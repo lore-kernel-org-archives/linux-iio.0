@@ -2,188 +2,218 @@ Return-Path: <SRS0=O0uU=CX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61F27C433E2
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Sep 2020 11:32:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 801CFC43461
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Sep 2020 12:40:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E7936216C4
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Sep 2020 11:32:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3B4C220759
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Sep 2020 12:40:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="qIdC1Kzg";
-	dkim=pass (1024-bit key) header.d=microchiptechnology.onmicrosoft.com header.i=@microchiptechnology.onmicrosoft.com header.b="NgqVc7/F"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ee9CzIog"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725999AbgINLck (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Sep 2020 07:32:40 -0400
-Received: from esa5.microchip.iphmx.com ([216.71.150.166]:5399 "EHLO
-        esa5.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726084AbgINLbF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Sep 2020 07:31:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1600083065; x=1631619065;
-  h=from:to:cc:subject:date:message-id:content-id:
-   content-transfer-encoding:mime-version;
-  bh=zhNOmfgXRrcN4mEuYqwroVgEDgqHCywDLKDjeJXFv5Y=;
-  b=qIdC1KzgHph5FUBiBkXvQa6Awb47gSaxD7WqfRQ7HDhKKS/7x0aCn5C2
-   AGRCF+nF2p54xkoiF8rJi2DlZ7DS6gvvYguN9/xEscXqiyElN2GpOWSKm
-   YiQlMKgcv4rQPPX/7SoyMt35yTD92WMFzW5iDDqtbCcElBI3WyE+a7M6I
-   VSZHoeK1m4vwxnw0iPHCfdt+VQdBcBZ34DoeTSZhuaKAiL5R/D1yP/Qir
-   PIhkTn2PXgvlxubSswk9uMLT7mgbwoJb7iJt+rsRahzYXQZEWO1QKEZUP
-   d0TnFTmK3m+D0Joh02HLvi0VNrQcuNPXJmecupZkBLlg24kMcuvm54MTp
-   g==;
-IronPort-SDR: savFxbHuRMY0FQSXX0vtgaV2/f7Y8OJNkN+DAntQqLk94YScB8Ml0gHFNdzKSY2yGVKx8DPw+B
- KGO1+guy7Qh+dE4l0GDvdchATx5ukkHcRdJSnuzH3k12YHAn+1T/anuSu6EVLhllKSRFlv/5Z8
- ovgexdqPNsL6Dwz8fmx621uOBOUl4FK/tBbvAQPgFWdOoygWJabJYZv9dDUj4kUaBZEXbDtWHD
- gk0yW6fA4OpNZm287rjRiV9cleIG3wXAoZeRYy50Y0OpFRkDBb1e+QTI3C9DV4G+udXIU9wpU4
- 6aE=
-X-IronPort-AV: E=Sophos;i="5.76,425,1592895600"; 
-   d="scan'208";a="90885049"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 14 Sep 2020 04:30:43 -0700
-Received: from chn-vm-ex03.mchp-main.com (10.10.85.151) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Mon, 14 Sep 2020 04:30:39 -0700
-Received: from NAM11-DM6-obe.outbound.protection.outlook.com (10.10.215.89) by
- email.microchip.com (10.10.87.152) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1979.3
- via Frontend Transport; Mon, 14 Sep 2020 04:30:39 -0700
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=ZbpzmfYrb5aPYoDhP0FUFRByam8UlAZ0NyuTVJwYDmKF5AbeX257JXqU1fkeuL3bEgm2UaxoIRQHIFXzW62pwHZ/BgEKd8+qhLImWc+OdzlD9NTMmMqA+o/65CPloEq+4R+hF6BZfvUb2hkDTQX8DMWI1K604EiFhF5g7e0QNXJnZrHCfEAWyIDEXETFSfhZdEJWcK9o92w1oxlYUiACpcdlxJlnsHi41ocCBSHBYM+F7TC0bRNEe12eeMe5beayMy1TgS+qwR40pbW0dOTkxZIF69bUOkOylqEuiwsXDnuxK4tPXikyIwdrsHOk8eEepR2Gz6e2ZFs5DAvj3bX3aw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zhNOmfgXRrcN4mEuYqwroVgEDgqHCywDLKDjeJXFv5Y=;
- b=eoMy0/Q9Wi7nUbXBMtRg1AjG6JqZ6MRpVbm2yWzOViTN+3SUtsG9SrgJ7GVbcYDBDDZw42Lion522OrfDwk1qB2KY4ZBj73Np75LyRVTz+6Dpbd3cdbIS7ARXGhSvsoDqUK09MDdt7IJ2LoyQVU5hVaTh3jcOVUW318YYooeJEcAnO6Es48BKBy9nO1GU/IOV9df8ZXVh4gO+4TpCfNBdtC8orHiCaUpxQvXHrGBF2YdG1hPmtXspxv/8iRM/XbuZPXElmlGmwnJY/QODI4EvqH5pAF2x1DBhc66Orv//Z1+UsIOdfKSTOxIuBgr/K6SZi9TU7oc+IXr2+0GjOh4qA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=microchip.com; dmarc=pass action=none
- header.from=microchip.com; dkim=pass header.d=microchip.com; arc=none
+        id S1726511AbgINMkY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Sep 2020 08:40:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726554AbgINMjb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Sep 2020 08:39:31 -0400
+Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9610C061354
+        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2020 05:38:06 -0700 (PDT)
+Received: by mail-ot1-x343.google.com with SMTP id n61so14649449ota.10
+        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2020 05:38:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=microchiptechnology.onmicrosoft.com;
- s=selector2-microchiptechnology-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=zhNOmfgXRrcN4mEuYqwroVgEDgqHCywDLKDjeJXFv5Y=;
- b=NgqVc7/FD1rz6ukXaPkcQEn6oyns+pzUea87DKebO6Tm5/gNZF8gZRRHvwYdXTgzh8tBtUv/hiwsNgv/vejpi9JPxgmBiJLfM6kwH2xr8lj/ZM8YjQMc0VXkHM7ofinXlVBp1WnfSuOfHOe6Nmn2s3hUREafkormYMLM6PBFGLw=
-Received: from BYAPR11MB2999.namprd11.prod.outlook.com (2603:10b6:a03:90::17)
- by BY5PR11MB4165.namprd11.prod.outlook.com (2603:10b6:a03:18c::26) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3370.19; Mon, 14 Sep
- 2020 11:30:39 +0000
-Received: from BYAPR11MB2999.namprd11.prod.outlook.com
- ([fe80::3956:c6f:11a4:b79]) by BYAPR11MB2999.namprd11.prod.outlook.com
- ([fe80::3956:c6f:11a4:b79%7]) with mapi id 15.20.3370.018; Mon, 14 Sep 2020
- 11:30:39 +0000
-From:   <Eugen.Hristev@microchip.com>
-To:     <alexandru.ardelean@analog.com>
-CC:     <jic23@kernel.org>, <linux-iio@vger.kernel.org>
-Subject: at91-sama5d2_adc crash
-Thread-Topic: at91-sama5d2_adc crash
-Thread-Index: AQHWiop494KNL5F21kmzJvvymHWACQ==
-Date:   Mon, 14 Sep 2020 11:30:39 +0000
-Message-ID: <e0822209-0010-f314-39eb-4fae33fb6661@microchip.com>
-Accept-Language: en-US, ro-RO
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.8.0
-authentication-results: analog.com; dkim=none (message not signed)
- header.d=none;analog.com; dmarc=none action=none header.from=microchip.com;
-x-originating-ip: [82.76.24.202]
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: f7d06546-caf9-4c17-324b-08d858a19b50
-x-ms-traffictypediagnostic: BY5PR11MB4165:
-x-microsoft-antispam-prvs: <BY5PR11MB416516B1F14D235A055EAA37E8230@BY5PR11MB4165.namprd11.prod.outlook.com>
-x-bypassexternaltag: True
-x-ms-oob-tlc-oobclassifiers: OLM:10000;
-x-ms-exchange-senderadcheck: 1
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: VpjFGykrednX07Mnndm2ovePsdDiDHow1yDs8J2qM4KCO0NB5yYgwTUDQnMryj2msn5Df7Qi92YC+Nxzb7VGdkja6T/4D7o/qRY1mW/7xgn/ewsDkG/NVBdlF8QgxtD08JO6xx51wm8Yt+IVlArhBGiuet0VkSt/bAKwOaCbdZDggNUYzmWnjheCMDIfVOeCGlFW0v4WjNQkNIcCgoiM9QCW+7SomDc7bfWe+aDk0361uGlT1l8mNgDgMB//IUCGq2P9M2dsF6sMHSx1UjGN3KHpgS2rG8qhYZGca/ZJUt4+H8OJ3NirItB5W3zGqS6fSqjzLtWxV0jClUuh05G3Z/wf3D+UBjrRIO+Sqfe6eEqdJLbqFwBoif1DxC0xicMV
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:BYAPR11MB2999.namprd11.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(346002)(366004)(136003)(39860400002)(396003)(4326008)(83380400001)(5660300002)(26005)(478600001)(66556008)(31696002)(66476007)(6512007)(64756008)(8676002)(66946007)(91956017)(6506007)(76116006)(71200400001)(8936002)(186003)(66446008)(31686004)(86362001)(6486002)(54906003)(2906002)(6916009)(2616005)(36756003)(316002)(43740500002);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata: Cj8kQ/Ewc9sTkwo0QNi7ArRbWewFILnqe344DkZsl2/nnzGqkEKnvEHNxHCDfEuN+YVw0+roXo+OUemCL6ow78sFmnlgo03IJwhS0/AZLFSIBgyDrQrE7+DaRfpx3Psr0Xlq3+O+eTbB8dsxCvPs7suoaFoiaGzMUEmNtdB7/6CLtrDYB53PbdHUrOpsFh+dx2SwTMKHwwBjcIZJHBYdDt3/I/9ATGZc1B16BHaVB3PToSKe6FA6yX/Ze7gz0tVzgROi35pk8o7ZIP1ZJuFDhVKNaADKuu4Ymku03sYKPD4QGR887gOIEdmK6uuBnB0jtPilPa5jswrYDlDPBtZ9rHP+Sic2vGZc6oL9dIjlnyUh1Gzlc1Sp9OV2K+Ij7aAgsg/HEhCTQVMKI7+c4+Ae9JxjEVrUtDX6uPlShCdi7ii0itqCgfVMbnBuh6iRkFPAdPA475Vo+7m69FrLP64Sm7q/QgL74bWbSpslGFVw2JgJGIjBiowCs/GHclfqb01uc9XivPXhyoIcmD/7TYszDzdrc1V3WoOs/ubdGs0XV3eU8fhViWCwMbzSwOHDB2/K0ED2Euylsg1+9c6heWZ/39G4FBvj40lQE+L2UI1/MoHlqjWnHDj7ifTdJi9R8yrBsWqqh1/b1UWKPeOyfJsphA==
-x-ms-exchange-transport-forked: True
-Content-Type: text/plain; charset="utf-8"
-Content-ID: <7D265EFFAC069B40900DE7E0CEEAFCBA@namprd11.prod.outlook.com>
-Content-Transfer-Encoding: base64
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=joOK07zUoq5UHJouopq09kOumHeQseKfettHHjU0Cb4=;
+        b=ee9CzIogYlGT55OqrffP6njQ0EUdGxrPekMnlHTJQwUujji1PTRbK/wftfIU48osUv
+         nXWCLQABde99BiFlnLffp60PHFvCs6qkhSA+WhyiK8dQWLfxF5meRBaY5KMMi9MA6p7/
+         f4K+UW4z6J82QnGo8SSaPWRLWL2cpimu8lhyMVqSuf0Kcw5dY9mHhYSMSqG2EuN3eBPX
+         seT7OBJltECQbhByx3jXDkqYRCBBsthGjApGWZjOcBTCMs2Ua5uGY/L4ej5DrErY7/uW
+         vkEQtz0DDsfhn1p+70jw8psZO+L86FzFtHuc6GE4Pex5gzJOXEs/r+KFa9+TTNtGThRj
+         byeg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=joOK07zUoq5UHJouopq09kOumHeQseKfettHHjU0Cb4=;
+        b=Xn1rpjYj+nwWi4vRG470yuPydckhQ/0NLfHhTH6TZPBDSCZsyLxylltSaGfEZVXnnT
+         8QsFHeuMkMf5p619hRM/BgDCNfd+t9PoHchio1qAIw1lTb+sGBS2hBMrB8Kt7u3Qa1tA
+         ClHaUOrSWE5enTTfJysRRxjMrS1bLjdifCVJA2blqQUaRmEbBremPzXuPLs42lT9bYH2
+         GI49aJdJYKDaB/SdgpcMi05XvczOFcesqzf+TdYCruRgIbRQz4b4YxnA0C+yCG4Tszuk
+         kzfK7GvWYyDYTUS3V2aYudMgk4jvxF//0PFauCeFM91he1npJtyabmwVN9EG46BVHlU/
+         ukmA==
+X-Gm-Message-State: AOAM533RgVnNYZ6qenMxky/Lg+emKyudAKQL7gqmdl0+M5De/dLXGI6D
+        aJu8z89ZmdDlQ9iBJo0LSZLQ9BxvpJGGT0sHhAc=
+X-Google-Smtp-Source: ABdhPJyIPl3U48amSrYvmJpJCjOIOTWI8ZPioj75lLQm1DCHFkJQ+NLy9LdlGQBl7HHWSfsJU8AbiBHqJqKx+G9jB9Q=
+X-Received: by 2002:a9d:4d0:: with SMTP id 74mr9401956otm.119.1600087085972;
+ Mon, 14 Sep 2020 05:38:05 -0700 (PDT)
 MIME-Version: 1.0
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: BYAPR11MB2999.namprd11.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: f7d06546-caf9-4c17-324b-08d858a19b50
-X-MS-Exchange-CrossTenant-originalarrivaltime: 14 Sep 2020 11:30:39.0389
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: 3f4057f3-b418-4d4e-ba84-d55b4e897d88
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: HK2GVurMiB9z9uC9+M73VxomW9vBJnqnziYFJwR7mYP2YB79T9jbjbY149AFyE3GAXjxl7X53coRplWkdxQE+105XjKu56nCjLBmFqBsE7s=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: BY5PR11MB4165
+References: <e0822209-0010-f314-39eb-4fae33fb6661@microchip.com>
+In-Reply-To: <e0822209-0010-f314-39eb-4fae33fb6661@microchip.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Mon, 14 Sep 2020 15:37:54 +0300
+Message-ID: <CA+U=DsqrFziYRjVfGnfBe0nKfxs0Le3pB0iYe=-7nDsLNZfXYw@mail.gmail.com>
+Subject: Re: at91-sama5d2_adc crash
+To:     Eugen.Hristev@microchip.com
+Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-SGVsbG8gQWxleCwNCg0KU29ycnkgdG8gZGlzdHVyYiBidXQgd2UgaGF2ZSBpc3N1ZXMgYWdhaW4g
-d2l0aCB0aGlzIHBhdGNoIDoNCg0KDQoNCmYzYzAzNGY2MTc3NSAoImlpbzogYXQ5MS1zYW1hNWQy
-X2FkYzogYWRqdXN0IA0KaWlvX3RyaWdnZXJlZF9idWZmZXJfe3ByZWRpc2FibGUscG9zdGVuYWJs
-ZX0gcG9zaXRpb25zIikNCg0KSSByZWNlbnRseSBkaXNjb3ZlcmVkIGEgY3Jhc2ggd2hlbiB1c2lu
-ZyBidWZmZXJlZCB0cmlnZ2VyIHdpdGggRE1BIHdpdGggDQp0aGlzIGRyaXZlcjoNCg0KIyBlY2hv
-IDEwMCA+IC9zeXMvYnVzL2lpby9kZXZpY2VzL2lpb1w6ZGV2aWNlMC9idWZmZXIvbGVuZ3RoDQoj
-IGVjaG8gMTAwID4gL3N5cy9idXMvaWlvL2RldmljZXMvaWlvXDpkZXZpY2UwL2J1ZmZlci93YXRl
-cm1hcmsNCiMgZWNobyAxID4gL3N5cy9idXMvaWlvL2RldmljZXMvaWlvXDpkZXZpY2UwL3NjYW5f
-ZWxlbWVudHMvaW5fdm9sdGFnZTRfZW4NCiMgaWlvX2dlbmVyaWNfYnVmZmVyIC1uIGZjMDMwMDAw
-LmFkYyAtdCANCmZjMDMwMDAwLmFkYy1kZXYwLWV4dGVybmFsX3Jpc2luZyAtYyA1DQppaW8gZGV2
-aWNlIG51bWJlciBiZWluZyB1c2VkIGlzIDANCmlpbyB0cmlnZ2VyIG51bWJlciBiZWluZyB1c2Vk
-IGlzIDANCi9zeXMvYnVzL2lpby9kZXZpY2lpL2lpbzpkZXZpY2UwIGZjMDMwMDAwLmFkYy1kZXYw
-LWV4dGVybmFsX3Jpc2luZ28gDQppaW86ZGV2aWNlMDogdXNpbmcgZG1hMGNoYW4xMCBmb3Igcngg
-RE1BIHRyYW5zZmVycw0KDQpEaXZpc2lvbiBieSB6ZXJvIGluIGtlcm5lbC4NCkNQVTogMCBQSUQ6
-IDI0MyBDb21tOiBpcnEvMTgyLWZjMDMwMDAgTm90IHRhaW50ZWQgNS44LjAtcmMxICMxDQpIYXJk
-d2FyZSBuYW1lOiBBdG1lbCBTQU1BNQ0KWzxjMDEwY2FmMD5dICh1bndpbmRfYmFja3RyYWNlKSBm
-cm9tIFs8YzAxMGEwMzQ+XSAoc2hvd19zdGFjaysweDEwLzB4MTQpDQpbPGMwMTBhMDM0Pl0gKHNo
-b3dfc3RhY2spIGZyb20gWzxjMDNhODkyYz5dIChMZGl2MCsweDgvMHgxMCkNCls8YzAzYTg5MmM+
-XSAoTGRpdjApIGZyb20gWzxjMDNhODhmYz5dIChfX2FlYWJpX3VpZGl2bW9kKzB4OC8weDE4KQ0K
-WzxjMDNhODhmYz5dIChfX2FlYWJpX3VpZGl2bW9kKSBmcm9tIFs8YzAzNTkyZDQ+XSAoZGl2X3M2
-NF9yZW0rMHgzYy8weGM0KQ0KWzxjMDM1OTJkND5dIChkaXZfczY0X3JlbSkgZnJvbSBbPGMwNWVk
-MzQ0Pl0gDQooYXQ5MV9hZGNfdHJpZ2dlcl9oYW5kbGVyKzB4Y2MvMHg0OTQpDQpbPGMwNWVkMzQ0
-Pl0gKGF0OTFfYWRjX3RyaWdnZXJfaGFuZGxlcikgZnJvbSBbPGMwMTQ5NDRjPl0gDQooaXJxX3Ro
-cmVhZF9mbisweDFjLzB4NzgpDQpbPGMwMTQ5NDRjPl0gKGlycV90aHJlYWRfZm4pIGZyb20gWzxj
-MDE0OTZkYz5dIChpcnFfdGhyZWFkKzB4MTI0LzB4MWQwKQ0KWzxjMDE0OTZkYz5dIChpcnFfdGhy
-ZWFkKSBmcm9tIFs8YzAxMzI1YjQ+XSAoa3RocmVhZCsweDEzOC8weDE0MCkNCls8YzAxMzI1YjQ+
-XSAoa3RocmVhZCkgZnJvbSBbPGMwMTAwMTQ4Pl0gKHJldF9mcm9tX2ZvcmsrMHgxNC8weDJjKQ0K
-RXhjZXB0aW9uIHN0YWNrKDB4ZGU0OWRmYjAgdG8gMHhkZTQ5ZGZmOCkNCmRmYTA6ICAgICAgICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIA0K
-MDAwMDAwMDANCmRmYzA6IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAw
-MDAwIDAwMDAwMDAwIDAwMDAwMDAwIA0KMDAwMDAwMDANCmRmZTA6IDAwMDAwMDAwIDAwMDAwMDAw
-IDAwMDAwMDAwIDAwMDAwMDAwIDAwMDAwMDEzIDAwMDAwMDAwDQpEaXZpc2lvbiBieSB6ZXJvIGlu
-IGtlcm5lbC4NCkNQVTogMCBQSUQ6IDI0MyBDb21tOiBpcnEvMTgyLWZjMDMwMDAgTm90IHRhaW50
-ZWQgNS44LjAtcmMxICMxDQpIYXJkd2FyZSBuYW1lOiBBdG1lbCBTQU1BNQ0KWzxjMDEwY2FmMD5d
-ICh1bndpbmRfYmFja3RyYWNlKSBmcm9tIFs8YzAxMGEwMzQ+XSAoc2hvd19zdGFjaysweDEwLzB4
-MTQpDQpbPGMwMTBhMDM0Pl0gKHNob3dfc3RhY2spIGZyb20gWzxjMDNhN2UyND5dIChMZGl2MF82
-NCsweDgvMHgxOCkNCls8YzAzYTdlMjQ+XSAoTGRpdjBfNjQpIGZyb20gWzxjMDM1OTM0ND5dIChk
-aXZfczY0X3JlbSsweGFjLzB4YzQpDQpbPGMwMzU5MzQ0Pl0gKGRpdl9zNjRfcmVtKSBmcm9tIFs8
-YzA1ZWQzNjA+XSANCihhdDkxX2FkY190cmlnZ2VyX2hhbmRsZXIrMHhlOC8weDQ5NCkNCls8YzA1
-ZWQzNjA+XSAoYXQ5MV9hZGNfdHJpZ2dlcl9oYW5kbGVyKSBmcm9tIFs8YzAxNDk0NGM+XSANCihp
-cnFfdGhyZWFkX2ZuKzB4MWMvMHg3OCkNCls8YzAxNDk0NGM+XSAoaXJxX3RocmVhZF9mbikgZnJv
-bSBbPGMwMTQ5NmRjPl0gKGlycV90aHJlYWQrMHgxMjQvMHgxZDApDQpbPGMwMTQ5NmRjPl0gKGly
-cV90aHJlYWQpIGZyb20gWzxjMDEzMjViND5dIChrdGhyZWFkKzB4MTM4LzB4MTQwKQ0KWzxjMDEz
-MjViND5dIChrdGhyZWFkKSBmcm9tIFs8YzAxMDAxNDg+XSAocmV0X2Zyb21fZm9yaysweDE0LzB4
-MmMpDQpFeGNlcHRpb24gc3RhY2soMHhkZTQ5ZGZiMCB0byAweGRlNDlkZmY4KQ0KZGZhMDogICAg
-ICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgICAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAw
-MDAgDQowMDAwMDAwMA0KZGZjMDogMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAg
-MDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgDQowMDAwMDAwMA0KZGZlMDogMDAwMDAwMDAgMDAw
-MDAwMDAgMDAwMDAwMDAgMDAwMDAwMDAgMDAwMDAwMTMgMDAwMDAwMDANCnNjaGVkOiBSVCB0aHJv
-dHRsaW5nIGFjdGl2YXRlZA0KDQoNCkl0IGxvb2tzIGxpa2UgY3Jhc2ggaXMgdGhlcmUgc2luY2Ug
-NS44LXJjMSBpbnRyb2R1Y2VkIGJ5IHRoYXQgcGF0Y2gNCg0KSSBsb29rZWQgaW4gdGhlIGNvZGUg
-YW5kIGl0IGxvb2tzIHNvbWV0aGluZyBpcyB6ZXJvLCBwcm9iYWJseSB0aGUgDQpyZWNlaXZlZCBi
-dWZmZXIgc2l6ZS4gSXQgaXMgbGlrZWx5IHRoYXQgdGhlIERNQSBzdGFydHMgdG9vIHNvb24gYmVm
-b3JlIA0KdGhlIGJ1ZmZlciBpcyBwcm9wZXJseSBzZXR1cCA/DQoNCkNhbiB5b3UgaGVscCB3aXRo
-IGZpeGluZyB0aGlzID8gb3IgeW91IGtub3cgaG93IHdlIGNhbiBkbyBpdCA/DQpBbHNvIGNvdWxk
-IHlvdSByZW1pbmQgbWUgd2h5IHdlIGVuYWJsZSBhbmQgc3RhcnQgdGhlIERNQSBvbiBwcmUtZW5h
-YmxlIA0Kb2YgdGhlIGJ1ZmZlciBpbnN0ZWFkIG9mIHBvc3QtZW5hYmxlIG9mIHRoZSBidWZmZXIg
-Pw0KSW4gcHJlLWVuYWJsZSwgZG8gd2UgaGF2ZSBldmVyeXRoaW5nIHJlYWR5IGluc2lkZSBJSU8g
-dG8gYmUgYWJsZSB0byANCnN0YXJ0IHRoZSBETUE/IE9yIGl0J3MgYmV0dGVyIHRvIGhhdmUgaXQg
-YXQgcG9zdC1lbmFibGUgdGltZSA/DQoNCkkga25vdyB5b3Ugd2FudCB0byBkaXRjaCB0aGUgcG9z
-dC1lbmFibGUgYW5kIHByZS1kaXNhYmxlIGhvb2tzLCBidXQgaXQgDQpsb29rcyB0aGlzIGRyaXZl
-ciBuZWVkcyB0aGVtLCBvciB3ZSBuZWVkIHRvIGZpbmQgYSB3YXkgdG8gbWFrZSBpdCB3b3JrIA0K
-cHJvcGVybHkNCg0KVGhhbmtzICENCkV1Z2VuDQo=
+On Mon, Sep 14, 2020 at 2:33 PM <Eugen.Hristev@microchip.com> wrote:
+>
+> Hello Alex,
+>
+> Sorry to disturb but we have issues again with this patch :
+>
+>
+
+firstly, many apologies for the breakage;
+
+>
+> f3c034f61775 ("iio: at91-sama5d2_adc: adjust
+> iio_triggered_buffer_{predisable,postenable} positions")
+>
+> I recently discovered a crash when using buffered trigger with DMA with
+> this driver:
+>
+> # echo 100 > /sys/bus/iio/devices/iio\:device0/buffer/length
+> # echo 100 > /sys/bus/iio/devices/iio\:device0/buffer/watermark
+> # echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage4_en
+> # iio_generic_buffer -n fc030000.adc -t
+> fc030000.adc-dev0-external_rising -c 5
+> iio device number being used is 0
+> iio trigger number being used is 0
+> /sys/bus/iio/devicii/iio:device0 fc030000.adc-dev0-external_risingo
+> iio:device0: using dma0chan10 for rx DMA transfers
+>
+> Division by zero in kernel.
+> CPU: 0 PID: 243 Comm: irq/182-fc03000 Not tainted 5.8.0-rc1 #1
+> Hardware name: Atmel SAMA5
+> [<c010caf0>] (unwind_backtrace) from [<c010a034>] (show_stack+0x10/0x14)
+> [<c010a034>] (show_stack) from [<c03a892c>] (Ldiv0+0x8/0x10)
+> [<c03a892c>] (Ldiv0) from [<c03a88fc>] (__aeabi_uidivmod+0x8/0x18)
+> [<c03a88fc>] (__aeabi_uidivmod) from [<c03592d4>] (div_s64_rem+0x3c/0xc4)
+> [<c03592d4>] (div_s64_rem) from [<c05ed344>]
+
+which of these lines is the issue?
+
+        sample_count = div_s64(transferred_len, sample_size);
+
+        /*
+         * interval between samples is total time since last transfer handling
+         * divided by the number of samples (total size divided by sample size)
+         */
+        interval = div_s64((ns - st->dma_st.dma_ts), sample_count);
+
+would a simple return like below make sense?
+if (!sample_size)    // or  if (!sample_count)
+    return;
+
+Is at91_adc_dma_size_done() returning 0?
+Or more closely, which variable is zero?
+
+> (at91_adc_trigger_handler+0xcc/0x494)
+> [<c05ed344>] (at91_adc_trigger_handler) from [<c014944c>]
+> (irq_thread_fn+0x1c/0x78)
+> [<c014944c>] (irq_thread_fn) from [<c01496dc>] (irq_thread+0x124/0x1d0)
+> [<c01496dc>] (irq_thread) from [<c01325b4>] (kthread+0x138/0x140)
+> [<c01325b4>] (kthread) from [<c0100148>] (ret_from_fork+0x14/0x2c)
+> Exception stack(0xde49dfb0 to 0xde49dff8)
+> dfa0:                                     00000000 00000000 00000000
+> 00000000
+> dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> 00000000
+> dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> Division by zero in kernel.
+> CPU: 0 PID: 243 Comm: irq/182-fc03000 Not tainted 5.8.0-rc1 #1
+> Hardware name: Atmel SAMA5
+> [<c010caf0>] (unwind_backtrace) from [<c010a034>] (show_stack+0x10/0x14)
+> [<c010a034>] (show_stack) from [<c03a7e24>] (Ldiv0_64+0x8/0x18)
+> [<c03a7e24>] (Ldiv0_64) from [<c0359344>] (div_s64_rem+0xac/0xc4)
+> [<c0359344>] (div_s64_rem) from [<c05ed360>]
+> (at91_adc_trigger_handler+0xe8/0x494)
+> [<c05ed360>] (at91_adc_trigger_handler) from [<c014944c>]
+> (irq_thread_fn+0x1c/0x78)
+> [<c014944c>] (irq_thread_fn) from [<c01496dc>] (irq_thread+0x124/0x1d0)
+> [<c01496dc>] (irq_thread) from [<c01325b4>] (kthread+0x138/0x140)
+> [<c01325b4>] (kthread) from [<c0100148>] (ret_from_fork+0x14/0x2c)
+> Exception stack(0xde49dfb0 to 0xde49dff8)
+> dfa0:                                     00000000 00000000 00000000
+> 00000000
+> dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000
+> 00000000
+> dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
+> sched: RT throttling activated
+>
+>
+> It looks like crash is there since 5.8-rc1 introduced by that patch
+>
+> I looked in the code and it looks something is zero, probably the
+> received buffer size. It is likely that the DMA starts too soon before
+> the buffer is properly setup ?
+
+I am not sure about this. See [1]
+
+>
+> Can you help with fixing this ? or you know how we can do it ?
+> Also could you remind me why we enable and start the DMA on pre-enable
+> of the buffer instead of post-enable of the buffer ?
+
+[1]
+So, in iio_enable_buffers(), the order is:
+preenable()
+update_scan_mode()
+hwfifo_set_watermark()
+iio_buffer_enable()    <-  this can also enable the DMA buffer if
+using the IIO DMA buffer framework
+[2] IIO-core-now-attaches-pollfunc via iio_trigger_attach_poll_func()
+(if current mode is INDIO_BUFFER_TRIGGERED)
+postenable()
+
+I could guess maybe that hwfifo_set_watermark() is called too late?
+Ideally, the driver would use the IIO DMA buffer hook to enable the
+buffer via iio_buffer_enable()
+That would be the ideal way to do it, and not enable DMA in preenable.
+
+Regarding [2] it was discussed that attach/detach should be done in
+that order, and it should be done in IIO core.
+So, all drivers were cleaned up to respect that order.
+The idea is more in the lines that repetitive/duplicated things should
+be done by the IIO framework, and attach/detach-of-pollfunc is one of
+them.
+
+> In pre-enable, do we have everything ready inside IIO to be able to
+> start the DMA? Or it's better to have it at post-enable time ?
+
+This really depends on each driver.
+
+>
+> I know you want to ditch the post-enable and pre-disable hooks, but it
+> looks this driver needs them, or we need to find a way to make it work
+> properly
+
+These hooks have already been dropped in favor of the IIO core doing
+attach/detach.
+At this point, it may be a bit more difficult to go back, than to move forward.
+
+I think this crash should be fixable to function with this IIO core change.
+
+Again, apologies for the breakage.
+
+Thanks
+Alex
+
+>
+> Thanks !
+> Eugen
