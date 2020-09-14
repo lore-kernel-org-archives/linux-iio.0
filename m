@@ -2,218 +2,108 @@ Return-Path: <SRS0=O0uU=CX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 801CFC43461
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Sep 2020 12:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32C07C433E2
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Sep 2020 15:42:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3B4C220759
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Sep 2020 12:40:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D7FBD2074B
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Sep 2020 15:42:16 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="ee9CzIog"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="kldHqlgV"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726511AbgINMkY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Sep 2020 08:40:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        id S1726424AbgINPmB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Sep 2020 11:42:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726554AbgINMjb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Sep 2020 08:39:31 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A9610C061354
-        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2020 05:38:06 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id n61so14649449ota.10
-        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2020 05:38:06 -0700 (PDT)
+        with ESMTP id S1726457AbgINPl2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Sep 2020 11:41:28 -0400
+Received: from mail-ot1-x342.google.com (mail-ot1-x342.google.com [IPv6:2607:f8b0:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C5EFDC06178B
+        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2020 08:41:27 -0700 (PDT)
+Received: by mail-ot1-x342.google.com with SMTP id w25so315992otk.8
+        for <linux-iio@vger.kernel.org>; Mon, 14 Sep 2020 08:41:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
+        d=linaro.org; s=google;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=joOK07zUoq5UHJouopq09kOumHeQseKfettHHjU0Cb4=;
-        b=ee9CzIogYlGT55OqrffP6njQ0EUdGxrPekMnlHTJQwUujji1PTRbK/wftfIU48osUv
-         nXWCLQABde99BiFlnLffp60PHFvCs6qkhSA+WhyiK8dQWLfxF5meRBaY5KMMi9MA6p7/
-         f4K+UW4z6J82QnGo8SSaPWRLWL2cpimu8lhyMVqSuf0Kcw5dY9mHhYSMSqG2EuN3eBPX
-         seT7OBJltECQbhByx3jXDkqYRCBBsthGjApGWZjOcBTCMs2Ua5uGY/L4ej5DrErY7/uW
-         vkEQtz0DDsfhn1p+70jw8psZO+L86FzFtHuc6GE4Pex5gzJOXEs/r+KFa9+TTNtGThRj
-         byeg==
+        bh=ZELQhGU+/XtL/55nDBDugsi7ueM9gHLCZBficN7FL9w=;
+        b=kldHqlgVGZ/L1PYKcsqUtEnMD/Q9aXDKd/gxzvCZ7KQiWwV87i0LUwBn0BrZo8xr4K
+         FAAP45tRfhJ9KXuDoUxhjfwwcNO6alrS4tySG00FInO7DLbCqX+7pX/tDsyV5k2SI8xJ
+         S7IBlUXutBVAu+M2zfeIH2IOfe1WdG2iNSOpBlqo2YR+ovIP4Lk427LLi70ohF/Ht7hn
+         Jl02Kik0j6p5/XYhF/AK59H3zr4ZeAzThOSl8QjXW0ipDwsndDXaoow/H5mpu1yr3wYm
+         H8OaA7NZjHv6Mq+h9JurK+57q9o3kbzIPUqme/9WuZut/XtoaemL9D87iVKfOmqNKEIp
+         PB4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=joOK07zUoq5UHJouopq09kOumHeQseKfettHHjU0Cb4=;
-        b=Xn1rpjYj+nwWi4vRG470yuPydckhQ/0NLfHhTH6TZPBDSCZsyLxylltSaGfEZVXnnT
-         8QsFHeuMkMf5p619hRM/BgDCNfd+t9PoHchio1qAIw1lTb+sGBS2hBMrB8Kt7u3Qa1tA
-         ClHaUOrSWE5enTTfJysRRxjMrS1bLjdifCVJA2blqQUaRmEbBremPzXuPLs42lT9bYH2
-         GI49aJdJYKDaB/SdgpcMi05XvczOFcesqzf+TdYCruRgIbRQz4b4YxnA0C+yCG4Tszuk
-         kzfK7GvWYyDYTUS3V2aYudMgk4jvxF//0PFauCeFM91he1npJtyabmwVN9EG46BVHlU/
-         ukmA==
-X-Gm-Message-State: AOAM533RgVnNYZ6qenMxky/Lg+emKyudAKQL7gqmdl0+M5De/dLXGI6D
-        aJu8z89ZmdDlQ9iBJo0LSZLQ9BxvpJGGT0sHhAc=
-X-Google-Smtp-Source: ABdhPJyIPl3U48amSrYvmJpJCjOIOTWI8ZPioj75lLQm1DCHFkJQ+NLy9LdlGQBl7HHWSfsJU8AbiBHqJqKx+G9jB9Q=
-X-Received: by 2002:a9d:4d0:: with SMTP id 74mr9401956otm.119.1600087085972;
- Mon, 14 Sep 2020 05:38:05 -0700 (PDT)
+        bh=ZELQhGU+/XtL/55nDBDugsi7ueM9gHLCZBficN7FL9w=;
+        b=fXio4lvRGGEzLK+nqTAZhBFm6FsyFghMbxY5Y0X3Mw3fDEt9SdXHJZHiwZ5+tgeudu
+         IGYdodO9bSgDiEYK31alnc9ux6mHuvE9o6Lg9i332QKx8K7liOWUBZfhdMnFf5trf59K
+         M9g7zNc+xZBLsLSw79DaeoeP1rWMBz1lzQFHjaO9f2aqYaUom/dMHKTJp+CdkSh9nk38
+         AmFUw7p/Mpf/JtfXJR0HwXlv3w2tmuNODdV3ajlcdaJ5VBOydiMsaq6v+0NsqOlpgPHH
+         SBRNDYX9z5zDMi7qQsZdOXAoDgQ/Bqln/1mdSzdOQ4VUmDVODI0/4pEr2gT0kgn9jOBx
+         uLfw==
+X-Gm-Message-State: AOAM533M62ZsUt9VDRhNPx2/PsN0RiCZfykuiNwLWOWFnKRLCXKpcGJ0
+        kaoU4CaPBtABB7w8s929c2KlAUX9o7aNvQEZpiZeYA==
+X-Google-Smtp-Source: ABdhPJxOXHJTmnoyvncutLUljQZPNcmmjD8ZnonC/r6sp0kl55kb8ZXthIsQjiYohus1Nn/JEPZJ+ZDFIEELZu6L0OY=
+X-Received: by 2002:a9d:7350:: with SMTP id l16mr9254540otk.368.1600098086769;
+ Mon, 14 Sep 2020 08:41:26 -0700 (PDT)
 MIME-Version: 1.0
-References: <e0822209-0010-f314-39eb-4fae33fb6661@microchip.com>
-In-Reply-To: <e0822209-0010-f314-39eb-4fae33fb6661@microchip.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Mon, 14 Sep 2020 15:37:54 +0300
-Message-ID: <CA+U=DsqrFziYRjVfGnfBe0nKfxs0Le3pB0iYe=-7nDsLNZfXYw@mail.gmail.com>
-Subject: Re: at91-sama5d2_adc crash
-To:     Eugen.Hristev@microchip.com
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>
+References: <20200910140000.324091-1-dmitry.baryshkov@linaro.org>
+ <20200910140000.324091-9-dmitry.baryshkov@linaro.org> <20200913111544.20a03410@archlinux>
+In-Reply-To: <20200913111544.20a03410@archlinux>
+From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Date:   Mon, 14 Sep 2020 18:41:15 +0300
+Message-ID: <CAA8EJpr4JSa9+3K1txbhyw64PgKdri_WNbW3yvQSkYMkD-zKYA@mail.gmail.com>
+Subject: Re: [PATCH v4 08/10] thermal: qcom: add support for adc-tm5 PMIC
+ thermal monitor
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "open list:DRM DRIVER FOR MSM ADRENO GPU" 
+        <linux-arm-msm@vger.kernel.org>, linux-pm@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
 Content-Type: text/plain; charset="UTF-8"
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Sep 14, 2020 at 2:33 PM <Eugen.Hristev@microchip.com> wrote:
+On Sun, 13 Sep 2020 at 13:15, Jonathan Cameron <jic23@kernel.org> wrote:
 >
-> Hello Alex,
+> On Thu, 10 Sep 2020 16:59:58 +0300
+> Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
 >
-> Sorry to disturb but we have issues again with this patch :
->
->
+> > Add support for Thermal Monitoring part of PMIC5. This part is closely
+> > coupled with ADC, using it's channels directly. ADC-TM support
+> > generating interrupts on ADC value crossing low or high voltage bounds,
+> > which is used to support thermal trip points.
+> >
+> > Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> A few trivial things inline.  Only one I'm really fussed about is
+> filling in the rest of the kernel-doc. I raised that in v2.
 
-firstly, many apologies for the breakage;
-
->
-> f3c034f61775 ("iio: at91-sama5d2_adc: adjust
-> iio_triggered_buffer_{predisable,postenable} positions")
->
-> I recently discovered a crash when using buffered trigger with DMA with
-> this driver:
->
-> # echo 100 > /sys/bus/iio/devices/iio\:device0/buffer/length
-> # echo 100 > /sys/bus/iio/devices/iio\:device0/buffer/watermark
-> # echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage4_en
-> # iio_generic_buffer -n fc030000.adc -t
-> fc030000.adc-dev0-external_rising -c 5
-> iio device number being used is 0
-> iio trigger number being used is 0
-> /sys/bus/iio/devicii/iio:device0 fc030000.adc-dev0-external_risingo
-> iio:device0: using dma0chan10 for rx DMA transfers
->
-> Division by zero in kernel.
-> CPU: 0 PID: 243 Comm: irq/182-fc03000 Not tainted 5.8.0-rc1 #1
-> Hardware name: Atmel SAMA5
-> [<c010caf0>] (unwind_backtrace) from [<c010a034>] (show_stack+0x10/0x14)
-> [<c010a034>] (show_stack) from [<c03a892c>] (Ldiv0+0x8/0x10)
-> [<c03a892c>] (Ldiv0) from [<c03a88fc>] (__aeabi_uidivmod+0x8/0x18)
-> [<c03a88fc>] (__aeabi_uidivmod) from [<c03592d4>] (div_s64_rem+0x3c/0xc4)
-> [<c03592d4>] (div_s64_rem) from [<c05ed344>]
-
-which of these lines is the issue?
-
-        sample_count = div_s64(transferred_len, sample_size);
-
-        /*
-         * interval between samples is total time since last transfer handling
-         * divided by the number of samples (total size divided by sample size)
-         */
-        interval = div_s64((ns - st->dma_st.dma_ts), sample_count);
-
-would a simple return like below make sense?
-if (!sample_size)    // or  if (!sample_count)
-    return;
-
-Is at91_adc_dma_size_done() returning 0?
-Or more closely, which variable is zero?
-
-> (at91_adc_trigger_handler+0xcc/0x494)
-> [<c05ed344>] (at91_adc_trigger_handler) from [<c014944c>]
-> (irq_thread_fn+0x1c/0x78)
-> [<c014944c>] (irq_thread_fn) from [<c01496dc>] (irq_thread+0x124/0x1d0)
-> [<c01496dc>] (irq_thread) from [<c01325b4>] (kthread+0x138/0x140)
-> [<c01325b4>] (kthread) from [<c0100148>] (ret_from_fork+0x14/0x2c)
-> Exception stack(0xde49dfb0 to 0xde49dff8)
-> dfa0:                                     00000000 00000000 00000000
-> 00000000
-> dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> 00000000
-> dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> Division by zero in kernel.
-> CPU: 0 PID: 243 Comm: irq/182-fc03000 Not tainted 5.8.0-rc1 #1
-> Hardware name: Atmel SAMA5
-> [<c010caf0>] (unwind_backtrace) from [<c010a034>] (show_stack+0x10/0x14)
-> [<c010a034>] (show_stack) from [<c03a7e24>] (Ldiv0_64+0x8/0x18)
-> [<c03a7e24>] (Ldiv0_64) from [<c0359344>] (div_s64_rem+0xac/0xc4)
-> [<c0359344>] (div_s64_rem) from [<c05ed360>]
-> (at91_adc_trigger_handler+0xe8/0x494)
-> [<c05ed360>] (at91_adc_trigger_handler) from [<c014944c>]
-> (irq_thread_fn+0x1c/0x78)
-> [<c014944c>] (irq_thread_fn) from [<c01496dc>] (irq_thread+0x124/0x1d0)
-> [<c01496dc>] (irq_thread) from [<c01325b4>] (kthread+0x138/0x140)
-> [<c01325b4>] (kthread) from [<c0100148>] (ret_from_fork+0x14/0x2c)
-> Exception stack(0xde49dfb0 to 0xde49dff8)
-> dfa0:                                     00000000 00000000 00000000
-> 00000000
-> dfc0: 00000000 00000000 00000000 00000000 00000000 00000000 00000000
-> 00000000
-> dfe0: 00000000 00000000 00000000 00000000 00000013 00000000
-> sched: RT throttling activated
->
->
-> It looks like crash is there since 5.8-rc1 introduced by that patch
->
-> I looked in the code and it looks something is zero, probably the
-> received buffer size. It is likely that the DMA starts too soon before
-> the buffer is properly setup ?
-
-I am not sure about this. See [1]
+Ugh, please excuse me. Probably I missed that comment.
 
 >
-> Can you help with fixing this ? or you know how we can do it ?
-> Also could you remind me why we enable and start the DMA on pre-enable
-> of the buffer instead of post-enable of the buffer ?
-
-[1]
-So, in iio_enable_buffers(), the order is:
-preenable()
-update_scan_mode()
-hwfifo_set_watermark()
-iio_buffer_enable()    <-  this can also enable the DMA buffer if
-using the IIO DMA buffer framework
-[2] IIO-core-now-attaches-pollfunc via iio_trigger_attach_poll_func()
-(if current mode is INDIO_BUFFER_TRIGGERED)
-postenable()
-
-I could guess maybe that hwfifo_set_watermark() is called too late?
-Ideally, the driver would use the IIO DMA buffer hook to enable the
-buffer via iio_buffer_enable()
-That would be the ideal way to do it, and not enable DMA in preenable.
-
-Regarding [2] it was discussed that attach/detach should be done in
-that order, and it should be done in IIO core.
-So, all drivers were cleaned up to respect that order.
-The idea is more in the lines that repetitive/duplicated things should
-be done by the IIO framework, and attach/detach-of-pollfunc is one of
-them.
-
-> In pre-enable, do we have everything ready inside IIO to be able to
-> start the DMA? Or it's better to have it at post-enable time ?
-
-This really depends on each driver.
-
+> With that fixed,
 >
-> I know you want to ditch the post-enable and pre-disable hooks, but it
-> looks this driver needs them, or we need to find a way to make it work
-> properly
+> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-These hooks have already been dropped in favor of the IIO core doing
-attach/detach.
-At this point, it may be a bit more difficult to go back, than to move forward.
-
-I think this crash should be fixable to function with this IIO core change.
-
-Again, apologies for the breakage.
-
-Thanks
-Alex
-
->
-> Thanks !
-> Eugen
+-- 
+With best wishes
+Dmitry
