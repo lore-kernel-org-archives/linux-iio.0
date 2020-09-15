@@ -2,157 +2,87 @@ Return-Path: <SRS0=jlvN=CY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45D9EC2D0E0
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8163EC433E2
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0D4E920770
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 26CBD2078E
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600197183;
-	bh=tSevbAqbQsSBw7dQvf5fhPX0nPaTd246otOaogFB0uc=;
+	s=default; t=1600197200;
+	bh=W2eB6mk20sDr6mur4xpyrOvReI/ND0Loy/2V1G6nSDM=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=cBy94Pg63erCgSSXMwb/spVxmUYI/Vdc58KmXMvTl3ajk9Xn/1DqRg5DHVmt4iz2o
-	 blRWWMKOQY9Y0CRXJnPZVWPTsL7Jo30RqNAqIqBYXFKvP82i+n+1LKj+l9s42ICloa
-	 qL7ZSTn/rWe7bWvb4F5xkDD2870qiP/a4rjcj29U=
+	b=NhMXIoofdcs/CPqd7JWQ+V6+2tQT/9CoQ5SJ0lErfp9kCFv4k7yDkGCzf42ojMb9X
+	 Fw3LM/hHV38BL/MGJKX6FGYIaAl+wA7irDeyPxAroJrLjJagMqEL6msGV0Hh9Ji5qX
+	 Z6aHwZkqyxcw9JiZpY0QnMV4Ctuj2rJL6JULNQvs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727958AbgIOTMx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:12:53 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:41686 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727870AbgIOTMe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:12:34 -0400
-Received: by mail-io1-f65.google.com with SMTP id z13so5352405iom.8;
-        Tue, 15 Sep 2020 12:12:33 -0700 (PDT)
+        id S1727713AbgIOTNR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:13:17 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:33176 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727778AbgIOTCC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:02:02 -0400
+Received: by mail-il1-f195.google.com with SMTP id x2so4091901ilm.0;
+        Tue, 15 Sep 2020 12:02:02 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=dIoLLlcqqfkrVdKCgu2dDh09wIBNAgAZpMC84Uk6ARE=;
-        b=Q3pRNS24LuOFsh/kXS/V656r5oi2sOXICL0K7hv0Eb6GUCH7omVYrlXT2e0ml6oyCv
-         dAsL+Wpd4kKFnihWZiZsF8XuD3nKhyLcB3qoiIoYekePgZhFEHUGH9uQmnqI0XmVgXcK
-         xIDjclBwOZMonR41lYoff410y7eomuRiNguqS1i4iTCgjaklF0RLhBdt/WLomuYqdu5t
-         iGTgonvMGYwtnMhrKDBf8hTki8fG8h+A5oInsJ6/FfvaCHDAJYAwc1Yd6QSurZ0hVV6U
-         bfJhoME5my1tHTOAvKElFqUZ/lcvNH5enm95JjlPAbpEdTGi06kUO5TbqaYMxICTPQ8R
-         p9gg==
-X-Gm-Message-State: AOAM531Trk8aE9HhAZD2W2jz/2RBZtY9wwd9wQh6m0zzOb0ZrXMIQ4P8
-        01u9KZvp5E96T/7GtLdqrcNhA78yGaowWIY=
-X-Google-Smtp-Source: ABdhPJxpi65URW7bw4MtaO89VaKU8CSom+vBLYeZUcnebS8wwyuXFrF5GBb3g7ghspILO2HMAM93sg==
-X-Received: by 2002:a6b:2b45:: with SMTP id r66mr16400898ior.159.1600197153556;
-        Tue, 15 Sep 2020 12:12:33 -0700 (PDT)
+        bh=10I5+fMmPEEzForz80NGynm9bLNuzz363eyFd54ZBxE=;
+        b=Q3MrvxHDSPvXYCmDHBj3b4YlKnCGE8G5qEjklhdLju6AXv0NfVPFXcR0JQj6V+KARG
+         3JrJO72MEG30Dk6jTGepKXoMwhUsjJvzwpvaEXxfo9yV6hMOxOIWCHgLHNSJ9+MkVfJn
+         ZazvxlrZ980pYpLmt5nuHmf4i9NoNJ7pd8IwECIy36/3zSLPndjcpCW+yfTxydbwMCta
+         6aPvonI7jkNDi5/MRQhWqBJuiK7Lc+JuC59AzJlYjYTR620UlMkiRD5T/0MIcOIzmk2y
+         GSQZRbWFXJBtKfkyrPZGqz9w8X8IcZe0wPYYkDloM+/pz1joGgI3oWzRxNb2fTZEqOXP
+         xssA==
+X-Gm-Message-State: AOAM53157QfEHbmhSChuyZt6VIFS317PIJPAwINUULIiYOnrjBcXHbs/
+        2QiepXUnUYzDlzhICnU0l0vhj98mk1Bci6Q=
+X-Google-Smtp-Source: ABdhPJzcUSrz/WHZ87chTUlj/m9Gk4HJj2HzYY6MwnUtGyFM0wfltv90V6icwdJbzKIE7TgDyxfY/A==
+X-Received: by 2002:a92:6b04:: with SMTP id g4mr17603879ilc.203.1600196522198;
+        Tue, 15 Sep 2020 12:02:02 -0700 (PDT)
 Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id z10sm7943121ioi.13.2020.09.15.12.12.32
+        by smtp.gmail.com with ESMTPSA id m18sm9222422iln.80.2020.09.15.12.02.01
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 12:12:32 -0700 (PDT)
-Received: (nullmailer pid 2332251 invoked by uid 1000);
-        Tue, 15 Sep 2020 19:12:30 -0000
-Date:   Tue, 15 Sep 2020 13:12:30 -0600
+        Tue, 15 Sep 2020 12:02:01 -0700 (PDT)
+Received: (nullmailer pid 2314862 invoked by uid 1000);
+        Tue, 15 Sep 2020 19:02:00 -0000
+Date:   Tue, 15 Sep 2020 13:02:00 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-Subject: Re: [PATCH v2 12/20] dt-bindings:iio:adc:dlg,da9150-gpadc yaml
- conversion
-Message-ID: <20200915191230.GA2330650@bogus>
+Cc:     devicetree@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
+        linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 03/20] dt-bindings:iio:adc:st,stmpe-adc yaml conversion
+Message-ID: <20200915190200.GA2314807@bogus>
 References: <20200909175946.395313-1-jic23@kernel.org>
- <20200909175946.395313-13-jic23@kernel.org>
+ <20200909175946.395313-4-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200909175946.395313-13-jic23@kernel.org>
+In-Reply-To: <20200909175946.395313-4-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 06:59:38PM +0100, Jonathan Cameron wrote:
+On Wed, 09 Sep 2020 18:59:29 +0100, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> This is a small part of an MFD so perhaps ultimately it makes more
-> sense to document it with that MFD binding rather than separately.
-> 
-> In the meantime it's a straightforward conversion from txt to yaml.
+> Conversion from freeform text to yaml.
+> One oddity in this binding is that, for historical reasons it requires
+> the node name to be stmpe_adc.  I've put that in the decription field
+> but I'm not sure if there is a better way to specify this?
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Acked-by: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
+> Cc: Stefan Agner <stefan@agner.ch>
 > ---
->  .../bindings/iio/adc/da9150-gpadc.txt         | 16 ---------
->  .../bindings/iio/adc/dlg,da9150-gpadc.yaml    | 33 +++++++++++++++++++
->  2 files changed, 33 insertions(+), 16 deletions(-)
+>  .../bindings/iio/adc/st,stmpe-adc.yaml        | 45 +++++++++++++++++++
+>  .../devicetree/bindings/iio/adc/stmpe-adc.txt | 21 ---------
+>  2 files changed, 45 insertions(+), 21 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt b/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-> deleted file mode 100644
-> index c07228da92ac..000000000000
-> --- a/Documentation/devicetree/bindings/iio/adc/da9150-gpadc.txt
-> +++ /dev/null
-> @@ -1,16 +0,0 @@
-> -Dialog Semiconductor DA9150 IIO GPADC bindings
-> -
-> -Required properties:
-> -- compatible: "dlg,da9150-gpadc" for DA9150 IIO GPADC
-> -- #io-channel-cells: Should be set to <1>
-> -  (See Documentation/devicetree/bindings/iio/iio-bindings.txt for further info)
-> -
-> -For further information on GPADC channels, see device datasheet.
-> -
-> -
-> -Example:
-> -
-> -	gpadc: da9150-gpadc {
-> -		compatible = "dlg,da9150-gpadc";
-> -		#io-channel-cells = <1>;
-> -	};
-> diff --git a/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml
-> new file mode 100644
-> index 000000000000..15c51d337108
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/dlg,da9150-gpadc.yaml
-> @@ -0,0 +1,33 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/dlg,da9150-gpadc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Dialog Semiconductor DA9150 IIO GPADC
-> +
-> +maintainers:
-> +  - Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
-> +
-> +description:
-> +  This patch adds support for general purpose ADC within the
-> +  DA9150 Charger & Fuel-Gauge IC.
-> +
-> +properties:
-> +  compatible:
-> +    const: dlg,da9150-gpadc
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-> +
-> +required:
-> +  - compatible
-> +  - "#io-channel-cells"
-
-additionalProperties...
-
-With that,
 
 Reviewed-by: Rob Herring <robh@kernel.org>
-
-> +
-> +examples:
-> +  - |
-> +    adc {
-> +        compatible = "dlg,da9150-gpadc";
-> +        #io-channel-cells = <1>;
-> +    };
-> +...
-> -- 
-> 2.28.0
-> 
