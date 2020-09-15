@@ -2,185 +2,86 @@ Return-Path: <SRS0=jlvN=CY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC22C43461
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:06:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 338A7C433E2
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:06:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 822F62078E
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:06:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DFB2D2078E
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:06:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600196763;
-	bh=r9zCn/rDG6DuU5UtzZu25hL3gpBJkDh8oqGbosweGco=;
+	s=default; t=1600196779;
+	bh=q4g9KOjlO+1WCe4oNnLO0C69sX5+bUVE80UjQv0091Q=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=ueaLfCxQeYEUAek5achWdivhvPoFBByn9QrBtKKSBvTd42Eynv14AtbVjQkmUkNt7
-	 sqz9IjyGxFTt2gxnC2npr/I7T+F2GwazN/S/nXOMs8TU757Bb81OfVfLlW+lIssPT2
-	 LV1IKeaHjap6lYWc+drWrHcPxMvefqmX/tPPzMb8=
+	b=JiZy8ZU9kA/mlc9m0jI5qlm3qtNvFobNpwgoVFI8jUzZqQCGJiUiXkfi3xMe6zymy
+	 j6YKyPa+CoZJNwVC/iuZ7eCT6mgeEQHLu3LCFFmwm/n9OC68p9APTWEy+Vv4T6Hx4f
+	 4qDAZ92FzH5wcqHpc37/tkxCRzoRGDLgged7dxWA=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727431AbgIOTFr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:05:47 -0400
-Received: from mail-io1-f67.google.com ([209.85.166.67]:39231 "EHLO
-        mail-io1-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727631AbgIOTDb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:03:31 -0400
-Received: by mail-io1-f67.google.com with SMTP id b6so5336444iof.6;
-        Tue, 15 Sep 2020 12:03:30 -0700 (PDT)
+        id S1727939AbgIOTGK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:06:10 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:34144 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727952AbgIOTE3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:04:29 -0400
+Received: by mail-io1-f65.google.com with SMTP id m17so5373135ioo.1;
+        Tue, 15 Sep 2020 12:04:28 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Ly1yz9nKm3JN/gXJzH8btmk8nm+s28fFu8Tr5Az4Nhs=;
-        b=VF7ibmSVkZsC0gEOGAioDYKGU2zjXU+ZeE4st5mSbr8Q/DCqSkG6UsQsgzlAf3EPsQ
-         uVG6g3UQJJYO7rpsnOxLWQOvEjeMyTQ5R8VXT8lHgIpzol7MtmJZ/3YjClVSG147UD64
-         n3shktEKd8wAey2y3UrA7bDkVpjNcprPklBzCUT1F59CCBeO5IqGpMmhX3f643e7ZmgD
-         BiBdNOpOOjQ+IknrifF+WCCtH4pMudbAX8qtCGPl40DFIUUoZJrxsRImUjlfl/AfhPtA
-         p43RJiiT1JHyn9oG0u63JB97e+pxAIx2jA5RslQx04ttMNP1q9JZjk+ulyjYod3fZ6Y5
-         f1UQ==
-X-Gm-Message-State: AOAM5302FKQ+f7auDjP7qLxxB9RVo3V/f5RwKonPwFId4dgHrSryt2MH
-        da1JZQE03DiYCHjnHE1n8A==
-X-Google-Smtp-Source: ABdhPJwPBHgpfTVrB3kSP+nsCZ7KrhOb3SVQ+rUaykN7vwhynoz0YKX+lX5bMeY/9gsuPsIee7+dCA==
-X-Received: by 2002:a6b:f301:: with SMTP id m1mr15824880ioh.162.1600196609836;
-        Tue, 15 Sep 2020 12:03:29 -0700 (PDT)
+        bh=E/uyvM+rNWZRJXZ9fqZJC2yRGVj5yDKdLeFC/xLpeHg=;
+        b=dPva973YHdCljfcbfjVxwAx5jle7Mkq9ucXV+JOwhilIY+jEVcaStRGzRHXzEsaZh0
+         N55DWd2TcVxcgZWxjD7Ehbp8v4Kd8/Bdz9RXKRsY6T9YJvXYx2UbK4tmeo9sZrt7osWR
+         jaiVxp+ueQJMOGiyGbHdCaUjS+C1P8kBwkJYlzSj65qeNrxoG2L72wIt4Fp4UsMo+9q+
+         3mNteCc0mFEa9wVTwCCz3aNCP6UBhIrWOv3zyN85LVBcPR8WPpC5Isfcoy1c2kqmsfvG
+         aJncwJfF4sVYJNgJBnNSmcLeCOgo3GMyWLvGiXStrAN8yKaey76JbEQ2BY31W2K7AAjx
+         pNvg==
+X-Gm-Message-State: AOAM531g7AYdnVCSxufJT7yPcEoa98Rlwys6Ep7HW3gVXP4AIHJWAcad
+        acqbx0tfBN/SGNUYo1BOsA==
+X-Google-Smtp-Source: ABdhPJxUmPqrzYCpTIGB6eM80mA4TC2JhHA+2Cr1Bc1c55ajoS3AggRboE+EtlrOfgd/1tkRKSNuTg==
+X-Received: by 2002:a5e:890c:: with SMTP id k12mr16234784ioj.75.1600196668495;
+        Tue, 15 Sep 2020 12:04:28 -0700 (PDT)
 Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id l12sm7997799ioq.50.2020.09.15.12.03.28
+        by smtp.gmail.com with ESMTPSA id l2sm9124812ilk.19.2020.09.15.12.04.27
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 12:03:29 -0700 (PDT)
-Received: (nullmailer pid 2317192 invoked by uid 1000);
-        Tue, 15 Sep 2020 19:03:28 -0000
-Date:   Tue, 15 Sep 2020 13:03:28 -0600
+        Tue, 15 Sep 2020 12:04:27 -0700 (PDT)
+Received: (nullmailer pid 2318851 invoked by uid 1000);
+        Tue, 15 Sep 2020 19:04:27 -0000
+Date:   Tue, 15 Sep 2020 13:04:27 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+Cc:     linux-iio@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rick Altherr <raltherr@google.com>,
-        Joel Stanley <joel@jms.id.au>, Andrew Jeffery <andrew@aj.id.au>
-Subject: Re: [PATCH v2 04/20] dt-bindings:iio:adc: aspeed,ast2400 yaml
+        Antoine Tenart <antoine.tenart@free-electrons.com>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 05/20] dt-bindings:iio:adc:marvell,berlin2-adc yaml
  conversion
-Message-ID: <20200915190328.GA2315043@bogus>
+Message-ID: <20200915190427.GA2318799@bogus>
 References: <20200909175946.395313-1-jic23@kernel.org>
- <20200909175946.395313-5-jic23@kernel.org>
+ <20200909175946.395313-6-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200909175946.395313-5-jic23@kernel.org>
+In-Reply-To: <20200909175946.395313-6-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 06:59:30PM +0100, Jonathan Cameron wrote:
+On Wed, 09 Sep 2020 18:59:31 +0100, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> Simple txt to yaml conversion. Part of a general move to convert
-> all the IIO bindings over to yaml.
+> Part of a general move of IIO bindings over to yaml.
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Rick Altherr <raltherr@google.com>
-> Cc: Joel Stanley <joel@jms.id.au>
-> Cc: Andrew Jeffery <andrew@aj.id.au>
+> Cc: Antoine Tenart <antoine.tenart@free-electrons.com>
 > ---
->  .../bindings/iio/adc/aspeed,ast2400-adc.yaml  | 54 +++++++++++++++++++
->  .../bindings/iio/adc/aspeed_adc.txt           | 22 --------
->  2 files changed, 54 insertions(+), 22 deletions(-)
+>  .../bindings/iio/adc/berlin2_adc.txt          | 19 -------
+>  .../bindings/iio/adc/marvell,berlin2-adc.yaml | 50 +++++++++++++++++++
+>  2 files changed, 50 insertions(+), 19 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed,ast2400-adc.yaml b/Documentation/devicetree/bindings/iio/adc/aspeed,ast2400-adc.yaml
-> new file mode 100644
-> index 000000000000..09018487d690
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/aspeed,ast2400-adc.yaml
-> @@ -0,0 +1,54 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/aspeed,ast2400-adc.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: ADC that forms part of an ASPEED server management processor.
-> +
-> +maintainers:
-> +  - Rick Altherr <raltherr@google.com>
-> +
-> +description:
-> +  This device is a 10-bit converter for 16 voltage channels.  All inputs are
-> +  single ended.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - aspeed,ast2400-adc
-> +      - aspeed,ast2500-adc
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  clocks:
-> +    description:
-> +      Input clock used to derive the sample clock. Expected to be the
-> +      SoC's APB clock.
-> +
-> +  resets: true
-
-maxItems: 1
-
-With that,
 
 Reviewed-by: Rob Herring <robh@kernel.org>
-
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - clocks
-> +  - resets
-> +  - "#io-channel-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/clock/aspeed-clock.h>
-> +    adc@1e6e9000 {
-> +        compatible = "aspeed,ast2400-adc";
-> +        reg = <0x1e6e9000 0xb0>;
-> +        clocks = <&syscon ASPEED_CLK_APB>;
-> +        resets = <&syscon ASPEED_RESET_ADC>;
-> +        #io-channel-cells = <1>;
-> +    };
-> +...
-> diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-> deleted file mode 100644
-> index 034fc2ba100e..000000000000
-> --- a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-> +++ /dev/null
-> @@ -1,22 +0,0 @@
-> -Aspeed ADC
-> -
-> -This device is a 10-bit converter for 16 voltage channels.  All inputs are
-> -single ended.
-> -
-> -Required properties:
-> -- compatible: Should be "aspeed,ast2400-adc" or "aspeed,ast2500-adc"
-> -- reg: memory window mapping address and length
-> -- clocks: Input clock used to derive the sample clock. Expected to be the
-> -          SoC's APB clock.
-> -- resets: Reset controller phandle
-> -- #io-channel-cells: Must be set to <1> to indicate channels are selected
-> -                     by index.
-> -
-> -Example:
-> -	adc@1e6e9000 {
-> -		compatible = "aspeed,ast2400-adc";
-> -		reg = <0x1e6e9000 0xb0>;
-> -		clocks = <&syscon ASPEED_CLK_APB>;
-> -		resets = <&syscon ASPEED_RESET_ADC>;
-> -		#io-channel-cells = <1>;
-> -	};
-> -- 
-> 2.28.0
-> 
