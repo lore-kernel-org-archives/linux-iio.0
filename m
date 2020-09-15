@@ -7,89 +7,93 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD92AC43461
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65192C43461
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:45:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6505220770
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:42:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1752220770
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:45:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600198936;
-	bh=eUCPmOrkMrI86UJv6tI915hmvXK+VMtmY9lMHjvcC8M=;
+	s=default; t=1600199118;
+	bh=Pi9gFqhF6D4Y9qzRSyZ2v5WIM4Kqb54Wiqu0Jdxdzms=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=lLrtOC62MkhHEAN6/dZz4FnZELd3/BG04je7apmlaMo3H6NlFgfVuJHwO9Zji3RFm
-	 N4G223qG6rBFUCNFly/akX4j03rsnrm3h+7W8CT9XGj1E8qj0yg7VQmId2M8UXZ+/v
-	 +IiQtp4daGHTTt3oLzLCdQK9hbHZDTKWxynVuQwU=
+	b=Cx4SwnOOtqZFewfzpT8mLYF+CRLuaPhe3gzv7R9XUNtuHylKgfgkWgbI9VtsIlsEa
+	 jHacc9QWZs8mIX8eHsVdilsIcR9TkhU58vB8wAME3CA/fOqe5l8kJvaxgRnMF2jM7W
+	 pdMgt3OqTaPKWJik/8VIwS4fSl3WIMuyjNyYtg28=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727697AbgIOTmF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:42:05 -0400
-Received: from mail-io1-f66.google.com ([209.85.166.66]:44038 "EHLO
-        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727889AbgIOTPN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:15:13 -0400
-Received: by mail-io1-f66.google.com with SMTP id g128so5328773iof.11;
-        Tue, 15 Sep 2020 12:15:08 -0700 (PDT)
+        id S1727917AbgIOTpN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:45:13 -0400
+Received: from mail-il1-f193.google.com ([209.85.166.193]:37658 "EHLO
+        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727866AbgIOTor (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:44:47 -0400
+Received: by mail-il1-f193.google.com with SMTP id q4so4192232ils.4;
+        Tue, 15 Sep 2020 12:44:46 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=FM7LE2LHDCWNqLopHxLuvP6gQ42SfuuOFqZuFdFeXVs=;
-        b=ED+KbHWimWrxtpP1+AM8zIlR3kxUG70S61+6FYWKqlNJ64IjJfq2f2PAVsphvenXgD
-         Wd1/RJFyrPCYtiauqqqdb4ycPS64XyR5ulvvbUgPGFWJwTEEZJaFibkgRu1CueKkHti7
-         VoArknTEM5Gzv/PVqQQ8aM+9uMdf0ZMng6RWbd3PnsAySLg09tl13ZrO5nhWFqLk9Fm6
-         iMz9+niK2lT72dg8C7COmnlXWW4Vtzcv0x5eIo4vEG0i/2971PwRO0XSnHelMYmyfI49
-         ylHAsvjBVbveqe/pivPQMwpZ5gXsm6WKVZ176doxedzPKPyyWCdgZDvUm5fP/jaB6DRY
-         dFcQ==
-X-Gm-Message-State: AOAM533LoJyvUGmAuk15+rKOrTAlZpaHxiZGp2rYmSyXGKZOmffBgLzU
-        /Jhi5L9VnvgXoaaFx6p84w==
-X-Google-Smtp-Source: ABdhPJze/kcs/GY/BYUtiDkcANofAMuoSLAHTsVQH7CMGqpM6NHD3caIkMw+iZzx9pK0U9hRcPUJRQ==
-X-Received: by 2002:a5d:8e12:: with SMTP id e18mr15043269iod.99.1600197308482;
-        Tue, 15 Sep 2020 12:15:08 -0700 (PDT)
+        bh=ER4i4P91JA8XeWAZ4N8ZnfRej/QPtcJHPmb1yet97nE=;
+        b=Rzlt7slUI+3rF6r/X0uyHdNzX4boWeO4IkzpL5Bg5sjD3ZSaMkdekgPM5hT7USoMWr
+         8+bMvcpcPBks7502iXX+g+0SSiQcCYYvrArgBxrWu2fE6pmfkH6ZDWiB59PoyLhRxeA/
+         duSldmnvRS3/bRQQ7MwoNRrkBGBn377h9w4AiAak/VkoD805fhzmTroUGNA8AD0S+TJ0
+         kvpLm+gQmdUv/I67YjvJrJt/5whYHvVNUq8WtZYVyt/mhVS7VnvHRn7whptQV+q85UUN
+         FF60usxH/08BetwFlldeRt6aE7BR5oF8p0zVKnG7JVraRVq8VEeRkV/adBKu+6iMkMa4
+         eRpA==
+X-Gm-Message-State: AOAM531ZtaAH9g7A7G+tOYhoHddrhoUNYFKjFfQYObWPZKtbwTVrS+HA
+        Dt5MQ4AO9mkeSbLtk0yYy+jHYfPu8ifDAl0=
+X-Google-Smtp-Source: ABdhPJyz1iDGc/LKq9EZm/77LVcAekloomVZDNQC7+Rkm16+Rgx6gE+pqZY0OLcy1zlIyWdkpCIrPA==
+X-Received: by 2002:a05:6e02:e07:: with SMTP id a7mr16855667ilk.277.1600199086466;
+        Tue, 15 Sep 2020 12:44:46 -0700 (PDT)
 Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id u18sm9454759iln.78.2020.09.15.12.15.07
+        by smtp.gmail.com with ESMTPSA id a23sm7874806ioc.54.2020.09.15.12.44.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 12:15:07 -0700 (PDT)
-Received: (nullmailer pid 2336730 invoked by uid 1000);
-        Tue, 15 Sep 2020 19:15:05 -0000
-Date:   Tue, 15 Sep 2020 13:15:05 -0600
+        Tue, 15 Sep 2020 12:44:45 -0700 (PDT)
+Received: (nullmailer pid 2384233 invoked by uid 1000);
+        Tue, 15 Sep 2020 19:44:44 -0000
+Date:   Tue, 15 Sep 2020 13:44:44 -0600
 From:   Rob Herring <robh@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     devicetree@vger.kernel.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 15/20] dt-bindings:iio:adc:ad7768-1 yaml conversion
-Message-ID: <20200915191505.GA2336645@bogus>
-References: <20200909175946.395313-1-jic23@kernel.org>
- <20200909175946.395313-16-jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Kukjin Kim <kgene@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: exynos-adc: require second
+ interrupt with touch screen
+Message-ID: <20200915194444.GA2384148@bogus>
+References: <20200910161933.9156-1-krzk@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200909175946.395313-16-jic23@kernel.org>
+In-Reply-To: <20200910161933.9156-1-krzk@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 09 Sep 2020 18:59:41 +0100, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Thu, 10 Sep 2020 18:19:32 +0200, Krzysztof Kozlowski wrote:
+> The ADC in S3C/S5P/Exynos SoCs can be used also for handling touch
+> screen.  In such case the second interrupt is required.  This second
+> interrupt can be anyway provided, even without touch screens.  This
+> fixes dtbs_check warnings like:
 > 
-> Fairly straight conversion.  The one oddity in the original binding
-> is that spi-cpha and spi-cpol were not marked as required, but were
-> in the example.  Looking at the datasheet, there isn't any documented
-> flexibility in the possible SPI modes, so I have moved these to requires.
-> For spi-max-frequency I have gone the other way.  I absolutely agree
-> that it is good to specify this in the dt-binding, but it's not
-> strictly required.
+>   arch/arm/boot/dts/s5pv210-aquila.dt.yaml: adc@e1700000: interrupts: [[23], [24]] is too long
 > 
-> As Stefan's email is bouncing I have gone with Michael as maintainer
-> of this one as it falls under the ADI catch all entry in MAINTAINERS.
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huwei.com>
 > 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
 > ---
->  .../bindings/iio/adc/adi,ad7768-1.txt         | 41 ---------
->  .../bindings/iio/adc/adi,ad7768-1.yaml        | 89 +++++++++++++++++++
->  2 files changed, 89 insertions(+), 41 deletions(-)
+> 
+> Changes since v1:
+> 1. Fix if:has-touchscreen, as pointed by Rob.
+> 2. Add Ack.
+> ---
+>  .../bindings/iio/adc/samsung,exynos-adc.yaml       | 14 +++++++++++++-
+>  1 file changed, 13 insertions(+), 1 deletion(-)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
