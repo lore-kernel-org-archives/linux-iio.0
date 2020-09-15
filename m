@@ -4,85 +4,84 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8163EC433E2
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A67E3C433E2
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 26CBD2078E
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B2C720771
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600197200;
-	bh=W2eB6mk20sDr6mur4xpyrOvReI/ND0Loy/2V1G6nSDM=;
+	s=default; t=1600197215;
+	bh=1CArA1frrYbgXJFm39ODyoEvFPNTj1ZzpWd5efDbTdU=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=NhMXIoofdcs/CPqd7JWQ+V6+2tQT/9CoQ5SJ0lErfp9kCFv4k7yDkGCzf42ojMb9X
-	 Fw3LM/hHV38BL/MGJKX6FGYIaAl+wA7irDeyPxAroJrLjJagMqEL6msGV0Hh9Ji5qX
-	 Z6aHwZkqyxcw9JiZpY0QnMV4Ctuj2rJL6JULNQvs=
+	b=fhZJz2bk9snKlYkjL7+5meRP5JSyZStGNTa8ewB69r+r7PllYzL4hDjjMk1tPkbJk
+	 p87cL7Ew+cWUYYM93pF2wEGokhAzUORFzXu56g537cEQcyraBl7jy2NaZMM8JbNfBO
+	 n9GNcz2cTPw6A159TIFGeUb0kR9pYhueLQuoCUVs=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727713AbgIOTNR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:13:17 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:33176 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727778AbgIOTCC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:02:02 -0400
-Received: by mail-il1-f195.google.com with SMTP id x2so4091901ilm.0;
-        Tue, 15 Sep 2020 12:02:02 -0700 (PDT)
+        id S1727586AbgIOTNc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:13:32 -0400
+Received: from mail-il1-f194.google.com ([209.85.166.194]:38467 "EHLO
+        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727540AbgIOTNT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:13:19 -0400
+Received: by mail-il1-f194.google.com with SMTP id t18so4091452ilp.5;
+        Tue, 15 Sep 2020 12:13:19 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=10I5+fMmPEEzForz80NGynm9bLNuzz363eyFd54ZBxE=;
-        b=Q3MrvxHDSPvXYCmDHBj3b4YlKnCGE8G5qEjklhdLju6AXv0NfVPFXcR0JQj6V+KARG
-         3JrJO72MEG30Dk6jTGepKXoMwhUsjJvzwpvaEXxfo9yV6hMOxOIWCHgLHNSJ9+MkVfJn
-         ZazvxlrZ980pYpLmt5nuHmf4i9NoNJ7pd8IwECIy36/3zSLPndjcpCW+yfTxydbwMCta
-         6aPvonI7jkNDi5/MRQhWqBJuiK7Lc+JuC59AzJlYjYTR620UlMkiRD5T/0MIcOIzmk2y
-         GSQZRbWFXJBtKfkyrPZGqz9w8X8IcZe0wPYYkDloM+/pz1joGgI3oWzRxNb2fTZEqOXP
-         xssA==
-X-Gm-Message-State: AOAM53157QfEHbmhSChuyZt6VIFS317PIJPAwINUULIiYOnrjBcXHbs/
-        2QiepXUnUYzDlzhICnU0l0vhj98mk1Bci6Q=
-X-Google-Smtp-Source: ABdhPJzcUSrz/WHZ87chTUlj/m9Gk4HJj2HzYY6MwnUtGyFM0wfltv90V6icwdJbzKIE7TgDyxfY/A==
-X-Received: by 2002:a92:6b04:: with SMTP id g4mr17603879ilc.203.1600196522198;
-        Tue, 15 Sep 2020 12:02:02 -0700 (PDT)
+        bh=c59QOoirisEsic0ogk7RbBRwTN0OIjzfefaZGz5P5Vk=;
+        b=XSnHihx6TAynwFVd6kyA3lxm0BiPoycAiBRCZZiJeBXMZz2tM36iwSCv8wBatIEkQK
+         ciiFiO5QbeTzk6KTIRZKoPIo7k8+H6aU382MCXtAUXGALb2C5sVDSgCZSzC4cplh2V82
+         k1Gh3FNyCJjvQmlGdvXgntTTIH/gdvZbDULcxMyBGSu1UsN9E3ghQ5f1yiWs5G+9LLX4
+         evk3ig+mx45eHntXf2H4rd/kUNBVNvEB0r7l47oJOgjtR9hzQIipXBREI2Sc+mhEFG3n
+         F+tZZCUuYlGBg4xupAvq5UfgS+yG/HMm7z9skBly0C1bhqI8C8vL5jUTFp+D9js+aR1k
+         Yfxg==
+X-Gm-Message-State: AOAM533FGFoTofz6QtkmDe1zwXKRaWOY7TUy9BgsruvxjAtFyCALXcQA
+        6+fCDRxV8cq5Pfc9lV7cbeuKWu0QC5mbuJU=
+X-Google-Smtp-Source: ABdhPJyFOJMN/QFZrduUxz6j5c03LrG31nTfJ6FopvvnI5IlNi3Fvy5jGFdnDepBB06GAVl01zDEZw==
+X-Received: by 2002:a92:ca85:: with SMTP id t5mr1678583ilo.254.1600197198846;
+        Tue, 15 Sep 2020 12:13:18 -0700 (PDT)
 Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id m18sm9222422iln.80.2020.09.15.12.02.01
+        by smtp.gmail.com with ESMTPSA id i9sm4912947ils.34.2020.09.15.12.13.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 12:02:01 -0700 (PDT)
-Received: (nullmailer pid 2314862 invoked by uid 1000);
-        Tue, 15 Sep 2020 19:02:00 -0000
-Date:   Tue, 15 Sep 2020 13:02:00 -0600
+        Tue, 15 Sep 2020 12:13:18 -0700 (PDT)
+Received: (nullmailer pid 2333609 invoked by uid 1000);
+        Tue, 15 Sep 2020 19:13:17 -0000
+Date:   Tue, 15 Sep 2020 13:13:17 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     devicetree@vger.kernel.org, Stefan Agner <stefan@agner.ch>,
-        linux-iio@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 03/20] dt-bindings:iio:adc:st,stmpe-adc yaml conversion
-Message-ID: <20200915190200.GA2314807@bogus>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        devicetree@vger.kernel.org, Phani Movva <Phani.Movva@imgtec.com>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 13/20] dt-bindings:iio:adc:cosmic,10001-adc yaml
+ conversion
+Message-ID: <20200915191317.GA2333547@bogus>
 References: <20200909175946.395313-1-jic23@kernel.org>
- <20200909175946.395313-4-jic23@kernel.org>
+ <20200909175946.395313-14-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200909175946.395313-4-jic23@kernel.org>
+In-Reply-To: <20200909175946.395313-14-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 09 Sep 2020 18:59:29 +0100, Jonathan Cameron wrote:
+On Wed, 09 Sep 2020 18:59:39 +0100, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> Conversion from freeform text to yaml.
-> One oddity in this binding is that, for historical reasons it requires
-> the node name to be stmpe_adc.  I've put that in the decription field
-> but I'm not sure if there is a better way to specify this?
+> I don't really know much about this one, hence the binding is
+> a simple conversion of what was in the txt file.
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Stefan Agner <stefan@agner.ch>
+> Cc: Phani Movva <Phani.Movva@imgtec.com>
 > ---
->  .../bindings/iio/adc/st,stmpe-adc.yaml        | 45 +++++++++++++++++++
->  .../devicetree/bindings/iio/adc/stmpe-adc.txt | 21 ---------
->  2 files changed, 45 insertions(+), 21 deletions(-)
+>  .../bindings/iio/adc/cc10001_adc.txt          | 22 -------
+>  .../bindings/iio/adc/cosmic,10001-adc.yaml    | 59 +++++++++++++++++++
+>  2 files changed, 59 insertions(+), 22 deletions(-)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
