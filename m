@@ -2,178 +2,123 @@ Return-Path: <SRS0=jlvN=CY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 124F8C433E2
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:29:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E183BC43461
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:30:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C029420770
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:29:49 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600198189;
-	bh=VD1NSSK75aFCHoac8sh6UMngnObck4nLQ/q5uoUdBJA=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=XHKR3cigZgQYH/MUXqaegwMR8VO1SPTXoeYMKUM4ypDZ0MItBy7vixWB4jKTNjVDD
-	 cOmouI4lnWMCoe33oUOXIQw6nEIEJiAFhFlsbXM6+rukSvd0TJGiawiXblcMKAvPIn
-	 ket4jWowQ4WzpYWnLkedBHVFX6a6txLDOKv4uNBg=
+	by mail.kernel.org (Postfix) with ESMTP id 86D6620738
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:30:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="ZvYuw0j9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727697AbgIOT24 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:28:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
+        id S1727579AbgIOTal (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:30:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52552 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727945AbgIOT2B (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:28:01 -0400
-Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED1AC06174A;
-        Tue, 15 Sep 2020 12:18:03 -0700 (PDT)
-Received: by mail-il1-x144.google.com with SMTP id y9so4126611ilq.2;
-        Tue, 15 Sep 2020 12:18:03 -0700 (PDT)
+        with ESMTP id S1727936AbgIOT1K (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:27:10 -0400
+Received: from mail-ed1-x541.google.com (mail-ed1-x541.google.com [IPv6:2a00:1450:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FCACC061797;
+        Tue, 15 Sep 2020 12:26:52 -0700 (PDT)
+Received: by mail-ed1-x541.google.com with SMTP id l17so4149904edq.12;
+        Tue, 15 Sep 2020 12:26:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LNJ33X1X2x2pheRlwyrmnoylDAJlzuXstxu32SG7U2U=;
+        b=ZvYuw0j9+OxIp9RRQIeIkbL7ZwpGqcUGl8PqjkMNBe3A0c7KyELphhBEMdBFj3S4BT
+         r1Tx/r9dJxRZveLzxj5S7ejzscSYZPtmAJBcMCfxmRJFjt6QK0PxPjXFJMskYIV8280O
+         7Ye//unKIMgMRpRr9zbbDTA0FGPHuVT8ogFTgd/pvKnbv/TTmw3gn6WAD5+s/rtbGhhS
+         yMhur9waNMKMb+0NVeE2tZIL6BDyL6fEuh/Cd1AfVaUV5Q8kHhkCmgK0ouUcSl2i72Nl
+         VH9YOWzUZFlBO5Ai+gAveqKk9L2L8iHKBJPupObNGmqoXkhOz4t01NrRAxRd9kW+26JP
+         sQcQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=qADCpDDZYXGLDB9qiRzX/sPuBqnYsAaT2PC/ym5ZjTk=;
-        b=jg4w5u3kox34Nt89YauuPwLk8dzvD97VgMHBaKil7M+t4hPR08x8x6BMVElalTUfrw
-         RT5czOo9J4KhDU0QONs95sJ6YAQQwQLU0iesvHl3M9Mi/c1ekuy2W31Y3AV3HnpaV+ww
-         t6HL8Ib4z76LVGSbAkXl7d8rIafhGT8qEB10Ok1Ol7VU8o1wYjo3uXBn07vNpgnS97ia
-         3r4hkUgKJ9iW0i79uPRHnriaWeADa/XBMGDwyP4Sse6MDMyT8Q7O7U/8i/pC6cOnIbnM
-         XkCFjC7z1vBnjEVCwdpu3OvWnoFQUNK3s6n20OlKTUSLEWmtdOwa2f+dFWm5GtWNNgw+
-         iDOA==
-X-Gm-Message-State: AOAM532FOaOTyN/5TxTc4Cl7TdB7gi6trRR9LLsRmq/Drqlnnf+lCJwn
-        EaCKw1GTn+gyD60nh1U+1TpsXRCAg8eypU0=
-X-Google-Smtp-Source: ABdhPJyqNELLjuu7kp0t1pCCjZR/86ZoOLot1HeTBNTtMnGxW34QKKBhjo6ylC6d1mc4F0NqslvOSw==
-X-Received: by 2002:a05:6e02:807:: with SMTP id u7mr16829423ilm.67.1600197482412;
-        Tue, 15 Sep 2020 12:18:02 -0700 (PDT)
-Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id e12sm9072165ils.70.2020.09.15.12.18.00
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=LNJ33X1X2x2pheRlwyrmnoylDAJlzuXstxu32SG7U2U=;
+        b=BD3MVK8ndotUhVNWeukZyoEuZnyh5hg0+eoMnARGPoKHq7wjZ63r16C7/Q7WGKf5/8
+         VJ5eNTYxJk5EbQjCe0BhydWBXuViAn6A/+KaJ23qCzRNRXDEnQQk9G2cP5WehzkSGzka
+         Le+TiGwfZ/2X75yLpjEkE2ZIx9jmFeTBs/cJtvz+RglU/4Kgnoly1sfmTv6t3l0skbdz
+         acvBmC2BCxjOjGjbratKdY98sYQYo3gWboThn0RX+3yRcBBMcBm/dcXHia5F48lADEDJ
+         NPp6EbnhlgOqcElte2nnAwnw0vk5rNbP1foWPsuWTKrtLZtYm/0mFj34WXNf7pFLsAv2
+         UHFA==
+X-Gm-Message-State: AOAM533ClxwJYDg8P/7+v4l8zm9z3EnEB9buSL9osKX71QzFyx3D6gZF
+        CUhn6RETdz39l4j1TZvBqX8=
+X-Google-Smtp-Source: ABdhPJyLyVl+bnfqF/iHpAZ2TTiUTK6ronbqqCJXBb5eGl6BjXnA0APDpW9Nf10CI8cwXaOvHV6xzA==
+X-Received: by 2002:a50:ec12:: with SMTP id g18mr14656537edr.309.1600198010859;
+        Tue, 15 Sep 2020 12:26:50 -0700 (PDT)
+Received: from localhost.localdomain (p200300f13701d4040000000000000fcc.dip0.t-ipconnect.de. [2003:f1:3701:d404::fcc])
+        by smtp.googlemail.com with ESMTPSA id re19sm10836312ejb.86.2020.09.15.12.26.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 12:18:01 -0700 (PDT)
-Received: (nullmailer pid 2341460 invoked by uid 1000);
-        Tue, 15 Sep 2020 19:17:59 -0000
-Date:   Tue, 15 Sep 2020 13:17:59 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Vladimir Barinov <vladimir.barinov@cogentembedded.com>
-Subject: Re: [PATCH v2 17/20] dt-bindings:iio:adc:holt,hi8435 yaml conversion
-Message-ID: <20200915191759.GA2339990@bogus>
-References: <20200909175946.395313-1-jic23@kernel.org>
- <20200909175946.395313-18-jic23@kernel.org>
+        Tue, 15 Sep 2020 12:26:50 -0700 (PDT)
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To:     jic23@kernel.org, linux-amlogic@lists.infradead.org,
+        linux-iio@vger.kernel.org
+Cc:     lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH] iio: adc: meson-saradc: Make the of_device_id array style consistent
+Date:   Tue, 15 Sep 2020 21:26:21 +0200
+Message-Id: <20200915192621.13202-1-martin.blumenstingl@googlemail.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200909175946.395313-18-jic23@kernel.org>
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 06:59:43PM +0100, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Very simple binding.  I've changed the example to use the node
-> name threshold-detector@0 as sensor@0 seemed too generic.
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
-> ---
->  .../devicetree/bindings/iio/adc/hi8435.txt    | 21 --------
->  .../bindings/iio/adc/holt,hi8435.yaml         | 49 +++++++++++++++++++
->  2 files changed, 49 insertions(+), 21 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/hi8435.txt b/Documentation/devicetree/bindings/iio/adc/hi8435.txt
-> deleted file mode 100644
-> index 3b0348c5e516..000000000000
-> --- a/Documentation/devicetree/bindings/iio/adc/hi8435.txt
-> +++ /dev/null
-> @@ -1,21 +0,0 @@
-> -Holt Integrated Circuits HI-8435 threshold detector bindings
-> -
-> -Required properties:
-> - - compatible: should be "holt,hi8435"
-> - - reg: spi chip select number for the device
-> -
-> -Recommended properties:
-> - - spi-max-frequency: definition as per
-> -		Documentation/devicetree/bindings/spi/spi-bus.txt
-> -
-> -Optional properties:
-> - - gpios: GPIO used for controlling the reset pin
-> -
-> -Example:
-> -sensor@0 {
-> -	compatible = "holt,hi8435";
-> -	reg = <0>;
-> -	gpios = <&gpio6 1 0>;
-> -
-> -	spi-max-frequency = <1000000>;
-> -};
-> diff --git a/Documentation/devicetree/bindings/iio/adc/holt,hi8435.yaml b/Documentation/devicetree/bindings/iio/adc/holt,hi8435.yaml
-> new file mode 100644
-> index 000000000000..a35cf3876b86
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/holt,hi8435.yaml
-> @@ -0,0 +1,49 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/holt,hi8435.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Holt Integrated Circuits HI-8435 SPI threshold detector
-> +
-> +maintainers:
-> +  - Vladimir Barinov <vladimir.barinov@cogentembedded.com>
-> +
-> +description: |
-> +  Datasheet: http://www.holtic.com/documents/427-hi-8435_v-rev-lpdf.do
-> +
-> +properties:
-> +  compatible:
-> +    const: holt,hi8435
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  gpios:
-> +    description:
-> +       GPIO used for controlling the reset pin
+Use only one line for the closing bracket of the last entry and the
+opening bracket for the next one to keep the style across the whole
+array consistent. Also add a "sentinel" comment to the last entry and
+remove the comma to ensure that there won't be any entry after it.
+No functional changes.
 
-maxItems: 1
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ drivers/iio/adc/meson_saradc.c | 11 ++++-------
+ 1 file changed, 4 insertions(+), 7 deletions(-)
 
-With that,
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 95bd187de1cb..e03988698755 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -1150,16 +1150,13 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
+ 	{
+ 		.compatible = "amlogic,meson8-saradc",
+ 		.data = &meson_sar_adc_meson8_data,
+-	},
+-	{
++	}, {
+ 		.compatible = "amlogic,meson8b-saradc",
+ 		.data = &meson_sar_adc_meson8b_data,
+-	},
+-	{
++	}, {
+ 		.compatible = "amlogic,meson8m2-saradc",
+ 		.data = &meson_sar_adc_meson8m2_data,
+-	},
+-	{
++	}, {
+ 		.compatible = "amlogic,meson-gxbb-saradc",
+ 		.data = &meson_sar_adc_gxbb_data,
+ 	}, {
+@@ -1175,7 +1172,7 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
+ 		.compatible = "amlogic,meson-g12a-saradc",
+ 		.data = &meson_sar_adc_g12a_data,
+ 	},
+-	{},
++	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, meson_sar_adc_of_match);
+ 
+-- 
+2.28.0
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-
-> +
-> +  spi-max-frequency: true
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +        threshold-detector@0 {
-> +            compatible = "holt,hi8435";
-> +            reg = <0>;
-> +            gpios = <&gpio6 1 0>;
-> +            spi-max-frequency = <1000000>;
-> +        };
-> +    };
-> +...
-> -- 
-> 2.28.0
-> 
