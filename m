@@ -7,81 +7,82 @@ X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14B03C433E2
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 84212C43461
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:14:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BD7362078E
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:13:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 42C8920770
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:14:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600197220;
-	bh=R7CUlxcwahOf8p6eNy0E3sScS9+zJqhdUWcAug/hEL4=;
+	s=default; t=1600197266;
+	bh=JFoC/9LSnM+nwjmuwqw/wvxniSJ9/Sox3FTRbPqvk3k=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=BkaLHmcU5ktoi5D8TUUYCXTM4QPjIHQToXhTEFyMiYCp1Kd8+UEqT7IIobF8jMR/n
-	 RkLO8QYQnV2LyEWaYI8xrKR/7dWXbUqpBRy9aycPcJh4DFy//8Hxigrt4R+VMejIcr
-	 xrl5/fWdcu4yxLMdSpu40Ry6D0MWQPUzEaxZU0yw=
+	b=LBEnGP7JfVC2O9ovWYujzKcKQf/Gt65jY3eFzKRAyoKveM5dHg7nd0EOFRd2cEJkD
+	 81vUi7KHj3J56VCNz4u3bPrOujzhjJyurrRGE95Vy37MKOavbr7wrUZ6HbC8IVuXoe
+	 HwRj7933TceoI25IFjVnUnutWe7ex5VQgXKI1ps8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727845AbgIOTNf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:13:35 -0400
-Received: from mail-il1-f194.google.com ([209.85.166.194]:36293 "EHLO
-        mail-il1-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727875AbgIOTBY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:01:24 -0400
-Received: by mail-il1-f194.google.com with SMTP id t12so4064818ilh.3;
-        Tue, 15 Sep 2020 12:01:10 -0700 (PDT)
+        id S1727909AbgIOTOE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:14:04 -0400
+Received: from mail-il1-f195.google.com ([209.85.166.195]:39678 "EHLO
+        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727965AbgIOTNy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:13:54 -0400
+Received: by mail-il1-f195.google.com with SMTP id s88so4094000ilb.6;
+        Tue, 15 Sep 2020 12:13:53 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Jus/icKjw9wFBDH6DE1vRQKLo0IQYaQTDwonrJpM30M=;
-        b=lhWWTOrFh7Pna6XjDH+rqRllfe/EbLbVVaCct1AhROgvVWCc3IwECZLC9RFCy3q1Ex
-         4/EK+7rzHRsPGs316dp0zytkwJ6T0lr5PzVaxdeyuBSmNGB5bVStQW94s91ZVuqZTU41
-         kNhzEFBOeE5b2KMcOJBt3xc0AH0o4jdynM2r1Qg+NWqm/Fc5H1NlKC8+blaeEdUsy8sm
-         9BMUil8T+36UfwATLsHgfc8tliLlxot/jA5KF8GJPyOxbtRICod9RdO5bJTY1UDj9mDX
-         8I7XnQyekpYEfNNqX8ak1Q2gW1gNn8AKYP7Oksb+dP00Vg1YVqCD4DvORCXb0os+grbZ
-         w6RA==
-X-Gm-Message-State: AOAM530hx14y2ZVxz5nFOcNbAq2pWahpHY9qbdKL7gJ2MgGjwCQ4Uc7q
-        9Qnbdw25puTCKJhzMB7Xzw==
-X-Google-Smtp-Source: ABdhPJwhs+xjaQhV2ANCPcFJdIj90WNqZiJRurFaMCt095j18X0FUJ5b2yd0vnXsQDXzwYsaHpidfA==
-X-Received: by 2002:a92:60b:: with SMTP id x11mr16698286ilg.179.1600196470130;
-        Tue, 15 Sep 2020 12:01:10 -0700 (PDT)
+        bh=iKyJ7xw7qKL5pA1FwuRtzJ0NNDkgskNvGzm/1t0z87o=;
+        b=WzueKbeUFBFNQPwIAuJifvLfECuQlIExMRYFTMALGNAHkE1ruATeLMuuTMd38H1Svc
+         Mwivac1sSqXHQY4ml9xxy4E2MR5CLuNRt6UTZ0Qw/rVeks/dacMYyLJBy39PtXQu3ylk
+         wIh6SHGQrXtoO1IBRNADOuv17Eyu9SmHurD71NYxubTLg3/XsdbJshGigKV50TKRwFHi
+         MvxKdBSPDJcmgXDL+iCW12lovq/xmyD9WHNVKLVOLc4kLXQHjwnQSrfP8g+FrvtuW3iQ
+         9VqB88HgM9ya0Y0z12PtKkk1DpGy2iBsOSqh5VLrbeQ768b8SOkZgRMZl9yTwxDrCdj6
+         bYLg==
+X-Gm-Message-State: AOAM5336E9wCGTRSXGUaX56CVjl6y6G+PmRLMj0EfNV/V5qQnGBDafJa
+        0/rpGmFIGyoCGnSnuMzwBw==
+X-Google-Smtp-Source: ABdhPJw/IxoeHnbvmeGrqNcboHPxI7gzqLDjtlCKh+YQYRqhfrJOx6WxY/M/4Hlr0LagYKa9MbvFew==
+X-Received: by 2002:a92:999c:: with SMTP id t28mr17277617ilk.230.1600197233192;
+        Tue, 15 Sep 2020 12:13:53 -0700 (PDT)
 Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id m7sm9508054ili.26.2020.09.15.12.01.09
+        by smtp.gmail.com with ESMTPSA id p86sm1791796ilb.5.2020.09.15.12.13.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 12:01:09 -0700 (PDT)
-Received: (nullmailer pid 2313337 invoked by uid 1000);
-        Tue, 15 Sep 2020 19:01:08 -0000
-Date:   Tue, 15 Sep 2020 13:01:08 -0600
+        Tue, 15 Sep 2020 12:13:52 -0700 (PDT)
+Received: (nullmailer pid 2334617 invoked by uid 1000);
+        Tue, 15 Sep 2020 19:13:50 -0000
+Date:   Tue, 15 Sep 2020 13:13:50 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Sebastian Reichel <sre@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 02/20] dt-bindings:iio:adc:ti,twl4030-madc yaml
- conversion
-Message-ID: <20200915190108.GA2313284@bogus>
+Cc:     linux-iio@vger.kernel.org,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 14/20] dt-bindings:iio:adc:adi,ad7949 yaml conversion
+Message-ID: <20200915191350.GA2334565@bogus>
 References: <20200909175946.395313-1-jic23@kernel.org>
- <20200909175946.395313-3-jic23@kernel.org>
+ <20200909175946.395313-15-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200909175946.395313-3-jic23@kernel.org>
+In-Reply-To: <20200909175946.395313-15-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 09 Sep 2020 18:59:28 +0100, Jonathan Cameron wrote:
+On Wed, 09 Sep 2020 18:59:40 +0100, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> Conversion from txt to yaml as part of a general move of IIO bindings
-> to the new format.
+> Simple SPI driver. I've added the #io-channel-cells
+> as an optional parameter to allow use of this device as a provider
+> of ADC capabilities to other devices.
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Acked-by: Sebastian Reichel <sre@kernel.org>
+> Cc: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
 > ---
->  .../bindings/iio/adc/ti,twl4030-madc.yaml     | 48 +++++++++++++++++++
->  .../bindings/iio/adc/twl4030-madc.txt         | 24 ----------
->  2 files changed, 48 insertions(+), 24 deletions(-)
+>  .../devicetree/bindings/iio/adc/ad7949.txt    | 16 ------
+>  .../bindings/iio/adc/adi,ad7949.yaml          | 57 +++++++++++++++++++
+>  2 files changed, 57 insertions(+), 16 deletions(-)
 > 
 
 Reviewed-by: Rob Herring <robh@kernel.org>
