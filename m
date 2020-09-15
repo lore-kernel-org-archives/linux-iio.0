@@ -2,87 +2,94 @@ Return-Path: <SRS0=jlvN=CY=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8777C43461
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:33:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD92AC43461
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:42:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8FB3520770
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:33:45 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=googlemail.com header.i=@googlemail.com header.b="XjoWHqqV"
+	by mail.kernel.org (Postfix) with ESMTP id 6505220770
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:42:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1600198936;
+	bh=eUCPmOrkMrI86UJv6tI915hmvXK+VMtmY9lMHjvcC8M=;
+	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
+	b=lLrtOC62MkhHEAN6/dZz4FnZELd3/BG04je7apmlaMo3H6NlFgfVuJHwO9Zji3RFm
+	 N4G223qG6rBFUCNFly/akX4j03rsnrm3h+7W8CT9XGj1E8qj0yg7VQmId2M8UXZ+/v
+	 +IiQtp4daGHTTt3oLzLCdQK9hbHZDTKWxynVuQwU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727753AbgIOTdk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:33:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53360 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727907AbgIOTcm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:32:42 -0400
-Received: from mail-ej1-x644.google.com (mail-ej1-x644.google.com [IPv6:2a00:1450:4864:20::644])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DA50C06178A;
-        Tue, 15 Sep 2020 12:31:55 -0700 (PDT)
-Received: by mail-ej1-x644.google.com with SMTP id gr14so6767222ejb.1;
-        Tue, 15 Sep 2020 12:31:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=googlemail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bZO2IAlnzNyQY1ZkwxclRSaPDfgwsEN+KnJfznLA36o=;
-        b=XjoWHqqVv23OkE6C1yvnk2Z30K+DyMrhGC6rd7EaLcuYKM2eqXu2DW2cobGWZct0wB
-         4yGzTjujp4PfP8be+s5mF7YDNPPQtIPFh1Xbl2x/OVKZCXJYclHxLOnNUzenxkpBJ1UX
-         vw1Xv+qAqaGzlAgMovPcebQQ8cydy7jpYxC8ozU0A1orhLuJMtR6nxSPvjmoVtRQnkIB
-         jIXerCuumwan7aU6jYwgwIuCN1vSGzkJvRchyCpILC9XRQ1aLLEm2GLcdk07gMfRe27G
-         Un86mEgYI5Rw4MjHayZGqggO5m4wwTk1d6leuZYn9aAB5mjdZ8wEkzn7D6O6eoaJcX4x
-         wVQQ==
+        id S1727697AbgIOTmF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:42:05 -0400
+Received: from mail-io1-f66.google.com ([209.85.166.66]:44038 "EHLO
+        mail-io1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727889AbgIOTPN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:15:13 -0400
+Received: by mail-io1-f66.google.com with SMTP id g128so5328773iof.11;
+        Tue, 15 Sep 2020 12:15:08 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bZO2IAlnzNyQY1ZkwxclRSaPDfgwsEN+KnJfznLA36o=;
-        b=nSoM9N+0IRLefQPUCEB8AsziW/L+x1ZEYeTVBLs+aY3u+bf5aG9JqVTOFhZU58qjaX
-         ltJD4QPSiujjPnBhzyK1Z0/fxQljTAxX/jhP47AEJ8LmT+o+HLTt6/jn23Wc62mnER6/
-         fuxf7K4GwR33zxN6+xOGmzSNcmnlXRuEZDCNF6nh6IVcGX5ZGEr7makS2RNi9uWPQcUk
-         bIY8t12C8zTT6ddKwvmR2H4gr6JRrn8MT+RS9zf1Jh6an2LBnimAR+Pryu2NbXFcpG50
-         jkuzXz5AfO1pVkCsRDhcY207gLQGKtuvmLiKHRQX6pNLjjYESBmdpu35RjWRIri0sPxm
-         G/ZA==
-X-Gm-Message-State: AOAM5305pp2NN3uGfxtDjIpxu4A6kUT6kqOaT+104ebNTQXUn/FJfT86
-        pQKTz241US8PRWO/npJBY5lT0O2dWDQC5663ZqoJZJahXzo=
-X-Google-Smtp-Source: ABdhPJx4GNtGiu2BEX73SjJFRnIvUahjNSdRj4SRJpPV7hE2D/6Ezv+p2Dz9/d/CQWvJCWVs1JFEMJ20c/leEtArqk0=
-X-Received: by 2002:a17:906:4902:: with SMTP id b2mr21321071ejq.208.1600198314216;
- Tue, 15 Sep 2020 12:31:54 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200909175946.395313-1-jic23@kernel.org> <20200909175946.395313-19-jic23@kernel.org>
-In-Reply-To: <20200909175946.395313-19-jic23@kernel.org>
-From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date:   Tue, 15 Sep 2020 21:31:43 +0200
-Message-ID: <CAFBinCCzmyCRvSCpor2mNkSmSO=g-KCJuiYVwdg6facvst9mJw@mail.gmail.com>
-Subject: Re: [PATCH v2 18/20] dt-bindings:iio:adc:amlogic,meson-saradc yaml conversion
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FM7LE2LHDCWNqLopHxLuvP6gQ42SfuuOFqZuFdFeXVs=;
+        b=ED+KbHWimWrxtpP1+AM8zIlR3kxUG70S61+6FYWKqlNJ64IjJfq2f2PAVsphvenXgD
+         Wd1/RJFyrPCYtiauqqqdb4ycPS64XyR5ulvvbUgPGFWJwTEEZJaFibkgRu1CueKkHti7
+         VoArknTEM5Gzv/PVqQQ8aM+9uMdf0ZMng6RWbd3PnsAySLg09tl13ZrO5nhWFqLk9Fm6
+         iMz9+niK2lT72dg8C7COmnlXWW4Vtzcv0x5eIo4vEG0i/2971PwRO0XSnHelMYmyfI49
+         ylHAsvjBVbveqe/pivPQMwpZ5gXsm6WKVZ176doxedzPKPyyWCdgZDvUm5fP/jaB6DRY
+         dFcQ==
+X-Gm-Message-State: AOAM533LoJyvUGmAuk15+rKOrTAlZpaHxiZGp2rYmSyXGKZOmffBgLzU
+        /Jhi5L9VnvgXoaaFx6p84w==
+X-Google-Smtp-Source: ABdhPJze/kcs/GY/BYUtiDkcANofAMuoSLAHTsVQH7CMGqpM6NHD3caIkMw+iZzx9pK0U9hRcPUJRQ==
+X-Received: by 2002:a5d:8e12:: with SMTP id e18mr15043269iod.99.1600197308482;
+        Tue, 15 Sep 2020 12:15:08 -0700 (PDT)
+Received: from xps15 ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id u18sm9454759iln.78.2020.09.15.12.15.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Sep 2020 12:15:07 -0700 (PDT)
+Received: (nullmailer pid 2336730 invoked by uid 1000);
+        Tue, 15 Sep 2020 19:15:05 -0000
+Date:   Tue, 15 Sep 2020 13:15:05 -0600
+From:   Rob Herring <robh@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Rob Herring <robh@kernel.org>,
-        devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Content-Type: text/plain; charset="UTF-8"
+Cc:     devicetree@vger.kernel.org,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 15/20] dt-bindings:iio:adc:ad7768-1 yaml conversion
+Message-ID: <20200915191505.GA2336645@bogus>
+References: <20200909175946.395313-1-jic23@kernel.org>
+ <20200909175946.395313-16-jic23@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20200909175946.395313-16-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+On Wed, 09 Sep 2020 18:59:41 +0100, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> Fairly straight conversion.  The one oddity in the original binding
+> is that spi-cpha and spi-cpol were not marked as required, but were
+> in the example.  Looking at the datasheet, there isn't any documented
+> flexibility in the possible SPI modes, so I have moved these to requires.
+> For spi-max-frequency I have gone the other way.  I absolutely agree
+> that it is good to specify this in the dt-binding, but it's not
+> strictly required.
+> 
+> As Stefan's email is bouncing I have gone with Michael as maintainer
+> of this one as it falls under the ADI catch all entry in MAINTAINERS.
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+> ---
+>  .../bindings/iio/adc/adi,ad7768-1.txt         | 41 ---------
+>  .../bindings/iio/adc/adi,ad7768-1.yaml        | 89 +++++++++++++++++++
+>  2 files changed, 89 insertions(+), 41 deletions(-)
+> 
 
-On Wed, Sep 9, 2020 at 8:02 PM Jonathan Cameron <jic23@kernel.org> wrote:
-[...]
-> +description:
-> +  Binding covers a range of ADCs found on amlogic meson SoCs.
-Amlogic Meson for consistency please
-(found while going through Rob's feedback - sorry for not finding this
-nit-pick earlier)
-
-
-Best regards,
-Martin
+Reviewed-by: Rob Herring <robh@kernel.org>
