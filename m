@@ -7,317 +7,298 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D609C2D0E0
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:25:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D846C43461
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:28:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BFD3E206B2
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:25:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4868C2078E
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:28:22 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600197936;
-	bh=MIH6EZGpQtG+4XjXrdYbBfQIRl8D0XXHgxaa4iF5BCQ=;
+	s=default; t=1600198102;
+	bh=2NcvZFuTQVW3X/Va19DSfaZr9CLTOdUMT5/mDeiADHY=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=p0zNkWMxnQQUwTlidN0NxJJpNSfrO37NSvIRBHvXePkmErwBHOQDIxwCrt+XivRUM
-	 t0d73+zwArM5ekaDsEzm4MD3g9SnTg9H9FXRCYM+lmDuv+cr/cW4Yq7pUehAQOpHxu
-	 dSa9U7tbLMpQod4hiwVmPz1aNuIxpWUEzxEv4AWo=
+	b=oYVFJI1udvLuBbLxTE00epYCB9fT0+s+Bdl9ToJpFpFhhh9+K9lECHEdw3hgga5Zh
+	 i84qYR4qAHlvv54PPfn0g8DSniMtqxgO0PFr+Zs38SNOD97yHWnu/dXayvPGD372ub
+	 sAPO4i96mJrMulav3PsMAbx2exaSYYrFpWpwEFUk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727928AbgIOTYc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:24:32 -0400
-Received: from mail-il1-f195.google.com ([209.85.166.195]:36339 "EHLO
-        mail-il1-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727653AbgIOTX4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:23:56 -0400
-Received: by mail-il1-f195.google.com with SMTP id t12so4131303ilh.3;
-        Tue, 15 Sep 2020 12:23:54 -0700 (PDT)
+        id S1727913AbgIOT1W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:27:22 -0400
+Received: from mail-io1-f65.google.com ([209.85.166.65]:43387 "EHLO
+        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727888AbgIOT0l (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:26:41 -0400
+Received: by mail-io1-f65.google.com with SMTP id z25so5386620iol.10;
+        Tue, 15 Sep 2020 12:26:40 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=hHhXidR6Ol2FUudL/UxKb9dPjOLxVvYQvVLLZ2xDN58=;
-        b=D5bP6rZgOEhZtdIFh6jqQIWVcj0ezKFcktS/N6apLJ3w8CWzb29jSYeVdwDdbSXfRe
-         5hx1qM4CAXj+XRq5JQgVoRUceQk7Xw9s1BdqwewAYmkHn0F9cZxJj4+Kj+Lb5kJksQBR
-         7iMj7R+dXcO+0cq9OQB+K5GKb+zqkw2P/k3yiVoyZMionsv4NImRQ1CKUmlVBGfNATkT
-         mGp/5gz1PL9RqzxF2Vu4eqe2AzgLW8pFOC6TGoCppRSgphT4/rmy0WXv29uW+cOknz6Y
-         tNye+qJL2Z/avil82y3bDmUZYyLKCgnhJdFet4LwS8o8CH0RtDqFvUWd4diwiO5/p4FK
-         yaxA==
-X-Gm-Message-State: AOAM531PgLps9/basTiRxf25orUFQKDs02lX6Np293hhF2OuiPvNFzaj
-        S9hdnArW5b7jzehWOxODGw==
-X-Google-Smtp-Source: ABdhPJy8vQSHlBq18AVz1hjMnw6aolAj3UOIa61p8rQjYx/XGcV7DFKRmCtqXZcRY2fsW8AFQK++KA==
-X-Received: by 2002:a05:6e02:d4f:: with SMTP id h15mr16541968ilj.307.1600197834339;
-        Tue, 15 Sep 2020 12:23:54 -0700 (PDT)
+        bh=tYBYkmkOCIGqFuOFhUoSUHBmQglmGC6EfZ4XQmGFw/Y=;
+        b=QZKbIKp+I5s+b1gYwWlCBmXRlcDpAQhgMHpIpUHaaHZTcVKWv2gb3yOo6EHNws/Nix
+         uCkjBJqVGtZ0iFn9kT4STa78yEJJ9HXP9knTgZFmJAmdUtquMYCV78PSxRec6JzWkNs3
+         UJx8xj2lRqjxXoO62ckCRHoj7R44/Uh6WT2508dfKee5B8iHksh4ngjR01z7uChT47pZ
+         lXgeT5pIoFhuoMelc9EOULCWoinCuorX8AzJqeTqj3saTV8NhjlLMAKnLikQaVB1s7Ol
+         Uxps1nwGCWmy1qpIEWNBI3d0AvQH30+/sA7cGjYQKmzPIbAqalSrurkiilcS/Sa9GxjW
+         zeJA==
+X-Gm-Message-State: AOAM532QlhBdKUJBrflvMnsB2hgD42UapIUaj6cCVg7QVo43V3Lo7Mmw
+        zEPcTm0/AawFvzyJ2CjFOg==
+X-Google-Smtp-Source: ABdhPJzRkkKTAo2GBjQO1GN4lTZ329d8H4/fOhrh9SGHekW/ozIPY/JzterLnLVZXrYqh8Aed+gpng==
+X-Received: by 2002:a05:6638:dd3:: with SMTP id m19mr20040971jaj.115.1600197999967;
+        Tue, 15 Sep 2020 12:26:39 -0700 (PDT)
 Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id h2sm8055955ioj.5.2020.09.15.12.23.52
+        by smtp.gmail.com with ESMTPSA id k1sm9289088ilq.59.2020.09.15.12.26.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 12:23:53 -0700 (PDT)
-Received: (nullmailer pid 2350686 invoked by uid 1000);
-        Tue, 15 Sep 2020 19:23:51 -0000
-Date:   Tue, 15 Sep 2020 13:23:51 -0600
+        Tue, 15 Sep 2020 12:26:39 -0700 (PDT)
+Received: (nullmailer pid 2354940 invoked by uid 1000);
+        Tue, 15 Sep 2020 19:26:37 -0000
+Date:   Tue, 15 Sep 2020 13:26:37 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>
-Subject: Re: [PATCH v2 18/20] dt-bindings:iio:adc:amlogic,meson-saradc yaml
+        Markus Pargmann <mpa@pengutronix.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>
+Subject: Re: [PATCH v2 20/20] dt-bindings:iio:adc:fsl,imx25-gcq yaml
  conversion
-Message-ID: <20200915192351.GA2341834@bogus>
+Message-ID: <20200915192637.GA2351801@bogus>
 References: <20200909175946.395313-1-jic23@kernel.org>
- <20200909175946.395313-19-jic23@kernel.org>
+ <20200909175946.395313-21-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200909175946.395313-19-jic23@kernel.org>
+In-Reply-To: <20200909175946.395313-21-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 06:59:44PM +0100, Jonathan Cameron wrote:
+On Wed, Sep 09, 2020 at 06:59:46PM +0100, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> This binding is non trivial due to the range of different parts
-> supported having several subtle quirks. Martin has helped
-> clarify some of them.
+> This binding has a few corners that would have been done different today
+> but hopefully the yaml schema captures the constraints correctly.
 > 
-> Note, I haven't restricted the amlogic,hhi-sysctrl to only
-> be present on the relevant parts if nvmem stuff also is, but
-> it would seem to be rather odd if it were otherwise.
+> The child node names are not constrained hence the fairly open regexp.
+> I've also documented the defaults for the two references that the
+> driver seems to use and copied the value descriptions from the header
+> because I think they should be in the dt-binding itself.
 > 
-> Perhaps we look to make this binding more restrictive at a later date.
+> This is part of a general effort to convert all the IIO bindings
+> over to yaml
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Cc: Kevin Hilman <khilman@baylibre.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Jerome Brunet <jbrunet@baylibre.com>
+> Cc: Markus Pargmann <mpa@pengutronix.de>
+> Cc: Shawn Guo <shawnguo@kernel.org>
+> Cc: Sascha Hauer <s.hauer@pengutronix.de>
 > ---
->  .../bindings/iio/adc/amlogic,meson-saradc.txt |  48 ------
->  .../iio/adc/amlogic,meson-saradc.yaml         | 149 ++++++++++++++++++
->  2 files changed, 149 insertions(+), 48 deletions(-)
+>  .../bindings/iio/adc/fsl,imx25-gcq.txt        |  57 --------
+>  .../bindings/iio/adc/fsl,imx25-gcq.yaml       | 129 ++++++++++++++++++
+>  2 files changed, 129 insertions(+), 57 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+> diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
 > deleted file mode 100644
-> index d57e9df25f4f..000000000000
-> --- a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+> index eebdcec3dab5..000000000000
+> --- a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
 > +++ /dev/null
-> @@ -1,48 +0,0 @@
-> -* Amlogic Meson SAR (Successive Approximation Register) A/D converter
+> @@ -1,57 +0,0 @@
+> -Freescale i.MX25 ADC GCQ device
+> -
+> -This is a generic conversion queue device that can convert any of the
+> -analog inputs using the ADC unit of the i.MX25.
 > -
 > -Required properties:
-> -- compatible:	depending on the SoC this should be one of:
-> -			- "amlogic,meson8-saradc" for Meson8
-> -			- "amlogic,meson8b-saradc" for Meson8b
-> -			- "amlogic,meson8m2-saradc" for Meson8m2
-> -			- "amlogic,meson-gxbb-saradc" for GXBB
-> -			- "amlogic,meson-gxl-saradc" for GXL
-> -			- "amlogic,meson-gxm-saradc" for GXM
-> -			- "amlogic,meson-axg-saradc" for AXG
-> -			- "amlogic,meson-g12a-saradc" for AXG
-> -		along with the generic "amlogic,meson-saradc"
-> -- reg:		the physical base address and length of the registers
-> -- interrupts:	the interrupt indicating end of sampling
-> -- clocks:	phandle and clock identifier (see clock-names)
-> -- clock-names:	mandatory clocks:
-> -			- "clkin" for the reference clock (typically XTAL)
-> -			- "core" for the SAR ADC core clock
-> -		optional clocks:
-> -			- "adc_clk" for the ADC (sampling) clock
-> -			- "adc_sel" for the ADC (sampling) clock mux
-> -- vref-supply:	the regulator supply for the ADC reference voltage
-> -- #io-channel-cells: must be 1, see ../iio-bindings.txt
+> - - compatible: Should be "fsl,imx25-gcq".
+> - - reg: Should be the register range of the module.
+> - - interrupts: Should be the interrupt number of the module.
+> -   Typically this is <1>.
+> - - #address-cells: Should be <1> (setting for the subnodes)
+> - - #size-cells: Should be <0> (setting for the subnodes)
 > -
 > -Optional properties:
-> -- amlogic,hhi-sysctrl:	phandle to the syscon which contains the 5th bit
-> -			of the TSC (temperature sensor coefficient) on
-> -			Meson8b and Meson8m2 (which used to calibrate the
-> -			temperature sensor)
-> -- nvmem-cells:		phandle to the temperature_calib eFuse cells
-> -- nvmem-cell-names:	if present (to enable the temperature sensor
-> -			calibration) this must contain "temperature_calib"
+> - - vref-ext-supply: The regulator supplying the ADC reference voltage.
+> -   Required when at least one subnode uses the this reference.
+> - - vref-xp-supply: The regulator supplying the ADC reference voltage on pin XP.
+> -   Required when at least one subnode uses this reference.
+> - - vref-yp-supply: The regulator supplying the ADC reference voltage on pin YP.
+> -   Required when at least one subnode uses this reference.
 > -
+> -Sub-nodes:
+> -Optionally you can define subnodes which define the reference voltage
+> -for the analog inputs.
+> -
+> -Required properties for subnodes:
+> - - reg: Should be the number of the analog input.
+> -     0: xp
+> -     1: yp
+> -     2: xn
+> -     3: yn
+> -     4: wiper
+> -     5: inaux0
+> -     6: inaux1
+> -     7: inaux2
+> -Optional properties for subnodes:
+> - - fsl,adc-refp: specifies the positive reference input as defined in
+> -     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
+> - - fsl,adc-refn: specifies the negative reference input as defined in
+> -     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
 > -
 > -Example:
-> -	saradc: adc@8680 {
-> -		compatible = "amlogic,meson-gxl-saradc", "amlogic,meson-saradc";
-> -		#io-channel-cells = <1>;
-> -		reg = <0x0 0x8680 0x0 0x34>;
-> -		interrupts = <GIC_SPI 73 IRQ_TYPE_EDGE_RISING>;
-> -		clocks = <&xtal>,
-> -			 <&clkc CLKID_SAR_ADC>,
-> -			 <&clkc CLKID_SANA>,
-> -			 <&clkc CLKID_SAR_ADC_CLK>,
-> -			 <&clkc CLKID_SAR_ADC_SEL>;
-> -		clock-names = "clkin", "core", "sana", "adc_clk", "adc_sel";
+> -
+> -	adc: adc@50030800 {
+> -		compatible = "fsl,imx25-gcq";
+> -		reg = <0x50030800 0x60>;
+> -		interrupt-parent = <&tscadc>;
+> -		interrupts = <1>;
+> -		#address-cells = <1>;
+> -		#size-cells = <0>;
+> -
+> -		inaux@5 {
+> -			reg = <5>;
+> -			fsl,adc-refp = <MX25_ADC_REFP_INT>;
+> -			fsl,adc-refn = <MX25_ADC_REFN_NGND>;
+> -		};
 > -	};
-> diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
+> diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml
 > new file mode 100644
-> index 000000000000..6d94bf76900e
+> index 000000000000..6c4e3ef0862c
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.yaml
-> @@ -0,0 +1,149 @@
+> +++ b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml
+> @@ -0,0 +1,129 @@
 > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 > +%YAML 1.2
 > +---
-> +$id: http://devicetree.org/schemas/iio/adc/amlogic,meson-saradc.yaml#
+> +$id: http://devicetree.org/schemas/iio/adc/fsl,imx25-gcq.yaml#
 > +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +title: Amlogic Meson SAR (Successive Approximation Register) A/D converter
-> +
-> +maintainers:
-> +  - Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> +title: Freescale ADC GCQ device
 > +
 > +description:
-> +  Binding covers a range of ADCs found on amlogic meson SoCs.
+> +  This is a generic conversion queue device that can convert any of the
+> +  analog inputs using the ADC unit of the i.MX25.
+> +
+> +maintainers:
+> +  - Markus Pargmann <mpa@pengutronix.de>
 > +
 > +properties:
 > +  compatible:
-> +    oneOf:
-> +      - const: amlogic,meson-saradc
-> +      - items:
-> +          - enum:
-> +              - amlogic,meson8-saradc
-> +              - amlogic,meson8b-saradc
-> +              - amlogic,meson8m2-saradc
-> +              - amlogic,meson-gxbb-saradc
-> +              - amlogic,meson-gxl-saradc
-> +              - amlogic,meson-gxm-saradc
-> +              - amlogic,meson-axg-saradc
-> +              - amlogic,meson-g12a-saradc
-> +          - const: amlogic,meson-saradc
+> +    const: fsl,imx25-gcq
 > +
 > +  reg:
 > +    maxItems: 1
 > +
 > +  interrupts:
-> +    description: Interrupt indicates end of sampling.
 > +    maxItems: 1
 > +
-> +  clocks: true
+> +  vref-ext-supply:
+> +    description:
+> +      The regulator supplying the ADC reference voltage.
+> +      Required when at least one subnode uses the this reference.
 > +
-> +  clock-names: true
-
-Since the names are the same, I prefer to have a schema that covers both 
-cases here and then...
-
+> +  vref-xp-supply:
+> +    description:
+> +      The regulator supplying the ADC reference voltage on pin XP.
+> +      Required when at least one subnode uses this reference.
 > +
-> +  vref-supply: true
+> +  vref-yp-supply:
+> +    description:
+> +      The regulator supplying the ADC reference voltage on pin YP.
+> +      Required when at least one subnode uses this reference.
 > +
 > +  "#io-channel-cells":
 > +    const: 1
 > +
-> +  amlogic,hhi-sysctrl:
-> +    $ref: /schemas/types.yaml#/definitions/phandle
-> +    description:
-> +      Syscon which contains the 5th bit of the TSC (temperature sensor
-> +      coefficient) on Meson8b and Meson8m2 (which used to calibrate the
-> +      temperature sensor)
+> +  "#address-cells":
+> +    const: 1
 > +
-> +  nvmem-cells:
-> +    description: phandle to the temperature_calib eFuse cells
-
-maxItems: 1
-
-> +
-> +  nvmem-cell-names:
-> +    const: temperature_calib
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - amlogic,meson8-saradc
-> +              - amlogic,meson8b-saradc
-> +              - amlogic,meson8m2-saradc
-> +    then:
-> +      properties:
-> +        nvmem-cells: true
-> +        nvmem-cell-names: true
-
-You can drop these 2.
-
-> +        clock-names:
-> +          items:
-> +            - const: clkin
-> +            - const: core
-> +          minItems: 2
-> +        clocks:
-> +          minItems: 2
-
-This case just needs 'maxItems: 2' for clock-names and clocks.
-
-> +    else:
-> +      properties:
-> +        nvmem-cells: false
-> +        mvmem-cel-names: false
-> +        clock-names:
-> +          items:
-> +            - const: clkin
-> +            - const: core
-> +            - const: adc_clk
-> +            - const: adc_sel
-> +          minItems: 4
-
-And just minItems here.
-
-> +        clocks:
-> +          minItems: 4
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            enum:
-> +              - amlogic,meson8b-saradc
-> +              - amlogic,meson8m2-saradc
-> +    then:
-> +      properties:
-> +        amlogic,hhi-sysctrl: true
-> +    else:
-> +      properties:
-> +        amlogic,hhi-sysctrl: false
+> +  "#size-cells":
+> +    const: 0
 > +
 > +required:
 > +  - compatible
 > +  - reg
 > +  - interrupts
-> +  - clocks
-> +  - clock-names
-> +  - "#io-channel-cells"
+> +  - "#address-cells"
+> +  - "#size-cells"
+> +
+> +patternProperties:
+> +  "[a-z][a-z0-9]+@[0-9a-f]+$":
+> +    type: object
+> +    description:
+> +      Child nodes used to define the reference voltages used for each channel
+> +
+> +    properties:
+> +      reg:
+> +        description: |
+> +          Number of the analog input.
+> +          0: xp
+> +          1: yp
+> +          2: xn
+> +          3: yn
+> +          4: wiper
+> +          5: inaux0
+> +          6: inaux1
+> +          7: inaux2
+> +        items:
+> +          - minimum: 0
+> +            maximum: 7
+> +
+> +      fsl,adc-refp:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: |
+> +          Specifies the positive reference input as defined in
+> +          <dt-bindings/iio/adc/fsl-imx25-gcq.h>
+> +          0: YP voltage reference
+> +          1: XP voltage reference
+> +          2: External voltage reference
+> +          3: Internal voltage reference (default)
+> +        minimum: 0
+> +        maximum: 3
+> +
+> +      fsl,adc-refn:
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        description: |
+> +          Specifies the negative reference input as defined in
+> +          <dt-bindings/iio/adc/fsl-imx25-gcq.h>
+> +          0: XN ground reference
+> +          1: YN ground reference
+> +          2: Internal ground reference
+> +          3: External ground reference (default)
+> +        minimum: 0
+> +        maximum: 3
+> +
+> +    required:
+> +      - reg
+
+Each level needs 'additionalProperties':
+
+       additionalProperties: false
+
+With that,
+
+Reviewed-by: Rob Herring <robh@kernel.org>
+
 > +
 > +additionalProperties: false
 > +
 > +examples:
 > +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    #include <dt-bindings/clock/gxbb-clkc.h>
-> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +    #include <dt-bindings/iio/adc/fsl-imx25-gcq.h>
 > +    soc {
-> +        #address-cells = <2>;
-> +        #size-cells = <2>;
-> +        adc@8680 {
-> +            compatible = "amlogic,meson-gxl-saradc", "amlogic,meson-saradc";
-> +            #io-channel-cells = <1>;
-> +            reg = <0x0 0x8680 0x0 0x34>;
-> +            interrupts = <GIC_SPI 73 IRQ_TYPE_EDGE_RISING>;
-> +            clocks = <&xtal>,
-> +                <&clkc CLKID_SAR_ADC>,
-> +                <&clkc CLKID_SAR_ADC_CLK>,
-> +                <&clkc CLKID_SAR_ADC_SEL>;
-> +            clock-names = "clkin", "core", "adc_clk", "adc_sel";
-> +        };
-> +        adc@9680 {
-> +            compatible = "amlogic,meson8b-saradc", "amlogic,meson-saradc";
-> +            #io-channel-cells = <1>;
-> +            reg = <0x0 0x9680 0x0 0x34>;
-> +            interrupts = <GIC_SPI 73 IRQ_TYPE_EDGE_RISING>;
-> +            clocks = <&xtal>, <&clkc CLKID_SAR_ADC>;
-> +            clock-names = "clkin", "core";
-> +            nvmem-cells = <&tsens_caldata>;
-> +            nvmem-cell-names = "temperature_calib";
-> +            amlogic,hhi-sysctrl = <&hhi>;
+> +        #address-cells = <1>;
+> +        #size-cells = <1>;
+> +        adc@50030800 {
+> +            compatible = "fsl,imx25-gcq";
+> +            reg = <0x50030800 0x60>;
+> +            interrupt-parent = <&tscadc>;
+> +            interrupts = <1>;
+> +            #address-cells = <1>;
+> +            #size-cells = <0>;
+> +
+> +            inaux@5 {
+> +                reg = <5>;
+> +                fsl,adc-refp = <MX25_ADC_REFP_INT>;
+> +                fsl,adc-refn = <MX25_ADC_REFN_NGND>;
+> +            };
 > +        };
 > +    };
 > +...
