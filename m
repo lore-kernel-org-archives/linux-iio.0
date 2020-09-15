@@ -7,298 +7,170 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D846C43461
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:28:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 124F8C433E2
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:29:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4868C2078E
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:28:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C029420770
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Sep 2020 19:29:49 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600198102;
-	bh=2NcvZFuTQVW3X/Va19DSfaZr9CLTOdUMT5/mDeiADHY=;
+	s=default; t=1600198189;
+	bh=VD1NSSK75aFCHoac8sh6UMngnObck4nLQ/q5uoUdBJA=;
 	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=oYVFJI1udvLuBbLxTE00epYCB9fT0+s+Bdl9ToJpFpFhhh9+K9lECHEdw3hgga5Zh
-	 i84qYR4qAHlvv54PPfn0g8DSniMtqxgO0PFr+Zs38SNOD97yHWnu/dXayvPGD372ub
-	 sAPO4i96mJrMulav3PsMAbx2exaSYYrFpWpwEFUk=
+	b=XHKR3cigZgQYH/MUXqaegwMR8VO1SPTXoeYMKUM4ypDZ0MItBy7vixWB4jKTNjVDD
+	 cOmouI4lnWMCoe33oUOXIQw6nEIEJiAFhFlsbXM6+rukSvd0TJGiawiXblcMKAvPIn
+	 ket4jWowQ4WzpYWnLkedBHVFX6a6txLDOKv4uNBg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727913AbgIOT1W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Sep 2020 15:27:22 -0400
-Received: from mail-io1-f65.google.com ([209.85.166.65]:43387 "EHLO
-        mail-io1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727888AbgIOT0l (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:26:41 -0400
-Received: by mail-io1-f65.google.com with SMTP id z25so5386620iol.10;
-        Tue, 15 Sep 2020 12:26:40 -0700 (PDT)
+        id S1727697AbgIOT24 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Sep 2020 15:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727945AbgIOT2B (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Sep 2020 15:28:01 -0400
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED1AC06174A;
+        Tue, 15 Sep 2020 12:18:03 -0700 (PDT)
+Received: by mail-il1-x144.google.com with SMTP id y9so4126611ilq.2;
+        Tue, 15 Sep 2020 12:18:03 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=tYBYkmkOCIGqFuOFhUoSUHBmQglmGC6EfZ4XQmGFw/Y=;
-        b=QZKbIKp+I5s+b1gYwWlCBmXRlcDpAQhgMHpIpUHaaHZTcVKWv2gb3yOo6EHNws/Nix
-         uCkjBJqVGtZ0iFn9kT4STa78yEJJ9HXP9knTgZFmJAmdUtquMYCV78PSxRec6JzWkNs3
-         UJx8xj2lRqjxXoO62ckCRHoj7R44/Uh6WT2508dfKee5B8iHksh4ngjR01z7uChT47pZ
-         lXgeT5pIoFhuoMelc9EOULCWoinCuorX8AzJqeTqj3saTV8NhjlLMAKnLikQaVB1s7Ol
-         Uxps1nwGCWmy1qpIEWNBI3d0AvQH30+/sA7cGjYQKmzPIbAqalSrurkiilcS/Sa9GxjW
-         zeJA==
-X-Gm-Message-State: AOAM532QlhBdKUJBrflvMnsB2hgD42UapIUaj6cCVg7QVo43V3Lo7Mmw
-        zEPcTm0/AawFvzyJ2CjFOg==
-X-Google-Smtp-Source: ABdhPJzRkkKTAo2GBjQO1GN4lTZ329d8H4/fOhrh9SGHekW/ozIPY/JzterLnLVZXrYqh8Aed+gpng==
-X-Received: by 2002:a05:6638:dd3:: with SMTP id m19mr20040971jaj.115.1600197999967;
-        Tue, 15 Sep 2020 12:26:39 -0700 (PDT)
+        bh=qADCpDDZYXGLDB9qiRzX/sPuBqnYsAaT2PC/ym5ZjTk=;
+        b=jg4w5u3kox34Nt89YauuPwLk8dzvD97VgMHBaKil7M+t4hPR08x8x6BMVElalTUfrw
+         RT5czOo9J4KhDU0QONs95sJ6YAQQwQLU0iesvHl3M9Mi/c1ekuy2W31Y3AV3HnpaV+ww
+         t6HL8Ib4z76LVGSbAkXl7d8rIafhGT8qEB10Ok1Ol7VU8o1wYjo3uXBn07vNpgnS97ia
+         3r4hkUgKJ9iW0i79uPRHnriaWeADa/XBMGDwyP4Sse6MDMyT8Q7O7U/8i/pC6cOnIbnM
+         XkCFjC7z1vBnjEVCwdpu3OvWnoFQUNK3s6n20OlKTUSLEWmtdOwa2f+dFWm5GtWNNgw+
+         iDOA==
+X-Gm-Message-State: AOAM532FOaOTyN/5TxTc4Cl7TdB7gi6trRR9LLsRmq/Drqlnnf+lCJwn
+        EaCKw1GTn+gyD60nh1U+1TpsXRCAg8eypU0=
+X-Google-Smtp-Source: ABdhPJyqNELLjuu7kp0t1pCCjZR/86ZoOLot1HeTBNTtMnGxW34QKKBhjo6ylC6d1mc4F0NqslvOSw==
+X-Received: by 2002:a05:6e02:807:: with SMTP id u7mr16829423ilm.67.1600197482412;
+        Tue, 15 Sep 2020 12:18:02 -0700 (PDT)
 Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id k1sm9289088ilq.59.2020.09.15.12.26.38
+        by smtp.gmail.com with ESMTPSA id e12sm9072165ils.70.2020.09.15.12.18.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Sep 2020 12:26:39 -0700 (PDT)
-Received: (nullmailer pid 2354940 invoked by uid 1000);
-        Tue, 15 Sep 2020 19:26:37 -0000
-Date:   Tue, 15 Sep 2020 13:26:37 -0600
+        Tue, 15 Sep 2020 12:18:01 -0700 (PDT)
+Received: (nullmailer pid 2341460 invoked by uid 1000);
+        Tue, 15 Sep 2020 19:17:59 -0000
+Date:   Tue, 15 Sep 2020 13:17:59 -0600
 From:   Rob Herring <robh@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Markus Pargmann <mpa@pengutronix.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>
-Subject: Re: [PATCH v2 20/20] dt-bindings:iio:adc:fsl,imx25-gcq yaml
- conversion
-Message-ID: <20200915192637.GA2351801@bogus>
+        Vladimir Barinov <vladimir.barinov@cogentembedded.com>
+Subject: Re: [PATCH v2 17/20] dt-bindings:iio:adc:holt,hi8435 yaml conversion
+Message-ID: <20200915191759.GA2339990@bogus>
 References: <20200909175946.395313-1-jic23@kernel.org>
- <20200909175946.395313-21-jic23@kernel.org>
+ <20200909175946.395313-18-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20200909175946.395313-21-jic23@kernel.org>
+In-Reply-To: <20200909175946.395313-18-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Sep 09, 2020 at 06:59:46PM +0100, Jonathan Cameron wrote:
+On Wed, Sep 09, 2020 at 06:59:43PM +0100, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> This binding has a few corners that would have been done different today
-> but hopefully the yaml schema captures the constraints correctly.
-> 
-> The child node names are not constrained hence the fairly open regexp.
-> I've also documented the defaults for the two references that the
-> driver seems to use and copied the value descriptions from the header
-> because I think they should be in the dt-binding itself.
-> 
-> This is part of a general effort to convert all the IIO bindings
-> over to yaml
+> Very simple binding.  I've changed the example to use the node
+> name threshold-detector@0 as sensor@0 seemed too generic.
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Markus Pargmann <mpa@pengutronix.de>
-> Cc: Shawn Guo <shawnguo@kernel.org>
-> Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> Cc: Vladimir Barinov <vladimir.barinov@cogentembedded.com>
 > ---
->  .../bindings/iio/adc/fsl,imx25-gcq.txt        |  57 --------
->  .../bindings/iio/adc/fsl,imx25-gcq.yaml       | 129 ++++++++++++++++++
->  2 files changed, 129 insertions(+), 57 deletions(-)
+>  .../devicetree/bindings/iio/adc/hi8435.txt    | 21 --------
+>  .../bindings/iio/adc/holt,hi8435.yaml         | 49 +++++++++++++++++++
+>  2 files changed, 49 insertions(+), 21 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+> diff --git a/Documentation/devicetree/bindings/iio/adc/hi8435.txt b/Documentation/devicetree/bindings/iio/adc/hi8435.txt
 > deleted file mode 100644
-> index eebdcec3dab5..000000000000
-> --- a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.txt
+> index 3b0348c5e516..000000000000
+> --- a/Documentation/devicetree/bindings/iio/adc/hi8435.txt
 > +++ /dev/null
-> @@ -1,57 +0,0 @@
-> -Freescale i.MX25 ADC GCQ device
-> -
-> -This is a generic conversion queue device that can convert any of the
-> -analog inputs using the ADC unit of the i.MX25.
+> @@ -1,21 +0,0 @@
+> -Holt Integrated Circuits HI-8435 threshold detector bindings
 > -
 > -Required properties:
-> - - compatible: Should be "fsl,imx25-gcq".
-> - - reg: Should be the register range of the module.
-> - - interrupts: Should be the interrupt number of the module.
-> -   Typically this is <1>.
-> - - #address-cells: Should be <1> (setting for the subnodes)
-> - - #size-cells: Should be <0> (setting for the subnodes)
+> - - compatible: should be "holt,hi8435"
+> - - reg: spi chip select number for the device
+> -
+> -Recommended properties:
+> - - spi-max-frequency: definition as per
+> -		Documentation/devicetree/bindings/spi/spi-bus.txt
 > -
 > -Optional properties:
-> - - vref-ext-supply: The regulator supplying the ADC reference voltage.
-> -   Required when at least one subnode uses the this reference.
-> - - vref-xp-supply: The regulator supplying the ADC reference voltage on pin XP.
-> -   Required when at least one subnode uses this reference.
-> - - vref-yp-supply: The regulator supplying the ADC reference voltage on pin YP.
-> -   Required when at least one subnode uses this reference.
-> -
-> -Sub-nodes:
-> -Optionally you can define subnodes which define the reference voltage
-> -for the analog inputs.
-> -
-> -Required properties for subnodes:
-> - - reg: Should be the number of the analog input.
-> -     0: xp
-> -     1: yp
-> -     2: xn
-> -     3: yn
-> -     4: wiper
-> -     5: inaux0
-> -     6: inaux1
-> -     7: inaux2
-> -Optional properties for subnodes:
-> - - fsl,adc-refp: specifies the positive reference input as defined in
-> -     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
-> - - fsl,adc-refn: specifies the negative reference input as defined in
-> -     <dt-bindings/iio/adc/fsl-imx25-gcq.h>
+> - - gpios: GPIO used for controlling the reset pin
 > -
 > -Example:
+> -sensor@0 {
+> -	compatible = "holt,hi8435";
+> -	reg = <0>;
+> -	gpios = <&gpio6 1 0>;
 > -
-> -	adc: adc@50030800 {
-> -		compatible = "fsl,imx25-gcq";
-> -		reg = <0x50030800 0x60>;
-> -		interrupt-parent = <&tscadc>;
-> -		interrupts = <1>;
-> -		#address-cells = <1>;
-> -		#size-cells = <0>;
-> -
-> -		inaux@5 {
-> -			reg = <5>;
-> -			fsl,adc-refp = <MX25_ADC_REFP_INT>;
-> -			fsl,adc-refn = <MX25_ADC_REFN_NGND>;
-> -		};
-> -	};
-> diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml
+> -	spi-max-frequency = <1000000>;
+> -};
+> diff --git a/Documentation/devicetree/bindings/iio/adc/holt,hi8435.yaml b/Documentation/devicetree/bindings/iio/adc/holt,hi8435.yaml
 > new file mode 100644
-> index 000000000000..6c4e3ef0862c
+> index 000000000000..a35cf3876b86
 > --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/fsl,imx25-gcq.yaml
-> @@ -0,0 +1,129 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +++ b/Documentation/devicetree/bindings/iio/adc/holt,hi8435.yaml
+> @@ -0,0 +1,49 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 > +%YAML 1.2
 > +---
-> +$id: http://devicetree.org/schemas/iio/adc/fsl,imx25-gcq.yaml#
+> +$id: http://devicetree.org/schemas/iio/adc/holt,hi8435.yaml#
 > +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
-> +title: Freescale ADC GCQ device
-> +
-> +description:
-> +  This is a generic conversion queue device that can convert any of the
-> +  analog inputs using the ADC unit of the i.MX25.
+> +title: Holt Integrated Circuits HI-8435 SPI threshold detector
 > +
 > +maintainers:
-> +  - Markus Pargmann <mpa@pengutronix.de>
+> +  - Vladimir Barinov <vladimir.barinov@cogentembedded.com>
+> +
+> +description: |
+> +  Datasheet: http://www.holtic.com/documents/427-hi-8435_v-rev-lpdf.do
 > +
 > +properties:
 > +  compatible:
-> +    const: fsl,imx25-gcq
+> +    const: holt,hi8435
 > +
 > +  reg:
 > +    maxItems: 1
 > +
-> +  interrupts:
-> +    maxItems: 1
-> +
-> +  vref-ext-supply:
+> +  gpios:
 > +    description:
-> +      The regulator supplying the ADC reference voltage.
-> +      Required when at least one subnode uses the this reference.
-> +
-> +  vref-xp-supply:
-> +    description:
-> +      The regulator supplying the ADC reference voltage on pin XP.
-> +      Required when at least one subnode uses this reference.
-> +
-> +  vref-yp-supply:
-> +    description:
-> +      The regulator supplying the ADC reference voltage on pin YP.
-> +      Required when at least one subnode uses this reference.
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-> +
-> +  "#address-cells":
-> +    const: 1
-> +
-> +  "#size-cells":
-> +    const: 0
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - interrupts
-> +  - "#address-cells"
-> +  - "#size-cells"
-> +
-> +patternProperties:
-> +  "[a-z][a-z0-9]+@[0-9a-f]+$":
-> +    type: object
-> +    description:
-> +      Child nodes used to define the reference voltages used for each channel
-> +
-> +    properties:
-> +      reg:
-> +        description: |
-> +          Number of the analog input.
-> +          0: xp
-> +          1: yp
-> +          2: xn
-> +          3: yn
-> +          4: wiper
-> +          5: inaux0
-> +          6: inaux1
-> +          7: inaux2
-> +        items:
-> +          - minimum: 0
-> +            maximum: 7
-> +
-> +      fsl,adc-refp:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: |
-> +          Specifies the positive reference input as defined in
-> +          <dt-bindings/iio/adc/fsl-imx25-gcq.h>
-> +          0: YP voltage reference
-> +          1: XP voltage reference
-> +          2: External voltage reference
-> +          3: Internal voltage reference (default)
-> +        minimum: 0
-> +        maximum: 3
-> +
-> +      fsl,adc-refn:
-> +        $ref: /schemas/types.yaml#/definitions/uint32
-> +        description: |
-> +          Specifies the negative reference input as defined in
-> +          <dt-bindings/iio/adc/fsl-imx25-gcq.h>
-> +          0: XN ground reference
-> +          1: YN ground reference
-> +          2: Internal ground reference
-> +          3: External ground reference (default)
-> +        minimum: 0
-> +        maximum: 3
-> +
-> +    required:
-> +      - reg
+> +       GPIO used for controlling the reset pin
 
-Each level needs 'additionalProperties':
-
-       additionalProperties: false
+maxItems: 1
 
 With that,
 
 Reviewed-by: Rob Herring <robh@kernel.org>
 
 > +
+> +  spi-max-frequency: true
+> +
+> +  "#io-channel-cells":
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
 > +additionalProperties: false
 > +
 > +examples:
 > +  - |
-> +    #include <dt-bindings/iio/adc/fsl-imx25-gcq.h>
-> +    soc {
+> +    spi {
 > +        #address-cells = <1>;
-> +        #size-cells = <1>;
-> +        adc@50030800 {
-> +            compatible = "fsl,imx25-gcq";
-> +            reg = <0x50030800 0x60>;
-> +            interrupt-parent = <&tscadc>;
-> +            interrupts = <1>;
-> +            #address-cells = <1>;
-> +            #size-cells = <0>;
-> +
-> +            inaux@5 {
-> +                reg = <5>;
-> +                fsl,adc-refp = <MX25_ADC_REFP_INT>;
-> +                fsl,adc-refn = <MX25_ADC_REFN_NGND>;
-> +            };
+> +        #size-cells = <0>;
+> +        threshold-detector@0 {
+> +            compatible = "holt,hi8435";
+> +            reg = <0>;
+> +            gpios = <&gpio6 1 0>;
+> +            spi-max-frequency = <1000000>;
 > +        };
 > +    };
 > +...
