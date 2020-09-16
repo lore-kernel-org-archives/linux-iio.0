@@ -2,373 +2,317 @@ Return-Path: <SRS0=9OhX=CZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECC7C433E2
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 20:30:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E662C433E2
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 20:45:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DBAC721941
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 20:30:06 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="isnr1b7F"
+	by mail.kernel.org (Postfix) with ESMTP id 06D5920770
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 20:45:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726939AbgIPU34 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Sep 2020 16:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726964AbgIPRXv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 13:23:51 -0400
-Received: from mail-wm1-x341.google.com (mail-wm1-x341.google.com [IPv6:2a00:1450:4864:20::341])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3664C0A3BDD;
-        Wed, 16 Sep 2020 09:44:25 -0700 (PDT)
-Received: by mail-wm1-x341.google.com with SMTP id q9so3447921wmj.2;
-        Wed, 16 Sep 2020 09:44:25 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=57jNkCFpR+ZC91t3GQZtyiHeManNCPVgldSKXxvGYAc=;
-        b=isnr1b7FbA6/O30CYuwqC9X9Y0Utf8gqRSaeHW8RTec7xV0QQEgmtRIHFQiD3j0NPP
-         rRZF80J0UNF0xYjm3Qt83cLJaTNzQItaoiY6ucEYcO6eIEy2bAlrXFnldm1kgBdwMg48
-         AGoHp6vlRYEvN84qFPTz+yl2po3lBFBqecP16b6HT/C3i8YW6CsFE6TwhePIF0BqYGJW
-         LpywdCCWDSzFvv/QOwnR112MOC2jpC97oJgwMX0J+oLG8TzCef04ttFY4or6KiGx1VFa
-         EWZEy06dMNoktQ9PocEITUPNVQI26lnQcjg3LLsb16nbXFwQ9gOS+E1Af6JE2rFNnpzW
-         Q3Vw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=57jNkCFpR+ZC91t3GQZtyiHeManNCPVgldSKXxvGYAc=;
-        b=DrNuHRwOrRStTT6FPs2o/fN+iQMX+R74hyUHIaSTOAVxVucgBA0SUHu1M0FSoJfQsB
-         4ENqE9UsEztHpNhBziuF4rd+jKyWtsp6tfoA4uuoyyanKo2rQJLlFYePDxkw2+7AHt+l
-         bHuD6So1AYRGL9dWqySjxBp3445rmSqIs7W+oGADvPt4tcfGJV8GKe+SfHS3ZqMgTT2s
-         jYo8HQfFpi+nqiKegbFYpzR4I5zCXgJxb4a90BuRKV422KIboczhgy+h/2m7e35Kmlz3
-         Bcn1DXrnQER10ayj+9wZqt3G5BRDnEiFiYLaizuRFg3Ltp8bfGDbk9PjcpAPc7s8Wg1q
-         0iog==
-X-Gm-Message-State: AOAM530UjE73EQUCZ7GuXnxlJLxXdo7JJMw+aFpl59Pgth6LXrimYe6Z
-        NsN9oLOy+KAzMxj8c1tGPvORDQR1mF6THg==
-X-Google-Smtp-Source: ABdhPJy9U/LgP8IdGF1y1AIcpK3pCp/q8zFu+6omF/0GF/QSJQlYlNvFWp3YXR2RaT/1tIHAj8dtFA==
-X-Received: by 2002:a05:600c:252:: with SMTP id 18mr5307304wmj.63.1600274664460;
-        Wed, 16 Sep 2020 09:44:24 -0700 (PDT)
-Received: from ctocxl0004.cto.st.com (net-109-115-0-45.cust.vodafonedsl.it. [109.115.0.45])
-        by smtp.gmail.com with ESMTPSA id h17sm36210381wro.27.2020.09.16.09.44.23
-        (version=TLS1_2 cipher=ECDHE-ECDSA-AES128-GCM-SHA256 bits=128/128);
-        Wed, 16 Sep 2020 09:44:23 -0700 (PDT)
-From:   Mario Tesi <martepisa@gmail.com>
-To:     lorenzo.bianconi83@gmail.com
-Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, mario.tesi@st.com
-Subject: [PATCH] iio: imu: st_lsm6dsx: Scaling factor type set to IIO_VAL_INT_PLUS_NANO
-Date:   Wed, 16 Sep 2020 18:44:20 +0200
-Message-Id: <1600274660-29143-1-git-send-email-martepisa@gmail.com>
-X-Mailer: git-send-email 2.7.4
+        id S1726705AbgIPUnn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Sep 2020 16:43:43 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:15518 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726744AbgIPRD2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 13:03:28 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08GD9Md5010152;
+        Wed, 16 Sep 2020 09:21:21 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33k5p62hn7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Sep 2020 09:21:21 -0400
+Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 08GDLKNh029875
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 16 Sep 2020 09:21:20 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 16 Sep 2020 09:21:27 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 16 Sep 2020 09:21:27 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 16 Sep 2020 09:21:27 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08GDLGMe026529;
+        Wed, 16 Sep 2020 09:21:17 -0400
+From:   Cristian Pop <cristian.pop@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, Cristian Pop <cristian.pop@analog.com>
+Subject: [PATCH v4 1/3] iio: core: Add optional symbolic label to a device channel
+Date:   Wed, 16 Sep 2020 16:21:15 +0300
+Message-ID: <20200916132115.81795-1-cristian.pop@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-16_07:2020-09-16,2020-09-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 impostorscore=0 bulkscore=0 adultscore=0
+ priorityscore=1501 mlxscore=0 phishscore=0 clxscore=1015 suspectscore=0
+ malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009160097
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Mario Tesi <mario.tesi@st.com>
+If a label is defined in the device tree for this channel add that
+to the channel specific attributes. This is useful for userspace to
+be able to identify an individual channel.
 
-Scaling factor values for Acc lead to an unacceptable rounding of the
-full scale (FS) calculated by some SensorHAL on Android devices. For examples
-setting FS to 4g the in_accel_x_scale, in_accel_y_scale and in_accel_z_scale
-are 0.001196 on 6 decimal digits and the FS is
-0.001196 × ((2^15) − 1) ~= 39.1893 m/s^2.
-
-Android CTS R10 SensorParameterRangeTest test expects a value greater than
-39.20 m/s^2 so this test fails (ACCELEROMETER_MAX_RANGE = 4 * 9.80).
-
-Using 9 decimal digits the new scale factor is 0.001196411 and the FS now
-is 0.001196411 × ((2^15)−1) ~= 39.2028 m/s^2.
-
-This patch extends to IIO_VAL_INT_PLUS_NANO type the scaling factor to all
-IMU devices where SensorParameterRangeTest CTS test fails.
-
-Signed-off-by: Mario Tesi <mario.tesi@st.com>
+Signed-off-by: Cristian Pop <cristian.pop@analog.com>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 136 ++++++++++++++++-----------
- 1 file changed, 79 insertions(+), 57 deletions(-)
+Change in V4:
+	- Check for callback before generating file system for label
+	- Add documentation in: Documentation/ABI/testing/sysfs-bus-iio
+	- Add example of usage for channel label attribute
+ drivers/iio/industrialio-core.c | 41 +++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h         |  6 +++++
+ 2 files changed, 47 insertions(+)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 346c242..382643e 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -157,10 +157,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x20,
- 					.mask = GENMASK(4, 3),
- 				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(732), 0x1 },
-+				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
-+				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
-+				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
-+				.fs_avl[3] = { IIO_G_TO_M_S_2(732000), 0x1 },
- 				.fs_len = 4,
- 			},
- 			[ST_LSM6DSX_ID_GYRO] = {
-@@ -169,9 +169,9 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.mask = GENMASK(4, 3),
- 				},
- 
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(70000), 0x3 },
-+				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
-+				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
-+				.fs_avl[2] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
- 				.fs_len = 3,
- 			},
- 		},
-@@ -259,10 +259,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x10,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(488), 0x1 },
-+				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
-+				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
-+				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
-+				.fs_avl[3] = { IIO_G_TO_M_S_2(488000), 0x1 },
- 				.fs_len = 4,
- 			},
- 			[ST_LSM6DSX_ID_GYRO] = {
-@@ -270,10 +270,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x11,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000), 0x2 },
--				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000), 0x3 },
-+				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
-+				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
-+				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000000), 0x2 },
-+				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
- 				.fs_len = 4,
- 			},
- 		},
-@@ -425,10 +425,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x10,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(488), 0x1 },
-+				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
-+				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
-+				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
-+				.fs_avl[3] = { IIO_G_TO_M_S_2(488000), 0x1 },
- 				.fs_len = 4,
- 			},
- 			[ST_LSM6DSX_ID_GYRO] = {
-@@ -436,10 +436,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x11,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000), 0x2 },
--				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000), 0x3 },
-+				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
-+				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
-+				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000000), 0x2 },
-+				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
- 				.fs_len = 4,
- 			},
- 		},
-@@ -600,10 +600,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x10,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(488), 0x1 },
-+				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
-+				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
-+				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
-+				.fs_avl[3] = { IIO_G_TO_M_S_2(488000), 0x1 },
- 				.fs_len = 4,
- 			},
- 			[ST_LSM6DSX_ID_GYRO] = {
-@@ -611,10 +611,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x11,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000), 0x2 },
--				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000), 0x3 },
-+				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
-+				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
-+				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000000), 0x2 },
-+				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
- 				.fs_len = 4,
- 			},
- 		},
-@@ -816,10 +816,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x10,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(488), 0x1 },
-+				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
-+				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
-+				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
-+				.fs_avl[3] = { IIO_G_TO_M_S_2(488000), 0x1 },
- 				.fs_len = 4,
- 			},
- 			[ST_LSM6DSX_ID_GYRO] = {
-@@ -827,10 +827,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x11,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000), 0x2 },
--				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000), 0x3 },
-+				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
-+				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
-+				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000000), 0x2 },
-+				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
- 				.fs_len = 4,
- 			},
- 		},
-@@ -1021,10 +1021,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x10,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(488), 0x1 },
-+				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
-+				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
-+				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
-+				.fs_avl[3] = { IIO_G_TO_M_S_2(488000), 0x1 },
- 				.fs_len = 4,
- 			},
- 			[ST_LSM6DSX_ID_GYRO] = {
-@@ -1032,10 +1032,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x11,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000), 0x2 },
--				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000), 0x3 },
-+				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
-+				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
-+				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000000), 0x2 },
-+				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
- 				.fs_len = 4,
- 			},
- 		},
-@@ -1200,10 +1200,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x10,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(488), 0x1 },
-+				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
-+				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
-+				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
-+				.fs_avl[3] = { IIO_G_TO_M_S_2(488000), 0x1 },
- 				.fs_len = 4,
- 			},
- 			[ST_LSM6DSX_ID_GYRO] = {
-@@ -1211,10 +1211,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 					.addr = 0x11,
- 					.mask = GENMASK(3, 2),
- 				},
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000), 0x2 },
--				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000), 0x3 },
-+				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
-+				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
-+				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000000), 0x2 },
-+				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
- 				.fs_len = 4,
- 			},
- 		},
-@@ -1598,7 +1598,7 @@ static int st_lsm6dsx_read_raw(struct iio_dev *iio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 0;
- 		*val2 = sensor->gain;
--		ret = IIO_VAL_INT_PLUS_MICRO;
-+		ret = IIO_VAL_INT_PLUS_NANO;
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -1836,13 +1836,33 @@ static ssize_t st_lsm6dsx_sysfs_scale_avail(struct device *dev,
- 
- 	fs_table = &hw->settings->fs_table[sensor->id];
- 	for (i = 0; i < fs_table->fs_len; i++)
--		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06u ",
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%09u ",
- 				 fs_table->fs_avl[i].gain);
- 	buf[len - 1] = '\n';
- 
- 	return len;
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1527f01a44f1..49868e080840 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -643,6 +643,21 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
  }
+ EXPORT_SYMBOL_GPL(iio_format_value);
  
-+static int st_lsm6dsx_write_raw_get_fmt(struct iio_dev *indio_dev,
-+					struct iio_chan_spec const *chan,
-+					long mask)
++static ssize_t iio_read_channel_label(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
 +{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_ANGL_VEL:
-+		case IIO_ACCEL:
-+			return IIO_VAL_INT_PLUS_NANO;
-+		default:
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		}
-+	default:
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	}
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
 +
-+	return -EINVAL;
++	if (indio_dev->info->read_label)
++		return indio_dev->info->read_label(indio_dev,
++							this_attr->c,
++							buf);
++	else
++		return -EINVAL;
 +}
 +
- static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(st_lsm6dsx_sysfs_sampling_frequency_avail);
- static IIO_DEVICE_ATTR(in_accel_scale_available, 0444,
- 		       st_lsm6dsx_sysfs_scale_avail, NULL, 0);
-@@ -1868,6 +1888,7 @@ static const struct iio_info st_lsm6dsx_acc_info = {
- 	.read_event_config = st_lsm6dsx_read_event_config,
- 	.write_event_config = st_lsm6dsx_write_event_config,
- 	.hwfifo_set_watermark = st_lsm6dsx_set_watermark,
-+	.write_raw_get_fmt = st_lsm6dsx_write_raw_get_fmt,
- };
+ static ssize_t iio_read_channel_info(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+@@ -1111,6 +1126,25 @@ int __iio_add_chan_devattr(const char *postfix,
+ 	return ret;
+ }
  
- static struct attribute *st_lsm6dsx_gyro_attributes[] = {
-@@ -1885,6 +1906,7 @@ static const struct iio_info st_lsm6dsx_gyro_info = {
- 	.read_raw = st_lsm6dsx_read_raw,
- 	.write_raw = st_lsm6dsx_write_raw,
- 	.hwfifo_set_watermark = st_lsm6dsx_set_watermark,
-+	.write_raw_get_fmt = st_lsm6dsx_write_raw_get_fmt,
- };
++static int iio_device_add_channel_label(struct iio_dev *indio_dev,
++					 struct iio_chan_spec const *chan)
++{
++	int ret;
++
++	ret = __iio_add_chan_devattr("label",
++					chan,
++					&iio_read_channel_label,
++					NULL,
++					0,
++					IIO_SEPARATE,
++					&indio_dev->dev,
++					&indio_dev->channel_attr_list);
++	if (ret < 0)
++		return ret;
++
++	return 1;
++}
++
+ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+ 					 struct iio_chan_spec const *chan,
+ 					 enum iio_shared_by shared_by,
+@@ -1241,6 +1275,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+ 		return ret;
+ 	attrcount += ret;
  
- static int st_lsm6dsx_get_drdy_pin(struct st_lsm6dsx_hw *hw, int *drdy_pin)
++	if (indio_dev->info->read_label) {
++		ret = iio_device_add_channel_label(indio_dev, chan);
++		if (ret < 0)
++			return ret;
++		attrcount += ret;
++	}
++
+ 	if (chan->ext_info) {
+ 		unsigned int i = 0;
+ 		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index a1be82e74c93..58b151f5321d 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -362,6 +362,8 @@ struct iio_trigger; /* forward declaration */
+  *			and max. For lists, all possible values are enumerated.
+  * @write_raw:		function to write a value to the device.
+  *			Parameters are the same as for read_raw.
++ * @read_label:		function to request label name for a specified label,
++ *			for better channel identification.
+  * @write_raw_get_fmt:	callback function to query the expected
+  *			format/precision. If not set by the driver, write_raw
+  *			returns IIO_VAL_INT_PLUS_MICRO.
+@@ -420,6 +422,10 @@ struct iio_info {
+ 			 int val2,
+ 			 long mask);
+ 
++	int (*read_label)(struct iio_dev *indio_dev,
++			 struct iio_chan_spec const *chan,
++			 char *label);
++
+ 	int (*write_raw_get_fmt)(struct iio_dev *indio_dev,
+ 			 struct iio_chan_spec const *chan,
+ 			 long mask);
 -- 
-2.7.4
+2.17.1
+
+
+From 1e6dc76e6574c5b74e0ce22ba0e91d2e47aa8699 Mon Sep 17 00:00:00 2001
+From: Cristian Pop <cristian.pop@analog.com>
+Date: Wed, 16 Sep 2020 14:35:59 +0000
+Subject: [PATCH v4 2/3] iio:Documentation: Add documentation for label channel
+ attribute
+
+If a label is defined in the device tree for this channel add that to the
+channel specific attributes. This is useful for userspace to be able to
+identify an individual channel.
+
+Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
+ 1 file changed, 9 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index d3e53a6d8331..f2a9a03b8af9 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1697,6 +1697,15 @@ Description:
+ 
+ 		Raw counter device counters direction for channel Y.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/channel_label
++KernelVersion:	5.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Optional symbolic label to a device channel.
++		If a label is defined in the device tree for this channel add
++		that to the channel specific attributes. This is useful for
++		userspace to be able to identify an individual channel.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_phaseY_raw
+ KernelVersion:	4.18
+ Contact:	linux-iio@vger.kernel.org
+-- 
+2.17.1
+
+
+From c6cf59857fb3001ad831bc49ab7fce6c7a9e48ff Mon Sep 17 00:00:00 2001
+From: Cristian Pop <cristian.pop@analog.com>
+Date: Wed, 16 Sep 2020 15:19:57 +0000
+Subject: [PATCH v4 3/3] iio: adc: ad7768-1: Add channel label example
+
+This is a demo usage of new "label" attribute for channel.
+
+Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+---
+ drivers/iio/adc/ad7768-1.c | 49 ++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 49 insertions(+)
+
+diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
+index 0d132708c429..5ca9f9febb5a 100644
+--- a/drivers/iio/adc/ad7768-1.c
++++ b/drivers/iio/adc/ad7768-1.c
+@@ -161,6 +161,7 @@ struct ad7768_state {
+ 	struct completion completion;
+ 	struct iio_trigger *trig;
+ 	struct gpio_desc *gpio_sync_in;
++	const char **labels;
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+ 	 * transfer buffers to live in their own cache lines.
+@@ -407,6 +408,14 @@ static int ad7768_write_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static int ad7768_read_label(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, char *label)
++{
++	struct ad7768_state *st = iio_priv(indio_dev);
++
++	return sprintf(label, "%s\n", st->labels[chan->channel]);
++}
++
+ static struct attribute *ad7768_attributes[] = {
+ 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	NULL
+@@ -420,6 +429,7 @@ static const struct iio_info ad7768_info = {
+ 	.attrs = &ad7768_group,
+ 	.read_raw = &ad7768_read_raw,
+ 	.write_raw = &ad7768_write_raw,
++	.read_label = ad7768_read_label,
+ 	.debugfs_reg_access = &ad7768_reg_access,
+ };
+ 
+@@ -538,6 +548,41 @@ static void ad7768_clk_disable(void *data)
+ 	clk_disable_unprepare(st->mclk);
+ }
+ 
++static int ad7768_set_channel_label(struct iio_dev *indio_dev,
++						int num_channels)
++{
++	struct ad7768_state *st = iio_priv(indio_dev);
++	struct device *device = indio_dev->dev.parent;
++	struct fwnode_handle *fwnode;
++	struct fwnode_handle *child;
++	const char *label;
++	int crt_ch = 0;
++
++	st->labels = devm_kcalloc(indio_dev->dev.parent,
++					num_channels,
++					sizeof(**st->labels),
++					GFP_KERNEL);
++
++	if (!st->labels)
++		return -ENOMEM;
++
++	fwnode = dev_fwnode(device);
++	fwnode_for_each_child_node(fwnode, child) {
++		if (fwnode_property_read_u32(child, "reg", &crt_ch))
++			continue;
++
++		if (crt_ch >= num_channels)
++			continue;
++
++		if (fwnode_property_read_string(child, "label", &label))
++			continue;
++
++		st->labels[crt_ch] = label;
++	}
++
++	return 0;
++}
++
+ static int ad7768_probe(struct spi_device *spi)
+ {
+ 	struct ad7768_state *st;
+@@ -611,6 +656,10 @@ static int ad7768_probe(struct spi_device *spi)
+ 
+ 	init_completion(&st->completion);
+ 
++	ret = ad7768_set_channel_label(indio_dev, ARRAY_SIZE(ad7768_channels));
++	if (ret)
++		return ret;
++
+ 	ret = devm_request_irq(&spi->dev, spi->irq,
+ 			       &ad7768_interrupt,
+ 			       IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+-- 
+2.17.1
 
