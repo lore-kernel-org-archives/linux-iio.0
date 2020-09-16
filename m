@@ -2,163 +2,95 @@ Return-Path: <SRS0=9OhX=CZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A52DC43461
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 20:15:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3834BC2BB84
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 20:22:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C0572064E
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 20:15:53 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="0JMkt+X6"
+	by mail.kernel.org (Postfix) with ESMTP id E90E321941
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 20:22:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1600287749;
+	bh=fHr8s2aEyDjlxUpOJp1EETFRNOt+FYCr0P+W9KOp4jM=;
+	h=Date:From:To:Subject:References:In-Reply-To:List-ID:From;
+	b=oIHC9EXPrn+s3kHjtSXWvls0Um/7fO3TGIxbRESlD9CRPt/DGZH+DmL/oUPgPt7lD
+	 Q5/XrYmdmekMbdiQ2ymz2kAWclPYFTtoeAdUbhKkFfamS6SPAU3NSlaqayFEy8c8K/
+	 h/uy+mZbXxMmzWwXMGo+fjmEVFc7mn7+jyFCDLv8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727195AbgIPUPr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Sep 2020 16:15:47 -0400
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:42012 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727167AbgIPRbE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 13:31:04 -0400
-Received: from pps.filterd (m0046037.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08GBhSp1016396;
-        Wed, 16 Sep 2020 13:43:34 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=STMicroelectronics;
- bh=FE2nDTAv+JDtwnTgqT9lmJ23Dlw6u2h28rI8qGiC8eA=;
- b=0JMkt+X6hSq5eyOmTlt6qSszqkSKHir9kkhUpVC8VsHmu9cacFKA5GYNWhNNTlRJ4NO/
- IxTzi7PqAK127kreoR5ban1a7iisplIV5NLr6BCJ4L3r1VSfLpIopnWFaq7tgpbV1RQf
- q8OEDLGNl70pYMiGhbY4B9wmL9ehyU7lYBZ7w3pyuUPOmh0Q31w8ActzENcfyoHc2uEQ
- /m2/0ksH8fAzBb1MH/eCVmmq047TvXQZ+rsftbjtLznCJTIWvyqit8W+V3bvmgCSSBXy
- MzwzvKd2G9l487+I5xfX7q6DkqiNykwp0+b61uRe0OtKdg1De+0wo/UAHMX49/v4j2wj zQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 33k691bpdr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 16 Sep 2020 13:43:34 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 55C68100143;
-        Wed, 16 Sep 2020 12:18:04 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag5node3.st.com [10.75.127.15])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 3C1E8212FB3;
-        Wed, 16 Sep 2020 12:18:04 +0200 (CEST)
-Received: from [10.48.1.149] (10.75.127.47) by SFHDAG5NODE3.st.com
- (10.75.127.15) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 16 Sep
- 2020 12:18:03 +0200
-Subject: Re: [PATCH v2] iio: stm32-dac: Replace indio_dev->mlock with own
- device lock
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        <linux-iio@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <olivier.moysan@st.com>,
-        Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-References: <20200826063850.47625-1-alexandru.ardelean@analog.com>
- <20200916092349.75647-1-alexandru.ardelean@analog.com>
-From:   Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <b8d5cbb5-f393-6a5f-19cd-afa983b9f10a@st.com>
-Date:   Wed, 16 Sep 2020 12:18:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1728320AbgIPUWI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Sep 2020 16:22:08 -0400
+Received: from mail-wm1-f44.google.com ([209.85.128.44]:39134 "EHLO
+        mail-wm1-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726818AbgIPR3Q (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 13:29:16 -0400
+Received: by mail-wm1-f44.google.com with SMTP id b79so3869120wmb.4;
+        Wed, 16 Sep 2020 10:28:56 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=E47fYlcJkUJ8l3iZf6clnfI3aqBpmWj9zsUvUFymYP4=;
+        b=chxz123lmU+GQnQtaRRx4Z2afnjUpzAn6iS26p+C4Qs4L/fuCtlhx4Dbrucl8dZZSU
+         QNqwpbK2kvxct99Q2OVrXa4Ye+3bi9e2VxRLv6wSG4ZbwhW8ZiH21UWOrM3LihhQjram
+         t2Kc8qC38zmMGUU5sU7h5tM57ZegawoVfZErS9j1MwckA8JUDigteO9vGVQOIvKw9/YD
+         +3RTZ61XXJV/9XCZ06CnGqvi6I3dLScuj0LQR9wMOaJr1O9qs5OGN6YFto/gZRSTh9tV
+         YlxjcUem5qBj9+ONIVVItoAxscWXUxyCWnJYLvJHjh4FJ/UGU7ihrFYbPl89l3F8Ifu3
+         eVqQ==
+X-Gm-Message-State: AOAM532rwa3glTN/hbZeuTMRK34crta/78oT4dN11UbUpVeK00eQ51bK
+        CUUn+ps6TJJ3GeAuUzWnB8E5aYk218IvFtCC
+X-Google-Smtp-Source: ABdhPJweKg9u7dlDmDehpToHUH+j70OfpazvGEE4rWT8Uv/tAw2q657tC8ru2bXuXynBmdptDnBrNA==
+X-Received: by 2002:a1c:4d14:: with SMTP id o20mr5723207wmh.74.1600276608983;
+        Wed, 16 Sep 2020 10:16:48 -0700 (PDT)
+Received: from kozik-lap ([194.230.155.191])
+        by smtp.googlemail.com with ESMTPSA id a13sm6462323wme.26.2020.09.16.10.16.46
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Wed, 16 Sep 2020 10:16:47 -0700 (PDT)
+Date:   Wed, 16 Sep 2020 19:16:44 +0200
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Kukjin Kim <kgene@kernel.org>, Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        =?utf-8?B?UGF3ZcWC?= Chmiel <pawel.mikolaj.chmiel@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [RFT 21/25] ARM: dts: s5pv210: move fixed regulators under root
+ node in Goni
+Message-ID: <20200916171644.GF19427@kozik-lap>
+References: <20200907161141.31034-1-krzk@kernel.org>
+ <20200907161141.31034-22-krzk@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20200916092349.75647-1-alexandru.ardelean@analog.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG3NODE3.st.com (10.75.127.9) To SFHDAG5NODE3.st.com
- (10.75.127.15)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-16_06:2020-09-16,2020-09-16 signatures=0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20200907161141.31034-22-krzk@kernel.org>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 9/16/20 11:23 AM, Alexandru Ardelean wrote:
-> From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+On Mon, Sep 07, 2020 at 06:11:37PM +0200, Krzysztof Kozlowski wrote:
+> The fixed regulators are kept under dedicated "regulators" node but this
+> causes multiple dtschema warnings:
 > 
-> As part of the general cleanup of indio_dev->mlock, this change replaces
-> it with a local lock. The lock protects against potential races when
-> reading the CR reg and then updating, so that the state of pm_runtime
-> is consistent between the two operations.
+>   regulators: $nodename:0: 'regulators' does not match '^([a-z][a-z0-9\\-]+-bus|bus|soc|axi|ahb|apb)(@[0-9a-f]+)?$'
+>   regulators: #size-cells:0:0: 0 is not one of [1, 2]
+>   regulators: fixed-regulator@0:reg:0: [0] is too short
+>   regulators: fixed-regulator@1:reg:0: [1] is too short
+>   regulators: fixed-regulator@2:reg:0: [2] is too short
+>   regulators: fixed-regulator@3:reg:0: [3] is too short
 > 
-> This is part of a bigger cleanup.
-> Link: https://lore.kernel.org/linux-iio/CA+U=Dsoo6YABe5ODLp+eFNPGFDjk5ZeQEceGkqjxXcVEhLWubw@mail.gmail.com/
-> 
-> Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
 > ---
->  drivers/iio/dac/stm32-dac.c | 13 +++++++++----
->  1 file changed, 9 insertions(+), 4 deletions(-)
+>  arch/arm/boot/dts/s5pv210-goni.dts | 64 +++++++++++++-----------------
 
-Hi Alexandru,
-
-Many thanks for this updated patch,
-
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Applied.
 
 Best regards,
-Fabrice
+Krzysztof
 
-> 
-> diff --git a/drivers/iio/dac/stm32-dac.c b/drivers/iio/dac/stm32-dac.c
-> index 092c796fa3d9..12dec68c16f7 100644
-> --- a/drivers/iio/dac/stm32-dac.c
-> +++ b/drivers/iio/dac/stm32-dac.c
-> @@ -26,9 +26,12 @@
->  /**
->   * struct stm32_dac - private data of DAC driver
->   * @common:		reference to DAC common data
-> + * @lock:		lock to protect against potential races when reading
-> + *			and update CR, to keep it in sync with pm_runtime
->   */
->  struct stm32_dac {
->  	struct stm32_dac_common *common;
-> +	struct mutex		lock;
->  };
->  
->  static int stm32_dac_is_enabled(struct iio_dev *indio_dev, int channel)
-> @@ -58,10 +61,10 @@ static int stm32_dac_set_enable_state(struct iio_dev *indio_dev, int ch,
->  	int ret;
->  
->  	/* already enabled / disabled ? */
-> -	mutex_lock(&indio_dev->mlock);
-> +	mutex_lock(&dac->lock);
->  	ret = stm32_dac_is_enabled(indio_dev, ch);
->  	if (ret < 0 || enable == !!ret) {
-> -		mutex_unlock(&indio_dev->mlock);
-> +		mutex_unlock(&dac->lock);
->  		return ret < 0 ? ret : 0;
->  	}
->  
-> @@ -69,13 +72,13 @@ static int stm32_dac_set_enable_state(struct iio_dev *indio_dev, int ch,
->  		ret = pm_runtime_get_sync(dev);
->  		if (ret < 0) {
->  			pm_runtime_put_noidle(dev);
-> -			mutex_unlock(&indio_dev->mlock);
-> +			mutex_unlock(&dac->lock);
->  			return ret;
->  		}
->  	}
->  
->  	ret = regmap_update_bits(dac->common->regmap, STM32_DAC_CR, msk, en);
-> -	mutex_unlock(&indio_dev->mlock);
-> +	mutex_unlock(&dac->lock);
->  	if (ret < 0) {
->  		dev_err(&indio_dev->dev, "%s failed\n", en ?
->  			"Enable" : "Disable");
-> @@ -327,6 +330,8 @@ static int stm32_dac_probe(struct platform_device *pdev)
->  	indio_dev->info = &stm32_dac_iio_info;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  
-> +	mutex_init(&dac->lock);
-> +
->  	ret = stm32_dac_chan_of_init(indio_dev);
->  	if (ret < 0)
->  		return ret;
-> 
