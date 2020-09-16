@@ -2,102 +2,72 @@ Return-Path: <SRS0=9OhX=CZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6F8C433E2
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:21:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0724C43461
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:37:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A523C21D90
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:21:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600280489;
-	bh=Ju+mDAYgGgYm5szp6plQMoO737lg/ofifEnvRT90SNI=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=yJpbivoGrruziZeRp9VO+TLDqf5UbQ92muMMuj6TxBhJWVC0PayVkZEn3k9wYg6vO
-	 VuiN1rWUxCF/zzoBlqF/Czv6syi9L8BqyzrtLzvKFO4CChuoju5W5E+QYVDUhGVOht
-	 gbVIqQfDPY/Xq1h5Y6PyL7VxsWujJ/SYP27NppCI=
+	by mail.kernel.org (Postfix) with ESMTP id 8D86320936
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:37:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727830AbgIPSV2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Sep 2020 14:21:28 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52636 "EHLO mail.kernel.org"
+        id S1728082AbgIPShK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Sep 2020 14:37:10 -0400
+Received: from ms.lwn.net ([45.79.88.28]:41692 "EHLO ms.lwn.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727816AbgIPSKo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 16 Sep 2020 14:10:44 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        id S1728229AbgIPSg7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 16 Sep 2020 14:36:59 -0400
+Received: from lwn.net (localhost [127.0.0.1])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D47AB2083B;
-        Wed, 16 Sep 2020 18:10:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600279827;
-        bh=Ju+mDAYgGgYm5szp6plQMoO737lg/ofifEnvRT90SNI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uigVu9nT/DR8STMbyQA9tMT/XkN6el3Pw15dPTt8xh/BbT/YlbLT2pDFr6UdeUYo0
-         HbpOF80HJsVzvdniwdV2k9f1EtOg/eNVhYp8gLWbIR5hvLedQgUjzrboKXUgQNs/Is
-         55NRPAOwYxB4o39VSGRCT1FcBTK+778DMRhEPGqA=
-Date:   Wed, 16 Sep 2020 19:10:26 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Liu Shixin <liushixin2@huawei.com>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH -next] iio: adc: palmas_gpadc: use
- module_platform_driver to simplify the code
-Message-ID: <20200916191026.56932e1c@archlinux>
-In-Reply-To: <20200914065401.3726354-1-liushixin2@huawei.com>
-References: <20200914065401.3726354-1-liushixin2@huawei.com>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        by ms.lwn.net (Postfix) with ESMTPSA id 9A70F2E5;
+        Wed, 16 Sep 2020 18:36:50 +0000 (UTC)
+Date:   Wed, 16 Sep 2020 12:36:49 -0600
+From:   Jonathan Corbet <corbet@lwn.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Lee Jones <lee.jones@linaro.org>
+Subject: Re: [PATCH] kernel-doc: add support for ____cacheline_aligned
+ attribute
+Message-ID: <20200916123649.20d7d999@lwn.net>
+In-Reply-To: <20200910185415.653139-1-jic23@kernel.org>
+References: <20200910185415.653139-1-jic23@kernel.org>
+Organization: LWN.net
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 14 Sep 2020 14:54:01 +0800
-Liu Shixin <liushixin2@huawei.com> wrote:
+On Thu, 10 Sep 2020 19:54:15 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> module_platform_driver() makes the code simpler by eliminating
-> boilerplate code.
+> Subroutine dump_struct uses type attributes to check if the struct
+> syntax is valid. Then, it removes all attributes before using it for
+> output. `____cacheline_aligned` is an attribute that is
+> not included in both steps. Add it, since it is used by kernel structs.
 > 
-> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
-
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to see if we missed anything.
-
-Thanks,
-
-Jonathan
-
+> Based on previous patch to add ____cacheline_aligned_in_smp.
+> Motivated by patches to reorder this attribute to before the
+> variable name.   Whilst we could do that in all cases, that would
+> be a massive change and it is more common in the kernel to place
+> this particular attribute after the variable name. A quick grep
+> suggests approximately 400 instances of which 341 have this
+> attribute just before a semicolon and hence after the variable name.
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Lee Jones <lee.jones@linaro.org>
 > ---
->  drivers/iio/adc/palmas_gpadc.c | 13 +------------
->  1 file changed, 1 insertion(+), 12 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-> index 1ca6570be66a..889b88768b63 100644
-> --- a/drivers/iio/adc/palmas_gpadc.c
-> +++ b/drivers/iio/adc/palmas_gpadc.c
-> @@ -834,18 +834,7 @@ static struct platform_driver palmas_gpadc_driver = {
->  		.of_match_table = of_palmas_gpadc_match_tbl,
->  	},
->  };
-> -
-> -static int __init palmas_gpadc_init(void)
-> -{
-> -	return platform_driver_register(&palmas_gpadc_driver);
-> -}
-> -module_init(palmas_gpadc_init);
-> -
-> -static void __exit palmas_gpadc_exit(void)
-> -{
-> -	platform_driver_unregister(&palmas_gpadc_driver);
-> -}
-> -module_exit(palmas_gpadc_exit);
-> +module_platform_driver(palmas_gpadc_driver);
->  
->  MODULE_DESCRIPTION("palmas GPADC driver");
->  MODULE_AUTHOR("Pradeep Goudagunta<pgoudagunta@nvidia.com>");
+> Note I haven't figured out what this is actually doing and hence the
+> patch is done by copying the changes made for ____cacheline_aligned_in_smp.
+> It seems to work. :)
 
+The little secret is that *nobody* really understands what all the regexes
+in kernel-doc do :)  Anyway, it does indeed seem to work; applied, thanks.
+
+jon
