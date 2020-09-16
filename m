@@ -2,38 +2,61 @@ Return-Path: <SRS0=9OhX=CZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 77BA6C43461
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:00:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E361EC433E2
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:04:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2222C20732
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:00:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 994B72083B
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:04:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1600279466;
+	bh=wekwBAIKPu1Rz5oUbsaznCNgfQb4fGuy2YA7PTMymvk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=AW3SXlbcIFkjYNVwtvfmoZPghimT0l5jYGWQwPAfvrHvQOc2wZpXJUfhul68n+mMl
+	 1aDMVKrfy4AMOBAaeoMSufZbgnGNOxlLYhwXtwCAkqemF6WfHTrQf7u0yyjUoF5bYE
+	 9/RD9zZNXcop4htgX3+mWwVjwerzmImUJbhZhQtg=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727718AbgIPSAX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Sep 2020 14:00:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37604 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727714AbgIPSAB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 14:00:01 -0400
-Received: from saturn.retrosnub.co.uk (saturn.retrosnub.co.uk [IPv6:2a00:1098:86::1:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BD95C06174A;
-        Wed, 16 Sep 2020 11:00:00 -0700 (PDT)
+        id S1727102AbgIPSEM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Sep 2020 14:04:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49232 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727614AbgIPSDa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 16 Sep 2020 14:03:30 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id C8A3F9E003C;
-        Wed, 16 Sep 2020 18:59:36 +0100 (BST)
-Date:   Wed, 16 Sep 2020 18:59:36 +0100
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     linux-iio@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 0/2] dt-bindings: yaml conversions of some simple ADC
- bindings.
-Message-ID: <20200916185936.12a1e790@archlinux>
-In-Reply-To: <20200830161154.3201-1-jic23@kernel.org>
-References: <20200830161154.3201-1-jic23@kernel.org>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6CDC32137B;
+        Wed, 16 Sep 2020 18:03:27 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600279409;
+        bh=wekwBAIKPu1Rz5oUbsaznCNgfQb4fGuy2YA7PTMymvk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=SVFaNdjRvlX2xA5CJGz4fdD1CDDM/wAVxm3wfv9vsDjqVmFBZqoj/HoT/8KZEifIP
+         V0C+2baqHooYe68TrshZU7HmpYZ745fbWOYXd66Lcj3vt1sMRGimbCHk2Uwu9xFxzt
+         gn7DIsychTc3yYLT6scbS7MrQ0q0Y11qrN0qwTMo=
+Date:   Wed, 16 Sep 2020 19:03:26 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzk@kernel.org>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Rob Herring <robh@kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Kukjin Kim <kgene@kernel.org>,
+        linux-samsung-soc@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: exynos-adc: require
+ second interrupt with touch screen
+Message-ID: <20200916190326.3095e945@archlinux>
+In-Reply-To: <20200916061747.GB5719@kozik-lap>
+References: <20200910161933.9156-1-krzk@kernel.org>
+        <20200915194444.GA2384148@bogus>
+        <20200916061747.GB5719@kozik-lap>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -43,32 +66,45 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 30 Aug 2020 17:11:52 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Wed, 16 Sep 2020 08:17:47 +0200
+Krzysztof Kozlowski <krzk@kernel.org> wrote:
 
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> On Tue, Sep 15, 2020 at 01:44:44PM -0600, Rob Herring wrote:
+> > On Thu, 10 Sep 2020 18:19:32 +0200, Krzysztof Kozlowski wrote:  
+> > > The ADC in S3C/S5P/Exynos SoCs can be used also for handling touch
+> > > screen.  In such case the second interrupt is required.  This second
+> > > interrupt can be anyway provided, even without touch screens.  This
+> > > fixes dtbs_check warnings like:
+> > > 
+> > >   arch/arm/boot/dts/s5pv210-aquila.dt.yaml: adc@e1700000: interrupts: [[23], [24]] is too long
+> > > 
+> > > Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+> > > Acked-by: Jonathan Cameron <Jonathan.Cameron@huwei.com>
+> > > 
+> > > ---
+> > > 
+> > > Changes since v1:
+> > > 1. Fix if:has-touchscreen, as pointed by Rob.
+> > > 2. Add Ack.
+> > > ---
+> > >  .../bindings/iio/adc/samsung,exynos-adc.yaml       | 14 +++++++++++++-
+> > >  1 file changed, 13 insertions(+), 1 deletion(-)
+> > >   
+> > 
+> > Reviewed-by: Rob Herring <robh@kernel.org>  
 > 
-> Remaining binding conversions for which changes were needed based on v1
-> reviews.
-Series applied.
+> Jonathan,
+> 
+> Could you pick up these two?
+Done.  Applied to the togreg branch of iio.git and pushed out
+as testing for the autobuilders to possibly poke them.
 
 Thanks,
 
 Jonathan
 
 > 
-> Jonathan Cameron (2):
->   dt-bindings: iio: adc: ti,adc12138 yaml conversion.
->   dt-bindings: iio: adc: ti,ads7950 binding conversion
-> 
->  .../bindings/iio/adc/ti,adc12138.yaml         | 86 +++++++++++++++++++
->  .../bindings/iio/adc/ti,ads7950.yaml          | 65 ++++++++++++++
->  .../bindings/iio/adc/ti-adc12138.txt          | 37 --------
->  .../bindings/iio/adc/ti-ads7950.txt           | 23 -----
->  4 files changed, 151 insertions(+), 60 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,adc12138.yaml
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads7950.yaml
->  delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
->  delete mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads7950.txt
+> Best regards,
+> Krzysztof
 > 
 
