@@ -2,108 +2,92 @@ Return-Path: <SRS0=9OhX=CZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB6E3C433E2
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 07:45:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFB70C43461
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 08:22:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5B7BC2064B
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 07:45:38 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="QNqrft4E"
+	by mail.kernel.org (Postfix) with ESMTP id BCA052083B
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 08:22:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726369AbgIPHpf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Sep 2020 03:45:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54220 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726314AbgIPHpd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 03:45:33 -0400
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9A482C06174A
-        for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2020 00:45:32 -0700 (PDT)
-Received: by mail-lf1-x144.google.com with SMTP id b22so5851514lfs.13
-        for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2020 00:45:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=vOVo1u3ISodBoRQj0xeoYhbegmTCRvXHeSQSNZhMTiE=;
-        b=QNqrft4Ee36StNvgvhWe3cXRap/zmqfHBndqkGJaGqHegY96FQ9goA7TGkR81+7QOs
-         nIAbFXbce906Pti2cqcOeCmhwhyk/1yuH0Zn7AP1G0lA5yBgaPEZYgVpY4fN6kZNFqj1
-         T69SuJhPJpV7xiPiVe4G1wHSTiB9MlXEAG6/tqL0SfpXU5fv3V06Z/uGMycDpYul0jXQ
-         qTZA33omdvIm4q5lQGtXFakCAVX6GpENdvQdARuFXLF3n9MhXCdEb4CgeBFobCQoW31i
-         8Oa9m5M2dpxMmZIhgG+900U5yB6cLVR5oEa96dGRvsHlbhO2n0BQw67KZ6qP3FkXxiCy
-         rLCg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=vOVo1u3ISodBoRQj0xeoYhbegmTCRvXHeSQSNZhMTiE=;
-        b=g/IX92gL3MW8jukM60BptPPOf/uNTTcdycgEhaJSlRPUznbSzxTAl/OkblERb2lu11
-         5OEZgRLzP760PFapYE+2lhhcj7x6z6NQgY6MwiNkcN3Q5XT9IK2qI9phiJOL0SakEXap
-         9FsS/OZ2ASY9CbY3KOJz9sAvL5Sb2azyi6CIyNAm+44W/4RoS8xW4glld8xXiva793w3
-         ELn7jvuJKtrKgpx849UAklLB1PLiKZXQSYa78NjSxU6pOD1r1HNiykq0dCsdvRE/2BRl
-         oSVZIHR5kpEo3nj+UBbQXTaecA8Y2jVhRk2UNNcjX/Dua8UQqoeHJYpvxtJ7MBzRjaW4
-         G4EQ==
-X-Gm-Message-State: AOAM530WNbdWHeaa7Y4e23UbdoJrkgtNVdLYIWrjetTk5BB8AWah2q3k
-        V6CQ4v6sqiSINhwhyX/fpoOpLp7slpcdokaV
-X-Google-Smtp-Source: ABdhPJyqEuFgsUmKXu7SN5bpPFsahMoQ+IKpWv8R1qvkfrQj2ijyDV5fCybj2R23chOqwj72Fc5Hew==
-X-Received: by 2002:a19:4085:: with SMTP id n127mr6936054lfa.425.1600242330877;
-        Wed, 16 Sep 2020 00:45:30 -0700 (PDT)
-Received: from localhost.localdomain ([193.201.216.203])
-        by smtp.gmail.com with ESMTPSA id t2sm4442845lff.157.2020.09.16.00.45.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Sep 2020 00:45:30 -0700 (PDT)
-From:   Ivan Drobyshevskyi <drobyshevskyi@gmail.com>
-To:     linux-iio@vger.kernel.org, jic23@kernel.org
-Cc:     songqiang1304521@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Ivan Drobyshevskyi <drobyshevskyi@gmail.com>
-Subject: [PATCH v2 1/2] dt-bindings: iio: proximity: vl53l0x: Add IRQ support
-Date:   Wed, 16 Sep 2020 10:44:57 +0300
-Message-Id: <20200916074458.873359-1-drobyshevskyi@gmail.com>
-X-Mailer: git-send-email 2.26.0
-In-Reply-To: <20200913113357.47e0c0a1@archlinux>
-References: <20200913113357.47e0c0a1@archlinux>
+        id S1726392AbgIPIWb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Sep 2020 04:22:31 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:63568 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726161AbgIPIWb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 04:22:31 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08G8IISf023138;
+        Wed, 16 Sep 2020 04:22:28 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33k5q51q38-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 16 Sep 2020 04:22:28 -0400
+Received: from ASHBMBX8.ad.analog.com (ashbmbx8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 08G8MRJV013259
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 16 Sep 2020 04:22:27 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 16 Sep 2020 04:22:35 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Wed, 16 Sep 2020 04:22:35 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 16 Sep 2020 04:22:34 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08G8MNne019773;
+        Wed, 16 Sep 2020 04:22:24 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: adc: ad9467: return ENODEV vs EINVAL in ad9467_setup()
+Date:   Wed, 16 Sep 2020 11:22:21 +0300
+Message-ID: <20200916082221.72851-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-16_02:2020-09-15,2020-09-16 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
+ impostorscore=0 mlxscore=0 malwarescore=0 phishscore=0 mlxlogscore=873
+ lowpriorityscore=0 suspectscore=0 priorityscore=1501 bulkscore=0
+ spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009160061
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Since IRQ support was added to the driver, update bindings accordingly.
+The proper error code should be ENODEV (vs EINVAL) in case the chip ID
+isn't recognized.
 
-Signed-off-by: Ivan Drobyshevskyi <drobyshevskyi@gmail.com>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
-(no changes since v1)
+ drivers/iio/adc/ad9467.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt b/Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt
-index aac5f621f..dfe00eb96 100644
---- a/Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt
-+++ b/Documentation/devicetree/bindings/iio/proximity/vl53l0x.txt
-@@ -4,9 +4,15 @@ Required properties:
- 	- compatible: must be "st,vl53l0x"
- 	- reg: i2c address where to find the device
+diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
+index 1e8fd83b9bc2..8a6682b567be 100644
+--- a/drivers/iio/adc/ad9467.c
++++ b/drivers/iio/adc/ad9467.c
+@@ -324,7 +324,7 @@ static int ad9467_setup(struct ad9467_state *st, unsigned int chip_id)
+ 				  AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT;
+ 		return 0;
+ 	default:
+-		return -EINVAL;
++		return -ENODEV;
+ 	}
+ }
  
-+Optional properties:
-+	- interrupts:	Interrupt for notifying that new measurement is ready.
-+			If no interrupt is specified, polling is used.
-+
- Example:
- 
- vl53l0x@29 {
- 	compatible = "st,vl53l0x";
- 	reg = <0x29>;
-+	interrupt-parent = <&gpio>;
-+	interrupts = <23 IRQ_TYPE_EDGE_FALLING>;
- };
 -- 
-2.26.0
+2.17.1
 
