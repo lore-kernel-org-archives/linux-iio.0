@@ -7,48 +7,47 @@ X-Spam-Status: No, score=-14.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36144C43461
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:18:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD6F8C433E2
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:21:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E37A621D43
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:18:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A523C21D90
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:21:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600280317;
-	bh=RYA2LrqTsqrb7hEDg4AHEnfPPnO9ZBUXZ0TGxhqVARc=;
+	s=default; t=1600280489;
+	bh=Ju+mDAYgGgYm5szp6plQMoO737lg/ofifEnvRT90SNI=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=PxLd2aM+QhPmV+2PyuOpoNZdNTcZwbpuonPR9DR/0x5kj3rd4jNDMX0BlcQhqvlAP
-	 iwqgQ+7Cy6O8egAuDvB/TlWPxTLoTM1JJyzH6QkdRFtwVREkDI+pcpU775OLX+kXcV
-	 gbPtDwvu0Gjsfg8B4Zzw4BZAKBDuzCr3FLuK1yHo=
+	b=yJpbivoGrruziZeRp9VO+TLDqf5UbQ92muMMuj6TxBhJWVC0PayVkZEn3k9wYg6vO
+	 VuiN1rWUxCF/zzoBlqF/Czv6syi9L8BqyzrtLzvKFO4CChuoju5W5E+QYVDUhGVOht
+	 gbVIqQfDPY/Xq1h5Y6PyL7VxsWujJ/SYP27NppCI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727901AbgIPSSI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Sep 2020 14:18:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54474 "EHLO mail.kernel.org"
+        id S1727830AbgIPSV2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Sep 2020 14:21:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52636 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727899AbgIPSSD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 16 Sep 2020 14:18:03 -0400
+        id S1727816AbgIPSKo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 16 Sep 2020 14:10:44 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2E45821655;
-        Wed, 16 Sep 2020 18:18:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D47AB2083B;
+        Wed, 16 Sep 2020 18:10:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600280282;
-        bh=RYA2LrqTsqrb7hEDg4AHEnfPPnO9ZBUXZ0TGxhqVARc=;
+        s=default; t=1600279827;
+        bh=Ju+mDAYgGgYm5szp6plQMoO737lg/ofifEnvRT90SNI=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=weYbHppDCrwYigvxNzFvcXpvJJT9ohm168FMXhRF34I2B0QXIuLTU78BOBxx0ctSz
-         0XPZ17WLiS/WQeeIr/AtQoMWi/n66lqxwbUmRR/xpOsJtp3llOJEqb8t/ufX2G/WgK
-         t2hIYQEN6FC8J4NJYlB5rFylTFXC4VhFPv02H0FA=
-Date:   Wed, 16 Sep 2020 19:17:56 +0100
+        b=uigVu9nT/DR8STMbyQA9tMT/XkN6el3Pw15dPTt8xh/BbT/YlbLT2pDFr6UdeUYo0
+         HbpOF80HJsVzvdniwdV2k9f1EtOg/eNVhYp8gLWbIR5hvLedQgUjzrboKXUgQNs/Is
+         55NRPAOwYxB4o39VSGRCT1FcBTK+778DMRhEPGqA=
+Date:   Wed, 16 Sep 2020 19:10:26 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     linux-amlogic@lists.infradead.org, linux-iio@vger.kernel.org,
-        lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: meson-saradc: Make the of_device_id array
- style consistent
-Message-ID: <20200916191756.6f53853a@archlinux>
-In-Reply-To: <20200915192621.13202-1-martin.blumenstingl@googlemail.com>
-References: <20200915192621.13202-1-martin.blumenstingl@googlemail.com>
+To:     Liu Shixin <liushixin2@huawei.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH -next] iio: adc: palmas_gpadc: use
+ module_platform_driver to simplify the code
+Message-ID: <20200916191026.56932e1c@archlinux>
+In-Reply-To: <20200914065401.3726354-1-liushixin2@huawei.com>
+References: <20200914065401.3726354-1-liushixin2@huawei.com>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,58 +57,47 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 15 Sep 2020 21:26:21 +0200
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+On Mon, 14 Sep 2020 14:54:01 +0800
+Liu Shixin <liushixin2@huawei.com> wrote:
 
-> Use only one line for the closing bracket of the last entry and the
-> opening bracket for the next one to keep the style across the whole
-> array consistent. Also add a "sentinel" comment to the last entry and
-> remove the comma to ensure that there won't be any entry after it.
-> No functional changes.
+> module_platform_driver() makes the code simpler by eliminating
+> boilerplate code.
 > 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> Signed-off-by: Liu Shixin <liushixin2@huawei.com>
 
-Applied,
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to see if we missed anything.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/meson_saradc.c | 11 ++++-------
->  1 file changed, 4 insertions(+), 7 deletions(-)
+>  drivers/iio/adc/palmas_gpadc.c | 13 +------------
+>  1 file changed, 1 insertion(+), 12 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> index 95bd187de1cb..e03988698755 100644
-> --- a/drivers/iio/adc/meson_saradc.c
-> +++ b/drivers/iio/adc/meson_saradc.c
-> @@ -1150,16 +1150,13 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
->  	{
->  		.compatible = "amlogic,meson8-saradc",
->  		.data = &meson_sar_adc_meson8_data,
-> -	},
-> -	{
-> +	}, {
->  		.compatible = "amlogic,meson8b-saradc",
->  		.data = &meson_sar_adc_meson8b_data,
-> -	},
-> -	{
-> +	}, {
->  		.compatible = "amlogic,meson8m2-saradc",
->  		.data = &meson_sar_adc_meson8m2_data,
-> -	},
-> -	{
-> +	}, {
->  		.compatible = "amlogic,meson-gxbb-saradc",
->  		.data = &meson_sar_adc_gxbb_data,
->  	}, {
-> @@ -1175,7 +1172,7 @@ static const struct of_device_id meson_sar_adc_of_match[] = {
->  		.compatible = "amlogic,meson-g12a-saradc",
->  		.data = &meson_sar_adc_g12a_data,
+> diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
+> index 1ca6570be66a..889b88768b63 100644
+> --- a/drivers/iio/adc/palmas_gpadc.c
+> +++ b/drivers/iio/adc/palmas_gpadc.c
+> @@ -834,18 +834,7 @@ static struct platform_driver palmas_gpadc_driver = {
+>  		.of_match_table = of_palmas_gpadc_match_tbl,
 >  	},
-> -	{},
-> +	{ /* sentinel */ }
 >  };
->  MODULE_DEVICE_TABLE(of, meson_sar_adc_of_match);
+> -
+> -static int __init palmas_gpadc_init(void)
+> -{
+> -	return platform_driver_register(&palmas_gpadc_driver);
+> -}
+> -module_init(palmas_gpadc_init);
+> -
+> -static void __exit palmas_gpadc_exit(void)
+> -{
+> -	platform_driver_unregister(&palmas_gpadc_driver);
+> -}
+> -module_exit(palmas_gpadc_exit);
+> +module_platform_driver(palmas_gpadc_driver);
 >  
+>  MODULE_DESCRIPTION("palmas GPADC driver");
+>  MODULE_AUTHOR("Pradeep Goudagunta<pgoudagunta@nvidia.com>");
 
