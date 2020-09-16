@@ -2,72 +2,118 @@ Return-Path: <SRS0=9OhX=CZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0724C43461
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:37:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F272C43461
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:41:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8D86320936
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:37:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2E68220732
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 18:41:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728082AbgIPShK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Sep 2020 14:37:10 -0400
-Received: from ms.lwn.net ([45.79.88.28]:41692 "EHLO ms.lwn.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728229AbgIPSg7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 16 Sep 2020 14:36:59 -0400
-Received: from lwn.net (localhost [127.0.0.1])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ms.lwn.net (Postfix) with ESMTPSA id 9A70F2E5;
-        Wed, 16 Sep 2020 18:36:50 +0000 (UTC)
-Date:   Wed, 16 Sep 2020 12:36:49 -0600
-From:   Jonathan Corbet <corbet@lwn.net>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-doc@vger.kernel.org, linux-iio@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lee Jones <lee.jones@linaro.org>
-Subject: Re: [PATCH] kernel-doc: add support for ____cacheline_aligned
- attribute
-Message-ID: <20200916123649.20d7d999@lwn.net>
-In-Reply-To: <20200910185415.653139-1-jic23@kernel.org>
-References: <20200910185415.653139-1-jic23@kernel.org>
-Organization: LWN.net
+        id S1728078AbgIPSlV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Sep 2020 14:41:21 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2871 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1727917AbgIPSlM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 16 Sep 2020 14:41:12 -0400
+Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.106])
+        by Forcepoint Email with ESMTP id 3CB896F93DAAF862A3D7;
+        Wed, 16 Sep 2020 11:35:39 +0100 (IST)
+Received: from localhost (10.52.126.84) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1913.5; Wed, 16 Sep
+ 2020 11:35:38 +0100
+Date:   Wed, 16 Sep 2020 11:34:01 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Rob Herring <robh@kernel.org>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, "Shawn Guo" <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>, <fugang.duan@nxp.com>
+Subject: Re: [PATCH v2 01/20] dt-bindings:iio:adc:fsl,vf610-adc conversion
+ to yaml.
+Message-ID: <20200916113401.00006d86@Huawei.com>
+In-Reply-To: <CAL_JsqJhBFqi8=gku8sv5=8MTB1uCTq=DkuoVzEaUMxO1QhBAg@mail.gmail.com>
+References: <20200909175946.395313-1-jic23@kernel.org>
+        <20200909175946.395313-2-jic23@kernel.org>
+        <CAL_JsqJhBFqi8=gku8sv5=8MTB1uCTq=DkuoVzEaUMxO1QhBAg@mail.gmail.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.52.126.84]
+X-ClientProxiedBy: lhreml707-chm.china.huawei.com (10.201.108.56) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 10 Sep 2020 19:54:15 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Tue, 15 Sep 2020 14:45:58 -0600
+Rob Herring <robh@kernel.org> wrote:
 
-> Subroutine dump_struct uses type attributes to check if the struct
-> syntax is valid. Then, it removes all attributes before using it for
-> output. `____cacheline_aligned` is an attribute that is
-> not included in both steps. Add it, since it is used by kernel structs.
+> On Wed, Sep 9, 2020 at 12:02 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> >
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> >
+> > A simple conversion of this freescale ADC binding from txt to yaml.
+> > For maintainer I went with Fugang Duan as the original author of the
+> > binding. Would be great to have confirmation of this.
+> >
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Cc: Fugang Duan <B38611@freescale.com>
+> > Cc: Shawn Guo <shawnguo@kernel.org>
+> > Cc: Sascha Hauer <s.hauer@pengutronix.de>
+> > ---
+> >  .../bindings/iio/adc/fsl,vf610-adc.yaml       | 81 +++++++++++++++++++
+> >  .../devicetree/bindings/iio/adc/vf610-adc.txt | 36 ---------
+> >  2 files changed, 81 insertions(+), 36 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml b/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
+> > new file mode 100644
+> > index 000000000000..99b6b55fd0a3
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
+> > @@ -0,0 +1,81 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/adc/fsl,vf610-adc.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: ADC found on Freescale vf610 and similar SoCs
+> > +
+> > +maintainers:
+> > +  - Fugang Duan <B38611@freescale.com>  
 > 
-> Based on previous patch to add ____cacheline_aligned_in_smp.
-> Motivated by patches to reorder this attribute to before the
-> variable name.   Whilst we could do that in all cases, that would
-> be a massive change and it is more common in the kernel to place
-> this particular attribute after the variable name. A quick grep
-> suggests approximately 400 instances of which 341 have this
-> attribute just before a semicolon and hence after the variable name.
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Lee Jones <lee.jones@linaro.org>
-> ---
-> 
-> Note I haven't figured out what this is actually doing and hence the
-> patch is done by copying the changes made for ____cacheline_aligned_in_smp.
-> It seems to work. :)
+> I assume you got a bunch of bounces on this series, too? Looks like 1,
+> 4, 7, 9, 13, 16, 19, and 20 bounced. Please fix those addresses before
+> applying.
 
-The little secret is that *nobody* really understands what all the regexes
-in kernel-doc do :)  Anyway, it does indeed seem to work; applied, thanks.
+Yup. I missed them on v1, but have saved the set for v2 to be able to
+fix those I can.
 
-jon
+for some I can make a reasonable stab at a suitable maintainer
+as covered by a catch all.  For the others if I can't find a newer address
+I'll cover them myself until someone else steps up.
+I think that's just 9 and 13.  For 4 I didn't get a bounce but can add that
+to my list!
+
+For this particular one looks like fugang duan is still active but now
+with an NXP address so I'll update that. I've changed the cc on this
+mail.
+
+Thanks,
+
+Jonathan
+
+
+> 
+> Rob
+
+
