@@ -2,137 +2,254 @@ Return-Path: <SRS0=9OhX=CZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09CD7C433E2
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 07:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D378AC43461
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 07:45:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 96C1D206C9
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 07:08:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8E2F32064B
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Sep 2020 07:45:42 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (2048-bit key) header.d=microchip.com header.i=@microchip.com header.b="qayZ3XUt"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="WFlRZwiM"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726159AbgIPHIp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Sep 2020 03:08:45 -0400
-Received: from esa3.microchip.iphmx.com ([68.232.153.233]:35266 "EHLO
-        esa3.microchip.iphmx.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726128AbgIPHIo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 03:08:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
-  d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1600240123; x=1631776123;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=kRZu+9DWwWzAavQX/XVNxGelxwlfukUlgQUjykqNXgE=;
-  b=qayZ3XUtssFFSofofV9lDD9LARyKq+DrCf0ir+sruFo8BEZTlQ9OTpWu
-   gHL5mMhaFvLeUPXERjq9nLh7GXJiOZaG8/Gy2htd50LbWn1TINfAuLeEP
-   JhYv4aLlaSLzsJptYc17TCUxbWGVLNgctOIwijnjGxY2PcRhNAl4CcToE
-   aWOIrwt01ga0WPeBfESQhb+jN/Z7rBGCSo802NY22uMQJRQqhTeYTmffE
-   Lq2oZdT/AYdxCVLWGsC8Vkiy+zpo5kAtXSLMXzzZVk439erj69VIgia8b
-   DkPeX5+i58codOnG/2UMeiRSvD5SCvAqWEstuvPByAWQbdzmqmp1R0FwH
-   g==;
-IronPort-SDR: bBHBK/VezAlFji1zCJrRtPFxLjwXVigFQKQlyGvAIn6RS6fh9U3ofpmFJEG+57br9oPDxPI3qL
- ODMEn98DgMCAc5aHXy2cRa2YQs/AlGHowLxOnIwYsNWOO6KoNZNnURbHwoTmG6+v67FJinZOHG
- 2f5rLekrUieffD9dhrzmQUob/WFesDNjonG7ETXeLN39os0S/XI3Ht5kTzvo40IXMLuk/8AQI1
- rH6TObkb28putEQ+xFQK51msWCzLSnzsVk+vcfZYVN9AxxbPNC9x5Ry8VqvdR8yHmoMVxCjLJs
- zC4=
-X-IronPort-AV: E=Sophos;i="5.76,431,1592895600"; 
-   d="scan'208";a="91976494"
-Received: from smtpout.microchip.com (HELO email.microchip.com) ([198.175.253.82])
-  by esa3.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 16 Sep 2020 00:08:43 -0700
-Received: from chn-vm-ex04.mchp-main.com (10.10.85.152) by
- chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1979.3; Wed, 16 Sep 2020 00:08:26 -0700
-Received: from ROB-ULT-M18282.microchip.com (10.10.115.15) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server id
- 15.1.1979.3 via Frontend Transport; Wed, 16 Sep 2020 00:08:32 -0700
-From:   Eugen Hristev <eugen.hristev@microchip.com>
-To:     <jic23@kernel.org>, <alexandru.ardelean@analog.com>
-CC:     <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        Eugen Hristev <eugen.hristev@microchip.com>
-Subject: [PATCH] iio: adc: at91-sama5d2_adc: fix DMA conversion crash
-Date:   Wed, 16 Sep 2020 10:08:21 +0300
-Message-ID: <20200916070821.118374-1-eugen.hristev@microchip.com>
-X-Mailer: git-send-email 2.25.1
+        id S1726314AbgIPHpl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Sep 2020 03:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54240 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726408AbgIPHpj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Sep 2020 03:45:39 -0400
+Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1206AC06174A
+        for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2020 00:45:39 -0700 (PDT)
+Received: by mail-lf1-x143.google.com with SMTP id x69so5920070lff.3
+        for <linux-iio@vger.kernel.org>; Wed, 16 Sep 2020 00:45:38 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=9qIv3P/9a7ycxlsj+59N5vCClSShV8EKMZIfaSc7p2c=;
+        b=WFlRZwiMyE0EVRrs7UHyo+/4qfHmVTjWtVLDeSbVDwRd7nbGFhIEgt/ypARKRwlcpt
+         Dw6QP1w2m9u/cAQ6+K2hxM03RF2QX5E35o+R4eJjb6vMUm7l/XsaTjPA/xEyI210gwb1
+         N2oX23UVi6BTvoBGxZCWptGKO3cFOmLGM6X1O9a++zFVIDUm+ZAsT5foJrouhTn3dPbM
+         1tdoFZSjnb9GAhwbFD20uxpJJdW7VEzrqTh4C/u2gUx0eUUw7Y7fW+hFPtN/ia9CjxrH
+         BXCK8G25fMfPzM/aP42LOcSuxSRVocps0LOsm2KPOwwqOTkszhx0S0RCuO4rp72lsibe
+         9hMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=9qIv3P/9a7ycxlsj+59N5vCClSShV8EKMZIfaSc7p2c=;
+        b=a2rsmKDm3+D0ADIKAHKJEZNSPphb6kKgH/pKW5Q18NnF3LQcdyT2LNwwlHuW0+mULc
+         7AdTWOzzjHAuZ2/ie8cKJsigynYcYVpUkr7YvbU1RDmeMcNhleyV65im/KWctkwYwREX
+         8T4uMd6hJ5RpWfScrQsxexjFG5vb7DtxMBGmbNV50H+1tyY2QXt/LUtZurjmAWqnXuVU
+         3JVXVwJUEvdBfgQcbv1+j/W0v8DLady01mvZmgFWhOvl7yPZOOqXz8pRn/OHY7snNMUH
+         SaZqkfV9Nq0Ec66SjsPfZxLTog5FpRr9zHaCrNSiSNaMlo8qLkZvAtO6X/W4ZltKPcWm
+         CZhQ==
+X-Gm-Message-State: AOAM531c54Ut/4KcVaSRshEyEoc90fATv6rtYrtCBAx7yYTf7r8rmIzH
+        rF+N1mWT7C+jKVL927+5f9E6HtlGRZ68NHL9
+X-Google-Smtp-Source: ABdhPJw/oqlA9NOzWq8+9dw5aN/biEWZiVLsbdkOTv3psrI2wVTa3S3R23+0YFSQTuUSZGzBM/0Tog==
+X-Received: by 2002:a05:6512:1142:: with SMTP id m2mr6799144lfg.22.1600242337279;
+        Wed, 16 Sep 2020 00:45:37 -0700 (PDT)
+Received: from localhost.localdomain ([193.201.216.203])
+        by smtp.gmail.com with ESMTPSA id t2sm4442845lff.157.2020.09.16.00.45.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 16 Sep 2020 00:45:36 -0700 (PDT)
+From:   Ivan Drobyshevskyi <drobyshevskyi@gmail.com>
+To:     linux-iio@vger.kernel.org, jic23@kernel.org
+Cc:     songqiang1304521@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Ivan Drobyshevskyi <drobyshevskyi@gmail.com>
+Subject: [PATCH v2 2/2] iio: proximity: vl53l0x: Add IRQ support
+Date:   Wed, 16 Sep 2020 10:44:58 +0300
+Message-Id: <20200916074458.873359-2-drobyshevskyi@gmail.com>
+X-Mailer: git-send-email 2.26.0
+In-Reply-To: <20200916074458.873359-1-drobyshevskyi@gmail.com>
+References: <20200913113357.47e0c0a1@archlinux>
+ <20200916074458.873359-1-drobyshevskyi@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-After the move of the postenable code to preenable, the DMA start was
-done before the DMA init, which is not correct.
-The DMA is initialized in set_watermark. Because of this, we need to call
-the DMA start functions in set_watermark, after the DMA init, instead of
-preenable hook, when the DMA is not properly setup yet.
+VL53L0X can be configured to use interrupt pin (GPIO1)
+to notify host about readiness of new measurement.
 
-Fixes: f3c034f61775 ("iio: at91-sama5d2_adc: adjust iio_triggered_buffer_{predisable,postenable} positions")
-Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
+If interrupt pin is not specified, driver still uses polling.
+
+Signed-off-by: Ivan Drobyshevskyi <drobyshevskyi@gmail.com>
 ---
+changes since v1:
+ - remove explicit DT parsing for IRQ number, reuse i2c_client's irq
+ - add checking of i2c_smbus_write_byte_data return value
+ - fix checking of i2c_smbus_read_byte_data return value
+ - other styling/cosmetic changes as suggested by Jonathan
 
-Hi,
+ drivers/iio/proximity/vl53l0x-i2c.c | 104 +++++++++++++++++++++++++---
+ 1 file changed, 93 insertions(+), 11 deletions(-)
 
-This crash is in the kernel since 5.8-rc1
-
-Please have a look at discussion here:
-https://lore.kernel.org/linux-iio/CA+U=DsqRUtjjoe5nevP_wNxTgr27+O2V1h9w7d3QijBQ+5f3XA@mail.gmail.com/T/#t
-
-Thanks !
-
- drivers/iio/adc/at91-sama5d2_adc.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index de9583d6cddd..b5196797dcb8 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -884,7 +884,7 @@ static bool at91_adc_current_chan_is_touch(struct iio_dev *indio_dev)
- 			       AT91_SAMA5D2_MAX_CHAN_IDX + 1);
- }
+diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+index b48216cc1..e92a0bf79 100644
+--- a/drivers/iio/proximity/vl53l0x-i2c.c
++++ b/drivers/iio/proximity/vl53l0x-i2c.c
+@@ -4,18 +4,19 @@
+  *
+  * Copyright (C) 2016 STMicroelectronics Imaging Division.
+  * Copyright (C) 2018 Song Qiang <songqiang1304521@gmail.com>
++ * Copyright (C) 2020 Ivan Drobyshevskyi <drobyshevskyi@gmail.com>
+  *
+  * Datasheet available at
+  * <https://www.st.com/resource/en/datasheet/vl53l0x.pdf>
+  *
+  * Default 7-bit i2c slave address 0x29.
+  *
+- * TODO: FIFO buffer, continuous mode, interrupts, range selection,
+- * sensor ID check.
++ * TODO: FIFO buffer, continuous mode, range selection, sensor ID check.
+  */
  
--static int at91_adc_buffer_preenable(struct iio_dev *indio_dev)
-+static int at91_adc_buffer_prepare(struct iio_dev *indio_dev)
- {
- 	int ret;
- 	u8 bit;
-@@ -901,7 +901,7 @@ static int at91_adc_buffer_preenable(struct iio_dev *indio_dev)
- 	/* we continue with the triggered buffer */
- 	ret = at91_adc_dma_start(indio_dev);
- 	if (ret) {
--		dev_err(&indio_dev->dev, "buffer postenable failed\n");
-+		dev_err(&indio_dev->dev, "buffer prepare failed\n");
- 		return ret;
- 	}
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
++#include <linux/interrupt.h>
+ #include <linux/module.h>
  
-@@ -989,7 +989,6 @@ static int at91_adc_buffer_postdisable(struct iio_dev *indio_dev)
- }
+ #include <linux/iio/iio.h>
+@@ -29,14 +30,72 @@
+ #define VL_REG_SYSRANGE_MODE_TIMED			BIT(2)
+ #define VL_REG_SYSRANGE_MODE_HISTOGRAM			BIT(3)
  
- static const struct iio_buffer_setup_ops at91_buffer_setup_ops = {
--	.preenable = &at91_adc_buffer_preenable,
- 	.postdisable = &at91_adc_buffer_postdisable,
++#define VL_REG_SYSTEM_INTERRUPT_CONFIG_GPIO		0x0A
++#define VL_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY	BIT(2)
++
++#define VL_REG_SYSTEM_INTERRUPT_CLEAR			0x0B
++
+ #define VL_REG_RESULT_INT_STATUS			0x13
+ #define VL_REG_RESULT_RANGE_STATUS			0x14
+ #define VL_REG_RESULT_RANGE_STATUS_COMPLETE		BIT(0)
+ 
+ struct vl53l0x_data {
+ 	struct i2c_client *client;
++	struct completion completion;
  };
  
-@@ -1586,7 +1585,11 @@ static int at91_adc_set_watermark(struct iio_dev *indio_dev, unsigned int val)
- 	else if (val > 1)
- 		at91_adc_dma_init(to_platform_device(&indio_dev->dev));
++static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
++{
++	struct iio_dev *indio_dev = priv;
++	struct vl53l0x_data *data = iio_priv(indio_dev);
++
++	complete(&data->completion);
++
++	return IRQ_HANDLED;
++}
++
++static int vl53l0x_configure_irq(struct i2c_client *client,
++				 struct iio_dev *indio_dev)
++{
++	struct vl53l0x_data *data = iio_priv(indio_dev);
++	int ret;
++
++	ret = devm_request_irq(&client->dev, client->irq, vl53l0x_handle_irq,
++			IRQF_TRIGGER_FALLING, indio_dev->name, indio_dev);
++	if (ret) {
++		dev_err(&client->dev, "devm_request_irq error: %d\n", ret);
++		return ret;
++	}
++
++	ret = i2c_smbus_write_byte_data(data->client,
++			VL_REG_SYSTEM_INTERRUPT_CONFIG_GPIO,
++			VL_REG_SYSTEM_INTERRUPT_GPIO_NEW_SAMPLE_READY);
++	if (ret < 0)
++		dev_err(&client->dev, "failed to configure IRQ: %d\n", ret);
++
++	return ret;
++}
++
++static void vl53l0x_clear_irq(struct vl53l0x_data *data)
++{
++	struct device *dev = &data->client->dev;
++	int ret;
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					VL_REG_SYSTEM_INTERRUPT_CLEAR, 1);
++	if (ret < 0)
++		dev_err(dev, "failed to clear error irq: %d\n", ret);
++
++	ret = i2c_smbus_write_byte_data(data->client,
++					VL_REG_SYSTEM_INTERRUPT_CLEAR, 0);
++	if (ret < 0)
++		dev_err(dev, "failed to clear range irq: %d\n", ret);
++
++	ret = i2c_smbus_read_byte_data(data->client, VL_REG_RESULT_INT_STATUS);
++	if (ret < 0 || ret & 0x07)
++		dev_err(dev, "failed to clear irq: %d\n", ret);
++}
++
+ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
+ 				  const struct iio_chan_spec *chan,
+ 				  int *val)
+@@ -50,19 +109,31 @@ static int vl53l0x_read_proximity(struct vl53l0x_data *data,
+ 	if (ret < 0)
+ 		return ret;
  
--	return 0;
-+	/*
-+	 * We can start the DMA only after setting the watermark and
-+	 * having the DMA initialization completed
-+	 */
-+	return at91_adc_buffer_prepare(indio_dev);
+-	do {
+-		ret = i2c_smbus_read_byte_data(client,
+-					       VL_REG_RESULT_RANGE_STATUS);
++	if (data->client->irq) {
++		reinit_completion(&data->completion);
++
++		ret = wait_for_completion_timeout(&data->completion, HZ/10);
+ 		if (ret < 0)
+ 			return ret;
++		else if (ret == 0)
++			return -ETIMEDOUT;
+ 
+-		if (ret & VL_REG_RESULT_RANGE_STATUS_COMPLETE)
+-			break;
++		vl53l0x_clear_irq(data);
++	} else {
++		do {
++			ret = i2c_smbus_read_byte_data(client,
++					       VL_REG_RESULT_RANGE_STATUS);
++			if (ret < 0)
++				return ret;
+ 
+-		usleep_range(1000, 5000);
+-	} while (--tries);
+-	if (!tries)
+-		return -ETIMEDOUT;
++			if (ret & VL_REG_RESULT_RANGE_STATUS_COMPLETE)
++				break;
++
++			usleep_range(1000, 5000);
++		} while (--tries);
++		if (!tries)
++			return -ETIMEDOUT;
++	}
+ 
+ 	ret = i2c_smbus_read_i2c_block_data(client, VL_REG_RESULT_RANGE_STATUS,
+ 					    12, buffer);
+@@ -141,6 +212,17 @@ static int vl53l0x_probe(struct i2c_client *client)
+ 	indio_dev->num_channels = ARRAY_SIZE(vl53l0x_channels);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	/* usage of interrupt is optional */
++	if (client->irq) {
++		int ret;
++
++		init_completion(&data->completion);
++
++		ret = vl53l0x_configure_irq(client, indio_dev);
++		if (ret)
++			return ret;
++	}
++
+ 	return devm_iio_device_register(&client->dev, indio_dev);
  }
  
- static int at91_adc_update_scan_mode(struct iio_dev *indio_dev,
 -- 
-2.25.1
+2.26.0
 
