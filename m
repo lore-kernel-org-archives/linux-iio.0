@@ -7,49 +7,47 @@ X-Spam-Status: No, score=-14.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D442C43461
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:41:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E63BFC2BBD1
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:43:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E33FC21D7B
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:41:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 977BB21D7B
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:43:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600368063;
-	bh=21Q34AOs8zDD3/feAv29bl5fXW+Jkv/vzpLdXHQugjU=;
+	s=default; t=1600368186;
+	bh=CdigQ/+3mxrVUS6hZ+1nUMXkX34CWxjHp9qYy4kPe2g=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=fvKSmBZ3X1tjqJ7LAaC4jODGvOw5gzu+owTYgEl+5WM4tAF9torgfh/6yXX7t+CBZ
-	 Ir5TWUWrr57OOXrl8VYt/04kTKK5J5GDYrMr/W1C9UYooi+aUG5tZw3rbRZyP9tZ4O
-	 O1P3MuZJEdBE7VG422MifE+2s45s64I9FzDC+pM8=
+	b=fvzdGhyrAKSRfzUmDzvfYo3JKVlxukxApzxQy/SgUznSOSf4ECOZCt1AGCFJlAnWb
+	 qRC7qFmKZhFKF9LbIYjyPSJ9X2LKLfDj38AmmxV90dyQNMKLNsWTvvwD8jdh98DgVD
+	 RvJREsAASG2/dbwLi8xGtfM+eXzFabVIzSyoc2As=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726557AbgIQSiT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Sep 2020 14:38:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:32772 "EHLO mail.kernel.org"
+        id S1726290AbgIQSmj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Sep 2020 14:42:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46450 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726250AbgIQRTs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 17 Sep 2020 13:19:48 -0400
+        id S1725882AbgIQSmi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 17 Sep 2020 14:42:38 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 145A8221E3;
-        Thu, 17 Sep 2020 17:19:45 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DF69721D7B;
+        Thu, 17 Sep 2020 18:42:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600363187;
-        bh=21Q34AOs8zDD3/feAv29bl5fXW+Jkv/vzpLdXHQugjU=;
+        s=default; t=1600368157;
+        bh=CdigQ/+3mxrVUS6hZ+1nUMXkX34CWxjHp9qYy4kPe2g=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=pWc2jfeNPJrr5Y0o2P93Y7tbpoCAOwUOSngPay4RQ1bh4VbLgLYwTxs2VTes6qsse
-         0kC0jMMhFaZJaDcxS8xWsfOt/w/Bg+bTLPxehAh8ZqjIxxkEACqV/m6/nRBpRhgdsU
-         Xoq8pBaePp6h9+Jo4nd9vif/0G6P+qCZEzmyt0eQ=
-Date:   Thu, 17 Sep 2020 18:19:42 +0100
+        b=Yvxz1yVf9HlZKzaI5XZkJ0swb7TQ4GqZr5VoHlNGY1vEsoFTw8PnkUhgufYWgD8jz
+         ZI+i1i20lHPi6Tz7A5APBnNcSVHKL+tK688hMge35fRAhUtLSodp4abWRjClpBk758
+         o++88nfw29MtbOExF3szyxHr+yM8CzlSS/vZR+u8=
+Date:   Thu, 17 Sep 2020 19:42:33 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Christian Eggers <ceggers@arri.de>
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <stable@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: trigger: Don't use RT priority
-Message-ID: <20200917181942.0d5db535@archlinux>
-In-Reply-To: <20200917120333.2337-1-ceggers@arri.de>
-References: <20200917120333.2337-1-ceggers@arri.de>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 3/3] iio: dac: ad5592r: localize locks only where needed
+ in ad5592r_read_raw()
+Message-ID: <20200917194233.57b548be@archlinux>
+In-Reply-To: <20200706110259.23947-3-alexandru.ardelean@analog.com>
+References: <20200706110259.23947-1-alexandru.ardelean@analog.com>
+        <20200706110259.23947-3-alexandru.ardelean@analog.com>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -58,74 +56,108 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 17 Sep 2020 14:03:33 +0200
-Christian Eggers <ceggers@arri.de> wrote:
+On Mon, 6 Jul 2020 14:02:59 +0300
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-> Triggers may raise transactions on slow busses like I2C.  Using the
-> original RT priority of a threaded IRQ may prevent other important IRQ
-> handlers from being run.
+> Since there was a recently discovered issue with these locks, it probably
+> makes sense to cleanup the code a bit, to prevent it from being used as an
+> example/reference.
 > 
-> Signed-off-by: Christian Eggers <ceggers@arri.de>
-> Cc: stable@vger.kernel.org
-> ---
-> In my particular case (on a RT kernel), the RT priority of the sysfstrig
-> threaded IRQ handler caused (temporarily) raising the prio of a user
-> space process which was holding the I2C bus mutex.
+> This change moves the lock only where it is explicitly needed to protect
+> resources from potential concurrent accesses.
 > 
-> Due to a bug in the i2c-imx driver, this process spent 500 ms in a busy-wait
-> loop and prevented all threaded IRQ handlers from being run during this
-> time.
-I'm not sure I fully understand the impacts of this yet.
+> It also reworks the switch statements to do direct returns vs caching the
+> return value on a variable.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Applied these two to the togreg branch of iio.git
 
-What is the impact on cases where we don't have any nasty side affects
-due to users of the trigger?
-
-I presume reducing the priority will cause some reduction in
-performance?  If so is there any chance that would count as a regression?
+Thanks,
 
 Jonathan
 
+> ---
+>  drivers/iio/dac/ad5592r-base.c | 30 +++++++++++++++---------------
+>  1 file changed, 15 insertions(+), 15 deletions(-)
 > 
-> v2:
-> - Use sched_set_normal() instead of sched_setscheduler_nocheck()
-> 
->  drivers/iio/industrialio-trigger.c | 10 ++++++++++
->  1 file changed, 10 insertions(+)
-> 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 6f16357fd732..7ed00ad695c7 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -9,7 +9,10 @@
->  #include <linux/err.h>
->  #include <linux/device.h>
->  #include <linux/interrupt.h>
-> +#include <linux/irq.h>
-> +#include <linux/irqdesc.h>
->  #include <linux/list.h>
-> +#include <linux/sched.h>
->  #include <linux/slab.h>
+> diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
+> index 7ea79e9bfa1d..f697b20efb6e 100644
+> --- a/drivers/iio/dac/ad5592r-base.c
+> +++ b/drivers/iio/dac/ad5592r-base.c
+> @@ -380,32 +380,32 @@ static int ad5592r_read_raw(struct iio_dev *iio_dev,
 >  
->  #include <linux/iio/iio.h>
-> @@ -245,6 +248,7 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
->  	int ret = 0;
->  	bool notinuse
->  		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
-> +	struct irq_desc *irq_desc;
+>  	switch (m) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		mutex_lock(&st->lock);
+> -
+>  		if (!chan->output) {
+> +			mutex_lock(&st->lock);
+>  			ret = st->ops->read_adc(st, chan->channel, &read_val);
+> +			mutex_unlock(&st->lock);
+>  			if (ret)
+> -				goto unlock;
+> +				return ret;
 >  
->  	/* Prevent the module from being removed whilst attached to a trigger */
->  	__module_get(pf->indio_dev->driver_module);
-> @@ -264,6 +268,12 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
->  	if (ret < 0)
->  		goto out_put_irq;
+>  			if ((read_val >> 12 & 0x7) != (chan->channel & 0x7)) {
+>  				dev_err(st->dev, "Error while reading channel %u\n",
+>  						chan->channel);
+> -				ret = -EIO;
+> -				goto unlock;
+> +				return -EIO;
+>  			}
 >  
-> +	/* Triggers may raise transactions on slow busses like I2C.  Using the original RT priority
-> +	 * of a threaded IRQ may prevent other threaded IRQ handlers from being run.
-> +	 */
-> +	irq_desc = irq_to_desc(pf->irq);
-> +	sched_set_normal(irq_desc->action->thread, 0);
+>  			read_val &= GENMASK(11, 0);
+>  
+>  		} else {
+> +			mutex_lock(&st->lock);
+>  			read_val = st->cached_dac[chan->channel];
+> +			mutex_unlock(&st->lock);
+>  		}
+>  
+>  		dev_dbg(st->dev, "Channel %u read: 0x%04hX\n",
+>  				chan->channel, read_val);
+>  
+>  		*val = (int) read_val;
+> -		ret = IIO_VAL_INT;
+> -		break;
+> +		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+>  		*val = ad5592r_get_vref(st);
+>  
+> @@ -425,11 +425,13 @@ static int ad5592r_read_raw(struct iio_dev *iio_dev,
+>  			mult = !!(st->cached_gp_ctrl &
+>  				AD5592R_REG_CTRL_ADC_RANGE);
+>  
+> +		mutex_unlock(&st->lock);
 > +
->  	/* Enable trigger in driver */
->  	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
->  		ret = trig->ops->set_trigger_state(trig, true);
+>  		*val *= ++mult;
+>  
+>  		*val2 = chan->scan_type.realbits;
+> -		ret = IIO_VAL_FRACTIONAL_LOG2;
+> -		break;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+>  	case IIO_CHAN_INFO_OFFSET:
+>  		ret = ad5592r_get_vref(st);
+>  
+> @@ -439,15 +441,13 @@ static int ad5592r_read_raw(struct iio_dev *iio_dev,
+>  			*val = (-34365 * 25) / ret;
+>  		else
+>  			*val = (-75365 * 25) / ret;
+> -		ret =  IIO_VAL_INT;
+> -		break;
+> +
+> +		mutex_unlock(&st->lock);
+> +
+> +		return IIO_VAL_INT;
+>  	default:
+>  		return -EINVAL;
+>  	}
+> -
+> -unlock:
+> -	mutex_unlock(&st->lock);
+> -	return ret;
+>  }
+>  
+>  static int ad5592r_write_raw_get_fmt(struct iio_dev *indio_dev,
 
