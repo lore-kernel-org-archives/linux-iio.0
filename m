@@ -2,37 +2,54 @@ Return-Path: <SRS0=wjVZ=C2=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6FFBC43461
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:40:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D442C43461
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:41:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 77935221EE
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:40:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E33FC21D7B
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:41:02 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1600368063;
+	bh=21Q34AOs8zDD3/feAv29bl5fXW+Jkv/vzpLdXHQugjU=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=fvKSmBZ3X1tjqJ7LAaC4jODGvOw5gzu+owTYgEl+5WM4tAF9torgfh/6yXX7t+CBZ
+	 Ir5TWUWrr57OOXrl8VYt/04kTKK5J5GDYrMr/W1C9UYooi+aUG5tZw3rbRZyP9tZ4O
+	 O1P3MuZJEdBE7VG422MifE+2s45s64I9FzDC+pM8=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726502AbgIQSkM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Sep 2020 14:40:12 -0400
-Received: from saturn.retrosnub.co.uk ([46.235.226.198]:51046 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726649AbgIQSkJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Sep 2020 14:40:09 -0400
-X-Greylist: delayed 400 seconds by postgrey-1.27 at vger.kernel.org; Thu, 17 Sep 2020 14:40:08 EDT
+        id S1726557AbgIQSiT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Sep 2020 14:38:19 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32772 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726250AbgIQRTs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 17 Sep 2020 13:19:48 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 80B019E0250;
-        Thu, 17 Sep 2020 19:40:06 +0100 (BST)
-Date:   Thu, 17 Sep 2020 19:40:05 +0100
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: Re: [PATCH] iio:dac:ad5592r: Fix use of true where iio_shared_by
- enum required
-Message-ID: <20200917194005.401d5279@archlinux>
-In-Reply-To: <20200913114731.739478-1-jic23@kernel.org>
-References: <20200913114731.739478-1-jic23@kernel.org>
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 145A8221E3;
+        Thu, 17 Sep 2020 17:19:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600363187;
+        bh=21Q34AOs8zDD3/feAv29bl5fXW+Jkv/vzpLdXHQugjU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pWc2jfeNPJrr5Y0o2P93Y7tbpoCAOwUOSngPay4RQ1bh4VbLgLYwTxs2VTes6qsse
+         0kC0jMMhFaZJaDcxS8xWsfOt/w/Bg+bTLPxehAh8ZqjIxxkEACqV/m6/nRBpRhgdsU
+         Xoq8pBaePp6h9+Jo4nd9vif/0G6P+qCZEzmyt0eQ=
+Date:   Thu, 17 Sep 2020 18:19:42 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Christian Eggers <ceggers@arri.de>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <stable@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: trigger: Don't use RT priority
+Message-ID: <20200917181942.0d5db535@archlinux>
+In-Reply-To: <20200917120333.2337-1-ceggers@arri.de>
+References: <20200917120333.2337-1-ceggers@arri.de>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -41,38 +58,74 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 13 Sep 2020 12:47:31 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Thu, 17 Sep 2020 14:03:33 +0200
+Christian Eggers <ceggers@arri.de> wrote:
 
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Triggers may raise transactions on slow busses like I2C.  Using the
+> original RT priority of a threaded IRQ may prevent other important IRQ
+> handlers from being run.
 > 
-> Given true evaluates to 1, this should IIO_SHARED_BY_TYPE.
-I sent this same one out before and then lost it.  I've picked that
-version up as at was reviewed at that time.
+> Signed-off-by: Christian Eggers <ceggers@arri.de>
+> Cc: stable@vger.kernel.org
+> ---
+> In my particular case (on a RT kernel), the RT priority of the sysfstrig
+> threaded IRQ handler caused (temporarily) raising the prio of a user
+> space process which was holding the I2C bus mutex.
+> 
+> Due to a bug in the i2c-imx driver, this process spent 500 ms in a busy-wait
+> loop and prevented all threaded IRQ handlers from being run during this
+> time.
+I'm not sure I fully understand the impacts of this yet.
 
-Sorry for the noise.
+What is the impact on cases where we don't have any nasty side affects
+due to users of the trigger?
+
+I presume reducing the priority will cause some reduction in
+performance?  If so is there any chance that would count as a regression?
 
 Jonathan
 
 > 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
-> ---
->  drivers/iio/dac/ad5592r-base.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+> v2:
+> - Use sched_set_normal() instead of sched_setscheduler_nocheck()
 > 
-> diff --git a/drivers/iio/dac/ad5592r-base.c b/drivers/iio/dac/ad5592r-base.c
-> index cc4875660a69..456bf5292c44 100644
-> --- a/drivers/iio/dac/ad5592r-base.c
-> +++ b/drivers/iio/dac/ad5592r-base.c
-> @@ -488,7 +488,7 @@ static const struct iio_chan_spec_ext_info ad5592r_ext_info[] = {
->  	{
->  	 .name = "scale_available",
->  	 .read = ad5592r_show_scale_available,
-> -	 .shared = true,
-> +	 .shared = IIO_SHARED_BY_TYPE,
->  	 },
->  	{},
->  };
+>  drivers/iio/industrialio-trigger.c | 10 ++++++++++
+>  1 file changed, 10 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index 6f16357fd732..7ed00ad695c7 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -9,7 +9,10 @@
+>  #include <linux/err.h>
+>  #include <linux/device.h>
+>  #include <linux/interrupt.h>
+> +#include <linux/irq.h>
+> +#include <linux/irqdesc.h>
+>  #include <linux/list.h>
+> +#include <linux/sched.h>
+>  #include <linux/slab.h>
+>  
+>  #include <linux/iio/iio.h>
+> @@ -245,6 +248,7 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+>  	int ret = 0;
+>  	bool notinuse
+>  		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+> +	struct irq_desc *irq_desc;
+>  
+>  	/* Prevent the module from being removed whilst attached to a trigger */
+>  	__module_get(pf->indio_dev->driver_module);
+> @@ -264,6 +268,12 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+>  	if (ret < 0)
+>  		goto out_put_irq;
+>  
+> +	/* Triggers may raise transactions on slow busses like I2C.  Using the original RT priority
+> +	 * of a threaded IRQ may prevent other threaded IRQ handlers from being run.
+> +	 */
+> +	irq_desc = irq_to_desc(pf->irq);
+> +	sched_set_normal(irq_desc->action->thread, 0);
+> +
+>  	/* Enable trigger in driver */
+>  	if (trig->ops && trig->ops->set_trigger_state && notinuse) {
+>  		ret = trig->ops->set_trigger_state(trig, true);
 
