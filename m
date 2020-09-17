@@ -5,48 +5,49 @@ X-Spam-Level:
 X-Spam-Status: No, score=-14.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 048AAC2BBD1
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 17:16:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40049C43461
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 17:31:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BC691221E3
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 17:16:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA1B6221F1
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 17:31:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600362999;
-	bh=Tlz5MsNMitAcZew4gZ2m7t4Tux7gDMCdLF29hPUUCx4=;
+	s=default; t=1600363907;
+	bh=NudZN54sc5i4qumVD3ViKxr7+VKLAtm733yj4DizhGk=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=oD32WLCZw3qdpo2YJnEWemCyvrGwSmvNwpVSvQWLmQs+BRhCrBG1cMmwVYKz2XqTF
-	 9Zw8VqNC6T8DGAOhckT9gmDYqqeAZIITikDVrI8cybB7IW3Hhkd5NiGHdmuzDgDxPe
-	 KdPoyzjRNLRv/NGW5lbyEyHbMMltgKpqtfWhjujw=
+	b=0Sa90JpPWMUtTD4/9VCjoZlKBu/YQ+jUpwPUw6YkE2+MsPV74BRD/evpCR+IlYj0w
+	 +Z5c/Qjmxl8wC9l6qQ4Z3CAQcfCmA+lmK9QzwYfG5BQsNlnlWyRSSFvOEn8PntXvlm
+	 +zCtkEEnKg76ac3jGGSsGiIKk5PmMst2Rb8TSz9I=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726497AbgIQRQh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Sep 2020 13:16:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59820 "EHLO mail.kernel.org"
+        id S1726394AbgIQR3m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Sep 2020 13:29:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:36540 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726543AbgIQRQb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 17 Sep 2020 13:16:31 -0400
+        id S1726597AbgIQR30 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 17 Sep 2020 13:29:26 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 07F56221E3;
-        Thu, 17 Sep 2020 17:16:29 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2E0DF221EC;
+        Thu, 17 Sep 2020 17:28:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600362990;
-        bh=Tlz5MsNMitAcZew4gZ2m7t4Tux7gDMCdLF29hPUUCx4=;
+        s=default; t=1600363707;
+        bh=NudZN54sc5i4qumVD3ViKxr7+VKLAtm733yj4DizhGk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wRIlXxmae7L0B2Sc6zDYoqxOttkK0u2IdYfiFJ9bDaJIMf/D2Sh6t6XVxZCo61XcV
-         fUfzrEuMUe4vYtPteMQOAt1kBlBmj5P9uPEstKQTz7206mu5H0wA3dk9XN5WejEyvp
-         ZR6h2+CoDwx43OCsK5HTV4fSNa3c/GGEs5L5UVs4=
-Date:   Thu, 17 Sep 2020 18:16:26 +0100
+        b=W/aMRUUNvIyM2brFmCUJW+GQFXIuQGJ7swGeNT+UXIdn2qWVNj2Qlxqbl44zup4yN
+         4f4BA+cO4gSeNxjI9b3Yr+I9HDyAy3PJ1CsPdtKXgaWAB7AR3HcfsUjJJ1oe/3U5GG
+         EY+yOYeRquvprpdDFKcmd4w8+GHDwWNjsxAuNock=
+Date:   Thu, 17 Sep 2020 18:28:22 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: buffer: split buffer sysfs creation to take buffer
- as primary arg
-Message-ID: <20200917181626.59eb84c8@archlinux>
-In-Reply-To: <20200917125951.861-1-alexandru.ardelean@analog.com>
-References: <20200917125951.861-1-alexandru.ardelean@analog.com>
+To:     Eugen Hristev <eugen.hristev@microchip.com>
+Cc:     <alexandru.ardelean@analog.com>, <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: adc: at91-sama5d2_adc: fix DMA conversion crash
+Message-ID: <20200917182822.5134767d@archlinux>
+In-Reply-To: <20200916070821.118374-1-eugen.hristev@microchip.com>
+References: <20200916070821.118374-1-eugen.hristev@microchip.com>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -55,116 +56,80 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 17 Sep 2020 15:59:51 +0300
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+On Wed, 16 Sep 2020 10:08:21 +0300
+Eugen Hristev <eugen.hristev@microchip.com> wrote:
 
-> Currently the iio_buffer_{alloc,free}_sysfs_and_mask() take 'indio_dev' as
-> primary argument. This change splits the main logic into a private function
-> that takes an IIO buffer as primary argument.
+> After the move of the postenable code to preenable, the DMA start was
+> done before the DMA init, which is not correct.
+> The DMA is initialized in set_watermark. Because of this, we need to call
+> the DMA start functions in set_watermark, after the DMA init, instead of
+> preenable hook, when the DMA is not properly setup yet.
 > 
-> That way, the functions can be extended to configure the sysfs for multiple
-> buffers.
-> 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> Fixes: f3c034f61775 ("iio: at91-sama5d2_adc: adjust iio_triggered_buffer_{predisable,postenable} positions")
+> Signed-off-by: Eugen Hristev <eugen.hristev@microchip.com>
 
-One comment inline.  Whilst I think it is safe as you have it, I'd
-rather avoid the minor change in logic if we don't need to make it.
-
-Thanks,
-
-Jonathan
-
+Basic approach looks fine, but if we were to get an error from  the
+buffer_prepare() function, should we be looking to disable dma if we
+enabled it earlier in the set_watermark callback?
 
 > ---
->  drivers/iio/industrialio-buffer.c | 46 ++++++++++++++++++++-----------
->  1 file changed, 30 insertions(+), 16 deletions(-)
 > 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index a7d7e5143ed2..a4f6bb96d4f4 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -1264,26 +1264,14 @@ static struct attribute *iio_buffer_attrs[] = {
->  	&dev_attr_data_available.attr,
+> Hi,
+> 
+> This crash is in the kernel since 5.8-rc1
+> 
+> Please have a look at discussion here:
+> https://lore.kernel.org/linux-iio/CA+U=DsqRUtjjoe5nevP_wNxTgr27+O2V1h9w7d3QijBQ+5f3XA@mail.gmail.com/T/#t
+> 
+> Thanks !
+> 
+>  drivers/iio/adc/at91-sama5d2_adc.c | 11 +++++++----
+>  1 file changed, 7 insertions(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+> index de9583d6cddd..b5196797dcb8 100644
+> --- a/drivers/iio/adc/at91-sama5d2_adc.c
+> +++ b/drivers/iio/adc/at91-sama5d2_adc.c
+> @@ -884,7 +884,7 @@ static bool at91_adc_current_chan_is_touch(struct iio_dev *indio_dev)
+>  			       AT91_SAMA5D2_MAX_CHAN_IDX + 1);
+>  }
+>  
+> -static int at91_adc_buffer_preenable(struct iio_dev *indio_dev)
+> +static int at91_adc_buffer_prepare(struct iio_dev *indio_dev)
+>  {
+>  	int ret;
+>  	u8 bit;
+> @@ -901,7 +901,7 @@ static int at91_adc_buffer_preenable(struct iio_dev *indio_dev)
+>  	/* we continue with the triggered buffer */
+>  	ret = at91_adc_dma_start(indio_dev);
+>  	if (ret) {
+> -		dev_err(&indio_dev->dev, "buffer postenable failed\n");
+> +		dev_err(&indio_dev->dev, "buffer prepare failed\n");
+>  		return ret;
+>  	}
+>  
+> @@ -989,7 +989,6 @@ static int at91_adc_buffer_postdisable(struct iio_dev *indio_dev)
+>  }
+>  
+>  static const struct iio_buffer_setup_ops at91_buffer_setup_ops = {
+> -	.preenable = &at91_adc_buffer_preenable,
+>  	.postdisable = &at91_adc_buffer_postdisable,
 >  };
 >  
-> -int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> +static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
-> +					     struct iio_dev *indio_dev)
->  {
->  	struct iio_dev_attr *p;
->  	struct attribute **attr;
-> -	struct iio_buffer *buffer = indio_dev->buffer;
->  	int ret, i, attrn, attrcount;
->  	const struct iio_chan_spec *channels;
+> @@ -1586,7 +1585,11 @@ static int at91_adc_set_watermark(struct iio_dev *indio_dev, unsigned int val)
+>  	else if (val > 1)
+>  		at91_adc_dma_init(to_platform_device(&indio_dev->dev));
 >  
-> -	channels = indio_dev->channels;
-> -	if (channels) {
-> -		int ml = indio_dev->masklength;
-> -
-> -		for (i = 0; i < indio_dev->num_channels; i++)
-> -			ml = max(ml, channels[i].scan_index + 1);
-> -		indio_dev->masklength = ml;
-> -	}
-> -
-> -	if (!buffer)
-> -		return 0;
-> -
->  	attrcount = 0;
->  	if (buffer->attrs) {
->  		while (buffer->attrs[attrcount] != NULL)
-> @@ -1367,19 +1355,45 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->  	return ret;
+> -	return 0;
+> +	/*
+> +	 * We can start the DMA only after setting the watermark and
+> +	 * having the DMA initialization completed
+> +	 */
+
+Looks superficially to me like we may need to unwind some stuff if this fails.
+
+> +	return at91_adc_buffer_prepare(indio_dev);
 >  }
 >  
-> -void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
-> +int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->  {
->  	struct iio_buffer *buffer = indio_dev->buffer;
-> +	const struct iio_chan_spec *channels;
-> +	int i;
-> +
-> +	channels = indio_dev->channels;
-> +	if (channels) {
-> +		int ml = indio_dev->masklength;
-> +
-> +		for (i = 0; i < indio_dev->num_channels; i++)
-> +			ml = max(ml, channels[i].scan_index + 1);
-> +		indio_dev->masklength = ml;
-> +	}
-
-I've not really figured out if it matters, but this is a logic change.
-Previously we didn't compute masklength if there was no buffer provided.
-Now we do.  It's probably better to move the if (!buffer) check above
-this block or at least mention this change in the patch description.
-
-
->  
->  	if (!buffer)
-> -		return;
-> +		return 0;
-> +
-> +	return __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev);
-> +}
->  
-> +static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
-> +{
->  	bitmap_free(buffer->scan_mask);
->  	kfree(buffer->buffer_group.attrs);
->  	kfree(buffer->scan_el_group.attrs);
->  	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
->  }
->  
-> +void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
-> +{
-> +	struct iio_buffer *buffer = indio_dev->buffer;
-> +
-> +	if (!buffer)
-> +		return;
-> +
-> +	__iio_buffer_free_sysfs_and_mask(buffer);
-> +}
-> +
->  /**
->   * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
->   * @indio_dev: the iio device
+>  static int at91_adc_update_scan_mode(struct iio_dev *indio_dev,
 
