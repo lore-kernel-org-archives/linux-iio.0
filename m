@@ -7,50 +7,50 @@ X-Spam-Status: No, score=-14.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E97D5C433E2
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 17:56:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CF45C43461
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:05:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9168B20707
-	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 17:56:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3D4FF214D8
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Sep 2020 18:05:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600365417;
-	bh=JPsTCcKQSJWwioUgZClYmjeaDcco+sofmS5Hjg0G3ek=;
+	s=default; t=1600365909;
+	bh=IlmibjKQkOmSNFpp1XnRSGcMC89RPmFcnnpLMx/wp0E=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=wN6GrLqsA5cYQno0Biu45uGE6Mnn40MpfwvEadB7f2CeTS+dB6ssP5eQ3i0EklQCI
-	 E2MNbS1Tt6GfIwTI/xBdtvKW8XXWdMjY3uw+2VAx8CieNfHcrmhvtMiWgEhuo9Mhi0
-	 JKO0+WkvMKmUz2XPdbjUSJcASxpjCb3Rch+TX+qE=
+	b=kRahdKiMWDl5a/vVNthUkuGPndzZj00ZaqG3nGfFlEcycV+pyJPYImeUZFLl2VgQN
+	 zDy0h79QAhhTgfraLOpz4EvWi7IWzMNHFf7Y6r2OQLeS0yItHEcBbA0j1xO5ZYGi58
+	 dJ94DM18h40klWII8RmZ24HsTLVS20D5pqkRmAvY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726528AbgIQR4o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 17 Sep 2020 13:56:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46998 "EHLO mail.kernel.org"
+        id S1726395AbgIQSES (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Sep 2020 14:04:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50044 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726582AbgIQR4F (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 17 Sep 2020 13:56:05 -0400
+        id S1726342AbgIQSCu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 17 Sep 2020 14:02:50 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B8F8A20707;
-        Thu, 17 Sep 2020 17:56:03 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F392A20707;
+        Thu, 17 Sep 2020 18:02:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600365364;
-        bh=JPsTCcKQSJWwioUgZClYmjeaDcco+sofmS5Hjg0G3ek=;
+        s=default; t=1600365768;
+        bh=IlmibjKQkOmSNFpp1XnRSGcMC89RPmFcnnpLMx/wp0E=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=k5ag4xwb9mY1gMrrsG6c8EQLFPZ/cX/gXYPDYWqZbG8xFOrK7iAWLAbu7jffpeIj7
-         qFl6zqMq8hBlU355hSDh67wO+0ZmiTpgXYQvvrtjMc5wom6ya0PpeGFlxoSOLV68vk
-         +BhWrpgM3aCOuxrq1diqfXfgQrn+DpkSwKIEG0ig=
-Date:   Thu, 17 Sep 2020 18:55:59 +0100
+        b=C746T6UP/gIDzLvo4LwVDxv7RS8k9I6Wbxmi6UZ58u7sO1QQy100V9cSNumlRE8BL
+         vLNGDUC8Pslt0kl2Dn6C6Wboy32penimsopDGpD5UpmQb4jrg6aNSBcqRkAt4wifpP
+         YPYJ5OisuklT9XIBt+rQ7090ct2MDQgJdCDjOqP8=
+Date:   Thu, 17 Sep 2020 19:02:43 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Alexandru Ardelean <ardeleanalex@gmail.com>
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: buffer: split buffer sysfs creation to take buffer
- as primary arg
-Message-ID: <20200917185559.7d6971e3@archlinux>
-In-Reply-To: <CA+U=DspN3WYX5_1MZpRPzUcC5NV4=iSekQ9jNSehad1jfi2bQw@mail.gmail.com>
-References: <20200917125951.861-1-alexandru.ardelean@analog.com>
-        <20200917181626.59eb84c8@archlinux>
-        <CA+U=DspN3WYX5_1MZpRPzUcC5NV4=iSekQ9jNSehad1jfi2bQw@mail.gmail.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: Re: [PATCH 1/3] iio:imu:adis16400: Sort out missing kernel doc.
+Message-ID: <20200917190243.0d7e7feb@archlinux>
+In-Reply-To: <CA+U=DsougYec6z-4qmbuKE8XkFzB2PUwwmxPGoUtcN+5cDep4Q@mail.gmail.com>
+References: <20200913132115.800131-1-jic23@kernel.org>
+        <20200913132115.800131-2-jic23@kernel.org>
+        <CA+U=DsougYec6z-4qmbuKE8XkFzB2PUwwmxPGoUtcN+5cDep4Q@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -59,137 +59,46 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 17 Sep 2020 20:41:08 +0300
+On Mon, 14 Sep 2020 08:52:34 +0300
 Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
 
-> On Thu, Sep 17, 2020 at 8:18 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> On Sun, Sep 13, 2020 at 4:24 PM Jonathan Cameron <jic23@kernel.org> wrote:
 > >
-> > On Thu, 17 Sep 2020 15:59:51 +0300
-> > Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> >
+> > I'd like to be enable W=1 for all IIO builds as it catches real issues as well
+> > as more minor documentation issues such as this (also good to fix though!)
+> >
+> > drivers/iio/imu/adis16400.c:183: warning: Function parameter or member 'avail_scan_mask' not described in 'adis16400_state'
 > >  
-> > > Currently the iio_buffer_{alloc,free}_sysfs_and_mask() take 'indio_dev' as
-> > > primary argument. This change splits the main logic into a private function
-> > > that takes an IIO buffer as primary argument.
-> > >
-> > > That way, the functions can be extended to configure the sysfs for multiple
-> > > buffers.
-> > >
-> > > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>  
-> >
-> > One comment inline.  Whilst I think it is safe as you have it, I'd
-> > rather avoid the minor change in logic if we don't need to make it.
-> >
-> > Thanks,
-> >
-> > Jonathan
-Applied to the togreg branch of iio.git.
-
-See below for my pathetic Diff confused me excuse :)
+> 
+> Acked-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> 
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Cc: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Applied to the togreg branch of iio.git
+Thanks,
 
 Jonathan
 
+> > ---
+> >  drivers/iio/imu/adis16400.c | 2 ++
+> >  1 file changed, 2 insertions(+)
 > >
-> >  
-> > > ---
-> > >  drivers/iio/industrialio-buffer.c | 46 ++++++++++++++++++++-----------
-> > >  1 file changed, 30 insertions(+), 16 deletions(-)
-> > >
-> > > diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> > > index a7d7e5143ed2..a4f6bb96d4f4 100644
-> > > --- a/drivers/iio/industrialio-buffer.c
-> > > +++ b/drivers/iio/industrialio-buffer.c
-> > > @@ -1264,26 +1264,14 @@ static struct attribute *iio_buffer_attrs[] = {
-> > >       &dev_attr_data_available.attr,
-> > >  };
-> > >
-> > > -int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> > > +static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
-> > > +                                          struct iio_dev *indio_dev)
-> > >  {
-> > >       struct iio_dev_attr *p;
-> > >       struct attribute **attr;
-> > > -     struct iio_buffer *buffer = indio_dev->buffer;
-> > >       int ret, i, attrn, attrcount;
-> > >       const struct iio_chan_spec *channels;
-> > >
-> > > -     channels = indio_dev->channels;
-> > > -     if (channels) {
-> > > -             int ml = indio_dev->masklength;
-> > > -
-> > > -             for (i = 0; i < indio_dev->num_channels; i++)
-> > > -                     ml = max(ml, channels[i].scan_index + 1);
-> > > -             indio_dev->masklength = ml;
-> > > -     }
-> > > -
-> > > -     if (!buffer)
-> > > -             return 0;
-> > > -
-> > >       attrcount = 0;
-> > >       if (buffer->attrs) {
-> > >               while (buffer->attrs[attrcount] != NULL)
-> > > @@ -1367,19 +1355,45 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> > >       return ret;
-> > >  }
-> > >
-> > > -void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
-> > > +int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> > >  {
-> > >       struct iio_buffer *buffer = indio_dev->buffer;
-> > > +     const struct iio_chan_spec *channels;
-> > > +     int i;
-> > > +
-> > > +     channels = indio_dev->channels;
-> > > +     if (channels) {
-> > > +             int ml = indio_dev->masklength;
-> > > +
-> > > +             for (i = 0; i < indio_dev->num_channels; i++)
-> > > +                     ml = max(ml, channels[i].scan_index + 1);
-> > > +             indio_dev->masklength = ml;
-> > > +     }  
-> >
-> > I've not really figured out if it matters, but this is a logic change.
-> > Previously we didn't compute masklength if there was no buffer provided.
-> > Now we do.  It's probably better to move the if (!buffer) check above
-> > this block or at least mention this change in the patch description.
-> >  
-> 
-> Umm, are you referring that this patch is a logic change or you are
-> suggesting a logic change?
-> The "if (!buffer)" check was positioned after the masklength
-> computation even in the old code.
-> 
-Got you.  Diff confused me :)
-
-
-> >  
-> > >
-> > >       if (!buffer)
-> > > -             return;
-> > > +             return 0;
-> > > +
-> > > +     return __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev);
-> > > +}
-> > >
-> > > +static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
-> > > +{
-> > >       bitmap_free(buffer->scan_mask);
-> > >       kfree(buffer->buffer_group.attrs);
-> > >       kfree(buffer->scan_el_group.attrs);
-> > >       iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
-> > >  }
-> > >
-> > > +void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
-> > > +{
-> > > +     struct iio_buffer *buffer = indio_dev->buffer;
-> > > +
-> > > +     if (!buffer)
-> > > +             return;
-> > > +
-> > > +     __iio_buffer_free_sysfs_and_mask(buffer);
-> > > +}
-> > > +
-> > >  /**
-> > >   * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
-> > >   * @indio_dev: the iio device  
+> > diff --git a/drivers/iio/imu/adis16400.c b/drivers/iio/imu/adis16400.c
+> > index 1ebe3e50d3e6..140cfc65ee8c 100644
+> > --- a/drivers/iio/imu/adis16400.c
+> > +++ b/drivers/iio/imu/adis16400.c
+> > @@ -173,6 +173,8 @@ struct adis16400_chip_info {
+> >   * @variant:   chip variant info
+> >   * @filt_int:  integer part of requested filter frequency
+> >   * @adis:      adis device
+> > + * @avail_scan_mask:   NULL terminated array of bitmaps of channels
+> > + *                     that must be enabled together
+> >   **/
+> >  struct adis16400_state {
+> >         struct adis16400_chip_info      *variant;
+> > --
+> > 2.28.0
 > >  
 
