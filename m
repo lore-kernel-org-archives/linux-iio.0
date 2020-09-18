@@ -2,214 +2,89 @@ Return-Path: <SRS0=Hov9=C3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D25FC43464
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 09:25:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5E1DC43463
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 10:33:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E4ED221973
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 09:25:25 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Y9/zVImE"
+	by mail.kernel.org (Postfix) with ESMTP id 736A320C56
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 10:33:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726121AbgIRJZZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Sep 2020 05:25:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726126AbgIRJZZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Sep 2020 05:25:25 -0400
-Received: from mail-ot1-x344.google.com (mail-ot1-x344.google.com [IPv6:2607:f8b0:4864:20::344])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4880C06174A;
-        Fri, 18 Sep 2020 02:25:24 -0700 (PDT)
-Received: by mail-ot1-x344.google.com with SMTP id o6so4799361ota.2;
-        Fri, 18 Sep 2020 02:25:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=YVFRxeNLYf6L8EcunJ8pjid4VzkzkBkIL4g7gPwuFYA=;
-        b=Y9/zVImEnOWiJc+AM8C1K/HdaQ5nzPS++qqHRkRelfoJzDhfYcapvW08+9YJGDzbUu
-         ej92kxaaSf7INCMCdgp/9l7GSAr1oEhbQj6cnvD9TXRa4NeSdTaWVVffGzYw52dd1wNi
-         GHyfS8T7/PBOSi27Xkza5yfMY2v9Qb5Ee3nduFFTUX1qIq29gBPoAEoa+9AKA/kV45ZP
-         7oxoSPA8wCdy+skRHhtAxQQ/U6B+j+9H3NAJw1FOOUK70MfYUikic4AqhDzOVvWGsmbY
-         a5ZH0cc4m84skuJJqpl6siYPhdrH1KPEdQPhsMT62AjGtCRbQNPgMRPa5UijDAwhxiMg
-         vieQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=YVFRxeNLYf6L8EcunJ8pjid4VzkzkBkIL4g7gPwuFYA=;
-        b=WemxEZWbz78j2Kxq0xa2oGFCNkd874aIlJKr02IcDJkHAgcIojYArOlMz/UjmCodTv
-         Yi+DlhAHjgy7tfoGf+VK4eoWWODKJu8DYCByuQQM/0GH2rDNXOCFiapG9d2ebytilrQK
-         aUVQTTpdPdfL8liTQuJ2wFQmfdoFy8mrQastWbfNZcFmmMCkgERX9EnkFFNyeYwv1VDC
-         AjrusVetfEedhgvjU5ELFe+ujB29nsx65wRiguNeqBGEn7vWtRwuB4x9FNcbxBGD4ZNi
-         nPGdGMMEBN60AH77PswLAehhgl50i1VEANir7VLf1Amcg8zj8IhpCLWStjamO1+Y452d
-         aWUQ==
-X-Gm-Message-State: AOAM530HVXWCqNFrD8C0nMGTh59E/5+XmrZrqV4Kg/D5GqL0GnQ1ImFv
-        tpXiDLQGrDIJjKHrt9rVAdL8UkXVPCs/pQpmdKThBTWm/Ps=
-X-Google-Smtp-Source: ABdhPJwsMau6u9U382UKAUKP8YnNcmvuEP86sjd2GoXlSIKXrGb0qNiGxaDcaY2Sk+as6Q/Sb1E2S3xQGEP0giPDAUw=
-X-Received: by 2002:a9d:7095:: with SMTP id l21mr22995177otj.224.1600421124085;
- Fri, 18 Sep 2020 02:25:24 -0700 (PDT)
+        id S1726205AbgIRKc6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Sep 2020 06:32:58 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:10126 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725941AbgIRKc6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Sep 2020 06:32:58 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08IATrdX009015;
+        Fri, 18 Sep 2020 06:32:56 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33k5p6a2am-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 18 Sep 2020 06:32:56 -0400
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 08IAWt8w058069
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Fri, 18 Sep 2020 06:32:55 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Fri, 18 Sep
+ 2020 06:33:00 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Fri, 18 Sep 2020 06:33:00 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08IAWpkW026227;
+        Fri, 18 Sep 2020 06:32:53 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 2/2] iio: event: NULL-ify IIO device's event_interface ref during unregister
+Date:   Fri, 18 Sep 2020 13:32:47 +0300
+Message-ID: <20200918103247.1484-2-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200918103247.1484-1-alexandru.ardelean@analog.com>
+References: <20200918103247.1484-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
-References: <20200917125951.861-1-alexandru.ardelean@analog.com>
- <20200917181626.59eb84c8@archlinux> <CA+U=DspN3WYX5_1MZpRPzUcC5NV4=iSekQ9jNSehad1jfi2bQw@mail.gmail.com>
- <20200917185559.7d6971e3@archlinux>
-In-Reply-To: <20200917185559.7d6971e3@archlinux>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Fri, 18 Sep 2020 12:25:13 +0300
-Message-ID: <CA+U=Dsp8Y+t=YM9KM2At7-PhqomXZ1W=QwHx=7rHxwyb74b2Ng@mail.gmail.com>
-Subject: Re: [PATCH] iio: buffer: split buffer sysfs creation to take buffer
- as primary arg
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-18_11:2020-09-16,2020-09-18 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 impostorscore=0 bulkscore=0 adultscore=0
+ priorityscore=1501 mlxscore=0 phishscore=0 clxscore=1015 suspectscore=2
+ malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009180086
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Sep 17, 2020 at 8:56 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Thu, 17 Sep 2020 20:41:08 +0300
-> Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
->
-> > On Thu, Sep 17, 2020 at 8:18 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> > >
-> > > On Thu, 17 Sep 2020 15:59:51 +0300
-> > > Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
-> > >
-> > > > Currently the iio_buffer_{alloc,free}_sysfs_and_mask() take 'indio_dev' as
-> > > > primary argument. This change splits the main logic into a private function
-> > > > that takes an IIO buffer as primary argument.
-> > > >
-> > > > That way, the functions can be extended to configure the sysfs for multiple
-> > > > buffers.
-> > > >
-> > > > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> > >
-> > > One comment inline.  Whilst I think it is safe as you have it, I'd
-> > > rather avoid the minor change in logic if we don't need to make it.
-> > >
-> > > Thanks,
-> > >
-> > > Jonathan
-> Applied to the togreg branch of iio.git.
->
-> See below for my pathetic Diff confused me excuse :)
->
-> Jonathan
->
-> > >
-> > >
-> > > > ---
-> > > >  drivers/iio/industrialio-buffer.c | 46 ++++++++++++++++++++-----------
-> > > >  1 file changed, 30 insertions(+), 16 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> > > > index a7d7e5143ed2..a4f6bb96d4f4 100644
-> > > > --- a/drivers/iio/industrialio-buffer.c
-> > > > +++ b/drivers/iio/industrialio-buffer.c
-> > > > @@ -1264,26 +1264,14 @@ static struct attribute *iio_buffer_attrs[] = {
-> > > >       &dev_attr_data_available.attr,
-> > > >  };
-> > > >
-> > > > -int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> > > > +static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
-> > > > +                                          struct iio_dev *indio_dev)
-> > > >  {
-> > > >       struct iio_dev_attr *p;
-> > > >       struct attribute **attr;
-> > > > -     struct iio_buffer *buffer = indio_dev->buffer;
-> > > >       int ret, i, attrn, attrcount;
-> > > >       const struct iio_chan_spec *channels;
-> > > >
-> > > > -     channels = indio_dev->channels;
-> > > > -     if (channels) {
-> > > > -             int ml = indio_dev->masklength;
-> > > > -
-> > > > -             for (i = 0; i < indio_dev->num_channels; i++)
-> > > > -                     ml = max(ml, channels[i].scan_index + 1);
-> > > > -             indio_dev->masklength = ml;
-> > > > -     }
-> > > > -
-> > > > -     if (!buffer)
-> > > > -             return 0;
-> > > > -
-> > > >       attrcount = 0;
-> > > >       if (buffer->attrs) {
-> > > >               while (buffer->attrs[attrcount] != NULL)
-> > > > @@ -1367,19 +1355,45 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> > > >       return ret;
-> > > >  }
-> > > >
-> > > > -void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
-> > > > +int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> > > >  {
-> > > >       struct iio_buffer *buffer = indio_dev->buffer;
-> > > > +     const struct iio_chan_spec *channels;
-> > > > +     int i;
-> > > > +
-> > > > +     channels = indio_dev->channels;
-> > > > +     if (channels) {
-> > > > +             int ml = indio_dev->masklength;
-> > > > +
-> > > > +             for (i = 0; i < indio_dev->num_channels; i++)
-> > > > +                     ml = max(ml, channels[i].scan_index + 1);
-> > > > +             indio_dev->masklength = ml;
-> > > > +     }
-> > >
-> > > I've not really figured out if it matters, but this is a logic change.
-> > > Previously we didn't compute masklength if there was no buffer provided.
-> > > Now we do.  It's probably better to move the if (!buffer) check above
-> > > this block or at least mention this change in the patch description.
-> > >
-> >
-> > Umm, are you referring that this patch is a logic change or you are
-> > suggesting a logic change?
-> > The "if (!buffer)" check was positioned after the masklength
-> > computation even in the old code.
-> >
-> Got you.  Diff confused me :)
+Though we know that the iio_device_unregister_eventset() call is followed
+by the free-ing of the IIO device object, we should not make this
+assumption in the iio_device_unregister_eventset() function. It should
+allow for the clean unregistering of the event-set, allowing a re-register
+should we decide to implement this at some point later.
 
-Yeah.
-Happens to me to with some git diffs.
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/industrialio-event.c | 1 +
+ 1 file changed, 1 insertion(+)
 
->
->
-> > >
-> > > >
-> > > >       if (!buffer)
-> > > > -             return;
-> > > > +             return 0;
-> > > > +
-> > > > +     return __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev);
-> > > > +}
-> > > >
-> > > > +static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
-> > > > +{
-> > > >       bitmap_free(buffer->scan_mask);
-> > > >       kfree(buffer->buffer_group.attrs);
-> > > >       kfree(buffer->scan_el_group.attrs);
-> > > >       iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
-> > > >  }
-> > > >
-> > > > +void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
-> > > > +{
-> > > > +     struct iio_buffer *buffer = indio_dev->buffer;
-> > > > +
-> > > > +     if (!buffer)
-> > > > +             return;
-> > > > +
-> > > > +     __iio_buffer_free_sysfs_and_mask(buffer);
-> > > > +}
-> > > > +
-> > > >  /**
-> > > >   * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
-> > > >   * @indio_dev: the iio device
-> > >
->
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index 96b7fa63f96c..2b5f1d84d321 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -561,4 +561,5 @@ void iio_device_unregister_eventset(struct iio_dev *indio_dev)
+ 	iio_free_chan_devattr_list(&ev_int->dev_attr_list);
+ 	kfree(ev_int->group.attrs);
+ 	kfree(ev_int);
++	iio_dev_opaque->event_interface = NULL;
+ }
+-- 
+2.17.1
+
