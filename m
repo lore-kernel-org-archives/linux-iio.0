@@ -7,41 +7,54 @@ X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C779C43463
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 08:13:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A67EDC43464
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 08:20:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 519342176B
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 08:13:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 56FC52072E
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 08:20:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726326AbgIRINK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Sep 2020 04:13:10 -0400
-Received: from lhrrgout.huawei.com ([185.176.76.210]:2885 "EHLO huawei.com"
+        id S1726476AbgIRIUQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Sep 2020 04:20:16 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2886 "EHLO huawei.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726154AbgIRINK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 18 Sep 2020 04:13:10 -0400
-X-Greylist: delayed 489 seconds by postgrey-1.27 at vger.kernel.org; Fri, 18 Sep 2020 04:13:09 EDT
-Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.107])
-        by Forcepoint Email with ESMTP id C1FF77F51F395616E139;
-        Fri, 18 Sep 2020 09:13:08 +0100 (IST)
+        id S1726064AbgIRIUQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 18 Sep 2020 04:20:16 -0400
+Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.108])
+        by Forcepoint Email with ESMTP id D6418949A7C7C550C067;
+        Fri, 18 Sep 2020 09:04:59 +0100 (IST)
 Received: from localhost (10.52.125.116) by lhreml710-chm.china.huawei.com
  (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Fri, 18 Sep
- 2020 09:13:08 +0100
-Date:   Fri, 18 Sep 2020 09:11:30 +0100
+ 2020 09:04:59 +0100
+Date:   Fri, 18 Sep 2020 09:03:21 +0100
 From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Cristian Pop <cristian.pop@analog.com>
-CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jic23@kernel.org>
-Subject: Re: [PATCH v4 1/3] iio: core: Add optional symbolic label to a
- device channel
-Message-ID: <20200918091130.0000282c@Huawei.com>
-In-Reply-To: <20200916132115.81795-1-cristian.pop@analog.com>
-References: <20200916132115.81795-1-cristian.pop@analog.com>
+To:     Gene Chen <gene.chen.richtek@gmail.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Matthias Brugger <matthias.bgg@gmail.com>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>,
+        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
+        "moderated list:ARM/Mediatek SoC support" 
+        <linux-mediatek@lists.infradead.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Gene Chen <gene_chen@richtek.com>, <Wilma.Wu@mediatek.com>,
+        <shufan_lee@richtek.com>, <cy_huang@richtek.com>,
+        <benjamin.chao@mediatek.com>,
+        Cristian Pop <cristian.pop@analog.com>
+Subject: Re: [PATCH v4 2/3] Documentation: ABI: testing: mt6360: Add ADC
+ sysfs guideline
+Message-ID: <20200918090321.00007f70@Huawei.com>
+In-Reply-To: <CAE+NS35Pw-6UqcHPNOsUtW0GABPVEHfPineF81+qrS6A18HiyA@mail.gmail.com>
+References: <1600191369-28040-1-git-send-email-gene.chen.richtek@gmail.com>
+        <1600191369-28040-3-git-send-email-gene.chen.richtek@gmail.com>
+        <20200917184256.71328701@archlinux>
+        <CAE+NS35Pw-6UqcHPNOsUtW0GABPVEHfPineF81+qrS6A18HiyA@mail.gmail.com>
 Organization: Huawei Technologies Research and Development (UK) Ltd.
 X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
 X-Originating-IP: [10.52.125.116]
 X-ClientProxiedBy: lhreml741-chm.china.huawei.com (10.201.108.191) To
  lhreml710-chm.china.huawei.com (10.201.108.61)
@@ -50,126 +63,162 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 16 Sep 2020 16:21:15 +0300
-Cristian Pop <cristian.pop@analog.com> wrote:
+On Fri, 18 Sep 2020 15:21:44 +0800
+Gene Chen <gene.chen.richtek@gmail.com> wrote:
 
-> If a label is defined in the device tree for this channel add that
-> to the channel specific attributes. This is useful for userspace to
-> be able to identify an individual channel.
+> Jonathan Cameron <jic23@kernel.org> 於 2020年9月18日 週五 上午1:43寫道：
+> >
+> > On Wed, 16 Sep 2020 01:36:08 +0800
+> > Gene Chen <gene.chen.richtek@gmail.com> wrote:
+> >  
+> > > From: Gene Chen <gene_chen@richtek.com>
+> > >
+> > > Add ABI documentation for mt6360 ADC sysfs interfaces.
+> > >
+> > > Signed-off-by: Gene Chen <gene_chen@richtek.com>  
+> > Would you consider using the proposed label attribute for channels?
+> >
+> > https://lore.kernel.org/linux-iio/20200916132115.81795-1-cristian.pop@analog.com/T/#u
+> >
+> > I'm hoping that will remove the need to have ext name used in the majority of
+> > cases and would like to know if it would work for you?
+> > It may not work for this particular case of course.
+> >
+> > Other comments inline.
+> >  
 > 
-> Signed-off-by: Cristian Pop <cristian.pop@analog.com>
-Hi Cristian.
+> because of ADC layout is fixed, I can't switch channel to specific
+> purpose for userspace.
 
-I (and lore.kernel.org) only received patch 1 so guess docs and example were
-in patches 2 and 3?  Something odd is perhaps going on with Analog's email
-vs vger as there was only a partial set of Nuno's series last night as well
-so I couldn't pick it up with b4.
+That patch set doesn't allow userspace to change the purpose. It provides
+a *_label attribute for each channel to allow for identification of the channel.
+That can be provided by ACPI / DT or can be provided by the driver itself.
+The advantage is that it removes the nasty freeform parsing that is needed
+to work out the filenames.
 
-This patch looks good to me.  Thanks for your hard work on this.
-Given timing it may slip into the next cycle. 
-
-Jonathan
-
-> ---
-> Change in V4:
-> 	- Check for callback before generating file system for label
-> 	- Add documentation in: Documentation/ABI/testing/sysfs-bus-iio
-
-
-> 	- Add example of usage for channel label attribute
->  drivers/iio/industrialio-core.c | 41 +++++++++++++++++++++++++++++++++
->  include/linux/iio/iio.h         |  6 +++++
->  2 files changed, 47 insertions(+)
 > 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 1527f01a44f1..49868e080840 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -643,6 +643,21 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
->  }
->  EXPORT_SYMBOL_GPL(iio_format_value);
->  
-> +static ssize_t iio_read_channel_label(struct device *dev,
-> +				     struct device_attribute *attr,
-> +				     char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +
-> +	if (indio_dev->info->read_label)
-> +		return indio_dev->info->read_label(indio_dev,
-> +							this_attr->c,
-> +							buf);
-> +	else
-> +		return -EINVAL;
-> +}
-> +
->  static ssize_t iio_read_channel_info(struct device *dev,
->  				     struct device_attribute *attr,
->  				     char *buf)
-> @@ -1111,6 +1126,25 @@ int __iio_add_chan_devattr(const char *postfix,
->  	return ret;
->  }
->  
-> +static int iio_device_add_channel_label(struct iio_dev *indio_dev,
-> +					 struct iio_chan_spec const *chan)
-> +{
-> +	int ret;
-> +
-> +	ret = __iio_add_chan_devattr("label",
-> +					chan,
-> +					&iio_read_channel_label,
-> +					NULL,
-> +					0,
-> +					IIO_SEPARATE,
-> +					&indio_dev->dev,
-> +					&indio_dev->channel_attr_list);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 1;
-> +}
-> +
->  static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
->  					 struct iio_chan_spec const *chan,
->  					 enum iio_shared_by shared_by,
-> @@ -1241,6 +1275,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  		return ret;
->  	attrcount += ret;
->  
-> +	if (indio_dev->info->read_label) {
-> +		ret = iio_device_add_channel_label(indio_dev, chan);
-> +		if (ret < 0)
-> +			return ret;
-> +		attrcount += ret;
-> +	}
-> +
->  	if (chan->ext_info) {
->  		unsigned int i = 0;
->  		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index a1be82e74c93..58b151f5321d 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -362,6 +362,8 @@ struct iio_trigger; /* forward declaration */
->   *			and max. For lists, all possible values are enumerated.
->   * @write_raw:		function to write a value to the device.
->   *			Parameters are the same as for read_raw.
-> + * @read_label:		function to request label name for a specified label,
-> + *			for better channel identification.
->   * @write_raw_get_fmt:	callback function to query the expected
->   *			format/precision. If not set by the driver, write_raw
->   *			returns IIO_VAL_INT_PLUS_MICRO.
-> @@ -420,6 +422,10 @@ struct iio_info {
->  			 int val2,
->  			 long mask);
->  
-> +	int (*read_label)(struct iio_dev *indio_dev,
-> +			 struct iio_chan_spec const *chan,
-> +			 char *label);
-> +
->  	int (*write_raw_get_fmt)(struct iio_dev *indio_dev,
->  			 struct iio_chan_spec const *chan,
->  			 long mask);
+> > > ---
+> > >  Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360 | 83 ++++++++++++++++++++++
+> > >  1 file changed, 83 insertions(+)
+> > >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360
+> > >
+> > > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360 b/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360
+> > > new file mode 100644
+> > > index 0000000..4b1c270
+> > > --- /dev/null
+> > > +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360
+> > > @@ -0,0 +1,83 @@
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_USBID_input  
+> >
+> >
+> > The mixture of case is a bit ugly.  Could we do
+> > in_voltage_usbin_input?
+> >  
+> 
+> ACK
+> 
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 USBID ADC which connected to connector ID pin.
+> > > +             Reading returns voltage in uV
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_VBUSDIV5_input  
+> >  
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 VBUS ADC with high accuracy
+> > > +             Reading returns voltage in uV  
+> >
+> > Why would we ever read the low accuracy version?
+> >  
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_VBUSDIV2_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 VBUS ADC with low accuracy
+> > > +             Reading returns voltage in uV
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_VSYS_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 VSYS ADC
+> > > +             Reading returns voltage in uV
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_VBAT_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 VBAT ADC
+> > > +             Reading returns voltage in uV
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_current_IBUS_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 IBUS ADC
+> > > +             Reading returns current in uA  
+> > Given voltage and current are already clear from the channel type,
+> > could we avoid the repetition?
+> >
+> > in_current_bus_input perhaps?
+> >  
+> 
+> ACK
+> 
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_current_IBAT_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 IBAT ADC
+> > > +             Reading returns current in uA
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_CHG_VDDP_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 CHG_VDDP ADC
+> > > +             Reading returns voltage in uV
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_temp_TEMP_JC_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 IC junction temperature
+> > > +             Reading returns temperature in degree
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_VREF_TS_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 VREF_TS ADC
+> > > +             Reading returns voltage in uV
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage_TS_input
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 TS ADC
+> > > +             Reading returns voltage in uV
+> > > +
+> > > +What:                /sys/bus/iio/devices/iio:deviceX/timestamp
+> > > +KernelVersion:       5.8.0
+> > > +Contact:     gene_chen@richtek.com
+> > > +Description:
+> > > +             Indicated MT6360 timestamp
+> > > +             Reading returns current timestamp in ms  
+> >
+> > That's an odd bit of ABI.  Why would we want to read the current timestamp from
+> > sysfs?  Timestamps in IIO also tend to be in nano seconds.
+> >
+> >
+> >
+> >  
+> 
+> ACK, I will remove this.
 
 
