@@ -2,100 +2,191 @@ Return-Path: <SRS0=Hov9=C3=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E70E3C43463
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 11:29:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19947C43463
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 11:39:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B188D21D42
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 11:29:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B8BAB2311C
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Sep 2020 11:39:31 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="VNPYvm2K"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726438AbgIRL3Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Sep 2020 07:29:16 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:55290 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726394AbgIRL3P (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Sep 2020 07:29:15 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08I9UMrN030862;
-        Fri, 18 Sep 2020 05:33:48 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 33k5p69wrk-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Sep 2020 05:33:48 -0400
-Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 08I9XkiD050966
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 18 Sep 2020 05:33:47 -0400
-Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 18 Sep 2020 02:33:51 -0700
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 18 Sep 2020 02:33:51 -0700
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Fri, 18 Sep 2020 02:33:51 -0700
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08I9XgYH024029;
-        Fri, 18 Sep 2020 05:33:42 -0400
-From:   Cristian Pop <cristian.pop@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, Cristian Pop <cristian.pop@analog.com>
-Subject: [PATCH v5] iio:Documentation: Add documentation for label channel attribute
-Date:   Fri, 18 Sep 2020 12:33:37 +0300
-Message-ID: <20200918093337.93621-1-cristian.pop@analog.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726064AbgIRLjb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Sep 2020 07:39:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57794 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725882AbgIRLjb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Sep 2020 07:39:31 -0400
+Received: from mail-oi1-x242.google.com (mail-oi1-x242.google.com [IPv6:2607:f8b0:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3064C06174A;
+        Fri, 18 Sep 2020 04:39:30 -0700 (PDT)
+Received: by mail-oi1-x242.google.com with SMTP id m7so6654248oie.0;
+        Fri, 18 Sep 2020 04:39:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Hv+H6dY6nRfqSFBOoFPMbAJc7waktRobbMQ296CJc44=;
+        b=VNPYvm2KioNyGT532r6jWxdYOsBWKKG9wrye0nG3XwS+dSLtTcVEy2jd9XIYDojmiU
+         10kKcqbZ4RmknzE5GfHV9ek+PzSmk+caTONhXsBYfKu3s7CDKm/UtmCKrL3rcXcDuycZ
+         z6XrAX8Iv3PkfRR9bMEXBen1gl7eAFRc6M4XYUmfE/U3rFH05GO7dbkM/StQ9OlEUpsy
+         NYHA/YvLhEe2OyYxSAzLFy+MPuNyXc5aHgranS9AmgfESsGj+5ENUimgzHigeMXDsvzL
+         kAVFnMZ24kRLp+CJ0zTvuZWApc6qnYCe2f/XUnBg56IBgjN2ttP890w34kM5EcVcpjNi
+         hYcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Hv+H6dY6nRfqSFBOoFPMbAJc7waktRobbMQ296CJc44=;
+        b=Ow9Oo0O3SrkUurXZeaSb32BYXxCPHOPVHLaYMe3VZzL6svZZNw/hz54AX52baaYQF+
+         yrijmTncy+cZ9+TyYTQLosxXu+rzq2TJBTyHIU/YmnsrrCawlEh1r51LTM4IZYlNtNyH
+         UDbL4hv0wKrfFQG+gUx0pjwow04GDDIbK4XjVH5uXV49q3YAYjeWYwNnOnmegptUuAkt
+         Ij9nfnhRcmjWyrl0nf0LTFHvoY7/nF+JSBDTYj2ocDBZ0W79qciA3ZI1wNB74ngmU4SK
+         oIxpW/7pIhpdy59ha40Ss1UA2NI/Y6ka2GoyLnew6uiw+JSZB70rc9vsAFvUL71axjet
+         tjQQ==
+X-Gm-Message-State: AOAM533TlvR74GSQAU4n+ZUGHSJY6/hpLsj4UUoJmv6EkJQRLL3Xh2ND
+        dSEVXJna9Y7Qjs2TtlgJa2OktC1uzZNJAZ/cs3PQjRZDBpI=
+X-Google-Smtp-Source: ABdhPJzHXSUmI2FjzpOSvUFXSwe1uczz1hrAT4joMRm8e5xrWbCJSCrjxqZheGCbOrYVdCvJFIvYdlbu8i9Nzt1LFBk=
+X-Received: by 2002:aca:72ca:: with SMTP id p193mr8819128oic.124.1600429170085;
+ Fri, 18 Sep 2020 04:39:30 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-18_11:2020-09-16,2020-09-18 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=973
- lowpriorityscore=0 impostorscore=0 bulkscore=0 adultscore=0
- priorityscore=1501 mlxscore=0 phishscore=0 clxscore=1015 suspectscore=0
- malwarescore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009180079
+References: <20200918103247.1484-1-alexandru.ardelean@analog.com>
+In-Reply-To: <20200918103247.1484-1-alexandru.ardelean@analog.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Fri, 18 Sep 2020 14:39:19 +0300
+Message-ID: <CA+U=DsoaOJHyoK30CDFie7XWknoeG6ASXLhzS0+zKJxWWJivnQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: event: use short-hand variable in
+ iio_device_{un}register_eventset functions
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-If a label is defined in the device tree for this channel add that to the
-channel specific attributes. This is useful for userspace to be able to
-identify an individual channel.
+On Fri, Sep 18, 2020 at 1:34 PM Alexandru Ardelean
+<alexandru.ardelean@analog.com> wrote:
+>
+> With the recent 'iio_dev_opaque' variable name, these two functions are
+> looking a bit ugly.
+>
+> This change uses an 'ev_int' variable for the
+> iio_device_{un}register_eventset functions to make the code a little easier
+> to read.
+>
 
-Signed-off-by: Cristian Pop <cristian.pop@analog.com>
----
-Changes in V5:
-Create a separate patch file for this commit.
- Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
- 1 file changed, 9 insertions(+)
+Please disregard this series.
+I found a bug with this.
+Seems I didn't test it properly the first time.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index d3e53a6d8331..f2a9a03b8af9 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1697,6 +1697,15 @@ Description:
- 
- 		Raw counter device counters direction for channel Y.
- 
-+What:		/sys/bus/iio/devices/iio:deviceX/channel_label
-+KernelVersion:	5.8
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Optional symbolic label to a device channel.
-+		If a label is defined in the device tree for this channel add
-+		that to the channel specific attributes. This is useful for
-+		userspace to be able to identify an individual channel.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/in_phaseY_raw
- KernelVersion:	4.18
- Contact:	linux-iio@vger.kernel.org
--- 
-2.17.1
-
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> ---
+>  drivers/iio/industrialio-event.c | 50 +++++++++++++++-----------------
+>  1 file changed, 24 insertions(+), 26 deletions(-)
+>
+> diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+> index 2ab4d4c44427..96b7fa63f96c 100644
+> --- a/drivers/iio/industrialio-event.c
+> +++ b/drivers/iio/industrialio-event.c
+> @@ -477,6 +477,7 @@ static const char *iio_event_group_name = "events";
+>  int iio_device_register_eventset(struct iio_dev *indio_dev)
+>  {
+>         struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> +       struct iio_event_interface *ev_int;
+>         struct iio_dev_attr *p;
+>         int ret = 0, attrcount_orig = 0, attrcount, attrn;
+>         struct attribute **attr;
+> @@ -485,14 +486,13 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
+>               iio_check_for_dynamic_events(indio_dev)))
+>                 return 0;
+>
+> -       iio_dev_opaque->event_interface =
+> -               kzalloc(sizeof(struct iio_event_interface), GFP_KERNEL);
+> -       if (iio_dev_opaque->event_interface == NULL)
+> +       ev_int = kzalloc(sizeof(struct iio_event_interface), GFP_KERNEL);
+> +       if (ev_int == NULL)
+>                 return -ENOMEM;
+>
+> -       INIT_LIST_HEAD(&iio_dev_opaque->event_interface->dev_attr_list);
+> +       INIT_LIST_HEAD(&ev_int->dev_attr_list);
+>
+> -       iio_setup_ev_int(iio_dev_opaque->event_interface);
+> +       iio_setup_ev_int(ev_int);
+>         if (indio_dev->info->event_attrs != NULL) {
+>                 attr = indio_dev->info->event_attrs->attrs;
+>                 while (*attr++ != NULL)
+> @@ -506,34 +506,31 @@ int iio_device_register_eventset(struct iio_dev *indio_dev)
+>                 attrcount += ret;
+>         }
+>
+> -       iio_dev_opaque->event_interface->group.name = iio_event_group_name;
+> -       iio_dev_opaque->event_interface->group.attrs = kcalloc(attrcount + 1,
+> -                                                         sizeof(iio_dev_opaque->event_interface->group.attrs[0]),
+> -                                                         GFP_KERNEL);
+> -       if (iio_dev_opaque->event_interface->group.attrs == NULL) {
+> +       ev_int->group.name = iio_event_group_name;
+> +       ev_int->group.attrs = kcalloc(attrcount + 1,
+> +                                     sizeof(ev_int->group.attrs[0]),
+> +                                     GFP_KERNEL);
+> +       if (ev_int->group.attrs == NULL) {
+>                 ret = -ENOMEM;
+>                 goto error_free_setup_event_lines;
+>         }
+>         if (indio_dev->info->event_attrs)
+> -               memcpy(iio_dev_opaque->event_interface->group.attrs,
+> +               memcpy(ev_int->group.attrs,
+>                        indio_dev->info->event_attrs->attrs,
+> -                      sizeof(iio_dev_opaque->event_interface->group.attrs[0])
+> -                      *attrcount_orig);
+> +                      sizeof(ev_int->group.attrs[0]) * attrcount_orig);
+>         attrn = attrcount_orig;
+>         /* Add all elements from the list. */
+> -       list_for_each_entry(p,
+> -                           &iio_dev_opaque->event_interface->dev_attr_list,
+> -                           l)
+> -               iio_dev_opaque->event_interface->group.attrs[attrn++] =
+> -                       &p->dev_attr.attr;
+> -       indio_dev->groups[indio_dev->groupcounter++] =
+> -               &iio_dev_opaque->event_interface->group;
+> +       list_for_each_entry(p, &ev_int->dev_attr_list, l)
+> +               ev_int->group.attrs[attrn++] = &p->dev_attr.attr;
+> +       indio_dev->groups[indio_dev->groupcounter++] = &ev_int->group;
+> +
+> +       iio_dev_opaque->event_interface = ev_int;
+>
+>         return 0;
+>
+>  error_free_setup_event_lines:
+> -       iio_free_chan_devattr_list(&iio_dev_opaque->event_interface->dev_attr_list);
+> -       kfree(iio_dev_opaque->event_interface);
+> +       iio_free_chan_devattr_list(&ev_int->dev_attr_list);
+> +       kfree(ev_int);
+>         iio_dev_opaque->event_interface = NULL;
+>         return ret;
+>  }
+> @@ -557,10 +554,11 @@ void iio_device_wakeup_eventset(struct iio_dev *indio_dev)
+>  void iio_device_unregister_eventset(struct iio_dev *indio_dev)
+>  {
+>         struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> +       struct iio_event_interface *ev_int = iio_dev_opaque->event_interface;
+>
+> -       if (iio_dev_opaque->event_interface == NULL)
+> +       if (ev_int == NULL)
+>                 return;
+> -       iio_free_chan_devattr_list(&iio_dev_opaque->event_interface->dev_attr_list);
+> -       kfree(iio_dev_opaque->event_interface->group.attrs);
+> -       kfree(iio_dev_opaque->event_interface);
+> +       iio_free_chan_devattr_list(&ev_int->dev_attr_list);
+> +       kfree(ev_int->group.attrs);
+> +       kfree(ev_int);
+>  }
+> --
+> 2.17.1
+>
