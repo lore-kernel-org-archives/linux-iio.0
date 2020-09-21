@@ -2,86 +2,103 @@ Return-Path: <SRS0=0g8i=C6=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6CDDC4346E
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Sep 2020 18:52:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BE68C4346E
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Sep 2020 19:05:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9027B20888
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Sep 2020 18:52:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 517AB2054F
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Sep 2020 19:05:38 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600714328;
-	bh=pMHDypg8mdGWzZlKNq79sq3or90BwHEMdVV0rPdC1T8=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=0a0jmIAHfWGt4k9lS8RPqVJWSYfks0Hk23cIf98VwhEC+vIZvFC8XhGOqnRCXGrhq
-	 3a3mOIC2P/fh3njnxuP47OOJCAB5rTkFRfgB6Bf/awczNoDk3sp3LH68bWVVNRyrWZ
-	 hPchkr9aH1TmzG03UpAtWwGULzK1tjgOdrZXBKDw=
+	s=default; t=1600715138;
+	bh=65I2+Uypw52sBROUYjUm5KBOwLLpwCWUWUURDKNaaBk=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=S/96B66x2n/y23jlbd9TjcImVgSa68knwJycf6H7KVFC2wgd+SqaY+RGznxWEkcdH
+	 KhrJgo2CDtF6ieU333txr4Dujs0tg/s0Bj21vhYhpho7/Qesb1lrp5uwX79LraX5vp
+	 m86FZT53qWD3rBxU0ntD4wPLGzG3+l8XpLozu0ag=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727430AbgIUSwI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 21 Sep 2020 14:52:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41474 "EHLO mail.kernel.org"
+        id S1726611AbgIUTFh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Sep 2020 15:05:37 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44028 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726395AbgIUSwI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 21 Sep 2020 14:52:08 -0400
-Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        id S1726471AbgIUTFh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 21 Sep 2020 15:05:37 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 32EC720888;
-        Mon, 21 Sep 2020 18:52:07 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D559F2054F;
+        Mon, 21 Sep 2020 19:05:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600714327;
-        bh=pMHDypg8mdGWzZlKNq79sq3or90BwHEMdVV0rPdC1T8=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=XtQx9C2FKqcL/TCp9SA3vKcNks3TUvQI2WZt4FQCSwzekDUu5+eBcM4svcqkSC6i0
-         8HnKPz9ih7hEOrg7APJoZT7rQvvAuGqyqdyNFsHex8cOMSfdrDujG4dFgWtS3Nb60E
-         QOgOo7mZROF1lfqkmzCzdfl6SK/jhKCXFj9qLNUE=
-Date:   Mon, 21 Sep 2020 20:52:30 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     Jonathan Cameron <jic23@kernel.org>
+        s=default; t=1600715137;
+        bh=65I2+Uypw52sBROUYjUm5KBOwLLpwCWUWUURDKNaaBk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=V68b9funpXNoXmWJR0b7sKS0qDmCsyC2Odz3eW7KyUhlw9qhUJk1kBIA4J16kXplT
+         VvmN1GQkwRROnbqS1nIefih965LNZ9BUhiswrJBgBZB9/3HyX2d0LL9G9NIoBD3XbM
+         1GwTuwpCuTa4ipsAFbAJbQHVs6WLb4VTW0+DlFfA=
+Date:   Mon, 21 Sep 2020 20:05:34 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Greg KH <gregkh@linuxfoundation.org>
 Cc:     linux-iio@vger.kernel.org
 Subject: Re: [PULL] Second set of features and cleanup for IIO in the 5.10
  cycle.
-Message-ID: <20200921185230.GA1429057@kroah.com>
+Message-ID: <20200921200534.0e2b32fb@archlinux>
+In-Reply-To: <20200921185230.GA1429057@kroah.com>
 References: <20200921190808.2f0af905@archlinux>
+        <20200921185230.GA1429057@kroah.com>
+X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20200921190808.2f0af905@archlinux>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Sep 21, 2020 at 07:08:08PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 2f0472a1f80e6230f126aa0af76e89f85abc37bd:
+On Mon, 21 Sep 2020 20:52:30 +0200
+Greg KH <gregkh@linuxfoundation.org> wrote:
+
+> On Mon, Sep 21, 2020 at 07:08:08PM +0100, Jonathan Cameron wrote:
+> > The following changes since commit 2f0472a1f80e6230f126aa0af76e89f85abc37bd:
+> > 
+> >   drivers/iio/humidity/hdc2010.c:305:2-3: Unneeded semicolon (2020-09-06 16:05:56 +0100)
+> > 
+> > are available in the Git repository at:
+> > 
+> >   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.10b
+> > 
+> > for you to fetch changes up to eda7a4890f5825f1a01d635ab25235f4dacb8715:
+> > 
+> >   dt-bindings: iio: vishay,vcnl4000: add interrupts property (2020-09-21 18:54:26 +0100)  
 > 
->   drivers/iio/humidity/hdc2010.c:305:2-3: Unneeded semicolon (2020-09-06 16:05:56 +0100)
+> So close:
 > 
-> are available in the Git repository at:
+> Commit: 7bf38af6540e ("iio:accel:bma180: Fix use of true when should be iio_shared_by enum")
+> 	Fixes tag: Fixes: fdadbce0da4 ("iio: add Bosch BMA180 acceleration sensor driver")
+> 	Has these problem(s):
+> 	        - SHA1 should be at least 12 digits long
+> 	          Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
+> 	          or later) just making sure it is not set (or set to "auto").
 > 
->   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.10b
+> One more digit!  :)
 > 
-> for you to fetch changes up to eda7a4890f5825f1a01d635ab25235f4dacb8715:
+> can you fix that up and resend?
 > 
->   dt-bindings: iio: vishay,vcnl4000: add interrupts property (2020-09-21 18:54:26 +0100)
+> Remember, if I don't catch these, linux-next will...
 
-So close:
+Gah. I really need to take the time to get scripts in place for this rather
+than always thinking I'll sort it next time and just eyeball them this
+time.
 
-Commit: 7bf38af6540e ("iio:accel:bma180: Fix use of true when should be iio_shared_by enum")
-	Fixes tag: Fixes: fdadbce0da4 ("iio: add Bosch BMA180 acceleration sensor driver")
-	Has these problem(s):
-	        - SHA1 should be at least 12 digits long
-	          Can be fixed by setting core.abbrev to 12 (or more) or (for git v2.11
-	          or later) just making sure it is not set (or set to "auto").
+False laziness gets me again.  Sorry about that!
 
-One more digit!  :)
+Thanks,
 
-can you fix that up and resend?
+Jonathan
 
-Remember, if I don't catch these, linux-next will...
+> 
+> thanks,
+> 
+> greg k-h
 
-thanks,
-
-greg k-h
