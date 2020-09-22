@@ -2,97 +2,89 @@ Return-Path: <SRS0=rjN2=C7=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B31EC2D0E2
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:26:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3963FC2D0E2
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:26:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 379C2239A1
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:26:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 03E3D20936
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:26:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726613AbgIVN0U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Sep 2020 09:26:20 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:20046 "EHLO
+        id S1726681AbgIVN0a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Sep 2020 09:26:30 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:32544 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726473AbgIVN0U (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2020 09:26:20 -0400
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08MDMT0t017278;
-        Tue, 22 Sep 2020 09:26:19 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 33new49vcg-1
+        by vger.kernel.org with ESMTP id S1726643AbgIVN00 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2020 09:26:26 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08MDKI27014376;
+        Tue, 22 Sep 2020 09:26:25 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33nbu6agh1-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Sep 2020 09:26:19 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 08MDQIVZ062803
+        Tue, 22 Sep 2020 09:26:24 -0400
+Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 08MDQNYk025990
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 22 Sep 2020 09:26:18 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+        Tue, 22 Sep 2020 09:26:23 -0400
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 22 Sep 2020 09:26:18 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 22 Sep 2020 09:26:18 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Tue, 22 Sep 2020 09:26:18 -0400
+ 15.1.1779.2; Tue, 22 Sep 2020 06:26:23 -0700
+Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Tue, 22 Sep 2020 06:26:23 -0700
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08MDQCon015940;
-        Tue, 22 Sep 2020 09:26:13 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08MDQCoq015940;
+        Tue, 22 Sep 2020 09:26:19 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     <robh+dt@kernel.org>, <jic23@kernel.org>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 0/5] iio: adc: ad9467: add support for AD9434 & AD9265
-Date:   Tue, 22 Sep 2020 16:25:54 +0300
-Message-ID: <20200922132559.38456-1-alexandru.ardelean@analog.com>
+Subject: [PATCH v2 3/5] dt-bindings: iio: ad9467: add entry for for AD9434 ADC
+Date:   Tue, 22 Sep 2020 16:25:57 +0300
+Message-ID: <20200922132559.38456-4-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200922132559.38456-1-alexandru.ardelean@analog.com>
+References: <20200922132559.38456-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-22_12:2020-09-21,2020-09-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
- lowpriorityscore=0 mlxlogscore=999 spamscore=0 impostorscore=0
- clxscore=1015 priorityscore=1501 mlxscore=0 adultscore=0 phishscore=0
- suspectscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2006250000 definitions=main-2009220104
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
+ suspectscore=0 priorityscore=1501 spamscore=0 lowpriorityscore=0
+ bulkscore=0 malwarescore=0 impostorscore=0 phishscore=0 clxscore=1015
+ mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009220104
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a V2 for:
-  https://lore.kernel.org/linux-iio/CA+U=DspC_W=j-eET38q1v+ytbntUXQwvUCBKx0DJ9hDGVtV-OA@mail.gmail.com/T/
+Add entry for the AD9434 high-speed ADC which is supported by the 'ad9467'
+driver.
 
-It does a bit of rework/unification of the 2 chip-info constants, so
-that it's easier to add new devices 2 this driver.
-V1 only added only AD9434, but when adding AD9265, I noticed that some
-things could be a bit more unified for vref_mask & default_output_mode.
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Changelog v1 -> v2:
-* add AD9265 support
-* wrap axi-adc chip-info, to also define vref_mask & default_output_mode
-  in the chip-info table
-
-Alexandru Ardelean (3):
-  iio: adc: ad9467: wrap a axi-adc chip-info into a ad9467_chip_info
-    type
-  dt-bindings: iio: ad9467: add entry for for AD9434 ADC
-  dt-bindings: iio: ad9467: add entry for for AD9265 ADC
-
-Michael Hennerich (2):
-  iio: adc: ad9467: add support for AD9434 high-speed ADC
-  iio: adc: ad9467: add support for AD9265 high-speed ADC
-
- .../bindings/iio/adc/adi,ad9467.yaml          |   2 +
- drivers/iio/adc/ad9467.c                      | 121 +++++++++++++-----
- 2 files changed, 90 insertions(+), 33 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
+index c4f57fa6aad1..0e8da8ee6975 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
+@@ -19,6 +19,7 @@ description: |
+ properties:
+   compatible:
+     enum:
++      - adi,ad9434
+       - adi,ad9467
+ 
+   reg:
 -- 
 2.17.1
 
