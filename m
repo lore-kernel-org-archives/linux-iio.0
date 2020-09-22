@@ -2,83 +2,97 @@ Return-Path: <SRS0=rjN2=C7=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 951FEC2D0E2
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 12:40:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B31EC2D0E2
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:26:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3D8E82395C
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 12:40:25 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1600778425;
-	bh=glyr4Ts0WAIQZH0vh63AEyg/MGLZ9VRPEa0rfeU2Mh8=;
-	h=Date:From:To:Subject:List-ID:From;
-	b=AaNZbKUPEMv/lSZOjAgliaLZWBfpQbxGnKCnG13p1k7L6yNPO6gret6192CvqgDYO
-	 0WUe8GUukBN5A/oV48/xSp4aCSXBWHBTiPTUldPQXCr0gduosw8Hh1s7M/OCMkdXML
-	 VltumykNSd4tNOAcdSUj023v1ruvMZCWOOC9/DfA=
+	by mail.kernel.org (Postfix) with ESMTP id 379C2239A1
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:26:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726541AbgIVMkY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Sep 2020 08:40:24 -0400
-Received: from mail.kernel.org ([198.145.29.99]:39320 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726586AbgIVMkY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 22 Sep 2020 08:40:24 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B1D232395C;
-        Tue, 22 Sep 2020 12:40:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1600778422;
-        bh=glyr4Ts0WAIQZH0vh63AEyg/MGLZ9VRPEa0rfeU2Mh8=;
-        h=Date:From:To:Subject:From;
-        b=wrsnb0CeclTbzt7IsH5xhWVBpnDlR7UsXgveGJO2E8FG505+Ye1FdP4myAkHNpwgX
-         bSZlXNHMSv8tSXqRJqn5/W5HEROlkY2wz9mfAGSHd1zc6UyLnc57REWNOuUn5LC75O
-         93lufphFD2nfbopTJZWKQ+701Wu4TERp0Zc8XhFQ=
-Date:   Tue, 22 Sep 2020 13:40:18 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-Subject: [PULL V2] 2nd set of IIO fixes for 5.9
-Message-ID: <20200922134018.064157eb@archlinux>
-X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1726613AbgIVN0U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Sep 2020 09:26:20 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:20046 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726473AbgIVN0U (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2020 09:26:20 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08MDMT0t017278;
+        Tue, 22 Sep 2020 09:26:19 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33new49vcg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Sep 2020 09:26:19 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 08MDQIVZ062803
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Tue, 22 Sep 2020 09:26:18 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 22 Sep 2020 09:26:18 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Tue, 22 Sep 2020 09:26:18 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Tue, 22 Sep 2020 09:26:18 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08MDQCon015940;
+        Tue, 22 Sep 2020 09:26:13 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <robh+dt@kernel.org>, <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v2 0/5] iio: adc: ad9467: add support for AD9434 & AD9265
+Date:   Tue, 22 Sep 2020 16:25:54 +0300
+Message-ID: <20200922132559.38456-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-22_12:2020-09-21,2020-09-22 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0
+ lowpriorityscore=0 mlxlogscore=999 spamscore=0 impostorscore=0
+ clxscore=1015 priorityscore=1501 mlxscore=0 adultscore=0 phishscore=0
+ suspectscore=0 malwarescore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2006250000 definitions=main-2009220104
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The following changes since commit 856deb866d16e29bd65952e0289066f6078af773:
+This is a V2 for:
+  https://lore.kernel.org/linux-iio/CA+U=DspC_W=j-eET38q1v+ytbntUXQwvUCBKx0DJ9hDGVtV-OA@mail.gmail.com/T/
 
-  Linux 5.9-rc5 (2020-09-13 16:06:00 -0700)
+It does a bit of rework/unification of the 2 chip-info constants, so
+that it's easier to add new devices 2 this driver.
+V1 only added only AD9434, but when adding AD9265, I noticed that some
+things could be a bit more unified for vref_mask & default_output_mode.
 
-are available in the Git repository at:
+Changelog v1 -> v2:
+* add AD9265 support
+* wrap axi-adc chip-info, to also define vref_mask & default_output_mode
+  in the chip-info table
 
-  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-5.9b-take2
+Alexandru Ardelean (3):
+  iio: adc: ad9467: wrap a axi-adc chip-info into a ad9467_chip_info
+    type
+  dt-bindings: iio: ad9467: add entry for for AD9434 ADC
+  dt-bindings: iio: ad9467: add entry for for AD9265 ADC
 
-for you to fetch changes up to fdb29f4de1374483291232ae7515e5e7bb464762:
+Michael Hennerich (2):
+  iio: adc: ad9467: add support for AD9434 high-speed ADC
+  iio: adc: ad9467: add support for AD9265 high-speed ADC
 
-  iio: adc: qcom-spmi-adc5: fix driver name (2020-09-22 13:33:19 +0100)
+ .../bindings/iio/adc/adi,ad9467.yaml          |   2 +
+ drivers/iio/adc/ad9467.c                      | 121 +++++++++++++-----
+ 2 files changed, 90 insertions(+), 33 deletions(-)
 
-----------------------------------------------------------------
-2nd set of IIO fixes for the 5.9 cycle.
+-- 
+2.17.1
 
-One of these fixes a regresison introduced this cycle, but if I am too late
-sending this request, it can be queued up for the merge window.
-
-ad7124: fix typo in device name exposed through sysfs.
-qcom-spmi-adc: fix stray .c in driver name field.
-
-----------------------------------------------------------------
-Dmitry Baryshkov (1):
-      iio: adc: qcom-spmi-adc5: fix driver name
-
-Mircea Caprioru (1):
-      iio: adc: ad7124: Fix typo in device name
-
- drivers/iio/adc/ad7124.c         | 4 ++--
- drivers/iio/adc/qcom-spmi-adc5.c | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
