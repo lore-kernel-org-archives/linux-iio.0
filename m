@@ -2,202 +2,151 @@ Return-Path: <SRS0=rjN2=C7=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A58E3C47423
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:26:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07762C4363D
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:47:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7152820888
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:26:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6A9BE2395B
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Sep 2020 13:47:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="alcV2CUR"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726646AbgIVN0Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Sep 2020 09:26:25 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:25042 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726473AbgIVN0X (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2020 09:26:23 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08MDKDKK014319;
-        Tue, 22 Sep 2020 09:26:21 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 33nbu6aggu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Sep 2020 09:26:21 -0400
-Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 08MDQJNL025972
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 22 Sep 2020 09:26:20 -0400
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Tue, 22 Sep
- 2020 06:26:20 -0700
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Tue, 22 Sep 2020 06:26:19 -0700
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08MDQCoo015940;
-        Tue, 22 Sep 2020 09:26:16 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     <robh+dt@kernel.org>, <jic23@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 1/5] iio: adc: ad9467: wrap a axi-adc chip-info into a ad9467_chip_info type
-Date:   Tue, 22 Sep 2020 16:25:55 +0300
-Message-ID: <20200922132559.38456-2-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200922132559.38456-1-alexandru.ardelean@analog.com>
-References: <20200922132559.38456-1-alexandru.ardelean@analog.com>
+        id S1726593AbgIVNrB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Sep 2020 09:47:01 -0400
+Received: from www381.your-server.de ([78.46.137.84]:44418 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726573AbgIVNrA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2020 09:47:00 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
+        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References;
+        bh=oUeSwr/n1Dl6z6L8xZ5BzVC3kUWF5+rtKL0jGU4TM1Q=; b=alcV2CURi5Q1Et/4QDW1pcgsY2
+        dBiKnogI3d5SqXy2KD5XFsuYLJmynnosNVOAVXUBFkcrcDhDfC2InCbQ2bxvWujK8D5BnQXtANqX/
+        WzlVAEP9CEm2KHk5XgK7GTXAfdMYji+XWH4Unj8rmHMRcdvU6IunQe3R7yytqfSDxBc65DXw67bld
+        a4v4y4FdYA2p6NNqw6IFPMf2uxGznVebGB7w/SxPtrZlAueNfxb8Lye7yr1Mdr+9Px5ziGReoXBRh
+        ONkScdjwpvmhh4vW6IR5stfnZ522JnQdFazbOFlvlW4bLXdN0h86I5EdQ9CHJBrMKKnuNf1QxWHLl
+        7/V3h+FA==;
+Received: from sslproxy01.your-server.de ([78.46.139.224])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1kKidF-0005wA-VP; Tue, 22 Sep 2020 15:46:58 +0200
+Received: from [2001:a61:259b:1201:9e5c:8eff:fe01:8578] (helo=lars-desktop.fritz.box)
+        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1kKidF-000LOk-RN; Tue, 22 Sep 2020 15:46:57 +0200
+From:   Lars-Peter Clausen <lars@metafoo.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 1/2] devicetree: Add Xilinx System Management Wizard binding documentation
+Date:   Tue, 22 Sep 2020 15:46:23 +0200
+Message-Id: <20200922134624.13191-1-lars@metafoo.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRoutedOnPrem: True
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
- definitions=2020-09-22_12:2020-09-21,2020-09-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxscore=0
- suspectscore=0 priorityscore=1501 spamscore=0 lowpriorityscore=0
- bulkscore=0 malwarescore=0 impostorscore=0 phishscore=0 clxscore=1015
- mlxlogscore=856 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009220104
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25934/Mon Sep 21 15:52:04 2020)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There are 2 chip constants that can be added to the chip-info part. The
-default output-mode and the VREF mask.
+Add binding documentation for the Xilinx System Management Wizard. The
+Xilinx System Management Wizard is a AXI frontend for the Xilinx System
+Monitor found in the UltraScale and UltraScale+ FPGAs.
 
-When adding new chips to this driver, these can be easily omitted, because
-these also need to be updated in 2 switch statements.
+The System Monitor is the equivalent to the Xilinx XADC found in their
+previous generation of FPGAs and their external and internal interfaces are
+very similar. For this reason the share the same binding documentation. But
+since they are not 100% compatible and software will have to know about the
+differences they use a different compatible string.
 
-However, if adding them in the chip-info constants, they are updated in a
-single place and propagated in both switch statements.
-
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/adc/ad9467.c | 62 +++++++++++++++++++---------------------
- 1 file changed, 29 insertions(+), 33 deletions(-)
+ .../bindings/iio/adc/xilinx-xadc.txt          | 49 +++++++++++++++----
+ 1 file changed, 39 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/iio/adc/ad9467.c b/drivers/iio/adc/ad9467.c
-index f068256cfca9..85f5a014bd2d 100644
---- a/drivers/iio/adc/ad9467.c
-+++ b/drivers/iio/adc/ad9467.c
-@@ -88,6 +88,15 @@ enum {
- 	ID_AD9467,
- };
+diff --git a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+index e0e0755cabd8..f42e18078376 100644
+--- a/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/xilinx-xadc.txt
+@@ -1,13 +1,22 @@
+ Xilinx XADC device driver
  
-+struct ad9467_chip_info {
-+	struct adi_axi_adc_chip_info	axi_adc_info;
-+	unsigned int			default_output_mode;
-+	unsigned int			vref_mask;
-+};
+-This binding document describes the bindings for both of them since the
+-bindings are very similar. The Xilinx XADC is a ADC that can be found in the
+-series 7 FPGAs from Xilinx. The XADC has a DRP interface for communication.
+-Currently two different frontends for the DRP interface exist. One that is only
+-available on the ZYNQ family as a hardmacro in the SoC portion of the ZYNQ. The
+-other one is available on all series 7 platforms and is a softmacro with a AXI
+-interface. This binding document describes the bindings for both of them since
+-the bindings are very similar.
++This binding document describes the bindings for the Xilinx 7 Series XADC as well
++as the UltraScale/UltraScale+ System Monitor.
 +
-+#define to_ad9467_chip_info(_info)	\
-+	container_of(_info, struct ad9467_chip_info, axi_adc_info)
++The Xilinx XADC is an ADC that can be found in the Series 7 FPGAs from Xilinx.
++The XADC has a DRP interface for communication. Currently two different
++frontends for the DRP interface exist. One that is only available on the ZYNQ
++family as a hardmacro in the SoC portion of the ZYNQ. The other one is available
++on all series 7 platforms and is a softmacro with a AXI interface. This binding
++document describes the bindings for both of them since the bindings are very
++similar.
 +
- struct ad9467_state {
- 	struct spi_device		*spi;
- 	struct clk			*clk;
-@@ -186,35 +195,31 @@ static const struct iio_chan_spec ad9467_channels[] = {
- 	AD9467_CHAN(0, 0, 16, 'S'),
- };
++The Xilinx System Monitor is an ADC that is found in the UltraScale and
++UltraScale+ FPGAs from Xilinx. The System Monitor provides a DRP interface for
++communication. Xilinx provides a standard IP core that can be used to access the
++System Monitor through an AXI interface in the FPGA fabric. This IP core is
++called the Xilinx System Management Wizard. This document describes the bindings
++for this IP.
  
--static const struct adi_axi_adc_chip_info ad9467_chip_tbl[] = {
-+static const struct ad9467_chip_info ad9467_chip_tbl[] = {
- 	[ID_AD9467] = {
--		.id = CHIPID_AD9467,
--		.max_rate = 250000000UL,
--		.scale_table = ad9467_scale_table,
--		.num_scales = ARRAY_SIZE(ad9467_scale_table),
--		.channels = ad9467_channels,
--		.num_channels = ARRAY_SIZE(ad9467_channels),
-+		.axi_adc_info = {
-+			.id = CHIPID_AD9467,
-+			.max_rate = 250000000UL,
-+			.scale_table = ad9467_scale_table,
-+			.num_scales = ARRAY_SIZE(ad9467_scale_table),
-+			.channels = ad9467_channels,
-+			.num_channels = ARRAY_SIZE(ad9467_channels),
-+		},
-+		.default_output_mode = AD9467_DEF_OUTPUT_MODE,
-+		.vref_mask = AD9467_REG_VREF_MASK,
- 	},
- };
+ Required properties:
+ 	- compatible: Should be one of
+@@ -15,11 +24,14 @@ Required properties:
+ 		  configuration interface to interface to the XADC hardmacro.
+ 		* "xlnx,axi-xadc-1.00.a": When using the axi-xadc pcore to
+ 		  interface to the XADC hardmacro.
++		* "xlnx,system-management-wiz-1.3": When using the
++		  Xilinx System Management Wizard fabric IP core to access the
++		  UltraScale and UltraScale+ System Monitor.
+ 	- reg: Address and length of the register set for the device
+ 	- interrupts: Interrupt for the XADC control interface.
+ 	- clocks: When using the ZYNQ this must be the ZYNQ PCAP clock,
+-	  when using the AXI-XADC pcore this must be the clock that provides the
+-	  clock to the AXI bus interface of the core.
++	  when using the axi-xadc or the axi-system-management-wizard this must be
++	  the clock that provides the clock to the AXI bus interface of the core.
  
- static int ad9467_get_scale(struct adi_axi_adc_conv *conv, int *val, int *val2)
- {
- 	const struct adi_axi_adc_chip_info *info = conv->chip_info;
-+	const struct ad9467_chip_info *info1 = to_ad9467_chip_info(info);
- 	struct ad9467_state *st = adi_axi_adc_conv_priv(conv);
--	unsigned int i, vref_val, vref_mask;
-+	unsigned int i, vref_val;
- 
- 	vref_val = ad9467_spi_read(st->spi, AN877_ADC_REG_VREF);
- 
--	switch (info->id) {
--	case CHIPID_AD9467:
--		vref_mask = AD9467_REG_VREF_MASK;
--		break;
--	default:
--		vref_mask = 0xFFFF;
--		break;
--	}
--
--	vref_val &= vref_mask;
-+	vref_val &= info1->vref_mask;
- 
- 	for (i = 0; i < info->num_scales; i++) {
- 		if (vref_val == info->scale_table[i][1])
-@@ -316,18 +321,6 @@ static int ad9467_preenable_setup(struct adi_axi_adc_conv *conv)
- 	return ad9467_outputmode_set(st->spi, st->output_mode);
- }
- 
--static int ad9467_setup(struct ad9467_state *st, unsigned int chip_id)
--{
--	switch (chip_id) {
--	case CHIPID_AD9467:
--		st->output_mode = AD9467_DEF_OUTPUT_MODE |
--				  AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT;
--		return 0;
--	default:
--		return -ENODEV;
--	}
--}
--
- static void ad9467_clk_disable(void *data)
- {
- 	struct ad9467_state *st = data;
-@@ -337,7 +330,7 @@ static void ad9467_clk_disable(void *data)
- 
- static int ad9467_probe(struct spi_device *spi)
- {
--	const struct adi_axi_adc_chip_info *info;
-+	const struct ad9467_chip_info *info;
- 	struct adi_axi_adc_conv *conv;
- 	struct ad9467_state *st;
- 	unsigned int id;
-@@ -386,7 +379,7 @@ static int ad9467_probe(struct spi_device *spi)
- 
- 	spi_set_drvdata(spi, st);
- 
--	conv->chip_info = info;
-+	conv->chip_info = &info->axi_adc_info;
- 
- 	id = ad9467_spi_read(spi, AN877_ADC_REG_CHIP_ID);
- 	if (id != conv->chip_info->id) {
-@@ -400,7 +393,10 @@ static int ad9467_probe(struct spi_device *spi)
- 	conv->read_raw = ad9467_read_raw;
- 	conv->preenable_setup = ad9467_preenable_setup;
- 
--	return ad9467_setup(st, id);
-+	st->output_mode = info->default_output_mode |
-+			  AN877_ADC_OUTPUT_MODE_TWOS_COMPLEMENT;
+ Optional properties:
+ 	- xlnx,external-mux:
+@@ -110,3 +122,20 @@ Examples:
+ 			};
+ 		};
+ 	};
 +
-+	return 0;
- }
- 
- static const struct of_device_id ad9467_of_match[] = {
++	adc@80000000 {
++		compatible = "xlnx,system-management-wiz-1.3";
++		reg = <0x80000000 0x1000>;
++		interrupts = <0 81 4>;
++		interrupt-parent = <&gic>;
++		clocks = <&fpga1_clk>;
++
++		xlnx,channels {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			channel@0 {
++				reg = <0>;
++				xlnx,bipolar;
++			};
++		};
++	};
 -- 
-2.17.1
+2.20.1
 
