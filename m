@@ -2,303 +2,130 @@ Return-Path: <SRS0=7TZI=DA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CF89C4727D
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Sep 2020 09:07:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E94B4C2D0A8
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Sep 2020 12:18:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C93562223E
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Sep 2020 09:07:28 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="kAJE3GOD"
+	by mail.kernel.org (Postfix) with ESMTP id 9473E21D92
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Sep 2020 12:18:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726723AbgIWJH2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 23 Sep 2020 05:07:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40376 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726424AbgIWJH1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2020 05:07:27 -0400
-Received: from mail-lj1-x244.google.com (mail-lj1-x244.google.com [IPv6:2a00:1450:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81ACEC0613D1
-        for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2020 02:07:27 -0700 (PDT)
-Received: by mail-lj1-x244.google.com with SMTP id c2so16559098ljj.12
-        for <linux-iio@vger.kernel.org>; Wed, 23 Sep 2020 02:07:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=oxfqN+/oFq6f8zrQC/M5ig8ijRiZLXyefj4fwEV8+DY=;
-        b=kAJE3GOD2vJpQ7aXFpD7xZpacWnJ+tWlt4k6eb4f5ao88/RQvx9wqvk/ebR6ZqhTTn
-         5Py6T+kevtOj+S8vA4PTA5eygM0sOHC1/FP9KdZVwlu0Oq3/44qodvghr+43QoHnh8x8
-         5CeWVD2IjSUHbIHbrAQ7kGd2QIrb8U079ygRjFkfN/Ywk/8Jrge8p9BXYzrluAY8UJ2n
-         nvM7Hpy0u4TFvdCA452stR9Ka/o059qUfVnVUvuyJ/7rNkwXW6Yvm09W9hWHlSib5sse
-         6fm/Y3mqsAQ/qtmkhTdlqildrALk8/aejkg8NeldoKzmgWO0UY41ZxhVXRjCrwHJdb12
-         YIRQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=oxfqN+/oFq6f8zrQC/M5ig8ijRiZLXyefj4fwEV8+DY=;
-        b=q4iRYEayZmJtJCINn+NCWeNjCI81QtLnZdfebVPFwwMn1A0cqzhu+f4+f1BmmW88hE
-         Pz+BLRSBPbzOvLhdTWGYnKK6SeKS3Ov5pkGl5S5NqfE8s+jBoHzpp3f/JHHcCYn/RqBG
-         omvDw2fFw0wOX0WXYBcggJhoRMcjbCfJXLOygM0iXR7I4Eae/QsTO7iA3+tl+XUf+SOi
-         619d1NFGJJ53ABh1erUzMiS0E1ZQNCc+m6eJhwlNQdDt/f4u2a/0pg6RbO7LDPF8FWOQ
-         L3Q70v1OpLT2tKHsWMryHPtQ/GacOfgoeTuM8fA0pID9IRjlRfw5UeiOp3/CzItRWK1G
-         JCyg==
-X-Gm-Message-State: AOAM53019SGHIXolOl0Z1bKUots7CmW/XX5HLKA3fVTrlH7D9Zj6p6li
-        Gx9gLJj+hkqeoOAymnmRmOq95g==
-X-Google-Smtp-Source: ABdhPJyoCA3uPuZCxSHL6yFBRN8e+6DemT9CbJsGA4nrCdkQQLUMdOxpTNjah6CWsGURB+sl+Zwn0g==
-X-Received: by 2002:a2e:8850:: with SMTP id z16mr2761724ljj.184.1600852045836;
-        Wed, 23 Sep 2020 02:07:25 -0700 (PDT)
-Received: from [192.168.1.211] ([188.162.64.186])
-        by smtp.gmail.com with ESMTPSA id o8sm4572927lfa.44.2020.09.23.02.07.23
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Sep 2020 02:07:25 -0700 (PDT)
-Subject: Re: [PATCH v5 1/9] dt-bindings: thermal: qcom: add adc-thermal
- monitor bindings
-To:     Rob Herring <robh@kernel.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <20200914154809.192174-1-dmitry.baryshkov@linaro.org>
- <20200914154809.192174-2-dmitry.baryshkov@linaro.org>
- <20200922234025.GA3476652@bogus>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Message-ID: <55d3f181-b9e6-4963-9d0c-cefee875058c@linaro.org>
-Date:   Wed, 23 Sep 2020 12:07:22 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.2.2
+        id S1726332AbgIWMSe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 23 Sep 2020 08:18:34 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:13348 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726130AbgIWMSd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Sep 2020 08:18:33 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08NCALBb024115;
+        Wed, 23 Sep 2020 08:18:20 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33r5u982va-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 23 Sep 2020 08:18:20 -0400
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 08NCIJOH006721
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 23 Sep 2020 08:18:19 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 23 Sep
+ 2020 08:18:18 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 23 Sep 2020 08:18:18 -0400
+Received: from saturn.ad.analog.com ([10.48.65.107])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08NCIGSI009889;
+        Wed, 23 Sep 2020 08:18:16 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: buffer-dmaengine: remove non managed alloc/free
+Date:   Wed, 23 Sep 2020 15:18:10 +0300
+Message-ID: <20200923121810.944075-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <20200922234025.GA3476652@bogus>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-23_07:2020-09-23,2020-09-23 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 phishscore=0
+ impostorscore=0 mlxlogscore=999 suspectscore=2 clxscore=1015
+ malwarescore=0 mlxscore=0 spamscore=0 lowpriorityscore=0 bulkscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009230099
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 23/09/2020 02:40, Rob Herring wrote:
-> On Mon, Sep 14, 2020 at 06:48:01PM +0300, Dmitry Baryshkov wrote:
->> Add bindings for thermal monitor, part of Qualcomm PMIC5 chips. It is a
->> close counterpart of VADC part of those PMICs.
->>
->> Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->> Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->> ---
->>   .../bindings/thermal/qcom-spmi-adc-tm5.yaml   | 151 ++++++++++++++++++
->>   1 file changed, 151 insertions(+)
->>   create mode 100644 Documentation/devicetree/bindings/thermal/qcom-spmi-adc-tm5.yaml
->>
->> diff --git a/Documentation/devicetree/bindings/thermal/qcom-spmi-adc-tm5.yaml b/Documentation/devicetree/bindings/thermal/qcom-spmi-adc-tm5.yaml
->> new file mode 100644
->> index 000000000000..432a65839b89
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/thermal/qcom-spmi-adc-tm5.yaml
->> @@ -0,0 +1,151 @@
->> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
->> +%YAML 1.2
->> +---
->> +$id: http://devicetree.org/schemas/thermal/qcom-spmi-adc-tm5.yaml#
->> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->> +
->> +title: Qualcomm's SPMI PMIC ADC Thermal Monitoring
->> +maintainers:
->> +  - Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
->> +
->> +properties:
->> +  compatible:
->> +    const: qcom,spmi-adc-tm5
->> +
->> +  reg:
->> +    maxItems: 1
->> +
->> +  interrupts:
->> +    maxItems: 1
->> +
->> +  "#thermal-sensor-cells":
->> +    const: 1
->> +    description:
->> +      Number of cells required to uniquely identify the thermal sensors. Since
->> +      we have multiple sensors this is set to 1
->> +
->> +  "#address-cells":
->> +    const: 1
->> +
->> +  "#size-cells":
->> +    const: 0
->> +
->> +  qcom,avg-samples:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    description: Number of samples to be used for measurement.
->> +    enum:
->> +      - 1
->> +      - 2
->> +      - 4
->> +      - 8
->> +      - 16
->> +    default: 1
->> +
->> +  qcom,decimation:
->> +    $ref: /schemas/types.yaml#/definitions/uint32
->> +    description: This parameter is used to decrease ADC sampling rate.
->> +            Quicker measurements can be made by reducing decimation ratio.
->> +    enum:
->> +      - 250
->> +      - 420
->> +      - 840
->> +    default: 840
->> +
->> +patternProperties:
->> +  "^([-a-z0-9]*)@[0-9]+$":
-> 
-> Less than 10 as unit-addresses are hex?
+This is to encourage the use of devm_iio_dmaengine_buffer_alloc().
+Currently the managed version of the DMAEngine buffer alloc is the only
+function used from this part of the framework.
 
-8 channels at max currently. I'll fix to use hex though.
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 6 ++----
+ include/linux/iio/buffer-dmaengine.h               | 4 ----
+ 2 files changed, 2 insertions(+), 8 deletions(-)
 
-> 
->> +    type: object
->> +    description:
->> +      Represent one thermal sensor.
->> +
->> +    properties:
->> +      reg:
->> +        description: Specify the sensor channel.
->> +        maxItems: 1
-> 
-> You need a range of values here.
-
-ok.
-
-> 
->> +
->> +      io-channels:
->> +        description:
->> +          From common IIO binding. Used to pipe PMIC ADC channel to thermal monitor
->> +
->> +      qcom,adc-channel:
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +        description: Corresponding ADC channel ID.
-> 
-> Why is this not a cell in io-channels?
-
-
-Do you mean parsing a cell from io-channels rather than specifying it 
-again? Sounds like a good idea.
-
-> 
->> +
->> +      qcom,ratiometric:
->> +        $ref: /schemas/types.yaml#/definitions/flag
->> +        description:
->> +          Channel calibration type.
->> +          If this property is specified VADC will use the VDD reference
->> +          (1.875V) and GND for channel calibration. If property is not found,
->> +          channel will be calibrated with 0V and 1.25V reference channels,
->> +          also known as absolute calibration.
->> +
->> +      qcom,hw-settle-time:
->> +        $ref: /schemas/types.yaml#/definitions/uint32
->> +        description: Time between AMUX getting configured and the ADC starting conversion.
-> 
-> Time values should have a unit suffix. Seems like a commmon ADC
-> property...
-
-Could you please be more specific here? Would you like for me to just 
-specify the unit in the description?
-
-> 
->> +
->> +      qcom,pre-scaling:
->> +        $ref: /schemas/types.yaml#/definitions/uint32-array
->> +        description: Used for scaling the channel input signal before the
->> +          signal is fed to VADC. See qcom,spi-vadc specification for the list
->> +          of possible values.
-> 
-> I'd rather not. Need the values here to validate a DT.
-
-OK
-
-> 
->> +        minItems: 2
->> +        maxItems: 2
->> +
->> +    required:
->> +      - reg
->> +      - qcom,adc-channel
->> +
->> +    additionalProperties:
->> +      false
->> +
->> +required:
->> +  - compatible
->> +  - reg
->> +  - interrupts
->> +  - "#address-cells"
->> +  - "#size-cells"
->> +  - "#thermal-sensor-cells"
->> +
->> +additionalProperties: false
->> +
->> +examples:
->> +  - |
->> +    #include <dt-bindings/iio/qcom,spmi-vadc.h>
->> +    #include <dt-bindings/interrupt-controller/irq.h>
->> +    spmi_bus {
->> +        #address-cells = <1>;
->> +        #size-cells = <0>;
->> +        pm8150b_adc: adc@3100 {
->> +            reg = <0x3100>;
->> +            compatible = "qcom,spmi-adc5";
->> +            #address-cells = <1>;
->> +            #size-cells = <0>;
->> +            #io-channel-cells = <1>;
->> +            io-channel-ranges;
->> +
->> +            /* Other propreties are omitted */
->> +            conn-therm@4f {
->> +                reg = <ADC5_AMUX_THM3_100K_PU>;
->> +                qcom,ratiometric;
->> +                qcom,hw-settle-time = <200>;
->> +            };
->> +        };
->> +
->> +        pm8150b_adc_tm: adc-tm@3500 {
->> +            compatible = "qcom,spmi-adc-tm5";
->> +            reg = <0x3500>;
->> +            interrupts = <0x2 0x35 0x0 IRQ_TYPE_EDGE_RISING>;
->> +            #thermal-sensor-cells = <1>;
->> +            #address-cells = <1>;
->> +            #size-cells = <0>;
->> +
->> +            conn-therm@0 {
->> +                reg = <0>;
->> +                io-channels = <&pm8150b_adc ADC5_AMUX_THM3_100K_PU>;
->> +                qcom,adc-channel = <ADC5_AMUX_THM3_100K_PU>;
->> +                qcom,ratiometric;
->> +                qcom,hw-settle-time = <200>;
->> +            };
->> +        };
->> +    };
->> +...
->> -- 
->> 2.28.0
->>
-
-
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index 5789bda0745b..93b4e9e6bb55 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -159,7 +159,7 @@ static const struct attribute *iio_dmaengine_buffer_attrs[] = {
+  * Once done using the buffer iio_dmaengine_buffer_free() should be used to
+  * release it.
+  */
+-struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
++static struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+ 	const char *channel)
+ {
+ 	struct dmaengine_buffer *dmaengine_buffer;
+@@ -211,7 +211,6 @@ struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+ 	kfree(dmaengine_buffer);
+ 	return ERR_PTR(ret);
+ }
+-EXPORT_SYMBOL(iio_dmaengine_buffer_alloc);
+ 
+ /**
+  * iio_dmaengine_buffer_free() - Free dmaengine buffer
+@@ -219,7 +218,7 @@ EXPORT_SYMBOL(iio_dmaengine_buffer_alloc);
+  *
+  * Frees a buffer previously allocated with iio_dmaengine_buffer_alloc().
+  */
+-void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
++static void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
+ {
+ 	struct dmaengine_buffer *dmaengine_buffer =
+ 		iio_buffer_to_dmaengine_buffer(buffer);
+@@ -229,7 +228,6 @@ void iio_dmaengine_buffer_free(struct iio_buffer *buffer)
+ 
+ 	iio_buffer_put(buffer);
+ }
+-EXPORT_SYMBOL_GPL(iio_dmaengine_buffer_free);
+ 
+ static void __devm_iio_dmaengine_buffer_free(struct device *dev, void *res)
+ {
+diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
+index 0e503db71289..5b502291d6a4 100644
+--- a/include/linux/iio/buffer-dmaengine.h
++++ b/include/linux/iio/buffer-dmaengine.h
+@@ -10,10 +10,6 @@
+ struct iio_buffer;
+ struct device;
+ 
+-struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
+-	const char *channel);
+-void iio_dmaengine_buffer_free(struct iio_buffer *buffer);
+-
+ struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
+ 						   const char *channel);
+ 
 -- 
-With best wishes
-Dmitry
+2.25.1
+
