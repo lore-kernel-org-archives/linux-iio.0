@@ -2,134 +2,125 @@ Return-Path: <SRS0=7TZI=DA=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6C94FC4363D
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Sep 2020 01:49:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 262BCC4363D
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Sep 2020 05:55:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2BA982371F
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Sep 2020 01:49:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Iy+cU19p"
+	by mail.kernel.org (Postfix) with ESMTP id B7DD8221F0
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Sep 2020 05:55:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1600840516;
+	bh=aOKtZI1CbPAyR48GMLTux6LI2qtvqlpc7xFg/7KZEb0=;
+	h=Subject:To:From:Date:List-ID:From;
+	b=LCwztt9OkViKYrBKp7+QtaaR0/Tify6/6iXz+WRmvShfSUpvIKBaOqtv/czqqUbuk
+	 S00wszhJg87+r5zBt5m6WVt1m2TBWKXIQUW2648LwwARyBLZxeBpV8GhQzjj+Wvoxx
+	 kiIvQ0nICdINBKeSCVSu2poOJeUiYSePB0u9ytJc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726643AbgIWBtB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Sep 2020 21:49:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57566 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726548AbgIWBtB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Sep 2020 21:49:01 -0400
-Received: from mail-qt1-x843.google.com (mail-qt1-x843.google.com [IPv6:2607:f8b0:4864:20::843])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30334C061755;
-        Tue, 22 Sep 2020 18:49:01 -0700 (PDT)
-Received: by mail-qt1-x843.google.com with SMTP id z2so17375207qtv.12;
-        Tue, 22 Sep 2020 18:49:01 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=X9uNPzY+kbe4wa6xwtAwYFztuqUdYMBDLfnDNt+LMK4=;
-        b=Iy+cU19p3ID4fWUzJ4+y5RoTaznblfmPAoP2x7nMaeWBjBVug7MB0iwXkCU7sZxkTL
-         4S2TzaIJ1W2LnG12r/Kd8h8qR2FDnlIixibHw8JTS2PfOLZhcOKy+sN/Kz3c9Dc7jft3
-         2gTL9U7TQnSiaJS2kHnzMIXnkNiS+wBiO4gchFzWXOqUQ9yN6uS2ggvUqE7OxLhfuQfb
-         k/4TMg/9NPSZcsxFEY3BKmuIpbUl/pJwK3aPih4wnfbtyUpNqgZrCSCWO/EjNIu3aMn2
-         dfwx1/hMeLq+qXxxksF1ZI8oNP1PwphPafhnohWXPp8QI6I8//inJJCpYo8Jm8lizK11
-         Xoyg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=X9uNPzY+kbe4wa6xwtAwYFztuqUdYMBDLfnDNt+LMK4=;
-        b=XmfYShBYNuNzpHea10DLMx/uoFxV/CUIZ7BwuZkRAmD88YNNLIdYInJckWsgNWLYo2
-         a09fDBk5igfAVo02ozogYPwJ4kXSCNieIn/NYe5jPllVi+wzzrdUgmGzVQbS+eK72Sjf
-         A73F6C3Fn56O3SaSyFRBA+WKobN1o/Gb2BML9Lep9MUZEOC/jKppqFtkjut9fEmlri6I
-         TOZXXwDtKj7eRPvYrBHBEF5GBSmBLxBpdnj6iPKlppBqqEUJ0nTYe3/35u26c9EM4mbk
-         L2RMNvwo/GXmwqtFoUtiEs4mO0bWmS9LlR/NZ8eQpwPt4jv9lsGwtSCGBlKGIO/KKWjw
-         rCIQ==
-X-Gm-Message-State: AOAM532ASg/SzNlxqN1RiwHAnQe7a5oQhpTfpE9qZ4habkoiMKaCDkzk
-        WyyaLSOS7zAep0vD8wIazTg=
-X-Google-Smtp-Source: ABdhPJxt1iMhkeV3PFsfjQ9tysdSfHw6UxkFzaXZ88od3R2WdGYz2AgC3VYKnrCqgPigtp77o9G9FA==
-X-Received: by 2002:aed:2963:: with SMTP id s90mr7801958qtd.381.1600825740262;
-        Tue, 22 Sep 2020 18:49:00 -0700 (PDT)
-Received: from shinobu (072-189-064-225.res.spectrum.com. [72.189.64.225])
-        by smtp.gmail.com with ESMTPSA id u13sm13550546qtv.57.2020.09.22.18.48.59
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 22 Sep 2020 18:48:59 -0700 (PDT)
-Date:   Tue, 22 Sep 2020 21:48:38 -0400
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Rikard Falkeborn <rikard.falkeborn@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Kamel Bouhara <kamel.bouhara@bootlin.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] counter: microchip-tcb-capture: Constify mchp_tc_ops
-Message-ID: <20200923014838.GA3267@shinobu>
-References: <20200922201941.41328-1-rikard.falkeborn@gmail.com>
+        id S1726883AbgIWFzQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 23 Sep 2020 01:55:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33376 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726557AbgIWFzQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 23 Sep 2020 01:55:16 -0400
+Received: from localhost (83-86-74-64.cable.dynamic.v4.ziggo.nl [83.86.74.64])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 07B42221EF;
+        Wed, 23 Sep 2020 05:55:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1600840515;
+        bh=aOKtZI1CbPAyR48GMLTux6LI2qtvqlpc7xFg/7KZEb0=;
+        h=Subject:To:From:Date:From;
+        b=NeFdYXOaTjHxkGuZvH3TwenyaJZ5mqVnhNGVJmnpRZasVMg/k7f9rWW6I6b18k7tY
+         dREaf2vtaWKnONyvMqBaQWBkaP4Xhyh0R9jT/xEQMsPloLU+oriqsOijnK45hQWnCr
+         aNxqmnVi5SXZi+WhHwbhB5tTN1+Apy6EqiQEg2nY=
+Subject: patch "MAINTAINERS: Move Hartmut Knaack to Credits" added to staging-next
+To:     krzk@kernel.org, Jonathan.Cameron@huawei.com,
+        andy.shevchenko@gmail.com, jic23@kernel.org,
+        linux-iio@vger.kernel.org
+From:   <gregkh@linuxfoundation.org>
+Date:   Wed, 23 Sep 2020 07:55:31 +0200
+Message-ID: <1600840531222121@kroah.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ew6BAiZeqk4r7MaW"
-Content-Disposition: inline
-In-Reply-To: <20200922201941.41328-1-rikard.falkeborn@gmail.com>
+Content-Type: text/plain; charset=ANSI_X3.4-1968
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
---ew6BAiZeqk4r7MaW
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This is a note to let you know that I've just added the patch titled
 
-On Tue, Sep 22, 2020 at 10:19:41PM +0200, Rikard Falkeborn wrote:
-> The only usage of mchp_tc_ops is to assign its address to the ops field
-> in the counter_device struct which is a const pointer. Make it const to
-> allow the compiler to put it in read-only memory.
->=20
-> Signed-off-by: Rikard Falkeborn <rikard.falkeborn@gmail.com>
+    MAINTAINERS: Move Hartmut Knaack to Credits
 
-Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+to my staging git tree which can be found at
+    git://git.kernel.org/pub/scm/linux/kernel/git/gregkh/staging.git
+in the staging-next branch.
 
-> ---
->  drivers/counter/microchip-tcb-capture.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->=20
-> diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/mi=
-crochip-tcb-capture.c
-> index b7b252c5addf..039c54a78aa5 100644
-> --- a/drivers/counter/microchip-tcb-capture.c
-> +++ b/drivers/counter/microchip-tcb-capture.c
-> @@ -253,7 +253,7 @@ static struct counter_count mchp_tc_counts[] =3D {
->  	},
->  };
-> =20
-> -static struct counter_ops mchp_tc_ops =3D {
-> +static const struct counter_ops mchp_tc_ops =3D {
->  	.signal_read  =3D mchp_tc_count_signal_read,
->  	.count_read   =3D mchp_tc_count_read,
->  	.function_get =3D mchp_tc_count_function_get,
-> --=20
-> 2.28.0
->=20
+The patch will show up in the next release of the linux-next tree
+(usually sometime within the next 24 hours during the week.)
 
---ew6BAiZeqk4r7MaW
-Content-Type: application/pgp-signature; name="signature.asc"
+The patch will also be merged in the next major kernel release
+during the merge window.
 
------BEGIN PGP SIGNATURE-----
+If you have any questions about this process, please let me know.
 
-iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAl9qqVQACgkQhvpINdm7
-VJKiUA//RCxl+1lEl3ZD7fgozAxc91BtR5k9Yu6UGBtrLNE+0lxJmpOdGyuN0K6X
-iqXNMEzyJWvydI5+K/2GUvBrzQRIiufVyeTd8aUygFtJh+8Qysa3fmHrVJz/6SSA
-TUKnENMoNKZZi9IzdGRkZN0yXr25RCVT6WXpb21T6Xp3nTAVTDU3GNNB5ytHhArG
-AmT2iiNb5qX1fGfzG9jP9S6pf4bVhP5po4cwAWsLbziJTuNvfnp+ByMn3xx+UUw7
-JN9WEm6/H36DTO0qNpNP6azWPLyZk8vElHY6tKpDKBvhN5k6UaJ6EXpvbba7DntA
-+xgQUAxfE6txDv20uwF/w4CdTdXI0tOBdBhv5Av+naWhu9LFG7n0wveOIF9L0ZXI
-KqYZ+ZSV537vZtvych1izHjm6V+LDmm49K6OhJnBkjYp4N36gmNhUbPV8UKhIh5E
-UlVyf4eqllRqmzkVwuma/kb6BM6XUKue8lp0vZjovcMXHeTQ4YumYnh7E7igqLWz
-V19MlFTEQrzR9h2B0LXbXkzXZm/fAnNQu00YSrOpNJ8Yl9gAIziTWWDxCDsYFORn
-eFxRHF5bvisS6srCGTF2JZuAmH3WC+Dgo33OzGCBVgzOP9ZQ7FoSLf2HpIqT7Dgh
-mysWnBNBXI9E1L+nNWWiYLpykO9Fru8nuG8cMKc9k/2mcnR/ISI=
-=AK/t
------END PGP SIGNATURE-----
 
---ew6BAiZeqk4r7MaW--
+From d3333e21f2d76fa384200a0826d766285787493f Mon Sep 17 00:00:00 2001
+From: Krzysztof Kozlowski <krzk@kernel.org>
+Date: Thu, 3 Sep 2020 20:19:26 +0200
+Subject: MAINTAINERS: Move Hartmut Knaack to Credits
+
+Hartmut Knaack was an active reviewer and contributor to the IIO
+subsystem and drivers.  However his last message on LKML is from
+October 2015.
+
+In thanks for Hartmut's effort, move him name to the Credits.
+
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Krzysztof Kozlowski <krzk@kernel.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio <linux-iio@vger.kernel.org>
+Link: https://lore.kernel.org/r/20200903181926.5606-2-krzk@kernel.org
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ CREDITS     | 4 ++++
+ MAINTAINERS | 1 -
+ 2 files changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/CREDITS b/CREDITS
+index 32ee70a7562e..c741455498a4 100644
+--- a/CREDITS
++++ b/CREDITS
+@@ -1942,6 +1942,10 @@ S: Post Office Box 611311
+ S: San Jose, California 95161-1311
+ S: USA
+ 
++N: Hartmut Knaack
++E: knaack.h@gmx.de
++D: IIO subsystem and drivers
++
+ N: Thorsten Knabe
+ E: Thorsten Knabe <tek@rbg.informatik.tu-darmstadt.de>
+ E: Thorsten Knabe <tek01@hrzpub.tu-darmstadt.de>
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 0e4fe7d2cec7..950e1d657411 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8451,7 +8451,6 @@ F:	drivers/iio/multiplexer/iio-mux.c
+ 
+ IIO SUBSYSTEM AND DRIVERS
+ M:	Jonathan Cameron <jic23@kernel.org>
+-R:	Hartmut Knaack <knaack.h@gmx.de>
+ R:	Lars-Peter Clausen <lars@metafoo.de>
+ R:	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+ L:	linux-iio@vger.kernel.org
+-- 
+2.28.0
+
+
