@@ -2,134 +2,98 @@ Return-Path: <SRS0=5qmk=DD=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05CCBC2D0A8
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Sep 2020 14:47:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7CBC2D0A8
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Sep 2020 14:55:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B77DA21D7F
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Sep 2020 14:47:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3E2FE20BED
+	for <linux-iio@archiver.kernel.org>; Sat, 26 Sep 2020 14:55:27 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1601131676;
-	bh=Cqdr63Eq+wVYenVsZtUQn/PzWYTxrwYKIvL/ax56lK4=;
+	s=default; t=1601132127;
+	bh=5tMbBNIJtzVNaEG/loFu6mje1p8enh0WBS5iNeCs55k=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=M981YyH5SSyTtI7VWOi+zqreJ5Fab0bSP4AcZaCRLXSple60LqfiQhd90tnGGvhGB
-	 oUh+REHnjSr0a1ZvM1RDxwI/pnQfVtKmDe9PHB65ZnQw94pzqL6WxfmdyrX5B2lhzd
-	 767lo2At7bM6Lohl5GhMtq23qH4dZXlbMPHDuEZg=
+	b=zinFPhI2HWY5mVuCuKK4yERAQvG/Zy4XEHy2yCC+PrRuxl7lKlWMKQRzxIrtgrurV
+	 Hk0qHzFJRZciCIgvDG2CVAX3rlhxx8L1QXW/7+cq/1iN75fHLmf/xppTHmRDk0TlnR
+	 F8/IYlzH8zAe+MJlgKVddMhmF8VWjPvt90UgytMQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726244AbgIZOr4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 26 Sep 2020 10:47:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41720 "EHLO mail.kernel.org"
+        id S1729217AbgIZOz0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 26 Sep 2020 10:55:26 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44216 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726210AbgIZOr4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 26 Sep 2020 10:47:56 -0400
+        id S1729186AbgIZOz0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 26 Sep 2020 10:55:26 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8860620BED;
-        Sat, 26 Sep 2020 14:47:54 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B26B320882;
+        Sat, 26 Sep 2020 14:55:24 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1601131675;
-        bh=Cqdr63Eq+wVYenVsZtUQn/PzWYTxrwYKIvL/ax56lK4=;
+        s=default; t=1601132126;
+        bh=5tMbBNIJtzVNaEG/loFu6mje1p8enh0WBS5iNeCs55k=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZnUVc1pY/DOXxviiOjWmvHX6FXf6dmvD6tX3skZ6P82lnO0tpJ1uAPIoM5QbpAap/
-         d2tKWYXsW+2xK9pUiJul6AKGUbq2G4BfFNnvd2Yr9jCrJDlrsUUvJNseXFCNQBG/St
-         3DCrTxxWw4RKNP4M0i9gTu9SwvV6kwHlgi7Uz488=
-Date:   Sat, 26 Sep 2020 15:47:51 +0100
+        b=qr4QpinhYLaSk7qWaLIGr9oO9V86HUNQag9yGWGGgY/WNln1XzTST+bRp1bEp90W5
+         mEAZJk7HCwxTjk2KfaNzgDIawYUwqfndhcdwFL3nEEL5lwnhc/VFHNTdnB/LlDwQZ1
+         LLah1bytFo+78NGbYdXzQXEJA05+jpl/5qyG6jB4=
+Date:   Sat, 26 Sep 2020 15:55:21 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tobias Jordan <kernel@cdqe.de>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Marek Vasut <marek.vasut@gmail.com>,
+To:     Markus Elfring <Markus.Elfring@web.de>
+Cc:     Tobias Jordan <kernel@cdqe.de>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org,
         Lars-Peter Clausen <lars@metafoo.de>,
+        Nuno Sa <nuno.sa@analog.com>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: adc: gyroadc: fix leak of device node iterator
-Message-ID: <20200926154751.0bfd072f@archlinux>
-In-Reply-To: <20200926104515.GA12079@agrajag.zerfleddert.de>
-References: <20200926104515.GA12079@agrajag.zerfleddert.de>
+Subject: Re: [PATCH] iio: temperature: ltc2983: fix leak of device node
+ iterator
+Message-ID: <20200926155521.3b75342f@archlinux>
+In-Reply-To: <b5eca237-b7ea-e4ca-3936-8c32892e49b5@web.de>
+References: <b5eca237-b7ea-e4ca-3936-8c32892e49b5@web.de>
 X-Mailer: Claws Mail 3.17.6 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 26 Sep 2020 12:45:15 +0200
-Tobias Jordan <kernel@cdqe.de> wrote:
+On Sat, 26 Sep 2020 16:45:56 +0200
+Markus Elfring <Markus.Elfring@web.de> wrote:
 
-> Add missing of_node_put calls for the error paths of the
-> for_each_child_of_node loop in rcar_gyroadc_parse_subdevs.
-> 
-> Thought about adding an "goto err_of_node_put" instead, but as the error
-> paths are quite divergent, I'm not sure if that wouldn't complicate
-> things.
-> 
-> Fixes: 059c53b32329 ("iio: adc: Add Renesas GyroADC driver")
-> Signed-off-by: Tobias Jordan <kernel@cdqe.de>
-Looks to me like there is one more route out of the
-for_each_child_of_node() that this doesn't cover.
+> > Thought about adding an "goto err_of_node_put" instead, but as the error
+> > paths are quite divergent, I'm not sure if that wouldn't complicate
+> > things. =20
+>=20
+> Please add jump targets like =E2=80=9Ce_inval=E2=80=9D and =E2=80=9Cput_n=
+ode=E2=80=9D so that a bit of
+> common exception handling code can be better reused for this function imp=
+lementation.
+> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/D=
+ocumentation/process/coding-style.rst?id=3D7c7ec3226f5f33f9c050d85ec20f1841=
+9c622ad6#n475
 
-		if (childmode == RCAR_GYROADC_MODE_SELECT_1_MB88101A)
-			break;
+On this one I think readability would perhaps be hurt a little by
+doing so, particular as we need to do the of_put_node in some but
+not all non error paths. =20
 
-If you agree, could you add an of_put_node() to that as well.
-It's not an error path, but it does break out early.
-Probably also want to modify the description of the patch a tiny
-bit to match with that changing being in there as well.
+It is a close run thing between the two options however.
+
+I considered another option of suggesting factoring out this whole
+per node block, but to do that we would have to do something a bit
+odd with the return value as we have 3 options.
+* error
+* do not parse any more children.
+* continue to parse children.
+
+So I think in this case Tobias' solution is the best one available.
 
 Thanks,
 
 Jonathan
 
-> ---
->  drivers/iio/adc/rcar-gyroadc.c | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/drivers/iio/adc/rcar-gyroadc.c b/drivers/iio/adc/rcar-gyroadc.c
-> index dcaefc108ff6..3746b0276b80 100644
-> --- a/drivers/iio/adc/rcar-gyroadc.c
-> +++ b/drivers/iio/adc/rcar-gyroadc.c
-> @@ -357,6 +357,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
->  			num_channels = ARRAY_SIZE(rcar_gyroadc_iio_channels_3);
->  			break;
->  		default:
-> +			of_node_put(child);
->  			return -EINVAL;
->  		}
->  
-> @@ -374,6 +375,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
->  				dev_err(dev,
->  					"Failed to get child reg property of ADC \"%pOFn\".\n",
->  					child);
-> +				of_node_put(child);
->  				return ret;
->  			}
->  
-> @@ -382,6 +384,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
->  				dev_err(dev,
->  					"Only %i channels supported with %pOFn, but reg = <%i>.\n",
->  					num_channels, child, reg);
-> +				of_node_put(child);
->  				return -EINVAL;
->  			}
->  		}
-> @@ -391,6 +394,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
->  			dev_err(dev,
->  				"Channel %i uses different ADC mode than the rest.\n",
->  				reg);
-> +			of_node_put(child);
->  			return -EINVAL;
->  		}
->  
-> @@ -401,6 +405,7 @@ static int rcar_gyroadc_parse_subdevs(struct iio_dev *indio_dev)
->  		if (IS_ERR(vref)) {
->  			dev_dbg(dev, "Channel %i 'vref' supply not connected.\n",
->  				reg);
-> +			of_node_put(child);
->  			return PTR_ERR(vref);
->  		}
->  
+>=20
+> Regards,
+> Markus
 
