@@ -1,73 +1,75 @@
-Return-Path: <SRS0=5qmk=DD=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=b3W8=DE=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-6.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78728C47420
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Sep 2020 17:18:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A300C2D0A8
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Sep 2020 02:18:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3804A20789
-	for <linux-iio@archiver.kernel.org>; Sat, 26 Sep 2020 17:18:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AE05521789
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Sep 2020 02:18:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MaueTk1y"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="kX8VBgyQ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729963AbgIZRSn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 26 Sep 2020 13:18:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48192 "EHLO
+        id S1726382AbgI0CSg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 26 Sep 2020 22:18:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726309AbgIZRSn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 26 Sep 2020 13:18:43 -0400
-Received: from mail-wr1-x441.google.com (mail-wr1-x441.google.com [IPv6:2a00:1450:4864:20::441])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA13AC0613CE;
-        Sat, 26 Sep 2020 10:18:42 -0700 (PDT)
-Received: by mail-wr1-x441.google.com with SMTP id s12so7260434wrw.11;
-        Sat, 26 Sep 2020 10:18:42 -0700 (PDT)
+        with ESMTP id S1726311AbgI0CSg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 26 Sep 2020 22:18:36 -0400
+Received: from mail-qt1-x844.google.com (mail-qt1-x844.google.com [IPv6:2607:f8b0:4864:20::844])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 694C3C0613CE;
+        Sat, 26 Sep 2020 19:18:36 -0700 (PDT)
+Received: by mail-qt1-x844.google.com with SMTP id y11so5625122qtn.9;
+        Sat, 26 Sep 2020 19:18:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=bl53+IHBE7yXiOLq6WRfnfhUTBMnGEZtbf1LqSaqfOk=;
-        b=MaueTk1yEtJ7GzSgrXw9tmwckv/94rigKyb+hYnwA4mrGQVzJNB5sjMe6y2xd4IBeT
-         3zkQ9HbFbDy2HsnjEzWPRD0Y0WO7UoGKjIxD+WFa4PQoTYvzULDT06j5a3uoJ3DXDEuB
-         kwBeb9FSSZOMVJb9QpJOm1IZ76qUyTUG04nCCPF74hjYkr7zD2KCdCnP9ID5ZmR8Nzmg
-         C7MsQtBPYqbYzatYImp4itw+59MOMc+2ezR9fnuhOMJ3/LKjf0riQt/EiAWmQToz5Wcb
-         rhdKstdxImdK1Ec5krm8r230l7kWzYOa0U20CsBBZOhjsabFERo9xzDUDPJXk0vj+k8p
-         muuA==
+        bh=6jkl7vNPFtvBxlWV2KeH9eoUepDDSh+STAgXaBbRvsc=;
+        b=kX8VBgyQVBJW+7uBi2aRBS3aEzPAoFZpBGFGFpWSeXrp+AusoFRwU5DX2zuOPHojZi
+         rowZckruCbRU/azdpCOauPKrmWvlXpz+qExS50WmStvqBL1CdCDhRtOHDDkBgN1ZG8/u
+         ovkPDg6h9CwgnQqzBlFMCgC+v6Zwr0dUSseQmbDF4mg4si8/qjp/RtB6TPxoIXO64k9o
+         uLjety8SCuDFTrBYjrPGnqTtr5D4zhvX6ppNTRkaTDQOnfkss2k1ATbtRd0WyiiRYY1n
+         fbPM+kwKZDsWSjPnh1+ZPPbPsUec9HUZpOUXsNDs+/WDyHSOjHS47QFSIUUX5GkKdq+I
+         qurQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=bl53+IHBE7yXiOLq6WRfnfhUTBMnGEZtbf1LqSaqfOk=;
-        b=GdxjOrt3qfc2NDShUkPm+FhikafObXAx2zB0+2hrT4kBCuBTuTvLLBHAbFkAKdB/Ku
-         IZGOitadgmm6+WNFAVaT+RKwzM/lx0X4l4wegbDB4gyY/e7/KxRFXjLc1pvSR5JArkMb
-         awTf/31Kr/WwJPfdxNzSryi/IjO+oxV1hLcmgAu6Ac/HkGCs0aJbbiqIO3jVcCCX1Dk0
-         S+4MnZn7fBM+V3YfbuZ3jFboztl6A2uv9QQDh4v5JDiragvx51WLWHRU9Kno2ol7L4WK
-         KA9rTIo0IITNo4X6n+AE1+RPMnYmgfXEDreQ5gczkca3K28s/USwexOzCIZicBMpAg6U
-         66lg==
-X-Gm-Message-State: AOAM531pXjsQZY//J/ZpDbxh4kk4Bpy7g/eE/zgeUanDyNxfN+ZI6jYN
-        6O9r2WZZrPBI/C45AtSFAyA=
-X-Google-Smtp-Source: ABdhPJyzlxbTOBiEV6UjiHZ8TzGIgyhnXIRMmB49mXLck6hVgqRUzmKf7TuHcYyH3cOFuQuh7oKS5Q==
-X-Received: by 2002:adf:f903:: with SMTP id b3mr10611592wrr.142.1601140721323;
-        Sat, 26 Sep 2020 10:18:41 -0700 (PDT)
-Received: from IcarusMOD.eternityproject.eu ([2.237.20.237])
-        by smtp.gmail.com with ESMTPSA id l4sm7427125wrc.14.2020.09.26.10.18.40
+        bh=6jkl7vNPFtvBxlWV2KeH9eoUepDDSh+STAgXaBbRvsc=;
+        b=hSor35GIdxlINhJy55vJ0llk/fc7M7e+uhosy6bbx1y4PMdAPR/APfiFk4lHQZuEav
+         e1taexebu9P5war3+b4ww8X5qFPWHeL/rSwdvtU+FSu36dCzXNYit7LDwPWtHZ0x0BAB
+         qMvus9KLBjOL5W5mk4yMGbLOzOx6zZjPx9xsAQeX1vXi9mhLWDO75X/ogaDDkVKkFvFi
+         7CRHHI5qWw+OMTI0WD1z1mhXhbK8KcOrXWAPlVNMA4qM6ZlaNwDEv15EvFF5ezgjmatl
+         GHAjmbZ0WtClT/beXl7rEow8VU8x+/moNlrkRKQDLhPNDrtNbYV2lfQ/PQYKqiYPdKK5
+         TKYQ==
+X-Gm-Message-State: AOAM532LgP/2cRaCSGg6Ea8lK1AMpA3UkC3VGkrQ+9H0YZekw4PsYpxh
+        metaOMhejrrG8sB4MNkEdoo=
+X-Google-Smtp-Source: ABdhPJyWclbfBUCxZ0CQqrbnS3dhIvPrkpJ60mUOMh+lAznAHlspDzeZBuTK0LZO2JlraUl4bfaCIw==
+X-Received: by 2002:aed:37a3:: with SMTP id j32mr7041381qtb.133.1601173113930;
+        Sat, 26 Sep 2020 19:18:33 -0700 (PDT)
+Received: from localhost.localdomain (072-189-064-225.res.spectrum.com. [72.189.64.225])
+        by smtp.gmail.com with ESMTPSA id f12sm5276906qti.70.2020.09.26.19.18.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 26 Sep 2020 10:18:40 -0700 (PDT)
-From:   kholk11@gmail.com
-To:     agross@kernel.org
-Cc:     bjorn.andersson@linaro.org, jic23@kernel.org, robh+dt@kernel.org,
-        kholk11@gmail.com, marijns95@gmail.com, konradybcio@gmail.com,
-        martin.botka1@gmail.com, linux-arm-msm@vger.kernel.org,
-        phone-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: [RESEND] [PATCH 1/2] iio: adc: qcom-spmi-vadc: Use right ratiometric range for 8998,660,845
-Date:   Sat, 26 Sep 2020 19:18:34 +0200
-Message-Id: <20200926171835.27154-1-kholk11@gmail.com>
+        Sat, 26 Sep 2020 19:18:33 -0700 (PDT)
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     jic23@kernel.org
+Cc:     kamel.bouhara@bootlin.com, gwendal@chromium.org,
+        alexandre.belloni@bootlin.com, david@lechnology.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, syednwaris@gmail.com,
+        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v5 0/5] Introduce the Counter character device interface
+Date:   Sat, 26 Sep 2020 22:18:13 -0400
+Message-Id: <cover.1601170670.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -75,80 +77,219 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: AngeloGioacchino Del Regno <kholk11@gmail.com>
+Changes in v5:
+ - Fixed typographical errors in documentation and comments
+ - Updated flow charts in documentation for clarity
+ - Moved uapi header to be part of the character device intro patch
+ - Fix git squash mistake in 104-quad-8.c; remove redundant changes
+ - Fix git merge mistake in 104-quad-8.c; fix locking race condition
+ - Minor code cleanup for clarity; adjust whitespace/flow
+ - Use put_device if device_add fails
+ - Document sysfs structures
+ - Rename "owner" symbols to "scope"; more apt name
+ - Use resource-managed devm_* allocation functions
+ - Rename *_free functions to *_remove; following common convention
+ - Rename COUNTER_DATA* to COUNTER_COMP*; more obvious meaning
+ - Rename various symbol and define names for clarity
+ - Bring back static ops function; more secure to have static const
+ - Rename counter_available union members to "enums" and "strs"
+ - Implement COUNTER_EVENT* constants; event types are now standard
+ - Implement atomic Counter watches swap; no more racy event config
 
-The ratiometric range for MSM8998, SDM630/636/660 and SDM845 is 1875mV
-instead of the standard 1800mV: address this by adding a new compatible
-"qcom,spmi-vadc-8998" and assigning the different range to the machines
-declaring this one.
+Over the past couple years we have noticed some shortcomings with the
+Counter sysfs interface. Although useful in the majority of situations,
+there are certain use-cases where interacting through sysfs attributes
+can become cumbersome and inefficient. A desire to support more advanced
+functionality such as timestamps, multi-axes positioning tables, and
+other such latency-sensitive applications, has motivated a reevaluation
+of the Counter subsystem. I believe a character device interface will be
+helpful for this more niche area of counter device use.
 
-Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>
----
- drivers/iio/adc/qcom-spmi-vadc.c   | 10 +++++++++-
- drivers/iio/adc/qcom-vadc-common.h |  1 +
- 2 files changed, 10 insertions(+), 1 deletion(-)
+To quell any concerns from the offset: this patchset makes no changes to
+the existing Counter sysfs userspace interface -- existing userspace
+applications will continue to work with no modifications necessary. I
+request that driver maintainers please test their applications to verify
+that this is true, and report any discrepancies if they arise.
 
-diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-index b0388f8a69f4..59a94ea7bf78 100644
---- a/drivers/iio/adc/qcom-spmi-vadc.c
-+++ b/drivers/iio/adc/qcom-spmi-vadc.c
-@@ -101,6 +101,7 @@ struct vadc_channel_prop {
-  * @dev: pointer to struct device.
-  * @base: base address for the ADC peripheral.
-  * @nchannels: number of VADC channels.
-+ * @ratio_range: ratiometric range for ref points.
-  * @chan_props: array of VADC channel properties.
-  * @iio_chans: array of IIO channels specification.
-  * @are_ref_measured: are reference points measured.
-@@ -114,6 +115,7 @@ struct vadc_priv {
- 	struct device		 *dev;
- 	u16			 base;
- 	unsigned int		 nchannels;
-+	unsigned int		 ratio_range;
- 	struct vadc_channel_prop *chan_props;
- 	struct iio_chan_spec	 *iio_chans;
- 	bool			 are_ref_measured;
-@@ -355,7 +357,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	u16 read_1, read_2;
- 	int ret;
- 
--	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
-+	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = vadc->ratio_range;
- 	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
- 
- 	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
-@@ -885,6 +887,11 @@ static int vadc_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	if (of_device_is_compatible(node, "qcom,spmi-vadc-8998"))
-+		vadc->ratio_range = VADC_RATIOMETRIC_RANGE_8998;
-+	else
-+		vadc->ratio_range = VADC_RATIOMETRIC_RANGE;
-+
- 	irq_eoc = platform_get_irq(pdev, 0);
- 	if (irq_eoc < 0) {
- 		if (irq_eoc == -EPROBE_DEFER || irq_eoc == -EINVAL)
-@@ -918,6 +925,7 @@ static int vadc_probe(struct platform_device *pdev)
- 
- static const struct of_device_id vadc_match_table[] = {
- 	{ .compatible = "qcom,spmi-vadc" },
-+	{ .compatible = "qcom-spmi-vadc-8998" },
- 	{ }
- };
- MODULE_DEVICE_TABLE(of, vadc_match_table);
-diff --git a/drivers/iio/adc/qcom-vadc-common.h b/drivers/iio/adc/qcom-vadc-common.h
-index 17b2fc4d8bf2..b10d5fd59034 100644
---- a/drivers/iio/adc/qcom-vadc-common.h
-+++ b/drivers/iio/adc/qcom-vadc-common.h
-@@ -16,6 +16,7 @@
- 
- #define VADC_ABSOLUTE_RANGE_UV			625000
- #define VADC_RATIOMETRIC_RANGE			1800
-+#define VADC_RATIOMETRIC_RANGE_8998		1875
- 
- #define VADC_DEF_PRESCALING			0 /* 1:1 */
- #define VADC_DEF_DECIMATION			0 /* 512 */
+However, this patchset does contain a major reimplementation of the
+Counter subsystem core and driver API. A reimplementation was necessary
+in order to separate the sysfs code from the counter device drivers and
+internalize it as a dedicated component of the core Counter subsystem
+module. A minor benefit from all of this is that the sysfs interface is
+now ensured a certain amount of consistency because the translation is
+performed outside of individual counter device drivers.
+
+Essentially, the reimplementation has enabled counter device drivers to
+pass and handle data as native C datatypes now rather than the sysfs
+strings from before.
+
+A high-level view of how a count value is passed down from a counter
+driver is exemplified by the following. The driver callbacks are first
+registered to the Counter core component for use by the Counter
+userspace interface components:
+
+                        +----------------------------+
+	                | Counter device driver      |
+                        +----------------------------+
+                        | Processes data from device |
+                        +----------------------------+
+                                |
+                         -------------------
+                        / driver callbacks /
+                        -------------------
+                                |
+                                V
+                        +----------------------+
+                        | Counter core         |
+                        +----------------------+
+                        | Routes device driver |
+                        | callbacks to the     |
+                        | userspace interfaces |
+                        +----------------------+
+                                |
+                         -------------------
+                        / driver callbacks /
+                        -------------------
+                                |
+                +---------------+---------------+
+                |                               |
+                V                               V
+        +--------------------+          +---------------------+
+        | Counter sysfs      |          | Counter chrdev      |
+        +--------------------+          +---------------------+
+        | Translates to the  |          | Translates to the   |
+        | standard Counter   |          | standard Counter    |
+        | sysfs output       |          | character device    |
+        +--------------------+          +---------------------+
+
+Thereafter, data can be transferred directly between the Counter device
+driver and Counter userspace interface:
+
+                         ----------------------
+                        / Counter device       \
+                        +----------------------+
+                        | Count register: 0x28 |
+                        +----------------------+
+                                |
+                         -----------------
+                        / raw count data /
+                        -----------------
+                                |
+                                V
+                        +----------------------------+
+                        | Counter device driver      |
+                        +----------------------------+
+                        | Processes data from device |
+                        |----------------------------|
+                        | Type: u64                  |
+                        | Value: 42                  |
+                        +----------------------------+
+                                |
+                         ----------
+                        / u64     /
+                        ----------
+                                |
+                +---------------+---------------+
+                |                               |
+                V                               V
+        +--------------------+          +---------------------+
+        | Counter sysfs      |          | Counter chrdev      |
+        +--------------------+          +---------------------+
+        | Translates to the  |          | Translates to the   |
+        | standard Counter   |          | standard Counter    |
+        | sysfs output       |          | character device    |
+        |--------------------|          |---------------------|
+        | Type: const char * |          | Type: u64           |
+        | Value: "42"        |          | Value: 42           |
+        +--------------------+          +---------------------+
+                |                               |
+         ---------------                 -----------------------
+        / const char * /                / struct counter_event /
+        ---------------                 -----------------------
+                |                               |
+                |                               V
+                |                       +-----------+
+                |                       | read      |
+                |                       +-----------+
+                |                       \ Count: 42 /
+                |                        -----------
+                |
+                V
+        +--------------------------------------------------+
+        | `/sys/bus/counter/devices/counterX/countY/count` |
+        +--------------------------------------------------+
+        \ Count: "42"                                      /
+         --------------------------------------------------
+
+Counter device data is exposed through standard character device read
+operations. Device data is gathered when a Counter event is pushed by
+the respective Counter device driver. Configuration is handled via ioctl
+operations on the respective Counter character device node.
+
+The following are some questions I have about this patchset:
+
+1. Should standard Counter component data types be defined as u8 or u32?
+
+   Many standard Counter component types such COUNTER_COMP_SIGNAL_LEVEL
+   have standard values defined (e.g. COUNTER_SIGNAL_LEVEL_LOW and
+   COUNTER_SIGNAL_LEVEL_HIGH). These values are currently handled by the
+   Counter subsystem code as u8 data types.
+
+   If u32 is used for these values instead, C enum structures could be
+   used by driver authors to implicit cast these values via the driver
+   callback parameters; userspace would still use u32 with no issue.
+
+   In theory this can work because GCC will treat enums are having a
+   32-bit size; but I worry about the possibility of build targets that
+   have -fshort-enums enabled, resulting in enums having a size less
+   than 32 bits. Would this be a problem?
+
+2. Should I have reserved members in the userspace structures?
+
+   The structures in include/uapi/linux/counter.h are available to
+   userspace applications. Should I reserve space in these structures
+   for future additions and usage? Will endianess and packing be a
+   concern here?
+
+William Breathitt Gray (5):
+  counter: Internalize sysfs interface code
+  docs: counter: Update to reflect sysfs internalization
+  counter: Add character device interface
+  docs: counter: Document character device interface
+  counter: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8
+
+ Documentation/ABI/testing/sysfs-bus-counter   |   18 +
+ .../ABI/testing/sysfs-bus-counter-104-quad-8  |   32 +
+ Documentation/driver-api/generic-counter.rst  |  408 ++++-
+ .../userspace-api/ioctl/ioctl-number.rst      |    1 +
+ MAINTAINERS                                   |    2 +-
+ drivers/counter/104-quad-8.c                  |  775 +++++----
+ drivers/counter/Kconfig                       |    6 +-
+ drivers/counter/Makefile                      |    1 +
+ drivers/counter/counter-chrdev.c              |  451 +++++
+ drivers/counter/counter-chrdev.h              |   16 +
+ drivers/counter/counter-core.c                |  190 +++
+ drivers/counter/counter-sysfs.c               |  862 ++++++++++
+ drivers/counter/counter-sysfs.h               |   13 +
+ drivers/counter/counter.c                     | 1496 -----------------
+ drivers/counter/ftm-quaddec.c                 |   60 +-
+ drivers/counter/microchip-tcb-capture.c       |  100 +-
+ drivers/counter/stm32-lptimer-cnt.c           |  175 +-
+ drivers/counter/stm32-timer-cnt.c             |  145 +-
+ drivers/counter/ti-eqep.c                     |  226 +--
+ include/linux/counter.h                       |  618 +++----
+ include/linux/counter_enum.h                  |   45 -
+ include/uapi/linux/counter.h                  |   99 ++
+ 22 files changed, 3053 insertions(+), 2686 deletions(-)
+ create mode 100644 drivers/counter/counter-chrdev.c
+ create mode 100644 drivers/counter/counter-chrdev.h
+ create mode 100644 drivers/counter/counter-core.c
+ create mode 100644 drivers/counter/counter-sysfs.c
+ create mode 100644 drivers/counter/counter-sysfs.h
+ delete mode 100644 drivers/counter/counter.c
+ delete mode 100644 include/linux/counter_enum.h
+ create mode 100644 include/uapi/linux/counter.h
+
 -- 
 2.28.0
 
