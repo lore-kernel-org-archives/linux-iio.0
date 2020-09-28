@@ -7,126 +7,139 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F35CC2D0A8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Sep 2020 12:55:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F2A61C2D0A8
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Sep 2020 13:14:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CF6A621D95
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Sep 2020 12:55:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BB5D32074A
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Sep 2020 13:14:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726344AbgI1MzN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Sep 2020 08:55:13 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:17038 "EHLO
+        id S1726547AbgI1NOU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Sep 2020 09:14:20 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:22612 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1726350AbgI1MzL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Sep 2020 08:55:11 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08SCt5Lr003527;
-        Mon, 28 Sep 2020 08:55:05 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 33syg5y9s3-1
+        by vger.kernel.org with ESMTP id S1726506AbgI1NOT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Sep 2020 09:14:19 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08SD7PV2000972;
+        Mon, 28 Sep 2020 09:14:06 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33t2j4f81s-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 28 Sep 2020 08:55:05 -0400
+        Mon, 28 Sep 2020 09:14:06 -0400
 Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 08SCt0kS056643
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 08SDE4eJ065287
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 28 Sep 2020 08:55:01 -0400
-Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
- SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 28 Sep 2020 05:54:54 -0700
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 28 Sep 2020 05:54:54 -0700
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Mon, 28 Sep 2020 05:54:54 -0700
+        Mon, 28 Sep 2020 09:14:05 -0400
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Mon, 28 Sep
+ 2020 06:13:58 -0700
+Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Mon, 28 Sep 2020 06:13:58 -0700
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08SCsrdi029765;
-        Mon, 28 Sep 2020 08:54:56 -0400
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
-CC:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
-        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <ludovic.desroches@microchip.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 2/2] iio: adc: at91_adc: const-ify some driver data
-Date:   Mon, 28 Sep 2020 15:54:24 +0300
-Message-ID: <20200928125424.35921-2-alexandru.ardelean@analog.com>
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08SDDuB5030926;
+        Mon, 28 Sep 2020 09:14:00 -0400
+From:   Mircea Caprioru <mircea.caprioru@analog.com>
+To:     <jic23@kernel.org>
+CC:     <Michael.Hennerich@analog.com>, <alexandru.ardelean@analog.com>,
+        <lars@metafoo.de>, <gregkh@linuxfoundation.org>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
+        Mircea Caprioru <mircea.caprioru@analog.com>
+Subject: [PATCH 2/5] iio: adc: palmas_gpadc: Replace indio_dev->mlock with own device lock
+Date:   Mon, 28 Sep 2020 16:13:30 +0300
+Message-ID: <20200928131333.36646-2-mircea.caprioru@analog.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20200928125424.35921-1-alexandru.ardelean@analog.com>
-References: <20200928125424.35921-1-alexandru.ardelean@analog.com>
+In-Reply-To: <20200928131333.36646-1-mircea.caprioru@analog.com>
+References: <20200928131333.36646-1-mircea.caprioru@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-28_11:2020-09-28,2020-09-28 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
- priorityscore=1501 impostorscore=0 suspectscore=0 lowpriorityscore=0
- spamscore=0 bulkscore=0 mlxscore=0 clxscore=1015 mlxlogscore=999
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009280103
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ suspectscore=0 priorityscore=1501 phishscore=0 spamscore=0 malwarescore=0
+ bulkscore=0 clxscore=1015 mlxlogscore=609 mlxscore=0 adultscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009280104
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The main intent is to get rid of the cast for the void-pointer returned by
-of_device_get_match_data().
+From: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
 
-This requires const-ifying the 'caps' and 'registers' references on the
-at91_adc_state struct.
+As part of the general cleanup of indio_dev->mlock, this change replaces
+it with a local lock on the device's state structure.
 
-The caps can be obtained also from the old platform_data (in the
-at91_adc_probe_pdata() function), but that cast is not touched in this
-patch, since the old platform_data should be removed/cleaned-away.
-Also, that cast deals with converting a kernel_ulong_t type to a pointer.
-So, updating that cast doesn't yield any benefit.
+This is part of a bigger cleanup.
+Link: https://lore.kernel.org/linux-iio/CA+U=Dsoo6YABe5ODLp+eFNPGFDjk5ZeQEceGkqjxXcVEhLWubw@mail.gmail.com/
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Signed-off-by: Sergiu Cuciurean <sergiu.cuciurean@analog.com>
+Signed-off-by: Mircea Caprioru <mircea.caprioru@analog.com>
 ---
- drivers/iio/adc/at91_adc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/adc/palmas_gpadc.c | 16 +++++++++++++---
+ 1 file changed, 13 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-index c9ec0a4a357e..7d846a2852a5 100644
---- a/drivers/iio/adc/at91_adc.c
-+++ b/drivers/iio/adc/at91_adc.c
-@@ -202,7 +202,7 @@ struct at91_adc_state {
- 	struct mutex		lock;
- 	u8			num_channels;
- 	void __iomem		*reg_base;
--	struct at91_adc_reg_desc *registers;
-+	const struct at91_adc_reg_desc *registers;
- 	u32			startup_time;
- 	u8			sample_hold_time;
- 	bool			sleep_mode;
-@@ -214,7 +214,7 @@ struct at91_adc_state {
- 	u32			res;		/* resolution used for convertions */
- 	bool			low_res;	/* the resolution corresponds to the lowest one */
- 	wait_queue_head_t	wq_data_avail;
--	struct at91_adc_caps	*caps;
-+	const struct at91_adc_caps	*caps;
+diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
+index 889b88768b63..14874f11614d 100644
+--- a/drivers/iio/adc/palmas_gpadc.c
++++ b/drivers/iio/adc/palmas_gpadc.c
+@@ -90,6 +90,12 @@ static struct palmas_gpadc_info palmas_gpadc_info[] = {
+  *			3: 800 uA
+  * @extended_delay:	enable the gpadc extended delay mode
+  * @auto_conversion_period:	define the auto_conversion_period
++ * @lock:	Lock to protect the device state during a potential concurrent
++ *		read access from userspace. Reading a raw value requires a sequence
++ *		of register writes, then a wait for a completion callback,
++ *		and finally a register read, during which userspace could issue
++ *		another read request. This lock protects a read access from
++ *		ocurring before another one has finished.
+  *
+  * This is the palmas_gpadc structure to store run-time information
+  * and pointers for this driver instance.
+@@ -110,6 +116,7 @@ struct palmas_gpadc {
+ 	bool				wakeup1_enable;
+ 	bool				wakeup2_enable;
+ 	int				auto_conversion_period;
++	struct mutex			lock;
+ };
  
- 	/*
- 	 * Following ADC channels are shared by touchscreen:
-@@ -550,7 +550,7 @@ static int at91_adc_configure_trigger(struct iio_trigger *trig, bool state)
- {
- 	struct iio_dev *idev = iio_trigger_get_drvdata(trig);
- 	struct at91_adc_state *st = iio_priv(idev);
--	struct at91_adc_reg_desc *reg = st->registers;
-+	const struct at91_adc_reg_desc *reg = st->registers;
- 	u32 status = at91_adc_readl(st, reg->trigger_register);
- 	int value;
- 	u8 bit;
-@@ -876,7 +876,7 @@ static int at91_adc_probe_dt(struct iio_dev *idev,
- 	if (!node)
+ /*
+@@ -388,7 +395,7 @@ static int palmas_gpadc_read_raw(struct iio_dev *indio_dev,
+ 	if (adc_chan > PALMAS_ADC_CH_MAX)
  		return -EINVAL;
  
--	st->caps = (struct at91_adc_caps *)of_device_get_match_data(&pdev->dev);
-+	st->caps = of_device_get_match_data(&pdev->dev);
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&adc->lock);
  
- 	st->use_external = of_property_read_bool(node, "atmel,adc-use-external-triggers");
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -414,12 +421,12 @@ static int palmas_gpadc_read_raw(struct iio_dev *indio_dev,
+ 		goto out;
+ 	}
+ 
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&adc->lock);
+ 	return ret;
+ 
+ out:
+ 	palmas_gpadc_read_done(adc, adc_chan);
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&adc->lock);
+ 
+ 	return ret;
+ }
+@@ -516,6 +523,9 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
+ 	adc->dev = &pdev->dev;
+ 	adc->palmas = dev_get_drvdata(pdev->dev.parent);
+ 	adc->adc_info = palmas_gpadc_info;
++
++	mutex_init(&adc->lock);
++
+ 	init_completion(&adc->conv_completion);
+ 	dev_set_drvdata(&pdev->dev, indio_dev);
  
 -- 
-2.17.1
+2.25.1
 
