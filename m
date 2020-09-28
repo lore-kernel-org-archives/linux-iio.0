@@ -1,80 +1,169 @@
-Return-Path: <SRS0=b3W8=DE=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=Qinn=DF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DFBC4727E
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Sep 2020 20:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B965CC4741F
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Sep 2020 09:10:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8BCE7239A1
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Sep 2020 20:15:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 81B9821D7F
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Sep 2020 09:10:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726414AbgI0UPw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Sep 2020 16:15:52 -0400
-Received: from smtprelay0182.hostedemail.com ([216.40.44.182]:36606 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1726239AbgI0UPw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Sep 2020 16:15:52 -0400
-X-Greylist: delayed 441 seconds by postgrey-1.27 at vger.kernel.org; Sun, 27 Sep 2020 16:15:51 EDT
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave02.hostedemail.com (Postfix) with ESMTP id 1170418011273;
-        Sun, 27 Sep 2020 20:08:31 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay05.hostedemail.com (Postfix) with ESMTP id 7E77118017FB8;
-        Sun, 27 Sep 2020 20:08:29 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: toy29_471566e2717b
-X-Filterd-Recvd-Size: 2021
-Received: from XPS-9350.home (unknown [47.151.133.149])
-        (Authenticated sender: joe@perches.com)
-        by omf19.hostedemail.com (Postfix) with ESMTPA;
-        Sun, 27 Sep 2020 20:08:26 +0000 (UTC)
-Message-ID: <9f6ebf51253bf420c8f6f8974a82283ae3e9e446.camel@perches.com>
-Subject: Re: [PATCH 00/18] use semicolons rather than commas to separate
- statements
-From:   Joe Perches <joe@perches.com>
-To:     Julia Lawall <Julia.Lawall@inria.fr>, linux-iio@vger.kernel.org
-Cc:     Valdis =?UTF-8?Q?Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        kernel-janitors@vger.kernel.org,
-        David Lechner <david@lechnology.com>,
-        linux-wireless@vger.kernel.org, linux-ide@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-clk@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-crypto@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        linux-amlogic@lists.infradead.org, linux-acpi@vger.kernel.org,
-        "Rafael J. Wysocki" <rafael@kernel.org>, drbd-dev@lists.linbit.com,
-        linux-block@vger.kernel.org
-Date:   Sun, 27 Sep 2020 13:08:25 -0700
-In-Reply-To: <1601233948-11629-1-git-send-email-Julia.Lawall@inria.fr>
-References: <1601233948-11629-1-git-send-email-Julia.Lawall@inria.fr>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.36.4-0ubuntu1 
+        id S1726504AbgI1JKd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Sep 2020 05:10:33 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:6446 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726461AbgI1JKa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Sep 2020 05:10:30 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08S953Y8023538;
+        Mon, 28 Sep 2020 05:10:28 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33syg5xpq3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 28 Sep 2020 05:10:28 -0400
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 08S9ARj1012285
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Mon, 28 Sep 2020 05:10:27 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 28 Sep 2020 05:10:21 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Mon, 28 Sep 2020 05:10:21 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Mon, 28 Sep 2020 05:10:21 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08S9ANjV026287;
+        Mon, 28 Sep 2020 05:10:24 -0400
+From:   Cristian Pop <cristian.pop@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, Cristian Pop <cristian.pop@analog.com>
+Subject: [PATCH v7 1/5] iio: core: Add optional symbolic label to a device channel
+Date:   Mon, 28 Sep 2020 12:09:55 +0300
+Message-ID: <20200928090959.88842-1-cristian.pop@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-28_07:2020-09-24,2020-09-28 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ priorityscore=1501 impostorscore=0 suspectscore=0 lowpriorityscore=0
+ spamscore=0 bulkscore=0 mlxscore=0 clxscore=1015 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009280076
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 2020-09-27 at 21:12 +0200, Julia Lawall wrote:
-> These patches replace commas by semicolons.  This was done using the
-> Coccinelle semantic patch (http://coccinelle.lip6.fr/) shown below.
-> 
-> This semantic patch ensures that commas inside for loop headers will not be
-> transformed.  It also doesn't touch macro definitions.
+If a label is defined in the device tree for this channel add that
+to the channel specific attributes. This is useful for userspace to
+be able to identify an individual channel.
 
-Thanks.
+Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+---
+ drivers/iio/industrialio-core.c | 40 +++++++++++++++++++++++++++++++++
+ include/linux/iio/iio.h         |  6 +++++
+ 2 files changed, 46 insertions(+)
 
-All of these appear to be correct and without effect
-except for __LINE__ number changes where braces are added.
-
-
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 6e388293c828..b577fff35641 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -669,6 +669,19 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+ }
+ EXPORT_SYMBOL_GPL(iio_format_value);
+ 
++static ssize_t iio_read_channel_label(struct device *dev,
++				      struct device_attribute *attr,
++				      char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++
++	if (!indio_dev->info->read_label)
++		return -EINVAL;
++
++	return indio_dev->info->read_label(indio_dev, this_attr->c, buf);
++}
++
+ static ssize_t iio_read_channel_info(struct device *dev,
+ 				     struct device_attribute *attr,
+ 				     char *buf)
+@@ -1137,6 +1150,28 @@ int __iio_add_chan_devattr(const char *postfix,
+ 	return ret;
+ }
+ 
++static int iio_device_add_channel_label(struct iio_dev *indio_dev,
++					 struct iio_chan_spec const *chan)
++{
++	int ret;
++
++	if (!indio_dev->info->read_label)
++		return 0;
++
++	ret = __iio_add_chan_devattr("label",
++				     chan,
++				     &iio_read_channel_label,
++				     NULL,
++				     0,
++				     IIO_SEPARATE,
++				     &indio_dev->dev,
++				     &indio_dev->channel_attr_list);
++	if (ret < 0)
++		return ret;
++
++	return 1;
++}
++
+ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+ 					 struct iio_chan_spec const *chan,
+ 					 enum iio_shared_by shared_by,
+@@ -1270,6 +1305,11 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+ 		return ret;
+ 	attrcount += ret;
+ 
++	ret = iio_device_add_channel_label(indio_dev, chan);
++	if (ret < 0)
++		return ret;
++	attrcount += ret;
++
+ 	if (chan->ext_info) {
+ 		unsigned int i = 0;
+ 		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index 2e45b3ceafa7..9a3cf4815148 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -362,6 +362,8 @@ struct iio_trigger; /* forward declaration */
+  *			and max. For lists, all possible values are enumerated.
+  * @write_raw:		function to write a value to the device.
+  *			Parameters are the same as for read_raw.
++ * @read_label:		function to request label name for a specified label,
++ *			for better channel identification.
+  * @write_raw_get_fmt:	callback function to query the expected
+  *			format/precision. If not set by the driver, write_raw
+  *			returns IIO_VAL_INT_PLUS_MICRO.
+@@ -420,6 +422,10 @@ struct iio_info {
+ 			 int val2,
+ 			 long mask);
+ 
++	int (*read_label)(struct iio_dev *indio_dev,
++			 struct iio_chan_spec const *chan,
++			 char *label);
++
+ 	int (*write_raw_get_fmt)(struct iio_dev *indio_dev,
+ 			 struct iio_chan_spec const *chan,
+ 			 long mask);
+-- 
+2.17.1
 
