@@ -2,132 +2,83 @@ Return-Path: <SRS0=BQmo=DG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38204C4346E
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 08:14:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5560DC4727C
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 11:54:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EE3FE20897
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 08:13:59 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="PJsIvzsC"
+	by mail.kernel.org (Postfix) with ESMTP id 2DB37206CA
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 11:54:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727654AbgI2IN7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Sep 2020 04:13:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34630 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgI2IN5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Sep 2020 04:13:57 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4BEA2C061755;
-        Tue, 29 Sep 2020 01:13:56 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id q21so3638969ota.8;
-        Tue, 29 Sep 2020 01:13:56 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=XCup1vGEgIO8d5dqKissyH4pLkKEy+8bhlwI7Fk/JgE=;
-        b=PJsIvzsCo37C7ACdvZDANz7dBByHCqE+2UewKmT8tcfvrjNsHX80YlgzbFCcr5HYXx
-         6N2S6KiHD+GdRRglVSF0I+HJ3nc3PF6h8gEoT9WtS4Z3tCsCBdlCD9+HwaYuTF49ttie
-         NbyO6rubqvTgRsa4f7Heg2PfJfUbbgrLyZXoOJktwMIwQJ8txZwMmPwS2WQEgpSnik4b
-         D9yzkXdcCbjW7C6EdZclYnV/3jDAjQdTV+nZ+WUksc0eKXzeJqlpeSQpkSiesBULXG32
-         ouoDCU8Ful6wbbv6Xmjff25aOgiWx33ztUQ64zd0s+luAHlBHtSPSBGeUcRCkDNrYX63
-         NAMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=XCup1vGEgIO8d5dqKissyH4pLkKEy+8bhlwI7Fk/JgE=;
-        b=of63Lk557eY+w3V4Q+XvckIzzcr1AyZr+yRuDy+QCVaCB1j7HQvFPdFsXj56e6G1LG
-         PbCcIsxRXn1lRwI0Br1LZ8EkrxiFcVCTE24pHIVPBWsj5m/OpqMkt7BtJAYu/KnRnVR0
-         1E5U+M0AZmrFHmIEFeMWaiETvjRHRnEX9y0mHm++dKD1BOR8jx/g0O9m6EeT87h4F4Nl
-         XXLV+dOTqfDLenxSGOWKxgj7pibVbHo59aM7sFFPKXggH+bpD1QgZpSjLCHR2x2mpqb0
-         bKe5CdwnYWzwhhV0q2cVPvpnBBCAUORWVPo7ftsET3v8kq61VLIcIBcXvIh5ZXTqsuMq
-         ceEg==
-X-Gm-Message-State: AOAM530aI++7sBvAKZgudj9flS4AdGNRMZlpa9O40wjiTu924ZgEFRcm
-        C0OwvBuaUhp+GbpdQ2tFUGf+jAxW0qKfZDShoj1ndtG5r3U=
-X-Google-Smtp-Source: ABdhPJwIl4voXZhuMAeIo5p6pCJJ4plObP3qKcN9I2JP8lusLk+mmggfoFHANVl5QMPSA+Q6ZDq2LEr9hblLYhSzQIc=
-X-Received: by 2002:a9d:4d0:: with SMTP id 74mr1973157otm.119.1601367235571;
- Tue, 29 Sep 2020 01:13:55 -0700 (PDT)
+        id S1731367AbgI2LyR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 29 Sep 2020 07:54:17 -0400
+Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:32180 "EHLO
+        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730629AbgI2Lq2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Sep 2020 07:46:28 -0400
+X-IronPort-AV: E=Sophos;i="5.77,318,1596492000"; 
+   d="scan'208";a="470044784"
+Received: from abo-173-121-68.mrs.modulonet.fr (HELO hadrien) ([85.68.121.173])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-GCM-SHA384; 29 Sep 2020 13:46:20 +0200
+Date:   Tue, 29 Sep 2020 13:46:19 +0200 (CEST)
+From:   Julia Lawall <julia.lawall@inria.fr>
+X-X-Sender: jll@hadrien
+To:     Mark Brown <broonie@kernel.org>
+cc:     Joe Perches <joe@perches.com>, linux-iio@vger.kernel.org,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-crypto@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-acpi@vger.kernel.org, David Lechner <david@lechnology.com>,
+        =?UTF-8?Q?Valdis_Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        kernel-janitors@vger.kernel.org, drbd-dev@lists.linbit.com,
+        openipmi-developer@lists.sourceforge.net,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-ide@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-wireless@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>
+Subject: Re: [PATCH 00/18] use semicolons rather than commas to separate
+ statements
+In-Reply-To: <20200929113745.GB4799@sirena.org.uk>
+Message-ID: <alpine.DEB.2.22.394.2009291344590.2808@hadrien>
+References: <1601233948-11629-1-git-send-email-Julia.Lawall@inria.fr> <160132172369.55460.9237357219623604216.b4-ty@kernel.org> <b1174f9be2ce65f6b5ebefcba0b48e792926abbc.camel@perches.com> <20200929113745.GB4799@sirena.org.uk>
+User-Agent: Alpine 2.22 (DEB 394 2020-01-19)
 MIME-Version: 1.0
-References: <20200929070908.10456-1-alexandru.ardelean@analog.com>
- <20200929070908.10456-2-alexandru.ardelean@analog.com> <CAHp75Ve_A_9ejG=sQKeLwEWWviLhZq1_L+WcTFk+=u8UGydKZw@mail.gmail.com>
-In-Reply-To: <CAHp75Ve_A_9ejG=sQKeLwEWWviLhZq1_L+WcTFk+=u8UGydKZw@mail.gmail.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Tue, 29 Sep 2020 11:13:44 +0300
-Message-ID: <CA+U=Dsp3SDEiKRF-VBS8FnW0q7TjArEiU1cjX-PxxdV8C3emjQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/9] iio: buffer: dmaengine: unwrap the use of iio_buffer_set_attrs()
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        groeck@chromium.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Gwendal Grignou <gwendal@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 10:49 AM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Tue, Sep 29, 2020 at 10:09 AM Alexandru Ardelean
-> <alexandru.ardelean@analog.com> wrote:
-> >
-> > The iio_buffer_set_attrs() helper will be removed in this series. So, just
-> > assign the attributes of the DMAEngine buffer logic directly.
-> >
-> > This is IIO buffer core context, so there is direct access to the
-> > buffer->attrs object.
-> >
-> > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> > ---
-> >  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 3 +--
-> >  1 file changed, 1 insertion(+), 2 deletions(-)
-> >
-> > diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> > index 93b4e9e6bb55..becea9f68181 100644
-> > --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> > +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> > @@ -200,8 +200,7 @@ static struct iio_buffer *iio_dmaengine_buffer_alloc(struct device *dev,
-> >
-> >         iio_dma_buffer_init(&dmaengine_buffer->queue, chan->device->dev,
-> >                 &iio_dmaengine_default_ops);
-> > -       iio_buffer_set_attrs(&dmaengine_buffer->queue.buffer,
-> > -               iio_dmaengine_buffer_attrs);
-> > +       dmaengine_buffer->queue.buffer.attrs = iio_dmaengine_buffer_attrs;
-> >
-> >         dmaengine_buffer->queue.buffer.access = &iio_dmaengine_buffer_ops;
->
-> A nit: can we group assignments together, like
-> init()
-> ...blank line...
-> attr = ...
-> access = ...
 
-fine by me
 
+On Tue, 29 Sep 2020, Mark Brown wrote:
+
+> On Mon, Sep 28, 2020 at 05:45:24PM -0700, Joe Perches wrote:
+> > On Mon, 2020-09-28 at 20:35 +0100, Mark Brown wrote:
 >
-> ?
+> > > [1/1] regmap: debugfs: use semicolons rather than commas to separate statements
+> > >       commit: 7f4a122d0b50b40c64d24a5cf7aafe26dd9487ee
 >
-> >
-> > --
-> > 2.17.1
-> >
+> > Rather than replying to the 0/n cover letter to a patch
+> > series, can you reply to each of the specific patches in
+> > the patch series you are applying?
 >
+> > Otherwise, it's a bit difficult to figure out which patches
+> > you are applying.
 >
-> --
-> With Best Regards,
-> Andy Shevchenko
+> Feel free to submit patches to b4.  Ideally things like this wouldn't be
+> being sent as serieses in the first place, there's no dependencies or
+> interactions between the patches.
+
+It was suggested (a long time ago, not with respect to this patch in
+particular) that sending such patches in a series is useful because it
+allows people who are not interested in the 18 patches to skip over them
+more easily.  So there are two conflicting needs...
+
+julia
