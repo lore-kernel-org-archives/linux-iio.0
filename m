@@ -2,103 +2,91 @@ Return-Path: <SRS0=BQmo=DG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A9E5C4741F
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 13:09:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 837ECC4727D
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 13:34:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 39680208FE
-	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 13:09:42 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="s8utigra"
+	by mail.kernel.org (Postfix) with ESMTP id 34FA42075A
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 13:34:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728879AbgI2NJl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 29 Sep 2020 09:09:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52680 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725776AbgI2NJl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Sep 2020 09:09:41 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 82696C061755;
-        Tue, 29 Sep 2020 06:09:41 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id h23so1496862pjv.5;
-        Tue, 29 Sep 2020 06:09:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=jAvojDEwPP77Cf1Vn+zoDW7yhX4boGzv0zKIJzb7HK0=;
-        b=s8utigraGsRng0q8D2toVYXL0YC3jjPm0r0HaEv0zz28/W6Se/BswR2VTDqDNHMJrR
-         6paAWZguxV7XmEYk4CI6BIDd+hKhedrUTf8gOQ7LcgbiXNJET94ht8BKPGLVW+lNsT3P
-         9Tuk3ELyVjAygaKdF7dBTSfKRN7dciAjJE41VQQADIzuIJ18EVx/PqmTFTfaRJYXqzg7
-         B53OBojjYOzgFUmGp+9no4FGl9bbZQ53b0+N9AOKBJpGcB6xGNSBVQrs9Yjq3z0DXYQD
-         +1ImBvp2FNt0YW0p1+y1Oc7oI6yxkd4jYbUduYlJ8v8jjlimnFe8aYf6yMOGFT8xKJYs
-         K1JQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=jAvojDEwPP77Cf1Vn+zoDW7yhX4boGzv0zKIJzb7HK0=;
-        b=ezfD4lzO4DJ+Tjc3zaJ7SRpzczaQ46exvT/PK4AIF3HBInLxVRnHoPlxX7KSRI1xty
-         6UQVVIiOPc+VYJEtAFFFbdY2JLnQ4DXzFQ6I4sp1UoDklF3xb+1uZ3cEZhuOEysqagC6
-         DLkSIvdiJ9SkCGcsluzW2wdcEmTUns1ZS0+5kZ2qIWqYGtefRQmfH1YsrYJNouzzaoEB
-         UbWEH2vn+hI8t4+MuPFCgXRwHom8Kp8pmLDTGjuOF1Kd7TpfXg4I6TF9PR5cfuWOAWNq
-         qAH9vMvImlCosiOfIXpRn9gyA+Avz0IPsYilkrY+HT5a8zobEHBme5DThV1bkUJnNPK0
-         kbXw==
-X-Gm-Message-State: AOAM532Oplv467sTp8yz7Z9yCjBEAUGC7mAd0tdWMqR/2ua8reYw5d98
-        D7g2TIpNUkZ//9o1KcNyI4CUXMLiRtERiLEiuhw=
-X-Google-Smtp-Source: ABdhPJz43usza+2e6m35ZxXuL/DIBXQoKpFuq77G2llkzWVkcSlh22Fn0hVML6oDua2jbhX86McCdeQ0OtAs33gDNRQ=
-X-Received: by 2002:a17:90b:fc4:: with SMTP id gd4mr3904635pjb.129.1601384981090;
- Tue, 29 Sep 2020 06:09:41 -0700 (PDT)
-MIME-Version: 1.0
-References: <20200929125949.69934-1-alexandru.ardelean@analog.com> <CAHp75VeQVEwtKGZcM6w=wfWuAvAD4xtveNUzT-7eXn5FVdheJQ@mail.gmail.com>
-In-Reply-To: <CAHp75VeQVEwtKGZcM6w=wfWuAvAD4xtveNUzT-7eXn5FVdheJQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 29 Sep 2020 16:09:22 +0300
-Message-ID: <CAHp75Vf4dvVKMZo1C5sWWg3cjFgDM5pizJEtwGFieXruMQBS1Q@mail.gmail.com>
-Subject: Re: [PATCH v3 0/9] iio: remove iio_buffer_set_attrs() and assign
- buffer attrs during alloc
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        id S1729712AbgI2NeK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 29 Sep 2020 09:34:10 -0400
+Received: from smtprelay0036.hostedemail.com ([216.40.44.36]:56784 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728273AbgI2NeK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 29 Sep 2020 09:34:10 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay04.hostedemail.com (Postfix) with ESMTP id 472EC180A7FFF;
+        Tue, 29 Sep 2020 13:34:08 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: event48_4a081af2718a
+X-Filterd-Recvd-Size: 2674
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf20.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 29 Sep 2020 13:34:03 +0000 (UTC)
+Message-ID: <5f0d2b20f5088281363bb4a35c5652a2c087f159.camel@perches.com>
+Subject: Re: [PATCH 00/18] use semicolons rather than commas to separate
+ statements
+From:   Joe Perches <joe@perches.com>
+To:     Julia Lawall <julia.lawall@inria.fr>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Shuah Khan <shuah@kernel.org>
+Cc:     Ard Biesheuvel <ardb@kernel.org>, linux-iio@vger.kernel.org,
+        drbd-dev@tron.linbit.com,
+        Valdis =?UTF-8?Q?Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        David Lechner <david@lechnology.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-wireless@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        kernel-janitors@vger.kernel.org,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        groeck@chromium.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Gwendal Grignou <gwendal@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-block@vger.kernel.org, linux-ide@vger.kernel.org,
+        Linux Crypto Mailing List <linux-crypto@vger.kernel.org>,
+        linux-amlogic@lists.infradead.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
+        openipmi-developer@lists.sourceforge.net,
+        linux-clk@vger.kernel.org,
+        Linux ARM <linux-arm-kernel@lists.infradead.org>,
+        Jerome Brunet <jbrunet@baylibre.com>
+Date:   Tue, 29 Sep 2020 06:34:02 -0700
+In-Reply-To: <alpine.DEB.2.22.394.2009291445050.2808@hadrien>
+References: <1601233948-11629-1-git-send-email-Julia.Lawall@inria.fr>
+         <CAMj1kXGh+CzuXkAnqsoMO2A3T1p=D6uFOV347Ym5+VFn5U1gWg@mail.gmail.com>
+         <20200929124108.GY4282@kadam>
+         <alpine.DEB.2.22.394.2009291445050.2808@hadrien>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 4:09 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Tue, Sep 29, 2020 at 3:55 PM Alexandru Ardelean
-> <alexandru.ardelean@analog.com> wrote:
-> >
-> > This is a v2 & v3 for [1]:
-> >   https://lore.kernel.org/linux-iio/20200925083743.46469-1-alexandru.ardelean@analog.com/
-> >
-> > It also includes a at91-sama5d2_adc cleanup patch in this series:
-> >   https://lore.kernel.org/linux-iio/20200924102902.136169-1-alexandru.ardelean@analog.com/
-> > This patch is required, in order to make the removal of
-> > iio_buffer_set_attrs() a bit cleaner in the at91-sama5d2_adc driver.
-> >
-> > Following the discussion from [1], this patchset implements the
-> > following:
->
-> Makes sense to me, FWIW,
-> Reviewed-by: Andy Shevchenko <andy.shevchenjko>
+On Tue, 2020-09-29 at 14:47 +0200, Julia Lawall wrote:
+> On Tue, 29 Sep 2020, Dan Carpenter wrote:
+> > The times where commas are used deliberately to replace curly braces are
+> > just evil.  Either way the code is cleaner with semi-colons.
+> 
+> I also found exaamples like the following to be particularly unforunate:
+> 
+>                                 fprintf(stderr,
+>                                         "page_nr %lu wrong count %Lu %Lu\n",
+>                                        page_nr, count,
+>                                        count_verify[page_nr]), exit(1);
+> 
+> The exit is very hard to see, unless you know to look for it.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+I sent that patch last month.
+https://patchwork.kernel.org/patch/11734877/
 
--- 
-With Best Regards,
-Andy Shevchenko
+It's still not applied.
+
+
+
