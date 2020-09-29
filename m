@@ -1,88 +1,97 @@
-Return-Path: <SRS0=Qinn=DF=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=BQmo=DG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.8 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C3EDC2D0A8
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Sep 2020 18:27:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F46AC4727C
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 00:45:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E4E08206C3
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Sep 2020 18:27:32 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1601317652;
-	bh=imwfy29Dr0lBD42zgANC5KpbVoKs0xGiMjEmJ9Z5bEY=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=Wqt4UiTqYcWwkQ3P1z1dj2LBZTLpk865yEz49+Iy550vYueeM1mCWJWtyFFZuUWe4
-	 ljKtr+uc5lnU2VB2jr5fIGCRUEF/nVEFFfZfxtQ94dM4uhPASiwScBBYs80MfWa+hE
-	 MMvb+5Jw6hkn3KHwu7nuWKgwWwDetH/qtrOJisuY=
+	by mail.kernel.org (Postfix) with ESMTP id DC55320738
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Sep 2020 00:45:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726548AbgI1S1c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Sep 2020 14:27:32 -0400
-Received: from mail-ot1-f66.google.com ([209.85.210.66]:37780 "EHLO
-        mail-ot1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726500AbgI1S1c (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Sep 2020 14:27:32 -0400
-Received: by mail-ot1-f66.google.com with SMTP id o8so1921994otl.4;
-        Mon, 28 Sep 2020 11:27:30 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=gntewucXGAZEXsmTkYpsZuCb5osJ4WHC8uBmXkRio9g=;
-        b=Cld0gdLCMDWN94yD+ledWRmIyQwuH9cOHLh/p9lxPJIJjjEW2T7JmKzg82olG6H8cX
-         xyHjvzfKpApiaVHO0pb6B2dVoHyEGZWhlXljHZp3/owR41G85ZIqlwKJVfCSh6owgXWi
-         nI4GdOE22r0qV4mJKOuglIif8OLB7xmOUxNejhbUjEJa4F6Q4KKpDbqM2PzrjapJW88q
-         6rREIttNK3Rxm51STLMLfRyYpq4YV1SMbS9TrPoLKL5LMB71a0L8eJ82Q3jp3pDKCLJt
-         i5QkD+vuaQsQjbFeOs9jxzQ2TJiinawAKQsljDdPJh4pRpAZelW2CdBDXY6CRpnvu8Rb
-         fSUA==
-X-Gm-Message-State: AOAM532K+hoBpPboyHOnnCIQMHlnnrWMII6+k3DPT1jQ3P7C6F02slId
-        Ik5riV9DRoawVO8sFHG+0Q==
-X-Google-Smtp-Source: ABdhPJynurwsMeyeH9KSDU10nJtgTWqyaJKqKSZEA8jpQUXzumTWDGrLO2HajskY1S2NhK4hbo3OTQ==
-X-Received: by 2002:a05:6830:10d9:: with SMTP id z25mr205514oto.136.1601317650306;
-        Mon, 28 Sep 2020 11:27:30 -0700 (PDT)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id 17sm402857oth.70.2020.09.28.11.27.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 28 Sep 2020 11:27:29 -0700 (PDT)
-Received: (nullmailer pid 3036808 invoked by uid 1000);
-        Mon, 28 Sep 2020 18:27:28 -0000
-Date:   Mon, 28 Sep 2020 13:27:28 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Gene Chen <gene.chen.richtek@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, matthias.bgg@gmail.com,
-        cy_huang@richtek.com, pmeerw@pmeerw.net,
-        benjamin.chao@mediatek.com, linux-mediatek@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        shufan_lee@richtek.com, gene_chen@richtek.com, knaack.h@gmx.de,
-        lars@metafoo.de, linux-iio@vger.kernel.org, jic23@kernel.org,
-        Wilma.Wu@mediatek.com, robh+dt@kernel.org
-Subject: Re: [PATCH v5 1/3] dt-bindings: iio: adc: add bindings doc for
- MT6360 ADC
-Message-ID: <20200928182728.GA3036774@bogus>
-References: <1600687442-23658-1-git-send-email-gene.chen.richtek@gmail.com>
- <1600687442-23658-2-git-send-email-gene.chen.richtek@gmail.com>
+        id S1727161AbgI2Apa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Sep 2020 20:45:30 -0400
+Received: from smtprelay0076.hostedemail.com ([216.40.44.76]:56402 "EHLO
+        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1726698AbgI2Apa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Sep 2020 20:45:30 -0400
+Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
+        by smtprelay01.hostedemail.com (Postfix) with ESMTP id 780A9100E7B40;
+        Tue, 29 Sep 2020 00:45:28 +0000 (UTC)
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-HE-Tag: self77_011759527186
+X-Filterd-Recvd-Size: 2723
+Received: from XPS-9350.home (unknown [47.151.133.149])
+        (Authenticated sender: joe@perches.com)
+        by omf03.hostedemail.com (Postfix) with ESMTPA;
+        Tue, 29 Sep 2020 00:45:25 +0000 (UTC)
+Message-ID: <b1174f9be2ce65f6b5ebefcba0b48e792926abbc.camel@perches.com>
+Subject: Re: [PATCH 00/18] use semicolons rather than commas to separate
+ statements
+From:   Joe Perches <joe@perches.com>
+To:     Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
+        Julia Lawall <Julia.Lawall@inria.fr>
+Cc:     linux-stm32@st-md-mailman.stormreply.com,
+        linux-crypto@vger.kernel.org,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-block@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-acpi@vger.kernel.org, David Lechner <david@lechnology.com>,
+        Valdis =?UTF-8?Q?Kl=C4=93tnieks?= <valdis.kletnieks@vt.edu>,
+        kernel-janitors@vger.kernel.org, drbd-dev@lists.linbit.com,
+        openipmi-developer@lists.sourceforge.net,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        linux-ide@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-clk@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-wireless@vger.kernel.org,
+        Neil Armstrong <narmstrong@baylibre.com>
+Date:   Mon, 28 Sep 2020 17:45:24 -0700
+In-Reply-To: <160132172369.55460.9237357219623604216.b4-ty@kernel.org>
+References: <1601233948-11629-1-git-send-email-Julia.Lawall@inria.fr>
+         <160132172369.55460.9237357219623604216.b4-ty@kernel.org>
+Content-Type: text/plain; charset="ISO-8859-1"
+User-Agent: Evolution 3.36.4-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <1600687442-23658-2-git-send-email-gene.chen.richtek@gmail.com>
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 21 Sep 2020 19:24:00 +0800, Gene Chen wrote:
-> From: Gene Chen <gene_chen@richtek.com>
+On Mon, 2020-09-28 at 20:35 +0100, Mark Brown wrote:
+> On Sun, 27 Sep 2020 21:12:10 +0200, Julia Lawall wrote:
+> > These patches replace commas by semicolons.  This was done using the
+> > Coccinelle semantic patch (http://coccinelle.lip6.fr/) shown below.
+> > 
+> > This semantic patch ensures that commas inside for loop headers will not be
+> > transformed.  It also doesn't touch macro definitions.
+> > 
+> > Coccinelle ensures that braces are added as needed when a single-statement
+> > branch turns into a multi-statement one.
+> > 
+> > [...]
 > 
-> This change adds the binding doc for the MT6360 ADC.
+> Applied to
 > 
-> Signed-off-by: Gene Chen <gene_chen@richtek.com>
-> ---
->  .../bindings/iio/adc/mediatek,mt6360-adc.yaml      | 34 ++++++++++++++++++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/mediatek,mt6360-adc.yaml
+>    https://git.kernel.org/pub/scm/linux/kernel/git/broonie/regmap.git for-next
 > 
+> Thanks!
+> 
+> [1/1] regmap: debugfs: use semicolons rather than commas to separate statements
+>       commit: 7f4a122d0b50b40c64d24a5cf7aafe26dd9487ee
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Hi Mark.
+
+Rather than replying to the 0/n cover letter to a patch
+series, can you reply to each of the specific patches in
+the patch series you are applying?
+
+Otherwise, it's a bit difficult to figure out which patches
+you are applying.
+
+thanks
+
