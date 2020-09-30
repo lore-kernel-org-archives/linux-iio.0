@@ -2,158 +2,97 @@ Return-Path: <SRS0=qhYY=DH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BDB8C2D0A8
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 05:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98CD4C2D0A8
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 05:56:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E0ED42072E
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 05:30:18 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="nLg+HuHF"
+	by mail.kernel.org (Postfix) with ESMTP id 54319206B8
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 05:56:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725554AbgI3FaS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Sep 2020 01:30:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34660 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725306AbgI3FaR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 01:30:17 -0400
-Received: from mail-ot1-x343.google.com (mail-ot1-x343.google.com [IPv6:2607:f8b0:4864:20::343])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADC92C061755;
-        Tue, 29 Sep 2020 22:30:17 -0700 (PDT)
-Received: by mail-ot1-x343.google.com with SMTP id m13so632579otl.9;
-        Tue, 29 Sep 2020 22:30:17 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=lu7XV755I5hRstMhFmm189SPTTuDmTjtnvxHW/n5cqM=;
-        b=nLg+HuHF8v5IpVD6GX/sUt8IbL83AGZA5Vptt2IcZdymdTMlBtLEIPHXU+bz11e/56
-         /GDeebPPsEGgZ1lFWxtIJx+wHcYrBQ1nwNUqdZaruS9LaDZuNH9VLCZvmjO239OKdLyc
-         qeOmALsQGeTMjj2Zjp8piJdhEVrcnFke4jo1TGMhsn8DLGiYyda1U1XZTudQdOlsxB9E
-         XXAMGps2AIlBJH27IzV0TDgudFA2YOqrcOf6FA2VWYZk1vTqYC7GT+i4mEkTg1Ex3zHQ
-         DBJJfhHs+A6H711yR1R2+GECd6TW25dAu3b6aKJINvDyT0naxRIYi4sma6rGsHLhHhpO
-         EUzw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=lu7XV755I5hRstMhFmm189SPTTuDmTjtnvxHW/n5cqM=;
-        b=Nzx38giv85hYceXmJr9/pn2nsvT4A2BubNmQRb/agpJi6WkbxkJ30iTEWDb3s3nB5e
-         jNlPPEAWH5KKBL5lAjbQWGsPxcYFjV9lQepSCaSg5oH01a7M15dKNmHRnirzMbNhmyoB
-         2v6t55nOAWtdpOebQ9meh1x+xqJJiH4KoxhGviMvWprhQk+X/qJb4Z5rxQNL+Mn1gjHD
-         mXxRhljaVg3QEHhefAffI90dPbqmcwMN6ACwvumMXIDo+4gpW0uF4DCQ5QhwkuNJWpn6
-         JG5LWOTYiHKnTgQ53hddj7wnhXO99pIgFiYzauDF4uJKl06oc92cCYpXs+8FcoPlV9kJ
-         9RaQ==
-X-Gm-Message-State: AOAM532gSwNPxg15f8kDIcSwQ/ETHd1PHhkSKZRmTppMVSWoLCm8rqaT
-        hpO+Opj9aBYggysOlQtXytunslAu4qIWoNTGUv8=
-X-Google-Smtp-Source: ABdhPJzphhYh6zkmYIsXBH5FvEdz6jeZ+lTC4wCELtyH2X1rODe/XdR6hN1qf45yBJG2rMuNT6LNqQ3aRLEOJtatmBw=
-X-Received: by 2002:a9d:50a:: with SMTP id 10mr476146otw.207.1601443817093;
- Tue, 29 Sep 2020 22:30:17 -0700 (PDT)
+        id S1726924AbgI3F4A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Sep 2020 01:56:00 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:61456 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725535AbgI3F4A (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 01:56:00 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08U5tHkw015043;
+        Wed, 30 Sep 2020 01:55:53 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33syg666b3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 30 Sep 2020 01:55:53 -0400
+Received: from ASHBMBX9.ad.analog.com (ashbmbx9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 08U5tpIv004170
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 30 Sep 2020 01:55:51 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 30 Sep
+ 2020 01:55:43 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 30 Sep 2020 01:55:43 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08U5tkgg031934;
+        Wed, 30 Sep 2020 01:55:47 -0400
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
+CC:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
+        <ludovic.desroches@microchip.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v2 0/4] iio: adc: at91: misc driver cleanups
+Date:   Wed, 30 Sep 2020 09:00:04 +0300
+Message-ID: <20200930060008.42134-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20200928125424.35921-1-alexandru.ardelean@analog.com> <20200929165428.15ac9e4c@archlinux>
-In-Reply-To: <20200929165428.15ac9e4c@archlinux>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Wed, 30 Sep 2020 08:30:06 +0300
-Message-ID: <CA+U=Dspd11N-pXXnnY_5CSzNp50iRr7h16zXTCxo8Fk+v48F7g@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: adc: at91_adc: use of_device_get_match_data() helper
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        LKML <linux-kernel@vger.kernel.org>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        alexandre.belloni@bootlin.com,
-        Ludovic Desroches <ludovic.desroches@microchip.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-ADIRoutedOnPrem: True
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
+ definitions=2020-09-30_03:2020-09-29,2020-09-30 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ priorityscore=1501 impostorscore=0 suspectscore=0 lowpriorityscore=0
+ spamscore=0 bulkscore=0 mlxscore=0 clxscore=1015 mlxlogscore=941
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009300047
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 6:55 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Mon, 28 Sep 2020 15:54:23 +0300
-> Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
->
-> > This tries to solve a warning reported by the lkp bot:
-> >
-> > >> drivers/iio/adc/at91_adc.c:1439:34: warning: unused variable
-> > >> 'at91_adc_dt_ids' [-Wunused-const-variable]
-> >    static const struct of_device_id at91_adc_dt_ids[] = {
-> >                                     ^
-> >    1 warning generated.
-> >
-> > This shows up with 'compiler: clang version 12.0.0' and W=1 (as the bot
-> > mentions).
-> >
-> > Forward declarations for global variables can be a bit weird; forward
-> > function declarations are more common.
-> Hi,
->
-> That's not the forward declaration that it is complaining about...
+This whole thing started because the lkp bot haunted me for a while with
+this build warning:
 
-Also, silly me here.
-I was just annoyed with the email from the bot, so I didn't dig too
-deep to understand.
+>> drivers/iio/adc/at91_adc.c:1439:34: warning: unused variable
+>> 'at91_adc_dt_ids' [-Wunused-const-variable]
+   static const struct of_device_id at91_adc_dt_ids[] = {
+                                    ^
+   1 warning generated.
 
->
-> It's a reasonable patch anyway, but doesn't fix that warning which is
-> about of_match_ptr and the lack of #ifdef CONFIG_OF around the
-> actual definition.
->
-> For the bug warning, I'd add add a Kconfig dependency on OF.
-> It doesn't make any sense to allow building this driver without that.
->
-> So resend this as a simple tidy up patch and another one adding
-> that build dependency.
->
-> Thanks,
->
-> Jonathan
->
-> >
-> > Maybe another fix for this would have been to prefix with 'extern' the
-> > 'at91_adc_dt_ids' variable, thus making it more friendly as a forward
-> > declaration. It would look weird, but it would work.
-> >
-> > But, we can avoid that forward declaration altogether simply by obtaining
-> > the private data with of_device_get_match_data().
-> >
-> > This appeared after commit 4027860dcc4c ("iio: Kconfig: at91_adc: add
-> > COMPILE_TEST dependency to driver"), which put this driver on the lkp's bot
-> > radar.
-> >
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> > ---
-> >  drivers/iio/adc/at91_adc.c | 5 +----
-> >  1 file changed, 1 insertion(+), 4 deletions(-)
-> >
-> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> > index 9b2c548fae95..c9ec0a4a357e 100644
-> > --- a/drivers/iio/adc/at91_adc.c
-> > +++ b/drivers/iio/adc/at91_adc.c
-> > @@ -829,8 +829,6 @@ static u32 calc_startup_ticks_9x5(u32 startup_time, u32 adc_clk_khz)
-> >       return ticks;
-> >  }
-> >
-> > -static const struct of_device_id at91_adc_dt_ids[];
-> > -
-> >  static int at91_adc_probe_dt_ts(struct device_node *node,
-> >       struct at91_adc_state *st, struct device *dev)
-> >  {
-> > @@ -878,8 +876,7 @@ static int at91_adc_probe_dt(struct iio_dev *idev,
-> >       if (!node)
-> >               return -EINVAL;
-> >
-> > -     st->caps = (struct at91_adc_caps *)
-> > -             of_match_device(at91_adc_dt_ids, &pdev->dev)->data;
-> > +     st->caps = (struct at91_adc_caps *)of_device_get_match_data(&pdev->dev);
-> >
-> >       st->use_external = of_property_read_bool(node, "atmel,adc-use-external-triggers");
-> >
->
+The fix may likely be patch 'iio: adc: at91_adc: add Kconfig dependency
+on the OF symbol'; was pointed out by Jonathan.
+
+Changelog v1 -> v2:
+- https://lore.kernel.org/linux-iio/CA+U=Dspd11N-pXXnnY_5CSzNp50iRr7h16zXTCxo8Fk+v48F7g@mail.gmail.com/T/#m7c0efef4dc623776fe8bafdb5f734b0eaca50f82
+- for patch 'iio: adc: at91_adc: use of_device_get_match_data() helper'
+  changed description; it's just tidy-up patch, not a fix
+- added 2 more patches:
+  - iio: adc: at91_adc: add Kconfig dependency on the OF symbol
+  - iio: adc: at91_adc: remove of_match_ptr() usage
+
+Alexandru Ardelean (4):
+  iio: adc: at91_adc: use of_device_get_match_data() helper
+  iio: adc: at91_adc: const-ify some driver data
+  iio: adc: at91_adc: add Kconfig dependency on the OF symbol
+  iio: adc: at91_adc: remove of_match_ptr() usage
+
+ drivers/iio/adc/Kconfig    |  2 +-
+ drivers/iio/adc/at91_adc.c | 13 +++++--------
+ 2 files changed, 6 insertions(+), 9 deletions(-)
+
+-- 
+2.17.1
+
