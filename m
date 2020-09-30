@@ -2,73 +2,71 @@ Return-Path: <SRS0=qhYY=DH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.0 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CF35C4727E
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 12:48:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C38CC4727E
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 12:48:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 30ADE20789
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 12:48:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 524E7207FB
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 12:48:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729873AbgI3MsD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Sep 2020 08:48:03 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:60632 "EHLO
+        id S1730009AbgI3MsI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Sep 2020 08:48:08 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:1402 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725776AbgI3MsD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 08:48:03 -0400
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08UClcHM013986;
-        Wed, 30 Sep 2020 08:47:57 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 33t2j4q8t3-1
+        by vger.kernel.org with ESMTP id S1730005AbgI3MsH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 08:48:07 -0400
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 08UCPM7F031003;
+        Wed, 30 Sep 2020 08:48:02 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 33syg67cv1-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 30 Sep 2020 08:47:57 -0400
-Received: from SCSQMBX11.ad.analog.com (scsqmbx11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 08UClt9f035950
+        Wed, 30 Sep 2020 08:48:01 -0400
+Received: from SCSQMBX10.ad.analog.com (scsqmbx10.ad.analog.com [10.77.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 08UClxUm048030
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 30 Sep 2020 08:47:55 -0400
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 30 Sep 2020 05:47:47 -0700
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 30 Sep 2020 05:47:36 -0700
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Wed, 30 Sep 2020 05:47:46 -0700
+        Wed, 30 Sep 2020 08:48:00 -0400
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 30 Sep
+ 2020 05:47:51 -0700
+Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Wed, 30 Sep 2020 05:47:51 -0700
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08UCloll023959;
-        Wed, 30 Sep 2020 08:47:50 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 08UClolo023959;
+        Wed, 30 Sep 2020 08:47:56 -0400
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
 CC:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
         <nicolas.ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
         <ludovic.desroches@microchip.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v3 0/4] iio: adc: at91: misc driver cleanups
-Date:   Wed, 30 Sep 2020 15:52:12 +0300
-Message-ID: <20200930125216.90424-1-alexandru.ardelean@analog.com>
+Subject: [PATCH v3 3/4] iio: adc: at91_adc: add Kconfig dep on the OF symbol and remove of_match_ptr()
+Date:   Wed, 30 Sep 2020 15:52:15 +0300
+Message-ID: <20200930125216.90424-4-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20200930125216.90424-1-alexandru.ardelean@analog.com>
+References: <20200930125216.90424-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRoutedOnPrem: True
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.235,18.0.687
  definitions=2020-09-30_07:2020-09-30,2020-09-30 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
- suspectscore=0 priorityscore=1501 phishscore=0 spamscore=0 malwarescore=0
- bulkscore=0 clxscore=1015 mlxlogscore=965 mlxscore=0 adultscore=0
- lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2006250000 definitions=main-2009300103
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 malwarescore=0
+ priorityscore=1501 impostorscore=0 suspectscore=0 lowpriorityscore=0
+ spamscore=0 bulkscore=0 mlxscore=0 clxscore=1015 mlxlogscore=999
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2006250000 definitions=main-2009300102
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This whole thing started because the lkp bot haunted me for a while with
-this build warning:
+This tries to solve a warning reported by the lkp bot:
 
 >> drivers/iio/adc/at91_adc.c:1439:34: warning: unused variable
 >> 'at91_adc_dt_ids' [-Wunused-const-variable]
@@ -76,42 +74,50 @@ this build warning:
                                     ^
    1 warning generated.
 
-The fix may likely be patch 'iio: adc: at91_adc: add Kconfig dependency
-on the OF symbol'; was pointed out by Jonathan.
+This warning has appeared after the AT91_ADC driver compilation has been
+enabled via the COMPILE_TEST symbol dependency.
 
-Changelog v2 -> v3:
-- https://lore.kernel.org/linux-iio/20200930060008.42134-1-alexandru.ardelean@analog.com/T/#t
-- added 'Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>'
-  for patches:
-     iio: adc: at91_adc: use of_device_get_match_data() helper
-     iio: adc: at91_adc: const-ify some driver data
-- fixed description for patch 'iio: adc: at91_adc: add Kconfig dependency on the OF symbol'
-- squash patches:
-     iio: adc: at91_adc: add Kconfig dependency on the OF symbol
-     iio: adc: at91_adc: remove of_match_ptr() usage
-- added patch: 'iio: adc: at91_adc: remove platform data and move defs in driver file'
+The warning is caused by the 'of_match_ptr()' helper which returns NULL if
+OF is undefined. This driver should build only for device-tree context, so
+a dependency on the OF Kconfig symbol has been added.
+Also, the usage of of_match_ptr() helper has been removed since it
+shouldn't ever return NULL (because the driver should not be built for the
+non-OF context).
 
-Changelog v1 -> v2:
-- https://lore.kernel.org/linux-iio/CA+U=Dspd11N-pXXnnY_5CSzNp50iRr7h16zXTCxo8Fk+v48F7g@mail.gmail.com/T/#m7c0efef4dc623776fe8bafdb5f734b0eaca50f82
-- for patch 'iio: adc: at91_adc: use of_device_get_match_data() helper'
-  changed description; it's just tidy-up patch, not a fix
-- added 2 more patches:
-  - iio: adc: at91_adc: add Kconfig dependency on the OF symbol
-  - iio: adc: at91_adc: remove of_match_ptr() usage
+Fixes: 4027860dcc4c ("iio: Kconfig: at91_adc: add COMPILE_TEST dependency to driver")
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/adc/Kconfig    | 2 +-
+ drivers/iio/adc/at91_adc.c | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-Alexandru Ardelean (4):
-  iio: adc: at91_adc: use of_device_get_match_data() helper
-  iio: adc: at91_adc: const-ify some driver data
-  iio: adc: at91_adc: add Kconfig dep on the OF symbol and remove
-    of_match_ptr()
-  iio: adc: at91_adc: remove platform data and move defs in driver file
-
- drivers/iio/adc/Kconfig                |  2 +-
- drivers/iio/adc/at91_adc.c             | 64 ++++++++++----------------
- include/linux/platform_data/at91_adc.h | 49 --------------------
- 3 files changed, 26 insertions(+), 89 deletions(-)
- delete mode 100644 include/linux/platform_data/at91_adc.h
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 91ae90514aff..17e9ceb9c6c4 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -295,7 +295,7 @@ config ASPEED_ADC
+ config AT91_ADC
+ 	tristate "Atmel AT91 ADC"
+ 	depends on ARCH_AT91 || COMPILE_TEST
+-	depends on INPUT && SYSFS
++	depends on INPUT && SYSFS && OF
+ 	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 7d846a2852a5..473bffe84fbd 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -1466,7 +1466,7 @@ static struct platform_driver at91_adc_driver = {
+ 	.id_table = at91_adc_ids,
+ 	.driver = {
+ 		   .name = DRIVER_NAME,
+-		   .of_match_table = of_match_ptr(at91_adc_dt_ids),
++		   .of_match_table = at91_adc_dt_ids,
+ 		   .pm = &at91_adc_pm_ops,
+ 	},
+ };
 -- 
 2.17.1
 
