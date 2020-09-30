@@ -2,61 +2,61 @@ Return-Path: <SRS0=qhYY=DH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1F9C4727F
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 10:02:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2CDFC4727F
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 10:02:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C3F0F207F7
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 10:02:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 80FE120848
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 10:02:27 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="XFH7F1yI"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="L7JpW8e4"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729132AbgI3KCV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Sep 2020 06:02:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48370 "EHLO
+        id S1728938AbgI3KCZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Sep 2020 06:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729121AbgI3KCQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 06:02:16 -0400
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ACE25C0613D2
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 03:02:15 -0700 (PDT)
-Received: by mail-lj1-x242.google.com with SMTP id r24so1057775ljm.3
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 03:02:15 -0700 (PDT)
+        with ESMTP id S1729225AbgI3KCY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 06:02:24 -0400
+Received: from mail-lf1-x142.google.com (mail-lf1-x142.google.com [IPv6:2a00:1450:4864:20::142])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0196BC061755
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 03:02:24 -0700 (PDT)
+Received: by mail-lf1-x142.google.com with SMTP id z19so1410849lfr.4
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 03:02:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dEnvUN6y4l8bN572xWFcvNos83VKKHZF/MtmBy4QG+U=;
-        b=XFH7F1yIVgeuDY9PL0FhlRcEmq+tLf2SYNRbk0xfFoe3UnMzG7vZcO1eBPb1wdnEO5
-         EG0vtU3lLHve8Or6iuVssXWZ+AtLChp5jwYuiAD4uMr7N2bXaP2k4/4etM4qNWyissC2
-         hUcEn/iOFxwgDuTuofrxpUn5bkkRPKPI24kkQY4dk8gr/RrwhST/uY4zqxeFMY1SFXAQ
-         82n0+kNMhnWd2dbChWmE1rNQmyGW6t8C3GFzVgAt6VdJVjD9MY7IRu+NTSdgFWCAIbni
-         DckvSMDpch0AlmerCnvTKbU1WSVrSiGl2Djq10K1auZ7gxsIoyB8teqI8YUmK4pfK72s
-         bmBQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=u+ec5e/iUjJ8qDBtGE9xKBCADcm1RI8srVHT5OLXlvU=;
+        b=L7JpW8e41pdQIDs7XVntiDjzE5Whj9TdpeqexPl106qK8irLfsBgPwN+J/IgEe/GWB
+         8CvCZf6TL20ekgQj5nkrKaJQN9Scd8FnmVP0FlvOHGD3ZMp1WZVPCAstpY1i3ejR2Ow/
+         RUGykcuatohUzP5y8wZA7Hh4EvItbSX3bc+wJfw9+KLldbCWOOc1H0I2/w53H1DSLlks
+         kLCF9lZUFdpCHrk04/77Pto7W1TUf1IhMqJnighA1lIn+PilH9NXLam0F085MiAwSNuH
+         MilmtAaB5f0ibptA12QDDQ1J+hz38YKS9dHqV7Wrvq5sGAZaMO6I6yb2utuP/s9ObxGX
+         z4Qg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dEnvUN6y4l8bN572xWFcvNos83VKKHZF/MtmBy4QG+U=;
-        b=Ka6FFMaeV1f9NNVvGa9YVHwzknnqSx/k9LNoXSyoZ7bqnniLxsJYZX9jgTvqA5uKrJ
-         Y4+Q+B/bW6E6k15lFyKyzfM2fFQ6VTMwYlhxHxuSkBJGyypNFeNTEE8FqzpZ1nhc0RXm
-         qez2mtFcZR+MdNXvjxcwIsOXibO6rW6o279Jg5BO3mXBIZANkKtOJBymZW/xIkP8+fcg
-         xJIKO89HSA+DdzAKO1KA0kkneyz8lZetWM3xrare2VzBHm3THNtBfKiJJ7VEG3iCWoCq
-         gzuSuvU9kkg2eLQsdanWnngBLrdCmEDSXjM/naoAmkytqVRUFmK71SyVUKI42I0xxVa3
-         GYhQ==
-X-Gm-Message-State: AOAM532Qf5Fbofrwzu6sVgzwzxLnbNO5InKpQCHnziuF0OAdS4I6tHPV
-        PTvq+rGjHa+9xb3ELkgbwEXtsA==
-X-Google-Smtp-Source: ABdhPJz5ntskvCOv+Iz5WOt47n4yiDYsnjzaTIWG5QJrq58KINZSFISwQnSUDMYL539taRJez+WOuQ==
-X-Received: by 2002:a05:651c:1205:: with SMTP id i5mr633295lja.47.1601460133963;
-        Wed, 30 Sep 2020 03:02:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=u+ec5e/iUjJ8qDBtGE9xKBCADcm1RI8srVHT5OLXlvU=;
+        b=REfpJpa496Ove3pG8FQkvRnmrkdbhIqJVfoB4gQWo0css8ZZpBq/13jyKJWEj3ehME
+         5Dkq4JWGRBZF+2bxKV8/Eb+OQrPHNtavk7UfyVkFvpRADGTSRRt+cP1OjdLWNU/DJTkg
+         K+VdemSe0nHgyMBrFZgJNXjngAuAkKyTzDylT4JUWGUarv18Y0uWxsFJiiO2YzRq8rcp
+         kkD2RAYejiq6ZxHGKWERct8q3N7Xle1YEflAel7VO33560SSJk2ajmzWMAu2rpc/Fmsc
+         FP9zX1T/6IdQ85FzsrRoDTkiR9ryyocujRu94jFUVzDXMaHO4QRFeH5beFxHC6YR9zaZ
+         u/Wg==
+X-Gm-Message-State: AOAM531k6BICnvbpNmjxgYEUW0bcTpd16KPuRhoJWJ5xn1CURcOfnfWa
+        SsV2T0N+TKfy1TwBXte1zgx7Cw==
+X-Google-Smtp-Source: ABdhPJzwwTX5w1ZQGgCsH5flM1GdwUDPzLgUTf5zIUJ76ZzgPt5znCt8OgR/hp2NsMNJkCGhBPk5Cg==
+X-Received: by 2002:ac2:418c:: with SMTP id z12mr645897lfh.231.1601460142445;
+        Wed, 30 Sep 2020 03:02:22 -0700 (PDT)
 Received: from eriador.lan ([188.162.64.138])
-        by smtp.gmail.com with ESMTPSA id w4sm132479lff.231.2020.09.30.03.02.10
+        by smtp.gmail.com with ESMTPSA id w4sm132479lff.231.2020.09.30.03.02.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2020 03:02:13 -0700 (PDT)
+        Wed, 30 Sep 2020 03:02:21 -0700 (PDT)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -71,56 +71,61 @@ To:     Andy Gross <agross@kernel.org>,
 Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
         devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jishnu Prakash <jprakash@qti.qualcomm.com>
-Subject: [PATCH v6 00/10] qcom: pm8150: add support for thermal monitoring
-Date:   Wed, 30 Sep 2020 13:01:53 +0300
-Message-Id: <20200930100203.1988374-1-dmitry.baryshkov@linaro.org>
+        Jishnu Prakash <jprakash@qti.qualcomm.com>,
+        Craig Tatlor <ctatlor97@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v6 02/10] fixp-arith: add a linear interpolation function
+Date:   Wed, 30 Sep 2020 13:01:55 +0300
+Message-Id: <20200930100203.1988374-3-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20200930100203.1988374-1-dmitry.baryshkov@linaro.org>
+References: <20200930100203.1988374-1-dmitry.baryshkov@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch serie adds support for thermal monitoring block on Qualcomm's
-PMIC5 chips. PM8150{,b,l} and sm8250-mtp board device trees are extended
-to support thermal zones provided by this thermal monitoring block.
-Unlike the rest of PMIC thermal senses, these thermal zones describe
-particular thermistors, which differ between from board to board.
+From: Craig Tatlor <ctatlor97@gmail.com>
 
-Changes since v5:
- - Reworked DT bindings:
-   * Removed qcom,adc-channel, instead it is parsed from io-channels
-   * Renamed qcom,hw-settle-time to include -us suffix
- - Re-added monitor enabling which got lost during refactored. Noted by
-   Jishnu Prakash.
- - Use threaded IRQ handler as susggested by Jishnu.
+Adds a function to interpolate against two points,
+this is carried arount as a helper function by tons of drivers.
 
-Changes since v4:
- - Added kernel-doc comments to ADC-TM structures
- - Used several sizeof(buf) instead of hand-conding register size
+Signed-off-by: Craig Tatlor <ctatlor97@gmail.com>
+Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ include/linux/fixp-arith.h | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
 
-Changes since v3:
- - Fix DT description to spell "thermal monitoring" instead of just TM
- - Fix warnings in DT example
- - Add EXPORT_SYMBOL_GPL(of_iio_channel_get_by_name)
- - Fixed whitespace chanes in qcom-vadc-common.c
- - Removed error message if IIO chanel get returns -EPROBE_DEFER
-
-Changes since v2:
- - IIO: export of_iio_channel_get_by_name() function
- - dt-bindings: move individual io-channels to each thermal monitoring
-   channel rather than listing them all in device node
- - added fallback defaults to of_device_get_match_data calls in
-   qcom-spmi-adc5 and qcom-spmi-adc-tm5 drivers
- - minor typo fixes
-
-Changes since v1:
- - Introduce fixp_linear_interpolate() by Craig Tatlor
- - Lots of syntax/whitespace changes
- - Cleaned up register definitions per Jonathan's suggestion
- - Implemented most of the suggestions from Bjorn's and Jonathan's
-   review
-
-
+diff --git a/include/linux/fixp-arith.h b/include/linux/fixp-arith.h
+index 8396013785ef..281cb4f83dbe 100644
+--- a/include/linux/fixp-arith.h
++++ b/include/linux/fixp-arith.h
+@@ -141,4 +141,23 @@ static inline s32 fixp_sin32_rad(u32 radians, u32 twopi)
+ #define fixp_cos32_rad(rad, twopi)	\
+ 	fixp_sin32_rad(rad + twopi / 4, twopi)
+ 
++/**
++ * fixp_linear_interpolate() - interpolates a value from two known points
++ *
++ * @x0: x value of point 0
++ * @y0: y value of point 0
++ * @x1: x value of point 1
++ * @y1: y value of point 1
++ * @x: the linear interpolant
++ */
++static inline int fixp_linear_interpolate(int x0, int y0, int x1, int y1, int x)
++{
++	if (y0 == y1 || x == x0)
++		return y0;
++	if (x1 == x0 || x == x1)
++		return y1;
++
++	return y0 + ((y1 - y0) * (x - x0) / (x1 - x0));
++}
++
+ #endif
+-- 
+2.28.0
 
