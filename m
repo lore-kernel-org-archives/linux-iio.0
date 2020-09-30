@@ -5,55 +5,56 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A461C4727F
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 07:57:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE51C2D0A8
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 07:57:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 331752075F
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 07:57:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8FDC62075F
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 07:57:53 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ieunoJ0C"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="fHoXBFJz"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728423AbgI3H5o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Sep 2020 03:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
+        id S1728471AbgI3H5w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Sep 2020 03:57:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728329AbgI3H5e (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 03:57:34 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0427CC0613D0
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 00:57:33 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id f18so608949pfa.10
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 00:57:32 -0700 (PDT)
+        with ESMTP id S1728177AbgI3H5f (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 03:57:35 -0400
+Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9B42C0613D3
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 00:57:34 -0700 (PDT)
+Received: by mail-pf1-x442.google.com with SMTP id l126so627298pfd.5
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 00:57:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=wwcKo51Wb1Z8EGzntv8DWG85B5SZsF7AJ7GbGFyxohQ=;
-        b=ieunoJ0C4vedImz4cRodWXnkc8/tddCub29bw+UBzRFrB+Hi2frlv736eCVuCHoX4y
-         /SWqS4IcN5BTgB1xsaXQ0DymqRjbcMyUJpS0phgfSOV4x3db2cm+PTQ3+eIvi9o1tJyx
-         C6fXCsccxPlI85FTlnqIez61fRq2qI/gwQ1Y0=
+        bh=Gw1RFzK+yqUfrbLUb2+nTAxxqoc8k7XTSgedNtFofyE=;
+        b=fHoXBFJzW9q1lKzLZ8paOVu1Kp7m4wRQ6AfsR1yl3WZJgS+22rJrctdrcivzvQDUOg
+         n5McLJgP2Qd/7LnQZlRmu7tpRXyuyB8et3tsVmRoKenMDmOx+yXJDQ3LgxPZi3ATwet3
+         B422ar3HwfHshIWuY8SehOyWkd78+51GnyvqQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=wwcKo51Wb1Z8EGzntv8DWG85B5SZsF7AJ7GbGFyxohQ=;
-        b=NiKYOxtAJg1QRIghDt1OfOL183aKpdpFAGrstgP+woR36j6ruIqzBzlshOttSzl1L+
-         cXWaU65oGsxtTP/YRvtpcxXglmufUNz43gmCo+010WTlzaYICsq84JNbiNjRirixzkey
-         Fr7rVziWdgBrwmkLmp7laNlOV9x1JXriXg8es+gXTrQaVCMiBeYACE8u7hhUHZBoZGxW
-         vEA9EkYguBNp9/t8f/Sup5Rx+TTOaPxpkgvf/4Ns3t6bnl/oT2sgIilfwnz7T16kiZZt
-         WRpJ+kwT56J/vHF4zNeaBg6it5EMaYXLyE/5wXGVihRYK/AmOq6Be0THB+e93MCIYZ36
-         U1Dg==
-X-Gm-Message-State: AOAM533pbD6BeHjDJfXeqv2+BlxeZwHuLWcQKQj6evefJtfb1WGAiOJn
-        PBug0KE6IHk1eg1SPNtThzDXHw==
-X-Google-Smtp-Source: ABdhPJwnFWtYFLG3/EbvADgayMWeo9wZudInr0ZIOwKTQ6IJHxK6y+SouxxoAOwYpY9x83TpUcttCQ==
-X-Received: by 2002:a62:19c1:0:b029:13c:1611:6529 with SMTP id 184-20020a6219c10000b029013c16116529mr1234973pfz.9.1601452652566;
-        Wed, 30 Sep 2020 00:57:32 -0700 (PDT)
+        bh=Gw1RFzK+yqUfrbLUb2+nTAxxqoc8k7XTSgedNtFofyE=;
+        b=qvQpKeZfCOciNZUvm4Pu+3vb0peojP2zQEEwuS8Op4hpLpt3/8xPJpe30Jm/SZUr2h
+         T4BHXym/fGv24ahKlFGnfdIkLxBIGxwBbNMGAh1zCRrg1nrEk0pIHYDWrmymKRR1HyRp
+         T9ePsmS872gnzJpzrYff8sN1zVV931hSiZ5nst0sGWs7+Xl3ExSxttQuJJz5daI7qUqd
+         x/7vonh7XhBFD/XAbK6l8emuIz0O4yJN8bm77ZL2r+RIvW81HEaX9nz51Krer4c6xOqR
+         eT3Pv94BOS5XyfgyORWXDdb9B3mSzMuL5FK71BF1Ach78DBcZiq0tllhnUjhyN7J48uQ
+         8kXw==
+X-Gm-Message-State: AOAM532e//6jLORQO923D6VBYyGEdi+J36GraiGrkIXN4Z6wemMd+Gjd
+        /6zEo7Ca2FoHFx5QrULC+k3cOw==
+X-Google-Smtp-Source: ABdhPJw1GlABTjohd8iR+8sFFzcQQOx9J4YlvXW46Cw3p7uoZOHsaGriT8XOILLMhjghBLYAOx08HA==
+X-Received: by 2002:a05:6a00:2db:b029:142:2501:34ed with SMTP id b27-20020a056a0002dbb0290142250134edmr1204975pft.70.1601452654504;
+        Wed, 30 Sep 2020 00:57:34 -0700 (PDT)
 Received: from smtp.gmail.com ([2620:15c:202:1:3e52:82ff:fe6c:83ab])
-        by smtp.gmail.com with ESMTPSA id l21sm1272131pjq.54.2020.09.30.00.57.31
+        by smtp.gmail.com with ESMTPSA id l21sm1272131pjq.54.2020.09.30.00.57.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2020 00:57:32 -0700 (PDT)
+        Wed, 30 Sep 2020 00:57:34 -0700 (PDT)
 From:   Stephen Boyd <swboyd@chromium.org>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -63,9 +64,9 @@ Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Douglas Anderson <dianders@chromium.org>,
         Gwendal Grignou <gwendal@chromium.org>,
         Evan Green <evgreen@chromium.org>
-Subject: [PATCH v2 2/6] iio: sx9310: Support setting proximity thresholds
-Date:   Wed, 30 Sep 2020 00:57:24 -0700
-Message-Id: <20200930075728.2410327-3-swboyd@chromium.org>
+Subject: [PATCH v2 4/6] iio: sx9310: Support setting debounce values
+Date:   Wed, 30 Sep 2020 00:57:26 -0700
+Message-Id: <20200930075728.2410327-5-swboyd@chromium.org>
 X-Mailer: git-send-email 2.28.0.709.gb0816b6eb0-goog
 In-Reply-To: <20200930075728.2410327-1-swboyd@chromium.org>
 References: <20200930075728.2410327-1-swboyd@chromium.org>
@@ -75,7 +76,9 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support to set the proximity thresholds for each channel.
+The rising and falling directions can be debounced in the hardware as
+"close" and "far" debounce settings. Add support for these as rising and
+falling debounce settings.
 
 Cc: Daniel Campello <campello@chromium.org>
 Cc: Lars-Peter Clausen <lars@metafoo.de>
@@ -85,148 +88,155 @@ Cc: Gwendal Grignou <gwendal@chromium.org>
 Cc: Evan Green <evgreen@chromium.org>
 Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 ---
- drivers/iio/proximity/sx9310.c | 114 +++++++++++++++++++++++++++++++++
- 1 file changed, 114 insertions(+)
+ drivers/iio/proximity/sx9310.c | 100 +++++++++++++++++++++++++++++++++
+ 1 file changed, 100 insertions(+)
 
 diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index 030397a85845..35e927dc4f66 100644
+index 9eb10e8263e7..3f909177eca9 100644
 --- a/drivers/iio/proximity/sx9310.c
 +++ b/drivers/iio/proximity/sx9310.c
-@@ -68,6 +68,7 @@
- #define   SX9310_REG_PROX_CTRL7_AVGNEGFILT_2		(0x01 << 3)
- #define   SX9310_REG_PROX_CTRL7_AVGPOSFILT_512		0x05
- #define SX9310_REG_PROX_CTRL8				0x18
-+#define   SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK		GENMASK(7, 3)
- #define SX9310_REG_PROX_CTRL9				0x19
- #define   SX9310_REG_PROX_CTRL8_9_PTHRESH_28		(0x08 << 3)
- #define   SX9310_REG_PROX_CTRL8_9_PTHRESH_96		(0x11 << 3)
-@@ -531,6 +532,117 @@ static int sx9310_read_avail(struct iio_dev *indio_dev,
- 	return -EINVAL;
+@@ -77,6 +77,8 @@
+ #define SX9310_REG_PROX_CTRL10				0x1a
+ #define   SX9310_REG_PROX_CTRL10_HYST_MASK		GENMASK(5, 4)
+ #define   SX9310_REG_PROX_CTRL10_HYST_6PCT		(0x01 << 4)
++#define   SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK	GENMASK(3, 2)
++#define   SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK	GENMASK(1, 0)
+ #define   SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_2		0x01
+ #define SX9310_REG_PROX_CTRL11				0x1b
+ #define SX9310_REG_PROX_CTRL12				0x1c
+@@ -147,6 +149,16 @@ struct sx9310_data {
+ };
+ 
+ static const struct iio_event_spec sx9310_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_shared_by_all = BIT(IIO_EV_INFO_PERIOD),
++	},
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_shared_by_all = BIT(IIO_EV_INFO_PERIOD),
++	},
+ 	{
+ 		.type = IIO_EV_TYPE_THRESH,
+ 		.dir = IIO_EV_DIR_EITHER,
+@@ -601,6 +613,42 @@ static int sx9310_read_hysteresis(struct sx9310_data *data,
+ 	return IIO_VAL_INT;
  }
  
-+static const unsigned int sx9310_pthresh_codes[] = {
-+	2, 4, 6, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 112,
-+	128, 144, 160, 192, 224, 256, 320, 384, 512, 640, 768, 1024, 1536
-+};
-+
-+static int sx9310_get_thresh_reg(unsigned int channel)
++static int sx9310_read_far_debounce(struct sx9310_data *data, int *val)
 +{
-+	switch (channel) {
-+	case 0:
-+	case 3:
-+		return SX9310_REG_PROX_CTRL8;
-+	case 1:
-+	case 2:
-+		return SX9310_REG_PROX_CTRL9;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int sx9310_read_thresh(struct sx9310_data *data,
-+			      const struct iio_chan_spec *chan, int *val)
-+{
-+	unsigned int reg;
 +	unsigned int regval;
 +	int ret;
 +
-+	reg = ret = sx9310_get_thresh_reg(chan->channel);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = regmap_read(data->regmap, reg, &regval);
++	ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL10, &regval);
 +	if (ret)
 +		return ret;
 +
-+	regval = FIELD_GET(SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
-+	if (regval > ARRAY_SIZE(sx9310_pthresh_codes))
-+		return -EINVAL;
++	regval = FIELD_GET(SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK, regval);
++	if (regval)
++		*val = 1 << regval;
++	else
++		*val = 0;
 +
-+	*val = sx9310_pthresh_codes[regval];
 +	return IIO_VAL_INT;
 +}
 +
-+static int sx9310_read_event_val(struct iio_dev *indio_dev,
-+				 const struct iio_chan_spec *chan,
-+				 enum iio_event_type type,
-+				 enum iio_event_direction dir,
-+				 enum iio_event_info info, int *val, int *val2)
++static int sx9310_read_close_debounce(struct sx9310_data *data, int *val)
 +{
-+	struct sx9310_data *data = iio_priv(indio_dev);
-+
-+	if (chan->type != IIO_PROXIMITY)
-+		return -EINVAL;
-+
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		return sx9310_read_thresh(data, chan, val);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int sx9310_write_thresh(struct sx9310_data *data,
-+			       const struct iio_chan_spec *chan, int val)
-+{
-+	unsigned int reg;
 +	unsigned int regval;
-+	int ret, i;
++	int ret;
 +
-+	reg = ret = sx9310_get_thresh_reg(chan->channel);
-+	if (ret < 0)
++	ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL10, &regval);
++	if (ret)
 +		return ret;
 +
-+	for (i = 0; i < ARRAY_SIZE(sx9310_pthresh_codes); i++) {
-+		if (sx9310_pthresh_codes[i] == val) {
-+			regval = i;
-+			break;
++	regval = FIELD_GET(SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK, regval);
++	if (regval)
++		*val = 1 << regval;
++	else
++		*val = 0;
++
++	return IIO_VAL_INT;
++}
++
+ static int sx9310_read_event_val(struct iio_dev *indio_dev,
+ 				 const struct iio_chan_spec *chan,
+ 				 enum iio_event_type type,
+@@ -615,6 +663,15 @@ static int sx9310_read_event_val(struct iio_dev *indio_dev,
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+ 		return sx9310_read_thresh(data, chan, val);
++	case IIO_EV_INFO_PERIOD:
++		switch (dir) {
++		case IIO_EV_DIR_RISING:
++			return sx9310_read_far_debounce(data, val);
++		case IIO_EV_DIR_FALLING:
++			return sx9310_read_close_debounce(data, val);
++		default:
++			return -EINVAL;
 +		}
-+	}
+ 	case IIO_EV_INFO_HYSTERESIS:
+ 		return sx9310_read_hysteresis(data, chan, val);
+ 	default:
+@@ -682,6 +739,40 @@ static int sx9310_write_hysteresis(struct sx9310_data *data,
+ 	return ret;
+ }
+ 
++static int sx9310_write_far_debounce(struct sx9310_data *data, int val)
++{
++	int ret;
++	unsigned int regval;
 +
-+	if (i == ARRAY_SIZE(sx9310_pthresh_codes))
-+		return -EINVAL;
++	val = ilog2(val);
++	regval = FIELD_PREP(SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK, val);
 +
-+	regval = FIELD_PREP(SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
 +	mutex_lock(&data->mutex);
-+	ret = regmap_update_bits(data->regmap, reg,
-+				 SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
++	ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL10,
++				 SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK,
++				 regval);
 +	mutex_unlock(&data->mutex);
 +
 +	return ret;
 +}
 +
-+
-+static int sx9310_write_event_val(struct iio_dev *indio_dev,
-+				  const struct iio_chan_spec *chan,
-+				  enum iio_event_type type,
-+				  enum iio_event_direction dir,
-+				  enum iio_event_info info, int val, int val2)
++static int sx9310_write_close_debounce(struct sx9310_data *data, int val)
 +{
-+	struct sx9310_data *data = iio_priv(indio_dev);
++	int ret;
++	unsigned int regval;
 +
-+	if (chan->type != IIO_PROXIMITY)
-+		return -EINVAL;
++	val = ilog2(val);
++	regval = FIELD_PREP(SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK, val);
 +
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		return sx9310_write_thresh(data, chan, val);
-+	default:
-+		return -EINVAL;
-+	}
++	mutex_lock(&data->mutex);
++	ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL10,
++				 SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK,
++				 regval);
++	mutex_unlock(&data->mutex);
++
++	return ret;
 +}
 +
- static int sx9310_set_samp_freq(struct sx9310_data *data, int val, int val2)
- {
- 	int i, ret;
-@@ -744,6 +856,8 @@ static const struct iio_info sx9310_info = {
- 	.attrs = &sx9310_attribute_group,
- 	.read_raw = sx9310_read_raw,
- 	.read_avail = sx9310_read_avail,
-+	.read_event_value = sx9310_read_event_val,
-+	.write_event_value = sx9310_write_event_val,
- 	.write_raw = sx9310_write_raw,
- 	.read_event_config = sx9310_read_event_config,
- 	.write_event_config = sx9310_write_event_config,
+ static int sx9310_write_event_val(struct iio_dev *indio_dev,
+ 				  const struct iio_chan_spec *chan,
+ 				  enum iio_event_type type,
+@@ -696,6 +787,15 @@ static int sx9310_write_event_val(struct iio_dev *indio_dev,
+ 	switch (info) {
+ 	case IIO_EV_INFO_VALUE:
+ 		return sx9310_write_thresh(data, chan, val);
++	case IIO_EV_INFO_PERIOD:
++		switch (dir) {
++		case IIO_EV_DIR_RISING:
++			return sx9310_write_far_debounce(data, val);
++		case IIO_EV_DIR_FALLING:
++			return sx9310_write_close_debounce(data, val);
++		default:
++			return -EINVAL;
++		}
+ 	case IIO_EV_INFO_HYSTERESIS:
+ 		return sx9310_write_hysteresis(data, chan, val);
+ 	default:
 -- 
 Sent by a computer, using git, on the internet
 
