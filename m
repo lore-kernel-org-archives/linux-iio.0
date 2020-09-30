@@ -5,69 +5,67 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81899C2D0A8
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 07:57:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A461C4727F
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 07:57:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 449A52075F
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 07:57:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 331752075F
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Sep 2020 07:57:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="n7gSOYsX"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="ieunoJ0C"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728426AbgI3H5o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1728423AbgI3H5o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 30 Sep 2020 03:57:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57280 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728392AbgI3H5j (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 03:57:39 -0400
-Received: from mail-pl1-x641.google.com (mail-pl1-x641.google.com [IPv6:2607:f8b0:4864:20::641])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D00BFC0613D7
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 00:57:35 -0700 (PDT)
-Received: by mail-pl1-x641.google.com with SMTP id t13so534749plb.10
-        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 00:57:35 -0700 (PDT)
+        with ESMTP id S1728329AbgI3H5e (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Sep 2020 03:57:34 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0427CC0613D0
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 00:57:33 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id f18so608949pfa.10
+        for <linux-iio@vger.kernel.org>; Wed, 30 Sep 2020 00:57:32 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GDEcWHlyapYQvTzBGPWxhwlFd+2hXwYzlj+sRCbxoP0=;
-        b=n7gSOYsXocsjgth2CDy902uJFO1zzt0WyA1PedfCq8fZFumii1yZIkBzQd99o57jeL
-         OQJLRxvfPxFjb5pxCc6/SWUIc0ANPF1xnntYLbHiOqCe2iDjCy0kvr6dJPP8ST465npn
-         4IM5KOnFkw++/7cFqA/INBXSOPysUEWZ2Gmz0=
+        bh=wwcKo51Wb1Z8EGzntv8DWG85B5SZsF7AJ7GbGFyxohQ=;
+        b=ieunoJ0C4vedImz4cRodWXnkc8/tddCub29bw+UBzRFrB+Hi2frlv736eCVuCHoX4y
+         /SWqS4IcN5BTgB1xsaXQ0DymqRjbcMyUJpS0phgfSOV4x3db2cm+PTQ3+eIvi9o1tJyx
+         C6fXCsccxPlI85FTlnqIez61fRq2qI/gwQ1Y0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GDEcWHlyapYQvTzBGPWxhwlFd+2hXwYzlj+sRCbxoP0=;
-        b=ZRk/qRlq96FOAgZvooYtludm6EsLGajxgxilZpv0JX9GsRqk2IndKovutqIU2cZ4qg
-         rGC0mCUCJahZlS70BI10wNkHjWQ8gSG20TnGv4jPPz9kiv7sjSrImK1D2VHGraXVKF4x
-         Ahdv8I7uZ19NdlemuizXGBVFxKxV3OqS+ES4JHdbgmI++rXFlJ651sL2f9YCWTZMERnA
-         Haqfp6eymFvVxtHVTpTv9kzCIR9Ub2QC8sUTq96CF3F3Y/fwwJjHzNWMJpWoHaKf7y22
-         u3iL+xG6Kd1CKdrH7C47jON8FPcJSUhwgpf1K62SXWeGgN/nr72EePKVN3dKWgUBmDQE
-         hkaA==
-X-Gm-Message-State: AOAM531v4jUatHBMwY9qxDpzcLKCLVoqCkBJYXpJ+rsXAlV4Nzv1UxAa
-        5XXhyPED11KaKZsnCLXvoECz6A==
-X-Google-Smtp-Source: ABdhPJz0F1CB/zSe1XmZdBhGdtw+r/P5uj6z+DERjylbMqGq6vqic9eQqPdxtS+2HxwNxFDNzDkNkA==
-X-Received: by 2002:a17:90a:ae12:: with SMTP id t18mr1488011pjq.147.1601452655437;
-        Wed, 30 Sep 2020 00:57:35 -0700 (PDT)
+        bh=wwcKo51Wb1Z8EGzntv8DWG85B5SZsF7AJ7GbGFyxohQ=;
+        b=NiKYOxtAJg1QRIghDt1OfOL183aKpdpFAGrstgP+woR36j6ruIqzBzlshOttSzl1L+
+         cXWaU65oGsxtTP/YRvtpcxXglmufUNz43gmCo+010WTlzaYICsq84JNbiNjRirixzkey
+         Fr7rVziWdgBrwmkLmp7laNlOV9x1JXriXg8es+gXTrQaVCMiBeYACE8u7hhUHZBoZGxW
+         vEA9EkYguBNp9/t8f/Sup5Rx+TTOaPxpkgvf/4Ns3t6bnl/oT2sgIilfwnz7T16kiZZt
+         WRpJ+kwT56J/vHF4zNeaBg6it5EMaYXLyE/5wXGVihRYK/AmOq6Be0THB+e93MCIYZ36
+         U1Dg==
+X-Gm-Message-State: AOAM533pbD6BeHjDJfXeqv2+BlxeZwHuLWcQKQj6evefJtfb1WGAiOJn
+        PBug0KE6IHk1eg1SPNtThzDXHw==
+X-Google-Smtp-Source: ABdhPJwnFWtYFLG3/EbvADgayMWeo9wZudInr0ZIOwKTQ6IJHxK6y+SouxxoAOwYpY9x83TpUcttCQ==
+X-Received: by 2002:a62:19c1:0:b029:13c:1611:6529 with SMTP id 184-20020a6219c10000b029013c16116529mr1234973pfz.9.1601452652566;
+        Wed, 30 Sep 2020 00:57:32 -0700 (PDT)
 Received: from smtp.gmail.com ([2620:15c:202:1:3e52:82ff:fe6c:83ab])
-        by smtp.gmail.com with ESMTPSA id l21sm1272131pjq.54.2020.09.30.00.57.34
+        by smtp.gmail.com with ESMTPSA id l21sm1272131pjq.54.2020.09.30.00.57.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 30 Sep 2020 00:57:34 -0700 (PDT)
+        Wed, 30 Sep 2020 00:57:32 -0700 (PDT)
 From:   Stephen Boyd <swboyd@chromium.org>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Daniel Campello <campello@chromium.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
         Douglas Anderson <dianders@chromium.org>,
         Gwendal Grignou <gwendal@chromium.org>,
         Evan Green <evgreen@chromium.org>
-Subject: [PATCH v2 5/6] dt-bindings: iio: sx9310: Add various settings as DT properties
-Date:   Wed, 30 Sep 2020 00:57:27 -0700
-Message-Id: <20200930075728.2410327-6-swboyd@chromium.org>
+Subject: [PATCH v2 2/6] iio: sx9310: Support setting proximity thresholds
+Date:   Wed, 30 Sep 2020 00:57:24 -0700
+Message-Id: <20200930075728.2410327-3-swboyd@chromium.org>
 X-Mailer: git-send-email 2.28.0.709.gb0816b6eb0-goog
 In-Reply-To: <20200930075728.2410327-1-swboyd@chromium.org>
 References: <20200930075728.2410327-1-swboyd@chromium.org>
@@ -77,101 +75,158 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-We need to set various bits in the hardware registers for this device to
-operate properly depending on how it is installed. Add a handful of DT
-properties to configure these things.
+Add support to set the proximity thresholds for each channel.
 
 Cc: Daniel Campello <campello@chromium.org>
 Cc: Lars-Peter Clausen <lars@metafoo.de>
 Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: <devicetree@vger.kernel.org>
 Cc: Douglas Anderson <dianders@chromium.org>
 Cc: Gwendal Grignou <gwendal@chromium.org>
 Cc: Evan Green <evgreen@chromium.org>
 Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 ---
- .../iio/proximity/semtech,sx9310.yaml         | 61 +++++++++++++++++++
- 1 file changed, 61 insertions(+)
+ drivers/iio/proximity/sx9310.c | 114 +++++++++++++++++++++++++++++++++
+ 1 file changed, 114 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
-index 5739074d3592..a85b8fa25861 100644
---- a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
-+++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9310.yaml
-@@ -40,6 +40,61 @@ properties:
-   "#io-channel-cells":
-     const: 1
+diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+index 030397a85845..35e927dc4f66 100644
+--- a/drivers/iio/proximity/sx9310.c
++++ b/drivers/iio/proximity/sx9310.c
+@@ -68,6 +68,7 @@
+ #define   SX9310_REG_PROX_CTRL7_AVGNEGFILT_2		(0x01 << 3)
+ #define   SX9310_REG_PROX_CTRL7_AVGPOSFILT_512		0x05
+ #define SX9310_REG_PROX_CTRL8				0x18
++#define   SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK		GENMASK(7, 3)
+ #define SX9310_REG_PROX_CTRL9				0x19
+ #define   SX9310_REG_PROX_CTRL8_9_PTHRESH_28		(0x08 << 3)
+ #define   SX9310_REG_PROX_CTRL8_9_PTHRESH_96		(0x11 << 3)
+@@ -531,6 +532,117 @@ static int sx9310_read_avail(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
  
-+  semtech,cs0-ground:
-+    description: Indicates the CS0 sensor is connected to ground.
-+    type: boolean
++static const unsigned int sx9310_pthresh_codes[] = {
++	2, 4, 6, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 112,
++	128, 144, 160, 192, 224, 256, 320, 384, 512, 640, 768, 1024, 1536
++};
 +
-+  semtech,combined-sensors:
-+    $ref: /schemas/types.yaml#/definitions/uint32-array
-+    description: |
-+      List of which sensors are combined and represented by CS3.
-+      Possible values are -
-+      3        - CS3 (internal)
-+      0 1      - CS0 + CS1
-+      1 2      - CS1 + CS2 (default)
-+      0 1 2 3  - CS0 + CS1 + CS2 + CS3
-+    minItems: 1
-+    maxItems: 4
++static int sx9310_get_thresh_reg(unsigned int channel)
++{
++	switch (channel) {
++	case 0:
++	case 3:
++		return SX9310_REG_PROX_CTRL8;
++	case 1:
++	case 2:
++		return SX9310_REG_PROX_CTRL9;
++	}
 +
-+  semtech,resolution:
-+    description:
-+      Capacitance measure resolution. Refer to datasheet for more details.
-+    enum:
-+      - coarsest
-+      - very-coarse
-+      - coarse
-+      - medium-coarse
-+      - medium
-+      - fine
-+      - very-fine
-+      - finest
++	return -EINVAL;
++}
 +
-+  semtech,startup-sensor:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    enum: [0, 1, 2, 3]
-+    default: 0
-+    description:
-+      Sensor used for start-up proximity detection. The combined
-+      sensor is represented by the value 3. This is used for initial
-+      compensation.
++static int sx9310_read_thresh(struct sx9310_data *data,
++			      const struct iio_chan_spec *chan, int *val)
++{
++	unsigned int reg;
++	unsigned int regval;
++	int ret;
 +
-+  semtech,proxraw-strength:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    enum: [0, 2, 4, 8]
-+    default: 2
-+    description:
-+      PROXRAW filter strength. A value of 0 represents off, and other values
-+      represent 1-1/N.
++	reg = ret = sx9310_get_thresh_reg(chan->channel);
++	if (ret < 0)
++		return ret;
 +
-+  semtech,avg-pos-strength:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    enum: [0, 16, 64, 128, 256, 512, 1024, 4294967295]
-+    default: 16
-+    description:
-+      Average positive filter strength. A value of 0 represents off and
-+      UINT_MAX (4294967295) represents infinite. Other values
-+      represent 1-1/N.
++	ret = regmap_read(data->regmap, reg, &regval);
++	if (ret)
++		return ret;
 +
- required:
-   - compatible
-   - reg
-@@ -61,5 +116,11 @@ examples:
-         vdd-supply = <&pp3300_a>;
-         svdd-supply = <&pp1800_prox>;
-         #io-channel-cells = <1>;
-+        semtech,cs0-ground;
-+        semtech,combined-sensors = <1 2 3>;
-+        semtech,resolution = "fine";
-+        semtech,startup-sensor = <1>;
-+        semtech,proxraw-strength = <2>;
-+        semtech,avg-pos-strength = <64>;
-       };
-     };
++	regval = FIELD_GET(SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
++	if (regval > ARRAY_SIZE(sx9310_pthresh_codes))
++		return -EINVAL;
++
++	*val = sx9310_pthresh_codes[regval];
++	return IIO_VAL_INT;
++}
++
++static int sx9310_read_event_val(struct iio_dev *indio_dev,
++				 const struct iio_chan_spec *chan,
++				 enum iio_event_type type,
++				 enum iio_event_direction dir,
++				 enum iio_event_info info, int *val, int *val2)
++{
++	struct sx9310_data *data = iio_priv(indio_dev);
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		return sx9310_read_thresh(data, chan, val);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int sx9310_write_thresh(struct sx9310_data *data,
++			       const struct iio_chan_spec *chan, int val)
++{
++	unsigned int reg;
++	unsigned int regval;
++	int ret, i;
++
++	reg = ret = sx9310_get_thresh_reg(chan->channel);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(sx9310_pthresh_codes); i++) {
++		if (sx9310_pthresh_codes[i] == val) {
++			regval = i;
++			break;
++		}
++	}
++
++	if (i == ARRAY_SIZE(sx9310_pthresh_codes))
++		return -EINVAL;
++
++	regval = FIELD_PREP(SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
++	mutex_lock(&data->mutex);
++	ret = regmap_update_bits(data->regmap, reg,
++				 SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++
++static int sx9310_write_event_val(struct iio_dev *indio_dev,
++				  const struct iio_chan_spec *chan,
++				  enum iio_event_type type,
++				  enum iio_event_direction dir,
++				  enum iio_event_info info, int val, int val2)
++{
++	struct sx9310_data *data = iio_priv(indio_dev);
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		return sx9310_write_thresh(data, chan, val);
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int sx9310_set_samp_freq(struct sx9310_data *data, int val, int val2)
+ {
+ 	int i, ret;
+@@ -744,6 +856,8 @@ static const struct iio_info sx9310_info = {
+ 	.attrs = &sx9310_attribute_group,
+ 	.read_raw = sx9310_read_raw,
+ 	.read_avail = sx9310_read_avail,
++	.read_event_value = sx9310_read_event_val,
++	.write_event_value = sx9310_write_event_val,
+ 	.write_raw = sx9310_write_raw,
+ 	.read_event_config = sx9310_read_event_config,
+ 	.write_event_config = sx9310_write_event_config,
 -- 
 Sent by a computer, using git, on the internet
 
