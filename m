@@ -2,171 +2,231 @@ Return-Path: <SRS0=2HuM=DO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E7A7C4363D
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Oct 2020 01:12:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C02FEC4363D
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Oct 2020 01:17:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B5DEA20782
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Oct 2020 01:12:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5B60F2080A
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Oct 2020 01:17:43 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="BZ5McIJk"
+	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="Jyb3RvSA"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726487AbgJGBMz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 6 Oct 2020 21:12:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50074 "EHLO
+        id S1727099AbgJGBRm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 6 Oct 2020 21:17:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725996AbgJGBMy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Oct 2020 21:12:54 -0400
-Received: from mail-pj1-x1041.google.com (mail-pj1-x1041.google.com [IPv6:2607:f8b0:4864:20::1041])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CF8F2C061755;
-        Tue,  6 Oct 2020 18:12:54 -0700 (PDT)
-Received: by mail-pj1-x1041.google.com with SMTP id ds1so213522pjb.5;
-        Tue, 06 Oct 2020 18:12:54 -0700 (PDT)
+        with ESMTP id S1727097AbgJGBRm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Oct 2020 21:17:42 -0400
+Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 931C7C0613D4
+        for <linux-iio@vger.kernel.org>; Tue,  6 Oct 2020 18:17:40 -0700 (PDT)
+Received: by mail-pg1-x544.google.com with SMTP id 34so314898pgo.13
+        for <linux-iio@vger.kernel.org>; Tue, 06 Oct 2020 18:17:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=mhoMukFtXUDnoxYBeSc1gCnHDJjh2RBWkCrpacxBvgc=;
-        b=BZ5McIJk7M9QpLpb5KoCQkdxJYiPrNQhgs5cl4vLLWytK5VF9kyh4DJe1g7PqgOdHJ
-         vi9SNcnbS6RVeKxhRm1gfXYW/1MobIU3emLb+keannjof0F62HLir3wvH+3R+JnKfDDw
-         hUuIq3r2W7hYuJwomu2PHIw9cHJh2bCarSSmPf2vcxlwhVYPy1B59pQCZh88VJfxM+SH
-         P3U1OKhTrqq3QQBPtMpZx/3RzdSMWOBjkBQktmI99bmH+2SMTqoB4KKC16f0DxyVah5V
-         LrrH+r9brZLGlfmZ2vd2w1S9l0EWtUIDgohzA1Ws4rcazlyeai7Bzg+4oBQf9+qgFD1f
-         D10A==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wwcKo51Wb1Z8EGzntv8DWG85B5SZsF7AJ7GbGFyxohQ=;
+        b=Jyb3RvSAMZGM7KSDjSeqpe4m8AAoVyAvRkrSXmCC7gzSrTUIPymZDjTzh4QFM+K6aw
+         JIcSgkao5+8OuKHZBfTCbZpCmBA8qIR9Hp0/hI7XhsS6w9KdNwnUIkeKnvWMKioOtx1I
+         6tJp1qJj28VVg7wtXBWzwLhadspF58dsZeuYM=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=mhoMukFtXUDnoxYBeSc1gCnHDJjh2RBWkCrpacxBvgc=;
-        b=tS0Ml+Y0Dw5j/SRwEKUylvVONA0aagIP22QfpHoSXqFa8exJjA/tqhzLKB8yU9wct1
-         uYocjmb0NrgxGzIt5B6ymksQzt9M2YT22LUJ6MzZK8tUzE4xexOiWtDKgoHbgs/ImV2c
-         cuLiB0qoM/e6mLec82qEARigL5Q/t8om6XLMgYdSd79Uho4bKKt4GPgivgY01YypHxHq
-         20W3bNbKPla4VKtYgu3D1MYMFG50Ktg5G9aHRPCaX015QBvwdGFA0RMftu0ldlkTIrTU
-         sGh2imjbHZL5r0TwHXglLQGqWc2001aPQuMamSb0ZeF4c/YVtXb6n8KQj1BQPKjsGpsb
-         BsBQ==
-X-Gm-Message-State: AOAM533lTQL+SB9+qiMJ8Rlk6VQ2zDJElYD9jHKylAvSU3yedmxTbAjP
-        8oKY4HvzTy7UsrJ9vtOxzek=
-X-Google-Smtp-Source: ABdhPJy4dLisQACUERV0GxDAYvpdj82oBH4eI0zaGWCX8W7avrgYWVStQLex6A0apJQoB8lnZYPvuA==
-X-Received: by 2002:a17:90a:1a02:: with SMTP id 2mr708050pjk.201.1602033174099;
-        Tue, 06 Oct 2020 18:12:54 -0700 (PDT)
-Received: from dtor-ws ([2620:15c:202:201:a6ae:11ff:fe11:fcc3])
-        by smtp.gmail.com with ESMTPSA id f17sm412371pgd.86.2020.10.06.18.12.51
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wwcKo51Wb1Z8EGzntv8DWG85B5SZsF7AJ7GbGFyxohQ=;
+        b=P0MiJvWVQeEN6TkBfiMt2SVsjXbeD7cC2NR2Fl+q4b70ZRE+EpaMlX1JMonqnZDkbL
+         Ed/gNw8UaNNblgUxdZwKxD9UdqXGZsorNzSW+uHwN3llLdwRskEZZ0mtLSWTgNHJsWPb
+         qW0AnjrvwKAmYR0Lh0X9KlevuqSgmjVL4wX8nWHjR0nuGbMGjKeb+e06OC+IL6s/J1Dz
+         LH74JUuYrDfgk5C60HpfJn/ozKnwgfPO3ABDXphEpUcITd1BCO+e93UX2+8mVfkVnUcD
+         +xRd+IfIhGtfyjgn1bLNdoZcaZwpZP2sk10GAqbJWQ94HXH/5+ExStXmQWPAGLdF9+BN
+         YyTw==
+X-Gm-Message-State: AOAM533H3dC8MBvEfKwwxXAP7qZqygqCbkwCC+UvpJ+z4QtJf3m2FZOY
+        eOGszQm4MvBYAtFkj2oEAm30fg==
+X-Google-Smtp-Source: ABdhPJz9psZfDbPlXxoosYLG7JwYe/vPGGUY191I0C4oWFpK03/Eccr1qI/p+bvmUFLN8iVqKLeTzg==
+X-Received: by 2002:a63:f807:: with SMTP id n7mr810721pgh.311.1602033460124;
+        Tue, 06 Oct 2020 18:17:40 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:3e52:82ff:fe6c:83ab])
+        by smtp.gmail.com with ESMTPSA id z190sm482654pfc.89.2020.10.06.18.17.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2020 18:12:53 -0700 (PDT)
-Date:   Tue, 6 Oct 2020 18:12:49 -0700
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Andrzej Pietrasiewicz <andrzej.p@collabora.com>
-Cc:     linux-pm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-samsung-soc@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-tegra@vger.kernel.org, patches@opensource.cirrus.com,
-        ibm-acpi-devel@lists.sourceforge.net,
-        platform-driver-x86@vger.kernel.org,
-        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
-        Len Brown <lenb@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        Tue, 06 Oct 2020 18:17:39 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Daniel Campello <campello@chromium.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Kukjin Kim <kgene@kernel.org>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Sylvain Lemieux <slemieux.tyco@gmail.com>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Jonathan Hunter <jonathanh@nvidia.com>,
-        Barry Song <baohua@kernel.org>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Nick Dyer <nick@shmanahar.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Ferruh Yigit <fery@cypress.com>,
-        Sangwon Jee <jeesw@melfas.com>,
-        Peter Hutterer <peter.hutterer@redhat.com>,
-        Henrique de Moraes Holschuh <ibm-acpi@hmh.eng.br>,
-        kernel@collabora.com, Patrik Fimml <patrikf@chromium.org>
-Subject: Re: [PATCH v4 7/7] Input: Add "inhibited" property
-Message-ID: <20201007011249.GS1009802@dtor-ws>
-References: <2336e15d-ff4b-bbb6-c701-dbf3aa110fcd@redhat.com>
- <20200608112211.12125-1-andrzej.p@collabora.com>
- <20200608112211.12125-8-andrzej.p@collabora.com>
- <20201005181014.GL1009802@dtor-ws>
- <ac4eeab7-8333-b96b-707b-eb2d6d0d8139@collabora.com>
- <20201007011102.GR1009802@dtor-ws>
+        Douglas Anderson <dianders@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Evan Green <evgreen@chromium.org>
+Subject: [PATCH v3 2/6] iio: sx9310: Support setting proximity thresholds
+Date:   Tue,  6 Oct 2020 18:17:31 -0700
+Message-Id: <20201007011735.1346994-3-swboyd@chromium.org>
+X-Mailer: git-send-email 2.28.0.806.g8561365e88-goog
+In-Reply-To: <20201007011735.1346994-1-swboyd@chromium.org>
+References: <20201007011735.1346994-1-swboyd@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20201007011102.GR1009802@dtor-ws>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Oct 06, 2020 at 06:11:02PM -0700, Dmitry Torokhov wrote:
-> On Tue, Oct 06, 2020 at 03:04:28PM +0200, Andrzej Pietrasiewicz wrote:
-> > Hi Dmitry,
-> > 
-> > W dniu 05.10.2020 o 20:10, Dmitry Torokhov pisze:
-> > > Hi Andrzej,
-> > > 
-> > > On Mon, Jun 08, 2020 at 01:22:11PM +0200, Andrzej Pietrasiewicz wrote:
-> > > > @@ -284,8 +284,11 @@ static int input_get_disposition(struct input_dev *dev,
-> > > >   	case EV_KEY:
-> > > >   		if (is_event_supported(code, dev->keybit, KEY_MAX)) {
-> > > > -			/* auto-repeat bypasses state updates */
-> > > > -			if (value == 2) {
-> > > > +			/*
-> > > > +			 * auto-repeat bypasses state updates but repeat
-> > > > +			 * events are ignored if the key is not pressed
-> > > > +			 */
-> > > > +			if (value == 2 && test_bit(code, dev->key)) {
-> > > >   				disposition = INPUT_PASS_TO_HANDLERS;
-> > > >   				break;
-> > > >   			}
-> > > 
-> > > Is this chunk really part of inhibit support? I'd think we cancel
-> > > autorepeat timer when we are releasing a key, no?
-> > > 
-> > 
-> > When I look at it now it seems to me the chunk might be redundant.
-> > But let me explain what I had in mind when adding it.
-> > 
-> > It is a matter of what we do with input events generated while a
-> > device is inhibited. If ->open()/->close() are not provided by the
-> > driver then inhibiting amounts to merely ignoring input events from
-> > a device while it remains active. What else can you do if the driver
-> > does not provide a method to prepare the device for generating events/
-> > to stop generating events?
-> > 
-> > In this special case a user might trigger a repeated event while the
-> > device is inhibited, then the user keeps holding the key down and the
-> > device is uninhibited. Do we pass anything to handlers then?
-> > 
-> > In my opinion we should not. Such an event is "illegal" in a sense that it
-> > was generated at a time when nobody wanted any events from the device.
-> > Hence the test to let only those auto-repeat events through for which
-> > a key is actually pressed.
-> > 
-> > However, what I see now is that if a device is inhibited, no key
-> > will ever reach neither the "1" nor "2" state because of the "if"
-> > in the very beginning of input_handle_event().
-> 
-> OK, then let's drop it for now. We can revisit if we see that a problem.
+Add support to set the proximity thresholds for each channel.
 
-And by that I mean that I will drop it myself, no need to resend. I will
-be applying this shortly.
+Cc: Daniel Campello <campello@chromium.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Gwendal Grignou <gwendal@chromium.org>
+Cc: Evan Green <evgreen@chromium.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
+ drivers/iio/proximity/sx9310.c | 114 +++++++++++++++++++++++++++++++++
+ 1 file changed, 114 insertions(+)
 
-Thanks.
-
+diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+index 030397a85845..35e927dc4f66 100644
+--- a/drivers/iio/proximity/sx9310.c
++++ b/drivers/iio/proximity/sx9310.c
+@@ -68,6 +68,7 @@
+ #define   SX9310_REG_PROX_CTRL7_AVGNEGFILT_2		(0x01 << 3)
+ #define   SX9310_REG_PROX_CTRL7_AVGPOSFILT_512		0x05
+ #define SX9310_REG_PROX_CTRL8				0x18
++#define   SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK		GENMASK(7, 3)
+ #define SX9310_REG_PROX_CTRL9				0x19
+ #define   SX9310_REG_PROX_CTRL8_9_PTHRESH_28		(0x08 << 3)
+ #define   SX9310_REG_PROX_CTRL8_9_PTHRESH_96		(0x11 << 3)
+@@ -531,6 +532,117 @@ static int sx9310_read_avail(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static const unsigned int sx9310_pthresh_codes[] = {
++	2, 4, 6, 8, 12, 16, 20, 24, 28, 32, 40, 48, 56, 64, 72, 80, 88, 96, 112,
++	128, 144, 160, 192, 224, 256, 320, 384, 512, 640, 768, 1024, 1536
++};
++
++static int sx9310_get_thresh_reg(unsigned int channel)
++{
++	switch (channel) {
++	case 0:
++	case 3:
++		return SX9310_REG_PROX_CTRL8;
++	case 1:
++	case 2:
++		return SX9310_REG_PROX_CTRL9;
++	}
++
++	return -EINVAL;
++}
++
++static int sx9310_read_thresh(struct sx9310_data *data,
++			      const struct iio_chan_spec *chan, int *val)
++{
++	unsigned int reg;
++	unsigned int regval;
++	int ret;
++
++	reg = ret = sx9310_get_thresh_reg(chan->channel);
++	if (ret < 0)
++		return ret;
++
++	ret = regmap_read(data->regmap, reg, &regval);
++	if (ret)
++		return ret;
++
++	regval = FIELD_GET(SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
++	if (regval > ARRAY_SIZE(sx9310_pthresh_codes))
++		return -EINVAL;
++
++	*val = sx9310_pthresh_codes[regval];
++	return IIO_VAL_INT;
++}
++
++static int sx9310_read_event_val(struct iio_dev *indio_dev,
++				 const struct iio_chan_spec *chan,
++				 enum iio_event_type type,
++				 enum iio_event_direction dir,
++				 enum iio_event_info info, int *val, int *val2)
++{
++	struct sx9310_data *data = iio_priv(indio_dev);
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		return sx9310_read_thresh(data, chan, val);
++	default:
++		return -EINVAL;
++	}
++}
++
++static int sx9310_write_thresh(struct sx9310_data *data,
++			       const struct iio_chan_spec *chan, int val)
++{
++	unsigned int reg;
++	unsigned int regval;
++	int ret, i;
++
++	reg = ret = sx9310_get_thresh_reg(chan->channel);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(sx9310_pthresh_codes); i++) {
++		if (sx9310_pthresh_codes[i] == val) {
++			regval = i;
++			break;
++		}
++	}
++
++	if (i == ARRAY_SIZE(sx9310_pthresh_codes))
++		return -EINVAL;
++
++	regval = FIELD_PREP(SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
++	mutex_lock(&data->mutex);
++	ret = regmap_update_bits(data->regmap, reg,
++				 SX9310_REG_PROX_CTRL8_9_PTHRESH_MASK, regval);
++	mutex_unlock(&data->mutex);
++
++	return ret;
++}
++
++
++static int sx9310_write_event_val(struct iio_dev *indio_dev,
++				  const struct iio_chan_spec *chan,
++				  enum iio_event_type type,
++				  enum iio_event_direction dir,
++				  enum iio_event_info info, int val, int val2)
++{
++	struct sx9310_data *data = iio_priv(indio_dev);
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		return sx9310_write_thresh(data, chan, val);
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int sx9310_set_samp_freq(struct sx9310_data *data, int val, int val2)
+ {
+ 	int i, ret;
+@@ -744,6 +856,8 @@ static const struct iio_info sx9310_info = {
+ 	.attrs = &sx9310_attribute_group,
+ 	.read_raw = sx9310_read_raw,
+ 	.read_avail = sx9310_read_avail,
++	.read_event_value = sx9310_read_event_val,
++	.write_event_value = sx9310_write_event_val,
+ 	.write_raw = sx9310_write_raw,
+ 	.read_event_config = sx9310_read_event_config,
+ 	.write_event_config = sx9310_write_event_config,
 -- 
-Dmitry
+Sent by a computer, using git, on the internet
+
