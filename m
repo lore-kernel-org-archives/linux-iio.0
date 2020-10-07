@@ -2,240 +2,180 @@ Return-Path: <SRS0=2HuM=DO=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE655C3279D
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Oct 2020 01:18:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35785C4363C
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Oct 2020 08:37:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 66CD420782
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Oct 2020 01:18:02 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=chromium.org header.i=@chromium.org header.b="KW1eYdUO"
+	by mail.kernel.org (Postfix) with ESMTP id D0DC32080A
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Oct 2020 08:37:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727083AbgJGBRo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 6 Oct 2020 21:17:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50880 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727116AbgJGBRn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Oct 2020 21:17:43 -0400
-Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18379C0613D2
-        for <linux-iio@vger.kernel.org>; Tue,  6 Oct 2020 18:17:43 -0700 (PDT)
-Received: by mail-pg1-x544.google.com with SMTP id h6so348763pgk.4
-        for <linux-iio@vger.kernel.org>; Tue, 06 Oct 2020 18:17:43 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Gw1RFzK+yqUfrbLUb2+nTAxxqoc8k7XTSgedNtFofyE=;
-        b=KW1eYdUOTFYv/3AJKwfDa46x4IHQKU4VsU0Ai9HLubvbn49YCdTUy0dvdakyVi8pcu
-         2wTWd07WlSi1SBZvhcfM1hN1yk+hZ6SGkwar3a52QBmfYx29sjI+kMUBBnFADmc2Ns42
-         E8WQnaT3NHUfzSoTra+rfHcrmcmNxOxnZapqs=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Gw1RFzK+yqUfrbLUb2+nTAxxqoc8k7XTSgedNtFofyE=;
-        b=IxQm13dZW2BXpnE7J2DIGNSfvTIsz0r8sDHR2QnLTPFvoPDiHPiyFIH7wYraaPY4sf
-         MOyGgFfh92btqUoqLBE8z3cO8vXBYL0iugtyhUpucyJRoh7p5flbI2hGj8GIk3dvWgGi
-         l201ochniqW3/NvovdABE4dLC0MkRg965TGzvzMsndKsMQV5SAyKg+XChgo1vo1HEYxs
-         Sry+HCN6OPWOQWRQr73unCJZcO08SI/GqX8S096H1v0mUuHcmqxgFHSA16240dnSmmIw
-         73Bgqfqp+DsHW45sEYiCvJWnqiGqNc2fVQqcqpoevIpqz6LqkiqHDpppBGvOHpm01k9O
-         bCmQ==
-X-Gm-Message-State: AOAM531whQtLGo8e7pD/46zthNlNjv9BuC0tzcvTi8jwZxhKkVT7vGwa
-        LS0sJ+/03ZssT9HXErwyt5Evx3yUdFV8Rw==
-X-Google-Smtp-Source: ABdhPJypa1SfsOcel80AqtvZE0mEezoKDSIuNuAQkrgOrTnA6dZN7jKoIiKTUNsgaHbPcspUqpl00A==
-X-Received: by 2002:a63:2246:: with SMTP id t6mr835470pgm.103.1602033462671;
-        Tue, 06 Oct 2020 18:17:42 -0700 (PDT)
-Received: from smtp.gmail.com ([2620:15c:202:201:3e52:82ff:fe6c:83ab])
-        by smtp.gmail.com with ESMTPSA id z190sm482654pfc.89.2020.10.06.18.17.41
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Oct 2020 18:17:42 -0700 (PDT)
-From:   Stephen Boyd <swboyd@chromium.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Daniel Campello <campello@chromium.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Douglas Anderson <dianders@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Evan Green <evgreen@chromium.org>
-Subject: [PATCH v3 4/6] iio: sx9310: Support setting debounce values
-Date:   Tue,  6 Oct 2020 18:17:33 -0700
-Message-Id: <20201007011735.1346994-5-swboyd@chromium.org>
-X-Mailer: git-send-email 2.28.0.806.g8561365e88-goog
-In-Reply-To: <20201007011735.1346994-1-swboyd@chromium.org>
-References: <20201007011735.1346994-1-swboyd@chromium.org>
+        id S1727819AbgJGIhw convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 7 Oct 2020 04:37:52 -0400
+Received: from lhrrgout.huawei.com ([185.176.76.210]:2963 "EHLO huawei.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1726041AbgJGIhw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 7 Oct 2020 04:37:52 -0400
+Received: from lhreml710-chm.china.huawei.com (unknown [172.18.7.107])
+        by Forcepoint Email with ESMTP id 7562EBF685A55F89FB20;
+        Wed,  7 Oct 2020 09:37:47 +0100 (IST)
+Received: from localhost (10.52.123.131) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Wed, 7 Oct 2020
+ 09:37:47 +0100
+Date:   Wed, 7 Oct 2020 09:36:02 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Mark Pearson <markpearson@lenovo.com>
+CC:     Hans de Goede <hdegoede@redhat.com>, <linux-iio@vger.kernel.org>,
+        Bastien Nocera <hadess@hadess.net>,
+        Nitin Joshi1 <njoshi1@lenovo.com>,
+        <linux-input@vger.kernel.org>, <dmitry.torokhov@gmail.com>
+Subject: Re: [External] Using IIO to export laptop palm-sensor and lap-mode
+ info to userspace?
+Message-ID: <20201007083602.00006b7e@Huawei.com>
+In-Reply-To: <5a646527-7a1f-2fb9-7c09-8becdbff417b@lenovo.com>
+References: <9f9b0ff6-3bf1-63c4-eb36-901cecd7c4d9@redhat.com>
+        <5a646527-7a1f-2fb9-7c09-8becdbff417b@lenovo.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+X-Originating-IP: [10.52.123.131]
+X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The rising and falling directions can be debounced in the hardware as
-"close" and "far" debounce settings. Add support for these as rising and
-falling debounce settings.
+On Mon, 5 Oct 2020 22:04:27 -0400
+Mark Pearson <markpearson@lenovo.com> wrote:
 
-Cc: Daniel Campello <campello@chromium.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Douglas Anderson <dianders@chromium.org>
-Cc: Gwendal Grignou <gwendal@chromium.org>
-Cc: Evan Green <evgreen@chromium.org>
-Signed-off-by: Stephen Boyd <swboyd@chromium.org>
----
- drivers/iio/proximity/sx9310.c | 100 +++++++++++++++++++++++++++++++++
- 1 file changed, 100 insertions(+)
+> Adding Nitin, lead for this feature, to the thread
 
-diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index 9eb10e8263e7..3f909177eca9 100644
---- a/drivers/iio/proximity/sx9310.c
-+++ b/drivers/iio/proximity/sx9310.c
-@@ -77,6 +77,8 @@
- #define SX9310_REG_PROX_CTRL10				0x1a
- #define   SX9310_REG_PROX_CTRL10_HYST_MASK		GENMASK(5, 4)
- #define   SX9310_REG_PROX_CTRL10_HYST_6PCT		(0x01 << 4)
-+#define   SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK	GENMASK(3, 2)
-+#define   SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK	GENMASK(1, 0)
- #define   SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_2		0x01
- #define SX9310_REG_PROX_CTRL11				0x1b
- #define SX9310_REG_PROX_CTRL12				0x1c
-@@ -147,6 +149,16 @@ struct sx9310_data {
- };
- 
- static const struct iio_event_spec sx9310_events[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_RISING,
-+		.mask_shared_by_all = BIT(IIO_EV_INFO_PERIOD),
-+	},
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_shared_by_all = BIT(IIO_EV_INFO_PERIOD),
-+	},
- 	{
- 		.type = IIO_EV_TYPE_THRESH,
- 		.dir = IIO_EV_DIR_EITHER,
-@@ -601,6 +613,42 @@ static int sx9310_read_hysteresis(struct sx9310_data *data,
- 	return IIO_VAL_INT;
- }
- 
-+static int sx9310_read_far_debounce(struct sx9310_data *data, int *val)
-+{
-+	unsigned int regval;
-+	int ret;
-+
-+	ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL10, &regval);
-+	if (ret)
-+		return ret;
-+
-+	regval = FIELD_GET(SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK, regval);
-+	if (regval)
-+		*val = 1 << regval;
-+	else
-+		*val = 0;
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int sx9310_read_close_debounce(struct sx9310_data *data, int *val)
-+{
-+	unsigned int regval;
-+	int ret;
-+
-+	ret = regmap_read(data->regmap, SX9310_REG_PROX_CTRL10, &regval);
-+	if (ret)
-+		return ret;
-+
-+	regval = FIELD_GET(SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK, regval);
-+	if (regval)
-+		*val = 1 << regval;
-+	else
-+		*val = 0;
-+
-+	return IIO_VAL_INT;
-+}
-+
- static int sx9310_read_event_val(struct iio_dev *indio_dev,
- 				 const struct iio_chan_spec *chan,
- 				 enum iio_event_type type,
-@@ -615,6 +663,15 @@ static int sx9310_read_event_val(struct iio_dev *indio_dev,
- 	switch (info) {
- 	case IIO_EV_INFO_VALUE:
- 		return sx9310_read_thresh(data, chan, val);
-+	case IIO_EV_INFO_PERIOD:
-+		switch (dir) {
-+		case IIO_EV_DIR_RISING:
-+			return sx9310_read_far_debounce(data, val);
-+		case IIO_EV_DIR_FALLING:
-+			return sx9310_read_close_debounce(data, val);
-+		default:
-+			return -EINVAL;
-+		}
- 	case IIO_EV_INFO_HYSTERESIS:
- 		return sx9310_read_hysteresis(data, chan, val);
- 	default:
-@@ -682,6 +739,40 @@ static int sx9310_write_hysteresis(struct sx9310_data *data,
- 	return ret;
- }
- 
-+static int sx9310_write_far_debounce(struct sx9310_data *data, int val)
-+{
-+	int ret;
-+	unsigned int regval;
-+
-+	val = ilog2(val);
-+	regval = FIELD_PREP(SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK, val);
-+
-+	mutex_lock(&data->mutex);
-+	ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL10,
-+				 SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK,
-+				 regval);
-+	mutex_unlock(&data->mutex);
-+
-+	return ret;
-+}
-+
-+static int sx9310_write_close_debounce(struct sx9310_data *data, int val)
-+{
-+	int ret;
-+	unsigned int regval;
-+
-+	val = ilog2(val);
-+	regval = FIELD_PREP(SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK, val);
-+
-+	mutex_lock(&data->mutex);
-+	ret = regmap_update_bits(data->regmap, SX9310_REG_PROX_CTRL10,
-+				 SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK,
-+				 regval);
-+	mutex_unlock(&data->mutex);
-+
-+	return ret;
-+}
-+
- static int sx9310_write_event_val(struct iio_dev *indio_dev,
- 				  const struct iio_chan_spec *chan,
- 				  enum iio_event_type type,
-@@ -696,6 +787,15 @@ static int sx9310_write_event_val(struct iio_dev *indio_dev,
- 	switch (info) {
- 	case IIO_EV_INFO_VALUE:
- 		return sx9310_write_thresh(data, chan, val);
-+	case IIO_EV_INFO_PERIOD:
-+		switch (dir) {
-+		case IIO_EV_DIR_RISING:
-+			return sx9310_write_far_debounce(data, val);
-+		case IIO_EV_DIR_FALLING:
-+			return sx9310_write_close_debounce(data, val);
-+		default:
-+			return -EINVAL;
-+		}
- 	case IIO_EV_INFO_HYSTERESIS:
- 		return sx9310_write_hysteresis(data, chan, val);
- 	default:
--- 
-Sent by a computer, using git, on the internet
++CC linux-input and Dmitry for reasons that will become clear below.
+> 
+> On 2020-10-03 10:02 a.m., Hans de Goede wrote:
+> > Hi All,
+> > 
+> > Modern laptops can have various sensors which are kinda
+> > like proximity sensors, but not really (they are more
+> > specific in which part of the laptop the user is
+> > proximate to).
+> > 
+> > Specifically modern Thinkpad's have 2 readings which we
+> > want to export to userspace, and I'm wondering if we
+> > could use the IIO framework for this since these readings
+> > are in essence sensor readings:
+> > 
+> > 1. These laptops have a sensor in the palm-rests to
+> > check if a user is physically proximate to the device's
+> > palm-rests. This info will be used by userspace for WWAN
+> > functionality to control the transmission level safely.
+> > 
+> > A patch adding a thinkpad_acpi specific sysfs API for this
+> > is currently pending:
+> > https://patchwork.kernel.org/patch/11722127/
+> > 
+> > But I'm wondering if it would not be better to use
+> > IIO to export this info.
+
+My first thought on this is it sounds more like a key than a sensor
+(simple proximity sensors fall into this category as well.)
+
+Dmitry, any existing stuff like this in input?
+
+If it does make sense to put it in IIO then rest of the questions
+obviously relevant.
+
+> > 
+> > 2. These laptops have something called lap-mode, which
+> > determines if the laptop's firmware thinks that it is on
+> > a users lap, or sitting on a table. This influences the
+> > max. allowed skin-temperature of the bottom of the laptop
+> > and thus influences thermal management.  Like the palm-rest
+> > snesors, this reading will likely also be used for
+> > controlling wireless transmission levels in the future.
+> > 
+> > Note that AFAIK the lap_mode reading is not a single sensor
+> > reading, it is a value derived from a bunch of sensor readings,
+> > the raw values of which may or may not be available
+> > separately.
+> > 
+> > So looking at existing IIO userspace API docs, focussing on
+> > proximity sensors I see:
+> > 
+> > Documentation/ABI/testing/sysfs-bus-iio
+> > Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935
+> > 
+> > Where the latter seems to not really be relevant.
+
+Indeed, that one is a very odd beast :) (lightning sensor)
+
+> > 
+> >  From the generic IO API doc, this bit is the most
+> > interesting:
+> > 
+> > What:           /sys/.../iio:deviceX/in_proximity_raw
+> > What:           /sys/.../iio:deviceX/in_proximity_input
+> > What:           /sys/.../iio:deviceX/in_proximityY_raw
+> > KernelVersion:  3.4
+> > Contact:        linux-iio@vger.kernel.org
+> > Description:
+> >                  Proximity measurement indicating that some
+> >                  object is near the sensor, usually by observing
+> >                  reflectivity of infrared or ultrasound emitted.
+> >                  Often these sensors are unit less and as such conversion
+> >                  to SI units is not possible. Higher proximity measurements
+> >                  indicate closer objects, and vice versa. Units after
+> >                  application of scale and offset are meters.
+> > 
+> > This seems to be a reasonable match for the Thinkpad sensors
+> > we are discussing here, although those report a simple
+> > 0/1 value.
+
+Given this is a bit of computed estimate rather than a true reading, I wonder
+a bit if we should treat it as closer to an 'activity classification sensor'.
+
+For those we use a percentage value to represent the output of some probabilistic
+classifier.  In reality all the versions we've had so far aren't that clever though
+so they only output 0 or 100%.  See in_activity_walking_input in the docs for
+example.
+
+> > 
+> > What is missing for the ThinkPad case is something like this:
+> > 
+> > What:        /sys/.../iio:deviceX/proximity_sensor_location
+> > KernelVersion:  5.11
+> > Contact:        linux-iio@vger.kernel.org
+> > Description:
+> >          Specifies the location of the proximity sensor /
+> >          specifies proximity to what the sensor is measuring.
+> >          Reading this file returns a string describing this, valid values
+> >          for this string are: "screen", "lap", "palmrest"
+> >          Note the list of valid values may be extended in the
+> >          future.
+> > 
+> > So what do you (IIO devs) think about this?
+> > 
+> > Would adding a proximity_sensor_location attribute be a reasonable
+> > thing to do for this; and do you think that this would be a good idea ?
+
+Absolutely fine.  There is precedence in cros_ec which has a generic
+location sysfs attribute (not associated with a particular channel though
+it is fine to do that as well). See Documentation/ABI/testing/sysfs-bus-iio-cros_ec
+We haven't moved it to the general docs because there is only one device
+providing it so far.  Hence we would move it with the introduction of
+this second device.
+
+> > 
+> > Regards,
+> > 
+> > Hans
+> >   
+
 
