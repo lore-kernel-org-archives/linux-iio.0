@@ -2,63 +2,73 @@ Return-Path: <SRS0=2Shf=DP=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.0 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EA2CC43467
-	for <linux-iio@archiver.kernel.org>; Thu,  8 Oct 2020 00:14:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D4DEC43467
+	for <linux-iio@archiver.kernel.org>; Thu,  8 Oct 2020 07:10:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BF6BA20760
-	for <linux-iio@archiver.kernel.org>; Thu,  8 Oct 2020 00:14:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 39C3B21924
+	for <linux-iio@archiver.kernel.org>; Thu,  8 Oct 2020 07:10:26 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=fail reason="signature verification failed" (1024-bit key) header.d=NETORG5796793.onmicrosoft.com header.i=@NETORG5796793.onmicrosoft.com header.b="NW5D1Jao"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="fvNlf6JZ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726400AbgJHAOf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 7 Oct 2020 20:14:35 -0400
-Received: from mail-dm6nam11on2072.outbound.protection.outlook.com ([40.107.223.72]:44736
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1726129AbgJHAOf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 7 Oct 2020 20:14:35 -0400
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=n1xY409k1CYoEBRejn+o4Q7tdyeyVazMFFWmq32nE/8CM4U5WeJpmaDNCHVCoNkrO7xPgaRHw3+GJTmwkeRIrytWHzZlan+On/tp/TSLc0GQ8+cOXcKRsm/Pvi6O9C/WUwuK0z0fVweOHCVzSBB66e4H8UQRCjQ9H7r6bvzvD6hv0lzvQGUVM/+iVdJKwaKxX6rrmiOZFu+udKmEHjz/qHnPahO45kwqcBpiib9WmMcmJKMN8F8TG8ML/AWhqkjr0RnO6EfFaJK3xMkcLiVbyoukWLLwyUrIww9w2mQ32HgEPmK1jqBVefpk46CKJuDdEV4bI0x6r+VAh9v+yvDhzw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TETinzYmP/5Jrw9z+fVDDesifrpBjdNWvFMfOVNHRvM=;
- b=fwSCsjGJFaqhDST7A2MpyjlibxbZa/iYLkWZuB8Ol1xKm9l50shKjEof4sBeI7S3hFkLso8abn83rMy3y22RGTQE8WMeenoALkRmakJBqrYdVAvDr06UukTI40oTHfqFU02KPy020pX1Jp3hKFDF92ULYsrZXzSyUbxsWyLfcWcnN6vh3eFa4b/3ClSvZzzCSLEIil4sKGgDDcLAfT/fO0JR5KSBtT147cPn2B3zPc2jYcBBLTaG6OYSpqNa8DsoXc7pieyq6Fhe5tGDf6KbKwUI0pvd1zr3MXHYf33BRgLKYVgKKkMfgZE92sRSZdM+EhQc/0qOL+jz5xTqnZEN6A==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=labundy.com; dmarc=pass action=none header.from=labundy.com;
- dkim=pass header.d=labundy.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=NETORG5796793.onmicrosoft.com; s=selector1-NETORG5796793-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=TETinzYmP/5Jrw9z+fVDDesifrpBjdNWvFMfOVNHRvM=;
- b=NW5D1JaoblTnmBaT5uBG4otk06DUpybok44vmZbXc4CK+MmkTAqFNDs2wtQKc/CtmOLYvd+uZQBXisy+ajsiTi6G24QXd9TQp5Z/xiV/B/qTGdyqoEuv2p5D4TFB1ei7u/6lIom8loaZuPI2FxEkmF1noHt0TFVh9+nbQrn+O1c=
-Authentication-Results: redhat.com; dkim=none (message not signed)
- header.d=none;redhat.com; dmarc=none action=none header.from=labundy.com;
-Received: from SN6PR08MB5517.namprd08.prod.outlook.com (2603:10b6:805:fb::32)
- by SN6PR08MB4095.namprd08.prod.outlook.com (2603:10b6:805:24::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3433.38; Thu, 8 Oct
- 2020 00:14:31 +0000
-Received: from SN6PR08MB5517.namprd08.prod.outlook.com
- ([fe80::c989:9cea:baa6:8254]) by SN6PR08MB5517.namprd08.prod.outlook.com
- ([fe80::c989:9cea:baa6:8254%7]) with mapi id 15.20.3433.044; Thu, 8 Oct 2020
- 00:14:31 +0000
-Date:   Wed, 7 Oct 2020 19:14:24 -0500
-From:   Jeff LaBundy <jeff@labundy.com>
-To:     Hans de Goede <hdegoede@redhat.com>
+        id S1725912AbgJHHKZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 8 Oct 2020 03:10:25 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:40211 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1725887AbgJHHKZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Oct 2020 03:10:25 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1602141024;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SX5UG7zGIzMe4tA1Jccg+gS8miA3mGapOr9ZUMpfB14=;
+        b=fvNlf6JZ9fbdOW/3oQ2jwI9Rq75UB/cFjhDzZvsIoEwLO2WvQ/TLV6keZLEghOK6l+wqgO
+        MrylnP+oIA9Xn8cCYIABcz82lJ4pj68/Z4LeauR9xu18MelBVCrRjjomHWAdMP1UjR1gUF
+        FCcSrr5PKjDjctocawueZKEjQ59uMAE=
+Received: from mail-ed1-f70.google.com (mail-ed1-f70.google.com
+ [209.85.208.70]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-175-vfzRHlTRMAyi1KGLyWlcOQ-1; Thu, 08 Oct 2020 03:10:22 -0400
+X-MC-Unique: vfzRHlTRMAyi1KGLyWlcOQ-1
+Received: by mail-ed1-f70.google.com with SMTP id n19so1822679eds.8
+        for <linux-iio@vger.kernel.org>; Thu, 08 Oct 2020 00:10:22 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=SX5UG7zGIzMe4tA1Jccg+gS8miA3mGapOr9ZUMpfB14=;
+        b=feX94m8i/VdH5lSm9ZMPNf0D1WdUSjtlg4uqmVfQcFZUcUxN9RHS6IEXUu1orkHvMO
+         iH6JZNyseu9WQsZInj6wk7lLvTP6PadahfVzCViP31ogt7qgyZ2W1gTEAHc5nZXf4zwg
+         296bZLJ0gFDpPdgvLhagkQHbj7tdprwtGbCHs7uCXanhXiok6EeT79ghg0VKt3KpJmOe
+         Qz/T64LKu6TRUdHI7ywIKsh5MHht5I75H9OdUehlJGbioj6in9GXLhDWKx+ID87aMYL8
+         AaMsI2Lj6BDG0VouGEpEU0GH3ZW/CZhswP4PHcb1h8dDpbhPYkyn9ZLYKS5HE+bMcT0h
+         +9qg==
+X-Gm-Message-State: AOAM531FIMxtw0OVsRV8Q5oNY3JjECHoGp4/Q756JeCBC3QI877LmxJy
+        d9o33oHCnxb7a+6wP/GMCQZm8kva1s2qhCoT464LghG4ofDDsaqZQWSuFc1gr+CjRL/FKuGDk+J
+        ujFBY3fcFB9JMPA85ajT0
+X-Received: by 2002:a50:ef0e:: with SMTP id m14mr7503800eds.5.1602141020935;
+        Thu, 08 Oct 2020 00:10:20 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJyB1klR20qsslQUJLaw02T0uqMrQljFTB8RV/i3/781a1Zl05V3aSnIYJy01X6wjkNQy5qm2w==
+X-Received: by 2002:a50:ef0e:: with SMTP id m14mr7503779eds.5.1602141020689;
+        Thu, 08 Oct 2020 00:10:20 -0700 (PDT)
+Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
+        by smtp.gmail.com with ESMTPSA id i14sm3385412ejp.2.2020.10.08.00.10.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 08 Oct 2020 00:10:20 -0700 (PDT)
+Subject: Re: [External] Using IIO to export laptop palm-sensor and lap-mode
+ info to userspace?
+To:     Jeff LaBundy <jeff@labundy.com>
 Cc:     Bastien Nocera <hadess@hadess.net>,
         Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
         Mark Pearson <markpearson@lenovo.com>,
         linux-iio@vger.kernel.org, Nitin Joshi1 <njoshi1@lenovo.com>,
         linux-input@vger.kernel.org, dmitry.torokhov@gmail.com
-Subject: Re: [External] Using IIO to export laptop palm-sensor and lap-mode
- info to userspace?
-Message-ID: <20201008001424.GA3713@labundy.com>
 References: <9f9b0ff6-3bf1-63c4-eb36-901cecd7c4d9@redhat.com>
  <5a646527-7a1f-2fb9-7c09-8becdbff417b@lenovo.com>
  <20201007083602.00006b7e@Huawei.com>
@@ -67,119 +77,82 @@ References: <9f9b0ff6-3bf1-63c4-eb36-901cecd7c4d9@redhat.com>
  <cadabe4d-7cce-281e-75fe-fcc2099848da@redhat.com>
  <5273a1de9db682cd41e58553fe57707c492a53b7.camel@hadess.net>
  <272074b5-b28e-1b74-8574-3dc2d614269a@redhat.com>
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <272074b5-b28e-1b74-8574-3dc2d614269a@redhat.com>
-User-Agent: Mutt/1.5.24 (2015-08-30)
-X-Originating-IP: [136.49.227.119]
-X-ClientProxiedBy: DM5PR22CA0013.namprd22.prod.outlook.com
- (2603:10b6:3:101::23) To SN6PR08MB5517.namprd08.prod.outlook.com
- (2603:10b6:805:fb::32)
+ <20201008001424.GA3713@labundy.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <9893a32c-02c8-f00c-7f00-6287d55043ab@redhat.com>
+Date:   Thu, 8 Oct 2020 09:10:19 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-X-MS-Exchange-MessageSentRepresentingType: 1
-Received: from labundy.com (136.49.227.119) by DM5PR22CA0013.namprd22.prod.outlook.com (2603:10b6:3:101::23) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3455.23 via Frontend Transport; Thu, 8 Oct 2020 00:14:30 +0000
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 8a5e26d2-b0c1-429d-31ca-08d86b1f20a3
-X-MS-TrafficTypeDiagnostic: SN6PR08MB4095:
-X-Microsoft-Antispam-PRVS: <SN6PR08MB40958B8D3ED44E3420742534D30B0@SN6PR08MB4095.namprd08.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: m/PbwYgcqDQsDZ3Kj62hkRDcFjpWURBPw+Spgj72hTMW5NwZMbHynnns7AnrKcwEb9VbL3tvBBJIB1jc1OFF9b5kXw9Y0VXKcwIFPEOBnM+8XrkDKUmjL5SCUt9+JLuavo+tn/ijMxEcntB8Lp7Ke/sn/vaLNnboQIiIcAIKcmV6C2xRCEmBGN1LTHQPN+a68XkK6mK+4QttfrNfVsgpVbWMu92tl/PfHDSS66La4NWHjfmLYCN9AaPiY/q4+Cw5+qio835yJqb6PwPNatkqVq0NgGbhMpig7yv/mNSAZXdu0EW4I+ibxLilLSlEzNJ/Wf7cefR3EJzI2MhEcjY28g==
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:SN6PR08MB5517.namprd08.prod.outlook.com;PTR:;CAT:NONE;SFS:(376002)(396003)(136003)(39830400003)(346002)(366004)(956004)(2616005)(8936002)(478600001)(54906003)(52116002)(86362001)(7696005)(55016002)(33656002)(36756003)(316002)(2906002)(53546011)(26005)(16526019)(6916009)(66556008)(66946007)(6666004)(5660300002)(1076003)(186003)(8676002)(8886007)(4326008)(83380400001)(66476007);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData: DzvzLUsI/OiIaOIQ9d0puyVRXTDYLLh/zC3xClWXCxHZ6d1oZzBmo/4irGChmRCRokQYUknFmsz6Fs0fzwhGeFx0GkvcbCx8lejQDRLvGJC/H8cVssojzlcPJqorVWIAUaQHVH4sUkBrATXplgHU6wz42esk54/WnSpEfwJjN5yx1IjVD3SImsnM7U1Btd0rbfwIC9VB30TNaGg5udzzOCjoPnHLFmZ+HcqIdLvjavX1MAxRKcmoN5tFoPZDRbRb7FAuvLhRqwqaamoSc8ZtlKGMeNk2kxP3XAb2F5M3hfZ1Ou4S70ovDBNyIl5bKqCbG2kRGGTDocBCCGbdbp2w0k7WVFY1DTI1aCzSsN8gxQA/Y6jppE60JTAYTfjV+5nzj+obD8A6DuhSt3VUPp5xxfdyajgWIkdzjopW4b8TFmXRyvsVup1vOaP26154eJWHkCp/7MhnuDUNYVelM0IQiUdEH7m8YeuS+Yt8dGS+A3NVpQneti36/zNRVbg+Ah2I1c4m5uZfGB0p5g3QLd+1yj0cjBB94oCvIAsN+azH5I/273w8nI3skdcQcp1AKPawIBtIiHATBHATmEPFEllgqreY5Bf2+ehA3qE3Xdq2HLhpb2ypAf8GpEFbWf4O7T39N/CgnE1DH1oEUMCGNFe90A==
-X-OriginatorOrg: labundy.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 8a5e26d2-b0c1-429d-31ca-08d86b1f20a3
-X-MS-Exchange-CrossTenant-AuthSource: SN6PR08MB5517.namprd08.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 08 Oct 2020 00:14:31.0678
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 00b69d09-acab-4585-aca7-8fb7c6323e6f
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: FyGCeqrBc3kgQ3NT3ZXnSlCzhBHwY1T20caDhoov78KPsDsICunbOc56lmTPoNstD1yQ9HAZZuUM/dobARbphw==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SN6PR08MB4095
+In-Reply-To: <20201008001424.GA3713@labundy.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi all,
+Hi,
 
-On Wed, Oct 07, 2020 at 03:32:07PM +0200, Hans de Goede wrote:
-> Hi,
+On 10/8/20 2:14 AM, Jeff LaBundy wrote:
+> Hi all,
 > 
-> On 10/7/20 3:29 PM, Bastien Nocera wrote:
-> >On Wed, 2020-10-07 at 15:08 +0200, Hans de Goede wrote:
-> >>Hi,
-> >>
-> >>On 10/7/20 1:35 PM, Bastien Nocera wrote:
-> >>>On Wed, 2020-10-07 at 11:51 +0200, Hans de Goede wrote:
-> >>>><snip>
-> >>>>>Dmitry, any existing stuff like this in input?
-
-It seems we are talking about "specific absorption rate" (SAR) type
-devices that signal the WLAN controller to reduce transmitted power
-while a user is nearby.
-
-I just wanted to chime in and confirm that we do have at least one
-precedent for these being in input (keyboard/iqs62x-keys) and not
-iio so I agree with Jonathan here. My argument is that we want to
-signal binary events (user grabbed onto or let go of the handset)
-rather than deliver continuous data.
-
-The example I've shown reports events as keycodes since some of the
-events it can express represent momentary conditions. In hindsight,
-however, an argument can be made to express some of this information
-as a switch (user is or is not near the device) and the new event
-codes proposed here seem like a step in the right direction.
-
-> >>>>
-> >>>>There already is a SW_FRONT_PROXIMITY defined in
-> >>>>input-event-codes.h, which I guess means detection if
-> >>>>someone is sitting in front of the screen. So we could add:
-> >>>>
-> >>>>SW_LAP_PROXIMITY
-> >>>>SW_PALMREST_PROXIMITY,
-> >>>>
-> >>>>And then we have a pretty decent API for this I think.
-> >>>
-> >>>  From the point of view of writing the consumer code for this API,
-> >>>it's
-> >>>rather a lot of pain to open the device node (hoping that it's the
-> >>>right one for what we need), getting the initial state, setting up
-> >>>masks to avoid being woken up for every little event, and parsing
-> >>>those
-> >>>events.
-> >>
-> >>There is not much difference with the iio sysfs API though, you would
-> >>also need to iterate over all the iio devices and test if they
-> >>are a proximity sensor (and read the new location sysfs file
-> >>discussed).
-> >>
-> >>>Where would the necessary bits of metadata for daemons to be able
-> >>>to
-> >>>find that those switches need to get added?
-> >>
-> >>evdev files export info on which events they can report. Not only
-> >>the types of events (EV_SW in this case) but also a bitmask for
-> >>which event-codes they can report within that type.
-> >
-> >I know that, I've written enough of that type of code ;)
-> >
-> >I meant a way to avoid having to go open each evdev, read its
-> >capabilities, and close them when it doesn't, and re-do that every time
-> >a new event device appears. In other words, can you please make sure
-> >there will be a udev property that we can use to enumerate and filter
-> >devices with those capabilities?
+> On Wed, Oct 07, 2020 at 03:32:07PM +0200, Hans de Goede wrote:
+>> Hi,
+>>
+>> On 10/7/20 3:29 PM, Bastien Nocera wrote:
+>>> On Wed, 2020-10-07 at 15:08 +0200, Hans de Goede wrote:
+>>>> Hi,
+>>>>
+>>>> On 10/7/20 1:35 PM, Bastien Nocera wrote:
+>>>>> On Wed, 2020-10-07 at 11:51 +0200, Hans de Goede wrote:
+>>>>>> <snip>
+>>>>>>> Dmitry, any existing stuff like this in input?
 > 
-> Ah I see, yes that should not be a problem since we already run
-> a helper on all new evdev-s anyways (assuming we go this route).
-> 
-> Regards,
-> 
-> Hans
-> 
+> It seems we are talking about "specific absorption rate" (SAR) type
+> devices that signal the WLAN controller to reduce transmitted power
+> while a user is nearby.
 
-Kind regards,
-Jeff LaBundy
+Yes and no. At least the lap-mode detection (laptop on someones
+lap rather then sitting on a table) is currently used by the
+embedded-controller for thermal management decisions, basically
+when on someones lap the configurable TPD of the CPU is set lower
+to keep the laptop's bottom skin temperate < 45 degrees Celsius
+(I think it is 45 but the exact number does not matter).
+
+The lap-mode info is currently exported with a thinkpad_acpi specific
+sysfs attribute with the idea that userspace could potentially use
+this to indicate to the user that turbo clocks will be lower
+because of this.
+
+With upcoming WLAN cards with configurable transmit power,
+this will also be used as what you call a SAR device.
+
+AFAIK the palmrest case is mostly a SAR device.
+
+Note I'm explaining the alternative lap-mode use-case to make
+sure everyone is on the same page. I completely agree with the
+gist of your email :)
+
+> I just wanted to chime in and confirm that we do have at least one
+> precedent for these being in input (keyboard/iqs62x-keys) and not
+> iio so I agree with Jonathan here. My argument is that we want to
+> signal binary events (user grabbed onto or let go of the handset)
+> rather than deliver continuous data.
+
+I was curious what keycode you are using for this, but I see
+that the keycodes come from devicetree, so I guess I should
+just ask: what keycode are you using for this ?
+
+> The example I've shown reports events as keycodes since some of the
+> events it can express represent momentary conditions. In hindsight,
+> however, an argument can be made to express some of this information
+> as a switch (user is or is not near the device) and the new event
+> codes proposed here seem like a step in the right direction.
+
+I'm glad that you like the new proposed switch event-codes.
+
+Regards,
+
+Hans
+
