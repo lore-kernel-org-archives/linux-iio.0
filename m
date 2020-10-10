@@ -7,48 +7,52 @@ X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF4CC3279D
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DBF6C2D0A3
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 406DC20760
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D542F2075E
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602371333;
-	bh=6MV7ZxzzlYAjamohlXNfIY2Q+5KrsiR/Ee2zbf25e0I=;
+	s=default; t=1602371330;
+	bh=LrxTBhOIRAvOVxxLMPo1bOOzACc+zp1p+bdGylDekVA=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=lJXVn5aobGw+vt3UPpPDUcZNADaOYlMk0lnl2oNFxBIGUjb/F+j/Aq8APlCCq/Xv9
-	 526uwGCMnXK27BoQfUT6LAQ5xnEUPNnuZ7t0s725kXBVEtJX8hQzdpcNH6DmL5hrxL
-	 uFb4wR2TfgLMQEE48dWpOX74Q2N5Vhlt2sWqk0SM=
+	b=t9bBBfCxkFXzaTsm5a/GKyQQTC7AhFiAoSVICJYIk5iLoEpMKeTUave753aq95EPT
+	 wliMvBod6AAXO/AF2x/Vw3w+k7Jkne6w3CJTrJDyyy3KNEz24zj/0/loar0q5uJo2u
+	 4EYQpP2aGMsZO/Oq1jL6j+NO0HLVkaoiaXU9j01s=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390343AbgJJW5E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 10 Oct 2020 18:57:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52036 "EHLO mail.kernel.org"
+        id S2390354AbgJJW5F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 10 Oct 2020 18:57:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52066 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731438AbgJJTWZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 10 Oct 2020 15:22:25 -0400
+        id S1731415AbgJJTWi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 10 Oct 2020 15:22:38 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1A656223AC;
-        Sat, 10 Oct 2020 16:05:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0C71522403;
+        Sat, 10 Oct 2020 16:39:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602345958;
-        bh=6MV7ZxzzlYAjamohlXNfIY2Q+5KrsiR/Ee2zbf25e0I=;
+        s=default; t=1602347956;
+        bh=LrxTBhOIRAvOVxxLMPo1bOOzACc+zp1p+bdGylDekVA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=WxLid6YLHjk6I+6yRZA6JLZh4F2BAz8dzYEWwJwMv8zrEOvbhni6NYlwu4QRTmeq1
-         zR5wCvvwR+cS6rttLxx2JwgCL3evMLMUmafkqk+Z6WegDDqUjylLtzUNU9KgJosh+e
-         karulIf+bMU1WevYZD1GLFNbJ8V8P+oqDy7B/QQg=
-Date:   Sat, 10 Oct 2020 17:05:53 +0100
+        b=YGQczH9xZlIu2suyiXmFhkMiyEN8OrcjJRqvpomls3kvVIyXXK3QXzH91BbigN4jV
+         FbL+ddUHB1LRmEDBedebkmXmkMCh6N1VF+AfZ3AHZD0veK8scsm2dYhI988AwBbOAU
+         lenjuLug3UrNA3/lJyIwt4g2tepiZl/zt+m6B690=
+Date:   Sat, 10 Oct 2020 17:39:10 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <nicolas.ferre@microchip.com>,
-        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>
-Subject: Re: [PATCH v4 0/4] iio: adc: at91: misc driver cleanups
-Message-ID: <20201010170553.69d4ad02@archlinux>
-In-Reply-To: <20200930135048.11530-1-alexandru.ardelean@analog.com>
-References: <20200930135048.11530-1-alexandru.ardelean@analog.com>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Daniel Campello <campello@chromium.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Douglas Anderson <dianders@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Evan Green <evgreen@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 0/6] iio: sx9310: Support setting various settings
+Message-ID: <20201010173910.2fbfe6e8@archlinux>
+In-Reply-To: <20201007011735.1346994-1-swboyd@chromium.org>
+References: <20201007011735.1346994-1-swboyd@chromium.org>
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,70 +61,54 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 30 Sep 2020 16:50:44 +0300
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+On Tue,  6 Oct 2020 18:17:29 -0700
+Stephen Boyd <swboyd@chromium.org> wrote:
 
-> This whole thing started because the lkp bot haunted me for a while with
-> this build warning:
-> 
-> >> drivers/iio/adc/at91_adc.c:1439:34: warning: unused variable
-> >> 'at91_adc_dt_ids' [-Wunused-const-variable]  
->    static const struct of_device_id at91_adc_dt_ids[] = {
->                                     ^
->    1 warning generated.
-> 
-> The fix may likely be patch 'iio: adc: at91_adc: add Kconfig dependency
-> on the OF symbol'; was pointed out by Jonathan.
+> I need to configure various settings such as thresholds, gain factors,
+> etc. on this device. Some settings matter at boot, while others can wait
+> for userspace to configure things. This patch series adds support to
+> set these various bits in the registers of this device.
 
-Series applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it and see what we missed.
+Looks good to me.  I've applied them to the togreg branch of iio.git and
+pushed out as testing for the autobuilders to see if they can find any
+issues.  Note that I can still add tags etc for now if anyone
+wants to send any!
 
 Thanks,
 
 Jonathan
 
 > 
-> Changelog v3 -> v4:
-> - https://lore.kernel.org/linux-iio/20200930125216.90424-1-alexandru.ardelean@analog.com/T/#t
-> - for patch: 'iio: adc: at91_adc: remove platform data and move defs in driver file'
->    * updated/cleand up commit description
->    * remove redundant pdata erorr message
->    * return error code from at91_adc_probe_dt()
->    * remove 'if (!node)' null check in at91_adc_probe_dt()
-> - added 'Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>'
->   for patch: 'iio: adc: at91_adc: add Kconfig dep on the OF symbol and remove of_match_ptr()'
+> Changes from v2 (https://lore.kernel.org/r/20200930075728.2410327-1-swboyd@chromium.org)
+>  - Rolled in a fix from Gwendal on last patch to simplify if-else logic
+>  - Fixed binding and picked up Rob's reviewed-by tag
 > 
-> Changelog v2 -> v3:
-> - https://lore.kernel.org/linux-iio/20200930060008.42134-1-alexandru.ardelean@analog.com/T/#t
-> - added 'Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>'
->   for patches:
->      iio: adc: at91_adc: use of_device_get_match_data() helper
->      iio: adc: at91_adc: const-ify some driver data
-> - fixed description for patch 'iio: adc: at91_adc: add Kconfig dependency on the OF symbol'
-> - squash patches:
->      iio: adc: at91_adc: add Kconfig dependency on the OF symbol
->      iio: adc: at91_adc: remove of_match_ptr() usage
-> - added patch: 'iio: adc: at91_adc: remove platform data and move defs in driver file'
+> Changes from v1 (https://lore.kernel.org/r/20200903221828.3657250-1-swboyd@chromium.org)
+>  - A bunch more patches for userspace settings
+>  - Removed body thresholds as they're probably not used
+>  - Removed compensate common as it probably doesn't matter
+>  - Moved thresholds, gain factor, hysteresis, debounce to userspace
 > 
-> Changelog v1 -> v2:
-> - https://lore.kernel.org/linux-iio/CA+U=Dspd11N-pXXnnY_5CSzNp50iRr7h16zXTCxo8Fk+v48F7g@mail.gmail.com/T/#m7c0efef4dc623776fe8bafdb5f734b0eaca50f82
-> - for patch 'iio: adc: at91_adc: use of_device_get_match_data() helper'
->   changed description; it's just tidy-up patch, not a fix
-> - added 2 more patches:
->   - iio: adc: at91_adc: add Kconfig dependency on the OF symbol
->   - iio: adc: at91_adc: remove of_match_ptr() usage
+> Stephen Boyd (6):
+>   iio: sx9310: Support hardware gain factor
+>   iio: sx9310: Support setting proximity thresholds
+>   iio: sx9310: Support setting hysteresis values
+>   iio: sx9310: Support setting debounce values
+>   dt-bindings: iio: sx9310: Add various settings as DT properties
+>   iio: sx9310: Set various settings from DT
 > 
-> Alexandru Ardelean (4):
->   iio: adc: at91_adc: use of_device_get_match_data() helper
->   iio: adc: at91_adc: const-ify some driver data
->   iio: adc: at91_adc: add Kconfig dep on the OF symbol and remove
->     of_match_ptr()
->   iio: adc: at91_adc: remove platform data and move defs in driver file
+>  .../iio/proximity/semtech,sx9310.yaml         |  63 +++
+>  drivers/iio/proximity/sx9310.c                | 508 +++++++++++++++++-
+>  2 files changed, 565 insertions(+), 6 deletions(-)
 > 
->  drivers/iio/adc/Kconfig                |  2 +-
->  drivers/iio/adc/at91_adc.c             | 73 ++++++++++----------------
->  include/linux/platform_data/at91_adc.h | 49 -----------------
->  3 files changed, 28 insertions(+), 96 deletions(-)
->  delete mode 100644 include/linux/platform_data/at91_adc.h
+> Cc: Daniel Campello <campello@chromium.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: Gwendal Grignou <gwendal@chromium.org>
+> Cc: Evan Green <evgreen@chromium.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: <devicetree@vger.kernel.org>
 > 
+> base-commit: 1bebdcb928eba880f3a119bacb8149216206958a
 
