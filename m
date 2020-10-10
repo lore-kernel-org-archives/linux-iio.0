@@ -2,50 +2,53 @@ Return-Path: <SRS0=sXLK=DR=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE4D2C433DF
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BF4CC3279D
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ACA0F2075E
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 406DC20760
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602371329;
-	bh=s083QnhbFPBYesVOpB+LThFjG2NY4u/5rmNI7PXW9MY=;
+	s=default; t=1602371333;
+	bh=6MV7ZxzzlYAjamohlXNfIY2Q+5KrsiR/Ee2zbf25e0I=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=OsanwU49BirsnU+pt9gwx/D5MZeIOaLKEtMyY5PPiE2q6r0NtkYmV1LFyFX+Xel1s
-	 MOeFyvlzG6OVYi23ayKJRP12LH7qlNNTJRktmXJ6WRvARGfqgVWAhe3RhHNVldCZcM
-	 iZpOoY+59NuOLPniiBRBv5GhhMforhQxDHTlvxTE=
+	b=lJXVn5aobGw+vt3UPpPDUcZNADaOYlMk0lnl2oNFxBIGUjb/F+j/Aq8APlCCq/Xv9
+	 526uwGCMnXK27BoQfUT6LAQ5xnEUPNnuZ7t0s725kXBVEtJX8hQzdpcNH6DmL5hrxL
+	 uFb4wR2TfgLMQEE48dWpOX74Q2N5Vhlt2sWqk0SM=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390365AbgJJW5G (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 10 Oct 2020 18:57:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53940 "EHLO mail.kernel.org"
+        id S2390343AbgJJW5E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 10 Oct 2020 18:57:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52036 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731820AbgJJTh1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 10 Oct 2020 15:37:27 -0400
+        id S1731438AbgJJTWZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 10 Oct 2020 15:22:25 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 43BC822228;
-        Sat, 10 Oct 2020 17:04:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1A656223AC;
+        Sat, 10 Oct 2020 16:05:56 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602349445;
-        bh=s083QnhbFPBYesVOpB+LThFjG2NY4u/5rmNI7PXW9MY=;
+        s=default; t=1602345958;
+        bh=6MV7ZxzzlYAjamohlXNfIY2Q+5KrsiR/Ee2zbf25e0I=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=O9hA6G3nCtxHz/jKYKu9PGVC9m4pvcLZCbb7lTdJgOJAgA7ntjd98+TlSxODIrSgX
-         veE4QHsJRTm3cqlmwrPAo1r41Wr+Pii4gz/85aaDC+gsuZpqqaJCF1a/ELDKomW4M7
-         0Qyzh8NFsFAzNssfMqtsLv0hL2MYnAM9hdpMKKgo=
-Date:   Sat, 10 Oct 2020 18:04:00 +0100
+        b=WxLid6YLHjk6I+6yRZA6JLZh4F2BAz8dzYEWwJwMv8zrEOvbhni6NYlwu4QRTmeq1
+         zR5wCvvwR+cS6rttLxx2JwgCL3evMLMUmafkqk+Z6WegDDqUjylLtzUNU9KgJosh+e
+         karulIf+bMU1WevYZD1GLFNbJ8V8P+oqDy7B/QQg=
+Date:   Sat, 10 Oct 2020 17:05:53 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] iio: dac: ad7303: remove platform data header
-Message-ID: <20201010180400.09658b3c@archlinux>
-In-Reply-To: <20201001141004.53846-1-alexandru.ardelean@analog.com>
-References: <20201001141004.53846-1-alexandru.ardelean@analog.com>
+Cc:     <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, <nicolas.ferre@microchip.com>,
+        <alexandre.belloni@bootlin.com>, <ludovic.desroches@microchip.com>
+Subject: Re: [PATCH v4 0/4] iio: adc: at91: misc driver cleanups
+Message-ID: <20201010170553.69d4ad02@archlinux>
+In-Reply-To: <20200930135048.11530-1-alexandru.ardelean@analog.com>
+References: <20200930135048.11530-1-alexandru.ardelean@analog.com>
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -54,62 +57,70 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 1 Oct 2020 17:10:04 +0300
+On Wed, 30 Sep 2020 16:50:44 +0300
 Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-> The information in the ad7303 platform_data header is unused, so it's dead
-> code.
-> This change removes it and it's inclusion from the driver.
+> This whole thing started because the lkp bot haunted me for a while with
+> this build warning:
 > 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Applied.
+> >> drivers/iio/adc/at91_adc.c:1439:34: warning: unused variable
+> >> 'at91_adc_dt_ids' [-Wunused-const-variable]  
+>    static const struct of_device_id at91_adc_dt_ids[] = {
+>                                     ^
+>    1 warning generated.
+> 
+> The fix may likely be patch 'iio: adc: at91_adc: add Kconfig dependency
+> on the OF symbol'; was pointed out by Jonathan.
+
+Series applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it and see what we missed.
 
 Thanks,
 
 Jonathan
-> ---
->  drivers/iio/dac/ad7303.c             |  2 --
->  include/linux/platform_data/ad7303.h | 20 --------------------
->  2 files changed, 22 deletions(-)
->  delete mode 100644 include/linux/platform_data/ad7303.h
+
 > 
-> diff --git a/drivers/iio/dac/ad7303.c b/drivers/iio/dac/ad7303.c
-> index 2e46def9d8ee..dbb4645ab6b1 100644
-> --- a/drivers/iio/dac/ad7303.c
-> +++ b/drivers/iio/dac/ad7303.c
-> @@ -17,8 +17,6 @@
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  
-> -#include <linux/platform_data/ad7303.h>
-> -
->  #define AD7303_CFG_EXTERNAL_VREF BIT(15)
->  #define AD7303_CFG_POWER_DOWN(ch) BIT(11 + (ch))
->  #define AD7303_CFG_ADDR_OFFSET	10
-> diff --git a/include/linux/platform_data/ad7303.h b/include/linux/platform_data/ad7303.h
-> deleted file mode 100644
-> index c2bd0a13bea1..000000000000
-> --- a/include/linux/platform_data/ad7303.h
-> +++ /dev/null
-> @@ -1,20 +0,0 @@
-> -/* SPDX-License-Identifier: GPL-2.0-only */
-> -/*
-> - * Analog Devices AD7303 DAC driver
-> - *
-> - * Copyright 2013 Analog Devices Inc.
-> - */
-> -
-> -#ifndef __IIO_ADC_AD7303_H__
-> -#define __IIO_ADC_AD7303_H__
-> -
-> -/**
-> - * struct ad7303_platform_data - AD7303 platform data
-> - * @use_external_ref: If set to true use an external voltage reference connected
-> - * to the REF pin, otherwise use the internal reference derived from Vdd.
-> - */
-> -struct ad7303_platform_data {
-> -	bool use_external_ref;
-> -};
-> -
-> -#endif
+> Changelog v3 -> v4:
+> - https://lore.kernel.org/linux-iio/20200930125216.90424-1-alexandru.ardelean@analog.com/T/#t
+> - for patch: 'iio: adc: at91_adc: remove platform data and move defs in driver file'
+>    * updated/cleand up commit description
+>    * remove redundant pdata erorr message
+>    * return error code from at91_adc_probe_dt()
+>    * remove 'if (!node)' null check in at91_adc_probe_dt()
+> - added 'Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>'
+>   for patch: 'iio: adc: at91_adc: add Kconfig dep on the OF symbol and remove of_match_ptr()'
+> 
+> Changelog v2 -> v3:
+> - https://lore.kernel.org/linux-iio/20200930060008.42134-1-alexandru.ardelean@analog.com/T/#t
+> - added 'Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>'
+>   for patches:
+>      iio: adc: at91_adc: use of_device_get_match_data() helper
+>      iio: adc: at91_adc: const-ify some driver data
+> - fixed description for patch 'iio: adc: at91_adc: add Kconfig dependency on the OF symbol'
+> - squash patches:
+>      iio: adc: at91_adc: add Kconfig dependency on the OF symbol
+>      iio: adc: at91_adc: remove of_match_ptr() usage
+> - added patch: 'iio: adc: at91_adc: remove platform data and move defs in driver file'
+> 
+> Changelog v1 -> v2:
+> - https://lore.kernel.org/linux-iio/CA+U=Dspd11N-pXXnnY_5CSzNp50iRr7h16zXTCxo8Fk+v48F7g@mail.gmail.com/T/#m7c0efef4dc623776fe8bafdb5f734b0eaca50f82
+> - for patch 'iio: adc: at91_adc: use of_device_get_match_data() helper'
+>   changed description; it's just tidy-up patch, not a fix
+> - added 2 more patches:
+>   - iio: adc: at91_adc: add Kconfig dependency on the OF symbol
+>   - iio: adc: at91_adc: remove of_match_ptr() usage
+> 
+> Alexandru Ardelean (4):
+>   iio: adc: at91_adc: use of_device_get_match_data() helper
+>   iio: adc: at91_adc: const-ify some driver data
+>   iio: adc: at91_adc: add Kconfig dep on the OF symbol and remove
+>     of_match_ptr()
+>   iio: adc: at91_adc: remove platform data and move defs in driver file
+> 
+>  drivers/iio/adc/Kconfig                |  2 +-
+>  drivers/iio/adc/at91_adc.c             | 73 ++++++++++----------------
+>  include/linux/platform_data/at91_adc.h | 49 -----------------
+>  3 files changed, 28 insertions(+), 96 deletions(-)
+>  delete mode 100644 include/linux/platform_data/at91_adc.h
+> 
 
