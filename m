@@ -7,51 +7,49 @@ X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4D21C433DF
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 22:57:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72AA4C35266
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 22:57:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 86C562075E
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 22:57:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3E17320829
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 22:57:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602370623;
-	bh=yqbHya5AzbPmZRg4XfaW3rvqiSj4EXVXjoskEJWuMvU=;
+	s=default; t=1602370625;
+	bh=Yd+Ts5zV4Imhr2dlD4CN2STzRAnre/8W1ZiC+y6m/NU=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=iu3HpWO76qEQznCO8yS8cvke/HkQxfNUE/TOJG9rIf/4rBdzdXnkGNEaNslp4h3ty
-	 8K+XKw44nDbUnJ9PPtVIENJz25K0PWerRbhBHIxu/+pS/SNQwc+T17n15JzGaTRgnZ
-	 uaqEOBrBTsIXgTu2+mnl3GHgZpU4ohovQY/Yb30o=
+	b=1+qKFWPFEEddngEmCPuu4M1T9aOjNI9LfMUqLiMpdZNzpmPfk6sLaljC4DonSW3IJ
+	 N3OgZvGX9wHdG4QV33in7XWfWWQIsdo4wuYusvrjEx0KcksB9/D4arFZ1vr9LFsHiW
+	 TJO9nYWNtFu8HS+bxSx573oQRGC2ilRFiomwx9LQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731342AbgJJW5B (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 10 Oct 2020 18:57:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48338 "EHLO mail.kernel.org"
+        id S2388035AbgJJW5D (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 10 Oct 2020 18:57:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50688 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730439AbgJJS5V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 10 Oct 2020 14:57:21 -0400
+        id S1731361AbgJJTMW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 10 Oct 2020 15:12:22 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 62E3F2064B;
-        Sat, 10 Oct 2020 16:07:24 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B695422400;
+        Sat, 10 Oct 2020 16:54:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602346045;
-        bh=yqbHya5AzbPmZRg4XfaW3rvqiSj4EXVXjoskEJWuMvU=;
+        s=default; t=1602348861;
+        bh=Yd+Ts5zV4Imhr2dlD4CN2STzRAnre/8W1ZiC+y6m/NU=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BcF0zQDkAGm9Coi1aAVr+rHLbwd9umTY7wfJ3NuTStMHuDva8OF2RHoELbm/Q4pD2
-         Lk2Ce8sqYPC1OXoQZ+qgs/1tKmGcJvzCx2ZQN29bxAyJS7i5zxNzBC4hwxWK4eWnzO
-         gf+07FdlYDMUUt+ZK10fcJlMinE3UvMTqmucK6ls=
-Date:   Sat, 10 Oct 2020 17:07:20 +0100
+        b=kNWySn40Fc1xgX/LG2i+iwLibfi85Qh8i5IV/OCvtrv/F/ydOQitt1DlIBy4zHPVZ
+         iNLKuXTBkFLTB6E2vpilcsc5UZj6jGXofy0/Cmw1S0yDCmt+7rJpMKTQ2j1CnixEA7
+         67m5Z0bhjNvdDa78h/RXjXj4uJCNsnc3SzG/jcME=
+Date:   Sat, 10 Oct 2020 17:54:15 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, nicolas.ferre@microchip.com,
-        ludovic.desroches@microchip.com
-Subject: Re: [PATCH v4 4/4] iio: adc: at91_adc: remove platform data and
- move defs in driver file
-Message-ID: <20201010170720.29f192f8@archlinux>
-In-Reply-To: <20200930140555.GI2804081@piout.net>
-References: <20200930135048.11530-1-alexandru.ardelean@analog.com>
-        <20200930135048.11530-5-alexandru.ardelean@analog.com>
-        <20200930140555.GI2804081@piout.net>
+To:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+Cc:     knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        michal.simek@xilinx.com, git@xilinx.com, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        anandash@xilinx.com
+Subject: Re: [LINUX PATCH v3] iio: core: Fix IIO_VAL_FRACTIONAL calculation
+ for negative values
+Message-ID: <20201010175415.6e51d873@archlinux>
+In-Reply-To: <1601910316-24111-1-git-send-email-anand.ashok.dumbre@xilinx.com>
+References: <1601910316-24111-1-git-send-email-anand.ashok.dumbre@xilinx.com>
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,191 +58,66 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 30 Sep 2020 16:05:55 +0200
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+On Mon,  5 Oct 2020 08:05:16 -0700
+Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com> wrote:
 
-> On 30/09/2020 16:50:48+0300, Alexandru Ardelean wrote:
-> > The AT91 ADC driver no longer uses the 'at91_add_device_adc' platform data
-> > type. This is no longer used (at least in mainline boards).
-> > 
-> > This change removes the platform-data initialization from the driver, since
-> > it is mostly dead code now.
-> > 
-> > Some definitions [from the platform data at91_adc.h include] have been
-> > moved in the driver, since they are needed in the driver.
-> > 
-> > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>  
-> Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> Fixes IIO_VAL_FRACTIONAL for case when the result is negative and
+> exponent is 0.
 > 
-> > ---
-> >  drivers/iio/adc/at91_adc.c             | 60 ++++++++++----------------
-> >  include/linux/platform_data/at91_adc.h | 49 ---------------------
-> >  2 files changed, 22 insertions(+), 87 deletions(-)
-> >  delete mode 100644 include/linux/platform_data/at91_adc.h
-> > 
-> > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> > index 473bffe84fbd..be6abf739881 100644
-> > --- a/drivers/iio/adc/at91_adc.c
-> > +++ b/drivers/iio/adc/at91_adc.c
-> > @@ -22,8 +22,6 @@
-> >  #include <linux/slab.h>
-> >  #include <linux/wait.h>
-> >  
-> > -#include <linux/platform_data/at91_adc.h>
-> > -
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/buffer.h>
-> >  #include <linux/iio/trigger.h>
-> > @@ -153,6 +151,25 @@
-> >  #define TOUCH_SHTIM                    0xa
-> >  #define TOUCH_SCTIM_US		10		/* 10us for the Touchscreen Switches Closure Time */
-> >  
-> > +enum atmel_adc_ts_type {
-> > +	ATMEL_ADC_TOUCHSCREEN_NONE = 0,
-> > +	ATMEL_ADC_TOUCHSCREEN_4WIRE = 4,
-> > +	ATMEL_ADC_TOUCHSCREEN_5WIRE = 5,
-> > +};
-> > +
-> > +/**
-> > + * struct at91_adc_trigger - description of triggers
-> > + * @name:		name of the trigger advertised to the user
-> > + * @value:		value to set in the ADC's trigger setup register
-> > +			to enable the trigger
-Build with W=1 (and hence kernel doc checks) picked up missing * 
-on this line.
+> example: if the result is -0.75, tmp0 will be 0 and tmp1 = 75
+> This causes the output to lose sign because of %d in snprintf
+> which works for tmp0 <= -1.
+> 
+> Signed-off-by: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+> Reported-by: kernel test robot <lkp@intel.com> #error: uninitialized symbol tmp
+> Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+As this doesn't have a fixes tag etc and from v2 discussion was only hit
+with a new driver, I'm not currently taking this a a fix.
+If people want me to rush it in / backport to stable then let me know
 
-Fixed.
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to poke at it.
+
+Thanks,
 
 Jonathan
 
-> > + * @is_external:	Does the trigger rely on an external pin?
-> > + */
-> > +struct at91_adc_trigger {
-> > +	const char	*name;
-> > +	u8		value;
-> > +	bool		is_external;
-> > +};
-> > +
-> >  /**
-> >   * struct at91_adc_reg_desc - Various informations relative to registers
-> >   * @channel_base:	Base offset for the channel data registers
-> > @@ -873,9 +890,6 @@ static int at91_adc_probe_dt(struct iio_dev *idev,
-> >  	int i = 0, ret;
-> >  	u32 prop;
-> >  
-> > -	if (!node)
-> > -		return -EINVAL;
-> > -
-> >  	st->caps = of_device_get_match_data(&pdev->dev);
-> >  
-> >  	st->use_external = of_property_read_bool(node, "atmel,adc-use-external-triggers");
-> > @@ -957,30 +971,6 @@ static int at91_adc_probe_dt(struct iio_dev *idev,
-> >  	return ret;
-> >  }
-> >  
-> > -static int at91_adc_probe_pdata(struct at91_adc_state *st,
-> > -				struct platform_device *pdev)
-> > -{
-> > -	struct at91_adc_data *pdata = pdev->dev.platform_data;
-> > -
-> > -	if (!pdata)
-> > -		return -EINVAL;
-> > -
-> > -	st->caps = (struct at91_adc_caps *)
-> > -			platform_get_device_id(pdev)->driver_data;
-> > -
-> > -	st->use_external = pdata->use_external_triggers;
-> > -	st->vref_mv = pdata->vref;
-> > -	st->channels_mask = pdata->channels_used;
-> > -	st->num_channels = st->caps->num_channels;
-> > -	st->startup_time = pdata->startup_time;
-> > -	st->trigger_number = pdata->trigger_number;
-> > -	st->trigger_list = pdata->trigger_list;
-> > -	st->registers = &st->caps->registers;
-> > -	st->touchscreen_type = pdata->touchscreen_type;
-> > -
-> > -	return 0;
-> > -}
-> > -
-> >  static const struct iio_info at91_adc_info = {
-> >  	.read_raw = &at91_adc_read_raw,
-> >  };
-> > @@ -1157,15 +1147,9 @@ static int at91_adc_probe(struct platform_device *pdev)
-> >  
-> >  	st = iio_priv(idev);
-> >  
-> > -	if (pdev->dev.of_node)
-> > -		ret = at91_adc_probe_dt(idev, pdev);
-> > -	else
-> > -		ret = at91_adc_probe_pdata(st, pdev);
-> > -
-> > -	if (ret) {
-> > -		dev_err(&pdev->dev, "No platform data available.\n");
-> > -		return -EINVAL;
-> > -	}
-> > +	ret = at91_adc_probe_dt(idev, pdev);
-> > +	if (ret)
-> > +		return ret;
-> >  
-> >  	platform_set_drvdata(pdev, idev);
-> >  
-> > diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
-> > deleted file mode 100644
-> > index f20eaeb827ce..000000000000
-> > --- a/include/linux/platform_data/at91_adc.h
-> > +++ /dev/null
-> > @@ -1,49 +0,0 @@
-> > -/* SPDX-License-Identifier: GPL-2.0-or-later */
-> > -/*
-> > - * Copyright (C) 2011 Free Electrons
-> > - */
-> > -
-> > -#ifndef _AT91_ADC_H_
-> > -#define _AT91_ADC_H_
-> > -
-> > -enum atmel_adc_ts_type {
-> > -	ATMEL_ADC_TOUCHSCREEN_NONE = 0,
-> > -	ATMEL_ADC_TOUCHSCREEN_4WIRE = 4,
-> > -	ATMEL_ADC_TOUCHSCREEN_5WIRE = 5,
-> > -};
-> > -
-> > -/**
-> > - * struct at91_adc_trigger - description of triggers
-> > - * @name:		name of the trigger advertised to the user
-> > - * @value:		value to set in the ADC's trigger setup register
-> > -			to enable the trigger
-> > - * @is_external:	Does the trigger rely on an external pin?
-> > - */
-> > -struct at91_adc_trigger {
-> > -	const char	*name;
-> > -	u8		value;
-> > -	bool		is_external;
-> > -};
-> > -
-> > -/**
-> > - * struct at91_adc_data - platform data for ADC driver
-> > - * @channels_used:		channels in use on the board as a bitmask
-> > - * @startup_time:		startup time of the ADC in microseconds
-> > - * @trigger_list:		Triggers available in the ADC
-> > - * @trigger_number:		Number of triggers available in the ADC
-> > - * @use_external_triggers:	does the board has external triggers availables
-> > - * @vref:			Reference voltage for the ADC in millivolts
-> > - * @touchscreen_type:		If a touchscreen is connected, its type (4 or 5 wires)
-> > - */
-> > -struct at91_adc_data {
-> > -	unsigned long			channels_used;
-> > -	u8				startup_time;
-> > -	struct at91_adc_trigger		*trigger_list;
-> > -	u8				trigger_number;
-> > -	bool				use_external_triggers;
-> > -	u16				vref;
-> > -	enum atmel_adc_ts_type		touchscreen_type;
-> > -};
-> > -
-> > -extern void __init at91_add_device_adc(struct at91_adc_data *data);
-> > -#endif
-> > -- 
-> > 2.17.1
-> >   
+> ---
 > 
+> Changes in v3:
+> 	Fixed a bug caught by kernel test robot and used correct variable
+> 
+> ---
+>  drivers/iio/industrialio-core.c | 10 +++++++---
+>  1 file changed, 7 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index cdcd16f1..ffd5176 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -592,6 +592,7 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+>  {
+>  	unsigned long long tmp;
+>  	int tmp0, tmp1;
+> +	s64 tmp2;
+>  	bool scale_db = false;
+>  
+>  	switch (type) {
+> @@ -614,10 +615,13 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+>  		else
+>  			return scnprintf(buf, len, "%d.%09u", vals[0], vals[1]);
+>  	case IIO_VAL_FRACTIONAL:
+> -		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+> +		tmp2 = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+>  		tmp1 = vals[1];
+> -		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
+> -		return scnprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+> +		tmp0 = (int)div_s64_rem(tmp2, 1000000000, &tmp1);
+> +		if ((tmp2 < 0) && (tmp0 == 0))
+> +			return snprintf(buf, len, "-0.%09u", abs(tmp1));
+> +		else
+> +			return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+>  	case IIO_VAL_FRACTIONAL_LOG2:
+>  		tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
+>  		tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
 
