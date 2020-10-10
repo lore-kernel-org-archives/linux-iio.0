@@ -7,46 +7,46 @@ X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BFCBC41604
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 596ECC43457
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 314A72075E
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 25FF22075E
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602371327;
-	bh=/o6kc0w86AtQfZwMUUuejermsLWKUUm141TautCeueA=;
+	s=default; t=1602371328;
+	bh=4GaaOYpeyMUnLNGhyYwBFY4c3rpB7JB1MtriAPl6+Hs=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=jYA9XfWAhe26qv/SOKkppBBk8K5Cfcm+84O5lN6UQNBMKr/Rn087S0dYdR2KA0zFZ
-	 R8XU31q4JKyCRlEHgIUJgAuYj/sot8cBIxW4+0lT+NiDImjARdXYPpdLPJJt1f3TYs
-	 eiGsmxUEfS/gAXW8ZbuIS88pDITb9brfuOmMqIJg=
+	b=pDbKqVbAY6Pn5rdSyRSCT0xuXB+5zaQC3EDAEFDSuTOtI8uprOJW6Dda/EbNBSydY
+	 M4vY2bOgyumy2IPyHe3ZQ6SkZx/Ox7VMTMrp0Epb6ndauSTK9ydx+Dd+4I3QkkkhCP
+	 Mcrd4idICXsdpYYykBMENV4rYeIqdKRr9UGJt+zY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2390385AbgJJW5J (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 10 Oct 2020 18:57:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56970 "EHLO mail.kernel.org"
+        id S2387921AbgJJW5I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 10 Oct 2020 18:57:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:56998 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731094AbgJJTxO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1731188AbgJJTxO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sat, 10 Oct 2020 15:53:14 -0400
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F91C223B0;
-        Sat, 10 Oct 2020 16:12:08 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 272A420829;
+        Sat, 10 Oct 2020 17:01:54 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602346329;
-        bh=/o6kc0w86AtQfZwMUUuejermsLWKUUm141TautCeueA=;
+        s=default; t=1602349314;
+        bh=4GaaOYpeyMUnLNGhyYwBFY4c3rpB7JB1MtriAPl6+Hs=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QthZT2Jf/4kVucgsha/eb8a9anw9MgY337YSbEsYgzCE2ZzgZUeJctUooOyDX2UUq
-         9vElLjcUKvplOqDAwRQuZEjB2BRkKwEMxtPWw3WWZn6X4Kx5nKk2yxw5kyZb3b8QKh
-         Am7IGbh6YH3KxHnzOX2YZe+86lQ7o/YVmVSIzbDU=
-Date:   Sat, 10 Oct 2020 17:12:05 +0100
+        b=uvY3jPhAPWzsLy8qa3RPVEawQzL31rotv3m3rreFQ3P6W7UzL0C/hqu5uK8eApq9/
+         HPGLxqOidGWS73peJIQRlLU/weLtAYrlcQtQD88jh/a4ozRZjHMAyaG0H+OX8uLgRx
+         vuPzzptgJ658becbPqAY2uV4dy1mzSxyftjuAw+U=
+Date:   Sat, 10 Oct 2020 18:01:51 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: adc: ad7887: invert/rework external ref logic
-Message-ID: <20201010171205.56890964@archlinux>
-In-Reply-To: <20201002082723.184810-1-alexandru.ardelean@analog.com>
-References: <20201001141143.925-1-alexandru.ardelean@analog.com>
-        <20201002082723.184810-1-alexandru.ardelean@analog.com>
+Cc:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: adc: ad7298: rework external ref setup & remove
+ platform data
+Message-ID: <20201010180151.0e85ba9e@archlinux>
+In-Reply-To: <20201001141048.69050-1-alexandru.ardelean@analog.com>
+References: <20201001141048.69050-1-alexandru.ardelean@analog.com>
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -55,89 +55,98 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 2 Oct 2020 11:27:23 +0300
+On Thu, 1 Oct 2020 17:10:48 +0300
 Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-> This change inverts/reworks the logic to use an external reference via a
-> provided regulator.
+> This change removes the old platform data for ad7298. It is only used to
+> provide whether to use an external regulator as a reference.
 > 
-> Now the driver tries to obtain a regulator. If one is found, then it is
-> used. The rest of the driver logic already checks if there is a non-NULL
-> reference to a regulator, so it should be fine.
+> So, the logic is inverted a bit. The driver now tries to obtain a
+> regulator. If one is provided, then the external ref is used. The rest of
+> the logic should work as before.
 > 
 > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-all the normal reasons.
-
-Interestingly it seems something odd happened to my email and I was missing
-random threads/part threads.  I've pulled them off lore.kernel.org but if
-I seem to have lost anything let me know.
-
-If anyone has a bounce message from me, please send it over as I'm curious
-as to what went wrong!
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to poke at it.
 
 Thanks,
 
 Jonathan
- 
+
 > ---
+>  drivers/iio/adc/ad7298.c             | 17 +++++++++--------
+>  include/linux/platform_data/ad7298.h | 19 -------------------
+>  2 files changed, 9 insertions(+), 27 deletions(-)
+>  delete mode 100644 include/linux/platform_data/ad7298.h
 > 
-> Changelog v1 -> v2:
-> * remove omitted '!pdata->use_onchip_ref' check; the field was removed from
->   the platform data, but was still used
-> 
->  drivers/iio/adc/ad7887.c             | 12 ++++++++----
->  include/linux/platform_data/ad7887.h |  4 ----
->  2 files changed, 8 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
-> index 037bcb47693c..99a480ad3985 100644
-> --- a/drivers/iio/adc/ad7887.c
-> +++ b/drivers/iio/adc/ad7887.c
-> @@ -246,11 +246,15 @@ static int ad7887_probe(struct spi_device *spi)
+> diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
+> index 48d43cb0f932..fa1047f74a1f 100644
+> --- a/drivers/iio/adc/ad7298.c
+> +++ b/drivers/iio/adc/ad7298.c
+> @@ -23,8 +23,6 @@
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  
+> -#include <linux/platform_data/ad7298.h>
+> -
+>  #define AD7298_WRITE	BIT(15) /* write to the control register */
+>  #define AD7298_REPEAT	BIT(14) /* repeated conversion enable */
+>  #define AD7298_CH(x)	BIT(13 - (x)) /* channel select */
+> @@ -283,7 +281,6 @@ static const struct iio_info ad7298_info = {
+>  
+>  static int ad7298_probe(struct spi_device *spi)
+>  {
+> -	struct ad7298_platform_data *pdata = spi->dev.platform_data;
+>  	struct ad7298_state *st;
+>  	struct iio_dev *indio_dev;
+>  	int ret;
+> @@ -294,14 +291,18 @@ static int ad7298_probe(struct spi_device *spi)
 >  
 >  	st = iio_priv(indio_dev);
 >  
-> -	if (!pdata || !pdata->use_onchip_ref) {
+> -	if (pdata && pdata->ext_ref)
+> +	st->reg = devm_regulator_get_optional(&spi->dev, "vref");
+> +	if (!IS_ERR(st->reg)) {
+>  		st->ext_ref = AD7298_EXTREF;
+> +	} else {
+> +		ret = PTR_ERR(st->reg);
+> +		if (ret != -ENODEV)
+> +			return ret;
+>  
+> -	if (st->ext_ref) {
 > -		st->reg = devm_regulator_get(&spi->dev, "vref");
 > -		if (IS_ERR(st->reg))
-> +	st->reg = devm_regulator_get_optional(&spi->dev, "vref");
-> +	if (IS_ERR(st->reg)) {
-> +		if (PTR_ERR(st->reg) != -ENODEV)
->  			return PTR_ERR(st->reg);
->  
+> -			return PTR_ERR(st->reg);
 > +		st->reg = NULL;
 > +	}
-> +
+>  
 > +	if (st->reg) {
 >  		ret = regulator_enable(st->reg);
 >  		if (ret)
 >  			return ret;
-> @@ -269,7 +273,7 @@ static int ad7887_probe(struct spi_device *spi)
->  	/* Setup default message */
->  
->  	mode = AD7887_PM_MODE4;
-> -	if (!pdata || !pdata->use_onchip_ref)
-> +	if (!st->reg)
->  		mode |= AD7887_REF_DIS;
->  	if (pdata && pdata->en_dual)
->  		mode |= AD7887_DUAL;
-> diff --git a/include/linux/platform_data/ad7887.h b/include/linux/platform_data/ad7887.h
-> index 732af46b2d16..9b4dca6ae70b 100644
-> --- a/include/linux/platform_data/ad7887.h
-> +++ b/include/linux/platform_data/ad7887.h
-> @@ -13,13 +13,9 @@
->   *	second input channel, and Vref is internally connected to Vdd. If set to
->   *	false the device is used in single channel mode and AIN1/Vref is used as
->   *	VREF input.
-> - * @use_onchip_ref: Whether to use the onchip reference. If set to true the
-> - *	internal 2.5V reference is used. If set to false a external reference is
-> - *	used.
->   */
->  struct ad7887_platform_data {
->  	bool en_dual;
-> -	bool use_onchip_ref;
->  };
->  
->  #endif /* IIO_ADC_AD7887_H_ */
+> diff --git a/include/linux/platform_data/ad7298.h b/include/linux/platform_data/ad7298.h
+> deleted file mode 100644
+> index 3e0ffe2d5d3d..000000000000
+> --- a/include/linux/platform_data/ad7298.h
+> +++ /dev/null
+> @@ -1,19 +0,0 @@
+> -/* SPDX-License-Identifier: GPL-2.0-only */
+> -/*
+> - * AD7298 SPI ADC driver
+> - *
+> - * Copyright 2011 Analog Devices Inc.
+> - */
+> -
+> -#ifndef __LINUX_PLATFORM_DATA_AD7298_H__
+> -#define __LINUX_PLATFORM_DATA_AD7298_H__
+> -
+> -/**
+> - * struct ad7298_platform_data - Platform data for the ad7298 ADC driver
+> - * @ext_ref: Whether to use an external reference voltage.
+> - **/
+> -struct ad7298_platform_data {
+> -	bool ext_ref;
+> -};
+> -
+> -#endif /* IIO_ADC_AD7298_H_ */
 
