@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51988C433DF
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D15CC433E7
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 24F7722246
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2C06822246
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602436228;
-	bh=qxz1nFYffvdJkqktFxYS4QndAo/Hvp2pWUygCya5Z4M=;
+	s=default; t=1602436229;
+	bh=e62MvhY7mBDduYumuFSyGAwOusGVUYbFQapzMnGtJlg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=qFpSXphrkirUjwBmer2XKAXxobDNQg99aMPNcwSli2kWzIeB/mNnkc8BdxLUjkKT5
-	 EKt9NKse73lWaVhYpEv4shdJby/jXbIzeLzk9FbfZYS2AbVtYQWmI97UibnuRHYvLM
-	 oHfI8ug6igL9sXRFItYRP32rvtOpR3rXng90V0ws=
+	b=beFlZOEG09GE/IDOW7iVq1l+5hHcgBIrjj2XuEgHLDCwIfPKGAkkz4LRTTDclBBo+
+	 PEkQc6uZJqg24KVd0TCdU/2lBBqo+LGXXUgOgU0uej47vgrO0S6R1/LfqKdsrTJtmZ
+	 QYj4ywNw/QxbxNb8lbtJx8WZsWQD+o+kFlA7WkCc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388234AbgJKRK1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 11 Oct 2020 13:10:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51954 "EHLO mail.kernel.org"
+        id S2388239AbgJKRK2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 11 Oct 2020 13:10:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51966 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387984AbgJKRK1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Oct 2020 13:10:27 -0400
+        id S2387984AbgJKRK2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Oct 2020 13:10:28 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 713D32222C;
-        Sun, 11 Oct 2020 17:10:25 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0CBB020782;
+        Sun, 11 Oct 2020 17:10:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602436226;
-        bh=qxz1nFYffvdJkqktFxYS4QndAo/Hvp2pWUygCya5Z4M=;
+        s=default; t=1602436228;
+        bh=e62MvhY7mBDduYumuFSyGAwOusGVUYbFQapzMnGtJlg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LKc9CTZONyPgk9m4pURD40QZ1u6px9oFQNaWEiZIby6jhMylkSeKH7nLuAPq1xIDL
-         wBhn2ifaGw2EKO5IsaW+Nr0iV2N+YF1h7DSHxtGD1TFpWD/Mu7CbsIGZ4Lkblz3vhH
-         m5BOIZpr/+CLh9GNbocGP5SQeqW6x3clWSeeYEq8=
+        b=pPkoSK6XlFmPxD5HKjAZ2TgSSTDtVBLz+79YMPEB4q43GNfKfaHX9vg99Y9YKJurD
+         p6B6e4fXhCkGJd5T10Fbm/iVszuWlvADU92cJp3M11mH86t/FH3c5rP6PnrjAfdu9H
+         q6R4195tj711sZyc0NiLweNiLfvcAv2S+MefeF7g=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sanchayan Maity <maitysanchayan@gmail.com>
-Subject: [PATCH 19/29] dt-bindings:iio:dac:fsl,vf610-dac yaml conversion
-Date:   Sun, 11 Oct 2020 18:07:39 +0100
-Message-Id: <20201011170749.243680-20-jic23@kernel.org>
+        Tomas Novotny <tomas@novotny.cz>
+Subject: [PATCH 20/29] dt-bindings:iio:dac:microchip,mcp4725 yaml conversion
+Date:   Sun, 11 Oct 2020 18:07:40 +0100
+Message-Id: <20201011170749.243680-21-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201011170749.243680-1-jic23@kernel.org>
 References: <20201011170749.243680-1-jic23@kernel.org>
@@ -56,103 +56,135 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Simple binding to convert.  Example expanded a little to include
-an example bus.
+I'm not sure vdd-supply absolutely has to be provided if vref-supply
+is, but as the previous binding docs stated it was required it seems
+reasonable to leave it as such.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Sanchayan Maity <maitysanchayan@gmail.com>
+Cc:  Tomas Novotny <tomas@novotny.cz>
 ---
- .../bindings/iio/dac/fsl,vf610-dac.yaml       | 55 +++++++++++++++++++
- .../devicetree/bindings/iio/dac/vf610-dac.txt | 20 -------
- 2 files changed, 55 insertions(+), 20 deletions(-)
+ .../devicetree/bindings/iio/dac/mcp4725.txt   | 35 ---------
+ .../bindings/iio/dac/microchip,mcp4725.yaml   | 71 +++++++++++++++++++
+ 2 files changed, 71 insertions(+), 35 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/fsl,vf610-dac.yaml b/Documentation/devicetree/bindings/iio/dac/fsl,vf610-dac.yaml
+diff --git a/Documentation/devicetree/bindings/iio/dac/mcp4725.txt b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+deleted file mode 100644
+index 1bc6c093fbfe..000000000000
+--- a/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
++++ /dev/null
+@@ -1,35 +0,0 @@
+-Microchip mcp4725 and mcp4726 DAC device driver
+-
+-Required properties:
+-	- compatible: Must be "microchip,mcp4725" or "microchip,mcp4726"
+-	- reg: Should contain the DAC I2C address
+-	- vdd-supply: Phandle to the Vdd power supply. This supply is used as a
+-	  voltage reference on mcp4725. It is used as a voltage reference on
+-	  mcp4726 if there is no vref-supply specified.
+-
+-Optional properties (valid only for mcp4726):
+-	- vref-supply: Optional phandle to the Vref power supply. Vref pin is
+-	  used as a voltage reference when this supply is specified.
+-	- microchip,vref-buffered: Boolean to enable buffering of the external
+-	  Vref pin. This boolean is not valid without the vref-supply. Quoting
+-	  the datasheet: This is offered in cases where the reference voltage
+-	  does not have the current capability not to drop its voltage when
+-	  connected to the internal resistor ladder circuit.
+-
+-Examples:
+-
+-	/* simple mcp4725 */
+-	mcp4725@60 {
+-		compatible = "microchip,mcp4725";
+-		reg = <0x60>;
+-		vdd-supply = <&vdac_vdd>;
+-	};
+-
+-	/* mcp4726 with the buffered external reference voltage */
+-	mcp4726@60 {
+-		compatible = "microchip,mcp4726";
+-		reg = <0x60>;
+-		vdd-supply = <&vdac_vdd>;
+-		vref-supply = <&vdac_vref>;
+-		microchip,vref-buffered;
+-	};
+diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp4725.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp4725.yaml
 new file mode 100644
-index 000000000000..999c715c6179
+index 000000000000..271998610ceb
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/fsl,vf610-dac.yaml
-@@ -0,0 +1,55 @@
++++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp4725.yaml
+@@ -0,0 +1,71 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/dac/fsl,vf610-dac.yaml#
++$id: http://devicetree.org/schemas/iio/dac/microchip,mcp4725.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Freescale vf610 Digital to Analog Converter
++title: Microchip mcp4725 and mcp4726 DAC
 +
 +maintainers:
-+  - Sanchayan Maity <maitysanchayan@gmail.com>
++  - Tomas Novotny <tomas@novotny.cz>
 +
 +properties:
 +  compatible:
-+    const: fsl,vf610-dac
++    enum:
++      - microchip,mcp4725
++      - microchip,mcp4726
 +
 +  reg:
 +    maxItems: 1
 +
-+  interrupts:
-+    maxItems: 1
++  vdd-supply:
++    description: |
++      Provides both power and acts as the reference supply on the mcp4725.
++      For the mcp4726 it will be used as the reference voltage if vref-supply
++      is not provided.
 +
-+  clocks:
-+    maxItems: 1
++  vref-supply:
++    description:
++      Vref pin is used as a voltage reference when this supply is specified.
 +
-+  clock-names:
-+    const: dac
++  microchip,vref-buffered:
++    type: boolean
++    description: |
++      Enable buffering of the external Vref pin. This boolean is not valid
++      without the vref-supply. Quoting the datasheet: This is offered in
++      cases where the reference voltage does not have the current
++      capability not to drop its voltage when connected to the internal
++      resistor ladder circuit.
++
++allOf:
++  - if:
++      not:
++        properties:
++          compatible:
++            contains:
++              const: microchip,mcp4726
++    then:
++      properties:
++        vref-supply: false
++        microchip,vref-buffered: false
 +
 +required:
 +  - compatible
 +  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
++  - vdd-supply
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/clock/vf610-clock.h>
-+    bus@40000000 {
-+        compatible = "fsl,aips-bus", "simple-bus";
-+        reg = <0x40000000 0x00070000>;
-+        ranges;
++    i2c {
 +        #address-cells = <1>;
-+        #size-cells = <1>;
-+        dac@400cc000 {
-+            compatible = "fsl,vf610-dac";
-+            reg = <0x400cc000 0x1000>;
-+            interrupts = <55 IRQ_TYPE_LEVEL_HIGH>;
-+            clock-names = "dac";
-+            clocks = <&clks VF610_CLK_DAC0>;
++        #size-cells = <0>;
++
++        mcp4725@60 {
++            compatible = "microchip,mcp4725";
++            reg = <0x60>;
++            vdd-supply = <&vdac_vdd>;
 +        };
 +    };
 +...
-diff --git a/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt b/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
-deleted file mode 100644
-index 20c6c7ae9687..000000000000
---- a/Documentation/devicetree/bindings/iio/dac/vf610-dac.txt
-+++ /dev/null
-@@ -1,20 +0,0 @@
--Freescale vf610 Digital to Analog Converter bindings
--
--The devicetree bindings are for the new DAC driver written for
--vf610 SoCs from Freescale.
--
--Required properties:
--- compatible: Should contain "fsl,vf610-dac"
--- reg: Offset and length of the register set for the device
--- interrupts: Should contain the interrupt for the device
--- clocks: The clock is needed by the DAC controller
--- clock-names: Must contain "dac" matching entry in the clocks property.
--
--Example:
--dac0: dac@400cc000 {
--	compatible = "fsl,vf610-dac";
--	reg = <0x400cc000 0x1000>;
--	interrupts = <55 IRQ_TYPE_LEVEL_HIGH>;
--	clock-names = "dac";
--	clocks = <&clks VF610_CLK_DAC0>;
--};
 -- 
 2.28.0
 
