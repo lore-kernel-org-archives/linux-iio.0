@@ -7,44 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DCEC43457
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 402AFC43467
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 36BC42222F
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EF9482222E
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602436200;
-	bh=XHzi1sFg6y12KCom9UbucvKN76ES59BRfxnZN+0znmI=;
+	s=default; t=1602436202;
+	bh=VBulIK4LHmlnLKNN0xlDLvUCl4hry0PL8Eszrlytr+c=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=EyjhotMbwiR/pVuMVx+ZocvFb3s3lF+a47IKN32tRXEcCeHpoIO/GPic7ynOdYbjv
-	 7RY4FMImGacubYkHW2R7cbdw08q/R7W0cw1CdA4sXuVsQlEvADau6hpIynyPq9ATMl
-	 SK3pj/WTctt2vIUaE/2jaTlYlGQAFNpL/Qcj04ls=
+	b=WY2jFTKLrXs3IiWxZ7YPfqMzaLiGHSE4jQ0sYXc/1swye3WZgXUKSAJywg2Q0mU/D
+	 0DcnOG8J/37az35lQiuOF3/cQnkxEHOBycAhQYqlLQ/tBdtihNubtf9dCeGxslIEzv
+	 NnZTMdXa1bTRHLB6ilqObaTtjy6yCnsAd/c+Y6eY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730247AbgJKRJ7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 11 Oct 2020 13:09:59 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51650 "EHLO mail.kernel.org"
+        id S1730255AbgJKRKB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 11 Oct 2020 13:10:01 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51684 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729634AbgJKRJ7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Oct 2020 13:09:59 -0400
+        id S1729634AbgJKRKB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Oct 2020 13:10:01 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 498142222C;
-        Sun, 11 Oct 2020 17:09:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C4DB22222A;
+        Sun, 11 Oct 2020 17:09:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602436199;
-        bh=XHzi1sFg6y12KCom9UbucvKN76ES59BRfxnZN+0znmI=;
+        s=default; t=1602436200;
+        bh=VBulIK4LHmlnLKNN0xlDLvUCl4hry0PL8Eszrlytr+c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xgt9EaJA1TogeG7LufF0R1+uV+waCfNj7eZzpo09ptS64djpTbv7HWCYEVO8OdpcI
-         NS54jX80tcbskweng2O9KAf9GuqHUGTIzKNHasKoZDD2QHH6vcPeArb0f2B5qWRkLG
-         GS6i27x3VhICASKVLpJZdMtcTSCDaCwn707QGQP4=
+        b=ZYavmNoulpTtRLrO6yOH9tGQ+UOPcwrnKS7xx5skw53SFJTtLvi/U96k8u+X5Ren5
+         uIgFRsYmV8M18D9k6l7jxLGO6tNDrg6YKCsLrUU0VZ9OZFx9oYjT8eL7Cct/LoNPkX
+         3SBgwXU1wC7880aa1dBjFImwWbFpEVAL0dkhdGk0=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>
-Subject: [PATCH 01/29] dt-bindings:iio:humidity:hdc100x Drop separate doc + add to trivial-devices
-Date:   Sun, 11 Oct 2020 18:07:21 +0100
-Message-Id: <20201011170749.243680-2-jic23@kernel.org>
+        William Markezana <william.markezana@meas-spec.com>,
+        Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
+Subject: [PATCH 02/29] dt-bindings:iio:humidity:htu21 Drop separate doc + add to trivial-devices
+Date:   Sun, 11 Oct 2020 18:07:22 +0100
+Message-Id: <20201011170749.243680-3-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201011170749.243680-1-jic23@kernel.org>
 References: <20201011170749.243680-1-jic23@kernel.org>
@@ -60,56 +61,47 @@ Very simple binding for this i2c device with no properties beyond
 reg and compatible.  Hence doesn't need it's own document.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Matt Ranostay <matt.ranostay@konsulko.com>
+Cc: William Markezana <william.markezana@meas-spec.com>
+Cc: Ludovic Tancerel <ludovic.tancerel@maplehightech.com>
 ---
- .../bindings/iio/humidity/hdc100x.txt           | 17 -----------------
- .../devicetree/bindings/trivial-devices.yaml    | 10 ++++++++++
- 2 files changed, 10 insertions(+), 17 deletions(-)
+ .../devicetree/bindings/iio/humidity/htu21.txt      | 13 -------------
+ .../devicetree/bindings/trivial-devices.yaml        |  4 ++++
+ 2 files changed, 4 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt b/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+diff --git a/Documentation/devicetree/bindings/iio/humidity/htu21.txt b/Documentation/devicetree/bindings/iio/humidity/htu21.txt
 deleted file mode 100644
-index c52333bdfd19..000000000000
---- a/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
+index 97d79636f7ae..000000000000
+--- a/Documentation/devicetree/bindings/iio/humidity/htu21.txt
 +++ /dev/null
-@@ -1,17 +0,0 @@
--* HDC100x temperature + humidity sensors
+@@ -1,13 +0,0 @@
+-*HTU21 - Measurement-Specialties htu21 temperature & humidity sensor and humidity part of MS8607 sensor
 -
 -Required properties:
--  - compatible: Should contain one of the following:
--	ti,hdc1000
--	ti,hdc1008
--	ti,hdc1010
--	ti,hdc1050
--	ti,hdc1080
--  - reg: i2c address of the sensor
+-
+-	- compatible: should be "meas,htu21" or "meas,ms8607-humidity"
+-	- reg: I2C address of the sensor
 -
 -Example:
 -
--hdc100x@40 {
--	compatible = "ti,hdc1000";
+-htu21@40 {
+-	compatible = "meas,htu21";
 -	reg = <0x40>;
 -};
 diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index 25cfcc904240..9f8531d4d33e 100644
+index 9f8531d4d33e..49c67a6a1332 100644
 --- a/Documentation/devicetree/bindings/trivial-devices.yaml
 +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -352,6 +352,16 @@ properties:
-           - ti,ads7830
-             # Temperature Monitoring and Fan Control
-           - ti,amc6821
-+            # Temperature and humidity sensor with i2c interface
-+          - ti,hdc1000
-+            # Temperature and humidity sensor with i2c interface
-+          - ti,hdc1008
-+            # Temperature and humidity sensor with i2c interface
-+          - ti,hdc1010
-+            # Temperature and humidity sensor with i2c interface
-+          - ti,hdc1050
-+            # Temperature and humidity sensor with i2c interface
-+          - ti,hdc1080
-             # Temperature sensor with 2-wire interface
-           - ti,lm73
-             # Temperature sensor with integrated fan control
+@@ -128,6 +128,10 @@ properties:
+           - mcube,mc3230
+             # MEMSIC 2-axis 8-bit digital accelerometer
+           - memsic,mxc6225
++            # Measurement Specialities I2C temperature and humidity sensor
++          - meas,htu21
++            # Measurement Specialities temp and humidity part of ms8607 device
++          - meas,ms8607-humidity
+             # Microchip differential I2C ADC, 1 Channel, 18 bit
+           - microchip,mcp3421
+             # Microchip differential I2C ADC, 2 Channel, 18 bit
 -- 
 2.28.0
 
