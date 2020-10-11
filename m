@@ -1,118 +1,99 @@
-Return-Path: <SRS0=sXLK=DR=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=8e7N=DS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0BFFC43467
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD996C433E7
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 10:48:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 856DF2075E
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Oct 2020 23:08:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602371336;
-	bh=tvRSA9R+WFrxxVwgdjd4mNTVYdF+H8JAqH74nfC64co=;
-	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=f+QE+CI8YxzlcxvAU0J95TN1XTxHFmmzPGwvs12haCQ9Su5XrOfKaMnicScIDHygo
-	 BC3JDSgC7omWiQoS2Eutth9DAeqI9DQ6moUn6GZ/dE6iVqEtbXUSewge4mE0P0abV6
-	 xMkIQT5LUW/Ei5lWiCXO1jKiYpHk2fIhCkUmOa1A=
+	by mail.kernel.org (Postfix) with ESMTP id 95C93207F7
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 10:48:08 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="F3y03Mst"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730439AbgJJW5B (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 10 Oct 2020 18:57:01 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48682 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731123AbgJJTCW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 10 Oct 2020 15:02:22 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 112712242B;
-        Sat, 10 Oct 2020 16:57:17 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602349041;
-        bh=tvRSA9R+WFrxxVwgdjd4mNTVYdF+H8JAqH74nfC64co=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ZgbF8bwi2UcwgQkisyGyNYTjjBlwqldV4vgAnD3Jv5bGIF2p9LtXEWQc1F+78JT0D
-         xY4+fZfeFRbH0/40ELyQHlLcLjTNDdVRKOYQhEiTuNQ+liidwbYO0y4f7u9DpGQ5lN
-         EVgZQalZesICskJ4Xb2cFQ0mX0R9DnjdXxYF+l3c=
-Date:   Sat, 10 Oct 2020 17:57:14 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gene Chen <gene.chen.richtek@gmail.com>
-Cc:     robh+dt@kernel.org, matthias.bgg@gmail.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        gene_chen@richtek.com, Wilma.Wu@mediatek.com,
-        shufan_lee@richtek.com, cy_huang@richtek.com,
-        benjamin.chao@mediatek.com
-Subject: Re: [PATCH v6 0/3] iio: adc: mt6360: Add ADC driver for MT6360
-Message-ID: <20201010175714.0fb968ab@archlinux>
-In-Reply-To: <1601542448-7433-1-git-send-email-gene.chen.richtek@gmail.com>
-References: <1601542448-7433-1-git-send-email-gene.chen.richtek@gmail.com>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1729806AbgJKKsI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 11 Oct 2020 06:48:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37684 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725863AbgJKKsG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Oct 2020 06:48:06 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F41B4C0613CE
+        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2020 03:48:05 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id y14so11236448pgf.12
+        for <linux-iio@vger.kernel.org>; Sun, 11 Oct 2020 03:48:05 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
+        bh=deTcVWZjgqYO/HLfkfRk5fdNNDOh0Ncp8EdEY6lKOFw=;
+        b=F3y03MstqCtOnJNCSDX1Zb7+EGV+MRYU/fh+rlts6ArMyKQo9C7ZbmClsYK2wlmiJP
+         +S0wf1JjLNejeNexAGgz6gpHjBR92TbU8uUaUlDG3+Q7zFHs/GoO2MwlNbAQDKvq1v9B
+         Xlgb92TdVpSm8U7tKeTkGKWLOyrcTfSYs2HOlyQzVFIHlxaVRxkijfwTVgPsdvE1xcWQ
+         nQEdK0eQm1iGrjkVbcTWQab6L25lwxBQyaeIXf7iSdjsN7O1kk1ZUYDU4HcZfMoSx/qQ
+         MBn17MjCpZ2gsJaLRVSAHZxVa+uPY5VU3++UQG/VSQvWdLRlrN64FW6qPgWHpPrpbGnP
+         h8gA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition;
+        bh=deTcVWZjgqYO/HLfkfRk5fdNNDOh0Ncp8EdEY6lKOFw=;
+        b=NK3prHeLDCJLF5vIpAIKBqQIFEve9Qcbks/yyUwNgRJCp4aA+CtGvxBB71LDKax074
+         WKvAeN9zbNo7Pq99Virrq9JqYP9cyy0oQVou+ao0zpHlFiNkioq0Q7yWoPjZ4xgfmB5b
+         eamGWVTrMAclpuYcmggz+dfhqXi09SkNwZ0ytdhBaat1X6wyMuXUeiTYwqlk8+6CGhXi
+         dQ1zTXuG6tFZy+fFo0tLuXlztFpYvN7vIk4sDyIi/J8ODLv2+fX5MU9PUyvjXuYyRrj8
+         KQvDbuvJ5mr8N5tU45VRfovBMC78AEOga8aa910XMaUgRe7CKaS0xPEiYVDaA1F5LMn8
+         H49w==
+X-Gm-Message-State: AOAM530KXcAgF0KJXbJz5mdEivRQujiCPtZ5DhTuQvcmvgU6HjO3/VHP
+        emhQpfitdAEPFgWFN5Q3B9U=
+X-Google-Smtp-Source: ABdhPJwXoPbipmzbzqDfFEGezKhOme9brJFVn4NLM1T2y8Zuk2nC6qFAlB0BJrxhHv59lldPhuZphA==
+X-Received: by 2002:aa7:8e54:0:b029:142:2501:34d2 with SMTP id d20-20020aa78e540000b0290142250134d2mr19031913pfr.43.1602413285617;
+        Sun, 11 Oct 2020 03:48:05 -0700 (PDT)
+Received: from ubuntu204 ([103.108.75.206])
+        by smtp.gmail.com with ESMTPSA id z8sm16872683pfk.49.2020.10.11.03.48.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 11 Oct 2020 03:48:05 -0700 (PDT)
+Date:   Sun, 11 Oct 2020 16:18:00 +0530
+From:   Deepak R Varma <mh12gx2825@gmail.com>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com
+Subject: [PATCH] staging: iio: adis16240: add blank line before struct
+ definition
+Message-ID: <20201011104800.GA29412@ubuntu204>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu,  1 Oct 2020 16:54:05 +0800
-Gene Chen <gene.chen.richtek@gmail.com> wrote:
+Add a blank line before starting structure definition as per coding
+style guidelines. Issue reported by checkpatch script.
 
-> This patch series add MT6360 ADC support contains driver, testing document
-> and binding document
-> 
-> Gene Chen (2)
->   dt-bindings: iio: adc: add bindings doc for MT6360 ADC
->   Documentation: ABI: testing: mt6360: Add ADC sysfs guideline
->   iio: adc: mt6360: Add ADC driver for MT6360
+Signed-off-by: Deepak R Varma <mh12gx2825@gmail.com>
+---
+ drivers/staging/iio/accel/adis16240.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Hi Gene
-
-This looks good to me.  I'm just waiting now on some final
-reviews for the patch that adds the label attribute support.
-Once those are in I'll pick your driver up as well.
-
-If I seem to have lost it, feel free to poke me!
-
-Thanks,
-
-Jonathan
-
-> 
->  Documentation/ABI/testing/sysfs-bus-iio-adc-mt6360                 |   78 ++
->  Documentation/devicetree/bindings/iio/adc/mediatek,mt6360-adc.yaml |   34 
->  drivers/iio/adc/Kconfig                                            |   11 
->  drivers/iio/adc/Makefile                                           |    1 
->  drivers/iio/adc/mt6360-adc.c                                       |  362 ++++++++++
->  5 files changed, 486 insertions(+)
-> 
-> changelogs between v1 & v2
->  - adc: use IIO_CHAN_INFO_PROCESSED only
->  - adc: use devm_iio_triggered_buffer_setup
->  - adc: use use s64 to record timestamp
-> 
-> changelogs between v2 & v3
->  - Rearrange include file order by alphabet
->  - Set line length constraint below 100
->  - Add Document for testing adc sysfs node guideline
->  - Set compiler 64 bit aligned when handle iio timestamp
-> 
-> changelogs between v3 & v4
->  - Fix sysfs guideline description
->  - Replace iio channel processed by raw/scale/offset
->  - Add comment of read adc flow for special HW design
-> 
-> changelogs between v4 & v5
->  - Rename dt-bindings aligned to file name
->  - Aligned sysfs node name with driver and add VBUSDIVX description
->  - Add ADC channel sysfs node "*_labels"
-> 
-> changelogs between v5 & v6
->  - Memset aligned adc data
->  - Remove strong casting void pointer
-> 
+diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
+index 5064adce5f58..8d3afc6dc755 100644
+--- a/drivers/staging/iio/accel/adis16240.c
++++ b/drivers/staging/iio/accel/adis16240.c
+@@ -426,6 +426,7 @@ static int adis16240_probe(struct spi_device *spi)
+ 
+ 	return devm_iio_device_register(&spi->dev, indio_dev);
+ }
++
+ static const struct of_device_id adis16240_of_match[] = {
+ 	{ .compatible = "adi,adis16240" },
+ 	{ },
+-- 
+2.25.1
 
