@@ -2,171 +2,117 @@ Return-Path: <SRS0=8e7N=DS=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61103C433DF
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01D9CC433DF
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:12:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 31AE322248
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BB6742222F
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:12:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602436244;
-	bh=SAqrR3+DNlpOMb5JijKMJonUOoAsWlE2fxST9BsXLrc=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=JpP+7emYeouqRHi+yCzNb5ef+uw7kunjv1lu8+x4/rHnILEPcri2ECd6DKgzXAJr3
-	 diZg6vbvIvaeTTD1+ApuuxiGa8C5gaAqFJXlf0QbinfnpHSQ7qq0Q9/7Fz53zARIp0
-	 crM2anG0L41gSkExX+rI2aY7H1tWBzu+BABZeT+8=
+	s=default; t=1602436328;
+	bh=ub/quG4quutxLNFN4hsKbiPh4RVFdcfrM76BxqCiyVY=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=W34QmgajkDvZsZbkZkdfXwsdUWQrkswkT6yMAhmxCUT94nKOyrOXBp00aN4qs039k
+	 cRF2mcIv+T0sRjP4JNYltXi/8E31WtAkNwdovseIJM5Yqe2syCM1Sc//P1d7FfgqS8
+	 j3OtNeXyRW6QxLZbfXTPqyAWkwAgoj4y4aiR9BXc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388249AbgJKRKn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 11 Oct 2020 13:10:43 -0400
-Received: from mail.kernel.org ([198.145.29.99]:52126 "EHLO mail.kernel.org"
+        id S1730277AbgJKRMI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 11 Oct 2020 13:12:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52362 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387984AbgJKRKn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Oct 2020 13:10:43 -0400
-Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        id S1729634AbgJKRMI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Oct 2020 13:12:08 -0400
+Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B5F142222F;
-        Sun, 11 Oct 2020 17:10:41 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id F36142222A;
+        Sun, 11 Oct 2020 17:12:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602436242;
-        bh=SAqrR3+DNlpOMb5JijKMJonUOoAsWlE2fxST9BsXLrc=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=CkmatXR6iKF0HwFp4PEPkyhABeBmjW6DFBruj5FYHN7DzVavRd7LfcsQk12SZzq9m
-         h1Iya+1mLrbX8DxarjNyMdsMFriVUaaJmsZJMZGMfNjpWyaxiVeMcoXpWY638UjfDS
-         r9jy5+zsrPFQLCp6fMbQSTQYKjvhDOXW4YHgCJbQ=
+        s=default; t=1602436327;
+        bh=ub/quG4quutxLNFN4hsKbiPh4RVFdcfrM76BxqCiyVY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=EgnbAd62YulB5EJh2jXpH5x9kxckWes6TPyvFZ67EQ1rRelSjTU2oHGnZf5/aDiTG
+         t4pURJvyeqc2DkWz8AL4x47dYe7myvgpVnyGD9H+Ac6sBEgJKWW7R6b6NcSJztwtP0
+         M+eTzfjl7AzqEbfXuDN/zzuob2Sf0BL3pNvX6rgI=
+Date:   Sun, 11 Oct 2020 18:11:58 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Manivannan Sadhasivam <manivannanece23@gmail.com>
-Subject: [PATCH 29/29] dt-bindings:iio:temperature:ti,tmp07 yaml conversion
-Date:   Sun, 11 Oct 2020 18:07:49 +0100
-Message-Id: <20201011170749.243680-30-jic23@kernel.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201011170749.243680-1-jic23@kernel.org>
-References: <20201011170749.243680-1-jic23@kernel.org>
+To:     Julia Lawall <julia.lawall@inria.fr>
+Cc:     Deepak R Varma <mh12gx2825@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com
+Subject: Re: [Outreachy kernel] [PATCH] staging: iio: adis16240: add blank
+ line before struct definition
+Message-ID: <20201011181158.7541d290@archlinux>
+In-Reply-To: <alpine.DEB.2.22.394.2010111303540.2716@hadrien>
+References: <20201011104800.GA29412@ubuntu204>
+        <alpine.DEB.2.22.394.2010111303540.2716@hadrien>
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Sun, 11 Oct 2020 13:06:06 +0200 (CEST)
+Julia Lawall <julia.lawall@inria.fr> wrote:
 
-Simple conversion from txt to yaml.
+> On Sun, 11 Oct 2020, Deepak R Varma wrote:
+> 
+> > Add a blank line before starting structure definition as per coding
+> > style guidelines. Issue reported by checkpatch script.
+> >
+> > Signed-off-by: Deepak R Varma <mh12gx2825@gmail.com>  
+> 
+> Acked-by: Julia Lawall <julia.lawall@inria.fr>
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Manivannan Sadhasivam <manivannanece23@gmail.com>
----
- .../bindings/iio/temperature/ti,tmp007.yaml   | 57 +++++++++++++++++++
- .../bindings/iio/temperature/tmp007.txt       | 33 -----------
- 2 files changed, 57 insertions(+), 33 deletions(-)
+Hi Deepak / Julia.
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp007.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp007.yaml
-new file mode 100644
-index 000000000000..3c2b7189fa2e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp007.yaml
-@@ -0,0 +1,57 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/temperature/ti,tmp007.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: IR thermopile sensor with integrated math engine
-+
-+maintainers:
-+  - Manivannan Sadhasivam <manivannanece23@gmail.com>
-+
-+description: |
-+  http://www.ti.com/lit/ds/symlink/tmp007.pdf
-+
-+properties:
-+  compatible:
-+    const: ti,tmp007
-+
-+  reg:
-+    description: |
-+      The I2C address of the sensor (changeable via ADR pins)
-+      ------------------------------
-+      |ADR1 | ADR0 | Device Address|
-+      ------------------------------
-+         0      0        0x40
-+         0      1        0x41
-+         0     SDA       0x42
-+         0     SCL       0x43
-+         1      0        0x44
-+         1      1        0x45
-+         1     SDA       0x46
-+         1     SCL       0x47
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        temp-sensor@40 {
-+            compatible = "ti,tmp007";
-+            reg = <0x40>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <5 0x08>;
-+        };
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/iio/temperature/tmp007.txt b/Documentation/devicetree/bindings/iio/temperature/tmp007.txt
-deleted file mode 100644
-index da0af234a357..000000000000
---- a/Documentation/devicetree/bindings/iio/temperature/tmp007.txt
-+++ /dev/null
-@@ -1,33 +0,0 @@
--* TI TMP007 - IR thermopile sensor with integrated math engine
--
--Link to datasheet: http://www.ti.com/lit/ds/symlink/tmp007.pdf
--
--Required properties:
--
--  - compatible: should be "ti,tmp007"
--  - reg: the I2C address of the sensor (changeable via ADR pins)
--		------------------------------
--		|ADR1 | ADR0 | Device Address|
--		------------------------------
--		   0      0        0x40
--		   0	  1	   0x41
--		   0	 SDA       0x42
--		   0     SCL       0x43
--		   1      0        0x44
--		   1      1        0x45
--		   1	 SDA	   0x46
--		   1     SCL       0x47
--
--Optional properties:
--
--  - interrupts: interrupt mapping for GPIO IRQ (level active low)
--
--Example:
--
--tmp007@40 {
--        compatible = "ti,tmp007";
--        reg = <0x40>;
--	interrupt-parent = <&gpio0>;
--	interrupts = <5 0x08>;
--};
--
--- 
-2.28.0
+Applied to the togreg branch of iio.git.  Initially I'll be pushing that
+out as testing, so that various systems that run build tests can check
+we haven't missed anything.   Clearly they won't be finding anything in
+this particular patch, but there are other things in that branch that
+may be more problematic.
+
+Given timing wrt to the merge window, these won't go upstream until
+next cycle.  I will probably send Greg KH a pull request in a few
+weeks time (after rc1) including this patch.
+
+Thanks,
+
+Jonathan
+
+
+> 
+> > ---
+> >  drivers/staging/iio/accel/adis16240.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> >
+> > diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
+> > index 5064adce5f58..8d3afc6dc755 100644
+> > --- a/drivers/staging/iio/accel/adis16240.c
+> > +++ b/drivers/staging/iio/accel/adis16240.c
+> > @@ -426,6 +426,7 @@ static int adis16240_probe(struct spi_device *spi)
+> >
+> >  	return devm_iio_device_register(&spi->dev, indio_dev);
+> >  }
+> > +
+> >  static const struct of_device_id adis16240_of_match[] = {
+> >  	{ .compatible = "adi,adis16240" },
+> >  	{ },
+> > --
+> > 2.25.1
+> >
+> > --
+> > You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
+> > To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
+> > To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20201011104800.GA29412%40ubuntu204.
+> >  
 
