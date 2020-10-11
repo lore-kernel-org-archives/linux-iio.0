@@ -7,47 +7,47 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EDC7C433E7
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 16:33:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74DCEC43457
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F2F032223C
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 16:33:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 36BC42222F
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602433993;
-	bh=8k26N85go+1RefiHDXvAcyTtVA5cPAcUtJ+6mS7XSvU=;
+	s=default; t=1602436200;
+	bh=XHzi1sFg6y12KCom9UbucvKN76ES59BRfxnZN+0znmI=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=cRDqS52G9FzaJep5CQv0VIE+9ND9XUTezzfBJt3vfnhwyWJ+Vj1ZqgNgPSoP+b7GQ
-	 SzcneS+G87nwyba++oejk8+KrElA2ZcJwXM/Vtka3kkRwuOeF/I6oQ0ZhHJJ1ShI+x
-	 AFF9ZVs+MS/FOTiXjsh820a4ezCJ1JYPgTJA9e1E=
+	b=EyjhotMbwiR/pVuMVx+ZocvFb3s3lF+a47IKN32tRXEcCeHpoIO/GPic7ynOdYbjv
+	 7RY4FMImGacubYkHW2R7cbdw08q/R7W0cw1CdA4sXuVsQlEvADau6hpIynyPq9ATMl
+	 SK3pj/WTctt2vIUaE/2jaTlYlGQAFNpL/Qcj04ls=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388191AbgJKQdM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 11 Oct 2020 12:33:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38830 "EHLO mail.kernel.org"
+        id S1730247AbgJKRJ7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 11 Oct 2020 13:09:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51650 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2388091AbgJKQdM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Oct 2020 12:33:12 -0400
+        id S1729634AbgJKRJ7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Oct 2020 13:09:59 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9E779221FF;
-        Sun, 11 Oct 2020 16:33:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 498142222C;
+        Sun, 11 Oct 2020 17:09:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602433991;
-        bh=8k26N85go+1RefiHDXvAcyTtVA5cPAcUtJ+6mS7XSvU=;
+        s=default; t=1602436199;
+        bh=XHzi1sFg6y12KCom9UbucvKN76ES59BRfxnZN+0znmI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JngxnZ8zAH6j6lZxFR8R2okZGPeees8eztoHP3LbB9uLtkNbR1PIeMxq0dkAb6u4J
-         tf6YkQe7118HICl68cGza574VbGC6ymjXGj8+9HhVl9A6TIKa9/GfSVq/r1dEHsqHW
-         9QYzzHB+wRH2Nn8m3cAqEGNaEBLKjHZXjZ6xmj5k=
+        b=Xgt9EaJA1TogeG7LufF0R1+uV+waCfNj7eZzpo09ptS64djpTbv7HWCYEVO8OdpcI
+         NS54jX80tcbskweng2O9KAf9GuqHUGTIzKNHasKoZDD2QHH6vcPeArb0f2B5qWRkLG
+         GS6i27x3VhICASKVLpJZdMtcTSCDaCwn707QGQP4=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Peter Rosin <peda@axentia.se>
-Subject: [PATCH 2/2] dt-bindings:iio:dac:dpot-dac: yaml conversion.
-Date:   Sun, 11 Oct 2020 17:30:31 +0100
-Message-Id: <20201011163031.240708-3-jic23@kernel.org>
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH 01/29] dt-bindings:iio:humidity:hdc100x Drop separate doc + add to trivial-devices
+Date:   Sun, 11 Oct 2020 18:07:21 +0100
+Message-Id: <20201011170749.243680-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201011163031.240708-1-jic23@kernel.org>
-References: <20201011163031.240708-1-jic23@kernel.org>
+In-Reply-To: <20201011170749.243680-1-jic23@kernel.org>
+References: <20201011170749.243680-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -56,138 +56,60 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Txt to yaml format conversion.  I dropped the example section
-describind the measurement ADC, as that isn't strictly part
-of this binding. Uses a reference to the new iio-consumers.yaml
-binding.
+Very simple binding for this i2c device with no properties beyond
+reg and compatible.  Hence doesn't need it's own document.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Peter Rosin <peda@axentia.se>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- .../devicetree/bindings/iio/dac/dpot-dac.txt  | 41 ------------
- .../devicetree/bindings/iio/dac/dpot-dac.yaml | 67 +++++++++++++++++++
- 2 files changed, 67 insertions(+), 41 deletions(-)
+ .../bindings/iio/humidity/hdc100x.txt           | 17 -----------------
+ .../devicetree/bindings/trivial-devices.yaml    | 10 ++++++++++
+ 2 files changed, 10 insertions(+), 17 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+diff --git a/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt b/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
 deleted file mode 100644
-index fdf47a01bfef..000000000000
---- a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+index c52333bdfd19..000000000000
+--- a/Documentation/devicetree/bindings/iio/humidity/hdc100x.txt
 +++ /dev/null
-@@ -1,41 +0,0 @@
--Bindings for DAC emulation using a digital potentiometer
--
--It is assumed that the dpot is used as a voltage divider between the
--current dpot wiper setting and the maximum resistance of the dpot. The
--divided voltage is provided by a vref regulator.
--
--                  .------.
--   .-----------.  |      |
--   | vref      |--'    .---.
--   | regulator |--.    |   |
--   '-----------'  |    | d |
--                  |    | p |
--                  |    | o |  wiper
--                  |    | t |<---------+
--                  |    |   |
--                  |    '---'       dac output voltage
--                  |      |
--                  '------+------------+
+@@ -1,17 +0,0 @@
+-* HDC100x temperature + humidity sensors
 -
 -Required properties:
--- compatible: Should be "dpot-dac"
--- vref-supply: The regulator supplying the voltage divider.
--- io-channels: Channel node of the dpot to be used for the voltage division.
--- io-channel-names: Should be "dpot".
+-  - compatible: Should contain one of the following:
+-	ti,hdc1000
+-	ti,hdc1008
+-	ti,hdc1010
+-	ti,hdc1050
+-	ti,hdc1080
+-  - reg: i2c address of the sensor
 -
 -Example:
 -
--	&i2c {
--		dpot: mcp4651-503@28 {
--			compatible = "microchip,mcp4651-503";
--			reg = <0x28>;
--			#io-channel-cells = <1>;
--		};
--	};
--
--	dac {
--		compatible = "dpot-dac";
--		vref-supply = <&reg_3v3>;
--		io-channels = <&dpot 0>;
--		io-channel-names = "dpot";
--	};
-diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.yaml b/Documentation/devicetree/bindings/iio/dac/dpot-dac.yaml
-new file mode 100644
-index 000000000000..b4a8073a3a3c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/dpot-dac.yaml
-@@ -0,0 +1,67 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/dac/dpot-dac.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: DAC emulation using a digital potentiometer
-+
-+maintainers:
-+  - Peter Rosin <peda@axentia.se>
-+
-+description: |
-+  It is assumed that the dpot is used as a voltage divider between the
-+  current dpot wiper setting and the maximum resistance of the dpot. The
-+  divided voltage is provided by a vref regulator.
-+
-+                  .------.
-+   .-----------.  |      |
-+   | vref      |--'    .---.
-+   | regulator |--.    |   |
-+   '-----------'  |    | d |
-+                  |    | p |
-+                  |    | o |  wiper
-+                  |    | t |<---------+
-+                  |    |   |
-+                  |    '---'       dac output voltage
-+                  |      |
-+                  '------+------------+
-+
-+allOf:
-+  - $ref: "../iio-consumer.yaml#"
-+
-+properties:
-+  compatible:
-+    const: dpot-dac
-+
-+  reg:
-+    maxItems: 1
-+
-+  vref-supply:
-+    description: Regulator supplying the voltage divider.
-+
-+  io-channels:
-+    maxItems: 1
-+    description: |
-+      Channel node of the dpot to be used for the voltage division.
-+
-+  io-channel-names:
-+    const: dpot
-+
-+required:
-+  - compatible
-+  - vref-supply
-+  - io-channels
-+  - io-channel-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    dac {
-+        compatible = "dpot-dac";
-+        vref-supply = <&reg_3v3>;
-+        io-channels = <&dpot 0>;
-+        io-channel-names = "dpot";
-+    };
-+...
+-hdc100x@40 {
+-	compatible = "ti,hdc1000";
+-	reg = <0x40>;
+-};
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index 25cfcc904240..9f8531d4d33e 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -352,6 +352,16 @@ properties:
+           - ti,ads7830
+             # Temperature Monitoring and Fan Control
+           - ti,amc6821
++            # Temperature and humidity sensor with i2c interface
++          - ti,hdc1000
++            # Temperature and humidity sensor with i2c interface
++          - ti,hdc1008
++            # Temperature and humidity sensor with i2c interface
++          - ti,hdc1010
++            # Temperature and humidity sensor with i2c interface
++          - ti,hdc1050
++            # Temperature and humidity sensor with i2c interface
++          - ti,hdc1080
+             # Temperature sensor with 2-wire interface
+           - ti,lm73
+             # Temperature sensor with integrated fan control
 -- 
 2.28.0
 
