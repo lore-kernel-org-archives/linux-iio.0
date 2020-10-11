@@ -4,47 +4,47 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7AEEC433E7
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA69C43457
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B30842222E
-	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C867D22248
+	for <linux-iio@archiver.kernel.org>; Sun, 11 Oct 2020 17:10:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1602436203;
-	bh=Htn+nY7QWDzs55T0k8wglXuov6jNs+lFjdvt/sun/PA=;
+	s=default; t=1602436204;
+	bh=oaRRkSSGkLvjYvC7py+YBMLCWtUP45LKWRnWSsfQlPg=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=LQQ5QEPsHg1wKedEIPZzkGGvgct3ifsUpSS6Tl0xPRfOcN7a/FSGZ0ZfsPozhLqqI
-	 SYzTgVrHjXGhQ3LDfmC2g2Ts/6YRWTnE2Jl0p+TKOuc/zZ1yZD1N+bSYU+rVaA3b1t
-	 nO6k6w8qghYaxA24WoXoR0Pwd/wSaYe28lW/x6Oo=
+	b=nyaT67kQWrnEfqN2IglMP0jzHkQsa11HcQ/fNiCv7sMEYN7u5rFuA1niLsvmLou93
+	 P6ZOcBsN3W4wDOErEv3WE4OOyExu8Ic8Am1A+unML7jxoVM7HxDbTaQ1K4DA+PBOoB
+	 MMrOncyF3GgfYwJb3Ua1MHAgMnjQDKhSaJNlcTlE=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730267AbgJKRKD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 11 Oct 2020 13:10:03 -0400
-Received: from mail.kernel.org ([198.145.29.99]:51706 "EHLO mail.kernel.org"
+        id S1730268AbgJKRKE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 11 Oct 2020 13:10:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51732 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729634AbgJKRKD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Oct 2020 13:10:03 -0400
+        id S1729634AbgJKRKE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Oct 2020 13:10:04 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 558A62222F;
-        Sun, 11 Oct 2020 17:10:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DC8C322247;
+        Sun, 11 Oct 2020 17:10:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1602436202;
-        bh=Htn+nY7QWDzs55T0k8wglXuov6jNs+lFjdvt/sun/PA=;
+        s=default; t=1602436203;
+        bh=oaRRkSSGkLvjYvC7py+YBMLCWtUP45LKWRnWSsfQlPg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ups1c6evPnVgVuT9ncv0sS6Vtda+trZkefoGoU/cS3SYFUp9KkgP3BS1YTROdiDU9
-         1s6C6Fa5RL/PB20k4/uqvtG8TLFnC/QWO+vvvVdMcL2tWSOjBknorjraZPXpWoCNP1
-         jmJHqzoUthY5qnOaDn9WsHU258jjFK3A83uluchk=
+        b=kUM0TYpZCM8RHXIuHU2/jY4v5hhUsISNqTQI1N2MKl9zmSGy1TrXT1UPghvgOWxr3
+         W/+wRFjSFlpwL/QHYYt/rvSyJ8ke3KCabYrzFienXakCgRx1PRhjaRKhneA9elYxYs
+         nqZYeSlXFXJAyt80y+RBI5EYOYlAkzkv6Ak5cnDA=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH 03/29] dt-bindings:iio:humidity:st,hts221 yaml conversion.
-Date:   Sun, 11 Oct 2020 18:07:23 +0100
-Message-Id: <20201011170749.243680-4-jic23@kernel.org>
+        Harald Geyer <harald@ccbib.org>
+Subject: [PATCH 04/29] dt-bindings:iio:humidity:dht11 yaml conversion
+Date:   Sun, 11 Oct 2020 18:07:24 +0100
+Message-Id: <20201011170749.243680-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201011170749.243680-1-jic23@kernel.org>
 References: <20201011170749.243680-1-jic23@kernel.org>
@@ -56,107 +56,86 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Straight forward conversion of this temperature and pressure sensor binding.
+The conversion is straight forward, but leaves an open question.
+The compatible for this device has never had a vendor. I suspect
+this because it is non-obvious who actually makes the module. It is
+resold by numerous vendors and it may be that there is no single vendor
+of the parts they are using.  If anyone has any more info on the
+vendor, please let me know and we can add a more informative
+compatible.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>
+Cc: Harald Geyer <harald@ccbib.org>
 ---
- .../bindings/iio/humidity/hts221.txt          | 30 -----------
- .../bindings/iio/humidity/st,hts221.yaml      | 52 +++++++++++++++++++
- 2 files changed, 52 insertions(+), 30 deletions(-)
+ .../bindings/iio/humidity/dht11.txt           | 14 -------
+ .../bindings/iio/humidity/dht11.yaml          | 41 +++++++++++++++++++
+ 2 files changed, 41 insertions(+), 14 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/humidity/hts221.txt b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
+diff --git a/Documentation/devicetree/bindings/iio/humidity/dht11.txt b/Documentation/devicetree/bindings/iio/humidity/dht11.txt
 deleted file mode 100644
-index 84d029372260..000000000000
---- a/Documentation/devicetree/bindings/iio/humidity/hts221.txt
+index ecc24c199fd6..000000000000
+--- a/Documentation/devicetree/bindings/iio/humidity/dht11.txt
 +++ /dev/null
-@@ -1,30 +0,0 @@
--* HTS221 STM humidity + temperature sensor
+@@ -1,14 +0,0 @@
+-* DHT11 humidity/temperature sensor (and compatibles like DHT22)
 -
 -Required properties:
--- compatible: should be "st,hts221"
--- reg: i2c address of the sensor / spi cs line
--
--Optional properties:
--- drive-open-drain: the interrupt/data ready line will be configured
--  as open drain, which is useful if several sensors share the same
--  interrupt line. This is a boolean property.
--  If the requested interrupt is configured as IRQ_TYPE_LEVEL_HIGH or
--  IRQ_TYPE_EDGE_RISING a pull-down resistor is needed to drive the line
--  when it is not active, whereas a pull-up one is needed when interrupt
--  line is configured as IRQ_TYPE_LEVEL_LOW or IRQ_TYPE_EDGE_FALLING.
--  Refer to pinctrl/pinctrl-bindings.txt for the property description.
--- interrupts: interrupt mapping for IRQ. It should be configured with
--  flags IRQ_TYPE_LEVEL_HIGH, IRQ_TYPE_EDGE_RISING, IRQ_TYPE_LEVEL_LOW or
--  IRQ_TYPE_EDGE_FALLING.
--
--  Refer to interrupt-controller/interrupts.txt for generic interrupt
--  client node bindings.
+-  - compatible: Should be "dht11"
+-  - gpios: Should specify the GPIO connected to the sensor's data
+-    line, see "gpios property" in
+-    Documentation/devicetree/bindings/gpio/gpio.txt.
 -
 -Example:
 -
--hts221@5f {
--	compatible = "st,hts221";
--	reg = <0x5f>;
--	interrupt-parent = <&gpio0>;
--	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/humidity/st,hts221.yaml b/Documentation/devicetree/bindings/iio/humidity/st,hts221.yaml
+-humidity_sensor {
+-	compatible = "dht11";
+-	gpios = <&gpio0 6 0>;
+-}
+diff --git a/Documentation/devicetree/bindings/iio/humidity/dht11.yaml b/Documentation/devicetree/bindings/iio/humidity/dht11.yaml
 new file mode 100644
-index 000000000000..396451c26728
+index 000000000000..38ec4c302760
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/humidity/st,hts221.yaml
-@@ -0,0 +1,52 @@
++++ b/Documentation/devicetree/bindings/iio/humidity/dht11.yaml
+@@ -0,0 +1,41 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/humidity/st,hts221.yaml#
++$id: http://devicetree.org/schemas/iio/humidity/dht11.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: HTS221 STM humidity + temperature sensor
++title: DHT11 humidity + temperature sensor
 +
 +maintainers:
-+  - Lorenzo Bianconi <lorenzo@kernel.org>
++  - Harald Geyer <harald@ccbib.org>
 +
 +description: |
-+   Humidity and temperature sensor with I2C interface and data ready
-+   interrupt.
++   A simple and low cost module providing a non standard single GPIO based
++   interface.  Whilst commonly available it is not easy to establish if there
++   is a single manufacturer for this part.
 +
 +properties:
 +  compatible:
-+    const: st,hts221
++    const: dht11
 +
 +  reg:
 +    maxItems: 1
 +
-+  drive-open-drain:
-+    type: boolean
-+    description:
-+      The interrupt/data ready line will be configured as open drain, which
-+      is useful if several sensors share the same interrupt line.
-+
-+  interrupts:
++  gpios:
 +    maxItems: 1
++    description:
++      Single, interrupt capable, GPIO used to communicate with the device.
 +
 +required:
 +  - compatible
-+  - reg
++  - gpios
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        hts221@5f {
-+            compatible = "st,hts221";
-+            reg = <0x5f>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-+        };
++    humidity_sensor {
++        compatible = "dht11";
++        gpios = <&gpio0 6 0>;
 +    };
 +...
 -- 
