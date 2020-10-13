@@ -7,20 +7,20 @@ X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58191C433DF
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Oct 2020 10:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA9D1C433DF
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Oct 2020 10:33:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1FADC20870
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Oct 2020 10:33:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7875E20878
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Oct 2020 10:33:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387947AbgJMKdO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Oct 2020 06:33:14 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:40386 "EHLO
+        id S1729468AbgJMKdS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 13 Oct 2020 06:33:18 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:40392 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388048AbgJMKdM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Oct 2020 06:33:12 -0400
+        with ESMTP id S2388026AbgJMKdR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Oct 2020 06:33:17 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 09DAUg2f010593;
+        by twspam01.aspeedtech.com with ESMTP id 09DAUguY010592;
         Tue, 13 Oct 2020 18:30:42 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from localhost.localdomain (192.168.10.9) by TWMBX02.aspeed.com
@@ -35,9 +35,9 @@ To:     <jic23@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [PATCH 3/3] iio: adc: aspeed: Setting ref_voltage in probe
-Date:   Tue, 13 Oct 2020 18:32:45 +0800
-Message-ID: <20201013103245.16723-4-billy_tsai@aspeedtech.com>
+Subject: [PATCH 1/3] iio: adc: aspeed: Orgnaize and add the define of adc
+Date:   Tue, 13 Oct 2020 18:32:43 +0800
+Message-ID: <20201013103245.16723-2-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20201013103245.16723-1-billy_tsai@aspeedtech.com>
 References: <20201013103245.16723-1-billy_tsai@aspeedtech.com>
@@ -47,52 +47,85 @@ X-Originating-IP: [192.168.10.9]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 09DAUg2f010593
+X-MAIL: twspam01.aspeedtech.com 09DAUguY010592
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-At ast2600 ref_voltage becomes configurable and this property is board
-dependency.
+This patch organizes the define of adc to multiple partitions
+and adds the new bit field define for ast2600 driver.
 
 Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 ---
- .../devicetree/bindings/iio/adc/aspeed_adc.txt   | 16 +++++++++++++++-
- 1 file changed, 15 insertions(+), 1 deletion(-)
+ drivers/iio/adc/aspeed_adc.c | 42 ++++++++++++++++++++++++++++++++----
+ 1 file changed, 38 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-index 034fc2ba100e..0ba1980c4e06 100644
---- a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-@@ -3,8 +3,11 @@ Aspeed ADC
- This device is a 10-bit converter for 16 voltage channels.  All inputs are
- single ended.
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index 1e5375235cfe..ae400c4d6d40 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -21,23 +21,57 @@
+ #include <linux/iio/driver.h>
+ #include <linux/iopoll.h>
  
-+At ast2600, this device split into two individual IPs and each contains 8 voltage channels.
++/**********************************************************
++ * ADC feature define
++ *********************************************************/
+ #define ASPEED_RESOLUTION_BITS		10
+ #define ASPEED_CLOCKS_PER_SAMPLE	12
+ 
++/**********************************************************
++ * ADC HW register offset define
++ *********************************************************/
+ #define ASPEED_REG_ENGINE_CONTROL	0x00
+ #define ASPEED_REG_INTERRUPT_CONTROL	0x04
+ #define ASPEED_REG_VGA_DETECT_CONTROL	0x08
+ #define ASPEED_REG_CLOCK_CONTROL	0x0C
++#define ASPEED_REG_COMPENSATION_TRIM	0xC4
+ #define ASPEED_REG_MAX			0xC0
+ 
++/**********************************************************
++ * ADC register Bit field
++ *********************************************************/
++/*ENGINE_CONTROL */
++/* [0] */
++#define ASPEED_ENGINE_ENABLE		BIT(0)
++/* [3:1] */
+ #define ASPEED_OPERATION_MODE_POWER_DOWN	(0x0 << 1)
+ #define ASPEED_OPERATION_MODE_STANDBY		(0x1 << 1)
+ #define ASPEED_OPERATION_MODE_NORMAL		(0x7 << 1)
+-
+-#define ASPEED_ENGINE_ENABLE		BIT(0)
+-
++/* [4] */
++#define ASPEED_CTRL_COMPENSATION	BIT(4)
++/* [5] */
++#define ASPEED_AUTOPENSATING		BIT(5)
++/* [7:6] */
++#define ASPEED_REF_VOLTAGE_2500mV	(0 << 6)
++#define ASPEED_REF_VOLTAGE_1200mV	(1 << 6)
++#define ASPEED_REF_VOLTAGE_EXT_HIGH	(2 << 6)
++#define ASPEED_REF_VOLTAGE_EXT_LOW	(3 << 6)
++#define ASPEED_BATTERY_SENSING_VOL_DIVIDE_2_3	(0 << 6)
++#define ASPEED_BATTERY_SENSING_VOL_DIVIDE_1_3	(1 << 6)
++/* [8] */
+ #define ASPEED_ADC_CTRL_INIT_RDY	BIT(8)
+-
++/* [12] */
++#define ASPEED_ADC_CH7_VOLTAGE_NORMAL	(0 << 12)
++#define ASPEED_ADC_CH7_VOLTAGE_BATTERY	(1 << 12)
++/* [13] */
++#define ASPEED_ADC_EN_BATTERY_SENSING	BIT(13)
++/* [31:16] */
++#define ASPEED_ADC_CTRL_CH_EN(n)	(1 << (16 + n))
++#define ASPEED_ADC_CTRL_CH_EN_ALL	GENMASK(31, 16)
 +
-+Chip level dtsi:
- Required properties:
--- compatible: Should be "aspeed,ast2400-adc" or "aspeed,ast2500-adc"
-+- compatible: Should be "aspeed,ast2400-adc" or "aspeed,ast2500-adc" or "aspeed,ast2600-adc"
- - reg: memory window mapping address and length
- - clocks: Input clock used to derive the sample clock. Expected to be the
-           SoC's APB clock.
-@@ -20,3 +23,14 @@ Example:
- 		resets = <&syscon ASPEED_RESET_ADC>;
- 		#io-channel-cells = <1>;
- 	};
-+
-+Board level dts:
-+Required properties:
-+- ref_voltage: (ast2600 only)
-+	- Reference voltage in millivolts for the conversions.
-+	- The range of value is 900 to 2700 mv.
-+
-+Example:
-+&adc0 {
-+	ref_voltage = <2500>;
-+};
-\ No newline at end of file
++/**********************************************************
++ * Software setting
++ *********************************************************/
+ #define ASPEED_ADC_INIT_POLLING_TIME	500
+ #define ASPEED_ADC_INIT_TIMEOUT		500000
+ 
 -- 
 2.17.1
 
