@@ -1,169 +1,132 @@
-Return-Path: <SRS0=0rsd=DW=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=ixCB=DX=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9055C433E7
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Oct 2020 08:49:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A88FC433E7
+	for <linux-iio@archiver.kernel.org>; Fri, 16 Oct 2020 15:09:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5EA9D218AC
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Oct 2020 08:49:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1717820866
+	for <linux-iio@archiver.kernel.org>; Fri, 16 Oct 2020 15:09:00 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="c+4sNBaG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388337AbgJOIt1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 15 Oct 2020 04:49:27 -0400
-Received: from mail-lf1-f65.google.com ([209.85.167.65]:41753 "EHLO
-        mail-lf1-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2388282AbgJOIt1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Oct 2020 04:49:27 -0400
-Received: by mail-lf1-f65.google.com with SMTP id d24so2649916lfa.8
-        for <linux-iio@vger.kernel.org>; Thu, 15 Oct 2020 01:49:25 -0700 (PDT)
+        id S2407458AbgJPPJA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 16 Oct 2020 11:09:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60458 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2407453AbgJPPI7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 16 Oct 2020 11:08:59 -0400
+Received: from mail-pg1-x542.google.com (mail-pg1-x542.google.com [IPv6:2607:f8b0:4864:20::542])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4C67C061755;
+        Fri, 16 Oct 2020 08:08:59 -0700 (PDT)
+Received: by mail-pg1-x542.google.com with SMTP id h6so1629083pgk.4;
+        Fri, 16 Oct 2020 08:08:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=a+hPhVaR5GY+I1MleoS6eNBmSlE2W0O1gZm+rdUy6VU=;
+        b=c+4sNBaGoiaDiRNFEdp0bwVWGYXXUMH965l+YcIpbMy8wy+slJJuqh516o/Uvq/vpS
+         zTxHVTvOpefYrwUk2jR1ObuypvVckXAM/zAJA3SmDBFWFBd8Wp7xOMvTRcglC4tPGSEm
+         ZYI2ZRKHcE4l17rSmwzZSxx9Ops4tqJB/Z+62R1BnslNTuCkoQyG2GumWstmFnJgY1/w
+         SQkYI76RiMmm0rCq//R8nerKrurXDTfke4SobxpzJ8kdm4UhSUKpwo6ghkU3+bWMnxYh
+         i/RGhDwRbbOL8YyjUZDEvLKZJtkjg1TBZGjRSJjMXrjGrL0FZBJ48DeHKtdxDGTI4vTT
+         uYXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=/Ya02bxBzqoQ9rFqplunA3rH5eOk1H7nY6BN2PgHyAU=;
-        b=h61Vo2Ijd5R0mUlbmjxYE96gS7RuXPe8mCRl4yXKCPxTleGwv1FeKj9kpnAM7Xk8Se
-         zBoUDyPC6zAu8qfHcUqSeqQYbBxVoAHTxhyq8TQX2xnkln06yWtWT1q+Lgz/lZDnKecX
-         CsYIKis4TJNz3Q8cgk9gXPnhxEU7dw9D0eFr7ZY3gjoLIk1CvxhZD23OTEU0jPqW/mBH
-         Roh+s2oJ+neUuSYjPH4j1D5vozNP7gajrDBQNKDM9w8B3bbapBhq+3N12JYTNlozCHAk
-         SWv8a7SnRi1afZEc3hypjhqMN+CyIx9dkwifNe/MhxxMS70xgcDAf8NKih9k0wC5HfxM
-         TS+w==
-X-Gm-Message-State: AOAM5326/8fqjS7ZLuM6qYQX30UKEUBzbXBYFYCzJ3zLs0TimRzTbxv5
-        Py6Qp2rPJxTq8WsuFWJmEeKJTlqa2K5uvXrh1Ag=
-X-Google-Smtp-Source: ABdhPJy3TtZ+NCVN1bqxWgf8oMYwjZa/a5nKEsSXgiBH5/8qUEuPB9W7/8PZqjNTS3VjbN7FjDytQRYCNafhJN4SLvQ=
-X-Received: by 2002:a19:c6d6:: with SMTP id w205mr802569lff.94.1602751765027;
- Thu, 15 Oct 2020 01:49:25 -0700 (PDT)
+        bh=a+hPhVaR5GY+I1MleoS6eNBmSlE2W0O1gZm+rdUy6VU=;
+        b=AqoJ8pVNhBJrkWmhSpAKj8EXoMq9IyEVErQ4HnE6/yzcHdPrEC+HelsnQZVw20bwdT
+         2tx/pgpFfmIdWEwK+PNbhX15rY65DOrx1MBa8n9fJ04Ag718HQ65WJgZWVtkQiDGhBKb
+         Xbe0tmBmo+JE+tjMp39O3uQ4zwDVjmwjjizhuqNc9vaRVk8w84kt3KK80+7LhPw78Jkf
+         2ZKue4qRMqHYIXwH9dVHxzYGFlxKctmTE/w2+OUaV2nAwiXqYEXGnxZ2d8p7yZvx+Ib7
+         +dc71JVk5+pI4tw+8ChSm1Z+eBZygmrVfkAUsOwKmr9JJdaUn+kwWniOHEe3xHvKC1l/
+         5kMQ==
+X-Gm-Message-State: AOAM531sgPNklNIZnX7YX7FFxJyHYM9Q/zSnXwJrmsn31uGJPyywtDe8
+        sYPkRLs99Bc31GJMotDv0Lj4XRaAU0oyNWQ81Q4=
+X-Google-Smtp-Source: ABdhPJxH69gtM7S4sKUktYCoPE8j5Os4acTrvawLtfWPvOYEo0j/tKYuikKH0LqtRFJP/tnn1Jn7/hC17nXTyFrjiW8=
+X-Received: by 2002:a05:6a00:22c2:b029:156:543:7c1d with SMTP id
+ f2-20020a056a0022c2b029015605437c1dmr4012698pfj.40.1602860939282; Fri, 16 Oct
+ 2020 08:08:59 -0700 (PDT)
 MIME-Version: 1.0
-References: <20201011170749.243680-1-jic23@kernel.org> <20201011170749.243680-16-jic23@kernel.org>
-In-Reply-To: <20201011170749.243680-16-jic23@kernel.org>
-From:   Ricardo Ribalda Delgado <ricardo@ribalda.com>
-Date:   Thu, 15 Oct 2020 10:49:08 +0200
-Message-ID: <CAPybu_2H--T+54B70mBDu45VxK11Qyp7UnAAHTKtv6MoMemaLw@mail.gmail.com>
-Subject: Re: [PATCH 15/29] dt-bindings:iio:dac:ti,dac7612 yaml conversion
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <20201011160748.4a47b889@archlinux> <1602440546-2376-1-git-send-email-LinoSanfilippo@gmx.de>
+In-Reply-To: <1602440546-2376-1-git-send-email-LinoSanfilippo@gmx.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 16 Oct 2020 18:09:48 +0300
+Message-ID: <CAHp75VfQ=fFn_r43VPV0uPCkozS2K=VQsuSEyj0mF+7QVsFQuA@mail.gmail.com>
+Subject: Re: [PATCH v2] iio:core: In map_array_register() cleanup in case of error
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Signed-off-by: Ricardo Ribalda <ribalda@kernel.org>
+On Sun, Oct 11, 2020 at 9:24 PM Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
+>
+> In function map_array_register() properly rewind in case of error.
+> Furthermore remove the now superfluous initialization of "ret" with 0.
 
-On Sun, Oct 11, 2020 at 7:10 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>  int iio_map_array_register(struct iio_dev *indio_dev, struct iio_map *maps)
+>  {
+> -       int i = 0, ret = 0;
+> +       int i = 0, ret;
+>         struct iio_map_internal *mapi;
 >
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> Simple conversion from txt to yaml.  No significant adjustments.
->
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Ricardo Ribalda Delgado <ricardo@ribalda.com>
-> ---
->  .../bindings/iio/dac/ti,dac7612.txt           | 28 ----------
->  .../bindings/iio/dac/ti,dac7612.yaml          | 53 +++++++++++++++++++
->  2 files changed, 53 insertions(+), 28 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
-> deleted file mode 100644
-> index 17af395b99d9..000000000000
-> --- a/Documentation/devicetree/bindings/iio/dac/ti,dac7612.txt
-> +++ /dev/null
-> @@ -1,28 +0,0 @@
-> -* Texas Instruments Dual, 12-Bit Serial Input Digital-to-Analog Converter
-> -
-> -The DAC7612 is a dual, 12-bit digital-to-analog converter (DAC) with guaranteed
-> -12-bit monotonicity performance over the industrial temperature range.
-> -Is is programmable through an SPI interface.
-> -
-> -The internal DACs are loaded when the LOADDACS pin is pulled down.
-> -
-> -https://www.ti.com/lit/ds/sbas106/sbas106.pdf
-> -
-> -Required Properties:
-> -- compatible: Should be one of:
-> -               "ti,dac7612"
-> -               "ti,dac7612u"
-> -               "ti,dac7612ub"
-> -- reg: Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
-> -
-> -Optional Properties:
-> -- ti,loaddacs-gpios: GPIO descriptor for the LOADDACS pin.
-> -- spi-*: Definition as per Documentation/devicetree/bindings/spi/spi-bus.txt
-> -
-> -Example:
-> -
-> -       dac@1 {
-> -               compatible = "ti,dac7612";
-> -               reg = <0x1>;
-> -               ti,loaddacs-gpios = <&msmgpio 25 GPIO_ACTIVE_LOW>;
-> -       };
-> diff --git a/Documentation/devicetree/bindings/iio/dac/ti,dac7612.yaml b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.yaml
-> new file mode 100644
-> index 000000000000..d172b142f6ed
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/dac/ti,dac7612.yaml
-> @@ -0,0 +1,53 @@
-> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/dac/ti,dac7612.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>         if (maps == NULL)
+> @@ -44,7 +44,18 @@ int iio_map_array_register(struct iio_dev *indio_dev, struct iio_map *maps)
+>                 list_add_tail(&mapi->l, &iio_map_list);
+>                 i++;
+>         }
+> +       mutex_unlock(&iio_map_list_lock);
 > +
-> +title: Texas Instruments DAC7612 family of DACs
+> +       return 0;
 > +
-> +description:
-> +  The DAC7612 is a dual, 12-bit digital-to-analog converter (DAC) with
-> +  guaranteed 12-bit monotonicity performance over the industrial temperature
-> +  range. Is is programmable through an SPI interface.
-> +
-> +maintainers:
-> +  - Ricardo Ribalda Delgado <ricardo@ribalda.com>
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,dac7612
-> +      - ti,dac7612u
-> +      - ti,dac7612ub
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  ti,loaddacs-gpios:
-> +    description:
-> +      DACs are loaded when the pin connected to this GPIO is pulled low.
-> +    maxItems: 1
-> +
-> +  spi-max-frequency: true
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/gpio/gpio.h>
-> +    spi {
-> +        #address-cells = <1>;
-> +        #size-cells = <0>;
-> +
-> +        dac@1 {
-> +            compatible = "ti,dac7612";
-> +            reg = <0x1>;
-> +            ti,loaddacs-gpios = <&msmgpio 25 GPIO_ACTIVE_LOW>;
-> +        };
-> +    };
-> +...
-> --
-> 2.28.0
->
+>  error_ret:
 
+Wait a bit.
+First of all we linked all successfully added items to the list.
+From this we have two ways to go:
+ - leave with as many maps as we registered
+ - clean up and bail out
+
+I dunno which one would play better in IIO, but you seem to go with
+the latter one.
+
+> +       /* undo */
+> +       while (i--) {
+> +               mapi = list_last_entry(&iio_map_list, struct iio_map_internal,
+> +                                      l);
+> +               list_del(&mapi->l);
+> +               kfree(mapi);
+> +       }
+
+We have iio_map_array_unregister(). Why not use it?
+
+>         mutex_unlock(&iio_map_list_lock);
+
+I would rather drop a label with replacement goto -> break inside the
+loop and call the following
+
+
+        mutex_unlock(&iio_map_list_lock);
+if (ret)
+  iio_map_array_unregister();
+return ret;
+
+Sounds like only a few LOCs are needed.
 
 -- 
-Ricardo Ribalda
+With Best Regards,
+Andy Shevchenko
