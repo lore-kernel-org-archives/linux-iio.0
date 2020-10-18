@@ -2,82 +2,95 @@ Return-Path: <SRS0=x94u=DZ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 222CBC433DF
-	for <linux-iio@archiver.kernel.org>; Sun, 18 Oct 2020 01:14:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A636C43467
+	for <linux-iio@archiver.kernel.org>; Sun, 18 Oct 2020 01:14:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AC59120E65
-	for <linux-iio@archiver.kernel.org>; Sun, 18 Oct 2020 01:14:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 004D520E65
+	for <linux-iio@archiver.kernel.org>; Sun, 18 Oct 2020 01:14:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="A/bUyM/L"
+	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="YSkGdx+i"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2440075AbgJRBOb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 17 Oct 2020 21:14:31 -0400
-Received: from mout.gmx.net ([212.227.15.15]:46929 "EHLO mout.gmx.net"
+        id S2440095AbgJRBOe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 17 Oct 2020 21:14:34 -0400
+Received: from mout.gmx.net ([212.227.15.18]:46069 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2440072AbgJRBOb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 17 Oct 2020 21:14:31 -0400
+        id S2440084AbgJRBOe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 17 Oct 2020 21:14:34 -0400
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1602983623;
-        bh=1OPnAzyG0UP63YieKjebVmqLGBRWiUnIlrUbQC4b4Xg=;
+        s=badeba3b8450; t=1602983624;
+        bh=LJP+KriKdGjpMcY1CtvW6omWMCmOlJNTjPQaEG7uDPE=;
         h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=A/bUyM/LQa6AqyW4GxjLeyB4LirSd5cIw6RZLhNlaDTULPu/mt7IrGxq7bbPsDilD
-         QwdZ3GPn7P0ymQ041i5mC9Z+3nYD7KAVPd2qGrXEP8oTKBz8Ve53Kizhd+ImU+KOAB
-         fXvH2MtYW/PFs63JHFsdN0Zh4Gyn265AEK7drsHE=
+        b=YSkGdx+ie1qdxT/9uFS7Srwj+B0qXhAsV1tftl1kJfYMsAnKV5X6T6GbSQzDMDB0O
+         2iU++AOA/ALKT451hJo3vESTni6nxkN4NcaFsr7ubrQDMRVvN6CzVCj3tzAcpM1h8q
+         A6as1ZY+mJghHY4z5PaV0y5gq18x8ER5YtEKBotw=
 X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
 Received: from Venus.fritz.box ([78.42.220.31]) by mail.gmx.com (mrgmx005
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1MFKGZ-1kehqw2w1Z-00Fl7i; Sun, 18
- Oct 2020 03:13:43 +0200
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1Mz9Un-1kFqKh1c5D-00wDl2; Sun, 18
+ Oct 2020 03:13:44 +0200
 From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
 To:     andy.shevchenko@gmail.com
 Cc:     jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio:core: In map_array_register() cleanup in case of error 
-Date:   Sun, 18 Oct 2020 03:11:54 +0200
-Message-Id: <1602983516-22913-1-git-send-email-LinoSanfilippo@gmx.de>
+        linux-kernel@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: [PATCH 2/2] iio:core: In iio_map_array_register() cleanup in case of error.
+Date:   Sun, 18 Oct 2020 03:11:56 +0200
+Message-Id: <1602983516-22913-3-git-send-email-LinoSanfilippo@gmx.de>
 X-Mailer: git-send-email 2.7.4
-In-Reply-To: <CAHp75VfQ=fFn_r43VPV0uPCkozS2K=VQsuSEyj0mF+7QVsFQuA@mail.gmail.com>
+In-Reply-To: <1602983516-22913-1-git-send-email-LinoSanfilippo@gmx.de>
 References: <CAHp75VfQ=fFn_r43VPV0uPCkozS2K=VQsuSEyj0mF+7QVsFQuA@mail.gmail.com>
+ <1602983516-22913-1-git-send-email-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: quoted-printable
-X-Provags-ID: V03:K1:UT979+DTW55HwB8+y4JN2u4i/kCPkrgJHnUCbza1Hg0hcGzVGYK
- BA0kVXAmkPpaUnpjeA7YdcspdCNDHn44cvi0siuRedFAIr/bvAIBYbuscsmKkEo5KsSxtj2
- lOXbU1MKlpWJ2kAl8tdJ99CPn7tv9nz4c84UMSGRS5XTeyEpe4LPD5SkrlcN2iHeKm6yulQ
- /AhbnFHgoMYinBLqpSa7w==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:RQp0Y63Rfgs=:+gOJBqOilWlqdqFI4z+fa+
- 4KMF4F4wkdJTHrLdnWPTQQv9e1WL0gNmAIqEJi4XRgHxIlf9mmXjw4FDnj00jpSGa29ZwYenE
- hCJuoiXJcNXbh65EIQO361a5Pw0TyJp+kmGNtUZeGXVYIADIaPQPBiGHYcO5Ev65ZxJeqpfaf
- iW0y4r7OqmL52KBzBaiVh+Kh7BM6nL5Cjaa7xmwzAAUnUiy12uYaasbvJTuCArx2sdyuGAt90
- GfJyUwrfXaP/e/DAyqXArw0U39x9LB7K929m/xrjn7cvVoWXVVo5oN038IFpWjP+LlQE6wnvL
- oIKNuLHMzY9agVltAeWr+9a6I85A+VCuq98fPS+mX28J9hifXYFN3CewDmvDo22+rP1SZo4Be
- GJn0tZ7v8LDJRXYPmy77WQr9kbz5nfJaDnEnxNyIFQRqgreBRV9XuvQ/Xh48Zv/sBdQ+2oPom
- yxtmvCU64GebokgJcCZVcIwg/hXYOnDpP5AlmdRaSAwp0aZ7NFxjkG3IaR7gm7B7ShMI+NVxr
- Fyo1zLiqIFN2Jh5XWWF1CvxouAcNkKA9+/FdRNgdzk2HRelHt8JzqzTA46UJiCT4BebCwc6DZ
- cSj5xFslws4wfC+UDQswGgUb/gmI8Yo77njzvVtPAPALShjmhHr6vRaWYXLIzJjQbT1Y7hq5e
- oGVnXkP1w/WBzs+XZi6TDuWUpS6UigsMEEFxTzUbSxFj84S6DdEyFpqS40f9jFRSkmBR/swiF
- n5vl3TqxaaGSbZhPEWgXYVkMXLgumN2dd8o/3ywu+nvEvoeDs7BKXazwG2nU1yQGO/4QXPIlr
- +/8F9ezO6ya1N+KcUl7WJoqupja2B2aI3PLBIqRLkY3FT511M5iujUdDiNn0o+o4NYyd1g49/
- dwxoWZJs+z4cspk2qnSA==
+X-Provags-ID: V03:K1:/G0i5tr9fAo76BkwxEOgAf5BtvgmaSTud7gTCL5d5JZvpeNnkQj
+ 5fYQS7JXj4Inygb2B60ThlJq4ER43D3Ky9bfkPQNu54S0H5EsnLgoekzdwtfVl/9XfJvf4B
+ W2f0sRKsj1TSSbN28MHoKIv8jJ8ncL+xUbSbS41sErvj2PXIBAXzV5KMaCm13tju25/hfxc
+ bm4TQ6lzYZ1Z8GC2aW97w==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:DboLyUSQS+Q=:LnWLtiC+oQ5Nwl0WPbpwqU
+ WNLy1ztDvFoTdpXl+PPBvzx+B8OsFN4odB1aXf9h38XSI+ddsnAiw2TVnfN/Ft1NriskZ3gNm
+ zRpLrm4ds9uSCrgeN0PihpXZ2TR3bd+vXIHhU86wJ5m19sFZHVK+deOO6NG/eVQfiqnW8EeHZ
+ F4nTtsBwE+gPfUbHIOtJ0eDIACUYo6gH6MK5bYw4rDYu63EvhkwhYHtg62iY9kEZIr0TkZkXD
+ UVU6zuuiyoLFtV57xUKnlkbv4JniALpZDomXD4DqkF+mR1uovTB0dOfqM3H7/HPM35DWIMRpv
+ I7lpm3rC5jTh5A+lph/1Q7+uVH9FOPjZPLdsno6Z1kd8kKJcFmGSEvZgh9CnLzQRMwHWOmApo
+ Klmuzpq5dUfH9IjnuZ05UOwWh2O/7kB/mNMKviivhkBrEC0GU3BXcozPIwGJ5x/CYzPOT9AYQ
+ DI91ei30k8y87CTMcleWnYivtn+kl1karu6GSsZvFXnyyXUEQ1v1c0d2ivMpmMosQO0/EYgWM
+ NRdazR9ygCTFsRc6MgVl4GyfclY76BmcSXhdheidepN5oWf/pfeSE8X2vgrPfywZVC6T7SCQr
+ fYzd9VViSIjwPIrHNlQ/3TjfBfR4MJFhQmPTCeTe443e4/9KLILFh0uCKdjdLAyJHXulZ8KfV
+ QYg9jwfuTgkwu1Ws8lhDo/Zy26q14HcJTUlj1VmDfc/O0N20wULYwJgifoFR/kVcqHDZsCJli
+ JVVWut2/DxtbnlyE0EhRQiDdl1vZyhduCXNJEXi7Zb+RRdIS3HVtqpd0Ko+U2EPvj+X1OF198
+ /2+Um96FTLdBPy7kyx3EbzjVJ5z67tz3haGMAGOddTokVkMMac6X3lmndNdb9sObm+CPHVnoB
+ ee0LZVA8ooB4/IlY0MuQ==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
+In function iio_map_array_register() properly rewind in case of error.
 
-Thanks for you suggestion. I agree that it is nicer to reuse the cleanup in
-iio_map_array_unregister() than to reimplement it. However I would like to
-avoid dropping and regaining the mutex in case of error.
-What about the attached approach:
+Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+---
+ drivers/iio/inkern.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Introduce an unlocked version of iio_map_array_unregister() and then use
-this one to unwind in error case. Thus we only need to add two lines of
-code, so that Jonathan may be ok with adding it to the main code flow...
-
-Regards,
-Lino
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 39c1d63..fe30bcb 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -60,6 +60,8 @@ int iio_map_array_register(struct iio_dev *indio_dev, str=
+uct iio_map *maps)
+ 		i++;
+ 	}
+ error_ret:
++	if (ret)
++		iio_map_array_unregister_locked(indio_dev);
+ 	mutex_unlock(&iio_map_list_lock);
+=20
+ 	return ret;
+--=20
+2.7.4
 
