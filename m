@@ -2,177 +2,83 @@ Return-Path: <SRS0=DXgW=ED=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E65C4363A
-	for <linux-iio@archiver.kernel.org>; Wed, 28 Oct 2020 22:05:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5348EC4363A
+	for <linux-iio@archiver.kernel.org>; Wed, 28 Oct 2020 22:15:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 09A0B2470E
-	for <linux-iio@archiver.kernel.org>; Wed, 28 Oct 2020 22:05:32 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="InpLHLru"
+	by mail.kernel.org (Postfix) with ESMTP id F24A224171
+	for <linux-iio@archiver.kernel.org>; Wed, 28 Oct 2020 22:15:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729975AbgJ1WFQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 28 Oct 2020 18:05:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51344 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729971AbgJ1WFO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Oct 2020 18:05:14 -0400
-Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35499C0613D1;
-        Wed, 28 Oct 2020 15:05:14 -0700 (PDT)
-Received: by mail-pf1-x443.google.com with SMTP id b3so615204pfo.2;
-        Wed, 28 Oct 2020 15:05:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=GeMX+k14VhxeG76k1/qSlgb4+cXieu72K4e08pwdt1o=;
-        b=InpLHLruF700Q395/JUSDPFi5ct3Q0NFGhIrDU/UmIhGdDThKH8GKD+cw6T2N6QNcD
-         PUvF0K87ShFDKaAjJCfvpeMCAaEiJ8eHb269GNLlCVUSVFBQarvkQDFEeK2v65rPe7+J
-         tC/1aFfwnYWg9j8u/6Ud/Yyen1uhouxurM0nLvzz3MYFdzPpthJUWusVU6lftQoy21uA
-         qiW9X1ZTMFe3cniRtPQ+TCgotIme378DGRcyAXvYYZgBHvV1ur7fGjNBhSILa0vbkqSM
-         tRUkeNha3rVBlOMkNme6QRGiAF7X/US6S2FlZ9tPWrsV95ioL0sZyvBU99MP8xfC1Ema
-         woPg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=GeMX+k14VhxeG76k1/qSlgb4+cXieu72K4e08pwdt1o=;
-        b=lzAqOSVmhU6VbRxYBDriHSDMrHey6KVNiVhpaRvSGsyBJZ6oe/lNxa6Kgo9ZeKm7jw
-         72626PUiA4Wzw92EBR2nnt08hZrqLAqQ/pEukMRqcjE9Gy67ZGvTfqHa330OVmqqvsl1
-         dmDUdms+/w5hAwlsY/+6dXLjqapVltPxry1/ThdulwOK6VxdYhdGIuoABnR/xiKn3syz
-         6NuYhb62FMA8Mrng0Lyv3BurqQCXo4F7Wcc/xOFuCz7PhwcnIYVS42WjxIdX66ew7qKd
-         VbLx+X3wuk4lLZooWloUYYTmUrskVoEoAwmKYhTeSUbSaiJIqBT3cdekqIxXywQ+mOlM
-         UbFg==
-X-Gm-Message-State: AOAM533RQkowhIxbHb2inKGnNmAVletJsLE743O6uN+WKsPGXEmBLzY0
-        M12JzlevK7J8lG5GABHnLbBduYkTX45V4g==
-X-Google-Smtp-Source: ABdhPJw+P7PZ1ANDYILo79Hsg7TsK8M0hrdd6+wFNAfXxYnBAlE0Wr2vQTH+qAkmHlbh1+XaD9f7GA==
-X-Received: by 2002:a63:78c3:: with SMTP id t186mr490857pgc.12.1603907075050;
-        Wed, 28 Oct 2020 10:44:35 -0700 (PDT)
-Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
-        by smtp.gmail.com with ESMTPSA id d26sm224049pfo.82.2020.10.28.10.44.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 28 Oct 2020 10:44:34 -0700 (PDT)
-Date:   Wed, 28 Oct 2020 10:44:27 -0700
-From:   Richard Cochran <richardcochran@gmail.com>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier@javigon.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bruno Meneguele <bmeneg@redhat.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Konstantin Khlebnikov <koct9i@gmail.com>,
-        Kranthi Kuntala <kranthi.kuntala@intel.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Len Brown <lenb@kernel.org>,
-        Leonid Maksymchuk <leonmaxx@gmail.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
-        Philippe Bergheaud <felix@linux.ibm.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-pm@vger.kernel.org,
+        id S1731307AbgJ1WPS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 28 Oct 2020 18:15:18 -0400
+Received: from kvm5.telegraphics.com.au ([98.124.60.144]:51986 "EHLO
+        kvm5.telegraphics.com.au" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731268AbgJ1WPG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Oct 2020 18:15:06 -0400
+Received: from localhost (localhost.localdomain [127.0.0.1])
+        by kvm5.telegraphics.com.au (Postfix) with ESMTP id A654929A58;
+        Tue, 27 Oct 2020 23:26:19 -0400 (EDT)
+Date:   Wed, 28 Oct 2020 14:26:12 +1100 (AEDT)
+From:   Finn Thain <fthain@telegraphics.com.au>
+To:     Tom Rix <trix@redhat.com>
+cc:     linux-kernel@vger.kernel.org, clang-built-linux@googlegroups.com,
+        linux-pm@vger.kernel.org, linux-crypto@vger.kernel.org,
+        qat-linux@intel.com, amd-gfx@lists.freedesktop.org,
+        dri-devel@lists.freedesktop.org, linux-iio@vger.kernel.org,
+        linux-rdma@vger.kernel.org, linux-mmc@vger.kernel.org,
+        netdev@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-amlogic@lists.infradead.org,
         linux-stm32@st-md-mailman.stormreply.com,
-        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, xen-devel@lists.xenproject.org
-Subject: Re: [PATCH 20/33] docs: ABI: testing: make the files compatible with
- ReST output
-Message-ID: <20201028174427.GE9364@hoboy.vegasvil.org>
-References: <cover.1603893146.git.mchehab+huawei@kernel.org>
- <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
+        linux-rtc@vger.kernel.org, linux-scsi@vger.kernel.org,
+        linux-aspeed@lists.ozlabs.org, linux-samsung-soc@vger.kernel.org,
+        linux-btrfs@vger.kernel.org, linux-nfs@vger.kernel.org,
+        tipc-discussion@lists.sourceforge.net, alsa-devel@alsa-project.org,
+        linux-rpi-kernel@lists.infradead.org, linux-tegra@vger.kernel.org
+Subject: Re: [RFC] clang tooling cleanups
+In-Reply-To: <20201027164255.1573301-1-trix@redhat.com>
+Message-ID: <alpine.LNX.2.23.453.2010281344120.31@nippy.intranet>
+References: <20201027164255.1573301-1-trix@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 03:23:18PM +0100, Mauro Carvalho Chehab wrote:
 
-> diff --git a/Documentation/ABI/testing/sysfs-uevent b/Documentation/ABI/testing/sysfs-uevent
-> index aa39f8d7bcdf..d0893dad3f38 100644
-> --- a/Documentation/ABI/testing/sysfs-uevent
-> +++ b/Documentation/ABI/testing/sysfs-uevent
-> @@ -19,7 +19,8 @@ Description:
->                  a transaction identifier so it's possible to use the same UUID
->                  value for one or more synthetic uevents in which case we
->                  logically group these uevents together for any userspace
-> -                listeners. The UUID value appears in uevent as
-> +                listeners. The UUID value appears in uevent as:
+On Tue, 27 Oct 2020, trix@redhat.com wrote:
 
-I know almost nothing about Sphinx, but why have one colon here ^^^ and ...
+> This rfc will describe
+> An upcoming treewide cleanup.
+> How clang tooling was used to programatically do the clean up.
+> Solicit opinions on how to generally use clang tooling.
+> 
 
-> +
->                  "SYNTH_UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" environment
->                  variable.
->  
-> @@ -30,18 +31,19 @@ Description:
->                  It's possible to define zero or more pairs - each pair is then
->                  delimited by a space character ' '. Each pair appears in
->                  synthetic uevent as "SYNTH_ARG_KEY=VALUE". That means the KEY
-> -                name gains "SYNTH_ARG_" prefix to avoid possible collisions
-> +                name gains `SYNTH_ARG_` prefix to avoid possible collisions
->                  with existing variables.
->  
-> -                Example of valid sequence written to the uevent file:
-> +                Example of valid sequence written to the uevent file::
+This tooling is very impressive. It makes possible an idea that I had a 
+while ago, to help make code review more efficient. It works like this. 
 
-... two here?
+Suppose a patch, p, is the difference between the new tree, n, and the old 
+tree, o. That is, p = n - o.
 
-Thanks,
-Richard
+Now let clang-tidy be the transformation 't'. This gets you a much more 
+readable patch submission, P = t(n) - t(o).
+
+The only difficulty is that, if I submit P intead of p then 'git am' will 
+probably reject it. This is solved by a little tooling around git, such 
+that, should a patch P fail to apply, the relevant files are automatically 
+reformatted with the officially endorsed transformation t, to generate a 
+minimal cleanup patch, such that P can be automatically applied on top.
+
+If the patch submission process required* that every patch submission was 
+generated like P and not like p, it would immediately eliminate all 
+clean-up patches from the workload of all reviewers, and also make the 
+reviewers' job easier because all submissions are now formatted correctly, 
+and also avoid time lost to round-trips, such as, "you can have a 
+reviewed-by if you respin to fix some minor style issues".
+
+* Enforcing this, e.g. with checkpatch, is slightly more complicated, but 
+it works the same way: generate a minimal cleanup patch for the relevant 
+files, apply the patch-to-be-submitted, and finally confirm that the 
+modified files are unchanged under t.
