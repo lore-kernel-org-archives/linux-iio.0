@@ -2,92 +2,177 @@ Return-Path: <SRS0=DXgW=ED=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.1 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36F3AC4363A
-	for <linux-iio@archiver.kernel.org>; Wed, 28 Oct 2020 21:42:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 60E65C4363A
+	for <linux-iio@archiver.kernel.org>; Wed, 28 Oct 2020 22:05:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DE5AB246CD
-	for <linux-iio@archiver.kernel.org>; Wed, 28 Oct 2020 21:42:57 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1603921377;
-	bh=wHOOQ68Dht3JUM0PmZ/p1O1vLvrJcv6F07gE0vDYiuU=;
-	h=Date:From:To:Subject:List-ID:From;
-	b=F1pomWckG100ynEmaIoOLwJSij1DCPlIHDufmYf1qHT3HjZh+/tZZT+0Jsj2wlcFe
-	 JfdGvXU7qBmAO0vmAKYDlR7N9wirZiVuKJY6V0x5Figv4Pw0OWTED8jrloMZE26eo/
-	 jrBJdrv1Pv3ZBGPm5j790b38aiTJlACMHQZfAORI=
+	by mail.kernel.org (Postfix) with ESMTP id 09A0B2470E
+	for <linux-iio@archiver.kernel.org>; Wed, 28 Oct 2020 22:05:32 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="InpLHLru"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726214AbgJ1Vm1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 28 Oct 2020 17:42:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38146 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726050AbgJ1VmX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 28 Oct 2020 17:42:23 -0400
-Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CBF0B247F3;
-        Wed, 28 Oct 2020 16:54:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1603904065;
-        bh=wHOOQ68Dht3JUM0PmZ/p1O1vLvrJcv6F07gE0vDYiuU=;
-        h=Date:From:To:Subject:From;
-        b=IDwytevgtHkkQ+SG1TrgW1g2hYyuTWsce2VjCWQDXDPQTB0nXPfwCV+AujaycOmcZ
-         ma2WOgwVWZUkO6K+QsThjIL2lWj90fdGZYzzQ7iqp1SPSAL2FVxrPM35s49KisqBKg
-         MIWHZbn6WTgLI0K6r82m2Zf3Bda3FI3nEVKA3pew=
-Date:   Wed, 28 Oct 2020 16:54:20 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Subject: iio: dt-schema addtiions. Pull request on github.
-Message-ID: <20201028165420.1c229ea2@archlinux>
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1729975AbgJ1WFQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 28 Oct 2020 18:05:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51344 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729971AbgJ1WFO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Oct 2020 18:05:14 -0400
+Received: from mail-pf1-x443.google.com (mail-pf1-x443.google.com [IPv6:2607:f8b0:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 35499C0613D1;
+        Wed, 28 Oct 2020 15:05:14 -0700 (PDT)
+Received: by mail-pf1-x443.google.com with SMTP id b3so615204pfo.2;
+        Wed, 28 Oct 2020 15:05:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=GeMX+k14VhxeG76k1/qSlgb4+cXieu72K4e08pwdt1o=;
+        b=InpLHLruF700Q395/JUSDPFi5ct3Q0NFGhIrDU/UmIhGdDThKH8GKD+cw6T2N6QNcD
+         PUvF0K87ShFDKaAjJCfvpeMCAaEiJ8eHb269GNLlCVUSVFBQarvkQDFEeK2v65rPe7+J
+         tC/1aFfwnYWg9j8u/6Ud/Yyen1uhouxurM0nLvzz3MYFdzPpthJUWusVU6lftQoy21uA
+         qiW9X1ZTMFe3cniRtPQ+TCgotIme378DGRcyAXvYYZgBHvV1ur7fGjNBhSILa0vbkqSM
+         tRUkeNha3rVBlOMkNme6QRGiAF7X/US6S2FlZ9tPWrsV95ioL0sZyvBU99MP8xfC1Ema
+         woPg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=GeMX+k14VhxeG76k1/qSlgb4+cXieu72K4e08pwdt1o=;
+        b=lzAqOSVmhU6VbRxYBDriHSDMrHey6KVNiVhpaRvSGsyBJZ6oe/lNxa6Kgo9ZeKm7jw
+         72626PUiA4Wzw92EBR2nnt08hZrqLAqQ/pEukMRqcjE9Gy67ZGvTfqHa330OVmqqvsl1
+         dmDUdms+/w5hAwlsY/+6dXLjqapVltPxry1/ThdulwOK6VxdYhdGIuoABnR/xiKn3syz
+         6NuYhb62FMA8Mrng0Lyv3BurqQCXo4F7Wcc/xOFuCz7PhwcnIYVS42WjxIdX66ew7qKd
+         VbLx+X3wuk4lLZooWloUYYTmUrskVoEoAwmKYhTeSUbSaiJIqBT3cdekqIxXywQ+mOlM
+         UbFg==
+X-Gm-Message-State: AOAM533RQkowhIxbHb2inKGnNmAVletJsLE743O6uN+WKsPGXEmBLzY0
+        M12JzlevK7J8lG5GABHnLbBduYkTX45V4g==
+X-Google-Smtp-Source: ABdhPJw+P7PZ1ANDYILo79Hsg7TsK8M0hrdd6+wFNAfXxYnBAlE0Wr2vQTH+qAkmHlbh1+XaD9f7GA==
+X-Received: by 2002:a63:78c3:: with SMTP id t186mr490857pgc.12.1603907075050;
+        Wed, 28 Oct 2020 10:44:35 -0700 (PDT)
+Received: from hoboy.vegasvil.org (c-73-241-114-122.hsd1.ca.comcast.net. [73.241.114.122])
+        by smtp.gmail.com with ESMTPSA id d26sm224049pfo.82.2020.10.28.10.44.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 28 Oct 2020 10:44:34 -0700 (PDT)
+Date:   Wed, 28 Oct 2020 10:44:27 -0700
+From:   Richard Cochran <richardcochran@gmail.com>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier@javigon.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bruno Meneguele <bmeneg@redhat.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Konstantin Khlebnikov <koct9i@gmail.com>,
+        Kranthi Kuntala <kranthi.kuntala@intel.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Len Brown <lenb@kernel.org>,
+        Leonid Maksymchuk <leonmaxx@gmail.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
+        Philippe Bergheaud <felix@linux.ibm.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-pm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 20/33] docs: ABI: testing: make the files compatible with
+ ReST output
+Message-ID: <20201028174427.GE9364@hoboy.vegasvil.org>
+References: <cover.1603893146.git.mchehab+huawei@kernel.org>
+ <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi All / Rob,
+On Wed, Oct 28, 2020 at 03:23:18PM +0100, Mauro Carvalho Chehab wrote:
 
-I'm not 100% sure on the process Rob uses for these, but I've just created
-a github pull request.
+> diff --git a/Documentation/ABI/testing/sysfs-uevent b/Documentation/ABI/testing/sysfs-uevent
+> index aa39f8d7bcdf..d0893dad3f38 100644
+> --- a/Documentation/ABI/testing/sysfs-uevent
+> +++ b/Documentation/ABI/testing/sysfs-uevent
+> @@ -19,7 +19,8 @@ Description:
+>                  a transaction identifier so it's possible to use the same UUID
+>                  value for one or more synthetic uevents in which case we
+>                  logically group these uevents together for any userspace
+> -                listeners. The UUID value appears in uevent as
+> +                listeners. The UUID value appears in uevent as:
 
-https://github.com/devicetree-org/dt-schema/pull/48
+I know almost nothing about Sphinx, but why have one colon here ^^^ and ...
 
-Patches to convert over all the users of these bits of schema will follow
-just as soon as I've had time to do appropriate checks etc.  Just under 100
-patches including v2 of the last set :)
+> +
+>                  "SYNTH_UUID=xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx" environment
+>                  variable.
+>  
+> @@ -30,18 +31,19 @@ Description:
+>                  It's possible to define zero or more pairs - each pair is then
+>                  delimited by a space character ' '. Each pair appears in
+>                  synthetic uevent as "SYNTH_ARG_KEY=VALUE". That means the KEY
+> -                name gains "SYNTH_ARG_" prefix to avoid possible collisions
+> +                name gains `SYNTH_ARG_` prefix to avoid possible collisions
+>                  with existing variables.
+>  
+> -                Example of valid sequence written to the uevent file:
+> +                Example of valid sequence written to the uevent file::
 
-I may break up the full set, but have patches for all IIO yaml with the
-exception of xilinx-xadc (and a few more below) because I believe that
-is already under way and don't want to duplicate work.
+... two here?
 
-Been an interesting process and in particular it is amazing how many of
-the examples in the txt file don't pass tests due to typos etc.
-
-A few exceptions that we need to figure out what to do with:
-lis302:  This is a ancient binding for the old misc driver.  I can just
-         blindly convert it to yaml, but I'd like to consider dropping it
-         in favour of the more modern st-sensors binding.
-
-mount-matrix:  This is in the github pull above, but there is a 'huge'
-         amount of documentation that I don't want to hid in that repo.
-         Perhaps the best plan is to add a page to the iio docs to
-         talk through both the binding and the userspace interface for this.
-
-io-channel-mux:  I might do this one at somepoint but it needs the
-         rest of the mux subsystem bindings to be converted at the same
-         time.
-
-One fun bit is we are likely to find warnings on the dts/dtsi files in mainline
-as a result of doing this. I will need some help cleaning those out as often
-it is a question of filling a missing value for some ancient board.  What fun :)
-
-Jonathan
-
-
+Thanks,
+Richard
