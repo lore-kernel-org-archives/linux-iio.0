@@ -8,65 +8,65 @@ X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1CBC55179
-	for <linux-iio@archiver.kernel.org>; Thu, 29 Oct 2020 07:51:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DD5FC56202
+	for <linux-iio@archiver.kernel.org>; Thu, 29 Oct 2020 07:55:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B87F62076B
-	for <linux-iio@archiver.kernel.org>; Thu, 29 Oct 2020 07:51:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 31BA020782
+	for <linux-iio@archiver.kernel.org>; Thu, 29 Oct 2020 07:55:03 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="K6/mzp9+"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="X2eKfrxr"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730838AbgJ2Hus (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 29 Oct 2020 03:50:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59622 "EHLO
+        id S1731090AbgJ2Hwy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 29 Oct 2020 03:52:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59918 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730816AbgJ2Hur (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 29 Oct 2020 03:50:47 -0400
-Received: from mail-pf1-x442.google.com (mail-pf1-x442.google.com [IPv6:2607:f8b0:4864:20::442])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F11FCC0613CF;
-        Thu, 29 Oct 2020 00:50:46 -0700 (PDT)
-Received: by mail-pf1-x442.google.com with SMTP id x13so1646566pfa.9;
-        Thu, 29 Oct 2020 00:50:46 -0700 (PDT)
+        with ESMTP id S1731164AbgJ2Hwj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 29 Oct 2020 03:52:39 -0400
+Received: from mail-pf1-x441.google.com (mail-pf1-x441.google.com [IPv6:2607:f8b0:4864:20::441])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3D862C0613DC;
+        Thu, 29 Oct 2020 00:52:01 -0700 (PDT)
+Received: by mail-pf1-x441.google.com with SMTP id y14so1639924pfp.13;
+        Thu, 29 Oct 2020 00:52:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=NOzNlbNOltOtdR1QdriCPf2XH+HcyRFu5e424v+5S24=;
-        b=K6/mzp9+iSfR1F0KLrjqgFqtGBgGu5Qsyh9lrv3lpj51Z3FiXtcnICok7kdsijfIJ3
-         0oLxGapPR3OtbP/2I4cWFTW2mESkcLLGuP24RealKcYZJeZIQJYzniqNa69DaEsg5fh/
-         ll71+R5b2Ag8xdbm/UYVEY4Et5kfQ5lpqhb93x4kjPRXWMBJ20bdYEyPklacx3G5kGod
-         I/jpxhGvKPKF4uIdkaTPVZa7QwAUbVSxGMkThEYK+WDi8MPeDO3zVmVcbHppfXO6Whn2
-         YQPIZKzDe60sCedqDCnbzWt7QBHkiHmQdC+TTTEPpKs120vc1/j2qC4Cgbilim1V2KZm
-         QPJg==
+        bh=6QKT0uDPiR12AaND+XZJ9++tzKNk6nVLA6Y08gKrKNM=;
+        b=X2eKfrxr1XpevgR1taGe1YeeLQW1y6aWkGVCUfn81sB5nS3ZSszSQ/Vlcrkyyimuit
+         l88GKRHFsLq1hruSdmhoCU9MWBOtfD89wpUgfdTKfucCfS5H13XUCyV2b7YxG9NYKZrY
+         PCfgxW49RzmhNA8yhZcIYbgDQuxasyX6pAUxibtKmk1SVJQN0Wd5yD4Y5hL+MKiyVErd
+         ULyEaBCSAOgwNU2t8uMBgcXfO8faDtat1zVlH/bO//nxC3OhHyunejghPzyeB7Tp6hOz
+         lywAZ4kHiCfe0Qb4EQCQgxgGTgu1vuVJZK8fKjG3bNmuHKlY9g7G7mcJ8azbIxDHLV/l
+         K59Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=NOzNlbNOltOtdR1QdriCPf2XH+HcyRFu5e424v+5S24=;
-        b=poJp9o35/lcP8Z+VBTrGx8bESgMf6JMa2rMOtOrE6hYlzCIvxbIna1foiNqHrg4gb7
-         vTHrllffRi6ZMtHn6FuevkqfSeYuwAP/62wvYs7cPEU0VWfchDIgBP20IeNnq+5KiVw0
-         2yuigMWINrr57f+SqspPnuCF875wjT/coOzIT+aWNP2il1qHCodQpPe75fZNXJehpYQo
-         BANMUTipHbZwTCmvmVcGWIynvmEyTgEv1TcV2HivOQ2lN0q7TYDfzO7wJHS/vPW0SW/h
-         7aizan6ZxOivq3RWx/cdazSIpqcERH5KlVV965DHQ2gQN/lGyqfVjGKJV8whGMdzA5A9
-         j1BA==
-X-Gm-Message-State: AOAM53196DCZs2nnKbCfWxxc41mx7fT1tn98hwU5jzk48u5A7CR+uQAk
-        JM6RYBzFH7GhMpU7DiXObHI=
-X-Google-Smtp-Source: ABdhPJy+HK/XXBsjKtniKutr4zdsu++EX8yBXcfuVK/U0htYUR+tkyhpMk6KZpbyMeKtccqlWH/5xw==
-X-Received: by 2002:a17:90a:4e83:: with SMTP id o3mr3025792pjh.164.1603957846646;
-        Thu, 29 Oct 2020 00:50:46 -0700 (PDT)
+        bh=6QKT0uDPiR12AaND+XZJ9++tzKNk6nVLA6Y08gKrKNM=;
+        b=aftjprGfhUIibbu581knBQY6F9Cc69hBErIrpFY5tuUfNfh+viwLIZ+5Ngg0BHI7ao
+         +9BFoM7rEjSOifoFoqgxRbKmraWPxO3EMsy1Z0FfQz3VQwnk6VFS8rTkndNXqzVLOBkD
+         3gwd66sF6zTiDWBo9db+snNeBfDh4NETdV/EifmDnm5zK5PPxu9eBcMM/fpa+cql+HY8
+         /QxHE+b2WXGL5mXx1fbB6fSrg9jAMgraWLyz8nhCeFuaEWgQ6kqE6GKIPSTGmx/4pL/q
+         64FskAP/V8NJFd96D+EyfFPrZE6FtBVy7ybuQeEQtBUoC8trrpBICrPtlmaV99X41JAA
+         8TCw==
+X-Gm-Message-State: AOAM530SX3pUOPv71/r+30WgNX22jfdsdO6cGVRBB5wfQ8WnTJS2jH0l
+        nVnYW3s9xH9XWrQGzzLJIno=
+X-Google-Smtp-Source: ABdhPJyR/vVNVZkgwQb9fbxcU230r0R0irNG6iyIzQ+N0rIkhxaZbxQjtX8zGTsnIhEKtqcKVP6jEA==
+X-Received: by 2002:a65:5ace:: with SMTP id d14mr2946530pgt.323.1603957920912;
+        Thu, 29 Oct 2020 00:52:00 -0700 (PDT)
 Received: from localhost ([2409:8a28:3c42:6840:9efc:e8ff:fef2:1cdc])
-        by smtp.gmail.com with ESMTPSA id s6sm1631225pgo.8.2020.10.29.00.50.44
+        by smtp.gmail.com with ESMTPSA id j20sm2042396pfd.40.2020.10.29.00.51.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 29 Oct 2020 00:50:46 -0700 (PDT)
+        Thu, 29 Oct 2020 00:52:00 -0700 (PDT)
 From:   Coiby Xu <coiby.xu@gmail.com>
 To:     Lars-Peter Clausen <lars@metafoo.de>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
         linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH 07/15] iio: ssp: remove unnecessary CONFIG_PM_SLEEP
-Date:   Thu, 29 Oct 2020 15:49:02 +0800
-Message-Id: <20201029074910.227859-7-coiby.xu@gmail.com>
+Subject: [PATCH 14/15] iio: light: remove unnecessary CONFIG_PM_SLEEP
+Date:   Thu, 29 Oct 2020 15:49:09 +0800
+Message-Id: <20201029074910.227859-14-coiby.xu@gmail.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201029074910.227859-1-coiby.xu@gmail.com>
 References: <20201029074910.227859-1-coiby.xu@gmail.com>
@@ -80,29 +80,28 @@ SET_SYSTEM_SLEEP_PM_OPS has already took good care of CONFIG_PM_CONFIG.
 
 Signed-off-by: Coiby Xu <coiby.xu@gmail.com>
 ---
- drivers/iio/common/ssp_sensors/ssp_dev.c | 2 --
+ drivers/iio/light/pa12203001.c | 2 --
  1 file changed, 2 deletions(-)
 
-diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
-index 1aee87100038..e284ff702280 100644
---- a/drivers/iio/common/ssp_sensors/ssp_dev.c
-+++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
-@@ -612,7 +612,6 @@ static int ssp_remove(struct spi_device *spi)
- 	return 0;
+diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
+index bfade6577a38..7737d2c8f0d5 100644
+--- a/drivers/iio/light/pa12203001.c
++++ b/drivers/iio/light/pa12203001.c
+@@ -417,14 +417,12 @@ static int pa12203001_suspend(struct device *dev)
  }
+ #endif
  
 -#ifdef CONFIG_PM_SLEEP
- static int ssp_suspend(struct device *dev)
+ static int pa12203001_resume(struct device *dev)
  {
- 	int ret;
-@@ -661,7 +660,6 @@ static int ssp_resume(struct device *dev)
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
  
- 	return 0;
+ 	return pa12203001_power_chip(indio_dev, PA12203001_CHIP_ENABLE);
  }
--#endif /* CONFIG_PM_SLEEP */
+-#endif
  
- static const struct dev_pm_ops ssp_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(ssp_suspend, ssp_resume)
+ #ifdef CONFIG_PM
+ static int pa12203001_runtime_resume(struct device *dev)
 -- 
 2.28.0
 
