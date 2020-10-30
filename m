@@ -1,83 +1,153 @@
-Return-Path: <SRS0=50BM=EE=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=OzwY=EF=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A1E8C2D0A3
-	for <linux-iio@archiver.kernel.org>; Thu, 29 Oct 2020 19:10:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C47BFC5DF9D
+	for <linux-iio@archiver.kernel.org>; Fri, 30 Oct 2020 07:11:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C4182076D
-	for <linux-iio@archiver.kernel.org>; Thu, 29 Oct 2020 19:10:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6D55C20723
+	for <linux-iio@archiver.kernel.org>; Fri, 30 Oct 2020 07:11:38 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1604041898;
+	bh=HMfalVRoys07ml7VPXGsddZqQtyxcaotzZe94CKTB5U=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=nPdNTndQOLj9XKM9UmZXcX03w/U6kpVc/XowDn0YBXwPvQrZeDQGsGc9i0pxRcxgH
+	 Rl+uzpc0VFQ7SkO3lS6EJSt8X8Xeg6fb1C/8OBnbwMfVhQhRrEft6p/1xx8istoDUv
+	 kR6ou3VzTF15b/65aXxX3m/VLwO7D1kxCOgTfUlc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726132AbgJ2TKQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 29 Oct 2020 15:10:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52768 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726127AbgJ2TKQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 29 Oct 2020 15:10:16 -0400
-X-Greylist: delayed 76882 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 29 Oct 2020 12:10:16 PDT
-Received: from bmailout2.hostsharing.net (bmailout2.hostsharing.net [IPv6:2a01:37:3000::53df:4ef0:0])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B01FC0613D4
-        for <linux-iio@vger.kernel.org>; Thu, 29 Oct 2020 12:10:16 -0700 (PDT)
-Received: from h08.hostsharing.net (h08.hostsharing.net [IPv6:2a01:37:1000::53df:5f1c:0])
+        id S1725956AbgJ3HLc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 30 Oct 2020 03:11:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45034 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725823AbgJ3HLa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 30 Oct 2020 03:11:30 -0400
+Received: from coco.lan (ip5f5ad5bb.dynamic.kabel-deutschland.de [95.90.213.187])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (Client CN "*.hostsharing.net", Issuer "COMODO RSA Domain Validation Secure Server CA" (not verified))
-        by bmailout2.hostsharing.net (Postfix) with ESMTPS id B03CC2800B3C3;
-        Thu, 29 Oct 2020 20:10:14 +0100 (CET)
-Received: by h08.hostsharing.net (Postfix, from userid 100393)
-        id 91442242DB8; Thu, 29 Oct 2020 20:10:14 +0100 (CET)
-Date:   Thu, 29 Oct 2020 20:10:14 +0100
-From:   Lukas Wunner <lukas@wunner.de>
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id A5A6620729;
+        Fri, 30 Oct 2020 07:11:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604041889;
+        bh=HMfalVRoys07ml7VPXGsddZqQtyxcaotzZe94CKTB5U=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=R7y6Bkg5GrGcYmjgIayZshuogEXNtD+N43HIj2ydphSqWHTpEKjdj+tkINZ9lO4pX
+         +EzN06y8xtiLvvAwAlP7B2jMtZP7Xz5TMkR6xCd/tfAA7bm7KHEvTD9Bw/cC31SHKp
+         JuVmtl721avx2j0rGBNlzZnqYSENceoWWYTIE5Wc=
+Date:   Fri, 30 Oct 2020 08:11:09 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 16/29] dt-bindings:iio:dac:ti,dac082s085 yaml conversion
-Message-ID: <20201029191014.GA18228@wunner.de>
-References: <20201011170749.243680-1-jic23@kernel.org>
- <20201011170749.243680-17-jic23@kernel.org>
- <20201028203140.GA24407@wunner.de>
- <20201029155025.0f3ce545@archlinux>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Javier =?UTF-8?B?R29uesOhbGV6?= <javier@javigon.com>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bruno Meneguele <bmeneg@redhat.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Juergen Gross <jgross@suse.com>,
+        Konstantin Khlebnikov <koct9i@gmail.com>,
+        Kranthi Kuntala <kranthi.kuntala@intel.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Len Brown <lenb@kernel.org>,
+        Leonid Maksymchuk <leonmaxx@gmail.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
+        Philippe Bergheaud <felix@linux.ibm.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-pm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, xen-devel@lists.xenproject.org
+Subject: Re: [PATCH 20/33] docs: ABI: testing: make the files compatible
+ with ReST output
+Message-ID: <20201030081109.5f7bbdaf@coco.lan>
+In-Reply-To: <20201029144912.3c0a239b@archlinux>
+References: <cover.1603893146.git.mchehab+huawei@kernel.org>
+        <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
+        <20201029144912.3c0a239b@archlinux>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201029155025.0f3ce545@archlinux>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Oct 29, 2020 at 03:50:25PM +0000, Jonathan Cameron wrote:
-> On Wed, 28 Oct 2020 21:31:40 +0100 Lukas Wunner <lukas@wunner.de> wrote:
-> > On Sun, Oct 11, 2020 at 06:07:36PM +0100, Jonathan Cameron wrote:
-> > > +examples:
-> > > +  - |
-> > > +    spi {
-> > > +        #address-cells = <1>;
-> > > +        #size-cells = <0>;
-> > > +
-> > > +        dac@0 {
-> > > +            compatible = "ti,dac082s085";
-> > > +            reg = <0>;
-> > > +            spi-max-frequency = <40000000>;
-> > > +            spi-cpol;
-> > > +            spi-cpha;
-> > > +            vref-supply = <&vref_2v5_reg>;
-> > > +        };
-> > > +    };  
-> > 
-> > Hm, why wasn't the "vref_2v5_reg" node carried over from the txt file?
-> 
-> Showing how to supply a regulator isn't generally necessary in an example.
-> I don't mind having it there though so can keep it
-> (as the fixed regulator binding has been converted to yaml)
+Em Thu, 29 Oct 2020 14:49:12 +0000
+Jonathan Cameron <jic23@kernel.org> escreveu:
 
-The "vref_2v5_reg" node is referenced by the "dac@0" node, so  I included
-it in the example for completeness.  I'd appreciate if it could be carried
-over to the YAML file, unless its inclusion is a bad practice.
+> On Wed, 28 Oct 2020 15:23:18 +0100
+> Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
+> 
+> > From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> > 
+> > Some files over there won't parse well by Sphinx.
+> > 
+> > Fix them.
+> > 
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
+> > Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>  
+> 
+> Query below...  I'm going to guess a rebase issue?
+
+Yes. I sent this series about 1,5 years ago. On that time, it
+ended by not being merged, as there were too much docs patches
+floating around. 
+
+The second SoB is not there on my tree. It was added by
+git send-email ;-)
+
+Anyway, fixed.
 
 Thanks,
-
-Lukas
+Mauro
