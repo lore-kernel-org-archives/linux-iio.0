@@ -5,47 +5,47 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B66EBC55178
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 610FAC61DD8
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6A981206F9
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0FB62206F9
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604168107;
-	bh=b6xwsrTqrL01OYwuXwqonMBb71GmaCiq8RUPWDCO/o8=;
+	s=default; t=1604168108;
+	bh=Dajqw5nvr2DvYCFQUKa+XCYy8A7wnG/zDAlkydD1B0s=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Yrnnwa762ypQWu9cGtNVmEoYBjKcc3SNc0lxbRpVm8vAVPlaPgJ5ThHpGL8/fu5yI
-	 TTRwQfRfrCnsH/KddelSd0kDUNEApw87VqCx6F/KeGCAODEa2Tj0rEA6ZZZJ2NpYHT
-	 GwFWDhrc8mm+7JeuylTPQgqz+SPJ1J5gTKkg+Xe8=
+	b=vHoUhLMU0dJjRKWA8lef9iv2X4QEx+DT+ssezEXUZnsJDOeSztKN8WhgYOzvgG71M
+	 Vordi6NdLu1aWKUpZiJuSvyR9Z26rMR3Ga+OuAwj0+Ldmdwfavxe5UA2oG22K5HhlO
+	 bI9tKmnog57B5vSJB6JfilfTVPDrDlXVar2nC4Ws=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728345AbgJaSPF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:15:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46206 "EHLO mail.kernel.org"
+        id S1728355AbgJaSPH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:15:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46308 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728322AbgJaSPA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:15:00 -0400
+        id S1728332AbgJaSPG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:15:06 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 581352071A;
-        Sat, 31 Oct 2020 18:14:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6564E206DD;
+        Sat, 31 Oct 2020 18:15:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604168099;
-        bh=b6xwsrTqrL01OYwuXwqonMBb71GmaCiq8RUPWDCO/o8=;
+        s=default; t=1604168105;
+        bh=Dajqw5nvr2DvYCFQUKa+XCYy8A7wnG/zDAlkydD1B0s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Li8Jm7v8bURv5b+Dyp28swb0/hNKZM3EzhHsFfIjh416nLhmoiriL4nLpDzKFGuXW
-         h0RSTiNIsN6OkevcDn1QCa0velT23VCw9HXvXLGGVB0O20KoNX98Nw6ZdtPExjEMMd
-         iHeftnTlBpamqopkYxKRONxI1KixscUIL3HRkdyQ=
+        b=jklqEaapj5i8oOedy9tPBdkExPWW1Lnvtegbj997i+2TXkrPEekBG0PkeHiCH+Ziq
+         9iulStcClJzllY4vB3MCMWqueq4+b/pPp/gFROfT7PwPI9do75LzMKgueUMH24/t5D
+         MTzFb/BBvxptx8cr1vX/Dv/hI4w4l9qh0vVLaQw8=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Peter Rosin <peda@axentia.se>
-Subject: [PATCH 05/10] dt-bindings:iio:afe:current-sense-amplifier: txt to yaml conversion.
-Date:   Sat, 31 Oct 2020 18:12:37 +0000
-Message-Id: <20201031181242.742301-6-jic23@kernel.org>
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 09/10] dt-bindings:iio:light:capella,cm3605: txt to yaml conversion.
+Date:   Sat, 31 Oct 2020 18:12:41 +0000
+Message-Id: <20201031181242.742301-10-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031181242.742301-1-jic23@kernel.org>
 References: <20201031181242.742301-1-jic23@kernel.org>
@@ -57,109 +57,147 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Note this includes a fix in the example where we had *-mul instead of
-*-mult.  The binding doc and driver agree that it should be *-mult
+Simple conversion using the new iio-consumers.yaml binding in the
+dt-schema.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Peter Rosin <peda@axentia.se>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 ---
- .../iio/afe/current-sense-amplifier.txt       | 26 ---------
- .../iio/afe/current-sense-amplifier.yaml      | 55 +++++++++++++++++++
- 2 files changed, 55 insertions(+), 26 deletions(-)
+ .../bindings/iio/light/capella,cm3605.yaml    | 78 +++++++++++++++++++
+ .../devicetree/bindings/iio/light/cm3605.txt  | 41 ----------
+ 2 files changed, 78 insertions(+), 41 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt b/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt
-deleted file mode 100644
-index 821b61b8c542..000000000000
---- a/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.txt
-+++ /dev/null
-@@ -1,26 +0,0 @@
--Current Sense Amplifier
--=======================
--
--When an io-channel measures the output voltage from a current sense
--amplifier, the interesting measurement is almost always the current
--through the sense resistor, not the voltage output. This binding
--describes such a current sense circuit.
--
--Required properties:
--- compatible : "current-sense-amplifier"
--- io-channels : Channel node of a voltage io-channel.
--- sense-resistor-micro-ohms : The sense resistance in microohms.
--
--Optional properties:
--- sense-gain-mult: Amplifier gain multiplier. The default is <1>.
--- sense-gain-div: Amplifier gain divider. The default is <1>.
--
--Example:
--
--sysi {
--	compatible = "current-sense-amplifier";
--	io-channels = <&tiadc 0>;
--
--	sense-resistor-micro-ohms = <20000>;
--	sense-gain-mul = <50>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.yaml b/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.yaml
+diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm3605.yaml b/Documentation/devicetree/bindings/iio/light/capella,cm3605.yaml
 new file mode 100644
-index 000000000000..920bdd8d12d6
+index 000000000000..001c99dbd14e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/afe/current-sense-amplifier.yaml
-@@ -0,0 +1,55 @@
++++ b/Documentation/devicetree/bindings/iio/light/capella,cm3605.yaml
+@@ -0,0 +1,78 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/afe/current-sense-amplifier.yaml#
++$id: http://devicetree.org/schemas/iio/light/capella,cm3605.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Current Sense Amplifier
++title:
++  Capella Microsystems CM3605 Ambient Light and Short Distance Proximity Sensor
 +
 +maintainers:
-+  - Peter Rosin <peda@axentia.se>
++  - Linus Walleij <linus.walleij@linaro.org>
 +
 +description: |
-+  When an io-channel measures the output voltage from a current sense
-+  amplifier, the interesting measurement is almost always the current
-+  through the sense resistor, not the voltage output. This binding
-+  describes such a current sense circuit.
++  The CM3605 is an entirely analog part. However, it requires quite a bit of
++  software logic to interface a host operating system.
++
++  This ALS and proximity sensor was one of the very first deployed in mobile
++  handsets, notably it is used in the very first Nexus One Android phone from
++  2010.
 +
 +properties:
 +  compatible:
-+    const: current-sense-amplifier
++    const: capella,cm3605
++
++  aset-gpios:
++    maxItems: 1
++    description:
++      ASET line (drive low to activate the ALS, should be flagged
++      GPIO_ACTIVE_LOW)
++
++  interrupts:
++    maxItems: 1
++    description:
++      Connected to the POUT (proximity sensor out) line. The edge
++      detection must be set to IRQ_TYPE_EDGE_BOTH so as to detect
++      movements toward and away from the proximity sensor.
 +
 +  io-channels:
 +    maxItems: 1
-+    description: |
-+      Channel node of a voltage io-channel.
++    description:
++      ADC channel used for converting the voltage from AOUT to a digital
++      representation.
 +
-+  sense-resistor-micro-ohms:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: The sense resistance.
++  io-channel-names:
++    const: aout
 +
-+  sense-gain-mult:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Amplifier gain multiplier. The default is <1>.
++  vdd-supply: true
 +
-+  sense-gain-div:
++  capella,aset-resistance-ohms:
 +    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Amplifier gain divider. The default is <1>.
++    enum: [50000, 100000, 300000, 600000]
++    description: >
++      Sensitivity calibration resistance. Note that calibration curves
++      are only provided for specific allowed values. Default: 100 kOhms.
 +
 +required:
 +  - compatible
++  - aset-gpios
++  - interrupts
 +  - io-channels
-+  - sense-resistor-micro-ohms
++  - io-channel-names
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    sysi {
-+        compatible = "current-sense-amplifier";
-+        io-channels = <&tiadc 0>;
-+
-+        sense-resistor-micro-ohms = <20000>;
-+        sense-gain-mult = <50>;
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    light-sensor {
++        compatible = "capella,cm3605";
++        vdd-supply = <&foo_reg>;
++        aset-gpios = <&foo_gpio 1 GPIO_ACTIVE_LOW>;
++        capella,aset-resistance-ohms = <100000>;
++        interrupts = <1 IRQ_TYPE_EDGE_BOTH>;
++        io-channels = <&adc 0x01>;
++        io-channel-names = "aout";
 +    };
 +...
+diff --git a/Documentation/devicetree/bindings/iio/light/cm3605.txt b/Documentation/devicetree/bindings/iio/light/cm3605.txt
+deleted file mode 100644
+index 56331a79f9ab..000000000000
+--- a/Documentation/devicetree/bindings/iio/light/cm3605.txt
++++ /dev/null
+@@ -1,41 +0,0 @@
+-Capella Microsystems CM3605
+-Ambient Light and Short Distance Proximity Sensor
+-
+-The CM3605 is an entirely analog part which however require quite a bit of
+-software logic to interface a host operating system.
+-
+-This ALS and proximity sensor was one of the very first deployed in mobile
+-handsets, notably it is used in the very first Nexus One Android phone from
+-2010.
+-
+-Required properties:
+-- compatible: must be: "capella,cm3605"
+-- aset-gpios: GPIO line controlling the ASET line (drive low
+-  to activate the ALS, should be flagged GPIO_ACTIVE_LOW)
+-- interrupts: the IRQ line (such as a GPIO) that is connected to
+-  the POUT (proximity sensor out) line. The edge detection must
+-  be set to IRQ_TYPE_EDGE_BOTH so as to detect movements toward
+-  and away from the proximity sensor.
+-- io-channels: the ADC channel used for converting the voltage from
+-  AOUT to a digital representation.
+-- io-channel-names: must be "aout"
+-
+-Optional properties:
+-- vdd-supply: regulator supplying VDD power to the component.
+-- capella,aset-resistance-ohms: the sensitivity calibration resistance,
+-  in Ohms. Valid values are: 50000, 100000, 300000 and 600000,
+-  as these are the resistance values that we are supplied with
+-  calibration curves for. If not supplied, 100 kOhm will be assumed
+-  but it is strongly recommended to supply this.
+-
+-Example:
+-
+-cm3605 {
+-	compatible = "capella,cm3605";
+-	vdd-supply = <&foo_reg>;
+-	aset-gpios = <&foo_gpio 1 GPIO_ACTIVE_LOW>;
+-	capella,aset-resistance-ohms = <100000>;
+-	interrupts = <1 IRQ_TYPE_EDGE_BOTH>;
+-	io-channels = <&adc 0x01>;
+-	io-channel-names = "aout";
+-};
 -- 
 2.28.0
 
