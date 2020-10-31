@@ -5,48 +5,47 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BF7EC55178
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 547A5C56202
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:43:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6CEEB20791
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:43:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1CEE320885
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:43:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604151828;
-	bh=+uTLtslO2QQtK4j3mW/JF0QgRnEKn9Jp/R0CuC672K4=;
+	s=default; t=1604151830;
+	bh=vGgvKV2jKu5MkEGz9QqQyakj6xX5L5ygJ4E/ro/w7ZY=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=ByWVHP9oA/EoUT1KTtKn5wX9tVGTOuwSJmi3NwT13XM/E1OauOK2GgX3WdUx1ih5X
-	 ZLTVF8LSXbA6upWk3l3bT4q75stk670/oSUrsYMjfyblRLx/aLFyEH/cjaMLxktakn
-	 6xs15Umej3Ak4K45F7Hygd/dQ9i5o5YpfbNkwrck=
+	b=RMdbuUblGyecJIltSUKHCUD+ekt4ty8ZDJPs+f61yywJ4ccOIawlZ1lRiKZuGR6rW
+	 GAPWxNZQw2NaNMW51Ai6NKOkyea3fkAet50tInrlYiDj9nbQo7CXPsxDA72X9jaHJt
+	 3w+6VH5XuSVLFDnA2G1yYFV5Ruvmb5hPnABr4s8Q=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727543AbgJaNnr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 09:43:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42696 "EHLO mail.kernel.org"
+        id S1727646AbgJaNnt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 09:43:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42740 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727589AbgJaNnq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 09:43:46 -0400
+        id S1727591AbgJaNnt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 09:43:49 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 2B58C20853;
-        Sat, 31 Oct 2020 13:43:44 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 55A0B2087D;
+        Sat, 31 Oct 2020 13:43:47 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604151825;
-        bh=+uTLtslO2QQtK4j3mW/JF0QgRnEKn9Jp/R0CuC672K4=;
+        s=default; t=1604151828;
+        bh=vGgvKV2jKu5MkEGz9QqQyakj6xX5L5ygJ4E/ro/w7ZY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Sl2vrPWoaD4RA8lpf5U0cOZINgcCGWkQVfaVCyTOKyHorvMpAK893KCf99a7k5wWQ
-         1P6np/50rQJLz9ekfP7UxX62baQyFNi9C+kL3WgnynT5DfU/1wg76AEEQ2DjGaEQz2
-         xyRFbyoLlq92vxOnfnzEAA56+9NTIcCoq5wY6zHw=
+        b=F/QpeewRDS7/0GSIpXxef1JU1s0ygmw/f6+JqmP2sHAEAEUiOmRCjA2Dg3xbRk7+2
+         Za+DjkeCbnSPEB4NrE7eN7PZlIWIav7gLCJbim2seZLlBbzRI93zH3AxBnHfuqH6XI
+         5FoLEOrF2UX0G+gqtNA4Tx0dCT+8z+FlY34d0Uos=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rob Herring <robh@kernel.org>,
-        Lorenzo Bianconi <lorenzo@kernel.org>
-Subject: [PATCH v2 03/29] dt-bindings:iio:humidity:st,hts221 yaml conversion.
-Date:   Sat, 31 Oct 2020 13:40:44 +0000
-Message-Id: <20201031134110.724233-4-jic23@kernel.org>
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 05/29] dt-bindings:iio:pressure:ms5637 Drop separate doc + add to trivial-devices
+Date:   Sat, 31 Oct 2020 13:40:46 +0000
+Message-Id: <20201031134110.724233-6-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031134110.724233-1-jic23@kernel.org>
 References: <20201031134110.724233-1-jic23@kernel.org>
@@ -58,110 +57,60 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Straight forward conversion of this temperature and pressure sensor binding.
+Very simple binding for this i2c device with no properties beyond
+reg and compatible.  Hence doesn't need it's own document.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Reviewed-by: Rob Herring <robh@kernel.org>
-Cc: Lorenzo Bianconi <lorenzo@kernel.org>
 ---
- .../bindings/iio/humidity/hts221.txt          | 30 -----------
- .../bindings/iio/humidity/st,hts221.yaml      | 52 +++++++++++++++++++
- 2 files changed, 52 insertions(+), 30 deletions(-)
+ .../devicetree/bindings/iio/pressure/ms5637.txt | 17 -----------------
+ .../devicetree/bindings/trivial-devices.yaml    |  8 ++++++++
+ 2 files changed, 8 insertions(+), 17 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/humidity/hts221.txt b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
+diff --git a/Documentation/devicetree/bindings/iio/pressure/ms5637.txt b/Documentation/devicetree/bindings/iio/pressure/ms5637.txt
 deleted file mode 100644
-index 84d029372260..000000000000
---- a/Documentation/devicetree/bindings/iio/humidity/hts221.txt
+index 1f43ffa068ac..000000000000
+--- a/Documentation/devicetree/bindings/iio/pressure/ms5637.txt
 +++ /dev/null
-@@ -1,30 +0,0 @@
--* HTS221 STM humidity + temperature sensor
+@@ -1,17 +0,0 @@
+-* MS5637 - Measurement-Specialties MS5637, MS5805, MS5837 and MS8607 pressure & temperature sensor
 -
 -Required properties:
--- compatible: should be "st,hts221"
--- reg: i2c address of the sensor / spi cs line
 -
--Optional properties:
--- drive-open-drain: the interrupt/data ready line will be configured
--  as open drain, which is useful if several sensors share the same
--  interrupt line. This is a boolean property.
--  If the requested interrupt is configured as IRQ_TYPE_LEVEL_HIGH or
--  IRQ_TYPE_EDGE_RISING a pull-down resistor is needed to drive the line
--  when it is not active, whereas a pull-up one is needed when interrupt
--  line is configured as IRQ_TYPE_LEVEL_LOW or IRQ_TYPE_EDGE_FALLING.
--  Refer to pinctrl/pinctrl-bindings.txt for the property description.
--- interrupts: interrupt mapping for IRQ. It should be configured with
--  flags IRQ_TYPE_LEVEL_HIGH, IRQ_TYPE_EDGE_RISING, IRQ_TYPE_LEVEL_LOW or
--  IRQ_TYPE_EDGE_FALLING.
--
--  Refer to interrupt-controller/interrupts.txt for generic interrupt
--  client node bindings.
+-	-compatible: should be one of the following
+-		meas,ms5637
+-		meas,ms5805
+-		meas,ms5837
+-		meas,ms8607-temppressure
+-	-reg: I2C address of the sensor
 -
 -Example:
 -
--hts221@5f {
--	compatible = "st,hts221";
--	reg = <0x5f>;
--	interrupt-parent = <&gpio0>;
--	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
+-ms5637@76 {
+-	compatible = "meas,ms5637";
+-	reg = <0x76>;
 -};
-diff --git a/Documentation/devicetree/bindings/iio/humidity/st,hts221.yaml b/Documentation/devicetree/bindings/iio/humidity/st,hts221.yaml
-new file mode 100644
-index 000000000000..396451c26728
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/humidity/st,hts221.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/humidity/st,hts221.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: HTS221 STM humidity + temperature sensor
-+
-+maintainers:
-+  - Lorenzo Bianconi <lorenzo@kernel.org>
-+
-+description: |
-+   Humidity and temperature sensor with I2C interface and data ready
-+   interrupt.
-+
-+properties:
-+  compatible:
-+    const: st,hts221
-+
-+  reg:
-+    maxItems: 1
-+
-+  drive-open-drain:
-+    type: boolean
-+    description:
-+      The interrupt/data ready line will be configured as open drain, which
-+      is useful if several sensors share the same interrupt line.
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        hts221@5f {
-+            compatible = "st,hts221";
-+            reg = <0x5f>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-+        };
-+    };
-+...
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index 43febb3057b6..8d8eadbab473 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -134,8 +134,16 @@ properties:
+           - memsic,mxc6225
+             # Measurement Specialities I2C temperature and humidity sensor
+           - meas,htu21
++            # Measurement Specialities I2C pressure and temperature sensor
++          - meas,ms5637
++            # Measurement Specialities I2C pressure and temperature sensor
++          - meas,ms5805
++            # Measurement Specialities I2C pressure and temperature sensor
++          - meas,ms5837
+             # Measurement Specialities temp and humidity part of ms8607 device
+           - meas,ms8607-humidity
++            # Measurement Specialities temp and pressure part of ms8607 device
++          - meas,ms8607-temppressure
+             # Microchip differential I2C ADC, 1 Channel, 18 bit
+           - microchip,mcp3421
+             # Microchip differential I2C ADC, 2 Channel, 18 bit
 -- 
 2.28.0
 
