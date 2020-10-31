@@ -7,46 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48569C56201
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1253FC55179
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 01A4D20709
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C2125206F9
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604168105;
-	bh=3JNkkk9Dl1YomxLvoKDitnSaJq06f+AYRrZkk3n4+0Y=;
+	s=default; t=1604168106;
+	bh=+KKQvxitikpmSsDORSTRtGhhfcyGmEHjn9x1tgY/194=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=CaWOtEbe+c9VWG0zz526NwSgrKDiwIknP8YPVsK+1Me/xDRsmD30z/eXm7wK0ASNq
-	 btQb0AFODf8hs729Whm0pnf/xVOiNIcnHpwUsc4wOhh1GXUzI6dG5zR1XsJzy16+k2
-	 dlI9y8XDLuIyCs86ETlOzUL+RD3L8N3En+jvecSc=
+	b=bgnN87CYCk0KPatXD0nYjzDcneZ4iCk1nYCYkKiGPFT5EzdLthpfcUISZS2yP7gIW
+	 PtIHMtFxNkqZykfVbcBcLV5aOyvYVeIByRX/MdVKXtICSTL235VIcz0Xk5vg7E4DQk
+	 aw82tCYXkeDMov2RUpzF4YkR+4lQmjxhAWiV/8eY=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728248AbgJaSPE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:15:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46268 "EHLO mail.kernel.org"
+        id S1728338AbgJaSPF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:15:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46234 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728338AbgJaSPD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:15:03 -0400
+        id S1728332AbgJaSPB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:15:01 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 42C69206D5;
-        Sat, 31 Oct 2020 18:15:01 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id C8D7220723;
+        Sat, 31 Oct 2020 18:14:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604168102;
-        bh=3JNkkk9Dl1YomxLvoKDitnSaJq06f+AYRrZkk3n4+0Y=;
+        s=default; t=1604168100;
+        bh=+KKQvxitikpmSsDORSTRtGhhfcyGmEHjn9x1tgY/194=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=QEjKOf2HcUyA6Aq9I6wetNpIMAYeqi8OoS4eauMsN4+1cxcAEKJ4hwJFM74CCh0/v
-         Xf3DcQTwq3A237CjRgqDiuDWJuqt6vQjg92ZReAx2MqzOp04FH6D2JEbEiav6/7PHu
-         c5cKO0SqHozFMAWLr/+T2Hw6/QNunNua1XNF9Rs8=
+        b=bCG51qMXl+kJbXF2yXQLnY1sZ4nSgWFeu6mWrMjldSiRv9oseuXUJKwHRN5rCqRtN
+         fcoZRPTaNL0q41XbNjLEbGCC10CUXbeOt57LEp4dlCpSZz4i213dBgG1o+ZLCddAE4
+         gZu0ZFPA/hdpUMIkt570oBaA4HBP7X2U5lzvRh/A=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Philippe Reynes <tremyfr@yahoo.fr>
-Subject: [PATCH 07/10] dt-bindings:iio:adc:maxim,max1027: Pull out to separate binding doc.
-Date:   Sat, 31 Oct 2020 18:12:39 +0000
-Message-Id: <20201031181242.742301-8-jic23@kernel.org>
+        Peter Rosin <peda@axentia.se>
+Subject: [PATCH 06/10] dt-bindings:iio:afe:current-sense-shunt: txt to yaml conversion.
+Date:   Sat, 31 Oct 2020 18:12:38 +0000
+Message-Id: <20201031181242.742301-7-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031181242.742301-1-jic23@kernel.org>
 References: <20201031181242.742301-1-jic23@kernel.org>
@@ -58,112 +57,133 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The afe/voltage-divider.yaml example uses this device with 2 properties
-not provided by trivial-devices.yaml (spi-max-frequency and #io-channel-cells)
-
-Solve that by creating a more specific binding doc.
+Very simple binding. As such straight forward conversion.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Miquel Raynal <miquel.raynal@bootlin.com>
-Cc: Philippe Reynes <tremyfr@yahoo.fr>
+Cc: Peter Rosin <peda@axentia.se>
 ---
- .../bindings/iio/adc/maxim,max1027.yaml       | 64 +++++++++++++++++++
- .../devicetree/bindings/trivial-devices.yaml  | 12 ----
- 2 files changed, 64 insertions(+), 12 deletions(-)
+ .../bindings/iio/afe/current-sense-shunt.txt  | 41 ------------
+ .../bindings/iio/afe/current-sense-shunt.yaml | 65 +++++++++++++++++++
+ 2 files changed, 65 insertions(+), 41 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max1027.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max1027.yaml
+diff --git a/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt b/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt
+deleted file mode 100644
+index 0f67108a07b6..000000000000
+--- a/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.txt
++++ /dev/null
+@@ -1,41 +0,0 @@
+-Current Sense Shunt
+-===================
+-
+-When an io-channel measures the voltage over a current sense shunt,
+-the interesting measurement is almost always the current through the
+-shunt, not the voltage over it. This binding describes such a current
+-sense circuit.
+-
+-Required properties:
+-- compatible : "current-sense-shunt"
+-- io-channels : Channel node of a voltage io-channel.
+-- shunt-resistor-micro-ohms : The shunt resistance in microohms.
+-
+-Example:
+-The system current is measured by measuring the voltage over a
+-3.3 ohms shunt resistor.
+-
+-sysi {
+-	compatible = "current-sense-shunt";
+-	io-channels = <&tiadc 0>;
+-
+-	/* Divide the voltage by 3300000/1000000 (or 3.3) for the current. */
+-	shunt-resistor-micro-ohms = <3300000>;
+-};
+-
+-&i2c {
+-	tiadc: adc@48 {
+-		compatible = "ti,ads1015";
+-		reg = <0x48>;
+-		#io-channel-cells = <1>;
+-
+-		#address-cells = <1>;
+-		#size-cells = <0>;
+-
+-		channel@0 { /* IN0,IN1 differential */
+-			reg = <0>;
+-			ti,gain = <1>;
+-			ti,datarate = <4>;
+-		};
+-	};
+-};
+diff --git a/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml b/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml
 new file mode 100644
-index 000000000000..09e853c50c76
+index 000000000000..2f18409c64e3
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/maxim,max1027.yaml
-@@ -0,0 +1,64 @@
++++ b/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml
+@@ -0,0 +1,65 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/maxim,max1027.yaml#
++$id: http://devicetree.org/schemas/iio/afe/current-sense-shunt.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Maxim MAX1027 and similar ADCs
++title: Current Sense Shunt
 +
 +maintainers:
-+  - Miquel Raynal <miquel.raynal@bootlin.com>
-+  - Philippe Reynes <tremyfr@yahoo.fr>
++  - Peter Rosin <peda@axentia.se>
 +
 +description: |
-+  300ks/s SPI ADCs with temperature sensors.
++  When an io-channel measures the voltage over a current sense shunt,
++  the interesting measurement is almost always the current through the
++  shunt, not the voltage over it. This binding describes such a current
++  sense circuit.
 +
 +properties:
 +  compatible:
-+    enum:
-+        # 10-bit 8 channels
-+      - maxim,max1027
-+        # 10-bit 12 channels
-+      - maxim,max1029
-+        # 10-bit 16 channels
-+      - maxim,max1031
-+         # 12-bit 8 channels
-+      - maxim,max1227
-+         # 12-bit 12 channels
-+      - maxim,max1229
-+         # 12-bit 16 channels
-+      - maxim,max1231
++    const: current-sense-shunt
 +
-+  reg:
++  io-channels:
 +    maxItems: 1
++    description: |
++      Channel node of a voltage io-channel.
 +
-+  interrupts:
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+  "#io-channel-cells":
-+    const: 1
++  shunt-resistor-micro-ohms:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: The shunt resistance.
 +
 +required:
 +  - compatible
-+  - reg
++  - io-channels
++  - shunt-resistor-micro-ohms
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi {
-+       #address-cells = <1>;
-+       #size-cells = <0>;
-+        maxadc: adc@0 {
-+            compatible = "maxim,max1027";
-+            reg = <0>;
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        tiadc: adc@48 {
++            compatible = "ti,ads1015";
++            reg = <0x48>;
 +            #io-channel-cells = <1>;
-+            interrupt-parent = <&gpio5>;
-+            interrupts = <15 IRQ_TYPE_EDGE_RISING>;
-+            spi-max-frequency = <1000000>;
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@0 { /* IN0,IN1 differential */
++                reg = <0>;
++                ti,gain = <1>;
++                ti,datarate = <4>;
++            };
 +        };
 +    };
++    sysi {
++        compatible = "current-sense-shunt";
++        io-channels = <&tiadc 0>;
++
++        /* Divide the voltage by 3300000/1000000 (or 3.3) for the current. */
++        shunt-resistor-micro-ohms = <3300000>;
++    };
 +...
-diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index d154ea97e30d..185e09e61e16 100644
---- a/Documentation/devicetree/bindings/trivial-devices.yaml
-+++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -108,18 +108,6 @@ properties:
-           - isil,isl68137
-             # 5 Bit Programmable, Pulse-Width Modulator
-           - maxim,ds1050
--            # 10-bit 8 channels 300ks/s SPI ADC with temperature sensor
--          - maxim,max1027
--            # 10-bit 12 channels 300ks/s SPI ADC with temperature sensor
--          - maxim,max1029
--            # 10-bit 16 channels 300ks/s SPI ADC with temperature sensor
--          - maxim,max1031
--            # 12-bit 8 channels 300ks/s SPI ADC with temperature sensor
--          - maxim,max1227
--            # 12-bit 12 channels 300ks/s SPI ADC with temperature sensor
--          - maxim,max1229
--            # 12-bit 16 channels 300ks/s SPI ADC with temperature sensor
--          - maxim,max1231
-             # Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
-           - maxim,max1237
-             # PECI-to-I2C translator for PECI-to-SMBus/I2C protocol conversion
 -- 
 2.28.0
 
