@@ -2,174 +2,103 @@ Return-Path: <SRS0=JG+F=EG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A198C4742C
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:44:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96277C388F9
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:45:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3E5ED20723
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:44:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604151867;
-	bh=ZMZApij4WsX+DlKlfh/xbMOnotONaYZnxY/ZbTKbQEI=;
-	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=0CWJGK5ASKrmM/xa3nf5gzGE5F/clH5m1W1c/nQHQW4dw3DjUOUintT5U2U+GSblY
-	 9pUicGv4Tp1Uyp+3gOC6y38B+6rgLTfsywoqYfqybR9HRkY0woD9TtV016XkEF0Zhl
-	 +lAyvj/xhJ8np3vbQkBYXcemQxlLnSd1jTkK/xaA=
+	by mail.kernel.org (Postfix) with ESMTP id 42EC12071A
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:45:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="P2alRR+I"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727804AbgJaNo0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 09:44:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43644 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727461AbgJaNo0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 09:44:26 -0400
-Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CB3A020756;
-        Sat, 31 Oct 2020 13:44:24 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604151866;
-        bh=ZMZApij4WsX+DlKlfh/xbMOnotONaYZnxY/ZbTKbQEI=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V5MCvJYrVXBPCtnHtVNQ6s54naBAEYSPr/lRAb9SVvqC/vQUsvYlHJLuG3SYyU4WB
-         feZxRvRBxVgSP/C80EfhJrUzotBnBg6C1Jm6F6yPinbvGtST3Gzue1XTH4So8NigTE
-         HZ+2if6AH022Qec2LQUZ+oCZFyy9KTnj0r38K7FQ=
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rob Herring <robh@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>
-Subject: [PATCH v2 29/29] dt-bindings:iio:temperature:ti,tmp07 yaml conversion
-Date:   Sat, 31 Oct 2020 13:41:10 +0000
-Message-Id: <20201031134110.724233-30-jic23@kernel.org>
-X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201031134110.724233-1-jic23@kernel.org>
-References: <20201031134110.724233-1-jic23@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        id S1727460AbgJaNpR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 09:45:17 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:23861 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1727461AbgJaNpP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 31 Oct 2020 09:45:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1604151914;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc; bh=814PgqQ2GaNYFANqzidfDl9rSrDeF/edtDaTRQDpiQw=;
+        b=P2alRR+IiPzztd2I7gY3SYlXKy5e19E/oprQR+RPTqnkkHrqrjaCpJyvnT9YI4NYGxCJ1I
+        T5EvmLI5Icuq7bAEoFdI/Ik9dSKwT7DOS3qs7Q7YIOl+9EIK8LLH2kCJrFuSm1SGiGQzHH
+        lchbJ8A7WePlpPp3Gho2pZYkksB3fFo=
+Received: from mail-ot1-f71.google.com (mail-ot1-f71.google.com
+ [209.85.210.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-311-fMpXboNsOJCcC9oBP3XFSA-1; Sat, 31 Oct 2020 09:45:12 -0400
+X-MC-Unique: fMpXboNsOJCcC9oBP3XFSA-1
+Received: by mail-ot1-f71.google.com with SMTP id 5so3778885oti.20
+        for <linux-iio@vger.kernel.org>; Sat, 31 Oct 2020 06:45:12 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=814PgqQ2GaNYFANqzidfDl9rSrDeF/edtDaTRQDpiQw=;
+        b=Nw5dvlEvisAT44SVnQVygsDaZxiv8JETKwfNFoUNRMJag8Wxgmc2TgFAPTP286wN3r
+         RNmRSDxWWuoS/wN8lnQ2yeW/hxhWs9VcJfszL/thLIlNaysPmO88Y8CW639isOlhxsx3
+         PSi6JtvllPm4hpy0yHI/Z1JV4Cxmciw+LAX8StZHAUU7fh2Z+gHQtrbcgZxQV71uyUzV
+         rPH/lRmz4cm7m6kn3WXvBs5ZvaeBaYuurqzjllYZV6CH1Rtzh1S/dpYx89Mc7ZyL+ULd
+         bOtIcuKCbTN77eUmgkw76qkFezMZQ79GYovoHl8z3qqHJZzfTjRbcRAQO1JtXhZtaztV
+         SI+A==
+X-Gm-Message-State: AOAM531AFSs52BQMWx1+C72wePA4eg/GNQaSYR6vE9EwUqdGanEiRZ7a
+        kawN+Oow9OqN/DRRi2j1proLU2YmLlpd5n89VrhkniuPngVekPFq8ZBTIGzPqZclQZPT40WTbwk
+        WXetPlfZ9AeMdFR4It7LZ
+X-Received: by 2002:a9d:4f15:: with SMTP id d21mr5349079otl.166.1604151911281;
+        Sat, 31 Oct 2020 06:45:11 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJwNGYuiT8MQi6phj/4hR76hzlOqYTMJ0W/2+FDiH5m1ZtjDgTkddbT/43RAQikP9pzjidHtEg==
+X-Received: by 2002:a9d:4f15:: with SMTP id d21mr5349070otl.166.1604151911094;
+        Sat, 31 Oct 2020 06:45:11 -0700 (PDT)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id m65sm2182844otc.36.2020.10.31.06.45.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 31 Oct 2020 06:45:10 -0700 (PDT)
+From:   trix@redhat.com
+To:     jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Tom Rix <trix@redhat.com>
+Subject: [PATCH] iio: pressure: bmp280: remove unneeded semicolon
+Date:   Sat, 31 Oct 2020 06:45:06 -0700
+Message-Id: <20201031134506.2134698-1-trix@redhat.com>
+X-Mailer: git-send-email 2.18.1
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: Tom Rix <trix@redhat.com>
 
-Simple conversion from txt to yaml.
+A semicolon is not needed after a switch statement.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Acked-by: Manivannan Sadhasivam <mani@kernel.org>
+Signed-off-by: Tom Rix <trix@redhat.com>
 ---
- .../bindings/iio/temperature/ti,tmp007.yaml   | 57 +++++++++++++++++++
- .../bindings/iio/temperature/tmp007.txt       | 33 -----------
- 2 files changed, 57 insertions(+), 33 deletions(-)
+ drivers/iio/pressure/bmp280-regmap.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp007.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp007.yaml
-new file mode 100644
-index 000000000000..3c2b7189fa2e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp007.yaml
-@@ -0,0 +1,57 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/temperature/ti,tmp007.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: IR thermopile sensor with integrated math engine
-+
-+maintainers:
-+  - Manivannan Sadhasivam <manivannanece23@gmail.com>
-+
-+description: |
-+  http://www.ti.com/lit/ds/symlink/tmp007.pdf
-+
-+properties:
-+  compatible:
-+    const: ti,tmp007
-+
-+  reg:
-+    description: |
-+      The I2C address of the sensor (changeable via ADR pins)
-+      ------------------------------
-+      |ADR1 | ADR0 | Device Address|
-+      ------------------------------
-+         0      0        0x40
-+         0      1        0x41
-+         0     SDA       0x42
-+         0     SCL       0x43
-+         1      0        0x44
-+         1      1        0x45
-+         1     SDA       0x46
-+         1     SCL       0x47
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        temp-sensor@40 {
-+            compatible = "ti,tmp007";
-+            reg = <0x40>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <5 0x08>;
-+        };
-+    };
-+...
-diff --git a/Documentation/devicetree/bindings/iio/temperature/tmp007.txt b/Documentation/devicetree/bindings/iio/temperature/tmp007.txt
-deleted file mode 100644
-index da0af234a357..000000000000
---- a/Documentation/devicetree/bindings/iio/temperature/tmp007.txt
-+++ /dev/null
-@@ -1,33 +0,0 @@
--* TI TMP007 - IR thermopile sensor with integrated math engine
--
--Link to datasheet: http://www.ti.com/lit/ds/symlink/tmp007.pdf
--
--Required properties:
--
--  - compatible: should be "ti,tmp007"
--  - reg: the I2C address of the sensor (changeable via ADR pins)
--		------------------------------
--		|ADR1 | ADR0 | Device Address|
--		------------------------------
--		   0      0        0x40
--		   0	  1	   0x41
--		   0	 SDA       0x42
--		   0     SCL       0x43
--		   1      0        0x44
--		   1      1        0x45
--		   1	 SDA	   0x46
--		   1     SCL       0x47
--
--Optional properties:
--
--  - interrupts: interrupt mapping for GPIO IRQ (level active low)
--
--Example:
--
--tmp007@40 {
--        compatible = "ti,tmp007";
--        reg = <0x40>;
--	interrupt-parent = <&gpio0>;
--	interrupts = <5 0x08>;
--};
--
+diff --git a/drivers/iio/pressure/bmp280-regmap.c b/drivers/iio/pressure/bmp280-regmap.c
+index 08c00ac32bda..da136dbadc8f 100644
+--- a/drivers/iio/pressure/bmp280-regmap.c
++++ b/drivers/iio/pressure/bmp280-regmap.c
+@@ -13,7 +13,7 @@ static bool bmp180_is_writeable_reg(struct device *dev, unsigned int reg)
+ 		return true;
+ 	default:
+ 		return false;
+-	};
++	}
+ }
+ 
+ static bool bmp180_is_volatile_reg(struct device *dev, unsigned int reg)
+@@ -51,7 +51,7 @@ static bool bmp280_is_writeable_reg(struct device *dev, unsigned int reg)
+ 		return true;
+ 	default:
+ 		return false;
+-	};
++	}
+ }
+ 
+ static bool bmp280_is_volatile_reg(struct device *dev, unsigned int reg)
 -- 
-2.28.0
+2.18.1
 
