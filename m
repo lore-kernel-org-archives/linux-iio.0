@@ -5,47 +5,47 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70526C56201
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07953C388F9
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:51:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3DCD02076E
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:51:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BF40D20706
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:51:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604170309;
-	bh=hvXOic1rUJfkQMhsWqepgHIYm8GKrgC2Efi+g7GSWbg=;
+	s=default; t=1604170310;
+	bh=qfobvL+xm68LRQrtL991IA3t1PNEVyCflIA+rDZs1YE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=ZyxxLVZznVYnT6Ydsh/mVtqsDoR3uxS9spZ5+GvF+0xpJa0Y54VMMhg3u9QwlnITH
-	 BfHrTHQw1JmphjBioQ4lnDoEmWpKb32s5FghRT1uNAur0YL2rx5fJ/zwnBdE0RFpH7
-	 EQkNa+YgahPl0VbGBQ+eLDBmB1VIL2ktQs8tQj4A=
+	b=lJrM4dSzXg00ddMQ7JDzcsVcMkYvGeL8wbrySqonpMALjI8WL1v1zbjnXNf8aCvDy
+	 A0/n2QvXCIE4ZSwjqgrV7Pb1A1/EEDqyFPb4u4c6KiukCeL4h4UYETZnBgtDPn3R11
+	 jCD4+WfLvajaY0+a1l50fWRVEHTrgMuODtqMDOG4=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728424AbgJaSvs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:51:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34984 "EHLO mail.kernel.org"
+        id S1728425AbgJaSvu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:51:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728399AbgJaSvs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:51:48 -0400
+        id S1728399AbgJaSvu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:51:50 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 84B9E20729;
-        Sat, 31 Oct 2020 18:51:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5137A20702;
+        Sat, 31 Oct 2020 18:51:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604170307;
-        bh=hvXOic1rUJfkQMhsWqepgHIYm8GKrgC2Efi+g7GSWbg=;
+        s=default; t=1604170309;
+        bh=qfobvL+xm68LRQrtL991IA3t1PNEVyCflIA+rDZs1YE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=H8FEXIo2rPEjbSO6MfHDZBvWDAjtuLZxJu2JWwiZKUjXO3YOmzTDZiTPIv5Za4D2Q
-         +8GSzVMnfSfEtVx5zkEEcb3TjHP3d3J+NTQGJC3A0WomNJZ1SjVSEaxgbcmSGK1HrS
-         ipE5LrKCDTlJihP3R5narpIUKb8FbLUtIU4lPKEw=
+        b=EmbrdeW9q5kLLyBvc6zjJzPnfGO4yS2obD43kgPO8BeYWlvCFd1N5y1ahx5xYlV3Y
+         GqEuglx8Y8guV/Km0QcdQa0nwJmHn/rFk1AXLUwJBv6AAq61bfHhLgNzGOJ/uGs2oD
+         zkn3g73KcBM/Wqt9i6lKiF4VGLWWaRqjDlICl2XI=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH 14/46] dt-bindings:iio:light:avago,apds9960: txt to yaml conversion
-Date:   Sat, 31 Oct 2020 18:48:22 +0000
-Message-Id: <20201031184854.745828-15-jic23@kernel.org>
+        Beomho Seo <beomho.seo@samsung.com>
+Subject: [PATCH 15/46] dt-bindings:iio:light:capella,cm36651: txt to yaml conversion.
+Date:   Sat, 31 Oct 2020 18:48:23 +0000
+Message-Id: <20201031184854.745828-16-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031184854.745828-1-jic23@kernel.org>
 References: <20201031184854.745828-1-jic23@kernel.org>
@@ -57,66 +57,36 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Very simple binding that we could move into trivial-devices.yaml
-with a small loss of documentation.
+Straight forward conversion with no changes beyond the node
+name in the example
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Matt Ranostay <mranostay@gmail.com>
+Cc: Beomho Seo <beomho.seo@samsung.com>
 ---
- .../bindings/iio/light/apds9960.txt           | 21 ---------
- .../bindings/iio/light/avago,apds9960.yaml    | 44 +++++++++++++++++++
- 2 files changed, 44 insertions(+), 21 deletions(-)
+ .../bindings/iio/light/capella,cm36651.yaml   | 48 +++++++++++++++++++
+ .../devicetree/bindings/iio/light/cm36651.txt | 26 ----------
+ 2 files changed, 48 insertions(+), 26 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/light/apds9960.txt b/Documentation/devicetree/bindings/iio/light/apds9960.txt
-deleted file mode 100644
-index c53ddb81c4aa..000000000000
---- a/Documentation/devicetree/bindings/iio/light/apds9960.txt
-+++ /dev/null
-@@ -1,21 +0,0 @@
--* Avago APDS9960 gesture/RGB/ALS/proximity sensor
--
--https://www.avagotech.com/docs/AV02-4191EN
--
--Required properties:
--
--  - compatible: must be "avago,apds9960"
--  - reg: the I2c address of the sensor
--  - interrupts : the sole interrupt generated by the device
--
--  Refer to interrupt-controller/interrupts.txt for generic interrupt client
--  node bindings.
--
--Example:
--
--apds9960@39 {
--	compatible = "avago,apds9960";
--	reg = <0x39>;
--	interrupt-parent = <&gpio1>;
--	interrupts = <16 1>;
--};
-diff --git a/Documentation/devicetree/bindings/iio/light/avago,apds9960.yaml b/Documentation/devicetree/bindings/iio/light/avago,apds9960.yaml
+diff --git a/Documentation/devicetree/bindings/iio/light/capella,cm36651.yaml b/Documentation/devicetree/bindings/iio/light/capella,cm36651.yaml
 new file mode 100644
-index 000000000000..eae8c7327c0f
+index 000000000000..446d94f3a89f
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/avago,apds9960.yaml
-@@ -0,0 +1,44 @@
++++ b/Documentation/devicetree/bindings/iio/light/capella,cm36651.yaml
+@@ -0,0 +1,48 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/light/avago,apds9960.yaml#
++$id: http://devicetree.org/schemas/iio/light/capella,cm36651.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Avago APDS9960 gesture/RGB/ALS/proximity sensor
++title: Capella CM36651 I2C Proximity and Color Light sensor
 +
 +maintainers:
-+  - Matt Ranostay <mranostay@gmail.com>
-+
-+description: |
-+  Datasheet at https://www.avagotech.com/docs/AV02-4191EN
++  - Beomho Seo <beomho.seo@samsung.com>
 +
 +properties:
 +  compatible:
-+    const: avago,apds9960
++    const: capella,cm36651
 +
 +  reg:
 +    maxItems: 1
@@ -124,11 +94,17 @@ index 000000000000..eae8c7327c0f
 +  interrupts:
 +    maxItems: 1
 +
++  vled-supply:
++    description: |
++      Supply for the IR_LED which is part of the cm36651 for proximity detection.
++
 +additionalProperties: false
 +
 +required:
 +  - compatible
 +  - reg
++  - interrupts
++  - vled-supply
 +
 +examples:
 +  - |
@@ -136,14 +112,47 @@ index 000000000000..eae8c7327c0f
 +        #address-cells = <1>;
 +        #size-cells = <0>;
 +
-+        light-sensor@39 {
-+            compatible = "avago,apds9960";
-+            reg = <0x39>;
-+            interrupt-parent = <&gpio1>;
-+            interrupts = <16 1>;
++        light-sensor@18 {
++            compatible = "capella,cm36651";
++            reg = <0x18>;
++            interrupt-parent = <&gpx0>;
++            interrupts = <2 0>;
++            vled-supply = <&ps_als_reg>;
 +        };
 +    };
 +...
+diff --git a/Documentation/devicetree/bindings/iio/light/cm36651.txt b/Documentation/devicetree/bindings/iio/light/cm36651.txt
+deleted file mode 100644
+index c03e19db4550..000000000000
+--- a/Documentation/devicetree/bindings/iio/light/cm36651.txt
++++ /dev/null
+@@ -1,26 +0,0 @@
+-* Capella CM36651 I2C Proximity and Color Light sensor
+-
+-Required properties:
+-- compatible: must be "capella,cm36651"
+-- reg: the I2C address of the device
+-- interrupts: interrupt-specifier for the sole interrupt
+-	      generated by the device
+-- vled-supply: regulator for the IR LED. IR_LED is a part
+-	      of the cm36651 for proximity detection.
+-	      As covered in ../../regulator/regulator.txt
+-
+-Example:
+-
+-	i2c_cm36651: i2c-gpio {
+-		/* ... */
+-
+-		cm36651@18 {
+-			compatible = "capella,cm36651";
+-			reg = <0x18>;
+-			interrupt-parent = <&gpx0>;
+-			interrupts = <2 0>;
+-			vled-supply = <&ps_als_reg>;
+-		};
+-
+-		/* ... */
+-	};
 -- 
 2.28.0
 
