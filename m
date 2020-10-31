@@ -5,47 +5,48 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB6A1C55179
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:52:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA3B7C388F9
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:52:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 80E0620825
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:52:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8E4CF2071A
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:52:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604170336;
-	bh=+pI2CXGiE+I6mLa2YboecZU7GwgiJdcZktZELuuO7IA=;
+	s=default; t=1604170338;
+	bh=iFGwE/9PSfd7hpDY+R4VCPz8RfOLa8Ub95oGrw/tXgA=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=E9YPIsKbx6pbIy0AWwEPjJdYR9lKAfKN9GVMFz4Yo7sIrMftr2FiCuoMQvptFgo3Q
-	 WeYuqe9IYyLynYFaQfg8YAItJykPCHI+fOEn/mrIcBS3Ykj4TtGwlpkzyldRDJFZRL
-	 8F9DKcgzrg3M2y0KYuH2WJc9zHJNdFUn4bv+nsI0=
+	b=yw+PUoHZOrevp5/7u9UWecjf28wnqc+6PVPONRQIyr1plp584Zcbu5ASFsdtGbH9p
+	 jrYgbQFlDd5X1ZFZiY63I1sdGEWiUNujOqiugfh6hVTJa2GT/un/xhmzHLczViLF3t
+	 hCTDLND+S34USICLBYuQoBw0SF1pMD/VDYU7SEOk=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728467AbgJaSwP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:52:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35564 "EHLO mail.kernel.org"
+        id S1728474AbgJaSwR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:52:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35668 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728456AbgJaSwN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:52:13 -0400
+        id S1728458AbgJaSwR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:52:17 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B2434205ED;
-        Sat, 31 Oct 2020 18:52:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id EB8AC20720;
+        Sat, 31 Oct 2020 18:52:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604170331;
-        bh=+pI2CXGiE+I6mLa2YboecZU7GwgiJdcZktZELuuO7IA=;
+        s=default; t=1604170336;
+        bh=iFGwE/9PSfd7hpDY+R4VCPz8RfOLa8Ub95oGrw/tXgA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BzIQBnrHlsDu9L6+6qARiYOGB+IrePopZmX9O+pJpDoBoUl0v030tLyK/cCCnlOEW
-         o6dHxdpdh50BdADxCWpDs8Xl/CRe149n9pw/lyrG2btWYAkmK6ahLPb5QPBiiFC0xd
-         Vy/0WynSwm0N4CZ522rdz8WJLGMzV9YwWgdH7XmY=
+        b=pD2edyoutsZ01IHWc6s/zNkLbvDIBzOjfQFXsJjUkeXTrfMwd3nts/p9pUyUEc7TK
+         +M6CaqLSVHSrINIXsnfiZHWHTGu500peFXSUvYNaeKk5ZB12CywpZiPxIIGiQFc3xm
+         NjN6dZ+M4tiefMg/YxgnhTa0yz+oL6AtnH+F3Ub8=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>
-Subject: [PATCH 30/46] dt-bindings:iio:adc:renesas,rcar-gyroadc: txt to yaml conversion.
-Date:   Sat, 31 Oct 2020 18:48:38 +0000
-Message-Id: <20201031184854.745828-31-jic23@kernel.org>
+        Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>
+Subject: [PATCH 33/46] dt-bindings:iio:adc:mediatek,mt2701-auxadc: rename and yaml conversion.
+Date:   Sat, 31 Oct 2020 18:48:41 +0000
+Message-Id: <20201031184854.745828-34-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031184854.745828-1-jic23@kernel.org>
 References: <20201031184854.745828-1-jic23@kernel.org>
@@ -57,162 +58,71 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This is a somewhat unusual device, in that it effectively does
-spi offload.   That means that it doesn't act as a full SPI
-master, but supports some functionality.  As such it supports
-a subset of specific SPI ADCs.  There is potential for a future
-clash in bindings, but as these are simple devices hopefully that
-will not occur.
+The current driver and indeed binding are named after a part that they
+do not list in the compatible.  Hence renamed the binding to reflect
+one that does.
 
-One addition to this from testing it against existing dts files
-was to add a resets property.
-This is specified in arch/arm/boot/dts/r8a7791.dtsi
-If it's the dtsi that is wrong and not the binding doc, then
-we can fix that instead.
+From the driver it looks like there is a lot more backwards compatibility
+than the binding currently reflects. We could consider expressing that
+more explicitly in the yaml for the compatible property. I have
+added one explicit pair that was present in the upstream dtsi files.
+
+I added Matthias alongside Zhiyong Tao because I don't think
+Zhiyong Tao has reviewed recent patches.  Please let me know if this
+isn't the right thing to do.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Marek Vasut <marek.vasut+renesas@gmail.com>
+Cc: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Cc: Matthias Brugger <matthias.bgg@gmail.com>
 ---
- .../bindings/iio/adc/renesas,gyroadc.txt      |  98 ------------
- .../iio/adc/renesas,rcar-gyroadc.yaml         | 141 ++++++++++++++++++
- 2 files changed, 141 insertions(+), 98 deletions(-)
+ .../iio/adc/mediatek,mt2701-auxadc.yaml       | 77 +++++++++++++++++++
+ .../bindings/iio/adc/mt6577_auxadc.txt        | 34 --------
+ 2 files changed, 77 insertions(+), 34 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
-deleted file mode 100644
-index df5b9f2ad8d8..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
-+++ /dev/null
-@@ -1,98 +0,0 @@
--* Renesas R-Car GyroADC device driver
--
--The GyroADC block is a reduced SPI block with up to 8 chipselect lines,
--which supports the SPI protocol of a selected few SPI ADCs. The SPI ADCs
--are sampled by the GyroADC block in a round-robin fashion and the result
--presented in the GyroADC registers.
--
--Required properties:
--- compatible:	Should be "<soc-specific>", "renesas,rcar-gyroadc".
--                The <soc-specific> should be one of:
--		renesas,r8a7791-gyroadc - for the GyroADC block present
--					  in r8a7791 SoC
--		renesas,r8a7792-gyroadc - for the GyroADC with interrupt
--					  block present in r8a7792 SoC
--- reg:		Address and length of the register set for the device
--- clocks:	References to all the clocks specified in the clock-names
--		property as specified in
--		Documentation/devicetree/bindings/clock/clock-bindings.txt.
--- clock-names:	Shall contain "fck". The "fck" is the GyroADC block clock.
--- power-domains: Must contain a reference to the PM domain, if available.
--- #address-cells: Should be <1> (setting for the subnodes) for all ADCs
--		except for "fujitsu,mb88101a". Should be <0> (setting for
--		only subnode) for "fujitsu,mb88101a".
--- #size-cells:	Should be <0> (setting for the subnodes)
--
--Sub-nodes:
--You must define subnode(s) which select the connected ADC type and reference
--voltage for the GyroADC channels.
--
--Required properties for subnodes:
--- compatible:	Should be either of:
--		"fujitsu,mb88101a"
--			- Fujitsu MB88101A compatible mode,
--			  12bit sampling, up to 4 channels can be sampled in
--			  round-robin fashion. One Fujitsu chip supplies four
--			  GyroADC channels with data as it contains four ADCs
--			  on the chip and thus for 4-channel operation, single
--			  MB88101A is required. The Cx chipselect lines of the
--			  MB88101A connect directly to two CHS lines of the
--			  GyroADC, no demuxer is required. The data out line
--			  of each MB88101A connects to a shared input pin of
--			  the GyroADC.
--		"ti,adcs7476" or "ti,adc121" or "adi,ad7476"
--			- TI ADCS7476 / TI ADC121 / ADI AD7476 compatible mode,
--			  15bit sampling, up to 8 channels can be sampled in
--			  round-robin fashion. One TI/ADI chip supplies single
--			  ADC channel with data, thus for 8-channel operation,
--			  8 chips are required. A 3:8 chipselect demuxer is
--			  required to connect the nCS line of the TI/ADI chips
--			  to the GyroADC, while MISO line of each TI/ADI ADC
--			  connects to a shared input pin of the GyroADC.
--		"maxim,max1162" or "maxim,max11100"
--			- Maxim MAX1162 / Maxim MAX11100 compatible mode,
--			  16bit sampling, up to 8 channels can be sampled in
--			  round-robin fashion. One Maxim chip supplies single
--			  ADC channel with data, thus for 8-channel operation,
--			  8 chips are required. A 3:8 chipselect demuxer is
--			  required to connect the nCS line of the MAX chips
--			  to the GyroADC, while MISO line of each Maxim ADC
--			  connects to a shared input pin of the GyroADC.
--- reg:		Should be the number of the analog input. Should be present
--		for all ADCs except "fujitsu,mb88101a".
--- vref-supply:	Reference to the channel reference voltage regulator.
--
--Example:
--	vref_max1162: regulator-vref-max1162 {
--		compatible = "regulator-fixed";
--
--		regulator-name = "MAX1162 Vref";
--		regulator-min-microvolt = <4096000>;
--		regulator-max-microvolt = <4096000>;
--	};
--
--	adc@e6e54000 {
--		compatible = "renesas,r8a7791-gyroadc", "renesas,rcar-gyroadc";
--		reg = <0 0xe6e54000 0 64>;
--		clocks = <&mstp9_clks R8A7791_CLK_GYROADC>;
--		clock-names = "fck";
--		power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
--
--		pinctrl-0 = <&adc_pins>;
--		pinctrl-names = "default";
--
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		adc@0 {
--			reg = <0>;
--			compatible = "maxim,max1162";
--			vref-supply = <&vref_max1162>;
--		};
--
--		adc@1 {
--			reg = <1>;
--			compatible = "maxim,max1162";
--			vref-supply = <&vref_max1162>;
--		};
--	};
-diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml b/Documentation/devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
 new file mode 100644
-index 000000000000..aeaa9d372450
+index 000000000000..5b21a9fba5dd
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/renesas,rcar-gyroadc.yaml
-@@ -0,0 +1,141 @@
++++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+@@ -0,0 +1,77 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/renesas,rcar-gyroadc.yaml#
++$id: http://devicetree.org/schemas/iio/adc/mediatek,mt2701-auxadc.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Renesas R-Car GyroADC
++title: Mediatek AUXADC - ADC on Mediatek mobile SoC (mt65xx/mt81xx/mt27xx)
 +
 +maintainers:
-+  - Marek Vasut <marek.vasut+renesas@gmail.com>
++  - Zhiyong Tao <zhiyong.tao@mediatek.com>
++  - Matthias Brugger <matthias.bgg@gmail.com>
 +
 +description: |
-+  The GyroADC block is a reduced SPI block with up to 8 chipselect lines,
-+  which supports the SPI protocol of a selected few SPI ADCs. The SPI ADCs
-+  are sampled by the GyroADC block in a round-robin fashion and the result
-+  presented in the GyroADC registers.
-+  The ADC bindings should match with that of the devices connected to a
-+  full featured SPI bus.
++  The Auxiliary Analog/Digital Converter (AUXADC) is an ADC found
++  in some Mediatek SoCs which among other things measures the temperatures
++  in the SoC. It can be used directly with register accesses, but it is also
++  used by thermal controller which reads the temperatures from the AUXADC
++  directly via its own bus interface. See mediatek-thermal bindings
++  for the Thermal Controller which holds a phandle to the AUXADC.
 +
 +properties:
 +  compatible:
-+    items:
++    oneOf:
 +      - enum:
-+          - renesas,r8a7791-gyroadc
-+          - renesas,r8a7792-gyroadc
-+      - const: renesas,rcar-gyroadc
++          - mediatek,mt2701-auxadc
++          - mediatek,mt2712-auxadc
++          - mediatek,mt6765-auxadc
++          - mediatek,mt7622-auxadc
++          - mediatek,mt8173-auxadc
++      - items:
++          - enum:
++              - mediatek,mt7623-auxadc
++          - const: mediatek,mt2701-auxadc
++      - items:
++          - enum:
++              - mediatek,mt8183-auxadc
++              - mediatek,mt8516-auxadc
++          - const: mediatek,mt8173-auxadc
 +
 +  reg:
 +    maxItems: 1
@@ -221,17 +131,10 @@ index 000000000000..aeaa9d372450
 +    maxItems: 1
 +
 +  clock-names:
-+    const: fck
++    const: main
 +
-+  power-domains: true
-+
-+  resets: true
-+
-+  "#address-cells":
++  "#io-channel-cells":
 +    const: 1
-+
-+  "#size-cells":
-+    const: 0
 +
 +additionalProperties: false
 +
@@ -240,94 +143,65 @@ index 000000000000..aeaa9d372450
 +  - reg
 +  - clocks
 +  - clock-names
-+  - "#address-cells"
-+  - "#size-cells"
-+
-+patternProperties:
-+  "^[a-zA-Z][a-zA-Z0-9,+\\-._]{0,63}@[0-9a-fA-F]+$":
-+    type: object
-+    properties:
-+      compatible:
-+        description: |
-+          fujitsu,mb88101a
-+          - Fujitsu MB88101A compatible mode,
-+            12bit sampling, up to 4 channels can be sampled in round-robin
-+            fashion. One Fujitsu chip supplies four GyroADC channels with
-+            data as it contains four ADCs on the chip and thus for 4-channel
-+            operation, single MB88101A is required. The Cx chipselect lines
-+            of the MB88101A connect directly to two CHS lines of the GyroADC,
-+            no demuxer is required. The data out line of each MB88101A
-+            connects to a shared input pin of the GyroADC.
-+          ti,adcs7476 or ti,adc121 or adi,ad7476
-+          - TI ADCS7476 / TI ADC121 / ADI AD7476 compatible mode, 15bit
-+            sampling, up to 8 channels can be sampled in round-robin
-+            fashion. One TI/ADI chip supplies single ADC channel with data,
-+            thus for 8-channel operation, 8 chips are required.
-+            A 3:8 chipselect demuxer is  required to connect the nCS line
-+            of the TI/ADI chips to the GyroADC, while MISO line of each
-+            TI/ADI ADC connects to a shared input pin of the GyroADC.
-+          maxim,max1162 or maxim,max11100
-+          - Maxim MAX1162 / Maxim MAX11100 compatible mode,  16bit sampling,
-+            up to 8 channels can be sampled in round-robin fashion. One
-+            Maxim chip supplies single ADC channel with data, thus for
-+            8-channel operation, 8 chips are required.
-+            A 3:8 chipselect demuxer is required to connect the nCS line
-+            of the MAX chips to the GyroADC, while MISO line of each Maxim
-+            ADC connects to a shared input pin of the GyroADC.
-+        enum:
-+          - adi,7476
-+          - fujitsu,mb88101a
-+          - maxim,max1162
-+          - maxim,max11100
-+          - ti,adcs7476
-+          - ti,adc121
-+
-+      reg: true
-+
-+      vref-supply: true
-+
-+    additionalProperties: false
-+
-+    required:
-+      - compatible
-+      - reg
-+      - vref-supply
++  - "#io-channel-cells"
 +
 +examples:
 +  - |
-+    #include <dt-bindings/clock/r8a7791-clock.h>
-+    #include <dt-bindings/power/r8a7791-sysc.h>
++    #include <dt-bindings/clock/mt8183-clk.h>
 +    soc {
 +        #address-cells = <2>;
 +        #size-cells = <2>;
 +
-+        adc@e6e54000 {
-+            compatible = "renesas,r8a7791-gyroadc", "renesas,rcar-gyroadc";
-+            reg = <0 0xe6e54000 0 64>;
-+            clocks = <&mstp9_clks R8A7791_CLK_GYROADC>;
-+            clock-names = "fck";
-+            power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
-+
-+            pinctrl-0 = <&adc_pins>;
-+            pinctrl-names = "default";
-+
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+
-+            adc@0 {
-+                reg = <0>;
-+                compatible = "maxim,max1162";
-+                vref-supply = <&vref_max1162>;
-+            };
-+
-+            adc@1 {
-+                reg = <1>;
-+                compatible = "maxim,max1162";
-+                vref-supply = <&vref_max1162>;
-+            };
++        adc@11001000 {
++            compatible = "mediatek,mt8183-auxadc",
++                         "mediatek,mt8173-auxadc";
++            reg = <0 0x11001000 0 0x1000>;
++            clocks = <&infracfg CLK_INFRA_AUXADC>;
++            clock-names = "main";
++            #io-channel-cells = <1>;
 +        };
 +    };
 +...
+diff --git a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+deleted file mode 100644
+index 1b7ff9e5615a..000000000000
+--- a/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
++++ /dev/null
+@@ -1,34 +0,0 @@
+-* Mediatek AUXADC - Analog to Digital Converter on Mediatek mobile soc (mt65xx/mt81xx/mt27xx)
+-===============
+-
+-The Auxiliary Analog/Digital Converter (AUXADC) is an ADC found
+-in some Mediatek SoCs which among other things measures the temperatures
+-in the SoC. It can be used directly with register accesses, but it is also
+-used by thermal controller which reads the temperatures from the AUXADC
+-directly via its own bus interface. See
+-Documentation/devicetree/bindings/thermal/mediatek-thermal.txt
+-for the Thermal Controller which holds a phandle to the AUXADC.
+-
+-Required properties:
+-  - compatible: Should be one of:
+-    - "mediatek,mt2701-auxadc": For MT2701 family of SoCs
+-    - "mediatek,mt2712-auxadc": For MT2712 family of SoCs
+-    - "mediatek,mt6765-auxadc": For MT6765 family of SoCs
+-    - "mediatek,mt7622-auxadc": For MT7622 family of SoCs
+-    - "mediatek,mt8173-auxadc": For MT8173 family of SoCs
+-    - "mediatek,mt8183-auxadc", "mediatek,mt8173-auxadc": For MT8183 family of SoCs
+-    - "mediatek,mt8516-auxadc", "mediatek,mt8173-auxadc": For MT8516 family of SoCs
+-  - reg: Address range of the AUXADC unit.
+-  - clocks: Should contain a clock specifier for each entry in clock-names
+-  - clock-names: Should contain "main".
+-  - #io-channel-cells: Should be 1, see ../iio-bindings.txt
+-
+-Example:
+-
+-auxadc: adc@11001000 {
+-	compatible = "mediatek,mt2701-auxadc";
+-	reg = <0 0x11001000 0 0x1000>;
+-	clocks = <&pericfg CLK_PERI_AUXADC>;
+-	clock-names = "main";
+-	#io-channel-cells = <1>;
+-};
 -- 
 2.28.0
 
