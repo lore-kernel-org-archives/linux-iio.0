@@ -2,51 +2,54 @@ Return-Path: <SRS0=JG+F=EG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C8A0C388F9
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:20:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16871C55179
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:20:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 43E0D206DD
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:20:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE07D206F9
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:20:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604168413;
-	bh=WeJM9sqefLyTbec/MpOe67C4HqcW9wc+PbJIX8GXQqo=;
-	h=From:To:Cc:Subject:Date:List-ID:From;
-	b=xGnI3HxdDE5PRQrA8nxqVzsOUZH8amFR5dMbre9YUETxOoDAfkTjOUW58Rmp4LkqQ
-	 GLr3tWo8KuyvH+JmPQiY/xWdY3ghGqaIdOHSn9yuwDQ1A3Wb10rKc5QyyKkXVjw75c
-	 rJeAaNZI1AT61t2Cvvt3zBVv97lgqnMsTOlg//6A=
+	s=default; t=1604168415;
+	bh=jbJQIsNnmVBL/hC0vfUaWlEmHz/8T8FVXPn5z06RA3w=;
+	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
+	b=dLqnjygeGYKxx/svwARR84dQIrL/rnu+KUWjY5GtBJXIQAyXosWpdFXGJtAhzow6V
+	 k/Swlbnxnt28ZE99wyHvisXu07ZkNv7IbCr1e3fZQBGjfqIZfOHdMwKR5gcT1E/VjI
+	 usjuz57kWEwVJhmaC4PsclZ5iQKEPBoc32pTMzqQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726736AbgJaSUM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:20:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47284 "EHLO mail.kernel.org"
+        id S1728213AbgJaSUP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:20:15 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47344 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727967AbgJaSUM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:20:12 -0400
+        id S1727967AbgJaSUP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:20:15 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 20204206D5;
-        Sat, 31 Oct 2020 18:20:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B5A1E206E3;
+        Sat, 31 Oct 2020 18:20:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604168412;
-        bh=WeJM9sqefLyTbec/MpOe67C4HqcW9wc+PbJIX8GXQqo=;
-        h=From:To:Cc:Subject:Date:From;
-        b=tFb3o3AbvzA/GKzWSwaSam11G2jgvfJ9gPZsU7Y89kQsIop++ogPSUAM/Nnvy6Pld
-         opbjTy6WXTGOyBh+o3SgQkbeg9bNbDzWv9MZrAUL5FF3fYdSTfb7KEYILlC2MZBZhr
-         U1gX6KBXBRbt/u1QB1s7E8NH2XvieHh+yQ0qykjs=
+        s=default; t=1604168414;
+        bh=jbJQIsNnmVBL/hC0vfUaWlEmHz/8T8FVXPn5z06RA3w=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=J7IOWt6PAHkN+iznkuGVNVy5FV0MNErDNX0ktTn4O02fu4z/TRS3v3lhw6qySRroU
+         gYcNbTJjRvsfNpQn25qsWg7WpghII4fwK6F13q2njXCSYq57yt3KPttxRHyvbBczWR
+         urKn5Ii3Km+k90wT/NFqnYNG1WGyHjNUX2kmfy7k=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org, linux-i2c@vger.kernel.org
 Cc:     Wolfram Sang <wsa@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 0/3] dt-bindings: yaml conversion of i2c-gate and IIO users
-Date:   Sat, 31 Oct 2020 18:17:58 +0000
-Message-Id: <20201031181801.742585-1-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>
+Subject: [PATCH 1/3] dt-bindings:i2c:i2c-gate: txt to yaml conversion
+Date:   Sat, 31 Oct 2020 18:17:59 +0000
+Message-Id: <20201031181801.742585-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
+In-Reply-To: <20201031181801.742585-1-jic23@kernel.org>
+References: <20201031181801.742585-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -55,31 +58,121 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-As part of a general effort to convert all IIO bindings over to yaml,
-we need to handle those that specify an i2c-gate.
-As such this also includes conversion of the base i2c-gate binding
-which is then referenced by the i2c binding files.
+Needed to reference from the invensense,mpu6050 yaml binding.
 
-Jonathan Cameron (3):
-  dt-bindings:i2c:i2c-gate: txt to yaml conversion
-  dt-bindings:iio:imu:invensense,mpu6050: txt to yaml conversion
-  dt-bindings:iio:gyro:invensense,mpu3050: txt to yaml format
-    conversion.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Peter Rosin <peda@axentia.se>
+Cc: Wolfram Sang <wsa@the-dreams.de>
+---
+ .../devicetree/bindings/i2c/i2c-gate.txt      | 41 ---------------
+ .../devicetree/bindings/i2c/i2c-gate.yaml     | 52 +++++++++++++++++++
+ 2 files changed, 52 insertions(+), 41 deletions(-)
 
- .../devicetree/bindings/i2c/i2c-gate.txt      |  41 -------
- .../devicetree/bindings/i2c/i2c-gate.yaml     |  52 +++++++++
- .../iio/gyroscope/invensense,mpu3050.txt      |  45 --------
- .../iio/gyroscope/invensense,mpu3050.yaml     |  70 ++++++++++++
- .../bindings/iio/imu/inv_mpu6050.txt          |  67 -----------
- .../bindings/iio/imu/invensense,mpu6050.yaml  | 105 ++++++++++++++++++
- 6 files changed, 227 insertions(+), 153 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-gate.txt
- create mode 100644 Documentation/devicetree/bindings/i2c/i2c-gate.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
- create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.yaml
- delete mode 100644 Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
- create mode 100644 Documentation/devicetree/bindings/iio/imu/invensense,mpu6050.yaml
-
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-gate.txt b/Documentation/devicetree/bindings/i2c/i2c-gate.txt
+deleted file mode 100644
+index 1846d236e656..000000000000
+--- a/Documentation/devicetree/bindings/i2c/i2c-gate.txt
++++ /dev/null
+@@ -1,41 +0,0 @@
+-An i2c gate is useful to e.g. reduce the digital noise for RF tuners connected
+-to the i2c bus. Gates are similar to arbitrators in that you need to perform
+-some kind of operation to access the i2c bus past the arbitrator/gate, but
+-there are no competing masters to consider for gates and therefore there is
+-no arbitration happening for gates.
+-
+-Common i2c gate properties.
+-
+-- i2c-gate child node
+-
+-Required properties for the i2c-gate child node:
+-- #address-cells = <1>;
+-- #size-cells = <0>;
+-
+-Optional properties for i2c-gate child node:
+-- Child nodes conforming to i2c bus binding
+-
+-
+-Example :
+-
+-	/*
+-	   An Invensense mpu9150 at address 0x68 featuring an on-chip Asahi
+-	   Kasei ak8975 compass behind a gate.
+-	 */
+-
+-	mpu9150@68 {
+-		compatible = "invensense,mpu9150";
+-		reg = <0x68>;
+-		interrupt-parent = <&gpio1>;
+-		interrupts = <18 1>;
+-
+-		i2c-gate {
+-			#address-cells = <1>;
+-			#size-cells = <0>;
+-
+-			ax8975@c {
+-				compatible = "ak,ak8975";
+-				reg = <0x0c>;
+-			};
+-		};
+-	};
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-gate.yaml b/Documentation/devicetree/bindings/i2c/i2c-gate.yaml
+new file mode 100644
+index 000000000000..29aa0690ed9a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/i2c/i2c-gate.yaml
+@@ -0,0 +1,52 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/i2c/i2c-gate.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Common i2c gate properties
++
++maintainers:
++  - Peter Rosin <peda@axentia.se>
++
++description: |
++  An i2c gate is useful to e.g. reduce the digital noise for RF tuners connected
++  to the i2c bus. Gates are similar to arbitrators in that you need to perform
++  some kind of operation to access the i2c bus past the arbitrator/gate, but
++  there are no competing masters to consider for gates and therefore there is
++  no arbitration happening for gates.
++
++properties:
++  $nodename:
++    const: i2c-gate
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++patternProperties:
++  "^[a-zA-Z][a-zA-Z0-9,+\\-._]{0,63}@[0-9a-fA-F]+$":
++    type: object
++    description: |
++      Child nodes for i2c devices behind the gate.
++
++required:
++  - "#address-cells"
++  - "#size-cells"
++
++additionalProperties: true
++
++examples:
++  - |
++    i2c-gate {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        ak8975@c {
++            compatible = "ak,ak8975";
++            reg = <0x0c>;
++        };
++    };
++...
++
 -- 
 2.28.0
 
