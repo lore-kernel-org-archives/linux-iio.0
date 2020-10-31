@@ -5,47 +5,48 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4ECBAC5DF9D
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7FC83C4742C
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:44:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1F5DF20825
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:44:13 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 51E602074F
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:44:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604151853;
-	bh=td9VXYGlk/QYLXW1nSdUA+5ZgE6IBV9wMbAFXH8Lpx4=;
+	s=default; t=1604151856;
+	bh=imnr0hPuKLRC23kdsQVHykB3NCohVjYBaGP4M2689ww=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=tfp7AUgjPL3W3DIS9ri24xx2EN0rOUQZc2YekqYCZhKEOM6ttMSVWAuQkD9SSz4Oa
-	 2rBkdwrUdfJ5oeGXCeIUDk0/0lWYdNxR1Ji1fY3fgm7lzhEpSaQHnbB0Cb10RyyzvW
-	 V0YZ0KWoRQkYKoKPDHgNBXNj5CvrL2E13WgMMxRo=
+	b=QXGwu2qAmPIMmxw3O1NUbmmgmgEVzp8AOrlUmDEBusoCkJZBcL4oaCWNiOYInD1U9
+	 cuB6KCvn5rq6NGVE3fWwZ0QjNWiWe/sqc/dhpfK2GxwpyDFIx94WxtSbq1Q+0y9JZs
+	 9/6R5/zf/1YY3NTg6zkzuM8uxRQAVRZFIoczfsqw=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727735AbgJaNoM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 09:44:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43332 "EHLO mail.kernel.org"
+        id S1727747AbgJaNoQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 09:44:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:43414 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727692AbgJaNoM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 09:44:12 -0400
+        id S1727692AbgJaNoP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 09:44:15 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8690320756;
-        Sat, 31 Oct 2020 13:44:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id AF04820731;
+        Sat, 31 Oct 2020 13:44:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604151851;
-        bh=td9VXYGlk/QYLXW1nSdUA+5ZgE6IBV9wMbAFXH8Lpx4=;
+        s=default; t=1604151854;
+        bh=imnr0hPuKLRC23kdsQVHykB3NCohVjYBaGP4M2689ww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mvM4dcz3IBUOuH6kRMW+APJWVGPswj6mSvtHY4rUbuTIY0JJodLfFxdDKt3YU7Qdr
-         d5731NWMjZC6E4Xhdi36a158vNM/zFPKlBp4fXQVPihZDEwemeNhzAdjpMk7taxc+O
-         reuRsTIWbnXN1ISWijuaJywqf+Fs2kxUaAVMIqM0=
+        b=akvhbeZO2o6/YEN1M67IV4VPNjA9Lf6ZzLQPT58jWO3ndUMU3cac9sXIwGkRwEi09
+         i3O1Siyk9j3ZXRvfW6DaVIZ4YygreU2wWs+4nv9ldpnUVce9SalSMHhRvHtRk+H3VK
+         WgnDI3DUc9s8EqmiqAvmnshtsILE+KaxCMRixfaw=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rob Herring <robh@kernel.org>, Tomas Novotny <tomas@novotny.cz>
-Subject: [PATCH v2 20/29] dt-bindings:iio:dac:microchip,mcp4725 yaml conversion
-Date:   Sat, 31 Oct 2020 13:41:01 +0000
-Message-Id: <20201031134110.724233-21-jic23@kernel.org>
+        Rob Herring <robh@kernel.org>,
+        Vladimir Zapolskiy <vz@mleia.com>
+Subject: [PATCH v2 22/29] dt-bindings:iio:dac:nxp,lpc1850-dac yaml conversion.
+Date:   Sat, 31 Oct 2020 13:41:03 +0000
+Message-Id: <20201031134110.724233-23-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031134110.724233-1-jic23@kernel.org>
 References: <20201031134110.724233-1-jic23@kernel.org>
@@ -57,133 +58,103 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-I'm not sure vdd-supply absolutely has to be provided if vref-supply
-is, but as the previous binding docs stated it was required it seems
-reasonable to leave it as such.
+Very similar binding to that for the ADC on the same device.
+Conversion from txt to yaml format.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Reviewed-by: Rob Herring <robh@kernel.org>
-Cc: Tomas Novotny <tomas@novotny.cz>
+Acked-by: Vladimir Zapolskiy <vz@mleia.com>
 ---
- .../devicetree/bindings/iio/dac/mcp4725.txt   | 35 ---------
- .../bindings/iio/dac/microchip,mcp4725.yaml   | 71 +++++++++++++++++++
- 2 files changed, 71 insertions(+), 35 deletions(-)
+ .../bindings/iio/dac/lpc1850-dac.txt          | 19 ------
+ .../bindings/iio/dac/nxp,lpc1850-dac.yaml     | 58 +++++++++++++++++++
+ 2 files changed, 58 insertions(+), 19 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/mcp4725.txt b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+diff --git a/Documentation/devicetree/bindings/iio/dac/lpc1850-dac.txt b/Documentation/devicetree/bindings/iio/dac/lpc1850-dac.txt
 deleted file mode 100644
-index 1bc6c093fbfe..000000000000
---- a/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+index 42db783c4e75..000000000000
+--- a/Documentation/devicetree/bindings/iio/dac/lpc1850-dac.txt
 +++ /dev/null
-@@ -1,35 +0,0 @@
--Microchip mcp4725 and mcp4726 DAC device driver
+@@ -1,19 +0,0 @@
+-NXP LPC1850 DAC bindings
 -
 -Required properties:
--	- compatible: Must be "microchip,mcp4725" or "microchip,mcp4726"
--	- reg: Should contain the DAC I2C address
--	- vdd-supply: Phandle to the Vdd power supply. This supply is used as a
--	  voltage reference on mcp4725. It is used as a voltage reference on
--	  mcp4726 if there is no vref-supply specified.
+-- compatible: Should be "nxp,lpc1850-dac"
+-- reg: Offset and length of the register set for the ADC device
+-- interrupts: The interrupt number for the ADC device
+-- clocks: The root clock of the ADC controller
+-- vref-supply: The regulator supply ADC reference voltage
+-- resets: phandle to reset controller and line specifier
 -
--Optional properties (valid only for mcp4726):
--	- vref-supply: Optional phandle to the Vref power supply. Vref pin is
--	  used as a voltage reference when this supply is specified.
--	- microchip,vref-buffered: Boolean to enable buffering of the external
--	  Vref pin. This boolean is not valid without the vref-supply. Quoting
--	  the datasheet: This is offered in cases where the reference voltage
--	  does not have the current capability not to drop its voltage when
--	  connected to the internal resistor ladder circuit.
--
--Examples:
--
--	/* simple mcp4725 */
--	mcp4725@60 {
--		compatible = "microchip,mcp4725";
--		reg = <0x60>;
--		vdd-supply = <&vdac_vdd>;
--	};
--
--	/* mcp4726 with the buffered external reference voltage */
--	mcp4726@60 {
--		compatible = "microchip,mcp4726";
--		reg = <0x60>;
--		vdd-supply = <&vdac_vdd>;
--		vref-supply = <&vdac_vref>;
--		microchip,vref-buffered;
--	};
-diff --git a/Documentation/devicetree/bindings/iio/dac/microchip,mcp4725.yaml b/Documentation/devicetree/bindings/iio/dac/microchip,mcp4725.yaml
+-Example:
+-dac: dac@400e1000 {
+-	compatible = "nxp,lpc1850-dac";
+-	reg = <0x400e1000 0x1000>;
+-	interrupts = <0>;
+-	clocks = <&ccu1 CLK_APB3_DAC>;
+-	vref-supply = <&reg_vdda>;
+-	resets = <&rgu 42>;
+-};
+diff --git a/Documentation/devicetree/bindings/iio/dac/nxp,lpc1850-dac.yaml b/Documentation/devicetree/bindings/iio/dac/nxp,lpc1850-dac.yaml
 new file mode 100644
-index 000000000000..271998610ceb
+index 000000000000..595f481c548e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/microchip,mcp4725.yaml
-@@ -0,0 +1,71 @@
++++ b/Documentation/devicetree/bindings/iio/dac/nxp,lpc1850-dac.yaml
+@@ -0,0 +1,58 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/dac/microchip,mcp4725.yaml#
++$id: http://devicetree.org/schemas/iio/dac/nxp,lpc1850-dac.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Microchip mcp4725 and mcp4726 DAC
++title: NXP LPC1850 DAC bindings
 +
 +maintainers:
-+  - Tomas Novotny <tomas@novotny.cz>
++  - Jonathan Cameron <jic23@kernel.org>
++
++description:
++  Supports the DAC found on the LPC1850 SoC.
 +
 +properties:
 +  compatible:
-+    enum:
-+      - microchip,mcp4725
-+      - microchip,mcp4726
++    const: nxp,lpc1850-dac
 +
 +  reg:
 +    maxItems: 1
 +
-+  vdd-supply:
-+    description: |
-+      Provides both power and acts as the reference supply on the mcp4725.
-+      For the mcp4726 it will be used as the reference voltage if vref-supply
-+      is not provided.
++  interrupts:
++    maxItems: 1
 +
-+  vref-supply:
-+    description:
-+      Vref pin is used as a voltage reference when this supply is specified.
++  clocks:
++    maxItems: 1
 +
-+  microchip,vref-buffered:
-+    type: boolean
-+    description: |
-+      Enable buffering of the external Vref pin. This boolean is not valid
-+      without the vref-supply. Quoting the datasheet: This is offered in
-+      cases where the reference voltage does not have the current
-+      capability not to drop its voltage when connected to the internal
-+      resistor ladder circuit.
++  vref-supply: true
 +
-+allOf:
-+  - if:
-+      not:
-+        properties:
-+          compatible:
-+            contains:
-+              const: microchip,mcp4726
-+    then:
-+      properties:
-+        vref-supply: false
-+        microchip,vref-buffered: false
++  resets:
++    maxItems: 1
 +
 +required:
 +  - compatible
 +  - reg
-+  - vdd-supply
++  - interrupts
++  - clocks
++  - vref-supply
++  - resets
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    i2c {
++    #include <dt-bindings/clock/lpc18xx-ccu.h>
++    soc {
 +        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        mcp4725@60 {
-+            compatible = "microchip,mcp4725";
-+            reg = <0x60>;
-+            vdd-supply = <&vdac_vdd>;
++        #size-cells = <1>;
++        dac: dac@400e1000 {
++            compatible = "nxp,lpc1850-dac";
++            reg = <0x400e1000 0x1000>;
++            interrupts = <0>;
++            clocks = <&ccu1 CLK_APB3_DAC>;
++            vref-supply = <&reg_vdda>;
++            resets = <&rgu 42>;
 +        };
 +    };
 +...
