@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B2E7C388F7
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C2F98C56201
 	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:43:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E43C220723
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:43:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8BE1920723
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 13:43:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604151827;
-	bh=zLBM80q81oAj3l/N7gt12bUAvzlrHfrBh4PcWowdvCE=;
+	s=default; t=1604151828;
+	bh=yeq1jZ94chq5UCF3Y6Eab8tO+mAbJGLYov/bxPRYBq0=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=HU+MCq8b9bOVw2IiNbyFuPbcefdzJ7jH/uIxMr9zCdqu2pSkrLwGSyfqXM4/HZh4y
-	 cA5mTCDYoA5CYUKdHFVGnRhM+TMGk5mg+5Tpa00eVKwLz8UKPIRIrtJi+7HdrPZZxR
-	 zbLIrRw9+HwNwx5i/LYq40M8/b591lHJw/asw7i0=
+	b=aX2WhiGHlGewYMAHzKR80kqu9jKFaEsy/ScZ1ObLPkuwQzCSHpSxOo0EW2X9Sqh4+
+	 hQ6BaNvj8Q7qCR/2S9AUjjjMg/F3Jsy3RyJ4tNcg1L5Jp11d5xYczqAVzqUrWgT2jB
+	 /RILwMKj3HEQe0e0zmZiJirzbiT3ayC9/B1q9xso=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727599AbgJaNnr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 09:43:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42588 "EHLO mail.kernel.org"
+        id S1727633AbgJaNns (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 09:43:48 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42720 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727543AbgJaNno (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 09:43:44 -0400
+        id S1727591AbgJaNnr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 09:43:47 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B4D9720756;
-        Sat, 31 Oct 2020 13:43:42 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B95382071A;
+        Sat, 31 Oct 2020 13:43:45 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604151823;
-        bh=zLBM80q81oAj3l/N7gt12bUAvzlrHfrBh4PcWowdvCE=;
+        s=default; t=1604151826;
+        bh=yeq1jZ94chq5UCF3Y6Eab8tO+mAbJGLYov/bxPRYBq0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=2TWsF9B1zP0BiqW721sHmfytT+5t4WD0mk/o9inaYs+9RCtLB4St40Cm3v5aQbRxh
-         a7XNEBzvb8xE22q2kE2N1z+VKefOuXDMGhz4elSnHgMu05bJnXFL12grm5oBT0+8lm
-         QA93xEv2vMgGlZCx1clYCnoxe67/eQYZTqEfpIZM=
+        b=LsRRCw9ibSo5Rb9iez092yVwrcsD6Bef2jPfuB7XOGxOSzBhniK+sM9Hi4BldPCJ8
+         Nl/pjYcc9fsYKfs+dArep+4qPOnNYifzS7Tgm20OGdS5RUhAhM4BeqBWeFW/Em2Vrq
+         Tcjb77w/7eqrElNVKIr3uq+oUrp7Z6ieFB86LSzM=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 02/29] dt-bindings:iio:humidity:htu21 Drop separate doc + add to trivial-devices
-Date:   Sat, 31 Oct 2020 13:40:43 +0000
-Message-Id: <20201031134110.724233-3-jic23@kernel.org>
+        Rob Herring <robh@kernel.org>, Harald Geyer <harald@ccbib.org>
+Subject: [PATCH v2 04/29] dt-bindings:iio:humidity:dht11 yaml conversion
+Date:   Sat, 31 Oct 2020 13:40:45 +0000
+Message-Id: <20201031134110.724233-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031134110.724233-1-jic23@kernel.org>
 References: <20201031134110.724233-1-jic23@kernel.org>
@@ -57,50 +57,92 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Very simple binding for this i2c device with no properties beyond
-reg and compatible.  Hence doesn't need it's own document.
+The conversion is straight forward, but leaves an open question.
+The compatible for this device has never had a vendor.
+
+Harald Geyer has identified as probably being made by aosong,
+but we have no current match to any of their more specific part
+numbers.  As such, this is noted in the file but the
+compatible doesn't include the vendor prefix.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Reviewed-by: Rob Herring <robh@kernel.org>
+Acked-By: Harald Geyer <harald@ccbib.org>
 ---
- .../devicetree/bindings/iio/humidity/htu21.txt      | 13 -------------
- .../devicetree/bindings/trivial-devices.yaml        |  4 ++++
- 2 files changed, 4 insertions(+), 13 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/humidity/htu21.txt b/Documentation/devicetree/bindings/iio/humidity/htu21.txt
+v2: Added note on aosong as probably manufacturer
+
+ .../bindings/iio/humidity/dht11.txt           | 14 -------
+ .../bindings/iio/humidity/dht11.yaml          | 41 +++++++++++++++++++
+ 2 files changed, 41 insertions(+), 14 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/humidity/dht11.txt b/Documentation/devicetree/bindings/iio/humidity/dht11.txt
 deleted file mode 100644
-index 97d79636f7ae..000000000000
---- a/Documentation/devicetree/bindings/iio/humidity/htu21.txt
+index ecc24c199fd6..000000000000
+--- a/Documentation/devicetree/bindings/iio/humidity/dht11.txt
 +++ /dev/null
-@@ -1,13 +0,0 @@
--*HTU21 - Measurement-Specialties htu21 temperature & humidity sensor and humidity part of MS8607 sensor
+@@ -1,14 +0,0 @@
+-* DHT11 humidity/temperature sensor (and compatibles like DHT22)
 -
 -Required properties:
--
--	- compatible: should be "meas,htu21" or "meas,ms8607-humidity"
--	- reg: I2C address of the sensor
+-  - compatible: Should be "dht11"
+-  - gpios: Should specify the GPIO connected to the sensor's data
+-    line, see "gpios property" in
+-    Documentation/devicetree/bindings/gpio/gpio.txt.
 -
 -Example:
 -
--htu21@40 {
--	compatible = "meas,htu21";
--	reg = <0x40>;
--};
-diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index d37f757e6bd1..43febb3057b6 100644
---- a/Documentation/devicetree/bindings/trivial-devices.yaml
-+++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -132,6 +132,10 @@ properties:
-           - mcube,mc3230
-             # MEMSIC 2-axis 8-bit digital accelerometer
-           - memsic,mxc6225
-+            # Measurement Specialities I2C temperature and humidity sensor
-+          - meas,htu21
-+            # Measurement Specialities temp and humidity part of ms8607 device
-+          - meas,ms8607-humidity
-             # Microchip differential I2C ADC, 1 Channel, 18 bit
-           - microchip,mcp3421
-             # Microchip differential I2C ADC, 2 Channel, 18 bit
+-humidity_sensor {
+-	compatible = "dht11";
+-	gpios = <&gpio0 6 0>;
+-}
+diff --git a/Documentation/devicetree/bindings/iio/humidity/dht11.yaml b/Documentation/devicetree/bindings/iio/humidity/dht11.yaml
+new file mode 100644
+index 000000000000..2247481d0203
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/humidity/dht11.yaml
+@@ -0,0 +1,41 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/humidity/dht11.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: DHT11 humidity + temperature sensor
++
++maintainers:
++  - Harald Geyer <harald@ccbib.org>
++
++description: |
++   A simple and low cost module providing a non standard single GPIO based
++   interface.  It is believed the part is made by aosong but don't have
++   absolute confirmation of this, or what the aosong part number is.
++
++properties:
++  compatible:
++    const: dht11
++
++  reg:
++    maxItems: 1
++
++  gpios:
++    maxItems: 1
++    description:
++      Single, interrupt capable, GPIO used to communicate with the device.
++
++required:
++  - compatible
++  - gpios
++
++additionalProperties: false
++
++examples:
++  - |
++    humidity_sensor {
++        compatible = "dht11";
++        gpios = <&gpio0 6 0>;
++    };
++...
 -- 
 2.28.0
 
