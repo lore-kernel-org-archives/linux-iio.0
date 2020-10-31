@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D37DDC55179
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0DDCC5DF9D
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A0F96206D5
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7CE1E206E3
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604168110;
-	bh=Za5exTD0a3RmhL7Ob2UhOE7IOWXzYlzSvz5GMsTToo8=;
+	s=default; t=1604168111;
+	bh=oAO6hYALRFY8QJ0jyjR+2tZNlN8Y0J3uYxsPvH4gG/8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=E3voC/9wtraVg94uFXNz18/2e568Okz+jqSrsKdserOAR1hJieA/y4TUEj0zi304t
-	 Qx2O1QJkLwZNAR84SHSXxkrwj1xVrK05YDfSPTS7Orvlw9lI0aJqKhhsOBoGNkBSf+
-	 nhQYAz9DipCduwl/Hgaj4qjJJalWi62pJ6BBdmwU=
+	b=2C72eCCQyq0j0GnEeeIAo2YQ6l9gR4c+hVAQg0J61h0YeQbRmh9CflWbxoXNYNPJk
+	 3nO9q6sXGbIZYa1wZ5IvjJd+mL+b8OyG+k1O95MD4rACiXfatoaWkYxfVWmzjV4bBj
+	 VqFYTo6sVSnCVADY32MwqETaL6PekPyRms2Nen5c=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728332AbgJaSPH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:15:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46274 "EHLO mail.kernel.org"
+        id S1727967AbgJaSPK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:15:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46332 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728344AbgJaSPE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:15:04 -0400
+        id S1728352AbgJaSPH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:15:07 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DE5AF206E3;
-        Sat, 31 Oct 2020 18:15:02 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E0593206A5;
+        Sat, 31 Oct 2020 18:15:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604168104;
-        bh=Za5exTD0a3RmhL7Ob2UhOE7IOWXzYlzSvz5GMsTToo8=;
+        s=default; t=1604168107;
+        bh=oAO6hYALRFY8QJ0jyjR+2tZNlN8Y0J3uYxsPvH4gG/8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ePGlAk5Va5+w4pv82PhGHDy2perbG3HYCP1mzkSpZbHcSdP2cjA8LvcuhE54JxOVE
-         kogoU58gdzdLy8Sb6aH0Xt05PNBAqdgCv7S0rnCuFqOWwmHXbifw1JJPbtzKz4wfhS
-         7XPnL7skU3t152cbcnfHDzDp2XUgYeAKX+ouGd6s=
+        b=QpArb/nu/ZfUHGMsuaINJ3i1lGH5ktCZWvhxyv+OnwB1fbOW2ZLBqB6wQ4SAjtQ5m
+         YdyHK8szW3uQrIqGGRa8soNNrUSaj8dwo2u07vV4kDWL8tFMMcnWPdUYOGKYL/yp0O
+         TfGn4M2cwmi4iYQE1YZKKI/i2zl+phzvZd73nFz8=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Peter Rosin <peda@axentia.se>
-Subject: [PATCH 08/10] dt-bindings:iio:afe:voltage-divider: txt to yaml conversion
-Date:   Sat, 31 Oct 2020 18:12:40 +0000
-Message-Id: <20201031181242.742301-9-jic23@kernel.org>
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH 10/10] dt-bindings:iio:potentiostat:ti,lmp91000: txt to yaml conversion.
+Date:   Sat, 31 Oct 2020 18:12:42 +0000
+Message-Id: <20201031181242.742301-11-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031181242.742301-1-jic23@kernel.org>
 References: <20201031181242.742301-1-jic23@kernel.org>
@@ -57,168 +57,128 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Simple binding so straight forward conversion, though did require
-adding a separate binding document for the max1027 to reflect
-its abilities to provide channels to consumers.
+There were a few parts of the example that did not conform to the
+binding description and would not have worked with the Linux driver
+as a result.  Fixed them whilst doing this conversion.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Peter Rosin <peda@axentia.se>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- .../bindings/iio/afe/voltage-divider.txt      | 53 -----------
- .../bindings/iio/afe/voltage-divider.yaml     | 88 +++++++++++++++++++
- 2 files changed, 88 insertions(+), 53 deletions(-)
+ .../bindings/iio/potentiostat/lmp91000.txt    | 33 ---------
+ .../iio/potentiostat/ti,lmp91000.yaml         | 68 +++++++++++++++++++
+ 2 files changed, 68 insertions(+), 33 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/afe/voltage-divider.txt b/Documentation/devicetree/bindings/iio/afe/voltage-divider.txt
+diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
 deleted file mode 100644
-index b452a8406107..000000000000
---- a/Documentation/devicetree/bindings/iio/afe/voltage-divider.txt
+index f3ab02b0dd41..000000000000
+--- a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
 +++ /dev/null
-@@ -1,53 +0,0 @@
--Voltage divider
--===============
+@@ -1,33 +0,0 @@
+-* Texas Instruments LMP91000 series of potentiostats
 -
--When an io-channel measures the midpoint of a voltage divider, the
--interesting voltage is often the voltage over the full resistance
--of the divider. This binding describes the voltage divider in such
--a curcuit.
--
--    Vin ----.
--            |
--         .-----.
--         |  R  |
--         '-----'
--            |
--            +---- Vout
--            |
--         .-----.
--         | Rout|
--         '-----'
--            |
--           GND
+-LMP91000: https://www.ti.com/lit/ds/symlink/lmp91000.pdf
+-LMP91002: https://www.ti.com/lit/ds/symlink/lmp91002.pdf
 -
 -Required properties:
--- compatible : "voltage-divider"
--- io-channels : Channel node of a voltage io-channel measuring Vout.
--- output-ohms : Resistance Rout over which the output voltage is measured.
--	        See full-ohms.
--- full-ohms : Resistance R + Rout for the full divider. The io-channel
--	      is scaled by the Rout / (R + Rout) quotient.
+-
+-  - compatible: should be one of the following:
+-                 "ti,lmp91000"
+-                 "ti,lmp91002"
+-  - reg: the I2C address of the device
+-  - io-channels: the phandle of the iio provider
+-
+-  - ti,external-tia-resistor: if the property ti,tia-gain-ohm is not defined this
+-    needs to be set to signal that an external resistor value is being used.
+-
+-Optional properties:
+-
+-  - ti,tia-gain-ohm: ohm value of the internal resistor for the transimpedance
+-    amplifier. Must be 2750, 3500, 7000, 14000, 35000, 120000, or 350000 ohms.
+-
+-  - ti,rload-ohm: ohm value of the internal resistor load applied to the gas
+-    sensor. Must be 10, 33, 50, or 100 (default) ohms.
 -
 -Example:
--The system voltage is circa 12V, but divided down with a 22/222
--voltage divider (R = 200 Ohms, Rout = 22 Ohms) and fed to an ADC.
 -
--sysv {
--	compatible = "voltage-divider";
--	io-channels = <&maxadc 1>;
--
--	/* Scale the system voltage by 22/222 to fit the ADC range. */
--	output-ohms = <22>;
--	full-ohms = <222>; /* 200 + 22 */
+-lmp91000@48 {
+-	compatible = "ti,lmp91000";
+-	reg = <0x48>;
+-	ti,tia-gain-ohm = <7500>;
+-	ti,rload = <100>;
+-	io-channels = <&adc>;
 -};
--
--&spi {
--	maxadc: adc@0 {
--		compatible = "maxim,max1027";
--		reg = <0>;
--		#io-channel-cells = <1>;
--		interrupt-parent = <&gpio5>;
--		interrupts = <15 IRQ_TYPE_EDGE_RISING>;
--		spi-max-frequency = <1000000>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml b/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
+diff --git a/Documentation/devicetree/bindings/iio/potentiostat/ti,lmp91000.yaml b/Documentation/devicetree/bindings/iio/potentiostat/ti,lmp91000.yaml
 new file mode 100644
-index 000000000000..fefce8c9f6dc
+index 000000000000..e4b5d890e8d5
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
-@@ -0,0 +1,88 @@
++++ b/Documentation/devicetree/bindings/iio/potentiostat/ti,lmp91000.yaml
+@@ -0,0 +1,68 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/afe/voltage-divider.yaml#
++$id: http://devicetree.org/schemas/iio/potentiostat/ti,lmp91000.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Voltage divider
++title: Texas Instruments LMP91000 series of potentiostats with I2C control
 +
 +maintainers:
-+  - Peter Rosin <peda@axentia.se>
++  - Matt Ranostay <matt.ranostay@konsulko.com>
 +
 +description: |
-+  When an io-channel measures the midpoint of a voltage divider, the
-+  interesting voltage is often the voltage over the full resistance
-+  of the divider. This binding describes the voltage divider in such
-+  a curcuit.
-+
-+    Vin ----.
-+            |
-+         .-----.
-+         |  R  |
-+         '-----'
-+            |
-+            +---- Vout
-+            |
-+         .-----.
-+         | Rout|
-+         '-----'
-+            |
-+           GND
-+
++  Typically used as a signal conditioner for chemical sensors.
++  LMP91000: https://www.ti.com/lit/ds/symlink/lmp91000.pdf
++  LMP91002: https://www.ti.com/lit/ds/symlink/lmp91002.pdf
 +
 +properties:
 +  compatible:
-+    const: voltage-divider
++    enum:
++      - ti,lmp91000
++      - ti,lmp91002
++
++  reg:
++    maxItems: 1
 +
 +  io-channels:
 +    maxItems: 1
-+    description: |
-+      Channel node of a voltage io-channel.
 +
-+  output-ohms:
-+    $ref: /schemas/types.yaml#/definitions/uint32
++  ti,external-tia-resistor:
++    $ref: /schemas/types.yaml#/definitions/flag
 +    description:
-+      Resistance Rout over which the output voltage is measured. See full-ohms.
++      If the property ti,tia-gain-ohm is not defined this needs to be set to
++      signal that an external resistor value is being used.
 +
-+  full-ohms:
++  ti,tia-gain-ohm:
 +    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [2750, 3500, 7000, 14000, 35000, 120000, 350000]
 +    description:
-+      Resistance R + Rout for the full divider. The io-channel is scaled by
-+      the Rout / (R + Rout) quotient.
++      Internal resistor for the transimpedance amplifier.
++
++  ti,rload-ohm:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    enum: [10, 33, 50, 100]
++    description:
++      Internal resistor load applied to the gas sensor.
++      Default 100 Ohms.
 +
 +required:
 +  - compatible
++  - reg
 +  - io-channels
-+  - output-ohms
-+  - full-ohms
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    /*
-+     * The system voltage is circa 12V, but divided down with a 22/222
-+     * voltage divider (R = 200 Ohms, Rout = 22 Ohms) and fed to an ADC.
-+     */
-+    spi {
++    i2c {
 +        #address-cells = <1>;
 +        #size-cells = <0>;
-+        maxadc: adc@0 {
-+            compatible = "maxim,max1027";
-+            reg = <0>;
-+            #io-channel-cells = <1>;
-+            interrupt-parent = <&gpio5>;
-+            interrupts = <15 IRQ_TYPE_EDGE_RISING>;
-+            spi-max-frequency = <1000000>;
++        lmp91000@48 {
++            compatible = "ti,lmp91000";
++            reg = <0x48>;
++            ti,tia-gain-ohm = <7000>;
++            ti,rload-ohm = <100>;
++            io-channels = <&adc>;
 +        };
-+    };
-+    sysv {
-+        compatible = "voltage-divider";
-+        io-channels = <&maxadc 1>;
-+
-+        /* Scale the system voltage by 22/222 to fit the ADC range. */
-+        output-ohms = <22>;
-+        full-ohms = <222>; /* 200 + 22 */
 +    };
 +...
 -- 
