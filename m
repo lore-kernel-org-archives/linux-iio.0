@@ -7,45 +7,45 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33D96C63777
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D37DDC55179
 	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F0C96206F9
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A0F96206D5
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:15:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
 	s=default; t=1604168110;
-	bh=uqY3t5DS/fLrjmuPBA7eur8K8fB96S7fLULj9OOiZw4=;
+	bh=Za5exTD0a3RmhL7Ob2UhOE7IOWXzYlzSvz5GMsTToo8=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=I7EMrhRg/pUEeos1TMIwpIPLbXr66NpwLBN+EdPmQD7Z/IZtS6SSplOlmIiRKh+Ai
-	 AnTpuUwIZpRoZf9FEd5UDlD+0Es7+hRxfFTyLBJblHEA90xJlMw3Jfx0GMTYcsjMap
-	 tpuV3029lP+Y5ms4HSQVXlT0KwjxjWcZ0xmm3mmc=
+	b=E3voC/9wtraVg94uFXNz18/2e568Okz+jqSrsKdserOAR1hJieA/y4TUEj0zi304t
+	 Qx2O1QJkLwZNAR84SHSXxkrwj1xVrK05YDfSPTS7Orvlw9lI0aJqKhhsOBoGNkBSf+
+	 nhQYAz9DipCduwl/Hgaj4qjJJalWi62pJ6BBdmwU=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728344AbgJaSPI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:15:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46174 "EHLO mail.kernel.org"
+        id S1728332AbgJaSPH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:15:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46274 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728247AbgJaSO6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:14:58 -0400
+        id S1728344AbgJaSPE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:15:04 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E336F20709;
-        Sat, 31 Oct 2020 18:14:56 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id DE5AF206E3;
+        Sat, 31 Oct 2020 18:15:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604168098;
-        bh=uqY3t5DS/fLrjmuPBA7eur8K8fB96S7fLULj9OOiZw4=;
+        s=default; t=1604168104;
+        bh=Za5exTD0a3RmhL7Ob2UhOE7IOWXzYlzSvz5GMsTToo8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=0u5DT0qQ62kOs9tCaPSdEGLe20bgpq5FOJJAoFmQ0QOu3Iby7uEzwXSKqHr8RaVPk
-         DDZKSS6+715OBw++hVenWzw2O8u/YmMKsOOTv4V7cQSqyu98eQd7VH27B3hp/Zr1P4
-         aWvjTSl87/oddhAa5INe8hoy9Q/xTUEuROmWGX7o=
+        b=ePGlAk5Va5+w4pv82PhGHDy2perbG3HYCP1mzkSpZbHcSdP2cjA8LvcuhE54JxOVE
+         kogoU58gdzdLy8Sb6aH0Xt05PNBAqdgCv7S0rnCuFqOWwmHXbifw1JJPbtzKz4wfhS
+         7XPnL7skU3t152cbcnfHDzDp2XUgYeAKX+ouGd6s=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Peter Rosin <peda@axentia.se>
-Subject: [PATCH 04/10] dt-bindings:iio:adc:envelope-detector: txt to yaml conversion.
-Date:   Sat, 31 Oct 2020 18:12:36 +0000
-Message-Id: <20201031181242.742301-5-jic23@kernel.org>
+Subject: [PATCH 08/10] dt-bindings:iio:afe:voltage-divider: txt to yaml conversion
+Date:   Sat, 31 Oct 2020 18:12:40 +0000
+Message-Id: <20201031181242.742301-9-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031181242.742301-1-jic23@kernel.org>
 References: <20201031181242.742301-1-jic23@kernel.org>
@@ -57,169 +57,170 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Straight forward format conversion.  The example in here is fun in
-that it has 2 separate provider / consumer pairs.
+Simple binding so straight forward conversion, though did require
+adding a separate binding document for the max1027 to reflect
+its abilities to provide channels to consumers.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Cc: Peter Rosin <peda@axentia.se>
 ---
- .../bindings/iio/adc/envelope-detector.txt    | 54 ------------
- .../bindings/iio/adc/envelope-detector.yaml   | 87 +++++++++++++++++++
- 2 files changed, 87 insertions(+), 54 deletions(-)
+ .../bindings/iio/afe/voltage-divider.txt      | 53 -----------
+ .../bindings/iio/afe/voltage-divider.yaml     | 88 +++++++++++++++++++
+ 2 files changed, 88 insertions(+), 53 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
+diff --git a/Documentation/devicetree/bindings/iio/afe/voltage-divider.txt b/Documentation/devicetree/bindings/iio/afe/voltage-divider.txt
 deleted file mode 100644
-index 27544bdd4478..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
+index b452a8406107..000000000000
+--- a/Documentation/devicetree/bindings/iio/afe/voltage-divider.txt
 +++ /dev/null
-@@ -1,54 +0,0 @@
--Bindings for ADC envelope detector using a DAC and a comparator
+@@ -1,53 +0,0 @@
+-Voltage divider
+-===============
 -
--The DAC is used to find the peak level of an alternating voltage input
--signal by a binary search using the output of a comparator wired to
--an interrupt pin. Like so:
--                          _
--                         | \
--    input +------>-------|+ \
--                         |   \
--           .-------.     |    }---.
--           |       |     |   /    |
--           |    dac|-->--|- /     |
--           |       |     |_/      |
--           |       |              |
--           |       |              |
--           |    irq|------<-------'
--           |       |
--           '-------'
+-When an io-channel measures the midpoint of a voltage divider, the
+-interesting voltage is often the voltage over the full resistance
+-of the divider. This binding describes the voltage divider in such
+-a curcuit.
+-
+-    Vin ----.
+-            |
+-         .-----.
+-         |  R  |
+-         '-----'
+-            |
+-            +---- Vout
+-            |
+-         .-----.
+-         | Rout|
+-         '-----'
+-            |
+-           GND
 -
 -Required properties:
--- compatible: Should be "axentia,tse850-envelope-detector"
--- io-channels: Channel node of the dac to be used for comparator input.
--- io-channel-names: Should be "dac".
--- interrupt specification for one client interrupt,
--  see ../../interrupt-controller/interrupts.txt for details.
--- interrupt-names: Should be "comp".
+-- compatible : "voltage-divider"
+-- io-channels : Channel node of a voltage io-channel measuring Vout.
+-- output-ohms : Resistance Rout over which the output voltage is measured.
+-	        See full-ohms.
+-- full-ohms : Resistance R + Rout for the full divider. The io-channel
+-	      is scaled by the Rout / (R + Rout) quotient.
 -
 -Example:
+-The system voltage is circa 12V, but divided down with a 22/222
+-voltage divider (R = 200 Ohms, Rout = 22 Ohms) and fed to an ADC.
 -
--	&i2c {
--		dpot: mcp4651-104@28 {
--			compatible = "microchip,mcp4651-104";
--			reg = <0x28>;
--			#io-channel-cells = <1>;
--		};
--	};
+-sysv {
+-	compatible = "voltage-divider";
+-	io-channels = <&maxadc 1>;
 -
--	dac: dac {
--		compatible = "dpot-dac";
--		vref-supply = <&reg_3v3>;
--		io-channels = <&dpot 0>;
--		io-channel-names = "dpot";
+-	/* Scale the system voltage by 22/222 to fit the ADC range. */
+-	output-ohms = <22>;
+-	full-ohms = <222>; /* 200 + 22 */
+-};
+-
+-&spi {
+-	maxadc: adc@0 {
+-		compatible = "maxim,max1027";
+-		reg = <0>;
 -		#io-channel-cells = <1>;
+-		interrupt-parent = <&gpio5>;
+-		interrupts = <15 IRQ_TYPE_EDGE_RISING>;
+-		spi-max-frequency = <1000000>;
 -	};
--
--	envelope-detector {
--		compatible = "axentia,tse850-envelope-detector";
--		io-channels = <&dac 0>;
--		io-channel-names = "dac";
--
--		interrupt-parent = <&gpio>;
--		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
--		interrupt-names = "comp";
--	};
-diff --git a/Documentation/devicetree/bindings/iio/adc/envelope-detector.yaml b/Documentation/devicetree/bindings/iio/adc/envelope-detector.yaml
+-};
+diff --git a/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml b/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
 new file mode 100644
-index 000000000000..6048be936aba
+index 000000000000..fefce8c9f6dc
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/envelope-detector.yaml
-@@ -0,0 +1,87 @@
++++ b/Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
+@@ -0,0 +1,88 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/envelope-detector.yaml#
++$id: http://devicetree.org/schemas/iio/afe/voltage-divider.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: ADC envelope detector using a DAC and a comparator
++title: Voltage divider
 +
 +maintainers:
 +  - Peter Rosin <peda@axentia.se>
 +
 +description: |
-+  The DAC is used to find the peak level of an alternating voltage input
-+  signal by a binary search using the output of a comparator wired to
-+  an interrupt pin. Like so:
-+                          _
-+                         | \
-+    input +------>-------|+ \
-+                         |   \
-+           .-------.     |    }---.
-+           |       |     |   /    |
-+           |    dac|-->--|- /     |
-+           |       |     |_/      |
-+           |       |              |
-+           |       |              |
-+           |    irq|------<-------'
-+           |       |
-+           '-------'
++  When an io-channel measures the midpoint of a voltage divider, the
++  interesting voltage is often the voltage over the full resistance
++  of the divider. This binding describes the voltage divider in such
++  a curcuit.
++
++    Vin ----.
++            |
++         .-----.
++         |  R  |
++         '-----'
++            |
++            +---- Vout
++            |
++         .-----.
++         | Rout|
++         '-----'
++            |
++           GND
++
 +
 +properties:
 +  compatible:
-+    const: axentia,tse850-envelope-detector
++    const: voltage-divider
 +
 +  io-channels:
 +    maxItems: 1
-+    description: Channel node of the dac to be used for comparator input.
++    description: |
++      Channel node of a voltage io-channel.
 +
-+  io-channel-names:
-+    const: dac
++  output-ohms:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      Resistance Rout over which the output voltage is measured. See full-ohms.
 +
-+  interrupts:
-+    maxItems: 1
-+
-+  interrupt-names:
-+    const: comp
++  full-ohms:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description:
++      Resistance R + Rout for the full divider. The io-channel is scaled by
++      the Rout / (R + Rout) quotient.
 +
 +required:
 +  - compatible
 +  - io-channels
-+  - io-channel-names
-+  - interrupts
-+  - interrupt-names
++  - output-ohms
++  - full-ohms
 +
 +additionalProperties: false
 +
 +examples:
 +  - |
 +    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
++    /*
++     * The system voltage is circa 12V, but divided down with a 22/222
++     * voltage divider (R = 200 Ohms, Rout = 22 Ohms) and fed to an ADC.
++     */
++    spi {
 +        #address-cells = <1>;
 +        #size-cells = <0>;
-+        dpot: dpot@28 {
-+            compatible = "microchip,mcp4651-104";
-+            reg = <0x28>;
++        maxadc: adc@0 {
++            compatible = "maxim,max1027";
++            reg = <0>;
 +            #io-channel-cells = <1>;
++            interrupt-parent = <&gpio5>;
++            interrupts = <15 IRQ_TYPE_EDGE_RISING>;
++            spi-max-frequency = <1000000>;
 +        };
 +    };
++    sysv {
++        compatible = "voltage-divider";
++        io-channels = <&maxadc 1>;
 +
-+    dac: dac {
-+        compatible = "dpot-dac";
-+        vref-supply = <&reg_3v3>;
-+        io-channels = <&dpot 0>;
-+        io-channel-names = "dpot";
-+        #io-channel-cells = <1>;
-+    };
-+
-+    envelope-detector {
-+        compatible = "axentia,tse850-envelope-detector";
-+        io-channels = <&dac 0>;
-+        io-channel-names = "dac";
-+
-+        interrupt-parent = <&gpio>;
-+        interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
-+        interrupt-names = "comp";
++        /* Scale the system voltage by 22/222 to fit the ADC range. */
++        output-ohms = <22>;
++        full-ohms = <222>; /* 200 + 22 */
 +    };
 +...
-+
 -- 
 2.28.0
 
