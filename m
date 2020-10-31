@@ -5,48 +5,47 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A39C55179
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:31:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4232C55178
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:31:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 04100206F9
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:31:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B39DE20729
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:31:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604169095;
-	bh=k4JPkpV36ENPtPE2AyB0tinJaMT3wFejSdzxJgCJhpg=;
+	s=default; t=1604169096;
+	bh=S+/kNmr/Ho0dwopTRNR3DWGY/LWhcjUUFL/C4x+AMPw=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=anm+E9LERbFnX0P5P4pc09bQc/LIECFukZtj3b0/2jtC52adlnEAOZEPAJUBhSSYO
-	 iDBf9+8R9YyL2RWAZMr7dOBflhP9DUQ7vHcSFnEJzo3SzJtvyXRQTmq7q3zfav9hoi
-	 NY4jCTu4WVePI/cERgsf2r3ANvubqWBV+LvLUb7c=
+	b=qVFHZK+jmbUOwCpKnfngRoRFyfcn6pi2D6n4wsSXv8+633g3TCyLukPb2s7laHcc6
+	 ZEULo7dadUd8EZwAu1kfgmbNnVOgMBgBP4yW61C6X8X01q8+O3saq5HiaJKruPsLP2
+	 CgB+7X74nvEX5dTwf+yXgdrAbgEEtyZEaT00KCHc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728360AbgJaSbe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:31:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54022 "EHLO mail.kernel.org"
+        id S1728367AbgJaSbg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:31:36 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54086 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727967AbgJaSbe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:31:34 -0400
+        id S1727967AbgJaSbg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:31:36 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8C83F2071A;
-        Sat, 31 Oct 2020 18:31:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3219A20723;
+        Sat, 31 Oct 2020 18:31:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604169093;
-        bh=k4JPkpV36ENPtPE2AyB0tinJaMT3wFejSdzxJgCJhpg=;
+        s=default; t=1604169095;
+        bh=S+/kNmr/Ho0dwopTRNR3DWGY/LWhcjUUFL/C4x+AMPw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Pln/8lIIkY0d2aoi/NB1FJ2EJqfnqKaNlneFhMJjKgNsOVetBRvbL+STSChKYJzpv
-         l8a/bMiz1bmW2nonrq0t99LahhPrzFda/3Extlh1tx0+3HOUYhE6n3Um13xc0n7S6e
-         ZlCZCXAZvyWmg215BumxsJhgqpc1Z6tfs9AC9s6g=
+        b=kHCyIRIwcupQ2GXWe/xc+CIm+SQ6yHFnMR7D+VJUPiCbTEQJg/Ri+yUVXiZIi8Yo9
+         4U68zH4ZIo8N62g9j5xKusmJnct0sFGsk6D/Q83r24JmnBP54bUkJGLg+hTQPWlHc9
+         ZAQxOqOM+PBYXVVcI/oJvU/r9g7PEaJnAF2CeRJs=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sebastien Bourdelin <sebastien.bourdelin@gmail.com>,
-        Himanshu Jha <himanshujha199640@gmail.com>
-Subject: [PATCH 2/7] dt-bindings:iio:chemical:bosch,bme180: Move to trivial devices
-Date:   Sat, 31 Oct 2020 18:29:17 +0000
-Message-Id: <20201031182922.743153-3-jic23@kernel.org>
+        Slawomir Stepien <sst@poczta.fm>
+Subject: [PATCH 3/7] dt-bindings:iio:potentiometer:maxim,ds1803 move to trivial devices.
+Date:   Sat, 31 Oct 2020 18:29:18 +0000
+Message-Id: <20201031182922.743153-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031182922.743153-1-jic23@kernel.org>
 References: <20201031182922.743153-1-jic23@kernel.org>
@@ -58,46 +57,61 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Very simple binding so no need to maintain a separate file.
+Simple binding where there is no obvious benefit in maintaining a
+separate file.  Hence document in trivial-devices.yaml and drop
+the txt file.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Sebastien Bourdelin <sebastien.bourdelin@gmail.com>
-Cc: Himanshu Jha <himanshujha199640@gmail.com>
+Cc: Slawomir Stepien <sst@poczta.fm>
 ---
- .../devicetree/bindings/iio/chemical/bme680.txt       | 11 -----------
- .../devicetree/bindings/trivial-devices.yaml          |  2 ++
- 2 files changed, 2 insertions(+), 11 deletions(-)
+ .../bindings/iio/potentiometer/ds1803.txt     | 21 -------------------
+ .../devicetree/bindings/trivial-devices.yaml  |  6 ++++++
+ 2 files changed, 6 insertions(+), 21 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/chemical/bme680.txt b/Documentation/devicetree/bindings/iio/chemical/bme680.txt
+diff --git a/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt b/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
 deleted file mode 100644
-index 7f3827cfb2ff..000000000000
---- a/Documentation/devicetree/bindings/iio/chemical/bme680.txt
+index df77bf552656..000000000000
+--- a/Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
 +++ /dev/null
-@@ -1,11 +0,0 @@
--Bosch Sensortec BME680 pressure/temperature/humidity/voc sensors
+@@ -1,21 +0,0 @@
+-* Maxim Integrated DS1803 digital potentiometer driver
+-
+-The node for this driver must be a child node of a I2C controller, hence
+-all mandatory properties for your controller must be specified. See directory:
+-
+-        Documentation/devicetree/bindings/i2c
+-
+-for more details.
 -
 -Required properties:
--- compatible: must be "bosch,bme680"
+-	- compatible:  	Must be one of the following, depending on the
+-			model:
+-			"maxim,ds1803-010",
+-			"maxim,ds1803-050",
+-			"maxim,ds1803-100"
 -
 -Example:
--
--bme680@76 {
--          compatible = "bosch,bme680";
--          reg = <0x76>;
+-ds1803: ds1803@1 {
+-	reg = <0x28>;
+-	compatible = "maxim,ds1803-010";
 -};
 diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index 642502761106..10f0afd44684 100644
+index 10f0afd44684..695b1e379238 100644
 --- a/Documentation/devicetree/bindings/trivial-devices.yaml
 +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -44,6 +44,8 @@ properties:
-           - atmel,atsha204a
-             # i2c h/w elliptic curve crypto module
-           - atmel,atecc508a
-+            # Bosch Sensortec preassure, temperature, humididty and VOC sensor
-+          - bosch,bme680
-             # CM32181: Ambient Light Sensor
-           - capella,cm32181
-             # CM3232: Ambient Light Sensor
+@@ -110,6 +110,12 @@ properties:
+           - isil,isl68137
+             # 5 Bit Programmable, Pulse-Width Modulator
+           - maxim,ds1050
++            # 10 kOhm digital potentiometer with I2C interface
++          - maxim,ds1803-010
++            # 50 kOhm digital potentiometer with I2C interface
++          - maxim,ds1803-050
++            # 100 kOhm digital potentiometer with I2C interface
++          - maxim,ds1803-100
+             # Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
+           - maxim,max1237
+             # PECI-to-I2C translator for PECI-to-SMBus/I2C protocol conversion
 -- 
 2.28.0
 
