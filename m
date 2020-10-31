@@ -5,48 +5,47 @@ X-Spam-Level:
 X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 544A4C388F9
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:52:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 754B6C5517A
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:52:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2470720729
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:52:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 39C9B2072C
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:52:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604170321;
-	bh=dkhq8aeKyBrwS8VEAzZqhk9tRqNu7aZfA0D9vLmY4JE=;
+	s=default; t=1604170324;
+	bh=wnXWTxJo+4XkKc+gpzNSmMjl4Sp4fe6181L7kywo6ZE=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=Xzzc2nUjIyJyl4P5TphK0OF6f9eJiYjH375nv/thloWbuiljlJhm7Sy4TtfXA49M2
-	 sl7NaVWwyvvKoMlwSMrWj7LUhMQ1lqYhv0TnGaoO/CftCW2oqEKSVcixyBedVe+djC
-	 0wNgZmA0gU/tzHsd42MDNTxH5NNPuA/L1z46wLTA=
+	b=TW2nrGAQRsOdhmQxsRfgnocXrdpawWa/MYsEca8alds3tDsZzRywQRorbp967yc1Q
+	 7DLCkjAxFeBl/ds4BBCuL91g/gHe5cpSYcAOdiX9UC/EyE+EVXas7NH4JsEl9Tleoc
+	 rQDw+1oO6BI7HfkeT5UffQs1CaY+5R8P2H8nZ8Uc=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728442AbgJaSwA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:52:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35262 "EHLO mail.kernel.org"
+        id S1728446AbgJaSwD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:52:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:35334 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728399AbgJaSwA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:52:00 -0400
+        id S1728399AbgJaSwD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:52:03 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8002920702;
-        Sat, 31 Oct 2020 18:51:58 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B1DE920720;
+        Sat, 31 Oct 2020 18:52:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604170319;
-        bh=dkhq8aeKyBrwS8VEAzZqhk9tRqNu7aZfA0D9vLmY4JE=;
+        s=default; t=1604170322;
+        bh=wnXWTxJo+4XkKc+gpzNSmMjl4Sp4fe6181L7kywo6ZE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=azppVyUOdHvR2GFBehbtQylQxl7id0OrrhSDozR4LePqJ3PeXAbXTAHGUne8tx8Hu
-         Lqsh9OBNNJGOt1TFwj4jsUl+IDfN0v6HX5rIz4n68o21eGvDno54HtiaQF7jRelqAJ
-         mT/6PBrnytkj1gni0gD44GfkLrZFbdJwC1UEqwiw=
+        b=sfwk2KOdtHjK4IBBbw911ciLf0qCBJLM4zybtFM6pVrSXxsrjjMr/9JTSUGkMLYBh
+         48iuJY6u9EgdXgtkptIWOL3CfI2HF+PQ+kQVeKEpPXKhFUV6QrxqxhHqBwn07xO3mQ
+         65SXxmP+1Q2U47Y0nrH5DsELub+msKLOEF68bhAY=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Manivannan Sadhasivam <manivannanece23@gmail.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 22/46] dt-bindings:iio:light:st,vl6180: txt to yaml format conversion.
-Date:   Sat, 31 Oct 2020 18:48:30 +0000
-Message-Id: <20201031184854.745828-23-jic23@kernel.org>
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 24/46] dt-bindings:iio:magnetometer:asahi-kasei,ak8974: txt to yaml format conversion
+Date:   Sat, 31 Oct 2020 18:48:32 +0000
+Message-Id: <20201031184854.745828-25-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031184854.745828-1-jic23@kernel.org>
 References: <20201031184854.745828-1-jic23@kernel.org>
@@ -58,52 +57,93 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-I'm not sure anyone would use this part primarily as an ALS,
-given the time of flight laser also present, but I'll stick with the
-original decision on where to put the binding.
-
-Added interrupts property as the device has a GPIO interrupt even
-if the driver is not currently using it.
+Simple conversion.  I have pruned descriptions that did not add much useful
+detail.  Note that the mount-matrix description will form part of a generic
+IIO binding.  No need to repeat that in every driver that uses it.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Manivannan Sadhasivam <manivannanece23@gmail.com>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 ---
- .../bindings/iio/light/st,vl6180.yaml         | 45 +++++++++++++++++++
- .../devicetree/bindings/iio/light/vl6180.txt  | 15 -------
- 2 files changed, 45 insertions(+), 15 deletions(-)
+ .../bindings/iio/magnetometer/ak8974.txt      | 31 ----------
+ .../iio/magnetometer/asahi-kasei,ak8974.yaml  | 57 +++++++++++++++++++
+ 2 files changed, 57 insertions(+), 31 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/light/st,vl6180.yaml b/Documentation/devicetree/bindings/iio/light/st,vl6180.yaml
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt
+deleted file mode 100644
+index 7f06eff3b504..000000000000
+--- a/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt
++++ /dev/null
+@@ -1,31 +0,0 @@
+-* Asahi Kasei AK8974 magnetometer sensor
+-
+-Required properties:
+-
+-- compatible:
+-    * "asahi-kasei,ak8974"
+-    * "alps,hscdtd008a"
+-- reg : the I2C address of the magnetometer
+-
+-Optional properties:
+-
+-- avdd-supply: regulator supply for the analog voltage
+-  (see regulator/regulator.txt)
+-- dvdd-supply: regulator supply for the digital voltage
+-  (see regulator/regulator.txt)
+-- interrupts: data ready (DRDY) and interrupt (INT1) lines
+-  from the chip, the DRDY interrupt must be placed first.
+-  The interrupts can be triggered on rising or falling
+-  edges alike.
+-- mount-matrix: an optional 3x3 mounting rotation matrix
+-
+-Example:
+-
+-ak8974@f {
+-	compatible = "asahi-kasei,ak8974";
+-	reg = <0x0f>;
+-	avdd-supply = <&foo_reg>;
+-	dvdd-supply = <&bar_reg>;
+-	interrupts = <0 IRQ_TYPE_EDGE_RISING>,
+-		     <1 IRQ_TYPE_EDGE_RISING>;
+-};
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8974.yaml b/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8974.yaml
 new file mode 100644
-index 000000000000..27c36ab7990d
+index 000000000000..cefb70def188
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/st,vl6180.yaml
-@@ -0,0 +1,45 @@
++++ b/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8974.yaml
+@@ -0,0 +1,57 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/light/st,vl6180.yaml#
++$id: http://devicetree.org/schemas/iio/magnetometer/asahi-kasei,ak8974.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: STMicro VL6180 ALS, range and proximity sensor
++title: Asahi Kasei AK8974 magnetometer sensor
 +
 +maintainers:
-+  - Manivannan Sadhasivam <manivannanece23@gmail.com>
-+  - Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-+
-+description: |
-+  Proximity sensing module incorporating time of flight sensor
-+  Datasheet at https://www.st.com/resource/en/datasheet/vl6180x.pdf
++  - Linus Walleij <linus.walleij@linaro.org>
 +
 +properties:
 +  compatible:
-+    const: st,vl6180
++    enum:
++      - alps,hscdtd008a
++      - asahi-kasei,ak8974
 +
 +  reg:
 +    maxItems: 1
 +
 +  interrupts:
-+    maxItems: 1
++    minItems: 1
++    maxItems: 2
++    description: |
++      Data ready (DRDY) and interrupt (INT1) lines from the chip. The DRDY
++      interrupt must be placed first. The interrupts can be triggered on
++      rising or falling edges.
++
++  avdd-supply: true
++
++  dvdd-supply: true
++
++  mount-matrix: true
 +
 +additionalProperties: false
 +
@@ -118,33 +158,16 @@ index 000000000000..27c36ab7990d
 +        #address-cells = <1>;
 +        #size-cells = <0>;
 +
-+        proximity@29 {
-+            compatible = "st,vl6180";
-+            reg = <0x29>;
++        magnetometer@f {
++            compatible = "asahi-kasei,ak8974";
++            reg = <0x0f>;
++            avdd-supply = <&foo_reg>;
++            dvdd-supply = <&bar_reg>;
++            interrupts = <0 IRQ_TYPE_EDGE_RISING>,
++                         <1 IRQ_TYPE_EDGE_RISING>;
 +        };
 +    };
 +...
-diff --git a/Documentation/devicetree/bindings/iio/light/vl6180.txt b/Documentation/devicetree/bindings/iio/light/vl6180.txt
-deleted file mode 100644
-index fb9137d85df9..000000000000
---- a/Documentation/devicetree/bindings/iio/light/vl6180.txt
-+++ /dev/null
-@@ -1,15 +0,0 @@
--STMicro VL6180 -  ALS, range and proximity sensor
--
--Link to datasheet: https://www.st.com/resource/en/datasheet/vl6180x.pdf
--
--Required properties:
--
--	-compatible: should be "st,vl6180"
--	-reg: the I2C address of the sensor
--
--Example:
--
--vl6180@29 {
--	compatible = "st,vl6180";
--	reg = <0x29>;
--};
 -- 
 2.28.0
 
