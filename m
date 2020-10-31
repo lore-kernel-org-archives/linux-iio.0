@@ -7,45 +7,44 @@ X-Spam-Status: No, score=-13.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A63EBC55178
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:14:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8E6AC56201
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:14:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 76CEA206D5
-	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:14:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8079120719
+	for <linux-iio@archiver.kernel.org>; Sat, 31 Oct 2020 18:14:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604168097;
-	bh=r/HMSSHlxN7A44SSKNFurR/Pa6IplZTBID1cSbgL6aM=;
+	s=default; t=1604168098;
+	bh=NMc1PNAZQxUSeAZbY3Gczu/MXpIt6te8IgTivcFzDlc=;
 	h=From:To:Cc:Subject:Date:In-Reply-To:References:List-ID:From;
-	b=fGawVDSCWt5KbBYJGkN3Tj5QTJC4j9GKrlAGR4/Wn9A6UacKd7KAhbt8BvaIZaJ7D
-	 vkWSXYCUj7AsbD3OBt/oiicemZNfeLGFVjVjz0xKAgCtd+0CjAOhKXJ9p9OZOALiB8
-	 uJ5LTbmewfcRl6jUGfAaigL3dL3biyFyBvE/T0+o=
+	b=Y89KZQzqD8mP5my9RjfKJ0iaGMN6QfZ1xHG4Oyp/fhx/TpBQ5IE0ZuIYrBmm5tbGM
+	 blfy1BmB7toCntPJY4QJ37brM7dhT1r2OYg78LOWYFqKk+jevVhWRVAfblJWZ56ZI1
+	 TZbZ92tBYB0ZWHQX7JJ3esaG8Qi+gSxBqRePx3kI=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728329AbgJaSO4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Oct 2020 14:14:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:46120 "EHLO mail.kernel.org"
+        id S1728316AbgJaSOy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Oct 2020 14:14:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46106 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728324AbgJaSOz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 31 Oct 2020 14:14:55 -0400
+        id S1728263AbgJaSOy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 31 Oct 2020 14:14:54 -0400
 Received: from localhost.localdomain (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A69F206DD;
-        Sat, 31 Oct 2020 18:14:53 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id BD764206F9;
+        Sat, 31 Oct 2020 18:14:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604168095;
-        bh=r/HMSSHlxN7A44SSKNFurR/Pa6IplZTBID1cSbgL6aM=;
+        s=default; t=1604168093;
+        bh=NMc1PNAZQxUSeAZbY3Gczu/MXpIt6te8IgTivcFzDlc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=a6sjw362l/vZIfp+FC6Ne5HEZHZPwT4MQ8E17CYl6Re4yyQa2jZXHODvVlX1lf41A
-         8brfG/NUVllV2DOCpxRWOmdSWAGTNirl6pw4zZaspWdsZa+B7qI71qjKgeXcA7IqLD
-         8UZGruB/pLiZq0LT/a9gATTAOWf6U6txGEYcliPk=
+        b=Fkz5vcgT87Abb7uu9li5CAvBaM6/gaRoIhxKika5fpxmeKgt1Mm9Zine6ygjqNa/Y
+         sQTKUuMv1zh0XjDEluSTGcNCYKS5jrYzUUXk4Zwn9c+/wsiO7risJsJBLqvfP/hnL9
+         7voKoy/FK1ZeOV1ySNIUdSaf4C6cguibIVj38MxM=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
         devicetree@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Peter Rosin <peda@axentia.se>
-Subject: [PATCH 02/10] dt-bindings:iio:dac:dpot-dac: yaml conversion.
-Date:   Sat, 31 Oct 2020 18:12:34 +0000
-Message-Id: <20201031181242.742301-3-jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 01/10] dt-bindings:iio:iio-binding.txt Drop file as content now in dt-schema
+Date:   Sat, 31 Oct 2020 18:12:33 +0000
+Message-Id: <20201031181242.742301-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201031181242.742301-1-jic23@kernel.org>
 References: <20201031181242.742301-1-jic23@kernel.org>
@@ -57,136 +56,122 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Txt to yaml format conversion.  I dropped the example section
-describing the measurement ADC, as that isn't strictly part
-of this binding.
-
-Uses the new dt-schema/schema/iio/iio-consumer.yaml schema.
+File contained generic IIO wide bindings.
+Now part of the external dt-schema repository.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Peter Rosin <peda@axentia.se>
 ---
- .../devicetree/bindings/iio/dac/dpot-dac.txt  | 41 ------------
- .../devicetree/bindings/iio/dac/dpot-dac.yaml | 64 +++++++++++++++++++
- 2 files changed, 64 insertions(+), 41 deletions(-)
+ .../devicetree/bindings/iio/iio-bindings.txt  | 102 ------------------
+ 1 file changed, 102 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+diff --git a/Documentation/devicetree/bindings/iio/iio-bindings.txt b/Documentation/devicetree/bindings/iio/iio-bindings.txt
 deleted file mode 100644
-index fdf47a01bfef..000000000000
---- a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+index aa63cac7323e..000000000000
+--- a/Documentation/devicetree/bindings/iio/iio-bindings.txt
 +++ /dev/null
-@@ -1,41 +0,0 @@
--Bindings for DAC emulation using a digital potentiometer
+@@ -1,102 +0,0 @@
+-This binding is derived from clock bindings, and based on suggestions
+-from Lars-Peter Clausen [1].
 -
--It is assumed that the dpot is used as a voltage divider between the
--current dpot wiper setting and the maximum resistance of the dpot. The
--divided voltage is provided by a vref regulator.
+-Sources of IIO channels can be represented by any node in the device
+-tree. Those nodes are designated as IIO providers. IIO consumer
+-nodes use a phandle and IIO specifier pair to connect IIO provider
+-outputs to IIO inputs. Similar to the gpio specifiers, an IIO
+-specifier is an array of one or more cells identifying the IIO
+-output on a device. The length of an IIO specifier is defined by the
+-value of a #io-channel-cells property in the IIO provider node.
 -
--                  .------.
--   .-----------.  |      |
--   | vref      |--'    .---.
--   | regulator |--.    |   |
--   '-----------'  |    | d |
--                  |    | p |
--                  |    | o |  wiper
--                  |    | t |<---------+
--                  |    |   |
--                  |    '---'       dac output voltage
--                  |      |
--                  '------+------------+
+-[1] https://marc.info/?l=linux-iio&m=135902119507483&w=2
+-
+-==IIO providers==
 -
 -Required properties:
--- compatible: Should be "dpot-dac"
--- vref-supply: The regulator supplying the voltage divider.
--- io-channels: Channel node of the dpot to be used for the voltage division.
--- io-channel-names: Should be "dpot".
+-#io-channel-cells: Number of cells in an IIO specifier; Typically 0 for nodes
+-		   with a single IIO output and 1 for nodes with multiple
+-		   IIO outputs.
 -
--Example:
+-Optional properties:
+-label:		   A symbolic name for the device.
 -
--	&i2c {
--		dpot: mcp4651-503@28 {
--			compatible = "microchip,mcp4651-503";
--			reg = <0x28>;
+-
+-Example for a simple configuration with no trigger:
+-
+-	adc: voltage-sensor@35 {
+-		compatible = "maxim,max1139";
+-		reg = <0x35>;
+-		#io-channel-cells = <1>;
+-		label = "voltage_feedback_group1";
+-	};
+-
+-Example for a configuration with trigger:
+-
+-	adc@35 {
+-		compatible = "some-vendor,some-adc";
+-		reg = <0x35>;
+-
+-		adc1: iio-device@0 {
 -			#io-channel-cells = <1>;
+-			/* other properties */
+-		};
+-		adc2: iio-device@1 {
+-			#io-channel-cells = <1>;
+-			/* other properties */
 -		};
 -	};
 -
--	dac {
--		compatible = "dpot-dac";
--		vref-supply = <&reg_3v3>;
--		io-channels = <&dpot 0>;
--		io-channel-names = "dpot";
+-==IIO consumers==
+-
+-Required properties:
+-io-channels:	List of phandle and IIO specifier pairs, one pair
+-		for each IIO input to the device. Note: if the
+-		IIO provider specifies '0' for #io-channel-cells,
+-		then only the phandle portion of the pair will appear.
+-
+-Optional properties:
+-io-channel-names:
+-		List of IIO input name strings sorted in the same
+-		order as the io-channels property. Consumers drivers
+-		will use io-channel-names to match IIO input names
+-		with IIO specifiers.
+-io-channel-ranges:
+-		Empty property indicating that child nodes can inherit named
+-		IIO channels from this node. Useful for bus nodes to provide
+-		and IIO channel to their children.
+-
+-For example:
+-
+-	device {
+-		io-channels = <&adc 1>, <&ref 0>;
+-		io-channel-names = "vcc", "vdd";
 -	};
-diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.yaml b/Documentation/devicetree/bindings/iio/dac/dpot-dac.yaml
-new file mode 100644
-index 000000000000..6a7ca8e432d1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/dpot-dac.yaml
-@@ -0,0 +1,64 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/dac/dpot-dac.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: DAC emulation using a digital potentiometer
-+
-+maintainers:
-+  - Peter Rosin <peda@axentia.se>
-+
-+description: |
-+  It is assumed that the dpot is used as a voltage divider between the
-+  current dpot wiper setting and the maximum resistance of the dpot. The
-+  divided voltage is provided by a vref regulator.
-+
-+                  .------.
-+   .-----------.  |      |
-+   | vref      |--'    .---.
-+   | regulator |--.    |   |
-+   '-----------'  |    | d |
-+                  |    | p |
-+                  |    | o |  wiper
-+                  |    | t |<---------+
-+                  |    |   |
-+                  |    '---'       dac output voltage
-+                  |      |
-+                  '------+------------+
-+
-+properties:
-+  compatible:
-+    const: dpot-dac
-+
-+  vref-supply:
-+    description: Regulator supplying the voltage divider.
-+
-+  io-channels:
-+    maxItems: 1
-+    description: |
-+      Channel node of the dpot to be used for the voltage division.
-+
-+  io-channel-names:
-+    const: dpot
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - vref-supply
-+  - io-channels
-+  - io-channel-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    dac {
-+        compatible = "dpot-dac";
-+        vref-supply = <&reg_3v3>;
-+        io-channels = <&dpot 0>;
-+        io-channel-names = "dpot";
-+    };
-+...
+-
+-This represents a device with two IIO inputs, named "vcc" and "vdd".
+-The vcc channel is connected to output 1 of the &adc device, and the
+-vdd channel is connected to output 0 of the &ref device.
+-
+-==Example==
+-
+-	adc: max1139@35 {
+-		compatible = "maxim,max1139";
+-		reg = <0x35>;
+-		#io-channel-cells = <1>;
+-	};
+-
+-	...
+-
+-	iio-hwmon {
+-		compatible = "iio-hwmon";
+-		io-channels = <&adc 0>, <&adc 1>, <&adc 2>,
+-			<&adc 3>, <&adc 4>, <&adc 5>,
+-			<&adc 6>, <&adc 7>, <&adc 8>,
+-			<&adc 9>;
+-	};
+-
+-	some_consumer {
+-		compatible = "some-consumer";
+-		io-channels = <&adc 10>, <&adc 11>;
+-		io-channel-names = "adc1", "adc2";
+-	};
 -- 
 2.28.0
 
