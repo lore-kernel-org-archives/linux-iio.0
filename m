@@ -2,56 +2,58 @@ Return-Path: <SRS0=DicA=EH=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5310C2D0A3
-	for <linux-iio@archiver.kernel.org>; Sun,  1 Nov 2020 15:32:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 95DF5C4741F
+	for <linux-iio@archiver.kernel.org>; Sun,  1 Nov 2020 15:34:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A868420723
-	for <linux-iio@archiver.kernel.org>; Sun,  1 Nov 2020 15:32:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 55D9A2224E
+	for <linux-iio@archiver.kernel.org>; Sun,  1 Nov 2020 15:34:53 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604244751;
-	bh=zaRSNwY1ZAh179FupbjBNapW+0OGmxmNUA2NqRQM7DA=;
+	s=default; t=1604244893;
+	bh=UQsIf8GFwl4kaVslPomFKf2DtFdFx3IH16pt4zhUhac=;
 	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
-	b=TtN8GOO5qrecEnP5iajYQQhctjaTtTmXyAJKC+bBQmUf2Nshs0n7wsr771C3pddt/
-	 PmVMPGMnl3u1yh5Ftk7gc5YQwZmuuFUUvVJKW2W3j1qdF6HoVXmqpa1XMJYTxQWyJs
-	 JeHB6pEB2gKk/HitMAnQkRPiWDxjBuDxQBPtzFPI=
+	b=lpmIgoz8NGnLxXGTyuiG90tVqTA3BLWzDuTVOgc5mg1rRbFtY+PUqzYEsjy+V0zrV
+	 n8i+OGSGeg7GvgpymvtpbDOugyySyYa3x/YxbloUlkSeGvcE2ruX2yjgMnGpojCOhk
+	 Jy4AnqDy/xniIz4v1eezpJj37V1NjtwKRf1wi8qo=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726555AbgKAPcb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 1 Nov 2020 10:32:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50222 "EHLO mail.kernel.org"
+        id S1726821AbgKAPeu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 1 Nov 2020 10:34:50 -0500
+Received: from mail.kernel.org ([198.145.29.99]:51806 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726549AbgKAPca (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 1 Nov 2020 10:32:30 -0500
+        id S1726555AbgKAPet (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 1 Nov 2020 10:34:49 -0500
 Received: from archlinux (cpc149474-cmbg20-2-0-cust94.5-4.cable.virginm.net [82.4.196.95])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 07331206D8;
-        Sun,  1 Nov 2020 15:32:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9C12E206D8;
+        Sun,  1 Nov 2020 15:34:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1604244750;
-        bh=zaRSNwY1ZAh179FupbjBNapW+0OGmxmNUA2NqRQM7DA=;
+        s=default; t=1604244889;
+        bh=UQsIf8GFwl4kaVslPomFKf2DtFdFx3IH16pt4zhUhac=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=wB+1iKH/vDi/y6iMdpvBhXq5ykVyK6NFK3Qbre4RK8xVpLewqtmHU5OiDVTVbcao7
-         5JfCP/wyiVXtk/jpUyC+/J5OqGKpRL1oAZ9j4zUrqNVfuIjcui33sgK0OmNFTmrRNi
-         CXOe6tW3hVJLsBmEcSrtBGvyD4cFwlIQWwxejtS8=
-Date:   Sun, 1 Nov 2020 15:32:25 +0000
+        b=zMRKSbKUpkqBBgZVawdbTDRoeSpvmRXcBEj6F3vpER+NV2SIFjdhmcrm7tFjW54SJ
+         hiX6v0zQ7UFfkN4ScSsfHz2h+ExlqB3F5QRAtqFBIIeObISAhiG4X4eoiUV//svDqn
+         TM3blzDTiU1QFr1mq/oJp1U+LVvNpiRuE+hno1Oc=
+Date:   Sun, 1 Nov 2020 15:34:43 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Cc:     trix@redhat.com, lars@metafoo.de, pmeerw@pmeerw.net,
-        khilman@baylibre.com, Neil Armstrong <narmstrong@baylibre.com>,
-        jbrunet@baylibre.com, andy.shevchenko@gmail.com, krzk@kernel.org,
-        alexandru.ardelean@analog.com, jonathan.albrieux@gmail.com,
+To:     Gene Chen <gene.chen.richtek@gmail.com>
+Cc:     robh+dt@kernel.org, matthias.bgg@gmail.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: remove unneeded break
-Message-ID: <20201101153225.0abf45c2@archlinux>
-In-Reply-To: <CAFBinCDKf_TJb9ONfz+383NB0yKDb2a_zxXktAoBHKg_03L2+Q@mail.gmail.com>
-References: <20201019172824.32166-1-trix@redhat.com>
-        <CAFBinCDKf_TJb9ONfz+383NB0yKDb2a_zxXktAoBHKg_03L2+Q@mail.gmail.com>
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        gene_chen@richtek.com, Wilma.Wu@mediatek.com,
+        shufan_lee@richtek.com, cy_huang@richtek.com,
+        benjamin.chao@mediatek.com
+Subject: Re: [PATCH v7 1/3] dt-bindings: iio: adc: add bindings doc for
+ MT6360 ADC
+Message-ID: <20201101153443.3826103e@archlinux>
+In-Reply-To: <1603181267-15610-2-git-send-email-gene.chen.richtek@gmail.com>
+References: <1603181267-15610-1-git-send-email-gene.chen.richtek@gmail.com>
+        <1603181267-15610-2-git-send-email-gene.chen.richtek@gmail.com>
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -60,23 +62,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 20 Oct 2020 21:39:17 +0200
-Martin Blumenstingl <martin.blumenstingl@googlemail.com> wrote:
+On Tue, 20 Oct 2020 16:07:45 +0800
+Gene Chen <gene.chen.richtek@gmail.com> wrote:
 
-> On Mon, Oct 19, 2020 at 7:28 PM <trix@redhat.com> wrote:
-> >
-> > From: Tom Rix <trix@redhat.com>
-> >
-> > A break is not needed if it is preceded by a return
-> >
-> > Signed-off-by: Tom Rix <trix@redhat.com>
-> > ---
-> >  drivers/iio/adc/meson_saradc.c       | 2 --  
-> for meson_saradc.c:
-> Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Applied,
+> From: Gene Chen <gene_chen@richtek.com>
+> 
+> This change adds the binding doc for the MT6360 ADC.
 
-Thanks,
+One thing I'd previously missed below.
 
 Jonathan
+
+> 
+> Signed-off-by: Gene Chen <gene_chen@richtek.com>
+> ---
+>  .../bindings/iio/adc/mediatek,mt6360-adc.yaml      | 34 ++++++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/mediatek,mt6360-adc.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt6360-adc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt6360-adc.yaml
+> new file mode 100644
+> index 0000000..a7350ec
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt6360-adc.yaml
+> @@ -0,0 +1,34 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/mediatek,mt6360-adc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Mediatek MT6360 and similar ADCs
+> +
+> +maintainers:
+> +  - Gene Chen <gene_chen@richtek.com>
+> +
+> +description: |
+> +  Family of simple ADCs with i2c interface and internal references.
+
+That seems unlikely...
+
+> +
+> +properties:
+> +  compatible:
+> +    const: mediatek,mt6360-adc
+> +
+> +  "#io-channel-cells":
+> +    const: 1
+> +
+> +required:
+> +  - compatible
+> +  - "#io-channel-cells"
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    adc {
+> +      compatible = "mediatek,mt6360-adc";
+> +      #io-channel-cells = <1>;
+> +    };
+> +...
 
