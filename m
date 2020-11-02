@@ -1,194 +1,112 @@
-Return-Path: <SRS0=OzwY=EF=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=wfAe=EI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable autolearn_force=no
+X-Spam-Status: No, score=-12.6 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0030DC00A89
-	for <linux-iio@archiver.kernel.org>; Fri, 30 Oct 2020 06:33:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6098CC00A89
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 22:35:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B114022258
-	for <linux-iio@archiver.kernel.org>; Fri, 30 Oct 2020 06:33:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1271D2084C
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 22:35:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="ASUzYsr9"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="MyC2MLo3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725827AbgJ3Gdq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 30 Oct 2020 02:33:46 -0400
-Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:48006 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1725355AbgJ3Gdq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Oct 2020 02:33:46 -0400
-Received: from pps.filterd (m0098419.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 09U6Ud2r194419;
-        Fri, 30 Oct 2020 02:33:44 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : in-reply-to : references : date : message-id : mime-version :
- content-type; s=pp1; bh=a5fAtWaCtw2lw0dSgLdjA+CSR8i93E5P4UH6V5O3U0U=;
- b=ASUzYsr9w5PpIlo1FB1Ujvp4AT5YXH/OUre7Gkp3TDu90qGcpRmvyPjU0AUUYnRxmqG0
- 7vmmN2sP3M7cVc/O+Rda3iOTvpOVji7shv3DHKfGIdcDJXRZZuSMGr6NLUnJbjG+tBFp
- Juc6oDm95+h5SspcMspge/3HT+LWaYZ9I0uL4oB9nGfzicRJ6Wsfl7zvItlgDNcyTWt4
- nnY2QLVyYwMf//UzG7l+fzLLAO4V6HLrUQRGqTEM11EUfSLTfK3Sys6tWbG+1CfiTrPZ
- D3H7tFAQ317lT4utCRZMHCVhNuIYSoO8jmtflcv4DnHKDeKyWHhyzdUDndjk605C6MTD VA== 
-Received: from ppma04fra.de.ibm.com (6a.4a.5195.ip4.static.sl-reverse.com [149.81.74.106])
-        by mx0b-001b2d01.pphosted.com with ESMTP id 34g15h5cq8-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Oct 2020 02:33:44 -0400
-Received: from pps.filterd (ppma04fra.de.ibm.com [127.0.0.1])
-        by ppma04fra.de.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 09U6O1Zx017390;
-        Fri, 30 Oct 2020 06:33:42 GMT
-Received: from b06avi18626390.portsmouth.uk.ibm.com (b06avi18626390.portsmouth.uk.ibm.com [9.149.26.192])
-        by ppma04fra.de.ibm.com with ESMTP id 34f7s3s051-2
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 30 Oct 2020 06:33:42 +0000
-Received: from d06av26.portsmouth.uk.ibm.com (d06av26.portsmouth.uk.ibm.com [9.149.105.62])
-        by b06avi18626390.portsmouth.uk.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 09U6Xc8235455466
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Fri, 30 Oct 2020 06:33:38 GMT
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EA5E7AE04D;
-        Fri, 30 Oct 2020 06:33:37 +0000 (GMT)
-Received: from d06av26.portsmouth.uk.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id EF445AE055;
-        Fri, 30 Oct 2020 06:33:04 +0000 (GMT)
-Received: from vajain21.in.ibm.com (unknown [9.79.209.23])
-        by d06av26.portsmouth.uk.ibm.com (Postfix) with SMTP;
-        Fri, 30 Oct 2020 06:33:04 +0000 (GMT)
-Received: by vajain21.in.ibm.com (sSMTP sendmail emulation); Fri, 30 Oct 2020 12:03:03 +0530
-From:   Vaibhav Jain <vaibhav@linux.ibm.com>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Peter Chen <peter.chen@nxp.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jerry Snitselaar <jsnitsel@redhat.com>,
-        dri-devel@lists.freedesktop.org, Pavel Machek <pavel@ucw.cz>,
-        Christian Gromm <christian.gromm@microchip.com>,
-        ceph-devel@vger.kernel.org, Kan Liang <kan.liang@linux.intel.com>,
-        Bart Van Assche <bvanassche@acm.org>,
-        linux-acpi@vger.kernel.org,
-        Danil Kipnis <danil.kipnis@cloud.ionos.com>,
-        Samuel Thibault <samuel.thibault@ens-lyon.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Ohad Ben-Cohen <ohad@wizery.com>, linux-pm@vger.kernel.org,
-        Simon Gaiser <simon@invisiblethingslab.com>,
-        Avri Altman <avri.altman@wdc.com>,
-        Alexander Antonov <alexander.antonov@linux.intel.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Stefan Achatz <erazor_de@users.sourceforge.net>,
-        Konstantin Khlebnikov <koct9i@gmail.com>,
-        Mathieu Malaterre <malat@debian.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        linux-kernel@vger.kernel.org,
-        Hans Verkuil <hverkuil-cisco@xs4all.nl>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Wu Hao <hao.wu@intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@intel.com>,
-        Saravana Kannan <saravanak@google.com>,
-        Gregory CLEMENT <gregory.clement@bootlin.com>,
-        Anton Vorontsov <anton@enomsg.org>,
-        Marek =?utf-8?Q?Marczykowski-G=C3=B3r?= =?utf-8?Q?ecki?= 
-        <marmarek@invisiblethingslab.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Len Brown <lenb@kernel.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Suzuki K Poulose <suzuki.poulose@arm.com>,
-        coresight@lists.linaro.org, linux-media@vger.kernel.org,
-        Frederic@d06av26.portsmouth.uk.ibm.com,
-        "Barrat <fbarrat"@linux.ibm.com
-Subject: Re: [PATCH 30/33] docs: ABI: cleanup several ABI documents
-In-Reply-To: <95ef2cf3a58f4e50f17d9e58e0d9440ad14d0427.1603893146.git.mchehab+huawei@kernel.org>
-References: <cover.1603893146.git.mchehab+huawei@kernel.org>
- <95ef2cf3a58f4e50f17d9e58e0d9440ad14d0427.1603893146.git.mchehab+huawei@kernel.org>
-Date:   Fri, 30 Oct 2020 12:03:03 +0530
-Message-ID: <87k0v8jk9s.fsf@vajain21.in.ibm.com>
+        id S1725933AbgKBWfh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 Nov 2020 17:35:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40442 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725829AbgKBWfh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Nov 2020 17:35:37 -0500
+Received: from mail-ej1-x642.google.com (mail-ej1-x642.google.com [IPv6:2a00:1450:4864:20::642])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01125C0617A6;
+        Mon,  2 Nov 2020 14:35:37 -0800 (PST)
+Received: by mail-ej1-x642.google.com with SMTP id w13so7618026eju.13;
+        Mon, 02 Nov 2020 14:35:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J7nOY/CMBrCc1yEj5RA267szHi6fVAQcuYVsfxRG2l4=;
+        b=MyC2MLo3fY+8+mqhUMbKTmdekGYgyuUib/UPpK5ahWOjDMEMJZTv6Jf8qy2hweyWym
+         ZNGogdWY9PHc64A6YjzmB/p9Lgcg2x/Hp8zYISyAFDnuWG2oERhnL5b43raKXso3PzKA
+         QyJ+uELWNrK8RGqOXNbhWsHO+SYXDiPdDdfz0CLXqwXFtnT2MzuMxnocY8MPRsJVmM9/
+         qQus2vl1ujBWbFirBzOOkUg/JkLRN4f6enrOhU3L3pYzdtzjbqtbM62WpJAblPUVM/zR
+         59SYp0LJf9PCpgwfeoE4+o060lCjPUPvXCjjdFfKwA9C8CMoqaNNR/8Xg5vtatDzpdjy
+         EYcw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=J7nOY/CMBrCc1yEj5RA267szHi6fVAQcuYVsfxRG2l4=;
+        b=bSekBdOio6IR+gufp8XllM5i4qLtHqDUAdE6/G59XEzafRWx3jNlVz40Z39fIpJOZ2
+         yNn6n3WNeV/474MUs/+9Z796yZ3zModhBfrk8H7lWNe/FP/5QAqMBubMxcrU5u6wd+4C
+         jVX1tIASmA18e89oX5ltKVEsWJK4qNkUcgaMDEOP7aSRZ0GoenSFQTJIzkRnz941TQNe
+         aKiICLE8JOHadgggl2gB2EFXG1jJziXm5CjnCynr/dvc5eNWiV1Ws3eYkZb2vuVoV6wz
+         2LB6QdSgItr6LWv7Nwyu+b25gjPbptmVZvFEt3CgD1Q1CFPwx0AJNMhx9WSebJk3zqnN
+         wmdQ==
+X-Gm-Message-State: AOAM530alJTAy555PJpQZT0MTJS43EO4RnCeantOuCBmsFALCOET54a+
+        zZ4hATxykoiSCw8RgGM4RXVRZuEIEnV5jw==
+X-Google-Smtp-Source: ABdhPJzf4mBvdfYdod1Rw2hhb5Xvo8/yAKwUJZbnBZdgLyZvf1m34Ub7JEwQD9YeiTwePAGsMc2CuQ==
+X-Received: by 2002:a17:906:840e:: with SMTP id n14mr5266686ejx.147.1604356535728;
+        Mon, 02 Nov 2020 14:35:35 -0800 (PST)
+Received: from necip-pc.vpn.ucf.edu ([85.153.224.24])
+        by smtp.gmail.com with ESMTPSA id la9sm1550707ejb.121.2020.11.02.14.35.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2020 14:35:35 -0800 (PST)
+From:   Necip Fazil Yildiran <fazilyildiran@gmail.com>
+To:     jic23@kernel.org
+Cc:     pn@denx.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, paul@pgazz.com, jeho@cs.utexas.edu,
+        Necip Fazil Yildiran <fazilyildiran@gmail.com>
+Subject: [PATCH] iio: light: fix kconfig dependency bug for VCNL4035
+Date:   Tue,  3 Nov 2020 01:35:24 +0300
+Message-Id: <20201102223523.572461-1-fazilyildiran@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-TM-AS-GCONF: 00
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-10-29_12:2020-10-29,2020-10-29 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 mlxlogscore=999
- priorityscore=1501 suspectscore=2 bulkscore=0 adultscore=0 mlxscore=0
- spamscore=0 lowpriorityscore=0 clxscore=1011 malwarescore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2010300046
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Mauro Carvalho Chehab <mchehab+huawei@kernel.org> writes:
+When VCNL4035 is enabled and IIO_BUFFER is disabled, it results in the
+following Kbuild warning:
 
-> There are some ABI documents that, while they don't generate
-> any warnings, they have issues when parsed by get_abi.pl script
-> on its output result.
->
-> Address them, in order to provide a clean output.
->
-> Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+WARNING: unmet direct dependencies detected for IIO_TRIGGERED_BUFFER
+  Depends on [n]: IIO [=y] && IIO_BUFFER [=n]
+  Selected by [y]:
+  - VCNL4035 [=y] && IIO [=y] && I2C [=y]
 
-<snip>
-> diff --git a/Documentation/ABI/testing/sysfs-bus-papr-pmem b/Documentation/ABI/testing/sysfs-bus-papr-pmem
-> index c1a67275c43f..8316c33862a0 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-papr-pmem
-> +++ b/Documentation/ABI/testing/sysfs-bus-papr-pmem
-> @@ -11,19 +11,26 @@ Description:
->  		at 'Documentation/powerpc/papr_hcalls.rst' . Below are
->  		the flags reported in this sysfs file:
->  
-> -		* "not_armed"	: Indicates that NVDIMM contents will not
-> +		* "not_armed"
-> +				  Indicates that NVDIMM contents will not
->  				  survive a power cycle.
-> -		* "flush_fail"	: Indicates that NVDIMM contents
-> +		* "flush_fail"
-> +				  Indicates that NVDIMM contents
->  				  couldn't be flushed during last
->  				  shut-down event.
-> -		* "restore_fail": Indicates that NVDIMM contents
-> +		* "restore_fail"
-> +				  Indicates that NVDIMM contents
->  				  couldn't be restored during NVDIMM
->  				  initialization.
-> -		* "encrypted"	: NVDIMM contents are encrypted.
-> -		* "smart_notify": There is health event for the NVDIMM.
-> -		* "scrubbed"	: Indicating that contents of the
-> +		* "encrypted"
-> +				  NVDIMM contents are encrypted.
-> +		* "smart_notify"
-> +				  There is health event for the NVDIMM.
-> +		* "scrubbed"
-> +				  Indicating that contents of the
->  				  NVDIMM have been scrubbed.
-> -		* "locked"	: Indicating that NVDIMM contents cant
-> +		* "locked"
-> +				  Indicating that NVDIMM contents cant
->  				  be modified until next power cycle.
->  
->  What:		/sys/bus/nd/devices/nmemX/papr/perf_stats
-> @@ -51,4 +58,4 @@ Description:
->  		* "MedWDur " : Media Write Duration
->  		* "CchRHCnt" : Cache Read Hit Count
->  		* "CchWHCnt" : Cache Write Hit Count
-> -		* "FastWCnt" : Fast Write Count
-> \ No newline at end of file
-> +		* "FastWCnt" : Fast Write Count
-<snip>
+The reason is that VCNL4035 selects IIO_TRIGGERED_BUFFER without depending
+on or selecting IIO_BUFFER while IIO_TRIGGERED_BUFFER depends on
+IIO_BUFFER. This can also fail building the kernel.
 
-Thanks,
+Honor the kconfig dependency to remove unmet direct dependency warnings
+and avoid any potential build failures.
 
-I am fine with proposed changes to sysfs-bus-papr-pmem.
+Fixes: 55707294c4eb ("iio: light: Add support for vishay vcnl4035")
+Link: https://bugzilla.kernel.org/show_bug.cgi?id=209883
+Signed-off-by: Necip Fazil Yildiran <fazilyildiran@gmail.com>
+---
+ drivers/iio/light/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
 
-Acked-by: Vaibhav Jain <vaibhav@linux.ibm.com> # for sysfs-bus-papr-pmem
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index cade6dc0305b..33ad4dd0b5c7 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -544,6 +544,7 @@ config VCNL4000
+ 
+ config VCNL4035
+ 	tristate "VCNL4035 combined ALS and proximity sensor"
++	select IIO_BUFFER
+ 	select IIO_TRIGGERED_BUFFER
+ 	select REGMAP_I2C
+ 	depends on I2C
+-- 
+2.25.1
 
