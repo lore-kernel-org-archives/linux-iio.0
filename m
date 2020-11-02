@@ -2,154 +2,247 @@ Return-Path: <SRS0=wfAe=EI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D47CC00A89
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 14:26:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DA91C388F2
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 14:43:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C35A1206F8
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 14:26:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 172122240C
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 14:43:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+	s=default; t=1604328206;
+	bh=3oIo7M+kbfes9glXaYwVawYl0ThrpApAaoS3m8AadNs=;
+	h=Date:From:To:Cc:Subject:In-Reply-To:References:List-ID:From;
+	b=1/UycRBsUNQkrRmHiiiXmtz3IRGxyjHF4+MvDrEnXiOUyeSi/0sgErDoYa4VIVViI
+	 axl0fPtfyb9cCZYJHesROkshAhErWRNXeM2OVVcWWyxBlBJScckzUVvVg0p8HeMv4f
+	 GJJA0t6qq9Xvpx/fcTBtBVNzdP0tWQTAm4ON1kDQ=
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725988AbgKBOOD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 Nov 2020 09:14:03 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:13610 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725977AbgKBOOC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Nov 2020 09:14:02 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A2EA0IH021848;
-        Mon, 2 Nov 2020 09:14:00 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 34h1s4xmj1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Nov 2020 09:14:00 -0500
-Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 0A2EDwPN044383
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 2 Nov 2020 09:13:59 -0500
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Mon, 2 Nov 2020
- 06:13:57 -0800
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Mon, 2 Nov 2020 06:13:57 -0800
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 0A2EDbsH027259;
-        Mon, 2 Nov 2020 09:13:55 -0500
-From:   Cristian Pop <cristian.pop@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>, Cristian Pop <cristian.pop@analog.com>
-Subject: [PATCH v7 3/5] iio: adc: ad7768-1: Add channel labels.
-Date:   Mon, 2 Nov 2020 16:16:57 +0200
-Message-ID: <20201102141659.41875-3-cristian.pop@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201102141659.41875-1-cristian.pop@analog.com>
-References: <20201102141659.41875-1-cristian.pop@analog.com>
+        id S1726137AbgKBOnS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 Nov 2020 09:43:18 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46960 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725788AbgKBOnQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 2 Nov 2020 09:43:16 -0500
+Received: from coco.lan (ip5f5ad5bd.dynamic.kabel-deutschland.de [95.90.213.189])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 63B96223FB;
+        Mon,  2 Nov 2020 14:42:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1604328194;
+        bh=3oIo7M+kbfes9glXaYwVawYl0ThrpApAaoS3m8AadNs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=o7vSyqavrA+tPEp8JUSX2Gre2OPdTrpaBl//HWqb1ndQojQ2+WQ+GCP6o1zviBXm5
+         BkixBkiludftpOuYl5RGYgd4ap8zUj38MqoeY5NGyExHQDLlRrYM+dKrsl0Sr0HfH8
+         qhyJWoyOHNQJOxgn2sog8B5I0MfzAibMKr1lQUA4=
+Date:   Mon, 2 Nov 2020 15:42:50 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc:     Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
+        "Jason A. Donenfeld" <Jason@zx2c4.com>,
+        Javier =?UTF-8?B?R29uesOhbGV6?= <javier@javigon.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        "Martin K. Petersen" <martin.petersen@oracle.com>,
+        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
+        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Andrew Donnellan <ajd@linux.ibm.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Baolin Wang <baolin.wang7@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
+        Bruno Meneguele <bmeneg@redhat.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>,
+        Dan Murphy <dmurphy@ti.com>,
+        Dan Williams <dan.j.williams@intel.com>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Frederic Barrat <fbarrat@linux.ibm.com>,
+        Guenter Roeck <groeck@chromium.org>,
+        Hanjun Guo <guohanjun@huawei.com>,
+        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
+        Jens Axboe <axboe@kernel.dk>,
+        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Juergen Gross <jgross@suse.com>,
+        Konstantin Khlebnikov <koct9i@gmail.com>,
+        Kranthi Kuntala <kranthi.kuntala@intel.com>,
+        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Len Brown <lenb@kernel.org>,
+        Leonid Maksymchuk <leonmaxx@gmail.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        Mario Limonciello <mario.limonciello@dell.com>,
+        Mark Gross <mgross@linux.intel.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Michael Ellerman <mpe@ellerman.id.au>,
+        Mika Westerberg <mika.westerberg@linux.intel.com>,
+        Mike Kravetz <mike.kravetz@oracle.com>,
+        Mimi Zohar <zohar@linux.ibm.com>,
+        Nayna Jain <nayna@linux.ibm.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Niklas Cassel <niklas.cassel@wdc.com>,
+        Oded Gabbay <oded.gabbay@gmail.com>,
+        Oleh Kravchenko <oleg@kaa.org.ua>,
+        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
+        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
+        Philippe Bergheaud <felix@linux.ibm.com>,
+        Richard Cochran <richardcochran@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
+        Stefano Stabellini <sstabellini@kernel.org>,
+        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        Tom Rix <trix@redhat.com>,
+        Vaibhav Jain <vaibhav@linux.ibm.com>,
+        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
+        Vishal Verma <vishal.l.verma@intel.com>,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-mm@kvack.org, linux-pm@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
+        netdev@vger.kernel.org, xen-devel@lists.xenproject.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 20/39] docs: ABI: testing: make the files compatible
+ with ReST output
+Message-ID: <20201102154250.45bee17f@coco.lan>
+In-Reply-To: <20201102124641.GA881895@kroah.com>
+References: <cover.1604042072.git.mchehab+huawei@kernel.org>
+        <58cf3c2d611e0197fb215652719ebd82ca2658db.1604042072.git.mchehab+huawei@kernel.org>
+        <5326488b-4185-9d67-fc09-79b911fbb3b8@st.com>
+        <20201030110925.3e09d59e@coco.lan>
+        <cb586ea3-b6e6-4e48-2344-2bd641e5323f@st.com>
+        <20201102124641.GA881895@kroah.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-02_07:2020-11-02,2020-11-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0
- priorityscore=1501 mlxlogscore=999 clxscore=1015 bulkscore=0 spamscore=0
- adultscore=0 suspectscore=0 phishscore=0 impostorscore=0
- lowpriorityscore=0 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2009150000 definitions=main-2011020113
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-For better identification of the channels.
+Em Mon, 2 Nov 2020 13:46:41 +0100
+Greg Kroah-Hartman <gregkh@linuxfoundation.org> escreveu:
 
-Signed-off-by: Cristian Pop <cristian.pop@analog.com>
----
- drivers/iio/adc/ad7768-1.c | 41 ++++++++++++++++++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
+> On Mon, Nov 02, 2020 at 12:04:36PM +0100, Fabrice Gasnier wrote:
+> > On 10/30/20 11:09 AM, Mauro Carvalho Chehab wrote:  
+> > > Em Fri, 30 Oct 2020 10:19:12 +0100
+> > > Fabrice Gasnier <fabrice.gasnier@st.com> escreveu:
+> > >   
+> > >> Hi Mauro,
+> > >>
+> > >> [...]
+> > >>  
+> > >>>  
+> > >>> +What:		/sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
+> > >>> +KernelVersion:	4.12
+> > >>> +Contact:	benjamin.gaignard@st.com
+> > >>> +Description:
+> > >>> +		Reading returns the list possible quadrature modes.
+> > >>> +
+> > >>> +What:		/sys/bus/iio/devices/iio:deviceX/in_count0_quadrature_mode
+> > >>> +KernelVersion:	4.12
+> > >>> +Contact:	benjamin.gaignard@st.com
+> > >>> +Description:
+> > >>> +		Configure the device counter quadrature modes:
+> > >>> +
+> > >>> +		channel_A:
+> > >>> +			Encoder A input servers as the count input and B as
+> > >>> +			the UP/DOWN direction control input.
+> > >>> +
+> > >>> +		channel_B:
+> > >>> +			Encoder B input serves as the count input and A as
+> > >>> +			the UP/DOWN direction control input.
+> > >>> +
+> > >>> +		quadrature:
+> > >>> +			Encoder A and B inputs are mixed to get direction
+> > >>> +			and count with a scale of 0.25.
+> > >>> +    
+> > >>  
+> > > 
+> > > Hi Fabrice,
+> > >   
+> > >> I just noticed that since Jonathan question in v1.
+> > >>
+> > >> Above ABI has been moved in the past as discussed in [1]. You can take a
+> > >> look at:
+> > >> b299d00 IIO: stm32: Remove quadrature related functions from trigger driver
+> > >>
+> > >> Could you please remove the above chunk ?
+> > >>
+> > >> With that, for the stm32 part:
+> > >> Acked-by: Fabrice Gasnier <fabrice.gasnier@st.com>  
+> > > 
+> > > 
+> > > Hmm... probably those were re-introduced due to a rebase. This
+> > > series were originally written about 1,5 years ago.
+> > > 
+> > > I'll drop those hunks.  
+> > 
+> > Hi Mauro, Greg,
+> > 
+> > I just figured out this patch has been applied with above hunk.
+> > 
+> > This should be dropped: is there a fix on its way already ?
+> > (I may have missed it)  
+> 
+> Can you send a fix for just this hunk?
 
-diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
-index 0e93b0766eb4..5c0cbee03230 100644
---- a/drivers/iio/adc/ad7768-1.c
-+++ b/drivers/iio/adc/ad7768-1.c
-@@ -161,6 +161,7 @@ struct ad7768_state {
- 	struct completion completion;
- 	struct iio_trigger *trig;
- 	struct gpio_desc *gpio_sync_in;
-+	const char *labels[ARRAY_SIZE(ad7768_channels)];
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
- 	 * transfer buffers to live in their own cache lines.
-@@ -407,6 +408,14 @@ static int ad7768_write_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static int ad7768_read_label(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, char *label)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+
-+	return sprintf(label, "%s\n", st->labels[chan->channel]);
-+}
-+
- static struct attribute *ad7768_attributes[] = {
- 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
- 	NULL
-@@ -420,6 +429,7 @@ static const struct iio_info ad7768_info = {
- 	.attrs = &ad7768_group,
- 	.read_raw = &ad7768_read_raw,
- 	.write_raw = &ad7768_write_raw,
-+	.read_label = ad7768_read_label,
- 	.debugfs_reg_access = &ad7768_reg_access,
- };
- 
-@@ -532,6 +542,33 @@ static void ad7768_clk_disable(void *data)
- 	clk_disable_unprepare(st->mclk);
- }
- 
-+static int ad7768_set_channel_label(struct iio_dev *indio_dev,
-+						int num_channels)
-+{
-+	struct ad7768_state *st = iio_priv(indio_dev);
-+	struct device *device = indio_dev->dev.parent;
-+	struct fwnode_handle *fwnode;
-+	struct fwnode_handle *child;
-+	const char *label;
-+	int crt_ch = 0;
-+
-+	fwnode = dev_fwnode(device);
-+	fwnode_for_each_child_node(fwnode, child) {
-+		if (fwnode_property_read_u32(child, "reg", &crt_ch))
-+			continue;
-+
-+		if (crt_ch >= num_channels)
-+			continue;
-+
-+		if (fwnode_property_read_string(child, "label", &label))
-+			continue;
-+
-+		st->labels[crt_ch] = label;
-+	}
-+
-+	return 0;
-+}
-+
- static int ad7768_probe(struct spi_device *spi)
- {
- 	struct ad7768_state *st;
-@@ -604,6 +641,10 @@ static int ad7768_probe(struct spi_device *spi)
- 
- 	init_completion(&st->completion);
- 
-+	ret = ad7768_set_channel_label(indio_dev, ARRAY_SIZE(ad7768_channels));
-+	if (ret)
-+		return ret;
-+
- 	ret = devm_request_irq(&spi->dev, spi->irq,
- 			       &ad7768_interrupt,
- 			       IRQF_TRIGGER_RISING | IRQF_ONESHOT,
--- 
-2.17.1
+Hmm...
 
+	$ git grep /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
+	Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8:What:                /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
+	Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:What:             /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
+	Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:What:               /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
+
+Even re-doing the changes from 
+changeset b299d00420e2 ("IIO: stm32: Remove quadrature related functions from trigger driver")
+at Documentation/ABI/testing/sysfs-bus-iio-timer-stm32, there's still
+a third duplicate of some of those, as reported by the script:
+
+	$ ./scripts/get_abi.pl validate 2>&1|grep quadra
+	Warning: /sys/bus/iio/devices/iio:deviceX/in_count0_quadrature_mode is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:117  Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:14
+	Warning: /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available is defined 3 times:  Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8:2  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:111  Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:8
+
+As in_count_quadrature_mode_available is also defined at:
+	Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8:2
+
+The best here seems to have a patch that will also drop the other
+duplication of this, probably moving in_count_quadrature_mode_available
+to a generic node probably placing it inside 
+Documentation/ABI/testing/sysfs-bus-iio.
+
+Comments?
+
+Thanks,
+Mauro
+
+PS.: the IIO subsystem is the one that currently has more duplicated
+ABI entries:
+
+$ ./scripts/get_abi.pl validate 2>&1|grep iio
+Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_x_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:0  Documentation/ABI/testing/sysfs-bus-iio:394
+Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_y_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:1  Documentation/ABI/testing/sysfs-bus-iio:395
+Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_z_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:2  Documentation/ABI/testing/sysfs-bus-iio:396
+Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:3  Documentation/ABI/testing/sysfs-bus-iio:397
+Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:4  Documentation/ABI/testing/sysfs-bus-iio:398
+Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-icm42600:5  Documentation/ABI/testing/sysfs-bus-iio:399
+Warning: /sys/bus/iio/devices/iio:deviceX/in_count0_preset is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:100  Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:0
+Warning: /sys/bus/iio/devices/iio:deviceX/in_count0_quadrature_mode is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:117  Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:14
+Warning: /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available is defined 3 times:  Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8:2  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:111  Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:8
+Warning: /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_frequency is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371:0  Documentation/ABI/testing/sysfs-bus-iio:599
+Warning: /sys/bus/iio/devices/iio:deviceX/out_altvoltageY_powerdown is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4371:36  Documentation/ABI/testing/sysfs-bus-iio:588
+Warning: /sys/bus/iio/devices/iio:deviceX/out_currentY_raw is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als:43  Documentation/ABI/testing/sysfs-bus-iio-health-afe440x:38
+Warning: /sys/bus/iio/devices/iio:deviceX/out_current_heater_raw is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010:0  Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x:0
+Warning: /sys/bus/iio/devices/iio:deviceX/out_current_heater_raw_available is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010:1  Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x:1
+Warning: /sys/bus/iio/devices/iio:deviceX/sensor_sensitivity is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-distance-srf08:0  Documentation/ABI/testing/sysfs-bus-iio-proximity-as3935:8
+Warning: /sys/bus/iio/devices/triggerX/sampling_frequency is defined 2 times:  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:92  Documentation/ABI/testing/sysfs-bus-iio:45
