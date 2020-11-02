@@ -2,109 +2,332 @@ Return-Path: <SRS0=wfAe=EI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30CE0C00A89
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 14:18:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A77CC00A89
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 14:26:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E9E0820679
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 14:18:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E681C206B7
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 14:26:01 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="SFVRkrzI"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725791AbgKBOPy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 Nov 2020 09:15:54 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:22354 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725768AbgKBOOH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Nov 2020 09:14:07 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A2ECMHm001582;
-        Mon, 2 Nov 2020 09:14:06 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 34j3bwkr34-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Nov 2020 09:14:06 -0500
-Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 0A2EE4A7044397
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Mon, 2 Nov 2020 09:14:04 -0500
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 2 Nov 2020 06:14:03 -0800
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Mon, 2 Nov 2020 06:13:00 -0800
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Mon, 2 Nov 2020 06:14:03 -0800
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 0A2EDbsJ027259;
-        Mon, 2 Nov 2020 09:14:00 -0500
-From:   Cristian Pop <cristian.pop@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>, Cristian Pop <cristian.pop@analog.com>
-Subject: [PATCH v7 5/5] dt-bindings:iio:adc:adc.txt: Add documentation for channel label attribute
-Date:   Mon, 2 Nov 2020 16:16:59 +0200
-Message-ID: <20201102141659.41875-5-cristian.pop@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201102141659.41875-1-cristian.pop@analog.com>
-References: <20201102141659.41875-1-cristian.pop@analog.com>
+        id S1725982AbgKBO0B (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 Nov 2020 09:26:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726090AbgKBOWk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Nov 2020 09:22:40 -0500
+Received: from mail-wr1-x443.google.com (mail-wr1-x443.google.com [IPv6:2a00:1450:4864:20::443])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4662FC061A04
+        for <linux-iio@vger.kernel.org>; Mon,  2 Nov 2020 06:22:38 -0800 (PST)
+Received: by mail-wr1-x443.google.com with SMTP id k10so13478793wrw.13
+        for <linux-iio@vger.kernel.org>; Mon, 02 Nov 2020 06:22:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=vLbBt6T4zV/xw9PURuQlOM8wVnilFKG9GdBusjjh0Mo=;
+        b=SFVRkrzIcWH8EfsDxR6Pfi92y1MXVYva5l0WcguIBbfiE6IhQzVSHxF9UsbfKH4vFQ
+         /61PTFnjWKt2Ktu6jXxhzFS3RDl7WTTD9S3vsW+B4e7Sg6e/XsaQ2vDhYcUZgEzWkrnR
+         AHPJOKqdTpNTijRvRzHgu4GmCzVhCVMucqJ2YYGxvb+fZLBWTVeTxe49bniLiXylqHLl
+         IBftQ1vXwTIf/WVsV43Cl2yXb506SQEBnc91/oWiwSps/zB8FBL2gSYJ8mO3LGbm2/OJ
+         sm3hZ7NMOKpMqAFEXP6N3uptECOZQEhE4YxhwTsGRe0a1doWV3b/H1Hv/j1+7CIuRcPb
+         BiLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=vLbBt6T4zV/xw9PURuQlOM8wVnilFKG9GdBusjjh0Mo=;
+        b=biZjlC192itI8/nmIFXAkOPmyytwhj+JU2ySeaA7VfHfSCvUdmzTG8OM+YTNonE3pd
+         v3TR2QsQUALerS6EtiGnbm+bre1IZ5pxLWIiMAHpMmo4LV/zVC4003CRferZQjf3P00N
+         wM5genoHJMoZkHdekJRUKST/p9rwCgAVMuFkqmdVuzye59p4EzXbPQVk8bZ3hwdRP9pX
+         Y4GJ8URBxZxk4NtR7BpXKlhSqnmOl1br8vqrTPx4S14pp5KkhdsPywZr7eGq1sV6Comz
+         JVQlLZpb2W7q/lMyIN44pyzwa5mbcMKiYLJ0/dDWrAsR1h4LP/aHHN+1UZ0FFL5EcSWz
+         WHaQ==
+X-Gm-Message-State: AOAM5318zTcmivrbfM4EwX09jk3HwmclNBHZMoF8LBnOsbFXMNBD+Go+
+        xEX3IYsYZPASbDz58jIchQ7Hrg==
+X-Google-Smtp-Source: ABdhPJw416wPtB82zogsu5olmJkH1UCsYtbiT23TJOgqrvgg/jImFRTpDsKYOmvyA335IzD2wpSLyg==
+X-Received: by 2002:a5d:4612:: with SMTP id t18mr20763254wrq.307.1604326957059;
+        Mon, 02 Nov 2020 06:22:37 -0800 (PST)
+Received: from debian-brgl.home (amarseille-656-1-4-167.w90-8.abo.wanadoo.fr. [90.8.158.167])
+        by smtp.gmail.com with ESMTPSA id 3sm16182987wmd.19.2020.11.02.06.22.36
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 Nov 2020 06:22:36 -0800 (PST)
+From:   Bartosz Golaszewski <brgl@bgdev.pl>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Michal Simek <michal.simek@xilinx.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH v2 4/4] iio: adc: xilinx: use more devres helpers and remove remove()
+Date:   Mon,  2 Nov 2020 15:22:28 +0100
+Message-Id: <20201102142228.14949-5-brgl@bgdev.pl>
+X-Mailer: git-send-email 2.29.1
+In-Reply-To: <20201102142228.14949-1-brgl@bgdev.pl>
+References: <20201102142228.14949-1-brgl@bgdev.pl>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-02_07:2020-11-02,2020-11-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 clxscore=1015
- adultscore=0 spamscore=0 priorityscore=1501 suspectscore=0 malwarescore=0
- impostorscore=0 mlxlogscore=999 lowpriorityscore=0 bulkscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011020113
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Optional attribute for better identification of the channels.
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+In order to simplify resource management and error paths in probe() and
+entirely drop the remove() callback - use devres helpers wherever
+possible. Define devm actions for cancelling the delayed work and
+disabling the clock.
+
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 ---
-Changes in v7:
- - Add this extra commit
- Documentation/devicetree/bindings/iio/adc/adc.txt | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/adc/xilinx-xadc-core.c | 129 +++++++++++++----------------
+ 1 file changed, 56 insertions(+), 73 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adc.txt b/Documentation/devicetree/bindings/iio/adc/adc.txt
-index 5bbaa330a250..4b37575bbddc 100644
---- a/Documentation/devicetree/bindings/iio/adc/adc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/adc.txt
-@@ -5,18 +5,24 @@ Optional properties for child nodes:
- - diff-channels : Differential channels muxed for this ADC. The first value
- 		specifies the positive input pin, the second value the negative
- 		input pin.
-+- reg: The channel number.
-+- label: Unique name to identify which channel this is.
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index 7792aa4cf9cb..6ce1745b4995 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -709,11 +709,12 @@ static const struct iio_trigger_ops xadc_trigger_ops = {
+ static struct iio_trigger *xadc_alloc_trigger(struct iio_dev *indio_dev,
+ 	const char *name)
+ {
++	struct device *dev = indio_dev->dev.parent;
+ 	struct iio_trigger *trig;
+ 	int ret;
  
- Example:
- 	adc@0 {
- 		compatible = "some,adc";
- 		...
- 		channel@0 {
-+			reg = <0>;
-+			label = "channel_0_name";
- 			bipolar;
- 			diff-channels = <0 1>;
- 			...
- 		};
+-	trig = iio_trigger_alloc("%s%d-%s", indio_dev->name,
+-				indio_dev->id, name);
++	trig = devm_iio_trigger_alloc(dev, "%s%d-%s", indio_dev->name,
++				      indio_dev->id, name);
+ 	if (trig == NULL)
+ 		return ERR_PTR(-ENOMEM);
  
- 		channel@1 {
-+			reg = <1>;
-+			label = "channel_1_name";
- 			diff-channels = <2 3>;
- 			...
- 		};
+@@ -721,15 +722,11 @@ static struct iio_trigger *xadc_alloc_trigger(struct iio_dev *indio_dev,
+ 	trig->ops = &xadc_trigger_ops;
+ 	iio_trigger_set_drvdata(trig, iio_priv(indio_dev));
+ 
+-	ret = iio_trigger_register(trig);
++	ret = devm_iio_trigger_register(dev, trig);
+ 	if (ret)
+-		goto error_free_trig;
++		return ERR_PTR(ret);
+ 
+ 	return trig;
+-
+-error_free_trig:
+-	iio_trigger_free(trig);
+-	return ERR_PTR(ret);
+ }
+ 
+ static int xadc_power_adc_b(struct xadc *xadc, unsigned int seq_mode)
+@@ -1188,6 +1185,20 @@ static int xadc_parse_dt(struct iio_dev *indio_dev, struct device_node *np,
+ 	return 0;
+ }
+ 
++static void xadc_clk_disable_unprepare(void *data)
++{
++	struct clk *clk = data;
++
++	clk_disable_unprepare(clk);
++}
++
++static void xadc_cancel_delayed_work(void *data)
++{
++	struct delayed_work *work = data;
++
++	cancel_delayed_work_sync(work);
++}
++
+ static int xadc_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+@@ -1236,34 +1247,35 @@ static int xadc_probe(struct platform_device *pdev)
+ 		return ret;
+ 
+ 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED) {
+-		ret = iio_triggered_buffer_setup(indio_dev,
+-			&iio_pollfunc_store_time, &xadc_trigger_handler,
+-			&xadc_buffer_ops);
++		ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++						      &iio_pollfunc_store_time,
++						      &xadc_trigger_handler,
++						      &xadc_buffer_ops);
+ 		if (ret)
+ 			return ret;
+ 
+ 		xadc->convst_trigger = xadc_alloc_trigger(indio_dev, "convst");
+-		if (IS_ERR(xadc->convst_trigger)) {
+-			ret = PTR_ERR(xadc->convst_trigger);
+-			goto err_triggered_buffer_cleanup;
+-		}
++		if (IS_ERR(xadc->convst_trigger))
++			return PTR_ERR(xadc->convst_trigger);
++
+ 		xadc->samplerate_trigger = xadc_alloc_trigger(indio_dev,
+ 			"samplerate");
+-		if (IS_ERR(xadc->samplerate_trigger)) {
+-			ret = PTR_ERR(xadc->samplerate_trigger);
+-			goto err_free_convst_trigger;
+-		}
++		if (IS_ERR(xadc->samplerate_trigger))
++			return PTR_ERR(xadc->samplerate_trigger);
+ 	}
+ 
+ 	xadc->clk = devm_clk_get(dev, NULL);
+-	if (IS_ERR(xadc->clk)) {
+-		ret = PTR_ERR(xadc->clk);
+-		goto err_free_samplerate_trigger;
+-	}
++	if (IS_ERR(xadc->clk))
++		return PTR_ERR(xadc->clk);
+ 
+ 	ret = clk_prepare_enable(xadc->clk);
+ 	if (ret)
+-		goto err_free_samplerate_trigger;
++		return ret;
++
++	ret = devm_add_action_or_reset(dev,
++				       xadc_clk_disable_unprepare, xadc->clk);
++	if (ret)
++		return ret;
+ 
+ 	/*
+ 	 * Make sure not to exceed the maximum samplerate since otherwise the
+@@ -1272,22 +1284,28 @@ static int xadc_probe(struct platform_device *pdev)
+ 	if (xadc->ops->flags & XADC_FLAGS_BUFFERED) {
+ 		ret = xadc_read_samplerate(xadc);
+ 		if (ret < 0)
+-			goto err_free_samplerate_trigger;
++			return ret;
++
+ 		if (ret > XADC_MAX_SAMPLERATE) {
+ 			ret = xadc_write_samplerate(xadc, XADC_MAX_SAMPLERATE);
+ 			if (ret < 0)
+-				goto err_free_samplerate_trigger;
++				return ret;
+ 		}
+ 	}
+ 
+-	ret = request_irq(xadc->irq, xadc->ops->interrupt_handler, 0,
+-			  dev_name(dev), indio_dev);
++	ret = devm_request_irq(dev, xadc->irq, xadc->ops->interrupt_handler, 0,
++			       dev_name(dev), indio_dev);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, xadc_cancel_delayed_work,
++				       &xadc->zynq_unmask_work);
+ 	if (ret)
+-		goto err_clk_disable_unprepare;
++		return ret;
+ 
+ 	ret = xadc->ops->setup(pdev, indio_dev, xadc->irq);
+ 	if (ret)
+-		goto err_free_irq;
++		return ret;
+ 
+ 	for (i = 0; i < 16; i++)
+ 		xadc_read_adc_reg(xadc, XADC_REG_THRESHOLD(i),
+@@ -1295,7 +1313,7 @@ static int xadc_probe(struct platform_device *pdev)
+ 
+ 	ret = xadc_write_adc_reg(xadc, XADC_REG_CONF0, conf0);
+ 	if (ret)
+-		goto err_free_irq;
++		return ret;
+ 
+ 	bipolar_mask = 0;
+ 	for (i = 0; i < indio_dev->num_channels; i++) {
+@@ -1305,17 +1323,18 @@ static int xadc_probe(struct platform_device *pdev)
+ 
+ 	ret = xadc_write_adc_reg(xadc, XADC_REG_INPUT_MODE(0), bipolar_mask);
+ 	if (ret)
+-		goto err_free_irq;
++		return ret;
++
+ 	ret = xadc_write_adc_reg(xadc, XADC_REG_INPUT_MODE(1),
+ 		bipolar_mask >> 16);
+ 	if (ret)
+-		goto err_free_irq;
++		return ret;
+ 
+ 	/* Disable all alarms */
+ 	ret = xadc_update_adc_reg(xadc, XADC_REG_CONF1, XADC_CONF1_ALARM_MASK,
+ 				  XADC_CONF1_ALARM_MASK);
+ 	if (ret)
+-		goto err_free_irq;
++		return ret;
+ 
+ 	/* Set thresholds to min/max */
+ 	for (i = 0; i < 16; i++) {
+@@ -1330,59 +1349,23 @@ static int xadc_probe(struct platform_device *pdev)
+ 		ret = xadc_write_adc_reg(xadc, XADC_REG_THRESHOLD(i),
+ 			xadc->threshold[i]);
+ 		if (ret)
+-			goto err_free_irq;
++			return ret;
+ 	}
+ 
+ 	/* Go to non-buffered mode */
+ 	xadc_postdisable(indio_dev);
+ 
+-	ret = iio_device_register(indio_dev);
++	ret = devm_iio_device_register(dev, indio_dev);
+ 	if (ret)
+-		goto err_free_irq;
++		return ret;
+ 
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+-	return 0;
+-
+-err_free_irq:
+-	free_irq(xadc->irq, indio_dev);
+-	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
+-err_clk_disable_unprepare:
+-	clk_disable_unprepare(xadc->clk);
+-err_free_samplerate_trigger:
+-	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
+-		iio_trigger_free(xadc->samplerate_trigger);
+-err_free_convst_trigger:
+-	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
+-		iio_trigger_free(xadc->convst_trigger);
+-err_triggered_buffer_cleanup:
+-	if (xadc->ops->flags & XADC_FLAGS_BUFFERED)
+-		iio_triggered_buffer_cleanup(indio_dev);
+-
+-	return ret;
+-}
+-
+-static int xadc_remove(struct platform_device *pdev)
+-{
+-	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+-	struct xadc *xadc = iio_priv(indio_dev);
+-
+-	iio_device_unregister(indio_dev);
+-	if (xadc->ops->flags & XADC_FLAGS_BUFFERED) {
+-		iio_trigger_free(xadc->samplerate_trigger);
+-		iio_trigger_free(xadc->convst_trigger);
+-		iio_triggered_buffer_cleanup(indio_dev);
+-	}
+-	free_irq(xadc->irq, indio_dev);
+-	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
+-	clk_disable_unprepare(xadc->clk);
+-
+ 	return 0;
+ }
+ 
+ static struct platform_driver xadc_driver = {
+ 	.probe = xadc_probe,
+-	.remove = xadc_remove,
+ 	.driver = {
+ 		.name = "xadc",
+ 		.of_match_table = xadc_of_match_table,
 -- 
-2.17.1
+2.29.1
 
