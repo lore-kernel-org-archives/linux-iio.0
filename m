@@ -2,276 +2,382 @@ Return-Path: <SRS0=wfAe=EI=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-9.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A563AC388F2
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 15:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3259C4742C
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 16:16:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3991220715
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 15:07:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6772A223AB
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Nov 2020 16:16:24 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=ibm.com header.i=@ibm.com header.b="CeaooSde"
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="yj41yHsk"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726070AbgKBPHZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 Nov 2020 10:07:25 -0500
-Received: from mx0a-001b2d01.pphosted.com ([148.163.156.1]:48302 "EHLO
-        mx0a-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725791AbgKBPHY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Nov 2020 10:07:24 -0500
-Received: from pps.filterd (m0098399.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A2F2BqL017658;
-        Mon, 2 Nov 2020 10:07:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=date : from : to : cc :
- subject : message-id : reply-to : references : mime-version : content-type
- : in-reply-to; s=pp1; bh=ej00TIy/LHYCfZ0dOvBL2CZGGwy/uU70D7NYwppsmbI=;
- b=CeaooSde8P9MLJGQKN7VpxuBW/kugZ0Ubk8qYGUGVzkeohHArRsAJfqjFGzuwYnrSWTi
- /ptajn1Z7ZgrR3zZo31N4TxfYQu4DwGZIM9MOdp/Y+Dsb/J7RVxYpG/UlZjrBsr38JMO
- QU2XYT4rgLfb/wu/r4f3NmrOWsd4bjbrs6bQe/3v6mVbSf7UsID1yUh0YKSXWWRY7S5G
- u7rS5ryqq0f4CSoaiy5ymxKzUUuttHCjWDDJlWCNeRqBInxF3obTc89/GHKBGSfpbGvF
- v2/iDtwKFAbGThkzyRZhk+yph3cAassBbG/Fw51NpGogJLBtisfxJdZunU8gGohvdF9x Dg== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34jf03ayb2-1
+        id S1726989AbgKBQQX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 Nov 2020 11:16:23 -0500
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:23760 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1726771AbgKBQQX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Nov 2020 11:16:23 -0500
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0A2G7c8M014044;
+        Mon, 2 Nov 2020 17:16:05 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=STMicroelectronics;
+ bh=jHb86NDYBn+RCxG2vcWk3aX1EGujfmsZTdv8PlRa3P0=;
+ b=yj41yHskXH9oPrzMZfp4udVecos0BgNchmxlNk3H9TvA6GXApoVa9hqlXUxmk4FPvC0+
+ +IVB301XsqfK9bGY6oTfqe80Cebsi1y/k6NHa/QupEIrMKhV/rtdp2//gWt2Df+nxhet
+ /fKdcCMIRM48O/hgodXjPV5s5r+x98T+ZmtJglJz9qGEeTCqF6azDn0AaXeOq4AX0A96
+ R9vSgpmCsqIsCab8rILpEX5XxfB7kNxVgPBzyqFaTs8voGSAZLlB1i38adKReAl0EvpE
+ SZfDZaxlHRXzIUaV+EuKJZdO//UZqxgToV7u0Pn+LRSbHUBkWf53Tn1ZkUULNfXGNCbs 8w== 
+Received: from eur05-db8-obe.outbound.protection.outlook.com (mail-db8eur05lp2112.outbound.protection.outlook.com [104.47.17.112])
+        by mx07-00178001.pphosted.com with ESMTP id 34gyw132ya-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Nov 2020 10:06:59 -0500
-Received: from m0098399.ppops.net (m0098399.ppops.net [127.0.0.1])
-        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 0A2F2FeQ018031;
-        Mon, 2 Nov 2020 10:06:59 -0500
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0a-001b2d01.pphosted.com with ESMTP id 34jf03aya2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Nov 2020 10:06:59 -0500
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.0.42/8.16.0.42) with SMTP id 0A2EvfuO018377;
-        Mon, 2 Nov 2020 15:06:57 GMT
-Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
-        by ppma04wdc.us.ibm.com with ESMTP id 34h0ehdquv-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 02 Nov 2020 15:06:57 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 0A2F6u9U6554070
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Mon, 2 Nov 2020 15:06:56 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 6DB85C6057;
-        Mon,  2 Nov 2020 15:06:56 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id B6B42C605F;
-        Mon,  2 Nov 2020 15:06:55 +0000 (GMT)
-Received: from sofia.ibm.com (unknown [9.199.57.175])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon,  2 Nov 2020 15:06:55 +0000 (GMT)
-Received: by sofia.ibm.com (Postfix, from userid 1000)
-        id 06C7A2E323C; Mon,  2 Nov 2020 20:36:52 +0530 (IST)
-Date:   Mon, 2 Nov 2020 20:36:51 +0530
-From:   Gautham R Shenoy <ego@linux.vnet.ibm.com>
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Mauro Carvalho Chehab <mchehab+samsung@kernel.org>,
-        "Gautham R. Shenoy" <ego@linux.vnet.ibm.com>,
-        "Jason A. Donenfeld" <Jason@zx2c4.com>,
-        Javier =?iso-8859-1?Q?Gonz=E1lez?= <javier@javigon.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        "Martin K. Petersen" <martin.petersen@oracle.com>,
-        "Rafael J. Wysocki" <rjw@rjwysocki.net>,
-        Alexander Shishkin <alexander.shishkin@linux.intel.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        Andrew Donnellan <ajd@linux.ibm.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Benson Leung <bleung@chromium.org>,
-        Boris Ostrovsky <boris.ostrovsky@oracle.com>,
-        Bruno Meneguele <bmeneg@redhat.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Dan Murphy <dmurphy@ti.com>,
-        Dan Williams <dan.j.williams@intel.com>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Felipe Balbi <balbi@kernel.org>,
-        Frederic Barrat <fbarrat@linux.ibm.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Hanjun Guo <guohanjun@huawei.com>,
-        Heikki Krogerus <heikki.krogerus@linux.intel.com>,
-        Jens Axboe <axboe@kernel.dk>,
-        Johannes Thumshirn <johannes.thumshirn@wdc.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Juergen Gross <jgross@suse.com>,
-        Konstantin Khlebnikov <koct9i@gmail.com>,
-        Kranthi Kuntala <kranthi.kuntala@intel.com>,
-        Lakshmi Ramasubramanian <nramas@linux.microsoft.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Len Brown <lenb@kernel.org>,
-        Leonid Maksymchuk <leonmaxx@gmail.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Mario Limonciello <mario.limonciello@dell.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Michael Ellerman <mpe@ellerman.id.au>,
-        Mika Westerberg <mika.westerberg@linux.intel.com>,
-        Mike Kravetz <mike.kravetz@oracle.com>,
-        Mimi Zohar <zohar@linux.ibm.com>,
-        Nayna Jain <nayna@linux.ibm.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Niklas Cassel <niklas.cassel@wdc.com>,
-        Oleh Kravchenko <oleg@kaa.org.ua>,
-        Orson Zhai <orsonzhai@gmail.com>, Pavel Machek <pavel@ucw.cz>,
-        Pawan Gupta <pawan.kumar.gupta@linux.intel.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Peter Rosin <peda@axentia.se>, Petr Mladek <pmladek@suse.com>,
-        Philippe Bergheaud <felix@linux.ibm.com>,
-        Richard Cochran <richardcochran@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Sergey Senozhatsky <sergey.senozhatsky@gmail.com>,
-        Stefano Stabellini <sstabellini@kernel.org>,
-        Thinh Nguyen <Thinh.Nguyen@synopsys.com>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Vineela Tummalapalli <vineela.tummalapalli@intel.com>,
-        Vishal Verma <vishal.l.verma@intel.com>,
-        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-mm@kvack.org, linux-pm@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-usb@vger.kernel.org, linuxppc-dev@lists.ozlabs.org,
-        netdev@vger.kernel.org, xen-devel@lists.xenproject.org
-Subject: Re: [PATCH 20/33] docs: ABI: testing: make the files compatible with
- ReST output
-Message-ID: <20201102150651.GA4379@in.ibm.com>
-Reply-To: ego@linux.vnet.ibm.com
-References: <cover.1603893146.git.mchehab+huawei@kernel.org>
- <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
+        Mon, 02 Nov 2020 17:16:05 +0100
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=a1qlbWdQg950OkYwHwCRhADd1540ieVXv5sagGsLsQyNEf13f1De1vLsIt1z4PgslDhja4rwOUhRfLL8eudprwXkkpze6eYGSb2ftNO1Wl3HDzevMTGzca/vmn2UbUt0i5ariP+EO8YbAg6k3ooUEf7/VR+ms7/Q9HjUmZH9CN3hLeAF2pajRN4UY0LzgN0+wQ0GY3DlwKW3cjmrR+hgIVsgvPy7xklXdYc+oOFCOzzUFmq2M0Cx8fQwpIZON0fBFyw00aE4FFFdHb9GL0L2EPBZeA8Ps7yRZq3yu1mnTESVBLaw5bDtzkkbVo3HwE2pXLf+O5qXCWmIYkQaBjiJDw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=jHb86NDYBn+RCxG2vcWk3aX1EGujfmsZTdv8PlRa3P0=;
+ b=OlX0aDuZrDLD3g6DN5H0gMOIH8UHb0D9MagnV67xSsfOHVs4IQsDd9oNVQ7oa62FYFxipMi09oot47AmsBZDHkYmnys4O7BcuAkco5MkJBT2Xs1FM5RMlrEnwaTAQ3LltCB1KnUNQc3t0FMsswV3g8bXvux4+eATwhuxZ7tQhoMUqtwretBIwFS3JkpbXR5oGEmr3YBxbsyNF0ylbuqIsIQDv+nPf9uvYTMP364COXObell+4mOpjg5I1ct1diy/6uma8JZP41/RLg2uEHfQixGutOsAB3PskSUfHnWHqANUVFBCwZwyqx+gH+Abk9yOdmQPhvBUemhSofwq0dmNOg==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=st.com; dmarc=pass action=none header.from=st.com; dkim=pass
+ header.d=st.com; arc=none
+Received: from AM8PR10MB4209.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:1c8::21)
+ by AM8PR10MB4113.EURPRD10.PROD.OUTLOOK.COM (2603:10a6:20b:1ee::8) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3499.18; Mon, 2 Nov
+ 2020 16:16:04 +0000
+Received: from AM8PR10MB4209.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::c4bb:187f:c55a:8d09]) by AM8PR10MB4209.EURPRD10.PROD.OUTLOOK.COM
+ ([fe80::c4bb:187f:c55a:8d09%7]) with mapi id 15.20.3499.030; Mon, 2 Nov 2020
+ 16:16:04 +0000
+From:   Denis CIOCCA <denis.ciocca@st.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+CC:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: RE: [PATCH 44/46] dt-bindings:iio:st,st-sensors: txt to yaml
+ conversion.
+Thread-Topic: [PATCH 44/46] dt-bindings:iio:st,st-sensors: txt to yaml
+ conversion.
+Thread-Index: AQHWr7cDBXBc3wuEvU+ePMDzV772Gqm1Bupg
+Date:   Mon, 2 Nov 2020 16:16:04 +0000
+Message-ID: <AM8PR10MB4209DBDB3270D3685507EE67ED100@AM8PR10MB4209.EURPRD10.PROD.OUTLOOK.COM>
+References: <20201031184854.745828-1-jic23@kernel.org>
+ <20201031184854.745828-45-jic23@kernel.org>
+In-Reply-To: <20201031184854.745828-45-jic23@kernel.org>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+authentication-results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=st.com;
+x-originating-ip: [165.225.34.64]
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: a1c96f91-f211-473e-1aa9-08d87f4a98e3
+x-ms-traffictypediagnostic: AM8PR10MB4113:
+x-microsoft-antispam-prvs: <AM8PR10MB41139E6E6FCB659215A1C90BED100@AM8PR10MB4113.EURPRD10.PROD.OUTLOOK.COM>
+x-ms-oob-tlc-oobclassifiers: OLM:7219;
+x-ms-exchange-senderadcheck: 1
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: enAwnPxRumDyO/y+16eIqFdinrsDMMDJ0exkqLOG0BVzjjtbgXB0Yo6eEEcCaY66XiFl48auL2WLtzKNhX2WQEVRmarRsxZbAP2BkyCAjsfEjT2n+qSwd4D3HjnrtY4Q4GbOM4US07dLfCEmHhPe21cdmj0gaR4BTm16WGGMrYMUMsq9PM7r6UZ6w4XtUupL2Mnx+bFi+hZqS6aMgYvdEoboLpemklqzn6VGQ21ZfTSd0YcuCnry9W3svg2hL7y9iVJm04LaNKXStAtxxI2oKze2YImAk95eyuQbqBAE0pvggPrJrCKtti4Ine7ctX3bZStx5JV6rCCWyzOxLzMk3nUhGBctJrXo3llEEGZQ5B9phaYdZatu1V8N32QTThD2vFhVYKJ8xpdWVw96mN+UaA==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM8PR10MB4209.EURPRD10.PROD.OUTLOOK.COM;PTR:;CAT:NONE;SFS:(4636009)(136003)(376002)(346002)(396003)(366004)(39860400002)(55236004)(6506007)(53546011)(966005)(5660300002)(9686003)(71200400001)(66946007)(64756008)(66476007)(52536014)(66446008)(66556008)(76116006)(8936002)(33656002)(26005)(86362001)(316002)(83380400001)(8676002)(186003)(2906002)(4326008)(7696005)(55016002)(110136005)(478600001);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata: y+G5RTDEafsC/wrXmSjpPBzTahkz/qyvyB4vb7QbGN6yBEBJdg+78wcbKn7EDDKUaw7W+zNVKHjivGraqqG1EivkIpoZZHFCw1aX1gsqYA4qCmTdGWeiekwh6ckAncT68SV748nly5AwW/3DH+0ixJNk4ZkXs6MrCxxtKkyNa5SMbM2ue52xjX7W4iSNgaafTiaNh2yJ1lDxWyX9RQCXWOLdwTTJLHVLrhQ72Lb1w7HBg6VcIHJ/ZXSsRVQoMzICx36YR08ut4jmL4vVXiBtvsGStmPol0aAZpxC8qJQZuenWidLaFEl4skPSyLMIgEVRJ3PGy+iLScnBO3nP5F1GkOdyN5gDpqY0a/7Si+tLW1qlFHWQDalgjHMFlZ2G1iUCfjSXkKZIypQ8tPqGstoSTRAilk2m03Xk9fjN/xgaeLv8k7c94y43fkDA2V0cy1kY1OyGmAsNBQwJ5RZF2HjiYohlnP2zUH60MG90tCgPzh5iVsrA1c1Sgyuq9fnhRI36VrzJZrSbpWLJyfQ+Cbq6l35BqiRRs/7Cqz8HN1C7XZ4GAtxkMFWzKEyBBItzbOF1Ar6oUDORjKMbTSbimkzMhyFUzAqAJXWyA960jtzGqoyloAOO7bNUZz3JThnUt9xFKgzIiUp7KcSVlmIfLnQPA==
+x-ms-exchange-transport-forked: True
+Content-Type: text/plain; charset="us-ascii"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <4ebaaa0320101479e392ce2db4b62e24fdf15ef1.1603893146.git.mchehab+huawei@kernel.org>
-User-Agent: Mutt/1.5.23 (2014-03-12)
-X-TM-AS-GCONF: 00
+X-OriginatorOrg: ST.COM
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: AM8PR10MB4209.EURPRD10.PROD.OUTLOOK.COM
+X-MS-Exchange-CrossTenant-Network-Message-Id: a1c96f91-f211-473e-1aa9-08d87f4a98e3
+X-MS-Exchange-CrossTenant-originalarrivaltime: 02 Nov 2020 16:16:04.1376
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: 75e027c9-20d5-47d5-b82f-77d7cd041e8f
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: EPIMPDt4FQzNa95K8HQV1qYp2I7vxxkorV1Pa2rGXD7WhWsEFZa7HRPNKJg6G+8B89Tf/RNbyLjiRH6SkYYxCQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR10MB4113
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-02_07:2020-11-02,2020-11-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 impostorscore=0
- clxscore=1011 lowpriorityscore=0 adultscore=0 mlxlogscore=999 spamscore=0
- suspectscore=0 malwarescore=0 mlxscore=0 priorityscore=1501 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
- definitions=main-2011020116
+ definitions=2020-11-02_09:2020-11-02,2020-11-02 signatures=0
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 suspectscore=0 mlxscore=0
+ lowpriorityscore=0 malwarescore=0 bulkscore=0 priorityscore=1501
+ spamscore=0 phishscore=0 adultscore=0 clxscore=1011 mlxlogscore=999
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011020125
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Oct 28, 2020 at 03:23:18PM +0100, Mauro Carvalho Chehab wrote:
-> From: Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
-> 
-> Some files over there won't parse well by Sphinx.
-> 
+Hello Jonathan,
 
-[..snip..]
+Yes it is good to me. Thanks for doing this, much appreciated.
 
+Acked-by: Denis Ciocca <denis.ciocca@st.com>
 
+Thanks,
+Denis
 
-> diff --git a/Documentation/ABI/testing/sysfs-devices-system-cpu b/Documentation/ABI/testing/sysfs-devices-system-cpu
-> index b555df825447..274c337ec6a9 100644
-> --- a/Documentation/ABI/testing/sysfs-devices-system-cpu
-> +++ b/Documentation/ABI/testing/sysfs-devices-system-cpu
-> @@ -151,23 +151,28 @@ Description:
->  		The processor idle states which are available for use have the
->  		following attributes:
-> 
-> -		name: (RO) Name of the idle state (string).
-> +		======== ==== =================================================
-> +		name:	 (RO) Name of the idle state (string).
-> 
->  		latency: (RO) The latency to exit out of this idle state (in
-> -		microseconds).
-> +			      microseconds).
-> 
-> -		power: (RO) The power consumed while in this idle state (in
-> -		milliwatts).
-> +		power:   (RO) The power consumed while in this idle state (in
-> +			      milliwatts).
-> 
-> -		time: (RO) The total time spent in this idle state (in microseconds).
-> +		time:    (RO) The total time spent in this idle state
-> +			      (in microseconds).
-> 
-> -		usage: (RO) Number of times this state was entered (a count).
-> +		usage:	 (RO) Number of times this state was entered (a count).
-> 
-> -		above: (RO) Number of times this state was entered, but the
-> -		       observed CPU idle duration was too short for it (a count).
-> +		above:	 (RO) Number of times this state was entered, but the
-> +			      observed CPU idle duration was too short for it
-> +			      (a count).
-> 
-> -		below: (RO) Number of times this state was entered, but the
-> -		       observed CPU idle duration was too long for it (a count).
-> +		below: 	 (RO) Number of times this state was entered, but the
-> +			      observed CPU idle duration was too long for it
-> +			      (a count).
-> +		======== ==== =================================================
-> 
->  What:		/sys/devices/system/cpu/cpuX/cpuidle/stateN/desc
->  Date:		February 2008
-> @@ -290,6 +295,7 @@ Description:	Processor frequency boosting control
->  		This switch controls the boost setting for the whole system.
->  		Boosting allows the CPU and the firmware to run at a frequency
->  		beyound it's nominal limit.
+> -----Original Message-----
+> From: Jonathan Cameron <jic23@kernel.org>
+> Sent: Saturday, October 31, 2020 11:49 AM
+> To: linux-iio@vger.kernel.org; Rob Herring <robh+dt@kernel.org>;
+> devicetree@vger.kernel.org
+> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>; Denis CIOCCA
+> <denis.ciocca@st.com>
+> Subject: [PATCH 44/46] dt-bindings:iio:st,st-sensors: txt to yaml convers=
+ion.
+>=20
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>=20
+> This binding document covers a very large number of different sensors.
+> As such the existing documentation is less specific than it could be (suc=
+h as
+> which devices have 2 interrupt pin options).
+> That can be improved later.
+>=20
+> Denis, are you happy to be listed as maintainer for this one?
+> If not feel free to suggestion someone else.
+>=20
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Denis Ciocca <denis.ciocca@st.com>
+> ---
+>  .../bindings/iio/st,st-sensors.yaml           | 123 ++++++++++++++++++
+>  .../devicetree/bindings/iio/st-sensors.txt    |  82 ------------
+>  2 files changed, 123 insertions(+), 82 deletions(-)
+>=20
+> diff --git a/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> new file mode 100644
+> index 000000000000..db291a9390b7
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/st,st-sensors.yaml
+> @@ -0,0 +1,123 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) %YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/st,st-sensors.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
 > +
->  		More details can be found in
->  		Documentation/admin-guide/pm/cpufreq.rst
-> 
-
-The changes to cpuidle states look good to me.
-
-
-[..snip..]
-
-> @@ -414,30 +434,30 @@ Description:	POWERNV CPUFreq driver's frequency throttle stats directory and
->  		throttle attributes exported in the 'throttle_stats' directory:
-> 
->  		- turbo_stat : This file gives the total number of times the max
-> -		frequency is throttled to lower frequency in turbo (at and above
-> -		nominal frequency) range of frequencies.
-> +		  frequency is throttled to lower frequency in turbo (at and above
-> +		  nominal frequency) range of frequencies.
-> 
->  		- sub_turbo_stat : This file gives the total number of times the
-> -		max frequency is throttled to lower frequency in sub-turbo(below
-> -		nominal frequency) range of frequencies.
-> +		  max frequency is throttled to lower frequency in sub-turbo(below
-> +		  nominal frequency) range of frequencies.
-> 
->  		- unthrottle : This file gives the total number of times the max
-> -		frequency is unthrottled after being throttled.
-> +		  frequency is unthrottled after being throttled.
-> 
->  		- powercap : This file gives the total number of times the max
-> -		frequency is throttled due to 'Power Capping'.
-> +		  frequency is throttled due to 'Power Capping'.
-> 
->  		- overtemp : This file gives the total number of times the max
-> -		frequency is throttled due to 'CPU Over Temperature'.
-> +		  frequency is throttled due to 'CPU Over Temperature'.
-> 
->  		- supply_fault : This file gives the total number of times the
-> -		max frequency is throttled due to 'Power Supply Failure'.
-> +		  max frequency is throttled due to 'Power Supply Failure'.
-> 
->  		- overcurrent : This file gives the total number of times the
-> -		max frequency is throttled due to 'Overcurrent'.
-> +		  max frequency is throttled due to 'Overcurrent'.
-> 
->  		- occ_reset : This file gives the total number of times the max
-> -		frequency is throttled due to 'OCC Reset'.
-> +		  frequency is throttled due to 'OCC Reset'.
-> 
->  		The sysfs attributes representing different throttle reasons like
->  		powercap, overtemp, supply_fault, overcurrent and occ_reset map to
-
-
-This hunk for the powernv cpufreq driver looks good to me.
-For these two hunks,
-
-Reviewed-by: Gautham R. Shenoy <ego@linux.vnet.ibm.com>
-
+> +title: STMicroelectronics MEMS sensors
+> +
+> +description: |
+> +  Note that whilst this covers many STMicro MEMs sensors, some more
+> +complex
+> +  IMUs need their own bindings.
+> +  The STMicroelectronics sensor devices are pretty straight-forward I2C
+> +or
+> +  SPI devices, all sharing the same device tree descriptions no matter
+> +what
+> +  type of sensor it is.
+> +
+> +maintainers:
+> +  - Denis Ciocca <denis.ciocca@st.com>
+> +
+> +properties:
+> +  compatible:
+> +    description: |
+> +      Some values are deprecated.
+> +      st,lis3lv02d (deprecated, use st,lis3lv02dl-accel)
+> +      st,lis302dl-spi (deprecated, use st,lis3lv02dl-accel)
+> +    enum:
+> +        # Accelerometers
+> +      - st,lis3lv02d
+> +      - st,lis302dl-spi
+> +      - st,lis3lv02dl-accel
+> +      - st,lsm303dlh-accel
+> +      - st,lsm303dlhc-accel
+> +      - st,lis3dh-accel
+> +      - st,lsm330d-accel
+> +      - st,lsm330dl-accel
+> +      - st,lsm330dlc-accel
+> +      - st,lis331dl-accel
+> +      - st,lis331dlh-accel
+> +      - st,lsm303dl-accel
+> +      - st,lsm303dlm-accel
+> +      - st,lsm330-accel
+> +      - st,lsm303agr-accel
+> +      - st,lis2dh12-accel
+> +      - st,h3lis331dl-accel
+> +      - st,lng2dm-accel
+> +      - st,lis3l02dq
+> +      - st,lis2dw12
+> +      - st,lis3dhh
+> +      - st,lis3de
+> +      - st,lis2de12
+> +      - st,lis2hh12
+> +        # Gyroscopes
+> +      - st,l3g4200d-gyro
+> +      - st,lsm330d-gyro
+> +      - st,lsm330dl-gyro
+> +      - st,lsm330dlc-gyro
+> +      - st,l3gd20-gyro
+> +      - st,l3gd20h-gyro
+> +      - st,l3g4is-gyro
+> +      - st,lsm330-gyro
+> +      - st,lsm9ds0-gyro
+> +        # Magnetometers
+> +      - st,lsm303agr-magn
+> +      - st,lsm303dlh-magn
+> +      - st,lsm303dlhc-magn
+> +      - st,lsm303dlm-magn
+> +      - st,lis3mdl-magn
+> +      - st,lis2mdl
+> +      - st,lsm9ds1-magn
+> +        # Pressure sensors
+> +      - st,lps001wp-press
+> +      - st,lps25h-press
+> +      - st,lps331ap-press
+> +      - st,lps22hb-press
+> +      - st,lps33hw
+> +      - st,lps35hw
+> +      - st,lps22hh
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    minItems: 1
+> +
+> +  vdd-supply: true
+> +  vddio-supply: true
+> +
+> +  st,drdy-int-pin:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    description:
+> +      Some sensors have multiple possible pins via which they can provid=
+e
+> +      a data ready interrupt.  This selects which one.
+> +    enum:
+> +      - 1
+> +      - 2
+> +
+> +  drive-open-drain:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description: |
+> +      The interrupt/data ready line will be configured as open drain, wh=
+ich
+> +      is useful if several sensors share the same interrupt line.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    i2c {
+> +        #address-cells =3D <1>;
+> +        #size-cells =3D <0>;
+> +        accelerometer@1d {
+> +            compatible =3D "st,lis3lv02dl-accel";
+> +            reg =3D <0x1d>;
+> +            interrupt-parent =3D <&gpio2>;
+> +            interrupts =3D <18 IRQ_TYPE_EDGE_RISING>;
+> +            pinctrl-0 =3D <&lis3lv02dl_nhk_mode>;
+> +            pinctrl-names =3D "default";
+> +        };
+> +    };
+> +...
+> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt
+> b/Documentation/devicetree/bindings/iio/st-sensors.txt
+> deleted file mode 100644
+> index 3213599c5071..000000000000
+> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
+> +++ /dev/null
+> @@ -1,82 +0,0 @@
+> -STMicroelectronics MEMS sensors
+> -
+> -The STMicroelectronics sensor devices are pretty straight-forward I2C or=
+ -
+> SPI devices, all sharing the same device tree descriptions no matter what=
+ -
+> type of sensor it is.
+> -
+> -Required properties:
+> -- compatible: see the list of valid compatible strings below
+> -- reg: the I2C or SPI address the device will respond to
+> -
+> -Optional properties:
+> -- vdd-supply: an optional regulator that needs to be on to provide VDD
+> -  power to the sensor.
+> -- vddio-supply: an optional regulator that needs to be on to provide the
+> -  VDD IO power to the sensor.
+> -- st,drdy-int-pin: the pin on the package that will be used to signal
+> -  "data ready" (valid values: 1 or 2). This property is not configurable
+> -  on all sensors.
+> -- drive-open-drain: the interrupt/data ready line will be configured
+> -  as open drain, which is useful if several sensors share the same
+> -  interrupt line. (This binding is taken from pinctrl/pinctrl-bindings.t=
+xt)
+> -  This is a boolean property.
+> -
+> -Sensors may also have applicable pin control settings, those use the -
+> standard bindings from pinctrl/pinctrl-bindings.txt.
+> -
+> -Valid compatible strings:
+> -
+> -Accelerometers:
+> -- st,lis3lv02d (deprecated, use st,lis3lv02dl-accel)
+> -- st,lis302dl-spi (deprecated, use st,lis3lv02dl-accel)
+> -- st,lis3lv02dl-accel
+> -- st,lsm303dlh-accel
+> -- st,lsm303dlhc-accel
+> -- st,lis3dh-accel
+> -- st,lsm330d-accel
+> -- st,lsm330dl-accel
+> -- st,lsm330dlc-accel
+> -- st,lis331dl-accel
+> -- st,lis331dlh-accel
+> -- st,lsm303dl-accel
+> -- st,lsm303dlm-accel
+> -- st,lsm330-accel
+> -- st,lsm303agr-accel
+> -- st,lis2dh12-accel
+> -- st,h3lis331dl-accel
+> -- st,lng2dm-accel
+> -- st,lis3l02dq
+> -- st,lis2dw12
+> -- st,lis3dhh
+> -- st,lis3de
+> -- st,lis2de12
+> -- st,lis2hh12
+> -
+> -Gyroscopes:
+> -- st,l3g4200d-gyro
+> -- st,lsm330d-gyro
+> -- st,lsm330dl-gyro
+> -- st,lsm330dlc-gyro
+> -- st,l3gd20-gyro
+> -- st,l3gd20h-gyro
+> -- st,l3g4is-gyro
+> -- st,lsm330-gyro
+> -- st,lsm9ds0-gyro
+> -
+> -Magnetometers:
+> -- st,lsm303agr-magn
+> -- st,lsm303dlh-magn
+> -- st,lsm303dlhc-magn
+> -- st,lsm303dlm-magn
+> -- st,lis3mdl-magn
+> -- st,lis2mdl
+> -- st,lsm9ds1-magn
+> -
+> -Pressure sensors:
+> -- st,lps001wp-press
+> -- st,lps25h-press
+> -- st,lps331ap-press
+> -- st,lps22hb-press
+> -- st,lps33hw
+> -- st,lps35hw
+> -- st,lps22hh
+> --
+> 2.28.0
 
