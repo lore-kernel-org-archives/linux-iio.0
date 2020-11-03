@@ -2,96 +2,93 @@ Return-Path: <SRS0=Xg61=EJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E55D3C2D0A3
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Nov 2020 12:04:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16FB6C388F7
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Nov 2020 15:24:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9DA8122409
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Nov 2020 12:04:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B6B8B223C7
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Nov 2020 15:24:35 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="rrVlj56y"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727109AbgKCMEh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 3 Nov 2020 07:04:37 -0500
-Received: from szxga04-in.huawei.com ([45.249.212.190]:7133 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728941AbgKCMEh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Nov 2020 07:04:37 -0500
-Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4CQT3Y5tlyz15R0b;
-        Tue,  3 Nov 2020 20:04:25 +0800 (CST)
-Received: from [10.174.177.149] (10.174.177.149) by
- DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
- 14.3.487.0; Tue, 3 Nov 2020 20:04:24 +0800
-Subject: Re: [PATCH v2] iio: adc: rockchip_saradc: fix missing
- clk_disable_unprepare() on error in rockchip_saradc_resume
-To:     Robin Murphy <robin.murphy@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Heiko Stuebner <heiko@sntech.de>
-CC:     <linux-iio@vger.kernel.org>, <linux-rockchip@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>
-References: <20201103074909.195465-1-miaoqinglang@huawei.com>
- <50da9bf1-7317-b24b-9a87-e9dfb4e4a694@arm.com>
-From:   Qinglang Miao <miaoqinglang@huawei.com>
-Message-ID: <c86c7e85-31ec-725f-ed75-563c804868c7@huawei.com>
-Date:   Tue, 3 Nov 2020 20:04:23 +0800
-User-Agent: Mozilla/5.0 (Windows NT 10.0; WOW64; rv:68.0) Gecko/20100101
- Thunderbird/68.7.0
+        id S1728302AbgKCPYf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 3 Nov 2020 10:24:35 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55846 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728287AbgKCPY2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Nov 2020 10:24:28 -0500
+Received: from mail-oo1-xc29.google.com (mail-oo1-xc29.google.com [IPv6:2607:f8b0:4864:20::c29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B24D5C061A4B
+        for <linux-iio@vger.kernel.org>; Tue,  3 Nov 2020 07:24:27 -0800 (PST)
+Received: by mail-oo1-xc29.google.com with SMTP id z14so4271054oom.10
+        for <linux-iio@vger.kernel.org>; Tue, 03 Nov 2020 07:24:27 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=N71Zs4qg4W+XUXzJvJITvEfPb9AWspIlQairrp1whfg=;
+        b=rrVlj56yk2trpBYSpi4k2yd1xCK2bo7zfyPwMRTDKgj2zJFZf+rsg3l64hS6mNlXsJ
+         /lsnCjsBYlscUhZQjxreix9yr1FDyyJ44isM98ku6PfR5nfH8ewfPGTyJoG+z8DaKf3B
+         GC0lFyYci0jWLRuivuAjfzCGQfauYD+FIBoJ65Z0ysgZFvM7r9APNUcj/A/ERVF2MbLf
+         yty4WBGjCP2WpSIZHr96/NF2lvOu9gyd0kH5dNJE6T16tbnf8/wDcP2ZEnVaZTeW+uv8
+         AOywb/DHyLh7Si/JMqeCh4eS5XqaKQQMWQhjlysMgge2i4X83N4I6vLqLPfg4x7OeC6p
+         Yirg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=N71Zs4qg4W+XUXzJvJITvEfPb9AWspIlQairrp1whfg=;
+        b=Gaq6l0dd+YBgUHoNw+rGESvb62nVwCDViMTbHchotJql0x9/RwJ/gND+rEfLnIxRFL
+         Ruarokp4BZXYp7yNcGDBdvCe7b4rB3mZKozKQLPVWWNWEM/lOsbiW73vvnbbOnh6vC5f
+         FWLLU+GWiEBuZa5zJwAvHQTapj2ilfGeS//ZSZvHjZJE3mypgyvD/xi0W6wm1bJt1nqW
+         +g1VcKFe4VVRHYPt9Nbq73ek++3FW8KJbFg26Sv1zHZHwidqjqcEUQ2i9cTSs9bbZYeb
+         ttsjZJdFt2FNb5kqWiYn7RWg6/8W0t9/wuyGlY7TwtYW/wqPgL6fm0/3bGM0QAXFUTA9
+         V/GA==
+X-Gm-Message-State: AOAM5316RGrndB1ZgNiwdnd8f66+w8c9GQuy1PtbT5mFqSnqi5X7dNIT
+        elaaZKuxlifpuqRZlojUrTI5zQ==
+X-Google-Smtp-Source: ABdhPJwU2NP+qjv7T5X33Bc5Qb64pjBRUiEN1Yk0nWz/TQ1GhwOuIu9xrFu+5vjm7/EyqQJ1LvpBNw==
+X-Received: by 2002:a4a:6b1a:: with SMTP id g26mr10661391ooc.13.1604417066733;
+        Tue, 03 Nov 2020 07:24:26 -0800 (PST)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id v5sm4548511otb.44.2020.11.03.07.24.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 03 Nov 2020 07:24:25 -0800 (PST)
+Date:   Tue, 3 Nov 2020 09:24:23 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        coresight@lists.linaro.org, dri-devel@lists.freedesktop.org,
+        linux-acpi@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-f2fs-devel@lists.sourceforge.net, linux-fpga@vger.kernel.org,
+        linux-gpio@vger.kernel.org, linux-i3c@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-remoteproc@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linuxppc-dev@lists.ozlabs.org, netdev@vger.kernel.org
+Subject: Re: [PATCH 30/33] docs: ABI: cleanup several ABI documents
+Message-ID: <20201103004241.GD223412@builder.lan>
+References: <cover.1603893146.git.mchehab+huawei@kernel.org>
+ <95ef2cf3a58f4e50f17d9e58e0d9440ad14d0427.1603893146.git.mchehab+huawei@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <50da9bf1-7317-b24b-9a87-e9dfb4e4a694@arm.com>
-Content-Type: text/plain; charset="utf-8"; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.174.177.149]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <95ef2cf3a58f4e50f17d9e58e0d9440ad14d0427.1603893146.git.mchehab+huawei@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Wed 28 Oct 09:23 CDT 2020, Mauro Carvalho Chehab wrote:
+[..]
+>  .../ABI/testing/sysfs-class-remoteproc        |  14 +-
 
+for this:
 
-在 2020/11/3 19:11, Robin Murphy 写道:
-> On 2020-11-03 07:49, Qinglang Miao wrote:
->> Fix the missing clk_disable_unprepare() of info->pclk
->> before return from rockchip_saradc_resume in the error
->> handling case when fails to prepare and enable info->clk.
->>
->> Fixes: 44d6f2ef94f9 ("iio: adc: add driver for Rockchip saradc")
->> Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
->> ---
->>   drivers/iio/adc/rockchip_saradc.c | 5 +++--
->>   1 file changed, 3 insertions(+), 2 deletions(-)
->>
->> diff --git a/drivers/iio/adc/rockchip_saradc.c 
->> b/drivers/iio/adc/rockchip_saradc.c
->> index 1f3d7d639..5eb566274 100644
->> --- a/drivers/iio/adc/rockchip_saradc.c
->> +++ b/drivers/iio/adc/rockchip_saradc.c
->> @@ -461,9 +461,10 @@ static int rockchip_saradc_resume(struct device 
->> *dev)
->>           return ret;
->>       ret = clk_prepare_enable(info->clk);
->> -    if (ret)
->> +    if (ret) {
->> +        clk_disable_unprepare(info->pclk);
->>           return ret;
-> 
-> No need to add braces, just replace this utterly pointless "early" 
-> return ;)
-> 
-> Robin.
-You are right Robin, thanks a lot! :D
+Acked-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 
-I've sent a 'real' v2 patch based on your advice.
-> 
->> -
->> +    }
->>       return ret;
->>   }
->>   #endif
->>
-> .
+Thanks,
+Bjorn
