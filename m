@@ -2,112 +2,79 @@ Return-Path: <SRS0=Xg61=EJ=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19702C00A89
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Nov 2020 02:35:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 391ADC2D0A3
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Nov 2020 07:43:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ADA272067C
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Nov 2020 02:35:04 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-	s=default; t=1604370904;
-	bh=bHqXmo6svN3AIUqj5cK/kFODXDT1zhyypoEv0Bx/ces=;
-	h=Date:From:To:Cc:Subject:References:In-Reply-To:List-ID:From;
-	b=P4yDCZrr0iCBct0lI04r3htwtlNWLB5wJG1rhKcnlGyTBSON40laCRFgnBGIsnM8p
-	 DHbEEc8l7ia5gZTiKDs3SBhPgiRJ7yv7zVB/x6xrPoXiNish8TqtiletP8QXcTg/fK
-	 sDXQ4PTVOMf+UzV+fGAc/BAxy5LFDMduJvrfbL9c=
+	by mail.kernel.org (Postfix) with ESMTP id EB556223BD
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Nov 2020 07:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726018AbgKCCfE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 Nov 2020 21:35:04 -0500
-Received: from mail-ot1-f68.google.com ([209.85.210.68]:39749 "EHLO
-        mail-ot1-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725968AbgKCCfE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Nov 2020 21:35:04 -0500
-Received: by mail-ot1-f68.google.com with SMTP id z16so9473595otq.6;
-        Mon, 02 Nov 2020 18:35:03 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=KNJMu2yACG+bHyAnNOjUeJvR+4QELKtVjegGmgtoKtU=;
-        b=V5ixOuqglKABXjYDpac9MRVDkuavpilv1bpq/dpXcsvh3dSo0tmAkdZhaJVlzA+U9G
-         8hq7bxGYKxoXvPW8i2F35bYiHPx7pT8TwcRqtzZ8IfVtq4q5Z7KuhvbVA7y5dbwqQdiA
-         O0xml2HF6ulaxjdZ++xlKE6CRsIPkzo0xJzS/pBtZ3h8sWKaGK/6PTmZmouH+gS34Ad/
-         AJG+Xo7UyN7LnId/H3Q4ErqGQgsBKzBR3Qnwyd2850cMEo7BA0/IcLLq+Ib3v70QRV/V
-         9QVe0fpnDS9WtWKjqwfgqg3xx68jtW794r87HhkWeJVIpp4jDq75V2/o/eT/RYW4AlDY
-         M0Bw==
-X-Gm-Message-State: AOAM532YRCNq7Rbpn6V0jjJIIhfcIsmk2KKQeFLxMw7S0kekw1e2HmQv
-        Re2+s+xOCKa0o5EnTVPKTCBvjWXBsA==
-X-Google-Smtp-Source: ABdhPJy1YkDt7tHVOHDJnHi5BGt6br4AnKN0UnU+dlWuo9AkhsxTFRw+78NGGkDEHiXJtclm6mulaw==
-X-Received: by 2002:a9d:2182:: with SMTP id s2mr14269568otb.328.1604370903100;
-        Mon, 02 Nov 2020 18:35:03 -0800 (PST)
-Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id l11sm569723oti.75.2020.11.02.18.35.02
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 Nov 2020 18:35:02 -0800 (PST)
-Received: (nullmailer pid 697358 invoked by uid 1000);
-        Tue, 03 Nov 2020 02:35:01 -0000
-Date:   Mon, 2 Nov 2020 20:35:01 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 0/7] dt-bindings:iio: Move to trivial-devices.yaml from
- txt files.
-Message-ID: <20201103023501.GA693302@bogus>
-References: <20201031182922.743153-1-jic23@kernel.org>
+        id S1727917AbgKCHns (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 3 Nov 2020 02:43:48 -0500
+Received: from szxga07-in.huawei.com ([45.249.212.35]:7409 "EHLO
+        szxga07-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725958AbgKCHnr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Nov 2020 02:43:47 -0500
+Received: from DGGEMS406-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga07-in.huawei.com (SkyGuard) with ESMTP id 4CQMGj6Slbz71th;
+        Tue,  3 Nov 2020 15:43:41 +0800 (CST)
+Received: from localhost.localdomain.localdomain (10.175.113.25) by
+ DGGEMS406-HUB.china.huawei.com (10.3.19.206) with Microsoft SMTP Server id
+ 14.3.487.0; Tue, 3 Nov 2020 15:43:33 +0800
+From:   Qinglang Miao <miaoqinglang@huawei.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Heiko Stuebner <heiko@sntech.de>
+CC:     <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        Qinglang Miao <miaoqinglang@huawei.com>
+Subject: [PATCH v2] iio: adc: rockchip_saradc: fix missing clk_disable_unprepare() on error in rockchip_saradc_resume
+Date:   Tue, 3 Nov 2020 15:49:09 +0800
+Message-ID: <20201103074909.195465-1-miaoqinglang@huawei.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201031182922.743153-1-jic23@kernel.org>
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [10.175.113.25]
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Oct 31, 2020 at 06:29:15PM +0000, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Rather than convert this group of bindings to yaml, let us just add
-> them to trivial-devices.yaml.
-> 
-> It is more than possible that we may need to give some of these their own
-> files at somepoint in the future (for example due to additional of
-> channel provider bindings for the potentiometers) but for now there seems
-> to be little advantage to keeping them separate.
-> 
-> Jonathan Cameron (7):
->   dt-bindings:iio:chemical:sensirion,sgp30: Move to
->     trivial-bindings.yaml
->   dt-bindings:iio:chemical:bosch,bme180: Move to trivial devices
->   dt-bindings:iio:potentiometer:maxim,ds1803 move to trivial devices.
->   dt-bindings:iio:potentiometer:maxim,max5481 move to trivial devices
->   dt-bindings:iio:light:renesas,isl29501: Move to trivial devices.
->   dt-bindings:iio:magnetometer:memsic,mmc35240: move to
->     trivial-devices.yaml
->   dt-bindings:iio:accel:domintech,dmard06: Move to trivial-devices.yaml
+Fix the missing clk_disable_unprepare() of info->pclk
+before return from rockchip_saradc_resume in the error
+handling case when fails to prepare and enable info->clk.
 
-Reviewed-by: Rob Herring <robh@kernel.org>
+Fixes: 44d6f2ef94f9 ("iio: adc: add driver for Rockchip saradc")
+Signed-off-by: Qinglang Miao <miaoqinglang@huawei.com>
+---
+ drivers/iio/adc/rockchip_saradc.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-> 
->  .../devicetree/bindings/iio/accel/dmard06.txt | 19 ------------
->  .../bindings/iio/chemical/bme680.txt          | 11 -------
->  .../bindings/iio/chemical/sensirion,sgp30.txt | 15 ----------
->  .../bindings/iio/light/renesas,isl29501.txt   | 13 --------
->  .../bindings/iio/magnetometer/mmc35240.txt    | 13 --------
->  .../bindings/iio/potentiometer/ds1803.txt     | 21 -------------
->  .../bindings/iio/potentiometer/max5481.txt    | 23 --------------
->  .../devicetree/bindings/trivial-devices.yaml  | 30 +++++++++++++++++++
->  8 files changed, 30 insertions(+), 115 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/iio/accel/dmard06.txt
->  delete mode 100644 Documentation/devicetree/bindings/iio/chemical/bme680.txt
->  delete mode 100644 Documentation/devicetree/bindings/iio/chemical/sensirion,sgp30.txt
->  delete mode 100644 Documentation/devicetree/bindings/iio/light/renesas,isl29501.txt
->  delete mode 100644 Documentation/devicetree/bindings/iio/magnetometer/mmc35240.txt
->  delete mode 100644 Documentation/devicetree/bindings/iio/potentiometer/ds1803.txt
->  delete mode 100644 Documentation/devicetree/bindings/iio/potentiometer/max5481.txt
-> 
-> -- 
-> 2.28.0
-> 
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+index 1f3d7d639..5eb566274 100644
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -461,9 +461,10 @@ static int rockchip_saradc_resume(struct device *dev)
+ 		return ret;
+ 
+ 	ret = clk_prepare_enable(info->clk);
+-	if (ret)
++	if (ret) {
++		clk_disable_unprepare(info->pclk);
+ 		return ret;
+-
++	}
+ 	return ret;
+ }
+ #endif
+-- 
+2.23.0
+
