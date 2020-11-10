@@ -2,46 +2,47 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-9.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no
-	version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06FD3C4742C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ECC94C55ABD
 	for <linux-iio@archiver.kernel.org>; Tue, 10 Nov 2020 13:38:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A177D206B6
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Nov 2020 13:38:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A4E9B206B6
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Nov 2020 13:38:45 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="IJyAzwim"
+	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="YyTnMoz+"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730577AbgKJNio (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Nov 2020 08:38:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:58746 "EHLO
+        id S1730270AbgKJNip (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Nov 2020 08:38:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:46422 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730368AbgKJNio (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Nov 2020 08:38:44 -0500
+        by vger.kernel.org with ESMTP id S1730534AbgKJNip (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Nov 2020 08:38:45 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
         s=mimecast20190719; t=1605015523;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=aMx7wjuNg2kAEzPgrkNd4CH/K8UHL+coRGUNV3J6B2g=;
-        b=IJyAzwimBcPT3ISlsfqdyZfRENwb+8+Sf+ymS2CZ88Miw36dx38KWgltw87glHfeupiUzD
-        DGVsXyVX1uventS8m2l0uuYv2GHcSZWMMqDTFol/yRD26W31DKOQyQB/8pQJMAKdbp0y2f
-        pFhD380soMowFdte5ulWnhpSzQtH9x4=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=SVnbTk+hfOm+spQSdQcWNoHZy9N+GiEB8bTrlx+8MxU=;
+        b=YyTnMoz+y61PQqZxZ5J0uRbhZ781XHWqL8tth6rl98MFZqD3UQZAXFwSmDGjyMLLwNBYk5
+        loDohvZmreQ8gOhmCe9gZaIurXVXKDWlQTk91gx3zvfA+Xt8uDlonjbjgVHpu+fMDZ3d86
+        05ef66saPZg170CJ8gowKxryFOkJ24s=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-2-c4zLv6f5O2qZVBxvaN6mOw-1; Tue, 10 Nov 2020 08:38:39 -0500
-X-MC-Unique: c4zLv6f5O2qZVBxvaN6mOw-1
+ us-mta-215-ptFeDXdqPzOOo8du9gMXLQ-1; Tue, 10 Nov 2020 08:38:41 -0500
+X-MC-Unique: ptFeDXdqPzOOo8du9gMXLQ-1
 Received: from smtp.corp.redhat.com (int-mx02.intmail.prod.int.phx2.redhat.com [10.5.11.12])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 37C656D582;
-        Tue, 10 Nov 2020 13:38:38 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 03328803F6A;
+        Tue, 10 Nov 2020 13:38:40 +0000 (UTC)
 Received: from x1.localdomain (ovpn-113-196.ams2.redhat.com [10.36.113.196])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 9224C4149;
-        Tue, 10 Nov 2020 13:38:36 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 804006115F;
+        Tue, 10 Nov 2020 13:38:38 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Hans de Goede <hdegoede@redhat.com>,
@@ -49,9 +50,11 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         "russianneuromancer @ ya . ru" <russianneuromancer@ya.ru>,
         linux-iio@vger.kernel.org
-Subject: [PATCH bugfix for 5.10 0/2] iio: accel: kxcjk1013: Fix kbd/touchpad not working on some 2-in-1s
-Date:   Tue, 10 Nov 2020 14:38:33 +0100
-Message-Id: <20201110133835.129080-1-hdegoede@redhat.com>
+Subject: [PATCH bugfix for 5.10 1/2] iio: accel: kxcjk1013: Replace is_smo8500_device with an acpi_type enum
+Date:   Tue, 10 Nov 2020 14:38:34 +0100
+Message-Id: <20201110133835.129080-2-hdegoede@redhat.com>
+In-Reply-To: <20201110133835.129080-1-hdegoede@redhat.com>
+References: <20201110133835.129080-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Scanned-By: MIMEDefang 2.79 on 10.5.11.12
@@ -59,24 +62,78 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi All,
+Replace the boolean is_smo8500_device variable with an acpi_type enum.
 
-This series fixes a somewhat special bug where sometimes the
-kbd/touchpad do not work on certain 2-in-1s with 360 degree
-(yoga) hinges, which use 2 accelerometers to allow figuring out the
-angle between the display and the base.
+For now this can be either ACPI_GENERIC or ACPI_SMO8500, this is a
+preparation patch for adding special handling for the KIOX010A ACPI HID,
+which will add a ACPI_KIOX010A acpi_type to the introduced enum.
 
-The display accelerometer ACPI device / fwnode has a special ACPI
-method which allows suppressing kbd + touchpads events when folded
-into tablet-mode and sometimes the event suppression gets enabled
-by default, this series calls the ACPI method at probe time to
-disable the suppression, fixing the kbd/touchpad not working.
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/accel/kxcjk-1013.c | 15 ++++++++++-----
+ 1 file changed, 10 insertions(+), 5 deletions(-)
 
-A web-search shows various reports about this issue in forums and such,
-so it would be good if we can get these 2 patches added to a 5.10-rc#
-as a bugfix, as I indicated in the Subject prefix.
-
-Regards,
-
-Hans
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index beb38d9d607d..abeb0d254046 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -126,6 +126,11 @@ enum kx_chipset {
+ 	KX_MAX_CHIPS /* this must be last */
+ };
+ 
++enum kx_acpi_type {
++	ACPI_GENERIC,
++	ACPI_SMO8500,
++};
++
+ struct kxcjk1013_data {
+ 	struct i2c_client *client;
+ 	struct iio_trigger *dready_trig;
+@@ -143,7 +148,7 @@ struct kxcjk1013_data {
+ 	bool motion_trigger_on;
+ 	int64_t timestamp;
+ 	enum kx_chipset chipset;
+-	bool is_smo8500_device;
++	enum kx_acpi_type acpi_type;
+ };
+ 
+ enum kxcjk1013_axis {
+@@ -1247,7 +1252,7 @@ static irqreturn_t kxcjk1013_data_rdy_trig_poll(int irq, void *private)
+ 
+ static const char *kxcjk1013_match_acpi_device(struct device *dev,
+ 					       enum kx_chipset *chipset,
+-					       bool *is_smo8500_device)
++					       enum kx_acpi_type *acpi_type)
+ {
+ 	const struct acpi_device_id *id;
+ 
+@@ -1256,7 +1261,7 @@ static const char *kxcjk1013_match_acpi_device(struct device *dev,
+ 		return NULL;
+ 
+ 	if (strcmp(id->id, "SMO8500") == 0)
+-		*is_smo8500_device = true;
++		*acpi_type = ACPI_SMO8500;
+ 
+ 	*chipset = (enum kx_chipset)id->driver_data;
+ 
+@@ -1299,7 +1304,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
+ 	} else if (ACPI_HANDLE(&client->dev)) {
+ 		name = kxcjk1013_match_acpi_device(&client->dev,
+ 						   &data->chipset,
+-						   &data->is_smo8500_device);
++						   &data->acpi_type);
+ 	} else
+ 		return -ENODEV;
+ 
+@@ -1316,7 +1321,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &kxcjk1013_info;
+ 
+-	if (client->irq > 0 && !data->is_smo8500_device) {
++	if (client->irq > 0 && data->acpi_type != ACPI_SMO8500) {
+ 		ret = devm_request_threaded_irq(&client->dev, client->irq,
+ 						kxcjk1013_data_rdy_trig_poll,
+ 						kxcjk1013_event_handler,
+-- 
+2.28.0
 
