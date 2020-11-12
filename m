@@ -2,99 +2,176 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B632C5519F
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Nov 2020 17:28:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDB5C2D0E4
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Nov 2020 21:55:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C0E48206E3
-	for <linux-iio@archiver.kernel.org>; Thu, 12 Nov 2020 17:28:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DE78622227
+	for <linux-iio@archiver.kernel.org>; Thu, 12 Nov 2020 21:55:10 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="D0CLbcjt"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726041AbgKLR2b convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 Nov 2020 12:28:31 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:2097 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725987AbgKLR2a (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 Nov 2020 12:28:30 -0500
-Received: from fraeml740-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4CX7nR1kD3z67J8Z;
-        Fri, 13 Nov 2020 01:26:51 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml740-chm.china.huawei.com (10.206.15.221) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1913.5; Thu, 12 Nov 2020 18:28:29 +0100
-Received: from localhost (10.52.124.211) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Thu, 12 Nov
- 2020 17:28:28 +0000
-Date:   Thu, 12 Nov 2020 17:28:21 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-CC:     <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+        id S1727260AbgKLVzK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 Nov 2020 16:55:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43792 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727043AbgKLVzJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 Nov 2020 16:55:09 -0500
+Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10D67C0617A6
+        for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2020 13:55:09 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id v144so10703706lfa.13
+        for <linux-iio@vger.kernel.org>; Thu, 12 Nov 2020 13:55:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=SwkdEZKAvc8j5iPFuWkoVDjlnDMeZmYFzd85/LfuZ/Y=;
+        b=D0CLbcjtMp/JuSGJRxAPMCSGwYEreqEULjgOjcBAL/4BjHzq1bmgIbcPhqpkuxEDrY
+         Od4gpvBNlj+c9AvMfIxOPOvKVKQcqJRkKwpyG9jlkcRtXbTKh05zfZCXBUn568NHBUeL
+         ONqS9F4oVDlqFzvd2MkFcmXToVoO3f9viX7C3MAe4hb8UL90vTT0PlRtS8Y4Ew3CPmJ5
+         w5Kz0LGM5PjezHQ5EQ8GgrEZMpFNkzLj4CVLAdAt1v/5VPA1ri9T/dr89AEfaogU1VEH
+         bSxaTnBvW9JYUGpt+09BKnWqzcLDT/m9AsRXfk5Cv8bCf4YORluJIeCQznHHVyAs7JIQ
+         jQBg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=SwkdEZKAvc8j5iPFuWkoVDjlnDMeZmYFzd85/LfuZ/Y=;
+        b=V4eepkXueH9/s19EOSurzkRFdV1irN9OXBiu/AHgSfb5LdkWdr9L52/viOsuO26zU6
+         g1VECsSyVxWdb57PCjwHdjTNGHjBM9bBrkPonJkYsVQHf5j5ID/x1X5XQ5TDMWhbsovE
+         jj4PioJE/WV6m1nnNe8ljRFSTw8kuKNAeLr8ZaGiR5eg8KUNXkGJLa00vvAsmO20uODH
+         pytKeG/Oujlqjg6eTVq8KI6UM+QK6U2RmUDxy6zW93E9y3n1vl4KAPMcs4pIOVPG1jCH
+         459/hnTVxsjbrTY8Idt5lhCXswINX2wUDCwMUfgEDGkMKtTPnbURv+sz+WZRLafQlQJX
+         v27w==
+X-Gm-Message-State: AOAM530/vtzJL8LjDV6XefESWrru/On0Jp8C4W+1NCYespjPxhkgKd2/
+        Ap9sEjK9/yn06dNng+2hK6eHcA==
+X-Google-Smtp-Source: ABdhPJwEz0Y/AEnYHH3L6uGPbG35kZxxqy75zavlMyltIKE/1G6hO64JMTqe1UEAiQGh1IChPoEfNw==
+X-Received: by 2002:ac2:4845:: with SMTP id 5mr641515lfy.402.1605218107568;
+        Thu, 12 Nov 2020 13:55:07 -0800 (PST)
+Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
+        by smtp.gmail.com with ESMTPSA id x24sm967731ljj.112.2020.11.12.13.55.06
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 12 Nov 2020 13:55:07 -0800 (PST)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: buffer: Fix demux update
-Message-ID: <20201112172821.0000088b@Huawei.com>
-In-Reply-To: <20201112144323.28887-1-nuno.sa@analog.com>
-References: <20201112144323.28887-1-nuno.sa@analog.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 3/3 v2] iio: accel: bmc150-accel: Add rudimentary regulator support
+Date:   Thu, 12 Nov 2020 22:54:51 +0100
+Message-Id: <20201112215451.2606136-3-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201112215451.2606136-1-linus.walleij@linaro.org>
+References: <20201112215451.2606136-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
-Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [10.52.124.211]
-X-ClientProxiedBy: lhreml738-chm.china.huawei.com (10.201.108.188) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 12 Nov 2020 15:43:22 +0100
-Nuno Sá <nuno.sa@analog.com> wrote:
+These Bosch accelerometers have two supplies, VDD and VDDIO.
+Add some rudimentary support to obtain and enable these
+regulators during probe() and disable them during remove()
+or on the errorpath.
 
-> When updating the buffer demux, we will skip a scan element from the
-> device in the case `in_ind != out_ind` and we enter the while loop.
-> in_ind should only be refreshed with `find_next_bit()` in the end of the
-> loop.
-> 
-> Fixes: 5ada4ea9be16 ("staging:iio: add demux optionally to path from device to buffer")
-> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Use dev_err_probe() to simplify the errorpath.
+---
+ drivers/iio/accel/bmc150-accel-core.c | 35 +++++++++++++++++++++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
 
-Yikes that's been there a long time.
-
-Could you provide an example of a particular layout and the result of this being wrong?
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/industrialio-buffer.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index a4f6bb96d4f4..276b609d7917 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -865,12 +865,12 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
->  				       indio_dev->masklength,
->  				       in_ind + 1);
->  		while (in_ind != out_ind) {
-> -			in_ind = find_next_bit(indio_dev->active_scan_mask,
-> -					       indio_dev->masklength,
-> -					       in_ind + 1);
->  			length = iio_storage_bytes_for_si(indio_dev, in_ind);
->  			/* Make sure we are aligned */
->  			in_loc = roundup(in_loc, length) + length;
-> +			in_ind = find_next_bit(indio_dev->active_scan_mask,
-> +					       indio_dev->masklength,
-> +					       in_ind + 1);
->  		}
->  		length = iio_storage_bytes_for_si(indio_dev, in_ind);
->  		out_loc = roundup(out_loc, length);
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 0dafe4052856..a9714cfacf4d 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -28,6 +28,7 @@
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ 
+ #include "bmc150-accel.h"
+ 
+@@ -184,6 +185,7 @@ enum bmc150_accel_trigger_id {
+ 
+ struct bmc150_accel_data {
+ 	struct regmap *regmap;
++	struct regulator_bulk_data regulators[2];
+ 	int irq;
+ 	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
+ 	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+@@ -1593,10 +1595,33 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 				     &data->orientation);
+ 	if (ret)
+ 		return ret;
++	/*
++	 * VDD   is the analog and digital domain voltage supply
++	 * VDDIO is the digital I/O voltage supply
++	 */
++	data->regulators[0].supply = "vdd";
++	data->regulators[1].supply = "vddio";
++	ret = devm_regulator_bulk_get(dev,
++				      ARRAY_SIZE(data->regulators),
++				      data->regulators);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to get regulators\n");
++
++	ret = regulator_bulk_enable(ARRAY_SIZE(data->regulators),
++				    data->regulators);
++	if (ret) {
++		dev_err(dev, "failed to enable regulators: %d\n", ret);
++		return ret;
++	}
++	/*
++	 * 2ms or 3ms power-on time according to datasheets, let's better
++	 * be safe than sorry and set this delay to 5ms.
++	 */
++	msleep(5);
+ 
+ 	ret = bmc150_accel_chip_init(data);
+ 	if (ret < 0)
+-		return ret;
++		goto err_disable_regulators;
+ 
+ 	mutex_init(&data->mutex);
+ 
+@@ -1613,7 +1638,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 					 &bmc150_accel_buffer_ops);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed: iio triggered buffer setup\n");
+-		return ret;
++		goto err_disable_regulators;
+ 	}
+ 
+ 	if (data->irq > 0) {
+@@ -1674,6 +1699,9 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+ err_buffer_cleanup:
+ 	iio_triggered_buffer_cleanup(indio_dev);
++err_disable_regulators:
++	regulator_bulk_disable(ARRAY_SIZE(data->regulators),
++			       data->regulators);
+ 
+ 	return ret;
+ }
+@@ -1698,6 +1726,9 @@ int bmc150_accel_core_remove(struct device *dev)
+ 	bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_DEEP_SUSPEND, 0);
+ 	mutex_unlock(&data->mutex);
+ 
++	regulator_bulk_disable(ARRAY_SIZE(data->regulators),
++			       data->regulators);
++
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(bmc150_accel_core_remove);
+-- 
+2.26.2
 
