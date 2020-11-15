@@ -7,176 +7,173 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 37C9BC63697
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9603DC63699
 	for <linux-iio@archiver.kernel.org>; Sun, 15 Nov 2020 20:58:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E9B23223FB
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Nov 2020 20:58:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 46B6B223C7
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Nov 2020 20:58:12 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="XmuYY5Cc"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="DAKgK7ys"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727434AbgKOU5v (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 15 Nov 2020 15:57:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52586 "EHLO
+        id S1727845AbgKOU5y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 15 Nov 2020 15:57:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727442AbgKOU5u (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2020 15:57:50 -0500
-Received: from mail-lf1-x143.google.com (mail-lf1-x143.google.com [IPv6:2a00:1450:4864:20::143])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5ECC9C0613D1
-        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2020 12:57:50 -0800 (PST)
-Received: by mail-lf1-x143.google.com with SMTP id j205so22268947lfj.6
-        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2020 12:57:50 -0800 (PST)
+        with ESMTP id S1727442AbgKOU5x (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Nov 2020 15:57:53 -0500
+Received: from mail-lj1-x243.google.com (mail-lj1-x243.google.com [IPv6:2a00:1450:4864:20::243])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4DC0AC0613D1
+        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2020 12:57:53 -0800 (PST)
+Received: by mail-lj1-x243.google.com with SMTP id x9so17756558ljc.7
+        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2020 12:57:53 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rnKSl2qWRJgBLP6TH3NnZE7MB45PnhqQS5bgJdVEwCM=;
-        b=XmuYY5Cce3uA3+VhP/7nIKX1vqsNH5OspAPfISjwov42gA8Fxo9SWOEtvc3v7GGfml
-         UNio5RHf7w54jU/Htuh/j2Y4OqQyfzrUJBRgSE3ecEDVPHf26OFd3sMC1jGSQbWN9lXr
-         g3Wb5U865C1Y75f0FS7zmLh+xYm29k0aBvnHKm18QwaAz2wZ6AJqdLuLOiA+lqPzpAup
-         5JXv5JD0TNIR8cP5vLuZNKuClA5yfYSytlhXvkNk9wGCqnjXrThuEFs6CaIsPoiDI+ZT
-         IUEMAlLaTGiySkNYnAl12mDJtjmdZHjcNYeahUYcAPJONtQUQhKp9rC2XA1xbaWuf021
-         i6Yg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=oSRenFjywTpXu8NL+XTe4zUWms6GZJwpv2y6EHWkomU=;
+        b=DAKgK7yso+4JIjoHCBpb+6tgWl2Eo+LvPfpPYbiVbFJMLP4keoa9OJPWdngLX/gZ63
+         Tk9vP5Zj3nZMRkJcV2tgzQASh5uf38k3hhQWhfvdK2m8HHWHt2DtBGmqyM5xEdUT43g7
+         LaR8UAbYWHp/9mTZbsVUNYX6jbmpExsWaZ2DpbLrfa9GRyl5eaIqTXXxbecfmyLJnzCd
+         5BlNE3EF5OjBejkNMdrfIajh6cIzxHJyOxanjlpsOJw71GJ0cWX9ltLUbDIdGqSfHUa0
+         SchnmBJplnS1NmZ0qWVyZHwy4P1KIhvEsA8+GEhXBULFCCsFs2WlXtvreJeMXrJGJeQA
+         HOqw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rnKSl2qWRJgBLP6TH3NnZE7MB45PnhqQS5bgJdVEwCM=;
-        b=W42nadL42nmJziKjqiw5mYxtehBQMSfClxCif9MRnTVj3NyHLbf1eE5aycFRe8qVyU
-         wJtmti9fznan7xxQ8cwVJreEjhCKPAVDiRdwk65hcF4TtijZfe06gvqw3ZI7XEUnMhli
-         +hHyKvD/odjjmBIjezFpX/DKX7KNky0qvc+Y416gheC6p3hlghnX4vxSG83IACOFFXEf
-         DGqCuT+vVJn/ZzGEVFBJZ84xcTYLxzL+bPsxx/P5Q66JjMcTvaqOUGi946gApP3EBCsB
-         9g8PW6t14CqmJfw3Jl5o1ADqGvCnEU+YkGEB6A1ijH51ZDGwG9l1ZfJqL061lQqg36yS
-         zoDQ==
-X-Gm-Message-State: AOAM530YgMddvYJAkD5rsXfTNXcX4YXWb01KyRea5Qu2J5xi98uu4Upp
-        dhiGKPcyMhi4qmftA1Wx97rSVQ==
-X-Google-Smtp-Source: ABdhPJzWyKwRViQzrAR3T3FBG60ThpuwSDbwrc+oohthCx5+lVFooJiiIV3EntQBkqDY19UR0mdQTg==
-X-Received: by 2002:ac2:52b2:: with SMTP id r18mr4090972lfm.50.1605473868740;
-        Sun, 15 Nov 2020 12:57:48 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=oSRenFjywTpXu8NL+XTe4zUWms6GZJwpv2y6EHWkomU=;
+        b=g0cCUfLWgGfcJOxJf119ZcZLHVYIHRPG3WpySDByDIsa6g8eJ/TMfY8tm3yzQRygek
+         uTeSJZ9VnYBeOHCR1dXdSCSwplRfHYAaRmyp3vp7XkCVDEyMztJt+5+lx9WUhkswla2o
+         Y4FkPVMCwiM61ZbdrKi81JKVTrTnehS+QWyiICdapI7QguXVdi/VXOU90qxiYNOIvy5T
+         t13U37onsKjg2v3FOFd6DtMIqsL9AtIy1d0lLWHSs0xwCrzqUYLeOWh6T3q7gr/qFioW
+         rGPI1xNcJed/UDmlIXvljgh9YUb1J8VblGcgM2l4gvmaRMZ0T7t7qzPRN6fU9YXYdHan
+         UQeA==
+X-Gm-Message-State: AOAM530umT4YFoMNnRRoTVkGUrNjuAyvgMtDJX87hvWXYZxbbMq6mDCa
+        wPBI5XLq3y7RoO4PNMl6fedW6A==
+X-Google-Smtp-Source: ABdhPJyhpzGJJBvkOc/BjhiPAmICTUnvR21ABBN+HkUlT4BnGzH0G42Obz4MiQZ+kdrufD3wAr+Qng==
+X-Received: by 2002:a2e:8891:: with SMTP id k17mr4905593lji.326.1605473871823;
+        Sun, 15 Nov 2020 12:57:51 -0800 (PST)
 Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id j4sm2458779lfk.275.2020.11.15.12.57.47
+        by smtp.gmail.com with ESMTPSA id j4sm2458779lfk.275.2020.11.15.12.57.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 15 Nov 2020 12:57:48 -0800 (PST)
+        Sun, 15 Nov 2020 12:57:51 -0800 (PST)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org
-Subject: [PATCH 1/3 v3] iio: accel: bmc150-accel: Add DT bindings
-Date:   Sun, 15 Nov 2020 21:57:43 +0100
-Message-Id: <20201115205745.618455-1-linus.walleij@linaro.org>
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 3/3 v3] iio: accel: bmc150-accel: Add rudimentary regulator support
+Date:   Sun, 15 Nov 2020 21:57:45 +0100
+Message-Id: <20201115205745.618455-3-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.26.2
+In-Reply-To: <20201115205745.618455-1-linus.walleij@linaro.org>
+References: <20201115205745.618455-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-These accelerometers have bindings used in the kernel and
-several device trees but no proper bindings documentation.
-Add it.
+These Bosch accelerometers have two supplies, VDD and VDDIO.
+Add some rudimentary support to obtain and enable these
+regulators during probe() and disable them during remove()
+or on the errorpath.
 
-Also add a compatible for the BMA222 that I am right now
-adding support for in the driver.
-
-Cc: devicetree@vger.kernel.org
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v2->v3:
-- Fix up an include directive in the example to be
-  outside of the I2C node.
+- Resend with the rest.
 ChangeLog v1->v2:
-- Rename to simply bosch,bma255.yaml after one of the
-  common accelerometers.
-- Specify that the SPI uses a 4-wire interface.
-- Specify maximum SPI clock frequency to 10MHz. (Checked
-  all the datasheets.)
+- Use dev_err_probe() to simplify the errorpath.
 ---
- .../bindings/iio/accel/bosch,bma255.yaml      | 73 +++++++++++++++++++
- 1 file changed, 73 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+ drivers/iio/accel/bmc150-accel-core.c | 35 +++++++++++++++++++++++++--
+ 1 file changed, 33 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
-new file mode 100644
-index 000000000000..6eef3480ea8f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
-@@ -0,0 +1,73 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/bosch,bma255.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 01dbc01e328f..caa984612e88 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -28,6 +28,7 @@
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ 
+ #include "bmc150-accel.h"
+ 
+@@ -184,6 +185,7 @@ enum bmc150_accel_trigger_id {
+ 
+ struct bmc150_accel_data {
+ 	struct regmap *regmap;
++	struct regulator_bulk_data regulators[2];
+ 	int irq;
+ 	struct bmc150_accel_interrupt interrupts[BMC150_ACCEL_INTERRUPTS];
+ 	struct bmc150_accel_trigger triggers[BMC150_ACCEL_TRIGGERS];
+@@ -1591,10 +1593,33 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 				     &data->orientation);
+ 	if (ret)
+ 		return ret;
++	/*
++	 * VDD   is the analog and digital domain voltage supply
++	 * VDDIO is the digital I/O voltage supply
++	 */
++	data->regulators[0].supply = "vdd";
++	data->regulators[1].supply = "vddio";
++	ret = devm_regulator_bulk_get(dev,
++				      ARRAY_SIZE(data->regulators),
++				      data->regulators);
++	if (ret)
++		return dev_err_probe(dev, ret, "failed to get regulators\n");
 +
-+title: Bosch BMA255 and Similar Accelerometers
++	ret = regulator_bulk_enable(ARRAY_SIZE(data->regulators),
++				    data->regulators);
++	if (ret) {
++		dev_err(dev, "failed to enable regulators: %d\n", ret);
++		return ret;
++	}
++	/*
++	 * 2ms or 3ms power-on time according to datasheets, let's better
++	 * be safe than sorry and set this delay to 5ms.
++	 */
++	msleep(5);
+ 
+ 	ret = bmc150_accel_chip_init(data);
+ 	if (ret < 0)
+-		return ret;
++		goto err_disable_regulators;
+ 
+ 	mutex_init(&data->mutex);
+ 
+@@ -1611,7 +1636,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 					 &bmc150_accel_buffer_ops);
+ 	if (ret < 0) {
+ 		dev_err(dev, "Failed: iio triggered buffer setup\n");
+-		return ret;
++		goto err_disable_regulators;
+ 	}
+ 
+ 	if (data->irq > 0) {
+@@ -1672,6 +1697,9 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 	bmc150_accel_unregister_triggers(data, BMC150_ACCEL_TRIGGERS - 1);
+ err_buffer_cleanup:
+ 	iio_triggered_buffer_cleanup(indio_dev);
++err_disable_regulators:
++	regulator_bulk_disable(ARRAY_SIZE(data->regulators),
++			       data->regulators);
+ 
+ 	return ret;
+ }
+@@ -1696,6 +1724,9 @@ int bmc150_accel_core_remove(struct device *dev)
+ 	bmc150_accel_set_mode(data, BMC150_ACCEL_SLEEP_MODE_DEEP_SUSPEND, 0);
+ 	mutex_unlock(&data->mutex);
+ 
++	regulator_bulk_disable(ARRAY_SIZE(data->regulators),
++			       data->regulators);
 +
-+maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+description:
-+  3 axis accelerometers with varying range and I2C or SPI
-+  4-wire interface.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - bosch,bmc150
-+      - bosch,bmi055
-+      - bosch,bma255
-+      - bosch,bma250e
-+      - bosch,bma222
-+      - bosch,bma222e
-+      - bosch,bma280
-+
-+  reg:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+  vddio-supply: true
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  mount-matrix:
-+    description: an optional 3x3 mounting rotation matrix.
-+
-+  spi-max-frequency:
-+    maximum: 10000000
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        accelerometer@8 {
-+            compatible = "bosch,bma222";
-+            reg = <0x08>;
-+            vddio-supply = <&vddio>;
-+            vdd-supply = <&vdd>;
-+            interrupts = <57 IRQ_TYPE_EDGE_FALLING>;
-+        };
-+    };
-+  - |
-+    # include <dt-bindings/interrupt-controller/irq.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        accel@0 {
-+            compatible = "bosch,bma222";
-+            reg = <0>;
-+            spi-max-frequency = <10000000>;
-+        };
-+    };
-+...
+ 	return 0;
+ }
+ EXPORT_SYMBOL_GPL(bmc150_accel_core_remove);
 -- 
 2.26.2
 
