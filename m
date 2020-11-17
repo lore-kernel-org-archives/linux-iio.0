@@ -2,100 +2,183 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,
-	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B56AC5519F
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:54:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BC13C64E69
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 11:01:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B396024654
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:54:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2911E24656
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 11:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726310AbgKQKyV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Nov 2020 05:54:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725355AbgKQKyV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 05:54:21 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB40DC0613CF
-        for <linux-iio@vger.kernel.org>; Tue, 17 Nov 2020 02:54:20 -0800 (PST)
-Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=[IPv6:::1])
-        by metis.ext.pengutronix.de with esmtp (Exim 4.92)
-        (envelope-from <a.fatoum@pengutronix.de>)
-        id 1keyct-00059B-EW; Tue, 17 Nov 2020 11:54:19 +0100
-Subject: Re: Counter device Interface for reading out input capture
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     Benjamin Gaignard <benjamin.gaignard@st.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Holger Assmann <h.assmann@pengutronix.de>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        linux-iio@vger.kernel.org
-References: <e8c99989-f018-dd90-2144-e09c05a3731b@pengutronix.de>
- <20201106124217.GA4015@shinobu>
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-Message-ID: <0fa25b7a-92f9-8eb7-088e-2ef3a2edf2a0@pengutronix.de>
-Date:   Tue, 17 Nov 2020 11:54:17 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.3.1
+        id S1727998AbgKQLB1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Nov 2020 06:01:27 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:2112 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728026AbgKQLB1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 06:01:27 -0500
+Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Cb2xm5S6gz67F5T;
+        Tue, 17 Nov 2020 18:59:08 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1913.5; Tue, 17 Nov 2020 12:01:19 +0100
+Received: from localhost (10.47.31.177) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Tue, 17 Nov
+ 2020 11:01:19 +0000
+Date:   Tue, 17 Nov 2020 11:01:11 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <robh+dt@kernel.org>, Vaishnav M A <vaishnav@beagleboard.org>,
+        <andy.shevchenko@gmail.com>
+Subject: Re: [PATCH 2/3] iio: adc: ad7887: convert driver to full DT probing
+Message-ID: <20201117110111.0000468a@Huawei.com>
+In-Reply-To: <20201117075254.4861-2-alexandru.ardelean@analog.com>
+References: <20201117075254.4861-1-alexandru.ardelean@analog.com>
+        <20201117075254.4861-2-alexandru.ardelean@analog.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-In-Reply-To: <20201106124217.GA4015@shinobu>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
-X-SA-Exim-Connect-IP: 2001:67c:670:201:5054:ff:fe8d:eefb
-X-SA-Exim-Mail-From: a.fatoum@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+X-Originating-IP: [10.47.31.177]
+X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello William,
+On Tue, 17 Nov 2020 09:52:53 +0200
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-On 06.11.20 13:42, William Breathitt Gray wrote:
-> On Thu, Nov 05, 2020 at 07:46:14PM +0100, Ahmad Fatoum wrote:
->> It doesn't look like the counter device API is yet made to support such
->> an input capture mode (latching a counter value on an external event, e.g.
->> to timestamp incoming rising edges to measure jitter between pulses).
->
-> Regarding the Counter subsystem, I'm developing a Counter character
-> device API that supports timestamps for counter devices:
-> https://lore.kernel.org/linux-arm-kernel/157d1edf-feec-33b5-7ad5-94f99316ca6e@lechnology.com/T/
+> This change removes the SPI device table, adds an OF device table instead.
+> This should also be usable for ACPI via PRP0001.
+> 
+> This device is usually probed via device-tree, so it makes more sense to
+> use the OF device table.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+So, we've had a few cases of having to put the device_id table
+back again recently.
+https://lore.kernel.org/linux-iio/20201101152613.2c37581a@archlinux/
 
-Any chance we could have a "raw" timestamp as well like the network
-stack offers (cf. SOF_TIMESTAMPING_{RAW,SYS}_HARDWARE)?
+They tend to be due to greybus doing it's probing in yet another fashion.
+So far they've been all i2c devices, but I kind of assume it does the same for spi.
+https://elixir.bootlin.com/linux/latest/source/drivers/staging/greybus/spilib.c#L437
 
-The API currently only exposes a ktime (i.e. CLOCK_MONOTONIC), which the
-raw timer count can't be readily converted to. For our use case of
-measuring jitter, the raw value is sufficient.
+How device_get_match_data() plays with that I'm not sure. It probably
+doesn't right now given swnode doesn't have a device_get_match_data() callback.
 
-> My aim is to get this functionality picked up for the Linux 5.11 merge
-> window. I have one more revision at least that should be ready in a
-> couple weeks -- I'll CC you for that patchset to keep you in the loop;
-> I force-push periodically to my personal repo when as I develop, so you
-> can take a look at the current state of this next revision if you're
-> curious:
-> https://gitlab.com/vilhelmgray/iio/-/tree/counter_chrdev_v6
+https://elixir.bootlin.com/linux/latest/source/drivers/base/swnode.c#L539
 
-Great. Looking forward to see this merged.
+So after all that I think I've argued myself around to thinking what you have
+here is fine.  If someone wants to support this via a swnode then they can
+figure out how to make that work.
+
++CC Vaishnav and Andy for their input.
+
+Otherwise looks fine to me.
 
 Thanks,
-Ahmad
 
-> 
-> Sincerely,
-> 
-> William Breathitt Gray
-> 
+Jonathan
 
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+
+> ---
+>  drivers/iio/adc/ad7887.c | 23 +++++++++++++++--------
+>  1 file changed, 15 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+> index 06f684c053a0..4f68a1b17ec8 100644
+> --- a/drivers/iio/adc/ad7887.c
+> +++ b/drivers/iio/adc/ad7887.c
+> @@ -40,6 +40,7 @@ enum ad7887_channels {
+>  
+>  /**
+>   * struct ad7887_chip_info - chip specifc information
+> + * @name:		the name of the part
+>   * @int_vref_mv:	the internal reference voltage
+>   * @channels:		channels specification
+>   * @num_channels:	number of channels
+> @@ -47,6 +48,7 @@ enum ad7887_channels {
+>   * @num_dual_channels:	number of channels in dual mode
+>   */
+>  struct ad7887_chip_info {
+> +	const char			*name;
+>  	u16				int_vref_mv;
+>  	const struct iio_chan_spec	*channels;
+>  	unsigned int			num_channels;
+> @@ -218,6 +220,7 @@ static const struct ad7887_chip_info ad7887_chip_info_tbl[] = {
+>  	 * More devices added in future
+>  	 */
+>  	[ID_AD7887] = {
+> +		.name = "ad7887",
+>  		.channels = ad7887_channels,
+>  		.num_channels = ARRAY_SIZE(ad7887_channels),
+>  		.dual_channels = ad7887_dual_channels,
+> @@ -239,12 +242,17 @@ static void ad7887_reg_disable(void *data)
+>  
+>  static int ad7887_probe(struct spi_device *spi)
+>  {
+> +	const struct ad7887_chip_info *info;
+>  	struct ad7887_state *st;
+>  	struct iio_dev *indio_dev;
+>  	bool dual_mode;
+>  	uint8_t mode;
+>  	int ret;
+>  
+> +	info = device_get_match_data(&spi->dev);
+> +	if (!info)
+> +		return -ENODEV;
+> +
+>  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>  	if (indio_dev == NULL)
+>  		return -ENOMEM;
+> @@ -269,13 +277,12 @@ static int ad7887_probe(struct spi_device *spi)
+>  			return ret;
+>  	}
+>  
+> -	st->chip_info =
+> -		&ad7887_chip_info_tbl[spi_get_device_id(spi)->driver_data];
+> +	st->chip_info = info;
+>  
+>  	spi_set_drvdata(spi, indio_dev);
+>  	st->spi = spi;
+>  
+> -	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->name = st->chip_info->name;
+>  	indio_dev->info = &ad7887_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  
+> @@ -336,18 +343,18 @@ static int ad7887_probe(struct spi_device *spi)
+>  	return devm_iio_device_register(&spi->dev, indio_dev);
+>  }
+>  
+> -static const struct spi_device_id ad7887_id[] = {
+> -	{"ad7887", ID_AD7887},
+> -	{}
+> +static const struct of_device_id ad7887_of_match[] = {
+> +	{ .compatible = "adi,ad7887", .data = &ad7887_chip_info_tbl[ID_AD7887] },
+> +	{ }
+>  };
+> -MODULE_DEVICE_TABLE(spi, ad7887_id);
+> +MODULE_DEVICE_TABLE(of, ad7887_of_match);
+>  
+>  static struct spi_driver ad7887_driver = {
+>  	.driver = {
+>  		.name	= "ad7887",
+> +		.of_match_table	= ad7887_of_match,
+>  	},
+>  	.probe		= ad7887_probe,
+> -	.id_table	= ad7887_id,
+>  };
+>  module_spi_driver(ad7887_driver);
+>  
+
