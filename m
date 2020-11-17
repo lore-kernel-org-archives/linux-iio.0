@@ -2,99 +2,166 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADDB9C2D0E4
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F3C9C5519F
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:41:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1CF082417E
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:38:52 +0000 (UTC)
-Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="M804rOM3"
+	by mail.kernel.org (Postfix) with ESMTP id D1F8320825
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:41:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726853AbgKQKib (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Nov 2020 05:38:31 -0500
-Received: from www381.your-server.de ([78.46.137.84]:50892 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727402AbgKQKib (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 05:38:31 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=o01jxV4yO2dqpFkMwgXqdLSGGKEhMfhsu2EsZzRkYew=; b=M804rOM3NmfWqmPJ5WAKAXDQ3P
-        hCo1r3TsTSJeD/X7RzROe8aXhSbNHdVCuK7nbQu2dOf5WG14OLUVKTuAg30SKAffr5XXK6gbJKgur
-        MjGbKzKMCbn6fV/oHYx261CHYOB/rE8Zweb8DQ/ECXdnHLAm0NNUqdzM2usyanmBm+Qx23UVH/a2s
-        DGOUdVHkEcSeAbZ2S5/SxkYsgQWKbq9DCpaoSKyol9yOGLH9OPkmx3LI9EFW/hLomLWgfDJieLKeL
-        YiKY23rL44t41YwsU0Vi+YjzvVvaSY5PgFr3oNQrP/Y/ujAE+A/K3sy8JG+cH0uP8TamjpPApa/X6
-        76kX5nPA==;
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1keyNZ-00050e-1l; Tue, 17 Nov 2020 11:38:29 +0100
-Received: from [62.216.202.98] (helo=lars-desktop.fritz.box)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1keyNY-0008jM-SB; Tue, 17 Nov 2020 11:38:28 +0100
-From:   Lars-Peter Clausen <lars@metafoo.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
-        Christian Eggers <ceggers@arri.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 2/2] iio: sysfs-trigger: Mark irq_work to expire in hardirq context
-Date:   Tue, 17 Nov 2020 11:37:51 +0100
-Message-Id: <20201117103751.16131-2-lars@metafoo.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20201117103751.16131-1-lars@metafoo.de>
-References: <20201117103751.16131-1-lars@metafoo.de>
+        id S1727454AbgKQKli (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Nov 2020 05:41:38 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:2111 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbgKQKli (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 05:41:38 -0500
+Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Cb2W01j7Cz67DLW;
+        Tue, 17 Nov 2020 18:39:24 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1913.5; Tue, 17 Nov 2020 11:41:35 +0100
+Received: from localhost (10.47.31.177) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Tue, 17 Nov
+ 2020 10:41:34 +0000
+Date:   Tue, 17 Nov 2020 10:41:26 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <robh+dt@kernel.org>
+Subject: Re: [PATCH 1/3] iio: adc: ad7887: convert dual-channel mode to
+ DT/ACPI
+Message-ID: <20201117104126.00000516@Huawei.com>
+In-Reply-To: <20201117075254.4861-1-alexandru.ardelean@analog.com>
+References: <20201117075254.4861-1-alexandru.ardelean@analog.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.102.4/25990/Mon Nov 16 14:19:13 2020)
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.31.177]
+X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Mark the IIO sysfs-trigger irq_work with IRQ_WORK_HARD_IRQ to ensure that
-it is always executed in hard interrupt context, even with PREEMPT_RT=y.
+On Tue, 17 Nov 2020 09:52:52 +0200
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-The IIO sysfs-trigger irq_work needs to run in hard interrupt context since
-it will end up calling generic_handle_irq() which has the requirement to
-run in hard interrupt context.
+> This change converts the configuration of the dual-channel mode from the
+> old platform-data, to the device_property_present() function, which
+> supports both device-tree and ACPI configuration setups.
+> 
+> With this change the old platform_data include of the driver can be
+> removed.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Hi Alex,
 
-Note that the IRQ_WORK_HARD_IRQ flag, while it exists, does not seem to do
-anything in the mainline kernel yet. It does have an effect in the RT
-patchset though and presumably this is sooner or later going to be added to
-mainline as well.
+I'm a bit in too minds about device_property_present()
+vs device_property_read_bool() which are the same thing under the hood.
 
-Reported-by: Christian Eggers <ceggers@arri.de>
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
-No changes since v1.
----
- drivers/iio/trigger/iio-trig-sysfs.c | 1 +
- 1 file changed, 1 insertion(+)
+Not sure which one conveys the correct semantics here.
+I don't feel strongly enough about it though to do more than raise
+eyebrows (i.e. not blocking this series).
 
-diff --git a/drivers/iio/trigger/iio-trig-sysfs.c b/drivers/iio/trigger/iio-trig-sysfs.c
-index e09e58072872..10a3fd29362b 100644
---- a/drivers/iio/trigger/iio-trig-sysfs.c
-+++ b/drivers/iio/trigger/iio-trig-sysfs.c
-@@ -161,6 +161,7 @@ static int iio_sysfs_trigger_probe(int id)
- 	iio_trigger_set_drvdata(t->trig, t);
- 
- 	init_irq_work(&t->work, iio_sysfs_trigger_work);
-+	atomic_set(&t->work.flags, IRQ_WORK_HARD_IRQ);
- 
- 	ret = iio_trigger_register(t->trig);
- 	if (ret)
--- 
-2.20.1
+Jonathan
+
+> ---
+>  drivers/iio/adc/ad7887.c             | 10 +++++-----
+>  include/linux/platform_data/ad7887.h | 21 ---------------------
+>  2 files changed, 5 insertions(+), 26 deletions(-)
+>  delete mode 100644 include/linux/platform_data/ad7887.h
+> 
+> diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
+> index 4f6f0e0e03ee..06f684c053a0 100644
+> --- a/drivers/iio/adc/ad7887.c
+> +++ b/drivers/iio/adc/ad7887.c
+> @@ -23,8 +23,6 @@
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+>  
+> -#include <linux/platform_data/ad7887.h>
+> -
+>  #define AD7887_REF_DIS		BIT(5)	/* on-chip reference disable */
+>  #define AD7887_DUAL		BIT(4)	/* dual-channel mode */
+>  #define AD7887_CH_AIN1		BIT(3)	/* convert on channel 1, DUAL=1 */
+> @@ -241,9 +239,9 @@ static void ad7887_reg_disable(void *data)
+>  
+>  static int ad7887_probe(struct spi_device *spi)
+>  {
+> -	struct ad7887_platform_data *pdata = spi->dev.platform_data;
+>  	struct ad7887_state *st;
+>  	struct iio_dev *indio_dev;
+> +	bool dual_mode;
+>  	uint8_t mode;
+>  	int ret;
+>  
+> @@ -286,7 +284,9 @@ static int ad7887_probe(struct spi_device *spi)
+>  	mode = AD7887_PM_MODE4;
+>  	if (!st->reg)
+>  		mode |= AD7887_REF_DIS;
+> -	if (pdata && pdata->en_dual)
+> +
+> +	dual_mode = device_property_present(&spi->dev, "adi,dual-channel-mode");
+
+It ends up as the same thing internally but sort of feels like
+device_property_read_bool() might be a better fit?
+
+I assume device_property_present() will return true for say
+adi,dual-channel-mode = <3>;
+whereas in my head device_property_read_bool should at very least
+print a warning on that (it doesn't :)
+
+
+
+> +	if (dual_mode)
+>  		mode |= AD7887_DUAL;
+>  
+>  	st->tx_cmd_buf[0] = AD7887_CH_AIN0 | mode;
+> @@ -298,7 +298,7 @@ static int ad7887_probe(struct spi_device *spi)
+>  	spi_message_init(&st->msg[AD7887_CH0]);
+>  	spi_message_add_tail(&st->xfer[0], &st->msg[AD7887_CH0]);
+>  
+> -	if (pdata && pdata->en_dual) {
+> +	if (dual_mode) {
+>  		st->tx_cmd_buf[2] = AD7887_CH_AIN1 | mode;
+>  
+>  		st->xfer[1].rx_buf = &st->data[0];
+> diff --git a/include/linux/platform_data/ad7887.h b/include/linux/platform_data/ad7887.h
+> deleted file mode 100644
+> index 9b4dca6ae70b..000000000000
+> --- a/include/linux/platform_data/ad7887.h
+> +++ /dev/null
+> @@ -1,21 +0,0 @@
+> -/* SPDX-License-Identifier: GPL-2.0-or-later */
+> -/*
+> - * AD7887 SPI ADC driver
+> - *
+> - * Copyright 2010 Analog Devices Inc.
+> - */
+> -#ifndef IIO_ADC_AD7887_H_
+> -#define IIO_ADC_AD7887_H_
+> -
+> -/**
+> - * struct ad7887_platform_data - AD7887 ADC driver platform data
+> - * @en_dual: Whether to use dual channel mode. If set to true AIN1 becomes the
+> - *	second input channel, and Vref is internally connected to Vdd. If set to
+> - *	false the device is used in single channel mode and AIN1/Vref is used as
+> - *	VREF input.
+> - */
+> -struct ad7887_platform_data {
+> -	bool en_dual;
+> -};
+> -
+> -#endif /* IIO_ADC_AD7887_H_ */
 
