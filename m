@@ -2,102 +2,107 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SIGNED_OFF_BY,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA93AC2D0E4
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:32:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D4B6C5519F
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:38:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7D22022202
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:32:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B0AC7238E6
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 10:38:51 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=metafoo.de header.i=@metafoo.de header.b="YFyZ8184"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725823AbgKQKcf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Nov 2020 05:32:35 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:2668 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1725355AbgKQKce (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 05:32:34 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AHAU5NW019375;
-        Tue, 17 Nov 2020 05:32:33 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 34t9ybh7d1-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 Nov 2020 05:32:32 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 0AHAWVJT037066
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 17 Nov 2020 05:32:31 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 17 Nov 2020 05:32:30 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 17 Nov 2020 05:32:30 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Tue, 17 Nov 2020 05:32:30 -0500
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 0AHAWSQd018733;
-        Tue, 17 Nov 2020 05:32:29 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH] iio: core: organize buffer file-ops in the order defined in the struct
-Date:   Tue, 17 Nov 2020 12:37:53 +0200
-Message-ID: <20201117103753.8450-1-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
+        id S1727454AbgKQKib (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Nov 2020 05:38:31 -0500
+Received: from www381.your-server.de ([78.46.137.84]:50864 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726853AbgKQKia (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 05:38:30 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
+        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References;
+        bh=IzuSViUEPJ5VqCkOoHggN05h1dEcyBfD+1drIfyESPI=; b=YFyZ8184ZXaQi+H/8bZ78Pf6ER
+        4O3fdhXVVNJQSHVXncVJgp3OkhPyvcqfBRnxP0tmhkn4EQhe6VXZf0f0nvyr6rAOF9KX8VklOoETu
+        MgOriKRfZe2tKOx8JPBHl6RSVNDDaiSXSAo3Cof1otiMXor2I49SeT3kPPhe0gJaBUxoAl0Ssl0/j
+        2MNbRWgWpy2s5iXMrIIYh8EnDA2aVhS13FfTUHQao10X2RLaBh7R0UoqsLRWDRMer1qslOJ4GL9HE
+        M1LX0b1vlcktTgC8ncQJlY+T6ZUBO46XH3f5gPgrKQ+X2MyQMPLe7bFpQi4gATMHN4+burXCUgyjt
+        /MjSNzgQ==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1keyNY-00050c-UC; Tue, 17 Nov 2020 11:38:29 +0100
+Received: from [62.216.202.98] (helo=lars-desktop.fritz.box)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1keyNY-0008jM-Pa; Tue, 17 Nov 2020 11:38:28 +0100
+From:   Lars-Peter Clausen <lars@metafoo.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Sebastian Andrzej Siewior <bigeasy@linutronix.de>,
+        Christian Eggers <ceggers@arri.de>,
+        Thomas Gleixner <tglx@linutronix.de>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 1/2] iio: hrtimer-trigger: Mark hrtimer to expire in hard interrupt context
+Date:   Tue, 17 Nov 2020 11:37:50 +0100
+Message-Id: <20201117103751.16131-1-lars@metafoo.de>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-17_03:2020-11-17,2020-11-17 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
- priorityscore=1501 suspectscore=0 impostorscore=0 lowpriorityscore=0
- bulkscore=0 clxscore=1015 spamscore=0 adultscore=0 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011170077
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.102.4/25990/Mon Nov 16 14:19:13 2020)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The change is mostly cosmetic. This organizes the order of assignment of
-the members of 'iio_buffer_fileops' to be similar to the one as defined in
-the 'struct file_operations' type.
+On PREEMPT_RT enabled kernels unmarked hrtimers are moved into soft
+interrupt expiry mode by default.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+The IIO hrtimer-trigger needs to run in hard interrupt context since it
+will end up calling generic_handle_irq() which has the requirement to run
+in hard interrupt context.
+
+Explicitly specify that the timer needs to run in hard interrupt context by
+using the HRTIMER_MODE_REL_HARD flag.
+
+Fixes: f5c2f0215e36 ("hrtimer: Move unmarked hrtimers to soft interrupt expiry on RT")
+Reported-by: Christian Eggers <ceggers@arri.de>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/industrialio-core.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+Changes since v1:
+	* Also pass HRTIMER_MODE_REL_HARD to hrtimer_start().
+---
+ drivers/iio/trigger/iio-trig-hrtimer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index b4f7dd75bef5..c58e8e9c09d2 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1765,14 +1765,14 @@ static long iio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
- }
+diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
+index f59bf8d58586..410de837d041 100644
+--- a/drivers/iio/trigger/iio-trig-hrtimer.c
++++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+@@ -102,7 +102,7 @@ static int iio_trig_hrtimer_set_state(struct iio_trigger *trig, bool state)
  
- static const struct file_operations iio_buffer_fileops = {
--	.read = iio_buffer_read_outer_addr,
--	.release = iio_chrdev_release,
--	.open = iio_chrdev_open,
--	.poll = iio_buffer_poll_addr,
- 	.owner = THIS_MODULE,
- 	.llseek = noop_llseek,
-+	.read = iio_buffer_read_outer_addr,
-+	.poll = iio_buffer_poll_addr,
- 	.unlocked_ioctl = iio_ioctl,
- 	.compat_ioctl = compat_ptr_ioctl,
-+	.open = iio_chrdev_open,
-+	.release = iio_chrdev_release,
- };
+ 	if (state)
+ 		hrtimer_start(&trig_info->timer, trig_info->period,
+-			      HRTIMER_MODE_REL);
++			      HRTIMER_MODE_REL_HARD);
+ 	else
+ 		hrtimer_cancel(&trig_info->timer);
  
- static const struct file_operations iio_event_fileops = {
+@@ -132,7 +132,7 @@ static struct iio_sw_trigger *iio_trig_hrtimer_probe(const char *name)
+ 	trig_info->swt.trigger->ops = &iio_hrtimer_trigger_ops;
+ 	trig_info->swt.trigger->dev.groups = iio_hrtimer_attr_groups;
+ 
+-	hrtimer_init(&trig_info->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
++	hrtimer_init(&trig_info->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL_HARD);
+ 	trig_info->timer.function = iio_hrtimer_trig_handler;
+ 
+ 	trig_info->sampling_frequency = HRTIMER_DEFAULT_SAMPLING_FREQUENCY;
 -- 
-2.17.1
+2.20.1
 
