@@ -2,101 +2,76 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 30397C63777
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 09:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0570CC2D0E4
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 09:49:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E2E5B2464E
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 09:46:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C0F5B2168B
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 09:49:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727477AbgKQJql (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Nov 2020 04:46:41 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:36884 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727454AbgKQJql (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 04:46:41 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AH9giYG000518;
-        Tue, 17 Nov 2020 04:46:39 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 34td198mqa-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 17 Nov 2020 04:46:39 -0500
-Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 0AH9kbRE012548
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Tue, 17 Nov 2020 04:46:38 -0500
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Tue, 17 Nov 2020 01:46:36 -0800
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Tue, 17 Nov 2020 01:46:36 -0800
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 0AH9kYmE016296;
-        Tue, 17 Nov 2020 04:46:34 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH] iio: core: return -EINVAL when no ioctl handler has been run
-Date:   Tue, 17 Nov 2020 11:51:54 +0200
-Message-ID: <20201117095154.7189-1-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
+        id S1726203AbgKQJtP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Nov 2020 04:49:15 -0500
+Received: from mail-wr1-f66.google.com ([209.85.221.66]:41656 "EHLO
+        mail-wr1-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725355AbgKQJtP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 04:49:15 -0500
+Received: by mail-wr1-f66.google.com with SMTP id 23so22467211wrc.8;
+        Tue, 17 Nov 2020 01:49:14 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WP8gt1gz+xHiJXIAB6gIFMSD97UgB4y9NAsXrhH2A1k=;
+        b=CirXokaBuxz8nYMLISpIX9Zwmjw9AiJTY6dLqvU3+meWCGBho8KEiRmAvaFn9JZ1M7
+         28CYzgj+GNvLAya19Mz9CXPo+3r9+6jotUZ6MgD5+6mChR929O7qI902Z9jh6vEq8rwI
+         C1GbuPB74XlzvOz7yBAEoOCAzPngE+RgeXAQI9bXBMALGD7yvyrYxtL4N7Jt2MN+CWxp
+         OdZ7FFvmOlKjxiZp0qu8wNbq9L5U9/QEVkgB1C7RqWKSQ+i7xG4OKp3o8mcdCzJppYQI
+         7BrqkZoZs1lZTuMzPHgU9OLRWW+uwYiSq9keVzGSpNeBe70b0Jm66DDQS4JirJHUWosP
+         KxFg==
+X-Gm-Message-State: AOAM532BE9ZahGbMXA6Te8rQUvpqxjgtywuQTLiaaGDsRuigxk7oUkDK
+        nUJFdXduci8VbukViQpDUIw=
+X-Google-Smtp-Source: ABdhPJwQE5i8G/mCBPJ2kPDLTUqOiMCkwJU9yW8yVP7EDL8/Xd+UhdtP0OKPatRiiHWnr7PAzQ2HXw==
+X-Received: by 2002:a5d:634b:: with SMTP id b11mr23350825wrw.97.1605606553463;
+        Tue, 17 Nov 2020 01:49:13 -0800 (PST)
+Received: from kozik-lap (adsl-84-226-167-205.adslplus.ch. [84.226.167.205])
+        by smtp.googlemail.com with ESMTPSA id i10sm26889284wrs.22.2020.11.17.01.49.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 17 Nov 2020 01:49:12 -0800 (PST)
+Date:   Tue, 17 Nov 2020 10:49:11 +0100
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH 2/9] dt-bindings:iio:samsung,exynos-adc: drop missuse of
+ io-channel-ranges
+Message-ID: <20201117094911.GA13513@kozik-lap>
+References: <20201115192951.1073632-1-jic23@kernel.org>
+ <20201115192951.1073632-3-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-17_03:2020-11-13,2020-11-17 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 suspectscore=0
- impostorscore=0 mlxscore=0 malwarescore=0 adultscore=0 clxscore=1015
- phishscore=0 priorityscore=1501 lowpriorityscore=0 spamscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011170071
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20201115192951.1073632-3-jic23@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-It seems that when this was tested the happy case was more tested. A few of
-the userspace apps rely on this returning negative error codes in case an
-ioctl() is not available.
+On Sun, Nov 15, 2020 at 07:29:44PM +0000, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> io-channel-ranges is a property for consumers of io-channels, not
+> providers.  Hence it is not relevant in this binding or the examples
+> given.
+> 
+> Recent changes to dt-schema result int his being reported as an error
 
-When running multiple ioctl() handlers or when calling an ioctl() that
-doesn't exist, IIO_IOCTL_UNHANDLED is returned. In that case -EINVAL should
-be returned.
+s/int his/in this/
 
-Fixes: 8dedcc3eee3a ("iio: core: centralize ioctl() calls to the main chardev")
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
 
-Apologies for not noticing this earlier.
-This came up when trying to write more IIO buffer code.
-
-From my side either is fine: whether it be applied as a fix or whether
-it's squashed into the original patch.
-
- drivers/iio/industrialio-core.c | 3 +++
- 1 file changed, 3 insertions(+)
-
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index e53c771d66eb..419d6f8acc13 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1743,6 +1743,9 @@ static long iio_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
- 			break;
- 	}
- 
-+	if (ret == IIO_IOCTL_UNHANDLED)
-+		ret = -EINVAL;
-+
- out_unlock:
- 	mutex_unlock(&indio_dev->info_exist_lock);
- 
--- 
-2.17.1
-
+Best regards,
+Krzysztof
