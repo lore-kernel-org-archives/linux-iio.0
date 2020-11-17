@@ -2,65 +2,150 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=0.6 required=3.0 tests=BAYES_50,DKIM_ADSP_CUSTOM_MED,
-	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,FREEMAIL_REPLYTO_END_DIGIT,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SIGNED_OFF_BY,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 730CCC56202
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 11:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AC5CC5519F
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 11:03:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 20A422078E
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 11:03:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D5A5520773
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Nov 2020 11:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728461AbgKQLCd convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Nov 2020 06:02:33 -0500
-Received: from tigeramira.ro ([88.158.78.30]:34563 "EHLO mail.tigeramira.ro"
-        rhost-flags-OK-FAIL-OK-OK) by vger.kernel.org with ESMTP
-        id S1728026AbgKQLBe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 17 Nov 2020 06:01:34 -0500
-Received: from localhost (localhost [127.0.0.1])
-        by mail.tigeramira.ro (Postfix) with ESMTP id C4D96C39799
-        for <linux-iio@vger.kernel.org>; Sun, 15 Nov 2020 11:30:27 +0200 (EET)
-Received: from mail.tigeramira.ro ([127.0.0.1])
-        by localhost (mail.tigeramira.ro [127.0.0.1]) (amavisd-new, port 10032)
-        with ESMTP id 9jB2b2bfUE-Q for <linux-iio@vger.kernel.org>;
-        Sun, 15 Nov 2020 11:30:19 +0200 (EET)
-Received: from mail.tigeramira.ro (localhost [127.0.0.1])
-        by mail.tigeramira.ro (Postfix) with ESMTP id 5415AC00BCA
-        for <linux-iio@vger.kernel.org>; Sat, 14 Nov 2020 20:33:17 +0200 (EET)
-Received: from [156.96.44.214] (unknown [192.168.12.254])
-        by mail.tigeramira.ro (Postfix) with ESMTP id 98E6F9989DF
-        for <linux-iio@vger.kernel.org>; Fri, 13 Nov 2020 19:07:24 +0200 (EET)
-Content-Type: text/plain; charset="iso-8859-1"
+        id S1727740AbgKQLDl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Nov 2020 06:03:41 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:2113 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727849AbgKQLDk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Nov 2020 06:03:40 -0500
+Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Cb3195n6cz67Dvd;
+        Tue, 17 Nov 2020 19:02:05 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1913.5; Tue, 17 Nov 2020 12:03:38 +0100
+Received: from localhost (10.47.31.177) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1913.5; Tue, 17 Nov
+ 2020 11:03:38 +0000
+Date:   Tue, 17 Nov 2020 11:03:30 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <robh+dt@kernel.org>
+Subject: Re: [PATCH 3/3] dt-bindings: adc: ad7887: add binding doc for
+ AD7887
+Message-ID: <20201117110330.00004adb@Huawei.com>
+In-Reply-To: <20201117075254.4861-3-alexandru.ardelean@analog.com>
+References: <20201117075254.4861-1-alexandru.ardelean@analog.com>
+        <20201117075254.4861-3-alexandru.ardelean@analog.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8BIT
-Content-Description: Mail message body
-Subject: Corporate and Personal Loan::,
-To:     linux-iio@vger.kernel.org
-From:   "Investment  Corporate" <financialcapability6@gmail.com>
-Date:   Fri, 13 Nov 2020 08:07:33 -0800
-Reply-To: hmurrah39@gmail.com
-Message-Id: <20201113170725.98E6F9989DF@mail.tigeramira.ro>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.31.177]
+X-ClientProxiedBy: lhreml736-chm.china.huawei.com (10.201.108.87) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello linux-iio@vger.kernel.org
+On Tue, 17 Nov 2020 09:52:54 +0200
+Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
+> This change adds a simple device-tree binding for thhe Analog Devices
+> AD7887 ADC.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 
-We are Base Investment Company offering Corporate and Personal Loan at 3% Interest Rate for a duration of 10Years.
+Binding looks good to me.
 
+Jonathan
 
-We also pay 1% commission to brokers, who introduce project owners for finance or other opportunities.
+> ---
+>  .../bindings/iio/adc/adi,ad7887.yaml          | 70 +++++++++++++++++++
+>  1 file changed, 70 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7887.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7887.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7887.yaml
+> new file mode 100644
+> index 000000000000..9b30f4569b4e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7887.yaml
+> @@ -0,0 +1,70 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/adi,ad7887.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices AD7887 low power, 12-bit ADC
+> +
+> +maintainers:
+> +  - Michael Hennerich <michael.hennerich@analog.com>
+> +
+> +description: |
+> +  Analog Devices AD7887 low power, 12-bit analog-to-digital converter (ADC)
+> +  that operates from a single 2.7 V to 5.25 V power supply.
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,ad7887
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  spi-cpha: true
+> +
+> +  spi-cpol: true
+> +
+> +  avcc-supply: true
+> +
+> +  spi-max-frequency: true
+> +
+> +  vref-supply:
+> +    description:
+> +      ADC reference voltage supply
+> +
+> +  adi,dual-channel-mode:
+> +    description:
+> +      Configures dual-channel mode for the ADC. In dual-channel operation,
+> +      the AIN1/VREF pin assumes its AIN1 function, providing a second analog
+> +      input channel. In this case, he reference voltage for the part is provided
+> +      via the VDD pin. As a result, the input voltage range on both the AIN0 and
+> +      AIN1 inputs is 0 to VDD.
+> +    type: boolean
+> +
+> +additionalProperties: false
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - spi-cpha
+> +  - spi-cpol
+> +
+> +examples:
+> +  - |
+> +    spi0 {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        adc@0 {
+> +                compatible = "adi,ad7887";
+> +                reg = <0>;
+> +                spi-max-frequency = <1000000>;
+> +                spi-cpol;
+> +                spi-cpha;
+> +
+> +                avcc-supply = <&adc_supply>;
+> +                vref-supply = <&adc_vref>;
+> +        };
+> +    };
+> +...
 
-
-Please get back to me if you are interested for more
-
-details.
-
-
-Yours faithfully,
-
-Hashim Murrah
