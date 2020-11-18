@@ -2,194 +2,116 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 451F3C63697
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Nov 2020 10:35:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE94CC63697
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Nov 2020 12:52:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CC61724248
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Nov 2020 10:35:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4CCC624181
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Nov 2020 12:52:51 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="Bsgb65YJ"
+	dkim=pass (2048-bit key) header.d=gmail.com header.i=@gmail.com header.b="TlYBdSZz"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727205AbgKRKf3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Nov 2020 05:35:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59356 "EHLO
+        id S1726020AbgKRMwu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Nov 2020 07:52:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726883AbgKRKf3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2020 05:35:29 -0500
-Received: from mail-io1-xd44.google.com (mail-io1-xd44.google.com [IPv6:2607:f8b0:4864:20::d44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0C76C0613D4;
-        Wed, 18 Nov 2020 02:35:28 -0800 (PST)
-Received: by mail-io1-xd44.google.com with SMTP id r1so1422626iob.13;
-        Wed, 18 Nov 2020 02:35:28 -0800 (PST)
+        with ESMTP id S1725767AbgKRMwu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Nov 2020 07:52:50 -0500
+Received: from mail-il1-x144.google.com (mail-il1-x144.google.com [IPv6:2607:f8b0:4864:20::144])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6380BC0613D4;
+        Wed, 18 Nov 2020 04:52:50 -0800 (PST)
+Received: by mail-il1-x144.google.com with SMTP id y18so1836712ilp.13;
+        Wed, 18 Nov 2020 04:52:50 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=BKPcjYkPwfMAm2g01yTzqP145VWNrXoKprIgjiPB/wU=;
-        b=Bsgb65YJLAqQkIQcjy9f8oww8vFi2C0iHtiF2JeOmvAvfWeqcFQlPc/R5rOjmxdU2a
-         2q9F6Xzv0PaJFub3ztMSQCI1yG4444ZxF57mHczP4sB9bHkPE1CM2L2BE5U+Wm6gI1fD
-         b7RbOMAkn21lPBeoHH4ZL0GFh4HM6JlMFnOB4i9z+cSm0ktRQNw/rkEhwG9cnk/y8f7L
-         dK8CAm05BiNw4hTtpRLaz/pUanvB+Aaj3Vus9HfqBdesj58xNmrTYz3Er00QNSS0kBaw
-         VPgTjGgJabMYP4mqaZ4tsWHXeLf4QkavPjPlu+SMpe2yXIKDrTPAJZ7ekqR/oYMOcz8v
-         2D7Q==
+        bh=Wzrnd7ru2kaBqfdd45rq9TddpeZGif2RVKPJRSLQI3s=;
+        b=TlYBdSZzpaW2FiQluPWVvSNLkouu0qMkLKKotMHfTu5dwanD115LCVtGRmnM7tViyi
+         dNqpq57hCD0IerxpBbQeEO+Ka10SeoQX5/3GWolmUlM2xJne/riLoYCfcgSTWG4t+xWJ
+         6vZo5LgtSRwRPeeHSOHWcdVK7PxlJyMoLsOEGydNb+uP5dSrW6jDv8SCaSsjBQ8AP5Ga
+         QV5JPNk8Yr2nZfXJLRC4u+r54Im/D830HIdHbPqVKHc1TMwgLaRLKhZujC1MhTI2C/jn
+         6cZIZR6g3+2PB9+VoTmbU7Ot2ZJxnODHZ3TJns8Ey8Lb0gm4sVaS+ZId4sT66b5rMzmj
+         Sx8A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=BKPcjYkPwfMAm2g01yTzqP145VWNrXoKprIgjiPB/wU=;
-        b=piotgi3P3FcdOaov/vkB425dNpeb0nWJaNw4xN2/isOGHnC3TjL7w5FR8fDjmBN+Vr
-         9vtbBxGkNGcdxGXupwZ/XOmkUUpaAogS9UE/kpKFx9hiAjl/FBVFr2APkHlxomV96kOS
-         ZfQKnkospLRa0c/Oz6jQqTcIsBYDItD6VAlxUi73eSvKJS8ja+yxBq4g5kLDVUFf/f5i
-         epT9C7If69nUeFhTSABDMX4vzMdR3c9pDrIpLEGgP0+SSd27qBmFwOSu17ph9t1Yqbm0
-         XE+M+bYK7oo0IgaQqfPQkk5M2ntvUvwkunmXeJbGFe3yTDX10uBzIFXEnKL5D192RdUB
-         vKCw==
-X-Gm-Message-State: AOAM532dD0bnH/v6ha7dIBp2VDD/HuFLqyGBftFbUGZPP0uJdcW6BWtq
-        gn+GEv85zNxIHdYT0S8VvavUxnrbqSpo8vtzbh8=
-X-Google-Smtp-Source: ABdhPJwglA8LVvau9H/EDjtY+yCY2Fo63u6e8utn4aIKBCN7unhYnxCR/yIkpBI05JSKw11Mo1qe3TTlqINggtgFnXE=
-X-Received: by 2002:a05:6602:20c7:: with SMTP id 7mr14611416ioz.170.1605695728359;
- Wed, 18 Nov 2020 02:35:28 -0800 (PST)
+        bh=Wzrnd7ru2kaBqfdd45rq9TddpeZGif2RVKPJRSLQI3s=;
+        b=XP8cX1ioLbFfUpvz5Zy5wZ1ia6efwuw2BawYXG+vygpt78/SMMzdrnXv4y/lNNN8hQ
+         l1MaAv2mwQnZIJQcx9HOU7JEtmTMFdMnYG46In5Wa8kTLS8zvAn45p2LKDMZa3aCtrgH
+         AuaSBiebRK0OTSEHnFwE4af/XZQXLsk6XSLGUqG7JSiafCV5tQogZffOgjGUGKzTGzlj
+         D5mqkz5ebRdWl1CikFMDn3a0Rvr9LRsZXOuOdgRRxqVBzVgxAB9vcy/bXlx5mh5fMzlX
+         4hPQQ8uF0P5TyK8SzmfQAC0RELtU2nkJz9bZKiH/xYUSqV7eXz8CQZXmA5abNedM3QU8
+         bgaQ==
+X-Gm-Message-State: AOAM532uha85CPPkwa+kdjX71y8ruJqDdh7dFMuKe+1BZ5doyJX+25EX
+        2LuB+g7MIMWG0NraXonoEjNtfIMdM0x4YvP4Hr6G/Thkuh1Arw==
+X-Google-Smtp-Source: ABdhPJy0fX+lcmmXzIlqfNie1TanUYv4qa3GgtyYnMvOyW5qYXKut25OlReiNtNCQIHAvDYyZBL5zpZaYK4HMiOlZ5o=
+X-Received: by 2002:a92:d90c:: with SMTP id s12mr17061620iln.100.1605703969800;
+ Wed, 18 Nov 2020 04:52:49 -0800 (PST)
 MIME-Version: 1.0
-References: <20200929125949.69934-1-alexandru.ardelean@analog.com>
- <20200929125949.69934-8-alexandru.ardelean@analog.com> <CAHp75VerL3x7L=AeLfnT6D01a=FyY3JE4vbwNFMaJz-v=f2k9w@mail.gmail.com>
- <CA+U=DsoKM6S+1vrhE6txB-zQLhpJE1St19D_tmHa0=bbqj-g8w@mail.gmail.com> <20200929164010.75f191c3@archlinux>
-In-Reply-To: <20200929164010.75f191c3@archlinux>
+References: <20201117075254.4861-1-alexandru.ardelean@analog.com>
+ <20201117104126.00000516@Huawei.com> <CAHp75VfKDSsiWqK0Bkkbe1ChntsRAFP5C_2qEzw+YE_qPjhJcQ@mail.gmail.com>
+In-Reply-To: <CAHp75VfKDSsiWqK0Bkkbe1ChntsRAFP5C_2qEzw+YE_qPjhJcQ@mail.gmail.com>
 From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Wed, 18 Nov 2020 12:35:16 +0200
-Message-ID: <CA+U=Dsqsz37HD0rjQLemnkOjdLOSBXoyVbpL_8svKS732jA-Uw@mail.gmail.com>
-Subject: Re: [PATCH v3 7/9] iio: cros_ec: use devm_iio_triggered_buffer_setup_ext()
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+Date:   Wed, 18 Nov 2020 14:52:38 +0200
+Message-ID: <CA+U=DsqF5tu8Be9KXeyCWD2uHvV688Nc3n=z_Xi2J6H6DFJPRQ@mail.gmail.com>
+Subject: Re: [PATCH 1/3] iio: adc: ad7887: convert dual-channel mode to DT/ACPI
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>,
         linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Benson Leung <bleung@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        groeck@chromium.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Gwendal Grignou <gwendal@chromium.org>
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Sep 29, 2020 at 6:40 PM Jonathan Cameron <jic23@kernel.org> wrote:
+On Tue, Nov 17, 2020 at 1:10 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
 >
-> On Tue, 29 Sep 2020 17:31:55 +0300
-> Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
->
-> > On Tue, Sep 29, 2020 at 4:09 PM Andy Shevchenko
-> > <andy.shevchenko@gmail.com> wrote:
-> > >
-> > > On Tue, Sep 29, 2020 at 3:55 PM Alexandru Ardelean
-> > > <alexandru.ardelean@analog.com> wrote:
-> > >
-> > > > This change switches to the new devm_iio_triggered_buffer_setup_ext()
-> > > > function and removes the iio_buffer_set_attrs() call, for assigning the
-> > > > HW FIFO attributes to the buffer.
-> > >
-> > > Sorry, you were too fast with the version, below one nit.
-> > >
-> > > > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> > > > ---
-> > > >  .../common/cros_ec_sensors/cros_ec_sensors_core.c | 15 +++++++++------
-> > > >  1 file changed, 9 insertions(+), 6 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > > > index c62cacc04672..1eafcf04ad69 100644
-> > > > --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > > > +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> > > > @@ -353,19 +353,22 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
-> > > >                         if (ret)
-> > > >                                 return ret;
-> > > >                 } else {
-> > > > +                       const struct attribute **fifo_attrs;
-> > > > +
-> > > > +                       if (has_hw_fifo)
-> > > > +                               fifo_attrs = cros_ec_sensor_fifo_attributes;
-> > > > +                       else
-> > > > +                               fifo_attrs = NULL;
-> > > > +
-> > > >                         /*
-> > > >                          * The only way to get samples in buffer is to set a
-> > > >                          * software trigger (systrig, hrtimer).
-> > > >                          */
-> > > > -                       ret = devm_iio_triggered_buffer_setup(
-> > >
-> > > > +                       ret = devm_iio_triggered_buffer_setup_ext(
-> > > >                                         dev, indio_dev, NULL, trigger_capture,
-> > > > -                                       NULL);
-> > > > +                                       NULL, fifo_attrs);
-> > >
-> > > Perhaps it's time to reformat a bit, i.e. move dev to the first line
-> > > and do the rest accordingly?
+> On Tue, Nov 17, 2020 at 12:42 PM Jonathan Cameron
+> <Jonathan.Cameron@huawei.com> wrote:
 > >
-> > this feels like a mix of preferences here;
-> > for once, the patch here [as-is], is the minimal form for this change
-> > [in terms of patch-noise];
-> > so, some people would choose the least noisiest patch;
+> > On Tue, 17 Nov 2020 09:52:52 +0200
+> > Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 > >
-> > also, this indentation was chosen [as-is here] from the start [for
-> > this code block];
-> > not sure if it was preferred; i'd suspect it was due to the old 80-col limit;
+> > > This change converts the configuration of the dual-channel mode from the
+> > > old platform-data, to the device_property_present() function, which
+> > > supports both device-tree and ACPI configuration setups.
+> > >
+> > > With this change the old platform_data include of the driver can be
+> > > removed.
+> > >
+> > > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> > Hi Alex,
 > >
-> > i'd leave it as-is [for now], or defer the decision to a maintainer to
-> > decide [either IIO or chromium];
->
-> The indenting of this whole code block is a bit too deep.
->
-> Looks to me like we should flip the sense of the outer if statement
->
-> if (!physical_device)
->         return 0;
->
-> That would lead to a whole bunch of reformatting around here including
-> picking up this.
->
-> For now I can just shuffle it a bit whilst applying.
->
-> This set isn't likely to make the merge window anyway now as I'd like
-> it to sit on list a little longer just because it touches several
-> drivers with active maintainers and I'd like time for them to sanity
-> check.
->
-
-ping on this;
-should i do a V4 for this?
-
-this is related to the multiple IIO buffer support:
-https://lore.kernel.org/linux-iio/20201117162340.43924-1-alexandru.ardelean@analog.com/T/#t
-
-it's one of the patchsets i could split away on it's own;
-
-> Jonathan
->
->
+> > I'm a bit in too minds about device_property_present()
+> > vs device_property_read_bool() which are the same thing under the hood.
 > >
-> > >
-> > > >                         if (ret)
-> > > >                                 return ret;
-> > > > -
-> > > > -                       if (has_hw_fifo)
-> > > > -                               iio_buffer_set_attrs(indio_dev->buffer,
-> > > > -                                                    cros_ec_sensor_fifo_attributes);
-> > > >                 }
-> > > >         }
-> > > >
-> > > > --
-> > > > 2.17.1
-> > > >
-> > >
-> > >
-> > > --
-> > > With Best Regards,
-> > > Andy Shevchenko
+> > Not sure which one conveys the correct semantics here.
+> > I don't feel strongly enough about it though to do more than raise
+> > eyebrows (i.e. not blocking this series).
 >
+> The idea as I understand it is that the 'present' can be run against
+> any type of property, while 'bool' is specifically for boolean (the
+> similarities is a detail of implementation).
+
+Yeah, I'm also not sure which to use here.
+I guess I got used to using device_property_present() a bit more.
+They're both pretty used around other drivers.
+I guess I'll leave it as is for now, unless other complaints.
+
+
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
