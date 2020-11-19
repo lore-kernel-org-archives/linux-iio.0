@@ -5,152 +5,533 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AB2FC64E7A
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Nov 2020 10:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 618ACC2D0E4
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Nov 2020 10:03:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 038042085B
-	for <linux-iio@archiver.kernel.org>; Thu, 19 Nov 2020 10:03:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 016C42080A
+	for <linux-iio@archiver.kernel.org>; Thu, 19 Nov 2020 10:03:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727193AbgKSKCt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 19 Nov 2020 05:02:49 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:4960 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727174AbgKSKCr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Nov 2020 05:02:47 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.42/8.16.0.42) with SMTP id 0AJA0Mmm010496;
-        Thu, 19 Nov 2020 05:02:45 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 34t9ybsjhh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 19 Nov 2020 05:02:45 -0500
-Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 0AJA2h0x011186
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 19 Nov 2020 05:02:43 -0500
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 19 Nov 2020 02:02:42 -0800
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 19 Nov 2020 02:02:42 -0800
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 0AJA2Ydf018635;
-        Thu, 19 Nov 2020 05:02:39 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-CC:     <robh+dt@kernel.org>, <jic23@kernel.org>,
-        <andy.shevchenko@gmail.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 4/4] dt-bindings: adc: ad7887: add binding doc for AD7887
-Date:   Thu, 19 Nov 2020 12:07:48 +0200
-Message-ID: <20201119100748.57689-4-alexandru.ardelean@analog.com>
+        id S1727174AbgKSKCw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 19 Nov 2020 05:02:52 -0500
+Received: from mga14.intel.com ([192.55.52.115]:10879 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1726845AbgKSKCv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 19 Nov 2020 05:02:51 -0500
+IronPort-SDR: jwjnb0/oQuJroJ8GPf3paJ7wT6QDjaYOUXXzPVwliTm/OIgEIKHSayMndjxMbL0967SGGRp/rU
+ rAg8ggWI6Jgw==
+X-IronPort-AV: E=McAfee;i="6000,8403,9809"; a="170482251"
+X-IronPort-AV: E=Sophos;i="5.77,490,1596524400"; 
+   d="scan'208";a="170482251"
+X-Amp-Result: SKIPPED(no attachment in message)
+X-Amp-File-Uploaded: False
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Nov 2020 02:02:51 -0800
+IronPort-SDR: dY2SwWMrwaFN9jRlTOuyv/BejX5ijognleH92o1I/jIXm0U7/7W3SAq+/skhWwCevkEmQIEhKg
+ CJKXeaaPHs/Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.77,490,1596524400"; 
+   d="scan'208";a="359909815"
+Received: from host.sh.intel.com ([10.239.154.115])
+  by fmsmga004.fm.intel.com with ESMTP; 19 Nov 2020 02:02:49 -0800
+From:   Ye Xiang <xiang.ye@intel.com>
+To:     jikos@kernel.org, jic23@kernel.org,
+        srinivas.pandruvada@linux.intel.com
+Cc:     linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ye Xiang <xiang.ye@intel.com>
+Subject: [PATCH v2 4/4] iio: hid-sensors: Add hinge sensor driver
+Date:   Thu, 19 Nov 2020 18:03:31 +0800
+Message-Id: <20201119100331.2594-5-xiang.ye@intel.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20201119100748.57689-1-alexandru.ardelean@analog.com>
-References: <20201119100748.57689-1-alexandru.ardelean@analog.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
- definitions=2020-11-19_08:2020-11-17,2020-11-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 mlxscore=0
- priorityscore=1501 suspectscore=0 impostorscore=0 lowpriorityscore=0
- bulkscore=0 clxscore=1015 spamscore=0 adultscore=0 mlxlogscore=999
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2011190073
+In-Reply-To: <20201119100331.2594-1-xiang.ye@intel.com>
+References: <20201119100331.2594-1-xiang.ye@intel.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This change adds a simple device-tree binding for thhe Analog Devices
-AD7887 ADC.
+The Hinge sensor is a common custom sensor on laptops. It calculates
+the angle between the lid (screen) and the base (keyboard). In addition,
+it also exposes screen and the keyboard angels with respect to the
+ground. Applications can easily get laptop's status in space through
+this sensor, in order to display appropriate user interface.
 
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Signed-off-by: Ye Xiang <xiang.ye@intel.com>
 ---
- .../bindings/iio/adc/adi,ad7887.yaml          | 70 +++++++++++++++++++
- 1 file changed, 70 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7887.yaml
+ .../hid-sensors/hid-sensor-attributes.c       |   2 +
+ drivers/iio/position/Kconfig                  |  16 +
+ drivers/iio/position/Makefile                 |   3 +
+ .../iio/position/hid-sensor-custom-hinge.c    | 412 ++++++++++++++++++
+ 4 files changed, 433 insertions(+)
+ create mode 100644 drivers/iio/position/hid-sensor-custom-hinge.c
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7887.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7887.yaml
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 442ff787f7af..5b822a4298a0 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -71,6 +71,8 @@ static struct {
+ 	{HID_USAGE_SENSOR_TEMPERATURE, HID_USAGE_SENSOR_UNITS_DEGREES, 1000, 0},
+ 
+ 	{HID_USAGE_SENSOR_HUMIDITY, 0, 1000, 0},
++	{HID_USAGE_SENSOR_HINGE, 0, 0, 17453293},
++	{HID_USAGE_SENSOR_HINGE, HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
+ };
+ 
+ static void simple_div(int dividend, int divisor, int *whole,
+diff --git a/drivers/iio/position/Kconfig b/drivers/iio/position/Kconfig
+index eda67f008c5b..0346f6f2b422 100644
+--- a/drivers/iio/position/Kconfig
++++ b/drivers/iio/position/Kconfig
+@@ -16,4 +16,20 @@ config IQS624_POS
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called iqs624-pos.
+ 
++config HID_SENSOR_CUSTOM_HINGE
++	depends on HID_SENSOR_HUB
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	select HID_SENSOR_IIO_COMMON
++	select HID_SENSOR_IIO_TRIGGER
++	tristate "HID Hinge"
++	help
++	  This sensor present three angles, hinge angel, screen angles
++	  and keyboard angle respect to horizon (ground).
++	  Say yes here to build support for the HID SENSOR CUSTOM
++	  HINGE.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called hid-sensor-custom-hinge.
++
+ endmenu
+diff --git a/drivers/iio/position/Makefile b/drivers/iio/position/Makefile
+index 3cbe7a734352..7a6225977a01 100644
+--- a/drivers/iio/position/Makefile
++++ b/drivers/iio/position/Makefile
+@@ -5,3 +5,6 @@
+ # When adding new entries keep the list in alphabetical order
+ 
+ obj-$(CONFIG_IQS624_POS)	+= iqs624-pos.o
++
++obj-$(CONFIG_HID_SENSOR_CUSTOM_HINGE) += hid-sensor-custom-hinge.o
++ccflags-y	+= -I$(srctree)/drivers/iio/common/hid-sensors
+diff --git a/drivers/iio/position/hid-sensor-custom-hinge.c b/drivers/iio/position/hid-sensor-custom-hinge.c
 new file mode 100644
-index 000000000000..9b30f4569b4e
+index 000000000000..a91b333f36fa
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7887.yaml
-@@ -0,0 +1,70 @@
-+# SPDX-License-Identifier: GPL-2.0
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ad7887.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/drivers/iio/position/hid-sensor-custom-hinge.c
+@@ -0,0 +1,412 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/*
++ * HID Sensors Driver
++ * Copyright (c) 2020, Intel Corporation.
++ */
++#include <linux/hid-sensor-hub.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/iio.h>
++#include <linux/platform_device.h>
 +
-+title: Analog Devices AD7887 low power, 12-bit ADC
++#include "hid-sensor-trigger.h"
 +
-+maintainers:
-+  - Michael Hennerich <michael.hennerich@analog.com>
++/* Channel definitions */
++static const struct iio_chan_spec hinge_channels[] = {
++	{ .type = IIO_ANGL,
++	  .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	  .info_mask_shared_by_type =
++		  BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_SCALE) |
++		  BIT(IIO_CHAN_INFO_SAMP_FREQ) | BIT(IIO_CHAN_INFO_HYSTERESIS),
++	  .scan_type.realbits = 16,
++	  .scan_type.storagebits = 32,
++	  .scan_type.sign = 's',
++	  .scan_index = 0 },
 +
-+description: |
-+  Analog Devices AD7887 low power, 12-bit analog-to-digital converter (ADC)
-+  that operates from a single 2.7 V to 5.25 V power supply.
++	IIO_CHAN_SOFT_TIMESTAMP(1)
++};
 +
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad7887
++struct hinge_state {
++	struct iio_dev *indio_dev;
++	struct hid_sensor_hub_attribute_info hinge;
++	/* Reserve for 1 channel + pading + timestamp */
++	u32 hinge_val[1 + 3];
++	int scale_pre_decml;
++	int scale_post_decml;
++	int scale_precision;
++	int value_offset;
++	int64_t timestamp;
++	u32 hinge_address;
++};
 +
-+  reg:
-+    maxItems: 1
++#define IIO_DEV_NUM 3
 +
-+  spi-cpha: true
++struct hinge_group {
++	struct hinge_state *hg_states[IIO_DEV_NUM];
++	struct hid_sensor_hub_callbacks callbacks;
++	struct hid_sensor_common common_attributes;
++};
 +
-+  spi-cpol: true
++static struct hinge_group *hg_group;
 +
-+  avcc-supply: true
++/* Channel read_raw handler */
++static int hinge_read_raw(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan, int *val, int *val2,
++			  long mask)
++{
++	struct hinge_state *hg_state = iio_priv(indio_dev);
++	struct hid_sensor_hub_device *hsdev;
++	int report_id = -1;
++	int ret_type;
++	s32 min;
 +
-+  spi-max-frequency: true
++	hsdev = hg_group->common_attributes.hsdev;
 +
-+  vref-supply:
-+    description:
-+      ADC reference voltage supply
++	*val = 0;
++	*val2 = 0;
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		hid_sensor_power_state(&hg_group->common_attributes, true);
++		report_id = hg_state->hinge.report_id;
++		min = hg_state->hinge.logical_minimum;
++		if (report_id < 0) {
++			*val = 0;
++			hid_sensor_power_state(&hg_group->common_attributes,
++					       false);
++			return -EINVAL;
++		}
 +
-+  adi,dual-channel-mode:
-+    description:
-+      Configures dual-channel mode for the ADC. In dual-channel operation,
-+      the AIN1/VREF pin assumes its AIN1 function, providing a second analog
-+      input channel. In this case, he reference voltage for the part is provided
-+      via the VDD pin. As a result, the input voltage range on both the AIN0 and
-+      AIN1 inputs is 0 to VDD.
-+    type: boolean
++		*val = sensor_hub_input_attr_get_raw_value(
++			hg_group->common_attributes.hsdev, hsdev->usage,
++			hg_state->hinge_address, report_id, SENSOR_HUB_SYNC,
++			min < 0);
 +
-+additionalProperties: false
++		hid_sensor_power_state(&hg_group->common_attributes, false);
++		ret_type = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		*val = hg_state->scale_pre_decml;
++		*val2 = hg_state->scale_post_decml;
++		ret_type = hg_state->scale_precision;
++		break;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = hg_state->value_offset;
++		ret_type = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret_type = hid_sensor_read_samp_freq_value(
++			&hg_group->common_attributes, val, val2);
++		break;
++	case IIO_CHAN_INFO_HYSTERESIS:
++		ret_type = hid_sensor_read_raw_hyst_value(
++			&hg_group->common_attributes, val, val2);
++		break;
++	default:
++		ret_type = -EINVAL;
++		break;
++	}
 +
-+required:
-+  - compatible
-+  - reg
-+  - spi-cpha
-+  - spi-cpol
++	return ret_type;
++}
 +
-+examples:
-+  - |
-+    spi0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
++/* Channel write_raw handler */
++static int hinge_write_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan, int val, int val2,
++			   long mask)
++{
++	int ret;
 +
-+        adc@0 {
-+                compatible = "adi,ad7887";
-+                reg = <0>;
-+                spi-max-frequency = <1000000>;
-+                spi-cpol;
-+                spi-cpha;
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = hid_sensor_write_samp_freq_value(
++			&hg_group->common_attributes, val, val2);
++		break;
++	case IIO_CHAN_INFO_HYSTERESIS:
++		ret = hid_sensor_write_raw_hyst_value(
++			&hg_group->common_attributes, val, val2);
 +
-+                avcc-supply = <&adc_supply>;
-+                vref-supply = <&adc_vref>;
-+        };
-+    };
-+...
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static const struct iio_info hinge_info = {
++	.read_raw = &hinge_read_raw,
++	.write_raw = &hinge_write_raw,
++};
++
++/*
++ * Function to push data to buffer;
++ * wrapper added for symmetry with other hid-sensor drivers
++ */
++static void hid_sensor_push_data(struct iio_dev *indio_dev, void *data, int len,
++				 int64_t timestamp)
++{
++	iio_push_to_buffers_with_timestamp(indio_dev, data, timestamp);
++}
++
++/*
++ * Callback handler to send event after all samples are received
++ * and captured.
++ */
++static int hinge_proc_event(struct hid_sensor_hub_device *hsdev,
++			    unsigned int usage_id, void *priv)
++{
++	int i;
++
++	for (i = 0; i < IIO_DEV_NUM; ++i) {
++		struct hinge_state *hg_state;
++		struct iio_dev *indio_dev;
++
++		hg_state = hg_group->hg_states[i];
++		indio_dev = hg_state->indio_dev;
++
++		dev_dbg(&indio_dev->dev, "%s timestamp:%llu scan_bytes:%d\n",
++			__func__, hg_state->timestamp, indio_dev->scan_bytes);
++
++		if (!hg_state->timestamp)
++			hg_state->timestamp = iio_get_time_ns(indio_dev);
++
++		hid_sensor_push_data(indio_dev, hg_state->hinge_val,
++				     sizeof(hg_state->hinge_val),
++				     hg_state->timestamp);
++
++		hg_state->timestamp = 0;
++	}
++
++	return 0;
++}
++
++/* Capture samples in local storage */
++static int hinge_capture_sample(struct hid_sensor_hub_device *hsdev,
++				unsigned int usage_id, size_t raw_len,
++				char *raw_data, void *priv)
++{
++	struct hinge_state *hg_state;
++	int offset;
++	int ret = -EINVAL;
++	int i;
++
++	if (usage_id == HID_USAGE_SENSOR_TIME_TIMESTAMP) {
++		for (i = 0; i < IIO_DEV_NUM; i++)
++			hg_group->hg_states[i]->timestamp =
++				hid_sensor_convert_timestamp(
++					&hg_group->common_attributes,
++					*(int64_t *)raw_data);
++		return 0;
++	}
++
++	switch (usage_id) {
++	case HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_1:
++	case HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_2:
++	case HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_3:
++		offset = usage_id - HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_1;
++		hg_state = hg_group->hg_states[offset];
++		hg_state->hinge_val[0] = *(u32 *)raw_data;
++		ret = 0;
++		break;
++	default:
++		break;
++	}
++
++	return ret;
++}
++
++/* Parse report which is specific to an usage id */
++static int hinge_parse_report(struct platform_device *pdev,
++			      struct hid_sensor_hub_device *hsdev,
++			      unsigned int usage_id, unsigned int attr_usage_id,
++			      struct hinge_state *st)
++{
++	int ret;
++
++	ret = sensor_hub_input_get_attribute_info(
++		hsdev, HID_INPUT_REPORT, usage_id, attr_usage_id, &st->hinge);
++	if (ret < 0)
++		return ret;
++
++	st->hinge_address = attr_usage_id;
++	st->scale_precision =
++		hid_sensor_format_scale(HID_USAGE_SENSOR_HINGE, &st->hinge,
++					&st->scale_pre_decml,
++					&st->scale_post_decml);
++
++	/* Set Sensitivity field ids, when there is no individual modifier */
++	if (hg_group->common_attributes.sensitivity.index < 0) {
++		sensor_hub_input_get_attribute_info(
++			hsdev, HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
++				HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_1,
++			&hg_group->common_attributes.sensitivity);
++		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
++			hg_group->common_attributes.sensitivity.index,
++			hg_group->common_attributes.sensitivity.report_id);
++	}
++
++	return ret;
++}
++
++/* Function to initialize the processing for usage id */
++static int hinge_add_iio_device(struct platform_device *pdev, int index,
++				const char *name, struct hinge_state **st)
++{
++	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
++	struct hinge_state *hg_state;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev =
++		devm_iio_device_alloc(&pdev->dev, sizeof(struct hinge_state));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	hg_state = iio_priv(indio_dev);
++	hg_state->indio_dev = indio_dev;
++
++	indio_dev->num_channels = ARRAY_SIZE(hinge_channels);
++	indio_dev->channels =
++		kmemdup(hinge_channels, sizeof(hinge_channels), GFP_KERNEL);
++	if (!indio_dev->channels)
++		return -ENOMEM;
++
++	ret = hinge_parse_report(
++		pdev, hsdev, hsdev->usage,
++		HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_1 + index, hg_state);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to setup attributes\n");
++		goto error_free_dev_mem;
++	}
++
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->info = &hinge_info;
++	indio_dev->name = name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = hid_sensor_setup_trigger(indio_dev, name,
++				       &hg_group->common_attributes);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "trigger setup failed\n");
++		goto error_free_dev_mem;
++	}
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&pdev->dev, "device register failed\n");
++		goto error_remove_trigger;
++	}
++
++	*st = hg_state;
++
++	return ret;
++
++error_remove_trigger:
++	hid_sensor_remove_trigger(indio_dev, &hg_group->common_attributes);
++error_free_dev_mem:
++	kfree(indio_dev->channels);
++	return ret;
++}
++
++/* Function to deinitialize the processing for usage id */
++static int hinge_remove_iio_device(struct platform_device *pdev, int index)
++{
++	struct hinge_state *hg_state = hg_group->hg_states[index];
++	struct iio_dev *indio_dev = hg_state->indio_dev;
++
++	iio_device_unregister(indio_dev);
++	hid_sensor_remove_trigger(indio_dev, &hg_group->common_attributes);
++	kfree(indio_dev->channels);
++
++	return 0;
++}
++
++static int hid_hinge_probe(struct platform_device *pdev)
++{
++	struct hinge_state *hg_state;
++	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
++	static const char *const names[] = { "hinge", "screen", "keyboard" };
++	int ret;
++	int i;
++
++	hg_group = devm_kzalloc(&pdev->dev, sizeof(struct hinge_group),
++				GFP_KERNEL);
++	if (!hg_group)
++		return -ENOMEM;
++
++	hg_group->common_attributes.hsdev = hsdev;
++	hg_group->common_attributes.pdev = pdev;
++
++	ret = hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
++						 &hg_group->common_attributes);
++	if (ret) {
++		dev_err(&pdev->dev, "failed to setup common attributes\n");
++		return ret;
++	}
++
++	atomic_set(&hg_group->common_attributes.data_ready, 0);
++	for (i = 0; i < IIO_DEV_NUM; i++) {
++		ret = hinge_add_iio_device(pdev, i, names[i], &hg_state);
++		if (ret)
++			goto err_probe;
++
++		hg_group->hg_states[i] = hg_state;
++	}
++
++	/* use the first iio device to do the PM */
++	platform_set_drvdata(pdev, hg_group->hg_states[0]->indio_dev);
++
++	hg_group->callbacks.send_event = hinge_proc_event;
++	hg_group->callbacks.capture_sample = hinge_capture_sample;
++	hg_group->callbacks.pdev = pdev;
++	ret = sensor_hub_register_callback(hsdev, hsdev->usage,
++					   &hg_group->callbacks);
++	if (ret < 0)
++		dev_err(&pdev->dev, "callback reg failed\n");
++
++	return ret;
++
++err_probe:
++	for (i--; i >= 0; i--)
++		hinge_remove_iio_device(pdev, i);
++
++	return ret;
++}
++
++/* Function to deinitialize the processing for usage id */
++static int hid_hinge_remove(struct platform_device *pdev)
++{
++	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
++	int i;
++
++	sensor_hub_remove_callback(hsdev, hsdev->usage);
++
++	for (i = 0; i < IIO_DEV_NUM; i++)
++		hinge_remove_iio_device(pdev, i);
++
++	return 0;
++}
++
++static const struct platform_device_id hid_hinge_ids[] = {
++	{
++		/* Format: HID-SENSOR-INT-usage_id_in_hex_lowercase */
++		.name = "HID-SENSOR-INT-020b",
++	},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, hid_hinge_ids);
++
++static struct platform_driver hid_hinge_platform_driver = {
++	.id_table = hid_hinge_ids,
++	.driver = {
++		.name	= KBUILD_MODNAME,
++		.pm	= &hid_sensor_pm_ops,
++	},
++	.probe		= hid_hinge_probe,
++	.remove		= hid_hinge_remove,
++};
++module_platform_driver(hid_hinge_platform_driver);
++
++MODULE_DESCRIPTION("HID Sensor Custom Hinge");
++MODULE_AUTHOR("Ye Xiang <xiang.ye@intel.com>");
++MODULE_LICENSE("GPL");
 -- 
 2.17.1
 
