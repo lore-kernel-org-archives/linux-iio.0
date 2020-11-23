@@ -2,235 +2,109 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BAAEC56201
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Nov 2020 03:03:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B648C63777
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Nov 2020 08:41:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DC4DB2145D
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Nov 2020 03:03:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1AB1520729
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Nov 2020 08:41:44 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (2048-bit key) header.d=st.com header.i=@st.com header.b="UhKsJoxF"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727028AbgKWDDN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 22 Nov 2020 22:03:13 -0500
-Received: from mail-lj1-f196.google.com ([209.85.208.196]:38503 "EHLO
-        mail-lj1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726917AbgKWDDN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Nov 2020 22:03:13 -0500
-Received: by mail-lj1-f196.google.com with SMTP id j10so3969030lja.5;
-        Sun, 22 Nov 2020 19:03:10 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=njcEpx2yCvJNcE61ngSH8L3BnOTf+sc74gZJYAGfKCA=;
-        b=rhx0P4z122TAgMef0IFk/2XD0sjBxP8t6yZdjN5rDvTppLIJaHdYvN0ah4jc3q8LJK
-         MHJ52aZ1byFbUwUJHJ9Iqj4hdOeV6ClHnpmTJvjSak+0m0kyGZQeZJ5mCbgIc/sj1VRP
-         B6DSWTTkSE7zn6zODRSvj9y/oaQ/ewW0s5tGypodwgwnqO4CFQWub1hgO3L6nyXmPbzF
-         KmgTQgnJJTwrl8eXmlyzsouPCkRRkdwygrVqZjE/7gOnCVZgaSjAJEWEJeYlRvkMALME
-         PIqObNx+/uoQP8mSjB6sVlDTacA7H7wWC8nstDalaQb+oxjsakTo7obwaGFyStHayO+5
-         0j5Q==
-X-Gm-Message-State: AOAM533mTkNXrZgtsJP1HUylRTaq3XMtZbeNP02AKM3GNBP5DMRD1fyY
-        od7QVYWS4xukfySb5C3iB26hRbR66exD/g==
-X-Google-Smtp-Source: ABdhPJzGGeUuLQ8OGLPEjlezaAMMOGFtxoqn/HP4LkffagPJ2nEt/WN+R6pC45nfubKCdnmblLL3YQ==
-X-Received: by 2002:a2e:9e43:: with SMTP id g3mr2659071ljk.286.1606100589363;
-        Sun, 22 Nov 2020 19:03:09 -0800 (PST)
-Received: from mail-lf1-f49.google.com (mail-lf1-f49.google.com. [209.85.167.49])
-        by smtp.gmail.com with ESMTPSA id j23sm291974lfh.88.2020.11.22.19.03.08
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 22 Nov 2020 19:03:08 -0800 (PST)
-Received: by mail-lf1-f49.google.com with SMTP id d17so21706597lfq.10;
-        Sun, 22 Nov 2020 19:03:08 -0800 (PST)
-X-Received: by 2002:a19:ca05:: with SMTP id a5mr11488392lfg.571.1606100588348;
- Sun, 22 Nov 2020 19:03:08 -0800 (PST)
+        id S1728024AbgKWIln (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 23 Nov 2020 03:41:43 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:16082 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1728018AbgKWIln (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Nov 2020 03:41:43 -0500
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0AN8VfXn009764;
+        Mon, 23 Nov 2020 09:40:36 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=st.com; h=from : to : cc : subject
+ : date : message-id : references : in-reply-to : content-type : content-id
+ : content-transfer-encoding : mime-version; s=STMicroelectronics;
+ bh=QAa2GnmQAiWoa2+YVF7t7OcyZCsfIr9pWcyDLYCfUkA=;
+ b=UhKsJoxFGSvG1f4curcr6LGdt1iUa76MDjniqftNWXHsi9Ly/WBHeVpe55bqJol+nt+B
+ 6VFew3zTJOvN2AWpYSjLoZuppzCZSdrGXCqOZvhyBT6EYew34t3bev5cF5b2Q+WSvChI
+ JeO3VYEFpuIQpiL4Y6eqafORKttyFpsLZCckRvZJKXeW/epYONTWSLpKoXN7K0ZiIUFf
+ IyYuYGoo/FAZM/MIETpwVs7fRkqX4isOZSppRAVH412/FiZw4qu/XfXohum2k7W7Ygxq
+ vsYzrPE4ZwfKobujUHalTM5mOA5Vo4ZajUnPxY+VfYKSlLU28Wf6NX2x62wQMsCs/jgL qg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 34y0hj1159-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 23 Nov 2020 09:40:36 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 9BFB610002A;
+        Mon, 23 Nov 2020 09:40:34 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag3node2.st.com [10.75.127.8])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 1FB6A22A4BE;
+        Mon, 23 Nov 2020 09:40:34 +0100 (CET)
+Received: from SFHDAG2NODE2.st.com (10.75.127.5) by SFHDAG3NODE2.st.com
+ (10.75.127.8) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 23 Nov
+ 2020 09:40:33 +0100
+Received: from SFHDAG2NODE2.st.com ([fe80::14c2:73ff:db87:a27b]) by
+ SFHDAG2NODE2.st.com ([fe80::14c2:73ff:db87:a27b%20]) with mapi id
+ 15.00.1473.003; Mon, 23 Nov 2020 09:40:33 +0100
+From:   Olivier MOYSAN <olivier.moysan@st.com>
+To:     =?utf-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Subject: Re: [PATCH 2/2] iio: buffer: Return error if no callback is given
+Thread-Topic: [PATCH 2/2] iio: buffer: Return error if no callback is given
+Thread-Index: AQHWwCGO6/PRziE1cU6P4ncVwkQG56nVV5QA
+Date:   Mon, 23 Nov 2020 08:40:33 +0000
+Message-ID: <79057dac-66d0-4e2d-b720-7b6bfbbb8157@st.com>
+References: <20201121161457.957-1-nuno.sa@analog.com>
+ <20201121161457.957-3-nuno.sa@analog.com>
+In-Reply-To: <20201121161457.957-3-nuno.sa@analog.com>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+user-agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+x-ms-exchange-messagesentrepresentingtype: 1
+x-ms-exchange-transport-fromentityheader: Hosted
+x-originating-ip: [10.75.127.49]
+Content-Type: text/plain; charset="utf-8"
+Content-ID: <D4271702028E7447A489EB1307131F3C@st.com>
+Content-Transfer-Encoding: base64
 MIME-Version: 1.0
-References: <20201031184854.745828-1-jic23@kernel.org> <20201031184854.745828-32-jic23@kernel.org>
- <20201122181525.52410a84@archlinux>
-In-Reply-To: <20201122181525.52410a84@archlinux>
-From:   Chen-Yu Tsai <wens@csie.org>
-Date:   Mon, 23 Nov 2020 11:02:58 +0800
-X-Gmail-Original-Message-ID: <CAGb2v64KwkN5z_3nH-kUhJSAMeUfrU+zzn2tivJniT7c38BeAA@mail.gmail.com>
-Message-ID: <CAGb2v64KwkN5z_3nH-kUhJSAMeUfrU+zzn2tivJniT7c38BeAA@mail.gmail.com>
-Subject: Re: [PATCH 31/46] dt-bindings:iio:adc:x-powers,axp209-adc: txt to
- yaml conversion
-To:     jic23@jic23.retrosnub.co.uk
-Cc:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Quentin Schulz <quentin.schulz@bootlin.com>
-Content-Type: text/plain; charset="UTF-8"
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-23_02:2020-11-20,2020-11-23 signatures=0
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
-
-On Mon, Nov 23, 2020 at 2:22 AM Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
->
-> On Sat, 31 Oct 2020 18:48:39 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
->
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> >
-> > This is a very small binding.  It might make sense at some stage
-> > to just roll it into the parent mfd.  For now, converted as is.
-> > The main advantage of this document is the identification of the
-> > channel index values when this is used as a provider of ADC channels
-> > to consumers.
-> >
-> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Cc: Quentin Schulz <quentin.schulz@bootlin.com>
-> Quentin's email address is boucing so for now I've put myself as maintainer
-> of this binding.
->
-> +CC Chen-Yu Tsai who 'might' be the a better choice.
-
-Yes you can list me as the maintainer if you yourself don't wish to be.
-I am listed as the maintainer for all AXP hardware, excluding the AXP288.
-
-ChenYu
-
-
-> Applied to the togreg branch of iio.git and pushed out as testing for
-> the autobuilders to poke at it.
->
-> Thanks,
->
-> Jonathan
->
-> > ---
-> >  .../bindings/iio/adc/axp20x_adc.txt           | 48 -------------
-> >  .../bindings/iio/adc/x-powers,axp209-adc.yaml | 67 +++++++++++++++++++
-> >  2 files changed, 67 insertions(+), 48 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt b/Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt
-> > deleted file mode 100644
-> > index 7a6313913923..000000000000
-> > --- a/Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt
-> > +++ /dev/null
-> > @@ -1,48 +0,0 @@
-> > -* X-Powers AXP ADC bindings
-> > -
-> > -Required properties:
-> > -  - compatible: should be one of:
-> > -    - "x-powers,axp209-adc",
-> > -    - "x-powers,axp221-adc",
-> > -    - "x-powers,axp813-adc",
-> > -  - #io-channel-cells: should be 1,
-> > -
-> > -Example:
-> > -
-> > -&axp22x {
-> > -     adc {
-> > -             compatible = "x-powers,axp221-adc";
-> > -             #io-channel-cells = <1>;
-> > -     };
-> > -};
-> > -
-> > -ADC channels and their indexes per variant:
-> > -
-> > -AXP209
-> > -------
-> > - 0 | acin_v
-> > - 1 | acin_i
-> > - 2 | vbus_v
-> > - 3 | vbus_i
-> > - 4 | pmic_temp
-> > - 5 | gpio0_v
-> > - 6 | gpio1_v
-> > - 7 | ipsout_v
-> > - 8 | batt_v
-> > - 9 | batt_chrg_i
-> > -10 | batt_dischrg_i
-> > -
-> > -AXP22x
-> > -------
-> > - 0 | pmic_temp
-> > - 1 | batt_v
-> > - 2 | batt_chrg_i
-> > - 3 | batt_dischrg_i
-> > -
-> > -AXP813
-> > -------
-> > - 0 | pmic_temp
-> > - 1 | gpio0_v
-> > - 2 | batt_v
-> > - 3 | batt_chrg_i
-> > - 4 | batt_dischrg_i
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/x-powers,axp209-adc.yaml b/Documentation/devicetree/bindings/iio/adc/x-powers,axp209-adc.yaml
-> > new file mode 100644
-> > index 000000000000..288a5ac31a16
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/adc/x-powers,axp209-adc.yaml
-> > @@ -0,0 +1,67 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/adc/x-powers,axp209-adc.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: X-Powers AXP ADC bindings
-> > +
-> > +maintainers:
-> > +  - Quentin Schulz <quentin.schulz@bootlin.com>
-> > +
-> > +description: |
-> > +  ADC is frequently used as a provider to consumers of the ADC channels.
-> > +  Device is a child of an axp209 multifunction device
-> > +  ADC channels and their indexes per variant:
-> > +
-> > +  AXP209
-> > +  ------
-> > +   0 | acin_v
-> > +   1 | acin_i
-> > +   2 | vbus_v
-> > +   3 | vbus_i
-> > +   4 | pmic_temp
-> > +   5 | gpio0_v
-> > +   6 | gpio1_v
-> > +   7 | ipsout_v
-> > +   8 | batt_v
-> > +   9 | batt_chrg_i
-> > +  10 | batt_dischrg_i
-> > +
-> > +  AXP22x
-> > +  ------
-> > +   0 | pmic_temp
-> > +   1 | batt_v
-> > +   2 | batt_chrg_i
-> > +   3 | batt_dischrg_i
-> > +
-> > +  AXP813
-> > +  ------
-> > +   0 | pmic_temp
-> > +   1 | gpio0_v
-> > +   2 | batt_v
-> > +   3 | batt_chrg_i
-> > +   4 | batt_dischrg_i
-> > +
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - x-powers,axp209-adc
-> > +      - x-powers,axp221-adc
-> > +      - x-powers,axp813-adc
-> > +
-> > +  "#io-channel-cells":
-> > +    const: 1
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    axp221 {
-> > +        adc {
-> > +            compatible = "x-powers,axp221-adc";
-> > +            #io-channel-cells = <1>;
-> > +        };
-> > +    };
-> > +...
->
+DQoNCk9uIDExLzIxLzIwIDU6MTQgUE0sIE51bm8gU8OhIHdyb3RlOg0KPiBSZXR1cm4gZXJyb3Ig
+aW4gY2FzZSBubyBjYWxsYmFjayBpcyBwcm92aWRlZCB0bw0KPiBgaWlvX2NoYW5uZWxfZ2V0X2Fs
+bF9jYigpYC4gVGhlcmUncyBubyBwb2ludCBpbiBzZXR0aW5nIHVwIGEgYnVmZmVyLWNiDQo+IGlm
+IG5vIGNhbGxiYWNrIGlzIHByb3ZpZGVkLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogTnVubyBTw6Eg
+PG51bm8uc2FAYW5hbG9nLmNvbT4NCj4gLS0tDQo+ICAgZHJpdmVycy9paW8vYnVmZmVyL2luZHVz
+dHJpYWxpby1idWZmZXItY2IuYyB8IDUgKysrKysNCj4gICAxIGZpbGUgY2hhbmdlZCwgNSBpbnNl
+cnRpb25zKCspDQo+IA0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vYnVmZmVyL2luZHVzdHJp
+YWxpby1idWZmZXItY2IuYyBiL2RyaXZlcnMvaWlvL2J1ZmZlci9pbmR1c3RyaWFsaW8tYnVmZmVy
+LWNiLmMNCj4gaW5kZXggNDdjOTZmN2Y0OTc2Li40YzEyYjdhOTRhZjUgMTAwNjQ0DQo+IC0tLSBh
+L2RyaXZlcnMvaWlvL2J1ZmZlci9pbmR1c3RyaWFsaW8tYnVmZmVyLWNiLmMNCj4gKysrIGIvZHJp
+dmVycy9paW8vYnVmZmVyL2luZHVzdHJpYWxpby1idWZmZXItY2IuYw0KPiBAQCAtNTQsNiArNTQs
+MTEgQEAgc3RydWN0IGlpb19jYl9idWZmZXIgKmlpb19jaGFubmVsX2dldF9hbGxfY2Ioc3RydWN0
+IGRldmljZSAqZGV2LA0KPiAgIAlzdHJ1Y3QgaWlvX2NiX2J1ZmZlciAqY2JfYnVmZjsNCj4gICAJ
+c3RydWN0IGlpb19jaGFubmVsICpjaGFuOw0KPiAgIA0KPiArCWlmICghY2IpIHsNCj4gKwkJZGV2
+X2VycihkZXYsICJJbnZhbGlkIGFyZ3VtZW50czogQSBjYWxsYmFjayBtdXN0IGJlIHByb3ZpZGVk
+IVxuIik7DQo+ICsJCXJldHVybiBFUlJfUFRSKC1FSU5WQUwpOw0KPiArCX0NCj4gKw0KPiAgIAlj
+Yl9idWZmID0ga3phbGxvYyhzaXplb2YoKmNiX2J1ZmYpLCBHRlBfS0VSTkVMKTsNCj4gICAJaWYg
+KGNiX2J1ZmYgPT0gTlVMTCkNCj4gICAJCXJldHVybiBFUlJfUFRSKC1FTk9NRU0pOw0KPiANCg0K
+UmV2aWV3ZWQtYnk6IE9saXZpZXIgTW95c2FuIDxvbGl2aWVyLm1veXNhbkBzdC5jb20+DQoNCkJl
+c3QgcmVnYXJkcywNCk9saXZpZXI=
