@@ -2,109 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE70CC6379D
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Nov 2020 15:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 26EF4C56202
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Nov 2020 15:39:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C3CE20857
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Nov 2020 15:33:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C312A221F7
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Nov 2020 15:39:18 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="baJY39hw"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730333AbgKYPdD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 Nov 2020 10:33:03 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:2149 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730308AbgKYPdC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Nov 2020 10:33:02 -0500
-Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Ch4b36Bbbz67GYr;
-        Wed, 25 Nov 2020 23:30:23 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Wed, 25 Nov 2020 16:33:00 +0100
-Received: from localhost (10.52.126.32) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1913.5; Wed, 25 Nov
- 2020 15:32:59 +0000
-Date:   Wed, 25 Nov 2020 15:32:43 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: Re: fake ACPI IDs in the drivers
-Message-ID: <20201125153243.00001e48@Huawei.com>
-In-Reply-To: <CAHp75VdZ1qG1yht_Wa_Npn8jv61ux+mWBeayd5x8uLOj2JarcA@mail.gmail.com>
-References: <CAHp75Vfz2P=U6CFY4824hPLSSDQNh4wATE_=JjA63fXyYCpsrQ@mail.gmail.com>
-        <857bbb6c-1025-df6d-871d-f0fbcafb6ad8@metafoo.de>
-        <CAHp75VdZ1qG1yht_Wa_Npn8jv61ux+mWBeayd5x8uLOj2JarcA@mail.gmail.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1731353AbgKYPi7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 Nov 2020 10:38:59 -0500
+Received: from mail.kernel.org ([198.145.29.99]:56744 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1731273AbgKYPiO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 25 Nov 2020 10:38:14 -0500
+Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 8F44622245;
+        Wed, 25 Nov 2020 15:38:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606318693;
+        bh=BxOy3NRojKPNp5qD23VYpEnFipfJooUeIQohb2/hlBU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=baJY39hws4yZ8gchuEcBWAODgsYlc51SJS/v7phtl9JXhyzJozVgCAoM1gsi2Ocfx
+         72/sokQqBC6rOzKJx/YQi5oAuvH01rhNbkJOXa/oD7b/39Qsy+Kx0HTpV50QiEgXGY
+         sekQVECsgxfTRS0jlp5dL/VxjaBLqQD4BLyZO3t4=
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Pablo Ceballos <pceballos@google.com>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.4 3/8] HID: hid-sensor-hub: Fix issue with devices with no report ID
+Date:   Wed, 25 Nov 2020 10:38:03 -0500
+Message-Id: <20201125153808.811104-3-sashal@kernel.org>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20201125153808.811104-1-sashal@kernel.org>
+References: <20201125153808.811104-1-sashal@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.52.126.32]
-X-ClientProxiedBy: lhreml705-chm.china.huawei.com (10.201.108.54) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+X-stable: review
+X-Patchwork-Hint: Ignore
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 25 Nov 2020 14:00:54 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+From: Pablo Ceballos <pceballos@google.com>
 
-> On Wed, Nov 25, 2020 at 1:47 PM Lars-Peter Clausen <lars@metafoo.de> wrote:
-> > On 11/25/20 12:14 PM, Andy Shevchenko wrote:  
-> 
-> > > Recent discussion [1] [2] around faking ACPI ID in RTC subsystem and a
-> > > sudden check [3] (due to last Hans' patches related to ACPI based
-> > > systems) of IIO makes me wonder if we may start cleaning drivers from
-> > > faked ACPI IDs and establish a stricter rules for the ID table
-> > > entries.
-> > >
-> > > Thoughts?  
-> >
-> > The cat is probably out of the bag.
-> >
-> > If there are systems shipping with those unregistered ACPI IDs we still
-> > have to support them.  
-> 
-> Yes, but we can do our best to google for them and try other sources
-> (like contacts with vendor companies who can acknowledge if there were
-> an ID issued or not).
-> 
-> > I'd assume that most drivers that have a acpi_device_id table do have
-> > hardware that uses that ID and were not just cargo culted.
+[ Upstream commit 34a9fa2025d9d3177c99351c7aaf256c5f50691f ]
 
-I fear that is overly optimistic :(
+Some HID devices don't use a report ID because they only have a single
+report. In those cases, the report ID in struct hid_report will be zero
+and the data for the report will start at the first byte, so don't skip
+over the first byte.
 
-Every time the ID is non obvious we are pretty safe it has come from real
-hardware (whether registered or not) but we have a bunch were introduced
-by various fairly new contributors that I let in before I knew better :(
-Those tend to just be part numbers squished into ACPI ID format.
+Signed-off-by: Pablo Ceballos <pceballos@google.com>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
+---
+ drivers/hid/hid-sensor-hub.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-> >
-> > For new drivers we should push back on unregistered IDs, but if there is
-> > hardware that uses them we have to take the patches.  
-> 
-> Right. But at the same time we have to push the idea of proper IDs to
-> the vendor companies, so they won't abuse ACPI specification anymore.
-> 
-
-Absolutely.  Sometimes it is just a case of moaning and asking whether
-hardware is already shipping with the ID - if not push back hard so they
-ideally go persuade their management to put a proper process in place.
-
-So upshot, in my view, is to be very careful removing existing IDs
-but definitely be very resistive to introducing any new ones without
-confirmation they are on some companies official registers.
-
-Jonathan
-
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 8efaa88329aa3..83e45d5801a98 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -473,7 +473,8 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
+ 		return 1;
+ 
+ 	ptr = raw_data;
+-	ptr++; /* Skip report id */
++	if (report->id)
++		ptr++; /* Skip report id */
+ 
+ 	spin_lock_irqsave(&pdata->lock, flags);
+ 
+-- 
+2.27.0
 
