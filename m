@@ -7,44 +7,44 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2278C83012
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Nov 2020 15:40:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 607C0C64E7C
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Nov 2020 15:41:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9D487221EB
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Nov 2020 15:40:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1BD4220BED
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Nov 2020 15:41:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="dmZQjVlU"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ueFSlCq9"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731018AbgKYPhU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 Nov 2020 10:37:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55352 "EHLO mail.kernel.org"
+        id S1730755AbgKYPlk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 Nov 2020 10:41:40 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54694 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730988AbgKYPhT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 25 Nov 2020 10:37:19 -0500
+        id S1730773AbgKYPgs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 25 Nov 2020 10:36:48 -0500
 Received: from sasha-vm.mshome.net (c-73-47-72-35.hsd1.nh.comcast.net [73.47.72.35])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C4F12221EB;
-        Wed, 25 Nov 2020 15:37:17 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 886EC21D81;
+        Wed, 25 Nov 2020 15:36:46 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606318638;
-        bh=oyAliAb+r1d1FgAbyRqcN+imWJ8VIKhFjlTvOEeWGmM=;
+        s=default; t=1606318607;
+        bh=uOekAwoa5nNQ8ROk2QR8D+nSv/F4MyHfZEL3hys9E8s=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=dmZQjVlUWDi23GsZFcJX6jH57ir3VxqIW8WpgZT3t6mwdwoINh5E77E7UkX4monMP
-         12gDuVauuAcEPLBWF9B5Wahp4HZqFtc4klsbI1gbMVLRXUVNv8/G+jWhi+f9488R1q
-         /osHNocoA5rGqf03j0wIVKxKL8Roa3LDy2Gj0jFs=
+        b=ueFSlCq988sD1WQH29qcwGtxZp/+7PYoitWS9dxcvOFhlA2wWY/3s3zCkof9Zhp+F
+         WsOesdHxWCL5+yes+Uq+HXY+HzTc+9etr97SE5Wf4A79je3n9qrCCtO8+/CRyza4D5
+         YT4hLEe36L1FwpvfXAlYUa+c36s9cNKew4jF7+xo=
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Pablo Ceballos <pceballos@google.com>,
         Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
         linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 04/15] HID: hid-sensor-hub: Fix issue with devices with no report ID
-Date:   Wed, 25 Nov 2020 10:37:01 -0500
-Message-Id: <20201125153712.810655-4-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 06/23] HID: hid-sensor-hub: Fix issue with devices with no report ID
+Date:   Wed, 25 Nov 2020 10:36:21 -0500
+Message-Id: <20201125153638.810419-6-sashal@kernel.org>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20201125153712.810655-1-sashal@kernel.org>
-References: <20201125153712.810655-1-sashal@kernel.org>
+In-Reply-To: <20201125153638.810419-1-sashal@kernel.org>
+References: <20201125153638.810419-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -71,10 +71,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 2 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 4256fdc5cd6d5..21fbdcde1faa1 100644
+index 94c7398b5c279..3dd7d32467378 100644
 --- a/drivers/hid/hid-sensor-hub.c
 +++ b/drivers/hid/hid-sensor-hub.c
-@@ -496,7 +496,8 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
+@@ -483,7 +483,8 @@ static int sensor_hub_raw_event(struct hid_device *hdev,
  		return 1;
  
  	ptr = raw_data;
