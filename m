@@ -2,243 +2,102 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC8B5C3E8C5
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 01:10:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75731C3E8C5
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 03:20:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9871321D46
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 01:10:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F35C62222A
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 03:20:41 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="p2ZmCu99"
+	dkim=pass (2048-bit key) header.d=avl.com header.i=@avl.com header.b="jWV3LyiK"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731144AbgK1BJP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 27 Nov 2020 20:09:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43390 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731810AbgK1Aks (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Nov 2020 19:40:48 -0500
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7732C0613D1
-        for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2020 16:40:42 -0800 (PST)
-Received: by mail-lj1-x22d.google.com with SMTP id r18so7740668ljc.2
-        for <linux-iio@vger.kernel.org>; Fri, 27 Nov 2020 16:40:42 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=i4MNSv4gC+pj1p9yYQOx1CnSc25gU9FzxQHw5nZNAz8=;
-        b=p2ZmCu99QuXp11puTEU9+0EBkB2vn2swUXMkZh7xaXqLDfbom0RMT0HZzICgtfJmPP
-         kPFOrc7bjeILmS2Z9biQ9mvQnUEYzQ9f/QpRfto0v0SgLWue7bdfvyYOT0BdWcJsHbtK
-         OweCNZcyyH2jhu6WS1/NDGX7ibuDRPoHh8FZV3am+zTPtraYavzv7ZHVlxDb6HVLSv8y
-         xA5Mx0+WP7PkMtZzCymF2vqrxxoQGwD6nkPHjIdKV17tv3TAHJQk6xnytnk9Dzv1V+hQ
-         pRRWMiTX9sRQg00Melsl/RzraO89ysAHYbYY5yFveOaT0Jcr5Ryf+ZHeAYL1tj216pZL
-         oEqg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=i4MNSv4gC+pj1p9yYQOx1CnSc25gU9FzxQHw5nZNAz8=;
-        b=Al4kyE39i8EO1jPorMO+opDLmHT0Bvco9Eos+RC2eaZcutnIaYIwprZb9/MSEGpjfH
-         4Fb/23W3yIPRsAJpTH29IelzEPobmi+JrM2Fmy5y8aezLKJmbAmKz9+d5dd0X6j3uXuf
-         Kdfe6CbIe/d+/GqtFJfxuHO7N+n1IQmVHzaw4QeFT5v71dRxMEHB5aDWzkEt+yQlNa4Z
-         XaJQhc/cL4vhmq9HfiMGq+6xM8GJ4Bwwuxo8Y+8oVWhNxZn0Dd5h7wVbU0FvbJBYLV9Q
-         puMxth83Itvr1y70Gogp/ZjkRaVBf4gCw7hCIfZJ2sxttN+SS/HEebb82csA0ThEf7Bd
-         0Jcg==
-X-Gm-Message-State: AOAM533gZDrz7/KidbuASPhx4PhQ9dxGQ+04FKZ0Zwlt3LXFwtc8SekK
-        pa0pD0oer37Hu1T6y0oFxlLQVrvNhzps0Dq5
-X-Google-Smtp-Source: ABdhPJxtQfnTIdZMpyl/YY61Q2nkfdUYtJUK36a6HJf004y0Fx3S3eosiEoVeEqUVrMqrFFV59Cbdw==
-X-Received: by 2002:a2e:a202:: with SMTP id h2mr5079119ljm.346.1606524041071;
-        Fri, 27 Nov 2020 16:40:41 -0800 (PST)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id z7sm906892lfq.50.2020.11.27.16.40.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 27 Nov 2020 16:40:40 -0800 (PST)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org, phone-devel@vger.kernel.org
-Subject: [PATCH 1/2 v2] iio: accel: yamaha-yas53x: Add DT bindings
-Date:   Sat, 28 Nov 2020 01:40:37 +0100
-Message-Id: <20201128004038.883289-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
+        id S1728698AbgK1DS0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 27 Nov 2020 22:18:26 -0500
+Received: from mx07-002cda01.pphosted.com ([185.132.180.122]:44112 "EHLO
+        mx07-002cda01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730889AbgK0T4I (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Nov 2020 14:56:08 -0500
+Received: from pps.filterd (m0135535.ppops.net [127.0.0.1])
+        by mx07-002cda01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 0ARJaijD013911;
+        Fri, 27 Nov 2020 19:42:41 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=avl.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-type; s=28082020;
+ bh=Ei0DtcfknakrZeJGnTpnw9OsPWEyKDEl9GawEswBnqM=;
+ b=jWV3LyiK5AHeHqoBwJAzg+KB7JKQKEa4oxSCUeGPwml+Jl6DUCCVVnMY3kyI6DudLv00
+ rm4mnILEG/YvVTSeq3xH0Y028esW+LO0Z4OyZmlhZd1589l3cRm3pFUwzx0/CwXCO7Og
+ 5P0OqSWAQ5zdX8O5N778l8ZmgnPI1n8L2JmxnuCUxrwdEADEbWrvgSV6/e9h8PZQvv7B
+ Ur0C9Go4dKoU7+7RXknI9CTmMduXpFw84ZKosPQXP7DIv4gNXljOWu/QxvhAMqXw+uV2
+ AEfrxQpYabKE3ix8ydC2ZEKB27FI7dtwZJ8Id5HQP2y1AEqr/Cv6yDwLsemqE6Lgva7g Iw== 
+Received: from atgrzso2901.avl01.avlcorp.lan ([192.102.17.76])
+        by mx07-002cda01.pphosted.com with ESMTP id 34xv3g47ch-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 27 Nov 2020 19:42:41 +0000
+Received: from pps.filterd (atgrzso2901.avl01.avlcorp.lan [127.0.0.1])
+        by atgrzso2901.avl01.avlcorp.lan (8.16.0.42/8.16.0.42) with SMTP id 0ARJge8O030534;
+        Fri, 27 Nov 2020 20:42:40 +0100
+Received: from atgrzsw3765.avl01.avlcorp.lan ([10.13.100.86])
+        by atgrzso2901.avl01.avlcorp.lan with ESMTP id 34xufsb0d9-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Fri, 27 Nov 2020 20:42:40 +0100
+Received: from atgrzsw3762.avl01.avlcorp.lan (10.37.149.15) by
+ atgrzsw3765.avl01.avlcorp.lan (10.37.149.18) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.1.2044.4; Fri, 27 Nov 2020 20:42:40 +0100
+Received: from ATGRZWN210214.avl01.avlcorp.lan (10.12.100.12) by
+ atgrzsw3762.avl01.avlcorp.lan (10.37.149.15) with Microsoft SMTP Server id
+ 15.1.2044.4 via Frontend Transport; Fri, 27 Nov 2020 20:42:40 +0100
+From:   <tomislav.denis@avl.com>
+To:     <jic23@kernel.org>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <tomislav.denis@avl.com>
+Subject: [PATCH 0/2] Add support for ADS131E0x ADC family
+Date:   Fri, 27 Nov 2020 20:42:38 +0100
+Message-ID: <20201127194240.15060-1-tomislav.denis@avl.com>
+X-Mailer: git-send-email 2.10.1.windows.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-EXCLAIMER-MD-CONFIG: f9e74532-fb7d-4806-8539-2b9574eafa9a
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-27_11:2020-11-26,2020-11-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 mlxlogscore=838
+ malwarescore=0 spamscore=0 adultscore=0 phishscore=0 bulkscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011270116
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.312,18.0.737
+ definitions=2020-11-27_11:2020-11-26,2020-11-27 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ clxscore=1011 priorityscore=1501 adultscore=0 spamscore=0 suspectscore=0
+ mlxlogscore=879 lowpriorityscore=0 phishscore=0 impostorscore=0
+ malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2011270116
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds device tree bindings for the Yamaha YAS53x
-magnetometers/compass sensors.
+From: Tomislav Denis <tomislav.denis@avl.com>
 
-Cc: devicetree@vger.kernel.org
-Cc: phone-devel@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v2->v3:
-- Restrict to cover the YAS53x variants, it turns out that
-  YAS529 is a very different component from the others so
-  keep that for a separate document when/if needed.
-- Rename the file and binding yamaha,53x.yaml
-- Use - if: clauses to restrict some properties.
-- Fix some spelling mistakes.
-- Restrict the nodename to be "magnetometer@[0-9a-f]"
-ChangeLog v1->v2:
-- Add Yamaha to the vendor list, I was surprised to find
-  they were not yet listed.
+This patchset adds support for Texas Instruments ADS131E0x
+analog-to-digital converters family.
 
-I am still working on the actual driver for the magnetometer
-but why not send out the DT bindings for review, the
-hardware variants are easy to describe. This makes it possibe
-for people to include these magnetometers in device
-trees.
----
- .../iio/magnetometer/yamaha,yas53x.yaml       | 116 ++++++++++++++++++
- .../devicetree/bindings/vendor-prefixes.yaml  |   2 +
- 2 files changed, 118 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/yamaha,yas53x.yaml
+Datasheet: https://www.ti.com/lit/ds/symlink/ads131e08.pdf
 
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/yamaha,yas53x.yaml b/Documentation/devicetree/bindings/iio/magnetometer/yamaha,yas53x.yaml
-new file mode 100644
-index 000000000000..e14668a6388d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/yamaha,yas53x.yaml
-@@ -0,0 +1,116 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/magnetometer/yamaha,yas53x.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Yamaha YAS53x magnetometer sensors
-+
-+maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+description:
-+  The Yamaha YAS53x magnetometers is a line of 3-axis magnetometers
-+  first introduced by Yamaha in 2009 with the YAS530. They are successors
-+  of Yamaha's first magnetometer YAS529. Over the years this magnetometer
-+  has been miniaturized and appeared in a number of different variants.
-+
-+properties:
-+  $nodename:
-+    pattern: '^magnetometer@[0-9a-f]+$'
-+
-+  compatible:
-+    items:
-+      - enum:
-+          - yamaha,yas530
-+          - yamaha,yas532
-+          - yamaha,yas533
-+          - yamaha,yas535
-+          - yamaha,yas536
-+          - yamaha,yas537
-+          - yamaha,yas539
-+
-+  reg:
-+    maxItems: 1
-+
-+  reset-gpios:
-+    description: The YAS530 sensor has a RSTN pin used to reset
-+      the logic inside the sensor. This GPIO line should connect
-+      to that pin and be marked as GPIO_ACTIVE_LOW.
-+
-+  interrupts:
-+    description: Interrupt for INT pin for interrupt generation.
-+      The polarity, whether the interrupt is active on the rising
-+      or the falling edge, is software-configurable in the hardware.
-+
-+  vdd-supply:
-+    description: An optional regulator providing core power supply
-+      on the VDD pin, typically 1.8 V or 3.0 V.
-+
-+  iovdd-supply:
-+    description: An optional regulator providing I/O power supply
-+      for the I2C interface on the IOVDD pin, typically 1.8 V.
-+
-+  mount-matrix:
-+    description: An optional 3x3 mounting rotation matrix.
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          items:
-+            const: yamaha,yas530
-+    then:
-+      properties:
-+        reset-gpios:
-+          maxItems: 1
-+
-+  - if:
-+      properties:
-+        compatible:
-+          enum:
-+            - yamaha,yas530
-+            - yamaha,yas532
-+            - yamaha,yas533
-+            - yamaha,yas535
-+            - yamaha,yas536
-+            - yamaha,yas537
-+    then:
-+      properties:
-+        interrupts:
-+          maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    #include <dt-bindings/gpio/gpio.h>
-+    i2c-0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        magnetometer@2e {
-+          compatible = "yamaha,yas530";
-+          reg = <0x2e>;
-+          vdd-supply = <&ldo1_reg>;
-+          iovdd-supply = <&ldo2_reg>;
-+          reset-gpios = <&gpio6 12 GPIO_ACTIVE_LOW>;
-+          interrupts = <&gpio6 13 IRQ_TYPE_EDGE_RISING>;
-+        };
-+    };
-+
-+    i2c-1 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        magnetometer@2e {
-+          compatible = "yamaha,yas539";
-+          reg = <0x2e>;
-+          vdd-supply = <&ldo1_reg>;
-+        };
-+    };
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 2735be1a8470..0340674c72bd 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -1210,6 +1210,8 @@ patternProperties:
-     description: Shenzhen Xunlong Software CO.,Limited
-   "^xylon,.*":
-     description: Xylon
-+  "^yamaha,.*":
-+    description: Yamaha Corporation
-   "^ylm,.*":
-     description: Shenzhen Yangliming Electronic Technology Co., Ltd.
-   "^yna,.*":
+Tomislav Denis (2):
+  iio: adc: Add driver for Texas Instruments ADS131E0x ADC family
+  bindings: iio: adc: Add documentation for ADS131E0x ADC driver
+
+ .../devicetree/bindings/iio/adc/ti,ads131e08.yaml  | 145 ++++
+ MAINTAINERS                                        |   7 +
+ drivers/iio/adc/Kconfig                            |  12 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/ti-ads131e08.c                     | 826 +++++++++++++++++++++
+ 5 files changed, 991 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml
+ create mode 100644 drivers/iio/adc/ti-ads131e08.c
+
 -- 
-2.26.2
+2.7.4
 
