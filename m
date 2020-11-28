@@ -2,156 +2,98 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5A26C83AA6
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADF15C83A8F
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A7B5C222C2
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7983A222C2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=redhat.com header.i=@redhat.com header.b="du6GD1YG"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Y8JG3qk1"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732765AbgK1VtY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:24 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:51188 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730037AbgK1Sfh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 13:35:37 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1606588450;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=Zszh/hjcmeeiyggCd7Qdid6Q4VmiyJkZoQgxeSYa8t0=;
-        b=du6GD1YGOf2rvHXavubq1+2sD4dofVlwONT0EzIUgLn9+x5P8aB5QdoWj3aa9u7iFevPPo
-        pK7kqMkL9iF4d8YHFEAeU3lEvcJl12LkMB4pH4zxWCEIfUfLeAvD42LhiKt2RFEJAQkF66
-        s0bJbahoLTttrW3tlmlkwGIuCwX2W5o=
-Received: from mail-ej1-f72.google.com (mail-ej1-f72.google.com
- [209.85.218.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-235-TB76rISrPPu2GJPAoziSgQ-1; Sat, 28 Nov 2020 08:32:53 -0500
-X-MC-Unique: TB76rISrPPu2GJPAoziSgQ-1
-Received: by mail-ej1-f72.google.com with SMTP id dx19so3240475ejb.7
-        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 05:32:52 -0800 (PST)
+        id S1729700AbgK1Vt0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42366 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731483AbgK1Sw6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 13:52:58 -0500
+Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E4D15C02A181
+        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 03:44:38 -0800 (PST)
+Received: by mail-lj1-x242.google.com with SMTP id y10so8967837ljc.7
+        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 03:44:38 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=JjI6jX2POrDX2Xe9vfJOZBcrPDMsHD4ZvzB5g8jo58c=;
+        b=Y8JG3qk1GMOjBQWuS/2x2Y6SgWUsuoaBXQbwkuOYw8X+41qAQFiTyTwjbbn8Uk5TSW
+         XQKOBAwsSCyyC+NxcSRbwmUdDdlwoQCYn6Y4VFCKHe4sXUtPBxfLXVbs6dXkX0WbfLp4
+         9BmFf9GV33IJGwyWv+tVHFGgS0tDSReumydu0KXGSLU1qzX4WiMzWNZid/Y+XYLUV9rt
+         OmrbNbbU/etMWzrud2j4IB+sT0gfk7ojz1YFE4bM/tHBCSFht61bdtK7pk4M37RqRTzx
+         4S3l0RVyqtAMZPQT9YTlYdXVYDoGlmm1Pu/pMuD/8im7cxF1J7Eaw690EzzmcjgM+VjJ
+         Fpjg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Zszh/hjcmeeiyggCd7Qdid6Q4VmiyJkZoQgxeSYa8t0=;
-        b=dfZxqRdo3baPqQk0AUoQ/ESaRTfqx3cJjlSw+4PTlvI0Yj3405jzvvkIePn2A2LeC4
-         Nbu8YA/++LxQlqkRTIvEq+cFxB4S2Uw/uZ5Z1jmxzjTbbncsOo4Yc9zoiy5gRDuKux6D
-         ccGesEor8AyhpWZkSICC/9GuRZYlFYCPzyM7F12KBVOv4sIwKsyzSft7ocvvpf/KS2Ui
-         XVoJKRkLeMXflfU+XB0PrvECmsbNApQYxyN0icNM7zQ5zcSgnmfaCHGU6voH0OuiATTu
-         nofwzQUlBm3qDnqz2pPvrK8Kirx1WM/kjtR+lc8q2rECp4qep7PcrdBYpZs4JzfLvdFU
-         9qcw==
-X-Gm-Message-State: AOAM533P8k1CMJhyJ2uYT1xVRkRC+7FTGUSMdO4FO+T9JPqn8o/ynHmD
-        QWQzlgtdoxeiedoVF35Zdyc0cSfV7MBo9QX8vdrG7ToEYxVfhg8Rye4PHhJ1xSJ55sL/DaQyIqC
-        H6AnhfUVeJKq/UvmNYVCBb3lihlHwtPvUwvr86zTPcZOSvhKwW/Nwn/EAS5luh4ynsCIecu05
-X-Received: by 2002:a50:951e:: with SMTP id u30mr13334280eda.197.1606570371214;
-        Sat, 28 Nov 2020 05:32:51 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJxIqMCUHs1PeV7rP9PTmA1bTNVtveQDSJymxUNHFDVyf8TUxr491dMIWGP0oErUZ+u1asJ4aw==
-X-Received: by 2002:a50:951e:: with SMTP id u30mr13334265eda.197.1606570370948;
-        Sat, 28 Nov 2020 05:32:50 -0800 (PST)
-Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
-        by smtp.gmail.com with ESMTPSA id p4sm4186921ejx.64.2020.11.28.05.32.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 28 Nov 2020 05:32:50 -0800 (PST)
-Subject: Re: [PATCH 1/3] iio: accel: bmc150: Improve ACPI enumeration support
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jeremy Cline <jeremy@jcline.org>,
-        linux-iio <linux-iio@vger.kernel.org>
-References: <20201125083618.10989-1-hdegoede@redhat.com>
- <CAHp75Vfu+PC-QzzE0_guwLHTdBXes-7RxbaS85df_p4Z=qR2=w@mail.gmail.com>
- <ec8c6e1e-f914-9ee7-133f-2f55d7cc8dfb@redhat.com>
- <20201128131604.1367126b@archlinux>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <17447d78-c637-ad6b-2e38-c4ce82587598@redhat.com>
-Date:   Sat, 28 Nov 2020 14:32:49 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=JjI6jX2POrDX2Xe9vfJOZBcrPDMsHD4ZvzB5g8jo58c=;
+        b=Kn2Z8EtZpGFBEnix3zzzS4TTpaDz9SyZZ9zdIjt5l1kA2tUjBAwHMpuab4Z8jLw+Ug
+         gZqKBFF6xMaP+eBzGD7q4g/06rfOoACTMYEnCnEH3M1U3gBLmBr/nHESwraslo+gPQO9
+         eMZ2F3C6UOEhcJ0BdXMYQ0gresgzxvSfayQlwVDBMaCDFSsxim8Orr1exDZiYViJqfdX
+         FvREtpESMYTnOfMRVvwpXiQazyGD6PdJEZazqPBs1PdCaEIQ0/V0Cc5yEX534PoxqTQF
+         QZsiBzI10HGg7RW2Zk3oxqT0yaTQYJng5qEDAGgBh4J7z3IYpTRAT0yS2kVbnKqaczPW
+         pUVQ==
+X-Gm-Message-State: AOAM533cU38VG4Z4Nv3uQK1ZemsPtMhnme8NfGsmRC00d3jToMaac0Pt
+        rzPnjPwqWNc/xDzqiZJ70QITxwtUkIo6Bx/m9y16Pg==
+X-Google-Smtp-Source: ABdhPJw9wiMGdZC3WiQQA7TFZf40grr1B9eqDrzjTy7O/dpNvF4XTM+uulSzmravgG21gbMsU6yG51fMhnLvVeCdNxQ=
+X-Received: by 2002:a2e:998e:: with SMTP id w14mr5924842lji.100.1606563877267;
+ Sat, 28 Nov 2020 03:44:37 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20201128131604.1367126b@archlinux>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+References: <20201115205745.618455-1-linus.walleij@linaro.org>
+ <20201115205745.618455-3-linus.walleij@linaro.org> <20201121164505.30767f9f@archlinux>
+In-Reply-To: <20201121164505.30767f9f@archlinux>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 28 Nov 2020 12:44:26 +0100
+Message-ID: <CACRpkdbP3ccrEK47jaQ=r8sYkFuXBcH=+LTKC1xz+kgXmkwomg@mail.gmail.com>
+Subject: Re: [PATCH 3/3 v3] iio: accel: bmc150-accel: Add rudimentary
+ regulator support
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+On Sat, Nov 21, 2020 at 5:45 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> On Sun, 15 Nov 2020 21:57:45 +0100
+> Linus Walleij <linus.walleij@linaro.org> wrote:
+>
+> > These Bosch accelerometers have two supplies, VDD and VDDIO.
+> > Add some rudimentary support to obtain and enable these
+> > regulators during probe() and disable them during remove()
+> > or on the errorpath.
+> >
+> > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-On 11/28/20 2:16 PM, Jonathan Cameron wrote:
-> On Wed, 25 Nov 2020 11:49:15 +0100
-> Hans de Goede <hdegoede@redhat.com> wrote:
-> 
->> Hi,
->>
->> On 11/25/20 11:41 AM, Andy Shevchenko wrote:
->>> On Wed, Nov 25, 2020 at 10:37 AM Hans de Goede <hdegoede@redhat.com> wrote:  
->>>>
->>>> Hi All,
->>>>
->>>> This series improves support for ACPI enumeration of bmc150 accels
->>>> described by an ACPI node with an ACPI hw-id of BOSC0200:
->>>>
->>>> 1. Add support for nodes which describe 2 acceleromers in a single node,  
->>>
->>> accelerometers
->>>   
->>>> fixing: https://bugzilla.kernel.org/show_bug.cgi?id=198671
->>>>
->>>> 2. Add support for reading the mount-matrix from the ACPI node.
->>>>
->>>> This is done in patches 2 - 3, patch 1 is a trivial cleanup which I noticed
->>>> could be done while working on this.
->>>>
->>>> Patch 2 is based on an earlier patch for this from Jeremy Cline:
->>>> https://lore.kernel.org/r/010001602cf53153-39ad69f1-1b39-4e6d-a748-9455a16c2fbd-000000@email.amazonses.com
->>>>
->>>> That patch was put on hold because normally ACPI nodes which describe
->>>> multiple i2c-clients in a single node are handled by:
->>>> drivers/platform/x86/i2c-multi-instantiate.c
->>>>
->>>> Which I tried to do at first, but as explained in the commit msg
->>>> of the updated patch, that is not possible in this special case
->>>> (because it would cause userspace breakage due to the modalias changing).  
->>>
->>> This is marked as patch 1?!  
->>
->> Yes my bad, sorry.
->>
->>> Usually --cover-letter produces a correct template...  
->>
->> I use --compose, time to switch to --cover-letter instead I guess.
->>
->> Regards,
->>
->> Hans
->>
-> 
-> Other than the minor bits Andy mentioned I'm fine with this.
-> 
-> It does sort of feel like we should be gathering documentation somewhere of
-> where this crazy stuff has been seen in the wild.
+> All looks good to me.  Will leave it for a bit longer though to let
+> Rob have a chance to look at the dt binding doc.
+>
+> As ever, if it seems to have gotten lost it is probably worth
+> poking me.
 
-I can provide an (incomplete) list of devices known to use the BOSC0200 ACPI HID,
-both in single and dual accelerometer configs.
+It's been another week and the bindings are simple enough
+I think? There has been plenty of time to review these
+bindings as they are now in v3 even, but it's a soft measure,
+I know there is usually this YAML-bot that complains if
+something is way out of line at least.
 
-In lieu of a better place, I guess I could best just drop this info in
-a big comment block near the ACPI mount-matrix parsing stuff ?
-
-If you agree that a comment is a reasonable place to place this info I
-can add this for v2 of the patch-set.
-
-Regards,
-
-Hans
-
+Yours,
+Linus Walleij
