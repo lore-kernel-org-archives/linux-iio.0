@@ -2,95 +2,84 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4465CC83AA2
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79F89C83A86
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0EBCB222C2
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EB462231B
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:36 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="LQerzBnp"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="aVbMhUY0"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388064AbgK1VtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47394 "EHLO mail.kernel.org"
+        id S1731921AbgK1VtX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46044 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730393AbgK1Skw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:40:52 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        id S1733291AbgK1SQ4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:16:56 -0500
+Received: from localhost.localdomain (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 23C74246AD;
-        Sat, 28 Nov 2020 15:37:04 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0D75B246B9;
+        Sat, 28 Nov 2020 15:58:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606577826;
-        bh=TMRrgzMorywJj2/Zw49Mmp/25hgyT+Mjxg62g2o5keA=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=LQerzBnpkbUTf7oc0NQVtnL+sau72gS0dLf/aq+V0V9bQF2t8TQ+8+eQQ6I+qebNW
-         wDwzBX7sfPGzHxagdJN1UNVYxKniynNycuiGiz5QuKntgC5tiNDGVgpsVkQSFnJrz3
-         ondhDMaDD20f0936EizzpCV7rS08zFBNxAPRAvr8=
-Date:   Sat, 28 Nov 2020 15:37:02 +0000
+        s=default; t=1606579136;
+        bh=lmQAo5lUYleEDPYPRR8Ekw2Yw9kLt4BUohqrHjvI3Nw=;
+        h=From:To:Cc:Subject:Date:From;
+        b=aVbMhUY0Gyd80N0yrUVIlrlAJyaDPk+3Q0SxVoZU4IGXb54s7kjnjsLADWaqgbS4g
+         YA+R3XJMKUgqPMKcx/Ab0s5yzemU3QH0xzSFqaNf5t6y0r+w8xXPGOZAB6jniO6rOn
+         hXoUNc+yhYp/aBv/bJIr6zbXE61UuCqQmXevM6J4=
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc:     robh+dt@kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-arm-msm@vger.kernel.org
-Subject: Re: [PATCH 6/9] ARM: dts: qcom-pma8084: Drop incorrect use of
- io-channel-ranges
-Message-ID: <20201128153702.7d144f68@archlinux>
-In-Reply-To: <20201115192951.1073632-7-jic23@kernel.org>
-References: <20201115192951.1073632-1-jic23@kernel.org>
-        <20201115192951.1073632-7-jic23@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        kernel test robot <lkp@intel.com>
+Subject: [PATCH] iio: fix warnings about passing signed values to %u
+Date:   Sat, 28 Nov 2020 15:56:48 +0000
+Message-Id: <20201128155648.376646-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 15 Nov 2020 19:29:48 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> This property is used by io-channel consumers, not providers so should
-> not present here.  Note dt_schema will now detect this error as there
-> is a dependency between this property and io-channels.
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Andy Gross <andy.gross@linaro.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-+CC Andy on an up to date email. Also added linux-arm-msm
-which I should have cc'd in the first place.
+In reality, we already know both of these values are positive
+but it is still better to make that explicit at the point of use
+with abs().
 
-I've taken the yaml fix related to this so just a question of
-cleaning up this loose end in the dtsi
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reported-by: kernel test robot <lkp@intel.com>
+---
+ drivers/iio/industrialio-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> ---
->  arch/arm/boot/dts/qcom-pma8084.dtsi | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/arch/arm/boot/dts/qcom-pma8084.dtsi b/arch/arm/boot/dts/qcom-pma8084.dtsi
-> index ea1ca166165c..e921c5e93a5d 100644
-> --- a/arch/arm/boot/dts/qcom-pma8084.dtsi
-> +++ b/arch/arm/boot/dts/qcom-pma8084.dtsi
-> @@ -68,7 +68,6 @@ pma8084_vadc: vadc@3100 {
->  			#address-cells = <1>;
->  			#size-cells = <0>;
->  			#io-channel-cells = <1>;
-> -			io-channel-ranges;
->  
->  			die_temp {
->  				reg = <VADC_DIE_TEMP>;
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index c2e4c267c36b..00644666f7fe 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -608,14 +608,14 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+ 			return scnprintf(buf, len, "-%d.%06u%s", abs(vals[0]),
+ 					-vals[1], scale_db ? " dB" : "");
+ 		else
+-			return scnprintf(buf, len, "%d.%06u%s", vals[0], vals[1],
++			return scnprintf(buf, len, "%d.%06u%s", vals[0], abs(vals[1]),
+ 					scale_db ? " dB" : "");
+ 	case IIO_VAL_INT_PLUS_NANO:
+ 		if (vals[1] < 0)
+ 			return scnprintf(buf, len, "-%d.%09u", abs(vals[0]),
+ 					-vals[1]);
+ 		else
+-			return scnprintf(buf, len, "%d.%09u", vals[0], vals[1]);
++			return scnprintf(buf, len, "%d.%09u", vals[0], abs(vals[1]));
+ 	case IIO_VAL_FRACTIONAL:
+ 		tmp2 = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+ 		tmp1 = vals[1];
+-- 
+2.29.2
 
