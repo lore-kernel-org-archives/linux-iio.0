@@ -2,223 +2,168 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5537BC83A8D
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EACE3C83A8F
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 24EC02240B
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B8DF12231B
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:35 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="THVq7GSb"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="0wJ3aocb"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731483AbgK1Vt1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48498 "EHLO mail.kernel.org"
+        id S1732332AbgK1VtX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:23 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46390 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731638AbgK1Syn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:54:43 -0500
+        id S1729414AbgK1S0z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:26:55 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id CC60A246A5;
-        Sat, 28 Nov 2020 15:21:27 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B6DE1246B7;
+        Sat, 28 Nov 2020 15:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606576889;
-        bh=PCExNiiq4fod27qjBrU5G0fxl6mD7Tnj2BkBlUMMkX0=;
+        s=default; t=1606578611;
+        bh=IfftN0dR9Tkdvkb2rK5sv4Mu/EaSXV2+K2BEqn8JYnk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=THVq7GSb96d+mD5yk9ekV9dWY1FRMcJcEOS0Kn9T9rjbpRP4BeFSEWjEsXsOxVYg7
-         5DOqeAWeI+7QGg7JlphsJNRvUkOnVcK3ooXvHkVkrwMLRKWzmx1BGhcoaJFCM9XGoF
-         JhOGCf4vHUrsHlf7vCSeQTMP9JizTApG1X325GoI=
-Date:   Sat, 28 Nov 2020 15:21:24 +0000
+        b=0wJ3aocbPTsVMTJR6ofukOEdXhGT7cYflHl9sVbcipM5LL6KNjRS1TsAzs6/+Ktyy
+         kr04ZCySfXZBS/srHdw1yFjXyrI3aE1JQW9A6cQuknCgvxmDtFoZ4g6QdMQa05ERH6
+         7iAtwEUtQAYyji1aYl7IVDAhYM+yQBt1SESIgyOo=
+Date:   Sat, 28 Nov 2020 15:50:06 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 07/11] iio: adc: at91_adc: merge at91_adc_probe_dt
- back in at91_adc_probe
-Message-ID: <20201128152124.24d88b36@archlinux>
-In-Reply-To: <20201117140656.1235055-8-alexandre.belloni@bootlin.com>
-References: <20201117140656.1235055-1-alexandre.belloni@bootlin.com>
-        <20201117140656.1235055-8-alexandre.belloni@bootlin.com>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH] iio: buffer: Fix demux update
+Message-ID: <20201128155006.04f05fef@archlinux>
+In-Reply-To: <20201114162638.6fbf55a8@archlinux>
+References: <20201112144323.28887-1-nuno.sa@analog.com>
+        <20201112172821.0000088b@Huawei.com>
+        <CY4PR03MB263146ADC49222DE28BB028999E60@CY4PR03MB2631.namprd03.prod.outlook.com>
+        <20201114162638.6fbf55a8@archlinux>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 17 Nov 2020 15:06:52 +0100
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+On Sat, 14 Nov 2020 16:26:38 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> at91_adc_probe_dt is now small enough to be merged back in at91_adc_probe.
-> 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> Reviewed-by: Ludovic Desroches <ludovic.desroches@microchip.com>
-This proved a little more interesting to apply, but I think that is just
-down to Alexandru having already made the match_data related change.
+> On Fri, 13 Nov 2020 07:55:21 +0000
+> "Sa, Nuno" <Nuno.Sa@analog.com> wrote:
+>=20
+> > > -----Original Message-----
+> > > From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+> > > Sent: Thursday, November 12, 2020 6:28 PM
+> > > To: Sa, Nuno <Nuno.Sa@analog.com>
+> > > Cc: linux-iio@vger.kernel.org; Jonathan Cameron <jic23@kernel.org>;
+> > > Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler
+> > > <pmeerw@pmeerw.net>
+> > > Subject: Re: [PATCH] iio: buffer: Fix demux update
+> > >=20
+> > >=20
+> > > On Thu, 12 Nov 2020 15:43:22 +0100
+> > > Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
+> > >    =20
+> > > > When updating the buffer demux, we will skip a scan element from   =
+=20
+> > > the   =20
+> > > > device in the case `in_ind !=3D out_ind` and we enter the while loo=
+p.
+> > > > in_ind should only be refreshed with `find_next_bit()` in the end o=
+f   =20
+> > > the   =20
+> > > > loop.
+> > > >
+> > > > Fixes: 5ada4ea9be16 ("staging:iio: add demux optionally to path fro=
+m   =20
+> > > device to buffer")   =20
+> > > > Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>   =20
+> > >=20
+> > > Yikes that's been there a long time.
+> > >=20
+> > > Could you provide an example of a particular layout and the result of
+> > > this being wrong?
+> > >    =20
+> >=20
+> > Hi Jonathan,
+> >=20
+> > Let's say:
+> >=20
+> > iio_dev_mask: 0x0111
+> > buffer_mask: 0x0100
+> >=20
+> > We would get out_ind =3D 2 and in_ind =3D 0 and  enter the loop. In the=
+ first
+> > iteration we call find_next_bit() before doing the in_ind=3D0 computati=
+on which means we=20
+> > will skip it and go directly to bit 1... And if we continue the path fl=
+ow, we see that bit 2 will
+> > be computed two times, so if we are lucky and scan_index0_len =3D=3D sc=
+an_index2_len this
+> > will go unnoticed...
+> >=20
+> > Honestly, I didn't test this but it looks one of those things more or l=
+ess clear by reading
+> > the code or am I missing something here? =20
+>=20
+> Mostly I was wondering why it hadn't bitten us before.  I think you've id=
+entified
+> why with your "if we are lucky and scan_index0_len =3D=3D scan_index2_len=
+" then this will
+> go unnoticed.  =20
+>=20
+> It's very rare (though not unheard of) for a device to have it's main cha=
+nnels
+> of different widths (timestamp doesn't matter for this as it is always at=
+ the
+> end).  The demux also only kicks in if we have a restricted channel
+> mask (or are using a kfifo and a buffer_cb which is rather rare).  I susp=
+ect
+> we have few if any devices that actually run into this problem.
+>=20
+> I guess I originally tested this code with devices I had at the time and =
+none of
+> them would have tripped this.
+>=20
+> Anyhow, whilst I agree with your analysis I'd like to leave this on list =
+for
+> perhaps another week before applying it on the basis I'm paranoid and wou=
+ld
+> ideally like a few more eyes on this.
+>=20
+Ah well. I'll take silence as meaning either everyone is happy or no
+one else is going to read it ;)
 
-Please check I got it right!
+Applied with a bit more text in the description to highlight that,
+whilst a bug, it's actually not a common situation.
 
-Thanks,
+Given timing I've applied this to the togreg branch of iio.git
+ready for the next merge window.
+
+thanks,
 
 Jonathan
 
-> ---
->  drivers/iio/adc/at91_adc.c | 117 ++++++++++++++++---------------------
->  1 file changed, 49 insertions(+), 68 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 83539422b704..347464844263 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -833,70 +833,6 @@ static int at91_adc_probe_dt_ts(struct device_node *node,
->  	}
->  }
->  
-> -static int at91_adc_probe_dt(struct iio_dev *idev,
-> -			     struct platform_device *pdev)
-> -{
-> -	struct at91_adc_state *st = iio_priv(idev);
-> -	struct device_node *node = pdev->dev.of_node;
-> -	int ret;
-> -	u32 prop;
-> -	char *s;
-> -
-> -	st->caps = (struct at91_adc_caps *)
-> -		of_match_device(at91_adc_dt_ids, &pdev->dev)->data;
-> -
-> -	st->use_external = of_property_read_bool(node, "atmel,adc-use-external-triggers");
-> -
-> -	if (of_property_read_u32(node, "atmel,adc-channels-used", &prop)) {
-> -		dev_err(&idev->dev, "Missing adc-channels-used property in the DT.\n");
-> -		ret = -EINVAL;
-> -		goto error_ret;
-> -	}
-> -	st->channels_mask = prop;
-> -
-> -	st->sleep_mode = of_property_read_bool(node, "atmel,adc-sleep-mode");
-> -
-> -	if (of_property_read_u32(node, "atmel,adc-startup-time", &prop)) {
-> -		dev_err(&idev->dev, "Missing adc-startup-time property in the DT.\n");
-> -		ret = -EINVAL;
-> -		goto error_ret;
-> -	}
-> -	st->startup_time = prop;
-> -
-> -	prop = 0;
-> -	of_property_read_u32(node, "atmel,adc-sample-hold-time", &prop);
-> -	st->sample_hold_time = prop;
-> -
-> -	if (of_property_read_u32(node, "atmel,adc-vref", &prop)) {
-> -		dev_err(&idev->dev, "Missing adc-vref property in the DT.\n");
-> -		ret = -EINVAL;
-> -		goto error_ret;
-> -	}
-> -	st->vref_mv = prop;
-> -
-> -	st->res = st->caps->high_res_bits;
-> -	if (st->caps->low_res_bits &&
-> -	    !of_property_read_string(node, "atmel,adc-use-res", (const char **)&s)
-> -	    && !strcmp(s, "lowres"))
-> -		st->res = st->caps->low_res_bits;
-> -
-> -	dev_info(&idev->dev, "Resolution used: %u bits\n", st->res);
-> -
-> -	st->registers = &st->caps->registers;
-> -	st->num_channels = st->caps->num_channels;
-> -
-> -	/* Check if touchscreen is supported. */
-> -	if (st->caps->has_ts)
-> -		return at91_adc_probe_dt_ts(node, st, &idev->dev);
-> -	else
-> -		dev_info(&idev->dev, "not support touchscreen in the adc compatible string.\n");
-> -
-> -	return 0;
-> -
-> -error_ret:
-> -	return ret;
-> -}
-> -
->  static const struct iio_info at91_adc_info = {
->  	.read_raw = &at91_adc_read_raw,
->  };
-> @@ -1062,10 +998,12 @@ static void at91_ts_unregister(struct at91_adc_state *st)
->  static int at91_adc_probe(struct platform_device *pdev)
->  {
->  	unsigned int prsc, mstrclk, ticks, adc_clk, adc_clk_khz, shtim;
-> +	struct device_node *node = pdev->dev.of_node;
->  	int ret;
->  	struct iio_dev *idev;
->  	struct at91_adc_state *st;
-> -	u32 reg;
-> +	u32 reg, prop;
-> +	char *s;
->  
->  	idev = devm_iio_device_alloc(&pdev->dev, sizeof(struct at91_adc_state));
->  	if (!idev)
-> @@ -1073,9 +1011,52 @@ static int at91_adc_probe(struct platform_device *pdev)
->  
->  	st = iio_priv(idev);
->  
-> -	ret = at91_adc_probe_dt(idev, pdev);
-> -	if (ret)
-> -		return ret;
-> +	st->caps = (struct at91_adc_caps *)
-> +		of_match_device(at91_adc_dt_ids, &pdev->dev)->data;
-> +
-> +	st->use_external = of_property_read_bool(node, "atmel,adc-use-external-triggers");
-> +
-> +	if (of_property_read_u32(node, "atmel,adc-channels-used", &prop)) {
-> +		dev_err(&idev->dev, "Missing adc-channels-used property in the DT.\n");
-> +		return -EINVAL;
-> +	}
-> +	st->channels_mask = prop;
-> +
-> +	st->sleep_mode = of_property_read_bool(node, "atmel,adc-sleep-mode");
-> +
-> +	if (of_property_read_u32(node, "atmel,adc-startup-time", &prop)) {
-> +		dev_err(&idev->dev, "Missing adc-startup-time property in the DT.\n");
-> +		return -EINVAL;
-> +	}
-> +	st->startup_time = prop;
-> +
-> +	prop = 0;
-> +	of_property_read_u32(node, "atmel,adc-sample-hold-time", &prop);
-> +	st->sample_hold_time = prop;
-> +
-> +	if (of_property_read_u32(node, "atmel,adc-vref", &prop)) {
-> +		dev_err(&idev->dev, "Missing adc-vref property in the DT.\n");
-> +		return -EINVAL;
-> +	}
-> +	st->vref_mv = prop;
-> +
-> +	st->res = st->caps->high_res_bits;
-> +	if (st->caps->low_res_bits &&
-> +	    !of_property_read_string(node, "atmel,adc-use-res", (const char **)&s)
-> +	    && !strcmp(s, "lowres"))
-> +		st->res = st->caps->low_res_bits;
-> +
-> +	dev_info(&idev->dev, "Resolution used: %u bits\n", st->res);
-> +
-> +	st->registers = &st->caps->registers;
-> +	st->num_channels = st->caps->num_channels;
-> +
-> +	/* Check if touchscreen is supported. */
-> +	if (st->caps->has_ts) {
-> +		ret = at91_adc_probe_dt_ts(node, st, &idev->dev);
-> +		if (ret)
-> +			return ret;
-> +	}
->  
->  	platform_set_drvdata(pdev, idev);
->  
+> Good spot!
+>=20
+> Jonathan
+>=20
+> >=20
+> > - Nuno S=C3=A1
+> >  =20
+> > > Thanks,
+> > >=20
+> > > Jonathan
+> > >    =20
+>=20
 
