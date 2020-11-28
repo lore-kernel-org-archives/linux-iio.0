@@ -2,130 +2,92 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BFA6C83A91
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58BE3C83AA4
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0CA6E2231B
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 26915222C2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="GvjnN70k"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="1/9uGtra"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732290AbgK1VtX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38302 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729410AbgK1S0y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 13:26:54 -0500
-Received: from mail-oi1-x244.google.com (mail-oi1-x244.google.com [IPv6:2607:f8b0:4864:20::244])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9784EC094263
-        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 10:26:14 -0800 (PST)
-Received: by mail-oi1-x244.google.com with SMTP id l206so9526922oif.12
-        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 10:26:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=8RiqeUI7pxEdcbpvxfJ+9GMvAAwvki840nbCV6Q60IU=;
-        b=GvjnN70kbYequ6BfcsRpypGeWaz7M4mB5QZPIeglAYUDWgjYru8CEuIHzyZIMCjLTY
-         giLlIEbmGAiGvREIxH/T7ywVpFWuVDo+x011+rt59YPS3k1TmGRgE8UH2UJXgEa17r8K
-         1B9f4d1IaLl9dlOtiPpUOhXFo7949yfYwUJ/1l5A3rBruzpKq1ycZHCdfEw1rx5T5C2V
-         b6BsFjLMQ9/O+mhvdvxkYSkCU5lZyKJSJk2J4+ZQRpIChm1Z2FT2s2bhjFYmTwexWKlf
-         bDnUvNrdgFp+AvBRPn/xgSayNjlRcpKbZ9lpg3LwNhgqKHJhK2U00l1wCzYBAiBOD7y3
-         Xu9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=8RiqeUI7pxEdcbpvxfJ+9GMvAAwvki840nbCV6Q60IU=;
-        b=QYwgbF/7UlWDY+tl+spHcB5DBnME8poISYONyAG6ljL9e63Khz3M15PsJK3qFAKLya
-         rRTxJF+6xwtr6558FLd+f6ciwinFadF3scCPWFVWI5IMkOVffYCTPqmvy8jyMM6HjunQ
-         8x0VCWEIqThhE91XeAr1IAT4FBivWRjez4eoU2QrJs6FVBNFVfY/g7gvTlDz7sHf6BCd
-         /ZI84ABqMvsU74piJGmLkBGaEJgv84iBlNBqL5ihV15rWvasx73xuC7+FyU3rnJZPcRf
-         CsTHBimKqKlOW0Fm5vMEMt76lyy122dJg1dhoPonkQJN5CEFTOxx1FPLXNyYRSzmGFGm
-         LHWg==
-X-Gm-Message-State: AOAM531FgV5iv03/Rper+EqvliCRbJ7UdQgiVst1wV0g9CL1xEP5jHMS
-        0rRv3FYqEV8z/pn6H/SwQwyjrQ==
-X-Google-Smtp-Source: ABdhPJxA5zsDHDJY99I5CzvTe4pikaKPHc9b9aQ8/DcRdy5mdSZJb5QNXLp5Vm7qvIKoHo+4x7kS7g==
-X-Received: by 2002:aca:1916:: with SMTP id l22mr9717479oii.79.1606587973685;
-        Sat, 28 Nov 2020 10:26:13 -0800 (PST)
-Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
-        by smtp.gmail.com with ESMTPSA id m81sm7411469oib.37.2020.11.28.10.26.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 28 Nov 2020 10:26:12 -0800 (PST)
-Date:   Sat, 28 Nov 2020 12:26:10 -0600
-From:   Bjorn Andersson <bjorn.andersson@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rob Herring <robh@kernel.org>, Andy Gross <agross@kernel.org>,
-        Jishnu Prakash <jprakash@codeaurora.org>
-Subject: Re: [PATCH 1/9] dt-bindings:iio:qcom-spmi-vadc drop incorrect
- io-channel-ranges from example
-Message-ID: <X8KWQrfyRXENTxM7@builder.lan>
-References: <20201115192951.1073632-1-jic23@kernel.org>
- <20201115192951.1073632-2-jic23@kernel.org>
+        id S1731233AbgK1VtW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45756 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1733170AbgK1SLz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:11:55 -0500
+Received: from localhost.localdomain (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 2B1CE246CF;
+        Sat, 28 Nov 2020 17:35:45 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606584947;
+        bh=XUbGegC6h14gbbGkEv2Y2Cvz0Swvml2kOPxl4U52PvQ=;
+        h=From:To:Cc:Subject:Date:From;
+        b=1/9uGtrajDDQlpbfwwgZEYFJNDFkEibybUmLCk3tpzLkmgzZ+anVycab0/bCHCYL7
+         dGeO38T5/jpQCRS7J5HMOQFAFKzaBs3fygdmrxqUIIVz23z+YzFtig8ZK2YDGS8VCE
+         /IlMAzDcQdlXbVaP1mdcR+69OcLA3wvqs+SOk7VI=
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-i2c@vger.kernel.org
+Cc:     Rob Herring <robh+dt@kernel.org>, Wolfram Sang <wsa@kernel.org>,
+        Peter Rosin <peda@axentia.se>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v2 0/3] dt-bindings: yaml conversion of i2c-gate and IIO users
+Date:   Sat, 28 Nov 2020 17:33:40 +0000
+Message-Id: <20201128173343.390165-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201115192951.1073632-2-jic23@kernel.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun 15 Nov 13:29 CST 2020, Jonathan Cameron wrote:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> io-channel-ranges is a property for io-channel consumers. Here
-> it is in an example of a provider of channels so doesn't do anything
-> useful.
-> 
-> Recent additions to dt-schema check this property is only provided
-> alongside io-channels which is not true here and hence an error is
-> reported.
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Reported-by: Rob Herring <robh@kernel.org>
-> Cc: Andy Gross <agross@kernel.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Jishnu Prakash <jprakash@codeaurora.org>
+Part of general move of all IIO bindings over to yaml.
 
-Reviewed-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+Chances since v1.
+As Rob suggested, I've move the 2 users over to directly referencing
+i2c-controller.yaml.
 
-Regards,
-Bjorn
+For the i2c-gate.yaml patch itself, I've kept it on the basis it provides
+some central docs of what an i2c-gate actually is.  Now it basically
+just provides the node name and reference to i2c-controller.yaml
 
-> ---
->  Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml | 3 ---
->  1 file changed, 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
-> index 7f4f827c57a7..95cc705b961b 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.yaml
-> @@ -48,8 +48,6 @@ properties:
->      description:
->        End of conversion interrupt.
->  
-> -  io-channel-ranges: true
-> -
->  required:
->    - compatible
->    - reg
-> @@ -249,7 +247,6 @@ examples:
->          #address-cells = <1>;
->          #size-cells = <0>;
->          #io-channel-cells = <1>;
-> -        io-channel-ranges;
->  
->          /* Channel node */
->          adc-chan@39 {
-> -- 
-> 2.28.0
-> 
+I've retained Rob's Reviewed-by on basis changes were ones he suggested and
+fairly minor in scope.
+
+Now the two IIO patches are separate from the i2c-gate one we can
+take them via diferent trees without any problems so unless any issues
+come up I'll pick up the two IIO patches in a few days time.
+
+Jonathan Cameron (3):
+  dt-bindings:i2c:i2c-gate: txt to yaml conversion
+  dt-bindings:iio:imu:invensense,mpu6050: txt to yaml conversion
+  dt-bindings:iio:gyro:invensense,mpu3050: txt to yaml format
+    conversion.
+
+ .../devicetree/bindings/i2c/i2c-gate.txt      |  41 -------
+ .../devicetree/bindings/i2c/i2c-gate.yaml     |  39 +++++++
+ .../iio/gyroscope/invensense,mpu3050.txt      |  45 --------
+ .../iio/gyroscope/invensense,mpu3050.yaml     |  70 ++++++++++++
+ .../bindings/iio/imu/inv_mpu6050.txt          |  67 ------------
+ .../bindings/iio/imu/invensense,mpu6050.yaml  | 103 ++++++++++++++++++
+ 6 files changed, 212 insertions(+), 153 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/i2c/i2c-gate.txt
+ create mode 100644 Documentation/devicetree/bindings/i2c/i2c-gate.yaml
+ delete mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.yaml
+ delete mode 100644 Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/invensense,mpu6050.yaml
+
+-- 
+2.29.2
+
