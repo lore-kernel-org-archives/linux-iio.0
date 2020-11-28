@@ -2,129 +2,127 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CAD3C83A92
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 325ADC83A87
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6EFAF222C2
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F26B8222C2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:34 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="Rnm00mPi"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="d4bw5nFd"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731324AbgK1VtX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46046 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732723AbgK1SQ4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:16:56 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E766C246BC;
-        Sat, 28 Nov 2020 16:00:03 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606579205;
-        bh=tIKRhWls3YzYhbVGldXSkrWMmSCjQfXBQFEelNA1aWM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Rnm00mPizeX5NU8jciZzzV3em6AJ98QA8A5sG7mzGPah20ZRauHQ6W6P5B05yGeqh
-         C0EyTSQjMtntaUCjrRaWhI+gtvOU07+MWkkFUSZnfCKj8G7zBaBgJ5wzIMA09DGmwi
-         Cqi36nVkWJEB9aDGNWyJwHlTNVCU+5QquZH7qYBw=
-Date:   Sat, 28 Nov 2020 16:00:00 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Bartosz Golaszewski <brgl@bgdev.pl>
-Cc:     Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michal Simek <michal.simek@xilinx.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        arm-soc <linux-arm-kernel@lists.infradead.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/4] device: provide devm_krealloc_array()
-Message-ID: <20201128160000.5ac0ddc6@archlinux>
-In-Reply-To: <CAMRc=Mfa2Y65CW8YO_poRgrN9aPjLz=MXYrn7OPUEfwB3mnZvA@mail.gmail.com>
-References: <20201102142228.14949-1-brgl@bgdev.pl>
-        <20201102142228.14949-2-brgl@bgdev.pl>
-        <20201114154641.0258f4ee@archlinux>
-        <X7ADFLwEpUHkTiT+@kroah.com>
-        <CAMpxmJUHiNqKNVDxaWLeDja6huR78u1Hp7JHF_aP5L_UgjYzbg@mail.gmail.com>
-        <CAMRc=Mfa2Y65CW8YO_poRgrN9aPjLz=MXYrn7OPUEfwB3mnZvA@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1732709AbgK1VtY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:24 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38934 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729839AbgK1Sa4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 13:30:56 -0500
+Received: from mail-oo1-xc41.google.com (mail-oo1-xc41.google.com [IPv6:2607:f8b0:4864:20::c41])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB198C02B8F8
+        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 10:30:15 -0800 (PST)
+Received: by mail-oo1-xc41.google.com with SMTP id z13so1805715ooa.5
+        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 10:30:15 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=+BIfatzZ+Hyrav++/2cWh0YeRH/ED9QPAyC3RwDUEos=;
+        b=d4bw5nFdsbVFVLQ0J45xz4bVho2nre5Wd+Fr2+9SHMofGu7baatvBUXOYhcaOFn3Bl
+         qqtSjBzWHtsSabQL0iQq8hopcnlmJ1ajdC4/nACNXRFqwH5yBFZDr172U7njDcYvwkNg
+         pkfEzM6C2gNViDjC6efXo8mXwdTZ9PgZb8cYJc0aqYAaFA4j2A5sbANyjbeH+1gFeDPO
+         Q8AIXLdygHxaS55p1NQD6m7NtE6T5x197kCLyfqOMw/uG9WX0Fb5uz8lgGoWhACRTrl4
+         25dpn7EnFMjebWvTwUIOIyEnyNoRef4UD4rT3f9wie07V2HYVFzcU3e+hVwZXhmymGH1
+         1xyQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+BIfatzZ+Hyrav++/2cWh0YeRH/ED9QPAyC3RwDUEos=;
+        b=ICC+vJBJfqBMIka/XErKBbL4qItWCHlCGlIfhdRJKBQQjnDXSZJSAEvLoijFqhrzQw
+         OGICdAvAcWfbBGQC+Jg4U9KWZ811DXUn9AkXDCiGlKJ1gqBt9PlG5rysxHRwvv4tJKkt
+         2u+cnsxlJNj3Sflpol1QksuVtSnd2zy3vYJ69cCsd+v0q0t37yKy6lzxxqrk4cwk+04D
+         Rno+npHAUyo5S5jCZlrplkp34D6q5vS8u2tNf3uRNUOPpVpVpdmgNt3wnkWnvBG+P9Gb
+         YHI49bxBRwbec9P0XjNX5e5Ti9ibOb9xLrGIA0Sz+ohVjreYtmngNG2nUjydTfpCuUHa
+         +QWw==
+X-Gm-Message-State: AOAM531T4/tLUnD/ojvBXP4Wz+8VN12RN1QjMxaMQWjfN7oqFYBXLxTG
+        BOgBQgsastPrt741FEu/yxsYiw==
+X-Google-Smtp-Source: ABdhPJzxJ41W7ildotOyUVY48Y3KokD3vdd/vlBIyNab4m0S3HYxfSbZc8cZ2+B1RlhKQqWJM/Nx4A==
+X-Received: by 2002:a05:6820:351:: with SMTP id m17mr2251050ooe.36.1606588213201;
+        Sat, 28 Nov 2020 10:30:13 -0800 (PST)
+Received: from builder.lan (104-57-184-186.lightspeed.austtx.sbcglobal.net. [104.57.184.186])
+        by smtp.gmail.com with ESMTPSA id 64sm6704740otu.62.2020.11.28.10.30.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 28 Nov 2020 10:30:12 -0800 (PST)
+Date:   Sat, 28 Nov 2020 12:30:10 -0600
+From:   Bjorn Andersson <bjorn.andersson@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Gross <agross@kernel.org>, linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 6/9] ARM: dts: qcom-pma8084: Drop incorrect use of
+ io-channel-ranges
+Message-ID: <X8KXMrFg1g8OsjZj@builder.lan>
+References: <20201115192951.1073632-1-jic23@kernel.org>
+ <20201115192951.1073632-7-jic23@kernel.org>
+ <20201128153702.7d144f68@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201128153702.7d144f68@archlinux>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 23 Nov 2020 12:38:26 +0100
-Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+On Sat 28 Nov 09:37 CST 2020, Jonathan Cameron wrote:
 
-> On Mon, Nov 16, 2020 at 11:18 AM Bartosz Golaszewski
-> <bgolaszewski@baylibre.com> wrote:
-> >
-> > On Sat, Nov 14, 2020 at 5:16 PM Greg KH <gregkh@linuxfoundation.org> wrote:  
-> > >
-> > > On Sat, Nov 14, 2020 at 03:46:41PM +0000, Jonathan Cameron wrote:  
-> > > > On Mon,  2 Nov 2020 15:22:25 +0100
-> > > > Bartosz Golaszewski <brgl@bgdev.pl> wrote:
-> > > >  
-> > > > > From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-> > > > >
-> > > > > When allocating an array of elements, users should check for
-> > > > > multiplication overflow or preferably use one of the provided helpers
-> > > > > like: devm_kmalloc_array().
-> > > > >
-> > > > > This provides devm_krealloc_array() for users who want to reallocate
-> > > > > managed arrays.
-> > > > >
-> > > > > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>  
-> > > >
-> > > > +CC Greg KH.
-> > > >
-> > > > As this is going into a very generic place I'd like a relevant ack.
-> > > > That file is a bit of a wild west for acks, but Greg seems most
-> > > > appropriate person.
-> > > >
-> > > > So Greg, any comments on this one?  
-> > >
-> > > As there is only 1 user of this function in the patch series, you don't
-> > > save any extra code space here, I don't think this is worth it.
-> > >  
-> >
-> > It's worth it in that the overflow check before allocation doesn't
-> > seem to belong in a driver IMO but is a general check that should live
-> > in common code.
-> >  
-> > > We are seeing less and less gains from these new devm_* additions, and
-> > > only more confusion and problems with them.  So perhaps don't add this?
-> > > I don't think it is needed.
-> > >  
-> >
-> > I think you're referring to the discussion on
-> > devm_platform_ioremap_resource()? I would argue that consolidation of
-> > common operations in helpers is rarely a bad thing but it's a
-> > discussion for another thread.
-> >
-> > I'm not too attached to this patch - if you think this should be
-> > dropped then fine, but I don't see how the name devm_krealloc_array()
-> > can confuse anyone.
-> >  
+> On Sun, 15 Nov 2020 19:29:48 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-> Greg: what's the final call on this?
-
-Reroll the series without this patch.  If it turns out to be a good idea
-in the long run we can always bring it back, but for now it's blocking
-the rest of the series.
-
-Thanks,
-
-Jonathan
-
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > This property is used by io-channel consumers, not providers so should
+> > not present here.  Note dt_schema will now detect this error as there
+> > is a dependency between this property and io-channels.
+> > 
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Cc: Andy Gross <andy.gross@linaro.org>
+> > Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> +CC Andy on an up to date email. Also added linux-arm-msm
+> which I should have cc'd in the first place.
 > 
-> Bartosz
+> I've taken the yaml fix related to this so just a question of
+> cleaning up this loose end in the dtsi
+> 
 
+Thanks Jonathan, I missed your patches earlier. The yaml change looks
+correct and I've merged this for 5.11.
+
+Regards,
+Bjorn
+
+> Thanks,
+> 
+> Jonathan
+> 
+> > ---
+> >  arch/arm/boot/dts/qcom-pma8084.dtsi | 1 -
+> >  1 file changed, 1 deletion(-)
+> > 
+> > diff --git a/arch/arm/boot/dts/qcom-pma8084.dtsi b/arch/arm/boot/dts/qcom-pma8084.dtsi
+> > index ea1ca166165c..e921c5e93a5d 100644
+> > --- a/arch/arm/boot/dts/qcom-pma8084.dtsi
+> > +++ b/arch/arm/boot/dts/qcom-pma8084.dtsi
+> > @@ -68,7 +68,6 @@ pma8084_vadc: vadc@3100 {
+> >  			#address-cells = <1>;
+> >  			#size-cells = <0>;
+> >  			#io-channel-cells = <1>;
+> > -			io-channel-ranges;
+> >  
+> >  			die_temp {
+> >  				reg = <VADC_DIE_TEMP>;
+> 
