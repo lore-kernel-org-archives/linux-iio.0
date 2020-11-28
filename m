@@ -7,44 +7,42 @@ X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEEFC83A90
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37910C83A82
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4FF532231B
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC543223C6
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:33 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="uGI2HUE7"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="sjDK79wO"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732882AbgK1VtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47532 "EHLO mail.kernel.org"
+        id S1733144AbgK1Vt1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:27 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48966 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730567AbgK1Sl4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:41:56 -0500
+        id S1732278AbgK1S7o (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:59:44 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 59D37246C1;
-        Sat, 28 Nov 2020 16:15:46 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5B6392467D;
+        Sat, 28 Nov 2020 13:54:39 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606580147;
-        bh=DqS5YYy9W5SG1eb0ykyOMwA4cjtF5BIMVnfJ92mEadM=;
+        s=default; t=1606571680;
+        bh=EQteL+c74mRL4e+NuB8VT4Ykr2TJi8KcKP+ixqxUUmY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=uGI2HUE7WASPx7pptdjVrB1P4ljFfuy3nQt0mLrMrCYziwPxVKPOPSlK6P9GhR3Zn
-         f5ix6hGKne8K3M6j5kskWzRDZmJu7DwUE+/ArD7MgSU/jrZ2b8zowOxhlwfzomFybk
-         mHluMu/pYLuMWrMf2K7PU7/GMTEHRtAtzn1pFdtg=
-Date:   Sat, 28 Nov 2020 16:15:42 +0000
+        b=sjDK79wORRbnsukahdrFaYyzTLaYdTlW/UttXDfCCQMx1+BNaK0m40iX9rD1bYEEg
+         IXxdwLxJw8HeBFWaeyZI5P88N+RdnIjBn5VMBBjftrdQvvx2sRr5h9JPSIOI1K7Xvi
+         ZdKXtMV5LKeeDL3CyivVtFjQmv59d3KT7YuipxP8=
+Date:   Sat, 28 Nov 2020 13:54:35 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        devicetree@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 07/46] dt-bindings:iio:health:ti,afe4403: txt to yaml
- binding
-Message-ID: <20201128161542.5481ab9f@archlinux>
-In-Reply-To: <20201122173211.26f4a912@archlinux>
-References: <20201031184854.745828-1-jic23@kernel.org>
-        <20201031184854.745828-8-jic23@kernel.org>
-        <20201122173211.26f4a912@archlinux>
+To:     Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Cc:     andy.shevchenko@gmail.com, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [RESEND PATCH 1/2] iio:core: Introduce unlocked version of
+ iio_map_array_unregister()
+Message-ID: <20201128135435.33e9f6ee@archlinux>
+In-Reply-To: <1606571059-13974-1-git-send-email-LinoSanfilippo@gmx.de>
+References: <1606571059-13974-1-git-send-email-LinoSanfilippo@gmx.de>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -53,146 +51,86 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 22 Nov 2020 17:32:11 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+On Sat, 28 Nov 2020 14:44:18 +0100
+Lino Sanfilippo <LinoSanfilippo@gmx.de> wrote:
 
-> On Sat, 31 Oct 2020 18:48:15 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
+> Introduce an unlocked version of iio_map_array_unregister(). This function
+> can help to unwind in case of error while the iio_map_list_lock mutex is
+> held.
 > 
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > 
-> > A few questions came up whilst converting this one.
-> > 1) What is actually required?
-> >   - Checking Linux driver, interrupt is not, and the tx-supply could
-> >     be supplied by a stub regulator as long as it's always on.
-> >     As such I have reduced the required list to just compatible and reg.
-> > 2) What is the regulator called?
-> >   - It's tx-supply in the binding doc, but the driver request tx_sup
-> >     I've left this alone for now.  Andrew could you confirm what is
-> >     intended for this?  
-> 
-> Andrew's email seems to be bouncing so I've reached out to him via another
-> means.  Will wait to see if that works before applying this or the next
-> patch given the questions.
+> Signed-off-by: Lino Sanfilippo <LinoSanfilippo@gmx.de>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Hi.
 
-In order to move forwards with this I've put myself as maintainer and
-decided to send out a fix for the driver naming of that supply.
+The mailing list is having issues today and as I use b4 to pull patches
+from lore.kernel.org I can't easily pick this up.
+
+I had as you've probably guessed forgotten about this one.
+A few notes to make it harder for people to do that in future.
+1. Don't send patch series (or new versions of older patches) in reply
+   to an existing thread.   They get lost and difficult to pull out.
+   b4 can't automatically figure out which patches to pull from that
+   original thread for example.
+2. Always version number whole series with same number, even if some patches
+   are new.   So this should be v3.
+
+Anyhow, I'll pick up this resend once the mailing list recovers or I get
+annoyed enough to do it the old fashioned manual way.
 
 Thanks,
 
 Jonathan
 
+> ---
+>  drivers/iio/inkern.c | 27 ++++++++++++++++++---------
+>  1 file changed, 18 insertions(+), 9 deletions(-)
 > 
-> Thanks,
-> 
-> Jonathan
-> 
-> > 
-> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Cc: Andrew F. Davis <afd@ti.com>
-> > ---
-> >  .../bindings/iio/health/afe4403.txt           | 33 ------------
-> >  .../bindings/iio/health/ti,afe4403.yaml       | 54 +++++++++++++++++++
-> >  2 files changed, 54 insertions(+), 33 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/health/afe4403.txt b/Documentation/devicetree/bindings/iio/health/afe4403.txt
-> > deleted file mode 100644
-> > index 8e412054d6d5..000000000000
-> > --- a/Documentation/devicetree/bindings/iio/health/afe4403.txt
-> > +++ /dev/null
-> > @@ -1,33 +0,0 @@
-> > -Texas Instruments AFE4403 Heart rate and Pulse Oximeter
-> > -
-> > -Required properties:
-> > - - compatible		: Should be "ti,afe4403".
-> > - - reg			: SPI chip select address of device.
-> > - - tx-supply		: Regulator supply to transmitting LEDs.
-> > - - interrupts		: The interrupt line the device ADC_RDY pin is
-> > -			  connected to. For details refer to,
-> > -			  ../../interrupt-controller/interrupts.txt.
-> > -
-> > -Optional properties:
-> > - - reset-gpios		: GPIO used to reset the device.
-> > -			  For details refer to, ../../gpio/gpio.txt.
-> > -
-> > -For other required and optional properties of SPI slave nodes
-> > -please refer to ../../spi/spi-bus.txt.
-> > -
-> > -Example:
-> > -
-> > -&spi0 {
-> > -	heart_mon@0 {
-> > -		compatible = "ti,afe4403";
-> > -		reg = <0>;
-> > -		spi-max-frequency = <10000000>;
-> > -
-> > -		tx-supply = <&vbat>;
-> > -
-> > -		interrupt-parent = <&gpio1>;
-> > -		interrupts = <28 IRQ_TYPE_EDGE_RISING>;
-> > -
-> > -		reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
-> > -	};
-> > -};
-> > diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-> > new file mode 100644
-> > index 000000000000..5c86db65c033
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-> > @@ -0,0 +1,54 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/health/ti,afe4403.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Texas Instruments AFE4403 Heart rate and Pulse Oximeter
-> > +
-> > +maintainers:
-> > +  - Andrew F. Davis <afd@ti.com>
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: ti,afe4403
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  tx-supply:
-> > +    description: Supply to transmitting LEDs.
-> > +
-> > +  interrupts:
-> > +    maxItems: 1
-> > +    description: Connected to ADC_RDY pin.
-> > +
-> > +  reset-gpios: true
-> > +
-> > +  spi-max-frequency: true
-> > +
-> > +additionalProperties: false
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +examples:
-> > +  - |
-> > +    #include <dt-bindings/gpio/gpio.h>
-> > +    #include <dt-bindings/interrupt-controller/irq.h>
-> > +    spi {
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +
-> > +        heart_mon@0 {
-> > +            compatible = "ti,afe4403";
-> > +            reg = <0>;
-> > +            spi-max-frequency = <10000000>;
-> > +            tx-supply = <&vbat>;
-> > +            interrupt-parent = <&gpio1>;
-> > +            interrupts = <28 IRQ_TYPE_EDGE_RISING>;
-> > +            reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
-> > +        };
-> > +    };
-> > +...  
-> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index ede99e0..39c1d63 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -24,6 +24,21 @@ struct iio_map_internal {
+>  static LIST_HEAD(iio_map_list);
+>  static DEFINE_MUTEX(iio_map_list_lock);
+>  
+> +static int iio_map_array_unregister_locked(struct iio_dev *indio_dev)
+> +{
+> +	int ret = -ENODEV;
+> +	struct iio_map_internal *mapi, *next;
+> +
+> +	list_for_each_entry_safe(mapi, next, &iio_map_list, l) {
+> +		if (indio_dev == mapi->indio_dev) {
+> +			list_del(&mapi->l);
+> +			kfree(mapi);
+> +			ret = 0;
+> +		}
+> +	}
+> +	return ret;
+> +}
+> +
+>  int iio_map_array_register(struct iio_dev *indio_dev, struct iio_map *maps)
+>  {
+>  	int i = 0, ret = 0;
+> @@ -57,18 +72,12 @@ EXPORT_SYMBOL_GPL(iio_map_array_register);
+>   */
+>  int iio_map_array_unregister(struct iio_dev *indio_dev)
+>  {
+> -	int ret = -ENODEV;
+> -	struct iio_map_internal *mapi, *next;
+> +	int ret;
+>  
+>  	mutex_lock(&iio_map_list_lock);
+> -	list_for_each_entry_safe(mapi, next, &iio_map_list, l) {
+> -		if (indio_dev == mapi->indio_dev) {
+> -			list_del(&mapi->l);
+> -			kfree(mapi);
+> -			ret = 0;
+> -		}
+> -	}
+> +	ret = iio_map_array_unregister_locked(indio_dev);
+>  	mutex_unlock(&iio_map_list_lock);
+> +
+>  	return ret;
+>  }
+>  EXPORT_SYMBOL_GPL(iio_map_array_unregister);
 
