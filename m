@@ -7,42 +7,43 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 698BCC83A9C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD9BC83AA0
 	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3D89A222C2
+	by mail.kernel.org (Postfix) with ESMTP id AAECD2231B
 	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:37 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="NgXLvdP9"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="vzSZqtyx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730078AbgK1VtX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45768 "EHLO mail.kernel.org"
+        id S1729678AbgK1VtW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45766 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1733189AbgK1SL4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1730883AbgK1SL4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sat, 28 Nov 2020 13:11:56 -0500
 Received: from localhost.localdomain (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E83BD246D4;
-        Sat, 28 Nov 2020 17:35:47 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0A524246DE;
+        Sat, 28 Nov 2020 17:35:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606584949;
-        bh=QhRj1M5XcWGqykhdQbuDQTyYKfBpV6BiehQdm55EpYY=;
+        s=default; t=1606584953;
+        bh=6qNyZ1RtQGHuKLMWge17BBB6zo62SDUtn3lfhDZJZAk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NgXLvdP9hQsAygC60erbFKdh3q1fLabcxnyrUZiExsMm+yU2KKMN+B3u7qx9NuEV0
-         4gA9xVq1jeD50SDUHAss2LZnHSgrixivxeZLe0PEtsXqP6onMgN3An4xg0c2gp7uIs
-         4P15f1ZTk3NpzrvD7GeM53eB+SVO06uhoyuRgB3U=
+        b=vzSZqtyxwLzk+3Q2GF6+3WfEP7KYzBpUefXHLTXmRq7FjIZMG/k3GDDgGEF7z3xPr
+         90LXvcn6jVEwivGKxPbedMN4v/bqddMc8wgorcrUfUpROlWTd2PmGbfxlMKTjIMR1b
+         TfIljwhhINop5T409hmlhkkuFb96kut70UOtsPIs=
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-i2c@vger.kernel.org
 Cc:     Rob Herring <robh+dt@kernel.org>, Wolfram Sang <wsa@kernel.org>,
         Peter Rosin <peda@axentia.se>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Wolfram Sang <wsa@the-dreams.de>
-Subject: [PATCH v2 1/3] dt-bindings:i2c:i2c-gate: txt to yaml conversion
-Date:   Sat, 28 Nov 2020 17:33:41 +0000
-Message-Id: <20201128173343.390165-2-jic23@kernel.org>
+        Linus Walleij <linus.walleij@linaro.org>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 3/3] dt-bindings:iio:gyro:invensense,mpu3050: txt to yaml format conversion.
+Date:   Sat, 28 Nov 2020 17:33:43 +0000
+Message-Id: <20201128173343.390165-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201128173343.390165-1-jic23@kernel.org>
 References: <20201128173343.390165-1-jic23@kernel.org>
@@ -54,111 +55,150 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This file provides very little in the way of actual schema but
-does provide a convenient intro to what an i2c-gate node actually
-represents.
+Very similar to the mpu6050 binding.
+Only unusual element is the i2c-gate section.
+Example tweaked a little to include a real device behind the gate.
+
+As Rob Herring suggested, dropped use of explicit i2c-gate yaml
+binding in favour of just using the i2c-controller.yaml binding
+directly.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Peter Rosin <peda@axentia.se>
-Cc: Wolfram Sang <wsa@the-dreams.de>
-Link: https://lore.kernel.org/r/20201031181801.742585-2-jic23@kernel.org
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Link: https://lore.kernel.org/r/20201031181801.742585-4-jic23@kernel.org
 ---
- .../devicetree/bindings/i2c/i2c-gate.txt      | 41 -------------------
- .../devicetree/bindings/i2c/i2c-gate.yaml     | 39 ++++++++++++++++++
- 2 files changed, 39 insertions(+), 41 deletions(-)
+ .../iio/gyroscope/invensense,mpu3050.txt      | 45 ------------
+ .../iio/gyroscope/invensense,mpu3050.yaml     | 70 +++++++++++++++++++
+ 2 files changed, 70 insertions(+), 45 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-gate.txt b/Documentation/devicetree/bindings/i2c/i2c-gate.txt
+diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
 deleted file mode 100644
-index 1846d236e656..000000000000
---- a/Documentation/devicetree/bindings/i2c/i2c-gate.txt
+index 233fe207aded..000000000000
+--- a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
 +++ /dev/null
-@@ -1,41 +0,0 @@
--An i2c gate is useful to e.g. reduce the digital noise for RF tuners connected
--to the i2c bus. Gates are similar to arbitrators in that you need to perform
--some kind of operation to access the i2c bus past the arbitrator/gate, but
--there are no competing masters to consider for gates and therefore there is
--no arbitration happening for gates.
+@@ -1,45 +0,0 @@
+-Invensense MPU-3050 Gyroscope device tree bindings
 -
--Common i2c gate properties.
+-Required properties:
+-  - compatible : should be "invensense,mpu3050"
+-  - reg : the I2C address of the sensor
 -
--- i2c-gate child node
+-Optional properties:
+-  - interrupts : interrupt mapping for the trigger interrupt from the
+-    internal oscillator. The following IRQ modes are supported:
+-    IRQ_TYPE_EDGE_RISING, IRQ_TYPE_EDGE_FALLING, IRQ_TYPE_LEVEL_HIGH and
+-    IRQ_TYPE_LEVEL_LOW. The driver should detect and configure the hardware
+-    for the desired interrupt type.
+-  - vdd-supply : supply regulator for the main power voltage.
+-  - vlogic-supply : supply regulator for the signal voltage.
+-  - mount-matrix : see iio/mount-matrix.txt
 -
--Required properties for the i2c-gate child node:
--- #address-cells = <1>;
--- #size-cells = <0>;
+-Optional subnodes:
+-  - The MPU-3050 will pass through and forward the I2C signals from the
+-    incoming I2C bus, alternatively drive traffic to a slave device (usually
+-    an accelerometer) on its own initiative. Therefore is supports a subnode
+-    i2c gate node. For details see: i2c/i2c-gate.txt
 -
--Optional properties for i2c-gate child node:
--- Child nodes conforming to i2c bus binding
+-Example:
 -
+-mpu3050@68 {
+-	compatible = "invensense,mpu3050";
+-	reg = <0x68>;
+-	interrupt-parent = <&foo>;
+-	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
+-	vdd-supply = <&bar>;
+-	vlogic-supply = <&baz>;
 -
--Example :
+-	/* External I2C interface */
+-	i2c-gate {
+-		#address-cells = <1>;
+-		#size-cells = <0>;
 -
--	/*
--	   An Invensense mpu9150 at address 0x68 featuring an on-chip Asahi
--	   Kasei ak8975 compass behind a gate.
--	 */
--
--	mpu9150@68 {
--		compatible = "invensense,mpu9150";
--		reg = <0x68>;
--		interrupt-parent = <&gpio1>;
--		interrupts = <18 1>;
--
--		i2c-gate {
--			#address-cells = <1>;
--			#size-cells = <0>;
--
--			ax8975@c {
--				compatible = "ak,ak8975";
--				reg = <0x0c>;
--			};
+-		fnord@18 {
+-			compatible = "fnord";
+-			reg = <0x18>;
+-			interrupt-parent = <&foo>;
+-			interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
 -		};
 -	};
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-gate.yaml b/Documentation/devicetree/bindings/i2c/i2c-gate.yaml
+-};
+diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.yaml b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.yaml
 new file mode 100644
-index 000000000000..66472f12a7e2
+index 000000000000..7e2accc3d5ce
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/i2c-gate.yaml
-@@ -0,0 +1,39 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++++ b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.yaml
+@@ -0,0 +1,70 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/i2c/i2c-gate.yaml#
++$id: http://devicetree.org/schemas/iio/gyroscope/invensense,mpu3050.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Common i2c gate properties
++title: Invensense MPU-3050 Gyroscope
 +
 +maintainers:
-+  - Peter Rosin <peda@axentia.se>
-+
-+description: |
-+  An i2c gate is useful to e.g. reduce the digital noise for RF tuners connected
-+  to the i2c bus. Gates are similar to arbitrators in that you need to perform
-+  some kind of operation to access the i2c bus past the arbitrator/gate, but
-+  there are no competing masters to consider for gates and therefore there is
-+  no arbitration happening for gates.
-+
-+allOf:
-+  - $ref: /schemas/i2c/i2c-controller.yaml
++  - Linus Walleij <linus.walleij@linaro.org>
 +
 +properties:
-+  $nodename:
-+    const: i2c-gate
++  compatible:
++    const: invensense,mpu3050
 +
-+additionalProperties: true
++  reg:
++    maxItems: 1
++
++  vdd-supply: true
++
++  vlogic-supply: true
++
++  interrupts:
++    minItems: 1
++    description:
++      Interrupt mapping for the trigger interrupt from the internal oscillator.
++
++  mount-matrix: true
++
++  i2c-gate:
++    $ref: /schemas/i2c/i2c-controller.yaml
++    unevaluatedProperties: false
++    description: |
++      The MPU-3050 will pass through and forward the I2C signals from the
++      incoming I2C bus, alternatively drive traffic to a slave device (usually
++      an accelerometer) on its own initiative. Therefore is supports an
++      i2c-gate subnode.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
 +
 +examples:
 +  - |
-+    i2c-gate {
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
 +        #address-cells = <1>;
 +        #size-cells = <0>;
-+        ak8975@c {
-+            compatible = "ak,ak8975";
-+            reg = <0x0c>;
++        gyroscope@68 {
++            compatible = "invensense,mpu3050";
++            reg = <0x68>;
++            interrupt-parent = <&foo>;
++            interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
++            vdd-supply = <&bar>;
++            vlogic-supply = <&baz>;
++
++            i2c-gate {
++                #address-cells = <1>;
++                #size-cells = <0>;
++
++                magnetometer@c {
++                    compatible = "ak,ak8975";
++                    reg = <0x0c>;
++                };
++            };
 +        };
 +    };
 +...
-+
 -- 
 2.29.2
 
