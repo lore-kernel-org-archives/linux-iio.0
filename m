@@ -7,42 +7,48 @@ X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 937DBC83036
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 861B9C83A93
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5BFB72244C
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 538A522404
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:00 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="dMeWEcRN"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="bTqju6rl"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1733274AbgK1Vt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:49464 "EHLO mail.kernel.org"
+        id S1730159AbgK1Vt0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:26 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47726 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732347AbgK1S7u (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:59:50 -0500
+        id S1731039AbgK1Sq4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:46:56 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 796AF22242;
-        Sat, 28 Nov 2020 12:34:21 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id D9EBF246A7;
+        Sat, 28 Nov 2020 15:26:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606566862;
-        bh=UY0UQDCHmQeVnKnM15GpLKvUWPojFD/NVJmBuCerxhc=;
+        s=default; t=1606577210;
+        bh=qPBrPmLwaSNVKpA1tKKhEp22LNFlPYTeLeRg1o4+Kbk=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dMeWEcRNuUmsVnNsy1YyY0EDMEwBPKnj1XJw3x3zcZ18uxUkv9OOq2Sf7AVQxOaJX
-         nKbrMg026CSJaFt+TyjIOhO216jTzrIEcYqOgkUphESaqeuWidECSX7GvC6HpPKFhI
-         uFS1c8X8om3SLVA9VNANpb+62VbG5pxNBVG/84vM=
-Date:   Sat, 28 Nov 2020 12:34:17 +0000
+        b=bTqju6rlhAxbIszR0SemxWgC0lYMHEHsrXjwKsjg86hDqFLK1fORldQq/PhAT7dzp
+         QPjaTDb+uaCvH1HwPF3AvotxnazXLNnP2Ks6FvlOyJ3D1cAjfJn2xoxNXBDX/RmumC
+         bWUsw+Lari6vZscVJkMDJN/ReUCSJuxah5+8ZdyA=
+Date:   Sat, 28 Nov 2020 15:26:45 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     <tomislav.denis@avl.com>
-Cc:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH 2/2] bindings: iio: adc: Add documentation for ADS131E0x
- ADC driver
-Message-ID: <20201128123417.7259ef13@archlinux>
-In-Reply-To: <20201127194240.15060-3-tomislav.denis@avl.com>
-References: <20201127194240.15060-1-tomislav.denis@avl.com>
-        <20201127194240.15060-3-tomislav.denis@avl.com>
+To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 01/11] iio: adc: at91_adc: remove platform data
+Message-ID: <20201128152645.0e0a7e4a@archlinux>
+In-Reply-To: <20201128142342.GJ1296649@piout.net>
+References: <20201117140656.1235055-1-alexandre.belloni@bootlin.com>
+        <20201117140656.1235055-2-alexandre.belloni@bootlin.com>
+        <20201128140427.61dbaceb@archlinux>
+        <20201128142342.GJ1296649@piout.net>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -51,223 +57,243 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 27 Nov 2020 20:42:40 +0100
-<tomislav.denis@avl.com> wrote:
+On Sat, 28 Nov 2020 15:23:42 +0100
+Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
 
-> From: Tomislav Denis <tomislav.denis@avl.com>
+> Hi,
 > 
-> Add a device tree binding documentation for Texas Instruments
-> ADS131E0x ADC family driver.
+> On 28/11/2020 14:04:27+0000, Jonathan Cameron wrote:
+> > On Tue, 17 Nov 2020 15:06:46 +0100
+> > Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+> >   
+> > > The at91 platforms have been DT only for a while, remove platform data.
+> > > 
+> > > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+> > > Reviewed-by: Ludovic Desroches <ludovic.desroches@microchip.com>  
+> > 
+> > Hi Alexandre,
+> > 
+> > I'd completely forgotten that we actually had a similar patch that
+> > is already applied from Alexandru back in September.
+> >   
 > 
-> Signed-off-by: Tomislav Denis <tomislav.denis@avl.com>
-Hi Tomislav,
+> I actually have seen that yesterday too. I even reviewed them...
+> 
+> > Given vast majority matched, I've just changed your patch into one
+> > that drops the id_table (which Alexandru didn't do).
+> > 
+> > So with that tweak applied to the togreg branch of iio.git.
+> >   
+> 
+> Ok, thanks, I guess you didn't push yet, I wanted to check and I didn't
+> find the patches on kernel.org.
 
-A few comments inline.
+I've actually just backed my try at this out.  It gets a bit messy around
+patch 6-7 so I'd rather you did a rebase.
+
+Please rebase on current togreg branch.
 
 Thanks,
 
 Jonathan
 
-> ---
->  .../devicetree/bindings/iio/adc/ti,ads131e08.yaml  | 145 +++++++++++++++++++++
->  MAINTAINERS                                        |   1 +
->  2 files changed, 146 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml
-> new file mode 100644
-> index 0000000..92da193
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml
-> @@ -0,0 +1,145 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/ti,ads131e08.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Texas Instruments ADS131E0x 4-, 6-, and 8-Channel ADCs
-
-Not currently supporting 6 channel variants?
-
-> +
-> +maintainers:
-> +  - Tomislav Denis <tomislav.denis@avl.com>
-> +
-> +description: |
-> +  The ADS131E0x are a family of multichannel, simultaneous sampling,
-> +  24-bit, delta-sigma, analog-to-digital converters (ADCs) with a
-> +  built-in programmable gain amplifier (PGA), internal reference
-> +  and an onboard oscillator.
-> +  The communication with ADC chip is via the SPI bus (mode 1).
-> +
-> +  https://www.ti.com/lit/ds/symlink/ads131e08.pdf
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,ads131e04
-> +      - ti,ads131e08
-> +
-> +  reg:
-> +    description: |
-> +      SPI chip select number
-
-That is entirely standard so no real need to put a description of
-reg for an spi device.
-
-> +    maxItems: 1
-> +
-> +  spi-cpha: true
-> +
-> +  clocks:
-> +    description: |
-> +      Device tree identifier to the clock source (2.048 MHz)
-> +      Note: clock source is selected using CLKSEL pin
-> +    maxItems: 1
-> +
-> +  clock-names:
-> +    items:
-> +      - const: adc-clk
-> +
-> +  interrupts:
-> +    description: |
-> +      IRQ line for the ADC data ready
-> +    maxItems: 1
-> +
-> +  vref-supply:
-> +    description: |
-> +      Optional external voltage reference. Has to be supplied, if
-> +      ti,vref-sel equals 2
-> +
-> +  ti,vref-sel:
-> +    description: |
-> +      Select the voltage reference source
-> +      Valid values are:
-> +      0: Internal reference 2.4V
-> +      1: Internal reference 4V
-> +      2: External reference source (vref-supply is required)
-
-With optional external references we normally just use their presense
-to indicate that they should be used.
-
-You'll still need a parameter to pick the internal reference though.
-
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [0, 1, 2]
-> +    default: 0
-> +
-> +  ti,datarate:
-> +    description: |
-> +      ADC data rate in kSPS
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 2, 4, 8, 16, 32, 64]
-> +    default: 1
-
-Why is this a devicetree element rather than runtime controllable?
-
-> +
-> +  ti,gain:
-> +    description: |
-> +      The gain value for the PGA function
-> +    $ref: /schemas/types.yaml#/definitions/uint32
-> +    enum: [1, 2, 4, 8, 12]
-> +    default: 1
-
-Isn't this per channel?  Also this explanation should mention
-why it is a board related characteristic rather than a runtime
-tuneable (I'm fine with having it here, but good to add a bit
-of info on that to the description).
-
-> +
-> +  ti,adc-channels:
-> +    description: |
-> +      List of single-ended channels muxed for this ADC
-> +      - 4 channels, numbered from 0 to 3 for ti,ads131e04
-> +      - 8 channels, numbered from 0 to 7 for ti,ads131e08
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-
-We've fairly recently introduced a generic adc channel binding that I'd prefer
-is used in drivers going forwards.
-
-See Documentation/device-tree/bindings/iio/adc.txt (or yaml if I've applied that
-patch before you get to this).
-
-That adds a subnode per channel and gives us an easy way to then provide
-per channel parameters.  It's heavier weight than what you have here, but
-much more flexible.
-
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - spi-cpha
-> +  - clocks
-> +  - clock-names
-> +  - interrupts
-> +  - ti,adc-channels
-> +
-> +allOf:
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: ti,ads131e04
-> +
-> +  - then:
-> +      properties:
-> +        ti,adc-channels:
-> +          minItems: 1
-> +          maxItems: 4
-> +          items:
-> +            minimum: 0
-> +            maximum: 3
-> +
-> +  - if:
-> +      properties:
-> +        compatible:
-> +          contains:
-> +            const: ti,ads131e08
-> +
-> +  - then:
-> +      properties:
-> +        ti,adc-channels:
-> +          minItems: 1
-> +          maxItems: 8
-> +          items:
-> +            minimum: 0
-> +            maximum: 7
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +
-> +    spidev@0 {
-> +      compatible = "ti,ads131e08";
-> +      reg = <0>;
-> +      spi-max-frequency = <1000000>;
-> +      spi-cpha;
-> +      clocks = <&clk2048k>;
-> +      clock-names = "adc-clk";
-> +      interrupt-parent = <&gpio5>;
-> +      interrupts = <28 IRQ_TYPE_EDGE_FALLING>;
-> +      vref-supply = <&vref_reg>;
-> +      ti,vref-sel = <2>;
-> +      ti,datarate = <1>;
-> +      ti,gain = <1>;
-> +      ti,adc-channels = <0 1 2 3 4 5 6 7>;
-> +    };
-> +...
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 28bc5f9..0c351c7 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -17224,6 +17224,7 @@ TI ADS131E0X ADC SERIES DRIVER
->  M:	Tomislav Denis <tomislav.denis@avl.com>
->  L:	linux-iio@vger.kernel.org
->  S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml
->  F:	drivers/iio/adc/ti-ads131e08.c
->  
->  TI AM437X VPFE DRIVER
+> 
+> 
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> > > ---
+> > >  drivers/iio/adc/at91_adc.c             | 80 +++++++-------------------
+> > >  include/linux/platform_data/at91_adc.h | 49 ----------------
+> > >  2 files changed, 22 insertions(+), 107 deletions(-)
+> > >  delete mode 100644 include/linux/platform_data/at91_adc.h
+> > > 
+> > > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> > > index 9b2c548fae95..62bd35af8b13 100644
+> > > --- a/drivers/iio/adc/at91_adc.c
+> > > +++ b/drivers/iio/adc/at91_adc.c
+> > > @@ -22,8 +22,6 @@
+> > >  #include <linux/slab.h>
+> > >  #include <linux/wait.h>
+> > >  
+> > > -#include <linux/platform_data/at91_adc.h>
+> > > -
+> > >  #include <linux/iio/iio.h>
+> > >  #include <linux/iio/buffer.h>
+> > >  #include <linux/iio/trigger.h>
+> > > @@ -153,6 +151,25 @@
+> > >  #define TOUCH_SHTIM                    0xa
+> > >  #define TOUCH_SCTIM_US		10		/* 10us for the Touchscreen Switches Closure Time */
+> > >  
+> > > +enum atmel_adc_ts_type {
+> > > +	ATMEL_ADC_TOUCHSCREEN_NONE = 0,
+> > > +	ATMEL_ADC_TOUCHSCREEN_4WIRE = 4,
+> > > +	ATMEL_ADC_TOUCHSCREEN_5WIRE = 5,
+> > > +};
+> > > +
+> > > +/**
+> > > + * struct at91_adc_trigger - description of triggers
+> > > + * @name:		name of the trigger advertised to the user
+> > > + * @value:		value to set in the ADC's trigger setup register
+> > > + *			to enable the trigger
+> > > + * @is_external:	Does the trigger rely on an external pin?
+> > > + */
+> > > +struct at91_adc_trigger {
+> > > +	const char	*name;
+> > > +	u8		value;
+> > > +	bool		is_external;
+> > > +};
+> > > +
+> > >  /**
+> > >   * struct at91_adc_reg_desc - Various informations relative to registers
+> > >   * @channel_base:	Base offset for the channel data registers
+> > > @@ -875,9 +892,6 @@ static int at91_adc_probe_dt(struct iio_dev *idev,
+> > >  	int i = 0, ret;
+> > >  	u32 prop;
+> > >  
+> > > -	if (!node)
+> > > -		return -EINVAL;
+> > > -
+> > >  	st->caps = (struct at91_adc_caps *)
+> > >  		of_match_device(at91_adc_dt_ids, &pdev->dev)->data;
+> > >  
+> > > @@ -960,30 +974,6 @@ static int at91_adc_probe_dt(struct iio_dev *idev,
+> > >  	return ret;
+> > >  }
+> > >  
+> > > -static int at91_adc_probe_pdata(struct at91_adc_state *st,
+> > > -				struct platform_device *pdev)
+> > > -{
+> > > -	struct at91_adc_data *pdata = pdev->dev.platform_data;
+> > > -
+> > > -	if (!pdata)
+> > > -		return -EINVAL;
+> > > -
+> > > -	st->caps = (struct at91_adc_caps *)
+> > > -			platform_get_device_id(pdev)->driver_data;
+> > > -
+> > > -	st->use_external = pdata->use_external_triggers;
+> > > -	st->vref_mv = pdata->vref;
+> > > -	st->channels_mask = pdata->channels_used;
+> > > -	st->num_channels = st->caps->num_channels;
+> > > -	st->startup_time = pdata->startup_time;
+> > > -	st->trigger_number = pdata->trigger_number;
+> > > -	st->trigger_list = pdata->trigger_list;
+> > > -	st->registers = &st->caps->registers;
+> > > -	st->touchscreen_type = pdata->touchscreen_type;
+> > > -
+> > > -	return 0;
+> > > -}
+> > > -
+> > >  static const struct iio_info at91_adc_info = {
+> > >  	.read_raw = &at91_adc_read_raw,
+> > >  };
+> > > @@ -1160,15 +1150,9 @@ static int at91_adc_probe(struct platform_device *pdev)
+> > >  
+> > >  	st = iio_priv(idev);
+> > >  
+> > > -	if (pdev->dev.of_node)
+> > > -		ret = at91_adc_probe_dt(idev, pdev);
+> > > -	else
+> > > -		ret = at91_adc_probe_pdata(st, pdev);
+> > > -
+> > > -	if (ret) {
+> > > -		dev_err(&pdev->dev, "No platform data available.\n");
+> > > -		return -EINVAL;
+> > > -	}
+> > > +	ret = at91_adc_probe_dt(idev, pdev);
+> > > +	if (ret)
+> > > +		return ret;
+> > >  
+> > >  	platform_set_drvdata(pdev, idev);
+> > >  
+> > > @@ -1444,29 +1428,9 @@ static const struct of_device_id at91_adc_dt_ids[] = {
+> > >  };
+> > >  MODULE_DEVICE_TABLE(of, at91_adc_dt_ids);
+> > >  
+> > > -static const struct platform_device_id at91_adc_ids[] = {
+> > > -	{
+> > > -		.name = "at91sam9260-adc",
+> > > -		.driver_data = (unsigned long)&at91sam9260_caps,
+> > > -	}, {
+> > > -		.name = "at91sam9rl-adc",
+> > > -		.driver_data = (unsigned long)&at91sam9rl_caps,
+> > > -	}, {
+> > > -		.name = "at91sam9g45-adc",
+> > > -		.driver_data = (unsigned long)&at91sam9g45_caps,
+> > > -	}, {
+> > > -		.name = "at91sam9x5-adc",
+> > > -		.driver_data = (unsigned long)&at91sam9x5_caps,
+> > > -	}, {
+> > > -		/* terminator */
+> > > -	}
+> > > -};
+> > > -MODULE_DEVICE_TABLE(platform, at91_adc_ids);
+> > > -
+> > >  static struct platform_driver at91_adc_driver = {
+> > >  	.probe = at91_adc_probe,
+> > >  	.remove = at91_adc_remove,
+> > > -	.id_table = at91_adc_ids,
+> > >  	.driver = {
+> > >  		   .name = DRIVER_NAME,
+> > >  		   .of_match_table = of_match_ptr(at91_adc_dt_ids),
+> > > diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
+> > > deleted file mode 100644
+> > > index f20eaeb827ce..000000000000
+> > > --- a/include/linux/platform_data/at91_adc.h
+> > > +++ /dev/null
+> > > @@ -1,49 +0,0 @@
+> > > -/* SPDX-License-Identifier: GPL-2.0-or-later */
+> > > -/*
+> > > - * Copyright (C) 2011 Free Electrons
+> > > - */
+> > > -
+> > > -#ifndef _AT91_ADC_H_
+> > > -#define _AT91_ADC_H_
+> > > -
+> > > -enum atmel_adc_ts_type {
+> > > -	ATMEL_ADC_TOUCHSCREEN_NONE = 0,
+> > > -	ATMEL_ADC_TOUCHSCREEN_4WIRE = 4,
+> > > -	ATMEL_ADC_TOUCHSCREEN_5WIRE = 5,
+> > > -};
+> > > -
+> > > -/**
+> > > - * struct at91_adc_trigger - description of triggers
+> > > - * @name:		name of the trigger advertised to the user
+> > > - * @value:		value to set in the ADC's trigger setup register
+> > > -			to enable the trigger
+> > > - * @is_external:	Does the trigger rely on an external pin?
+> > > - */
+> > > -struct at91_adc_trigger {
+> > > -	const char	*name;
+> > > -	u8		value;
+> > > -	bool		is_external;
+> > > -};
+> > > -
+> > > -/**
+> > > - * struct at91_adc_data - platform data for ADC driver
+> > > - * @channels_used:		channels in use on the board as a bitmask
+> > > - * @startup_time:		startup time of the ADC in microseconds
+> > > - * @trigger_list:		Triggers available in the ADC
+> > > - * @trigger_number:		Number of triggers available in the ADC
+> > > - * @use_external_triggers:	does the board has external triggers availables
+> > > - * @vref:			Reference voltage for the ADC in millivolts
+> > > - * @touchscreen_type:		If a touchscreen is connected, its type (4 or 5 wires)
+> > > - */
+> > > -struct at91_adc_data {
+> > > -	unsigned long			channels_used;
+> > > -	u8				startup_time;
+> > > -	struct at91_adc_trigger		*trigger_list;
+> > > -	u8				trigger_number;
+> > > -	bool				use_external_triggers;
+> > > -	u16				vref;
+> > > -	enum atmel_adc_ts_type		touchscreen_type;
+> > > -};
+> > > -
+> > > -extern void __init at91_add_device_adc(struct at91_adc_data *data);
+> > > -#endif  
+> >   
+> 
 
