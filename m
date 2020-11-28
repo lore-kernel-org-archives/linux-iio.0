@@ -2,86 +2,197 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D958EC83A97
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DEEFC83A90
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A4018222C2
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4FF532231B
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:59 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="Wsgvqs5K"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="uGI2HUE7"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731818AbgK1Vt0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40800 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730680AbgK1Sm7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 13:42:59 -0500
-Received: from mail-lj1-x242.google.com (mail-lj1-x242.google.com [IPv6:2a00:1450:4864:20::242])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED958C02A182
-        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 03:33:26 -0800 (PST)
-Received: by mail-lj1-x242.google.com with SMTP id y10so8944671ljc.7
-        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 03:33:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=MKPvFn4lbegJK70IF9mRAT16SFZjn/X0197EAhYHLLQ=;
-        b=Wsgvqs5Kfz10ZOSGhgSWRHsxlR0h5Ya/M0vcDGuOwEQYH8DHkbAMphjiG/YF76u6wP
-         PqbYjgFl87K+F/iulXDoEqDEjn6g6S2JCktEQow/uZ42luigGWnAGA7/CxEu/g9cbOPB
-         264Cx67ayUyEoEquIiXqne748PDFuloELOujwO/OHLmLEeQPWGrxRlUWHefyJRJMOi5y
-         apnQsNBn8m7liJFvQYlWtn3s4/vfvqFljR1V8nZyIypbiBGcYWL7Gdp4JmfIlJJPmv2J
-         WN/JtGU7q/01o9qsXLDGB9Uz3p6oPSKP66I2e9CPGBVi7duntPyvCE0TrtH8buhUTpRT
-         XEBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=MKPvFn4lbegJK70IF9mRAT16SFZjn/X0197EAhYHLLQ=;
-        b=trxPcSXU8NJFMtVzauolLoQS6C/+KkkcltqyyeBPaOrVbjI6V+VIPzunFSqLyUltlr
-         8IsUZoZv0q1ziBxDLxRGVeLegmFZtz0AoBCTn8Oc5Cwh67cI1dYshoby1vOelclAjC1i
-         qYTfBpPkHU84v/FIm0rgaea6xet6qY3cJDkLK2lTUe5f1J/fLEEM+tFnYL0T+G2r2YTx
-         ss8DYw5+ztYU8fYr6x61spxHkeaCNbIjWALvppxNsQmk/G2QBGek+2L8+vR4Z1ajYGOT
-         jPbA7TTJlLwV0gd30ZtKZnJXtaY6qcS8d6wyTx/8/YhalUjeeXexVbcgY/H9BxCQqNlW
-         PwhA==
-X-Gm-Message-State: AOAM533+9Atdg4ljUuhhSQfeMDtA1BexiPf5b1jFgBX1yTtnVibG2lpQ
-        JerODgSBudsJH9PsOHn94VuSXi72iyfj7evcyh0S8g==
-X-Google-Smtp-Source: ABdhPJwGY8O21QclJ7LQgaZvcNRsXUjT7S6+h39sfyyDVX1y8W6wzFa9fT/PJBGV3iEIX7G2FYuo5NBIlw6LoFBgaM4=
-X-Received: by 2002:a05:651c:39d:: with SMTP id e29mr3999203ljp.144.1606563205299;
- Sat, 28 Nov 2020 03:33:25 -0800 (PST)
+        id S1732882AbgK1VtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47532 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1730567AbgK1Sl4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:41:56 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 59D37246C1;
+        Sat, 28 Nov 2020 16:15:46 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606580147;
+        bh=DqS5YYy9W5SG1eb0ykyOMwA4cjtF5BIMVnfJ92mEadM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=uGI2HUE7WASPx7pptdjVrB1P4ljFfuy3nQt0mLrMrCYziwPxVKPOPSlK6P9GhR3Zn
+         f5ix6hGKne8K3M6j5kskWzRDZmJu7DwUE+/ArD7MgSU/jrZ2b8zowOxhlwfzomFybk
+         mHluMu/pYLuMWrMf2K7PU7/GMTEHRtAtzn1pFdtg=
+Date:   Sat, 28 Nov 2020 16:15:42 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 07/46] dt-bindings:iio:health:ti,afe4403: txt to yaml
+ binding
+Message-ID: <20201128161542.5481ab9f@archlinux>
+In-Reply-To: <20201122173211.26f4a912@archlinux>
+References: <20201031184854.745828-1-jic23@kernel.org>
+        <20201031184854.745828-8-jic23@kernel.org>
+        <20201122173211.26f4a912@archlinux>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20201128004038.883289-1-linus.walleij@linaro.org>
- <20201128004038.883289-2-linus.walleij@linaro.org> <X8HNcg4fQKbo8yd5@builder.lan>
- <20201128112735.57398b74@archlinux>
-In-Reply-To: <20201128112735.57398b74@archlinux>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 28 Nov 2020 12:33:14 +0100
-Message-ID: <CACRpkda=_hSfbgTJNCkrHfQ3K7OHhPwbWnvVw0MDNxh-Xdggdg@mail.gmail.com>
-Subject: Re: [PATCH 2/2 v2] iio: magnetometer: Add driver for Yamaha YAS5xx
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        phone-devel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Nov 28, 2020 at 12:27 PM Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, 22 Nov 2020 17:32:11 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Even better to use FIELD_GET
-> which does what Bjorn suggested under the hood.
+> On Sat, 31 Oct 2020 18:48:15 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > A few questions came up whilst converting this one.
+> > 1) What is actually required?
+> >   - Checking Linux driver, interrupt is not, and the tx-supply could
+> >     be supplied by a stub regulator as long as it's always on.
+> >     As such I have reduced the required list to just compatible and reg.
+> > 2) What is the regulator called?
+> >   - It's tx-supply in the binding doc, but the driver request tx_sup
+> >     I've left this alone for now.  Andrew could you confirm what is
+> >     intended for this?  
+> 
+> Andrew's email seems to be bouncing so I've reached out to him via another
+> means.  Will wait to see if that works before applying this or the next
+> patch given the questions.
 
-I didn't even know of the existence of that thing, and I was still
-looking and scouting around for something like it.
+In order to move forwards with this I've put myself as maintainer and
+decided to send out a fix for the driver naming of that supply.
 
-I'll rewrite the thingie using FIELD_GET, no problem!
+Thanks,
 
-Yours,
-Linus Walleij
+Jonathan
+
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+> > 
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Cc: Andrew F. Davis <afd@ti.com>
+> > ---
+> >  .../bindings/iio/health/afe4403.txt           | 33 ------------
+> >  .../bindings/iio/health/ti,afe4403.yaml       | 54 +++++++++++++++++++
+> >  2 files changed, 54 insertions(+), 33 deletions(-)
+> > 
+> > diff --git a/Documentation/devicetree/bindings/iio/health/afe4403.txt b/Documentation/devicetree/bindings/iio/health/afe4403.txt
+> > deleted file mode 100644
+> > index 8e412054d6d5..000000000000
+> > --- a/Documentation/devicetree/bindings/iio/health/afe4403.txt
+> > +++ /dev/null
+> > @@ -1,33 +0,0 @@
+> > -Texas Instruments AFE4403 Heart rate and Pulse Oximeter
+> > -
+> > -Required properties:
+> > - - compatible		: Should be "ti,afe4403".
+> > - - reg			: SPI chip select address of device.
+> > - - tx-supply		: Regulator supply to transmitting LEDs.
+> > - - interrupts		: The interrupt line the device ADC_RDY pin is
+> > -			  connected to. For details refer to,
+> > -			  ../../interrupt-controller/interrupts.txt.
+> > -
+> > -Optional properties:
+> > - - reset-gpios		: GPIO used to reset the device.
+> > -			  For details refer to, ../../gpio/gpio.txt.
+> > -
+> > -For other required and optional properties of SPI slave nodes
+> > -please refer to ../../spi/spi-bus.txt.
+> > -
+> > -Example:
+> > -
+> > -&spi0 {
+> > -	heart_mon@0 {
+> > -		compatible = "ti,afe4403";
+> > -		reg = <0>;
+> > -		spi-max-frequency = <10000000>;
+> > -
+> > -		tx-supply = <&vbat>;
+> > -
+> > -		interrupt-parent = <&gpio1>;
+> > -		interrupts = <28 IRQ_TYPE_EDGE_RISING>;
+> > -
+> > -		reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
+> > -	};
+> > -};
+> > diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
+> > new file mode 100644
+> > index 000000000000..5c86db65c033
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
+> > @@ -0,0 +1,54 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/health/ti,afe4403.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Texas Instruments AFE4403 Heart rate and Pulse Oximeter
+> > +
+> > +maintainers:
+> > +  - Andrew F. Davis <afd@ti.com>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: ti,afe4403
+> > +
+> > +  reg:
+> > +    maxItems: 1
+> > +
+> > +  tx-supply:
+> > +    description: Supply to transmitting LEDs.
+> > +
+> > +  interrupts:
+> > +    maxItems: 1
+> > +    description: Connected to ADC_RDY pin.
+> > +
+> > +  reset-gpios: true
+> > +
+> > +  spi-max-frequency: true
+> > +
+> > +additionalProperties: false
+> > +
+> > +required:
+> > +  - compatible
+> > +  - reg
+> > +
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/gpio/gpio.h>
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    spi {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +
+> > +        heart_mon@0 {
+> > +            compatible = "ti,afe4403";
+> > +            reg = <0>;
+> > +            spi-max-frequency = <10000000>;
+> > +            tx-supply = <&vbat>;
+> > +            interrupt-parent = <&gpio1>;
+> > +            interrupts = <28 IRQ_TYPE_EDGE_RISING>;
+> > +            reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
+> > +        };
+> > +    };
+> > +...  
+> 
+
