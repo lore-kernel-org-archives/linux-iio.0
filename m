@@ -2,102 +2,96 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65948C64E8A
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38D14C83014
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2CCE0222C2
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F32A9222C2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:09 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="awjqu6B8"
+	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="Ow7GReK3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730578AbgK1VtU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43260 "EHLO mail.kernel.org"
+        id S1731210AbgK1VtV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:21 -0500
+Received: from mout.gmx.net ([212.227.15.15]:57285 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726961AbgK1R6R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 12:58:17 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 1C908246E2;
-        Sat, 28 Nov 2020 17:57:35 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606586257;
-        bh=TysTcHn2fgrDv6ggQHwiNuDIFdGJtM1RGsXV7S/7owc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=awjqu6B87cLyKBBprTyTXkJIBAin8UTpcBvVrqfWIUtr8gzZjprqHCqaJRZCCv9Fy
-         mZtwy454PnWP1zmi0Y2CEmOQeR4S9JrsBp0HFDjw7u3L/fQlr0vSwJbnnE9Aqybix3
-         iHa8p8gF/08jj8bwnK722YgMzgWIT0DWmmeFt+ww=
-Date:   Sat, 28 Nov 2020 17:57:32 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 00/10] dt-bindings: iio: conversion of consumer drivers
-Message-ID: <20201128175732.5fdc7310@archlinux>
-In-Reply-To: <20201103160756.GB1732900@bogus>
-References: <20201031181242.742301-1-jic23@kernel.org>
-        <20201103160756.GB1732900@bogus>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1729677AbgK1SBp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:01:45 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1606586412;
+        bh=1y7lQ6mSJVuP8bFeEYcO3sN//QRu8cVbO6D2sNz3OR8=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date;
+        b=Ow7GReK3SAD68BTZPww+4Fy5UizfF4vatLipUqJK6tfnNeQlRTelXxXfQHpp77i+Z
+         iP6MgvKlCNvPO5Kx/4pElmztszhg6v5kH+rdqk1aswYPfrra8v7vLP6eA/MHNIibPD
+         h+oDaZYxdc2ykuKUAvggm0Hgp0CfxQ46I1q1HFh8=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([78.42.220.31]) by mail.gmx.com (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1MI5UD-1kx3342rYt-00F8pB; Sat, 28
+ Nov 2020 14:45:41 +0100
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     jic23@kernel.org
+Cc:     andy.shevchenko@gmail.com, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: [RESEND PATCH 1/2] iio:core: Introduce unlocked version of iio_map_array_unregister()
+Date:   Sat, 28 Nov 2020 14:44:18 +0100
+Message-Id: <1606571059-13974-1-git-send-email-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.7.4
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:P0trFNXk9UyPd/J1BiqVcQVNknly/UXlIok3ZG/YBgn2HtVNVts
+ OTLM/t2VRlvxleKg0rsY3Tx9l5dlJoGsac7I+SRSIV3qj+OrDkUcB6Z1w1t98K7Zdt2/fXU
+ mo2cattR8eCwhYTeGlaXirMuP8DBCRKW0nQqB4BtQ2Ny051Re6/C898t7Jz0KNRl0JMo+rG
+ P9ubrfM4Zab6EOqCXinbQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:LJzd9RfOtuk=:oBgS3sH7lCeQC1E0e+15KS
+ EDJf5mtjNZHAuIXKvtS5Lfk6MN5nJC4KOlDHxfhghTQYp02zKgplR8knUF9qHoAHGa+rrdk4x
+ Jz/k3cv4JRYeaAd8SsoBW0ky+aeUEzlRNVBWKpplY71ICf3KsliukN7TCyiMMzp0/M/LfjSXt
+ 8ZU1+a0YH0UN2d6dc+FlTMJvLzPkMaWZdzlIBuxRNuNlYH0NJyqjkzDVp5NZTDZJBPaWkGtHa
+ qUSb1MZhDdZ7hHFqprZ9BTJT8A44dZiVXqGexukLtrSD2ydHwtzsT+xSsdQAOVPlKFF0lPnUs
+ f0xo8has0CqoP5yHB6D5+GeiiD8OGrVLQZoSWhxdj5MO8T5rPIFyfUWFPahJq8Q+7JTJCXNza
+ myXpfoX16+GTx+TUEeJcDHl2PK12niwQk8A0P7ZF2wgln2O1XJfwVYTQwABehAOR/LMPt2iWZ
+ 5PYnPL5r9BigVGaYGwJZoMC6y+jJ2/2a+a6hxhQMvUMMGvcGpT/oc7nhhWboELlRr0PN3cT7K
+ 3BevCW60UkdhX/s/X8McWaSzSGrFIGAx1/hKyYCuyXp/+g/3zwKC2tc+TiX2z6Kl+yP+W1TGJ
+ ii+oNPy1H0kMJJtxBo17bIDYkIni7jWwA2KjBos2CYJdmFV2Zrwotvokg67zz08n8oGz3zdLI
+ TpUkWHAGfPxS6VENRYWWqNbwaDYnp/lBmx3FCS8knsVi3MNe3Y9XBv5DjfT3g4EIurKsRxlAu
+ EKTHw4+GtWGPB03E/I/c3M2MHrK3GYcFuilJwEWAFpoGwCs5vh60j+RT1zH8SBnz8hOfdQnO9
+ 0VxQU1VuCI420XiSEe4q8laYQFZktAhzRQzdHllbLyzc1N3FkVK66nQ2ktv1+P4Iv1qSAdp7h
+ 6na7CAptcklfs1HQl0Ag==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 3 Nov 2020 10:07:56 -0600
-Rob Herring <robh@kernel.org> wrote:
-
-> On Sat, Oct 31, 2020 at 06:12:32PM +0000, Jonathan Cameron wrote:
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > 
-> > Firstly drop the old text file as the consumer binding (and the other
-> > parts of that file) are under review for inclusion in the dt-schema external
-> > repo.
-> > 
-> > This only converts consumers that happen to also be IIO drivers.
-> > Others may get done as part of SoC binding conversions or I may do a lot
-> > of them at somepoint.
-> > 
-> > A few of the examples in existing text files used providers that were
-> > documented in trivial-bindings.yaml which does not allow for
-> > #io-channel-cells. I have pulled those out to their own files as part
-> > of this patch set.
-> > 
-> > The iio-mux binding is not done as that has some dependencies and will
-> > form part of some future patch set.
-> > 
-> > There is no explicit dependency in here on any other sets, but some
-> > noise will occur in trivial-bindings.yaml if applied in a different
-> > order to I happen to have them sets locally.
-> > 
-> > Jonathan Cameron (10):
-> >   dt-bindings:iio:iio-binding.txt Drop file as content now in dt-schema
-> >   dt-bindings:iio:dac:dpot-dac: yaml conversion.
-> >   dt-bindings:iio:potentiometer: give microchip,mcp4531 its own binding
-> >   dt-bindings:iio:adc:envelope-detector: txt to yaml conversion.
-> >   dt-bindings:iio:afe:current-sense-amplifier: txt to yaml conversion.
-> >   dt-bindings:iio:afe:current-sense-shunt: txt to yaml conversion. 
-> >   dt-bindings:iio:adc:maxim,max1027: Pull out to separate binding doc.
-> >   dt-bindings:iio:afe:voltage-divider: txt to yaml conversion
-> >   dt-bindings:iio:light:capella,cm3605: txt to yaml conversion.
-> >   dt-bindings:iio:potentiostat:ti,lmp91000: txt to yaml conversion.  
-> 
-> With the type references for properties with standard units dropped,
-
-Done.
-
-> 
-> Reviewed-by: Rob Herring <robh@kernel.org>
-
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to do their magic.
-Thanks,
-
-Jonathan
+SW50cm9kdWNlIGFuIHVubG9ja2VkIHZlcnNpb24gb2YgaWlvX21hcF9hcnJheV91bnJlZ2lzdGVy
+KCkuIFRoaXMgZnVuY3Rpb24KY2FuIGhlbHAgdG8gdW53aW5kIGluIGNhc2Ugb2YgZXJyb3Igd2hp
+bGUgdGhlIGlpb19tYXBfbGlzdF9sb2NrIG11dGV4IGlzCmhlbGQuCgpTaWduZWQtb2ZmLWJ5OiBM
+aW5vIFNhbmZpbGlwcG8gPExpbm9TYW5maWxpcHBvQGdteC5kZT4KUmV2aWV3ZWQtYnk6IEFuZHkg
+U2hldmNoZW5rbyA8YW5keS5zaGV2Y2hlbmtvQGdtYWlsLmNvbT4KLS0tCiBkcml2ZXJzL2lpby9p
+bmtlcm4uYyB8IDI3ICsrKysrKysrKysrKysrKysrKy0tLS0tLS0tLQogMSBmaWxlIGNoYW5nZWQs
+IDE4IGluc2VydGlvbnMoKyksIDkgZGVsZXRpb25zKC0pCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9p
+aW8vaW5rZXJuLmMgYi9kcml2ZXJzL2lpby9pbmtlcm4uYwppbmRleCBlZGU5OWUwLi4zOWMxZDYz
+IDEwMDY0NAotLS0gYS9kcml2ZXJzL2lpby9pbmtlcm4uYworKysgYi9kcml2ZXJzL2lpby9pbmtl
+cm4uYwpAQCAtMjQsNiArMjQsMjEgQEAgc3RydWN0IGlpb19tYXBfaW50ZXJuYWwgewogc3RhdGlj
+IExJU1RfSEVBRChpaW9fbWFwX2xpc3QpOwogc3RhdGljIERFRklORV9NVVRFWChpaW9fbWFwX2xp
+c3RfbG9jayk7CiAKK3N0YXRpYyBpbnQgaWlvX21hcF9hcnJheV91bnJlZ2lzdGVyX2xvY2tlZChz
+dHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2KQoreworCWludCByZXQgPSAtRU5PREVWOworCXN0cnVj
+dCBpaW9fbWFwX2ludGVybmFsICptYXBpLCAqbmV4dDsKKworCWxpc3RfZm9yX2VhY2hfZW50cnlf
+c2FmZShtYXBpLCBuZXh0LCAmaWlvX21hcF9saXN0LCBsKSB7CisJCWlmIChpbmRpb19kZXYgPT0g
+bWFwaS0+aW5kaW9fZGV2KSB7CisJCQlsaXN0X2RlbCgmbWFwaS0+bCk7CisJCQlrZnJlZShtYXBp
+KTsKKwkJCXJldCA9IDA7CisJCX0KKwl9CisJcmV0dXJuIHJldDsKK30KKwogaW50IGlpb19tYXBf
+YXJyYXlfcmVnaXN0ZXIoc3RydWN0IGlpb19kZXYgKmluZGlvX2Rldiwgc3RydWN0IGlpb19tYXAg
+Km1hcHMpCiB7CiAJaW50IGkgPSAwLCByZXQgPSAwOwpAQCAtNTcsMTggKzcyLDEyIEBAIEVYUE9S
+VF9TWU1CT0xfR1BMKGlpb19tYXBfYXJyYXlfcmVnaXN0ZXIpOwogICovCiBpbnQgaWlvX21hcF9h
+cnJheV91bnJlZ2lzdGVyKHN0cnVjdCBpaW9fZGV2ICppbmRpb19kZXYpCiB7Ci0JaW50IHJldCA9
+IC1FTk9ERVY7Ci0Jc3RydWN0IGlpb19tYXBfaW50ZXJuYWwgKm1hcGksICpuZXh0OworCWludCBy
+ZXQ7CiAKIAltdXRleF9sb2NrKCZpaW9fbWFwX2xpc3RfbG9jayk7Ci0JbGlzdF9mb3JfZWFjaF9l
+bnRyeV9zYWZlKG1hcGksIG5leHQsICZpaW9fbWFwX2xpc3QsIGwpIHsKLQkJaWYgKGluZGlvX2Rl
+diA9PSBtYXBpLT5pbmRpb19kZXYpIHsKLQkJCWxpc3RfZGVsKCZtYXBpLT5sKTsKLQkJCWtmcmVl
+KG1hcGkpOwotCQkJcmV0ID0gMDsKLQkJfQotCX0KKwlyZXQgPSBpaW9fbWFwX2FycmF5X3VucmVn
+aXN0ZXJfbG9ja2VkKGluZGlvX2Rldik7CiAJbXV0ZXhfdW5sb2NrKCZpaW9fbWFwX2xpc3RfbG9j
+ayk7CisKIAlyZXR1cm4gcmV0OwogfQogRVhQT1JUX1NZTUJPTF9HUEwoaWlvX21hcF9hcnJheV91
+bnJlZ2lzdGVyKTsKLS0gCjIuNy40Cgo=
