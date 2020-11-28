@@ -2,79 +2,234 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C681C83A9B
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2A2FC83AA8
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2B0A422370
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 820282231B
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:38 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ADzdIi6K"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="HqsShV39"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732840AbgK1VtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:25 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47530 "EHLO mail.kernel.org"
+        id S1727612AbgK1VtW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:22 -0500
+Received: from mail.kernel.org ([198.145.29.99]:45486 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730551AbgK1Sl4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:41:56 -0500
+        id S1731701AbgK1SG4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:06:56 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 89BB4246AB;
-        Sat, 28 Nov 2020 15:35:06 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id B4CD4246DB;
+        Sat, 28 Nov 2020 17:47:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606577707;
-        bh=dI+UiI6qYNNByDAsfPe3uvTzxrA2PiQV2r4/yD08zSo=;
+        s=default; t=1606585676;
+        bh=FHOVomPcNIJ3yOgKxl1NsiBfA1/NdOBLqOGyQvAjJuY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ADzdIi6KCnNxc/6/AAeKSF7o8wKC9qOv+zY72kThkRoyTx0oFEGXWdxus+P/k3wLs
-         nu7SG+b53ZcqDjX9Sw3WikmNsXm08repoTG7RzAGuQzpkzviGI8Lq7sC/Mk+SCBrmS
-         t2mAVL0Xhz7GvchQUGzvzyYBnDwEIe4UHqGRrv9U=
-Date:   Sat, 28 Nov 2020 15:35:03 +0000
+        b=HqsShV39WguX+Rcma4hvdVCQFwav6XNE/Dp+F63FErrJYoXwURW0dJGiPjJx7VUBR
+         Ei6oWi7AaUUNm84DMcmjJmj2l08JJVDMSv+8kgCGeq/S7NM4DD2hafEqy6td0xUMKW
+         MOnoUC/XeQJ5RwPgAT29xHwA180f/l0fadFOWI7o=
+Date:   Sat, 28 Nov 2020 17:47:52 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Krzysztof Kozlowski <krzk@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, robh+dt@kernel.org,
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rob Herring <robh@kernel.org>
-Subject: Re: [PATCH 2/9] dt-bindings:iio:samsung,exynos-adc: drop missuse of
- io-channel-ranges
-Message-ID: <20201128153503.12abb0a8@archlinux>
-In-Reply-To: <20201117094911.GA13513@kozik-lap>
-References: <20201115192951.1073632-1-jic23@kernel.org>
-        <20201115192951.1073632-3-jic23@kernel.org>
-        <20201117094911.GA13513@kozik-lap>
+        Philippe Reynes <tremyfr@yahoo.fr>
+Subject: Re: [PATCH 07/10] dt-bindings:iio:adc:maxim,max1027: Pull out to
+ separate binding doc.
+Message-ID: <20201128174752.577a964e@archlinux>
+In-Reply-To: <20201101203304.1abf4a77@archlinux>
+References: <20201031181242.742301-1-jic23@kernel.org>
+        <20201031181242.742301-8-jic23@kernel.org>
+        <20201101142557.153c7b97@xps13>
+        <20201101203304.1abf4a77@archlinux>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 17 Nov 2020 10:49:11 +0100
-Krzysztof Kozlowski <krzk@kernel.org> wrote:
+On Sun, 1 Nov 2020 20:33:04 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Sun, Nov 15, 2020 at 07:29:44PM +0000, Jonathan Cameron wrote:
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > 
-> > io-channel-ranges is a property for consumers of io-channels, not
-> > providers.  Hence it is not relevant in this binding or the examples
-> > given.
-> > 
-> > Recent changes to dt-schema result int his being reported as an error  
-> 
-> s/int his/in this/
-> 
-> Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
-Thanks + applied.
+> On Sun, 1 Nov 2020 14:25:57 +0100
+> Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>=20
+> > Hi Jonathan,
+> >=20
+> > Jonathan Cameron <jic23@kernel.org> wrote on Sat, 31 Oct 2020 18:12:39
+> > +0000:
+> >  =20
+> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > >=20
+> > > The afe/voltage-divider.yaml example uses this device with 2 properti=
+es
+> > > not provided by trivial-devices.yaml (spi-max-frequency and #io-chann=
+el-cells)
+> > >=20
+> > > Solve that by creating a more specific binding doc.   =20
+> >=20
+> > I don't know #io-channel-cells but spi-max-frequency is very common and
+> > is related to the fact that this device is a SPI device (hence, a SPI
+> > subnode), IMHO it has nothing to do with trivial-devices.yaml
+> > description. =20
+>=20
+> There may be some logic to adding spi-max-frequency to the allowed proper=
+ties
+> of devices listed in trivial-devices.  Right now it's not there so you wi=
+ll
+> get warnings if you check a dts file that has it in for bindings described
+> by that file.  I've been lazy here, but ideally we also want to document
+> a maximum for this property.  In this case, it should be 10000000 (10MHz).
+> I'll add that to this binding either in v2, or whilst applying.
+>=20
+> The io-channel-cells, is specific to devices proving analog channel measu=
+rement
+> services that other bindings can make use of.  (typically ADCs and DACs).
+> Currently only applies to IIO bindings for ADCs and DACs.
+> It specifies how many parameters are needed as part of the phandle to ide=
+ntify
+> a channel.
+>=20
+> Given most of trivial devices don't fall into that category, we need to do
+> a separate binding where it's known to be used anyway.
+>=20
+> As a side note.. I just noticed these devices have reference voltage pins.
+> At somepoint (not necessarily now) we should look at adding appropriate r=
+egulator
+> bindings.
+
+Applied with the addition of 10000000 maximum for spi-max-frequency.
+
+thanks,
 
 Jonathan
 
-> 
-> Best regards,
-> Krzysztof
+>=20
+> Jonathan
+>=20
+> >  =20
+> > >=20
+> > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > Cc: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > Cc: Philippe Reynes <tremyfr@yahoo.fr>
+> > > ---
+> > >  .../bindings/iio/adc/maxim,max1027.yaml       | 64 +++++++++++++++++=
+++
+> > >  .../devicetree/bindings/trivial-devices.yaml  | 12 ----
+> > >  2 files changed, 64 insertions(+), 12 deletions(-)
+> > >=20
+> > > diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max1027.=
+yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max1027.yaml
+> > > new file mode 100644
+> > > index 000000000000..09e853c50c76
+> > > --- /dev/null
+> > > +++ b/Documentation/devicetree/bindings/iio/adc/maxim,max1027.yaml
+> > > @@ -0,0 +1,64 @@
+> > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > > +%YAML 1.2
+> > > +---
+> > > +$id: http://devicetree.org/schemas/iio/adc/maxim,max1027.yaml#
+> > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > +
+> > > +title: Maxim MAX1027 and similar ADCs
+> > > +
+> > > +maintainers:
+> > > +  - Miquel Raynal <miquel.raynal@bootlin.com>
+> > > +  - Philippe Reynes <tremyfr@yahoo.fr>
+> > > +
+> > > +description: |
+> > > +  300ks/s SPI ADCs with temperature sensors.
+> > > +
+> > > +properties:
+> > > +  compatible:
+> > > +    enum:
+> > > +        # 10-bit 8 channels
+> > > +      - maxim,max1027
+> > > +        # 10-bit 12 channels
+> > > +      - maxim,max1029
+> > > +        # 10-bit 16 channels
+> > > +      - maxim,max1031
+> > > +         # 12-bit 8 channels
+> > > +      - maxim,max1227
+> > > +         # 12-bit 12 channels
+> > > +      - maxim,max1229
+> > > +         # 12-bit 16 channels
+> > > +      - maxim,max1231
+> > > +
+> > > +  reg:
+> > > +    maxItems: 1
+> > > +
+> > > +  interrupts:
+> > > +    maxItems: 1
+> > > +
+> > > +  spi-max-frequency: true
+> > > +
+> > > +  "#io-channel-cells":
+> > > +    const: 1
+> > > +
+> > > +required:
+> > > +  - compatible
+> > > +  - reg
+> > > +
+> > > +additionalProperties: false
+> > > +
+> > > +examples:
+> > > +  - |
+> > > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > > +    spi {
+> > > +       #address-cells =3D <1>;
+> > > +       #size-cells =3D <0>;
+> > > +        maxadc: adc@0 {
+> > > +            compatible =3D "maxim,max1027";
+> > > +            reg =3D <0>;
+> > > +            #io-channel-cells =3D <1>;
+> > > +            interrupt-parent =3D <&gpio5>;
+> > > +            interrupts =3D <15 IRQ_TYPE_EDGE_RISING>;
+> > > +            spi-max-frequency =3D <1000000>;
+> > > +        };
+> > > +    };
+> > > +...
+> > > diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b=
+/Documentation/devicetree/bindings/trivial-devices.yaml
+> > > index d154ea97e30d..185e09e61e16 100644
+> > > --- a/Documentation/devicetree/bindings/trivial-devices.yaml
+> > > +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+> > > @@ -108,18 +108,6 @@ properties:
+> > >            - isil,isl68137
+> > >              # 5 Bit Programmable, Pulse-Width Modulator
+> > >            - maxim,ds1050
+> > > -            # 10-bit 8 channels 300ks/s SPI ADC with temperature sen=
+sor
+> > > -          - maxim,max1027
+> > > -            # 10-bit 12 channels 300ks/s SPI ADC with temperature se=
+nsor
+> > > -          - maxim,max1029
+> > > -            # 10-bit 16 channels 300ks/s SPI ADC with temperature se=
+nsor
+> > > -          - maxim,max1031
+> > > -            # 12-bit 8 channels 300ks/s SPI ADC with temperature sen=
+sor
+> > > -          - maxim,max1227
+> > > -            # 12-bit 12 channels 300ks/s SPI ADC with temperature se=
+nsor
+> > > -          - maxim,max1229
+> > > -            # 12-bit 16 channels 300ks/s SPI ADC with temperature se=
+nsor
+> > > -          - maxim,max1231
+> > >              # Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
+> > >            - maxim,max1237
+> > >              # PECI-to-I2C translator for PECI-to-SMBus/I2C protocol =
+conversion   =20
+> >=20
+> > Thanks,
+> > Miqu=C3=A8l =20
+>=20
 
