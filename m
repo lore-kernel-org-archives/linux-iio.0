@@ -3,51 +3,52 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,UPPERCASE_50_75,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8051FC83035
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D9EF8C83038
 	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:21:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4D466222EC
+	by mail.kernel.org (Postfix) with ESMTP id AA838222EC
 	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:21:52 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="CdRpV3F8"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="WFxnkD+3"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730439AbgK1Vtb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50388 "EHLO mail.kernel.org"
+        id S2388187AbgK1Vta (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50806 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S2387395AbgK1TGv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 14:06:51 -0500
+        id S1733211AbgK1TGu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 14:06:50 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EE26D24677;
-        Sat, 28 Nov 2020 13:40:32 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id E57E924671;
+        Sat, 28 Nov 2020 13:29:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606570834;
-        bh=rbJeBPUYhl6GPSmdIP1yrJCzYX5bhCpiHnCO9FSCpO4=;
+        s=default; t=1606570176;
+        bh=ISe7j/OX5cdcWTRh8YAAybJtMJKopbyofLwO0nzAGLA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CdRpV3F8GM4g7JT3uG7+z/efdsNNfdAOW6lk1RF/CFWqonhORWspIVpMGGOJq1zRw
-         PSKagrQSk9/vGw2ok0/oMSX9zTYHlZfj7PVBNRCtUaguDMhxHLDg2lyRXbqSOIB5tD
-         J3En5I4Kr8pbQ/n2TxdEVfSs28t8B5cRlvH2Q1YM=
-Date:   Sat, 28 Nov 2020 13:40:30 +0000
+        b=WFxnkD+3JHVa9hvCSw2Kf0esY6f+cdvXt4BrDxxqAB9g+Hy1bHnkl2ZcljeyZcnyq
+         7hWD3sQ9wiEWpVh7xjHxd0idxdVrkHD6G+igqOp5tVruqe75qDkGO/TYTky0Q76Xq4
+         YTMUqagwcFM8N1Bt6f1hQ8WZTGwRFZM4f2eXVog8=
+Date:   Sat, 28 Nov 2020 13:29:31 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 3/3 v3] iio: accel: bmc150-accel: Add rudimentary
- regulator support
-Message-ID: <20201128134030.1dc08d21@archlinux>
-In-Reply-To: <CACRpkdbP3ccrEK47jaQ=r8sYkFuXBcH=+LTKC1xz+kgXmkwomg@mail.gmail.com>
-References: <20201115205745.618455-1-linus.walleij@linaro.org>
-        <20201115205745.618455-3-linus.walleij@linaro.org>
-        <20201121164505.30767f9f@archlinux>
-        <CACRpkdbP3ccrEK47jaQ=r8sYkFuXBcH=+LTKC1xz+kgXmkwomg@mail.gmail.com>
+To:     "Ye, Xiang" <xiang.ye@intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>, jikos@kernel.org,
+        srinivas.pandruvada@linux.intel.com, linux-input@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] HID: hid-sensor-custom: Add custom sensor iio
+ support
+Message-ID: <20201128132931.4844ceb5@archlinux>
+In-Reply-To: <20201125022721.GA4958@host>
+References: <20201119100331.2594-1-xiang.ye@intel.com>
+        <20201119100331.2594-2-xiang.ye@intel.com>
+        <20201121172127.18bdd4bb@archlinux>
+        <20201124102905.GA29864@host>
+        <20201124113211.00003141@Huawei.com>
+        <20201125022721.GA4958@host>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -56,42 +57,114 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 28 Nov 2020 12:44:26 +0100
-Linus Walleij <linus.walleij@linaro.org> wrote:
+On Wed, 25 Nov 2020 10:27:21 +0800
+"Ye, Xiang" <xiang.ye@intel.com> wrote:
 
-> On Sat, Nov 21, 2020 at 5:45 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Sun, 15 Nov 2020 21:57:45 +0100
-> > Linus Walleij <linus.walleij@linaro.org> wrote:
-> >  
-> > > These Bosch accelerometers have two supplies, VDD and VDDIO.
-> > > Add some rudimentary support to obtain and enable these
-> > > regulators during probe() and disable them during remove()
-> > > or on the errorpath.
-> > >
-> > > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>  
-> 
-> > All looks good to me.  Will leave it for a bit longer though to let
-> > Rob have a chance to look at the dt binding doc.
-> >
-> > As ever, if it seems to have gotten lost it is probably worth
-> > poking me.  
-> 
-> It's been another week and the bindings are simple enough
-> I think? There has been plenty of time to review these
-> bindings as they are now in v3 even, but it's a soft measure,
-> I know there is usually this YAML-bot that complains if
-> something is way out of line at least.
-Agreed. No need to bother Rob with this one if he's busy.
-It's had 2 weeks in it's final patch version.
+> On Tue, Nov 24, 2020 at 11:32:11AM +0000, Jonathan Cameron wrote:
+> > Hi
+> > ...  
+> > > > >  	sysfs_remove_group(&sensor_inst->pdev->dev.kobj,
+> > > > > diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+> > > > > index 530c09f3e64a..46db3056f04b 100644
+> > > > > --- a/include/linux/hid-sensor-ids.h
+> > > > > +++ b/include/linux/hid-sensor-ids.h
+> > > > > @@ -128,6 +128,10 @@
+> > > > >  #define HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND		0x15
+> > > > >  
+> > > > >  /* Common selectors */
+> > > > > +#define HID_USAGE_SENSOR_PROP_DESC				0x200300
+> > > > > +#define HID_USAGE_SENSOR_PROP_FRIENDLY_NAME			0x200301
+> > > > > +#define HID_USAGE_SENSOR_PROP_SERIAL_NUM			0x200307
+> > > > > +#define HID_USAGE_SENSOR_PROP_MANUFACTURER			0x200305
+> > > > >  #define HID_USAGE_SENSOR_PROP_REPORT_INTERVAL			0x20030E
+> > > > >  #define HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS			0x20030F
+> > > > >  #define HID_USAGE_SENSOR_PROP_SENSITIVITY_RANGE_PCT		0x200310
+> > > > > @@ -159,4 +163,39 @@
+> > > > >  #define HID_USAGE_SENSOR_PROP_REPORTING_STATE_NO_EVENTS_ENUM	0x200840
+> > > > >  #define HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EVENTS_ENUM	0x200841
+> > > > >  
+> > > > > +/* Custom Sensor (2000e1) */
+> > > > > +#define HID_USAGE_SENSOR_HINGE				        0x20020B
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_LOCATION			0x200400
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELE_TIME_SINCE_SYS_BOOT		0x20052B
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_USAGE		0x200541
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE		0x200543    
+> > > > Given these are all defined in a block could we use a macro?
+> > > > HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE(x)                     0x200543 + (x)
+> > > > 
+> > > > perhaps?
+> > > > 
+> > > > I'm not sure what the preferred convention is in this file.    
+> > > If using HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE(x), we should give a range to x, like (1<x<28).
+> > > How to ensure the x is in the range? It can be an issue when someone using x out of the range.  
+> > 
+> > It can be done via build time checking.
+> > https://elixir.bootlin.com/linux/latest/source/include/linux/build_bug.h#L49
+> > Normally we wouldn't bother and would rely on review to pick up on this but
+> > I'd have no problem with a paranoid check in the macro. Particularly as 28 isn't
+> > exactly and obvious number to support!  
+> Because HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE is used as case condition, we cannot use
+> Build_BUG_ON in the macro like below.
+> #define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE(x)                            \
+>        ({                                                                     \
+>                BUILD_BUG_ON(x > 28);                                          \
+>                BUILD_BUG_ON(x < 0);                                           \
+>                (HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_BASE + (x));         \
+>        })
 
-Applied to the togreg branch of iio.git and pushed out as
-testing for the autobuilders to poke at it.
+Ah. I'd missed the case condition element.  Good point!
+
+
+> 
+> I can use the define with a comments to declear the range of x.
+> #define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_BASE           0x200543
+> /* Custom Sensor data 28=>x>=0 */
+> #define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE(x)                            \
+> 	(HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_BASE + (x)) 
+> 
+Sounds good to me.
 
 Thanks,
 
 Jonathan
 
-> 
-> Yours,
-> Linus Walleij
+> Thanks
+> Ye, Xiang
+> >   
+> > > 
+> > > Thanks
+> > > Xiang  
+> > > >     
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_1		0x200544
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_2		0x200545
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_3		0x200546
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_4		0x200547
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_5		0x200548
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_6		0x200549
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_7		0x20054A
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_8		0x20054B
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_9		0x20054C
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_10		0x20054D
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_11		0x20054E
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_12		0x20054F
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_13		0x200550
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_14		0x200551
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_15		0x200552
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_16		0x200553
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_17		0x200554
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_18		0x200555
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_19		0x200556
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_20		0x200557
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_21		0x200558
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_22		0x200559
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_23		0x20055A
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_24		0x20055B
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_25		0x20055C
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_26		0x20055D
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_27		0x20055E
+> > > > > +#define HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE_28		0x20055F
+> > > > > +
+> > > > >  #endif    
+> > > >     
+> >   
 
