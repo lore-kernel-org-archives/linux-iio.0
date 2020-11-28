@@ -7,43 +7,42 @@ X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 54420C8302C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 841B6C8302D
 	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 15BE8223BD
+	by mail.kernel.org (Postfix) with ESMTP id 6198E223C6
 	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:31 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hdeWmGD/"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="IiABbyqx"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388097AbgK1Vt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S2388093AbgK1Vt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sat, 28 Nov 2020 16:49:28 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48966 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:50322 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732568AbgK1TCA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 14:02:00 -0500
+        id S1732538AbgK1TBy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 14:01:54 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3B04824672;
-        Sat, 28 Nov 2020 13:34:12 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0EE9824654;
+        Sat, 28 Nov 2020 13:04:36 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606570453;
-        bh=yZvlOf7/LQLMMBpn5XVrFU9zEb4NbWedk0oxkJYa5mE=;
+        s=default; t=1606568677;
+        bh=AS491kcEn7jKh+dTN2DjipJSCONVK9RI7M4QUO1+bWA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hdeWmGD/FVy1+NCMSvgLzHJanDF2tSUyJfukJDIV7IgSlHsIIQz56CVIKZt0095JU
-         nSQ1Q5ypLvlabeCUOdJWYh7eQYSHnyO05v7q4ZLMpz5J8TQSMQZ9P/r1Ma/xqlRQdC
-         EJnJGZJSDZE7B0jiJdo01E8ye7gH/WPJ9n3usHVM=
-Date:   Sat, 28 Nov 2020 13:34:08 +0000
+        b=IiABbyqxpzx3IX+fmZnshBsjQyTtfEL2BZT8r5nxjhrwYN2CmVUrZzlXkCeAxFsdz
+         TeOviaUeTsmKofhuHdhRL9/WTruz3H8RKnC9hTVF/viFpir1/7xNx5sm93p2pYp1zb
+         8e3pcq3zoDwASCdjOGZFZ4Pyq6W3uf0yOhFclo9c=
+Date:   Sat, 28 Nov 2020 13:04:33 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
 Cc:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <lars@metafoo.de>, <alexandru.tachici@analog.com>
-Subject: Re: [PATCH v3] iio: ad_sigma_delta: Don't put SPI transfer buffer
- on the stack
-Message-ID: <20201128133408.3218c1fd@archlinux>
-In-Reply-To: <20201124123807.19717-1-alexandru.ardelean@analog.com>
-References: <20201113094059.152651-1-alexandru.ardelean@analog.com>
-        <20201124123807.19717-1-alexandru.ardelean@analog.com>
+        <colin.king@canonical.com>
+Subject: Re: [PATCH 1/2] iio: adc: ad7298: convert probe to device-managed
+ functions
+Message-ID: <20201128130433.320de46e@archlinux>
+In-Reply-To: <20201127094038.91714-1-alexandru.ardelean@analog.com>
+References: <20201127094038.91714-1-alexandru.ardelean@analog.com>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -52,119 +51,115 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 24 Nov 2020 14:38:07 +0200
+On Fri, 27 Nov 2020 11:40:37 +0200
 Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
 
-> From: Lars-Peter Clausen <lars@metafoo.de>
+> This change converts the probe of this driver to use device-managed
+> register functions, and a devm_add_action_or_reset() for the regulator
+> disable.
 > 
-> Use a heap allocated memory for the SPI transfer buffer. Using stack memory
-> can corrupt stack memory when using DMA on some systems.
+> With this, the exit & error paths can be removed.
+> Another side-effect is that this should avoid some static-analyzer's check
+> with respect to a potential null dereference of the regulator. The null
+> dereference isn't likely to happen (under normal operation), so there isn't
+> a requirement to have this fixed/backported in other releases.
 > 
-> This change moves the buffer from the stack of the trigger handler call to
-> the heap of the buffer of the state struct. The size increases takes into
-> account the alignment for the timestamp, which is 8 bytes.
+> As a note: this is removing spi_set_drvdata() since there is no other
+> spi_get_drvdata() (or dev_get_drvdata()) call that need it.
 > 
-> The 'data' buffer is split into 'tx_buf' and 'rx_buf', to make a clearer
-> separation of which part of the buffer should be used for TX & RX.
-> 
-> Fixes: af3008485ea03 ("iio:adc: Add common code for ADI Sigma Delta devices")
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Colin Ian King <colin.king@canonical.com>
 > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Given where we are in the cycle and the fact this has been there a long time
-I've queued it up for the next merge window.  Also marked it for stable so
-it will get backported in the medium term.
-
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to do their usual magic.
+Series applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to work their magic.
 
 Thanks,
 
 Jonathan
 
 > ---
->  drivers/iio/adc/ad_sigma_delta.c       | 18 ++++++++----------
->  include/linux/iio/adc/ad_sigma_delta.h |  6 +++++-
->  2 files changed, 13 insertions(+), 11 deletions(-)
+>  drivers/iio/adc/ad7298.c | 46 +++++++++++++---------------------------
+>  1 file changed, 15 insertions(+), 31 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-> index 86039e9ecaca..3a6f239d4acc 100644
-> --- a/drivers/iio/adc/ad_sigma_delta.c
-> +++ b/drivers/iio/adc/ad_sigma_delta.c
-> @@ -57,7 +57,7 @@ EXPORT_SYMBOL_GPL(ad_sd_set_comm);
->  int ad_sd_write_reg(struct ad_sigma_delta *sigma_delta, unsigned int reg,
->  	unsigned int size, unsigned int val)
->  {
-> -	uint8_t *data = sigma_delta->data;
-> +	uint8_t *data = sigma_delta->tx_buf;
->  	struct spi_transfer t = {
->  		.tx_buf		= data,
->  		.len		= size + 1,
-> @@ -99,7 +99,7 @@ EXPORT_SYMBOL_GPL(ad_sd_write_reg);
->  static int ad_sd_read_reg_raw(struct ad_sigma_delta *sigma_delta,
->  	unsigned int reg, unsigned int size, uint8_t *val)
->  {
-> -	uint8_t *data = sigma_delta->data;
-> +	uint8_t *data = sigma_delta->tx_buf;
->  	int ret;
->  	struct spi_transfer t[] = {
->  		{
-> @@ -146,22 +146,22 @@ int ad_sd_read_reg(struct ad_sigma_delta *sigma_delta,
->  {
->  	int ret;
->  
-> -	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->data);
-> +	ret = ad_sd_read_reg_raw(sigma_delta, reg, size, sigma_delta->rx_buf);
->  	if (ret < 0)
->  		goto out;
->  
->  	switch (size) {
->  	case 4:
-> -		*val = get_unaligned_be32(sigma_delta->data);
-> +		*val = get_unaligned_be32(sigma_delta->rx_buf);
->  		break;
->  	case 3:
-> -		*val = get_unaligned_be24(&sigma_delta->data[0]);
-> +		*val = get_unaligned_be24(sigma_delta->rx_buf);
->  		break;
->  	case 2:
-> -		*val = get_unaligned_be16(sigma_delta->data);
-> +		*val = get_unaligned_be16(sigma_delta->rx_buf);
->  		break;
->  	case 1:
-> -		*val = sigma_delta->data[0];
-> +		*val = sigma_delta->rx_buf[0];
->  		break;
->  	default:
->  		ret = -EINVAL;
-> @@ -395,11 +395,9 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
-> +	uint8_t *data = sigma_delta->rx_buf;
->  	unsigned int reg_size;
->  	unsigned int data_reg;
-> -	uint8_t data[16];
-> -
-> -	memset(data, 0x00, 16);
->  
->  	reg_size = indio_dev->channels[0].scan_type.realbits +
->  			indio_dev->channels[0].scan_type.shift;
-> diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
-> index a3a838dcf8e4..efc2413abaf4 100644
-> --- a/include/linux/iio/adc/ad_sigma_delta.h
-> +++ b/include/linux/iio/adc/ad_sigma_delta.h
-> @@ -79,8 +79,12 @@ struct ad_sigma_delta {
->  	/*
->  	 * DMA (thus cache coherency maintenance) requires the
->  	 * transfer buffers to live in their own cache lines.
-> +	 * 'tx_buf' is up to 32 bits.
-> +	 * 'rx_buf' is up to 32 bits per sample + 64 bit timestamp,
-> +	 * rounded to 16 bytes to take into account padding.
->  	 */
-> -	uint8_t				data[4] ____cacheline_aligned;
-> +	uint8_t				tx_buf[4] ____cacheline_aligned;
-> +	uint8_t				rx_buf[16] __aligned(8);
+> diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
+> index fa1047f74a1f..ecdb01bd5b2f 100644
+> --- a/drivers/iio/adc/ad7298.c
+> +++ b/drivers/iio/adc/ad7298.c
+> @@ -279,6 +279,13 @@ static const struct iio_info ad7298_info = {
+>  	.update_scan_mode = ad7298_update_scan_mode,
 >  };
 >  
->  static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
+> +static void ad7298_reg_disable(void *data)
+> +{
+> +	struct regulator *reg = data;
+> +
+> +	regulator_disable(reg);
+> +}
+> +
+>  static int ad7298_probe(struct spi_device *spi)
+>  {
+>  	struct ad7298_state *st;
+> @@ -306,9 +313,12 @@ static int ad7298_probe(struct spi_device *spi)
+>  		ret = regulator_enable(st->reg);
+>  		if (ret)
+>  			return ret;
+> -	}
+>  
+> -	spi_set_drvdata(spi, indio_dev);
+> +		ret = devm_add_action_or_reset(&spi->dev, ad7298_reg_disable,
+> +					       st->reg);
+> +		if (ret)
+> +			return ret;
+> +	}
+>  
+>  	st->spi = spi;
+>  
+> @@ -334,37 +344,12 @@ static int ad7298_probe(struct spi_device *spi)
+>  	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
+>  	spi_message_add_tail(&st->scan_single_xfer[2], &st->scan_single_msg);
+>  
+> -	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
+>  			&ad7298_trigger_handler, NULL);
+>  	if (ret)
+> -		goto error_disable_reg;
+> -
+> -	ret = iio_device_register(indio_dev);
+> -	if (ret)
+> -		goto error_cleanup_ring;
+> -
+> -	return 0;
+> -
+> -error_cleanup_ring:
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -error_disable_reg:
+> -	if (st->ext_ref)
+> -		regulator_disable(st->reg);
+> -
+> -	return ret;
+> -}
+> -
+> -static int ad7298_remove(struct spi_device *spi)
+> -{
+> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> -	struct ad7298_state *st = iio_priv(indio_dev);
+> -
+> -	iio_device_unregister(indio_dev);
+> -	iio_triggered_buffer_cleanup(indio_dev);
+> -	if (st->ext_ref)
+> -		regulator_disable(st->reg);
+> +		return ret;
+>  
+> -	return 0;
+> +	return devm_iio_device_register(&spi->dev, indio_dev);
+>  }
+>  
+>  static const struct spi_device_id ad7298_id[] = {
+> @@ -378,7 +363,6 @@ static struct spi_driver ad7298_driver = {
+>  		.name	= "ad7298",
+>  	},
+>  	.probe		= ad7298_probe,
+> -	.remove		= ad7298_remove,
+>  	.id_table	= ad7298_id,
+>  };
+>  module_spi_driver(ad7298_driver);
 
