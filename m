@@ -2,203 +2,81 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DFD9BC83AA0
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A32C63777
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AAECD2231B
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9EF2D222C2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:07 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="vzSZqtyx"
+	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="DJ/nfbKG"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729678AbgK1VtW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45766 "EHLO mail.kernel.org"
+        id S1730846AbgK1VtU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:20 -0500
+Received: from mout.gmx.net ([212.227.15.19]:42797 "EHLO mout.gmx.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730883AbgK1SL4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:11:56 -0500
-Received: from localhost.localdomain (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0A524246DE;
-        Sat, 28 Nov 2020 17:35:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606584953;
-        bh=6qNyZ1RtQGHuKLMWge17BBB6zo62SDUtn3lfhDZJZAk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=vzSZqtyxwLzk+3Q2GF6+3WfEP7KYzBpUefXHLTXmRq7FjIZMG/k3GDDgGEF7z3xPr
-         90LXvcn6jVEwivGKxPbedMN4v/bqddMc8wgorcrUfUpROlWTd2PmGbfxlMKTjIMR1b
-         TfIljwhhINop5T409hmlhkkuFb96kut70UOtsPIs=
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-i2c@vger.kernel.org
-Cc:     Rob Herring <robh+dt@kernel.org>, Wolfram Sang <wsa@kernel.org>,
-        Peter Rosin <peda@axentia.se>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v2 3/3] dt-bindings:iio:gyro:invensense,mpu3050: txt to yaml format conversion.
-Date:   Sat, 28 Nov 2020 17:33:43 +0000
-Message-Id: <20201128173343.390165-4-jic23@kernel.org>
-X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20201128173343.390165-1-jic23@kernel.org>
-References: <20201128173343.390165-1-jic23@kernel.org>
+        id S1728495AbgK1SBn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:01:43 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
+        s=badeba3b8450; t=1606586410;
+        bh=llOEp7TKQR/EGzhXDacWl6woOORc2KNFI1XW/Ng1WBE=;
+        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=DJ/nfbKGA6OwjBY2mp6hbCcOIirJNfKNpSO7kJn1PuSzwvcjqecLXZTAjrFoQ1VMx
+         CBQMAUjjJXiXKF3bY3ZyVdNQHACYvU2zzn7vKRVKgPzxkX8bfEfxgvnb8aB8XM7Nxm
+         cxOX42gAEFQFRlCuQDmnlYVKPTm7T9j3JY7wKJdE=
+X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
+Received: from Venus.fritz.box ([78.42.220.31]) by mail.gmx.com (mrgmx004
+ [212.227.17.190]) with ESMTPSA (Nemesis) id 1N4QsO-1k1f4F49ag-011S5k; Sat, 28
+ Nov 2020 14:45:42 +0100
+From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
+To:     jic23@kernel.org
+Cc:     andy.shevchenko@gmail.com, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lino Sanfilippo <LinoSanfilippo@gmx.de>
+Subject: [RESEND PATCH 2/2] io:core: In iio_map_array_register() cleanup in case of error
+Date:   Sat, 28 Nov 2020 14:44:19 +0100
+Message-Id: <1606571059-13974-2-git-send-email-LinoSanfilippo@gmx.de>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1606571059-13974-1-git-send-email-LinoSanfilippo@gmx.de>
+References: <1606571059-13974-1-git-send-email-LinoSanfilippo@gmx.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: base64
+X-Provags-ID: V03:K1:42saRdxZ6O4sXs+ITGkakIE0b5eMR+hUo7mlPXHk4FtfBar2KNJ
+ TqMXXQOA/UYgWTjPDT8zT05SLCRCfXUBA0s0Ss+thXqER5ZeLG4DYrCx2dkC6truEyGznp6
+ vClgHCNLnSe62YVHnDEBZlgxQzg+fCqezVMpOvH+P0hrWkx0KOgsRRPj2NjoDkX7fWAgVC4
+ JvqZPRYgT/rzIqCvLbUFQ==
+X-UI-Out-Filterresults: notjunk:1;V03:K0:g9bbeuahMiQ=:ssS7esfd+e8zblSYq5aV44
+ 2ckzlX5Ha/IjZ/jI5KpM7aNqIZUNH6ZHhaZt8MjXBT1/ESZ/4t/c8/JJXyz3IWUK300mZE2hV
+ OOfieIqXmzyw7xTZwkga4P5HcVEdd40avx2+rc64saYPXVq1kyfZHj1ZPnSMaEwjWpuxefGgy
+ aQF3gVLlDRlhtZxIF9Rz2EGKYzpBTj2KfO8yywlmvjAsA7Y9jOmsnOLWnVMKcbPcLYbSf5CXT
+ E1ctokGfs1V1QfQujR5u/pnjCpLixXXd+B5jkc4BrTHAVS8031Fb3OpZnbSWiFHY5GM070lMN
+ DMu9eCewgtIKMwbWOz7dyq5I8oCqPWFKZWTLEIHZ5UDA9kD/2U6tXQanh9YnWhOmk+H08aTE5
+ 4JIfK4DVBMNV7WiID8aoa/D93fclGkqgdJs+0m4g/pEwRUpEahptav/wtcaNieI5sgm4qWxkt
+ uTeLh+ayDsIgVPkwFl406No678sWPhK9soHnBet71tFukXRDcaUiY4zQuP8RPmg1J3o+0NDpL
+ EdYCMUJN2C4HzIZDm4msMJTePFLiER3MXBNnyPkv/wN7gtyEZkKZtxbR8piMoer5bhhujFQVI
+ jK2X1quyuqQ3Ip6QdoGMN0aHvbcvtq9ONDJb2fG3uOeo2+tn+jULHQkljy1LWKBvv8Fzkrkq6
+ nxUMn3c0zkiOxnFB1/S4OKgYPBL8DelTmcjuHbLO4XOAdym7T7K9k5OVkTevTkofYEvFDOXup
+ MiRRH6lhN+EmiS281CmslUEm/fQszY3BiJUt/RxGl21plrxulAHkpUX23GeIZ8JGOzzWDJo6e
+ LjwBOP3rfHkoqWqfRnphPaObfHv10y5UrKxbs2vXOhbkvjz4XKLcvgHx0BjVjMKYnjLlJadIP
+ F24gpLOFcn4cs6U/C5qg==
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-Very similar to the mpu6050 binding.
-Only unusual element is the i2c-gate section.
-Example tweaked a little to include a real device behind the gate.
-
-As Rob Herring suggested, dropped use of explicit i2c-gate yaml
-binding in favour of just using the i2c-controller.yaml binding
-directly.
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Link: https://lore.kernel.org/r/20201031181801.742585-4-jic23@kernel.org
----
- .../iio/gyroscope/invensense,mpu3050.txt      | 45 ------------
- .../iio/gyroscope/invensense,mpu3050.yaml     | 70 +++++++++++++++++++
- 2 files changed, 70 insertions(+), 45 deletions(-)
-
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
-deleted file mode 100644
-index 233fe207aded..000000000000
---- a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
-+++ /dev/null
-@@ -1,45 +0,0 @@
--Invensense MPU-3050 Gyroscope device tree bindings
--
--Required properties:
--  - compatible : should be "invensense,mpu3050"
--  - reg : the I2C address of the sensor
--
--Optional properties:
--  - interrupts : interrupt mapping for the trigger interrupt from the
--    internal oscillator. The following IRQ modes are supported:
--    IRQ_TYPE_EDGE_RISING, IRQ_TYPE_EDGE_FALLING, IRQ_TYPE_LEVEL_HIGH and
--    IRQ_TYPE_LEVEL_LOW. The driver should detect and configure the hardware
--    for the desired interrupt type.
--  - vdd-supply : supply regulator for the main power voltage.
--  - vlogic-supply : supply regulator for the signal voltage.
--  - mount-matrix : see iio/mount-matrix.txt
--
--Optional subnodes:
--  - The MPU-3050 will pass through and forward the I2C signals from the
--    incoming I2C bus, alternatively drive traffic to a slave device (usually
--    an accelerometer) on its own initiative. Therefore is supports a subnode
--    i2c gate node. For details see: i2c/i2c-gate.txt
--
--Example:
--
--mpu3050@68 {
--	compatible = "invensense,mpu3050";
--	reg = <0x68>;
--	interrupt-parent = <&foo>;
--	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
--	vdd-supply = <&bar>;
--	vlogic-supply = <&baz>;
--
--	/* External I2C interface */
--	i2c-gate {
--		#address-cells = <1>;
--		#size-cells = <0>;
--
--		fnord@18 {
--			compatible = "fnord";
--			reg = <0x18>;
--			interrupt-parent = <&foo>;
--			interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
--		};
--	};
--};
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.yaml b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.yaml
-new file mode 100644
-index 000000000000..7e2accc3d5ce
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.yaml
-@@ -0,0 +1,70 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/gyroscope/invensense,mpu3050.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Invensense MPU-3050 Gyroscope
-+
-+maintainers:
-+  - Linus Walleij <linus.walleij@linaro.org>
-+
-+properties:
-+  compatible:
-+    const: invensense,mpu3050
-+
-+  reg:
-+    maxItems: 1
-+
-+  vdd-supply: true
-+
-+  vlogic-supply: true
-+
-+  interrupts:
-+    minItems: 1
-+    description:
-+      Interrupt mapping for the trigger interrupt from the internal oscillator.
-+
-+  mount-matrix: true
-+
-+  i2c-gate:
-+    $ref: /schemas/i2c/i2c-controller.yaml
-+    unevaluatedProperties: false
-+    description: |
-+      The MPU-3050 will pass through and forward the I2C signals from the
-+      incoming I2C bus, alternatively drive traffic to a slave device (usually
-+      an accelerometer) on its own initiative. Therefore is supports an
-+      i2c-gate subnode.
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        gyroscope@68 {
-+            compatible = "invensense,mpu3050";
-+            reg = <0x68>;
-+            interrupt-parent = <&foo>;
-+            interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
-+            vdd-supply = <&bar>;
-+            vlogic-supply = <&baz>;
-+
-+            i2c-gate {
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+
-+                magnetometer@c {
-+                    compatible = "ak,ak8975";
-+                    reg = <0x0c>;
-+                };
-+            };
-+        };
-+    };
-+...
--- 
-2.29.2
-
+SW4gZnVuY3Rpb24gaWlvX21hcF9hcnJheV9yZWdpc3RlcigpIHByb3Blcmx5IHJld2luZCBpbiBj
+YXNlIG9mIGVycm9yLgoKU2lnbmVkLW9mZi1ieTogTGlubyBTYW5maWxpcHBvIDxMaW5vU2FuZmls
+aXBwb0BnbXguZGU+ClJldmlld2VkLWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHkuc2hldmNoZW5r
+b0BnbWFpbC5jb20+Ci0tLQogZHJpdmVycy9paW8vaW5rZXJuLmMgfCAyICsrCiAxIGZpbGUgY2hh
+bmdlZCwgMiBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vaW5rZXJuLmMg
+Yi9kcml2ZXJzL2lpby9pbmtlcm4uYwppbmRleCAzOWMxZDYzLi5mZTMwYmNiIDEwMDY0NAotLS0g
+YS9kcml2ZXJzL2lpby9pbmtlcm4uYworKysgYi9kcml2ZXJzL2lpby9pbmtlcm4uYwpAQCAtNjAs
+NiArNjAsOCBAQCBpbnQgaWlvX21hcF9hcnJheV9yZWdpc3RlcihzdHJ1Y3QgaWlvX2RldiAqaW5k
+aW9fZGV2LCBzdHJ1Y3QgaWlvX21hcCAqbWFwcykKIAkJaSsrOwogCX0KIGVycm9yX3JldDoKKwlp
+ZiAocmV0KQorCQlpaW9fbWFwX2FycmF5X3VucmVnaXN0ZXJfbG9ja2VkKGluZGlvX2Rldik7CiAJ
+bXV0ZXhfdW5sb2NrKCZpaW9fbWFwX2xpc3RfbG9jayk7CiAKIAlyZXR1cm4gcmV0OwotLSAKMi43
+LjQKCg==
