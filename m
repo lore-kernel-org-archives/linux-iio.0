@@ -5,50 +5,44 @@ X-Spam-Level:
 X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 861B9C83A93
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 284DFC83AA7
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 538A522404
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EB3C5222C2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="bTqju6rl"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="rAT0j+UH"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730159AbgK1Vt0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:47726 "EHLO mail.kernel.org"
+        id S1732756AbgK1VtY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46996 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1731039AbgK1Sq4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:46:56 -0500
+        id S1729872AbgK1Sb4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:31:56 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id D9EBF246A7;
-        Sat, 28 Nov 2020 15:26:48 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 596DC246B3;
+        Sat, 28 Nov 2020 15:42:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606577210;
-        bh=qPBrPmLwaSNVKpA1tKKhEp22LNFlPYTeLeRg1o4+Kbk=;
+        s=default; t=1606578177;
+        bh=PehoDkJGJYuvwMfXbqGvqcusVZuYX70NuYcbiOg9oZE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=bTqju6rlhAxbIszR0SemxWgC0lYMHEHsrXjwKsjg86hDqFLK1fORldQq/PhAT7dzp
-         QPjaTDb+uaCvH1HwPF3AvotxnazXLNnP2Ks6FvlOyJ3D1cAjfJn2xoxNXBDX/RmumC
-         bWUsw+Lari6vZscVJkMDJN/ReUCSJuxah5+8ZdyA=
-Date:   Sat, 28 Nov 2020 15:26:45 +0000
+        b=rAT0j+UHvy9ewef3k+3wzoup8sA0nVJwBOl98SpqzCogRl16uqZHNnKjBnn3I2QLo
+         H6kZo7FPXCdqP+ihFpnMBjhRfz1p0qyI4PnV5wL5JnLvzt1lyOL4GwQ2rdjMKusACT
+         9nJr/BMTcCM6MZZo0DMjnjw16KvP8Szc/AFzb6Vo=
+Date:   Sat, 28 Nov 2020 15:42:54 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 01/11] iio: adc: at91_adc: remove platform data
-Message-ID: <20201128152645.0e0a7e4a@archlinux>
-In-Reply-To: <20201128142342.GJ1296649@piout.net>
-References: <20201117140656.1235055-1-alexandre.belloni@bootlin.com>
-        <20201117140656.1235055-2-alexandre.belloni@bootlin.com>
-        <20201128140427.61dbaceb@archlinux>
-        <20201128142342.GJ1296649@piout.net>
+To:     Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: core: Consolidate
+ iio_format_avail_{list,range}()
+Message-ID: <20201128154254.4619329e@archlinux>
+In-Reply-To: <20201114120000.6533-1-lars@metafoo.de>
+References: <20201114120000.6533-1-lars@metafoo.de>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -57,243 +51,122 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 28 Nov 2020 15:23:42 +0100
-Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
+On Sat, 14 Nov 2020 12:59:59 +0100
+Lars-Peter Clausen <lars@metafoo.de> wrote:
 
-> Hi,
+> The iio_format_avail_list() and iio_format_avail_range() functions are
+> almost identical. The only differences are that iio_format_avail_range()
+> expects a fixed amount of items and adds brackets "[ ]" around the output.
 > 
-> On 28/11/2020 14:04:27+0000, Jonathan Cameron wrote:
-> > On Tue, 17 Nov 2020 15:06:46 +0100
-> > Alexandre Belloni <alexandre.belloni@bootlin.com> wrote:
-> >   
-> > > The at91 platforms have been DT only for a while, remove platform data.
-> > > 
-> > > Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-> > > Reviewed-by: Ludovic Desroches <ludovic.desroches@microchip.com>  
-> > 
-> > Hi Alexandre,
-> > 
-> > I'd completely forgotten that we actually had a similar patch that
-> > is already applied from Alexandru back in September.
-> >   
+> Refactor them into a common helper function. This improves the
+> maintainability of the code as it makes it easier to modify the
+> implementation of these functions.
 > 
-> I actually have seen that yesterday too. I even reviewed them...
-> 
-> > Given vast majority matched, I've just changed your patch into one
-> > that drops the id_table (which Alexandru didn't do).
-> > 
-> > So with that tweak applied to the togreg branch of iio.git.
-> >   
-> 
-> Ok, thanks, I guess you didn't push yet, I wanted to check and I didn't
-> find the patches on kernel.org.
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 
-I've actually just backed my try at this out.  It gets a bit messy around
-patch 6-7 so I'd rather you did a rebase.
-
-Please rebase on current togreg branch.
+Nice little cleanup.  Series applied to the togreg branch of iio.git and pushed
+out as testing for the autobuilders to poke at it.
 
 Thanks,
 
 Jonathan
 
+> ---
+>  drivers/iio/industrialio-core.c | 57 ++++++++-------------------------
+>  1 file changed, 14 insertions(+), 43 deletions(-)
 > 
-> 
-> 
-> > Thanks,
-> > 
-> > Jonathan
-> >   
-> > > ---
-> > >  drivers/iio/adc/at91_adc.c             | 80 +++++++-------------------
-> > >  include/linux/platform_data/at91_adc.h | 49 ----------------
-> > >  2 files changed, 22 insertions(+), 107 deletions(-)
-> > >  delete mode 100644 include/linux/platform_data/at91_adc.h
-> > > 
-> > > diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> > > index 9b2c548fae95..62bd35af8b13 100644
-> > > --- a/drivers/iio/adc/at91_adc.c
-> > > +++ b/drivers/iio/adc/at91_adc.c
-> > > @@ -22,8 +22,6 @@
-> > >  #include <linux/slab.h>
-> > >  #include <linux/wait.h>
-> > >  
-> > > -#include <linux/platform_data/at91_adc.h>
-> > > -
-> > >  #include <linux/iio/iio.h>
-> > >  #include <linux/iio/buffer.h>
-> > >  #include <linux/iio/trigger.h>
-> > > @@ -153,6 +151,25 @@
-> > >  #define TOUCH_SHTIM                    0xa
-> > >  #define TOUCH_SCTIM_US		10		/* 10us for the Touchscreen Switches Closure Time */
-> > >  
-> > > +enum atmel_adc_ts_type {
-> > > +	ATMEL_ADC_TOUCHSCREEN_NONE = 0,
-> > > +	ATMEL_ADC_TOUCHSCREEN_4WIRE = 4,
-> > > +	ATMEL_ADC_TOUCHSCREEN_5WIRE = 5,
-> > > +};
-> > > +
-> > > +/**
-> > > + * struct at91_adc_trigger - description of triggers
-> > > + * @name:		name of the trigger advertised to the user
-> > > + * @value:		value to set in the ADC's trigger setup register
-> > > + *			to enable the trigger
-> > > + * @is_external:	Does the trigger rely on an external pin?
-> > > + */
-> > > +struct at91_adc_trigger {
-> > > +	const char	*name;
-> > > +	u8		value;
-> > > +	bool		is_external;
-> > > +};
-> > > +
-> > >  /**
-> > >   * struct at91_adc_reg_desc - Various informations relative to registers
-> > >   * @channel_base:	Base offset for the channel data registers
-> > > @@ -875,9 +892,6 @@ static int at91_adc_probe_dt(struct iio_dev *idev,
-> > >  	int i = 0, ret;
-> > >  	u32 prop;
-> > >  
-> > > -	if (!node)
-> > > -		return -EINVAL;
-> > > -
-> > >  	st->caps = (struct at91_adc_caps *)
-> > >  		of_match_device(at91_adc_dt_ids, &pdev->dev)->data;
-> > >  
-> > > @@ -960,30 +974,6 @@ static int at91_adc_probe_dt(struct iio_dev *idev,
-> > >  	return ret;
-> > >  }
-> > >  
-> > > -static int at91_adc_probe_pdata(struct at91_adc_state *st,
-> > > -				struct platform_device *pdev)
-> > > -{
-> > > -	struct at91_adc_data *pdata = pdev->dev.platform_data;
-> > > -
-> > > -	if (!pdata)
-> > > -		return -EINVAL;
-> > > -
-> > > -	st->caps = (struct at91_adc_caps *)
-> > > -			platform_get_device_id(pdev)->driver_data;
-> > > -
-> > > -	st->use_external = pdata->use_external_triggers;
-> > > -	st->vref_mv = pdata->vref;
-> > > -	st->channels_mask = pdata->channels_used;
-> > > -	st->num_channels = st->caps->num_channels;
-> > > -	st->startup_time = pdata->startup_time;
-> > > -	st->trigger_number = pdata->trigger_number;
-> > > -	st->trigger_list = pdata->trigger_list;
-> > > -	st->registers = &st->caps->registers;
-> > > -	st->touchscreen_type = pdata->touchscreen_type;
-> > > -
-> > > -	return 0;
-> > > -}
-> > > -
-> > >  static const struct iio_info at91_adc_info = {
-> > >  	.read_raw = &at91_adc_read_raw,
-> > >  };
-> > > @@ -1160,15 +1150,9 @@ static int at91_adc_probe(struct platform_device *pdev)
-> > >  
-> > >  	st = iio_priv(idev);
-> > >  
-> > > -	if (pdev->dev.of_node)
-> > > -		ret = at91_adc_probe_dt(idev, pdev);
-> > > -	else
-> > > -		ret = at91_adc_probe_pdata(st, pdev);
-> > > -
-> > > -	if (ret) {
-> > > -		dev_err(&pdev->dev, "No platform data available.\n");
-> > > -		return -EINVAL;
-> > > -	}
-> > > +	ret = at91_adc_probe_dt(idev, pdev);
-> > > +	if (ret)
-> > > +		return ret;
-> > >  
-> > >  	platform_set_drvdata(pdev, idev);
-> > >  
-> > > @@ -1444,29 +1428,9 @@ static const struct of_device_id at91_adc_dt_ids[] = {
-> > >  };
-> > >  MODULE_DEVICE_TABLE(of, at91_adc_dt_ids);
-> > >  
-> > > -static const struct platform_device_id at91_adc_ids[] = {
-> > > -	{
-> > > -		.name = "at91sam9260-adc",
-> > > -		.driver_data = (unsigned long)&at91sam9260_caps,
-> > > -	}, {
-> > > -		.name = "at91sam9rl-adc",
-> > > -		.driver_data = (unsigned long)&at91sam9rl_caps,
-> > > -	}, {
-> > > -		.name = "at91sam9g45-adc",
-> > > -		.driver_data = (unsigned long)&at91sam9g45_caps,
-> > > -	}, {
-> > > -		.name = "at91sam9x5-adc",
-> > > -		.driver_data = (unsigned long)&at91sam9x5_caps,
-> > > -	}, {
-> > > -		/* terminator */
-> > > -	}
-> > > -};
-> > > -MODULE_DEVICE_TABLE(platform, at91_adc_ids);
-> > > -
-> > >  static struct platform_driver at91_adc_driver = {
-> > >  	.probe = at91_adc_probe,
-> > >  	.remove = at91_adc_remove,
-> > > -	.id_table = at91_adc_ids,
-> > >  	.driver = {
-> > >  		   .name = DRIVER_NAME,
-> > >  		   .of_match_table = of_match_ptr(at91_adc_dt_ids),
-> > > diff --git a/include/linux/platform_data/at91_adc.h b/include/linux/platform_data/at91_adc.h
-> > > deleted file mode 100644
-> > > index f20eaeb827ce..000000000000
-> > > --- a/include/linux/platform_data/at91_adc.h
-> > > +++ /dev/null
-> > > @@ -1,49 +0,0 @@
-> > > -/* SPDX-License-Identifier: GPL-2.0-or-later */
-> > > -/*
-> > > - * Copyright (C) 2011 Free Electrons
-> > > - */
-> > > -
-> > > -#ifndef _AT91_ADC_H_
-> > > -#define _AT91_ADC_H_
-> > > -
-> > > -enum atmel_adc_ts_type {
-> > > -	ATMEL_ADC_TOUCHSCREEN_NONE = 0,
-> > > -	ATMEL_ADC_TOUCHSCREEN_4WIRE = 4,
-> > > -	ATMEL_ADC_TOUCHSCREEN_5WIRE = 5,
-> > > -};
-> > > -
-> > > -/**
-> > > - * struct at91_adc_trigger - description of triggers
-> > > - * @name:		name of the trigger advertised to the user
-> > > - * @value:		value to set in the ADC's trigger setup register
-> > > -			to enable the trigger
-> > > - * @is_external:	Does the trigger rely on an external pin?
-> > > - */
-> > > -struct at91_adc_trigger {
-> > > -	const char	*name;
-> > > -	u8		value;
-> > > -	bool		is_external;
-> > > -};
-> > > -
-> > > -/**
-> > > - * struct at91_adc_data - platform data for ADC driver
-> > > - * @channels_used:		channels in use on the board as a bitmask
-> > > - * @startup_time:		startup time of the ADC in microseconds
-> > > - * @trigger_list:		Triggers available in the ADC
-> > > - * @trigger_number:		Number of triggers available in the ADC
-> > > - * @use_external_triggers:	does the board has external triggers availables
-> > > - * @vref:			Reference voltage for the ADC in millivolts
-> > > - * @touchscreen_type:		If a touchscreen is connected, its type (4 or 5 wires)
-> > > - */
-> > > -struct at91_adc_data {
-> > > -	unsigned long			channels_used;
-> > > -	u8				startup_time;
-> > > -	struct at91_adc_trigger		*trigger_list;
-> > > -	u8				trigger_number;
-> > > -	bool				use_external_triggers;
-> > > -	u16				vref;
-> > > -	enum atmel_adc_ts_type		touchscreen_type;
-> > > -};
-> > > -
-> > > -extern void __init at91_add_device_adc(struct at91_adc_data *data);
-> > > -#endif  
-> >   
-> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index 9955672fc16a..3e71fcab7cbd 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -698,11 +698,13 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>  	return iio_format_value(buf, ret, val_len, vals);
+>  }
+>  
+> -static ssize_t iio_format_avail_list(char *buf, const int *vals,
+> -				     int type, int length)
+> +static ssize_t iio_format_list(char *buf, const int *vals, int type, int length,
+> +			       const char *prefix, const char *suffix)
+>  {
+> +	ssize_t len;
+>  	int i;
+> -	ssize_t len = 0;
+> +
+> +	len = scnprintf(buf, PAGE_SIZE, prefix);
+>  
+>  	switch (type) {
+>  	case IIO_VAL_INT:
+> @@ -716,7 +718,7 @@ static ssize_t iio_format_avail_list(char *buf, const int *vals,
+>  						" ");
+>  			else
+>  				len += scnprintf(buf + len, PAGE_SIZE - len,
+> -						"\n");
+> +						"%s\n", suffix);
+>  			if (len >= PAGE_SIZE)
+>  				return -EFBIG;
+>  		}
+> @@ -732,7 +734,7 @@ static ssize_t iio_format_avail_list(char *buf, const int *vals,
+>  						" ");
+>  			else
+>  				len += scnprintf(buf + len, PAGE_SIZE - len,
+> -						"\n");
+> +						"%s\n", suffix);
+>  			if (len >= PAGE_SIZE)
+>  				return -EFBIG;
+>  		}
+> @@ -741,47 +743,16 @@ static ssize_t iio_format_avail_list(char *buf, const int *vals,
+>  	return len;
+>  }
+>  
+> -static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
+> +static ssize_t iio_format_avail_list(char *buf, const int *vals,
+> +				     int type, int length)
+>  {
+> -	int i;
+> -	ssize_t len;
+>  
+> -	len = snprintf(buf, PAGE_SIZE, "[");
+> -	switch (type) {
+> -	case IIO_VAL_INT:
+> -		for (i = 0; i < 3; i++) {
+> -			len += __iio_format_value(buf + len, PAGE_SIZE - len,
+> -						  type, 1, &vals[i]);
+> -			if (len >= PAGE_SIZE)
+> -				return -EFBIG;
+> -			if (i < 2)
+> -				len += scnprintf(buf + len, PAGE_SIZE - len,
+> -						" ");
+> -			else
+> -				len += scnprintf(buf + len, PAGE_SIZE - len,
+> -						"]\n");
+> -			if (len >= PAGE_SIZE)
+> -				return -EFBIG;
+> -		}
+> -		break;
+> -	default:
+> -		for (i = 0; i < 3; i++) {
+> -			len += __iio_format_value(buf + len, PAGE_SIZE - len,
+> -						  type, 2, &vals[i * 2]);
+> -			if (len >= PAGE_SIZE)
+> -				return -EFBIG;
+> -			if (i < 2)
+> -				len += scnprintf(buf + len, PAGE_SIZE - len,
+> -						" ");
+> -			else
+> -				len += scnprintf(buf + len, PAGE_SIZE - len,
+> -						"]\n");
+> -			if (len >= PAGE_SIZE)
+> -				return -EFBIG;
+> -		}
+> -	}
+> +	return iio_format_list(buf, vals, type, length, "", "");
+> +}
+>  
+> -	return len;
+> +static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
+> +{
+> +	return iio_format_list(buf, vals, type, 3, "[", "]");
+>  }
+>  
+>  static ssize_t iio_read_channel_info_avail(struct device *dev,
 
