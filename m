@@ -2,176 +2,97 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62106C63798
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:21:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03388C64E7D
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:21:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2FBC12231B
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:21:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A7E9E2231B
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:21:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="B0RYQ/X8"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="ySX/gR4g"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388242AbgK1Vtc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S2388224AbgK1Vtc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sat, 28 Nov 2020 16:49:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34468 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387762AbgK1VFu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 16:05:50 -0500
-Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6EBC0613D2
-        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 13:05:09 -0800 (PST)
-Received: by mail-lj1-x241.google.com with SMTP id s9so10333395ljo.11
-        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 13:05:09 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NXUgVDY/D8K1+7OpYT2Vp98ohpEzXQV3FJGu7OisKHw=;
-        b=B0RYQ/X8uMlxaHTlxLlkMxhZWIXS6S5D4Dc5hIrd7dNsbUYDzvwpk9TAV1/qlDrHMj
-         +qukWe72ObWsO9pQLV7/X+xTQdlRxwdTq7DVmjrwonNTanp25gLcSMZdAMuVhOcBSW69
-         QBwXgZntGwASuk0ZwBaeJgZ2EXu2DA71lFmCE+tcazt37PlGBZ3as6vFjufW1eMEAT4R
-         Frf/MZAEshhqNI1w8hFUvCFwESi8/mbGQGuaL11REKTMgF/pLo4/6sLhsKivrh6y/oRf
-         nY3R2fX4kVbwgnZ/AQurjpD6mIcv8Q2zdaYGtq51xvhUV2BsTlVHD0EI1h+yRA6uPSKn
-         GZQQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NXUgVDY/D8K1+7OpYT2Vp98ohpEzXQV3FJGu7OisKHw=;
-        b=gIQZBnk+cnpabyEZePp7mZ0a/NtQU52sXb3njIbuF2dBHdoOSLnVHuNqzWdOFdkgCg
-         IrwfnsCzAYu7E6ylDLA9isMvS9L2+BG5UFKDYtT5yCm8epHiw+V/5JbsFEvmCQ1FdufD
-         nICgnU9AE4VaqpEb8/vhLuhsHZ+ng1Ch51yO9E6vgbUnk9iP2953mubF083K2yHaWwqE
-         dlhkOVpF+rZIQI5/RMK907y5TQo3i/M6M2yhieIhkqzXjFlvfidxcoV8BMMB8sXA70LE
-         l/QLm/12ul53U5BdUcPJ8/pmorTzJMudhSXpaZF6iwJknzQuOhBVt2rvj5DsxXGTkj0w
-         gczw==
-X-Gm-Message-State: AOAM53153sC5p/gTg3DVJim246LlZnBswIZE70emNiDEmPdWkgYRgK2N
-        Dzo/ylruRBJYQmkxWBqsZDjGbdckcgeTFgs3ZrVJaBj9SsAU9zLU
-X-Google-Smtp-Source: ABdhPJzk9XSRJelIhy3xHhNQlcQJUiu6s5RaAPCZgj/9kuTxLN6mx6IMZCcKMLlGNOsauoMEoiV1TrTlNl9Pbws4OIk=
-X-Received: by 2002:a05:651c:39d:: with SMTP id e29mr4810713ljp.144.1606597508162;
- Sat, 28 Nov 2020 13:05:08 -0800 (PST)
+Received: from mail.kernel.org ([198.145.29.99]:51236 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387420AbgK1TH1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 14:07:27 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C3B2A246CC;
+        Sat, 28 Nov 2020 16:39:31 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606581572;
+        bh=noFCBd4nTh2GdZ4T+8oNdS+9TrApdROYtx/lAjMcsAY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ySX/gR4gf4f/DaHfs91hZ1bb9j2YaSoTRfhHZ9itoWj+lMX5csFvT2EL4Tlx8WnZg
+         EDHK0N9w1n5my1Glwj/xPyeyj+1tT2zBg1rTJgTBF/Kl5dLI65RUMJEg0FFIisV9TA
+         Wpogfn58e1UFRQDB37BzoVkoCmbNXTHET/DfAeCs=
+Date:   Sat, 28 Nov 2020 16:39:28 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 0/3] dt-bindings:iio:adc: Convert generic ADC channel
+ binding to yaml
+Message-ID: <20201128163928.4ef2a43a@archlinux>
+In-Reply-To: <20201103023146.GA692453@bogus>
+References: <20201031182423.742798-1-jic23@kernel.org>
+        <20201103023146.GA692453@bogus>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20201128004038.883289-1-linus.walleij@linaro.org>
- <20201128004038.883289-2-linus.walleij@linaro.org> <20201128122153.44c1052c@archlinux>
-In-Reply-To: <20201128122153.44c1052c@archlinux>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Sat, 28 Nov 2020 22:04:56 +0100
-Message-ID: <CACRpkdYvkV0Xrw9fseQneHwhJ-EkcX+RQKVcCF8hhidE479AmQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2 v2] iio: magnetometer: Add driver for Yamaha YAS5xx
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        phone-devel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan!
+On Mon, 2 Nov 2020 20:31:46 -0600
+Rob Herring <robh@kernel.org> wrote:
 
-I fixed most things, some elaboration inline:
+> On Sat, Oct 31, 2020 at 06:24:20PM +0000, Jonathan Cameron wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > This channel binding is not yet that heavily used, though that will slowly
+> > change now we have a standard binding.  There are more properties coming
+> > for this binding in the near future.
+> > 
+> > This series converts the channel binding itself then leverages it to
+> > reduce repitition and improve consistency in a couple of drivers.
+> > 
+> > One thing to note is that we have similar defintion for DACs but so
+> > far there are no generic properties.
+> > 
+> > Jonathan Cameron (3):
+> >   dt-bindings:iio:adc: convert adc.txt to yaml
+> >   dt-bindings:iio:adc:adi,ad7124: Use the new adc.yaml channel binding
+> >   dt-bindings:iio:adc:adi,ad7292: Use new adc.yaml binding for channels.  
+> 
+> For the series:
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+Series applied with just that small addition to patch 1.
 
-On Sat, Nov 28, 2020 at 1:21 PM Jonathan Cameron <jic23@kernel.org> wrote:
+Thanks,
 
-> The 'interesting' nature of the packing in those calibration registers
-> is unfortunate.  I'm not really sure how we make that code more readable
-> but using overlapping unaligned big endian reads definitely doesn't make
-> it easier for me to follow!
+Jonathan
 
-Yeah I am experimenting to find a good way. Maybe I will try to extract
-u64 and chop out the bits from there to make it clearer.
+> 
+> > 
+> >  .../devicetree/bindings/iio/adc/adc.txt       | 23 -----------
+> >  .../devicetree/bindings/iio/adc/adc.yaml      | 38 +++++++++++++++++++
+> >  .../bindings/iio/adc/adi,ad7124.yaml          | 14 +++----
+> >  .../bindings/iio/adc/adi,ad7292.yaml          |  8 ++--
+> >  4 files changed, 47 insertions(+), 36 deletions(-)
+> >  delete mode 100644 Documentation/devicetree/bindings/iio/adc/adc.txt
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adc.yaml
+> > 
+> > -- 
+> > 2.28.0
+> >   
 
-I think a lot of clock drivers have this problem already.
-
-> > +       This driver can also be compiled as a module.
-> > +       To compile this driver as a module, choose M here: the module
-> > +       will be called yamaha-yas.
-> > +
-
-> One line only
-
-Please clarify what you want the end result to look like, I don't
-quite get it... Looking a the latest committed drivers in linux-next
-didn't give a clue either.
-
-> > + * YAS530 MS-3E (2011 Samsung Galaxy S Advance)
-> > + * YAS532 MS-3R (2011 Samsung Galaxy S4)
-> > + * YAS533 MS-3F (Vivo 1633, 1707, V3, Y21L)
-> > + * (YAS534 is a magnetic switch, not handled)
->
-> And there is your reason not to use wild cards in the dt file name etc!
-
-It's pretty safe as we definately account for all magnetometers
-of the naming scheme YAS53x. The YAS534 would be in another
-subsystem (proximity, I guess) so the path to the file gives the
-right info: this covers all magnetometers named yas53x, goes
-for both the bindings and the driver I think?
-
-> > +static void yas53x_extract_calibration(u8 *data, struct yas5xx_calibration *c)
-> > +{
->
-> As below.  I'm not sure how you make this clearer, but right now it's
-> really hard to follow.  Perhaps detailed comment on what the data packing
-> in here is?
-
-OK I try to detail a bit.
-
-> > +     c->a2 = yas5xx_extract_bits(&data[3], 10, 15) - 32;
-> > +     c->a3 = yas5xx_extract_bits(&data[3], 6, 9) - 8;
-> > +     c->a4 = yas5xx_extract_bits(&data[4], 8, 13) - 32;
-> > +     c->a5 = yas5xx_extract_bits(&data[5], 10, 15) + 38;
-> > +     c->a6 = yas5xx_extract_bits(&data[5], 4, 9) - 32;
-> > +     c->a7 = yas5xx_extract_bits(&data[6], 5, 11) - 64;
-> > +     c->a8 = yas5xx_extract_bits(&data[7], 7, 12) - 32;
-> > +     c->a9 = yas5xx_extract_bits(&data[8], 7, 14);
-> > +     c->k = yas5xx_extract_bits(&data[9], 10, 14) + 10;
-
-Since this segment easily fits in a u64 I thought about
-extracing a u64 and then use FIELD_GET on that.
-
-> As below, I wonder if you'd be better just constructing these directly from
-> the 8 bit register pairs. The overlapping unaligned 16 bit reads are
-> rather confusing.
-
-I already tried that but it looks even worse :/
-
-I will try to put them into a bigger word instead.
-
-> > +     /* Extract linearization */
->
-> Could you add a comment on the data layout here. It seems rather
-> non obvious given the overlapping 16 bit reads you are doing.
-> Whilst the maths might correspond to extracting bits from be16 registers
-> that looks more like coincidence than design and only makes any
-> useful difference to the bit 7,8 pair.  The bit 9-14 could just have
-> been gotten from the next 8 bit register directly.
-
-It sadly doesn't look any better if I operate on u8 chars. :/
-I'll try to think of something.
-
-> > +             snprintf(yas5xx->name, sizeof(yas5xx->name),
-> > +                      "YAS530 MS-3E %s",
->
-> Name tends to be lowercase. Also, not sure we've had one with spaces
-> in it before.  I guess our userspace code is fine with it though
-> as presumably you've tested that.
-
-Yeah oddly it turns it into just "YAS530":
-
-skomer:/home/linus# lsiio
-Device 003: bma222
-Device 001: current-sense-amplifier
-Device 004: gp2ap002
-Device 002: mpu3050
-Device 000: ab8500-gpadc
-Device 005: YAS530
-Trigger 000: mpu3050-dev2
-
-But it doesn't look nice, I will rename it lowercase.
-
-Yours,
-Linus Walleij
