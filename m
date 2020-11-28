@@ -2,657 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1499C83027
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B3D9C83035
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 71174223BE
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1AF4C223C6
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:22:32 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="UCi6ZqEP"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="qyXpF6Sp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388107AbgK1Vt3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50388 "EHLO mail.kernel.org"
+        id S1725989AbgK1Vt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49434 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1732602AbgK1TCU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 14:02:20 -0500
-Received: from localhost.localdomain (unknown [151.66.8.153])
+        id S1732535AbgK1TBy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 14:01:54 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 3F854222B8;
-        Sat, 28 Nov 2020 10:08:09 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3A0B02466D;
+        Sat, 28 Nov 2020 13:25:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606558090;
-        bh=wCtgc2+rt3NEWfWOvaaCUzQOWiA5mjzsEXm/HqxyctM=;
-        h=From:To:Cc:Subject:Date:From;
-        b=UCi6ZqEPllWDuLGqhqC20b+9gEItE94d1FfGxmgvCN/W9zF4EAdivI3sYXYi267hC
-         1fNCbooD6Am/7zkR6Jz0RYDlLeEw4d4voiCNXQyWzrhsw60cSNvgcc91hTdZpnBYK0
-         mGlUtAS0i0cefFxclAOL3M1WRmEpKe9WkBKxRykM=
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     jic23@kernel.org
-Cc:     lorenzo.bianconi@redhat.com, linux-iio@vger.kernel.org
-Subject: [PATCH] iio: imu: st_lsmdsx: compact st_lsm6dsx_sensor_settings table
-Date:   Sat, 28 Nov 2020 11:08:01 +0100
-Message-Id: <c43286938b2fe03ab3abdb5fc095ea6b950abcb1.1606557946.git.lorenzo@kernel.org>
-X-Mailer: git-send-email 2.28.0
+        s=default; t=1606569957;
+        bh=wlRpR5k7tSed5+Y/LjhaD1wUPthFRlO6ecBs7oG5hHE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=qyXpF6SpgPF8iY8EUePUJsiv1JNSdeUpCyxkFYYJaSNq+1jgC97oDUbtarg61kpV9
+         pn9uaMgHeCKBgaBuW3oMi2acFODI2OPwuTtLsDYatF0Mfi2sIhHkyXvvI09HamRxO0
+         85mMqV3o+xmJNp46PoYgcIwQ6zLmj61RUOz0I1pU=
+Date:   Sat, 28 Nov 2020 13:25:51 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Takashi Iwai <tiwai@suse.com>, Mark Brown <broonie@kernel.org>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Subject: Re: [PATCH 0/2] Make cb a required parameter of buffer-cb
+Message-ID: <20201128132551.4006f293@archlinux>
+In-Reply-To: <20201121161457.957-1-nuno.sa@analog.com>
+References: <20201121161457.957-1-nuno.sa@analog.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Shrink st_lsm6dsx_sensor_settings table size moving wai address info in
-id array and remove duplicated code
+On Sat, 21 Nov 2020 17:14:55 +0100
+Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
 
-Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h      |   3 +-
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 451 ++-----------------
- 2 files changed, 29 insertions(+), 425 deletions(-)
+> When going through the code of the buffer-cb interface and all it's
+> users, I realized that the stm32_adfsdm driver is calling
+> `iio_channel_get_all_cb()` with NULL for the cb. After going a bit
+> trough the stm drivers, it looks like this is actually intentional.
+> However, it is clear that we have a clear/direct route here for a NULL
+> pointer dereference. This change makes cb a required parameter of the
+> API.
+>=20
+> The first patch makes the necessary changes to the stm32_adfsdm driver
+> so that it does not break.
+>=20
+> Nuno S=C3=A1 (1):
+>   iio: buffer: Return error if no callback is given
+>=20
+> Olivier Moysan (1):
+>   ASoC: stm32: dfsdm: add stm32_adfsdm_dummy_cb() callback
+>=20
+>  drivers/iio/buffer/industrialio-buffer-cb.c |  5 +++++
+>  sound/soc/stm/stm32_adfsdm.c                | 12 +++++++++++-
+>  2 files changed, 16 insertions(+), 1 deletion(-)
+>=20
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-index 4b4ec39d4400..b81da6053b3c 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -266,7 +266,6 @@ struct st_lsm6dsx_ext_dev_settings {
- 
- /**
-  * struct st_lsm6dsx_settings - ST IMU sensor settings
-- * @wai: Sensor WhoAmI default value.
-  * @reset: register address for reset.
-  * @boot: register address for boot.
-  * @bdu: register address for Block Data Update.
-@@ -284,7 +283,6 @@ struct st_lsm6dsx_ext_dev_settings {
-  * @shub_settings: i2c controller related settings.
-  */
- struct st_lsm6dsx_settings {
--	u8 wai;
- 	struct st_lsm6dsx_reg reset;
- 	struct st_lsm6dsx_reg boot;
- 	struct st_lsm6dsx_reg bdu;
-@@ -292,6 +290,7 @@ struct st_lsm6dsx_settings {
- 	struct {
- 		enum st_lsm6dsx_hw_id hw_id;
- 		const char *name;
-+		u8 wai;
- 	} id[ST_LSM6DSX_MAX_ID];
- 	struct {
- 		const struct iio_chan_spec *chan;
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index a73c41dea5fc..c05910fa0de6 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -90,7 +90,6 @@ static const struct iio_chan_spec st_lsm6ds0_gyro_channels[] = {
- 
- static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 	{
--		.wai = 0x68,
- 		.reset = {
- 			.addr = 0x22,
- 			.mask = BIT(0),
-@@ -108,9 +107,11 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			{
- 				.hw_id = ST_LSM9DS1_ID,
- 				.name = ST_LSM9DS1_DEV_NAME,
-+				.wai = 0x68,
- 			}, {
- 				.hw_id = ST_LSM6DS0_ID,
- 				.name = ST_LSM6DS0_DEV_NAME,
-+				.wai = 0x68,
- 			},
- 		},
- 		.channels = {
-@@ -195,7 +196,6 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 		},
- 	},
- 	{
--		.wai = 0x69,
- 		.reset = {
- 			.addr = 0x12,
- 			.mask = BIT(0),
-@@ -213,6 +213,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			{
- 				.hw_id = ST_LSM6DS3_ID,
- 				.name = ST_LSM6DS3_DEV_NAME,
-+				.wai = 0x69,
- 			},
- 		},
- 		.channels = {
-@@ -361,7 +362,6 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 		},
- 	},
- 	{
--		.wai = 0x69,
- 		.reset = {
- 			.addr = 0x12,
- 			.mask = BIT(0),
-@@ -379,6 +379,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			{
- 				.hw_id = ST_LSM6DS3H_ID,
- 				.name = ST_LSM6DS3H_DEV_NAME,
-+				.wai = 0x69,
- 			},
- 		},
- 		.channels = {
-@@ -527,7 +528,6 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 		},
- 	},
- 	{
--		.wai = 0x6a,
- 		.reset = {
- 			.addr = 0x12,
- 			.mask = BIT(0),
-@@ -545,15 +545,19 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			{
- 				.hw_id = ST_LSM6DSL_ID,
- 				.name = ST_LSM6DSL_DEV_NAME,
-+				.wai = 0x6a,
- 			}, {
- 				.hw_id = ST_LSM6DSM_ID,
- 				.name = ST_LSM6DSM_DEV_NAME,
-+				.wai = 0x6a,
- 			}, {
- 				.hw_id = ST_ISM330DLC_ID,
- 				.name = ST_ISM330DLC_DEV_NAME,
-+				.wai = 0x6a,
- 			}, {
- 				.hw_id = ST_LSM6DS3TRC_ID,
- 				.name = ST_LSM6DS3TRC_DEV_NAME,
-+				.wai = 0x6a,
- 			},
- 		},
- 		.channels = {
-@@ -743,7 +747,6 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 		},
- 	},
- 	{
--		.wai = 0x6c,
- 		.reset = {
- 			.addr = 0x12,
- 			.mask = BIT(0),
-@@ -759,11 +762,29 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 		.max_fifo_size = 512,
- 		.id = {
- 			{
-+				.hw_id = ST_LSM6DSR_ID,
-+				.name = ST_LSM6DSR_DEV_NAME,
-+				.wai = 0x6b,
-+			}, {
-+				.hw_id = ST_ISM330DHCX_ID,
-+				.name = ST_ISM330DHCX_DEV_NAME,
-+				.wai = 0x6b,
-+			}, {
-+				.hw_id = ST_LSM6DSRX_ID,
-+				.name = ST_LSM6DSRX_DEV_NAME,
-+				.wai = 0x6b,
-+			}, {
- 				.hw_id = ST_LSM6DSO_ID,
- 				.name = ST_LSM6DSO_DEV_NAME,
-+				.wai = 0x6c,
- 			}, {
- 				.hw_id = ST_LSM6DSOX_ID,
- 				.name = ST_LSM6DSOX_DEV_NAME,
-+				.wai = 0x6c,
-+			}, {
-+				.hw_id = ST_LSM6DST_ID,
-+				.name = ST_LSM6DST_DEV_NAME,
-+				.wai = 0x6d,
- 			},
- 		},
- 		.channels = {
-@@ -951,7 +972,6 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 		},
- 	},
- 	{
--		.wai = 0x6b,
- 		.reset = {
- 			.addr = 0x12,
- 			.mask = BIT(0),
-@@ -969,6 +989,7 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			{
- 				.hw_id = ST_ASM330LHH_ID,
- 				.name = ST_ASM330LHH_DEV_NAME,
-+				.wai = 0x6b,
- 			},
- 		},
- 		.channels = {
-@@ -1123,422 +1144,6 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
- 			.wakeup_src_x_mask = BIT(2),
- 		},
- 	},
--	{
--		.wai = 0x6b,
--		.reset = {
--			.addr = 0x12,
--			.mask = BIT(0),
--		},
--		.boot = {
--			.addr = 0x12,
--			.mask = BIT(7),
--		},
--		.bdu = {
--			.addr = 0x12,
--			.mask = BIT(6),
--		},
--		.max_fifo_size = 512,
--		.id = {
--			{
--				.hw_id = ST_LSM6DSR_ID,
--				.name = ST_LSM6DSR_DEV_NAME,
--			}, {
--				.hw_id = ST_ISM330DHCX_ID,
--				.name = ST_ISM330DHCX_DEV_NAME,
--			}, {
--				.hw_id = ST_LSM6DSRX_ID,
--				.name = ST_LSM6DSRX_DEV_NAME,
--			},
--		},
--		.channels = {
--			[ST_LSM6DSX_ID_ACC] = {
--				.chan = st_lsm6dsx_acc_channels,
--				.len = ARRAY_SIZE(st_lsm6dsx_acc_channels),
--			},
--			[ST_LSM6DSX_ID_GYRO] = {
--				.chan = st_lsm6dsx_gyro_channels,
--				.len = ARRAY_SIZE(st_lsm6dsx_gyro_channels),
--			},
--		},
--		.drdy_mask = {
--			.addr = 0x13,
--			.mask = BIT(3),
--		},
--		.odr_table = {
--			[ST_LSM6DSX_ID_ACC] = {
--				.reg = {
--					.addr = 0x10,
--					.mask = GENMASK(7, 4),
--				},
--				.odr_avl[0] = {  12500, 0x01 },
--				.odr_avl[1] = {  26000, 0x02 },
--				.odr_avl[2] = {  52000, 0x03 },
--				.odr_avl[3] = { 104000, 0x04 },
--				.odr_avl[4] = { 208000, 0x05 },
--				.odr_avl[5] = { 416000, 0x06 },
--				.odr_avl[6] = { 833000, 0x07 },
--				.odr_len = 7,
--			},
--			[ST_LSM6DSX_ID_GYRO] = {
--				.reg = {
--					.addr = 0x11,
--					.mask = GENMASK(7, 4),
--				},
--				.odr_avl[0] = {  12500, 0x01 },
--				.odr_avl[1] = {  26000, 0x02 },
--				.odr_avl[2] = {  52000, 0x03 },
--				.odr_avl[3] = { 104000, 0x04 },
--				.odr_avl[4] = { 208000, 0x05 },
--				.odr_avl[5] = { 416000, 0x06 },
--				.odr_avl[6] = { 833000, 0x07 },
--				.odr_len = 7,
--			},
--		},
--		.fs_table = {
--			[ST_LSM6DSX_ID_ACC] = {
--				.reg = {
--					.addr = 0x10,
--					.mask = GENMASK(3, 2),
--				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(488000), 0x1 },
--				.fs_len = 4,
--			},
--			[ST_LSM6DSX_ID_GYRO] = {
--				.reg = {
--					.addr = 0x11,
--					.mask = GENMASK(3, 2),
--				},
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000000), 0x2 },
--				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
--				.fs_len = 4,
--			},
--		},
--		.irq_config = {
--			.irq1 = {
--				.addr = 0x0d,
--				.mask = BIT(3),
--			},
--			.irq2 = {
--				.addr = 0x0e,
--				.mask = BIT(3),
--			},
--			.lir = {
--				.addr = 0x56,
--				.mask = BIT(0),
--			},
--			.clear_on_read = {
--				.addr = 0x56,
--				.mask = BIT(6),
--			},
--			.irq1_func = {
--				.addr = 0x5e,
--				.mask = BIT(5),
--			},
--			.irq2_func = {
--				.addr = 0x5f,
--				.mask = BIT(5),
--			},
--			.hla = {
--				.addr = 0x12,
--				.mask = BIT(5),
--			},
--			.od = {
--				.addr = 0x12,
--				.mask = BIT(4),
--			},
--		},
--		.batch = {
--			[ST_LSM6DSX_ID_ACC] = {
--				.addr = 0x09,
--				.mask = GENMASK(3, 0),
--			},
--			[ST_LSM6DSX_ID_GYRO] = {
--				.addr = 0x09,
--				.mask = GENMASK(7, 4),
--			},
--		},
--		.fifo_ops = {
--			.update_fifo = st_lsm6dsx_update_fifo,
--			.read_fifo = st_lsm6dsx_read_tagged_fifo,
--			.fifo_th = {
--				.addr = 0x07,
--				.mask = GENMASK(8, 0),
--			},
--			.fifo_diff = {
--				.addr = 0x3a,
--				.mask = GENMASK(9, 0),
--			},
--			.th_wl = 1,
--		},
--		.ts_settings = {
--			.timer_en = {
--				.addr = 0x19,
--				.mask = BIT(5),
--			},
--			.decimator = {
--				.addr = 0x0a,
--				.mask = GENMASK(7, 6),
--			},
--			.freq_fine = 0x63,
--		},
--		.shub_settings = {
--			.page_mux = {
--				.addr = 0x01,
--				.mask = BIT(6),
--			},
--			.master_en = {
--				.sec_page = true,
--				.addr = 0x14,
--				.mask = BIT(2),
--			},
--			.pullup_en = {
--				.sec_page = true,
--				.addr = 0x14,
--				.mask = BIT(3),
--			},
--			.aux_sens = {
--				.addr = 0x14,
--				.mask = GENMASK(1, 0),
--			},
--			.wr_once = {
--				.addr = 0x14,
--				.mask = BIT(6),
--			},
--			.num_ext_dev = 3,
--			.shub_out = {
--				.sec_page = true,
--				.addr = 0x02,
--			},
--			.slv0_addr = 0x15,
--			.dw_slv0_addr = 0x21,
--			.batch_en = BIT(3),
--		},
--		.event_settings = {
--			.enable_reg = {
--				.addr = 0x58,
--				.mask = BIT(7),
--			},
--			.wakeup_reg = {
--				.addr = 0x5B,
--				.mask = GENMASK(5, 0),
--			},
--			.wakeup_src_reg = 0x1b,
--			.wakeup_src_status_mask = BIT(3),
--			.wakeup_src_z_mask = BIT(0),
--			.wakeup_src_y_mask = BIT(1),
--			.wakeup_src_x_mask = BIT(2),
--		}
--	},
--	{
--		.wai = 0x6d,
--		.reset = {
--			.addr = 0x12,
--			.mask = BIT(0),
--		},
--		.boot = {
--			.addr = 0x12,
--			.mask = BIT(7),
--		},
--		.bdu = {
--			.addr = 0x12,
--			.mask = BIT(6),
--		},
--		.max_fifo_size = 512,
--		.id = {
--			{
--				.hw_id = ST_LSM6DST_ID,
--				.name = ST_LSM6DST_DEV_NAME,
--			},
--		},
--		.channels = {
--			[ST_LSM6DSX_ID_ACC] = {
--				.chan = st_lsm6dsx_acc_channels,
--				.len = ARRAY_SIZE(st_lsm6dsx_acc_channels),
--			},
--			[ST_LSM6DSX_ID_GYRO] = {
--				.chan = st_lsm6dsx_gyro_channels,
--				.len = ARRAY_SIZE(st_lsm6dsx_gyro_channels),
--			},
--		},
--		.drdy_mask = {
--			.addr = 0x13,
--			.mask = BIT(3),
--		},
--		.odr_table = {
--			[ST_LSM6DSX_ID_ACC] = {
--				.reg = {
--					.addr = 0x10,
--					.mask = GENMASK(7, 4),
--				},
--				.odr_avl[0] = {  12500, 0x01 },
--				.odr_avl[1] = {  26000, 0x02 },
--				.odr_avl[2] = {  52000, 0x03 },
--				.odr_avl[3] = { 104000, 0x04 },
--				.odr_avl[4] = { 208000, 0x05 },
--				.odr_avl[5] = { 416000, 0x06 },
--				.odr_avl[6] = { 833000, 0x07 },
--				.odr_len = 7,
--			},
--			[ST_LSM6DSX_ID_GYRO] = {
--				.reg = {
--					.addr = 0x11,
--					.mask = GENMASK(7, 4),
--				},
--				.odr_avl[0] = {  12500, 0x01 },
--				.odr_avl[1] = {  26000, 0x02 },
--				.odr_avl[2] = {  52000, 0x03 },
--				.odr_avl[3] = { 104000, 0x04 },
--				.odr_avl[4] = { 208000, 0x05 },
--				.odr_avl[5] = { 416000, 0x06 },
--				.odr_avl[6] = { 833000, 0x07 },
--				.odr_len = 7,
--			},
--		},
--		.fs_table = {
--			[ST_LSM6DSX_ID_ACC] = {
--				.reg = {
--					.addr = 0x10,
--					.mask = GENMASK(3, 2),
--				},
--				.fs_avl[0] = {  IIO_G_TO_M_S_2(61000), 0x0 },
--				.fs_avl[1] = { IIO_G_TO_M_S_2(122000), 0x2 },
--				.fs_avl[2] = { IIO_G_TO_M_S_2(244000), 0x3 },
--				.fs_avl[3] = { IIO_G_TO_M_S_2(488000), 0x1 },
--				.fs_len = 4,
--			},
--			[ST_LSM6DSX_ID_GYRO] = {
--				.reg = {
--					.addr = 0x11,
--					.mask = GENMASK(3, 2),
--				},
--				.fs_avl[0] = {  IIO_DEGREE_TO_RAD(8750000), 0x0 },
--				.fs_avl[1] = { IIO_DEGREE_TO_RAD(17500000), 0x1 },
--				.fs_avl[2] = { IIO_DEGREE_TO_RAD(35000000), 0x2 },
--				.fs_avl[3] = { IIO_DEGREE_TO_RAD(70000000), 0x3 },
--				.fs_len = 4,
--			},
--		},
--		.irq_config = {
--			.irq1 = {
--				.addr = 0x0d,
--				.mask = BIT(3),
--			},
--			.irq2 = {
--				.addr = 0x0e,
--				.mask = BIT(3),
--			},
--			.lir = {
--				.addr = 0x56,
--				.mask = BIT(0),
--			},
--			.clear_on_read = {
--				.addr = 0x56,
--				.mask = BIT(6),
--			},
--			.irq1_func = {
--				.addr = 0x5e,
--				.mask = BIT(5),
--			},
--			.irq2_func = {
--				.addr = 0x5f,
--				.mask = BIT(5),
--			},
--			.hla = {
--				.addr = 0x12,
--				.mask = BIT(5),
--			},
--			.od = {
--				.addr = 0x12,
--				.mask = BIT(4),
--			},
--		},
--		.batch = {
--			[ST_LSM6DSX_ID_ACC] = {
--				.addr = 0x09,
--				.mask = GENMASK(3, 0),
--			},
--			[ST_LSM6DSX_ID_GYRO] = {
--				.addr = 0x09,
--				.mask = GENMASK(7, 4),
--			},
--		},
--		.fifo_ops = {
--			.update_fifo = st_lsm6dsx_update_fifo,
--			.read_fifo = st_lsm6dsx_read_tagged_fifo,
--			.fifo_th = {
--				.addr = 0x07,
--				.mask = GENMASK(8, 0),
--			},
--			.fifo_diff = {
--				.addr = 0x3a,
--				.mask = GENMASK(9, 0),
--			},
--			.th_wl = 1,
--		},
--		.ts_settings = {
--			.timer_en = {
--				.addr = 0x19,
--				.mask = BIT(5),
--			},
--			.decimator = {
--				.addr = 0x0a,
--				.mask = GENMASK(7, 6),
--			},
--			.freq_fine = 0x63,
--		},
--		.shub_settings = {
--			.page_mux = {
--				.addr = 0x01,
--				.mask = BIT(6),
--			},
--			.master_en = {
--				.sec_page = true,
--				.addr = 0x14,
--				.mask = BIT(2),
--			},
--			.pullup_en = {
--				.sec_page = true,
--				.addr = 0x14,
--				.mask = BIT(3),
--			},
--			.aux_sens = {
--				.addr = 0x14,
--				.mask = GENMASK(1, 0),
--			},
--			.wr_once = {
--				.addr = 0x14,
--				.mask = BIT(6),
--			},
--			.num_ext_dev = 3,
--			.shub_out = {
--				.sec_page = true,
--				.addr = 0x02,
--			},
--			.slv0_addr = 0x15,
--			.dw_slv0_addr = 0x21,
--			.batch_en = BIT(3),
--		},
--		.event_settings = {
--			.enable_reg = {
--				.addr = 0x58,
--				.mask = BIT(7),
--			},
--			.wakeup_reg = {
--				.addr = 0x5b,
--				.mask = GENMASK(5, 0),
--			},
--			.wakeup_src_reg = 0x1b,
--			.wakeup_src_status_mask = BIT(3),
--			.wakeup_src_z_mask = BIT(0),
--			.wakeup_src_y_mask = BIT(1),
--			.wakeup_src_x_mask = BIT(2),
--		},
--	},
- };
- 
- int st_lsm6dsx_set_page(struct st_lsm6dsx_hw *hw, bool enable)
-@@ -1582,7 +1187,7 @@ static int st_lsm6dsx_check_whoami(struct st_lsm6dsx_hw *hw, int id,
- 		return err;
- 	}
- 
--	if (data != st_lsm6dsx_sensor_settings[i].wai) {
-+	if (data != st_lsm6dsx_sensor_settings[i].id[j].wai) {
- 		dev_err(hw->dev, "unsupported whoami [%02x]\n", data);
- 		return -ENODEV;
- 	}
--- 
-2.28.0
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to do their magic.
 
+Thanks,
+
+Jonathan
