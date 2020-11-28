@@ -5,25 +5,25 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 85342C64E7D
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:29:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DCFBC83012
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:29:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 569CE221FD
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:29:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5D87B21D40
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:29:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387656AbgK1W3R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 17:29:17 -0500
-Received: from relay7-d.mail.gandi.net ([217.70.183.200]:38461 "EHLO
-        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729330AbgK1W3Q (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 17:29:16 -0500
+        id S2388541AbgK1W3Y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 17:29:24 -0500
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:45295 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2388159AbgK1W3Y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 17:29:24 -0500
 X-Originating-IP: 86.194.74.19
 Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id E933720006;
-        Sat, 28 Nov 2020 22:28:31 +0000 (UTC)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 565ED1BF205;
+        Sat, 28 Nov 2020 22:28:40 +0000 (UTC)
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -32,12 +32,10 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Ludovic Desroches <ludovic.desroches@microchip.com>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 04/10] dt-bindings:iio:adc:atmel,sama9260-adc: conversion to yaml from at91_adc.txt
-Date:   Sat, 28 Nov 2020 23:28:12 +0100
-Message-Id: <20201128222818.1910764-5-alexandre.belloni@bootlin.com>
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH v3 10/10] ARM: dts: at91: remove deprecated ADC properties
+Date:   Sat, 28 Nov 2020 23:28:18 +0100
+Message-Id: <20201128222818.1910764-11-alexandre.belloni@bootlin.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201128222818.1910764-1-alexandre.belloni@bootlin.com>
 References: <20201128222818.1910764-1-alexandre.belloni@bootlin.com>
@@ -47,287 +45,286 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+atmel,adc-res, atmel,adc-res-names and the trigger nodes are not parsed by
+the driver anymore and the information is now defined in the driver data.
 
-There are a few things we would do differently in an ADC binding if we
-were starting from scratch but we are stuck with what we have (which
-made sense back when this was written!)
+Also remove the leftover #address-cells and #size-cells that were used when
+the trigger nodes had a unit-address.
 
-We may be able to tighten up some elements of this binding in the future
-by careful checking of what values properties can actually take.
+Finally, the default is already to use the highest resoution. Remove
+atmel,adc-use-res from the SoC dtsi.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
-[Alexandre Belloni: add sama5d3, remove atmel,adc-res and atmel,adc-res-names]
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Ludovic Desroches <ludovic.desroches@microchip.com>
 ---
- .../devicetree/bindings/iio/adc/at91_adc.txt  |  78 --------
- .../bindings/iio/adc/atmel,sama9260-adc.yaml  | 167 ++++++++++++++++++
- 2 files changed, 167 insertions(+), 78 deletions(-)
- delete mode 100644 Documentation/devicetree/bindings/iio/adc/at91_adc.txt
- create mode 100644 Documentation/devicetree/bindings/iio/adc/atmel,sama9260-adc.yaml
+ arch/arm/boot/dts/at91sam9260.dtsi | 25 -------------------------
+ arch/arm/boot/dts/at91sam9g45.dtsi | 27 ---------------------------
+ arch/arm/boot/dts/at91sam9rl.dtsi  | 28 ----------------------------
+ arch/arm/boot/dts/at91sam9x5.dtsi  | 28 ----------------------------
+ arch/arm/boot/dts/sama5d3.dtsi     | 24 ------------------------
+ arch/arm/boot/dts/sama5d4.dtsi     | 22 ----------------------
+ 6 files changed, 154 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/at91_adc.txt b/Documentation/devicetree/bindings/iio/adc/at91_adc.txt
-deleted file mode 100644
-index da393ac5c05f..000000000000
---- a/Documentation/devicetree/bindings/iio/adc/at91_adc.txt
-+++ /dev/null
-@@ -1,78 +0,0 @@
--* AT91's Analog to Digital Converter (ADC)
+diff --git a/arch/arm/boot/dts/at91sam9260.dtsi b/arch/arm/boot/dts/at91sam9260.dtsi
+index 6afbb48e7ff0..1fc76ebef46e 100644
+--- a/arch/arm/boot/dts/at91sam9260.dtsi
++++ b/arch/arm/boot/dts/at91sam9260.dtsi
+@@ -694,8 +694,6 @@ spi1: spi@fffcc000 {
+ 			};
+ 
+ 			adc0: adc@fffe0000 {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				compatible = "atmel,at91sam9260-adc";
+ 				reg = <0xfffe0000 0x100>;
+ 				interrupts = <5 IRQ_TYPE_LEVEL_HIGH 0>;
+@@ -705,29 +703,6 @@ adc0: adc@fffe0000 {
+ 				atmel,adc-channels-used = <0xf>;
+ 				atmel,adc-vref = <3300>;
+ 				atmel,adc-startup-time = <15>;
+-				atmel,adc-res = <8 10>;
+-				atmel,adc-res-names = "lowres", "highres";
+-				atmel,adc-use-res = "highres";
 -
--Required properties:
--  - compatible: Should be "atmel,<chip>-adc"
--    <chip> can be "at91sam9260", "at91sam9g45", "at91sam9x5" or "sama5d3"
--  - reg: Should contain ADC registers location and length
--  - interrupts: Should contain the IRQ line for the ADC
--  - clock-names: tuple listing input clock names.
--	Required elements: "adc_clk", "adc_op_clk".
--  - clocks: phandles to input clocks.
--  - atmel,adc-channels-used: Bitmask of the channels muxed and enabled for this
--    device
--  - atmel,adc-startup-time: Startup Time of the ADC in microseconds as
--    defined in the datasheet
--  - atmel,adc-vref: Reference voltage in millivolts for the conversions
+-				trigger0 {
+-					trigger-name = "timer-counter-0";
+-					trigger-value = <0x1>;
+-				};
+-				trigger1 {
+-					trigger-name = "timer-counter-1";
+-					trigger-value = <0x3>;
+-				};
 -
--Optional properties:
--  - atmel,adc-use-external-triggers: Boolean to enable the external triggers
--  - atmel,adc-use-res: String selecting the resolution, can be "lowres" or
--		       "highres". If not specified, the highest resolution will
--		       be used.
--  - atmel,adc-sleep-mode: Boolean to enable sleep mode when no conversion
--  - atmel,adc-sample-hold-time: Sample and Hold Time in microseconds
--  - atmel,adc-ts-wires: Number of touchscreen wires. Should be 4 or 5. If this
--                        value is set, then the adc driver will enable touchscreen
--                        support.
--    NOTE: when adc touchscreen is enabled, the adc hardware trigger will be
--          disabled. Since touchscreen will occupy the trigger register.
--  - atmel,adc-ts-pressure-threshold: a pressure threshold for touchscreen. It
--                                     makes touch detection more precise.
+-				trigger2 {
+-					trigger-name = "timer-counter-2";
+-					trigger-value = <0x5>;
+-				};
 -
--Optional trigger Nodes:
--  - Required properties:
--    * trigger-name: Name of the trigger exposed to the user
--    * trigger-value: Value to put in the Trigger register
--      to activate this trigger
--  - Optional properties:
--    * trigger-external: Is the trigger an external trigger?
+-				trigger3 {
+-					trigger-name = "external";
+-					trigger-value = <0xd>;
+-					trigger-external;
+-				};
+ 			};
+ 
+ 			rtc@fffffd20 {
+diff --git a/arch/arm/boot/dts/at91sam9g45.dtsi b/arch/arm/boot/dts/at91sam9g45.dtsi
+index 1fbee2a7785f..ec71c316962c 100644
+--- a/arch/arm/boot/dts/at91sam9g45.dtsi
++++ b/arch/arm/boot/dts/at91sam9g45.dtsi
+@@ -808,8 +808,6 @@ ac97: sound@fffac000 {
+ 			};
+ 
+ 			adc0: adc@fffb0000 {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				compatible = "atmel,at91sam9g45-adc";
+ 				reg = <0xfffb0000 0x100>;
+ 				interrupts = <20 IRQ_TYPE_LEVEL_HIGH 0>;
+@@ -818,31 +816,6 @@ adc0: adc@fffb0000 {
+ 				atmel,adc-channels-used = <0xff>;
+ 				atmel,adc-vref = <3300>;
+ 				atmel,adc-startup-time = <40>;
+-				atmel,adc-res = <8 10>;
+-				atmel,adc-res-names = "lowres", "highres";
+-				atmel,adc-use-res = "highres";
 -
--Examples:
--adc0: adc@fffb0000 {
--	#address-cells = <1>;
--	#size-cells = <0>;
--	compatible = "atmel,at91sam9260-adc";
--	reg = <0xfffb0000 0x100>;
--	interrupts = <20 IRQ_TYPE_LEVEL_HIGH 0>;
--	clocks = <&adc_clk>, <&adc_op_clk>;
--	clock-names = "adc_clk", "adc_op_clk";
--	atmel,adc-channels-used = <0xff>;
--	atmel,adc-startup-time = <40>;
--	atmel,adc-use-external-triggers;
--	atmel,adc-vref = <3300>;
--	atmel,adc-res = <8 10>;
--	atmel,adc-res-names = "lowres", "highres";
--	atmel,adc-use-res = "lowres";
+-				trigger0 {
+-					trigger-name = "external-rising";
+-					trigger-value = <0x1>;
+-					trigger-external;
+-				};
+-				trigger1 {
+-					trigger-name = "external-falling";
+-					trigger-value = <0x2>;
+-					trigger-external;
+-				};
 -
--	trigger0 {
--		trigger-name = "external-rising";
--		trigger-value = <0x1>;
--		trigger-external;
--	};
--	trigger1 {
--		trigger-name = "external-falling";
--		trigger-value = <0x2>;
--		trigger-external;
--	};
+-				trigger2 {
+-					trigger-name = "external-any";
+-					trigger-value = <0x3>;
+-					trigger-external;
+-				};
 -
--	trigger2 {
--		trigger-name = "external-any";
--		trigger-value = <0x3>;
--		trigger-external;
--	};
+-				trigger3 {
+-					trigger-name = "continuous";
+-					trigger-value = <0x6>;
+-				};
+ 			};
+ 
+ 			isi@fffb4000 {
+diff --git a/arch/arm/boot/dts/at91sam9rl.dtsi b/arch/arm/boot/dts/at91sam9rl.dtsi
+index bf85a9419c69..6139e0fd613f 100644
+--- a/arch/arm/boot/dts/at91sam9rl.dtsi
++++ b/arch/arm/boot/dts/at91sam9rl.dtsi
+@@ -262,8 +262,6 @@ spi0: spi@fffcc000 {
+ 			};
+ 
+ 			adc0: adc@fffd0000 {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				compatible = "atmel,at91sam9rl-adc";
+ 				reg = <0xfffd0000 0x100>;
+ 				interrupts = <20 IRQ_TYPE_LEVEL_HIGH 0>;
+@@ -273,32 +271,6 @@ adc0: adc@fffd0000 {
+ 				atmel,adc-channels-used = <0x3f>;
+ 				atmel,adc-vref = <3300>;
+ 				atmel,adc-startup-time = <40>;
+-				atmel,adc-res = <8 10>;
+-				atmel,adc-res-names = "lowres", "highres";
+-				atmel,adc-use-res = "highres";
 -
--	trigger3 {
--		trigger-name = "continuous";
--		trigger-value = <0x6>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/iio/adc/atmel,sama9260-adc.yaml b/Documentation/devicetree/bindings/iio/adc/atmel,sama9260-adc.yaml
-new file mode 100644
-index 000000000000..9b0ff59e75de
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/atmel,sama9260-adc.yaml
-@@ -0,0 +1,167 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/atmel,sama9260-adc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: AT91 sama9260 and similar Analog to Digital Converter (ADC)
-+
-+maintainers:
-+  - Alexandre Belloni <alexandre.belloni@bootlin.com>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - atmel,at91sam9260-adc
-+      - atmel,at91sam9rl-adc
-+      - atmel,at91sam9g45-adc
-+      - atmel,at91sam9x5-adc
-+      - atmel,at91sama5d3-adc
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    minItems: 2
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: adc_clk
-+      - const: adc_op_clk
-+
-+  atmel,adc-channels-used:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Bitmask of the channels muxed and enabled for this device
-+
-+  atmel,adc-startup-time:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Startup Time of the ADC in microseconds as defined in the datasheet
-+
-+  atmel,adc-vref:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Reference voltage in millivolts for the conversions
-+
-+  atmel,adc-use-external-triggers:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: Enable the external triggers
-+
-+  atmel,adc-use-res:
-+    $ref: /schemas/types.yaml#/definitions/string
-+    description:
-+      String corresponding to an identifier from atmel,adc-res-names property.
-+      If not specified, the highest resolution will be used.
-+    enum:
-+      - "lowres"
-+      - "highres"
-+
-+  atmel,adc-sleep-mode:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description: Enable sleep mode when no conversion
-+
-+  atmel,adc-sample-hold-time:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: Sample and Hold Time in microseconds
-+
-+  atmel,adc-ts-wires:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description: |
-+      Number of touchscreen wires. Must be set to enable touchscreen.
-+      NOTE: when adc touchscreen is enabled, the adc hardware trigger will be
-+      disabled. Since touchscreen will occupy the trigger register.
-+    enum:
-+      - 4
-+      - 5
-+
-+  atmel,adc-ts-pressure-threshold:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Pressure threshold for touchscreen.
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - atmel,adc-channels-used
-+  - atmel,adc-startup-time
-+  - atmel,adc-vref
-+
-+patternProperties:
-+  "^(trigger)[0-9]$":
-+    type: object
-+    description: Child node to describe a trigger exposed to the user.
-+    properties:
-+      trigger-name:
-+        $ref: /schemas/types.yaml#/definitions/string
-+        description: Identifying name.
-+
-+      trigger-value:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        description:
-+          Value to put in the Trigger register to activate this trigger
-+
-+      trigger-external:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description: This trigger is provided from an external pin.
-+
-+    additionalProperties: false
-+    required:
-+      - trigger-name
-+      - trigger-value
-+
-+examples:
-+  - |
-+    #include <dt-bindings/dma/at91.h>
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    soc {
-+        #address-cells = <1>;
-+        #size-cells = <1>;
-+
-+        adc@fffb0000 {
-+            compatible = "atmel,at91sam9260-adc";
-+            reg = <0xfffb0000 0x100>;
-+            interrupts = <20 IRQ_TYPE_LEVEL_HIGH 0>;
-+            clocks = <&adc_clk>, <&adc_op_clk>;
-+            clock-names = "adc_clk", "adc_op_clk";
-+            atmel,adc-channels-used = <0xff>;
-+            atmel,adc-startup-time = <40>;
-+            atmel,adc-use-external-triggers;
-+            atmel,adc-vref = <3300>;
-+            atmel,adc-use-res = "lowres";
-+
-+            trigger0 {
-+                trigger-name = "external-rising";
-+                trigger-value = <0x1>;
-+                trigger-external;
-+            };
-+
-+            trigger1 {
-+                trigger-name = "external-falling";
-+                trigger-value = <0x2>;
-+                trigger-external;
-+            };
-+
-+            trigger2 {
-+                trigger-name = "external-any";
-+                trigger-value = <0x3>;
-+                trigger-external;
-+            };
-+
-+            trigger3 {
-+                trigger-name = "continuous";
-+                trigger-value = <0x6>;
-+            };
-+        };
-+    };
-+...
+-				trigger0 {
+-					trigger-name = "external-rising";
+-					trigger-value = <0x1>;
+-					trigger-external;
+-				};
+-
+-				trigger1 {
+-					trigger-name = "external-falling";
+-					trigger-value = <0x2>;
+-					trigger-external;
+-				};
+-
+-				trigger2 {
+-					trigger-name = "external-any";
+-					trigger-value = <0x3>;
+-					trigger-external;
+-				};
+-
+-				trigger3 {
+-					trigger-name = "continuous";
+-					trigger-value = <0x6>;
+-				};
+ 			};
+ 
+ 			usb0: gadget@fffd4000 {
+diff --git a/arch/arm/boot/dts/at91sam9x5.dtsi b/arch/arm/boot/dts/at91sam9x5.dtsi
+index 948fe99ab6c3..4fa75e5a4029 100644
+--- a/arch/arm/boot/dts/at91sam9x5.dtsi
++++ b/arch/arm/boot/dts/at91sam9x5.dtsi
+@@ -793,8 +793,6 @@ uart1: serial@f8044000 {
+ 			};
+ 
+ 			adc0: adc@f804c000 {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				compatible = "atmel,at91sam9x5-adc";
+ 				reg = <0xf804c000 0x100>;
+ 				interrupts = <19 IRQ_TYPE_LEVEL_HIGH 0>;
+@@ -806,32 +804,6 @@ adc0: adc@f804c000 {
+ 				atmel,adc-vref = <3300>;
+ 				atmel,adc-startup-time = <40>;
+ 				atmel,adc-sample-hold-time = <11>;
+-				atmel,adc-res = <8 10>;
+-				atmel,adc-res-names = "lowres", "highres";
+-				atmel,adc-use-res = "highres";
+-
+-				trigger0 {
+-					trigger-name = "external-rising";
+-					trigger-value = <0x1>;
+-					trigger-external;
+-				};
+-
+-				trigger1 {
+-					trigger-name = "external-falling";
+-					trigger-value = <0x2>;
+-					trigger-external;
+-				};
+-
+-				trigger2 {
+-					trigger-name = "external-any";
+-					trigger-value = <0x3>;
+-					trigger-external;
+-				};
+-
+-				trigger3 {
+-					trigger-name = "continuous";
+-					trigger-value = <0x6>;
+-				};
+ 			};
+ 
+ 			spi0: spi@f0000000 {
+diff --git a/arch/arm/boot/dts/sama5d3.dtsi b/arch/arm/boot/dts/sama5d3.dtsi
+index 9a0c94492c5b..40bb576d1636 100644
+--- a/arch/arm/boot/dts/sama5d3.dtsi
++++ b/arch/arm/boot/dts/sama5d3.dtsi
+@@ -302,8 +302,6 @@ ssc1: ssc@f800c000 {
+ 			};
+ 
+ 			adc0: adc@f8018000 {
+-				#address-cells = <1>;
+-				#size-cells = <0>;
+ 				compatible = "atmel,sama5d3-adc";
+ 				reg = <0xf8018000 0x100>;
+ 				interrupts = <29 IRQ_TYPE_LEVEL_HIGH 5>;
+@@ -330,30 +328,8 @@ &pinctrl_adc0_ad11
+ 				atmel,adc-startup-time = <40>;
+ 				atmel,adc-use-external-triggers;
+ 				atmel,adc-vref = <3000>;
+-				atmel,adc-res = <10 12>;
+ 				atmel,adc-sample-hold-time = <11>;
+-				atmel,adc-res-names = "lowres", "highres";
+ 				status = "disabled";
+-
+-				trigger0 {
+-					trigger-name = "external-rising";
+-					trigger-value = <0x1>;
+-					trigger-external;
+-				};
+-				trigger1 {
+-					trigger-name = "external-falling";
+-					trigger-value = <0x2>;
+-					trigger-external;
+-				};
+-				trigger2 {
+-					trigger-name = "external-any";
+-					trigger-value = <0x3>;
+-					trigger-external;
+-				};
+-				trigger3 {
+-					trigger-name = "continuous";
+-					trigger-value = <0x6>;
+-				};
+ 			};
+ 
+ 			i2c2: i2c@f801c000 {
+diff --git a/arch/arm/boot/dts/sama5d4.dtsi b/arch/arm/boot/dts/sama5d4.dtsi
+index 2d9f853ab15f..68d83027e7ab 100644
+--- a/arch/arm/boot/dts/sama5d4.dtsi
++++ b/arch/arm/boot/dts/sama5d4.dtsi
+@@ -655,31 +655,9 @@ adc0: adc@fc034000 {
+ 				atmel,adc-startup-time = <40>;
+ 				atmel,adc-use-external-triggers;
+ 				atmel,adc-vref = <3000>;
+-				atmel,adc-res = <8 10>;
+ 				atmel,adc-sample-hold-time = <11>;
+-				atmel,adc-res-names = "lowres", "highres";
+ 				atmel,adc-ts-pressure-threshold = <10000>;
+ 				status = "disabled";
+-
+-				trigger0 {
+-					trigger-name = "external-rising";
+-					trigger-value = <0x1>;
+-					trigger-external;
+-				};
+-				trigger1 {
+-					trigger-name = "external-falling";
+-					trigger-value = <0x2>;
+-					trigger-external;
+-				};
+-				trigger2 {
+-					trigger-name = "external-any";
+-					trigger-value = <0x3>;
+-					trigger-external;
+-				};
+-				trigger3 {
+-					trigger-name = "continuous";
+-					trigger-value = <0x6>;
+-				};
+ 			};
+ 
+ 			aes@fc044000 {
 -- 
 2.28.0
 
