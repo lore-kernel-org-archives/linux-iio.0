@@ -2,81 +2,102 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MIME_BASE64_TEXT,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F3A32C63777
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 65948C64E8A
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9EF2D222C2
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2CCE0222C2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:24:08 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=gmx.net header.i=@gmx.net header.b="DJ/nfbKG"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="awjqu6B8"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730846AbgK1VtU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1730578AbgK1VtU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sat, 28 Nov 2020 16:49:20 -0500
-Received: from mout.gmx.net ([212.227.15.19]:42797 "EHLO mout.gmx.net"
+Received: from mail.kernel.org ([198.145.29.99]:43260 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728495AbgK1SBn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:01:43 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1606586410;
-        bh=llOEp7TKQR/EGzhXDacWl6woOORc2KNFI1XW/Ng1WBE=;
-        h=X-UI-Sender-Class:From:To:Cc:Subject:Date:In-Reply-To:References;
-        b=DJ/nfbKGA6OwjBY2mp6hbCcOIirJNfKNpSO7kJn1PuSzwvcjqecLXZTAjrFoQ1VMx
-         CBQMAUjjJXiXKF3bY3ZyVdNQHACYvU2zzn7vKRVKgPzxkX8bfEfxgvnb8aB8XM7Nxm
-         cxOX42gAEFQFRlCuQDmnlYVKPTm7T9j3JY7wKJdE=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from Venus.fritz.box ([78.42.220.31]) by mail.gmx.com (mrgmx004
- [212.227.17.190]) with ESMTPSA (Nemesis) id 1N4QsO-1k1f4F49ag-011S5k; Sat, 28
- Nov 2020 14:45:42 +0100
-From:   Lino Sanfilippo <LinoSanfilippo@gmx.de>
-To:     jic23@kernel.org
-Cc:     andy.shevchenko@gmail.com, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lino Sanfilippo <LinoSanfilippo@gmx.de>
-Subject: [RESEND PATCH 2/2] io:core: In iio_map_array_register() cleanup in case of error
-Date:   Sat, 28 Nov 2020 14:44:19 +0100
-Message-Id: <1606571059-13974-2-git-send-email-LinoSanfilippo@gmx.de>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1606571059-13974-1-git-send-email-LinoSanfilippo@gmx.de>
-References: <1606571059-13974-1-git-send-email-LinoSanfilippo@gmx.de>
+        id S1726961AbgK1R6R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 12:58:17 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1C908246E2;
+        Sat, 28 Nov 2020 17:57:35 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606586257;
+        bh=TysTcHn2fgrDv6ggQHwiNuDIFdGJtM1RGsXV7S/7owc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=awjqu6B87cLyKBBprTyTXkJIBAin8UTpcBvVrqfWIUtr8gzZjprqHCqaJRZCCv9Fy
+         mZtwy454PnWP1zmi0Y2CEmOQeR4S9JrsBp0HFDjw7u3L/fQlr0vSwJbnnE9Aqybix3
+         iHa8p8gF/08jj8bwnK722YgMzgWIT0DWmmeFt+ww=
+Date:   Sat, 28 Nov 2020 17:57:32 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Rob Herring <robh@kernel.org>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 00/10] dt-bindings: iio: conversion of consumer drivers
+Message-ID: <20201128175732.5fdc7310@archlinux>
+In-Reply-To: <20201103160756.GB1732900@bogus>
+References: <20201031181242.742301-1-jic23@kernel.org>
+        <20201103160756.GB1732900@bogus>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: base64
-X-Provags-ID: V03:K1:42saRdxZ6O4sXs+ITGkakIE0b5eMR+hUo7mlPXHk4FtfBar2KNJ
- TqMXXQOA/UYgWTjPDT8zT05SLCRCfXUBA0s0Ss+thXqER5ZeLG4DYrCx2dkC6truEyGznp6
- vClgHCNLnSe62YVHnDEBZlgxQzg+fCqezVMpOvH+P0hrWkx0KOgsRRPj2NjoDkX7fWAgVC4
- JvqZPRYgT/rzIqCvLbUFQ==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:g9bbeuahMiQ=:ssS7esfd+e8zblSYq5aV44
- 2ckzlX5Ha/IjZ/jI5KpM7aNqIZUNH6ZHhaZt8MjXBT1/ESZ/4t/c8/JJXyz3IWUK300mZE2hV
- OOfieIqXmzyw7xTZwkga4P5HcVEdd40avx2+rc64saYPXVq1kyfZHj1ZPnSMaEwjWpuxefGgy
- aQF3gVLlDRlhtZxIF9Rz2EGKYzpBTj2KfO8yywlmvjAsA7Y9jOmsnOLWnVMKcbPcLYbSf5CXT
- E1ctokGfs1V1QfQujR5u/pnjCpLixXXd+B5jkc4BrTHAVS8031Fb3OpZnbSWiFHY5GM070lMN
- DMu9eCewgtIKMwbWOz7dyq5I8oCqPWFKZWTLEIHZ5UDA9kD/2U6tXQanh9YnWhOmk+H08aTE5
- 4JIfK4DVBMNV7WiID8aoa/D93fclGkqgdJs+0m4g/pEwRUpEahptav/wtcaNieI5sgm4qWxkt
- uTeLh+ayDsIgVPkwFl406No678sWPhK9soHnBet71tFukXRDcaUiY4zQuP8RPmg1J3o+0NDpL
- EdYCMUJN2C4HzIZDm4msMJTePFLiER3MXBNnyPkv/wN7gtyEZkKZtxbR8piMoer5bhhujFQVI
- jK2X1quyuqQ3Ip6QdoGMN0aHvbcvtq9ONDJb2fG3uOeo2+tn+jULHQkljy1LWKBvv8Fzkrkq6
- nxUMn3c0zkiOxnFB1/S4OKgYPBL8DelTmcjuHbLO4XOAdym7T7K9k5OVkTevTkofYEvFDOXup
- MiRRH6lhN+EmiS281CmslUEm/fQszY3BiJUt/RxGl21plrxulAHkpUX23GeIZ8JGOzzWDJo6e
- LjwBOP3rfHkoqWqfRnphPaObfHv10y5UrKxbs2vXOhbkvjz4XKLcvgHx0BjVjMKYnjLlJadIP
- F24gpLOFcn4cs6U/C5qg==
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-SW4gZnVuY3Rpb24gaWlvX21hcF9hcnJheV9yZWdpc3RlcigpIHByb3Blcmx5IHJld2luZCBpbiBj
-YXNlIG9mIGVycm9yLgoKU2lnbmVkLW9mZi1ieTogTGlubyBTYW5maWxpcHBvIDxMaW5vU2FuZmls
-aXBwb0BnbXguZGU+ClJldmlld2VkLWJ5OiBBbmR5IFNoZXZjaGVua28gPGFuZHkuc2hldmNoZW5r
-b0BnbWFpbC5jb20+Ci0tLQogZHJpdmVycy9paW8vaW5rZXJuLmMgfCAyICsrCiAxIGZpbGUgY2hh
-bmdlZCwgMiBpbnNlcnRpb25zKCspCgpkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vaW5rZXJuLmMg
-Yi9kcml2ZXJzL2lpby9pbmtlcm4uYwppbmRleCAzOWMxZDYzLi5mZTMwYmNiIDEwMDY0NAotLS0g
-YS9kcml2ZXJzL2lpby9pbmtlcm4uYworKysgYi9kcml2ZXJzL2lpby9pbmtlcm4uYwpAQCAtNjAs
-NiArNjAsOCBAQCBpbnQgaWlvX21hcF9hcnJheV9yZWdpc3RlcihzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2LCBzdHJ1Y3QgaWlvX21hcCAqbWFwcykKIAkJaSsrOwogCX0KIGVycm9yX3JldDoKKwlp
-ZiAocmV0KQorCQlpaW9fbWFwX2FycmF5X3VucmVnaXN0ZXJfbG9ja2VkKGluZGlvX2Rldik7CiAJ
-bXV0ZXhfdW5sb2NrKCZpaW9fbWFwX2xpc3RfbG9jayk7CiAKIAlyZXR1cm4gcmV0OwotLSAKMi43
-LjQKCg==
+On Tue, 3 Nov 2020 10:07:56 -0600
+Rob Herring <robh@kernel.org> wrote:
+
+> On Sat, Oct 31, 2020 at 06:12:32PM +0000, Jonathan Cameron wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > Firstly drop the old text file as the consumer binding (and the other
+> > parts of that file) are under review for inclusion in the dt-schema external
+> > repo.
+> > 
+> > This only converts consumers that happen to also be IIO drivers.
+> > Others may get done as part of SoC binding conversions or I may do a lot
+> > of them at somepoint.
+> > 
+> > A few of the examples in existing text files used providers that were
+> > documented in trivial-bindings.yaml which does not allow for
+> > #io-channel-cells. I have pulled those out to their own files as part
+> > of this patch set.
+> > 
+> > The iio-mux binding is not done as that has some dependencies and will
+> > form part of some future patch set.
+> > 
+> > There is no explicit dependency in here on any other sets, but some
+> > noise will occur in trivial-bindings.yaml if applied in a different
+> > order to I happen to have them sets locally.
+> > 
+> > Jonathan Cameron (10):
+> >   dt-bindings:iio:iio-binding.txt Drop file as content now in dt-schema
+> >   dt-bindings:iio:dac:dpot-dac: yaml conversion.
+> >   dt-bindings:iio:potentiometer: give microchip,mcp4531 its own binding
+> >   dt-bindings:iio:adc:envelope-detector: txt to yaml conversion.
+> >   dt-bindings:iio:afe:current-sense-amplifier: txt to yaml conversion.
+> >   dt-bindings:iio:afe:current-sense-shunt: txt to yaml conversion. 
+> >   dt-bindings:iio:adc:maxim,max1027: Pull out to separate binding doc.
+> >   dt-bindings:iio:afe:voltage-divider: txt to yaml conversion
+> >   dt-bindings:iio:light:capella,cm3605: txt to yaml conversion.
+> >   dt-bindings:iio:potentiostat:ti,lmp91000: txt to yaml conversion.  
+> 
+> With the type references for properties with standard units dropped,
+
+Done.
+
+> 
+> Reviewed-by: Rob Herring <robh@kernel.org>
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to do their magic.
+Thanks,
+
+Jonathan
