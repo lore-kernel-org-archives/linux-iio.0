@@ -2,201 +2,176 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86282C83010
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 18:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62106C63798
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:21:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4DD9E22456
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 18:00:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2FBC12231B
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:21:46 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="BsZ6molR"
+	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="B0RYQ/X8"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729460AbgK1R7h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 12:59:37 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43072 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1730967AbgK1R5f (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 12:57:35 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A1E5F22456;
-        Sat, 28 Nov 2020 17:56:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606586214;
-        bh=Y4tpYinA5TUHjdPSkcxV5jWTVfrgtBiS6vtywGzjwvQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=BsZ6molRogIjNMNsThGL64BjZlb2ZUQESnqKijdNZgOemTvkiVP8nm9O2n88ZVoJU
-         kqEgitpggcKiyeS2lJNGj+tcOYgc7c4rJYO4hSHFi9RPNzndV++jWeCfrkfFPg3gHd
-         rfeioP2X/plLZxHdO8nAn/0dbqtzoM7nrQQDBsk8=
-Date:   Sat, 28 Nov 2020 17:56:50 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Matt Ranostay <matt.ranostay@konsulko.com>
-Cc:     "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 10/10] dt-bindings:iio:potentiostat:ti,lmp91000: txt to
- yaml conversion.
-Message-ID: <20201128175650.1e8d2a5e@archlinux>
-In-Reply-To: <CAJCx=gmWRa4Q_zZZG=f37ZeuifCjmJZ5gnuuc1ZBFGa6bdmGrQ@mail.gmail.com>
-References: <20201031181242.742301-1-jic23@kernel.org>
-        <20201031181242.742301-11-jic23@kernel.org>
-        <CAJCx=gmWRa4Q_zZZG=f37ZeuifCjmJZ5gnuuc1ZBFGa6bdmGrQ@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S2388242AbgK1Vtc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34468 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2387762AbgK1VFu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Nov 2020 16:05:50 -0500
+Received: from mail-lj1-x241.google.com (mail-lj1-x241.google.com [IPv6:2a00:1450:4864:20::241])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AF6EBC0613D2
+        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 13:05:09 -0800 (PST)
+Received: by mail-lj1-x241.google.com with SMTP id s9so10333395ljo.11
+        for <linux-iio@vger.kernel.org>; Sat, 28 Nov 2020 13:05:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=NXUgVDY/D8K1+7OpYT2Vp98ohpEzXQV3FJGu7OisKHw=;
+        b=B0RYQ/X8uMlxaHTlxLlkMxhZWIXS6S5D4Dc5hIrd7dNsbUYDzvwpk9TAV1/qlDrHMj
+         +qukWe72ObWsO9pQLV7/X+xTQdlRxwdTq7DVmjrwonNTanp25gLcSMZdAMuVhOcBSW69
+         QBwXgZntGwASuk0ZwBaeJgZ2EXu2DA71lFmCE+tcazt37PlGBZ3as6vFjufW1eMEAT4R
+         Frf/MZAEshhqNI1w8hFUvCFwESi8/mbGQGuaL11REKTMgF/pLo4/6sLhsKivrh6y/oRf
+         nY3R2fX4kVbwgnZ/AQurjpD6mIcv8Q2zdaYGtq51xvhUV2BsTlVHD0EI1h+yRA6uPSKn
+         GZQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=NXUgVDY/D8K1+7OpYT2Vp98ohpEzXQV3FJGu7OisKHw=;
+        b=gIQZBnk+cnpabyEZePp7mZ0a/NtQU52sXb3njIbuF2dBHdoOSLnVHuNqzWdOFdkgCg
+         IrwfnsCzAYu7E6ylDLA9isMvS9L2+BG5UFKDYtT5yCm8epHiw+V/5JbsFEvmCQ1FdufD
+         nICgnU9AE4VaqpEb8/vhLuhsHZ+ng1Ch51yO9E6vgbUnk9iP2953mubF083K2yHaWwqE
+         dlhkOVpF+rZIQI5/RMK907y5TQo3i/M6M2yhieIhkqzXjFlvfidxcoV8BMMB8sXA70LE
+         l/QLm/12ul53U5BdUcPJ8/pmorTzJMudhSXpaZF6iwJknzQuOhBVt2rvj5DsxXGTkj0w
+         gczw==
+X-Gm-Message-State: AOAM53153sC5p/gTg3DVJim246LlZnBswIZE70emNiDEmPdWkgYRgK2N
+        Dzo/ylruRBJYQmkxWBqsZDjGbdckcgeTFgs3ZrVJaBj9SsAU9zLU
+X-Google-Smtp-Source: ABdhPJzk9XSRJelIhy3xHhNQlcQJUiu6s5RaAPCZgj/9kuTxLN6mx6IMZCcKMLlGNOsauoMEoiV1TrTlNl9Pbws4OIk=
+X-Received: by 2002:a05:651c:39d:: with SMTP id e29mr4810713ljp.144.1606597508162;
+ Sat, 28 Nov 2020 13:05:08 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201128004038.883289-1-linus.walleij@linaro.org>
+ <20201128004038.883289-2-linus.walleij@linaro.org> <20201128122153.44c1052c@archlinux>
+In-Reply-To: <20201128122153.44c1052c@archlinux>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 28 Nov 2020 22:04:56 +0100
+Message-ID: <CACRpkdYvkV0Xrw9fseQneHwhJ-EkcX+RQKVcCF8hhidE479AmQ@mail.gmail.com>
+Subject: Re: [PATCH 2/2 v2] iio: magnetometer: Add driver for Yamaha YAS5xx
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        phone-devel@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 31 Oct 2020 14:41:10 -0700
-Matt Ranostay <matt.ranostay@konsulko.com> wrote:
+Hi Jonathan!
 
-> On Sat, Oct 31, 2020 at 11:15 AM Jonathan Cameron <jic23@kernel.org> wrote:
-> >
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> >
-> > There were a few parts of the example that did not conform to the
-> > binding description and would not have worked with the Linux driver
-> > as a result.  Fixed them whilst doing this conversion.
-> >
-> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > Cc: Matt Ranostay <matt.ranostay@konsulko.com>  
-> 
-> Acked-by: Matt Ranostay <matt.ranostay@konsulko.com>
+I fixed most things, some elaboration inline:
 
-Note I couldn't drop the type markings for the resistance properties here
-because the dt-schema uses ohms and these are ohm.
+On Sat, Nov 28, 2020 at 1:21 PM Jonathan Cameron <jic23@kernel.org> wrote:
 
-An unfortunate bit of legacy we'll need to maintain I guess.
+> The 'interesting' nature of the packing in those calibration registers
+> is unfortunate.  I'm not really sure how we make that code more readable
+> but using overlapping unaligned big endian reads definitely doesn't make
+> it easier for me to follow!
 
-Jonathan
+Yeah I am experimenting to find a good way. Maybe I will try to extract
+u64 and chop out the bits from there to make it clearer.
 
-> 
-> > ---
-> >  .../bindings/iio/potentiostat/lmp91000.txt    | 33 ---------
-> >  .../iio/potentiostat/ti,lmp91000.yaml         | 68 +++++++++++++++++++
-> >  2 files changed, 68 insertions(+), 33 deletions(-)
-> >
-> > diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
-> > deleted file mode 100644
-> > index f3ab02b0dd41..000000000000
-> > --- a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
-> > +++ /dev/null
-> > @@ -1,33 +0,0 @@
-> > -* Texas Instruments LMP91000 series of potentiostats
-> > -
-> > -LMP91000: https://www.ti.com/lit/ds/symlink/lmp91000.pdf
-> > -LMP91002: https://www.ti.com/lit/ds/symlink/lmp91002.pdf
-> > -
-> > -Required properties:
-> > -
-> > -  - compatible: should be one of the following:
-> > -                 "ti,lmp91000"
-> > -                 "ti,lmp91002"
-> > -  - reg: the I2C address of the device
-> > -  - io-channels: the phandle of the iio provider
-> > -
-> > -  - ti,external-tia-resistor: if the property ti,tia-gain-ohm is not defined this
-> > -    needs to be set to signal that an external resistor value is being used.
-> > -
-> > -Optional properties:
-> > -
-> > -  - ti,tia-gain-ohm: ohm value of the internal resistor for the transimpedance
-> > -    amplifier. Must be 2750, 3500, 7000, 14000, 35000, 120000, or 350000 ohms.
-> > -
-> > -  - ti,rload-ohm: ohm value of the internal resistor load applied to the gas
-> > -    sensor. Must be 10, 33, 50, or 100 (default) ohms.
-> > -
-> > -Example:
-> > -
-> > -lmp91000@48 {
-> > -       compatible = "ti,lmp91000";
-> > -       reg = <0x48>;
-> > -       ti,tia-gain-ohm = <7500>;
-> > -       ti,rload = <100>;
-> > -       io-channels = <&adc>;
-> > -};
-> > diff --git a/Documentation/devicetree/bindings/iio/potentiostat/ti,lmp91000.yaml b/Documentation/devicetree/bindings/iio/potentiostat/ti,lmp91000.yaml
-> > new file mode 100644
-> > index 000000000000..e4b5d890e8d5
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/potentiostat/ti,lmp91000.yaml
-> > @@ -0,0 +1,68 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/potentiostat/ti,lmp91000.yaml#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Texas Instruments LMP91000 series of potentiostats with I2C control
-> > +
-> > +maintainers:
-> > +  - Matt Ranostay <matt.ranostay@konsulko.com>
-> > +
-> > +description: |
-> > +  Typically used as a signal conditioner for chemical sensors.
-> > +  LMP91000: https://www.ti.com/lit/ds/symlink/lmp91000.pdf
-> > +  LMP91002: https://www.ti.com/lit/ds/symlink/lmp91002.pdf
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - ti,lmp91000
-> > +      - ti,lmp91002
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  io-channels:
-> > +    maxItems: 1
-> > +
-> > +  ti,external-tia-resistor:
-> > +    $ref: /schemas/types.yaml#/definitions/flag
-> > +    description:
-> > +      If the property ti,tia-gain-ohm is not defined this needs to be set to
-> > +      signal that an external resistor value is being used.
-> > +
-> > +  ti,tia-gain-ohm:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > +    enum: [2750, 3500, 7000, 14000, 35000, 120000, 350000]
-> > +    description:
-> > +      Internal resistor for the transimpedance amplifier.
-> > +
-> > +  ti,rload-ohm:
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > +    enum: [10, 33, 50, 100]
-> > +    description:
-> > +      Internal resistor load applied to the gas sensor.
-> > +      Default 100 Ohms.
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +  - io-channels
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    i2c {
-> > +        #address-cells = <1>;
-> > +        #size-cells = <0>;
-> > +        lmp91000@48 {
-> > +            compatible = "ti,lmp91000";
-> > +            reg = <0x48>;
-> > +            ti,tia-gain-ohm = <7000>;
-> > +            ti,rload-ohm = <100>;
-> > +            io-channels = <&adc>;
-> > +        };
-> > +    };
-> > +...
-> > --
-> > 2.28.0
-> >  
+I think a lot of clock drivers have this problem already.
 
+> > +       This driver can also be compiled as a module.
+> > +       To compile this driver as a module, choose M here: the module
+> > +       will be called yamaha-yas.
+> > +
+
+> One line only
+
+Please clarify what you want the end result to look like, I don't
+quite get it... Looking a the latest committed drivers in linux-next
+didn't give a clue either.
+
+> > + * YAS530 MS-3E (2011 Samsung Galaxy S Advance)
+> > + * YAS532 MS-3R (2011 Samsung Galaxy S4)
+> > + * YAS533 MS-3F (Vivo 1633, 1707, V3, Y21L)
+> > + * (YAS534 is a magnetic switch, not handled)
+>
+> And there is your reason not to use wild cards in the dt file name etc!
+
+It's pretty safe as we definately account for all magnetometers
+of the naming scheme YAS53x. The YAS534 would be in another
+subsystem (proximity, I guess) so the path to the file gives the
+right info: this covers all magnetometers named yas53x, goes
+for both the bindings and the driver I think?
+
+> > +static void yas53x_extract_calibration(u8 *data, struct yas5xx_calibration *c)
+> > +{
+>
+> As below.  I'm not sure how you make this clearer, but right now it's
+> really hard to follow.  Perhaps detailed comment on what the data packing
+> in here is?
+
+OK I try to detail a bit.
+
+> > +     c->a2 = yas5xx_extract_bits(&data[3], 10, 15) - 32;
+> > +     c->a3 = yas5xx_extract_bits(&data[3], 6, 9) - 8;
+> > +     c->a4 = yas5xx_extract_bits(&data[4], 8, 13) - 32;
+> > +     c->a5 = yas5xx_extract_bits(&data[5], 10, 15) + 38;
+> > +     c->a6 = yas5xx_extract_bits(&data[5], 4, 9) - 32;
+> > +     c->a7 = yas5xx_extract_bits(&data[6], 5, 11) - 64;
+> > +     c->a8 = yas5xx_extract_bits(&data[7], 7, 12) - 32;
+> > +     c->a9 = yas5xx_extract_bits(&data[8], 7, 14);
+> > +     c->k = yas5xx_extract_bits(&data[9], 10, 14) + 10;
+
+Since this segment easily fits in a u64 I thought about
+extracing a u64 and then use FIELD_GET on that.
+
+> As below, I wonder if you'd be better just constructing these directly from
+> the 8 bit register pairs. The overlapping unaligned 16 bit reads are
+> rather confusing.
+
+I already tried that but it looks even worse :/
+
+I will try to put them into a bigger word instead.
+
+> > +     /* Extract linearization */
+>
+> Could you add a comment on the data layout here. It seems rather
+> non obvious given the overlapping 16 bit reads you are doing.
+> Whilst the maths might correspond to extracting bits from be16 registers
+> that looks more like coincidence than design and only makes any
+> useful difference to the bit 7,8 pair.  The bit 9-14 could just have
+> been gotten from the next 8 bit register directly.
+
+It sadly doesn't look any better if I operate on u8 chars. :/
+I'll try to think of something.
+
+> > +             snprintf(yas5xx->name, sizeof(yas5xx->name),
+> > +                      "YAS530 MS-3E %s",
+>
+> Name tends to be lowercase. Also, not sure we've had one with spaces
+> in it before.  I guess our userspace code is fine with it though
+> as presumably you've tested that.
+
+Yeah oddly it turns it into just "YAS530":
+
+skomer:/home/linus# lsiio
+Device 003: bma222
+Device 001: current-sense-amplifier
+Device 004: gp2ap002
+Device 002: mpu3050
+Device 000: ab8500-gpadc
+Device 005: YAS530
+Trigger 000: mpu3050-dev2
+
+But it doesn't look nice, I will rename it lowercase.
+
+Yours,
+Linus Walleij
