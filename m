@@ -2,168 +2,95 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EACE3C83A8F
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4465CC83AA2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B8DF12231B
-	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0EBCB222C2
+	for <linux-iio@archiver.kernel.org>; Sat, 28 Nov 2020 22:23:02 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="0wJ3aocb"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="LQerzBnp"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732332AbgK1VtX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 Nov 2020 16:49:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46390 "EHLO mail.kernel.org"
+        id S2388064AbgK1VtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 Nov 2020 16:49:25 -0500
+Received: from mail.kernel.org ([198.145.29.99]:47394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729414AbgK1S0z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 28 Nov 2020 13:26:55 -0500
+        id S1730393AbgK1Skw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 28 Nov 2020 13:40:52 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id B6DE1246B7;
-        Sat, 28 Nov 2020 15:50:10 +0000 (UTC)
+        by mail.kernel.org (Postfix) with ESMTPSA id 23C74246AD;
+        Sat, 28 Nov 2020 15:37:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=default; t=1606578611;
-        bh=IfftN0dR9Tkdvkb2rK5sv4Mu/EaSXV2+K2BEqn8JYnk=;
+        s=default; t=1606577826;
+        bh=TMRrgzMorywJj2/Zw49Mmp/25hgyT+Mjxg62g2o5keA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=0wJ3aocbPTsVMTJR6ofukOEdXhGT7cYflHl9sVbcipM5LL6KNjRS1TsAzs6/+Ktyy
-         kr04ZCySfXZBS/srHdw1yFjXyrI3aE1JQW9A6cQuknCgvxmDtFoZ4g6QdMQa05ERH6
-         7iAtwEUtQAYyji1aYl7IVDAhYM+yQBt1SESIgyOo=
-Date:   Sat, 28 Nov 2020 15:50:06 +0000
+        b=LQerzBnpkbUTf7oc0NQVtnL+sau72gS0dLf/aq+V0V9bQF2t8TQ+8+eQQ6I+qebNW
+         wDwzBX7sfPGzHxagdJN1UNVYxKniynNycuiGiz5QuKntgC5tiNDGVgpsVkQSFnJrz3
+         ondhDMaDD20f0936EizzpCV7rS08zFBNxAPRAvr8=
+Date:   Sat, 28 Nov 2020 15:37:02 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: buffer: Fix demux update
-Message-ID: <20201128155006.04f05fef@archlinux>
-In-Reply-To: <20201114162638.6fbf55a8@archlinux>
-References: <20201112144323.28887-1-nuno.sa@analog.com>
-        <20201112172821.0000088b@Huawei.com>
-        <CY4PR03MB263146ADC49222DE28BB028999E60@CY4PR03MB2631.namprd03.prod.outlook.com>
-        <20201114162638.6fbf55a8@archlinux>
+To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc:     robh+dt@kernel.org, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        linux-arm-msm@vger.kernel.org
+Subject: Re: [PATCH 6/9] ARM: dts: qcom-pma8084: Drop incorrect use of
+ io-channel-ranges
+Message-ID: <20201128153702.7d144f68@archlinux>
+In-Reply-To: <20201115192951.1073632-7-jic23@kernel.org>
+References: <20201115192951.1073632-1-jic23@kernel.org>
+        <20201115192951.1073632-7-jic23@kernel.org>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 14 Nov 2020 16:26:38 +0000
+On Sun, 15 Nov 2020 19:29:48 +0000
 Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Fri, 13 Nov 2020 07:55:21 +0000
-> "Sa, Nuno" <Nuno.Sa@analog.com> wrote:
->=20
-> > > -----Original Message-----
-> > > From: Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-> > > Sent: Thursday, November 12, 2020 6:28 PM
-> > > To: Sa, Nuno <Nuno.Sa@analog.com>
-> > > Cc: linux-iio@vger.kernel.org; Jonathan Cameron <jic23@kernel.org>;
-> > > Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler
-> > > <pmeerw@pmeerw.net>
-> > > Subject: Re: [PATCH] iio: buffer: Fix demux update
-> > >=20
-> > >=20
-> > > On Thu, 12 Nov 2020 15:43:22 +0100
-> > > Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
-> > >    =20
-> > > > When updating the buffer demux, we will skip a scan element from   =
-=20
-> > > the   =20
-> > > > device in the case `in_ind !=3D out_ind` and we enter the while loo=
-p.
-> > > > in_ind should only be refreshed with `find_next_bit()` in the end o=
-f   =20
-> > > the   =20
-> > > > loop.
-> > > >
-> > > > Fixes: 5ada4ea9be16 ("staging:iio: add demux optionally to path fro=
-m   =20
-> > > device to buffer")   =20
-> > > > Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>   =20
-> > >=20
-> > > Yikes that's been there a long time.
-> > >=20
-> > > Could you provide an example of a particular layout and the result of
-> > > this being wrong?
-> > >    =20
-> >=20
-> > Hi Jonathan,
-> >=20
-> > Let's say:
-> >=20
-> > iio_dev_mask: 0x0111
-> > buffer_mask: 0x0100
-> >=20
-> > We would get out_ind =3D 2 and in_ind =3D 0 and  enter the loop. In the=
- first
-> > iteration we call find_next_bit() before doing the in_ind=3D0 computati=
-on which means we=20
-> > will skip it and go directly to bit 1... And if we continue the path fl=
-ow, we see that bit 2 will
-> > be computed two times, so if we are lucky and scan_index0_len =3D=3D sc=
-an_index2_len this
-> > will go unnoticed...
-> >=20
-> > Honestly, I didn't test this but it looks one of those things more or l=
-ess clear by reading
-> > the code or am I missing something here? =20
->=20
-> Mostly I was wondering why it hadn't bitten us before.  I think you've id=
-entified
-> why with your "if we are lucky and scan_index0_len =3D=3D scan_index2_len=
-" then this will
-> go unnoticed.  =20
->=20
-> It's very rare (though not unheard of) for a device to have it's main cha=
-nnels
-> of different widths (timestamp doesn't matter for this as it is always at=
- the
-> end).  The demux also only kicks in if we have a restricted channel
-> mask (or are using a kfifo and a buffer_cb which is rather rare).  I susp=
-ect
-> we have few if any devices that actually run into this problem.
->=20
-> I guess I originally tested this code with devices I had at the time and =
-none of
-> them would have tripped this.
->=20
-> Anyhow, whilst I agree with your analysis I'd like to leave this on list =
-for
-> perhaps another week before applying it on the basis I'm paranoid and wou=
-ld
-> ideally like a few more eyes on this.
->=20
-Ah well. I'll take silence as meaning either everyone is happy or no
-one else is going to read it ;)
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> This property is used by io-channel consumers, not providers so should
+> not present here.  Note dt_schema will now detect this error as there
+> is a dependency between this property and io-channels.
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Andy Gross <andy.gross@linaro.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
++CC Andy on an up to date email. Also added linux-arm-msm
+which I should have cc'd in the first place.
 
-Applied with a bit more text in the description to highlight that,
-whilst a bug, it's actually not a common situation.
+I've taken the yaml fix related to this so just a question of
+cleaning up this loose end in the dtsi
 
-Given timing I've applied this to the togreg branch of iio.git
-ready for the next merge window.
-
-thanks,
+Thanks,
 
 Jonathan
 
-> Good spot!
->=20
-> Jonathan
->=20
-> >=20
-> > - Nuno S=C3=A1
-> >  =20
-> > > Thanks,
-> > >=20
-> > > Jonathan
-> > >    =20
->=20
+> ---
+>  arch/arm/boot/dts/qcom-pma8084.dtsi | 1 -
+>  1 file changed, 1 deletion(-)
+> 
+> diff --git a/arch/arm/boot/dts/qcom-pma8084.dtsi b/arch/arm/boot/dts/qcom-pma8084.dtsi
+> index ea1ca166165c..e921c5e93a5d 100644
+> --- a/arch/arm/boot/dts/qcom-pma8084.dtsi
+> +++ b/arch/arm/boot/dts/qcom-pma8084.dtsi
+> @@ -68,7 +68,6 @@ pma8084_vadc: vadc@3100 {
+>  			#address-cells = <1>;
+>  			#size-cells = <0>;
+>  			#io-channel-cells = <1>;
+> -			io-channel-ranges;
+>  
+>  			die_temp {
+>  				reg = <VADC_DIE_TEMP>;
 
