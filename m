@@ -2,129 +2,314 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9173C64E8A
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 13:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FD80C64E7B
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 13:13:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 79022206C1
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 13:00:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B126820708
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 13:13:49 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=linaro.org header.i=@linaro.org header.b="g3YzTo4y"
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="RKBIRy13"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725955AbgK3NAC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Nov 2020 08:00:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33410 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725933AbgK3NAB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Nov 2020 08:00:01 -0500
-Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 000C1C0613D4
-        for <linux-iio@vger.kernel.org>; Mon, 30 Nov 2020 04:59:20 -0800 (PST)
-Received: by mail-lf1-x144.google.com with SMTP id u18so21411442lfd.9
-        for <linux-iio@vger.kernel.org>; Mon, 30 Nov 2020 04:59:20 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5vzUKpDdGw3DeKYZJvtAHtIzx8LG3ZUWuYSvug1TKDA=;
-        b=g3YzTo4yvJ3DZWSgyEBJJlJ+eH2u1CVKPSIupC/KGG28Uw6/foiMIuWq/xhwkpQcdB
-         QDbTcAB8HQ/Kn0SGB1Uwv6KYoYOP7IcchVHVYzWGZJdAR5y0XOeAL0M4qr/CLjJuhnjj
-         ZcRXEUcIOjpWmbsoVUgDqcc8THjRuR97LMEqiCdNHrO6qnQXlIt47DZCgmP3T/DKquJz
-         H1ZqZU72EPF6mk4j/HTqoxmgNAFPbVPgN945SGfPFSuFM96g83f6AtBQz2AD4QfQGVIf
-         ft3n4AtN1gPrOA9I5yNIY5teXowmwjT3ZkXd/RXzFZ7G1EHyUvUOz26iJbBJuMqWTolY
-         DAMg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=5vzUKpDdGw3DeKYZJvtAHtIzx8LG3ZUWuYSvug1TKDA=;
-        b=lQ5c9E/6gLe+zEBNSLLLLSDTW4yLMwz+iItLrD5TJJIMdLfJJ7YMePwHodJ+rOpRsd
-         040j2WbjSfITzm2ou/WC4YhDUA4/VbneNgBl/T26KGvIMUZEJLwLD+sg4rR4YeXaqgjd
-         fhxkUHg9A/9tZiYEKm3LKNdp9JF170picVNkaXiI3ud77oJGCxQvZRxlyLlCV+oNi0TP
-         Y/qVOzAvVrLlTHbE26Pht+LtWyjKVKFHxeVadS8/nJhkfC29Dhg26dwHaSUXAApspUNX
-         5T97UER2Rqf3G8ad0JzMgyzJWJX7hpjXBiN1IJx+DK+iu4iKYz1E3+VBybcjb/k+Mvrd
-         grJA==
-X-Gm-Message-State: AOAM531RTs/HTkxI/jAdoAhjxMGKV+7mEy1H+Mcjk2NV6RQZcjIomB3/
-        hxHq8UD5tZgBCQZssSsRJVO9S8wfWy+0cnQ+
-X-Google-Smtp-Source: ABdhPJwT6xnky/mHaJNxckiNgkibDGvw90qwzfJSlcDCNn3jbsIMJ962xH6Kd5qNGNkzNXRe1WckpQ==
-X-Received: by 2002:ac2:5e34:: with SMTP id o20mr8630983lfg.337.1606741159493;
-        Mon, 30 Nov 2020 04:59:19 -0800 (PST)
-Received: from localhost.bredbandsbolaget (c-92d7225c.014-348-6c756e10.bbcust.telenor.se. [92.34.215.146])
-        by smtp.gmail.com with ESMTPSA id y28sm2949671ljn.18.2020.11.30.04.59.18
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 04:59:18 -0800 (PST)
-From:   Linus Walleij <linus.walleij@linaro.org>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        id S1725911AbgK3NNt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Nov 2020 08:13:49 -0500
+Received: from mail.kernel.org ([198.145.29.99]:52622 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725870AbgK3NNs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 30 Nov 2020 08:13:48 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3B17E20708;
+        Mon, 30 Nov 2020 13:13:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606741986;
+        bh=2Wt9k9djFrOZJwMSSCXmqfKi5ZUf6djOrXxXR+7xMQA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=RKBIRy13u62ULlABcXxUoxyhj9jF7ElnDcGZvNiyfM+iE6YcqjJNbAMigut8Xb0Ce
+         qdI71YGZuqSUDxv6mZiakrEkkdCnk4JwD3PlOBzUaPU4FcFBI61wRItm6V/YhKiSQA
+         Kx/UCIBadBJbFRwA/nke4Y5NsU5tPoEu3Db0d32c=
+Date:   Mon, 30 Nov 2020 13:13:01 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 1/2] iio: gyro: mpu3050: Use devm_ to set up buffer
-Date:   Mon, 30 Nov 2020 13:59:14 +0100
-Message-Id: <20201130125915.1315667-1-linus.walleij@linaro.org>
-X-Mailer: git-send-email 2.26.2
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v4 0/8] IIO: Fused set 1 and 2 of timestamp alignment
+ fixes
+Message-ID: <20201130131301.2249636b@archlinux>
+In-Reply-To: <CA+U=Dsp7MkaqRSMi7u2+=0UeMNhBbp0R-zRMX1NwFNiJR9UK9Q@mail.gmail.com>
+References: <20200920112742.170751-1-jic23@kernel.org>
+        <20201129132225.08a81004@archlinux>
+        <CA+U=DsqUy8nvqmMYHBvU0CBOVAmEmcdqy-XYxpj7zTjqNQt4+Q@mail.gmail.com>
+        <20201129183303.2ef9edb9@archlinux>
+        <CA+U=Dsp7MkaqRSMi7u2+=0UeMNhBbp0R-zRMX1NwFNiJR9UK9Q@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This makes use of devm_iio_triggered_buffer_setup() to
-save some minor overhead.
+On Sun, 29 Nov 2020 22:26:46 +0200
+Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/gyro/mpu3050-core.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+> On Sun, Nov 29, 2020 at 8:33 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> >
+> > On Sun, 29 Nov 2020 18:15:28 +0200
+> > Alexandru Ardelean <ardeleanalex@gmail.com> wrote:
+> >  
+> > > On Sun, Nov 29, 2020 at 3:24 PM Jonathan Cameron <jic23@kernel.org> wrote:  
+> > > >
+> > > > Dear All,
+> > > >
+> > > > Whilst I'm reasonably confident this series is correct (famous last words)
+> > > > I don't like applying anything non trivial without having had at least one
+> > > > set of additional eyes on it.
+> > > >
+> > > > As such, if anyone has a chance to do a quick sanity check that would be
+> > > > much appreciated!  
+> > >
+> > > This looks good AFAICT.  
+> >
+> > Thanks. If you are comfortable giving a tag that would be great.
+> > If not, no problem!  
+> 
+> Sure. Apologies for not adding one sooner.
+> 
+> Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> 
+Thanks, Applied to the togreg branch of iio.git and marked for stable.
+Didn't send these the faster route as we are near the next merge
+window anyway and these have been there for a very long time.
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index 00e58060968c..0d0850945d3a 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -1203,9 +1203,10 @@ int mpu3050_common_probe(struct device *dev,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->name = name;
- 
--	ret = iio_triggered_buffer_setup(indio_dev, iio_pollfunc_store_time,
--					 mpu3050_trigger_handler,
--					 &mpu3050_buffer_setup_ops);
-+	ret = devm_iio_triggered_buffer_setup(dev,
-+					indio_dev, iio_pollfunc_store_time,
-+					mpu3050_trigger_handler,
-+					&mpu3050_buffer_setup_ops);
- 	if (ret) {
- 		dev_err(dev, "triggered buffer setup failed\n");
- 		goto err_power_down;
-@@ -1214,7 +1215,7 @@ int mpu3050_common_probe(struct device *dev,
- 	ret = iio_device_register(indio_dev);
- 	if (ret) {
- 		dev_err(dev, "device register failed\n");
--		goto err_cleanup_buffer;
-+		goto err_power_down;
- 	}
- 
- 	dev_set_drvdata(dev, indio_dev);
-@@ -1241,8 +1242,6 @@ int mpu3050_common_probe(struct device *dev,
- 
- 	return 0;
- 
--err_cleanup_buffer:
--	iio_triggered_buffer_cleanup(indio_dev);
- err_power_down:
- 	mpu3050_power_down(mpu3050);
- 
-@@ -1258,7 +1257,6 @@ int mpu3050_common_remove(struct device *dev)
- 	pm_runtime_get_sync(dev);
- 	pm_runtime_put_noidle(dev);
- 	pm_runtime_disable(dev);
--	iio_triggered_buffer_cleanup(indio_dev);
- 	if (mpu3050->irq)
- 		free_irq(mpu3050->irq, mpu3050);
- 	iio_device_unregister(indio_dev);
--- 
-2.26.2
+
+> >  
+> > > But it also looks like it could do with some re-design/re-thinking.
+> > > Maybe somehow moving more of this buffer + timestamp management
+> > > somewhere in IIO core.
+> > >
+> > > It would change the paradigm a bit, in the sense that a driver would
+> > > ask IIO core for a buffer/scratchpad area, where to put the data read
+> > > from the device.
+> > > This buffer pool management could be interesting [in the long run].
+> > > Maybe with some zero-copy mechanism.  
+> >
+> > Whilst an interesting idea, it would run into various challenges.
+> > 1) Need to be DMA safe for SPI drivers, or they would still need to have
+> >    bounce buffers.  Current cases where we have to copy twice are a bit
+> >    annoying of course.
+> > 2) Need to show sufficient performance benefit to be worth the churn to
+> >    make the change + the potential complexity.
+> > 3) That interface isn't necessarily just going to one place as there may
+> >    be multiple consumers.  There are probably still ways that could be
+> >    dealt with but it's another level of complexity.
+> >
+> > So perhaps worth exploring but the performance vs complexity question is
+> > where I suspect it would come unstuck.  
+> 
+> I still feel there may be some reasonably simple mechanisms, that
+> would benefit drivers that use iio_push_to_buffers_with_timestamp().
+> I don't have anything clear in mind yet.
+> I still need to dig through other backlog stuff.
+> But, I'll try to make a note of this and see later if I can get to it.
+
+Cool.  There might be stuff that is worth doing in this area.
+Will see what you come up with!
+
+Jonathan
+
+> 
+> >
+> > Thanks,
+> >
+> > Jonathan
+> >  
+> > >  
+> > > >
+> > > > Thanks
+> > > >
+> > > > Jonathan
+> > > >
+> > > > +CC a few additional helpful souls :)
+> > > >
+> > > > On Sun, 20 Sep 2020 12:27:34 +0100
+> > > > Jonathan Cameron <jic23@kernel.org> wrote:
+> > > >  
+> > > > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > > >
+> > > > > Took me a while to get back to these.  We have 2 new patches in here to
+> > > > > fix issues unrelated to the main topic, but which effect the buffer lengths.
+> > > > > I've done those as precursors so it is clear what is going on.
+> > > > >
+> > > > > Note there are still a few outstanding drivers to be fixed before we can
+> > > > > think about adding a warning if unaligned buffers are provided. Naturally
+> > > > > they are the hardest ones, or the ones where I couldn't work out how
+> > > > > the code is working today, so may take a little while.
+> > > > >
+> > > > > Changes since v3:
+> > > > > * Applied all the ones where only minor comment changes were needed.
+> > > > > * rpr0521: Fixed typo. Also added to patch description Mikko's information
+> > > > >   on why it would be costly to split off the interrupt read.
+> > > > > * st_uvis: Drop the pointless masking.
+> > > > > * mag3110: Rename element to temperature
+> > > > > * bmi160: Add fix to length of buffer.
+> > > > > * bmi160: Improve comments and carry forwards shorter length.
+> > > > > * mpl3115: Sufficiently unusual to need a 'special' comment and another review.
+> > > > > * ti-ads124s08: Add fix to length of buffer.
+> > > > > * ti-ads124s08: Expand comment to express the buffer length not all needed if
+> > > > >   not all channels are enabled.
+> > > > >
+> > > > > Changes since v2:
+> > > > > * bmc150-accel: Use sizeof() for channel size (Andy Shevchenko)
+> > > > > * st_uvis25: Use local variable for regmap call (Andy Shevchenko)
+> > > > > * st_lsm6dsx: Use array of scan[] rather than 3 structures (Lorenzo Bianconi)
+> > > > > * inv_mpu6050: Add patch switching to a regmap_noinc_read (Jean-Baptiste Maneyrol)
+> > > > > * ina2xx: Use a structure (previously failed to notice that works here)
+> > > > > * I've added clarifying notes to patch descriptions based on questions asked.
+> > > > >   These were mainly about why we didn't use the structure approach everywhere
+> > > > >   and why I've forced alignment in places it wasn't strictly needed.
+> > > > >
+> > > > > Previous cover letter:
+> > > > > A few notes based on questions on v1.
+> > > > >
+> > > > > 1. Why not use put_unaligned to avoid the whole thing?
+> > > > >    This interface can pass directly to a variety of in kernel users
+> > > > >    who would reasonably assume that we have true natural alignment.
+> > > > >    When it gets passed directly is subtle as it depends on whether
+> > > > >    the demux has to realign the data or not.  So enabling an extra
+> > > > >    channel could result in a previously working alignment no longer
+> > > > >    being true.
+> > > > >
+> > > > >    Even if this is fine for existing usecases we are likely to
+> > > > >    store up subtle long term issues if we don't fix it explicitly.
+> > > > >    It's also worth noting that the data channel sometimes suffered
+> > > > >    the same problem as the timestamp.
+> > > > >
+> > > > > 2. Why not specify explicit padding?
+> > > > >    In my view this is error prone in comparisom with relying on
+> > > > >    c to do the hard work for us.
+> > > > >
+> > > > > 3. Why not move the timestamp to the start?
+> > > > >    ABI breakage and as timestamp is optional (no obvious from the
+> > > > >    iio_push_to_buffers_with_timestamp call) we can end up having
+> > > > >    to shift the rest of the data within that call.
+> > > > >
+> > > > > Changes since v1.
+> > > > >
+> > > > > Andy Schevchenko pointed out that on x86_32 s64 elements are only
+> > > > > aligned to 4 bytes.  Where I had tried to use a structure to avoid
+> > > > > explicit need to list the padding, there were some cases where
+> > > > > this results in insufficient padding being inserted.
+> > > > >
+> > > > > This doesn't affect the few patches that had already been applied and
+> > > > > sent upstream. (which was lucky ;)
+> > > > >
+> > > > > The fix was to take advantage of __aligned(8) which (according to
+> > > > > my reading of the c spec and the gcc docs) enforces the alignment of
+> > > > > both the element within a structure and the structure itself.
+> > > > > The kernel now requires a recent enough version of GCC to ensure this
+> > > > > works both on the stack and heap.  This is done in lots of other
+> > > > > userspace interfaces. In some cases iio_push_to_buffers_with_ts
+> > > > > is aligning data for passing to userspace, be it via a kfifo
+> > > > > so it is sensible we should use the same solution.
+> > > > >
+> > > > > Note that we could have used u64_aligned but there is no equivalent
+> > > > > for s64 and explicit use of __aligned(8) is common in
+> > > > > the kernel so we adopt this here.
+> > > > >
+> > > > > Note that there were about 8 drivers that would have been broken with
+> > > > > v1 of the patch.  I have also forced alignment of timestamps in cases
+> > > > > where (mostly by coincidence) we would have been fine (padding was
+> > > > > less than 4 bytes anyway.  I did this partly to reduce fragility if
+> > > > > other elements are added in future and also to avoid cut and paste
+> > > > > errors in new drivers.
+> > > > >
+> > > > > There were a few other minor tidying up changes inline with reviews
+> > > > > of v1.
+> > > > >
+> > > > > I've kept tags given for v1 on basis the changes are minor. Shout if
+> > > > > you disagree.
+> > > > >
+> > > > > Version 1 part 1 cover letter.
+> > > > >
+> > > > > Lars noted in a recent review [1] of the adis16475 that we had an issue around
+> > > > > the alignment requirements of iio_push_to_buffers_with_timestamp.
+> > > > > Whilst it's not documented, that function assumes that the overall buffer
+> > > > > is 8 byte aligned, to ensure the timestamp is itself naturally aligned.
+> > > > > We have drivers that use arrays (typically on the stack) that do
+> > > > > not guarantee this alignment.
+> > > > >
+> > > > > We could have fixed this by using a put_unaligned to write the timestamp
+> > > > > but I think that just pushes the problem down the line.  If we were to
+> > > > > have a consumer buffer wanting all the channels in the current
+> > > > > active_scanmask then it will get the raw buffer from the driver passed
+> > > > > straight through.  It seems odd to me if we allow passing a buffer
+> > > > > that is not naturally aligned through to a consumer.
+> > > > > Hence I'm proposing to fix up all existing drivers that might pass
+> > > > > a buffer with insufficient alignment guarantees.
+> > > > > Sometimes the timestamp is guaranteed to be in a particular location,
+> > > > > in which case we can use C structure alignment guarantees to fix this
+> > > > > in a nice readable fashion.  In other cases, the timestamp location
+> > > > > depends on which channels are enabled, and in those case we can
+> > > > > use explicit alignment __aligned(8) to ensure the whole array is
+> > > > > appropriately aligned.
+> > > > >
+> > > > > Lars-Peter also noted that, in many of these cases, there are holes
+> > > > > in the stack array that we never write.  Those provide a potential
+> > > > > leak of kernel data to userspace.  For drivers where this applies
+> > > > > we either need to zero those holes each time, or allocate the buffer
+> > > > > on the heap (only once), ensuring it is zeroed at that time.
+> > > > > We may leak previous values from the sensor but currently that seems
+> > > > > unlikely to present any form of security risk.
+> > > > >
+> > > > > As such, this first set contains a mixture of fixes.  Where there
+> > > > > are no possible holes, the buffer is kept on the stack but a
+> > > > > c structure is used to guarantee appropriate alignment.  Where
+> > > > > there are holes, the buffer is moved into the iio_priv() accessed
+> > > > > data private structure. A c structure or __aligned(8) is used
+> > > > > as appropriate.
+> > > > >
+> > > > > I've stopped at this point rather than doing all the drivers Lars
+> > > > > found in order to both throttle the review burden and also to
+> > > > > see find any general problems with the fixes before doign futher
+> > > > > similar series.  A few of the remaining ones will be rather more
+> > > > > complex to deal with.
+> > > > >
+> > > > > These have been there a long time, so whilst they are fixes we
+> > > > > will want in stable I'm not that bothered if it takes us a little
+> > > > > while to get them there!
+> > > > >
+> > > > > [1] https://www.spinics.net/lists/devicetree/msg350590.html
+> > > > > [2] https://patchwork.kernel.org/cover/11554215/
+> > > > >
+> > > > > Jonathan Cameron (8):
+> > > > >   iio:light:rpr0521: Fix timestamp alignment and prevent data leak.
+> > > > >   iio:light:st_uvis25: Fix timestamp alignment and prevent data leak.
+> > > > >   iio:magnetometer:mag3110: Fix alignment and data leak issues.
+> > > > >   iio:imu:bmi160: Fix too large a buffer.
+> > > > >   iio:imu:bmi160: Fix alignment and data leak issues
+> > > > >   iio:pressure:mpl3115: Force alignment of buffer
+> > > > >   iio:adc:ti-ads124s08: Fix buffer being too long.
+> > > > >   iio:adc:ti-ads124s08: Fix alignment and data leak issues.
+> > > > >
+> > > > >  drivers/iio/adc/ti-ads124s08.c       | 13 ++++++++++---
+> > > > >  drivers/iio/imu/bmi160/bmi160.h      |  7 +++++++
+> > > > >  drivers/iio/imu/bmi160/bmi160_core.c |  6 ++----
+> > > > >  drivers/iio/light/rpr0521.c          | 17 +++++++++++++----
+> > > > >  drivers/iio/light/st_uvis25.h        |  5 +++++
+> > > > >  drivers/iio/light/st_uvis25_core.c   |  8 +++++---
+> > > > >  drivers/iio/magnetometer/mag3110.c   | 13 +++++++++----
+> > > > >  drivers/iio/pressure/mpl3115.c       |  9 ++++++++-
+> > > > >  8 files changed, 59 insertions(+), 19 deletions(-)
+> > > > >  
+> > > >  
+> >  
 
