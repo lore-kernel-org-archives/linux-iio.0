@@ -2,107 +2,93 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 997C5C63777
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 17:37:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F41EC64E8A
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 20:22:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 50AB1206DF
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 17:37:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 329BD2074A
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 20:22:20 +0000 (UTC)
+Authentication-Results: mail.kernel.org;
+	dkim=pass (1024-bit key) header.d=kernel.org header.i=@kernel.org header.b="hqFZh5fJ"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387606AbgK3RhU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Nov 2020 12:37:20 -0500
-Received: from mail-il1-f193.google.com ([209.85.166.193]:41774 "EHLO
-        mail-il1-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2387521AbgK3RhT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Nov 2020 12:37:19 -0500
-Received: by mail-il1-f193.google.com with SMTP id p5so12089431iln.8;
-        Mon, 30 Nov 2020 09:37:04 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=fsp1blWR1sEPQhmBclKQNeakz0wx8DgrPZF+YSlf8PE=;
-        b=P/DwguoO8p/OuWF4ZnDju9y8l+uwsiTS+9s6LCvDQYi9AC7+yodR0fevdse1KHIzag
-         ao61r+09bAOwJBZFFoBTgNj2F5AAWi5Wnm5LnTPbip3qrI3unFwRUICprdkFmTcngamC
-         WvsHMOcWphP74eNMbvupi/20PPmwuogmBdJZCf8Wz7AkbOkqvE2Boa0T+3uT3/cd8CT/
-         h9Y8WNYCT7JlDAM9+d4qtD6vJ7ifE9grwwEgDPys6+rJ2ZGGvDOdnOQHzTCKC5/xsNsa
-         aHazL03JfvH5ISIO9PO5thumzmwx58WvRMJPp1kxTqEeq4MScaBqXqpuPDh3s+Pl4blh
-         WTJw==
-X-Gm-Message-State: AOAM530loeN/xLdFzsckxDpevME8qR6USuK9UXDlvU00MFkIJPertL89
-        5jgwHZp5oZ4BvvsLnDnmWA==
-X-Google-Smtp-Source: ABdhPJyd53GgrWq2rCHuy4ycE05CbnIyKRy6oXyUGYnljoiHnpBLlcUSgkG9E9NzQtPg7PzsjLLLZw==
-X-Received: by 2002:a92:cc03:: with SMTP id s3mr19936624ilp.146.1606757798763;
-        Mon, 30 Nov 2020 09:36:38 -0800 (PST)
-Received: from xps15 ([64.188.179.253])
-        by smtp.gmail.com with ESMTPSA id p89sm11835225ili.29.2020.11.30.09.36.37
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 09:36:37 -0800 (PST)
-Received: (nullmailer pid 2683783 invoked by uid 1000);
-        Mon, 30 Nov 2020 17:36:36 -0000
-Date:   Mon, 30 Nov 2020 10:36:36 -0700
-From:   Rob Herring <robh@kernel.org>
-To:     tomislav.denis@avl.com
-Cc:     devicetree@vger.kernel.org, jic23@kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] bindings: iio: adc: Add documentation for ADS131E0x
- ADC driver
-Message-ID: <20201130173636.GA2683425@robh.at.kernel.org>
-References: <20201127194240.15060-1-tomislav.denis@avl.com>
- <20201127194240.15060-3-tomislav.denis@avl.com>
+        id S2388381AbgK3UV5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Nov 2020 15:21:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:58068 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S2387449AbgK3UV4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 30 Nov 2020 15:21:56 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6197B2073C;
+        Mon, 30 Nov 2020 20:21:14 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=default; t=1606767676;
+        bh=3vBda+pxIcoAiOM7rrSvH/AB34KT1Bwlkb2BskN4kv0=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=hqFZh5fJSGpKMENMR3RzKM3trL2jgcZyPhOo7LsmmYPuN98YT28DK+3UOnaR6LB+w
+         /gmeei9bASpcrllTWe4fElIm22Uz0Oi7p0dLfCYDt9Jgdrtph6mU7PTZW1LazbDKkS
+         0ebg14kd2//yhhitOhFMn3cYNcTDsYP+tavBOM/g=
+Date:   Mon, 30 Nov 2020 20:21:10 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Bartosz Golaszewski <brgl@bgdev.pl>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Michal Simek <michal.simek@xilinx.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Anand Ashok Dumbre <ANANDASH@xilinx.com>
+Subject: Re: [PATH v3 0/3] iio: adc: xilinx: use even more devres
+Message-ID: <20201130202110.62e7f989@archlinux>
+In-Reply-To: <20201130142759.28216-1-brgl@bgdev.pl>
+References: <20201130142759.28216-1-brgl@bgdev.pl>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201127194240.15060-3-tomislav.denis@avl.com>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 27 Nov 2020 20:42:40 +0100, tomislav.denis@avl.com wrote:
-> From: Tomislav Denis <tomislav.denis@avl.com>
+On Mon, 30 Nov 2020 15:27:56 +0100
+Bartosz Golaszewski <brgl@bgdev.pl> wrote:
+
+> From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 > 
-> Add a device tree binding documentation for Texas Instruments
-> ADS131E0x ADC family driver.
+> This is a follow-up to commit 750628c79bb1 ("iio: adc: xilinx-xadc: use
+> devm_krealloc()"). I noticed we can use even more devres helpers and entirely
+> drop the remove() callback.
 > 
-> Signed-off-by: Tomislav Denis <tomislav.denis@avl.com>
-> ---
->  .../devicetree/bindings/iio/adc/ti,ads131e08.yaml  | 145 +++++++++++++++++++++
->  MAINTAINERS                                        |   1 +
->  2 files changed, 146 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml
+> v1 -> v2:
+> - squash three patches adding more devres calls into one for easier review
+> - don't insist on the 80 characters limit
+> - add a new helper: devm_krealloc_array() and use it
+> 
+> v2 -> v3:
+> - drop the devm_krealloc_array() helper
+> 
+> Bartosz Golaszewski (3):
+>   iio: adc: xilinx: use helper variable for &pdev->dev
+>   iio: adc: xilinx: use devm_krealloc() instead of kfree() + kcalloc()
+>   iio: adc: xilinx: use more devres helpers and remove remove()
+> 
+>  drivers/iio/adc/xilinx-xadc-core.c | 157 ++++++++++++++---------------
+>  1 file changed, 74 insertions(+), 83 deletions(-)
 > 
 
+Series looks good to me but would like to leave it a little longer to let
+others take a look at it. That will probably mean it falls into next cycle
+now.
 
-My bot found errors running 'make dt_binding_check' on your patch:
++CC Anand who is looking at another series touching this driver and might
+give this one a spin as well.
 
-yamllint warnings/errors:
+Thanks,
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml: 'additionalProperties' is a required property
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml: ignoring, error in schema: 
-warning: no schema found in file: ./Documentation/devicetree/bindings/iio/adc/ti,ads131e08.yaml
-Documentation/devicetree/bindings/iio/adc/ti,ads131e08.example.dts:23.11-21: Warning (reg_format): /example-0/spidev@0:reg: property has invalid length (4 bytes) (#address-cells == 1, #size-cells == 1)
-Documentation/devicetree/bindings/iio/adc/ti,ads131e08.example.dt.yaml: Warning (pci_device_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/adc/ti,ads131e08.example.dt.yaml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/adc/ti,ads131e08.example.dt.yaml: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/adc/ti,ads131e08.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/adc/ti,ads131e08.example.dt.yaml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/ti,ads131e08.example.dt.yaml: example-0: spidev@0:reg:0: [0] is too short
-	From schema: /usr/local/lib/python3.8/dist-packages/dtschema/schemas/reg.yaml
-
-
-See https://patchwork.ozlabs.org/patch/1407724
-
-The base for the patch is generally the last rc1. Any dependencies
-should be noted.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+Jonathan
 
