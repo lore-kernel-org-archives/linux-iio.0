@@ -2,61 +2,61 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08AC1C64E90
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 14:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E10BC83013
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 14:29:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 944F320684
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 14:29:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B82F5206D4
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Nov 2020 14:29:18 +0000 (UTC)
 Authentication-Results: mail.kernel.org;
-	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="1EcvxvJc"
+	dkim=pass (2048-bit key) header.d=bgdev-pl.20150623.gappssmtp.com header.i=@bgdev-pl.20150623.gappssmtp.com header.b="x0oInSN5"
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727369AbgK3O2w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Nov 2020 09:28:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47250 "EHLO
+        id S1727521AbgK3O3A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Nov 2020 09:29:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47282 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726265AbgK3O2v (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Nov 2020 09:28:51 -0500
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AD8DC0613D4
-        for <linux-iio@vger.kernel.org>; Mon, 30 Nov 2020 06:28:11 -0800 (PST)
-Received: by mail-wr1-x430.google.com with SMTP id 64so16462944wra.11
-        for <linux-iio@vger.kernel.org>; Mon, 30 Nov 2020 06:28:11 -0800 (PST)
+        with ESMTP id S1727293AbgK3O3A (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Nov 2020 09:29:00 -0500
+Received: from mail-wm1-x342.google.com (mail-wm1-x342.google.com [IPv6:2a00:1450:4864:20::342])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A4423C0617A7
+        for <linux-iio@vger.kernel.org>; Mon, 30 Nov 2020 06:28:14 -0800 (PST)
+Received: by mail-wm1-x342.google.com with SMTP id x22so18643515wmc.5
+        for <linux-iio@vger.kernel.org>; Mon, 30 Nov 2020 06:28:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=bgdev-pl.20150623.gappssmtp.com; s=20150623;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QvXhZgU2xMEzW9xUafEpy+bHmn3Gc8NAD102F5oHAyA=;
-        b=1EcvxvJc4mbZdHxqfftJrVKOTIK9BH+eVgl5TW6c7R7lbRF0+OhsYHL1L0kYvA8TMv
-         Qlrg8Ct1Vd8H+6AgLIu3Tlr4p6ZfserFewRmMX59gDUoFzpqikZPd7M14D25TvT588b6
-         bCv1TSxGSOxIs0SYhrwQTiaR+cWLZLelbISBNasBqxPp7nLhcA7+l4T6yyUYRfPu3cVB
-         TJOPOPrqV/0JNmFtZN+P6rcx5sBVu2gNuJ7Bes6zHIv+dCAfJ9Ed4a8dJ1guN9MG9Eog
-         y21E9pkM6Jd8E1sb//+7xcvDw58/mMxxvkB104Y11UVYXgEtWxBT282XlWhk05E+uFC+
-         qsRQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=YC+CHaCok09rYh/O6VeZFt906CZ5WncrdXBXZsu9Deg=;
+        b=x0oInSN5K0DGybItSGSqgocXAKsO59Tv43WwTYl2mFz+HUgmEdGSZx8FctCdW+C92C
+         pJIp3ryu/Wyy5XmVBOFcLcHDfIdsGnINxK9zcwNSkDqqK15ggpG1N3ERtg7aymUFEmr6
+         HudBQPGsbVNYbktGhwOw7/KJVsD6drHpctT83bbLkycNjPyLykFfBdCeX6W1eNCa1tLL
+         ZQnwg3UucEj7vpp1Fi6bTcoMQWCVoASU7k37a1pfiUY9BMyHeQ6dfO5vY0Kg0sDENuu0
+         5EtRvVWmlufM6tOqzAwIRFVL092QR7sM3OGY6p/IMYh7t+INxdKE8UosxJw5SKvS0jIW
+         XYHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QvXhZgU2xMEzW9xUafEpy+bHmn3Gc8NAD102F5oHAyA=;
-        b=JyPlkHK11HUlNkt+guH6l7TOMH4ofNKskqSLNnLaWCjKLUQewGG9/pkh5O3W0CmSeF
-         lnA1u0Hy6P6+kHYP67yTm5G5l1baQMFU52wwdwqhZBWnluafL07Y3Tks0gzX7iWi77rg
-         GynDKsiVNa0bt5oB5nUdmAB/t/vcEzGBlXRHI8p3YcJDZFqy7OwUny7vuGBkVnjKUepm
-         X+3TjeBwqZBz+ahyLstAcK9JMdX+ofDVtN/LKqwzPqN/1rmiwh5lwncjnV7Hc5NcKQDi
-         jeA2a7YNSmOWFibqYNU8ZzBAwCuQkOa7y9nMROY+A19xa8/U2nbo12dve/1yLDO02FO5
-         whjg==
-X-Gm-Message-State: AOAM530Pz++ZIjyM3onFxmjOzZurtHUTLEU1F+Za8mTcl59P77eYy6tx
-        KqbP0KfTknxxLRefWriA8nXWHQ==
-X-Google-Smtp-Source: ABdhPJzJyK1+fOpoEEjpFkrOW4BnKluQ8G36C3Y9PDwLN5GySBcQ+LJP4HL+Boasaj6KbkpQ1Fbnig==
-X-Received: by 2002:a5d:570d:: with SMTP id a13mr27858154wrv.193.1606746490088;
-        Mon, 30 Nov 2020 06:28:10 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=YC+CHaCok09rYh/O6VeZFt906CZ5WncrdXBXZsu9Deg=;
+        b=TNf6MBmhnWD3/03PUOcH9r+kzR9EylELsa9c48dFvh6IjvVox/5jDsk812QipZm9oj
+         YK/Dl/EXKk86r58odxIe+g5h8RIVqlD1rcsj2BaB+wWtDAJ2HvJFHNgt2YguIOLphgpX
+         NHISwPjTboSClYSODZ0cvH7GprPqj/y65ep+lULArHgRoYp9ZyolMclYplPW+S8DjMZD
+         HvrHGhU7aERlvKHTdoYHpocOrIzgAinB6BPaDJdu3ECLevX3QmXgIC/4MPa2GUsyD41D
+         lXIbH1mvDKzgpGycZ0iPOhbY9AMrJzLMJGAzZTK3J0stTiRNg/pfLa2sfnuUEiYgkOzk
+         Zigg==
+X-Gm-Message-State: AOAM530pCuUtAoeNuXgw8o34+n23vwLQQ7nkAcy0nYgiwFjKBWZr65U5
+        TUO1NGNbeF0yk5MJ308+Z2zA7A==
+X-Google-Smtp-Source: ABdhPJyQFIZ33gaXyeO/XB+ll3rZvsk+O2uAhu3h1EtSn3BIE/hzSR7hvSSXXS+PqnDmhPSd+Od8uw==
+X-Received: by 2002:a1c:b107:: with SMTP id a7mr23490658wmf.121.1606746492513;
+        Mon, 30 Nov 2020 06:28:12 -0800 (PST)
 Received: from debian-brgl.home (amarseille-656-1-4-167.w90-8.abo.wanadoo.fr. [90.8.158.167])
-        by smtp.gmail.com with ESMTPSA id p19sm29446044wrg.18.2020.11.30.06.28.05
+        by smtp.gmail.com with ESMTPSA id p19sm29446044wrg.18.2020.11.30.06.28.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 30 Nov 2020 06:28:09 -0800 (PST)
+        Mon, 30 Nov 2020 06:28:11 -0800 (PST)
 From:   Bartosz Golaszewski <brgl@bgdev.pl>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -65,10 +65,12 @@ To:     Jonathan Cameron <jic23@kernel.org>,
 Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-kernel@vger.kernel.org,
         Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATH v3 0/3] iio: adc: xilinx: use even more devres
-Date:   Mon, 30 Nov 2020 15:27:56 +0100
-Message-Id: <20201130142759.28216-1-brgl@bgdev.pl>
+Subject: [PATH v3 2/3] iio: adc: xilinx: use devm_krealloc() instead of kfree() + kcalloc()
+Date:   Mon, 30 Nov 2020 15:27:58 +0100
+Message-Id: <20201130142759.28216-3-brgl@bgdev.pl>
 X-Mailer: git-send-email 2.29.1
+In-Reply-To: <20201130142759.28216-1-brgl@bgdev.pl>
+References: <20201130142759.28216-1-brgl@bgdev.pl>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -77,26 +79,61 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
 
-This is a follow-up to commit 750628c79bb1 ("iio: adc: xilinx-xadc: use
-devm_krealloc()"). I noticed we can use even more devres helpers and entirely
-drop the remove() callback.
+We now have devm_krealloc() in the kernel Use it indstead of calling
+kfree() and kcalloc() separately.
 
-v1 -> v2:
-- squash three patches adding more devres calls into one for easier review
-- don't insist on the 80 characters limit
-- add a new helper: devm_krealloc_array() and use it
+Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+---
+ drivers/iio/adc/xilinx-xadc-core.c | 17 ++++++++++++-----
+ 1 file changed, 12 insertions(+), 5 deletions(-)
 
-v2 -> v3:
-- drop the devm_krealloc_array() helper
-
-Bartosz Golaszewski (3):
-  iio: adc: xilinx: use helper variable for &pdev->dev
-  iio: adc: xilinx: use devm_krealloc() instead of kfree() + kcalloc()
-  iio: adc: xilinx: use more devres helpers and remove remove()
-
- drivers/iio/adc/xilinx-xadc-core.c | 157 ++++++++++++++---------------
- 1 file changed, 74 insertions(+), 83 deletions(-)
-
+diff --git a/drivers/iio/adc/xilinx-xadc-core.c b/drivers/iio/adc/xilinx-xadc-core.c
+index 8494eb424b33..6f89a97bb127 100644
+--- a/drivers/iio/adc/xilinx-xadc-core.c
++++ b/drivers/iio/adc/xilinx-xadc-core.c
+@@ -19,6 +19,7 @@
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/of.h>
++#include <linux/overflow.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+@@ -585,15 +586,22 @@ static int xadc_update_scan_mode(struct iio_dev *indio_dev,
+ 	const unsigned long *mask)
+ {
+ 	struct xadc *xadc = iio_priv(indio_dev);
+-	unsigned int n;
++	size_t new_size, n;
++	void *data;
+ 
+ 	n = bitmap_weight(mask, indio_dev->masklength);
+ 
+-	kfree(xadc->data);
+-	xadc->data = kcalloc(n, sizeof(*xadc->data), GFP_KERNEL);
+-	if (!xadc->data)
++	if (check_mul_overflow(n, sizeof(*xadc->data), &new_size))
++		return -ENOMEM;
++
++	data = devm_krealloc(indio_dev->dev.parent, xadc->data,
++			     new_size, GFP_KERNEL);
++	if (!data)
+ 		return -ENOMEM;
+ 
++	memset(data, 0, new_size);
++	xadc->data = data;
++
+ 	return 0;
+ }
+ 
+@@ -1372,7 +1380,6 @@ static int xadc_remove(struct platform_device *pdev)
+ 	free_irq(xadc->irq, indio_dev);
+ 	cancel_delayed_work_sync(&xadc->zynq_unmask_work);
+ 	clk_disable_unprepare(xadc->clk);
+-	kfree(xadc->data);
+ 
+ 	return 0;
+ }
 -- 
 2.29.1
 
