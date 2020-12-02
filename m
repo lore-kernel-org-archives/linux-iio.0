@@ -2,64 +2,59 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-20.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CC70C71155
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Dec 2020 19:34:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E27FBC64E7C
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Dec 2020 20:03:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 13443206A5
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Dec 2020 19:34:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 789B32222F
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Dec 2020 20:03:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729290AbgLBTds (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Dec 2020 14:33:48 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33678 "EHLO
+        id S1731225AbgLBUDm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Dec 2020 15:03:42 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1728301AbgLBTds (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Dec 2020 14:33:48 -0500
+        with ESMTP id S1729304AbgLBUDl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Dec 2020 15:03:41 -0500
 Received: from mail-pg1-x544.google.com (mail-pg1-x544.google.com [IPv6:2607:f8b0:4864:20::544])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 361C3C0613CF
-        for <linux-iio@vger.kernel.org>; Wed,  2 Dec 2020 11:33:02 -0800 (PST)
-Received: by mail-pg1-x544.google.com with SMTP id t3so1699749pgi.11
-        for <linux-iio@vger.kernel.org>; Wed, 02 Dec 2020 11:33:02 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9749CC0613D6
+        for <linux-iio@vger.kernel.org>; Wed,  2 Dec 2020 12:02:55 -0800 (PST)
+Received: by mail-pg1-x544.google.com with SMTP id n10so1600171pgv.8
+        for <linux-iio@vger.kernel.org>; Wed, 02 Dec 2020 12:02:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=mime-version:content-transfer-encoding:in-reply-to:references
-         :subject:from:cc:to:date:message-id:user-agent;
-        bh=2ws4aBFfst0FepWJPo86fhaHj1lS3AzxytqLnfxKPd4=;
-        b=GZmL0X4/ynrDPfadka+G23nEnhPlejElMpZTjWF/JocZE6VSRNcKdFVLZd8LRQnqMD
-         o8sivVoHfFH54KFaxiBXWDPYRZvE/BWqLBulyeyj++9Tq1BrR7BytKWEsKDLwC6O26vO
-         ZVwUaoEN9BS7uyrSr5Z6rRQCOKwCHLTo/qT60=
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5If13UxZbzUYPYSGlnG6A95GWw+mvTPbOVGEWE9ood8=;
+        b=S/8B7FkJWRKEvk0a7GH8tIaFCBMw11QXU83Q70IW+qUkcvgGZhrhnA/wiiJx9GGIWC
+         xa7kipkkMT0V//SYHvnMYiHkIZwX4iY27bmTtkXYOCR+7YRsOgeiEFOhTv7RrDlkQoJQ
+         DOtmhdccPHT7JYr5Jdt/lJx+iW9h9s4vTY/vQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:content-transfer-encoding
-         :in-reply-to:references:subject:from:cc:to:date:message-id
-         :user-agent;
-        bh=2ws4aBFfst0FepWJPo86fhaHj1lS3AzxytqLnfxKPd4=;
-        b=uIV1GOJTYnXqGhmhJR+xClxFxAh90SvBkbMHOExTIkhrZPUTOebD5bNVV/ZbwsG+jO
-         OtjvFOL+R9EfsHAQOV+AzFA0hreCfWCcXjW4bkuLzC7dieVOfJZ91xDT6RqJaP+MqB1w
-         fr7wBX/1dz/8FYPFy3W5k3tIla8/3N3P4ULO/FjXRMlVeojtMi5qEIRR4L/XzQEf3qU+
-         5ILdUCOkcb1WHcPJSHB9j2yjX40nAthXvmOILDFTIRCAWMbuJC0LOBx//ISIrWzTYUV0
-         8x4BOEuEOLFT/WqJt4T/ExTNyUYaD8iIkUpnZK03fcmLmja8pgL4lKtMXYwE8j5hbxdo
-         VKKg==
-X-Gm-Message-State: AOAM530t2zlY8lMAvMnLv1GWunujlLAgtIA4NLW9MiQNNMlFJYdPYJJ+
-        LpeF1GoQXRfKGU+1VmpLYqtpyA==
-X-Google-Smtp-Source: ABdhPJzZ1MAL9lumKbBIW8KjyFiuFLoeK4tjoL2Xa6q6TjanAsmhRI4Zg9IBr1e9CIodzaDnihWo9A==
-X-Received: by 2002:a62:2984:0:b029:19c:1300:6b11 with SMTP id p126-20020a6229840000b029019c13006b11mr4096499pfp.74.1606937581780;
-        Wed, 02 Dec 2020 11:33:01 -0800 (PST)
-Received: from chromium.org ([2620:15c:202:201:3e52:82ff:fe6c:83ab])
-        by smtp.gmail.com with ESMTPSA id j11sm433430pgp.82.2020.12.02.11.33.00
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=5If13UxZbzUYPYSGlnG6A95GWw+mvTPbOVGEWE9ood8=;
+        b=TG7jS7r6NE+Sohknzigc/OY7bbSVpTIzXrVblH2mHWfdo8+i0XC1NJCq0Hs2tfwg1M
+         7QOq1pR3pc466lwuXSwduHzeGOz3ZCGrBAtx5hXXGwPQbsr9XYypXrT4Xa0ut8PulZHN
+         8qTppqZffICmlxXOPTjXhwlvotOU+/uxlviOEsqFrfoWZaeAvY0l9szOkl5Vzr7Y0ayD
+         PdTZjD3g8IvPE92+mG6GzCNbDMMmq+8WLD6GFFzG6vN0gw3HOmbaLiyjYZLziYVbBegc
+         RFvBcsHndDXqIqhaUbLBXgY5PAT+aDCXJnFgZOMN/VTKK+/SW877u8H2GzgzkV3JLepw
+         J6nA==
+X-Gm-Message-State: AOAM532GTMpQTkTnV6Eov4PMkofOzoEK/OacIpjw5a+o2yh521/+EWWt
+        7kIJJv+nzbZ8UfEg1xDXj6cXzA==
+X-Google-Smtp-Source: ABdhPJxgeXdDm3H5w340toK+i1w7gpbZhgH3rIjemTd8uUKoAUMe+wIu04XUiztHHayJ+gJSkakglA==
+X-Received: by 2002:a63:6e45:: with SMTP id j66mr1408847pgc.238.1606939375140;
+        Wed, 02 Dec 2020 12:02:55 -0800 (PST)
+Received: from smtp.gmail.com ([2620:15c:202:201:3e52:82ff:fe6c:83ab])
+        by smtp.gmail.com with ESMTPSA id i4sm483748pgg.67.2020.12.02.12.02.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Dec 2020 11:33:01 -0800 (PST)
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-In-Reply-To: <20201121150245.4da5c4cf@archlinux>
-References: <20201120182944.543428-1-swboyd@chromium.org> <20201121145849.32e14ab9@archlinux> <20201121150245.4da5c4cf@archlinux>
-Subject: Re: [PATCH v2] iio: sx9310: Fix semtech,avg-pos-strength setting when > 16
+        Wed, 02 Dec 2020 12:02:54 -0800 (PST)
 From:   Stephen Boyd <swboyd@chromium.org>
+To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Daniel Campello <campello@chromium.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -67,40 +62,57 @@ Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Douglas Anderson <dianders@chromium.org>,
         Gwendal Grignou <gwendal@chromium.org>,
         Evan Green <evgreen@chromium.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Date:   Wed, 02 Dec 2020 11:32:59 -0800
-Message-ID: <160693757954.2717324.3993650083941744982@swboyd.mtv.corp.google.com>
-User-Agent: alot/0.9.1
+Subject: [PATCH v3] iio: sx9310: Fix semtech,avg-pos-strength setting when > 16
+Date:   Wed,  2 Dec 2020 12:02:52 -0800
+Message-Id: <20201202200252.986230-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.29.2.454.gaff20da3a2-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Quoting Jonathan Cameron (2020-11-21 07:02:45)
-> On Sat, 21 Nov 2020 14:58:49 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
->=20
-> > On Fri, 20 Nov 2020 10:29:44 -0800
-> > Stephen Boyd <swboyd@chromium.org> wrote:
-> > > diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/s=
-x9310.c
-> > > index a2f820997afc..ee1b4ff05a37 100644
-> > > --- a/drivers/iio/proximity/sx9310.c
-> > > +++ b/drivers/iio/proximity/sx9310.c
-> > > @@ -1305,7 +1305,7 @@ sx9310_get_default_reg(struct sx9310_data *data=
-, int i,
-> > >             if (ret)
-> > >                     break;
-> > > =20
-> > > -           pos =3D min(max(ilog2(pos), 3), 10) - 3;
-> > > +           pos =3D min(max(ilog2(pos), 3), 11) - (pos >=3D 32 ? 4 : =
-3); =20
-> >=20
-> > Given this is now rather tricky to read, I'd just do an explicit lookup=
- of
-> > the allowed values.  Probably just a switch statement.
-> As an alternative, a comment would help saying that it's powers of 2 exce=
-pt
-> for a gap at 64.
->=20
+This DT property can be 0, 16, and then 64, but not 32. The math here
+doesn't recognize this slight bump in the power of 2 numbers and
+translates a DT property of 64 into the register value '3' when it
+really should be '2'. Fix it by subtracting one more if the number being
+translated is larger than 31. Also use clamp() because we're here.
 
-Ok. I'll update with a comment.
+Cc: Daniel Campello <campello@chromium.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Gwendal Grignou <gwendal@chromium.org>
+Cc: Evan Green <evgreen@chromium.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
+
+Changes from v2 (https://lore.kernel.org/r/20201120182944.543428-1-swboyd@chromium.org):                                                                                                         
+ * Use clamp()
+ * Add comment to clarify
+
+Changes from v1 (https://lore.kernel.org/r/20201120073842.3232458-1-swboyd@chromium.org):                                                                                                         
+ * Changed ternary to consider 17 to 31 as the same as 16   
+
+ drivers/iio/proximity/sx9310.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+index a2f820997afc..0e6863e4d384 100644
+--- a/drivers/iio/proximity/sx9310.c
++++ b/drivers/iio/proximity/sx9310.c
+@@ -1305,7 +1305,8 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
+ 		if (ret)
+ 			break;
+ 
+-		pos = min(max(ilog2(pos), 3), 10) - 3;
++		/* Powers of 2, except for a gap between 16 and 64 */
++		pos = clamp(ilog2(pos), 3, 11) - (pos >= 32 ? 4 : 3);
+ 		reg_def->def &= ~SX9310_REG_PROX_CTRL7_AVGPOSFILT_MASK;
+ 		reg_def->def |= FIELD_PREP(SX9310_REG_PROX_CTRL7_AVGPOSFILT_MASK,
+ 					   pos);
+
+base-commit: 5b19ca2c78a0838976064c0347e46a2c859b541d
+-- 
+https://chromeos.dev
+
