@@ -2,60 +2,59 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96E1DC0018C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70ADBC4167B
 	for <linux-iio@archiver.kernel.org>; Fri,  4 Dec 2020 02:57:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 633BB224D4
+	by mail.kernel.org (Postfix) with ESMTP id 325EB224DE
 	for <linux-iio@archiver.kernel.org>; Fri,  4 Dec 2020 02:57:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727113AbgLDC5B (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 3 Dec 2020 21:57:01 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43386 "EHLO
+        id S1726780AbgLDC5A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 3 Dec 2020 21:57:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43364 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726112AbgLDC5A (ORCPT
+        with ESMTP id S1727113AbgLDC5A (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Dec 2020 21:57:00 -0500
 Received: from mail-lf1-x144.google.com (mail-lf1-x144.google.com [IPv6:2a00:1450:4864:20::144])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53DAEC09424F
-        for <linux-iio@vger.kernel.org>; Thu,  3 Dec 2020 18:55:31 -0800 (PST)
-Received: by mail-lf1-x144.google.com with SMTP id t6so5687324lfl.13
-        for <linux-iio@vger.kernel.org>; Thu, 03 Dec 2020 18:55:31 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49BB8C094240
+        for <linux-iio@vger.kernel.org>; Thu,  3 Dec 2020 18:55:26 -0800 (PST)
+Received: by mail-lf1-x144.google.com with SMTP id u9so183986lfm.1
+        for <linux-iio@vger.kernel.org>; Thu, 03 Dec 2020 18:55:26 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=fdozn1iYzMMjpKJN5NGb/8zh5XeUDLh4+Oq5oqMMC8M=;
-        b=EslvcfVFhIoT8ToCVYKz+uQhuz/c8/KnM+blwcA//rp3dw3yN/roLaQUDSPgPidE+E
-         Yyy3tJya3ErmFZ9HepOkzjnx+XDr1pcI3daP/6TYz4VvGuO8m6cjJt2Onn3GsfI0hTzt
-         2BU1Jd5E7xywiLvEouXzIkw/cA9PsFNIJqqFM9pwKGFk0ihe01/cxUEIFE41LhK3Hw/k
-         n0SB05zqrt4U+x04VzT/v3or9kGSmR/6HeQVx3bfPo+HGEVnSyOKrU8M7VoCf7UAj6cc
-         FPIGRt/1EERCOH1IEvcPoslslcXzf7P/Jwcg6FG30AJenUzgAFyBI1dZsKHT8xAZ15Gv
-         I7vA==
+        bh=kheJmCyDI4R5PgXqJsIVVX5lZh86mdMPpHXrUUt/fHo=;
+        b=R6XRhBdoGrWXkV8N/DwEVhvjyVxFDq+6j6z5pACnCc3ycb0afXDbJdE91idETZGXcx
+         JOko52r78Mtq601o7nd1Jo+lvMLQ9+4GOtKcgjNSY+1Isa7bC2jPVqSGNh/azmH43wT+
+         qnD1jOZpwFaUHQGuo4zFi8EUGQQAzbrE1PN/b4XCPpXWFL1dsbR8BL40v1Q6ynlsmnbc
+         xwvrosg0BXiK5dBOYGZIjsIHinrOIkGPXhdZLfEdI/0ddTkUPeDoKqERIWzWhGEASrgU
+         2ByUHhMrFcPjKpycb5Iy8TtFALbEGk0YgO3pcoOA8QePnX6n5ZTBSlOhmpJPx5EPbLlG
+         3eCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=fdozn1iYzMMjpKJN5NGb/8zh5XeUDLh4+Oq5oqMMC8M=;
-        b=i+n3FYTSmbjQr77+nC2jh37jyPWv0LTBdc7mDu1UaqObdrzvEcKlMrgfC9p/NsfA+y
-         TmZuxklCbp/EqFLLZdc9ekNUY0+D9aqdOCLng5o8sNXuMZZObeMxE3OBNAoHdQGau6en
-         RG9UMbSc9QVTKz6xNfG84YjFnbiHo7+8eG+daV5OnkPe1x5HS/GGkuc8NHvYeB+ePxUv
-         ishYco2pwQmZn1cMXVBRrvyzo44iWXmO4WvQrCcIUwyC5POpVMG/IPO2ZO1wBBeI+7Aj
-         8i02FLjLAa6IosEF9Gs+5AFFUmajysX9KREqzbcyUo8MO7C5juuIU1Da3pGH6ugnd54m
-         c8zg==
-X-Gm-Message-State: AOAM532RIFi9/Kl1JOxaI0UXpB78vCilM2bbn3IZvovGWx85RdI8GTZs
-        OQAqpZ+LVfJhvq2RrK2KEdjU/Q==
-X-Google-Smtp-Source: ABdhPJzBKx0pLSJ0JkkNh2NCIHdRv4eFyd9aBQD8FA4/EDr8ikvHrc5/6jx2c3FHEpEHR6a7FQugkg==
-X-Received: by 2002:a19:cd6:: with SMTP id 205mr2380277lfm.117.1607050529867;
-        Thu, 03 Dec 2020 18:55:29 -0800 (PST)
+        bh=kheJmCyDI4R5PgXqJsIVVX5lZh86mdMPpHXrUUt/fHo=;
+        b=N04PVegG0U8dS+6QlOU3ZOwdYqGMVUdZc0B6jjLuFruVVKo/DqhaXa5ybtNDZaqYQa
+         BzVB0hX4haNhHAmfDJi6edQoeGp0PhHW5LkJz19V9eNCiA4gmpCzgJTYLCNgVjwuVakW
+         Rp6CwJEuzpRA3oITaJNEJieLrnpfal4nBTn56Z5URwhZi6Uf+XUbqoB/PaZhVMmsfFy3
+         Gqb1l4NoyuJ4kpI46NnWG86s/6HfwK/nwPqCwX+uSpkM/yWBUjyxHUE6x7AOyH2GfK5E
+         Sg6J8U0fxtwNWv8/4D/RnN2P9ibSNw+8ZgkoA0l8qFrAvHr6v1+mQ8YooKltCRP534mj
+         zKCg==
+X-Gm-Message-State: AOAM531G1M/uYEBU+Aqu+aq5S5P8xrjzcbTtzwVLWMSwIzQhM5ju6t/x
+        pGic1adRppIgFOac6CoNelZcZg==
+X-Google-Smtp-Source: ABdhPJx2LLD1xrVQw9UHOJUHWQjRe+ecZMZn3p8IuVU8NUEu3Ag4M+HZWGtJ3FhhvjRa2kMKy2yP8w==
+X-Received: by 2002:a05:6512:36c7:: with SMTP id e7mr2696179lfs.79.1607050524841;
+        Thu, 03 Dec 2020 18:55:24 -0800 (PST)
 Received: from eriador.lumag.spb.ru ([188.162.64.117])
-        by smtp.gmail.com with ESMTPSA id b8sm1131667ljo.68.2020.12.03.18.55.27
+        by smtp.gmail.com with ESMTPSA id b8sm1131667ljo.68.2020.12.03.18.55.22
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 03 Dec 2020 18:55:29 -0800 (PST)
+        Thu, 03 Dec 2020 18:55:24 -0800 (PST)
 From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
 To:     Andy Gross <agross@kernel.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
@@ -72,9 +71,9 @@ Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
         Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
         Jishnu Prakash <jprakash@qti.qualcomm.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v10 06/15] iio: adc: qcom-spmi-adc5: use of_device_get_match_data
-Date:   Fri,  4 Dec 2020 05:55:00 +0300
-Message-Id: <20201204025509.1075506-7-dmitry.baryshkov@linaro.org>
+Subject: [PATCH v10 04/15] iio: adc: qcom-vadc-common: use fixp_linear_interpolate
+Date:   Fri,  4 Dec 2020 05:54:58 +0300
+Message-Id: <20201204025509.1075506-5-dmitry.baryshkov@linaro.org>
 X-Mailer: git-send-email 2.29.2
 In-Reply-To: <20201204025509.1075506-1-dmitry.baryshkov@linaro.org>
 References: <20201204025509.1075506-1-dmitry.baryshkov@linaro.org>
@@ -84,67 +83,41 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use of_device_get_match_data() instead of hand-coding it manually.
+Use new function fixp_linear_interpolate() instead of hand-coding the
+linear interpolation.
 
 Signed-off-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/adc/qcom-spmi-adc5.c | 18 +++++++-----------
- 1 file changed, 7 insertions(+), 11 deletions(-)
+ drivers/iio/adc/qcom-vadc-common.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
-index b10a0fcf09dc..87438d1e5c0b 100644
---- a/drivers/iio/adc/qcom-spmi-adc5.c
-+++ b/drivers/iio/adc/qcom-spmi-adc5.c
-@@ -15,6 +15,7 @@
+diff --git a/drivers/iio/adc/qcom-vadc-common.c b/drivers/iio/adc/qcom-vadc-common.c
+index d11f3343ad52..40d77b3af1bb 100644
+--- a/drivers/iio/adc/qcom-vadc-common.c
++++ b/drivers/iio/adc/qcom-vadc-common.c
+@@ -2,6 +2,7 @@
+ #include <linux/bug.h>
+ #include <linux/kernel.h>
+ #include <linux/bitops.h>
++#include <linux/fixp-arith.h>
  #include <linux/math64.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/regmap.h>
- #include <linux/slab.h>
-@@ -807,8 +808,6 @@ static int adc5_get_dt_data(struct adc5_chip *adc, struct device_node *node)
- 	struct adc5_channel_prop prop, *chan_props;
- 	struct device_node *child;
- 	unsigned int index = 0;
--	const struct of_device_id *id;
--	const struct adc5_data *data;
- 	int ret;
+ #include <linux/log2.h>
+ #include <linux/err.h>
+@@ -368,10 +369,9 @@ static int qcom_vadc_map_voltage_temp(const struct vadc_map_pt *pts,
+ 	} else {
+ 		/* result is between search_index and search_index-1 */
+ 		/* interpolate linearly */
+-		*output = (((s32)((pts[i].y - pts[i - 1].y) *
+-			(input - pts[i - 1].x)) /
+-			(pts[i].x - pts[i - 1].x)) +
+-			pts[i - 1].y);
++		*output = fixp_linear_interpolate(pts[i - 1].x, pts[i - 1].y,
++						  pts[i].x, pts[i].y,
++						  input);
+ 	}
  
- 	adc->nchannels = of_get_available_child_count(node);
-@@ -827,24 +826,21 @@ static int adc5_get_dt_data(struct adc5_chip *adc, struct device_node *node)
- 
- 	chan_props = adc->chan_props;
- 	iio_chan = adc->iio_chans;
--	id = of_match_node(adc5_match_table, node);
--	if (id)
--		data = id->data;
--	else
--		data = &adc5_data_pmic;
--	adc->data = data;
-+	adc->data = of_device_get_match_data(adc->dev);
-+	if (!adc->data)
-+		adc->data = &adc5_data_pmic;
- 
- 	for_each_available_child_of_node(node, child) {
--		ret = adc5_get_dt_channel_data(adc, &prop, child, data);
-+		ret = adc5_get_dt_channel_data(adc, &prop, child, adc->data);
- 		if (ret) {
- 			of_node_put(child);
- 			return ret;
- 		}
- 
- 		prop.scale_fn_type =
--			data->adc_chans[prop.channel].scale_fn_type;
-+			adc->data->adc_chans[prop.channel].scale_fn_type;
- 		*chan_props = prop;
--		adc_chan = &data->adc_chans[prop.channel];
-+		adc_chan = &adc->data->adc_chans[prop.channel];
- 
- 		iio_chan->channel = prop.channel;
- 		iio_chan->datasheet_name = prop.datasheet_name;
+ 	return 0;
 -- 
 2.29.2
 
