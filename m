@@ -2,118 +2,130 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7F41C4361B
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1383AC1B087
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:33:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 717B7229C4
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:30:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D49F522D01
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729019AbgLESao (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Dec 2020 13:30:44 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56222 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728800AbgLES3y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Dec 2020 13:29:54 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A5F63229C4;
-        Sat,  5 Dec 2020 18:29:12 +0000 (UTC)
-Date:   Sat, 5 Dec 2020 18:29:07 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lorenzo Bianconi <lorenzo@kernel.org>
-Cc:     lorenzo.bianconi@redhat.com, linux-iio@vger.kernel.org,
-        linus.walleij@linaro.org, denis.ciocca@st.com
-Subject: Re: [PATCH v2] iio: common: st_sensors: fix possible infinite loop
- in st_sensors_irq_thread
-Message-ID: <20201205182907.5d2c948e@archlinux>
-In-Reply-To: <58d40383f6e1faa14850f3a9b694b8e4cb4fbbec.1607162799.git.lorenzo@kernel.org>
-References: <58d40383f6e1faa14850f3a9b694b8e4cb4fbbec.1607162799.git.lorenzo@kernel.org>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S1727943AbgLESce (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Dec 2020 13:32:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42018 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728584AbgLES2z (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Dec 2020 13:28:55 -0500
+Received: from mail-il1-x143.google.com (mail-il1-x143.google.com [IPv6:2607:f8b0:4864:20::143])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D34B2C02B8F8
+        for <linux-iio@vger.kernel.org>; Sat,  5 Dec 2020 07:50:14 -0800 (PST)
+Received: by mail-il1-x143.google.com with SMTP id q1so8120368ilt.6
+        for <linux-iio@vger.kernel.org>; Sat, 05 Dec 2020 07:50:14 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=OtNgo2D1Ic+pYCO01LJfEMZQjRueM5d4Zqn+Q1wGnUs=;
+        b=gUwYiGo9itCOrMM5kgmg4c4/XUaM0wqHrVABqeqZisNtyeieHH/dPEgd8M8pUyDpsS
+         4RNWFa5nTdCyJuNTsOzXJJszcDoIYspnnvDcOpcEisWySx3jD7u4UyAMQiK3a2eLEKm8
+         Fuy9CUvqdhj0FmpP1Y03OghNGz+2pTDowA1tn+u5afuGYYtYKEmfasZA37VF2+V10wB4
+         7B2RxZIAQEuvaHi2A73fRZylNsBrRGeozr+aLIZ6wgAdTGYTqqDLCWYLVdQYge23kPKw
+         P2XARjn8MBcTFrDNqw6fTJizkPQ1AljQsOEXgkuuUuJNRpVurEN3eNR7B2i985HYdaWy
+         1VQA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=OtNgo2D1Ic+pYCO01LJfEMZQjRueM5d4Zqn+Q1wGnUs=;
+        b=ooalwaib2uc+7wUgZPGLbBD5T2LukRhxq7YOYJVNDFKG/ZEr0/F1E74r5XoCOlH14k
+         8TvUh6nc7AjWXQS0nKOxDOrws1wIQ1giMX8pGOwum4Zx8epEIIUwgKUEV86teMZTgOur
+         vmNBCEW/7Mh6FP3cJ/xKrvu+X2TBGuggJhSop/Dz0VYrKGEpEVX3jHiylPuVPnNue4bX
+         Ua8YQPkPEL2Sej+PSSwLpk+DKwdyu2i1qc5VSA6PkbxyXa0UivzyRcdYVAZqDC+07e5j
+         bAnwQchkS0O64WqZkRVUnlFyLcQoCe2Qi4682fioBWSJGT9VoxHrpOCDyvjdVdKst60U
+         WCOw==
+X-Gm-Message-State: AOAM530FAw+Dqll19vZXkdUKbJ7HUu7wiot5DTFdiiHNceTUu1h95zmX
+        Ti+vkM0vJ6XQxqAxB5Uw2AkS5m3qPRWLYSKcd0A=
+X-Google-Smtp-Source: ABdhPJwLIZ5s52s53l7SZ8wjlzg82tbbTt1vnpAqqdk6k5lAv3/nKrYHiCNcUACEuD62Mx9doBiBAmX+gu5e0KPrJjc=
+X-Received: by 2002:a92:c844:: with SMTP id b4mr11536702ilq.292.1607183413967;
+ Sat, 05 Dec 2020 07:50:13 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20201125084606.11404-1-hdegoede@redhat.com> <2a20cf21-d483-d41e-6ff8-95ae23d230c2@redhat.com>
+ <20201205152344.173e5b96@archlinux> <f11fd496-948e-8bf9-04eb-44262d54a271@redhat.com>
+In-Reply-To: <f11fd496-948e-8bf9-04eb-44262d54a271@redhat.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Sat, 5 Dec 2020 17:50:02 +0200
+Message-ID: <CA+U=Dsqc8djb8KFV75EST4=9W5CN+mgeym+hgUX0F8x2P04Epg@mail.gmail.com>
+Subject: Re: [PATCH 0/1] iio: core: Copy iio_info.attrs->is_visible into iio_dev_opaque.chan_attr_group.is_visible
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jeremy Cline <jeremy@jcline.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat,  5 Dec 2020 11:10:41 +0100
-Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+On Sat, Dec 5, 2020 at 5:44 PM Hans de Goede <hdegoede@redhat.com> wrote:
+>
+> Hi,
+>
+> n 12/5/20 4:23 PM, Jonathan Cameron wrote:
+> > On Tue, 1 Dec 2020 13:28:47 +0100
+> > Hans de Goede <hdegoede@redhat.com> wrote:
+> >
+> >> Hi,
+> >>
+> >> On 11/25/20 9:46 AM, Hans de Goede wrote:
+> >>> Hi All,
+> >>>
+> >>> I wrote this because I was planning on using is_visible in a driver's
+> >>> attribute group myself (1). But in the end it looks like I'm going to
+> >>> do things differently.
+> >>>
+> >>> This is still useful to have though, both for possible future use of
+> >>> is_visible in driver's attribute groups as well as to make the current
+> >>> usage of is_visible in adi-axi-adc.c actually work.
+> >>
+> >> Jonathan, any opinion / remarks on this one?
+> >>
+> >> FWIW since I no longer have plans to use is_visible in an iio-driver
+> >> myself I'm fine with dropping this one, but:
+> >>
+> >> 1. Being able to use is_visible in the attr group of iio-drivers
+> >> seems like a nice thing to have.
+> >>
+> >> 2. There is an existing use of is_visible in adi-axi-adc.c which currently is broken.
+> >
+> > I was giving time for Alex, or others to sanity check the need for a fix
+> > (well more specifically wether this one was the right one as clearly
+> > a need!).
+> >
+> > Anyhow, all sounds good.  Giving timing I'll mark it as one I'll pick up
+> > to go in after rc1 + stable.
+> >
+> > I'm not totally sure on the fixes tag.  Current patch will have to go on top
+> > of 207c2d27a010 ("iio: core: move channel list & group to private iio device object")
+> > but I don't think it worked before that either as we were still copying attributes
+> > around, just to a different location.
+>
+> I don't think it is important for this one to go to the stables series,
+> so if you think it may cause problems feel free to drop the Fixes tag
+> (or point it to a different commit).
 
-> Return a boolean value in st_sensors_new_samples_available routine in
-> order to avoid an infinite loop in st_sensors_irq_thread if
-> stat_drdy.addr is not defined or stat_drdy read fails
-> 
-> Fixes: 90efe05562921 ("iio: st_sensors: harden interrupt handling")
-> Reported-by: Jonathan Cameron <jic23@kernel.org>
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+I am also fine to not port this into the stable series.
+The AXI ADC driver that is usually used, is from the Analog Devices Linux tree.
+The current upstream version will be the one that reworks/cleans-up
+the old ones in the ADI tree.
+For some reason, there are like 4 AXI ADC variants in the ADI tree :p
+All these 4 should be unified into this one at some point.
 
-Oops. I should not noticed this and replied here.
-See reply to previous version.  I think this will create an infinite
-loop in the obscure case of no status register + an edge interrupt.
-My gut feeling is we can't support that combination so should fail
-at probe time if it is specified.  It's broken hardware / dt.
-
-Jonathan
-
-> ---
-> Changes since v1:
-> - return true if the sensor does not have stat_drdy register
-> ---
->  .../common/st_sensors/st_sensors_trigger.c    | 20 ++++++++-----------
->  1 file changed, 8 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> index 0507283bd4c1..d3f047e9d778 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> @@ -23,35 +23,31 @@
->   * @sdata: Sensor data.
->   *
->   * returns:
-> - * 0 - no new samples available
-> - * 1 - new samples available
-> - * negative - error or unknown
-> + * false - no new samples available or read error
-> + * true - new samples available
->   */
-> -static int st_sensors_new_samples_available(struct iio_dev *indio_dev,
-> -					    struct st_sensor_data *sdata)
-> +static bool st_sensors_new_samples_available(struct iio_dev *indio_dev,
-> +					     struct st_sensor_data *sdata)
->  {
->  	int ret, status;
->  
->  	/* How would I know if I can't check it? */
->  	if (!sdata->sensor_settings->drdy_irq.stat_drdy.addr)
-> -		return -EINVAL;
-> +		return true;
->  
->  	/* No scan mask, no interrupt */
->  	if (!indio_dev->active_scan_mask)
-> -		return 0;
-> +		return false;
->  
->  	ret = regmap_read(sdata->regmap,
->  			  sdata->sensor_settings->drdy_irq.stat_drdy.addr,
->  			  &status);
->  	if (ret < 0) {
->  		dev_err(sdata->dev, "error checking samples available\n");
-> -		return ret;
-> +		return false;
->  	}
->  
-> -	if (status & sdata->sensor_settings->drdy_irq.stat_drdy.mask)
-> -		return 1;
-> -
-> -	return 0;
-> +	return !!(status & sdata->sensor_settings->drdy_irq.stat_drdy.mask);
->  }
->  
->  /**
-
+>
+> Regards,
+>
+> Hans
+>
