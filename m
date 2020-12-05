@@ -2,48 +2,41 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF1C6C2BB48
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CB88DC4361A
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:42:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CC67822E00
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:41:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 930E022E00
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:42:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727837AbgLESTU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Dec 2020 13:19:20 -0500
-Received: from mail.kernel.org ([198.145.29.99]:43214 "EHLO mail.kernel.org"
+        id S1727689AbgLESTT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Dec 2020 13:19:19 -0500
+Received: from mail.kernel.org ([198.145.29.99]:43212 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728037AbgLERyc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1727787AbgLERyc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sat, 5 Dec 2020 12:54:32 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 4D63A22D72;
-        Sat,  5 Dec 2020 17:08:34 +0000 (UTC)
-Date:   Sat, 5 Dec 2020 17:08:30 +0000
+        by mail.kernel.org (Postfix) with ESMTPSA id 5F6F92311C;
+        Sat,  5 Dec 2020 17:17:11 +0000 (UTC)
+Date:   Sat, 5 Dec 2020 17:17:08 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jishnu Prakash <jprakash@qti.qualcomm.com>
-Subject: Re: [PATCH v10 00/15] qcom: pm8150: add support for thermal
- monitoring
-Message-ID: <20201205170830.4d56ecb7@archlinux>
-In-Reply-To: <20201204025509.1075506-1-dmitry.baryshkov@linaro.org>
-References: <20201204025509.1075506-1-dmitry.baryshkov@linaro.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     linux-kernel@vger.kernel.org, Jiri Kosina <jikos@kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-input@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        linux-iio@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        linux-doc@vger.kernel.org
+Subject: Re: [PATCH 3/8] Documentation: HID: hiddev editing & corrections
+Message-ID: <20201205171708.55251bb7@archlinux>
+In-Reply-To: <20201204062022.5095-4-rdunlap@infradead.org>
+References: <20201204062022.5095-1-rdunlap@infradead.org>
+        <20201204062022.5095-4-rdunlap@infradead.org>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -52,83 +45,82 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri,  4 Dec 2020 05:54:54 +0300
-Dmitry Baryshkov <dmitry.baryshkov@linaro.org> wrote:
+On Thu,  3 Dec 2020 22:20:17 -0800
+Randy Dunlap <rdunlap@infradead.org> wrote:
 
-> This patch serie adds support for thermal monitoring block on Qualcomm's
-> PMIC5 chips. PM8150{,b,l} and sm8250-mtp board device trees are extended
-> to support thermal zones provided by this thermal monitoring block.
-> Unlike the rest of PMIC thermal senses, these thermal zones describe
-> particular thermistors, which differ between from board to board.
+> Do basic editing & correction to hiddev.rst:
+> - use HID instead of hid consistently
 
-I've just taken another look through the various IIO parts in here and 
-I think they are fine.
+One case inline, where I think the usage of hid-core
+might have been deliberate.
 
-My assumption is that given the timing this isn't going to make the merge
-window now.  Hence I'll be looking to do an immutable branch based on rc1
-once it's available (assuming everyone else is fine with this version).
+> - add hyphenation of multi-word adjectives
+> - drop a duplicate word
+> - unhyphenate "a priori"
+> 
+> 
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Cc: Jiri Kosina <jikos@kernel.org>
+> Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+> Cc: linux-input@vger.kernel.org
+> Cc: Jonathan Corbet <corbet@lwn.net>
+> Cc: linux-doc@vger.kernel.org
+> ---
+>  Documentation/hid/hiddev.rst |   12 ++++++------
+>  1 file changed, 6 insertions(+), 6 deletions(-)
+> 
+> --- linux-next-20201201.orig/Documentation/hid/hiddev.rst
+> +++ linux-next-20201201/Documentation/hid/hiddev.rst
+> @@ -27,7 +27,7 @@ the following::
+>                            --> hiddev.c ----> POWER / MONITOR CONTROL  
+>  
+>  In addition, other subsystems (apart from USB) can potentially feed
+> -events into the input subsystem, but these have no effect on the hid
+> +events into the input subsystem, but these have no effect on the HID
+>  device interface.
+>  
+>  Using the HID Device Interface
+> @@ -72,8 +72,8 @@ The hiddev API uses a read() interface,
+>  
+>  HID devices exchange data with the host computer using data
+>  bundles called "reports".  Each report is divided into "fields",
+> -each of which can have one or more "usages".  In the hid-core,
+> -each one of these usages has a single signed 32 bit value.
+> +each of which can have one or more "usages".  In the HID core,
 
-Thanks,
+Hmm. hid-core is (I think) kind of referring to the code in hid-core.c
+Whereas a Human Interface Device core (HID core) sounds like
+something different.  Not my doc though!
 
-Jonathan
-
-> 
-> Changes since v9:
->  - In patch 12 add comments to the code as requested by Daniel Lezcano.
->  - Change copyright comment in qcom-spmi-adc-tm5.c to clearly note
->    driver history.
-> 
-> Changes since v8:
->  - Simplified qcom_vadc_map_voltage_temp() code by removing ascending
->    tables support
->  - Simplified qcom-vadc-common volt/temp mapping code
->  - Implement suggestions by Matthias Kaehlcke: message formatting,
->    rewrite comments, remove unused variable initialization.
-> 
-> Changes since v7:
->  - Move qcom-vadc-common.h header to include/linux/iio/adc/ dir.
->  - Use explicit sizeof(var) instead of hand-coding 1 when accessing
->    adc-tm registers.
->  - Remove buffer read from adc_tm5_init().
->  - Remove extra on-stack var from adc_tm5_get_temp().
->  - Minor formatting changes as suggested Daniel.
-> 
-> Changes since v6:
->  - Added include <linux/bitfield.h> as noted by Jishnu Prakash.
-> 
-> Changes since v5:
->  - Reworked DT bindings:
->    * Removed qcom,adc-channel, instead it is parsed from io-channels
->    * Renamed qcom,hw-settle-time to include -us suffix
->  - Re-added monitor enabling which got lost during refactored. Noted by
->    Jishnu Prakash.
->  - Use threaded IRQ handler as susggested by Jishnu.
-> 
-> Changes since v4:
->  - Added kernel-doc comments to ADC-TM structures
->  - Used several sizeof(buf) instead of hand-conding register size
-> 
-> Changes since v3:
->  - Fix DT description to spell "thermal monitoring" instead of just TM
->  - Fix warnings in DT example
->  - Add EXPORT_SYMBOL_GPL(of_iio_channel_get_by_name)
->  - Fixed whitespace chanes in qcom-vadc-common.c
->  - Removed error message if IIO chanel get returns -EPROBE_DEFER
-> 
-> Changes since v2:
->  - IIO: export of_iio_channel_get_by_name() function
->  - dt-bindings: move individual io-channels to each thermal monitoring
->    channel rather than listing them all in device node
->  - added fallback defaults to of_device_get_match_data calls in
->    qcom-spmi-adc5 and qcom-spmi-adc-tm5 drivers
->  - minor typo fixes
-> 
-> Changes since v1:
->  - Introduce fixp_linear_interpolate() by Craig Tatlor
->  - Lots of syntax/whitespace changes
->  - Cleaned up register definitions per Jonathan's suggestion
->  - Implemented most of the suggestions from Bjorn's and Jonathan's
->    review
-> 
-> 
+> +each one of these usages has a single signed 32-bit value.
+>  
+>  read():
+>  -------
+> @@ -113,7 +113,7 @@ HIDIOCAPPLICATION
+>    - (none)
+>  
+>  This ioctl call returns the HID application usage associated with the
+> -hid device. The third argument to ioctl() specifies which application
+> +HID device. The third argument to ioctl() specifies which application
+>  index to get. This is useful when the device has more than one
+>  application collection. If the index is invalid (greater or equal to
+>  the number of application collections this device has) the ioctl
+> @@ -181,7 +181,7 @@ looked up by type (input, output or feat
+>  must be filled in by the user. The ID can be absolute -- the actual
+>  report id as reported by the device -- or relative --
+>  HID_REPORT_ID_FIRST for the first report, and (HID_REPORT_ID_NEXT |
+> -report_id) for the next report after report_id. Without a-priori
+> +report_id) for the next report after report_id. Without a priori
+>  information about report ids, the right way to use this ioctl is to
+>  use the relative IDs above to enumerate the valid IDs. The ioctl
+>  returns non-zero when there is no more next ID. The real report ID is
+> @@ -200,7 +200,7 @@ HIDIOCGUCODE
+>    - struct hiddev_usage_ref (read/write)
+>  
+>  Returns the usage_code in a hiddev_usage_ref structure, given that
+> -given its report type, report id, field index, and index within the
+> +its report type, report id, field index, and index within the
+>  field have already been filled into the structure.
+>  
+>  HIDIOCGUSAGE
 
