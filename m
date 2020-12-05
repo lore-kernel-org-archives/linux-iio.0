@@ -2,132 +2,380 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BE98C4361A
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 15:40:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 480F5C18E57
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:30:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 515B222C9F
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 15:40:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 262C5230FD
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Dec 2020 18:30:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726873AbgLEPjL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Dec 2020 10:39:11 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([63.128.21.124]:45365 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1727381AbgLEP3Z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Dec 2020 10:29:25 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1607182022;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=TwP5DSbtF9fgDrZhUKfti9Bm5YPZjJW+lsqFYHl18PI=;
-        b=PfM+B+SVoDeE1zjxEpeXA9fp2Oa9PrwzjEW2IyYl+i2IybN+t3OrN+yxyMzNJtVvpcZs+8
-        +LPMoEkqDJQgrrzW+zNTbZlG1n4VhmrczJTLBUlF5gJ6qa3BxrgBBHzGBr2Qez5xFjb81d
-        saIKocFxC4KigMMzg4Lby7EevQT4IGE=
-Received: from mail-ed1-f72.google.com (mail-ed1-f72.google.com
- [209.85.208.72]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-510-EeelZW3YNxWWOzETlQXpiA-1; Sat, 05 Dec 2020 10:27:01 -0500
-X-MC-Unique: EeelZW3YNxWWOzETlQXpiA-1
-Received: by mail-ed1-f72.google.com with SMTP id cm4so78643edb.0
-        for <linux-iio@vger.kernel.org>; Sat, 05 Dec 2020 07:27:01 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=TwP5DSbtF9fgDrZhUKfti9Bm5YPZjJW+lsqFYHl18PI=;
-        b=aPNsu8enbvAN9pq1OBUFNtpFtQXjOnliw08/H/s8WqaNFT8RQMrN79S5zM+PNx7tec
-         bidEJkgDCyh7zFcoWt1yYtxd7UOZsqdSQxC7ShZXxhX2aDRexYtahV2h4jJNz3rzwGkt
-         PxeE4B4pT8ZD1Ukapm5GKXbu6ZXAWsOPkHqhnworbflRu/fafUHIG4KwVR03ndmLuVtU
-         YtAUnY9rXZPo88XVUD+ogFarSmMIrxAcWbzVueuMI9pt42GJEa3wYhtXQJFYi0gWo0nG
-         P39OiQux7nBrIdB2gtXzWgfxx25SMqzDlAo+j96N6ugIeGO9fWDTUVerMHl/sTEzfd4o
-         /wzg==
-X-Gm-Message-State: AOAM53267A5LHAS1HctM3jHLuTsfpuFQX0/BVtZru8eHICA58eeyFUac
-        dz8LokxLiv0QicKfvxGL0Jx1e3569YZDLm6Ihgd7qut1fjlfz7C1TAzu2faMDAI5lidkJ1r9nD4
-        H3Hlfnstt6Fw77RZTccIXllp8GxIIytaUXhpHA8/6t473cvc7ZruORDaLqYR8SNhyBWS6qS47
-X-Received: by 2002:aa7:c652:: with SMTP id z18mr12090860edr.60.1607182019670;
-        Sat, 05 Dec 2020 07:26:59 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJyjZv4gdoGpTjg8uc+bOkqs0AgNM71eHpeOOVclvjy5+N2nJq4K5EpG6lTNFSSGqWNG+U670g==
-X-Received: by 2002:aa7:c652:: with SMTP id z18mr12090839edr.60.1607182019354;
-        Sat, 05 Dec 2020 07:26:59 -0800 (PST)
-Received: from x1.localdomain (2001-1c00-0c0c-fe00-d2ea-f29d-118b-24dc.cable.dynamic.v6.ziggo.nl. [2001:1c00:c0c:fe00:d2ea:f29d:118b:24dc])
-        by smtp.gmail.com with ESMTPSA id cc8sm5267163edb.17.2020.12.05.07.26.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 05 Dec 2020 07:26:58 -0800 (PST)
-Subject: Re: [PATCH 0/1] iio: core: Copy iio_info.attrs->is_visible into
- iio_dev_opaque.chan_attr_group.is_visible
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        id S2387394AbgLES32 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Dec 2020 13:29:28 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55898 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1728862AbgLES30 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 5 Dec 2020 13:29:26 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 524872312D;
+        Sat,  5 Dec 2020 15:49:41 +0000 (UTC)
+Date:   Sat, 5 Dec 2020 15:49:38 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jeremy Cline <jeremy@jcline.org>, linux-iio@vger.kernel.org
-References: <20201125084606.11404-1-hdegoede@redhat.com>
- <2a20cf21-d483-d41e-6ff8-95ae23d230c2@redhat.com>
- <20201205152344.173e5b96@archlinux>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <f11fd496-948e-8bf9-04eb-44262d54a271@redhat.com>
-Date:   Sat, 5 Dec 2020 16:26:48 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.4.0
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH] iio: st-sensors: Convert bindings to YAML
+Message-ID: <20201205154938.636c07c1@archlinux>
+In-Reply-To: <20201202211358.1517554-1-linus.walleij@linaro.org>
+References: <20201202211358.1517554-1-linus.walleij@linaro.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20201205152344.173e5b96@archlinux>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+On Wed,  2 Dec 2020 22:13:58 +0100
+Linus Walleij <linus.walleij@linaro.org> wrote:
 
-n 12/5/20 4:23 PM, Jonathan Cameron wrote:
-> On Tue, 1 Dec 2020 13:28:47 +0100
-> Hans de Goede <hdegoede@redhat.com> wrote:
+> Convert this large binding to YAML. It is pretty simple
+> in it's basic form but the devil is in the details.
+> Some -if restrictions painstakingly created by reading through
+> all the datasheets.
 > 
->> Hi,
->>
->> On 11/25/20 9:46 AM, Hans de Goede wrote:
->>> Hi All,
->>>
->>> I wrote this because I was planning on using is_visible in a driver's
->>> attribute group myself (1). But in the end it looks like I'm going to
->>> do things differently.
->>>
->>> This is still useful to have though, both for possible future use of
->>> is_visible in driver's attribute groups as well as to make the current
->>> usage of is_visible in adi-axi-adc.c actually work.  
->>
->> Jonathan, any opinion / remarks on this one?
->>
->> FWIW since I no longer have plans to use is_visible in an iio-driver
->> myself I'm fine with dropping this one, but:
->>
->> 1. Being able to use is_visible in the attr group of iio-drivers
->> seems like a nice thing to have.
->>
->> 2. There is an existing use of is_visible in adi-axi-adc.c which currently is broken.
-> 
-> I was giving time for Alex, or others to sanity check the need for a fix
-> (well more specifically wether this one was the right one as clearly
-> a need!).
-> 
-> Anyhow, all sounds good.  Giving timing I'll mark it as one I'll pick up
-> to go in after rc1 + stable. 
-> 
-> I'm not totally sure on the fixes tag.  Current patch will have to go on top
-> of 207c2d27a010 ("iio: core: move channel list & group to private iio device object")
-> but I don't think it worked before that either as we were still copying attributes
-> around, just to a different location.
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 
-I don't think it is important for this one to go to the stables series,
-so if you think it may cause problems feel free to drop the Fixes tag
-(or point it to a different commit).
+Subject to the fact you already picked up on the much less precise
+binding doc conversion I did (was a conversion whereas this is
+an improvement :)
 
-Regards,
+Looks good to me.  One minor suggestion in line.
 
-Hans
+Unfortunate this hit just after I'd applied the lesser version :(
+
+> ---
+>  .../devicetree/bindings/iio/st-sensors.txt    |  82 -------
+>  .../devicetree/bindings/iio/st-sensors.yaml   | 213 ++++++++++++++++++
+>  2 files changed, 213 insertions(+), 82 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iio/st-sensors.txt
+>  create mode 100644 Documentation/devicetree/bindings/iio/st-sensors.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.txt b/Documentation/devicetree/bindings/iio/st-sensors.txt
+> deleted file mode 100644
+> index 3213599c5071..000000000000
+> --- a/Documentation/devicetree/bindings/iio/st-sensors.txt
+> +++ /dev/null
+> @@ -1,82 +0,0 @@
+> -STMicroelectronics MEMS sensors
+> -
+> -The STMicroelectronics sensor devices are pretty straight-forward I2C or
+> -SPI devices, all sharing the same device tree descriptions no matter what
+> -type of sensor it is.
+> -
+> -Required properties:
+> -- compatible: see the list of valid compatible strings below
+> -- reg: the I2C or SPI address the device will respond to
+> -
+> -Optional properties:
+> -- vdd-supply: an optional regulator that needs to be on to provide VDD
+> -  power to the sensor.
+> -- vddio-supply: an optional regulator that needs to be on to provide the
+> -  VDD IO power to the sensor.
+> -- st,drdy-int-pin: the pin on the package that will be used to signal
+> -  "data ready" (valid values: 1 or 2). This property is not configurable
+> -  on all sensors.
+> -- drive-open-drain: the interrupt/data ready line will be configured
+> -  as open drain, which is useful if several sensors share the same
+> -  interrupt line. (This binding is taken from pinctrl/pinctrl-bindings.txt)
+> -  This is a boolean property.
+> -
+> -Sensors may also have applicable pin control settings, those use the
+> -standard bindings from pinctrl/pinctrl-bindings.txt.
+> -
+> -Valid compatible strings:
+> -
+> -Accelerometers:
+> -- st,lis3lv02d (deprecated, use st,lis3lv02dl-accel)
+> -- st,lis302dl-spi (deprecated, use st,lis3lv02dl-accel)
+> -- st,lis3lv02dl-accel
+> -- st,lsm303dlh-accel
+> -- st,lsm303dlhc-accel
+> -- st,lis3dh-accel
+> -- st,lsm330d-accel
+> -- st,lsm330dl-accel
+> -- st,lsm330dlc-accel
+> -- st,lis331dl-accel
+> -- st,lis331dlh-accel
+> -- st,lsm303dl-accel
+> -- st,lsm303dlm-accel
+> -- st,lsm330-accel
+> -- st,lsm303agr-accel
+> -- st,lis2dh12-accel
+> -- st,h3lis331dl-accel
+> -- st,lng2dm-accel
+> -- st,lis3l02dq
+> -- st,lis2dw12
+> -- st,lis3dhh
+> -- st,lis3de
+> -- st,lis2de12
+> -- st,lis2hh12
+> -
+> -Gyroscopes:
+> -- st,l3g4200d-gyro
+> -- st,lsm330d-gyro
+> -- st,lsm330dl-gyro
+> -- st,lsm330dlc-gyro
+> -- st,l3gd20-gyro
+> -- st,l3gd20h-gyro
+> -- st,l3g4is-gyro
+> -- st,lsm330-gyro
+> -- st,lsm9ds0-gyro
+> -
+> -Magnetometers:
+> -- st,lsm303agr-magn
+> -- st,lsm303dlh-magn
+> -- st,lsm303dlhc-magn
+> -- st,lsm303dlm-magn
+> -- st,lis3mdl-magn
+> -- st,lis2mdl
+> -- st,lsm9ds1-magn
+> -
+> -Pressure sensors:
+> -- st,lps001wp-press
+> -- st,lps25h-press
+> -- st,lps331ap-press
+> -- st,lps22hb-press
+> -- st,lps33hw
+> -- st,lps35hw
+> -- st,lps22hh
+> diff --git a/Documentation/devicetree/bindings/iio/st-sensors.yaml b/Documentation/devicetree/bindings/iio/st-sensors.yaml
+> new file mode 100644
+> index 000000000000..6435bbedfd9a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/st-sensors.yaml
+> @@ -0,0 +1,213 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/st-sensors.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: STMicroelectronics MEMS Sensors
+> +
+> +description: The STMicroelectronics sensor devices are pretty straight-forward
+> +  I2C or SPI devices, all sharing the same device tree descriptions no matter
+> +  what type of sensor it is.
+> +
+> +maintainers:
+> +  - Linus Walleij <linus.walleij@linaro.org>
+> +
+> +properties:
+> +  compatible:
+> +    oneOf:
+> +      - description: STMicroelectronics Accelerometers
+> +        enum:
+> +          - st,h3lis331dl-accel
+> +          - st,lis2de12
+> +          - st,lis2dw12
+> +          - st,lis2hh12
+> +          - st,lis2dh12-accel
+> +          - st,lis331dl-accel
+> +          - st,lis331dlh-accel
+> +          - st,lis3de
+> +          - st,lis3dh-accel
+> +          - st,lis3dhh
+> +          - st,lis3l02dq
+> +          - st,lis3lv02dl-accel
+> +          - st,lng2dm-accel
+> +          - st,lsm303agr-accel
+> +          - st,lsm303dl-accel
+> +          - st,lsm303dlh-accel
+> +          - st,lsm303dlhc-accel
+> +          - st,lsm303dlm-accel
+> +          - st,lsm330-accel
+> +          - st,lsm330d-accel
+> +          - st,lsm330dl-accel
+> +          - st,lsm330dlc-accel
+> +      - description: STMicroelectronics Gyroscopes
+> +        enum:
+> +          - st,l3g4200d-gyro
+> +          - st,l3g4is-gyro
+> +          - st,l3gd20-gyro
+> +          - st,l3gd20h-gyro
+> +          - st,lsm330-gyro
+> +          - st,lsm330d-gyro
+> +          - st,lsm330dl-gyro
+> +          - st,lsm330dlc-gyro
+> +          - st,lsm9ds0-gyro
+> +      - description: STMicroelectronics Magnetometers
+> +        enum:
+> +          - st,lis2mdl
+> +          - st,lis3mdl-magn
+> +          - st,lsm303agr-magn
+> +          - st,lsm303dlh-magn
+> +          - st,lsm303dlhc-magn
+> +          - st,lsm303dlm-magn
+> +          - st,lsm9ds1-magn
+> +      - description: STMicroelectronics Pressure Sensors
+> +        enum:
+> +          - st,lps001wp-press
+> +          - st,lps22hb-press
+> +          - st,lps22hh
+> +          - st,lps25h-press
+> +          - st,lps331ap-press
+> +          - st,lps33hw
+> +          - st,lps35hw
+> +      - description: Deprecated bindings
+> +        enum:
+> +          - st,lis302dl-spi
+> +          - st,lis3lv02d
+> +        deprecated: true
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description: interrupt line(s) connected to the DRDY line(s) and/or the
+> +      Intertial interrupt lines INT1 and INT2 if these exist. This means up to
+> +      three interrupts, and the DRDY must be the first one if it exists on
+> +      the package. The trigger edge of the interrupts is sometimes software
+> +      configurable in the hardware so the operating system should parse this
+> +      flag and set up the trigger edge as indicated in the device tree.
+> +    minItems: 1
+> +    maxItems: 2
+> +
+> +  vdd-supply: true
+> +  vddio-supply: true
+> +
+> +  st,drdy-int-pin:
+> +    $ref: /schemas/types.yaml#/definitions/uint32
+> +    maxItems: 1
+> +    description: the pin on the package that will be used to signal
+> +      "data ready" (valid values 1 or 2). This property is not configurable
+> +      on all sensors.
+> +    items:
+> +      minimum: 1
+> +      maximum: 2
+
+Maybe enum [1, 2]?
+
+> +
+> +  drive-open-drain:
+> +    type: boolean
+> +    description: the interrupt/data ready line will be configured
+> +      as open drain, which is useful if several sensors share the same
+> +      interrupt line. (This binding is taken from pinctrl.)
+> +
+> +  mount-matrix:
+> +    description: an optional 3x3 mounting rotation matrix.
+> +
+> +allOf:
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          enum:
+> +            # These have no interrupts
+> +            - st,lps001wp
+> +    then:
+> +      properties:
+> +        interrupts: false
+> +        st,drdy-int-pin: false
+> +        drive-open-drain: false
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          enum:
+> +            # These have only DRDY
+> +            - st,lis2mdl
+> +            - st,lis3l02dq
+> +            - st,lis3lv02dl-accel
+> +            - st,lps22hb-press
+> +            - st,lps22hh
+> +            - st,lps25h-press
+> +            - st,lps33hw
+> +            - st,lps35hw
+> +            - st,lsm303agr-magn
+> +            - st,lsm303dlh-magn
+> +            - st,lsm303dlhc-magn
+> +            - st,lsm303dlm-magn
+> +    then:
+> +      properties:
+> +        interrupts:
+> +          maxItems: 1
+> +        st,drdy-int-pin: false
+> +
+> +  - if:
+> +      properties:
+> +        compatible:
+> +          enum:
+> +            # Two intertial interrupts i.e. accelerometer/gyro interrupts
+> +            - st,h3lis331dl-accel
+> +            - st,l3g4200d-gyro
+> +            - st,l3g4is-gyro
+> +            - st,l3gd20-gyro
+> +            - st,l3gd20h-gyro
+> +            - st,lis2de12
+> +            - st,lis2dw12
+> +            - st,lis2hh12
+> +            - st,lis2dh12-accel
+> +            - st,lis331dl-accel
+> +            - st,lis331dlh-accel
+> +            - st,lis3de
+> +            - st,lis3dh-accel
+> +            - st,lis3dhh
+> +            - st,lis3mdl-magn
+> +            - st,lng2dm-accel
+> +            - st,lps331ap-press
+> +            - st,lsm303agr-accel
+> +            - st,lsm303dlh-accel
+> +            - st,lsm303dlhc-accel
+> +            - st,lsm303dlm-accel
+> +            - st,lsm330-accel
+> +            - st,lsm330-gyro
+> +            - st,lsm330d-accel
+> +            - st,lsm330d-gyro
+> +            - st,lsm330dl-accel
+> +            - st,lsm330dl-gyro
+> +            - st,lsm330dlc-accel
+> +            - st,lsm330dlc-gyro
+> +            - st,lsm9ds0-gyro
+> +            - st,lsm9ds1-magn
+> +    then:
+> +      properties:
+> +        interrupts:
+> +          maxItems: 2
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    #include <dt-bindings/gpio/gpio.h>
+> +    i2c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      accelerometer@1c {
+> +        compatible = "st,lis331dl-accel";
+> +        reg = <0x1c>;
+> +        st,drdy-int-pin = <1>;
+> +        vdd-supply = <&ldo1>;
+> +        vddio-supply = <&ldo2>;
+> +        interrupt-parent = <&gpio>;
+> +        interrupts = <18 IRQ_TYPE_EDGE_RISING>, <19 IRQ_TYPE_EDGE_RISING>;
+> +      };
+> +    };
 
