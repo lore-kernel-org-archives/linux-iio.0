@@ -5,25 +5,24 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1625FC433FE
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D75C8C19425
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:50:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DBED123BAC
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:50:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B3A1523B51
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:50:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1732873AbgLIXty (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Dec 2020 18:49:54 -0500
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:57163 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726281AbgLIXtr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Dec 2020 18:49:47 -0500
-X-Originating-IP: 86.194.74.19
+        id S1733171AbgLIXuJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Dec 2020 18:50:09 -0500
+Received: from relay10.mail.gandi.net ([217.70.178.230]:34789 "EHLO
+        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732567AbgLIXt4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Dec 2020 18:49:56 -0500
 Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 96AC5240006;
-        Wed,  9 Dec 2020 23:49:04 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 33C72240004;
+        Wed,  9 Dec 2020 23:49:08 +0000 (UTC)
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -31,9 +30,9 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 1/6] iio:pressure:ms5637: switch to probe_new
-Date:   Thu, 10 Dec 2020 00:48:52 +0100
-Message-Id: <20201209234857.1521453-2-alexandre.belloni@bootlin.com>
+Subject: [PATCH 5/6] iio:common:ms_sensors:ms_sensors_i2c: add support for alternative PROM layout
+Date:   Thu, 10 Dec 2020 00:48:56 +0100
+Message-Id: <20201209234857.1521453-6-alexandre.belloni@bootlin.com>
 X-Mailer: git-send-email 2.28.0
 In-Reply-To: <20201209234857.1521453-1-alexandre.belloni@bootlin.com>
 References: <20201209234857.1521453-1-alexandre.belloni@bootlin.com>
@@ -43,70 +42,130 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Switch to the modern i2c probe_new callback and drop the i2c_device_id
-array.
+Currently, only the 112bit PROM on 7 words is supported. However the ms58xx
+family also have devices with a 128bit PROM on 8 words. See AN520:
+C-CODE EXAMPLE FOR MS56XX, MS57XX (EXCEPT ANALOG SENSOR), AND MS58XX SERIES
+PRESSURE SENSORS and the various device datasheets.
+
+The difference is that the CRC is the 4 LSBs of word7 instead of being the
+4 MSBs of word0.
 
 Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
 ---
- drivers/iio/pressure/ms5637.c | 25 +++++++------------------
- 1 file changed, 7 insertions(+), 18 deletions(-)
+ .../iio/common/ms_sensors/ms_sensors_i2c.c    | 70 ++++++++++++++++---
+ 1 file changed, 59 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
-index 5b59a4137d32..7c3f0ccd917c 100644
---- a/drivers/iio/pressure/ms5637.c
-+++ b/drivers/iio/pressure/ms5637.c
-@@ -126,8 +126,7 @@ static const struct iio_info ms5637_info = {
- 	.attrs = &ms5637_attribute_group,
- };
+diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
+index 872f90459e2e..d97ca3e1b1d7 100644
+--- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
++++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
+@@ -488,21 +488,18 @@ int ms_sensors_ht_read_humidity(struct ms_ht_dev *dev_data,
+ EXPORT_SYMBOL(ms_sensors_ht_read_humidity);
  
--static int ms5637_probe(struct i2c_client *client,
--			const struct i2c_device_id *id)
-+static int ms5637_probe(struct i2c_client *client)
+ /**
+- * ms_sensors_tp_crc_valid() - CRC check function for
++ * ms_sensors_tp_crc4() - Calculate PROM CRC for
+  *     Temperature and pressure devices.
+  *     This function is only used when reading PROM coefficients
+  *
+  * @prom:	pointer to PROM coefficients array
+  *
+- * Return: True if CRC is ok.
++ * Return: CRC.
+  */
+-static bool ms_sensors_tp_crc_valid(u16 *prom)
++static u8 ms_sensors_tp_crc4(u16 *prom)
  {
- 	struct ms_tp_dev *dev_data;
- 	struct iio_dev *indio_dev;
-@@ -152,7 +151,7 @@ static int ms5637_probe(struct i2c_client *client,
- 	mutex_init(&dev_data->lock);
+ 	unsigned int cnt, n_bit;
+-	u16 n_rem = 0x0000, crc_read = prom[0], crc = (*prom & 0xF000) >> 12;
+-
+-	prom[MS_SENSORS_TP_PROM_WORDS_NB - 1] = 0;
+-	prom[0] &= 0x0FFF;      /* Clear the CRC computation part */
++	u16 n_rem = 0x0000;
  
- 	indio_dev->info = &ms5637_info;
--	indio_dev->name = id->name;
-+	indio_dev->name = device_get_match_data(&client->dev);
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = ms5637_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(ms5637_channels);
-@@ -170,27 +169,17 @@ static int ms5637_probe(struct i2c_client *client,
- 	return devm_iio_device_register(&client->dev, indio_dev);
+ 	for (cnt = 0; cnt < MS_SENSORS_TP_PROM_WORDS_NB * 2; cnt++) {
+ 		if (cnt % 2 == 1)
+@@ -517,10 +514,55 @@ static bool ms_sensors_tp_crc_valid(u16 *prom)
+ 				n_rem <<= 1;
+ 		}
+ 	}
+-	n_rem >>= 12;
+-	prom[0] = crc_read;
+ 
+-	return n_rem == crc;
++	return n_rem >> 12;
++}
++
++/**
++ * ms_sensors_tp_crc_valid_112() - CRC check function for
++ *     Temperature and pressure devices for 112bit PROM.
++ *     This function is only used when reading PROM coefficients
++ *
++ * @prom:	pointer to PROM coefficients array
++ *
++ * Return: CRC.
++ */
++static bool ms_sensors_tp_crc_valid_112(u16 *prom)
++{
++	u16 w0 = prom[0], crc_read = (w0 & 0xF000) >> 12;
++	u8 crc;
++
++	prom[0] &= 0x0FFF;      /* Clear the CRC computation part */
++	prom[MS_SENSORS_TP_PROM_WORDS_NB - 1] = 0;
++
++	crc = ms_sensors_tp_crc4(prom);
++
++	prom[0] = w0;
++
++	return crc == crc_read;
++}
++
++/**
++ * ms_sensors_tp_crc_valid_128() - CRC check function for
++ *     Temperature and pressure devices for 128bit PROM.
++ *     This function is only used when reading PROM coefficients
++ *
++ * @prom:	pointer to PROM coefficients array
++ *
++ * Return: CRC.
++ */
++static bool ms_sensors_tp_crc_valid_128(u16 *prom)
++{
++	u16 w7 = prom[7], crc_read = w7 & 0x000F;
++	u8 crc;
++
++	prom[7] &= 0xFF00;      /* Clear the CRC and LSB part */
++
++	crc = ms_sensors_tp_crc4(prom);
++
++	prom[7] = w7;
++
++	return crc == crc_read;
  }
  
--static const struct i2c_device_id ms5637_id[] = {
--	{"ms5637", 0},
--	{"ms5805", 0},
--	{"ms5837", 0},
--	{"ms8607-temppressure", 0},
--	{}
--};
--MODULE_DEVICE_TABLE(i2c, ms5637_id);
--
- static const struct of_device_id ms5637_of_match[] = {
--	{ .compatible = "meas,ms5637", },
--	{ .compatible = "meas,ms5805", },
--	{ .compatible = "meas,ms5837", },
--	{ .compatible = "meas,ms8607-temppressure", },
-+	{ .compatible = "meas,ms5637", .data = "ms5637" },
-+	{ .compatible = "meas,ms5805", .data = "ms5805" },
-+	{ .compatible = "meas,ms5837", .data = "ms5837" },
-+	{ .compatible = "meas,ms8607-temppressure", .data = "ms8607-temppressure" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, ms5637_of_match);
+ /**
+@@ -535,6 +577,7 @@ static bool ms_sensors_tp_crc_valid(u16 *prom)
+ int ms_sensors_tp_read_prom(struct ms_tp_dev *dev_data)
+ {
+ 	int i, ret;
++	bool valid;
  
- static struct i2c_driver ms5637_driver = {
--	.probe = ms5637_probe,
--	.id_table = ms5637_id,
-+	.probe_new = ms5637_probe,
- 	.driver = {
- 		   .name = "ms5637",
- 		   .of_match_table = ms5637_of_match,
+ 	for (i = 0; i < dev_data->hw->prom_len; i++) {
+ 		ret = ms_sensors_read_prom_word(
+@@ -546,7 +589,12 @@ int ms_sensors_tp_read_prom(struct ms_tp_dev *dev_data)
+ 			return ret;
+ 	}
+ 
+-	if (!ms_sensors_tp_crc_valid(dev_data->prom)) {
++	if (dev_data->hw->prom_len == 8)
++		valid = ms_sensors_tp_crc_valid_128(dev_data->prom);
++	else
++		valid = ms_sensors_tp_crc_valid_112(dev_data->prom);
++
++	if (!valid) {
+ 		dev_err(&dev_data->client->dev,
+ 			"Calibration coefficients crc check error\n");
+ 		return -ENODEV;
 -- 
 2.28.0
 
