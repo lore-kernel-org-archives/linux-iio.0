@@ -2,28 +2,27 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5287EC433FE
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:52:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D08B0C4361B
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:52:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1B21B23B53
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:52:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9F8E923B51
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:52:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1730301AbgLIXvn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Dec 2020 18:51:43 -0500
-Received: from relay1-d.mail.gandi.net ([217.70.183.193]:39817 "EHLO
-        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732493AbgLIXtz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Dec 2020 18:49:55 -0500
+        id S1727953AbgLIXtq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Dec 2020 18:49:46 -0500
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:50809 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726840AbgLIXtq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Dec 2020 18:49:46 -0500
 X-Originating-IP: 86.194.74.19
 Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
         (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id 797F3240007;
-        Wed,  9 Dec 2020 23:49:07 +0000 (UTC)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id AF16260004;
+        Wed,  9 Dec 2020 23:49:02 +0000 (UTC)
 From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -31,103 +30,42 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 4/6] iio:common:ms_sensors:ms_sensors_i2c: rework CRC calculation helper
-Date:   Thu, 10 Dec 2020 00:48:55 +0100
-Message-Id: <20201209234857.1521453-5-alexandre.belloni@bootlin.com>
+Subject: [PATCH 0/6] iio:pressure:ms5637: add ms5803 support
+Date:   Thu, 10 Dec 2020 00:48:51 +0100
+Message-Id: <20201209234857.1521453-1-alexandre.belloni@bootlin.com>
 X-Mailer: git-send-email 2.28.0
-In-Reply-To: <20201209234857.1521453-1-alexandre.belloni@bootlin.com>
-References: <20201209234857.1521453-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The CRC calculation always happens on 8 words which is why there is an
-extra element in the prom array of struct ms_tp_dev. However, on ms5637 and
-similar, only 7 words are readable.
+Hello,
 
-Then, set MS_SENSORS_TP_PROM_WORDS_NB to 8 and stop passing a len parameter
-to ms_sensors_tp_crc_valid as this simply hide the fact that it is
-hardcoded.
+This series adds support for the Measurement Specialities ms5803. It is
+very similar to the ms5805 but has a different PROM layout (which I
+suspect predates the ms5805 PROM layout). Also it supports less
+frequency sampling options.
 
-Finally, use the newly introduced hw->prom_len to know how many words can be
-read.
+After a bit of preparatory work in the ms5637 driver and its common
+library, mainly to handle the PROM layou and sample frequencies, adding
+support is trivial.
 
-Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
----
- drivers/iio/common/ms_sensors/ms_sensors_i2c.c | 12 +++++-------
- drivers/iio/common/ms_sensors/ms_sensors_i2c.h |  4 ++--
- 2 files changed, 7 insertions(+), 9 deletions(-)
+Alexandre Belloni (6):
+  iio:pressure:ms5637: switch to probe_new
+  iio:pressure:ms5637: introduce hardware differentiation
+  iio:pressure:ms5637: limit available sample frequencies
+  iio:common:ms_sensors:ms_sensors_i2c: rework CRC calculation helper
+  iio:common:ms_sensors:ms_sensors_i2c: add support for alternative PROM
+    layout
+  iio:pressure:ms5637: add ms5803 support
 
-diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-index b9e2038d05ef..872f90459e2e 100644
---- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-+++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
-@@ -493,19 +493,18 @@ EXPORT_SYMBOL(ms_sensors_ht_read_humidity);
-  *     This function is only used when reading PROM coefficients
-  *
-  * @prom:	pointer to PROM coefficients array
-- * @len:	length of PROM coefficients array
-  *
-  * Return: True if CRC is ok.
-  */
--static bool ms_sensors_tp_crc_valid(u16 *prom, u8 len)
-+static bool ms_sensors_tp_crc_valid(u16 *prom)
- {
- 	unsigned int cnt, n_bit;
- 	u16 n_rem = 0x0000, crc_read = prom[0], crc = (*prom & 0xF000) >> 12;
- 
--	prom[len - 1] = 0;
-+	prom[MS_SENSORS_TP_PROM_WORDS_NB - 1] = 0;
- 	prom[0] &= 0x0FFF;      /* Clear the CRC computation part */
- 
--	for (cnt = 0; cnt < len * 2; cnt++) {
-+	for (cnt = 0; cnt < MS_SENSORS_TP_PROM_WORDS_NB * 2; cnt++) {
- 		if (cnt % 2 == 1)
- 			n_rem ^= prom[cnt >> 1] & 0x00FF;
- 		else
-@@ -537,7 +536,7 @@ int ms_sensors_tp_read_prom(struct ms_tp_dev *dev_data)
- {
- 	int i, ret;
- 
--	for (i = 0; i < MS_SENSORS_TP_PROM_WORDS_NB; i++) {
-+	for (i = 0; i < dev_data->hw->prom_len; i++) {
- 		ret = ms_sensors_read_prom_word(
- 			dev_data->client,
- 			MS_SENSORS_TP_PROM_READ + (i << 1),
-@@ -547,8 +546,7 @@ int ms_sensors_tp_read_prom(struct ms_tp_dev *dev_data)
- 			return ret;
- 	}
- 
--	if (!ms_sensors_tp_crc_valid(dev_data->prom,
--				     MS_SENSORS_TP_PROM_WORDS_NB + 1)) {
-+	if (!ms_sensors_tp_crc_valid(dev_data->prom)) {
- 		dev_err(&dev_data->client->dev,
- 			"Calibration coefficients crc check error\n");
- 		return -ENODEV;
-diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.h b/drivers/iio/common/ms_sensors/ms_sensors_i2c.h
-index f4a88148c113..f15b973f27c6 100644
---- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.h
-+++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.h
-@@ -11,7 +11,7 @@
- #include <linux/i2c.h>
- #include <linux/mutex.h>
- 
--#define MS_SENSORS_TP_PROM_WORDS_NB		7
-+#define MS_SENSORS_TP_PROM_WORDS_NB		8
- 
- /**
-  * struct ms_ht_dev - Humidity/Temperature sensor device structure
-@@ -47,7 +47,7 @@ struct ms_tp_dev {
- 	struct i2c_client *client;
- 	struct mutex lock;
- 	const struct ms_tp_hw_data *hw;
--	u16 prom[MS_SENSORS_TP_PROM_WORDS_NB + 1];
-+	u16 prom[MS_SENSORS_TP_PROM_WORDS_NB];
- 	u8 res_index;
- };
- 
+ .../devicetree/bindings/trivial-devices.yaml  |  2 +
+ .../iio/common/ms_sensors/ms_sensors_i2c.c    | 76 +++++++++++++++----
+ .../iio/common/ms_sensors/ms_sensors_i2c.h    | 15 +++-
+ drivers/iio/pressure/ms5637.c                 | 73 +++++++++++++-----
+ 4 files changed, 128 insertions(+), 38 deletions(-)
+
 -- 
 2.28.0
 
