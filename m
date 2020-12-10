@@ -2,70 +2,72 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D08B0C4361B
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E93BC2BBCA
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Dec 2020 14:05:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9F8E923B51
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Dec 2020 23:52:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5747523B85
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Dec 2020 14:05:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727953AbgLIXtq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Dec 2020 18:49:46 -0500
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:50809 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726840AbgLIXtq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Dec 2020 18:49:46 -0500
-X-Originating-IP: 86.194.74.19
-Received: from localhost (lfbn-lyo-1-997-19.w86-194.abo.wanadoo.fr [86.194.74.19])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id AF16260004;
-        Wed,  9 Dec 2020 23:49:02 +0000 (UTC)
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH 0/6] iio:pressure:ms5637: add ms5803 support
-Date:   Thu, 10 Dec 2020 00:48:51 +0100
-Message-Id: <20201209234857.1521453-1-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.28.0
+        id S1732424AbgLJOEM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Dec 2020 09:04:12 -0500
+Received: from mail-oi1-f196.google.com ([209.85.167.196]:37953 "EHLO
+        mail-oi1-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S2389824AbgLJOEG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Dec 2020 09:04:06 -0500
+Received: by mail-oi1-f196.google.com with SMTP id o25so5811857oie.5;
+        Thu, 10 Dec 2020 06:03:50 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=3MLLm+mEEjeqlhPqYeqwFttUlHw74kkq347oncGq1Gw=;
+        b=XOlKHm65DzjULTr5Z9/uMEPGvuhjLWdkGQqG6aGzELJwdPS8idPSYRSAcEztav6jXT
+         ivLQw+Ah4QG/e5TKNwZl4yMkKqy0BPSxWyP45lLPKUGzgEy3NM4e9MMo15QTadJISmCq
+         iBPt+AlSCasfcWroyinyKOsedhemYAwheXGDzzXXSVwbl1NLuZemXfGfDSyPnsQpkZfS
+         2Ojiwol7HbpxnFvCvf1Kh39Xb0Lz2hWuHPqUI84T073gtSWrrEpipXvitfir+EC88YsT
+         rRUQGSsTa4S6akUBTkhAj47Bh7K3olxy3ZJef++J/hRAmfBqP/eABIqcO3rPE93zHqWq
+         3nIg==
+X-Gm-Message-State: AOAM531EIQqzELhKw7qGGwZrXJqSE4qVI6TDk/eqWXB7V+0oyPQVklaI
+        sw5HUApiSSEGEQTYRnaK2elvXfocxg==
+X-Google-Smtp-Source: ABdhPJwG52D2wifZOqB6HTnMduClyCraQe186nghSc5IY6q8p1tskxYgGqkEMIu3RfTL+SAFDYXsYA==
+X-Received: by 2002:aca:5e57:: with SMTP id s84mr5396974oib.102.1607609005231;
+        Thu, 10 Dec 2020 06:03:25 -0800 (PST)
+Received: from xps15 (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id n16sm264268oov.23.2020.12.10.06.03.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 10 Dec 2020 06:03:24 -0800 (PST)
+Received: (nullmailer pid 2425665 invoked by uid 1000);
+        Thu, 10 Dec 2020 14:03:23 -0000
+Date:   Thu, 10 Dec 2020 08:03:23 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Cristian Pop <cristian.pop@analog.com>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        jic23@kernel.org, robh+dt@kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 1/3] dt-bindings: iio: dac: AD5766 yaml documentation
+Message-ID: <20201210140323.GA2425635@robh.at.kernel.org>
+References: <20201208131957.34381-1-cristian.pop@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20201208131957.34381-1-cristian.pop@analog.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello,
+On Tue, 08 Dec 2020 15:19:55 +0200, Cristian Pop wrote:
+> This adds device tree bindings for the AD5766 DAC.
+> 
+> Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+> ---
+>  Changes in v3:
+> 	- Fix errors
+>  .../bindings/iio/dac/adi,ad5766.yaml          | 58 +++++++++++++++++++
+>  1 file changed, 58 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/adi,ad5766.yaml
+> 
 
-This series adds support for the Measurement Specialities ms5803. It is
-very similar to the ms5805 but has a different PROM layout (which I
-suspect predates the ms5805 PROM layout). Also it supports less
-frequency sampling options.
-
-After a bit of preparatory work in the ms5637 driver and its common
-library, mainly to handle the PROM layou and sample frequencies, adding
-support is trivial.
-
-Alexandre Belloni (6):
-  iio:pressure:ms5637: switch to probe_new
-  iio:pressure:ms5637: introduce hardware differentiation
-  iio:pressure:ms5637: limit available sample frequencies
-  iio:common:ms_sensors:ms_sensors_i2c: rework CRC calculation helper
-  iio:common:ms_sensors:ms_sensors_i2c: add support for alternative PROM
-    layout
-  iio:pressure:ms5637: add ms5803 support
-
- .../devicetree/bindings/trivial-devices.yaml  |  2 +
- .../iio/common/ms_sensors/ms_sensors_i2c.c    | 76 +++++++++++++++----
- .../iio/common/ms_sensors/ms_sensors_i2c.h    | 15 +++-
- drivers/iio/pressure/ms5637.c                 | 73 +++++++++++++-----
- 4 files changed, 128 insertions(+), 38 deletions(-)
-
--- 
-2.28.0
-
+Reviewed-by: Rob Herring <robh@kernel.org>
