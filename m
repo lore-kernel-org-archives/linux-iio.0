@@ -2,43 +2,42 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4827C4361B
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Dec 2020 20:10:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3355DC4361B
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Dec 2020 20:11:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7A8242311A
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Dec 2020 20:10:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DD01F2311A
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Dec 2020 20:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2406194AbgLKSkK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Dec 2020 13:40:10 -0500
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:18108 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2391319AbgLKSjr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Dec 2020 13:39:47 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1607711814;
+        id S1732238AbgLKSmS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Dec 2020 13:42:18 -0500
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.80]:32073 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732504AbgLKSmD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Dec 2020 13:42:03 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1607711951;
         s=strato-dkim-0002; d=gerhold.net;
-        h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:From:
+        h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:From:
         Subject:Sender;
-        bh=n0ZAmmH9D9CDGDYMnyJLYA7Il7vUH7f1aPjp9QFWHPw=;
-        b=iM2DjNpjiPF/WABZUvpMocl1f9u1OYptsticEJ8v81+5nNy0M0seL8fzo3Oq/+E5bF
-        Ny5oVD5nwkK2a6G0o8NNUAL1tnDFNeyOuUKqvMyStOFz4A/5UIi+VxGYD+p4cyhxxgGW
-        3UC4uBkVt82ItQyNqfRobY9L6TmlFEv72mY+60bAlcILSSbsagvtw62PW198EfVK6y+z
-        TIAZjXY1c1Cae0bjhazQZv7eVFYtaI7or/3Wh7pdOv7eNN9KxxDQFy0Rv7lxNN8J6Aph
-        W0IHNFOfbha2unwEwVvdEdjwMxm5Q1Cg0S89JbMXIG+aKnpxOcwV0fXRLaQ2biu+7wOV
-        9Zqw==
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u26zEodhPgRDZ8jxIczFYoo="
+        bh=R9fci6EiMxdHKTGC3N1/vvheHR3a4vfxhujqbG75lBQ=;
+        b=XpNnvlBI8lH7VY9OYgNGLzECpyLRoWm2Emyddd/lwuTDIvllIMYcH6EcTYQRIszCF5
+        pfps2waYv/ZbV8BAYSrcYmUmR8aCfigGF2htDRRsMrn6bz0iiDdskiGJY9fck2QYWjF6
+        o/480jsgmTe9pQSkE5m2TOWQZfAeXWEZgiRRiGiygZQljGfAQdzGMDhO+/pzViLtc4W6
+        lRWd6Nu4dmj3PolVwU8Mjm0oyE9zPSIjG+wukVNIam/jZEbR4B4HXY0um8FqU60+YJEN
+        4qLd4fTFZxxa5ZUqjeTphIPDQs49XCRyPe+uUKVoL8kWlvfFhKc0qU6RYLqg0O6tOsH7
+        W41w==
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxB626OARkI"
 X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
+Received: from droid..
         by smtp.strato.de (RZmta 47.7.1 DYNA|AUTH)
-        with ESMTPSA id 409b08wBBIak4dD
+        with ESMTPSA id 409b08wBBId34ed
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-        Fri, 11 Dec 2020 19:36:46 +0100 (CET)
-Date:   Fri, 11 Dec 2020 19:36:40 +0100
+        Fri, 11 Dec 2020 19:39:03 +0100 (CET)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -46,179 +45,90 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org,
         "H . Nikolaus Schaller" <hns@goldelico.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: Re: [PATCH 4/4] iio: gyro: bmg160: Add rudimentary regulator support
-Message-ID: <X9O8OEHSZ40OhrB/@gerhold.net>
-References: <20201202093322.77114-1-stephan@gerhold.net>
- <20201202093322.77114-4-stephan@gerhold.net>
- <20201205153848.697c77a5@archlinux>
+        Linus Walleij <linus.walleij@linaro.org>,
+        Stephan Gerhold <stephan@gerhold.net>
+Subject: [PATCH v2 2/2] iio: gyro: bmg160: Add rudimentary regulator support
+Date:   Fri, 11 Dec 2020 19:38:15 +0100
+Message-Id: <20201211183815.51269-2-stephan@gerhold.net>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20201211183815.51269-1-stephan@gerhold.net>
+References: <20201211183815.51269-1-stephan@gerhold.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20201205153848.697c77a5@archlinux>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+BMG160 needs VDD and VDDIO regulators that might need to be explicitly
+enabled. Add some rudimentary support to obtain and enable these
+regulators during probe() and disable them using a devm action.
 
-On Sat, Dec 05, 2020 at 03:38:48PM +0000, Jonathan Cameron wrote:
-> On Wed,  2 Dec 2020 10:33:22 +0100
-> Stephan Gerhold <stephan@gerhold.net> wrote:
-> 
-> > BMG160 needs VDD and VDDIO regulators that might need to be explicitly
-> > enabled. Add some rudimentary support to obtain and enable these
-> > regulators during probe() and disable them during remove()
-> > or on the error path.
-> > 
-> > Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
-> 
-> This one is a bit tricky due to the extensive use of devm_ managed
-> cleanup.  Normally I'd be very fussy about ensuring remove order
-> is precise reverse of probe, but in this driver it isn't quite
-> already, due to that chip_init being before the interrupt allocation.
-> 
-> Having said that I'd rather not make it worse.  Would you mind
-> using automated clean up of the regulator_enable as well via
-> devm_add_action_or_reset() call?
-> 
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+Changes in v2:
+  - Do regulator_bulk_enable() immediately after devm_regulator_bulk_get()
+  - Simplify error handling using devm_add_action_or_reset()
+---
+ drivers/iio/gyro/bmg160_core.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-Good point, devm_add_action_or_reset() definitely looks better for this
-driver. I will send a v2 with just the bmg160 part shortly.
+diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
+index 2d5015801a75..029ef4c34604 100644
+--- a/drivers/iio/gyro/bmg160_core.c
++++ b/drivers/iio/gyro/bmg160_core.c
+@@ -19,6 +19,7 @@
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+ #include <linux/regmap.h>
++#include <linux/regulator/consumer.h>
+ #include "bmg160.h"
+ 
+ #define BMG160_IRQ_NAME		"bmg160_event"
+@@ -92,6 +93,7 @@
+ 
+ struct bmg160_data {
+ 	struct regmap *regmap;
++	struct regulator_bulk_data regulators[2];
+ 	struct iio_trigger *dready_trig;
+ 	struct iio_trigger *motion_trig;
+ 	struct iio_mount_matrix orientation;
+@@ -1061,6 +1063,13 @@ static const char *bmg160_match_acpi_device(struct device *dev)
+ 	return dev_name(dev);
+ }
+ 
++static void bmg160_disable_regulators(void *d)
++{
++	struct bmg160_data *data = d;
++
++	regulator_bulk_disable(ARRAY_SIZE(data->regulators), data->regulators);
++}
++
+ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 		      const char *name)
+ {
+@@ -1077,6 +1086,22 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 	data->irq = irq;
+ 	data->regmap = regmap;
+ 
++	data->regulators[0].supply = "vdd";
++	data->regulators[1].supply = "vddio";
++	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(data->regulators),
++				      data->regulators);
++	if (ret)
++		return dev_err_probe(dev, ret, "Failed to get regulators\n");
++
++	ret = regulator_bulk_enable(ARRAY_SIZE(data->regulators),
++				    data->regulators);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(dev, bmg160_disable_regulators, data);
++	if (ret)
++		return ret;
++
+ 	ret = iio_read_mount_matrix(dev, "mount-matrix",
+ 				&data->orientation);
+ 	if (ret)
+-- 
+2.29.2
 
-> As a side note, should we not have more cleanup of chip_init()
-> in error paths, specifically putting the device into it's suspended
-> mode?  Obviously nothing to do with your patch...
-> 
-
-I'm not sure. I guess when bmg160_chip_init() fails there is some kind
-of communication problem or a problem with the chip. Chances are that
-putting it back into suspend mode would also fail.
-
-But I don't really know enough about the hardware to say more. :)
-
-I have also fixed your other comments below in v2.
-
-Thanks!
-Stephan
-
-> 
-> > ---
-> >  drivers/iio/gyro/bmg160_core.c | 38 +++++++++++++++++++++++++++-------
-> >  1 file changed, 31 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iio/gyro/bmg160_core.c b/drivers/iio/gyro/bmg160_core.c
-> > index 2d5015801a75..4baa4169c5a2 100644
-> > --- a/drivers/iio/gyro/bmg160_core.c
-> > +++ b/drivers/iio/gyro/bmg160_core.c
-> > @@ -19,6 +19,7 @@
-> >  #include <linux/iio/trigger_consumer.h>
-> >  #include <linux/iio/triggered_buffer.h>
-> >  #include <linux/regmap.h>
-> > +#include <linux/regulator/consumer.h>
-> >  #include "bmg160.h"
-> >  
-> >  #define BMG160_IRQ_NAME		"bmg160_event"
-> > @@ -92,6 +93,7 @@
-> >  
-> >  struct bmg160_data {
-> >  	struct regmap *regmap;
-> > +	struct regulator_bulk_data regulators[2];
-> >  	struct iio_trigger *dready_trig;
-> >  	struct iio_trigger *motion_trig;
-> >  	struct iio_mount_matrix orientation;
-> > @@ -1077,14 +1079,28 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
-> >  	data->irq = irq;
-> >  	data->regmap = regmap;
-> >  
-> > +	data->regulators[0].supply = "vdd";
-> > +	data->regulators[1].supply = "vddio";
-> > +	ret = devm_regulator_bulk_get(dev, ARRAY_SIZE(data->regulators),
-> > +				      data->regulators);
-> > +	if (ret)
-> > +		return dev_err_probe(dev, ret, "Failed to get regulators\n");
-> > +
-> >  	ret = iio_read_mount_matrix(dev, "mount-matrix",
-> >  				&data->orientation);
-> >  	if (ret)
-> >  		return ret;
-> 
-> Why not put regulator get and enable together?  
-> 
-> >  
-> > +	ret = regulator_bulk_enable(ARRAY_SIZE(data->regulators),
-> > +				    data->regulators);
-> > +	if (ret < 0) {
-> > +		dev_err(dev, "Failed to enable regulators: %d\n", ret);
-> > +		return ret;
-> > +	}
-> > +
-> 
-> If you were to use devm_add_action_or_reset() and a trivial wrapper
-> the disable would be automated, simplifying the error handling etc.
-> 
-> >  	ret = bmg160_chip_init(data);
-> >  	if (ret < 0)
-> > -		return ret;
-> > +		goto err_regulator_disable;
-> >  
-> >  	mutex_init(&data->mutex);
-> >  
-> > @@ -1107,28 +1123,32 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
-> >  						BMG160_IRQ_NAME,
-> >  						indio_dev);
-> >  		if (ret)
-> > -			return ret;
-> > +			goto err_regulator_disable;
-> >  
-> >  		data->dready_trig = devm_iio_trigger_alloc(dev,
-> >  							   "%s-dev%d",
-> >  							   indio_dev->name,
-> >  							   indio_dev->id);
-> > -		if (!data->dready_trig)
-> > -			return -ENOMEM;
-> > +		if (!data->dready_trig) {
-> > +			ret = -ENOMEM;
-> > +			goto err_regulator_disable;
-> > +		}
-> >  
-> >  		data->motion_trig = devm_iio_trigger_alloc(dev,
-> >  							  "%s-any-motion-dev%d",
-> >  							  indio_dev->name,
-> >  							  indio_dev->id);
-> > -		if (!data->motion_trig)
-> > -			return -ENOMEM;
-> > +		if (!data->motion_trig) {
-> > +			ret = -ENOMEM;
-> > +			goto err_regulator_disable;
-> > +		}
-> >  
-> >  		data->dready_trig->dev.parent = dev;
-> >  		data->dready_trig->ops = &bmg160_trigger_ops;
-> >  		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
-> >  		ret = iio_trigger_register(data->dready_trig);
-> >  		if (ret)
-> > -			return ret;
-> > +			goto err_regulator_disable;
-> >  
-> >  		data->motion_trig->dev.parent = dev;
-> >  		data->motion_trig->ops = &bmg160_trigger_ops;
-> > @@ -1174,6 +1194,8 @@ int bmg160_core_probe(struct device *dev, struct regmap *regmap, int irq,
-> >  		iio_trigger_unregister(data->dready_trig);
-> >  	if (data->motion_trig)
-> >  		iio_trigger_unregister(data->motion_trig);
-> > +err_regulator_disable:
-> > +	regulator_bulk_disable(ARRAY_SIZE(data->regulators), data->regulators);
-> >  
-> >  	return ret;
-> >  }
-> > @@ -1200,6 +1222,8 @@ void bmg160_core_remove(struct device *dev)
-> >  	mutex_lock(&data->mutex);
-> >  	bmg160_set_mode(data, BMG160_MODE_DEEP_SUSPEND);
-> >  	mutex_unlock(&data->mutex);
-> > +
-> > +	regulator_bulk_disable(ARRAY_SIZE(data->regulators), data->regulators);
-> >  }
-> >  EXPORT_SYMBOL_GPL(bmg160_core_remove);
-> >  
-> 
