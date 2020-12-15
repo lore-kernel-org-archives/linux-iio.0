@@ -2,95 +2,98 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD2A3C2BB48
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Dec 2020 19:19:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B8FFC4361B
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Dec 2020 19:41:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5C94222B3B
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Dec 2020 19:19:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AECF622B2C
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Dec 2020 19:41:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1731908AbgLOTTD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Dec 2020 14:19:03 -0500
-Received: from www381.your-server.de ([78.46.137.84]:43356 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731955AbgLOTTA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Dec 2020 14:19:00 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
-        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References;
-        bh=xccQOSYQEyHPrPPKyeCeoL4dNFDuWyigmpZVpcXe9IY=; b=EB5Gm/bxi033T6dQIhUBmQEZkK
-        vG3FsdoaGxRFxdOrMq2sfNTKzUxSvMm0eNZJjEuIVBxOcGsXyHFCoIF6Yzf8ISgl5pGDS3XS+8lva
-        cgbaq0Nskwl0GCi3ga2klhiJqO4LPBvnZHBiMHDO4awxFcopDrf2WFxEMo4yvzMcPL8WGhUfge09J
-        BlUiiHM1F56UhHec+M1WeZE8kiYc/9Kw3M9zlkSUJxoOfvSitXVLzf5EylFJzerRuzz2F/8peRk9h
-        Thdt30TE/bwwAfMfGk16kVmgRBePQZP0ZeRGO8LOhdzPwqDYIMBvjGS0evYt/W0nWyvD0s15xYGMN
-        t5TBt/ag==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1kpFpq-000E1I-PR; Tue, 15 Dec 2020 20:18:10 +0100
-Received: from [62.216.202.54] (helo=lars-desktop.fritz.box)
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1kpFpq-0002L1-Kz; Tue, 15 Dec 2020 20:18:10 +0100
-From:   Lars-Peter Clausen <lars@metafoo.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 1/3] iio: iio_format_value(): Use signed temporary for IIO_VAL_FRACTIONAL_LOG2
-Date:   Tue, 15 Dec 2020 20:17:41 +0100
-Message-Id: <20201215191743.2725-1-lars@metafoo.de>
-X-Mailer: git-send-email 2.20.1
+        id S1725901AbgLOTlg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Dec 2020 14:41:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34172 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728618AbgLOTl0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Dec 2020 14:41:26 -0500
+Received: from mail-pj1-x1043.google.com (mail-pj1-x1043.google.com [IPv6:2607:f8b0:4864:20::1043])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 664C7C0617A6
+        for <linux-iio@vger.kernel.org>; Tue, 15 Dec 2020 11:40:46 -0800 (PST)
+Received: by mail-pj1-x1043.google.com with SMTP id lb18so172197pjb.5
+        for <linux-iio@vger.kernel.org>; Tue, 15 Dec 2020 11:40:46 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=MLencUfCHyyZy3vWcFLWAOq5AiBapLkwshvIBU16G+o=;
+        b=kn0CjOWOc7KwJ8FdCxqwJiCvA1x9BMq7zHyOBxsD2LGVkxrfZhYJC8pcT6+ap+7dxR
+         joCJrBOQM11bDaCw9JV2FkL+vQ3Qek1Er/aiOCegWsowr4yht5udL6IBkMaZEjmsQqQK
+         Tv9pvZieuSl9jFMpG5xgltNioHl0lFu+fURQEsUrxzSCHG9MLsv+ER/JM7PpPg2cLiOH
+         /b2D6NCDjuqfy04g6PeOf79HiQYTFIO7Yspvn7wp9kLRytPvNq4ajrNPtPorgzRMOc02
+         HCuqo4V4Pc3Qru3V05O4dVHEONdQh2mOS02WwxRcT9NpctzVIySy4NMGH0ghlgoWtnaa
+         q7pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=MLencUfCHyyZy3vWcFLWAOq5AiBapLkwshvIBU16G+o=;
+        b=qNEx6QdwbCzcIrVLspEU6H0tk281VG+XbcPifnrLtBHkq8y0kxNHESlpZ/CNh9TIJs
+         jW2OUV1befsKdOfr4EhJGlypdoAjkw67ZHLWVK9hUs2IQh5pQbIyc4XehZ6FgRBM9WvE
+         zPj33buP/PIgb5C0Sse6lP1i3IpWZT89qDaMlFi3UP9bLhGmbFmu3gZJtFusjromimQ5
+         ddtZ5eSn8VC0jEispD6Gt1fIX5PXoQ8/iYa9bSrJi2lfXXbxpNZV4lUSP6s50dymhHaZ
+         xd0n0A4SIY45GAQ1/xV00jzyD1q46kEHKO7cU49rZzt8dLcFFr3Zj8VhUlLTT/1Dr2t8
+         G2ng==
+X-Gm-Message-State: AOAM533uIS+lbOV4uu4T/AThF//Mz7OYH/McVM5a5YGbaNMFg4ILogW+
+        A3ejVo40IYBT0gQvVD6AyVJCKYtfK93fRW6cNq4=
+X-Google-Smtp-Source: ABdhPJzLpIaqmTtoNMpPzvaQgJkjT5EEMlRyICGKIjCsl6UM0xmIhTaPNtdac6XYCq7wSue67Z/12yUWwvgxiWjdaVk=
+X-Received: by 2002:a17:90a:c592:: with SMTP id l18mr425509pjt.228.1608061245966;
+ Tue, 15 Dec 2020 11:40:45 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26018/Tue Dec 15 15:37:09 2020)
+References: <20201214220412.13224-1-sis@melexis.com> <20201214220412.13224-2-sis@melexis.com>
+In-Reply-To: <20201214220412.13224-2-sis@melexis.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 15 Dec 2020 21:41:34 +0200
+Message-ID: <CAHp75VfakW9A4i=N-aq3=6+2CMX0CPaR07EWqDVTsNhBz6WCwA@mail.gmail.com>
+Subject: Re: [PATCH v4 1/1] drivers: iio: temperature: Add delay after the
+ addressed reset command in mlx90632.c
+To:     Slaveyko Slaveykov <sis@melexis.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Crt Mori <cmo@melexis.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-IIO_VAL_FRACTIONAL_LOG2 works with signed values, yet the temporary we use
-is unsigned. This works at the moment because the variable is implicitly
-cast to signed everywhere where it is used.
+On Tue, Dec 15, 2020 at 12:05 AM Slaveyko Slaveykov <sis@melexis.com> wrote:
+>
+> After an I2C reset command, the mlx90632 needs some time before
+> responding to other I2C commands. Without that delay, there is a chance
+> that the I2C command(s) after the reset will not be accepted
 
-But it will certainly be cleaner to use a signed variable in the first
-place.
+accepted -> accepted.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/industrialio-core.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+...
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index c2e4c267c36b..d84b74cc544b 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -592,7 +592,6 @@ EXPORT_SYMBOL(iio_read_mount_matrix);
- static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
- 				  int size, const int *vals)
- {
--	unsigned long long tmp;
- 	int tmp0, tmp1;
- 	s64 tmp2;
- 	bool scale_db = false;
-@@ -625,8 +624,8 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
- 		else
- 			return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
- 	case IIO_VAL_FRACTIONAL_LOG2:
--		tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
--		tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
-+		tmp2 = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
-+		tmp0 = (int)div_s64_rem(tmp2, 1000000000LL, &tmp1);
- 		return scnprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
- 	case IIO_VAL_INT_MULTIPLE:
- 	{
+> +       /*
+> +        * give the mlx90632 some time to reset properly before sending a new I2C command
+
+give -> Give
+
+> +        * if this is not done, the following I2C command(s) will not be accepted
+
+accepted -> accepted.
+
+> +        */
+> +       usleep_range(150, 200);
+
+After addressing above you can take my
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+
 -- 
-2.20.1
-
+With Best Regards,
+Andy Shevchenko
