@@ -2,159 +2,361 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B81A5C2BBCA
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Dec 2020 18:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 803A4C2BB9A
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Dec 2020 19:19:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7A13B22B40
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Dec 2020 18:30:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3494B22ADC
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Dec 2020 19:19:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729683AbgLOSaN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Dec 2020 13:30:13 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:2262 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731584AbgLOS37 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Dec 2020 13:29:59 -0500
-Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4CwRXx2zGWz67Ph6;
-        Wed, 16 Dec 2020 02:26:25 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Tue, 15 Dec 2020 19:29:15 +0100
-Received: from localhost (10.47.79.81) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2106.2; Tue, 15 Dec
- 2020 18:29:14 +0000
-Date:   Tue, 15 Dec 2020 18:28:47 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Anand Ashok Dumbre <ANANDASH@xilinx.com>,
-        Michal Simek <michals@xilinx.com>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: xilinx-xadc: Add basic support for Ultrascale
- System Monitor
-Message-ID: <20201215182847.00001627@Huawei.com>
-In-Reply-To: <d88226b8-74c6-0535-fc72-936f87463fb6@metafoo.de>
-References: <20200922134624.13191-1-lars@metafoo.de>
-        <20200922134624.13191-2-lars@metafoo.de>
-        <20200923214728.6e0c07b0@archlinux>
-        <fb8db604-0ae3-1736-67bf-20a1dc8bc008@xilinx.com>
-        <20201129131441.3e9d83f8@archlinux>
-        <BY5PR02MB6916F923D93341D41BA08E8AA9CA0@BY5PR02MB6916.namprd02.prod.outlook.com>
-        <20201213115711.58733caa@archlinux>
-        <d88226b8-74c6-0535-fc72-936f87463fb6@metafoo.de>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
+        id S1731961AbgLOTTD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Dec 2020 14:19:03 -0500
+Received: from www381.your-server.de ([78.46.137.84]:43346 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1731908AbgLOTS4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Dec 2020 14:18:56 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
+        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=+i6jKHbv+WCAkeo5L/SdFzgfEAC2Ih97Ok3rQYWtbHE=; b=NIZiHvl9+Yk8LllBrD/AAEaj7q
+        jCh6tiQd/htsK4jt/JjNB7U2Koz6n2kBTO8rGIqFJ3NRJvI5i7MM01Gh/9/AyBB2pXlumQdbjPCYP
+        Tkp6Ew3r3mI1BZTPBSMsDBBl6Y+RcPauRcTGQ7GBp6ZgA0ghuFziRGuoM2AAPPfyPcfE30f/LrHYR
+        6IGRkSbh+uD5yh5uAZJaI0vNcANbr40gyhh04HWv8nXCGKmAt+P59ODTLZ2J8RyVUUSSd6WtJNe/L
+        /vedn5YdcSB0MDs9iEfVpl3ddqIKSffoH3MicK38IgroUHnM24/MJt4qXPXIZTdulHWcgZKvb+iNx
+        8nIBZz7Q==;
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1kpFps-000E1m-My; Tue, 15 Dec 2020 20:18:12 +0100
+Received: from [62.216.202.54] (helo=lars-desktop.fritz.box)
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1kpFps-0002L1-Iq; Tue, 15 Dec 2020 20:18:12 +0100
+From:   Lars-Peter Clausen <lars@metafoo.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 3/3] iio: Add basic unit test for iio_format_value()
+Date:   Tue, 15 Dec 2020 20:17:43 +0100
+Message-Id: <20201215191743.2725-3-lars@metafoo.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20201215191743.2725-1-lars@metafoo.de>
+References: <20201215191743.2725-1-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.79.81]
-X-ClientProxiedBy: lhreml707-chm.china.huawei.com (10.201.108.56) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26018/Tue Dec 15 15:37:09 2020)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 15 Dec 2020 16:49:19 +0100
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+The IIO core provides a function to do formatting of fixedpoint numbers.
 
-> On 12/13/20 12:57 PM, Jonathan Cameron wrote:
-> > On Fri, 11 Dec 2020 09:57:30 +0000
-> > Anand Ashok Dumbre <ANANDASH@xilinx.com> wrote:
-> >  
-> >>> -----Original Message-----
-> >>> From: Jonathan Cameron <jic23@kernel.org>
-> >>> Sent: Sunday 29 November 2020 1:15 PM
-> >>> To: Michal Simek <michals@xilinx.com>
-> >>> Cc: Lars-Peter Clausen <lars@metafoo.de>; Peter Meerwald-Stadler
-> >>> <pmeerw@pmeerw.net>; linux-iio@vger.kernel.org; Anand Ashok Dumbre
-> >>> <ANANDASH@xilinx.com>
-> >>> Subject: Re: [PATCH 2/2] iio: xilinx-xadc: Add basic support for Ultrascale
-> >>> System Monitor
-> >>>
-> >>> On Thu, 24 Sep 2020 08:08:31 +0200
-> >>> Michal Simek <michal.simek@xilinx.com> wrote:
-> >>>      
-> >>>> Hi, +Anand,
-> >>>>
-> >>>> On 23. 09. 20 22:47, Jonathan Cameron wrote:  
-> >>>>> On Tue, 22 Sep 2020 15:46:24 +0200
-> >>>>> Lars-Peter Clausen <lars@metafoo.de> wrote:
-> >>>>>     
-> >>>>>> The xilinx-xadc IIO driver currently has support for the XADC in
-> >>>>>> the Xilinx
-> >>>>>> 7 series FPGAs. The system-monitor is the equivalent to the XADC in
-> >>>>>> the Xilinx UltraScale and UltraScale+ FPGAs.
-> >>>>>>
-> >>>>>> The IP designers did a good job at maintaining backwards
-> >>>>>> compatibility and only minor changes are required to add basic
-> >>>>>> support for the system-monitor core.
-> >>>>>>
-> >>>>>> The non backwards compatible changes are:
-> >>>>>>    * Register map offset was moved from 0x200 to 0x400
-> >>>>>>    * Only one ADC compared to two in the XADC
-> >>>>>>    * 10 bit ADC instead of 12 bit ADC
-> >>>>>>    * Two of the channels monitor different supplies
-> >>>>>>
-> >>>>>> Add the necessary logic to accommodate these changes to support the
-> >>>>>> system-monitor in the XADC driver.
-> >>>>>>
-> >>>>>> Note that this patch does not include support for some new features
-> >>>>>> found in the system-monitor like additional alarms, user supply
-> >>>>>> monitoring and secondary system-monitor access. This might be added  
-> >>> at a later time.  
-> >>>>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>  
-> >>>>> Very nice.  Will let this sit on the mailing list a bit longer but
-> >>>>> looks good to me.  
-> >>>> FYI: I have asked Anand to take a look at it and retest.
-> >>>>
-> >>>> Thanks,
-> >>>> Michal
-> >>>>     
-> >>> Hi Michal / Anand,
-> >>>
-> >>> Any feedback on this one?
-> >>>
-> >>> Thanks
-> >>>
-> >>> Jonathan
-> >>>
-> >>> p.s. I'm just ploughing through my older emails and had this one marked as
-> >>> waiting for a reply.
-> >>>      
-> >> Hi Jonathan,
-> >>
-> >> Thanks for waiting.
-> >> The patch looks good.
-> >>
-> >> Reviewed-by: Anand Ashok Dumbre <anandash@xilinx.com>
-> >> Tested-by: Anand Ashok Dumbre <anandash@xilinx.com>  
-> > Thanks. I've applied this but there was a bit of complexity around
-> > devm changes that went in whilst this was under review.
-> >
-> > I think I fixed it up correctly, but great if you can take
-> > a quick look to make sure I didn't mess it up.
-> > I'll try and put the other outstanding series in as well which
-> > will probably result in more fiddly corners during the merge.
-> >
-> > Applied to the togreg branch of iio.git and pushed out as testing
-> > or the autobuilders to see what we missed.
-> >  
-> Thanks Johnathan.
-> 
-> I'm not seeing the patches in your public repository yet :)
+In the past there have been some issues with the implementation of the
+function where for example negative numbers were not handled correctly.
 
-Doh. I may well have forgotten to push.  Will do so later today if so.
+Introduce a basic unit test based on kunit that tests the function and
+ensures that the generated output matches the expected output.
 
-Jonathan
+This gives us some confidence that future modifications to the function
+implementation will not break ABI compatibility.
 
-> 
+To run the unit tests follow the kunit documentation and add
+
+  CONFIG_IIO=y
+  CONFIG_IIO_TEST_FORMAT=y
+
+to the .kunitconfig and run
+
+  > ./tools/testing/kunit/kunit.py run
+  Configuring KUnit Kernel ...
+  Building KUnit Kernel ...
+  Starting KUnit Kernel ...
+  ============================================================
+  ======== [PASSED] iio-format ========
+  [PASSED] iio_test_iio_format_value_integer
+  [PASSED] iio_test_iio_format_value_fixedpoint
+  [PASSED] iio_test_iio_format_value_fractional
+  [PASSED] iio_test_iio_format_value_fractional_log2
+  [PASSED] iio_test_iio_format_value_multiple
+  ============================================================
+  Testing complete. 21 tests run. 0 failed. 0 crashed.
+  Elapsed time: 8.242s total, 0.001s configuring, 3.865s building, 0.000s running
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/Kconfig                |   1 +
+ drivers/iio/Makefile               |   1 +
+ drivers/iio/test/Kconfig           |   9 ++
+ drivers/iio/test/Makefile          |   7 +
+ drivers/iio/test/iio-test-format.c | 198 +++++++++++++++++++++++++++++
+ 5 files changed, 216 insertions(+)
+ create mode 100644 drivers/iio/test/Kconfig
+ create mode 100644 drivers/iio/test/Makefile
+ create mode 100644 drivers/iio/test/iio-test-format.c
+
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 267553386c71..b35e0c33b5e2 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -85,6 +85,7 @@ source "drivers/iio/light/Kconfig"
+ source "drivers/iio/magnetometer/Kconfig"
+ source "drivers/iio/multiplexer/Kconfig"
+ source "drivers/iio/orientation/Kconfig"
++source "drivers/iio/test/Kconfig"
+ if IIO_TRIGGER
+    source "drivers/iio/trigger/Kconfig"
+ endif #IIO_TRIGGER
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 1712011c0f4a..2561325aaa74 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -38,4 +38,5 @@ obj-y += pressure/
+ obj-y += proximity/
+ obj-y += resolver/
+ obj-y += temperature/
++obj-y += test/
+ obj-y += trigger/
+diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
+new file mode 100644
+index 000000000000..679a7794af20
+--- /dev/null
++++ b/drivers/iio/test/Kconfig
+@@ -0,0 +1,9 @@
++# SPDX-License-Identifier: GPL-2.0-only
++#
++# Industrial I/O subsystem unit tests configuration
++#
++
++# Keep in alphabetical order
++config IIO_TEST_FORMAT
++        bool "Test IIO formatting functions"
++        depends on KUNIT=y
+diff --git a/drivers/iio/test/Makefile b/drivers/iio/test/Makefile
+new file mode 100644
+index 000000000000..f1099b495301
+--- /dev/null
++++ b/drivers/iio/test/Makefile
+@@ -0,0 +1,7 @@
++# SPDX-License-Identifier: GPL-2.0
++#
++# Makefile for the industrial I/O unit tests.
++#
++
++# Keep in alphabetical order
++obj-$(CONFIG_IIO_TEST_FORMAT) += iio-test-format.o
+diff --git a/drivers/iio/test/iio-test-format.c b/drivers/iio/test/iio-test-format.c
+new file mode 100644
+index 000000000000..55a0cfe9181d
+--- /dev/null
++++ b/drivers/iio/test/iio-test-format.c
+@@ -0,0 +1,198 @@
++// SPDX-License-Identifier: GPL-2.0-only
++/* Unit tests for IIO formatting functions
++ *
++ * Copyright (c) 2020 Lars-Peter Clausen <lars@metafoo.de>
++ */
++
++#include <kunit/test.h>
++#include <linux/iio/iio.h>
++
++#define IIO_TEST_FORMAT_EXPECT_EQ(_test, _buf, _ret, _val) do { \
++		KUNIT_EXPECT_EQ(_test, (int)strlen(_buf), _ret); \
++		KUNIT_EXPECT_STREQ(_test, (_buf), (_val)); \
++	} while (0)
++
++static void iio_test_iio_format_value_integer(struct kunit *test)
++{
++	char *buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
++	int val;
++	int ret;
++
++	val = 42;
++	ret = iio_format_value(buf, IIO_VAL_INT, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "42\n");
++
++	val = -23;
++	ret = iio_format_value(buf, IIO_VAL_INT, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-23\n");
++
++	val = 0;
++	ret = iio_format_value(buf, IIO_VAL_INT, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0\n");
++
++	val = INT_MAX;
++	ret = iio_format_value(buf, IIO_VAL_INT, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "2147483647\n");
++
++	val = INT_MIN;
++	ret = iio_format_value(buf, IIO_VAL_INT, 1, &val);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-2147483648\n");
++}
++
++static void iio_test_iio_format_value_fixedpoint(struct kunit *test)
++{
++	char *buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
++	int values[2];
++	int ret;
++
++	/* positive >= 1 */
++	values[0] = 1;
++	values[1] = 10;
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.000010\n");
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO_DB, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.000010 dB\n");
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_NANO, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1.000000010\n");
++
++	/* positive < 1 */
++	values[0] = 0;
++	values[1] = 12;
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000012\n");
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO_DB, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000012 dB\n");
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_NANO, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000000012\n");
++
++	/* negative <= -1 */
++	values[0] = -1;
++	values[1] = 10;
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-1.000010\n");
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO_DB, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-1.000010 dB\n");
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_NANO, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-1.000000010\n");
++
++	/* negative > -1 */
++	values[0] = 0;
++	values[1] = -123;
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.000123\n");
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO_DB, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.000123 dB\n");
++
++	ret = iio_format_value(buf, IIO_VAL_INT_PLUS_NANO, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.000000123\n");
++}
++
++static void iio_test_iio_format_value_fractional(struct kunit *test)
++{
++	char *buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
++	int values[2];
++	int ret;
++
++	/* positive < 1 */
++	values[0] = 1;
++	values[1] = 10;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.100000000\n");
++
++	/* positive >= 1 */
++	values[0] = 100;
++	values[1] = 3;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "33.333333333\n");
++
++	/* negative > -1 */
++	values[0] = -1;
++	values[1] = 1000000000;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.000000001\n");
++
++	/* negative <= -1 */
++	values[0] = -200;
++	values[1] = 3;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-66.666666666\n");
++
++	/* Zero */
++	values[0] = 0;
++	values[1] = -10;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000000000\n");
++}
++
++static void iio_test_iio_format_value_fractional_log2(struct kunit *test)
++{
++	char *buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
++	int values[2];
++	int ret;
++
++	/* positive < 1 */
++	values[0] = 123;
++	values[1] = 10;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL_LOG2, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.120117187\n");
++
++	/* positive >= 1 */
++	values[0] = 1234567;
++	values[1] = 10;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL_LOG2, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1205.631835937\n");
++
++	/* negative > -1 */
++	values[0] = -123;
++	values[1] = 10;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL_LOG2, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-0.120117187\n");
++
++	/* negative <= -1 */
++	values[0] = -1234567;
++	values[1] = 10;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL_LOG2, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "-1205.631835937\n");
++
++	/* Zero */
++	values[0] = 0;
++	values[1] = 10;
++	ret = iio_format_value(buf, IIO_VAL_FRACTIONAL_LOG2, 2, values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "0.000000000\n");
++}
++
++static void iio_test_iio_format_value_multiple(struct kunit *test)
++{
++	char *buf = kunit_kmalloc(test, PAGE_SIZE, GFP_KERNEL);
++	int values[] = {1, -2, 3, -4, 5};
++	int ret;
++
++	ret = iio_format_value(buf, IIO_VAL_INT_MULTIPLE,
++			       ARRAY_SIZE(values), values);
++	IIO_TEST_FORMAT_EXPECT_EQ(test, buf, ret, "1 -2 3 -4 5 \n");
++}
++
++static struct kunit_case iio_format_test_cases[] = {
++		KUNIT_CASE(iio_test_iio_format_value_integer),
++		KUNIT_CASE(iio_test_iio_format_value_fixedpoint),
++		KUNIT_CASE(iio_test_iio_format_value_fractional),
++		KUNIT_CASE(iio_test_iio_format_value_fractional_log2),
++		KUNIT_CASE(iio_test_iio_format_value_multiple),
++		{}
++};
++
++static struct kunit_suite iio_format_test_suite = {
++	.name = "iio-format",
++	.test_cases = iio_format_test_cases,
++};
++kunit_test_suite(iio_format_test_suite);
+-- 
+2.20.1
 
