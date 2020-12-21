@@ -2,148 +2,96 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.3 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4715BC433DB
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Dec 2020 15:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CD571C433E0
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Dec 2020 18:00:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1686522CA1
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Dec 2020 15:27:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A107720786
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Dec 2020 18:00:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1725785AbgLUP0s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 21 Dec 2020 10:26:48 -0500
-Received: from vern.gendns.com ([98.142.107.122]:42826 "EHLO vern.gendns.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1725782AbgLUP0s (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 21 Dec 2020 10:26:48 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Z6HZk7Rcqf/SkkBth/RgoLSQOT9bXljXp/uxtQNS6ns=; b=VS2TDpRcdGQLF321oOjoUZ4XUk
-        kLC+WLwnckx544GfvwqbtUK+XbjuQD2Lqg5ClmYKa8a8abcE1vHT6ubwCMd1D3Vtjsbrz3MCgd9gm
-        OaG3jo514MZvUqVxx8JJ4OVzkptKFnrRlb0dGjgN5Nq1bY8mBvhbatRaCrLgXFwVEwJIy+aeexuD5
-        22oINfR3rFXfUIWpDKPZQlnvyn4yNHbPiPd10PQhXVaDzQn/1PaXP5ZpWfvciRuPMBbshKcRnWg+F
-        kpRztksPyt0aoDYDRLcTJ3iZMbFpwqDS5a3FQEDGux6D63+1FKjyK8rKuX4P6qxbyHdCAspd254a6
-        l6DSNWJQ==;
-Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:51348 helo=[192.168.0.134])
-        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <david@lechnology.com>)
-        id 1krN4V-0006ij-Sq; Mon, 21 Dec 2020 10:26:03 -0500
-Subject: Re: [PATCH v6 1/5] counter: Internalize sysfs interface code
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     jic23@kernel.org, kernel@pengutronix.de,
-        linux-stm32@st-md-mailman.stormreply.com, a.fatoum@pengutronix.de,
-        kamel.bouhara@bootlin.com, gwendal@chromium.org,
-        alexandre.belloni@bootlin.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        syednwaris@gmail.com, patrick.havelange@essensium.com,
-        fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@st.com, Dan Carpenter <dan.carpenter@oracle.com>
-References: <cover.1606075915.git.vilhelm.gray@gmail.com>
- <950660d49af7d12b09bc9d3b1db6f8ff74209c26.1606075915.git.vilhelm.gray@gmail.com>
- <9fe4090e-2780-31b8-8ffa-2c665c6a2a4e@lechnology.com>
- <X9/MBla990ctfpL4@shinobu>
-From:   David Lechner <david@lechnology.com>
-Message-ID: <11343644-dd98-37db-0480-3b8e9c88c631@lechnology.com>
-Date:   Mon, 21 Dec 2020 09:26:02 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S1725962AbgLUSA4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Dec 2020 13:00:56 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48084 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725881AbgLUSAz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Dec 2020 13:00:55 -0500
+Received: from mail-oi1-x231.google.com (mail-oi1-x231.google.com [IPv6:2607:f8b0:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BBDC0613D6;
+        Mon, 21 Dec 2020 09:59:40 -0800 (PST)
+Received: by mail-oi1-x231.google.com with SMTP id q205so12052424oig.13;
+        Mon, 21 Dec 2020 09:59:40 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ui6zW1fAECFc2gEXxsQFOudLu4o+hfhu76Kgy65HxoY=;
+        b=hfnfZnWeAbRa89kvAzfU4bxp+7siuL/T++w7vu3Ku0U3lQZxxT6lBcku6eVoWmxuOI
+         3gx4emQJQI0k80u0iv3IeHID3WyGkuxHYuLSwNXyw0cw/lrMk3HK//v1aJqdFRX3C6P1
+         4QSCvksLXiG0rWfYUblpDBOKN4no0ySG3dJtFGnT19P0Bd7YqgR2+3q+dufz8uZ4y+gL
+         Uwi38udGgqYs3+I0CXPaUZSHhg4WbgPAgkUVLr/VhoMjKywCMwQ5LgB9WY//veND7PYS
+         hHCX0Cc0atgkW5s7jDitfIFRBoNIonlyMClkf085d03zv5F7IuIIBdBooonNPMZTdau1
+         GZTw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ui6zW1fAECFc2gEXxsQFOudLu4o+hfhu76Kgy65HxoY=;
+        b=Hyj1osNyhr4UHME8thr6/ss2M9LHXmxTEd2wZDHkS+WU45xxEiJTVMrjGiIM4k7v6k
+         kFLbKAhy8oZur1HAqZJ9gO5Q4jFOjzK0UK+EmEfKfgOla9qiQziGHK9XTBsHHg0K45yN
+         4DI2aHYK0uCuN9MReFEbL4+i0Qvr3/TeUtw4SNIcH9Dy0LkfOSGlK/S7lhBMUicbxQ9Y
+         jdHo2wVF79BfT/ZcXYCB+uafcxw5csbCTHxtpkZvt61JscV7geRkpeDkKajse1MAXHjy
+         33dZQmHUcTfkZ//F/Eo/v96rOlxIxc6wida36u0DCvtAbGwaHs/chRvSik7JXohkOY8O
+         +leQ==
+X-Gm-Message-State: AOAM533YXhFUmQKwnE1kmNSnPCxW2PEfJdTJZRpdvVqWVkx0GsxNsacD
+        UcUeoKvRKGhLJVyTsWv3jX8HrnJePJzHNVuyDOgU6KWXkYs=
+X-Google-Smtp-Source: ABdhPJxT5ASjlLeSdcAjns1ixlfwE9Db42btuJN9lT60t5QwUpywkIS1QWUP00XT8pQBJJKOVI7SGPUuizg32BZrM+I=
+X-Received: by 2002:a17:90b:a17:: with SMTP id gg23mr18502363pjb.129.1608572166918;
+ Mon, 21 Dec 2020 09:36:06 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <X9/MBla990ctfpL4@shinobu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vern.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+References: <20201221151551.52511-1-alexandru.ardelean@analog.com>
+In-Reply-To: <20201221151551.52511-1-alexandru.ardelean@analog.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 21 Dec 2020 19:36:55 +0200
+Message-ID: <CAHp75Ve6GHU50WO3Ygmfz8GU=22jpLi+JeDoA3TiY8bp76T09A@mail.gmail.com>
+Subject: Re: [PATCH v4] iio: Handle enumerated properties with gaps
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 12/20/20 4:11 PM, William Breathitt Gray wrote:
-> On Sun, Dec 13, 2020 at 05:15:00PM -0600, David Lechner wrote:
->> On 11/22/20 2:29 PM, William Breathitt Gray wrote:
->>
->>>    14 files changed, 1806 insertions(+), 2546 deletions(-)
->>
->> It would be really nice if we could break this down into smaller
->> pieces and start getting it merged. It is really tough to keep
->> reviewing this much code in one patch over and over again.
-> 
-> Yes, this is a pretty massive patch. I could break this across the
-> individual files affected to make it simpler to review, but in the end
-> all those patches would need to end up squashed together before merge
-> again (for the sake of git bisect), so the effort feels somewhat moot.
-> 
-> Luckily, I don't think there will be much change in the next revision
-> since it's looking like it'll mainly be a few bug fixes; hopefully this
-> coming version 7 will be the final revision before merge.
-> 
->> Here are some initial findings from testing:
->>
->>
->>> +static void counter_device_release(struct device *dev)
->>> +{
->>> +	struct counter_device *const counter = dev_get_drvdata(dev);
->>> +
->>> +	counter_chrdev_remove(counter);
->>> +	ida_simple_remove(&counter_ida, counter->id);
->>> +}
->>
->>
->> I got the following error after `modprobe -r ti-eqep`:
->>
->> [ 1186.045766] ------------[ cut here ]------------
->> [ 1186.050647] WARNING: CPU: 0 PID: 2625 at lib/refcount.c:28 counter_device_release+0x10/0x24 [counter]
->> [ 1186.059976] refcount_t: underflow; use-after-free.
->> [ 1186.064790] Modules linked in: aes_arm_bs(+) crypto_simd cryptd ccm usb_f_mass_storage usb_f_acm u_serial usb_f_ecm rfcomm usb_f_rndis u_ether libcomposite aes_arm aes_generic cmac bnep wl18xx wlcore mac80211 libarc4 sha256_generic libsha256 sha256_arm cfg80211 ti_am335x_adc kfifo_buf omap_aes_driver omap_crypto omap_sham crypto_engine pm33xx ti_emif_sram hci_uart omap_rng btbcm rng_core ti_eqep(-) counter bluetooth c_can_platform c_can ecdh_generic bmp280_spi ecc can_dev libaes bmp280_i2c bmp280 industrialio omap_mailbox musb_dsps wlcore_sdio musb_hdrc udc_core usbcore wkup_m3_ipc at24 omap_wdt phy_am335x watchdog phy_am335x_control ti_am335x_tscadc phy_generic wkup_m3_rproc usb_common cppi41 rtc_omap leds_gpio led_class cpufreq_dt pwm_tiehrpwm autofs4
->> [ 1186.132376] CPU: 0 PID: 2625 Comm: modprobe Not tainted 5.10.0-rc7bone-counter+ #23
->> [ 1186.140070] Hardware name: Generic AM33XX (Flattened Device Tree)
->> [ 1186.146225] [<c0110d70>] (unwind_backtrace) from [<c010b640>] (show_stack+0x10/0x14)
->> [ 1186.154017] [<c010b640>] (show_stack) from [<c09a0c98>] (dump_stack+0xc4/0xe4)
->> [ 1186.161285] [<c09a0c98>] (dump_stack) from [<c0137ba0>] (__warn+0xd8/0x100)
->> [ 1186.168284] [<c0137ba0>] (__warn) from [<c099c8e4>] (warn_slowpath_fmt+0x94/0xbc)
->> [ 1186.175814] [<c099c8e4>] (warn_slowpath_fmt) from [<bf10b0e8>] (counter_device_release+0x10/0x24 [counter])
->> [ 1186.185632] [<bf10b0e8>] (counter_device_release [counter]) from [<c0667118>] (device_release+0x30/0xa4)
->> [ 1186.195163] [<c0667118>] (device_release) from [<c057f73c>] (kobject_put+0x94/0x104)
->> [ 1186.202944] [<c057f73c>] (kobject_put) from [<c057f73c>] (kobject_put+0x94/0x104)
->> [ 1186.210472] [<c057f73c>] (kobject_put) from [<bf19004c>] (ti_eqep_remove+0x10/0x30 [ti_eqep])
->> [ 1186.219047] [<bf19004c>] (ti_eqep_remove [ti_eqep]) from [<c066f390>] (platform_drv_remove+0x24/0x3c)
->> [ 1186.228313] [<c066f390>] (platform_drv_remove) from [<c066d934>] (device_release_driver_internal+0xfc/0x1d0)
->> [ 1186.238187] [<c066d934>] (device_release_driver_internal) from [<c066da78>] (driver_detach+0x58/0xa8)
->> [ 1186.247456] [<c066da78>] (driver_detach) from [<c066c5ec>] (bus_remove_driver+0x4c/0xa0)
->> [ 1186.255594] [<c066c5ec>] (bus_remove_driver) from [<c01dd150>] (sys_delete_module+0x180/0x264)
->> [ 1186.264250] [<c01dd150>] (sys_delete_module) from [<c0100080>] (ret_fast_syscall+0x0/0x54)
->> [ 1186.272551] Exception stack(0xd247ffa8 to 0xd247fff0)
->> [ 1186.277629] ffa0:                   004fb478 004fb478 004fb4b4 00000800 b3bfcf00 00000000
->> [ 1186.285847] ffc0: 004fb478 004fb478 004fb478 00000081 00000000 be974900 be974a55 004fb478
->> [ 1186.294062] ffe0: 004f8f5c be97352c 004ddd97 b6d11d68
->> [ 1186.299253] ---[ end trace e1c61dea091f1078 ]---
-> 
-> I noticed that I'm calling counter_chrdev_remove() twice: once in
-> counter_unregister(), and again in counter_device_release(). I suspect
-> this is what's causing the refcount to underflow. I'll test and verify
-> that this is the culprit.
-> 
-> In fact, I don't think I need to define a counter_device_release()
-> callback at all, would I? These cleanup function calls could be moved to
-> counter_unregister() instead.
+On Mon, Dec 21, 2020 at 5:11 PM Alexandru Ardelean
+<alexandru.ardelean@analog.com> wrote:
+>
+> From: Lars-Peter Clausen <lars@metafoo.de>
+>
+> Some enums might have gaps or reserved values in the middle of their value
+> range. E.g. consider a 2-bit enum where the values 0, 1 and 3 have a
+> meaning, but 2 is a reserved value and can not be used.
+>
+> Add support for such enums to the IIO enum helper functions. A reserved
+> values is marked by setting its entry in the items array to NULL rather
+> than the normal descriptive string value.
 
-As long as a user program keeps a chrdev open, it holds a reference to
-the device, so I think it needs to be the other way around. (Unless it
-is impossible to call counter_unregister() before all references have
-been released - but I don't think that is the case - not 100% sure.)
+...
+
+> I tried a few shots at working with 'lib/string.c', and that went
+> slow. The __sysfs_match_string_with_gaps() approach has stalled.
+> https://lore.kernel.org/linux-iio/20190422140251.8960-1-alexandru.ardelean@analog.com/
+
+Hmm... If you are not going to push that forward, perhaps better is to  provide
+iio_sysfs_match_string() and if we need it in the future for other
+users, it would be easier to find and export. Also it will be a matter
+of one line change in the caller.
+
+-- 
+With Best Regards,
+Andy Shevchenko
