@@ -2,101 +2,90 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D52C4161F
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Dec 2020 23:13:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D615C433DB
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Dec 2020 01:54:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AB110224D2
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Dec 2020 23:13:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E4258207DE
+	for <linux-iio@archiver.kernel.org>; Tue, 29 Dec 2020 01:54:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729513AbgL1Wzz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Dec 2020 17:55:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37488 "EHLO
+        id S1726139AbgL2Bxs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Dec 2020 20:53:48 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55180 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1729474AbgL1UzA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Dec 2020 15:55:00 -0500
-Received: from merlin.infradead.org (merlin.infradead.org [IPv6:2001:8b0:10b:1231::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E9557C06179B;
-        Mon, 28 Dec 2020 12:53:55 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=merlin.20170209; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description;
-        bh=Ut9bABGWC1jsjzFpFRlCDxYQtxee7nxj5/jV/VNYK7Y=; b=VWj1smeQ7GlF5YUGH1riVLDy7g
-        aJFaZUrwRBO0SFc7ClDV38IffzNz0VD9mTC4WdDtenQfNmWBCUFqsLmpFmeFW56pe1qa6KgU/fQG7
-        5hyJ4cl3k1koHfnSRLdbYHgvn0D8XXhdDTXZZo8KDAsspScD77Sz8nBRsrIizAoWsNFcuBlprf16n
-        JAaUgsXi5fp01xf15CW/aGg13ICXliMQQVq40hvIS0c7UYBHuKTvmzkJAC4R17DJURZKxTLNYIDS2
-        h/99b+i7ajybvkYGaHGkeuhW0hvHeGtjth6XE7oWprizsGOinuKFZiIXQFj/e8zVLW2Iuy85jYsIU
-        2MnrPYUQ==;
-Received: from [2601:1c0:6280:3f0::64ea] (helo=smtpauth.infradead.org)
-        by merlin.infradead.org with esmtpsa (Exim 4.92.3 #3 (Red Hat Linux))
-        id 1ktzWb-0002ml-IZ; Mon, 28 Dec 2020 20:53:54 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Jiri Kosina <jikos@kernel.org>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        linux-iio@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        linux-doc@vger.kernel.org, Alan Ott <alan@signal11.us>
-Subject: [PATCH v2 5/8] Documentation: HID: hidraw editing & corrections
-Date:   Mon, 28 Dec 2020 12:53:24 -0800
-Message-Id: <20201228205327.1063-6-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.26.2
-In-Reply-To: <20201228205327.1063-1-rdunlap@infradead.org>
-References: <20201228205327.1063-1-rdunlap@infradead.org>
+        with ESMTP id S1726014AbgL2Bxr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Dec 2020 20:53:47 -0500
+Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A484C0613D6
+        for <linux-iio@vger.kernel.org>; Mon, 28 Dec 2020 17:53:07 -0800 (PST)
+Received: by mail-pj1-x1035.google.com with SMTP id v1so677169pjr.2
+        for <linux-iio@vger.kernel.org>; Mon, 28 Dec 2020 17:53:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hgX1vWmXsqLL2u5r8XIXzwJjTHAgdag+GB5T19oC7I0=;
+        b=H2n6rnJq1BoIPMawMVGZsJR1Bc7aaS+f5SugX7m8XQnF+sesvWVV7LpkpVYVHj4hui
+         B4+ANrnOHPRfj+JgYdFP/schle8cJa49bVoo2J2XniWxXZ4HuseNGBKRqNokt13gNAoX
+         3a/cAduvVZ1N7fVMJYeIR7dwbYFbQyu/eKl7w=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=hgX1vWmXsqLL2u5r8XIXzwJjTHAgdag+GB5T19oC7I0=;
+        b=iiWaOcgprSWsBEXamxGUAbjKBJsBc0UiPmCoN1arIKE+T8iU409writXPwKFv19lns
+         8QxQ/uycdeKJcM44BF6Jk20hz++EcqGyMjpuMD5RoaBeTPONT+YG6e6uD3C3b89ourGp
+         Tku7yoF+lk0CGZJuJ3I01EtBpe6VOXr9Lyfwm8ZmJnG3SQBdYTY4rZl8PiMgLK1DyjSa
+         HlpwI1Jt6x3FZjdskycsJUUlENN0M55SRNiop56f7IyFlTMYq7BDDBtV72eHeAISMh6U
+         u6AQrkSUjhSNG3A+3dn7kJY+gmX9DgzgAlIRZZ+nRX82yTSjW/uJ1AZ5JYDtw06T5dni
+         vDgA==
+X-Gm-Message-State: AOAM533Pw5SgASGcQyomu+HXuZ86frkIInd52to2ZKkZgTx+YIIO5V1E
+        TPTdXpHNjMj39mHiRGYXLfAEsvk3+iK4cA==
+X-Google-Smtp-Source: ABdhPJxx5Q+eyJPHqjbYh5J/8VOKTdGSw8MZR/oBUESlvERsNsgN3sGlpJlwRHS9xWDamAPYDWyJsA==
+X-Received: by 2002:a17:902:d90d:b029:da:5114:7275 with SMTP id c13-20020a170902d90db02900da51147275mr47844525plz.64.1609206786907;
+        Mon, 28 Dec 2020 17:53:06 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:7220:84ff:fe09:94fe])
+        by smtp.gmail.com with ESMTPSA id h12sm26012306pgk.70.2020.12.28.17.53.05
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 28 Dec 2020 17:53:06 -0800 (PST)
+From:   Gwendal Grignou <gwendal@chromium.org>
+To:     gabriele.mzt@gmail.com, jic23@kernel.org, lars@metafoo.de,
+        andy.shevchenko@gmail.com
+Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH v5 0/3] iio: acpi_als: Add sotfware trigger support
+Date:   Mon, 28 Dec 2020 17:52:57 -0800
+Message-Id: <20201229015300.3037816-1-gwendal@chromium.org>
+X-Mailer: git-send-email 2.29.2.729.g45daf8777d-goog
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Some devices (chromebooks) present the ACPI ALS device but do not have
+ability to notify when a new sample is present.
+Add support for software trigger (hrtimer/sysfs-trigger) to allow
+retrieving samples using iio buffers.
 
-Do basic editing & correction to hidraw.rst:
-- use "hidraw" consistently except at the beginning of a sentence
-- add archive.org URL for signal11.us since the latter seems to be MIA
-- use a list for 2 URLs so that they don't run together
+The first path fully adds timestamp channel, the second adds a local
+variable in probe routine and the last one adds trigger support.
+
+This patch assumes the patch "iio: set default trig->dev.parent" is
+applied.
 
 
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jiri Kosina <jikos@kernel.org>
-Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Cc: linux-input@vger.kernel.org
-Cc: Alan Ott <alan@signal11.us>
-Cc: Jonathan Corbet <corbet@lwn.net>
-Cc: linux-doc@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>
----
-v2: rebase & resend
+Gwendal Grignou (3):
+  iio: acpi_als: Add timestamp channel
+  iio: acpi_als: Add local variable dev in probe
+  iio: acpi_als: Add trigger support
 
- Documentation/hid/hidraw.rst |    5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/iio/light/acpi-als.c | 121 +++++++++++++++++++++++------------
+ 1 file changed, 81 insertions(+), 40 deletions(-)
 
---- linux-next-20201201.orig/Documentation/hid/hidraw.rst
-+++ linux-next-20201201/Documentation/hid/hidraw.rst
-@@ -21,7 +21,7 @@ Hidraw is the only alternative, short of
- these non-conformant devices.
- 
- A benefit of hidraw is that its use by userspace applications is independent
--of the underlying hardware type.  Currently, Hidraw is implemented for USB
-+of the underlying hardware type.  Currently, hidraw is implemented for USB
- and Bluetooth.  In the future, as new hardware bus types are developed which
- use the HID specification, hidraw will be expanded to add support for these
- new bus types.
-@@ -31,9 +31,10 @@ create hidraw device nodes.  Udev will t
- directly under /dev (eg: /dev/hidraw0).  As this location is distribution-
- and udev rule-dependent, applications should use libudev to locate hidraw
- devices attached to the system.  There is a tutorial on libudev with a
--working example at:
-+working example at::
- 
- 	http://www.signal11.us/oss/udev/
-+	https://web.archive.org/web/2019*/www.signal11.us
- 
- The HIDRAW API
- ---------------
+-- 
+2.29.2.729.g45daf8777d-goog
+
