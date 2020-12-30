@@ -6,37 +6,37 @@ X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 228AEC433E0
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Dec 2020 12:09:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF505C433E0
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Dec 2020 12:22:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C7FF720757
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Dec 2020 12:09:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A662222227
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Dec 2020 12:22:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726612AbgL3MJg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Dec 2020 07:09:36 -0500
-Received: from mail.kernel.org ([198.145.29.99]:45374 "EHLO mail.kernel.org"
+        id S1726509AbgL3MWB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Dec 2020 07:22:01 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46282 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726536AbgL3MJg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 30 Dec 2020 07:09:36 -0500
+        id S1726203AbgL3MWB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 30 Dec 2020 07:22:01 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0B17F20757;
-        Wed, 30 Dec 2020 12:08:53 +0000 (UTC)
-Date:   Wed, 30 Dec 2020 12:08:50 +0000
+        by mail.kernel.org (Postfix) with ESMTPSA id 35E3D22209;
+        Wed, 30 Dec 2020 12:21:19 +0000 (UTC)
+Date:   Wed, 30 Dec 2020 12:21:14 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lorenzo Bianconi <lorenzo.bianconi@redhat.com>
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Denis CIOCCA <denis.ciocca@st.com>
-Subject: Re: [PATCH v3] iio: common: st_sensors: fix possible infinite loop
- in st_sensors_irq_thread
-Message-ID: <20201230120850.6dd32cfc@archlinux>
-In-Reply-To: <CAJ0CqmVJ9qMpLq-ZSVBFzQXSj3MNqeP5b4MjMpZh0b2H7mjXzg@mail.gmail.com>
-References: <c9ec69ed349e7200c779fd7a5bf04c1aaa2817aa.1607438132.git.lorenzo@kernel.org>
-        <20201213150447.119eec7c@archlinux>
-        <CAJ0CqmXmFvEEnt_fQa+H9Lrsu9d-kj+zTWgVXakBF8z2KqEQYA@mail.gmail.com>
-        <CAJ0CqmVJ9qMpLq-ZSVBFzQXSj3MNqeP5b4MjMpZh0b2H7mjXzg@mail.gmail.com>
+To:     Rob Herring <robh+dt@kernel.org>
+Cc:     "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        devicetree@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        "Andrew F . Davis" <afd@ti.com>
+Subject: Re: [PATCH 08/46] dt-bindings:iio:health:ti,afe4404: txt to yaml
+ conversion
+Message-ID: <20201230122114.12e6957f@archlinux>
+In-Reply-To: <CAL_JsqL0ssp2M02+J8teNu_fcwn9qn4HxPwaOu1weTCTQoC5Kw@mail.gmail.com>
+References: <20201031184854.745828-1-jic23@kernel.org>
+        <20201031184854.745828-9-jic23@kernel.org>
+        <CAL_JsqL0ssp2M02+J8teNu_fcwn9qn4HxPwaOu1weTCTQoC5Kw@mail.gmail.com>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -45,153 +45,106 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 22 Dec 2020 11:53:57 +0100
-Lorenzo Bianconi <lorenzo.bianconi@redhat.com> wrote:
+On Fri, 18 Dec 2020 13:42:19 -0600
+Rob Herring <robh+dt@kernel.org> wrote:
 
-> >  
-> > >
-> > > On Tue,  8 Dec 2020 15:36:40 +0100
-> > > Lorenzo Bianconi <lorenzo@kernel.org> wrote:
-> > >  
-> > > > Return a boolean value in st_sensors_new_samples_available routine in
-> > > > order to avoid an infinite loop in st_sensors_irq_thread if
-> > > > stat_drdy.addr is not defined or stat_drdy read fails
-> > > >
-> > > > Fixes: 90efe05562921 ("iio: st_sensors: harden interrupt handling")
-> > > > Reported-by: Jonathan Cameron <jic23@kernel.org>
-> > > > Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-> > > > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>  
-> > >
-> > > One trivial inline. Note I'm looking for an Ack form Dennis on this one
-> > > as it may result in a some breakage if any devices are using
-> > > edge interrupts.  
+> On Sat, Oct 31, 2020 at 1:51 PM Jonathan Cameron <jic23@kernel.org> wrote:
 > >
-> > Looking at the current code I am wondering if it is possible since we
-> > would have already triggered the infinite loop in this case. I think
-> > nobody is currently using edge interrupts if the status register is
-> > not available. What do you think?
-> >  
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> >
+> > This basically has same questions as for the afe4403.  We could combine
+> > the two bindings, but as the drivers are separate and it would be a little
+> > fiddly due to different buses let's keep the separating.
+> > To repeat questions from the ti,afe4403 binding.
+> >
+> > A few questions came up whilst converting this one.
+> > 1) What is actually required?
+> >    - Checking Linux driver, interrupt is not, and the tx-supply could
+> >      be supplied by a stub regulator as long as it's always on.
+> >      As such I have reduced the required list to just compatible and reg.
+> > 2) What is the regulator called?
+> >    - It's tx-supply in the binding doc, but the driver request tx_sup
+> >      I've left this alone for now.  Andrew could you confirm what is
+> >      intended for this?
+> >
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > Cc: Andrew F. Davis <afd@ti.com>
+> > ---
+> >  .../bindings/iio/health/afe4404.txt           | 29 -----------
+> >  .../bindings/iio/health/ti,afe4404.yaml       | 51 +++++++++++++++++++
+> >  2 files changed, 51 insertions(+), 29 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/health/afe4404.txt b/Documentation/devicetree/bindings/iio/health/afe4404.txt
+> > deleted file mode 100644
+> > index 0b52830a0d9c..000000000000
+> > --- a/Documentation/devicetree/bindings/iio/health/afe4404.txt
+> > +++ /dev/null
+> > @@ -1,29 +0,0 @@
+> > -Texas Instruments AFE4404 Heart rate and Pulse Oximeter
+> > -
+> > -Required properties:
+> > - - compatible          : Should be "ti,afe4404".
+> > - - reg                 : I2C address of the device.
+> > - - tx-supply           : Regulator supply to transmitting LEDs.
+> > - - interrupts          : The interrupt line the device ADC_RDY pin is
+> > -                         connected to. For details refer to,
+> > -                         ../interrupt-controller/interrupts.txt.
+> > -
+> > -Optional properties:
+> > - - reset-gpios         : GPIO used to reset the device.
+> > -                         For details refer to, ../gpio/gpio.txt.
+> > -
+> > -Example:
+> > -
+> > -&i2c2 {
+> > -       heart_mon@58 {
+> > -               compatible = "ti,afe4404";
+> > -               reg = <0x58>;
+> > -
+> > -               tx-supply = <&vbat>;
+> > -
+> > -               interrupt-parent = <&gpio1>;
+> > -               interrupts = <28 IRQ_TYPE_EDGE_RISING>;
+> > -
+> > -               reset-gpios = <&gpio1 16 GPIO_ACTIVE_LOW>;
+> > -       };
+> > -};
+> > diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml b/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
+> > new file mode 100644
+> > index 000000000000..187b99b22312
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
+> > @@ -0,0 +1,51 @@
+> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > +%YAML 1.2
+> > +---
+> > +$id: http://devicetree.org/schemas/iio/health/ti,afe4404.yaml#
+> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > +
+> > +title: Texas Instruments AFE4404 Heart rate and Pulse Oximeter
+> > +
+> > +maintainers:
+> > +  - Andrew F. Davis <afd@ti.com>
+> > +
+> > +properties:
+> > +  compatible:
+> > +    const: ti,afe4403  
 > 
-> Hi Jonathan,
+> Typo here, which causes this warning:
 > 
-> any news about this patch?
+> Documentation/devicetree/bindings/iio/health/ti,afe4403.example.dt.yaml:
+> heart_mon@0: 'spi-max-frequency' does not match any of the regexes:
+> 'pinctrl-[0-9]+'
 > 
-> Regards,
-> Lorenzo
-It's a very minor gamble, so I've applied it to the fixes-togreg branch of
-iio.git.  Fingers crossed no one hits the corner case and has somehow been
-getting away with it.
+> Took me a minute staring at ti,afe4403.yaml to figure out what was happening.
+Doh!
+
+Patch on it's way.
 
 Thanks,
 
 Jonathan
 
 > 
-> > Regards,
-> > Lorenzo
-> >  
-> > >
-> > > It's possible we would be better falling back to interrupt free support
-> > > in that case rather than failing to probe at all.
-> > > I think that would be best done by moving the check out to the
-> > > various per type drivers so we fail in the same fashion as no irq
-> > > provided + a warning.  
-> >
-> >  
-> > >
-> > > thanks,
-> > >
-> > > Jonathan
-> > >
-> > >  
-> > > > ---
-> > > > Changes since v2:
-> > > > - return -EOPNOTSUPP if the drv requests edge IRQ and the sensor does not support
-> > > >   status register
-> > > >
-> > > > Changes since v1:
-> > > > - return true if the sensor does not have stat_drdy register
-> > > > ---
-> > > >  .../common/st_sensors/st_sensors_trigger.c    | 31 ++++++++++---------
-> > > >  1 file changed, 17 insertions(+), 14 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> > > > index 0507283bd4c1..2dbd2646e44e 100644
-> > > > --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> > > > +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-> > > > @@ -23,35 +23,31 @@
-> > > >   * @sdata: Sensor data.
-> > > >   *
-> > > >   * returns:
-> > > > - * 0 - no new samples available
-> > > > - * 1 - new samples available
-> > > > - * negative - error or unknown
-> > > > + * false - no new samples available or read error
-> > > > + * true - new samples available
-> > > >   */
-> > > > -static int st_sensors_new_samples_available(struct iio_dev *indio_dev,
-> > > > -                                         struct st_sensor_data *sdata)
-> > > > +static bool st_sensors_new_samples_available(struct iio_dev *indio_dev,
-> > > > +                                          struct st_sensor_data *sdata)
-> > > >  {
-> > > >       int ret, status;
-> > > >
-> > > >       /* How would I know if I can't check it? */
-> > > >       if (!sdata->sensor_settings->drdy_irq.stat_drdy.addr)
-> > > > -             return -EINVAL;
-> > > > +             return true;
-> > > >
-> > > >       /* No scan mask, no interrupt */
-> > > >       if (!indio_dev->active_scan_mask)
-> > > > -             return 0;
-> > > > +             return false;
-> > > >
-> > > >       ret = regmap_read(sdata->regmap,
-> > > >                         sdata->sensor_settings->drdy_irq.stat_drdy.addr,
-> > > >                         &status);
-> > > >       if (ret < 0) {
-> > > >               dev_err(sdata->dev, "error checking samples available\n");
-> > > > -             return ret;
-> > > > +             return false;
-> > > >       }
-> > > >
-> > > > -     if (status & sdata->sensor_settings->drdy_irq.stat_drdy.mask)
-> > > > -             return 1;
-> > > > -
-> > > > -     return 0;
-> > > > +     return !!(status & sdata->sensor_settings->drdy_irq.stat_drdy.mask);  
-> > >
-> > > No need for the !! as you can rely on type conversion to a boolean.
-> > >  
-> > > >  }
-> > > >
-> > > >  /**
-> > > > @@ -180,9 +176,15 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
-> > > >
-> > > >       /* Tell the interrupt handler that we're dealing with edges */
-> > > >       if (irq_trig == IRQF_TRIGGER_FALLING ||
-> > > > -         irq_trig == IRQF_TRIGGER_RISING)
-> > > > +         irq_trig == IRQF_TRIGGER_RISING) {
-> > > > +             if (!sdata->sensor_settings->drdy_irq.stat_drdy.addr) {
-> > > > +                     dev_err(&indio_dev->dev,
-> > > > +                             "edge IRQ not supported w/o stat register.\n");
-> > > > +                     err = -EOPNOTSUPP;
-> > > > +                     goto iio_trigger_free;
-> > > > +             }
-> > > >               sdata->edge_irq = true;
-> > > > -     else
-> > > > +     } else {
-> > > >               /*
-> > > >                * If we're not using edges (i.e. level interrupts) we
-> > > >                * just mask off the IRQ, handle one interrupt, then
-> > > > @@ -190,6 +192,7 @@ int st_sensors_allocate_trigger(struct iio_dev *indio_dev,
-> > > >                * interrupt handler top half again and start over.
-> > > >                */
-> > > >               irq_trig |= IRQF_ONESHOT;
-> > > > +     }
-> > > >
-> > > >       /*
-> > > >        * If the interrupt pin is Open Drain, by definition this  
-> > >  
-> 
+> Rob
 
