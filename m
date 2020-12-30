@@ -2,77 +2,124 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 466D3C433E6
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Dec 2020 12:22:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36666C433DB
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Dec 2020 12:38:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1CDB92220B
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Dec 2020 12:22:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0ACDF20715
+	for <linux-iio@archiver.kernel.org>; Wed, 30 Dec 2020 12:38:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726555AbgL3MWE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Dec 2020 07:22:04 -0500
-Received: from mail.kernel.org ([198.145.29.99]:46322 "EHLO mail.kernel.org"
+        id S1726628AbgL3Mif (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 30 Dec 2020 07:38:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48698 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726203AbgL3MWE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 30 Dec 2020 07:22:04 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 27FE72220B;
-        Wed, 30 Dec 2020 12:21:22 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1609330884;
-        bh=lxNPnzdDyjWsyS+E0orDPDGd4R0X6oWe5CXCiakGWUs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=MdYSn7V0atcJ5SjuK+YnCZgiE5cGJBUpcGalIHnrn7Z58qPKeK2t0oGEdg58X7Z/H
-         GdO7Edg9Y1sCM0a+0h8N+P31+KGpQwzuPxyaG8xisTnYeB9cHJdkOvA8qqxBvN+Iih
-         3lSobYSuawF71NYXbnBM0LQxdyfRBcOySIrKs/4j5T7So5W5Flm+nuhufMSoyxws3w
-         DU7hUaXhBD7SebYUUkPJrS9c+WvHn0ngaEejVVYydzwWLCZYL1ApBZpPau+vyDbf1T
-         hNhKYP06DGQH4PnBwGJAN2ecM1MQ1A5R7t9L/38tG17s8FnJg8BgaeWkyNcfIEjxg8
-         lJ+17jYO/uGow==
+        id S1726625AbgL3Mif (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 30 Dec 2020 07:38:35 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 1498A20715;
+        Wed, 30 Dec 2020 12:37:51 +0000 (UTC)
+Date:   Wed, 30 Dec 2020 12:37:48 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: [PATCH] dt-bindings:iio:health:ti,afe4404: Fix wrong compatible value.
-Date:   Wed, 30 Dec 2020 12:19:19 +0000
-Message-Id: <20201230121919.238335-1-jic23@kernel.org>
-X-Mailer: git-send-email 2.30.0
+To:     Jyoti Bhayana <jbhayana@google.com>
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        cristian.marussi@arm.com, sudeep.holla@arm.com,
+        egranata@google.com, mikhail.golubev@opensynergy.com,
+        Igor.Skalkin@opensynergy.com, Peter.hilber@opensynergy.com,
+        ankitarora@google.com
+Subject: Re: [RFC PATCH v2 0/1] Adding support for IIO SCMI based sensors
+Message-ID: <20201230123748.4e969f82@archlinux>
+In-Reply-To: <20201224031921.1547519-1-jbhayana@google.com>
+References: <20201224031921.1547519-1-jbhayana@google.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Thu, 24 Dec 2020 03:19:20 +0000
+Jyoti Bhayana <jbhayana@google.com> wrote:
 
-Cut and paste error.
+> Hi,
+> 
+> This series adds support for ARM SCMI Protocol based IIO Device.
+> This driver provides support for Accelerometer and Gyroscope sensor
+> using new SCMI Sensor Protocol defined by the upcoming SCMIv3.0 ARM
+> specification, which is available at 
+> 
+> https://developer.arm.com/documentation/den0056/c/
+> 
+> The series is currently based on top of:
+> 
+> commit f83eb664cdb4 ("Merge tag 'scmi-voltage-5.11' of git://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/linux into for-next/scmi")
+> 
+> in Sudeep for-next/scmi branch:
+> 
+> https://git.kernel.org/pub/scm/linux/kernel/git/sudeep.holla/\
+> linux.git/log/?h=for-next/scmi
+> 
+> This version of the patch series has been tested using 
+> version 5.4.21 branch of Android common kernel.
+> 
+> Any feedback welcome,
+> 
+> Thanks,
+> 
+> Jyoti Bhayana
+> 
+> v1 --> v2
+> - Incorporated the feedback comments from v1 review of the patch
+> - Regarding the new ABI for sensor_power,sensor_max_range,
+> and sensor_resolution, these are some of the sensor attributes
+> which Android passes to the apps. If there is any other way of getting
+> those values, please let us know
 
-Documentation/devicetree/bindings/iio/health/ti,afe4403.example.dt.yaml:
-heart_mon@0: 'spi-max-frequency' does not match any of the regexes:
-'pinctrl-[0-9]+'
+So, sensor_max_range can effectively be exposed as a combination of
+scale and the *_raw_avail for a raw read (via the read_avail callback in IIO).
+We'll ignore the fact the interface assumes a single value (so I assume symmetric?)
 
-Reported-by: Rob Herring <robh+dt@kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Fixes: f494151b5eba ("dt-bindings:iio:health:ti,afe4404: txt to yaml conversion")
----
- Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+I think resolution in android is equivalent to _scale in IIO terms?
+Docs seem to say it's "resolution of the sensor in sensor's units".
+There are a few corners where that might not be true (sensors that do some
+odd padding for example) but we can probably rely on it normally being fine.
 
-diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml b/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
-index 3b4d6c48b8bb..c0e815d9999e 100644
---- a/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
-+++ b/Documentation/devicetree/bindings/iio/health/ti,afe4404.yaml
-@@ -11,7 +11,7 @@ maintainers:
- 
- properties:
-   compatible:
--    const: ti,afe4403
-+    const: ti,afe4404
- 
-   reg:
-     maxItems: 1
--- 
-2.30.0
+Power.  Hmm. Currently we have no provision for this as users
+of the sensor don't care.  The OS might of course, but individual applications
+tend not to.
+
+The question is much more general than IIO if we go down the route of
+exposing this from the kernel as we should define some sort of power query
+interface for any device in the system in a generic way. I'm not sure if
+any such thing already exists.
+
+Jonathan
+
+> 
+> Jyoti Bhayana (1):
+>   iio/scmi: Adding support for IIO SCMI Based Sensors
+> 
+>  MAINTAINERS                                |   6 +
+>  drivers/iio/common/Kconfig                 |   1 +
+>  drivers/iio/common/Makefile                |   1 +
+>  drivers/iio/common/scmi_sensors/Kconfig    |  18 +
+>  drivers/iio/common/scmi_sensors/Makefile   |   5 +
+>  drivers/iio/common/scmi_sensors/scmi_iio.c | 693 +++++++++++++++++++++
+>  6 files changed, 724 insertions(+)
+>  create mode 100644 drivers/iio/common/scmi_sensors/Kconfig
+>  create mode 100644 drivers/iio/common/scmi_sensors/Makefile
+>  create mode 100644 drivers/iio/common/scmi_sensors/scmi_iio.c
+> 
 
