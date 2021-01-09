@@ -2,172 +2,97 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39803C433DB
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Jan 2021 21:56:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40660C433E9
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Jan 2021 23:14:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F0C2723AC0
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Jan 2021 21:56:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0FA4223975
+	for <linux-iio@archiver.kernel.org>; Sat,  9 Jan 2021 23:14:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726154AbhAIV4R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Jan 2021 16:56:17 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39418 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1726141AbhAIV4R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 9 Jan 2021 16:56:17 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id EBF3C23AC0;
-        Sat,  9 Jan 2021 21:55:34 +0000 (UTC)
-Date:   Sat, 9 Jan 2021 21:55:30 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     lars@metafoo.de, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2] iio: hrtimer: Allow sub Hz granularity
-Message-ID: <20210109215530.0ab8950a@archlinux>
-In-Reply-To: <20201213170228.745bcd48@archlinux>
-References: <20201209224644.185134-1-gwendal@chromium.org>
-        <20201213170228.745bcd48@archlinux>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S1726488AbhAIXNZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 9 Jan 2021 18:13:25 -0500
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:45993 "EHLO
+        relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1726454AbhAIXNY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Jan 2021 18:13:24 -0500
+X-Originating-IP: 86.202.109.140
+Received: from localhost (lfbn-lyo-1-13-140.w86-202.abo.wanadoo.fr [86.202.109.140])
+        (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id C74031BF204;
+        Sat,  9 Jan 2021 23:12:41 +0000 (UTC)
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>
+Subject: [PATCH v2 3/6] iio:pressure:ms5637: limit available sample frequencies
+Date:   Sun, 10 Jan 2021 00:11:45 +0100
+Message-Id: <20210109231148.1168104-4-alexandre.belloni@bootlin.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210109231148.1168104-1-alexandre.belloni@bootlin.com>
+References: <20210109231148.1168104-1-alexandre.belloni@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 13 Dec 2020 17:02:28 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
+Avoid exposing all the sampling frequencies for chip that only support a
+subset.
 
-> On Wed,  9 Dec 2020 14:46:44 -0800
-> Gwendal Grignou <gwendal@chromium.org> wrote:
-> 
-> > Allow setting frequency below 1Hz or sub 1Hz precision.
-> > Useful for slow sensors like ALS.
-> > 
-> > Test frequency is set properly:
-> > modprobe iio-trig-hrtimer && \
-> > mkdir /sys/kernel/config/iio/triggers/hrtimer/t1 && \
-> > cd /sys/bus/iio/devices/triggerX ;
-> > for i in 1 .1 .01 .001 ; do
-> >   echo $i > sampling_frequency
-> >   cat sampling_frequency
-> > done
-> > 
-> > Signed-off-by: Gwendal Grignou <gwendal@chromium.org>  
-> Just to note as Andy raised the ABI docs question. 
-> The attribute this is providing is more generic than just for the hrtimer
-> trigger and as such is in the main ABI docs.  The reason is that
-> samping_frequency is able to occur in various different places depending
-> on where it has side effects.  In particular a dataready trigger for
-> a device with variable sampling frequency will usually be in the
-> iio:\deviceX directory because it will have affects on anti aliasing filters
-> so has an impact even if you are just reading from sysfs.
-> We could add specific docs for this case (though because all ABI docs
-> for a given named attribute need to be in one file, it would be rather
-> messy).
-> 
-> Applied to the togreg branch of iio.git and pushed out as testing
-> for the autobuilders to see if we missed anything.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> > ---
-> > Changes since v1:
-> > - Added documentation.
-> > 
-> >  Documentation/iio/iio_configfs.rst     |  1 +
-> >  drivers/iio/trigger/iio-trig-hrtimer.c | 25 +++++++++++++++----------
-> >  2 files changed, 16 insertions(+), 10 deletions(-)
-> > 
-> > diff --git a/Documentation/iio/iio_configfs.rst b/Documentation/iio/iio_configfs.rst
-> > index ecbfdb3afef7e..428419f8732c4 100644
-> > --- a/Documentation/iio/iio_configfs.rst
-> > +++ b/Documentation/iio/iio_configfs.rst
-> > @@ -99,3 +99,4 @@ Each trigger can have one or more attributes specific to the trigger type.
-> >  
-> >  "hrtimer" trigger type doesn't have any configurable attribute from /config dir.
-> >  It does introduce the sampling_frequency attribute to trigger directory.
-> > +That attribute sets the polling frequency in Hz, with mHz precision.
-> > diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
-> > index a5e670726717f..06acd6dc79a8c 100644
-> > --- a/drivers/iio/trigger/iio-trig-hrtimer.c
-> > +++ b/drivers/iio/trigger/iio-trig-hrtimer.c
-> > @@ -22,7 +22,7 @@
-> >  struct iio_hrtimer_info {
-> >  	struct iio_sw_trigger swt;
-> >  	struct hrtimer timer;
-> > -	unsigned long sampling_frequency;
-> > +	int sampling_frequency[2];
-> >  	ktime_t period;
-> >  };
-> >  
-> > @@ -38,7 +38,9 @@ ssize_t iio_hrtimer_show_sampling_frequency(struct device *dev,
-> >  	struct iio_trigger *trig = to_iio_trigger(dev);
-> >  	struct iio_hrtimer_info *info = iio_trigger_get_drvdata(trig);
-> >  
-> > -	return snprintf(buf, PAGE_SIZE, "%lu\n", info->sampling_frequency);
-> > +	return iio_format_value(buf, IIO_VAL_INT_PLUS_MICRO,
-> > +			ARRAY_SIZE(info->sampling_frequency),
-> > +			info->sampling_frequency);
-> >  }
-> >  
-> >  static
-> > @@ -48,18 +50,21 @@ ssize_t iio_hrtimer_store_sampling_frequency(struct device *dev,
-> >  {
-> >  	struct iio_trigger *trig = to_iio_trigger(dev);
-> >  	struct iio_hrtimer_info *info = iio_trigger_get_drvdata(trig);
-> > -	unsigned long val;
-> > -	int ret;
-> > +	unsigned long long val;
-> > +	int integer, fract, ret;
-> >  
-> > -	ret = kstrtoul(buf, 10, &val);
-> > +	ret = iio_str_to_fixpoint(buf, 100, &integer, &fract);
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > -	if (!val || val > NSEC_PER_SEC)
-> > +	val = fract + 1000 * integer;
-> > +
-> > +	if (!val || val > NSEC_PER_SEC * 1000)
-> >  		return -EINVAL;
-> >  
-> > -	info->sampling_frequency = val;
-> > -	info->period = NSEC_PER_SEC / val;
-> > +	info->sampling_frequency[0] = integer;
-> > +	info->sampling_frequency[1] = fract * 1000;
-> > +	info->period = NSEC_PER_SEC * 1000 / val;
+Signed-off-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+---
+Changes in v2:
+ -use sysfs_emit_at
 
-0 day pointed out this is a 64 bit division so needs to work on 32 bit platforms.
+ drivers/iio/pressure/ms5637.c | 19 +++++++++++++++----
+ 1 file changed, 15 insertions(+), 4 deletions(-)
 
-I've dropped it for now, please respin with that fixed up.
-
-Thanks,
-
-Jonathan
-
-> >  
-> >  	return len;
-> >  }
-> > @@ -135,8 +140,8 @@ static struct iio_sw_trigger *iio_trig_hrtimer_probe(const char *name)
-> >  	hrtimer_init(&trig_info->timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-> >  	trig_info->timer.function = iio_hrtimer_trig_handler;
-> >  
-> > -	trig_info->sampling_frequency = HRTIMER_DEFAULT_SAMPLING_FREQUENCY;
-> > -	trig_info->period = NSEC_PER_SEC / trig_info->sampling_frequency;
-> > +	trig_info->sampling_frequency[0] = HRTIMER_DEFAULT_SAMPLING_FREQUENCY;
-> > +	trig_info->period = NSEC_PER_SEC / trig_info->sampling_frequency[0];
-> >  
-> >  	ret = iio_trigger_register(trig_info->swt.trigger);
-> >  	if (ret)  
-> 
+diff --git a/drivers/iio/pressure/ms5637.c b/drivers/iio/pressure/ms5637.c
+index fdd557ac71a3..0a6034342714 100644
+--- a/drivers/iio/pressure/ms5637.c
++++ b/drivers/iio/pressure/ms5637.c
+@@ -36,8 +36,19 @@ struct ms_tp_data {
+ };
+ 
+ static const int ms5637_samp_freq[6] = { 960, 480, 240, 120, 60, 30 };
+-/* String copy of the above const for readability purpose */
+-static const char ms5637_show_samp_freq[] = "960 480 240 120 60 30";
++
++static ssize_t ms5637_show_samp_freq(struct device *dev, struct device_attribute *attr, char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct ms_tp_dev *dev_data = iio_priv(indio_dev);
++	int i, len = 0;
++
++	for (i = 0; i <= dev_data->hw->max_res_index; i++)
++		len += sysfs_emit_at(buf, len, "%u ", ms5637_samp_freq[i]);
++	sysfs_emit_at(buf, len - 1, "\n");
++
++	return len;
++}
+ 
+ static int ms5637_read_raw(struct iio_dev *indio_dev,
+ 			   struct iio_chan_spec const *channel, int *val,
+@@ -114,10 +125,10 @@ static const struct iio_chan_spec ms5637_channels[] = {
+ 	}
+ };
+ 
+-static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(ms5637_show_samp_freq);
++static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(ms5637_show_samp_freq);
+ 
+ static struct attribute *ms5637_attributes[] = {
+-	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+ 	NULL,
+ };
+ 
+-- 
+2.29.2
 
