@@ -2,75 +2,115 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+	SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8173C4160E
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Jan 2021 23:14:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6A3EC433E0
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Jan 2021 07:11:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AE0AB23975
-	for <linux-iio@archiver.kernel.org>; Sat,  9 Jan 2021 23:14:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B386238EE
+	for <linux-iio@archiver.kernel.org>; Sun, 10 Jan 2021 07:11:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726379AbhAIXNT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 9 Jan 2021 18:13:19 -0500
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:60701 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1726080AbhAIXNT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 9 Jan 2021 18:13:19 -0500
-X-Originating-IP: 86.202.109.140
-Received: from localhost (lfbn-lyo-1-13-140.w86-202.abo.wanadoo.fr [86.202.109.140])
-        (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id B0CC840009;
-        Sat,  9 Jan 2021 23:12:35 +0000 (UTC)
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+        id S1725858AbhAJHLD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 10 Jan 2021 02:11:03 -0500
+Received: from mga14.intel.com ([192.55.52.115]:58862 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1725783AbhAJHLD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 10 Jan 2021 02:11:03 -0500
+IronPort-SDR: Ph3gmX39Z+M3eU1GInaUgH7qg2EU5toJgsAu035xhaVEGFwxR0t803muADXpFxZAD5JqwnrcEP
+ RirL4PbRGKWQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9859"; a="176969633"
+X-IronPort-AV: E=Sophos;i="5.79,336,1602572400"; 
+   d="scan'208";a="176969633"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Jan 2021 23:10:22 -0800
+IronPort-SDR: +MCerczLGg7YRrtxAzgk8uRlie0mkdf52XqN8aI0DvMe2mNG1Tw9T6+kdS648jPrD9uJUZCy22
+ 2z2GD7V0hRug==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.79,336,1602572400"; 
+   d="scan'208";a="423418525"
+Received: from host.sh.intel.com (HELO host) ([10.239.154.115])
+  by orsmga001.jf.intel.com with ESMTP; 09 Jan 2021 23:10:20 -0800
+Date:   Sun, 10 Jan 2021 15:11:40 +0800
+From:   "Ye, Xiang" <xiang.ye@intel.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>
-Subject: [PATCH v2 0/6] iio:pressure:ms5637: add ms5803 support
-Date:   Sun, 10 Jan 2021 00:11:42 +0100
-Message-Id: <20210109231148.1168104-1-alexandre.belloni@bootlin.com>
-X-Mailer: git-send-email 2.29.2
+Cc:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        jikos@kernel.org, linux-input@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 0/6] add timestamp channel for hid-sensors
+Message-ID: <20210110071140.GA32641@host>
+References: <20210105072203.5701-1-xiang.ye@intel.com>
+ <ed6a6de1c0b2339d467a3ffd341130342b41c3bc.camel@linux.intel.com>
+ <20210105092632.GA15865@host>
+ <20210109192805.138fed41@archlinux>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210109192805.138fed41@archlinux>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello,
+On Sat, Jan 09, 2021 at 07:28:05PM +0000, Jonathan Cameron wrote:
+> On Tue, 5 Jan 2021 17:26:33 +0800
+> "Ye, Xiang" <xiang.ye@intel.com> wrote:
+> 
+> > On Tue, Jan 05, 2021 at 12:53:44AM -0800, Srinivas Pandruvada wrote:
+> > > On Tue, 2021-01-05 at 15:21 +0800, Ye Xiang wrote:  
+> > > > This patch series add a timestamp channel for hid sensors,
+> > > > including gravity sensor, gyro sensor, magnetometer sensor,
+> > > > ambient light sensor, inclinometer sensor, and rotation sensor.
+> > > > 
+> > > > With this patch series, user can get the time when sensor yield
+> > > > a sample.
+> > > >   
+> > > I think this series is v1 for upstream not v3.  
+> > Sorry, it's v1 for upstream. will resent it as v1. v3 is our internal review version.
+> > 
+> Future notice, if you make a mistake of this particular type - don't resend and
+> carry on with future version numbers.  Otherwise it gets really confusing
+> if we get to a public v3 version!   Monotonic version numbers only :)
+> 
+> Not a bit problem though but if that does happen check I don't grab the wrong
+> version.
 
-This series adds support for the Measurement Specialities ms5803. It is
-very similar to the ms5805 but has a different PROM layout (which I
-suspect predates the ms5805 PROM layout). Also it supports less
-frequency sampling options.
+Got it. you grabed the right version v1 for test. thanks.
 
-After a bit of preparatory work in the ms5637 driver and its common
-library, mainly to handle the PROM layout and sample frequencies, adding
-support is trivial.
+Thanks
+Ye Xiang
 
-Changes in v2:
- - Dropped "iio:pressure:ms5637: switch to probe_new" to keep the i2c_device_id
-   table.
- - Reorder trivial-devices.yaml
-
-Alexandre Belloni (6):
-  dt-bindings: trivial-devices: reorder memsic devices
-  iio:pressure:ms5637: introduce hardware differentiation
-  iio:pressure:ms5637: limit available sample frequencies
-  iio:common:ms_sensors:ms_sensors_i2c: rework CRC calculation helper
-  iio:common:ms_sensors:ms_sensors_i2c: add support for alternative PROM
-    layout
-  iio:pressure:ms5637: add ms5803 support
-
- .../devicetree/bindings/trivial-devices.yaml  | 10 ++-
- .../iio/common/ms_sensors/ms_sensors_i2c.c    | 76 ++++++++++++++----
- .../iio/common/ms_sensors/ms_sensors_i2c.h    | 15 +++-
- drivers/iio/pressure/ms5637.c                 | 77 +++++++++++++++----
- 4 files changed, 143 insertions(+), 35 deletions(-)
-
--- 
-2.29.2
-
+> 
+> > > 
+> > >   
+> > > > ---
+> > > > v3:
+> > > >   - hid-sensor-magn-3d: fix iio_val buffer len issue.
+> > > >   - hid-sensor-accel-3d: refine commit message
+> > > > 
+> > > > v2:
+> > > >   - remove unrelated changes.
+> > > > 
+> > > > Ye Xiang (6):
+> > > >   iio: hid-sensor-accel-3d: Add timestamp channel for gravity sensor
+> > > >   iio: hid-sensor-gyro-3d: Add timestamp channel
+> > > >   iio: hid-sensor-als: Add timestamp channel
+> > > >   iio: hid-sensor-magn-3d: Add timestamp channel
+> > > >   iio: hid-sensor-incl-3d: Add timestamp channel
+> > > >   iio: hid-sensor-rotation: Add timestamp channel
+> > > > 
+> > > >  drivers/iio/accel/hid-sensor-accel-3d.c       |  6 ++-
+> > > >  drivers/iio/gyro/hid-sensor-gyro-3d.c         | 40 +++++++++-------
+> > > >  drivers/iio/light/hid-sensor-als.c            | 39 ++++++++-------
+> > > >  drivers/iio/magnetometer/hid-sensor-magn-3d.c | 48 ++++++++++++-----
+> > > > --
+> > > >  drivers/iio/orientation/hid-sensor-incl-3d.c  | 43 ++++++++++-------
+> > > >  drivers/iio/orientation/hid-sensor-rotation.c | 46 ++++++++++-------
+> > > > -
+> > > >  6 files changed, 134 insertions(+), 88 deletions(-)
+> > > >   
+> > > 
+> > >   
+> 
