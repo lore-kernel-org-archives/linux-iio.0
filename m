@@ -2,120 +2,87 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-6.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B032C4332D
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Jan 2021 00:46:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7340C433DB
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Jan 2021 11:01:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E12C423131
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Jan 2021 00:46:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6A0E323159
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Jan 2021 11:01:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2392416AbhAMAnP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Jan 2021 19:43:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51182 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S2392292AbhAMAQI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jan 2021 19:16:08 -0500
-Received: from mail-io1-xd2e.google.com (mail-io1-xd2e.google.com [IPv6:2607:f8b0:4864:20::d2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2F23C061575
-        for <linux-iio@vger.kernel.org>; Tue, 12 Jan 2021 16:15:27 -0800 (PST)
-Received: by mail-io1-xd2e.google.com with SMTP id y19so625831iov.2
-        for <linux-iio@vger.kernel.org>; Tue, 12 Jan 2021 16:15:27 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dS4I0Vmta6QahyszLm60tagdPq0B9cCR9FF+/LK5920=;
-        b=fZBiSUD6P0LlhEPoP/Y5/GVldq67mfJgZh0eW9r0KdtvBbsEnVvfmRQ+r7aiw9l03a
-         r4bUXdADrvZzJdwCAJJlPk+kTbJm+632VSg/OKQrEWSTVhu8gm4Wj88+BnGXUgKoUhBz
-         Ns+hylr+C/FphYJTM50PA8Zvh/HQhSGkZj9TE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dS4I0Vmta6QahyszLm60tagdPq0B9cCR9FF+/LK5920=;
-        b=sJ4Tquk0N2ya6LU9v1oG7A/ZEo2AF4Wce/83STD4HvfmKbzqLonoE+k7zAJFq4K4Gi
-         QqJ+epY+jAFVJFG/XBhjPv2PyIU+9om+j6OWJrXpvFrVayLqXruS07vbHh+RjmEEP3rS
-         +5Tj8DnfD/wsxt/rkT9939ruSN97FB+kzu+f3n05ksY/WpDF2k7dxFe9Qn6nBiBG/fqL
-         UF1SiX+1mVXQChP8bPpa1w+ivObYPv8hAfU93/U/SZJM9ZUUSJMP/Z/qNAkP9O59rduM
-         Fk41rDexqtw1tyrHd1DBVa60LWApaOCkdP396o2bW3iku75faACe8ZRtJdwiTBYnnuRy
-         aP0Q==
-X-Gm-Message-State: AOAM530n5P4YqMC4bFPccFCCZTfJNHInrdRLHVtJLGJ4MoiLA5Ur9wC1
-        7DRF7dvaBDSMJLgl/cqj4XbilJWoVKKcWGBCQzxpGpPSGAA=
-X-Google-Smtp-Source: ABdhPJxbBmSKGXFXBAkU01Ejd/kvCcuZk1UE8iTyYKj97xPFOZH+rEofmsZgCMlianst7NkmXJj40FY7YVR8qrzX/7A=
-X-Received: by 2002:a6b:7501:: with SMTP id l1mr1366061ioh.92.1610496927312;
- Tue, 12 Jan 2021 16:15:27 -0800 (PST)
-MIME-Version: 1.0
-References: <20210112040923.2613711-1-gwendal@chromium.org> <CAHp75Vda3htVLApWwqoKb8uyoJaQWdOL2JK4kzMn_OH4OHa4Lg@mail.gmail.com>
-In-Reply-To: <CAHp75Vda3htVLApWwqoKb8uyoJaQWdOL2JK4kzMn_OH4OHa4Lg@mail.gmail.com>
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Tue, 12 Jan 2021 16:15:15 -0800
-Message-ID: <CAPUE2usVJU98D50enyf5+L3OdXcjzFnLdYt82g=AHCfeqgOyCA@mail.gmail.com>
-Subject: Re: [PATCH v5] iio: hrtimer: Allow sub Hz granularity
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        id S1727637AbhAMLBJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Jan 2021 06:01:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:38834 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1727624AbhAMLBI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 13 Jan 2021 06:01:08 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 38CB923442;
+        Wed, 13 Jan 2021 10:59:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1610535570;
+        bh=ykEet3EI/ADgoSKLzwNCpDq7KddS6zlSWibH/hw3RFQ=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=pb8I5UUyyDvOrvpxjCKIOB44foG974g42MpJ2ltWAXtOfUkw9hiw23WnDYMCpkEhw
+         NGHs9nDMbvjjR0OoYE8XNOsAVgPvZFjppLLMKK6NiDRBQjEMxEVVNa5H7VnFRSZQCu
+         cjrpekabgfWQlW9b7PCrNZksJjecEwy1e7CQ5oqlJMnvD51UKJYlfQbT/vvI9V74dv
+         7vQWzIhGGY4AOAck26cnmfmwvZHFbqOKua7VUKrBxC3UJxkvJOenY6jygGGWHcL0s5
+         KhL2LWwI7CY7wdEfdCnh4l50G9lUSnhgJg93kbArxdYGJ6uyltlP2HGs7vTNK+HPC2
+         +mY0mFpaokIrQ==
+Received: by mail.kernel.org with local (Exim 4.94)
+        (envelope-from <mchehab@kernel.org>)
+        id 1kzds7-00DpGr-TO; Wed, 13 Jan 2021 11:59:27 +0100
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "Jonathan Corbet" <corbet@lwn.net>,
+        "Linux Doc Mailing List" <linux-doc@vger.kernel.org>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 23/24] dt-bindings:iio:adc: update adc.yaml reference
+Date:   Wed, 13 Jan 2021 11:59:24 +0100
+Message-Id: <8e37dba8ae9099acd649bab8a1cf718caa4f3e6a.1610535350.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <cover.1610535349.git.mchehab+huawei@kernel.org>
+References: <cover.1610535349.git.mchehab+huawei@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Jan 12, 2021 at 6:22 AM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Tue, Jan 12, 2021 at 6:09 AM Gwendal Grignou <gwendal@chromium.org> wrote:
-> >
-> > Allow setting frequency below 1Hz or sub 1Hz precision.
-> > Useful for slow sensors like ALS.
-> >
-> > Test frequency is set properly:
-> > modprobe iio-trig-hrtimer && \
-> > mkdir /sys/kernel/config/iio/triggers/hrtimer/t1 && \
->
-> This && seems strange...
->
-> > cd /sys/bus/iio/devices/triggerX ;
-This is just for testing. X in triggerX should be replaced with the
-newly created trigger.
->
-> ...because if the above fails, the below becomes a total train wreck.
->
-> > for i in 1 .1 .01 .001 ; do
-> >   echo $i > sampling_frequency
-> >   cat sampling_frequency
-> > done
->
-> Something like this perhaps (note {} and also I dropped unneeded ; and
-> whitespace)
->   modprobe iio-trig-hrtimer && \
->   mkdir /sys/kernel/config/iio/triggers/hrtimer/t1 && { \
->     cd /sys/bus/iio/devices/triggerX
->     for i in 1 .1 .01 .001; do
->       echo $i > sampling_frequency
->       cat sampling_frequency
->     done
->   }
->
-> ...
->
-> > +       if (!val || val > NSEC_PER_SEC * 1000)
-> >                 return -EINVAL;
->
-> > +       info->period = NSEC_PER_SEC * 1000;
->
-> I didn't get these * 1000 parts, why not define and use PSEC_PER_SEC?
-Indeed only Nano and Femto SEC_PER_SEC are defined.
+Changeset b70d154d6558 ("dt-bindings:iio:adc: convert adc.txt to yaml")
+renamed: Documentation/devicetree/bindings/iio/adc/adc.txt
+to: Documentation/devicetree/bindings/iio/adc/adc.yaml.
 
->
-> I'll send a patch soon. You may include it in your series as prerequisite.
-Thanks,
+Update its cross-reference accordingly.
 
-Gwendal.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
+index e0cc3b2e8957..22b7ed3723f6 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7192.yaml
+@@ -80,7 +80,7 @@ properties:
+     type: boolean
+ 
+   bipolar:
+-    description: see Documentation/devicetree/bindings/iio/adc/adc.txt
++    description: see Documentation/devicetree/bindings/iio/adc/adc.yaml
+     type: boolean
+ 
+ required:
+-- 
+2.29.2
+
