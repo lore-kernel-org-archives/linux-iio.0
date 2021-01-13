@@ -2,126 +2,102 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E9F47C433DB
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Jan 2021 11:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44966C433E0
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Jan 2021 15:19:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 966622333F
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Jan 2021 11:02:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 10F1723329
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Jan 2021 15:19:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727841AbhAMLCK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 13 Jan 2021 06:02:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:38838 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727442AbhAMLAw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 13 Jan 2021 06:00:52 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 96C0123383;
-        Wed, 13 Jan 2021 10:59:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610535569;
-        bh=UsiaJ5TeFRIuOKIuSBE3ueTDIjqdP8/ojUP8xNThLiU=;
-        h=From:To:Cc:Subject:Date:From;
-        b=JwQBO8e3swkxbw4v0qYoQuzfOutZcHgnI0MSHLSa7aQYUqKKz9xGmdslvbE+6X+pl
-         iQOsreIaYUaopfrnoALMeRcoV8b2ewED6qoB6VZAohTV2XoiM/Ugq8CdhsTDpkpFSC
-         sHsApbyrBjWJlSbUXBv7tLCy1UNX3cGrSSAD7j++4HLesIzeEjFZVPQJn2J5oLmjON
-         LO6JcKkXMZsrXk8YpCGzlX782pac1zAqJFB7uHTlnn9sXRcGD3zlcwAV7Mf5VR7pFG
-         iH9Nqr9o9EuUz7C11onQCo1Sg/vfJIRxblyM1+yeUPdfpo0R+ivUmKOYdf8WcgHtgm
-         MAEc9cWWKa5YQ==
-Received: by mail.kernel.org with local (Exim 4.94)
-        (envelope-from <mchehab@kernel.org>)
-        id 1kzds7-00DpFo-1W; Wed, 13 Jan 2021 11:59:27 +0100
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        Akira Yokosawa <akiyks@gmail.com>,
-        Daniel Lustig <dlustig@nvidia.com>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        David Airlie <airlied@linux.ie>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Jean Delvare <jdelvare@suse.com>,
-        Joel Fernandes <joel@joelfernandes.org>,
-        Jonathan Cameron <jic23@kernel.org>,
+        id S1726011AbhAMPTK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Jan 2021 10:19:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47668 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1725943AbhAMPTJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Jan 2021 10:19:09 -0500
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5431CC061786;
+        Wed, 13 Jan 2021 07:18:29 -0800 (PST)
+Received: by mail-wr1-x433.google.com with SMTP id m4so2494454wrx.9;
+        Wed, 13 Jan 2021 07:18:29 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id;
+        bh=kzRWO1g2nydF2LKWqESQR4NlJSJAXxDYrK3h7IF5Wlw=;
+        b=M+BhNqQORxxPUaLNPs/8UZW5fEIH3oMnBnnC3i9nwocGgRfLEQxuwMGqZtZwDueIyZ
+         Fp4J9rGnLlKOBGRohsT6EglxFdmVeaNuDf0qZVfpSFm+OP/1apUBGObwCovbVKcWrVzm
+         LwdUzo3z38wehhwxw2C2yV1ElxcwqleuQZp49KsyAjbGh9afV93VmudI75ZasebQmcrP
+         kmPNY8CNet+MDM6U8hqJCkoujsTlzXnBHNAgwa1UuUreNSUj72JAKRoI1M+MTGmIzXpV
+         E+pTEiB2l4S7i5LI2fdSUsjb4KPUiNI2aNFHZCVk10NQ/FA8i0QtouBR2Uza+Au3aqGN
+         T7zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=kzRWO1g2nydF2LKWqESQR4NlJSJAXxDYrK3h7IF5Wlw=;
+        b=ioJzW2ka+X8yoO5TKO1ZGIlDMgxpjjkYK3UshUsuZijT+aCvN50nDcVRiUfwkHAnck
+         AIgt//D0cFiCIRN5fkHru8dL9Jxxen0guuOOS/Co20PAS+I59cMZWIVsPOu24VOqv9ue
+         4Sqw4JM7RXTCxxzSIoYS3vvE1yl2sOTwtR/i2g9LAb4PND07Usckapn6uUyya3jv3qxy
+         rmjv7R59gw6fzKIq2DA6FtudS+bCRUgC9oIvQgtVfaub8fsB07ieNonJSFaq0rvU1zyL
+         WnEhTszcEE4779a4EqB4PvKRpLcNvybkc1ESvoImo2mK95axL9JH2cQD0u5qAu2k1BQf
+         31ww==
+X-Gm-Message-State: AOAM532W1T1zT+jNIiBA8Vr+mFpDJZr6QnZwOA+dG29SfhUVhigPqGoc
+        zJULLUllLlfUKH8TjV2CZa2unVpx9BIiFuPn
+X-Google-Smtp-Source: ABdhPJxFqeQkr2aw8OrSaUA4n2GVb6LN8cFuZ4or3IaMeZVyEi2pRebu8pNBFRaBY/4jMdbvPW3bHg==
+X-Received: by 2002:adf:f989:: with SMTP id f9mr3094366wrr.299.1610551107563;
+        Wed, 13 Jan 2021 07:18:27 -0800 (PST)
+Received: from jonathan-N53SV.station ([151.81.101.204])
+        by smtp.googlemail.com with ESMTPSA id w1sm3890553wrr.84.2021.01.13.07.18.23
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 13 Jan 2021 07:18:24 -0800 (PST)
+From:   Jonathan Albrieux <jonathan.albrieux@gmail.com>
+To:     linux-kernel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        devicetree@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-arch@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
-Subject: [PATCH 00/24] Fix broken file docs cross-references
-Date:   Wed, 13 Jan 2021 11:59:01 +0100
-Message-Id: <cover.1610535349.git.mchehab+huawei@kernel.org>
-X-Mailer: git-send-email 2.29.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
+        Rob Herring <robh+dt@kernel.org>
+Subject: [PATCH 0/2] Allow VADC_LR_MUX2_BAT_ID channel proper reading
+Date:   Wed, 13 Jan 2021 16:18:06 +0100
+Message-Id: <20210113151808.4628-1-jonathan.albrieux@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-File renames and yaml conversions broke file references for several files,
-as reported by:
+Working on a battery charger and fuel gauge driver it happened to
+have the need to read from VADC_LR_MUX2_BAT_ID channel. Here is
+the declaration from downstream msm8916.dtsi:
 
-	./scripts/documentation-file-ref-check
+	chan@31 {
+		label = "batt_id";
+		reg = <0x31>;
+		qcom,decimation = <0>;
+		qcom,pre-div-channel-scaling = <0>;
+		qcom,calibration-type = "ratiometric";
+		qcom,scale-function = <0>;
+		qcom,hw-settle-time = <0xb>;
+		qcom,fast-avg-setup = <0>;
+	};
 
-Fix most of them.
+Those two patches set channel scaling accordingly and add it to
+pm8916 device tree.
 
-Please notice that this series was generated against  linux-next
-(next-20210113).  So, it is better if the fixup patch could be added
-at the same tree that received the patch renaming the filename.
+Jonathan Albrieux (2):
+  iio:adc:qcom-spmi-vadc: add default scale to LR_MUX2_BAT_ID channel
+  arm64: dts: qcom: pm8916: Add batt_id channel node
 
-Regards,
-Mauro
-
-Mauro Carvalho Chehab (24):
-  MAINTAINERS: update adi,ad5758.yaml reference
-  MAINTAINERS: update fsl,dpaa2-console.yaml reference
-  MAINTAINERS: update st,hts221.yaml reference
-  MAINTAINERS: update dpot-dac.yaml reference
-  MAINTAINERS: update envelope-detector.yaml reference
-  MAINTAINERS: update current-sense-amplifier.yaml reference
-  MAINTAINERS: update current-sense-shunt.yaml reference
-  MAINTAINERS: update voltage-divider.yaml reference
-  MAINTAINERS: update mtk-sd.yaml reference
-  MAINTAINERS: update atmel,sama5d2-adc.yaml reference
-  MAINTAINERS: update pni,rm3100.yaml reference
-  MAINTAINERS: update renesas,rcar-gyroadc.yaml reference
-  MAINTAINERS: update st,lsm6dsx.yaml reference
-  MAINTAINERS: update st,vl53l0x.yaml reference
-  MAINTAINERS: update ti,dac7612.yaml reference
-  Documentation/hwmon/ina2xx.rst: update ti,ina2xx.yaml reference
-  arch/Kconfig: update unaligned-memory-access.rst reference
-  include/linux/iio/dac/mcp4725.h: update a microchip,mcp4725.yaml ref
-  doc: update rcu_dereference.rst reference
-  ASoC: audio-graph-card: update audio-graph-card.yaml reference
-  dt-bindings: display: mediatek: update mediatek,dpi.yaml reference
-  dt-bindings: memory: mediatek: update mediatek,smi-larb.yaml
-    references
-  dt-bindings:iio:adc: update adc.yaml reference
-  dt-bindings: phy: update phy-cadence-sierra.yaml reference
-
- .../bindings/display/bridge/sii902x.txt       |  2 +-
- .../display/mediatek/mediatek,disp.txt        |  4 +--
- .../bindings/iio/adc/adi,ad7192.yaml          |  2 +-
- .../bindings/media/mediatek-jpeg-decoder.txt  |  2 +-
- .../bindings/media/mediatek-jpeg-encoder.txt  |  2 +-
- .../bindings/media/mediatek-mdp.txt           |  2 +-
- .../bindings/phy/ti,phy-j721e-wiz.yaml        |  2 +-
- Documentation/hwmon/ina2xx.rst                |  2 +-
- MAINTAINERS                                   | 30 +++++++++----------
- arch/Kconfig                                  |  2 +-
- include/linux/iio/dac/mcp4725.h               |  2 +-
- tools/memory-model/Documentation/glossary.txt |  2 +-
- 12 files changed, 27 insertions(+), 27 deletions(-)
+ arch/arm64/boot/dts/qcom/pm8916.dtsi | 5 +++++
+ drivers/iio/adc/qcom-spmi-vadc.c     | 2 +-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
 -- 
-2.29.2
-
+2.17.1
 
