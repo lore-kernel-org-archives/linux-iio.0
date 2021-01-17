@@ -2,47 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B5666C433DB
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:41:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F439C433E9
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:41:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 741DE2251F
+	by mail.kernel.org (Postfix) with ESMTP id DF2CB22522
 	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:41:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729174AbhAQPl1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Jan 2021 10:41:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48940 "EHLO mail.kernel.org"
+        id S1729089AbhAQPla (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Jan 2021 10:41:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48914 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729042AbhAQPlZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Jan 2021 10:41:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 519222255F;
-        Sun, 17 Jan 2021 15:40:37 +0000 (UTC)
+        id S1728983AbhAQPl0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 17 Jan 2021 10:41:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5C68B2251F;
+        Sun, 17 Jan 2021 15:40:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610898038;
-        bh=8s+alTuwm7/hKtRMvDxP7RkD1eUO+qnS3pAay4zrGIk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ipcv4uo+KkhSLMAxISwP16imVgPa7y2f5yfpOw6UyRBWhyQyCkv5z/WQaCCWdKb3T
-         TIiVBWfXvScZ6t+5HJH4JMgUeFMPnA1PFXW3E0fMGqh0wsp1IwrT/ND3MvYBlafu0F
-         KockJ5P5+ya7WuZrCk4g8cVCSvRgIjltbOkmY27gpKtpoeLTJADptyxh15rjq/5DGP
-         +cmjjI/poIgNMEtgSqlvG0k3Qea/LnZqQEhA3rRCFcnxiKpd8hqVto6wz0Y0zufqIi
-         ifkFJbBk+eGMWsCDIPMXa0oGju0I08PXQla2qew7IkTVAvRaW0Fia0R0ECxNWVExhG
-         ya4+vh9vk7pFg==
+        s=k20201202; t=1610898035;
+        bh=lNeedfoU1xazCMUCyZKami6dsmuMB2stdtfRD5qR9zo=;
+        h=From:To:Cc:Subject:Date:From;
+        b=JwgVJ//bE5AMOs/y9ppgdMzOirLkzHn4IVS6Pn9fMjNZq8aMeKMXWTlP6gorGRhkk
+         T/lB+rAM0Mdzhi4HuZZ07Kxt4NYOyqlXwqJWxy4zlwpgYIms8AsvAkfDKUd1q74hQl
+         sXTeMG3d9WpkgcpFbUkfIAGXwIt8NO5BaKcXIrxCtoUW30EcivlCP7Rtnz3L6TEUPN
+         lhGYuc96srK48dEgTDqbe39tTtLU4s+Zg4kRENAfJusyTMzmcGI0oEsgXvPoVMdNLl
+         0ADV/SzCkEGE7fIxpcfqVnLKRYWrBfo0+yQcyKI95DGSElPDwLAdx9T9yD8XcJJth9
+         IrfBn8Z3mjf7g==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, linux-doc@vger.kernel.org,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject: [RFC PATCH 2/7] iio:ABI docs: Avoid repitition of triggerX/sampling_frequency
-Date:   Sun, 17 Jan 2021 15:38:11 +0000
-Message-Id: <20210117153816.696693-3-jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [RFC PATCH 0/7] IIO ABI documentation duplication fixes
+Date:   Sun, 17 Jan 2021 15:38:09 +0000
+Message-Id: <20210117153816.696693-1-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
-In-Reply-To: <20210117153816.696693-1-jic23@kernel.org>
-References: <20210117153816.696693-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -51,55 +48,63 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The timer-stm32 provided a little more specific information than the main
-docs about the value of 0 corresponding to stopping sampling.  Given that
-this makes sense in general, move that statement over to the main docs
-and drop the version in sysfs-bus-iio-timer-stm32
+The nature of IIO devices is that they are highly varied and occaisonly
+ABI is used in somewhat of a 'best fit' fashion.  This has lead to a
+situation where we had additional more specific ABI docs for some sysfs
+parameters in certain drivers.  Unfortunately the automated documentation
+building doesn't work well with this both issuing warnings and building
+a less than ideal output.
 
-Fixes
-$ scripts/get_abi.pl validate
-/sys/bus/iio/devices/triggerX/sampling_frequency is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:92  ./Documentation/ABI/testing/sysfs-bus-iio:45
+So this series attempts to fix that up, mostly by moving the application
+specific parts, of properties that are documented in more than one place,
+into a higher level documentation file, sometimes with a device specific
+note. In a few cases this the result is a bit non-obvious hence the RFC.
+Roughly speaking I've put the more 'interesting' cases towards the end
+of the series.
 
-Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
-Reported-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- Documentation/ABI/testing/sysfs-bus-iio             | 2 ++
- Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 | 8 --------
- 2 files changed, 2 insertions(+), 8 deletions(-)
+It's worth noting that a general reorganzation, audit of missing docs
+etc is needed for the IIO ABI docs, but as that's a big job it may well
+take sometime to get it done. In the meantime let's deal with these
+issues.  Some of the drivers have complex enough ABI that we should probably
+have detailed docs for them in addition to Documentation/ABI.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index d2dd9cc280f9..9b5ceb22363d 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -55,6 +55,8 @@ Description:
- 		direct access interfaces, it may be found in any of the
- 		relevant directories.  If it affects all of the above
- 		then it is to be found in the base device directory.
-+		Note a value 0 where supported, will correspond to sampling
-+		stopping.
- 
- What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
- What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_sampling_frequency_available
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-index c4a4497c249a..05074c4a65e2 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-@@ -90,14 +90,6 @@ Description:
- 		Reading returns the current master modes.
- 		Writing set the master mode
- 
--What:		/sys/bus/iio/devices/triggerX/sampling_frequency
--KernelVersion:	4.11
--Contact:	benjamin.gaignard@st.com
--Description:
--		Reading returns the current sampling frequency.
--		Writing an value different of 0 set and start sampling.
--		Writing 0 stop sampling.
--
- What:		/sys/bus/iio/devices/iio:deviceX/in_count0_preset
- KernelVersion:	4.12
- Contact:	benjamin.gaignard@st.com
+Note I haven't yet touched the remaining case of
+Warning: /sys/bus/iio/devices/iio:deviceX/in_count0_preset is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:100  ./Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:0
+Warning: /sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8:2  ./Documentation/ABI/testing/sysfs-bus-iio-lptimer-stm32:8
+
+This is mainly because I don't really know enough about these devices
+to conclude exactly what a fused bit of docs should look like.
+Also worth noting that those are probably deprecated ABI anyway given
+the move of counters into their own subsystem.
+
+Jonathan Cameron (7):
+  iio:ABI docs: Fix up duplicate *_calibbias_* documentation for
+    icm42600
+  iio:ABI docs: Avoid repitition of triggerX/sampling_frequency
+  iio:ABI docs: Drop device specific docs for _powerdown for the adf4371
+  iio:ABI docs: Fix issue around repeated definition of out_currentY_raw
+  iio:ABI docs: Combine sysfs-bus-iio-humidity-hdc2010/hdc100x into one
+    file
+  iio:ABI docs: Combine the two instances of docs for sensor_sensitivity
+  iio:ABI docs: Move specific description of out_altvoltageX_frequency
+    to main docs.
+
+ Documentation/ABI/testing/sysfs-bus-iio       | 45 +++++++++++++++++++
+ .../ABI/testing/sysfs-bus-iio-distance-srf08  |  8 ----
+ .../testing/sysfs-bus-iio-frequency-adf4371   | 33 --------------
+ .../ABI/testing/sysfs-bus-iio-health-afe440x  | 10 +----
+ ...umidity-hdc2010 => sysfs-bus-iio-humidity} |  3 +-
+ .../testing/sysfs-bus-iio-humidity-hdc100x    |  9 ----
+ .../ABI/testing/sysfs-bus-iio-icm42600        | 20 ---------
+ .../testing/sysfs-bus-iio-light-lm3533-als    | 11 ++---
+ .../ABI/testing/sysfs-bus-iio-proximity       | 14 ++++++
+ .../testing/sysfs-bus-iio-proximity-as3935    |  9 ----
+ .../ABI/testing/sysfs-bus-iio-timer-stm32     |  8 ----
+ 11 files changed, 66 insertions(+), 104 deletions(-)
+ rename Documentation/ABI/testing/{sysfs-bus-iio-humidity-hdc2010 => sysfs-bus-iio-humidity} (79%)
+ delete mode 100644 Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
+ delete mode 100644 Documentation/ABI/testing/sysfs-bus-iio-icm42600
+
 -- 
 2.30.0
 
