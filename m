@@ -7,38 +7,39 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AEC53C43332
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61604C4332D
 	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:41:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7CA0022522
+	by mail.kernel.org (Postfix) with ESMTP id 3ACCB22522
 	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:41:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728988AbhAQPld (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Jan 2021 10:41:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48964 "EHLO mail.kernel.org"
+        id S1728983AbhAQPlc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Jan 2021 10:41:32 -0500
+Received: from mail.kernel.org ([198.145.29.99]:48924 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1729123AbhAQPl0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1728988AbhAQPl0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 17 Jan 2021 10:41:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 625C122573;
-        Sun, 17 Jan 2021 15:40:40 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BDCAE22525;
+        Sun, 17 Jan 2021 15:40:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610898041;
-        bh=WIChk+JRspU4kAtX+lA9BNOFiMqXhLWFFkMf7lQZ/as=;
+        s=k20201202; t=1610898036;
+        bh=O7hLJi627+dzEbV8hGXUM+os9GMieFVg4UvUCiSkhps=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ELACkt2iG0PIQoy7KK4XcZf9yLJVRHm77oVPOM60vVJPfUi23tBEu0iXcxI+f9R0w
-         04XG7eryA+/PyYowYRXNBUneIDXlJPkQjtbr9cgAq3uN8oQqRUu6bVN+TdxWSOAOKU
-         fGD4cq7SPMpfBcbcGOdMHYOZ9McS4d8mdDKY/aOjw77ardUBibdZnR6RyO5QEtc+/h
-         ST/m3+NI8DwmYbD7OWxs50YV++MJ+3G36PducG0/6GPRFz7OduzwlqngO8zcsHjUmi
-         FM4LcT9zbzrFB0o526T0dVJCiErUe0ybN3HCJli9e/wLZ40ATTRmcBx6PyFBpcgHfE
-         SwOeyEL+KuMGQ==
+        b=NuSTqxMlqV3R9ilHgJQNKRAaGJcwbPk1EdvgMBfEi0uMBMKLDed2ivbOjLmDqX63n
+         WJvwJxfGsj93HlkylCpdeiapPdzXIORhsWkeQF3zeHv5b9FsDyTWG0wJMh5y0XXdK3
+         Gk4L4m04Cb1Lf6cAujHKzVtsLiJZ18ven9GuRtyy9fBND4Z9X8eSqCKlbrwOrHeOGE
+         CbrCkx+N2VY8fPh9yUuZG0R3vdPY0nWcZh4VUyLudJKtL74TUpn0yQLKPsTtQ3Ifnq
+         kFZSWxBHBgjAHT1jw0zHAybVzGp9zY3N7aqt0o0hzFbDejbvBACsAfHs46KXHWPHwj
+         qnA38ePSyoLTQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, linux-doc@vger.kernel.org,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [RFC PATCH 4/7] iio:ABI docs: Fix issue around repeated definition of out_currentY_raw
-Date:   Sun, 17 Jan 2021 15:38:13 +0000
-Message-Id: <20210117153816.696693-5-jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Subject: [RFC PATCH 1/7] iio:ABI docs: Fix up duplicate *_calibbias_* documentation for icm42600
+Date:   Sun, 17 Jan 2021 15:38:10 +0000
+Message-Id: <20210117153816.696693-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210117153816.696693-1-jic23@kernel.org>
 References: <20210117153816.696693-1-jic23@kernel.org>
@@ -50,103 +51,84 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This one is challenging as both the places this appears in specific drivers
-are making 'unusual' uses of what looks like a simple output current
-channel.
-As a side note, this was particular bit of ABI occurs in other drivers
-where the use is much more straight forward e.g. dac/ad5421
+This device has the unusual characteristic that the calibbias values
+have well defined units (more commonly they are tweaks to a DAC)
+Unfortunately the previous approach of having more specific documentation
+in sysfs-bus-iio-icm42600 results in warnings during the documentation
+build and random ordering in the resulting documentation.
 
-This patch attempts to make a best effort of adding it to the main docs but
-retaining enough information. Both of these drivers probably need
-specific documents being written to describe their unusual interfaces, but
-those should be in the main documentation, not under Documentation/ABI.
-That is a non trivial job so left for another time.
+To avoid this, add a note to the main documentation on this special
+characteristic for the icm42600.   The _available for calibbias was
+missing from the main sysfs-bus-iio docs so also add that, allowing
+us to drop the icm42600 specific file.
 
-Fixes:
-$ scripts/get_abi.pl validate
-Warning: /sys/bus/iio/devices/iio:deviceX/out_currentY_raw is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als:43  ./Documentation/ABI/testing/sysfs-bus-iio-health-afe440x:38
+Fixes
+$ scripts/get_abi.pl validate warning:
+Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_x_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:0  ./Documentation/ABI/testing/sysfs-bus-iio:394
+Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_y_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:1  ./Documentation/ABI/testing/sysfs-bus-iio:395
+Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_z_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:2  ./Documentation/ABI/testing/sysfs-bus-iio:396
+Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:3  ./Documentation/ABI/testing/sysfs-bus-iio:397
+Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:4  ./Documentation/ABI/testing/sysfs-bus-iio:398
+Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:5  ./Documentation/ABI/testing/sysfs-bus-iio:399
 
+Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
 Reported-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio               | 11 +++++++++++
- .../ABI/testing/sysfs-bus-iio-health-afe440x          | 10 ++--------
- .../ABI/testing/sysfs-bus-iio-light-lm3533-als        | 11 +++--------
- 3 files changed, 16 insertions(+), 16 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio       | 13 ++++++++++++
+ .../ABI/testing/sysfs-bus-iio-icm42600        | 20 -------------------
+ 2 files changed, 13 insertions(+), 20 deletions(-)
 
 diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 9b5ceb22363d..ed50f4b21dcc 100644
+index d957f5da5c04..d2dd9cc280f9 100644
 --- a/Documentation/ABI/testing/sysfs-bus-iio
 +++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -631,6 +631,17 @@ Description:
- 		specified and unique if the output corresponds to a single
- 		channel.
- 
-+What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_raw
-+Date:		May 2012
-+KernelVersion:	3.5
-+Contact:	Johan Hovold <jhovold@gmail.com>
-+Description:
-+		Set/get output current for channel Y. Units after application
-+		of scale and offset are milliamps.
-+		For some devices current channels are used to specify
-+		current supplied to elements used in taking a measurement
-+		of a different type. E.g. LED currents.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/events
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
-index 66b621f10223..a8e04b41d9ff 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-health-afe440x
-@@ -18,6 +18,8 @@ Description:
- 		respectively which simply helper channels containing the
- 		calculated difference in the value of stage 1 - 2 and 3 - 4.
- 		The values are expressed in 24-bit twos complement.
-+		The LED current for the stage is controlled via
-+		out_currentY_raw.
- 
- What:		/sys/bus/iio/devices/iio:deviceX/in_intensityY_offset
- Date:		May 2016
-@@ -35,11 +37,3 @@ Contact:	Andrew F. Davis <afd@ti.com>
+@@ -408,6 +408,19 @@ Contact:	linux-iio@vger.kernel.org
  Description:
- 		Get and set the resistance and the capacitance settings for the
- 		Transimpedance Amplifier during the associated stage.
--
--What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_raw
--Date:		May 2016
--KernelVersion:
--Contact:	Andrew F. Davis <afd@ti.com>
--Description:
--		Get and set the LED current for the specified LED active during
--		this stage. Y is the specific stage number.
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
-index 22c5ea670971..c476d48d0f82 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-light-lm3533-als
-@@ -41,14 +41,6 @@ Description:
- 		Get the current light zone (0..4) as defined by the
- 		in_illuminance0_threshY_{falling,rising} thresholds.
- 
--What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_raw
--Date:		May 2012
--KernelVersion:	3.5
--Contact:	Johan Hovold <jhovold@gmail.com>
--Description:
--		Get output current for channel Y (0..255), that is,
--		out_currentY_currentZ_raw, where Z is the current zone.
--
- What:		/sys/bus/iio/devices/iio:deviceX/out_currentY_currentZ_raw
- Date:		May 2012
- KernelVersion:	3.5
-@@ -59,3 +51,6 @@ Description:
- 
- 		These values correspond to the ALS-mapper target registers for
- 		ALS-mapper Y + 1.
+ 		Hardware applied calibration offset (assumed to fix production
+ 		inaccuracies).
++		icm42600: For this device values are real physical offsets
++		expressed in SI units (m/s^2 for accelerometers and rad/s
++		for gyroscope)/
 +
-+		Note that out_currentY_raw provides the current for the
-+		current zone.
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_calibbias_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_calibbias_available
++KernelVersion:  5.8
++Contact:        linux-iio@vger.kernel.org
++Description:
++		Available values of calibbias. Maybe expressed as either of:
++
++		- a small discrete set of values like "0 2 4 6 8"
++		- a range specified as "[min step max]"
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_calibscale
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-icm42600 b/Documentation/ABI/testing/sysfs-bus-iio-icm42600
+deleted file mode 100644
+index 0bf1fd4f5bf1..000000000000
+--- a/Documentation/ABI/testing/sysfs-bus-iio-icm42600
++++ /dev/null
+@@ -1,20 +0,0 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibbias
+-What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibbias
+-What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_calibbias
+-What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibbias
+-What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias
+-What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias
+-KernelVersion:  5.8
+-Contact:        linux-iio@vger.kernel.org
+-Description:
+-		Hardware applied calibration offset (assumed to fix production
+-		inaccuracies). Values represent a real physical offset expressed
+-		in SI units (m/s^2 for accelerometer and rad/s for gyroscope).
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_accel_calibbias_available
+-What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_calibbias_available
+-KernelVersion:  5.8
+-Contact:        linux-iio@vger.kernel.org
+-Description:
+-		Range of available values for hardware offset. Values in SI
+-		units (m/s^2 for accelerometer and rad/s for gyroscope).
 -- 
 2.30.0
 
