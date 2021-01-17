@@ -7,39 +7,40 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61604C4332D
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B583DC433E6
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:42:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3ACCB22522
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:41:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 87C252256F
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Jan 2021 15:42:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728983AbhAQPlc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Jan 2021 10:41:32 -0500
-Received: from mail.kernel.org ([198.145.29.99]:48924 "EHLO mail.kernel.org"
+        id S1728708AbhAQPmJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Jan 2021 10:42:09 -0500
+Received: from mail.kernel.org ([198.145.29.99]:49028 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728988AbhAQPl0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Jan 2021 10:41:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id BDCAE22525;
-        Sun, 17 Jan 2021 15:40:35 +0000 (UTC)
+        id S1726574AbhAQPmH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 17 Jan 2021 10:42:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C534E2253A;
+        Sun, 17 Jan 2021 15:40:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1610898036;
-        bh=O7hLJi627+dzEbV8hGXUM+os9GMieFVg4UvUCiSkhps=;
+        s=k20201202; t=1610898043;
+        bh=9AX5rf6EYSn7JDBBzPcWzczYLdWEL2zW6dyRs5ubigI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NuSTqxMlqV3R9ilHgJQNKRAaGJcwbPk1EdvgMBfEi0uMBMKLDed2ivbOjLmDqX63n
-         WJvwJxfGsj93HlkylCpdeiapPdzXIORhsWkeQF3zeHv5b9FsDyTWG0wJMh5y0XXdK3
-         Gk4L4m04Cb1Lf6cAujHKzVtsLiJZ18ven9GuRtyy9fBND4Z9X8eSqCKlbrwOrHeOGE
-         CbrCkx+N2VY8fPh9yUuZG0R3vdPY0nWcZh4VUyLudJKtL74TUpn0yQLKPsTtQ3Ifnq
-         kFZSWxBHBgjAHT1jw0zHAybVzGp9zY3N7aqt0o0hzFbDejbvBACsAfHs46KXHWPHwj
-         qnA38ePSyoLTQ==
+        b=TLEbJ6AbMUV6KTauzw6zu5dOJgvn3I41GrrcnzK3sYkVHMju2N9t0LdpmFTZ/8oqg
+         ToH6HfJyTgavO4fir9p6WZq35J9qBAotM/2XFTvFftuQ3bVXAw+Hdj5F/JlhdwBeoa
+         +T+ge2Tuum2hEbVAGCDkSEFLm79bMXH6eUO0fbAu9lSL7ffyE2wv8DE+wKofzdc76Q
+         PgbYAiyPGMzfWdWqUe/UxKYhWzLS7/LTn6raZ0t7dLe2RMl0OMH2VDRedfoE05CAq6
+         DDHQIJwVXjnb/SXsIuYHRh48g2lmNH3dmj8O+oD9hwdIASmiLUjP+OB+IxYHtlRbZi
+         7AepbphI+ZTFQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, linux-doc@vger.kernel.org,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Lukas Bulwahn <lukas.bulwahn@gmail.com>
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
-Subject: [RFC PATCH 1/7] iio:ABI docs: Fix up duplicate *_calibbias_* documentation for icm42600
-Date:   Sun, 17 Jan 2021 15:38:10 +0000
-Message-Id: <20210117153816.696693-2-jic23@kernel.org>
+        Eugene Zaikonnikov <ez@norphonic.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [RFC PATCH 5/7] iio:ABI docs: Combine sysfs-bus-iio-humidity-hdc2010/hdc100x into one file
+Date:   Sun, 17 Jan 2021 15:38:14 +0000
+Message-Id: <20210117153816.696693-6-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210117153816.696693-1-jic23@kernel.org>
 References: <20210117153816.696693-1-jic23@kernel.org>
@@ -51,84 +52,53 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This device has the unusual characteristic that the calibbias values
-have well defined units (more commonly they are tweaks to a DAC)
-Unfortunately the previous approach of having more specific documentation
-in sysfs-bus-iio-icm42600 results in warnings during the documentation
-build and random ordering in the resulting documentation.
+These contain only one entry for out_current_heater_raw (_available).
+Document this in a new sysfs-bus-iio-humidity file, and make it a little
+more generic by allowing for non 0/1 values.
 
-To avoid this, add a note to the main documentation on this special
-characteristic for the icm42600.   The _available for calibbias was
-missing from the main sysfs-bus-iio docs so also add that, allowing
-us to drop the icm42600 specific file.
+Fixes:
+$ scripts/get_abi.pl validate
+Warning: /sys/bus/iio/devices/iio:deviceX/out_current_heater_raw is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010:0  ./Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x:0
+Warning: /sys/bus/iio/devices/iio:deviceX/out_current_heater_raw_available is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010:1  ./Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x:1
 
-Fixes
-$ scripts/get_abi.pl validate warning:
-Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_x_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:0  ./Documentation/ABI/testing/sysfs-bus-iio:394
-Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_y_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:1  ./Documentation/ABI/testing/sysfs-bus-iio:395
-Warning: /sys/bus/iio/devices/iio:deviceX/in_accel_z_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:2  ./Documentation/ABI/testing/sysfs-bus-iio:396
-Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:3  ./Documentation/ABI/testing/sysfs-bus-iio:397
-Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:4  ./Documentation/ABI/testing/sysfs-bus-iio:398
-Warning: /sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-icm42600:5  ./Documentation/ABI/testing/sysfs-bus-iio:399
-
-Cc: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
+Cc: Eugene Zaikonnikov <ez@norphonic.com>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 Reported-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio       | 13 ++++++++++++
- .../ABI/testing/sysfs-bus-iio-icm42600        | 20 -------------------
- 2 files changed, 13 insertions(+), 20 deletions(-)
+ ...s-bus-iio-humidity-hdc2010 => sysfs-bus-iio-humidity} | 3 ++-
+ Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x | 9 ---------
+ 2 files changed, 2 insertions(+), 10 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index d957f5da5c04..d2dd9cc280f9 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -408,6 +408,19 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Hardware applied calibration offset (assumed to fix production
- 		inaccuracies).
-+		icm42600: For this device values are real physical offsets
-+		expressed in SI units (m/s^2 for accelerometers and rad/s
-+		for gyroscope)/
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_calibbias_available
-+What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_calibbias_available
-+KernelVersion:  5.8
-+Contact:        linux-iio@vger.kernel.org
-+Description:
-+		Available values of calibbias. Maybe expressed as either of:
-+
-+		- a small discrete set of values like "0 2 4 6 8"
-+		- a range specified as "[min step max]"
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010 b/Documentation/ABI/testing/sysfs-bus-iio-humidity
+similarity index 79%
+rename from Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010
+rename to Documentation/ABI/testing/sysfs-bus-iio-humidity
+index 5b78af5f341d..cb0d7e75d297 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc2010
++++ b/Documentation/ABI/testing/sysfs-bus-iio-humidity
+@@ -6,4 +6,5 @@ Description:
+ 		Controls the heater device within the humidity sensor to get
+ 		rid of excess condensation.
  
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_supply_calibscale
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-icm42600 b/Documentation/ABI/testing/sysfs-bus-iio-icm42600
+-		Valid control values are 0 = OFF, and 1 = ON.
++		In some devices, this is just a switch in which case 0 = OFF,
++		and 1 = ON.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x b/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
 deleted file mode 100644
-index 0bf1fd4f5bf1..000000000000
---- a/Documentation/ABI/testing/sysfs-bus-iio-icm42600
+index b72bb62552cf..000000000000
+--- a/Documentation/ABI/testing/sysfs-bus-iio-humidity-hdc100x
 +++ /dev/null
-@@ -1,20 +0,0 @@
--What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibbias
--What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibbias
--What:		/sys/bus/iio/devices/iio:deviceX/in_accel_z_calibbias
--What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_calibbias
--What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_calibbias
--What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_calibbias
--KernelVersion:  5.8
--Contact:        linux-iio@vger.kernel.org
+@@ -1,9 +0,0 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/out_current_heater_raw
+-What:		/sys/bus/iio/devices/iio:deviceX/out_current_heater_raw_available
+-KernelVersion:	4.3
+-Contact:	linux-iio@vger.kernel.org
 -Description:
--		Hardware applied calibration offset (assumed to fix production
--		inaccuracies). Values represent a real physical offset expressed
--		in SI units (m/s^2 for accelerometer and rad/s for gyroscope).
+-		Controls the heater device within the humidity sensor to get
+-		rid of excess condensation.
 -
--What:		/sys/bus/iio/devices/iio:deviceX/in_accel_calibbias_available
--What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_calibbias_available
--KernelVersion:  5.8
--Contact:        linux-iio@vger.kernel.org
--Description:
--		Range of available values for hardware offset. Values in SI
--		units (m/s^2 for accelerometer and rad/s for gyroscope).
+-		Valid control values are 0 = OFF, and 1 = ON.
 -- 
 2.30.0
 
