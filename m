@@ -2,139 +2,172 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B85BAC433E0
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Jan 2021 09:03:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADA57C433E0
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Jan 2021 13:23:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 862A622228
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Jan 2021 09:03:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6EC40206F9
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Jan 2021 13:23:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388172AbhARJDh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Jan 2021 04:03:37 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:36468 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S2388251AbhARJD3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jan 2021 04:03:29 -0500
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10I90acw018127;
-        Mon, 18 Jan 2021 10:02:10 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=XVqcBJ1/aC3pTbN7m9Y9/ws7Y5V/4/XE7uZRGJIjjpw=;
- b=sYTKo/FfZBbc2CJ97C5klIeVMgUZ0Z0GPkYwlBshKmDEtxsASTIYdr10Y/fAbOIfSOKp
- aThlb/VcoWF7dMqQJIccCnbgr+BBuCzj4DSHPl/EBi90GdKKhNkfU9ZmuvCEhcC/RM5c
- wwn6c0hYMdoE6r9rWbHvI/+oH93dEhfCk33pzBc/wNIE89PDPno64oTRTzArtq6x6wNM
- 3mv1GwSfGdqB3ufS7lAep/K9nAMWe/FI4vmQ9KFJ4EdzLl/16/KDCfSRdRcn2C8nSt8J
- sMokebeCBa0ZvqoplXLxhJRn6ZAj+5ySxZPmUPftja/AB2vFtXeNcYVp6Rdl4D/B2Gq9 kQ== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 363rc507pc-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 18 Jan 2021 10:02:10 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DAD20100034;
-        Mon, 18 Jan 2021 10:02:08 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id C72CD221796;
-        Mon, 18 Jan 2021 10:02:08 +0100 (CET)
-Received: from [10.211.13.252] (10.75.127.47) by SFHDAG2NODE3.st.com
- (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Mon, 18 Jan
- 2021 10:02:07 +0100
-Subject: Re: [RFC PATCH 2/7] iio:ABI docs: Avoid repitition of
- triggerX/sampling_frequency
-To:     Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-CC:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Olivier MOYSAN <olivier.moysan@st.com>,
-        "linux-stm32@st-md-mailman.stormreply.com" 
-        <linux-stm32@st-md-mailman.stormreply.com>
-References: <20210117153816.696693-1-jic23@kernel.org>
- <20210117153816.696693-3-jic23@kernel.org>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Message-ID: <59ecf96d-6a20-fec7-95ba-fe2561338f1e@foss.st.com>
-Date:   Mon, 18 Jan 2021 10:02:07 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        id S2392177AbhARNXb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Jan 2021 08:23:31 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:37598 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S2392171AbhARNXX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jan 2021 08:23:23 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1610976108;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=/j6fmz4BNu5zYxXBw+JVpP+HzvjSGdu8WbaEvKmmbPI=;
+        b=bN7ZFIQGEeKTH0LQf/o2SMuyziH0rgV5kW57bhlxRTETKbVADyNnXjwvdpVSRV3VGD1zk+
+        gvhzK7Urqu2F+5O9/b5w6uLF5/HCJy5X3YimBdIYdW3hDbDTi8Nf23aqCC5Bq8vMekId6L
+        llI4loPBPu9IszwIsJgtF9PImaAP0TY=
+Received: from mail-qv1-f69.google.com (mail-qv1-f69.google.com
+ [209.85.219.69]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-449-NiZrkfJcO5W7o0Jt_Vtz4g-1; Mon, 18 Jan 2021 08:21:46 -0500
+X-MC-Unique: NiZrkfJcO5W7o0Jt_Vtz4g-1
+Received: by mail-qv1-f69.google.com with SMTP id i13so16535175qvx.11
+        for <linux-iio@vger.kernel.org>; Mon, 18 Jan 2021 05:21:46 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-transfer-encoding
+         :content-language;
+        bh=/j6fmz4BNu5zYxXBw+JVpP+HzvjSGdu8WbaEvKmmbPI=;
+        b=lya02Jn7IluSS5aFGFdVVYfCJ3m/WCq9/qLUfLkjKiTHiie4G+Ej52pbOQEQgvOzHJ
+         bOirpNI/bihI7dyVDCbba9kOjxCOeXMMV5ZpeUv76dpDZkoU0Ya7HQQEtIi9sc5oegrT
+         9lbUOU60RKhBFvgbllqLHHdr0YgpTjexH5jQoqnaXonxTbFsLzMYHXAbdAsYBak+DZN5
+         ycMYijjAKgukcQ6sjng8BBtVT72KvGIOo9+mFcuHCENcwfthzDVlIU6AkTwIt24TmpZX
+         wo0gwT//lKtlFXFvbZNmVqlVCkaWrHzMNixopV9/y8aSk6W3XlB63f/Bm5pvsbqogyE9
+         md4Q==
+X-Gm-Message-State: AOAM532lfa9ZCEdGBP2Ga907uJdxshdGaCsRu4gLlRIZu4EuN/7B4jv/
+        yviJOr45TtVknM7xB26Mx0Oo2kAL1V7h/78Ew+NGDH7/4AotmuK7+E9xHnlp3a3AgB4aNCHULxo
+        vc68WTqOJf+u+pq93kunr
+X-Received: by 2002:a0c:e5d1:: with SMTP id u17mr24021660qvm.34.1610976105903;
+        Mon, 18 Jan 2021 05:21:45 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJwXJOsf27ueWFhPZhoHG46qk+JWP2MsCVrcN24OKR2tyBT58lM9r3n3KYzfCjzHxUHMnFh6eg==
+X-Received: by 2002:a0c:e5d1:: with SMTP id u17mr24021643qvm.34.1610976105648;
+        Mon, 18 Jan 2021 05:21:45 -0800 (PST)
+Received: from trix.remote.csb (075-142-250-213.res.spectrum.com. [75.142.250.213])
+        by smtp.gmail.com with ESMTPSA id j203sm10482955qke.134.2021.01.18.05.21.43
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 18 Jan 2021 05:21:45 -0800 (PST)
+Subject: Re: [PATCH] iio: imu: bmi160: add mutex_lock for avoiding race
+To:     chiguoqing <chi962464zy@163.com>, linux-iio@vger.kernel.org
+Cc:     martin.blumenstingl@googlemail.com, linux-kernel@vger.kernel.org,
+        chiguoqing@yulong.com, huyue@yulong.com, zhangwen@yulong.com
+References: <20210118100527.19325-1-chi962464zy@163.com>
+From:   Tom Rix <trix@redhat.com>
+Message-ID: <a524b6c0-31ad-99cf-d6a9-0ae761370449@redhat.com>
+Date:   Mon, 18 Jan 2021 05:21:42 -0800
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.6.0
 MIME-Version: 1.0
-In-Reply-To: <20210117153816.696693-3-jic23@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <20210118100527.19325-1-chi962464zy@163.com>
+Content-Type: text/plain; charset=utf-8
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG3NODE3.st.com (10.75.127.9) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-18_07:2021-01-15,2021-01-18 signatures=0
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 
-On 1/17/21 4:38 PM, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On 1/18/21 2:05 AM, chiguoqing wrote:
+> Adding mutex_lock, when read and write reg need to use this lock to
+> avoid race.
 >
-> The timer-stm32 provided a little more specific information than the main
-> docs about the value of 0 corresponding to stopping sampling.  Given that
-> this makes sense in general, move that statement over to the main docs
-> and drop the version in sysfs-bus-iio-timer-stm32
->
-> Fixes
-> $ scripts/get_abi.pl validate
-> /sys/bus/iio/devices/triggerX/sampling_frequency is defined 2 times:  ./Documentation/ABI/testing/sysfs-bus-iio-timer-stm32:92  ./Documentation/ABI/testing/sysfs-bus-iio:45
->
-> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
-> Reported-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Signed-off-by: Guoqing Chi <chiguoqing@yulong.com>
 > ---
->  Documentation/ABI/testing/sysfs-bus-iio             | 2 ++
->  Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 | 8 --------
->  2 files changed, 2 insertions(+), 8 deletions(-)
-
-Hi Jonathan,
-
-Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-
-Thanks,
-
-Fabrice
-
+>  drivers/iio/imu/bmi160/bmi160.h      |  2 ++
+>  drivers/iio/imu/bmi160/bmi160_core.c | 17 +++++++++++++----
+>  2 files changed, 15 insertions(+), 4 deletions(-)
 >
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index d2dd9cc280f9..9b5ceb22363d 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -55,6 +55,8 @@ Description:
->  		direct access interfaces, it may be found in any of the
->  		relevant directories.  If it affects all of the above
->  		then it is to be found in the base device directory.
-> +		Note a value 0 where supported, will correspond to sampling
-> +		stopping.
+> diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
+> index 32c2ea2d7112..0c189a8b5b53 100644
+> --- a/drivers/iio/imu/bmi160/bmi160.h
+> +++ b/drivers/iio/imu/bmi160/bmi160.h
+> @@ -3,9 +3,11 @@
+>  #define BMI160_H_
 >  
->  What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
->  What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_sampling_frequency_available
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> index c4a4497c249a..05074c4a65e2 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> @@ -90,14 +90,6 @@ Description:
->  		Reading returns the current master modes.
->  		Writing set the master mode
+>  #include <linux/iio/iio.h>
+> +#include <linux/mutex.h>
+>  #include <linux/regulator/consumer.h>
 >  
-> -What:		/sys/bus/iio/devices/triggerX/sampling_frequency
-> -KernelVersion:	4.11
-> -Contact:	benjamin.gaignard@st.com
-> -Description:
-> -		Reading returns the current sampling frequency.
-> -		Writing an value different of 0 set and start sampling.
-> -		Writing 0 stop sampling.
-> -
->  What:		/sys/bus/iio/devices/iio:deviceX/in_count0_preset
->  KernelVersion:	4.12
->  Contact:	benjamin.gaignard@st.com
+>  struct bmi160_data {
+> +	struct mutex lock;
+where is the mutex_init() ?
+>  	struct regmap *regmap;
+>  	struct iio_trigger *trig;
+>  	struct regulator_bulk_data supplies[2];
+> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+> index 290b5ef83f77..b626e067c612 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+> @@ -454,18 +454,24 @@ static int bmi160_read_raw(struct iio_dev *indio_dev,
+
+how the read and write functions lock and return are not consistent.
+
+to me, the write function looks better, so change the read function to look more like the write function
+
+Tom
+
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&data->lock);
+>  		ret = bmi160_get_data(data, chan->type, chan->channel2, val);
+> +		mutex_unlock(&data->lock);
+>  		if (ret)
+>  			return ret;
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+>  		*val = 0;
+> +		mutex_lock(&data->lock);
+>  		ret = bmi160_get_scale(data,
+>  				       bmi160_to_sensor(chan->type), val2);
+> +		mutex_unlock(&data->lock);
+>  		return ret ? ret : IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		mutex_lock(&data->lock);
+>  		ret = bmi160_get_odr(data, bmi160_to_sensor(chan->type),
+>  				     val, val2);
+> +		mutex_unlock(&data->lock);
+>  		return ret ? ret : IIO_VAL_INT_PLUS_MICRO;
+>  	default:
+>  		return -EINVAL;
+> @@ -479,19 +485,22 @@ static int bmi160_write_raw(struct iio_dev *indio_dev,
+>  			    int val, int val2, long mask)
+>  {
+>  	struct bmi160_data *data = iio_priv(indio_dev);
+> +	int result;
+>  
+> +	mutex_lock(&data->lock);
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_SCALE:
+> -		return bmi160_set_scale(data,
+> +		result = bmi160_set_scale(data,
+>  					bmi160_to_sensor(chan->type), val2);
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+> -		return bmi160_set_odr(data, bmi160_to_sensor(chan->type),
+> +		result = bmi160_set_odr(data, bmi160_to_sensor(chan->type),
+>  				      val, val2);
+>  	default:
+> -		return -EINVAL;
+> +		result = -EINVAL;
+>  	}
+> +	mutex_unlock(&data->lock);
+>  
+> -	return 0;
+> +	return result;
+>  }
+>  
+>  static
+
