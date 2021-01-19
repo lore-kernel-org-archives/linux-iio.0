@@ -2,106 +2,175 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 372D2C433E6
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 23:30:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F2AC433E0
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 23:34:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 080A022DD3
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 23:30:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 586F322DD3
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 23:34:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726110AbhASXah (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Jan 2021 18:30:37 -0500
-Received: from mail-oi1-f177.google.com ([209.85.167.177]:34999 "EHLO
-        mail-oi1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1727444AbhASX3E (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jan 2021 18:29:04 -0500
-Received: by mail-oi1-f177.google.com with SMTP id w8so1348449oie.2;
-        Tue, 19 Jan 2021 15:28:49 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=NgCjdpeD2ewodAEIf3EQzoU1nevKZ6HXzGccvrmfIfA=;
-        b=ElA8yaxMJd6GiuFs2Jt/zCSC8F3CKWQ8crU2SkJo2Fm6Hc2ifsNdUKffZy/q6ZiA3U
-         ezY8V/betxSAEdhtHYRlpJmN6X8fGA/dDc4YKdn/T2NdLlgQvHW0eKjO/HM+R1phBFzV
-         UTE99Qb+3fRTzPpLxrYUSG9rZYrI/R772IiRtc5qaX/HFeXofpNpHkEjfqvQFuOc6uV3
-         henhxwxZNazr376gQhUQbSgpc3VWEDo9iTTzT3EIzMk4zYL5CtyY3H+u9GrefrxeuWgE
-         D6a0BhLelRGt2Z4KRAYRg0IMWA/SnUuxWF3V6jpXnMzxE27v9gnnEJ3m/QejyGliIZKe
-         Vq/A==
-X-Gm-Message-State: AOAM533fKORvK9gIHUxXXPvedhBDzbzRoiTs/2HX4tXJ2zp0l8o7RWn/
-        zN2PtIWyeActfqAc/zmuRmZTGlXnUw==
-X-Google-Smtp-Source: ABdhPJxjoKWxggjGsvdJkBiPqoPTvu9VCOzm1dtQb6Aj5ED83KtYj9XBHxaWMQSIs/Fq0OCB5taxxA==
-X-Received: by 2002:aca:a915:: with SMTP id s21mr1412597oie.108.1611098903373;
-        Tue, 19 Jan 2021 15:28:23 -0800 (PST)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id e12sm31915otp.25.2021.01.19.15.28.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Jan 2021 15:28:22 -0800 (PST)
-Received: (nullmailer pid 2803682 invoked by uid 1000);
-        Tue, 19 Jan 2021 23:28:21 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Mike Looijmans <mike.looijmans@topic.nl>
-Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        devicetree@vger.kernel.org
-In-Reply-To: <20210119124622.9490-1-mike.looijmans@topic.nl>
-References: <20210119124622.9490-1-mike.looijmans@topic.nl>
-Subject: Re: [PATCH v6 1/2] dt-bindings: iio: accel: Add bmi088 accelerometer bindings
-Date:   Tue, 19 Jan 2021 17:28:21 -0600
-Message-Id: <1611098901.303102.2803681.nullmailer@robh.at.kernel.org>
+        id S1732160AbhASONo convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Jan 2021 09:13:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732437AbhASJVN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jan 2021 04:21:13 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ED71C061575
+        for <linux-iio@vger.kernel.org>; Tue, 19 Jan 2021 01:20:32 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1l1nBZ-0004WN-1x; Tue, 19 Jan 2021 10:20:25 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1l1nBW-0001Dn-E1; Tue, 19 Jan 2021 10:20:22 +0100
+Date:   Tue, 19 Jan 2021 10:20:22 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     jic23@kernel.org, kamel.bouhara@bootlin.com, gwendal@chromium.org,
+        a.fatoum@pengutronix.de, david@lechnology.com,
+        linux-iio@vger.kernel.org, patrick.havelange@essensium.com,
+        alexandre.belloni@bootlin.com, mcoquelin.stm32@gmail.com,
+        linux-kernel@vger.kernel.org,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        kernel@pengutronix.de, fabrice.gasnier@st.com,
+        syednwaris@gmail.com, linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, alexandre.torgue@st.com,
+        David Jander <david@protonic.nl>
+Subject: Re: [PATCH v6 3/5] counter: Add character device interface
+Message-ID: <20210119092022.GA14502@pengutronix.de>
+References: <cover.1606075915.git.vilhelm.gray@gmail.com>
+ <b52a62196399d33221f78a1689276ac193c10229.1606075915.git.vilhelm.gray@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8BIT
+In-Reply-To: <b52a62196399d33221f78a1689276ac193c10229.1606075915.git.vilhelm.gray@gmail.com>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 10:05:44 up 35 days, 17:13, 74 users,  load average: 0.14, 0.75,
+ 1.44
+User-Agent: Mutt/1.10.1 (2018-07-13)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 19 Jan 2021 13:46:21 +0100, Mike Looijmans wrote:
-> This adds the device-tree bindings for the Bosch Sensortec BMI088 IMU,
-> the accelerometer part.
+On Sun, Nov 22, 2020 at 03:29:54PM -0500, William Breathitt Gray wrote:
+> This patch introduces a character device interface for the Counter
+> subsystem. Device data is exposed through standard character device read
+> operations. Device data is gathered when a Counter event is pushed by
+> the respective Counter device driver. Configuration is handled via ioctl
+> operations on the respective Counter character device node.
 > 
-> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
-> 
+> Cc: David Lechner <david@lechnology.com>
+> Cc: Gwendal Grignou <gwendal@chromium.org>
+> Cc: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 > ---
-> 
-> Changes in v6:
-> I't been almost a year since the last commit, sorry...
-> Fixed the yaml errors
-> Add interrupt, vdd and vddio properties
-> 
-> Changes in v5:
-> submit together with driver code as patch series
-> 
-> Changes in v2:
-> convert to yaml format
-> 
->  .../bindings/iio/accel/bosch,bmi088.yaml      | 55 +++++++++++++++++++
->  1 file changed, 55 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
-> 
 
-My bot found errors running 'make dt_binding_check' on your patch:
+Hello William,
 
-yamllint warnings/errors:
+the series looks quite interesting, we have some thoughts... see below:
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml: 'additionalProperties' is a required property
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml: ignoring, error in schema: 
-warning: no schema found in file: ./Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
+[...]
+> +/**
+> + * counter_push_event - queue event for userspace reading
+> + * @counter:	pointer to Counter structure
+> + * @event:	triggered event
+> + * @channel:	event channel
+> + *
+> + * Note: If no one is watching for the respective event, it is silently
+> + * discarded.
+> + *
+> + * RETURNS:
+> + * 0 on success, negative error number on failure.
+> + */
+> +int counter_push_event(struct counter_device *const counter, const u8 event,
+> +		       const u8 channel)
+> +{
+> +	struct counter_event ev = {0};
+> +	unsigned int copied = 0;
+> +	unsigned long flags;
+> +	struct counter_event_node *event_node;
+> +	struct counter_comp_node *comp_node;
+> +	int err = 0;
+> +
+> +	ev.timestamp = ktime_get_ns();
+> +	ev.watch.event = event;
+> +	ev.watch.channel = channel;
+> +
+> +	raw_spin_lock_irqsave(&counter->events_lock, flags);
+> +
+> +	/* Search for event in the list */
+> +	list_for_each_entry(event_node, &counter->events_list, l)
+> +		if (event_node->event == event &&
+> +		    event_node->channel == channel)
+> +			break;
+> +
+> +	/* If event is not in the list */
+> +	if (&event_node->l == &counter->events_list)
+> +		goto exit_early;
+> +
+> +	/* Read and queue relevant comp for userspace */
+> +	list_for_each_entry(comp_node, &event_node->comp_list, l) {
+> +		err = counter_get_data(counter, comp_node, &ev.value);
+> +		if (err)
+> +			goto exit_early;
+> +
+> +		ev.watch.component = comp_node->component;
+> +
+> +		copied += kfifo_put(&counter->events, ev);
 
-See https://patchwork.ozlabs.org/patch/1428668
+We want to calculate the frequency of some IRQ pulses in user space and
+counter values with time stamps really fits well here. As the pulses are
+from a physical system (rotating wheel), they will only change at a
+certain rate. We want to have the possibility to read from the counter
+device less often, we intentionally want to skip (meaning miss)
+events.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+When reading we're interested in the newest events. The kfifo implements
+a "tail" drop FIFO, which means new values are added at the end, and if
+the FIFO is full, they are dropped. We need a "head" drop FIFO which
+discards the oldest events, keeping only the recent ones.
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+As far as we know, kfifo doesn't offer a head drop mode, but I think
+this can be added.
 
-pip3 install dtschema --upgrade
+[...]
 
-Please check and re-submit.
+>  struct counter_device {
+>  	const char *name;
+> @@ -270,12 +270,20 @@ struct counter_device {
+>  
+>  	int id;
+>  	struct device dev;
+> +	struct cdev chrdev;
+> +	raw_spinlock_t events_lock;
+> +	struct list_head events_list;
+> +	struct list_head next_events_list;
+> +	DECLARE_KFIFO(events, struct counter_event, 64);
 
+Do you plan to make the size of the FIFO configurable?
+
+regards,
+Oleksij & Marc
+
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
