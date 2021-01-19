@@ -2,101 +2,106 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DCB31C433E9
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 23:22:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 372D2C433E6
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 23:30:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BBE5423109
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 23:22:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 080A022DD3
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 23:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726708AbhASXVc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Jan 2021 18:21:32 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54140 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730328AbhASXRy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jan 2021 18:17:54 -0500
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F8DAC0613D3
-        for <linux-iio@vger.kernel.org>; Tue, 19 Jan 2021 15:17:14 -0800 (PST)
-Received: by mail-qk1-x732.google.com with SMTP id b64so23686253qkc.12
-        for <linux-iio@vger.kernel.org>; Tue, 19 Jan 2021 15:17:14 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dB7F3Mtlu9hzcaH0arXRlX+sy8rlfc5xRtRuFS9rvVg=;
-        b=SibYt1GVdrviyGqBHiuRdkDJ212F7mKHeGAGTB3L6VdvZ2tX3F1XaE6kRQ89HeDHwg
-         ctZ9o3Y7tlLWqVfF7LjJMXmKGSrNa7VSowWHy5QAb8k8NxgbCOgJC1zipjomGEe3iJea
-         5TUZlIHbOQHHZiG4nXdh4SABgjHW6NYYLnatBHGCtcOa1VU0mfaYrkyObMYi3FoyzCIS
-         u9No6XJWWpJnuT3Yd0j9glu45Q1AoZ59LbenJHRMpv6VgZ3urxG+tii+h03WPMXVJeF0
-         oYBrTIqMJDQYiiWTHVH+nvfZqnu+QcedayPLqgxAsYcqY9Mg7ssCkwU2X4lXf6mmRWne
-         Q9Ww==
+        id S1726110AbhASXah (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Jan 2021 18:30:37 -0500
+Received: from mail-oi1-f177.google.com ([209.85.167.177]:34999 "EHLO
+        mail-oi1-f177.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1727444AbhASX3E (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jan 2021 18:29:04 -0500
+Received: by mail-oi1-f177.google.com with SMTP id w8so1348449oie.2;
+        Tue, 19 Jan 2021 15:28:49 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dB7F3Mtlu9hzcaH0arXRlX+sy8rlfc5xRtRuFS9rvVg=;
-        b=bPzSL++w+TzZs5FB3BuhVayrqoj70A1OltLTIe+zf7Ym/64gcpTKzvf59lOiIs2NJZ
-         0NAj94sEdLKihF+Gbck1GG3IP02sDRKiZaVuMeUas7gRJAdWr3bJoVu5BQeP2fWkVymv
-         p+lnZGYRBaJbRoO/uFhfZn2q1HwsvAU0pNiu4kcvwJKTGRTdAVMxuzlKILBhDLbA9MSQ
-         0KKSSZkchp9EmhNYpUpWXIITpgY2GZXFhCQYcTUoFSMg/fhMvCQXgeG1dWgV1lxbpAvb
-         T7GXeRN9Vfrr/OgWzoFs5slBktB8OlKH/q0CrCVVqzpBSb9IT6o3UJI63/O6hObtnbN8
-         JJMg==
-X-Gm-Message-State: AOAM5316p+1keaiJwGRLMl/GmWwKw1Iuk8T7Xb03kPikAuYMCWJNsbA2
-        xxYfxmqygfwON9x+0khMRfjLYuvlhYRGobjTjsmMX8Kp4Ihp5A==
-X-Google-Smtp-Source: ABdhPJyGeUyg+YiDKqtN0x6dVvip4U9xb9aSUrHVlWP6pb2DIhbKAAN/SFc8tehaF+Bmf26mv1wmQWdcJ5xXSunbNtM=
-X-Received: by 2002:a37:be84:: with SMTP id o126mr3005803qkf.138.1611098233468;
- Tue, 19 Jan 2021 15:17:13 -0800 (PST)
-MIME-Version: 1.0
-References: <20210119054848.592329-1-dmitry.baryshkov@linaro.org> <078a7025-ce5c-a252-f8f4-694c56153b3a@linaro.org>
-In-Reply-To: <078a7025-ce5c-a252-f8f4-694c56153b3a@linaro.org>
-From:   Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Date:   Wed, 20 Jan 2021 02:17:02 +0300
-Message-ID: <CAA8EJpr2bubGBtUGf=4+d4ZVT1nReTBzT25scGehdwKy2EepmQ@mail.gmail.com>
-Subject: Re: [PATCH v12 0/5] qcom: pm8150: add support for thermal monitoring
-To:     Daniel Lezcano <daniel.lezcano@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=NgCjdpeD2ewodAEIf3EQzoU1nevKZ6HXzGccvrmfIfA=;
+        b=ElA8yaxMJd6GiuFs2Jt/zCSC8F3CKWQ8crU2SkJo2Fm6Hc2ifsNdUKffZy/q6ZiA3U
+         ezY8V/betxSAEdhtHYRlpJmN6X8fGA/dDc4YKdn/T2NdLlgQvHW0eKjO/HM+R1phBFzV
+         UTE99Qb+3fRTzPpLxrYUSG9rZYrI/R772IiRtc5qaX/HFeXofpNpHkEjfqvQFuOc6uV3
+         henhxwxZNazr376gQhUQbSgpc3VWEDo9iTTzT3EIzMk4zYL5CtyY3H+u9GrefrxeuWgE
+         D6a0BhLelRGt2Z4KRAYRg0IMWA/SnUuxWF3V6jpXnMzxE27v9gnnEJ3m/QejyGliIZKe
+         Vq/A==
+X-Gm-Message-State: AOAM533fKORvK9gIHUxXXPvedhBDzbzRoiTs/2HX4tXJ2zp0l8o7RWn/
+        zN2PtIWyeActfqAc/zmuRmZTGlXnUw==
+X-Google-Smtp-Source: ABdhPJxjoKWxggjGsvdJkBiPqoPTvu9VCOzm1dtQb6Aj5ED83KtYj9XBHxaWMQSIs/Fq0OCB5taxxA==
+X-Received: by 2002:aca:a915:: with SMTP id s21mr1412597oie.108.1611098903373;
+        Tue, 19 Jan 2021 15:28:23 -0800 (PST)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id e12sm31915otp.25.2021.01.19.15.28.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 19 Jan 2021 15:28:22 -0800 (PST)
+Received: (nullmailer pid 2803682 invoked by uid 1000);
+        Tue, 19 Jan 2021 23:28:21 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Mike Looijmans <mike.looijmans@topic.nl>
+Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Amit Kucheria <amitk@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "open list:DRM DRIVER FOR MSM ADRENO GPU" 
-        <linux-arm-msm@vger.kernel.org>, linux-pm@vger.kernel.org,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, linux-iio@vger.kernel.org,
-        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
-        Jishnu Prakash <jprakash@qti.qualcomm.com>
-Content-Type: text/plain; charset="UTF-8"
+        devicetree@vger.kernel.org
+In-Reply-To: <20210119124622.9490-1-mike.looijmans@topic.nl>
+References: <20210119124622.9490-1-mike.looijmans@topic.nl>
+Subject: Re: [PATCH v6 1/2] dt-bindings: iio: accel: Add bmi088 accelerometer bindings
+Date:   Tue, 19 Jan 2021 17:28:21 -0600
+Message-Id: <1611098901.303102.2803681.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 19 Jan 2021 at 23:58, Daniel Lezcano <daniel.lezcano@linaro.org> wrote:
->
-> On 19/01/2021 06:48, Dmitry Baryshkov wrote:
-> > This patch serie adds support for thermal monitoring block on Qualcomm's
-> > PMIC5 chips. PM8150{,b,l}, qrb5165-rb5 board and sm8250-mtp board device
-> > trees are extended to support thermal zones provided by this thermal
-> > monitoring block.  Unlike the rest of PMIC thermal senses, these thermal
-> > zones describe particular thermistors, which differ between from board
-> > to board.
-> >
-> > Dependencies: https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=ib-iio-thermal-5.11-rc1
->
-> Shall I pick 3,4,5 also ?
+On Tue, 19 Jan 2021 13:46:21 +0100, Mike Looijmans wrote:
+> This adds the device-tree bindings for the Bosch Sensortec BMI088 IMU,
+> the accelerometer part.
+> 
+> Signed-off-by: Mike Looijmans <mike.looijmans@topic.nl>
+> 
+> ---
+> 
+> Changes in v6:
+> I't been almost a year since the last commit, sorry...
+> Fixed the yaml errors
+> Add interrupt, vdd and vddio properties
+> 
+> Changes in v5:
+> submit together with driver code as patch series
+> 
+> Changes in v2:
+> convert to yaml format
+> 
+>  .../bindings/iio/accel/bosch,bmi088.yaml      | 55 +++++++++++++++++++
+>  1 file changed, 55 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
+> 
 
-I have no strong preference on this topic. It might be easier to get
-3,4,5 through lk-qcom so that we won't face possible conflicts. Bjorn?
+My bot found errors running 'make dt_binding_check' on your patch:
 
+yamllint warnings/errors:
 
--- 
-With best wishes
-Dmitry
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml: 'additionalProperties' is a required property
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml: ignoring, error in schema: 
+warning: no schema found in file: ./Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
+
+See https://patchwork.ozlabs.org/patch/1428668
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
+
