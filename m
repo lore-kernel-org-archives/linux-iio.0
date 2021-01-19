@@ -2,227 +2,106 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD3A8C47254
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 18:29:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E98FBC433E0
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 20:59:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A6D5822CAD
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 18:29:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9B64222CE3
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Jan 2021 20:59:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2388288AbhASR65 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Jan 2021 12:58:57 -0500
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:55840 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S2391650AbhASR6n (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jan 2021 12:58:43 -0500
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10JHm10P016045;
-        Tue, 19 Jan 2021 18:56:58 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=5WYFGtdY+KCjXDAhcbztWKsr83wJ4tyifcNDQMaEHjk=;
- b=jpOQy+1g4mLwJN4aLOIXIg0FOR0UTggpirNgSbWbLGg+F0kMNkqb90wQIOQpn/uWdaxJ
- k0PtDvfzly8rLeknLJIdcKbDQT9hp8HXdp2SRoN38lOtfelmTRmloqtbQLAiPLI7S0+H
- XyrBoZ7f2QPbw2whmOYxp6X4DWEUTJHkuvi/0IvZ6uHvkLYLxa/guPQbSlbBhRXuDLQp
- CLarBPgMFsm3FfEzAEtbq8TkeoxiP4sDjnc3zWC7VbA7P2YTdJT+LEDgSJcpIvO14GQY
- wmTTuA4+8f0AHq7A+UruFbn7dE0ZCTxBxPCmPyk8pRGqnwoqFLUjEGVwo4UviU/Zz3vQ Ig== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 363qwnj2eb-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 19 Jan 2021 18:56:58 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E83CF10002A;
-        Tue, 19 Jan 2021 18:56:57 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D059D25D01B;
-        Tue, 19 Jan 2021 18:56:57 +0100 (CET)
-Received: from [10.211.11.124] (10.75.127.49) by SFHDAG2NODE3.st.com
- (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 19 Jan
- 2021 18:56:56 +0100
-Subject: Re: [Linux-stm32] [PATCH] iio: adc: stm32-adc: fix erroneous handling
- of spurious IRQs
-To:     Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        id S1727078AbhASU6r (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Jan 2021 15:58:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52178 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1729731AbhASU6o (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jan 2021 15:58:44 -0500
+Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CA3EC061573
+        for <linux-iio@vger.kernel.org>; Tue, 19 Jan 2021 12:58:04 -0800 (PST)
+Received: by mail-wm1-x336.google.com with SMTP id i63so1006005wma.4
+        for <linux-iio@vger.kernel.org>; Tue, 19 Jan 2021 12:58:04 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=subject:to:cc:references:from:message-id:date:user-agent
+         :mime-version:in-reply-to:content-language:content-transfer-encoding;
+        bh=of/pRXfYf8KADmbm/k7eAlaIB9piSSwAWZ8glb4h2lk=;
+        b=ccFf+1ObrkxxiKN/zv8a7jjbmKQyeEBznWyroAQD9yAVMaTnl+JtmHf5fIQ6Rp+Rob
+         yF6h+EoyFK6Nz8ldK6DIOj3AlTamfWWRGssGaVrp0pH3oJyLLVbDPqFujsScurwkRcWl
+         W5s3zsXqXedGuTW5KIVCMkdQMRm8U5j6auWhsAC7XoBgP/6bNtGTGQq2dheNWz4C+hQm
+         03s+pcyRBjTWifFxRg0eOAj3uT1X5kZtY43JsBlyIx0DaudguLPTC/wtCvNhziENpMaK
+         s24C/rJOhJfvsmE6w/eGa2e3KP5nCwFcaWp3A/+ugQQn4g/rmnPvx4dpPeaHRHZBHFCO
+         jhEw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=of/pRXfYf8KADmbm/k7eAlaIB9piSSwAWZ8glb4h2lk=;
+        b=j5xxVS3qW87fCbR/DYV+uOFF3S7OrEmtB+Q9MPVLpFjNc3MmOa3YWulVZZm2OTN28E
+         rapdOsRc3vydNKSW1P5/fpe0j6FmfTJPd0Jc9yj3U+P2j2iHmhLfwsCJADcWwBhERL60
+         IlOAD4O0v7nabl6K30gI+4Ai+RNeuWbjctGjriaDjoHqUZmj5KVYPWQi6Qj+0dN6dEWP
+         ZvTPDW80wIjpA9nF7cyfucHwEAKnYxV0rV7JDjoZt9o1HaSu4jVuSWnhVrqUBp37nWuF
+         MRVJj1FgpTykRxLbvzfe+sNrc+Q+EdxoPrWD0Qs6NDIIVSNhM/g6S1FhCxlrQc9P11bz
+         Wbzg==
+X-Gm-Message-State: AOAM532snLe9e4Ot+YFdq0lCZDTb2ETAD+CiMuqailZtqtioDY0unMNh
+        dfpUwvnoU136xECZ8rp6muyyvA==
+X-Google-Smtp-Source: ABdhPJwwlkl7tUgr70Wbh1Oql8bMdbNpHNrfJ1G+pno8wXk6Ry+lDe8WS36QVLc2VM7Vg8xp0m5a8w==
+X-Received: by 2002:a1c:6089:: with SMTP id u131mr1230059wmb.187.1611089882759;
+        Tue, 19 Jan 2021 12:58:02 -0800 (PST)
+Received: from ?IPv6:2a01:e34:ed2f:f020:c8a3:239a:c6eb:c10b? ([2a01:e34:ed2f:f020:c8a3:239a:c6eb:c10b])
+        by smtp.googlemail.com with ESMTPSA id a62sm6592680wmf.7.2021.01.19.12.58.00
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 19 Jan 2021 12:58:02 -0800 (PST)
+Subject: Re: [PATCH v12 0/5] qcom: pm8150: add support for thermal monitoring
+To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Amit Kucheria <amitk@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        Olivier Moysan <olivier.moysan@st.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>
-CC:     Lars-Peter Clausen <lars@metafoo.de>,
-        Holger Assmann <has@pengutronix.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        <linux-iio@vger.kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        <linux-kernel@vger.kernel.org>, <kernel@pengutronix.de>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        Lucas Stach <l.stach@pengutronix.de>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-References: <20210112152441.20665-1-a.fatoum@pengutronix.de>
- <20210116175333.4d8684c5@archlinux>
- <47b0905a-4496-2f21-3b17-91988aa88e91@pengutronix.de>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Message-ID: <7668b126-d77c-7339-029f-50333d03fbd9@foss.st.com>
-Date:   Tue, 19 Jan 2021 18:56:55 +0100
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     linux-arm-msm@vger.kernel.org, linux-pm@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>,
+        Jishnu Prakash <jprakash@qti.qualcomm.com>
+References: <20210119054848.592329-1-dmitry.baryshkov@linaro.org>
+From:   Daniel Lezcano <daniel.lezcano@linaro.org>
+Message-ID: <078a7025-ce5c-a252-f8f4-694c56153b3a@linaro.org>
+Date:   Tue, 19 Jan 2021 21:57:59 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
  Thunderbird/68.10.0
 MIME-Version: 1.0
-In-Reply-To: <47b0905a-4496-2f21-3b17-91988aa88e91@pengutronix.de>
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210119054848.592329-1-dmitry.baryshkov@linaro.org>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG1NODE2.st.com (10.75.127.2) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-19_07:2021-01-18,2021-01-19 signatures=0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 1/18/21 12:42 PM, Ahmad Fatoum wrote:
-> Hello Jonathan,
->
-> On 16.01.21 18:53, Jonathan Cameron wrote:
->> On Tue, 12 Jan 2021 16:24:42 +0100
->> Ahmad Fatoum <a.fatoum@pengutronix.de> wrote:
->>
->>> 1c6c69525b40 ("genirq: Reject bogus threaded irq requests") makes sure
->>> that threaded IRQs either
->>>   - have IRQF_ONESHOT set
->>>   - don't have the default just return IRQ_WAKE_THREAD primary handler
->>>
->>> This is necessary because level-triggered interrupts need to be masked,
->>> either at device or irqchip, to avoid an interrupt storm.
->>>
->>> For spurious interrupts, the STM32 ADC driver still does this bogus
->>> request though:
->>>   - It doesn't set IRQF_ONESHOT
->>>   - Its primary handler just returns IRQ_WAKE_THREAD if the interrupt
->>>     is unexpected, i.e. !(status & enabled_mask)
->> This seems 'unusual'.  If this is a spurious interrupt we should be
->> returning IRQ_NONE and letting the spurious interrupt protection
->> stuff kick in.
->>
->> The only reason I can see that it does this is print an error message.
->> I'm not sure why we need to go into the thread to do that given
->> it's not supposed to happen. If we need that message at all, I'd
->> suggest doing it in the interrupt handler then return IRQ_NONE;
-> As described, I run into the spurious IRQ case, so I think the message is
-> still useful (until that's properly fixed), but yes, it should've returned
-> IRQ_NONE in that case.
->
-> With these changes, IRQF_ONESHOT shouldn't be necessary, but in practice
-> the driver doesn't function correctly with the primary IRQ handler threaded.
->
-> Olivier, Fabrice: Are you aware of this problem?
+On 19/01/2021 06:48, Dmitry Baryshkov wrote:
+> This patch serie adds support for thermal monitoring block on Qualcomm's
+> PMIC5 chips. PM8150{,b,l}, qrb5165-rb5 board and sm8250-mtp board device
+> trees are extended to support thermal zones provided by this thermal
+> monitoring block.  Unlike the rest of PMIC thermal senses, these thermal
+> zones describe particular thermistors, which differ between from board
+> to board.
+> 
+> Dependencies: https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=ib-iio-thermal-5.11-rc1
+
+Shall I pick 3,4,5 also ?
 
 
-Hi Ahmad, Jonathan,
+-- 
+<http://www.linaro.org/> Linaro.org │ Open source software for ARM SoCs
 
-I wasn't aware of this up to now. I confirm we've the same behavior at
-our end with threadirqs=1.
-
-Olivier and I started to look at this. Indeed, the IRQF_ONESHOT makes
-the issue to disappear.
-I'm not sure 100% that's for the above reasons. Please let me share some
-piece of logs, analysis and thoughts.
-
-
-I may miss it but, the patch "genirq: Reject bogus threaded irq
-requests" seems to handle the case where no HW handler is provided, but
-only the threaded part?
-
-In the stm32-adc both are provided. Also the IRQ domain in
-stm32-adc-core maybe a key here ?
-
-
-We did some testing, ftrace and observed following behavior for one
-capture (a single cat in_voltage..._raw) :
-
-in stm32-adc-core, as IRQ source is still active until the IRQ thread
-can execute:
-- stm32_adc_irq_handler <-- generic_handle_irq
-- stm32_adc_irq_handler <-- generic_handle_irq
-- stm32_adc_irq_handler <-- generic_handle_irq
-...
-
-- sched_switch to the 1st IRQ thread
-- stm32_adc_irq_handler <-- generic_handle_irq (again until DR get read)
-
-- stm32_adc_isr <-- irq_forced_thread_fn (from stm32-adc)
-  DR read, clears the active flag
-- stm32_adc_isr <-- irq_forced_thread_fn
-  wakes the 2nd IRQ thread to print an error (unexpected...)
-
-sched_switch to the 2nd IRQ thread that prints the message.
-
-- stm32_adc_threaded_isr <-- irq_thread_fn
-
-
-So my understanding is: the cause seems to be the concurrency between
-
-- stm32_adc_irq_handler() storm calls in stm32-adc-core
-- stm32_adc_isr() call to clear the cause (forced into a thread with
-threadirqs=1).
-
-To properly work, the stm32_adc_irq_handler() should be masked in between.
-
-As you explain, this works in this case: the call to stm32_adc_isr (in
-stm32-adc) isn't longer forced threaded with IRQF_ONESHOT.
-
-It looks like IRQF_NO_THREAD for forced threading would have similar
-effect? Maybe the same would be applicable here ? (I haven't tested...)
-
-
-Hopefully this helps and is similar to what you observed.
-
-Thanks and best regards,
-Fabrice
-
->
-> Cheers,
-> Ahmad
->
->>>   - stm32mp151.dtsi describes the ADC interrupt as level-triggered
->>>
->>> Fix this by setting IRQF_ONESHOT to have the irqchip mask the IRQ
->>> until the IRQ thread has finished.
->>>
->>> IRQF_ONESHOT also has the effect that the primary handler is no longer
->>> forced into a thread. This makes the issue with spurious interrupts
->>> interrupts disappear when reading the ADC on a threadirqs=1 kernel.
->>> This used to result in following kernel error message:
->>>
->>> 	iio iio:device1: Unexpected IRQ: IER=0x00000000, ISR=0x0000100e
->>> or
->>> 	iio iio:device1: Unexpected IRQ: IER=0x00000004, ISR=0x0000100a
->>>
->>> But with this patch applied (or threaded IRQs disabled), this no longer
->>> occurs.
->>>
->>> Cc: Lucas Stach <l.stach@pengutronix.de>
->>> Reported-by: Holger Assmann <has@pengutronix.de>
->>> Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
->>> Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
->>> ---
->>>  drivers/iio/adc/stm32-adc.c | 2 +-
->>>  1 file changed, 1 insertion(+), 1 deletion(-)
->>>
->>> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
->>> index c067c994dae2..7e0e21c79ac8 100644
->>> --- a/drivers/iio/adc/stm32-adc.c
->>> +++ b/drivers/iio/adc/stm32-adc.c
->>> @@ -1910,7 +1910,7 @@ static int stm32_adc_probe(struct platform_device *pdev)
->>>  
->>>  	ret = devm_request_threaded_irq(&pdev->dev, adc->irq, stm32_adc_isr,
->>>  					stm32_adc_threaded_isr,
->>> -					0, pdev->name, indio_dev);
->>> +					IRQF_ONESHOT, pdev->name, indio_dev);
->>>  	if (ret) {
->>>  		dev_err(&pdev->dev, "failed to request IRQ\n");
->>>  		return ret;
->>
+Follow Linaro:  <http://www.facebook.com/pages/Linaro> Facebook |
+<http://twitter.com/#!/linaroorg> Twitter |
+<http://www.linaro.org/linaro-blog/> Blog
