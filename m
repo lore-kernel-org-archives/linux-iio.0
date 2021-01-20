@@ -2,98 +2,81 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F3DDC433DB
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Jan 2021 07:50:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E03BC433E6
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Jan 2021 11:30:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4C63823131
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Jan 2021 07:50:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 434F123159
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Jan 2021 11:30:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728936AbhATHti (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Jan 2021 02:49:38 -0500
-Received: from mga06.intel.com ([134.134.136.31]:35549 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1728911AbhATHtR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 20 Jan 2021 02:49:17 -0500
-IronPort-SDR: jlC9l65W0gAMoq1RiTzbaujQtE+zshnUHmbOeI3Aed5C/V69tKEaETioMbBBpspwWMJkoqb69/
- n9sv+Toedw1g==
-X-IronPort-AV: E=McAfee;i="6000,8403,9869"; a="240600210"
-X-IronPort-AV: E=Sophos;i="5.79,360,1602572400"; 
-   d="scan'208";a="240600210"
-Received: from orsmga001.jf.intel.com ([10.7.209.18])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 19 Jan 2021 23:48:32 -0800
-IronPort-SDR: N3eeg1rePNFLLAsJnzVHKgnfVbVszaQDBbzpl6XmLKR+Ow0jkLkbNSb6kDO6MUDtUTGbBP0gyb
- FtdDwtPyiA+A==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.79,360,1602572400"; 
-   d="scan'208";a="426810673"
-Received: from host.sh.intel.com ([10.239.154.115])
-  by orsmga001.jf.intel.com with ESMTP; 19 Jan 2021 23:48:29 -0800
-From:   Ye Xiang <xiang.ye@intel.com>
-To:     jikos@kernel.org, jic23@kernel.org,
-        srinivas.pandruvada@linux.intel.com
-Cc:     linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ye Xiang <xiang.ye@intel.com>
-Subject: [PATCH] iio: hid-sensor-prox: Fix scale not correct issue
-Date:   Wed, 20 Jan 2021 15:49:35 +0800
-Message-Id: <20210120074935.26637-1-xiang.ye@intel.com>
-X-Mailer: git-send-email 2.17.1
+        id S1731020AbhATLWE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Jan 2021 06:22:04 -0500
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:52653 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1732958AbhATKWU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Jan 2021 05:22:20 -0500
+X-Originating-IP: 82.255.60.242
+Received: from [192.168.1.150] (lns-bzn-39-82-255-60-242.adsl.proxad.net [82.255.60.242])
+        (Authenticated sender: hadess@hadess.net)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 95BE32001B;
+        Wed, 20 Jan 2021 10:21:34 +0000 (UTC)
+Message-ID: <aab4d104fc358ce21f8ef69377e203043e700879.camel@hadess.net>
+Subject: Re: "light" channel not working in hid-sensor-hub
+From:   Bastien Nocera <hadess@hadess.net>
+To:     linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Date:   Wed, 20 Jan 2021 11:21:34 +0100
+In-Reply-To: <194e35b5acefbb3f7f4092e5d5e46ce5e541cc19.camel@hadess.net>
+References: <194e35b5acefbb3f7f4092e5d5e46ce5e541cc19.camel@hadess.net>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.2 (3.38.2-1.fc33) 
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Currently, the proxy sensor scale is zero because it just return the
-exponent directly. To fix this issue, this patch use
-hid_sensor_format_scale to process the scale first then return the
-output.
+On Mon, 2021-01-18 at 21:06 +0100, Bastien Nocera wrote:
+> Hey,
+> 
+> It seems that the "light" channel that's available in hid-sensor-hub
+> stopped working quite some time ago. I've tested this on a ColorHug
+> ALS
+> light sensor, as well as on the light sensor part of the HID sensor
+> hub
+> on a Surface 3.
 
-Signed-off-by: Ye Xiang <xiang.ye@intel.com>
----
- drivers/iio/light/hid-sensor-prox.c | 13 +++++++++++--
- 1 file changed, 11 insertions(+), 2 deletions(-)
+Using hid-recorder on the ColorHugALS device, after unloading the hid-
+sensor-hub code after the device isn't outputting any useful data:
+D: 0
+R: 269 05 20 09 01 a1 01 09 41 a1 00 85 01 0a 09 03 15 00 25 01 75 08
+95 01 a1 02 0a 31 08 0a 32 08 b1 00 c0 0a 16 03 15 00 25 02 a1 02 0a 40
+08 0a 41 08 0a 42 08 b1 00 c0 0a 19 03 15 00 25 02 a1 02 0a 50 08 0a 51
+08 0a 52 08 b1 00 c0 0a 01 02 15 00 25 06 a1 02 0a 00 08 0a 01 08 0a 02
+08 0a 03 08 0a 04 08 0a 05 08 0a 06 08 b1 00 c0 0a 0e 03 15 00 27 ff ff
+ff ff 75 20 55 00 b1 02 05 20 0a 01 02 15 00 25 05 75 08 95 01 a1 02 0a
+00 08 0a 01 08 0a 02 08 0a 03 08 0a 05 08 0a 06 08 81 00 c0 0a 02 02 15
+00 25 04 a1 02 0a 10 08 0a 11 08 0a 12 08 0a 13 08 0a 14 08 81 00 c0 0a
+d1 04 15 00 26 ff ff 75 20 55 0e 81 02 06 c0 ff 09 02 a1 01 85 02 09 01
+09 0d 09 03 95 03 b1 22 09 05 75 10 95 01 b1 22 c0 09 03 a1 01 85 03 09
+30 75 08 95 01 b1 22 09 07 75 30 95 01 b1 22 09 0b 75 20 b1 22 09 24 09
+28 75 08 95 02 c0 c0 c0
+N: Hughski Ltd. ColorHugALS
+P: usb-0000:00:14.0-10/input0
+I: 3 273f 1008
+D: 0
+E: 0.000001 7 01 01 03 00 00 00 00
+E: 0.663922 7 01 01 03 00 00 00 00
+E: 1.327952 7 01 01 03 00 00 00 00
+E: 1.991027 7 01 01 03 00 00 00 00
+E: 2.654949 7 01 01 03 00 00 00 00
+E: 3.318928 7 01 01 03 00 00 00 00
+E: 3.982937 7 01 01 03 00 00 00 00
+etc.
 
-diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-index 4ab285a418d5..4abcfe48f1d4 100644
---- a/drivers/iio/light/hid-sensor-prox.c
-+++ b/drivers/iio/light/hid-sensor-prox.c
-@@ -23,6 +23,9 @@ struct prox_state {
- 	struct hid_sensor_common common_attributes;
- 	struct hid_sensor_hub_attribute_info prox_attr;
- 	u32 human_presence;
-+	int scale_pre_decml;
-+	int scale_post_decml;
-+	int scale_precision;
- };
- 
- static const u32 prox_sensitivity_addresses[] = {
-@@ -98,8 +101,9 @@ static int prox_read_raw(struct iio_dev *indio_dev,
- 		ret_type = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = prox_state->prox_attr.units;
--		ret_type = IIO_VAL_INT;
-+		*val = prox_state->scale_pre_decml;
-+		*val2 = prox_state->scale_post_decml;
-+		ret_type = prox_state->scale_precision;
- 		break;
- 	case IIO_CHAN_INFO_OFFSET:
- 		*val = hid_sensor_convert_exponent(
-@@ -221,6 +225,11 @@ static int prox_parse_report(struct platform_device *pdev,
- 	dev_dbg(&pdev->dev, "prox %x:%x\n", st->prox_attr.index,
- 			st->prox_attr.report_id);
- 
-+	st->scale_precision = hid_sensor_format_scale(
-+				hsdev->usage,
-+				&st->prox_attr,
-+				&st->scale_pre_decml, &st->scale_post_decml);
-+
- 	return ret;
- }
- 
--- 
-2.17.1
+So it's possible that, in this case, the problem lies in the HID core.
+
+Cheers
 
