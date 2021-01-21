@@ -2,126 +2,357 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8AC43C433E6
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 11:57:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8516C433E0
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 14:40:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3AF102399A
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 11:57:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 98B422310A
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 14:40:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728429AbhAUL5H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Jan 2021 06:57:07 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:5546 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1730170AbhAULsv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2021 06:48:51 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10LBeF2M029625;
-        Thu, 21 Jan 2021 06:47:52 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3668rbp83q-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 21 Jan 2021 06:47:52 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 10LBlpgG005255
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 21 Jan 2021 06:47:51 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Thu, 21 Jan 2021 06:47:50 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
- Thu, 21 Jan 2021 06:47:50 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
- Thu, 21 Jan 2021 06:47:50 -0500
-Received: from nsa.sphairon.box ([10.44.3.51])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 10LBllDf013729;
-        Thu, 21 Jan 2021 06:47:47 -0500
-From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-To:     <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 0/4] Fix/Improve sync clock mode handling
-Date:   Thu, 21 Jan 2021 12:49:50 +0100
-Message-ID: <20210121114954.64156-1-nuno.sa@analog.com>
+        id S1731668AbhAUOkZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Jan 2021 09:40:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1728953AbhAUOkU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2021 09:40:20 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC0FC061786
+        for <linux-iio@vger.kernel.org>; Thu, 21 Jan 2021 06:27:28 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1l2ave-0002Qn-GB; Thu, 21 Jan 2021 15:27:18 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1l2avd-0001g3-VY; Thu, 21 Jan 2021 15:27:17 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio@vger.kernel.org
+Subject: [PATCH v1 2/2] counter: add GPIO based pulse counters
+Date:   Thu, 21 Jan 2021 15:27:16 +0100
+Message-Id: <20210121142716.6374-3-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210121142716.6374-1-o.rempel@pengutronix.de>
+References: <20210121142716.6374-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8bit
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
- definitions=2021-01-21_04:2021-01-21,2021-01-21 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 malwarescore=0 impostorscore=0 spamscore=0 mlxscore=0
- lowpriorityscore=0 suspectscore=0 bulkscore=0 adultscore=0 mlxlogscore=999
- clxscore=1011 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2101210064
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The first patch in this series is just a simple helper to lock/unlock
-the device. Having these helpers make the code slightly neater (IMHO).
+Add simple GPIO base pulse counter. This device is used to measure
+rotation speed of some agricultural devices, so no high frequency on the
+counter pin is expected.
 
-The following patches introduces changes in the sampling frequency
-calculation when sync scale/pps modes are used. First, it's important
-to understand the purpose of this mode and how it should be used. Let's
-say our part has an internal rate of 4250 (e.g adis1649x family) and the
-user wants an output rate of 200SPS. Obviously, we can't use this
-sampling rate and divide back down to get 200 SPS with decimation on.
-Hence, we can use this mode to give an input clock of 1HZ, scale it to
-something like 4200 or 4000 SPS and then use the decimation filter to get
-the exact desired 200SPS. There are also some limits that should be
-taken into account when scaling:
+The maximal measurement frequency depends on the CPU and system load. On
+the idle iMX6S I was able to measure up to 20kHz without count drops.
 
- * For the devices in the adis16475 driver:
-     - Input sync frequency range is 1 to 128 Hz
-     - Native sample rate: 2 kSPS.  Optimal range: 1900-2100 sps
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/counter/Kconfig          |   9 ++
+ drivers/counter/Makefile         |   1 +
+ drivers/counter/gpio-pulse-cnt.c | 245 +++++++++++++++++++++++++++++++
+ 3 files changed, 255 insertions(+)
+ create mode 100644 drivers/counter/gpio-pulse-cnt.c
 
- * For the adis1649x family (adis16480 driver):
-    - Input sync frequency range is 1 to 128 Hz
-    - Native sample rate: 4.25 kSPS.  Optimal range: 4000-4250 sps 
-
-I'm not 100% convinced on how to handle the optimal minimum. For now,
-I'm just throwing a warning saying we might get into trouble if we get a
-value lower than that. I was also tempted to just return -EINVAL or
-clamp the value. However, I know that there are ADI customers that
-(for some reason) are using a sampling rate lower than the minimum
-advised.
-
-That said, the patch for the adis16480 driver is a fix as this mode was
-being wrongly handled. There should not be a "separation" between using
-the sync_scale and the dec_rate registers. The way things were being done,
-we could easily get into a situation where the part could be running with
-an internal rate way lower than the optimal minimum.
-
-For the adis16475 drivers, things were not really wrong. They were just
-not optimal as we were forcing users to specify the IMU scaled internal
-rate once in the devicetree. Calculating things at runtime gives much
-more flexibility to choose the output rate.
-
-Nuno Sá (4):
-  iio: adis: add helpers for locking
-  iio: adis16480: fix pps mode sampling frequency math
-  iio: adis16475: improve sync scale mode handling
-  dt-bindings: adis16475: remove property
-
- .../bindings/iio/imu/adi,adis16475.yaml       |   9 --
- drivers/iio/imu/adis16475.c                   | 110 ++++++++++++----
- drivers/iio/imu/adis16480.c                   | 120 +++++++++++++-----
- include/linux/iio/imu/adis.h                  |  10 ++
- 4 files changed, 178 insertions(+), 71 deletions(-)
-
+diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
+index 2de53ab0dd25..9ad1d9d49dd1 100644
+--- a/drivers/counter/Kconfig
++++ b/drivers/counter/Kconfig
+@@ -29,6 +29,15 @@ config 104_QUAD_8
+ 	  The base port addresses for the devices may be configured via the base
+ 	  array module parameter.
+ 
++config GPIO_PULSE_CNT
++	tristate "GPIO pulse counter driver"
++	depends on GPIOLIB
++	help
++	  Select this option to enable GPIO pulse counter driver.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called gpio-pulse-cnt.
++
+ config STM32_TIMER_CNT
+ 	tristate "STM32 Timer encoder counter driver"
+ 	depends on MFD_STM32_TIMERS || COMPILE_TEST
+diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
+index 0a393f71e481..6a5c3fc6f2a0 100644
+--- a/drivers/counter/Makefile
++++ b/drivers/counter/Makefile
+@@ -6,6 +6,7 @@
+ obj-$(CONFIG_COUNTER) += counter.o
+ 
+ obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
++obj-$(CONFIG_GPIO_PULSE_CNT)	+= gpio-pulse-cnt.o
+ obj-$(CONFIG_STM32_TIMER_CNT)	+= stm32-timer-cnt.o
+ obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+ obj-$(CONFIG_TI_EQEP)		+= ti-eqep.o
+diff --git a/drivers/counter/gpio-pulse-cnt.c b/drivers/counter/gpio-pulse-cnt.c
+new file mode 100644
+index 000000000000..e847831f4cce
+--- /dev/null
++++ b/drivers/counter/gpio-pulse-cnt.c
+@@ -0,0 +1,245 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2021 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
++ */
++
++#include <linux/counter.h>
++#include <linux/interrupt.h>
++#include <linux/module.h>
++#include <linux/of_gpio.h>
++#include <linux/platform_device.h>
++
++#define GPIO_PULSE_NAME		"gpio-pulse-counter"
++
++struct gpio_pulse_priv {
++	struct counter_device counter;
++	struct gpio_desc *gpio;
++	int irq;
++	bool enabled;
++	unsigned long count;
++};
++
++static irqreturn_t gpio_pulse_irq_isr(int irq, void *dev_id)
++{
++	struct gpio_pulse_priv *priv = dev_id;
++
++	if (!priv->enabled)
++		return IRQ_NONE;
++
++	priv->count++;
++
++	return IRQ_HANDLED;
++}
++
++static ssize_t gpio_pulse_count_enable_read(struct counter_device *counter,
++					    struct counter_count *count,
++					    void *private, char *buf)
++{
++	struct gpio_pulse_priv *priv = counter->priv;
++
++	return scnprintf(buf, PAGE_SIZE, "%d\n", priv->enabled);
++}
++
++static ssize_t gpio_pulse_count_enable_write(struct counter_device *counter,
++					     struct counter_count *count,
++					     void *private,
++					     const char *buf, size_t len)
++{
++	struct gpio_pulse_priv *priv = counter->priv;
++	bool enable;
++	ssize_t ret;
++
++	ret = kstrtobool(buf, &enable);
++	if (ret)
++		return ret;
++
++	if (priv->enabled == enable)
++		return len;
++
++	if (enable)
++		enable_irq(priv->irq);
++	else
++		disable_irq(priv->irq);
++
++	priv->enabled = enable;
++
++	return len;
++}
++
++static const struct counter_count_ext gpio_pulse_count_ext[] = {
++	{
++		.name = "enable",
++		.read = gpio_pulse_count_enable_read,
++		.write = gpio_pulse_count_enable_write
++	},
++};
++
++static enum counter_synapse_action gpio_pulse_synapse_actions[] = {
++	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
++};
++
++static int gpio_pulse_action_get(struct counter_device *counter,
++			    struct counter_count *count,
++			    struct counter_synapse *synapse,
++			    size_t *action)
++{
++	*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
++
++	return 0;
++}
++
++static int gpio_pulse_count_read(struct counter_device *counter,
++				 struct counter_count *count,
++				 unsigned long *val)
++{
++	struct gpio_pulse_priv *priv = counter->priv;
++
++	*val = priv->count;
++
++	return 0;
++}
++
++static int gpio_pulse_count_write(struct counter_device *counter,
++				  struct counter_count *count,
++				  const unsigned long val)
++{
++	struct gpio_pulse_priv *priv = counter->priv;
++
++	priv->count = val;
++
++	return 0;
++}
++
++static int gpio_pulse_count_function_get(struct counter_device *counter,
++					 struct counter_count *count,
++					 size_t *function)
++{
++	*function = COUNTER_COUNT_FUNCTION_INCREASE;
++
++	return 0;
++}
++
++static int gpio_pulse_count_signal_read(struct counter_device *counter,
++					struct counter_signal *signal,
++					enum counter_signal_value *val)
++{
++	struct gpio_pulse_priv *priv = counter->priv;
++	int ret;
++
++	ret = gpiod_get_value(priv->gpio);
++	if (ret < 0)
++		return ret;
++
++	*val = ret ? COUNTER_SIGNAL_HIGH : COUNTER_SIGNAL_LOW;
++
++	return 0;
++}
++
++static const struct counter_ops gpio_pulse_cnt_ops = {
++	.action_get = gpio_pulse_action_get,
++	.count_read = gpio_pulse_count_read,
++	.count_write = gpio_pulse_count_write,
++	.function_get = gpio_pulse_count_function_get,
++	.signal_read  = gpio_pulse_count_signal_read,
++};
++
++static struct counter_signal gpio_pulse_signals[] = {
++	{
++		.id = 0,
++		.name = "Channel 0 signal"
++	},
++};
++
++static struct counter_synapse gpio_pulse_count_synapses[] = {
++	{
++		.actions_list = gpio_pulse_synapse_actions,
++		.num_actions = ARRAY_SIZE(gpio_pulse_synapse_actions),
++		.signal = &gpio_pulse_signals[0]
++	},
++};
++
++static enum counter_count_function gpio_pulse_count_functions[] = {
++	COUNTER_COUNT_FUNCTION_INCREASE,
++};
++
++static struct counter_count gpio_pulse_counts[] = {
++	{
++		.id = 0,
++		.name = "Channel 1 Count",
++		.functions_list = gpio_pulse_count_functions,
++		.num_functions = ARRAY_SIZE(gpio_pulse_count_functions),
++		.synapses = gpio_pulse_count_synapses,
++		.num_synapses = ARRAY_SIZE(gpio_pulse_count_synapses),
++		.ext = gpio_pulse_count_ext,
++		.num_ext = ARRAY_SIZE(gpio_pulse_count_ext)
++	},
++};
++
++static int gpio_pulse_cnt_probe(struct platform_device *pdev)
++{
++	struct device_node *np = pdev->dev.of_node;
++	struct device *dev = &pdev->dev;
++	struct gpio_pulse_priv *priv;
++	int ret;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	if (of_gpio_count(np) != 1) {
++		dev_err(dev, "Error, need exactly 1 gpio for device\n");
++		return -EINVAL;
++	}
++
++	priv->gpio = devm_fwnode_gpiod_get(dev, of_fwnode_handle(np),
++					   NULL, GPIOD_IN, GPIO_PULSE_NAME);
++	if (IS_ERR(priv->gpio))
++		return dev_err_probe(dev, PTR_ERR(priv->gpio), "failed to get gpio\n");
++
++	priv->irq = gpiod_to_irq(priv->gpio);
++	if (priv->irq < 0) {
++		dev_err(dev, "failed to map GPIO to IRQ: %d\n", priv->irq);
++		return priv->irq;
++	}
++
++	priv->counter.name = dev_name(dev);
++	priv->counter.parent = dev;
++	priv->counter.ops = &gpio_pulse_cnt_ops;
++	priv->counter.counts = gpio_pulse_counts;
++	priv->counter.num_counts = ARRAY_SIZE(gpio_pulse_counts);
++	priv->counter.signals = gpio_pulse_signals;
++	priv->counter.num_signals = ARRAY_SIZE(gpio_pulse_signals);
++	priv->counter.priv = priv;
++
++	ret = devm_request_irq(dev, priv->irq, gpio_pulse_irq_isr,
++			       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
++			       GPIO_PULSE_NAME, priv);
++	if (ret)
++		return ret;
++
++	disable_irq(priv->irq);
++
++	platform_set_drvdata(pdev, priv);
++
++	return devm_counter_register(dev, &priv->counter);
++}
++
++static const struct of_device_id gpio_pulse_cnt_of_match[] = {
++	{ .compatible = "virtual,gpio-pulse-counter", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, gpio_pulse_cnt_of_match);
++
++static struct platform_driver gpio_pulse_cnt_driver = {
++	.probe = gpio_pulse_cnt_probe,
++	.driver = {
++		.name = GPIO_PULSE_NAME,
++		.of_match_table = gpio_pulse_cnt_of_match,
++	},
++};
++module_platform_driver(gpio_pulse_cnt_driver);
++
++MODULE_ALIAS("platform:gpio-pulse-counter");
++MODULE_AUTHOR("Oleksij Rempel <o.rempel@pengutronix.de>");
++MODULE_DESCRIPTION("GPIO pulse counter driver");
++MODULE_LICENSE("GPL v2");
 -- 
 2.30.0
 
