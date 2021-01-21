@@ -7,53 +7,51 @@ X-Spam-Status: No, score=-18.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8727BC433E0
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 19:16:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44065C433DB
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 19:16:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 30FF5221E7
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 19:16:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EB10C23A03
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 19:16:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726931AbhAUTQX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Jan 2021 14:16:23 -0500
-Received: from fllv0015.ext.ti.com ([198.47.19.141]:58246 "EHLO
+        id S1726925AbhAUTQm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Jan 2021 14:16:42 -0500
+Received: from fllv0015.ext.ti.com ([198.47.19.141]:58244 "EHLO
         fllv0015.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1725827AbhAUTPm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2021 14:15:42 -0500
+        with ESMTP id S1727001AbhAUTQ0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2021 14:16:26 -0500
 Received: from fllv0034.itg.ti.com ([10.64.40.246])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 10LJEXgM073446;
-        Thu, 21 Jan 2021 13:14:33 -0600
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 10LJEWfN073438;
+        Thu, 21 Jan 2021 13:14:32 -0600
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1611256473;
-        bh=c521nXnHmjfC1hi1EZOG5ZjLnL+1H9V1/vRn3/1k1u0=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=NlNgSnGQuBT1f3qrXkzBDyDnzGIfaHpd3IwZ3tBiNAZ9Mp6mZWU08yrDihnlOOT0J
-         jZy8DuxaZRN8BSpu7XqwjdGhSgyF9VrPNAZgs/igqw59Ic80CTk2o2+ZvHJ0EtMNtS
-         Vn4DOFeQnqJy7PkOpBV99j+/Tl506rHOwTMiKKfU=
+        s=ti-com-17Q1; t=1611256472;
+        bh=cKP+KafvdKMdHwP7uKPhFADhSJd5TNUUdhxLiZpDyNA=;
+        h=From:To:CC:Subject:Date;
+        b=jHG4aGE6Cn9Mr5fLuNa7FzdxrTtdQQnmC+aXYWZVyXLpwcQIgbGvQ6azxfBVjcNCx
+         pvtwxuMKHC4M+BBUbL1g0ns0oBpsy7TXC5MSqB0BzPQYkfpt6pvMO8NIq3Oxfmlmtm
+         9KhAwmugAQ5o1XvMc3ddrFOHiqM29sklGtMFxu2s=
 Received: from DLEE108.ent.ti.com (dlee108.ent.ti.com [157.170.170.38])
-        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 10LJEWNW094773
+        by fllv0034.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 10LJEWRS094760
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 21 Jan 2021 13:14:33 -0600
-Received: from DLEE111.ent.ti.com (157.170.170.22) by DLEE108.ent.ti.com
+        Thu, 21 Jan 2021 13:14:32 -0600
+Received: from DLEE115.ent.ti.com (157.170.170.26) by DLEE108.ent.ti.com
  (157.170.170.38) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3; Thu, 21
  Jan 2021 13:14:32 -0600
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE111.ent.ti.com
- (157.170.170.22) with Microsoft SMTP Server (version=TLS1_2,
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DLEE115.ent.ti.com
+ (157.170.170.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.1979.3 via
  Frontend Transport; Thu, 21 Jan 2021 13:14:32 -0600
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 10LJEWtR054845;
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 10LJEVck004174;
         Thu, 21 Jan 2021 13:14:32 -0600
 From:   Dan Murphy <dmurphy@ti.com>
 To:     <linux-iio@vger.kernel.org>
 CC:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-kernel@vger.kernel.org>, Dan Murphy <dmurphy@ti.com>
-Subject: [PATCH 2/2] iio:adc:ti-ads124s08: Fix packet read from the ADC
-Date:   Thu, 21 Jan 2021 13:14:31 -0600
-Message-ID: <20210121191431.12057-2-dmurphy@ti.com>
+Subject: [PATCH 1/2] iio:adc:ti-ads124s08: Fix start stop conversion command
+Date:   Thu, 21 Jan 2021 13:14:30 -0600
+Message-ID: <20210121191431.12057-1-dmurphy@ti.com>
 X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210121191431.12057-1-dmurphy@ti.com>
-References: <20210121191431.12057-1-dmurphy@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -62,32 +60,37 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix the spi_transfer array in the reading of the data from the ADC.
+Fix start and stop conversion commands.  The proper command is not be
+sent.
 
 Fixes: ("e717f8c6dfec iio: adc: Add the TI ads124s08 ADC code")
 Signed-off-by: Dan Murphy <dmurphy@ti.com>
 ---
- drivers/iio/adc/ti-ads124s08.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ drivers/iio/adc/ti-ads124s08.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/ti-ads124s08.c b/drivers/iio/adc/ti-ads124s08.c
-index f05d4e0e1c9d..023d81c7e8da 100644
+index b4a128b19188..f05d4e0e1c9d 100644
 --- a/drivers/iio/adc/ti-ads124s08.c
 +++ b/drivers/iio/adc/ti-ads124s08.c
-@@ -201,12 +201,10 @@ static int ads124s_read(struct iio_dev *indio_dev, unsigned int chan)
- 	struct spi_transfer t[] = {
- 		{
- 			.tx_buf = &priv->data[0],
--			.len = 4,
--			.cs_change = 1,
- 		}, {
--			.tx_buf = &priv->data[1],
- 			.rx_buf = &priv->data[1],
- 			.len = 4,
-+			.cs_change = 1,
- 		},
- 	};
+@@ -237,7 +237,7 @@ static int ads124s_read_raw(struct iio_dev *indio_dev,
+ 			goto out;
+ 		}
  
+-		ret = ads124s_write_cmd(indio_dev, ADS124S08_START_CONV);
++		ret = ads124s_write_cmd(indio_dev, ADS124S08_CMD_START);
+ 		if (ret) {
+ 			dev_err(&priv->spi->dev, "Start conversions failed\n");
+ 			goto out;
+@@ -251,7 +251,7 @@ static int ads124s_read_raw(struct iio_dev *indio_dev,
+ 
+ 		*val = ret;
+ 
+-		ret = ads124s_write_cmd(indio_dev, ADS124S08_STOP_CONV);
++		ret = ads124s_write_cmd(indio_dev, ADS124S08_CMD_STOP);
+ 		if (ret) {
+ 			dev_err(&priv->spi->dev, "Stop conversions failed\n");
+ 			goto out;
 -- 
 2.29.2
 
