@@ -2,136 +2,268 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 159E6C433E0
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 10:01:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 886E1C433E0
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 11:49:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BC3CF20725
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 10:01:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 338682395B
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 11:49:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1728483AbhAUKAn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Jan 2021 05:00:43 -0500
-Received: from mail-mw2nam12on2063.outbound.protection.outlook.com ([40.107.244.63]:1504
-        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1729040AbhAUKA0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 21 Jan 2021 05:00:26 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=YmuD460o8xYAX6XvdYRgAoeCUe+kGKsbKMK25SLxbPX5iBqdcDfeeHb9GWWHJzfvMXz3B+X9+ysdUw4owJceQKbxPabGsWz3w0cdHh0n4eLIqkqW708iyC7x3gYPptD5kPERLxCvfPnEhm/ap0ZawXsiGHiC/C6gObOfLSRswcDOV5P5BVF0URvWo8QuBsQFrXerQCg794eNtIjDlOhagfn2JPL6oA6BJQawNWc3uw2ChAbaGi7MZvV6AL6totH4s/YVUx14ngt6yW0mND38Vi8Nvzvlz6vhbT9ZWLgBLQlR00khU8Ku6qNKbeSQTvnAzZ8mODrzT+Erztn3aGupVA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k2ZjwhQx52T5+4NaCn+NHr92htOVOjBW5Y7LSzT3Yt0=;
- b=KRdtXwhVyO1DXbYoU4KEFzeF5e07HGhmJo1VDHFq6D6RfBZJ7fRZw67wcZXsCWrzXR16PcRkoBkyq5AMKGKCJDIfV+wRmIIDPhd8YXjVCPo3VYbJSEvoiv8bTAnS3fauK69ATsmqaKsG+IiMLTDKMeMk7NVt2AdakjNxLy2T38W1ivJZNh4Kpc+cHy90y1y2MhM0YYiHTnVu9T+eJTGJS2XlbiOBgppE+aHbYSzMwk9hQeqPgq1ulwmKYdehtq4wbbVKXZuDO28tDekOLt3+cyAkRb7f3bmj7LCYvw5uu0+dDQ2oDGj+8JufQf1lEscO6uU65fI7zrU6oY6bH44T6w==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 149.199.62.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
- dmarc=bestguesspass action=none header.from=xilinx.com; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k2ZjwhQx52T5+4NaCn+NHr92htOVOjBW5Y7LSzT3Yt0=;
- b=GCqvF+tB1yq36o/dM8PJl68gGLvydwKaQqYUMGGoTrPxzG2iLYWzDFpy0h4oTjB3u2yjSOFzjHiIJLGsZyt1Fa6DoAibFMQzNJZDOkpiY3ExL1gsTZqS2F9YqqaQ03hwqKH2Aub9ithM+roaYlh6iijCODGO9psQZoJMYkzsRfg=
-Received: from SA9PR13CA0167.namprd13.prod.outlook.com (2603:10b6:806:28::22)
- by CH2PR02MB6885.namprd02.prod.outlook.com (2603:10b6:610:89::24) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3763.10; Thu, 21 Jan
- 2021 09:59:34 +0000
-Received: from SN1NAM02FT044.eop-nam02.prod.protection.outlook.com
- (2603:10b6:806:28:cafe::78) by SA9PR13CA0167.outlook.office365.com
- (2603:10b6:806:28::22) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3784.7 via Frontend
- Transport; Thu, 21 Jan 2021 09:59:34 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.62.198)
- smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
- header.d=none;vger.kernel.org; dmarc=bestguesspass action=none
- header.from=xilinx.com;
-Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
- 149.199.62.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.62.198; helo=xsj-pvapexch02.xlnx.xilinx.com;
-Received: from xsj-pvapexch02.xlnx.xilinx.com (149.199.62.198) by
- SN1NAM02FT044.mail.protection.outlook.com (10.152.72.173) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.3784.12 via Frontend Transport; Thu, 21 Jan 2021 09:59:33 +0000
-Received: from xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) by
- xsj-pvapexch02.xlnx.xilinx.com (172.19.86.41) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1913.5; Thu, 21 Jan 2021 01:59:33 -0800
-Received: from smtp.xilinx.com (172.19.127.95) by
- xsj-pvapexch01.xlnx.xilinx.com (172.19.86.40) with Microsoft SMTP Server id
- 15.1.1913.5 via Frontend Transport; Thu, 21 Jan 2021 01:59:33 -0800
-Envelope-to: michal.simek@xilinx.com,
- manish.narani@xilinx.com,
- linux-iio@vger.kernel.org,
- pthomas8589@gmail.com
-Received: from [172.30.17.109] (port=44900)
-        by smtp.xilinx.com with esmtp (Exim 4.90)
-        (envelope-from <michal.simek@xilinx.com>)
-        id 1l2WkX-0000pN-0e; Thu, 21 Jan 2021 01:59:33 -0800
-Subject: Re: xilinx ams
-To:     Paul Thomas <pthomas8589@gmail.com>, <linux-iio@vger.kernel.org>,
-        "Manish Narani" <manish.narani@xilinx.com>,
-        Michal Simek <michal.simek@xilinx.com>
-References: <CAD56B7equnodXB4jKnA+fcU9XqdWXiO+SnbmfPw2vDKNqUFzdw@mail.gmail.com>
-From:   Michal Simek <michal.simek@xilinx.com>
-Message-ID: <6c742a18-101b-c29a-7cfc-009dcba578cd@xilinx.com>
-Date:   Thu, 21 Jan 2021 10:59:31 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.1
+        id S1730764AbhAULs7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Jan 2021 06:48:59 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:6434 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1730739AbhAULsv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2021 06:48:51 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10LBdi60003523;
+        Thu, 21 Jan 2021 06:47:54 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 3668rce6sh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 21 Jan 2021 06:47:54 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 10LBlrP5033328
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 21 Jan 2021 06:47:53 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2; Thu, 21 Jan 2021
+ 06:47:52 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
+ Thu, 21 Jan 2021 06:47:52 -0500
+Received: from nsa.sphairon.box ([10.44.3.51])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 10LBllDh013729;
+        Thu, 21 Jan 2021 06:47:51 -0500
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH 2/4] iio: adis16480: fix pps mode sampling frequency math
+Date:   Thu, 21 Jan 2021 12:49:52 +0100
+Message-ID: <20210121114954.64156-3-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210121114954.64156-1-nuno.sa@analog.com>
+References: <20210121114954.64156-1-nuno.sa@analog.com>
 MIME-Version: 1.0
-In-Reply-To: <CAD56B7equnodXB4jKnA+fcU9XqdWXiO+SnbmfPw2vDKNqUFzdw@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 80f5f00b-179e-4052-2ba2-08d8bdf34113
-X-MS-TrafficTypeDiagnostic: CH2PR02MB6885:
-X-Microsoft-Antispam-PRVS: <CH2PR02MB6885CBC7B4029CF43E1EB860C6A10@CH2PR02MB6885.namprd02.prod.outlook.com>
-X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:10000;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 4X5OM7vJ5fANMiQ7V+d9scl+n99d+NdNw/lf0Qmqx5VGTnTcBOojIMbbyWj792/Vml7rLxO3Y3YMXSYcyAXp9Bg8VlHZaHPwrYUtIxZ9fF7/4pwUmbxmgmLfFuKgLOc2RHhtSNtthIzxQJTFHPnt8FBn8Pejo0EfGrI7bx5+rplhDGosPxCodrQeO+Eqkc82aL2YHQCuXk1Op8UPzBIeONmQDZzKwtcFkwkpAOCydbvNfndUpXyzC06kZcbcU6uXcP9KQXfbkaTH8Xh2K8OWrQwmACOPQU28jl0/4kfryD8k/5dGUIKFL7Xp72Ue7CMYtebOJU7AYtcEDYsjhWypuzWZ5tt9L/9g+VyNiOZ7tC9MKv/P7KBiKVpxjhVzV11oSBCYr2guv4g8tFcn1PlBV++X2WcypeAQXsdKtSqrHQApY5JMfdQ7V5GJAYfSGoCahVliO2CUmf6ToNKTaQfnOo7OwPb2O2A4pOVu0hJfOWEeyBKf5CKjBcMxedb4BnNPJFWwWAevhwvtRp+l8Jmp1Aj4jc3Fis7rX9YC6GsgfFE/xTbU8JeH/kDkG4mum1QipAaik/+cPQ6oUWMMwyZwocq+wyJFYSAROBL80ts/kbU=
-X-Forefront-Antispam-Report: CIP:149.199.62.198;CTRY:US;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:xsj-pvapexch02.xlnx.xilinx.com;PTR:unknown-62-198.xilinx.com;CAT:NONE;SFS:(4636009)(346002)(136003)(376002)(39860400002)(396003)(46966006)(478600001)(8676002)(5660300002)(44832011)(70206006)(356005)(3480700007)(7636003)(31696002)(26005)(2906002)(31686004)(7116003)(2616005)(70586007)(966005)(53546011)(8936002)(36756003)(82310400003)(4744005)(316002)(47076005)(336012)(110136005)(82740400003)(426003)(186003)(9786002)(50156003)(43740500002);DIR:OUT;SFP:1101;
-X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 21 Jan 2021 09:59:33.8593
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 80f5f00b-179e-4052-2ba2-08d8bdf34113
-X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.62.198];Helo=[xsj-pvapexch02.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT044.eop-nam02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6885
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
+ definitions=2021-01-21_04:2021-01-21,2021-01-21 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ lowpriorityscore=0 priorityscore=1501 mlxscore=0 spamscore=0 adultscore=0
+ malwarescore=0 mlxlogscore=999 clxscore=1015 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2101210064
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Manish
+When using PPS mode, the input clock needs to be scaled so that we have
+an IMU sample rate between (optimally) 4000 and 4250. After this, we can
+use the decimation filter to lower the sampling rate in order to get what
+the user wants. Optimally, the user sample rate is a multiple of both the
+IMU sample rate and the input clock. Hence, calculating the sync_scale
+dynamically gives us better chances of achieving a perfect/integer value
+for DEC_RATE. The math here is:
+ 1. lcm of the input clock and the desired output rate.
+ 2. get the highest multiple of the previous result lower than the adis
+    max rate.
+ 3. The last result becomes the IMU sample rate. Use that to calculate
+    SYNC_SCALE and DEC_RATE (to get the user output rate).
 
-On 1/18/21 6:56 PM, Paul Thomas wrote:
-> Hi All,
-> 
-> We're still using v4 of the xilinx ams driver patch set (as of kernel 5.10.4):
-> https://patchwork.kernel.org/project/linux-arm-kernel/cover/1555943870-15353-1-git-send-email-manish.narani@xilinx.com/
-> 
-> And it's still working for us. We did have a fix to remove usage of
-> iio_priv_to_dev(), (I can send this if anyone is interested) but other
-> than that it's been fine.
-> 
-> I'm just going through the commit set we carry to see if I can nudge
-> anything along.
-> 
-> -Paul
-> 
+Fixes: 326e2357553d3 ("iio: imu: adis16480: Add support for external clock")
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/iio/imu/adis16480.c | 120 ++++++++++++++++++++++++++----------
+ 1 file changed, 86 insertions(+), 34 deletions(-)
 
-Can you please comment this?
+diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
+index dfe86c589325..7620822f3350 100644
+--- a/drivers/iio/imu/adis16480.c
++++ b/drivers/iio/imu/adis16480.c
+@@ -17,6 +17,7 @@
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/module.h>
++#include <linux/lcm.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -312,7 +313,8 @@ static int adis16480_debugfs_init(struct iio_dev *indio_dev)
+ static int adis16480_set_freq(struct iio_dev *indio_dev, int val, int val2)
+ {
+ 	struct adis16480 *st = iio_priv(indio_dev);
+-	unsigned int t, reg;
++	unsigned int t, sample_rate = st->clk_freq;
++	int ret;
+ 
+ 	if (val < 0 || val2 < 0)
+ 		return -EINVAL;
+@@ -321,28 +323,63 @@ static int adis16480_set_freq(struct iio_dev *indio_dev, int val, int val2)
+ 	if (t == 0)
+ 		return -EINVAL;
+ 
++	adis_dev_lock(&st->adis);
+ 	/*
+-	 * When using PPS mode, the rate of data collection is equal to the
+-	 * product of the external clock frequency and the scale factor in the
+-	 * SYNC_SCALE register.
+-	 * When using sync mode, or internal clock, the output data rate is
+-	 * equal with  the clock frequency divided by DEC_RATE + 1.
++	 * When using PPS mode, the input clock needs to be scaled so that we have an IMU
++	 * sample rate between (optimally) 4000 and 4250. After this, we can use the
++	 * decimation filter to lower the sampling rate in order to get what the user wants.
++	 * Optimally, the user sample rate is a multiple of both the IMU sample rate and
++	 * the input clock. Hence, calculating the sync_scale dynamically gives us better
++	 * chances of achieving a perfect/integer value for DEC_RATE. The math here is:
++	 *	1. lcm of the input clock and the desired output rate.
++	 *	2. get the highest multiple of the previous result lower than the adis max rate.
++	 *	3. The last result becomes the IMU sample rate. Use that to calculate SYNC_SCALE
++	 *	   and DEC_RATE (to get the user output rate)
+ 	 */
+ 	if (st->clk_mode == ADIS16480_CLK_PPS) {
+-		t = t / st->clk_freq;
+-		reg = ADIS16495_REG_SYNC_SCALE;
+-	} else {
+-		t = st->clk_freq / t;
+-		reg = ADIS16480_REG_DEC_RATE;
++		unsigned long scaled_rate = lcm(st->clk_freq, t);
++		int sync_scale;
++		struct device *dev = &st->adis.spi->dev;
++
++		/*
++		 * If lcm is bigger than the IMU maximum sampling rate there's no perfect
++		 * solution. In this case, we get the highest multiple of the input clock
++		 * lower that the IMU max sample rate.
++		 */
++		if (scaled_rate > st->chip_info->int_clk)
++			scaled_rate = st->chip_info->int_clk / st->clk_freq * st->clk_freq;
++		else
++			scaled_rate = st->chip_info->int_clk / scaled_rate * scaled_rate;
++
++		/*
++		 * This is not an hard requirement but it's not advised to run the IMU
++		 * with a sample rate lower than 4000Hz due to possible undersampling
++		 * issues so we will log a warning here. We could even force the rate
++		 * to 4000 but some users might really want this...
++		 */
++		if (scaled_rate < 4000000)
++			dev_warn(dev, "Possible undersampling issues due to sampling rate=%lu < 4000\n",
++				 scaled_rate / 1000);
++
++		sync_scale = scaled_rate / st->clk_freq;
++		ret = __adis_write_reg_16(&st->adis, ADIS16495_REG_SYNC_SCALE, sync_scale);
++		if (ret)
++			goto error;
++
++		sample_rate = scaled_rate;
+ 	}
+ 
++	t = DIV_ROUND_CLOSEST(sample_rate, t);
++	if (t)
++		t--;
++
+ 	if (t > st->chip_info->max_dec_rate)
+ 		t = st->chip_info->max_dec_rate;
+ 
+-	if ((t != 0) && (st->clk_mode != ADIS16480_CLK_PPS))
+-		t--;
+-
+-	return adis_write_reg_16(&st->adis, reg, t);
++	ret = __adis_write_reg_16(&st->adis, ADIS16480_REG_DEC_RATE, t);
++error:
++	adis_dev_unlock(&st->adis);
++	return ret;
+ }
+ 
+ static int adis16480_get_freq(struct iio_dev *indio_dev, int *val, int *val2)
+@@ -350,34 +387,35 @@ static int adis16480_get_freq(struct iio_dev *indio_dev, int *val, int *val2)
+ 	struct adis16480 *st = iio_priv(indio_dev);
+ 	uint16_t t;
+ 	int ret;
+-	unsigned int freq;
+-	unsigned int reg;
++	unsigned int freq, sample_rate = st->clk_freq;
+ 
+-	if (st->clk_mode == ADIS16480_CLK_PPS)
+-		reg = ADIS16495_REG_SYNC_SCALE;
+-	else
+-		reg = ADIS16480_REG_DEC_RATE;
++	adis_dev_lock(&st->adis);
+ 
+-	ret = adis_read_reg_16(&st->adis, reg, &t);
++	if (st->clk_mode == ADIS16480_CLK_PPS) {
++		u16 sync_scale;
++
++		ret = __adis_read_reg_16(&st->adis, ADIS16495_REG_SYNC_SCALE, &sync_scale);
++		if (ret)
++			goto error;
++
++		sample_rate = st->clk_freq * sync_scale;
++	}
++
++	ret = __adis_read_reg_16(&st->adis, ADIS16480_REG_DEC_RATE, &t);
+ 	if (ret)
+-		return ret;
++		goto error;
+ 
+-	/*
+-	 * When using PPS mode, the rate of data collection is equal to the
+-	 * product of the external clock frequency and the scale factor in the
+-	 * SYNC_SCALE register.
+-	 * When using sync mode, or internal clock, the output data rate is
+-	 * equal with  the clock frequency divided by DEC_RATE + 1.
+-	 */
+-	if (st->clk_mode == ADIS16480_CLK_PPS)
+-		freq = st->clk_freq * t;
+-	else
+-		freq = st->clk_freq / (t + 1);
++	adis_dev_unlock(&st->adis);
++
++	freq = DIV_ROUND_CLOSEST(sample_rate, (t + 1));
+ 
+ 	*val = freq / 1000;
+ 	*val2 = (freq % 1000) * 1000;
+ 
+ 	return IIO_VAL_INT_PLUS_MICRO;
++error:
++	adis_dev_unlock(&st->adis);
++	return ret;
+ }
+ 
+ enum {
+@@ -1278,6 +1316,20 @@ static int adis16480_probe(struct spi_device *spi)
+ 
+ 		st->clk_freq = clk_get_rate(st->ext_clk);
+ 		st->clk_freq *= 1000; /* micro */
++		if (st->clk_mode == ADIS16480_CLK_PPS) {
++			u16 sync_scale;
++
++			/*
++			 * In PPS mode, the IMU sample rate is the clk_freq * sync_scale. Hence,
++			 * default the IMU sample rate to the highest multiple of the input clock
++			 * lower than the IMU max sample rate. The internal sample rate is the
++			 * max...
++			 */
++			sync_scale = st->chip_info->int_clk / st->clk_freq;
++			ret = __adis_write_reg_16(&st->adis, ADIS16495_REG_SYNC_SCALE, sync_scale);
++			if (ret)
++				return ret;
++		}
+ 	} else {
+ 		st->clk_freq = st->chip_info->int_clk;
+ 	}
+-- 
+2.30.0
 
-Thanks,
-Michal
