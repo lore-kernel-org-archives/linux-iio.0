@@ -6,26 +6,26 @@ X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
 	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7D1FC433E0
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 19:58:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C43C0C433E6
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 19:59:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 663E923A54
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 19:58:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7607523A54
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 19:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726636AbhAUT61 convert rfc822-to-8bit (ORCPT
+        id S1726470AbhAUT7L convert rfc822-to-8bit (ORCPT
         <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Jan 2021 14:58:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:50024 "EHLO mail.kernel.org"
+        Thu, 21 Jan 2021 14:59:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:50386 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727254AbhAUT43 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 21 Jan 2021 14:56:29 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 0EBC023A56
-        for <linux-iio@vger.kernel.org>; Thu, 21 Jan 2021 19:55:49 +0000 (UTC)
+        id S1726073AbhAUT6w (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 21 Jan 2021 14:58:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPS id 0E07C23A5C
+        for <linux-iio@vger.kernel.org>; Thu, 21 Jan 2021 19:58:12 +0000 (UTC)
 From:   bugzilla-daemon@bugzilla.kernel.org
 To:     linux-iio@vger.kernel.org
-Subject: [Bug 209889] iio: adc: build error due to unmet dependency for
- MFD_STM32_TIMERS by STM32_ADC_CORE
-Date:   Thu, 21 Jan 2021 19:55:48 +0000
+Subject: [Bug 209883] iio: light: build error due to unmet dependency for
+ IIO_TRIGGERED_BUFFER by VCNL4035
+Date:   Thu, 21 Jan 2021 19:58:11 +0000
 X-Bugzilla-Reason: None
 X-Bugzilla-Type: changed
 X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
@@ -33,17 +33,17 @@ X-Bugzilla-Product: Drivers
 X-Bugzilla-Component: IIO
 X-Bugzilla-Version: 2.5
 X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: normal
+X-Bugzilla-Severity: low
 X-Bugzilla-Who: andy.shevchenko@gmail.com
-X-Bugzilla-Status: NEW
-X-Bugzilla-Resolution: 
+X-Bugzilla-Status: RESOLVED
+X-Bugzilla-Resolution: CODE_FIX
 X-Bugzilla-Priority: P1
 X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
 X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: component assigned_to
-Message-ID: <bug-209889-217253-Hn6j3u4eLE@https.bugzilla.kernel.org/>
-In-Reply-To: <bug-209889-217253@https.bugzilla.kernel.org/>
-References: <bug-209889-217253@https.bugzilla.kernel.org/>
+X-Bugzilla-Changed-Fields: cc component assigned_to
+Message-ID: <bug-209883-217253-6AdXj6TMio@https.bugzilla.kernel.org/>
+In-Reply-To: <bug-209883-217253@https.bugzilla.kernel.org/>
+References: <bug-209883-217253@https.bugzilla.kernel.org/>
 Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: 8BIT
 X-Bugzilla-URL: https://bugzilla.kernel.org/
@@ -53,12 +53,13 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-https://bugzilla.kernel.org/show_bug.cgi?id=209889
+https://bugzilla.kernel.org/show_bug.cgi?id=209883
 
 Andy Shevchenko (andy.shevchenko@gmail.com) changed:
 
            What    |Removed                     |Added
 ----------------------------------------------------------------------------
+                 CC|                            |andy.shevchenko@gmail.com
           Component|I2O                         |IIO
            Assignee|lars@metafoo.de             |drivers_iio@kernel-bugs.ker
                    |                            |nel.org
