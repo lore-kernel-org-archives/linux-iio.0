@@ -7,212 +7,586 @@ X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC31EC433E9
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 16:14:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40716C433DB
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 16:42:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 767DB23A52
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 16:14:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EBBCF23A22
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jan 2021 16:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S2387618AbhAUQKM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Jan 2021 11:10:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46192 "EHLO
+        id S2388093AbhAUQmV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Jan 2021 11:42:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1731893AbhAUQKD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2021 11:10:03 -0500
-Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F7EEC0613D6;
-        Thu, 21 Jan 2021 08:09:22 -0800 (PST)
-Received: by mail-pl1-x629.google.com with SMTP id b8so1507371plh.12;
-        Thu, 21 Jan 2021 08:09:22 -0800 (PST)
+        with ESMTP id S2388043AbhAUQmF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jan 2021 11:42:05 -0500
+Received: from mail-pg1-x52d.google.com (mail-pg1-x52d.google.com [IPv6:2607:f8b0:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B86C4C061756;
+        Thu, 21 Jan 2021 08:41:23 -0800 (PST)
+Received: by mail-pg1-x52d.google.com with SMTP id 30so1696773pgr.6;
+        Thu, 21 Jan 2021 08:41:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=z7oVga7Escj/c6BU5fn9u2qNIv4eQlnHp8uz/6apHm8=;
-        b=u13qVxp+ZtSHi+YnVRLB3wpgmSKmpNWCcNZUbEumSVrAjePaV7jzEOA1BNcokSMm5K
-         bb3cWcZ0R7Xzx0+2YBcJI6XQAMflPW1QUHNRf0Wb4fNYY3P59R262N2ZrHLs7wkQNvuT
-         xNPAu9mlC5g0WJoVyGbN5+EdhNJ+knPl81IiiFYACckKVWftkHgTI1AlS1V+IAAG3O5L
-         q/cDvnpumIrADAEIxyVXg48ada/aXIZr82dB3SFykrn4yA+vaxt/BLnir2ZHhTPPvF5E
-         0iBiWUQ9xn7qsj5c5Fxo99lG/A22xWjkVBdWzXLz+D4EFR2LYsr6p2mAybN+REoeWSrE
-         t4Jg==
+        bh=akda6afINCiP/jlkD7Qva1n/yoVCiIAqPE5va9RpOtw=;
+        b=amGM57mxt9hAY7ewQ9ONycuJJa1UpVu2EOTVU22asnbzkRk4Q1zVoSxJGMY6xj90k+
+         Iy/ofi3+9bsca3r/WfjaBui8lhmzkYFgotsLGD4GoTyXFJHpZ06Hipz26Df9HVsf07Pz
+         TEvAB0KpZxX81UXqpVknPLDyvKh968CXGpnFJsDTmH9ZM/QqKEJrf1Wo4JXiue/YtTYN
+         8T51ai+5j+FQ35ZA3oGPAXE9xFQGYrWhqCN/gT11K6XoxGxjOJYyEXRrC/5rUH1oRa4i
+         JoOljWjlP+QsaBSJjR9tczcZpHY8czNH0Z7Ii7tIDGs38fO6pirhM3gApvZgYA8InJ5S
+         kCGA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=z7oVga7Escj/c6BU5fn9u2qNIv4eQlnHp8uz/6apHm8=;
-        b=YwPt7yxXw11UHG6uW8ttXO844UtbTurtepDaROsL1I296cGdSsS+XX407Ud2gB3zUz
-         xzM4FwKt9yAZ0gxsYY5hdAzwW1JaDbtp5AKyN2ALY1YuGYmBzVJy408Z6Erjmwa0y5hB
-         55xOD3FVMrxq4hYRXHnqxODciPeQaKsLG/LaGtzyAvRV6kaLfUPWn1cHEmxUjuwI6TVZ
-         uPH2W/svRCHW9TmyebCAb5ddNJM/kN9vYT0TRB+aeNmQxKZl8MX3zw+GFOJ1RytuAAFu
-         5kOdmYJLwxpYEpqEJ0GzWQyNHP9J+FVoOAdDNpcvPM6q7H7Vja5SPNXGUcpnunJsiThC
-         tB5A==
-X-Gm-Message-State: AOAM533Xk+ahvjg09dTToVGt+SFOPIqnbIanXvqO5Wfg6/3bzvJoG/xP
-        aLVMzXsC7Pfb0lsdYnuxtYh4dlD/TWH70idkPr0=
-X-Google-Smtp-Source: ABdhPJz810rj4uEh3NOSZjkte6BAAPp2lkFigFSpC0lmoi8bADNmSJpDd6MCWI3LiIBOxL+SgTYdC7FnQIAMX/83wZI=
-X-Received: by 2002:a17:902:7b96:b029:de:7ae6:b8db with SMTP id
- w22-20020a1709027b96b02900de7ae6b8dbmr425254pll.0.1611245361597; Thu, 21 Jan
- 2021 08:09:21 -0800 (PST)
+        bh=akda6afINCiP/jlkD7Qva1n/yoVCiIAqPE5va9RpOtw=;
+        b=H6i3huxpl2NA2onDQiMSTy8YvFpA/W5nFrCASo2OMFMOn9zVx9+8kv2eGtiWoncz1Z
+         GxWE+OcuvDYhr3FoPviuH4Voy1lqP/6c1+9Gkuw+ehGH8+KkIrZg/1H6njby3GSJzhip
+         1V+CEng1DnR7apOz/wufWZiQeVKu88UJwS27JOZXGJ1NErsS83zk5GRZSO5pW/FanuaK
+         fErdsMnuoA2VF6UKFvnTDiJLBeD0JezrjdN7OXSEWVAf6InCrpydCKJpV+Hp2dvtlk5R
+         MGni57E4Jt1NS5yd1hiINOiEWByq0T+Bnd/KucsURfra0TMGpr4TgxBD+CCu9VqTLF/A
+         Z5ag==
+X-Gm-Message-State: AOAM530Eo/Nmkh6a8LiiaaRoC4UiFnIII29rhrKMROg4HyvhQDOKVNm2
+        0D5Mzo1ZEi4UpQ9OSsEQgCuzxreZCcqnZTNtCF6v3EputuuGZMQN
+X-Google-Smtp-Source: ABdhPJzT/vXVlPZvq2wB9cWw/osqtOHiruTWjRXst6np42w0BiE4w7TPffReBkTNIinSCEk+Huk5Z4Yzbe4DC+dJzug=
+X-Received: by 2002:a62:445:0:b029:19c:162b:bbef with SMTP id
+ 66-20020a6204450000b029019c162bbbefmr233800pfe.40.1611247283052; Thu, 21 Jan
+ 2021 08:41:23 -0800 (PST)
 MIME-Version: 1.0
-References: <20210121142716.6374-1-o.rempel@pengutronix.de> <20210121142716.6374-3-o.rempel@pengutronix.de>
-In-Reply-To: <20210121142716.6374-3-o.rempel@pengutronix.de>
+References: <20210112095128.7112-1-tomislav.denis@avl.com> <20210112095128.7112-2-tomislav.denis@avl.com>
+In-Reply-To: <20210112095128.7112-2-tomislav.denis@avl.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Thu, 21 Jan 2021 18:10:10 +0200
-Message-ID: <CAHp75VfnV+A=BpXGqf=xC=RTozfNrmq7X5V0o8aK2ptMyZF9YA@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] counter: add GPIO based pulse counters
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-iio <linux-iio@vger.kernel.org>
+Date:   Thu, 21 Jan 2021 18:42:11 +0200
+Message-ID: <CAHp75VfNweJyXgzCcvZUWj=3mCVkP=+HaFmG2XaKmKP1cATa=Q@mail.gmail.com>
+Subject: Re: [PATCH v3 1/2] iio: adc: Add driver for Texas Instruments
+ ADS131E0x ADC family
+To:     tomislav.denis@avl.com
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Jan 21, 2021 at 4:32 PM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+On Tue, Jan 12, 2021 at 2:37 PM <tomislav.denis@avl.com> wrote:
 >
-> Add simple GPIO base pulse counter. This device is used to measure
-> rotation speed of some agricultural devices, so no high frequency on the
-> counter pin is expected.
+> From: Tomislav Denis <tomislav.denis@avl.com>
 >
-> The maximal measurement frequency depends on the CPU and system load. On
-> the idle iMX6S I was able to measure up to 20kHz without count drops.
+> The ADS131E0x are a family of multichannel, simultaneous sampling,
+> 24-bit, delta-sigma, analog-to-digital converters (ADCs) with a
+> built-in programmable gain amplifier (PGA), internal reference
+> and an onboard oscillator.
 
 ...
 
-> +#include <linux/of_gpio.h>
+> +config TI_ADS131E08
+> +       tristate "Texas Instruments ADS131E08"
+> +       depends on SPI && OF
 
-It would be better to see OF agnostic code WRT GPIOs.
+Why OF?!
 
-...
-
-> +static ssize_t gpio_pulse_count_enable_read(struct counter_device *counter,
-> +                                           struct counter_count *count,
-> +                                           void *private, char *buf)
-> +{
-> +       struct gpio_pulse_priv *priv = counter->priv;
+> +       select IIO_BUFFER
+> +       select IIO_TRIGGERED_BUFFER
+> +       help
+> +         Say yes here to get support for Texas Instruments ADS131E04, ADS131E06
+> +         and ADS131E08 chips.
 > +
-> +       return scnprintf(buf, PAGE_SIZE, "%d\n", priv->enabled);
+> +         This driver can also be built as a module. If so, the module will be
+> +         called ti-ads131e08.
 
-sysfs_emit()
+...
+
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Texas Instruments ADS131E0x 4-, 6- and 8-Channel ADCs
+> + *
+> + * Copyright (c) 2020 AVL DiTEST GmbH
+> + *   Tomislav Denis <tomislav.denis@avl.com>
+> + *
+> + * Datasheet: https://www.ti.com/lit/ds/symlink/ads131e08.pdf
+
+Please, put this as a tag in the commit message as well
+
+> + */
+> +
+> +#include <linux/bitfield.h>
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+> +#include <linux/module.h>
+
+> +#include <linux/of_device.h>
+
+Why?!
+
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/spi/spi.h>
+> +#include <asm/unaligned.h>
+
+Can we group these to something like (wit blank lines between groups)
+
+linux/*.h
+
+linux/iio*.h
+
+asm/*.h
+
+?
+
+...
+
+> +#define ADS131E08_CMD_RREG(r)          (0x20 | (r & GENMASK(4, 0)))
+> +#define ADS131E08_CMD_WREG(r)          (0x40 | (r & GENMASK(4, 0)))
+
+BIT(5)
+BIT(6)
+
+...
+
+> +#define ADS131E08_VREF_2V4_MV          2400
+> +#define ADS131E08_VREF_4V_MV           4000
+
+I prefer mV despite this being defined constant.
+
+...
+
+> +struct ads131e08_state {
+> +       const struct ads131e08_info *info;
+> +       struct spi_device *spi;
+> +       struct iio_trigger *trig;
+> +       struct clk *adc_clk;
+> +       struct regulator *vref_reg;
+> +       struct ads131e08_channel_config *channel_config;
+> +       unsigned int data_rate;
+> +       unsigned int vref_mv;
+> +       unsigned int sdecode_delay_us;
+> +       unsigned int reset_delay_us;
+> +       unsigned int readback_len;
+> +       struct completion completion;
+
+> +
+
+Redundant blank line. But it's up to you.
+
+> +       struct {
+> +               u8 data[ADS131E08_NUM_DATA_BYTES_MAX];
+> +               s64 ts __aligned(8);
+> +       } tmp_buf;
+> +
+> +       u8 tx_buf[3] ____cacheline_aligned;
+> +       /*
+> +        * Add extra one padding byte to be able to access the last channel
+> +        * value using u32 pointer
+> +        */
+> +       u8 rx_buf[ADS131E08_NUM_STATUS_BYTES +
+> +               ADS131E08_NUM_DATA_BYTES_MAX + 1];
+> +};
+
+...
+
+> +static const struct ads131e08_data_rate_desc ads131e08_data_rate_tbl[] = {
+> +       { .rate = 64,   .reg = 0x00 },
+> +       { .rate = 32,   .reg = 0x01 },
+> +       { .rate = 16,   .reg = 0x02 },
+> +       { .rate = 8,    .reg = 0x03 },
+> +       { .rate = 4,    .reg = 0x04 },
+> +       { .rate = 2,    .reg = 0x05 },
+> +       { .rate = 1,    .reg = 0x06 },
+> +};
+
+Can't you use simple bit operations on this?
+
+rate = BIT(6 - index)
+reg = index
+
+...
+
+> +static const struct ads131e08_pga_gain_desc ads131e08_pga_gain_tbl[] = {
+> +       { .gain = 1,   .reg = 0x01 },
+> +       { .gain = 2,   .reg = 0x02 },
+
+reg == 3 valid?
+
+> +       { .gain = 4,   .reg = 0x04 },
+> +       { .gain = 8,   .reg = 0x05 },
+> +       { .gain = 12,  .reg = 0x06 },
+> +};
+
+Also can be changed by formula, but I remember that in some cases
+tables are preferable.
+
+...
+
+> +static int ads131e08_exec_cmd(struct ads131e08_state *st, u8 cmd)
+> +{
+> +       int ret;
+> +
+> +       ret = spi_write_then_read(st->spi, &cmd, 1, NULL, 0);
+> +       if (ret) {
+> +               dev_err(&st->spi->dev,
+> +                       "%s: SPI write failed for cmd: %02x\n", __func__, cmd);
+
+__func__ is not needed.
+
+> +               return ret;
+> +       }
+> +
+> +       return 0;
+
+The last is redundant, simply
+  return ret;
+instead of both of them.
 
 > +}
 > +
-> +static ssize_t gpio_pulse_count_enable_write(struct counter_device *counter,
-> +                                            struct counter_count *count,
-> +                                            void *private,
-> +                                            const char *buf, size_t len)
+> +static int ads131e08_read_reg(struct ads131e08_state *st, u8 reg)
 > +{
-> +       struct gpio_pulse_priv *priv = counter->priv;
-> +       bool enable;
-> +       ssize_t ret;
+> +       int ret;
+
 > +
-> +       ret = kstrtobool(buf, &enable);
+
+Redundant blank line.
+
+> +       struct spi_transfer transfer[] = {
+> +               {
+> +                       .tx_buf = &st->tx_buf,
+> +                       .len = 2,
+> +                       .delay_usecs = st->sdecode_delay_us,
+> +               }, {
+> +                       .rx_buf = &st->rx_buf,
+> +                       .len = 1,
+> +               },
+> +       };
+> +
+> +       st->tx_buf[0] = ADS131E08_CMD_RREG(reg);
+> +       st->tx_buf[1] = 0;
+> +
+> +       ret = spi_sync_transfer(st->spi, transfer, ARRAY_SIZE(transfer));
+> +       if (ret) {
+> +               dev_err(&st->spi->dev, "%s: SPI transfer failed\n", __func__);
+
+__func__ is almost useless. Better to think about the uniqueness of
+the messages across the driver.
+
+> +               return ret;
+> +       }
+> +
+> +       return st->rx_buf[0];
+> +}
+
+> +static int ads131e08_write_reg(struct ads131e08_state *st, u8 reg, u8 value)
+> +{
+
+Similar comments as per previous function.
+
+> +       ret = spi_sync_transfer(st->spi, transfer, ARRAY_SIZE(transfer));
+> +       if (ret) {
+> +               dev_err(&st->spi->dev, "%s: SPI transfer failed\n", __func__);
+
+> +               return ret;
+> +       }
+> +
+> +       return 0;
+
+return ret;
+
+> +}
+> +
+> +static int ads131e08_read_data(struct ads131e08_state *st, int rx_len)
+> +{
+
+As above.
+
+> +}
+
+...
+
+> +       for (i = 0; i < ARRAY_SIZE(ads131e08_data_rate_tbl); ++i) {
+
+i++ works the same and more regular pattern.
+Ditto for other occurrences.
+
+> +               if (ads131e08_data_rate_tbl[i].rate == data_rate)
+> +                       break;
+> +       }
+
+...
+
+> +       struct ads131e08_state *st = iio_priv(indio_dev);
+> +       const struct iio_chan_spec *channel = indio_dev->channels;
+> +       int ret, i;
+> +       u8 active_channels = 0;
+
+Reversed xmas tree order?
+Also for the rest of the driver.
+
+...
+
+> +       /* Power down unused channels */
+> +       for (i = 0; i < st->info->max_channels; ++i) {
+> +               if (!(active_channels & BIT(i))) {
+
+NIH of for_each_clear_bit()
+
+> +                       ret = ads131e08_power_down_channel(st, i, true);
+> +                       if (ret)
+> +                               return ret;
+> +               }
+> +       }
+
+...
+
+> +       /*
+> +        * Channel offset calibration is triggered with first START command.
+
+the first
+
+> +        * Since calibration take more time than settling operation,
+
+takes
+
+> +        * this causes timeout error when command START is sent first
+> +        * time (e.g. first call of the ads131e08_read_direct method).
+> +        * To avoid this problem offset calibration is triggered here.
+> +        */
+
+...
+
+> +       ret = ads131e08_exec_cmd(st, ADS131E08_CMD_STOP);
 > +       if (ret)
 > +               return ret;
 > +
-> +       if (priv->enabled == enable)
-> +               return len;
-> +
-> +       if (enable)
-> +               enable_irq(priv->irq);
-> +       else
-> +               disable_irq(priv->irq);
+> +       return 0;
 
-Oops, if IRQ happens here, shouldn't we have priv->enabled already set properly?
-
-> +       priv->enabled = enable;
-> +
-> +       return len;
-> +}
-> +
-> +static const struct counter_count_ext gpio_pulse_count_ext[] = {
-> +       {
-> +               .name = "enable",
-> +               .read = gpio_pulse_count_enable_read,
-> +               .write = gpio_pulse_count_enable_write
-
-Leave the comma here.
-
-> +       },
-> +};
+return _exec_cmd(...);
 
 ...
 
-> +static struct counter_signal gpio_pulse_signals[] = {
-> +       {
-> +               .id = 0,
-> +               .name = "Channel 0 signal"
+> +       ret = wait_for_completion_timeout(&st->completion,
+> +               msecs_to_jiffies(ADS131E08_MAX_SETTLING_TIME_MS));
 
-Leave the comma.
+With a temporary variable is easier to read.
 
-> +       },
-> +};
+... timeout = msecs_to_jiffies(...);
+
+       ret = wait_for_completion_timeout(&st->completion, timeout);
+
+> +       if (!ret)
+> +               return -ETIMEDOUT;
+
+...
+
+> +       *value = sign_extend32(
+> +               get_unaligned_be32(src) >> (32 - num_bits), num_bits - 1);
+
+One line, please.
+
+> +       return ret;
+
+Expected other than 0?
+
+...
+
+> +       case IIO_CHAN_INFO_SCALE:
+> +               if (!IS_ERR(st->vref_reg)) {
+
+Why not positive conditional?
+
+> +                       ret = regulator_get_voltage(st->vref_reg);
+> +                       if (ret < 0)
+> +                               return ret;
 > +
-> +static struct counter_synapse gpio_pulse_count_synapses[] = {
-> +       {
-> +               .actions_list = gpio_pulse_synapse_actions,
-> +               .num_actions = ARRAY_SIZE(gpio_pulse_synapse_actions),
-> +               .signal = &gpio_pulse_signals[0]
+> +                       *value = ret / 1000;
+> +               } else {
+> +                       *value = st->vref_mv;
+> +               }
+
+...
+
+> +       return -EINVAL;
+
+Can you use rather
+  default:
+   return -EINVAL;
+instead?
+
+...
+
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_SAMP_FREQ:
+> +               ret = iio_device_claim_direct_mode(indio_dev);
+> +               if (ret)
+> +                       return ret;
+> +
+> +               ret = ads131e08_set_data_rate(st, value);
+> +               iio_device_release_direct_mode(indio_dev);
+> +               return ret;
+> +       }
+> +
+> +       return -EINVAL;
 
 Ditto.
 
-> +       },
-> +};
-
 ...
 
-> +static struct counter_count gpio_pulse_counts[] = {
-> +       {
-> +               .id = 0,
-> +               .name = "Channel 1 Count",
-> +               .functions_list = gpio_pulse_count_functions,
-> +               .num_functions = ARRAY_SIZE(gpio_pulse_count_functions),
-> +               .synapses = gpio_pulse_count_synapses,
-> +               .num_synapses = ARRAY_SIZE(gpio_pulse_count_synapses),
-> +               .ext = gpio_pulse_count_ext,
-> +               .num_ext = ARRAY_SIZE(gpio_pulse_count_ext)
-
-Ditto
-
-> +       },
-> +};
+> +static int ads131e08_debugfs_reg_access(struct iio_dev *indio_dev,
+> +       unsigned int reg, unsigned int writeval, unsigned int *readval)
+> +{
+> +       struct ads131e08_state *st = iio_priv(indio_dev);
 > +
+> +       if (readval) {
+> +               int ret = ads131e08_read_reg(st, (u8)reg);
 
-...
+Is casting needed?
 
-> +       struct device_node *np = pdev->dev.of_node;
-
-> +       if (of_gpio_count(np) != 1) {
-> +               dev_err(dev, "Error, need exactly 1 gpio for device\n");
-> +               return -EINVAL;
+> +               *readval = ret;
+> +               return ret;
 > +       }
 
-gpiod_count() ?
+...
 
-> +       priv->gpio = devm_fwnode_gpiod_get(dev, of_fwnode_handle(np),
-> +                                          NULL, GPIOD_IN, GPIO_PULSE_NAME);
+> +       /*
+> +        * The number of data bits per channel depends on the data rate.
+> +        * For 32 and 64 ksps data rates, number of data bits per channel
+> +        * is 16. This case is not compliant with used (fixed) scan element
+> +        * type (be:s24/32>>8). So we use a litle tweek to pack properly
 
-of node to fwnode, can we avoid dragging this here to there?
+little tweak
 
-Why is devm_gpiod_get() followed by a label setting not good enough?
-
-> +       if (IS_ERR(priv->gpio))
-> +               return dev_err_probe(dev, PTR_ERR(priv->gpio), "failed to get gpio\n");
+> +        * 16 bits of data into the buffer.
+> +        */
 
 ...
 
-> +static const struct of_device_id gpio_pulse_cnt_of_match[] = {
-> +       { .compatible = "virtual,gpio-pulse-counter", },
-> +       {},
+> +       for_each_set_bit(chn, indio_dev->active_scan_mask,
+> +               indio_dev->masklength) {
 
-No comma needed for real terminator entry.
+One line.
 
-> +};
+...
+
+> +               /*
+> +                * Data conversion from 16 bits of data to 24 bits of data
+> +                * is done by sign etension (properly filling padding byte).
+
+extension
+
+> +                */
+> +               if (tweek_offset)
+> +                       memset(dest, *src & BIT(7) ? 0xff : 0x00, 1);
+
+One byte with memset()?!
+
+...
+
+> +       ret = of_property_read_u32(node, "ti,vref-internal", &tmp);
+
+device_property_read_u32()
+
+> +       if (ret)
+> +               tmp = 0;
+
+...
+
+> +       num_channels = of_get_available_child_count(node);
+
+fwnode API has something OF agnostic.
+
+> +       if (num_channels == 0) {
+> +               dev_err(&st->spi->dev, "no channel children\n");
+> +               return -ENODEV;
+> +       }
+
+...
+
+> +       for_each_available_child_of_node(node, child) {
+> +               ret = of_property_read_u32(child, "reg", &channel);
+
+> +               ret = of_property_read_u32(child, "ti,gain", &tmp);
+
+> +               ret = of_property_read_u32(child, "ti,mux", &tmp);
+
+> +       }
+
+Easy to convert to fwnode API.
+
+...
+
+> +       info = of_device_get_match_data(&spi->dev);
+
+device_get_match_data()
+
+> +       if (!info) {
+> +               dev_err(&spi->dev, "failed to get match data\n");
+> +               return -ENODEV;
+> +       }
+
+...
+
+> +       indio_dev->dev.of_node = spi->dev.of_node;
+
+Do you need to copy fwnode as well?
+
+...
+
+> +       st->adc_clk = devm_clk_get(&spi->dev, "adc-clk");
+> +       if (IS_ERR(st->adc_clk)) {
+> +               dev_err(&spi->dev, "failed to get the ADC clock\n");
+
+Spam when deferred.
+
+> +               return PTR_ERR(st->adc_clk);
+> +       }
+
+...
+
+> +       ret = clk_prepare_enable(st->adc_clk);
+> +       if (ret) {
+> +               dev_err(&spi->dev, "failed to prepare/enable the ADC clock\n");
+> +               return ret;
+> +       }
+> +
+> +       ret = devm_add_action_or_reset(&spi->dev, ads131e08_clk_disable, st);
+> +       if (ret) {
+
+> +               clk_disable_unprepare(st->adc_clk);
+
+"_or_reset" does call this, no?
+
+> +               return ret;
+> +       }
+
+Actually both calls can be moved to a separate helper.
+
+...
+
+> +       adc_clk_ns = NSEC_PER_SEC / adc_clk_hz;
+> +       st->sdecode_delay_us = DIV_ROUND_UP(
+> +               ADS131E08_WAIT_SDECODE_CYCLES * adc_clk_ns, 1000);
+
+NSEC_PER_USEC
+
+> +       st->reset_delay_us = DIV_ROUND_UP(
+> +               ADS131E08_WAIT_RESET_CYCLES * adc_clk_ns, 1000);
+
+Ditto.
+
+
+> +       ret = devm_iio_device_register(&spi->dev, indio_dev);
+> +       if (ret) {
+> +               dev_err(&spi->dev, "failed to register IIO device\n");
+> +               return ret;
+> +       }
+> +
+> +       return 0;
+
+return devm_iio_device_register(...);
 
 -- 
 With Best Regards,
