@@ -2,57 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBCD0C433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D20E3C43381
 	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 17:31:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8920323A9C
+	by mail.kernel.org (Postfix) with ESMTP id A805423A79
 	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 17:31:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729551AbhAVR2C (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Jan 2021 12:28:02 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:11906 "EHLO
+        id S1729571AbhAVR2J (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Jan 2021 12:28:09 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:19972 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729067AbhAVP4T (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jan 2021 10:56:19 -0500
+        by vger.kernel.org with ESMTP id S1729176AbhAVP4U (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jan 2021 10:56:20 -0500
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10MFTuj2004455;
-        Fri, 22 Jan 2021 10:55:21 -0500
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10MFU0BW004515;
+        Fri, 22 Jan 2021 10:55:27 -0500
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3668rcjhwj-1
+        by mx0a-00128a01.pphosted.com with ESMTP id 3668rcjhwu-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Jan 2021 10:55:21 -0500
+        Fri, 22 Jan 2021 10:55:27 -0500
 Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 10MFtJxQ002544
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 10MFtP1c002556
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 22 Jan 2021 10:55:20 -0500
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
+        Fri, 22 Jan 2021 10:55:25 -0500
+Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
  SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 22 Jan 2021 07:55:18 -0800
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.721.2;
- Fri, 22 Jan 2021 07:55:18 -0800
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Fri, 22 Jan 2021 07:55:18 -0800
+ 15.1.1779.2; Fri, 22 Jan 2021 07:55:24 -0800
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
+ SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
+ Fri, 22 Jan 2021 07:55:24 -0800
+Received: from zeus.spd.analog.com (10.66.68.11) by scsqmbx10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
+ Fri, 22 Jan 2021 07:55:23 -0800
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 10MFtF53014933;
-        Fri, 22 Jan 2021 10:55:15 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 10MFtF57014933;
+        Fri, 22 Jan 2021 10:55:21 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <jic23@kernel.org>, <nuno.sa@analog.com>,
         <dragos.bogdan@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 00/12] iio: core,buffer: add support for multiple IIO buffers per IIO device
-Date:   Fri, 22 Jan 2021 17:57:53 +0200
-Message-ID: <20210122155805.83012-1-alexandru.ardelean@analog.com>
+Subject: [PATCH v2 04/12] iio: buffer: add index to the first IIO buffer dir and symlink it back
+Date:   Fri, 22 Jan 2021 17:57:57 +0200
+Message-ID: <20210122155805.83012-5-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210122155805.83012-1-alexandru.ardelean@analog.com>
+References: <20210122155805.83012-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
@@ -67,62 +70,137 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Continuing from:
- https://lore.kernel.org/linux-iio/20201117162340.43924-1-alexandru.ardelean@analog.com/
+This change makes it so that the first buffer directory is named 'buffer0'
+and moves the 'scan_elements' under it.
 
-Changelog v1 -> v2:
-* 'iio: buffer: rework buffer & scan_elements dir creation'
-  add more doc-strings detailing the reasoning for this change
-* 'iio: buffer: re-route scan_elements via it's kobj_type'
-  move list_del() before the kfree()'s in the list destruction
-* 'iio: buffer: introduce support for attaching more IIO buffers'
-  - changed to 'cnt' variable vs re-using the 'i' for unwinding in
-    iio_buffer_alloc_sysfs_and_mask()
-  - removed kfree(old) in iio_device_attach_buffer()
-  - made iio_device_attach_buffer() an int return; this means that some
-    follow up patches are needed to make this return value be used;
-* 'iio: buffer: add ioctl() to support opening extra buffers for IIO device'
-  - tested ioctl() with a simple C program; attached to comment;
-  - changed 'i' variable usage to 'sz' for alloc
-  - changed logic for buffer0; returning FD 0; userspace should know
-    that the IIO_BUFFER_GET_FD_IOCTL call returns 0 for buffer0;
-    this is because I can't find a way to determine the FD of the
-    ioctl() in the kernel; duplicating an ioctl() for buffer0 is also bad;
+For backwards compatibility these folders are symlinked back to the
+original folders.
 
-Alexandru Ardelean (12):
-  iio: core: register chardev only if needed
-  iio: buffer: add back-ref from iio_buffer to iio_dev
-  iio: buffer: rework buffer & scan_elements dir creation
-  iio: buffer: add index to the first IIO buffer dir and symlink it back
-  iio: core: split __iio_device_attr_init() to init only the attr object
-  iio: buffer: re-route scan_elements via it's kobj_type
-  iio: buffer: re-route core buffer attributes via it's new kobj_type
-  iio: buffer: add helper to get the IIO device to which a buffer
-    belongs
-  iio: re-route all buffer attributes through new buffer kobj_type
-  iio: core: wrap iio device & buffer into struct for character devices
-  iio: buffer: introduce support for attaching more IIO buffers
-  iio: buffer: add ioctl() to support opening extra buffers for IIO
-    device
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/industrialio-buffer.c | 66 +++++++++++++++++++++----------
+ 1 file changed, 46 insertions(+), 20 deletions(-)
 
- drivers/iio/accel/adxl372.c                   |  36 +-
- drivers/iio/accel/bmc150-accel-core.c         |  34 +-
- drivers/iio/adc/at91-sama5d2_adc.c            |  30 +-
- .../buffer/industrialio-buffer-dmaengine.c    |  13 +-
- .../cros_ec_sensors/cros_ec_sensors_core.c    |  30 +-
- .../common/hid-sensors/hid-sensor-trigger.c   |  32 +-
- drivers/iio/iio_core.h                        |  11 +
- drivers/iio/industrialio-buffer.c             | 647 ++++++++++++++----
- drivers/iio/industrialio-core.c               | 117 ++--
- include/linux/iio/buffer.h                    |   6 +-
- include/linux/iio/buffer_impl.h               |  25 +-
- include/linux/iio/iio-opaque.h                |   6 +
- include/linux/iio/iio.h                       |   2 +-
- include/linux/iio/sysfs.h                     |  50 ++
- include/uapi/linux/iio/buffer.h               |  10 +
- 15 files changed, 790 insertions(+), 259 deletions(-)
- create mode 100644 include/uapi/linux/iio/buffer.h
-
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 0f470d902790..628d78125126 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1369,7 +1369,8 @@ static void iio_sysfs_del_attrs(struct kobject *kobj, struct attribute **ptr)
+  * IIO device.
+  */
+ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+-					     struct iio_dev *indio_dev)
++					     struct iio_dev *indio_dev,
++					     unsigned int idx)
+ {
+ 	struct iio_dev_attr *p;
+ 	struct attribute **attr;
+@@ -1401,7 +1402,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 	buffer->buffer_attrs = attr;
+ 
+ 	ret = kobject_init_and_add(&buffer->buffer_dir, &iio_buffer_dir_ktype,
+-				   &indio_dev->dev.kobj, "buffer");
++				   &indio_dev->dev.kobj, "buffer%u", idx);
+ 	if (ret)
+ 		goto error_buffer_free_attrs;
+ 
+@@ -1446,7 +1447,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 	}
+ 
+ 	ret = kobject_init_and_add(&buffer->scan_el_dir, &iio_scan_el_dir_ktype,
+-				   &indio_dev->dev.kobj, "scan_elements");
++				   &buffer->buffer_dir, "scan_elements");
+ 	if (ret)
+ 		goto error_free_scan_attrs;
+ 
+@@ -1477,6 +1478,22 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 	return ret;
+ }
+ 
++/**
++ * __iio_buffer_free_sysfs_and_mask() - Free sysfs objects for a single IIO buffer
++ * @buffer: the iio buffer for which to destroy the objects
++ */
++static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
++{
++	iio_sysfs_del_attrs(&buffer->scan_el_dir, buffer->scan_el_attrs);
++	kobject_put(&buffer->scan_el_dir);
++	kfree(buffer->scan_el_attrs);
++	bitmap_free(buffer->scan_mask);
++	iio_sysfs_del_attrs(&buffer->buffer_dir, buffer->buffer_attrs);
++	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
++	kobject_put(&buffer->buffer_dir);
++	kfree(buffer->buffer_attrs);
++}
++
+ /**
+  * iio_buffer_alloc_sysfs_and_mask() - Allocate sysfs attributes to attached buffers
+  * @indio_dev: the iio device for which to create the buffer sysfs attributes
+@@ -1492,7 +1509,7 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ {
+ 	struct iio_buffer *buffer = indio_dev->buffer;
+ 	const struct iio_chan_spec *channels;
+-	int i;
++	int i, ret;
+ 
+ 	channels = indio_dev->channels;
+ 	if (channels) {
+@@ -1506,23 +1523,29 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ 	if (!buffer)
+ 		return 0;
+ 
+-	return __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev);
+-}
++	ret = __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev, 0);
++	if (ret)
++		return ret;
+ 
+-/**
+- * __iio_buffer_free_sysfs_and_mask() - Free sysfs objects for a single IIO buffer
+- * @buffer: the iio buffer for which to destroy the objects
+- */
+-static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
+-{
+-	iio_sysfs_del_attrs(&buffer->scan_el_dir, buffer->scan_el_attrs);
+-	kobject_put(&buffer->scan_el_dir);
+-	kfree(buffer->scan_el_attrs);
+-	bitmap_free(buffer->scan_mask);
+-	iio_sysfs_del_attrs(&buffer->buffer_dir, buffer->buffer_attrs);
+-	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
+-	kobject_put(&buffer->buffer_dir);
+-	kfree(buffer->buffer_attrs);
++	ret = sysfs_create_link(&indio_dev->dev.kobj,
++				&indio_dev->buffer->buffer_dir,
++				"buffer");
++	if (ret)
++		goto error_free_sysfs_and_mask;
++
++	ret = sysfs_create_link(&indio_dev->dev.kobj,
++				&indio_dev->buffer->scan_el_dir,
++				"scan_elements");
++	if (ret)
++		goto error_remove_buffer_dir_link;
++
++	return 0;
++
++error_remove_buffer_dir_link:
++	sysfs_remove_link(&indio_dev->dev.kobj, "buffer");
++error_free_sysfs_and_mask:
++	__iio_buffer_free_sysfs_and_mask(buffer);
++	return ret;
+ }
+ 
+ /**
+@@ -1538,6 +1561,9 @@ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
+ 	if (!buffer)
+ 		return;
+ 
++	sysfs_remove_link(&indio_dev->dev.kobj, "scan_elements");
++	sysfs_remove_link(&indio_dev->dev.kobj, "buffer");
++
+ 	__iio_buffer_free_sysfs_and_mask(buffer);
+ }
+ 
 -- 
 2.17.1
 
