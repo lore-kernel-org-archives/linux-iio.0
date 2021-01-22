@@ -2,111 +2,57 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PULL_REQUEST,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43549C433E0
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 08:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 923A4C433E6
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 10:12:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F088C238D7
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 08:55:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 55984235F9
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 10:12:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1727263AbhAVIzL convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Jan 2021 03:55:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:55050 "EHLO mail.kernel.org"
+        id S1727782AbhAVKL5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Jan 2021 05:11:57 -0500
+Received: from mail.kernel.org ([198.145.29.99]:42742 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1727089AbhAVIy6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 22 Jan 2021 03:54:58 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id F0423236F9;
-        Fri, 22 Jan 2021 08:54:14 +0000 (UTC)
-Date:   Fri, 22 Jan 2021 08:54:08 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc:     Zheng Yongjun <zhengyongjun3@huawei.com>, jikos@kernel.org,
-        benjamin.tissoires@redhat.com, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH -next] hid/hid-sensor-custom: convert comma to semicolon
-Message-ID: <20210122085408.4fcc8a10@archlinux>
-In-Reply-To: <20210120204824.0d52a2d2@archlinux>
-References: <20201214133212.3569-1-zhengyongjun3@huawei.com>
-        <df1481e15c591106ba75ed85289b12507cbc8c49.camel@linux.intel.com>
-        <20201229181841.6d63213a@archlinux>
-        <20210120204824.0d52a2d2@archlinux>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S1727772AbhAVKKH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 22 Jan 2021 05:10:07 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A03BA238EE;
+        Fri, 22 Jan 2021 10:09:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1611310147;
+        bh=nNnml7DN93HIS64+w3vF1JaFyWcdyNdSc/QxeRarj8U=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=R5BnIpxUp1l5YvefgMee+eK1b6/ud3YQfPvZOM/3X7PloxktLf3AZJuI4NiqftSJv
+         HfWBXnsdIl7i5ddm39FDHi7DH5LrzEKHtL4GspNxu44H2Gpumo1M22PYBCJeIm0sQG
+         f5tLBkZIFASJ1vkIo3Dl9FQpk/RvFPvBQqxqA13Y=
+Date:   Fri, 22 Jan 2021 11:08:31 +0100
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org
+Subject: Re: [PULL] 1st set of new IIO device support, features and cleanups
+ for the 5.12 cycle
+Message-ID: <YAqkH0YPCc7DC4Sl@kroah.com>
+References: <20210122090927.2fd2e3c1@archlinux>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210122090927.2fd2e3c1@archlinux>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 20 Jan 2021 20:49:57 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On Tue, 29 Dec 2020 18:18:41 +0000
-> Jonathan Cameron <jic23@kernel.org> wrote:
+On Fri, Jan 22, 2021 at 09:09:27AM +0000, Jonathan Cameron wrote:
+> The following changes since commit d61adf609c48b9e91a84e9a943f0b3bcd84c3cad:
 > 
-> > On Mon, 14 Dec 2020 06:13:58 -0800
-> > Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com> wrote:
-> >   
-> > > On Mon, 2020-12-14 at 21:32 +0800, Zheng Yongjun wrote:    
-> > > > Replace a comma between expression statements by a semicolon.
-> > > > 
-> > > > Signed-off-by: Zheng Yongjun <zhengyongjun3@huawei.com>      
-> > > Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>    
-> > Applied to the togreg branch of iio.git and pushed out as testing for
-> > the autobuilders to see if they can break it.  
-> Hi Jiri,
+>   staging: unisys: visorhba: enhance visorhba to use channel_interrupt (2021-01-07 16:57:50 +0100)
 > 
-> Just realised this is in HID rather than IIO. I hope you don't mind as
-> it's now deep in a tree I'd rather not rebase.
-
-On basis it wasn't actually that bad, (only one merge after it) I did
-the rebase and dropped this patch.  Jiri, guess you probably
-want to pick this up through HID.
-
-Thanks,
-
-Jonathan
-
+> are available in the Git repository at:
 > 
-> Sorry about that.
-> 
-> Jonathan
-> 
-> > 
-> > Thanks,
-> > 
-> > Jonathan
-> >   
-> > >     
-> > > > ---
-> > > >  drivers/hid/hid-sensor-custom.c | 2 +-
-> > > >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > > > 
-> > > > diff --git a/drivers/hid/hid-sensor-custom.c b/drivers/hid/hid-
-> > > > sensor-custom.c
-> > > > index 4d25577a8573..6c47a2e7623d 100644
-> > > > --- a/drivers/hid/hid-sensor-custom.c
-> > > > +++ b/drivers/hid/hid-sensor-custom.c
-> > > > @@ -728,7 +728,7 @@ static int hid_sensor_custom_dev_if_add(struct
-> > > > hid_sensor_custom *sensor_inst)
-> > > >  
-> > > >         sensor_inst->custom_dev.minor = MISC_DYNAMIC_MINOR;
-> > > >         sensor_inst->custom_dev.name = dev_name(&sensor_inst->pdev-      
-> > > > >dev);      
-> > > > -       sensor_inst->custom_dev.fops = &hid_sensor_custom_fops,
-> > > > +       sensor_inst->custom_dev.fops = &hid_sensor_custom_fops;
-> > > >         ret = misc_register(&sensor_inst->custom_dev);
-> > > >         if (ret) {
-> > > >                 kfifo_free(&sensor_inst->data_fifo);      
-> > > 
-> > >     
-> >   
-> 
+>   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.12a
 
+Pulled and pushed out, thanks.
+
+greg k-h
