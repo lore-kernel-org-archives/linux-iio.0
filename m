@@ -7,52 +7,48 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA74EC433E0
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 16:23:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 23FABC43381
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 16:23:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9038B2343E
+	by mail.kernel.org (Postfix) with ESMTP id DEB462343E
 	for <linux-iio@archiver.kernel.org>; Fri, 22 Jan 2021 16:23:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729571AbhAVQXc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Jan 2021 11:23:32 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:36746 "EHLO
+        id S1729648AbhAVQXl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Jan 2021 11:23:41 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:47714 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1729597AbhAVQXW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jan 2021 11:23:22 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10MG0oqp025859;
-        Fri, 22 Jan 2021 11:22:30 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3668rbtnd2-1
+        by vger.kernel.org with ESMTP id S1729640AbhAVQX2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jan 2021 11:23:28 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 10MGLofs005882;
+        Fri, 22 Jan 2021 11:22:35 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 3668rcjmkx-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 22 Jan 2021 11:22:30 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 10MGMTU6003229
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 22 Jan 2021 11:22:29 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Fri, 22 Jan 2021 11:22:28 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
- Fri, 22 Jan 2021 11:22:28 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
- Fri, 22 Jan 2021 11:22:28 -0500
+        Fri, 22 Jan 2021 11:22:35 -0500
+Received: from SCSQMBX10.ad.analog.com (SCSQMBX10.ad.analog.com [10.77.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 10MGMXE1058184
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 22 Jan 2021 11:22:34 -0500
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.721.2;
+ Fri, 22 Jan 2021 08:22:32 -0800
+Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Fri, 22 Jan 2021 08:22:32 -0800
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 10MGMOCn016711;
-        Fri, 22 Jan 2021 11:22:25 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 10MGMOCq016711;
+        Fri, 22 Jan 2021 11:22:30 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <jic23@kernel.org>, <nuno.sa@analog.com>,
         <dragos.bogdan@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 01/12][RESEND] iio: core: register chardev only if needed
-Date:   Fri, 22 Jan 2021 18:25:18 +0200
-Message-ID: <20210122162529.84978-2-alexandru.ardelean@analog.com>
+Subject: [PATCH v2 04/12][RESEND] iio: buffer: add index to the first IIO buffer dir and symlink it back
+Date:   Fri, 22 Jan 2021 18:25:21 +0200
+Message-ID: <20210122162529.84978-5-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210122162529.84978-1-alexandru.ardelean@analog.com>
 References: <20210122162529.84978-1-alexandru.ardelean@analog.com>
@@ -61,92 +57,146 @@ Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.343,18.0.737
  definitions=2021-01-22_11:2021-01-22,2021-01-22 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
- phishscore=0 malwarescore=0 impostorscore=0 spamscore=0 mlxscore=0
- lowpriorityscore=0 suspectscore=0 bulkscore=0 adultscore=0 mlxlogscore=999
- clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ lowpriorityscore=0 priorityscore=1501 mlxscore=0 spamscore=0 adultscore=0
+ malwarescore=0 mlxlogscore=999 clxscore=1015 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2101220088
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-We only need a chardev if we need to support buffers and/or events.
+This change makes it so that the first buffer directory is named 'buffer0'
+and moves the 'scan_elements' under it.
 
-With this change, a chardev will be created only if an IIO buffer is
-attached OR an event_interface is configured.
-
-Otherwise, no chardev will be created, and the IIO device will get
-registered with the 'device_add()' call.
-
-Quite a lot of IIO devices don't really need a chardev, so this is a minor
-improvement to the IIO core, as the IIO device will take up (slightly)
-fewer resources.
-
-In order to not create a chardev, we mostly just need to not initialize the
-indio_dev->dev.devt field. If that is un-initialized, cdev_device_add()
-behaves like device_add().
+For backwards compatibility these folders are symlinked back to the
+original folders.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/industrialio-core.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
+ drivers/iio/industrialio-buffer.c | 66 +++++++++++++++++++++----------
+ 1 file changed, 46 insertions(+), 20 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 7db761afa578..0a6fd299a978 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1761,6 +1761,15 @@ static const struct file_operations iio_buffer_fileops = {
- 	.release = iio_chrdev_release,
- };
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 0f470d902790..628d78125126 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -1369,7 +1369,8 @@ static void iio_sysfs_del_attrs(struct kobject *kobj, struct attribute **ptr)
+  * IIO device.
+  */
+ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+-					     struct iio_dev *indio_dev)
++					     struct iio_dev *indio_dev,
++					     unsigned int idx)
+ {
+ 	struct iio_dev_attr *p;
+ 	struct attribute **attr;
+@@ -1401,7 +1402,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 	buffer->buffer_attrs = attr;
  
-+static const struct file_operations iio_event_fileops = {
-+	.owner = THIS_MODULE,
-+	.llseek = noop_llseek,
-+	.unlocked_ioctl = iio_ioctl,
-+	.compat_ioctl = compat_ptr_ioctl,
-+	.open = iio_chrdev_open,
-+	.release = iio_chrdev_release,
-+};
+ 	ret = kobject_init_and_add(&buffer->buffer_dir, &iio_buffer_dir_ktype,
+-				   &indio_dev->dev.kobj, "buffer");
++				   &indio_dev->dev.kobj, "buffer%u", idx);
+ 	if (ret)
+ 		goto error_buffer_free_attrs;
+ 
+@@ -1446,7 +1447,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 	}
+ 
+ 	ret = kobject_init_and_add(&buffer->scan_el_dir, &iio_scan_el_dir_ktype,
+-				   &indio_dev->dev.kobj, "scan_elements");
++				   &buffer->buffer_dir, "scan_elements");
+ 	if (ret)
+ 		goto error_free_scan_attrs;
+ 
+@@ -1477,6 +1478,22 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 	return ret;
+ }
+ 
++/**
++ * __iio_buffer_free_sysfs_and_mask() - Free sysfs objects for a single IIO buffer
++ * @buffer: the iio buffer for which to destroy the objects
++ */
++static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
++{
++	iio_sysfs_del_attrs(&buffer->scan_el_dir, buffer->scan_el_attrs);
++	kobject_put(&buffer->scan_el_dir);
++	kfree(buffer->scan_el_attrs);
++	bitmap_free(buffer->scan_mask);
++	iio_sysfs_del_attrs(&buffer->buffer_dir, buffer->buffer_attrs);
++	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
++	kobject_put(&buffer->buffer_dir);
++	kfree(buffer->buffer_attrs);
++}
 +
- static int iio_check_unique_scan_index(struct iio_dev *indio_dev)
+ /**
+  * iio_buffer_alloc_sysfs_and_mask() - Allocate sysfs attributes to attached buffers
+  * @indio_dev: the iio device for which to create the buffer sysfs attributes
+@@ -1492,7 +1509,7 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
  {
- 	int i, j;
-@@ -1788,6 +1797,7 @@ static const struct iio_buffer_setup_ops noop_ring_setup_ops;
+ 	struct iio_buffer *buffer = indio_dev->buffer;
+ 	const struct iio_chan_spec *channels;
+-	int i;
++	int i, ret;
  
- int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- {
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	int ret;
+ 	channels = indio_dev->channels;
+ 	if (channels) {
+@@ -1506,23 +1523,29 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ 	if (!buffer)
+ 		return 0;
  
- 	if (!indio_dev->info)
-@@ -1805,9 +1815,6 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- 	if (ret < 0)
- 		return ret;
+-	return __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev);
+-}
++	ret = __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev, 0);
++	if (ret)
++		return ret;
  
--	/* configure elements for the chrdev */
--	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
--
- 	iio_device_register_debugfs(indio_dev);
+-/**
+- * __iio_buffer_free_sysfs_and_mask() - Free sysfs objects for a single IIO buffer
+- * @buffer: the iio buffer for which to destroy the objects
+- */
+-static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
+-{
+-	iio_sysfs_del_attrs(&buffer->scan_el_dir, buffer->scan_el_attrs);
+-	kobject_put(&buffer->scan_el_dir);
+-	kfree(buffer->scan_el_attrs);
+-	bitmap_free(buffer->scan_mask);
+-	iio_sysfs_del_attrs(&buffer->buffer_dir, buffer->buffer_attrs);
+-	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
+-	kobject_put(&buffer->buffer_dir);
+-	kfree(buffer->buffer_attrs);
++	ret = sysfs_create_link(&indio_dev->dev.kobj,
++				&indio_dev->buffer->buffer_dir,
++				"buffer");
++	if (ret)
++		goto error_free_sysfs_and_mask;
++
++	ret = sysfs_create_link(&indio_dev->dev.kobj,
++				&indio_dev->buffer->scan_el_dir,
++				"scan_elements");
++	if (ret)
++		goto error_remove_buffer_dir_link;
++
++	return 0;
++
++error_remove_buffer_dir_link:
++	sysfs_remove_link(&indio_dev->dev.kobj, "buffer");
++error_free_sysfs_and_mask:
++	__iio_buffer_free_sysfs_and_mask(buffer);
++	return ret;
+ }
  
- 	ret = iio_buffer_alloc_sysfs_and_mask(indio_dev);
-@@ -1836,9 +1843,15 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- 		indio_dev->setup_ops == NULL)
- 		indio_dev->setup_ops = &noop_ring_setup_ops;
+ /**
+@@ -1538,6 +1561,9 @@ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
+ 	if (!buffer)
+ 		return;
  
--	cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
-+	if (indio_dev->buffer)
-+		cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
-+	else if (iio_dev_opaque->event_interface)
-+		cdev_init(&indio_dev->chrdev, &iio_event_fileops);
++	sysfs_remove_link(&indio_dev->dev.kobj, "scan_elements");
++	sysfs_remove_link(&indio_dev->dev.kobj, "buffer");
++
+ 	__iio_buffer_free_sysfs_and_mask(buffer);
+ }
  
--	indio_dev->chrdev.owner = this_mod;
-+	if (indio_dev->buffer || iio_dev_opaque->event_interface) {
-+		indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
-+		indio_dev->chrdev.owner = this_mod;
-+	}
- 
- 	ret = cdev_device_add(&indio_dev->chrdev, &indio_dev->dev);
- 	if (ret < 0)
 -- 
 2.17.1
 
