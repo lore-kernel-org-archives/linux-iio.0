@@ -2,190 +2,205 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 972B4C433E0
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Jan 2021 20:17:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20884C433E0
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Jan 2021 22:30:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 63A1922582
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Jan 2021 20:17:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CE41B22202
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Jan 2021 22:30:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1726763AbhAYURS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Jan 2021 15:17:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58532 "EHLO
+        id S1732301AbhAYW3p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Jan 2021 17:29:45 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1732201AbhAYTvW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jan 2021 14:51:22 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE192C061A29
-        for <linux-iio@vger.kernel.org>; Mon, 25 Jan 2021 11:48:40 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <afa@pengutronix.de>)
-        id 1l47qf-0006N0-C0; Mon, 25 Jan 2021 20:48:29 +0100
-Received: from afa by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <afa@pengutronix.de>)
-        id 1l47qb-0007yC-C9; Mon, 25 Jan 2021 20:48:25 +0100
-From:   Ahmad Fatoum <a.fatoum@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>
-Cc:     kernel@pengutronix.de, Holger Assmann <has@pengutronix.de>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v4] iio: adc: stm32-adc: enable timestamping for non-DMA usage
-Date:   Mon, 25 Jan 2021 20:48:23 +0100
-Message-Id: <20210125194824.30549-1-a.fatoum@pengutronix.de>
-X-Mailer: git-send-email 2.30.0
+        with ESMTP id S1732031AbhAYW3j (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jan 2021 17:29:39 -0500
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 809A0C061756
+        for <linux-iio@vger.kernel.org>; Mon, 25 Jan 2021 14:28:59 -0800 (PST)
+Received: by mail-io1-xd2c.google.com with SMTP id p72so29854877iod.12
+        for <linux-iio@vger.kernel.org>; Mon, 25 Jan 2021 14:28:59 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=3HTXYu55L+PAx0SiIbYzAoCAbt0r7piW94Rvj4CnZEs=;
+        b=lhDuB21EK2ZrJGH1AFpt2WhxwsmxqDqj0dgUgbw63DMTeTFGtTRhtcxKjql0Pd1o1m
+         D2OyUyFBNwh2V04SjQigJD0BGrrAry+k1yeuQ/rVxmPApCtkYVzgmclTyDLwKDE/bkkD
+         W1SalSsWPLqajBDlroCko3EAlIkIJzqwTDrgE=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=3HTXYu55L+PAx0SiIbYzAoCAbt0r7piW94Rvj4CnZEs=;
+        b=AsTRZJIyobS0yJmFyuqqjbsCeQprT8tU6+AC1uLWqnQ184PSzoMuwkwi53WSOe3l+Q
+         sDlsMZo0iH9S650uwQUcZEtfL2M1pxOGcPIx7uOMuXSE4A6DGmT4H4whC/tcpeotB9xJ
+         FSP8X7bd1YRBj4CNfcfjPKSUiuJ/QoTfK7sRKn1AHMaoIYzsWdl02AahgBVd1Q23Xkfq
+         ui0PRwrSVVcAP3x4lY3a6xkOF+yauqzV+7CzJHNgzxI/0DM/z3mHx6XCeaySY1CDzp+U
+         r58SUoaQX3VztNOQwAlB1K3ATXS1mbl9Q4oV1ZFL5yvbvYEwVQZ9w3Pqyk2unwgBcGhX
+         tjyQ==
+X-Gm-Message-State: AOAM531p3CqDcg5LiNDZKFymm0/wpTN7mOrbhQ8aR67892v18HyqXHxC
+        UeegyeOyuA4QLgM1wCAi3w2EbJOIij8leLmJrN/3TQ==
+X-Google-Smtp-Source: ABdhPJxXwB291NNb3prn3mV1kF2sr9XondyMRUQzXqm37hFMZBuz7sJjvziSK50fLymFfaIQYRf1DeHFOihgvNO7SEE=
+X-Received: by 2002:a5e:d603:: with SMTP id w3mr2025939iom.65.1611613738699;
+ Mon, 25 Jan 2021 14:28:58 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: afa@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+References: <20210122225443.186184-1-swboyd@chromium.org> <20210122225443.186184-4-swboyd@chromium.org>
+ <20210124173820.4528b9c9@archlinux> <CAPUE2uuQsa7=pjw+D=r0QtLGTd1kQa7X6VBVa73=gx47Vf7KDA@mail.gmail.com>
+ <161160076017.76967.4467861058817044169@swboyd.mtv.corp.google.com>
+In-Reply-To: <161160076017.76967.4467861058817044169@swboyd.mtv.corp.google.com>
+From:   Gwendal Grignou <gwendal@chromium.org>
+Date:   Mon, 25 Jan 2021 14:28:46 -0800
+Message-ID: <CAPUE2uu555NT1=u=1Nb8WExT7RvK8mj5kBiDfGymHiAmoj2WCg@mail.gmail.com>
+Subject: Re: [PATCH 3/3] iio: proximity: Add a ChromeOS EC MKBP proximity driver
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-For non-DMA usage, we have an easy way to associate a timestamp with a
-sample: iio_pollfunc_store_time stores a timestamp in the primary
-trigger IRQ handler and stm32_adc_trigger_handler runs in the IRQ thread
-to push out the buffer along with the timestamp.
+On Mon, Jan 25, 2021 at 10:52 AM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> Quoting Gwendal Grignou (2021-01-24 13:41:44)
+> > On Sun, Jan 24, 2021 at 9:38 AM Jonathan Cameron <jic23@kernel.org> wrote:
+> > >
+> > > On Fri, 22 Jan 2021 14:54:43 -0800
+> > > Stephen Boyd <swboyd@chromium.org> wrote:
+> > >
+> > > > ---
+> > > >  drivers/iio/proximity/Kconfig             |  11 +
+> > > >  drivers/iio/proximity/Makefile            |   1 +
+> > > >  drivers/iio/proximity/cros_ec_proximity.c | 252 ++++++++++++++++++++++
+>
+> I suppose I'll change this to cros_ec_mkbp_proximity as well.
+>
+> > > > diff --git a/drivers/iio/proximity/cros_ec_proximity.c b/drivers/iio/proximity/cros_ec_proximity.c
+> > > > new file mode 100644
+> > > > index 000000000000..a3aef911e3cc
+> > > > --- /dev/null
+> > > > +++ b/drivers/iio/proximity/cros_ec_proximity.c
+> > > > @@ -0,0 +1,252 @@
+> [...]
+> > > > +
+> > > > +static int cros_ec_proximity_query(struct cros_ec_device *ec_dev, int *state)
+> > > > +{
+> > > > +     struct ec_params_mkbp_info *params;
+> > > > +     struct cros_ec_command *msg;
+> > > > +     int ret;
+> > > > +
+> > > > +     msg = kzalloc(sizeof(*msg) + max(sizeof(u32), sizeof(*params)),
+> > > > +                   GFP_KERNEL);
+> > >
+> > > Given this is known at build time, perhaps better to add it to the
+> > > iio_priv() accessed structure and avoid having to handle allocations
+> > > separately.
+> > As Jonathan said, it can be preallocated in iio private structure. We
+> > can also use the stack, given the response size is known beforehand.
+> > See cros_ec_cec_set_log_addr() or cros_ec_pwm_get_duty() for example.
+>
+> I suppose stack is even simpler. I'll try that.
+>
+> > > > +
+> > > > +static int cros_ec_proximity_notify(struct notifier_block *nb,
+> > > > +                          unsigned long queued_during_suspend, void *_ec)
+> > > > +{
+> > > > +     struct cros_ec_proximity_data *data;
+> > > > +     struct cros_ec_device *ec = _ec;
+> > > > +     u8 event_type = ec->event_data.event_type & EC_MKBP_EVENT_TYPE_MASK;
+> > > > +     void *switches = &ec->event_data.data.switches;
+> > > > +     struct iio_dev *indio_dev;
+> > > > +     s64 timestamp;
+> > > > +     int state, dir;
+> > > > +     u64 ev;
+> > > > +
+> > > > +     if (event_type == EC_MKBP_EVENT_SWITCH) {
+> > > > +             data = container_of(nb, struct cros_ec_proximity_data, notifier);
+> > > > +             indio_dev = data->indio_dev;
+> > > > +
+> > > > +             mutex_lock(&data->lock);
+> > > > +             if (data->enabled) {
+> > > > +                     timestamp = iio_get_time_ns(indio_dev);
+> > For Android, given the timestamp must be time it happens, not reported
+> > [https://source.android.com/devices/sensors/sensors-hal2] """The
+> > timestamp must be accurate and correspond to the time at which the
+> > event physically happened, not the time it was reported.""", consider
+> > using ec_dev->last_event_time and apply a delta if the iio clock base
+> > is different from CLOCK_BOOTTIME.
+>
+> Ah alright. Is there a reason why cros_ec_get_time_ns() is using
+> boottime instead of plain ktime_get(), i.e. CLOCK_MONOTONIC? Otherwise I
+> suppose some sort of cros_ec API should be exposed to convert the
+> last_event_time to whatever clock base is desired. Does that exist?
+CLOCK_BOOTTIME was chosen to be Android compliant, as it includes
+suspend time and match elapsedRealtime() [see
+https://developer.android.com/reference/android/os/SystemClock#elapsedRealtime()]
+Chromebook set iio clock reference for all sensor to CLOCK_BOOTTIME
+(see https://chromium.googlesource.com/chromiumos/platform2/+/HEAD/mems_setup/configuration.cc#127).
+In case the iio device clock_id is not CLOCK_BOOTTIME/"bootime", we
+need to add a delta, like in cros_ec_sensors_push_data()
+[https://elixir.bootlin.com/linux/latest/source/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c#L210]
+>
+> > > > +static int cros_ec_proximity_probe(struct platform_device *pdev)
+> > > > +{
+> > > > +     struct device *dev = &pdev->dev;
+> > > > +     struct cros_ec_device *ec = dev_get_drvdata(dev->parent);
+> > > > +     struct iio_dev *indio_dev;
+> > > > +     struct cros_ec_proximity_data *data;
+> > > > +     int ret;
+> > > > +
+> > > > +     indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> > > > +     if (!indio_dev)
+> > > > +             return -ENOMEM;
+> > > > +
+> > > > +     data = iio_priv(indio_dev);
+> > > > +     data->ec = ec;
+> > > > +     data->indio_dev = indio_dev;
+> > > > +     mutex_init(&data->lock);
+> > > > +     platform_set_drvdata(pdev, data);
+> > > > +
+> > > > +     indio_dev->name = "cros_ec_proximity";
+> > Define a constant CROS_EC_[MKBP_]PROXIMITY_DRIVER_NAME and use it here
+> > and in struct platform_driver cros_ec_proximity_driver.
+>
+> I used dev->driver->name instead. Yay for no define!
+>
+> > > > +     indio_dev->dev.parent = dev;
+> > Not needed, done by iio_device_alloc(), called by devm_iio_device_alloc().
+>
+> Ok.
+>
+> > > > +static const struct of_device_id cros_ec_proximity_of_match[] = {
+> > > > +     { .compatible = "google,cros-ec-proximity" },
+> > > > +     {}
+> > > > +};
+> > > > +MODULE_DEVICE_TABLE(of, cros_ec_proximity_of_match);
+> > > > +#endif
+> > > > +
+> > > > +static struct platform_driver cros_ec_proximity_driver = {
+> > > > +     .driver = {
+> > > > +             .name = "cros-ec-proximity",
+> > > > +             .of_match_table = of_match_ptr(cros_ec_proximity_of_match),
+> > Add a ACPI match table to match.
+>
+> I don't have an ACPI system in hand. What should the ACPI table look
+> like? Can ACPI use the of_match_table logic?
+AFAIK, ACPI uses .acpi_match_table, see
+drivers/iio/magnetometer/ak8975.c for a simple example.
 
-For this to work, the driver needs to register an IIO_TIMESTAMP channel.
-Do this.
 
-For DMA, it's not as easy, because we don't push the buffers out of
-stm32_adc_trigger, but out of stm32_adc_dma_buffer_done, which runs in
-a tasklet scheduled after a DMA completion.
-
-Preferably, the DMA controller would copy us the timestamp into that buffer
-as well. Until this is implemented, restrict timestamping support to
-only PIO. For low-frequency sampling, PIO is probably good enough.
-
-Cc: Holger Assmann <has@pengutronix.de>
-Acked-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Signed-off-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
----
-v3 -> v4:
-  - descrease buffer size to correct size (Marc)
-v2 -> v3:
-  - explicitly specify alignment (Jonathan)
-  - increase buffer size to hold additional timestamp
-v1 -> v2:
-  - Added comment about timestamping being PIO only (Fabrice)
-  - Added missing DMA resource clean up in error path (Fabrice)
-  - Added Fabrice's Acked-by
----
- drivers/iio/adc/stm32-adc.c | 39 +++++++++++++++++++++++++++++--------
- 1 file changed, 31 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index c067c994dae2..5ebbd28e45ca 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -177,7 +177,7 @@ struct stm32_adc_cfg {
-  * @offset:		ADC instance register offset in ADC block
-  * @cfg:		compatible configuration data
-  * @completion:		end of single conversion completion
-- * @buffer:		data buffer
-+ * @buffer:		data buffer + 8 bytes for timestamp if enabled
-  * @clk:		clock for this adc instance
-  * @irq:		interrupt for this adc instance
-  * @lock:		spinlock
-@@ -200,7 +200,7 @@ struct stm32_adc {
- 	u32			offset;
- 	const struct stm32_adc_cfg	*cfg;
- 	struct completion	completion;
--	u16			buffer[STM32_ADC_MAX_SQ];
-+	u16			buffer[STM32_ADC_MAX_SQ + 4] __aligned(8);
- 	struct clk		*clk;
- 	int			irq;
- 	spinlock_t		lock;		/* interrupt lock */
-@@ -1718,7 +1718,7 @@ static void stm32_adc_chan_init_one(struct iio_dev *indio_dev,
- 	}
- }
- 
--static int stm32_adc_chan_of_init(struct iio_dev *indio_dev)
-+static int stm32_adc_chan_of_init(struct iio_dev *indio_dev, bool timestamping)
- {
- 	struct device_node *node = indio_dev->dev.of_node;
- 	struct stm32_adc *adc = iio_priv(indio_dev);
-@@ -1766,6 +1766,9 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev)
- 		return -EINVAL;
- 	}
- 
-+	if (timestamping)
-+		num_channels++;
-+
- 	channels = devm_kcalloc(&indio_dev->dev, num_channels,
- 				sizeof(struct iio_chan_spec), GFP_KERNEL);
- 	if (!channels)
-@@ -1816,6 +1819,19 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev)
- 		stm32_adc_smpr_init(adc, channels[i].channel, smp);
- 	}
- 
-+	if (timestamping) {
-+		struct iio_chan_spec *timestamp = &channels[scan_index];
-+
-+		timestamp->type = IIO_TIMESTAMP;
-+		timestamp->channel = -1;
-+		timestamp->scan_index = scan_index;
-+		timestamp->scan_type.sign = 's';
-+		timestamp->scan_type.realbits = 64;
-+		timestamp->scan_type.storagebits = 64;
-+
-+		scan_index++;
-+	}
-+
- 	indio_dev->num_channels = scan_index;
- 	indio_dev->channels = channels;
- 
-@@ -1875,6 +1891,7 @@ static int stm32_adc_probe(struct platform_device *pdev)
- 	struct device *dev = &pdev->dev;
- 	irqreturn_t (*handler)(int irq, void *p) = NULL;
- 	struct stm32_adc *adc;
-+	bool timestamping = false;
- 	int ret;
- 
- 	if (!pdev->dev.of_node)
-@@ -1931,16 +1948,22 @@ static int stm32_adc_probe(struct platform_device *pdev)
- 	if (ret < 0)
- 		return ret;
- 
--	ret = stm32_adc_chan_of_init(indio_dev);
--	if (ret < 0)
--		return ret;
--
- 	ret = stm32_adc_dma_request(dev, indio_dev);
- 	if (ret < 0)
- 		return ret;
- 
--	if (!adc->dma_chan)
-+	if (!adc->dma_chan) {
-+		/* For PIO mode only, iio_pollfunc_store_time stores a timestamp
-+		 * in the primary trigger IRQ handler and stm32_adc_trigger_handler
-+		 * runs in the IRQ thread to push out buffer along with timestamp.
-+		 */
- 		handler = &stm32_adc_trigger_handler;
-+		timestamping = true;
-+	}
-+
-+	ret = stm32_adc_chan_of_init(indio_dev, timestamping);
-+	if (ret < 0)
-+		goto err_dma_disable;
- 
- 	ret = iio_triggered_buffer_setup(indio_dev,
- 					 &iio_pollfunc_store_time, handler,
--- 
-2.30.0
-
+>
+> > > > +     },
+> > > > +     .probe = cros_ec_proximity_probe,
+> > > > +     .remove = cros_ec_proximity_remove,
+> > > > +};
