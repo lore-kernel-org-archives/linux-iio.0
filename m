@@ -2,441 +2,389 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EE36C433E0
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Jan 2021 18:41:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE7BEC433E0
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Jan 2021 19:20:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 43C6A22228
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Jan 2021 18:41:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 64A3A22228
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Jan 2021 19:20:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1729944AbhAZRUt convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 Jan 2021 12:20:49 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47420 "EHLO
+        id S1732283AbhAZFt2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 Jan 2021 00:49:28 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1730177AbhAZIIv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jan 2021 03:08:51 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DCDC2C061574
-        for <linux-iio@vger.kernel.org>; Tue, 26 Jan 2021 00:08:02 -0800 (PST)
-Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
-        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1l4JOH-0005lV-Sf; Tue, 26 Jan 2021 09:07:57 +0100
-Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
-        (envelope-from <ore@pengutronix.de>)
-        id 1l4JOH-0007m2-0x; Tue, 26 Jan 2021 09:07:57 +0100
-Date:   Tue, 26 Jan 2021 09:07:57 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
+        with ESMTP id S1732121AbhAZCF4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jan 2021 21:05:56 -0500
+Received: from mail-pf1-x42d.google.com (mail-pf1-x42d.google.com [IPv6:2607:f8b0:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0E75C061223
+        for <linux-iio@vger.kernel.org>; Mon, 25 Jan 2021 18:01:25 -0800 (PST)
+Received: by mail-pf1-x42d.google.com with SMTP id i63so9508968pfg.7
+        for <linux-iio@vger.kernel.org>; Mon, 25 Jan 2021 18:01:25 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8b54P9GIkGKCedCV+9IXK9mS3hJ7SuH9lcmt0NSka3U=;
+        b=deNrR4vH6Bt9lTiCeca1toKRSAMlDFT98VWfHbjWdBHAg/uoX5yZfc0LLhGTT81T7e
+         Iuao3dyE8YDhRgaVtTkM4y6C2P+tma9RoNMnpx18AcDroiiZ0tjriWnAjX/RO0IscdwM
+         sVWZx+lT5wyzZ/FhC6xDGcQ9JUUeWy7+93nsA=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8b54P9GIkGKCedCV+9IXK9mS3hJ7SuH9lcmt0NSka3U=;
+        b=U3hdD0j9CIpik+M6bm4OKb0oed0L2yZ49c9GkOEqP0D/BwPqfbL5i/Hc1PEXdkEgyp
+         UrRXZ3sXSGLRw7+5EVh2q+FgUx5NVIFX81SAAsXwhWsCQcEkW+DUujuIMy5hSzpz44Yn
+         2ZY9I0QRmudbNzZ23onE996AiiJe1OnuWZ7wVWL2ktpnlR7FUmwuk0rr6IrHepjRExEg
+         LscaZH8L/0xX3BD6QP10+VCOHOzPp7eMLMyWo5fG5gbiEIrzbvbA6P4fqOapavXjGdnW
+         +sPrNJGNZj3kTKp0DlxgC4p9lhbX+gsyRfWlmvioiJCdFHjBvDnKgnsRK176+xkXpqwq
+         c+hw==
+X-Gm-Message-State: AOAM533VsbiUxKBoy5jGHiUOJManPykQH9By6U5O/eFaF2SMhSD1ZdgR
+        88p9eBAajvKV75KEPZUmvQ6/dal58ZTKQw==
+X-Google-Smtp-Source: ABdhPJzPQqKmS+0qb5R5dR9sLDjyeEAUQaRnCbtX5QDKpMJTRUepH1pbqU55w1c3OCbLoECJmeYG0A==
+X-Received: by 2002:a63:2262:: with SMTP id t34mr3411934pgm.166.1611626485306;
+        Mon, 25 Jan 2021 18:01:25 -0800 (PST)
+Received: from smtp.gmail.com ([2620:15c:202:201:1066:b437:97cd:2278])
+        by smtp.gmail.com with ESMTPSA id n2sm16975028pfu.42.2021.01.25.18.01.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 25 Jan 2021 18:01:24 -0800 (PST)
+From:   Stephen Boyd <swboyd@chromium.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>
-Subject: Re: [PATCH v3 2/2] counter: add GPIO based pulse counters
-Message-ID: <20210126080756.xi637l6ne3g4vgb7@pengutronix.de>
-References: <20210122112434.27886-1-o.rempel@pengutronix.de>
- <20210122112434.27886-3-o.rempel@pengutronix.de>
- <20210124144737.7978d3c8@archlinux>
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH v2 3/3] iio: proximity: Add a ChromeOS EC MKBP proximity driver
+Date:   Mon, 25 Jan 2021 18:01:17 -0800
+Message-Id: <20210126020117.2753615-5-swboyd@chromium.org>
+X-Mailer: git-send-email 2.30.0.280.ga3ce27912f-goog
+In-Reply-To: <20210126020117.2753615-1-swboyd@chromium.org>
+References: <20210126020117.2753615-1-swboyd@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-In-Reply-To: <20210124144737.7978d3c8@archlinux>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 08:48:52 up 54 days, 21:55, 25 users,  load average: 0.00, 0.01,
- 0.00
-User-Agent: NeoMutt/20170113 (1.7.2)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Add support for a ChromeOS EC proximity driver that exposes a "front"
+proximity sensor via the IIO subsystem. The EC decides when front
+proximity is near and sets an MKBP switch 'EC_MKBP_FRONT_PROXIMITY' to
+notify the kernel of proximity. Similarly, when proximity detects
+something far away it sets the switch bit to 0. For now this driver
+exposes a single sensor, but it could be expanded in the future via more
+MKBP bits if desired.
 
-On Sun, Jan 24, 2021 at 02:47:37PM +0000, Jonathan Cameron wrote:
-> On Fri, 22 Jan 2021 12:24:34 +0100
-> Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> 
-> > Add simple GPIO base pulse counter. This device is used to measure
-> > rotation speed of some agricultural devices, so no high frequency on the
-> > counter pin is expected.
-> > 
-> > The maximal measurement frequency depends on the CPU and system load. On
-> > the idle iMX6S I was able to measure up to 20kHz without count drops.
-> > 
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> 
-> Hi Oleksij,
-> 
-> A few comments inline.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/counter/Kconfig          |   9 ++
-> >  drivers/counter/Makefile         |   1 +
-> >  drivers/counter/gpio-pulse-cnt.c | 244 +++++++++++++++++++++++++++++++
-> >  3 files changed, 254 insertions(+)
-> >  create mode 100644 drivers/counter/gpio-pulse-cnt.c
-> > 
-> > diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
-> > index 2de53ab0dd25..9ad1d9d49dd1 100644
-> > --- a/drivers/counter/Kconfig
-> > +++ b/drivers/counter/Kconfig
-> > @@ -29,6 +29,15 @@ config 104_QUAD_8
-> >  	  The base port addresses for the devices may be configured via the base
-> >  	  array module parameter.
-> >  
-> > +config GPIO_PULSE_CNT
-> > +	tristate "GPIO pulse counter driver"
-> > +	depends on GPIOLIB
-> > +	help
-> > +	  Select this option to enable GPIO pulse counter driver.
-> > +
-> > +	  To compile this driver as a module, choose M here: the
-> > +	  module will be called gpio-pulse-cnt.
-> > +
-> >  config STM32_TIMER_CNT
-> >  	tristate "STM32 Timer encoder counter driver"
-> >  	depends on MFD_STM32_TIMERS || COMPILE_TEST
-> > diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
-> > index 0a393f71e481..6a5c3fc6f2a0 100644
-> > --- a/drivers/counter/Makefile
-> > +++ b/drivers/counter/Makefile
-> > @@ -6,6 +6,7 @@
-> >  obj-$(CONFIG_COUNTER) += counter.o
-> >  
-> >  obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
-> > +obj-$(CONFIG_GPIO_PULSE_CNT)	+= gpio-pulse-cnt.o
-> >  obj-$(CONFIG_STM32_TIMER_CNT)	+= stm32-timer-cnt.o
-> >  obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
-> >  obj-$(CONFIG_TI_EQEP)		+= ti-eqep.o
-> > diff --git a/drivers/counter/gpio-pulse-cnt.c b/drivers/counter/gpio-pulse-cnt.c
-> > new file mode 100644
-> > index 000000000000..9454345c77ad
-> > --- /dev/null
-> > +++ b/drivers/counter/gpio-pulse-cnt.c
-> > @@ -0,0 +1,244 @@
-> > +// SPDX-License-Identifier: GPL-2.0
-> > +/*
-> > + * Copyright (c) 2021 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
-> > + */
-> > +
-> > +#include <linux/counter.h>
-> > +#include <linux/gpio/consumer.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/module.h>
-> > +#include <linux/of_device.h>
-> 
-> why of_device.h?  Probably want mod_devicetable.h instead.
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Benson Leung <bleung@chromium.org>
+Cc: Guenter Roeck <groeck@chromium.org>
+Cc: Douglas Anderson <dianders@chromium.org>
+Cc: Gwendal Grignou <gwendal@chromium.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
 
-done
+Changes from v1:
+ * Sorted includes
+ * Renamed to have MKBP everywhere
+ * Use last_event_time for timestamp
+ * Dropped claim calls
+ * Dropped useless dev assignment
 
-> > +#include <linux/platform_device.h>
-> > +
-> > +#define GPIO_PULSE_NAME		"gpio-pulse-counter"
-> > +
-> > +struct gpio_pulse_priv {
-> > +	struct counter_device counter;
-> > +	struct gpio_desc *gpio;
-> > +	int irq;
-> > +	bool enabled;
-> > +	atomic_t count;
-> > +};
-> > +
-> > +static irqreturn_t gpio_pulse_irq_isr(int irq, void *dev_id)
-> > +{
-> > +	struct gpio_pulse_priv *priv = dev_id;
-> > +
-> > +	if (!priv->enabled)
-> > +		return IRQ_NONE;
-> > +
-> > +	atomic_inc(&priv->count);
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static ssize_t gpio_pulse_count_enable_read(struct counter_device *counter,
-> > +					    struct counter_count *count,
-> > +					    void *private, char *buf)
-> > +{
-> > +	struct gpio_pulse_priv *priv = counter->priv;
-> > +
-> > +	return sysfs_emit(buf, "%d\n", priv->enabled);
-> > +}
-> > +
-> > +static ssize_t gpio_pulse_count_enable_write(struct counter_device *counter,
-> > +					     struct counter_count *count,
-> > +					     void *private,
-> > +					     const char *buf, size_t len)
-> > +{
-> > +	struct gpio_pulse_priv *priv = counter->priv;
-> > +	bool enable;
-> > +	ssize_t ret;
-> > +
-> > +	ret = kstrtobool(buf, &enable);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	if (priv->enabled == enable)
-> > +		return len;
-> > +
-> > +	priv->enabled = enable;
-> > +
-> > +	if (enable)
-> > +		enable_irq(priv->irq);
-> > +	else
-> > +		disable_irq(priv->irq);
-> 
-> As pointed out by Ahmad, this is all racy.
-> Personally I'd just let the race happen, and don't
-> bother with the priv->enabled at all.
+ drivers/iio/proximity/Kconfig                 |  11 +
+ drivers/iio/proximity/Makefile                |   1 +
+ .../iio/proximity/cros_ec_mkbp_proximity.c    | 243 ++++++++++++++++++
+ 3 files changed, 255 insertions(+)
+ create mode 100644 drivers/iio/proximity/cros_ec_mkbp_proximity.c
 
-yes, i forgot about existence of IRQ_NOAUTOEN
-
-> We aren't going to be dealing with shared interrupts
-> here so if we get a race, it's between userspace write
-> getting through to enable / disable the interrupt and
-> a pulse coming in.  The userspace part is so unpredictable on
-> timing etc the race isn't pretty meaningless (you might count
-> one extra, but then if userspace took a bit longer you might
-> do that anyway).
-> 
-> 
-> > +
-> > +	return len;
-> > +}
-> > +
-> > +static const struct counter_count_ext gpio_pulse_count_ext[] = {
-> > +	{
-> > +		.name = "enable",
-> > +		.read = gpio_pulse_count_enable_read,
-> > +		.write = gpio_pulse_count_enable_write,
-> > +	},
-> > +};
-> > +
-> > +static enum counter_synapse_action gpio_pulse_synapse_actions[] = {
-> > +	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
-> > +};
-> > +
-> > +static int gpio_pulse_action_get(struct counter_device *counter,
-> > +			    struct counter_count *count,
-> > +			    struct counter_synapse *synapse,
-> > +			    size_t *action)
-> > +{
-> > +	*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int gpio_pulse_count_read(struct counter_device *counter,
-> > +				 struct counter_count *count,
-> > +				 unsigned long *val)
-> > +{
-> > +	struct gpio_pulse_priv *priv = counter->priv;
-> > +
-> > +	*val = atomic_read(&priv->count);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int gpio_pulse_count_write(struct counter_device *counter,
-> > +				  struct counter_count *count,
-> > +				  const unsigned long val)
-> > +{
-> > +	struct gpio_pulse_priv *priv = counter->priv;
-> > +
-> > +	atomic_set(&priv->count, val);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int gpio_pulse_count_function_get(struct counter_device *counter,
-> > +					 struct counter_count *count,
-> > +					 size_t *function)
-> > +{
-> > +	*function = COUNTER_COUNT_FUNCTION_INCREASE;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int gpio_pulse_count_signal_read(struct counter_device *counter,
-> > +					struct counter_signal *signal,
-> > +					enum counter_signal_value *val)
-> > +{
-> > +	struct gpio_pulse_priv *priv = counter->priv;
-> > +	int ret;
-> > +
-> > +	ret = gpiod_get_value(priv->gpio);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	*val = ret ? COUNTER_SIGNAL_HIGH : COUNTER_SIGNAL_LOW;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static const struct counter_ops gpio_pulse_cnt_ops = {
-> > +	.action_get = gpio_pulse_action_get,
-> > +	.count_read = gpio_pulse_count_read,
-> > +	.count_write = gpio_pulse_count_write,
-> > +	.function_get = gpio_pulse_count_function_get,
-> > +	.signal_read  = gpio_pulse_count_signal_read,
-> > +};
-> > +
-> > +static struct counter_signal gpio_pulse_signals[] = {
-> > +	{
-> > +		.id = 0,
-> > +		.name = "Channel 0 signal",
-> > +	},
-> > +};
-> > +
-> > +static struct counter_synapse gpio_pulse_count_synapses[] = {
-> > +	{
-> > +		.actions_list = gpio_pulse_synapse_actions,
-> > +		.num_actions = ARRAY_SIZE(gpio_pulse_synapse_actions),
-> > +		.signal = &gpio_pulse_signals[0]
-> > +	},
-> > +};
-> > +
-> > +static enum counter_count_function gpio_pulse_count_functions[] = {
-> > +	COUNTER_COUNT_FUNCTION_INCREASE,
-> > +};
-> > +
-> > +static struct counter_count gpio_pulse_counts[] = {
-> > +	{
-> > +		.id = 0,
-> > +		.name = "Channel 1 Count",
-> > +		.functions_list = gpio_pulse_count_functions,
-> > +		.num_functions = ARRAY_SIZE(gpio_pulse_count_functions),
-> > +		.synapses = gpio_pulse_count_synapses,
-> > +		.num_synapses = ARRAY_SIZE(gpio_pulse_count_synapses),
-> > +		.ext = gpio_pulse_count_ext,
-> > +		.num_ext = ARRAY_SIZE(gpio_pulse_count_ext),
-> > +	},
-> > +};
-> > +
-> > +static int gpio_pulse_cnt_probe(struct platform_device *pdev)
-> > +{
-> > +	struct device *dev = &pdev->dev;
-> > +	struct gpio_pulse_priv *priv;
-> > +	int ret;
-> > +
-> > +	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> > +	if (!priv)
-> > +		return -ENOMEM;
-> > +
-> > +	if (gpiod_count(dev, NULL) != 1) {
-> > +		dev_err(dev, "Error, need exactly 1 gpio for device\n");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	priv->gpio = devm_gpiod_get(dev, NULL, GPIOD_IN);
-> > +	if (IS_ERR(priv->gpio))
-> > +		return dev_err_probe(dev, PTR_ERR(priv->gpio), "failed to get gpio\n");
-> 
-> My gut feeling here is that it probably makes sense to drop
-> the direct read of the signal level, and hence allow the driver
-> to be provided with an interrupt instead of a gpio.
-> 
-> Afterall, not all gpio lines are interrupt capable.
-
-Hm, .. I need to be able to sense GPIO level for diagnostic interface.
-So, in this case i'll need to get irq and gpio separately 
-
-> > +
-> > +	priv->irq = gpiod_to_irq(priv->gpio);
-> > +	if (priv->irq < 0) {
-> > +		dev_err(dev, "failed to map GPIO to IRQ: %d\n", priv->irq);
-> > +		return priv->irq;
-> > +	}
-> > +
-> > +	priv->counter.name = dev_name(dev);
-> > +	priv->counter.parent = dev;
-> > +	priv->counter.ops = &gpio_pulse_cnt_ops;
-> > +	priv->counter.counts = gpio_pulse_counts;
-> > +	priv->counter.num_counts = ARRAY_SIZE(gpio_pulse_counts);
-> > +	priv->counter.signals = gpio_pulse_signals;
-> > +	priv->counter.num_signals = ARRAY_SIZE(gpio_pulse_signals);
-> > +	priv->counter.priv = priv;
-> > +
-> > +	ret = devm_request_irq(dev, priv->irq, gpio_pulse_irq_isr,
-> > +			       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
-> > +			       GPIO_PULSE_NAME, priv);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	disable_irq(priv->irq);
-> 
-> Race condition here (messy at least) that we can close down.
-
-ACK
-
-> Note there is ongoing work to try and do this in a nice generic
-> fashion, but in the meantime call
->
-> irq_set_status_flags(priv->irq, IRQ_NOAUTOEN);
-
-^^ yes! this is what i was seeking! Thx.
-
-> before the devm_request_irq()
-> 
-> https://lore.kernel.org/lkml/20210107223926.35284-2-song.bao.hua@hisilicon.com/
-
-Nice!
-
-> There are a lot of cases that series will tidy up, but let us do the best
-> we can in the meantime!
->  
-> > +
-> > +	platform_set_drvdata(pdev, priv);
-> > +
-> > +	return devm_counter_register(dev, &priv->counter);
-> > +}
-> > +
-> > +static const struct of_device_id gpio_pulse_cnt_of_match[] = {
-> > +	{ .compatible = "virtual,gpio-pulse-counter", },
-> > +	{}
-> > +};
-> > +MODULE_DEVICE_TABLE(of, gpio_pulse_cnt_of_match);
-> > +
-> > +static struct platform_driver gpio_pulse_cnt_driver = {
-> > +	.probe = gpio_pulse_cnt_probe,
-> > +	.driver = {
-> > +		.name = GPIO_PULSE_NAME,
-> > +		.of_match_table = gpio_pulse_cnt_of_match,
-> > +	},
-> > +};
-> > +module_platform_driver(gpio_pulse_cnt_driver);
-> > +
-> > +MODULE_ALIAS("platform:gpio-pulse-counter");
-> > +MODULE_AUTHOR("Oleksij Rempel <o.rempel@pengutronix.de>");
-> > +MODULE_DESCRIPTION("GPIO pulse counter driver");
-> > +MODULE_LICENSE("GPL v2");
-
-Thank you.
-
-Regards,
-Oleksij
+diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+index 12672a0e89ed..7c7203ca3ac6 100644
+--- a/drivers/iio/proximity/Kconfig
++++ b/drivers/iio/proximity/Kconfig
+@@ -21,6 +21,17 @@ endmenu
+ 
+ menu "Proximity and distance sensors"
+ 
++config CROS_EC_MKBP_PROXIMITY
++	tristate "ChromeOS EC MKBP Proximity sensor"
++	depends on CROS_EC
++	help
++	  Say Y here to enable the proximity sensor implemented via the ChromeOS EC MKBP
++	  switches protocol. You must enable one bus option (CROS_EC_I2C or CROS_EC_SPI)
++	  to use this.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called cros_ec_mkbp_proximity.
++
+ config ISL29501
+ 	tristate "Intersil ISL29501 Time Of Flight sensor"
+ 	depends on I2C
+diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+index 9c1aca1a8b79..cbdac09433eb 100644
+--- a/drivers/iio/proximity/Makefile
++++ b/drivers/iio/proximity/Makefile
+@@ -5,6 +5,7 @@
+ 
+ # When adding new entries keep the list in alphabetical order
+ obj-$(CONFIG_AS3935)		+= as3935.o
++obj-$(CONFIG_CROS_EC_MKBP_PROXIMITY) += cros_ec_mkbp_proximity.o
+ obj-$(CONFIG_ISL29501)		+= isl29501.o
+ obj-$(CONFIG_LIDAR_LITE_V2)	+= pulsedlight-lidar-lite-v2.o
+ obj-$(CONFIG_MB1232)		+= mb1232.o
+diff --git a/drivers/iio/proximity/cros_ec_mkbp_proximity.c b/drivers/iio/proximity/cros_ec_mkbp_proximity.c
+new file mode 100644
+index 000000000000..3c85d1843e3b
+--- /dev/null
++++ b/drivers/iio/proximity/cros_ec_mkbp_proximity.c
+@@ -0,0 +1,243 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Driver for cros-ec proximity sensor exposed through MKBP switch
++ *
++ * Copyright 2021 Google LLC.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/notifier.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++#include <linux/types.h>
++
++#include <linux/platform_data/cros_ec_commands.h>
++#include <linux/platform_data/cros_ec_proto.h>
++
++#include <linux/iio/events.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#include <asm/unaligned.h>
++
++struct cros_ec_mkbp_proximity_data {
++	struct cros_ec_device *ec;
++	struct iio_dev *indio_dev;
++	struct mutex lock;
++	struct notifier_block notifier;
++	bool enabled;
++};
++
++static const struct iio_event_spec cros_ec_mkbp_proximity_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
++static const struct iio_chan_spec cros_ec_mkbp_proximity_chan_spec[] = {
++	{
++		.type = IIO_PROXIMITY,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.event_spec = cros_ec_mkbp_proximity_events,
++		.num_event_specs = ARRAY_SIZE(cros_ec_mkbp_proximity_events),
++	},
++};
++
++static int cros_ec_mkbp_proximity_parse_state(const void *data)
++{
++	u32 switches = get_unaligned_le32(data);
++
++	return !!(switches & BIT(EC_MKBP_FRONT_PROXIMITY));
++}
++
++static int cros_ec_mkbp_proximity_query(struct cros_ec_device *ec_dev,
++					int *state)
++{
++	struct {
++		struct cros_ec_command msg;
++		union {
++			struct ec_params_mkbp_info params;
++			u32 switches;
++		};
++	} __packed buf = { };
++	struct ec_params_mkbp_info *params = &buf.params;
++	struct cros_ec_command *msg = &buf.msg;
++	u32 *switches = &buf.switches;
++	size_t insize = sizeof(*switches);
++	int ret;
++
++	msg->command = EC_CMD_MKBP_INFO;
++	msg->version = 1;
++	msg->outsize = sizeof(*params);
++	msg->insize = insize;
++
++	params->info_type = EC_MKBP_INFO_CURRENT;
++	params->event_type = EC_MKBP_EVENT_SWITCH;
++
++	ret = cros_ec_cmd_xfer_status(ec_dev, msg);
++	if (ret < 0)
++		return ret;
++
++	if (ret != insize) {
++		dev_warn(ec_dev->dev, "wrong result size: %d != %zu\n", ret,
++			 insize);
++		return -EPROTO;
++	}
++
++	*state = cros_ec_mkbp_proximity_parse_state(switches);
++	return IIO_VAL_INT;
++}
++
++static int cros_ec_mkbp_proximity_notify(struct notifier_block *nb,
++					 unsigned long queued_during_suspend,
++					 void *_ec)
++{
++	struct cros_ec_mkbp_proximity_data *data;
++	struct cros_ec_device *ec = _ec;
++	u8 event_type = ec->event_data.event_type & EC_MKBP_EVENT_TYPE_MASK;
++	void *switches = &ec->event_data.data.switches;
++	struct iio_dev *indio_dev;
++	s64 timestamp;
++	int state, dir;
++	u64 ev;
++
++	if (event_type == EC_MKBP_EVENT_SWITCH) {
++		data = container_of(nb, struct cros_ec_mkbp_proximity_data,
++				    notifier);
++		indio_dev = data->indio_dev;
++
++		mutex_lock(&data->lock);
++		if (data->enabled) {
++			timestamp = ktime_to_ns(ec->last_event_time);
++			state = cros_ec_mkbp_proximity_parse_state(switches);
++			dir = state ? IIO_EV_DIR_FALLING : IIO_EV_DIR_RISING;
++
++			ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, 0,
++						  IIO_EV_TYPE_THRESH, dir);
++			iio_push_event(indio_dev, ev, timestamp);
++		}
++		mutex_unlock(&data->lock);
++	}
++
++	return NOTIFY_OK;
++}
++
++static int cros_ec_mkbp_proximity_read_raw(struct iio_dev *indio_dev,
++			   const struct iio_chan_spec *chan, int *val,
++			   int *val2, long mask)
++{
++	struct cros_ec_mkbp_proximity_data *data = iio_priv(indio_dev);
++	struct cros_ec_device *ec = data->ec;
++
++	if (chan->type != IIO_PROXIMITY)
++		return -EINVAL;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		return cros_ec_mkbp_proximity_query(ec, val);
++	}
++
++	return -EINVAL;
++}
++
++static int cros_ec_mkbp_proximity_read_event_config(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir)
++{
++	struct cros_ec_mkbp_proximity_data *data = iio_priv(indio_dev);
++
++	return data->enabled;
++}
++
++static int cros_ec_mkbp_proximity_write_event_config(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan,
++				     enum iio_event_type type,
++				     enum iio_event_direction dir, int state)
++{
++	struct cros_ec_mkbp_proximity_data *data = iio_priv(indio_dev);
++
++	mutex_lock(&data->lock);
++	data->enabled = state;
++	mutex_unlock(&data->lock);
++
++	return 0;
++}
++
++static const struct iio_info cros_ec_mkbp_proximity_info = {
++	.read_raw = cros_ec_mkbp_proximity_read_raw,
++	.read_event_config = cros_ec_mkbp_proximity_read_event_config,
++	.write_event_config = cros_ec_mkbp_proximity_write_event_config,
++};
++
++static int cros_ec_mkbp_proximity_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct cros_ec_device *ec = dev_get_drvdata(dev->parent);
++	struct iio_dev *indio_dev;
++	struct cros_ec_mkbp_proximity_data *data;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	data->ec = ec;
++	data->indio_dev = indio_dev;
++	mutex_init(&data->lock);
++	platform_set_drvdata(pdev, data);
++
++	indio_dev->name = dev->driver->name;
++	indio_dev->info = &cros_ec_mkbp_proximity_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = cros_ec_mkbp_proximity_chan_spec;
++	indio_dev->num_channels = ARRAY_SIZE(cros_ec_mkbp_proximity_chan_spec);
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret)
++		return ret;
++
++	data->notifier.notifier_call = cros_ec_mkbp_proximity_notify;
++	ret = blocking_notifier_chain_register(&ec->event_notifier,
++					       &data->notifier);
++	if (ret)
++		dev_err(dev, "cannot register notifier: %d\n", ret);
++
++	return ret;
++}
++
++static int cros_ec_mkbp_proximity_remove(struct platform_device *pdev)
++{
++	struct cros_ec_mkbp_proximity_data *data = platform_get_drvdata(pdev);
++	struct cros_ec_device *ec = data->ec;
++
++	blocking_notifier_chain_unregister(&ec->event_notifier,
++					   &data->notifier);
++
++	return 0;
++}
++
++static const struct of_device_id cros_ec_mkbp_proximity_of_match[] = {
++	{ .compatible = "google,cros-ec-mkbp-proximity" },
++	{}
++};
++MODULE_DEVICE_TABLE(of, cros_ec_mkbp_proximity_of_match);
++
++static struct platform_driver cros_ec_mkbp_proximity_driver = {
++	.driver = {
++		.name = "cros-ec-mkbp-proximity",
++		.of_match_table = of_match_ptr(cros_ec_mkbp_proximity_of_match),
++	},
++	.probe = cros_ec_mkbp_proximity_probe,
++	.remove = cros_ec_mkbp_proximity_remove,
++};
++module_platform_driver(cros_ec_mkbp_proximity_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_DESCRIPTION("ChromeOS EC MKBP proximity sensor driver");
 -- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+https://chromeos.dev
+
