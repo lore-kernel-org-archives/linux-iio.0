@@ -2,157 +2,140 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C160C433E0
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Jan 2021 05:24:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66B84C433E0
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Jan 2021 09:01:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5DC0864DF5
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Jan 2021 05:24:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 36CDC64E27
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Jan 2021 09:01:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233812AbhA3FXn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Jan 2021 00:23:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33022 "EHLO
+        id S230197AbhA3JBA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Jan 2021 04:01:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58878 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233780AbhA3FQY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2021 00:16:24 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4036BC06174A;
-        Fri, 29 Jan 2021 21:15:41 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id o20so7562547pfu.0;
-        Fri, 29 Jan 2021 21:15:41 -0800 (PST)
+        with ESMTP id S230178AbhA3FFK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Jan 2021 00:05:10 -0500
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3089C06178C;
+        Fri, 29 Jan 2021 18:37:24 -0800 (PST)
+Received: by mail-pg1-x52f.google.com with SMTP id z21so7886404pgj.4;
+        Fri, 29 Jan 2021 18:37:24 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=DajhKcQbvSudZ+FOJNrz2aW0zOcE1tiQUOXaXnxB8PI=;
-        b=A2wpAIaWTg4pDD9bNSTe4FEpzxuaqCYRaCVihvKx9wk4a53sZUM30exdllaZC+58wB
-         DcS/Eju4Mj+AWigJelaiXevcBUWJgdFgRGpphd01ISsYAwKghf1M6aksu+BlnwN6eX8w
-         2LctfS3dvly0L7a/zRbjYVfOCKG0X2vW3nIh5bYs0+u4Y4OZ6ZoeUJaKj9qOUh7XeBoL
-         RsILgZWUtTyoktjsIFoSGaxIv5MTTFaN4KJSZe5FBaZV5hTghnl1KrHqz1cmWfdOB+EH
-         +x1t/hUWbaWdRZGKDmXZMXVrYhScbRb2bbsA1he8ykO28gGC1Dn0efZe94Q/Xan9wJEq
-         elPw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nPXNniK0cP00K5qLPpxAIbnbN3Q+mjeyNaHpzJ+KH3k=;
+        b=RbYhZsnL4VMKvm6QpPE/9G5QwNofOtuZ2iZea/SqI/1PIK7tpakwr8tZ8Krt/CKNW8
+         zagDeMeo37feTz6xRE9KY5zredG/1FS6UoSX7wsdVvmqKwj1+sLZgad5QBS7euop4LfV
+         xkYuDNbA1JiZ/6nhNqHYFfTLexpOa8b5JiFMS0lKENeuZyNU/wwcwAuolQ5aCBsN9va+
+         AKeNQ1+R+nuYmhEz1ay2JpVasxT5ZD6qIvHrr3xz0wID+/kq1ObJN2CjDyJHMFcuqWSd
+         cA9CWzNVcf3x6I9BQ7Wa7Fmyr6f/fZBWzCg7RdqxtuKnfDKisqy0U2WovmhO4Ob+giA2
+         xMew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=DajhKcQbvSudZ+FOJNrz2aW0zOcE1tiQUOXaXnxB8PI=;
-        b=b/e4jLpodm4lg8QlXMewuFFDiCGVqTQKbSfFe1Z5wRBpoz87HiZcuydxYPyW7ZVnmf
-         /MR7O+9tGFnCLq+u4hCmynGPzeNM73rKSTgjGHKk3b0wPs5PiOfMQDp7msXL/WoTHCyY
-         7ZUqemvP4Wqq4sjOTHyGNWTUb9U242ceHle7xrMKUPn6zIbhoZrMFGTUvxZt8t4nDeMx
-         HNVZLfma9uzH/Qs+usErZROUgqXCxMe29E5oZfZugZahEZWg/tBB6TYprR9zAKPY4c7u
-         OrT2VIssjRQVMJzCi/HF6jr2mmLsNgM9CvfIYSQ3ldRNw92qtQkfvCRMkjspN9pDVrwh
-         WKmw==
-X-Gm-Message-State: AOAM531iNEiYYDuGjw03qx/yChFrUSRoMvewi0CR+wCcF8ve3yMfV/OR
-        i4tWcEZI4kiVoDFKGjaw/lg=
-X-Google-Smtp-Source: ABdhPJz3xXOhtRoebqWMcQVAVlzvOHOj3KQTzng9Dt2tFdWx6XxcAnUKxQc98am3f2V4rV+jkl4rog==
-X-Received: by 2002:a65:62cd:: with SMTP id m13mr7931884pgv.108.1611983740662;
-        Fri, 29 Jan 2021 21:15:40 -0800 (PST)
-Received: from shinobu (113x33x126x33.ap113.ftth.ucom.ne.jp. [113.33.126.33])
-        by smtp.gmail.com with ESMTPSA id v8sm10269068pfn.114.2021.01.29.21.15.33
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nPXNniK0cP00K5qLPpxAIbnbN3Q+mjeyNaHpzJ+KH3k=;
+        b=ANIAj7rNygOoe5GZps+LMUw8xm87a3+WWnj0NKfGaUONNzhRXlEXQTmCbqEvjVQ2eu
+         dbLy0FydpuP+B+oJKNFuoyAIqel9K+RHaoxwuDISORDxuKe8+nZQsqKifSDC5y5wONCs
+         PmMiWis33gU0Q6yqNspca0cF6UVGKfyPXwHEvT0+I2rC3DotmsXf0TZcbTjYgV6UYf1A
+         Znb1zhw5wxWej7fIsN9CyMtK8snE/77gQ++o9TdrcC0VfWHB+DdNsZuKeMHf9cP5w6xr
+         077cU0A9vLig5+3wyN8Zx83n+HJOggAIQxv+ApVX1I4Brx5kt5FVzKHhdtXHT0aa5h8k
+         jsSA==
+X-Gm-Message-State: AOAM531kqJ3dCd3ToqcQwM6BMH5/bM/UrQzSEnzK9a3qGfiGTFBmolMN
+        KrhNfckqb6uHMAtz5vbK7A0=
+X-Google-Smtp-Source: ABdhPJxmNYQ2xRyefxv6olIx9Kxeslfjhpr7Ldrxjn6aGFQNCSavhb6L7VIkYSQ9scZQiLiUA1IHrQ==
+X-Received: by 2002:a63:844:: with SMTP id 65mr7198863pgi.371.1611974244452;
+        Fri, 29 Jan 2021 18:37:24 -0800 (PST)
+Received: from localhost.localdomain (113x33x126x33.ap113.ftth.ucom.ne.jp. [113.33.126.33])
+        by smtp.gmail.com with ESMTPSA id s21sm8872169pjz.13.2021.01.29.18.37.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Jan 2021 21:15:39 -0800 (PST)
-Date:   Sat, 30 Jan 2021 14:15:29 +0900
+        Fri, 29 Jan 2021 18:37:23 -0800 (PST)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     jic23@kernel.org, kamel.bouhara@bootlin.com, gwendal@chromium.org,
-        a.fatoum@pengutronix.de, david@lechnology.com,
-        linux-iio@vger.kernel.org, patrick.havelange@essensium.com,
-        alexandre.belloni@bootlin.com, mcoquelin.stm32@gmail.com,
-        linux-kernel@vger.kernel.org,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        kernel@pengutronix.de, fabrice.gasnier@st.com,
-        syednwaris@gmail.com, linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, alexandre.torgue@st.com
-Subject: Re: [PATCH v7 3/5] counter: Add character device interface
-Message-ID: <YBTrcYgbXfKYaQnX@shinobu>
-References: <cover.1608935587.git.vilhelm.gray@gmail.com>
- <57bc509273bf288d74835e6ebdaebf27b4991888.1608935587.git.vilhelm.gray@gmail.com>
- <20210128090113.GA8734@pengutronix.de>
+To:     jic23@kernel.org, fabrice.gasnier@foss.st.com
+Cc:     fabrice.gasnier@st.com, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, benjamin.gaignard@st.com,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v2 2/2] iio: Remove the IIO counter ABI documentation
+Date:   Sat, 30 Jan 2021 11:37:04 +0900
+Message-Id: <bc8b5b759592b013c197a98428c3f0141bedd54d.1611973018.git.vilhelm.gray@gmail.com>
+X-Mailer: git-send-email 2.30.0
+In-Reply-To: <cover.1611973018.git.vilhelm.gray@gmail.com>
+References: <cover.1611973018.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mYrx736tSU4e+spo"
-Content-Disposition: inline
-In-Reply-To: <20210128090113.GA8734@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The IIO counter driver has been superseded by the Counter subsystem as
+discussed in [1]. This patch removes the IIO counter ABI documentation.
 
---mYrx736tSU4e+spo
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+[1] https://lore.kernel.org/lkml/20210119104105.000010df@Huawei.com/
 
-On Thu, Jan 28, 2021 at 10:01:13AM +0100, Oleksij Rempel wrote:
-> Hello William,
->=20
->=20
-> On Fri, Dec 25, 2020 at 07:15:36PM -0500, William Breathitt Gray wrote:
-> > This patch introduces a character device interface for the Counter
-> > subsystem. Device data is exposed through standard character device read
-> > operations. Device data is gathered when a Counter event is pushed by
-> > the respective Counter device driver. Configuration is handled via ioctl
-> > operations on the respective Counter character device node.
-> >=20
-> > Cc: David Lechner <david@lechnology.com>
-> > Cc: Gwendal Grignou <gwendal@chromium.org>
-> > Cc: Dan Carpenter <dan.carpenter@oracle.com>
-> > Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> > ---
-> ...
-> > +struct counter_event {
-> > +	__aligned_u64 timestamp;
-> > +	__aligned_u64 value;
-> > +	struct counter_watch watch;
-> > +	__u8 errno;
->=20
-> This variable clashed in user space, as soon as you include errno.h,
-> with the libc's "magic" definition of errno. What about "err" instead.
-> I'm not sure it an __u8 is the proper type, IIRC usually it's an int.
->=20
-> Regards,
-> Oleksij
-> --=20
-> Pengutronix e.K.                           |                             |
-> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Benjamin Gaignard <benjamin.gaignard@st.com>
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 40 -------------------------
+ 1 file changed, 40 deletions(-)
 
-Sure, I can rename this to avoid a possible clash with libc's errno.
-Maybe "status" would be more apt to indicate that this is an exit status
-for the event -- the code returned may simply be a warning and not
-necessarily a critical error.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index d957f5da5c04..c207484a86d0 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1704,46 +1704,6 @@ Description:
+ 		Raw (unscaled no offset etc.) electric conductivity reading that
+ 		can be processed to siemens per meter.
+ 
+-What:		/sys/bus/iio/devices/iio:deviceX/in_countY_raw
+-KernelVersion:	4.10
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		This interface is deprecated; please use the Counter subsystem.
+-
+-		Raw counter device counts from channel Y. For quadrature
+-		counters, multiplication by an available [Y]_scale results in
+-		the counts of a single quadrature signal phase from channel Y.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_raw
+-KernelVersion:	4.10
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		This interface is deprecated; please use the Counter subsystem.
+-
+-		Raw counter device index value from channel Y. This attribute
+-		provides an absolute positional reference (e.g. a pulse once per
+-		revolution) which may be used to home positional systems as
+-		required.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_count_count_direction_available
+-KernelVersion:	4.12
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		This interface is deprecated; please use the Counter subsystem.
+-
+-		A list of possible counting directions which are:
+-
+-		- "up"	: counter device is increasing.
+-		- "down": counter device is decreasing.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/in_countY_count_direction
+-KernelVersion:	4.12
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		This interface is deprecated; please use the Counter subsystem.
+-
+-		Raw counter device counters direction for channel Y.
+-
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_label
+ What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_label
+ KernelVersion:	5.8
+-- 
+2.30.0
 
-Regarding the datatype for this value, I've opened up the discussion in
-my reply to David Lechner [1], so perhaps we can continue it there.
-
-[1] https://lkml.org/lkml/2021/1/30/5
-
-William Breathitt Gray
-
---mYrx736tSU4e+spo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmAU63EACgkQhvpINdm7
-VJLsxRAAhlCPUhj65vzfuqQStMkmCoKCekEBmx0CS9yJR2Ilrcqm0yvEZdq5q/c4
-/FjnucZRerDshexfeRaaDg4h8guEXzp8YcmM74NTEn8tpsvwNVFWFcbwbePlvHTt
-VtU6qRRN8Bu50wVwdqchRiMuJA9jcAR/5YcfGslq7bxGcvEhQgNvlrjI+NG9tNUU
-smKjjeqBW1AMMFs7CQ4i2QwNA+Vdfy3/Fun9Qsx41zMHAV8/c7UVbIBF3XsqdJHl
-AAphNutr43FIjqrvb3MMVrk06sQ0f8SjEjypX6jODB0dzug5JDtnt1/MdvBO5gSN
-e6/QLq4wgz8Rvl6YECPFBZvt9Bk31tmPWsUg6JQduASolLoM7kCW4XDIGzeHBEiT
-ESipbOGVVeM3WQlON5+bf9li7ARIPEFajcOViw1R8LbASwSXv1MOuDoLHHHfVRg4
-kVFJCD0K/g635AkOHB/Nve9ju0x15u7aJOibOzU6YyyuY+kkj1Yir8QMYf2IBUvA
-CMHkZwxt2uSIFvjVdXrOFuHCoqQnRSIL+USgBk3T/NtCMrGDaPd2RDEE0VL2+O0Z
-T2Dwuzzd1QnCYrZWQFgjaPOgUIPYf1sRWUpkr4s1//RQN+kLCEepauTHgApP9+4m
-7peK1qgaGSNZYjq7lcdzv8J410JU6D9ZgIGe3BpUhLqGGBDHQcE=
-=9dBE
------END PGP SIGNATURE-----
-
---mYrx736tSU4e+spo--
