@@ -2,48 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43CAEC433E9
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Feb 2021 15:29:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C569C433E0
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Feb 2021 15:30:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E761564D9E
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Feb 2021 15:29:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F3AC064EA0
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Feb 2021 15:30:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231475AbhBAP3I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 Feb 2021 10:29:08 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:28814 "EHLO
+        id S231648AbhBAP3u (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 Feb 2021 10:29:50 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:27574 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230038AbhBAOt1 (ORCPT
+        by vger.kernel.org with ESMTP id S229984AbhBAOt1 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Feb 2021 09:49:27 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 111El9AT014367;
-        Mon, 1 Feb 2021 09:48:32 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36dbucuqa3-1
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 111El4L0009549;
+        Mon, 1 Feb 2021 09:48:30 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 36d26a4h74-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 01 Feb 2021 09:48:32 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 111EmUAb030260
+        Mon, 01 Feb 2021 09:48:30 -0500
+Received: from SCSQMBX10.ad.analog.com (SCSQMBX10.ad.analog.com [10.77.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 111EmSVo060970
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 1 Feb 2021 09:48:31 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
- Mon, 1 Feb 2021 09:48:30 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+        Mon, 1 Feb 2021 09:48:28 -0500
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.721.2;
- Mon, 1 Feb 2021 09:48:29 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Mon, 1 Feb 2021 09:48:29 -0500
+ Mon, 1 Feb 2021 06:48:27 -0800
+Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Mon, 1 Feb 2021 06:48:27 -0800
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 111EmNu8027350;
-        Mon, 1 Feb 2021 09:48:27 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 111EmNu6027350;
+        Mon, 1 Feb 2021 09:48:23 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
@@ -51,103 +46,78 @@ CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <dragos.bogdan@analog.com>, <rafael@kernel.org>,
         <gregkh@linuxfoundation.org>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v3 02/11] iio: core: register chardev only if needed
-Date:   Mon, 1 Feb 2021 16:50:56 +0200
-Message-ID: <20210201145105.20459-3-alexandru.ardelean@analog.com>
+Subject: [PATCH v3 00/11] iio: core,buffer: add support for multiple IIO buffers per IIO device
+Date:   Mon, 1 Feb 2021 16:50:54 +0200
+Message-ID: <20210201145105.20459-1-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210201145105.20459-1-alexandru.ardelean@analog.com>
-References: <20210201145105.20459-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-01_06:2021-01-29,2021-02-01 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 clxscore=1015 suspectscore=0 malwarescore=0 mlxscore=0
- priorityscore=1501 bulkscore=0 mlxlogscore=999 spamscore=0 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102010079
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0
+ lowpriorityscore=0 impostorscore=0 clxscore=1011 suspectscore=0
+ priorityscore=1501 malwarescore=0 bulkscore=0 adultscore=0 mlxscore=0
+ mlxlogscore=999 phishscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2009150000 definitions=main-2102010079
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-We only need a chardev if we need to support buffers and/or events.
+Changelog v2 -> v3:
+* added commit 'docs: ioctl-number.rst: reserve IIO subsystem ioctl() space'
+  reserving 'i' 0x90-0x9F ioctls for IIO
+  I did not see any conflicts with others (in the doc)
+  - related to this, the new IIO_BUFFER_GET_FD_IOCTL is now at 'i' 0x91
+* changed approach for creating sysfs buffer directories;
+  - they are now created as groups on the IIO device; that also means
+    that the groups array needs to be krealloc-ed and assign later in
+    the registration
+  - merged bufferX/ and scan_elementsX/ directories into a single
+    bufferX/ directory
+  - for legacy the buffer/ & scan_elements/ directories are kept; but
+    they're groups objects have been moved on the iio_dev_opaque object
+  - internally, the iio_dev_attr type is being extended to hold a
+    reference for an IIO buffer;
+    = this is great for scan_elements attributes
+    = and for the rest of the iio_buffer attributes, it means we need to
+      wrap them into iio_dev_attr
 
-With this change, a chardev will be created only if an IIO buffer is
-attached OR an event_interface is configured.
+One thing to be determined: if IIO_BUFFER_GET_FD_IOCTL for buffer0 should
+return an FD or not.
+Right now, it's returning 0.
 
-Otherwise, no chardev will be created, and the IIO device will get
-registered with the 'device_add()' call.
+Alexandru Ardelean (11):
+  docs: ioctl-number.rst: reserve IIO subsystem ioctl() space
+  iio: core: register chardev only if needed
+  iio: core-trigger: make iio_device_register_trigger_consumer() an int
+    return
+  iio: core: rework iio device group creation
+  iio: buffer: group attr count and attr alloc
+  iio: core: merge buffer/ & scan_elements/ attributes
+  iio: add reference to iio buffer on iio_dev_attr
+  iio: buffer: wrap all buffer attributes into iio_dev_attr
+  iio: core: wrap iio device & buffer into struct for character devices
+  iio: buffer: introduce support for attaching more IIO buffers
+  iio: buffer: add ioctl() to support opening extra buffers for IIO
+    device
 
-Quite a lot of IIO devices don't really need a chardev, so this is a minor
-improvement to the IIO core, as the IIO device will take up (slightly)
-fewer resources.
+ .../userspace-api/ioctl/ioctl-number.rst      |   1 +
+ drivers/iio/iio_core.h                        |  10 +
+ drivers/iio/iio_core_trigger.h                |   4 +-
+ drivers/iio/industrialio-buffer.c             | 420 +++++++++++++++---
+ drivers/iio/industrialio-core.c               |  87 +++-
+ drivers/iio/industrialio-event.c              |   6 +-
+ drivers/iio/industrialio-trigger.c            |   6 +-
+ include/linux/iio/buffer.h                    |   4 +-
+ include/linux/iio/buffer_impl.h               |  21 +-
+ include/linux/iio/iio-opaque.h                |  14 +
+ include/linux/iio/iio.h                       |   5 -
+ include/linux/iio/sysfs.h                     |   3 +
+ include/uapi/linux/iio/buffer.h               |  10 +
+ 13 files changed, 487 insertions(+), 104 deletions(-)
+ create mode 100644 include/uapi/linux/iio/buffer.h
 
-In order to not create a chardev, we mostly just need to not initialize the
-indio_dev->dev.devt field. If that is un-initialized, cdev_device_add()
-behaves like device_add().
-
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/industrialio-core.c | 23 ++++++++++++++++++-----
- 1 file changed, 18 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 7db761afa578..0a6fd299a978 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1761,6 +1761,15 @@ static const struct file_operations iio_buffer_fileops = {
- 	.release = iio_chrdev_release,
- };
- 
-+static const struct file_operations iio_event_fileops = {
-+	.owner = THIS_MODULE,
-+	.llseek = noop_llseek,
-+	.unlocked_ioctl = iio_ioctl,
-+	.compat_ioctl = compat_ptr_ioctl,
-+	.open = iio_chrdev_open,
-+	.release = iio_chrdev_release,
-+};
-+
- static int iio_check_unique_scan_index(struct iio_dev *indio_dev)
- {
- 	int i, j;
-@@ -1788,6 +1797,7 @@ static const struct iio_buffer_setup_ops noop_ring_setup_ops;
- 
- int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- {
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	int ret;
- 
- 	if (!indio_dev->info)
-@@ -1805,9 +1815,6 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- 	if (ret < 0)
- 		return ret;
- 
--	/* configure elements for the chrdev */
--	indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
--
- 	iio_device_register_debugfs(indio_dev);
- 
- 	ret = iio_buffer_alloc_sysfs_and_mask(indio_dev);
-@@ -1836,9 +1843,15 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
- 		indio_dev->setup_ops == NULL)
- 		indio_dev->setup_ops = &noop_ring_setup_ops;
- 
--	cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
-+	if (indio_dev->buffer)
-+		cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
-+	else if (iio_dev_opaque->event_interface)
-+		cdev_init(&indio_dev->chrdev, &iio_event_fileops);
- 
--	indio_dev->chrdev.owner = this_mod;
-+	if (indio_dev->buffer || iio_dev_opaque->event_interface) {
-+		indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
-+		indio_dev->chrdev.owner = this_mod;
-+	}
- 
- 	ret = cdev_device_add(&indio_dev->chrdev, &indio_dev->dev);
- 	if (ret < 0)
 -- 
 2.17.1
 
