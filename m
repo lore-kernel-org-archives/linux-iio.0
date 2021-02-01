@@ -2,203 +2,216 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6989DC433E0
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Jan 2021 20:43:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19B2EC433DB
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Feb 2021 03:52:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 25E4564E0A
-	for <linux-iio@archiver.kernel.org>; Sun, 31 Jan 2021 20:43:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C71F764E0A
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Feb 2021 03:52:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229618AbhAaUnS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 31 Jan 2021 15:43:18 -0500
-Received: from foss.arm.com ([217.140.110.172]:37514 "EHLO foss.arm.com"
+        id S231136AbhBADwj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 31 Jan 2021 22:52:39 -0500
+Received: from m12-16.163.com ([220.181.12.16]:53914 "EHLO m12-16.163.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229564AbhAaUnQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 31 Jan 2021 15:43:16 -0500
-Received: from usa-sjc-imap-foss1.foss.arm.com (unknown [10.121.207.14])
-        by usa-sjc-mx-foss1.foss.arm.com (Postfix) with ESMTP id 5B9771042;
-        Sun, 31 Jan 2021 12:42:30 -0800 (PST)
-Received: from e120937-lin (unknown [172.31.20.19])
-        by usa-sjc-imap-foss1.foss.arm.com (Postfix) with ESMTPSA id 6BB3B3F71A;
-        Sun, 31 Jan 2021 12:42:27 -0800 (PST)
-Date:   Sun, 31 Jan 2021 20:42:20 +0000
-From:   Cristian Marussi <cristian.marussi@arm.com>
+        id S231302AbhBADwf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 31 Jan 2021 22:52:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=163.com;
+        s=s110527; h=Date:From:Subject:Message-ID:MIME-Version; bh=unf2M
+        8g1vcN4LaTMbREEj/+XheFvd1gQDauXFepBi60=; b=iAzkMIdBir37pMVEsLJsH
+        p7mhSGtx34xpQRD51BXDlIuwU7fPnZfy4Ci7SMpLoVvHOiJrrKqAZbnc9cO4qq0E
+        6FEEUiuFuNVhwXvTN25DhAC8rt0CIw8gEasErT933dzzIFGdThQHSV57c4MCouS2
+        EsGXMXVPo9Jh1adJh4l9+E=
+Received: from localhost (unknown [218.94.48.178])
+        by smtp12 (Coremail) with SMTP id EMCowACXZGEsVhdg+daNZw--.25668S2;
+        Mon, 01 Feb 2021 09:15:24 +0800 (CST)
+Date:   Mon, 1 Feb 2021 09:15:35 +0800
+From:   Guoqing Chi <chi962464zy@163.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Jyoti Bhayana <jbhayana@google.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Rob Herring <robh@kernel.org>,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        sudeep.holla@arm.com, egranata@google.com,
-        mikhail.golubev@opensynergy.com, Igor.Skalkin@opensynergy.com,
-        Peter.hilber@opensynergy.com, ankitarora@google.com
-Subject: Re: [RFC PATCH v4 1/1] iio/scmi: Adding support for IIO SCMI Based
- Sensors
-Message-ID: <20210131204220.GB8355@e120937-lin>
-References: <20210129221818.3540620-1-jbhayana@google.com>
- <20210129221818.3540620-2-jbhayana@google.com>
- <20210131131141.468f1cc2@archlinux>
+Cc:     trix@redhat.com, linux-iio@vger.kernel.org, huyue2@yulong.com,
+        linux-kernel@vger.kernel.org, zhangwen@yulong.com,
+        chiguoqing@yulong.com
+Subject: Re: [PATCH v2 resend] iio: imu: bmi160: add mutex_lock for avoiding
+ race
+Message-ID: <20210201091535.000035d7@163.com>
+In-Reply-To: <20210131112143.200cf70a@archlinux>
+References: <20210125015344.106-1-chi962464zy@163.com>
+        <20210131112143.200cf70a@archlinux>
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210131131141.468f1cc2@archlinux>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
+X-CM-TRANSID: EMCowACXZGEsVhdg+daNZw--.25668S2
+X-Coremail-Antispam: 1Uf129KBjvJXoWxXr1xJry8Jr4DKFWrGFW3Wrg_yoWrtF43pa
+        47KF15CrZ5XF1xCr12qr98CFyYv34SqFnrGwn7Ka45ZrZ0yFn3Kr1UJ34FvF9YkrWDAF1S
+        qrWUXrZ5uF1vv3DanT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDUYxBIdaVFxhVjvjDU0xZFpf9x07UvLv_UUUUU=
+X-Originating-IP: [218.94.48.178]
+X-CM-SenderInfo: pfklmlasuwk6r16rljoofrz/1tbiNxsrRFWBjbYHmQABsz
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi
+On Sun, 31 Jan 2021 11:21:43 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-a clarification down below regarding something I pointed out in the
-other thread (just to be sure I have not pointed out something
-plain wrong :D)
-
-Thanks
-
-Cristian
-
-On Sun, Jan 31, 2021 at 01:11:41PM +0000, Jonathan Cameron wrote:
-> On Fri, 29 Jan 2021 22:18:18 +0000
-> Jyoti Bhayana <jbhayana@google.com> wrote:
+> On Mon, 25 Jan 2021 09:53:44 +0800
+> Guoqing Chi <chi962464zy@163.com> wrote:
 > 
-> > This change provides ARM SCMI Protocol based IIO device.
-> > This driver provides support for Accelerometer and Gyroscope using
-> > SCMI Sensor Protocol extensions added in the SCMIv3.0 ARM specification
+> > From: chiguoqing <chi962464zy@163.com>
 > > 
-> > Signed-off-by: Jyoti Bhayana <jbhayana@google.com>
+> > Adding mutex_lock, when read and write reg need to use this lock to
+> > avoid race.
+> > 
+> > Signed-off-by: Guoqing Chi <chiguoqing@yulong.com>
+> > Reviewed-by: Tom Rix <trix@redhat.com>  
 > 
-> A few minor things noticed on a fresh read through, but mostly I think
-> we are down to figuring out how to deal with the range (as discussed
-> in the thread continuing on v3).
+> Hi.  Looking at this again, I'm not entirely sure I understand what
+> the race is.  Could you give any example?
 > 
-> On another note, probably time to drop the RFC or give a bit more detail
-> on why you think this isn't ready to be applied.
+> Individual regmap accesses have their own internal protections
+> against races.  We don't have an read modify write cycles that
+> I can see here, so I don't think there are any races.
 > 
-> Thanks,
+> On another note however, there is a regmap_bulk_read into
+> a variable on the stack which is a problem for spi.  Unlike i2c
+> the spi patch in regmap for bulk_reads can be zero copy which
+> means that the variable on the stack can be dma'd into.  That's
+> a potential issue for some systems in which you can end up wiping
+> out whatever else gets changed in the same cacheline.
+> 
+> To fix that, the variable should be in it's own cacheline. Either
+> do that by using kmalloc etc to put it on the stack, or add a
+> suitable buffer to priv, marked ___cacheline_aligned.  Though once
+> you do that you will need locks to protect it as you've done
+> here.
 > 
 > Jonathan
-> 
-[snip]
 
-> > +
-> > +static int scmi_iio_dev_probe(struct scmi_device *sdev)
-> > +{
-> > +	const struct scmi_sensor_info *sensor_info;
-> > +	struct scmi_handle *handle = sdev->handle;
-> > +	struct device *dev = &sdev->dev;
-> > +	struct iio_dev *scmi_iio_dev;
-> > +	u16 nr_sensors;
-> > +	int err, i;
-> > +
-> > +	if (!handle || !handle->sensor_ops) {
-> > +		dev_err(dev, "SCMI device has no sensor interface\n");
-> I'm going to guess we can't actually get here because the registration
-> would't have happened if either of those are true?
-> If so perhaps drop the error message.
-> 
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	nr_sensors = handle->sensor_ops->count_get(handle);
-> > +	if (!nr_sensors) {
-> > +		dev_dbg(dev, "0 sensors found via SCMI bus\n");
-> -ENODEV maybe?
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	dev_dbg(dev, "%d sensors found via SCMI bus\n", nr_sensors);
-> 
-> Clear out any debug prints out that don't provide info that can't be obtained
-> farily easily from elsewhere.  In this case they will either be registered
-> or not and we'll get error messages.
-> These sort of prints bitrot over time so we want to limit them to the truely
-> useful.
-> 
-> > +
-> > +	for (i = 0; i < nr_sensors; i++) {
-> > +		sensor_info = handle->sensor_ops->info_get(handle, i);
-> > +		if (!sensor_info) {
-> > +			dev_err(dev, "SCMI sensor %d has missing info\n", i);
-> > +			return -EINVAL;
-> > +		}
-> > +
-> > +		/* Skipping scalar sensor,as this driver only supports accel and gyro */
-> > +		if (sensor_info->num_axis == 0)
-> > +			continue;
-> 
-> So there is a situation where this driver never creates anything?  In that path I'd
-> like to see an -ENODEV error return.
-> 
-You mean -ENODEV only if this driver does not find at least one
-good/supported GYRO/ACCEL sensor right ?
+Hi Jonathan
 
-I would expect a system to possibly expose a bunch of other SCMI sensors
-maybe unsupported by this IIO driver but currently handled by other
-drivers, as an example on JUNO a number of temps/volts/currents sensors
-are exposed and handled by the SCMI hwmon driver.
+It's my mistake. The regmap_bulk_read func has their own lock.
+So maybe we can give up my patch.
+
+Thanks.
+
+> 
+> 
+> 
+> > ---
+> > v2:Follow write function to fix read function.
+> > Adding mutex init in core probe function.
+> > Adding break in switch case at read and write function.
+> > 
+> >  drivers/iio/imu/bmi160/bmi160.h      |  2 ++
+> >  drivers/iio/imu/bmi160/bmi160_core.c | 34
+> > +++++++++++++++++++--------- 2 files changed, 25 insertions(+), 11
+> > deletions(-)
+> > 
+> > diff --git a/drivers/iio/imu/bmi160/bmi160.h
+> > b/drivers/iio/imu/bmi160/bmi160.h index 32c2ea2d7112..0c189a8b5b53
+> > 100644 --- a/drivers/iio/imu/bmi160/bmi160.h
+> > +++ b/drivers/iio/imu/bmi160/bmi160.h
+> > @@ -3,9 +3,11 @@
+> >  #define BMI160_H_
+> >  
+> >  #include <linux/iio/iio.h>
+> > +#include <linux/mutex.h>
+> >  #include <linux/regulator/consumer.h>
+> >  
+> >  struct bmi160_data {
+> > +	struct mutex lock;
+> >  	struct regmap *regmap;
+> >  	struct iio_trigger *trig;
+> >  	struct regulator_bulk_data supplies[2];
+> > diff --git a/drivers/iio/imu/bmi160/bmi160_core.c
+> > b/drivers/iio/imu/bmi160/bmi160_core.c index
+> > 290b5ef83f77..e303378f4841 100644 ---
+> > a/drivers/iio/imu/bmi160/bmi160_core.c +++
+> > b/drivers/iio/imu/bmi160/bmi160_core.c @@ -452,26 +452,32 @@ static
+> > int bmi160_read_raw(struct iio_dev *indio_dev, int ret;
+> >  	struct bmi160_data *data = iio_priv(indio_dev);
+> >  
+> > +	mutex_lock(&data->lock);
+> >  	switch (mask) {
+> >  	case IIO_CHAN_INFO_RAW:
+> >  		ret = bmi160_get_data(data, chan->type,
+> > chan->channel2, val);
+> > -		if (ret)
+> > -			return ret;
+> > -		return IIO_VAL_INT;
+> > +		if (!ret)
+> > +			ret = IIO_VAL_INT;
+> > +		break;
+> >  	case IIO_CHAN_INFO_SCALE:
+> >  		*val = 0;
+> >  		ret = bmi160_get_scale(data,
+> >  				       bmi160_to_sensor(chan->type),
+> > val2);
+> > -		return ret ? ret : IIO_VAL_INT_PLUS_MICRO;
+> > +		if (!ret)
+> > +			ret = IIO_VAL_INT_PLUS_MICRO;
+> > +		break;
+> >  	case IIO_CHAN_INFO_SAMP_FREQ:
+> >  		ret = bmi160_get_odr(data,
+> > bmi160_to_sensor(chan->type), val, val2);
+> > -		return ret ? ret : IIO_VAL_INT_PLUS_MICRO;
+> > +		if (!ret)
+> > +			ret = IIO_VAL_INT_PLUS_MICRO;
+> > +		break;
+> >  	default:
+> > -		return -EINVAL;
+> > +		ret = -EINVAL;
+> >  	}
+> > +	mutex_unlock(&data->lock);
+> >  
+> > -	return 0;
+> > +	return ret;
+> >  }
+> >  
+> >  static int bmi160_write_raw(struct iio_dev *indio_dev,
+> > @@ -479,19 +485,24 @@ static int bmi160_write_raw(struct iio_dev
+> > *indio_dev, int val, int val2, long mask)
+> >  {
+> >  	struct bmi160_data *data = iio_priv(indio_dev);
+> > +	int result;
+> >  
+> > +	mutex_lock(&data->lock);
+> >  	switch (mask) {
+> >  	case IIO_CHAN_INFO_SCALE:
+> > -		return bmi160_set_scale(data,
+> > +		result = bmi160_set_scale(data,
+> >  					bmi160_to_sensor(chan->type),
+> > val2);
+> > +		break;
+> >  	case IIO_CHAN_INFO_SAMP_FREQ:
+> > -		return bmi160_set_odr(data,
+> > bmi160_to_sensor(chan->type),
+> > +		result = bmi160_set_odr(data,
+> > bmi160_to_sensor(chan->type), val, val2);
+> > +		break;
+> >  	default:
+> > -		return -EINVAL;
+> > +		result = -EINVAL;
+> >  	}
+> > +	mutex_unlock(&data->lock);
+> >  
+> > -	return 0;
+> > +	return result;
+> >  }
+> >  
+> >  static
+> > @@ -838,6 +849,7 @@ int bmi160_core_probe(struct device *dev,
+> > struct regmap *regmap, return -ENOMEM;
+> >  
+> >  	data = iio_priv(indio_dev);
+> > +	mutex_init(&data->lock);
+> >  	dev_set_drvdata(dev, indio_dev);
+> >  	data->regmap = regmap;
+> >    
 
 
-> > +
-> > +		err = scmi_alloc_iiodev(dev, handle, sensor_info,
-> > +					&scmi_iio_dev);
-> > +		if (err < 0) {
-> > +			dev_err(dev,
-> > +				"failed to allocate IIO device for sensor %s: %d\n",
-> > +				sensor_info->name, err);
-> > +			return err;
-> > +		}
-> > +
-> > +		err = scmi_iio_buffers_setup(scmi_iio_dev);
-> > +		if (err < 0) {
-> > +			dev_err(dev,
-> > +				"IIO buffer setup error at sensor %s: %d\n",
-> > +				sensor_info->name, err);
-> > +			return err;
-> > +		}
-> > +
-> > +		err = devm_iio_device_register(dev, scmi_iio_dev);
-> > +		if (err) {
-> > +			dev_err(dev,
-> > +				"IIO device registration failed at sensor %s: %d\n",
-> > +				sensor_info->name, err);
-> > +			return err;
-> > +		}
-> > +	}
-> > +	return err;
-> > +}
-> > +
-> > +static const struct scmi_device_id scmi_id_table[] = {
-> > +	{ SCMI_PROTOCOL_SENSOR, "iiodev" },
-> 
-> I'm curious on this.  What actually causes a match on that
-> iiodev?  From digging around the scmi core am I right in thinking
-> that this iiodev id needs to be explicitly listed?
-> 
-> It would be good to include any changes needed there in this
-> series.
-> 
-> > +	{},
-> > +};
-> > +
-> > +MODULE_DEVICE_TABLE(scmi, scmi_id_table);
-> > +
-> > +static struct scmi_driver scmi_iiodev_driver = {
-> > +	.name = "scmi-sensor-iiodev",
-> > +	.probe = scmi_iio_dev_probe,
-> > +	.id_table = scmi_id_table,
-> > +};
-> > +
-> > +module_scmi_driver(scmi_iiodev_driver);
-> > +
-> > +MODULE_AUTHOR("Jyoti Bhayana <jbhayana@google.com>");
-> > +MODULE_DESCRIPTION("SCMI IIO Driver");
-> > +MODULE_LICENSE("GPL v2");
-> 
