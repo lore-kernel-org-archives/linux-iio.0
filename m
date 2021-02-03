@@ -2,132 +2,179 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.4 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CFB78C433E6
-	for <linux-iio@archiver.kernel.org>; Tue,  2 Feb 2021 21:57:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 67F1FC433DB
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Feb 2021 08:30:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A336564F9F
-	for <linux-iio@archiver.kernel.org>; Tue,  2 Feb 2021 21:57:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 12E2564F68
+	for <linux-iio@archiver.kernel.org>; Wed,  3 Feb 2021 08:30:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234233AbhBBV5N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 2 Feb 2021 16:57:13 -0500
-Received: from www381.your-server.de ([78.46.137.84]:54146 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234159AbhBBV5I (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Feb 2021 16:57:08 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=LnQwN2vEqk8UbAPHy4QObNw8+1L9AEfi2v9UkN3eiYM=; b=QcZ7t6B73TJjLZgr7L7AmWmlun
-        goGMrOJDi+SEOzKnf/foGdSqnARXIfhbN3Ur45vAUh8hNH6IVEoHpo986Bi7ZsFmDjOVmKlnbzr8l
-        QCgFihZbzj77Jy4SA55AuSKT4sShq9d0+N7uUZe7sLisOsMUEzrkUy3L5rfqOhVMGdIcKyjZf56XF
-        s1eKkADP2KTegqRIWuWB2Wa5x/Lh0aYEgJ0WPdvCFG104m7fBCMdC/LYd8CAM4HneUClTVEtBp0ws
-        ntenPHaztSY0GdBgw0sdQ1mEQSQk4rfNtpq7heOHpstV1SR/OwafjGGqWsvKIFMaom9eUK/sRoJQH
-        1Onmkscg==;
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1l73eo-0008Ek-5d; Tue, 02 Feb 2021 22:56:22 +0100
-Received: from [62.216.202.92] (helo=[192.168.178.20])
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1l73eo-000NBx-0A; Tue, 02 Feb 2021 22:56:22 +0100
-Subject: Re: [PATCH v2] dt-bindings: iio: dac: Fix AD5686 references
-To:     Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michael Auchter <michael.auchter@ni.com>,
-        linux-iio@vger.kernel.org
-References: <20210202215503.114113-1-robh@kernel.org>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <755532c1-2c28-3796-367a-baec09f2dada@metafoo.de>
-Date:   Tue, 2 Feb 2021 22:56:21 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.6.0
+        id S232563AbhBCIae (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 3 Feb 2021 03:30:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232512AbhBCIad (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Feb 2021 03:30:33 -0500
+Received: from mail-oi1-x22d.google.com (mail-oi1-x22d.google.com [IPv6:2607:f8b0:4864:20::22d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE90FC061573;
+        Wed,  3 Feb 2021 00:29:52 -0800 (PST)
+Received: by mail-oi1-x22d.google.com with SMTP id k25so25914707oik.13;
+        Wed, 03 Feb 2021 00:29:52 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=Fw7mhJ/ALXeJZR+44OFAC0sbpDziXpuDZAubERRVzFg=;
+        b=Gf4D99yyAGOZ90xVmedTlmHqUPxdM+6hM26isYs20UlmBRFXHcIHNUMpo72aolFpcP
+         8D/v/2G6lKq9u/93G2AcMlmE9SPD2mgCAKX7NbV4qrJ3YRlFmvD4BPVXeWq301FClRsM
+         y9jxMdbOdkQXEwmh70WVeWxMH3kFRroAyUf3Jh893QymPpT2Jn95lQ1XNn5YDNnXFRSX
+         4VDvaQfBcQGtB32mHEEPokjc0knJ37BSW2fajRDHzxR6MQna/o9SMl4902qbGe10iHY7
+         zisckfJj2pnkG+quwEg6t03KcL2TVS0yN98jEoVji33sE7MCDp+zhKLLQtyqKRZnrgRT
+         pCXw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=Fw7mhJ/ALXeJZR+44OFAC0sbpDziXpuDZAubERRVzFg=;
+        b=g6yU4I4Bf1U/1cKCm8sEbUKoGFmplAaFr+vX7XZS43G2cDh4AF6by5orsoWLvcXFLf
+         C/nMit/0MX5H9qF1Uwj7duwEMl1mR39Ch353bfVFlMlNXbpBj5vMeT/uoRXsTzk/gbYr
+         4zkQQNpxKsGwd0SgNCbTM0TLMaOj0ln+vgV2q+FGPELnQHKtc4RONKQ0Cj6k2t5CLtR7
+         1uMPwN0f8ei+6pIJS/MEQENRKIUF18ggioc/SMKDNGVxHdUzL4HEVdAeHH2X28lOShB+
+         0ouQsE2M4QL9rhHowlL1XGdQ/FM2NROCKthytLsZQKN0jeSvtK51c2jSXIGlWQNY0oZW
+         CIoQ==
+X-Gm-Message-State: AOAM533ceS+bjga10ETmI+hU1yRe1L3ULIHSF56LFt/ZPsTIY04k0f6p
+        xFdk3wNuGTn2giiXoRUvO1jtH90s4T576Ruj3nU=
+X-Google-Smtp-Source: ABdhPJyoWWtBttqrhsG53CwbEqSmRLh1H8YTHimPEVkBZhFUCZ+sKisqTESaxWyAlhg6iF9K81LGmeIyGJN5AGQfyK0=
+X-Received: by 2002:aca:4454:: with SMTP id r81mr1268682oia.129.1612340992276;
+ Wed, 03 Feb 2021 00:29:52 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20210202215503.114113-1-robh@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26068/Tue Feb  2 13:21:02 2021)
+References: <20210202184434.42644-1-swboyd@chromium.org> <20210202184434.42644-3-swboyd@chromium.org>
+In-Reply-To: <20210202184434.42644-3-swboyd@chromium.org>
+From:   Enric Balletbo Serra <eballetbo@gmail.com>
+Date:   Wed, 3 Feb 2021 09:29:40 +0100
+Message-ID: <CAFqH_52xjAmjWu3DFuFyqQBDYFccZXYp=8wcXVOr4H5deRa2bw@mail.gmail.com>
+Subject: Re: [PATCH v4 2/3] dt-bindings: iio: Add cros ec proximity yaml doc
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Benson Leung <bleung@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>,
+        Douglas Anderson <dianders@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2/2/21 10:55 PM, Rob Herring wrote:
-> The example and filename use 'adi,ad5686', but the schema doesn't
-> document it. The AD5686 is also a SPI interface variant while all the
-> documented variants have an I2C interface. So let's update all the
-> references to AD5686 to AD5696.
+Hi Stephen,
+
+Missatge de Stephen Boyd <swboyd@chromium.org> del dia dt., 2 de febr.
+2021 a les 19:53:
 >
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Michael Hennerich <Michael.Hennerich@analog.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> Cc: Michael Auchter <michael.auchter@ni.com>
-> Cc: linux-iio@vger.kernel.org
-> Signed-off-by: Rob Herring <robh@kernel.org>
+> Some cros ECs support a front proximity MKBP event via
+> 'EC_MKBP_FRONT_PROXIMITY'. Add a DT binding to document this feature via
+> a node that is a child of the main cros_ec device node. Devices that
+> have this ability will describe this in firmware.
+>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Benson Leung <bleung@chromium.org>
+> Cc: Guenter Roeck <groeck@chromium.org>
+> Cc: Douglas Anderson <dianders@chromium.org>
+> Cc: Gwendal Grignou <gwendal@chromium.org>
+> Cc: <devicetree@vger.kernel.org>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
 
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Thanks for adding a full example, IIRC this is preferred by Rob and we
+are also trying to apply this rule on all the cros-ec related
+bindings, so the dt_bindings_check really checks a full example. From
+my side looks good to me.
 
-Thanks Rob.
+Reviewed-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
 > ---
-> v2:
-> - Rename instead of adding AD5686
+>  .../google,cros-ec-mkbp-proximity.yaml        | 46 +++++++++++++++++++
+>  .../bindings/mfd/google,cros-ec.yaml          |  3 ++
+>  2 files changed, 49 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml
 >
->   .../iio/dac/{adi,ad5686.yaml => adi,ad5696.yaml}       | 10 +++++-----
->   1 file changed, 5 insertions(+), 5 deletions(-)
->   rename Documentation/devicetree/bindings/iio/dac/{adi,ad5686.yaml => adi,ad5696.yaml} (77%)
+> diff --git a/Documentation/devicetree/bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml b/Documentation/devicetree/bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml
+> new file mode 100644
+> index 000000000000..d82b929af445
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/proximity/google,cros-ec-mkbp-proximity.yaml
+> @@ -0,0 +1,46 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +
+> +$id: http://devicetree.org/schemas/iio/proximity/google,cros-ec-mkbp-proximity.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: ChromeOS EC MKBP Proximity Sensor
+> +
+> +maintainers:
+> +  - Stephen Boyd <swboyd@chromium.org>
+> +  - Benson Leung <bleung@chromium.org>
+> +  - Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> +
+> +description: |
+> +  Google's ChromeOS EC sometimes has the ability to detect user proximity.
+> +  This is implemented on the EC as near/far logic and exposed to the OS
+> +  via an MKBP switch bit.
+> +
+> +properties:
+> +  compatible:
+> +    const: google,cros-ec-mkbp-proximity
+> +
+> +  label:
+> +    description: Name for proximity sensor
+> +
+> +required:
+> +  - compatible
+> +
+> +unevaluatedProperties: false
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    spi {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      ec@0 {
+> +        compatible = "google,cros-ec-spi";
+> +        reg = <0>;
+> +        proximity {
+> +          compatible = "google,cros-ec-mkbp-proximity";
+> +          label = "proximity-wifi-lte";
+> +        };
+> +      };
+> +    };
+> diff --git a/Documentation/devicetree/bindings/mfd/google,cros-ec.yaml b/Documentation/devicetree/bindings/mfd/google,cros-ec.yaml
+> index 76bf16ee27ec..479a9f15de32 100644
+> --- a/Documentation/devicetree/bindings/mfd/google,cros-ec.yaml
+> +++ b/Documentation/devicetree/bindings/mfd/google,cros-ec.yaml
+> @@ -94,6 +94,9 @@ properties:
+>    keyboard-controller:
+>      $ref: "/schemas/input/google,cros-ec-keyb.yaml#"
 >
-> diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
-> similarity index 77%
-> rename from Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-> rename to Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
-> index 8065228e5df8..56b0cda0f30a 100644
-> --- a/Documentation/devicetree/bindings/iio/dac/adi,ad5686.yaml
-> +++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5696.yaml
-> @@ -1,16 +1,16 @@
->   # SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->   %YAML 1.2
->   ---
-> -$id: http://devicetree.org/schemas/iio/dac/adi,ad5686.yaml#
-> +$id: http://devicetree.org/schemas/iio/dac/adi,ad5696.yaml#
->   $schema: http://devicetree.org/meta-schemas/core.yaml#
->   
-> -title: Analog Devices AD5686 and similar multi-channel DACs
-> +title: Analog Devices AD5696 and similar multi-channel DACs
->   
->   maintainers:
->     - Michael Auchter <michael.auchter@ni.com>
->   
->   description: |
-> -  Binding for Analog Devices AD5686 and similar multi-channel DACs
-> +  Binding for Analog Devices AD5696 and similar multi-channel DACs
->   
->   properties:
->     compatible:
-> @@ -48,8 +48,8 @@ examples:
->         #address-cells = <1>;
->         #size-cells = <0>;
->   
-> -      ad5686: dac@0 {
-> -        compatible = "adi,ad5686";
-> +      ad5696: dac@0 {
-> +        compatible = "adi,ad5696";
->           reg = <0>;
->           vcc-supply = <&dac_vref>;
->         };
-
-
+> +  proximity:
+> +    $ref: "/schemas/iio/proximity/google,cros-ec-mkbp-proximity.yaml#"
+> +
+>    codecs:
+>      type: object
+>      additionalProperties: false
+> --
+> https://chromeos.dev
+>
