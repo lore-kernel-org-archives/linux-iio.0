@@ -2,90 +2,172 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE464C433DB
-	for <linux-iio@archiver.kernel.org>; Thu,  4 Feb 2021 11:36:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D673C433E6
+	for <linux-iio@archiver.kernel.org>; Thu,  4 Feb 2021 13:43:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 757B264F44
-	for <linux-iio@archiver.kernel.org>; Thu,  4 Feb 2021 11:36:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 22B4964F5C
+	for <linux-iio@archiver.kernel.org>; Thu,  4 Feb 2021 13:43:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235907AbhBDLg0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 4 Feb 2021 06:36:26 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:34904 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235649AbhBDLd6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 Feb 2021 06:33:58 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 114BUWo9015856;
-        Thu, 4 Feb 2021 06:33:11 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36dbud5vec-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 04 Feb 2021 06:33:11 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 114BXAKV054304
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 4 Feb 2021 06:33:10 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 4 Feb 2021
- 06:33:09 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
- Thu, 4 Feb 2021 06:33:09 -0500
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 114BX7Yn009001;
-        Thu, 4 Feb 2021 06:33:08 -0500
-From:   <alexandru.tachici@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <jic23@kernel.org>, <robh+dt@kernel.org>
-Subject: [PATCH v2 0/2] iio: adc: ad7124: allow 16 channels
-Date:   Thu, 4 Feb 2021 13:35:49 +0200
-Message-ID: <20210204113551.68744-1-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
+        id S236419AbhBDNn0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 4 Feb 2021 08:43:26 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43994 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236324AbhBDNma (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 4 Feb 2021 08:42:30 -0500
+Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AB39CC061573;
+        Thu,  4 Feb 2021 05:41:49 -0800 (PST)
+Received: by mail-il1-x135.google.com with SMTP id q5so2560860ilc.10;
+        Thu, 04 Feb 2021 05:41:49 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=FcwGwCNpcpd+qkLWuVWx4j+sB84HP58bIF6W3jSzKOw=;
+        b=OwCcrEz34nwaoYgHVhYEuXLUxN8RsVj2AxTD/T++bzASAocHN6OCmydkROHqxhktJ5
+         sz3z7SuApibMd7eQmd4xure6C8lCmXKZ/eEzi70plH7RHOgHYxE6vvNbOWnQ6iNcWoVj
+         +2F13KRS4/cf/3nPwnGNBEkdSpQEWBDbfVwVgNnLneIlb5+nz59xHpy3lv/sWEco+xzz
+         7xJgRhcKcL+Ojf42FcjoXILfFKdKzKZ8b69nuXb8OjhLBljz72vYnyhVv92PJ17p4M8Z
+         jofF6+KxapcXk7914r4cxtm5dCA7165gGVYZqe8vh19cSri8alc71d/nyciiqMxE1BtE
+         v+Rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=FcwGwCNpcpd+qkLWuVWx4j+sB84HP58bIF6W3jSzKOw=;
+        b=mxbKEbEnWWsWnsFt/3UOYnq05wfuWFbMpds5eZ2FlPX6Qrzw1tpcxpdbAqYbzuvGC4
+         lj4bXh/gYzsum5Gyz6IfWPAU/VgbMG2M8IEmia2a+dg3jb5rZjt5y0MbfBB6at9xNMPQ
+         Gxfywune01ywGqf8VKEzikFHqaTj7wjWyRCfRCcl1Y+uxszKhcXl2ynpvF2bV0h+X6k0
+         FPxlAZWZa1ZOnFff3WCF6OU5RtHjdCnfFVHVdb3BwYbIwuP2+M9am7LdfdmKYs+4zkAM
+         UGe9v1H/mlE6zleE3ddSfyrMZmrJDKmjoN3H2oRHl/XBQsW6CZhZ54IRzQN5wnok7BIN
+         6tHg==
+X-Gm-Message-State: AOAM531jlW9wwL2xMhl/QixjyuFMDkyYLNMOLk1bDFS+7ZNhaPYCqfD8
+        0lEYro180xbdCx+xJJr6TZELfmu7jh/LzBcAa027mKCpEQY=
+X-Google-Smtp-Source: ABdhPJxX3tx631C9/WljgQULwuwYchT/xtMMxnMCZXMpmx6EZW8w6PdFEfGKQbSsOeASSpuPvY/REB6IUOez0hVWFeI=
+X-Received: by 2002:a05:6e02:138f:: with SMTP id d15mr6968376ilo.303.1612446109179;
+ Thu, 04 Feb 2021 05:41:49 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-04_06:2021-02-04,2021-02-04 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- adultscore=0 clxscore=1015 suspectscore=0 malwarescore=0 mlxscore=0
- priorityscore=1501 bulkscore=0 mlxlogscore=999 spamscore=0 phishscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102040072
+References: <20210201145105.20459-1-alexandru.ardelean@analog.com>
+ <20210201145105.20459-7-alexandru.ardelean@analog.com> <CAHp75VcTk-Lv_Hr0VHnd-r2XoVeRHEocwVyg6kKdWYrkHnf0gg@mail.gmail.com>
+In-Reply-To: <CAHp75VcTk-Lv_Hr0VHnd-r2XoVeRHEocwVyg6kKdWYrkHnf0gg@mail.gmail.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Thu, 4 Feb 2021 15:41:37 +0200
+Message-ID: <CA+U=Dso4zosunKgqb64+EwepUwcrpJN0ANwvFXnsz5KxVhOG-w@mail.gmail.com>
+Subject: Re: [PATCH v3 06/11] iio: core: merge buffer/ & scan_elements/ attributes
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        "Bogdan, Dragos" <dragos.bogdan@analog.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+On Wed, Feb 3, 2021 at 12:04 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+>
+> On Mon, Feb 1, 2021 at 5:28 PM Alexandru Ardelean
+> <alexandru.ardelean@analog.com> wrote:
+> >
+> > With this change, we create a new directory for the IIO device called
+> > buffer0, under which both the old buffer/ and scan_elements/ are stored.
+> >
+> > This is done to simplify the addition of multiple IIO buffers per IIO
+> > device. Otherwise we would need to add a bufferX/ and scan_elementsX/
+> > directory for each IIO buffer.
+> > With the current way of storing attribute groups, we can't have directories
+> > stored under each other (i.e. scan_elements/ under buffer/), so the best
+> > approach moving forward is to merge their attributes.
+> >
+> > The old/legacy buffer/ & scan_elements/ groups are not stored on the opaque
+> > IIO device object. This way the IIO buffer can have just a single
+> > attribute_group object, saving a bit of memory when adding multiple IIO
+> > buffers.
+>
+> ...
+>
+> > +static int iio_buffer_register_legacy_sysfs_groups(struct iio_dev *indio_dev,
+> > +                                                  struct attribute **buffer_attrs,
+> > +                                                  int buffer_attrcount,
+> > +                                                  int scan_el_attrcount)
+> > +{
+> > +       struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+> > +       struct attribute_group *group;
+> > +       int ret;
+> > +
+> > +       group = &iio_dev_opaque->legacy_buffer_group;
+>
+> > +       group->attrs = kcalloc(buffer_attrcount + 1,
+> > +                              sizeof(struct attribute *), GFP_KERNEL);
+> > +       if (!group->attrs)
+> > +               return -ENOMEM;
+> > +
+> > +       memcpy(group->attrs, buffer_attrs,
+> > +              buffer_attrcount * sizeof(struct attribute *));
+>
+> kmemdup() ?
+> Perhaps introduce kmemdup_array().
 
-AD7124-8 can have up to 16 pseudo-differential channels
-enabled simultaneously and only 8 configurations. In this
-scenario we cannot assign one configuration per channel,
-some channels will have to share configurations like, ODR,
-gain and filter parameters.
+doesn't add much benefit from what i can tell;
+and it complicates things with the fact that we need to add the extra
+null terminator element;
+[1] if we kmemdup(buffer_attrcount + 1) , the copy an extra element we
+don't need, which needs to be null-ed
 
-Allow the user to specify channels and configurations
-separately in device-tree and assign, if needed, the same
-configuration to multiple channels.
+>
+> > +       group->name = "buffer";
+> > +
+> > +       ret = iio_device_register_sysfs_group(indio_dev, group);
+> > +       if (ret)
+> > +               goto error_free_buffer_attrs;
+> > +
+> > +       group = &iio_dev_opaque->legacy_scan_el_group;
+>
+> > +       group->attrs = kcalloc(scan_el_attrcount + 1,
+> > +                              sizeof(struct attribute *), GFP_KERNEL);
+> > +       if (!group->attrs) {
+> > +               ret = -ENOMEM;
+> > +               goto error_free_buffer_attrs;
+> > +       }
+> > +
+> > +       memcpy(group->attrs, &buffer_attrs[buffer_attrcount],
+> > +              scan_el_attrcount * sizeof(struct attribute *));
+>
+> Ditto.
 
-If two channels share the configuration changing the
-sampling rate of one will change the sampling rate of the
-other too.
+continuing from [1]
+here it may be worse, because kmemdup() would copy 1 element from
+undefined memory;
 
-Alexandru Tachici (2):
-  iio: adc: ad7124: allow 16 channels
-  dt-bindings: iio: adc: ad7124: add config nodes
-
- .../bindings/iio/adc/adi,ad7124.yaml          |  72 +++++--
- drivers/iio/adc/ad7124.c                      | 183 +++++++++++-------
- 2 files changed, 166 insertions(+), 89 deletions(-)
-
--- 
-2.20.1
-
+>
+> > +       group->name = "scan_elements";
+> > +
+> > +       ret = iio_device_register_sysfs_group(indio_dev, group);
+> > +       if (ret)
+> > +               goto error_free_scan_el_attrs;
+> > +
+> > +       return 0;
+> > +
+> > +error_free_buffer_attrs:
+> > +       kfree(iio_dev_opaque->legacy_buffer_group.attrs);
+> > +error_free_scan_el_attrs:
+> > +       kfree(iio_dev_opaque->legacy_scan_el_group.attrs);
+> > +
+> > +       return ret;
+> > +}
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
