@@ -2,188 +2,145 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-9.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86D66C433DB
-	for <linux-iio@archiver.kernel.org>; Sat,  6 Feb 2021 02:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCE4AC433DB
+	for <linux-iio@archiver.kernel.org>; Sat,  6 Feb 2021 03:48:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 44BB564E3D
-	for <linux-iio@archiver.kernel.org>; Sat,  6 Feb 2021 02:58:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8CC7D64F91
+	for <linux-iio@archiver.kernel.org>; Sat,  6 Feb 2021 03:48:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231794AbhBFC5k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 5 Feb 2021 21:57:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41400 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231453AbhBFCwi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 Feb 2021 21:52:38 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 191BAC061756
-        for <linux-iio@vger.kernel.org>; Fri,  5 Feb 2021 13:58:17 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id z9so4576944pjl.5
-        for <linux-iio@vger.kernel.org>; Fri, 05 Feb 2021 13:58:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rwGnDkAwLPNFNg3dbClr9Apyxhw0sa9sADlIfBPGl84=;
-        b=e3vOfoclLsO/A7ts9jMJQiKJ2DoT3ZGGYFMYPidsrc4+xaSs3wRxbJKgXTxsiszjzU
-         +7+o3uUgAlvAonbolehMDUA6fzCvanJXJ9pJLuYJlsfNpnNJRcJs3LuLsQ3T526ps1rk
-         221kDHhrcovViFSPzOdHWqKVrefqTfPHETKfM=
+        id S229795AbhBFDrk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 5 Feb 2021 22:47:40 -0500
+Received: from mail-yb1-f173.google.com ([209.85.219.173]:44540 "EHLO
+        mail-yb1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232297AbhBFDqB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 Feb 2021 22:46:01 -0500
+Received: by mail-yb1-f173.google.com with SMTP id r2so8753338ybk.11;
+        Fri, 05 Feb 2021 19:45:45 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=rwGnDkAwLPNFNg3dbClr9Apyxhw0sa9sADlIfBPGl84=;
-        b=PeWCQvT9anYx4iubyOTkTszR2MLcRkIfNPQaHctxf7NGjjdSxuFk0fkIBz97BOxQy6
-         1VTS8pIYDHNf/OS8UHWS7mlH1R1ul2WVmMhKqJwrn7Y81M8XdovoBc6MwbyZTy8bbGgw
-         q0ShG/X7SI6XJLpncbtOr/sTwUkIkXKr/rOk0howNyTzycbQcyjagz05Ch7d0pQhSTL9
-         wfR7ZHpJngkLGV34SOO7xkcxoSumIhuNplnWQMnqCJky+hawmilcMep4rU+8Q4wI74H2
-         llqMP1y5mMSHo5tM/6ddQU/cnmUesPJK11hPhwNoP3USh8dJSl/islOYYCrv9vS8dV1z
-         AKKA==
-X-Gm-Message-State: AOAM530KSlL9zdhJ6L0MtBQzHQyEWQQ4IPj0EJPaDdAJfKK6kCLb1df5
-        KQBQevjSQwBeZiRA0n8u4a0ZwQ==
-X-Google-Smtp-Source: ABdhPJzUEkkWlurX5b5kkN5EQMoFWb73ErhTzOULYKGavUVTKY4Tl910aC4SfioeJ43vjjwtOhXYeQ==
-X-Received: by 2002:a17:902:d2c9:b029:e1:8692:aa7c with SMTP id n9-20020a170902d2c9b02900e18692aa7cmr5685001plc.21.1612562296549;
-        Fri, 05 Feb 2021 13:58:16 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:ac48:d1a2:431e:ab86])
-        by smtp.gmail.com with ESMTPSA id b23sm9202364pjh.53.2021.02.05.13.58.15
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 05 Feb 2021 13:58:15 -0800 (PST)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     jic23@kernel.org, lars@metafoo.de, swboyd@chromium.org,
-        campello@chromium.org
-Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2] iio: sx9310: Support ACPI property
-Date:   Fri,  5 Feb 2021 13:58:11 -0800
-Message-Id: <20210205215811.2033425-1-gwendal@chromium.org>
-X-Mailer: git-send-email 2.30.0.478.g8a0d178c01-goog
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=AcoHueHL4Wy2Pr1abC9BKUiPNmDLmBdlWfI1XWRBONM=;
+        b=mzcx5IqU/FXiySpZJNqVXesUlFsT46cWaStGdRJ2RbJruaAojZAuEY9MCaZ6HQIZKC
+         krsRxNiqgNF89cXO9qWRS4Y1QAcEIyXmUkfi0DFUFY9rHRhd+tj8PeerRTN025wrHUYR
+         YonK/pmMyd23q9IzqNtD1Lfo/qBZtAtQCfr0Qzxqj8+EYtO6tpEQsaIrGHgtJJ+ljYqF
+         yizglPyTVJvrw1wHNxUrfDq1wSwzhZEdKs3Vf7GmueAuKd5SMw17fIUa76BmiVG5wz6R
+         0jjtYp/64tmobuUiyQ/OrxF1GMkPj+Bq9DgthXpqSAOBeBHvM3JhaaKz3RzkZIsNXp9T
+         /BeA==
+X-Gm-Message-State: AOAM531RO545iule3qjvRk/5/Vtz6NB706PI77xF6XRfVp/F+143OtFS
+        uH7lf9p9XCbJg7r5x433WVEnzXVKVw==
+X-Google-Smtp-Source: ABdhPJysckCTiEn4BNOgsJXp+mp8XOnY9U26In4PM5Rfmj18l/aBfio/eMtVXS8Vr++qgTQZHHkzxA==
+X-Received: by 2002:a9d:2035:: with SMTP id n50mr4917292ota.44.1612568066555;
+        Fri, 05 Feb 2021 15:34:26 -0800 (PST)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id 36sm2096266oty.62.2021.02.05.15.34.25
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 05 Feb 2021 15:34:25 -0800 (PST)
+Received: (nullmailer pid 3971304 invoked by uid 1000);
+        Fri, 05 Feb 2021 23:34:24 -0000
+Date:   Fri, 5 Feb 2021 17:34:24 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Robin van der Gracht <robin@protonic.nl>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v4 1/2] dt-bindings: counter: add pulse-counter binding
+Message-ID: <20210205233424.GA3955177@robh.at.kernel.org>
+References: <20210126131239.8335-1-o.rempel@pengutronix.de>
+ <20210126131239.8335-2-o.rempel@pengutronix.de>
+ <CACRpkdY2XYi2jqYiXaBUfRO1+UEK3QCC8JQ0duENVGoOfYTmBA@mail.gmail.com>
+ <20210128133922.khkb4zyccoxdnlyp@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210128133922.khkb4zyccoxdnlyp@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use device_property_read_... to support both device tree and ACPI
-bindings.
+On Thu, Jan 28, 2021 at 02:39:22PM +0100, Oleksij Rempel wrote:
+> On Thu, Jan 28, 2021 at 09:17:23AM +0100, Linus Walleij wrote:
+> > Hi Oleksij,
+> > 
+> > thanks for your patch!
+> > 
+> > On Tue, Jan 26, 2021 at 2:15 PM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+> > 
+> > > Add binding for the pulse counter node
+> > >
+> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+> > (...)
+> > 
+> > > +properties:
+> > > +  compatible:
+> > > +    const: virtual,pulse-counter
+> > 
+> > What is so virtual about this? The device seems very real.
+> 
+> Currently there are two ways:
+> 1. use "virtual" or "linux" vendor. Same as "virtual,mdio-gpio"
 
-Add support for variable array per documentation
-("iio/proximity/semtech,sx9310.yaml").
+virtual is used by exactly one case. linux for a few more, mostly 
+linux,spdif-dit and extcon (deprecated).
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-Reviewed-by: Stephen Boyd <swboyd@chromium.org>
----
- Changes since v1:
-   Use device_property_count_u32(...) instead of device_property_read_u32_array(..., NULL, 0)
+> 2. Extend the list of "not vendor" prefixes in the prefixes list:
+>    Documentation/devicetree/bindings/vendor-prefixes.yaml
 
- drivers/iio/proximity/sx9310.c | 35 +++++++++++++++++++---------------
- 1 file changed, 20 insertions(+), 15 deletions(-)
+Pretty sure that says 'DON'T ADD MORE'. Maybe I forgot to scream it.
 
-diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index 6a04959df35e5..bba9dc6ac844d 100644
---- a/drivers/iio/proximity/sx9310.c
-+++ b/drivers/iio/proximity/sx9310.c
-@@ -20,6 +20,7 @@
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/pm.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
-@@ -1215,31 +1216,35 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
- }
- 
- static const struct sx9310_reg_default *
--sx9310_get_default_reg(struct sx9310_data *data, int i,
-+sx9310_get_default_reg(struct device *dev, int i,
- 		       struct sx9310_reg_default *reg_def)
- {
--	int ret;
--	const struct device_node *np = data->client->dev.of_node;
-+	int ret, count;
- 	u32 combined[SX9310_NUM_CHANNELS] = { 4, 4, 4, 4 };
- 	unsigned long comb_mask = 0;
- 	const char *res;
- 	u32 start = 0, raw = 0, pos = 0;
- 
- 	memcpy(reg_def, &sx9310_default_regs[i], sizeof(*reg_def));
--	if (!np)
--		return reg_def;
--
- 	switch (reg_def->reg) {
- 	case SX9310_REG_PROX_CTRL2:
--		if (of_property_read_bool(np, "semtech,cs0-ground")) {
-+		if (device_property_read_bool(dev, "semtech,cs0-ground")) {
- 			reg_def->def &= ~SX9310_REG_PROX_CTRL2_SHIELDEN_MASK;
- 			reg_def->def |= SX9310_REG_PROX_CTRL2_SHIELDEN_GROUND;
- 		}
- 
- 		reg_def->def &= ~SX9310_REG_PROX_CTRL2_COMBMODE_MASK;
--		of_property_read_u32_array(np, "semtech,combined-sensors",
--					   combined, ARRAY_SIZE(combined));
--		for (i = 0; i < ARRAY_SIZE(combined); i++) {
-+		count = device_property_count_u32(dev, "semtech,combined-sensors");
-+		if (count > 0 && count <= ARRAY_SIZE(combined))
-+			ret = device_property_read_u32_array(dev,
-+					"semtech,combined-sensors", combined,
-+					count);
-+		else
-+			ret = -EINVAL;
-+		if (ret)
-+			count = ARRAY_SIZE(combined);
-+
-+		for (i = 0; i < count; i++) {
- 			if (combined[i] <= SX9310_NUM_CHANNELS)
- 				comb_mask |= BIT(combined[i]);
- 		}
-@@ -1256,7 +1261,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
- 
- 		break;
- 	case SX9310_REG_PROX_CTRL4:
--		ret = of_property_read_string(np, "semtech,resolution", &res);
-+		ret = device_property_read_string(dev, "semtech,resolution", &res);
- 		if (ret)
- 			break;
- 
-@@ -1280,7 +1285,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
- 
- 		break;
- 	case SX9310_REG_PROX_CTRL5:
--		ret = of_property_read_u32(np, "semtech,startup-sensor", &start);
-+		ret = device_property_read_u32(dev, "semtech,startup-sensor", &start);
- 		if (ret) {
- 			start = FIELD_GET(SX9310_REG_PROX_CTRL5_STARTUPSENS_MASK,
- 					  reg_def->def);
-@@ -1290,7 +1295,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
- 		reg_def->def |= FIELD_PREP(SX9310_REG_PROX_CTRL5_STARTUPSENS_MASK,
- 					   start);
- 
--		ret = of_property_read_u32(np, "semtech,proxraw-strength", &raw);
-+		ret = device_property_read_u32(dev, "semtech,proxraw-strength", &raw);
- 		if (ret) {
- 			raw = FIELD_GET(SX9310_REG_PROX_CTRL5_RAWFILT_MASK,
- 					reg_def->def);
-@@ -1303,7 +1308,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
- 					   raw);
- 		break;
- 	case SX9310_REG_PROX_CTRL7:
--		ret = of_property_read_u32(np, "semtech,avg-pos-strength", &pos);
-+		ret = device_property_read_u32(dev, "semtech,avg-pos-strength", &pos);
- 		if (ret)
- 			break;
- 
-@@ -1339,7 +1344,7 @@ static int sx9310_init_device(struct iio_dev *indio_dev)
- 
- 	/* Program some sane defaults. */
- 	for (i = 0; i < ARRAY_SIZE(sx9310_default_regs); i++) {
--		initval = sx9310_get_default_reg(data, i, &tmp);
-+		initval = sx9310_get_default_reg(&indio_dev->dev, i, &tmp);
- 		ret = regmap_write(data->regmap, initval->reg, initval->def);
- 		if (ret)
- 			return ret;
--- 
-2.30.0.478.g8a0d178c01-goog
+> 
+> Since both ways seems to be valid, i personally prefer to use existing
+> prefix instead of maintaining the vendor-prefixes.yaml
+> 
+> @Rob, what do you prefer?
 
+For vendorless bindings, no vendor prefix! 'gpio-counter' if only gpio 
+interfaced. No idea what other options would be.
+
+> 
+> > However it is certainly a GPIO counter.
+> 
+> This was my first implementation. @Jonathan you suggest to use GPIO-free
+> way, can you and Linus please decide what is the way to go.
+> 
+> I personally can imagine that this driver can be attached to any IRQ
+> source, including drivers/iio/trigger/iio-trig-sysfs.c
+> 
+> > I would call it "gpio-counter" simply.
+> > 
+> > Define:
+> >   $nodename:
+> >      pattern: "^counter(@.*)?$"
+> > 
+> > > +    counter-0 {
+> > 
+> > counter@0 {
+> > 
+> > > +    counter-1 {
+> > 
+> > counter@1 {
+> 
+> In this case the dtc compiler will say:
+> /counter@0: node has a unit name, but no reg property
+
+counter-0 then.
+
+> 
+> Regards,
+> Oleksij
+> -- 
+> Pengutronix e.K.                           |                             |
+> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
