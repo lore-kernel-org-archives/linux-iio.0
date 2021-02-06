@@ -2,102 +2,178 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79CE3C433E0
-	for <linux-iio@archiver.kernel.org>; Sat,  6 Feb 2021 14:53:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CCFC9C433DB
+	for <linux-iio@archiver.kernel.org>; Sat,  6 Feb 2021 14:59:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3A93064E5A
-	for <linux-iio@archiver.kernel.org>; Sat,  6 Feb 2021 14:53:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 960D864EBC
+	for <linux-iio@archiver.kernel.org>; Sat,  6 Feb 2021 14:59:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229721AbhBFOxo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 6 Feb 2021 09:53:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54978 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbhBFOxk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 6 Feb 2021 09:53:40 -0500
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2516C061756
-        for <linux-iio@vger.kernel.org>; Sat,  6 Feb 2021 06:53:00 -0800 (PST)
-Received: by mail-ej1-x634.google.com with SMTP id jj19so17661393ejc.4
-        for <linux-iio@vger.kernel.org>; Sat, 06 Feb 2021 06:53:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=gL6PkGPiUJyt8E86+SvXApLkntk98PwCWqJQs00szfo=;
-        b=I3NCx/8l1dhB7c0bLOPVvgSA3a44ygplOUTBrf+ncLjfpT5uLW4fGYxqUu0DajllYy
-         5BXzbTeUD6GaYr4+vRrTh5Ks7j0JluVggzJsjaHJFJ35i3PcmqPcDmCxN7Trz3zf2ubI
-         +tK7jksvHHY5NmCCqX6JYBv//9oSV69GunvRgLo7FgoShjUFACE2UBOIg80QpGL7a9Vf
-         SJ3FhoGD05zFiRUramMxGbnVMVXWjVtoZoG22urbuDHgYrY+UWfViWcMyABqpOU/Z6w7
-         N0sik1A1oHtDJ+IitOyR2AD9S1O1jpfzCeSDQJHjcnddW6uaxaLItkkSTCZraqd+et35
-         Ej7A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=gL6PkGPiUJyt8E86+SvXApLkntk98PwCWqJQs00szfo=;
-        b=iQXegYbflvS8h3PdSmlceZ9yPI0iqQicaWuqKQKexiu3aF4/0QLcYENC0AKAJoYkyo
-         j3u3Bnz9FXsoRaujB3U2nUDVVSGTMFSw4kcGOcsDl6qek5QCEiLT0CwbfUg8JUJE2LD/
-         it5BslRLUGmONJaofFIMGAc3r+YC1pRjJeNb90ZFluEzpsS46ZoVelsRg/JPNEfMWr/f
-         1mYFcac97jBhQufMae8pBV9eUISO/BL3a+xXwIHV2Sxg1bDpBV7WGhQFYJcOiXvZ/1N4
-         qO3flsQhYcUJEfHuEEIFOPfA7v0T/JOoTy5dP/FS77FPJkpWGgLEEQ6+6QDVjORZlO1c
-         XuWA==
-X-Gm-Message-State: AOAM5306+C9JawhHo1hu+U3MlVZn059FlvK9j7pLuuZKoZs2/qnCBy+s
-        gp1FaiOzaMw7+liAJVNI9o4=
-X-Google-Smtp-Source: ABdhPJxs1HZ3hANE9vpbHOgv5g/8NAML2IPRNiO6DF305HT5TMhKMW76sFXz0q7YpPMrFW7gX0PphA==
-X-Received: by 2002:a17:906:a147:: with SMTP id bu7mr9184909ejb.305.1612623179758;
-        Sat, 06 Feb 2021 06:52:59 -0800 (PST)
-Received: from ubuntu (62-46-102-85.adsl.highway.telekom.at. [62.46.102.85])
-        by smtp.gmail.com with ESMTPSA id lc11sm134558ejc.95.2021.02.06.06.52.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 06 Feb 2021 06:52:59 -0800 (PST)
-Date:   Sat, 6 Feb 2021 15:52:58 +0100
-From:   Wilfried Wessner <wilfried.wessner@gmail.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: [PATCH v2] iio: ad7949: fix wrong ADC result due to incorrect bit
- mask
-Message-ID: <20210206145258.GA603024@ubuntu>
+        id S229839AbhBFO7o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 6 Feb 2021 09:59:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46898 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230196AbhBFO7n (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 6 Feb 2021 09:59:43 -0500
+Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 6AA7E64EBC;
+        Sat,  6 Feb 2021 14:59:02 +0000 (UTC)
+Date:   Sat, 6 Feb 2021 14:58:58 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Gwendal Grignou <gwendal@chromium.org>
+Cc:     lars@metafoo.de, swboyd@chromium.org, campello@chromium.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2] iio: sx9310: Support ACPI property
+Message-ID: <20210206145858.2a09d6a5@archlinux>
+In-Reply-To: <20210205215811.2033425-1-gwendal@chromium.org>
+References: <20210205215811.2033425-1-gwendal@chromium.org>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fixes a wrong bit mask used for the ADC's result, which was caused by an
-improper usage of the GENMASK() macro. The bits higher than ADC's 
-resolution are undefined and if not masked out correctly, a wrong result 
-can be given. The GENMASK() macro indexing is zero based, so the mask has 
-to go from [resolution - 1 , 0].
+On Fri,  5 Feb 2021 13:58:11 -0800
+Gwendal Grignou <gwendal@chromium.org> wrote:
 
-Signed-off-by: Wilfried Wessner <wilfried.wessner@gmail.com>
+> Use device_property_read_... to support both device tree and ACPI
+> bindings.
+> 
+> Add support for variable array per documentation
+> ("iio/proximity/semtech,sx9310.yaml").
+> 
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  Changes since v1:
+>    Use device_property_count_u32(...) instead of device_property_read_u32_array(..., NULL, 0)
+> 
+>  drivers/iio/proximity/sx9310.c | 35 +++++++++++++++++++---------------
+>  1 file changed, 20 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+> index 6a04959df35e5..bba9dc6ac844d 100644
+> --- a/drivers/iio/proximity/sx9310.c
+> +++ b/drivers/iio/proximity/sx9310.c
+> @@ -20,6 +20,7 @@
+>  #include <linux/mod_devicetable.h>
+>  #include <linux/module.h>
+>  #include <linux/pm.h>
+> +#include <linux/property.h>
+>  #include <linux/regmap.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/slab.h>
+> @@ -1215,31 +1216,35 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
+>  }
+>  
+>  static const struct sx9310_reg_default *
+> -sx9310_get_default_reg(struct sx9310_data *data, int i,
+> +sx9310_get_default_reg(struct device *dev, int i,
+>  		       struct sx9310_reg_default *reg_def)
+>  {
+> -	int ret;
+> -	const struct device_node *np = data->client->dev.of_node;
+> +	int ret, count;
+>  	u32 combined[SX9310_NUM_CHANNELS] = { 4, 4, 4, 4 };
+>  	unsigned long comb_mask = 0;
+>  	const char *res;
+>  	u32 start = 0, raw = 0, pos = 0;
+>  
+>  	memcpy(reg_def, &sx9310_default_regs[i], sizeof(*reg_def));
+> -	if (!np)
+> -		return reg_def;
+> -
+>  	switch (reg_def->reg) {
+>  	case SX9310_REG_PROX_CTRL2:
+> -		if (of_property_read_bool(np, "semtech,cs0-ground")) {
+> +		if (device_property_read_bool(dev, "semtech,cs0-ground")) {
+>  			reg_def->def &= ~SX9310_REG_PROX_CTRL2_SHIELDEN_MASK;
+>  			reg_def->def |= SX9310_REG_PROX_CTRL2_SHIELDEN_GROUND;
+>  		}
+>  
+>  		reg_def->def &= ~SX9310_REG_PROX_CTRL2_COMBMODE_MASK;
+> -		of_property_read_u32_array(np, "semtech,combined-sensors",
+> -					   combined, ARRAY_SIZE(combined));
+> -		for (i = 0; i < ARRAY_SIZE(combined); i++) {
+> +		count = device_property_count_u32(dev, "semtech,combined-sensors");
+> +		if (count > 0 && count <= ARRAY_SIZE(combined))
+> +			ret = device_property_read_u32_array(dev,
+> +					"semtech,combined-sensors", combined,
+> +					count);
+> +		else
+> +			ret = -EINVAL;
+> +		if (ret)
+> +			count = ARRAY_SIZE(combined);
 
----
- drivers/iio/adc/ad7949.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+This is odd enough please give a comment on why we would set count to
+the array size on error in reading the array.
+(obviously we do that before by ignoring the error, but still good
+to improve clarity on what is going on here - I assume we are just
+falling back to defaults...)
 
-diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
-index 5d597e5050f6..1b4b3203e428 100644
---- a/drivers/iio/adc/ad7949.c
-+++ b/drivers/iio/adc/ad7949.c
-@@ -91,7 +91,7 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
- 	int ret;
- 	int i;
- 	int bits_per_word = ad7949_adc->resolution;
--	int mask = GENMASK(ad7949_adc->resolution, 0);
-+	int mask = GENMASK(ad7949_adc->resolution - 1, 0);
- 	struct spi_message msg;
- 	struct spi_transfer tx[] = {
- 		{
--- 
-2.25.1
+Also, this crossed with Stephen continuing the thread on v1 and suggesting
+an alternative form so I'll wait for that discussion to be resolved.
+
+Thanks,
+
+Jonathan
+
+
+> +
+> +		for (i = 0; i < count; i++) {
+>  			if (combined[i] <= SX9310_NUM_CHANNELS)
+>  				comb_mask |= BIT(combined[i]);
+>  		}
+> @@ -1256,7 +1261,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
+>  
+>  		break;
+>  	case SX9310_REG_PROX_CTRL4:
+> -		ret = of_property_read_string(np, "semtech,resolution", &res);
+> +		ret = device_property_read_string(dev, "semtech,resolution", &res);
+>  		if (ret)
+>  			break;
+>  
+> @@ -1280,7 +1285,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
+>  
+>  		break;
+>  	case SX9310_REG_PROX_CTRL5:
+> -		ret = of_property_read_u32(np, "semtech,startup-sensor", &start);
+> +		ret = device_property_read_u32(dev, "semtech,startup-sensor", &start);
+>  		if (ret) {
+>  			start = FIELD_GET(SX9310_REG_PROX_CTRL5_STARTUPSENS_MASK,
+>  					  reg_def->def);
+> @@ -1290,7 +1295,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
+>  		reg_def->def |= FIELD_PREP(SX9310_REG_PROX_CTRL5_STARTUPSENS_MASK,
+>  					   start);
+>  
+> -		ret = of_property_read_u32(np, "semtech,proxraw-strength", &raw);
+> +		ret = device_property_read_u32(dev, "semtech,proxraw-strength", &raw);
+>  		if (ret) {
+>  			raw = FIELD_GET(SX9310_REG_PROX_CTRL5_RAWFILT_MASK,
+>  					reg_def->def);
+> @@ -1303,7 +1308,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
+>  					   raw);
+>  		break;
+>  	case SX9310_REG_PROX_CTRL7:
+> -		ret = of_property_read_u32(np, "semtech,avg-pos-strength", &pos);
+> +		ret = device_property_read_u32(dev, "semtech,avg-pos-strength", &pos);
+>  		if (ret)
+>  			break;
+>  
+> @@ -1339,7 +1344,7 @@ static int sx9310_init_device(struct iio_dev *indio_dev)
+>  
+>  	/* Program some sane defaults. */
+>  	for (i = 0; i < ARRAY_SIZE(sx9310_default_regs); i++) {
+> -		initval = sx9310_get_default_reg(data, i, &tmp);
+> +		initval = sx9310_get_default_reg(&indio_dev->dev, i, &tmp);
+>  		ret = regmap_write(data->regmap, initval->reg, initval->def);
+>  		if (ret)
+>  			return ret;
 
