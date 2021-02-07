@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 18E21C433E0
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03ADDC433E6
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CFB6F64D9A
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B958664E3E
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229651AbhBGPuK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Feb 2021 10:50:10 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34028 "EHLO mail.kernel.org"
+        id S229601AbhBGPuL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Feb 2021 10:50:11 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34022 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229615AbhBGPuJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S229596AbhBGPuJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 7 Feb 2021 10:50:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AFDE864E54;
-        Sun,  7 Feb 2021 15:48:53 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D8B964D9A;
+        Sun,  7 Feb 2021 15:48:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612712934;
-        bh=5ktcO7M+7ub0BD03DVCMXmzuQaOquDyiftN7Rg9aDZo=;
+        s=k20201202; t=1612712930;
+        bh=DTCL8xHphxH/c6QWI2fC4+eyHtH3JVQ9LLgh4b8UoWY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pt0Fq2zeTiOBz2STEhg/BPWQLbYX6w0BGN4xOm84XAND7NJCwm5TkvKLDPY2lrFQB
-         XBn6paMYmyJUdOGXB3KtBuOSaaOT2kaWNJge3GE0Nt/pCBH/9oBRrYPjzBwZy6rO7Y
-         TScl9t3aXY9nAYinoFXs2CjxX/7xkwcGKsbIlTJJmDiDrTrGJANsJ7ni684LqACVpb
-         yO3Ov7utKEPzLp/pHJqc9z9T8HI0OhngWLfxIHP+OsbbgqKehtROY0pIH7pgHggW05
-         wPf/zCBBooFB+Shw3iil2t+RZhkmiYqPnIEFcjO+alBN8TOqYI1Zvu9uLQ5eB2MXcR
-         y7y4n4hD+MTrA==
+        b=UjdQ0GyKVWCRxeZxGMmmUrCSKuR+jPyyJ/uge0Zu8zdTPRSvVwBb3VJFOPSlxN571
+         JALo7RWSIOTlarvTZQTg0oHx4rYhpNSZr+QiNCihtT0PZ2ZnIegcZoKk8wBePzSLC7
+         YT0/XLlFT34mnSqzTff+JqrmO4KxxTlDUTQqfJHPw8KDsEf9g4wE/1da8TiMBaUm1k
+         Cg6hVdncF6sYqbrPwh37VYpfA7ujiPryjhW41vFj6zmZW+c3cnrJM8KPkpTTiqNv+6
+         KVmEEbDyVoU9RkzzjUyMzam+UpjGJmoyOQrvqAuf9cVbJSlgX/uSyKQiPhJld1Rduc
+         cXmL5vChXToYw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         song.bao.hua@hisilicon.com, robh+dt@kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 08/24] staging:iio:cdc:ad7150: Drop noisy print in probe
-Date:   Sun,  7 Feb 2021 15:46:07 +0000
-Message-Id: <20210207154623.433442-9-jic23@kernel.org>
+Subject: [PATCH 05/24] staging:iio:cdc:ad7150: Drop platform data support
+Date:   Sun,  7 Feb 2021 15:46:04 +0000
+Message-Id: <20210207154623.433442-6-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210207154623.433442-1-jic23@kernel.org>
 References: <20210207154623.433442-1-jic23@kernel.org>
@@ -51,48 +51,39 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Also
-* drop i2c_set_client_data() as now unused.
-* white space cleanups
+There are no mainline board files using this driver so lets drop
+the platform_data support in favour of devicetree and similar.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/cdc/ad7150.c | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+ drivers/staging/iio/cdc/ad7150.c | 14 --------------
+ 1 file changed, 14 deletions(-)
 
 diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index 34e6afe52f0e..8f8e472e3240 100644
+index 0dce1b8ce76d..7ad9105e6b46 100644
 --- a/drivers/staging/iio/cdc/ad7150.c
 +++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -573,11 +573,9 @@ static int ad7150_probe(struct i2c_client *client,
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
- 	if (!indio_dev)
- 		return -ENOMEM;
-+
- 	chip = iio_priv(indio_dev);
- 	mutex_init(&chip->state_lock);
--	/* this is only used for device removal purposes */
--	i2c_set_clientdata(client, indio_dev);
--
- 	chip->client = client;
- 
- 	indio_dev->name = id->name;
-@@ -624,14 +622,7 @@ static int ad7150_probe(struct i2c_client *client,
- 		}
+@@ -570,20 +570,6 @@ static int ad7150_probe(struct i2c_client *client,
+ 			return ret;
  	}
  
--	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
--	if (ret)
--		return ret;
+-	if (client->dev.platform_data) {
+-		ret = devm_request_threaded_irq(&client->dev, *(unsigned int *)
+-						client->dev.platform_data,
+-						NULL,
+-						&ad7150_event_handler,
+-						IRQF_TRIGGER_RISING |
+-						IRQF_TRIGGER_FALLING |
+-						IRQF_ONESHOT,
+-						"ad7150_irq2",
+-						indio_dev);
+-		if (ret)
+-			return ret;
+-	}
 -
--	dev_info(&client->dev, "%s capacitive sensor registered,irq: %d\n",
--		 id->name, client->irq);
--
--	return 0;
-+	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
- }
- 
- static const struct i2c_device_id ad7150_id[] = {
+ 	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+ 	if (ret)
+ 		return ret;
 -- 
 2.30.0
 
