@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68943C433E6
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D730C433E0
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3D11764D9A
+	by mail.kernel.org (Postfix) with ESMTP id EB8AA64E3E
 	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229715AbhBGPuw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Feb 2021 10:50:52 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34076 "EHLO mail.kernel.org"
+        id S229711AbhBGPux (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Feb 2021 10:50:53 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34080 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229711AbhBGPuv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 7 Feb 2021 10:50:51 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 39EE264E5A;
-        Sun,  7 Feb 2021 15:49:09 +0000 (UTC)
+        id S229717AbhBGPuw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 7 Feb 2021 10:50:52 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BC0AE64E61;
+        Sun,  7 Feb 2021 15:49:15 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612712950;
-        bh=SoRbZ4bjAi+0oTP5ndExAjb/by4PTKbnns+ox/vRLJw=;
+        s=k20201202; t=1612712956;
+        bh=QxN68hL0r4dralFNejSlqzW5AefIyMLW6iP4TOtvLOc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JCmclsbjl8u1ehnlkFxVgDuAui8u9w4X/T5lyv2VL1IEtl5Gd7lY9VLFo8e6Elyt1
-         YAUeGM9ch3XvJMuMisKOs+akfDebTLnve+lJhQgO931BLJZ8Taht90Xd3vejskZh48
-         wvk1Yt4WGJZhEEwV/uCbB0BaEyFc1L6o0YWAH3Qu3g5Hao6+Px9SPTZozkq6Ax0uHy
-         0lzXX1f5Dw/TWneN7VZqfh7NL//fsX5uYMnVipL8WAQAlH2/GkpwZkw6b3O2Ytw2HC
-         VM/JdiHb5Rww6/WGoOetYYaT2XsVCmM+bqwDcPRhPaVST1uu6U+BoZlVUFprHffNCG
-         9Kvdm9X3qy5bw==
+        b=SA0CDmrnAyVUboSeZeM0y7pIr7q7jyyw99pVmutdZO3rndvX/auHZMDKqYBHNb7g/
+         QAtj838FQ/ItWBu7BogBA5K/DxM7+kO4x1cHi6ggG3cYfJiUbXCumc1Z4Cr25gr+fO
+         lKgSrpYEFYf/Lruj2gMGvYJTV2Uw9j/cfYP45AFcRleRC+15FmpromyxV7AY+O+kUm
+         styNbUsy2X9bDKcIcJYdMYO7sLzzXLMLGQupfW/fKk/++4Wyj3mJ9OAN40cjv8AdnN
+         I93vzH8wYIRWJtPznXEixkOzBDv7hO35AFEbBN/+1ty+qY7ROipf/F5AXxVgoKiqk6
+         RGc9ax4CbZh9g==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         song.bao.hua@hisilicon.com, robh+dt@kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 18/24] staging:iio:cdc:ad7150: Add scale and offset to info_mask_shared_by_type
-Date:   Sun,  7 Feb 2021 15:46:17 +0000
-Message-Id: <20210207154623.433442-19-jic23@kernel.org>
+Subject: [PATCH 22/24] iio:Documentation:ABI Add missing elements as used by the adi,ad7150
+Date:   Sun,  7 Feb 2021 15:46:21 +0000
+Message-Id: <20210207154623.433442-23-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210207154623.433442-1-jic23@kernel.org>
 References: <20210207154623.433442-1-jic23@kernel.org>
@@ -51,56 +51,82 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The datasheet provides these two values on the assumption they are applied
-to unshift raw value.  Hence shift both the offset and scale by 4
-to compensate.
+Main additions are around thresh_adaptive.  This has been supported
+by the core of IIO for a long time, but no driver that uses it has
+previously graduated from staging, hence we are missing Docs.
+
+Otherwise, just new entries in existing lists.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/cdc/ad7150.c | 16 ++++++++++++++++
- 1 file changed, 16 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 33 +++++++++++++++++++++++++
+ 1 file changed, 33 insertions(+)
 
-diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index 97689625f26c..a2aae370c231 100644
---- a/drivers/staging/iio/cdc/ad7150.c
-+++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -121,6 +121,18 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
- 			return ret;
- 		*val = ret;
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 35289d47d6cb..e3b9878ea7f9 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -324,6 +324,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_magn_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_rot_offset
+ What:		/sys/bus/iio/devices/iio:deviceX/in_angl_offset
++What:		/sys/bus/iio/devices/iio:deviceX/in_capacitanceX_offset
+ KernelVersion:	2.6.35
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -655,6 +656,8 @@ What:		/sys/.../iio:deviceX/events/in_voltageY_thresh_falling_en
+ What:		/sys/.../iio:deviceX/events/in_voltageY_thresh_either_en
+ What:		/sys/.../iio:deviceX/events/in_tempY_thresh_rising_en
+ What:		/sys/.../iio:deviceX/events/in_tempY_thresh_falling_en
++What:		/sys/.../iio:deviceX/events/in_capacitanceY_thresh_rising_en
++What:		/sys/.../iio:deviceX/events/in_capacitanceY_thresh_falling_en
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+@@ -732,6 +735,32 @@ Description:
+ 		a given event type is enabled a future point (and not those for
+ 		whatever event was previously enabled).
  
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		/*
-+		 * Base units for capacitance are nano farads and the value
-+		 * calculated from the datasheet formula is in picofarad
-+		 * so multiply by 1000
-+		 */
-+		*val = 1000;
-+		*val2 = 40944 >> 4; /* To match shift in _RAW */
-+		return IIO_VAL_FRACTIONAL;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = -(12288 >> 4); /* To match shift in _RAW */
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		/* Strangely same for both 1 and 2 chan parts */
-@@ -425,6 +437,8 @@ static const struct iio_event_spec ad7150_events[] = {
- 		.channel = _chan,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
- 		BIT(IIO_CHAN_INFO_AVERAGE_RAW),			\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
-+			BIT(IIO_CHAN_INFO_OFFSET),		\
- 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
- 		.event_spec = ad7150_events,			\
- 		.num_event_specs = ARRAY_SIZE(ad7150_events),	\
-@@ -436,6 +450,8 @@ static const struct iio_event_spec ad7150_events[] = {
- 		.channel = _chan,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
- 		BIT(IIO_CHAN_INFO_AVERAGE_RAW),			\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
-+			BIT(IIO_CHAN_INFO_OFFSET),		\
- 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
- 	}
- 
++What:		/sys/.../events/in_capacitanceY_adaptive_thresh_rising_en
++What:		/sys/.../events/in_capacitanceY_adaptive_thresh_falling_en
++KernelVersion:	5.11
++Contact:	linux-iio@vger.kernel.org
++Descrption:
++		Adaptive thresholds are similar to normal fixed thresholds
++		but the value is expressed as an offset from a value which
++		provides a low frequency approximation of the channel itself.
++		Thus these detect if a rapid change occurs in the specified
++		direction which crosses tracking value + offset.
++		Tracking value calculation is devices specific.
++
++What:		/sys/.../in_capacitanceY_adaptive_thresh_rising_timeout
++What:		/sys/.../in_capacitanceY_adaptive_thresh_falling_timeout
++KernelVersion:	5.11
++Contact:	linux-iio@vger.kernel.org
++Descrption:
++		When adaptive thresholds are used, the tracking signal
++		may adjust too slowly to step changes in the raw signal.
++		*_timeout (in seconds) specifies a time for which the
++		difference between the slow tracking signal and the raw
++		signal is allowed to remain out-of-range before a reset
++		event occurs in which the tracking signal is made equal
++		to the raw signal, allowing slow tracking to resume and the
++		adaptive threshold event detection to function as expected.
++
+ What:		/sys/.../events/in_accel_thresh_rising_value
+ What:		/sys/.../events/in_accel_thresh_falling_value
+ What:		/sys/.../events/in_accel_x_raw_thresh_rising_value
+@@ -772,6 +801,10 @@ What:		/sys/.../events/in_proximity0_thresh_falling_value
+ What:		/sys/.../events/in_proximity0_thresh_rising_value
+ What:		/sys/.../events/in_illuminance_thresh_rising_value
+ What:		/sys/.../events/in_illuminance_thresh_falling_value
++What:		/sys/.../events/in_capacitanceY_thresh_rising_value
++What:		/sys/.../events/in_capacitanceY_thresh_falling_value
++What:		/sys/.../events/in_capacitanceY_thresh_adaptive_rising_value
++What:		/sys/.../events/in_capacitanceY_thresh_falling_rising_value
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
 -- 
 2.30.0
 
