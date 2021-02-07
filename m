@@ -4,42 +4,43 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-19.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B77C43381
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0882C433DB
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A967564D9A
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CC0F064D9A
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229692AbhBGPub (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S229684AbhBGPub (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 7 Feb 2021 10:50:31 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34022 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34030 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229684AbhBGPu0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S229690AbhBGPu0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 7 Feb 2021 10:50:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C280D64E62;
-        Sun,  7 Feb 2021 15:49:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D8A2A64E64;
+        Sun,  7 Feb 2021 15:49:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612712951;
-        bh=Ky8I7DTWX1mCUv4cS7FiIiJSFZ8MtNwWTdIInWwTju8=;
+        s=k20201202; t=1612712955;
+        bh=BNvWERF7kZIB0Y4RCSxZOcMeDmUk3d5+ItEOYMBWmnw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=WaBoxJtzAGKbpVQIAAhR2qB20ZQfZumqxBzazRd9bcfT5/4+RXfnycNZHr1Kkkjif
-         0Q1G2i0JGZg/4M5P0IqC9BcpXqK1PsBEd2XVfOYzFb2eR25oiilnEbrD6580moP7Nc
-         rq4OKuH2Is640UP8ILEjQKT1kBd7hr6ryVG9DuOui6v8Kk/fkeIhVToGWzoiUEqygO
-         3ltakfm4G+S7e5TYY+z65fbljS9oiymnHziiRt2TSzdtxhLXzurcEKDNw81Cs5s8Iu
-         3L1MGiMsSraaNTdQh263YREZZCLHa0B6K12sjXtj6B6iedUgdOLJpsdVWBHp9tpIbF
-         SvnKu0ltRciCQ==
+        b=X/7FzrvrgHwobvr6KC+eQtFYdns4a4VNMsE67SK304yOWKPOmLwnZTBFPLdV86Wbk
+         GlDXQQn4n4Ul9+Hdj4QBfBuF1Yz+9ufUIMU/4wtX4/9agW6DdmUgnzg422CvyIbq6Q
+         9RDiE9SnyHEeHMdhc7Tt4b0VmvhfQylLpu65SjuqSoNAjeUTY0mNXycRnq6t4gwjdu
+         oJQQERc5h3WfpR8WXrv4lVQMBgXYJPSTC6/8MOA8Tp3kkNLFHhlWIx4uPWObCouJns
+         bBVLGgpp8dPXPSFLzYmZ5rSoZS9Qa0T9ZD6MxkiJCALRTMhijWv5X+DLslwSzqZUqp
+         XlWL9ssYUR3xw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         song.bao.hua@hisilicon.com, robh+dt@kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 19/24] staging:iio:cdc:ad7150: Really basic regulator support.
-Date:   Sun,  7 Feb 2021 15:46:18 +0000
-Message-Id: <20210207154623.433442-20-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Robh+dt@kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH 21/24] dt-bindings:iio:cdc:adi,ad7150 binding doc
+Date:   Sun,  7 Feb 2021 15:46:20 +0000
+Message-Id: <20210207154623.433442-22-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210207154623.433442-1-jic23@kernel.org>
 References: <20210207154623.433442-1-jic23@kernel.org>
@@ -51,65 +52,92 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Given DT docs will include regulators, lets just turn them on and
-off with driver probe() and remove().
+Binding covering the ad7150, ad7151 and ad7156 capacitance to digital
+convertors.  The only difference between these is how many channels they
+have (1 or 2)
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Robh+dt@kernel.org
+Cc: devicetree@vger.kernel.org
 ---
- drivers/staging/iio/cdc/ad7150.c | 21 +++++++++++++++++++++
- 1 file changed, 21 insertions(+)
+ .../bindings/iio/cdc/adi,ad7150.yaml          | 69 +++++++++++++++++++
+ 1 file changed, 69 insertions(+)
 
-diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index a2aae370c231..0bc8c7a99883 100644
---- a/drivers/staging/iio/cdc/ad7150.c
-+++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -12,6 +12,7 @@
- #include <linux/i2c.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-+#include <linux/regulator/consumer.h>
- #include <linux/slab.h>
- 
- #include <linux/iio/iio.h>
-@@ -538,11 +539,19 @@ static const struct iio_info ad7150_info_no_irq = {
- 	.read_raw = &ad7150_read_raw,
- };
- 
-+static void ad7150_reg_disable(void *data)
-+{
-+	struct regulator *reg = data;
+diff --git a/Documentation/devicetree/bindings/iio/cdc/adi,ad7150.yaml b/Documentation/devicetree/bindings/iio/cdc/adi,ad7150.yaml
+new file mode 100644
+index 000000000000..2155d3f5666c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/cdc/adi,ad7150.yaml
+@@ -0,0 +1,69 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/cdc/adi,ad7150.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	regulator_disable(reg);
-+}
++title: Analog device AD7150 and similar capacitance to digital convertors.
 +
- static int ad7150_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
- 	struct ad7150_chip_info *chip;
- 	struct iio_dev *indio_dev;
-+	struct regulator *reg;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
-@@ -557,6 +566,18 @@ static int ad7150_probe(struct i2c_client *client,
- 
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
-+	reg = devm_regulator_get(&client->dev, "vdd");
-+	if (IS_ERR(reg))
-+		return PTR_ERR(reg);
++maintainers:
++  - Jonathan Cameron <jic23@kernel.org>
 +
-+	ret = regulator_enable(reg);
-+	if (ret)
-+		return ret;
++properties:
++  compatible:
++    enum:
++      - adi,ad7150
++      - adi,ad7151
++      - adi,ad7156
 +
-+	ret = devm_add_action_or_reset(&client->dev, ad7150_reg_disable, reg);
-+	if (ret)
-+		return ret;
++  reg:
++    maxItems: 1
 +
- 	chip->interrupts[0] = fwnode_irq_get(dev_fwnode(&client->dev), 0);
- 	if (chip->interrupts[0] < 0)
- 		return chip->interrupts[0];
++  vdd-supply: true
++
++  interrupts: true
++
++allOf:
++  - if:
++      properties:
++        compatible:
++          contains:
++            enum:
++              - adi,ad7150
++              - adi,ad7156
++    then:
++      properties:
++        interrupts:
++          minItems: 2
++          maxItems: 2
++  - if:
++      properties:
++        compatible:
++          contains:
++            const: adi,ad7151
++    then:
++      properties:
++        interrupts:
++          minItems: 1
++          maxItems: 1
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        cdc@48 {
++            compatible = "adi,ad7150";
++            reg = <0x48>;
++            interrupts = <25 2>, <26 2>;
++            interrupt-parent = <&gpio>;
++        };
++    };
++...
 -- 
 2.30.0
 
