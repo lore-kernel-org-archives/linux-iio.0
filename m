@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9407AC433DB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9B77C43381
 	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6695A64D9A
+	by mail.kernel.org (Postfix) with ESMTP id A967564D9A
 	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229703AbhBGPua (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Feb 2021 10:50:30 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34032 "EHLO mail.kernel.org"
+        id S229692AbhBGPub (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Feb 2021 10:50:31 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34022 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229692AbhBGPu0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S229684AbhBGPu0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 7 Feb 2021 10:50:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4CC1E64E66;
-        Sun,  7 Feb 2021 15:49:17 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C280D64E62;
+        Sun,  7 Feb 2021 15:49:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612712958;
-        bh=J1crtzcACihAIjr0lh/NEmAlqbIDCHdm1R8pyw+i0gI=;
+        s=k20201202; t=1612712951;
+        bh=Ky8I7DTWX1mCUv4cS7FiIiJSFZ8MtNwWTdIInWwTju8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=caReAL5trO+QWVxKE+3bUzMLq3tVuHLRFcWUrKOVu55DpDf87eiM2qhyoMjbUvWn0
-         3O/GjmevEGRB3ilKV52Vj4S+QxOjQFVwz7IbUQQia3EDihUY3QnG9Z89aQtvlzrTVe
-         1XRFXay8ysjVd9zhyAfi8EGPuAZvfJ8ivGaaDvAj76smPjR5gJzY7EQ4F3bj/r6zpQ
-         uppImwCB2e4oStBoDpdqRDjnI016go6loFmCX0z9npTpBaEE8I6SK7LWQQxQWe2ZOU
-         4We+IWxIL7x6SgXTWH2XZtt36eKhbc3hJRvZw5wTMGvq0BMxPB5PB7mlH3fBN4/qM8
-         nC/cqNRA7lloQ==
+        b=WaBoxJtzAGKbpVQIAAhR2qB20ZQfZumqxBzazRd9bcfT5/4+RXfnycNZHr1Kkkjif
+         0Q1G2i0JGZg/4M5P0IqC9BcpXqK1PsBEd2XVfOYzFb2eR25oiilnEbrD6580moP7Nc
+         rq4OKuH2Is640UP8ILEjQKT1kBd7hr6ryVG9DuOui6v8Kk/fkeIhVToGWzoiUEqygO
+         3ltakfm4G+S7e5TYY+z65fbljS9oiymnHziiRt2TSzdtxhLXzurcEKDNw81Cs5s8Iu
+         3L1MGiMsSraaNTdQh263YREZZCLHa0B6K12sjXtj6B6iedUgdOLJpsdVWBHp9tpIbF
+         SvnKu0ltRciCQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         song.bao.hua@hisilicon.com, robh+dt@kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 23/24] staging:iio:cdc:ad7150: Add copyright notice given substantial changes.
-Date:   Sun,  7 Feb 2021 15:46:22 +0000
-Message-Id: <20210207154623.433442-24-jic23@kernel.org>
+Subject: [PATCH 19/24] staging:iio:cdc:ad7150: Really basic regulator support.
+Date:   Sun,  7 Feb 2021 15:46:18 +0000
+Message-Id: <20210207154623.433442-20-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210207154623.433442-1-jic23@kernel.org>
 References: <20210207154623.433442-1-jic23@kernel.org>
@@ -51,26 +51,65 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-It seems to me that the changes made to get this ready to move out of
-staging are substantial enough to warant a copyright notice addition.
+Given DT docs will include regulators, lets just turn them on and
+off with driver probe() and remove().
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/cdc/ad7150.c | 1 +
- 1 file changed, 1 insertion(+)
+ drivers/staging/iio/cdc/ad7150.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
 diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index 33c8a78c076f..9a6b55021fa7 100644
+index a2aae370c231..0bc8c7a99883 100644
 --- a/drivers/staging/iio/cdc/ad7150.c
 +++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -3,6 +3,7 @@
-  * AD7150 capacitive sensor driver supporting AD7150/1/6
-  *
-  * Copyright 2010-2011 Analog Devices Inc.
-+ * Copyright 2021 Jonathan Cameron <Jonathan.Cameron@huawei.com>
-  */
+@@ -12,6 +12,7 @@
+ #include <linux/i2c.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/regulator/consumer.h>
+ #include <linux/slab.h>
  
- #include <linux/bitfield.h>
+ #include <linux/iio/iio.h>
+@@ -538,11 +539,19 @@ static const struct iio_info ad7150_info_no_irq = {
+ 	.read_raw = &ad7150_read_raw,
+ };
+ 
++static void ad7150_reg_disable(void *data)
++{
++	struct regulator *reg = data;
++
++	regulator_disable(reg);
++}
++
+ static int ad7150_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+ 	struct ad7150_chip_info *chip;
+ 	struct iio_dev *indio_dev;
++	struct regulator *reg;
+ 	int ret;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+@@ -557,6 +566,18 @@ static int ad7150_probe(struct i2c_client *client,
+ 
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
++	reg = devm_regulator_get(&client->dev, "vdd");
++	if (IS_ERR(reg))
++		return PTR_ERR(reg);
++
++	ret = regulator_enable(reg);
++	if (ret)
++		return ret;
++
++	ret = devm_add_action_or_reset(&client->dev, ad7150_reg_disable, reg);
++	if (ret)
++		return ret;
++
+ 	chip->interrupts[0] = fwnode_irq_get(dev_fwnode(&client->dev), 0);
+ 	if (chip->interrupts[0] < 0)
+ 		return chip->interrupts[0];
 -- 
 2.30.0
 
