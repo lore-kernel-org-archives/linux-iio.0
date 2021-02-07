@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03ADDC433E6
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17768C433E9
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B958664E3E
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D9B9164D9A
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229601AbhBGPuL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S229596AbhBGPuL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 7 Feb 2021 10:50:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34022 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:34030 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229596AbhBGPuJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S229618AbhBGPuJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 7 Feb 2021 10:50:09 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D8B964D9A;
-        Sun,  7 Feb 2021 15:48:48 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 404EA64E56;
+        Sun,  7 Feb 2021 15:48:55 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612712930;
-        bh=DTCL8xHphxH/c6QWI2fC4+eyHtH3JVQ9LLgh4b8UoWY=;
+        s=k20201202; t=1612712936;
+        bh=SOMyTxKeIeIWFoMLtYk0Cyyi9hMbUmQfLc6M434EXww=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UjdQ0GyKVWCRxeZxGMmmUrCSKuR+jPyyJ/uge0Zu8zdTPRSvVwBb3VJFOPSlxN571
-         JALo7RWSIOTlarvTZQTg0oHx4rYhpNSZr+QiNCihtT0PZ2ZnIegcZoKk8wBePzSLC7
-         YT0/XLlFT34mnSqzTff+JqrmO4KxxTlDUTQqfJHPw8KDsEf9g4wE/1da8TiMBaUm1k
-         Cg6hVdncF6sYqbrPwh37VYpfA7ujiPryjhW41vFj6zmZW+c3cnrJM8KPkpTTiqNv+6
-         KVmEEbDyVoU9RkzzjUyMzam+UpjGJmoyOQrvqAuf9cVbJSlgX/uSyKQiPhJld1Rduc
-         cXmL5vChXToYw==
+        b=CbSut3ZOEgqSpKptg27WCH8Pkn4gPhRExeLOF5U7kQX8ZYZ8zibOjsvSvW413grfo
+         GJWXdOHll+BhM6c7QmQsF6xY5c18MzlLwd01qikxyXvEJL1UR0U2UavJI8WISl2EJn
+         +LwzuGKT4FksfHre9QLEgkwdcAqGYMUiBDc3TEk/2+X4NgErDBo7OVfq+ZusfGbVJd
+         fhBjdddKn7NajWFgj6fEiyo0R2WSERlksIBX8cOi7tL3CQ1j1b8HIUXurOk4a9jZ5C
+         ZPnYwJQnBXG8Av4DRF0VXi7Gp3lMZf7NEFX7zBjK5/wDXMoM6bbJSrwfpm0dJj4rgl
+         euAzOlBbLxMAg==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         song.bao.hua@hisilicon.com, robh+dt@kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 05/24] staging:iio:cdc:ad7150: Drop platform data support
-Date:   Sun,  7 Feb 2021 15:46:04 +0000
-Message-Id: <20210207154623.433442-6-jic23@kernel.org>
+Subject: [PATCH 09/24] staging:iio:cdc:ad7150: Add sampling_frequency support
+Date:   Sun,  7 Feb 2021 15:46:08 +0000
+Message-Id: <20210207154623.433442-10-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210207154623.433442-1-jic23@kernel.org>
 References: <20210207154623.433442-1-jic23@kernel.org>
@@ -51,39 +51,44 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-There are no mainline board files using this driver so lets drop
-the platform_data support in favour of devicetree and similar.
+Device uses a fixed sampling frequency. Let us expose it to userspace.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/cdc/ad7150.c | 14 --------------
- 1 file changed, 14 deletions(-)
+ drivers/staging/iio/cdc/ad7150.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
 diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index 0dce1b8ce76d..7ad9105e6b46 100644
+index 8f8e472e3240..54f31aadc92a 100644
 --- a/drivers/staging/iio/cdc/ad7150.c
 +++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -570,20 +570,6 @@ static int ad7150_probe(struct i2c_client *client,
+@@ -126,6 +126,10 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
  			return ret;
+ 		*val = ret;
+ 
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		/* Strangely same for both 1 and 2 chan parts */
++		*val = 100;
+ 		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+@@ -449,6 +453,7 @@ static const struct iio_event_spec ad7150_events[] = {
+ 		.channel = _chan,				\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+ 		BIT(IIO_CHAN_INFO_AVERAGE_RAW),			\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
+ 		.event_spec = ad7150_events,			\
+ 		.num_event_specs = ARRAY_SIZE(ad7150_events),	\
+ 	}
+@@ -459,6 +464,7 @@ static const struct iio_event_spec ad7150_events[] = {
+ 		.channel = _chan,				\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+ 		BIT(IIO_CHAN_INFO_AVERAGE_RAW),			\
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
  	}
  
--	if (client->dev.platform_data) {
--		ret = devm_request_threaded_irq(&client->dev, *(unsigned int *)
--						client->dev.platform_data,
--						NULL,
--						&ad7150_event_handler,
--						IRQF_TRIGGER_RISING |
--						IRQF_TRIGGER_FALLING |
--						IRQF_ONESHOT,
--						"ad7150_irq2",
--						indio_dev);
--		if (ret)
--			return ret;
--	}
--
- 	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
- 	if (ret)
- 		return ret;
+ static const struct iio_chan_spec ad7150_channels[] = {
 -- 
 2.30.0
 
