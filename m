@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BCD8C433E6
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48A25C4332B
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D25DD64D9A
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2438364E3E
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229631AbhBGPuO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Feb 2021 10:50:14 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34034 "EHLO mail.kernel.org"
+        id S229646AbhBGPuP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Feb 2021 10:50:15 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34038 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229629AbhBGPuK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 7 Feb 2021 10:50:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5A10464E43;
-        Sun,  7 Feb 2021 15:48:58 +0000 (UTC)
+        id S229650AbhBGPuL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 7 Feb 2021 10:50:11 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 75BC764E58;
+        Sun,  7 Feb 2021 15:49:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612712939;
-        bh=8yGo+9mnx7F2gVtRoGJV2aljS8VDxMrMfT2/TfOUKe0=;
+        s=k20201202; t=1612712942;
+        bh=DHK8ByBIHFZROiTcgedDfpuTsPseAwJQQ5RnqEQR3mQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=uOUhFRUW2mugBW3EF0xaNjPRwvSQJ3eEBl9ii1pK7viHhZ/EWD+7+Kb/BhK0xjfqE
-         QD/oEybxRwR0askl5TNroicsfh4B5NSuDIpCQ3xjfgwH36M1dzio78hoZxsD14+kYU
-         We9GH03L6Pu44UtoQnhtqKksyfsoydtMnhHuqESemYZt8A2ML5351+wML+VHPfzooF
-         ZsHu6LN3psuxz0BG51PhuZMNwiu9vXLBAJC/pWCAxtUCJ0Aaq8MNfM6m8oG28o9Wv5
-         BAOroY2f+fTLaB67RBGxjM/m9Zo+ylrRHx1zk50+yS/rAIl8DxjHr7VFXT4qThUUBH
-         LYoOKCSh3JKAw==
+        b=t/chv+s48Xh5sQn88BgZto/3y1Tw+pxq7GkjTH2GtzyhkjqPH5rynbtvEGnXtD0lJ
+         2q3QlYrBYJlLGpIlaCdPA2bBZuBk5IdFsbsQ9hj/wbdzLGcntz1oGl4bGWcqdiY4tA
+         QsXpcDIROKXNwC9ULM7/htlSVqYjHm3GX0QY1KTluj7WPMHCH7cnINFeOJZas0lv5Q
+         mmnwEHIJ/mrDQDja/OOuMRIhHBFO8uwOVFI4sItVrj44pvtvmWOjP1y38Y3AIE4cJK
+         6Y5dUSzrR2s0x1MN1yMbioD5ct/ekWcQXqL4y1s0Gzl+CCPwa77M8P3vNuH8VflEID
+         ncaLQq8KyUdxw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         song.bao.hua@hisilicon.com, robh+dt@kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 11/24] staging:iio:cdc:ad7150: Change timeout units to seconds and use core support
-Date:   Sun,  7 Feb 2021 15:46:10 +0000
-Message-Id: <20210207154623.433442-12-jic23@kernel.org>
+Subject: [PATCH 13/24] staging:iio:cdc:ad7150: More consistent register and field naming
+Date:   Sun,  7 Feb 2021 15:46:12 +0000
+Message-Id: <20210207154623.433442-14-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210207154623.433442-1-jic23@kernel.org>
 References: <20210207154623.433442-1-jic23@kernel.org>
@@ -51,220 +51,197 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Now we have core support for timeouts related to adaptive events, let us
-use it.  Note the units of that attribute are seconds, so we also need
-to scale the cycles value by the period of each sample.
+Add _REG postfix to register addresses to avoid confusion with
+fields.  Also add additional field defines and use throughout the
+driver in place of magic numbers.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/cdc/ad7150.c | 159 ++++++++++---------------------
- 1 file changed, 52 insertions(+), 107 deletions(-)
+ drivers/staging/iio/cdc/ad7150.c | 123 +++++++++++++++----------------
+ 1 file changed, 58 insertions(+), 65 deletions(-)
 
 diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index 54f31aadc92a..f8183c540d5c 100644
+index 24be97456c03..5d4783da7f98 100644
 --- a/drivers/staging/iio/cdc/ad7150.c
 +++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -294,13 +294,22 @@ static int ad7150_read_event_value(struct iio_dev *indio_dev,
- 	int rising = (dir == IIO_EV_DIR_RISING);
+@@ -21,37 +21,38 @@
+  * AD7150 registers definition
+  */
  
- 	/* Complex register sharing going on here */
--	switch (type) {
--	case IIO_EV_TYPE_THRESH_ADAPTIVE:
--		*val = chip->thresh_sensitivity[rising][chan->channel];
--		return IIO_VAL_INT;
--	case IIO_EV_TYPE_THRESH:
--		*val = chip->threshold[rising][chan->channel];
--		return IIO_VAL_INT;
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		switch (type) {
-+		case IIO_EV_TYPE_THRESH_ADAPTIVE:
-+			*val = chip->thresh_sensitivity[rising][chan->channel];
-+			return IIO_VAL_INT;
-+		case IIO_EV_TYPE_THRESH:
-+			*val = chip->threshold[rising][chan->channel];
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+	case IIO_EV_INFO_TIMEOUT:
-+		*val = 0;
-+		*val2 = chip->thresh_timeout[rising][chan->channel] * 10000;
-+		return IIO_VAL_INT_PLUS_MICRO;
+-#define AD7150_STATUS              0
+-#define AD7150_STATUS_OUT1         BIT(3)
+-#define AD7150_STATUS_OUT2         BIT(5)
+-#define AD7150_CH1_DATA_HIGH       1
+-#define AD7150_CH2_DATA_HIGH       3
+-#define AD7150_CH1_AVG_HIGH        5
+-#define AD7150_CH2_AVG_HIGH        7
+-#define AD7150_CH1_SENSITIVITY     9
+-#define AD7150_CH1_THR_HOLD_H      9
+-#define AD7150_CH1_TIMEOUT         10
+-#define AD7150_CH1_SETUP           11
+-#define AD7150_CH2_SENSITIVITY     12
+-#define AD7150_CH2_THR_HOLD_H      12
+-#define AD7150_CH2_TIMEOUT         13
+-#define AD7150_CH2_SETUP           14
+-#define AD7150_CFG                 15
+-#define AD7150_CFG_FIX             BIT(7)
+-#define AD7150_PD_TIMER            16
+-#define AD7150_CH1_CAPDAC          17
+-#define AD7150_CH2_CAPDAC          18
+-#define AD7150_SN3                 19
+-#define AD7150_SN2                 20
+-#define AD7150_SN1                 21
+-#define AD7150_SN0                 22
+-#define AD7150_ID                  23
+-
+-/* AD7150 masks */
+-#define AD7150_THRESHTYPE_MSK			GENMASK(6, 5)
+-
+-#define AD7150_CH_TIMEOUT_RECEDING		GENMASK(3, 0)
+-#define AD7150_CH_TIMEOUT_APPROACHING		GENMASK(7, 4)
++#define AD7150_STATUS_REG		0
++#define   AD7150_STATUS_OUT1		BIT(3)
++#define   AD7150_STATUS_OUT2		BIT(5)
++#define AD7150_CH1_DATA_HIGH_REG	1
++#define AD7150_CH2_DATA_HIGH_REG	3
++#define AD7150_CH1_AVG_HIGH_REG		5
++#define AD7150_CH2_AVG_HIGH_REG		7
++#define AD7150_CH1_SENSITIVITY_REG	9
++#define AD7150_CH1_THR_HOLD_H_REG	9
++#define AD7150_CH1_TIMEOUT_REG		10
++#define   AD7150_CH_TIMEOUT_RECEDING	GENMASK(3, 0)
++#define   AD7150_CH_TIMEOUT_APPROACHING	GENMASK(7, 4)
++#define AD7150_CH1_SETUP_REG		11
++#define AD7150_CH2_SENSITIVITY_REG	12
++#define AD7150_CH2_THR_HOLD_H_REG	12
++#define AD7150_CH2_TIMEOUT_REG		13
++#define AD7150_CH2_SETUP_REG		14
++#define AD7150_CFG_REG			15
++#define   AD7150_CFG_FIX		BIT(7)
++#define   AD7150_CFG_THRESHTYPE_MSK	GENMASK(6, 5)
++#define   AD7150_CFG_TT_NEG		0x0
++#define   AD7150_CFG_TT_POS		0x1
++#define   AD7150_CFG_TT_IN_WINDOW	0x2
++#define   AD7150_CFG_TT_OUT_WINDOW	0x3
++#define AD7150_PD_TIMER_REG		16
++#define AD7150_CH1_CAPDAC_REG		17
++#define AD7150_CH2_CAPDAC_REG		18
++#define AD7150_SN3_REG			19
++#define AD7150_SN2_REG			20
++#define AD7150_SN1_REG			21
++#define AD7150_SN0_REG			22
++#define AD7150_ID_REG			23
+ 
+ enum {
+ 	AD7150,
+@@ -93,12 +94,12 @@ struct ad7150_chip_info {
+  */
+ 
+ static const u8 ad7150_addresses[][6] = {
+-	{ AD7150_CH1_DATA_HIGH, AD7150_CH1_AVG_HIGH,
+-	  AD7150_CH1_SETUP, AD7150_CH1_THR_HOLD_H,
+-	  AD7150_CH1_SENSITIVITY, AD7150_CH1_TIMEOUT },
+-	{ AD7150_CH2_DATA_HIGH, AD7150_CH2_AVG_HIGH,
+-	  AD7150_CH2_SETUP, AD7150_CH2_THR_HOLD_H,
+-	  AD7150_CH2_SENSITIVITY, AD7150_CH2_TIMEOUT },
++	{ AD7150_CH1_DATA_HIGH_REG, AD7150_CH1_AVG_HIGH_REG,
++	  AD7150_CH1_SETUP_REG, AD7150_CH1_THR_HOLD_H_REG,
++	  AD7150_CH1_SENSITIVITY_REG, AD7150_CH1_TIMEOUT_REG },
++	{ AD7150_CH2_DATA_HIGH_REG, AD7150_CH2_AVG_HIGH_REG,
++	  AD7150_CH2_SETUP_REG, AD7150_CH2_THR_HOLD_H_REG,
++	  AD7150_CH2_SENSITIVITY_REG, AD7150_CH2_TIMEOUT_REG },
+ };
+ 
+ static int ad7150_read_raw(struct iio_dev *indio_dev,
+@@ -147,11 +148,11 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
+ 	bool thrfixed;
+ 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
+ 
+-	ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG);
++	ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG_REG);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	threshtype = FIELD_GET(AD7150_THRESHTYPE_MSK, ret);
++	threshtype = FIELD_GET(AD7150_CFG_THRESHTYPE_MSK, ret);
+ 
+ 	/*check if threshold mode is fixed or adaptive*/
+ 	thrfixed = FIELD_GET(AD7150_CFG_FIX, ret);
+@@ -159,12 +160,12 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
+ 	switch (type) {
+ 	case IIO_EV_TYPE_THRESH_ADAPTIVE:
+ 		if (dir == IIO_EV_DIR_RISING)
+-			return !thrfixed && (threshtype == 0x1);
+-		return !thrfixed && (threshtype == 0x0);
++			return !thrfixed && (threshtype == AD7150_CFG_TT_POS);
++		return !thrfixed && (threshtype == AD7150_CFG_TT_NEG);
+ 	case IIO_EV_TYPE_THRESH:
+ 		if (dir == IIO_EV_DIR_RISING)
+-			return thrfixed && (threshtype == 0x1);
+-		return thrfixed && (threshtype == 0x0);
++			return thrfixed && (threshtype == AD7150_CFG_TT_POS);
++		return thrfixed && (threshtype == AD7150_CFG_TT_NEG);
  	default:
- 		return -EINVAL;
+ 		break;
  	}
-@@ -318,13 +327,36 @@ static int ad7150_write_event_value(struct iio_dev *indio_dev,
- 	int rising = (dir == IIO_EV_DIR_RISING);
+@@ -261,35 +262,27 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
+ 		disable_irq(chip->interrupts[0]);
+ 		disable_irq(chip->interrupts[1]);
  
- 	mutex_lock(&chip->state_lock);
--	switch (type) {
--	case IIO_EV_TYPE_THRESH_ADAPTIVE:
--		chip->thresh_sensitivity[rising][chan->channel] = val;
-+	switch (info) {
-+	case IIO_EV_INFO_VALUE:
-+		switch (type) {
-+		case IIO_EV_TYPE_THRESH_ADAPTIVE:
-+			chip->thresh_sensitivity[rising][chan->channel] = val;
-+			break;
-+		case IIO_EV_TYPE_THRESH:
-+			chip->threshold[rising][chan->channel] = val;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+			goto error_ret;
-+		}
- 		break;
--	case IIO_EV_TYPE_THRESH:
--		chip->threshold[rising][chan->channel] = val;
-+	case IIO_EV_INFO_TIMEOUT: {
-+		/*
-+		 * Raw timeout is in cycles of 10 msecs as long as both
-+		 * channels are enabled.
-+		 * In terms of INT_PLUS_MICRO, that is in units of 10,000
-+		 */
-+		int timeout = val2 / 10000;
+-		ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG);
++		ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG_REG);
+ 		if (ret < 0)
+ 			goto error_ret;
+ 
+-		cfg = ret & ~((0x03 << 5) | BIT(7));
++		cfg = ret & ~(AD7150_CFG_THRESHTYPE_MSK | AD7150_CFG_FIX);
+ 
+-		switch (type) {
+-		case IIO_EV_TYPE_THRESH_ADAPTIVE:
++		if (type == IIO_EV_TYPE_THRESH_ADAPTIVE)
+ 			adaptive = 1;
+-			if (rising)
+-				thresh_type = 0x1;
+-			else
+-				thresh_type = 0x0;
+-			break;
+-		case IIO_EV_TYPE_THRESH:
++		else
+ 			adaptive = 0;
+-			if (rising)
+-				thresh_type = 0x1;
+-			else
+-				thresh_type = 0x0;
+-			break;
+-		default:
+-			ret = -EINVAL;
+-			goto error_ret;
+-		}
+ 
+-		cfg |= (!adaptive << 7) | (thresh_type << 5);
++		if (rising)
++			thresh_type = AD7150_CFG_TT_POS;
++		else
++			thresh_type = AD7150_CFG_TT_NEG;
 +
-+		if (val != 0 || timeout < 0 || timeout > 15 || val2 % 10000) {
-+			ret = -EINVAL;
-+			goto error_ret;
-+		}
-+
-+		chip->thresh_timeout[rising][chan->channel] = timeout;
- 		break;
-+	}
- 	default:
- 		ret = -EINVAL;
- 		goto error_ret;
-@@ -338,91 +370,6 @@ static int ad7150_write_event_value(struct iio_dev *indio_dev,
- 	return ret;
- }
++		cfg |= FIELD_PREP(AD7150_CFG_FIX, !adaptive) |
++			FIELD_PREP(AD7150_CFG_THRESHTYPE_MSK, thresh_type);
  
--static ssize_t ad7150_show_timeout(struct device *dev,
--				   struct device_attribute *attr,
--				   char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7150_chip_info *chip = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	u8 value;
--
--	/* use the event code for consistency reasons */
--	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(this_attr->address);
--	int rising = (IIO_EVENT_CODE_EXTRACT_DIR(this_attr->address)
--		      == IIO_EV_DIR_RISING) ? 1 : 0;
--
--	switch (IIO_EVENT_CODE_EXTRACT_TYPE(this_attr->address)) {
--	case IIO_EV_TYPE_THRESH_ADAPTIVE:
--		value = chip->thresh_timeout[rising][chan];
--		break;
--	default:
--		return -EINVAL;
--	}
--
--	return sprintf(buf, "%d\n", value);
--}
--
--static ssize_t ad7150_store_timeout(struct device *dev,
--				    struct device_attribute *attr,
--				    const char *buf,
--				    size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7150_chip_info *chip = iio_priv(indio_dev);
--	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
--	int chan = IIO_EVENT_CODE_EXTRACT_CHAN(this_attr->address);
--	enum iio_event_direction dir;
--	enum iio_event_type type;
--	int rising;
--	u8 data;
--	int ret;
--
--	type = IIO_EVENT_CODE_EXTRACT_TYPE(this_attr->address);
--	dir = IIO_EVENT_CODE_EXTRACT_DIR(this_attr->address);
--	rising = (dir == IIO_EV_DIR_RISING);
--
--	ret = kstrtou8(buf, 10, &data);
--	if (ret < 0)
--		return ret;
--
--	if (data > GENMASK(3, 0))
--		return -EINVAL;
--
--	mutex_lock(&chip->state_lock);
--	switch (type) {
--	case IIO_EV_TYPE_THRESH_ADAPTIVE:
--		chip->thresh_timeout[rising][chan] = data;
--		break;
--	default:
--		ret = -EINVAL;
--		goto error_ret;
--	}
--
--	ret = ad7150_write_event_params(indio_dev, chan, type, dir);
--error_ret:
--	mutex_unlock(&chip->state_lock);
--
--	if (ret < 0)
--		return ret;
--
--	return len;
--}
--
--#define AD7150_TIMEOUT(chan, type, dir, ev_type, ev_dir)		\
--	IIO_DEVICE_ATTR(in_capacitance##chan##_##type##_##dir##_timeout, \
--		0644,							\
--		&ad7150_show_timeout,					\
--		&ad7150_store_timeout,					\
--		IIO_UNMOD_EVENT_CODE(IIO_CAPACITANCE,			\
--				     chan,				\
--				     IIO_EV_TYPE_##ev_type,		\
--				     IIO_EV_DIR_##ev_dir))
--static AD7150_TIMEOUT(0, thresh_adaptive, rising, THRESH_ADAPTIVE, RISING);
--static AD7150_TIMEOUT(0, thresh_adaptive, falling, THRESH_ADAPTIVE, FALLING);
--static AD7150_TIMEOUT(1, thresh_adaptive, rising, THRESH_ADAPTIVE, RISING);
--static AD7150_TIMEOUT(1, thresh_adaptive, falling, THRESH_ADAPTIVE, FALLING);
--
- static const struct iio_event_spec ad7150_events[] = {
- 	{
- 		.type = IIO_EV_TYPE_THRESH,
-@@ -438,12 +385,14 @@ static const struct iio_event_spec ad7150_events[] = {
- 		.type = IIO_EV_TYPE_THRESH_ADAPTIVE,
- 		.dir = IIO_EV_DIR_RISING,
- 		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
--			BIT(IIO_EV_INFO_ENABLE),
-+			BIT(IIO_EV_INFO_ENABLE) |
-+			BIT(IIO_EV_INFO_TIMEOUT),
- 	}, {
- 		.type = IIO_EV_TYPE_THRESH_ADAPTIVE,
- 		.dir = IIO_EV_DIR_FALLING,
- 		.mask_separate = BIT(IIO_EV_INFO_VALUE) |
--			BIT(IIO_EV_INFO_ENABLE),
-+			BIT(IIO_EV_INFO_ENABLE) |
-+			BIT(IIO_EV_INFO_TIMEOUT),
- 	},
- };
+-		ret = i2c_smbus_write_byte_data(chip->client, AD7150_CFG, cfg);
++		ret = i2c_smbus_write_byte_data(chip->client, AD7150_CFG_REG,
++						cfg);
+ 		if (ret < 0)
+ 			goto error_ret;
  
-@@ -538,15 +487,11 @@ static irqreturn_t ad7150_event_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
+@@ -480,7 +473,7 @@ static irqreturn_t __ad7150_event_handler(void *private, u8 status_mask,
+ 	s64 timestamp = iio_get_time_ns(indio_dev);
+ 	int int_status;
  
--/* Timeouts not currently handled by core */
-+static IIO_CONST_ATTR(in_capacitance_thresh_adaptive_timeout_available,
-+		      "[0 0.01 0.15]");
-+
- static struct attribute *ad7150_event_attributes[] = {
--	&iio_dev_attr_in_capacitance0_thresh_adaptive_rising_timeout
--	.dev_attr.attr,
--	&iio_dev_attr_in_capacitance0_thresh_adaptive_falling_timeout
--	.dev_attr.attr,
--	&iio_dev_attr_in_capacitance1_thresh_adaptive_rising_timeout
--	.dev_attr.attr,
--	&iio_dev_attr_in_capacitance1_thresh_adaptive_falling_timeout
-+	&iio_const_attr_in_capacitance_thresh_adaptive_timeout_available
- 	.dev_attr.attr,
- 	NULL,
- };
+-	int_status = i2c_smbus_read_byte_data(chip->client, AD7150_STATUS);
++	int_status = i2c_smbus_read_byte_data(chip->client, AD7150_STATUS_REG);
+ 	if (int_status < 0)
+ 		return IRQ_HANDLED;
+ 
 -- 
 2.30.0
 
