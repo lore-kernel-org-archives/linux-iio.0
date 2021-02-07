@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 361F9C433DB
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3841C433E6
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 08F4E64E3E
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9C05264D9A
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229702AbhBGPu1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Feb 2021 10:50:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34028 "EHLO mail.kernel.org"
+        id S229650AbhBGPu3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Feb 2021 10:50:29 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34026 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229650AbhBGPuZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 7 Feb 2021 10:50:25 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8DBD364E5D;
-        Sun,  7 Feb 2021 15:49:04 +0000 (UTC)
+        id S229681AbhBGPu0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 7 Feb 2021 10:50:26 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A9A8C64E60;
+        Sun,  7 Feb 2021 15:49:07 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612712945;
-        bh=9bCbymbbviS1pIvSoNX1oyz7bcGvrgD7rv/3Bka0rOU=;
+        s=k20201202; t=1612712948;
+        bh=Jp1GDzXZcYQ/pOlj6E9N5al14Xc2+FKEaMLpmh2SWpU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qoKY5QemVUtwtqQAKENhFQBQWzddhuTB+8/xcBPynDdIqAfsxlrK5i0lTbv5o5DyV
-         /Hj+G6fZJc1p2oRD2MwwmadJEhLn7k4dndVX/fspvnVoynZW/+xIc+LhbA5/M3Y+k5
-         6gHk8lOSNFEa/14PgiFtjSggNim3LZSWeT3L+OTi4/9O/eo3LqQnzQcXIvOC+kp+xM
-         cSDsmBeD9m+BIXHoL3m6RRH+7d81IEg6gy80o70zDyz6yXvL+8GZ7pNTwG085NaXum
-         okQleel8G1QkOa2ViPJbQvt/3b38UtLyjty15LmS0cANVxxKM0Bt1mTXyAvdzba5F2
-         eR/BJf/9lmyow==
+        b=LfZCXzVsdtJ6gHXisjXkTqvXjVdiEYtxsffkVBZeZ1CppDC6Fey3CASrbdyEk/zPl
+         SfL+peDRIznMCnIoBrK/KwMujY0gH1ehd+kkt3gKMwCOuX48NxcdRr1UtyIEL3NnoQ
+         96lnliLzaVd6bk+SEWaYxDJBf5HF/7V4f9/SeUv78+saoR6/hSHlEsfX/1xMMYmOuJ
+         O6+tsFbMVAKvfglFtFSJcYJ2NFnU5YugM4e+krpYiEQXl5KRakpQE/o4jQ3fx21fM+
+         LQtuDe8I58CCgWZXfPxv6MHV5On/FIuIw02rQqep+qmjqVXOk+wuTAdA4UU4yQ53To
+         AkTL39pWjkECg==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         song.bao.hua@hisilicon.com, robh+dt@kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 15/24] staging:iio:cdc:ad7150: Tidy up local variable positioning.
-Date:   Sun,  7 Feb 2021 15:46:14 +0000
-Message-Id: <20210207154623.433442-16-jic23@kernel.org>
+Subject: [PATCH 17/24] staging:iio:cdc:ad7150: Shift the _raw readings by 4 bits.
+Date:   Sun,  7 Feb 2021 15:46:16 +0000
+Message-Id: <20210207154623.433442-18-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210207154623.433442-1-jic23@kernel.org>
 References: <20210207154623.433442-1-jic23@kernel.org>
@@ -51,75 +51,31 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Where there is no other basis on which to order declarations
-let us prefer reverse xmas tree.  Also reduce scope where
-sensible.
+Every other register related to raw value on the datasheet is
+described as correpsonding to the 12MSB of the actual
+data registers + the bottom 4 bits are 0.  So lets treat this
+as what it actually is, which is a 12 bit value.
+Note that we will have to be a little careful to compensate for
+the offset and scale values.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/cdc/ad7150.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
+ drivers/staging/iio/cdc/ad7150.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index 9e88e774752f..d530b467d1b2 100644
+index 4c83e6e37c5a..97689625f26c 100644
 --- a/drivers/staging/iio/cdc/ad7150.c
 +++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -108,9 +108,9 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
- 			   int *val2,
- 			   long mask)
- {
--	int ret;
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
- 	int channel = chan->channel;
-+	int ret;
+@@ -111,7 +111,7 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
+ 						  ad7150_addresses[channel][0]);
+ 		if (ret < 0)
+ 			return ret;
+-		*val = ret;
++		*val = ret >> 4;
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -143,10 +143,10 @@ static int ad7150_read_event_config(struct iio_dev *indio_dev,
- 				    enum iio_event_type type,
- 				    enum iio_event_direction dir)
- {
--	int ret;
-+	struct ad7150_chip_info *chip = iio_priv(indio_dev);
- 	u8 threshtype;
- 	bool thrfixed;
--	struct ad7150_chip_info *chip = iio_priv(indio_dev);
-+	int ret;
- 
- 	ret = i2c_smbus_read_byte_data(chip->client, AD7150_CFG_REG);
- 	if (ret < 0)
-@@ -227,10 +227,8 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
- 				     enum iio_event_type type,
- 				     enum iio_event_direction dir, int state)
- {
--	u8 thresh_type, cfg, adaptive;
--	int ret;
- 	struct ad7150_chip_info *chip = iio_priv(indio_dev);
--	int rising = (dir == IIO_EV_DIR_RISING);
-+	int ret;
- 
- 	/*
- 	 * There is only a single shared control and no on chip
-@@ -251,6 +249,8 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&chip->state_lock);
- 	if ((type != chip->type) || (dir != chip->dir)) {
-+		int rising = (dir == IIO_EV_DIR_RISING);
-+		u8 thresh_type, cfg, adaptive;
- 
- 		/*
- 		 * Need to temporarily disable both interrupts if
-@@ -533,9 +533,9 @@ static const struct iio_info ad7150_info_no_irq = {
- static int ad7150_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
--	int ret;
- 	struct ad7150_chip_info *chip;
- 	struct iio_dev *indio_dev;
-+	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
- 	if (!indio_dev)
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_AVERAGE_RAW:
 -- 
 2.30.0
 
