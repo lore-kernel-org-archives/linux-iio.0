@@ -2,44 +2,45 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-16.3 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 624ACC433DB
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 16:10:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C772C433E0
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 16:10:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3570764DF2
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 16:10:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07E4D64DF6
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 16:10:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229562AbhBGQKd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Feb 2021 11:10:33 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:51414 "EHLO
+        id S229587AbhBGQKg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Feb 2021 11:10:36 -0500
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:31738 "EHLO
         us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229548AbhBGQKd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 Feb 2021 11:10:33 -0500
+        by vger.kernel.org with ESMTP id S229548AbhBGQKf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 Feb 2021 11:10:35 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612714147;
+        s=mimecast20190719; t=1612714149;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=CeSb5CDpKlv0YpMJw4fe6Hce7DFAvp5Tyy1/1YVC6KM=;
-        b=J6N+/h0LnOS3VYfK00uD81dulg0m5bc9RF+/OgezBLG1gnCXXcxZNhsZsPoNsoySoOrHFF
-        803/z268FBUmNaInapgPaglPid8VQM39zxV//j5nT4YxWkRPG3BHI421vsWi5nc71+xoEq
-        wJ3s/lPn4VfxsZFTUwU9/TnvRxGZCq0=
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=HZQXVkMqxp7XBFbeCA9Aa6LBCxZeB/3DymTyc75y28c=;
+        b=ASkDx02l49o95YnIzF8lARFyEC7ZFX54Bg+MDlFi5UGy/sZVfhXtvjVHxzeV0TouxOOp0A
+        Fe07tQnaJ9mfQ0cCWj1kS6/lZcwcUiLcs4iRYZr75krJWawFYVNIJ59Dw9WlCfBxi+2In2
+        CZTRAX0s0cuoTq5TVAg8DT6zMg0TWNE=
 Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
  [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-287-lYsgk9lsNMG64V1mzulEhg-1; Sun, 07 Feb 2021 11:09:05 -0500
-X-MC-Unique: lYsgk9lsNMG64V1mzulEhg-1
+ us-mta-159-VOgOg6P3Mb2k_UvKGgPvhQ-1; Sun, 07 Feb 2021 11:09:08 -0500
+X-MC-Unique: VOgOg6P3Mb2k_UvKGgPvhQ-1
 Received: from smtp.corp.redhat.com (int-mx01.intmail.prod.int.phx2.redhat.com [10.5.11.11])
         (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id E14E0427CC;
-        Sun,  7 Feb 2021 16:09:03 +0000 (UTC)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id EDCB58030CC;
+        Sun,  7 Feb 2021 16:09:06 +0000 (UTC)
 Received: from x1.localdomain (ovpn-112-86.ams2.redhat.com [10.36.112.86])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 5FDF06F7E6;
-        Sun,  7 Feb 2021 16:09:02 +0000 (UTC)
+        by smtp.corp.redhat.com (Postfix) with ESMTP id B45E36F7E6;
+        Sun,  7 Feb 2021 16:09:05 +0000 (UTC)
 From:   Hans de Goede <hdegoede@redhat.com>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Hans de Goede <hdegoede@redhat.com>,
@@ -47,9 +48,11 @@ Cc:     Hans de Goede <hdegoede@redhat.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
-Subject: [PATCH 0/3] iio: add labels with accel-location to bmc150 and kxcjk-1013 drivers
-Date:   Sun,  7 Feb 2021 17:08:58 +0100
-Message-Id: <20210207160901.110643-1-hdegoede@redhat.com>
+Subject: [PATCH 2/3] iio: accel: bmc150: Set label based on accel-location on 2-accel yoga-style 2-in-1s
+Date:   Sun,  7 Feb 2021 17:09:00 +0100
+Message-Id: <20210207160901.110643-3-hdegoede@redhat.com>
+In-Reply-To: <20210207160901.110643-1-hdegoede@redhat.com>
+References: <20210207160901.110643-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -58,34 +61,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi All,
+Some 2-in-1 laptops / convertibles with 360° (yoga-style) hinges,
+use 2 bmc150 accelerometers, defined by a single BOSC0200 ACPI
+device node (1 in their base and 1 in their display).
 
-Here is a patch-set implementing the standardized "accel-display"
-and "accel-base" label sysfs-attributes defined in my earlier
-"[PATCH 1/2] iio: documentation: Document proximity sensor label use"
-"[PATCH 2/2] iio: documentation: Document accelerometer label use"
-series.
+Since in this case we know the location of each accelerometer,
+set the label for the accelerometers to the standardized
+"accel-display" resp. "accel-base" labels. This way userspace
+can use the labels to get the location.
 
-This patch sets adds these labels to the bmc150 and kxcjk-1013 accel
-drivers.
+This was tested on a Lenovo ThinkPad Yoga 11e 4th gen (N3450 CPU).
 
-Regards,
-
-Hans
-
-
-Hans de Goede (3):
-  iio: core: Allow drivers to specify a label without it coming from of
-  iio: accel: bmc150: Set label based on accel-location on 2-accel
-    yoga-style 2-in-1s
-  iio: accel: kxcjk-1013: Set label based on accel-location on 2-accel
-    yoga-style 2-in-1s
-
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
  drivers/iio/accel/bmc150-accel-core.c | 18 ++++++++++++------
- drivers/iio/accel/kxcjk-1013.c        | 14 ++++++++++----
- drivers/iio/industrialio-core.c       |  6 ++++--
- 3 files changed, 26 insertions(+), 12 deletions(-)
+ 1 file changed, 12 insertions(+), 6 deletions(-)
 
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 7e425ebcd7ea..b0dbd12cbf42 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -443,26 +443,32 @@ static bool bmc150_apply_acpi_orientation(struct device *dev,
+ 					  struct iio_mount_matrix *orientation)
+ {
+ 	struct acpi_buffer buffer = { ACPI_ALLOCATE_BUFFER, NULL };
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct acpi_device *adev = ACPI_COMPANION(dev);
++	char *name, *alt_name, *label, *str;
+ 	union acpi_object *obj, *elements;
+-	char *name, *alt_name, *str;
+ 	acpi_status status;
+ 	int i, j, val[3];
+ 
+ 	if (!adev || !acpi_dev_hid_uid_match(adev, "BOSC0200", NULL))
+ 		return false;
+ 
+-	if (strcmp(dev_name(dev), "i2c-BOSC0200:base") == 0)
++	if (strcmp(dev_name(dev), "i2c-BOSC0200:base") == 0) {
+ 		alt_name = "ROMK";
+-	else
++		label = "accel-base";
++	} else {
+ 		alt_name = "ROMS";
++		label = "accel-display";
++	}
+ 
+-	if (acpi_has_method(adev->handle, "ROTM"))
++	if (acpi_has_method(adev->handle, "ROTM")) {
+ 		name = "ROTM";
+-	else if (acpi_has_method(adev->handle, alt_name))
++	} else if (acpi_has_method(adev->handle, alt_name)) {
+ 		name = alt_name;
+-	else
++		indio_dev->label = label;
++	} else {
+ 		return false;
++	}
+ 
+ 	status = acpi_evaluate_object(adev->handle, name, NULL, &buffer);
+ 	if (ACPI_FAILURE(status)) {
 -- 
 2.30.0
 
