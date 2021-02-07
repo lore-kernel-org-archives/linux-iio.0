@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C3841C433E6
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9407AC433DB
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9C05264D9A
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6695A64D9A
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Feb 2021 15:50:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229650AbhBGPu3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Feb 2021 10:50:29 -0500
-Received: from mail.kernel.org ([198.145.29.99]:34026 "EHLO mail.kernel.org"
+        id S229703AbhBGPua (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Feb 2021 10:50:30 -0500
+Received: from mail.kernel.org ([198.145.29.99]:34032 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229681AbhBGPu0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S229692AbhBGPu0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sun, 7 Feb 2021 10:50:26 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id A9A8C64E60;
-        Sun,  7 Feb 2021 15:49:07 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4CC1E64E66;
+        Sun,  7 Feb 2021 15:49:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1612712948;
-        bh=Jp1GDzXZcYQ/pOlj6E9N5al14Xc2+FKEaMLpmh2SWpU=;
+        s=k20201202; t=1612712958;
+        bh=J1crtzcACihAIjr0lh/NEmAlqbIDCHdm1R8pyw+i0gI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LfZCXzVsdtJ6gHXisjXkTqvXjVdiEYtxsffkVBZeZ1CppDC6Fey3CASrbdyEk/zPl
-         SfL+peDRIznMCnIoBrK/KwMujY0gH1ehd+kkt3gKMwCOuX48NxcdRr1UtyIEL3NnoQ
-         96lnliLzaVd6bk+SEWaYxDJBf5HF/7V4f9/SeUv78+saoR6/hSHlEsfX/1xMMYmOuJ
-         O6+tsFbMVAKvfglFtFSJcYJ2NFnU5YugM4e+krpYiEQXl5KRakpQE/o4jQ3fx21fM+
-         LQtuDe8I58CCgWZXfPxv6MHV5On/FIuIw02rQqep+qmjqVXOk+wuTAdA4UU4yQ53To
-         AkTL39pWjkECg==
+        b=caReAL5trO+QWVxKE+3bUzMLq3tVuHLRFcWUrKOVu55DpDf87eiM2qhyoMjbUvWn0
+         3O/GjmevEGRB3ilKV52Vj4S+QxOjQFVwz7IbUQQia3EDihUY3QnG9Z89aQtvlzrTVe
+         1XRFXay8ysjVd9zhyAfi8EGPuAZvfJ8ivGaaDvAj76smPjR5gJzY7EQ4F3bj/r6zpQ
+         uppImwCB2e4oStBoDpdqRDjnI016go6loFmCX0z9npTpBaEE8I6SK7LWQQxQWe2ZOU
+         4We+IWxIL7x6SgXTWH2XZtt36eKhbc3hJRvZw5wTMGvq0BMxPB5PB7mlH3fBN4/qM8
+         nC/cqNRA7lloQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         song.bao.hua@hisilicon.com, robh+dt@kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 17/24] staging:iio:cdc:ad7150: Shift the _raw readings by 4 bits.
-Date:   Sun,  7 Feb 2021 15:46:16 +0000
-Message-Id: <20210207154623.433442-18-jic23@kernel.org>
+Subject: [PATCH 23/24] staging:iio:cdc:ad7150: Add copyright notice given substantial changes.
+Date:   Sun,  7 Feb 2021 15:46:22 +0000
+Message-Id: <20210207154623.433442-24-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <20210207154623.433442-1-jic23@kernel.org>
 References: <20210207154623.433442-1-jic23@kernel.org>
@@ -51,31 +51,26 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Every other register related to raw value on the datasheet is
-described as correpsonding to the 12MSB of the actual
-data registers + the bottom 4 bits are 0.  So lets treat this
-as what it actually is, which is a 12 bit value.
-Note that we will have to be a little careful to compensate for
-the offset and scale values.
+It seems to me that the changes made to get this ready to move out of
+staging are substantial enough to warant a copyright notice addition.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/cdc/ad7150.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/cdc/ad7150.c | 1 +
+ 1 file changed, 1 insertion(+)
 
 diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-index 4c83e6e37c5a..97689625f26c 100644
+index 33c8a78c076f..9a6b55021fa7 100644
 --- a/drivers/staging/iio/cdc/ad7150.c
 +++ b/drivers/staging/iio/cdc/ad7150.c
-@@ -111,7 +111,7 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
- 						  ad7150_addresses[channel][0]);
- 		if (ret < 0)
- 			return ret;
--		*val = ret;
-+		*val = ret >> 4;
+@@ -3,6 +3,7 @@
+  * AD7150 capacitive sensor driver supporting AD7150/1/6
+  *
+  * Copyright 2010-2011 Analog Devices Inc.
++ * Copyright 2021 Jonathan Cameron <Jonathan.Cameron@huawei.com>
+  */
  
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_AVERAGE_RAW:
+ #include <linux/bitfield.h>
 -- 
 2.30.0
 
