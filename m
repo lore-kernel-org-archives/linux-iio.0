@@ -2,89 +2,126 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A0BDC433E0
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 08:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6766AC433DB
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 11:16:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 271F064E6E
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 08:13:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 25CFD64D8F
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 11:16:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229611AbhBHINV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Feb 2021 03:13:21 -0500
-Received: from frasgout.his.huawei.com ([185.176.79.56]:2519 "EHLO
+        id S232370AbhBHLQ0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Feb 2021 06:16:26 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:2522 "EHLO
         frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229698AbhBHINQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2021 03:13:16 -0500
-Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DYzCV2qd1z67lRm;
-        Mon,  8 Feb 2021 16:07:34 +0800 (CST)
-Received: from lhreml713-chm.china.huawei.com (10.201.108.64) by
- fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
+        with ESMTP id S232763AbhBHLOT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2021 06:14:19 -0500
+Received: from fraeml712-chm.china.huawei.com (unknown [172.18.147.207])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4DZ3Fy5Z2yz67lxg;
+        Mon,  8 Feb 2021 19:09:58 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml712-chm.china.huawei.com (10.206.15.61) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2106.2; Mon, 8 Feb 2021 09:12:25 +0100
-Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
- lhreml713-chm.china.huawei.com (10.201.108.64) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id
- 15.1.2106.2; Mon, 8 Feb 2021 08:12:23 +0000
-Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
- dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.2106.006;
- Mon, 8 Feb 2021 16:12:21 +0800
-From:   "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        Jonathan Cameron <jonathan.cameron@huawei.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: RE: [PATCH 21/24] dt-bindings:iio:cdc:adi,ad7150 binding doc
-Thread-Topic: [PATCH 21/24] dt-bindings:iio:cdc:adi,ad7150 binding doc
-Thread-Index: AQHW/WjR86DKZNfgyEaoAH5ZJEi/1apMU8IAgAGTsaA=
-Date:   Mon, 8 Feb 2021 08:12:21 +0000
-Message-ID: <8967afd32123482482af599b199e347b@hisilicon.com>
+ 15.1.2106.2; Mon, 8 Feb 2021 12:13:36 +0100
+Received: from localhost (10.47.30.32) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2106.2; Mon, 8 Feb 2021
+ 11:13:35 +0000
+Date:   Mon, 8 Feb 2021 11:12:49 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Michael Hennerich" <Michael.Hennerich@analog.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>
+Subject: Re: [PATCH 05/24] staging:iio:cdc:ad7150: Drop platform data
+ support
+Message-ID: <20210208111249.00002a13@Huawei.com>
+In-Reply-To: <aa4c713cb40448109f858b301e7a0f04@hisilicon.com>
 References: <20210207154623.433442-1-jic23@kernel.org>
- <20210207154623.433442-22-jic23@kernel.org>
- <1840bd30-be94-761e-403d-59b13eeef774@metafoo.de>
-In-Reply-To: <1840bd30-be94-761e-403d-59b13eeef774@metafoo.de>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.200.200]
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: base64
+        <20210207154623.433442-6-jic23@kernel.org>
+        <aa4c713cb40448109f858b301e7a0f04@hisilicon.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.4 (GTK+ 2.24.32; i686-w64-mingw32)
 MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.30.32]
+X-ClientProxiedBy: lhreml719-chm.china.huawei.com (10.201.108.70) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-DQoNCj4gLS0tLS1PcmlnaW5hbCBNZXNzYWdlLS0tLS0NCj4gRnJvbTogTGFycy1QZXRlciBDbGF1
-c2VuIFttYWlsdG86bGFyc0BtZXRhZm9vLmRlXQ0KPiBTZW50OiBNb25kYXksIEZlYnJ1YXJ5IDgs
-IDIwMjEgNTowMCBBTQ0KPiBUbzogSm9uYXRoYW4gQ2FtZXJvbiA8amljMjNAa2VybmVsLm9yZz47
-IGxpbnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gQ2M6IE1pY2hhZWwgSGVubmVyaWNoIDxNaWNo
-YWVsLkhlbm5lcmljaEBhbmFsb2cuY29tPjsgU29uZyBCYW8gSHVhIChCYXJyeSBTb25nKQ0KPiA8
-c29uZy5iYW8uaHVhQGhpc2lsaWNvbi5jb20+OyByb2JoK2R0QGtlcm5lbC5vcmc7IEpvbmF0aGFu
-IENhbWVyb24NCj4gPGpvbmF0aGFuLmNhbWVyb25AaHVhd2VpLmNvbT47IGRldmljZXRyZWVAdmdl
-ci5rZXJuZWwub3JnDQo+IFN1YmplY3Q6IFJlOiBbUEFUQ0ggMjEvMjRdIGR0LWJpbmRpbmdzOmlp
-bzpjZGM6YWRpLGFkNzE1MCBiaW5kaW5nIGRvYw0KPiANCj4gT24gMi83LzIxIDQ6NDYgUE0sIEpv
-bmF0aGFuIENhbWVyb24gd3JvdGU6DQo+ID4gK3JlcXVpcmVkOg0KPiA+ICsgIC0gY29tcGF0aWJs
-ZQ0KPiA+ICsgIC0gcmVnDQo+IA0KPiBJcyB2ZGQtc3VwcGx5IHJlYWxseSBvcHRpb25hbCB0aGUg
-d2F5IGl0IGlzIGltcGxlbWVudGVkIGluIHRoZSBkcml2ZXI/DQo+IA0KPiA+ICsNCj4gPiArYWRk
-aXRpb25hbFByb3BlcnRpZXM6IGZhbHNlDQo+ID4gKw0KPiA+ICtleGFtcGxlczoNCj4gPiArICAt
-IHwNCj4gPiArICAgIGkyYyB7DQo+ID4gKyAgICAgICAgI2FkZHJlc3MtY2VsbHMgPSA8MT47DQo+
-ID4gKyAgICAgICAgI3NpemUtY2VsbHMgPSA8MD47DQo+ID4gKw0KPiA+ICsgICAgICAgIGNkY0A0
-OCB7DQo+ID4gKyAgICAgICAgICAgIGNvbXBhdGlibGUgPSAiYWRpLGFkNzE1MCI7DQo+ID4gKyAg
-ICAgICAgICAgIHJlZyA9IDwweDQ4PjsNCj4gPiArICAgICAgICAgICAgaW50ZXJydXB0cyA9IDwy
-NSAyPiwgPDI2IDI+Ow0KDQpPbmUgcXVlc3Rpb24sIGhlcmUgd2UgaGF2ZSB0d28gaW50ZXJydXB0
-cywgYnV0IHRoZSBkcml2ZXIgaXMgcmVhZGluZw0Kb25lIGludGVycnVwdCBvbmx5LCBkbyB3ZSBu
-ZWVkIHRvIGNhbGwNCm9mX2lycV9nZXQoZGV2LCBpbmRleCkNCm9yDQpvZl9pcnFfZ2V0X2J5bmFt
-ZSgpPw0KDQoNCj4gDQo+IEkgd29uZGVyIGlmIHdlIHNob3VsZCB1c2UgdGhlIHN5bWJvbGljIGNv
-bnN0YW50cyBmb3IgdGhlIElSUSB0eXBlIHRvDQo+IG1ha2UgdGhlIGV4YW1wbGUgbW9yZSBjbGVh
-ci4gRS5nLg0KPiANCj4gaW50ZXJydXB0cyA9IDwyNSBJUlFfVFlQRV9FREdFX0ZBTExJTkc+LCAu
-Li4NCj4gDQo+ID4gKyAgICAgICAgICAgIGludGVycnVwdC1wYXJlbnQgPSA8JmdwaW8+Ow0KPiA+
-ICsgICAgICAgIH07DQo+ID4gKyAgICB9Ow0KPiA+ICsuLi4NCj4gDQpUaGFua3MNCkJhcnJ5DQoN
-Cg==
+On Mon, 8 Feb 2021 08:01:10 +0000
+"Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com> wrote:
+
+> > -----Original Message-----
+> > From: Jonathan Cameron [mailto:jic23@kernel.org]
+> > Sent: Monday, February 8, 2021 4:46 AM
+> > To: linux-iio@vger.kernel.org
+> > Cc: Lars-Peter Clausen <lars@metafoo.de>; Michael Hennerich
+> > <Michael.Hennerich@analog.com>; Song Bao Hua (Barry Song)
+> > <song.bao.hua@hisilicon.com>; robh+dt@kernel.org; Jonathan Cameron
+> > <jonathan.cameron@huawei.com>
+> > Subject: [PATCH 05/24] staging:iio:cdc:ad7150: Drop platform data support
+> > 
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > There are no mainline board files using this driver so lets drop
+> > the platform_data support in favour of devicetree and similar.
+> > 
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > ---
+> >  drivers/staging/iio/cdc/ad7150.c | 14 --------------
+> >  1 file changed, 14 deletions(-)
+> > 
+> > diff --git a/drivers/staging/iio/cdc/ad7150.c
+> > b/drivers/staging/iio/cdc/ad7150.c
+> > index 0dce1b8ce76d..7ad9105e6b46 100644
+> > --- a/drivers/staging/iio/cdc/ad7150.c
+> > +++ b/drivers/staging/iio/cdc/ad7150.c
+> > @@ -570,20 +570,6 @@ static int ad7150_probe(struct i2c_client *client,
+> >  			return ret;
+> >  	}
+> > 
+> > -	if (client->dev.platform_data) {
+> > -		ret = devm_request_threaded_irq(&client->dev, *(unsigned int *)
+> > -						client->dev.platform_data,
+> > -						NULL,
+> > -						&ad7150_event_handler,
+> > -						IRQF_TRIGGER_RISING |
+> > -						IRQF_TRIGGER_FALLING |
+> > -						IRQF_ONESHOT,
+> > -						"ad7150_irq2",
+> > -						indio_dev);
+> > -		if (ret)
+> > -			return ret;
+> > -	}
+> > -  
+> 
+> The original code looks ugly, I forget when ad7150 needs
+> the second interrupt.
+It is one per channel.  That is events on a channel are only indicated on the
+line associated with the channel.
+
+I bring it back later in the series.
+
+Jonathan
+
+> 
+> >  	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+> >  	if (ret)
+> >  		return ret;
+> > --
+> > 2.30.0  
+> 
+> Thanks
+> Barry
+> 
+
