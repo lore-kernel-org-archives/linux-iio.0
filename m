@@ -2,132 +2,135 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-21.3 required=3.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT,USER_IN_DEF_DKIM_WL autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58A73C433E9
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 16:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E895C433E6
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 21:20:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1A59464DF0
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 16:08:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3DC2164E8F
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 21:20:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232135AbhBHQHw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Feb 2021 11:07:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35608 "EHLO
+        id S235646AbhBHVUR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Feb 2021 16:20:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233828AbhBHQH0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2021 11:07:26 -0500
-Received: from mail-pj1-x1033.google.com (mail-pj1-x1033.google.com [IPv6:2607:f8b0:4864:20::1033])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 698AFC061788
-        for <linux-iio@vger.kernel.org>; Mon,  8 Feb 2021 08:06:46 -0800 (PST)
-Received: by mail-pj1-x1033.google.com with SMTP id e9so9050397pjj.0
-        for <linux-iio@vger.kernel.org>; Mon, 08 Feb 2021 08:06:46 -0800 (PST)
+        with ESMTP id S236308AbhBHVUE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2021 16:20:04 -0500
+Received: from mail-pj1-x1049.google.com (mail-pj1-x1049.google.com [IPv6:2607:f8b0:4864:20::1049])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD48C061788
+        for <linux-iio@vger.kernel.org>; Mon,  8 Feb 2021 13:19:22 -0800 (PST)
+Received: by mail-pj1-x1049.google.com with SMTP id m5so336292pjg.0
+        for <linux-iio@vger.kernel.org>; Mon, 08 Feb 2021 13:19:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=iiGQ1a+ocaFv/oN1twet9JTGRuf/5E5q4ifpPbH3kY4=;
-        b=DVRq0eWguGA3ST4Rc5JVp5Ah4l82xyltocw00Rx4S/7cwi5unaij0xapeNrGUA6O8K
-         PcTNopuHr9e6bxdn3PQcyHd4V2U1Qj30rAVa9zJIrHBbrHRszh0fgRoEeBvL9tygJGHz
-         HQ66GOfY8lci3j80EUz+jPi9YbVaOFMj0FiFfoHDZ+vQUJ2cwiDwPlrptJWV+3G55UtZ
-         IrQJ4ehTLdxW01DgJmRjdRZ8uw2clIfE3/DOBZE/8gs9DKdsHJmfRyv8mYa++6FyRZZZ
-         bbFiQoe7mnHiYfKnKd5lK4pxKPrZU6wMzexd1xCmEK9h3RrSgK02qoVmIvJDOrJYYSkL
-         gqCA==
+        d=google.com; s=20161025;
+        h=sender:date:message-id:mime-version:subject:from:to:cc;
+        bh=mj2tFALi24MejDUAyOIZC6XcOuZLAwzBMp1DQ6QF7c4=;
+        b=R4kz3oxWh27Oa6yQGz5VU3uqmz22vN2b3nKeesahabCfAT7e9yqTnNciJeT2xfk5ou
+         IWNsYRcd58dNHirK6ZQQezlr81Zhw6QZIoaGkGWyVgHTyo+4jkg1HdNt3KuGvgqbi/+3
+         7uyVABrUZF0Knpi/7O/BdUmgOaToVrambu3GLsjcAEZoPPdP72xMaXyfDIOreA4YqhlA
+         +nB8h7pPZ0m1nUaeoqAMTAO+gMtIw/GZe7Li6nltqNfsFeRmPCE95gv/61bASA61YrW9
+         BIacRXmVAmPErl9C7oejKaSPaJF8edAKFWl979P6587nVdK2OrqlsgkpqksTH1Y2Y3wo
+         7OWA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=iiGQ1a+ocaFv/oN1twet9JTGRuf/5E5q4ifpPbH3kY4=;
-        b=Y6zvTKoUczmhBBP3Q+/qZdCj0sHKTeE/ZPwA8soxs1twC2RpuvO3/gW+Xwr7sxbW9w
-         Mt4jEvxruVgHpvnDPrG0GGM3pfRQYyHrK6oOTOYrRTECrYNN5jXayPY0Ur4tw49Venuc
-         +87LhKIWiqPr4VfwMBU+mOCoY9FhLDWXif6SiZPsH66dEWfw0x652vOUEpZVxLtBYMWf
-         dUMiCjq2cVpPd5+0wvn06ysC5yFN7P0xTuTtoOIRWambWyx62VmxhVjl49ZD810txS1V
-         RHbEplo9VvS19edEd7+41kg/fcAz6q7bdc9Nk6Hg1tEvyx3Iff6rmsr+XddHes880ypI
-         hsLw==
-X-Gm-Message-State: AOAM530tm1UlB85fo2GzsjhrhwYEaNPf9ImX5BYQyMCjchcXapm5AWO5
-        BPjmJGcXLlIEHSxzIGUmEQd0HNGX5g6DkwRpTQA=
-X-Google-Smtp-Source: ABdhPJzg/AXM6ZJv2Ji+SVKzjlvkY+YDUEzB9CPgC9wpPRH3XFijSIAmik/Q3roac64CNy3+NAsFKhJJz7uIFwpR1Vw=
-X-Received: by 2002:a17:902:7b96:b029:de:7ae6:b8db with SMTP id
- w22-20020a1709027b96b02900de7ae6b8dbmr16728887pll.0.1612800405935; Mon, 08
- Feb 2021 08:06:45 -0800 (PST)
-MIME-Version: 1.0
-References: <20210208142705.GA51260@ubuntu>
-In-Reply-To: <20210208142705.GA51260@ubuntu>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 8 Feb 2021 18:06:29 +0200
-Message-ID: <CAHp75Vc1VWYLO1rF-NNnW3qkgiGycgpTHvr5Q2Yn91aZcFuyJg@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: ad7949: fix wrong ADC result due to incorrect bit mask
-To:     Wilfried Wessner <wilfried.wessner@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        h=x-gm-message-state:sender:date:message-id:mime-version:subject:from
+         :to:cc;
+        bh=mj2tFALi24MejDUAyOIZC6XcOuZLAwzBMp1DQ6QF7c4=;
+        b=ke8L50LZ6L1BYUzv+t+e9wdAWvOlLxTqogys3phQ4oZ8rbBXqfPpDzZJTY5V8ASaW/
+         +nQMgoqP4E3aZD3QoQcXBWkVed5D/Mv2pLM4WzviLFrp1VFhijGx3zwwRHViltRmWmHc
+         tur70e90cMGOFW/S07O+7If8zewjJiZBhWTB8xv1Uvt5qRMQ5fM81nDptAraAlLTm3KV
+         2agXgy3/4eana+1JcgsaZggJMjIaOKxcZmG5RkrcYVAEt4HWwL1wvDsVE1LzSzNa1bK6
+         eNwCPGzAKOSosGhOFpuS081H5ADfYWTL/fYHAhtqSyYv9RMBZ0YWCJHm/wYOOiIqC3cl
+         NFBw==
+X-Gm-Message-State: AOAM5324m8CQinAmrdPuYdt9fioynC2ioWr7RnB/i5hnsOzOBxp016Rb
+        DkH1TYldx5V9ulLMgXjyiFMxKw7nTzOjAQ==
+X-Google-Smtp-Source: ABdhPJyvWdjxDxa2oDucvOMapD4bizkkq8JMxC+/bmdPT4s/BwMGoHRPjIom3HD+ILKxl8qH9PapC3lGyhggoA==
+Sender: "jbhayana via sendgmr" <jbhayana@jbhayana.c.googlers.com>
+X-Received: from jbhayana.c.googlers.com ([fda3:e722:ac3:10:24:72f4:c0a8:42b2])
+ (user=jbhayana job=sendgmr) by 2002:a62:3503:0:b029:1aa:6f15:b9fe with SMTP
+ id c3-20020a6235030000b02901aa6f15b9femr19274370pfa.65.1612819162178; Mon, 08
+ Feb 2021 13:19:22 -0800 (PST)
+Date:   Mon,  8 Feb 2021 21:19:17 +0000
+Message-Id: <20210208211918.1280588-1-jbhayana@google.com>
+Mime-Version: 1.0
+X-Mailer: git-send-email 2.30.0.478.g8a0d178c01-goog
+Subject: [PATCH v5 0/1] Adding support for IIO SCMI based sensors
+From:   Jyoti Bhayana <jbhayana@google.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Greg KH <gregkh@linuxfoundation.org>,
-        Charles-Antoine Couret <charles-antoine.couret@essensium.com>
+        Jyoti Bhayana <jbhayana@google.com>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        "David S. Miller" <davem@davemloft.net>,
+        Rob Herring <robh@kernel.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        cristian.marussi@arm.com, sudeep.holla@arm.com,
+        egranata@google.com, mikhail.golubev@opensynergy.com,
+        Igor.Skalkin@opensynergy.com, Peter.hilber@opensynergy.com,
+        ankitarora@google.com
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Feb 8, 2021 at 4:27 PM Wilfried Wessner
-<wilfried.wessner@gmail.com> wrote:
->
-> Fixes a wrong bit mask used for the ADC's result, which was caused by an
-> improper usage of the GENMASK() macro. The bits higher than ADC's
-> resolution are undefined and if not masked out correctly, a wrong result
-> can be given. The GENMASK() macro indexing is zero based, so the mask has
-> to go from [resolution - 1 , 0].
+Hi,
 
+This series adds support for ARM SCMI Protocol based IIO Device.
 
-> Fixes: 7f40e0614317f ("iio:adc:ad7949: Add AD7949 ADC driver family")
+This driver provides support for Accelerometer and Gyroscope sensor using
+SCMI Sensor Protocol extensions added in the SCMIv3.0 ARM specification,
+which is available at 
 
->
+https://developer.arm.com/documentation/den0056/c/
 
-Shouldn't be blank like here, but I think Jonathan can fix when applying.
-Jonathan, can you also amend the subject (I totally forgot about
-subsubsystem prefix)?
-Should be like:
-"iio: adc: ad7949: fix wrong results due to incorrect bit mask"
+This version of the patch series has been tested using 
+version 5.4.21 branch of Android common kernel.
 
-And FWIW,
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Any feedback welcome,
 
-> Signed-off-by: Wilfried Wessner <wilfried.wessner@gmail.com>
->
-> ---
->
-> The issue was found in combination of an AD7682 ADC with an ARM based
-> iMX7-CPU. The SPI line was analyzed with a logic analyzer and a
-> discrepancy between applied voltage level and the ADC reported value
-> in user space was observed. Digging into the driver code revealed an
-> improper mask used for the ADC-result.
->
->
->  drivers/iio/adc/ad7949.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
-> index 5d597e5050f6..1b4b3203e428 100644
-> --- a/drivers/iio/adc/ad7949.c
-> +++ b/drivers/iio/adc/ad7949.c
-> @@ -91,7 +91,7 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
->         int ret;
->         int i;
->         int bits_per_word = ad7949_adc->resolution;
-> -       int mask = GENMASK(ad7949_adc->resolution, 0);
-> +       int mask = GENMASK(ad7949_adc->resolution - 1, 0);
->         struct spi_message msg;
->         struct spi_transfer tx[] = {
->                 {
-> --
-> 2.25.1
->
+Thanks,
 
+Jyoti Bhayana
+
+v4 --> v5
+- Dropped the RFC tag
+- Added channel ext_info for raw_available
+- Incorporated the feedback comments from v4 review of the patch
+
+v3 --> v4
+- Incorporated the feedback comments from v3 review of the patch
+
+v2 --> v3
+- Incorporated the feedback comments from v2 review of the patch
+
+v1 --> v2
+- Incorporated the feedback comments from v1 review of the patch
+- Regarding the new ABI for sensor_power,sensor_max_range,
+and sensor_resolution, these are some of the sensor attributes
+which Android passes to the apps. If there is any other way of getting
+those values, please let us know
+
+Jyoti Bhayana (1):
+  iio/scmi: Adding support for IIO SCMI Based Sensors
+
+ MAINTAINERS                                |   6 +
+ drivers/firmware/arm_scmi/driver.c         |   2 +-
+ drivers/iio/common/Kconfig                 |   1 +
+ drivers/iio/common/Makefile                |   1 +
+ drivers/iio/common/scmi_sensors/Kconfig    |  18 +
+ drivers/iio/common/scmi_sensors/Makefile   |   5 +
+ drivers/iio/common/scmi_sensors/scmi_iio.c | 673 +++++++++++++++++++++
+ 7 files changed, 705 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iio/common/scmi_sensors/Kconfig
+ create mode 100644 drivers/iio/common/scmi_sensors/Makefile
+ create mode 100644 drivers/iio/common/scmi_sensors/scmi_iio.c
 
 -- 
-With Best Regards,
-Andy Shevchenko
+2.30.0.478.g8a0d178c01-goog
+
