@@ -2,113 +2,123 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE626C433E0
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 14:30:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D398C433E0
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 16:08:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7E1E664E5A
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 14:30:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 41EA864E45
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 16:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231342AbhBHO37 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Feb 2021 09:29:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42378 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233109AbhBHO1s (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2021 09:27:48 -0500
-Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BE2C0617A9
-        for <linux-iio@vger.kernel.org>; Mon,  8 Feb 2021 06:27:08 -0800 (PST)
-Received: by mail-wr1-x433.google.com with SMTP id l12so17401040wry.2
-        for <linux-iio@vger.kernel.org>; Mon, 08 Feb 2021 06:27:07 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:mime-version:content-disposition;
-        bh=6PZoUHzaiK538MtkpiToyHFFo/rxX3hgqAsFX27xofw=;
-        b=U5ziOzZ8pzNl0U2MMLDVYxOTdQO5kDfc5xOmsd1wj6J0dWcsZHpfttS2WfgOegbNZQ
-         j8j/Sq2WNbfpISlhICh2cutIT7EMRyqYD52OuJ6XT0GOVl6nDm6Ryx3CEpCEJCRePxvk
-         fUNrTCsUtVWAClJMpUVDKfcAEjmcUbF/bdhr4ZFl4gUoYlNjByT8mplz21cmAJcvc/Dh
-         6NbeUxN2g4+xadW2jUyf3JFuXz1ei+IGoMIL020XlO1/ZXnqPpwrWinpaJEopPYVqkof
-         JO0hSkMTT1rSi1tLR6HLhqNH2X80j+OOmJQaMpAf4iXqOzJKXar2QQP715bZPzVxmHNv
-         23ww==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
-         :content-disposition;
-        bh=6PZoUHzaiK538MtkpiToyHFFo/rxX3hgqAsFX27xofw=;
-        b=UpEshPD3L63Jefs5SXR2zbVhE9r4U4ib7L+g0aW9oAdvRMtRidSZ7hit22o2tdSSEf
-         2spTC7+N1d11sgrdIR/J6nSiGdUNro6B29p0jXNecUGToF53OE5dTgawxGsLq8xW5nIN
-         R8/xOhOj2Aacz4G1q1hbOdBgm46mZsyP1NndGfg3aLWzXQFE4iLkbRS0mPDVOOqsOtjg
-         hNMRSEFZT582zLOVf220Vk6imKVorB8CO/G0AjbPN+oOV1lSzNRDjbms0pJVRt1FOlDL
-         TZHKRggRpAW0oDV+GZafJSMwk+EhybzYTZpFPaUvKHG5vTbPzLK6STyKSVsza/BtHk9B
-         q+Zg==
-X-Gm-Message-State: AOAM531AZDDnh4xtxo3IiMewwVqsr6xwM4AZ1F+/Uyxb19fPs3sBymdz
-        lHDC/43wXwwOUghm+NbjmVye/Luc9x/k5Nb0
-X-Google-Smtp-Source: ABdhPJxwz8+dWLR0W3AA62qXMOf8XHceGrxzuRxagMLhIHQ9UgtVsrmGsz/oieAZTHaZEjOc07u+xg==
-X-Received: by 2002:a5d:6685:: with SMTP id l5mr19939948wru.176.1612794426844;
-        Mon, 08 Feb 2021 06:27:06 -0800 (PST)
-Received: from ubuntu ([212.183.24.90])
-        by smtp.gmail.com with ESMTPSA id i7sm30074527wru.49.2021.02.08.06.27.05
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 08 Feb 2021 06:27:06 -0800 (PST)
-Date:   Mon, 8 Feb 2021 15:27:05 +0100
-From:   Wilfried Wessner <wilfried.wessner@gmail.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-iio@vger.kernel.org, Greg KH <gregkh@linuxfoundation.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Charles-Antoine Couret <charles-antoine.couret@essensium.com>
-Subject: [PATCH v3] iio: ad7949: fix wrong ADC result due to incorrect bit
- mask
-Message-ID: <20210208142705.GA51260@ubuntu>
+        id S233828AbhBHQHy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Feb 2021 11:07:54 -0500
+Received: from mail.kernel.org ([198.145.29.99]:46686 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233959AbhBHQHc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 8 Feb 2021 11:07:32 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 703C364DF0;
+        Mon,  8 Feb 2021 16:06:51 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1612800411;
+        bh=fTuhJ5RT5eLAOUQrf/tdirgkNlz+VEc+4HXnU0SEBNY=;
+        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
+        b=CE+UBgTcDUlapJhqmFejcia3qaw0B8VrsoRrETcKyAGabydxD4GrGLxeuQh4z2WIV
+         fEZUTK3eyBYKhdKsVYF1E09qTHQFS9rpK+bfnU5WcTgMyQTcStYiBjA8Or50Bygx3i
+         P+1YFg3c1WmM/GRPnWKHhQEIJrWWfa+f4JEK5X+p4uJC7vvyk//cyBqLY++9h2ZgWh
+         ZmphXs+BzmLpUhXwZE2rmbfUSSbU0Hgr8R8TFT1Ec1Ks31652+73b0yy3R61zX3+V4
+         RDb1bq8r+a9PvwCpd7w5rnK2D4g6ob+0j7PXUc/F625iJ3HNs2ZUOXcWIz6lsnxOGI
+         ytIzgvJv58S6w==
+Received: by mail-qt1-f182.google.com with SMTP id w20so10669510qta.0;
+        Mon, 08 Feb 2021 08:06:51 -0800 (PST)
+X-Gm-Message-State: AOAM531PbvIWNh1HoTpcl2TbMEO9/WPrtJDz5V86miULqnODZj7Xkuwu
+        BGddixzu6B17Ek55cks6W8S8D+0ZGQ5S6YWGBw==
+X-Google-Smtp-Source: ABdhPJzQqyDVjzf3UbUtZdEJmP0vjWtaTKE5/EstbBlrylclBdwLqosH30kf0R50qJ8YnbDKvk1GGSZilez2wJPVCUk=
+X-Received: by 2002:ac8:5c41:: with SMTP id j1mr15757118qtj.306.1612800410564;
+ Mon, 08 Feb 2021 08:06:50 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+References: <20210204113551.68744-1-alexandru.tachici@analog.com>
+ <20210204113551.68744-3-alexandru.tachici@analog.com> <20210206152643.53b0e01b@archlinux>
+In-Reply-To: <20210206152643.53b0e01b@archlinux>
+From:   Rob Herring <robh+dt@kernel.org>
+Date:   Mon, 8 Feb 2021 10:06:39 -0600
+X-Gmail-Original-Message-ID: <CAL_Jsq+zXzqkMbq5x6GCdE_175MpTGHw3kfOKaPpuaWuAtMF-Q@mail.gmail.com>
+Message-ID: <CAL_Jsq+zXzqkMbq5x6GCdE_175MpTGHw3kfOKaPpuaWuAtMF-Q@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] dt-bindings: iio: adc: ad7124: add config nodes
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Alexandru Tachici <alexandru.tachici@analog.com>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fixes a wrong bit mask used for the ADC's result, which was caused by an
-improper usage of the GENMASK() macro. The bits higher than ADC's 
-resolution are undefined and if not masked out correctly, a wrong result 
-can be given. The GENMASK() macro indexing is zero based, so the mask has 
-to go from [resolution - 1 , 0].
+On Sat, Feb 6, 2021 at 9:26 AM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Thu, 4 Feb 2021 13:35:51 +0200
+> <alexandru.tachici@analog.com> wrote:
+>
+> > From: Alexandru Tachici <alexandru.tachici@analog.com>
+> >
+> > Document use of configurations in device-tree bindings.
+> >
+> > Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+>
+> Ignoring discussing in my reply to the cover letter...
+>
+> This is a breaking change as described.  We can't move properties
+> around without some sort of fullback for them being in the old
+> location.
+>
+> > ---
+> >  .../bindings/iio/adc/adi,ad7124.yaml          | 72 +++++++++++++++----
+> >  1 file changed, 57 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+> > index fb3d0dae9bae..330064461d0a 100644
+> > --- a/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+> > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7124.yaml
+> > @@ -62,20 +62,19 @@ required:
+> >    - interrupts
+> >
+> >  patternProperties:
+> > -  "^channel@([0-9]|1[0-5])$":
+> > -    $ref: "adc.yaml"
+> > +  "^config@(2[0-7])$":
+> >      type: object
+> >      description: |
+> > -      Represents the external channels which are connected to the ADC.
+> > +      Represents a channel configuration.
+> > +      See Documentation/devicetree/bindings/iio/adc/adc.txt.
+>
+> adc.yaml now.
+>
+>
+> >
+> >      properties:
+> >        reg:
+> >          description: |
+> > -          The channel number. It can have up to 8 channels on ad7124-4
+> > -          and 16 channels on ad7124-8, numbered from 0 to 15.
+> > +          The config number. It can have up to 8 configuration.
+> >          items:
+> > -          minimum: 0
+> > -          maximum: 15
+> > +         minimum: 20
+> > +         maximum: 27
+>
+> Number then 0-7 please rather than 20-27.
 
-Fixes: 7f40e0614317f ("iio:adc:ad7949: Add AD7949 ADC driver family")
+That doesn't work. It would be creating 2 address spaces at one level
+with channel@0 and config@0. The way to address this is add a
+'configs' node with config@N children.
 
-Signed-off-by: Wilfried Wessner <wilfried.wessner@gmail.com>
+My question here though is where does 20-27 come from. I suspect it's
+made up which isn't good either. Addresses should also be rooted in
+something in the h/w.
 
----
-
-The issue was found in combination of an AD7682 ADC with an ARM based 
-iMX7-CPU. The SPI line was analyzed with a logic analyzer and a 
-discrepancy between applied voltage level and the ADC reported value 
-in user space was observed. Digging into the driver code revealed an 
-improper mask used for the ADC-result.
-
-
- drivers/iio/adc/ad7949.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
-index 5d597e5050f6..1b4b3203e428 100644
---- a/drivers/iio/adc/ad7949.c
-+++ b/drivers/iio/adc/ad7949.c
-@@ -91,7 +91,7 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
- 	int ret;
- 	int i;
- 	int bits_per_word = ad7949_adc->resolution;
--	int mask = GENMASK(ad7949_adc->resolution, 0);
-+	int mask = GENMASK(ad7949_adc->resolution - 1, 0);
- 	struct spi_message msg;
- 	struct spi_transfer tx[] = {
- 		{
--- 
-2.25.1
-
+Rob
