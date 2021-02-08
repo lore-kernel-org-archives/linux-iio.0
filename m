@@ -2,143 +2,367 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CD0BC433DB
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 13:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68F79C433DB
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 13:55:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1C07164E60
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 13:52:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2817C64E6B
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Feb 2021 13:55:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231359AbhBHNwC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Feb 2021 08:52:02 -0500
-Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:35793 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230384AbhBHNv5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2021 08:51:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1612792230;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=yNPIoHnBY6HXYG4ADh2fKWto5IZcYeENv/QQ0n/pnTw=;
-        b=jNQykoMH1r3kpnscS6Aw3RtULfHHHxtKigiNoRb7arOeF5p7LRfrTaUICNDTSMAN400rPl
-        VkuauhAr/XnuP21Trqio9nhrMXc5PiUrh2H3gkPJQJaNHWOsnB9QLLKw1p04XP4psjulrk
-        Gwqn2qaeMgKVdc9DtIMEjWQ59+7Dhw4=
-Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
- [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-261-R2KISg1KM5eWq4qu4FefVQ-1; Mon, 08 Feb 2021 08:50:29 -0500
-X-MC-Unique: R2KISg1KM5eWq4qu4FefVQ-1
-Received: by mail-ed1-f71.google.com with SMTP id bd22so13243126edb.4
-        for <linux-iio@vger.kernel.org>; Mon, 08 Feb 2021 05:50:28 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=yNPIoHnBY6HXYG4ADh2fKWto5IZcYeENv/QQ0n/pnTw=;
-        b=XhyS7fXg0dL9nP73fSPowG67p8QBUbE0/+Xidpoex16Inb7OCBZeC9ICWDbKz8JUWB
-         7C+Fkg3WRu8ShMFhDnm8SU71ANSPBshcYyJnXTqmT6oy7pD25N8DRXzM4e1zyqo2+/h2
-         T4iYWyI8BeE/waF5O0wrBMIrywcp9d3Wj4RsI74GrGYyVw+AqN1EVs/yNDCpBpXt5KVB
-         2ev5S3jHMoNnAUYCmvrMEdzYwHXedF2Xts7G9YdB0KkTDMsAA7XV+uWig+yFjpd5Oj4d
-         IW6GzE6eAKPVyjUe6fSmlKIq0aXjDe2/4BrsWbTAlmmYXlNRxErJPnkz7IYh8uzXW2sG
-         wkrg==
-X-Gm-Message-State: AOAM532YF+wbVsp1gNHaKuGzn1P66Op1kh01HRtVSneC91LZqm13gI3N
-        03YNQ3HsAogieLm7P5NZGDHSvpBJF5aWwIFRIy0z4wNPralDl0ouxZhJJXbwHgtsns23han9vOu
-        2rDyyY9mC392pzs6PsRYk
-X-Received: by 2002:a17:907:1b1f:: with SMTP id mp31mr16542665ejc.348.1612792227607;
-        Mon, 08 Feb 2021 05:50:27 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJzzwM5czmo7ikJRAMH4nPm9ToFKx6w5odzT7x9ljUza982b0mGEdgSWzmvem5f3LTvyI41EzA==
-X-Received: by 2002:a17:907:1b1f:: with SMTP id mp31mr16542630ejc.348.1612792227266;
-        Mon, 08 Feb 2021 05:50:27 -0800 (PST)
-Received: from x1.localdomain (2001-1c00-0c1e-bf00-1054-9d19-e0f0-8214.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1054:9d19:e0f0:8214])
-        by smtp.gmail.com with ESMTPSA id f6sm5400461edm.15.2021.02.08.05.50.26
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Feb 2021 05:50:26 -0800 (PST)
-Subject: Re: [PATCH 1/2] iio: documentation: Document proximity sensor label
- use
-To:     Bastien Nocera <hadess@hadess.net>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-input@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        id S231463AbhBHNzq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Feb 2021 08:55:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35400 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231779AbhBHNzR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Feb 2021 08:55:17 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23B3CC061794
+        for <linux-iio@vger.kernel.org>; Mon,  8 Feb 2021 05:53:55 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1l96z7-0006qK-Br; Mon, 08 Feb 2021 14:53:49 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1l96z6-0004pZ-KW; Mon, 08 Feb 2021 14:53:48 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
         linux-iio@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Pearson <mpearson@lenovo.com>
-References: <20210207123720.8357-1-hdegoede@redhat.com>
- <2b7a0374f4af5e2113c1d209246b506d7f42ae29.camel@hadess.net>
-From:   Hans de Goede <hdegoede@redhat.com>
-Message-ID: <676c9b71-ffc6-343e-f4ef-b0ec73fdb906@redhat.com>
-Date:   Mon, 8 Feb 2021 14:50:26 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v5 2/2] counter: add IRQ or GPIO based event counter
+Date:   Mon,  8 Feb 2021 14:53:47 +0100
+Message-Id: <20210208135347.18494-3-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.0
+In-Reply-To: <20210208135347.18494-1-o.rempel@pengutronix.de>
+References: <20210208135347.18494-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <2b7a0374f4af5e2113c1d209246b506d7f42ae29.camel@hadess.net>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+Add simple IRQ or GPIO base event counter. This device is used to measure
+rotation speed of some agricultural devices, so no high frequency on the
+counter pin is expected.
 
-On 2/8/21 2:40 PM, Bastien Nocera wrote:
-> On Sun, 2021-02-07 at 13:37 +0100, Hans de Goede wrote:
->> Add an entry to Documentation/ABI/testing/sysfs-bus-iio for
->> the new device and channel label sysfs-attribute support.
->>
->> And document the standardized labels which may be used with proximity
->> sensors to hint userspace about the intended use of the sensor.
->>
->> Using labels to differentiate between the multiple proximity sensors
->> which a modern laptop/tablet may have was discussed in this thread:
->> https://lore.kernel.org/linux-iio/9f9b0ff6-3bf1-63c4-eb36-901cecd7c4d9@redhat.com/
->>
->> As mentioned the "proximity-wifi*" labels are already being used in
->> this manner on some chromebooks, see e.g.:
->> arch/arm64/boot/dts/qcom/sc7180-trogdor.dtsi
->> arch/arm64/boot/dts/qcom/sc7180-trogdor-lte-sku.dtsi
->>
->> And the "proximity-palmrest" and "proximity-lap" labels are intended
->> to be used with the lap and palmrest sensors found in recent Lenovo
->> ThinkPad models.
-> 
-> Both patches in the series look fine to me.
+The maximal measurement frequency depends on the CPU and system load. On
+the idle iMX6S I was able to measure up to 20kHz without count drops.
 
-Thank you for checking.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Ahmad Fatoum <a.fatoum@pengutronix.de>
+---
+ drivers/counter/Kconfig     |  10 ++
+ drivers/counter/Makefile    |   1 +
+ drivers/counter/event-cnt.c | 250 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 261 insertions(+)
+ create mode 100644 drivers/counter/event-cnt.c
 
-> Is IIO the interface you plan on using to implement the lap detection
-> for the thinkpad_acpi driver?
-
-ATM both the lap detection and the palmrest proximity detection are
-already available using thinkpad_acpi specific sysfs attributes:
-
-[hans@x1 linux]$ cat /sys/bus/platform/devices/thinkpad_acpi/dytc_lapmode 
-0
-[hans@x1 linux]$ cat /sys/bus/platform/devices/thinkpad_acpi/palmsensor 
-1
-
-Which I think you are already aware of ?  These will not be going
-anywhere since dropping these would be a userspace ABI break.
-
-With that said, yes the plan is to extend the thinkpad_acpi driver
-to also report lap / palmrest proximity through IIO using these labels.
-
-With the idea being that if other drivers / vendor firmwares also will
-export similar readings that those will then also use IIO with these
-labels for this, so that there is one unified / driver independent
-interface which userspace can use to get these readings.
-
-> If so, don't forget to set the "nearlevel" property as well.
-
-Ack, I'll make sure that you are on the Cc when the patches for this
-get posted.
-
-Regards,
-
-Hans
+diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
+index 2de53ab0dd25..3284987e070a 100644
+--- a/drivers/counter/Kconfig
++++ b/drivers/counter/Kconfig
+@@ -29,6 +29,16 @@ config 104_QUAD_8
+ 	  The base port addresses for the devices may be configured via the base
+ 	  array module parameter.
+ 
++config EVENT_CNT
++	tristate "Event counter driver"
++	depends on GPIOLIB
++	help
++	  Select this option to enable event counter driver. Any interrupt source
++	  can be used by this driver as the event source.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called gpio-pulse-cnt.
++
+ config STM32_TIMER_CNT
+ 	tristate "STM32 Timer encoder counter driver"
+ 	depends on MFD_STM32_TIMERS || COMPILE_TEST
+diff --git a/drivers/counter/Makefile b/drivers/counter/Makefile
+index 0a393f71e481..6626900468f6 100644
+--- a/drivers/counter/Makefile
++++ b/drivers/counter/Makefile
+@@ -6,6 +6,7 @@
+ obj-$(CONFIG_COUNTER) += counter.o
+ 
+ obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
++obj-$(CONFIG_EVENT_CNT)		+= event-cnt.o
+ obj-$(CONFIG_STM32_TIMER_CNT)	+= stm32-timer-cnt.o
+ obj-$(CONFIG_STM32_LPTIMER_CNT)	+= stm32-lptimer-cnt.o
+ obj-$(CONFIG_TI_EQEP)		+= ti-eqep.o
+diff --git a/drivers/counter/event-cnt.c b/drivers/counter/event-cnt.c
+new file mode 100644
+index 000000000000..a394fe72c4e4
+--- /dev/null
++++ b/drivers/counter/event-cnt.c
+@@ -0,0 +1,250 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Copyright (c) 2021 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
++ */
++
++#include <linux/counter.h>
++#include <linux/gpio/consumer.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++
++#define EVENT_CNT_NAME		"event-cnt"
++
++struct event_cnt_priv {
++	struct counter_device counter;
++	struct counter_ops ops;
++	struct gpio_desc *gpio;
++	int irq;
++	bool enabled;
++	atomic_t count;
++};
++
++static irqreturn_t event_cnt_isr(int irq, void *dev_id)
++{
++	struct event_cnt_priv *priv = dev_id;
++
++	atomic_inc(&priv->count);
++
++	return IRQ_HANDLED;
++}
++
++static ssize_t event_cnt_enable_read(struct counter_device *counter,
++				     struct counter_count *count, void *private,
++				     char *buf)
++{
++	struct event_cnt_priv *priv = counter->priv;
++
++	return sysfs_emit(buf, "%d\n", priv->enabled);
++}
++
++static ssize_t event_cnt_enable_write(struct counter_device *counter,
++				      struct counter_count *count,
++				      void *private, const char *buf,
++				      size_t len)
++{
++	struct event_cnt_priv *priv = counter->priv;
++	bool enable;
++	ssize_t ret;
++
++	ret = kstrtobool(buf, &enable);
++	if (ret)
++		return ret;
++
++	if (priv->enabled == enable)
++		return len;
++
++	if (enable) {
++		priv->enabled = enable;
++		enable_irq(priv->irq);
++	} else {
++		disable_irq(priv->irq);
++		priv->enabled = enable;
++	}
++
++	return len;
++}
++
++static const struct counter_count_ext event_cnt_ext[] = {
++	{
++		.name = "enable",
++		.read = event_cnt_enable_read,
++		.write = event_cnt_enable_write,
++	},
++};
++
++static enum counter_synapse_action event_cnt_synapse_actionss[] = {
++	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
++};
++
++static int event_cnt_action_get(struct counter_device *counter,
++			    struct counter_count *count,
++			    struct counter_synapse *synapse,
++			    size_t *action)
++{
++	*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
++
++	return 0;
++}
++
++static int event_cnt_read(struct counter_device *counter,
++				 struct counter_count *count,
++				 unsigned long *val)
++{
++	struct event_cnt_priv *priv = counter->priv;
++
++	*val = atomic_read(&priv->count);
++
++	return 0;
++}
++
++static int event_cnt_write(struct counter_device *counter,
++				  struct counter_count *count,
++				  const unsigned long val)
++{
++	struct event_cnt_priv *priv = counter->priv;
++
++	atomic_set(&priv->count, val);
++
++	return 0;
++}
++
++static int event_cnt_function_get(struct counter_device *counter,
++				  struct counter_count *count, size_t *function)
++{
++	*function = COUNTER_COUNT_FUNCTION_INCREASE;
++
++	return 0;
++}
++
++static int event_cnt_signal_read(struct counter_device *counter,
++				 struct counter_signal *signal,
++				 enum counter_signal_value *val)
++{
++	struct event_cnt_priv *priv = counter->priv;
++	int ret;
++
++	ret = gpiod_get_value(priv->gpio);
++	if (ret < 0)
++		return ret;
++
++	*val = ret ? COUNTER_SIGNAL_HIGH : COUNTER_SIGNAL_LOW;
++
++	return 0;
++}
++
++static struct counter_signal event_cnt_signals[] = {
++	{
++		.id = 0,
++		.name = "Channel 0 signal",
++	},
++};
++
++static struct counter_synapse event_cnt_synapses[] = {
++	{
++		.actions_list = event_cnt_synapse_actionss,
++		.num_actions = ARRAY_SIZE(event_cnt_synapse_actionss),
++		.signal = &event_cnt_signals[0]
++	},
++};
++
++static enum counter_count_function event_cnt_functions[] = {
++	COUNTER_COUNT_FUNCTION_INCREASE,
++};
++
++static struct counter_count event_cnts[] = {
++	{
++		.id = 0,
++		.name = "Channel 1 Count",
++		.functions_list = event_cnt_functions,
++		.num_functions = ARRAY_SIZE(event_cnt_functions),
++		.synapses = event_cnt_synapses,
++		.num_synapses = ARRAY_SIZE(event_cnt_synapses),
++		.ext = event_cnt_ext,
++		.num_ext = ARRAY_SIZE(event_cnt_ext),
++	},
++};
++
++static int event_cnt_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct event_cnt_priv *priv;
++	int ret;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->irq = platform_get_irq_optional(pdev,  0);
++	if (priv->irq == -ENXIO)
++		priv->irq = 0;
++	else if (priv->irq < 0)
++		return dev_err_probe(dev, priv->irq, "failed to get IRQ\n");
++
++	priv->gpio = devm_gpiod_get_optional(dev, NULL, GPIOD_IN);
++	if (IS_ERR(priv->gpio))
++		return dev_err_probe(dev, PTR_ERR(priv->gpio), "failed to get GPIO\n");
++
++	if (!priv->irq && !priv->gpio) {
++		dev_err(dev, "IRQ and GPIO are not found. At least one source should be provided\n");
++		return -ENODEV;
++	}
++
++	if (!priv->irq) {
++		int irq = gpiod_to_irq(priv->gpio);
++
++		if (irq < 0)
++			return dev_err_probe(dev, irq, "failed to get IRQ from GPIO\n");
++
++		priv->irq = irq;
++	}
++
++	priv->ops.action_get = event_cnt_action_get;
++	priv->ops.count_read = event_cnt_read;
++	priv->ops.count_write = event_cnt_write;
++	priv->ops.function_get = event_cnt_function_get;
++	if (priv->gpio)
++		priv->ops.signal_read  = event_cnt_signal_read;
++
++	priv->counter.name = dev_name(dev);
++	priv->counter.parent = dev;
++	priv->counter.ops = &priv->ops;
++	priv->counter.counts = event_cnts;
++	priv->counter.num_counts = ARRAY_SIZE(event_cnts);
++	priv->counter.signals = event_cnt_signals;
++	priv->counter.num_signals = ARRAY_SIZE(event_cnt_signals);
++	priv->counter.priv = priv;
++
++	irq_set_status_flags(priv->irq, IRQ_NOAUTOEN);
++	ret = devm_request_irq(dev, priv->irq, event_cnt_isr,
++			       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
++			       EVENT_CNT_NAME, priv);
++	if (ret)
++		return ret;
++
++	platform_set_drvdata(pdev, priv);
++
++	return devm_counter_register(dev, &priv->counter);
++}
++
++static const struct of_device_id event_cnt_of_match[] = {
++	{ .compatible = "event-counter", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, event_cnt_of_match);
++
++static struct platform_driver event_cnt_driver = {
++	.probe = event_cnt_probe,
++	.driver = {
++		.name = EVENT_CNT_NAME,
++		.of_match_table = event_cnt_of_match,
++	},
++};
++module_platform_driver(event_cnt_driver);
++
++MODULE_ALIAS("platform:event-counter");
++MODULE_AUTHOR("Oleksij Rempel <o.rempel@pengutronix.de>");
++MODULE_DESCRIPTION("Event counter driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.30.0
 
