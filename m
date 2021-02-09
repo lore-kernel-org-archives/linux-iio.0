@@ -2,77 +2,136 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A92E8C433DB
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Feb 2021 16:04:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF1AC433E6
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Feb 2021 21:54:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 69FDA64EB8
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Feb 2021 16:04:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 78F2064EBC
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Feb 2021 21:54:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232653AbhBIQEu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Feb 2021 11:04:50 -0500
-Received: from mail-oi1-f181.google.com ([209.85.167.181]:41452 "EHLO
-        mail-oi1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232650AbhBIQEr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2021 11:04:47 -0500
-Received: by mail-oi1-f181.google.com with SMTP id v193so14477910oie.8;
-        Tue, 09 Feb 2021 08:04:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=7ZuEtfm+aDvR3PynQiFYy1ZPav1OUzL36rYQRVcoZgA=;
-        b=LN9/HIzNueQvaekMZF2fSFzo5Nf2ouf51i188gJTzMTZ90GdMdDx89dYwh4LvUqzfr
-         FwWjUYYXSYg7Sxj895zlVBIFKNg5r9h3RUENxIjyt3dvZpQ2lzBg1PxPLitqyi5Crg61
-         mlua/39sP9VisKpIXZCkA7VuzRp7PhhsPXP6kUJeegoYYb/tprIYBLHe+ekojxcadwaw
-         MNWgmJ8h6rcNuPLF8lOMdbLGiBIOLc7yr8AZ+176weIejJ2OSpxQZQ5pbVCXrBhwKfb4
-         KMxZQBY/svXf5xup378CsKSYxtqIUIacA+kkb/76zZ4lOGKKUFabfwZpKILNN9WdGVo0
-         6bSQ==
-X-Gm-Message-State: AOAM533GRg+PU/hQCBuBKI7vYAnZWDQV71ZMslsOCB20jYoiqeUwPyky
-        OqIf/0v1HmetGmNCxxqmrPXQ2483Fw==
-X-Google-Smtp-Source: ABdhPJzCCOzLI519ZBVzaYiBxfJDwBoUmtv2JTmWMNV4I82WEWkc9KGC+3ipomPFW6PK9cRId1BI9A==
-X-Received: by 2002:aca:5d84:: with SMTP id r126mr2900564oib.76.1612886646455;
-        Tue, 09 Feb 2021 08:04:06 -0800 (PST)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id k23sm4433524oik.4.2021.02.09.08.04.04
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Feb 2021 08:04:05 -0800 (PST)
-Received: (nullmailer pid 3847693 invoked by uid 1000);
-        Tue, 09 Feb 2021 16:04:04 -0000
-Date:   Tue, 9 Feb 2021 10:04:04 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        devicetree@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: Re: [PATCH 4/4] dt-bindings: adis16475: remove property
-Message-ID: <20210209160404.GA3847638@robh.at.kernel.org>
-References: <20210121114954.64156-1-nuno.sa@analog.com>
- <20210121114954.64156-5-nuno.sa@analog.com>
+        id S233433AbhBIVvv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Feb 2021 16:51:51 -0500
+Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:48656 "EHLO
+        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S234326AbhBIVOh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Feb 2021 16:14:37 -0500
+X-IronPort-AV: E=Sophos;i="5.81,166,1610406000"; 
+   d="scan'208";a="492125962"
+Received: from palace.lip6.fr ([132.227.105.202])
+  by mail2-relais-roc.national.inria.fr with ESMTP/TLS/DHE-RSA-AES256-SHA; 09 Feb 2021 22:13:19 +0100
+From:   Julia Lawall <Julia.Lawall@inria.fr>
+To:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Tomasz Duszynski <tomasz.duszynski@octakon.com>
+Subject: [PATCH] iio: use getter/setter functions
+Date:   Tue,  9 Feb 2021 22:13:15 +0100
+Message-Id: <20210209211315.1261791-1-Julia.Lawall@inria.fr>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210121114954.64156-5-nuno.sa@analog.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 21 Jan 2021 12:49:54 +0100, Nuno Sá wrote:
-> `adi,scaled-output-hz` is no longer used by the driver.
-> 
-> Signed-off-by: Nuno Sá <nuno.sa@analog.com>
-> ---
->  .../devicetree/bindings/iio/imu/adi,adis16475.yaml       | 9 ---------
->  1 file changed, 9 deletions(-)
-> 
+Use getter and setter functions, for a variety of data types.
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Julia Lawall <Julia.Lawall@inria.fr>
+
+---
+ drivers/iio/adc/palmas_gpadc.c      |    2 +-
+ drivers/iio/chemical/scd30_serial.c |    2 +-
+ drivers/iio/industrialio-core.c     |    2 +-
+ drivers/iio/potentiometer/max5481.c |    4 ++--
+ drivers/iio/potentiometer/max5487.c |    4 ++--
+ 5 files changed, 7 insertions(+), 7 deletions(-)
+
+diff --git a/drivers/iio/potentiometer/max5487.c b/drivers/iio/potentiometer/max5487.c
+index 7ec51976ec99..1c0d46a96200 100644
+--- a/drivers/iio/potentiometer/max5487.c
++++ b/drivers/iio/potentiometer/max5487.c
+@@ -92,7 +92,7 @@ static int max5487_spi_probe(struct spi_device *spi)
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	dev_set_drvdata(&spi->dev, indio_dev);
++	spi_set_drvdata(spi, indio_dev);
+ 	data = iio_priv(indio_dev);
+ 
+ 	data->spi = spi;
+@@ -114,7 +114,7 @@ static int max5487_spi_probe(struct spi_device *spi)
+ 
+ static int max5487_spi_remove(struct spi_device *spi)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 
+ 	iio_device_unregister(indio_dev);
+ 
+diff --git a/drivers/iio/potentiometer/max5481.c b/drivers/iio/potentiometer/max5481.c
+index a88ed0eb3adc..6e22b538091f 100644
+--- a/drivers/iio/potentiometer/max5481.c
++++ b/drivers/iio/potentiometer/max5481.c
+@@ -136,7 +136,7 @@ static int max5481_probe(struct spi_device *spi)
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	dev_set_drvdata(&spi->dev, indio_dev);
++	spi_set_drvdata(spi, indio_dev);
+ 	data = iio_priv(indio_dev);
+ 
+ 	data->spi = spi;
+@@ -163,7 +163,7 @@ static int max5481_probe(struct spi_device *spi)
+ 
+ static int max5481_remove(struct spi_device *spi)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct max5481_data *data = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 7db761afa578..4ef7a39cfb1c 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1596,7 +1596,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ 	dev->dev.type = &iio_device_type;
+ 	dev->dev.bus = &iio_bus_type;
+ 	device_initialize(&dev->dev);
+-	dev_set_drvdata(&dev->dev, (void *)dev);
++	iio_device_set_drvdata(dev, (void *)dev);
+ 	mutex_init(&dev->mlock);
+ 	mutex_init(&dev->info_exist_lock);
+ 	INIT_LIST_HEAD(&iio_dev_opaque->channel_attr_list);
+diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
+index 889b88768b63..9ae0d7f73155 100644
+--- a/drivers/iio/adc/palmas_gpadc.c
++++ b/drivers/iio/adc/palmas_gpadc.c
+@@ -517,7 +517,7 @@ static int palmas_gpadc_probe(struct platform_device *pdev)
+ 	adc->palmas = dev_get_drvdata(pdev->dev.parent);
+ 	adc->adc_info = palmas_gpadc_info;
+ 	init_completion(&adc->conv_completion);
+-	dev_set_drvdata(&pdev->dev, indio_dev);
++	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	adc->auto_conversion_period = gpadc_pdata->auto_conversion_period_ms;
+ 	adc->irq = palmas_irq_get_virq(adc->palmas, PALMAS_GPADC_EOC_SW_IRQ);
+diff --git a/drivers/iio/chemical/scd30_serial.c b/drivers/iio/chemical/scd30_serial.c
+index 06f85eb1a4dd..568b34486c44 100644
+--- a/drivers/iio/chemical/scd30_serial.c
++++ b/drivers/iio/chemical/scd30_serial.c
+@@ -177,7 +177,7 @@ static int scd30_serdev_command(struct scd30_state *state, enum scd30_cmd cmd, u
+ static int scd30_serdev_receive_buf(struct serdev_device *serdev,
+ 				    const unsigned char *buf, size_t size)
+ {
+-	struct iio_dev *indio_dev = dev_get_drvdata(&serdev->dev);
++	struct iio_dev *indio_dev = serdev_device_get_drvdata(serdev);
+ 	struct scd30_serdev_priv *priv;
+ 	struct scd30_state *state;
+ 	int num;
+
