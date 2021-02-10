@@ -2,43 +2,48 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92EFDC433E0
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:09:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B18DC433DB
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:09:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5E2DC64E35
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:09:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0924D60235
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:09:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230410AbhBJKJh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 10 Feb 2021 05:09:37 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:33030 "EHLO
+        id S230461AbhBJKJj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 10 Feb 2021 05:09:39 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:49782 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229678AbhBJKHA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2021 05:07:00 -0500
+        by vger.kernel.org with ESMTP id S229639AbhBJKHO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2021 05:07:14 -0500
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AA3JOK017536;
-        Wed, 10 Feb 2021 05:06:04 -0500
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AA3gGl018492;
+        Wed, 10 Feb 2021 05:06:19 -0500
 Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36hrw8v4a6-1
+        by mx0a-00128a01.pphosted.com with ESMTP id 36hrw8v4av-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Feb 2021 05:06:04 -0500
+        Wed, 10 Feb 2021 05:06:19 -0500
 Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 11AA63QW025880
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 11AA6IKe025912
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 10 Feb 2021 05:06:03 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2; Wed, 10 Feb 2021
- 05:06:02 -0500
+        Wed, 10 Feb 2021 05:06:18 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
+ Wed, 10 Feb 2021 05:06:17 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
+ Wed, 10 Feb 2021 05:06:17 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
- Wed, 10 Feb 2021 05:06:02 -0500
+ Wed, 10 Feb 2021 05:06:17 -0500
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11AA5x06018045;
-        Wed, 10 Feb 2021 05:05:59 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11AA5x0E018045;
+        Wed, 10 Feb 2021 05:06:14 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
@@ -46,17 +51,19 @@ CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <dragos.bogdan@analog.com>, <rafael@kernel.org>,
         <gregkh@linuxfoundation.org>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v4 00/17] iio: core,buffer: add support for multiple IIO buffers per IIO device
-Date:   Wed, 10 Feb 2021 12:08:06 +0200
-Message-ID: <20210210100823.46780-1-alexandru.ardelean@analog.com>
+Subject: [PATCH v4 08/17] iio: buffer: wrap all buffer attributes into iio_dev_attr
+Date:   Wed, 10 Feb 2021 12:08:14 +0200
+Message-ID: <20210210100823.46780-9-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210210100823.46780-1-alexandru.ardelean@analog.com>
+References: <20210210100823.46780-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-10_03:2021-02-10,2021-02-10 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 spamscore=0 mlxlogscore=999 clxscore=1015 adultscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=942 clxscore=1015 adultscore=0
  priorityscore=1501 bulkscore=0 mlxscore=0 phishscore=0 suspectscore=0
  impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2102100097
@@ -64,80 +71,272 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changelog v3 -> v4:
-* patch 'docs: ioctl-number.rst: reserve IIO subsystem ioctl() space'
-   remove 'uapi/' from `uapi/linux/iio/*.h`
-* patch 'iio: core: register chardev only if needed'
-   add commit comment about potentially breaking userspace ABI with chardev removal
-* patch 'iio: core: rework iio device group creation'
-   remove NULL re-init in iio_device_unregister_sysfs() ; memory is being free'd
-* patch 'iio: buffer: group attr count and attr alloc'
-  extend commit comment about the 2 or 1 buffer directores
-* patch 'iio: core: merge buffer/ & scan_elements/ attributes'
-   fixed static checker complaints
-    - removed unused global
-    - initialize omitted 'ret = -ENOMEM' on error path
-    - made iio_buffer_unregister_legacy_sysfs_groups() static
-* patch 'iio: buffer: wrap all buffer attributes into iio_dev_attr'
-   - update some omitted unwindings; seems i forgot a few originally
-     this was showing up when trying to read from buffer1
-* add patch 'iio: buffer: move __iio_buffer_free_sysfs_and_mask() before alloc func'
-* patch 'iio: buffer: introduce support for attaching more IIO buffers'
-   - removed 'iio_dev_opaque->attached_buffers = NULL' after kfree()
-   - using 'iio_dev_opaque->attached_buffers_cnt' to check that we have buffers
-      instead of checking 'indio_dev->buffer'
-* patch 'iio: buffer: add ioctl() to support opening extra buffers for IIO device'
-   - replaced -ENOENT with -ENODEV when buffer index is out of range
-* add 'iio: core: rename 'dev' -> 'indio_dev' in iio_device_alloc()'
-* add 'iio: buffer: dmaengine: obtain buffer object from attribute'
-* add tools/iio patches for new multibuffer logic
-   tools: iio: make iioutils_get_type() private in iio_utils
-   tools: iio: privatize globals and functions in iio_generic_buffer.c file
-   tools: iio: convert iio_generic_buffer to use new IIO buffer API 
+This change wraps all buffer attributes into iio_dev_attr objects, and
+assigns a reference to the IIO buffer they belong to.
 
-Alexandru Ardelean (17):
-  docs: ioctl-number.rst: reserve IIO subsystem ioctl() space
-  iio: core: register chardev only if needed
-  iio: core-trigger: make iio_device_register_trigger_consumer() an int
-    return
-  iio: core: rework iio device group creation
-  iio: buffer: group attr count and attr alloc
-  iio: core: merge buffer/ & scan_elements/ attributes
-  iio: add reference to iio buffer on iio_dev_attr
-  iio: buffer: wrap all buffer attributes into iio_dev_attr
-  iio: buffer: dmaengine: obtain buffer object from attribute
-  iio: core: wrap iio device & buffer into struct for character devices
-  iio: buffer: move __iio_buffer_free_sysfs_and_mask() before alloc
-  iio: buffer: introduce support for attaching more IIO buffers
-  iio: buffer: add ioctl() to support opening extra buffers for IIO
-    device
-  iio: core: rename 'dev' -> 'indio_dev' in iio_device_alloc()
-  tools: iio: make iioutils_get_type() private in iio_utils
-  tools: iio: privatize globals and functions in iio_generic_buffer.c
-    file
-  tools: iio: convert iio_generic_buffer to use new IIO buffer API
+With the addition of multiple IIO buffers per one IIO device, we need a way
+to know which IIO buffer is being enabled/disabled/controlled.
 
- .../userspace-api/ioctl/ioctl-number.rst      |   1 +
- .../buffer/industrialio-buffer-dmaengine.c    |   3 +-
- drivers/iio/iio_core.h                        |  24 +-
- drivers/iio/iio_core_trigger.h                |   4 +-
- drivers/iio/industrialio-buffer.c             | 483 ++++++++++++++----
- drivers/iio/industrialio-core.c               | 108 +++-
- drivers/iio/industrialio-event.c              |   6 +-
- drivers/iio/industrialio-trigger.c            |   6 +-
- include/linux/iio/buffer.h                    |   4 +-
- include/linux/iio/buffer_impl.h               |  21 +-
- include/linux/iio/iio-opaque.h                |  14 +
- include/linux/iio/iio.h                       |   5 -
- include/linux/iio/sysfs.h                     |   3 +
- include/uapi/linux/iio/buffer.h               |  10 +
- tools/iio/Makefile                            |   1 +
- tools/iio/iio_generic_buffer.c                | 133 +++--
- tools/iio/iio_utils.c                         |  18 +-
- tools/iio/iio_utils.h                         |   8 +-
- 18 files changed, 658 insertions(+), 194 deletions(-)
- create mode 100644 include/uapi/linux/iio/buffer.h
+We know that all buffer attributes are device_attributes. So we can wrap
+them with a iio_dev_attr types. In the iio_dev_attr type, we can also hold
+a reference to an IIO buffer.
+So, we end up being able to allocate wrapped attributes for all buffer
+attributes (even the one from other drivers).
 
+The neat part with this mechanism, is that we don't need to add any extra
+cleanup, because these attributes are being added to a dynamic list that
+will get cleaned up via iio_free_chan_devattr_list().
+
+With this change, the 'buffer->scan_el_dev_attr_list' list is being renamed
+to 'buffer->buffer_attr_list', effectively merging (or finalizing the
+merge) of the buffer/ & scan_elements/ attributes internally.
+
+Accessing these new buffer attributes can now be done via
+'to_iio_dev_attr(attr)->buffer' inside the show/store handlers.
+
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/industrialio-buffer.c | 76 ++++++++++++++++++++-----------
+ include/linux/iio/buffer_impl.h   |  4 +-
+ 2 files changed, 52 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 530b8697f3d8..d79d81485a3f 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -253,8 +253,7 @@ static ssize_t iio_scan_el_show(struct device *dev,
+ 				char *buf)
+ {
+ 	int ret;
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 
+ 	/* Ensure ret is 0 or 1. */
+ 	ret = !!test_bit(to_iio_dev_attr(attr)->address,
+@@ -367,8 +366,8 @@ static ssize_t iio_scan_el_store(struct device *dev,
+ 	int ret;
+ 	bool state;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	struct iio_buffer *buffer = this_attr->buffer;
+ 
+ 	ret = strtobool(buf, &state);
+ 	if (ret < 0)
+@@ -402,8 +401,7 @@ static ssize_t iio_scan_el_ts_show(struct device *dev,
+ 				   struct device_attribute *attr,
+ 				   char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 
+ 	return sprintf(buf, "%d\n", buffer->scan_timestamp);
+ }
+@@ -415,7 +413,7 @@ static ssize_t iio_scan_el_ts_store(struct device *dev,
+ {
+ 	int ret;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 	bool state;
+ 
+ 	ret = strtobool(buf, &state);
+@@ -448,7 +446,7 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+ 				     IIO_SEPARATE,
+ 				     &indio_dev->dev,
+ 				     buffer,
+-				     &buffer->scan_el_dev_attr_list);
++				     &buffer->buffer_attr_list);
+ 	if (ret)
+ 		return ret;
+ 	attrcount++;
+@@ -460,7 +458,7 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+ 				     0,
+ 				     &indio_dev->dev,
+ 				     buffer,
+-				     &buffer->scan_el_dev_attr_list);
++				     &buffer->buffer_attr_list);
+ 	if (ret)
+ 		return ret;
+ 	attrcount++;
+@@ -473,7 +471,7 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+ 					     0,
+ 					     &indio_dev->dev,
+ 					     buffer,
+-					     &buffer->scan_el_dev_attr_list);
++					     &buffer->buffer_attr_list);
+ 	else
+ 		ret = __iio_add_chan_devattr("en",
+ 					     chan,
+@@ -483,7 +481,7 @@ static int iio_buffer_add_channel_sysfs(struct iio_dev *indio_dev,
+ 					     0,
+ 					     &indio_dev->dev,
+ 					     buffer,
+-					     &buffer->scan_el_dev_attr_list);
++					     &buffer->buffer_attr_list);
+ 	if (ret)
+ 		return ret;
+ 	attrcount++;
+@@ -495,8 +493,7 @@ static ssize_t iio_buffer_read_length(struct device *dev,
+ 				      struct device_attribute *attr,
+ 				      char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 
+ 	return sprintf(buf, "%d\n", buffer->length);
+ }
+@@ -506,7 +503,7 @@ static ssize_t iio_buffer_write_length(struct device *dev,
+ 				       const char *buf, size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 	unsigned int val;
+ 	int ret;
+ 
+@@ -538,8 +535,7 @@ static ssize_t iio_buffer_show_enable(struct device *dev,
+ 				      struct device_attribute *attr,
+ 				      char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 
+ 	return sprintf(buf, "%d\n", iio_buffer_is_active(buffer));
+ }
+@@ -1154,7 +1150,7 @@ static ssize_t iio_buffer_store_enable(struct device *dev,
+ 	int ret;
+ 	bool requested_state;
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 	bool inlist;
+ 
+ 	ret = strtobool(buf, &requested_state);
+@@ -1183,8 +1179,7 @@ static ssize_t iio_buffer_show_watermark(struct device *dev,
+ 					 struct device_attribute *attr,
+ 					 char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 
+ 	return sprintf(buf, "%u\n", buffer->watermark);
+ }
+@@ -1195,7 +1190,7 @@ static ssize_t iio_buffer_store_watermark(struct device *dev,
+ 					  size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 	unsigned int val;
+ 	int ret;
+ 
+@@ -1228,8 +1223,7 @@ static ssize_t iio_dma_show_data_available(struct device *dev,
+ 						struct device_attribute *attr,
+ 						char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
+ 
+ 	return sprintf(buf, "%zu\n", iio_buffer_data_available(buffer));
+ }
+@@ -1254,6 +1248,26 @@ static struct attribute *iio_buffer_attrs[] = {
+ 	&dev_attr_data_available.attr,
+ };
+ 
++#define to_dev_attr(_attr) container_of(_attr, struct device_attribute, attr)
++
++static struct attribute *iio_buffer_wrap_attr(struct iio_buffer *buffer,
++					      struct attribute *attr)
++{
++	struct device_attribute *dattr = to_dev_attr(attr);
++	struct iio_dev_attr *iio_attr;
++
++	iio_attr = kzalloc(sizeof(*iio_attr), GFP_KERNEL);
++	if (!iio_attr)
++		return NULL;
++
++	iio_attr->buffer = buffer;
++	memcpy(&iio_attr->dev_attr, dattr, sizeof(iio_attr->dev_attr));
++
++	list_add(&iio_attr->l, &buffer->buffer_attr_list);
++
++	return &iio_attr->dev_attr.attr;
++}
++
+ static int iio_buffer_register_legacy_sysfs_groups(struct iio_dev *indio_dev,
+ 						   struct attribute **buffer_attrs,
+ 						   int buffer_attrcount,
+@@ -1329,7 +1343,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 	}
+ 
+ 	scan_el_attrcount = 0;
+-	INIT_LIST_HEAD(&buffer->scan_el_dev_attr_list);
++	INIT_LIST_HEAD(&buffer->buffer_attr_list);
+ 	channels = indio_dev->channels;
+ 	if (channels) {
+ 		/* new magic */
+@@ -1376,9 +1390,19 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 
+ 	buffer_attrcount += ARRAY_SIZE(iio_buffer_attrs);
+ 
+-	attrn = buffer_attrcount;
++	for (i = 0; i < buffer_attrcount; i++) {
++		struct attribute *wrapped;
++
++		wrapped = iio_buffer_wrap_attr(buffer, attr[i]);
++		if (!wrapped) {
++			ret = -ENOMEM;
++			goto error_free_scan_mask;
++		}
++		attr[i] = wrapped;
++	}
+ 
+-	list_for_each_entry(p, &buffer->scan_el_dev_attr_list, l)
++	attrn = 0;
++	list_for_each_entry(p, &buffer->buffer_attr_list, l)
+ 		attr[attrn++] = &p->dev_attr.attr;
+ 
+ 	buffer->buffer_group.name = kasprintf(GFP_KERNEL, "buffer%d", index);
+@@ -1412,7 +1436,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ error_free_scan_mask:
+ 	bitmap_free(buffer->scan_mask);
+ error_cleanup_dynamic:
+-	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
++	iio_free_chan_devattr_list(&buffer->buffer_attr_list);
+ 
+ 	return ret;
+ }
+@@ -1443,7 +1467,7 @@ static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
+ 	bitmap_free(buffer->scan_mask);
+ 	kfree(buffer->buffer_group.name);
+ 	kfree(buffer->buffer_group.attrs);
+-	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
++	iio_free_chan_devattr_list(&buffer->buffer_attr_list);
+ }
+ 
+ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
+diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
+index 3e555e58475b..41044320e581 100644
+--- a/include/linux/iio/buffer_impl.h
++++ b/include/linux/iio/buffer_impl.h
+@@ -97,8 +97,8 @@ struct iio_buffer {
+ 	/* @scan_timestamp: Does the scan mode include a timestamp. */
+ 	bool scan_timestamp;
+ 
+-	/* @scan_el_dev_attr_list: List of scan element related attributes. */
+-	struct list_head scan_el_dev_attr_list;
++	/* @buffer_attr_list: List of buffer attributes. */
++	struct list_head buffer_attr_list;
+ 
+ 	/*
+ 	 * @buffer_group: Attributes of the new buffer group.
 -- 
 2.17.1
 
