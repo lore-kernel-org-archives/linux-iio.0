@@ -7,208 +7,88 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D650AC433E0
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:10:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B665BC433E0
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:52:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9D52360235
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:10:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 727D464E32
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:52:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230422AbhBJKKO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 10 Feb 2021 05:10:14 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:46736 "EHLO
+        id S231290AbhBJKwC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 10 Feb 2021 05:52:02 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:7374 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230298AbhBJKHK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2021 05:07:10 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AA2dEd017585;
-        Wed, 10 Feb 2021 05:06:14 -0500
+        by vger.kernel.org with ESMTP id S231448AbhBJKt6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2021 05:49:58 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AAjt3s018532;
+        Wed, 10 Feb 2021 05:49:17 -0500
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36hr7qc5wv-1
+        by mx0a-00128a01.pphosted.com with ESMTP id 36hrw8v7su-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Feb 2021 05:06:13 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11AA6CVE035789
+        Wed, 10 Feb 2021 05:49:17 -0500
+Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11AAnFMn036784
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 10 Feb 2021 05:06:12 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 10 Feb 2021 05:06:11 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
- Wed, 10 Feb 2021 05:06:11 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
- Wed, 10 Feb 2021 05:06:11 -0500
+        Wed, 10 Feb 2021 05:49:16 -0500
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 10 Feb
+ 2021 02:49:14 -0800
+Received: from zeus.spd.analog.com (10.66.68.11) by scsqmbx10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
+ Wed, 10 Feb 2021 02:49:14 -0800
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11AA5x0B018045;
-        Wed, 10 Feb 2021 05:06:09 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11AAnAs8019925;
+        Wed, 10 Feb 2021 05:49:11 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <jic23@kernel.org>, <nuno.sa@analog.com>,
-        <dragos.bogdan@analog.com>, <rafael@kernel.org>,
-        <gregkh@linuxfoundation.org>,
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, <michael.hennerich@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v4 05/17] iio: buffer: group attr count and attr alloc
-Date:   Wed, 10 Feb 2021 12:08:11 +0200
-Message-ID: <20210210100823.46780-6-alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: adc: adi-axi-adc: add proper Kconfig dependencies
+Date:   Wed, 10 Feb 2021 12:50:44 +0200
+Message-ID: <20210210105044.48914-1-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210210100823.46780-1-alexandru.ardelean@analog.com>
-References: <20210210100823.46780-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-10_03:2021-02-10,2021-02-10 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=769
- lowpriorityscore=0 malwarescore=0 clxscore=1015 spamscore=0 phishscore=0
- suspectscore=0 mlxscore=0 bulkscore=0 priorityscore=1501 impostorscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102100097
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=942 clxscore=1015 adultscore=0
+ priorityscore=1501 bulkscore=0 mlxscore=0 phishscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102100106
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-If we want to merge the attributes of the buffer/ and scan_elements/
-directories, we'll need to count all attributes first, then (depending on
-the attribute group) either allocate 2 attribute groups, or a single one.
-Historically an IIO buffer was described by 2 subdirectories under
-/sys/bus/iio/iio:devicesX (i.e. buffer/ and scan_elements/); these subdirs
-were actually 2 separate attribute groups on the iio_buffer object.
+The ADI AXI ADC driver requires IO mem access and OF to work. This change
+adds these dependencies to the Kconfig symbol of the driver.
 
-Moving forward, if we want to allow more than one buffer per IIO device,
-keeping 2 subdirectories for each IIO buffer is a bit cumbersome
-(especially for userpace ABI). So, we will merge the attributes of these 2
-subdirs under a /sys/bus/iio/iio:devicesX/bufferY subdirectory. To do this,
-we need to count all attributes first, and then distribute them based on
-which buffer this is. For the first buffer, we'll need to also allocate the
-legacy 2 attribute groups (for buffer/ and scan_elements/), and also a
-/sys/bus/iio/iio:devicesX/buffer0 attribute group.
+This was also found via the lkp bot, as the
+devm_platform_ioremap_resource() symbol was not found at link-time on the
+S390 architecture.
 
-For buffer1 and above, just a single attribute group will be allocated (the
-merged one).
-
+Fixes: ef04070692a21 ("iio: adc: adi-axi-adc: add support for AXI ADC IP core")
+Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/industrialio-buffer.c | 71 ++++++++++++++++---------------
- 1 file changed, 37 insertions(+), 34 deletions(-)
+ drivers/iio/adc/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index cc846988fdb9..23f22be62cc7 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -1257,41 +1257,16 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- {
- 	struct iio_dev_attr *p;
- 	struct attribute **attr;
--	int ret, i, attrn, attrcount;
-+	int ret, i, attrn, scan_el_attrcount, buffer_attrcount;
- 	const struct iio_chan_spec *channels;
- 
--	attrcount = 0;
-+	buffer_attrcount = 0;
- 	if (buffer->attrs) {
--		while (buffer->attrs[attrcount] != NULL)
--			attrcount++;
-+		while (buffer->attrs[buffer_attrcount] != NULL)
-+			buffer_attrcount++;
- 	}
- 
--	attr = kcalloc(attrcount + ARRAY_SIZE(iio_buffer_attrs) + 1,
--		       sizeof(struct attribute *), GFP_KERNEL);
--	if (!attr)
--		return -ENOMEM;
--
--	memcpy(attr, iio_buffer_attrs, sizeof(iio_buffer_attrs));
--	if (!buffer->access->set_length)
--		attr[0] = &dev_attr_length_ro.attr;
--
--	if (buffer->access->flags & INDIO_BUFFER_FLAG_FIXED_WATERMARK)
--		attr[2] = &dev_attr_watermark_ro.attr;
--
--	if (buffer->attrs)
--		memcpy(&attr[ARRAY_SIZE(iio_buffer_attrs)], buffer->attrs,
--		       sizeof(struct attribute *) * attrcount);
--
--	attr[attrcount + ARRAY_SIZE(iio_buffer_attrs)] = NULL;
--
--	buffer->buffer_group.name = "buffer";
--	buffer->buffer_group.attrs = attr;
--
--	ret = iio_device_register_sysfs_group(indio_dev, &buffer->buffer_group);
--	if (ret)
--		goto error_free_buffer_attrs;
--
--	attrcount = 0;
-+	scan_el_attrcount = 0;
- 	INIT_LIST_HEAD(&buffer->scan_el_dev_attr_list);
- 	channels = indio_dev->channels;
- 	if (channels) {
-@@ -1304,7 +1279,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 							 &channels[i]);
- 			if (ret < 0)
- 				goto error_cleanup_dynamic;
--			attrcount += ret;
-+			scan_el_attrcount += ret;
- 			if (channels[i].type == IIO_TIMESTAMP)
- 				indio_dev->scan_index_timestamp =
- 					channels[i].scan_index;
-@@ -1319,9 +1294,37 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 		}
- 	}
- 
-+	attr = kcalloc(buffer_attrcount + ARRAY_SIZE(iio_buffer_attrs) + 1,
-+		       sizeof(struct attribute *), GFP_KERNEL);
-+	if (!attr) {
-+		ret = -ENOMEM;
-+		goto error_free_scan_mask;
-+	}
-+
-+	memcpy(attr, iio_buffer_attrs, sizeof(iio_buffer_attrs));
-+	if (!buffer->access->set_length)
-+		attr[0] = &dev_attr_length_ro.attr;
-+
-+	if (buffer->access->flags & INDIO_BUFFER_FLAG_FIXED_WATERMARK)
-+		attr[2] = &dev_attr_watermark_ro.attr;
-+
-+	if (buffer->attrs)
-+		memcpy(&attr[ARRAY_SIZE(iio_buffer_attrs)], buffer->attrs,
-+		       sizeof(struct attribute *) * buffer_attrcount);
-+
-+	buffer_attrcount += ARRAY_SIZE(iio_buffer_attrs);
-+	attr[buffer_attrcount] = NULL;
-+
-+	buffer->buffer_group.name = "buffer";
-+	buffer->buffer_group.attrs = attr;
-+
-+	ret = iio_device_register_sysfs_group(indio_dev, &buffer->buffer_group);
-+	if (ret)
-+		goto error_free_buffer_attrs;
-+
- 	buffer->scan_el_group.name = iio_scan_elements_group_name;
- 
--	buffer->scan_el_group.attrs = kcalloc(attrcount + 1,
-+	buffer->scan_el_group.attrs = kcalloc(scan_el_attrcount + 1,
- 					      sizeof(buffer->scan_el_group.attrs[0]),
- 					      GFP_KERNEL);
- 	if (buffer->scan_el_group.attrs == NULL) {
-@@ -1341,12 +1344,12 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 
- error_free_scan_el_attrs:
- 	kfree(buffer->scan_el_group.attrs);
-+error_free_buffer_attrs:
-+	kfree(buffer->buffer_group.attrs);
- error_free_scan_mask:
- 	bitmap_free(buffer->scan_mask);
- error_cleanup_dynamic:
- 	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
--error_free_buffer_attrs:
--	kfree(buffer->buffer_group.attrs);
- 
- 	return ret;
- }
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 769381b05b9a..d20a3b574af9 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -266,6 +266,8 @@ config ADI_AXI_ADC
+ 	select IIO_BUFFER
+ 	select IIO_BUFFER_HW_CONSUMER
+ 	select IIO_BUFFER_DMAENGINE
++	depends on HAS_IOMEM
++	depends on OF
+ 	help
+ 	  Say yes here to build support for Analog Devices Generic
+ 	  AXI ADC IP core. The IP core is used for interfacing with
 -- 
 2.17.1
 
