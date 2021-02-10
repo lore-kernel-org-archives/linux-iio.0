@@ -7,43 +7,39 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3551EC433E9
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AE9AC433E6
 	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:10:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EEFCA64E35
+	by mail.kernel.org (Postfix) with ESMTP id C9E1660235
 	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:10:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230176AbhBJKKL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 10 Feb 2021 05:10:11 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:47802 "EHLO
+        id S230300AbhBJKKH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 10 Feb 2021 05:10:07 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:57268 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230380AbhBJKHK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2021 05:07:10 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AA2cxp017577;
-        Wed, 10 Feb 2021 05:06:17 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36hr7qc5x2-1
+        by vger.kernel.org with ESMTP id S230399AbhBJKHT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2021 05:07:19 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AA3gGm018492;
+        Wed, 10 Feb 2021 05:06:27 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 36hrw8v4b6-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Feb 2021 05:06:17 -0500
-Received: from SCSQMBX10.ad.analog.com (SCSQMBX10.ad.analog.com [10.77.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 11AA6FWX025905
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 10 Feb 2021 05:06:16 -0500
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
- Wed, 10 Feb 2021 02:06:14 -0800
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.721.2;
- Wed, 10 Feb 2021 02:06:14 -0800
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Wed, 10 Feb 2021 02:06:14 -0800
+        Wed, 10 Feb 2021 05:06:26 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11AA6PGC035800
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Wed, 10 Feb 2021 05:06:25 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Wed, 10 Feb
+ 2021 05:06:24 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
+ Wed, 10 Feb 2021 05:06:24 -0500
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11AA5x0C018045;
-        Wed, 10 Feb 2021 05:06:11 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11AA5x0I018045;
+        Wed, 10 Feb 2021 05:06:21 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
@@ -51,9 +47,9 @@ CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <dragos.bogdan@analog.com>, <rafael@kernel.org>,
         <gregkh@linuxfoundation.org>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v4 06/17] iio: core: merge buffer/ & scan_elements/ attributes
-Date:   Wed, 10 Feb 2021 12:08:12 +0200
-Message-ID: <20210210100823.46780-7-alexandru.ardelean@analog.com>
+Subject: [PATCH v4 12/17] iio: buffer: introduce support for attaching more IIO buffers
+Date:   Wed, 10 Feb 2021 12:08:18 +0200
+Message-ID: <20210210100823.46780-13-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210210100823.46780-1-alexandru.ardelean@analog.com>
 References: <20210210100823.46780-1-alexandru.ardelean@analog.com>
@@ -62,260 +58,288 @@ Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-10_03:2021-02-10,2021-02-10 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- lowpriorityscore=0 malwarescore=0 clxscore=1015 spamscore=0 phishscore=0
- suspectscore=0 mlxscore=0 bulkscore=0 priorityscore=1501 impostorscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=999 clxscore=1015 adultscore=0
+ priorityscore=1501 bulkscore=0 mlxscore=0 phishscore=0 suspectscore=0
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2102100097
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-With this change, we create a new directory for the IIO device called
-buffer0, under which both the old buffer/ and scan_elements/ are stored.
+With this change, calling iio_device_attach_buffer() will actually attach
+more buffers.
+Right now this doesn't do any validation of whether a buffer is attached
+twice; maybe that can be added later (if needed). Attaching a buffer more
+than once should yield noticeably bad results.
 
-This is done to simplify the addition of multiple IIO buffers per IIO
-device. Otherwise we would need to add a bufferX/ and scan_elementsX/
-directory for each IIO buffer.
-With the current way of storing attribute groups, we can't have directories
-stored under each other (i.e. scan_elements/ under buffer/), so the best
-approach moving forward is to merge their attributes.
+The first buffer is the legacy buffer, so a reference is kept to it.
 
-The old/legacy buffer/ & scan_elements/ groups are not stored on the opaque
-IIO device object. This way the IIO buffer can have just a single
-attribute_group object, saving a bit of memory when adding multiple IIO
+At this point, accessing the data for the extra buffers (that are added
+after the first one) isn't possible yet.
+
+The iio_device_attach_buffer() is also changed to return an error code,
+which for now is -ENOMEM if the array could not be realloc-ed for more
 buffers.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- drivers/iio/industrialio-buffer.c | 115 +++++++++++++++++++++++-------
- include/linux/iio/buffer_impl.h   |   9 +--
- include/linux/iio/iio-opaque.h    |   4 ++
- 3 files changed, 95 insertions(+), 33 deletions(-)
+ drivers/iio/iio_core.h            |  2 +
+ drivers/iio/industrialio-buffer.c | 96 +++++++++++++++++++++++++------
+ drivers/iio/industrialio-core.c   |  6 +-
+ include/linux/iio/buffer.h        |  4 +-
+ include/linux/iio/buffer_impl.h   |  3 +
+ include/linux/iio/iio-opaque.h    |  4 ++
+ 6 files changed, 93 insertions(+), 22 deletions(-)
 
+diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+index 87868fff7d37..4690c3240a5d 100644
+--- a/drivers/iio/iio_core.h
++++ b/drivers/iio/iio_core.h
+@@ -77,6 +77,7 @@ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev);
+ 
+ void iio_disable_all_buffers(struct iio_dev *indio_dev);
+ void iio_buffer_wakeup_poll(struct iio_dev *indio_dev);
++void iio_buffers_put(struct iio_dev *indio_dev);
+ 
+ #else
+ 
+@@ -92,6 +93,7 @@ static inline void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev) {}
+ 
+ static inline void iio_disable_all_buffers(struct iio_dev *indio_dev) {}
+ static inline void iio_buffer_wakeup_poll(struct iio_dev *indio_dev) {}
++static inline void iio_buffers_put(struct iio_dev *indio_dev) {}
+ 
+ #endif
+ 
 diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 23f22be62cc7..fcbbffb904bf 100644
+index 209b3a32bdbb..1e8e4c2ff00e 100644
 --- a/drivers/iio/industrialio-buffer.c
 +++ b/drivers/iio/industrialio-buffer.c
-@@ -1175,8 +1175,6 @@ static ssize_t iio_buffer_store_enable(struct device *dev,
- 	return (ret < 0) ? ret : len;
+@@ -193,12 +193,14 @@ __poll_t iio_buffer_poll(struct file *filp,
+  */
+ void iio_buffer_wakeup_poll(struct iio_dev *indio_dev)
+ {
+-	struct iio_buffer *buffer = indio_dev->buffer;
+-
+-	if (!buffer)
+-		return;
++	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
++	struct iio_buffer *buffer;
++	unsigned int i;
+ 
+-	wake_up(&buffer->pollq);
++	for (i = 0; i < iio_dev_opaque->attached_buffers_cnt; i++) {
++		buffer = iio_dev_opaque->attached_buffers[i];
++		wake_up(&buffer->pollq);
++	}
  }
  
--static const char * const iio_scan_elements_group_name = "scan_elements";
--
- static ssize_t iio_buffer_show_watermark(struct device *dev,
- 					 struct device_attribute *attr,
- 					 char *buf)
-@@ -1252,8 +1250,68 @@ static struct attribute *iio_buffer_attrs[] = {
- 	&dev_attr_data_available.attr,
- };
+ void iio_buffer_init(struct iio_buffer *buffer)
+@@ -212,6 +214,18 @@ void iio_buffer_init(struct iio_buffer *buffer)
+ }
+ EXPORT_SYMBOL(iio_buffer_init);
  
-+static int iio_buffer_register_legacy_sysfs_groups(struct iio_dev *indio_dev,
-+						   struct attribute **buffer_attrs,
-+						   int buffer_attrcount,
-+						   int scan_el_attrcount)
++void iio_buffers_put(struct iio_dev *indio_dev)
 +{
 +	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+	struct attribute_group *group;
-+	int ret;
++	struct iio_buffer *buffer;
++	unsigned int i;
 +
-+	group = &iio_dev_opaque->legacy_buffer_group;
-+
-+	group->attrs = kcalloc(buffer_attrcount + 1,
-+			       sizeof(struct attribute *), GFP_KERNEL);
-+	if (!group->attrs)
-+		return -ENOMEM;
-+
-+	memcpy(group->attrs, buffer_attrs,
-+	       buffer_attrcount * sizeof(struct attribute *));
-+	group->name = "buffer";
-+
-+	ret = iio_device_register_sysfs_group(indio_dev, group);
-+	if (ret)
-+		goto error_free_buffer_attrs;
-+
-+	group = &iio_dev_opaque->legacy_scan_el_group;
-+
-+	group->attrs = kcalloc(scan_el_attrcount + 1,
-+			       sizeof(struct attribute *), GFP_KERNEL);
-+	if (!group->attrs) {
-+		ret = -ENOMEM;
-+		goto error_free_buffer_attrs;
++	for (i = 0; i < iio_dev_opaque->attached_buffers_cnt; i++) {
++		buffer = iio_dev_opaque->attached_buffers[i];
++		iio_buffer_put(buffer);
 +	}
++}
 +
-+	memcpy(group->attrs, &buffer_attrs[buffer_attrcount],
-+	       scan_el_attrcount * sizeof(struct attribute *));
-+	group->name = "scan_elements";
-+
-+	ret = iio_device_register_sysfs_group(indio_dev, group);
-+	if (ret)
-+		goto error_free_scan_el_attrs;
+ static ssize_t iio_show_scan_index(struct device *dev,
+ 				   struct device_attribute *attr,
+ 				   char *buf)
+@@ -1453,9 +1467,11 @@ static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
+ 
+ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ {
+-	struct iio_buffer *buffer = indio_dev->buffer;
++	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 	const struct iio_chan_spec *channels;
+-	int i;
++	struct iio_buffer *buffer;
++	int unwind_idx;
++	int ret, i;
+ 
+ 	channels = indio_dev->channels;
+ 	if (channels) {
+@@ -1466,22 +1482,46 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ 		indio_dev->masklength = ml;
+ 	}
+ 
+-	if (!buffer)
++	if (!iio_dev_opaque->attached_buffers_cnt)
+ 		return 0;
+ 
+-	return __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev, 0);
++	for (i = 0; i < iio_dev_opaque->attached_buffers_cnt; i++) {
++		buffer = iio_dev_opaque->attached_buffers[i];
++		ret = __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev, i);
++		if (ret) {
++			unwind_idx = i;
++			goto error_unwind_sysfs_and_mask;
++		}
++	}
 +
 +	return 0;
 +
-+error_free_buffer_attrs:
-+	kfree(iio_dev_opaque->legacy_buffer_group.attrs);
-+error_free_scan_el_attrs:
-+	kfree(iio_dev_opaque->legacy_scan_el_group.attrs);
-+
++error_unwind_sysfs_and_mask:
++	for (; unwind_idx >= 0; unwind_idx--) {
++		buffer = iio_dev_opaque->attached_buffers[unwind_idx];
++		__iio_buffer_free_sysfs_and_mask(buffer);
++	}
++	kfree(iio_dev_opaque->attached_buffers);
 +	return ret;
-+}
-+
-+static void iio_buffer_unregister_legacy_sysfs_groups(struct iio_dev *indio_dev)
-+{
+ }
+ 
+ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
+ {
+-	struct iio_buffer *buffer = indio_dev->buffer;
 +	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+
-+	kfree(iio_dev_opaque->legacy_buffer_group.attrs);
-+	kfree(iio_dev_opaque->legacy_scan_el_group.attrs);
-+}
-+
- static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
--					     struct iio_dev *indio_dev)
-+					     struct iio_dev *indio_dev,
-+					     int index)
- {
- 	struct iio_dev_attr *p;
- 	struct attribute **attr;
-@@ -1294,8 +1352,8 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 		}
- 	}
++	struct iio_buffer *buffer;
++	int i;
  
--	attr = kcalloc(buffer_attrcount + ARRAY_SIZE(iio_buffer_attrs) + 1,
--		       sizeof(struct attribute *), GFP_KERNEL);
-+	attrn = buffer_attrcount + scan_el_attrcount + ARRAY_SIZE(iio_buffer_attrs);
-+	attr = kcalloc(attrn + 1, sizeof(struct attribute *), GFP_KERNEL);
- 	if (!attr) {
- 		ret = -ENOMEM;
- 		goto error_free_scan_mask;
-@@ -1313,37 +1371,38 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 		       sizeof(struct attribute *) * buffer_attrcount);
- 
- 	buffer_attrcount += ARRAY_SIZE(iio_buffer_attrs);
--	attr[buffer_attrcount] = NULL;
--
--	buffer->buffer_group.name = "buffer";
--	buffer->buffer_group.attrs = attr;
- 
--	ret = iio_device_register_sysfs_group(indio_dev, &buffer->buffer_group);
--	if (ret)
--		goto error_free_buffer_attrs;
-+	attrn = buffer_attrcount;
- 
--	buffer->scan_el_group.name = iio_scan_elements_group_name;
-+	list_for_each_entry(p, &buffer->scan_el_dev_attr_list, l)
-+		attr[attrn++] = &p->dev_attr.attr;
- 
--	buffer->scan_el_group.attrs = kcalloc(scan_el_attrcount + 1,
--					      sizeof(buffer->scan_el_group.attrs[0]),
--					      GFP_KERNEL);
--	if (buffer->scan_el_group.attrs == NULL) {
-+	buffer->buffer_group.name = kasprintf(GFP_KERNEL, "buffer%d", index);
-+	if (!buffer->buffer_group.name) {
- 		ret = -ENOMEM;
--		goto error_free_scan_mask;
-+		goto error_free_buffer_attrs;
- 	}
--	attrn = 0;
- 
--	list_for_each_entry(p, &buffer->scan_el_dev_attr_list, l)
--		buffer->scan_el_group.attrs[attrn++] = &p->dev_attr.attr;
-+	buffer->buffer_group.attrs = attr;
- 
--	ret = iio_device_register_sysfs_group(indio_dev, &buffer->scan_el_group);
-+	ret = iio_device_register_sysfs_group(indio_dev, &buffer->buffer_group);
- 	if (ret)
--		goto error_free_scan_el_attrs;
-+		goto error_free_buffer_attr_group_name;
-+
-+	/* we only need to link the legacy buffer groups for the first buffer */
-+	if (index > 0)
-+		return 0;
-+
-+	ret = iio_buffer_register_legacy_sysfs_groups(indio_dev, attr,
-+						      buffer_attrcount,
-+						      scan_el_attrcount);
-+	if (ret)
-+		goto error_free_buffer_attr_group_name;
- 
- 	return 0;
- 
--error_free_scan_el_attrs:
--	kfree(buffer->scan_el_group.attrs);
-+error_free_buffer_attr_group_name:
-+	kfree(buffer->buffer_group.name);
- error_free_buffer_attrs:
- 	kfree(buffer->buffer_group.attrs);
- error_free_scan_mask:
-@@ -1372,14 +1431,14 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
- 	if (!buffer)
- 		return 0;
- 
--	return __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev);
-+	return __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev, 0);
- }
- 
- static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
- {
- 	bitmap_free(buffer->scan_mask);
-+	kfree(buffer->buffer_group.name);
- 	kfree(buffer->buffer_group.attrs);
--	kfree(buffer->scan_el_group.attrs);
- 	iio_free_chan_devattr_list(&buffer->scan_el_dev_attr_list);
- }
- 
-@@ -1390,6 +1449,8 @@ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
- 	if (!buffer)
+-	if (!buffer)
++	if (!iio_dev_opaque->attached_buffers_cnt)
  		return;
  
-+	iio_buffer_unregister_legacy_sysfs_groups(indio_dev);
+ 	iio_buffer_unregister_legacy_sysfs_groups(indio_dev);
+ 
+-	__iio_buffer_free_sysfs_and_mask(buffer);
++	for (i = iio_dev_opaque->attached_buffers_cnt - 1; i >= 0; i--) {
++		buffer = iio_dev_opaque->attached_buffers[i];
++		__iio_buffer_free_sysfs_and_mask(buffer);
++	}
 +
- 	__iio_buffer_free_sysfs_and_mask(buffer);
++	kfree(iio_dev_opaque->attached_buffers);
  }
  
+ /**
+@@ -1599,13 +1639,35 @@ EXPORT_SYMBOL_GPL(iio_buffer_put);
+  * @indio_dev: The device the buffer should be attached to
+  * @buffer: The buffer to attach to the device
+  *
++ * Return 0 if successful, negative if error.
++ *
+  * This function attaches a buffer to a IIO device. The buffer stays attached to
+- * the device until the device is freed. The function should only be called at
+- * most once per device.
++ * the device until the device is freed. For legacy reasons, the first attached
++ * buffer will also be assigned to 'indio_dev->buffer'.
+  */
+-void iio_device_attach_buffer(struct iio_dev *indio_dev,
+-			      struct iio_buffer *buffer)
++int iio_device_attach_buffer(struct iio_dev *indio_dev,
++			     struct iio_buffer *buffer)
+ {
+-	indio_dev->buffer = iio_buffer_get(buffer);
++	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
++	struct iio_buffer **new, **old = iio_dev_opaque->attached_buffers;
++	unsigned int cnt = iio_dev_opaque->attached_buffers_cnt;
++
++	cnt++;
++
++	new = krealloc(old, sizeof(*new) * cnt, GFP_KERNEL);
++	if (!new)
++		return -ENOMEM;
++	iio_dev_opaque->attached_buffers = new;
++
++	buffer = iio_buffer_get(buffer);
++
++	/* first buffer is legacy; attach it to the IIO device directly */
++	if (!indio_dev->buffer)
++		indio_dev->buffer = buffer;
++
++	iio_dev_opaque->attached_buffers[cnt - 1] = buffer;
++	iio_dev_opaque->attached_buffers_cnt = cnt;
++
++	return 0;
+ }
+ EXPORT_SYMBOL_GPL(iio_device_attach_buffer);
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 1be94df3e591..26b05dddfa71 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1583,7 +1583,7 @@ static void iio_dev_release(struct device *device)
+ 	iio_device_unregister_eventset(indio_dev);
+ 	iio_device_unregister_sysfs(indio_dev);
+ 
+-	iio_buffer_put(indio_dev->buffer);
++	iio_buffers_put(indio_dev);
+ 
+ 	ida_simple_remove(&iio_ida, indio_dev->id);
+ 	kfree(iio_dev_opaque);
+@@ -1884,12 +1884,12 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+ 		indio_dev->setup_ops == NULL)
+ 		indio_dev->setup_ops = &noop_ring_setup_ops;
+ 
+-	if (indio_dev->buffer)
++	if (iio_dev_opaque->attached_buffers_cnt)
+ 		cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
+ 	else if (iio_dev_opaque->event_interface)
+ 		cdev_init(&indio_dev->chrdev, &iio_event_fileops);
+ 
+-	if (indio_dev->buffer || iio_dev_opaque->event_interface) {
++	if (iio_dev_opaque->attached_buffers_cnt || iio_dev_opaque->event_interface) {
+ 		indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), indio_dev->id);
+ 		indio_dev->chrdev.owner = this_mod;
+ 	}
+diff --git a/include/linux/iio/buffer.h b/include/linux/iio/buffer.h
+index 8febc23f5f26..b6928ac5c63d 100644
+--- a/include/linux/iio/buffer.h
++++ b/include/linux/iio/buffer.h
+@@ -41,7 +41,7 @@ static inline int iio_push_to_buffers_with_timestamp(struct iio_dev *indio_dev,
+ bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
+ 				   const unsigned long *mask);
+ 
+-void iio_device_attach_buffer(struct iio_dev *indio_dev,
+-			      struct iio_buffer *buffer);
++int iio_device_attach_buffer(struct iio_dev *indio_dev,
++			     struct iio_buffer *buffer);
+ 
+ #endif /* _IIO_BUFFER_GENERIC_H_ */
 diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
-index a63dc07b7350..3e555e58475b 100644
+index 41044320e581..768b90c64412 100644
 --- a/include/linux/iio/buffer_impl.h
 +++ b/include/linux/iio/buffer_impl.h
-@@ -100,14 +100,11 @@ struct iio_buffer {
- 	/* @scan_el_dev_attr_list: List of scan element related attributes. */
- 	struct list_head scan_el_dev_attr_list;
+@@ -112,6 +112,9 @@ struct iio_buffer {
+ 	/* @demux_bounce: Buffer for doing gather from incoming scan. */
+ 	void *demux_bounce;
  
--	/* @buffer_group: Attributes of the buffer group. */
--	struct attribute_group buffer_group;
--
- 	/*
--	 * @scan_el_group: Attribute group for those attributes not
--	 * created from the iio_chan_info array.
-+	 * @buffer_group: Attributes of the new buffer group.
-+	 * Includes scan elements attributes.
- 	 */
--	struct attribute_group scan_el_group;
-+	struct attribute_group buffer_group;
++	/* @attached_entry: Entry in the devices list of buffers attached by the driver. */
++	struct list_head attached_entry;
++
+ 	/* @buffer_list: Entry in the devices list of current buffers. */
+ 	struct list_head buffer_list;
  
- 	/* @attrs: Standard attributes of the buffer. */
- 	const struct attribute **attrs;
 diff --git a/include/linux/iio/iio-opaque.h b/include/linux/iio/iio-opaque.h
-index 8ba13a5c7af6..3e4c3cd248fd 100644
+index 3e4c3cd248fd..c909835b6247 100644
 --- a/include/linux/iio/iio-opaque.h
 +++ b/include/linux/iio/iio-opaque.h
-@@ -14,6 +14,8 @@
-  * @ioctl_handlers:		ioctl handlers registered with the core handler
-  * @groups:			attribute groups
-  * @groupcounter:		index of next attribute group
-+ * @legacy_scan_el_group:	attribute group for legacy scan elements attribute group
-+ * @legacy_buffer_el_group:	attribute group for legacy buffer attributes group
-  * @debugfs_dentry:		device specific debugfs dentry
-  * @cached_reg_addr:		cached register address for debugfs reads
-  * @read_buf:			read buffer to be used for the initial reg read
-@@ -28,6 +30,8 @@ struct iio_dev_opaque {
- 	struct list_head		ioctl_handlers;
- 	const struct attribute_group	**groups;
- 	int				groupcounter;
-+	struct attribute_group		legacy_scan_el_group;
-+	struct attribute_group		legacy_buffer_group;
- #if defined(CONFIG_DEBUG_FS)
- 	struct dentry			*debugfs_dentry;
- 	unsigned			cached_reg_addr;
+@@ -7,6 +7,8 @@
+  * struct iio_dev_opaque - industrial I/O device opaque information
+  * @indio_dev:			public industrial I/O device information
+  * @event_interface:		event chrdevs associated with interrupt lines
++ * @attached_buffers:		array of buffers statically attached by the driver
++ * @attached_buffers_cnt:	number of buffers in the array of statically attached buffers
+  * @buffer_list:		list of all buffers currently attached
+  * @channel_attr_list:		keep track of automatically created channel
+  *				attributes
+@@ -24,6 +26,8 @@
+ struct iio_dev_opaque {
+ 	struct iio_dev			indio_dev;
+ 	struct iio_event_interface	*event_interface;
++	struct iio_buffer		**attached_buffers;
++	unsigned int			attached_buffers_cnt;
+ 	struct list_head		buffer_list;
+ 	struct list_head		channel_attr_list;
+ 	struct attribute_group		chan_attr_group;
 -- 
 2.17.1
 
