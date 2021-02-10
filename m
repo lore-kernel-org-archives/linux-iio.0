@@ -7,43 +7,39 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 78A13C433E0
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:10:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 054E1C433E0
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:10:05 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2ED8F60235
-	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:10:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B53FF60235
+	for <linux-iio@archiver.kernel.org>; Wed, 10 Feb 2021 10:10:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229766AbhBJKJz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 10 Feb 2021 05:09:55 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:3216 "EHLO
+        id S230494AbhBJKJ4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 10 Feb 2021 05:09:56 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:59070 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230443AbhBJKHa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2021 05:07:30 -0500
+        by vger.kernel.org with ESMTP id S229944AbhBJKHV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 10 Feb 2021 05:07:21 -0500
 Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AA6PKr022840;
-        Wed, 10 Feb 2021 05:06:36 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36hr7qc5xt-1
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11AA6TCZ023102;
+        Wed, 10 Feb 2021 05:06:29 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 36hr7qc5xh-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 10 Feb 2021 05:06:36 -0500
-Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11AA6YuN035806
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Wed, 10 Feb 2021 05:06:34 -0500
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.1779.2; Wed, 10 Feb 2021 02:06:33 -0800
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
- Wed, 10 Feb 2021 02:06:32 -0800
-Received: from zeus.spd.analog.com (10.66.68.11) by scsqmbx10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
- Wed, 10 Feb 2021 02:06:32 -0800
+        Wed, 10 Feb 2021 05:06:28 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 11AA6RuC025928
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 10 Feb 2021 05:06:27 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2; Wed, 10 Feb 2021
+ 05:06:26 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
+ Wed, 10 Feb 2021 05:06:26 -0500
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11AA5x0N018045;
-        Wed, 10 Feb 2021 05:06:30 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11AA5x0J018045;
+        Wed, 10 Feb 2021 05:06:23 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
@@ -51,9 +47,9 @@ CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <dragos.bogdan@analog.com>, <rafael@kernel.org>,
         <gregkh@linuxfoundation.org>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v4 17/17] tools: iio: convert iio_generic_buffer to use new IIO buffer API
-Date:   Wed, 10 Feb 2021 12:08:23 +0200
-Message-ID: <20210210100823.46780-18-alexandru.ardelean@analog.com>
+Subject: [PATCH v4 13/17] iio: buffer: add ioctl() to support opening extra buffers for IIO device
+Date:   Wed, 10 Feb 2021 12:08:19 +0200
+Message-ID: <20210210100823.46780-14-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210210100823.46780-1-alexandru.ardelean@analog.com>
 References: <20210210100823.46780-1-alexandru.ardelean@analog.com>
@@ -71,374 +67,408 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This change makes use of the new IIO buffer API to read data from an IIO
-buffer.
-It doesn't read the /sys/bus/iio/devices/iio:deviceX/scan_elements dir
-anymore, it reads /sys/bus/iio/devices/iio:deviceX/bufferY, where all the
-scan_elements have been merged together with the old/classical buffer
-attributes.
+With this change, an ioctl() call is added to open a character device for a
+buffer. The ioctl() number is 'i' 0x91, which follows the
+IIO_GET_EVENT_FD_IOCTL ioctl.
 
-And it makes use of the new IIO_BUFFER_GET_FD_IOCTL ioctl to get an FD for
-the IIO buffer for which to read data from.
-It also does a quick sanity check to see that -EBUSY is returned if reading
-the chardev after the ioctl() has succeeded.
+The ioctl() will return an FD for the requested buffer index. The indexes
+are the same from the /sys/iio/devices/iio:deviceX/bufferY (i.e. the Y
+variable).
 
-This was tested with the following cases:
- 1. Tested buffer0 works with ioctl()
- 2. Tested that buffer0 can't be opened via /dev/iio:deviceX after ioctl()
- 3. Moved valid buffer0 to be buffer1, and tested that data comes from it
+Since there doesn't seem to be a sane way to return the FD for buffer0 to
+be the same FD for the /dev/iio:deviceX, this ioctl() will return another
+FD for buffer0 (or the first buffer). This duplicate FD will be able to
+access the same buffer object (for buffer0) as accessing directly the
+/dev/iio:deviceX chardev.
+
+Also, there is no IIO_BUFFER_GET_BUFFER_COUNT ioctl() implemented, as the
+index for each buffer (and the count) can be deduced from the
+'/sys/bus/iio/devices/iio:deviceX/bufferY' folders (i.e the number of
+bufferY folders).
+
+Used following C code to test this:
+-------------------------------------------------------------------
+
+ #include <stdio.h>
+ #include <stdlib.h>
+ #include <unistd.h>
+ #include <sys/ioctl.h>
+ #include <fcntl.h"
+ #include <errno.h>
+
+ #define IIO_BUFFER_GET_FD_IOCTL      _IOWR('i', 0x91, int)
+
+int main(int argc, char *argv[])
+{
+        int fd;
+        int fd1;
+        int ret;
+
+        if ((fd = open("/dev/iio:device0", O_RDWR))<0) {
+                fprintf(stderr, "Error open() %d errno %d\n",fd, errno);
+                return -1;
+        }
+
+        fprintf(stderr, "Using FD %d\n", fd);
+
+        fd1 = atoi(argv[1]);
+
+        ret = ioctl(fd, IIO_BUFFER_GET_FD_IOCTL, &fd1);
+        if (ret < 0) {
+                fprintf(stderr, "Error for buffer %d ioctl() %d errno %d\n", fd1, ret, errno);
+                close(fd);
+                return -1;
+        }
+
+        fprintf(stderr, "Got FD %d\n", fd1);
+
+        close(fd1);
+        close(fd);
+
+        return 0;
+}
+-------------------------------------------------------------------
+
+Results are:
+-------------------------------------------------------------------
+ # ./test 0
+ Using FD 3
+ Got FD 4
+
+ # ./test 1
+ Using FD 3
+ Got FD 4
+
+ # ./test 2
+ Using FD 3
+ Got FD 4
+
+ # ./test 3
+ Using FD 3
+ Got FD 4
+
+ # ls /sys/bus/iio/devices/iio\:device0
+ buffer  buffer0  buffer1  buffer2  buffer3  dev
+ in_voltage_sampling_frequency  in_voltage_scale
+ in_voltage_scale_available
+ name  of_node  power  scan_elements  subsystem  uevent
+-------------------------------------------------------------------
+
+iio:device0 has some fake kfifo buffers attached to an IIO device.
 
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- tools/iio/Makefile             |   1 +
- tools/iio/iio_generic_buffer.c | 102 +++++++++++++++++++++++++++------
- tools/iio/iio_utils.c          |  13 +++--
- tools/iio/iio_utils.h          |   4 +-
- 4 files changed, 96 insertions(+), 24 deletions(-)
+ drivers/iio/iio_core.h            |  12 +--
+ drivers/iio/industrialio-buffer.c | 137 ++++++++++++++++++++++++++++--
+ drivers/iio/industrialio-core.c   |   1 +
+ include/linux/iio/buffer_impl.h   |   5 ++
+ include/linux/iio/iio-opaque.h    |   2 +
+ include/uapi/linux/iio/buffer.h   |  10 +++
+ 6 files changed, 156 insertions(+), 11 deletions(-)
+ create mode 100644 include/uapi/linux/iio/buffer.h
 
-diff --git a/tools/iio/Makefile b/tools/iio/Makefile
-index 3de763d9ab70..5d12ac4e7f8f 100644
---- a/tools/iio/Makefile
-+++ b/tools/iio/Makefile
-@@ -27,6 +27,7 @@ include $(srctree)/tools/build/Makefile.include
- #
- $(OUTPUT)include/linux/iio: ../../include/uapi/linux/iio
- 	mkdir -p $(OUTPUT)include/linux/iio 2>&1 || true
-+	ln -sf $(CURDIR)/../../include/uapi/linux/iio/buffer.h $@
- 	ln -sf $(CURDIR)/../../include/uapi/linux/iio/events.h $@
- 	ln -sf $(CURDIR)/../../include/uapi/linux/iio/types.h $@
+diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+index 4690c3240a5d..88db1feb5857 100644
+--- a/drivers/iio/iio_core.h
++++ b/drivers/iio/iio_core.h
+@@ -64,16 +64,16 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals);
+ #ifdef CONFIG_IIO_BUFFER
+ struct poll_table_struct;
  
-diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-index 7c7240553777..c796a1d9ed20 100644
---- a/tools/iio/iio_generic_buffer.c
-+++ b/tools/iio/iio_generic_buffer.c
-@@ -30,6 +30,8 @@
- #include <inttypes.h>
- #include <stdbool.h>
- #include <signal.h>
-+#include <sys/ioctl.h>
-+#include <linux/iio/buffer.h>
- #include "iio_utils.h"
+-__poll_t iio_buffer_poll(struct file *filp,
+-			     struct poll_table_struct *wait);
+-ssize_t iio_buffer_read_outer(struct file *filp, char __user *buf,
+-			      size_t n, loff_t *f_ps);
++__poll_t iio_buffer_poll_wrapper(struct file *filp,
++				 struct poll_table_struct *wait);
++ssize_t iio_buffer_read_wrapper(struct file *filp, char __user *buf,
++				size_t n, loff_t *f_ps);
  
- /**
-@@ -197,7 +199,7 @@ static void process_scan(char *data, struct iio_channel_info *channels,
- 	printf("\n");
+ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev);
+ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev);
+ 
+-#define iio_buffer_poll_addr (&iio_buffer_poll)
+-#define iio_buffer_read_outer_addr (&iio_buffer_read_outer)
++#define iio_buffer_poll_addr (&iio_buffer_poll_wrapper)
++#define iio_buffer_read_outer_addr (&iio_buffer_read_wrapper)
+ 
+ void iio_disable_all_buffers(struct iio_dev *indio_dev);
+ void iio_buffer_wakeup_poll(struct iio_dev *indio_dev);
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 1e8e4c2ff00e..dea37dbf5d28 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -9,6 +9,7 @@
+  * - Better memory allocation techniques?
+  * - Alternative access techniques?
+  */
++#include <linux/anon_inodes.h>
+ #include <linux/kernel.h>
+ #include <linux/export.h>
+ #include <linux/device.h>
+@@ -89,7 +90,7 @@ static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
  }
  
--static int enable_disable_all_channels(char *dev_dir_name, int enable)
-+static int enable_disable_all_channels(char *dev_dir_name, int buffer_idx, int enable)
- {
- 	const struct dirent *ent;
- 	char scanelemdir[256];
-@@ -205,7 +207,7 @@ static int enable_disable_all_channels(char *dev_dir_name, int enable)
- 	int ret;
- 
- 	snprintf(scanelemdir, sizeof(scanelemdir),
--		 FORMAT_SCAN_ELEMENTS_DIR, dev_dir_name);
-+		 FORMAT_SCAN_ELEMENTS_DIR, dev_dir_name, buffer_idx);
- 	scanelemdir[sizeof(scanelemdir)-1] = '\0';
- 
- 	dp = opendir(scanelemdir);
-@@ -243,6 +245,7 @@ static void print_usage(void)
- 		"Capture, convert and output data from IIO device buffer\n"
- 		"  -a         Auto-activate all available channels\n"
- 		"  -A         Force-activate ALL channels\n"
-+		"  -b <n>     The buffer which to open (by index), default 0\n"
- 		"  -c <n>     Do n conversions, or loop forever if n < 0\n"
- 		"  -e         Disable wait for event (new data)\n"
- 		"  -g         Use trigger-less mode\n"
-@@ -259,6 +262,7 @@ static void print_usage(void)
- static enum autochan autochannels = AUTOCHANNELS_DISABLED;
- static char *dev_dir_name = NULL;
- static char *buf_dir_name = NULL;
-+static int buffer_idx = 0;
- static bool current_trigger_set = false;
- 
- static void cleanup(void)
-@@ -286,7 +290,7 @@ static void cleanup(void)
- 
- 	/* Disable channels if auto-enabled */
- 	if (dev_dir_name && autochannels == AUTOCHANNELS_ACTIVE) {
--		ret = enable_disable_all_channels(dev_dir_name, 0);
-+		ret = enable_disable_all_channels(dev_dir_name, buffer_idx, 0);
- 		if (ret)
- 			fprintf(stderr, "Failed to disable all channels\n");
- 		autochannels = AUTOCHANNELS_DISABLED;
-@@ -333,7 +337,9 @@ int main(int argc, char **argv)
- 	unsigned long long j;
- 	unsigned long toread;
- 	int ret, c;
--	int fp = -1;
-+	struct stat st;
-+	int fd = -1;
-+	int buf_fd = -1;
- 
- 	int num_channels = 0;
- 	char *trigger_name = NULL, *device_name = NULL;
-@@ -352,7 +358,7 @@ int main(int argc, char **argv)
- 
- 	register_cleanup();
- 
--	while ((c = getopt_long(argc, argv, "aAc:egl:n:N:t:T:w:?", longopts,
-+	while ((c = getopt_long(argc, argv, "aAb:c:egl:n:N:t:T:w:?", longopts,
- 				NULL)) != -1) {
- 		switch (c) {
- 		case 'a':
-@@ -361,7 +367,20 @@ int main(int argc, char **argv)
- 		case 'A':
- 			autochannels = AUTOCHANNELS_ENABLED;
- 			force_autochannels = true;
--			break;	
-+			break;
-+		case 'b':
-+			errno = 0;
-+			buffer_idx = strtoll(optarg, &dummy, 10);
-+			if (errno) {
-+				ret = -errno;
-+				goto error;
-+			}
-+			if (buffer_idx < 0) {
-+				ret = -ERANGE;
-+				goto error;
-+			}
-+
-+			break;
- 		case 'c':
- 			errno = 0;
- 			num_loops = strtoll(optarg, &dummy, 10);
-@@ -518,7 +537,7 @@ int main(int argc, char **argv)
- 	 * Parse the files in scan_elements to identify what channels are
- 	 * present
- 	 */
--	ret = build_channel_array(dev_dir_name, &channels, &num_channels);
-+	ret = build_channel_array(dev_dir_name, buffer_idx, &channels, &num_channels);
- 	if (ret) {
- 		fprintf(stderr, "Problem reading scan element information\n"
- 			"diag %s\n", dev_dir_name);
-@@ -535,7 +554,7 @@ int main(int argc, char **argv)
- 	    (autochannels == AUTOCHANNELS_ENABLED && force_autochannels)) {
- 		fprintf(stderr, "Enabling all channels\n");
- 
--		ret = enable_disable_all_channels(dev_dir_name, 1);
-+		ret = enable_disable_all_channels(dev_dir_name, buffer_idx, 1);
- 		if (ret) {
- 			fprintf(stderr, "Failed to enable all channels\n");
- 			goto error;
-@@ -544,7 +563,7 @@ int main(int argc, char **argv)
- 		/* This flags that we need to disable the channels again */
- 		autochannels = AUTOCHANNELS_ACTIVE;
- 
--		ret = build_channel_array(dev_dir_name, &channels,
-+		ret = build_channel_array(dev_dir_name, buffer_idx, &channels,
- 					  &num_channels);
- 		if (ret) {
- 			fprintf(stderr, "Problem reading scan element "
-@@ -565,7 +584,7 @@ int main(int argc, char **argv)
- 		fprintf(stderr, "Enable channels manually in "
- 			FORMAT_SCAN_ELEMENTS_DIR
- 			"/*_en or pass -a to autoenable channels and "
--			"try again.\n", dev_dir_name);
-+			"try again.\n", dev_dir_name, buffer_idx);
- 		ret = -ENOENT;
- 		goto error;
- 	}
-@@ -576,12 +595,25 @@ int main(int argc, char **argv)
- 	 * be built rather than found.
- 	 */
- 	ret = asprintf(&buf_dir_name,
--		       "%siio:device%d/buffer", iio_dir, dev_num);
-+		       "%siio:device%d/buffer%d", iio_dir, dev_num, buffer_idx);
- 	if (ret < 0) {
- 		ret = -ENOMEM;
- 		goto error;
- 	}
- 
-+	if (stat(buf_dir_name, &st)) {
-+		fprintf(stderr, "Could not stat() '%s', got error %d: %s\n",
-+			buf_dir_name, errno, strerror(errno));
-+		ret = -errno;
-+		goto error;
-+	}
-+
-+	if (!S_ISDIR(st.st_mode)) {
-+		fprintf(stderr, "File '%s' is not a directory\n", buf_dir_name);
-+		ret = -EFAULT;
-+		goto error;
-+	}
-+
- 	if (!notrigger) {
- 		printf("%s %s\n", dev_dir_name, trigger_name);
- 		/*
-@@ -607,7 +639,8 @@ int main(int argc, char **argv)
- 	ret = write_sysfs_int("enable", buf_dir_name, 1);
- 	if (ret < 0) {
- 		fprintf(stderr,
--			"Failed to enable buffer: %s\n", strerror(-ret));
-+			"Failed to enable buffer '%s': %s\n",
-+			buf_dir_name, strerror(-ret));
- 		goto error;
- 	}
- 
-@@ -625,17 +658,50 @@ int main(int argc, char **argv)
- 	}
- 
- 	/* Attempt to open non blocking the access dev */
--	fp = open(buffer_access, O_RDONLY | O_NONBLOCK);
--	if (fp == -1) { /* TODO: If it isn't there make the node */
-+	fd = open(buffer_access, O_RDONLY | O_NONBLOCK);
-+	if (fd == -1) { /* TODO: If it isn't there make the node */
- 		ret = -errno;
- 		fprintf(stderr, "Failed to open %s\n", buffer_access);
- 		goto error;
- 	}
- 
-+	/* specify for which buffer index we want an FD */
-+	buf_fd = buffer_idx;
-+
-+	ret = ioctl(fd, IIO_BUFFER_GET_FD_IOCTL, &buf_fd);
-+	if (ret == -1 || buf_fd == -1) {
-+		ret = -errno;
-+		if (ret == -ENODEV || ret == -EINVAL)
-+			fprintf(stderr,
-+				"This device does not support buffers\n");
-+		else
-+			fprintf(stderr, "Failed to retrieve buffer fd\n");
-+		if (close(fd) == -1)
-+			perror("Failed to close character device file");
-+
-+		goto error;
-+	}
-+
-+	/* if this is buffer0, check that we get EBUSY after this point */
-+	if (buffer_idx == 0) {
-+		errno = 0;
-+		read_size = read(fd, data, 1);
-+		if (read_size > -1 || errno != EBUSY) {
-+			ret = -EFAULT;
-+			perror("Reading from '%s' should not be possible after ioctl()");
-+			goto error;
-+		}
-+	}
-+
-+	/* close now the main chardev FD and let the buffer FD work */
-+	if (close(fd) == -1)
-+		perror("Failed to close character device file");
-+	fd = -1;
-+
- 	for (j = 0; j < num_loops || num_loops < 0; j++) {
- 		if (!noevents) {
- 			struct pollfd pfd = {
--				.fd = fp,
-+				.fd = buf_fd,
- 				.events = POLLIN,
- 			};
- 
-@@ -653,7 +719,7 @@ int main(int argc, char **argv)
- 			toread = 64;
- 		}
- 
--		read_size = read(fp, data, toread * scan_size);
-+		read_size = read(buf_fd, data, toread * scan_size);
- 		if (read_size < 0) {
- 			if (errno == EAGAIN) {
- 				fprintf(stderr, "nothing available\n");
-@@ -670,7 +736,9 @@ int main(int argc, char **argv)
- error:
- 	cleanup();
- 
--	if (fp >= 0 && close(fp) == -1)
-+	if (fd >= 0 && close(fd) == -1)
-+		perror("Failed to close character device");
-+	if (buf_fd >= 0 && close(buf_fd) == -1)
- 		perror("Failed to close buffer");
- 	free(buffer_access);
- 	free(data);
-diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
-index a96002f2c2d5..aadee6d34c74 100644
---- a/tools/iio/iio_utils.c
-+++ b/tools/iio/iio_utils.c
-@@ -77,6 +77,7 @@ int iioutils_break_up_name(const char *full_name, char **generic_name)
-  * @mask: output a bit mask for the raw data
-  * @be: output if data in big endian
-  * @device_dir: the IIO device directory
-+ * @buffer_idx: the IIO buffer index
-  * @name: the channel name
-  * @generic_name: the channel type name
-  *
-@@ -85,8 +86,8 @@ int iioutils_break_up_name(const char *full_name, char **generic_name)
- static int iioutils_get_type(unsigned int *is_signed, unsigned int *bytes,
- 			     unsigned int *bits_used, unsigned int *shift,
- 			     uint64_t *mask, unsigned int *be,
--			     const char *device_dir, const char *name,
--			     const char *generic_name)
-+			     const char *device_dir, int buffer_idx,
-+			     const char *name, const char *generic_name)
- {
- 	FILE *sysfsfp;
- 	int ret;
-@@ -96,7 +97,7 @@ static int iioutils_get_type(unsigned int *is_signed, unsigned int *bytes,
- 	unsigned padint;
- 	const struct dirent *ent;
- 
--	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
-+	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir, buffer_idx);
- 	if (ret < 0)
- 		return -ENOMEM;
- 
-@@ -304,12 +305,13 @@ void bsort_channel_array_by_index(struct iio_channel_info *ci_array, int cnt)
  /**
-  * build_channel_array() - function to figure out what channels are present
-  * @device_dir: the IIO device directory in sysfs
-+ * @buffer_idx: the IIO buffer for this channel array
-  * @ci_array: output the resulting array of iio_channel_info
-  * @counter: output the amount of array elements
-  *
-  * Returns 0 on success, otherwise a negative error code.
+- * iio_buffer_read_outer() - chrdev read for buffer access
++ * iio_buffer_read() - chrdev read for buffer access
+  * @filp:	File structure pointer for the char device
+  * @buf:	Destination buffer for iio buffer read
+  * @n:		First n bytes to read
+@@ -101,8 +102,8 @@ static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
+  * Return: negative values corresponding to error codes or ret != 0
+  *	   for ending the reading activity
   **/
--int build_channel_array(const char *device_dir,
-+int build_channel_array(const char *device_dir, int buffer_idx,
- 			struct iio_channel_info **ci_array, int *counter)
+-ssize_t iio_buffer_read_outer(struct file *filp, char __user *buf,
+-			      size_t n, loff_t *f_ps)
++static ssize_t iio_buffer_read(struct file *filp, char __user *buf,
++			       size_t n, loff_t *f_ps)
  {
- 	DIR *dp;
-@@ -322,7 +324,7 @@ int build_channel_array(const char *device_dir,
- 	char *filename;
+ 	struct iio_dev_buffer_pair *ib = filp->private_data;
+ 	struct iio_buffer *rb = ib->buffer;
+@@ -168,8 +169,8 @@ ssize_t iio_buffer_read_outer(struct file *filp, char __user *buf,
+  * Return: (EPOLLIN | EPOLLRDNORM) if data is available for reading
+  *	   or 0 for other cases
+  */
+-__poll_t iio_buffer_poll(struct file *filp,
+-			     struct poll_table_struct *wait)
++static __poll_t iio_buffer_poll(struct file *filp,
++				struct poll_table_struct *wait)
+ {
+ 	struct iio_dev_buffer_pair *ib = filp->private_data;
+ 	struct iio_buffer *rb = ib->buffer;
+@@ -184,6 +185,32 @@ __poll_t iio_buffer_poll(struct file *filp,
+ 	return 0;
+ }
  
- 	*counter = 0;
--	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir);
-+	ret = asprintf(&scan_el_dir, FORMAT_SCAN_ELEMENTS_DIR, device_dir, buffer_idx);
- 	if (ret < 0)
- 		return -ENOMEM;
++ssize_t iio_buffer_read_wrapper(struct file *filp, char __user *buf,
++				size_t n, loff_t *f_ps)
++{
++	struct iio_dev_buffer_pair *ib = filp->private_data;
++	struct iio_buffer *rb = ib->buffer;
++
++	/* check if buffer was opened through new API */
++	if (test_bit(IIO_BUSY_BIT_POS, &rb->flags))
++		return -EBUSY;
++
++	return iio_buffer_read(filp, buf, n, f_ps);
++}
++
++__poll_t iio_buffer_poll_wrapper(struct file *filp,
++				 struct poll_table_struct *wait)
++{
++	struct iio_dev_buffer_pair *ib = filp->private_data;
++	struct iio_buffer *rb = ib->buffer;
++
++	/* check if buffer was opened through new API */
++	if (test_bit(IIO_BUSY_BIT_POS, &rb->flags))
++		return -EBUSY;
++
++	return iio_buffer_poll(filp, wait);
++}
++
+ /**
+  * iio_buffer_wakeup_poll - Wakes up the buffer waitqueue
+  * @indio_dev: The IIO device
+@@ -1343,6 +1370,90 @@ static void iio_buffer_unregister_legacy_sysfs_groups(struct iio_dev *indio_dev)
+ 	kfree(iio_dev_opaque->legacy_scan_el_group.attrs);
+ }
  
-@@ -503,6 +505,7 @@ int build_channel_array(const char *device_dir,
- 						&current->mask,
- 						&current->be,
- 						device_dir,
-+						buffer_idx,
- 						current->name,
- 						current->generic_name);
- 			if (ret < 0)
-diff --git a/tools/iio/iio_utils.h b/tools/iio/iio_utils.h
-index a5d0aa8a57d3..336752cade4f 100644
---- a/tools/iio/iio_utils.h
-+++ b/tools/iio/iio_utils.h
-@@ -12,7 +12,7 @@
- /* Made up value to limit allocation sizes */
- #define IIO_MAX_NAME_LENGTH 64
++static int iio_buffer_chrdev_release(struct inode *inode, struct file *filep)
++{
++	struct iio_dev_buffer_pair *ib = filep->private_data;
++	struct iio_dev *indio_dev = ib->indio_dev;
++	struct iio_buffer *buffer = ib->buffer;
++
++	clear_bit(IIO_BUSY_BIT_POS, &buffer->flags);
++	iio_device_put(indio_dev);
++	kfree(ib);
++
++	return 0;
++}
++
++static const struct file_operations iio_buffer_chrdev_fileops = {
++	.owner = THIS_MODULE,
++	.llseek = noop_llseek,
++	.read = iio_buffer_read,
++	.poll = iio_buffer_poll,
++	.compat_ioctl = compat_ptr_ioctl,
++	.release = iio_buffer_chrdev_release,
++};
++
++static long iio_device_buffer_getfd(struct iio_dev *indio_dev, unsigned long arg)
++{
++	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
++	int __user *ival = (int __user *)arg;
++	char buf_name[sizeof("iio:buffer:xxx")];
++	struct iio_dev_buffer_pair *ib;
++	struct iio_buffer *buffer;
++	int fd, idx;
++
++	if (copy_from_user(&idx, ival, sizeof(idx)))
++		return -EFAULT;
++
++	if (idx >= iio_dev_opaque->attached_buffers_cnt)
++		return -ENODEV;
++
++	buffer = iio_dev_opaque->attached_buffers[idx];
++
++	if (test_and_set_bit(IIO_BUSY_BIT_POS, &buffer->flags))
++		return -EBUSY;
++
++	iio_device_get(indio_dev);
++
++	ib = kzalloc(sizeof(*ib), GFP_KERNEL);
++	if (!ib) {
++		fd = -ENOMEM;
++		goto error_iio_dev_put;
++	}
++
++	ib->indio_dev = indio_dev;
++	ib->buffer = buffer;
++
++	fd = anon_inode_getfd(buf_name, &iio_buffer_chrdev_fileops,
++			      ib, O_RDWR | O_CLOEXEC);
++	if (fd < 0)
++		goto error_free_ib;
++
++	if (copy_to_user(ival, &fd, sizeof(fd))) {
++		fd = -EFAULT;
++		goto error_free_ib;
++	}
++
++	return fd;
++
++error_free_ib:
++	kfree(ib);
++error_iio_dev_put:
++	iio_device_put(indio_dev);
++	clear_bit(IIO_BUSY_BIT_POS, &buffer->flags);
++	return fd;
++}
++
++static long iio_device_buffer_ioctl(struct iio_dev *indio_dev, struct file *filp,
++				    unsigned int cmd, unsigned long arg)
++{
++	switch (cmd) {
++	case IIO_BUFFER_GET_FD_IOCTL:
++		return iio_device_buffer_getfd(indio_dev, arg);
++	default:
++		return IIO_IOCTL_UNHANDLED;
++	}
++}
++
+ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+ 					     struct iio_dev *indio_dev,
+ 					     int index)
+@@ -1472,6 +1583,7 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ 	struct iio_buffer *buffer;
+ 	int unwind_idx;
+ 	int ret, i;
++	size_t sz;
  
--#define FORMAT_SCAN_ELEMENTS_DIR "%s/scan_elements"
-+#define FORMAT_SCAN_ELEMENTS_DIR "%s/buffer%d"
- #define FORMAT_TYPE_FILE "%s_type"
+ 	channels = indio_dev->channels;
+ 	if (channels) {
+@@ -1493,6 +1605,18 @@ int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
+ 			goto error_unwind_sysfs_and_mask;
+ 		}
+ 	}
++	unwind_idx = iio_dev_opaque->attached_buffers_cnt - 1;
++
++	sz = sizeof(*(iio_dev_opaque->buffer_ioctl_handler));
++	iio_dev_opaque->buffer_ioctl_handler = kzalloc(sz, GFP_KERNEL);
++	if (!iio_dev_opaque->buffer_ioctl_handler) {
++		ret = -ENOMEM;
++		goto error_unwind_sysfs_and_mask;
++	}
++
++	iio_dev_opaque->buffer_ioctl_handler->ioctl = iio_device_buffer_ioctl;
++	iio_device_ioctl_handler_register(indio_dev,
++					  iio_dev_opaque->buffer_ioctl_handler);
  
- #define ARRAY_SIZE(arr) (sizeof(arr) / sizeof(arr[0]))
-@@ -61,7 +61,7 @@ int iioutils_get_param_float(float *output, const char *param_name,
- 			     const char *device_dir, const char *name,
- 			     const char *generic_name);
- void bsort_channel_array_by_index(struct iio_channel_info *ci_array, int cnt);
--int build_channel_array(const char *device_dir,
-+int build_channel_array(const char *device_dir, int buffer_idx,
- 			struct iio_channel_info **ci_array, int *counter);
- int find_type_by_name(const char *name, const char *type);
- int write_sysfs_int(const char *filename, const char *basedir, int val);
+ 	return 0;
+ 
+@@ -1514,6 +1638,9 @@ void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
+ 	if (!iio_dev_opaque->attached_buffers_cnt)
+ 		return;
+ 
++	iio_device_ioctl_handler_unregister(iio_dev_opaque->buffer_ioctl_handler);
++	kfree(iio_dev_opaque->buffer_ioctl_handler);
++
+ 	iio_buffer_unregister_legacy_sysfs_groups(indio_dev);
+ 
+ 	for (i = iio_dev_opaque->attached_buffers_cnt - 1; i >= 0; i--) {
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 26b05dddfa71..febb3a0d91f3 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1737,6 +1737,7 @@ static int iio_chrdev_release(struct inode *inode, struct file *filp)
+ 	struct iio_dev_buffer_pair *ib = filp->private_data;
+ 	struct iio_dev *indio_dev = container_of(inode->i_cdev,
+ 						struct iio_dev, chrdev);
++
+ 	clear_bit(IIO_BUSY_BIT_POS, &indio_dev->flags);
+ 	iio_device_put(indio_dev);
+ 	kfree(ib);
+diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
+index 768b90c64412..245b32918ae1 100644
+--- a/include/linux/iio/buffer_impl.h
++++ b/include/linux/iio/buffer_impl.h
+@@ -6,6 +6,8 @@
+ 
+ #ifdef CONFIG_IIO_BUFFER
+ 
++#include <uapi/linux/iio/buffer.h>
++
+ struct iio_dev;
+ struct iio_buffer;
+ 
+@@ -72,6 +74,9 @@ struct iio_buffer {
+ 	/** @length: Number of datums in buffer. */
+ 	unsigned int length;
+ 
++	/** @flags: File ops flags including busy flag. */
++	unsigned long flags;
++
+ 	/**  @bytes_per_datum: Size of individual datum including timestamp. */
+ 	size_t bytes_per_datum;
+ 
+diff --git a/include/linux/iio/iio-opaque.h b/include/linux/iio/iio-opaque.h
+index c909835b6247..2c3374d465da 100644
+--- a/include/linux/iio/iio-opaque.h
++++ b/include/linux/iio/iio-opaque.h
+@@ -9,6 +9,7 @@
+  * @event_interface:		event chrdevs associated with interrupt lines
+  * @attached_buffers:		array of buffers statically attached by the driver
+  * @attached_buffers_cnt:	number of buffers in the array of statically attached buffers
++ * @buffer_ioctl_handler:	ioctl() handler for this IIO device's buffer interface
+  * @buffer_list:		list of all buffers currently attached
+  * @channel_attr_list:		keep track of automatically created channel
+  *				attributes
+@@ -28,6 +29,7 @@ struct iio_dev_opaque {
+ 	struct iio_event_interface	*event_interface;
+ 	struct iio_buffer		**attached_buffers;
+ 	unsigned int			attached_buffers_cnt;
++	struct iio_ioctl_handler	*buffer_ioctl_handler;
+ 	struct list_head		buffer_list;
+ 	struct list_head		channel_attr_list;
+ 	struct attribute_group		chan_attr_group;
+diff --git a/include/uapi/linux/iio/buffer.h b/include/uapi/linux/iio/buffer.h
+new file mode 100644
+index 000000000000..de571c83c9f2
+--- /dev/null
++++ b/include/uapi/linux/iio/buffer.h
+@@ -0,0 +1,10 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/* industrial I/O buffer definitions needed both in and out of kernel
++ */
++
++#ifndef _UAPI_IIO_BUFFER_H_
++#define _UAPI_IIO_BUFFER_H_
++
++#define IIO_BUFFER_GET_FD_IOCTL		_IOWR('i', 0x91, int)
++
++#endif /* _UAPI_IIO_BUFFER_H_ */
 -- 
 2.17.1
 
