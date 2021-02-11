@@ -2,648 +2,350 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB106C433E0
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Feb 2021 12:38:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19A1CC433DB
+	for <linux-iio@archiver.kernel.org>; Thu, 11 Feb 2021 13:18:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7339F64E05
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Feb 2021 12:38:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D0BD864E7E
+	for <linux-iio@archiver.kernel.org>; Thu, 11 Feb 2021 13:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231592AbhBKMhI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 11 Feb 2021 07:37:08 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:51980 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231576AbhBKMc3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Feb 2021 07:32:29 -0500
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11BCQYaL006751;
-        Thu, 11 Feb 2021 07:31:35 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36hr7qg9fy-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 11 Feb 2021 07:31:35 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11BCVYI0004812
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Thu, 11 Feb 2021 07:31:34 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Thu, 11 Feb
- 2021 07:31:33 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Thu, 11 Feb 2021 07:31:33 -0500
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11BCVRdn011921;
-        Thu, 11 Feb 2021 07:31:30 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <jic23@kernel.org>, <nuno.sa@analog.com>,
-        <dragos.bogdan@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH 2/3] iio: buffer-dma: Add mmap support
-Date:   Thu, 11 Feb 2021 14:33:52 +0200
-Message-ID: <20210211123353.78963-3-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210211123353.78963-1-alexandru.ardelean@analog.com>
-References: <20210211123353.78963-1-alexandru.ardelean@analog.com>
+        id S231244AbhBKNRV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 11 Feb 2021 08:17:21 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52340 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231764AbhBKNPS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Feb 2021 08:15:18 -0500
+Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97346C061756;
+        Thu, 11 Feb 2021 05:14:36 -0800 (PST)
+Received: by mail-il1-x129.google.com with SMTP id q9so5012200ilo.1;
+        Thu, 11 Feb 2021 05:14:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=eaWT11VKWyn2uORRCibZSFi/qJOW4Eg9p6rFjiWryHA=;
+        b=O391STiNhG3s/WRQht8rugL07cj8J77PPw31l2435034KWJvxWD9nsnVWNItVNNxWe
+         d5g4bRGlKgRc7TVVNp4PUZ9Q5xiqMynVQYty3wFTnS/MOHysEyB4UQslMq0kUHOEKVJr
+         AK8jNsTZB34S61qHeQh8MR0gwzqmVrf8je9LQo1IZkHGiSp7DHsL3AZ1+ddjp4N/mjKq
+         0wqdmO9ZHr+RiA0SMgKHIfrwAHc+87BskEiBPBGMnllZ2GGpPzKjw1lFaHAZGrAuJsWH
+         KeVrpdN6Vbfv30vhUaPb/h8xMw2MZ7F48QdMDE5qOe468KymQbgg9Pln3IJF8B6Hl6gU
+         uFSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=eaWT11VKWyn2uORRCibZSFi/qJOW4Eg9p6rFjiWryHA=;
+        b=QcpgSA3Rhas23tKi9RnCpe8LXzgiIfV8VgQpaKCx6Tn8XD+jhNfzH5/DFtWP107IjK
+         GAHrPK3fvOyCobRAhFVMzCfWEdcyf/2HhHDKR5kfvYck3MrHwcWK/J3yJJKseEAAHucz
+         DdqegrYNHX7jUpNGgxJ03D7Wg7BLxTX5Fba6e7HSPRxZ6gjxtUT5dePVXyNt+8kynS6Q
+         /GnToT6ectVNIrPJ1HbgBoX3LNaC+IpaM0VGbr6Zr1LPjEH8qmC1dwqWPk4+yBqJ20JY
+         g1EIWma5eFStcalsb+xqrprAMi3TbcPcAby0jALMU/ZFRwe2DmpFMwIo58ZWPAX+ZWzy
+         uuzQ==
+X-Gm-Message-State: AOAM5311wV2IF91y+3SHj854a6K/pjuX1jbBJiavL7j0fsiTRb6jmZNO
+        oFQY0C5Fn0097SjeALztDTiK2is667rv+GXYqYQ=
+X-Google-Smtp-Source: ABdhPJzkfNqlGQjHMubNaQg1+u/L5l/ZyU+t/fc5z3CN7u2JModVJN9BwjfvAFAl7He5OG+eH6pj0JqzvTmmOmAVqbk=
+X-Received: by 2002:a05:6e02:1be1:: with SMTP id y1mr5487782ilv.101.1613049275631;
+ Thu, 11 Feb 2021 05:14:35 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
- definitions=2021-02-11_06:2021-02-10,2021-02-11 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
- lowpriorityscore=0 malwarescore=0 clxscore=1015 spamscore=0 phishscore=0
- suspectscore=0 mlxscore=0 bulkscore=0 priorityscore=1501 impostorscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102110111
+References: <20210211123353.78963-1-alexandru.ardelean@analog.com> <20210211123353.78963-4-alexandru.ardelean@analog.com>
+In-Reply-To: <20210211123353.78963-4-alexandru.ardelean@analog.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Thu, 11 Feb 2021 15:14:23 +0200
+Message-ID: <CA+U=DsqtURTGzG-h0Avrk=cMbjObB-0Lwt68P7wkrK0aj7ueOg@mail.gmail.com>
+Subject: Re: [PATCH 3/3] tools: iio: add example for high-speed buffer support
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     LKML <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        "Bogdan, Dragos" <dragos.bogdan@analog.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+On Thu, Feb 11, 2021 at 2:38 PM Alexandru Ardelean
+<alexandru.ardelean@analog.com> wrote:
+>
+> Following a recent update to the IIO buffer infrastructure, this change
+> adds a basic example on how to access an IIO buffer via the new mmap()
+> interface.
+>
+> The ioctl() for the high-speed mode needs to be enabled right from the
+> start, before setting any parameters via sysfs (length, enable, etc), to
+> make sure that the mmap mode is used and not the fileio mode.
+>
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> ---
+>  tools/iio/iio_generic_buffer.c | 184 +++++++++++++++++++++++++++++++--
+>  1 file changed, 178 insertions(+), 6 deletions(-)
+>
+> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+> index fdd08514d556..af1a944edcdb 100644
+> --- a/tools/iio/iio_generic_buffer.c
+> +++ b/tools/iio/iio_generic_buffer.c
+> @@ -31,6 +31,7 @@
+>  #include <stdbool.h>
+>  #include <signal.h>
+>  #include <sys/ioctl.h>
+> +#include <sys/mman.h>
+>  #include <linux/iio/buffer.h>
+>  #include "iio_utils.h"
+>
+> @@ -239,6 +240,133 @@ static int enable_disable_all_channels(char *dev_dir_name, int buffer_idx, int e
+>         return 0;
+>  }
+>
+> +struct mmap_block {
+> +       struct iio_buffer_block block;
+> +       void *addr;
+> +};
+> +
+> +static struct mmap_block *enable_high_speed(int buf_fd, unsigned int block_size,
+> +                                           int nblocks)
+> +{
+> +       struct iio_buffer_block_alloc_req req = { 0 };
+> +       struct mmap_block *mmaps = NULL;
+> +       int mmaps_cnt = 0;
+> +       int i, ret;
+> +
+> +       /**
+> +        * Validate we can do high-speed by issuing BLOCK_FREE ioctl.
+> +        * If using just BLOCK_ALLOC it's distinguish between ENOSYS
+> +        * and other error types.
+> +        */
+> +       ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_FREE_IOCTL, 0);
+> +       if (ret < 0) {
+> +               errno = ENOSYS;
+> +               return NULL;
+> +       }
+> +
+> +       /* for now, this */
+> +       req.id = 0;
+> +       req.type = 0;
+> +       req.size = block_size;
+> +       req.count = nblocks;
+> +
+> +       ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_ALLOC_IOCTL, &req);
+> +       if (ret < 0)
+> +               return NULL;
+> +
+> +       if (req.count == 0) {
+> +               errno = ENOMEM;
+> +               return NULL;
+> +       }
+> +
+> +       if (req.count < nblocks) {
+> +               fprintf(stderr, "Requested %d blocks, got %d\n",
+> +                       nblocks, req.count);
+> +               errno = ENOMEM;
+> +               return NULL;
+> +       }
+> +
+> +       mmaps = calloc(req.count, sizeof(*mmaps));
+> +       if (!mmaps) {
+> +               errno = ENOMEM;
+> +               return NULL;
+> +       }
+> +
+> +       for (i = 0; i < req.count; i++) {
+> +               mmaps[i].block.id = i;
+> +               ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_QUERY_IOCTL, &mmaps[i].block);
+> +               if (ret < 0)
+> +                       goto error;
+> +
+> +               ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_ENQUEUE_IOCTL, &mmaps[i].block);
+> +               if (ret < 0)
+> +                       goto error;
+> +
+> +               mmaps[i].addr = mmap(0, mmaps[i].block.size,
+> +                                     PROT_READ | PROT_WRITE, MAP_SHARED,
+> +                                     buf_fd, mmaps[i].block.data.offset);
+> +
+> +               if (mmaps[i].addr == MAP_FAILED)
+> +                       goto error;
+> +
+> +               mmaps_cnt++;
+> +       }
+> +
+> +       return mmaps;
+> +
+> +error:
+> +       for (i = 0; i < mmaps_cnt; i++)
+> +               munmap(mmaps[i].addr, mmaps[i].block.size);
+> +       free(mmaps);
+> +       return NULL;
+> +}
+> +
+> +static int read_high_speed(int buf_fd, char *data, unsigned int block_size,
+> +                          struct mmap_block *mmaps, unsigned int mmaps_cnt)
+> +{
+> +       struct iio_buffer_block block;
+> +       int ret;
+> +
+> +       /**
+> +        * This is where some buffer-pool management can do wonders,
+> +        * but for the sake of this sample-code, we're just going to
+> +        * copy the data and re-enqueue it back
+> +        */
+> +       memset(&block, 0, sizeof(block));
+> +       ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_DEQUEUE_IOCTL, &block);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       /* check for weird conditions */
+> +       if (block.bytes_used > block_size) {
+> +               fprintf(stderr,
+> +                       "Got a bigger block (%u) than expected (%u)\n",
+> +                       block.bytes_used, block_size);
+> +               return -EFBIG;
+> +       }
+> +
+> +       if (block.bytes_used < block_size) {
+> +               /**
+> +                * This can be normal, with some real-world data
+> +                * terminating abruptly. But log it.
+> +                */
+> +               fprintf(stderr,
+> +                       "Got a smaller block (%u) than expected (%u)\n",
+> +                       block.bytes_used, block_size);
+> +       }
+> +
+> +       /* memcpy() the data, we lose some more performance here :p */
+> +       memcpy(data, mmaps[block.id].addr, block.bytes_used);
+> +
+> +       /* and re-queue this back */
+> +       ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_ENQUEUE_IOCTL, &mmaps[block.id].block);
+> +       if (ret < 0)
+> +               return ret;
+> +
+> +       return block.bytes_used;
+> +}
+> +
 
-Add support for the new mmap interface to IIO DMA buffer. This interface
-allows to directly map the backing memory of a block to userspace. This is
-especially advantageous for high-speed devices where the extra copy from
-kernel space to userspace of the data incurs a significant overhead.
+forgot to remove this extra line;
+will make a note, for the next re-spin;
+after some feedback
 
-In addition this interface allows more fine grained control over how many
-blocks are allocated and their size.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/buffer/industrialio-buffer-dma.c  | 314 ++++++++++++++++--
- .../buffer/industrialio-buffer-dmaengine.c    |  22 +-
- drivers/iio/industrialio-buffer.c             |   1 +
- include/linux/iio/buffer-dma.h                |  20 +-
- 4 files changed, 321 insertions(+), 36 deletions(-)
-
-diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-index d348af8b9705..befb0a3d2def 100644
---- a/drivers/iio/buffer/industrialio-buffer-dma.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-@@ -90,6 +90,9 @@
-  * callback is called from within the custom callback.
-  */
- 
-+static unsigned int iio_dma_buffer_max_block_size = SZ_16M;
-+module_param_named(max_block_size, iio_dma_buffer_max_block_size, uint, 0644);
-+
- static void iio_buffer_block_release(struct kref *kref)
- {
- 	struct iio_dma_buffer_block *block = container_of(kref,
-@@ -97,7 +100,7 @@ static void iio_buffer_block_release(struct kref *kref)
- 
- 	WARN_ON(block->state != IIO_BLOCK_STATE_DEAD);
- 
--	dma_free_coherent(block->queue->dev, PAGE_ALIGN(block->size),
-+	dma_free_coherent(block->queue->dev, PAGE_ALIGN(block->block.size),
- 					block->vaddr, block->phys_addr);
- 
- 	iio_buffer_put(&block->queue->buffer);
-@@ -178,7 +181,7 @@ static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
- 		return NULL;
- 	}
- 
--	block->size = size;
-+	block->block.size = size;
- 	block->state = IIO_BLOCK_STATE_DEQUEUED;
- 	block->queue = queue;
- 	INIT_LIST_HEAD(&block->head);
-@@ -243,7 +246,7 @@ void iio_dma_buffer_block_list_abort(struct iio_dma_buffer_queue *queue,
- 	spin_lock_irqsave(&queue->list_lock, flags);
- 	list_for_each_entry_safe(block, _block, list, head) {
- 		list_del(&block->head);
--		block->bytes_used = 0;
-+		block->block.bytes_used = 0;
- 		_iio_dma_buffer_block_done(block);
- 		iio_buffer_block_put_atomic(block);
- 	}
-@@ -296,6 +299,10 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
- 
- 	mutex_lock(&queue->lock);
- 
-+	/* If in mmap mode dont do anything */
-+	if (queue->num_blocks)
-+		goto out_unlock;
-+
- 	/* Allocations are page aligned */
- 	if (PAGE_ALIGN(queue->fileio.block_size) == PAGE_ALIGN(size))
- 		try_reuse = true;
-@@ -330,7 +337,7 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
- 				iio_buffer_block_put(block);
- 				block = NULL;
- 			} else {
--				block->size = size;
-+				block->block.size = size;
- 			}
- 		} else {
- 			block = NULL;
-@@ -345,6 +352,8 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
- 			queue->fileio.blocks[i] = block;
- 		}
- 
-+		block->block.id = i;
-+
- 		block->state = IIO_BLOCK_STATE_QUEUED;
- 		list_add_tail(&block->head, &queue->incoming);
- 	}
-@@ -356,6 +365,30 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
- }
- EXPORT_SYMBOL_GPL(iio_dma_buffer_request_update);
- 
-+static void iio_dma_buffer_fileio_free(struct iio_dma_buffer_queue *queue)
-+{
-+	unsigned int i;
-+
-+	spin_lock_irq(&queue->list_lock);
-+	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
-+		if (!queue->fileio.blocks[i])
-+			continue;
-+		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
-+	}
-+	INIT_LIST_HEAD(&queue->outgoing);
-+	spin_unlock_irq(&queue->list_lock);
-+
-+	INIT_LIST_HEAD(&queue->incoming);
-+
-+	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
-+		if (!queue->fileio.blocks[i])
-+			continue;
-+		iio_buffer_block_put(queue->fileio.blocks[i]);
-+		queue->fileio.blocks[i] = NULL;
-+	}
-+	queue->fileio.active_block = NULL;
-+}
-+
- static void iio_dma_buffer_submit_block(struct iio_dma_buffer_queue *queue,
- 	struct iio_dma_buffer_block *block)
- {
-@@ -404,6 +437,7 @@ int iio_dma_buffer_enable(struct iio_buffer *buffer,
- 	struct iio_dma_buffer_block *block, *_block;
- 
- 	mutex_lock(&queue->lock);
-+	queue->fileio.enabled = !queue->num_blocks;
- 	queue->active = true;
- 	list_for_each_entry_safe(block, _block, &queue->incoming, head) {
- 		list_del(&block->head);
-@@ -429,6 +463,7 @@ int iio_dma_buffer_disable(struct iio_buffer *buffer,
- 	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
- 
- 	mutex_lock(&queue->lock);
-+	queue->fileio.enabled = false;
- 	queue->active = false;
- 
- 	if (queue->ops && queue->ops->abort)
-@@ -490,6 +525,11 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
- 
- 	mutex_lock(&queue->lock);
- 
-+	if (!queue->fileio.enabled) {
-+		ret = -EBUSY;
-+		goto out_unlock;
-+	}
-+
- 	if (!queue->fileio.active_block) {
- 		block = iio_dma_buffer_dequeue(queue);
- 		if (block == NULL) {
-@@ -503,8 +543,8 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
- 	}
- 
- 	n = rounddown(n, buffer->bytes_per_datum);
--	if (n > block->bytes_used - queue->fileio.pos)
--		n = block->bytes_used - queue->fileio.pos;
-+	if (n > block->block.bytes_used - queue->fileio.pos)
-+		n = block->block.bytes_used - queue->fileio.pos;
- 
- 	if (copy_to_user(user_buffer, block->vaddr + queue->fileio.pos, n)) {
- 		ret = -EFAULT;
-@@ -513,7 +553,7 @@ int iio_dma_buffer_read(struct iio_buffer *buffer, size_t n,
- 
- 	queue->fileio.pos += n;
- 
--	if (queue->fileio.pos == block->bytes_used) {
-+	if (queue->fileio.pos == block->block.bytes_used) {
- 		queue->fileio.active_block = NULL;
- 		iio_dma_buffer_enqueue(queue, block);
- 	}
-@@ -549,11 +589,11 @@ size_t iio_dma_buffer_data_available(struct iio_buffer *buf)
- 
- 	mutex_lock(&queue->lock);
- 	if (queue->fileio.active_block)
--		data_available += queue->fileio.active_block->size;
-+		data_available += queue->fileio.active_block->block.size;
- 
- 	spin_lock_irq(&queue->list_lock);
- 	list_for_each_entry(block, &queue->outgoing, head)
--		data_available += block->size;
-+		data_available += block->block.size;
- 	spin_unlock_irq(&queue->list_lock);
- 	mutex_unlock(&queue->lock);
- 
-@@ -561,6 +601,241 @@ size_t iio_dma_buffer_data_available(struct iio_buffer *buf)
- }
- EXPORT_SYMBOL_GPL(iio_dma_buffer_data_available);
- 
-+int iio_dma_buffer_alloc_blocks(struct iio_buffer *buffer,
-+				struct iio_buffer_block_alloc_req *req)
-+{
-+	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-+	struct iio_dma_buffer_block **blocks;
-+	unsigned int num_blocks;
-+	unsigned int i;
-+	int ret = 0;
-+
-+	mutex_lock(&queue->lock);
-+
-+	/*
-+	 * If the buffer is enabled and in fileio mode new blocks can't be
-+	 * allocated.
-+	 */
-+	if (queue->fileio.enabled) {
-+		ret = -EBUSY;
-+		goto err_unlock;
-+	}
-+
-+	/* Free memory that might be in use for fileio mode */
-+	iio_dma_buffer_fileio_free(queue);
-+
-+	/* 64 blocks ought to be enough for anybody ;) */
-+	if (req->count > 64 - queue->num_blocks)
-+		req->count = 64 - queue->num_blocks;
-+	if (req->size > iio_dma_buffer_max_block_size)
-+		req->size = iio_dma_buffer_max_block_size;
-+
-+	req->id = queue->num_blocks;
-+
-+	if (req->count == 0 || req->size == 0) {
-+		ret = 0;
-+		goto err_unlock;
-+	}
-+
-+	num_blocks = req->count + queue->num_blocks;
-+
-+	blocks = krealloc(queue->blocks, sizeof(*blocks) * num_blocks,
-+		GFP_KERNEL);
-+	if (!blocks) {
-+		ret = -ENOMEM;
-+		goto err_unlock;
-+	}
-+
-+	for (i = queue->num_blocks; i < num_blocks; i++) {
-+		blocks[i] = iio_dma_buffer_alloc_block(queue, req->size);
-+		if (!blocks[i])
-+			break;
-+		blocks[i]->block.id = i;
-+		blocks[i]->block.data.offset = queue->max_offset;
-+		queue->max_offset += PAGE_ALIGN(req->size);
-+	}
-+
-+	req->count = i - queue->num_blocks;
-+	queue->num_blocks = i;
-+	queue->blocks = blocks;
-+
-+err_unlock:
-+	mutex_unlock(&queue->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iio_dma_buffer_alloc_blocks);
-+
-+int iio_dma_buffer_free_blocks(struct iio_buffer *buffer)
-+{
-+	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-+	unsigned int i;
-+
-+	mutex_lock(&queue->lock);
-+
-+	spin_lock_irq(&queue->list_lock);
-+	INIT_LIST_HEAD(&queue->incoming);
-+	INIT_LIST_HEAD(&queue->outgoing);
-+
-+	for (i = 0; i < queue->num_blocks; i++)
-+		queue->blocks[i]->state = IIO_BLOCK_STATE_DEAD;
-+	spin_unlock_irq(&queue->list_lock);
-+
-+	for (i = 0; i < queue->num_blocks; i++)
-+		iio_buffer_block_put(queue->blocks[i]);
-+
-+	kfree(queue->blocks);
-+	queue->blocks = NULL;
-+	queue->num_blocks = 0;
-+	queue->max_offset = 0;
-+
-+	mutex_unlock(&queue->lock);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL_GPL(iio_dma_buffer_free_blocks);
-+
-+int iio_dma_buffer_query_block(struct iio_buffer *buffer,
-+			       struct iio_buffer_block *block)
-+{
-+	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-+	int ret = 0;
-+
-+	mutex_lock(&queue->lock);
-+
-+	if (block->id >= queue->num_blocks) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	*block = queue->blocks[block->id]->block;
-+
-+out_unlock:
-+	mutex_unlock(&queue->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iio_dma_buffer_query_block);
-+
-+int iio_dma_buffer_enqueue_block(struct iio_buffer *buffer,
-+				 struct iio_buffer_block *block)
-+{
-+	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-+	struct iio_dma_buffer_block *dma_block;
-+	int ret = 0;
-+
-+	mutex_lock(&queue->lock);
-+
-+	if (block->id >= queue->num_blocks) {
-+		ret = -EINVAL;
-+		goto out_unlock;
-+	}
-+
-+	dma_block = queue->blocks[block->id];
-+	dma_block->block.bytes_used = block->bytes_used;
-+	dma_block->block.flags = block->flags;
-+
-+	switch (dma_block->state) {
-+	case IIO_BLOCK_STATE_DONE:
-+		list_del_init(&dma_block->head);
-+		break;
-+	case IIO_BLOCK_STATE_QUEUED:
-+		/* Nothing to do */
-+		goto out_unlock;
-+	case IIO_BLOCK_STATE_DEQUEUED:
-+		break;
-+	default:
-+		ret = -EBUSY;
-+		goto out_unlock;
-+	}
-+
-+	iio_dma_buffer_enqueue(queue, dma_block);
-+
-+out_unlock:
-+	mutex_unlock(&queue->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iio_dma_buffer_enqueue_block);
-+
-+int iio_dma_buffer_dequeue_block(struct iio_buffer *buffer,
-+				 struct iio_buffer_block *block)
-+{
-+	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-+	struct iio_dma_buffer_block *dma_block;
-+	int ret = 0;
-+
-+	mutex_lock(&queue->lock);
-+
-+	dma_block = iio_dma_buffer_dequeue(queue);
-+	if (!dma_block) {
-+		ret = -EAGAIN;
-+		goto out_unlock;
-+	}
-+
-+	*block = dma_block->block;
-+
-+out_unlock:
-+	mutex_unlock(&queue->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(iio_dma_buffer_dequeue_block);
-+
-+static void iio_dma_buffer_mmap_open(struct vm_area_struct *area)
-+{
-+	struct iio_dma_buffer_block *block = area->vm_private_data;
-+
-+	iio_buffer_block_get(block);
-+}
-+
-+static void iio_dma_buffer_mmap_close(struct vm_area_struct *area)
-+{
-+	struct iio_dma_buffer_block *block = area->vm_private_data;
-+
-+	iio_buffer_block_put(block);
-+}
-+
-+static const struct vm_operations_struct iio_dma_buffer_vm_ops = {
-+	.open = iio_dma_buffer_mmap_open,
-+	.close = iio_dma_buffer_mmap_close,
-+};
-+
-+int iio_dma_buffer_mmap(struct iio_buffer *buffer, struct vm_area_struct *vma)
-+{
-+	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buffer);
-+	struct iio_dma_buffer_block *block = NULL;
-+	size_t vm_offset;
-+	unsigned int i;
-+
-+	vm_offset = vma->vm_pgoff << PAGE_SHIFT;
-+
-+	for (i = 0; i < queue->num_blocks; i++) {
-+		if (queue->blocks[i]->block.data.offset == vm_offset) {
-+			block = queue->blocks[i];
-+			break;
-+		}
-+	}
-+
-+	if (block == NULL)
-+		return -EINVAL;
-+
-+	if (PAGE_ALIGN(block->block.size) < vma->vm_end - vma->vm_start)
-+		return -EINVAL;
-+
-+	vma->vm_pgoff = 0;
-+
-+	vma->vm_flags |= VM_DONTEXPAND | VM_DONTDUMP;
-+	vma->vm_ops = &iio_dma_buffer_vm_ops;
-+	vma->vm_private_data = block;
-+
-+	vma->vm_ops->open(vma);
-+
-+	return dma_mmap_coherent(queue->dev, vma, block->vaddr,
-+		block->phys_addr, vma->vm_end - vma->vm_start);
-+}
-+EXPORT_SYMBOL_GPL(iio_dma_buffer_mmap);
-+
- /**
-  * iio_dma_buffer_set_bytes_per_datum() - DMA buffer set_bytes_per_datum callback
-  * @buffer: Buffer to set the bytes-per-datum for
-@@ -635,28 +910,9 @@ EXPORT_SYMBOL_GPL(iio_dma_buffer_init);
-  */
- void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue)
- {
--	unsigned int i;
--
- 	mutex_lock(&queue->lock);
- 
--	spin_lock_irq(&queue->list_lock);
--	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
--		if (!queue->fileio.blocks[i])
--			continue;
--		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
--	}
--	INIT_LIST_HEAD(&queue->outgoing);
--	spin_unlock_irq(&queue->list_lock);
--
--	INIT_LIST_HEAD(&queue->incoming);
--
--	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
--		if (!queue->fileio.blocks[i])
--			continue;
--		iio_buffer_block_put(queue->fileio.blocks[i]);
--		queue->fileio.blocks[i] = NULL;
--	}
--	queue->fileio.active_block = NULL;
-+	iio_dma_buffer_fileio_free(queue);
- 	queue->ops = NULL;
- 
- 	mutex_unlock(&queue->lock);
-diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-index 8ecdbae83414..bb022922ec23 100644
---- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-@@ -54,7 +54,7 @@ static void iio_dmaengine_buffer_block_done(void *data,
- 	spin_lock_irqsave(&block->queue->list_lock, flags);
- 	list_del(&block->head);
- 	spin_unlock_irqrestore(&block->queue->list_lock, flags);
--	block->bytes_used -= result->residue;
-+	block->block.bytes_used -= result->residue;
- 	iio_dma_buffer_block_done(block);
- }
- 
-@@ -66,12 +66,17 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
- 	struct dma_async_tx_descriptor *desc;
- 	dma_cookie_t cookie;
- 
--	block->bytes_used = min(block->size, dmaengine_buffer->max_size);
--	block->bytes_used = rounddown(block->bytes_used,
--			dmaengine_buffer->align);
-+	block->block.bytes_used = min(block->block.size,
-+		dmaengine_buffer->max_size);
-+	block->block.bytes_used = rounddown(block->block.bytes_used,
-+		dmaengine_buffer->align);
-+	if (block->block.bytes_used == 0) {
-+		iio_dma_buffer_block_done(block);
-+		return 0;
-+	}
- 
- 	desc = dmaengine_prep_slave_single(dmaengine_buffer->chan,
--		block->phys_addr, block->bytes_used, DMA_DEV_TO_MEM,
-+		block->phys_addr, block->block.bytes_used, DMA_DEV_TO_MEM,
- 		DMA_PREP_INTERRUPT);
- 	if (!desc)
- 		return -ENOMEM;
-@@ -120,6 +125,13 @@ static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
- 	.data_available = iio_dma_buffer_data_available,
- 	.release = iio_dmaengine_buffer_release,
- 
-+	.alloc_blocks = iio_dma_buffer_alloc_blocks,
-+	.free_blocks = iio_dma_buffer_free_blocks,
-+	.query_block = iio_dma_buffer_query_block,
-+	.enqueue_block = iio_dma_buffer_enqueue_block,
-+	.dequeue_block = iio_dma_buffer_dequeue_block,
-+	.mmap = iio_dma_buffer_mmap,
-+
- 	.modes = INDIO_BUFFER_HARDWARE,
- 	.flags = INDIO_BUFFER_FLAG_FIXED_WATERMARK,
- };
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 50228df0b09f..a0d1ad86022f 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -19,6 +19,7 @@
- #include <linux/mm.h>
- #include <linux/poll.h>
- #include <linux/sched/signal.h>
-+#include <linux/mm.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/iio-opaque.h>
-diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-index 6564bdcdac66..315a8d750986 100644
---- a/include/linux/iio/buffer-dma.h
-+++ b/include/linux/iio/buffer-dma.h
-@@ -47,7 +47,7 @@ enum iio_block_state {
- struct iio_dma_buffer_block {
- 	/* May only be accessed by the owner of the block */
- 	struct list_head head;
--	size_t bytes_used;
-+	struct iio_buffer_block block;
- 
- 	/*
- 	 * Set during allocation, constant thereafter. May be accessed read-only
-@@ -55,7 +55,6 @@ struct iio_dma_buffer_block {
- 	 */
- 	void *vaddr;
- 	dma_addr_t phys_addr;
--	size_t size;
- 	struct iio_dma_buffer_queue *queue;
- 
- 	/* Must not be accessed outside the core. */
-@@ -73,12 +72,14 @@ struct iio_dma_buffer_block {
-  * @active_block: Block being used in read()
-  * @pos: Read offset in the active block
-  * @block_size: Size of each block
-+ * @enabled: Whether the buffer is operating in fileio mode
-  */
- struct iio_dma_buffer_queue_fileio {
- 	struct iio_dma_buffer_block *blocks[2];
- 	struct iio_dma_buffer_block *active_block;
- 	size_t pos;
- 	size_t block_size;
-+	bool enabled;
- };
- 
- /**
-@@ -109,6 +110,10 @@ struct iio_dma_buffer_queue {
- 
- 	bool active;
- 
-+	unsigned int num_blocks;
-+	struct iio_dma_buffer_block **blocks;
-+	unsigned int max_offset;
-+
- 	struct iio_dma_buffer_queue_fileio fileio;
- };
- 
-@@ -143,4 +148,15 @@ int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
- void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue);
- void iio_dma_buffer_release(struct iio_dma_buffer_queue *queue);
- 
-+int iio_dma_buffer_alloc_blocks(struct iio_buffer *buffer,
-+				struct iio_buffer_block_alloc_req *req);
-+int iio_dma_buffer_free_blocks(struct iio_buffer *buffer);
-+int iio_dma_buffer_query_block(struct iio_buffer *buffer,
-+			       struct iio_buffer_block *block);
-+int iio_dma_buffer_enqueue_block(struct iio_buffer *buffer,
-+				 struct iio_buffer_block *block);
-+int iio_dma_buffer_dequeue_block(struct iio_buffer *buffer,
-+				 struct iio_buffer_block *block);
-+int iio_dma_buffer_mmap(struct iio_buffer *buffer, struct vm_area_struct *vma);
-+
- #endif
--- 
-2.17.1
-
+> +
+>  static void print_usage(void)
+>  {
+>         fprintf(stderr, "Usage: generic_buffer [options]...\n"
+> @@ -249,6 +377,7 @@ static void print_usage(void)
+>                 "  -c <n>     Do n conversions, or loop forever if n < 0\n"
+>                 "  -e         Disable wait for event (new data)\n"
+>                 "  -g         Use trigger-less mode\n"
+> +               "  -h         Use high-speed buffer access\n"
+>                 "  -l <n>     Set buffer length to n samples\n"
+>                 "  --device-name -n <name>\n"
+>                 "  --device-num -N <num>\n"
+> @@ -356,9 +485,15 @@ int main(int argc, char **argv)
+>
+>         struct iio_channel_info *channels = NULL;
+>
+> +       static bool use_high_speed = false;
+> +       unsigned int block_size;
+> +       int nblocks = 16; /* default */
+> +       int mmaps_cnt = 0;
+> +       struct mmap_block *mmaps = NULL;
+> +
+>         register_cleanup();
+>
+> -       while ((c = getopt_long(argc, argv, "aAb:c:egl:n:N:t:T:w:?", longopts,
+> +       while ((c = getopt_long(argc, argv, "aAb:c:eghl:n:N:t:T:w:?", longopts,
+>                                 NULL)) != -1) {
+>                 switch (c) {
+>                 case 'a':
+> @@ -396,6 +531,9 @@ int main(int argc, char **argv)
+>                 case 'g':
+>                         notrigger = 1;
+>                         break;
+> +               case 'h':
+> +                       use_high_speed = true;
+> +                       break;
+>                 case 'l':
+>                         errno = 0;
+>                         buf_len = strtoul(optarg, &dummy, 10);
+> @@ -661,6 +799,29 @@ int main(int argc, char **argv)
+>                 goto error;
+>         }
+>
+> +       scan_size = size_from_channelarray(channels, num_channels);
+> +       block_size = scan_size * buf_len;
+> +       /**
+> +        * Need to enable high-speed before configuring length/enable.
+> +        * Otherwise, the DMA buffer will work in fileio mode,
+> +        * and mmap won't work.
+> +        */
+> +       if (use_high_speed) {
+> +               /**
+> +                * The block_size for one block is the same as 'data', but it
+> +                * doesn't need to be the same size. It is easier for the sake
+> +                * of this example.
+> +                */
+> +               mmaps = enable_high_speed(buf_fd, block_size, nblocks);
+> +               if (!mmaps) {
+> +                       fprintf(stderr, "Could not enable high-speed mode\n");
+> +                       ret = -errno;
+> +                       goto error;
+> +               }
+> +               mmaps_cnt = nblocks;
+> +               printf("Using high-speed mode\n");
+> +       }
+> +
+>         /* Setup ring buffer parameters */
+>         ret = write_sysfs_int("length", buf_dir_name, buf_len);
+>         if (ret < 0)
+> @@ -675,8 +836,7 @@ int main(int argc, char **argv)
+>                 goto error;
+>         }
+>
+> -       scan_size = size_from_channelarray(channels, num_channels);
+> -       data = malloc(scan_size * buf_len);
+> +       data = malloc(block_size);
+>         if (!data) {
+>                 ret = -ENOMEM;
+>                 goto error;
+> @@ -719,7 +879,13 @@ int main(int argc, char **argv)
+>                         toread = 64;
+>                 }
+>
+> -               read_size = read(buf_fd, data, toread * scan_size);
+> +               if (use_high_speed) {
+> +                       read_size = read_high_speed(buf_fd, data, block_size,
+> +                                                   mmaps, mmaps_cnt);
+> +               } else {
+> +                       read_size = read(buf_fd, data, toread * scan_size);
+> +               }
+> +
+>                 if (read_size < 0) {
+>                         if (errno == EAGAIN) {
+>                                 fprintf(stderr, "nothing available\n");
+> @@ -738,8 +904,14 @@ int main(int argc, char **argv)
+>
+>         if (fd >= 0 && close(fd) == -1)
+>                 perror("Failed to close character device");
+> -       if (buf_fd >= 0 && close(buf_fd) == -1)
+> -               perror("Failed to close buffer");
+> +       for (i = 0; i < mmaps_cnt; i++)
+> +               munmap(mmaps[i].addr, mmaps[i].block.size);
+> +       free(mmaps);
+> +       if (buf_fd >= 0) {
+> +               ioctl(buf_fd, IIO_BUFFER_BLOCK_FREE_IOCTL, 0);
+> +               if (close(buf_fd) == -1)
+> +                       perror("Failed to close buffer");
+> +       }
+>         free(buffer_access);
+>         free(data);
+>         free(buf_dir_name);
+> --
+> 2.17.1
+>
