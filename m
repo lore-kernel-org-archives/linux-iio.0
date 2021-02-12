@@ -2,61 +2,67 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65FC6C433DB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C4FC433E9
 	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 10:19:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 13B2A64D9E
+	by mail.kernel.org (Postfix) with ESMTP id 8A08864D9E
 	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 10:19:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230468AbhBLKS6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 Feb 2021 05:18:58 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:63242 "EHLO
+        id S230374AbhBLKTE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Feb 2021 05:19:04 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:1830 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230295AbhBLKSy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Feb 2021 05:18:54 -0500
+        by vger.kernel.org with ESMTP id S230389AbhBLKS5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Feb 2021 05:18:57 -0500
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11CAFOpp001736;
-        Fri, 12 Feb 2021 05:18:02 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36hrw93ca5-1
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11CAFO8k001788;
+        Fri, 12 Feb 2021 05:18:05 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 36hrw93ca8-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Feb 2021 05:18:02 -0500
-Received: from SCSQMBX10.ad.analog.com (SCSQMBX10.ad.analog.com [10.77.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11CAI0hh025137
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 12 Feb 2021 05:18:01 -0500
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.721.2;
- Fri, 12 Feb 2021 02:17:59 -0800
-Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
- Transport; Fri, 12 Feb 2021 02:17:59 -0800
+        Fri, 12 Feb 2021 05:18:05 -0500
+Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 11CAI3bB023449
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
+        Fri, 12 Feb 2021 05:18:04 -0500
+Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
+ SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 12 Feb 2021 02:18:02 -0800
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
+ SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
+ Fri, 12 Feb 2021 02:18:02 -0800
+Received: from zeus.spd.analog.com (10.66.68.11) by scsqmbx10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
+ Fri, 12 Feb 2021 02:18:02 -0800
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11CAHu5j029319;
-        Fri, 12 Feb 2021 05:17:56 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11CAHu5l029319;
+        Fri, 12 Feb 2021 05:17:59 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <jic23@kernel.org>, <nuno.sa@analog.com>,
         <dragos.bogdan@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [RFC PATCH 0/5] iio: buffer: add output buffer and cyclic mode
-Date:   Fri, 12 Feb 2021 12:20:16 +0200
-Message-ID: <20210212102021.47276-1-alexandru.ardelean@analog.com>
+Subject: [RFC PATCH 2/5] iio: kfifo-buffer: Add output buffer support
+Date:   Fri, 12 Feb 2021 12:20:18 +0200
+Message-ID: <20210212102021.47276-3-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210212102021.47276-1-alexandru.ardelean@analog.com>
+References: <20210212102021.47276-1-alexandru.ardelean@analog.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-12_03:2021-02-12,2021-02-12 signatures=0
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 spamscore=0 mlxlogscore=930 clxscore=1015 adultscore=0
+ malwarescore=0 spamscore=0 mlxlogscore=999 clxscore=1015 adultscore=0
  priorityscore=1501 bulkscore=0 mlxscore=0 phishscore=0 suspectscore=0
  impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2102120077
@@ -64,48 +70,84 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Largely, an adaptation of Lars' work, applied on the IIO multi-buffer
-support + high-speed/mmap support [1].
-Found here:
-  https://github.com/larsclausen/linux/commits/iio-high-speed-5.10
-But this isn't tested.
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-[1] Requires that these sets be applied (in this order):
-* https://lore.kernel.org/linux-iio/20210211122452.78106-1-alexandru.ardelean@analog.com/T/#t
-* https://lore.kernel.org/linux-iio/20210212101143.18993-1-alexandru.ardelean@analog.com/T/#t
+Add output buffer support to the kfifo buffer implementation.
 
-Some of the variation from the original work are:
-1. It's applied on top of the multibuffer support; so the direction of the
-   data is set per iio_buffer, and not iio_dev
-2. Cyclic mode is a separate patch
-3. devm_iio_dmaengine_buffer_alloc() requires the definition of
-   'enum iio_buffer_direction'; which means that 'linux/iio/buffer.h'
-   needs to be included in  buffer-dma.h; Lars tried to use a bool, but
-   using the enum seems a bit more consistent and allows us to maybe
-   go down the route of both I/O buffers (some day); not sure if
-   that's sane or not (you never know)
-4. Various re-formatting; and added some docstrings where I remembered
-   to so so
+The implementation is straight forward and mostly just wraps the kfifo
+API to provide the required operations.
 
-Lars-Peter Clausen (5):
-  iio: Add output buffer support
-  iio: kfifo-buffer: Add output buffer support
-  iio: buffer-dma: Allow to provide custom buffer ops
-  iio: buffer-dma: Add output buffer support
-  iio: buffer-dma: add support for cyclic DMA transfers
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+ drivers/iio/buffer/kfifo_buf.c | 50 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
- drivers/iio/adc/adi-axi-adc.c                 |   5 +-
- drivers/iio/buffer/industrialio-buffer-dma.c  | 120 ++++++++++++++++--
- .../buffer/industrialio-buffer-dmaengine.c    |  57 +++++++--
- drivers/iio/buffer/kfifo_buf.c                |  50 ++++++++
- drivers/iio/industrialio-buffer.c             | 110 +++++++++++++++-
- include/linux/iio/buffer-dma.h                |  11 +-
- include/linux/iio/buffer-dmaengine.h          |   7 +-
- include/linux/iio/buffer.h                    |   7 +
- include/linux/iio/buffer_impl.h               |  11 ++
- include/uapi/linux/iio/buffer.h               |   1 +
- 10 files changed, 348 insertions(+), 31 deletions(-)
-
+diff --git a/drivers/iio/buffer/kfifo_buf.c b/drivers/iio/buffer/kfifo_buf.c
+index 1359abed3b31..6e055176f969 100644
+--- a/drivers/iio/buffer/kfifo_buf.c
++++ b/drivers/iio/buffer/kfifo_buf.c
+@@ -138,10 +138,60 @@ static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
+ 	kfree(kf);
+ }
+ 
++static size_t iio_kfifo_buf_space_available(struct iio_buffer *r)
++{
++	struct iio_kfifo *kf = iio_to_kfifo(r);
++	size_t avail;
++
++	mutex_lock(&kf->user_lock);
++	avail = kfifo_avail(&kf->kf);
++	mutex_unlock(&kf->user_lock);
++
++	return avail;
++}
++
++static int iio_kfifo_remove_from(struct iio_buffer *r, void *data)
++{
++	int ret;
++	struct iio_kfifo *kf = iio_to_kfifo(r);
++
++	if (kfifo_size(&kf->kf) < r->bytes_per_datum)
++		return -EBUSY;
++
++	ret = kfifo_out(&kf->kf, data, r->bytes_per_datum);
++	if (ret != r->bytes_per_datum)
++		return -EBUSY;
++
++	wake_up_interruptible_poll(&r->pollq, POLLOUT | POLLWRNORM);
++
++	return 0;
++}
++
++static int iio_kfifo_write(struct iio_buffer *r, size_t n,
++	const char __user *buf)
++{
++	struct iio_kfifo *kf = iio_to_kfifo(r);
++	int ret, copied;
++
++	mutex_lock(&kf->user_lock);
++	if (!kfifo_initialized(&kf->kf) || n < kfifo_esize(&kf->kf))
++		ret = -EINVAL;
++	else
++		ret = kfifo_from_user(&kf->kf, buf, n, &copied);
++	mutex_unlock(&kf->user_lock);
++	if (ret)
++		return ret;
++
++	return copied;
++}
++
+ static const struct iio_buffer_access_funcs kfifo_access_funcs = {
+ 	.store_to = &iio_store_to_kfifo,
+ 	.read = &iio_read_kfifo,
+ 	.data_available = iio_kfifo_buf_data_available,
++	.remove_from = &iio_kfifo_remove_from,
++	.write = &iio_kfifo_write,
++	.space_available = &iio_kfifo_buf_space_available,
+ 	.request_update = &iio_request_update_kfifo,
+ 	.set_bytes_per_datum = &iio_set_bytes_per_datum_kfifo,
+ 	.set_length = &iio_set_length_kfifo,
 -- 
 2.17.1
 
