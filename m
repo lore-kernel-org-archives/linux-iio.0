@@ -7,48 +7,52 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7D55C433E0
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 10:10:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 30714C433DB
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 10:11:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 941A761477
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 10:10:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E746564E57
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 10:10:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230260AbhBLKKZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 Feb 2021 05:10:25 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:31788 "EHLO
+        id S230311AbhBLKKk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Feb 2021 05:10:40 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:28568 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229948AbhBLKKX (ORCPT
+        by vger.kernel.org with ESMTP id S229928AbhBLKKX (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Feb 2021 05:10:23 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11CA5SqR032589;
-        Fri, 12 Feb 2021 05:09:30 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11CA7BGc025925;
+        Fri, 12 Feb 2021 05:09:26 -0500
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36hrw93br9-1
+        by mx0a-00128a01.pphosted.com with ESMTP id 36hr7qkg1h-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 12 Feb 2021 05:09:30 -0500
+        Fri, 12 Feb 2021 05:09:26 -0500
 Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11CA9T3L024946
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11CA9Ppc024940
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES128-GCM-SHA256 bits=128 verify=FAIL);
-        Fri, 12 Feb 2021 05:09:29 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.1779.2; Fri, 12 Feb
- 2021 05:09:28 -0500
+        Fri, 12 Feb 2021 05:09:25 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.1779.2; Fri, 12 Feb 2021 05:09:24 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
+ Fri, 12 Feb 2021 05:09:24 -0500
 Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
  (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
- Fri, 12 Feb 2021 05:09:28 -0500
+ Fri, 12 Feb 2021 05:09:24 -0500
 Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11CA9K66029095;
-        Fri, 12 Feb 2021 05:09:25 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11CA9K64029095;
+        Fri, 12 Feb 2021 05:09:22 -0500
 From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <jic23@kernel.org>, <nuno.sa@analog.com>,
         <dragos.bogdan@analog.com>,
         Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v2 3/3] tools: iio: add example for high-speed buffer support
-Date:   Fri, 12 Feb 2021 12:11:43 +0200
-Message-ID: <20210212101143.18993-4-alexandru.ardelean@analog.com>
+Subject: [PATCH v2 1/3] iio: core: Add mmap interface infrastructure
+Date:   Fri, 12 Feb 2021 12:11:41 +0200
+Message-ID: <20210212101143.18993-2-alexandru.ardelean@analog.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210212101143.18993-1-alexandru.ardelean@analog.com>
 References: <20210212101143.18993-1-alexandru.ardelean@analog.com>
@@ -57,280 +61,413 @@ Content-Type: text/plain
 X-ADIRuleOP-NewSCL: Rule Triggered
 X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
  definitions=2021-02-12_03:2021-02-12,2021-02-12 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 spamscore=0 mlxlogscore=999 clxscore=1015 adultscore=0
- priorityscore=1501 bulkscore=0 mlxscore=0 phishscore=0 suspectscore=0
- impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999
+ lowpriorityscore=0 malwarescore=0 clxscore=1015 spamscore=0 phishscore=0
+ suspectscore=0 mlxscore=0 bulkscore=0 priorityscore=1501 impostorscore=0
+ adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2009150000 definitions=main-2102120076
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Following a recent update to the IIO buffer infrastructure, this change
-adds a basic example on how to access an IIO buffer via the new mmap()
-interface.
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-The ioctl() for the high-speed mode needs to be enabled right from the
-start, before setting any parameters via sysfs (length, enable, etc), to
-make sure that the mmap mode is used and not the fileio mode.
+Add the necessary infrastructure to the IIO core to support an mmap based
+interface to access the capture data.
 
+The advantage of the mmap based interface compared to the read() based
+interface is that it avoids an extra copy of the data between kernel and
+userspace. This is particular useful for high-speed devices which produce
+several megabytes or even gigabytes of data per second.
+
+The data for the mmap interface is managed at the granularity of so called
+blocks. A block is a contiguous region of memory (at the moment both
+physically and virtually contiguous). Reducing the granularity from byte
+level to block level is done to reduce the userspace-kernelspace
+synchronization overhead since performing syscalls for each byte at a
+data-rate of a few megabytes is not feasible.
+
+This of course leads to a slightly increased latency. For this reason an
+application can choose the size of the blocks as well as how many blocks it
+allocates. E.g. two blocks would be a traditional double buffering scheme.
+But using a higher number might be necessary to avoid underflow/overflow
+situations in the presence of scheduling latencies.
+
+A block can either be owned by kernel space or userspace. When owned by
+userspace it save to access the data in the block and process it. When
+owned by kernel space the block can be in one of 3 states.
+
+It can be in the incoming queue where all blocks submitted from userspace
+are placed and are waiting to be processed by the kernel driver.
+
+It can be currently being processed by the kernel driver, this means it is
+actively placing capturing data in it (usually using DMA).
+
+Or it can be in the outgoing queue where all blocks that have been
+processed by the kernel are placed. Userspace can dequeue the blocks as
+necessary.
+
+As part of the interface 5 new IOCTLs to manage the blocks and exchange
+them between userspace and kernelspace. The IOCTLs can be accessed through
+a open file descriptor to a IIO device.
+
+IIO_BUFFER_BLOCK_ALLOC_IOCTL(struct iio_buffer_block_alloc_req *):
+ Allocates new blocks. Can be called multiple times if necessary. A newly
+ allocated block is initially owned by userspace.
+
+IIO_BUFFER_BLOCK_FREE_IOCTL(void):
+ Frees all previously allocated blocks. If the backing memory of a block is
+ still in use by a kernel driver (i.e. active DMA transfer) it will be
+ freed once the kernel driver has released it.
+
+IIO_BUFFER_BLOCK_QUERY_IOCTL(struct iio_buffer_block *):
+ Queries information about a block. The id of the block about which
+ information is to be queried needs to be set by userspace.
+
+IIO_BUFFER_BLOCK_ENQUEUE_IOCTL(struct iio_buffer_block *):
+ Places a block on the incoming queue. This transfers ownership of the
+ block from userspace to kernelspace. Userspace must populate the id field
+ of the block to indicate which block to enqueue.
+
+IIO_BUFFER_BLOCK_DEQUEUE_IOCTL(struct iio_buffer_block *):
+ Removes the first block from the outgoing queue. This transfers ownership
+ of the block from kernelspace to userspace. Kernelspace will populate all
+ fields of the block. If the queue is empty and the file descriptor is set
+ to blocking the IOCTL will block until a new block is available on the
+ outgoing queue.
+
+To access the data stored in a block by userspace the block must be mapped
+to the process's memory. This is done by calling mmap() on the IIO device
+file descriptor. Each block has a unique offset assigned to it which should
+be passed to the mmap interface. E.g.
+
+  mmap(0, block.size, PROT_READ | PROT_WRITE, MAP_SHARED, fd,
+       block.offset);
+
+A typical workflow for the new interface is:
+
+  BLOCK_ALLOC
+
+  foreach block
+     BLOCK_QUERY block
+	 mmap block.data.offset
+	 BLOCK_ENQUEUE block
+
+  enable buffer
+
+  while !done
+	BLOCK_DEQUEUE block
+	process data
+	BLOCK_ENQUEUE block
+
+  disable buffer
+
+  BLOCK_FREE
+
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
 ---
- tools/iio/iio_generic_buffer.c | 183 +++++++++++++++++++++++++++++++--
- 1 file changed, 177 insertions(+), 6 deletions(-)
+ drivers/iio/industrialio-buffer.c | 157 ++++++++++++++++++++++++++++++
+ include/linux/iio/buffer-dma.h    |   5 -
+ include/linux/iio/buffer_impl.h   |  23 +++++
+ include/uapi/linux/iio/buffer.h   |  26 +++++
+ 4 files changed, 206 insertions(+), 5 deletions(-)
 
-diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-index fdd08514d556..675a7e6047e0 100644
---- a/tools/iio/iio_generic_buffer.c
-+++ b/tools/iio/iio_generic_buffer.c
-@@ -31,6 +31,7 @@
- #include <stdbool.h>
- #include <signal.h>
- #include <sys/ioctl.h>
-+#include <sys/mman.h>
- #include <linux/iio/buffer.h>
- #include "iio_utils.h"
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 3aa6702a5811..50228df0b09f 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -16,6 +16,7 @@
+ #include <linux/fs.h>
+ #include <linux/cdev.h>
+ #include <linux/slab.h>
++#include <linux/mm.h>
+ #include <linux/poll.h>
+ #include <linux/sched/signal.h>
  
-@@ -239,6 +240,132 @@ static int enable_disable_all_channels(char *dev_dir_name, int buffer_idx, int e
+@@ -1370,6 +1371,12 @@ static void iio_buffer_unregister_legacy_sysfs_groups(struct iio_dev *indio_dev)
+ 	kfree(iio_dev_opaque->legacy_scan_el_group.attrs);
+ }
+ 
++static void iio_buffer_free_blocks(struct iio_buffer *buffer)
++{
++	if (buffer->access->free_blocks)
++		buffer->access->free_blocks(buffer);
++}
++
+ static int iio_buffer_chrdev_release(struct inode *inode, struct file *filep)
+ {
+ 	struct iio_dev_buffer_pair *ib = filep->private_data;
+@@ -1378,18 +1385,24 @@ static int iio_buffer_chrdev_release(struct inode *inode, struct file *filep)
+ 
+ 	wake_up(&buffer->pollq);
+ 	clear_bit(IIO_BUSY_BIT_POS, &buffer->flags);
++	iio_buffer_free_blocks(buffer);
+ 	iio_device_put(indio_dev);
+ 	kfree(ib);
+ 
  	return 0;
  }
  
-+struct mmap_block {
-+	struct iio_buffer_block block;
-+	void *addr;
-+};
++static long iio_buffer_ioctl(struct file *filep, unsigned int cmd, unsigned long arg);
++static int iio_buffer_mmap(struct file *filep, struct vm_area_struct *vma);
 +
-+static struct mmap_block *enable_high_speed(int buf_fd, unsigned int block_size,
-+					    int nblocks)
-+{
-+	struct iio_buffer_block_alloc_req req = { 0 };
-+	struct mmap_block *mmaps = NULL;
-+	int mmaps_cnt = 0;
-+	int i, ret;
-+
-+	/**
-+	 * Validate we can do high-speed by issuing BLOCK_FREE ioctl.
-+	 * If using just BLOCK_ALLOC it's distinguish between ENOSYS
-+	 * and other error types.
-+	 */
-+	ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_FREE_IOCTL, 0);
-+	if (ret < 0) {
-+		errno = ENOSYS;
-+		return NULL;
-+	}
-+
-+	/* for now, this */
-+	req.id = 0;
-+	req.type = 0;
-+	req.size = block_size;
-+	req.count = nblocks;
-+
-+	ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_ALLOC_IOCTL, &req);
-+	if (ret < 0)
-+		return NULL;
-+
-+	if (req.count == 0) {
-+		errno = ENOMEM;
-+		return NULL;
-+	}
-+
-+	if (req.count < nblocks) {
-+		fprintf(stderr, "Requested %d blocks, got %d\n",
-+			nblocks, req.count);
-+		errno = ENOMEM;
-+		return NULL;
-+	}
-+
-+	mmaps = calloc(req.count, sizeof(*mmaps));
-+	if (!mmaps) {
-+		errno = ENOMEM;
-+		return NULL;
-+	}
-+
-+	for (i = 0; i < req.count; i++) {
-+		mmaps[i].block.id = i;
-+		ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_QUERY_IOCTL, &mmaps[i].block);
-+		if (ret < 0)
-+			goto error;
-+
-+		ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_ENQUEUE_IOCTL, &mmaps[i].block);
-+		if (ret < 0)
-+			goto error;
-+
-+		mmaps[i].addr = mmap(0, mmaps[i].block.size,
-+				      PROT_READ | PROT_WRITE, MAP_SHARED,
-+				      buf_fd, mmaps[i].block.data.offset);
-+
-+		if (mmaps[i].addr == MAP_FAILED)
-+			goto error;
-+
-+		mmaps_cnt++;
-+	}
-+
-+	return mmaps;
-+
-+error:
-+	for (i = 0; i < mmaps_cnt; i++)
-+		munmap(mmaps[i].addr, mmaps[i].block.size);
-+	free(mmaps);
-+	return NULL;
-+}
-+
-+static int read_high_speed(int buf_fd, char *data, unsigned int block_size,
-+			   struct mmap_block *mmaps, unsigned int mmaps_cnt)
+ static const struct file_operations iio_buffer_chrdev_fileops = {
+ 	.owner = THIS_MODULE,
+ 	.llseek = noop_llseek,
+ 	.read = iio_buffer_read,
+ 	.poll = iio_buffer_poll,
++	.unlocked_ioctl = iio_buffer_ioctl,
+ 	.compat_ioctl = compat_ptr_ioctl,
++	.mmap = iio_buffer_mmap,
+ 	.release = iio_buffer_chrdev_release,
+ };
+ 
+@@ -1762,6 +1775,150 @@ void iio_buffer_put(struct iio_buffer *buffer)
+ }
+ EXPORT_SYMBOL_GPL(iio_buffer_put);
+ 
++static int iio_buffer_query_block(struct iio_buffer *buffer,
++				  struct iio_buffer_block __user *user_block)
 +{
 +	struct iio_buffer_block block;
 +	int ret;
 +
-+	/**
-+	 * This is where some buffer-pool management can do wonders,
-+	 * but for the sake of this sample-code, we're just going to
-+	 * copy the data and re-enqueue it back
-+	 */
-+	memset(&block, 0, sizeof(block));
-+	ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_DEQUEUE_IOCTL, &block);
-+	if (ret < 0)
++	if (!buffer->access->query_block)
++		return -ENOSYS;
++
++	if (copy_from_user(&block, user_block, sizeof(block)))
++		return -EFAULT;
++
++	ret = buffer->access->query_block(buffer, &block);
++	if (ret)
 +		return ret;
 +
-+	/* check for weird conditions */
-+	if (block.bytes_used > block_size) {
-+		fprintf(stderr,
-+			"Got a bigger block (%u) than expected (%u)\n",
-+			block.bytes_used, block_size);
-+		return -EFBIG;
-+	}
++	if (copy_to_user(user_block, &block, sizeof(block)))
++		return -EFAULT;
 +
-+	if (block.bytes_used < block_size) {
-+		/**
-+		 * This can be normal, with some real-world data
-+		 * terminating abruptly. But log it.
-+		 */
-+		fprintf(stderr,
-+			"Got a smaller block (%u) than expected (%u)\n",
-+			block.bytes_used, block_size);
-+	}
-+
-+	/* memcpy() the data, we lose some more performance here :p */
-+	memcpy(data, mmaps[block.id].addr, block.bytes_used);
-+
-+	/* and re-queue this back */
-+	ret = ioctl(buf_fd, IIO_BUFFER_BLOCK_ENQUEUE_IOCTL, &mmaps[block.id].block);
-+	if (ret < 0)
-+		return ret;
-+
-+	return block.bytes_used;
++	return 0;
 +}
 +
- static void print_usage(void)
- {
- 	fprintf(stderr, "Usage: generic_buffer [options]...\n"
-@@ -249,6 +376,7 @@ static void print_usage(void)
- 		"  -c <n>     Do n conversions, or loop forever if n < 0\n"
- 		"  -e         Disable wait for event (new data)\n"
- 		"  -g         Use trigger-less mode\n"
-+		"  -h         Use high-speed buffer access\n"
- 		"  -l <n>     Set buffer length to n samples\n"
- 		"  --device-name -n <name>\n"
- 		"  --device-num -N <num>\n"
-@@ -356,9 +484,15 @@ int main(int argc, char **argv)
- 
- 	struct iio_channel_info *channels = NULL;
- 
-+	static bool use_high_speed = false;
-+	unsigned int block_size;
-+	int nblocks = 16; /* default */
-+	int mmaps_cnt = 0;
-+	struct mmap_block *mmaps = NULL;
++static int iio_buffer_dequeue_block(struct iio_dev *indio_dev,
++				    struct iio_buffer *buffer,
++				    struct iio_buffer_block __user *user_block,
++				    bool non_blocking)
++{
++	struct iio_buffer_block block;
++	int ret;
 +
- 	register_cleanup();
- 
--	while ((c = getopt_long(argc, argv, "aAb:c:egl:n:N:t:T:w:?", longopts,
-+	while ((c = getopt_long(argc, argv, "aAb:c:eghl:n:N:t:T:w:?", longopts,
- 				NULL)) != -1) {
- 		switch (c) {
- 		case 'a':
-@@ -396,6 +530,9 @@ int main(int argc, char **argv)
- 		case 'g':
- 			notrigger = 1;
- 			break;
-+		case 'h':
-+			use_high_speed = true;
-+			break;
- 		case 'l':
- 			errno = 0;
- 			buf_len = strtoul(optarg, &dummy, 10);
-@@ -661,6 +798,29 @@ int main(int argc, char **argv)
- 		goto error;
- 	}
- 
-+	scan_size = size_from_channelarray(channels, num_channels);
-+	block_size = scan_size * buf_len;
-+	/**
-+	 * Need to enable high-speed before configuring length/enable.
-+	 * Otherwise, the DMA buffer will work in fileio mode,
-+	 * and mmap won't work.
-+	 */
-+	if (use_high_speed) {
-+		/**
-+		 * The block_size for one block is the same as 'data', but it
-+		 * doesn't need to be the same size. It is easier for the sake
-+		 * of this example.
-+		 */
-+		mmaps = enable_high_speed(buf_fd, block_size, nblocks);
-+		if (!mmaps) {
-+			fprintf(stderr, "Could not enable high-speed mode\n");
-+			ret = -errno;
-+			goto error;
-+		}
-+		mmaps_cnt = nblocks;
-+		printf("Using high-speed mode\n");
-+	}
++	if (!buffer->access->dequeue_block)
++		return -ENOSYS;
 +
- 	/* Setup ring buffer parameters */
- 	ret = write_sysfs_int("length", buf_dir_name, buf_len);
- 	if (ret < 0)
-@@ -675,8 +835,7 @@ int main(int argc, char **argv)
- 		goto error;
- 	}
- 
--	scan_size = size_from_channelarray(channels, num_channels);
--	data = malloc(scan_size * buf_len);
-+	data = malloc(block_size);
- 	if (!data) {
- 		ret = -ENOMEM;
- 		goto error;
-@@ -719,7 +878,13 @@ int main(int argc, char **argv)
- 			toread = 64;
- 		}
- 
--		read_size = read(buf_fd, data, toread * scan_size);
-+		if (use_high_speed) {
-+			read_size = read_high_speed(buf_fd, data, block_size,
-+						    mmaps, mmaps_cnt);
-+		} else {
-+			read_size = read(buf_fd, data, toread * scan_size);
++	do {
++		if (!iio_buffer_data_available(buffer)) {
++			if (non_blocking)
++				return -EAGAIN;
++
++			ret = wait_event_interruptible(buffer->pollq,
++					iio_buffer_data_available(buffer) ||
++					indio_dev->info == NULL);
++			if (ret)
++				return ret;
++			if (indio_dev->info == NULL)
++				return -ENODEV;
 +		}
 +
- 		if (read_size < 0) {
- 			if (errno == EAGAIN) {
- 				fprintf(stderr, "nothing available\n");
-@@ -738,8 +903,14 @@ int main(int argc, char **argv)
- 
- 	if (fd >= 0 && close(fd) == -1)
- 		perror("Failed to close character device");
--	if (buf_fd >= 0 && close(buf_fd) == -1)
--		perror("Failed to close buffer");
-+	for (i = 0; i < mmaps_cnt; i++)
-+		munmap(mmaps[i].addr, mmaps[i].block.size);
-+	free(mmaps);
-+	if (buf_fd >= 0) {
-+		ioctl(buf_fd, IIO_BUFFER_BLOCK_FREE_IOCTL, 0);
-+		if (close(buf_fd) == -1)
-+			perror("Failed to close buffer");
++		ret = buffer->access->dequeue_block(buffer, &block);
++		if (ret == -EAGAIN && non_blocking)
++			ret = 0;
++	} while (ret);
++
++	if (ret)
++		return ret;
++
++	if (copy_to_user(user_block, &block, sizeof(block)))
++		return -EFAULT;
++
++	return 0;
++}
++
++static int iio_buffer_enqueue_block(struct iio_buffer *buffer,
++				   struct iio_buffer_block __user *user_block)
++{
++	struct iio_buffer_block block;
++
++	if (!buffer->access->enqueue_block)
++		return -ENOSYS;
++
++	if (copy_from_user(&block, user_block, sizeof(block)))
++		return -EFAULT;
++
++	return buffer->access->enqueue_block(buffer, &block);
++}
++
++static int iio_buffer_alloc_blocks(struct iio_buffer *buffer,
++				   struct iio_buffer_block_alloc_req __user *user_req)
++{
++	struct iio_buffer_block_alloc_req req;
++	int ret;
++
++	if (!buffer->access->alloc_blocks)
++		return -ENOSYS;
++
++	if (copy_from_user(&req, user_req, sizeof(req)))
++		return -EFAULT;
++
++	ret = buffer->access->alloc_blocks(buffer, &req);
++	if (ret)
++		return ret;
++
++	if (copy_to_user(user_req, &req, sizeof(req)))
++		return -EFAULT;
++
++	return 0;
++}
++
++static long iio_buffer_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
++{
++	bool non_blocking = filep->f_flags & O_NONBLOCK;
++	struct iio_dev_buffer_pair *ib = filep->private_data;
++	struct iio_dev *indio_dev = ib->indio_dev;
++	struct iio_buffer *buffer = ib->buffer;
++
++	if (!buffer || !buffer->access)
++		return -ENODEV;
++
++	switch (cmd) {
++	case IIO_BUFFER_BLOCK_ALLOC_IOCTL:
++		return iio_buffer_alloc_blocks(buffer,
++			(struct iio_buffer_block_alloc_req __user *)arg);
++	case IIO_BUFFER_BLOCK_FREE_IOCTL:
++		iio_buffer_free_blocks(buffer);
++		return 0;
++	case IIO_BUFFER_BLOCK_QUERY_IOCTL:
++		return iio_buffer_query_block(buffer,
++			(struct iio_buffer_block __user *)arg);
++	case IIO_BUFFER_BLOCK_ENQUEUE_IOCTL:
++		return iio_buffer_enqueue_block(buffer,
++			(struct iio_buffer_block __user *)arg);
++	case IIO_BUFFER_BLOCK_DEQUEUE_IOCTL:
++		return iio_buffer_dequeue_block(indio_dev, buffer,
++			(struct iio_buffer_block __user *)arg, non_blocking);
 +	}
- 	free(buffer_access);
- 	free(data);
- 	free(buf_dir_name);
++	return -EINVAL;
++}
++
++static int iio_buffer_mmap(struct file *filep, struct vm_area_struct *vma)
++{
++	struct iio_dev_buffer_pair *ib = filep->private_data;
++	struct iio_buffer *buffer = ib->buffer;
++
++	if (!buffer->access || !buffer->access->mmap)
++		return -ENODEV;
++
++	if (!(vma->vm_flags & VM_SHARED))
++		return -EINVAL;
++
++	if (!(vma->vm_flags & VM_READ))
++		return -EINVAL;
++
++	return buffer->access->mmap(buffer, vma);
++}
++
+ /**
+  * iio_device_attach_buffer - Attach a buffer to a IIO device
+  * @indio_dev: The device the buffer should be attached to
+diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
+index ff15c61bf319..6564bdcdac66 100644
+--- a/include/linux/iio/buffer-dma.h
++++ b/include/linux/iio/buffer-dma.h
+@@ -17,11 +17,6 @@ struct iio_dma_buffer_queue;
+ struct iio_dma_buffer_ops;
+ struct device;
+ 
+-struct iio_buffer_block {
+-	u32 size;
+-	u32 bytes_used;
+-};
+-
+ /**
+  * enum iio_block_state - State of a struct iio_dma_buffer_block
+  * @IIO_BLOCK_STATE_DEQUEUED: Block is not queued
+diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
+index 245b32918ae1..1d57dc7ccb4f 100644
+--- a/include/linux/iio/buffer_impl.h
++++ b/include/linux/iio/buffer_impl.h
+@@ -34,6 +34,18 @@ struct iio_buffer;
+  *                      device stops sampling. Calles are balanced with @enable.
+  * @release:		called when the last reference to the buffer is dropped,
+  *			should free all resources allocated by the buffer.
++ * @alloc_blocks:	called from userspace via ioctl to allocate blocks
++ *			that will be used via the mmap interface.
++ * @free_blocks:	called from userspace via ioctl to free all blocks
++ *			allocated for this buffer.
++ * @enqueue_block:	called from userspace via ioctl to queue this block
++ *			to this buffer. Requires a valid block id.
++ * @dequeue_block:	called from userspace via ioctl to dequeue this block
++ *			from this buffer. Requires a valid block id.
++ * @query_block:	called from userspace via ioctl to query the attributes
++ *			of this block. Requires a valid block id.
++ * @mmap:		mmap hook for this buffer. Userspace mmap() calls will
++ *			get routed to this.
+  * @modes:		Supported operating modes by this buffer type
+  * @flags:		A bitmask combination of INDIO_BUFFER_FLAG_*
+  *
+@@ -60,6 +72,17 @@ struct iio_buffer_access_funcs {
+ 
+ 	void (*release)(struct iio_buffer *buffer);
+ 
++	int (*alloc_blocks)(struct iio_buffer *buffer,
++			    struct iio_buffer_block_alloc_req *req);
++	int (*free_blocks)(struct iio_buffer *buffer);
++	int (*enqueue_block)(struct iio_buffer *buffer,
++			     struct iio_buffer_block *block);
++	int (*dequeue_block)(struct iio_buffer *buffer,
++			     struct iio_buffer_block *block);
++	int (*query_block)(struct iio_buffer *buffer,
++			   struct iio_buffer_block *block);
++	int (*mmap)(struct iio_buffer *buffer,	struct vm_area_struct *vma);
++
+ 	unsigned int modes;
+ 	unsigned int flags;
+ };
+diff --git a/include/uapi/linux/iio/buffer.h b/include/uapi/linux/iio/buffer.h
+index 13939032b3f6..70ad3aea01ea 100644
+--- a/include/uapi/linux/iio/buffer.h
++++ b/include/uapi/linux/iio/buffer.h
+@@ -5,6 +5,32 @@
+ #ifndef _UAPI_IIO_BUFFER_H_
+ #define _UAPI_IIO_BUFFER_H_
+ 
++struct iio_buffer_block_alloc_req {
++	__u32 type;
++	__u32 size;
++	__u32 count;
++	__u32 id;
++};
++
++#define IIO_BUFFER_BLOCK_FLAG_TIMESTAMP_VALID	(1 << 0)
++
++struct iio_buffer_block {
++	__u32 id;
++	__u32 size;
++	__u32 bytes_used;
++	__u32 type;
++	__u32 flags;
++	union {
++		__u32 offset;
++	} data;
++	__u64 timestamp;
++};
++
+ #define IIO_BUFFER_GET_FD_IOCTL			_IOWR('i', 0x91, int)
++#define IIO_BUFFER_BLOCK_ALLOC_IOCTL		_IOWR('i', 0x92, struct iio_buffer_block_alloc_req)
++#define IIO_BUFFER_BLOCK_FREE_IOCTL		_IO('i',   0x93)
++#define IIO_BUFFER_BLOCK_QUERY_IOCTL		_IOWR('i', 0x93, struct iio_buffer_block)
++#define IIO_BUFFER_BLOCK_ENQUEUE_IOCTL		_IOWR('i', 0x94, struct iio_buffer_block)
++#define IIO_BUFFER_BLOCK_DEQUEUE_IOCTL		_IOWR('i', 0x95, struct iio_buffer_block)
+ 
+ #endif /* _UAPI_IIO_BUFFER_H_ */
 -- 
 2.17.1
 
