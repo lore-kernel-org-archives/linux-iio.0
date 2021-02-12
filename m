@@ -5,57 +5,57 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD863C433E0
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 12:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0180DC433E0
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 12:15:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8858D64E08
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 12:15:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C6CFF64E30
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Feb 2021 12:15:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230486AbhBLMOr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 Feb 2021 07:14:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37256 "EHLO
+        id S230132AbhBLMPR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Feb 2021 07:15:17 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230323AbhBLMOr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Feb 2021 07:14:47 -0500
-Received: from mail-qk1-x72b.google.com (mail-qk1-x72b.google.com [IPv6:2607:f8b0:4864:20::72b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45489C061756;
-        Fri, 12 Feb 2021 04:14:06 -0800 (PST)
-Received: by mail-qk1-x72b.google.com with SMTP id o193so8399941qke.11;
-        Fri, 12 Feb 2021 04:14:06 -0800 (PST)
+        with ESMTP id S229992AbhBLMO6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Feb 2021 07:14:58 -0500
+Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C6D4C061786;
+        Fri, 12 Feb 2021 04:14:17 -0800 (PST)
+Received: by mail-qt1-x831.google.com with SMTP id v10so4118457qtq.7;
+        Fri, 12 Feb 2021 04:14:17 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=/HIvsBK/oc4MlyDkN1rV+yPLGbvejpCaMHFfLvFpOso=;
-        b=teqgFNoyZseqXH7xem42yT13V9jTcCwik3MFHaHNFe8LET3zEzGZ+hnmU1RdKgydGe
-         H38CoBVnTVbYQ6LfsUdwYfFLcMgn8lLwg5remy9f44WuoG1xwkeNw8orHaictbEkZUo2
-         uLooHIV3LfBnSenouNrYzr6FtxERkcn0LZ3djAqSpb4O4h+3XE3ATzsqr3xHomCrm8qo
-         JBKq7N2+vxcpkltqD6DqEIGvMmsn5DIz4PDRCmKu8E9u1D/ZHxp8kGdSJ9qU8i9GNmDs
-         MsuvEPtoyA2mapGHnYUikTw/6Hts1L1payZJSAU7AeYPfTobeWCEHFumE9c9E4puY+HP
-         BALg==
+        bh=zYNQDVBttWuol9Nr7vZ9TZ0pD01e0D8AxvqzWcKy2yQ=;
+        b=aM0sxgfW7EgiObp2+TZrx7/lpr8sKMXQGE4XaF94+aL5T5kix2W8sOsAr8u0jENXVE
+         7ifeOIOq16yrovXrbb8oiyDkt+ArzI+PtEZez5zjEvlJFN3ZFsbl6RvIAoza1oNUOCX1
+         olEGary8VS5UP6uiSlIR5HLqcnjrgFztryrCUkJeSMUKk70QmoHERtWMIrvjqQqulxX0
+         xMyTRO5H7Say1S18oBN+GhBXNe6kuL1byvWTOHo9i5zCEEshHdM0dxUrf0Ud9pvL7rOj
+         OxFXDTRj2LBOa+80VR1/rN5SRZ27oq6IRHXOM8rvgNHGumKKjlrG3dNbN0m3JfnPzCSa
+         zSRg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=/HIvsBK/oc4MlyDkN1rV+yPLGbvejpCaMHFfLvFpOso=;
-        b=lqtVpPttyakapAh9y3YffmjM1dHKnfKzXz/0L91G7suMkFiWUnwI6et7v8YFjn0dce
-         Xe+REWy6Ah9pD5DRhSYxApU4WKhuVBNHnIS9fqHp5OonCfiit32NCdO/XZXJNfO/DwLM
-         SY49Cu9s1v2DJ4U4iIXE4SrLofusM8rLv+oEt2MJJniHg6qgUjKsbPmdSa3DQu05Vuxh
-         0+0bqxXIdXe6n5aA5GemJTy1EtbjzUmva71AuGQbdKVTlISJC0QjUm56ibQ2X5JXsaG0
-         XRuIjYryCwM6+1rBuNWQasa9Rn0mHFXGAvYzjm6TEx+uRIU+msryIWj/Ux+TH0rL5YN0
-         29UA==
-X-Gm-Message-State: AOAM532xm7gEXk1vBlPwP6cxy1dUUCP1hPjHoLD2Uu76S2ZPY+Kin2uH
-        hz+rOWPK0Q26Knmaz3hDUtfiVeUbM1M=
-X-Google-Smtp-Source: ABdhPJx7a3LAbwMEGu8J69E1bji8Gb6H3Ac/H4iPgV6pmaV0zInIFGbFDX0JEgJuDk6PAyV2naU9yw==
-X-Received: by 2002:a37:6494:: with SMTP id y142mr2325340qkb.57.1613132045451;
-        Fri, 12 Feb 2021 04:14:05 -0800 (PST)
+        bh=zYNQDVBttWuol9Nr7vZ9TZ0pD01e0D8AxvqzWcKy2yQ=;
+        b=ZMM02OgBYWyS9jaArKVcbEeeXDVBfdszjNI+sT8Bgw5NOPeLD+Zi2pjxUVDpSEzyo4
+         DOyqRm34mnWgwl9fr2QgdwQz76kA8xjtfP83VbY6fvVge6wHoZMsu5ystHqm1wnylVfd
+         fxr9+iA0yYBmRN/eqIZW2i+/emu8E5Qn0ABRGcAqIOvWyG66RHayoDBRB9hQJObGaILZ
+         9nBlufo7gcy6n2wc/jl1pCu9D1hfWgY1HTcCn8FIHLCnNyb9un4xR3PSEubcObqk9+E8
+         TfpIH6+vRmxNrLYpaSliPiRLtJ/qcB9iPSIDy7Nm6H9tdte8MorLvbZquYR81H+mU17/
+         Zq0g==
+X-Gm-Message-State: AOAM530B4mzQt/ocKm3pwmsyV/m6X5VllBBCCFT98GyROA3IqXxBwxqz
+        p/LdjXgGLaNME5GRF6zquik=
+X-Google-Smtp-Source: ABdhPJwnyJ+R/neIAfUAIjSjngmjsVTVRQEo+iuZDMXLDZrsRJ6K4GTnnYIMjHvxF2iySoUNHUa4Gg==
+X-Received: by 2002:ac8:5894:: with SMTP id t20mr2078682qta.194.1613132056934;
+        Fri, 12 Feb 2021 04:14:16 -0800 (PST)
 Received: from localhost.localdomain ([193.27.12.132])
-        by smtp.gmail.com with ESMTPSA id y135sm6278534qkb.14.2021.02.12.04.13.59
+        by smtp.gmail.com with ESMTPSA id y135sm6278534qkb.14.2021.02.12.04.14.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 12 Feb 2021 04:14:04 -0800 (PST)
+        Fri, 12 Feb 2021 04:14:16 -0800 (PST)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -67,9 +67,9 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v8 01/22] docs: counter: Consolidate Counter sysfs attributes documentation
-Date:   Fri, 12 Feb 2021 21:13:25 +0900
-Message-Id: <362a71a1eba98108d009db8c929170a6ed8cf110.1613131238.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v8 03/22] counter: 104-quad-8: Return error when invalid mode during ceiling_write
+Date:   Fri, 12 Feb 2021 21:13:27 +0900
+Message-Id: <2be0c071e7730ea16b8faa1efcd3d0d908e7f9db.1613131238.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.0
 In-Reply-To: <cover.1613131238.git.vilhelm.gray@gmail.com>
 References: <cover.1613131238.git.vilhelm.gray@gmail.com>
@@ -79,246 +79,39 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Duplicate ABIs are not valid, so let's consolidate these sysfs
-attributes into the main sysfs-bus-counter documentation file.
+The 104-QUAD-8 only has two count modes where a ceiling value makes
+sense: Range Limit and Modulo-N. Outside of these two modes, setting a
+ceiling value is an invalid operation -- so let's report it as such by
+returning -EINVAL.
 
-Cc: Patrick Havelange <patrick.havelange@essensium.com>
+Fixes: fc069262261c ("counter: 104-quad-8: Add lock guards - generic interface")
+Cc: Syed Nayyar Waris <syednwaris@gmail.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-counter   | 76 ++++++++++++++++++-
- .../ABI/testing/sysfs-bus-counter-104-quad-8  | 61 ---------------
- .../ABI/testing/sysfs-bus-counter-ftm-quaddec | 16 ----
- MAINTAINERS                                   |  4 +-
- 4 files changed, 75 insertions(+), 82 deletions(-)
- delete mode 100644 Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
- delete mode 100644 Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
+ drivers/counter/104-quad-8.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
-index 566bd99fe0a5..29f54484183f 100644
---- a/Documentation/ABI/testing/sysfs-bus-counter
-+++ b/Documentation/ABI/testing/sysfs-bus-counter
-@@ -57,6 +57,7 @@ Description:
- What:		/sys/bus/counter/devices/counterX/countY/count_mode_available
- What:		/sys/bus/counter/devices/counterX/countY/error_noise_available
- What:		/sys/bus/counter/devices/counterX/countY/function_available
-+What:		/sys/bus/counter/devices/counterX/countY/prescaler_available
- What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_available
- KernelVersion:	5.2
- Contact:	linux-iio@vger.kernel.org
-@@ -154,6 +155,15 @@ Description:
- 		Count Y. If possible, this should match the name of the
- 		respective channel as it appears in the device datasheet.
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 9691f8612be8..f0608b21196a 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -714,13 +714,14 @@ static ssize_t quad8_count_ceiling_write(struct counter_device *counter,
+ 	switch (priv->count_mode[count->id]) {
+ 	case 1:
+ 	case 3:
++		mutex_unlock(&priv->lock);
+ 		quad8_preset_register_set(priv, count->id, ceiling);
+-		break;
++		return len;
+ 	}
  
-+What:		/sys/bus/counter/devices/counterX/countY/prescaler
-+KernelVersion:	5.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Configure the prescaler value associated with Count Y.
-+		On the FlexTimer, the counter clock source passes through a
-+		prescaler (i.e. a counter). This acts like a clock
-+		divider.
-+
- What:		/sys/bus/counter/devices/counterX/countY/preset
- KernelVersion:	5.2
- Contact:	linux-iio@vger.kernel.org
-@@ -215,11 +225,45 @@ Description:
- 		Read-only attribute that indicates the total number of Signals
- 		belonging to the Counter.
+ 	mutex_unlock(&priv->lock);
  
--What:		/sys/bus/counter/devices/counterX/signalY/signal
-+What:		/sys/bus/counter/devices/counterX/signalY/cable_fault
-+KernelVersion:	5.7
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read-only attribute that indicates whether a differential
-+		encoder cable fault (not connected or loose wires) is detected
-+		for the respective channel of Signal Y. Valid attribute values
-+		are boolean. Detection must first be enabled via the
-+		corresponding cable_fault_enable attribute.
-+
-+What:		/sys/bus/counter/devices/counterX/signalY/cable_fault_enable
-+KernelVersion:	5.7
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Whether detection of differential encoder cable faults for the
-+		respective channel of Signal Y is enabled. Valid attribute
-+		values are boolean.
-+
-+What:		/sys/bus/counter/devices/counterX/signalY/filter_clock_prescaler
-+KernelVersion:	5.7
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Filter clock factor for input Signal Y. This prescaler value
-+		affects the inputs of both quadrature pair signals.
-+
-+What:		/sys/bus/counter/devices/counterX/signalY/index_polarity
- KernelVersion:	5.2
- Contact:	linux-iio@vger.kernel.org
- Description:
--		Signal data of Signal Y represented as a string.
-+		Active level of index input Signal Y; irrelevant in
-+		non-synchronous load mode.
-+
-+What:		/sys/bus/counter/devices/counterX/signalY/index_polarity_available
-+What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode_available
-+KernelVersion:	5.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Discrete set of available values for the respective Signal Y
-+		configuration are listed in this file.
+-	return len;
++	return -EINVAL;
+ }
  
- What:		/sys/bus/counter/devices/counterX/signalY/name
- KernelVersion:	5.2
-@@ -228,3 +272,31 @@ Description:
- 		Read-only attribute that indicates the device-specific name of
- 		Signal Y. If possible, this should match the name of the
- 		respective signal as it appears in the device datasheet.
-+
-+What:		/sys/bus/counter/devices/counterX/signalY/signal
-+KernelVersion:	5.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Signal data of Signal Y represented as a string.
-+
-+What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode
-+KernelVersion:	5.2
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Configure the counter associated with Signal Y for
-+		non-synchronous or synchronous load mode. Synchronous load mode
-+		cannot be selected in non-quadrature (Pulse-Direction) clock
-+		mode.
-+
-+		non-synchronous:
-+			A logic low level is the active level at this index
-+			input. The index function (as enabled via preset_enable)
-+			is performed directly on the active level of the index
-+			input.
-+
-+		synchronous:
-+			Intended for interfacing with encoder Index output in
-+			quadrature clock mode. The active level is configured
-+			via index_polarity. The index function (as enabled via
-+			preset_enable) is performed synchronously with the
-+			quadrature clock on the active level of the index input.
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8 b/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
-deleted file mode 100644
-index eac32180c40d..000000000000
---- a/Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
-+++ /dev/null
-@@ -1,61 +0,0 @@
--What:		/sys/bus/counter/devices/counterX/signalY/cable_fault
--KernelVersion:	5.7
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Read-only attribute that indicates whether a differential
--		encoder cable fault (not connected or loose wires) is detected
--		for the respective channel of Signal Y. Valid attribute values
--		are boolean. Detection must first be enabled via the
--		corresponding cable_fault_enable attribute.
--
--What:		/sys/bus/counter/devices/counterX/signalY/cable_fault_enable
--KernelVersion:	5.7
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Whether detection of differential encoder cable faults for the
--		respective channel of Signal Y is enabled. Valid attribute
--		values are boolean.
--
--What:		/sys/bus/counter/devices/counterX/signalY/filter_clock_prescaler
--KernelVersion:	5.7
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Filter clock factor for input Signal Y. This prescaler value
--		affects the inputs of both quadrature pair signals.
--
--What:		/sys/bus/counter/devices/counterX/signalY/index_polarity
--KernelVersion:	5.2
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Active level of index input Signal Y; irrelevant in
--		non-synchronous load mode.
--
--What:		/sys/bus/counter/devices/counterX/signalY/index_polarity_available
--What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode_available
--KernelVersion:	5.2
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Discrete set of available values for the respective Signal Y
--		configuration are listed in this file.
--
--What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode
--KernelVersion:	5.2
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Configure the counter associated with Signal Y for
--		non-synchronous or synchronous load mode. Synchronous load mode
--		cannot be selected in non-quadrature (Pulse-Direction) clock
--		mode.
--
--		non-synchronous:
--			A logic low level is the active level at this index
--			input. The index function (as enabled via preset_enable)
--			is performed directly on the active level of the index
--			input.
--
--		synchronous:
--			Intended for interfacing with encoder Index output in
--			quadrature clock mode. The active level is configured
--			via index_polarity. The index function (as enabled via
--			preset_enable) is performed synchronously with the
--			quadrature clock on the active level of the index input.
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec b/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
-deleted file mode 100644
-index 7d2e7b363467..000000000000
---- a/Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
-+++ /dev/null
-@@ -1,16 +0,0 @@
--What:		/sys/bus/counter/devices/counterX/countY/prescaler_available
--KernelVersion:	5.2
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Discrete set of available values for the respective Count Y
--		configuration are listed in this file. Values are delimited by
--		newline characters.
--
--What:		/sys/bus/counter/devices/counterX/countY/prescaler
--KernelVersion:	5.2
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Configure the prescaler value associated with Count Y.
--		On the FlexTimer, the counter clock source passes through a
--		prescaler (i.e. a counter). This acts like a clock
--		divider.
-diff --git a/MAINTAINERS b/MAINTAINERS
-index e697044d34d6..d858582c917b 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -297,7 +297,6 @@ M:	William Breathitt Gray <vilhelm.gray@gmail.com>
- M:	Syed Nayyar Waris <syednwaris@gmail.com>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
--F:	Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
- F:	drivers/counter/104-quad-8.c
- 
- ACCES PCI-IDIO-16 GPIO DRIVER
-@@ -4540,7 +4539,7 @@ COUNTER SUBSYSTEM
- M:	William Breathitt Gray <vilhelm.gray@gmail.com>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
--F:	Documentation/ABI/testing/sysfs-bus-counter*
-+F:	Documentation/ABI/testing/sysfs-bus-counter
- F:	Documentation/driver-api/generic-counter.rst
- F:	drivers/counter/
- F:	include/linux/counter.h
-@@ -6925,7 +6924,6 @@ FLEXTIMER FTM-QUADDEC DRIVER
- M:	Patrick Havelange <patrick.havelange@essensium.com>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
--F:	Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
- F:	Documentation/devicetree/bindings/counter/ftm-quaddec.txt
- F:	drivers/counter/ftm-quaddec.c
- 
+ static ssize_t quad8_count_preset_enable_read(struct counter_device *counter,
 -- 
 2.30.0
 
