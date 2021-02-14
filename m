@@ -2,467 +2,206 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 427C1C433DB
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Feb 2021 15:25:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE1C2C433DB
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Feb 2021 15:57:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0005B64E56
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Feb 2021 15:25:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 886C864DCF
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Feb 2021 15:57:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229821AbhBNPZX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Feb 2021 10:25:23 -0500
-Received: from mail.kernel.org ([198.145.29.99]:35896 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229783AbhBNPZX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Feb 2021 10:25:23 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 469AE64E61;
-        Sun, 14 Feb 2021 15:24:38 +0000 (UTC)
-Date:   Sun, 14 Feb 2021 15:24:33 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <nuno.sa@analog.com>, <dragos.bogdan@analog.com>
-Subject: Re: [PATCH v2 1/3] iio: core: Add mmap interface infrastructure
-Message-ID: <20210214152433.091ba147@archlinux>
-In-Reply-To: <20210212101143.18993-2-alexandru.ardelean@analog.com>
-References: <20210212101143.18993-1-alexandru.ardelean@analog.com>
-        <20210212101143.18993-2-alexandru.ardelean@analog.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S229773AbhBNP5H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Feb 2021 10:57:07 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:26900 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229758AbhBNP5G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Feb 2021 10:57:06 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11EFovBN020903;
+        Sun, 14 Feb 2021 10:56:12 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 36p9gatp9a-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sun, 14 Feb 2021 10:56:12 -0500
+Received: from SCSQMBX10.ad.analog.com (SCSQMBX10.ad.analog.com [10.77.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 11EFuAMN015190
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sun, 14 Feb 2021 10:56:10 -0500
+Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
+ SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
+ Sun, 14 Feb 2021 07:56:09 -0800
+Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
+ SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.2.721.2;
+ Sun, 14 Feb 2021 07:56:09 -0800
+Received: from zeus.spd.analog.com (10.66.68.11) by SCSQMBX11.ad.analog.com
+ (10.77.17.10) with Microsoft SMTP Server id 15.1.1779.2 via Frontend
+ Transport; Sun, 14 Feb 2021 07:56:09 -0800
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11EFu6gr004472;
+        Sun, 14 Feb 2021 10:56:06 -0500
+From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
+To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
+CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <jic23@kernel.org>, <nuno.sa@analog.com>,
+        <dragos.bogdan@analog.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH] iio: buffer-dma,adi-axi-adc: introduce devm_iio_dmaengine_buffer_setup()
+Date:   Sun, 14 Feb 2021 17:58:17 +0200
+Message-ID: <20210214155817.68678-1-alexandru.ardelean@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.737
+ definitions=2021-02-14_04:2021-02-12,2021-02-14 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ bulkscore=0 malwarescore=0 mlxlogscore=999 phishscore=0 clxscore=1015
+ mlxscore=0 priorityscore=1501 impostorscore=0 adultscore=0 spamscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2102140134
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 12 Feb 2021 12:11:41 +0200
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+This change does a conversion of the devm_iio_dmaengine_buffer_alloc() to
+devm_iio_dmaengine_buffer_setup(). This will allocate an IIO DMA buffer and
+attach it to the IIO device, similar to devm_iio_triggered_buffer_setup()
+(though the underlying code is different, the final logic is the same).
 
-> From: Lars-Peter Clausen <lars@metafoo.de>
-> 
-> Add the necessary infrastructure to the IIO core to support an mmap based
-> interface to access the capture data.
-> 
-> The advantage of the mmap based interface compared to the read() based
-> interface is that it avoids an extra copy of the data between kernel and
-> userspace. This is particular useful for high-speed devices which produce
-> several megabytes or even gigabytes of data per second.
-> 
-> The data for the mmap interface is managed at the granularity of so called
-> blocks. A block is a contiguous region of memory (at the moment both
-> physically and virtually contiguous). Reducing the granularity from byte
-> level to block level is done to reduce the userspace-kernelspace
-> synchronization overhead since performing syscalls for each byte at a
-> data-rate of a few megabytes is not feasible.
-> 
-> This of course leads to a slightly increased latency. For this reason an
-> application can choose the size of the blocks as well as how many blocks it
-> allocates. E.g. two blocks would be a traditional double buffering scheme.
-> But using a higher number might be necessary to avoid underflow/overflow
-> situations in the presence of scheduling latencies.
-> 
-> A block can either be owned by kernel space or userspace. When owned by
-> userspace it save to access the data in the block and process it. When
-> owned by kernel space the block can be in one of 3 states.
-> 
-> It can be in the incoming queue where all blocks submitted from userspace
-> are placed and are waiting to be processed by the kernel driver.
-> 
-> It can be currently being processed by the kernel driver, this means it is
-> actively placing capturing data in it (usually using DMA).
-> 
-> Or it can be in the outgoing queue where all blocks that have been
-> processed by the kernel are placed. Userspace can dequeue the blocks as
-> necessary.
-> 
-> As part of the interface 5 new IOCTLs to manage the blocks and exchange
-> them between userspace and kernelspace. The IOCTLs can be accessed through
-> a open file descriptor to a IIO device.
-> 
-> IIO_BUFFER_BLOCK_ALLOC_IOCTL(struct iio_buffer_block_alloc_req *):
->  Allocates new blocks. Can be called multiple times if necessary. A newly
->  allocated block is initially owned by userspace.
-> 
-> IIO_BUFFER_BLOCK_FREE_IOCTL(void):
->  Frees all previously allocated blocks. If the backing memory of a block is
->  still in use by a kernel driver (i.e. active DMA transfer) it will be
->  freed once the kernel driver has released it.
-> 
-> IIO_BUFFER_BLOCK_QUERY_IOCTL(struct iio_buffer_block *):
->  Queries information about a block. The id of the block about which
->  information is to be queried needs to be set by userspace.
-> 
-> IIO_BUFFER_BLOCK_ENQUEUE_IOCTL(struct iio_buffer_block *):
->  Places a block on the incoming queue. This transfers ownership of the
->  block from userspace to kernelspace. Userspace must populate the id field
->  of the block to indicate which block to enqueue.
-> 
-> IIO_BUFFER_BLOCK_DEQUEUE_IOCTL(struct iio_buffer_block *):
->  Removes the first block from the outgoing queue. This transfers ownership
->  of the block from kernelspace to userspace. Kernelspace will populate all
->  fields of the block. If the queue is empty and the file descriptor is set
->  to blocking the IOCTL will block until a new block is available on the
->  outgoing queue.
-> 
-> To access the data stored in a block by userspace the block must be mapped
-> to the process's memory. This is done by calling mmap() on the IIO device
-> file descriptor. Each block has a unique offset assigned to it which should
-> be passed to the mmap interface. E.g.
-> 
->   mmap(0, block.size, PROT_READ | PROT_WRITE, MAP_SHARED, fd,
->        block.offset);
-> 
-> A typical workflow for the new interface is:
-> 
->   BLOCK_ALLOC
-> 
->   foreach block
->      BLOCK_QUERY block
-> 	 mmap block.data.offset
-> 	 BLOCK_ENQUEUE block
-> 
->   enable buffer
-> 
->   while !done
-> 	BLOCK_DEQUEUE block
-> 	process data
-> 	BLOCK_ENQUEUE block
-> 
->   disable buffer
-> 
->   BLOCK_FREE
-Rather feels like some of this info should be in the formal docs somewhere rather
-than just burried in this patch description.
+Since the only user of the devm_iio_dmaengine_buffer_alloc() was the
+adi-axi-adc driver, this change does the replacement in a single go in the
+driver.
 
-Also good to have a bit more in the way of docs in the uapi header.
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+---
+
+Related to
+  https://lore.kernel.org/linux-iio/20210214143313.67202-2-alexandru.ardelean@analog.com/T/
 
 
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Few trivial things inline, but otherwise seems like straightforwards
-wrappers.
+ .../driver-api/driver-model/devres.rst        |  1 +
+ drivers/iio/adc/adi-axi-adc.c                 | 12 ++-----
+ .../buffer/industrialio-buffer-dmaengine.c    | 33 +++++++++++++++++--
+ include/linux/iio/buffer-dmaengine.h          |  7 ++--
+ 4 files changed, 38 insertions(+), 15 deletions(-)
 
-Jonathan
-
-> ---
->  drivers/iio/industrialio-buffer.c | 157 ++++++++++++++++++++++++++++++
->  include/linux/iio/buffer-dma.h    |   5 -
->  include/linux/iio/buffer_impl.h   |  23 +++++
->  include/uapi/linux/iio/buffer.h   |  26 +++++
->  4 files changed, 206 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 3aa6702a5811..50228df0b09f 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -16,6 +16,7 @@
->  #include <linux/fs.h>
->  #include <linux/cdev.h>
->  #include <linux/slab.h>
-> +#include <linux/mm.h>
->  #include <linux/poll.h>
->  #include <linux/sched/signal.h>
->  
-> @@ -1370,6 +1371,12 @@ static void iio_buffer_unregister_legacy_sysfs_groups(struct iio_dev *indio_dev)
->  	kfree(iio_dev_opaque->legacy_scan_el_group.attrs);
->  }
->  
-> +static void iio_buffer_free_blocks(struct iio_buffer *buffer)
-> +{
-> +	if (buffer->access->free_blocks)
-> +		buffer->access->free_blocks(buffer);
-> +}
-> +
->  static int iio_buffer_chrdev_release(struct inode *inode, struct file *filep)
->  {
->  	struct iio_dev_buffer_pair *ib = filep->private_data;
-> @@ -1378,18 +1385,24 @@ static int iio_buffer_chrdev_release(struct inode *inode, struct file *filep)
->  
->  	wake_up(&buffer->pollq);
->  	clear_bit(IIO_BUSY_BIT_POS, &buffer->flags);
-> +	iio_buffer_free_blocks(buffer);
->  	iio_device_put(indio_dev);
->  	kfree(ib);
->  
->  	return 0;
->  }
->  
-> +static long iio_buffer_ioctl(struct file *filep, unsigned int cmd, unsigned long arg);
-> +static int iio_buffer_mmap(struct file *filep, struct vm_area_struct *vma);
-> +
->  static const struct file_operations iio_buffer_chrdev_fileops = {
->  	.owner = THIS_MODULE,
->  	.llseek = noop_llseek,
->  	.read = iio_buffer_read,
->  	.poll = iio_buffer_poll,
-> +	.unlocked_ioctl = iio_buffer_ioctl,
->  	.compat_ioctl = compat_ptr_ioctl,
-
-Why do we have an existing compat_ioctl here?
-Seems odd without the unlocked_ioctl.  I see introduced in the multi buffer
-series whereas I think it should in this one.
-
-It has a test against being there without the unlocked_ioctl though so
-no great disaster.
-
-> +	.mmap = iio_buffer_mmap,
->  	.release = iio_buffer_chrdev_release,
->  };
->  
-> @@ -1762,6 +1775,150 @@ void iio_buffer_put(struct iio_buffer *buffer)
->  }
->  EXPORT_SYMBOL_GPL(iio_buffer_put);
->  
-> +static int iio_buffer_query_block(struct iio_buffer *buffer,
-> +				  struct iio_buffer_block __user *user_block)
-> +{
-> +	struct iio_buffer_block block;
-> +	int ret;
-> +
-> +	if (!buffer->access->query_block)
-> +		return -ENOSYS;
-> +
-> +	if (copy_from_user(&block, user_block, sizeof(block)))
-> +		return -EFAULT;
-> +
-> +	ret = buffer->access->query_block(buffer, &block);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (copy_to_user(user_block, &block, sizeof(block)))
-> +		return -EFAULT;
-> +
-> +	return 0;
-> +}
-> +
-> +static int iio_buffer_dequeue_block(struct iio_dev *indio_dev,
-> +				    struct iio_buffer *buffer,
-> +				    struct iio_buffer_block __user *user_block,
-> +				    bool non_blocking)
-> +{
-> +	struct iio_buffer_block block;
-> +	int ret;
-> +
-> +	if (!buffer->access->dequeue_block)
-> +		return -ENOSYS;
-> +
-> +	do {
-> +		if (!iio_buffer_data_available(buffer)) {
-> +			if (non_blocking)
-> +				return -EAGAIN;
-> +
-> +			ret = wait_event_interruptible(buffer->pollq,
-> +					iio_buffer_data_available(buffer) ||
-> +					indio_dev->info == NULL);
-> +			if (ret)
-> +				return ret;
-> +			if (indio_dev->info == NULL)
-> +				return -ENODEV;
-> +		}
-> +
-> +		ret = buffer->access->dequeue_block(buffer, &block);
-> +		if (ret == -EAGAIN && non_blocking)
-> +			ret = 0;
-> +	} while (ret);
-> +
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (copy_to_user(user_block, &block, sizeof(block)))
-> +		return -EFAULT;
-> +
-> +	return 0;
-> +}
-> +
-> +static int iio_buffer_enqueue_block(struct iio_buffer *buffer,
-> +				   struct iio_buffer_block __user *user_block)
-> +{
-> +	struct iio_buffer_block block;
-> +
-> +	if (!buffer->access->enqueue_block)
-> +		return -ENOSYS;
-> +
-> +	if (copy_from_user(&block, user_block, sizeof(block)))
-> +		return -EFAULT;
-> +
-> +	return buffer->access->enqueue_block(buffer, &block);
-> +}
-> +
-> +static int iio_buffer_alloc_blocks(struct iio_buffer *buffer,
-> +				   struct iio_buffer_block_alloc_req __user *user_req)
-> +{
-> +	struct iio_buffer_block_alloc_req req;
-> +	int ret;
-> +
-> +	if (!buffer->access->alloc_blocks)
-> +		return -ENOSYS;
-> +
-> +	if (copy_from_user(&req, user_req, sizeof(req)))
-> +		return -EFAULT;
-> +
-> +	ret = buffer->access->alloc_blocks(buffer, &req);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (copy_to_user(user_req, &req, sizeof(req)))
-> +		return -EFAULT;
-> +
-> +	return 0;
-> +}
-> +
-> +static long iio_buffer_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
-> +{
-> +	bool non_blocking = filep->f_flags & O_NONBLOCK;
-> +	struct iio_dev_buffer_pair *ib = filep->private_data;
-> +	struct iio_dev *indio_dev = ib->indio_dev;
-> +	struct iio_buffer *buffer = ib->buffer;
-> +
-> +	if (!buffer || !buffer->access)
-> +		return -ENODEV;
-> +
-> +	switch (cmd) {
-> +	case IIO_BUFFER_BLOCK_ALLOC_IOCTL:
-> +		return iio_buffer_alloc_blocks(buffer,
-> +			(struct iio_buffer_block_alloc_req __user *)arg);
-> +	case IIO_BUFFER_BLOCK_FREE_IOCTL:
-> +		iio_buffer_free_blocks(buffer);
-> +		return 0;
-> +	case IIO_BUFFER_BLOCK_QUERY_IOCTL:
-> +		return iio_buffer_query_block(buffer,
-> +			(struct iio_buffer_block __user *)arg);
-> +	case IIO_BUFFER_BLOCK_ENQUEUE_IOCTL:
-> +		return iio_buffer_enqueue_block(buffer,
-> +			(struct iio_buffer_block __user *)arg);
-> +	case IIO_BUFFER_BLOCK_DEQUEUE_IOCTL:
-> +		return iio_buffer_dequeue_block(indio_dev, buffer,
-> +			(struct iio_buffer_block __user *)arg, non_blocking);
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int iio_buffer_mmap(struct file *filep, struct vm_area_struct *vma)
-> +{
-> +	struct iio_dev_buffer_pair *ib = filep->private_data;
-> +	struct iio_buffer *buffer = ib->buffer;
-> +
-> +	if (!buffer->access || !buffer->access->mmap)
-> +		return -ENODEV;
-> +
-> +	if (!(vma->vm_flags & VM_SHARED))
-> +		return -EINVAL;
-> +
-> +	if (!(vma->vm_flags & VM_READ))
-> +		return -EINVAL;
-> +
-> +	return buffer->access->mmap(buffer, vma);
-> +}
-> +
->  /**
->   * iio_device_attach_buffer - Attach a buffer to a IIO device
->   * @indio_dev: The device the buffer should be attached to
-> diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
-> index ff15c61bf319..6564bdcdac66 100644
-> --- a/include/linux/iio/buffer-dma.h
-> +++ b/include/linux/iio/buffer-dma.h
-> @@ -17,11 +17,6 @@ struct iio_dma_buffer_queue;
->  struct iio_dma_buffer_ops;
->  struct device;
->  
-> -struct iio_buffer_block {
-> -	u32 size;
-> -	u32 bytes_used;
-> -};
-> -
->  /**
->   * enum iio_block_state - State of a struct iio_dma_buffer_block
->   * @IIO_BLOCK_STATE_DEQUEUED: Block is not queued
-> diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
-> index 245b32918ae1..1d57dc7ccb4f 100644
-> --- a/include/linux/iio/buffer_impl.h
-> +++ b/include/linux/iio/buffer_impl.h
-> @@ -34,6 +34,18 @@ struct iio_buffer;
->   *                      device stops sampling. Calles are balanced with @enable.
->   * @release:		called when the last reference to the buffer is dropped,
->   *			should free all resources allocated by the buffer.
-> + * @alloc_blocks:	called from userspace via ioctl to allocate blocks
-> + *			that will be used via the mmap interface.
-> + * @free_blocks:	called from userspace via ioctl to free all blocks
-> + *			allocated for this buffer.
-> + * @enqueue_block:	called from userspace via ioctl to queue this block
-> + *			to this buffer. Requires a valid block id.
-> + * @dequeue_block:	called from userspace via ioctl to dequeue this block
-> + *			from this buffer. Requires a valid block id.
-> + * @query_block:	called from userspace via ioctl to query the attributes
-> + *			of this block. Requires a valid block id.
-> + * @mmap:		mmap hook for this buffer. Userspace mmap() calls will
-> + *			get routed to this.
->   * @modes:		Supported operating modes by this buffer type
->   * @flags:		A bitmask combination of INDIO_BUFFER_FLAG_*
->   *
-> @@ -60,6 +72,17 @@ struct iio_buffer_access_funcs {
->  
->  	void (*release)(struct iio_buffer *buffer);
->  
-> +	int (*alloc_blocks)(struct iio_buffer *buffer,
-> +			    struct iio_buffer_block_alloc_req *req);
-> +	int (*free_blocks)(struct iio_buffer *buffer);
-> +	int (*enqueue_block)(struct iio_buffer *buffer,
-> +			     struct iio_buffer_block *block);
-> +	int (*dequeue_block)(struct iio_buffer *buffer,
-> +			     struct iio_buffer_block *block);
-> +	int (*query_block)(struct iio_buffer *buffer,
-> +			   struct iio_buffer_block *block);
-> +	int (*mmap)(struct iio_buffer *buffer,	struct vm_area_struct *vma);
-> +
->  	unsigned int modes;
->  	unsigned int flags;
->  };
-> diff --git a/include/uapi/linux/iio/buffer.h b/include/uapi/linux/iio/buffer.h
-> index 13939032b3f6..70ad3aea01ea 100644
-> --- a/include/uapi/linux/iio/buffer.h
-> +++ b/include/uapi/linux/iio/buffer.h
-> @@ -5,6 +5,32 @@
->  #ifndef _UAPI_IIO_BUFFER_H_
->  #define _UAPI_IIO_BUFFER_H_
->  
-> +struct iio_buffer_block_alloc_req {
-> +	__u32 type;
-> +	__u32 size;
-> +	__u32 count;
-> +	__u32 id;
-> +};
-> +
-> +#define IIO_BUFFER_BLOCK_FLAG_TIMESTAMP_VALID	(1 << 0)
-> +
-
-Add some docs for the elements of these structures.
-
-> +struct iio_buffer_block {
-> +	__u32 id;
-> +	__u32 size;
-> +	__u32 bytes_used;
-> +	__u32 type;
-> +	__u32 flags;
-> +	union {
-> +		__u32 offset;
-> +	} data;
-> +	__u64 timestamp;
-> +};
-> +
->  #define IIO_BUFFER_GET_FD_IOCTL			_IOWR('i', 0x91, int)
-> +#define IIO_BUFFER_BLOCK_ALLOC_IOCTL		_IOWR('i', 0x92, struct iio_buffer_block_alloc_req)
-> +#define IIO_BUFFER_BLOCK_FREE_IOCTL		_IO('i',   0x93)
-> +#define IIO_BUFFER_BLOCK_QUERY_IOCTL		_IOWR('i', 0x93, struct iio_buffer_block)
-> +#define IIO_BUFFER_BLOCK_ENQUEUE_IOCTL		_IOWR('i', 0x94, struct iio_buffer_block)
-> +#define IIO_BUFFER_BLOCK_DEQUEUE_IOCTL		_IOWR('i', 0x95, struct iio_buffer_block)
->  
->  #endif /* _UAPI_IIO_BUFFER_H_ */
+diff --git a/Documentation/driver-api/driver-model/devres.rst b/Documentation/driver-api/driver-model/devres.rst
+index 4b15b3e9358b..5f8c6c303ff2 100644
+--- a/Documentation/driver-api/driver-model/devres.rst
++++ b/Documentation/driver-api/driver-model/devres.rst
+@@ -285,6 +285,7 @@ I2C
+ IIO
+   devm_iio_device_alloc()
+   devm_iio_device_register()
++  devm_iio_dmaengine_buffer_setup()
+   devm_iio_kfifo_buffer_setup()
+   devm_iio_triggered_buffer_setup()
+   devm_iio_trigger_alloc()
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index 9109da2d2e15..2e84623f732e 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -104,7 +104,6 @@ static unsigned int adi_axi_adc_read(struct adi_axi_adc_state *st,
+ static int adi_axi_adc_config_dma_buffer(struct device *dev,
+ 					 struct iio_dev *indio_dev)
+ {
+-	struct iio_buffer *buffer;
+ 	const char *dma_name;
+ 
+ 	if (!device_property_present(dev, "dmas"))
+@@ -113,15 +112,8 @@ static int adi_axi_adc_config_dma_buffer(struct device *dev,
+ 	if (device_property_read_string(dev, "dma-names", &dma_name))
+ 		dma_name = "rx";
+ 
+-	buffer = devm_iio_dmaengine_buffer_alloc(indio_dev->dev.parent,
+-						 dma_name);
+-	if (IS_ERR(buffer))
+-		return PTR_ERR(buffer);
+-
+-	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
+-	iio_device_attach_buffer(indio_dev, buffer);
+-
+-	return 0;
++	return devm_iio_dmaengine_buffer_setup(indio_dev->dev.parent,
++					       indio_dev, dma_name);
+ }
+ 
+ static int adi_axi_adc_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index b0cb9a35f5cd..9981896e1495 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -244,7 +244,7 @@ static void __devm_iio_dmaengine_buffer_free(struct device *dev, void *res)
+  *
+  * The buffer will be automatically de-allocated once the device gets destroyed.
+  */
+-struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
++static struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
+ 	const char *channel)
+ {
+ 	struct iio_buffer **bufferp, *buffer;
+@@ -265,7 +265,36 @@ struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
+ 
+ 	return buffer;
+ }
+-EXPORT_SYMBOL_GPL(devm_iio_dmaengine_buffer_alloc);
++
++/**
++ * devm_iio_dmaengine_buffer_setup() - Setup a DMA buffer for an IIO device
++ * @dev: Parent device for the buffer
++ * @indio_dev: IIO device to which to attach this buffer.
++ * @channel: DMA channel name, typically "rx".
++ *
++ * This allocates a new IIO buffer with devm_iio_dmaengine_buffer_alloc()
++ * and attaches it to an IIO device with iio_device_attach_buffer().
++ * It also appends the INDIO_BUFFER_HARDWARE mode to the supported modes of the
++ * IIO device.
++ */
++int devm_iio_dmaengine_buffer_setup(struct device *dev,
++				    struct iio_dev *indio_dev,
++				    const char *channel)
++{
++	struct iio_buffer *buffer;
++
++	buffer = devm_iio_dmaengine_buffer_alloc(indio_dev->dev.parent,
++						 channel);
++	if (IS_ERR(buffer))
++		return PTR_ERR(buffer);
++
++	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
++
++	iio_device_attach_buffer(indio_dev, buffer);
++
++	return 0;
++}
++EXPORT_SYMBOL_GPL(devm_iio_dmaengine_buffer_setup);
+ 
+ MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+ MODULE_DESCRIPTION("DMA buffer for the IIO framework");
+diff --git a/include/linux/iio/buffer-dmaengine.h b/include/linux/iio/buffer-dmaengine.h
+index 5b502291d6a4..5c355be89814 100644
+--- a/include/linux/iio/buffer-dmaengine.h
++++ b/include/linux/iio/buffer-dmaengine.h
+@@ -7,10 +7,11 @@
+ #ifndef __IIO_DMAENGINE_H__
+ #define __IIO_DMAENGINE_H__
+ 
+-struct iio_buffer;
++struct iio_dev;
+ struct device;
+ 
+-struct iio_buffer *devm_iio_dmaengine_buffer_alloc(struct device *dev,
+-						   const char *channel);
++int devm_iio_dmaengine_buffer_setup(struct device *dev,
++				    struct iio_dev *indio_dev,
++				    const char *channel);
+ 
+ #endif
+-- 
+2.17.1
 
