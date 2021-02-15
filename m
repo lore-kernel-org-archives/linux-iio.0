@@ -2,77 +2,102 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A76BC433DB
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Feb 2021 15:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B74B8C4332B
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Feb 2021 15:32:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 47EF064DA8
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Feb 2021 15:09:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 90E7F64ED7
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Feb 2021 15:32:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230142AbhBOPI4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Feb 2021 10:08:56 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40534 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230305AbhBOPIK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 15 Feb 2021 10:08:10 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPS id 12F7164E2B
-        for <linux-iio@vger.kernel.org>; Mon, 15 Feb 2021 15:07:29 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1613401649;
-        bh=TcjS5SbwC0qS/TQc+GCR6W37AiIaolEMJOrZsNFjPOo=;
-        h=From:To:Subject:Date:In-Reply-To:References:From;
-        b=rtymTeqMIZ+9T4sBbdmLSXrL/6JIG6bJLPH4hs3WaKiYnArBJMPsegjG5U32PF/wG
-         ASzv6xc8lRwnVs5NeQaTvg15mxBSWlDFA89+m9KIewh0vwGjRXzmpbafMOiTgOgX8K
-         hg8URgV9XZyqIXElKXi6Kzw4iblWSLYUylAqtway111dB0gn3ir5vcRSVuIT/wwEqO
-         S0DfBU/x4nZu+7J5bsrjQAH/Ld+r74iPbvu4/xdoQGa0IwUByNnRn52qFbvcg78esw
-         zsQDw4GxPDR7H2FyKlOZwB7lHEk2/y3lcjjDj/WRn/AmmMM1zpmmkFumkhYvWPt9y4
-         oVY0a2CugXhyw==
-From:   bugzilla-daemon@bugzilla.kernel.org
-To:     linux-iio@vger.kernel.org
-Subject: [Bug 200493] drivers\iio\magnetometer\hmc5843_i2c.c unchecked return
- value of devm_regmap_init_i2c() in function hmc5843_i2c_probe
-Date:   Mon, 15 Feb 2021 15:07:28 +0000
-X-Bugzilla-Reason: None
-X-Bugzilla-Type: changed
-X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Product: Drivers
-X-Bugzilla-Component: IIO
-X-Bugzilla-Version: 2.5
-X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: normal
-X-Bugzilla-Who: andy.shevchenko@gmail.com
-X-Bugzilla-Status: RESOLVED
-X-Bugzilla-Resolution: CODE_FIX
-X-Bugzilla-Priority: P1
-X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: bug_status resolution
-Message-ID: <bug-200493-217253-Yy1XksFVjI@https.bugzilla.kernel.org/>
-In-Reply-To: <bug-200493-217253@https.bugzilla.kernel.org/>
-References: <bug-200493-217253@https.bugzilla.kernel.org/>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Bugzilla-URL: https://bugzilla.kernel.org/
-Auto-Submitted: auto-generated
+        id S230145AbhBOPcU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Feb 2021 10:32:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38622 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231203AbhBOPbH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Feb 2021 10:31:07 -0500
+Received: from mail-lj1-x231.google.com (mail-lj1-x231.google.com [IPv6:2a00:1450:4864:20::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D37CEC0613D6
+        for <linux-iio@vger.kernel.org>; Mon, 15 Feb 2021 07:30:26 -0800 (PST)
+Received: by mail-lj1-x231.google.com with SMTP id u4so8219160ljh.6
+        for <linux-iio@vger.kernel.org>; Mon, 15 Feb 2021 07:30:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tw5kGX/wN0aLH+g+NvPcP8n/H7DznXIrgtDbZyQfeHU=;
+        b=rjRU6U6SRdnWxqm5DLwVj+p6NHPTLkQ6WF2lHWITpkFPMpeufJlgNJXpzw0lfygO1B
+         EolObpR3JYUczChlN8BJSYjPx7Pve1ClOcjbnnPpdqeeory8wwOzRCDIH9SpgvqFGdzA
+         y7J9SKsOP/WS8+i353wr6ihWBXN84J+ksZpBryVcxknLb0qMUpbMNpJsprgbpP93FjO1
+         4EaFE/qrUsVejag5TtnvSjIqO9LaWTI8EF6uEIX/FYKRYeORvKduxBOrVIu+pYjRULoS
+         bmADN//1gCc96RsKPIK6BIT/jb5hBl8Iys+vbWi4BQ+jhy7hFPFkrIAxwi3nBHD2pPe8
+         gWoA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=Tw5kGX/wN0aLH+g+NvPcP8n/H7DznXIrgtDbZyQfeHU=;
+        b=IWc+X5nPogqUioF5ihtHksMxaaluyBSJsTEBE05Vzi2X3BwBCTSZliIEHD0nb9CNGa
+         /8XZqQe9V1Oe/cT0BeHPTRyNHeq5OL4kG/yimH1eBtpHcwY4MYnyCSdLDrwXnY+Any7V
+         yvs6JhqZePht9d/SgLBNXKzMtX3H3eIJrJcGyPAS+qyV+TTB38Fw0vRhtEX1hQBvZ8I7
+         MiqLuv0KLUB/tpC2lWfINe1rFb+989+/5DuJdlH8a3uiMMeUHmaXNeFDUPBbgvxJoVUX
+         Wn7AIa4TDg7JkX9rRzdvS+oFxbEtJt8ENny8jw4iUoSqs+mZM94b8Sp6bYpDsaBzapj8
+         w3Hw==
+X-Gm-Message-State: AOAM531b7RMEbNuXAQM8T34+2NYXYNevzAcUN7QfCunpSbI6FpPHEPui
+        fs34TMLKPS4wB1GNjdfCmRHwfg==
+X-Google-Smtp-Source: ABdhPJxuVIFMpJPt1pcGebXuNF9BKxSpAVHZiQBy9whACiHPkMcnQOtcHoLg7B4Hyjg+3v7QvuHyGg==
+X-Received: by 2002:a2e:ba18:: with SMTP id p24mr9418061lja.488.1613403025394;
+        Mon, 15 Feb 2021 07:30:25 -0800 (PST)
+Received: from genomnajs.publikt.skane.se (host-78-76-89-148.homerun.telia.com. [78.76.89.148])
+        by smtp.gmail.com with ESMTPSA id n6sm395777lfi.92.2021.02.15.07.30.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 15 Feb 2021 07:30:25 -0800 (PST)
+From:   Linus Walleij <linus.walleij@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc:     Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        kernel test robot <lkp@intel.com>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH 1/2] iio: magnetometer: yas530: Fix return value on errorpath
+Date:   Mon, 15 Feb 2021 16:30:23 +0100
+Message-Id: <20210215153023.47899-1-linus.walleij@linaro.org>
+X-Mailer: git-send-email 2.29.2
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D200493
+There was a missed return variable assignment in the
+default errorpath of the switch statement in yas5xx_probe().
+Fix it.
 
-Andy Shevchenko (andy.shevchenko@gmail.com) changed:
+Reported-by: kernel test robot <lkp@intel.com>
+Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/magnetometer/yamaha-yas530.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-           What    |Removed                     |Added
-----------------------------------------------------------------------------
-             Status|NEW                         |RESOLVED
-         Resolution|---                         |CODE_FIX
+diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
+index d46f23d82b3d..cee6207d8847 100644
+--- a/drivers/iio/magnetometer/yamaha-yas530.c
++++ b/drivers/iio/magnetometer/yamaha-yas530.c
+@@ -887,6 +887,7 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 		strncpy(yas5xx->name, "yas532", sizeof(yas5xx->name));
+ 		break;
+ 	default:
++		ret = -ENODEV;
+ 		dev_err(dev, "unhandled device ID %02x\n", yas5xx->devid);
+ 		goto assert_reset;
+ 	}
+-- 
+2.29.2
 
---=20
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are watching the assignee of the bug.=
