@@ -2,37 +2,40 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6117C433E0
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Feb 2021 15:26:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8FAEC433E0
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Feb 2021 15:27:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 65C0364EAD
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Feb 2021 15:26:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 54C1164E6F
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Feb 2021 15:27:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232224AbhBRP0T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 18 Feb 2021 10:26:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:56104 "EHLO mail.kernel.org"
+        id S232270AbhBRP0o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 18 Feb 2021 10:26:44 -0500
+Received: from mail.kernel.org ([198.145.29.99]:55986 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231490AbhBRNVC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S231805AbhBRNVC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 18 Feb 2021 08:21:02 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 0552764E76;
-        Thu, 18 Feb 2021 13:10:48 +0000 (UTC)
-Date:   Thu, 18 Feb 2021 13:10:45 +0000
+        by mail.kernel.org (Postfix) with ESMTPSA id BD6B46023C;
+        Thu, 18 Feb 2021 13:19:45 +0000 (UTC)
+Date:   Thu, 18 Feb 2021 13:19:41 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <nuno.sa@analog.com>, <dragos.bogdan@analog.com>
-Subject: Re: [PATCH v4 0/6] iio: core: Add mmap interface infrastructure
-Message-ID: <20210218131045.1a34d0a1@archlinux>
-In-Reply-To: <20210217073638.21681-1-alexandru.ardelean@analog.com>
-References: <20210217073638.21681-1-alexandru.ardelean@analog.com>
+To:     Jiri Kosina <jikos@kernel.org>
+Cc:     Ye Xiang <xiang.ye@intel.com>, srinivas.pandruvada@linux.intel.com,
+        linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] iio: Add relative sensitivity support
+Message-ID: <20210218131941.0ac3b1f5@archlinux>
+In-Reply-To: <nycvar.YFH.7.76.2102171255250.28696@cbobk.fhfr.pm>
+References: <20210207070048.23935-1-xiang.ye@intel.com>
+        <20210207070048.23935-2-xiang.ye@intel.com>
+        <20210212182809.2cc90cfd@archlinux>
+        <nycvar.YFH.7.76.2102171255250.28696@cbobk.fhfr.pm>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -41,85 +44,34 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 17 Feb 2021 09:36:32 +0200
-Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
+On Wed, 17 Feb 2021 12:55:41 +0100 (CET)
+Jiri Kosina <jikos@kernel.org> wrote:
 
-Dropped v3 and applied v4 to the togreg branch of iio.git and pushed
-it out as testing for the autobuilders to poke at it and see what
-else they can find :)
+> On Fri, 12 Feb 2021, Jonathan Cameron wrote:
+> 
+> > > Some hid sensors may use relative sensitivity such as als sensor.
+> > > This patch adds relative sensitivity checking for all hid sensors.
+> > > 
+> > > Signed-off-by: Ye Xiang <xiang.ye@intel.com>  
+> > Hi,
+> > 
+> > One totally trivial extra line below.  I'll fix that whilst applying
+> > unless you need to respin for some reason.
+> > 
+> > I'm fine with the series, but looking for an Ack from Jiri
+> > for the HID header changes.  
+> 
+> Acked-by: Jiri Kosina <jkosina@suse.cz>
+> 
+> Thanks,
+>
+Thanks, series (and precursor series that also had a tiny addition
+to those headers) applied to the togreg branch of iio.git and pushed out
+as testing for the autobuilders to poke at it and see if they can find
+anything we missed.
+
+THanks,
 
 Jonathan
-
-
-> Changelog v3 -> v4:
-> * https://lore.kernel.org/linux-iio/20210215143234.3248-5-alexandru.ardelean@analog.com/T/
-> * added patch 'iio: buffer-dma: reduce the type of block.size to u32'
->   - resolves error on 64 bit archs; 32 bit block size should be enough
-> * in patch 'iio: buffer-dma: Add mmap support'
->   - added 'linux/types.h' include in uapi buffer.h header; an error
->     shows up when building with 'make allmodconfig'
-> * in patch 'tools: iio: add example for high-speed buffer support'
->   - calling ioctl(BOCK_FREE) only if use_high_speed is true
-> 
-> Changelog v2 -> v3:
-> * https://lore.kernel.org/linux-iio/20210212101143.18993-1-alexandru.ardelean@analog.com/T/#u
-> * added 'Documentation: iio: add doc for high-speed buffer API'
-> * add 'iio: buffer-dma: split iio_dma_buffer_fileio_free() function'
-> * patch 'iio: buffer-dma: Add mmap support'
->    - unwind free on error path in iio_dma_buffer_alloc_blocks()
->    - removed double mm.h include
-> * patch 'tools: iio: add example for high-speed buffer support'
->    - call IIO_BUFFER_BLOCK_FREE_IOCTL on the error path of the
->      enable_high_speed() function
-> 
-> Changelog v1 -> v2:
-> * https://lore.kernel.org/linux-iio/20210211123353.78963-1-alexandru.ardelean@analog.com/T/#t
-> * removed IIO_BUFFER_BLOCK_FLAG_CYCLIC flag; will be added in a later
->   patch
-> * removed extra line in tools/iio/iio_generic_buffer.c
-> * patch 'iio: core: Add mmap interface infrastructure'
->   added docstrings for new hooks (alloc_blocks, mmap, etc)
-> 
-> This is basically Lars' work adapted from branch:
->   https://github.com/larsclausen/linux/commits/iio-high-speed-5.10
-> [hopefully i got the stuff correctly from that branch]
-> 
-> What is different, is that this one is adapted on top of the multibuffer
-> support (currently at v5) discussed here:
->   https://lore.kernel.org/linux-iio/20210211122452.78106-1-alexandru.ardelean@analog.com/T/#t
-> 
-> Also, adapted an example for high-speed/mmap support in
-> 'tools/iio/iio_generic_buffer.c'
-> 
-> The example is adapted from libiio:
->   https://github.com/analogdevicesinc/libiio/blob/master/local.c#L51
-> but will all the ioctl()s organized after the one that are reserved
-> (hopefully) for IIO
-> 
-> Tested that mmap() works.
-> Moved (artifically) valid buffer0 as buffer2 and the operation still
-> works.
-> 
-> Alexandru Ardelean (4):
->   Documentation: iio: add doc for high-speed buffer API
->   iio: buffer-dma: split iio_dma_buffer_fileio_free() function
->   iio: buffer-dma: reduce the type of block.size to u32
->   tools: iio: add example for high-speed buffer support
-> 
-> Lars-Peter Clausen (2):
->   iio: core: Add mmap interface infrastructure
->   iio: buffer-dma: Add mmap support
-> 
->  Documentation/iio/iio_high_speed_buffers.rst  | 100 ++++++
->  Documentation/iio/index.rst                   |   2 +
->  drivers/iio/buffer/industrialio-buffer-dma.c  | 324 ++++++++++++++++--
->  .../buffer/industrialio-buffer-dmaengine.c    |  28 +-
->  drivers/iio/industrialio-buffer.c             | 158 +++++++++
->  include/linux/iio/buffer-dma.h                |  27 +-
->  include/linux/iio/buffer_impl.h               |  23 ++
->  include/uapi/linux/iio/buffer.h               |  51 +++
->  tools/iio/iio_generic_buffer.c                | 185 +++++++++-
->  9 files changed, 847 insertions(+), 51 deletions(-)
->  create mode 100644 Documentation/iio/iio_high_speed_buffers.rst
-> 
+ 
 
