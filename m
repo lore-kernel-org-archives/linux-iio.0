@@ -2,153 +2,70 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B22B6C433DB
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Feb 2021 12:43:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58224C433DB
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Feb 2021 14:50:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 657C464E77
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Feb 2021 12:43:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1CB9D64EB2
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Feb 2021 14:50:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbhBSMn0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Feb 2021 07:43:26 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:63872 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229999AbhBSMnY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Feb 2021 07:43:24 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11JCeRlA007392;
-        Fri, 19 Feb 2021 07:42:31 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 36pcjb27j2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 19 Feb 2021 07:42:30 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11JCgTSp052115
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 19 Feb 2021 07:42:29 -0500
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
- Fri, 19 Feb 2021 07:42:28 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
- Fri, 19 Feb 2021 07:42:28 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
- Fri, 19 Feb 2021 07:42:28 -0500
-Received: from saturn.ad.analog.com ([10.48.65.120])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11JCeH4r008911;
-        Fri, 19 Feb 2021 07:40:20 -0500
-From:   Alexandru Ardelean <alexandru.ardelean@analog.com>
-To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
-CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <jic23@kernel.org>, <nuno.sa@analog.com>,
-        <dragos.bogdan@analog.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Subject: [PATCH v3 2/6] iio: kfifo-buffer: Add output buffer support
-Date:   Fri, 19 Feb 2021 14:40:08 +0200
-Message-ID: <20210219124012.92897-3-alexandru.ardelean@analog.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20210219124012.92897-1-alexandru.ardelean@analog.com>
-References: <20210219124012.92897-1-alexandru.ardelean@analog.com>
+        id S229937AbhBSOu2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Feb 2021 09:50:28 -0500
+Received: from smtp-out.xnet.cz ([178.217.244.18]:31330 "EHLO smtp-out.xnet.cz"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229925AbhBSOt5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 19 Feb 2021 09:49:57 -0500
+Received: from meh.true.cz (meh.true.cz [108.61.167.218])
+        (Authenticated sender: petr@true.cz)
+        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 7F09A18404;
+        Fri, 19 Feb 2021 15:49:08 +0100 (CET)
+Received: by meh.true.cz (OpenSMTPD) with ESMTP id 3ba7593b;
+        Fri, 19 Feb 2021 15:48:50 +0100 (CET)
+Date:   Fri, 19 Feb 2021 15:49:06 +0100
+From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        stable@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: chemical: scd30: fix Oops due to missing parent
+ device
+Message-ID: <20210219144906.GA28573@meh.true.cz>
+Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
+References: <20210208223947.32344-1-ynezz@true.cz>
+ <20210212191219.7b16abbb@archlinux>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-19_05:2021-02-18,2021-02-19 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- priorityscore=1501 impostorscore=0 spamscore=0 bulkscore=0 mlxscore=0
- malwarescore=0 suspectscore=0 adultscore=0 clxscore=1015 phishscore=0
- mlxlogscore=999 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2009150000 definitions=main-2102190102
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210212191219.7b16abbb@archlinux>
+X-PGP-Key: https://gist.githubusercontent.com/ynezz/477f6d7a1623a591b0806699f9fc8a27/raw/a0878b8ed17e56f36ebf9e06a6b888a2cd66281b/pgp-key.pub
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Lars-Peter Clausen <lars@metafoo.de>
+Jonathan Cameron <jic23@kernel.org> [2021-02-12 19:12:19]:
 
-Add output buffer support to the kfifo buffer implementation.
+Hi Jonathan,
 
-The implementation is straight forward and mostly just wraps the kfifo
-API to provide the required operations.
+> >  CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.4.96+ #473
+> 
+> So, we moved this into the core a while back (to avoid exactly this sort of issue).
+> That change predates this introduction of this driver as it went in
+> in v5.8
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
----
- drivers/iio/buffer/kfifo_buf.c | 50 ++++++++++++++++++++++++++++++++++
- 1 file changed, 50 insertions(+)
+sorry for the noise, I've missed that commit 8525df47b3d1 ("iio: core:
+fix/re-introduce back parent assignment"), thank you for the hint.
 
-diff --git a/drivers/iio/buffer/kfifo_buf.c b/drivers/iio/buffer/kfifo_buf.c
-index 34289ce12f20..e8a434f84778 100644
---- a/drivers/iio/buffer/kfifo_buf.c
-+++ b/drivers/iio/buffer/kfifo_buf.c
-@@ -138,10 +138,60 @@ static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
- 	kfree(kf);
- }
- 
-+static size_t iio_kfifo_buf_space_available(struct iio_buffer *r)
-+{
-+	struct iio_kfifo *kf = iio_to_kfifo(r);
-+	size_t avail;
-+
-+	mutex_lock(&kf->user_lock);
-+	avail = kfifo_avail(&kf->kf);
-+	mutex_unlock(&kf->user_lock);
-+
-+	return avail;
-+}
-+
-+static int iio_kfifo_remove_from(struct iio_buffer *r, void *data)
-+{
-+	int ret;
-+	struct iio_kfifo *kf = iio_to_kfifo(r);
-+
-+	if (kfifo_size(&kf->kf) < r->bytes_per_datum)
-+		return -EBUSY;
-+
-+	ret = kfifo_out(&kf->kf, data, r->bytes_per_datum);
-+	if (ret != r->bytes_per_datum)
-+		return -EBUSY;
-+
-+	wake_up_interruptible_poll(&r->pollq, POLLOUT | POLLWRNORM);
-+
-+	return 0;
-+}
-+
-+static int iio_kfifo_write(struct iio_buffer *r, size_t n,
-+	const char __user *buf)
-+{
-+	struct iio_kfifo *kf = iio_to_kfifo(r);
-+	int ret, copied;
-+
-+	mutex_lock(&kf->user_lock);
-+	if (!kfifo_initialized(&kf->kf) || n < kfifo_esize(&kf->kf))
-+		ret = -EINVAL;
-+	else
-+		ret = kfifo_from_user(&kf->kf, buf, n, &copied);
-+	mutex_unlock(&kf->user_lock);
-+	if (ret)
-+		return ret;
-+
-+	return copied;
-+}
-+
- static const struct iio_buffer_access_funcs kfifo_access_funcs = {
- 	.store_to = &iio_store_to_kfifo,
- 	.read = &iio_read_kfifo,
- 	.data_available = iio_kfifo_buf_data_available,
-+	.remove_from = &iio_kfifo_remove_from,
-+	.write = &iio_kfifo_write,
-+	.space_available = &iio_kfifo_buf_space_available,
- 	.request_update = &iio_request_update_kfifo,
- 	.set_bytes_per_datum = &iio_set_bytes_per_datum_kfifo,
- 	.set_length = &iio_set_length_kfifo,
--- 
-2.27.0
+> So I think you've hit an issue with a backport here to an earlier kernel?
 
+Indeed, I've backported it to 5.4.96 as you can see in the dmesg output above.
+I'll try to reproduce it again on 5.10 in the upcoming days.
+
+Cheers,
+
+Petr
