@@ -2,70 +2,84 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58224C433DB
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Feb 2021 14:50:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E59F0C433E0
+	for <linux-iio@archiver.kernel.org>; Sat, 20 Feb 2021 16:26:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1CB9D64EB2
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Feb 2021 14:50:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A08BF64E92
+	for <linux-iio@archiver.kernel.org>; Sat, 20 Feb 2021 16:26:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbhBSOu2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Feb 2021 09:50:28 -0500
-Received: from smtp-out.xnet.cz ([178.217.244.18]:31330 "EHLO smtp-out.xnet.cz"
+        id S229774AbhBTQ0d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 20 Feb 2021 11:26:33 -0500
+Received: from vern.gendns.com ([98.142.107.122]:59204 "EHLO vern.gendns.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229925AbhBSOt5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 19 Feb 2021 09:49:57 -0500
-Received: from meh.true.cz (meh.true.cz [108.61.167.218])
-        (Authenticated sender: petr@true.cz)
-        by smtp-out.xnet.cz (Postfix) with ESMTPSA id 7F09A18404;
-        Fri, 19 Feb 2021 15:49:08 +0100 (CET)
-Received: by meh.true.cz (OpenSMTPD) with ESMTP id 3ba7593b;
-        Fri, 19 Feb 2021 15:48:50 +0100 (CET)
-Date:   Fri, 19 Feb 2021 15:49:06 +0100
-From:   Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Tomasz Duszynski <tomasz.duszynski@octakon.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        stable@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: chemical: scd30: fix Oops due to missing parent
- device
-Message-ID: <20210219144906.GA28573@meh.true.cz>
-Reply-To: Petr =?utf-8?Q?=C5=A0tetiar?= <ynezz@true.cz>
-References: <20210208223947.32344-1-ynezz@true.cz>
- <20210212191219.7b16abbb@archlinux>
+        id S229784AbhBTQ03 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 20 Feb 2021 11:26:29 -0500
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
+        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=d+oiySUdTw6kjAIxeQUPAaWlTWZ7c9j+H2jNv6v/cDc=; b=eUB3/yQ7F/4qZ5vniJWQ6ToNH7
+        5/hd333+ZRnlYykM476FGC75X6/xI9UtIj7kt+Zs74lF/OIkVu7WfNg4Cl7XXG8s7ctPSq60ntD4K
+        l+cWa2DyyXsOUG1o25Yq6U4sOpv6CRVm9lSVNwkk8CecyGzy5cKuP/Y2qXufMSCQsxZXabtW/N10c
+        gA0n2NCHNUL+HRICcSVSqj9Qy8Ot6FZfLYqQvlYnZtlo43ohHCPmKguNfjpdc+sZtyf9Khge7VUFO
+        VtrXBA/hpChfXPq4PXPy80vaifg9LrvxmR25s9tt/zbQWg56WjETLjHe3HvnTlYC6os69bjNTMsZK
+        /7ovMFfQ==;
+Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:57342 helo=[192.168.0.134])
+        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
+        (Exim 4.93)
+        (envelope-from <david@lechnology.com>)
+        id 1lDV4i-00063f-Gl; Sat, 20 Feb 2021 11:25:44 -0500
+Subject: Re: [PATCH v8 01/22] docs: counter: Consolidate Counter sysfs
+ attributes documentation
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>, jic23@kernel.org
+Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
+        a.fatoum@pengutronix.de, kamel.bouhara@bootlin.com,
+        gwendal@chromium.org, alexandre.belloni@bootlin.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, syednwaris@gmail.com,
+        patrick.havelange@essensium.com, fabrice.gasnier@st.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        o.rempel@pengutronix.de
+References: <cover.1613131238.git.vilhelm.gray@gmail.com>
+ <362a71a1eba98108d009db8c929170a6ed8cf110.1613131238.git.vilhelm.gray@gmail.com>
+From:   David Lechner <david@lechnology.com>
+Message-ID: <2d35b608-b13b-3dbf-e895-a65da1f4bf68@lechnology.com>
+Date:   Sat, 20 Feb 2021 10:25:42 -0600
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210212191219.7b16abbb@archlinux>
-X-PGP-Key: https://gist.githubusercontent.com/ynezz/477f6d7a1623a591b0806699f9fc8a27/raw/a0878b8ed17e56f36ebf9e06a6b888a2cd66281b/pgp-key.pub
+In-Reply-To: <362a71a1eba98108d009db8c929170a6ed8cf110.1613131238.git.vilhelm.gray@gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - vern.gendns.com
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - lechnology.com
+X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
+X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Jonathan Cameron <jic23@kernel.org> [2021-02-12 19:12:19]:
-
-Hi Jonathan,
-
-> >  CPU: 0 PID: 1 Comm: swapper/0 Not tainted 5.4.96+ #473
+On 2/12/21 6:13 AM, William Breathitt Gray wrote:
+> Duplicate ABIs are not valid, so let's consolidate these sysfs
+> attributes into the main sysfs-bus-counter documentation file.
 > 
-> So, we moved this into the core a while back (to avoid exactly this sort of issue).
-> That change predates this introduction of this driver as it went in
-> in v5.8
+> Cc: Patrick Havelange <patrick.havelange@essensium.com>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> ---
 
-sorry for the noise, I've missed that commit 8525df47b3d1 ("iio: core:
-fix/re-introduce back parent assignment"), thank you for the hint.
+Reviewed-by: David Lechner <david@lechnology.com>
 
-> So I think you've hit an issue with a backport here to an earlier kernel?
-
-Indeed, I've backported it to 5.4.96 as you can see in the dmesg output above.
-I'll try to reproduce it again on 5.10 in the upcoming days.
-
-Cheers,
-
-Petr
