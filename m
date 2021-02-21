@@ -2,38 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 96279C433DB
-	for <linux-iio@archiver.kernel.org>; Sun, 21 Feb 2021 16:18:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A859C433DB
+	for <linux-iio@archiver.kernel.org>; Sun, 21 Feb 2021 16:27:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5FB6E64EF1
-	for <linux-iio@archiver.kernel.org>; Sun, 21 Feb 2021 16:18:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5347564D9E
+	for <linux-iio@archiver.kernel.org>; Sun, 21 Feb 2021 16:27:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229826AbhBUQSs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 21 Feb 2021 11:18:48 -0500
-Received: from mail.kernel.org ([198.145.29.99]:51476 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229585AbhBUQSr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 21 Feb 2021 11:18:47 -0500
+        id S230036AbhBUQ1I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 21 Feb 2021 11:27:08 -0500
+Received: from saturn.retrosnub.co.uk ([46.235.226.198]:35462 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229817AbhBUQ1I (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2021 11:27:08 -0500
 Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 22DEE64EF1;
-        Sun, 21 Feb 2021 16:18:04 +0000 (UTC)
-Date:   Sun, 21 Feb 2021 16:18:01 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        stable@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ab8500-gpadc: Fix off by 10 to 3
-Message-ID: <20210221161801.42532e87@archlinux>
-In-Reply-To: <20201224011700.1059659-1-linus.walleij@linaro.org>
-References: <20201224011700.1059659-1-linus.walleij@linaro.org>
+        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id ADA4A9E00E6;
+        Sun, 21 Feb 2021 16:26:24 +0000 (GMT)
+Date:   Sun, 21 Feb 2021 16:26:22 +0000
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        kernel test robot <lkp@intel.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio: fix warnings about passing signed values to %u
+Message-ID: <20210221162622.02f6ca2c@archlinux>
+In-Reply-To: <20201128155648.376646-1-jic23@kernel.org>
+References: <20201128155648.376646-1-jic23@kernel.org>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -42,42 +40,46 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 24 Dec 2020 02:17:00 +0100
-Linus Walleij <linus.walleij@linaro.org> wrote:
+On Sat, 28 Nov 2020 15:56:48 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Fix an off by three orders of magnitude error in the AB8500
-> GPADC driver. Luckily it showed up quite quickly when trying
-> to make use of it. The processed reads were returning
-> microvolts, microamperes and microcelsius instead of millivolts,
-> milliamperes and millicelsius as advertised.
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> Cc: stable@vger.kernel.org
-> Fixes: 07063bbfa98e ("iio: adc: New driver for the AB8500 GPADC")
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-No idea why I didn't pick this up before now.  I guess I forgot it
-over xmas.
+> In reality, we already know both of these values are positive
+> but it is still better to make that explicit at the point of use
+> with abs().
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Reported-by: kernel test robot <lkp@intel.com>
 
-Anyhow, now applied to the fixes-togreg branch of iio.git.
-
-Thanks,
+Maintainers curse. If someone could sanity check this that would be great.
+I never trust myself not to do anything stupid :)
 
 Jonathan
 
 > ---
->  drivers/iio/adc/ab8500-gpadc.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/industrialio-core.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/ab8500-gpadc.c b/drivers/iio/adc/ab8500-gpadc.c
-> index 6f9a3e2d5533..7b5212ba5501 100644
-> --- a/drivers/iio/adc/ab8500-gpadc.c
-> +++ b/drivers/iio/adc/ab8500-gpadc.c
-> @@ -918,7 +918,7 @@ static int ab8500_gpadc_read_raw(struct iio_dev *indio_dev,
->  			return processed;
->  
->  		/* Return millivolt or milliamps or millicentigrades */
-> -		*val = processed * 1000;
-> +		*val = processed;
->  		return IIO_VAL_INT;
->  	}
->  
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index c2e4c267c36b..00644666f7fe 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -608,14 +608,14 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+>  			return scnprintf(buf, len, "-%d.%06u%s", abs(vals[0]),
+>  					-vals[1], scale_db ? " dB" : "");
+>  		else
+> -			return scnprintf(buf, len, "%d.%06u%s", vals[0], vals[1],
+> +			return scnprintf(buf, len, "%d.%06u%s", vals[0], abs(vals[1]),
+>  					scale_db ? " dB" : "");
+>  	case IIO_VAL_INT_PLUS_NANO:
+>  		if (vals[1] < 0)
+>  			return scnprintf(buf, len, "-%d.%09u", abs(vals[0]),
+>  					-vals[1]);
+>  		else
+> -			return scnprintf(buf, len, "%d.%09u", vals[0], vals[1]);
+> +			return scnprintf(buf, len, "%d.%09u", vals[0], abs(vals[1]));
+>  	case IIO_VAL_FRACTIONAL:
+>  		tmp2 = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+>  		tmp1 = vals[1];
 
