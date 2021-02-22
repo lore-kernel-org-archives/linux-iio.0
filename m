@@ -2,147 +2,168 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38297C433DB
-	for <linux-iio@archiver.kernel.org>; Sun, 21 Feb 2021 16:41:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DD96EC433DB
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Feb 2021 01:43:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0E53861493
-	for <linux-iio@archiver.kernel.org>; Sun, 21 Feb 2021 16:41:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C7BB601FA
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Feb 2021 01:43:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229926AbhBUQlT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 21 Feb 2021 11:41:19 -0500
-Received: from mail.kernel.org ([198.145.29.99]:58204 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229884AbhBUQlT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 21 Feb 2021 11:41:19 -0500
-Received: from archlinux (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7736661493;
-        Sun, 21 Feb 2021 16:40:36 +0000 (UTC)
-Date:   Sun, 21 Feb 2021 16:40:32 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     kholk11@gmail.com
-Cc:     agross@kernel.org, bjorn.andersson@linaro.org, robh+dt@kernel.org,
-        marijns95@gmail.com, konradybcio@gmail.com,
-        martin.botka1@gmail.com, linux-arm-msm@vger.kernel.org,
-        phone-devel@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [RESEND] [PATCH 1/2] iio: adc: qcom-spmi-vadc: Use right
- ratiometric range for 8998,660,845
-Message-ID: <20210221164032.0271952a@archlinux>
-In-Reply-To: <20201129131233.4a8f7119@archlinux>
-References: <20200926171835.27154-1-kholk11@gmail.com>
-        <20201129131233.4a8f7119@archlinux>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S231728AbhBVBnt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 21 Feb 2021 20:43:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36536 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231844AbhBVBnq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Feb 2021 20:43:46 -0500
+Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DC4EC061574;
+        Sun, 21 Feb 2021 17:43:06 -0800 (PST)
+Received: by mail-pf1-x436.google.com with SMTP id z5so2459393pfe.3;
+        Sun, 21 Feb 2021 17:43:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=HZ/4l65nTDhovBkbwgDTnLClUOuYmVMheRYyJCbxZxM=;
+        b=h0cYF5fvpWEiRbbwRWAAqWEfqrdffeclp04xOx6AiP7i586mgB9Q5LMC2N+1DjcMC6
+         qvi5rPKwNvt8Ax6OZ/+GnVN2fW3MJi6DeCPv30sBm6uK0I+1pM5ALKEHf2pxOVb6Nv3h
+         2QSGxfy2koj9i8E39QpCUFPC4P5xn/QX7cs6dqp1SiGphc+F1gLbdRJigAvX8r3o40bE
+         Ag5SzS1RGj9SLXFM2QcxSvGZdAkE2LJ30jArcE2PtkISXy+1UD/RfDVKb3BUuunFUWNt
+         dsPVeh/M9an6AfBXoDQxzFohOExR+fyPnaSedk1W+sMDOJkmH+oWYh61bEXtUP2Y1Rlo
+         U/rw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=HZ/4l65nTDhovBkbwgDTnLClUOuYmVMheRYyJCbxZxM=;
+        b=dF2MGUXYwvbTUYpqdtH5S1r9c+4Sb99WgODK1sAMm8T9hvgXDgnxtbossc946ipVYI
+         wccgkHb4cCM51Cfs41EK1oVsjSD+fB9bNDxCRs+aOHRYJgA5j7Lt30AwjKbNmJ59unJO
+         0U268E4c+mVBDUArDPPzmNHak9qDzftj55zATwkE1M1S2HK3ZcsVnt31sibpkkkeaaQR
+         G52o90PikmoOJmQSZqfrHs0Dkg1PAyo+s4wLFiIHVCaZ4Jd3TGhbbquBH78hF0INIvBK
+         g57kGzgs44LfHKboRG7vk+Vpfj3QGNGkpNIaJKIx4H/wiv5NwsP+9DKeK3k8EIe1Rirt
+         kowg==
+X-Gm-Message-State: AOAM5335SK0xEHQ07g5XWGSWkOMubBmL1DSCVZPQeUQGMZ50sDWpnyBn
+        CB1uxmLB1Corgg7rlbvIW1M=
+X-Google-Smtp-Source: ABdhPJxBiOH+r7NdzTv2bl+669/mGs+q2NSfxyJ5R/ryNclj98f75uRzTtN2b8n/uhXnJ37Tw9vsuA==
+X-Received: by 2002:a63:4d41:: with SMTP id n1mr18230961pgl.147.1613958186088;
+        Sun, 21 Feb 2021 17:43:06 -0800 (PST)
+Received: from shinobu ([156.146.35.76])
+        by smtp.gmail.com with ESMTPSA id lw17sm14874202pjb.11.2021.02.21.17.43.02
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 21 Feb 2021 17:43:05 -0800 (PST)
+Date:   Mon, 22 Feb 2021 10:43:00 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v5 2/2] counter: add IRQ or GPIO based event counter
+Message-ID: <YDMMJJ985Zq9oEOv@shinobu>
+References: <20210208135347.18494-1-o.rempel@pengutronix.de>
+ <20210208135347.18494-3-o.rempel@pengutronix.de>
+ <YCjlPhEtyH+vfSi4@shinobu>
+ <20210215091737.fx6dwiz7tt56wbkr@pengutronix.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wC8Tf9mEZxh/iA1u"
+Content-Disposition: inline
+In-Reply-To: <20210215091737.fx6dwiz7tt56wbkr@pengutronix.de>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 29 Nov 2020 13:12:33 +0000
-Jonathan Cameron <jic23@kernel.org> wrote:
 
-> On Sat, 26 Sep 2020 19:18:34 +0200
-> kholk11@gmail.com wrote:
-> 
-> > From: AngeloGioacchino Del Regno <kholk11@gmail.com>
-> > 
-> > The ratiometric range for MSM8998, SDM630/636/660 and SDM845 is 1875mV
-> > instead of the standard 1800mV: address this by adding a new compatible
-> > "qcom,spmi-vadc-8998" and assigning the different range to the machines
-> > declaring this one.
-> > 
-> > Signed-off-by: AngeloGioacchino Del Regno <kholk11@gmail.com>  
-> 
-> @Bjorn
-> 
-> Could you take a quick look at this pair of patches.  It's been sat in
-> my queue waiting for appropriate review for rather too long!
-> (mainly because I've been rather lax in checking on status of older
-> series really - sorry about that :(
+--wC8Tf9mEZxh/iA1u
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I still have these marked as outstanding.  Please take a look.
+On Mon, Feb 15, 2021 at 10:17:37AM +0100, Oleksij Rempel wrote:
+> > > +static irqreturn_t event_cnt_isr(int irq, void *dev_id)
+> > > +{
+> > > +	struct event_cnt_priv *priv =3D dev_id;
+> > > +
+> > > +	atomic_inc(&priv->count);
+> >=20
+> > This is just used to count the number of interrupts right? I wonder if
+> > we can do this smarter. For example, the kernel already keeps track of
+> > number of interrupts that has occurred for any particular IRQ line on a
+> > CPU (see the 'kstat_irqs' member of struct irq_desc, and the
+> > show_interrupts() function in kernel/irq/proc.c). Would it make sense to
+> > simply store the initial interrupt count on driver load or enablement,
+> > and then return the difference during a count_read() callback?
+>=20
+> This driver do not makes a lot of sense without your chardev patches. As
+> soon as this patches go mainline, this driver will be able to send
+> event with a timestamp and counter state to the user space.
+>=20
+> With other words, we will need an irq handler anyway. In this case we
+> can't save more RAM or CPU cycles by using system irq counters.
 
-Thanks,
+It's true that this driver will need an IRQ handler when the timestamp
+functionality is added, but deriving the count value is different matter
+regardless. There's already code in the kernel to retrieve the number of
+interrupts, so it makes sense that we use that rather than rolling our
+own -- at the very least to ensure the value we provide to users is
+consistent with the ones already provided by other areas of the kernel.
 
-Jonathan
+To that end, I'd like to see your cnt_isr() function removed for this
+patchset (you can bring it back once timestamp support is added).
+Reimplement your cnt_read/cnt_write() functions to instead use
+kstat_irqs_usr() from <linux/kernel_stat.h> to get the current number of
+interrupts the IRQ line and use it to derive your count value for this
+driver.
 
-> 
-> Thanks
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/adc/qcom-spmi-vadc.c   | 10 +++++++++-
-> >  drivers/iio/adc/qcom-vadc-common.h |  1 +
-> >  2 files changed, 10 insertions(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-> > index b0388f8a69f4..59a94ea7bf78 100644
-> > --- a/drivers/iio/adc/qcom-spmi-vadc.c
-> > +++ b/drivers/iio/adc/qcom-spmi-vadc.c
-> > @@ -101,6 +101,7 @@ struct vadc_channel_prop {
-> >   * @dev: pointer to struct device.
-> >   * @base: base address for the ADC peripheral.
-> >   * @nchannels: number of VADC channels.
-> > + * @ratio_range: ratiometric range for ref points.
-> >   * @chan_props: array of VADC channel properties.
-> >   * @iio_chans: array of IIO channels specification.
-> >   * @are_ref_measured: are reference points measured.
-> > @@ -114,6 +115,7 @@ struct vadc_priv {
-> >  	struct device		 *dev;
-> >  	u16			 base;
-> >  	unsigned int		 nchannels;
-> > +	unsigned int		 ratio_range;
-> >  	struct vadc_channel_prop *chan_props;
-> >  	struct iio_chan_spec	 *iio_chans;
-> >  	bool			 are_ref_measured;
-> > @@ -355,7 +357,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
-> >  	u16 read_1, read_2;
-> >  	int ret;
-> >  
-> > -	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
-> > +	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = vadc->ratio_range;
-> >  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
-> >  
-> >  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
-> > @@ -885,6 +887,11 @@ static int vadc_probe(struct platform_device *pdev)
-> >  	if (ret)
-> >  		return ret;
-> >  
-> > +	if (of_device_is_compatible(node, "qcom,spmi-vadc-8998"))
-> > +		vadc->ratio_range = VADC_RATIOMETRIC_RANGE_8998;
-> > +	else
-> > +		vadc->ratio_range = VADC_RATIOMETRIC_RANGE;
-> > +
-> >  	irq_eoc = platform_get_irq(pdev, 0);
-> >  	if (irq_eoc < 0) {
-> >  		if (irq_eoc == -EPROBE_DEFER || irq_eoc == -EINVAL)
-> > @@ -918,6 +925,7 @@ static int vadc_probe(struct platform_device *pdev)
-> >  
-> >  static const struct of_device_id vadc_match_table[] = {
-> >  	{ .compatible = "qcom,spmi-vadc" },
-> > +	{ .compatible = "qcom-spmi-vadc-8998" },
-> >  	{ }
-> >  };
-> >  MODULE_DEVICE_TABLE(of, vadc_match_table);
-> > diff --git a/drivers/iio/adc/qcom-vadc-common.h b/drivers/iio/adc/qcom-vadc-common.h
-> > index 17b2fc4d8bf2..b10d5fd59034 100644
-> > --- a/drivers/iio/adc/qcom-vadc-common.h
-> > +++ b/drivers/iio/adc/qcom-vadc-common.h
-> > @@ -16,6 +16,7 @@
-> >  
-> >  #define VADC_ABSOLUTE_RANGE_UV			625000
-> >  #define VADC_RATIOMETRIC_RANGE			1800
-> > +#define VADC_RATIOMETRIC_RANGE_8998		1875
-> >  
-> >  #define VADC_DEF_PRESCALING			0 /* 1:1 */
-> >  #define VADC_DEF_DECIMATION			0 /* 512 */  
-> 
+> > > +static struct counter_signal event_cnt_signals[] =3D {
+> > > +	{
+> > > +		.id =3D 0,
+> > > +		.name =3D "Channel 0 signal",
+> >=20
+> > You should choose a more description name for this Signal;
+> > "Channel 0 signal" isn't very useful information for the user. Is this
+> > signal the respective GPIO line state?
+>=20
+> Sounds plausible. How about "Channel 0, GPIO line state"?
 
+Ideally, this would match the GPIO name (or I suppose the IRQ number if
+not a GPIO line). So in your probe() function you can do something like
+this I believe:
+
+	cnt_signals[0].name =3D priv->gpio->name;
+
+Of course, you should first check whether this is a GPIO line or IRQ
+line and set the name accordingly.
+
+William Breathitt Gray
+
+--wC8Tf9mEZxh/iA1u
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmAzDBkACgkQhvpINdm7
+VJIqnw//X6S/JF8NIH9UZTbsm1n4Yu5N6OuQoLch0ADAHI6Ei6/ntVwFPUPG0Kaz
+8DoefFjwbu7ixJA/aCLo8c0dCzrztQxcz4gTB+50uoxGNk6YqvYGHtsfcalN2vae
+u9ku4i3j2oDk9KZwlFs49QhxZjBIZ6BBmz/R2HbYcurhU4pa/7Y22otyPUwKhXVB
+pvDTKNrQmN2PRYS1CQcwup+D0/skW/JKiG76MPCtJ1HWt+bj+Aih+7wIwqsQ1m6p
+W0jyQc4Mt+tbPZ30IratIJJiO1Vsw/D9TTHCkErP7x7BEE2dIY4SJ5fJe1L8up1f
+vHo2G8gFO8JdoZT4eFvEbmWKC6Lv76ClKjSDqDKgr5SYtyZOzbtqPaxjDD3GB3eY
+BPU8eekZoPjdDuktFnaLP6wXVewGP87Thr7NXCwRkA7boSe+6s3IYTFAzqhtgdKw
+QdE+C3154koHmyyd5kwkVm3Hzur4xCWj2wQ7fze6tjwnSiAdCMFrz6myMtj7Exg7
+GBDbLVQWvv0F6uA3G8vzzT2o//hb8AD1x859o1Bxmcbsrjz3yb4/s5QwKRxq7MFK
+IZYz9VAMgNUUYlD/hs21UBl2PmjEH6NGySuGvXOMTGU5EAdTdL8SopJ38l9XuzHS
+ZjlHqraYQvaP9p64s7vB8taS6LnZudVgivmf/0spF5PlL5K7R1o=
+=zZCZ
+-----END PGP SIGNATURE-----
+
+--wC8Tf9mEZxh/iA1u--
