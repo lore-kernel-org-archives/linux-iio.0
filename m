@@ -2,68 +2,109 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9B0BC433DB
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Feb 2021 12:13:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F4121C433DB
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Feb 2021 16:37:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9D2FE64E00
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Feb 2021 12:13:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B434964D99
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Feb 2021 16:37:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232377AbhBWMNR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Feb 2021 07:13:17 -0500
-Received: from guitar.tcltek.co.il ([192.115.133.116]:38399 "EHLO
-        mx.tkos.co.il" rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232300AbhBWMNR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Feb 2021 07:13:17 -0500
-Received: from tarshish.tkos.co.il (unknown [10.0.8.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        by mx.tkos.co.il (Postfix) with ESMTPS id B29874402B1;
-        Tue, 23 Feb 2021 14:12:29 +0200 (IST)
-From:   Baruch Siach <baruch@tkos.co.il>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     linux-iio@vger.kernel.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Baruch Siach <baruch@tkos.co.il>,
-        Mike Frysinger <vapier@gentoo.org>
-Subject: [PATCH] staging: iio: remove mention of defunct list
-Date:   Tue, 23 Feb 2021 14:12:23 +0200
-Message-Id: <69b3e45e7666a1dd74a83df0b84ef8a63bf090ea.1614082343.git.baruch@tkos.co.il>
-X-Mailer: git-send-email 2.30.0
+        id S233538AbhBWQhT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Feb 2021 11:37:19 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:60908 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S233312AbhBWQhS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Feb 2021 11:37:18 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11NGTeqS004231;
+        Tue, 23 Feb 2021 11:36:34 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 36tw5bk6t3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 23 Feb 2021 11:36:34 -0500
+Received: from SCSQMBX11.ad.analog.com (SCSQMBX11.ad.analog.com [10.77.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 11NGaXZN003439
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 23 Feb 2021 11:36:33 -0500
+Received: from SCSQCASHYB7.ad.analog.com (10.77.17.133) by
+ SCSQMBX11.ad.analog.com (10.77.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
+ Tue, 23 Feb 2021 08:36:31 -0800
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
+ SCSQCASHYB7.ad.analog.com (10.77.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2;
+ Tue, 23 Feb 2021 08:36:31 -0800
+Received: from zeus.spd.analog.com (10.66.68.11) by scsqmbx10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
+ Tue, 23 Feb 2021 08:36:31 -0800
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 11NGaTkp030454;
+        Tue, 23 Feb 2021 11:36:30 -0500
+From:   <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>
+Subject: [PATCH v3 0/1] iio: adc: ad7124: allow more than 8 channels
+Date:   Tue, 23 Feb 2021 18:44:03 +0200
+Message-ID: <20210223164404.93540-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-02-23_08:2021-02-23,2021-02-23 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 suspectscore=0
+ spamscore=0 lowpriorityscore=0 mlxlogscore=864 phishscore=0 mlxscore=0
+ bulkscore=0 priorityscore=1501 impostorscore=0 adultscore=0 clxscore=1015
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2009150000
+ definitions=main-2102230138
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADI device-drivers-devel list no longer exists.
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Cc: Mike Frysinger <vapier@gentoo.org>
-Signed-off-by: Baruch Siach <baruch@tkos.co.il>
----
- drivers/staging/iio/TODO | 4 ----
- 1 file changed, 4 deletions(-)
+Currently AD7124-8 driver cannot use more than 8 IIO channels
+because it was assigning the channel configurations bijectively
+to channels specified in the device-tree. This is not possible
+to do when using more than 8 channels as AD7124-8 has only 8
+configuration registers.
 
-diff --git a/drivers/staging/iio/TODO b/drivers/staging/iio/TODO
-index 4d469016a13a..0fa6a5500bdb 100644
---- a/drivers/staging/iio/TODO
-+++ b/drivers/staging/iio/TODO
-@@ -1,9 +1,5 @@
- 2020-02-25
- 
- 
--ADI Drivers:
--CC the device-drivers-devel@blackfin.uclinux.org mailing list when
--e-mailing the normal IIO list (see below).
--
- Contact: Jonathan Cameron <jic23@kernel.org>.
- Mailing list: linux-iio@vger.kernel.org
+All configurations are marked as live if they are
+programmed on the device. Any change that happens from
+userspace (sampling rate, filters etc.) will invalidate
+them.
+
+To allow the user to use all channels at once the driver
+will keep in memory configurations for all channels but
+will program only 8 of them at a time on the device.
+
+If multiple channels have the same configuration, only
+one configuration register will be used.
+
+If there are more configurations needed than available registers
+only the last 8 used configurations will be allowed to exist
+on the device in a LRU fashion. (in case of raw reads).
+
+If a read is requested on a channel whose configuration
+is not programmed:
+- check if there are similar configurations already programmed
+	if yes: - point channel to that config
+	if no:  - check if there are empty config slots
+			- if yes: write config, push into queue of LRU configs
+			- if no: pop one config, get it's config slot nr,
+			write new config on the old slot, push new config
+			in queue of LRU configs.
+
+Alexandru Tachici (1):
+  iio: adc: ad7124: allow more than 8 channels
+
+ drivers/iio/adc/ad7124.c | 461 ++++++++++++++++++++++++++-------------
+ 1 file changed, 308 insertions(+), 153 deletions(-)
+
 -- 
-2.30.0
+2.20.1
 
