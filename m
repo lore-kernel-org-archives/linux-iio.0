@@ -2,160 +2,221 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BB7F5C433E0
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Feb 2021 16:38:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 289F9C433DB
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Feb 2021 17:46:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 680FA64D99
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Feb 2021 16:38:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F3B7264E85
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Feb 2021 17:46:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233605AbhBWQib (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Feb 2021 11:38:31 -0500
-Received: from www381.your-server.de ([78.46.137.84]:38522 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233552AbhBWQi1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Feb 2021 11:38:27 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=tlgUyvMAxOQzOyYpYCaYbua1OPAVFxN8saq4CxuGkt4=; b=Vcvh84K+9+7P/8r3MMERhEIt1S
-        X/4e8vHPSMoPQ4pohjVsNoz9FBVrxD9nsFtZUW2VwxbsalhcCyC00ncqJS/ig4rlubeQhuQonZR4c
-        oF30el/0YDi3rJqboAuovdORkd+M7PZtXv5Y71t9yRvkaqoRCTiinE896Qq2eqzoK0RTToqZiE8VY
-        2npTsGGVNVOpyxMz6qDtIrnHNYvQaHbcJeOJL62AHY4NrA2baSFzFVo5BMaSeb8XvyGt3KhcofdzL
-        pX46hz0suZajzhm7ykMOBBu6olYmOHcqmL+UrJOTvrBFiwmWbSToyP6JKuwHV/SuVIVa9mwBg2URG
-        8TEr8ABg==;
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1lEagv-0009Cm-BB; Tue, 23 Feb 2021 17:37:41 +0100
-Received: from [62.216.202.180] (helo=[192.168.178.20])
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        id S231523AbhBWRql (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Feb 2021 12:46:41 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43150 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233816AbhBWRqV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Feb 2021 12:46:21 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15F47C061793
+        for <linux-iio@vger.kernel.org>; Tue, 23 Feb 2021 09:45:25 -0800 (PST)
+Received: from pty.hi.pengutronix.de ([2001:67c:670:100:1d::c5])
+        by metis.ext.pengutronix.de with esmtps (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1lEagv-000InI-5Q; Tue, 23 Feb 2021 17:37:41 +0100
-Subject: Re: [PATCH v2 5/5] iio: dac: ad5686: Add PWM as a trigger source
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Michael.Hennerich@analog.com, nuno.sa@analog.com,
-        dragos.bogdan@analog.com,
-        Mircea Caprioru <mircea.caprioru@analog.com>,
-        Mihail Chindris <Mihail.Chindris@analog.com>,
-        robh+dt@kernel.org
-References: <20210217083438.37865-1-alexandru.ardelean@analog.com>
- <20210217083438.37865-6-alexandru.ardelean@analog.com>
- <20210218140506.02b28d8a@archlinux>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <49654dc0-5c6b-2fdc-1e48-22e4b07a4165@metafoo.de>
-Date:   Tue, 23 Feb 2021 17:37:40 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.0
+        (envelope-from <ore@pengutronix.de>)
+        id 1lEbkM-0003pY-Fu; Tue, 23 Feb 2021 18:45:18 +0100
+Received: from ore by pty.hi.pengutronix.de with local (Exim 4.89)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lEbkK-0004xs-VV; Tue, 23 Feb 2021 18:45:16 +0100
+Date:   Tue, 23 Feb 2021 18:45:16 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Ahmad Fatoum <a.fatoum@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v5 2/2] counter: add IRQ or GPIO based event counter
+Message-ID: <20210223174516.wjlh7hnrd5qe5s6w@pengutronix.de>
+References: <20210208135347.18494-1-o.rempel@pengutronix.de>
+ <20210208135347.18494-3-o.rempel@pengutronix.de>
+ <YCjlPhEtyH+vfSi4@shinobu>
+ <20210215091737.fx6dwiz7tt56wbkr@pengutronix.de>
+ <YDMMJJ985Zq9oEOv@shinobu>
+ <20210223100656.efbshsh5bz66uhj5@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20210218140506.02b28d8a@archlinux>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.102.4/26089/Tue Feb 23 13:11:02 2021)
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210223100656.efbshsh5bz66uhj5@pengutronix.de>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 16:46:23 up 83 days,  5:52, 36 users,  load average: 0.05, 0.03,
+ 0.00
+User-Agent: NeoMutt/20170113 (1.7.2)
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c5
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2/18/21 3:05 PM, Jonathan Cameron wrote:
-> On Wed, 17 Feb 2021 10:34:38 +0200
-> Alexandru Ardelean <alexandru.ardelean@analog.com> wrote:
->
->> From: Mircea Caprioru <mircea.caprioru@analog.com>
->>
->> A PWM signal will be used as a trigger source to have a deterministic
->> sampling frequency since this family of DAC has no hardware interrupt
->> source.
->>
->> This feature is made optional however, as there are some board setups where
->> this isn't used.
->>
-> So this is taking a very generic setup, but then implementing it
-> as a bit of a hack within the driver.
->
-> It's effectively a PWM connected up to an instance
-> of iio/triggers/iio-trig-interrupt.c
->
-> Now, I've not looked at that trigger driver for a while, so you may well
-> need to figure out how to add a binding to instantiate it.
-> (looks like no one has used it since board file days, or via instantiation
-> from another driver).
->
-> It's a slightly odd corner case as what it reflects is that we have
-> an interrupt available that is intended to drive some sort of data
-> capture or output (it's a trigger signal) - but exactly what is done
-> is a runtime configurable.  In this particular case that interrupt
-> is hooked up to a PWM and we also want to represent that.
->
-> The fact it's being driven via a PWM is interesting but we should be
-> able to extend that trigger driver to optionally accept a pwm provider
-> and if it has one provide frequency control.
->
-> Binding might look something like the following..
->
-> interrupt-trigger {
->     interrupts = <>;
->     pwms = <&pwm 0 4000 PWM_POLARITY_INVERTED>;	
-> };
->
-> @Rob, what do you think of this odd beast?
->
-> So all in all, this generic facility needs a generic implementation, not
-> one buried in a driver.
->
-> Another open question here is whether you really can't just use an hrtimer
-> to get similar precision?  Way back at the dawn of time in IIO we had
-> code to use the RTC periodic ticks as a trigger with the theory that they
-> would give very precise and even timing.  In the end it turned out that
-> hrtimers worked just as well (and RTCs drivers emulated the periodic
-> ticks via hrtimers, dropping their use of the hardware periodic timers).
->
-The way this DAC works is that it has a "latch" pin and some shadow 
-registers. The way this is supposed to be used is that you update the 
-shadow registers and then when the there is a rising edge on the latch 
-pin all the shadow register values are transferred to DAC output registers.
+Hello William,
 
-This means if you hook up a periodic signal like a PWM or clock to the 
-latch pin you can generate very precise waveforms that have much lower 
-jitter than when using a hrtimer since there is no variable interrupt 
-latency for the update step itself. This is useful when generating 
-periodic signals.
+Here is cooled down technical answer. Excuse me for over reacting.
 
-But you could for example also use a GPIO to update multiple discrete 
-DACs at the same time.
+On Tue, Feb 23, 2021 at 11:06:56AM +0100, Oleksij Rempel wrote:
+> On Mon, Feb 22, 2021 at 10:43:00AM +0900, William Breathitt Gray wrote:
+> > On Mon, Feb 15, 2021 at 10:17:37AM +0100, Oleksij Rempel wrote:
+> > > > > +static irqreturn_t event_cnt_isr(int irq, void *dev_id)
+> > > > > +{
+> > > > > +	struct event_cnt_priv *priv = dev_id;
+> > > > > +
+> > > > > +	atomic_inc(&priv->count);
+> > > > 
+> > > > This is just used to count the number of interrupts right? I wonder if
+> > > > we can do this smarter. For example, the kernel already keeps track of
+> > > > number of interrupts that has occurred for any particular IRQ line on a
+> > > > CPU (see the 'kstat_irqs' member of struct irq_desc, and the
+> > > > show_interrupts() function in kernel/irq/proc.c). Would it make sense to
+> > > > simply store the initial interrupt count on driver load or enablement,
+> > > > and then return the difference during a count_read() callback?
+> > > 
+> > > This driver do not makes a lot of sense without your chardev patches. As
+> > > soon as this patches go mainline, this driver will be able to send
+> > > event with a timestamp and counter state to the user space.
+> > > 
+> > > With other words, we will need an irq handler anyway. In this case we
+> > > can't save more RAM or CPU cycles by using system irq counters.
+> > 
+> > It's true that this driver will need an IRQ handler when the timestamp
+> > functionality is added, but deriving the count value is different matter
+> > regardless. There's already code in the kernel to retrieve the number of
+> > interrupts, so it makes sense that we use that rather than rolling our
+> > own -- at the very least to ensure the value we provide to users is
+> > consistent with the ones already provided by other areas of the kernel.
 
-This is not specific to this particular chip. There are quite a few ADI 
-(and probably from other vendors) precision DACs that have this 
-functionality. I agree that this should be a some sort of generic 
-trigger helper module.
+The value provided by the driver is consistent only if it is not
+overwritten by user. The driver provides an interface to reset/overwrite it.
+At least after this step the value is not consistent.
 
-Now for the implementation since there is a direct connection between 
-the PWM and the DAC I think it makes sense to describe this connection 
-in the DT. After all if there is no connection this will not work.
+> We are talking about one or two code lines. If we will take some
+> duplication search engine, it will find that major part of the kernel
+> is matching against it.
+> 
+> Newer the less, this driver provides a way to reset the counter. Why
+> should we drop this functionality no advantage?
+> 
+> > To that end, I'd like to see your cnt_isr() function removed for this
+> > patchset (you can bring it back once timestamp support is added).
 
-As for the interrupt, most PWM controllers do have the ability to 
-generate an IRQ by themselves once per period. There should be not need 
-for a hardware loopback. Unfortunately the PWM framework does not have a 
-mechanism yet to expose those IRQs and register a callback.
+It make no sense to request an interrupt without interrupt service
+routine.
 
-A similar feature btw exists for many of the ADCs and we did have this 
-special Blackfin PWM trigger[1] back in the day to support this. The 
-bfin PWM trigger driver essentially implements what I'm describing 
-above, but without using the PWM framework.
+https://elixir.bootlin.com/linux/latest/source/kernel/irq/manage.c#L2072if
+	if (!handler) {
+		if (!thread_fn)
+			return -EINVAL;
 
-- Lars
+As you can see, requesting an irq need at least handler or thread_fn.
 
-[1] 
-https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/tree/drivers/staging/iio/trigger/iio-trig-bfin-timer.c?h=v3.15
+enable_irq: this will explode at least here:
+https://elixir.bootlin.com/linux/latest/source/kernel/irq/manage.c#L778
 
+If he have no IRQ handler and some how was able to enable it, at
+some point this IRQ will be disabled by this code:
+https://elixir.bootlin.com/linux/latest/source/kernel/irq/spurious.c#L410
+	if (unlikely(desc->irqs_unhandled > 99900)) {
+		/*
+		 * The interrupt is stuck
+		 */
+		__report_bad_irq(desc, action_ret);
+		/*
+		 * Now kill the IRQ
+		 */
+		printk(KERN_EMERG "Disabling IRQ #%d\n", irq);
+		desc->istate |= IRQS_SPURIOUS_DISABLED;
+		desc->depth++;
+		irq_disable(desc);
+
+With current code, we can't request or enable IRQ without cnt_isr(). Not
+that it is not possible, but it make no sense to me.
+
+> Are you suggesting to enable IRQ without interrupt handler? May be i'm
+> missing some thing.. I do not understand it.
+> 
+> > Reimplement your cnt_read/cnt_write() functions to instead use
+> > kstat_irqs_usr() from <linux/kernel_stat.h> to get the current number of
+> > interrupts the IRQ line and use it to derive your count value for this
+> > driver.
+
+irq descriptor has 3 counters:
+- irq_count: this value can be reset any time by the kernel at least by
+  the note_interrupt()
+- irqs_unhandled: this value is increased in case of missing irq
+  handler. Or if handler has returns IRQ_NONE.
+- tot_count: this value should not be reset.
+
+Non of this values is suitable for cnt_read() and cnt_write(). Only
+tot_count would be suitable if cnt_write() is removed. I do not see it
+as acceptable option.
+
+For this driver, we still need extra counter, where only this driver is
+responsible for writing to it.
+
+> I can follow the counter read way, but overwriting system wide counter
+> for local use is bad idea.
+> 
+> > > > > +static struct counter_signal event_cnt_signals[] = {
+> > > > > +	{
+> > > > > +		.id = 0,
+> > > > > +		.name = "Channel 0 signal",
+> > > > 
+> > > > You should choose a more description name for this Signal;
+> > > > "Channel 0 signal" isn't very useful information for the user. Is this
+> > > > signal the respective GPIO line state?
+> > > 
+> > > Sounds plausible. How about "Channel 0, GPIO line state"?
+> > 
+> > Ideally, this would match the GPIO name (or I suppose the IRQ number if
+> > not a GPIO line). So in your probe() function you can do something like
+> > this I believe:
+> > 
+> > 	cnt_signals[0].name = priv->gpio->name;
+> 
+
+> to make this possible, i would need hack gpiolib framework and add
+> name/label exporter. But after endless rounds of pingponging me for
+> renaming the driver and removing interrupt handler, i feel like we are
+> not having serious discussion for mainlining this driver.
+
+Probably for good reason, struct gpio_desc was made local and is located
+in the drivers/gpio/gpiolib.h. It feels like additional hack to include
+it. I assume, it should be done properly so there is a function to
+provide gpio name or label.
+
+@Linus Walleij are there any good way to get the GPIO name? And which
+name will be actually used? A label provided over devicetree?
+
+If I see it correctly, it would need more work to make the kernel infrastructure
+suitable for this suggestions. Some of them are only needed before
+chardev support will go mainline and , in long term, not worth to
+spend time on it.
+
+Probably I do not understand you and i missing some thing?
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
