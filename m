@@ -2,214 +2,326 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C8BC433DB
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Feb 2021 11:20:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F22D2C433DB
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Feb 2021 13:22:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1FFDD64EC3
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Feb 2021 11:20:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8424164EAF
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Feb 2021 13:22:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229571AbhBYLUW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Feb 2021 06:20:22 -0500
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:54324 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S234675AbhBYLUV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Feb 2021 06:20:21 -0500
-Received: from pps.filterd (m0241204.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 11PBHF5r006407;
-        Thu, 25 Feb 2021 12:19:26 +0100
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=CMTm/gPp7SHBgmvKDTH9L2sSez0dNF3orqXJb1JT8M4=;
- b=MvAR4Vv/NHFJsNA0pv6LrnxkIuwZSUtNrUvWrBXo0SthxC6nF3KtidapmIO5QY/f5M3Y
- bxoONQEw5hO7tv23xOkXyF62AHTjNfLewBoyfnbFOLdSpR31ACHQWKZODGlOREIH7JF/
- AQPXmzqtZaGDi+JOyWU31Ums/ms7LV/q1XYdjftFs2DcUamHJnG1e08Z95p2Of/nFEy3
- BMPV/Ad9zkCO90nd19ZDMjnwcAzfE910H3U2+AxtoJE3uGEla5qhqPKwIGiN2DJya9bH
- 35btoWnIfhT8uIxctSmhof5jOMMWVqhdlNlDrjUIt8fubQpS7+QtuMh4SXMqq7cWle7q 3A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 36w66cn91j-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 25 Feb 2021 12:19:26 +0100
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id DE3A710002A;
-        Thu, 25 Feb 2021 12:19:24 +0100 (CET)
-Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 4A25F22529A;
-        Thu, 25 Feb 2021 12:19:20 +0100 (CET)
-Received: from [10.211.6.253] (10.75.127.49) by SFHDAG2NODE3.st.com
- (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Thu, 25 Feb
- 2021 12:19:19 +0100
+        id S230315AbhBYNWt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 25 Feb 2021 08:22:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39154 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229571AbhBYNWs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Feb 2021 08:22:48 -0500
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45773C061574;
+        Thu, 25 Feb 2021 05:22:08 -0800 (PST)
+Received: by mail-pf1-x42f.google.com with SMTP id j12so3575884pfj.12;
+        Thu, 25 Feb 2021 05:22:08 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=dbkQpNd5Wc1Bh81qcstyrrHXrqv5XpRWDvj0O1psJbw=;
+        b=QXwYFJOhkT8yELYTe4PluG9O0HQW6nlLuRYLCjSRfqgEOnYGTpRJ8WeIR8HmVytLly
+         uYwbFi7yoRwLFrZ9O2Fs0sWMPlm9DWu8pIo1HB0TAgsSvIm5gaCurN2T3nKvKCO9pbXN
+         U5114B7otySof1hdMyh24EBAnoRcn/GADeIC/0bTN8cY26tyfsu42X0DFEAzlChD1Exf
+         vZl0y4Lv44GXNxkhpDVeefrA2fVUMk/jNLCCGTeO1tn9yYk6EjORqeg53bwa6GzjlEyr
+         iNIcqq5Oo5FxiuZ16dDR8cv0IMlPaPg0snZKKwEbKMPv3dw72m6Uh7/KBhjbpzVCuL9l
+         2+7Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=dbkQpNd5Wc1Bh81qcstyrrHXrqv5XpRWDvj0O1psJbw=;
+        b=FcIonQGsDkp/tpdai9WwS471oI380fIFvSv9Lhw+3xntEqcrobOxQ2nhl2+/ZPqDYn
+         ncL128OBngnvL73xsssT1G2MgbE1xokxoWjxKcGr3T8qdOcP1/6IMl5mqb0Mw4+ZHdTz
+         Txu/teubDb6ASWgqPeKuk6y91BYzSDJ/nL9AHXkv8Y4YDtXYFF4mZsah0p3Oc362qaSZ
+         G7mQ7+iBdCiN1knx07i4j4ltmR2IavmIU9vEq2bbK8Ob0Fkv2i7xlcC4C/KDORNpz5YR
+         rG1OBA56rpiYksVCpwg1Muwk6N7V5pMmDKP4RL0d/hoS9LrzhcM91a9UNipJ2PU/8v9i
+         wROA==
+X-Gm-Message-State: AOAM533O2yO3X3zkfAIfDTmm7JiJdhpDJgVCWNYGcqlF38qShNX5ajxu
+        FQuDmvBebnd/uqeZa1VrSD8=
+X-Google-Smtp-Source: ABdhPJx5B2zDz1NmyernrPD2VdZbdhb3KcHlWxb8WvzeAKI+vSi5tRZbFee/JCtsAEfn4B7UccP5Hw==
+X-Received: by 2002:a63:2164:: with SMTP id s36mr3017110pgm.268.1614259327859;
+        Thu, 25 Feb 2021 05:22:07 -0800 (PST)
+Received: from shinobu (113x37x72x20.ap113.ftth.ucom.ne.jp. [113.37.72.20])
+        by smtp.gmail.com with ESMTPSA id a2sm6424041pfi.64.2021.02.25.05.22.03
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Feb 2021 05:22:06 -0800 (PST)
+Date:   Thu, 25 Feb 2021 22:22:00 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc:     jic23@kernel.org, Alexandre Torgue <alexandre.torgue@st.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org
 Subject: Re: [PATCH] counter: stm32-timer-cnt: Report count function when
  SLAVE_MODE_DISABLED
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>, <jic23@kernel.org>
-CC:     Alexandre Torgue <alexandre.torgue@st.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        <linux-stm32@st-md-mailman.stormreply.com>,
-        <linux-arm-kernel@lists.infradead.org>
+Message-ID: <YDekeKfygdUht3HL@shinobu>
 References: <20210219095906.220382-1-vilhelm.gray@gmail.com>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Message-ID: <288929fc-6984-072b-359a-10e163056bad@foss.st.com>
-Date:   Thu, 25 Feb 2021 12:19:18 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+ <288929fc-6984-072b-359a-10e163056bad@foss.st.com>
 MIME-Version: 1.0
-In-Reply-To: <20210219095906.220382-1-vilhelm.gray@gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE3.st.com
- (10.75.127.6)
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
- definitions=2021-02-25_06:2021-02-24,2021-02-25 signatures=0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="4fpeKnoH9IErCEuJ"
+Content-Disposition: inline
+In-Reply-To: <288929fc-6984-072b-359a-10e163056bad@foss.st.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2/19/21 10:59 AM, William Breathitt Gray wrote:
-> When in SLAVE_MODE_DISABLED mode, the count still increases if the
-> counter is enabled because an internal clock is used. This patch fixes
-> the stm32_count_function_get() function to properly report this
-> behavior.
 
-Hi William,
+--4fpeKnoH9IErCEuJ
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Thanks for the patch, that's something I also noticed earlier.
-Please find few comment below.
+On Thu, Feb 25, 2021 at 12:19:18PM +0100, Fabrice Gasnier wrote:
+> On 2/19/21 10:59 AM, William Breathitt Gray wrote:
+> > When in SLAVE_MODE_DISABLED mode, the count still increases if the
+> > counter is enabled because an internal clock is used. This patch fixes
+> > the stm32_count_function_get() function to properly report this
+> > behavior.
+>=20
+> Hi William,
+>=20
+> Thanks for the patch, that's something I also noticed earlier.
+> Please find few comment below.
+>=20
+> >=20
+> > Fixes: ad29937e206f ("counter: Add STM32 Timer quadrature encoder")
+> > Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
+> > Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> > Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> > Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> > ---
+> >  drivers/counter/stm32-timer-cnt.c | 31 +++++++++++++++++++------------
+> >  1 file changed, 19 insertions(+), 12 deletions(-)
+> >=20
+> > diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-=
+timer-cnt.c
+> > index ef2a974a2f10..ec6d9e89c028 100644
+> > --- a/drivers/counter/stm32-timer-cnt.c
+> > +++ b/drivers/counter/stm32-timer-cnt.c
+> > @@ -44,13 +44,14 @@ struct stm32_timer_cnt {
+> >   * @STM32_COUNT_ENCODER_MODE_3: counts on both TI1FP1 and TI2FP2 edges
+> >   */
+> >  enum stm32_count_function {
+> > -	STM32_COUNT_SLAVE_MODE_DISABLED =3D -1,
+> > +	STM32_COUNT_SLAVE_MODE_DISABLED,
+> >  	STM32_COUNT_ENCODER_MODE_1,
+> >  	STM32_COUNT_ENCODER_MODE_2,
+> >  	STM32_COUNT_ENCODER_MODE_3,
+> >  };
+> > =20
+> >  static enum counter_count_function stm32_count_functions[] =3D {
+> > +	[STM32_COUNT_SLAVE_MODE_DISABLED] =3D COUNTER_COUNT_FUNCTION_INCREASE,
+> >  	[STM32_COUNT_ENCODER_MODE_1] =3D COUNTER_COUNT_FUNCTION_QUADRATURE_X2=
+_A,
+> >  	[STM32_COUNT_ENCODER_MODE_2] =3D COUNTER_COUNT_FUNCTION_QUADRATURE_X2=
+_B,
+> >  	[STM32_COUNT_ENCODER_MODE_3] =3D COUNTER_COUNT_FUNCTION_QUADRATURE_X4,
+> > @@ -99,9 +100,10 @@ static int stm32_count_function_get(struct counter_=
+device *counter,
+> >  	case 3:
+> >  		*function =3D STM32_COUNT_ENCODER_MODE_3;
+> >  		return 0;
+> > +	default:
+>=20
+> I'd rather add a 'case 0', as that's the real value for slave mode
+> disabled. For reference, here's what the STM32 timer spec says on slave
+> mode selection:
+> 0000: Slave mode disabled - if CEN =3D =E2=80=981=E2=80=99 then the presc=
+aler is clocked
+> directly by the internal clock.
 
-> 
-> Fixes: ad29937e206f ("counter: Add STM32 Timer quadrature encoder")
-> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
-> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-> Cc: Alexandre Torgue <alexandre.torgue@st.com>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> ---
->  drivers/counter/stm32-timer-cnt.c | 31 +++++++++++++++++++------------
->  1 file changed, 19 insertions(+), 12 deletions(-)
-> 
-> diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-> index ef2a974a2f10..ec6d9e89c028 100644
-> --- a/drivers/counter/stm32-timer-cnt.c
-> +++ b/drivers/counter/stm32-timer-cnt.c
-> @@ -44,13 +44,14 @@ struct stm32_timer_cnt {
->   * @STM32_COUNT_ENCODER_MODE_3: counts on both TI1FP1 and TI2FP2 edges
->   */
->  enum stm32_count_function {
-> -	STM32_COUNT_SLAVE_MODE_DISABLED = -1,
-> +	STM32_COUNT_SLAVE_MODE_DISABLED,
->  	STM32_COUNT_ENCODER_MODE_1,
->  	STM32_COUNT_ENCODER_MODE_2,
->  	STM32_COUNT_ENCODER_MODE_3,
->  };
->  
->  static enum counter_count_function stm32_count_functions[] = {
-> +	[STM32_COUNT_SLAVE_MODE_DISABLED] = COUNTER_COUNT_FUNCTION_INCREASE,
->  	[STM32_COUNT_ENCODER_MODE_1] = COUNTER_COUNT_FUNCTION_QUADRATURE_X2_A,
->  	[STM32_COUNT_ENCODER_MODE_2] = COUNTER_COUNT_FUNCTION_QUADRATURE_X2_B,
->  	[STM32_COUNT_ENCODER_MODE_3] = COUNTER_COUNT_FUNCTION_QUADRATURE_X4,
-> @@ -99,9 +100,10 @@ static int stm32_count_function_get(struct counter_device *counter,
->  	case 3:
->  		*function = STM32_COUNT_ENCODER_MODE_3;
->  		return 0;
-> +	default:
+Ack.
 
-I'd rather add a 'case 0', as that's the real value for slave mode
-disabled. For reference, here's what the STM32 timer spec says on slave
-mode selection:
-0000: Slave mode disabled - if CEN = ‘1’ then the prescaler is clocked
-directly by the internal clock.
+> > +		*function =3D STM32_COUNT_SLAVE_MODE_DISABLED;
+> > +		return 0;
+> >  	}
+> > -
+> > -	return -EINVAL;
+>=20
+> Other slave modes could be added later (like counting on external
+> signals: channel A, B, ETR or other signals). But this isn't supported
+> right now in the driver.
+> Then I suggest to keep the returning -EINVAL for the default case here.
+> Do you agree with this approach ?
 
-> +		*function = STM32_COUNT_SLAVE_MODE_DISABLED;
-> +		return 0;
->  	}
-> -
-> -	return -EINVAL;
+That should be fine; we'll fill in the additional cases as the
+functionalities are introduced to this driver in the future.
 
-Other slave modes could be added later (like counting on external
-signals: channel A, B, ETR or other signals). But this isn't supported
-right now in the driver.
-Then I suggest to keep the returning -EINVAL for the default case here.
-Do you agree with this approach ?
+> >  }
+> > =20
+> >  static int stm32_count_function_set(struct counter_device *counter,
+> > @@ -274,31 +276,36 @@ static int stm32_action_get(struct counter_device=
+ *counter,
+> >  	size_t function;
+> >  	int err;
+> > =20
+> > -	/* Default action mode (e.g. STM32_COUNT_SLAVE_MODE_DISABLED) */
+> > -	*action =3D STM32_SYNAPSE_ACTION_NONE;
+> > -
+> >  	err =3D stm32_count_function_get(counter, count, &function);
+> >  	if (err)
+> > -		return 0;
+> > +		return err;
+>=20
+> This makes sense, in case the error reporting is kept above. Otherwise,
+> it always returns 0.
 
->  }
->  
->  static int stm32_count_function_set(struct counter_device *counter,
-> @@ -274,31 +276,36 @@ static int stm32_action_get(struct counter_device *counter,
->  	size_t function;
->  	int err;
->  
-> -	/* Default action mode (e.g. STM32_COUNT_SLAVE_MODE_DISABLED) */
-> -	*action = STM32_SYNAPSE_ACTION_NONE;
-> -
->  	err = stm32_count_function_get(counter, count, &function);
->  	if (err)
-> -		return 0;
-> +		return err;
+Conceptually, a nonzero value from the function_get() callback should
+indicate an invalid function mode for a Counter driver. The changes in
+this patch should bring us to that behavior so fortunately we won't have
+to worry about remembering whether the stm32_count_function_get() return
+value is valid or not.
 
-This makes sense, in case the error reporting is kept above. Otherwise,
-it always returns 0.
+> > =20
+> >  	switch (function) {
+> >  	case STM32_COUNT_ENCODER_MODE_1:
+> >  		/* counts up/down on TI1FP1 edge depending on TI2FP2 level */
+> >  		if (synapse->signal->id =3D=3D count->synapses[0].signal->id)
+> >  			*action =3D STM32_SYNAPSE_ACTION_BOTH_EDGES;
+> > -		break;
+> > +		else
+> > +			*action =3D STM32_SYNAPSE_ACTION_NONE;
+>=20
+> More a question here...
+>=20
+> > +		return 0;
+> >  	case STM32_COUNT_ENCODER_MODE_2:
+> >  		/* counts up/down on TI2FP2 edge depending on TI1FP1 level */
+> >  		if (synapse->signal->id =3D=3D count->synapses[1].signal->id)
+> >  			*action =3D STM32_SYNAPSE_ACTION_BOTH_EDGES;
+> > -		break;
+> > +		else
+> > +			*action =3D STM32_SYNAPSE_ACTION_NONE;
+>=20
+> ..., not related to your fix: In "quadrature x2 a" or "quadrature x2 b",
+> the other signal determines the counting direction.
+> I feel like this isn't really represented with the "none" action.
 
->  
->  	switch (function) {
->  	case STM32_COUNT_ENCODER_MODE_1:
->  		/* counts up/down on TI1FP1 edge depending on TI2FP2 level */
->  		if (synapse->signal->id == count->synapses[0].signal->id)
->  			*action = STM32_SYNAPSE_ACTION_BOTH_EDGES;
-> -		break;
-> +		else
-> +			*action = STM32_SYNAPSE_ACTION_NONE;
+Be careful not to confuse the Generic Counter paradigm with the hardware
+description of your device. Within the context of the Generic Counter
+paradigm, Synapse actions are the trigger conditions of a hypothetical
+counting function evaluating Signals for an idealized Counter. In other
+words, a Synapse action indicates whether a Signal triggers a change in
+the Count value, not whether the Signal value is evaluated by the
+counting function.
 
-More a question here...
+"Quadrature x2 A" and "Quadrature x2 B" are two different counting
+functions. Both happen to evaluate two Signals, but only one of those
+Signals is ever triggering the counting function evaluation to update
+the Count value. In other words, the Signal serving as a direction can
+change value as much as you like but it will never trigger a change in
+the respective Count's value; i.e. that Signal's Synapse action is
+"none" because it does not trigger the count function evaluation.
 
-> +		return 0;
->  	case STM32_COUNT_ENCODER_MODE_2:
->  		/* counts up/down on TI2FP2 edge depending on TI1FP1 level */
->  		if (synapse->signal->id == count->synapses[1].signal->id)
->  			*action = STM32_SYNAPSE_ACTION_BOTH_EDGES;
-> -		break;
-> +		else
-> +			*action = STM32_SYNAPSE_ACTION_NONE;
+> I just realized if we want to extend this driver to add new signals
+> (e.g. like counting on chA, chB or even by adding other signals like ETR
+> on STM32 with the increase function), this may start to be confusing.
+> Currently only the two signal names could give some hint (so it's rather
+> obvious currently).
+>=20
+> Maybe there could be some change later to indicate the other signal
+> (channel A or channel B) participates in quadrature encoding ?
+>=20
+>=20
+> Thanks and best regards,
+> Fabrice
 
-..., not related to your fix: In "quadrature x2 a" or "quadrature x2 b",
-the other signal determines the counting direction.
-I feel like this isn't really represented with the "none" action.
+Well, one thing could try is to introduce new count functions in the
+future if there is some configuration you want to support with a count
+function evaluation that doesn't really fit one of the ones currently
+available; we can create a new enum counter_count_function constant to
+represent it.
 
-I just realized if we want to extend this driver to add new signals
-(e.g. like counting on chA, chB or even by adding other signals like ETR
-on STM32 with the increase function), this may start to be confusing.
-Currently only the two signal names could give some hint (so it's rather
-obvious currently).
+Remember that in the Generic Counter paradigm we are not necessarily
+matching hardware layout of your device, but rather abstracting its
+functionality. Because of that, you can associate multiple Signals to
+your Count component, even if your hardware device has only two physical
+lines.
 
-Maybe there could be some change later to indicate the other signal
-(channel A or channel B) participates in quadrature encoding ?
+For example, let's say a counter device has 3 modes: quadrature lines,
+external pulses, clock source. In quadrature lines mode, a "QUADA" and
+"QUADB" signal are evaluate as a quadrature x4 encoding; in external
+pulses mode, a "PULSE" signal is evaluated for both falling and rising
+edges; and in clock source mode, a "CLOCK" signal is evaluated for
+rising edges.
 
+Using the Generic Counter paradigm, we would construct a Count with 4
+Synapes associating the four Signals: QUADA, QUADB, PULSE, CLOCK. There
+would be 2 count functions: COUNTER_COUNT_FUNCTION_QUADRATURE_X4,
+COUNTER_COUNT_FUNCTION_INCREASE. The following 3 configurations would be
+possible:
 
-Thanks and best regards,
-Fabrice
+* Count Function: COUNTER_COUNT_FUNCTION_QUADRATURE_X4
+  Synapse Actions: QUADA =3D> COUNTER_SYNAPSE_ACTION_BOTH_EDGES
+                   QUADB =3D> COUNTER_SYNAPSE_ACTION_BOTH_EDGES
+		   PULSE =3D> COUNTER_SYNAPSE_ACTION_NONE
+		   CLOCK =3D> COUNTER_SYNAPSE_ACTION_NONE
 
-> +		return 0;
->  	case STM32_COUNT_ENCODER_MODE_3:
->  		/* counts up/down on both TI1FP1 and TI2FP2 edges */
->  		*action = STM32_SYNAPSE_ACTION_BOTH_EDGES;
-> -		break;
-> +		return 0;
-> +	case STM32_COUNT_SLAVE_MODE_DISABLED:
-> +		/* counts on internal clock when CEN=1 */
-> +		*action = STM32_SYNAPSE_ACTION_NONE;
-> +		return 0;
-> +	default:
-> +		return -EINVAL;
->  	}
-> -
-> -	return 0;
->  }
->  
->  static const struct counter_ops stm32_timer_cnt_ops = {
-> 
+* Count Function: COUNTER_COUNT_FUNCTION_INCREASE
+  Synapse Actions: QUADA =3D> COUNTER_SYNAPSE_ACTION_NONE
+                   QUADB =3D> COUNTER_SYNAPSE_ACTION_NONE
+		   PULSE =3D> COUNTER_SYNAPSE_ACTION_BOTH_EDGES
+		   CLOCK =3D> COUNTER_SYNAPSE_ACTION_NONE
+
+* Count Function: COUNTER_COUNT_FUNCTION_INCREASE
+  Synapse Actions: QUADA =3D> COUNTER_SYNAPSE_ACTION_NONE
+                   QUADB =3D> COUNTER_SYNAPSE_ACTION_NONE
+		   PULSE =3D> COUNTER_SYNAPSE_ACTION_NONE
+		   CLOCK =3D> COUNTER_SYNAPSE_ACTION_RISING_EDGE
+
+So a Synapse action isn't where the differentiation occurs between which
+Signals are evaluated by a particular count function; the Synapse
+actions only indicate whether a change in the respective Signal value
+will trigger an update of the associated Count value.
+
+However, I see what you mean that this does leave some ambiguity when we
+have multiple Signals associated to the same Count, yet various possible
+count functions that only evaluate a subsection of those Signals.
+
+Perhaps one solution is to create a second Count component dedicated to
+just those Signals: so we impose a requirement that the only Signals
+associated with a particular Count component are Signals that are
+evaluated by all the specified count functions. Alternatively, perhaps
+we can expose a new attribute to communicate which Signals are
+evaluated.
+
+We're starting to go off on a tangent here though, so lets postpone
+this discussion to a later time, perhaps when support for the ETR signal
+is proposed for this driver.
+
+William Breathitt Gray
+
+--4fpeKnoH9IErCEuJ
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmA3pFwACgkQhvpINdm7
+VJIz8xAAkNBJ9CbKbEINNZHmehMRuz8Jh0VyG8CB8730GBAcPVHiRvgt/GAO1okb
+NiDnZrTpThAnA6Wq2FJqDmeMIOqgxzgogeS/XD8zSLaXxnDELC72zbZA2adyBUX1
+9E7gtWPXDLiuXyt371sWSCmJFV2AnMVyNrmoY6qT7Gm5iODQvkFpiqS47r4mRSFs
+cdGbBf3t1vvB15wMvs2fGT48Tf6Cxc85nx/Qfcmp1D5DPsUb1MKJwBw3EvlkExpw
+qpqgacIjmIqAUitqJRS8g/8qo4BRZ/pyqP74QIMgovOfnzAffdhuD9BJ7rotHMjo
+axVmrrBxZuwinvbhfmRwq4RntKpXW+oLrgcKJe/cpnKqh9IvEUyXvUNZb2szbsZD
+9tbtMwMMHzVQjNnRLyLuaZG8H2LcdVtHeZtkkJL635xSLMirPv+pnpa7d4wbNtNu
+BCLbGnXq17S7jAE8DeiaGATrIevkA+njaQnlxoo8Vxvtw/33mJZB1ha0S2/N1r2d
+klYM/88HSgMBywGiDF6lZSbKlavX/56OfMjWyjzHy+0ZukMXySYqIatfT29koIYh
+Z85TrkWz9QjdHzHt/ngq8EjkEIwdl/mjq/ZVbg5FDs2NhiLYUywOrrbjSzmgAmk6
+rE3/TYDLdO1zZ9j4h9v7XfLgHkZV3Fkeq4kigsVoZa0GuSfScMw=
+=Hwqs
+-----END PGP SIGNATURE-----
+
+--4fpeKnoH9IErCEuJ--
