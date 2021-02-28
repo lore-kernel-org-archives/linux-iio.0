@@ -2,59 +2,59 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3324EC433DB
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Feb 2021 08:30:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70A01C433E0
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Feb 2021 08:52:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D94F864DBA
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Feb 2021 08:30:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 39A3664E38
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Feb 2021 08:52:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230079AbhB1I3p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 28 Feb 2021 03:29:45 -0500
-Received: from www381.your-server.de ([78.46.137.84]:47696 "EHLO
+        id S230382AbhB1IwW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 28 Feb 2021 03:52:22 -0500
+Received: from www381.your-server.de ([78.46.137.84]:51004 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230075AbhB1I3o (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Feb 2021 03:29:44 -0500
+        with ESMTP id S230299AbhB1IwV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Feb 2021 03:52:21 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
          s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
         MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=Rnp46uHNyUiQW6a1gr96QWgGKIhkJAiSdkAgs0KFxVM=; b=Yz3sbd/QdPS03ozZx84rCHHZ50
-        RmTV9+tM3+iuyL7Thop9Vi+2W5+qhRV49pF4Iv5/0m0I04uR5gc0szyoyAFJrkOtJyUgQ5hR9gT1k
-        6GFcy66hH1ZBa11J37zejAuLKxTwjouktOhFU2tvDkIchGvNM0VsKN31osByqIfFD1vho3owMCwoT
-        Q5oSq/eyBglVUo3nneVagwK4jnsxAEd85BwbK8YzgbCWq8GQPV1YCg2dMln8n23gNU060DqOdSm5i
-        9LdUeWaoH6p7kXg9FfuVApkQ0ED+yW01eePUy6EkFQ1E9TVE3Ku3jIME++kX8DrU3bxIWvt3STR8w
-        oY5gCthQ==;
-Received: from sslproxy03.your-server.de ([88.198.220.132])
+        bh=8E7c/Z1a3sjaUgQcFNKtXe/vCdCcKhkLNcrSGUpc+Dc=; b=b9CDjPxRY25Ro8Z29cvKdM1Zhq
+        u4SL10j/hWm5n21f5KIfQumem74DS8D9zrmeOwSfC99+/CPAoXf/9UZec0U1WZ2XEFvn8cpmX5Rb/
+        zi4k2aeZVsc0ACX3yNjZoR1cjcFFrbcc+ikpLS5oj7siHXWF2z4hS1gLQlnUqw+LlFcZEW4JLjyLL
+        iPBZN5O0Wj36a+if0HS/+1fDgRrNOptynwvrvofK27oNWE5WWHsvKXz3TPTaoggsizSW8Hgc5z+9X
+        mMMQmci/3yDvUpoDdJeRi79i1ZJlvAZiZN5QwByssMJkhm6+m1Tbg4MsEg8mZk7t46beplMhNX4x3
+        boxMcTTA==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
         by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <lars@metafoo.de>)
-        id 1lGHRl-0006TN-Dz; Sun, 28 Feb 2021 09:29:01 +0100
+        id 1lGHne-0009ch-KT; Sun, 28 Feb 2021 09:51:38 +0100
 Received: from [62.216.202.180] (helo=[192.168.178.20])
-        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <lars@metafoo.de>)
-        id 1lGHRl-0001wV-8t; Sun, 28 Feb 2021 09:29:01 +0100
-Subject: Re: [PATCH v6 19/24] iio: buffer: introduce support for attaching
- more IIO buffers
+        id 1lGHne-000N8B-Em; Sun, 28 Feb 2021 09:51:38 +0100
+Subject: Re: [PATCH v6 20/24] iio: buffer: add ioctl() to support opening
+ extra buffers for IIO device
 To:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc:     Michael.Hennerich@analog.com, jic23@kernel.org, nuno.sa@analog.com,
         dragos.bogdan@analog.com
 References: <20210215104043.91251-1-alexandru.ardelean@analog.com>
- <20210215104043.91251-20-alexandru.ardelean@analog.com>
+ <20210215104043.91251-21-alexandru.ardelean@analog.com>
 From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <d616ffac-9747-55f8-0478-dd747dba381a@metafoo.de>
-Date:   Sun, 28 Feb 2021 09:29:01 +0100
+Message-ID: <877ca331-1a56-1bd3-6637-482bbf060ba9@metafoo.de>
+Date:   Sun, 28 Feb 2021 09:51:38 +0100
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
  Thunderbird/78.7.0
 MIME-Version: 1.0
-In-Reply-To: <20210215104043.91251-20-alexandru.ardelean@analog.com>
+In-Reply-To: <20210215104043.91251-21-alexandru.ardelean@analog.com>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Content-Language: en-US
@@ -65,49 +65,107 @@ List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 On 2/15/21 11:40 AM, Alexandru Ardelean wrote:
->   static ssize_t iio_show_scan_index(struct device *dev,
->   				   struct device_attribute *attr,
->   				   char *buf)
-> @@ -1451,11 +1465,13 @@ static void __iio_buffer_free_sysfs_and_mask(struct iio_buffer *buffer)
->   	iio_free_chan_devattr_list(&buffer->buffer_attr_list);
->   }
->   
-> -int iio_buffer_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
-> +int iio_buffers_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
->   {
-> [...]
-> +error_unwind_sysfs_and_mask:
-> +	for (; unwind_idx >= 0; unwind_idx--) {
-> +		buffer = iio_dev_opaque->attached_buffers[unwind_idx];
-> +		__iio_buffer_free_sysfs_and_mask(buffer);
-> +	}
-> +	kfree(iio_dev_opaque->attached_buffers);
-> +	return ret;
->   }
->   
-> -void iio_buffer_free_sysfs_and_mask(struct iio_dev *indio_dev)
-> +void iio_buffers_free_sysfs_and_mask(struct iio_dev *indio_dev)
->   {
-> [...]
-> +	for (i = iio_dev_opaque->attached_buffers_cnt - 1; i >= 0; i--) {
-> +		buffer = iio_dev_opaque->attached_buffers[i];
-> +		__iio_buffer_free_sysfs_and_mask(buffer);
-> +	}
-> +
-> +	kfree(iio_dev_opaque->attached_buffers);
->   }
-> [...]
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index 1d500ea246af..f7f785431106 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -1583,7 +1583,7 @@ static void iio_dev_release(struct device *device)
->   	iio_device_unregister_eventset(indio_dev);
->   	iio_device_unregister_sysfs(indio_dev);
->   
-> -	iio_buffer_put(indio_dev->buffer);
-> +	iio_buffers_put(indio_dev);
-We do call kfree(iio_dev_opaque->attached_buffers) before we get here. I 
-think we need to keep the array around, otherwise we end of up with a 
-use after free.
+> With this change, an ioctl() call is added to open a character device for a
+> buffer. The ioctl() number is 'i' 0x91, which follows the
+> IIO_GET_EVENT_FD_IOCTL ioctl.
+>
+> The ioctl() will return an FD for the requested buffer index. The indexes
+> are the same from the /sys/iio/devices/iio:deviceX/bufferY (i.e. the Y
+> variable).
+>
+> Since there doesn't seem to be a sane way to return the FD for buffer0 to
+> be the same FD for the /dev/iio:deviceX, this ioctl() will return another
+> FD for buffer0 (or the first buffer). This duplicate FD will be able to
+> access the same buffer object (for buffer0) as accessing directly the
+> /dev/iio:deviceX chardev.
+>
+> Also, there is no IIO_BUFFER_GET_BUFFER_COUNT ioctl() implemented, as the
+> index for each buffer (and the count) can be deduced from the
+> '/sys/bus/iio/devices/iio:deviceX/bufferY' folders (i.e the number of
+> bufferY folders).
+>
+> Used following C code to test this:
+> -------------------------------------------------------------------
+>
+>   #include <stdio.h>
+>   #include <stdlib.h>
+>   #include <unistd.h>
+>   #include <sys/ioctl.h>
+>   #include <fcntl.h"
+>   #include <errno.h>
+>
+>   #define IIO_BUFFER_GET_FD_IOCTL      _IOWR('i', 0x91, int)
+>
+> int main(int argc, char *argv[])
+> {
+>          int fd;
+>          int fd1;
+>          int ret;
+>
+>          if ((fd = open("/dev/iio:device0", O_RDWR))<0) {
+>                  fprintf(stderr, "Error open() %d errno %d\n",fd, errno);
+>                  return -1;
+>          }
+>
+>          fprintf(stderr, "Using FD %d\n", fd);
+>
+>          fd1 = atoi(argv[1]);
+>
+>          ret = ioctl(fd, IIO_BUFFER_GET_FD_IOCTL, &fd1);
+>          if (ret < 0) {
+>                  fprintf(stderr, "Error for buffer %d ioctl() %d errno %d\n", fd1, ret, errno);
+>                  close(fd);
+>                  return -1;
+>          }
+>
+>          fprintf(stderr, "Got FD %d\n", fd1);
+>
+>          close(fd1);
+>          close(fd);
+>
+>          return 0;
+> }
+> -------------------------------------------------------------------
+>
+> Results are:
+> -------------------------------------------------------------------
+>   # ./test 0
+>   Using FD 3
+>   Got FD 4
+>
+>   # ./test 1
+>   Using FD 3
+>   Got FD 4
+>
+>   # ./test 2
+>   Using FD 3
+>   Got FD 4
+>
+>   # ./test 3
+>   Using FD 3
+>   Got FD 4
+>
+>   # ls /sys/bus/iio/devices/iio\:device0
+>   buffer  buffer0  buffer1  buffer2  buffer3  dev
+>   in_voltage_sampling_frequency  in_voltage_scale
+>   in_voltage_scale_available
+>   name  of_node  power  scan_elements  subsystem  uevent
+> -------------------------------------------------------------------
+>
+> iio:device0 has some fake kfifo buffers attached to an IIO device.
+
+For me there is one major problem with this approach. We only allow one 
+application to open /dev/iio:deviceX at a time. This means we can't have 
+different applications access different buffers of the same device. I 
+believe this is a circuital feature.
+
+It is possible to open the chardev, get the annonfd, close the chardev 
+and keep the annonfd open. Then the next application can do the same and 
+get access to a different buffer. But this has room for race conditions 
+when two applications try this at the very same time.
+
+We need to somehow address this.
+
+I'm also not much of a fan of using ioctls to create annon fds. In part 
+because all the standard mechanisms for access control no longer work.
 
