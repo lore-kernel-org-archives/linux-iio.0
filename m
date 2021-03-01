@@ -2,137 +2,81 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31CEFC433DB
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Mar 2021 08:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D446C433E6
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Mar 2021 08:06:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E8CBB64E07
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Mar 2021 08:01:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BB32364E45
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Mar 2021 08:06:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232634AbhCAIBn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 Mar 2021 03:01:43 -0500
-Received: from first.geanix.com ([116.203.34.67]:37620 "EHLO first.geanix.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232617AbhCAIBl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 1 Mar 2021 03:01:41 -0500
-Received: from zen.. (unknown [185.17.218.86])
-        by first.geanix.com (Postfix) with ESMTPSA id A146F1023BE2;
-        Mon,  1 Mar 2021 08:00:33 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1614585633; bh=LSfeAQBaJdp4FrJX+ge+unO0yjFPS9yC37TGoYqeC3k=;
-        h=From:To:Cc:Subject:Date;
-        b=F5Q4k40NiV2GM3qoMlG6EoceSrjGeSFEM3Na93zYfPhBajeaqs7ft0jPSkc64K9QH
-         W9w0zIgcVQf6W/NsRckHL/XZjNU1MHmnHGgT4ur2kCtQmwLX0n0+bL29ikg+XgHV13
-         lt7Nlt01kCp4KaH3r7/F5JjU1Sj4V31TEdsp9pJANJHv6mycQWZpBAFLy4lYXfv0yw
-         OUnrW0+rNxy9Rd6hLIeNy19RrIS9GHjIUYNhkhpAT7S2ag9SksNRvCuaHDaRTgKqH5
-         qeLjlvWoChSY+hi3s4e/yAkyRa5DIJ1pjLCNCupGZkvh8+JNut+lNz1/psFaVokvkk
-         +o56U34kZjLnw==
-From:   Sean Nyekjaer <sean@geanix.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        id S232719AbhCAIGF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 Mar 2021 03:06:05 -0500
+Received: from mail.zju.edu.cn ([61.164.42.155]:27836 "EHLO zju.edu.cn"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232718AbhCAIF1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 1 Mar 2021 03:05:27 -0500
+Received: from localhost.localdomain (unknown [10.192.85.18])
+        by mail-app3 (Coremail) with SMTP id cC_KCgDnPSQFoDxgCuLgAQ--.21092S4;
+        Mon, 01 Mar 2021 16:04:25 +0800 (CST)
+From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
+To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc:     Sean Nyekjaer <sean@geanix.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: accel: mma8452: fix indentation
-Date:   Mon,  1 Mar 2021 09:00:28 +0100
-Message-Id: <20210301080029.1974797-1-sean@geanix.com>
-X-Mailer: git-send-email 2.29.2
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: gyro: mpu3050: Fix error handling in mpu3050_trigger_handler
+Date:   Mon,  1 Mar 2021 16:04:21 +0800
+Message-Id: <20210301080421.13436-1-dinghao.liu@zju.edu.cn>
+X-Mailer: git-send-email 2.17.1
+X-CM-TRANSID: cC_KCgDnPSQFoDxgCuLgAQ--.21092S4
+X-Coremail-Antispam: 1UD129KBjvdXoW7JF13WF4kWr1xXFyxKr15Jwb_yoWfJrb_W3
+        4UZas7W34IvFnrCr42yayfXr9FyF95ur95Wrn2qF9IkFyxCas5WryUZrnxGr43Wr48CFy3
+        Wr1ruF1xCF43KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
+        9fnUUIcSsGvfJTRUUUbc8Fc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
+        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
+        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2
+        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
+        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
+        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
+        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv
+        6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
+        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48J
+        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
+        IF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
+        6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
+X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgcLBlZdtSjMQAABsT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Improve readability by fixing indentation.
+There is one regmap_bulk_read() call in mpu3050_trigger_handler
+that we have caught its return value bug lack further handling.
+Check and terminate the execution flow just like the other three
+regmap_bulk_read() calls in this function.
 
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
 ---
-v2: removed fixing of register values indentation
+ drivers/iio/gyro/mpu3050-core.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
- drivers/iio/accel/mma8452.c | 46 ++++++++++++++++++-------------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
-
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index b0176d936423..33f0c419d8ff 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -58,7 +58,7 @@
- #define MMA8452_FF_MT_THS			0x17
- #define  MMA8452_FF_MT_THS_MASK			0x7f
- #define MMA8452_FF_MT_COUNT			0x18
--#define MMA8452_FF_MT_CHAN_SHIFT	3
-+#define MMA8452_FF_MT_CHAN_SHIFT		3
- #define MMA8452_TRANSIENT_CFG			0x1d
- #define  MMA8452_TRANSIENT_CFG_CHAN(chan)	BIT(chan + 1)
- #define  MMA8452_TRANSIENT_CFG_HPF_BYP		BIT(0)
-@@ -70,7 +70,7 @@
- #define MMA8452_TRANSIENT_THS			0x1f
- #define  MMA8452_TRANSIENT_THS_MASK		GENMASK(6, 0)
- #define MMA8452_TRANSIENT_COUNT			0x20
--#define MMA8452_TRANSIENT_CHAN_SHIFT 1
-+#define MMA8452_TRANSIENT_CHAN_SHIFT		1
- #define MMA8452_CTRL_REG1			0x2a
- #define  MMA8452_CTRL_ACTIVE			BIT(0)
- #define  MMA8452_CTRL_DR_MASK			GENMASK(5, 3)
-@@ -134,33 +134,33 @@ struct mma8452_data {
-   * used for different chips and the relevant registers are included here.
-   */
- struct mma8452_event_regs {
--		u8 ev_cfg;
--		u8 ev_cfg_ele;
--		u8 ev_cfg_chan_shift;
--		u8 ev_src;
--		u8 ev_ths;
--		u8 ev_ths_mask;
--		u8 ev_count;
-+	u8 ev_cfg;
-+	u8 ev_cfg_ele;
-+	u8 ev_cfg_chan_shift;
-+	u8 ev_src;
-+	u8 ev_ths;
-+	u8 ev_ths_mask;
-+	u8 ev_count;
- };
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index dfa31a23500f..ac90be03332a 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -551,6 +551,8 @@ static irqreturn_t mpu3050_trigger_handler(int irq, void *p)
+ 					       MPU3050_FIFO_R,
+ 					       &fifo_values[offset],
+ 					       toread);
++			if (ret)
++				goto out_trigger_unlock;
  
- static const struct mma8452_event_regs ff_mt_ev_regs = {
--		.ev_cfg = MMA8452_FF_MT_CFG,
--		.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
--		.ev_cfg_chan_shift = MMA8452_FF_MT_CHAN_SHIFT,
--		.ev_src = MMA8452_FF_MT_SRC,
--		.ev_ths = MMA8452_FF_MT_THS,
--		.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
--		.ev_count = MMA8452_FF_MT_COUNT
-+	.ev_cfg = MMA8452_FF_MT_CFG,
-+	.ev_cfg_ele = MMA8452_FF_MT_CFG_ELE,
-+	.ev_cfg_chan_shift = MMA8452_FF_MT_CHAN_SHIFT,
-+	.ev_src = MMA8452_FF_MT_SRC,
-+	.ev_ths = MMA8452_FF_MT_THS,
-+	.ev_ths_mask = MMA8452_FF_MT_THS_MASK,
-+	.ev_count = MMA8452_FF_MT_COUNT
- };
- 
- static const struct mma8452_event_regs trans_ev_regs = {
--		.ev_cfg = MMA8452_TRANSIENT_CFG,
--		.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
--		.ev_cfg_chan_shift = MMA8452_TRANSIENT_CHAN_SHIFT,
--		.ev_src = MMA8452_TRANSIENT_SRC,
--		.ev_ths = MMA8452_TRANSIENT_THS,
--		.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
--		.ev_count = MMA8452_TRANSIENT_COUNT,
-+	.ev_cfg = MMA8452_TRANSIENT_CFG,
-+	.ev_cfg_ele = MMA8452_TRANSIENT_CFG_ELE,
-+	.ev_cfg_chan_shift = MMA8452_TRANSIENT_CHAN_SHIFT,
-+	.ev_src = MMA8452_TRANSIENT_SRC,
-+	.ev_ths = MMA8452_TRANSIENT_THS,
-+	.ev_ths_mask = MMA8452_TRANSIENT_THS_MASK,
-+	.ev_count = MMA8452_TRANSIENT_COUNT,
- };
- 
- /**
+ 			dev_dbg(mpu3050->dev,
+ 				"%04x %04x %04x %04x %04x\n",
 -- 
-2.29.2
+2.17.1
 
