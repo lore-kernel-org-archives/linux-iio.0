@@ -4,79 +4,135 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D446C433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77F52C43381
 	for <linux-iio@archiver.kernel.org>; Mon,  1 Mar 2021 08:06:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BB32364E45
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Mar 2021 08:06:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3472A64E45
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Mar 2021 08:06:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232719AbhCAIGF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 Mar 2021 03:06:05 -0500
-Received: from mail.zju.edu.cn ([61.164.42.155]:27836 "EHLO zju.edu.cn"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232718AbhCAIF1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 1 Mar 2021 03:05:27 -0500
-Received: from localhost.localdomain (unknown [10.192.85.18])
-        by mail-app3 (Coremail) with SMTP id cC_KCgDnPSQFoDxgCuLgAQ--.21092S4;
-        Mon, 01 Mar 2021 16:04:25 +0800 (CST)
-From:   Dinghao Liu <dinghao.liu@zju.edu.cn>
-To:     dinghao.liu@zju.edu.cn, kjlu@umn.edu
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: gyro: mpu3050: Fix error handling in mpu3050_trigger_handler
-Date:   Mon,  1 Mar 2021 16:04:21 +0800
-Message-Id: <20210301080421.13436-1-dinghao.liu@zju.edu.cn>
-X-Mailer: git-send-email 2.17.1
-X-CM-TRANSID: cC_KCgDnPSQFoDxgCuLgAQ--.21092S4
-X-Coremail-Antispam: 1UD129KBjvdXoW7JF13WF4kWr1xXFyxKr15Jwb_yoWfJrb_W3
-        4UZas7W34IvFnrCr42yayfXr9FyF95ur95Wrn2qF9IkFyxCas5WryUZrnxGr43Wr48CFy3
-        Wr1ruF1xCF43KjkaLaAFLSUrUUUUUb8apTn2vfkv8UJUUUU8Yxn0WfASr-VFAUDa7-sFnT
-        9fnUUIcSsGvfJTRUUUbc8Fc2x0x2IEx4CE42xK8VAvwI8IcIk0rVWrJVCq3wAFIxvE14AK
-        wVWUJVWUGwA2ocxC64kIII0Yj41l84x0c7CEw4AK67xGY2AK021l84ACjcxK6xIIjxv20x
-        vE14v26w1j6s0DM28EF7xvwVC0I7IYx2IY6xkF7I0E14v26F4UJVW0owA2z4x0Y4vEx4A2
-        jsIE14v26rxl6s0DM28EF7xvwVC2z280aVCY1x0267AKxVW0oVCq3wAS0I0E0xvYzxvE52
-        x082IY62kv0487Mc02F40EFcxC0VAKzVAqx4xG6I80ewAv7VC0I7IYx2IY67AKxVWUJVWU
-        GwAv7VC2z280aVAFwI0_Jr0_Gr1lOx8S6xCaFVCjc4AY6r1j6r4UM4x0Y48IcxkI7VAKI4
-        8JM4x0x7Aq67IIx4CEVc8vx2IErcIFxwCF04k20xvY0x0EwIxGrwCF04k20xvE74AGY7Cv
-        6cx26r4fKr1UJr1l4I8I3I0E4IkC6x0Yz7v_Jr0_Gr1lx2IqxVAqx4xG67AKxVWUJVWUGw
-        C20s026x8GjcxK67AKxVWUGVWUWwC2zVAF1VAY17CE14v26r1q6r43MIIYrxkI7VAKI48J
-        MIIF0xvE2Ix0cI8IcVAFwI0_Jr0_JF4lIxAIcVC0I7IYx2IY6xkF7I0E14v26r1j6r4UMI
-        IF0xvE42xK8VAvwI8IcIk0rVWrJr0_WFyUJwCI42IY6I8E87Iv67AKxVWUJVW8JwCI42IY
-        6I8E87Iv6xkF7I0E14v26r4j6r4UJbIYCTnIWIevJa73UjIFyTuYvjfUoOJ5UUUUU
-X-CM-SenderInfo: qrrzjiaqtzq6lmxovvfxof0/1tbiAgcLBlZdtSjMQAABsT
+        id S231794AbhCAIGJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 Mar 2021 03:06:09 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232726AbhCAIFk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Mar 2021 03:05:40 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65ABEC061793
+        for <linux-iio@vger.kernel.org>; Mon,  1 Mar 2021 00:04:12 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lGdX9-0003wl-5z; Mon, 01 Mar 2021 09:04:03 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lGdX8-0005my-Hv; Mon, 01 Mar 2021 09:04:02 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH v8 1/2] dt-bindings: counter: add interrupt-counter binding
+Date:   Mon,  1 Mar 2021 09:04:00 +0100
+Message-Id: <20210301080401.22190-2-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210301080401.22190-1-o.rempel@pengutronix.de>
+References: <20210301080401.22190-1-o.rempel@pengutronix.de>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There is one regmap_bulk_read() call in mpu3050_trigger_handler
-that we have caught its return value bug lack further handling.
-Check and terminate the execution flow just like the other three
-regmap_bulk_read() calls in this function.
+Add binding for the interrupt counter node
 
-Signed-off-by: Dinghao Liu <dinghao.liu@zju.edu.cn>
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/gyro/mpu3050-core.c | 2 ++
- 1 file changed, 2 insertions(+)
+ .../bindings/counter/interrupt-counter.yaml   | 62 +++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/counter/interrupt-counter.yaml
 
-diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
-index dfa31a23500f..ac90be03332a 100644
---- a/drivers/iio/gyro/mpu3050-core.c
-+++ b/drivers/iio/gyro/mpu3050-core.c
-@@ -551,6 +551,8 @@ static irqreturn_t mpu3050_trigger_handler(int irq, void *p)
- 					       MPU3050_FIFO_R,
- 					       &fifo_values[offset],
- 					       toread);
-+			if (ret)
-+				goto out_trigger_unlock;
- 
- 			dev_dbg(mpu3050->dev,
- 				"%04x %04x %04x %04x %04x\n",
+diff --git a/Documentation/devicetree/bindings/counter/interrupt-counter.yaml b/Documentation/devicetree/bindings/counter/interrupt-counter.yaml
+new file mode 100644
+index 000000000000..fd075d104631
+--- /dev/null
++++ b/Documentation/devicetree/bindings/counter/interrupt-counter.yaml
+@@ -0,0 +1,62 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/counter/interrupt-counter.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Interrupt counter
++
++maintainers:
++  - Oleksij Rempel <o.rempel@pengutronix.de>
++
++description: |
++  A generic interrupt counter to measure interrupt frequency. It was developed
++  and used for agricultural devices to measure rotation speed of wheels or
++  other tools. Since the direction of rotation is not important, only one
++  signal line is needed.
++  Interrupts or gpios are required. If both are defined, the interrupt will
++  take precedence for counting interrupts.
++
++properties:
++  compatible:
++    const: interrupt-counter
++
++  interrupts:
++    maxItems: 1
++
++  gpios:
++    maxItems: 1
++
++required:
++  - compatible
++
++anyOf:
++  - required: [ interrupts-extended ]
++  - required: [ interrupts ]
++  - required: [ gpios ]
++
++additionalProperties: false
++
++examples:
++  - |
++
++    #include <dt-bindings/interrupt-controller/irq.h>
++    #include <dt-bindings/gpio/gpio.h>
++
++    counter-0 {
++        compatible = "interrupt-counter";
++        interrupts-extended = <&gpio 0 IRQ_TYPE_EDGE_RISING>;
++    };
++
++    counter-1 {
++        compatible = "interrupt-counter";
++        gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
++    };
++
++    counter-2 {
++        compatible = "interrupt-counter";
++        interrupts-extended = <&gpio 2 IRQ_TYPE_EDGE_RISING>;
++        gpios = <&gpio 2 GPIO_ACTIVE_HIGH>;
++    };
++
++...
 -- 
-2.17.1
+2.29.2
 
