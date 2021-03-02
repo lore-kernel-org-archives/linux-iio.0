@@ -2,120 +2,166 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4F33C433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA0A4C433E9
 	for <linux-iio@archiver.kernel.org>; Wed,  3 Mar 2021 04:25:16 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7200A64E86
+	by mail.kernel.org (Postfix) with ESMTP id A0A2E64EC3
 	for <linux-iio@archiver.kernel.org>; Wed,  3 Mar 2021 04:25:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236208AbhCCELg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 2 Mar 2021 23:11:36 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54470 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350743AbhCBPq1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Mar 2021 10:46:27 -0500
-Received: from mail-lf1-x12f.google.com (mail-lf1-x12f.google.com [IPv6:2a00:1450:4864:20::12f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03C66C061794
-        for <linux-iio@vger.kernel.org>; Tue,  2 Mar 2021 07:37:17 -0800 (PST)
-Received: by mail-lf1-x12f.google.com with SMTP id u4so31965324lfs.0
-        for <linux-iio@vger.kernel.org>; Tue, 02 Mar 2021 07:37:17 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=4MgbZOgNW8uixaX7A/+b9oSIGLPsBpXoCjq0KvgA0Vs=;
-        b=Sh8OBszE7R3d8uy7nbh6mGISl/xCEmQuyh4gsiTAsNoq0BctI45bGAlwpUnecy1kA2
-         7IyIPkl7uPlD9RIGSpEwCItMHd4J1HSMUVEOIfFGWOb1iSQlyd8JBsrwTPeRYNYEwWIL
-         4F0Oiifpjpe4z0u4pT36uIJse9yGuU21a4gqFsTthZKHpVuqyyNxzCku3CVqOvhEgXoE
-         SEIoh2gDqqJBZHlPiZQgS3vgDgHjUakA1AcpsijE7EI52oMQTvx+0qKk0ZdjmFSwKnmk
-         APLEgSd+JFLMwGBh4Pbg5ePTydmtKuUTzi/U75LRZvA8luBff0oR7xz5+PzrwnIK3UAJ
-         Z6zQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=4MgbZOgNW8uixaX7A/+b9oSIGLPsBpXoCjq0KvgA0Vs=;
-        b=NE7HXjGlQyO66wqBTIUFIDMQAf8wCOkVlbXqoHuAbyvoDgK4mLIphTv/g0NOcTp4J1
-         icgcY16oQAPJEYbz/3+Ce04nQCCIISSbjHOZKYlCyeIQc6910tabj8NvotIrbPqlrA4h
-         Zhg0Lm7S4LbM3txggwSaNFUoT7Kh6h0xh923f9lHHhiWIDIqSvWaLJvpXGBe2hCvYSlu
-         nDbyupQA/48OsSkKPo9eCnSnBKFBIn653E9BQPBobQjgBsP7q60Pqq4U+Dskh0t0vWak
-         yNo8gPGUscpdB2hr/A7MFkoi0mx1o0hpQAW8c4cJpiLBs+kVkjwV19r1SKCQxwLeokwl
-         JjHg==
-X-Gm-Message-State: AOAM530zWjVFOqBebeTdSZ6fhGp+87T+FFAI00m/R/VObN2mNST2swvr
-        dLAl3+OEqvMWnXpskQoD+4a6vFyJflircG6Awf3YQw==
-X-Google-Smtp-Source: ABdhPJw4x/G20E257/e052t5Gg9ElQhvDjsYdCfPJESaXuqZZBAOAPdVPZrOW8Pyw0S1XLAm4uKTuwetVf8NZN0spvM=
-X-Received: by 2002:ac2:5d21:: with SMTP id i1mr12099756lfb.649.1614699436419;
- Tue, 02 Mar 2021 07:37:16 -0800 (PST)
-MIME-Version: 1.0
-References: <20210208135347.18494-1-o.rempel@pengutronix.de>
- <20210208135347.18494-3-o.rempel@pengutronix.de> <YCjlPhEtyH+vfSi4@shinobu>
- <20210215091737.fx6dwiz7tt56wbkr@pengutronix.de> <YDMMJJ985Zq9oEOv@shinobu>
- <20210223100656.efbshsh5bz66uhj5@pengutronix.de> <20210223174516.wjlh7hnrd5qe5s6w@pengutronix.de>
- <YDW7Hihg0gGQh8UR@shinobu>
-In-Reply-To: <YDW7Hihg0gGQh8UR@shinobu>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 2 Mar 2021 16:37:05 +0100
-Message-ID: <CACRpkdY7GSPiadVORECLcdK91AORY6LgtWi8BBLNK_Sj0Jc3LA@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] counter: add IRQ or GPIO based event counter
+        id S234526AbhCCEME (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 2 Mar 2021 23:12:04 -0500
+Received: from mx07-00178001.pphosted.com ([185.132.182.106]:50157 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1580623AbhCBSF3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 2 Mar 2021 13:05:29 -0500
+Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 122H1sYa016196;
+        Tue, 2 Mar 2021 18:03:43 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=MPuDgAI8bly3BZ6l6If7B5CFn09WiiZifHi7p1VUgfM=;
+ b=hRHRtutXrKv510SgyVvetOCL3HRxze1NoX5YPPb0qyvX/3dbvcBY2GT79kpPY8IKXfUJ
+ fPnXHH4Kc7tUvmzVAcr07orC1L4+vGm6vNUJKQWPcBxz/HY46YqrMyhcK0EJO+puRYX5
+ WZoj1W5jYEayMKhHLRCxNFEJHPeL18hDHxY4iO2ww/imgUVpSWdBdfwWVjWJ/m/sygRj
+ Spn7wpWcRR7Ydvb4s+QybY5vfsFP4uCOophKl13NftkCSYNc8VhVHF6GWcRHTHps69xg
+ J+9WFb00mfwbIAXWPXXAUA6SL3TeYeFkjUf+KD4vS8553zwD5agCAmj0Fj+CNQpN9Y9r MQ== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 36yfc3uh6w-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 02 Mar 2021 18:03:43 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 858D810002A;
+        Tue,  2 Mar 2021 18:03:42 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 735CA2160F0;
+        Tue,  2 Mar 2021 18:03:42 +0100 (CET)
+Received: from [10.211.13.170] (10.75.127.44) by SFHDAG2NODE3.st.com
+ (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Tue, 2 Mar
+ 2021 18:03:41 +0100
+Subject: Re: [PATCH] counter: stm32-timer-cnt: fix ceiling write max value
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+CC:     <jic23@kernel.org>, <david@lechnology.com>,
+        <alexandre.torgue@foss.st.com>, <mcoquelin.stm32@gmail.com>,
+        <olivier.moysan@foss.st.com>, <linux-iio@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1614696235-24088-1-git-send-email-fabrice.gasnier@foss.st.com>
+ <YD5SLrdttn+95M7N@shinobu>
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Message-ID: <e54d1446-b583-9625-1ab3-09e54d6a7456@foss.st.com>
+Date:   Tue, 2 Mar 2021 18:03:25 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <YD5SLrdttn+95M7N@shinobu>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.44]
+X-ClientProxiedBy: SFHDAG1NODE1.st.com (10.75.127.1) To SFHDAG2NODE3.st.com
+ (10.75.127.6)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-02_08:2021-03-01,2021-03-02 signatures=0
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Feb 24, 2021 at 3:34 AM William Breathitt Gray
-<vilhelm.gray@gmail.com> wrote:
-> On Tue, Feb 23, 2021 at 06:45:16PM +0100, Oleksij Rempel wrote:
+On 3/2/21 3:56 PM, William Breathitt Gray wrote:
+> On Tue, Mar 02, 2021 at 03:43:55PM +0100, Fabrice Gasnier wrote:
+>> The ceiling value isn't checked before writing it into registers. The user
+>> could write a value higher than the counter resolution (e.g. 16 or 32 bits
+>> indicated by max_arr). This makes most significant bits to be truncated.
+>> Fix it by checking the max_arr to report a range error [1] to the user.
+>>
+>> Fixes: ad29937e206f ("counter: Add STM32 Timer quadrature encoder")
+>>
+>> [1] https://lkml.org/lkml/2021/2/12/358
+>>
+>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> 
+> Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> 
+> Side question: if priv->ceiling is tracking the current ceiling
+> configuration, would it make sense to change stm32_count_ceiling_read()
+> to print the value of priv->ceiling instead of doing a regmap_read()
+> call?
 
-> > > to make this possible, i would need hack gpiolib framework and add
-> > > name/label exporter. But after endless rounds of pingponging me for
-> > > renaming the driver and removing interrupt handler, i feel like we are
-> > > not having serious discussion for mainlining this driver.
-> >
-> > Probably for good reason, struct gpio_desc was made local and is located
-> > in the drivers/gpio/gpiolib.h. It feels like additional hack to include
-> > it. I assume, it should be done properly so there is a function to
-> > provide gpio name or label.
-> >
-> > @Linus Walleij are there any good way to get the GPIO name? And which
-> > name will be actually used? A label provided over devicetree?
->
-> Perhaps one of the GPIO subsystem maintainers can provide more guidance
-> here, but I was under the impression that this name was provided
-> statically by the respective GPIO driver via their struct gpio_chip. I
-> think you can see the array of names via priv->gpio->gdev->chip->names.
+Hi William,
 
-These names can be set either through device properties on the
-GPIO chip "line-names" such as through device tree, or as static
-names in the .names array on struct gpio_chip for chips that
-are e.g. hot-pluggable and does not have a hardware
-description associated. These names should be something
-like what the signal is called on the circuit board rail.
+Thanks for reviewing.
 
-gpiolib further has a function:
-gpiod_set_consumer_name() that can be used by consumers to
-set their use case for the line, which makes it appear in debugfs
-etc. The consumer name does not need to be unique.
+I'd be fine either way. So no objection to move to the priv->ceiling
+(cached) value. It could also here here.
+By looking at this, I figured out there's probably another thing to fix
+here, for initial conditions.
 
-These names have no practical use other than debugging or
-userspace representation.
+At probe time priv->ceiling is initialized to max value (ex 65535 for a
+16 bits counter). But the register content is 0 (clear by mfd driver at
+probe time).
 
-I hope this helps.
+- So, reading ceiling from sysfs currently reports 0 (regmap_read())
+after booting and probing.
 
-Yours,
-Linus Walleij
+I see two cases at this point:
+- In case the counter gets enabled without any prior configuration, it
+won't count: ceiling value (e.g. 65535) should be written to register
+before it is enabled, so the counter will actually count. So there's
+room for a fix here.
+
+- In case function gets set (ex: quadrature x4), priv->ceiling (e.g.
+65535) gets written to the register (although it's been read earlier as
+0 from sysfs).
+This could be fixed by reading the priv->ceiling in
+stm32_count_ceiling_read() as you're asking (provided 1st case has been
+fixed as well)
+
+I'll probably prepare one or two patches for the above cases, if you agree ?
+
+Best Regards,
+Fabrice
+
+> 
+>> ---
+>>  drivers/counter/stm32-timer-cnt.c | 5 +++++
+>>  1 file changed, 5 insertions(+)
+>>
+>> diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+>> index ef2a974..2cf0c05 100644
+>> --- a/drivers/counter/stm32-timer-cnt.c
+>> +++ b/drivers/counter/stm32-timer-cnt.c
+>> @@ -32,6 +32,7 @@ struct stm32_timer_cnt {
+>>  	struct regmap *regmap;
+>>  	struct clk *clk;
+>>  	u32 ceiling;
+>> +	u32 max_arr;
+>>  	bool enabled;
+>>  	struct stm32_timer_regs bak;
+>>  };
+>> @@ -185,6 +186,9 @@ static ssize_t stm32_count_ceiling_write(struct counter_device *counter,
+>>  	if (ret)
+>>  		return ret;
+>>  
+>> +	if (ceiling > priv->max_arr)
+>> +		return -ERANGE;
+>> +
+>>  	/* TIMx_ARR register shouldn't be buffered (ARPE=0) */
+>>  	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, 0);
+>>  	regmap_write(priv->regmap, TIM_ARR, ceiling);
+>> @@ -360,6 +364,7 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
+>>  	priv->regmap = ddata->regmap;
+>>  	priv->clk = ddata->clk;
+>>  	priv->ceiling = ddata->max_arr;
+>> +	priv->max_arr = ddata->max_arr;
+>>  
+>>  	priv->counter.name = dev_name(dev);
+>>  	priv->counter.parent = dev;
+>> -- 
+>> 2.7.4
+>>
