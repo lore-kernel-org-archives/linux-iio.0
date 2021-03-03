@@ -2,98 +2,154 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9059AC433E9
-	for <linux-iio@archiver.kernel.org>; Thu,  4 Mar 2021 00:30:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52F65C4332D
+	for <linux-iio@archiver.kernel.org>; Thu,  4 Mar 2021 00:30:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5A6816023B
-	for <linux-iio@archiver.kernel.org>; Thu,  4 Mar 2021 00:30:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2727A6023B
+	for <linux-iio@archiver.kernel.org>; Thu,  4 Mar 2021 00:30:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1442158AbhCDA3w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 3 Mar 2021 19:29:52 -0500
-Received: from mga17.intel.com ([192.55.52.151]:50156 "EHLO mga17.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1841810AbhCCGiH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 3 Mar 2021 01:38:07 -0500
-IronPort-SDR: c83ZcA82RkRczXgl5i59GxccgYZGylr0JMG86BuoM2IeMQgH4yycrfzhpmRSdbE5lcgugAAzsp
- +swzsKSf2pTQ==
-X-IronPort-AV: E=McAfee;i="6000,8403,9911"; a="167012874"
-X-IronPort-AV: E=Sophos;i="5.81,219,1610438400"; 
-   d="scan'208";a="167012874"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2021 22:35:57 -0800
-IronPort-SDR: Gy3mAPxL2/2WviYYVKUVJHi6hQ4UjNDKPADQJzNEPFb7llQZquOPv8f7Z4bWgwEnfCYCeU79xt
- GKmB5DG5WRWA==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.81,219,1610438400"; 
-   d="scan'208";a="383870896"
-Received: from host.sh.intel.com ([10.239.154.115])
-  by orsmga002.jf.intel.com with ESMTP; 02 Mar 2021 22:35:55 -0800
-From:   Ye Xiang <xiang.ye@intel.com>
-To:     jikos@kernel.org, jic23@kernel.org,
-        srinivas.pandruvada@linux.intel.com
-Cc:     linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Ye Xiang <xiang.ye@intel.com>
-Subject: [PATCH 1/4] iio: hid-sensor-humidity: Fix alignment issue of timestamp channel
-Date:   Wed,  3 Mar 2021 14:36:12 +0800
-Message-Id: <20210303063615.12130-2-xiang.ye@intel.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210303063615.12130-1-xiang.ye@intel.com>
-References: <20210303063615.12130-1-xiang.ye@intel.com>
+        id S1451120AbhCDAaH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 3 Mar 2021 19:30:07 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:53610 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S236607AbhCCQPe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 3 Mar 2021 11:15:34 -0500
+Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 123FwEbn019267;
+        Wed, 3 Mar 2021 17:12:10 +0100
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
+ references : from : message-id : date : mime-version : in-reply-to :
+ content-type : content-transfer-encoding; s=selector1;
+ bh=oBSCDr6pumMwSnGjMzBLCyN+aCiMW9l6k6rqZVXJZes=;
+ b=Sffuk4F0omnhhqQs067z32mOava1pBdl9ucUV/nkNIvDmNfFWpRvE3TWp5LmICU4J3L5
+ KuXSOsQsIVU8ltoGaunltqhVK+ZuSy6w7XWfBVP9iZkgjfVi8PiazbdgD7Y9wfb7MXEN
+ vjo+/ZTLUK2XC2z1+XnI5jMoZYvoYEkXcpaBUsY6fTCpbJABbVp6KMwUnHUn2wlJEc4g
+ cf2NrzpF+pdQji7F7muYRDXK24Ayu+D/39h4LnKfYxj35mUykhKIEBgRCIxg9TD0NQHC
+ h2k03Tm66SI0ddsWRPOa7lCi5yzi0kGpztrjlORCR5gTUIlqK045c/VqocMMB7BCCZ6E IA== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 36yf9q9xvf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 03 Mar 2021 17:12:10 +0100
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C0039100034;
+        Wed,  3 Mar 2021 17:12:09 +0100 (CET)
+Received: from Webmail-eu.st.com (sfhdag2node3.st.com [10.75.127.6])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id AA90E252AEC;
+        Wed,  3 Mar 2021 17:12:09 +0100 (CET)
+Received: from [10.211.2.167] (10.75.127.48) by SFHDAG2NODE3.st.com
+ (10.75.127.6) with Microsoft SMTP Server (TLS) id 15.0.1473.3; Wed, 3 Mar
+ 2021 17:12:00 +0100
+Subject: Re: [PATCH] counter: stm32-timer-cnt: fix ceiling write max value
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+CC:     <jic23@kernel.org>, <david@lechnology.com>,
+        <alexandre.torgue@foss.st.com>, <mcoquelin.stm32@gmail.com>,
+        <olivier.moysan@foss.st.com>, <linux-iio@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+References: <1614696235-24088-1-git-send-email-fabrice.gasnier@foss.st.com>
+ <YD5SLrdttn+95M7N@shinobu> <e54d1446-b583-9625-1ab3-09e54d6a7456@foss.st.com>
+ <YD7NZiqCtmtmqJGg@shinobu>
+From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Message-ID: <adc63e37-6eae-decd-99bc-a49787d9670a@foss.st.com>
+Date:   Wed, 3 Mar 2021 17:11:59 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.10.0
+MIME-Version: 1.0
+In-Reply-To: <YD7NZiqCtmtmqJGg@shinobu>
+Content-Type: text/plain; charset="utf-8"
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.75.127.48]
+X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE3.st.com
+ (10.75.127.6)
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-03_05:2021-03-03,2021-03-03 signatures=0
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch ensures that, there is sufficient space and correct
-alignment for the timestamp.
+On 3/3/21 12:42 AM, William Breathitt Gray wrote:
+> On Tue, Mar 02, 2021 at 06:03:25PM +0100, Fabrice Gasnier wrote:
+>> On 3/2/21 3:56 PM, William Breathitt Gray wrote:
+>>> Side question: if priv->ceiling is tracking the current ceiling
+>>> configuration, would it make sense to change stm32_count_ceiling_read()
+>>> to print the value of priv->ceiling instead of doing a regmap_read()
+>>> call?
+>>
+>> Hi William,
+>>
+>> Thanks for reviewing.
+>>
+>> I'd be fine either way. So no objection to move to the priv->ceiling
+>> (cached) value. It could also here here.
+>> By looking at this, I figured out there's probably another thing to fix
+>> here, for initial conditions.
+>>
+>> At probe time priv->ceiling is initialized to max value (ex 65535 for a
+>> 16 bits counter). But the register content is 0 (clear by mfd driver at
+>> probe time).
+>>
+>> - So, reading ceiling from sysfs currently reports 0 (regmap_read())
+>> after booting and probing.
+>>
+>> I see two cases at this point:
+>> - In case the counter gets enabled without any prior configuration, it
+>> won't count: ceiling value (e.g. 65535) should be written to register
+>> before it is enabled, so the counter will actually count. So there's
+>> room for a fix here.
+>>
+>> - In case function gets set (ex: quadrature x4), priv->ceiling (e.g.
+>> 65535) gets written to the register (although it's been read earlier as
+>> 0 from sysfs).
+>> This could be fixed by reading the priv->ceiling in
+>> stm32_count_ceiling_read() as you're asking (provided 1st case has been
+>> fixed as well)
+>>
+>> I'll probably prepare one or two patches for the above cases, if you agree ?
+>>
+>> Best Regards,
+>> Fabrice
+> 
+> Looking through the driver, it doesn't seem like priv->ceiling is used
+> in any performance critical code, just the callbacks for count_write()
+> and function_set(). It might make more sense to remove priv->ceiling and
+> replace it with the regmap_read() calls where necessary so that we
+> always get the most current ceiling value from the device when needed.
 
-Fixes: d7ed89d5aadf ("iio: hid: Add humidity sensor support")
-Signed-off-by: Ye Xiang <xiang.ye@intel.com>
----
- drivers/iio/humidity/hid-sensor-humidity.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+Hi William,
 
-diff --git a/drivers/iio/humidity/hid-sensor-humidity.c b/drivers/iio/humidity/hid-sensor-humidity.c
-index ec88ae3f233d..74383abc0d44 100644
---- a/drivers/iio/humidity/hid-sensor-humidity.c
-+++ b/drivers/iio/humidity/hid-sensor-humidity.c
-@@ -15,7 +15,10 @@
- struct hid_humidity_state {
- 	struct hid_sensor_common common_attributes;
- 	struct hid_sensor_hub_attribute_info humidity_attr;
--	s32 humidity_data;
-+	struct {
-+		s32 humidity_data;
-+		u64 timestamp __aligned(8);
-+	} scan;
- 	int scale_pre_decml;
- 	int scale_post_decml;
- 	int scale_precision;
-@@ -129,9 +132,8 @@ static int humidity_proc_event(struct hid_sensor_hub_device *hsdev,
- 	struct hid_humidity_state *humid_st = iio_priv(indio_dev);
- 
- 	if (atomic_read(&humid_st->common_attributes.data_ready))
--		iio_push_to_buffers_with_timestamp(indio_dev,
--					&humid_st->humidity_data,
--					iio_get_time_ns(indio_dev));
-+		iio_push_to_buffers_with_timestamp(indio_dev, &humid_st->scan,
-+						   iio_get_time_ns(indio_dev));
- 
- 	return 0;
- }
-@@ -146,7 +148,7 @@ static int humidity_capture_sample(struct hid_sensor_hub_device *hsdev,
- 
- 	switch (usage_id) {
- 	case HID_USAGE_SENSOR_ATMOSPHERIC_HUMIDITY:
--		humid_st->humidity_data = *(s32 *)raw_data;
-+		humid_st->scan.humidity_data = *(s32 *)raw_data;
- 
- 		return 0;
- 	default:
--- 
-2.17.1
+Ok, I'll look into this.
 
+> 
+> As for the default ceiling value for the device at probe time, this
+> should probably be set to the max value because that is what a normal
+> user would expect when loading a Counter driver (a ceiling value of 0 at
+> startup is somewhat unintuitive).
+
+Yes, I agree. In fact, the default (reset) value is the maximum. The 0
+value is forced in ARR register by the mfd driver [1], after reading the
+max_arr value. I see no rationale for this.
+I think the fix should probably be done there: I'd prefer to backup and
+restore ARR value in the mfd, instead of unconditionally clearing it.
+
+[1]
+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git/tree/drivers/mfd/stm32-timers.c?h=v5.11#n167
+
+> 
+> If you prepare those two patches, then that should resolve this.
+
+I'll prepare this.
+
+Thanks for your advices,
+Best Regards,
+Fabrice
+
+> 
+> William Breathitt Gray
+> 
