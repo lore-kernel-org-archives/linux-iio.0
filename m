@@ -1,102 +1,236 @@
-Return-Path: <SRS0=oi+N=IF=vger.kernel.org=linux-iio-owner@kernel.org>
+Return-Path: <SRS0=qrlV=IG=vger.kernel.org=linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58639C433DB
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Mar 2021 23:06:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A372C433E0
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Mar 2021 01:10:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 27FFF65159
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Mar 2021 23:06:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3CBFF64F96
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Mar 2021 01:10:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233240AbhCGXGA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Mar 2021 18:06:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56336 "EHLO
+        id S232076AbhCHBKG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Mar 2021 20:10:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54556 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233244AbhCGXFj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 Mar 2021 18:05:39 -0500
-Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AE84C06175F;
-        Sun,  7 Mar 2021 15:05:36 -0800 (PST)
-Received: by mail-pg1-x535.google.com with SMTP id l2so5229137pgb.1;
-        Sun, 07 Mar 2021 15:05:36 -0800 (PST)
+        with ESMTP id S231387AbhCHBJb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 Mar 2021 20:09:31 -0500
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2BF8C06174A
+        for <linux-iio@vger.kernel.org>; Sun,  7 Mar 2021 17:09:31 -0800 (PST)
+Received: by mail-pg1-x533.google.com with SMTP id n9so4414503pgi.7
+        for <linux-iio@vger.kernel.org>; Sun, 07 Mar 2021 17:09:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=XtRSM0w13Qb1yabD0yvOGJiUG6gT2e1c0aSLnOFytzc=;
-        b=qqpw7VXyGhTyjQDiNWQvy+fZqojgqjErZm6pCLbKaMo8BltCZW6n83L/4NHkQIyw1l
-         OG7wEU7XsaVivWPrzL6iXfy9zkcKDb1+0O+TLlwapo13/SWW/t5DgpIFrhNf7lHlL9gY
-         TG5rism1NvCMTSY8XFbDRtnbJMge7ptt+7CxawGKg83tKY94uZFnxAWYnSy4TQ2jORsS
-         k5jBXiFjEijqKa+VstXfHUP+VdQzUn7z3TzHpP75lyhJdYPSG0yNbRcZ3efCB9KkN7L5
-         qR0pM0qSQauu9u/WlgIoiJVlwAzexoZzczYVRGOJTCKIzPL+yQX8JTVuUQRjYo95a/mV
-         BlUw==
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TbODWFLdJifOkejS9hgbe8ELRNbypeCDIpatD3uQ97I=;
+        b=JRuUJqhITmAvzohFE2Bg8KCHbDYdm8P6Yn4eRMy/HFySxEm8z0uUVDvaZTERtcqtz+
+         LtKiF6zb6y2Lwye1dBSiW4A4B0TMRVSpxD2uDa/4T7B1khtzHh9OsDN2DqgJJtfCVf7Y
+         WJL57VbWQwgpxi102gaXgkxvAityQbS1/iEUk=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=XtRSM0w13Qb1yabD0yvOGJiUG6gT2e1c0aSLnOFytzc=;
-        b=X9w1qUzNk7+zrIormjQmOrYc2RzmsCHMPwE2Iwxv2+uhSpPry7vCCGv/XO+zFCZ6sF
-         RuyH7qQRrqqZSb5IfUZuLHV/8XlJ63F+2fj9ImNBGcEOss4kMKnSOWrd25bC3HhLZl1J
-         7/caq/90dy0nmLQ7FPs1TvaBYahSMyQ2BeXXC2Vzw9zV415x2XDo3M5oIAXM3tlMVvwM
-         lpDiIBhVcGPbJ7KKjwQKvOIEqSDHQpo3QMMAzlgI/jgOdzax6iH584eJu8Vx2Evoxws9
-         1ddDf2TTkWkyAKbn7oeQnC04IaUxIIcK1HK7roTacJWRM9NDX+38oJ1wn6QwKRiO/+Ej
-         7N1Q==
-X-Gm-Message-State: AOAM531ZDoeWkLXKRGxIojOQlX6LWeuURJlWYrpJpEswWAiq+qCAWo7s
-        ZpYPwjyMC3PucGSE/3GiZLE=
-X-Google-Smtp-Source: ABdhPJynFdhgChyPxLEfnQ6VKIMDURJUnkeggRhI6GHFju/IlzJvlb/bAyyPTr80X2b7bq4l9ZresA==
-X-Received: by 2002:a63:ec50:: with SMTP id r16mr17631072pgj.451.1615158335573;
-        Sun, 07 Mar 2021 15:05:35 -0800 (PST)
-Received: from google.com ([2620:15c:202:201:bc9b:5ab2:d763:15bc])
-        by smtp.gmail.com with ESMTPSA id x1sm8369251pje.40.2021.03.07.15.05.33
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 07 Mar 2021 15:05:34 -0800 (PST)
-Date:   Sun, 7 Mar 2021 15:05:31 -0800
-From:   Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v1 2/2] iio: adc: add ADC driver for the TI TSC2046
- controller
-Message-ID: <YEVcO/NeKzBsFEdL@google.com>
-References: <20210305133813.27967-1-o.rempel@pengutronix.de>
- <20210305133813.27967-3-o.rempel@pengutronix.de>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=TbODWFLdJifOkejS9hgbe8ELRNbypeCDIpatD3uQ97I=;
+        b=GtJGleQ2ZUkRVdJNGKOmhAA5X+PBikp09L+klAwb4uDY9w2sKjpu5hZ1mU20rFh8me
+         GxAFeqOoMAQC4Y7EtqDg08GKX06MTlYGHhXT9wYWi/jsN2O52T2UXAudoz7xgqnbAiUR
+         qC0wWdmCESfm6yyH1o6pI6LKLdov2/k5DZDHgHYGxTzvCcbursEJuBlnSrfzEoK9lfEQ
+         G9RtFkpd7BYh1E7Lw8uOVSrQxZIiDUis65k/xahqyqZdDT/xiJETs4OnPvLufSHrH3lW
+         eiufa/d9W/+qzK1LA0afiICpFYeeefaR83Plw/4OH/WtI3Ew3XADBgf8uOz0/GpqL1bT
+         UCzw==
+X-Gm-Message-State: AOAM531rkhp7kHOqCCjkX6YRREcYusaJjCxLvwq8DUrBm4eh/yc7F/5x
+        +NJm5o1UKskpX9Q6Pw5AFrNavQ==
+X-Google-Smtp-Source: ABdhPJw++2w30Z7M4l8mEKWYUZs7TLzENA27BTxbGkDYEnmhx75OOPubb4BxqoRIGXNuFmOht0Zy9Q==
+X-Received: by 2002:aa7:8bd2:0:b029:1ee:1838:685f with SMTP id s18-20020aa78bd20000b02901ee1838685fmr18990233pfd.64.1615165771153;
+        Sun, 07 Mar 2021 17:09:31 -0800 (PST)
+Received: from localhost ([2620:15c:202:201:6dac:4399:3fff:9ad9])
+        by smtp.gmail.com with UTF8SMTPSA id v185sm8526809pfb.125.2021.03.07.17.09.29
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 07 Mar 2021 17:09:30 -0800 (PST)
+From:   Gwendal Grignou <gwendal@chromium.org>
+To:     Jonathan.Cameron@huawei.com, alexandru.ardelean@analog.com,
+        groeck@chromium.org
+Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH] iio: cros: unify hw fifo attributes without API changes
+Date:   Sun,  7 Mar 2021 17:09:22 -0800
+Message-Id: <20210308010922.765394-1-gwendal@chromium.org>
+X-Mailer: git-send-email 2.30.1.766.gb4fecdf3b7-goog
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210305133813.27967-3-o.rempel@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Oleksij,
+fixes commit 2e2366c2d141 ("iio: cros_ec: unify hw fifo attributes into the core file")
+fixes commit 165aea80e2e2 ("iio: cros_ec: use devm_iio_triggered_buffer_setup_ext()")
 
-On Fri, Mar 05, 2021 at 02:38:13PM +0100, Oleksij Rempel wrote:
-> +
-> +	/* TODO: remove IRQ_NOAUTOEN after needed patches are mainline */
-> +	irq_set_status_flags(spi->irq, IRQ_NOAUTOEN);
-> +	ret = devm_request_threaded_irq(dev, spi->irq,
-> +					NULL,
-> +					&tsc2046_adc_irq,
-> +					IRQF_TRIGGER_LOW | IRQF_ONESHOT,
-> +					name, indio_dev);
+1. Instead of adding has_fw_fifo, deduct it from the configuration:
+- EC must support FIFO (EC_FEATURE_MOTION_SENSE_FIFO) set.
+- sensors send data a regular interval (accelerometer, gyro,
+  magnetomer, barometer, light sensor).
+- "Legacy accelerometer" is only present on EC without FIFO, so we don't
+need to set buffer attributes.
 
-I'd recommend dropping IRQF_TRIGGER_LOW and only using IRQF_ONESHOT and
-rely on the platform (ACPI, DT) to specify trigger polarity according to
-how device is wired in a given system. In general I believe newer
-drivers should not specify interrupt triggers themselves.
+2. devm_iio_triggered_buffer_setup_ext() does not need to be called.
+Only when the EC support FIFO we set the buffer attributes directly to set
+timeout and watermark.
 
-Thanks.
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+---
+ drivers/iio/accel/cros_ec_accel_legacy.c      |  2 +-
+ .../cros_ec_sensors/cros_ec_lid_angle.c       |  3 +--
+ .../common/cros_ec_sensors/cros_ec_sensors.c  |  3 +--
+ .../cros_ec_sensors/cros_ec_sensors_core.c    | 19 +++++++------------
+ drivers/iio/light/cros_ec_light_prox.c        |  3 +--
+ drivers/iio/pressure/cros_ec_baro.c           |  3 +--
+ .../linux/iio/common/cros_ec_sensors_core.h   |  3 +--
+ 7 files changed, 13 insertions(+), 23 deletions(-)
 
+diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
+index 8f1232c38e0d7..b6f3471b62dcf 100644
+--- a/drivers/iio/accel/cros_ec_accel_legacy.c
++++ b/drivers/iio/accel/cros_ec_accel_legacy.c
+@@ -215,7 +215,7 @@ static int cros_ec_accel_legacy_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+-					cros_ec_sensors_capture, NULL, false);
++					cros_ec_sensors_capture, NULL);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+index 752f59037715b..af801e203623e 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
+@@ -97,8 +97,7 @@ static int cros_ec_lid_angle_probe(struct platform_device *pdev)
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+-	ret = cros_ec_sensors_core_init(pdev, indio_dev, false, NULL,
+-					NULL, false);
++	ret = cros_ec_sensors_core_init(pdev, indio_dev, false, NULL, NULL);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+index dee1191de7528..376a5b30010ae 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+@@ -236,8 +236,7 @@ static int cros_ec_sensors_probe(struct platform_device *pdev)
+ 
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+ 					cros_ec_sensors_capture,
+-					cros_ec_sensors_push_data,
+-					true);
++					cros_ec_sensors_push_data);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index c833ec0ef2147..1926f5719b2d4 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -8,6 +8,7 @@
+ #include <linux/delay.h>
+ #include <linux/device.h>
+ #include <linux/iio/buffer.h>
++#include <linux/iio/buffer_impl.h>
+ #include <linux/iio/common/cros_ec_sensors_core.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/kfifo_buf.h>
+@@ -240,7 +241,6 @@ static void cros_ec_sensors_core_clean(void *arg)
+  *    for backward compatibility.
+  * @push_data:          function to call when cros_ec_sensorhub receives
+  *    a sample for that sensor.
+- * @has_hw_fifo:	Set true if this device has/uses a HW FIFO
+  *
+  * Return: 0 on success, -errno on failure.
+  */
+@@ -248,8 +248,7 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 			      struct iio_dev *indio_dev,
+ 			      bool physical_device,
+ 			      cros_ec_sensors_capture_t trigger_capture,
+-			      cros_ec_sensorhub_push_data_cb_t push_data,
+-			      bool has_hw_fifo)
++			      cros_ec_sensorhub_push_data_cb_t push_data)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct cros_ec_sensors_core_state *state = iio_priv(indio_dev);
+@@ -358,21 +357,17 @@ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 			ret = iio_device_set_clock(indio_dev, CLOCK_BOOTTIME);
+ 			if (ret)
+ 				return ret;
+-		} else {
+-			const struct attribute **fifo_attrs;
+-
+-			if (has_hw_fifo)
+-				fifo_attrs = cros_ec_sensor_fifo_attributes;
+-			else
+-				fifo_attrs = NULL;
+ 
++			/* Set attributes to control EC FIFO directly. */
++			indio_dev->buffer->attrs = cros_ec_sensor_fifo_attributes;
++		} else {
+ 			/*
+ 			 * The only way to get samples in buffer is to set a
+ 			 * software trigger (systrig, hrtimer).
+ 			 */
+-			ret = devm_iio_triggered_buffer_setup_ext(
++			ret = devm_iio_triggered_buffer_setup(
+ 					dev, indio_dev, NULL, trigger_capture,
+-					NULL, fifo_attrs);
++					NULL);
+ 			if (ret)
+ 				return ret;
+ 		}
+diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
+index 75d6b5fcf2cc4..de472f23d1cba 100644
+--- a/drivers/iio/light/cros_ec_light_prox.c
++++ b/drivers/iio/light/cros_ec_light_prox.c
+@@ -182,8 +182,7 @@ static int cros_ec_light_prox_probe(struct platform_device *pdev)
+ 
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+ 					cros_ec_sensors_capture,
+-					cros_ec_sensors_push_data,
+-					true);
++					cros_ec_sensors_push_data);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+index aa043cb9ac426..2f882e1094232 100644
+--- a/drivers/iio/pressure/cros_ec_baro.c
++++ b/drivers/iio/pressure/cros_ec_baro.c
+@@ -139,8 +139,7 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
+ 
+ 	ret = cros_ec_sensors_core_init(pdev, indio_dev, true,
+ 					cros_ec_sensors_capture,
+-					cros_ec_sensors_push_data,
+-					true);
++					cros_ec_sensors_push_data);
+ 	if (ret)
+ 		return ret;
+ 
+diff --git a/include/linux/iio/common/cros_ec_sensors_core.h b/include/linux/iio/common/cros_ec_sensors_core.h
+index c9b80be82440f..7ce8a8adad587 100644
+--- a/include/linux/iio/common/cros_ec_sensors_core.h
++++ b/include/linux/iio/common/cros_ec_sensors_core.h
+@@ -96,8 +96,7 @@ struct platform_device;
+ int cros_ec_sensors_core_init(struct platform_device *pdev,
+ 			      struct iio_dev *indio_dev, bool physical_device,
+ 			      cros_ec_sensors_capture_t trigger_capture,
+-			      cros_ec_sensorhub_push_data_cb_t push_data,
+-			      bool has_hw_fifo);
++			      cros_ec_sensorhub_push_data_cb_t push_data);
+ 
+ irqreturn_t cros_ec_sensors_capture(int irq, void *p);
+ int cros_ec_sensors_push_data(struct iio_dev *indio_dev,
 -- 
-Dmitry
+2.30.1.766.gb4fecdf3b7-goog
+
