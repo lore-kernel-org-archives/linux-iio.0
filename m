@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42CE9C4332B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A344C4332D
 	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 13:21:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 10F1765105
+	by mail.kernel.org (Postfix) with ESMTP id 3A1A0650F7
 	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 13:21:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbhCINU4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Mar 2021 08:20:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43382 "EHLO
+        id S231150AbhCINU6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Mar 2021 08:20:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43444 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231131AbhCINUc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Mar 2021 08:20:32 -0500
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81AD7C06174A;
-        Tue,  9 Mar 2021 05:20:32 -0800 (PST)
-Received: by mail-pl1-x634.google.com with SMTP id c16so6568703ply.0;
-        Tue, 09 Mar 2021 05:20:32 -0800 (PST)
+        with ESMTP id S230242AbhCINUr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Mar 2021 08:20:47 -0500
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B66DEC06174A;
+        Tue,  9 Mar 2021 05:20:47 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id nh23-20020a17090b3657b02900c0d5e235a8so5189533pjb.0;
+        Tue, 09 Mar 2021 05:20:47 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Uo8aZJ7uFJm9IN0X5m8O12CJstLR4Mg3ThLr0VJ0OLA=;
-        b=iyVwdDeb0d9ar/SgQS8NCqCJF8zBmbqYEU7YVIcfERfeXU9rRk+X9zQwpng9qVLZda
-         d1yQFwkRQ8moVuHOC4RaL4Eo+CI1Jg13S3Hg6IASCNLMFxuYym7guA7qAb4WPvmIhWn6
-         P/fdq6zIxxYWhKwBGjfuOapE0xGM0vv5wE20G+6Ri5Twoc+Wx5yUlWsdz13BfRWUowNs
-         saUOHkge4Z82XVoDKISrpPzLWDywMrP/a+UBj+RSFBKZNgXdtK1ZH2UiUnola7ptT952
-         yBn8kK5z87O+8qTLztPBkh6iP7/J+wmtH/wZUR+UVgqVXKcvt1/VcQUQF/CG6wjMMSJy
-         lFzQ==
+        bh=Zj7+sm7nk2JUK10WGHF14mMymh0P+kdsvv/edNpXnVQ=;
+        b=dr1NBz1sIQAoYrrUbrRdkjOj9yhfd+zFT5TTFhG3smfCVNmH9EJ+fW/RiBfPXdYJCz
+         KMAE5GLHZYPIP9vCq7Uua1LiPg9IQQG+GRHW3Hx1HbzjdDfB0SxDKTWwwib7W8IyZcCm
+         Ym6Dzq/2XIPH8v0wb4Wysob7fTtAZY1cFZ9vVNBv9rUjqW4mOKCYPoxImr1aRa1jiiiw
+         OSrX3TDkO0w9BsbVGwVFO6pSiJ1OAhnuQZWQ+64HbUQyihAucSifjk2iQ/bWlAWzOSgQ
+         l4noN+n6Yb9on9upQPWXzpVHI6tGqprEl8odS2YcDAikDBq2+VkhPHxWE6CD0Pxw3mbz
+         JhDA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Uo8aZJ7uFJm9IN0X5m8O12CJstLR4Mg3ThLr0VJ0OLA=;
-        b=oc1KcUyDV8LjJQ11TAx/r83sWhaFHFd/tACCdEQC6KYxUkxRXONjX+0Dvxl9JE+0bX
-         zCPYI8+bOlV0KiUB2EVJ+NtaClo81W8MxGRyLKHVai+pzrJ9I6xnfNplb8IttOseFW0e
-         VaKXTmw8uKKdtqZUpcav8INtcTwjTCV8CU5IyRH15tKFJOEcWJw3AkI2/DxuoZnV6QBF
-         YnALzTqmD3+AihLrFxC5V5KkxvMMGRIvxTEH1iwgqNbiF9/Bc9j0bvfZM8oP9BHHhhvd
-         DLUJG4yif/P3w58f1gMLnkSeanTrw0lR7IAm5HqAEWy779Ce/ay6UY0yz5iY9btmUp0m
-         mlWA==
-X-Gm-Message-State: AOAM531pbiuAoWNWzN4UVTQ0Nc5zYTP3kKj3qirHV+f/yzWGfFgTp2so
-        Q4J+9fJS8BgNNU39Pkekoqk=
-X-Google-Smtp-Source: ABdhPJzztWhpH23pplZlKp2maeyt5sWNUAAE2Am8BwuwOdJ/qsjqY345MQI6zfkVfbAY+PYd8TblmA==
-X-Received: by 2002:a17:90a:cca:: with SMTP id 10mr4613485pjt.103.1615296032134;
-        Tue, 09 Mar 2021 05:20:32 -0800 (PST)
+        bh=Zj7+sm7nk2JUK10WGHF14mMymh0P+kdsvv/edNpXnVQ=;
+        b=mtp2xSF9KaBKbwwfclI1OexbkvAM95843XSJVwTETLgGXUm8MkxL1lczt5Ki0Vta9F
+         ZKQX2H1g+Lfm3NOlx+WyiPauC4hHaHT3GFWfsYqMrTAZ9YDidNKoHj4qL7ifR0XuPADv
+         6ijTfttJkH09nRNRThUxu2oF7sVih4rWX0XiA+GfexYQvKz8o5bmCeULVuuX0EFP6eFd
+         ITGctqgb6nhaKcIWYeF/o9xESx7eMj2E3DZKXHdDiN8az4GvbglJazL847AQU/nyfXRn
+         J8HBtFhuzvD0tGorqgB2JcFDaqVRH6Wq1CG6Hh/a4OVjKXpbYe4ud/DLzNhx8mSmD96G
+         dVMA==
+X-Gm-Message-State: AOAM532J2B9jCPUgOxsM1mGX9v5DdmMg7TY6YV7I8HjsR89wRCHrpPZU
+        E+2FkajGxFj1qGF3I5ybYesdASyNbPM4IA==
+X-Google-Smtp-Source: ABdhPJxVIxri8CSPeQwEBxpL4lyaoQVUFDNOXibjSAlsHzjikvlIqauj3O0He51c/uXIyeIi0wkRTw==
+X-Received: by 2002:a17:902:8ec9:b029:e6:c5e:cf18 with SMTP id x9-20020a1709028ec9b02900e60c5ecf18mr13935274plo.47.1615296047360;
+        Tue, 09 Mar 2021 05:20:47 -0800 (PST)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id y9sm7647421pfl.201.2021.03.09.05.20.27
+        by smtp.gmail.com with ESMTPSA id y9sm7647421pfl.201.2021.03.09.05.20.42
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Mar 2021 05:20:31 -0800 (PST)
+        Tue, 09 Mar 2021 05:20:46 -0800 (PST)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -67,9 +67,9 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v9 04/33] counter: 104-quad-8: Return error when invalid mode during ceiling_write
-Date:   Tue,  9 Mar 2021 22:19:17 +0900
-Message-Id: <ab32428600ac501761775f65a69f103859166d55.1615293276.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v9 07/33] counter: 104-quad-8: Add const qualifier for functions_list array
+Date:   Tue,  9 Mar 2021 22:19:20 +0900
+Message-Id: <4d899b2fb1ed37f97f827af5880fdde916c5c4bf.1615293276.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <cover.1615293276.git.vilhelm.gray@gmail.com>
 References: <cover.1615293276.git.vilhelm.gray@gmail.com>
@@ -79,39 +79,29 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The 104-QUAD-8 only has two count modes where a ceiling value makes
-sense: Range Limit and Modulo-N. Outside of these two modes, setting a
-ceiling value is an invalid operation -- so let's report it as such by
-returning -EINVAL.
+The struct counter_count functions_list member expects a const enum
+counter_count_function array. This patch adds the const qualifier to the
+quad8_count_functions_list to match functions_list.
 
-Fixes: fc069262261c ("counter: 104-quad-8: Add lock guards - generic interface")
 Cc: Syed Nayyar Waris <syednwaris@gmail.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/104-quad-8.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/counter/104-quad-8.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 4bb9abffae48..233a3acc1377 100644
+index 51fba8cf9c2a..ae89ad7a91c6 100644
 --- a/drivers/counter/104-quad-8.c
 +++ b/drivers/counter/104-quad-8.c
-@@ -714,13 +714,14 @@ static ssize_t quad8_count_ceiling_write(struct counter_device *counter,
- 	switch (priv->count_mode[count->id]) {
- 	case 1:
- 	case 3:
-+		mutex_unlock(&priv->lock);
- 		quad8_preset_register_set(priv, count->id, ceiling);
--		break;
-+		return len;
- 	}
+@@ -193,7 +193,7 @@ enum quad8_count_function {
+ 	QUAD8_COUNT_FUNCTION_QUADRATURE_X4
+ };
  
- 	mutex_unlock(&priv->lock);
- 
--	return len;
-+	return -EINVAL;
- }
- 
- static ssize_t quad8_count_preset_enable_read(struct counter_device *counter,
+-static enum counter_count_function quad8_count_functions_list[] = {
++static const enum counter_count_function quad8_count_functions_list[] = {
+ 	[QUAD8_COUNT_FUNCTION_PULSE_DIRECTION] = COUNTER_COUNT_FUNCTION_PULSE_DIRECTION,
+ 	[QUAD8_COUNT_FUNCTION_QUADRATURE_X1] = COUNTER_COUNT_FUNCTION_QUADRATURE_X1_A,
+ 	[QUAD8_COUNT_FUNCTION_QUADRATURE_X2] = COUNTER_COUNT_FUNCTION_QUADRATURE_X2_A,
 -- 
 2.30.1
 
