@@ -7,58 +7,58 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7025DC43333
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 01:19:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B19B9C433E0
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 01:19:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 576156529E
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 01:19:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7708565252
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 01:19:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229599AbhCIBSv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Mar 2021 20:18:51 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56776 "EHLO
+        id S229791AbhCIBSu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Mar 2021 20:18:50 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230139AbhCIBSg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Mar 2021 20:18:36 -0500
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F7F3C061760
-        for <linux-iio@vger.kernel.org>; Mon,  8 Mar 2021 17:18:36 -0800 (PST)
-Received: by mail-pj1-x1034.google.com with SMTP id cl21-20020a17090af695b02900c61ac0f0e9so261117pjb.1
-        for <linux-iio@vger.kernel.org>; Mon, 08 Mar 2021 17:18:36 -0800 (PST)
+        with ESMTP id S229951AbhCIBSc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Mar 2021 20:18:32 -0500
+Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC47AC061760
+        for <linux-iio@vger.kernel.org>; Mon,  8 Mar 2021 17:18:31 -0800 (PST)
+Received: by mail-pg1-x52e.google.com with SMTP id x29so7637334pgk.6
+        for <linux-iio@vger.kernel.org>; Mon, 08 Mar 2021 17:18:31 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=lb3YlmZQbxHbVqLvOeIMo+Kf5cBBvQ634iPfDXoGJTo=;
-        b=X2jgTs1aWCQp26Bgbe3WaDuEVHGC+KT8A6Eph3QEVEoBcb65d8YEH4Rob+gz+4XObZ
-         7PyHh5UdjV5BORNrm4fM5Q/jEMi5ENc/F/4CPgXaEgu2RNIzTguxpOj22o1KzEO6H8xC
-         wi9ljSqDpfoXoTJKs/RBw24E1PcCverQF8DIo=
+        bh=c0PrhgcYJVgTqe4+CQit8K21Qzx2NgW6BSu6fKAZzAo=;
+        b=IwGlZHA4rVBq8ou3VQZrkpT01V+b20W5FTIho8sX5M1+FYY224kRhZ27DRlRxfiwJj
+         uOCcxAPVlIRsm5mUXGWOG71KxT/w7lFIzN6qMU7qD4st5QlcB7g55NbJ9wmki5vt6ezi
+         lCQBRTTCEy81Iu24kuhEf9uZBnOXDpiaoWo0c=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=lb3YlmZQbxHbVqLvOeIMo+Kf5cBBvQ634iPfDXoGJTo=;
-        b=fG/zyblsiOiQC+uADCdAuy45/orsRkeQbwSYtMLDzjVvsK/JsqawkIl07tcej0cKQd
-         U4Is1AkyXVGweuASZBB7YOrCB70dee85fPr5mgKEjlaxOX1bRAJOeuAENlQYUzIpVn9A
-         JS06k0CiktDgY4Ll4POQ380zFK9KhP4L0c2xJXKJvXI0fY3I9wPC1gqX6mVVtlmWKN39
-         /FDaU/ad/qhutLLHsMU/MX9k4PQwUYgLDI2QB9h00OJSEZucwrh3V2XfwiqWfIF0LerT
-         o/4VGUdRAqrD/wGuiQQyukjg+L2L5UcuiPzcB4kGvDu4fyWM6GpMb7aORgNJd7eTn7OK
-         W9IA==
-X-Gm-Message-State: AOAM533/OvVv6GyYVyZWYm28LnewYS9Tb9rbeJZLhwFzSNDyeSR4HT5n
-        Lpu3JrdSJ0606JkfkWWR4Vj+Kw==
-X-Google-Smtp-Source: ABdhPJw12X8Dio4t4uYLvDo7EL8YojBnUE1KV3IG+W6KbY4nM+1vXlKTx+bRkX3TQjucrPJu637HaQ==
-X-Received: by 2002:a17:90b:110c:: with SMTP id gi12mr1854804pjb.48.1615252716089;
-        Mon, 08 Mar 2021 17:18:36 -0800 (PST)
+        bh=c0PrhgcYJVgTqe4+CQit8K21Qzx2NgW6BSu6fKAZzAo=;
+        b=B91xnaQwUQzR0eZ+RFtRplWBRhh+kKA+dRAemhy0miBUSZyeuWg2XnVnFw8VfNNfiM
+         3NBM/AJwXFh4T4AOgbgnAWsYi3C5SHvdru3NHid/MXS76oR5JOFTekI+C01JzHdGkkDk
+         kP3b1bhB/fwqI1gHhGqW+m9s6K2FtFEqyLzZAqd48UeLnwc5OYCiPHGqSckAN7qodsIW
+         cscxpaCvn89S1GtgC60SfqPYNmVqkUBjeHNtMj0bWA+KfxSTS4v5hbjT0nNdPPe3uV4a
+         K/5iCnWgq/A14r9IgcBQxbkqyUyxMvkDgoQAeRL6Rk0UiXENztyRCVoHAyKztWFIBBzC
+         Gfyg==
+X-Gm-Message-State: AOAM533ujddPHhSYwmFcIzm+xDDXz+rEAbGlv2BPfz1kpwuMX9s5sMha
+        eBaIIhqxGArEocNc2xqPg0I2Xg==
+X-Google-Smtp-Source: ABdhPJydX+WFLDfDtDmBc829cTdBdgwRNiqeVZiwi+7svnFxEDJ2PhQ+rAM2Ofxr2zxNB6JclOH0Lg==
+X-Received: by 2002:a65:458f:: with SMTP id o15mr8362394pgq.111.1615252711587;
+        Mon, 08 Mar 2021 17:18:31 -0800 (PST)
 Received: from localhost ([2620:15c:202:201:3cb0:414a:7f1c:ca43])
-        by smtp.gmail.com with UTF8SMTPSA id x67sm12193131pfx.144.2021.03.08.17.18.35
+        by smtp.gmail.com with UTF8SMTPSA id q25sm3332721pfh.34.2021.03.08.17.18.30
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 08 Mar 2021 17:18:35 -0800 (PST)
+        Mon, 08 Mar 2021 17:18:31 -0800 (PST)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     jic23@kernel.org, lars@metafoo.de, andy.shevchenko@gmail.com,
         ardeleanalex@gmail.com
 Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v3 6/8] iio: chemical: atlas: Remove code to set trigger parent
-Date:   Mon,  8 Mar 2021 17:18:14 -0800
-Message-Id: <20210309011816.2024099-7-gwendal@chromium.org>
+Subject: [PATCH v3 4/8] iio: gp2ap020a00f: Remove code to set trigger parent
+Date:   Mon,  8 Mar 2021 17:18:12 -0800
+Message-Id: <20210309011816.2024099-5-gwendal@chromium.org>
 X-Mailer: git-send-email 2.30.1.766.gb4fecdf3b7-goog
 In-Reply-To: <20210309011816.2024099-1-gwendal@chromium.org>
 References: <20210309011816.2024099-1-gwendal@chromium.org>
@@ -74,20 +74,20 @@ Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
 No changes since v2.
 
- drivers/iio/chemical/atlas-sensor.c | 1 -
+ drivers/iio/light/gp2ap020a00f.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/chemical/atlas-sensor.c b/drivers/iio/chemical/atlas-sensor.c
-index cdab9d04dedd0..56ba6c82b501f 100644
---- a/drivers/iio/chemical/atlas-sensor.c
-+++ b/drivers/iio/chemical/atlas-sensor.c
-@@ -649,7 +649,6 @@ static int atlas_probe(struct i2c_client *client,
- 	data->client = client;
- 	data->trig = trig;
- 	data->chip = chip;
--	trig->dev.parent = indio_dev->dev.parent;
- 	trig->ops = &atlas_interrupt_trigger_ops;
- 	iio_trigger_set_drvdata(trig, indio_dev);
+diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+index e2850c1a73533..d1d9f2d319e45 100644
+--- a/drivers/iio/light/gp2ap020a00f.c
++++ b/drivers/iio/light/gp2ap020a00f.c
+@@ -1551,7 +1551,6 @@ static int gp2ap020a00f_probe(struct i2c_client *client,
+ 	}
+ 
+ 	data->trig->ops = &gp2ap020a00f_trigger_ops;
+-	data->trig->dev.parent = &data->client->dev;
+ 
+ 	init_irq_work(&data->work, gp2ap020a00f_iio_trigger_work);
  
 -- 
 2.30.1.766.gb4fecdf3b7-goog
