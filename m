@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9D2CFC43603
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 13:22:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D71A5C433DB
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 13:22:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 73684650ED
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 13:22:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7E04F64D8F
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Mar 2021 13:22:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231386AbhCINVb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Mar 2021 08:21:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43570 "EHLO
+        id S229553AbhCINV6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Mar 2021 08:21:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43610 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230086AbhCINVT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Mar 2021 08:21:19 -0500
-Received: from mail-pg1-x529.google.com (mail-pg1-x529.google.com [IPv6:2607:f8b0:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8FD39C06174A;
-        Tue,  9 Mar 2021 05:21:19 -0800 (PST)
-Received: by mail-pg1-x529.google.com with SMTP id w34so7691000pga.8;
-        Tue, 09 Mar 2021 05:21:19 -0800 (PST)
+        with ESMTP id S231367AbhCINVa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Mar 2021 08:21:30 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B04C06174A;
+        Tue,  9 Mar 2021 05:21:29 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id y67so9520693pfb.2;
+        Tue, 09 Mar 2021 05:21:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=t3RYDFFjHkpdIJ04TsWBr8TmaLo8cU+WLWiTJPwxr6A=;
-        b=cPm80utEO4gK7NjFC0zhB5gCOPQtq5RrNUNd9cA58RKV54Pyfn5Ple+ImuNJKzBvpt
-         n8wndmxhEJq8BsaC+on7Q07Q9RHLFCNoxNaPe97INCetElIrmTqsj+Bwb9lPnVIRGw1g
-         Un727QcUYB5HiVK+udGrEKeO9EX8vCZYnIbjKJWtph48VCX2XFggT0wmSwc3TO0ybB5z
-         CBXoOaDrVfuxpGeV99w8q8QegdY1RsYgGuSbz9gBE4n6XusXJbjRBb1RvX4eDWh0EO4l
-         K58k5bv/48LTWLNqywOg69rT+vHYe/T9mxJJjOsyCGOR24wHn0wqcfvJkzzq0n+h9zZ5
-         wnlw==
+        bh=rC2Th++vNt7CqGAj8WhJOkxOFf8ZEs13/9ziRoW9ymc=;
+        b=E/4zwhWgcU4xyOXY8FDQeW+SR9ur9RmudK7zimF4LzKDITpUVG4827s/iONgSA9PpG
+         y9Tby0YfFWbRhVpxHArnaYYiqbKBuTV5jVQyckjVVAxHjufzRbu70bxnbXuYrr2sKz78
+         Azqb0OjEmY08D5CCel1gMdHXed8HtHiT2xBGNlLhKuS/Fs2W+/9HpIe7RfjBM1uWQOJ+
+         czzF9qSKODr59CXoLqF1iJTdYqABa64zXh00WbOV2AMDX8GPj/rDiOYJcCFVqAfcMfE/
+         xsqpJniF26aFbx9eCEEI+DnaWOsEKuW4ns05JQLBiDwb8tfqP/WNMJfIxzpH2me97cIL
+         Enbw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=t3RYDFFjHkpdIJ04TsWBr8TmaLo8cU+WLWiTJPwxr6A=;
-        b=nHx1J2jp7uUmz3YSy/zap8/+7HjrZ6AOg7BN9+piOF0qlEaBMeAJSI4MEa2hz5y1SC
-         uIP7G5blD5Aw/RDifzfMQHnTYVaFgOVcM3UR66Bi9+y72W28orHVjOkg1nP7/EvVOE+W
-         w7LxNuFry7c2wtu5NZqPs1yXis7OfgLRXIWWix5gYKO2lH1Ks2t8bblcjd0fFe/+Bs6T
-         DHT2UoecmyWnK6AqJIffrZkm7WGXGh3IgNBCJKf+96qGGs+AvsqgiHLv2yHBqfvyk6f0
-         rYmElM+/7f1I4Xg4h+kNzx3/4AE2Jq5EBiN++7BFvhm1v+VV55h8CccrlwlQb8/bfnoG
-         hDGQ==
-X-Gm-Message-State: AOAM532ZEO8hhM/QmSPY2l5f3f7ZwZ+cB9hFw4z4pBW6AUkkRre9NXqJ
-        /WbDd2PGyTabC8T1CNZFfbNhNOG9frDaXA==
-X-Google-Smtp-Source: ABdhPJzuf+IfHPoOevXWiR5Tex/ci8k9Iu42/LT75i/JLS8DvEf89M7PROm+OH0amxUz5yHaHNf9Eg==
-X-Received: by 2002:a63:d242:: with SMTP id t2mr24853367pgi.431.1615296079245;
-        Tue, 09 Mar 2021 05:21:19 -0800 (PST)
+        bh=rC2Th++vNt7CqGAj8WhJOkxOFf8ZEs13/9ziRoW9ymc=;
+        b=JUxIiVYgyPyqYayEDw4CIDSQxwhlGmPoCsq26gcLzgXbkCUYmmD1UqDT2q5Og+MCNG
+         0ey3fP6Uz2oH+wdd76fB/cwaW1/67LUzacAu7rLaOtekqze8j3A08qeNKBSQS1vAcdq1
+         VtqXtmDNkXZxhpTJ+lczo/k0/KkLvex+/kUSdtxkNfbGmvB396drpXZyu9zzleZj3YA0
+         BaptfGbAPQF3+b0BU2VjciysApM3t51DpYLgm/DecQzpnL6grJtUtvLmEBLhpeJwKowF
+         erHFUurg0TdvGn1k09WgzDvyPgWEndzcvWIP/XYoKfFnBQBXrcvM4M75zy1/b5HHhp1X
+         DLWg==
+X-Gm-Message-State: AOAM532Rvt+7hkeM6dU4xqE2gmnPJgxIkUwLha9B6rwVGihO/ii997BI
+        f1i2FJFL1hiq4xoNveVAEVs=
+X-Google-Smtp-Source: ABdhPJw9kLoA+icLpJPLdh1A/lMDX6fb53r5KBvtgKq0qWuhM1Z2JhSYca6Qi8lTMgRjJfO1PhKqmw==
+X-Received: by 2002:a63:2e06:: with SMTP id u6mr9962931pgu.444.1615296089500;
+        Tue, 09 Mar 2021 05:21:29 -0800 (PST)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id y9sm7647421pfl.201.2021.03.09.05.21.14
+        by smtp.gmail.com with ESMTPSA id y9sm7647421pfl.201.2021.03.09.05.21.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 09 Mar 2021 05:21:18 -0800 (PST)
+        Tue, 09 Mar 2021 05:21:28 -0800 (PST)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -67,9 +67,9 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v9 13/33] counter: ftm-quaddec: Add const qualifier for actions_list array
-Date:   Tue,  9 Mar 2021 22:19:26 +0900
-Message-Id: <e9656724c31451a736d623920317b2e40524fa54.1615293276.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v9 15/33] counter: microchip-tcb-capture: Add const qualifier for actions_list array
+Date:   Tue,  9 Mar 2021 22:19:28 +0900
+Message-Id: <08b2f787df2965aca63988ca35e58133cb4e2c3e.1615293276.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <cover.1615293276.git.vilhelm.gray@gmail.com>
 References: <cover.1615293276.git.vilhelm.gray@gmail.com>
@@ -81,27 +81,27 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 The struct counter_synapse actions_list member expects a const enum
 counter_synapse_action array. This patch adds the const qualifier to the
-ftm_quaddec_synapse_actions to match actions_list.
+mchp_tc_synapse_actions to match actions_list.
 
-Cc: Patrick Havelange <patrick.havelange@essensium.com>
+Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/ftm-quaddec.c | 2 +-
+ drivers/counter/microchip-tcb-capture.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-index c2b3fdfd8b77..9371532406ca 100644
---- a/drivers/counter/ftm-quaddec.c
-+++ b/drivers/counter/ftm-quaddec.c
-@@ -162,7 +162,7 @@ enum ftm_quaddec_synapse_action {
- 	FTM_QUADDEC_SYNAPSE_ACTION_BOTH_EDGES,
+diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+index cabcfebfc799..51b8af80f98b 100644
+--- a/drivers/counter/microchip-tcb-capture.c
++++ b/drivers/counter/microchip-tcb-capture.c
+@@ -49,7 +49,7 @@ enum mchp_tc_synapse_action {
+ 	MCHP_TC_SYNAPSE_ACTION_BOTH_EDGE
  };
  
--static enum counter_synapse_action ftm_quaddec_synapse_actions[] = {
-+static const enum counter_synapse_action ftm_quaddec_synapse_actions[] = {
- 	[FTM_QUADDEC_SYNAPSE_ACTION_BOTH_EDGES] =
- 	COUNTER_SYNAPSE_ACTION_BOTH_EDGES
- };
+-static enum counter_synapse_action mchp_tc_synapse_actions[] = {
++static const enum counter_synapse_action mchp_tc_synapse_actions[] = {
+ 	[MCHP_TC_SYNAPSE_ACTION_NONE] = COUNTER_SYNAPSE_ACTION_NONE,
+ 	[MCHP_TC_SYNAPSE_ACTION_RISING_EDGE] = COUNTER_SYNAPSE_ACTION_RISING_EDGE,
+ 	[MCHP_TC_SYNAPSE_ACTION_FALLING_EDGE] = COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
 -- 
 2.30.1
 
