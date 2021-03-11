@@ -2,125 +2,110 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6305AC433E0
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Mar 2021 08:59:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BE4BC433DB
+	for <linux-iio@archiver.kernel.org>; Thu, 11 Mar 2021 09:05:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 15C3264FB1
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Mar 2021 08:59:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B705060234
+	for <linux-iio@archiver.kernel.org>; Thu, 11 Mar 2021 09:05:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231607AbhCKI7X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 11 Mar 2021 03:59:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44870 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231759AbhCKI7F (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Mar 2021 03:59:05 -0500
-Received: from mail-il1-x131.google.com (mail-il1-x131.google.com [IPv6:2607:f8b0:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1617BC061574
-        for <linux-iio@vger.kernel.org>; Thu, 11 Mar 2021 00:59:05 -0800 (PST)
-Received: by mail-il1-x131.google.com with SMTP id h18so18295616ils.2
-        for <linux-iio@vger.kernel.org>; Thu, 11 Mar 2021 00:59:05 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sxg3X/oYCGXtcasjRKf7wk0A6Sv64hB8sDPE2qKlin4=;
-        b=DquXJOcnfNsBbYCop8Hsr0bCQhMQhsRRc3x8Weqoev4C6C0+2Ubtu65U7ysboRdm26
-         xrXatJYKeXLfaFVTuv0LMIZbT1zHOXenqLSnWqJDWte+EJqIwNZz8zyZZmZt6UmD1gOp
-         /2GBmpTBOXxs2lwvi8zOMfQTDouqBESNQm9rPkYbck3fWV3UVE+jUuPSaLSj7EZkaIXv
-         JlJnZXGTTxDHJjOTgkxQ2sHGkao1F3m+tnVbRq/fUXPb1HeIUl+XJSiBZaoRkHcUA6ph
-         cBSkmTb2DR+V1oumiBMEDxtPojPJ+xWlAZLfQ/fTP3UJAct0vv3jaS4CGNIVz4yBRrRT
-         B+QA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sxg3X/oYCGXtcasjRKf7wk0A6Sv64hB8sDPE2qKlin4=;
-        b=haD7gbzSoi7QzXJ+MNsqkQrkSfXhOU4zdFVfD7nDlOZCGCOL1zJ2ZNyo2JQYom+G6C
-         Y/5NKzyhnROHquzjgAHqSXzEeKZYKKAi+ZSxbpxuNzHy2XfZuLe3hbfLobGkDZRFD0B0
-         QoHwmBhOaMbxsQvCDwd8nxWXRPHdDtv/sIBLPSKUIICmXKkUq1CY2o5TK+9wuhO+VZKE
-         6cSKp1FqlGRtAymV3xJcRkxDcMfVtnZjjyGlWAgF5LAHQC6qHGht76OcurTR8yX2WVOd
-         b/VErsfEOrVtddyudjNQJfababiGYSXCTZXyaODjMT/Lz1muV8OkQGl0uzuWqDzLB0hh
-         N6ow==
-X-Gm-Message-State: AOAM531MZwD75Faf4YRaTpRZrQxSnmStq+hwcMKLD1bCidkhJq6DbZWS
-        DMEK4sMZLbbI2jzECnEGbu2ISWE3tsr5ZYdMW2g9CxKYUx3jzQ==
-X-Google-Smtp-Source: ABdhPJz5W8vg6I+2MU3heWAqI3nocwJQtVtZjP068G0aZqCjcpRRoDPZCkI75GQJ2r8sZi0JLaUf3uiPEmy4sXURFIQ=
-X-Received: by 2002:a92:3652:: with SMTP id d18mr6151572ilf.100.1615453144569;
- Thu, 11 Mar 2021 00:59:04 -0800 (PST)
+        id S231653AbhCKJFR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 11 Mar 2021 04:05:17 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:9712 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231394AbhCKJE7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Mar 2021 04:04:59 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 12B90oGb005075;
+        Thu, 11 Mar 2021 04:04:56 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 3747h9pj8e-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 11 Mar 2021 04:04:55 -0500
+Received: from SCSQMBX10.ad.analog.com (SCSQMBX10.ad.analog.com [10.77.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 12B94sMn041437
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 11 Mar 2021 04:04:54 -0500
+Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by SCSQMBX10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.721.2; Thu, 11 Mar 2021
+ 01:04:53 -0800
+Received: from zeus.spd.analog.com (10.66.68.11) by scsqmbx10.ad.analog.com
+ (10.77.17.5) with Microsoft SMTP Server id 15.2.721.2 via Frontend Transport;
+ Thu, 11 Mar 2021 01:04:52 -0800
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 12B94p3U010252;
+        Thu, 11 Mar 2021 04:04:51 -0500
+From:   <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>
+Subject: [PATCH v5 0/1] iio: adc: ad7124: allow more than 8 channels
+Date:   Thu, 11 Mar 2021 11:11:53 +0200
+Message-ID: <20210311091154.47785-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <CAOgtOjMwnwsiXd8rPeGBBTVkZUeabQ5nLtPts2RQDDMc-TDgKA@mail.gmail.com>
-In-Reply-To: <CAOgtOjMwnwsiXd8rPeGBBTVkZUeabQ5nLtPts2RQDDMc-TDgKA@mail.gmail.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Thu, 11 Mar 2021 10:58:53 +0200
-Message-ID: <CA+U=DsqAcmQq2qPMfxVcuwLWJefus_qyM1wG+ioGyG8bej88pw@mail.gmail.com>
-Subject: Re: GSoC IIO project: Mugil
-To:     Mugil Raj <dmugil2000@gmail.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.369,18.0.761
+ definitions=2021-03-11_04:2021-03-10,2021-03-11 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ spamscore=0 malwarescore=0 clxscore=1015 mlxscore=0 mlxlogscore=864
+ impostorscore=0 priorityscore=1501 bulkscore=0 phishscore=0 adultscore=0
+ suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2009150000 definitions=main-2103110047
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 9:03 AM Mugil Raj <dmugil2000@gmail.com> wrote:
->
-> Hi,
-> This is Mugilraj, an undergrad at NIT Trichy, India. I'm applying to
-> GSoC'21 for the project IIO driver. So, I need help from you guys with
-> the application process and finding the device to develop a driver.
-> I've done few exercises on patch submissions and completed a Linux
-> Foundations course, "A beginners guide to Linux kernel development
-> (LFD103)". I found this "https://kernelnewbies.org/IIO_tasks" task for
-> beginners, and now I'm doing that also If anyone suggests some fixes
-> to develop, that would be helpful for me.
->
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
+Currently AD7124-8 driver cannot use more than 8 IIO channels
+because it was assigning the channel configurations bijectively
+to channels specified in the device-tree. This is not possible
+to do when using more than 8 channels as AD7124-8 has only 8
+configuration registers.
 
-hey,
+All configurations are marked as live if they are
+programmed on the device. Any change that happens from
+userspace (sampling rate, filters etc.) will invalidate
+them.
 
-i posted some ideas here:
-https://lore.kernel.org/linux-iio/CA+U=Dsp98caW89g9FbsV-+KQ-NjyOqd+KSkO+aaFp4qBb-hpMg@mail.gmail.com/T/#md6c49f2e457d66d922d3d22f1f6fdb54971e6b8a
+To allow the user to use all channels at once the driver
+will keep in memory configurations for all channels but
+will program only 8 of them at a time on the device.
 
-[a quick copy + paste from that email]
+If multiple channels have the same configuration, only
+one configuration register will be used.
 
-One thing I've always wanted to do, is to convert the entire IIO
-subsystem to devm_ variants.
-Essentially getting rid of the iio_device_unregister() function in
-favor of using devm_iio_device_unregister() and similar.
+If there are more configurations needed than available registers
+only the last 8 used configurations will be allowed to exist
+on the device in a LRU fashion. (in case of raw reads).
 
-There's about ~217 uses of this function.
-The more complicated one is in the 'drivers/platform/x86/toshiba_acpi.c'
-I think reworking the Toshiba ACPI driver would also be interesting,
-but it is some work.
+If a read is requested on a channel whose configuration
+is not programmed:
+- check if there are similar configurations already programmed
+	if yes: - point channel to that config
+	if no:  - check if there are empty config slots
+			- if yes: write config, push into queue of LRU configs
+			- if no: pop one config, get it's config slot nr,
+			write new config on the old slot, push new config
+			in queue of LRU configs.
 
-Now, converting everything to devm_ variants can be considered a bit
-of an obsession [by some people].
-But I sometimes find potential memory leaks by doing this conversion.
-And chances are that we may never be able to fully convert the IIO API
-to be devm_ variant-only.
-But it is an interesting process [for me], just the cleanup itself.
+Alexandru Tachici (1):
+  iio: adc: ad7124: allow more than 8 channels
 
-Another one, that was interesting until 1-2 years ago, was the
-conversion of OF drivers to be a bit more ACPI friendly [as well].
-This is also a bit of work to convert drivers that use only
-of_property_read_xxxx()  functions to   device_property_read_xxx()
-functions.
-This isn't always straightforward in all drivers, but I do find it
-interesting to unify the OF & ACPI interfaces, so that all you have to
-do, is just switch the system from OF to ACPI underneath, and if the
-device-tree conversion to ACPI is done right, it just works.
+Changelog v4 -> v5:
+	- replaced ad7124_configs_equal function with a memcmp
+	in order to check if two configs are equal
+	- moved members that do not count to equality at the
+	end of the ad7124_channel_config struct (live, cfg_slot)
 
-Then, there's the matter of moving fields [marked as [INTERN] )  from
-"struct iio_dev"  to "struct iio_dev_opaque".
-The value of this conversion is to reduce the review pain of having to
-tell people not-to-use [INTERN] fields [especially when older drivers
-do].
+ drivers/iio/adc/ad7124.c | 458 +++++++++++++++++++++++++--------------
+ 1 file changed, 301 insertions(+), 157 deletions(-)
 
+-- 
+2.20.1
 
-> Is there any IRC channel for IIO?
->
-> Thanks,
-> Mugil
