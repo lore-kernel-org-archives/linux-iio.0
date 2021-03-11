@@ -2,119 +2,75 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3042AC43333
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Mar 2021 03:07:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D1D94C433E0
+	for <linux-iio@archiver.kernel.org>; Thu, 11 Mar 2021 07:02:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 06C1D64FD0
-	for <linux-iio@archiver.kernel.org>; Thu, 11 Mar 2021 03:07:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8BCA564FBB
+	for <linux-iio@archiver.kernel.org>; Thu, 11 Mar 2021 07:02:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229874AbhCKDGg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 10 Mar 2021 22:06:36 -0500
-Received: from mail-eopbgr60114.outbound.protection.outlook.com ([40.107.6.114]:33497
-        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229803AbhCKDGI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 10 Mar 2021 22:06:08 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=QlfK5xo1V7BWpdrXEAXFNDmdCY1mUzFj34kJQLbmUMN9z+P7JeGBh+lZj2LJ6MCgAmmH67hzcr3aYvKEqpxaWbzqZv9DW2s8vi6FPpRgoIZyJV+lNny7E4yNDDIvGPldR/Qvadqomd3CRD2EBd/4Ij2J4yTHgb3Dbrvtb/OTAapPubdejEGsSdhSbW1xU+7QuV9GSWMHn6D7YBrCdFAEvVEndkgMu9diXk/lt+9DUoklPERg9MYtbxGXIksrYyi+zv/FGdekACjVzdoLpYRG4Es0COJiRQ6MB8k990/ZFYI7kIkC+TsdobI+tfZfhKpc6zqQiaJzVUT4CkZL1vn0aA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k2ZtaVVrHEls8fv3W65kFdm0Vl8liSTqkMEOhY6f14M=;
- b=USw6SHSRpS9X/8s2gTd66m36GvYjZkwDzFAMcn7HsmbPAReO9XMR53KOq/woM+lxV6agobkxJH8vL5RWuJAi1S79Kzz+vxu+BmHO54EM+xg1tBwz4KZUzBCjVzWtQw7eU1Ew0I4bTEt6BtpGVaqLA0yoeL7qnoI2MVpUWEdCkWX6AqQjrmlI0KoyHQEn/XimAfHWgsngD0/CF23hANrNv4So9KzcrjFDW310TDsshNq6NQIHtvbaYO1yPcIhiRPenoVTNmh5VqQCg4VM2S1Qz4xFpB2HTJXTZJJohXh3IXjIt/1Fy5mw1l1lRZk3BAzKvKBsjHl9xROd8ljjm/58BQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.99) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
+        id S231479AbhCKHB5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 11 Mar 2021 02:01:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47956 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231616AbhCKHBk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 11 Mar 2021 02:01:40 -0500
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 933D0C061574
+        for <linux-iio@vger.kernel.org>; Wed, 10 Mar 2021 23:01:40 -0800 (PST)
+Received: by mail-ej1-x633.google.com with SMTP id hs11so43958194ejc.1
+        for <linux-iio@vger.kernel.org>; Wed, 10 Mar 2021 23:01:40 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=k2ZtaVVrHEls8fv3W65kFdm0Vl8liSTqkMEOhY6f14M=;
- b=sxS3c6GsOVOLNZs+Yq32k6a0ZkrUm4AgwT8Z/wwsSjDnjNfxlFCiHN1INC2Zxoet8ZURdrlPCNvgsPFSiMQowrI5DDbzXJKtwIkIGY/zuXvP1CcprqBAi4QtG3RbuJz2SdNqjIrltVCneDWZeggPfR7+evD7+XNgkrjCNHiC3dg=
-Received: from AM7PR03CA0020.eurprd03.prod.outlook.com (2603:10a6:20b:130::30)
- by AM5PR0601MB2657.eurprd06.prod.outlook.com (2603:10a6:203:4a::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.19; Thu, 11 Mar
- 2021 03:06:03 +0000
-Received: from AM5EUR02FT056.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:130:cafe::60) by AM7PR03CA0020.outlook.office365.com
- (2603:10a6:20b:130::30) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.3912.17 via Frontend
- Transport; Thu, 11 Mar 2021 03:06:03 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.99)
- smtp.mailfrom=leica-geosystems.com.cn; kernel.org; dkim=none (message not
- signed) header.d=none;kernel.org; dmarc=pass action=none
- header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.99 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.99; helo=aherlnxbspsrv01.lgs-net.com;
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.99) by
- AM5EUR02FT056.mail.protection.outlook.com (10.152.9.107) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.3933.31 via Frontend Transport; Thu, 11 Mar 2021 03:06:02 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, andriy.shevchenko@linux.intel.com,
-        denis.ciocca@st.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     grygorii.tertychnyi@leica-geosystems.com,
-        andrey.zhizhikin@leica-geosystems.com,
-        LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Subject: [PATCH V2 0/2] Add support for ST magnetometer IIS2MDC
-Date:   Thu, 11 Mar 2021 03:05:52 +0000
-Message-Id: <20210311030554.6428-1-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.17.1
-X-EOPAttributedMessage: 0
-X-MS-Office365-Filtering-HT: Tenant
-X-MS-PublicTrafficType: Email
+        d=gmail.com; s=20161025;
+        h=mime-version:from:date:message-id:subject:to;
+        bh=ePbzz48BJbDJZuqQXB7WXLflIirIxYx6QnnOQ+uwEqw=;
+        b=M6rNgnhsV40/pF8sbJS8kDhuQoBWHBydy/t+rnMp/oipKzwSc2EJs5XEKBD3bCSxhC
+         AbtGRxM7eKC3ZuA83BLwVHocs3ZMLlHC86NStpUyWVagbx2dF4Birpv9gpetyPBNHMOh
+         ENK/8W44nqSJaqlLBY8Mp4Hc0KtVfjQRLzrdB3W1oyOavHD9+4RlIjgmy2GYimdNVlUj
+         ny7pnUGdOab8VaDjOcF6b+yNE4K8DGMpCGg5/H2jTlE8Q5st2ZLSj5xVv3oJBeJ5zx95
+         KCR7wsi4jfGsi0wGS4PwvPSsW+vZD5AqnX1Vw2aQHM8sJZ7RVl2frRgjtOgKGjGIXSh1
+         GEuw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
+        bh=ePbzz48BJbDJZuqQXB7WXLflIirIxYx6QnnOQ+uwEqw=;
+        b=WuctQ6dV/DZe9vi7PZth4GxrNZ7XPcKMb6vlEN2889EAs0YYPExyaCBd9mYL4jyJjA
+         +kzUDr+K/xgpL9QX1M0GaXqLgiMp4k6DyZSlNxZzT2f3hOR/xeym52lj40xsdDlRCF1i
+         0/1mdh7+EEtwAPQPL8lyE/6VvjBH9RqbjtIwIZoMDGfXE2cQD4bRWGOH+6eeyB2eKdLP
+         /yIi4rTj5Tvsw7xPkYcqoH139Yidmd1Z+uvFZSABuQJ6xTf1xXeY238RNQGsMghWZcrc
+         dwZIUbr9IiCUK1w/x8ChEKCDdv/UtOAZ2CxBUZxnzQDzsUD2LlZJv2QI+3geOEmubLjU
+         xUfg==
+X-Gm-Message-State: AOAM530T2ij9nH8u/N+ZMslrAmkdHgEHyDaNoR+kMi1uFCYpcJZE1+O8
+        QZnf34jHE15Mw97hQl9T6rx23Mlxvd5deW7y6VpvwJZ49ubnLA==
+X-Google-Smtp-Source: ABdhPJxs37EYuCM/VnZ5SZ7nUd7jR4PA+6tN2vXlxKpYfcB87GySAmcUB5GYJOOc5+shPXODUxTQ2cenXZkjD6H0Vxw=
+X-Received: by 2002:a17:907:788e:: with SMTP id ku14mr1670821ejc.17.1615446098820;
+ Wed, 10 Mar 2021 23:01:38 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 6460603a-0522-463f-6c23-08d8e43a9aa7
-X-MS-TrafficTypeDiagnostic: AM5PR0601MB2657:
-X-MS-Exchange-Transport-Forked: True
-X-Microsoft-Antispam-PRVS: <AM5PR0601MB2657DED946063935648F3E90D7909@AM5PR0601MB2657.eurprd06.prod.outlook.com>
-X-MS-Oob-TLC-OOBClassifiers: OLM:4303;
-X-MS-Exchange-SenderADCheck: 1
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: G1WAFfPx27ayjB9W6NkRxZBsqvEu2Kw2/NwMOQbqImeCPaZG3MkIUeMrbNPc5UGQn4kig14fbwz2ujcDMxPQ0Wr5iEjps8+I653E/BRyXU5hZuD9SEj3k0h/sZgjvUVi1mNj+MHwaVEV5I6nHI6NjiMC+6kRee8+jayMN2p41/dRzynnMGFDebl31tnmNMS/ZAxyRUbSh/fETYn7KnodWekqQ0KcimXOxZbLbm3TtKhEhGQL8E1BodXBawo1fszZ3Mr/ZKEc9HK7yd/VtsXie6O+lOUYFT4eZfkeGGXuAhAWRD43mGaDxa7Yqh1XzVIjRn4mUrQzmXoAOmZTmg+tKxesE72uzrkJfRf7KGM1zJhEmuCwTAgj0yHb1xp/rMcevh9EcGMkQJJqnO2KWSUfVHaCuy9VvVdXcj9fD0cZdXXOREuqEYi7yKlR1qY6IuZ8IdcVy+RKsgcEWDVsv21qPY9hsQBbfWDNZ4hNclvey1hETuJWnbQusYK5FsPEF634rTa/JetVhWvvMqUoDPZACL03hRJyFJ48elAEU+d9fgupHeZzpYp4ZUqk62yXcaEt6Ao2Gbq+qA2l45vH6Nz9b71MpmZLIeAH9av/J9vuk5Y9RQBZgyRxI5UDkwcQtPeFlc/ErTo9l48u6mQGY1t6rBu0uV4jXHxl9CUEUbvjEZn9HaTFXjHLvp++PyviO7gE
-X-Forefront-Antispam-Report: CIP:193.8.40.99;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom51.leica-geosystems.com;CAT:NONE;SFS:(4636009)(396003)(346002)(376002)(136003)(39860400002)(36840700001)(46966006)(26005)(86362001)(186003)(118246002)(70586007)(70206006)(47076005)(6512007)(6666004)(478600001)(6486002)(4744005)(5660300002)(4326008)(1076003)(107886003)(8676002)(34020700004)(36860700001)(356005)(82740400003)(82310400003)(81166007)(2616005)(956004)(336012)(2906002)(6506007)(36756003)(316002)(36736006)(8936002);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 11 Mar 2021 03:06:02.4435
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6460603a-0522-463f-6c23-08d8e43a9aa7
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.99];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: AM5EUR02FT056.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM5PR0601MB2657
+From:   Mugil Raj <dmugil2000@gmail.com>
+Date:   Thu, 11 Mar 2021 12:31:26 +0530
+Message-ID: <CAOgtOjMwnwsiXd8rPeGBBTVkZUeabQ5nLtPts2RQDDMc-TDgKA@mail.gmail.com>
+Subject: GSoC IIO project: Mugil
+To:     linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changes in V2:
+Hi,
+This is Mugilraj, an undergrad at NIT Trichy, India. I'm applying to
+GSoC'21 for the project IIO driver. So, I need help from you guys with
+the application process and finding the device to develop a driver.
+I've done few exercises on patch submissions and completed a Linux
+Foundations course, "A beginners guide to Linux kernel development
+(LFD103)". I found this "https://kernelnewbies.org/IIO_tasks" task for
+beginners, and now I'm doing that also If anyone suggests some fixes
+to develop, that would be helpful for me.
 
-Extend the exist st_magn* to support IIS2MDC, instead of adding a new
-driver.
+Is there any IRC channel for IIO?
 
-
-LI Qingwu (2):
-  dt-bindings: iio: st,st-sensors add IIS2MDC.
-  iio:magnetometer: Add Support for ST IIS2MDC
-
- Documentation/devicetree/bindings/iio/st,st-sensors.yaml | 1 +
- drivers/iio/magnetometer/st_magn.h                       | 2 ++
- drivers/iio/magnetometer/st_magn_core.c                  | 1 +
- drivers/iio/magnetometer/st_magn_i2c.c                   | 5 +++++
- drivers/iio/magnetometer/st_magn_spi.c                   | 5 +++++
- 5 files changed, 14 insertions(+)
-
--- 
-2.17.1
-
+Thanks,
+Mugil
