@@ -2,178 +2,191 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15558C433E0
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Mar 2021 05:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9DCCC433E0
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Mar 2021 10:56:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C388E64FA0
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Mar 2021 05:28:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B230C64FDC
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Mar 2021 10:56:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231370AbhCLF2F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 Mar 2021 00:28:05 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55196 "EHLO
+        id S233653AbhCLKz5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Mar 2021 05:55:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230205AbhCLF1k (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Mar 2021 00:27:40 -0500
-Received: from mail-il1-x129.google.com (mail-il1-x129.google.com [IPv6:2607:f8b0:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBA49C061574;
-        Thu, 11 Mar 2021 21:27:39 -0800 (PST)
-Received: by mail-il1-x129.google.com with SMTP id b5so1493165ilq.10;
-        Thu, 11 Mar 2021 21:27:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=cedzXH2mwsyrkSO9r0tC4BCdclkRwN6ijBwzgFvGgU0=;
-        b=TBJd7C/NApDyC+0/5wKLyKr+fzrC1bBtWFxlApGpVyZYTAMf7pMBGY8VGT5i+/J/0F
-         UMCA16UtCB0WQK3L/IsMP0EAFn6zxNPGkQnIYDCljBIdnLgPbUSHRJhI9vt3NXmpbbc3
-         V4pQiFiINrAbHbvATj2zBbezRRPDl/+kJOglBy4/cSNRnIqv64w2zVclA5keFs/39eLG
-         zKRl7UdUJ+fTHc8bFAHhjTJswQxlhYD6giVjVgDBs9dluN0WOLhScK/ewf009dIZUPEE
-         Bg9fEPPZo/KAOiCkcDJx21B5dM1wF3CqnWo/FhMB6fbqa3gJ4Dtr5737Z9xjEd/32mkY
-         dR9g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=cedzXH2mwsyrkSO9r0tC4BCdclkRwN6ijBwzgFvGgU0=;
-        b=NTLaEi3ZBJSvUW2zstccAQd0wCc0umCs7G9++9L6IW7LKhaZMrupxvzHaa0zJOkvQz
-         6MtfHWQTADEnFCIInGnNeZP+C+77snxsCjz6TqwbdbtZBHywDy9yaX6S3iYsy2KrqO5H
-         vcvYAooaUoNjv/86/AVm2X7xN/DqtcrP9OrG8lHHQfni/n0u0xb/N9vwpGHRqfCfe6tD
-         GZz4eUjm4EQt/tlqfsi14cSN+bGIitg4BfOknEzsuuACJHmkAypKV9kl9DMTeIB8e8X/
-         DColPBb0cerVtEa2nRO5ufJ/lyySzEqaU9uNxfhNNZaQScP0eLWbxq7Uh/HoNSB2bS8Y
-         qCjw==
-X-Gm-Message-State: AOAM5313WMxvCQTwbJFQIB7ODnLtHcrXRJQjL3Xep3V3mN+XHwBrBdTo
-        XFjDEhlUnFEUcWf1D+OPAKcztirUYDRiYDmxazw=
-X-Google-Smtp-Source: ABdhPJxvReihQMelM2NYf37nhXSdBLG+zRTVh/SPSvsdhuYaeeoY+unUsG3pMcj+CVJC87cQ/uE4oYbyqA3v1Ouzibc=
-X-Received: by 2002:a92:3652:: with SMTP id d18mr1627864ilf.100.1615526859345;
- Thu, 11 Mar 2021 21:27:39 -0800 (PST)
+        with ESMTP id S233594AbhCLKz0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Mar 2021 05:55:26 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E655C061574
+        for <linux-iio@vger.kernel.org>; Fri, 12 Mar 2021 02:55:25 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lKfRt-0006gK-CG; Fri, 12 Mar 2021 11:55:17 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lKfRs-0008MK-ES; Fri, 12 Mar 2021 11:55:16 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH v2 2/3] dt-bindings:iio:adc: add documentation for TI TSC2046 controller
+Date:   Fri, 12 Mar 2021 11:55:14 +0100
+Message-Id: <20210312105515.32055-3-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210312105515.32055-1-o.rempel@pengutronix.de>
+References: <20210312105515.32055-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-References: <20210311091042.22417-1-aardelean@deviqon.com>
-In-Reply-To: <20210311091042.22417-1-aardelean@deviqon.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Fri, 12 Mar 2021 07:27:28 +0200
-Message-ID: <CA+U=DsqL3BS0QFsV01caxFjsUmeSsfrbuo1ezKtfBhAncCBoMA@mail.gmail.com>
-Subject: Re: [PATCH] iio: kfifo: add devm_iio_triggered_buffer_setup_ext variant
-To:     Alexandru Ardelean <aardelean@deviqon.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux@deviqon.com,
-        Jonathan Cameron <jic23@kernel.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Mar 11, 2021 at 11:14 AM Alexandru Ardelean
-<aardelean@deviqon.com> wrote:
->
-> This is similar to the {devm_}iio_triggered_buffer_setup_ext variants added
-> via commit 5164c7889857 ("iio: triggered-buffer: add
-> {devm_}iio_triggered_buffer_setup_ext variants").
->
-> These can be used to pass extra buffer attributes to the buffer object.
-> This is a bit of temporary mechanism (hopefully) so that drivers that want
-> to allocate a kfifo buffer with extra buffer attributes, don't need to
-> include 'buffer_impl.h' directly. This can also become an API function (in
-> it's own right, unfortunately), but it may be a little less bad vs drivers
-> having to include 'buffer_impl.h'.
->
-> So, far the drivers that want to pass buffer attributes, all have to do
-> with some HW FIFO attributes, so there may be a chance of unifying them
-> into IIO core somehow (as some standard API). But, until that happens, we
-> just need to let them register their HW FIFO attributes directly (without
-> having to let them include 'buffer_impl.h' directly).
->
+Add a binding documentation for the TI TSC2046 touchscreen controllers
+ADC functionality.
 
-This isn't required anymore.
-Please disregard.
-Apologies for the noise
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ .../bindings/iio/adc/ti,tsc2046.yaml          | 115 ++++++++++++++++++
+ 1 file changed, 115 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
 
-> Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
-> ---
->
-> Related to the discussion here:
->   https://lore.kernel.org/linux-iio/CA+U=Dspk3cWjiiRmDrgfHAY6houjr-KtSD3u4BssUcb=c2ujpQ@mail.gmail.com/T/#mcfda9d6cb6426caefa4a5db6d634640bfdbe328e
->
->  drivers/iio/buffer/kfifo_buf.c | 16 ++++++++++------
->  include/linux/iio/kfifo_buf.h  | 12 ++++++++----
->  2 files changed, 18 insertions(+), 10 deletions(-)
->
-> diff --git a/drivers/iio/buffer/kfifo_buf.c b/drivers/iio/buffer/kfifo_buf.c
-> index 4ecfa0ec3016..13eea2e11cbc 100644
-> --- a/drivers/iio/buffer/kfifo_buf.c
-> +++ b/drivers/iio/buffer/kfifo_buf.c
-> @@ -206,22 +206,24 @@ static struct iio_buffer *devm_iio_kfifo_allocate(struct device *dev)
->  }
->
->  /**
-> - * devm_iio_kfifo_buffer_setup - Allocate a kfifo buffer & attach it to an IIO device
-> + * devm_iio_kfifo_buffer_setup_ext - Allocate a kfifo buffer & attach it to an IIO device
->   * @dev: Device object to which to attach the life-time of this kfifo buffer
->   * @indio_dev: The device the buffer should be attached to
->   * @mode_flags: The mode flags for this buffer (INDIO_BUFFER_SOFTWARE and/or
->   *             INDIO_BUFFER_TRIGGERED).
->   * @setup_ops: The setup_ops required to configure the HW part of the buffer (optional)
-> + * @buffer_attrs: Extra sysfs buffer attributes for this IIO buffer
->   *
->   * This function allocates a kfifo buffer via devm_iio_kfifo_allocate() and
->   * attaches it to the IIO device via iio_device_attach_buffer().
->   * This is meant to be a bit of a short-hand/helper function as there are a few
->   * drivers that seem to do this.
->   */
-> -int devm_iio_kfifo_buffer_setup(struct device *dev,
-> -                               struct iio_dev *indio_dev,
-> -                               int mode_flags,
-> -                               const struct iio_buffer_setup_ops *setup_ops)
-> +int devm_iio_kfifo_buffer_setup_ext(struct device *dev,
-> +                                   struct iio_dev *indio_dev,
-> +                                   int mode_flags,
-> +                                   const struct iio_buffer_setup_ops *setup_ops,
-> +                                   const struct attribute **buffer_attrs)
->  {
->         struct iio_buffer *buffer;
->
-> @@ -237,8 +239,10 @@ int devm_iio_kfifo_buffer_setup(struct device *dev,
->         indio_dev->modes |= mode_flags;
->         indio_dev->setup_ops = setup_ops;
->
-> +       buffer->attrs = buffer_attrs;
-> +
->         return iio_device_attach_buffer(indio_dev, buffer);
->  }
-> -EXPORT_SYMBOL_GPL(devm_iio_kfifo_buffer_setup);
-> +EXPORT_SYMBOL_GPL(devm_iio_kfifo_buffer_setup_ext);
->
->  MODULE_LICENSE("GPL");
-> diff --git a/include/linux/iio/kfifo_buf.h b/include/linux/iio/kfifo_buf.h
-> index 1522896e1daf..ccd2ceae7b25 100644
-> --- a/include/linux/iio/kfifo_buf.h
-> +++ b/include/linux/iio/kfifo_buf.h
-> @@ -10,9 +10,13 @@ struct device;
->  struct iio_buffer *iio_kfifo_allocate(void);
->  void iio_kfifo_free(struct iio_buffer *r);
->
-> -int devm_iio_kfifo_buffer_setup(struct device *dev,
-> -                               struct iio_dev *indio_dev,
-> -                               int mode_flags,
-> -                               const struct iio_buffer_setup_ops *setup_ops);
-> +int devm_iio_kfifo_buffer_setup_ext(struct device *dev,
-> +                                   struct iio_dev *indio_dev,
-> +                                   int mode_flags,
-> +                                   const struct iio_buffer_setup_ops *setup_ops,
-> +                                   const struct attribute **buffer_attrs);
-> +
-> +#define devm_iio_kfifo_buffer_setup(dev, indio_dev, mode_flags, setup_ops)     \
-> +       devm_iio_kfifo_buffer_setup_ext((dev), (indio_dev), (mode_flags), (setup_ops), NULL)
->
->  #endif
-> --
-> 2.29.2
->
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml b/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
+new file mode 100644
+index 000000000000..4f705dc0f639
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
+@@ -0,0 +1,115 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/ti,tsc2046.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Texas Instruments TSC2046 touch screen controller.
++
++maintainers:
++  - Oleksij Rempel <o.rempel@pengutronix.de>
++
++description: |
++  TSC2046 is a touch screen controller with 8 channels ADC.
++
++properties:
++  compatible:
++    enum:
++      - ti,tsc2046e-adc
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  spi-max-frequency: true
++
++  "#io-channel-cells":
++    const: 1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++required:
++  - compatible
++  - reg
++
++patternProperties:
++  "^channel@[0-7]$":
++    $ref: "adc.yaml"
++    type: object
++
++    properties:
++      reg:
++        description: |
++          The channel number. It can have up to 8 channels
++        items:
++          minimum: 0
++          maximum: 7
++
++      settling-time-us: true
++      average-samples: true
++
++    required:
++      - reg
++
++    additionalProperties: false
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        adc@0 {
++            compatible = "ti,tsc2046e-adc";
++            reg = <0>;
++            spi-max-frequency = <1000000>;
++            interrupts-extended = <&gpio3 20 IRQ_TYPE_LEVEL_LOW>;
++            #io-channel-cells = <1>;
++
++            #address-cells = <1>;
++            #size-cells = <0>;
++
++            channel@0 {
++              reg = <0>;
++            };
++            channel@1 {
++              reg = <1>;
++              settling-time-us = <700>;
++              average-samples = <5>;
++            };
++            channel@2 {
++              reg = <2>;
++            };
++            channel@3 {
++              reg = <3>;
++              settling-time-us = <700>;
++              average-samples = <5>;
++            };
++            channel@4 {
++              reg = <4>;
++              settling-time-us = <700>;
++              average-samples = <5>;
++            };
++            channel@5 {
++              reg = <5>;
++              settling-time-us = <700>;
++              average-samples = <5>;
++            };
++            channel@6 {
++              reg = <6>;
++            };
++            channel@7 {
++              reg = <7>;
++            };
++        };
++    };
++...
+-- 
+2.29.2
+
