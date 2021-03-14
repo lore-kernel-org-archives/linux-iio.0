@@ -7,36 +7,37 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FFC9C433E0
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 342DBC433E9
 	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 16:49:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E035A64E75
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 16:49:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0C2BD64E7C
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 16:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234532AbhCNQtO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Mar 2021 12:49:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54690 "EHLO mail.kernel.org"
+        id S234668AbhCNQtQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Mar 2021 12:49:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54712 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234668AbhCNQtG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Mar 2021 12:49:06 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 177F464E75;
-        Sun, 14 Mar 2021 16:49:05 +0000 (UTC)
+        id S234673AbhCNQtK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 14 Mar 2021 12:49:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 61BB364EC6;
+        Sun, 14 Mar 2021 16:49:09 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615740546;
-        bh=mW1ap7fHw3F6PGpp6ekV1Sw7n9hAcjlq/i2sNKzEttE=;
+        s=k20201202; t=1615740550;
+        bh=2gpVKDyz4eKOgby8fB5zPO24dATUQOirm4NV4OFwVM8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=l7jaH0TGS8huwwXjPbZU045Zn6NH9uSnqdMngT6Qmm9ji64xWtltvR9aFn/3VjYDp
-         ZENbHb0kDE0hsiPC5OXE3ZK/Cl3OYtkn4HbgqnM+mS/vPtupdgE9+NcdhH4v5DX60S
-         oHP2PFfhRfJk2T4YTE0mzhse44THV6UXpzAbvEwcfQU/dZd6B9HrHa1Z0XIS5wy4Xp
-         gvpq/SdEG7P07a+KaO2jShirjCq7XvV6S04EmFgxIw6ERVu2NHmRy88Ach+NEnTRsL
-         PEJPu9YMMhqOMiKxmZAHeHOc+6/94y3t9cz4jhUhYmFfokNee0A5tYSNBj7b23oQtI
-         IK7LOGpYVLM3g==
+        b=io/XMjmOxXOyvMoilQ87PDNcZ6PxCxHflR2GMJDTCieFFb5exd4glnzT/q1DRl7S8
+         QBVwTmb1lXBUKxeYxruIMfmMc7NipiP3BWTBstMwfrusOw0YsX/kaMjw58Aa2Nd4t4
+         kNvNMHN3dJjZkOPQr9po6XFERru9KzFfacjJaGf/kVpAI8abicbZpOrCKenL83rXrJ
+         lM2nsUiODWv37UwoxKH2nYH7blvZYinq2xebTUwNokFPhoHYmjEOpxZRmFUoRSyqSX
+         qF0/tXw4xn3RxNW4N3Q0oxQJXNqpm2vlYFk+dZ7SR0VnD8bk/O9beZIGzJAQC+348+
+         4slYU+BjWFLIA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 1/8] iio: pressure: zpa2326: kernel-doc fixes
-Date:   Sun, 14 Mar 2021 16:46:48 +0000
-Message-Id: <20210314164655.408461-2-jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 4/8] iio: dac: ad5504: fix wrong part number in kernel-doc structure name.
+Date:   Sun, 14 Mar 2021 16:46:51 +0000
+Message-Id: <20210314164655.408461-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210314164655.408461-1-jic23@kernel.org>
 References: <20210314164655.408461-1-jic23@kernel.org>
@@ -48,36 +49,28 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Two comment blocks had wrong naming for function/structures that they
-referred to.  Results in warnings when doing a W=1 build.
+Probably a bit of cut and paste where someone forgot to change the
+part number.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/pressure/zpa2326.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ad5504.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
-index 70adff62cd20..a93411216aee 100644
---- a/drivers/iio/pressure/zpa2326.c
-+++ b/drivers/iio/pressure/zpa2326.c
-@@ -103,7 +103,7 @@ static const struct zpa2326_frequency *zpa2326_highest_frequency(void)
- }
+diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
+index e9297c25d4ef..f383bdcdc121 100644
+--- a/drivers/iio/dac/ad5504.c
++++ b/drivers/iio/dac/ad5504.c
+@@ -39,7 +39,7 @@
+ #define AD5504_DAC_PWRDN_3STATE		1
  
  /**
-- * struct zpa_private - Per-device internal private state
-+ * struct zpa2326_private - Per-device internal private state
-  * @timestamp:  Buffered samples ready datum.
-  * @regmap:     Underlying I2C / SPI bus adapter used to abstract slave register
-  *              accesses.
-@@ -1382,7 +1382,7 @@ static const struct iio_trigger_ops zpa2326_trigger_ops = {
- };
- 
- /**
-- * zpa2326_init_trigger() - Create an interrupt driven / hardware trigger
-+ * zpa2326_init_managed_trigger() - Create interrupt driven / hardware trigger
-  *                          allowing to notify external devices a new sample is
-  *                          ready.
-  * @parent:    Hardware sampling device @indio_dev is a child of.
+- * struct ad5446_state - driver instance specific data
++ * struct ad5504_state - driver instance specific data
+  * @spi:			spi_device
+  * @reg:		supply regulator
+  * @vref_mv:		actual reference voltage used
 -- 
 2.30.2
 
