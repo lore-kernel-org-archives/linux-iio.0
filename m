@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 43D1DC4332B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8B4AC4332D
 	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 16:49:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2E7F464DE8
+	by mail.kernel.org (Postfix) with ESMTP id AF3D464E10
 	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 16:49:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234479AbhCNQtT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Mar 2021 12:49:19 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54708 "EHLO mail.kernel.org"
+        id S234707AbhCNQtU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Mar 2021 12:49:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54718 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234672AbhCNQtJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Mar 2021 12:49:09 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4905864E7C;
-        Sun, 14 Mar 2021 16:49:08 +0000 (UTC)
+        id S234675AbhCNQtL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 14 Mar 2021 12:49:11 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D3C564EC8;
+        Sun, 14 Mar 2021 16:49:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1615740549;
-        bh=HoxW6wThxv+y1k2anG1pVqG9lZRroDxpSKTo5lC/0Hs=;
+        s=k20201202; t=1615740551;
+        bh=8JsrY2BUysqfPfQl7OW7Lhc1wiK4ZaL+AshW1qQrgEg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V7uDrTEY+IqC1DfwecFrTTVNQbMmjKR6jl+Gg1G6OWgaaioqV4KCCt5ri6/nrB2t8
-         gEL/Ui1DJiDvVG0EE5a6DjnrukqqHfe+ZYnqy5nDTe7H4xroOe4DA+ACgS9cLMO+2F
-         7cGqVPHoIXmufPgFFbkGC9H/WC6biohgWjeKydWePoxrHSS547fGjo9UyUEkUMQfVZ
-         f00vd4QdYcc8ocaM9KnR76ZpENeVdI228XBHUL50vvHflE7TO+2xsrFSZBb1rfJKL7
-         Zsi2LaSQejMetbo3DjnuigD5EQh+IhccR7zaO1YGs3/9PLXqmPPzK9uR0D0DO5JrJF
-         tgLa6VuuUlGSw==
+        b=H/mpBFAkOBjAQIrKUYRHlQkMOFdFxZyQRgiGDiIN+yD9/KP93TsXqeNJn/4FSfACQ
+         ETRPphokx/SPwvhb7hIaGQBZ/uWvVz0s3WPOdePhjnFFXovt3i/azo0ugYSpfTJJDo
+         V71mcsQN80BKdNgDqQ4gOEpLNy8Zyspw5n9TrJqyBYomt9ORgcdqbUitiKNQwzIYgF
+         MrhNZ8C1RUD2QtalXSLrJ/9CamdC1N4DoINdIVOJCWLviqC3Zhnl4WEOzkNG0s8VZT
+         pItdSgPWdDFZX0tu9iAWKfoquqtKcThSbU9FmPaFSuOgOBCMMp5gbPILaNRMwGMz69
+         yqk3ssUrCNFLw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>
-Subject: [PATCH 3/8] iio: dac: ad5770r: kernel-doc fix case of letter R wrong in structure name
-Date:   Sun, 14 Mar 2021 16:46:50 +0000
-Message-Id: <20210314164655.408461-4-jic23@kernel.org>
+        Tony Lindgren <tony@atomide.com>
+Subject: [PATCH 5/8] iio: adc: cpcap-adc: kernel-doc fix - that should be _ in structure name
+Date:   Sun, 14 Mar 2021 16:46:52 +0000
+Message-Id: <20210314164655.408461-6-jic23@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210314164655.408461-1-jic23@kernel.org>
 References: <20210314164655.408461-1-jic23@kernel.org>
@@ -49,27 +49,27 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Nothing useful to add beyond this causing a warning with W=1
+Fixes a W=1 warning.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
+Cc: Tony Lindgren <tony@atomide.com>
 ---
- drivers/iio/dac/ad5770r.c | 2 +-
+ drivers/iio/adc/cpcap-adc.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5770r.c b/drivers/iio/dac/ad5770r.c
-index 84dcf149261f..4e7a8ed83cc1 100644
---- a/drivers/iio/dac/ad5770r.c
-+++ b/drivers/iio/dac/ad5770r.c
-@@ -118,7 +118,7 @@ struct ad5770r_out_range {
+diff --git a/drivers/iio/adc/cpcap-adc.c b/drivers/iio/adc/cpcap-adc.c
+index f19c9aa93f17..40e59f4c95bc 100644
+--- a/drivers/iio/adc/cpcap-adc.c
++++ b/drivers/iio/adc/cpcap-adc.c
+@@ -100,7 +100,7 @@ struct cpcap_adc_ato {
  };
  
  /**
-- * struct ad5770R_state - driver instance specific data
-+ * struct ad5770r_state - driver instance specific data
-  * @spi:		spi_device
-  * @regmap:		regmap
-  * @vref_reg:		fixed regulator for reference configuration
+- * struct cpcap-adc - cpcap adc device driver data
++ * struct cpcap_adc - cpcap adc device driver data
+  * @reg: cpcap regmap
+  * @dev: struct device
+  * @vendor: cpcap vendor
 -- 
 2.30.2
 
