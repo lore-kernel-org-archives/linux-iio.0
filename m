@@ -2,126 +2,111 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EDA1C433E0
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 18:02:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F7AC433E0
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 18:18:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D670E64EB6
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 18:01:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F013964E77
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Mar 2021 18:18:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232431AbhCNR5i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Mar 2021 13:57:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41424 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231205AbhCNR5i (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Mar 2021 13:57:38 -0400
-Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97E5AC061574;
-        Sun, 14 Mar 2021 10:57:37 -0700 (PDT)
-Received: by mail-pl1-x632.google.com with SMTP id z5so14192829plg.3;
-        Sun, 14 Mar 2021 10:57:37 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=tRe63mOXEOy6zxRX1QNNRKDXtHVES7uBXxIwluuNQG8=;
-        b=SS0baeye3CdXT4p0PYnRzOQAfhfM0O3kOh/QNfVnl/F0zHq/HEpVxK2Wk5erpMt7Cg
-         WcjF67M4exWEDkPEFPhUthpF2ZBZdi4HU/GfrZ1BYKrm5lvcFDRwY8g5NqO5Xe0nFSCf
-         1GTuG6w+dNbZNtgrRtLHFi1sJe7iFjKvGCIbR4V9N8/a+lfXNgMYIP/VlJZXlD4A3cGQ
-         nv0I9/OtvIuYwXJb3RducmUmMQvAuFWc7oduearsCnWXUCsIWsaL1YkmqfzfInEhwEYm
-         64UbYRBbDzLhn3JDcTFdCphbTw3Ne/CnMCEanO8CROJJJcjJVcBAkpOg+xzP0drPIrDV
-         lGiQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=tRe63mOXEOy6zxRX1QNNRKDXtHVES7uBXxIwluuNQG8=;
-        b=aZLsrSd4V+g9B1HbTVWv9Im3azwe9eRG8M8o3m+3HOOiS7WZuSZwXXluHHqZPKqqeH
-         8+Y5qgEWa1IvVyZQTlYF4RdRy1qozTnIHm166cHNq2Wt0/8V4BwMOMLrd5VTTis0QosW
-         t/FUS16TrDlsPwIqAkbmganSbnv7ioUJbKR3HpS/+SnlBn7bHMiUzRwxUOfjf0aNwpwj
-         7w37jW4GG+YNHSIoXCpMMVfy4N60Qq1jFiioIVfAaLMA9pEwU1a7boksfXfKvTllgWIj
-         LtU3F60SkAITNJnxAEAdF5Rr1l6g63J4DrPxwJo59HD+ukT4SdwwKMKcAPpy1RdysE4X
-         Ay4Q==
-X-Gm-Message-State: AOAM530aUK/EDCzUEluIkJiDEGgkn9jHD0eH7GxFhNLK+4qCXFSgjKQd
-        V1zXfdYs7uYihHUM5/TYqmU=
-X-Google-Smtp-Source: ABdhPJwEAKsPBH7kn2azStwrrC4zVXziImkWLBmxhWQX1WGjnEH+r9FKIJnDuTflsqQPJwHRpFohBA==
-X-Received: by 2002:a17:902:7b83:b029:e5:d4f4:fc4a with SMTP id w3-20020a1709027b83b02900e5d4f4fc4amr7810329pll.0.1615744656931;
-        Sun, 14 Mar 2021 10:57:36 -0700 (PDT)
-Received: from localhost.localdomain ([2409:4072:89b:3eb5:22db:84eb:67de:24b5])
-        by smtp.googlemail.com with ESMTPSA id x7sm8177670pjr.7.2021.03.14.10.57.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Mar 2021 10:57:36 -0700 (PDT)
-From:   Mugilraj Dhavachelvan <dmugil2000@gmail.com>
-To:     ardeleanalex@gmail.com, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mugilraj Dhavachelvan <dmugil2000@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio:dac:max517.c: Use devm_iio_device_register()
-Date:   Sun, 14 Mar 2021 23:27:09 +0530
-Message-Id: <20210314175709.34301-1-dmugil2000@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210314093356.10609-1-dmugil2000@gmail.com>
-References: <20210314093356.10609-1-dmugil2000@gmail.com>
+        id S230441AbhCNSRk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Mar 2021 14:17:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44878 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232431AbhCNSR0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 14 Mar 2021 14:17:26 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A0A5964EC3;
+        Sun, 14 Mar 2021 18:17:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1615745846;
+        bh=0yy0K9rHUqCqzzRRNcRTpKrZHbakWr9rsVlqqPHzCKI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=RRVfZpCEkSExo9s7CHl+qNWb2kuNbM6Z4XdwaAWVKv67ONOimaqJLvmcOda2BT+3o
+         yKs9Uzqo3Mijyh0lVVtkqz7h/T2XYD8oZtvz3xB0KffW0L2pt+r4zA4U53MEbFQo9q
+         OeGIP4h+lVdLV2sBLkykWj1iG8ojT2IzroHSwjZpl3dvKK7CbAjoI4BD8BBUAstyvl
+         9qJ4GuW87ZJ1li1vCdfSDOoz+ODalkSE99dZq9m7niS2nHjX8TSGnMnoaVHWxiI3rF
+         Pj8RyMbyvZq+o41JqgcVPk07P9WgntaMHr00xy1tEgbFjb5tv4ZaK74yArZWlk7AOq
+         p04j9IiBO5phw==
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>, Robh+dt@kernel.org,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Subject: [PATCH v2 01/24] staging:iio:cdc:ad7150: use swapped reads for i2c rather than open coding.
+Date:   Sun, 14 Mar 2021 18:14:48 +0000
+Message-Id: <20210314181511.531414-2-jic23@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210314181511.531414-1-jic23@kernel.org>
+References: <20210314181511.531414-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use devm_iio_device_register() to avoid remove function and
-drop explicit call to iio_device_unregister().
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Signed-off-by: Mugilraj Dhavachelvan <dmugil2000@gmail.com>
+Reduces boilerplate and chances of getting the error handling wrong.
+No functional change.
 
-changes v1->v2:
-	-As sugested by Alexandru removed i2c_set_clientdata() because the stored
-	 data will be never used.
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Link: https://lore.kernel.org/r/20210207154623.433442-2-jic23@kernel.org
 ---
- drivers/iio/dac/max517.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/staging/iio/cdc/ad7150.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/iio/dac/max517.c b/drivers/iio/dac/max517.c
-index 7e01838ef4d0..00f0062a0298 100644
---- a/drivers/iio/dac/max517.c
-+++ b/drivers/iio/dac/max517.c
-@@ -153,7 +153,6 @@ static int max517_probe(struct i2c_client *client,
- 	if (!indio_dev)
- 		return -ENOMEM;
- 	data = iio_priv(indio_dev);
--	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
+diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+index 48132ab157ef..c3ed88c5e0a5 100644
+--- a/drivers/staging/iio/cdc/ad7150.c
++++ b/drivers/staging/iio/cdc/ad7150.c
+@@ -109,18 +109,20 @@ static int ad7150_read_raw(struct iio_dev *indio_dev,
  
- 	/* establish that the iio_dev is a child of the i2c device */
-@@ -189,13 +188,7 @@ static int max517_probe(struct i2c_client *client,
- 			data->vref_mv[chan] = platform_data->vref_mv[chan];
- 	}
- 
--	return iio_device_register(indio_dev);
--}
--
--static int max517_remove(struct i2c_client *client)
--{
--	iio_device_unregister(i2c_get_clientdata(client));
--	return 0;
-+	return devm_iio_device_register(&client->dev, indio_dev);
- }
- 
- static const struct i2c_device_id max517_id[] = {
-@@ -214,7 +207,6 @@ static struct i2c_driver max517_driver = {
- 		.pm	= &max517_pm_ops,
- 	},
- 	.probe		= max517_probe,
--	.remove		= max517_remove,
- 	.id_table	= max517_id,
- };
- module_i2c_driver(max517_driver);
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = i2c_smbus_read_word_data(chip->client,
+-					       ad7150_addresses[channel][0]);
++		ret = i2c_smbus_read_word_swapped(chip->client,
++						  ad7150_addresses[channel][0]);
+ 		if (ret < 0)
+ 			return ret;
+-		*val = swab16(ret);
++		*val = ret;
++
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_AVERAGE_RAW:
+-		ret = i2c_smbus_read_word_data(chip->client,
+-					       ad7150_addresses[channel][1]);
++		ret = i2c_smbus_read_word_swapped(chip->client,
++						  ad7150_addresses[channel][1]);
+ 		if (ret < 0)
+ 			return ret;
+-		*val = swab16(ret);
++		*val = ret;
++
+ 		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+@@ -188,9 +190,9 @@ static int ad7150_write_event_params(struct iio_dev *indio_dev,
+ 		/* Note completely different from the adaptive versions */
+ 	case IIO_EV_TYPE_THRESH:
+ 		value = chip->threshold[rising][chan];
+-		return i2c_smbus_write_word_data(chip->client,
+-						 ad7150_addresses[chan][3],
+-						 swab16(value));
++		return i2c_smbus_write_word_swapped(chip->client,
++						    ad7150_addresses[chan][3],
++						    value);
+ 	case IIO_EV_TYPE_MAG_ADAPTIVE:
+ 		sens = chip->mag_sensitivity[rising][chan];
+ 		timeout = chip->mag_timeout[rising][chan];
 -- 
-2.25.1
+2.30.2
 
