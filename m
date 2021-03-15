@@ -8,102 +8,96 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82C61C43381
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Mar 2021 07:59:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13DC2C433DB
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Mar 2021 08:01:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 527A164D9E
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Mar 2021 07:59:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DCD7464E0F
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Mar 2021 08:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229828AbhCOH6d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Mar 2021 03:58:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51338 "EHLO
+        id S229742AbhCOIAr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Mar 2021 04:00:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229995AbhCOH6G (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Mar 2021 03:58:06 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 724F3C061574
-        for <linux-iio@vger.kernel.org>; Mon, 15 Mar 2021 00:58:06 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id k2so32407870ioh.5
-        for <linux-iio@vger.kernel.org>; Mon, 15 Mar 2021 00:58:06 -0700 (PDT)
+        with ESMTP id S230070AbhCOIAe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Mar 2021 04:00:34 -0400
+Received: from mail-il1-x12e.google.com (mail-il1-x12e.google.com [IPv6:2607:f8b0:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32D16C061574
+        for <linux-iio@vger.kernel.org>; Mon, 15 Mar 2021 01:00:34 -0700 (PDT)
+Received: by mail-il1-x12e.google.com with SMTP id b5so8468684ilq.10
+        for <linux-iio@vger.kernel.org>; Mon, 15 Mar 2021 01:00:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=gXJotL87kb208DULEaYsuSrgsOPbWPHz2zA/gPV6XIY=;
-        b=m7jZrsykCIFh8ZJG01qIlZSyU0oBewuiKfYZ7zTwXn8IwEWH8caEAXV2N6VkxpaxKy
-         vhFsICiWO+b+dG16ENewg/Iqul9vSBCDBZ+7eiF9wEDUxDVWih6ebsyunx9Te74SIvwn
-         NGJQ7uHFFW/osmlcjsuxboHCG0+ZpBlYRAPKxQ9mt5sAdHwVw+0si2DozSmHh6cwjB+j
-         3j6gRCas3nmOBH2nXgkclUJXdpPPu0V5NQI+mECwTbS9ntjwEUxfbWqsTWLp4Ycl79zk
-         cHqTw+bfKniGhIhw2K5tE2CTQ6hVY8hrBmq+7BqCTRAgNabRGXQLEY8fkQr/X/puwfO+
-         VLOA==
+         :cc:content-transfer-encoding;
+        bh=zRqJhLCeuzPIFTJD0+tvL51PbuX6OecrRLrwWI5uxGo=;
+        b=ldZBDduJ2BE6x1A54h4IZlvCqeKUVx1BfX8+wT+Xaek73Y1FLSQmvgJRCtKy/t2jPT
+         3pnX2IfE1yxXCTRjlJF2kIaY/MvsPwZlO0OPza2GSHB8MR606IL/wH/+4WiA7kRdisyH
+         7yQ0saA9FygpGVKwDhOfZ0MckDOwCa4LajqP76yiqFfypG89m/BsFmjByKIbxfjO1KSr
+         Ht9/WtzTJj6gLkzsNx7Pw3jnD3JYL2WtMqoF8ezLdnrJF6cIeYCFA1hGVHbEafvpXtrd
+         cPvjBCxu5dAbnf/GSpZCtueGqSNhRHffi5Asu+LaYkn7ztzByWl+bOGh7twPTMYyApNo
+         mjtg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=gXJotL87kb208DULEaYsuSrgsOPbWPHz2zA/gPV6XIY=;
-        b=Ki+xyYEvmRlXt/g2NqNQgGPBDxz/S8YReYCSSpwN9Y+RC5yMH8sMdHuMUFSabnXj5K
-         lNkAUFeApoFPZyngMJbFusUsg8bcWzDTF4N3H0M1Vfp7kbezKMZRhhkwnkxYFjghdFka
-         aRjfrTdv/9uoICp3Ggwp8rI5rJC1SunBbwPCqYDprkhwTMRSZtch3vPO7FEj5DAartBv
-         0S5hOeyE2S+rf6c1nYaGWZsoabu/i9cOYMjnnWHFD4PZ+kj2P2tMLCC9CL4KD2hq4WkS
-         Qbxkkz8BI/XdKFdPz4/B/rHWgL2kdUBR94GpBZezaTqHHtONO6dVkdkbLiio+/OL5yEE
-         1p1g==
-X-Gm-Message-State: AOAM532WRsV1xNXG4OyhPT6pRhf1qeTca6H0hHbECyKBLB+7VkafEnVU
-        7Jey5Q/d1yco86jVpCd8TYQAOXx2yV1uH2WOaOk=
-X-Google-Smtp-Source: ABdhPJwCe443x0BOPO66k2phQfnXjgmr7+6USrlhht08lNueU4TGTMiwaJJs7o/ct6RruSP19jqamsUGNqJ/92IsUBA=
-X-Received: by 2002:a02:9663:: with SMTP id c90mr8512259jai.16.1615795086003;
- Mon, 15 Mar 2021 00:58:06 -0700 (PDT)
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=zRqJhLCeuzPIFTJD0+tvL51PbuX6OecrRLrwWI5uxGo=;
+        b=pKeQqrfjunnnBSSdtqPOQCO2Osd29/duDITl1cRf6efwwL+7+9B4Pli/DeZ3263Bur
+         SvfPKOoe1K8moRfLNWen7/QijZudPAPOAYbUq8/2mmEBPtLJiYn7gxwj9AyXO0RS6rAF
+         ANI+Ia56ykNgs65WFFvhtgklQ+Z4sxABHSQuUsyWekg0MQW6hDHMRDYBXjh/21O7IhmI
+         xaCSIc2FvnyHpID4aHnmBe7QzfcE9UTdn/uQNvQg4kOplMhzbvwRL7R7acMjDP4sg7BI
+         zH2cr3G/4Q38rsIzskS+E3DX4p0VR/IzzNvrdfPtk83byaJfynUZltg2W1OCk0mB5RlZ
+         07kQ==
+X-Gm-Message-State: AOAM532y1A8eSiPcvUTfEU8no1EG6KFrCBP7Lr/HgdXCL/JhM6sOmwiY
+        SydJILytPHESg59AZ9PoEANdc3+uTecWkyGN18E=
+X-Google-Smtp-Source: ABdhPJzUparwwXV9pqNXub/pIfG3O/K7jd4zTPju4v0vcTrc24VoXJSGD5dNBiKyX1hp0UQtAONmY4REWm9LA682CIk=
+X-Received: by 2002:a92:194c:: with SMTP id e12mr10899112ilm.292.1615795233715;
+ Mon, 15 Mar 2021 01:00:33 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210314164655.408461-1-jic23@kernel.org> <20210314164655.408461-2-jic23@kernel.org>
-In-Reply-To: <20210314164655.408461-2-jic23@kernel.org>
+References: <20210314164655.408461-1-jic23@kernel.org> <20210314164655.408461-7-jic23@kernel.org>
+In-Reply-To: <20210314164655.408461-7-jic23@kernel.org>
 From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Mon, 15 Mar 2021 09:57:55 +0200
-Message-ID: <CA+U=DspfWZQfw-bsNOwyZSSTWnAMedCveq+LR=U1OLQY==u4TQ@mail.gmail.com>
-Subject: Re: [PATCH 1/8] iio: pressure: zpa2326: kernel-doc fixes
+Date:   Mon, 15 Mar 2021 10:00:22 +0200
+Message-ID: <CA+U=DsqYpjBM9Ds+Wjp3eU6jeA74Eqb+5JhazzSXQsOWCU3nRQ@mail.gmail.com>
+Subject: Re: [PATCH 6/8] iio: adc: adi-axi-adc: Drop false marking for kernel-doc
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Mar 14, 2021 at 6:53 PM Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, Mar 14, 2021 at 6:54 PM Jonathan Cameron <jic23@kernel.org> wrote:
 >
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 >
-> Two comment blocks had wrong naming for function/structures that they
-> referred to.  Results in warnings when doing a W=1 build.
+> This comment block isn't in kernel-doc format so drop the /** marking.
 >
 
 Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Nuno S=C3=A1 <nuno.sa@analog.com>
 > ---
->  drivers/iio/pressure/zpa2326.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
+>  drivers/iio/adc/adi-axi-adc.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
-> index 70adff62cd20..a93411216aee 100644
-> --- a/drivers/iio/pressure/zpa2326.c
-> +++ b/drivers/iio/pressure/zpa2326.c
-> @@ -103,7 +103,7 @@ static const struct zpa2326_frequency *zpa2326_highest_frequency(void)
->  }
+> diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.=
+c
+> index 2e84623f732e..d5f6ffc5b5bc 100644
+> --- a/drivers/iio/adc/adi-axi-adc.c
+> +++ b/drivers/iio/adc/adi-axi-adc.c
+> @@ -23,7 +23,7 @@
+>  #include <linux/fpga/adi-axi-common.h>
+>  #include <linux/iio/adc/adi-axi-adc.h>
 >
->  /**
-> - * struct zpa_private - Per-device internal private state
-> + * struct zpa2326_private - Per-device internal private state
->   * @timestamp:  Buffered samples ready datum.
->   * @regmap:     Underlying I2C / SPI bus adapter used to abstract slave register
->   *              accesses.
-> @@ -1382,7 +1382,7 @@ static const struct iio_trigger_ops zpa2326_trigger_ops = {
->  };
->
->  /**
-> - * zpa2326_init_trigger() - Create an interrupt driven / hardware trigger
-> + * zpa2326_init_managed_trigger() - Create interrupt driven / hardware trigger
->   *                          allowing to notify external devices a new sample is
->   *                          ready.
->   * @parent:    Hardware sampling device @indio_dev is a child of.
+> -/**
+> +/*
+>   * Register definitions:
+>   *   https://wiki.analog.com/resources/fpga/docs/axi_adc_ip#register_map
+>   */
 > --
 > 2.30.2
 >
