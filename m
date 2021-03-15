@@ -8,58 +8,58 @@ X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFEFEC433E0
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Mar 2021 07:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 657D3C433E9
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Mar 2021 07:59:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6CD4C64E49
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Mar 2021 07:58:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 32EE564E49
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Mar 2021 07:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230020AbhCOH53 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Mar 2021 03:57:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51126 "EHLO
+        id S229970AbhCOH6d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Mar 2021 03:58:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51416 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230404AbhCOH5I (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Mar 2021 03:57:08 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0915CC061574
-        for <linux-iio@vger.kernel.org>; Mon, 15 Mar 2021 00:57:08 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id o11so32436751iob.1
-        for <linux-iio@vger.kernel.org>; Mon, 15 Mar 2021 00:57:08 -0700 (PDT)
+        with ESMTP id S230114AbhCOH60 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Mar 2021 03:58:26 -0400
+Received: from mail-io1-xd2c.google.com (mail-io1-xd2c.google.com [IPv6:2607:f8b0:4864:20::d2c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 66B3DC061574
+        for <linux-iio@vger.kernel.org>; Mon, 15 Mar 2021 00:58:26 -0700 (PDT)
+Received: by mail-io1-xd2c.google.com with SMTP id w11so6612807iol.13
+        for <linux-iio@vger.kernel.org>; Mon, 15 Mar 2021 00:58:26 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=8Czj+quBHCqKhps1Re3ZcrIIxNeHMa3VxY46tAQeChQ=;
-        b=JAz1VacwcTDqwKQMgKUmlT8sjnc+tHaX0/blAHqP8PuFgk3BhGgSNzJf2JHCcvntsA
-         I6sHoJnQyQ2q/KSHoKP6SWppp22YrbL+AY0l97QApprUVzD4RuOHtDqT+wuE86bKhT04
-         cp+WInGL83LRVZk5E0sjXT7w06Fp0Nbo4oR4cnoSqu/EQgvFBm/iR/CtolLKQWdcA/JL
-         EV/beO4dH+v8UmrMSHsSqCd4CCGA6qKdRWfGl7QKi4H51yAWyvTCvA1MprDmJ9Bn7nVr
-         VGbw0Sttej2wFINGhmusOme0ctyEZv6hTyzEE7cIo+nEg7/1RiDHnAjV6H6DmD69f6Qb
-         2zyA==
+        bh=3rN67eZ8bk5E83Dfs+UiMfYIIK6ZAKquXUGLxfDOEcc=;
+        b=o3ev+Vu0B2ICB+tEnjba/OwRa4IP1TXiQ2chtL5weui+B6A2jBNd9KoXSBGJOYninm
+         Hj2GVSnCo64GzC+7Y9517VTodHOP9AQvedLrLZg3KR8mevYDZxJQv0P5xeqJW4U4qkAz
+         WCaVn3E2gnteCIt73c949814sV6d7hSbR8tlhUp/D41HEMZ9RslztESOy/UV3i+UIuuq
+         W+cDLk2IwhhHop/HwqU3ybbDFyUizowIAPg3+Z0dDb/RW3go4J58bLKpVFgobVKUdNpF
+         E9cw/m3/rhnKXkZ2pfjMKNaC2UEZSwK4xQA1fjiMjzjll+CKXrDnlANdt9fYQ+Bc2r0t
+         +v3w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=8Czj+quBHCqKhps1Re3ZcrIIxNeHMa3VxY46tAQeChQ=;
-        b=ort4d0jbR07XhxDrOdevOCCGw7B1u3pXXStHbQhBaAz1at8GN+z+8ih5zdw78Wk7Fc
-         MkdhQtyA5iZ4ebX/v2aIJwMaRXax28HZuTpGuCrURtSBTQrM/7I32tgRcF0U67dQnV+y
-         WdxTeBAT6W5RSpNTlmk+34UfW0uXKWKF0rGbUYxf1Cc0afJdxVLZMQo1hNthKWTR7b0H
-         acHzS3AxNg41nLm5jfT2R1QWppPzvBGdTNpIhKQuui8JAURFj7g33l8PyoU0Zy99l0nX
-         o+t+pujqMMUDKWsv1Nqfo70wIjopRWduFaIJ09PqHiASeewRXAmNAhPYZrLYP9WdkUaW
-         LQEg==
-X-Gm-Message-State: AOAM532mDIbPkjf6ml+h4NJz5MhKny2diB1Z4zaIB9n/AJhXQMAzvohV
-        lieAubcKWKQ/PXmXY8MgKMwxBejcGEaGe2ITr/0=
-X-Google-Smtp-Source: ABdhPJwgGtOj5AV3sKkjYjTrIuhq1uA5Ms2Zbg2siOStwDHGMMjS7H0moznBZNO9tiQdK2qmeQmnLBCw9fJMFtYE3C8=
-X-Received: by 2002:a05:6638:91:: with SMTP id v17mr8276637jao.69.1615795027539;
- Mon, 15 Mar 2021 00:57:07 -0700 (PDT)
+        bh=3rN67eZ8bk5E83Dfs+UiMfYIIK6ZAKquXUGLxfDOEcc=;
+        b=nGUnI3/hnBvGhRbrhUio8+1/dw5Xw2BtuwhSpGT/YLPmocujMYRZKwdeVllXKDquuu
+         CaPf2FtCrbvxkRBAxhMDPMNf0OJjDaJLVuEsaSUf9P3gyO0VKNeIO0vN2Lf9vr/5EDII
+         cZD6vWrG5sr6mwXkc6m1fz/EgZYcfjyug6yFFSRGLRi3XzHkRTbQVxq1U1H3gJCBf/qM
+         4Yx6atolq/CZ4vdiewSMWl9muI6w97JTIYbnytl/SfvZASzEA+99znjxdX/6Z7V56y/Y
+         hh8VyQlIHEhj56KylG4PyiZiYIpV5UWZij8v85tOKXhfAc6b9Ub7b90jFUhY4qSTAYXY
+         J1Gw==
+X-Gm-Message-State: AOAM5329AL70K/4py8spCePCz5GhZzyDCxE+pRkpGBKzAnoWPhiU/nLI
+        zDSY0DOaexIBTjKoGlT/XSfZs2dzCnGXGjXOqAw=
+X-Google-Smtp-Source: ABdhPJzKpMYBxnrXo+O2AeOolhB+1jls4Bt0mC3wjs6t78fYSsjePqjgDPL4pMTPf8fqq2+mBkNbBTugdYWhGEjZmj0=
+X-Received: by 2002:a02:cd33:: with SMTP id h19mr8305368jaq.88.1615795105927;
+ Mon, 15 Mar 2021 00:58:25 -0700 (PDT)
 MIME-Version: 1.0
-References: <20210314164655.408461-1-jic23@kernel.org> <20210314164655.408461-4-jic23@kernel.org>
-In-Reply-To: <20210314164655.408461-4-jic23@kernel.org>
+References: <20210314164655.408461-1-jic23@kernel.org> <20210314164655.408461-8-jic23@kernel.org>
+In-Reply-To: <20210314164655.408461-8-jic23@kernel.org>
 From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Mon, 15 Mar 2021 09:56:56 +0200
-Message-ID: <CA+U=Dsrk8CAROmNFXPDEMdBWKZfUkeqO5pqCeMDqxZDCeACrQg@mail.gmail.com>
-Subject: Re: [PATCH 3/8] iio: dac: ad5770r: kernel-doc fix case of letter R
- wrong in structure name
+Date:   Mon, 15 Mar 2021 09:58:14 +0200
+Message-ID: <CA+U=DsqfDBYvLpt5Ry1W4R827hcfy3Y02o9Rpk8WNp-RsSSX+g@mail.gmail.com>
+Subject: Re: [PATCH 7/8] iio: accel: sca3000: kernel-doc fixes. Missing - and
+ wrong function names.
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio <linux-iio@vger.kernel.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
@@ -68,34 +68,60 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Mar 14, 2021 at 6:49 PM Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, Mar 14, 2021 at 6:54 PM Jonathan Cameron <jic23@kernel.org> wrote:
 >
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 >
-> Nothing useful to add beyond this causing a warning with W=1
+> All extremely obvious so nothing to add to patch title.
 >
 
-Acked-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
 > ---
->  drivers/iio/dac/ad5770r.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/accel/sca3000.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
 >
-> diff --git a/drivers/iio/dac/ad5770r.c b/drivers/iio/dac/ad5770r.c
-> index 84dcf149261f..4e7a8ed83cc1 100644
-> --- a/drivers/iio/dac/ad5770r.c
-> +++ b/drivers/iio/dac/ad5770r.c
-> @@ -118,7 +118,7 @@ struct ad5770r_out_range {
->  };
+> diff --git a/drivers/iio/accel/sca3000.c b/drivers/iio/accel/sca3000.c
+> index 467b5fcb81db..cb753a43533c 100644
+> --- a/drivers/iio/accel/sca3000.c
+> +++ b/drivers/iio/accel/sca3000.c
+> @@ -351,7 +351,7 @@ static int __sca3000_unlock_reg_lock(struct sca3000_state *st)
+>  }
 >
 >  /**
-> - * struct ad5770R_state - driver instance specific data
-> + * struct ad5770r_state - driver instance specific data
->   * @spi:               spi_device
->   * @regmap:            regmap
->   * @vref_reg:          fixed regulator for reference configuration
+> - * sca3000_write_ctrl_reg() write to a lock protect ctrl register
+> + * sca3000_write_ctrl_reg() - write to a lock protect ctrl register
+>   * @st: Driver specific device instance data.
+>   * @sel: selects which registers we wish to write to
+>   * @val: the value to be written
+> @@ -389,7 +389,7 @@ static int sca3000_write_ctrl_reg(struct sca3000_state *st,
+>  }
+>
+>  /**
+> - * sca3000_read_ctrl_reg() read from lock protected control register.
+> + * sca3000_read_ctrl_reg() - read from lock protected control register.
+>   * @st: Driver specific device instance data.
+>   * @ctrl_reg: Which ctrl register do we want to read.
+>   *
+> @@ -421,7 +421,7 @@ static int sca3000_read_ctrl_reg(struct sca3000_state *st,
+>  }
+>
+>  /**
+> - * sca3000_show_rev() - sysfs interface to read the chip revision number
+> + * sca3000_print_rev() - sysfs interface to read the chip revision number
+>   * @indio_dev: Device instance specific generic IIO data.
+>   * Driver specific device instance data can be obtained via
+>   * via iio_priv(indio_dev)
+> @@ -902,7 +902,7 @@ static int sca3000_read_event_value(struct iio_dev *indio_dev,
+>  }
+>
+>  /**
+> - * sca3000_write_value() - control of threshold and period
+> + * sca3000_write_event_value() - control of threshold and period
+>   * @indio_dev: Device instance specific IIO information.
+>   * @chan: Description of the channel for which the event is being
+>   * configured.
 > --
 > 2.30.2
 >
