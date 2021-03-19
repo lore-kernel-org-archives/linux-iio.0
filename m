@@ -2,60 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DFFDC43381
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 46846C4332D
 	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:04:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CADE364F6B
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:04:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1F2EA64F6F
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:04:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbhCSLDz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 07:03:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39128 "EHLO
+        id S230247AbhCSLD6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 07:03:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39204 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230223AbhCSLDb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:03:31 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3431EC06174A;
-        Fri, 19 Mar 2021 04:03:31 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id bt4so4459529pjb.5;
-        Fri, 19 Mar 2021 04:03:31 -0700 (PDT)
+        with ESMTP id S229796AbhCSLDv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:03:51 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08C2BC06174A;
+        Fri, 19 Mar 2021 04:03:51 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id mz6-20020a17090b3786b02900c16cb41d63so4685992pjb.2;
+        Fri, 19 Mar 2021 04:03:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=HvvZ2pFbiubk/RaFwxqoeYMzhVunEOAm5oGM3eeUGTQ=;
-        b=QJV7fv95tRRdF9dMz2rMqAh3PXAvZhzETCESyHORpq7x8zaFNohYd+hcP9fOE5yOWq
-         lk90CY0uPOLq9ALlpUjAcKv8rVibRlqvUd9Kn/fP93rV8PAANO23klH6qn3imFYw1LGx
-         nj0Khb283VbK6JHmRMPXFkvFvt68CivKVNdq3emh26UT1e3bSM3KdoMaswBNbOTfh52Q
-         83x9/PX6yL0I/N/MwcdzPKlHyK26Z/AWQrWrr4g9rpjtJ5Zk3/raOkkKPI/maZ9E6lVT
-         eSngc/ZSbSYu0q30HqpIGgiPzLxrbV+hs53seao99ATGuNJSvJ4hyp2xiX0OQ2hQxBrp
-         Taow==
+        bh=DFYjuegOGbgHgYqxs5GI1KnJ54NWCzese+od+Fnc8YA=;
+        b=jp+ASD1Y8cbrAI9TdrsgIv89huqPP06f+wod69gyZkhRk7AicBVWQyjnZmOD74bqOg
+         itDfDXiRgCl92Jnm5lNezcoFlExTbYL5SROhwlN1FY5apXu8rSSgblyyH8E9i9hiDFii
+         MHFSWdDYHPJvrEmtIULdSBNALbHliqj2m4CaNxx3KFmPT6O7NQa68ACq1AoqrhJld2Pi
+         gqDMiZg90h0RgkFuyLFHtxVmfLlgjM035QfNOb/zM147/M//UFOoS5P2bPy+Xno0zwIg
+         ybexdTPo7B+/APiGnh5TC+5VFGicjholq/O1TdehE9euzZCuNnb7aRt9s5P6tH+h+xMD
+         9KmQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=HvvZ2pFbiubk/RaFwxqoeYMzhVunEOAm5oGM3eeUGTQ=;
-        b=S5oxhe7ZebgoSutVRmQp1tN7L/FHuDDjlUT6xiH/T1p+E2VxjDvylg1Va3P568Guv2
-         XGgxD3Yk1iOsfuynwlBv+loqxH2TpLcUCg4fBSctMpO7PTsl+XJmdZ4ojT0H3NKQiKCM
-         yR1vpBxbvexATjbrMhVp5eWLUTFxJ/T+d/ANy4pZnUJG2KVHTK1cPBycPMco5r+tpLEP
-         jDKUs+ZmYgiMG3UiF5nZF4168LvqIcZSSFE6riDeN1bj4PHicwxgT37oZXZMWD2kYiLB
-         bshYidn8QrkqiPsq8au/77HXmfBTsyJkLzzcPdTUTEqPZZ6BWR2mYYjtxY2hDYLzT8f3
-         q/dw==
-X-Gm-Message-State: AOAM532qxzk1XQ27EchGvyojxn/DCEaGTj5Nx8SjcI8jVhYsbvu10hyk
-        meuuWLnTm9seOUWjCHZMS18=
-X-Google-Smtp-Source: ABdhPJySR2eEoe+Yo+Lcvmnooi8jbrWZVxfL4eFoFxMkwGBmYvLZpUrXyf+N23OZ20WvIBCDGS3XPQ==
-X-Received: by 2002:a17:90b:4c0a:: with SMTP id na10mr9561896pjb.227.1616151810858;
-        Fri, 19 Mar 2021 04:03:30 -0700 (PDT)
+        bh=DFYjuegOGbgHgYqxs5GI1KnJ54NWCzese+od+Fnc8YA=;
+        b=ehCNmBAb9gLvyaxODL5Mrj+C2cqIIbgqDS9Lc6HjOcjkRvapPXPN/UgaY3E8KKjSJP
+         MFwBJIAXdfxVwF77wpQngnVNPy7nMoLiiUKO/F39N3ZUOJFUM0T0EDunRxoMz0XpY7DG
+         cel1rPfK62sPLzvd3HOO/CH4KfcaM6UqKAVUYjkpFKD0PcWKeyP0qnrDeF4rW7GC7BDs
+         ArUj0f7ffxv2dkAxFRW3UG6z5KhV8w6/D+plMT66+3N73/bkdyGzFCT63rpJzRp0kPNu
+         enb4mwCEUx2gCIFyvmA6nZlv975AZVRljxsig72jjrG0Eg7R4tSh0Z/UoesoofCFBifz
+         IoAQ==
+X-Gm-Message-State: AOAM533JU7tfO4459qXeyRpadHNV2P+P1rGzrGfqiIzu0vVKJFD24BEo
+        AjIpRQ+g7BukfTeeT3veX1M=
+X-Google-Smtp-Source: ABdhPJzlzkf76EUu1+dlV5gYt/3d6NqNxpwvsEkonssFkaTvEQAfnq7RJkbE7rnjbkKVaSe2ojmFDw==
+X-Received: by 2002:a17:90b:4b08:: with SMTP id lx8mr8970434pjb.135.1616151830554;
+        Fri, 19 Mar 2021 04:03:50 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.03.26
+        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.03.45
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 04:03:30 -0700 (PDT)
+        Fri, 19 Mar 2021 04:03:50 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -66,11 +66,10 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         syednwaris@gmail.com, patrick.havelange@essensium.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v10 29/33] counter: Implement signalZ_action_component_id sysfs attribute
-Date:   Fri, 19 Mar 2021 20:00:48 +0900
-Message-Id: <699de2bee70cbcdbafd7ba652849fc3cf77b0e34.1616150619.git.vilhelm.gray@gmail.com>
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v10 33/33] counter: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8
+Date:   Fri, 19 Mar 2021 20:00:52 +0900
+Message-Id: <24f0eacf6d2e320c2ed1bc20e07a6e723da75737.1616150619.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1616150619.git.vilhelm.gray@gmail.com>
 References: <cover.1616150619.git.vilhelm.gray@gmail.com>
@@ -80,102 +79,338 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The Generic Counter chrdev interface expects users to supply component
-IDs in order to select Synapses for requests. In order for users to know
-what component ID belongs to which Synapse this information must be
-exposed. The signalZ_action_component_id attribute provides a way for
-users to discover what component ID belongs to the respective Synapse.
+The LSI/CSI LS7266R1 chip provides programmable output via the FLG pins.
+When interrupts are enabled on the ACCES 104-QUAD-8, they occur whenever
+FLG1 is active. Four functions are available for the FLG1 signal: Carry,
+Compare, Carry-Borrow, and Index.
 
-Cc: David Lechner <david@lechnology.com>
-Cc: Gwendal Grignou <gwendal@chromium.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
+	Carry:
+		Interrupt generated on active low Carry signal. Carry
+		signal toggles every time the respective channel's
+		counter overflows.
+
+	Compare:
+		Interrupt generated on active low Compare signal.
+		Compare signal toggles every time respective channel's
+		preset register is equal to the respective channel's
+		counter.
+
+	Carry-Borrow:
+		Interrupt generated on active low Carry signal and
+		active low Borrow signal. Carry signal toggles every
+		time the respective channel's counter overflows. Borrow
+		signal toggles every time the respective channel's
+		counter underflows.
+
+	Index:
+		Interrupt generated on active high Index signal.
+
+These four functions correspond respectivefly to the following four
+Counter event types: COUNTER_EVENT_OVERFLOW, COUNTER_EVENT_THRESHOLD,
+COUNTER_EVENT_OVERFLOW_UNDERFLOW, and COUNTER_EVENT_INDEX. Interrupts
+push Counter events to event channel X, where 'X' is the respective
+channel whose FLG1 activated.
+
+This patch adds IRQ support for the ACCES 104-QUAD-8. The interrupt line
+numbers for the devices may be configured via the irq array module
+parameter.
+
+Cc: Syed Nayyar Waris <syednwaris@gmail.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-counter |  7 ++++
- drivers/counter/counter-sysfs.c             | 45 +++++++++++++++++++++
- 2 files changed, 52 insertions(+)
+ drivers/counter/104-quad-8.c | 167 +++++++++++++++++++++++++++++++++--
+ drivers/counter/Kconfig      |   6 +-
+ 2 files changed, 164 insertions(+), 9 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
-index 6353f0a2f8f8..bee9289aecd1 100644
---- a/Documentation/ABI/testing/sysfs-bus-counter
-+++ b/Documentation/ABI/testing/sysfs-bus-counter
-@@ -203,6 +203,13 @@ Description:
- 		both edges:
- 			Any state transition.
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index d46b8101f207..09b0b0ba8fe7 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -11,6 +11,7 @@
+ #include <linux/errno.h>
+ #include <linux/io.h>
+ #include <linux/ioport.h>
++#include <linux/interrupt.h>
+ #include <linux/isa.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -25,6 +26,10 @@ static unsigned int num_quad8;
+ module_param_hw_array(base, uint, ioport, &num_quad8, 0);
+ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
  
-+What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_component_id
-+KernelVersion:	5.13
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read-only attribute that indicates the component ID of the
-+		respective Synapse of Count Y for Signal Z.
++static unsigned int irq[max_num_isa_dev(QUAD8_EXTENT)];
++module_param_hw_array(irq, uint, irq, NULL, 0);
++MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
 +
- What:		/sys/bus/counter/devices/counterX/name
- KernelVersion:	5.2
- Contact:	linux-iio@vger.kernel.org
-diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sysfs.c
-index 07588130600a..bb49a10f160b 100644
---- a/drivers/counter/counter-sysfs.c
-+++ b/drivers/counter/counter-sysfs.c
-@@ -533,6 +533,46 @@ static int counter_name_attr_create(struct device *const dev,
- 	return 0;
+ #define QUAD8_NUM_COUNTERS 8
+ 
+ /**
+@@ -38,6 +43,8 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
+  * @quadrature_scale:	array of quadrature mode scale configurations
+  * @ab_enable:		array of A and B inputs enable configurations
+  * @preset_enable:	array of set_to_preset_on_index attribute configurations
++ * @irq_trigger:	array of current IRQ trigger function configurations
++ * @next_irq_trigger:	array of next IRQ trigger function configurations
+  * @synchronous_mode:	array of index function synchronous mode configurations
+  * @index_polarity:	array of index function polarity configurations
+  * @cable_fault_enable:	differential encoder cable status enable configurations
+@@ -53,13 +60,17 @@ struct quad8 {
+ 	unsigned int quadrature_scale[QUAD8_NUM_COUNTERS];
+ 	unsigned int ab_enable[QUAD8_NUM_COUNTERS];
+ 	unsigned int preset_enable[QUAD8_NUM_COUNTERS];
++	unsigned int irq_trigger[QUAD8_NUM_COUNTERS];
++	unsigned int next_irq_trigger[QUAD8_NUM_COUNTERS];
+ 	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
+ 	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
+ 	unsigned int cable_fault_enable;
+ 	unsigned int base;
+ };
+ 
++#define QUAD8_REG_INTERRUPT_STATUS 0x10
+ #define QUAD8_REG_CHAN_OP 0x11
++#define QUAD8_REG_INDEX_INTERRUPT 0x12
+ #define QUAD8_REG_INDEX_INPUT_LEVELS 0x16
+ #define QUAD8_DIFF_ENCODER_CABLE_STATUS 0x17
+ /* Borrow Toggle flip-flop */
+@@ -92,8 +103,8 @@ struct quad8 {
+ #define QUAD8_RLD_CNTR_OUT 0x10
+ /* Transfer Preset Register LSB to FCK Prescaler */
+ #define QUAD8_RLD_PRESET_PSC 0x18
+-#define QUAD8_CHAN_OP_ENABLE_COUNTERS 0x00
+ #define QUAD8_CHAN_OP_RESET_COUNTERS 0x01
++#define QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC 0x04
+ #define QUAD8_CMR_QUADRATURE_X1 0x08
+ #define QUAD8_CMR_QUADRATURE_X2 0x10
+ #define QUAD8_CMR_QUADRATURE_X4 0x18
+@@ -378,13 +389,103 @@ static int quad8_action_read(struct counter_device *counter,
+ 	}
  }
  
-+static ssize_t counter_comp_id_show(struct device *dev,
-+				    struct device_attribute *attr, char *buf)
++enum {
++	QUAD8_EVENT_NONE = -1,
++	QUAD8_EVENT_CARRY = 0,
++	QUAD8_EVENT_COMPARE = 1,
++	QUAD8_EVENT_CARRY_BORROW = 2,
++	QUAD8_EVENT_INDEX = 3,
++};
++
++static int quad8_events_configure(struct counter_device *counter)
 +{
-+	const size_t id = (size_t)to_counter_attribute(attr)->comp.priv;
++	struct quad8 *const priv = counter->priv;
++	unsigned long irq_enabled = 0;
++	unsigned long irqflags;
++	size_t channel;
++	unsigned long ior_cfg;
++	unsigned long base_offset;
 +
-+	return sprintf(buf, "%zu\n", id);
-+}
++	spin_lock_irqsave(&priv->lock, irqflags);
 +
-+static int counter_comp_id_attr_create(struct device *const dev,
-+				       struct counter_attribute_group *const group,
-+				       const char *name, const size_t id)
-+{
-+	struct counter_attribute *counter_attr;
++	/* Enable interrupts for the requested channels, disable for the rest */
++	for (channel = 0; channel < QUAD8_NUM_COUNTERS; channel++) {
++		if (priv->next_irq_trigger[channel] == QUAD8_EVENT_NONE)
++			continue;
 +
-+	/* Allocate Counter attribute */
-+	counter_attr = devm_kzalloc(dev, sizeof(*counter_attr), GFP_KERNEL);
-+	if (!counter_attr)
-+		return -ENOMEM;
++		if (priv->irq_trigger[channel] != priv->next_irq_trigger[channel]) {
++			/* Save new IRQ function configuration */
++			priv->irq_trigger[channel] = priv->next_irq_trigger[channel];
 +
-+	/* Generate component ID name */
-+	name = devm_kasprintf(dev, GFP_KERNEL, "%s_component_id", name);
-+	if (!name)
-+		return -ENOMEM;
++			/* Load configuration to I/O Control Register */
++			ior_cfg = priv->ab_enable[channel] |
++				  priv->preset_enable[channel] << 1 |
++				  priv->irq_trigger[channel] << 3;
++			base_offset = priv->base + 2 * channel + 1;
++			outb(QUAD8_CTR_IOR | ior_cfg, base_offset);
++		}
 +
-+	/* Configure Counter attribute */
-+	counter_attr->comp.priv = (void *)id;
++		/* Reset next IRQ trigger function configuration */
++		priv->next_irq_trigger[channel] = QUAD8_EVENT_NONE;
 +
-+	/* Configure device attribute */
-+	sysfs_attr_init(&counter_attr->dev_attr.attr);
-+	counter_attr->dev_attr.attr.name = name;
-+	counter_attr->dev_attr.attr.mode = 0444;
-+	counter_attr->dev_attr.show = counter_comp_id_show;
++		/* Enable IRQ line */
++		irq_enabled |= BIT(channel);
++	}
 +
-+	/* Store list node */
-+	list_add(&counter_attr->l, &group->attr_list);
-+	group->num_attr++;
++	outb(irq_enabled, priv->base + QUAD8_REG_INDEX_INTERRUPT);
++
++	spin_unlock_irqrestore(&priv->lock, irqflags);
 +
 +	return 0;
 +}
 +
- static struct counter_comp counter_signal_comp = {
- 	.type = COUNTER_COMP_SIGNAL_LEVEL,
- 	.name = "signal",
-@@ -627,6 +667,11 @@ static int counter_sysfs_synapses_add(struct counter_device *const counter,
- 					  COUNTER_SCOPE_COUNT, count);
- 		if (err < 0)
- 			return err;
++static int quad8_watch_validate(struct counter_device *counter,
++				const struct counter_watch *watch)
++{
++	struct quad8 *const priv = counter->priv;
 +
-+		/* Create Synapse component ID attribute */
-+		err = counter_comp_id_attr_create(dev, group, comp.name, i);
-+		if (err < 0)
-+			return err;
- 	}
++	if (watch->channel > QUAD8_NUM_COUNTERS - 1)
++		return -EINVAL;
++
++	switch (watch->event) {
++	case COUNTER_EVENT_OVERFLOW:
++		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
++			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_CARRY;
++		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_CARRY)
++			return -EINVAL;
++		return 0;
++	case COUNTER_EVENT_THRESHOLD:
++		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
++			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_COMPARE;
++		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_COMPARE)
++			return -EINVAL;
++		return 0;
++	case COUNTER_EVENT_OVERFLOW_UNDERFLOW:
++		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
++			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_CARRY_BORROW;
++		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_CARRY_BORROW)
++			return -EINVAL;
++		return 0;
++	case COUNTER_EVENT_INDEX:
++		if (priv->next_irq_trigger[watch->channel] == QUAD8_EVENT_NONE)
++			priv->next_irq_trigger[watch->channel] = QUAD8_EVENT_INDEX;
++		else if (priv->next_irq_trigger[watch->channel] != QUAD8_EVENT_INDEX)
++			return -EINVAL;
++		return 0;
++	default:
++		return -EINVAL;
++	}
++}
++
+ static const struct counter_ops quad8_ops = {
+ 	.signal_read = quad8_signal_read,
+ 	.count_read = quad8_count_read,
+ 	.count_write = quad8_count_write,
+ 	.function_read = quad8_function_read,
+ 	.function_write = quad8_function_write,
+-	.action_read = quad8_action_read
++	.action_read = quad8_action_read,
++	.events_configure = quad8_events_configure,
++	.watch_validate = quad8_watch_validate,
+ };
  
- 	return 0;
+ static const char *const quad8_index_polarity_modes[] = {
+@@ -579,7 +680,8 @@ static int quad8_count_enable_write(struct counter_device *counter,
+ 
+ 	priv->ab_enable[count->id] = enable;
+ 
+-	ior_cfg = enable | priv->preset_enable[count->id] << 1;
++	ior_cfg = enable | priv->preset_enable[count->id] << 1 |
++		  priv->irq_trigger[count->id] << 3;
+ 
+ 	/* Load I/O control configuration */
+ 	outb(QUAD8_CTR_IOR | ior_cfg, base_offset + 1);
+@@ -728,7 +830,8 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
+ 
+ 	priv->preset_enable[count->id] = preset_enable;
+ 
+-	ior_cfg = priv->ab_enable[count->id] | preset_enable << 1;
++	ior_cfg = priv->ab_enable[count->id] | preset_enable << 1 |
++		  priv->irq_trigger[count->id] << 3;
+ 
+ 	/* Load I/O control configuration to Input / Output Control Register */
+ 	outb(QUAD8_CTR_IOR | ior_cfg, base_offset);
+@@ -980,11 +1083,54 @@ static struct counter_count quad8_counts[] = {
+ 	QUAD8_COUNT(7, "Channel 8 Count")
+ };
+ 
++static irqreturn_t quad8_irq_handler(int irq, void *private)
++{
++	struct quad8 *const priv = private;
++	const unsigned long base = priv->base;
++	unsigned long irq_status;
++	unsigned long channel;
++	u8 event;
++
++	irq_status = inb(base + QUAD8_REG_INTERRUPT_STATUS);
++	if (!irq_status)
++		return IRQ_NONE;
++
++	for_each_set_bit(channel, &irq_status, QUAD8_NUM_COUNTERS) {
++		switch (priv->irq_trigger[channel]) {
++		case QUAD8_EVENT_CARRY:
++			event = COUNTER_EVENT_OVERFLOW;
++				break;
++		case QUAD8_EVENT_COMPARE:
++			event = COUNTER_EVENT_THRESHOLD;
++				break;
++		case QUAD8_EVENT_CARRY_BORROW:
++			event = COUNTER_EVENT_OVERFLOW_UNDERFLOW;
++				break;
++		case QUAD8_EVENT_INDEX:
++			event = COUNTER_EVENT_INDEX;
++				break;
++		default:
++			/* should never reach this path */
++			WARN_ONCE(true, "invalid interrupt trigger function %u configured for channel %lu\n",
++				  priv->irq_trigger[channel], channel);
++			continue;
++		}
++
++		counter_push_event(&priv->counter, event, channel);
++	}
++
++	/* Clear pending interrupts on device */
++	outb(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, base + QUAD8_REG_CHAN_OP);
++
++	return IRQ_HANDLED;
++}
++
+ static int quad8_probe(struct device *dev, unsigned int id)
+ {
+ 	struct quad8 *priv;
+ 	int i, j;
+ 	unsigned int base_offset;
++	int err;
+ 
+ 	if (!devm_request_region(dev, base[id], QUAD8_EXTENT, dev_name(dev))) {
+ 		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
+@@ -1009,6 +1155,8 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 
+ 	spin_lock_init(&priv->lock);
+ 
++	/* Reset Index/Interrupt Register */
++	outb(0x00, base[id] + QUAD8_REG_INDEX_INTERRUPT);
+ 	/* Reset all counters and disable interrupt function */
+ 	outb(QUAD8_CHAN_OP_RESET_COUNTERS, base[id] + QUAD8_REG_CHAN_OP);
+ 	/* Set initial configuration for all counters */
+@@ -1035,11 +1183,18 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 		outb(QUAD8_CTR_IOR, base_offset + 1);
+ 		/* Disable index function; negative index polarity */
+ 		outb(QUAD8_CTR_IDR, base_offset + 1);
++		/* Initialize next IRQ trigger function configuration */
++		priv->next_irq_trigger[i] = QUAD8_EVENT_NONE;
+ 	}
+ 	/* Disable Differential Encoder Cable Status for all channels */
+ 	outb(0xFF, base[id] + QUAD8_DIFF_ENCODER_CABLE_STATUS);
+-	/* Enable all counters */
+-	outb(QUAD8_CHAN_OP_ENABLE_COUNTERS, base[id] + QUAD8_REG_CHAN_OP);
++	/* Enable all counters and enable interrupt function */
++	outb(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, base[id] + QUAD8_REG_CHAN_OP);
++
++	err = devm_request_irq(dev, irq[id], quad8_irq_handler, IRQF_SHARED,
++			       priv->counter.name, priv);
++	if (err)
++		return err;
+ 
+ 	return devm_counter_register(dev, &priv->counter);
+ }
+diff --git a/drivers/counter/Kconfig b/drivers/counter/Kconfig
+index 5328705aa09c..2c2862dd46a5 100644
+--- a/drivers/counter/Kconfig
++++ b/drivers/counter/Kconfig
+@@ -23,11 +23,11 @@ config 104_QUAD_8
+ 	  A counter's respective error flag may be cleared by performing a write
+ 	  operation on the respective count value attribute. Although the
+ 	  104-QUAD-8 counters have a 25-bit range, only the lower 24 bits may be
+-	  set, either directly or via the counter's preset attribute. Interrupts
+-	  are not supported by this driver.
++	  set, either directly or via the counter's preset attribute.
+ 
+ 	  The base port addresses for the devices may be configured via the base
+-	  array module parameter.
++	  array module parameter. The interrupt line numbers for the devices may
++	  be configured via the irq array module parameter.
+ 
+ config INTERRUPT_CNT
+ 	tristate "Interrupt counter driver"
 -- 
 2.30.2
 
