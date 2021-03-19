@@ -2,151 +2,312 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 24ADCC433E0
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 16:58:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FA84C433C1
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 17:43:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EADB261955
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 16:58:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0727E6197B
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 17:43:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230196AbhCSQ6W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 12:58:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59202 "EHLO
+        id S230039AbhCSRnA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 13:43:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230229AbhCSQ6P (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 12:58:15 -0400
-Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CBF99C06174A
-        for <linux-iio@vger.kernel.org>; Fri, 19 Mar 2021 09:58:15 -0700 (PDT)
-Received: by mail-pj1-x1034.google.com with SMTP id nh23-20020a17090b3657b02900c0d5e235a8so5178421pjb.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 Mar 2021 09:58:15 -0700 (PDT)
+        with ESMTP id S230154AbhCSRm6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 13:42:58 -0400
+Received: from mail-pl1-x633.google.com (mail-pl1-x633.google.com [IPv6:2607:f8b0:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 40F4CC06174A;
+        Fri, 19 Mar 2021 10:42:58 -0700 (PDT)
+Received: by mail-pl1-x633.google.com with SMTP id l1so3298177plg.12;
+        Fri, 19 Mar 2021 10:42:58 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=4YhaO+/7zQ8eIjr571Ku5UtRnhk6XWOem2z/EOwxdUI=;
-        b=mb1gSQp6McWfH7sGoeYlwGUDqNtGmU9C7knT1kii24cilXZ2ebncww/qPisFbnlMma
-         n4aiiaUxBZypGhw82mx5TGirFP96B3js1QiOYT3MEWopZPLlmxvmyyno9WSpbsLaTISt
-         brNNNZuf/Lm+hs3gUWcZdktVa5UKkQJlM6P28=
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=aCBxKGyN1RW9McR86Ob8DISjqGfg+CaKCVIqc4Cd+b4=;
+        b=nlkD62njG7eZA+nK9kojt3lTe8jXKPwyFlwaHD10T+uTYR+qjk11Epgurd4S7Ws6Bh
+         P/iMS7+vU1KiOKTKSoeoQKenAhFwJbsrW6SnSI2O9XZzrQcnfpsqiQpxVIw33EXQbeZi
+         xnx3DaDPm/kHhRcLtsPUIrjrrKA9sMKWq7DLRMn/+WQVPa5B7uETH1RHLY0moZ78K1Dh
+         6Ar3KeDnvFHen5vKyBoPgGBGPF0Q+gdPNL7sJWxX7E0i0cAcWQuFuOPa3rPj7v+uam0A
+         levOpW3GNzL5dfN5zG0jAFbBG+/TvjqmS6AnKDfzJpWvBjgz4EjfGxZ9nljQtoyPMETp
+         wCFg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=4YhaO+/7zQ8eIjr571Ku5UtRnhk6XWOem2z/EOwxdUI=;
-        b=pxbmP75ko/6LewUcropltoj30DVG6vJW7vWOkKvBH2NhD2Lt4bpqfOGZU4b7BUwYxP
-         RtXm5j6zLQkzerDkyQnvwlkcDpBNaldVi5Oe4D4AJYY4Wx6eQLggpkm66PX9BO3masHZ
-         BXYcEC+gHcy7SE6SHDOd3Si+09QoGOCy3uRxB5JDHyzKFeRCwAKGy2R5BrhD0mD81vI2
-         oM+QpT4jFwGz1Ru+iomO7DdiWmge98uvfs2id4+KlswX/M4ywzSJFqmD6Ci5V1X9vbYA
-         oGPOfl7ZuR0FHSlokeQF8jO+Hm6T4w+7XFwkZ8wvgGU7YhMcnfJseNZtF28Jjz2UZBLD
-         ubdg==
-X-Gm-Message-State: AOAM532XIMSqxGsCemtLXOnmZXnng6EzUIQroKHNW1yM2FHZVKroATaV
-        wKU7mescjA0hvMrqRKIT3VPq4Q==
-X-Google-Smtp-Source: ABdhPJyN2d1YAXjoTAxYy78cLtSI5+KcT4hZN21UuOpbQxHiZO3ssDcQIN4jpyQ9DndU9KiLn4r6VQ==
-X-Received: by 2002:a17:90a:ff05:: with SMTP id ce5mr10447961pjb.156.1616173094873;
-        Fri, 19 Mar 2021 09:58:14 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:a05c:c77f:8a41:973d])
-        by smtp.gmail.com with UTF8SMTPSA id k21sm1527018pfi.28.2021.03.19.09.58.13
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Mar 2021 09:58:14 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     jic23@kernel.org, lars@metafoo.de, swboyd@chromium.org,
-        campello@chromium.org, andy.shevchenko@gmail.com
-Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v5 1/2] iio: sx9310: Fix access to variable DT array
-Date:   Fri, 19 Mar 2021 09:58:06 -0700
-Message-Id: <20210319165807.3639636-2-gwendal@chromium.org>
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
-In-Reply-To: <20210319165807.3639636-1-gwendal@chromium.org>
-References: <20210319165807.3639636-1-gwendal@chromium.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=aCBxKGyN1RW9McR86Ob8DISjqGfg+CaKCVIqc4Cd+b4=;
+        b=S34Ti16GzEBkj23jS1PlJyp5tHTPi42MCRS6B5Yf2iFTiN+Az9phQ9ZrNYig3n3ckW
+         Nls14W9jxk5zvJE+39ImAk5sr01pZUiL48ulEGIZdsJo5QXmRKhbUd8NoA7WUoJ8Xq9j
+         gCFCncZZB7AUmsv19LMqLTj2Pe5z69WFAXjjRH0X2odU6NHmc6wG2V+sRCFcA3WYMM8x
+         CokuDEuoa9LvopjC+MpIAbz6fE3ripQ1DtsIcD7mOineSpgRKBPmwAUGtu4dwes80i2R
+         OzTCruNCEDUPKhYDUvN5emU2T7uOmt06zhhuSv33qt5VYt9qzLEjRWVVYc9TABB0U0Mn
+         EgOw==
+X-Gm-Message-State: AOAM530R2MoOx2GdhvECJbbKQp1p5yyXg5v6pdtotomrTGVW494xkAXx
+        rqdfBm36uINURpM7og3fmBYktrVg48ZZdZPZCSI=
+X-Google-Smtp-Source: ABdhPJxoo4vsSIeNDkBBr2mzZSj7vcXIsQn3r+AXxkiCjnO3Z0ouzSL6VmvOsWbYb+aTQulZXjfRzeLOqrwZg4+4I80=
+X-Received: by 2002:a17:902:a406:b029:e6:78c4:71c8 with SMTP id
+ p6-20020a170902a406b02900e678c471c8mr15307631plq.17.1616175777639; Fri, 19
+ Mar 2021 10:42:57 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210319144509.7627-1-o.rempel@pengutronix.de> <20210319144509.7627-4-o.rempel@pengutronix.de>
+In-Reply-To: <20210319144509.7627-4-o.rempel@pengutronix.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 19 Mar 2021 19:42:41 +0200
+Message-ID: <CAHp75Vcn=g-3NRXAEd5jEu4uxD_fHbybiDg=t9QiY80TNZuTgQ@mail.gmail.com>
+Subject: Re: [PATCH v3 3/3] iio: adc: add ADC driver for the TI TSC2046 controller
+To:     Oleksij Rempel <o.rempel@pengutronix.de>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-With the current cide, we want to read at 4 entries from DT array
-"semtech,combined-sensors". If there are less, we silently fail as
-of_property_read_u32_array() returns -EOVERFLOW.
+On Fri, Mar 19, 2021 at 4:45 PM Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+>
+> Basically the TI TSC2046 touchscreen controller is 8 channel ADC optimized for
+> the touchscreen use case. By implementing it as an IIO ADC device, we can
+> make use of resistive-adc-touch and iio-hwmon drivers.
+>
+> So far, this driver was tested with a custom version of resistive-adc-touch driver,
+> since it needs to be extended to make use of Z1 and Z2 channels. The X/Y
+> are working without additional changes.
 
-First count the number of entries and if between 1 and 4, collect the
-content of the array.
+Since kbuild bot found some issues and it will be v4, some additional
+comments from me below.
 
-Fixes: 5b19ca2c78a0 ("iio: sx9310: Set various settings from DT")
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
- drivers/iio/proximity/sx9310.c | 40 ++++++++++++++++++++++++----------
- 1 file changed, 28 insertions(+), 12 deletions(-)
+...
 
-diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index 394c2afe0f233..cbca965889f14 100644
---- a/drivers/iio/proximity/sx9310.c
-+++ b/drivers/iio/proximity/sx9310.c
-@@ -1213,17 +1213,17 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
- }
- 
- static const struct sx9310_reg_default *
--sx9310_get_default_reg(struct sx9310_data *data, int i,
-+sx9310_get_default_reg(struct sx9310_data *data, int idx,
- 		       struct sx9310_reg_default *reg_def)
- {
--	int ret;
- 	const struct device_node *np = data->client->dev.of_node;
--	u32 combined[SX9310_NUM_CHANNELS] = { 4, 4, 4, 4 };
-+	u32 combined[SX9310_NUM_CHANNELS];
-+	u32 start = 0, raw = 0, pos = 0;
- 	unsigned long comb_mask = 0;
-+	int ret, i, count;
- 	const char *res;
--	u32 start = 0, raw = 0, pos = 0;
- 
--	memcpy(reg_def, &sx9310_default_regs[i], sizeof(*reg_def));
-+	memcpy(reg_def, &sx9310_default_regs[idx], sizeof(*reg_def));
- 	if (!np)
- 		return reg_def;
- 
-@@ -1234,15 +1234,31 @@ sx9310_get_default_reg(struct sx9310_data *data, int i,
- 			reg_def->def |= SX9310_REG_PROX_CTRL2_SHIELDEN_GROUND;
- 		}
- 
--		reg_def->def &= ~SX9310_REG_PROX_CTRL2_COMBMODE_MASK;
--		of_property_read_u32_array(np, "semtech,combined-sensors",
--					   combined, ARRAY_SIZE(combined));
--		for (i = 0; i < ARRAY_SIZE(combined); i++) {
--			if (combined[i] <= SX9310_NUM_CHANNELS)
--				comb_mask |= BIT(combined[i]);
-+		count = of_property_count_elems_of_size(np, "semtech,combined-sensors",
-+							ARRAY_SIZE(combined));
-+		if (count > 0 && count <= ARRAY_SIZE(combined)) {
-+			ret = of_property_read_u32_array(np, "semtech,combined-sensors",
-+							 combined, count);
-+			if (ret)
-+				break;
-+		} else {
-+			/*
-+			 * Either the property does not exist in the DT or the
-+			 * number of entries is incorrect.
-+			 */
-+			break;
-+		}
-+		for (i = 0; i < count; i++) {
-+			if (combined[i] >= SX9310_NUM_CHANNELS) {
-+				/* Invalid sensor (invalid DT). */
-+				break;
-+			}
-+			comb_mask |= BIT(combined[i]);
- 		}
-+		if (i < count)
-+			break;
- 
--		comb_mask &= 0xf;
-+		reg_def->def &= ~SX9310_REG_PROX_CTRL2_COMBMODE_MASK;
- 		if (comb_mask == (BIT(3) | BIT(2) | BIT(1) | BIT(0)))
- 			reg_def->def |= SX9310_REG_PROX_CTRL2_COMBMODE_CS0_CS1_CS2_CS3;
- 		else if (comb_mask == (BIT(1) | BIT(2)))
+> +#define        TI_TSC2046_SAMPLE_BITS \
+> +       (sizeof(struct tsc2046_adc_atom) * BITS_PER_BYTE)
+
+Isn't it something like BITS_PER_TYPE(struct ...) ?
+
+...
+
+> +struct tsc2046_adc_atom {
+> +       /*
+> +        * Command transmitted to the controller. This filed is empty on the RX
+> +        * buffer.
+> +        */
+> +       u8 cmd;
+> +       /*
+> +        * Data received from the controller. This filed is empty for the TX
+> +        * buffer
+> +        */
+> +       __be16 data;
+> +} __packed;
+
+filed -> field in both cases above.
+
+...
+
+> +       /*
+> +        * Lock to protect the layout and the spi transfer buffer.
+
+SPI
+
+> +        * tsc2046_adc_group_layout can be changed within update_scan_mode(),
+> +        * in this case the l[] and tx/rx buffer will be out of sync to each
+> +        * other.
+> +        */
+
+...
+
+> +static unsigned int tsc2046_adc_time_to_count(struct tsc2046_adc_priv *priv,
+> +                                             unsigned long time)
+> +{
+> +       unsigned int bit_count, sample_count;
+> +
+> +       bit_count = DIV_ROUND_UP(time * NSEC_PER_USEC, priv->time_per_bit_ns);
+
+Does it survive 32-bit builds?
+
+> +       sample_count = DIV_ROUND_UP(bit_count, TI_TSC2046_SAMPLE_BITS);
+> +
+> +       dev_dbg(&priv->spi->dev, "Effective speed %u, time per bit: %u, count bits: %u, count samples: %u\n",
+> +               priv->effective_speed_hz, priv->time_per_bit_ns,
+> +               bit_count, sample_count);
+> +
+> +       return sample_count;
+> +}
+
+...
+
+> +       /*
+> +        * if PD bits are 0, controller will automatically disable ADC, VREF and
+> +        * enable IRQ.
+> +        */
+> +       if (keep_power)
+> +               pd = TI_TSC2046_PD0_ADC_ON;
+> +       else
+> +               pd = 0;
+
+Can be ternary on one line, but it's up to you.
+
+...
+
+> +static u16 tsc2046_adc_get_value(struct tsc2046_adc_atom *buf)
+> +{
+> +       /* Last 3 bits on the wire are empty */
+
+Last?! You meant Least significant?
+Also, don't we lose precision if a new compatible chip appears that
+does fill those bits?
+
+Perhaps define the constant and put a comment why it's like this.
+
+> +       return get_unaligned_be16(&buf->data) >> 3;
+> +}
+
+...
+
+> +static size_t tsc2046_adc_group_set_layout(struct tsc2046_adc_priv *priv,
+> +                                          unsigned int group,
+> +                                          unsigned int ch_idx)
+> +{
+> +       struct tsc2046_adc_ch_cfg *ch = &priv->ch_cfg[ch_idx];
+> +       struct tsc2046_adc_group_layout *prev, *cur;
+> +       unsigned int max_count, count_skip;
+> +       unsigned int offset = 0;
+> +
+> +       if (group) {
+> +               prev = &priv->l[group - 1];
+> +               offset = prev->offset + prev->count;
+> +       }
+
+I guess you may easily refactor this by supplying a pointer to the
+current layout + current size.
+
+> +       cur = &priv->l[group];
+
+Also, can you move it down closer to the (single?) caller.
+
+> +}
+
+...
+
+> +static int tsc2046_adc_scan(struct iio_dev *indio_dev)
+> +{
+> +       struct tsc2046_adc_priv *priv = iio_priv(indio_dev);
+> +       struct device *dev = &priv->spi->dev;
+> +       int group;
+> +       int ret;
+> +
+> +       ret = spi_sync(priv->spi, &priv->msg);
+> +       if (ret < 0) {
+
+> +               dev_err_ratelimited(dev, "SPI transfer filed: %pe\n",
+> +                                   ERR_PTR(ret));
+
+One line?
+
+> +               return ret;
+> +       }
+
+> +       ret = iio_push_to_buffers_with_timestamp(indio_dev, &priv->scan_buf,
+> +                                                iio_get_time_ns(indio_dev));
+> +       /* If consumer is kfifo, we may get a EBUSY here - ignore it. */
+
+the consumer
+
+> +       if (ret < 0 && ret != -EBUSY) {
+> +               dev_err_ratelimited(dev, "Failed to push scan buffer %pe\n",
+> +                                   ERR_PTR(ret));
+> +
+> +               return ret;
+> +       }
+> +
+> +       return 0;
+> +}
+
+
+...
+
+> +static enum hrtimer_restart tsc2046_adc_trig_more(struct hrtimer *hrtimer)
+> +{
+> +       struct tsc2046_adc_priv *priv = container_of(hrtimer,
+> +                                                    struct tsc2046_adc_priv,
+> +                                                    trig_timer);
+> +       unsigned long flags;
+> +
+> +       spin_lock_irqsave(&priv->trig_lock, flags);
+> +
+> +       disable_irq_nosync(priv->spi->irq);
+
+> +       atomic_inc(&priv->trig_more_count);
+
+You already have a spin lock, do you need to use the atomic API?
+
+> +       iio_trigger_poll(priv->trig);
+> +
+> +       spin_unlock_irqrestore(&priv->trig_lock, flags);
+> +
+> +       return HRTIMER_NORESTART;
+> +}
+
+...
+
+> +       size_t size = 0;
+
+Move the assignment closer to the actual use of the variable.
+
+...
+
+> +       /*
+> +        * In case SPI controller do not report effective_speed_hz, use
+> +        * configure value and hope it will match
+
+Missed period.
+
+> +        */
+> +       if (!priv->effective_speed_hz)
+> +               priv->effective_speed_hz = priv->spi->max_speed_hz;
+
+Also can be ternary on one line, but it's up to you.
+
+...
+
+> +       name = devm_kasprintf(dev, GFP_KERNEL, "%s-%s",
+> +                             TI_TSC2046_NAME, dev_name(dev));
+
+No NULL check?
+Should be added or justified.
+
+...
+
+> +       trig->dev.parent = indio_dev->dev.parent;
+
+Don't we have this done by core (some recent patches in upstream)?
+
+...
+
+> +       ret = devm_iio_device_register(dev, indio_dev);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to register iio device\n");
+
+> +               return ret;
+> +       }
+> +
+> +       return 0;
+
+  return ret;
+or even
+  return devm_iio_device_register(dev, indio_dev);
+
 -- 
-2.31.0.291.g576ba9dcdaf-goog
-
+With Best Regards,
+Andy Shevchenko
