@@ -2,176 +2,85 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1548BC433DB
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCCFC433E2
 	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 16:58:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D55AF61983
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 16:58:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1EE4B6197D
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 16:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230051AbhCSQ6X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 12:58:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59206 "EHLO
+        id S230241AbhCSQ6W (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 12:58:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59192 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230239AbhCSQ6R (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 12:58:17 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06DFDC06174A
-        for <linux-iio@vger.kernel.org>; Fri, 19 Mar 2021 09:58:17 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id ot17-20020a17090b3b51b0290109c9ac3c34so4740918pjb.4
-        for <linux-iio@vger.kernel.org>; Fri, 19 Mar 2021 09:58:17 -0700 (PDT)
+        with ESMTP id S230225AbhCSQ6N (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 12:58:13 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9D39AC06174A
+        for <linux-iio@vger.kernel.org>; Fri, 19 Mar 2021 09:58:13 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id k4so3239324plk.5
+        for <linux-iio@vger.kernel.org>; Fri, 19 Mar 2021 09:58:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Iogigeo27wil0UjHB2TpJicxsulnRf0A5GJ3aAzbnx0=;
-        b=nmK9h8IQhmdFeEf1ncehMDDkDpXNQX1hcUAv83UNKzNz2zwpBOPlr6iv49MMztNoH6
-         tZgmNG2TfRioxZXXIFF1rUyE7mb2KDsNmIodFGzJnSJDwpwCQDT4jiARMePVbdDqOaMO
-         aIqQ6+1igTnnhR/rvJM/95y8cBQnOqV58X87c=
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=amwYW5kcWHNwFy1h/kG8xoj/Mpb8Cd0PQb0wWJh698E=;
+        b=mNUZf5SAG0+7JrB+M1ZhiMD8TG7S1b/S1BCBJgY09te/Oa1SIgIr+IrqC858/T2Yh8
+         lc/lc2sI0rZLs/eleqZs9LxHaEP5Iwr2yQdz2KG3oApsCETqLjAHaK5Bskwwp6+deuRE
+         dlzEmJnCfbFB2nT8f9MI9azXep7RS8L2X57vU=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Iogigeo27wil0UjHB2TpJicxsulnRf0A5GJ3aAzbnx0=;
-        b=uRhAYOErxmovTch0u8j0LG+Ph1+DQ7XpIO43cp9ZIlBSIQIxOgllqipux4gsiLpPUJ
-         aYE92SB41+jOCRVTjK5B6eEWcIrsPMnGqggBmxcofkbq7AGamHFf3lCAGbemsIToEbzm
-         MoZ0ldi8dGogSe9h6qbV5Knw3iDtDUC+9ffPEs35Kx2ZKqNwQZmDsLMhUHBgbpH9+3Rf
-         mbpu0z1rEjdqj1NHMTtyiHBYJuaTc5JJ+WNQ/KsitBnCGpSXe7PemaDZ4lqumRTF7B18
-         RcVHIf68aLQ1UGjau/95fAwKH6PMuiR1c6YwgdnNOyWXKuqHIttDsRcFC6iL14vQnFeg
-         8PmQ==
-X-Gm-Message-State: AOAM531cAexQjJvrRq+BUb7srvLLYHGNLRAJ59KCk8VbIYKGkqH+Go5s
-        lRgisgVLFyWHcG42Pu+hSs7b1SisK9nLZA==
-X-Google-Smtp-Source: ABdhPJx87AEHAvcN2MxHsnUtNqOruEIIAVo+aL2/0OdJu0itVsG3e7sb4ZMFMaY3KHpsaBj/XzoX6Q==
-X-Received: by 2002:a17:902:da8d:b029:e5:c7d9:81f2 with SMTP id j13-20020a170902da8db02900e5c7d981f2mr14997546plx.21.1616173096574;
-        Fri, 19 Mar 2021 09:58:16 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=amwYW5kcWHNwFy1h/kG8xoj/Mpb8Cd0PQb0wWJh698E=;
+        b=ThruyNhfhDBOhAFkKKC/Tl4az/iFggo25wEAh2GVl09mq/WY9refYh89QOPt49qCk4
+         9sq1A3d8WRgIbRcbHWCADqE1HkMHPmJcOk6kfhmJxGIgAyd16TGAE4CGltgPDi8mJbqg
+         AwFOM6jFme37ptZ/2KiiYHYWBXDV/QpvWHUnTshzexYGZdmSJJQWHk4lpixndHBbL4gM
+         NXwOOY7mA+TQZwt4oLw4/KvCQY3x8DmpuH2zM8of4N7u9pYgBgt31ueTh3c1+WSsN54d
+         KPyAsvSciRMsxaE1SwtVNx0rkBCyd8fNpW5VXSlPKEiw77UycJ2VKIc0lys+CA4G8LUY
+         MwZw==
+X-Gm-Message-State: AOAM532TYeu2ddI6sVnTCnsdVl+DNKiXjusQkWqEim1uyMyXpTJKfykf
+        oWLMp1UcK0gVakfEuoXHSr489ND0iCLLnA==
+X-Google-Smtp-Source: ABdhPJxTMt7nqlLEvoeBUVBqo+M+xnhGONAe8vH+guWIXXYGCWneAp7/BjN9mhivfrWYmp/Cu1rZYA==
+X-Received: by 2002:a17:90a:4e42:: with SMTP id t2mr11072062pjl.38.1616173093222;
+        Fri, 19 Mar 2021 09:58:13 -0700 (PDT)
 Received: from localhost ([2620:15c:202:201:a05c:c77f:8a41:973d])
-        by smtp.gmail.com with UTF8SMTPSA id i7sm5289723pgq.16.2021.03.19.09.58.15
+        by smtp.gmail.com with UTF8SMTPSA id gk12sm5825790pjb.44.2021.03.19.09.58.11
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 19 Mar 2021 09:58:16 -0700 (PDT)
+        Fri, 19 Mar 2021 09:58:12 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     jic23@kernel.org, lars@metafoo.de, swboyd@chromium.org,
         campello@chromium.org, andy.shevchenko@gmail.com
 Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v5 2/2] iio: sx9310: Support ACPI properties
-Date:   Fri, 19 Mar 2021 09:58:07 -0700
-Message-Id: <20210319165807.3639636-3-gwendal@chromium.org>
+Subject: [PATCH v5 0/2] iio: sx9310: Support ACPI properties
+Date:   Fri, 19 Mar 2021 09:58:05 -0700
+Message-Id: <20210319165807.3639636-1-gwendal@chromium.org>
 X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
-In-Reply-To: <20210319165807.3639636-1-gwendal@chromium.org>
-References: <20210319165807.3639636-1-gwendal@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use device_property_read_... to support both device tree and ACPI
-bindings when reading the properties we need to configure the SAR
-sensor.
+Current sx9310 driver only support device tree properties.
+To be able to use sensor on Intel platfrom, add support to read ACPI by
+converting calls of_property_read_...() to device_property_read_...().
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
- drivers/iio/proximity/sx9310.c | 26 +++++++++++---------------
- 1 file changed, 11 insertions(+), 15 deletions(-)
+A bug was uncovered: if "semtech,combined-sensors" array was less than
+4 entries, its content would be ignored, as of_property_read_u32_array
+would return -EOVERFLOW.
 
-diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
-index cbca965889f14..80cc8dc3f2d9c 100644
---- a/drivers/iio/proximity/sx9310.c
-+++ b/drivers/iio/proximity/sx9310.c
-@@ -20,6 +20,7 @@
- #include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/pm.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
- #include <linux/slab.h>
-@@ -1213,10 +1214,9 @@ static int sx9310_init_compensation(struct iio_dev *indio_dev)
- }
- 
- static const struct sx9310_reg_default *
--sx9310_get_default_reg(struct sx9310_data *data, int idx,
-+sx9310_get_default_reg(struct device *dev, int idx,
- 		       struct sx9310_reg_default *reg_def)
- {
--	const struct device_node *np = data->client->dev.of_node;
- 	u32 combined[SX9310_NUM_CHANNELS];
- 	u32 start = 0, raw = 0, pos = 0;
- 	unsigned long comb_mask = 0;
-@@ -1224,21 +1224,17 @@ sx9310_get_default_reg(struct sx9310_data *data, int idx,
- 	const char *res;
- 
- 	memcpy(reg_def, &sx9310_default_regs[idx], sizeof(*reg_def));
--	if (!np)
--		return reg_def;
--
- 	switch (reg_def->reg) {
- 	case SX9310_REG_PROX_CTRL2:
--		if (of_property_read_bool(np, "semtech,cs0-ground")) {
-+		if (device_property_read_bool(dev, "semtech,cs0-ground")) {
- 			reg_def->def &= ~SX9310_REG_PROX_CTRL2_SHIELDEN_MASK;
- 			reg_def->def |= SX9310_REG_PROX_CTRL2_SHIELDEN_GROUND;
- 		}
- 
--		count = of_property_count_elems_of_size(np, "semtech,combined-sensors",
--							ARRAY_SIZE(combined));
-+		count = device_property_read_u32_array(dev, "semtech,combined-sensors", NULL, 0);
- 		if (count > 0 && count <= ARRAY_SIZE(combined)) {
--			ret = of_property_read_u32_array(np, "semtech,combined-sensors",
--							 combined, count);
-+			ret = device_property_read_u32_array(dev, "semtech,combined-sensors",
-+							   combined, count);
- 			if (ret)
- 				break;
- 		} else {
-@@ -1270,7 +1266,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int idx,
- 
- 		break;
- 	case SX9310_REG_PROX_CTRL4:
--		ret = of_property_read_string(np, "semtech,resolution", &res);
-+		ret = device_property_read_string(dev, "semtech,resolution", &res);
- 		if (ret)
- 			break;
- 
-@@ -1294,7 +1290,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int idx,
- 
- 		break;
- 	case SX9310_REG_PROX_CTRL5:
--		ret = of_property_read_u32(np, "semtech,startup-sensor", &start);
-+		ret = device_property_read_u32(dev, "semtech,startup-sensor", &start);
- 		if (ret) {
- 			start = FIELD_GET(SX9310_REG_PROX_CTRL5_STARTUPSENS_MASK,
- 					  reg_def->def);
-@@ -1304,7 +1300,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int idx,
- 		reg_def->def |= FIELD_PREP(SX9310_REG_PROX_CTRL5_STARTUPSENS_MASK,
- 					   start);
- 
--		ret = of_property_read_u32(np, "semtech,proxraw-strength", &raw);
-+		ret = device_property_read_u32(dev, "semtech,proxraw-strength", &raw);
- 		if (ret) {
- 			raw = FIELD_GET(SX9310_REG_PROX_CTRL5_RAWFILT_MASK,
- 					reg_def->def);
-@@ -1317,7 +1313,7 @@ sx9310_get_default_reg(struct sx9310_data *data, int idx,
- 					   raw);
- 		break;
- 	case SX9310_REG_PROX_CTRL7:
--		ret = of_property_read_u32(np, "semtech,avg-pos-strength", &pos);
-+		ret = device_property_read_u32(dev, "semtech,avg-pos-strength", &pos);
- 		if (ret)
- 			break;
- 
-@@ -1353,7 +1349,7 @@ static int sx9310_init_device(struct iio_dev *indio_dev)
- 
- 	/* Program some sane defaults. */
- 	for (i = 0; i < ARRAY_SIZE(sx9310_default_regs); i++) {
--		initval = sx9310_get_default_reg(data, i, &tmp);
-+		initval = sx9310_get_default_reg(&indio_dev->dev, i, &tmp);
- 		ret = regmap_write(data->regmap, initval->reg, initval->def);
- 		if (ret)
- 			return ret;
+Gwendal Grignou (2):
+  iio: sx9310: Fix access to variable DT array
+  iio: sx9310: Support ACPI properties
+
+ drivers/iio/proximity/sx9310.c | 56 +++++++++++++++++++++-------------
+ 1 file changed, 34 insertions(+), 22 deletions(-)
+
 -- 
 2.31.0.291.g576ba9dcdaf-goog
 
