@@ -2,60 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_NONE,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87EEEC4332B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB139C4332E
 	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4DBAF64F88
+	by mail.kernel.org (Postfix) with ESMTP id AF3BE64F74
 	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229900AbhCSLBs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 07:01:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38642 "EHLO
+        id S229917AbhCSLBu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 07:01:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbhCSLB3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:01:29 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3DC78C06174A;
-        Fri, 19 Mar 2021 04:01:29 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id u19so3426329pgh.10;
-        Fri, 19 Mar 2021 04:01:29 -0700 (PDT)
+        with ESMTP id S229866AbhCSLBo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:01:44 -0400
+Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0FC87C06174A;
+        Fri, 19 Mar 2021 04:01:44 -0700 (PDT)
+Received: by mail-pf1-x42e.google.com with SMTP id y200so5625261pfb.5;
+        Fri, 19 Mar 2021 04:01:44 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=IHsMXHlvFNbqoAQhdtfNE0zKBykgUvZF86//Vvt93y4=;
-        b=uRIytIxxH0fuSwhbhHS6b4YfjvyuWeiqfnWivka6MFy9ceMr5uyzm+sQ3oPn0ZAMox
-         +fCxTTZuLgrukUbOZpVNuNzprxd3A8676IqPEloktxufGhRUXDhFjlc9IgQ48zOWUny5
-         kSUL9qKC3IGQhQON4sjpQd5ucTuEpLUDhp+LzAH0JHTQJS2JXK1IJvGF/laM7UuxVGD4
-         Mqk3d/EIrtX1uRUPQqhJMLxnN0zNLYN2cC5rRh9zS+AjkqKn3T2DDN7tGNJcachGYUVF
-         44J6hAorf3/jy4z1Q2/WOetkupBcJktiZhzlrltpm3j5LMY3P0RsPxFdMSHJ9tqPenuV
-         GnMQ==
+        bh=mCIsrz/xNvA8l6ynJhWaN/C4nkgE8ErMLRxbZcB8jd0=;
+        b=am/M0nVLA6ftbdIkBJC85jGx6ceAzyM00ClgAXBg541rE5bK6A+wFcQfakS/ZWqkg1
+         gamQ9xCPIsmi4YpN0aQqREqPnl4PS6Q35iX09W+AJD+ypBMZ+Z0mpi6waAoh+8/MARTT
+         cc33HDM0mNeAMW4lN2dVsCVp1ZqWvKxU32LqbchgFLVV10rVNmfquOneDsNtgilXi813
+         d8r4ROtk5bKf/LpcDkE8NOpzLDgvcDuGEsGRH4os16N2y7bPQN0ZmETIYRF5xB4LO2f4
+         JsixGDErfCTV+au9XB15Uusyu3pFn9SjhTT7a40KRd1ZsxoyiNIANFKs/3Ecrsy9ejwH
+         9trw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=IHsMXHlvFNbqoAQhdtfNE0zKBykgUvZF86//Vvt93y4=;
-        b=VNILSE4cAIKQnnFNyJakt8Lk0CSuL6HpFofVW+kOXVsJA1O8uhouqEgYSGAFvYb3cs
-         ZAxDvLZFm204z31wvWO+GETRT/uinYsgMxoLwnATeO09zlCS34vuy/pvF9d9PCnGTCmI
-         rDDOAsiAURx92zNiDpYjenWmO+HzwUYDZQDEYFGx9u2c2p1pFv5hnscDMVoYW2baYeXb
-         n+Wd9H8HzR7armt0seLv/AM3c24eN2YMBwVyxY/YxrllkgqUNZF+o+i8NB4HGnxYFTxw
-         opN+9VRfIheb6H7EOg7k+PMaHWZArX0ExJaeVBlAXPF2TGLZXGqAUxWuoOL/9NNMfhqr
-         66Ww==
-X-Gm-Message-State: AOAM532Xq8+i/EYkxfne65jhY32OYAQKEsx0isCnmwHBJMWZiFkd3MW2
-        JYtWuufvGucaDds5faoboNk=
-X-Google-Smtp-Source: ABdhPJxSWirRoocy1cgAXwgyeqnrSHox94o4V8L5k6ly6ZQmLV2G7nSUjtsEllB2Jw0UZ7t0/O3OyA==
-X-Received: by 2002:a65:4942:: with SMTP id q2mr10660452pgs.34.1616151688818;
-        Fri, 19 Mar 2021 04:01:28 -0700 (PDT)
+        bh=mCIsrz/xNvA8l6ynJhWaN/C4nkgE8ErMLRxbZcB8jd0=;
+        b=CqELw46vomkA3SdWqJL9eL7XIh7WzYJW3jBZF6VGHOoG9Ex1rf8A5jTMUpe0KT7kp9
+         2o7NRxrhc78JO5S69cY47Eg1V6bsY7HSo1DLKsx/rQ8XklhVejfqIWvkWIu4rwLpUoqP
+         C39MI3Gai/1/Ni+D2Mw7dTku2Cm4i2FI9U4LtFSXSkwlsckOB5cGWlPETx2o8tn3SEYf
+         IzreXBsgPCeDzIKlvj8aZDp4t0y9h9sxxcDjCYSwtWbUllY9pWIxqRj3Xg1f80Kn/OMi
+         nXF6OumoJAtrdbGLeBmnyl4ms7hjY9EhrlZjKwUHac1zDAUF9O2GTqnPaU21lPhP2wnm
+         8k6g==
+X-Gm-Message-State: AOAM5335c7UKrngzSWyS02q3ICew0MC7IW5jTMvvYodRXy2/f9cQwmsG
+        hpgeaEMfokMxYnoxeQ5FT9XaWBXho7kkHw==
+X-Google-Smtp-Source: ABdhPJyKv5HtcVkjQgECZi+ZwlOiOa96Ec+AS01yofO/WrXx2aXH4fKPJt8mdlUA9B36kq6B2dkFgg==
+X-Received: by 2002:aa7:95b5:0:b029:1ef:272f:920c with SMTP id a21-20020aa795b50000b02901ef272f920cmr8767965pfk.21.1616151703668;
+        Fri, 19 Mar 2021 04:01:43 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.01.24
+        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.01.39
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 04:01:28 -0700 (PDT)
+        Fri, 19 Mar 2021 04:01:43 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -67,9 +67,9 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 05/33] counter: 104-quad-8: Annotate hardware config module parameter
-Date:   Fri, 19 Mar 2021 20:00:24 +0900
-Message-Id: <203f1b6084ed86a6696eb422bcadc0955c6427bb.1616150619.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v10 08/33] counter: interrupt-cnt: Add const qualifier for functions_list array
+Date:   Fri, 19 Mar 2021 20:00:27 +0900
+Message-Id: <ae7132b943c51fb5b7a9c9bb247c26bc74c9a8b6.1616150619.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1616150619.git.vilhelm.gray@gmail.com>
 References: <cover.1616150619.git.vilhelm.gray@gmail.com>
@@ -79,45 +79,29 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When the kernel is running in secure boot mode, we lock down the kernel to
-prevent userspace from modifying the running kernel image.  Whilst this
-includes prohibiting access to things like /dev/mem, it must also prevent
-access by means of configuring driver modules in such a way as to cause a
-device to access or modify the kernel image.
+The struct counter_count functions_list member expects a const enum
+counter_count_function array. This patch adds the const qualifier to the
+interrupt__cnt_functions to match functions_list.
 
-To this end, annotate module_param* statements that refer to hardware
-configuration and indicate for future reference what type of parameter they
-specify.  The parameter parser in the core sees this information and can
-skip such parameters with an error message if the kernel is locked down.
-The module initialisation then runs as normal, but just sees whatever the
-default values for those parameters is.
-
-Note that we do still need to do the module initialisation because some
-drivers have viable defaults set in case parameters aren't specified and
-some drivers support automatic configuration (e.g. PNP or PCI) in addition
-to manually coded parameters.
-
-This patch annotates the 104-QUAD-8 driver.
-
-Cc: Syed Nayyar Waris <syednwaris@gmail.com>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/104-quad-8.c | 2 +-
+ drivers/counter/interrupt-cnt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 233a3acc1377..0fd61cc82d30 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -21,7 +21,7 @@
+diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
+index a99ee7996977..827d785e19b4 100644
+--- a/drivers/counter/interrupt-cnt.c
++++ b/drivers/counter/interrupt-cnt.c
+@@ -112,7 +112,7 @@ static int interrupt_cnt_write(struct counter_device *counter,
+ 	return 0;
+ }
  
- static unsigned int base[max_num_isa_dev(QUAD8_EXTENT)];
- static unsigned int num_quad8;
--module_param_array(base, uint, &num_quad8, 0);
-+module_param_hw_array(base, uint, ioport, &num_quad8, 0);
- MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
+-static enum counter_count_function interrupt_cnt_functions[] = {
++static const enum counter_count_function interrupt_cnt_functions[] = {
+ 	COUNTER_COUNT_FUNCTION_INCREASE,
+ };
  
- #define QUAD8_NUM_COUNTERS 8
 -- 
 2.30.2
 
