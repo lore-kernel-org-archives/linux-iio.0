@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EAC5C43331
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8D05DC433E6
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:03:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2D67A64F59
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5AE7164F1C
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:03:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229970AbhCSLCW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 07:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38816 "EHLO
+        id S229767AbhCSLCv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 07:02:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229785AbhCSLCO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:02:14 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF571C06174A;
-        Fri, 19 Mar 2021 04:02:13 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id o2so2785030plg.1;
-        Fri, 19 Mar 2021 04:02:13 -0700 (PDT)
+        with ESMTP id S230009AbhCSLCZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:02:25 -0400
+Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D4BFFC06174A;
+        Fri, 19 Mar 2021 04:02:23 -0700 (PDT)
+Received: by mail-pj1-x1036.google.com with SMTP id t18so4463219pjs.3;
+        Fri, 19 Mar 2021 04:02:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=CzS3NlE62IcJjUyZ5qk3czC9f+XUZUeA9uXPPXXnAM8=;
-        b=dtjQRf0CP07sJ2z6Eneel0Gon/lsArlDmbRz3ilHaaIf6tLCjQ75zJ+hQMh90HxX7+
-         Im7ilddYq70zNTOEkZLRerrCW6QT+mlit1re7YhLWszt/dg8BNF5l/0t2BhlmT9DAUt1
-         pWc4sKTXeqHAUym9rdNfJjrIuUjaLSKAmPUjt+fgSVi9lZCyOY6lqnevZj2X8cmtD+FR
-         miZoYmsDlr3U/4i9GhNt5If18c1KXoect8VRsOkuembFBKk/MYFcpCe02muVPltNyr+C
-         qZ5EY2SwIDq0UQW9G8kF8t5wwbZ8N1Mfa2Xilw+RXrmSlIJZgVspwC6uXCfF3QFy4vp1
-         3pkg==
+        bh=lSxNdunUcfVjOwF1Ukve+wpGCmUe1GqXnjLiDip7r60=;
+        b=Ijjt5X33sHG6VLfr/X33ofH/zw3C83x5jF2PbSQDxSentiAHZIdiWspxk+4wpX/j/k
+         dll2UbF/VnvXh89Ud178c7zqeR+G4sJ9kXGUWQys5Xo57/GUxwevKvql1vB2pRI9s2O4
+         D8RA3+HfIXxAwA2e9r37NxLzuu0F4RH2HJ9DmslDfOAp/DbJnmv3SEbR0U2UxXmHN7Mh
+         saPQ19ko9HehDeewr55u+I6ikxva25/lNvth/kyOEKrC+9aZgJ43NxDjrjcpXa9VJMcJ
+         jkHyArhlPzf/2CaRZ/kRVPzG2TZFzLvwSofJeOfhmkx4TFT9uXwU4TAvQfYNxBBCq6a9
+         FT9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=CzS3NlE62IcJjUyZ5qk3czC9f+XUZUeA9uXPPXXnAM8=;
-        b=haz9i7FkrCnN5rohFBN8x075uWZCkxWADo4QY1vAnYyji608gXOzCufWbcydfD0mkn
-         eGpDXZsuMTyXiuQfx1f36qisl6Lz+XnjAm7BkhajvxjJFafPjYcYvN9+sV3PLculJthI
-         F4ucehcFaMHue1lapKCO8FUAGUzZofvkwiMEAOp3yoZ0aPB93XesvLWkQWewKMi43uPd
-         3sqMsVYww4iVDK9CsPsSx1A12BHo+ULzFSetECU5xzOONX/LgXc0QAuleQ5uQhMNCOw4
-         +7HwsBHwVzgcMxuqamOsrehMiNHbxE2SXRymz5p/HcBEXh7rWm09VWsv7tfuTKGPYFs+
-         dlEg==
-X-Gm-Message-State: AOAM5307vFFpt8uP/jgh1LQvJZU2e798Df1xMgik/iij/CYywt9gsPO2
-        C/uzuIPfRMNIZ4PndcjRya8=
-X-Google-Smtp-Source: ABdhPJyq+X+ih+kVYAP/TinmHgoIzLZQepjdalrkaduhO8V2BqB+ieMb4gPKsDDBHOEkNy1Gvl3YLw==
-X-Received: by 2002:a17:902:70c5:b029:e6:cba1:5d94 with SMTP id l5-20020a17090270c5b02900e6cba15d94mr11170116plt.84.1616151733578;
-        Fri, 19 Mar 2021 04:02:13 -0700 (PDT)
+        bh=lSxNdunUcfVjOwF1Ukve+wpGCmUe1GqXnjLiDip7r60=;
+        b=CrO5C6cTwnTOCACO2KYcJZFBZj9Zs54Sb9hBowZbuuzvdw3pUZpVh1+I7MGZiI22HK
+         Pu2ohwaBU6nq57OTc/5lgZbaOtKaLSY9jbyL0o0GhyFvnCSxgQpBE+Nf7BB3e2OMaR6H
+         VzKK8sIeBvK098bKzRvE635Scd3bVPh8n2/PHJdzCT2KkDcjF2KYLWPD196VarSkDF+j
+         KY9KGQA6//QIWtsalinT2DRL4WCC7eymkRpEBfRXGhvqOEBSXv8fVA5vBj1ToODbYd8t
+         44QVnX2vcSsaoTBK0veymFOEkuNd20AjpJlj9PnushpoZclAo7Vb6TDNs6GWkkiVMzZH
+         SACQ==
+X-Gm-Message-State: AOAM531EGlkTlGcxpK4qkuUrgxaqc0+oovaT8+Zt65dLHK9vc/zHr+FJ
+        PFF9CEzyRUsqJSlFlwYDoNV3e7hEJO5lmg==
+X-Google-Smtp-Source: ABdhPJxakjll3igoMgwm09QbKi+PEN8Sji9wqQ7cN5cp5slUO1v+w3Ri5WLxTByTWvLWd5tA36ZOJQ==
+X-Received: by 2002:a17:90a:1b0e:: with SMTP id q14mr3596346pjq.41.1616151743496;
+        Fri, 19 Mar 2021 04:02:23 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.02.08
+        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.02.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 04:02:13 -0700 (PDT)
+        Fri, 19 Mar 2021 04:02:22 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -67,9 +67,9 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 14/33] counter: interrupt-cnt: Add const qualifier for actions_list array
-Date:   Fri, 19 Mar 2021 20:00:33 +0900
-Message-Id: <961bd5450371a32492d5cb189ccfdbe7d9160975.1616150619.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v10 16/33] counter: stm32-lptimer-cnt: Add const qualifier for actions_list array
+Date:   Fri, 19 Mar 2021 20:00:35 +0900
+Message-Id: <1a454675b256daed71e0c0053377f36475f920d3.1616150619.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1616150619.git.vilhelm.gray@gmail.com>
 References: <cover.1616150619.git.vilhelm.gray@gmail.com>
@@ -81,27 +81,27 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 The struct counter_synapse actions_list member expects a const enum
 counter_synapse_action array. This patch adds the const qualifier to the
-interrupt_cnt_synapse_actionss to match actions_list.
+stm32_lptim_cnt_synapse_actions to match actions_list.
 
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/interrupt-cnt.c | 2 +-
+ drivers/counter/stm32-lptimer-cnt.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-index 827d785e19b4..0e07607f2cd3 100644
---- a/drivers/counter/interrupt-cnt.c
-+++ b/drivers/counter/interrupt-cnt.c
-@@ -77,7 +77,7 @@ static const struct counter_count_ext interrupt_cnt_ext[] = {
- 	},
+diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
+index 0f7d3f1ec1b6..c19d998df5ba 100644
+--- a/drivers/counter/stm32-lptimer-cnt.c
++++ b/drivers/counter/stm32-lptimer-cnt.c
+@@ -146,7 +146,7 @@ enum stm32_lptim_synapse_action {
+ 	STM32_LPTIM_SYNAPSE_ACTION_NONE,
  };
  
--static enum counter_synapse_action interrupt_cnt_synapse_actionss[] = {
-+static const enum counter_synapse_action interrupt_cnt_synapse_actionss[] = {
- 	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
- };
- 
+-static enum counter_synapse_action stm32_lptim_cnt_synapse_actions[] = {
++static const enum counter_synapse_action stm32_lptim_cnt_synapse_actions[] = {
+ 	/* Index must match with stm32_lptim_cnt_polarity[] (priv->polarity) */
+ 	[STM32_LPTIM_SYNAPSE_ACTION_RISING_EDGE] = COUNTER_SYNAPSE_ACTION_RISING_EDGE,
+ 	[STM32_LPTIM_SYNAPSE_ACTION_FALLING_EDGE] = COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
 -- 
 2.30.2
 
