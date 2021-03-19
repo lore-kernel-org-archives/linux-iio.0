@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 14546C433E6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75778C43381
 	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BE16E64F69
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2A0D364F69
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229894AbhCSLBr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 07:01:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38626 "EHLO
+        id S229905AbhCSLBt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 07:01:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38664 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229849AbhCSLBZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:01:25 -0400
-Received: from mail-pg1-x532.google.com (mail-pg1-x532.google.com [IPv6:2607:f8b0:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59EBCC06174A;
-        Fri, 19 Mar 2021 04:01:24 -0700 (PDT)
-Received: by mail-pg1-x532.google.com with SMTP id y27so3425752pga.9;
-        Fri, 19 Mar 2021 04:01:24 -0700 (PDT)
+        with ESMTP id S229854AbhCSLBe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:01:34 -0400
+Received: from mail-pg1-x52f.google.com (mail-pg1-x52f.google.com [IPv6:2607:f8b0:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5873FC06174A;
+        Fri, 19 Mar 2021 04:01:34 -0700 (PDT)
+Received: by mail-pg1-x52f.google.com with SMTP id y27so3426090pga.9;
+        Fri, 19 Mar 2021 04:01:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=1TpNtbXoxyIjRd7QIp1WNUGV3OlR+l0VzEx11bA72Sw=;
-        b=bGsyS/ntHB5J/zGOzWa3dDyJ+RSrk0AxzcTTabPa/qWzSF3DAQkcBBYPCERu5rU5/L
-         /Tpp7DtV9HaJHtMyRTwa9QF+cO1KFylnYYX0zCk3n0pCx8jDthkoiATd01qRCQl32SoJ
-         rBFrtroMaqCCnK8fAh1FJhtZhtwxb5AdtpztX4O3YecnWYidtuMs+j3td9/dI1tAXP6l
-         YEfWvLnIbxnmsj2t9dvTXyh//iJksnwS3T0AcYJcLvo+ZZziwXXeqaEOjXRlP28GXWMB
-         qztwaapx0RSzcWGJBFDxMY5J3IDt3c1QgW459KejscA78lWdxtZxgJGXLYOXKCnTxLCI
-         nYrA==
+        bh=eeVMUELsSRVxeUS6ro8QPXwbMLileU2G6rPw+jVjGYk=;
+        b=X24pb7+dYFtj2mM5k/2cLtbb+JoOMN6PVCV5K2nU1mFYA8HUghz240ARKjWBo2R6oL
+         nW3SfEKupdMjFc4Y0HVfnVTWQEyUQ/h9gsR+JfPJ3XLjBcpfyioM5fKW0TnxZsSVAGQh
+         SiTcftcT+mI5TJYGdvMP05FD/OdACJVIqc9uQE4jw6CM99rbxmSW9z9W+egHJAFsoBTZ
+         xP2D4Hg5yIRu2d0zTN6+xtaMgcC4aSnOmZy3JwRVmoAh97w5cZFQqLEypsXsRcftXWRA
+         MInGS+KjZhIElejzH+LUouoOZ7dahXxwuu4lSxlM87f7rucczOA6HD3qWbHKq0m5VldZ
+         5UoQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=1TpNtbXoxyIjRd7QIp1WNUGV3OlR+l0VzEx11bA72Sw=;
-        b=n4K/Jb249k3Wt8vRfzygKBqR1FVq+f7P9eBbytreisv7lzNflAhe2df7wpq70HUZ4B
-         P6zUNQBynBQqafcxJyuyEQ3rGIZJrTcZY1FxAMHN04Y5Ld5momKXAWGoMCx4/gjof/zy
-         aOGuAxHutf89AOBQnxEfeLw+sJbbb0KdrIGCR1kNzGU816+DArB62er6GZdEHybe1k1q
-         Ns1hRsxqws3qGW/0n8xScMYGCQGNWufDHzzKSyebjfLem+C+o5GT/cOS8ixVChvl8kCl
-         TB2XlXDITHDYJ9ad7md5fNE2Ec31NM7gcU2EsifHm28pfSTCJDRU3yTwOXbunJFj4PfR
-         je3Q==
-X-Gm-Message-State: AOAM53082fndt0JTAjYMNmcWS0vM3H4/4L4+g5/4kXRgd7tf9J7dBQa7
-        kSRJLzuMQNdqQMt7uzaqJ0I=
-X-Google-Smtp-Source: ABdhPJzxh9zmvHiKp9AVLB5uChGOrHdkMdux+y77XRdYYBPJAs8ueovVpELDjCWf+ul14cb+iAaEDA==
-X-Received: by 2002:a65:520d:: with SMTP id o13mr10965823pgp.57.1616151683853;
-        Fri, 19 Mar 2021 04:01:23 -0700 (PDT)
+        bh=eeVMUELsSRVxeUS6ro8QPXwbMLileU2G6rPw+jVjGYk=;
+        b=HtPcLHvvhwHiBg4p4BHPUjunsPeb5hTbs/B3XQOo812sO6XO8f0Sy8z1P5loNBS0ds
+         qhWL6ycxWzsJwCO81UQtjoQAYa20g69VK0eh6DDn8B6oPLR1HcL7GPtwkbLD0pCRtvG2
+         2B0qRtpyrvTum61YK3PAs8oD8kGRJERtwT1JstSJNUS3HK7YYNCOSjE7QItdX03GLNur
+         /S/NPwjv0xpwo5Cm2rQa7JGZDm9nl7vO7WqShR23Cfb8A2mhcP06vBFUcEkTckZhfiJj
+         w3waTZa2qQujfCEmdc94Fj9XDhesr+JPVRpwTlJzc+Uu+CQ4Cp1vudxxUp7yHuBDcKjZ
+         wqmA==
+X-Gm-Message-State: AOAM533feXnIdlRrPn6VNSNZfsj301r7U4NOsJL/d0C+MY0QJ7DnvMsH
+        UsLhYUiFu9u4PVH7InZWcHM=
+X-Google-Smtp-Source: ABdhPJz8LoFhKaWgFy/KKzChvQwuknU/7/8FINs7N2t4xXiUnnQdM+uove8u0VdoRkUHpy37LHB9Lg==
+X-Received: by 2002:a65:4c08:: with SMTP id u8mr10701760pgq.203.1616151693937;
+        Fri, 19 Mar 2021 04:01:33 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.01.19
+        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.01.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 04:01:23 -0700 (PDT)
+        Fri, 19 Mar 2021 04:01:33 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -67,9 +67,9 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 04/33] counter: 104-quad-8: Return error when invalid mode during ceiling_write
-Date:   Fri, 19 Mar 2021 20:00:23 +0900
-Message-Id: <98676f9a2e9cf991d7a002b3b264cca774e5b3c8.1616150619.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v10 06/33] counter: 104-quad-8: Add const qualifiers for quad8_preset_register_set
+Date:   Fri, 19 Mar 2021 20:00:25 +0900
+Message-Id: <4a227eea6fa6aa1648fb0ccba6e924b6f95b2752.1616150619.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1616150619.git.vilhelm.gray@gmail.com>
 References: <cover.1616150619.git.vilhelm.gray@gmail.com>
@@ -79,39 +79,30 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The 104-QUAD-8 only has two count modes where a ceiling value makes
-sense: Range Limit and Modulo-N. Outside of these two modes, setting a
-ceiling value is an invalid operation -- so let's report it as such by
-returning -EINVAL.
+Add some safety by qualifying the quad8_preset_register_set() function
+parameters as const.
 
-Fixes: fc069262261c ("counter: 104-quad-8: Add lock guards - generic interface")
 Cc: Syed Nayyar Waris <syednwaris@gmail.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/104-quad-8.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+ drivers/counter/104-quad-8.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 4bb9abffae48..233a3acc1377 100644
+index 0fd61cc82d30..51fba8cf9c2a 100644
 --- a/drivers/counter/104-quad-8.c
 +++ b/drivers/counter/104-quad-8.c
-@@ -714,13 +714,14 @@ static ssize_t quad8_count_ceiling_write(struct counter_device *counter,
- 	switch (priv->count_mode[count->id]) {
- 	case 1:
- 	case 3:
-+		mutex_unlock(&priv->lock);
- 		quad8_preset_register_set(priv, count->id, ceiling);
--		break;
-+		return len;
- 	}
- 
- 	mutex_unlock(&priv->lock);
- 
--	return len;
-+	return -EINVAL;
+@@ -632,8 +632,8 @@ static ssize_t quad8_count_preset_read(struct counter_device *counter,
+ 	return sprintf(buf, "%u\n", priv->preset[count->id]);
  }
  
- static ssize_t quad8_count_preset_enable_read(struct counter_device *counter,
+-static void quad8_preset_register_set(struct quad8 *priv, int id,
+-				      unsigned int preset)
++static void quad8_preset_register_set(struct quad8 *const priv, const int id,
++				      const unsigned int preset)
+ {
+ 	const unsigned int base_offset = priv->base + 2 * id;
+ 	int i;
 -- 
 2.30.2
 
