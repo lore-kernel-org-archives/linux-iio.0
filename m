@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B660EC433DB
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:03:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B792C433E0
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:03:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8046864F1C
+	by mail.kernel.org (Postfix) with ESMTP id D138264F04
 	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:03:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229993AbhCSLDY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 07:03:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39008 "EHLO
+        id S230137AbhCSLD3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 07:03:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39048 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230196AbhCSLDA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:03:00 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57DDCC06174A;
-        Fri, 19 Mar 2021 04:03:00 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id kk2-20020a17090b4a02b02900c777aa746fso4665380pjb.3;
-        Fri, 19 Mar 2021 04:03:00 -0700 (PDT)
+        with ESMTP id S230273AbhCSLDK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:03:10 -0400
+Received: from mail-pj1-x102d.google.com (mail-pj1-x102d.google.com [IPv6:2607:f8b0:4864:20::102d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6CA6BC06174A;
+        Fri, 19 Mar 2021 04:03:10 -0700 (PDT)
+Received: by mail-pj1-x102d.google.com with SMTP id ha17so4486720pjb.2;
+        Fri, 19 Mar 2021 04:03:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=4tcESTYG+Q+wtlieN7sDSgCHsiQUUS+79HIQLrQg5rs=;
-        b=J21BnrqJHpV+AM7Wtm83gn7eepWxB63hJ7NockTW0xnljY4G/Q8rDxylDO/t8+EEO+
-         GM3TvWFbatL1Ls8O3B38cgjFhhc7XCH4XEqb/Uzmd2ecuBLpoycYdO4ssu7RnbADYIf9
-         8trkovvyqz4ySUKnSUwkTTDogA8MWXERP9ucFKUY6lrwWCBVDCpSjOOT3I0hg4xRbe6F
-         CrWs/1mkVY41rBhcqnWLW0mV7OOEsODC7Zh5Ah6zG5U8JyC5vm29zUm8GWG7Rgqq54B5
-         9pBYbd8+V3GdGFnDT6MSgCnfo2X3AUsA+q1ObTvJsSX8TotE2MTp0ZqlB6se5LoX94ik
-         n68w==
+        bh=PpFvI7Hr2xnxZZJp2f4SLiB8ePysZG2/PXUscKLYdTM=;
+        b=gTvA3Rk2UCYebE1TVVgbqZDlJZMGTNotD3E0b/waW/Ra43vwNvnBt/klOyNt0kSzts
+         09F4yWVqE7EcxuuGpuUZo4pj/f9U9LikUcKqLKUX0Ie5J91GtdPzD7W7MQNY8qChwl3o
+         0KrwsHAg5R5F0nOoyQ6LcAbS5UOy3mLA+27GrWScs8JnHMmGUf362wrxDjOPusXVOwJg
+         it8pfXrUCMXKTuW3uYWe/bwqiyOJAZplC/doRHwshOCi0E1dKh2nEI2P+hbicDZzjiSf
+         MKKJJVjpTuRfjiDkqk3azGwNdg7Ys2kSFXt+L+/gKcGMO6B1BQTKajEnwV7yWO719EF+
+         X2sg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=4tcESTYG+Q+wtlieN7sDSgCHsiQUUS+79HIQLrQg5rs=;
-        b=SPjiLlKxy7PDbnjBAD7DGcGPz+E3HIMgP1Os1Nla+QsFLRQ/eV49zk0TPt3W1rlTEQ
-         xV1Y1sgw+BD9hkVwjWePE3VPk2tsr7ZgKsbdWmcHiu5cOodoxFVkv/U+gpnvxA8tyyGj
-         1WxIBUhnbXK02+++NEIs4csrfaz0hFS1vigZjIjzNcgbX/zTwfcjUJgd7mD2xuG0o0Jy
-         rKSidJ8B1S+BdRQgwspgAz4M3HcWtkAdFJbJD8jiFskB7pSIJ+T5nSvFcxJBnon2FO3k
-         qQyHeiEXGC77q7TpnIfZdBOVPDp0th/B22EBJfsnF2NVa5TOPAS8KgSN17Y7BFFSU88B
-         5QUA==
-X-Gm-Message-State: AOAM532oQrFOjoB7EO8E5wT2DZoZS5rPjM49Ayoj1TpWNHid3Nh4yvkX
-        PYVjkE7m20U5ofMekKrTZpQ=
-X-Google-Smtp-Source: ABdhPJwXFmip/iYe7tRt8scz59n+KTk0vY40omuBd7na3cbbvJJPI+ZzpMv7hCLc+aNA+xiRI3CFQA==
-X-Received: by 2002:a17:90b:228e:: with SMTP id kx14mr9250409pjb.71.1616151779954;
-        Fri, 19 Mar 2021 04:02:59 -0700 (PDT)
+        bh=PpFvI7Hr2xnxZZJp2f4SLiB8ePysZG2/PXUscKLYdTM=;
+        b=s59FwR85WWdf1xUQ2fMtksrWJwKI0tWa6jDmgrnXoMHGDADHAfKxYyd+f69YEy/PxN
+         22KDblnIE8ZpPZcS2+TorgSLlkHt06f2CN+LXzWbRbIwfpvg6KkDFVF6Y6Ar1XP28xiv
+         7NfFd6N1jJRn0kbMNpee+wJTfxNt3IiSMfDKtaDwcuecwHP2fXZEhosJK1/WdcWzoVny
+         /MtLjbMXixfmCH0wSbFByLeMkfQHslOg/oZzCJnlUmycHgzsI5c2XLWeDriS8MEKHlqj
+         pjLnSqMU5i2IDWZjbrP9+j2mp1Nx52xmgYyaO3XHRmvn8u+OdrUo0chQLh/d3qN7yofN
+         nEng==
+X-Gm-Message-State: AOAM531hWwad/te2UnSnP2gOl/agxHca1p00vbTbb7b8hY+rML4QYxrt
+        rh6obse5J4uqOcRy517I9LU=
+X-Google-Smtp-Source: ABdhPJzkOB8WSdT8am3pdoAQWkCp1OmHCwNZK6vBKQVREzmBLXf4IJ0tqJOZvJOQcfJVOIvrGW1/2g==
+X-Received: by 2002:a17:90b:e01:: with SMTP id ge1mr9498567pjb.117.1616151790035;
+        Fri, 19 Mar 2021 04:03:10 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.02.55
+        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.03.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 04:02:59 -0700 (PDT)
+        Fri, 19 Mar 2021 04:03:09 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -67,9 +67,9 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 23/33] counter: Update counter.h comments to reflect sysfs internalization
-Date:   Fri, 19 Mar 2021 20:00:42 +0900
-Message-Id: <6cc4a2c7c16810addbb072be37022b331e3585cb.1616150619.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v10 25/33] counter: Move counter enums to uapi header
+Date:   Fri, 19 Mar 2021 20:00:44 +0900
+Message-Id: <06e8a19be3e71b1da55c1e2813b669fcfd6bbd34.1616150619.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1616150619.git.vilhelm.gray@gmail.com>
 References: <cover.1616150619.git.vilhelm.gray@gmail.com>
@@ -79,144 +79,152 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The Counter subsystem architecture and driver implementations have
-changed in order to handle Counter sysfs interactions in a more
-consistent way. This patch updates the Generic Counter interface
-header file comments to reflect the changes.
+This is in preparation for a subsequent patch implementing a character
+device interface for the Counter subsystem.
 
+Reviewed-by: David Lechner <david@lechnology.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/counter-core.c |  3 ++
- include/linux/counter.h        | 72 +++++++++++++++-------------------
- 2 files changed, 35 insertions(+), 40 deletions(-)
+ MAINTAINERS                  |  1 +
+ include/linux/counter.h      | 42 +--------------------------
+ include/uapi/linux/counter.h | 56 ++++++++++++++++++++++++++++++++++++
+ 3 files changed, 58 insertions(+), 41 deletions(-)
+ create mode 100644 include/uapi/linux/counter.h
 
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index e7dd6ea01c8a..407661c6feb0 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -41,6 +41,9 @@ static struct bus_type counter_bus_type = {
-  * This function registers a Counter to the system. A sysfs "counter" directory
-  * will be created and populated with sysfs attributes correlating with the
-  * Counter Signals, Synapses, and Counts respectively.
-+ *
-+ * RETURNS:
-+ * 0 on success, negative error number on failure.
-  */
- int counter_register(struct counter_device *const counter)
- {
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1508db256784..93233a07f5aa 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4581,6 +4581,7 @@ F:	Documentation/ABI/testing/sysfs-bus-counter
+ F:	Documentation/driver-api/generic-counter.rst
+ F:	drivers/counter/
+ F:	include/linux/counter.h
++F:	include/uapi/linux/counter.h
+ 
+ CPMAC ETHERNET DRIVER
+ M:	Florian Fainelli <f.fainelli@gmail.com>
 diff --git a/include/linux/counter.h b/include/linux/counter.h
-index 567471818ec3..e7fd6d81a929 100644
+index e7fd6d81a929..eee85db8e332 100644
 --- a/include/linux/counter.h
 +++ b/include/linux/counter.h
-@@ -188,12 +188,10 @@ struct counter_comp {
+@@ -9,6 +9,7 @@
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+ #include <linux/types.h>
++#include <uapi/linux/counter.h>
  
- /**
-  * struct counter_signal - Counter Signal node
-- * @id:		unique ID used to identify signal
-- * @name:	device-specific Signal name; ideally, this should match the name
-- *		as it appears in the datasheet documentation
-- * @ext:	optional array of Counter Signal extensions
-- * @num_ext:	number of Counter Signal extensions specified in @ext
-- * @priv:	optional private data supplied by driver
-+ * @id:		unique ID used to identify the Signal
-+ * @name:	device-specific Signal name
-+ * @ext:	optional array of Signal extensions
-+ * @num_ext:	number of Signal extensions specified in @ext
-  */
- struct counter_signal {
- 	int id;
-@@ -207,7 +205,7 @@ struct counter_signal {
-  * struct counter_synapse - Counter Synapse node
-  * @actions_list:	array of available action modes
-  * @num_actions:	number of action modes specified in @actions_list
-- * @signal:		pointer to associated signal
-+ * @signal:		pointer to the associated Signal
-  */
- struct counter_synapse {
- 	const enum counter_synapse_action *actions_list;
-@@ -218,17 +216,14 @@ struct counter_synapse {
+ struct counter_device;
+ struct counter_count;
+@@ -27,47 +28,6 @@ enum counter_comp_type {
+ 	COUNTER_COMP_COUNT_MODE,
+ };
  
+-enum counter_scope {
+-	COUNTER_SCOPE_DEVICE,
+-	COUNTER_SCOPE_SIGNAL,
+-	COUNTER_SCOPE_COUNT,
+-};
+-
+-enum counter_count_direction {
+-	COUNTER_COUNT_DIRECTION_FORWARD,
+-	COUNTER_COUNT_DIRECTION_BACKWARD,
+-};
+-
+-enum counter_count_mode {
+-	COUNTER_COUNT_MODE_NORMAL,
+-	COUNTER_COUNT_MODE_RANGE_LIMIT,
+-	COUNTER_COUNT_MODE_NON_RECYCLE,
+-	COUNTER_COUNT_MODE_MODULO_N,
+-};
+-
+-enum counter_function {
+-	COUNTER_FUNCTION_INCREASE,
+-	COUNTER_FUNCTION_DECREASE,
+-	COUNTER_FUNCTION_PULSE_DIRECTION,
+-	COUNTER_FUNCTION_QUADRATURE_X1_A,
+-	COUNTER_FUNCTION_QUADRATURE_X1_B,
+-	COUNTER_FUNCTION_QUADRATURE_X2_A,
+-	COUNTER_FUNCTION_QUADRATURE_X2_B,
+-	COUNTER_FUNCTION_QUADRATURE_X4,
+-};
+-
+-enum counter_signal_level {
+-	COUNTER_SIGNAL_LEVEL_LOW,
+-	COUNTER_SIGNAL_LEVEL_HIGH,
+-};
+-
+-enum counter_synapse_action {
+-	COUNTER_SYNAPSE_ACTION_NONE,
+-	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
+-	COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
+-	COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
+-};
+-
  /**
-  * struct counter_count - Counter Count node
-- * @id:			unique ID used to identify Count
-- * @name:		device-specific Count name; ideally, this should match
-- *			the name as it appears in the datasheet documentation
-- * @function:		index of current function mode
-- * @functions_list:	array available function modes
-+ * @id:			unique ID used to identify the Count
-+ * @name:		device-specific Count name
-+ * @functions_list:	array of available function modes
-  * @num_functions:	number of function modes specified in @functions_list
-- * @synapses:		array of synapses for initialization
-- * @num_synapses:	number of synapses specified in @synapses
-- * @ext:		optional array of Counter Count extensions
-- * @num_ext:		number of Counter Count extensions specified in @ext
-- * @priv:		optional private data supplied by driver
-+ * @synapses:		array of Synapses for initialization
-+ * @num_synapses:	number of Synapses specified in @synapses
-+ * @ext:		optional array of Count extensions
-+ * @num_ext:		number of Count extensions specified in @ext
-  */
- struct counter_count {
- 	int id;
-@@ -246,29 +241,26 @@ struct counter_count {
- 
- /**
-  * struct counter_ops - Callbacks from driver
-- * @signal_read:	optional read callback for Signal attribute. The read
-- *			level of the respective Signal should be passed back via
-- *			the level parameter.
-- * @count_read:		optional read callback for Count attribute. The read
-- *			value of the respective Count should be passed back via
-- *			the val parameter.
-- * @count_write:	optional write callback for Count attribute. The write
-- *			value for the respective Count is passed in via the val
-+ * @signal_read:	read callback for Signals. The read level of the
-+ *			respective Signal should be passed back via the level
-+ *			parameter.
-+ * @count_read:		read callback for Counts. The read value of the
-+ *			respective Count should be passed back via the value
-  *			parameter.
-- * @function_get:	function to get the current count function mode. Returns
-- *			0 on success and negative error code on error. The index
-- *			of the respective Count's returned function mode should
-- *			be passed back via the function parameter.
-- * @function_set:	function to set the count function mode. function is the
-- *			index of the requested function mode from the respective
-- *			Count's functions_list array.
-- * @action_get:		function to get the current action mode. Returns 0 on
-- *			success and negative error code on error. The index of
-- *			the respective Synapse's returned action mode should be
-- *			passed back via the action parameter.
-- * @action_set:		function to set the action mode. action is the index of
-- *			the requested action mode from the respective Synapse's
-- *			actions_list array.
-+ * @count_write:	write callback for Counts. The write value for the
-+ *			respective Count is passed in via the value parameter.
-+ * @function_read:	read callback the Count function modes. The read
-+ *			function mode of the respective Count should be passed
-+ *			back via the function parameter.
-+ * @function_write:	write callback for Count function modes. The function
-+ *			mode to write for the respective Count is passed in via
-+ *			the function parameter.
-+ * @action_read:	read callback the Synapse action modes. The read action
-+ *			mode of the respective Synapse should be passed back via
-+ *			the action parameter.
-+ * @action_write:	write callback for Synapse action modes. The action mode
-+ *			to write for the respective Synapse is passed in via the
-+ *			action parameter.
-  */
- struct counter_ops {
- 	int (*signal_read)(struct counter_device *counter,
-@@ -296,7 +288,7 @@ struct counter_ops {
- 
- /**
-  * struct counter_device - Counter data structure
-- * @name:		name of the device as it appears in the datasheet
-+ * @name:		name of the device
-  * @parent:		optional parent device providing the counters
-  * @ops:		callbacks from driver
-  * @signals:		array of Signals
+  * struct counter_comp - Counter component node
+  * @type:		Counter component data type
+diff --git a/include/uapi/linux/counter.h b/include/uapi/linux/counter.h
+new file mode 100644
+index 000000000000..6113938a6044
+--- /dev/null
++++ b/include/uapi/linux/counter.h
+@@ -0,0 +1,56 @@
++/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
++/*
++ * Userspace ABI for Counter character devices
++ * Copyright (C) 2020 William Breathitt Gray
++ */
++#ifndef _UAPI_COUNTER_H_
++#define _UAPI_COUNTER_H_
++
++/* Component scope definitions */
++enum counter_scope {
++	COUNTER_SCOPE_DEVICE,
++	COUNTER_SCOPE_SIGNAL,
++	COUNTER_SCOPE_COUNT,
++};
++
++/* Count direction values */
++enum counter_count_direction {
++	COUNTER_COUNT_DIRECTION_FORWARD,
++	COUNTER_COUNT_DIRECTION_BACKWARD,
++};
++
++/* Count mode values */
++enum counter_count_mode {
++	COUNTER_COUNT_MODE_NORMAL,
++	COUNTER_COUNT_MODE_RANGE_LIMIT,
++	COUNTER_COUNT_MODE_NON_RECYCLE,
++	COUNTER_COUNT_MODE_MODULO_N,
++};
++
++/* Count function values */
++enum counter_function {
++	COUNTER_FUNCTION_INCREASE,
++	COUNTER_FUNCTION_DECREASE,
++	COUNTER_FUNCTION_PULSE_DIRECTION,
++	COUNTER_FUNCTION_QUADRATURE_X1_A,
++	COUNTER_FUNCTION_QUADRATURE_X1_B,
++	COUNTER_FUNCTION_QUADRATURE_X2_A,
++	COUNTER_FUNCTION_QUADRATURE_X2_B,
++	COUNTER_FUNCTION_QUADRATURE_X4,
++};
++
++/* Signal values */
++enum counter_signal_level {
++	COUNTER_SIGNAL_LEVEL_LOW,
++	COUNTER_SIGNAL_LEVEL_HIGH,
++};
++
++/* Action mode values */
++enum counter_synapse_action {
++	COUNTER_SYNAPSE_ACTION_NONE,
++	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
++	COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
++	COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
++};
++
++#endif /* _UAPI_COUNTER_H_ */
 -- 
 2.30.2
 
