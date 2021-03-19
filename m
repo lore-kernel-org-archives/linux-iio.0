@@ -2,60 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,USER_AGENT_GIT autolearn=unavailable
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CAEDC433E0
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B6366C433DB
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DD04664F79
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7988C64F59
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 11:02:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229787AbhCSLBu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 07:01:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38682 "EHLO
+        id S230034AbhCSLCS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 07:02:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229862AbhCSLBj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:01:39 -0400
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32DC8C06174A;
-        Fri, 19 Mar 2021 04:01:39 -0700 (PDT)
-Received: by mail-pg1-x52c.google.com with SMTP id r17so3427647pgi.0;
-        Fri, 19 Mar 2021 04:01:39 -0700 (PDT)
+        with ESMTP id S229904AbhCSLBt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 07:01:49 -0400
+Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBE49C06174A;
+        Fri, 19 Mar 2021 04:01:48 -0700 (PDT)
+Received: by mail-pj1-x102e.google.com with SMTP id x7-20020a17090a2b07b02900c0ea793940so6546124pjc.2;
+        Fri, 19 Mar 2021 04:01:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XSocH1pEsSl5GXfkgGEmzp3nM7R7NfVZbOAEiTfnQJI=;
-        b=kjOcLKbCFtzL3WRZ+TMUVvMnzsHKXNVNuCHl+oo/fV0dipngNeeNES1u/UHkJEUIml
-         JyNwebt5WfgbhZmvTperffY9h84hMNYEP06UtCLJ9T1v0RpU1hRDzD+XI1A/BYGnt9Lc
-         MfCI6WX5r71fnHUV4PPxjLoproqN6KLXMJn6aZ9Q1kAY7Ss74bngKQboFwr0VTX/GCYa
-         ej+x9hIjxQpoIgyS+vVJ0zi9bVzHFRIVfnblEGgNGTHXc1k0T3UuFMdWkidJr06aYdjP
-         blwfMp7eW9R6K6ZNgCiM2bjzxp+/YJg4JOvwt35Wd2S0MMCUewYFiHtnzhfBvPuM+iHQ
-         ghqw==
+        bh=wYRkXjsb1PVUWcJtSf+4c08/zRkX/J8HBJAhSg6Bbvc=;
+        b=n7oeCws7sjZvBebyHE7fBiK6RqTLulu55vDhMPuOzayEz6rz+d1gs3fVWFOtfrJ62e
+         toRYYupwhq6QMZ5DL/ZttFp2LB0dIA4DYRM8vCsiVJBqibRMSZJ9aKWhzqptHY2Uu/e2
+         OCWOrGDxQ8lNJyRInF/2dOcoyCNxLFJx7Op7QtC2eSoui30LlusueFXfj0813mUgDO1s
+         Cyle8ufF1veYYkQltfkhXjr5Zq2lMjcsaOvqM4H2osxFTnzc6gE/RRMgf5IXRAPb8+l9
+         QrBSx+4OsUTFOd/rRATdLLUJ6IKwYArS0AZEJ5j7S+L3tJSJ/GP1mejYNihDbI33ikBq
+         pmng==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XSocH1pEsSl5GXfkgGEmzp3nM7R7NfVZbOAEiTfnQJI=;
-        b=C0/7TEO9BgVEJa5Jr2/cYwPQBFbtY4fHR4LcemmC5Ow32FI1vnrW72rtkPT7BYS0Rf
-         lSTbfv4xdqYB1qug5tA7ylvkKL2S/dNqR7mLhTrNU0hfyvMINNIDNY8UAvlm8rpyVuI3
-         TXleXsTk03BXLV0kkKKyOLV74eFAHyeGmvdIla4Y8UU93YlmAfB7oeFe3g1ePs7PwTjo
-         C3LIowH+RVGKsXE9rfbPPcbYH0R6l6fdl0ZNCglhuibPC0wRWLfrEJBGFH/5eqbUjjiW
-         O1xRdyydZ69GFGnv6JZJZmrCA1jthDYnI/WAcXJLoWtb2H04g0mLT4Foo6m+81Pw1dSN
-         KKtA==
-X-Gm-Message-State: AOAM530KK2/R2kuQqneYIrJh4f2VONpSmQkrKo73ioYVDUxtJ/OcSLwZ
-        jTuChbxyfv0HOva7DVoIfS8=
-X-Google-Smtp-Source: ABdhPJzRoI1fHcE1ZAKUXQ3BHSbmbZz4CqkRJPGAcm7nkR1fgIQrZY50i8oPgAoFDMztWakz8atzYA==
-X-Received: by 2002:a63:1d26:: with SMTP id d38mr11288574pgd.385.1616151698789;
-        Fri, 19 Mar 2021 04:01:38 -0700 (PDT)
+        bh=wYRkXjsb1PVUWcJtSf+4c08/zRkX/J8HBJAhSg6Bbvc=;
+        b=ulc8kKnjGrjwKDRFCjtDN+YQBb8Tm4H3HQ5w+VvbuqVJbtG4M6iCfyT1hqZYS9VdHP
+         lulw6tW9IK6EUQktSoYYQJSx4nkNmNne2hxpEASIjt1fdz3f6/zHAtN/zHBghikSkhcK
+         hcId+UIXIEq0zdHfUlJ9ECcosm9+iqmNYH2e7aYGulUpzwG/CK4/S2wpJM8NJ7GlHy7I
+         7wCyjvt75JyTNh0qhtlyoy5xCC35sC8dcBiLJbfp9AOFAQqghvX6Mn5+0aLuJTuPDVGq
+         LhFGmlWiZrVXbdcycAnKLPhfP3X8MW34FVNRuFNWvRgx+ggJJk1WTy/GN5aDFJHCqFwU
+         P1vA==
+X-Gm-Message-State: AOAM532u91VwSiNMEtjSbG1sGJt9op0GFJWlQqSK/2FBF2vmic+RTci3
+        6I34H9JGT0DAIRez6wdw81w=
+X-Google-Smtp-Source: ABdhPJzLKllTLseOaGqWk7ZaQmgb/qzKLLE1uT5g8JgA/XofhROJiz2cVxQ4Lv0hd09wd8lboU/QnQ==
+X-Received: by 2002:a17:902:7609:b029:e6:9f29:625f with SMTP id k9-20020a1709027609b02900e69f29625fmr14284842pll.80.1616151708526;
+        Fri, 19 Mar 2021 04:01:48 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.01.34
+        by smtp.gmail.com with ESMTPSA id i22sm4879042pjz.56.2021.03.19.04.01.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 04:01:38 -0700 (PDT)
+        Fri, 19 Mar 2021 04:01:48 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
@@ -67,9 +67,9 @@ Cc:     kernel@pengutronix.de, linux-stm32@st-md-mailman.stormreply.com,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v10 07/33] counter: 104-quad-8: Add const qualifier for functions_list array
-Date:   Fri, 19 Mar 2021 20:00:26 +0900
-Message-Id: <c3d989972172945bbc616c973c1a759df5fa3d19.1616150619.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v10 09/33] counter: microchip-tcb-capture: Add const qualifier for functions_list array
+Date:   Fri, 19 Mar 2021 20:00:28 +0900
+Message-Id: <130ef8380b67430aed17ecd938e6460e73f80058.1616150619.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <cover.1616150619.git.vilhelm.gray@gmail.com>
 References: <cover.1616150619.git.vilhelm.gray@gmail.com>
@@ -81,27 +81,27 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 The struct counter_count functions_list member expects a const enum
 counter_count_function array. This patch adds the const qualifier to the
-quad8_count_functions_list to match functions_list.
+mchp_tc_count_functions to match functions_list.
 
-Cc: Syed Nayyar Waris <syednwaris@gmail.com>
+Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/104-quad-8.c | 2 +-
+ drivers/counter/microchip-tcb-capture.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 51fba8cf9c2a..ae89ad7a91c6 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -193,7 +193,7 @@ enum quad8_count_function {
- 	QUAD8_COUNT_FUNCTION_QUADRATURE_X4
+diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+index 710acc0a3704..cabcfebfc799 100644
+--- a/drivers/counter/microchip-tcb-capture.c
++++ b/drivers/counter/microchip-tcb-capture.c
+@@ -37,7 +37,7 @@ enum mchp_tc_count_function {
+ 	MCHP_TC_FUNCTION_QUADRATURE,
  };
  
--static enum counter_count_function quad8_count_functions_list[] = {
-+static const enum counter_count_function quad8_count_functions_list[] = {
- 	[QUAD8_COUNT_FUNCTION_PULSE_DIRECTION] = COUNTER_COUNT_FUNCTION_PULSE_DIRECTION,
- 	[QUAD8_COUNT_FUNCTION_QUADRATURE_X1] = COUNTER_COUNT_FUNCTION_QUADRATURE_X1_A,
- 	[QUAD8_COUNT_FUNCTION_QUADRATURE_X2] = COUNTER_COUNT_FUNCTION_QUADRATURE_X2_A,
+-static enum counter_count_function mchp_tc_count_functions[] = {
++static const enum counter_count_function mchp_tc_count_functions[] = {
+ 	[MCHP_TC_FUNCTION_INCREASE] = COUNTER_COUNT_FUNCTION_INCREASE,
+ 	[MCHP_TC_FUNCTION_QUADRATURE] = COUNTER_COUNT_FUNCTION_QUADRATURE_X4,
+ };
 -- 
 2.30.2
 
