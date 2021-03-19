@@ -2,131 +2,114 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E9D7C433E3
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 20:31:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4ABCC433EC
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 21:50:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D477861981
-	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 20:31:19 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AB50361998
+	for <linux-iio@archiver.kernel.org>; Fri, 19 Mar 2021 21:50:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230324AbhCSUap (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 19 Mar 2021 16:30:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48748 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230336AbhCSUaW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 16:30:22 -0400
-Received: from mail-pl1-x62e.google.com (mail-pl1-x62e.google.com [IPv6:2607:f8b0:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4859C06175F;
-        Fri, 19 Mar 2021 13:30:22 -0700 (PDT)
-Received: by mail-pl1-x62e.google.com with SMTP id f17so3485586plr.0;
-        Fri, 19 Mar 2021 13:30:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=RiFhJY/XmFpGNDX1w0pF3EBmSkOJw+L7xsDBx5EWS60=;
-        b=IYByJR+l+qAy6WziotlkXvjzNldd/MmWdjP7/hoeaZVbfGIfnj2L8TrGb6Wn4mFkcr
-         pxR0MpTduBdYzQNpb7MI2tNTw8fCytbckiGNpyltRAjCTT3x7syXhpLzioj/ZUohaNzs
-         2oIYUgcSYDyIxY7Rz/RjSUQ2eLk/iKcs0XgR1HxLstPDkg3A3C896VvMWTOwYfRabNua
-         eiE9oAh5JN6DGlEYVaoCCycuVL7NbEqKwwglwbDt2nSatMPLuIU8BcN+Y0x9aP5u+gcy
-         6jTIa5jhYVWyTqOSATU9yWsY30i2kbnenj82MnARCNHbv9F0Dgj4A3ratHjPTpqHd/ZA
-         MFRg==
+        id S231219AbhCSVtt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 19 Mar 2021 17:49:49 -0400
+Received: from mail-io1-f53.google.com ([209.85.166.53]:46079 "EHLO
+        mail-io1-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230467AbhCSVt1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Mar 2021 17:49:27 -0400
+Received: by mail-io1-f53.google.com with SMTP id k8so7629443iop.12;
+        Fri, 19 Mar 2021 14:49:26 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=RiFhJY/XmFpGNDX1w0pF3EBmSkOJw+L7xsDBx5EWS60=;
-        b=IiQNVMWJ0qL64quV8OmizSgr9pHDqnujhQ9YTFVmckL6wy7wjDBVcYJXDBv4qViRSU
-         3SDFWjxJ/umcDnYB0F7OheHGyvTsYT+ptW3xJqIFOenZiYO4/iE3FlLZEAD8zKJLr6TQ
-         LH5rI7vCeFSGpC9WvXmE90opR//Kbp9LUkzsntCjUeQoUH2hTffRNHwh56Q/5NhpuZik
-         LVYpCsQx6N2g/20WW16gLFYlEyun3MdtKviMbKJnDkt2Sehq7r38pzDY1Mb8zswdrIum
-         3RtHqzxMJWaVxSdnP4AC3wAJq9eF4qKW6tB8C+cMaO9fpJcAJzrGSDnjAPpaxH/SgSmR
-         ZvZg==
-X-Gm-Message-State: AOAM533DK7sbHltIUecz1ftGw2d+r9HYWO5VKc2GSVq9iQFLKIs8twNr
-        sqPWetj3DDncqBxxvY5Vydk=
-X-Google-Smtp-Source: ABdhPJwkbA+icpzWFo2U3z2itF9zSqPJ3TjyYB3Ia9j33+A+pwvp09XQdDsZStPKM7pAOSEE0yHnhQ==
-X-Received: by 2002:a17:902:eac5:b029:e6:34e2:8378 with SMTP id p5-20020a170902eac5b02900e634e28378mr15700832pld.35.1616185822156;
-        Fri, 19 Mar 2021 13:30:22 -0700 (PDT)
-Received: from localhost.localdomain ([27.255.182.86])
-        by smtp.googlemail.com with ESMTPSA id m21sm6340406pff.61.2021.03.19.13.30.19
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=IPHDJ/umprofnRpBVdWFXC1bay3IqbtQs+rWfOUqMjY=;
+        b=jdxGFf9XlNZAvYQJGFmDhARD4IImrglDP4UU/XKjj2yLGfALpppOrbvk7FemVxmLYg
+         pBIF+/NquD6IXDXHS0I/8GxBIvpOmWg+C9CnJa9Vt5oWZk5g5RI0sBPg0+gj0iz2jkX9
+         e+bHrYgKT4X8LOcqqU3CNv1//4kvTt9op8nG5g58Z78osmqc0ek12wYIaBco7ezFi9Af
+         pPbGkV6TBZnAg6LsCc46hFdg50QCwI8uNAqnLZkKAZzoO+cXku+ag3Y08R/lnFDgudkk
+         fw3yOYTRuw65W2JSFhvwe5ujsigYMrYcmZZ09dCz5rsJh0vuJnMu0/IwjcOZVSrk8JBX
+         OXDg==
+X-Gm-Message-State: AOAM531JAH4rkgnd8sgIrvNoGqmkaP342Vqi1buz5v4gi+U52DlaiPg4
+        oy7Q1+NzQIkbLwafmXYWWH55nzvSxQ==
+X-Google-Smtp-Source: ABdhPJzc6gYCOEjEt5GfViOI/JBJaMpg0f7Z/rAVRVVH+odzcNnmv2fmf/sJzplIydxd8eKeN8nPTQ==
+X-Received: by 2002:a05:6602:2e85:: with SMTP id m5mr4157265iow.112.1616190566407;
+        Fri, 19 Mar 2021 14:49:26 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id h193sm3230363iof.9.2021.03.19.14.49.25
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 19 Mar 2021 13:30:21 -0700 (PDT)
-From:   Puranjay Mohan <puranjay12@gmail.com>
-To:     alexandru.ardelean@analog.com, jic23@kernel.org,
-        devicetree@vger.kernel.org, knaack.h@gmx.de,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Puranjay Mohan <puranjay12@gmail.com>
-Subject: [PATCH 1/2] dt-bindings: iio: temperature: Add DT bindings for TMP117
-Date:   Sat, 20 Mar 2021 02:00:06 +0530
-Message-Id: <20210319203007.287802-2-puranjay12@gmail.com>
-X-Mailer: git-send-email 2.30.1
-In-Reply-To: <20210319203007.287802-1-puranjay12@gmail.com>
-References: <20210319203007.287802-1-puranjay12@gmail.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Fri, 19 Mar 2021 14:49:25 -0700 (PDT)
+Received: (nullmailer pid 1647642 invoked by uid 1000);
+        Fri, 19 Mar 2021 21:49:12 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Puranjay Mohan <puranjay12@gmail.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        jic23@kernel.org, knaack.h@gmx.de, linux-kernel@vger.kernel.org,
+        alexandru.ardelean@analog.com
+In-Reply-To: <20210319203007.287802-2-puranjay12@gmail.com>
+References: <20210319203007.287802-1-puranjay12@gmail.com> <20210319203007.287802-2-puranjay12@gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: temperature: Add DT bindings for TMP117
+Date:   Fri, 19 Mar 2021 15:49:12 -0600
+Message-Id: <1616190552.598171.1647641.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add devicetree binding document for TMP117, a digital temperature sensor.
+On Sat, 20 Mar 2021 02:00:06 +0530, Puranjay Mohan wrote:
+> Add devicetree binding document for TMP117, a digital temperature sensor.
+> 
+> Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
+> ---
+>  .../bindings/iio/temperature/ti,tmp117.yaml   | 40 +++++++++++++++++++
+>  1 file changed, 40 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+> 
 
-Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
----
- .../bindings/iio/temperature/ti,tmp117.yaml   | 40 +++++++++++++++++++
- 1 file changed, 40 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+My bot found errors running 'make dt_binding_check' on your patch:
 
-diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-new file mode 100644
-index 000000000..c9ea5db12
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-@@ -0,0 +1,40 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+# Copyright 2021 Puranjay Mohan.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/bindings/iio/temperature/ti,tmp117.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: TI TMP117 - Digital temperature sensor with integrated NV memory
-+
-+maintainers: Puranjay Mohan <puranjay12@gmail.com>
-+
-+description: |
-+  datasheet- https://www.ti.com/lit/gpn/tmp1
-+		-----------------------------
-+		|   ADD0    | Device Address|
-+		-----------------------------
-+		|   Ground  |      0x48     |
-+		|     V+    |	   0x49     |
-+		|    SDA    | 	   0x4A     |
-+		|    SCL    |	   0x4B     |
-+		-----------------------------
-+properties:
-+  compatible:
-+    enum:
-+      - ti,tmp117
-+
-+  reg:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+examples:
-+    |
-+    tmp117@48 {
-+        compatible = "ti,tmp117";
-+        reg = <0x48>;
-+    };
-+
--- 
-2.30.1
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml:14:1: [error] syntax error: found character '\t' that cannot start any token (syntax)
+
+dtschema/dtc warnings/errors:
+make[1]: *** Deleting file 'Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dts'
+Traceback (most recent call last):
+  File "/usr/local/bin/dt-extract-example", line 45, in <module>
+    binding = yaml.load(open(args.yamlfile, encoding='utf-8').read())
+  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/main.py", line 343, in load
+    return constructor.get_single_data()
+  File "/usr/local/lib/python3.8/dist-packages/ruamel/yaml/constructor.py", line 111, in get_single_data
+    node = self.composer.get_single_node()
+  File "_ruamel_yaml.pyx", line 706, in _ruamel_yaml.CParser.get_single_node
+  File "_ruamel_yaml.pyx", line 724, in _ruamel_yaml.CParser._compose_document
+  File "_ruamel_yaml.pyx", line 775, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 889, in _ruamel_yaml.CParser._compose_mapping_node
+  File "_ruamel_yaml.pyx", line 731, in _ruamel_yaml.CParser._compose_node
+  File "_ruamel_yaml.pyx", line 904, in _ruamel_yaml.CParser._parse_next_event
+ruamel.yaml.scanner.ScannerError: while scanning a block scalar
+  in "<unicode string>", line 12, column 14
+found a tab character where an indentation space is expected
+  in "<unicode string>", line 14, column 1
+make[1]: *** [Documentation/devicetree/bindings/Makefile:20: Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dts] Error 1
+make[1]: *** Waiting for unfinished jobs....
+./Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml:  while scanning a block scalar
+  in "<unicode string>", line 12, column 14
+found a tab character where an indentation space is expected
+  in "<unicode string>", line 14, column 1
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml: ignoring, error parsing file
+warning: no schema found in file: ./Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+make: *** [Makefile:1380: dt_binding_check] Error 2
+
+See https://patchwork.ozlabs.org/patch/1456032
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
