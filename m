@@ -2,106 +2,86 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2E04C433C1
-	for <linux-iio@archiver.kernel.org>; Sat, 20 Mar 2021 11:37:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FE50C433E0
+	for <linux-iio@archiver.kernel.org>; Sat, 20 Mar 2021 12:53:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 973896193E
-	for <linux-iio@archiver.kernel.org>; Sat, 20 Mar 2021 11:37:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0BFCB61978
+	for <linux-iio@archiver.kernel.org>; Sat, 20 Mar 2021 12:53:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229640AbhCTLgq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 20 Mar 2021 07:36:46 -0400
-Received: from smtprelay0014.hostedemail.com ([216.40.44.14]:41106 "EHLO
-        smtprelay.hostedemail.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229445AbhCTLgT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 20 Mar 2021 07:36:19 -0400
-X-Greylist: delayed 900 seconds by postgrey-1.27 at vger.kernel.org; Sat, 20 Mar 2021 07:36:19 EDT
-Received: from smtprelay.hostedemail.com (10.5.19.251.rfc1918.com [10.5.19.251])
-        by smtpgrave04.hostedemail.com (Postfix) with ESMTP id 646C71802EC79
-        for <linux-iio@vger.kernel.org>; Sat, 20 Mar 2021 11:06:53 +0000 (UTC)
-Received: from filter.hostedemail.com (clb03-v110.bra.tucows.net [216.40.38.60])
-        by smtprelay07.hostedemail.com (Postfix) with ESMTP id 2E5C71801FC5B;
-        Sat, 20 Mar 2021 11:01:53 +0000 (UTC)
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-HE-Tag: stove97_440bd9227757
-X-Filterd-Recvd-Size: 2673
-Received: from [192.168.1.159] (unknown [47.151.137.21])
-        (Authenticated sender: joe@perches.com)
-        by omf01.hostedemail.com (Postfix) with ESMTPA;
-        Sat, 20 Mar 2021 11:01:52 +0000 (UTC)
-Message-ID: <733be1879f059f87fc03df79b33cf5560f3dfcaf.camel@perches.com>
+        id S229672AbhCTMwj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 20 Mar 2021 08:52:39 -0400
+Received: from www381.your-server.de ([78.46.137.84]:51564 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229544AbhCTMw1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 20 Mar 2021 08:52:27 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=YnxDx14DgbEq/fFkIvh4xmfD+U9hJOx2AnbQTNDX3sE=; b=IQYd13PYwV7LpswK9GYCrY/ECx
+        W1UR4SSToi8Wo+dIPELAHEVIcGDnoQDUghBuDrFz82Aav3IGZ/o8WZtY7l2p/N6Cw1qOcWRsmCdae
+        Em6KCQ5FFRyO+g4mg4TnNsIDFDdj1GxyXuFaNSpWLVFoiwsB9d5yKifloXRJvQpI2l3qiB3JQXXVh
+        L7uCvGg4aq5iyTnGdugt2t6Q0YrlTIHyXUq0H4BiZ/jISDqi2ZqY+Om0t8PhE/E9F6CsUCVSNQIa6
+        Xlb3jXHCjqz4UcqhSbc0VdqJsYb0gK+Ie1dTJhJDVNn1blcCw3lSQk0daary0w9HgBPYFMhZv2gzK
+        A/7VPJRQ==;
+Received: from sslproxy03.your-server.de ([88.198.220.132])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1lNb5b-000B0J-Ez; Sat, 20 Mar 2021 13:52:23 +0100
+Received: from [2001:a61:2aa9:e001:9e5c:8eff:fe01:8578]
+        by sslproxy03.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1lNb5b-0006D0-BK; Sat, 20 Mar 2021 13:52:23 +0100
 Subject: Re: [PATCH 4/4] iio: dac: Convert powerdown read callbacks to
  sysfs_emit()
-From:   Joe Perches <joe@perches.com>
-To:     Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>
+To:     Joe Perches <joe@perches.com>, Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio@vger.kernel.org
-Date:   Sat, 20 Mar 2021 04:01:50 -0700
-In-Reply-To: <20210320071405.9347-5-lars@metafoo.de>
 References: <20210320071405.9347-1-lars@metafoo.de>
-         <20210320071405.9347-5-lars@metafoo.de>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.38.1-1 
+ <20210320071405.9347-5-lars@metafoo.de>
+ <733be1879f059f87fc03df79b33cf5560f3dfcaf.camel@perches.com>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <3e26d657-4f03-5284-8cfe-73131a65e33f@metafoo.de>
+Date:   Sat, 20 Mar 2021 13:52:23 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.8.0
 MIME-Version: 1.0
+In-Reply-To: <733be1879f059f87fc03df79b33cf5560f3dfcaf.camel@perches.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Transfer-Encoding: 8bit
+Content-Language: en-US
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26115/Sat Mar 20 12:03:55 2021)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 2021-03-20 at 08:14 +0100, Lars-Peter Clausen wrote:
-> Update DAC drivers powerdown attribute show callback to use the new
-> sysfs_emit() function.
-> 
-> sysfs_emit() is preferred over raw s*printf() for sysfs attributes since it
-> knows about the sysfs buffer specifics and has some built-in sanity checks.
-
-Thanks.
-
-unrelated trivia:
-
-> diff --git a/drivers/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
-[]
-> @@ -255,7 +255,7 @@ static ssize_t ad5360_read_dac_powerdown(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct ad5360_state *st = iio_priv(indio_dev);
->  
-> -	return sprintf(buf, "%d\n", (bool)(st->ctrl & AD5360_SF_CTRL_PWR_DOWN));
-> +	return sysfs_emit(buf, "%d\n", (bool)(st->ctrl & AD5360_SF_CTRL_PWR_DOWN));
-
-rather than cast to bool, perhaps standardize to use !!(val & test)
-
-> diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
-[]
-> @@ -117,8 +117,8 @@ static ssize_t ad5624r_read_dac_powerdown(struct iio_dev *indio_dev,
->  {
->  	struct ad5624r_state *st = iio_priv(indio_dev);
->  
-> -	return sprintf(buf, "%d\n",
-> -			!!(st->pwr_down_mask & (1 << chan->channel)));
-> +	return sysfs_emit(buf, "%d\n",
-> +			  !!(st->pwr_down_mask & (1 << chan->channel)));
-
-like this and below...
-
-> diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
-[]
-> @@ -57,7 +57,7 @@ static ssize_t ad5686_read_dac_powerdown(struct iio_dev *indio_dev,
->  {
->  	struct ad5686_state *st = iio_priv(indio_dev);
-> 
-> -	return sprintf(buf, "%d\n", !!(st->pwr_down_mask &
-> +	return sysfs_emit(buf, "%d\n", !!(st->pwr_down_mask &
->  				       (0x3 << (chan->channel * 2))));
->  }
-
-etc...
-
-and it might be nicer to rewrap alignments like
-
-	return sysfs_emit(buf, "%d\n",
-			  !!(st->pwr_down_mask & (0x3 << (chan->channel * 2))));
-
-
+On 3/20/21 12:01 PM, Joe Perches wrote:
+> On Sat, 2021-03-20 at 08:14 +0100, Lars-Peter Clausen wrote:
+>> Update DAC drivers powerdown attribute show callback to use the new
+>> sysfs_emit() function.
+>>
+>> sysfs_emit() is preferred over raw s*printf() for sysfs attributes since it
+>> knows about the sysfs buffer specifics and has some built-in sanity checks.
+> Thanks.
+>
+> unrelated trivia:
+>
+>> diff --git a/drivers/iio/dac/ad5360.c b/drivers/iio/dac/ad5360.c
+> []
+>> @@ -255,7 +255,7 @@ static ssize_t ad5360_read_dac_powerdown(struct device *dev,
+>>  Â 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>  Â 	struct ad5360_state *st = iio_priv(indio_dev);
+>>   
+>> -	return sprintf(buf, "%d\n", (bool)(st->ctrl & AD5360_SF_CTRL_PWR_DOWN));
+>> +	return sysfs_emit(buf, "%d\n", (bool)(st->ctrl & AD5360_SF_CTRL_PWR_DOWN));
+> rather than cast to bool, perhaps standardize to use !!(val & test)
+I very much prefer the cast to bool since it semantically stronger. You 
+don't have to know that the !! idiom is used to cast an int to bool.
