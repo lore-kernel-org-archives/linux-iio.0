@@ -2,40 +2,41 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 16576C433DB
-	for <linux-iio@archiver.kernel.org>; Sat, 20 Mar 2021 14:47:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A5B62C433C1
+	for <linux-iio@archiver.kernel.org>; Sat, 20 Mar 2021 14:54:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D723C61967
-	for <linux-iio@archiver.kernel.org>; Sat, 20 Mar 2021 14:47:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 621D56192D
+	for <linux-iio@archiver.kernel.org>; Sat, 20 Mar 2021 14:54:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229835AbhCTOrP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 20 Mar 2021 10:47:15 -0400
-Received: from mail.kernel.org ([198.145.29.99]:56382 "EHLO mail.kernel.org"
+        id S229564AbhCTOyN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 20 Mar 2021 10:54:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59142 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229634AbhCTOqi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 20 Mar 2021 10:46:38 -0400
+        id S229546AbhCTOyA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 20 Mar 2021 10:54:00 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 04FCF61967;
-        Sat, 20 Mar 2021 14:46:34 +0000 (UTC)
-Date:   Sat, 20 Mar 2021 14:46:31 +0000
+        by mail.kernel.org (Postfix) with ESMTPSA id C4BEC61929;
+        Sat, 20 Mar 2021 14:53:57 +0000 (UTC)
+Date:   Sat, 20 Mar 2021 14:53:53 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-Cc:     lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        andriy.shevchenko@linux.intel.com, denis.ciocca@st.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        grygorii.tertychnyi@leica-geosystems.com,
-        andrey.zhizhikin@leica-geosystems.com
-Subject: Re: [PATCH V3 0/2] Add support for ST magnetometer IIS2MDC
-Message-ID: <20210320144631.7941083a@jic23-huawei>
-In-Reply-To: <20210317063902.19300-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20210317063902.19300-1-Qing-wu.Li@leica-geosystems.com.cn>
+To:     Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Pavel Andrianov <andrianov@ispras.ru>,
+        ldv-project@linuxtesting.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: A potential data race in drivers/iio/adc/berlin2-adc.ko
+Message-ID: <20210320145353.5a82a34d@jic23-huawei>
+In-Reply-To: <71686d00-1b1a-9fc2-e65d-dd9be140fd27@metafoo.de>
+References: <e11a245e-95ed-eff0-05a8-264f7598672f@ispras.ru>
+        <e0a0dddc-b5e4-f544-c448-84910861afc1@metafoo.de>
+        <71686d00-1b1a-9fc2-e65d-dd9be140fd27@metafoo.de>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -44,29 +45,66 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 17 Mar 2021 06:39:00 +0000
-LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
+On Thu, 18 Mar 2021 09:47:29 +0100
+Lars-Peter Clausen <lars@metafoo.de> wrote:
 
-> Changes in V3:
+> On 3/18/21 9:27 AM, Lars-Peter Clausen wrote:
+> > On 3/18/21 9:07 AM, Pavel Andrianov wrote:  
+> >> Hi,
+> >>
+> >> berlin2_adc_probe [1] registers two interrupt handlers: 
+> >> berlin2_adc_irq [2]
+> >> and berlin2_adc_tsen_irq [3]. The interrupt handlers operate with the 
+> >> same data, for example, modify
+> >> priv->data with different masks:
+> >>
+> >> priv->data &= BERLIN2_SM_ADC_MASK;
+> >> and
+> >> priv->data &= BERLIN2_SM_TSEN_MASK;
+> >>
+> >> If the two interrupt handlers are executed simultaneously, a 
+> >> potential data race takes place. So, the question is if the situation 
+> >> is possible. For example, in the case of the handlers are executed on 
+> >> different CPU cores.
+
+If we assume there is a race here, the reading into priv->data from
+two different registers on the line above the masking is more of any issue.
+
+> >>
+> >> Best regards,
+> >> Pavel
+> >>
+> >> [1] 
+> >> https://elixir.bootlin.com/linux/latest/source/drivers/iio/adc/berlin2-adc.c#L283 
+> >>
+> >> [2] 
+> >> https://elixir.bootlin.com/linux/latest/source/drivers/iio/adc/berlin2-adc.c#L239 
+> >>
+> >> [3] 
+> >> https://elixir.bootlin.com/linux/latest/source/drivers/iio/adc/berlin2-adc.c#L259
+> >>  
+> > Looking at the code there are two functions. berlin2_adc_tsen_read() 
+> > and berlin2_adc_read(). These two function are take the same mutex and 
+> > can not run concurrently. At the beginning of the protected section 
+> > the corresponding interrupt for that function is enabled and at the 
+> > end disabled. So at least if the hardware works correctly those two 
+> > interrupts will never fire at the same time.
+> >
+> > Now, if the hardware misbehaves the two interrupts could still fire at 
+> > the same time.
+> >
+> > - Lars
+> >  
+> Actually thinking a bit more about this the interrupt could still fire 
+> after it has been disabled since there is no synchronization between the 
+> disable and the interrupt handler. And the handler might be queued on 
+> one CPU, while the disable is running on another CPU.
 > 
-> Reword the commit message, add "Acked-by: Rob Herring"
-Applied to the togreg branch of iio.git and initially pushed out as testing
-to let autobuilders see if they can find anything we missed.
-
-Thanks,
+Superficially it looks like splitting the priv->data and related priv->data_available
+into versions for the normal ADC and the touch screen ADC paths should solve
+this at the trivial cost of a couple of elements in that structure.
+Possibly also need to deal with the wait_queue but I think that's fine as is.
+(haven't thought about it that much!)
 
 Jonathan
-
-> 
-> LI Qingwu (2):
->   dt-bindings: iio: st,st-sensors add IIS2MDC.
->   iio:magnetometer: Add Support for ST IIS2MDC
-> 
->  Documentation/devicetree/bindings/iio/st,st-sensors.yaml | 1 +
->  drivers/iio/magnetometer/st_magn.h                       | 1 +
->  drivers/iio/magnetometer/st_magn_core.c                  | 1 +
->  drivers/iio/magnetometer/st_magn_i2c.c                   | 5 +++++
->  drivers/iio/magnetometer/st_magn_spi.c                   | 5 +++++
->  5 files changed, 13 insertions(+)
-> 
 
