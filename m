@@ -2,74 +2,96 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FC5C433C1
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Mar 2021 19:52:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B34CEC433DB
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Mar 2021 01:23:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C6B8961993
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Mar 2021 19:52:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7493561934
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Mar 2021 01:23:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231778AbhCVTvh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Mar 2021 15:51:37 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38200 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232290AbhCVTv0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 22 Mar 2021 15:51:26 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 316C361937;
-        Mon, 22 Mar 2021 19:51:23 +0000 (UTC)
-Date:   Mon, 22 Mar 2021 19:51:23 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        kernel test robot <lkp@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Subject: Re: [PATCH 1/2] iio: magnetometer: yas530: Fix return value on
- errorpath
-Message-ID: <20210322195123.61d0688a@jic23-huawei>
-In-Reply-To: <CACRpkdbk80cK34vDNjfLkpeso4dC8ZXOe5WGgi2PP8KHSLxuxg@mail.gmail.com>
-References: <20210215153023.47899-1-linus.walleij@linaro.org>
-        <20210221154511.75b3d8a6@archlinux>
-        <CACRpkdbk80cK34vDNjfLkpeso4dC8ZXOe5WGgi2PP8KHSLxuxg@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S231580AbhCWBWm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Mar 2021 21:22:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48890 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231559AbhCWBWc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Mar 2021 21:22:32 -0400
+Received: from mail-qv1-xf29.google.com (mail-qv1-xf29.google.com [IPv6:2607:f8b0:4864:20::f29])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA7D8C061574;
+        Mon, 22 Mar 2021 18:22:31 -0700 (PDT)
+Received: by mail-qv1-xf29.google.com with SMTP id x27so9690506qvd.2;
+        Mon, 22 Mar 2021 18:22:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oy04/El40Ne1ubQawCjKO3bb/wFTwFt+f7NEOOoONMs=;
+        b=qZ620LGPTtlsTf367eU1NiqWUBhP+Ym1FqCf3JA0vAZicZKnNgbAYQDtH9okaEO60J
+         PxZpDselVxLahdpOf89Thr5mvrxGTVS1Y7mXKqD/2NlPryruPXk6ixwNPTj1rrA8tgDf
+         Gp9e36zVhpIhGukhrKAG8QTkopYE2c5FhcI9AdEqmC+/cfFBr5/Mf2OVy9fLQQVWL65U
+         3S7o1lJ76vaMwiDbxJUJlhb+SBWDwEMq8qc+TdDuHiQwLnKFTsJZ29HeydMDwFDTzDjV
+         d1HyXIC5Uvvnt6Qlrv1EOIcelG1tpeyz4J73WnIHxnHxe/ofVugh3zGf1O+W25v8a0G7
+         nrnQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=oy04/El40Ne1ubQawCjKO3bb/wFTwFt+f7NEOOoONMs=;
+        b=EG3FEzol0M0Bn6g0zhiwTZwa6iMY1d7oH+71urjO2L5bcsl5CcGnXDQSmbM37GoNME
+         RYRn0VjVUjgqQxRaITI/PqYbCvJA3LpCBgUgufLaGyxpGFURootnKuypiO+qTlJrx6ax
+         chw9g2UHcoWUC7gpWVUOx+z5UdWM2HKIJxgdmReLg16oj8B1H6acw1VihLC00oWuXNRh
+         +DfMpOEk0CunnYsStXWQUROjPgPBGlXZVrsI1zFJn1XJrS/eawPtyNRNdUQnSUPyb0hn
+         +mrDRzNnh/XhbEnoeTnZ4iAoPA5/FBNsDCPEaeIOkBFnFAqm/3bgxF/K9qmafI/Gnmw6
+         GS4Q==
+X-Gm-Message-State: AOAM532K47QiHHJ/tfRmXu4jO3FIR5RjwdOkm9TnStj+weGVwROA4ntm
+        NGa6oElx/xymZ5qyPzU4p48=
+X-Google-Smtp-Source: ABdhPJwjLF3vW90pqxpmz/cYw4RaTWr+fSidr90ggYnLlnntadiyfnbsk1WZp9kZApKyiJwXhniM4g==
+X-Received: by 2002:a0c:a425:: with SMTP id w34mr2601728qvw.2.1616462551254;
+        Mon, 22 Mar 2021 18:22:31 -0700 (PDT)
+Received: from localhost.localdomain ([37.19.198.117])
+        by smtp.gmail.com with ESMTPSA id 184sm12439706qki.97.2021.03.22.18.22.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Mar 2021 18:22:30 -0700 (PDT)
+From:   Bhaskar Chowdhury <unixbhaskar@gmail.com>
+To:     lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Cc:     rdunlap@infradead.org, Bhaskar Chowdhury <unixbhaskar@gmail.com>
+Subject: [PATCH] iio: dac: Rudimentary typo fix
+Date:   Tue, 23 Mar 2021 06:52:15 +0530
+Message-Id: <20210323012215.451075-1-unixbhaskar@gmail.com>
+X-Mailer: git-send-email 2.31.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 1 Mar 2021 10:00:35 +0100
-Linus Walleij <linus.walleij@linaro.org> wrote:
 
-> On Sun, Feb 21, 2021 at 4:45 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > A bit of bad timing on these.  I'm running behind on pull requests for
-> > my fixes-togreg branch so it doesn't yet have the driver.
-> >
-> > Hence I'll pick these up in a couple of weeks once that's rebased after
-> > I send Greg a pull request.
-> >
-> > Give me a poke if I seem to have forgotten them.  
-> 
-> No problem, the fixes are not critical in any way.
-> I'll track them!
-> 
-Series applied to the fixes-togreg branch of iio.git.
+s/concurent/concurrent/
 
-Apologies for the delay.
+Signed-off-by: Bhaskar Chowdhury <unixbhaskar@gmail.com>
+---
+ drivers/iio/dac/ad5766.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Jonathan
-
-> Yours,
-> Linus Walleij
+diff --git a/drivers/iio/dac/ad5766.c b/drivers/iio/dac/ad5766.c
+index ef1618ea6a20..79837a4b3a41 100644
+--- a/drivers/iio/dac/ad5766.c
++++ b/drivers/iio/dac/ad5766.c
+@@ -89,7 +89,7 @@ static const char * const ad5766_dither_scales[] = {
+ /**
+  * struct ad5766_state - driver instance specific data
+  * @spi:		SPI device
+- * @lock:		Lock used to restrict concurent access to SPI device
++ * @lock:		Lock used to restrict concurrent access to SPI device
+  * @chip_info:		Chip model specific constants
+  * @gpio_reset:		Reset GPIO, used to reset the device
+  * @crt_range:		Current selected output range
+--
+2.31.0
 
