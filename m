@@ -2,134 +2,86 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E859BC43381
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Mar 2021 12:57:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB63DC433DB
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Mar 2021 17:14:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CCF8961A0D
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Mar 2021 12:57:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B52DA61A1A
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Mar 2021 17:14:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234815AbhCXM4k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Mar 2021 08:56:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57848 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234593AbhCXM4J (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Mar 2021 08:56:09 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBF9C0613E0
-        for <linux-iio@vger.kernel.org>; Wed, 24 Mar 2021 05:56:08 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id y6so27529226eds.1
-        for <linux-iio@vger.kernel.org>; Wed, 24 Mar 2021 05:56:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=deviqon.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Ruo6fYyWvyeJFaVWRfRo7oSi7ED8tQGcfoAxMCBCouU=;
-        b=pToGEiEfgiNyZfl5C5BwyI33D499QdsgN5d4sYrAyvneIIsK/sYBAGjJZrICh9FW3g
-         ltW9Mx8eY0dcmwNGjyTEPcdR9Dx0lfN3skiPB61+AvuKuVXuIB1vG5gF6N0PVrbK+V2d
-         DdrBpkOc5Oc3lAazjRDt8f0l4wKevp/U8+82KBYfgfV8JRJnfBIwkV8w4n2qHGLT/qqw
-         m635iR/BBo/0bSiWsebp3FGP9+gM7BAhr9HXzP7tXV/O3XnnfzLp1O49EzdO4pkb9+Bw
-         AJ5q+u8K7rnnwi+Dl1NA3M0i5lZvPul7SbJbu9QuQOfjKteIHLWGMpLvFxkxWLBVTXgr
-         5/uA==
+        id S236883AbhCXRN7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Mar 2021 13:13:59 -0400
+Received: from mail-il1-f171.google.com ([209.85.166.171]:43946 "EHLO
+        mail-il1-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237139AbhCXRNv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Mar 2021 13:13:51 -0400
+Received: by mail-il1-f171.google.com with SMTP id d2so22040654ilm.10;
+        Wed, 24 Mar 2021 10:13:51 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Ruo6fYyWvyeJFaVWRfRo7oSi7ED8tQGcfoAxMCBCouU=;
-        b=AzK7wDnEEQlV7Mxr5AhkpPVwxDUuBHFlL9F7i+oNCiFsi1169dOa9mx35rpxxnP3ds
-         F+tCCDoo8hQXu2KNz3XiW7pWMDZETN6aHgFRuF4f+H9dlR3lt5IfOp83kArNnaIKu+7m
-         XXuJzSt1KUoAkKfx8cQdANi5bGdZMAeTaGkVdDLrX1zhC6BYNnwLgDOuMkr3E+iFDKGD
-         hSB4DsVhtBBcr8uK7S/tjH0cl6bXHQWjApnWHLTEvTdYp5uMTyxYWUUd8XZmqeDowanV
-         CaKXjS23q2WwG/0d+/39UKnFUXFw8ikEjTVS04E3scMiaRAnReVFodbGWeJAekwkN5YT
-         3bVw==
-X-Gm-Message-State: AOAM532aNwFoOh9o2W/HhLo5MwZkQNctHm/jVz6/HfPH4cK9QaJ/zgK/
-        BMNVzy6AY7UojRgDzhsYgoHhKQ==
-X-Google-Smtp-Source: ABdhPJxJui6LdwmCfMr51Xk8gBZNOfiV50TbD4aKH9VG4B65APB61qzksR3QKrC4/mmIV44+rkV7og==
-X-Received: by 2002:a05:6402:142:: with SMTP id s2mr3307510edu.2.1616590567384;
-        Wed, 24 Mar 2021 05:56:07 -0700 (PDT)
-Received: from localhost.localdomain ([5.2.193.191])
-        by smtp.gmail.com with ESMTPSA id fi11sm880282ejb.73.2021.03.24.05.56.06
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=/317AgX3s99KFrkx7VorpzhdeLK4kgmrKfsU5wf4js8=;
+        b=qwiF6qZ4/K2cnTXyU/rp5uwmODdPtJAoPflf8+1b32VJgX2D+nFED7dBFn7DK1P6dB
+         /zQ0hIqaNKWrK3UyxB1hYPAkWXY9oN1xXyyoREEG73cO1ws3JvIybpGLY1+mE5Z5HqYW
+         5WQD3/b7mdgWCWFiLaFK7VgBFyUJyKCNIVOQYkrR+waQvyxtu3rrfolUUrP85oD6tg+e
+         kxF/FPk+k3AuEsH69+VNyU6qAMg1AoxxiUB6LAaemKikKxONTA4Ec77UTZcBi7HJt90D
+         p+3QbFVoP6ASnL9U2Ou398RT0PBFr4a8L2+v/somQTg2k3PWuSx+jCA9FE1b9EFgSNYx
+         ybFg==
+X-Gm-Message-State: AOAM532AEqRTj+gUD7clot2jZOL9cHoZFgM9I5VYkuxmWTVLuy0byVMP
+        EzW0aoYQuvmAkfco2M+crQ==
+X-Google-Smtp-Source: ABdhPJwEjumbwytU+/AtAqPrLFwDlEAjXdmLZVxZGKHBahiSjMnR8NFDw+bfXcaMS8KLfuZe9rry2A==
+X-Received: by 2002:a92:c702:: with SMTP id a2mr3504492ilp.219.1616606030906;
+        Wed, 24 Mar 2021 10:13:50 -0700 (PDT)
+Received: from robh.at.kernel.org ([64.188.179.253])
+        by smtp.gmail.com with ESMTPSA id z17sm1370166ilz.58.2021.03.24.10.13.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 05:56:07 -0700 (PDT)
-From:   Alexandru Ardelean <aardelean@deviqon.com>
-To:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Cc:     coproscefalo@gmail.com, hdegoede@redhat.com,
-        mgross@linux.intel.com, jic23@kernel.org, linux@deviqon.com,
-        Alexandru Ardelean <aardelean@deviqon.com>
-Subject: [PATCH 07/10] platform/x86: toshiba_acpi: use device-managed functions for accelerometer
-Date:   Wed, 24 Mar 2021 14:55:45 +0200
-Message-Id: <20210324125548.45983-8-aardelean@deviqon.com>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210324125548.45983-1-aardelean@deviqon.com>
-References: <20210324125548.45983-1-aardelean@deviqon.com>
+        Wed, 24 Mar 2021 10:13:50 -0700 (PDT)
+Received: (nullmailer pid 3266595 invoked by uid 1000);
+        Wed, 24 Mar 2021 17:13:48 -0000
+Date:   Wed, 24 Mar 2021 11:13:48 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, Robh+dt@kernel.org,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-iio@vger.kernel.org,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        devicetree@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 23/24] dt-bindings:iio:cdc:adi,ad7150 binding doc
+Message-ID: <20210324171348.GA3266557@robh.at.kernel.org>
+References: <20210314181511.531414-1-jic23@kernel.org>
+ <20210314181511.531414-24-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210314181511.531414-24-jic23@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This change converts the IIO registration to use devm_iio_device_alloc()
-and devm_iio_device_register().
-With this change we can remove the manual deregistrations an freeing of the
-IIO data.
+On Sun, 14 Mar 2021 18:15:10 +0000, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> Binding covering the ad7150, ad7151 and ad7156 capacitance to digital
+> convertors.  The only difference between these is how many channels they
+> have (1 or 2)
+> 
+> Whilst it is clearly necessary to provide power to the part, we don't
+> need to know the voltage or anything so if it is always on, there should
+> be no need to have it specified in the binding.
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Robh+dt@kernel.org
+> Cc: devicetree@vger.kernel.org
+> Link: https://lore.kernel.org/r/20210207154623.433442-22-jic23@kernel.org
+> ---
+>  .../bindings/iio/cdc/adi,ad7150.yaml          | 69 +++++++++++++++++++
+>  1 file changed, 69 insertions(+)
+> 
 
-This also makes the deregistration symmetrical with the registration.
-
-One side-effect (that is undesired), is that if devm_iio_device_register()
-fails, then the IIO object will not be free'd and will stick around until
-the parent object is free'd. This is because there is no
-devm_iio_device_free() function anymore in IIO.
-However, this is a pretty bad corner-case that should not happen under
-normal operation.
-
-Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
----
- drivers/platform/x86/toshiba_acpi.c | 11 +++--------
- 1 file changed, 3 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/platform/x86/toshiba_acpi.c b/drivers/platform/x86/toshiba_acpi.c
-index e787c140eec2..12860ef60e4d 100644
---- a/drivers/platform/x86/toshiba_acpi.c
-+++ b/drivers/platform/x86/toshiba_acpi.c
-@@ -2992,11 +2992,6 @@ static int toshiba_acpi_remove(struct acpi_device *acpi_dev)
- 
- 	remove_toshiba_proc_entries(dev);
- 
--	if (dev->accelerometer_supported && dev->indio_dev) {
--		iio_device_unregister(dev->indio_dev);
--		iio_device_free(dev->indio_dev);
--	}
--
- 	if (dev->sysfs_created)
- 		sysfs_remove_group(&dev->acpi_dev->dev.kobj,
- 				   &toshiba_attr_group);
-@@ -3149,7 +3144,7 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
- 
- 	toshiba_accelerometer_available(dev);
- 	if (dev->accelerometer_supported) {
--		dev->indio_dev = iio_device_alloc(&acpi_dev->dev, sizeof(*dev));
-+		dev->indio_dev = devm_iio_device_alloc(parent, sizeof(*dev));
- 		if (!dev->indio_dev) {
- 			pr_err("Unable to allocate iio device\n");
- 			goto iio_error;
-@@ -3164,10 +3159,10 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
- 		dev->indio_dev->num_channels =
- 					ARRAY_SIZE(toshiba_iio_accel_channels);
- 
--		ret = iio_device_register(dev->indio_dev);
-+		ret = devm_iio_device_register(parent, dev->indio_dev);
- 		if (ret < 0) {
- 			pr_err("Unable to register iio device\n");
--			iio_device_free(dev->indio_dev);
-+			dev->indio_dev = NULL;
- 		}
- 	}
- iio_error:
--- 
-2.30.2
-
+Reviewed-by: Rob Herring <robh@kernel.org>
