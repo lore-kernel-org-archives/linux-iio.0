@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4635BC43445
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Mar 2021 12:57:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E445C433F7
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Mar 2021 12:57:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 21D1061A11
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Mar 2021 12:57:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5E12861A0B
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Mar 2021 12:57:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234614AbhCXM4l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Mar 2021 08:56:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
+        id S234546AbhCXM4j (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Mar 2021 08:56:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234642AbhCXM4L (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Mar 2021 08:56:11 -0400
+        with ESMTP id S234574AbhCXM4G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Mar 2021 08:56:06 -0400
 Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A87C5C0613E4
-        for <linux-iio@vger.kernel.org>; Wed, 24 Mar 2021 05:56:10 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id h10so27455459edt.13
-        for <linux-iio@vger.kernel.org>; Wed, 24 Mar 2021 05:56:10 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91160C0613E1
+        for <linux-iio@vger.kernel.org>; Wed, 24 Mar 2021 05:56:06 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id h10so27455183edt.13
+        for <linux-iio@vger.kernel.org>; Wed, 24 Mar 2021 05:56:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=deviqon.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Yr+hqksGhsoym9OCme5jUvwyeFtwCUa6Az4rur4J9Ag=;
-        b=d1Hl+i0+A5Tve+esaspvDfy3ewi9VbVCtugdJQn0K1QWqY+FGWio3cXwpC7Y5TSQmb
-         CAZbREkS4JI5YXjkYuuBEs3n6kd09gpj3KnlxvdNaHRAp2OgrLdRvvUhlbM46RaHyGnU
-         mKANrSt2KGlLDwDn7rEBHMlOwIwN19zUX+/7EvKukLVv5Ku0uh89Er0X9omSScL4/nIe
-         7j3ILSGNXewnknpaIG6j8xNuBUE/M9KN9/57LVC1rEHh2Cw1QnckIZST8W7Ur4RZ9Vrx
-         vqNBC1+J5k8AlrzMWHjFH4Q5jpfBuj/yNGu01EozxvWJn1TU/dzgaNgUynTiC33iG8id
-         isfg==
+        bh=gTwIvnFJ6UsqMLEIUtmaMXWTcL1Cr8qDnDvFwxUlyRo=;
+        b=bmsC/KwYkIzuvFP7Idgwv5+p6kgC9Ye8LKkbjNEhX+tq2iw90b48JioM/uXs8qGp/j
+         7yfjdIrCmrv2sB6OFf7M/FkpXYW7wjcT250s9W0gpygqFAd/vs/vdAD5FiiMWDwwNaTp
+         OJgN+VCaAK4AniCbsqmqMkoi02XTfkzi4z/5KDgEaiJotbunvsNjL6+KH7x2+mBaXm3k
+         Vt5Rq5QBnW9eCfp/6ToIbwu4YojnHMXcjCHciJl5BWnrEhHfyXAJD+pfJu6vho1VyuF+
+         z07Xlox0xuiuC7pl3CAuzlGy+jeFgHtaYJACRudvls1IjhT5jCVEOqQRpigkXONRBI3Q
+         rSIA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Yr+hqksGhsoym9OCme5jUvwyeFtwCUa6Az4rur4J9Ag=;
-        b=DCm8vTV63PyyCgQBd9wI7k0X5jYHQ2yo6KnKHn74ctt9fsP2nJpay4YbEbOAq8yXRj
-         Umyuu17cvUo7El+ZMklWELC6+T/kMYOAFEuVLmO/Zk2a2NfR9g/4+boItuWH+JhxtPyJ
-         e5Uo6xqrsYWsKXvOxnoNjEGRGW8VdN4g1ESi3nNXoABZETYlDh0M5u1wMlhF4LZew0kQ
-         bTogSDoARXmzNfjcZAA4osWZb+s1FjEHjydYxyZh1GStQdkFOPovI2/4DhcX2b8G7Aev
-         8Mhumls81HlS1v419plkf0P/nkJ84jvF0ed23iCGjqfD9Ic9SZ8DwmnM6guGjr9lX5IF
-         CjVQ==
-X-Gm-Message-State: AOAM5332pZmUN6yh7piknQP2yWL93ZPiVpfTDYygyRtCCbnNTJKyWy32
-        nxPSZVfspzbxm2ZVV++iPxJTIg==
-X-Google-Smtp-Source: ABdhPJxIcmTmkmMN9WvwQrOU///P6BOxa5oEnluuOV54BfqppfMs+765Gs7vq6TYuoCyYNuyKS4u5g==
-X-Received: by 2002:aa7:d416:: with SMTP id z22mr3222861edq.239.1616590569433;
-        Wed, 24 Mar 2021 05:56:09 -0700 (PDT)
+        bh=gTwIvnFJ6UsqMLEIUtmaMXWTcL1Cr8qDnDvFwxUlyRo=;
+        b=YJEInUvKTMrQZeujs3ZnppqXKLGtCP4+0FC1X2gcK7VBxirXsZYgT2JFwLqHD19NyS
+         cw4p9RtPGd6VgATFlC/SMsKtEsNInwB7YjUAeSSfgtb+l7L96GwEMX2uccxkNYryMQCt
+         Q8EchDOv3VTO/RSANNtJaaT0ykTmaQGgH7g5LEzE63J+2QyqFF0xyixHbwK4dEyrPz0T
+         bm2sRVM3QwL+/pOveklGodxDMS3Ds1A5NS2GIXEmCm9AMtSrVbAYMt6QVRkJBsr+4AUp
+         TqWJkNqz1ZxNXJLlZb9Bdi7IXjju41WDlKIPgdXPMH/3gT9Vvi83mc+h8X2Z1hdXz/0a
+         jKbQ==
+X-Gm-Message-State: AOAM530pIY+zOWOP3UeX4WYErACMHJnG6PnrkGEVUcGgeaWKJKT1gdxN
+        uvhq+JyHv7VB4J4Ep8rTvebbEg==
+X-Google-Smtp-Source: ABdhPJyN5wrrs/ArU3voReZNJqPglYS2Zo/b32kuE6YTrDfhRKFB4Ch90AD8q0CTaav6C8DazMTz/w==
+X-Received: by 2002:a05:6402:51cd:: with SMTP id r13mr3347222edd.116.1616590565316;
+        Wed, 24 Mar 2021 05:56:05 -0700 (PDT)
 Received: from localhost.localdomain ([5.2.193.191])
-        by smtp.gmail.com with ESMTPSA id fi11sm880282ejb.73.2021.03.24.05.56.08
+        by smtp.gmail.com with ESMTPSA id fi11sm880282ejb.73.2021.03.24.05.56.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 24 Mar 2021 05:56:09 -0700 (PDT)
+        Wed, 24 Mar 2021 05:56:05 -0700 (PDT)
 From:   Alexandru Ardelean <aardelean@deviqon.com>
 To:     platform-driver-x86@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org
 Cc:     coproscefalo@gmail.com, hdegoede@redhat.com,
         mgross@linux.intel.com, jic23@kernel.org, linux@deviqon.com,
         Alexandru Ardelean <aardelean@deviqon.com>
-Subject: [PATCH 09/10] platform/x86: toshiba_acpi: use device-managed for sysfs removal
-Date:   Wed, 24 Mar 2021 14:55:47 +0200
-Message-Id: <20210324125548.45983-10-aardelean@deviqon.com>
+Subject: [PATCH 05/10] platform/x86: toshiba_acpi: register backlight with device-managed variant
+Date:   Wed, 24 Mar 2021 14:55:43 +0200
+Message-Id: <20210324125548.45983-6-aardelean@deviqon.com>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210324125548.45983-1-aardelean@deviqon.com>
 References: <20210324125548.45983-1-aardelean@deviqon.com>
@@ -73,84 +73,70 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This change moves the creation of the Toshiba ACPI group to be
-automatically removed when the parent refcount goes to zero.
-
-The main reason to do this, is to also enforce that the order of removal is
-mirroring the order of initialization.
+This change converts the registration of the backlight data with the
+devm_backlight_device_register() function.
+This way, the backlight_device_unregister() call is no longer required, and
+the order of deregistration is made to be more symmetrical with the
+registration order.
 
 Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
 ---
- drivers/platform/x86/toshiba_acpi.c | 29 +++++++++++++++--------------
- 1 file changed, 15 insertions(+), 14 deletions(-)
+ drivers/platform/x86/toshiba_acpi.c | 20 ++++++++++----------
+ 1 file changed, 10 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/platform/x86/toshiba_acpi.c b/drivers/platform/x86/toshiba_acpi.c
-index a1249f6dde9a..8e8917979047 100644
+index 556f2cc99bad..ada2a2d8c913 100644
 --- a/drivers/platform/x86/toshiba_acpi.c
 +++ b/drivers/platform/x86/toshiba_acpi.c
-@@ -200,7 +200,6 @@ struct toshiba_acpi_dev {
- 	unsigned int usb_three_supported:1;
- 	unsigned int wwan_supported:1;
- 	unsigned int cooling_method_supported:1;
--	unsigned int sysfs_created:1;
- 	unsigned int special_functions;
- 
- 	bool kbd_event_generated;
-@@ -3019,10 +3018,6 @@ static int toshiba_acpi_remove(struct acpi_device *acpi_dev)
- 
- 	remove_toshiba_proc_entries(dev);
- 
--	if (dev->sysfs_created)
--		sysfs_remove_group(&dev->acpi_dev->dev.kobj,
--				   &toshiba_attr_group);
--
- 	return 0;
+@@ -2876,7 +2876,8 @@ static int toshiba_acpi_setup_keyboard(struct device *parent,
+ 	return error;
  }
  
-@@ -3049,6 +3044,13 @@ static void toshiba_acpi_misc_deregister(void *data)
- 	misc_deregister(miscdev);
- }
- 
-+static void toshiba_acpi_sysfs_remove(void *data)
-+{
-+	struct kobject *kobj = data;
-+
-+	sysfs_remove_group(kobj, &toshiba_attr_group);
-+}
-+
- static int toshiba_acpi_add(struct acpi_device *acpi_dev)
+-static int toshiba_acpi_setup_backlight(struct toshiba_acpi_dev *dev)
++static int toshiba_acpi_setup_backlight(struct device *parent,
++					struct toshiba_acpi_dev *dev)
  {
- 	struct device *parent = &acpi_dev->dev;
-@@ -3219,21 +3221,20 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
+ 	struct backlight_properties props;
+ 	int brightness;
+@@ -2924,11 +2925,12 @@ static int toshiba_acpi_setup_backlight(struct toshiba_acpi_dev *dev)
+ 	if (dev->tr_backlight_supported)
+ 		props.max_brightness++;
  
- 	ret = sysfs_create_group(&dev->acpi_dev->dev.kobj,
- 				 &toshiba_attr_group);
--	if (ret) {
--		dev->sysfs_created = 0;
--		goto error;
--	}
--	dev->sysfs_created = !ret;
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(parent,
-+				       toshiba_acpi_sysfs_remove,
-+				       &dev->acpi_dev->dev.kobj);
-+	if (ret)
-+		return ret;
+-	dev->backlight_dev = backlight_device_register("toshiba",
+-						       &dev->acpi_dev->dev,
+-						       dev,
+-						       &toshiba_backlight_data,
+-						       &props);
++	dev->backlight_dev = devm_backlight_device_register(parent,
++							    "toshiba",
++							    &dev->acpi_dev->dev,
++							    dev,
++							    &toshiba_backlight_data,
++							    &props);
+ 	if (IS_ERR(dev->backlight_dev)) {
+ 		ret = PTR_ERR(dev->backlight_dev);
+ 		pr_err("Could not register toshiba backlight device\n");
+@@ -2999,8 +3001,6 @@ static int toshiba_acpi_remove(struct acpi_device *acpi_dev)
+ 		sysfs_remove_group(&dev->acpi_dev->dev.kobj,
+ 				   &toshiba_attr_group);
  
- 	create_toshiba_proc_entries(dev);
- 
- 	toshiba_acpi = dev;
- 
- 	return 0;
+-	backlight_device_unregister(dev->backlight_dev);
 -
--error:
--	toshiba_acpi_remove(acpi_dev);
--	return ret;
- }
+ 	led_classdev_unregister(&dev->led_dev);
+ 	led_classdev_unregister(&dev->kbd_led);
+ 	led_classdev_unregister(&dev->eco_led);
+@@ -3104,9 +3104,9 @@ static int toshiba_acpi_add(struct acpi_device *acpi_dev)
+ 	ret = get_tr_backlight_status(dev, &dummy);
+ 	dev->tr_backlight_supported = !ret;
  
- static void toshiba_acpi_notify(struct acpi_device *acpi_dev, u32 event)
+-	ret = toshiba_acpi_setup_backlight(dev);
++	ret = toshiba_acpi_setup_backlight(parent, dev);
+ 	if (ret)
+-		goto error;
++		return ret;
+ 
+ 	toshiba_illumination_available(dev);
+ 	if (dev->illumination_supported) {
 -- 
 2.30.2
 
