@@ -2,83 +2,157 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 119E1C433DB
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Mar 2021 19:37:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E69DC433E0
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Mar 2021 22:06:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BC0AB619FC
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Mar 2021 19:37:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 644CD61A3C
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Mar 2021 22:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229581AbhCYThC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Mar 2021 15:37:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33450 "EHLO
+        id S231148AbhCYWFg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 25 Mar 2021 18:05:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229930AbhCYTgg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Mar 2021 15:36:36 -0400
-Received: from mail-lj1-x22d.google.com (mail-lj1-x22d.google.com [IPv6:2a00:1450:4864:20::22d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC9A6C06174A
-        for <linux-iio@vger.kernel.org>; Thu, 25 Mar 2021 12:36:33 -0700 (PDT)
-Received: by mail-lj1-x22d.google.com with SMTP id 15so4726140ljj.0
-        for <linux-iio@vger.kernel.org>; Thu, 25 Mar 2021 12:36:33 -0700 (PDT)
+        with ESMTP id S230461AbhCYWFZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Mar 2021 18:05:25 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAF9CC06174A;
+        Thu, 25 Mar 2021 15:05:24 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id bf3so4132382edb.6;
+        Thu, 25 Mar 2021 15:05:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=uLJhf6Pq8M3br+vUFeKdAHCXxfEwlRMxAhokRlNzL+Q=;
-        b=yZPqbLDiV4B23r3fiWRV/yz/hZduKM+h05EJOfZ0dM8LJ8AUa8tT1tsWd+lxpWpK36
-         3ZA7i2TffzxDUHRllh2+qme09TJanhzL09x1Khv1Upxq3M8ffA8YWYc+DBwsVW+fHe7/
-         a7mPUFRQCZaJ8WQDZzLRWBNVrUpFDpMoxdDEYBbS0FxyebcY0gAosAL96RKxEyi8fNKm
-         Hti79W6htGLfZ7be9nVQPbcivQhURjSwxIxQNKu8YUVnuik7weMCJGQbCHx4k7mqYP3P
-         YxHZNwuDpZMQparv0znOso1dNkfaEF29quaLpFkoIV304wVobA7wRy+PDqTSAltSmipF
-         q6Sg==
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=x98MpMVkvAgNwkPqVPR2pEnt8bqdPgOHJHzdHKg0xoo=;
+        b=KmUNdr4oH7c8nkg3RQJnuPsc04evcmNVlLBRZEDqSJ2JqY30jsaSfySihth7txYq4R
+         hIbi4GKeGVwVvrd5s9KyT7kP8A+9qp/Nw4halW1jClGXtfAX0kKNugV/CSNsY6Z0eZh8
+         09OwGJxEaG8mbQRfSBbmPnm81tlV8nubRnLZxH8V9fflDpKTKbCbFpGLmCNKrA/CDaAd
+         3Nj2PPDhL4ccQSNexNkg9q1r2y6L1inMCVZE7bGdBc7KpErws1ssEgnwSAaPB27R43Ml
+         iw5/8CjbxQaq+BDXt4AJS+KZtduEv5CdL+bULN5C5g45gVpM0wZ8OmODMsUqVWa5Y3+Z
+         zTkA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=uLJhf6Pq8M3br+vUFeKdAHCXxfEwlRMxAhokRlNzL+Q=;
-        b=Pmc18QKrr46sKJTt72bxY8cZP8Hj2/QWIe/a+YqmknsKHzLl0MGsYw+USg6D4AZ6iU
-         gqGugUmOtPFetg5ZAqcrT7UEBP/A+8V1fKIhAcn/HANMQDhoA2BqkDtdWsoU7sxSktbZ
-         SVrHc+KSPY/u1dbhGMmsC+4tXPIatXmzqoL4+rpmrbAiYcV+FaiSjTVWuySFFC/uudQQ
-         qi4kdNc/PV5sHr92DIxwnvQfKhhvxkIwirAj1cOaDQHPnT9sUNfYM+nS8jsFwQRP7Hoa
-         dmsZJmOGoExGLJYZ72AC4err9k4H0VFYCfobZpVVP/dFDe3CujRN0bR0vs7SzFEZ8gIm
-         iEIw==
-X-Gm-Message-State: AOAM531FaRaudkZf7qR34PvgEa+iwqDnq4RO5gz+2wSkx2OaIzVKEouU
-        tdzB77ZpGiyjEz7pSX7YT4P66punTlPbMQSrPgzIdg==
-X-Google-Smtp-Source: ABdhPJw7LmlR5fAyfhlIOtoYPdsdesEBRVz2T2z/SWgGzgPJ64fNhbeQ+jsF7+Y9baQEE5oDNA+SCC24FildF8kXumE=
-X-Received: by 2002:a2e:9cb:: with SMTP id 194mr6609153ljj.438.1616700991904;
- Thu, 25 Mar 2021 12:36:31 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210322132408.1003443-1-linus.walleij@linaro.org> <BL0PR12MB501168E715C96BBDF34D1ACCC4629@BL0PR12MB5011.namprd12.prod.outlook.com>
-In-Reply-To: <BL0PR12MB501168E715C96BBDF34D1ACCC4629@BL0PR12MB5011.namprd12.prod.outlook.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Thu, 25 Mar 2021 20:36:20 +0100
-Message-ID: <CACRpkdaLkMfsBDi-fp+6pN4SgaYjjRbH3o=0VFEF2jYG2wozyg@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: imu: inv_mpu6050: Use as standalone trigger
-To:     Jean-Baptiste Maneyrol <JManeyrol@invensense.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references;
+        bh=x98MpMVkvAgNwkPqVPR2pEnt8bqdPgOHJHzdHKg0xoo=;
+        b=HdMx6Jll/U1bgzIqUD9/rbliZ00D2tdpLS8Nn0mxlhbwGekuTwWGeNYHX7TaIkR3s+
+         sVTwbz7so+3FdtNgH2ntrDtVg0PcSFIAWzcUXh0NaluwnLhb4zNBqfTHFFoVvwfSVZ8a
+         0ZG52R4DK2qHwE0kWdSQeHsgtHR1/WoVQhP+Vc4cE2mYLlLtuVELltfJPGryITyxAAXk
+         nurDFeuFqFLtJaqjuNZsLU3dKJNnwF4MjPMgZIy1R2T7OAmuaPcj8RhpNqaBgvdkPrjL
+         Sq8kKUIHSunexguZ+LACRNNGy93VcYrVmTSd/O6i+34SAOWCfTFR2+OO9M1PQw1BP8OY
+         w2ng==
+X-Gm-Message-State: AOAM530M1L16ZWQAZnP3O43CxoKcR/j4SQloaHwOpASqTkN0DeR+dUur
+        MLNrn9NqifJiSiwtgMGTRac=
+X-Google-Smtp-Source: ABdhPJwptJnKlineTUQJgcKW2JJkCQv2wqY7h2XYhotAnOhHEYnoy9xImoQ8nkr06HaYkbtCsTpJng==
+X-Received: by 2002:a05:6402:268c:: with SMTP id w12mr11252987edd.280.1616709922546;
+        Thu, 25 Mar 2021 15:05:22 -0700 (PDT)
+Received: from pop-os.localdomain (cpc97922-walt21-2-0-cust248.13-2.cable.virginm.net. [82.16.251.249])
+        by smtp.gmail.com with ESMTPSA id i6sm2951726ejz.95.2021.03.25.15.05.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Mar 2021 15:05:22 -0700 (PDT)
+From:   Joe Sandom <joe.g.sandom@gmail.com>
+To:     jic23@kernel.org
+Cc:     andy.shevchenko@gmail.com, Joe Sandom <joe.g.sandom@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset="UTF-8"
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v6 2/2] Added AMS tsl2591 device tree binding
+Date:   Thu, 25 Mar 2021 22:05:04 +0000
+Message-Id: <20210325220505.14507-2-joe.g.sandom@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210325220505.14507-1-joe.g.sandom@gmail.com>
+References: <20210325220505.14507-1-joe.g.sandom@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Mar 25, 2021 at 6:08 PM Jean-Baptiste Maneyrol
-<JManeyrol@invensense.com> wrote:
+Device tree binding for AMS/TAOS tsl2591 ambient light sensor.
 
-> Acked-by: Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>
->
-> We're lucky this is working without any sensor running, it was not obvious.
-> On which chip have you tested that?
+This driver supports configuration via device tree and sysfs.
+Supported channels for raw infrared light intensity,
+raw combined light intensity and illuminance in lux.
+The driver additionally supports iio events on lower and
+upper thresholds.
 
-This was tested on the Samsung GT-I8190 (Galaxy S III mini)
-mobile phone, I don't know which version of MPU6050 it is.
+This is a very-high sensitivity light-to-digital converter that
+transforms light intensity into a digital signal.
 
-Yours,
-Linus Walleij
+Datasheet: https://ams.com/tsl25911#tab/documents
+
+Signed-off-by: Joe Sandom <joe.g.sandom@gmail.com>
+---
+Changes in v6:
+- No changes
+
+Notes:
+- Re-submitted to align the version with part 1 of the patch series
+ 
+ .../bindings/iio/light/amstaos,tsl2591.yaml   | 50 +++++++++++++++++++
+ 1 file changed, 50 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/amstaos,tsl2591.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/light/amstaos,tsl2591.yaml b/Documentation/devicetree/bindings/iio/light/amstaos,tsl2591.yaml
+new file mode 100644
+index 000000000000..596a3bc770f4
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/amstaos,tsl2591.yaml
+@@ -0,0 +1,50 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/amstaos,tsl2591.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: AMS/TAOS TSL2591 Ambient Light Sensor (ALS)
++
++maintainers:
++  - Joe Sandom <joe.g.sandom@gmail.com>
++
++description: |
++  AMS/TAOS TSL2591 is a very-high sensitivity
++  light-to-digital converter that transforms light intensity into a digital
++  signal.
++
++properties:
++  compatible:
++    const: amstaos,tsl2591
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++    description:
++      Interrupt (INT:Pin 2) Active low. Should be set to IRQ_TYPE_EDGE_FALLING.
++      interrupt is used to detect if the light intensity has fallen below
++      or reached above the configured threshold values.
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        tsl2591@29 {
++            compatible = "amstaos,tsl2591";
++            reg = <0x29>;
++            interrupts = <20 IRQ_TYPE_EDGE_FALLING>;
++       };
++    };
++...
+-- 
+2.17.1
+
