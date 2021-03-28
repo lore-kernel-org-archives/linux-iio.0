@@ -2,112 +2,106 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89F75C433C1
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 17:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 353ABC433DB
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 18:02:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5B2AD6192E
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 17:43:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F23FE6195D
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 18:02:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229538AbhC1RnL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 28 Mar 2021 13:43:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
+        id S231247AbhC1SCZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 28 Mar 2021 14:02:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230144AbhC1Rmq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Mar 2021 13:42:46 -0400
-Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AB6CC061756
-        for <linux-iio@vger.kernel.org>; Sun, 28 Mar 2021 10:42:46 -0700 (PDT)
-Received: by mail-pf1-x42f.google.com with SMTP id j25so8388136pfe.2
-        for <linux-iio@vger.kernel.org>; Sun, 28 Mar 2021 10:42:46 -0700 (PDT)
+        with ESMTP id S230451AbhC1SCW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Mar 2021 14:02:22 -0400
+Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36178C061756;
+        Sun, 28 Mar 2021 11:02:22 -0700 (PDT)
+Received: by mail-pj1-x1030.google.com with SMTP id nh23-20020a17090b3657b02900c0d5e235a8so4856398pjb.0;
+        Sun, 28 Mar 2021 11:02:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=subject:from:to:references:message-id:date:user-agent:mime-version
-         :in-reply-to:content-language:content-transfer-encoding;
-        bh=Ye+m/OIlmTMjg+aDM6OQcZLwWdpiWjCHWPLqdTZti6w=;
-        b=m5dQPaPRfmY+Ky9LVhk0cPttFQYsJW9dAA3zBwHt/eN/SVS6czLlX2kX28Eq/b+GWu
-         ZOhBsUJe7ze4wYSF6oF9KJtbbh0itZ/p3padHoLbruzvRUkd8vna5XomryO7+d800m5B
-         jmyrLz6tlQYnHZuTZ5xdx7xAuw+uRJYOWR2eAXisnfxzrurYFfUFb5HbvWGlH3AE3Ev+
-         /MMqZ340JR7SInhkyjHZpkcQ6M7T9yeOYgsrjfdAD3AQqwkeGtCUiZPeT9AweUe4X6P1
-         ZMgKel2eDREn2ecor/F0t3tEowTVEl7na4m1BPSO9KIq93/EHkMGe3gZiUvI32sjZs/Y
-         +oJA==
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=SLrPxpePKe+LtiSm7QDz7eMtAeP6QmwAE1sgXjH2QAw=;
+        b=BaEC2EXljj1cxhwSXJWzOcg0C8k6B/ZuiEmxkwsyu/XF9K/nTj0HZ9NnUY2zHdQBTF
+         ZnwA38OT6VTY10SBRqXZqidQ5ckt6t9moH0ulD2iGPAmhyyCDsxuKNnFC9q//gYsBXTa
+         xXXtPhXGRaiFjPNbVzx5BiNOKicv9hPKNkxdabIeKQmCVP0r8N2ggtKm330UOhH9+LzU
+         gtUw8hm7V/7GsV1zve2spd5ttuzLN+YAzdqCBCDwLDMrpCv5/guvWhg7Yb47AesD5Ms9
+         GsVXxFkrxuOqzAvkOA4BBepsZpF9zEuGxbPcQXtNtTOvUP1MCd+iOinAZQizLqhileUP
+         Jkeg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:from:to:references:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=Ye+m/OIlmTMjg+aDM6OQcZLwWdpiWjCHWPLqdTZti6w=;
-        b=TYLxUMqt/Mc6gHqAkaMnM+PvBAt7hC4fO53SBZIZzftK0s9eJ17hLPkd71Axdj+Yd0
-         GyYvRP8GrG+leq8+zGrx6ZiQzTagiShl2GaDgHpN3nQcwuWyRrJkTY6Y66u2IrCxRITg
-         1QxZMmr4KEBTi04LD5XBSMUdxcIM5Y8SbZQv9+h631tvE8RknWhbe0mKnbox/mWsEbND
-         2Z9co3MDg4faKtMb/B+Ijv5WFoHo34xQjOxcFAM1sgVVlC11dPUee7wVQcm/pGQFNgTM
-         nTsS3hFwKQ2bJmVfoHh8J/inFx/C/Pg0AL6gWgoXH6HIh8PspvffQtERlx6PEyYkDOL5
-         ocoA==
-X-Gm-Message-State: AOAM531XDVYhooQD6kQ1hPlO4OXPeDlCFtKhaHB+gevZJXkHB80gm6I1
-        Ddz4aItoiDkb7ZHlqh4QVffKdpBykjPMbw==
-X-Google-Smtp-Source: ABdhPJy+bIJ/cKxpPoNh3pcQwoyeNZ/05eda4Uf3+i//zjomyquRut+mKB6nYbOu8doTowP6ZD+geA==
-X-Received: by 2002:a65:43c6:: with SMTP id n6mr20651877pgp.170.1616953365429;
-        Sun, 28 Mar 2021 10:42:45 -0700 (PDT)
-Received: from ?IPv6:2409:4072:21b:917d:6a69:e0c5:1507:d785? ([2409:4072:21b:917d:6a69:e0c5:1507:d785])
-        by smtp.gmail.com with ESMTPSA id t12sm14239117pga.85.2021.03.28.10.42.42
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 28 Mar 2021 10:42:44 -0700 (PDT)
-Subject: Re: [RFC] GSoC'21 IIO project: Mugil
-From:   Mugilraj D <dmugil2000@gmail.com>
-To:     linux-iio <linux-iio@vger.kernel.org>, dragos.bogdan@analog.com
-References: <CAOgtOjMw0UDhOgXU=HY=+kUhVU+Ya_N=Mvxj-cA_gvj-r9HwuQ@mail.gmail.com>
-Message-ID: <6e95cf24-9b8b-dd8d-d9cd-c3302d0f7993@gmail.com>
-Date:   Sun, 28 Mar 2021 23:12:39 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        bh=SLrPxpePKe+LtiSm7QDz7eMtAeP6QmwAE1sgXjH2QAw=;
+        b=d61pyoXKvjciNQ+I31Mfh8idEaiNat5TSHJPLM0IdhNu6yQ5jxK1TXxO174amsnY5O
+         xS6IIMywYGb2lodJus401pGhyUm+cJh6eY3DAwwXH6Zf8qjuWrUpd0yX4xKsMwto2my7
+         gFajOwtAFCWdzk0/OYE0iHR0ugQdNtW3Clgng3No9smIi3LY500qmkniPVQz2sQpYoEK
+         wNrwN6uoqfDnSUNTlG87t/sUJ7TgDYsdhCxcPbZ6HhJUxvpEk+FC1+tFaOmAp4q83ExG
+         zecnb58HPSvLtRt5ThgwmC5z2FWGiVC9Ep40wPM83Is0JjCp3xxf+Y42358JCRKwAggN
+         4ZzQ==
+X-Gm-Message-State: AOAM533huVQhjz0YAnWO88SMzbyOfANm0L5hQ3azWvepQqeBGWhhRA98
+        R5uqCaYRHlvqxK3SDvcameY=
+X-Google-Smtp-Source: ABdhPJzPuuhrDZq2vmxtq3Kd4ZCOil0iw2b8M6DVjcL7xUQMc7rYYPhi5bR8OikNOVNFbjwJ5N7w8A==
+X-Received: by 2002:a17:90a:f28d:: with SMTP id fs13mr22756545pjb.220.1616954541639;
+        Sun, 28 Mar 2021 11:02:21 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:21b:917d:6a69:e0c5:1507:d785])
+        by smtp.googlemail.com with ESMTPSA id g10sm14046755pgh.36.2021.03.28.11.02.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Mar 2021 11:02:21 -0700 (PDT)
+From:   Mugilraj Dhavachelvan <dmugil2000@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mugilraj Dhavachelvan <dmugil2000@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: accel: da280: Drop unnecessarily used braces
+Date:   Sun, 28 Mar 2021 23:31:23 +0530
+Message-Id: <20210328180124.8762-1-dmugil2000@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
-In-Reply-To: <CAOgtOjMw0UDhOgXU=HY=+kUhVU+Ya_N=Mvxj-cA_gvj-r9HwuQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+As per linux kernel coding style braces are not needed for single
+statement.
+Checkpatch
+warning: braces {} are not necessary for any arm of this statement
+128: FILE: drivers/iio/accel/da280.c:128:
 
+Signed-off-by: Mugilraj Dhavachelvan <dmugil2000@gmail.com>
+---
+ drivers/iio/accel/da280.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-On 26/03/21 3:20 pm, Mugil Raj wrote:
-> Hello All,
-> 
-> [Dragos here you have a quick intro about me if you want,
-> https://lore.kernel.org/linux-iio/CAOgtOjMwnwsiXd8rPeGBBTVkZUeabQ5nLtPts2RQDDMc-TDgKA@mail.gmail.com/]
-> 
-> For GSoC'21 IIO project I would like to choose  AD4695/AD4696 device
-> for implementing the driver.
-> I referred Analog Device, Inc.'s page that lists all drivers and
-> their kernel tree, but there is no existence of any compatible drivers
-> for this component.
-> 
-> About AD4695:
-> - 16-Channel, 16-bit 500 kSPS SAR ADC
-> - "Recommended for New Designs" phase
-> - SPI digital output
-> - Datasheet in [1]
-> - Product overview in [2]
-> 
-> Is there any other factor I should consider before choosing a component
-> to make a driver for? Do I go ahead with AD4695  in my
-> proposal? If yes, are there any recommendations/suggestions you'd like
-> to provide for a beginner indulging in making a kernel driver for such a
-> component?
-> 
+diff --git a/drivers/iio/accel/da280.c b/drivers/iio/accel/da280.c
+index 227bea2d738b..31f290ae4386 100644
+--- a/drivers/iio/accel/da280.c
++++ b/drivers/iio/accel/da280.c
+@@ -125,11 +125,10 @@ static int da280_probe(struct i2c_client *client,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->channels = da280_channels;
+ 
+-	if (ACPI_HANDLE(&client->dev)) {
++	if (ACPI_HANDLE(&client->dev))
+ 		chip = da280_match_acpi_device(&client->dev);
+-	} else {
++	else
+ 		chip = id->driver_data;
+-	}
+ 
+ 	if (chip == da226) {
+ 		indio_dev->name = "da226";
+-- 
+2.25.1
 
-I would like to hear from Dragos but seems like he is busy/out of station. 
-So, if possible can any other ADI peoples comment on this?
-
-> Thanks,
-> Mugil
-> 
-> [1] https://www.analog.com/media/en/technical-documentation/data-sheets/ad4695_4696.pdf
-> [2] https://www.analog.com/en/products/ad4695.html#product-overview
-> 
