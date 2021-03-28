@@ -2,90 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55010C433DB
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 03:38:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACF5C433DB
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 03:53:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1010561937
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 03:38:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F207A6197E
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 03:53:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230495AbhC1DhY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 27 Mar 2021 23:37:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47400 "EHLO
+        id S230512AbhC1DxJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 27 Mar 2021 23:53:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbhC1Dgq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 27 Mar 2021 23:36:46 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CAEBC0613B1
-        for <linux-iio@vger.kernel.org>; Sat, 27 Mar 2021 20:36:46 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id j25so7602878pfe.2
-        for <linux-iio@vger.kernel.org>; Sat, 27 Mar 2021 20:36:46 -0700 (PDT)
+        with ESMTP id S229647AbhC1Dwp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 27 Mar 2021 23:52:45 -0400
+Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D663C0613B1;
+        Sat, 27 Mar 2021 20:52:43 -0700 (PDT)
+Received: by mail-qt1-x82b.google.com with SMTP id h7so7139328qtx.3;
+        Sat, 27 Mar 2021 20:52:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
+        d=gmail.com; s=20161025;
+        h=sender:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=g55s+qGud9ob/EhXq7vN0WUXspe2A0tB4UDs0xkj+cg=;
-        b=oEbZdEBz5EveLJl9AS35lLDorko7es888fvu2VP9/WP4UTblzQYx1OfKb/P/MK03u1
-         3ISsIC0AAspY+PuSgZ2X4Ak05DbNGC/UnU8ywoddQNQxEY21fNHWY4fSPUImO3+Z2QXa
-         ArbbL0uycLSiWLmGuO7lhgPfqDgV/VcEU87oE=
+        bh=rc7yssPbV27sYNALyL+r3owRxSm/5ty2UM3T5ky+ids=;
+        b=H5ybrH9DttYV1k+Y4B1WzKhMHEJtScukLQbtndy6DB7p8KvLu78+x+Ws3jTwbYPz9V
+         iL8mGZqkOpd3KRsjImM4iRB20okyB9Nh5/xjIhQABcTpiRIammSIpGTvK6Sad/Q7Byo0
+         HtDPwXh6Y9wtA8pkeoar8hs4OVjMhgPhb6zRe3PiznfLI2AWuxOiKwHHcFql2rcOZfVK
+         TiG5XfYvCGOLULFvu/EENkYRqBdxItKOKNnKfnY6i7Kg0U2Rm8aKZJmLN1aVF4D+rnfv
+         +g647T0MWuIB/7hsyaFavwiTuIrPIsvtLpik/3DXOYi5uyBLweNt+g47d75lw2NDHnCT
+         zGTg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=g55s+qGud9ob/EhXq7vN0WUXspe2A0tB4UDs0xkj+cg=;
-        b=t3YM66nJflibDf4yZhn0bEFV52yLaV3EU4xS8XLMFBHJ4j9WygQzyiygwYp/74GtBy
-         NY4E6iPRFAi32b9a3nx/Zipyln02WFNIFProF+D4YY/B8tuMNgmQvyTMK39ZiyKpAtf+
-         oITocuO2CiZcyWlxpc9UKbEFyRENh96Z4az3uDIOQ44ktcC1xynN77xEY6jOKSEpNIZ0
-         e+DDUqlJ9H2LbMhaaH4/7Bb/tsll9554r/nEYpxpbtzthppkvZ3mTHGmYUUlZne6xytm
-         dx97Tds7RbW/2d/ksTkwmTnFkoLOWNKVEBcpId0wCujq9DCsKhcu+2eYYxtTW31UXo5f
-         WJsQ==
-X-Gm-Message-State: AOAM530hTIZi0D2jhwLmdoojncUshBTNKqmWP2Cxa2jlC+FeSkNmZNn/
-        xkYw4WmMZ36db+S3zya2d5HJLsbnVUHyZA==
-X-Google-Smtp-Source: ABdhPJw/O7R9adXH3IH5bLakCDoptxyHNqfrJtZ8x+kxzRMv53WwcjrCUk/iyH9h9nkWxdAYi4l4jA==
-X-Received: by 2002:a63:ec50:: with SMTP id r16mr18222132pgj.451.1616902606147;
-        Sat, 27 Mar 2021 20:36:46 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:5993:d227:a897:4c2a])
-        by smtp.gmail.com with UTF8SMTPSA id gb1sm11845283pjb.21.2021.03.27.20.36.44
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 27 Mar 2021 20:36:45 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     jic23@kernel.org, lars@metafoo.de, swboyd@chromium.org,
-        campello@chromium.org, andy.shevchenko@gmail.com,
-        ardeleanalex@gmail.com
-Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 0/2] iio: sx9310: Add debouncer-depth parameters
-Date:   Sat, 27 Mar 2021 20:36:37 -0700
-Message-Id: <20210328033639.1021599-1-gwendal@chromium.org>
-X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
+        h=x-gm-message-state:sender:from:to:cc:subject:date:message-id
+         :mime-version:content-transfer-encoding;
+        bh=rc7yssPbV27sYNALyL+r3owRxSm/5ty2UM3T5ky+ids=;
+        b=QK/Jx/XxqVv5f+9S0+oQEVyK/rw6bNU8TlwECOCTl5mLEzazosub3ANpp9y/AONo5S
+         1ZzNWVa0ZHUjNnxPSzyiEeqHGteIfKypTMgmq4l9y2rcaupi2d5PNX5R+a7jxXi7fdS6
+         qi7OcY1AnLv+eAlCyPMrTsWKvzyP/k3ktySt+E2zkN9maAsLvW0u9mEwalHNueh+zphE
+         GRUIQSxBQt5MI7eiztjF9Mjdv4kRA3O8iwy6tt/KvYvPF5uWI4tnytqJHjOqH3cuwF13
+         cQ9hHAVNZ3+2Id0yXkCgh6Mp4eGA+lYhK1z6LB2chHHiFvdsY8jMJXILDtpYiVkBDvIn
+         E7vg==
+X-Gm-Message-State: AOAM533OkLpPD1ULpeH0CONRZ1S5gCD16JUSWHnWQAQIJMN9CQoag0WF
+        ivDB9ctV3VA9XR+SqDZiqdU=
+X-Google-Smtp-Source: ABdhPJwajyUzsIXfJ9bvfbUUi1c4OU1ufMrq1i2EHc9UbUgtmwThpRlGoRyaVIn5P4m7ygCzq5xEeg==
+X-Received: by 2002:ac8:5313:: with SMTP id t19mr17897181qtn.148.1616903561702;
+        Sat, 27 Mar 2021 20:52:41 -0700 (PDT)
+Received: from kde-neon-desktop.orld.fl.wtsky.net ([208.64.158.251])
+        by smtp.gmail.com with ESMTPSA id i14sm8715426qtq.81.2021.03.27.20.52.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 27 Mar 2021 20:52:41 -0700 (PDT)
+Sender: Julian Braha <julian.braha@gmail.com>
+From:   Julian Braha <julianbraha@gmail.com>
+To:     jic23@kernel.org
+Cc:     fazilyildiran@gmail.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] drivers: iio: adc: fix unmet dependency on OF
+Date:   Sat, 27 Mar 2021 23:51:59 -0400
+Message-Id: <20210328035159.47259-1-julianbraha@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Semtech SX9310 SAR sensor has a debouncer filter: only when N
-measurements are above/below the far/close threshold an event is
-sent to the host.
-By default the debouncer is set to 2 events for the close to far
-transition and 1 event (no debounce) for far to close.
-It is a balance speed of detection and false positive avoidance.
+When AD9467 is enabled, and OF is disabled,
+Kbuild gives the following warning:
 
-On some chromebooks, the debouncer is set to a larger number.
+WARNING: unmet direct dependencies detected for ADI_AXI_ADC
+ Depends on [n]: IIO [=y] && HAS_IOMEM [=y] && OF [=n]
+ Selected by [y]:
+ - AD9467 [=y] && IIO [=y] && SPI [=y]
 
-This patch applies on top of commit 103d6ec82676 ("iio: sx9310: Support ACPI properties")
+This is because AD9467 selects ADI_AXI_ADC
+without selecting or depending on OF,
+despite ADI_AXI_ADC depending on OF.
 
-Gwendal Grignou (2):
-  dt-bindings: iio: sx9310: Add close/far debouncer strength
-  iio: sx9310: Add debouncer-depth parameters
+Signed-off-by: Julian Braha <julianbraha@gmail.com>
+---
+ drivers/iio/adc/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
- .../iio/proximity/semtech,sx9310.yaml         | 18 ++++++++++++++++
- drivers/iio/proximity/sx9310.c                | 21 ++++++++++++++++++-
- 2 files changed, 38 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index e0667c4b3c08..7606c9b1630e 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -248,7 +248,7 @@ config AD799X
+ 
+ config AD9467
+ 	tristate "Analog Devices AD9467 High Speed ADC driver"
+-	depends on SPI
++	depends on SPI && OF
+ 	select ADI_AXI_ADC
+ 	help
+ 	  Say yes here to build support for Analog Devices:
 -- 
-2.31.0.291.g576ba9dcdaf-goog
+2.25.1
 
