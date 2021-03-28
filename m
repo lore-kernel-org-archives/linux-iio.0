@@ -2,145 +2,127 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB41C433C1
-	for <linux-iio@archiver.kernel.org>; Sat, 27 Mar 2021 17:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 57EE3C433E0
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 03:38:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C6B196199F
-	for <linux-iio@archiver.kernel.org>; Sat, 27 Mar 2021 17:02:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 269EC619A0
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Mar 2021 03:38:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230114AbhC0RCW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 27 Mar 2021 13:02:22 -0400
-Received: from mail-oi1-f170.google.com ([209.85.167.170]:41475 "EHLO
-        mail-oi1-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229990AbhC0RCB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 27 Mar 2021 13:02:01 -0400
-Received: by mail-oi1-f170.google.com with SMTP id z15so8993950oic.8;
-        Sat, 27 Mar 2021 10:02:00 -0700 (PDT)
+        id S230470AbhC1DhZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 27 Mar 2021 23:37:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47418 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230512AbhC1Dgu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 27 Mar 2021 23:36:50 -0400
+Received: from mail-pg1-x533.google.com (mail-pg1-x533.google.com [IPv6:2607:f8b0:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06D7FC0613B1
+        for <linux-iio@vger.kernel.org>; Sat, 27 Mar 2021 20:36:50 -0700 (PDT)
+Received: by mail-pg1-x533.google.com with SMTP id r17so7263381pgi.0
+        for <linux-iio@vger.kernel.org>; Sat, 27 Mar 2021 20:36:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=j9qFxmM7PC3HjqXfTJfN+OFOhIINqBJVEYzQMAqXcGA=;
+        b=M8EhQfC4W6FHV3cDWap/DkH8n5aAmlpmNhyYhEzvvYfkdO5nEhZclvVTKiuveLvw9I
+         cbL9bK0zAvsuu//aTsisUri1xAMSr3pVO1hWTbzeHjZNYlKM0ZpJ08/h5DeFepnZbmfs
+         Of6huu2I/NV+k0Cczzp5vdOXqpejA65rq+T/o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ldGNUOc4SBVAB+z9wRCXO6PlOlMpMotMJHqEqZkxP0Q=;
-        b=KTidhLynN64ioxemkxCaA2vGwmBb1MyDohHczP/uqpBuA5FIIJ+VCYg4zCSbwi0VSP
-         Xa+PfUSFTr2KdNL99sYxr3wxt7P0EiL8wzV6+my9RHQqgvXxJRo255MxQ0HQxLAZgboN
-         Bd4dd6aP9Tasvt5O5CMTgVUj65mPWkPceSZ0R9ItTCNK+MzEvJ1dMWL+SVKxxgU0brlz
-         S7e9rAn/hPmakKBdhqeHSfEDovJNXQaJ4/G2+CE2C4r+9A/NzoaG5lgd8SbJMwxfj1Pz
-         Fa3s4aodMk1JOxb0RkTlQ+ZP4NOnGMJj2JKfjoB/QcoSOxmcHyPZzLbW9QvHwnCAC5cB
-         kjDw==
-X-Gm-Message-State: AOAM531O4rGD2tgIHe2CZC9tq8MXijR24X6cH6Na3t7IUhkP4f8FLFtN
-        0voWZgSae5WW0KInKizoe9BdbqYfug==
-X-Google-Smtp-Source: ABdhPJxxiEl5w7Dd7XM49OqfgN5wHD0q2gRI43tMxxKgnPf42SyfZhIxlLA6NROR/Hy1Na3KPZa6gA==
-X-Received: by 2002:a54:408a:: with SMTP id i10mr14047231oii.141.1616864520517;
-        Sat, 27 Mar 2021 10:02:00 -0700 (PDT)
-Received: from robh.at.kernel.org ([172.58.107.88])
-        by smtp.gmail.com with ESMTPSA id z14sm2511644oid.12.2021.03.27.10.01.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 27 Mar 2021 10:01:59 -0700 (PDT)
-Received: (nullmailer pid 245995 invoked by uid 1000);
-        Sat, 27 Mar 2021 17:01:53 -0000
-Date:   Sat, 27 Mar 2021 11:01:53 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-Cc:     jic23@kernel.org, michal.simek@xilinx.com, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        git@xilinx.com
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: Add ti,ina260.yaml
-Message-ID: <20210327170153.GA243988@robh.at.kernel.org>
-References: <20210322105056.30571-1-raviteja.narayanam@xilinx.com>
- <20210322105056.30571-2-raviteja.narayanam@xilinx.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=j9qFxmM7PC3HjqXfTJfN+OFOhIINqBJVEYzQMAqXcGA=;
+        b=VuWnGAUEm638Hcl2pz8QCgBPO0Cfkj6FjGtza/6dV1AEPZkAZLT8J4jpxCJa1Ur3U2
+         FmAkIfcdZvZoD0D9+AWGNf3CxlZIdwxDEEEZgReWxNICuIzNIF1yGfWHADcoJvFKQ3tr
+         u2ys7rJsG5GVu6fN1yPr5hETmJFCHTWQJyYeYc8R8+mWZJzfhbBEJmNGAGlwTI+ol7ad
+         xmCINItft7alXWHVlu+DtfOiYS7MhFsn4v8o2ko1t/I2KiDgEJ6ggDS8+7hZKHFfecqP
+         QKSVbYx1yDHTYQxxaIHhw86NlaULUb9BzYPTpkG4kY12CpP9Wf6buLyXY/LabrF2EcAY
+         xF4Q==
+X-Gm-Message-State: AOAM533RW4Uqvve8Bgnx02nSEG+EzvIrBb5Ezb+yRo+jckVYsoQPxKFC
+        TqPn5c4yY6MfSOkJdk9RgYF11Q==
+X-Google-Smtp-Source: ABdhPJxIkOWp9AM1cU0EfkTNpxya9df7+547JU6zFQwHIByCqf4G4WHXu0LnEVyuNvOCOHBp2PaAOQ==
+X-Received: by 2002:aa7:980a:0:b029:20c:5402:5de9 with SMTP id e10-20020aa7980a0000b029020c54025de9mr19769635pfl.18.1616902609590;
+        Sat, 27 Mar 2021 20:36:49 -0700 (PDT)
+Received: from localhost ([2620:15c:202:201:5993:d227:a897:4c2a])
+        by smtp.gmail.com with UTF8SMTPSA id u9sm13075121pgc.59.2021.03.27.20.36.48
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 27 Mar 2021 20:36:49 -0700 (PDT)
+From:   Gwendal Grignou <gwendal@chromium.org>
+To:     jic23@kernel.org, lars@metafoo.de, swboyd@chromium.org,
+        campello@chromium.org, andy.shevchenko@gmail.com,
+        ardeleanalex@gmail.com
+Cc:     linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH 2/2] iio: sx9310: Add debouncer-depth parameters
+Date:   Sat, 27 Mar 2021 20:36:39 -0700
+Message-Id: <20210328033639.1021599-3-gwendal@chromium.org>
+X-Mailer: git-send-email 2.31.0.291.g576ba9dcdaf-goog
+In-Reply-To: <20210328033639.1021599-1-gwendal@chromium.org>
+References: <20210328033639.1021599-1-gwendal@chromium.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210322105056.30571-2-raviteja.narayanam@xilinx.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Mar 22, 2021 at 04:20:55PM +0530, Raviteja Narayanam wrote:
-> Add a binding for Texas Instruments INA260 power monitor device.
-> 
-> Signed-off-by: Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-> ---
->  .../bindings/iio/adc/ti,ina260.yaml           | 57 +++++++++++++++++++
->  1 file changed, 57 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,ina260.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ina260.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ina260.yaml
-> new file mode 100644
-> index 000000000000..97c68188e53d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti,ina260.yaml
-> @@ -0,0 +1,57 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/adc/ti,ina260.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Texas Instruments INA260 power monitor
-> +
-> +maintainers:
-> +  - Raviteja Narayanam <raviteja.narayanam@xilinx.com>
-> +
-> +description: |
-> +  The INA260 is a digital-output, current, power and voltage monitor
-> +  with an I2C and SMBUS compatible interface with an integrated shunt
-> +  resistor. It features up to 16 programmable addresses on I2C compatible
-> +  interface. Datasheet - https://www.ti.com/lit/ds/symlink/ina260.pdf?ts=1608607288391
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - ti,ina260
-> +
-> +  reg:
-> +    description: |
-> +      The 7-bits long I2c address of the device
+Semtech SX9310 SAR sensor has a debouncer filter: only when N
+measurements are above/below the far/close threshold an event is
+sent to the host.
+By default the debouncer is set to 2 events for the close to far
+transition and 1 event (no debounce) for far to close.
+It is a balance speed of detection and false positive avoidance.
 
-Just 'maxItems: 1'
+On some chromebooks, the debouncer is set to a larger number.
 
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-> +
-> +  interrupts:
-> +    description: |
-> +      IRQ line for the device
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+---
+ drivers/iio/proximity/sx9310.c | 21 ++++++++++++++++++++-
+ 1 file changed, 20 insertions(+), 1 deletion(-)
 
-That's every 'interrupts' property. Drop.
+diff --git a/drivers/iio/proximity/sx9310.c b/drivers/iio/proximity/sx9310.c
+index 1ed749190bff9..6f92cf18fac31 100644
+--- a/drivers/iio/proximity/sx9310.c
++++ b/drivers/iio/proximity/sx9310.c
+@@ -1219,8 +1219,8 @@ static const struct sx9310_reg_default *
+ sx9310_get_default_reg(struct device *dev, int idx,
+ 		       struct sx9310_reg_default *reg_def)
+ {
++	u32 start = 0, raw = 0, pos = 0, depth = 0;
+ 	u32 combined[SX9310_NUM_CHANNELS];
+-	u32 start = 0, raw = 0, pos = 0;
+ 	unsigned long comb_mask = 0;
+ 	int ret, i, count;
+ 	const char *res;
+@@ -1325,6 +1325,25 @@ sx9310_get_default_reg(struct device *dev, int idx,
+ 		reg_def->def |= FIELD_PREP(SX9310_REG_PROX_CTRL7_AVGPOSFILT_MASK,
+ 					   pos);
+ 		break;
++	case SX9310_REG_PROX_CTRL10:
++		ret = device_property_read_u32(dev, "semtech,close-debouncer-depth", &depth);
++		if (ret)
++			raw = FIELD_GET(SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK,
++					reg_def->def);
++		else
++			raw = ilog2(depth);
++		reg_def->def &= ~SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK;
++		reg_def->def |= FIELD_PREP(SX9310_REG_PROX_CTRL10_CLOSE_DEBOUNCE_MASK, raw);
++
++		ret = device_property_read_u32(dev, "semtech,far-debouncer-depth", &depth);
++		if (ret)
++			raw = FIELD_GET(SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK,
++					reg_def->def);
++		else
++			raw = ilog2(depth);
++		reg_def->def &= ~SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK;
++		reg_def->def |= FIELD_PREP(SX9310_REG_PROX_CTRL10_FAR_DEBOUNCE_MASK, raw);
++		break;
+ 	}
+ 
+ 	return reg_def;
+-- 
+2.31.0.291.g576ba9dcdaf-goog
 
-You need to say how many: maxItems: 1
-
-> +
-> +  label:
-> +    description: |
-> +      A symbolic name for the device
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#io-channel-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    i2c {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +
-> +      ina260@40 {
-> +        compatible = "ti,ina260";
-> +        reg = <0x40>;
-> +        #io-channel-cells = <1>;
-> +      };
-> +    };
-> +...
-> -- 
-> 2.17.1
-> 
