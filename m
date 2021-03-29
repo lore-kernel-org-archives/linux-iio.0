@@ -2,85 +2,77 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-1.8 required=3.0 tests=BAYES_00,DATE_IN_PAST_96_XX,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8005C433C1
-	for <linux-iio@archiver.kernel.org>; Mon, 29 Mar 2021 15:43:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A09CC433C1
+	for <linux-iio@archiver.kernel.org>; Mon, 29 Mar 2021 21:59:04 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 93CE761929
-	for <linux-iio@archiver.kernel.org>; Mon, 29 Mar 2021 15:43:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 053CC61481
+	for <linux-iio@archiver.kernel.org>; Mon, 29 Mar 2021 21:59:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbhC2PnR convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 29 Mar 2021 11:43:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33130 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231237AbhC2Pmy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Mar 2021 11:42:54 -0400
-Received: from saturn.retrosnub.co.uk (saturn.retrosnub.co.uk [IPv6:2a00:1098:86::1:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F557C061574
-        for <linux-iio@vger.kernel.org>; Mon, 29 Mar 2021 08:42:54 -0700 (PDT)
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 903089E0183;
-        Mon, 29 Mar 2021 16:42:50 +0100 (BST)
-Date:   Sat, 20 Mar 2021 18:26:09 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Drew Fustini <drew@beagleboard.org>
-Cc:     Sean Nyekjaer <sean@geanix.com>,
-        Gregory Clement <gregory.clement@bootlin.com>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        David Lechner <david@lechnology.com>,
-        linux-iio@vger.kernel.org, Dan Murphy <dmurphy@ti.com>
-Subject: Re: iio: adc: anyone working on TI ADS7066?
-Message-ID: <20210320182609.5e4e7f3c@jic23-huawei>
-In-Reply-To: <20210320035234.GA95301@x1>
-References: <20210320035234.GA95301@x1>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S230381AbhC2V6b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 29 Mar 2021 17:58:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40450 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230089AbhC2V6Q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 29 Mar 2021 17:58:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8A41961481;
+        Mon, 29 Mar 2021 21:58:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617055096;
+        bh=ARxgytYYbc0pvxc9szjy73NYkLMwf11cpxbHeU690ek=;
+        h=Date:From:To:Cc:Subject:From;
+        b=h98V8oc5H1o6eE1RXoALvixBgKafkpcm1VRxrmrZ6JUKku0TJrda1xJ3kceLyC5GH
+         qUJL+1jA1R8MU0Bc7lrZ5JSP9qGhDOzhgBT5pEo+ghLHMviMBYNWeRIaw8rR2tfkvt
+         //2qQHgek3RMySa78iHvsFqdHpSI8ziiu30jte3k6bLXDhQsCZyay7SMsn0ej3bpLt
+         l9caVojhwOn/b+e2vfdxlgS5sf8xb6qMWaacFIbNSBszLt54AOWuKwWdWCRQRV8MwU
+         lkD5lxlHxqYh8ExIx1RDr4gLUIxEtYi7I2jF/ChILUnh2qG7/QL57dLeqY7TwBo8dY
+         VHrWGDAfhA9aQ==
+Date:   Mon, 29 Mar 2021 15:58:17 -0500
+From:   "Gustavo A. R. Silva" <gustavoars@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        "Gustavo A. R. Silva" <gustavoars@kernel.org>
+Subject: [PATCH][next] iio: hrtimer-trigger: Fix potential integer overflow
+ in iio_hrtimer_store_sampling_frequency
+Message-ID: <20210329205817.GA188755@embeddedor>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
-Message-ID: <20210320182609.UDho2FXy64c2jirpY31aCAiR7VAOQno1jLbcbjFOGP8@z>
 
-On Fri, 19 Mar 2021 20:52:34 -0700
-Drew Fustini <drew@beagleboard.org> wrote:
+Add suffix ULL to constant 1000 in order to avoid a potential integer
+overflow and give the compiler complete information about the proper
+arithmetic to use. Notice that this constant is being used in a context
+that expects an expression of type unsigned long long, but it's
+currently evaluated using 32-bit arithmetic.
 
-> I have a board with a TI ADS7066 8-channel ADC [1] that I want to get
-> working in Linux.  I see there is already driver support in iio for
-> ADS1015, ADS79xx, ADS8344, ADS868x and ADS124S0x.
-> 
-> Is anyone already working with the ADS7066 or a similar part in that
-> series?
-> 
-> If not, I'll take one of the existing TI drivers as a template for the
-> ADS7066 driver.
-> 
-> Thank you,
-> Drew
+Addresses-Coverity-ID: 1503062 ("Unintentional integer overflow")
+Fixes: dafcf4ed8392 ("iio: hrtimer: Allow sub Hz granularity")
+Signed-off-by: Gustavo A. R. Silva <gustavoars@kernel.org>
+---
+ drivers/iio/trigger/iio-trig-hrtimer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Hi Drew,
-
-I've not seen anything for this part.
-
-From a 10 second glance at the data sheet I see it's capable of
-ADC / GPIO on each pin.   If you plan to support that functionality
-at somepoint make sure to define dt bindings and similar to specify
-which channels are enabled and dynamically create the iio_chan_spec
-array to match.  It can be a bit ugly to retrofit later.
-
-Oh. It does daisy chaining as well. That is always fun to support
-though I guess you may well not have it wired up to do that.
-Oversampling as well - though that looks nice and simple for once.
-
-Jonathan
-
-
-> 
-> [1] https://www.ti.com/product/ADS7066
-> 
-> 
+diff --git a/drivers/iio/trigger/iio-trig-hrtimer.c b/drivers/iio/trigger/iio-trig-hrtimer.c
+index 51e362f091c2..716c795d08fb 100644
+--- a/drivers/iio/trigger/iio-trig-hrtimer.c
++++ b/drivers/iio/trigger/iio-trig-hrtimer.c
+@@ -63,7 +63,7 @@ ssize_t iio_hrtimer_store_sampling_frequency(struct device *dev,
+ 	if (integer < 0 || fract < 0)
+ 		return -ERANGE;
+ 
+-	val = fract + 1000 * integer;  /* mHz */
++	val = fract + 1000ULL * integer;  /* mHz */
+ 
+ 	if (!val || val > UINT_MAX)
+ 		return -EINVAL;
+-- 
+2.27.0
 
