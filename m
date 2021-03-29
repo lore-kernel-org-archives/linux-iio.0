@@ -2,108 +2,87 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A942FC433DB
-	for <linux-iio@archiver.kernel.org>; Mon, 29 Mar 2021 07:19:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8389DC433DB
+	for <linux-iio@archiver.kernel.org>; Mon, 29 Mar 2021 07:32:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7DBA161936
-	for <linux-iio@archiver.kernel.org>; Mon, 29 Mar 2021 07:19:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3EFF261935
+	for <linux-iio@archiver.kernel.org>; Mon, 29 Mar 2021 07:32:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230450AbhC2HS7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 29 Mar 2021 03:18:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34694 "EHLO
+        id S231142AbhC2HcD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 29 Mar 2021 03:32:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229711AbhC2HSo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Mar 2021 03:18:44 -0400
-Received: from mail-il1-x12a.google.com (mail-il1-x12a.google.com [IPv6:2607:f8b0:4864:20::12a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 739D9C061574;
-        Mon, 29 Mar 2021 00:18:44 -0700 (PDT)
-Received: by mail-il1-x12a.google.com with SMTP id r17so4271852ilt.0;
-        Mon, 29 Mar 2021 00:18:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ipGIX5vIwXmNlWMmQnWuyNW0ntYcVKs6pD8ajiwAnug=;
-        b=XyZL/W8VaxFDzjFLaaYW/fQo+48ztvKqEBg+KJxrYfBdVANhaJ1U3TLOtlYswRQkap
-         1lFPil6jY9ZwtJ8qKXZ0AcTcsVOpByWh2kz7E/BcqFWe7/mkw3uOMGgGnqbE0dCsugaZ
-         248C5uWfZJAcfMnGGkS1Vf/H6ARTbkOnYnNSyHOdC9TxblQ5cUj8qF0I66wSl6CBQnuh
-         e4sV05K0uGcVI0jJ5OsMxNaHBaIYDAWAd7X7i2YWm+VyIpySXjm42YueJxQDKvSOMPJn
-         yuUFAKlp2UB1qx9owUfcR4Gdt56qzzbkkfQP3LkszC879mU9WdQSFGA/loe/Klt+JCbW
-         Gx3g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ipGIX5vIwXmNlWMmQnWuyNW0ntYcVKs6pD8ajiwAnug=;
-        b=GjV3cewFIio2XYL6zBd6Kh2u2gyyIfzCZQNbqlKtk/Hkri6JSEhJxbhsygld4Vl2LC
-         FTtpN8c87vitGhqvuKYSTxqojaLIQWMs5Nl3xG8FA87UNl7dqRPKcFzo1MWzmSZ2oFWL
-         2YkXDL1P9ADfAxcBwzteXIxzY6sSvZixOVRqjCSggcgriFxd1oiRFq5qL9SYJSWiM6W5
-         y9nWbqCjguVMgqoDpJ4jqlAJDlXE3IgxbTzjAAswKHqqgyJJFPX1CaPSi9coBiLvv8FO
-         MWk3xNFzKimUvRE4qzHA7+PyqiTy8H4V3rE/LLI3p6gSEw186PVwRcz6JBAc1guGrX5P
-         8cZQ==
-X-Gm-Message-State: AOAM533a3/tLo54Vp/JLtze1751SbDrzAptsRvZGuPRyu+rZiQ8SJRbP
-        LsFoS0wJdydPzxkIUjovBCkU2ys1ze5ERNGyGFGfMhF+qmFoUA==
-X-Google-Smtp-Source: ABdhPJxgoEy+504UKzc83Pshb0sd4GwTxbG1/5jJB/P/wMWiVbHYiQiSccfdpfpCm+G/V2KxS41eSBOAm9n5Nr5g37o=
-X-Received: by 2002:a92:194c:: with SMTP id e12mr19805012ilm.292.1617002323859;
- Mon, 29 Mar 2021 00:18:43 -0700 (PDT)
+        with ESMTP id S230503AbhC2Hbm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Mar 2021 03:31:42 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F097BC061756
+        for <linux-iio@vger.kernel.org>; Mon, 29 Mar 2021 00:31:41 -0700 (PDT)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lQmN3-0001Sn-KL; Mon, 29 Mar 2021 09:31:33 +0200
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1lQmN2-0000TR-Qy; Mon, 29 Mar 2021 09:31:32 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        David Jander <david@protonic.nl>,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Subject: [PATCH v5 1/3] dt-bindings:iio:adc: add generic settling-time-us and oversampling-ratio channel properties
+Date:   Mon, 29 Mar 2021 09:31:29 +0200
+Message-Id: <20210329073131.1759-2-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210329073131.1759-1-o.rempel@pengutronix.de>
+References: <20210329073131.1759-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
-References: <cover.1616966903.git.lucas.p.stankus@gmail.com>
-In-Reply-To: <cover.1616966903.git.lucas.p.stankus@gmail.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Mon, 29 Mar 2021 10:18:32 +0300
-Message-ID: <CA+U=DsqOq2ZYRTy-VG-N-5fb_9TY6RNa4KM1uVdQb6eW-6VH6w@mail.gmail.com>
-Subject: Re: [PATCH 0/3] iio: adc: ad7923: convert driver resources routines
- to device-managed counterparts
-To:     Lucas Stankus <lucas.p.stankus@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Mar 29, 2021 at 12:48 AM Lucas Stankus
-<lucas.p.stankus@gmail.com> wrote:
->
-> Following the initiative proposed by Alexandru, this patch series aims
-> to convert the ad7923 to use only device-managed routines.
->
+Settling time and over sampling is a typical challenge for different IIO ADC
+devices. So, introduce channel specific settling-time-us and oversampling-ratio
+properties to cover this use case.
 
-This idea is becoming popular it seems :)
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ Documentation/devicetree/bindings/iio/adc/adc.yaml | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Thanks to Lars for pointing out that spi_set_drvdata() omission.
-With that fixed:
+diff --git a/Documentation/devicetree/bindings/iio/adc/adc.yaml b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+index 912a7635edc4..d5bc86d2a2af 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adc.yaml
+@@ -39,4 +39,12 @@ properties:
+       The first value specifies the positive input pin, the second
+       specifies the negative input pin.
+ 
++  settling-time-us:
++    description:
++      Time between enabling the channel and firs stable readings.
++
++  oversampling-ratio:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    description: Number of data samples which are averaged for each read.
++
+ additionalProperties: true
+-- 
+2.29.2
 
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
-
-If you want, you can also search for more of these xxx_set_drvdata() omissions.
-There were more conversions to devm_ that forgot to remove those.
-Maybe a cocci script would be nice to find them.
-But all this is optional. Only if you want.
-
-> Part of the driver was already using devm_ functions, so it was possible
-> to convert the remainder of it without much hassle.
->
-> With that, the deregistration function was no longer necessary and could
-> be entirely removed from the driver.
->
-> Lucas Stankus (3):
->   iio: adc: ad7923: use devm_add_action_or_reset for regulator disable
->   iio: adc: ad7923: use device-managed function for triggered buffer
->   iio: adc: ad7923: register device with devm_iio_device_register
->
->  drivers/iio/adc/ad7923.c | 39 +++++++++++++--------------------------
->  1 file changed, 13 insertions(+), 26 deletions(-)
->
-> --
-> 2.31.0
->
