@@ -2,84 +2,107 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D649C43616
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2719CC433B4
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 19158601FC
+	by mail.kernel.org (Postfix) with ESMTP id 04087601FC
 	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236680AbhDAS1s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S236960AbhDAS1s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 1 Apr 2021 14:27:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45708 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:45704 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239645AbhDASQo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 14:16:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5ECB8611B0;
-        Thu,  1 Apr 2021 12:17:56 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617279476;
-        bh=qxHHEh59lbTrqV1rllKZyjun9PIy/W9Y5I+tZUgQdYg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=XAm5A824vgRGUpuimG3L+FHaGUew6xSrToUOXbQUI+uHNqLg5A6Mc8xe1ifYOhpAi
-         9f2nsfuXW9Ij6HKfHDApns5QHEpef0WxiB6LaOHsLKrbTdJTJT4bj2DBvuWw8zHjIJ
-         eCjFKqLzMBUXZH+p5tcZ5TEg2XAZ3eopSalLZ0PGOBogKFd+jOiCSEZcvQekt9+Q8p
-         R13sh7T7FXwnJhVTDMiJb/8MAG/hrcgJXNWmZ1LsFypGbLdGW5ZmOlXhOUgEMnhTsq
-         IWqe3rx8nzgDFtFataKsfg+WBB75svi7F0WcFfxA/OMIkT9NnvfQ4W737x9Gl65QOe
-         LEZEfzcFiSt3g==
-Received: by mail.kernel.org with local (Exim 4.94)
-        (envelope-from <mchehab@kernel.org>)
-        id 1lRwGo-001c3T-EW; Thu, 01 Apr 2021 14:17:54 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
-Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        "Jonathan Corbet" <corbet@lwn.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 25/32] dt-bindings:iio:dac: update microchip,mcp4725.yaml reference
-Date:   Thu,  1 Apr 2021 14:17:45 +0200
-Message-Id: <82fb54974e8a22be15e64343260a6de39a18edda.1617279356.git.mchehab+huawei@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <cover.1617279355.git.mchehab+huawei@kernel.org>
-References: <cover.1617279355.git.mchehab+huawei@kernel.org>
+        id S237026AbhDASSq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Apr 2021 14:18:46 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AEE366136A;
+        Thu,  1 Apr 2021 15:12:55 +0000 (UTC)
+Date:   Thu, 1 Apr 2021 16:13:04 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Puranjay Mohan <puranjay12@gmail.com>
+Cc:     alexandru.ardelean@analog.com, devicetree@vger.kernel.org,
+        knaack.h@gmx.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lars@metafoo.de
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: Add DT bindings
+ for TMP117
+Message-ID: <20210401161304.70c61fe6@jic23-huawei>
+In-Reply-To: <20210401091648.87421-2-puranjay12@gmail.com>
+References: <20210401091648.87421-1-puranjay12@gmail.com>
+        <20210401091648.87421-2-puranjay12@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changeset 6ced946a4bba ("dt-bindings:iio:dac:microchip,mcp4725 yaml conversion")
-renamed: Documentation/devicetree/bindings/iio/dac/mcp4725.txt
-to: Documentation/devicetree/bindings/iio/dac/microchip,mcp4725.yaml.
+On Thu,  1 Apr 2021 14:46:47 +0530
+Puranjay Mohan <puranjay12@gmail.com> wrote:
 
-Update its cross-reference accordingly.
+> Add devicetree binding document for TMP117, a digital temperature sensor.
+> 
+> Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
+> ---
+>  .../bindings/iio/temperature/ti,tmp117.yaml   | 34 +++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+> new file mode 100644
+> index 000000000..1ead22317
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+> @@ -0,0 +1,34 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/iio/temperature/ti,tmp117.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: "TI TMP117 - Digital temperature sensor with integrated NV memory"
+> +
+> +description: |
+> +    TI TMP117 - Digital temperature sensor with integrated NV memory that supports
+> +    I2C interface.
+> +      https://www.ti.com/lit/gpn/tmp1
+> +
+> +maintainers: 
+> +  - "Puranjay Mohan <puranjay12@gmail.com>"
+> +
+> +properties: 
+> +  compatible: 
+> +    enum: 
+> +      - "ti,tmp117"
+> +  reg: 
+> +    maxItems: 1
+> +required: 
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - | 
+> +    tmp117@48 {
+> +        compatible = "ti,tmp117";
+> +        reg = <0x48>;
+> +      };  
 
-Fixes: 6ced946a4bba ("dt-bindings:iio:dac:microchip,mcp4725 yaml conversion")
-Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
----
- include/linux/iio/dac/mcp4725.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+For the example embed it in an appropriate i2c description e.g.
 
-diff --git a/include/linux/iio/dac/mcp4725.h b/include/linux/iio/dac/mcp4725.h
-index e9801c8d49c0..1f7e53c506b6 100644
---- a/include/linux/iio/dac/mcp4725.h
-+++ b/include/linux/iio/dac/mcp4725.h
-@@ -15,7 +15,7 @@
-  * @vref_buffered: Controls buffering of the external reference voltage.
-  *
-  * Vref related settings are available only on MCP4756. See
-- * Documentation/devicetree/bindings/iio/dac/mcp4725.txt for more information.
-+ * Documentation/devicetree/bindings/iio/dac/microchip,mcp4725.yaml for more information.
-  */
- struct mcp4725_platform_data {
- 	bool use_vref;
--- 
-2.30.2
+    i2c {
+        #address-cells = <1>;
+        #size-cells = <0>;
 
+        tmp117@48 {
+             compatible = "ti,tmp117";
+             reg = <0x48>;
+        };
+    };
