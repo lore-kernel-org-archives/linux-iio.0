@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BE8C43470
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C102C433ED
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9BDB161130
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 54DE4610A0
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236282AbhDARyG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:54:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45228 "EHLO mail.kernel.org"
+        id S235373AbhDARyH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:54:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45216 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236468AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S236465AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 1 Apr 2021 13:45:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 00FB9613BE;
-        Thu,  1 Apr 2021 17:43:18 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 5480261139;
+        Thu,  1 Apr 2021 17:43:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617299000;
-        bh=DYBylFCzwf/mC1qtfHCHRZAYGu4r3hcX9pYrM/Et+T0=;
+        s=k20201202; t=1617298993;
+        bh=8hYXBEQLia1l5VDqkRWPplK6G18Gnbyqzd6es6m0EoY=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=n7DEEBdoZVB6pQDH/QEAOLAVGoQkgGkFICaNFMo7ECIFLilAMUhlJkVJ57U0+29Dm
-         QfCfWm8JJhdYjPSeRF3SOWbDZhOSC5ziZTCsWZGJbXZpsvZMRZHr8E0vEBhMOFGNwN
-         JdtVHqL4n14SFhhgAAS0Yas32UmDgFrUrTNl1g7C/JOcCc+qpI+01rYUs6gGRIQi32
-         Q9uMn9y7g10BJkfX9e6WGb6iHoi33bYGDZV4P+DpB7hLct70jOK5kXMtmutYkYK/Lx
-         cMThOAmPM8R4vDhc/EtEDC269WKApNW1LfyWKIADvojaLMg564ghu3NKGIWURi5GCT
-         WANmobMB6aEAQ==
+        b=qAI8jPaTcz8ZbPjAgRFisNU676PrFeo5j0nrv/4Pcv6PB7ZtQSUQMUM21ZYOFIaPe
+         3+rlt3DkjHWmvBrtMPXCsOCKKzoHEITTxG4e13GQ+1QBQ/opJH1HJNYgLLO/DG23Et
+         JXb0wR8OkrlKDLxiomd81FBuXZ+uoma1+8SWnezpWdVLs7ZTKC1Tiv/f3jAe9nh7e1
+         BYgwTZf7vIKsPnanyws9hXNMwPlcnVkEL6TpeMyJY85jwB6K0gFe7n3GLx7GVO+XJc
+         20j3qV6wbLueBxcwWi1jwIbM+slBLu2JyL3qdDWU8ozMtn0jSVOo7KjpWNGrrtTxPq
+         s8POxzkL5VYDw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 6/6] dt-bindings:iio:adc:adi,ad7298 document bindings
-Date:   Thu,  1 Apr 2021 18:41:12 +0100
-Message-Id: <20210401174112.320497-7-jic23@kernel.org>
+        Joachim Eastwood <manabian@gmail.com>
+Subject: [PATCH 3/6] dt-bindings:iio:accel:fsl,mma7455 binding doc
+Date:   Thu,  1 Apr 2021 18:41:09 +0100
+Message-Id: <20210401174112.320497-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210401174112.320497-1-jic23@kernel.org>
 References: <20210401174112.320497-1-jic23@kernel.org>
@@ -50,48 +50,68 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The device has a tsens-busy pin, but it's both fiddly and currently
-ignored by the Linux driver.  Given it's not clear whether the binding
-should be an interrupt, or a GPIO I have left that out for now.
+Binding documentation for this driver was missing.
+Note that the binding and some in tree dts files specifiy interrupts
+etc but the driver is fairly simple and does not yet make use of them.
+
+Listed both Joachim and myself as maintainers for this binding on basis
+it's Joachim's driver but I don't want to volunteer Joachim too
+strongly to look after this doc.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>
+Cc: Joachim Eastwood <manabian@gmail.com>
 ---
- .../bindings/iio/adc/adi,ad7298.yaml          | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ .../bindings/iio/accel/fsl,mma7455.yaml       | 82 +++++++++++++++++++
+ 1 file changed, 82 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7298.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7298.yaml
+diff --git a/Documentation/devicetree/bindings/iio/accel/fsl,mma7455.yaml b/Documentation/devicetree/bindings/iio/accel/fsl,mma7455.yaml
 new file mode 100644
-index 000000000000..ca414bb396c5
+index 000000000000..7c8f8bdc2333
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7298.yaml
-@@ -0,0 +1,48 @@
++++ b/Documentation/devicetree/bindings/iio/accel/fsl,mma7455.yaml
+@@ -0,0 +1,82 @@
 +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2019 Analog Devices Inc.
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ad7298.yaml#
++$id: http://devicetree.org/schemas/iio/accel/fsl,mma7455.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Analog Devices AD7298 ADC
++title: Freescale MMA7455 and MMA7456 three axis accelerometers
 +
 +maintainers:
-+  - Michael Hennerich <michael.hennerich@analog.com>
++  - Joachim Eastwood <manabian@gmail.com>
++  - Jonathan Cameron <jic23@kernel.org>
 +
-+description: |
-+  Bindings for the Analog Devices AD7298 ADC device. Datasheet can be
-+  found here:
-+    https://www.analog.com/en/products/ad7298.html
++description:
++  Devices support both SPI and I2C interfaces.
 +
 +properties:
 +  compatible:
-+    const: adi,ad7298
-+
++    enum:
++      - fsl,mma7455
++      - fsl,mma7456
 +  reg:
 +    maxItems: 1
 +
-+  vref-supply: true
-+  vdd-supply: true
++  avdd-supply: true
++  vddio-supply: true
++
++  interrupts:
++    minItems: 1
++    maxItems: 2
++
++  interrupt-names:
++    description:
++      Data ready is only available on INT1, but events can use either or
++      both pins.  If not specified, first element assumed to correspond
++      to INT1 and second (where present) to INT2.
++    minItems: 1
++    maxItems: 2
++    items:
++      enum:
++        - "INT1"
++        - "INT2"
++
 +  spi-max-frequency: true
 +
 +required:
@@ -102,16 +122,34 @@ index 000000000000..ca414bb396c5
 +
 +examples:
 +  - |
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
++    # include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
 +
-+      adc@0 {
-+        compatible = "adi,ad7298";
-+        reg = <0>;
-+        spi-max-frequency = <5000000>;
-+        vref-supply = <&adc_vref>;
-+      };
++        accelerometer@18 {
++            compatible = "fsl,mma7455";
++            reg = <0x18>;
++            vddio-supply = <&iovdd>;
++            avdd-supply = <&avdd>;
++            interrupts = <57 IRQ_TYPE_EDGE_FALLING>, <58 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-names = "INT2", "INT1";
++        };
++    };
++  - |
++    # include <dt-bindings/interrupt-controller/irq.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        accelerometer@0 {
++            compatible = "fsl,mma7456";
++            reg = <0>;
++            spi-max-frequency = <10000000>;
++            vddio-supply = <&iovdd>;
++            avdd-supply = <&avdd>;
++            interrupts = <57 IRQ_TYPE_EDGE_FALLING>;
++            interrupt-names = "INT1";
++        };
 +    };
 +...
 -- 
