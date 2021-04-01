@@ -2,44 +2,45 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_NONE,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76427C4363E
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:46:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F47C43462
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:48:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5849861368
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:46:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ECB1C61008
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:48:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234327AbhDARpo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:45:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40588 "EHLO mail.kernel.org"
+        id S235799AbhDARsN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:48:13 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45212 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234553AbhDARiA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 13:38:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8EF9F613C8;
-        Thu,  1 Apr 2021 17:20:01 +0000 (UTC)
+        id S236463AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Apr 2021 13:45:02 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E0CB6112E;
+        Thu,  1 Apr 2021 17:43:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617297603;
-        bh=usq0s/98Iuh/cp4Sl8sg8Td3LyTxRc7CTMxUIrR/zDg=;
-        h=From:To:Cc:Subject:Date:From;
-        b=PtLVsgwfbAOh1/JZXaqClCEHPcDiWupUkGYyyEDteEf3v2XPIq4vPlmjLO94Ej97k
-         i0weT3e+ybdpdlMe2mo9TI2BXSjPBlvkAF1BYowbxMALRw1mSg42mWqTiBj3HJLDgT
-         LDk8oUpL4rz89oeAwdGZwynMF91Qee06w/54veU02D0NtK3KjtI6aT5jVwA10/9Xiz
-         N130D+tYE8IRtRtnvgrsXAuiMA5JxYHqDX0Js1WsRF7UNsKNw1TeWmWcqGqZiWhaCZ
-         SJEsGT8NhjfebKo1Oi1zu2DGyx+JNa7fNrorHq029ASPZIoqt7nI4O95QTh/DlQw/j
-         BN7Ly4xMneMJQ==
+        s=k20201202; t=1617298988;
+        bh=UkBJ3TPaqOhgNhsmcELZeSyEXojAw6LG7Ou09rNFPzA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=MCM1K8/GkUbQaIYihixSAtruO6JJFOouJR5LzzUEcVPW0/cLhttU+v3x+V/9EgX96
+         uU5fQdhW7NPhjRbgT/iN7N/OAPvwlumQuE6CNo/4ypnbW9IYeRIjwWwR4e13CDwmEv
+         52H9Dno+dsHxSKuP12ZCpHBgbsSua7vQw2q8w4e/p0VQonKzFsuNaRQhBBjVzAIuXa
+         MWfig6gSOg8NkQ0VZdqTdShjbW+kROLPqONHe4jkG3QnvIg+0QEU2W6idVJP/xdivq
+         6Lq08UdHgUyz5CP/8BmkjPbgY4V9n+g8gObvnnqaVqNqB0+Niqrxt8AoLBqg+ZWU/W
+         W4oeWiRXIH8zw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
+Cc:     devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 0/3] iio:adc:ad7476: Fix, regulator support and binding doc.
-Date:   Thu,  1 Apr 2021 18:17:56 +0100
-Message-Id: <20210401171759.318140-1-jic23@kernel.org>
+Subject: [PATCH 1/6] dt-bindings:iio:accel:adis16201 and adis16209 bindings
+Date:   Thu,  1 Apr 2021 18:41:07 +0100
+Message-Id: <20210401174112.320497-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210401174112.320497-1-jic23@kernel.org>
+References: <20210401174112.320497-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -48,19 +49,79 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-I was only actually aiming to add a missing binding document for this one,
-but whilst testing it came across some other things that needed doing.
+These two devices have different internal characterstics, but their
+external connectivity and as a result device tree descriptions are
+identical.
 
-Jonathan Cameron (3):
-  iio:adc:ad7476: Fix remove handling
-  iio:adc:ad7476: Handle the different regulators used by various parts.
-  dt-bindings:iio:adc:adi,ad7474: Add missing binding document
+Note that neither driver in Linux currently has an of_match_table
+but instead rely on matching via name alone.
 
- .../bindings/iio/adc/adi,ad7476.yaml          | 139 ++++++++++++++++++
- drivers/iio/adc/ad7476.c                      |  99 +++++++++----
- 2 files changed, 211 insertions(+), 27 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ .../bindings/iio/accel/adi,adis16201.yaml     | 55 +++++++++++++++++++
+ 1 file changed, 55 insertions(+)
 
+diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
+new file mode 100644
+index 000000000000..6f8f8a6258fe
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
+@@ -0,0 +1,55 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/accel/adi,adis16201.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADIS16201 Dual Axis Inclinometer and similar
++
++maintainers:
++  - Jonathan Cameron <Jonathan.Cameron@huawei.com>
++
++description: |
++  Two similar parts from external interface point of view.
++  SPI interface.
++    https://www.analog.com/en/products/adis16201.html
++    https://www.analog.com/en/products/adis16209.html
++
++properties:
++  compatible:
++    enum:
++      - adi,adis16201
++      - adi,adis16209
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  spi-max-frequency: true
++
++  vdd-supply: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    spi0 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        accelerometer@0 {
++            compatible = "adi,adis16201";
++            reg = <0>;
++            spi-max-frequency = <2500000>;
++            interrupt-parent = <&gpio0>;
++            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
++        };
++    };
++...
 -- 
 2.31.1
 
