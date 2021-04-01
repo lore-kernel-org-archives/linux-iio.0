@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 29F47C43462
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:48:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06F39C43603
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ECB1C61008
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:48:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D9ADB61108
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235799AbhDARsN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:48:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45212 "EHLO mail.kernel.org"
+        id S236253AbhDARyD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:54:03 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45214 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236463AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S236466AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 1 Apr 2021 13:45:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1E0CB6112E;
-        Thu,  1 Apr 2021 17:43:05 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 180D1611ED;
+        Thu,  1 Apr 2021 17:43:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617298988;
-        bh=UkBJ3TPaqOhgNhsmcELZeSyEXojAw6LG7Ou09rNFPzA=;
+        s=k20201202; t=1617298995;
+        bh=M8jALQnqCGJzphUULs3bm0t87GVhkS81ocqnfHlOgXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MCM1K8/GkUbQaIYihixSAtruO6JJFOouJR5LzzUEcVPW0/cLhttU+v3x+V/9EgX96
-         uU5fQdhW7NPhjRbgT/iN7N/OAPvwlumQuE6CNo/4ypnbW9IYeRIjwWwR4e13CDwmEv
-         52H9Dno+dsHxSKuP12ZCpHBgbsSua7vQw2q8w4e/p0VQonKzFsuNaRQhBBjVzAIuXa
-         MWfig6gSOg8NkQ0VZdqTdShjbW+kROLPqONHe4jkG3QnvIg+0QEU2W6idVJP/xdivq
-         6Lq08UdHgUyz5CP/8BmkjPbgY4V9n+g8gObvnnqaVqNqB0+Niqrxt8AoLBqg+ZWU/W
-         W4oeWiRXIH8zw==
+        b=qhn+jdeD0sPPL/7ZjkICVkP7Q5VMXFnPMeVwS84k3XiSMmhN857lrqMvCYwE84vj3
+         OUKUWhbJ1sctg+mNayn0tKUIxsjtSd9w6f7BuIR1kN1vpWB1q+x4ClZjju/RSFhncF
+         wVhtVbd543j76zUGeqoyiBgF2ZBOnegtHV96FG/NAsXiGTlBx27Eo7g5SYSMnNI2yA
+         L56R0lMQBEz2KvrrQIufRExj8g3OwBqoF066649Khkvib8oN9pQEnjXG+NI3wHpQfq
+         RDVORfKq46i11Z7QSbK1dMBPHAhho7SGofx7hjOykEqOw7l/98c09gUpCIvqa/llu5
+         ieCfkFD/dbekQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 1/6] dt-bindings:iio:accel:adis16201 and adis16209 bindings
-Date:   Thu,  1 Apr 2021 18:41:07 +0100
-Message-Id: <20210401174112.320497-2-jic23@kernel.org>
+Subject: [PATCH 4/6] dt-bindings:trivial-devices: Add memsic,mxc4005/mxc6255/mxc6655 entries
+Date:   Thu,  1 Apr 2021 18:41:10 +0100
+Message-Id: <20210401174112.320497-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210401174112.320497-1-jic23@kernel.org>
 References: <20210401174112.320497-1-jic23@kernel.org>
@@ -49,79 +49,33 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-These two devices have different internal characterstics, but their
-external connectivity and as a result device tree descriptions are
-identical.
-
-Note that neither driver in Linux currently has an of_match_table
-but instead rely on matching via name alone.
+Simple devices with I2C interface and single interrupt line so
+entries in trivial devices are sufficient.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- .../bindings/iio/accel/adi,adis16201.yaml     | 55 +++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ Documentation/devicetree/bindings/trivial-devices.yaml | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
-new file mode 100644
-index 000000000000..6f8f8a6258fe
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
-@@ -0,0 +1,55 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/adi,adis16201.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ADIS16201 Dual Axis Inclinometer and similar
-+
-+maintainers:
-+  - Jonathan Cameron <Jonathan.Cameron@huawei.com>
-+
-+description: |
-+  Two similar parts from external interface point of view.
-+  SPI interface.
-+    https://www.analog.com/en/products/adis16201.html
-+    https://www.analog.com/en/products/adis16209.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adis16201
-+      - adi,adis16209
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+  vdd-supply: true
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        accelerometer@0 {
-+            compatible = "adi,adis16201";
-+            reg = <0>;
-+            spi-max-frequency = <2500000>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+        };
-+    };
-+...
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index a327130d1faa..c7d49a720afa 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -166,8 +166,14 @@ properties:
+           - meas,tsys01
+             # MEMSIC magnetometer
+           - memsic,mmc35240
++            # MEMSIC 3-axis accelerometer
++          - memsic,mx4005
+             # MEMSIC 2-axis 8-bit digital accelerometer
+           - memsic,mxc6225
++            # MEMSIC 2-axis 8-bit digital accelerometer
++          - memsic,mxc6255
++            # MEMSIC 3-axis accelerometer
++          - memsic,mxc6655
+             # Microchip differential I2C ADC, 1 Channel, 18 bit
+           - microchip,mcp3421
+             # Microchip differential I2C ADC, 2 Channel, 18 bit
 -- 
 2.31.1
 
