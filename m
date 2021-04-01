@@ -2,123 +2,146 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4671CC433ED
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:02:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3D80FC001B3
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:10:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1A9176128B
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:02:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2FCB6611BD
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:10:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236605AbhDASCo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 14:02:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33036 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236043AbhDAR5R (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Apr 2021 13:57:17 -0400
-Received: from mail-pf1-x42b.google.com (mail-pf1-x42b.google.com [IPv6:2607:f8b0:4864:20::42b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FE56C0D9424;
-        Thu,  1 Apr 2021 07:53:03 -0700 (PDT)
-Received: by mail-pf1-x42b.google.com with SMTP id v10so1654569pfn.5;
-        Thu, 01 Apr 2021 07:53:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=S8v12+xvw38bIlezrR3XZMbu9iWBOqwBPhWL+2JH5Uc=;
-        b=Dyqaw1+fyqUfg5bx0s7dFljkCV8PaVIz36dJtCnis6d0JE98H+gWGEiJkpxzAu72t5
-         7wx0QmLOv6AMm0/1H50UY2mhotoAXpVBh6TjlUbhRDghDYIvd4Na88BsYOU/MfjiG/Ek
-         5L9NUBnbr0HDgBFpjCwPCjneRQQqWMFxfdBdAOUbbkWGh50YlaxYeyrpcBppDZxPfLju
-         7W5/5wDngGZi9dfnVSeMQtKWEkaIJVTGbtbo9z+RiPBI2tP2AG9Lmg2iFXLV7/mlHJpP
-         BdQnus19uPbIqKC78aExwLAg091o5q+nisiOXbINw42FSWQE+dz2viABp1CuUiFcQbbV
-         QNRA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=S8v12+xvw38bIlezrR3XZMbu9iWBOqwBPhWL+2JH5Uc=;
-        b=Z2EEFRlRaxyJjpEDPgbwcpPGf79rKZ+dkUxR09P7igo4/zPaRSZ8ZE7DkTnnW+xoyn
-         nT9TSiVra1gutF6KT2paqnplhpdCB3t4nqSQfU1nUvyPKcIj6D0/Bb2BePIgyYWG+25R
-         3oTtIBniU7qSdN6/iFyukMHbqk5FD5nme49uf2QoTbz0l2KTjmkkSC44sDh46wd42n4v
-         a0qLR+eh6HL9XiJKfxrXQlt8oDSgUeJe1gq3Gxm46NADfPqC32pirK8Jhkn1w/7auoVz
-         7gbPEfRJTH4wBgTKkor29QVPOu/STCaipTrgq3C47R/4vHN7mrtwp4YLNVsUHf+L/WSd
-         CCrg==
-X-Gm-Message-State: AOAM533CrZt/KvlcNgh369tUdh25Wk8PAve6Q0GGDBLZS45PHSr0gy+b
-        BbMOnf1PyABJO9M23bDF7M67wJHxUjEWh1xF
-X-Google-Smtp-Source: ABdhPJzu44h9Fj7Ot3tFgyse9/w8XDAsDQQFWBiJsD/anxTnTfRamR8LuuoBNBHgcCRNKdUOVvGHZw==
-X-Received: by 2002:a63:1a47:: with SMTP id a7mr7729388pgm.437.1617288782443;
-        Thu, 01 Apr 2021 07:53:02 -0700 (PDT)
-Received: from ?IPv6:2409:4072:6307:8389:a773:d07f:cd55:994a? ([2409:4072:6307:8389:a773:d07f:cd55:994a])
-        by smtp.gmail.com with ESMTPSA id s19sm5825401pfh.168.2021.04.01.07.52.55
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Thu, 01 Apr 2021 07:53:01 -0700 (PDT)
-Subject: Re: [PATCH] iio: adc: bcm_iproc_adc: Use %s and __func__
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
+        id S234628AbhDASKn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 14:10:43 -0400
+Received: from mga07.intel.com ([134.134.136.100]:1736 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S236615AbhDASCp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Apr 2021 14:02:45 -0400
+IronPort-SDR: AosnQ+6nSoLTZ8YlxVgXpKw+b4pU4V4kK1Zmq04SKOxc87ZpKxuROjEguP8WFG18SzxqJDr2mU
+ SEHAvL9uaDMQ==
+X-IronPort-AV: E=McAfee;i="6000,8403,9941"; a="256244491"
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="256244491"
+Received: from orsmga003.jf.intel.com ([10.7.209.27])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 01 Apr 2021 07:54:50 -0700
+IronPort-SDR: X9eLACOkTT5s82bm68RFcb7IcKuSxWeqc0tDNTkihzqGTXvuC0QEZfQ2TXEgsuY9JVRnD8vA4X
+ HWKH4yKraf4Q==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.81,296,1610438400"; 
+   d="scan'208";a="377726725"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga003.jf.intel.com with ESMTP; 01 Apr 2021 07:54:48 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 85C7D29D; Thu,  1 Apr 2021 17:55:03 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-References: <20210401062517.28832-1-dmugil2000@gmail.com>
- <CAHp75VfgL0KW0fetgE3NuBb4itMK1oY+yLmr1xDYkn390hCscg@mail.gmail.com>
- <20210401113015.00006b70@Huawei.com>
-From:   Mugilraj D <dmugil2000@gmail.com>
-Message-ID: <a2ac91a9-54e3-2525-1e7e-00a26d3393e3@gmail.com>
-Date:   Thu, 1 Apr 2021 20:22:47 +0530
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 2/2] iio: trigger: Fix strange (ladder-tupe) indentation
+Date:   Thu,  1 Apr 2021 17:54:57 +0300
+Message-Id: <20210401145457.12255-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210401145457.12255-1-andriy.shevchenko@linux.intel.com>
+References: <20210401145457.12255-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <20210401113015.00006b70@Huawei.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+In some cases indentation looks a bit weird with starting from = sign
+and being in a ladder-type style. Unify it across the module.
 
+While at it, add blank line after definition block where it needed,
 
-On 01/04/21 4:00 pm, Jonathan Cameron wrote:
-> On Thu, 1 Apr 2021 12:24:50 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> 
->> On Thu, Apr 1, 2021 at 9:27 AM Mugilraj Dhavachelvan
->> <dmugil2000@gmail.com> wrote:
->>>
->>> Change function's name to %s and __func__ to fix checkpatch.pl errors.  
->>
->> No, just drop the __func__ completely. First of all, we have a device
->> name, and uniqueness of the messages in the driver should guarantee
->> easy findings. Second, specific to _dbg() variants, with enabled
->> Dynamic Debug it can be chosen at run time!
->>
->> I recommend going through all drivers and drop __func__ near to
->> dev_dbg() and pr_debug().
->>
-> 
-> Agreed.  Though beware that some maintainers will count this
-> as noise and get grumpy.
-> 
-> I'm fine with such patches for IIO.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/industrialio-trigger.c | 25 ++++++++++++-------------
+ 1 file changed, 12 insertions(+), 13 deletions(-)
 
-Sorry for the noise. I just seen the docs about dynamic debug.
-So, if we use dev_dbg("log_msg") it will print statement like
-filename:lineno [module]func flag log_msg, If I get it correctly.
-And no need of specifying __func__ in dev_dbg() and dp_dbg() right!!
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 77fca24147b2..f998900a34f5 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -211,6 +211,7 @@ EXPORT_SYMBOL(iio_trigger_notify_done);
+ static int iio_trigger_get_irq(struct iio_trigger *trig)
+ {
+ 	int ret;
++
+ 	mutex_lock(&trig->pool_lock);
+ 	ret = bitmap_find_free_region(trig->pool,
+ 				      CONFIG_IIO_CONSUMERS_PER_TRIGGER,
+@@ -239,9 +240,9 @@ static void iio_trigger_put_irq(struct iio_trigger *trig, int irq)
+ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ 				 struct iio_poll_func *pf)
+ {
++	bool notinuse =
++		bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+ 	int ret = 0;
+-	bool notinuse
+-		= bitmap_empty(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+ 
+ 	/* Prevent the module from being removed whilst attached to a trigger */
+ 	__module_get(pf->indio_dev->driver_module);
+@@ -290,11 +291,10 @@ int iio_trigger_attach_poll_func(struct iio_trigger *trig,
+ int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+ 				 struct iio_poll_func *pf)
+ {
++	bool no_other_users =
++		bitmap_weight(trig->pool, CONFIG_IIO_CONSUMERS_PER_TRIGGER) == 1;
+ 	int ret = 0;
+-	bool no_other_users
+-		= (bitmap_weight(trig->pool,
+-				 CONFIG_IIO_CONSUMERS_PER_TRIGGER)
+-		   == 1);
++
+ 	if (trig->ops && trig->ops->set_trigger_state && no_other_users) {
+ 		ret = trig->ops->set_trigger_state(trig, false);
+ 		if (ret)
+@@ -312,6 +312,7 @@ int iio_trigger_detach_poll_func(struct iio_trigger *trig,
+ irqreturn_t iio_pollfunc_store_time(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
++
+ 	pf->timestamp = iio_get_time_ns(pf->indio_dev);
+ 	return IRQ_WAKE_THREAD;
+ }
+@@ -498,18 +499,16 @@ static const struct device_type iio_trig_type = {
+ static void iio_trig_subirqmask(struct irq_data *d)
+ {
+ 	struct irq_chip *chip = irq_data_get_irq_chip(d);
+-	struct iio_trigger *trig
+-		= container_of(chip,
+-			       struct iio_trigger, subirq_chip);
++	struct iio_trigger *trig = container_of(chip, struct iio_trigger, subirq_chip);
++
+ 	trig->subirqs[d->irq - trig->subirq_base].enabled = false;
+ }
+ 
+ static void iio_trig_subirqunmask(struct irq_data *d)
+ {
+ 	struct irq_chip *chip = irq_data_get_irq_chip(d);
+-	struct iio_trigger *trig
+-		= container_of(chip,
+-			       struct iio_trigger, subirq_chip);
++	struct iio_trigger *trig = container_of(chip, struct iio_trigger, subirq_chip);
++
+ 	trig->subirqs[d->irq - trig->subirq_base].enabled = true;
+ }
+ 
+@@ -695,7 +694,7 @@ EXPORT_SYMBOL(iio_trigger_using_own);
+  * device, -EINVAL otherwise.
+  */
+ int iio_trigger_validate_own_device(struct iio_trigger *trig,
+-	struct iio_dev *indio_dev)
++				    struct iio_dev *indio_dev)
+ {
+ 	if (indio_dev->dev.parent != trig->dev.parent)
+ 		return -EINVAL;
+-- 
+2.30.2
 
-Jonathan do you have any TODO's?
-
-> 
-> Jonathan
-> 
