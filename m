@@ -2,103 +2,139 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no
+X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F519C43462
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:46:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFCE9C433B4
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 19:16:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 67936610CF
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:46:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6F2446101E
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 19:16:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235115AbhDASqG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 14:46:06 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35182 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235778AbhDASnC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 14:43:02 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 8C22761364;
-        Thu,  1 Apr 2021 15:05:47 +0000 (UTC)
-Date:   Thu, 1 Apr 2021 16:05:57 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Mugilraj D <dmugil2000@gmail.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        id S234352AbhDATQH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 15:16:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49756 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234850AbhDATOn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Apr 2021 15:14:43 -0400
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7BEEDC0613B3;
+        Thu,  1 Apr 2021 11:06:15 -0700 (PDT)
+Received: by mail-pj1-x1034.google.com with SMTP id a22-20020a17090aa516b02900c1215e9b33so3483151pjq.5;
+        Thu, 01 Apr 2021 11:06:15 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=LtbHgeOb5Q/GLe2iHTvlk5L+iXICHogfcJ7TfbimPCs=;
+        b=VrZzKx+uJE1Tg2egJrBWLu9gt7VPFt1vdgxVuXWVwFli0ZByDP+TLwtmNsK3rBfDjr
+         X7hhAzyzRTpOvhmB/LeTdNIxX4XX/UGzFC/GMPKd2Eryww1KZ40M7qxQSEaOYEPSzprh
+         nw/hLrU383xEpIKwm1BCBTTUunmbXPf8Tc8j/IeWclI9wMWW/Gdk3CRe9QDZmDs8rUjP
+         +YebusOFF126ld9ZER5jzx5j/WDpY2fs9fZQTq4mZoc/gd+fS6ExHGSO40lmtnWjlEoj
+         M7gUflHLs8oMkXRwy55JMpOT0s4+Hu2QgkbC/5nsdS/qCKwMoFWsMty9iSBGa0LPtJGy
+         aLSw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=LtbHgeOb5Q/GLe2iHTvlk5L+iXICHogfcJ7TfbimPCs=;
+        b=laWGGfliET5gp7ZVcjfbb+7U5dzjYk36fEmZWeFu18+JlMWNTn2I8mFHAE7LXGodYw
+         r11n3BecWCOvzg35M9dQleHy3y0tKNbeodhqXFJ9LHHPYh+QR5Wvux/mGdl5NjyLMoCa
+         5PjWSfVs4Z1cJytAE7NSsg6cd2bQFHCreG1IzyMaPTe9bJco3Xxz7o/LgzEYQQsSSsKD
+         0Hl24JcftsfE75COnv1taMhLOjI/A/W52iMZxleLNV68WbcIlKa7/7inU8rHcAx2TC3B
+         EE6YepKJB/gq4lyY1up0iv8Y6doeny91dFxgHaZhtgYdBU8IKIlXI7vWl5KKbHNIoH6I
+         5OAg==
+X-Gm-Message-State: AOAM533AriOvDoNi5HX+kEfer9Ig12dG5gQxXvqrwKrwktNcw05Hm1bz
+        beAhSZ3Wnnnz6lltVI9nnhlpVCMpRjetSZNPEns=
+X-Google-Smtp-Source: ABdhPJzsvLX9harUfAuK07k4egskm6yqn6pQylArKiWFguIMrjNLOlW5MORgdYPmir2kwL2JGK0erL1PRRJAwTzvGaw=
+X-Received: by 2002:a17:90a:db49:: with SMTP id u9mr10351275pjx.181.1617300374919;
+ Thu, 01 Apr 2021 11:06:14 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210401154343.41527-1-dmugil2000@gmail.com>
+In-Reply-To: <20210401154343.41527-1-dmugil2000@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 1 Apr 2021 21:05:58 +0300
+Message-ID: <CAHp75VfkCQpfUrVcWHUnD4DLMp9iZJBL8mYfsYOCsESm_y068A@mail.gmail.com>
+Subject: Re: [PATCH] iio: adc: stm32-dfsdm: drop __func__ while using Dynamic debug
+To:     Mugilraj Dhavachelvan <dmugil2000@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ray Jui <rjui@broadcom.com>,
-        Scott Branden <sbranden@broadcom.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
         linux-iio <linux-iio@vger.kernel.org>,
+        linux-stm32@st-md-mailman.stormreply.com,
         linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: adc: bcm_iproc_adc: Use %s and __func__
-Message-ID: <20210401160557.533bae90@jic23-huawei>
-In-Reply-To: <a2ac91a9-54e3-2525-1e7e-00a26d3393e3@gmail.com>
-References: <20210401062517.28832-1-dmugil2000@gmail.com>
-        <CAHp75VfgL0KW0fetgE3NuBb4itMK1oY+yLmr1xDYkn390hCscg@mail.gmail.com>
-        <20210401113015.00006b70@Huawei.com>
-        <a2ac91a9-54e3-2525-1e7e-00a26d3393e3@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 1 Apr 2021 20:22:47 +0530
-Mugilraj D <dmugil2000@gmail.com> wrote:
+On Thu, Apr 1, 2021 at 8:48 PM Mugilraj Dhavachelvan
+<dmugil2000@gmail.com> wrote:
+>
+> dropped __func__ while using dev_dbg() and pr_debug()
 
-> On 01/04/21 4:00 pm, Jonathan Cameron wrote:
-> > On Thu, 1 Apr 2021 12:24:50 +0300
-> > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
-> >   
-> >> On Thu, Apr 1, 2021 at 9:27 AM Mugilraj Dhavachelvan
-> >> <dmugil2000@gmail.com> wrote:  
-> >>>
-> >>> Change function's name to %s and __func__ to fix checkpatch.pl errors.    
-> >>
-> >> No, just drop the __func__ completely. First of all, we have a device
-> >> name, and uniqueness of the messages in the driver should guarantee
-> >> easy findings. Second, specific to _dbg() variants, with enabled
-> >> Dynamic Debug it can be chosen at run time!
-> >>
-> >> I recommend going through all drivers and drop __func__ near to
-> >> dev_dbg() and pr_debug().
-> >>  
-> > 
-> > Agreed.  Though beware that some maintainers will count this
-> > as noise and get grumpy.
-> > 
-> > I'm fine with such patches for IIO.  
-> 
-> Sorry for the noise. I just seen the docs about dynamic debug.
-> So, if we use dev_dbg("log_msg") it will print statement like
-> filename:lineno [module]func flag log_msg, If I get it correctly.
-> And no need of specifying __func__ in dev_dbg() and dp_dbg() right!!
-> 
-> Jonathan do you have any TODO's?
+The commit message may be amended, from code perspective LGTM!
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-I tend not to mind cleanup patches (within reason)in IIO so I'm absolutely
-fine with a series removing any __func__ items like this.  One patch per
-driver preferred because it avoids issues with this interfering with backports
-etc. There will end up being about 18 patches from a quick grep.  Perhaps send
-a small number first though to avoid having to put in too much effort as
-any issues likely to affect the whole set.
+> Signed-off-by: Mugilraj Dhavachelvan <dmugil2000@gmail.com>
+> ---
+>  drivers/iio/adc/stm32-dfsdm-adc.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+> index 76a60d93fe23..95ec5f3c3126 100644
+> --- a/drivers/iio/adc/stm32-dfsdm-adc.c
+> +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+> @@ -198,7 +198,7 @@ static int stm32_dfsdm_compute_osrs(struct stm32_dfsdm_filter *fl,
+>         unsigned int p = fl->ford;      /* filter order (ford) */
+>         struct stm32_dfsdm_filter_osr *flo = &fl->flo[fast];
+>
+> -       pr_debug("%s: Requested oversampling: %d\n",  __func__, oversamp);
+> +       pr_debug("Requested oversampling: %d\n", oversamp);
+>         /*
+>          * This function tries to compute filter oversampling and integrator
+>          * oversampling, base on oversampling ratio requested by user.
+> @@ -294,8 +294,8 @@ static int stm32_dfsdm_compute_osrs(struct stm32_dfsdm_filter *fl,
+>                                 }
+>                                 flo->max = (s32)max;
+>
+> -                               pr_debug("%s: fast %d, fosr %d, iosr %d, res 0x%llx/%d bits, rshift %d, lshift %d\n",
+> -                                        __func__, fast, flo->fosr, flo->iosr,
+> +                               pr_debug("fast %d, fosr %d, iosr %d, res 0x%llx/%d bits, rshift %d, lshift %d\n",
+> +                                        fast, flo->fosr, flo->iosr,
+>                                          flo->res, bits, flo->rshift,
+>                                          flo->lshift);
+>                         }
+> @@ -858,7 +858,7 @@ static void stm32_dfsdm_dma_buffer_done(void *data)
+>          * support in IIO.
+>          */
+>
+> -       dev_dbg(&indio_dev->dev, "%s: pos = %d, available = %d\n", __func__,
+> +       dev_dbg(&indio_dev->dev, "pos = %d, available = %d\n",
+>                 adc->bufi, available);
+>         old_pos = adc->bufi;
+>
+> @@ -912,7 +912,7 @@ static int stm32_dfsdm_adc_dma_start(struct iio_dev *indio_dev)
+>         if (!adc->dma_chan)
+>                 return -EINVAL;
+>
+> -       dev_dbg(&indio_dev->dev, "%s size=%d watermark=%d\n", __func__,
+> +       dev_dbg(&indio_dev->dev, "size=%d watermark=%d\n",
+>                 adc->buf_sz, adc->buf_sz / 2);
+>
+>         if (adc->nconv == 1 && !indio_dev->trig)
+> --
+> 2.25.1
+>
 
-Just be careful with other maintainers, they sometimes strike a different
-balance for what they consider noise vs useful.  
 
-Jonathan
-
-> 
-> > 
-> > Jonathan
-> >   
-
+-- 
+With Best Regards,
+Andy Shevchenko
