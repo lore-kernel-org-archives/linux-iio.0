@@ -2,135 +2,136 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC78C43460
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44F5CC43600
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 94D7360201
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1BD7660BBB
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237319AbhDAS1q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 14:27:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36950 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239580AbhDASQj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Apr 2021 14:16:39 -0400
-Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBA8C02FEA5;
-        Thu,  1 Apr 2021 09:09:54 -0700 (PDT)
-Received: by mail-oi1-x22e.google.com with SMTP id z15so2261216oic.8;
-        Thu, 01 Apr 2021 09:09:54 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=FLBIDyYd3J/QtsHCQ3avUSdZOaQsAsWhMC43OlTTZSw=;
-        b=Iqtud0triEWyazPJmzlGRQ6Ocgrzhq5cXJjODDFqG+EbWlylLqxW5JEZ4Oqs3oVxjr
-         +/+UM+k/6eFJf0uYAophB0CwPJxJL2Veo6w2nrdTymgpR4O5w7bMNMA19bg0u+vz86xY
-         QA1+dqkdHKtOWypgr+6YeIDynkJadusJchIuTxvEmhlq6O3TraCUc9nywbgxd2NQ9aex
-         TyxGonDCQrcQdmBvi25wKwcyO0L86aURZX/6EoviSR+SgqdHDyi61sTlOh3BDX16H3hD
-         hGVr5OwgDDKXHQ0P9pWd5tEV9jGgOKo+vivBDmsNIgXhhZpmn35StNc1sszWGDGbEtSR
-         e6/g==
-X-Gm-Message-State: AOAM530z/9WHrfqFjQVEwDp41uxX8vPJMrqFiexuEeBbc2ImFMt86Pyq
-        uvQOdzoMPeYmSRVIl/i02Q==
-X-Google-Smtp-Source: ABdhPJzuyvMJcuMo9cj5QfUbMgNUWOVcunNaqBnqvwFCm8lZfeH3oWw+mP/behHNWR56hqSEeRKiIA==
-X-Received: by 2002:a54:4492:: with SMTP id v18mr6593685oiv.49.1617293393485;
-        Thu, 01 Apr 2021 09:09:53 -0700 (PDT)
-Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id b12sm1259828oti.17.2021.04.01.09.09.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 09:09:53 -0700 (PDT)
-Received: (nullmailer pid 524765 invoked by uid 1000);
-        Thu, 01 Apr 2021 16:09:51 -0000
-Date:   Thu, 1 Apr 2021 11:09:51 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Puranjay Mohan <puranjay12@gmail.com>
-Cc:     alexandru.ardelean@analog.com, jic23@kernel.org,
-        devicetree@vger.kernel.org, knaack.h@gmx.de,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        lars@metafoo.de
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: Add DT bindings
- for TMP117
-Message-ID: <20210401160951.GA522095@robh.at.kernel.org>
-References: <20210401091648.87421-1-puranjay12@gmail.com>
- <20210401091648.87421-2-puranjay12@gmail.com>
+        id S236913AbhDAS1r (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 14:27:47 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45700 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S239627AbhDASQn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Apr 2021 14:16:43 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 0169F6113E;
+        Thu,  1 Apr 2021 12:17:55 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617279476;
+        bh=wRad7N84rWD9dSoio69a4lZ1e70YET8Y/U4ELbCnnho=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Q1xGCX8CjWBXtQC1pgo9/9vi4nDHYsR9ze0Q3GiyebU0GCkZVF2x7Dm68maSFFiUb
+         aYhFb4Mtsxe3dwyRk1InCmoNe+43BkSOmz3+yXmoJlqQon680CoD7Fu0OV/kMatoKB
+         POCl1bXAfQ85z4s39lkLH+3JCvV54zR+CeAxccTEvavGiJh0qGmRlyOcVNt9cvXxRq
+         kYRsUf12VYN3g12XZxM/SAQ9Jf1Po6QForEFkcVk/jW0b2lIFgc1wXKAcg30pF7BC8
+         U8xRKFjOp2o3cBdsuc5vEOD8ftGdy/B8MUbxDoRdCuirrnPb1300SCFtXBNU1EX6Km
+         N9eYgXDgwnnkA==
+Received: by mail.kernel.org with local (Exim 4.94)
+        (envelope-from <mchehab@kernel.org>)
+        id 1lRwGn-001c2K-FQ; Thu, 01 Apr 2021 14:17:53 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
+        =?UTF-8?q?Przemys=C5=82aw=20Gaj?= <pgaj@cadence.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Andy Whitcroft <apw@canonical.com>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        David Airlie <airlied@linux.ie>,
+        Dwaipayan Ray <dwaipayanray1@gmail.com>,
+        Joe Perches <joe@perches.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lukas Bulwahn <lukas.bulwahn@gmail.com>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Vitor Soares <vitor.soares@synopsys.com>,
+        alsa-devel@alsa-project.org, devicetree@vger.kernel.org,
+        dri-devel@lists.freedesktop.org,
+        linux-arm-kernel@lists.infradead.org, linux-gpio@vger.kernel.org,
+        linux-i3c@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-media@vger.kernel.org, linux-mediatek@lists.infradead.org,
+        linux-pm@vger.kernel.org, patches@opensource.cirrus.com
+Subject: [PATCH 00/32] Fix broken documentation file references
+Date:   Thu,  1 Apr 2021 14:17:20 +0200
+Message-Id: <cover.1617279355.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210401091648.87421-2-puranjay12@gmail.com>
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Apr 01, 2021 at 02:46:47PM +0530, Puranjay Mohan wrote:
-> Add devicetree binding document for TMP117, a digital temperature sensor.
+Each patch on this series can be applied independently. They fix broken
+file references.
 
-Please run checkpatch.pl and fix trailing WS.
+Most of them are due to DT binding renames, but there are also other
+unrelated changes.
 
-> 
-> Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
-> ---
->  .../bindings/iio/temperature/ti,tmp117.yaml   | 34 +++++++++++++++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-> new file mode 100644
-> index 000000000..1ead22317
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-> @@ -0,0 +1,34 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/iio/temperature/ti,tmp117.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: "TI TMP117 - Digital temperature sensor with integrated NV memory"
-> +
-> +description: |
-> +    TI TMP117 - Digital temperature sensor with integrated NV memory that supports
-> +    I2C interface.
-> +      https://www.ti.com/lit/gpn/tmp1
-> +
-> +maintainers: 
-> +  - "Puranjay Mohan <puranjay12@gmail.com>"
+This series is based on next-20210401.
 
-Don't need quotes.
+Mauro Carvalho Chehab (32):
+  MAINTAINERS: update adi,ad5758.yaml reference
+  MAINTAINERS: update ste,mcde.yaml reference
+  MAINTAINERS: update brcm,bcm-v3d.yaml reference
+  MAINTAINERS: update fsl,dpaa2-console.yaml reference
+  MAINTAINERS: update st,hts221.yaml reference
+  MAINTAINERS: update dpot-dac.yaml reference
+  MAINTAINERS: update envelope-detector.yaml reference
+  MAINTAINERS: update current-sense-amplifier.yaml reference
+  MAINTAINERS: update current-sense-shunt.yaml reference
+  MAINTAINERS: update voltage-divider.yaml reference
+  MAINTAINERS: update invensense,mpu3050.yaml reference
+  MAINTAINERS: update lego,ev3-battery.yaml reference
+  MAINTAINERS: update marvell,armada-3700-utmi-phy.yaml reference
+  MAINTAINERS: update mtk-sd.yaml reference
+  MAINTAINERS: update atmel,sama5d2-adc.yaml reference
+  MAINTAINERS: update pni,rm3100.yaml reference
+  MAINTAINERS: update renesas,rcar-gyroadc.yaml reference
+  MAINTAINERS: update st,lsm6dsx.yaml reference
+  MAINTAINERS: update st,vl53l0x.yaml reference
+  MAINTAINERS: update snps,dw-axi-dmac.yaml reference
+  MAINTAINERS: update ti,dac7612.yaml reference
+  MAINTAINERS: update nxp,imx8-jpeg.yaml reference
+  MAINTAINERS: update ovti,ov2680.yaml reference
+  MAINTAINERS: update imi,rdacm2x-gmsl.yaml reference
+  dt-bindings:iio:dac: update microchip,mcp4725.yaml reference
+  dt-bindings: iommu: mediatek: update mediatek,iommu.yaml references
+  dt-bindings: i3c: update i3c.yaml references
+  dt-bindings: power: update battery.yaml reference
+  docs: dt: update writing-schema.rst references
+  Documentation: net: dsa: update configuration.rst reference
+  Documentation: update sysfs-platform_profile.rst reference
+  pinctrl: update pin-control.rst references
 
-> +
-> +properties: 
-> +  compatible: 
-> +    enum: 
-> +      - "ti,tmp117"
+ .../display/mediatek/mediatek,disp.txt        |  2 +-
+ .../bindings/i3c/cdns,i3c-master.txt          |  6 +--
+ .../bindings/i3c/snps,dw-i3c-master.txt       |  6 +--
+ .../bindings/media/mediatek-jpeg-decoder.txt  |  2 +-
+ .../bindings/media/mediatek-jpeg-encoder.txt  |  2 +-
+ .../bindings/media/mediatek-mdp.txt           |  2 +-
+ .../bindings/media/mediatek-vcodec.txt        |  2 +-
+ .../bindings/submitting-patches.rst           |  2 +-
+ Documentation/filesystems/cifs/cifsd.rst      |  2 +-
+ Documentation/power/power_supply_class.rst    |  2 +-
+ MAINTAINERS                                   | 48 +++++++++----------
+ include/linux/device.h                        |  2 +-
+ include/linux/iio/dac/mcp4725.h               |  2 +-
+ include/linux/mfd/madera/pdata.h              |  2 +-
+ include/linux/pinctrl/pinconf-generic.h       |  2 +-
+ include/linux/platform_profile.h              |  2 +-
+ scripts/checkpatch.pl                         |  2 +-
+ 17 files changed, 44 insertions(+), 44 deletions(-)
 
-Don't need quotes.
+-- 
+2.30.2
 
-Blank line here.
 
-> +  reg: 
-> +    maxItems: 1
-
-blank line here.
-
-> +required: 
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - | 
-> +    tmp117@48 {
-> +        compatible = "ti,tmp117";
-> +        reg = <0x48>;
-
-You could just add to trivial-devices.yaml.
-
-> +      };  
-> -- 
-> 2.30.1
-> 
