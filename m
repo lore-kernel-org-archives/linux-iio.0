@@ -2,49 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E38C433B4
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:43:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE552C43461
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:43:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7A7DD60FED
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:43:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A6F5060FED
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:43:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236656AbhDASnu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 14:43:50 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57608 "EHLO mail.kernel.org"
+        id S237245AbhDASnx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 14:43:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:32786 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237190AbhDASdC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 14:33:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C77F61262;
-        Thu,  1 Apr 2021 13:44:11 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617284653;
-        bh=nIwHdxNPXkB6nr1PwaVAwJHaRGsRSIL2ggN61tM8Kdo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=kYB1fGnNTnpwmXvUNYVSgiDEMayovjEoIyAL2dxJ0VVSGMayWatxLC0EGu42o9oSQ
-         vb/rcS64rZWZXvHega1/AEOkJ/V6sRTSjTbi8gxKU14dUZcshwdntdxjcQhON+2780
-         ddH55p1QtAhd6tSSL4WW/4yPOUlr05aoGHk2LLWI8SuaQHqP/MxvCfnh5vwlAG18Za
-         hCPHar9AfXuKz1IVcY+B1c2glNAuz/o9Ivs2Ko86/wqekQ4R8LtmrFnVnj9nBhza93
-         38Ruc7yZllHtBFR4269O/7ggJuYkJyRwku1Gk8Qt93cCao4cpKthAVD73VgNsKEH1J
-         mF3KdTtNmR/vA==
-Date:   Thu, 1 Apr 2021 15:44:08 +0200
-From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        id S238339AbhDASh7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Apr 2021 14:37:59 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9787461264;
+        Thu,  1 Apr 2021 15:00:11 +0000 (UTC)
+Date:   Thu, 1 Apr 2021 16:00:20 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <jic23@kernel.org>, <nuno.sa@analog.com>,
-        <dragos.bogdan@analog.com>, Greg KH <gregkh@linuxfoundation.org>
+        <nuno.sa@analog.com>, <dragos.bogdan@analog.com>,
+        Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: [PATCH v2 1/5] iio: Documentation: update definitions for
  bufferY and scan_elements
-Message-ID: <20210401154408.5f26a3c6@coco.lan>
-In-Reply-To: <20210217083438.37865-2-alexandru.ardelean@analog.com>
+Message-ID: <20210401160020.17537821@jic23-huawei>
+In-Reply-To: <20210401154408.5f26a3c6@coco.lan>
 References: <20210217083438.37865-1-alexandru.ardelean@analog.com>
         <20210217083438.37865-2-alexandru.ardelean@analog.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
+        <20210401154408.5f26a3c6@coco.lan>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -52,70 +46,88 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Em Wed, 17 Feb 2021 10:34:34 +0200
-Alexandru Ardelean <alexandru.ardelean@analog.com> escreveu:
+On Thu, 1 Apr 2021 15:44:08 +0200
+Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
 
-> Since the new change to the IIO buffer infrastructure, the buffer/ and
-> scan_elements/ directories have been merged into bufferY/ to have some
-> attributes available per-buffer.
+> Em Wed, 17 Feb 2021 10:34:34 +0200
+> Alexandru Ardelean <alexandru.ardelean@analog.com> escreveu:
 > 
-> This change updates the ABI docs to reflect this change.
+> > Since the new change to the IIO buffer infrastructure, the buffer/ and
+> > scan_elements/ directories have been merged into bufferY/ to have some
+> > attributes available per-buffer.
+> > 
+> > This change updates the ABI docs to reflect this change.
+> > 
+> > The hwfifo attributes are not updated, as for now these should be used
+> > via the legacy buffer/ directory until they are moved into core.
+> > 
+> > Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> > ---
+> >  Documentation/ABI/testing/sysfs-bus-iio | 85 +++++++++++++++++++++++++
+> >  1 file changed, 85 insertions(+)
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> > index d957f5da5c04..f2a72d7fbacb 100644
+> > --- a/Documentation/ABI/testing/sysfs-bus-iio
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> > @@ -1118,12 +1118,16 @@ Description:
+> >  
+> >  What:		/sys/bus/iio/devices/iio:deviceX/buffer/length
+> >  KernelVersion:	2.6.35
+> > +What:		/sys/bus/iio/devices/iio:deviceX/bufferY/length
+> > +KernelVersion:	5.11
+> >  Contact:	linux-iio@vger.kernel.org
+> >  Description:
+> >  		Number of scans contained by the buffer.  
 > 
-> The hwfifo attributes are not updated, as for now these should be used
-> via the legacy buffer/ directory until they are moved into core.
+> The ABI parser doesn't like things like this:
 > 
-> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 85 +++++++++++++++++++++++++
->  1 file changed, 85 insertions(+)
+> 	$ ./scripts/get_abi.pl validate
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index d957f5da5c04..f2a72d7fbacb 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -1118,12 +1118,16 @@ Description:
->  
->  What:		/sys/bus/iio/devices/iio:deviceX/buffer/length
->  KernelVersion:	2.6.35
-> +What:		/sys/bus/iio/devices/iio:deviceX/bufferY/length
-> +KernelVersion:	5.11
->  Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Number of scans contained by the buffer.
+> 	Warning: file Documentation/ABI/testing/sysfs-bus-iio#1167:
+> 		What '/sys/bus/iio/devices/iio:deviceX/buffer/length' doesn't have a description
+> 
+> The main reason is that all properties, including KernelVersion, 
+> Contact and Description are associated to a group of properties.
+> 
+> To be frank, for me that don't work with IIO, the above ABI
+> description doesn't sound clear.
+> 
+> I mean, what's the difference between
+> 	/sys/bus/iio/devices/iio:deviceX/buffer/length
+> and
+> 	/sys/bus/iio/devices/iio:deviceX/bufferY/length?
+> 
+> 
+> If the intention is to tell that:
+> 	/sys/bus/iio/devices/iio:deviceX/buffer/length
+> was obsoleted by:
+> 	/sys/bus/iio/devices/iio:deviceX/bufferY/length
+> 
+> IMO, the right thing would be to move the deprecated definition to
+> 	Documentation/ABI/obsolete/
+> 
+> If, on the other hand, both are completely identical and 
+> non-obsoleted, why to have both APIs? 
+> 
+> Or did you just missed adding a different description for the
+> new ABI symbols, but this was dropped due to some merge
+> conflict?
 
-The ABI parser doesn't like things like this:
+You are right that the version with out the index is obsolete
+but it's only just become so and there are no realistic way we
+are going to ever be able to remove it however much we encourage
+userspace to use the new interface.  We are stuck with this bit
+of backwards compatibility indefinitely.
 
-	$ ./scripts/get_abi.pl validate
+I'm fine with moving it and related definitions over to
+ABI/obsolete if that makes sense.
 
-	Warning: file Documentation/ABI/testing/sysfs-bus-iio#1167:
-		What '/sys/bus/iio/devices/iio:deviceX/buffer/length' doesn't have a description
-
-The main reason is that all properties, including KernelVersion, 
-Contact and Description are associated to a group of properties.
-
-To be frank, for me that don't work with IIO, the above ABI
-description doesn't sound clear.
-
-I mean, what's the difference between
-	/sys/bus/iio/devices/iio:deviceX/buffer/length
-and
-	/sys/bus/iio/devices/iio:deviceX/bufferY/length?
+Jonathan
 
 
-If the intention is to tell that:
-	/sys/bus/iio/devices/iio:deviceX/buffer/length
-was obsoleted by:
-	/sys/bus/iio/devices/iio:deviceX/bufferY/length
 
-IMO, the right thing would be to move the deprecated definition to
-	Documentation/ABI/obsolete/
+> 
+> Thanks,
+> Mauro
 
-If, on the other hand, both are completely identical and 
-non-obsoleted, why to have both APIs? 
-
-Or did you just missed adding a different description for the
-new ABI symbols, but this was dropped due to some merge
-conflict?
-
-Thanks,
-Mauro
