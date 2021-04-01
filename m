@@ -2,139 +2,120 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A595C433B4
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:43:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1E38C433B4
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:43:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 584B260FED
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:43:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7A7DD60FED
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:43:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236588AbhDASnp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 14:43:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57618 "EHLO mail.kernel.org"
+        id S236656AbhDASnu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 14:43:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57608 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237199AbhDASdC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S237190AbhDASdC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 1 Apr 2021 14:33:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C2C636135E;
-        Thu,  1 Apr 2021 14:56:02 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9C77F61262;
+        Thu,  1 Apr 2021 13:44:11 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617288964;
-        bh=9nGCAXDp6OelbE7tz1e6xJ0PqioU1rqkdi7vdNwhnHs=;
-        h=From:To:Cc:Subject:Date:From;
-        b=DFO+KLWc6v1piMLn8m7vsnNF6kl0O39zoVez/n6cI2DT7ixcAxdSDyfJW8hUUNmRI
-         IOox1YjvwF5Ihj0O5GyaS3vOMBg1lTptaIc9Rf0bSm0zJqA1uwoyuv+RVlZXqCVsvL
-         xmDHRKlnSxtmNdaSJv84qiXlzFYhhtSoEXX1io9nXfujiQZAZY4cf5R39v3gV0aSF4
-         vue3FBomsJvf/lCYbGzYDwABlftwFMNxUv0hlgqJg8LpVYpSfrbUvQIO815mQMR8Ct
-         hMVmiMdm5Lr6PM27XURFes6sTkw/k7sqpxoP0JUEGAbLgIdqENzuaArnvtr8Af71i9
-         VssIW+/kyxxKw==
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: [PATCH] iio:adc: Drop false comment about lack of timestamp control
-Date:   Thu,  1 Apr 2021 15:54:10 +0100
-Message-Id: <20210401145410.226917-1-jic23@kernel.org>
-X-Mailer: git-send-email 2.31.1
+        s=k20201202; t=1617284653;
+        bh=nIwHdxNPXkB6nr1PwaVAwJHaRGsRSIL2ggN61tM8Kdo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=kYB1fGnNTnpwmXvUNYVSgiDEMayovjEoIyAL2dxJ0VVSGMayWatxLC0EGu42o9oSQ
+         vb/rcS64rZWZXvHega1/AEOkJ/V6sRTSjTbi8gxKU14dUZcshwdntdxjcQhON+2780
+         ddH55p1QtAhd6tSSL4WW/4yPOUlr05aoGHk2LLWI8SuaQHqP/MxvCfnh5vwlAG18Za
+         hCPHar9AfXuKz1IVcY+B1c2glNAuz/o9Ivs2Ko86/wqekQ4R8LtmrFnVnj9nBhza93
+         38Ruc7yZllHtBFR4269O/7ggJuYkJyRwku1Gk8Qt93cCao4cpKthAVD73VgNsKEH1J
+         mF3KdTtNmR/vA==
+Date:   Thu, 1 Apr 2021 15:44:08 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Alexandru Ardelean <alexandru.ardelean@analog.com>
+Cc:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
+        <jic23@kernel.org>, <nuno.sa@analog.com>,
+        <dragos.bogdan@analog.com>, Greg KH <gregkh@linuxfoundation.org>
+Subject: Re: [PATCH v2 1/5] iio: Documentation: update definitions for
+ bufferY and scan_elements
+Message-ID: <20210401154408.5f26a3c6@coco.lan>
+In-Reply-To: <20210217083438.37865-2-alexandru.ardelean@analog.com>
+References: <20210217083438.37865-1-alexandru.ardelean@analog.com>
+        <20210217083438.37865-2-alexandru.ardelean@analog.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-redhat-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Em Wed, 17 Feb 2021 10:34:34 +0200
+Alexandru Ardelean <alexandru.ardelean@analog.com> escreveu:
 
-The timestamp control has been a function implemented in the core of
-IIO for a long time, so this comment is incorrect and has clearly been
-cut and paste into all these drivers.
+> Since the new change to the IIO buffer infrastructure, the buffer/ and
+> scan_elements/ directories have been merged into bufferY/ to have some
+> attributes available per-buffer.
+> 
+> This change updates the ABI docs to reflect this change.
+> 
+> The hwfifo attributes are not updated, as for now these should be used
+> via the legacy buffer/ directory until they are moved into core.
+> 
+> Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> ---
+>  Documentation/ABI/testing/sysfs-bus-iio | 85 +++++++++++++++++++++++++
+>  1 file changed, 85 insertions(+)
+> 
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+> index d957f5da5c04..f2a72d7fbacb 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio
+> @@ -1118,12 +1118,16 @@ Description:
+>  
+>  What:		/sys/bus/iio/devices/iio:deviceX/buffer/length
+>  KernelVersion:	2.6.35
+> +What:		/sys/bus/iio/devices/iio:deviceX/bufferY/length
+> +KernelVersion:	5.11
+>  Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Number of scans contained by the buffer.
 
-The remainder of the comment added nothing and was confusing so dropped
-that as well.
+The ABI parser doesn't like things like this:
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>
+	$ ./scripts/get_abi.pl validate
 
----
- drivers/iio/adc/ad7298.c | 6 ------
- drivers/iio/adc/ad7887.c | 6 ------
- drivers/iio/adc/ad7923.c | 6 ------
- drivers/iio/adc/ad799x.c | 6 ------
- 4 files changed, 24 deletions(-)
+	Warning: file Documentation/ABI/testing/sysfs-bus-iio#1167:
+		What '/sys/bus/iio/devices/iio:deviceX/buffer/length' doesn't have a description
 
-diff --git a/drivers/iio/adc/ad7298.c b/drivers/iio/adc/ad7298.c
-index 689ecd5dd563..d2163cb62f4f 100644
---- a/drivers/iio/adc/ad7298.c
-+++ b/drivers/iio/adc/ad7298.c
-@@ -142,12 +142,6 @@ static int ad7298_update_scan_mode(struct iio_dev *indio_dev,
- 	return 0;
- }
- 
--/*
-- * ad7298_trigger_handler() bh of trigger launched polling to ring buffer
-- *
-- * Currently there is no option in this driver to disable the saving of
-- * timestamps within the ring.
-- */
- static irqreturn_t ad7298_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-diff --git a/drivers/iio/adc/ad7887.c b/drivers/iio/adc/ad7887.c
-index 4f6f0e0e03ee..9b3cbe1ddc6f 100644
---- a/drivers/iio/adc/ad7887.c
-+++ b/drivers/iio/adc/ad7887.c
-@@ -109,12 +109,6 @@ static int ad7887_ring_postdisable(struct iio_dev *indio_dev)
- 	return spi_sync(st->spi, &st->msg[AD7887_CH0]);
- }
- 
--/*
-- * ad7887_trigger_handler() bh of trigger launched polling to ring buffer
-- *
-- * Currently there is no option in this driver to disable the saving of
-- * timestamps within the ring.
-- **/
- static irqreturn_t ad7887_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-index 287f4c13194e..9a649745cd0a 100644
---- a/drivers/iio/adc/ad7923.c
-+++ b/drivers/iio/adc/ad7923.c
-@@ -192,12 +192,6 @@ static int ad7923_update_scan_mode(struct iio_dev *indio_dev,
- 	return 0;
- }
- 
--/*
-- * ad7923_trigger_handler() bh of trigger launched polling to ring buffer
-- *
-- * Currently there is no option in this driver to disable the saving of
-- * timestamps within the ring.
-- */
- static irqreturn_t ad7923_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 1575b7670207..18bf8386d50a 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -182,12 +182,6 @@ static int ad799x_update_config(struct ad799x_state *st, u16 config)
- 	return 0;
- }
- 
--/*
-- * ad799x_trigger_handler() bh of trigger launched polling to ring buffer
-- *
-- * Currently there is no option in this driver to disable the saving of
-- * timestamps within the ring.
-- **/
- static irqreturn_t ad799x_trigger_handler(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
--- 
-2.31.1
+The main reason is that all properties, including KernelVersion, 
+Contact and Description are associated to a group of properties.
 
+To be frank, for me that don't work with IIO, the above ABI
+description doesn't sound clear.
+
+I mean, what's the difference between
+	/sys/bus/iio/devices/iio:deviceX/buffer/length
+and
+	/sys/bus/iio/devices/iio:deviceX/bufferY/length?
+
+
+If the intention is to tell that:
+	/sys/bus/iio/devices/iio:deviceX/buffer/length
+was obsoleted by:
+	/sys/bus/iio/devices/iio:deviceX/bufferY/length
+
+IMO, the right thing would be to move the deprecated definition to
+	Documentation/ABI/obsolete/
+
+If, on the other hand, both are completely identical and 
+non-obsoleted, why to have both APIs? 
+
+Or did you just missed adding a different description for the
+new ABI symbols, but this was dropped due to some merge
+conflict?
+
+Thanks,
+Mauro
