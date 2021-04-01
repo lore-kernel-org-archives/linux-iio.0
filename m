@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1FFDC43462
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E05FC433B4
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CFE83610A0
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3AA07610A0
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236062AbhDARyE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:54:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45222 "EHLO mail.kernel.org"
+        id S236022AbhDARyF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:54:05 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45218 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236467AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S236464AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 1 Apr 2021 13:45:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 760C061369;
-        Thu,  1 Apr 2021 17:43:16 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D8F0C60FDC;
+        Thu,  1 Apr 2021 17:43:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617298998;
-        bh=CMa/KbEmOuK4qKikXAWIG/TGer29caM46pGWKN9rWO4=;
+        s=k20201202; t=1617298990;
+        bh=Fm0cejd2vCxIhfGEwUI4LawYQxbjdzYkPvBX6SYU5/o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tj0UD5/hbO1I8u4q+WSs4XUY33eAKSL9sij1MpoLUK8RFI8qIt5/uC1qmwFnUNBYB
-         Vsfu1UGniXYDj5Wg4/aFfME+kCmq+8fUoSFFaK8YsbqvwdZYslo6R18G9XkNd+hZlQ
-         crxmW6vg0l+yHayurw4yBDzHvqhMJq/7Olqw4YlH4jGksKw2AZrpR6jyFCu0qh57Vi
-         rLnNEiBsi8aKjFmui4D5oqqHsT2q6wHWXLwMwtTsH4XYXIvW3WZwS0qkTJd9vB8YTX
-         QmML+6V6lxSuz/ViNbFSzei9FyMzwo2/opgZq6ICJcfxv47wvU+0td1XryGNtLAk9c
-         jODH9z40Jajfg==
+        b=TwRzHuU4gFy+/Dwo/SEiEVwLncIb8bom0zF0vMxvLXxM0/ez5VwC46Ue0bWLgLLAE
+         Qz/ezPBa9CXUnKopxtlXb5QD8kJW0aILKrXWobAWZdjCIigQlxSmz/uQfbZ1S/Bx9i
+         kT+czKiR2MN6k+don4JuZvWEnw3qV17ydxoh6rdQz9PSbpv2UnURCihCiG3fUV2WSn
+         Y62OS7VK6/J9HkcbwP8XHJlOiXvBm3jBLwCPzj1R1SD/8P0b+XPubWORfZtl9+C/jW
+         y5QCGnhAbRgl45CInZrBQbUyVKh7vQvBfAA3CFLCWzamY2nS8BoAnOv1uc79QEaaG2
+         EfEyuStuMAfvQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5/6] dt-bindings:trivial-devices: Add sensortek,stk8312 and sensortek,s8ba50
-Date:   Thu,  1 Apr 2021 18:41:11 +0100
-Message-Id: <20210401174112.320497-6-jic23@kernel.org>
+Subject: [PATCH 2/6] dt-bindings:iio:accel:bosch,bma220 device tree binding documentation
+Date:   Thu,  1 Apr 2021 18:41:08 +0100
+Message-Id: <20210401174112.320497-3-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210401174112.320497-1-jic23@kernel.org>
 References: <20210401174112.320497-1-jic23@kernel.org>
@@ -49,32 +49,72 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Two simple devices. The stk8ba50 datasheet could be found via
-google, but I only have the driver for the 8312.
+Linux driver currently relies on the driver.name to match to the
+compatible, but that doesn't mean it isn't a good idea to document it.
 
-Given they both seem to be 3 axis devices with a single interrupt
-line, add them to trivial-devices.yaml
+Only real complexity is the 3 separate power supplies.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- Documentation/devicetree/bindings/trivial-devices.yaml | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../bindings/iio/accel/bosch,bma220.yaml      | 50 +++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
-index c7d49a720afa..92ea6b960e16 100644
---- a/Documentation/devicetree/bindings/trivial-devices.yaml
-+++ b/Documentation/devicetree/bindings/trivial-devices.yaml
-@@ -258,6 +258,10 @@ properties:
-           - sensirion,sgpc3
-             # Sensirion multi-pixel gas sensor with I2C interface
-           - sensirion,sgp30
-+            # Sensortek 3 axis accelerometer
-+          - sensortek,stk8312
-+            # Sensortek 3 axis accelerometer
-+          - sensortek,stk8ba50
-             # SGX Sensortech VZ89X Sensors
-           - sgx,vz89x
-             # Relative Humidity and Temperature Sensors
+diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bma220.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bma220.yaml
+new file mode 100644
+index 000000000000..942b23ad0712
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/accel/bosch,bma220.yaml
+@@ -0,0 +1,50 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/accel/bosch,bma220.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Bosch BMA220 Trixial Acceleration Sensor
++
++maintainers:
++  - Jonathan Cameron <Jonathan.Cameron@huawei.com>
++
++properties:
++  compatible:
++    enum:
++      - bosch,bma220
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  spi-max-frequency: true
++
++  vdda-supply: true
++  vddd-supply: true
++  vddio-supply: true
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    spi0 {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        accelerometer@0 {
++            compatible = "bosch,bma220";
++            reg = <0>;
++            spi-max-frequency = <2500000>;
++            interrupt-parent = <&gpio0>;
++            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
++        };
++    };
++...
 -- 
 2.31.1
 
