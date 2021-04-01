@@ -7,39 +7,39 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C669C001E3
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:45:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 418EAC001E5
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:45:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 37F896136D
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:45:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 25DA16136F
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234553AbhDARpp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:45:45 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40586 "EHLO mail.kernel.org"
+        id S234702AbhDARpq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:45:46 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40690 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234550AbhDARiA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 13:38:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 88E11613D2;
-        Thu,  1 Apr 2021 17:20:10 +0000 (UTC)
+        id S234601AbhDARiV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Apr 2021 13:38:21 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 512D3613C9;
+        Thu,  1 Apr 2021 17:20:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617297613;
-        bh=K9Ub/CKfmRvSeQSmLNc98Iuwtk58+Z8qykYAOmarZrg=;
+        s=k20201202; t=1617297606;
+        bh=ppFkbyhE1z8HEc1Vjh/sVhlr9mfGa9Nh8NUjxIGBCr4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=oQLebEoXWOH/wBVUjuu3aliho34wJhvYBBM6UfivNTTZYVv6LoD+mYB2NHLiDna+i
-         K+Z1eFmF5sdIKpMbdzgPRQDW9eoFSS5YVX/7jAhL5MdML9kyZtRYwvG68HDJl+0cwT
-         Oshc/82G0rzWXLMQx4oOlBGa401+6JXO2ReQ1v2U8SM5LigSWHNqQLGyvsiI5YDG99
-         Rls1A1jkpvSPmaFZtvgM3tmNl0t2YVXJK889XUVSJti0k90lT/l+2J8LvlOQnQXv/b
-         E067Bgg+r961qxPSkC6whl2NNc5hSGAo2y7/nGfMzOV+MsNWVulzPLCrZdMq0UoYRV
-         P7UqQ/N/0TbIA==
+        b=W8IqReJrPDBe28rX9SpHJnVzragn++d0qpzhAmvdxvmFW1CVtSQwL2XX2tZjVr76f
+         itxUNu0C7yvskWFvFHhBJpJ79KOQjYxqFeB8Cmi1gcpcI213MUsi6+xLTPBf8gsK56
+         KYIF+KUdCS2D4nTwkNE3EU4g1J055EWzwEE0SGBWi/DwyO2bE4iXvtlr0/lTqwVCfP
+         Mu9dL7/vspVMjqlehguS98RUhWz3HZSRqSu80IyEeICZb5rvCJx7PDo8nyo/xOOW8+
+         1A5ilHPpiVmqQDTCr6Pyey/ZH7u72NTCpPgylrHkCLVS6ShK/gAnRb+yIybQvpRRKq
+         ixpSU5JKnRbrw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 3/3] dt-bindings:iio:adc:adi,ad7474: Add missing binding document
-Date:   Thu,  1 Apr 2021 18:17:59 +0100
-Message-Id: <20210401171759.318140-4-jic23@kernel.org>
+Subject: [PATCH 1/3] iio:adc:ad7476: Fix remove handling
+Date:   Thu,  1 Apr 2021 18:17:57 +0100
+Message-Id: <20210401171759.318140-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210401171759.318140-1-jic23@kernel.org>
 References: <20210401171759.318140-1-jic23@kernel.org>
@@ -51,166 +51,53 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This binding covers class of simple SPI ADCs which only provide
-data output - they don't have MOSI pin.
-
-The only real variation between them is over how many supplies they
-use and which one is used for the reference.
-
-Michael listed as maintainer for this one as it is his driver and
-falls under the catch all MAINTAINERS entry for ADI devices.
+This driver was in an odd half way state between devm based cleanup
+and manual cleanup (most of which was missing).
+I would guess something went wrong with a rebase or similar.
+Anyhow, this basially finishes the job as a precusor to improving
+the regulator handling.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 4bb2b8f94ace3 ("iio: adc: ad7476: implement devm_add_action_or_reset")
 Cc: Michael Hennerich <michael.hennerich@analog.com>
 ---
- .../bindings/iio/adc/adi,ad7476.yaml          | 139 ++++++++++++++++++
- 1 file changed, 139 insertions(+)
+ drivers/iio/adc/ad7476.c | 18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
-new file mode 100644
-index 000000000000..465c85add31d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7476.yaml
-@@ -0,0 +1,139 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+# Copyright 2019 Analog Devices Inc.
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/adi,ad7476.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: AD7476 and similar simple SPI ADCs from multiple manufacturers.
-+
-+maintainers:
-+  - Michael Hennerich <michael.hennerich@analog.com>
-+
-+description: |
-+  A lot of simple SPI ADCs have very straight forward interfaces.
-+  They typically don't provide a MOSI pin, simply reading out data
-+  on MISO when the clock toggles.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad7091
-+      - adi,ad7091r
-+      - adi,ad7273
-+      - adi,ad7274
-+      - adi,ad7276
-+      - adi,ad7277
-+      - adi,ad7278
-+      - adi,ad7466
-+      - adi,ad7467
-+      - adi,ad7468
-+      - adi,ad7475
-+      - adi,ad7476
-+      - adi,ad7476a
-+      - adi,ad7477
-+      - adi,ad7477a
-+      - adi,ad7478
-+      - adi,ad7478a
-+      - adi,ad7495
-+      - adi,ad7910
-+      - adi,ad7920
-+      - adi,ad7940
-+      - ti,adc081s
-+      - ti,adc101s
-+      - ti,adc121s
-+      - ti,ads7866
-+      - ti,ads7867
-+      - ti,ads7868
-+      - lltc,ltc2314-14
-+
-+  reg:
-+    maxItems: 1
-+
-+  vcc-supply:
-+    description:
-+      Main powersupply voltage for the chips, sometimes referred to as VDD on
-+      datasheets.  If there is no separate vref-supply, then this is needed
-+      to establish channel scaling.
-+
-+  vdrive-supply:
-+    description:
-+      Some devices have separate supply for their digital control side.
-+
-+  vref-supply:
-+    description:
-+      Some devices have a specific reference voltage supplied on a different pin
-+      to the other supplies. Needed to be able to establish channel scaling.
-+
-+  spi-max-frequency: true
-+
-+  adi,conversion-start-gpios:
-+    description: A GPIO used to trigger the start of a conversion
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+allOf:
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad7091
-+              - adi,ad7091r
-+    then:
-+      properties:
-+        adi,conversion-start-gpios: true
-+    else:
-+      properties:
-+        adi,conversion-start-gpios: false
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad7273
-+              - adi,ad7274
-+              - adi,ad7475
-+              - lltc,ltc2314-14
-+    then:
-+      properties:
-+        vref-supply: true
-+      required:
-+        - vref-supply
-+    else:
-+      properties:
-+        vref-supply: false
-+      required:
-+        - vcc-supply
-+  - if:
-+      properties:
-+        compatible:
-+          contains:
-+            enum:
-+              - adi,ad7475
-+              - adi,ad7495
-+    then:
-+      properties:
-+        vdrive-supply: true
-+    else:
-+      properties:
-+        vdrive-supply: false
-+
-+examples:
-+  - |
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      adc@0 {
-+        compatible = "adi,ad7091";
-+        reg = <0>;
-+        spi-max-frequency = <5000000>;
-+        vcc-supply = <&adc_vcc>;
-+      };
-+    };
-+...
+diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
+index 17402714b387..9e9ff07cf972 100644
+--- a/drivers/iio/adc/ad7476.c
++++ b/drivers/iio/adc/ad7476.c
+@@ -321,25 +321,15 @@ static int ad7476_probe(struct spi_device *spi)
+ 	spi_message_init(&st->msg);
+ 	spi_message_add_tail(&st->xfer, &st->msg);
+ 
+-	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+-			&ad7476_trigger_handler, NULL);
++	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev, NULL,
++					      &ad7476_trigger_handler, NULL);
+ 	if (ret)
+-		goto error_disable_reg;
++		return ret;
+ 
+ 	if (st->chip_info->reset)
+ 		st->chip_info->reset(st);
+ 
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		goto error_ring_unregister;
+-	return 0;
+-
+-error_ring_unregister:
+-	iio_triggered_buffer_cleanup(indio_dev);
+-error_disable_reg:
+-	regulator_disable(st->reg);
+-
+-	return ret;
++	return devm_iio_device_register(&spi->dev, indio_dev);
+ }
+ 
+ static const struct spi_device_id ad7476_id[] = {
 -- 
 2.31.1
 
