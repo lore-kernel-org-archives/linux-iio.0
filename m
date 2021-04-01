@@ -2,372 +2,310 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-20.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 628D6C43611
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A78AC43617
 	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:55:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3D81E61108
+	by mail.kernel.org (Postfix) with ESMTP id 4D2C760FF3
 	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:55:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236327AbhDARyN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:54:13 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50704 "EHLO mail.kernel.org"
+        id S234702AbhDARzo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:55:44 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237002AbhDARuA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 13:50:00 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 1DCD26128B;
-        Thu,  1 Apr 2021 14:11:51 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617286314;
-        bh=r3iVFQU8xfyDnlDbW+aSZlPQ2NMUf9ylsDKd8eRxUss=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cpA/aNK2R7SoTeUsc7Fq9ZLM5V2D0iSAkQnd2TJKNkrtLSB7b3yzypJ9B97vxiwbg
-         H1zOCnQKGQXuEpTcTEI6YQYJaQilmhDZFTc+vyCrMkZPdtIbP30JbCkQV/5rR7jFUc
-         dmt14riH5GNUCbN173wjTdo7Z0gQOifhcGg+lSpAfi0HDQzTpyALmCMOa3Q2UaU1Tp
-         oqEq++Kv0pZTmeYk0rx3ACvSv+rQ/epFGBKU8pKL7/Zyl/xkgFcOucFohRFOhzy/hl
-         TFJieaMxY4dM2A4gOelUAyjm/bQwyEoNSINBevfovliViNIfNdxc7JcQlp/1s7hV3S
-         6BSnBben9tDNg==
+        id S235326AbhDARw7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Apr 2021 13:52:59 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 77D7E611F0;
+        Thu,  1 Apr 2021 13:05:32 +0000 (UTC)
+Date:   Thu, 1 Apr 2021 14:05:40 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Subject: [PATCH 1/2] dt-bindings:iio:dac:ad5755: txt to yaml format conversion.
-Date:   Thu,  1 Apr 2021 15:09:55 +0100
-Message-Id: <20210401140956.224084-2-jic23@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210401140956.224084-1-jic23@kernel.org>
-References: <20210401140956.224084-1-jic23@kernel.org>
+To:     "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        "Robh+dt@kernel.org" <Robh+dt@kernel.org>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        "Jonathan Cameron" <jonathan.cameron@huawei.com>
+Subject: Re: [PATCH v2 00/24] staging:iio:cdc:ad7150: cleanup / fixup /
+ graduate
+Message-ID: <20210401140540.3f16d233@jic23-huawei>
+In-Reply-To: <e6dd33f25592499988a11b4e4aa142a6@hisilicon.com>
+References: <20210314181511.531414-1-jic23@kernel.org>
+        <20210329163021.20d9c9b7@jic23-huawei>
+        <20210329163601.3e3a88ac@jic23-huawei>
+        <9218f13e32e642a19cb7df6e7c8c358f@hisilicon.com>
+        <20210331131327.5f938957@jic23-huawei>
+        <e6dd33f25592499988a11b4e4aa142a6@hisilicon.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Thu, 1 Apr 2021 10:15:22 +0000
+"Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com> wrote:
 
-Straight forward conversion.  Only fiddly bit is the XOR of
-spi-cpol and spi-cpha.
+Various tweaks as discussed below made and whole series applied to
+the togreg branch of iio.git and pushed out as testing for hte
+usual reasons.   Thanks to Alex and Barry for the quick follow up
+on review responses!
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-Link: https://lore.kernel.org/r/20201031184854.745828-40-jic23@kernel.org
----
- .../devicetree/bindings/iio/dac/ad5755.txt    | 124 -------------
- .../bindings/iio/dac/adi,ad5755.yaml          | 171 ++++++++++++++++++
- 2 files changed, 171 insertions(+), 124 deletions(-)
+With hindsight I should be more careful when using b4 to apply and
+resend versions of my own patch series. Had to go through by hand
+deleting the duplicate links :(
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/ad5755.txt b/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-deleted file mode 100644
-index 502e1e55adbd..000000000000
---- a/Documentation/devicetree/bindings/iio/dac/ad5755.txt
-+++ /dev/null
-@@ -1,124 +0,0 @@
--* Analog Devices AD5755 IIO Multi-Channel DAC Linux Driver
--
--Required properties:
-- - compatible: Has to contain one of the following:
--	adi,ad5755
--	adi,ad5755-1
--	adi,ad5757
--	adi,ad5735
--	adi,ad5737
--
-- - reg: spi chip select number for the device
-- - spi-cpha or spi-cpol: is the only modes that is supported
--
--Recommended properties:
-- - spi-max-frequency: Definition as per
--		Documentation/devicetree/bindings/spi/spi-bus.txt
--
--Optional properties:
--See include/dt-bindings/iio/ad5755.h
-- - adi,ext-dc-dc-compenstation-resistor: boolean set if the hardware have an
--					 external resistor and thereby bypasses
--					 the internal compensation resistor.
-- - adi,dc-dc-phase:
--	Valid values for DC DC Phase control is:
--	0: All dc-to-dc converters clock on the same edge.
--	1: Channel A and Channel B clock on the same edge,
--	   Channel C and Channel D clock on opposite edges.
--	2: Channel A and Channel C clock on the same edge,
--	   Channel B and Channel D clock on opposite edges.
--	3: Channel A, Channel B, Channel C, and Channel D
--	   clock 90 degrees out of phase from each other.
-- - adi,dc-dc-freq-hz:
--	Valid values for DC DC frequency is [Hz]:
--	250000
--	410000
--	650000
-- - adi,dc-dc-max-microvolt:
--	Valid values for the maximum allowed Vboost voltage supplied by
--	the dc-to-dc converter is:
--	23000000
--	24500000
--	27000000
--	29500000
--
--Optional for every channel:
-- - adi,mode:
--	Valid values for DAC modes is:
--	0: 0 V to 5 V voltage range.
--	1: 0 V to 10 V voltage range.
--	2: Plus minus 5 V voltage range.
--	3: Plus minus 10 V voltage range.
--	4: 4 mA to 20 mA current range.
--	5: 0 mA to 20 mA current range.
--	6: 0 mA to 24 mA current range.
-- - adi,ext-current-sense-resistor: boolean set if the hardware a external
--				   current sense resistor.
-- - adi,enable-voltage-overrange: boolean enable voltage overrange
-- - adi,slew: Array of slewrate settings should contain 3 fields:
--	1: Should be either 0 or 1 in order to enable or disable slewrate.
--	2: Slew rate settings:
--		Valid values for the slew rate update frequency:
--		64000
--		32000
--		16000
--		8000
--		4000
--		2000
--		1000
--		500
--		250
--		125
--		64
--		32
--		16
--		8
--		4
--		0
--	3: Slew step size:
--		Valid values for the step size LSBs:
--		1
--		2
--		4
--		16
--		32
--		64
--		128
--		256
--
--Example:
--dac@0 {
--	#address-cells = <1>;
--	#size-cells = <0>;
--	compatible = "adi,ad5755";
--	reg = <0>;
--	spi-max-frequency = <1000000>;
--	spi-cpha;
--	adi,dc-dc-phase = <0>;
--	adi,dc-dc-freq-hz = <410000>;
--	adi,dc-dc-max-microvolt = <23000000>;
--	channel@0 {
--		reg = <0>;
--		adi,mode = <4>;
--		adi,ext-current-sense-resistor;
--		adi,slew = <0 64000 1>;
--	};
--	channel@1 {
--		reg = <1>;
--		adi,mode = <4>;
--		adi,ext-current-sense-resistor;
--		adi,slew = <0 64000 1>;
--	};
--	channel@2 {
--		reg = <2>;
--		adi,mode = <4>;
--		adi,ext-current-sense-resistor;
--		adi,slew = <0 64000 1>;
--	};
--	channel@3 {
--		reg = <3>;
--		adi,mode = <4>;
--		adi,ext-current-sense-resistor;
--		adi,slew = <0 64000 1>;
--	};
--};
-diff --git a/Documentation/devicetree/bindings/iio/dac/adi,ad5755.yaml b/Documentation/devicetree/bindings/iio/dac/adi,ad5755.yaml
-new file mode 100644
-index 000000000000..5d6a87f28b12
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/adi,ad5755.yaml
-@@ -0,0 +1,171 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/dac/adi,ad5755.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices AD5755 Multi-Channel DAC
-+
-+maintainers:
-+  - Sean Nyekjaer <sean.nyekjaer@prevas.dk>
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,ad5755
-+      - adi,ad5755-1
-+      - adi,ad5757
-+      - adi,ad5735
-+      - adi,ad5737
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-cpha:
-+    description: Either this or spi-cpol but not both.
-+  spi-cpol: true
-+
-+  spi-max-frequency: true
-+
-+  adi,ext-dc-dc-compenstation-resistor:
-+    $ref: /schemas/types.yaml#/definitions/flag
-+    description:
-+      Set if the hardware have an external resistor and thereby bypasses
-+      the internal compensation resistor.
-+
-+  adi,dc-dc-phase:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [0, 1, 2, 3]
-+    description: |
-+      Valid values for DC DC Phase control is:
-+      0: All dc-to-dc converters clock on the same edge.
-+      1: Channel A and Channel B clock on the same edge,
-+         Channel C and Channel D clock on opposite edges.
-+      2: Channel A and Channel C clock on the same edge,
-+         Channel B and Channel D clock on opposite edges.
-+      3: Channel A, Channel B, Channel C, and Channel D
-+         clock 90 degrees out of phase from each other.
-+
-+  adi,dc-dc-freq-hz:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    enum: [250000, 410000, 650000]
-+
-+  adi,dc-dc-max-microvolt:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    description:
-+      Maximum allowed Vboost voltage supplied by the dc-to-dc converter.
-+    enum: [23000000, 24500000, 27000000, 29500000]
-+
-+  "#address-cells":
-+    const: 1
-+
-+  "#size-cells":
-+    const: 0
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+patternProperties:
-+  "^(channel@)[0-7]$":
-+    type: object
-+    description: Child node to describe a channel
-+    properties:
-+      reg:
-+        maxItems: 1
-+
-+      adi,mode:
-+        $ref: /schemas/types.yaml#/definitions/uint32
-+        minimum: 0
-+        maximum: 6
-+        description: |
-+          Valid values for DAC modes is:
-+          0: 0 V to 5 V voltage range.
-+          1: 0 V to 10 V voltage range.
-+          2: Plus minus 5 V voltage range.
-+          3: Plus minus 10 V voltage range.
-+          4: 4 mA to 20 mA current range.
-+          5: 0 mA to 20 mA current range.
-+          6: 0 mA to 24 mA current range.
-+
-+      adi,ext-current-sense-resistor:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description:
-+          Set if the hardware has an external current sense resistor
-+
-+      adi,enable-voltage-overrange:
-+        $ref: /schemas/types.yaml#/definitions/flag
-+        description: Enable voltage overrange
-+
-+      adi,slew:
-+        $ref: /schemas/types.yaml#/definitions/uint32-array
-+        description: |
-+          Array of slewrate settings should contain 3 fields:
-+          1: Should be either 0 or 1 in order to enable or disable slewrate.
-+          2: Slew rate update frequency
-+          3: Slew step size
-+        items:
-+          - enum: [0, 1]
-+          - enum: [64000, 32000, 16000, 8000, 4000, 2000, 1000, 500, 250, 125, 64, 32, 16, 8, 4, 0]
-+          - enum: [1, 2, 4, 16, 32, 64, 128, 256]
-+
-+    required:
-+      - reg
-+
-+    additionalProperties: false
-+
-+oneOf:
-+  - required:
-+      - spi-cpha
-+  - required:
-+      - spi-cpol
-+
-+examples:
-+  - |
-+    #include <dt-bindings/iio/adi,ad5592r.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        dac@0 {
-+            #address-cells = <1>;
-+            #size-cells = <0>;
-+            compatible = "adi,ad5755";
-+            reg = <0>;
-+            spi-max-frequency = <1000000>;
-+            spi-cpha;
-+            adi,dc-dc-phase = <0>;
-+            adi,dc-dc-freq-hz = <410000>;
-+            adi,dc-dc-max-microvolt = <23000000>;
-+            channel@0 {
-+                reg = <0>;
-+                adi,mode = <4>;
-+                adi,ext-current-sense-resistor;
-+                adi,slew = <0 64000 1>;
-+            };
-+            channel@1 {
-+                reg = <1>;
-+                adi,mode = <4>;
-+                adi,ext-current-sense-resistor;
-+                adi,slew = <0 64000 1>;
-+            };
-+            channel@2 {
-+                reg = <2>;
-+                adi,mode = <4>;
-+                adi,ext-current-sense-resistor;
-+                adi,slew = <0 64000 1>;
-+            };
-+            channel@3 {
-+                reg = <3>;
-+                adi,mode = <4>;
-+                adi,ext-current-sense-resistor;
-+                adi,slew = <0 64000 1>;
-+            };
-+        };
-+    };
-+...
--- 
-2.31.1
+Jonathan
+
+
+> > -----Original Message-----
+> > From: Jonathan Cameron [mailto:jic23@jic23.retrosnub.co.uk]
+> > Sent: Thursday, April 1, 2021 1:13 AM
+> > To: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>
+> > Cc: linux-iio@vger.kernel.org; Lars-Peter Clausen <lars@metafoo.de>; Michael
+> > Hennerich <Michael.Hennerich@analog.com>; Alexandru Ardelean
+> > <aardelean@deviqon.com>; Robh+dt@kernel.org; Alexandru Ardelean
+> > <ardeleanalex@gmail.com>; Jonathan Cameron <jonathan.cameron@huawei.com>
+> > Subject: Re: [PATCH v2 00/24] staging:iio:cdc:ad7150: cleanup / fixup / graduate
+> > 
+> > On Tue, 30 Mar 2021 21:23:59 +0000
+> > "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com> wrote:
+> >   
+> > > > -----Original Message-----
+> > > > From: Jonathan Cameron [mailto:jic23@jic23.retrosnub.co.uk]
+> > > > Sent: Tuesday, March 30, 2021 4:36 AM
+> > > > To: linux-iio@vger.kernel.org; Song Bao Hua (Barry Song)
+> > > > <song.bao.hua@hisilicon.com>
+> > > > Cc: Lars-Peter Clausen <lars@metafoo.de>; Michael Hennerich
+> > > > <Michael.Hennerich@analog.com>; Alexandru Ardelean  
+> > <aardelean@deviqon.com>;  
+> > > > Robh+dt@kernel.org; Alexandru Ardelean <ardeleanalex@gmail.com>; Jonathan
+> > > > Cameron <jonathan.cameron@huawei.com>
+> > > > Subject: Re: [PATCH v2 00/24] staging:iio:cdc:ad7150: cleanup / fixup /  
+> > graduate  
+> > > >
+> > > > On Mon, 29 Mar 2021 16:30:21 +0100
+> > > > Jonathan Cameron <jic23@kernel.org> wrote:
+> > > >  
+> > > > > Hi All,
+> > > > >
+> > > > > Whilst I'll give up at some point and just apply this without additional
+> > > > > tags I really don't like doing that as I've made too many idiot mistakes
+> > > > > in the past.
+> > > > >
+> > > > > Some of these are fairly trivial so please can people take a look if
+> > > > > they have a chance. Rob did the DT one (thanks!) so we are down to...
+> > > > >  
+> > > > > >
+> > > > > > 12 - The big irq rework patch. Alex wasn't quite happy to give a tag
+> > > > > >      on that last time, but didn't mention anything specific. It's a  
+> > bit  
+> > > > > >      fiddly so fair enough!  
+> > > > >
+> > > > > (it's not that bad!)
+> > > > >  
+> > > >
+> > > > 20 had an ack that I think was accidentally sent off list and hence burried
+> > > > in my junk. And then there were two...
+> > > >  
+> > > > > >
+> > > > > > 21 - ABI patch.  I don't think there is anything controversial in here
+> > > > > >      but it's not gained any tags yet.
+> > > > > >  
+> > > > >
+> > > > > Perhaps didn't help that I accidentally didn't cc Barry on v2.
+> > > > >
+> > > > > Thanks,
+> > > > >
+> > > > > Jonathan
+> > > > >
+> > > > >
+> > > > >  
+> > > > > > v1 description:
+> > > > > >
+> > > > > > This is an 'old' driver in IIO that has been in staging a while.
+> > > > > > First submitted in October 2010.
+> > > > > >
+> > > > > > I wanted to try and experiment and picked this driver to try it with.
+> > > > > >
+> > > > > > The cleanup etc here was all tested against some basic emulation
+> > > > > > added to QEMU rather than real hardware.  Once I've cleaned that up
+> > > > > > a tiny bit I'll push it up to https://github.com/jic23/qemu
+> > > > > > Note that for now I'm not proposing to upstream this to QEMU but
+> > > > > > would be interested in hearing if people thing it is a good idea to
+> > > > > > do so.
+> > > > > >
+> > > > > > Whilst it's obviously hard to be absolutely sure that the emulation  
+> > is  
+> > > > > > correct, the fact that the original driver worked as expected and the
+> > > > > > cleaned up version still does is certainly encouraging.
+> > > > > >
+> > > > > > Note however, that there were a few more significant changes in here  
+> > than  
+> > > > > > basic cleanup.
+> > > > > > 1. Interrupts / events were handled in a rather esoteric fashion.
+> > > > > >    (Always on, window modes represented as magnitudes).
+> > > > > >    Note that for two channel devices there are separate lines. The original
+> > > > > >    driver was not supporting this at all.
+> > > > > >    They now look more like a standard IIO driver and reflect experience
+> > > > > >    that we've gained over the years in dealing with devices where these
+> > > > > >    aren't interrupt lines as such, but rather reporters of current status.
+> > > > > > 2. Timeouts were handled in a fashion that clearly wouldn't work.
+> > > > > >
+> > > > > > Note that this moving out of staging makes a few bits of ABI 'official'
+> > > > > > and so those are added to the main IIO ABI Docs.
+> > > > > >
+> > > > > > Thanks in advance to anyone who has time to take a look.
+> > > > > >
+> > > > > > Jonathan Cameron (24):
+> > > > > >   staging:iio:cdc:ad7150: use swapped reads for i2c rather than open
+> > > > > >     coding.  
+> > >
+> > > Using i2c_smbus_read_word_swapper and i2c_smbus_write_word_swapped
+> > > looks good to me. The only thing is that your changelog didn't
+> > > mention you also used swapper write as you said "use swapped
+> > > reads". Otherwise,
+> > >
+> > > Reviewed-by: Barry Song <song.bao.hua@hisilicon>
+> > >  
+> > > > > >   staging:iio:cdc:ad7150: Remove magnitude adaptive events
+> > > > > >   staging:iio:cdc:ad7150: Refactor event parameter update
+> > > > > >   staging:iio:cdc:ad7150: Timeout register covers both directions so
+> > > > > >     both need updating
+> > > > > >   staging:iio:cdc:ad7150: Drop platform data support
+> > > > > >   staging:iio:cdc:ad7150: Handle variation in chan_spec across device
+> > > > > >     and irq present or not
+> > > > > >   staging:iio:cdc:ad7150: Simplify event handling by only using rising
+> > > > > >     direction.
+> > > > > >   staging:iio:cdc:ad7150: Drop noisy print in probe
+> > > > > >   staging:iio:cdc:ad7150: Add sampling_frequency support
+> > > > > >   iio:event: Add timeout event info type
+> > > > > >   staging:iio:cdc:ad7150: Change timeout units to seconds and use core
+> > > > > >     support
+> > > > > >   staging:iio:cdc:ad7150: Rework interrupt handling.  
+> > >
+> > > +	/*
+> > > +	 * There are race conditions around enabling and disabling that
+> > > +	 * could easily land us here with a spurious interrupt.
+> > > +	 * Just eat it if so.
+> > > +	 */
+> > > +	if (!(int_status & status_mask))
+> > > +		return IRQ_HANDLED;
+> > > +
+> > >
+> > > I am not sure what kind of race conditions we have since disable_irq()
+> > > will synchronize with the irq handler.
+> > >
+> > > If we are in an interrupt, the user who calls disable_irq will wait
+> > > for the completion of irq handler.
+> > > If an interrupt comes in the gap of disable_irq and enable_irq, we should
+> > > have a valid int_status after we re-enable the interrupt?
+> > >
+> > > Maybe it is because of the weird behavior of the hardware?  
+> > 
+> > I think you are right and I was being overly paranoid on that one. I'll drop
+> > the comment, though I'll leave the paranoid check.
+> >   
+> 
+> Yes. Make sense.
+> 
+> > >  
+> > > > > >   staging:iio:cdc:ad7150: More consistent register and field naming
+> > > > > >   staging:iio:cdc:ad7150: Reorganize headers.
+> > > > > >   staging:iio:cdc:ad7150: Tidy up local variable positioning.
+> > > > > >   staging:iio:cdc:ad7150: Drop unnecessary block comments.
+> > > > > >   staging:iio:cdc:ad7150: Shift the _raw readings by 4 bits.
+> > > > > >   staging:iio:cdc:ad7150: Add scale and offset to
+> > > > > >     info_mask_shared_by_type
+> > > > > >   staging:iio:cdc:ad7150: Really basic regulator support.
+> > > > > >   staging:iio:cdc:ad7150: Add of_match_table  
+> > >
+> > > Reviewed-by: Barry Song <song.bao.hua@hisilicon>
+> > >  
+> > > > > >   iio:Documentation:ABI Add missing elements as used by the adi,ad7150  
+> > >
+> > > +What:		/sys/.../events/in_capacitanceY_adaptive_thresh_rising_en
+> > > +What:		/sys/.../events/in_capacitanceY_adaptive_thresh_falling_en
+> > > +KernelVersion:	5.11
+> > >
+> > > Is kernel 5.11 the right version? Guess not :-)  
+> > Oops Can tell this took a while.  I'll tidy that up whilst applying.  
+> > >  
+> > > > > >   staging:iio:cdc:ad7150: Add copyright notice given substantial
+> > > > > >     changes.
+> > > > > >   dt-bindings:iio:cdc:adi,ad7150 binding doc  
+> > >
+> > > Reviewed-by: Barry Song <song.bao.hua@hisilicon>
+> > >
+> > > +      properties:
+> > > +        compatible:
+> > > +          contains:
+> > > +            enum:
+> > > +              - adi,ad7150
+> > > +              - adi,ad7156
+> > > +    then:
+> > > +      properties:
+> > > +        interrupts:
+> > > +          minItems: 2
+> > > +          maxItems: 2
+> > > +  - if:
+> > > +      properties:
+> > > +        compatible:
+> > > +          contains:
+> > > +            const: adi,ad7151
+> > > +    then:
+> > > +      properties:
+> > > +        interrupts:
+> > > +          minItems: 1
+> > > +          maxItems: 1
+> > >
+> > > A further follow-up might be:
+> > > we can move to read two irq number for adi7150/7156
+> > > and one irq number for adi7151 in driver?  
+> > 
+> > Unless I'm miss understanding you I think we already do.
+> > There is a check against the driver_data being AD7150 which is set for
+> > the two parts that have 2 interrupts.  If we don't get that we don't
+> > query the second irq number.  
+> 
+> Sorry for missing that part.
+> 
+> >   
+> > >  
+> > > > > >   iio:cdc:ad7150: Move driver out of staging.
+> > > > > >
+> > > > > >  Documentation/ABI/testing/sysfs-bus-iio       |  33 +
+> > > > > >  .../bindings/iio/cdc/adi,ad7150.yaml          |  69 ++
+> > > > > >  drivers/iio/Kconfig                           |   1 +
+> > > > > >  drivers/iio/Makefile                          |   1 +
+> > > > > >  drivers/iio/cdc/Kconfig                       |  17 +
+> > > > > >  drivers/iio/cdc/Makefile                      |   6 +
+> > > > > >  drivers/iio/cdc/ad7150.c                      | 678 ++++++++++++++++++
+> > > > > >  drivers/iio/industrialio-event.c              |   1 +
+> > > > > >  drivers/staging/iio/cdc/Kconfig               |  10 -
+> > > > > >  drivers/staging/iio/cdc/Makefile              |   3 +-
+> > > > > >  drivers/staging/iio/cdc/ad7150.c              | 655 -----------------
+> > > > > >  include/linux/iio/types.h                     |   1 +
+> > > > > >  12 files changed, 808 insertions(+), 667 deletions(-)
+> > > > > >  create mode 100644  
+> > > > Documentation/devicetree/bindings/iio/cdc/adi,ad7150.yaml  
+> > > > > >  create mode 100644 drivers/iio/cdc/Kconfig
+> > > > > >  create mode 100644 drivers/iio/cdc/Makefile
+> > > > > >  create mode 100644 drivers/iio/cdc/ad7150.c
+> > > > > >  delete mode 100644 drivers/staging/iio/cdc/ad7150.c
+> > > > > >  
+> > > > >  
+> > >
+> > >  
+> Thanks
+> Barry
+> 
 
