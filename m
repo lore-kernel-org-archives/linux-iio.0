@@ -6,61 +6,70 @@ X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C03DC43461
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BBC78C43460
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6DE1B601FC
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 94D7360201
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236807AbhDAS1o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 14:27:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
+        id S237319AbhDAS1q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 14:27:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36950 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239238AbhDASPu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Apr 2021 14:15:50 -0400
-Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AC5C0F26CA;
-        Thu,  1 Apr 2021 07:56:29 -0700 (PDT)
-Received: by mail-oi1-x232.google.com with SMTP id n8so2016723oie.10;
-        Thu, 01 Apr 2021 07:56:29 -0700 (PDT)
+        with ESMTP id S239580AbhDASQj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Apr 2021 14:16:39 -0400
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CBA8C02FEA5;
+        Thu,  1 Apr 2021 09:09:54 -0700 (PDT)
+Received: by mail-oi1-x22e.google.com with SMTP id z15so2261216oic.8;
+        Thu, 01 Apr 2021 09:09:54 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=hmK4hQlTe/dm4OEhWDvI1X0E5xhesSt9X9vk7PN2+D0=;
-        b=Nt3OrrBvL3S9XKUVqA54ZvBGEsaBvezPl3jRLE0I2Bi0NWtYOZ61z05xk5t0aahcS3
-         iKsAk7vQVS9oV8UWzL8INOpgyzhugy7vON9xMXMREoLwQcdbduWVnLvXfkZquUmwvzbz
-         sjJiRCLDSWYIsmRe+BxuRCYgU4VJ9swJKjnVKyz5TrUaAjzFeIn9Kcc7XKOc4RdpA4rM
-         kR+XQ9PIs9NEbPwWMDk8Mu1UxX+NYGWpvDINS4NrOnA3yzvE+YdHi9I2d3T+iIL7hC0u
-         WmJJG2Zecscg0R3l06J+8g/yLQensHlob2lkGgQr8npEQ9Mhhq7zn9bP2Qdwtf4ZRxIB
-         q+7Q==
-X-Gm-Message-State: AOAM533+7v6il8Nkpt37Z0U4nFlnYvXbVBUu2I7mbeUniBP6ecZQl08+
-        l8rkVm+KjwyjC18vFZmDHA==
-X-Google-Smtp-Source: ABdhPJzSJezFFJWfsrLlTbHO7wSon9UUy58X1LwrBJKlLXSZ7+3BsgnGryhpiYtiaivLvDP+5R1zPg==
-X-Received: by 2002:a05:6808:249:: with SMTP id m9mr6434303oie.170.1617288986305;
-        Thu, 01 Apr 2021 07:56:26 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FLBIDyYd3J/QtsHCQ3avUSdZOaQsAsWhMC43OlTTZSw=;
+        b=Iqtud0triEWyazPJmzlGRQ6Ocgrzhq5cXJjODDFqG+EbWlylLqxW5JEZ4Oqs3oVxjr
+         +/+UM+k/6eFJf0uYAophB0CwPJxJL2Veo6w2nrdTymgpR4O5w7bMNMA19bg0u+vz86xY
+         QA1+dqkdHKtOWypgr+6YeIDynkJadusJchIuTxvEmhlq6O3TraCUc9nywbgxd2NQ9aex
+         TyxGonDCQrcQdmBvi25wKwcyO0L86aURZX/6EoviSR+SgqdHDyi61sTlOh3BDX16H3hD
+         hGVr5OwgDDKXHQ0P9pWd5tEV9jGgOKo+vivBDmsNIgXhhZpmn35StNc1sszWGDGbEtSR
+         e6/g==
+X-Gm-Message-State: AOAM530z/9WHrfqFjQVEwDp41uxX8vPJMrqFiexuEeBbc2ImFMt86Pyq
+        uvQOdzoMPeYmSRVIl/i02Q==
+X-Google-Smtp-Source: ABdhPJzuyvMJcuMo9cj5QfUbMgNUWOVcunNaqBnqvwFCm8lZfeH3oWw+mP/behHNWR56hqSEeRKiIA==
+X-Received: by 2002:a54:4492:: with SMTP id v18mr6593685oiv.49.1617293393485;
+        Thu, 01 Apr 2021 09:09:53 -0700 (PDT)
 Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
-        by smtp.gmail.com with ESMTPSA id v65sm1092368oib.42.2021.04.01.07.56.24
+        by smtp.gmail.com with ESMTPSA id b12sm1259828oti.17.2021.04.01.09.09.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Apr 2021 07:56:24 -0700 (PDT)
-Received: (nullmailer pid 409162 invoked by uid 1000);
-        Thu, 01 Apr 2021 14:56:21 -0000
+        Thu, 01 Apr 2021 09:09:53 -0700 (PDT)
+Received: (nullmailer pid 524765 invoked by uid 1000);
+        Thu, 01 Apr 2021 16:09:51 -0000
+Date:   Thu, 1 Apr 2021 11:09:51 -0500
 From:   Rob Herring <robh@kernel.org>
 To:     Puranjay Mohan <puranjay12@gmail.com>
-Cc:     linux-kernel@vger.kernel.org, alexandru.ardelean@analog.com,
-        knaack.h@gmx.de, devicetree@vger.kernel.org, lars@metafoo.de,
-        jic23@kernel.org, linux-iio@vger.kernel.org
+Cc:     alexandru.ardelean@analog.com, jic23@kernel.org,
+        devicetree@vger.kernel.org, knaack.h@gmx.de,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        lars@metafoo.de
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: Add DT bindings
+ for TMP117
+Message-ID: <20210401160951.GA522095@robh.at.kernel.org>
+References: <20210401091648.87421-1-puranjay12@gmail.com>
+ <20210401091648.87421-2-puranjay12@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 In-Reply-To: <20210401091648.87421-2-puranjay12@gmail.com>
-References: <20210401091648.87421-1-puranjay12@gmail.com> <20210401091648.87421-2-puranjay12@gmail.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: Add DT bindings for TMP117
-Date:   Thu, 01 Apr 2021 09:56:21 -0500
-Message-Id: <1617288981.576340.409161.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 01 Apr 2021 14:46:47 +0530, Puranjay Mohan wrote:
+On Thu, Apr 01, 2021 at 02:46:47PM +0530, Puranjay Mohan wrote:
 > Add devicetree binding document for TMP117, a digital temperature sensor.
+
+Please run checkpatch.pl and fix trailing WS.
+
 > 
 > Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
 > ---
@@ -68,31 +77,60 @@ On Thu, 01 Apr 2021 14:46:47 +0530, Puranjay Mohan wrote:
 >  1 file changed, 34 insertions(+)
 >  create mode 100644 Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
 > 
+> diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+> new file mode 100644
+> index 000000000..1ead22317
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
+> @@ -0,0 +1,34 @@
+> +# SPDX-License-Identifier: GPL-2.0
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/iio/temperature/ti,tmp117.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
+> +
+> +title: "TI TMP117 - Digital temperature sensor with integrated NV memory"
+> +
+> +description: |
+> +    TI TMP117 - Digital temperature sensor with integrated NV memory that supports
+> +    I2C interface.
+> +      https://www.ti.com/lit/gpn/tmp1
+> +
+> +maintainers: 
+> +  - "Puranjay Mohan <puranjay12@gmail.com>"
 
-My bot found errors running 'make dt_binding_check' on your patch:
+Don't need quotes.
 
-yamllint warnings/errors:
+> +
+> +properties: 
+> +  compatible: 
+> +    enum: 
+> +      - "ti,tmp117"
 
-dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dts:21.13-26: Warning (reg_format): /example-0/tmp117@48:reg: property has invalid length (4 bytes) (#address-cells == 1, #size-cells == 1)
-Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (pci_device_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: example-0: tmp117@48:reg:0: [72] is too short
-	From schema: /usr/local/lib/python3.8/dist-packages/dtschema/schemas/reg.yaml
+Don't need quotes.
 
-See https://patchwork.ozlabs.org/patch/1460920
+Blank line here.
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+> +  reg: 
+> +    maxItems: 1
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
+blank line here.
 
-pip3 install dtschema --upgrade
+> +required: 
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - | 
+> +    tmp117@48 {
+> +        compatible = "ti,tmp117";
+> +        reg = <0x48>;
 
-Please check and re-submit.
+You could just add to trivial-devices.yaml.
 
+> +      };  
+> -- 
+> 2.30.1
+> 
