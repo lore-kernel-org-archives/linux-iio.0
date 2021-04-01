@@ -2,256 +2,130 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F34C47064
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB65C47067
 	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:45:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 85ABC61285
+	by mail.kernel.org (Postfix) with ESMTP id B5F99613C5
 	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234713AbhDARpr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:45:47 -0400
-Received: from mail.kernel.org ([198.145.29.99]:40714 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234614AbhDARiZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 13:38:25 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 9495B613CB;
-        Thu,  1 Apr 2021 17:20:07 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617297609;
-        bh=EshraPHggvWBzitSNOCgch/Nz5TGMwmZb4MjOUvnq78=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=q/CryuzyglWNhXqf/lCuSoCSNdlnMAR4DJQzkA8pETAsmZnZz9xjTVN7IMHhHDUiC
-         c/enp9R3/SgmMk7fhPu6OWSR3tHWI+sY48/eFQF4QFasqpnBSeGRgE/Qw8hq9JGzmp
-         9QGkk1l0ZCwWc2vscIOu7oiTSznGl5NDeKz70VE18mY3rX8iAAgADV3+KVOOVJkity
-         xWQOChNHXCK/C5tCZe+vh3OhMbkBO+Df2P8ZfLMOAiXz6+iNsvboBSeN1h2pWZ0Ozf
-         z4J8uDK58Xwkh11BhPryn4zI4uUQucceC+jYT+I/rkAW2Th67171cri4DfhbRXLZzB
-         qOnrab7PZ+xSw==
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
-Cc:     devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 2/3] iio:adc:ad7476: Handle the different regulators used by various parts.
-Date:   Thu,  1 Apr 2021 18:17:58 +0100
-Message-Id: <20210401171759.318140-3-jic23@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210401171759.318140-1-jic23@kernel.org>
-References: <20210401171759.318140-1-jic23@kernel.org>
+        id S234792AbhDARps (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:45:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57222 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234811AbhDARkV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Apr 2021 13:40:21 -0400
+Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01351C02D54E;
+        Thu,  1 Apr 2021 08:44:23 -0700 (PDT)
+Received: by mail-pj1-x102a.google.com with SMTP id cl21-20020a17090af695b02900c61ac0f0e9so4895877pjb.1;
+        Thu, 01 Apr 2021 08:44:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L7OE5i32xqp2hZR46nimIfKkiwZGHT1inF3gekHLXDk=;
+        b=SpKmHRTJB0YwvLzZBV4ng2u4aIRSqa4wlNadMwbL7IhXlN+i18QZ6diB1fjjiHOceW
+         aIpzOwMcBjM5ES/kjU6jx5jzDma2XZ3BVs9TSzmATxp+EMBXftIalt3Gvc8WAVinFobE
+         iStmjpV2+nN4Lu4MLIXbzcBwwFXxP7U8vc2GHguS4sXg9h8sQC9/mOTy1NrJ+/jLesqn
+         qr1bUm611OxLeYRYQT0F+tWy+ApLN13ULwVcWLmF2rWWKY9hXdlwz0bVDXBE6AVyQkGk
+         jtqQZc1KQXss738+jFsKYQv4DX43l2QEGLYMCrmlkJ8jbQhmyPHkqXD3mPATz/WOQvAh
+         FE0g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=L7OE5i32xqp2hZR46nimIfKkiwZGHT1inF3gekHLXDk=;
+        b=K3wEG3geCOD7Bi1MTzv9fgMgHKTBT6BKvl2gPXP5wqv6lGtw6XRX1j4cMam+cXLuqt
+         Pba3tJzRsPishJM39rcBNoHNqMx+HwbW7+rlzJZXAGxXEoCzDQtISzVNQ9MUyBXrRPEu
+         3+lIOMK9thcw8Z5SZ7T+aT5mbdLcWWKa0sHU8d5zNQ1JHsI8/7W9f9x4oils/MPwtu6E
+         uKiMkbH3oXBQAppilnPCB+ugHTc47aAAUMfTKc0b9eeLmT5yb0aMYCGeSguLRpdjauSp
+         tRiNUdxE96BQk+rITFmQSf1KaEK6Y0luxBT2nk5X9/BE6FDYSRxYeobGoukDy+beZkB5
+         Oh0w==
+X-Gm-Message-State: AOAM532S3PlX74J7B16S/taLGyEB9FgS5HST74VnaA/eYZ89VLfJRi1F
+        jkorje1IkolTpbzBzsJbxXI=
+X-Google-Smtp-Source: ABdhPJyhownPWGsKaGGfB9TosD1NuukP+16rbvj9ZGpkWFPybd+q/Fjmx9cmapGv3WhXWBtPuZJIig==
+X-Received: by 2002:a17:90a:bb02:: with SMTP id u2mr9676740pjr.175.1617291863249;
+        Thu, 01 Apr 2021 08:44:23 -0700 (PDT)
+Received: from localhost.localdomain ([2409:4072:6307:8389:a773:d07f:cd55:994a])
+        by smtp.googlemail.com with ESMTPSA id i8sm5957174pjl.32.2021.04.01.08.44.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Apr 2021 08:44:22 -0700 (PDT)
+From:   Mugilraj Dhavachelvan <dmugil2000@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        Mugilraj Dhavachelvan <dmugil2000@gmail.com>,
+        linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: stm32-dfsdm: drop __func__ while using Dynamic debug
+Date:   Thu,  1 Apr 2021 21:13:43 +0530
+Message-Id: <20210401154343.41527-1-dmugil2000@gmail.com>
+X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+dropped __func__ while using dev_dbg() and pr_debug()
 
-Not all of the parts supported by this driver use single supply.
-Hence we add chip_info fields to say what additional supplies exist
-and in the case of vref, ensure that is used for the reference voltage
-rather than vcc.
-
-Tested using really simple QEMU model and some fixed regulators.
-
-The devm_add_action_or_reset() callback is changed to take the
-regulator as it's parameter so we can use one callback for all the
-different regulators without having to store pointers to them in
-the iio_priv() structure.
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>
+Signed-off-by: Mugilraj Dhavachelvan <dmugil2000@gmail.com>
 ---
- drivers/iio/adc/ad7476.c | 81 +++++++++++++++++++++++++++++++++-------
- 1 file changed, 68 insertions(+), 13 deletions(-)
+ drivers/iio/adc/stm32-dfsdm-adc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7476.c b/drivers/iio/adc/ad7476.c
-index 9e9ff07cf972..49f7d252b200 100644
---- a/drivers/iio/adc/ad7476.c
-+++ b/drivers/iio/adc/ad7476.c
-@@ -32,12 +32,14 @@ struct ad7476_chip_info {
- 	/* channels used when convst gpio is defined */
- 	struct iio_chan_spec		convst_channel[2];
- 	void (*reset)(struct ad7476_state *);
-+	bool				has_vref;
-+	bool				has_vdrive;
- };
+diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+index 76a60d93fe23..95ec5f3c3126 100644
+--- a/drivers/iio/adc/stm32-dfsdm-adc.c
++++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+@@ -198,7 +198,7 @@ static int stm32_dfsdm_compute_osrs(struct stm32_dfsdm_filter *fl,
+ 	unsigned int p = fl->ford;	/* filter order (ford) */
+ 	struct stm32_dfsdm_filter_osr *flo = &fl->flo[fast];
  
- struct ad7476_state {
- 	struct spi_device		*spi;
- 	const struct ad7476_chip_info	*chip_info;
--	struct regulator		*reg;
-+	struct regulator		*ref_reg;
- 	struct gpio_desc		*convst_gpio;
- 	struct spi_transfer		xfer;
- 	struct spi_message		msg;
-@@ -53,12 +55,15 @@ struct ad7476_state {
+-	pr_debug("%s: Requested oversampling: %d\n",  __func__, oversamp);
++	pr_debug("Requested oversampling: %d\n", oversamp);
+ 	/*
+ 	 * This function tries to compute filter oversampling and integrator
+ 	 * oversampling, base on oversampling ratio requested by user.
+@@ -294,8 +294,8 @@ static int stm32_dfsdm_compute_osrs(struct stm32_dfsdm_filter *fl,
+ 				}
+ 				flo->max = (s32)max;
  
- enum ad7476_supported_device_ids {
- 	ID_AD7091R,
-+	ID_AD7273,
-+	ID_AD7274,
- 	ID_AD7276,
- 	ID_AD7277,
- 	ID_AD7278,
- 	ID_AD7466,
- 	ID_AD7467,
- 	ID_AD7468,
-+	ID_AD7475,
- 	ID_AD7495,
- 	ID_AD7940,
- 	ID_ADC081S,
-@@ -146,7 +151,7 @@ static int ad7476_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		if (!st->chip_info->int_vref_uv) {
--			scale_uv = regulator_get_voltage(st->reg);
-+			scale_uv = regulator_get_voltage(st->ref_reg);
- 			if (scale_uv < 0)
- 				return scale_uv;
- 		} else {
-@@ -194,6 +199,16 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- 		.convst_channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 		.reset = ad7091_reset,
- 	},
-+	[ID_AD7273] = {
-+		.channel[0] = AD7940_CHAN(10),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+		.has_vref = true,
-+	},
-+	[ID_AD7274] = {
-+		.channel[0] = AD7940_CHAN(12),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+		.has_vref = true,
-+	},
- 	[ID_AD7276] = {
- 		.channel[0] = AD7940_CHAN(12),
- 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-@@ -218,10 +233,17 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- 		.channel[0] = AD7476_CHAN(8),
- 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 	},
-+	[ID_AD7475] = {
-+		.channel[0] = AD7476_CHAN(12),
-+		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+		.has_vref = true,
-+		.has_vdrive = true,
-+	},
- 	[ID_AD7495] = {
- 		.channel[0] = AD7476_CHAN(12),
- 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
- 		.int_vref_uv = 2500000,
-+		.has_vdrive = true,
- 	},
- 	[ID_AD7940] = {
- 		.channel[0] = AD7940_CHAN(14),
-@@ -254,6 +276,7 @@ static const struct ad7476_chip_info ad7476_chip_info_tbl[] = {
- 	[ID_LTC2314_14] = {
- 		.channel[0] = AD7940_CHAN(14),
- 		.channel[1] = IIO_CHAN_SOFT_TIMESTAMP(1),
-+		.has_vref = true,
- 	},
- };
+-				pr_debug("%s: fast %d, fosr %d, iosr %d, res 0x%llx/%d bits, rshift %d, lshift %d\n",
+-					 __func__, fast, flo->fosr, flo->iosr,
++				pr_debug("fast %d, fosr %d, iosr %d, res 0x%llx/%d bits, rshift %d, lshift %d\n",
++					 fast, flo->fosr, flo->iosr,
+ 					 flo->res, bits, flo->rshift,
+ 					 flo->lshift);
+ 			}
+@@ -858,7 +858,7 @@ static void stm32_dfsdm_dma_buffer_done(void *data)
+ 	 * support in IIO.
+ 	 */
  
-@@ -263,15 +286,16 @@ static const struct iio_info ad7476_info = {
+-	dev_dbg(&indio_dev->dev, "%s: pos = %d, available = %d\n", __func__,
++	dev_dbg(&indio_dev->dev, "pos = %d, available = %d\n",
+ 		adc->bufi, available);
+ 	old_pos = adc->bufi;
  
- static void ad7476_reg_disable(void *data)
- {
--	struct ad7476_state *st = data;
-+	struct regulator *reg = data;
+@@ -912,7 +912,7 @@ static int stm32_dfsdm_adc_dma_start(struct iio_dev *indio_dev)
+ 	if (!adc->dma_chan)
+ 		return -EINVAL;
  
--	regulator_disable(st->reg);
-+	regulator_disable(reg);
- }
+-	dev_dbg(&indio_dev->dev, "%s size=%d watermark=%d\n", __func__,
++	dev_dbg(&indio_dev->dev, "size=%d watermark=%d\n",
+ 		adc->buf_sz, adc->buf_sz / 2);
  
- static int ad7476_probe(struct spi_device *spi)
- {
- 	struct ad7476_state *st;
- 	struct iio_dev *indio_dev;
-+	struct regulator *reg;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-@@ -282,19 +306,50 @@ static int ad7476_probe(struct spi_device *spi)
- 	st->chip_info =
- 		&ad7476_chip_info_tbl[spi_get_device_id(spi)->driver_data];
- 
--	st->reg = devm_regulator_get(&spi->dev, "vcc");
--	if (IS_ERR(st->reg))
--		return PTR_ERR(st->reg);
-+	reg = devm_regulator_get(&spi->dev, "vcc");
-+	if (IS_ERR(reg))
-+		return PTR_ERR(reg);
- 
--	ret = regulator_enable(st->reg);
-+	ret = regulator_enable(reg);
- 	if (ret)
- 		return ret;
- 
--	ret = devm_add_action_or_reset(&spi->dev, ad7476_reg_disable,
--				       st);
-+	ret = devm_add_action_or_reset(&spi->dev, ad7476_reg_disable, reg);
- 	if (ret)
- 		return ret;
- 
-+	if (st->chip_info->has_vref) {
-+		reg = devm_regulator_get(&spi->dev, "vref");
-+		if (IS_ERR(reg))
-+			return PTR_ERR(reg);
-+
-+		ret = regulator_enable(reg);
-+		if (ret)
-+			return ret;
-+
-+		ret = devm_add_action_or_reset(&spi->dev, ad7476_reg_disable,
-+					       reg);
-+		if (ret)
-+			return ret;
-+	}
-+	/* Either vcc or vref as appropriate */
-+	st->ref_reg = reg;
-+
-+	if (st->chip_info->has_vdrive) {
-+		reg = devm_regulator_get(&spi->dev, "vdrive");
-+		if (IS_ERR(reg))
-+			return PTR_ERR(reg);
-+
-+		ret = regulator_enable(reg);
-+		if (ret)
-+			return ret;
-+
-+		ret = devm_add_action_or_reset(&spi->dev, ad7476_reg_disable,
-+					       reg);
-+		if (ret)
-+			return ret;
-+	}
-+
- 	st->convst_gpio = devm_gpiod_get_optional(&spi->dev,
- 						  "adi,conversion-start",
- 						  GPIOD_OUT_LOW);
-@@ -335,15 +390,15 @@ static int ad7476_probe(struct spi_device *spi)
- static const struct spi_device_id ad7476_id[] = {
- 	{"ad7091", ID_AD7091R},
- 	{"ad7091r", ID_AD7091R},
--	{"ad7273", ID_AD7277},
--	{"ad7274", ID_AD7276},
-+	{"ad7273", ID_AD7273},
-+	{"ad7274", ID_AD7274},
- 	{"ad7276", ID_AD7276},
- 	{"ad7277", ID_AD7277},
- 	{"ad7278", ID_AD7278},
- 	{"ad7466", ID_AD7466},
- 	{"ad7467", ID_AD7467},
- 	{"ad7468", ID_AD7468},
--	{"ad7475", ID_AD7466},
-+	{"ad7475", ID_AD7475},
- 	{"ad7476", ID_AD7466},
- 	{"ad7476a", ID_AD7466},
- 	{"ad7477", ID_AD7467},
+ 	if (adc->nconv == 1 && !indio_dev->trig)
 -- 
-2.31.1
+2.25.1
 
