@@ -2,107 +2,83 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2719CC433B4
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A1A9C43460
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 04087601FC
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E6E3160BBB
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236960AbhDAS1s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 14:27:48 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45704 "EHLO mail.kernel.org"
+        id S237448AbhDAS1t (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 14:27:49 -0400
+Received: from mail.kernel.org ([198.145.29.99]:51646 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237026AbhDASSq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 14:18:46 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id AEE366136A;
-        Thu,  1 Apr 2021 15:12:55 +0000 (UTC)
-Date:   Thu, 1 Apr 2021 16:13:04 +0100
+        id S237303AbhDASW7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Apr 2021 14:22:59 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C9B4E6135C;
+        Thu,  1 Apr 2021 14:44:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617288266;
+        bh=lwWtqsMAluvnXv/MtmV8EIm4bHoGqvkCMAJWHaRbw98=;
+        h=From:To:Cc:Subject:Date:From;
+        b=AU+BHcFK453ROlrTanuMDlFDc5ZyxxHI2ozzBtJypeIUvu8YLhjroITiKJCuJLG3V
+         ZRoCalLmf8CteZxIeXJvwrh1ymDOScMh6FbDjPzsXZQkC/Ze0UGPvDFN+PQfEEjcc/
+         nNZxuyRQ8qhdJx0Hc2C4KyRBhbA0IvWMPg+Wz65qQsCVmuD33Bhb/jErsRjH4jHcSt
+         MxE/daKNIeKPGW920SsbV9yw2f0ePe3iM0bj745IFNYB7/sE7wiJuFFSZUskT34JaT
+         kZmDHplRtQCzjstnHnyCmZ+UAtU295z1a1S83z5xzgyBNFqj9msrHmyiplxGyQJZza
+         TD4h0hGSUuG2A==
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Puranjay Mohan <puranjay12@gmail.com>
-Cc:     alexandru.ardelean@analog.com, devicetree@vger.kernel.org,
-        knaack.h@gmx.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lars@metafoo.de
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: Add DT bindings
- for TMP117
-Message-ID: <20210401161304.70c61fe6@jic23-huawei>
-In-Reply-To: <20210401091648.87421-2-puranjay12@gmail.com>
-References: <20210401091648.87421-1-puranjay12@gmail.com>
-        <20210401091648.87421-2-puranjay12@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+To:     linux-iio@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH] iio:accel:stk8312: Add lowercase i2c device id
+Date:   Thu,  1 Apr 2021 15:42:26 +0100
+Message-Id: <20210401144226.225928-1-jic23@kernel.org>
+X-Mailer: git-send-email 2.31.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu,  1 Apr 2021 14:46:47 +0530
-Puranjay Mohan <puranjay12@gmail.com> wrote:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> Add devicetree binding document for TMP117, a digital temperature sensor.
-> 
-> Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
-> ---
->  .../bindings/iio/temperature/ti,tmp117.yaml   | 34 +++++++++++++++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-> new file mode 100644
-> index 000000000..1ead22317
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
-> @@ -0,0 +1,34 @@
-> +# SPDX-License-Identifier: GPL-2.0
-> +%YAML 1.2
-> +---
-> +$id: "http://devicetree.org/schemas/iio/temperature/ti,tmp117.yaml#"
-> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
-> +
-> +title: "TI TMP117 - Digital temperature sensor with integrated NV memory"
-> +
-> +description: |
-> +    TI TMP117 - Digital temperature sensor with integrated NV memory that supports
-> +    I2C interface.
-> +      https://www.ti.com/lit/gpn/tmp1
-> +
-> +maintainers: 
-> +  - "Puranjay Mohan <puranjay12@gmail.com>"
-> +
-> +properties: 
-> +  compatible: 
-> +    enum: 
-> +      - "ti,tmp117"
-> +  reg: 
-> +    maxItems: 1
-> +required: 
-> +  - compatible
-> +  - reg
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - | 
-> +    tmp117@48 {
-> +        compatible = "ti,tmp117";
-> +        reg = <0x48>;
-> +      };  
+These are never upper case.  Chances are that all users of this driver
+were using the ACPI binding but just in case keep the uppercase version
+but mark it deprecated.
 
-For the example embed it in an appropriate i2c description e.g.
+Whilst here tidy up some spacing.
 
-    i2c {
-        #address-cells = <1>;
-        #size-cells = <0>;
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/iio/accel/stk8312.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-        tmp117@48 {
-             compatible = "ti,tmp117";
-             reg = <0x48>;
-        };
-    };
+diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+index 157d8faefb9e..60aecfa9fd92 100644
+--- a/drivers/iio/accel/stk8312.c
++++ b/drivers/iio/accel/stk8312.c
+@@ -635,13 +635,15 @@ static SIMPLE_DEV_PM_OPS(stk8312_pm_ops, stk8312_suspend, stk8312_resume);
+ #endif
+ 
+ static const struct i2c_device_id stk8312_i2c_id[] = {
+-	{"STK8312", 0},
++	/* Deprecated in favour of lowercase form */
++	{ "STK8312", 0 },
++	{ "stk8312", 0 },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, stk8312_i2c_id);
+ 
+ static const struct acpi_device_id stk8312_acpi_id[] = {
+-	{"STK8312", 0},
++	{ "STK8312", 0 },
+ 	{}
+ };
+ 
+-- 
+2.31.1
+
