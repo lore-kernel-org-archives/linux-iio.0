@@ -2,102 +2,97 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EDB4C433ED
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:10:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8C03DC43461
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1AC5D61155
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:10:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6DE1B601FC
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 18:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234689AbhDASKw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 14:10:52 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41106 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237277AbhDASIA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 1 Apr 2021 14:08:00 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id ED6EF6120C;
-        Thu,  1 Apr 2021 13:19:23 +0000 (UTC)
-Date:   Thu, 1 Apr 2021 14:19:35 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     Stephen Boyd <swboyd@chromium.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Daniel Campello <campello@chromium.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 0/2] iio: sx9310: Add debouncer-depth parameters
-Message-ID: <20210401141935.1fd2e15d@jic23-huawei>
-In-Reply-To: <CAPUE2usX-Tq2wyO4ekkAUaR6rRfJ3mZG3SQMqJbpzzUTMwd-0A@mail.gmail.com>
-References: <20210328033639.1021599-1-gwendal@chromium.org>
-        <161698755179.3012082.10332557476670862687@swboyd.mtv.corp.google.com>
-        <CAPUE2usX-Tq2wyO4ekkAUaR6rRfJ3mZG3SQMqJbpzzUTMwd-0A@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        id S236807AbhDAS1o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 14:27:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37146 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239238AbhDASPu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Apr 2021 14:15:50 -0400
+Received: from mail-oi1-x232.google.com (mail-oi1-x232.google.com [IPv6:2607:f8b0:4864:20::232])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12AC5C0F26CA;
+        Thu,  1 Apr 2021 07:56:29 -0700 (PDT)
+Received: by mail-oi1-x232.google.com with SMTP id n8so2016723oie.10;
+        Thu, 01 Apr 2021 07:56:29 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=hmK4hQlTe/dm4OEhWDvI1X0E5xhesSt9X9vk7PN2+D0=;
+        b=Nt3OrrBvL3S9XKUVqA54ZvBGEsaBvezPl3jRLE0I2Bi0NWtYOZ61z05xk5t0aahcS3
+         iKsAk7vQVS9oV8UWzL8INOpgyzhugy7vON9xMXMREoLwQcdbduWVnLvXfkZquUmwvzbz
+         sjJiRCLDSWYIsmRe+BxuRCYgU4VJ9swJKjnVKyz5TrUaAjzFeIn9Kcc7XKOc4RdpA4rM
+         kR+XQ9PIs9NEbPwWMDk8Mu1UxX+NYGWpvDINS4NrOnA3yzvE+YdHi9I2d3T+iIL7hC0u
+         WmJJG2Zecscg0R3l06J+8g/yLQensHlob2lkGgQr8npEQ9Mhhq7zn9bP2Qdwtf4ZRxIB
+         q+7Q==
+X-Gm-Message-State: AOAM533+7v6il8Nkpt37Z0U4nFlnYvXbVBUu2I7mbeUniBP6ecZQl08+
+        l8rkVm+KjwyjC18vFZmDHA==
+X-Google-Smtp-Source: ABdhPJzSJezFFJWfsrLlTbHO7wSon9UUy58X1LwrBJKlLXSZ7+3BsgnGryhpiYtiaivLvDP+5R1zPg==
+X-Received: by 2002:a05:6808:249:: with SMTP id m9mr6434303oie.170.1617288986305;
+        Thu, 01 Apr 2021 07:56:26 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id v65sm1092368oib.42.2021.04.01.07.56.24
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 01 Apr 2021 07:56:24 -0700 (PDT)
+Received: (nullmailer pid 409162 invoked by uid 1000);
+        Thu, 01 Apr 2021 14:56:21 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Puranjay Mohan <puranjay12@gmail.com>
+Cc:     linux-kernel@vger.kernel.org, alexandru.ardelean@analog.com,
+        knaack.h@gmx.de, devicetree@vger.kernel.org, lars@metafoo.de,
+        jic23@kernel.org, linux-iio@vger.kernel.org
+In-Reply-To: <20210401091648.87421-2-puranjay12@gmail.com>
+References: <20210401091648.87421-1-puranjay12@gmail.com> <20210401091648.87421-2-puranjay12@gmail.com>
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: temperature: Add DT bindings for TMP117
+Date:   Thu, 01 Apr 2021 09:56:21 -0500
+Message-Id: <1617288981.576340.409161.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 30 Mar 2021 17:38:03 -0700
-Gwendal Grignou <gwendal@chromium.org> wrote:
-
-> On Sun, Mar 28, 2021 at 8:12 PM Stephen Boyd <swboyd@chromium.org> wrote:
-> >
-> > Quoting Gwendal Grignou (2021-03-27 20:36:37)  
-> > > Semtech SX9310 SAR sensor has a debouncer filter: only when N
-> > > measurements are above/below the far/close threshold an event is
-> > > sent to the host.
-> > > By default the debouncer is set to 2 events for the close to far
-> > > transition and 1 event (no debounce) for far to close.
-> > > It is a balance speed of detection and false positive avoidance.
-> > >
-> > > On some chromebooks, the debouncer is set to a larger number.
-> > >
-> > > This patch applies on top of commit 103d6ec82676 ("iio: sx9310: Support ACPI properties")  
-> >
-> > The near/far debounce settings are already supported via sysfs. Can you
-> > use those instead of putting this into DT/ACPI? See
-> > sx9310_read_far_debounce() and associated code.  
-> Stephen, I missed you already proposed these bindings earlier
-> [https://lore.kernel.org/linux-devicetree/20200906150247.3aaef3a3@archlinux/].
-> After Jonathan inputs, it is done via sysfs interface
-> [events/thresh_{falling|rising}_period].
+On Thu, 01 Apr 2021 14:46:47 +0530, Puranjay Mohan wrote:
+> Add devicetree binding document for TMP117, a digital temperature sensor.
 > 
-> The debounce parameters are in the same class as the other parameters
-> already present in the DT. They are calculated during tests to meet
-> FCC requirements, in particular the time it takes to detect a human
-> body near the antennas.
-> Depending on the SAR antenna design, it is a balance between lowering
-> the debouncer "period" to raise an event as soon as possible, and
-> increasing it to prevent false posible.
+> Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
+> ---
+>  .../bindings/iio/temperature/ti,tmp117.yaml   | 34 +++++++++++++++++++
+>  1 file changed, 34 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/temperature/ti,tmp117.yaml
 > 
-> In addition to controlling it from sysfs, could it be acceptable to
-> have it in DT/ACPI as well?
-> In the meantime, I will make sure semtech,sx9310.yaml matches
-> in_proximityX_hardwaregain_available and connect to that attribute.
-> 
-> Gwendal.
 
+My bot found errors running 'make dt_binding_check' on your patch:
 
-Ok, add something to make it clear that these effectively tied to the board
-hardware because of this FCC requirement.
+yamllint warnings/errors:
 
-As long as that's clear the Rob is fine with the DT binding I don't mind.
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dts:21.13-26: Warning (reg_format): /example-0/tmp117@48:reg: property has invalid length (4 bytes) (#address-cells == 1, #size-cells == 1)
+Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/temperature/ti,tmp117.example.dt.yaml: example-0: tmp117@48:reg:0: [72] is too short
+	From schema: /usr/local/lib/python3.8/dist-packages/dtschema/schemas/reg.yaml
 
-Is there a requirement as a result of this FCC stuff that we should not
-expose them to userspace control if they are provided in DT?
+See https://patchwork.ozlabs.org/patch/1460920
 
-If so we should figure out a sensible way of doing that without breaking
-the existing ABI.
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
 
-Joanthan
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
 
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
