@@ -2,46 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C102C433ED
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39915C433ED
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:55:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 54DE4610A0
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0C0866112F
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235373AbhDARyH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:54:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45216 "EHLO mail.kernel.org"
+        id S235513AbhDARyJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:54:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45208 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236465AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S236462AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 1 Apr 2021 13:45:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5480261139;
-        Thu,  1 Apr 2021 17:43:10 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 13D9761155;
+        Thu,  1 Apr 2021 17:43:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617298993;
-        bh=8hYXBEQLia1l5VDqkRWPplK6G18Gnbyqzd6es6m0EoY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qAI8jPaTcz8ZbPjAgRFisNU676PrFeo5j0nrv/4Pcv6PB7ZtQSUQMUM21ZYOFIaPe
-         3+rlt3DkjHWmvBrtMPXCsOCKKzoHEITTxG4e13GQ+1QBQ/opJH1HJNYgLLO/DG23Et
-         JXb0wR8OkrlKDLxiomd81FBuXZ+uoma1+8SWnezpWdVLs7ZTKC1Tiv/f3jAe9nh7e1
-         BYgwTZf7vIKsPnanyws9hXNMwPlcnVkEL6TpeMyJY85jwB6K0gFe7n3GLx7GVO+XJc
-         20j3qV6wbLueBxcwWi1jwIbM+slBLu2JyL3qdDWU8ozMtn0jSVOo7KjpWNGrrtTxPq
-         s8POxzkL5VYDw==
+        s=k20201202; t=1617298985;
+        bh=7F89OoO2DJFxgS3Bk3MUOem8HAJsy7MMXYXeybjFq3w=;
+        h=From:To:Cc:Subject:Date:From;
+        b=RfNLCIWsIZNqG/8Br7UmoGGXXGtFkiGPTgJfgQj0NoUD9w15CFMrQeRq7CVjMPOhr
+         98E1dID4IQbq5T3Y8xgTQydJSQrELyDs3JmW6vkXtpLRaJdp5KwEJ2D+wQkP3yu5yo
+         9uLPIz5q9nUxYg+D5FRoAxRw9ZBQAYcRrFh27AG3G+PyIGbK4rAPiiaFh3gaS6BtKs
+         iBiqEXg4dWPHKQ4UlHx0Y0p6hTxZvwBcQSlZqiQPttVHSZurNPwCS5VaB++tBZEj/Z
+         qxfzeU12ILHpqUhz1SNJRdB9SpnJ1GRCxns8Yg8prtJUBVhjauGZHgKvi+X0WqZ32n
+         O5RNiD6x6lkgA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Joachim Eastwood <manabian@gmail.com>
-Subject: [PATCH 3/6] dt-bindings:iio:accel:fsl,mma7455 binding doc
-Date:   Thu,  1 Apr 2021 18:41:09 +0100
-Message-Id: <20210401174112.320497-4-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 0/6] dt-bindings: Add some missing IIO related binding docs.
+Date:   Thu,  1 Apr 2021 18:41:06 +0100
+Message-Id: <20210401174112.320497-1-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210401174112.320497-1-jic23@kernel.org>
-References: <20210401174112.320497-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -50,108 +47,40 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Binding documentation for this driver was missing.
-Note that the binding and some in tree dts files specifiy interrupts
-etc but the driver is fairly simple and does not yet make use of them.
+First of what will probably be one of several sets to slowly but surely
+add yaml binding docs for all the defacto bindings hiding in IIO
+drivers.  Ultimate I'd like to clear the backlog of these and so go
+forward with full documenation, but there may be some cases we just decide
+are too complex to bother.  The fsl,mma955x parts are ignored (for now) on
+that basis (I think we have all the other accelerometers covered now)
 
-Listed both Joachim and myself as maintainers for this binding on basis
-it's Joachim's driver but I don't want to volunteer Joachim too
-strongly to look after this doc.
+Some of these date back to board file days and some were added by people
+only interested in ACPI, but all can be instantiated from dt-bindings.
+A few may simply have slipped through the net during review.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Joachim Eastwood <manabian@gmail.com>
----
+Testing done with hacked up qemu when anything was non trivial.
+
+Jonathan Cameron (6):
+  dt-bindings:iio:accel:adis16201 and adis16209 bindings
+  dt-bindings:iio:accel:bosch,bma220 device tree binding documentation
+  dt-bindings:iio:accel:fsl,mma7455 binding doc
+  dt-bindings:trivial-devices: Add memsic,mxc4005/mxc6255/mxc6655
+    entries
+  dt-bindings:trivial-devices: Add sensortek,stk8312 and
+    sensortek,s8ba50
+  dt-bindings:iio:adc:adi,ad7298 document bindings
+
+ .../bindings/iio/accel/adi,adis16201.yaml     | 55 +++++++++++++
+ .../bindings/iio/accel/bosch,bma220.yaml      | 50 +++++++++++
  .../bindings/iio/accel/fsl,mma7455.yaml       | 82 +++++++++++++++++++
- 1 file changed, 82 insertions(+)
+ .../bindings/iio/adc/adi,ad7298.yaml          | 48 +++++++++++
+ .../devicetree/bindings/trivial-devices.yaml  | 10 +++
+ 5 files changed, 245 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adis16201.yaml
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/bosch,bma220.yaml
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/fsl,mma7455.yaml
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7298.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/fsl,mma7455.yaml b/Documentation/devicetree/bindings/iio/accel/fsl,mma7455.yaml
-new file mode 100644
-index 000000000000..7c8f8bdc2333
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/fsl,mma7455.yaml
-@@ -0,0 +1,82 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/fsl,mma7455.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Freescale MMA7455 and MMA7456 three axis accelerometers
-+
-+maintainers:
-+  - Joachim Eastwood <manabian@gmail.com>
-+  - Jonathan Cameron <jic23@kernel.org>
-+
-+description:
-+  Devices support both SPI and I2C interfaces.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - fsl,mma7455
-+      - fsl,mma7456
-+  reg:
-+    maxItems: 1
-+
-+  avdd-supply: true
-+  vddio-supply: true
-+
-+  interrupts:
-+    minItems: 1
-+    maxItems: 2
-+
-+  interrupt-names:
-+    description:
-+      Data ready is only available on INT1, but events can use either or
-+      both pins.  If not specified, first element assumed to correspond
-+      to INT1 and second (where present) to INT2.
-+    minItems: 1
-+    maxItems: 2
-+    items:
-+      enum:
-+        - "INT1"
-+        - "INT2"
-+
-+  spi-max-frequency: true
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    # include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        accelerometer@18 {
-+            compatible = "fsl,mma7455";
-+            reg = <0x18>;
-+            vddio-supply = <&iovdd>;
-+            avdd-supply = <&avdd>;
-+            interrupts = <57 IRQ_TYPE_EDGE_FALLING>, <58 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-names = "INT2", "INT1";
-+        };
-+    };
-+  - |
-+    # include <dt-bindings/interrupt-controller/irq.h>
-+    spi {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        accelerometer@0 {
-+            compatible = "fsl,mma7456";
-+            reg = <0>;
-+            spi-max-frequency = <10000000>;
-+            vddio-supply = <&iovdd>;
-+            avdd-supply = <&avdd>;
-+            interrupts = <57 IRQ_TYPE_EDGE_FALLING>;
-+            interrupt-names = "INT1";
-+        };
-+    };
-+...
 -- 
 2.31.1
 
