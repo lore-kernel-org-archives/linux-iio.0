@@ -7,37 +7,38 @@ X-Spam-Status: No, score=-19.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E05FC433B4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2BE8C43470
 	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3AA07610A0
+	by mail.kernel.org (Postfix) with ESMTP id 9BDB161130
 	for <linux-iio@archiver.kernel.org>; Thu,  1 Apr 2021 17:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236022AbhDARyF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Apr 2021 13:54:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:45218 "EHLO mail.kernel.org"
+        id S236282AbhDARyG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Apr 2021 13:54:06 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45228 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236464AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S236468AbhDARpC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Thu, 1 Apr 2021 13:45:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D8F0C60FDC;
-        Thu,  1 Apr 2021 17:43:08 +0000 (UTC)
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 00FB9613BE;
+        Thu,  1 Apr 2021 17:43:18 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1617298990;
-        bh=Fm0cejd2vCxIhfGEwUI4LawYQxbjdzYkPvBX6SYU5/o=;
+        s=k20201202; t=1617299000;
+        bh=DYBylFCzwf/mC1qtfHCHRZAYGu4r3hcX9pYrM/Et+T0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TwRzHuU4gFy+/Dwo/SEiEVwLncIb8bom0zF0vMxvLXxM0/ez5VwC46Ue0bWLgLLAE
-         Qz/ezPBa9CXUnKopxtlXb5QD8kJW0aILKrXWobAWZdjCIigQlxSmz/uQfbZ1S/Bx9i
-         kT+czKiR2MN6k+don4JuZvWEnw3qV17ydxoh6rdQz9PSbpv2UnURCihCiG3fUV2WSn
-         Y62OS7VK6/J9HkcbwP8XHJlOiXvBm3jBLwCPzj1R1SD/8P0b+XPubWORfZtl9+C/jW
-         y5QCGnhAbRgl45CInZrBQbUyVKh7vQvBfAA3CFLCWzamY2nS8BoAnOv1uc79QEaaG2
-         EfEyuStuMAfvQ==
+        b=n7DEEBdoZVB6pQDH/QEAOLAVGoQkgGkFICaNFMo7ECIFLilAMUhlJkVJ57U0+29Dm
+         QfCfWm8JJhdYjPSeRF3SOWbDZhOSC5ziZTCsWZGJbXZpsvZMRZHr8E0vEBhMOFGNwN
+         JdtVHqL4n14SFhhgAAS0Yas32UmDgFrUrTNl1g7C/JOcCc+qpI+01rYUs6gGRIQi32
+         Q9uMn9y7g10BJkfX9e6WGb6iHoi33bYGDZV4P+DpB7hLct70jOK5kXMtmutYkYK/Lx
+         cMThOAmPM8R4vDhc/EtEDC269WKApNW1LfyWKIADvojaLMg564ghu3NKGIWURi5GCT
+         WANmobMB6aEAQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     devicetree@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 2/6] dt-bindings:iio:accel:bosch,bma220 device tree binding documentation
-Date:   Thu,  1 Apr 2021 18:41:08 +0100
-Message-Id: <20210401174112.320497-3-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Michael Hennerich <michael.hennerich@analog.com>
+Subject: [PATCH 6/6] dt-bindings:iio:adc:adi,ad7298 document bindings
+Date:   Thu,  1 Apr 2021 18:41:12 +0100
+Message-Id: <20210401174112.320497-7-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210401174112.320497-1-jic23@kernel.org>
 References: <20210401174112.320497-1-jic23@kernel.org>
@@ -49,49 +50,49 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Linux driver currently relies on the driver.name to match to the
-compatible, but that doesn't mean it isn't a good idea to document it.
-
-Only real complexity is the 3 separate power supplies.
+The device has a tsens-busy pin, but it's both fiddly and currently
+ignored by the Linux driver.  Given it's not clear whether the binding
+should be an interrupt, or a GPIO I have left that out for now.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Michael Hennerich <michael.hennerich@analog.com>
 ---
- .../bindings/iio/accel/bosch,bma220.yaml      | 50 +++++++++++++++++++
- 1 file changed, 50 insertions(+)
+ .../bindings/iio/adc/adi,ad7298.yaml          | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bma220.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bma220.yaml
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7298.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7298.yaml
 new file mode 100644
-index 000000000000..942b23ad0712
+index 000000000000..ca414bb396c5
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/bosch,bma220.yaml
-@@ -0,0 +1,50 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7298.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++# Copyright 2019 Analog Devices Inc.
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/iio/accel/bosch,bma220.yaml#
++$id: http://devicetree.org/schemas/iio/adc/adi,ad7298.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Bosch BMA220 Trixial Acceleration Sensor
++title: Analog Devices AD7298 ADC
 +
 +maintainers:
-+  - Jonathan Cameron <Jonathan.Cameron@huawei.com>
++  - Michael Hennerich <michael.hennerich@analog.com>
++
++description: |
++  Bindings for the Analog Devices AD7298 ADC device. Datasheet can be
++  found here:
++    https://www.analog.com/en/products/ad7298.html
 +
 +properties:
 +  compatible:
-+    enum:
-+      - bosch,bma220
++    const: adi,ad7298
 +
 +  reg:
 +    maxItems: 1
 +
-+  interrupts:
-+    maxItems: 1
-+
++  vref-supply: true
++  vdd-supply: true
 +  spi-max-frequency: true
-+
-+  vdda-supply: true
-+  vddd-supply: true
-+  vddio-supply: true
 +
 +required:
 +  - compatible
@@ -101,18 +102,16 @@ index 000000000000..942b23ad0712
 +
 +examples:
 +  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    spi0 {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
 +
-+        accelerometer@0 {
-+            compatible = "bosch,bma220";
-+            reg = <0>;
-+            spi-max-frequency = <2500000>;
-+            interrupt-parent = <&gpio0>;
-+            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+        };
++      adc@0 {
++        compatible = "adi,ad7298";
++        reg = <0>;
++        spi-max-frequency = <5000000>;
++        vref-supply = <&adc_vref>;
++      };
 +    };
 +...
 -- 
