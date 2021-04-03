@@ -2,178 +2,91 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-17.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0FC57C433B4
-	for <linux-iio@archiver.kernel.org>; Fri,  2 Apr 2021 20:37:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 53B20C433ED
+	for <linux-iio@archiver.kernel.org>; Sat,  3 Apr 2021 11:45:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DD61E61151
-	for <linux-iio@archiver.kernel.org>; Fri,  2 Apr 2021 20:37:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0BF4061241
+	for <linux-iio@archiver.kernel.org>; Sat,  3 Apr 2021 11:45:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234161AbhDBUhm convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 2 Apr 2021 16:37:42 -0400
-Received: from szxga01-in.huawei.com ([45.249.212.187]:3068 "EHLO
-        szxga01-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229722AbhDBUhm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Apr 2021 16:37:42 -0400
-Received: from dggeme762-chm.china.huawei.com (unknown [172.30.72.55])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4FBsGZ3tT9zWSgj;
-        Sat,  3 Apr 2021 04:34:14 +0800 (CST)
-Received: from dggemi761-chm.china.huawei.com (10.1.198.147) by
- dggeme762-chm.china.huawei.com (10.3.19.108) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2106.2; Sat, 3 Apr 2021 04:37:37 +0800
-Received: from dggemi761-chm.china.huawei.com ([10.9.49.202]) by
- dggemi761-chm.china.huawei.com ([10.9.49.202]) with mapi id 15.01.2106.013;
- Sat, 3 Apr 2021 04:37:37 +0800
-From:   "Song Bao Hua (Barry Song)" <song.bao.hua@hisilicon.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC:     Jonathan Cameron <jonathan.cameron@huawei.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Nuno Sa <Nuno.Sa@analog.com>,
-        "tiantao (H)" <tiantao6@hisilicon.com>
-Subject: RE: [PATCH 6/7] iio:imu:adis: Use IRQF_NO_AUTOEN instead of irq
- request then disable
-Thread-Topic: [PATCH 6/7] iio:imu:adis: Use IRQF_NO_AUTOEN instead of irq
- request then disable
-Thread-Index: AQHXJ/C2KFXGa5INrk6vvD00lTP3FKqhrWwg
-Date:   Fri, 2 Apr 2021 20:37:37 +0000
-Message-ID: <a733aa9b11684bb990f0bc6a50b101e5@hisilicon.com>
+        id S236431AbhDCLpn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 3 Apr 2021 07:45:43 -0400
+Received: from www381.your-server.de ([78.46.137.84]:35966 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231681AbhDCLpn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Apr 2021 07:45:43 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=0TWIFkFfRw2A8U4shLoTBKKXAMhn5rjIeEE/n4rooQY=; b=UnvYziEAcknH0KNu4MHGXcb/o5
+        NkyfS9n777KV32i34rP1bxWUQiPcScwbuZwAktuuVqN3w8H27RFPQnFgSfwDLp/OFY1PVwoCL8bb7
+        B9epy2PAH1Amo9q/ad1d227o0Elxj7YH/NDLE/GRkm49DQqF+Lv0lXbzadJCGUHzb4MDxZEn8V5dV
+        oiHcLVlOxr4JCUR2PA4rG2MRb5cwoWFOlQkAc4GVTQZe1/7DjeGeGBlXITZ43uqScgms9P9nLjb8/
+        5qlmM+W+LdqHmndCiBIqwhyZ+qvx7X64zppWhUc3RmdHXzbfdzIok7ciyd9BxprRPyaYV8Khu3Yaf
+        VSj4QxtA==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1lSeid-0000jF-Bu; Sat, 03 Apr 2021 13:45:35 +0200
+Received: from [2001:a61:2aa1:1e01:9e5c:8eff:fe01:8578]
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1lSeid-000VTB-87; Sat, 03 Apr 2021 13:45:35 +0200
+Subject: Re: [PATCH 0/7] iio: Use IRQF_NO_AUTOEN
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc:     Barry Song <song.bao.hua@hisilicon.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
 References: <20210402184544.488862-1-jic23@kernel.org>
- <20210402184544.488862-7-jic23@kernel.org>
-In-Reply-To: <20210402184544.488862-7-jic23@kernel.org>
-Accept-Language: en-GB, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [10.126.202.55]
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: 8BIT
+From:   Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <c4249ee3-b69c-cc39-0129-6b271f3962a9@metafoo.de>
+Date:   Sat, 3 Apr 2021 13:45:35 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.9.0
 MIME-Version: 1.0
-X-CFilter-Loop: Reflected
+In-Reply-To: <20210402184544.488862-1-jic23@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.102.4/26128/Fri Apr  2 13:10:37 2021)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-
-
-> -----Original Message-----
-> From: Jonathan Cameron [mailto:jic23@kernel.org]
-> Sent: Saturday, April 3, 2021 7:46 AM
-> To: linux-iio@vger.kernel.org
-> Cc: Song Bao Hua (Barry Song) <song.bao.hua@hisilicon.com>; Jonathan Cameron
-> <jonathan.cameron@huawei.com>; Alexandru Ardelean <ardeleanalex@gmail.com>;
-> Nuno Sa <Nuno.Sa@analog.com>
-> Subject: [PATCH 6/7] iio:imu:adis: Use IRQF_NO_AUTOEN instead of irq request
-> then disable
-> 
+On 4/2/21 8:45 PM, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> This is a bit involved as the adis library code already has some
-> sanity checking of the flags of the requested irq that we need
-> to ensure is happy to pass through the IRQF_NO_AUTOEN flag untouched.
-> 
-> Using this flag avoids us autoenabling the irq in the adis16460 and
-> adis16475 drivers which cover parts that don't have any means of
-> masking the interrupt on the device end.
-> 
-> Note, compile tested only!
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
-> Cc: Nuno Sa <Nuno.Sa@analog.com>
-> ---
->  drivers/iio/imu/adis16460.c    |  4 ++--
->  drivers/iio/imu/adis16475.c    |  5 +++--
->  drivers/iio/imu/adis_trigger.c | 11 ++++++-----
->  3 files changed, 11 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/adis16460.c b/drivers/iio/imu/adis16460.c
-> index 74a161e39733..73bf45e859b8 100644
-> --- a/drivers/iio/imu/adis16460.c
-> +++ b/drivers/iio/imu/adis16460.c
-> @@ -403,12 +403,12 @@ static int adis16460_probe(struct spi_device *spi)
->  	if (ret)
->  		return ret;
-> 
-> +	/* We cannot mask the interrupt, so ensure it isn't auto enabled */
-> +	st->adis.irq_flag |= IRQF_NO_AUTOEN;
->  	ret = devm_adis_setup_buffer_and_trigger(&st->adis, indio_dev, NULL);
->  	if (ret)
->  		return ret;
-> 
-> -	adis16460_enable_irq(&st->adis, 0);
-> -
->  	ret = __adis_initial_startup(&st->adis);
->  	if (ret)
->  		return ret;
-> diff --git a/drivers/iio/imu/adis16475.c b/drivers/iio/imu/adis16475.c
-> index 8f6bea4b6608..1de62fc79e0f 100644
-> --- a/drivers/iio/imu/adis16475.c
-> +++ b/drivers/iio/imu/adis16475.c
-> @@ -1258,6 +1258,9 @@ static int adis16475_config_irq_pin(struct adis16475 *st)
->  		return -EINVAL;
->  	}
-> 
-> +	/* We cannot mask the interrupt so ensure it's not enabled at request */
-> +	st->adis.irq_flag |= IRQF_NO_AUTOEN;
-> +
->  	val = ADIS16475_MSG_CTRL_DR_POL(polarity);
->  	ret = __adis_update_bits(&st->adis, ADIS16475_REG_MSG_CTRL,
->  				 ADIS16475_MSG_CTRL_DR_POL_MASK, val);
-> @@ -1362,8 +1365,6 @@ static int adis16475_probe(struct spi_device *spi)
->  	if (ret)
->  		return ret;
-> 
-> -	adis16475_enable_irq(&st->adis, false);
-> -
->  	ret = devm_iio_device_register(&spi->dev, indio_dev);
->  	if (ret)
->  		return ret;
-> diff --git a/drivers/iio/imu/adis_trigger.c b/drivers/iio/imu/adis_trigger.c
-> index 0f29e56200af..39b50d6fdb6a 100644
-> --- a/drivers/iio/imu/adis_trigger.c
-> +++ b/drivers/iio/imu/adis_trigger.c
-> @@ -29,18 +29,19 @@ static const struct iio_trigger_ops adis_trigger_ops = {
-> 
->  static int adis_validate_irq_flag(struct adis *adis)
->  {
-> +	unsigned long direction = adis->irq_flag & IRQF_TRIGGER_MASK;
->  	/*
->  	 * Typically this devices have data ready either on the rising edge or
->  	 * on the falling edge of the data ready pin. This checks enforces that
->  	 * one of those is set in the drivers... It defaults to
-> -	 * IRQF_TRIGGER_RISING for backward compatibility wiht devices that
-> +	 * IRQF_TRIGGER_RISING for backward compatibility with devices that
->  	 * don't support changing the pin polarity.
->  	 */
-> -	if (!adis->irq_flag) {
-> -		adis->irq_flag = IRQF_TRIGGER_RISING;
-> +	if (!direction) {
+>
+> This series is dependant on
+> cbe16f35bee68 ("genirq: Add IRQF_NO_AUTOEN for request_irq/nmi()")
+> which is available in an immutable tag in the tip tree.
+> https://git.kernel.org/pub/scm/linux/kernel/git/tip/tip.git/tag/?h=irq-no-autoen-2021-03-25
+> which I'll merge in to the IIO tree if we need it before it's available
+> upstream.
+>
+> That patch introduces a new IRQF_NO_AUTOEN flag for irq requests to avoid
+> the current dance where we either mark an irq as not to be autoenabled before
+> we know if we can actually request it succesfully, or (as IIO drivers seem to
+> have gone with) we disable the interrupt just after requesting it.
+> In short the flag stops the interrupt being autoenabled in the first place.
+>
+> So this series applies this magic to IIO :)
+>
+> Note these are all just compile tested and some of them aren't entirely
+> trivial because of other aspects of the irq flag handling.
 
-Reviewed-by: Barry Song <song.bao.hua@hisilicon.com>
+Something like IRQF_NO_AUTOEN has been on my wish list for a long time. 
+Thanks Barry!
 
-Though a better way might be:
+Series looks good.
 
-if (direction == IRQF_TRIGGER_NONE)
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
-> +		adis->irq_flag |= IRQF_TRIGGER_RISING;
->  		return 0;
-> -	} else if (adis->irq_flag != IRQF_TRIGGER_RISING &&
-> -		   adis->irq_flag != IRQF_TRIGGER_FALLING) {
-> +	} else if (direction != IRQF_TRIGGER_RISING &&
-> +		   direction != IRQF_TRIGGER_FALLING) {
->  		dev_err(&adis->spi->dev, "Invalid IRQ mask: %08lx\n",
->  			adis->irq_flag);
->  		return -EINVAL;
-> --
-> 2.31.1
-
-Thanks
-Barry
 
