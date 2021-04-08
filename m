@@ -7,20 +7,20 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA98BC43461
-	for <linux-iio@archiver.kernel.org>; Thu,  8 Apr 2021 11:41:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 56A2FC43470
+	for <linux-iio@archiver.kernel.org>; Thu,  8 Apr 2021 11:41:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 85AC161155
-	for <linux-iio@archiver.kernel.org>; Thu,  8 Apr 2021 11:41:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 26F6C611AD
+	for <linux-iio@archiver.kernel.org>; Thu,  8 Apr 2021 11:41:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231295AbhDHLlK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 8 Apr 2021 07:41:10 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:15978 "EHLO
+        id S231329AbhDHLlL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 8 Apr 2021 07:41:11 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:15980 "EHLO
         szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231292AbhDHLlK (ORCPT
+        with ESMTP id S229751AbhDHLlK (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Apr 2021 07:41:10 -0400
 Received: from DGGEMS403-HUB.china.huawei.com (unknown [172.30.72.60])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FGK5y0P9DzyNQQ;
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FGK5y09cBzyNQP;
         Thu,  8 Apr 2021 19:38:46 +0800 (CST)
 Received: from localhost.localdomain (10.67.165.24) by
  DGGEMS403-HUB.china.huawei.com (10.3.19.203) with Microsoft SMTP Server id
@@ -30,9 +30,9 @@ To:     <jic23@kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <pmeerw@pmeerw.net>, <prime.zeng@huawei.com>,
         <tiantao6@hisilicon.com>, <yangyicong@hisilicon.com>
-Subject: [PATCH 4/7] iio: triggered-buffer: simplify devm_iio_triggered_buffer_setup_ext
-Date:   Thu, 8 Apr 2021 19:38:13 +0800
-Message-ID: <1617881896-3164-5-git-send-email-yangyicong@hisilicon.com>
+Subject: [PATCH 6/7] iio: trigger: simplify __devm_iio_trigger_register
+Date:   Thu, 8 Apr 2021 19:38:15 +0800
+Message-ID: <1617881896-3164-7-git-send-email-yangyicong@hisilicon.com>
 X-Mailer: git-send-email 2.8.1
 In-Reply-To: <1617881896-3164-1-git-send-email-yangyicong@hisilicon.com>
 References: <1617881896-3164-1-git-send-email-yangyicong@hisilicon.com>
@@ -50,52 +50,49 @@ code. There is no functional changes.
 
 Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
 ---
- drivers/iio/buffer/industrialio-triggered-buffer.c | 19 +++++--------------
- 1 file changed, 5 insertions(+), 14 deletions(-)
+ drivers/iio/industrialio-trigger.c | 18 +++++-------------
+ 1 file changed, 5 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-index 92b8aea..63b4722 100644
---- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-+++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-@@ -92,9 +92,9 @@ void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index ea3c985..0db0952 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -624,9 +624,9 @@ struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
  }
- EXPORT_SYMBOL(iio_triggered_buffer_cleanup);
+ EXPORT_SYMBOL_GPL(devm_iio_trigger_alloc);
  
--static void devm_iio_triggered_buffer_clean(struct device *dev, void *res)
-+static void devm_iio_triggered_buffer_clean(void *indio_dev)
+-static void devm_iio_trigger_unreg(struct device *dev, void *res)
++static void devm_iio_trigger_unreg(void *trigger_info)
  {
--	iio_triggered_buffer_cleanup(*(struct iio_dev **)res);
-+	iio_triggered_buffer_cleanup(indio_dev);
+-	iio_trigger_unregister(*(struct iio_trigger **)res);
++	iio_trigger_unregister(trigger_info);
  }
  
- int devm_iio_triggered_buffer_setup_ext(struct device *dev,
-@@ -104,24 +104,15 @@ int devm_iio_triggered_buffer_setup_ext(struct device *dev,
- 					const struct iio_buffer_setup_ops *ops,
- 					const struct attribute **buffer_attrs)
+ /**
+@@ -647,21 +647,13 @@ int __devm_iio_trigger_register(struct device *dev,
+ 				struct iio_trigger *trig_info,
+ 				struct module *this_mod)
  {
--	struct iio_dev **ptr;
+-	struct iio_trigger **ptr;
  	int ret;
  
--	ptr = devres_alloc(devm_iio_triggered_buffer_clean, sizeof(*ptr),
--			   GFP_KERNEL);
+-	ptr = devres_alloc(devm_iio_trigger_unreg, sizeof(*ptr), GFP_KERNEL);
 -	if (!ptr)
 -		return -ENOMEM;
 -
--	*ptr = indio_dev;
--
- 	ret = iio_triggered_buffer_setup_ext(indio_dev, h, thread, ops,
- 					     buffer_attrs);
- 	if (!ret)
+-	*ptr = trig_info;
+ 	ret = __iio_trigger_register(trig_info, this_mod);
+-	if (!ret)
 -		devres_add(dev, ptr);
 -	else
 -		devres_free(ptr);
++	if (ret)
 +		return ret;
  
 -	return ret;
-+	return devm_add_action_or_reset(dev, devm_iio_triggered_buffer_clean,
-+					indio_dev);
++	return devm_add_action_or_reset(dev, devm_iio_trigger_unreg, trig_info);
  }
- EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_setup_ext);
+ EXPORT_SYMBOL_GPL(__devm_iio_trigger_register);
  
 -- 
 2.8.1
