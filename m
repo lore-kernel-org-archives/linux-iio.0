@@ -2,136 +2,162 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-24.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECD89C433B4
-	for <linux-iio@archiver.kernel.org>; Fri,  9 Apr 2021 09:56:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 12386C43470
+	for <linux-iio@archiver.kernel.org>; Fri,  9 Apr 2021 12:48:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C0CCD611BF
-	for <linux-iio@archiver.kernel.org>; Fri,  9 Apr 2021 09:56:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E609361178
+	for <linux-iio@archiver.kernel.org>; Fri,  9 Apr 2021 12:48:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233622AbhDIJ4U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 9 Apr 2021 05:56:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233465AbhDIJzw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Apr 2021 05:55:52 -0400
-Received: from mail-pf1-x42c.google.com (mail-pf1-x42c.google.com [IPv6:2607:f8b0:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A990FC0613DA
-        for <linux-iio@vger.kernel.org>; Fri,  9 Apr 2021 02:55:38 -0700 (PDT)
-Received: by mail-pf1-x42c.google.com with SMTP id q5so3877898pfh.10
-        for <linux-iio@vger.kernel.org>; Fri, 09 Apr 2021 02:55:38 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=7eD+elrYRDLpQrW74rbdw9/C9GZrRnF7A8PFe13iiCU=;
-        b=mFaW6qyQOJn/r3hkRUQIuE5Wax8yjbgo+WU3lqTiuzqQFf0oFAXj+YSiJRTurdbrQG
-         FulYMNTAVhZZVywuO6caQIizr9rVzKRuiZ5MifFmFJC4mPaqHHR4z4AFLZqWbYrWWpvT
-         fC1jf7bq+/abnwxL3x7yFtsKGg/1dkL0hLNgmPxXQuIb9viY535kWUAnzefka3EEB7hk
-         cZvXkiBGlrU2t9KRy6cDbnMUS3w4jN0QCtdFoy5kc6dTgFUak4N7TW6N9wzjnLbeCJ7n
-         TmZduxoaVhnJctlcao/Qb0kxIxur/PRJCaWJTQO/leDJTZhG1m6J3LYR/aXpsrBmxNdf
-         ROlg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=7eD+elrYRDLpQrW74rbdw9/C9GZrRnF7A8PFe13iiCU=;
-        b=JPUtM/Shl+VsQe+x4N+g8VgBwJRO4vcy7u2SzylzHuZXn6rQvZCgy4c+DddcNkedHh
-         ezBOUHoeaF8kooLLwGuuCFQb1HADkjLYFkzAHyWPJ3DGRJL3KlKql/xlQ/tUwHiNy7bC
-         GEczXjy1TECWNxHcW3xB6+Xb3lJT9HCfy9Aj5QxvjRL7R+iAQpM2Xz6YBhsAhuICzDTv
-         DkQoKGlYrzDBGUhK9e1ggIpRhy8Ih4ZoP1cGs7Sa/w5cHqUol2n3k9px+RmW5WRFFV3I
-         LZC88rG7+LM2N94+r0mzAwHW1Uuze6ErfwiPHUPKoza9XQZr7T5CkZCJPwsve8Xc+ZhJ
-         4Sfg==
-X-Gm-Message-State: AOAM533aYg5emiy9DAVEP3nJ+h03o0oeFA01iA7MAZgQf2x/+IZU0YjV
-        Yz02L8Ev1Nxv+u5Dj8mp56ZIkasMWTaqP7gqm3TGOKnaIwudtMkG
-X-Google-Smtp-Source: ABdhPJwPzsUS+G2Csjx/TijELdgvd5XRhPacwlZ+7wJG3pcaxxXhOv2IsuUL4zi+pdZDA8Sj4o1saD3/Zkta3F3LKck=
-X-Received: by 2002:a63:c48:: with SMTP id 8mr12287783pgm.74.1617962138214;
- Fri, 09 Apr 2021 02:55:38 -0700 (PDT)
-MIME-Version: 1.0
-References: <1617881896-3164-1-git-send-email-yangyicong@hisilicon.com>
- <1617881896-3164-6-git-send-email-yangyicong@hisilicon.com>
- <CA+U=DspZCGVjFxB0YH7OAPBKhFAKz=a9Q=O7xW-Xu4BPZKC=pA@mail.gmail.com>
- <9f1257a2-a69e-acbc-8c0a-2d2157274225@hisilicon.com> <CAHp75Ve_JwGeruZeZnVk3pXXmETVERQTdR2+MSPX=Y75+nQLcw@mail.gmail.com>
- <94bbe851-1f09-7099-38ac-2b6fcb056349@hisilicon.com>
-In-Reply-To: <94bbe851-1f09-7099-38ac-2b6fcb056349@hisilicon.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 9 Apr 2021 12:55:22 +0300
-Message-ID: <CAHp75Ve7+-_=nsUjn5e3tR-37Fg622_PSPyR5CrgUWGxk6zPKA@mail.gmail.com>
-Subject: Re: [PATCH 5/7] iio: core: simplify some devm functions
-To:     Yicong Yang <yangyicong@hisilicon.com>
-Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
+        id S233823AbhDIMsS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 9 Apr 2021 08:48:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41718 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233776AbhDIMsO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 9 Apr 2021 08:48:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 550F0610E7;
+        Fri,  9 Apr 2021 12:48:01 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1617972481;
+        bh=m2eKblH+l+hCzdwNUEf5egrpSG7CdIPFtLnlQPtnfug=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=kVDJDoaipcVMiN/navLdNp8KHl4PhMRXFyRHkYU7u4A6gsBhu6CvRiVAdWK1SHVzR
+         PSw/OyrAxxZ2lmV5QKREtKcQBh6oXrc/i27jpKSRTpg4mtww9bKxNZ3knjwKMHqrY1
+         BmozC3kJ08vKC3+rdkPSa9coB+zdWFz3i7BHFldjWop1NdATWhxmOlUhpBQFhgjBFM
+         KY3y2LlEyBwbnZ7gW91iNvU2HKlZz8uJ9HU/J8LusbkwDT6gbTxhDfuSFBRtK+7VAV
+         Z4NVL5s1s8XkWn1jpibe5mujpgKy5EMSjAimxIlhEPEXNXnwN74PAB4EFLPHBG55rC
+         Zo7tnPLUQzMPg==
+Received: by mail.kernel.org with local (Exim 4.94)
+        (envelope-from <mchehab@kernel.org>)
+        id 1lUqYE-001SLi-5x; Fri, 09 Apr 2021 14:47:54 +0200
+From:   Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+To:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
+        "Jonathan Corbet" <corbet@lwn.net>
+Cc:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        Artur Rojek <contact@artur-rojek.eu>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jean Delvare <jdelvare@suse.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        Lee Jones <lee.jones@linaro.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        prime.zeng@huawei.com, Tian Tao <tiantao6@hisilicon.com>
-Content-Type: text/plain; charset="UTF-8"
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v3 2/8] dt-bindings: fix references for iio-bindings.txt
+Date:   Fri,  9 Apr 2021 14:47:46 +0200
+Message-Id: <4efd81eca266ca0875d3bf9d1672097444146c69.1617972339.git.mchehab+huawei@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <cover.1617972339.git.mchehab+huawei@kernel.org>
+References: <cover.1617972339.git.mchehab+huawei@kernel.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+Sender: Mauro Carvalho Chehab <mchehab@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Apr 9, 2021 at 12:42 PM Yicong Yang <yangyicong@hisilicon.com> wrote:
-> On 2021/4/9 17:19, Andy Shevchenko wrote:
-> > On Fri, Apr 9, 2021 at 10:22 AM Yicong Yang <yangyicong@hisilicon.com> wrote:
-> >> On 2021/4/8 21:09, Alexandru Ardelean wrote:
-> >>> On Thu, Apr 8, 2021 at 2:41 PM Yicong Yang <yangyicong@hisilicon.com> wrote:
+The iio-bindings.txt was converted into two files and merged
+at the dt-schema git tree at:
 
-...
+	https://github.com/devicetree-org/dt-schema
 
-> > Actually Alexandru has a good point. Compare the pieces I left above.
-> >
->
-> a little different from my perspective when I did this.
->
-> previously:
->
-> -       ptr = devres_alloc(devm_iio_device_release, sizeof(*ptr),
-> -                          GFP_KERNEL);
-> -       if (!ptr)
-> -               return NULL;
->
-> if devres_alloc() failure we return NULL.
->
->
->         iio_dev = iio_device_alloc(parent, sizeof_priv);
-> -       if (iio_dev) {
-> -               *ptr = iio_dev;
-> -               devres_add(parent, ptr);
-> -       } else {
-> -               devres_free(ptr);
-> -       }
->
->         return iio_dev;
->
-> if iio_device_alloc() failed, we return what it returns.
->
-> now we remove devres_alloc() and stay iio_device_alloc(), so I just
-> keep to return iio_dev.
->
-> but actually iio_device_alloc() will return NULL at failure. :)
-> so return NULL here is definitely correct. i'll change to that if
-> it's recommended.
+Yet, some documents still refer to the old file. Fix their
+references, in order to point to the right URL.
 
-Confusing here (in your case) is that:
+Fixes: dba91f82d580 ("dt-bindings:iio:iio-binding.txt Drop file as content now in dt-schema")
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Guenter Roeck <linux@roeck-us.net>
+Signed-off-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+---
+ Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt   | 2 +-
+ Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml   | 5 +++--
+ Documentation/devicetree/bindings/input/adc-joystick.yaml    | 4 +++-
+ .../bindings/input/touchscreen/resistive-adc-touch.txt       | 5 ++++-
+ Documentation/devicetree/bindings/mfd/ab8500.txt             | 4 +++-
+ 5 files changed, 14 insertions(+), 6 deletions(-)
 
-if (!FOO)
- return BAR;
-
-...
-
-return BAR;
-
-I.e. twice returning BAR for different occasions. This makes
-additional cognitive work and decrease readability / maintainability
-of the code.
-
-I.o.w., yes, it's preferred.
-
+diff --git a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+index 37f18d684f6a..4c5c3712970e 100644
+--- a/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
++++ b/Documentation/devicetree/bindings/hwmon/ntc_thermistor.txt
+@@ -32,7 +32,7 @@ Optional node properties:
+ - "#thermal-sensor-cells" Used to expose itself to thermal fw.
+ 
+ Read more about iio bindings at
+-	Documentation/devicetree/bindings/iio/iio-bindings.txt
++	https://github.com/devicetree-org/dt-schema/blob/master/schemas/iio/
+ 
+ Example:
+ 	ncp15wb473@0 {
+diff --git a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+index 9f414dbdae86..433a3fb55a2e 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ingenic,adc.yaml
+@@ -14,8 +14,9 @@ description: >
+   Industrial I/O subsystem bindings for ADC controller found in
+   Ingenic JZ47xx SoCs.
+ 
+-  ADC clients must use the format described in iio-bindings.txt, giving
+-  a phandle and IIO specifier pair ("io-channels") to the ADC controller.
++  ADC clients must use the format described in
++  https://github.com/devicetree-org/dt-schema/blob/master/schemas/iio/iio-consumer.yaml,
++  giving a phandle and IIO specifier pair ("io-channels") to the ADC controller.
+ 
+ properties:
+   compatible:
+diff --git a/Documentation/devicetree/bindings/input/adc-joystick.yaml b/Documentation/devicetree/bindings/input/adc-joystick.yaml
+index 054406bbd22b..721878d5b7af 100644
+--- a/Documentation/devicetree/bindings/input/adc-joystick.yaml
++++ b/Documentation/devicetree/bindings/input/adc-joystick.yaml
+@@ -24,7 +24,9 @@ properties:
+     description: >
+       List of phandle and IIO specifier pairs.
+       Each pair defines one ADC channel to which a joystick axis is connected.
+-      See Documentation/devicetree/bindings/iio/iio-bindings.txt for details.
++      See
++      https://github.com/devicetree-org/dt-schema/blob/master/schemas/iio/iio-consumer.yaml
++      for details.
+ 
+   '#address-cells':
+     const: 1
+diff --git a/Documentation/devicetree/bindings/input/touchscreen/resistive-adc-touch.txt b/Documentation/devicetree/bindings/input/touchscreen/resistive-adc-touch.txt
+index fee0da12474e..af5223bb5bdd 100644
+--- a/Documentation/devicetree/bindings/input/touchscreen/resistive-adc-touch.txt
++++ b/Documentation/devicetree/bindings/input/touchscreen/resistive-adc-touch.txt
+@@ -5,7 +5,10 @@ Required properties:
+  - compatible: must be "resistive-adc-touch"
+ The device must be connected to an ADC device that provides channels for
+ position measurement and optional pressure.
+-Refer to Documentation/devicetree/bindings/iio/iio-bindings.txt for details
++Refer to
++https://github.com/devicetree-org/dt-schema/blob/master/schemas/iio/iio-consumer.yaml
++for details
++
+  - iio-channels: must have at least two channels connected to an ADC device.
+ These should correspond to the channels exposed by the ADC device and should
+ have the right index as the ADC device registers them. These channels
+diff --git a/Documentation/devicetree/bindings/mfd/ab8500.txt b/Documentation/devicetree/bindings/mfd/ab8500.txt
+index d2a6e835c257..937b3e5505e0 100644
+--- a/Documentation/devicetree/bindings/mfd/ab8500.txt
++++ b/Documentation/devicetree/bindings/mfd/ab8500.txt
+@@ -72,7 +72,9 @@ Required child device properties:
+                                                pwm|regulator|rtc|sysctrl|usb]";
+ 
+   A few child devices require ADC channels from the GPADC node. Those follow the
+-  standard bindings from iio/iio-bindings.txt and iio/adc/adc.txt
++  standard bindings from
++  https://github.com/devicetree-org/dt-schema/blob/master/schemas/iio/iio-consumer.yaml
++  and Documentation/devicetree/bindings/iio/adc/adc.yaml
+ 
+   abx500-temp		 : io-channels "aux1" and "aux2" for measuring external
+ 			   temperatures.
 -- 
-With Best Regards,
-Andy Shevchenko
+2.30.2
+
