@@ -2,73 +2,125 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DF0AC43460
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Apr 2021 08:39:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 039ECC43461
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Apr 2021 09:07:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0710461221
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Apr 2021 08:39:00 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CA04F6137E
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Apr 2021 09:07:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237277AbhDLIjQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 12 Apr 2021 04:39:16 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:16569 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237219AbhDLIjQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Apr 2021 04:39:16 -0400
-Received: from DGGEMS414-HUB.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FJht207Bcz1BGYM;
-        Mon, 12 Apr 2021 16:36:42 +0800 (CST)
-Received: from localhost.localdomain (10.69.192.56) by
- DGGEMS414-HUB.china.huawei.com (10.3.19.214) with Microsoft SMTP Server id
- 14.3.498.0; Mon, 12 Apr 2021 16:38:49 +0800
-From:   Tian Tao <tiantao6@hisilicon.com>
-To:     <jic23@kernel.org>, <tduszyns@gmail.com>,
-        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@foss.st.com>
-CC:     <linux-iio@vger.kernel.org>, Tian Tao <tiantao6@hisilicon.com>
-Subject: [PATCH drivers/iio 1/3] iio:chemical:sps30:  Convert sysfs sprintf/snprintf family to sysfs_emit
-Date:   Mon, 12 Apr 2021 16:39:09 +0800
-Message-ID: <1618216751-1678-2-git-send-email-tiantao6@hisilicon.com>
-X-Mailer: git-send-email 2.7.4
-In-Reply-To: <1618216751-1678-1-git-send-email-tiantao6@hisilicon.com>
-References: <1618216751-1678-1-git-send-email-tiantao6@hisilicon.com>
+        id S239361AbhDLJH0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 12 Apr 2021 05:07:26 -0400
+Received: from szxga05-in.huawei.com ([45.249.212.191]:16446 "EHLO
+        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240335AbhDLJFo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Apr 2021 05:05:44 -0400
+Received: from DGGEMS411-HUB.china.huawei.com (unknown [172.30.72.59])
+        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FJjSY02ztzqTHF;
+        Mon, 12 Apr 2021 17:03:09 +0800 (CST)
+Received: from [127.0.0.1] (10.69.38.196) by DGGEMS411-HUB.china.huawei.com
+ (10.3.19.211) with Microsoft SMTP Server id 14.3.498.0; Mon, 12 Apr 2021
+ 17:05:15 +0800
+Subject: Re: [PATCH 4/7] iio: triggered-buffer: simplify
+ devm_iio_triggered_buffer_setup_ext
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     <linux-iio@vger.kernel.org>, <lars@metafoo.de>,
+        <Michael.Hennerich@analog.com>, <pmeerw@pmeerw.net>,
+        <prime.zeng@huawei.com>, <tiantao6@hisilicon.com>
+References: <1617881896-3164-1-git-send-email-yangyicong@hisilicon.com>
+ <1617881896-3164-5-git-send-email-yangyicong@hisilicon.com>
+ <20210411151606.1ec66860@jic23-huawei>
+From:   Yicong Yang <yangyicong@hisilicon.com>
+Message-ID: <d8c6eaa8-ab97-c3e4-644e-35bc53b957c1@hisilicon.com>
+Date:   Mon, 12 Apr 2021 17:05:15 +0800
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.5.1
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.69.192.56]
+In-Reply-To: <20210411151606.1ec66860@jic23-huawei>
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.69.38.196]
 X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix the following coccicheck warning:
-./drivers/iio/chemical/sps30.c:414:8-16: WARNING:
-use scnprintf or sprintf
+On 2021/4/11 22:16, Jonathan Cameron wrote:
+> On Thu, 8 Apr 2021 19:38:13 +0800
+> Yicong Yang <yangyicong@hisilicon.com> wrote:
+> 
+>> Use devm_add_action_or_reset() instead of devres_alloc() and
+>> devres_add(), which works the same. This will simplify the
+>> code. There is no functional changes.
+>>
+>> Signed-off-by: Yicong Yang <yangyicong@hisilicon.com>
+>> ---
+>>  drivers/iio/buffer/industrialio-triggered-buffer.c | 19 +++++--------------
+>>  1 file changed, 5 insertions(+), 14 deletions(-)
+>>
+>> diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
+>> index 92b8aea..63b4722 100644
+>> --- a/drivers/iio/buffer/industrialio-triggered-buffer.c
+>> +++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
+>> @@ -92,9 +92,9 @@ void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev)
+>>  }
+>>  EXPORT_SYMBOL(iio_triggered_buffer_cleanup);
+>>  
+>> -static void devm_iio_triggered_buffer_clean(struct device *dev, void *res)
+>> +static void devm_iio_triggered_buffer_clean(void *indio_dev)
+>>  {
+>> -	iio_triggered_buffer_cleanup(*(struct iio_dev **)res);
+>> +	iio_triggered_buffer_cleanup(indio_dev);
+>>  }
+>>  
+>>  int devm_iio_triggered_buffer_setup_ext(struct device *dev,
+>> @@ -104,24 +104,15 @@ int devm_iio_triggered_buffer_setup_ext(struct device *dev,
+>>  					const struct iio_buffer_setup_ops *ops,
+>>  					const struct attribute **buffer_attrs)
+>>  {
+>> -	struct iio_dev **ptr;
+>>  	int ret;
+>>  
+>> -	ptr = devres_alloc(devm_iio_triggered_buffer_clean, sizeof(*ptr),
+>> -			   GFP_KERNEL);
+>> -	if (!ptr)
+>> -		return -ENOMEM;
+>> -
+>> -	*ptr = indio_dev;
+>> -
+>>  	ret = iio_triggered_buffer_setup_ext(indio_dev, h, thread, ops,
+>>  					     buffer_attrs);
+>>  	if (!ret)
+>> -		devres_add(dev, ptr);
+>> -	else
+>> -		devres_free(ptr);
+>> +		return ret;
+> 
+> This looks inverted from what it should be.
+> 
+> 	if (ret)
+> 		return ret;
+> 
+> 	return devm_add_action_or_reset()...
+> 
 
-Signed-off-by: Tian Tao <tiantao6@hisilicon.com>
----
- drivers/iio/chemical/sps30.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+yes. it does. will fix.
 
-diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-index 2ea9a5c..7486591 100644
---- a/drivers/iio/chemical/sps30.c
-+++ b/drivers/iio/chemical/sps30.c
-@@ -411,9 +411,9 @@ static ssize_t cleaning_period_available_show(struct device *dev,
- 					      struct device_attribute *attr,
- 					      char *buf)
- {
--	return snprintf(buf, PAGE_SIZE, "[%d %d %d]\n",
--			SPS30_AUTO_CLEANING_PERIOD_MIN, 1,
--			SPS30_AUTO_CLEANING_PERIOD_MAX);
-+	return sysfs_emit(buf, "[%d %d %d]\n",
-+			  SPS30_AUTO_CLEANING_PERIOD_MIN, 1,
-+			  SPS30_AUTO_CLEANING_PERIOD_MAX);
- }
- 
- static IIO_DEVICE_ATTR_WO(start_cleaning, 0);
--- 
-2.7.4
+thanks
+
+>>  
+>> -	return ret;
+>> +	return devm_add_action_or_reset(dev, devm_iio_triggered_buffer_clean,
+>> +					indio_dev);
+>>  }
+>>  EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_setup_ext);
+>>  
+> 
+> 
+> .
+> 
 
