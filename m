@@ -2,211 +2,780 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C76E7C433ED
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Apr 2021 15:43:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A08CCC433ED
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Apr 2021 19:44:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9D885611F0
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Apr 2021 15:43:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 58B3161360
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Apr 2021 19:44:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241003AbhDSPnd convert rfc822-to-8bit (ORCPT
+        id S233739AbhDSTpL convert rfc822-to-8bit (ORCPT
         <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Apr 2021 11:43:33 -0400
-Received: from frasgout.his.huawei.com ([185.176.79.56]:2880 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240329AbhDSPnc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Apr 2021 11:43:32 -0400
-Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.207])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4FP9r65Pr2z68Brf;
-        Mon, 19 Apr 2021 23:35:34 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Mon, 19 Apr 2021 17:43:01 +0200
-Received: from localhost (10.52.124.55) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 19 Apr
- 2021 16:43:00 +0100
-Date:   Mon, 19 Apr 2021 16:41:32 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH 4/7] iio: adis16475: re-set max spi transfer
-Message-ID: <20210419164132.0000714d@Huawei.com>
-In-Reply-To: <CY4PR03MB311289981955B0889BE539F499499@CY4PR03MB3112.namprd03.prod.outlook.com>
-References: <20210413112105.69458-1-nuno.sa@analog.com>
-        <20210413112105.69458-5-nuno.sa@analog.com>
-        <CA+U=DsqeiRRGp+Q+yZ7OVOE719aBiyMoBLsFTZL3amGfWHtgkg@mail.gmail.com>
-        <CY4PR03MB3112C342E901F4E308D0AFF0994D9@CY4PR03MB3112.namprd03.prod.outlook.com>
-        <CY4PR03MB3112BFAA334A280B0E04CB88994D9@CY4PR03MB3112.namprd03.prod.outlook.com>
-        <20210418112058.7bb04fa6@jic23-huawei>
-        <CY4PR03MB311289981955B0889BE539F499499@CY4PR03MB3112.namprd03.prod.outlook.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
+        Mon, 19 Apr 2021 15:45:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58116 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232305AbhDSTpK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 19 Apr 2021 15:45:10 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 96DE161354;
+        Mon, 19 Apr 2021 19:44:37 +0000 (UTC)
+Date:   Mon, 19 Apr 2021 20:45:08 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Tomas Melin <tomas.melin@vaisala.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, aardelean@deviqon.com,
+        Alexandru Ardelean <ardeleanalex@gmail.com>
+Subject: Re: [PATCH 2/2] iio: accel: Add driver for Murata SCA3300
+ accelerometer
+Message-ID: <20210419204509.527570a3@jic23-huawei>
+In-Reply-To: <ea58851c-3bf1-ab51-0771-6844ed53b892@vaisala.com>
+References: <20210412075056.56301-1-tomas.melin@vaisala.com>
+        <20210412075056.56301-3-tomas.melin@vaisala.com>
+        <20210412120807.000044d3@Huawei.com>
+        <87302341-f9d0-372a-1f18-b934df202e82@vaisala.com>
+        <c3fca8dc-9617-220b-2085-febe2a7f3b7e@vaisala.com>
+        <1541221b-3dd3-9cc6-1dfe-6a4a100579d0@vaisala.com>
+        <20210418110319.72694b7e@jic23-huawei>
+        <ea58851c-3bf1-ab51-0771-6844ed53b892@vaisala.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="ISO-8859-1"
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
-X-Originating-IP: [10.52.124.55]
-X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 19 Apr 2021 07:47:55 +0000
-"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
+On Mon, 19 Apr 2021 16:34:35 +0300
+Tomas Melin <tomas.melin@vaisala.com> wrote:
 
-> > -----Original Message-----
-> > From: Jonathan Cameron <jic23@kernel.org>
-> > Sent: Sunday, April 18, 2021 12:21 PM
-> > To: Sa, Nuno <Nuno.Sa@analog.com>
-> > Cc: Alexandru Ardelean <ardeleanalex@gmail.com>; linux-iio <linux-  
-> > iio@vger.kernel.org>; Hennerich, Michael  
-> > <Michael.Hennerich@analog.com>; Lars-Peter Clausen
-> > <lars@metafoo.de>
-> > Subject: Re: [PATCH 4/7] iio: adis16475: re-set max spi transfer
-> > 
-> > [External]
-> > 
-> > On Thu, 15 Apr 2021 08:16:30 +0000
-> > "Sa, Nuno" <Nuno.Sa@analog.com> wrote:
-> >   
-> > > > -----Original Message-----
-> > > > From: Sa, Nuno <Nuno.Sa@analog.com>
-> > > > Sent: Thursday, April 15, 2021 9:54 AM
-> > > > To: Alexandru Ardelean <ardeleanalex@gmail.com>
-> > > > Cc: linux-iio <linux-iio@vger.kernel.org>; Jonathan Cameron
-> > > > <jic23@kernel.org>; Hennerich, Michael
-> > > > <Michael.Hennerich@analog.com>; Lars-Peter Clausen
-> > > > <lars@metafoo.de>
-> > > > Subject: RE: [PATCH 4/7] iio: adis16475: re-set max spi transfer
-> > > >
-> > > > [External]
-> > > >
-> > > >
-> > > >  
-> > > > > -----Original Message-----
-> > > > > From: Alexandru Ardelean <ardeleanalex@gmail.com>
-> > > > > Sent: Wednesday, April 14, 2021 9:29 AM
-> > > > > To: Sa, Nuno <Nuno.Sa@analog.com>
-> > > > > Cc: linux-iio <linux-iio@vger.kernel.org>; Jonathan Cameron
-> > > > > <jic23@kernel.org>; Hennerich, Michael
-> > > > > <Michael.Hennerich@analog.com>; Lars-Peter Clausen
-> > > > > <lars@metafoo.de>
-> > > > > Subject: Re: [PATCH 4/7] iio: adis16475: re-set max spi transfer
-> > > > >
-> > > > > [External]
-> > > > >
-> > > > > On Tue, Apr 13, 2021 at 5:45 PM Nuno Sa <nuno.sa@analog.com>
-> > > > > wrote:  
-> > > > > >
-> > > > > > In case 'spi_sync()' fails, we would be left with a max spi  
-> > transfer  
-> > > > > > which is not the one the user expects it to be. Hence, we need  
-> > to  
-> > > > re-  
-> > > > > set  
-> > > > > > it also in this error path.
-> > > > > >
-> > > > > > Fixes: fff7352bf7a3c ("iio: imu: Add support for adis16475")
-> > > > > > Signed-off-by: Nuno Sa <nuno.sa@analog.com>
-> > > > > > ---
-> > > > > >  drivers/iio/imu/adis16475.c | 4 +++-
-> > > > > >  1 file changed, 3 insertions(+), 1 deletion(-)
-> > > > > >
-> > > > > > diff --git a/drivers/iio/imu/adis16475.c  
-> > > > b/drivers/iio/imu/adis16475.c  
-> > > > > > index 51b76444db0b..9dca7e506200 100644
-> > > > > > --- a/drivers/iio/imu/adis16475.c
-> > > > > > +++ b/drivers/iio/imu/adis16475.c
-> > > > > > @@ -1067,8 +1067,10 @@ static irqreturn_t  
-> > > > > adis16475_trigger_handler(int irq, void *p)  
-> > > > > >         adis->spi->max_speed_hz =  
-> > ADIS16475_BURST_MAX_SPEED;  
-> > > > > >
-> > > > > >         ret = spi_sync(adis->spi, &adis->msg);  
-> > > > >
-> > > > > Purely stylistic here.
-> > > > > But, the restore from the cached variable could be done here in a
-> > > > > single line.
-> > > > > So. just moving [1] here.  
-> > > >
-> > > > You mean also doing it in the label? I thought about that and the
-> > > > reason
-> > > > why I didn't is that on a normal run, I want to reset the max freq as
-> > > > soon
-> > > > as possible so that if someone concurrently tries to read 'direct  
-> > mode'  
-> > > > attrs
-> > > > gets the max freq. This was my reasoning but I admit that it's not  
-> > that  
-> > > > important so I will leave this to Jonathan's preference...
-> > > >
-> > > > Hmm now that I spoke about the concurrently access to IIO attr  
-> > and  
-> > > > being paranoid about
-> > > > the compiler, I wonder if we should not use
-> > > > WRITE_ONCE(adis->spi->max_speed_hz,
-> > > > ADIS16475_BURST_MAX_SPEED)...  
-> > >
-> > > Hmmm, actually WRITE_ONCE would not be any help since the spi  
-> > core  
-> > > does not use READ_ONCE. So, if we are going to be paranoid about  
-> > the  
-> > > compiler and load/store tearing, I guess the only safe way here is to
-> > > acquire the adis lock [btw, I'm a bit paranoid with this stuff :)]...
-> > >
-> > > Anyways, arguably the likelihood for this to happen is really, really  
-> > small...
-> > 
-> > Really small, but needs fixing.  We shouldn't have a window in which
-> > this  
+> Hi,
 > 
-> Agreed!
+> On 4/18/21 1:03 PM, Jonathan Cameron wrote:
+> > On Fri, 16 Apr 2021 15:21:14 +0300
+> > Tomas Melin <tomas.melin@vaisala.com> wrote:
+> >  
+> >> Updated email-address for Alexandru.
+> >>
+> >>
+> >> On 4/16/21 3:17 PM, Tomas Melin wrote:  
+> >>> On 4/15/21 11:41 AM, Tomas Melin wrote:
+> >>>     
+> >>>> While working on updates I did notice something new which I cannot
+> >>>>
+> >>>> reproduce on older (5.10.17 kernel) version. If compiling this as a
+> >>>> module, getting error while
+> >>>>
+> >>>> unloading module:
+> >>>>
+> >>>> [   40.200084] Unable to handle kernel NULL pointer dereference at
+> >>>> virtual address 00000104
+> >>>> ...
+> >>>>
+> >>>> [   40.510054] Backtrace:
+> >>>> [   40.512502] [<c06c5e0c>] (iio_device_ioctl_handler_unregister)
+> >>>> from [<c06ca8c4>] (iio_buffers_free_sysfs_and_mask+0x2c/0x6c)
+> >>>> [   40.523735] [<c06ca898>] (iio_buffers_free_sysfs_and_mask) from
+> >>>> [<c06c4a18>] (iio_device_unregister+0xa8/0xac)
+> >>>> [   40.533746]  r5:c1811228 r4:c1811000
+> >>>> [   40.537318] [<c06c4970>] (iio_device_unregister) from [<c06c4a38>]
+> >>>> (devm_iio_device_unreg+0x1c/0x20)
+> >>>> [   40.546461]  r5:c2415000 r4:c25bab80
+> >>>> [   40.550025] [<c06c4a1c>] (devm_iio_device_unreg) from [<c0556820>]
+> >>>> (release_nodes+0x1c0/0x1f0)
+> >>>> [   40.558654] [<c0556660>] (release_nodes) from [<c0556bb0>]
+> >>>> (devres_release_all+0x40/0x60)
+> >>>> [   40.566847]  r10:00000081 r9:c2350000 r8:c0100264 r7:00000081
+> >>>> r6:bf00c010 r5:c19be000
+> >>>> [   40.574669]  r4:c1a91c00
+> >>>> [   40.577194] [<c0556b70>] (devres_release_all) from [<c055216c>]
+> >>>> (device_release_driver_internal+0x120/0x1cc)
+> >>>> [   40.587031]  r5:c19be000 r4:c1a91c00
+> >>>> [   40.590596] [<c055204c>] (device_release_driver_internal) from
+> >>>> [<c05522b4>] (driver_detach+0x54/0x90)
+> >>>> [   40.599828]  r7:00000081 r6:00000000 r5:bf00c010 r4:c1a91c00
+> >>>> [   40.605482] [<c0552260>] (driver_detach) from [<c0550ba4>]
+> >>>> (bus_remove_driver+0x5c/0xb0)
+> >>>> [   40.613583]  r5:00000800 r4:bf00c010
+> >>>> [   40.617148] [<c0550b48>] (bus_remove_driver) from [<c0552c38>]
+> >>>> (driver_unregister+0x38/0x5c)
+> >>>> [   40.625596]  r5:00000800 r4:bf00c010
+> >>>> [   40.629161] [<c0552c00>] (driver_unregister) from [<bf00a760>]
+> >>>> (sca3300_driver_exit+0x14/0x8b4 [sca3300])
+> >>>> [   40.638747]  r5:00000800 r4:bf00c080
+> >>>> [   40.642311] [<bf00a74c>] (sca3300_driver_exit [sca3300]) from
+> >>>> [<c01c06f0>] (sys_delete_module+0x16c/0x238)
+> >>>> [   40.651990] [<c01c0584>] (sys_delete_module) from [<c0100244>]
+> >>>> (__sys_trace_return+0x0/0x1c)
+> >>>> [   40.660435] Exception stack(0xc2351fa8 to 0xc2351ff0)
+> >>>> [   40.665484] 1fa0:                   0050e5a8 00000000 0050e5e4
+> >>>> 00000800 081d4b00 bec18af4
+> >>>> [   40.673661] 1fc0: 0050e5a8 00000000 bec18b50 00000081 bec18e51
+> >>>> 0050e190 00000001 bec18d3c
+> >>>> [   40.681834] 1fe0: 0050cf70 bec18afc 004f1ec8 b6ecb27c
+> >>>> [   40.686887]  r6:bec18b50 r5:00000000 r4:0050e5a8
+> >>>> [   40.691507] Code: e8bd4000 e1c020d0 e3a0cc01 e3001122 (e5823004)
+> >>>> [   40.707675] ---[ end trace 189882b050077333 ]---
+> >>>>
+> >>>> This happens when building against linux-next
+> >>>> 5.12.0-rc6-next-20210409. I'm failing to see what is wrong. Any ideas?
+> >>>>
+> >>>> Thanks,
+> >>>>
+> >>>> Tomas  
+> >>>
+> >>> Tested further that for this driver, loading and unloading as module
+> >>> works fine until commit:
+> >>>
+> >>> commit f73f7f4da581875f9b1f2fb8ebd1ab15ed634488
+> >>> Author: Alexandru Ardelean <alexandru.ardelean@analog.com>
+> >>> Date:   Mon Feb 15 12:40:39 2021 +0200
+> >>>
+> >>>      iio: buffer: add ioctl() to support opening extra buffers for IIO
+> >>> device
+> >>>
+> >>>
+> >>> Any thoughts what causes this issue?  
+> > Is this still happening after fixing the ordering in probe / remove?
+> > (devm_iio_triggered_buffer_setup() being easiest way)
+> >
+> > As driver currently stands it's calling iio_triggered_buffer_cleanup
+> > before the managed cleanup of the iio_device_register() call.  That
+> > should never happen so would be where I'd look for problems here.
+> >
+> > It is possible Alex's work is relying on that ordering being correct
+> > a little more than we previously were. I could be wrong though
+> > and could be something else going on!
+> >
+> > Jonathan
+> >
+> > +CC Alex's other email address.  
 > 
-> > can happen.  So either we need to stop those attributes from reading
-> > whilst
-> > we are in buffered mode (via claim_direct_mode pattern) or we need
-> > to put
-> > a lock around this.  As an alternative, could we use the speed_hz field
-> > in appropriate spi_transfer structures to tweak in this path without
-> > affecting others?  That should make this concurrency problem an issue
-> > for the spi core (which I'd assume handles this).  
+> This is still happening with v3 of driver patchset, which uses only devm_*
 > 
-> Hmm, I like the 'speed_hz' approach as there's no reason to grab
-> the lock because of a spi core tweak. As you said, with this, we push things
-> to spi core. Going one step further, I think the most appropriate thing to do
-> is actually come up with a new member in the 'adis_data' struct
-> (like burst_max_speed_hz) and tweak the burst mode transfers accordingly in
-> 'adis_update_scan_mode_burst()' (as there's no need to set this on every
-> burst sample)...
-> 
-> If we are going the above path, what would be your preference? To add the
-> patches to this series? Or to just fix this patch and [1] and push another series
-> with the above changes? Hmm, since [1] would also depend on this, I guess the
-> later approach would be better?
-> 
-> [1]: https://patchwork.kernel.org/project/linux-iio/patch/20210413092815.28626-1-nuno.sa@analog.com/
+> versions in probing. v5.12-rc7 works ok, I'm currently only seeing this 
+> using linux-next.
 
-Make a new version of this series with the fix, then provide an update of [1]
-that is probably going to be dependent on this series.
+Thanks for checking.  I've just fired up a VM and confirmed that the same
+thing is happening with creating and removing instances of the dummy driver.
 
-Given this is a fix, ideally we'll backport it which we don't need to do
-for the new code introduced in [1].
-
-Thanks,
+Will see if I can figure out what's going wrong.
 
 Jonathan
 
 > 
-> - Nuno S�
+> Thanks,
+> 
+> Tomas
+> 
+> 
+> >>> Thanks,
+> >>>
+> >>> Tomas
+> >>>
+> >>>
+> >>>     
+> >>>>     
+> >>>>>     
+> >>>>>> ---
+> >>>>>>    drivers/iio/accel/Kconfig   |  13 ++
+> >>>>>>    drivers/iio/accel/Makefile  |   1 +
+> >>>>>>    drivers/iio/accel/sca3300.c | 434
+> >>>>>> ++++++++++++++++++++++++++++++++++++
+> >>>>>>    3 files changed, 448 insertions(+)
+> >>>>>>    create mode 100644 drivers/iio/accel/sca3300.c
+> >>>>>>
+> >>>>>> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> >>>>>> index cceda3cecbcf..0dbf7b648e8a 100644
+> >>>>>> --- a/drivers/iio/accel/Kconfig
+> >>>>>> +++ b/drivers/iio/accel/Kconfig
+> >>>>>> @@ -450,6 +450,19 @@ config SCA3000
+> >>>>>>          To compile this driver as a module, say M here: the module
+> >>>>>> will be
+> >>>>>>          called sca3000.
+> >>>>>>    +config SCA3300
+> >>>>>> +    tristate "Murata SCA3300 3-Axis Accelerometer Driver"
+> >>>>>> +    depends on SPI
+> >>>>>> +    select CRC8
+> >>>>>> +    select IIO_BUFFER
+> >>>>>> +    select IIO_TRIGGERED_BUFFER
+> >>>>>> +    help
+> >>>>>> +      Say yes here to build support for Murata SCA3300 3-Axis
+> >>>>>> +      accelerometer.
+> >>>>>> +
+> >>>>>> +      To compile this driver as a module, choose M here: the
+> >>>>>> module will be
+> >>>>>> +      called sca3300.
+> >>>>>> +
+> >>>>>>    config STK8312
+> >>>>>>        tristate "Sensortek STK8312 3-Axis Accelerometer Driver"
+> >>>>>>        depends on I2C
+> >>>>>> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> >>>>>> index 32cd1342a31a..4b56527a2b97 100644
+> >>>>>> --- a/drivers/iio/accel/Makefile
+> >>>>>> +++ b/drivers/iio/accel/Makefile
+> >>>>>> @@ -50,6 +50,7 @@ obj-$(CONFIG_MXC4005)        += mxc4005.o
+> >>>>>>    obj-$(CONFIG_MXC6255)        += mxc6255.o
+> >>>>>>      obj-$(CONFIG_SCA3000)        += sca3000.o
+> >>>>>> +obj-$(CONFIG_SCA3300)        += sca3300.o
+> >>>>>>      obj-$(CONFIG_STK8312)        += stk8312.o
+> >>>>>>    obj-$(CONFIG_STK8BA50)        += stk8ba50.o
+> >>>>>> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
+> >>>>>> new file mode 100644
+> >>>>>> index 000000000000..112fb88ecd3a
+> >>>>>> --- /dev/null
+> >>>>>> +++ b/drivers/iio/accel/sca3300.c
+> >>>>>> @@ -0,0 +1,434 @@
+> >>>>>> +// SPDX-License-Identifier: GPL-2.0-only
+> >>>>>> +/*
+> >>>>>> + * Copyright (c) Vaisala Oyj. All rights reserved.  
+> >>>>> Give a year for the copyright notice if you can.
+> >>>>>     
+> >>>>>> + */
+> >>>>>> +#include <linux/crc8.h>
+> >>>>>> +#include <linux/delay.h>
+> >>>>>> +#include <linux/iio/buffer.h>
+> >>>>>> +#include <linux/iio/iio.h>
+> >>>>>> +#include <linux/iio/sysfs.h>
+> >>>>>> +#include <linux/iio/trigger_consumer.h>
+> >>>>>> +#include <linux/iio/triggered_buffer.h>
+> >>>>>> +#include <linux/kernel.h>
+> >>>>>> +#include <linux/module.h>
+> >>>>>> +#include <linux/spi/spi.h>
+> >>>>>> +
+> >>>>>> +#define SCA3300_ALIAS "sca3300"
+> >>>>>> +
+> >>>>>> +#define SCA3300_REG_STATUS 0x6
+> >>>>>> +#define SCA3300_REG_MODE 0xd
+> >>>>>> +#define SCA3300_REG_WHOAMI 0x10
+> >>>>>> +#define SCA3300_VALUE_SW_RESET 0x20
+> >>>>>> +#define SCA3300_CRC8_POLYNOMIAL 0x1d
+> >>>>>> +#define SCA3300_X_READ 0  
+> >>>>> I wouldn't bother defining this.
+> >>>>>     
+> >>>>>> +#define SCA3300_X_WRITE BIT(7)  
+> >>>>> Even this one is something I'd just put inline with a comment.
+> >>>>>     
+> >>>>>> +#define SCA3300_DEVICE_ID 0x51
+> >>>>>> +#define SCA3300_RS_ERROR 0x3
+> >>>>>> +
+> >>>>>> +enum sca3300_scan_indexes {
+> >>>>>> +    SCA3300_ACC_X = 0,
+> >>>>>> +    SCA3300_ACC_Y,
+> >>>>>> +    SCA3300_ACC_Z,
+> >>>>>> +    SCA3300_TEMP,
+> >>>>>> +    SCA3300_TIMESTAMP,
+> >>>>>> +};
+> >>>>>> +
+> >>>>>> +#define SCA3300_ACCEL_CHANNEL(index, reg, axis) { \
+> >>>>>> +        .type = IIO_ACCEL,                    \
+> >>>>>> +        .address = reg,                        \
+> >>>>>> +        .modified = 1,                        \
+> >>>>>> +        .channel2 = IIO_MOD_##axis,                \
+> >>>>>> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> >>>>>> +                      BIT(IIO_CHAN_INFO_PROCESSED),    \  
+> >>>>> As mentioned below, don't provide PROCESSED. Userspace is better at
+> >>>>> handling the
+> >>>>> conversion so leave it to them.
+> >>>>>     
+> >>>>>> +        .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),    \
+> >>>>>> +        .scan_index = index,                    \
+> >>>>>> +        .scan_type = {                        \
+> >>>>>> +            .sign = 's',                    \
+> >>>>>> +            .realbits = 16,                    \
+> >>>>>> +            .storagebits = 16,                \
+> >>>>>> +            .shift = 0,                    \
+> >>>>>> +            .endianness = IIO_CPU,                \
+> >>>>>> +        },                            \
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +static const struct iio_chan_spec sca3300_channels[] = {
+> >>>>>> +    SCA3300_ACCEL_CHANNEL(SCA3300_ACC_X, 0x1, X),
+> >>>>>> +    SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
+> >>>>>> +    SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
+> >>>>>> +    {
+> >>>>>> +        .type = IIO_TEMP,
+> >>>>>> +        .address = 0x5,
+> >>>>>> +        .scan_index = SCA3300_TEMP,
+> >>>>>> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> >>>>>> +        .scan_type = {
+> >>>>>> +            .sign = 's',
+> >>>>>> +            .realbits = 16,
+> >>>>>> +            .storagebits = 16,
+> >>>>>> +            .shift = 0,
+> >>>>>> +            .endianness = IIO_CPU,
+> >>>>>> +        },
+> >>>>>> +    },
+> >>>>>> +    IIO_CHAN_SOFT_TIMESTAMP(4),
+> >>>>>> +};
+> >>>>>> +
+> >>>>>> +static const int sca3300_accel_scale[] = {2700, 1350, 5400, 5400};
+> >>>>>> +
+> >>>>>> +static const unsigned long sca3300_scan_masks[] = {
+> >>>>>> +    BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+> >>>>>> +    BIT(SCA3300_TEMP),
+> >>>>>> +    0};
+> >>>>>> +
+> >>>>>> +/**
+> >>>>>> + * SCA3300 device data  
+> >>>>> run scripts/kernel-doc over the file and fix the warnings + errors.
+> >>>>>     
+> >>>>>> + *
+> >>>>>> + * @spi SPI device structure
+> >>>>>> + * @opmode Device operation mode
+> >>>>>> + * @lock Data buffer lock
+> >>>>>> + * @txbuf Transmit buffer
+> >>>>>> + * @rxbuf Receive buffer
+> >>>>>> + * @scan Triggered buffer. Four channel 16-bit data + 64-bit
+> >>>>>> timestamp
+> >>>>>> + */
+> >>>>>> +struct sca3300_data {
+> >>>>>> +    struct spi_device *spi;
+> >>>>>> +    u32 opmode;
+> >>>>>> +    struct mutex lock;
+> >>>>>> +    u8 txbuf[4];
+> >>>>>> +    u8 rxbuf[4];
+> >>>>>> +    struct {
+> >>>>>> +        s16 channels[4];
+> >>>>>> +        s64 ts __aligned(sizeof(s64));
+> >>>>>> +    } scan;
+> >>>>>> +};
+> >>>>>> +
+> >>>>>> +DECLARE_CRC8_TABLE(sca3300_crc_table);
+> >>>>>> +
+> >>>>>> +static int sca3300_transfer(struct sca3300_data *sca_data, int *val)
+> >>>>>> +{
+> >>>>>> +    struct spi_delay delay = {.value = 10, .unit =
+> >>>>>> SPI_DELAY_UNIT_USECS};
+> >>>>>> +    int32_t ret;
+> >>>>>> +    int rs;
+> >>>>>> +    u8 crc;
+> >>>>>> +    struct spi_transfer xfers[2] = {
+> >>>>>> +        {
+> >>>>>> +            .tx_buf = sca_data->txbuf,
+> >>>>>> +            .rx_buf = NULL,
+> >>>>>> +            .len = ARRAY_SIZE(sca_data->txbuf),
+> >>>>>> +            .delay = delay,
+> >>>>>> +            .cs_change = 1,
+> >>>>>> +        },
+> >>>>>> +        {
+> >>>>>> +            .tx_buf = NULL,
+> >>>>>> +            .rx_buf = sca_data->rxbuf,
+> >>>>>> +            .len = ARRAY_SIZE(sca_data->rxbuf),
+> >>>>>> +            .delay = delay,
+> >>>>>> +            .cs_change = 0,
+> >>>>>> +        }
+> >>>>>> +    };
+> >>>>>> +
+> >>>>>> +    /* inverted crc value as described in device data sheet */
+> >>>>>> +    crc = ~crc8(sca3300_crc_table, &sca_data->txbuf[0], 3,
+> >>>>>> CRC8_INIT_VALUE);
+> >>>>>> +    sca_data->txbuf[3] = crc;
+> >>>>>> +
+> >>>>>> +    ret = spi_sync_transfer(sca_data->spi, xfers, 2);  
+> >>>>> Use ARRAY_SIZE(xfers) instead of 2.
+> >>>>>     
+> >>>>>> +    if (ret < 0) {
+> >>>>>> +        dev_err(&sca_data->spi->dev,
+> >>>>>> +            "transfer error, error: %d\n", ret);
+> >>>>>> +        return -EIO;
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +    crc = ~crc8(sca3300_crc_table, &sca_data->rxbuf[0], 3,
+> >>>>>> CRC8_INIT_VALUE);
+> >>>>>> +    if (sca_data->rxbuf[3] != crc) {
+> >>>>>> +        dev_err(&sca_data->spi->dev, "CRC checksum mismatch");
+> >>>>>> +        return -EIO;
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +    /* get return status */
+> >>>>>> +    rs = sca_data->rxbuf[0] & 0x03;
+> >>>>>> +    if (rs == SCA3300_RS_ERROR)
+> >>>>>> +        return rs;
+> >>>>>> +
+> >>>>>> +    *val = (s16)(sca_data->rxbuf[2] | (sca_data->rxbuf[1] << 8));  
+> >>>>> Preference for an unaligned endian conversion here and explicit sign
+> >>>>> extend e.g
+> >>>>> something like
+> >>>>>
+> >>>>> sign_extend32(get_unaligned_le16(&sca_data->rxbuf[1]), 15)
+> >>>>>     
+> >>>>>> +
+> >>>>>> +    return 0;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int sca3300_read_reg(struct sca3300_data *sca_data, u8 reg,
+> >>>>>> int *val)
+> >>>>>> +{
+> >>>>>> +    int ret;
+> >>>>>> +
+> >>>>>> +    mutex_lock(&sca_data->lock);
+> >>>>>> +    sca_data->txbuf[0] = SCA3300_X_READ | (reg << 2);
+> >>>>>> +    ret = sca3300_transfer(sca_data, val);
+> >>>>>> +    if (ret > 0) {
+> >>>>>> +        sca_data->txbuf[0] = SCA3300_X_READ | (SCA3300_REG_STATUS
+> >>>>>> << 2);
+> >>>>>> +        ret = sca3300_transfer(sca_data, val);
+> >>>>>> +        /* status 0 = startup, 0x2 = mode change */
+> >>>>>> +        if (ret > 0 && *val != 0 && *val != 0x2) {
+> >>>>>> + dev_err_ratelimited(&sca_data->spi->dev,
+> >>>>>> +                        "device status: %x\n",
+> >>>>>> +                        (u16)*val);
+> >>>>>> +            mutex_unlock(&sca_data->lock);
+> >>>>>> +            return -EIO;
+> >>>>>> +        }
+> >>>>>> +        if (ret > 0)
+> >>>>>> +            ret = 0;
+> >>>>>> +    }
+> >>>>>> +    mutex_unlock(&sca_data->lock);
+> >>>>>> +
+> >>>>>> +    return ret;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int sca3300_write_reg(struct sca3300_data *sca_data, u8
+> >>>>>> reg, int val)
+> >>>>>> +{
+> >>>>>> +    int reg_val = 0;
+> >>>>>> +    int ret;
+> >>>>>> +
+> >>>>>> +    mutex_lock(&sca_data->lock);
+> >>>>>> +    sca_data->txbuf[0] = SCA3300_X_WRITE | (reg << 2);
+> >>>>>> +    sca_data->txbuf[1] = val >> 8;
+> >>>>>> +    sca_data->txbuf[2] = val & 0xFF;  
+> >>>>> Prefer (Slightly) an unaligned put.
+> >>>>>     
+> >>>>>> +    ret = sca3300_transfer(sca_data, &reg_val);
+> >>>>>> +    if (ret > 0) {  
+> >>>>> Factor this error handling out to another function, plus trigger it
+> >>>>> from an
+> >>>>> appropriate standard error code rather than a positive return value.
+> >>>>>     
+> >>>>>> +        sca_data->txbuf[0] = SCA3300_X_READ | (SCA3300_REG_STATUS
+> >>>>>> << 2);
+> >>>>>> +        ret = sca3300_transfer(sca_data, &reg_val);
+> >>>>>> +        /* status 0 = startup, 0x2 = mode change */
+> >>>>>> +        if (ret > 0 && reg_val != 0 && reg_val != 0x2) {
+> >>>>>> + dev_err_ratelimited(&sca_data->spi->dev,
+> >>>>>> +                        "device status: %x\n",
+> >>>>>> +                        (u16)reg_val);
+> >>>>>> +            mutex_unlock(&sca_data->lock);
+> >>>>>> +            return -EIO;
+> >>>>>> +        }
+> >>>>>> +        if (ret > 0)
+> >>>>>> +            ret = 0;  
+> >>>>> Whenever you get this sort of juggling it rather implies your design is
+> >>>>> less than ideal.
+> >>>>>     
+> >>>>>> +    }
+> >>>>>> +    mutex_unlock(&sca_data->lock);
+> >>>>>> +
+> >>>>>> +    return ret;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int sca3300_write_raw(struct iio_dev *indio_dev,
+> >>>>>> +                 struct iio_chan_spec const *chan,
+> >>>>>> +                 int val, int val2, long mask)
+> >>>>>> +{
+> >>>>>> +    struct sca3300_data *data = iio_priv(indio_dev);
+> >>>>>> +
+> >>>>>> +    switch (mask) {
+> >>>>>> +    case IIO_CHAN_INFO_SCALE:
+> >>>>>> +        if (val < 0 || val > 3)
+> >>>>>> +            return -EINVAL;  
+> >>>>> No.  Scale values need to be the value of 1LSB not a random integer
+> >>>>> that requires you to look up the datasheet.
+> >>>>>     
+> >>>>>> +        return sca3300_write_reg(data, SCA3300_REG_MODE, val);
+> >>>>>> +    default:
+> >>>>>> +        return -EINVAL;
+> >>>>>> +    }
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int sca3300_read_raw(struct iio_dev *indio_dev,
+> >>>>>> +                struct iio_chan_spec const *chan,
+> >>>>>> +                int *val, int *val2, long mask)
+> >>>>>> +{
+> >>>>>> +    struct sca3300_data *data = iio_priv(indio_dev);
+> >>>>>> +    int ret;
+> >>>>>> +    int reg_val;
+> >>>>>> +
+> >>>>>> +    switch (mask) {
+> >>>>>> +    case IIO_CHAN_INFO_RAW:
+> >>>>>> +        ret = sca3300_read_reg(data, chan->address, val);
+> >>>>>> +        if (ret < 0)
+> >>>>>> +            return ret;
+> >>>>>> +        return IIO_VAL_INT;
+> >>>>>> +    case IIO_CHAN_INFO_SCALE:
+> >>>>>> +        ret = sca3300_read_reg(data, SCA3300_REG_MODE, &reg_val);
+> >>>>>> +        if (ret < 0)
+> >>>>>> +            return ret;
+> >>>>>> +        *val = sca3300_accel_scale[reg_val];  
+> >>>>> Scale is very very rarely an integer value which makes me wonder what
+> >>>>> you are returning here...  It should be the multiplier needed to
+> >>>>> take the raw value to a reading in m/sec^2  Given you use it as
+> >>>>> fractional
+> >>>>> below, I'm guessing this is 1/scale_value?
+> >>>>>     
+> >>>>>> +        return IIO_VAL_INT;
+> >>>>>> +    case IIO_CHAN_INFO_PROCESSED:  
+> >>>>> Don't provide processed here.   Userspace needs to do the conversion
+> >>>>> itself
+> >>>>> (and given it has floating point easily available will probably do a
+> >>>>> better
+> >>>>>    job than we can).   I'm assuming the mode can't autonomously change?
+> >>>>>     
+> >>>>>> +        ret = sca3300_read_reg(data, SCA3300_REG_MODE, &reg_val);
+> >>>>>> +        if (ret < 0)
+> >>>>>> +            return ret;
+> >>>>>> +        *val2 = sca3300_accel_scale[reg_val];
+> >>>>>> +        ret = sca3300_read_reg(data, chan->address, val);
+> >>>>>> +        if (ret < 0)
+> >>>>>> +            return ret;
+> >>>>>> +        return IIO_VAL_FRACTIONAL;
+> >>>>>> +    default:
+> >>>>>> +        return -EINVAL;
+> >>>>>> +    }
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static irqreturn_t sca3300_trigger_handler(int irq, void *p)
+> >>>>>> +{
+> >>>>>> +    struct iio_poll_func *pf = p;
+> >>>>>> +    struct iio_dev *indio_dev = pf->indio_dev;
+> >>>>>> +    struct sca3300_data *data = iio_priv(indio_dev);
+> >>>>>> +    s64 time_ns = iio_get_time_ns(indio_dev);  
+> >>>>> Is the timestamp at the start more accurate that that at the end
+> >>>>> of reading the channels?  If not, just put this inline in the
+> >>>>> iio_push_to_buffers_with_timestamp() call.
+> >>>>>     
+> >>>>>> +    int bit, ret, val, i = 0;
+> >>>>>> +
+> >>>>>> +    for_each_set_bit(bit, indio_dev->active_scan_mask,
+> >>>>>> +             indio_dev->masklength) {
+> >>>>>> +        ret = sca3300_read_reg(data, sca3300_channels[bit].address,
+> >>>>>> +                       &val);
+> >>>>>> +        if (ret < 0)  
+> >>>>> Given we can't return an error code from interrupt handlers, it is
+> >>>>> usually
+> >>>>> a good idea to print something to the log. Otherwise we get missing
+> >>>>> data
+> >>>>> with no idea of why..
+> >>>>>     
+> >>>>>> +            goto out;
+> >>>>>> +        if (ARRAY_SIZE(data->scan.channels) > i)  
+> >>>>> How could this not be true?  If it's always true, don't bother
+> >>>>> checking i.
+> >>>>>     
+> >>>>>> +            ((s16 *)data->scan.channels)[i++] = val;
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +    iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
+> >>>>>> time_ns);
+> >>>>>> +out:
+> >>>>>> +    iio_trigger_notify_done(indio_dev->trig);
+> >>>>>> +
+> >>>>>> +    return IRQ_HANDLED;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int sca3300_init(struct sca3300_data *sca_data,
+> >>>>>> +            struct iio_dev *indio_dev)
+> >>>>>> +{
+> >>>>>> +    int ret;
+> >>>>>> +    int value = 0;
+> >>>>>> +
+> >>>>>> +    if (sca_data->opmode < 1 || sca_data->opmode > 4)
+> >>>>>> +        return -EINVAL;  
+> >>>>> Whilst this is going anyway, better to check that next to where
+> >>>>> it is read so we drop out immediately rather than buried in this
+> >>>>> function.
+> >>>>>     
+> >>>>>> +
+> >>>>>> +    ret = sca3300_write_reg(sca_data, SCA3300_REG_MODE,
+> >>>>>> +                SCA3300_VALUE_SW_RESET);
+> >>>>>> +    if (ret != 0)
+> >>>>>> +        return ret;  
+> >>>>> For sleeps, good to reference which section in data sheet gives the
+> >>>>> timing.
+> >>>>>     
+> >>>>>> +    usleep_range(2e3, 10e3);
+> >>>>>> +
+> >>>>>> +    ret = sca3300_write_reg(sca_data, SCA3300_REG_MODE,
+> >>>>>> +                sca_data->opmode - 1);
+> >>>>>> +    if (ret != 0)  
+> >>>>> if (ret) see below.
+> >>>>>     
+> >>>>>> +        return ret;
+> >>>>>> +    msleep(100);  
+> >>>>> Again, document where the time comes from. Saves reviewers time if
+> >>>>> they want to check it. (I'm too lazy :)
+> >>>>>     
+> >>>>>> +    ret = sca3300_read_reg(sca_data, SCA3300_REG_WHOAMI, &value);
+> >>>>>> +    if (ret != 0)  
+> >>>>> if (ret) is more idiomatic in kernel code.
+> >>>>>     
+> >>>>>> +        return ret;
+> >>>>>> +
+> >>>>>> +    if (value != SCA3300_DEVICE_ID) {
+> >>>>>> +        dev_err(&sca_data->spi->dev, "device id not expected
+> >>>>>> value\n");  
+> >>>>> Perhaps useful to print what was expected and what was seen. Maybe it's
+> >>>>> a new variant and this might help the user to identify that and add
+> >>>>> it to the
+> >>>>> driver.
+> >>>>>     
+> >>>>>> +        return -EIO;  
+> >>>>> -EINVAL probably more appropriate return.
+> >>>>>     
+> >>>>>> +    }
+> >>>>>> +    return 0;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int sca3300_debugfs_reg_access(struct iio_dev *indio_dev,
+> >>>>>> +                      unsigned int reg, unsigned int writeval,
+> >>>>>> +                      unsigned int *readval)
+> >>>>>> +{
+> >>>>>> +    struct sca3300_data *data = iio_priv(indio_dev);
+> >>>>>> +    int value;
+> >>>>>> +    int ret;
+> >>>>>> +
+> >>>>>> +    if (reg > 0x1f)  
+> >>>>> Use a define that names that register.
+> >>>>>     
+> >>>>>> +        return -EINVAL;
+> >>>>>> +
+> >>>>>> +    if (!readval)
+> >>>>>> +        return sca3300_write_reg(data, reg, writeval);
+> >>>>>> +
+> >>>>>> +    ret = sca3300_read_reg(data, reg, &value);
+> >>>>>> +    if (ret < 0)
+> >>>>>> +        return ret;
+> >>>>>> +
+> >>>>>> +    *readval = (unsigned int)value;
+> >>>>>> +
+> >>>>>> +    return 0;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static const struct iio_info sca3300_info = {
+> >>>>>> +    .read_raw = sca3300_read_raw,
+> >>>>>> +    .write_raw = sca3300_write_raw,
+> >>>>>> +    .debugfs_reg_access = &sca3300_debugfs_reg_access,
+> >>>>>> +};
+> >>>>>> +
+> >>>>>> +static int sca3300_probe(struct spi_device *spi)
+> >>>>>> +{
+> >>>>>> +    struct sca3300_data *sca_data;
+> >>>>>> +    struct iio_dev *indio_dev;
+> >>>>>> +    int ret;
+> >>>>>> +
+> >>>>>> +    indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*sca_data));
+> >>>>>> +    if (!indio_dev) {
+> >>>>>> +        dev_err(&spi->dev,
+> >>>>>> +            "failed to allocate memory for iio device\n");
+> >>>>>> +        return -ENOMEM;
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +    sca_data = iio_priv(indio_dev);
+> >>>>>> +    mutex_init(&sca_data->lock);
+> >>>>>> +    sca_data->spi = spi;
+> >>>>>> +    spi_set_drvdata(spi, indio_dev);  
+> >>>>> Won't be used once using devm as below and remove() is dropped, so
+> >>>>> drop this.
+> >>>>>     
+> >>>>>> +
+> >>>>>> +    crc8_populate_msb(sca3300_crc_table, SCA3300_CRC8_POLYNOMIAL);
+> >>>>>> +
+> >>>>>> +    indio_dev->dev.parent = &spi->dev;
+> >>>>>> +    indio_dev->info = &sca3300_info;
+> >>>>>> +    indio_dev->name = SCA3300_ALIAS;
+> >>>>>> +    indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;  
+> >>>>> BUFFER_TRIGGERED bit now set by iio_triggered_buffer_setup() so
+> >>>>> shouldn't
+> >>>>> be ehre as well.
+> >>>>>     
+> >>>>>> +    indio_dev->channels = sca3300_channels;
+> >>>>>> +    indio_dev->num_channels = ARRAY_SIZE(sca3300_channels);
+> >>>>>> +    indio_dev->available_scan_masks = sca3300_scan_masks;
+> >>>>>> +
+> >>>>>> +    if (spi->dev.of_node) {
+> >>>>>> +        ret = of_property_read_u32(spi->dev.of_node, "murata,opmode",  
+> >>>>> Please use generic firmware access calls rather than the of specific
+> >>>>> ones.
+> >>>>> That lets us get ACPI support for free :)
+> >>>>>
+> >>>>> As per the binding review however, this one needs to go in favour of
+> >>>>> userspace
+> >>>>> control of scale + filter frequencies / sampling freq.
+> >>>>>     
+> >>>>>> + &sca_data->opmode);
+> >>>>>> +        if (ret < 0)
+> >>>>>> +            return ret;
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +    ret = sca3300_init(sca_data, indio_dev);
+> >>>>>> +    if (ret < 0) {
+> >>>>>> +        dev_err(&spi->dev, "failed to init device, error: %d\n",
+> >>>>>> ret);
+> >>>>>> +        return ret;
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +    ret = iio_triggered_buffer_setup(indio_dev,
+> >>>>>> iio_pollfunc_store_time,
+> >>>>>> +                     sca3300_trigger_handler, NULL);  
+> >>>>> devm_iio_triggered_buffer_setup() and you can drop the manual
+> >>>>> cleanup in remove()
+> >>>>> and hence drop remove() entirely as nothing else left.
+> >>>>>     
+> >>>>>> +    if (ret < 0) {
+> >>>>>> +        dev_err(&spi->dev,
+> >>>>>> +            "iio triggered buffer setup failed, error: %d\n", ret);
+> >>>>>> +        return ret;
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +    ret = devm_iio_device_register(&spi->dev, indio_dev);
+> >>>>>> +    if (ret < 0) {
+> >>>>>> +        dev_err(&spi->dev, "iio device register failed, error: %d\n",
+> >>>>>> +            ret);
+> >>>>>> +        iio_triggered_buffer_cleanup(indio_dev);  
+> >>>>> With devm above, no need to manually clean this up.
+> >>>>>     
+> >>>>>> +        return ret;
+> >>>>>> +    }
+> >>>>>> +
+> >>>>>> +    return 0;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static int sca3300_remove(struct spi_device *spi)
+> >>>>>> +{
+> >>>>>> +    struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> >>>>>> +
+> >>>>>> +    iio_triggered_buffer_cleanup(indio_dev);
+> >>>>>> +    return 0;
+> >>>>>> +}
+> >>>>>> +
+> >>>>>> +static const struct of_device_id sca3300_dt_ids[] = {
+> >>>>>> +    { .compatible = "murata,sca3300"},
+> >>>>>> +    {},
+> >>>>>> +};
+> >>>>>> +MODULE_DEVICE_TABLE(of, sca3300_dt_ids);
+> >>>>>> +
+> >>>>>> +static struct spi_driver sca3300_driver = {
+> >>>>>> +    .driver = {
+> >>>>>> +        .name        = SCA3300_ALIAS,
+> >>>>>> +        .owner        = THIS_MODULE,
+> >>>>>> +        .of_match_table = of_match_ptr(sca3300_dt_ids),
+> >>>>>> +    },
+> >>>>>> +
+> >>>>>> +    .probe    = sca3300_probe,
+> >>>>>> +    .remove    = sca3300_remove,
+> >>>>>> +};
+> >>>>>> +
+> >>>>>> +module_spi_driver(sca3300_driver);
+> >>>>>> +
+> >>>>>> +MODULE_AUTHOR("Tomas Melin <tomas.melin@vaisala.com>");
+> >>>>>> +MODULE_DESCRIPTION("Murata SCA3300 SPI Accelerometer");
+> >>>>>> +MODULE_LICENSE("GPL v2");  
 
