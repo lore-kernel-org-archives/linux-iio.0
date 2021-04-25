@@ -2,540 +2,162 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-17.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 72AF2C43461
-	for <linux-iio@archiver.kernel.org>; Sun, 25 Apr 2021 14:00:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC13C433B4
+	for <linux-iio@archiver.kernel.org>; Sun, 25 Apr 2021 15:16:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4F88B61009
-	for <linux-iio@archiver.kernel.org>; Sun, 25 Apr 2021 14:00:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 261246044F
+	for <linux-iio@archiver.kernel.org>; Sun, 25 Apr 2021 15:16:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230363AbhDYOAm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 25 Apr 2021 10:00:42 -0400
-Received: from smtpout1.mo528.mail-out.ovh.net ([46.105.34.251]:48217 "EHLO
-        smtpout1.mo528.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S230281AbhDYOAk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Apr 2021 10:00:40 -0400
-Received: from pro2.mail.ovh.net (unknown [10.109.143.134])
-        by mo528.mail-out.ovh.net (Postfix) with ESMTPS id A04FCA236483;
-        Sun, 25 Apr 2021 15:59:58 +0200 (CEST)
-Received: from arch.lan (89.70.221.198) by DAG2EX1.emp2.local (172.16.2.11)
- with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2242.4; Sun, 25 Apr
- 2021 15:59:57 +0200
-From:   Tomasz Duszynski <tomasz.duszynski@octakon.com>
-To:     <linux-iio@vger.kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>,
-        Tomasz Duszynski <tomasz.duszynski@octakon.com>
-Subject: [PATCH 2/3] iio: sps30: add support for serial interface
-Date:   Sun, 25 Apr 2021 15:55:45 +0200
-Message-ID: <20210425135546.57343-3-tomasz.duszynski@octakon.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210425135546.57343-1-tomasz.duszynski@octakon.com>
+        id S230329AbhDYPQ4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 25 Apr 2021 11:16:56 -0400
+Received: from www381.your-server.de ([78.46.137.84]:51894 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230288AbhDYPQ4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Apr 2021 11:16:56 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
+        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=rcM1mDotLLM1ehwVHiTLyrx9DdDtiH0Nl6OFkvOnz3I=; b=j06XSWN2CdUw8AT9BTyrSs05Zq
+        OhJ1zyk7vwNxNeEpTYWrzqYyRx05fUsfRbSXbB0nKl63mc+7NGaoodCvshAGSHwsT9AdfpZgyb/Z3
+        eDNiPYe9Z7iOEOOJuuc5Ig8YSVRIsKx7a1fnsvBv5gfUYxvhPHLbF7D1TXA1qJSOMmrYug72aZTqn
+        OjLnuaxaJfe7xgO+43sLfmWofTk6+0OjBZiSy2Y50wek013FhTN0xJGJXnaeA+XPQ4oi9xjsUvbYY
+        PbGw6FZt0WEQJ3cvOmyXvsrCrRemGyl2jlH3hM45knT/NOYHhQO7FyakZmFWReUQrDwKYJNsfJVng
+        0AHLKNSA==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1lagUY-0005XR-VX; Sun, 25 Apr 2021 17:16:15 +0200
+Received: from [2001:a61:2a42:9501:9e5c:8eff:fe01:8578]
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1lagUY-000KyF-Q5; Sun, 25 Apr 2021 17:16:14 +0200
+Subject: Re: [PATCH 1/3] iio: sps30: separate core and interface specific code
+To:     Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+        linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        jic23@kernel.org, robh+dt@kernel.org
 References: <20210425135546.57343-1-tomasz.duszynski@octakon.com>
+ <20210425135546.57343-2-tomasz.duszynski@octakon.com>
+From:   Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <38d5438d-7e00-ed5d-ed33-01ff04e26f33@metafoo.de>
+Date:   Sun, 25 Apr 2021 17:16:14 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [89.70.221.198]
-X-ClientProxiedBy: DAG3EX2.emp2.local (172.16.2.22) To DAG2EX1.emp2.local
- (172.16.2.11)
-X-Ovh-Tracer-Id: 8493225947914329111
-X-VR-SPAMSTATE: OK
-X-VR-SPAMSCORE: 0
-X-VR-SPAMCAUSE: gggruggvucftvghtrhhoucdtuddrgeduledrvdduiedgjeefucetufdoteggodetrfdotffvucfrrhhofhhilhgvmecuqfggjfdpvefjgfevmfevgfenuceurghilhhouhhtmecuhedttdenucenucfjughrpefhvffufffkofgjfhgggfgtihesthekredtredttdenucfhrhhomhepvfhomhgrshiiucffuhhsiiihnhhskhhiuceothhomhgrshiirdguuhhsiiihnhhskhhisehotghtrghkohhnrdgtohhmqeenucggtffrrghtthgvrhhnpeevjedvkeeuieehveeggeduuddvhfduhffhhedufeejudehkeeuhffgheduffduudenucfkpheptddrtddrtddrtddpkeelrdejtddrvddvuddrudelkeenucevlhhushhtvghrufhiiigvpedtnecurfgrrhgrmhepmhhouggvpehsmhhtphdqohhuthdphhgvlhhopehprhhovddrmhgrihhlrdhovhhhrdhnvghtpdhinhgvtheptddrtddrtddrtddpmhgrihhlfhhrohhmpehtohhmrghsiidrughushiihihnshhkihesohgtthgrkhhonhdrtghomhdprhgtphhtthhopehrohgshhdoughtsehkvghrnhgvlhdrohhrgh
+In-Reply-To: <20210425135546.57343-2-tomasz.duszynski@octakon.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Transfer-Encoding: 7bit
+Content-Language: en-US
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.103.2/26151/Sun Apr 25 13:05:06 2021)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Sensor has support for both i2c and serial communication interfaces.
-Both offer very similar set of features. Minor differences don't impact
-overall functionality like doing measurements, etc.
+On 4/25/21 3:55 PM, Tomasz Duszynski wrote:
+> Move code responsible for handling i2c communication to a separate file.
+> Rationale for this change is preparation for adding support for serial
+> communication.
+>
+> Signed-off-by: Tomasz Duszynski <tomasz.duszynski@octakon.com>
 
-Support for i2c have already been added, this patch adds support
-for the latter ie. serial interface.
+Hi,
 
-Signed-off-by: Tomasz Duszynski <tomasz.duszynski@octakon.com>
----
- MAINTAINERS                         |   1 +
- drivers/iio/chemical/Kconfig        |  10 +
- drivers/iio/chemical/Makefile       |   1 +
- drivers/iio/chemical/sps30_serial.c | 420 ++++++++++++++++++++++++++++
- 4 files changed, 432 insertions(+)
- create mode 100644 drivers/iio/chemical/sps30_serial.c
+The whole series looks really great. Couple of small comments inline.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 4b39a9c48736..cab9a63ad2cf 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16138,6 +16138,7 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/chemical/sensirion,sps30.yaml
- F:	drivers/iio/chemical/sps30.c
- F:	drivers/iio/chemical/sps30_i2c.c
-+F:	drivers/iio/chemical/sps30_serial.c
- 
- SERIAL DEVICE BUS
- M:	Rob Herring <robh@kernel.org>
-diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-index 82af5f62fbc6..6909b4754b9e 100644
---- a/drivers/iio/chemical/Kconfig
-+++ b/drivers/iio/chemical/Kconfig
-@@ -153,6 +153,16 @@ config SPS30_I2C
- 	  To compile this driver as a module, choose M here: the module will
- 	  be called sps30_i2c.
- 
-+config SPS30_SERIAL
-+	tristate "SPS30 particulate matter sensor serial driver"
-+	depends on SPS30 && SERIAL_DEV_BUS
-+	help
-+	  Say Y here to build support for the Sensirion SPS30 serial interface
-+	  driver.
-+
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called sps30_serial.
-+
- config VZ89X
- 	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
- 	depends on I2C
-diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
-index 41c264a229c0..4898690cc155 100644
---- a/drivers/iio/chemical/Makefile
-+++ b/drivers/iio/chemical/Makefile
-@@ -18,4 +18,5 @@ obj-$(CONFIG_SCD30_SERIAL) += scd30_serial.o
- obj-$(CONFIG_SENSIRION_SGP30)	+= sgp30.o
- obj-$(CONFIG_SPS30) += sps30.o
- obj-$(CONFIG_SPS30_I2C) += sps30_i2c.o
-+obj-$(CONFIG_SPS30_SERIAL) += sps30_serial.o
- obj-$(CONFIG_VZ89X)		+= vz89x.o
-diff --git a/drivers/iio/chemical/sps30_serial.c b/drivers/iio/chemical/sps30_serial.c
-new file mode 100644
-index 000000000000..5adeeed9bc8f
---- /dev/null
-+++ b/drivers/iio/chemical/sps30_serial.c
-@@ -0,0 +1,420 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Sensirion SPS30 particulate matter sensor serial driver
-+ *
-+ * Copyright (c) 2021 Tomasz Duszynski <tomasz.duszynski@octakon.com>
-+ */
-+#include <linux/completion.h>
-+#include <linux/device.h>
-+#include <linux/errno.h>
-+#include <linux/iio/iio.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/serdev.h>
-+
-+#include "sps30.h"
-+
-+#define SPS30_SERIAL_SOF_EOF 0x7e
-+#define SPS30_SERIAL_TIMEOUT msecs_to_jiffies(20)
-+#define SPS30_SERIAL_MAX_BUF_SIZE 263
-+#define SPS30_SERIAL_ESCAPE_CHAR 0x7d
-+
-+#define SPS30_SERIAL_FRAME_MIN_SIZE 7
-+#define SPS30_SERIAL_FRAME_ADR_OFFSET 1
-+#define SPS30_SERIAL_FRAME_CMD_OFFSET 2
-+#define SPS30_SERIAL_FRAME_MOSI_LEN_OFFSET 3
-+#define SPS30_SERIAL_FRAME_MISO_STATE_OFFSET 3
-+#define SPS30_SERIAL_FRAME_MISO_LEN_OFFSET 4
-+#define SPS30_SERIAL_FRAME_MISO_DATA_OFFSET 5
-+
-+#define SPS30_SERIAL_START_MEAS 0x00
-+#define SPS30_SERIAL_STOP_MEAS 0x01
-+#define SPS30_SERIAL_READ_MEAS 0x03
-+#define SPS30_SERIAL_RESET 0xd3
-+#define SPS30_SERIAL_CLEAN_FAN 0x56
-+#define SPS30_SERIAL_PERIOD 0x80
-+#define SPS30_SERIAL_DEV_INFO 0xd0
-+#define SPS30_SERIAL_READ_VERSION 0xd1
-+
-+struct sps30_serial_priv {
-+	struct completion new_frame;
-+	char buf[SPS30_SERIAL_MAX_BUF_SIZE];
-+	int num;
-+	unsigned int chksum;
-+	bool escaped;
-+	bool done;
-+};
-+
-+static int sps30_serial_xfer(struct sps30_state *state, const char *buf, int size)
-+{
-+	struct serdev_device *serdev = to_serdev_device(state->dev);
-+	struct sps30_serial_priv *priv = state->priv;
-+	int ret;
-+
-+	priv->num = 0;
-+	priv->chksum = 0;
-+	priv->escaped = false;
-+	priv->done = false;
-+
-+	ret = serdev_device_write(serdev, buf, size, SPS30_SERIAL_TIMEOUT);
-+	if (ret < 0)
-+		return ret;
-+	if (ret != size)
-+		return -EIO;
-+
-+	ret = wait_for_completion_interruptible_timeout(&priv->new_frame, SPS30_SERIAL_TIMEOUT);
-+	if (ret < 0)
-+		return ret;
-+	if (!ret)
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static struct {
-+	char byte;
-+	char byte2;
-+} sps30_serial_bytes[] = {
-+	{ 0x11, 0x31 },
-+	{ 0x13, 0x33 },
-+	{ 0x7e, 0x5e },
-+	{ 0x7d, 0x5d },
-+};
-+
-+static int sps30_serial_put_byte(char *buf, char byte)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(sps30_serial_bytes); i++) {
-+		if (sps30_serial_bytes[i].byte != byte)
-+			continue;
-+
-+		buf[0] = SPS30_SERIAL_ESCAPE_CHAR;
-+		buf[1] = sps30_serial_bytes[i].byte2;
-+
-+		return 2;
-+	}
-+
-+	buf[0] = byte;
-+
-+	return 1;
-+}
-+
-+static char sps30_serial_get_byte(bool escaped, char byte2)
-+{
-+	int i;
-+
-+	if (!escaped)
-+		return byte2;
-+
-+	for (i = 0; i < ARRAY_SIZE(sps30_serial_bytes); i++) {
-+		if (sps30_serial_bytes[i].byte2 != byte2)
-+			continue;
-+
-+		return sps30_serial_bytes[i].byte;
-+	}
-+
-+	return 0;
-+}
-+
-+static int sps30_serial_prep_frame(char *buf, char cmd, const char *arg, int arg_size)
-+{
-+	unsigned int chksum;
-+	unsigned char byte;
-+	int i, num = 0;
-+
-+	buf[num++] = SPS30_SERIAL_SOF_EOF;
-+	buf[num++] = 0;
-+
-+	byte = cmd;
-+	num += sps30_serial_put_byte(buf + num, byte);
-+	chksum = byte;
-+
-+	byte = (unsigned char)arg_size;
-+	num += sps30_serial_put_byte(buf + num, byte);
-+	chksum += byte;
-+
-+	for (i = 0; i < arg_size; i++) {
-+		byte = arg[i];
-+		num += sps30_serial_put_byte(buf + num, byte);
-+		chksum += byte;
-+	}
-+
-+	byte = (unsigned char)~chksum;
-+	num += sps30_serial_put_byte(buf + num, byte);
-+
-+	buf[num++] = SPS30_SERIAL_SOF_EOF;
-+
-+	return num;
-+}
-+
-+static bool sps30_serial_frame_valid(struct sps30_state *state, const char *buf)
-+{
-+	struct sps30_serial_priv *priv = state->priv;
-+
-+	if ((priv->num < SPS30_SERIAL_FRAME_MIN_SIZE) ||
-+	    (priv->num != SPS30_SERIAL_FRAME_MIN_SIZE +
-+	     priv->buf[SPS30_SERIAL_FRAME_MISO_LEN_OFFSET])) {
-+		dev_err(state->dev, "frame has invalid number of bytes\n");
-+		return false;
-+	}
-+
-+	if ((priv->buf[SPS30_SERIAL_FRAME_ADR_OFFSET] != buf[SPS30_SERIAL_FRAME_ADR_OFFSET]) ||
-+	    (priv->buf[SPS30_SERIAL_FRAME_CMD_OFFSET] != buf[SPS30_SERIAL_FRAME_CMD_OFFSET])) {
-+		dev_err(state->dev, "frame has wrong ADR and CMD bytes\n");
-+		return false;
-+	}
-+
-+	if (priv->buf[SPS30_SERIAL_FRAME_MISO_STATE_OFFSET]) {
-+		dev_err(state->dev, "frame with non-zero state received (0x%02x)\n",
-+			priv->buf[SPS30_SERIAL_FRAME_MISO_STATE_OFFSET]);
-+		//return false;
-+	}
-+
-+	if (priv->buf[priv->num - 2] != priv->chksum) {
-+		dev_err(state->dev, "frame integrity check failed\n");
-+		return false;
-+	}
-+
-+	return true;
-+}
-+
-+static int sps30_serial_command(struct sps30_state *state, char cmd, void *arg, int arg_size,
-+				void *rsp, int rsp_size)
-+{
-+	struct sps30_serial_priv *priv = state->priv;
-+	char buf[SPS30_SERIAL_MAX_BUF_SIZE];
-+	int ret, size;
-+
-+	size = sps30_serial_prep_frame(buf, cmd, arg, arg_size);
-+	ret = sps30_serial_xfer(state, buf, size);
-+	if (ret)
-+		return ret;
-+
-+	if (!sps30_serial_frame_valid(state, buf))
-+		return -EIO;
-+
-+	if (rsp) {
-+		rsp_size = clamp((int)priv->buf[SPS30_SERIAL_FRAME_MISO_LEN_OFFSET], 0, rsp_size);
-+		memcpy(rsp, &priv->buf[SPS30_SERIAL_FRAME_MISO_DATA_OFFSET], rsp_size);
-+	}
-+
-+	return rsp_size;
-+}
-+
-+static int sps30_serial_receive_buf(struct serdev_device *serdev, const unsigned char *buf,
-+				    size_t size)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(&serdev->dev);
-+	struct sps30_serial_priv *priv;
-+	struct sps30_state *state;
-+	unsigned char byte;
-+	int i;
-+
-+	if (!indio_dev)
-+		return 0;
-+
-+	state = iio_priv(indio_dev);
-+	priv = state->priv;
-+
-+	/* just in case device put some unexpected data on the bus */
-+	if (priv->done)
-+		return size;
-+
-+	/* wait for the start of frame */
-+	if (!priv->num && size && buf[0] != SPS30_SERIAL_SOF_EOF)
-+		return 1;
-+
-+	if (priv->num + size >= ARRAY_SIZE(priv->buf))
-+		size = ARRAY_SIZE(priv->buf) - priv->num;
-+
-+	for (i = 0; i < size; i++) {
-+		byte = buf[i];
-+		/* remove stuffed bytes on-the-fly */
-+		if (byte == SPS30_SERIAL_ESCAPE_CHAR) {
-+			priv->escaped = true;
-+			continue;
-+		}
-+
-+		byte = sps30_serial_get_byte(priv->escaped, byte);
-+		if (priv->escaped && !byte)
-+			dev_warn(state->dev, "unrecognized escaped char (0x%02x)\n", byte);
-+		priv->chksum += byte;
-+		/* incrementing here would complete rx just after reading SOF */
-+		priv->buf[priv->num] = byte;
-+
-+		if (priv->num++ && !priv->escaped && byte == SPS30_SERIAL_SOF_EOF) {
-+			/* SOF, EOF and checksum itself are not checksummed */
-+			priv->chksum -= 2 * SPS30_SERIAL_SOF_EOF + priv->buf[priv->num - 2];
-+			priv->chksum = (unsigned char)~priv->chksum;
-+			priv->done = true;
-+			complete(&priv->new_frame);
-+			i++;
-+			break;
-+		}
-+
-+		priv->escaped = false;
-+	}
-+
-+	return i;
-+}
-+
-+static const struct serdev_device_ops sps30_serial_device_ops = {
-+	.receive_buf = sps30_serial_receive_buf,
-+	.write_wakeup = serdev_device_write_wakeup,
-+};
-+
-+static int sps30_serial_start_meas(struct sps30_state *state)
-+{
-+	/* request BE IEEE754 formatted data */
-+	char buf[] = { 0x01, 0x03 };
-+
-+	return sps30_serial_command(state, SPS30_SERIAL_START_MEAS, buf, sizeof(buf), NULL, 0);
-+}
-+
-+static int sps30_serial_stop_meas(struct sps30_state *state)
-+{
-+	return sps30_serial_command(state, SPS30_SERIAL_STOP_MEAS, NULL, 0, NULL, 0);
-+}
-+
-+static int sps30_serial_reset(struct sps30_state *state)
-+{
-+	int ret;
-+
-+	ret = sps30_serial_command(state, SPS30_SERIAL_RESET, NULL, 0, NULL, 0);
-+	msleep(500);
-+
-+	return ret;
-+}
-+
-+static int sps30_serial_read_meas(struct sps30_state *state, int *meas, int num)
-+{
-+	int ret, tries = 3;
-+
-+	do {
-+		ret = sps30_serial_command(state, SPS30_SERIAL_READ_MEAS, NULL, 0,
-+					   meas, num * sizeof(num));
-+		if (ret < 0)
-+			return ret;
-+		/* if measurements aren't ready sensor returns empty frame */
-+		if (ret == num * sizeof(int))
-+			break;
-+
-+		if (msleep_interruptible(500))
-+			return -EINTR;
-+	} while (--tries);
-+
-+	return !tries ? -ETIMEDOUT : 0;
-+}
-+
-+static int sps30_serial_clean_fan(struct sps30_state *state)
-+{
-+	return sps30_serial_command(state, SPS30_SERIAL_CLEAN_FAN, NULL, 0, NULL, 0);
-+}
-+
-+static int sps30_serial_read_cleaning_period(struct sps30_state *state, int *period)
-+{
-+	char buf[] = { 0x00 };
-+	int ret;
-+
-+	ret = sps30_serial_command(state, SPS30_SERIAL_PERIOD, buf, sizeof(buf),
-+				   period, sizeof(*period));
-+	if (ret < 0)
-+		return ret;
-+	if (ret != sizeof(*period))
-+		return -EIO;
-+
-+	return 0;
-+}
-+
-+static int sps30_serial_write_cleaning_period(struct sps30_state *state, int period)
-+{
-+	char buf[5] = { 0x00 };
-+
-+	memcpy(buf + 1, &period, sizeof(period));
-+
-+	return sps30_serial_command(state, SPS30_SERIAL_PERIOD, buf, sizeof(buf), NULL, 0);
-+}
-+
-+static int sps30_serial_show_info(struct sps30_state *state)
-+{
-+	/* extra nul byte just in case serial number isn't a valid string */
-+	char buf[32 + 1] = { 0x00 };
-+	struct device *dev = state->dev;
-+	int ret;
-+
-+	/* tell device to return serial number */
-+	buf[0] = 0x03;
-+	ret = sps30_serial_command(state, SPS30_SERIAL_DEV_INFO, buf, 1, buf, sizeof(buf) - 1);
-+	if (ret < 0)
-+		return ret;
-+
-+	dev_info(dev, "serial number: %s\n", buf);
-+
-+	ret = sps30_serial_command(state, SPS30_SERIAL_READ_VERSION, NULL, 0, buf, sizeof(buf) - 1);
-+	if (ret < 0)
-+		return ret;
-+	if (ret < 2)
-+		return -EIO;
-+
-+	dev_info(dev, "fw version: %u.%u\n", buf[0], buf[1]);
-+
-+	return 0;
-+}
-+
-+static const struct sps30_ops sps30_serial_ops = {
-+	.start_meas = sps30_serial_start_meas,
-+	.stop_meas = sps30_serial_stop_meas,
-+	.read_meas = sps30_serial_read_meas,
-+	.reset = sps30_serial_reset,
-+	.clean_fan = sps30_serial_clean_fan,
-+	.read_cleaning_period = sps30_serial_read_cleaning_period,
-+	.write_cleaning_period = sps30_serial_write_cleaning_period,
-+	.show_info = sps30_serial_show_info,
-+};
-+
-+static int sps30_serial_probe(struct serdev_device *serdev)
-+{
-+	struct device *dev = &serdev->dev;
-+	struct sps30_serial_priv *priv;
-+	int ret;
-+
-+	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	init_completion(&priv->new_frame);
-+	serdev_device_set_client_ops(serdev, &sps30_serial_device_ops);
-+
-+	ret = devm_serdev_device_open(dev, serdev);
-+	if (ret)
-+		return ret;
-+
-+	serdev_device_set_baudrate(serdev, 115200);
-+	serdev_device_set_flow_control(serdev, false);
-+
-+	ret = serdev_device_set_parity(serdev, SERDEV_PARITY_NONE);
-+	if (ret)
-+		return ret;
-+
-+	return sps30_probe(dev, KBUILD_MODNAME, priv, &sps30_serial_ops);
-+}
-+
-+static const struct of_device_id sps30_serial_of_match[] = {
-+	{ .compatible = "sensirion,sps30" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, sps30_serial_of_match);
-+
-+static struct serdev_device_driver sps30_serial_driver = {
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = sps30_serial_of_match,
-+	},
-+	.probe = sps30_serial_probe,
-+};
-+module_serdev_device_driver(sps30_serial_driver);
-+
-+MODULE_AUTHOR("Tomasz Duszynski <tomasz.duszynski@octakon.com>");
-+MODULE_DESCRIPTION("Sensirion SPS30 particulate matter sensor serial driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.31.1
+> [...]
+> diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
+> index 10bb431bc3ce..82af5f62fbc6 100644
+> --- a/drivers/iio/chemical/Kconfig
+> +++ b/drivers/iio/chemical/Kconfig
+> @@ -133,8 +133,6 @@ config SENSIRION_SGP30
+>   
+>   config SPS30
+>   	tristate "SPS30 particulate matter sensor"
+> -	depends on I2C
+> -	select CRC8
+>   	select IIO_BUFFER
+>   	select IIO_TRIGGERED_BUFFER
+>   	help
+> @@ -144,6 +142,17 @@ config SPS30
+>   	  To compile this driver as a module, choose M here: the module will
+>   	  be called sps30.
+>   
+> +config SPS30_I2C
+> +	tristate "SPS30 particulate matter sensor I2C driver"
+> +	depends on SPS30 && I2C
+> +	select CRC8
+Since the base module is not very useful without any of the drivers 
+enabled, what you can do here is, make the base module 
+non-user-selectable, e.g. remove the description text after the tristate 
+and then do a `select SPS30` both here from he I2C module and the serial 
+module.
+> +	help
+> +	  Say Y here to build support for the Sensirion SPS30 I2C interface
+> +	  driver.
+> +
+> +	  To compile this driver as a module, choose M here: the module will
+> +	  be called sps30_i2c.
+> +
+>   config VZ89X
+>   	tristate "SGX Sensortech MiCS VZ89X VOC sensor"
+>   	depends on I2C
+> diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
+> index fef63dd5bf92..41c264a229c0 100644
+> --- a/drivers/iio/chemical/Makefile
+> +++ b/drivers/iio/chemical/Makefile
+> @@ -17,4 +17,5 @@ obj-$(CONFIG_SCD30_I2C) += scd30_i2c.o
+>   obj-$(CONFIG_SCD30_SERIAL) += scd30_serial.o
+>   obj-$(CONFIG_SENSIRION_SGP30)	+= sgp30.o
+>   obj-$(CONFIG_SPS30) += sps30.o
+> +obj-$(CONFIG_SPS30_I2C) += sps30_i2c.o
+>   obj-$(CONFIG_VZ89X)		+= vz89x.o
+> diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+> index 7486591588c3..ec9db99e324c 100644
+> --- a/drivers/iio/chemical/sps30.c
+> +++ b/drivers/iio/chemical/sps30.c
+> [...]
+> +EXPORT_SYMBOL(sps30_probe);
+EXPORT_SYMBOL_GPL()
+>   
+>   MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
+>   MODULE_DESCRIPTION("Sensirion SPS30 particulate matter sensor driver");
+> diff --git a/drivers/iio/chemical/sps30.h b/drivers/iio/chemical/sps30.h
+> new file mode 100644
+> index 000000000000..d2b7140fdeb4
+> --- /dev/null
+> +++ b/drivers/iio/chemical/sps30.h
+> @@ -0,0 +1,73 @@
+> +/* SPDX-License-Identifier: GPL-2.0 */
+> +#ifndef _SPS30_H
+> +#define _SPS30_H
+> +
+> +struct sps30_state;
+> +struct sps30_ops {
+> +	int (*start_meas)(struct sps30_state *state);
+> +	int (*stop_meas)(struct sps30_state *state);
+> +	int (*read_meas)(struct sps30_state *state, int *meas, int num);
+> +	int (*reset)(struct sps30_state *state);
+> +	int (*clean_fan)(struct sps30_state *state);
+> +	int (*read_cleaning_period)(struct sps30_state *state, int *period);
+> +	int (*write_cleaning_period)(struct sps30_state *state, int period);
 
+The interface for {read,write}_cleaning_period() should use __be32, 
+since that is what is being passed around.
+
+I was a bit confused when reviewing the uart driver why we can just 
+memcpy an int into the output buffer without endianess problems.
+
+> +	int (*show_info)(struct sps30_state *state);
+> +};
+> +
+[...]
