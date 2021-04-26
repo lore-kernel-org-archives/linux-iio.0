@@ -7,37 +7,37 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FFA2C433ED
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:50:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 809F7C433B4
+	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:50:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1A72F600D1
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:50:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4EBCC61185
+	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:50:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237584AbhDZRvW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 26 Apr 2021 13:51:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48428 "EHLO mail.kernel.org"
+        id S234754AbhDZRv1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 26 Apr 2021 13:51:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48512 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237515AbhDZRvW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 26 Apr 2021 13:51:22 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 64252611C1;
-        Mon, 26 Apr 2021 17:50:39 +0000 (UTC)
+        id S237645AbhDZRvZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 26 Apr 2021 13:51:25 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id A99F661007;
+        Mon, 26 Apr 2021 17:50:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619459440;
-        bh=3vo7ZXahI7wAgRzB8k4gdspnJcSE5+quAxe5UH+JBvY=;
+        s=k20201202; t=1619459443;
+        bh=S6IA0jORHg5jGpkyFVGHI27KVXAzfeS7TuXtyYHPxQc=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wv5uCeUhN0g1P6fzpS7x34AjISmxweeHgH4NAu7kCu/0bQjM0lp1E95vrocPHLAvk
-         zaLMF62BEGzW8/iV0N9MGid0FjoFVe5ynygQRTAnqLN6mNVNKHYnmTlijqTpqTok+u
-         fYIe0z90u3OWQTrHMr4j/WmwjYKMjLPOs3Hpqvs9cLN4I1VMQTRKqrPqL6OFBhqKSk
-         qIRvzmMzzVTrglbUz4j2kc4pzV4sVu5MU6A04WXvj8t+BUhFkUE9Y0eviTZdHhJ9ud
-         nN5zHZBl1kLa2iwh6l+CKlVVALgSnASE3oh2cBHkufEb+grFDs9xXAbRk6BxbzKx5m
-         /cvN/OzVrNYzQ==
+        b=KvHUQ6ffse7PCrcRdqJ0/RthgxY1RavXwkS5UeQFCdLFAN6hB8a80E2cv4JcvrK6f
+         dUT7Oy8FJnCHeoFAk5daCbRYnDSTkgFVQR79Enpywl+mL3fc9pvhM6o4DkyScSuYyG
+         08Vl39jZsT4ixeCWRWUpn4PXOisjlx2cjE8xeKHO+Aq5gwOtDLJrVJ77R7HqpKLJ0O
+         bBWou8Daw5MLNtw5LqBscSMwRKjckvSnva730hxwejxPBMEqW4IuMaL1yrawX8gbTB
+         FopV7LUXHi3XMo6n1yoG40p+7xhroaqPHWRoiSFOvl920l3SJH9Odu0gV3ioJ3Ebuz
+         pLk5OiHrGRhZQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5/9] iio: core: move @scan_index_timestamp to struct iio_dev_opaque
-Date:   Mon, 26 Apr 2021 18:49:07 +0100
-Message-Id: <20210426174911.397061-6-jic23@kernel.org>
+Subject: [PATCH 7/9] iio: core: move @chrdev from struct iio_dev to struct iio_dev_opaque
+Date:   Mon, 26 Apr 2021 18:49:09 +0100
+Message-Id: <20210426174911.397061-8-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210426174911.397061-1-jic23@kernel.org>
 References: <20210426174911.397061-1-jic23@kernel.org>
@@ -49,91 +49,117 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-No reason for this cached value to be exposed to drivers so move it
-to the opaque structure.
+No reason for this to be exposed to the drivers, so lets move it to the
+opaque structure.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/industrialio-buffer.c | 7 +++++--
- include/linux/iio/iio-opaque.h    | 4 ++++
- include/linux/iio/iio.h           | 2 --
- 3 files changed, 9 insertions(+), 4 deletions(-)
+ drivers/iio/industrialio-core.c | 20 +++++++++++---------
+ include/linux/iio/iio-opaque.h  |  2 ++
+ include/linux/iio/iio.h         |  2 --
+ 3 files changed, 13 insertions(+), 11 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 9a8e16c7e9af..9ecb3c58d94c 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -601,8 +601,10 @@ static unsigned int iio_storage_bytes_for_si(struct iio_dev *indio_dev,
- 
- static unsigned int iio_storage_bytes_for_timestamp(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index f3b38d69b7e1..6fbe29f0b1de 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1715,8 +1715,9 @@ EXPORT_SYMBOL_GPL(devm_iio_device_alloc);
+  **/
+ static int iio_chrdev_open(struct inode *inode, struct file *filp)
  {
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+
- 	return iio_storage_bytes_for_si(indio_dev,
--					indio_dev->scan_index_timestamp);
-+					iio_dev_opaque->scan_index_timestamp);
- }
+-	struct iio_dev *indio_dev = container_of(inode->i_cdev,
+-						struct iio_dev, chrdev);
++	struct iio_dev_opaque *iio_dev_opaque =
++		container_of(inode->i_cdev, struct iio_dev_opaque, chrdev);
++	struct iio_dev *indio_dev = &iio_dev_opaque->indio_dev;
+ 	struct iio_dev_buffer_pair *ib;
  
- static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
-@@ -1469,6 +1471,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 					     struct iio_dev *indio_dev,
- 					     int index)
+ 	if (test_and_set_bit(IIO_BUSY_BIT_POS, &indio_dev->flags))
+@@ -1749,8 +1750,9 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
+ static int iio_chrdev_release(struct inode *inode, struct file *filp)
  {
-+	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- 	struct iio_dev_attr *p;
- 	struct attribute **attr;
- 	int ret, i, attrn, scan_el_attrcount, buffer_attrcount;
-@@ -1495,7 +1498,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
- 				goto error_cleanup_dynamic;
- 			scan_el_attrcount += ret;
- 			if (channels[i].type == IIO_TIMESTAMP)
--				indio_dev->scan_index_timestamp =
-+				iio_dev_opaque->scan_index_timestamp =
- 					channels[i].scan_index;
- 		}
- 		if (indio_dev->masklength && buffer->scan_mask == NULL) {
+ 	struct iio_dev_buffer_pair *ib = filp->private_data;
+-	struct iio_dev *indio_dev = container_of(inode->i_cdev,
+-						struct iio_dev, chrdev);
++	struct iio_dev_opaque *iio_dev_opaque =
++		container_of(inode->i_cdev, struct iio_dev_opaque, chrdev);
++	struct iio_dev *indio_dev = &iio_dev_opaque->indio_dev;
+ 	kfree(ib);
+ 	clear_bit(IIO_BUSY_BIT_POS, &indio_dev->flags);
+ 	iio_device_put(indio_dev);
+@@ -1901,19 +1903,19 @@ int __iio_device_register(struct iio_dev *indio_dev, struct module *this_mod)
+ 		indio_dev->setup_ops = &noop_ring_setup_ops;
+ 
+ 	if (iio_dev_opaque->attached_buffers_cnt)
+-		cdev_init(&indio_dev->chrdev, &iio_buffer_fileops);
++		cdev_init(&iio_dev_opaque->chrdev, &iio_buffer_fileops);
+ 	else if (iio_dev_opaque->event_interface)
+-		cdev_init(&indio_dev->chrdev, &iio_event_fileops);
++		cdev_init(&iio_dev_opaque->chrdev, &iio_event_fileops);
+ 
+ 	if (iio_dev_opaque->attached_buffers_cnt || iio_dev_opaque->event_interface) {
+ 		indio_dev->dev.devt = MKDEV(MAJOR(iio_devt), iio_dev_opaque->id);
+-		indio_dev->chrdev.owner = this_mod;
++		iio_dev_opaque->chrdev.owner = this_mod;
+ 	}
+ 
+ 	/* assign device groups now; they should be all registered now */
+ 	indio_dev->dev.groups = iio_dev_opaque->groups;
+ 
+-	ret = cdev_device_add(&indio_dev->chrdev, &indio_dev->dev);
++	ret = cdev_device_add(&iio_dev_opaque->chrdev, &indio_dev->dev);
+ 	if (ret < 0)
+ 		goto error_unreg_eventset;
+ 
+@@ -1940,7 +1942,7 @@ void iio_device_unregister(struct iio_dev *indio_dev)
+ 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+ 	struct iio_ioctl_handler *h, *t;
+ 
+-	cdev_device_del(&indio_dev->chrdev, &indio_dev->dev);
++	cdev_device_del(&iio_dev_opaque->chrdev, &indio_dev->dev);
+ 
+ 	mutex_lock(&iio_dev_opaque->info_exist_lock);
+ 
 diff --git a/include/linux/iio/iio-opaque.h b/include/linux/iio/iio-opaque.h
-index 10aa97239117..02038fb2d291 100644
+index 538b4b5ef1a9..2f8ef5d15a66 100644
 --- a/include/linux/iio/iio-opaque.h
 +++ b/include/linux/iio/iio-opaque.h
-@@ -22,6 +22,7 @@
-  * @groupcounter:		index of next attribute group
+@@ -24,6 +24,7 @@
   * @legacy_scan_el_group:	attribute group for legacy scan elements attribute group
   * @legacy_buffer_group:	attribute group for legacy buffer attributes group
-+ * @scan_index_timestamp:	cache of the index to the timestamp
+  * @scan_index_timestamp:	cache of the index to the timestamp
++ * @chrdev:			associated character device
   * @debugfs_dentry:		device specific debugfs dentry
   * @cached_reg_addr:		cached register address for debugfs reads
   * @read_buf:			read buffer to be used for the initial reg read
-@@ -44,6 +45,9 @@ struct iio_dev_opaque {
- 	int				groupcounter;
- 	struct attribute_group		legacy_scan_el_group;
+@@ -49,6 +50,7 @@ struct iio_dev_opaque {
  	struct attribute_group		legacy_buffer_group;
-+
-+	unsigned int			scan_index_timestamp;
-+
+ 
+ 	unsigned int			scan_index_timestamp;
++	struct cdev			chrdev;
+ 
  #if defined(CONFIG_DEBUG_FS)
  	struct dentry			*debugfs_dentry;
- 	unsigned			cached_reg_addr;
 diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 672f141f74c5..cbc9e9ece0a6 100644
+index a12bbd8b1e74..586e2dc4fbf3 100644
 --- a/include/linux/iio/iio.h
 +++ b/include/linux/iio/iio.h
-@@ -501,7 +501,6 @@ struct iio_buffer_setup_ops {
-  *			channels
-  * @active_scan_mask:	[INTERN] union of all scan masks requested by buffers
-  * @scan_timestamp:	[INTERN] set if any buffers have requested timestamp
-- * @scan_index_timestamp:[INTERN] cache of the index to the timestamp
-  * @trig:		[INTERN] current device trigger (buffer modes)
-  * @pollfunc:		[DRIVER] function run on trigger being received
-  * @pollfunc_event:	[DRIVER] function run on events trigger being received
-@@ -532,7 +531,6 @@ struct iio_dev {
- 	unsigned			masklength;
- 	const unsigned long		*active_scan_mask;
- 	bool				scan_timestamp;
--	unsigned			scan_index_timestamp;
- 	struct iio_trigger		*trig;
- 	struct iio_poll_func		*pollfunc;
- 	struct iio_poll_func		*pollfunc_event;
+@@ -512,7 +512,6 @@ struct iio_buffer_setup_ops {
+  * @clock_id:		[INTERN] timestamping clock posix identifier
+  * @setup_ops:		[DRIVER] callbacks to call before and after buffer
+  *			enable/disable
+- * @chrdev:		[INTERN] associated character device
+  * @flags:		[INTERN] file ops related flags including busy flag.
+  * @priv:		[DRIVER] reference to driver's private information
+  *			**MUST** be accessed **ONLY** via iio_priv() helper
+@@ -542,7 +541,6 @@ struct iio_dev {
+ 	const struct iio_info		*info;
+ 	clockid_t			clock_id;
+ 	const struct iio_buffer_setup_ops	*setup_ops;
+-	struct cdev			chrdev;
+ 
+ 	unsigned long			flags;
+ 	void				*priv;
 -- 
 2.31.1
 
