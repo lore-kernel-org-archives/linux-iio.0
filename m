@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ADB74C43461
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:04:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C34DDC433B4
+	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:04:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 79237613BB
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:04:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C25861026
+	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:04:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234628AbhDZRFE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 26 Apr 2021 13:05:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50288 "EHLO mail.kernel.org"
+        id S235193AbhDZRFH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 26 Apr 2021 13:05:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50516 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235187AbhDZRFD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 26 Apr 2021 13:05:03 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 091B161026;
-        Mon, 26 Apr 2021 17:04:19 +0000 (UTC)
+        id S235135AbhDZRFG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 26 Apr 2021 13:05:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id C9CE3613AA;
+        Mon, 26 Apr 2021 17:04:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619456661;
-        bh=V5sTDjK/t7jLtwqrpye9zTN4n7r5WYjm9L+qXcoRY0k=;
+        s=k20201202; t=1619456665;
+        bh=um7xTbcfIkZ3pU67vL/jR1erRTfwDGHwZ8NDAi54i18=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YAReStBu/jUeb/y8Bh5/QLK2tOy/Acy3hAZBO5nL42mVjNhgzAhjIjLQkjKNCQshM
-         dLsz6c4mYaSkyGlIiUX41fSdbq2mwdjNKByHM0sja/dvbfj8flEImGlwprESBfytM1
-         5OPNuBrbZW7Qe1qTdcbpTZ07KEb690tkOoVdrZbcQR5ITBYONQBBMdhFe0L1L5AUHo
-         aHyUW/cy45o6JjZIxCA5WwM1XOaQygbbBwE4iZhlKhiC4VAb0r706JAzDE9ivRNLDE
-         7g8fMomQh8p05q1HEYZIl/rrRTDyLJ0xX9ReOf0mvSvymGt/YfIKqA4Q1V72nxVMS0
-         w5qmAi243gusw==
+        b=I2GFUxzGhZV4V8FnHjBR+zB8bfiE4ZNFUPK03L6Cca3jS5ISscQpegI61BS0aj9SL
+         ohmi2U4Qus6tlbI57BIxAulbQplPoFY0VEAI0Pq68oHEGnCH5vRJxOP7VkQ2kTmCBg
+         B+WT6U0lcf/KUk6aq2ARvz/VpQzhv0KSSRSZshIRy07qxpITBA2nfn4ROT565sZNDk
+         7fGifR5ZrN2hapbjlBzUyMeUX1snInhBhHm0rUuTJlTVNC/hXrxPsdIy3dxnQD4dSv
+         nXi/bg3nqfoBhYRX/grVq6Ww8nlT79VznW+2XKXpWr8HJdAICo8KWTwLTyM592GkWo
+         hpsyK2lnfxD1A==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Eugene Zaikonnikov <ez@norphonic.com>
-Subject: [PATCH 6/8] iio: humidity: hdc2010: Drop duplicate setting of iio_dev.dev.parent
-Date:   Mon, 26 Apr 2021 18:02:49 +0100
-Message-Id: <20210426170251.351957-7-jic23@kernel.org>
+        Jyoti Bhayana <jbhayana@google.com>
+Subject: [PATCH 8/8] iio: common: scmi_sensors: Drop duplicate setting of iio_dev.dev.parent
+Date:   Mon, 26 Apr 2021 18:02:51 +0100
+Message-Id: <20210426170251.351957-9-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210426170251.351957-1-jic23@kernel.org>
 References: <20210426170251.351957-1-jic23@kernel.org>
@@ -50,26 +50,26 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Already set to same value in devm_iio_device_alloc()
+This is already set to the same value in devm_iio_device_alloc()
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Eugene Zaikonnikov <ez@norphonic.com>
+Cc: Jyoti Bhayana <jbhayana@google.com>
 ---
- drivers/iio/humidity/hdc2010.c | 1 -
+ drivers/iio/common/scmi_sensors/scmi_iio.c | 1 -
  1 file changed, 1 deletion(-)
 
-diff --git a/drivers/iio/humidity/hdc2010.c b/drivers/iio/humidity/hdc2010.c
-index 83f5b9f60780..1381df46187c 100644
---- a/drivers/iio/humidity/hdc2010.c
-+++ b/drivers/iio/humidity/hdc2010.c
-@@ -272,7 +272,6 @@ static int hdc2010_probe(struct i2c_client *client,
- 	data->client = client;
- 	mutex_init(&data->lock);
+diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c b/drivers/iio/common/scmi_sensors/scmi_iio.c
+index 63e4cec9de5e..16f0526ff01a 100644
+--- a/drivers/iio/common/scmi_sensors/scmi_iio.c
++++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
+@@ -544,7 +544,6 @@ static struct iio_dev *scmi_alloc_iiodev(struct device *dev,
+ 		return ERR_PTR(-ENOMEM);
  
--	indio_dev->dev.parent = &client->dev;
- 	/*
- 	 * As DEVICE ID register does not differentiate between
- 	 * HDC2010 and HDC2080, we have the name hardcoded
+ 	iiodev->modes = INDIO_DIRECT_MODE;
+-	iiodev->dev.parent = dev;
+ 	sensor = iio_priv(iiodev);
+ 	sensor->handle = handle;
+ 	sensor->sensor_info = sensor_info;
 -- 
 2.31.1
 
