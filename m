@@ -2,133 +2,122 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFFA8C43460
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:50:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CF31C433ED
+	for <linux-iio@archiver.kernel.org>; Tue, 27 Apr 2021 02:20:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A84C600D1
-	for <linux-iio@archiver.kernel.org>; Mon, 26 Apr 2021 17:50:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EA8F1613AB
+	for <linux-iio@archiver.kernel.org>; Tue, 27 Apr 2021 02:20:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237515AbhDZRv1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 26 Apr 2021 13:51:27 -0400
-Received: from mail.kernel.org ([198.145.29.99]:48526 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237557AbhDZRv1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 26 Apr 2021 13:51:27 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6A4F5613BA;
-        Mon, 26 Apr 2021 17:50:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619459445;
-        bh=Ewu2A1EUpUcpA6v/3YvAk39V1hiR+pBnERol3CgoKrU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tuAHp3j7+Z5XFITNYVkCCaqF4FEFSb3/20TPOsgQsK6FJ05RznNFZzpmq0kTbtbse
-         2/0CqUYmsEM1zhF38PkE6RmF9Xs2Kma28zseO79PooTxDB6g6qeica5dnN8QgynoDM
-         NwKBcxpsvtidVkZ9BYS9iuRHHWvK+vlpXS4tuSQdYjd3yzWyZx0GZfeamR5XX8oI5E
-         rTqz9GGy0qEOsfJwa3TpkMmUAkpxZC3te7cdIGewQdlCjnVtXsYS6E9lnhgv8a7aRK
-         73F6h7mQJysqvjTtOgD3thChTDDQdMQGoO/EzC4lBU/9LGkG6WJHAm85Z4UjHOZ6Z6
-         4in3RTIBEDGyQ==
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 8/9] iio: core: move @flags from struct iio_dev to struct iio_dev_opaque
-Date:   Mon, 26 Apr 2021 18:49:10 +0100
-Message-Id: <20210426174911.397061-9-jic23@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210426174911.397061-1-jic23@kernel.org>
-References: <20210426174911.397061-1-jic23@kernel.org>
+        id S232680AbhD0CVH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 26 Apr 2021 22:21:07 -0400
+Received: from relay5-d.mail.gandi.net ([217.70.183.197]:49497 "EHLO
+        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232159AbhD0CVG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Apr 2021 22:21:06 -0400
+X-Originating-IP: 68.203.5.165
+Received: from tacos.lan (cpe-68-203-5-165.austin.res.rr.com [68.203.5.165])
+        (Authenticated sender: frank@zago.net)
+        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id 165E71C0004;
+        Tue, 27 Apr 2021 02:20:20 +0000 (UTC)
+From:   Frank Zago <frank@zago.net>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        frank zago <frank@zago.net>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] iio: core: fix list breakage in iio_device_unregister()
+Date:   Mon, 26 Apr 2021 21:20:16 -0500
+Message-Id: <20210427022017.19314-1-frank@zago.net>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+From: frank zago <frank@zago.net>
 
-No reason any driver should ever need access to this field, so hide it.
+The ioctl handlers are unlinked and freed in
+iio_buffers_free_sysfs_and_mask(). Do not break the list prematurely.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+This fixes the following GPF when a client module is removed:
+
+[  157.007865] general protection fault, probably for non-canonical address 0xdead000000000100: 0000 [#1] SMP NOPTI
+[  157.007876] CPU: 6 PID: 2353 Comm: rmmod Not tainted 5.12.0+ #29
+[  157.007882] ...
+[  157.007886] RIP: 0010:iio_device_ioctl_handler_unregister+0xd/0x30 [industrialio]
+[  157.007904] Code: 00 48 89 77 08 48 89 3e 48 89 e5 48 89 46 08 48 89 30 5d c3 66 0f 1f 84 00 00 00 00 00 0f 1f 44 00 00 48 8b 47 08 48 8b 17 55 <48> 89 42 08 48 89 10 48 89 e5 48 b8 00 01
+ 00 00 00 00 ad de 5d 48
+[  157.007910] RSP: 0018:ffffa9b840a57d70 EFLAGS: 00010202
+[  157.007916] RAX: dead000000000122 RBX: ffff95484e9a8000 RCX: 0000000000000000
+[  157.007920] RDX: dead000000000100 RSI: 0000000000000246 RDI: ffff9548489a2360
+[  157.007923] RBP: ffffa9b840a57da0 R08: 0000000000000000 R09: ffffa9b840a57d18
+[  157.007926] R10: 0000000000000000 R11: ffff95489f3e5180 R12: ffff95484e9a8000
+[  157.007929] R13: ffff95484e9a8390 R14: ffff95484e9a8000 R15: 0000000000000000
+[  157.007933] FS:  00007fd35bd18540(0000) GS:ffff954b4eb80000(0000) knlGS:0000000000000000
+[  157.007937] CS:  0010 DS: 0000 ES: 0000 CR0: 0000000080050033
+[  157.007941] CR2: 000055e1e29d4818 CR3: 000000010ae76000 CR4: 00000000003506e0
+[  157.007945] Call Trace:
+[  157.007950]  ? iio_buffers_free_sysfs_and_mask+0x2a/0xb0 [industrialio]
+[  157.007965]  iio_device_unregister+0xba/0xc0 [industrialio]
+[  157.007978]  tcs3472_remove+0x1e/0x90 [tcs3472]
+[  157.007984]  i2c_device_remove+0x2b/0xa0
+[  157.007993]  __device_release_driver+0x181/0x240
+[  157.008000]  driver_detach+0xd5/0x120
+[  157.008005]  bus_remove_driver+0x5c/0xe0
+[  157.008010]  driver_unregister+0x31/0x50
+[  157.008014]  i2c_del_driver+0x46/0x70
+[  157.008020]  tcs3472_driver_exit+0x10/0x5dd [tcs3472]
+[  157.008026]  __do_sys_delete_module.constprop.0+0x183/0x290
+[  157.008033]  ? exit_to_user_mode_prepare+0x37/0x1c0
+[  157.008041]  __x64_sys_delete_module+0x12/0x20
+[  157.008045]  do_syscall_64+0x40/0xb0
+[  157.008052]  entry_SYSCALL_64_after_hwframe+0x44/0xae
+[  157.008058] RIP: 0033:0x7fd35be5aceb
+[  157.008063] Code: 73 01 c3 48 8b 0d 7d 91 0c 00 f7 d8 64 89 01 48 83 c8 ff c3 66 2e 0f 1f 84 00 00 00 00 00 90 f3 0f 1e fa b8 b0 00 00 00 0f 05 <48> 3d 01 f0 ff ff 73 01 c3 48 8b 0d 4d 91 0c 00 f7 d8 64 89 01 48
+[  157.008068] RSP: 002b:00007ffe90b07478 EFLAGS: 00000206 ORIG_RAX: 00000000000000b0
+[  157.008073] RAX: ffffffffffffffda RBX: 000055e1e29ca770 RCX: 00007fd35be5aceb
+[  157.008076] RDX: 000000000000000a RSI: 0000000000000800 RDI: 000055e1e29ca7d8
+[  157.008079] RBP: 00007ffe90b074d8 R08: 0000000000000000 R09: 0000000000000000
+[  157.008081] R10: 00007fd35bed5ac0 R11: 0000000000000206 R12: 00007ffe90b076b0
+[  157.008084] R13: 00007ffe90b08807 R14: 000055e1e29ca2a0 R15: 000055e1e29ca770
+[  157.008089] Modules linked in: tcs3472(-) industrialio_triggered_buffer kfifo_buf industrialio ch341_buses binfmt_misc snd_hda_codec_realtek snd_hda_codec_generic ledtrig_audio snd_hda_codec_hdmi snd_hda_intel snd_intel_dspcfg snd_hda_codec snd_hwdep snd_hda_core snd_pcm wmi_bmof snd_seq snd_timer snd_seq_device input_leds rapl snd ccp k10temp soundcore wmi mac_hid sch_fq_codel parport_pc ppdev lp parport ip_tables x_tables autofs4 dm_crypt hid_generic usbhid hid radeon i2c_algo_bit drm_ttm_helper ttm drm_kms_helper syscopyarea sysfillrect sysimgblt fb_sys_fops cec rc_core drm crct10dif_pclmul crc32_pclmul ghash_clmulni_intel aesni_intel r8169 crypto_simd cryptd ahci i2c_piix4 xhci_pci realtek libahci xhci_pci_renesas gpio_amdpt gpio_generic [last unloaded: tcs3472]
+[  157.008167] ---[ end trace c8eef7a3c5a40ff0 ]---
+
+Signed-off-by: frank zago <frank@zago.net>
 ---
- drivers/iio/industrialio-core.c | 6 +++---
- include/linux/iio/iio-opaque.h  | 2 ++
- include/linux/iio/iio.h         | 2 --
- 3 files changed, 5 insertions(+), 5 deletions(-)
+ drivers/iio/industrialio-core.c | 6 ------
+ 1 file changed, 6 deletions(-)
 
 diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 6fbe29f0b1de..4a4c02fea152 100644
+index d92c58a94fe4..9e59f5da3d28 100644
 --- a/drivers/iio/industrialio-core.c
 +++ b/drivers/iio/industrialio-core.c
-@@ -1720,7 +1720,7 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
- 	struct iio_dev *indio_dev = &iio_dev_opaque->indio_dev;
- 	struct iio_dev_buffer_pair *ib;
+@@ -1926,9 +1926,6 @@ EXPORT_SYMBOL(__iio_device_register);
+  **/
+ void iio_device_unregister(struct iio_dev *indio_dev)
+ {
+-	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
+-	struct iio_ioctl_handler *h, *t;
+-
+ 	cdev_device_del(&indio_dev->chrdev, &indio_dev->dev);
  
--	if (test_and_set_bit(IIO_BUSY_BIT_POS, &indio_dev->flags))
-+	if (test_and_set_bit(IIO_BUSY_BIT_POS, &iio_dev_opaque->flags))
- 		return -EBUSY;
+ 	mutex_lock(&indio_dev->info_exist_lock);
+@@ -1939,9 +1936,6 @@ void iio_device_unregister(struct iio_dev *indio_dev)
  
- 	iio_device_get(indio_dev);
-@@ -1728,7 +1728,7 @@ static int iio_chrdev_open(struct inode *inode, struct file *filp)
- 	ib = kmalloc(sizeof(*ib), GFP_KERNEL);
- 	if (!ib) {
- 		iio_device_put(indio_dev);
--		clear_bit(IIO_BUSY_BIT_POS, &indio_dev->flags);
-+		clear_bit(IIO_BUSY_BIT_POS, &iio_dev_opaque->flags);
- 		return -ENOMEM;
- 	}
+ 	indio_dev->info = NULL;
  
-@@ -1754,7 +1754,7 @@ static int iio_chrdev_release(struct inode *inode, struct file *filp)
- 		container_of(inode->i_cdev, struct iio_dev_opaque, chrdev);
- 	struct iio_dev *indio_dev = &iio_dev_opaque->indio_dev;
- 	kfree(ib);
--	clear_bit(IIO_BUSY_BIT_POS, &indio_dev->flags);
-+	clear_bit(IIO_BUSY_BIT_POS, &iio_dev_opaque->flags);
- 	iio_device_put(indio_dev);
- 
- 	return 0;
-diff --git a/include/linux/iio/iio-opaque.h b/include/linux/iio/iio-opaque.h
-index 2f8ef5d15a66..d7c3036861ac 100644
---- a/include/linux/iio/iio-opaque.h
-+++ b/include/linux/iio/iio-opaque.h
-@@ -25,6 +25,7 @@
-  * @legacy_buffer_group:	attribute group for legacy buffer attributes group
-  * @scan_index_timestamp:	cache of the index to the timestamp
-  * @chrdev:			associated character device
-+ * @flags:			file ops related flags including busy flag.
-  * @debugfs_dentry:		device specific debugfs dentry
-  * @cached_reg_addr:		cached register address for debugfs reads
-  * @read_buf:			read buffer to be used for the initial reg read
-@@ -51,6 +52,7 @@ struct iio_dev_opaque {
- 
- 	unsigned int			scan_index_timestamp;
- 	struct cdev			chrdev;
-+	unsigned long			flags;
- 
- #if defined(CONFIG_DEBUG_FS)
- 	struct dentry			*debugfs_dentry;
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 586e2dc4fbf3..ed0537015eee 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -512,7 +512,6 @@ struct iio_buffer_setup_ops {
-  * @clock_id:		[INTERN] timestamping clock posix identifier
-  * @setup_ops:		[DRIVER] callbacks to call before and after buffer
-  *			enable/disable
-- * @flags:		[INTERN] file ops related flags including busy flag.
-  * @priv:		[DRIVER] reference to driver's private information
-  *			**MUST** be accessed **ONLY** via iio_priv() helper
-  */
-@@ -542,7 +541,6 @@ struct iio_dev {
- 	clockid_t			clock_id;
- 	const struct iio_buffer_setup_ops	*setup_ops;
- 
--	unsigned long			flags;
- 	void				*priv;
- };
+-	list_for_each_entry_safe(h, t, &iio_dev_opaque->ioctl_handlers, entry)
+-		list_del(&h->entry);
+-
+ 	iio_device_wakeup_eventset(indio_dev);
+ 	iio_buffer_wakeup_poll(indio_dev);
  
 -- 
-2.31.1
+2.27.0
 
