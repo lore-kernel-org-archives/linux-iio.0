@@ -2,42 +2,42 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D05CAC433B4
-	for <linux-iio@archiver.kernel.org>; Fri, 30 Apr 2021 15:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06E1FC43462
+	for <linux-iio@archiver.kernel.org>; Fri, 30 Apr 2021 15:16:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 905B161186
-	for <linux-iio@archiver.kernel.org>; Fri, 30 Apr 2021 15:16:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CB3636143D
+	for <linux-iio@archiver.kernel.org>; Fri, 30 Apr 2021 15:16:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230175AbhD3PRA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 30 Apr 2021 11:17:00 -0400
-Received: from mta-02.yadro.com ([89.207.88.252]:55678 "EHLO mta-01.yadro.com"
+        id S230227AbhD3PRE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 30 Apr 2021 11:17:04 -0400
+Received: from mta-02.yadro.com ([89.207.88.252]:55714 "EHLO mta-01.yadro.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229818AbhD3PQy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 30 Apr 2021 11:16:54 -0400
+        id S230104AbhD3PQz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 30 Apr 2021 11:16:55 -0400
 Received: from localhost (unknown [127.0.0.1])
-        by mta-01.yadro.com (Postfix) with ESMTP id C69ED4149F;
-        Fri, 30 Apr 2021 15:16:04 +0000 (UTC)
+        by mta-01.yadro.com (Postfix) with ESMTP id 0113C4148E;
+        Fri, 30 Apr 2021 15:16:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=yadro.com; h=
         content-type:content-type:content-transfer-encoding:mime-version
-        :x-mailer:message-id:date:date:subject:subject:from:from
-        :received:received:received; s=mta-01; t=1619795763; x=
-        1621610164; bh=/rXJip+F0IvVCEdh2B4yy/908Dqa2MKfXinBs0lFWDg=; b=H
-        761oJZhH/NPO+eYlg0LvpUJFwfNDY5xmn6kdEKsRqQStGlPTbe4RvGiYjbPBwA7u
-        QURTMMJNVVmZmYlOPiaKeDSAtUhRnbYXwRigG8Zz05SQxZrwaMKk8K/yVOolHgZz
-        a3RxvR6DYyYTXVRFkaTb7lLse6EINnCiU86u2oZYY4=
+        :references:in-reply-to:x-mailer:message-id:date:date:subject
+        :subject:from:from:received:received:received; s=mta-01; t=
+        1619795764; x=1621610165; bh=xN26c+iDe10Fz8GFaWlgjIyKKxDcZvKGebP
+        GdZ88n4k=; b=ACM+vfmw3TFb4/7JcK9Pg2i9nEAJDOa4Nk4+gcYPQEbnGHFiRyb
+        pupLAhrwtPRCpmdLfY4CgzqHO2Wo/fP/PwgyL4FlGwOWmdHfsCOYrBjniVKgOF5W
+        QqiK1yi1jnVBxTXgYC9r4zUclg49iQBFxMmqQiXdPGjvemQynp0TScbc=
 X-Virus-Scanned: amavisd-new at yadro.com
 Received: from mta-01.yadro.com ([127.0.0.1])
         by localhost (mta-01.yadro.com [127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id PQ2urrZPNQSa; Fri, 30 Apr 2021 18:16:03 +0300 (MSK)
+        with ESMTP id 2GETdw06S2N2; Fri, 30 Apr 2021 18:16:04 +0300 (MSK)
 Received: from T-EXCH-03.corp.yadro.com (t-exch-03.corp.yadro.com [172.17.100.103])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mta-01.yadro.com (Postfix) with ESMTPS id 312294148B;
+        by mta-01.yadro.com (Postfix) with ESMTPS id D7D1841490;
         Fri, 30 Apr 2021 18:16:03 +0300 (MSK)
 Received: from localhost.yadro.com (10.199.0.97) by T-EXCH-03.corp.yadro.com
  (172.17.100.103) with Microsoft SMTP Server (version=TLS1_2,
@@ -52,10 +52,12 @@ To:     Jonathan Cameron <jic23@kernel.org>,
 CC:     Ivan Mikhaylov <i.mikhaylov@yadro.com>,
         <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
         <linux-hwmon@vger.kernel.org>
-Subject: [PATCH 0/4] add periodic mode, threshold options and hwmon
-Date:   Fri, 30 Apr 2021 18:24:15 +0300
-Message-ID: <20210430152419.261757-1-i.mikhaylov@yadro.com>
+Subject: [PATCH 2/4] iio: proximity: vcnl3020: add threshold options
+Date:   Fri, 30 Apr 2021 18:24:17 +0300
+Message-ID: <20210430152419.261757-3-i.mikhaylov@yadro.com>
 X-Mailer: git-send-email 2.26.3
+In-Reply-To: <20210430152419.261757-1-i.mikhaylov@yadro.com>
+References: <20210430152419.261757-1-i.mikhaylov@yadro.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -66,29 +68,132 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add periodic mode enablement, high/low threshold options. Remove mutex
-from vcnl3020_data structure, change mutex_lock/unlock's appropriately on
-iio_device_claim/release_direct_mode.
+Add the low/high threshold options.
 
-Add hwmon driver as intrusion sensor which provides information about
-any triggers within thresholds, works in periodic mode of proximity
-sensor.
+Signed-off-by: Ivan Mikhaylov <i.mikhaylov@yadro.com>
+---
+ drivers/iio/proximity/vcnl3020.c | 94 ++++++++++++++++++++++++++++++++
+ 1 file changed, 94 insertions(+)
 
-Ivan Mikhaylov (4):
-  iio: proximity: vcnl3020: add periodic mode
-  iio: proximity: vcnl3020: add threshold options
-  iio: proximity: vncl3020: remove mutex from vcnl3020_data
-  hwmon: vcnl3020: add hwmon driver for intrusion sensor
-
- drivers/hwmon/Kconfig                  |   7 +
- drivers/hwmon/Makefile                 |   1 +
- drivers/hwmon/vcnl3020-hwmon.c         |  57 +++++
- drivers/iio/proximity/vcnl3020.c       | 335 ++++++++++++++++++++++---
- include/linux/iio/proximity/vcnl3020.h |  26 ++
- 5 files changed, 395 insertions(+), 31 deletions(-)
- create mode 100644 drivers/hwmon/vcnl3020-hwmon.c
- create mode 100644 include/linux/iio/proximity/vcnl3020.h
-
+diff --git a/drivers/iio/proximity/vcnl3020.c b/drivers/iio/proximity/vcnl3020.c
+index 25c6bdba3ede..0dfa6a0b5eec 100644
+--- a/drivers/iio/proximity/vcnl3020.c
++++ b/drivers/iio/proximity/vcnl3020.c
+@@ -254,6 +254,90 @@ static bool vcnl3020_is_thr_enabled(struct vcnl3020_data *data)
+ 	return !!(icr & VCNL_ICR_THRES_EN);
+ }
+ 
++static int vcnl3020_read_event(struct iio_dev *indio_dev,
++			       const struct iio_chan_spec *chan,
++			       enum iio_event_type type,
++			       enum iio_event_direction dir,
++			       enum iio_event_info info,
++			       int *val, int *val2)
++{
++	int rc;
++	struct vcnl3020_data *data = iio_priv(indio_dev);
++	__be16 res;
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		switch (dir) {
++		case IIO_EV_DIR_RISING:
++			rc = regmap_bulk_read(data->regmap, VCNL_PS_HI_THR_HI,
++					      &res, 2);
++			*val = be16_to_cpu(res);
++			if (rc < 0)
++				return rc;
++			return IIO_VAL_INT;
++		case IIO_EV_DIR_FALLING:
++			rc = regmap_bulk_read(data->regmap, VCNL_PS_LO_THR_HI,
++					      &res, 2);
++			*val = be16_to_cpu(res);
++			if (rc < 0)
++				return rc;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	default:
++		return -EINVAL;
++	}
++}
++
++static int vcnl3020_write_event(struct iio_dev *indio_dev,
++				const struct iio_chan_spec *chan,
++				enum iio_event_type type,
++				enum iio_event_direction dir,
++				enum iio_event_info info,
++				int val, int val2)
++{
++	int rc;
++	__be16 buf;
++	struct vcnl3020_data *data = iio_priv(indio_dev);
++
++	rc = iio_device_claim_direct_mode(indio_dev);
++	if (rc)
++		return rc;
++
++	switch (info) {
++	case IIO_EV_INFO_VALUE:
++		switch (dir) {
++		case IIO_EV_DIR_RISING:
++			/* 16 bit word/ low * high */
++			buf = cpu_to_be16(val);
++			rc = regmap_bulk_write(data->regmap, VCNL_PS_HI_THR_HI,
++					       &buf, 2);
++			if (rc < 0)
++				goto end;
++			rc = IIO_VAL_INT;
++			goto end;
++		case IIO_EV_DIR_FALLING:
++			buf = cpu_to_be16(val);
++			rc = regmap_bulk_write(data->regmap, VCNL_PS_LO_THR_HI,
++					       &buf, 2);
++			if (rc < 0)
++				goto end;
++			rc = IIO_VAL_INT;
++			goto end;
++		default:
++			rc = -EINVAL;
++			goto end;
++		}
++	default:
++		rc = -EINVAL;
++		goto end;
++	}
++end:
++	iio_device_release_direct_mode(indio_dev);
++	return rc;
++}
++
+ static int vcnl3020_config_threshold(struct iio_dev *indio_dev, bool state)
+ {
+ 	struct vcnl3020_data *data = iio_priv(indio_dev);
+@@ -334,6 +418,14 @@ static int vcnl3020_read_event_config(struct iio_dev *indio_dev,
+ 
+ static const struct iio_event_spec vcnl3020_event_spec[] = {
+ 	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++	}, {
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++	}, {
+ 		.type = IIO_EV_TYPE_THRESH,
+ 		.dir = IIO_EV_DIR_EITHER,
+ 		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+@@ -423,6 +515,8 @@ static const struct iio_info vcnl3020_info = {
+ 	.read_raw = vcnl3020_read_raw,
+ 	.write_raw = vcnl3020_write_raw,
+ 	.read_avail = vcnl3020_read_avail,
++	.read_event_value = vcnl3020_read_event,
++	.write_event_value = vcnl3020_write_event,
+ 	.read_event_config = vcnl3020_read_event_config,
+ 	.write_event_config = vcnl3020_write_event_config,
+ };
 -- 
 2.26.3
 
