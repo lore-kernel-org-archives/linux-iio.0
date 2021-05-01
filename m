@@ -7,36 +7,38 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13D3FC433B4
-	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:03:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35FC6C433ED
+	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:03:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E767161477
-	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:03:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 18C5561494
+	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231556AbhEARDv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 1 May 2021 13:03:51 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47464 "EHLO mail.kernel.org"
+        id S231517AbhEARDz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 1 May 2021 13:03:55 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47472 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231517AbhEARDu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 May 2021 13:03:50 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CB2F360FEB;
-        Sat,  1 May 2021 17:02:59 +0000 (UTC)
+        id S231342AbhEARDx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 May 2021 13:03:53 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7922460FEB;
+        Sat,  1 May 2021 17:03:02 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619888580;
-        bh=wnCZx9gNN9yoEAKP8Ko4hFMcSK3q0KZ1Tlg6Zl16aAQ=;
+        s=k20201202; t=1619888583;
+        bh=WNasbTZXsu/8eJqrzYPHut0vsXilpL75Rl/IMxcLfIM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Dch4v/rZ3hvYquOhq/FT+1IF28PPYVwSvIaMJzDuMyImpad/48oZJuyNBleefHPeG
-         5IWKilerIWi7MLY2YFQYFesLD9iH+MPRPwzv8LJPAyZOBPcyZ5hvvwRDkADhvWIbow
-         49wNQ45hueu9xogjyrfSayGDZExSJgpDScUr/YhO1BRdoW5fvrfv65qJ2htfiyDew3
-         J7Dd7eAUQaEfG9C3pOw39zKkCV+FvYz/B6L+VzrsiokRd6k8I2hfccYughUpo4OYWM
-         LzOmYazMhVQhWTdgdoCQ7sMAcbLHyykxQCgBMYJ45qUmVaVxjwfdzIs2BmKe1fvsD4
-         XG2PrlxTqdxlA==
+        b=Gq93P7WMH/P43Kf+Uw3jjDz82HD8wyt64ImGwSfGovQIi+Xxp8KJdWgJQaQOuIFHq
+         +1QbHoMCAmguFUZKZSxHnDLrI7y2Bp3x2mnkgh/wPvpSS3L0Q9/iQ0a2UMW4Gicpd6
+         5D8+yc8xBFbBlFkP7iJoW5LJfe3nzvSmbet/boHt164+VMqi+1rttFU1T2xlOM4BFZ
+         9xj1fXgq+gAGMDiODJelR0wddsuDrmaLuBy7g7yRVM50nyjEtY0V+gp9iGe0yZRnKL
+         XpuaFi89Bwtvn1o2JQIw/gwRGUHLxs6ZxadWBbkHSpUzM9fzg71xU/7+gOKnluU6gb
+         0QoA21b11LthA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 06/19] iio: accel: stk8312: Fix buffer alignment in iio_push_to_buffers_with_timestamp()
-Date:   Sat,  1 May 2021 18:01:08 +0100
-Message-Id: <20210501170121.512209-7-jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: [PATCH 08/19] iio: adc: ti-ads1015: Fix buffer alignment in iio_push_to_buffers_with_timestamp()
+Date:   Sat,  1 May 2021 18:01:10 +0100
+Message-Id: <20210501170121.512209-9-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210501170121.512209-1-jic23@kernel.org>
 References: <20210501170121.512209-1-jic23@kernel.org>
@@ -53,53 +55,48 @@ layout and ensure the timestamp is 8 byte aligned.
 
 Found during an audit of all calls of this function.
 
-Fixes: 95c12bba51c3 ("iio: accel: Add buffer mode for Sensortek STK8312")
+Fixes: ecc24e72f437 ("iio: adc: Add TI ADS1015 ADC driver support")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Daniel Baluta <daniel.baluta@nxp.com>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/accel/stk8312.c | 12 ++++++++----
+ drivers/iio/adc/ti-ads1015.c | 12 ++++++++----
  1 file changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
-index 157d8faefb9e..c8b6915a757c 100644
---- a/drivers/iio/accel/stk8312.c
-+++ b/drivers/iio/accel/stk8312.c
-@@ -103,7 +103,11 @@ struct stk8312_data {
- 	u8 mode;
- 	struct iio_trigger *dready_trig;
- 	bool dready_trigger_on;
--	s8 buffer[16]; /* 3x8-bit channels + 5x8 padding + 64-bit timestamp */
-+	/* Ensure timestamp is naturally aligned */
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 9fef39bcf997..5b828428be77 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -395,10 +395,14 @@ static irqreturn_t ads1015_trigger_handler(int irq, void *p)
+ 	struct iio_poll_func *pf = p;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ads1015_data *data = iio_priv(indio_dev);
+-	s16 buf[8]; /* 1x s16 ADC val + 3x s16 padding +  4x s16 timestamp */
++	/* Ensure natural alignment of timestamp */
 +	struct {
-+		s8 chans[3];
-+		s64 timestamp;
++		s16 chan;
++		s64 timestamp __aligned(8);
 +	} scan;
- };
+ 	int chan, ret, res;
  
- static IIO_CONST_ATTR(in_accel_scale_available, STK8312_SCALE_AVAIL);
-@@ -438,7 +442,7 @@ static irqreturn_t stk8312_trigger_handler(int irq, void *p)
- 		ret = i2c_smbus_read_i2c_block_data(data->client,
- 						    STK8312_REG_XOUT,
- 						    STK8312_ALL_CHANNEL_SIZE,
--						    data->buffer);
-+						    data->scan.chans);
- 		if (ret < STK8312_ALL_CHANNEL_SIZE) {
- 			dev_err(&data->client->dev, "register read failed\n");
- 			mutex_unlock(&data->lock);
-@@ -452,12 +456,12 @@ static irqreturn_t stk8312_trigger_handler(int irq, void *p)
- 				mutex_unlock(&data->lock);
- 				goto err;
- 			}
--			data->buffer[i++] = ret;
-+			data->scan.chans[i++] = ret;
- 		}
+-	memset(buf, 0, sizeof(buf));
++	memset(&scan, 0, sizeof(scan));
+ 
+ 	mutex_lock(&data->lock);
+ 	chan = find_first_bit(indio_dev->active_scan_mask,
+@@ -409,10 +413,10 @@ static irqreturn_t ads1015_trigger_handler(int irq, void *p)
+ 		goto err;
  	}
+ 
+-	buf[0] = res;
++	scan.chan = res;
  	mutex_unlock(&data->lock);
  
--	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
- 					   pf->timestamp);
+-	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++	iio_push_to_buffers_with_timestamp(indio_dev, &scan,
+ 					   iio_get_time_ns(indio_dev));
+ 
  err:
- 	iio_trigger_notify_done(indio_dev->trig);
 -- 
 2.31.1
 
