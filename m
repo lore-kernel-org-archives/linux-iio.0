@@ -7,38 +7,36 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0D07C43462
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00879C43460
 	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:03:18 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 85847614A7
-	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:03:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D42F960FEB
+	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:03:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231656AbhEAREH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S231342AbhEAREH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sat, 1 May 2021 13:04:07 -0400
-Received: from mail.kernel.org ([198.145.29.99]:47622 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:47588 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231624AbhEAREH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 May 2021 13:04:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 804D961494;
-        Sat,  1 May 2021 17:03:16 +0000 (UTC)
+        id S231624AbhEAREG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 May 2021 13:04:06 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id D80D961477;
+        Sat,  1 May 2021 17:03:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619888597;
-        bh=xzCdApNrTu4WGkorKfY7rAn71k/JxYlItlZly/aomvA=;
+        s=k20201202; t=1619888595;
+        bh=ZOWV2SDaDrkdtQVbWb2Z/szrXi2HdONNTe26hCRcAi0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bDw2GNFJAqy+LahkJyHpWbmZoy7J4NWNlmVdaE/wq92h0g9Rff7n45LCaj9PXc36i
-         ab1lvd6OihwCdRj2Q3yUZeiK4VQGREAb1l+mhkCtOaGcLw6LEuWNrT+bfxAPqHUiyb
-         nDHDIn2HlmyVxNdl5kRc8JZv9YHkUIoEA0M0fN3GIYvEEcYbDkLpjPA4xQtVZdRnjf
-         1kczA533zj/rmOVlgFT2AHsfNEidyNjE2te+Nt7xepHhtwaKkQFH9w95JU1eKwEzUs
-         wFbTaCcadkqvO6fLTmjeIND22jRnbvx1LERrF2Z/zqyQtA1SLlOzhIAA2MRjKs44H2
-         1F0A9eDlbQmcg==
+        b=l2d0iXJG/chMjiUGfuVGbt565jEZyUE/Zj4x9x5wXopsCPLnvk7Unr9TDIHg1wlLQ
+         3XMkYBUQGypVQnJ0ozNQ9e6vrqG5PTP4+lIR4xbDV2xac8k/xZp1tjsLV5VXq3eqx7
+         xKbxPwWklb/0JdY9S2fvRmHusaOmeFf5Fd2oVHqsTqT7sYjv4bn71Dkhxbm5VSUUIT
+         Bnkgyo/hlvujSoUaHJxdusPjd/wvyJd4S4Arrl/iIHApt54yPk/MzM8euSSTbZj2T7
+         WcrDAYQZeNLwvs2bLNtwYA23i3GLHUCX+cHjzun24nL9ZqDXZkeS+Hpch7BXMagIk2
+         3n5/VbAG34C5w==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 16/19] iio: magn: bmc150: Fix buffer alignment in iio_push_to_buffers_with_timestamp()
-Date:   Sat,  1 May 2021 18:01:18 +0100
-Message-Id: <20210501170121.512209-17-jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 15/19] iio: magn: hmc5843: Fix buffer alignment in iio_push_to_buffers_with_timestamp()
+Date:   Sat,  1 May 2021 18:01:17 +0100
+Message-Id: <20210501170121.512209-16-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210501170121.512209-1-jic23@kernel.org>
 References: <20210501170121.512209-1-jic23@kernel.org>
@@ -56,46 +54,59 @@ layout and ensure the timestamp is 8 byte aligned.
 Found during an audit of all calls of uses of
 iio_push_to_buffers_with_timestamp()
 
-Fixes: c91746a2361d ("iio: magn: Add support for BMC150 magnetometer")
+Fixes: 7247645f6865 ("iio: hmc5843: Move hmc5843 out of staging")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Stephan Gerhold <stephan@gerhold.net>
-Cc: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/magnetometer/bmc150_magn.c | 11 +++++++----
- 1 file changed, 7 insertions(+), 4 deletions(-)
+ drivers/iio/magnetometer/hmc5843.h      | 8 ++++++--
+ drivers/iio/magnetometer/hmc5843_core.c | 4 ++--
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index 00f9766bad5c..dd5f80093a18 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -138,8 +138,11 @@ struct bmc150_magn_data {
+diff --git a/drivers/iio/magnetometer/hmc5843.h b/drivers/iio/magnetometer/hmc5843.h
+index 3f6c0b662941..242f742f2643 100644
+--- a/drivers/iio/magnetometer/hmc5843.h
++++ b/drivers/iio/magnetometer/hmc5843.h
+@@ -33,7 +33,8 @@ enum hmc5843_ids {
+  * @lock:		update and read regmap data
+  * @regmap:		hardware access register maps
+  * @variant:		describe chip variants
+- * @buffer:		3x 16-bit channels + padding + 64-bit timestamp
++ * @scan:		buffer to pack data for passing to
++ *			iio_push_to_buffers_with_timestamp()
+  */
+ struct hmc5843_data {
+ 	struct device *dev;
+@@ -41,7 +42,10 @@ struct hmc5843_data {
  	struct regmap *regmap;
- 	struct regulator_bulk_data regulators[2];
+ 	const struct hmc5843_chip_info *variant;
  	struct iio_mount_matrix orientation;
--	/* 4 x 32 bits for x, y z, 4 bytes align, 64 bits timestamp */
--	s32 buffer[6];
-+	/* Ensure timestamp is naturally aligned */
+-	__be16 buffer[8];
 +	struct {
-+		s32 chans[4];
++		__be16 chans[3];
 +		s64 timestamp __aligned(8);
 +	} scan;
- 	struct iio_trigger *dready_trig;
- 	bool dready_trigger_on;
- 	int max_odr;
-@@ -675,11 +678,11 @@ static irqreturn_t bmc150_magn_trigger_handler(int irq, void *p)
- 	int ret;
+ };
  
- 	mutex_lock(&data->mutex);
--	ret = bmc150_magn_read_xyz(data, data->buffer);
-+	ret = bmc150_magn_read_xyz(data, data->scan.chans);
+ int hmc5843_common_probe(struct device *dev, struct regmap *regmap,
+diff --git a/drivers/iio/magnetometer/hmc5843_core.c b/drivers/iio/magnetometer/hmc5843_core.c
+index 780faea61d82..221563e0c18f 100644
+--- a/drivers/iio/magnetometer/hmc5843_core.c
++++ b/drivers/iio/magnetometer/hmc5843_core.c
+@@ -446,13 +446,13 @@ static irqreturn_t hmc5843_trigger_handler(int irq, void *p)
+ 	}
+ 
+ 	ret = regmap_bulk_read(data->regmap, HMC5843_DATA_OUT_MSB_REGS,
+-			       data->buffer, 3 * sizeof(__be16));
++			       data->scan.chans, sizeof(data->scan.chans));
+ 
+ 	mutex_unlock(&data->lock);
  	if (ret < 0)
- 		goto err;
+ 		goto done;
  
 -	iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
 +	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan,
- 					   pf->timestamp);
+ 					   iio_get_time_ns(indio_dev));
  
- err:
+ done:
 -- 
 2.31.1
 
