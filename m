@@ -7,40 +7,40 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 46073C433B4
-	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 16:54:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 98544C433ED
+	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:02:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2804B61446
-	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 16:54:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 755BC6157F
+	for <linux-iio@archiver.kernel.org>; Sat,  1 May 2021 17:02:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231517AbhEAQzo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 1 May 2021 12:55:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:44450 "EHLO mail.kernel.org"
+        id S230195AbhEARDm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 1 May 2021 13:03:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47356 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230195AbhEAQzo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 1 May 2021 12:55:44 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 07A3C61477;
-        Sat,  1 May 2021 16:54:52 +0000 (UTC)
+        id S230450AbhEARDm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 May 2021 13:03:42 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1F07461477;
+        Sat,  1 May 2021 17:02:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1619888094;
-        bh=36uePG+qgyqQVBTud8/t51FHRljBV4GAYAz6sngmxGs=;
+        s=k20201202; t=1619888572;
+        bh=l+q9JoD+N6d5yOdWpLTkf2DWswGnbFRHMRoaHpupKvQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=cw/U1k7Jv27q12Vyb7/iyZWLgDOWxSjm9bHJS3cfMZq3TZUeRHRwJ+XQFvsP4pP9D
-         WMPTHn1OA3ecHZu4yVY7Hx1C7HmSrdGsWWRokWLwwlNrpafdotioniLrTvL5wGy5uR
-         ssDyKjy+vM78UbBSG9yZ7WRL9z9VSx1Y7UjJR9Zwlaxh0pUkj1eREF9+BEp9m1lTDa
-         QHtcm/nJzkWi+kw0SnffJQY56sAtui1niGbbn1Zr01RyZRHtn8r1BTyMrpNPMQWA4M
-         tSrggLnvIc2IMZ2tKNeWzeZ6LxDI0HxJofJUuwQrq7M+VkCffF0hPVMF0co2SzMkV8
-         w+DDKLtOk7t4w==
+        b=sFURnOk6rzfe54+4NzUu/qHTEXDRBXQpHeqM1aKPnBZWnDLUxD+egZteMC8w9hU0e
+         cZK2u4B0MOJXX2Y8MTnnbfZEsDzCIUDkx2kGXrGTYuaNfGy3S0WLOG2fT37u4xgxod
+         GlMqMsAajvhtE5fN71rTrUvSrpog+ZN1KDFIqQiHGV8gkN2SHG3wjzTEx3e5f+6xfn
+         W9F/2SauD6jElcj28lP+bFiu5qvr3PZFu/3YHrdaNN6EKu61Oyl67Tg1vgzOQXMv1F
+         R7piCXf/mTavLF41k4WB+N5AF0c5+Gmv7T11tU3cPDVQWc8NbQ1dr8qM8YksmMECYD
+         pQdGJpkgXa7ew==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Daniel Junho <djunho@gmail.com>
-Subject: [PATCH 2/2] iio: adc: ad7923: Fix undersized rx buffer.
-Date:   Sat,  1 May 2021 17:53:14 +0100
-Message-Id: <20210501165314.511954-3-jic23@kernel.org>
+        Peter Meerwald <pmeerw@pmeerw.net>
+Subject: [PATCH 01/19] iio: accel: bma180: Fix buffer alignment in iio_push_to_buffers_with_timestamp()
+Date:   Sat,  1 May 2021 18:01:03 +0100
+Message-Id: <20210501170121.512209-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210501165314.511954-1-jic23@kernel.org>
-References: <20210501165314.511954-1-jic23@kernel.org>
+In-Reply-To: <20210501170121.512209-1-jic23@kernel.org>
+References: <20210501170121.512209-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -49,31 +49,49 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Fixes tag is where the max channels became 8, but timestamp space was missing
-before that.
+To make code more readable, use a structure to express the channel
+layout and ensure the timestamp is 8 byte aligned.
 
-Fixes: 851644a60d20 ("iio: adc: ad7923: Add support for the ad7908/ad7918/ad7928")
+Found during an audit of all calls of this function.
+
+Fixes: b9a6a237ffc9 ("iio:bma180: Drop _update_scan_mode()")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Daniel Junho <djunho@gmail.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>
 ---
- drivers/iio/adc/ad7923.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/accel/bma180.c | 10 +++++++---
+ 1 file changed, 7 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7923.c b/drivers/iio/adc/ad7923.c
-index 9a649745cd0a..069b561ee768 100644
---- a/drivers/iio/adc/ad7923.c
-+++ b/drivers/iio/adc/ad7923.c
-@@ -59,8 +59,10 @@ struct ad7923_state {
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
- 	 * transfer buffers to live in their own cache lines.
-+	 * Ensure rx_buf can be directly used in iio_push_to_buffers_with_timetamp
-+	 * Length = 8 channels + 4 extra for 8 byte timestamp
- 	 */
--	__be16				rx_buf[4] ____cacheline_aligned;
-+	__be16				rx_buf[12] ____cacheline_aligned;
- 	__be16				tx_buf[4];
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index b8a7469cdae4..2e901f900ea7 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -162,7 +162,11 @@ struct bma180_data {
+ 	int scale;
+ 	int bw;
+ 	bool pmode;
+-	u8 buff[16]; /* 3x 16-bit + 8-bit + padding + timestamp */
++	/* Ensure timestamp is naturally aligned */
++	struct {
++		s16 chan[3];
++		s64 timestamp __aligned(8);
++	} scan;
  };
+ 
+ enum bma180_chan {
+@@ -938,12 +942,12 @@ static irqreturn_t bma180_trigger_handler(int irq, void *p)
+ 			mutex_unlock(&data->mutex);
+ 			goto err;
+ 		}
+-		((s16 *)data->buff)[i++] = ret;
++		data->scan.chan[i++] = ret;
+ 	}
+ 
+ 	mutex_unlock(&data->mutex);
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, data->buff, time_ns);
++	iio_push_to_buffers_with_timestamp(indio_dev, &data->scan, time_ns);
+ err:
+ 	iio_trigger_notify_done(indio_dev->trig);
  
 -- 
 2.31.1
