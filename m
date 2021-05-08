@@ -2,106 +2,130 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34204C433ED
-	for <linux-iio@archiver.kernel.org>; Sat,  8 May 2021 15:24:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE2B9C433B4
+	for <linux-iio@archiver.kernel.org>; Sat,  8 May 2021 15:41:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 16AF961261
-	for <linux-iio@archiver.kernel.org>; Sat,  8 May 2021 15:24:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9433961090
+	for <linux-iio@archiver.kernel.org>; Sat,  8 May 2021 15:41:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbhEHPZ5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 8 May 2021 11:25:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43222 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229657AbhEHPZz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 May 2021 11:25:55 -0400
-Received: from mail-ot1-x32e.google.com (mail-ot1-x32e.google.com [IPv6:2607:f8b0:4864:20::32e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47BF4C061574;
-        Sat,  8 May 2021 08:24:51 -0700 (PDT)
-Received: by mail-ot1-x32e.google.com with SMTP id g15-20020a9d128f0000b02902a7d7a7bb6eso10529931otg.9;
-        Sat, 08 May 2021 08:24:51 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=sender:to:cc:references:from:subject:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=CQrb2ccioAuJwkBkkjkm5++a5tjwhsHDADyhrpZzW54=;
-        b=t07xTn2HoLS9AeU1/ytNJoAPweLLNw954qEeA9gzfDz6O5k7lG48JLPMp1Vp+riTdf
-         vWKbEqMesrhHs2YG4UMSg8WyGQvbrXbe2cwJjAwttIvVjG8GYmAuaW4Etf0Ai0Xtf1tb
-         /YvfnVAywgDwjMhbgUMdv70rb/mtHgkkZjaRkRuzNhXsIGaVrLLdeJruaMGrFu/kp4kn
-         cnka4RB6ya+6G1YOeD7UE2KHtHUcDsWi+yLMKBR4J/a8tPckQYKWk4tLVjOfSAtpVIMA
-         r9ha3jLB06Qe1mAdOIu5/GhXlkjK6vNODwPVGptDq5ueByaux3lyKlqP1+Mpvys/khj1
-         l+2A==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:sender:to:cc:references:from:subject:message-id
-         :date:user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=CQrb2ccioAuJwkBkkjkm5++a5tjwhsHDADyhrpZzW54=;
-        b=R5JFn49g5LmY6sk7DHFlezze2rI6NSSf/H0DUaQkpsGyx/P+XgsxbDuSWXjjdzwpzV
-         MOW/Gsb8mpYfXjJlysJwaCB2DgrwJQ/fT4jT1Xz5aaMyDjcK0F4GbHA78Fawnfa+EbJf
-         W16uLW+Gd+5KPz2FOQOBC3x54t3aaPL9i9YFF5IKbxwfJ2XYGu13q6xHzWkreCwpsxfg
-         6vg3w57SychHy0/1fkCSUZi2Bd2GgcFHJBwt7ExLNXWD1+060+FnocdZ5n4ISWnoYRvE
-         7CHJY5IWMPTaEiQNPpvELkuJZYK/VkR41BBZbcMM+koTXDWBop/zJYUV0AC6g5RD9HmR
-         J5nw==
-X-Gm-Message-State: AOAM531MyP6ybOx0VCSylf9vzYXNZcjmPiUoYpvjLXWoh5sf7bt2WBQU
-        kHEvjIVFxslA+G6HcqK6N9U=
-X-Google-Smtp-Source: ABdhPJyr8ffp31pRO2niJ3tEPlem8Q6Wl/yZRlGmOHegbe6pcD/Ot79LBlaTTtZ61eDK3uWi1gMzmQ==
-X-Received: by 2002:a05:6830:1505:: with SMTP id k5mr13714612otp.45.1620487490738;
-        Sat, 08 May 2021 08:24:50 -0700 (PDT)
-Received: from server.roeck-us.net ([2600:1700:e321:62f0:329c:23ff:fee3:9d7c])
-        by smtp.gmail.com with ESMTPSA id r10sm1053663oic.4.2021.05.08.08.24.49
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 08 May 2021 08:24:50 -0700 (PDT)
-Sender: Guenter Roeck <groeck7@gmail.com>
+        id S229614AbhEHPmO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 8 May 2021 11:42:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33244 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229500AbhEHPmN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 8 May 2021 11:42:13 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 3177B61261;
+        Sat,  8 May 2021 15:41:10 +0000 (UTC)
+Date:   Sat, 8 May 2021 16:42:08 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+Cc:     Guenter Roeck <linux@roeck-us.net>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
         kernel test robot <lkp@intel.com>,
         Hans de Goede <hdegoede@redhat.com>
-References: <20210506034332.752263-1-linux@roeck-us.net>
- <20210507103154.00006763@Huawei.com> <20210508030936.GA3879276@roeck-us.net>
- <CAHp75Vfa3GT9bnimxw7EJsJyRF8HZP3PGsUNikSScuNiU4qArg@mail.gmail.com>
-From:   Guenter Roeck <linux@roeck-us.net>
-Subject: Re: [PATCH v2] iio: bme680_i2c: Remove ACPI support
-Message-ID: <27cdac1a-6df8-6650-17fb-7dcdeaed66c5@roeck-us.net>
-Date:   Sat, 8 May 2021 08:24:48 -0700
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+Subject: Re: [PATCH] iio:accel:stk8312: Remove ACPI support
+Message-ID: <20210508164208.7481e013@jic23-huawei>
+In-Reply-To: <CAHp75VdkQmrfpwj6tmEpNYcL0soRcGrhoOghiqJpVezyxZ68LQ@mail.gmail.com>
+References: <20210506035659.765109-1-linux@roeck-us.net>
+        <CAHp75VdkQmrfpwj6tmEpNYcL0soRcGrhoOghiqJpVezyxZ68LQ@mail.gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <CAHp75Vfa3GT9bnimxw7EJsJyRF8HZP3PGsUNikSScuNiU4qArg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 5/8/21 12:48 AM, Andy Shevchenko wrote:
-[ ... ]
+On Thu, 6 May 2021 12:29:44 +0300
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+
+> On Thu, May 6, 2021 at 6:57 AM Guenter Roeck <linux@roeck-us.net> wrote:
+> >
+> > With CONFIG_ACPI=n, W=1 and -Werror, 0-day reports:
+> >
+> > drivers/iio/accel/stk8312.c:644:36: error:
+> >         'stk8312_acpi_id' defined but not used
+> >
+> > Apparently STK8312 is not a valid ACPI ID. Remove it and with it
+> > ACPI support from the stk8312 driver.  
 > 
->     If you like I'll be happy to send you the coccinelle script I wrote
->     to play with.
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> 
+> For the record, point finger on me in case somebody complains about
+> any of such patches.
+> 
+> > Reported-by: kernel test robot <lkp@intel.com>
+> > Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > Cc: Hans de Goede <hdegoede@redhat.com>
+> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> > ---
+> > There is another patch pending which makes whitespace changes in struct
+> > acpi_device_id stk8312_acpi_id. This will result in a conflict if this
+> > patch is applied. In that patch, it is claimed that the driver would
+> > possibly only be used based on its ACPI ID (even though that ACPI device
+> > ID is not official).
+> > Link: https://patchwork.kernel.org/project/linux-iio/patch/20210401144226.225928-1-jic23@kernel.org/
+> > I can not determine if that claim has any truth in it. Still, it appears
+> > that the device ID is not an official device ID.
+
+So this is a fun corner case and I suspect reflects most that the device isn't
+in common use with mainline Linux outside of the hobbyist community.
+The other type of ID in the driver was in capitals whereas those IDs are always
+lowercase.  That rather implied that it had been copied over from the ACPI binding.
+
+Anyhow, I've applied this with the commit message adjusted to suggest that if anyone
+does want ACPI binding support for this and doesn't have control of a vendor ID
+then they should add the of_match_table and use PRP0001.  
+
+Jonathan
+
+ 
+> >
+> >  drivers/iio/accel/stk8312.c | 9 ---------
+> >  1 file changed, 9 deletions(-)
+> >
+> > diff --git a/drivers/iio/accel/stk8312.c b/drivers/iio/accel/stk8312.c
+> > index 157d8faefb9e..2fc30cfe1457 100644
+> > --- a/drivers/iio/accel/stk8312.c
+> > +++ b/drivers/iio/accel/stk8312.c
+> > @@ -7,7 +7,6 @@
+> >   * IIO driver for STK8312; 7-bit I2C address: 0x3D.
+> >   */
+> >
+> > -#include <linux/acpi.h>
+> >  #include <linux/i2c.h>
+> >  #include <linux/interrupt.h>
+> >  #include <linux/kernel.h>
+> > @@ -640,18 +639,10 @@ static const struct i2c_device_id stk8312_i2c_id[] = {
+> >  };
+> >  MODULE_DEVICE_TABLE(i2c, stk8312_i2c_id);
+> >
+> > -static const struct acpi_device_id stk8312_acpi_id[] = {
+> > -       {"STK8312", 0},
+> > -       {}
+> > -};
+> > -
+> > -MODULE_DEVICE_TABLE(acpi, stk8312_acpi_id);
+> > -
+> >  static struct i2c_driver stk8312_driver = {
+> >         .driver = {
+> >                 .name = STK8312_DRIVER_NAME,
+> >                 .pm = STK8312_PM_OPS,
+> > -               .acpi_match_table = ACPI_PTR(stk8312_acpi_id),
+> >         },
+> >         .probe =            stk8312_probe,
+> >         .remove =           stk8312_remove,
+> > --
+> > 2.25.1
+> >  
 > 
 > 
-> Please share (maybe even thru GH gist or so?)
-> 
 
-https://github.com/groeck/coccinelle-patches, subdirectory 'acpi'.
-
-With "MODE=patch", it "only" touches 258 files in the kernel,
-and 43 files in drivers/iio.
-
- From the other comments it looks like we would need another csv based
-match table, something like
-
-ID, "valid" | "invalid"
-
-to override the results from the published ID tables.
-
-Guenter
