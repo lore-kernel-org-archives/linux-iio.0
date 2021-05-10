@@ -2,137 +2,108 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-4.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CEC3AC43462
-	for <linux-iio@archiver.kernel.org>; Mon, 10 May 2021 13:42:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD977C433B4
+	for <linux-iio@archiver.kernel.org>; Mon, 10 May 2021 13:51:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9A41E6101B
-	for <linux-iio@archiver.kernel.org>; Mon, 10 May 2021 13:42:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8BB9261042
+	for <linux-iio@archiver.kernel.org>; Mon, 10 May 2021 13:51:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237201AbhEJNnN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 May 2021 09:43:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47602 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236863AbhEJNR0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 May 2021 09:17:26 -0400
-Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED3A6C06138C;
-        Mon, 10 May 2021 06:16:19 -0700 (PDT)
-Received: by mail-wm1-x32b.google.com with SMTP id 82-20020a1c01550000b0290142562ff7c9so8868251wmb.3;
-        Mon, 10 May 2021 06:16:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=subject:to:cc:references:from:message-id:date:user-agent
-         :mime-version:in-reply-to:content-language:content-transfer-encoding;
-        bh=Sh4i9feljTPFrIfpR/IU/E8n0D3Fda88xyQfypmum7w=;
-        b=GfQpYA/u/ESXNzCwhJN35I1L0Sb2vRVeukRNG83W8xG2OMlDA6+i5W0OODo/+LWE9E
-         ivWW5//Dci3M+PXPgJnH/odM7KtTO7yjQKrEe7KAvh4E7fvrd/ZuLkJAZP62sWtsDMuB
-         AIqgCRqoTLZzj0iGC6/REa3QuGlmZjiRxifV0mZYrMLJSap8JjiujnvbMmFTzTlx+O95
-         x9XnwiLNDr5qqWcsdoyW+ETG1hWAlzA+FW12aKJEwh2j5DlnppfpjkE6ahf9DAyZ8V+v
-         c4HLN0tsaWZM2+zfMzrOFU3u/mXI98pyg6LlDYSgFBtDuHlk1DmX0lhge4HX1KOLhtwA
-         z+4g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=Sh4i9feljTPFrIfpR/IU/E8n0D3Fda88xyQfypmum7w=;
-        b=cYGoVbnuzC8qi/rSzJ+ExaPcPY6WDiRnoQYrUOJUW/LDLaupeK70YlIz31CC6DpEIO
-         YjQqqXw2K1KRvLE2EmkMqZgmSNaOqjLw3WgaQER7nKYN78smSnUQvql/Lq9C3BYIAbbS
-         A89hiMUo84LxHpIIH5PXWbH2rmZnREpJ+CAq/H0QPEPvY3481ifRRLSpOK8Cv3AHyzwB
-         Y9C4Y5kQCgYC6MsNt9LSL+mATP7JJWBNR9KZjed7REYhOTmkJTYOrQnd1aSrwgzazjvo
-         Ixtv6yd4OPdU4nF7WYCxOtY9Watsai28mxpDWeEFK5xhy198jgxuKAvRFJqigderRiYZ
-         zU/w==
-X-Gm-Message-State: AOAM5320WfRdSTq1VXESkXjcB7G2WrDl9rtLEDxZcnwiFr7WOtK+XUaU
-        ikYqT3CuD1N4pbhEXWdxDhI=
-X-Google-Smtp-Source: ABdhPJysoQ4YBpE1J87NsTC/Z24p8NQqGLKPSudpVCmtLwZFhM2Wy0R7/k0aKiXMKdpTI23nPdYVEw==
-X-Received: by 2002:a05:600c:47d7:: with SMTP id l23mr36980376wmo.95.1620652578722;
-        Mon, 10 May 2021 06:16:18 -0700 (PDT)
-Received: from [192.168.1.122] (cpc159425-cmbg20-2-0-cust403.5-4.cable.virginm.net. [86.7.189.148])
-        by smtp.gmail.com with ESMTPSA id s1sm27945073wmj.8.2021.05.10.06.16.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 May 2021 06:16:17 -0700 (PDT)
-Subject: Re: [PATCH 00/53] Get rid of UTF-8 chars that can be mapped as ASCII
-To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        David Woodhouse <dwmw2@infradead.org>
-Cc:     Linux Doc Mailing List <linux-doc@vger.kernel.org>,
-        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>,
-        alsa-devel@alsa-project.org, coresight@lists.linaro.org,
-        dri-devel@lists.freedesktop.org, intel-gfx@lists.freedesktop.org,
-        intel-wired-lan@lists.osuosl.org, keyrings@vger.kernel.org,
-        kvm@vger.kernel.org, linux-acpi@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        linux-ext4@vger.kernel.org, linux-f2fs-devel@lists.sourceforge.net,
-        linux-fpga@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-integrity@vger.kernel.org, linux-media@vger.kernel.org,
-        linux-pci@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-rdma@vger.kernel.org, linux-riscv@lists.infradead.org,
-        linux-sgx@vger.kernel.org, linux-usb@vger.kernel.org,
-        mjpeg-users@lists.sourceforge.net, netdev@vger.kernel.org,
-        rcu@vger.kernel.org, x86@kernel.org
-References: <cover.1620641727.git.mchehab+huawei@kernel.org>
- <2ae366fdff4bd5910a2270823e8da70521c859af.camel@infradead.org>
- <20210510135518.305cc03d@coco.lan>
-From:   Edward Cree <ecree.xilinx@gmail.com>
-Message-ID: <df6b4567-030c-a480-c5a6-fe579830e8c0@gmail.com>
-Date:   Mon, 10 May 2021 14:16:16 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.5.0
+        id S232818AbhEJNwO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 May 2021 09:52:14 -0400
+Received: from frasgout.his.huawei.com ([185.176.79.56]:3044 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237513AbhEJNmN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 May 2021 09:42:13 -0400
+Received: from fraeml708-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Ff29S0Wr2z6lpj7;
+        Mon, 10 May 2021 21:35:08 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml708-chm.china.huawei.com (10.206.15.36) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Mon, 10 May 2021 15:41:04 +0200
+Received: from localhost (10.52.123.16) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Mon, 10 May
+ 2021 14:41:03 +0100
+Date:   Mon, 10 May 2021 14:39:21 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Sean Nyekjaer <sean@geanix.com>
+CC:     Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v5 5/6] iio: accel: fxls8962af: add hw buffered sampling
+Message-ID: <20210510143921.00001774@Huawei.com>
+In-Reply-To: <f50d0b0f-f00d-35c9-9cf5-2a9e9ffaa8ca@geanix.com>
+References: <20210506070940.312959-1-sean@geanix.com>
+        <20210506070940.312959-5-sean@geanix.com>
+        <20210508173947.47d18328@jic23-huawei>
+        <f50d0b0f-f00d-35c9-9cf5-2a9e9ffaa8ca@geanix.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
 MIME-Version: 1.0
-In-Reply-To: <20210510135518.305cc03d@coco.lan>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-GB
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.52.123.16]
+X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10/05/2021 12:55, Mauro Carvalho Chehab wrote:
-> The main point on this series is to replace just the occurrences
-> where ASCII represents the symbol equally well
+On Mon, 10 May 2021 09:54:05 +0200
+Sean Nyekjaer <sean@geanix.com> wrote:
 
-> 	- U+2014 ('—'): EM DASH
-Em dash is not the same thing as hyphen-minus, and the latter does not
- serve 'equally well'.  People use em dashes because — even in
- monospace fonts — they make text easier to read and comprehend, when
- used correctly.
-I accept that some of the other distinctions — like en dashes — are
- needlessly pedantic (though I don't doubt there is someone out there
- who will gladly defend them with the same fervour with which I argue
- for the em dash) and I wouldn't take the trouble to use them myself;
- but I think there is a reasonable assumption that when someone goes
- to the effort of using a Unicode punctuation mark that is semantic
- (rather than merely typographical), they probably had a reason for
- doing so.
+> On 08/05/2021 18.39, Jonathan Cameron wrote:
+> > On Thu,  6 May 2021 09:09:39 +0200
+> > Sean Nyekjaer <sean@geanix.com> wrote:
+> >   
+> >> When buffered sampling is enabled, the accelerometer will dump data into
+> >> the internal fifo and interrupt at watermark. Then the driver flushes
+> >> all data to the iio buffer.
+> >> As the accelerometer doesn't have internal timestamps, they are
+> >> approximated between the current and last interrupt.
+> >>
+> >> Signed-off-by: Sean Nyekjaer <sean@geanix.com>  
+> > 
+> > Hi Sean,
+> > 
+> > Couple of things I adjusted whilst applying this.
+> > 1) trigger.h isn't used as no triggers are involved currently in this driver so
+> >    I dropped it.
+> > 2) kfifo allocation etc has changed in the IIO core whilst this driver was in
+> >    development. Now we have devm_iio_kfifo_setup() which does everything your
+> >    locals _setup() function does. 
+> > 
+> > I've made changes for both of the above whilst applying so please take a look
+> > at the result which I'll shortly push out as testing for the autobuilders to
+> > poke at as well.
+> > 
+> > Other than that I tweaked a bit of whilespace in the id tables in patch 1.
+> > 
+> > Series applied to the togreg branch of iio.git but initially just pushed out as
+> > testing to let 0-day work it's magic.
+> > 
+> > Thanks,
+> > 
+> > Jonathan
+> >   
+> 
+> Hi Jonathan,
+> 
+> Guess it's okay, but I can't find the patches here:
+> https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=togreg
+> 
+Gah. As happens far too often I forgot to push.  It's now there as testing to
+actually let the autobuilders poke a it.
 
-> 	- U+2018 ('‘'): LEFT SINGLE QUOTATION MARK
-> 	- U+2019 ('’'): RIGHT SINGLE QUOTATION MARK
-> 	- U+201c ('“'): LEFT DOUBLE QUOTATION MARK
-> 	- U+201d ('”'): RIGHT DOUBLE QUOTATION MARK
-(These are purely typographic, I have no problem with dumping them.)
 
-> 	- U+00d7 ('×'): MULTIPLICATION SIGN
-Presumably this is appearing in mathematical formulae, in which case
- changing it to 'x' loses semantic information.
+> :-)
+> 
+> Br,
+> /Sean
+> 
 
-> Using the above symbols will just trick tools like grep for no good
-> reason.
-NBSP, sure.  That one's probably an artefact of some document format
- conversion somewhere along the line, anyway.
-But what kinds of things with × or — in are going to be grept for?
-
-If there are em dashes lying around that semantically _should_ be
- hyphen-minus (one of your patches I've seen, for instance, fixes an
- *en* dash moonlighting as the option character in an `ethtool`
- command line), then sure, convert them.
-But any time someone is using a Unicode character to *express
- semantics*, even if you happen to think the semantic distinction
- involved is a pedantic or unimportant one, I think you need an
- explicit grep case to justify ASCIIfying it.
-
--ed
