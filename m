@@ -2,146 +2,192 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 252A7C433B4
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E28C43460
 	for <linux-iio@archiver.kernel.org>; Mon, 10 May 2021 13:07:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E2BD1611CE
-	for <linux-iio@archiver.kernel.org>; Mon, 10 May 2021 13:07:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 57F386157E
+	for <linux-iio@archiver.kernel.org>; Mon, 10 May 2021 13:07:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235662AbhEJNID (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 May 2021 09:08:03 -0400
-Received: from youngberry.canonical.com ([91.189.89.112]:43266 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234871AbhEJMSo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 May 2021 08:18:44 -0400
-Received: from mail-qk1-f199.google.com ([209.85.222.199])
-        by youngberry.canonical.com with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.93)
-        (envelope-from <krzysztof.kozlowski@canonical.com>)
-        id 1lg4qu-00035B-K4
-        for linux-iio@vger.kernel.org; Mon, 10 May 2021 12:17:36 +0000
-Received: by mail-qk1-f199.google.com with SMTP id d201-20020ae9efd20000b02902e9e9d8d9dcso11436015qkg.10
-        for <linux-iio@vger.kernel.org>; Mon, 10 May 2021 05:17:36 -0700 (PDT)
+        id S241901AbhEJNIW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 May 2021 09:08:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44138 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1351134AbhEJNDA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 May 2021 09:03:00 -0400
+Received: from mail-wm1-x32c.google.com (mail-wm1-x32c.google.com [IPv6:2a00:1450:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 836CBC061350
+        for <linux-iio@vger.kernel.org>; Mon, 10 May 2021 05:55:53 -0700 (PDT)
+Received: by mail-wm1-x32c.google.com with SMTP id o6-20020a05600c4fc6b029015ec06d5269so2440287wmq.0
+        for <linux-iio@vger.kernel.org>; Mon, 10 May 2021 05:55:53 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=deviqon.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=T22i+g53k1fhCLKh9tB02Omn3iL2iUzJbrWzhjCB28A=;
+        b=eCtUxx+QoNkZtb/x+DkVSPqZKOadIhEMMlPASjY0l/1g2fFi8OVRvbxa1cF2ypMlad
+         Cy5bx2x/k/plI+xFS7PNi3znFYwTD7Wpi2sWEJ/T0lbNvXorIFyFAkzz450CKuleSf+C
+         gU2jWBcQ/3ILNxkS823GfeKdQ/GOhlpkLCdVDW4zVsbdKcBrRJckPits/sj9xHOXy+N+
+         wjmQXMupfKXoLBd4QOLr1ord6ufgI4xlfjoYD2yoKDSvolyGTYtWtrRIGCsaiJ/NMyTJ
+         fxSymlUL9EG6oNJTcQO4D0zZsX92771UIVWAt8mHt13/SMdZ3ckm5Tp0O9HTlsrnSwsC
+         gjhQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
-         :user-agent:mime-version:in-reply-to:content-language
-         :content-transfer-encoding;
-        bh=hcrqYtVd277y8wGe0DAUkPRsrC0LqbV2x0VgcwLCb3c=;
-        b=Aij3AuTuObxrsC/ULh4nBHm3SeaAA0+v0vNKHcVZU4i4mzBBRkifdDl3YEmaIWH4u+
-         XMmZyjsMq5KidikinhD4Gtn8UgAbEG2c2vL0eEImF2p9rFvO9RE9HrMdcPyp1LCEIipJ
-         uhMgA4EvnVr7QrJxtaiT6CgYZO3h/gZ1/1GnzEPp4TuBLZ+GHQ/otIgBRmynq0cWZytC
-         A/4LecKamGJ1b5kSN4yrkcqQGzGRJeWWaJ/Xl0nnv4Ka0IyFjQKnrvV9mck+BPG/PEAE
-         1ya0c/03sLyUT6aslv2PaYz2cheRX4hAwYu9nciI1DJgvMujCel52kE8AXTKxppmvM6b
-         dqOA==
-X-Gm-Message-State: AOAM532IzqXS9egT0htikXwRBUELssvjfuN1ck5bQaMzvmoHs6MhD9Xv
-        l8kniDU2mzf8IyqMV3YHKadO0EhGPP2+6XCIRJlTE1G2HxLzxWUOBWjunUCiNFxucUI5Q40m0ou
-        z/+SSu2v6mpFW8wdqT8LpuhUbSc3iPAuormCY1Q==
-X-Received: by 2002:ae9:ec03:: with SMTP id h3mr23609152qkg.87.1620649055715;
-        Mon, 10 May 2021 05:17:35 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJwfAZJ/fJms6W3J42t4JspLSmay5z4r7ykDR8TMfCxjU9edR+ivZa0FNnGuW9w4GO5cBfzfug==
-X-Received: by 2002:ae9:ec03:: with SMTP id h3mr23609128qkg.87.1620649055479;
-        Mon, 10 May 2021 05:17:35 -0700 (PDT)
-Received: from [192.168.1.4] ([45.237.49.2])
-        by smtp.gmail.com with ESMTPSA id g140sm10110983qke.32.2021.05.10.05.17.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 10 May 2021 05:17:34 -0700 (PDT)
-Subject: Re: [PATCH] dt-bindings: iio: afe: current-sense-shunt: add
- io-channel-cells
-To:     Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20210506150637.35288-1-krzysztof.kozlowski@canonical.com>
- <0e68ca18-7d8c-12ab-59b1-56404b29be77@axentia.se>
- <20210508165944.2e3d8d91@jic23-huawei>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-Message-ID: <1e8651a3-e730-411b-18a8-800e9bd9304e@canonical.com>
-Date:   Mon, 10 May 2021 08:17:17 -0400
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.7.1
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=T22i+g53k1fhCLKh9tB02Omn3iL2iUzJbrWzhjCB28A=;
+        b=OSh2qL1Uq3bbObbZqtwZIkyZaowpzxt0GbVrpkN2GP09SiEC/HdZn9lntqe03+wtap
+         wqSPdeGnrsALJMeDAchsVYxxnyt7pxJ+LmXiozaDjdP4u/T17ZnTeDzn958Wr7JDm6em
+         A8q3CfCSiGrS721eZykD63f7PbzzBJW6R5Z717RcnVoKY26O3MJTdGI2yn/1FE80EYRn
+         lFmgjU8XZr6yVwX6vjF5OhKJ+D6EYX4OaWVfSRWBDUSt4msEJg3XmMsQg0ZPe5GFhRUG
+         m3s3W9gCto5M4EiFmYkdkttIIt0+XM95r3gPNmmXV0h9diRpS52+zQ2QPuWl7iwmM1sh
+         rm/g==
+X-Gm-Message-State: AOAM533Yr2r4e2PSUVWxH+Wei27E5VKKmbdF+c9YaxZWrKvQsy+Atm59
+        /Z2XaH5L65MsJPWroWs+hDNiFZjHHGKcAg==
+X-Google-Smtp-Source: ABdhPJz2vAtWMSvSZ13uvP3TVIYNGQLJ09O47U9p2Q6KI9rlJzds0loEMA+VGywRLQo2U1RX1UOH5g==
+X-Received: by 2002:a05:600c:4304:: with SMTP id p4mr37384148wme.111.1620651352071;
+        Mon, 10 May 2021 05:55:52 -0700 (PDT)
+Received: from neptune.. ([5.2.193.191])
+        by smtp.gmail.com with ESMTPSA id n2sm23134329wmb.32.2021.05.10.05.55.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 10 May 2021 05:55:51 -0700 (PDT)
+From:   Alexandru Ardelean <aardelean@deviqon.com>
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     jic23@kernel.org, Jonathan.Cameron@huawei.com,
+        alexandru.tachici@analog.com, linux@deviqon.com,
+        Alexandru Ardelean <aardelean@deviqon.com>
+Subject: [PATCH 01/11] iio: adc: ad_sigma_delta: introduct devm_ad_sd_setup_buffer_and_trigger()
+Date:   Mon, 10 May 2021 15:55:13 +0300
+Message-Id: <20210510125523.1271237-2-aardelean@deviqon.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210510125523.1271237-1-aardelean@deviqon.com>
+References: <20210510125523.1271237-1-aardelean@deviqon.com>
 MIME-Version: 1.0
-In-Reply-To: <20210508165944.2e3d8d91@jic23-huawei>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 08/05/2021 11:59, Jonathan Cameron wrote:
-> On Sat, 8 May 2021 00:44:58 +0200
-> Peter Rosin <peda@axentia.se> wrote:
-> 
->> Hi!
->>
->> On 2021-05-06 17:06, Krzysztof Kozlowski wrote:
->>> The current-sense-shunt is an IIO provider thus can be referenced by IIO
->>> consumers (via "io-channels" property in consumer device node).
->>> Such provider is required to describe number of cells used in phandle
->>> lookup with "io-channel-cells" property.  This also fixes dtbs_check
->>> warnings like:
->>>
->>>   arch/arm/boot/dts/s5pv210-fascinate4g.dt.yaml: current-sense-shunt:
->>>     '#io-channel-cells' does not match any of the regexes: 'pinctrl-[0-9]+'
->>>
->>> Fixes: ce66e52b6c16 ("dt-bindings:iio:afe:current-sense-shunt: txt to yaml conversion.")
->>> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
->>> ---
->>>  .../devicetree/bindings/iio/afe/current-sense-shunt.yaml     | 5 +++++
->>>  1 file changed, 5 insertions(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml b/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml
->>> index 90439a8dc785..05166d8a3124 100644
->>> --- a/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml
->>> +++ b/Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml
->>> @@ -24,12 +24,16 @@ properties:
->>>      description: |
->>>        Channel node of a voltage io-channel.
->>>  
->>> +  "#io-channel-cells":
->>> +    const: 0
->>> +
->>>    shunt-resistor-micro-ohms:
->>>      description: The shunt resistance.
->>>  
->>>  required:
->>>    - compatible
->>>    - io-channels
->>> +  - "#io-channel-cells"
->>>    - shunt-resistor-micro-ohms  
->>
->> I know I'm listed as maintainer and all, but I have not kept up with the yaml
->> conversion. Sorry. So, given that I might very well fundamentally misunderstand
->> something, it does not sound correct that #io-channel-cells is now "required".
->> I regard it as optional, and only needed if some other in-kernel driver is
->> consuming the sensed current. What am I missing?
->>
-> 
-> Agreed. This should be optional and I have deliberately not introduced it
-> into all the bindings that could in theory support being used as providers.
-> 
-> So far I've not pushed it out in a blanket fashion into existing bindings
-> even as optional.
-> 
->> Also, whatever is done in this binding should preferably also be done in the
->> two "sister" afe bindings, i.e. current-sense-amplifier and voltage-divider.
-> 
-> This particular case is squashing an error, so whilst I'm happy to have those
-> gain the binding addition, I would like to see them in a separate patch as
-> less likely they'd get back ported.
-> 
-> If Kryysztof is fine with me just dropping the required I can pick up this patch.
+This is a version of ad_sd_setup_buffer_and_trigger() with all underlying
+functions (that are used) being replaced with their device-managed
+variants.
 
-Having here required number of cells helps any DT-user to seamlessly
-integrate with it (e.g. with his in-tree or out-of-tree DTS, with
-overlays). However it also can be added with such DTS or overlay, so in
-general I don't mind dropping the required piece. Thanks!
+One thing to take care here is with {devm_}iio_trigger_alloc(), where both
+functions take a parent-device object as the first parameter.
 
-Best regards,
-Krzysztof
+To make sure nothing quirky is happening, the devm_ad_sd_probe_trigger()
+function is checking that the provided 'dev' reference is the same as the
+one stored on the 'struct ad_sigma_delta' driver data.
+
+Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
+---
+ drivers/iio/adc/ad_sigma_delta.c       | 60 ++++++++++++++++++++++++++
+ include/linux/iio/adc/ad_sigma_delta.h |  3 ++
+ 2 files changed, 63 insertions(+)
+
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index 69b979331ccd..d5801a47be07 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -513,6 +513,46 @@ static int ad_sd_probe_trigger(struct iio_dev *indio_dev)
+ 	return ret;
+ }
+ 
++static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_dev)
++{
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	int ret;
++
++	if (dev != &sigma_delta->spi->dev) {
++		dev_err(dev, "Trigger parent should be '%s', got '%s'\n",
++			dev_name(dev), dev_name(&sigma_delta->spi->dev));
++		return -EFAULT;
++	}
++
++	sigma_delta->trig = devm_iio_trigger_alloc(dev, "%s-dev%d", indio_dev->name,
++						   iio_device_id(indio_dev));
++	if (sigma_delta->trig == NULL)
++		return -ENOMEM;
++
++	sigma_delta->trig->ops = &ad_sd_trigger_ops;
++	init_completion(&sigma_delta->completion);
++
++	sigma_delta->irq_dis = true;
++	ret = devm_request_irq(dev, sigma_delta->spi->irq,
++			       ad_sd_data_rdy_trig_poll,
++			       sigma_delta->info->irq_flags | IRQF_NO_AUTOEN,
++			       indio_dev->name,
++			       sigma_delta);
++	if (ret)
++		return ret;
++
++	iio_trigger_set_drvdata(sigma_delta->trig, sigma_delta);
++
++	ret = devm_iio_trigger_register(dev, sigma_delta->trig);
++	if (ret)
++		return ret;
++
++	/* select default trigger */
++	indio_dev->trig = iio_trigger_get(sigma_delta->trig);
++
++	return 0;
++}
++
+ static void ad_sd_remove_trigger(struct iio_dev *indio_dev)
+ {
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+@@ -556,6 +596,26 @@ void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev)
+ }
+ EXPORT_SYMBOL_GPL(ad_sd_cleanup_buffer_and_trigger);
+ 
++/**
++ * devm_ad_sd_setup_buffer_and_trigger() - Device-managed buffer & trigger setup
++ * @dev: Device object to which to bind the life-time of the resources attached
++ * @indio_dev: The IIO device
++ */
++int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indio_dev)
++{
++	int ret;
++
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
++					      &iio_pollfunc_store_time,
++					      &ad_sd_trigger_handler,
++					      &ad_sd_buffer_setup_ops);
++	if (ret)
++		return ret;
++
++	return devm_ad_sd_probe_trigger(dev, indio_dev);
++}
++EXPORT_SYMBOL_GPL(devm_ad_sd_setup_buffer_and_trigger);
++
+ /**
+  * ad_sd_init() - Initializes a ad_sigma_delta struct
+  * @sigma_delta: The ad_sigma_delta device
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index 7199280d89ca..be81ad39fb7a 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -26,6 +26,7 @@ struct ad_sd_calib_data {
+ };
+ 
+ struct ad_sigma_delta;
++struct device;
+ struct iio_dev;
+ 
+ /**
+@@ -135,6 +136,8 @@ int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
+ int ad_sd_setup_buffer_and_trigger(struct iio_dev *indio_dev);
+ void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev);
+ 
++int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indio_dev);
++
+ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
+ 
+ #endif
+-- 
+2.31.1
+
