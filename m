@@ -2,254 +2,81 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DATE_IN_PAST_24_48,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64A7FC43461
-	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:22:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66F67C433ED
+	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 21:42:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3105D613D6
-	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:22:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2E464613E9
+	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 21:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242848AbhELSWR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 May 2021 14:22:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350991AbhELRw6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:52:58 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8930DC061355
-        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:50:08 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id b25so36190112eju.5
-        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:50:08 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=deviqon.com; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=xFkHVHDvpM4JyC3RFUTwL0ulXU8LKKn0HJTf8peIPYk=;
-        b=D3ReImWGwbW1wqo6/tCxCxSe1CGUuqMyKGlsioWYi+ETGeV4gJR3D0VvcCGALUrina
-         UNkNlKikXwVCfMa6rNKkwED8e3HXjFHAHoS5tHxSvBb846wxvA7bAgIDC+xe7b4TrR8Z
-         1UiXaE8I2fw1SH4GwGA+xAqhyFe7sCcsg43xRIknfwlSAa1Leyiod5s1hxGnRLRtDdem
-         QZDPHI5IEvq3ZMIjjf1a4Tuu2KManRRixupHuU2ZqaNNW6hyKvJpANTsjx/8VA34md3t
-         OnbwvY6YZQxWsxf6OOZDcP9pcvv4/85nHDyzIihEU7ndPzgc/SueuWbnn2UMg/MM5992
-         Ey5w==
+        id S240844AbhELVnU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 May 2021 17:43:20 -0400
+Received: from mail-oi1-f178.google.com ([209.85.167.178]:33370 "EHLO
+        mail-oi1-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1385223AbhELUH1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 16:07:27 -0400
+Received: by mail-oi1-f178.google.com with SMTP id b25so18161132oic.0;
+        Wed, 12 May 2021 13:06:17 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=xFkHVHDvpM4JyC3RFUTwL0ulXU8LKKn0HJTf8peIPYk=;
-        b=DCNxPV0DDK05V6KlFsLJFSfOUjHBwGyFwRXwvNpb4/Yf8tKBndR6bYdK6FJ1JOKTKS
-         orZ+/xHQF8SJPp2RjebwN7rwLTuGoZCeWDdGnZRttzdQNYsPYOfJMpU04//jEinOVXOF
-         XAZw6oL89nJo4DpIdyPdi+DUJe3sTmt2rMDlATm6e+xJNJt33A5nCA1WmcJd020SKJ4N
-         r0sY029Yi3iVi0f9HH5F2pB2qLfY+dImz2xmClq5U8aEO24I+6QjKmzH3a7peL6x0cht
-         V8CWdWGnC06gkgsyhcyURKThi/Xh77YHUS3MXxnU7J53sypZQbfU0syRuH0ZyTJh3R2M
-         B0uQ==
-X-Gm-Message-State: AOAM530/cvyRlejyNPK+FWlP25FoDdkT2v4ytfprKrcmHL+6hmlN/jYn
-        kfB+XJIS5ZJBxp6ua8r81IQ5oznKZ1LZyQ==
-X-Google-Smtp-Source: ABdhPJz8VHCR8NiXBDh+X/OqKT9lhbmZKJqjhxIt05aKwMYjqznKRx3qmWIxLiCB1qlI5n/kfOCb2w==
-X-Received: by 2002:a17:906:5912:: with SMTP id h18mr38916931ejq.447.1620841806923;
-        Wed, 12 May 2021 10:50:06 -0700 (PDT)
-Received: from neptune.. ([5.2.193.191])
-        by smtp.gmail.com with ESMTPSA id r16sm338058edq.87.2021.05.12.10.50.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=8mK8FNLcUAP6zHwFtfduF9ONl8iQuSOq8udr35xhVZw=;
+        b=rfbzN5gtwWvTTE3Nngn9kcc3WwV3oTr93yzevEWCk0Eo2HJZ2GgzKy+W7SPhyVJVfC
+         dogCc6HqQ318qgiW3qrv3T2DK762IeWBRPd0yfnuYV2Exp7DVVKNpnGfY59CvH/yKQdY
+         wRnC3+7fyvWnXQunvxbzo2uWCjq8Yn3h46NYuZzWP6URcIj/adpGGi31ou5iwwQ1bFS8
+         OepJ8Mn988uhB87MT2oGu6RCl6D88f9Fp7lq9gO+W0PBO3I3rbg+crse54re4F5TI1c4
+         LUrg/8dDSrs13VhJPH2pAVIiPQb1q8sqWzaR2LmYEXaIHmQ6XiaMV5z+iMSiHQJuTFGu
+         Vc8w==
+X-Gm-Message-State: AOAM5309vDH92N6pPyqDiH24PuUY2STfLbZVl9S26k7IBExOu7q7jeZz
+        maPMx5ddr90gwzohV0uKqw==
+X-Google-Smtp-Source: ABdhPJygkS5R5T5PEwrtsxUteg5Ksl4UaPopx1hiuVEvWf7CYPqSYko5JqMkb2MTszCKk1qkDDV6xg==
+X-Received: by 2002:aca:c449:: with SMTP id u70mr163257oif.146.1620849977312;
+        Wed, 12 May 2021 13:06:17 -0700 (PDT)
+Received: from robh.at.kernel.org (24-155-109-49.dyn.grandenetworks.net. [24.155.109.49])
+        by smtp.gmail.com with ESMTPSA id v28sm238408ood.27.2021.05.12.13.06.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 May 2021 10:50:06 -0700 (PDT)
-From:   Alexandru Ardelean <aardelean@deviqon.com>
-To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     jic23@kernel.org, Jonathan.Cameron@huawei.com,
-        alexandru.tachici@analog.com, linux@deviqon.com,
-        Alexandru Ardelean <aardelean@deviqon.com>
-Subject: [PATCH v3 10/12] iio: adc: ad7192: convert to device-managed functions
-Date:   Wed, 12 May 2021 20:49:12 +0300
-Message-Id: <20210512174914.10549-11-aardelean@deviqon.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210512174914.10549-1-aardelean@deviqon.com>
-References: <20210512174914.10549-1-aardelean@deviqon.com>
+        Wed, 12 May 2021 13:06:16 -0700 (PDT)
+Received: (nullmailer pid 2491536 invoked by uid 1000);
+        Tue, 11 May 2021 19:47:17 -0000
+Date:   Tue, 11 May 2021 14:47:17 -0500
+From:   Rob Herring <robh@kernel.org>
+To:     Stephan Gerhold <stephan@gerhold.net>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, Robert Yang <decatf@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        devicetree@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 1/3] dt-bindings: iio: kionix,kxcjk1013: Document
+ kionix,kx023-1025
+Message-ID: <20210511194717.GA2491222@robh.at.kernel.org>
+References: <20210511142402.4457-1-stephan@gerhold.net>
+ <20210511142402.4457-2-stephan@gerhold.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210511142402.4457-2-stephan@gerhold.net>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-With the devm_ad_sd_setup_buffer_and_trigger() helper, it's a bit easier
-now to convert the probe of the AD7192 driver to use device-managed
-functions.
+On Tue, 11 May 2021 16:24:00 +0200, Stephan Gerhold wrote:
+> The KX023-1025 accelerometer uses similar register bits as kxcjk1023,
+> so it can make use of the same driver. Document the new kionix,kx023-1025
+> compatible that is also supported by the kxcjk-1013 driver now.
+> 
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+> Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+> ---
+>  .../devicetree/bindings/iio/accel/kionix,kxcjk1013.yaml          | 1 +
+>  1 file changed, 1 insertion(+)
+> 
 
-The regulators and the mclk requires devm_add_action_or_reset() callbacks
-though.
-
-Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
----
- drivers/iio/adc/ad7192.c | 90 ++++++++++++++++------------------------
- 1 file changed, 36 insertions(+), 54 deletions(-)
-
-diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
-index c3442e9aa9fd..70b7ce70e478 100644
---- a/drivers/iio/adc/ad7192.c
-+++ b/drivers/iio/adc/ad7192.c
-@@ -908,6 +908,16 @@ static int ad7192_channels_config(struct iio_dev *indio_dev)
- 	return 0;
- }
- 
-+static void ad7192_reg_disable(void *reg)
-+{
-+	regulator_disable(reg);
-+}
-+
-+static void ad7192_clk_disable(void *clk)
-+{
-+	clk_disable_unprepare(clk);
-+}
-+
- static int ad7192_probe(struct spi_device *spi)
- {
- 	struct ad7192_state *st;
-@@ -937,36 +947,40 @@ static int ad7192_probe(struct spi_device *spi)
- 		return ret;
- 	}
- 
-+	ret = devm_add_action_or_reset(&spi->dev, ad7192_reg_disable, st->avdd);
-+	if (ret)
-+		return ret;
-+
- 	st->dvdd = devm_regulator_get(&spi->dev, "dvdd");
--	if (IS_ERR(st->dvdd)) {
--		ret = PTR_ERR(st->dvdd);
--		goto error_disable_avdd;
--	}
-+	if (IS_ERR(st->dvdd))
-+		return PTR_ERR(st->dvdd);
- 
- 	ret = regulator_enable(st->dvdd);
- 	if (ret) {
- 		dev_err(&spi->dev, "Failed to enable specified DVdd supply\n");
--		goto error_disable_avdd;
-+		return ret;
- 	}
- 
-+	ret = devm_add_action_or_reset(&spi->dev, ad7192_reg_disable, st->dvdd);
-+	if (ret)
-+		return ret;
-+
- 	voltage_uv = regulator_get_voltage(st->avdd);
- 
- 	if (voltage_uv >= 0) {
- 		st->int_vref_mv = voltage_uv / 1000;
- 	} else {
--		ret = voltage_uv;
- 		dev_err(&spi->dev, "Device tree error, reference voltage undefined\n");
--		goto error_disable_avdd;
-+		return voltage_uv;
- 	}
- 
--	spi_set_drvdata(spi, indio_dev);
- 	st->chip_info = of_device_get_match_data(&spi->dev);
- 	indio_dev->name = st->chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	ret = ad7192_channels_config(indio_dev);
- 	if (ret < 0)
--		goto error_disable_dvdd;
-+		return ret;
- 
- 	if (st->chip_info->chip_id == CHIPID_AD7195)
- 		indio_dev->info = &ad7195_info;
-@@ -975,17 +989,15 @@ static int ad7192_probe(struct spi_device *spi)
- 
- 	ad_sd_init(&st->sd, indio_dev, spi, &ad7192_sigma_delta_info);
- 
--	ret = ad_sd_setup_buffer_and_trigger(indio_dev);
-+	ret = devm_ad_sd_setup_buffer_and_trigger(&spi->dev, indio_dev);
- 	if (ret)
--		goto error_disable_dvdd;
-+		return ret;
- 
- 	st->fclk = AD7192_INT_FREQ_MHZ;
- 
- 	st->mclk = devm_clk_get_optional(&spi->dev, "mclk");
--	if (IS_ERR(st->mclk)) {
--		ret = PTR_ERR(st->mclk);
--		goto error_remove_trigger;
--	}
-+	if (IS_ERR(st->mclk))
-+		return PTR_ERR(st->mclk);
- 
- 	st->clock_sel = ad7192_of_clock_select(st);
- 
-@@ -993,55 +1005,26 @@ static int ad7192_probe(struct spi_device *spi)
- 	    st->clock_sel == AD7192_CLK_EXT_MCLK2) {
- 		ret = clk_prepare_enable(st->mclk);
- 		if (ret < 0)
--			goto error_remove_trigger;
-+			return ret;
-+
-+		ret = devm_add_action_or_reset(&spi->dev, ad7192_clk_disable,
-+					       st->mclk);
-+		if (ret)
-+			return ret;
- 
- 		st->fclk = clk_get_rate(st->mclk);
- 		if (!ad7192_valid_external_frequency(st->fclk)) {
--			ret = -EINVAL;
- 			dev_err(&spi->dev,
- 				"External clock frequency out of bounds\n");
--			goto error_disable_clk;
-+			return -EINVAL;
- 		}
- 	}
- 
- 	ret = ad7192_setup(st, spi->dev.of_node);
- 	if (ret)
--		goto error_disable_clk;
--
--	ret = iio_device_register(indio_dev);
--	if (ret < 0)
--		goto error_disable_clk;
--	return 0;
--
--error_disable_clk:
--	if (st->clock_sel == AD7192_CLK_EXT_MCLK1_2 ||
--	    st->clock_sel == AD7192_CLK_EXT_MCLK2)
--		clk_disable_unprepare(st->mclk);
--error_remove_trigger:
--	ad_sd_cleanup_buffer_and_trigger(indio_dev);
--error_disable_dvdd:
--	regulator_disable(st->dvdd);
--error_disable_avdd:
--	regulator_disable(st->avdd);
--
--	return ret;
--}
--
--static int ad7192_remove(struct spi_device *spi)
--{
--	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--	struct ad7192_state *st = iio_priv(indio_dev);
--
--	iio_device_unregister(indio_dev);
--	if (st->clock_sel == AD7192_CLK_EXT_MCLK1_2 ||
--	    st->clock_sel == AD7192_CLK_EXT_MCLK2)
--		clk_disable_unprepare(st->mclk);
--	ad_sd_cleanup_buffer_and_trigger(indio_dev);
--
--	regulator_disable(st->dvdd);
--	regulator_disable(st->avdd);
-+		return ret;
- 
--	return 0;
-+	return devm_iio_device_register(&spi->dev, indio_dev);
- }
- 
- static const struct of_device_id ad7192_of_match[] = {
-@@ -1059,7 +1042,6 @@ static struct spi_driver ad7192_driver = {
- 		.of_match_table = ad7192_of_match,
- 	},
- 	.probe		= ad7192_probe,
--	.remove		= ad7192_remove,
- };
- module_spi_driver(ad7192_driver);
- 
--- 
-2.31.1
-
+Acked-by: Rob Herring <robh@kernel.org>
