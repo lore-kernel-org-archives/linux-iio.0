@@ -2,78 +2,92 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAACFC433B4
-	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 11:40:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AAB3C433B4
+	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 12:38:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ADB8261207
-	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 11:40:22 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1DBE56191A
+	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 12:38:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231419AbhEKLl1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 May 2021 07:41:27 -0400
-Received: from szxga05-in.huawei.com ([45.249.212.191]:2631 "EHLO
-        szxga05-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230501AbhEKLl0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 May 2021 07:41:26 -0400
-Received: from DGGEMS401-HUB.china.huawei.com (unknown [172.30.72.59])
-        by szxga05-in.huawei.com (SkyGuard) with ESMTP id 4FfbVd46zYzPwtP;
-        Tue, 11 May 2021 19:36:57 +0800 (CST)
-Received: from thunder-town.china.huawei.com (10.174.177.72) by
- DGGEMS401-HUB.china.huawei.com (10.3.19.201) with Microsoft SMTP Server id
- 14.3.498.0; Tue, 11 May 2021 19:40:11 +0800
-From:   Zhen Lei <thunder.leizhen@huawei.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio <linux-iio@vger.kernel.org>
-CC:     Zhen Lei <thunder.leizhen@huawei.com>
-Subject: [PATCH 1/1] iio: ep93xx: Remove redundant error printing in ep93xx_adc_probe()
-Date:   Tue, 11 May 2021 19:39:12 +0800
-Message-ID: <20210511113912.5548-1-thunder.leizhen@huawei.com>
-X-Mailer: git-send-email 2.26.0.windows.1
+        id S231582AbhEKMjl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 May 2021 08:39:41 -0400
+Received: from mga09.intel.com ([134.134.136.24]:2470 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230475AbhEKMjk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 11 May 2021 08:39:40 -0400
+IronPort-SDR: /V3rRbQL5qS4lUyOg2RKkAgmvj8+5Ft8IlcQG09j7LwJEDm3eaaueSv3npMxE7hrJDJnSTYWVe
+ wV+QtJ8B5hrA==
+X-IronPort-AV: E=McAfee;i="6200,9189,9980"; a="199495462"
+X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; 
+   d="scan'208";a="199495462"
+Received: from orsmga005.jf.intel.com ([10.7.209.41])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 May 2021 05:38:32 -0700
+IronPort-SDR: FRwwxEHA3LJBodNCNuQ5179JAjm/wOZzoYFL76sLvj/bAba2sAei3aqGxtn8bv8fUZZdHDgR9x
+ EOaHLlryZreg==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.82,290,1613462400"; 
+   d="scan'208";a="609470067"
+Received: from lkp-server01.sh.intel.com (HELO f375d57c4ed4) ([10.239.97.150])
+  by orsmga005.jf.intel.com with ESMTP; 11 May 2021 05:38:29 -0700
+Received: from kbuild by f375d57c4ed4 with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1lgRee-0000hU-Ko; Tue, 11 May 2021 12:38:28 +0000
+Date:   Tue, 11 May 2021 20:37:58 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Stephan Gerhold <stephan@gerhold.net>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     kbuild-all@lists.01.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Yang <decatf@gmail.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Subject: [RFC PATCH] iio: accel: kxcjk-1013: kxcjk1013_regs can be static
+Message-ID: <20210511123758.GA70037@86ca4a2db576>
+References: <20210511095409.9290-3-stephan@gerhold.net>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.174.177.72]
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210511095409.9290-3-stephan@gerhold.net>
+X-Patchwork-Hint: ignore
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When devm_ioremap_resource() fails, a clear enough error message will be
-printed by its subfunction __devm_ioremap_resource(). The error
-information contains the device name, failure cause, and possibly resource
-information.
+drivers/iio/accel/kxcjk-1013.c:150:30: warning: symbol 'kxcjk1013_regs' was not declared. Should it be static?
+drivers/iio/accel/kxcjk-1013.c:162:30: warning: symbol 'kxtf9_regs' was not declared. Should it be static?
 
-Therefore, remove the error printing here to simplify code and reduce the
-binary size.
-
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Signed-off-by: Zhen Lei <thunder.leizhen@huawei.com>
+Reported-by: kernel test robot <lkp@intel.com>
+Signed-off-by: kernel test robot <lkp@intel.com>
 ---
- drivers/iio/adc/ep93xx_adc.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
+ kxcjk-1013.c |    4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/ep93xx_adc.c b/drivers/iio/adc/ep93xx_adc.c
-index c08ab3c6dfafd48..a10a4e8d94fdda8 100644
---- a/drivers/iio/adc/ep93xx_adc.c
-+++ b/drivers/iio/adc/ep93xx_adc.c
-@@ -165,10 +165,8 @@ static int ep93xx_adc_probe(struct platform_device *pdev)
+diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+index 8800ebf47b5a7..492f576f97348 100644
+--- a/drivers/iio/accel/kxcjk-1013.c
++++ b/drivers/iio/accel/kxcjk-1013.c
+@@ -147,7 +147,7 @@ struct kx_chipset_regs {
+ 	u8 wake_thres;
+ };
  
- 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	priv->base = devm_ioremap_resource(&pdev->dev, res);
--	if (IS_ERR(priv->base)) {
--		dev_err(&pdev->dev, "Cannot map memory resource\n");
-+	if (IS_ERR(priv->base))
- 		return PTR_ERR(priv->base);
--	}
+-const struct kx_chipset_regs kxcjk1013_regs = {
++static const struct kx_chipset_regs kxcjk1013_regs = {
+ 	.int_src1	= KXCJK1013_REG_INT_SRC1,
+ 	.int_src2	= KXCJK1013_REG_INT_SRC2,
+ 	.int_rel	= KXCJK1013_REG_INT_REL,
+@@ -159,7 +159,7 @@ const struct kx_chipset_regs kxcjk1013_regs = {
+ 	.wake_thres	= KXCJK1013_REG_WAKE_THRES,
+ };
  
- 	iiodev->name = dev_name(&pdev->dev);
- 	iiodev->modes = INDIO_DIRECT_MODE;
--- 
-2.26.0.106.g9fadedd
-
-
+-const struct kx_chipset_regs kxtf9_regs = {
++static const struct kx_chipset_regs kxtf9_regs = {
+ 	/* .int_src1 was moved to INT_SRC2 on KXTF9 */
+ 	.int_src1	= KXTF9_REG_INT_SRC2,
+ 	/* .int_src2 is not available */
