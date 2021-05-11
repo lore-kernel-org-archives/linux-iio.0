@@ -2,34 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E2A1C433B4
-	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 14:03:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E1CFAC433B4
+	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 14:09:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4448260200
-	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 14:03:37 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B613761155
+	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 14:09:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231527AbhEKOEk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 May 2021 10:04:40 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43590 "EHLO mail.kernel.org"
+        id S231736AbhEKOKS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 May 2021 10:10:18 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48356 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231704AbhEKOEd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 11 May 2021 10:04:33 -0400
+        id S231663AbhEKOKS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 11 May 2021 10:10:18 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DB0206192E;
-        Tue, 11 May 2021 14:03:25 +0000 (UTC)
-Date:   Tue, 11 May 2021 15:04:32 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id 63F81613F7;
+        Tue, 11 May 2021 14:09:07 +0000 (UTC)
+Date:   Tue, 11 May 2021 15:10:14 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     srf@canb.auug.org.au, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org
-Subject: Conflict for tomorrows linux-next between staging/staging-linus and
- iio/togreg
-Message-ID: <20210511150432.3045a3f8@jic23-huawei>
+To:     Hans de Goede <hdegoede@redhat.com>
+Cc:     Stephan Gerhold <stephan@gerhold.net>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Yang <decatf@gmail.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH 0/3] iio: accel: kxcjk-1013: Add support for KX023-1025
+Message-ID: <20210511151014.3d9d6768@jic23-huawei>
+In-Reply-To: <91258724-09cc-ed39-2277-6fbcca0c53e9@redhat.com>
+References: <20210511095409.9290-1-stephan@gerhold.net>
+        <91258724-09cc-ed39-2277-6fbcca0c53e9@redhat.com>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -38,52 +47,56 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi stephen
+On Tue, 11 May 2021 12:44:23 +0200
+Hans de Goede <hdegoede@redhat.com> wrote:
 
-Heads up that I've just pushed out iio/togreg and that will conflict
-with staging/staging-linus (and iio/fixes-togreg)
+> Hi,
+> 
+> On 5/11/21 11:54 AM, Stephan Gerhold wrote:
+> > KX023-1025 [1] is another accelerometer from Kionix that has lots
+> > of additional functionality compared to KXCJK-1013. It combines the
+> > motion interrupt functionality from KXCJK with the tap detection
+> > from KXTF9, plus a lot more other functionality.
+> > 
+> > This patch set does not add support for any of the extra functionality,
+> > but makes basic functionality work with the existing kxcjk-1013 driver.
+> > 
+> > At first, the register map for the KX023-1025 seems quite different
+> > from the other accelerometers supported by the kxcjk-1013.
+> > However, it turns out that at least most of the register bits
+> > still mean the same for KX023-1025.
+> > 
+> > This patch set refactors the kxcjk-1013 driver a little bit
+> > to get the register addresses from a chip-specific struct.
+> > The register bits can be re-used for all the different chips.
+> > 
+> > The KX023-1025 is used in several smartphones from Huawei.
+> > I tested these changes on a Huawei Ascend G7, someone else reported
+> > they also work fine on the Huawei Honor 5X (codename "kiwi").
+> > 
+> > [1]: https://kionixfs.azureedge.net/en/datasheet/KX023-1025%20Specifications%20Rev%2012.0.pdf
+> > 
+> > Stephan Gerhold (3):
+> >   dt-bindings: iio: kionix,kxcjk1013: Document kionix,kx023-1025
+> >   iio: accel: kxcjk-1013: Refactor configuration registers into struct
+> >   iio: accel: kxcjk-1013: Add support for KX023-1025  
+> 
+> Thanks, the entire series looks good to me:
+> 
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+> 
 
-I'll rebase to fix this cleanly once rc2 is out.
+Other than those things 0-day found which would be good to tidy up for a v2
+looks good to me.
 
-Sorry for the noise in the meantime.
+Thanks,
 
-Resolution I would suggest looks like:
+Jonathan
 
-commit 7cf1fe472df0d6dbddb44a7996efa5245884fa55 (HEAD -> check)
-Merge: ba9c25d94dea 68068fad0e1c
-Author: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Date:   Tue May 11 14:50:16 2021 +0100
+> for the series.
+> 
+> Regards,
+> 
+> Hans
+> 
 
-    Merge branch 'togreg' into check
-
-diff --cc drivers/iio/industrialio-core.c
-index 59efb36db2c7,efb4cf91c9e4..bfa20a346f71
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@@ -1785,10 -1811,10 +1810,10 @@@ static long iio_ioctl(struct file *filp
-        }
-  
-        if (ret == IIO_IOCTL_UNHANDLED)
- -              ret = -EINVAL;
- +              ret = -ENODEV;
-  
-  out_unlock:
--       mutex_unlock(&indio_dev->info_exist_lock);
-+       mutex_unlock(&iio_dev_opaque->info_exist_lock);
-  
-        return ret;
-  }
-@@@ -1925,9 -1951,12 +1950,11 @@@ EXPORT_SYMBOL(__iio_device_register)
-   **/
-  void iio_device_unregister(struct iio_dev *indio_dev)
-  {
--       cdev_device_del(&indio_dev->chrdev, &indio_dev->dev);
-+       struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
- -      struct iio_ioctl_handler *h, *t;
-  
--       mutex_lock(&indio_dev->info_exist_lock);
-+       cdev_device_del(&iio_dev_opaque->chrdev, &indio_dev->dev);
-+ 
-+       mutex_lock(&iio_dev_opaque->info_exist_lock);
-  
-        iio_device_unregister_debugfs(indio_dev);
