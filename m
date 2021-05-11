@@ -2,177 +2,110 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 55CA4C433ED
-	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 14:24:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E08F3C433ED
+	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 14:25:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1FE926190A
-	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 14:24:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B0849611CC
+	for <linux-iio@archiver.kernel.org>; Tue, 11 May 2021 14:25:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231721AbhEKOZI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 11 May 2021 10:25:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60488 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231773AbhEKOZH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 11 May 2021 10:25:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 7BF676187E;
-        Tue, 11 May 2021 14:24:00 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1620743040;
-        bh=K5dIHfa4f6iByDzBZIlrjQRjF6/bEjxWK1nUAqzRpew=;
-        h=References:In-Reply-To:From:Date:Subject:To:Cc:From;
-        b=JwaonazL7mHtxi37clzYyAaTtim9WYGe0jNdHlIfH66KDgGwD7QSLjEbrzvQMGgxj
-         cDxVGdxsCSttt8JIk8CkX28GzepNyrYgvBI1JuvlFOJaMgtQqfDezEAUokTzNj9Di/
-         AXk99SIB1YVQuMhT8u6c+PflBGCBBVOhpYgwe9cQWyML9PY1iJv974grpxFQf2Zlfk
-         aUGvNVSxIAiuPtI40JwsNp54vhkyiWFA7kZoGWTVhKJA8n9Wz1XL4k007CFv87+k2k
-         ie6Ts3jvb6fuJ96vpOt+4eetlT3LXFNfFHwPDzEMeFWHkETQEygR474DDgvL+Oc1l/
-         9cZVdIGiRgynA==
-Received: by mail-ed1-f53.google.com with SMTP id v5so12032451edc.8;
-        Tue, 11 May 2021 07:24:00 -0700 (PDT)
-X-Gm-Message-State: AOAM5336IfGGHK4WvHXBJwJ1DkR9FDCNaG8F6ys88Kmm2uB8QC8lGEBv
-        7Kemzwb5+bFmJnTumAKG56ABR7gqI57cF0v2Aw==
-X-Google-Smtp-Source: ABdhPJxvejkoMRuepYDfIZklCbkFbvR1TbNfZ2DNIhf0/HxlULmwCrdyYucaU8vfjuT695OoYvWsI5knsrz4cgRv3yU=
-X-Received: by 2002:a50:c446:: with SMTP id w6mr33152086edf.62.1620743038881;
- Tue, 11 May 2021 07:23:58 -0700 (PDT)
+        id S231855AbhEKO00 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 11 May 2021 10:26:26 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.82]:31928 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231848AbhEKO00 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 May 2021 10:26:26 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1620743105; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=FcAVKS3UNpLQ8gj8eAghEpOPRQFEwSbn2aGZC1YYtXjLiPqhK89rW6pb/+zIZl7zum
+    9lZRlFmnzOqmC3f/yvpPAMQQAW8nBUWSspqmtNanpP31NmYZ6xsWYdQyfen1Z4Hteo2o
+    Mgv22y0N7cOl0FxnG124PLYVKq7240aN+mKs6lf2kLJ3jPg5zD4RoDWKH0mNXT3RuCNe
+    acfk6fAzaQuHYg5nswnQ6KZ3J0vsRAjIoWVMqwR7ikkIiHE7nX89b3jD33VGkr89vYTR
+    OyzBhhkBHnn1nOK1Tm/atfF42jvXXaue4+vV0mYuSOfa3EtOEonySId7yTjjtNnQIIhH
+    szfA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1620743105;
+    s=strato-dkim-0002; d=strato.com;
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=7yyxdVM6KYbZoGA9Q0XvOMSAphuounGt4Tz7A3rbIGQ=;
+    b=mkSeNJCwzcDuypwBr21kBOwOmNht/n01Ptxgnq36CAqtVDLot/tvSDjxDsDBY3q6iV
+    yWpRdbiLuCPC9UO6UGoMTt0RCTb+meBWpEQoSuUg2XcUwFYUJ9WoCq7wMYbZStGX+psL
+    6mv5/h0WfnVk7+PrsYYAR5MMjGlkAjYfn2Ds9wE7M0nc5ymAcaFqClCmCPPZGTEd9YA6
+    y9xZDmN4hC7cecQIa4umRnrv1cV/ApJibRAQmpSumWOxt5e94Ayg2wiVOBdn9GauC3Hz
+    ROMY6NSj8IIPrQVJkDJEG0gEtYV7rWw13UGRFbMwfGuMuhB63QRrzIcU/NrTnnn0DZzu
+    GldQ==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1620743105;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=7yyxdVM6KYbZoGA9Q0XvOMSAphuounGt4Tz7A3rbIGQ=;
+    b=cV/YL3173mkXQA1ahlkNXLpQPl7xdcwsPZH9oFUHDfYoNI/if9MfXRVVtk9oo5IP3x
+    hvM7PTjM8mjGM45dGtPzCAj14iA1YkHEvIufGSRgVlQFa2NvdFHM3Ak1ckcTag2MfvjI
+    ljXAXRztHd2J+PK44hBktNT3h4xvC/lGAo21MFR/Lp7KA4TDxCiJyiBxIf9jvI8JcohJ
+    Z3CXuo9aaNRCHNu0lRUv0Nmd4NL4SRrI/M0m2bls7exrQgKUbclG8PcKT41/bJNiYmZf
+    VclOWOfWQiwPj35w6aJAWksIAjbeQ+L9pp5NwyhsetkW5TukRuZjDV1IghlMrAlU2L3b
+    nZqQ==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxB5m6ONKhX"
+X-RZG-CLASS-ID: mo00
+Received: from droid..
+    by smtp.strato.de (RZmta 47.25.7 DYNA|AUTH)
+    with ESMTPSA id j06c13x4BEP50bk
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Tue, 11 May 2021 16:25:05 +0200 (CEST)
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Robert Yang <decatf@gmail.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        =?UTF-8?q?Micha=C5=82=20Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Hans de Goede <hdegoede@redhat.com>,
+        Stephan Gerhold <stephan@gerhold.net>
+Subject: [PATCH v2 1/3] dt-bindings: iio: kionix,kxcjk1013: Document kionix,kx023-1025
+Date:   Tue, 11 May 2021 16:24:00 +0200
+Message-Id: <20210511142402.4457-2-stephan@gerhold.net>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210511142402.4457-1-stephan@gerhold.net>
+References: <20210511142402.4457-1-stephan@gerhold.net>
 MIME-Version: 1.0
-References: <20210510204524.617390-1-robh@kernel.org> <d3aae746-284b-b0bc-0d52-a76c361d3592@lucaceresoli.net>
- <CAL_JsqLhwifngoNK0ciO=yuVqpEbMGOSWMHyT=5DcYcO9jcuCw@mail.gmail.com> <2b09c4ed-758d-6eed-8fc1-39653d10e844@lucaceresoli.net>
-In-Reply-To: <2b09c4ed-758d-6eed-8fc1-39653d10e844@lucaceresoli.net>
-From:   Rob Herring <robh@kernel.org>
-Date:   Tue, 11 May 2021 09:23:44 -0500
-X-Gmail-Original-Message-ID: <CAL_JsqKEdtJ=NndWAR4j1WEBnzML_UkGFzKd6fkKOiV1SLFczg@mail.gmail.com>
-Message-ID: <CAL_JsqKEdtJ=NndWAR4j1WEBnzML_UkGFzKd6fkKOiV1SLFczg@mail.gmail.com>
-Subject: Re: [PATCH] dt-bindings: More removals of type references on common properties
-To:     Luca Ceresoli <luca@lucaceresoli.net>
-Cc:     devicetree@vger.kernel.org,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Georgi Djakov <djakov@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Odelu Kukatla <okukatla@codeaurora.org>,
-        Alex Elder <elder@kernel.org>,
-        Shengjiu Wang <shengjiu.wang@nxp.com>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        Linux-ALSA <alsa-devel@alsa-project.org>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Linux Input <linux-input@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        netdev <netdev@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, May 11, 2021 at 9:09 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
->
-> Hi Rob,
->
-> On 11/05/21 15:44, Rob Herring wrote:
-> > On Tue, May 11, 2021 at 2:20 AM Luca Ceresoli <luca@lucaceresoli.net> wrote:
-> >>
-> >> Hi,
-> >>
-> >> On 10/05/21 22:45, Rob Herring wrote:
-> >>> Users of common properties shouldn't have a type definition as the
-> >>> common schemas already have one. A few new ones slipped in and
-> >>> *-names was missed in the last clean-up pass. Drop all the unnecessary
-> >>> type references in the tree.
-> >>>
-> >>> A meta-schema update to catch these is pending.
-> >>>
-> >>> Cc: Luca Ceresoli <luca@lucaceresoli.net>
-> >>> Cc: Stephen Boyd <sboyd@kernel.org>
-> >>> Cc: Olivier Moysan <olivier.moysan@foss.st.com>
-> >>> Cc: Arnaud Pouliquen <arnaud.pouliquen@foss.st.com>
-> >>> Cc: Jonathan Cameron <jic23@kernel.org>
-> >>> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> >>> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-> >>> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> >>> Cc: Georgi Djakov <djakov@kernel.org>
-> >>> Cc: "David S. Miller" <davem@davemloft.net>
-> >>> Cc: Jakub Kicinski <kuba@kernel.org>
-> >>> Cc: Sebastian Reichel <sre@kernel.org>
-> >>> Cc: Orson Zhai <orsonzhai@gmail.com>
-> >>> Cc: Baolin Wang <baolin.wang7@gmail.com>
-> >>> Cc: Chunyan Zhang <zhang.lyra@gmail.com>
-> >>> Cc: Liam Girdwood <lgirdwood@gmail.com>
-> >>> Cc: Mark Brown <broonie@kernel.org>
-> >>> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
-> >>> Cc: Odelu Kukatla <okukatla@codeaurora.org>
-> >>> Cc: Alex Elder <elder@kernel.org>
-> >>> Cc: Shengjiu Wang <shengjiu.wang@nxp.com>
-> >>> Cc: linux-clk@vger.kernel.org
-> >>> Cc: alsa-devel@alsa-project.org
-> >>> Cc: linux-iio@vger.kernel.org
-> >>> Cc: linux-arm-kernel@lists.infradead.org
-> >>> Cc: linux-input@vger.kernel.org
-> >>> Cc: linux-pm@vger.kernel.org
-> >>> Cc: netdev@vger.kernel.org
-> >>> Signed-off-by: Rob Herring <robh@kernel.org>
-> >>> ---
-> >>>  Documentation/devicetree/bindings/clock/idt,versaclock5.yaml    | 2 --
-> >>>  .../devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.yaml         | 1 -
-> >>>  Documentation/devicetree/bindings/input/input.yaml              | 1 -
-> >>>  Documentation/devicetree/bindings/interconnect/qcom,rpmh.yaml   | 1 -
-> >>>  Documentation/devicetree/bindings/net/qcom,ipa.yaml             | 1 -
-> >>>  .../devicetree/bindings/power/supply/sc2731-charger.yaml        | 2 +-
-> >>>  Documentation/devicetree/bindings/sound/fsl,rpmsg.yaml          | 2 +-
-> >>>  7 files changed, 2 insertions(+), 8 deletions(-)
-> >>>
-> >>> diff --git a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> >>> index c268debe5b8d..28675b0b80f1 100644
-> >>> --- a/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> >>> +++ b/Documentation/devicetree/bindings/clock/idt,versaclock5.yaml
-> >>> @@ -60,7 +60,6 @@ properties:
-> >>>      maxItems: 2
-> >>>
-> >>>    idt,xtal-load-femtofarads:
-> >>> -    $ref: /schemas/types.yaml#/definitions/uint32
-> >>>      minimum: 9000
-> >>>      maximum: 22760
-> >>>      description: Optional load capacitor for XTAL1 and XTAL2
-> >>> @@ -84,7 +83,6 @@ patternProperties:
-> >>>          enum: [ 1800000, 2500000, 3300000 ]
-> >>>        idt,slew-percent:
-> >>>          description: The Slew rate control for CMOS single-ended.
-> >>> -        $ref: /schemas/types.yaml#/definitions/uint32
-> >>>          enum: [ 80, 85, 90, 100 ]
-> >>
-> >> Ok, but shouldn't "percent" be listed in
-> >> Documentation/devicetree/bindings/property-units.txt?
-> >
-> > It is in the schema already[1].
->
-> Sure, but having an incomplete file in the kernel is poorly useful, if
-> not misleading. What about any of these options:
->
-> - add to property-units.txt the missing units
-> - delete property-units.txt from the kernel sources
-> - replace the entire content of property-units.txt with a link to the
->   schema file, stating it is the authoritative and complete source
->
-> I would feel a lot better with any of these. I can prepare the patch too.
+The KX023-1025 accelerometer uses similar register bits as kxcjk1023,
+so it can make use of the same driver. Document the new kionix,kx023-1025
+compatible that is also supported by the kxcjk-1013 driver now.
 
-Yes, we should remove it. I just hadn't gotten around to it. Note
-there is one reference to it in writing-bindings.rst.
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+ .../devicetree/bindings/iio/accel/kionix,kxcjk1013.yaml          | 1 +
+ 1 file changed, 1 insertion(+)
 
-Rob
+diff --git a/Documentation/devicetree/bindings/iio/accel/kionix,kxcjk1013.yaml b/Documentation/devicetree/bindings/iio/accel/kionix,kxcjk1013.yaml
+index fbb714431e3d..52fa0f7c2d0e 100644
+--- a/Documentation/devicetree/bindings/iio/accel/kionix,kxcjk1013.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/kionix,kxcjk1013.yaml
+@@ -16,6 +16,7 @@ properties:
+       - kionix,kxcj91008
+       - kionix,kxtj21009
+       - kionix,kxtf9
++      - kionix,kx023-1025
+ 
+   reg:
+     maxItems: 1
+-- 
+2.31.1
+
