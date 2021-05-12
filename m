@@ -2,67 +2,68 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5CD13C433B4
-	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:22:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EC5DC433ED
+	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:22:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 16B34613C3
-	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:22:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 10EB5600D4
+	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242796AbhELSWP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 May 2021 14:22:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50794 "EHLO
+        id S242888AbhELSWS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 May 2021 14:22:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350904AbhELRwi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:52:38 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3749EC06134F
-        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:50:07 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id t4so36323140ejo.0
-        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:50:07 -0700 (PDT)
+        with ESMTP id S1351070AbhELRxQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:53:16 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCD72C06135A
+        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:50:10 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id c22so8142146ejd.12
+        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:50:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=deviqon.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=xBvo4n1b1lpFvoXyiJXHa/MxZkZ+cVEgHQDwczdnQoM=;
-        b=KeUHS+sM1e7FnHAfkAJ7Aol2WcEZSwD8dAOWuCv5Qvd6OzIRoGIRKTn8gqDF0uDisi
-         bPd0RIbn+h1yOn7ceieEkaop7mFgy478fbu6zPFO6KOFBa5d0RkUH6eTBb5BIyXWSGpz
-         +7/g/2PvfIvNb6kH0/kv5ONgD5oS8UnYRoVOjIgas7m28TfoGkvwsQWi0oH0r9PBkgSh
-         51WKUnD2amNa/ATxdUfAaZr1wP+nBbYOnxry6jKDGOXQJu4fCtDChSPKy4QFWxVi3INZ
-         7fGtyvLH0aQd+2jabyC9ZfHcnpTYw/50fcvrrJZdCLx5ricC7WAnxZ50AJh2Ffsw6fZq
-         8M8Q==
+        bh=jHJAupFk4VVa7z8ctgtedCHBJAEpOSwdi50lGjIjnM8=;
+        b=e10xmBpzys9TdMzE0pnZOOkSfhsx/x+C1dbrHUZpxwE97NttSHDWv5JMPPQzRHCKmf
+         5q3wJ5nmq/nooxGb8mVQgNDjWMrYDglBaVpSrsIn1rcHqC7bLMzlUR1K9d0aSDaxANMN
+         8MDIr7L9W2Ama2Do4uMchWdz1vBpNeascHyKnkr+5S7TktkVwvza3oJPN4QniW+C8qwR
+         Wjp3K0jHkZj1hY/NMOCCNUhtWCUzcQbP79tBqyTCMXocF1iEwztNhOFlG8jKbQQwdcqP
+         4+sEdxNOOqJsRF7tO+rQ/ykf2Fq0Xko9BUwyAfKDYTRVewT8XpjtFLoU9WjFDFSLyjo8
+         aOTA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=xBvo4n1b1lpFvoXyiJXHa/MxZkZ+cVEgHQDwczdnQoM=;
-        b=F0mPiGJofrK48Yir2gpKL2lhEtanZDYfGA//ZPIenjhxo10v1aaufPmian1NabLYV8
-         4i+V4BwxdMeF7dAaJEOnMlch9pQK5ixbvAgugqscCHeRtES8+LylqYRYQsTeqvYFvq+4
-         Ca2xIpHQkBeMuOIR14zZXtDk2b56HbQyLb9ITSFqsJ8s0gaYeEvW+XtuhwdL2FaGdCeI
-         KhWJZhxUNJmUoLFxKwayc4vnSNOAr05X4bDyFAnfd2ZlORgoXOu2aIf3uXWg7rWZr/mn
-         Ykq2pF7KzjJEIqCBaufwOJOGGxohY6BCqRGtw4F/4couifc4loxAhEChTr6CuEI9cZ3r
-         HCAg==
-X-Gm-Message-State: AOAM5313uEvtFaawhlADmt+Tjz+iAk7iIsXnywtfk7hUoVmAE17FRfiX
-        IZBfCcq3TdlH4TXKtfsw3fiSypgNluYbgQ==
-X-Google-Smtp-Source: ABdhPJydkg/jTMyUOet8s5ERY+J4yag6wbwgnKkuWVtiHkJnqAlKM5TCo+BFuBhkjoO7RE9j+lsnBQ==
-X-Received: by 2002:a17:907:990f:: with SMTP id ka15mr31620660ejc.132.1620841805716;
-        Wed, 12 May 2021 10:50:05 -0700 (PDT)
+        bh=jHJAupFk4VVa7z8ctgtedCHBJAEpOSwdi50lGjIjnM8=;
+        b=iw0MHABBC4O7fooPotyDQVxz6G7+i8ALg/Hwvp+B6iDtcfTuMU9PvD3Uw22CPe3Bwh
+         h3DIeZOlKgrs2oogn7q4C/NNRtwoE9FV+y17HnNK+kj9qbNNek3qIJ5CY1fND/lvSxUx
+         hWyj/+IBrlAenNQBoGn1v6+kKSJLpH38hg8ChRMFAdOzc/6qROoQcyZifMZDnje7aj6z
+         +KyGD4MycJa/52RT0lIyo7XWsNVz6rUhobDsfTILozQSUEZCwOeNL2PI9iupKzYoM6ue
+         KFFXRC+u9VBYa8meHrpBiRuY4EnE9OHUTPJ/ImcbcTMLCypTyTm0xWz1EIzss48Ays/P
+         9RQQ==
+X-Gm-Message-State: AOAM530BIZ5900omFw23S/5j4oe/HwefMF/NVjTEpMM6fFKq6vfsIMHU
+        7TB1JQkexY0NYd5+UAn7GJeSgy/5nO5rJA==
+X-Google-Smtp-Source: ABdhPJz0FTn0J+EeturXDq+YOEJGN9aS96/Ktldul8oQ4CJTzbrcu1fjcrwMYKn+fa9fVKlSBehKIg==
+X-Received: by 2002:a17:907:e89:: with SMTP id ho9mr37611483ejc.5.1620841809218;
+        Wed, 12 May 2021 10:50:09 -0700 (PDT)
 Received: from neptune.. ([5.2.193.191])
-        by smtp.gmail.com with ESMTPSA id r16sm338058edq.87.2021.05.12.10.50.04
+        by smtp.gmail.com with ESMTPSA id r16sm338058edq.87.2021.05.12.10.50.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 May 2021 10:50:05 -0700 (PDT)
+        Wed, 12 May 2021 10:50:08 -0700 (PDT)
 From:   Alexandru Ardelean <aardelean@deviqon.com>
 To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     jic23@kernel.org, Jonathan.Cameron@huawei.com,
         alexandru.tachici@analog.com, linux@deviqon.com,
         Alexandru Ardelean <aardelean@deviqon.com>
-Subject: [PATCH v3 09/12] iio: adc: ad7192: use devm_clk_get_optional() for mclk
-Date:   Wed, 12 May 2021 20:49:11 +0300
-Message-Id: <20210512174914.10549-10-aardelean@deviqon.com>
+Subject: [PATCH v3 12/12] iio: adc: ad_sigma_delta: remove ad_sd_{setup,cleanup}_buffer_and_trigger()
+Date:   Wed, 12 May 2021 20:49:14 +0300
+Message-Id: <20210512174914.10549-13-aardelean@deviqon.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210512174914.10549-1-aardelean@deviqon.com>
 References: <20210512174914.10549-1-aardelean@deviqon.com>
@@ -72,43 +73,137 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The devm_clk_get_optional() helper returns NULL when devm_clk_get() returns
--ENOENT.
-This makes things slightly cleaner. The added benefit is mostly cosmetic.
+Since all AD Sigma-Delta drivers now use the
+devm_ad_sd_setup_buffer_and_trigger() function, we can remove the old
+ad_sd_{setup,cleanup}_buffer_and_trigger() functions.
 
-Also, a minor detail with this call, is that the reference for the parent
-device is taken as `spi->dev` instead of `&st->sd.spi->dev` (which looks a
-little quirky).
+This way we can discourage new drivers that use the ad_sigma_delta
+lib-driver to use these (older functions).
 
 Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
 ---
- drivers/iio/adc/ad7192.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/adc/ad_sigma_delta.c       | 86 --------------------------
+ include/linux/iio/adc/ad_sigma_delta.h |  3 -
+ 2 files changed, 89 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
-index 9da394ad3868..c3442e9aa9fd 100644
---- a/drivers/iio/adc/ad7192.c
-+++ b/drivers/iio/adc/ad7192.c
-@@ -326,7 +326,7 @@ static int ad7192_of_clock_select(struct ad7192_state *st)
- 	clock_sel = AD7192_CLK_INT;
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index d5801a47be07..1d652d9b2f5c 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -470,49 +470,6 @@ EXPORT_SYMBOL_GPL(ad_sd_validate_trigger);
+ static const struct iio_trigger_ops ad_sd_trigger_ops = {
+ };
  
- 	/* use internal clock */
--	if (PTR_ERR(st->mclk) == -ENOENT) {
-+	if (st->mclk) {
- 		if (of_property_read_bool(np, "adi,int-clock-output-enable"))
- 			clock_sel = AD7192_CLK_INT_CO;
- 	} else {
-@@ -981,8 +981,8 @@ static int ad7192_probe(struct spi_device *spi)
+-static int ad_sd_probe_trigger(struct iio_dev *indio_dev)
+-{
+-	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+-	int ret;
+-
+-	sigma_delta->trig = iio_trigger_alloc(&sigma_delta->spi->dev,
+-					      "%s-dev%d", indio_dev->name,
+-					      iio_device_id(indio_dev));
+-	if (sigma_delta->trig == NULL) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-	sigma_delta->trig->ops = &ad_sd_trigger_ops;
+-	init_completion(&sigma_delta->completion);
+-
+-	sigma_delta->irq_dis = true;
+-	ret = request_irq(sigma_delta->spi->irq,
+-			  ad_sd_data_rdy_trig_poll,
+-			  sigma_delta->info->irq_flags | IRQF_NO_AUTOEN,
+-			  indio_dev->name,
+-			  sigma_delta);
+-	if (ret)
+-		goto error_free_trig;
+-
+-	iio_trigger_set_drvdata(sigma_delta->trig, sigma_delta);
+-
+-	ret = iio_trigger_register(sigma_delta->trig);
+-	if (ret)
+-		goto error_free_irq;
+-
+-	/* select default trigger */
+-	indio_dev->trig = iio_trigger_get(sigma_delta->trig);
+-
+-	return 0;
+-
+-error_free_irq:
+-	free_irq(sigma_delta->spi->irq, sigma_delta);
+-error_free_trig:
+-	iio_trigger_free(sigma_delta->trig);
+-error_ret:
+-	return ret;
+-}
+-
+ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_dev)
+ {
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+@@ -553,49 +510,6 @@ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_de
+ 	return 0;
+ }
  
- 	st->fclk = AD7192_INT_FREQ_MHZ;
+-static void ad_sd_remove_trigger(struct iio_dev *indio_dev)
+-{
+-	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+-
+-	iio_trigger_unregister(sigma_delta->trig);
+-	free_irq(sigma_delta->spi->irq, sigma_delta);
+-	iio_trigger_free(sigma_delta->trig);
+-}
+-
+-/**
+- * ad_sd_setup_buffer_and_trigger() -
+- * @indio_dev: The IIO device
+- */
+-int ad_sd_setup_buffer_and_trigger(struct iio_dev *indio_dev)
+-{
+-	int ret;
+-
+-	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
+-			&ad_sd_trigger_handler, &ad_sd_buffer_setup_ops);
+-	if (ret)
+-		return ret;
+-
+-	ret = ad_sd_probe_trigger(indio_dev);
+-	if (ret) {
+-		iio_triggered_buffer_cleanup(indio_dev);
+-		return ret;
+-	}
+-
+-	return 0;
+-}
+-EXPORT_SYMBOL_GPL(ad_sd_setup_buffer_and_trigger);
+-
+-/**
+- * ad_sd_cleanup_buffer_and_trigger() -
+- * @indio_dev: The IIO device
+- */
+-void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev)
+-{
+-	ad_sd_remove_trigger(indio_dev);
+-	iio_triggered_buffer_cleanup(indio_dev);
+-}
+-EXPORT_SYMBOL_GPL(ad_sd_cleanup_buffer_and_trigger);
+-
+ /**
+  * devm_ad_sd_setup_buffer_and_trigger() - Device-managed buffer & trigger setup
+  * @dev: Device object to which to bind the life-time of the resources attached
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index be81ad39fb7a..c525fd51652f 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -133,9 +133,6 @@ int ad_sd_calibrate_all(struct ad_sigma_delta *sigma_delta,
+ int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
+ 	struct spi_device *spi, const struct ad_sigma_delta_info *info);
  
--	st->mclk = devm_clk_get(&st->sd.spi->dev, "mclk");
--	if (IS_ERR(st->mclk) && PTR_ERR(st->mclk) != -ENOENT) {
-+	st->mclk = devm_clk_get_optional(&spi->dev, "mclk");
-+	if (IS_ERR(st->mclk)) {
- 		ret = PTR_ERR(st->mclk);
- 		goto error_remove_trigger;
- 	}
+-int ad_sd_setup_buffer_and_trigger(struct iio_dev *indio_dev);
+-void ad_sd_cleanup_buffer_and_trigger(struct iio_dev *indio_dev);
+-
+ int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indio_dev);
+ 
+ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
 -- 
 2.31.1
 
