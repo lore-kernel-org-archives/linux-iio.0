@@ -2,136 +2,129 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B105C43600
-	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29D53C433B4
+	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3AE67613BD
-	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DB230613FB
+	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242681AbhELSV7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 May 2021 14:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50442 "EHLO
+        id S242718AbhELSWD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 May 2021 14:22:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50468 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350504AbhELRvF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:51:05 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E07AEC0613ED
-        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:49:56 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id v5so17014068edc.8
-        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:49:56 -0700 (PDT)
+        with ESMTP id S1350521AbhELRvK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:51:10 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F344C06138F
+        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:50:00 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id c20so845309ejm.3
+        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:50:00 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=deviqon.com; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6CF6JaLEsr4bT8+QMif5jPEHXEsPl26FZvVRFcuOkwc=;
-        b=uOBsu1XrTiZAwShcaOMcffKTDx/Ophnyzam9nkJ6oEg55xrsCEksPt88yeaVa3Ovqt
-         2/SRVcnxMhYkX8I+aQHAHvvVHAEERH9RqzuRChVR45Vb8nLFAY4b+mPf7n0P6R/yAhnY
-         La735GzTyGtprzS0GPLMFfXKxBsaYrUiQYIoBEOQCf8s44lJxk6UUHMuxCQr4/fwjl7n
-         84f5uecYvko4pNv+RgrtmFDbLWXd2F1AS4LzNxHRZT+wE7DwWFrDOb5ytKsewOqZmC8m
-         GFh5Ff8BKcz6x7jBJHc47fz8x21FoqGJA4SiGAe4LyjrqMZ600q6hfvYcyE+DNN7vvG2
-         WjUw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nkXARO+FVrewyUKtJO4CN2s0umqdJR4fAYNaOAsTCV0=;
+        b=SYDiblT/FKbuA+P5DtK7LLEjtQVRy9buQ9rlNnDPTNyrJ6fCURA7APFNkba9LrMETA
+         cp3y5kAVDg7FK34ik232iLoQpAG5Vp1LMM0FdeDtuaNFTN+91XFonJ9BJZWNrqPEGgPa
+         h6sV98fIZv24fN/XvrB0Zl5JgWBVZ/c4dc9RYJsSoQQwzbnJnrKMF67YsAoTvYTGUFf8
+         8fwD+RyHyj1pUkVk0vJC6sT4gB2u3ZhkssdBvugnvV2eK955YM7zcrQ5hJsHYwpHNaXy
+         3ieX3bz92AFTz9y6vERaW/F6Sgc8Ba31m5jd1csiSZupR98LhBfDBDUd/dSSY+l7zwQU
+         EoJw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=6CF6JaLEsr4bT8+QMif5jPEHXEsPl26FZvVRFcuOkwc=;
-        b=nzp52NH7hqZaYfrXx6cHyUf2BsNGRlHlePgwZ8aJZmV67pxa66ya8On+GFqqPj83tv
-         21MfPcYHOKiBb5nHR7f2YZBzYtzdMFKjPUD3ZsJggPvVn0ZcG0bntFkPWFToAYJuJl0N
-         jqE+nmy/xk0At3u8NuUu10H1y2MNTazj9QFVxZRb5SB7H40jawf1I7KgBCexwvrYHJZ4
-         bZc8iLAp11ucQEijt7SzU0CRzR7roRhAdwK19dteBAjJj4/MpJ+uwJFXhxwV2BciefpP
-         7XV/XSP/mir5YYWu6K84IqJjaIdI6HfNSj94bAWJylHAr2Nm263ta2cg2/mJcRLn+6uZ
-         EXEQ==
-X-Gm-Message-State: AOAM532xELjb+NGY41IDqKRV+egWQnlGEH0eg7+qAoNfyXouIqYPML1Q
-        JEC+LVfZ04wUqifriKXq5qE1dkkp04t7OQ==
-X-Google-Smtp-Source: ABdhPJzy+ZctiG/CuSRiDfEFPWdzDWwJlut5GCbXDpDUdtanYQzxV0aXnNO3mPgLQRGnzdTtFbtu2g==
-X-Received: by 2002:aa7:dc54:: with SMTP id g20mr45080155edu.266.1620841795330;
-        Wed, 12 May 2021 10:49:55 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nkXARO+FVrewyUKtJO4CN2s0umqdJR4fAYNaOAsTCV0=;
+        b=L+mpV0vBAl3fzm/G1318KedmzDyDmlMsmbYlbKAi9qnXRWFcmf4diCAzmiDjTepu9S
+         1WxC5TbIZH0DIrVL4T/79Vw8TjAq+LG9hG/ipysvPo3f3zYcvLMDaLfy7BGXs+1DjJHH
+         xGepl6Us//WPdhaXnkUdCWaNb8ocBoy/dWBZdyd8hFG93lTJ34fMSRmlauX+VcCC/fZn
+         NOuaUL1gGhvMLtyOaa08W6WsKqND4q5pgoIJScMWUT4oiRQ+Du7NkdeiGAjsewshGuRo
+         dbPjQLZYywhdmQg4KuxacFRqODTRrf3/2Jy3pngWwBoXACPbKaQ/4kAeA9owizYlXWrV
+         a70w==
+X-Gm-Message-State: AOAM531BNWiFi5RFtyYc32ffscR0MklWNXgdMtHTpOeTJQqNP9fvB9D1
+        OLDclVD3eHQJUenkn+X+SBaVJy9yA5h3OA==
+X-Google-Smtp-Source: ABdhPJwBLSV+hsZcozcVFIQf+ebEzlkp5nvvKcSNKrmg6v9FLDS+ICiZXI3Q+Kw2xiIZ/PF/gA6lCg==
+X-Received: by 2002:a17:906:d978:: with SMTP id rp24mr39245712ejb.333.1620841798809;
+        Wed, 12 May 2021 10:49:58 -0700 (PDT)
 Received: from neptune.. ([5.2.193.191])
-        by smtp.gmail.com with ESMTPSA id r16sm338058edq.87.2021.05.12.10.49.54
+        by smtp.gmail.com with ESMTPSA id r16sm338058edq.87.2021.05.12.10.49.57
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 12 May 2021 10:49:54 -0700 (PDT)
+        Wed, 12 May 2021 10:49:58 -0700 (PDT)
 From:   Alexandru Ardelean <aardelean@deviqon.com>
 To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     jic23@kernel.org, Jonathan.Cameron@huawei.com,
         alexandru.tachici@analog.com, linux@deviqon.com,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
         Alexandru Ardelean <aardelean@deviqon.com>
-Subject: [PATCH v3 00/12] ad_sigma_delta: convert all drivers to device-managed
-Date:   Wed, 12 May 2021 20:49:02 +0300
-Message-Id: <20210512174914.10549-1-aardelean@deviqon.com>
+Subject: [PATCH v3 03/12] iio: adc: ad7192: Avoid disabling a clock that was never enabled.
+Date:   Wed, 12 May 2021 20:49:05 +0300
+Message-Id: <20210512174914.10549-4-aardelean@deviqon.com>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210512174914.10549-1-aardelean@deviqon.com>
+References: <20210512174914.10549-1-aardelean@deviqon.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Well, for lack of a better title that's what this series does.
-It merges Jonathan's patches from:
-  * https://lore.kernel.org/linux-iio/20210508182319.488551-1-jic23@kernel.org/
-    Patch 3/3 was a polished a bit with my comments from that review and also
-    to use the devm_ad_sd_setup_buffer_and_trigger() function.
-  * https://lore.kernel.org/linux-iio/20210509114118.660422-1-jic23@kernel.org/
-    Added only to base the conversion to devm_
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The AD Sigma Delta family of ADC drivers share a lot of the logic in the
-ad_sigma_delta lib-driver.
+Found by inspection.
 
-This set introduces a devm_ad_sd_setup_buffer_and_trigger() call, which
-aims to replace the 'ad_sd_{setup,cleanup}_buffer_and_trigger()' pair.
+If the internal clock source is being used, the driver doesn't
+call clk_prepare_enable() and as such we should not call
+clk_disable_unprepare()
 
-This helps with converting the AD7780, AD7791, AD7793 and AD7192
-drivers use be fully converted to device-managed functions.
+Use the same condition to protect the disable path as is used
+on the enable one.  Note this will all get simplified when
+the driver moves over to a full devm_ flow, but that would make
+backporting the fix harder.
 
-Changelog v2 -> v3:
-* https://lore.kernel.org/linux-iio/20210511071831.576145-1-aardelean@deviqon.com/
-* patch 'iio: adc: ad7192: handle zero Avdd regulator value as error'
-  is now 'iio: adc: ad7192: handle zero Avdd regulator value'
-  essentially just doing a simple 'if (voltage_uv >= 0)' check now
+Fix obviously predates move out of staging, but backporting will
+become more complex (and is unlikely to happen), hence that patch
+is given in the fixes tag.
 
-Changelog v1 -> v2:
-* https://lore.kernel.org/linux-iio/20210510125523.1271237-1-aardelean@deviqon.com/
-* add my S-o-b tags on all patches; with @deviqon.com email
-  - Note: I'm a little unsure about the correctness of these tags; there
-    are a few mixed-in, with Reviewed-by & Signed-off-by; I'm fine if
-    Jonathan tweaks these as needed;
-* added patch 'iio: adc: ad7192: handle zero Avdd regulator value as error'
-* all Fixes patches should be now at the beginning of the series
+Fixes: b581f748cce0 ("staging: iio: adc: ad7192: move out of staging")
+Cc: Alexandru Tachici <alexandru.tachici@analog.com>
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
+---
+ drivers/iio/adc/ad7192.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-Alexandru Ardelean (8):
-  iio: adc: ad7192: handle zero Avdd regulator value
-  iio: adc: ad_sigma_delta: introduct
-    devm_ad_sd_setup_buffer_and_trigger()
-  iio: adc: ad7793: convert to device-managed functions
-  iio: adc: ad7791: convert to device-managed functions
-  iio: adc: ad7780: convert to device-managed functions
-  iio: adc: ad7192: use devm_clk_get_optional() for mclk
-  iio: adc: ad7192: convert to device-managed functions
-  iio: adc: ad_sigma_delta: remove
-    ad_sd_{setup,cleanup}_buffer_and_trigger()
-
-Jonathan Cameron (4):
-  iio: adc: ad7124: Fix missbalanced regulator enable / disable on
-    error.
-  iio: adc: ad7124: Fix potential overflow due to non sequential channel
-    numbers
-  iio: adc: ad7192: Avoid disabling a clock that was never enabled.
-  iio: adc: ad7124: Use devm_ managed calls for all of probe() + drop
-    remove()
-
- drivers/iio/adc/ad7124.c               | 84 ++++++++++-------------
- drivers/iio/adc/ad7192.c               | 92 +++++++++++---------------
- drivers/iio/adc/ad7780.c               | 38 +++--------
- drivers/iio/adc/ad7791.c               | 44 ++++--------
- drivers/iio/adc/ad7793.c               | 53 +++++----------
- drivers/iio/adc/ad_sigma_delta.c       | 82 ++++++++---------------
- include/linux/iio/adc/ad_sigma_delta.h |  4 +-
- 7 files changed, 142 insertions(+), 255 deletions(-)
-
+diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
+index 2ed580521d81..d3be67aa0522 100644
+--- a/drivers/iio/adc/ad7192.c
++++ b/drivers/iio/adc/ad7192.c
+@@ -1014,7 +1014,9 @@ static int ad7192_probe(struct spi_device *spi)
+ 	return 0;
+ 
+ error_disable_clk:
+-	clk_disable_unprepare(st->mclk);
++	if (st->clock_sel == AD7192_CLK_EXT_MCLK1_2 ||
++	    st->clock_sel == AD7192_CLK_EXT_MCLK2)
++		clk_disable_unprepare(st->mclk);
+ error_remove_trigger:
+ 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+ error_disable_dvdd:
+@@ -1031,7 +1033,9 @@ static int ad7192_remove(struct spi_device *spi)
+ 	struct ad7192_state *st = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+-	clk_disable_unprepare(st->mclk);
++	if (st->clock_sel == AD7192_CLK_EXT_MCLK1_2 ||
++	    st->clock_sel == AD7192_CLK_EXT_MCLK2)
++		clk_disable_unprepare(st->mclk);
+ 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+ 
+ 	regulator_disable(st->dvdd);
 -- 
 2.31.1
 
