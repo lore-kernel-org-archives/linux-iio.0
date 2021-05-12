@@ -2,113 +2,115 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CCA7C43460
-	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6954C4360C
+	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ED329613D3
-	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A3E15613EE
+	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242658AbhELSVx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 May 2021 14:21:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43810 "EHLO
+        id S242704AbhELSWB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 May 2021 14:22:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50464 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346783AbhELRVk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:21:40 -0400
-Received: from mail-pf1-x436.google.com (mail-pf1-x436.google.com [IPv6:2607:f8b0:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A482C061347;
-        Wed, 12 May 2021 10:20:14 -0700 (PDT)
-Received: by mail-pf1-x436.google.com with SMTP id v191so18995763pfc.8;
-        Wed, 12 May 2021 10:20:14 -0700 (PDT)
+        with ESMTP id S1350519AbhELRvK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:51:10 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F1E0C06138B
+        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:49:59 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id s20so30731413ejr.9
+        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:49:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/mRM7q1w9KEfWo7XLMCrlXg4WbYJ598DsMPCReIKFcI=;
-        b=NNxJOC23SFvUX3yQW92nyLFzLFHNPZr8wDnfRRzMSlqB2XWlW6gkv9Pgwv1joc/odL
-         kZUSxA62ue/klNVU1liSmFbMBwJyzDwt86W1jUoMTLxjwfQxWO8hCSlzWrYERHAfmD0S
-         HgUnaOJWhGXY+4JXADcXpKI9iJCWYvKgwLcFQsBjh8yIKYDK2scSHFKXs2xGOvsCzcQd
-         uiOGUIgi+lyiMA8uK7nuZXyxhRDdUOBTBQEBCTfnAEz7pAlfr7ANsPBg43I4VCHqGh6Z
-         bbulzkuoffV1gybJb8q00vrxEt7M46JwL5cD9pxAWd6bAtom880pBUVmOcX28MNfRe2A
-         MfMQ==
+        d=deviqon.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=MlVahHcRzJl/OmCKvY8N8NXLgxaRCwf7xRO5a1v6DG4=;
+        b=ARiwzjzixi6kh5+4cwI0MVWB0GweYEnmFJ2+cGNn+FZTzgODruNy6osicsuDPE3nE4
+         4rjOlH2wXakFQgZyYyO7Yn1lgsTLMIKgLQYVsPfi4N2z2pydUd83fC78WrcA0NZPJRx5
+         HW6NAS2hVe4/dlf0qSQsoscJZ3UQ5x2lxG7S+Y0N6Q/whgA7CALQn52psQ3AfPM8QSbE
+         /zS6RNtTWyDdlhVzd5Aa/8nYX7/Ksr+VfUZcBDXkS3B+mGfqbhJIlpsie7wfGxSzAANA
+         xhxVI4O19Oa/Scyk3vDeTMBFy2dL+cbUG174pRmWdYPnD7WSon1Cz0QeHCRcQx/e+hSl
+         fZTw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/mRM7q1w9KEfWo7XLMCrlXg4WbYJ598DsMPCReIKFcI=;
-        b=mFATqLwBsL7RH7yhhIVJT30DMNtNARQzmibIcx6iluCGVxgnMJSxHrO98Pm2ethLKr
-         y2K5sVVvtjm1tfiim3T6rhMVx8cAa1oPgASLsuPAAa756Yprv2KZ3xXhO7H4/OGs1m8X
-         ENw3Sbo2Jp68WlOiCgZbzCxfXuDI1YfDusImSxzkllb1HJ1TwyW1sruYdJc/XCtHULM8
-         sASupd3dfrAxhmLXkBPbBxJIp0nz2qmm6i0rJAvcMg/7DMzJViZdqSvAQBBHBHjudoWB
-         bmugCZvOotIAXQRp1t0lG+e0UqHOQRVRSsWpyT/V5m++6r3WmKHWsoDOYUvgKb7xXnqa
-         BSWw==
-X-Gm-Message-State: AOAM533EnNJQE//Hr9IrjYvDrUQXxz1FKJ/HMlSIZl0ttmJiwbEVAwzy
-        pygjUiC+MevIiQLU3VJjWCArQM4MsDnpWjQcq2o=
-X-Google-Smtp-Source: ABdhPJxDVWM6VC96SX/FrY4PNncdkd0pABiXC4DaOTQwHYXX7VS6NITQsa75eGgDVq4vOcFjWpkRADT1tlGm2bYJnSI=
-X-Received: by 2002:a05:6a00:8c4:b029:2b4:8334:ed4d with SMTP id
- s4-20020a056a0008c4b02902b48334ed4dmr22170660pfu.36.1620840013879; Wed, 12
- May 2021 10:20:13 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=MlVahHcRzJl/OmCKvY8N8NXLgxaRCwf7xRO5a1v6DG4=;
+        b=An3eLH21an083I9qo2654rbbkM365iDFINQGAkj68hGDTjm2o+9SZjXL7GfW3JmZpC
+         +khz4b5nrk0eF5tZ5VOy7ww1rrBWIpu6PqWBXkz+cQhezD97KT0J5DwR2IxCSMF2yy/1
+         bICrFxwLtosrhemRBbpjWX5gdMd3T+orJQ19KoeG1jEM6RJ4PYbWkt1aazzR2m1e1ugk
+         vPziQc/SXmPLtPwsOtRCRhtzqoZf7qxRrpCizws/1kVGNoDZe4ZOF3AaVbT7CMoU1fBb
+         cj0MbD3/1ikRwR6+IREZBXIx+ZGPB+g+gGo/eBqSL59x48x22xKkfj7ETBpT2RxV6SXk
+         vO6g==
+X-Gm-Message-State: AOAM533jxcXHaP81kZcYzXoWfwzxGjtJ6l2CjXxDFtgRmY3BfC2kyRDS
+        SKzazThDpQvoqqLLzzHhJ/aiU8lJKlb0SQ==
+X-Google-Smtp-Source: ABdhPJzo7tmImWNPOb4Lq7Z3+yra7hePoowXdeUssxDVr3PJD3+Y/BkCZA1BuGocp2anTSOX9BNOfg==
+X-Received: by 2002:a17:907:3da4:: with SMTP id he36mr38201476ejc.308.1620841797674;
+        Wed, 12 May 2021 10:49:57 -0700 (PDT)
+Received: from neptune.. ([5.2.193.191])
+        by smtp.gmail.com with ESMTPSA id r16sm338058edq.87.2021.05.12.10.49.56
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 May 2021 10:49:57 -0700 (PDT)
+From:   Alexandru Ardelean <aardelean@deviqon.com>
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     jic23@kernel.org, Jonathan.Cameron@huawei.com,
+        alexandru.tachici@analog.com, linux@deviqon.com,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>
+Subject: [PATCH v3 02/12] iio: adc: ad7124: Fix potential overflow due to non sequential channel numbers
+Date:   Wed, 12 May 2021 20:49:04 +0300
+Message-Id: <20210512174914.10549-3-aardelean@deviqon.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210512174914.10549-1-aardelean@deviqon.com>
+References: <20210512174914.10549-1-aardelean@deviqon.com>
 MIME-Version: 1.0
-References: <cover.1620766020.git.lucas.p.stankus@gmail.com> <09e65d3a235febfc4c3ee172b573ba8c9cde94b8.1620766020.git.lucas.p.stankus@gmail.com>
-In-Reply-To: <09e65d3a235febfc4c3ee172b573ba8c9cde94b8.1620766020.git.lucas.p.stankus@gmail.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Wed, 12 May 2021 20:20:02 +0300
-Message-ID: <CA+U=DsptfNDut3984MJkKckgWBhNd_0p17RfpidEXwYhMRfxtg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] staging: iio: cdc: ad7746: avoid overwrite of num_channels
-To:     Lucas Stankus <lucas.p.stankus@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        linux-staging@lists.linux.dev, LKML <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, May 11, 2021 at 11:55 PM Lucas Stankus
-<lucas.p.stankus@gmail.com> wrote:
->
-> AD7745 devices don't have the CIN2 pins and therefore can't handle related
-> channels. Forcing the number of AD7746 channels may lead to enabling more
-> channels than what the hardware actually supports.
-> Avoid num_channels being overwritten after first assignment.
->
-> Signed-off-by: Lucas Stankus <lucas.p.stankus@gmail.com>
-> ---
->  drivers/staging/iio/cdc/ad7746.c | 1 -
->  1 file changed, 1 deletion(-)
->
-> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> index e03d010b2f4c..9e0da43b2871 100644
-> --- a/drivers/staging/iio/cdc/ad7746.c
-> +++ b/drivers/staging/iio/cdc/ad7746.c
-> @@ -693,7 +693,6 @@ static int ad7746_probe(struct i2c_client *client,
->                 indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
->         else
->                 indio_dev->num_channels =  ARRAY_SIZE(ad7746_channels) - 2;
-> -       indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-ohh; good catch
+Channel numbering must start at 0 and then not have any holes, or
+it is possible to overflow the available storage.  Note this bug was
+introduced as part of a fix to ensure we didn't rely on the ordering
+of child nodes.  So we need to support arbitrary ordering but they all
+need to be there somewhere.
 
-this falls into the category of a fix, so a Fixes tag is required;
-this looks so old, that i did not bother tracking it before
-83e416f458d53  [which is 2011]
+Note I hit this when using qemu to test the rest of this series.
+Arguably this isn't the best fix, but it is probably the most minimal
+option for backporting etc.
 
-so, maybe something like:
+Fixes: d7857e4ee1ba6 ("iio: adc: ad7124: Fix DT channel configuration")
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
+---
+ drivers/iio/adc/ad7124.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-Fixes: 83e416f458d53 ("staging: iio: adc: Replace, rewrite ad7745 from
-scratch.")
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index 437116a07cf1..a27db78ea13e 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -771,6 +771,13 @@ static int ad7124_of_parse_channel_config(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			goto err;
+ 
++		if (channel >= indio_dev->num_channels) {
++			dev_err(indio_dev->dev.parent,
++				"Channel index >= number of channels\n");
++			ret = -EINVAL;
++			goto err;
++		}
++
+ 		ret = of_property_read_u32_array(child, "diff-channels",
+ 						 ain, 2);
+ 		if (ret)
+-- 
+2.31.1
 
->         indio_dev->modes = INDIO_DIRECT_MODE;
->
->         if (pdata) {
-> --
-> 2.31.1
->
