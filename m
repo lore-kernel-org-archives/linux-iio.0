@@ -2,136 +2,166 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5574BC43462
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7711EC43470
 	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1E02E613CB
+	by mail.kernel.org (Postfix) with ESMTP id 5D408613D3
 	for <linux-iio@archiver.kernel.org>; Wed, 12 May 2021 18:21:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242668AbhELSV6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 May 2021 14:21:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46268 "EHLO
+        id S242688AbhELSWA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 May 2021 14:22:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50448 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348246AbhELRfr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:35:47 -0400
-Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15CA4C061358;
-        Wed, 12 May 2021 10:33:21 -0700 (PDT)
-Received: by mail-pl1-x631.google.com with SMTP id n3so725776plf.7;
-        Wed, 12 May 2021 10:33:21 -0700 (PDT)
+        with ESMTP id S1350514AbhELRvH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 May 2021 13:51:07 -0400
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AB81C06138A
+        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:49:58 -0700 (PDT)
+Received: by mail-ej1-x62f.google.com with SMTP id k10so5028940ejj.8
+        for <linux-iio@vger.kernel.org>; Wed, 12 May 2021 10:49:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=K/Pm8uY+AjoJVI9OqoE7C7bqpQJBmCJUql194cT1sRI=;
-        b=YQCkngmEgnmJH8laOgr5SiRh1EjFYL3bZw6APsX8Ws8qgT0glcuzLp80bmFu4yqWbt
-         Bg77zKgSEAJ3CU0HoirVKmeAY5KCEaU1x+TJUFFZyvrfoed6kXVUfpFueyjWNuN9ok4L
-         YPB1nNk3FFFX182+gyX7v6z4zltqNb8enccvRrUZ6YVlzdzShZfV36TrxaYQmMVUzxJF
-         utlM/oC7Cb/9voUmN+Ou7Z59XfxJOZvG1zVR+MwWMAHYXQspt1IeThGMlrZRukkW7deQ
-         obD6cxWnZMRItH13f490p/Ca2Da/vZM/NlQiKWdxDmaHkA09EHyMql1GIqBxgLBrHVyN
-         n+Wg==
+        d=deviqon.com; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=URnNCU/Gt3uzfVjqFnT5ZArbKyWbTbXjKVLfJMYugCE=;
+        b=qg7B+p/EdpaiT5gvz8IazDMbbMPiWk9AJUJJLOX5vNYzliT7X3pyFCTYphE+eWpyFT
+         pnzyX3hL1IquBRjvIKYFWfDQErVLkvyNwtHGDP+R7WDY1LMzeJEj+2ngyLkN9Ei1QkR6
+         P8Wp/EABTMd4H97FmKQ7DGN6Y4GTrP6cmbyWCjJkE1qs1x6APee0qKsGJDPWBwXjZ4Uh
+         wA5iPLULgRq1vosVtyEaXwnWyL6kxoC+ANXj3lF3BUAMCfjeViP3tJrVfEQ6d2PPn+qK
+         WYPsLEICOvDN+XcdTDWeRTV7GG1opmSMRv5NcVu+bTeKvUdlKCs5fBCxxvzsDi+n5gEZ
+         GwZQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=K/Pm8uY+AjoJVI9OqoE7C7bqpQJBmCJUql194cT1sRI=;
-        b=rdRXk7Lp/jOHTA31xiden3CRaYG7p1qz/lLwycy4m05s0vpsLIEGiB/OPfCkkTVSAr
-         wv9LX4NKfa7Jyme/yndx2mA9I/ai22bJJup0IWUzuJuvXfTuC2mery7BQNWQmXQlCqb1
-         ckaV/rfM7R1njtz0EIVhhCe4JrlsRLgB6bBP81omyU49ktq7gZup/WpMg6RYz1xFC0RP
-         ECUva8K8KOlpkwlf3JQCQYDKIm2vh+bgLpEF7RMss+NlOVhLAyenzWdwvYUqWnijF2ZD
-         ncWqi4M70Nfj0m021mUGNnJKmo3kGX+g0ELSZWzazFOYDygtV641I67C7Byy7kkvy7Kw
-         g0hQ==
-X-Gm-Message-State: AOAM530IvBbNhpk9SL2wjTifVF8fW2XSXlFuWDQL/jWG6lty97HUnCrZ
-        pW/YFJEjfwCvYyfFUybXxQzBrG9acIY5GFWF5/A=
-X-Google-Smtp-Source: ABdhPJwTXd7T2dzSEPTNfRmvseSk41y6zLPIAEHJ+5CYjpYUtwD/xFC07w0jHDeQdr1S8pcozwocecMj1CYFjkUkB5A=
-X-Received: by 2002:a17:90b:1c10:: with SMTP id oc16mr7425665pjb.86.1620840800569;
- Wed, 12 May 2021 10:33:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=URnNCU/Gt3uzfVjqFnT5ZArbKyWbTbXjKVLfJMYugCE=;
+        b=T/+s80zSNmvScPUiXrzws+UPvnoLBZKrAGMneYXqQ5v2qhWbrJDUsI1WDt/1p4eMXN
+         U4GervRLEdZY/QkFQcOH7PH5eUcSNLI0nXj1iQMvAaR3v5VPqu3emkJdhczrhbO7zTFd
+         /92llostO5TVTNJ4BdKUbzAz774Wp2uxnYUobsI+uxqpik1NWwrFxYvpFkoEYtqKg5VF
+         kSRcgJaPlhIhOllxsjWRUGcbH7kNtwg34WEjRQyxkCcWwciXK+D87Bx451bo9tlDR96a
+         FF5DyTRrSCh8N3PaLC6dKBzwdH19zipwGXvKgF0qk6/U9iadDvoqHxHRBmq34v77qDjj
+         JRHA==
+X-Gm-Message-State: AOAM5314PwxzBcmAJ5RqKXXmROPzGKL6vz/nxoLmssOLH3XG5ZNbvwZX
+        lvh5VJlFlVVJVUWRv56smrsmMAHetCjP6g==
+X-Google-Smtp-Source: ABdhPJwRM2YdDAwUgqdu+As6vFNfWcxNjZJd+2LpncXGnTaKBSs/Qj0AxhzAn8V71kWgDJbc4EfQng==
+X-Received: by 2002:a17:906:7c45:: with SMTP id g5mr37981556ejp.368.1620841796574;
+        Wed, 12 May 2021 10:49:56 -0700 (PDT)
+Received: from neptune.. ([5.2.193.191])
+        by smtp.gmail.com with ESMTPSA id r16sm338058edq.87.2021.05.12.10.49.55
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 12 May 2021 10:49:56 -0700 (PDT)
+From:   Alexandru Ardelean <aardelean@deviqon.com>
+To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     jic23@kernel.org, Jonathan.Cameron@huawei.com,
+        alexandru.tachici@analog.com, linux@deviqon.com,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>
+Subject: [PATCH v3 01/12] iio: adc: ad7124: Fix missbalanced regulator enable / disable on error.
+Date:   Wed, 12 May 2021 20:49:03 +0300
+Message-Id: <20210512174914.10549-2-aardelean@deviqon.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210512174914.10549-1-aardelean@deviqon.com>
+References: <20210512174914.10549-1-aardelean@deviqon.com>
 MIME-Version: 1.0
-References: <20210510095649.3302835-1-andy.shevchenko@gmail.com>
-In-Reply-To: <20210510095649.3302835-1-andy.shevchenko@gmail.com>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Wed, 12 May 2021 20:33:09 +0300
-Message-ID: <CA+U=DsoX1kTy-NwNFPajWMZnJT+cY9MocSGpgTggmhgXrhXREg@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: dac: ad5770r: Put fwnode in error case during ->probe()
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, May 10, 2021 at 12:59 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> device_for_each_child_node() bumps a reference counting of a returned variable.
-> We have to balance it whenever we return to the caller.
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-This feels like the device_for_each_child_node() [and the of_node
-variant] iterator[s] need[s] some re-design to account for how easy it
-is to slip stuff by.
-But that's something quite out of this scope.
+If the devm_regulator_get() call succeeded but not the regulator_enable()
+then regulator_disable() would be called on a regulator that was not
+enabled.
 
+Fix this by moving regulator enabling / disabling over to
+devm_ management via devm_add_action_or_reset.
+
+Fixes: b3af341bbd96 ("iio: adc: Add ad7124 support")
 Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
+---
+ drivers/iio/adc/ad7124.c | 29 +++++++++++++----------------
+ 1 file changed, 13 insertions(+), 16 deletions(-)
 
->
-> Fixes: cbbb819837f6 ("iio: dac: ad5770r: Add AD5770R support")
-> Cc: Alexandru Tachici <alexandru.tachici@analog.com>
-> Signed-off-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> ---
->  drivers/iio/dac/ad5770r.c | 16 +++++++++++-----
->  1 file changed, 11 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iio/dac/ad5770r.c b/drivers/iio/dac/ad5770r.c
-> index 7ab2ccf90863..8107f7bbbe3c 100644
-> --- a/drivers/iio/dac/ad5770r.c
-> +++ b/drivers/iio/dac/ad5770r.c
-> @@ -524,23 +524,29 @@ static int ad5770r_channel_config(struct ad5770r_state *st)
->         device_for_each_child_node(&st->spi->dev, child) {
->                 ret = fwnode_property_read_u32(child, "num", &num);
->                 if (ret)
-> -                       return ret;
-> -               if (num >= AD5770R_MAX_CHANNELS)
-> -                       return -EINVAL;
-> +                       goto err_child_out;
-> +               if (num >= AD5770R_MAX_CHANNELS) {
-> +                       ret = -EINVAL;
-> +                       goto err_child_out;
-> +               }
->
->                 ret = fwnode_property_read_u32_array(child,
->                                                      "adi,range-microamp",
->                                                      tmp, 2);
->                 if (ret)
-> -                       return ret;
-> +                       goto err_child_out;
->
->                 min = tmp[0] / 1000;
->                 max = tmp[1] / 1000;
->                 ret = ad5770r_store_output_range(st, min, max, num);
->                 if (ret)
-> -                       return ret;
-> +                       goto err_child_out;
->         }
->
-> +       return 0;
-> +
-> +err_child_out:
-> +       fwnode_handle_put(child);
->         return ret;
->  }
->
-> --
-> 2.31.1
->
+diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
+index 9d3952b4674f..437116a07cf1 100644
+--- a/drivers/iio/adc/ad7124.c
++++ b/drivers/iio/adc/ad7124.c
+@@ -850,6 +850,11 @@ static int ad7124_setup(struct ad7124_state *st)
+ 	return ret;
+ }
+ 
++static void ad7124_reg_disable(void *r)
++{
++	regulator_disable(r);
++}
++
+ static int ad7124_probe(struct spi_device *spi)
+ {
+ 	const struct ad7124_chip_info *info;
+@@ -895,17 +900,20 @@ static int ad7124_probe(struct spi_device *spi)
+ 		ret = regulator_enable(st->vref[i]);
+ 		if (ret)
+ 			return ret;
++
++		ret = devm_add_action_or_reset(&spi->dev, ad7124_reg_disable,
++					       st->vref[i]);
++		if (ret)
++			return ret;
+ 	}
+ 
+ 	st->mclk = devm_clk_get(&spi->dev, "mclk");
+-	if (IS_ERR(st->mclk)) {
+-		ret = PTR_ERR(st->mclk);
+-		goto error_regulator_disable;
+-	}
++	if (IS_ERR(st->mclk))
++		return PTR_ERR(st->mclk);
+ 
+ 	ret = clk_prepare_enable(st->mclk);
+ 	if (ret < 0)
+-		goto error_regulator_disable;
++		return ret;
+ 
+ 	ret = ad7124_soft_reset(st);
+ 	if (ret < 0)
+@@ -935,11 +943,6 @@ static int ad7124_probe(struct spi_device *spi)
+ 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+ error_clk_disable_unprepare:
+ 	clk_disable_unprepare(st->mclk);
+-error_regulator_disable:
+-	for (i = ARRAY_SIZE(st->vref) - 1; i >= 0; i--) {
+-		if (!IS_ERR_OR_NULL(st->vref[i]))
+-			regulator_disable(st->vref[i]);
+-	}
+ 
+ 	return ret;
+ }
+@@ -948,17 +951,11 @@ static int ad7124_remove(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct ad7124_state *st = iio_priv(indio_dev);
+-	int i;
+ 
+ 	iio_device_unregister(indio_dev);
+ 	ad_sd_cleanup_buffer_and_trigger(indio_dev);
+ 	clk_disable_unprepare(st->mclk);
+ 
+-	for (i = ARRAY_SIZE(st->vref) - 1; i >= 0; i--) {
+-		if (!IS_ERR_OR_NULL(st->vref[i]))
+-			regulator_disable(st->vref[i]);
+-	}
+-
+ 	return 0;
+ }
+ 
+-- 
+2.31.1
+
