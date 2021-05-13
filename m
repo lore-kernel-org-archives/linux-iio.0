@@ -7,63 +7,63 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A915C433B4
-	for <linux-iio@archiver.kernel.org>; Thu, 13 May 2021 12:08:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0B9C433B4
+	for <linux-iio@archiver.kernel.org>; Thu, 13 May 2021 12:08:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CB4B161186
-	for <linux-iio@archiver.kernel.org>; Thu, 13 May 2021 12:08:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E722661186
+	for <linux-iio@archiver.kernel.org>; Thu, 13 May 2021 12:08:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232410AbhEMMJ5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 13 May 2021 08:09:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40042 "EHLO
+        id S233305AbhEMMJ7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 13 May 2021 08:09:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40056 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233664AbhEMMJL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 May 2021 08:09:11 -0400
-Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F954C061574
-        for <linux-iio@vger.kernel.org>; Thu, 13 May 2021 05:08:01 -0700 (PDT)
-Received: by mail-ed1-x529.google.com with SMTP id f1so8475281edt.4
-        for <linux-iio@vger.kernel.org>; Thu, 13 May 2021 05:08:01 -0700 (PDT)
+        with ESMTP id S233684AbhEMMJN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 13 May 2021 08:09:13 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A68DC06175F
+        for <linux-iio@vger.kernel.org>; Thu, 13 May 2021 05:08:03 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id r11so6659943edt.13
+        for <linux-iio@vger.kernel.org>; Thu, 13 May 2021 05:08:03 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=deviqon.com; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=URnNCU/Gt3uzfVjqFnT5ZArbKyWbTbXjKVLfJMYugCE=;
-        b=ZtQbTSVXvj17YhFLNO51WDqUQAYNykjDQQIXPE/wLAnfnWto5f2bBUTK1tno1fOl2v
-         OEdbJ7iY64YXKEnXGoBYrYmytA6Q+Y4FqyR2MfU5bTHdIoQvasQYkl9WU9aKMTiDne/r
-         VSmfeNjCjYhVUrQtOCs/q+jmaS/NhDkUt+99M99/habPt7mjEYkmhDvtVG9FYChATwKP
-         TpUBB+aFh2TD7FxbQbTAp4Le27VQmrPtKJ/+IjlBrllqw+UXgKNFAe1GMx58jE2h6N/h
-         nuzeMm72jSFkK2MECoJuqBhgmigaoDGDseXXlg25TYPbNfhixWCncm3LdNk+ajJunVce
-         75Sw==
+        bh=nkXARO+FVrewyUKtJO4CN2s0umqdJR4fAYNaOAsTCV0=;
+        b=P+SgjrmYBqQ0rZ0mFyDg1f5A/hC9oEwgxN7MfLMZ+oL42m2KNxPOEqVmqgKSFvJkzb
+         lUus8kWAEbJ21EjfXNp9d4ZZlz5BHaSm8C2LruPbbj63Hx+UkamvZGpfPyfyLmZbDoxb
+         yN/k5DhCepeM4vEIJpwK674t6L1PvAd9f7qyXJEdaZbigJ9TrrSEhF34j+nB1G8vG8w1
+         j/ZxkVa81qFZk2F21/G0pH31Uh6wAx2eBwz743DkZ/Sju/sf7vDdpH94msnZ3Sflic+5
+         ScfK87fQuydxmeFk3+1N5whe04veqv8XybEiU+nQviKgocqdMvkSo8/mbEyTGQvFaGts
+         MVHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=URnNCU/Gt3uzfVjqFnT5ZArbKyWbTbXjKVLfJMYugCE=;
-        b=VnAnwj5VfSWkULKLY2F5mTbOIKHI7RLPmapuQZnl7wHjXnwjeHS/pvQqCTRUIAQtDq
-         P05y3uQeMdcW9lippMqWVVY7emlmlm/Y4h62yCtTz3O2VeJs4NhWKatrcZBTr3VbLBxD
-         VHZE6OssQlXoK4MnZWuBXNP+5jU5iujjS/aajIQpAvoA68ayyc853vtBpVb8IIgAjgFW
-         B4qwC8pT2pIXlOgh8o87Ex2atEQoJyQMrXOF/i2cGEj+ye7koekZuh7DvriyxQ6mCXUW
-         kGFN/6JfJNhcYUPhQ+1Hbcx1TLd3WGyiaHNxClEhT9KbyJYYd+FMDFZF5vFf+mBMTZXA
-         bWtw==
-X-Gm-Message-State: AOAM531TdJFFJgLhU9i26LsC5DKy+kcMOz2A52UpMTkxDdBFVHq2piFy
-        xcU++Xt5RjjR01sx/TB2Cl9yrHUTXOX/NA==
-X-Google-Smtp-Source: ABdhPJysLfVEVIwQJvqmYYgFXiCP+neyXUG/tx8+hsPaCnWRLO/JSZAYs2l9y5M7G/cA2WFVeKuZ0Q==
-X-Received: by 2002:aa7:d893:: with SMTP id u19mr5066675edq.258.1620907679648;
-        Thu, 13 May 2021 05:07:59 -0700 (PDT)
+        bh=nkXARO+FVrewyUKtJO4CN2s0umqdJR4fAYNaOAsTCV0=;
+        b=tfXnR2nFKkY6D7ory0K0flwRdyZilx6THgylrTNBUiGDbrSj4LHWT//7+YDgGY4WZ4
+         wrq73feqxuIf9mf+nikmn2uDv/AkP5PM1Gn0FX4YpBTrhV6VtyQVW0ZJ214MJwb6qWG1
+         knYDeCeTkpZHy4R3a9Uw88N8b81f5aYTZ7uaFLj/Pbcv5fmnAwSJ1yMXjb9rB6ecMB2R
+         KD+tf0IiSgL4hMteql84FSWnoIiP5lR0zUjNU5SXb4Mg0cTrUWxdhguCx+bmwf0Fd3rK
+         ChkIk57vUKQp4t0CKgut9gX3Gi15K4brq6kO07PDVTswkM4vMhTDPNOAB9VCeeRPKKeT
+         etEw==
+X-Gm-Message-State: AOAM532hyw3N7Aor4ZVfcTBHO/tU6XZ/i9vpAyik9/FVR8TJ88LPGXBt
+        RrZB8LTBuvotV7awuLBUQtm3i94YVQtnBw==
+X-Google-Smtp-Source: ABdhPJyIkT/ogJbSRjObXn+3wUE92nhhoORSTrArsHGYJUkPNOdItWFMkhsKNkU+Ba5KXYwxAIGvNQ==
+X-Received: by 2002:aa7:d5c9:: with SMTP id d9mr50355348eds.153.1620907681870;
+        Thu, 13 May 2021 05:08:01 -0700 (PDT)
 Received: from neptune.. ([5.2.193.191])
-        by smtp.gmail.com with ESMTPSA id ga28sm1717809ejc.20.2021.05.13.05.07.58
+        by smtp.gmail.com with ESMTPSA id ga28sm1717809ejc.20.2021.05.13.05.08.00
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 13 May 2021 05:07:59 -0700 (PDT)
+        Thu, 13 May 2021 05:08:01 -0700 (PDT)
 From:   Alexandru Ardelean <aardelean@deviqon.com>
 To:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     jic23@kernel.org, Jonathan.Cameron@huawei.com,
         alexandru.tachici@analog.com, linux@deviqon.com,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
         Alexandru Ardelean <aardelean@deviqon.com>
-Subject: [PATCH v4 01/12] iio: adc: ad7124: Fix missbalanced regulator enable / disable on error.
-Date:   Thu, 13 May 2021 15:07:41 +0300
-Message-Id: <20210513120752.90074-2-aardelean@deviqon.com>
+Subject: [PATCH v4 03/12] iio: adc: ad7192: Avoid disabling a clock that was never enabled.
+Date:   Thu, 13 May 2021 15:07:43 +0300
+Message-Id: <20210513120752.90074-4-aardelean@deviqon.com>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210513120752.90074-1-aardelean@deviqon.com>
 References: <20210513120752.90074-1-aardelean@deviqon.com>
@@ -75,93 +75,56 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-If the devm_regulator_get() call succeeded but not the regulator_enable()
-then regulator_disable() would be called on a regulator that was not
-enabled.
+Found by inspection.
 
-Fix this by moving regulator enabling / disabling over to
-devm_ management via devm_add_action_or_reset.
+If the internal clock source is being used, the driver doesn't
+call clk_prepare_enable() and as such we should not call
+clk_disable_unprepare()
 
-Fixes: b3af341bbd96 ("iio: adc: Add ad7124 support")
+Use the same condition to protect the disable path as is used
+on the enable one.  Note this will all get simplified when
+the driver moves over to a full devm_ flow, but that would make
+backporting the fix harder.
+
+Fix obviously predates move out of staging, but backporting will
+become more complex (and is unlikely to happen), hence that patch
+is given in the fixes tag.
+
+Fixes: b581f748cce0 ("staging: iio: adc: ad7192: move out of staging")
+Cc: Alexandru Tachici <alexandru.tachici@analog.com>
 Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
 ---
- drivers/iio/adc/ad7124.c | 29 +++++++++++++----------------
- 1 file changed, 13 insertions(+), 16 deletions(-)
+ drivers/iio/adc/ad7192.c | 8 ++++++--
+ 1 file changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7124.c b/drivers/iio/adc/ad7124.c
-index 9d3952b4674f..437116a07cf1 100644
---- a/drivers/iio/adc/ad7124.c
-+++ b/drivers/iio/adc/ad7124.c
-@@ -850,6 +850,11 @@ static int ad7124_setup(struct ad7124_state *st)
- 	return ret;
- }
+diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
+index 2ed580521d81..d3be67aa0522 100644
+--- a/drivers/iio/adc/ad7192.c
++++ b/drivers/iio/adc/ad7192.c
+@@ -1014,7 +1014,9 @@ static int ad7192_probe(struct spi_device *spi)
+ 	return 0;
  
-+static void ad7124_reg_disable(void *r)
-+{
-+	regulator_disable(r);
-+}
-+
- static int ad7124_probe(struct spi_device *spi)
- {
- 	const struct ad7124_chip_info *info;
-@@ -895,17 +900,20 @@ static int ad7124_probe(struct spi_device *spi)
- 		ret = regulator_enable(st->vref[i]);
- 		if (ret)
- 			return ret;
-+
-+		ret = devm_add_action_or_reset(&spi->dev, ad7124_reg_disable,
-+					       st->vref[i]);
-+		if (ret)
-+			return ret;
- 	}
- 
- 	st->mclk = devm_clk_get(&spi->dev, "mclk");
--	if (IS_ERR(st->mclk)) {
--		ret = PTR_ERR(st->mclk);
--		goto error_regulator_disable;
--	}
-+	if (IS_ERR(st->mclk))
-+		return PTR_ERR(st->mclk);
- 
- 	ret = clk_prepare_enable(st->mclk);
- 	if (ret < 0)
--		goto error_regulator_disable;
-+		return ret;
- 
- 	ret = ad7124_soft_reset(st);
- 	if (ret < 0)
-@@ -935,11 +943,6 @@ static int ad7124_probe(struct spi_device *spi)
+ error_disable_clk:
+-	clk_disable_unprepare(st->mclk);
++	if (st->clock_sel == AD7192_CLK_EXT_MCLK1_2 ||
++	    st->clock_sel == AD7192_CLK_EXT_MCLK2)
++		clk_disable_unprepare(st->mclk);
+ error_remove_trigger:
  	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- error_clk_disable_unprepare:
- 	clk_disable_unprepare(st->mclk);
--error_regulator_disable:
--	for (i = ARRAY_SIZE(st->vref) - 1; i >= 0; i--) {
--		if (!IS_ERR_OR_NULL(st->vref[i]))
--			regulator_disable(st->vref[i]);
--	}
- 
- 	return ret;
- }
-@@ -948,17 +951,11 @@ static int ad7124_remove(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
- 	struct ad7124_state *st = iio_priv(indio_dev);
--	int i;
+ error_disable_dvdd:
+@@ -1031,7 +1033,9 @@ static int ad7192_remove(struct spi_device *spi)
+ 	struct ad7192_state *st = iio_priv(indio_dev);
  
  	iio_device_unregister(indio_dev);
+-	clk_disable_unprepare(st->mclk);
++	if (st->clock_sel == AD7192_CLK_EXT_MCLK1_2 ||
++	    st->clock_sel == AD7192_CLK_EXT_MCLK2)
++		clk_disable_unprepare(st->mclk);
  	ad_sd_cleanup_buffer_and_trigger(indio_dev);
- 	clk_disable_unprepare(st->mclk);
  
--	for (i = ARRAY_SIZE(st->vref) - 1; i >= 0; i--) {
--		if (!IS_ERR_OR_NULL(st->vref[i]))
--			regulator_disable(st->vref[i]);
--	}
--
- 	return 0;
- }
- 
+ 	regulator_disable(st->dvdd);
 -- 
 2.31.1
 
