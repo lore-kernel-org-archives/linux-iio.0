@@ -2,189 +2,97 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F14CC43460
-	for <linux-iio@archiver.kernel.org>; Fri, 14 May 2021 08:17:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C719C433B4
+	for <linux-iio@archiver.kernel.org>; Fri, 14 May 2021 08:20:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4A48E61408
-	for <linux-iio@archiver.kernel.org>; Fri, 14 May 2021 08:17:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1B95661457
+	for <linux-iio@archiver.kernel.org>; Fri, 14 May 2021 08:20:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231454AbhENIS3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 May 2021 04:18:29 -0400
-Received: from szxga04-in.huawei.com ([45.249.212.190]:3758 "EHLO
-        szxga04-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229654AbhENIS1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 May 2021 04:18:27 -0400
-Received: from dggems705-chm.china.huawei.com (unknown [172.30.72.58])
-        by szxga04-in.huawei.com (SkyGuard) with ESMTP id 4FhLrt2vd4zqTrp;
-        Fri, 14 May 2021 16:13:50 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- dggems705-chm.china.huawei.com (10.3.19.182) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Fri, 14 May 2021 16:17:14 +0800
-Received: from localhost (10.52.120.239) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Fri, 14 May
- 2021 09:17:07 +0100
-Date:   Fri, 14 May 2021 09:15:20 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        "Robin van der Gracht" <robin@protonic.nl>,
-        <linux-iio@vger.kernel.org>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "Dmitry Torokhov" <dmitry.torokhov@gmail.com>
-Subject: Re: [PATCH v6 0/3] mainline ti tsc2046 adc driver
-Message-ID: <20210514091520.00004930@Huawei.com>
-In-Reply-To: <20210514075731.ipxq2o4cdxd3piu3@pengutronix.de>
-References: <20210428073208.19570-1-o.rempel@pengutronix.de>
-        <20210503122818.59f50e45@jic23-huawei>
-        <20210514075731.ipxq2o4cdxd3piu3@pengutronix.de>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
+        id S233446AbhENIVx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 14 May 2021 04:21:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:45486 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229654AbhENIVw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 14 May 2021 04:21:52 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CA94561408;
+        Fri, 14 May 2021 08:20:39 +0000 (UTC)
+Date:   Fri, 14 May 2021 09:21:49 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Julia Lawall <Julia.Lawall@inria.fr>,
+        "Rafael J . Wysocki" <rjw@rjwysocki.net>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 19/28] iio: light: pa12203001: Use
+ pm_runtime_resume_and_get() to replace open coding.
+Message-ID: <20210514092149.0cbc34d1@jic23-huawei>
+In-Reply-To: <20210514093513.1d973db5@coco.lan>
+References: <20210509113354.660190-1-jic23@kernel.org>
+        <20210509113354.660190-20-jic23@kernel.org>
+        <20210514093513.1d973db5@coco.lan>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.52.120.239]
-X-ClientProxiedBy: lhreml706-chm.china.huawei.com (10.201.108.55) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 14 May 2021 09:57:31 +0200
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+On Fri, 14 May 2021 09:35:13 +0200
+Mauro Carvalho Chehab <mchehab+huawei@kernel.org> wrote:
 
-> Hi Jonathan,
+> Em Sun,  9 May 2021 12:33:45 +0100
+> Jonathan Cameron <jic23@kernel.org> escreveu:
 > 
-> On Mon, May 03, 2021 at 12:28:18PM +0100, Jonathan Cameron wrote:
-> > On Wed, 28 Apr 2021 09:32:05 +0200
-> > Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > > 
-> > Hi Oleksij,
+> > Found using coccicheck script under review at:
+> > https://lore.kernel.org/lkml/20210427141946.2478411-1-Julia.Lawall@inria.fr/
 > > 
-> > Series applied with the tweaks as per review to patch 3.  Please
-> > check I didn't mess those up though.
+> > This is a prequel to taking a closer look at the runtime pm in IIO drivers
+> > in general.
 > > 
-> > Applied to the togreg branch of iio.git and pushed out as testing for
-> > the autobuilders to poke at it.  
+> > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>  
 > 
-> It works. Thx!
+> LGTM.
 > 
-> Now i need to make configurable iio buffer layout
-> 
-> for the drivers/input/touchscreen/resistive-adc-touch.c
-> 
-> Do you have ideas what is the proper way to make it?
+> Reviewed-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
 
-So IIRC the issue here was making the ordering of the channels
-more flexible?  
+Thanks,
 
-We should be able to do that using the names in DT.
-
-Right now the touch screen driver just grabs them all an assumes
-a particular order, but if you look at the binding it requires naming
-
-https://elixir.bootlin.com/linux/latest/source/Documentation/devicetree/bindings/input/touchscreen/resistive-adc-touch.txt
-
-That naming should associate 'which channel' is which when
-we then do the get_all() in the driver.  If it matches the existing
-layout, nothing to do, but if we have something more complex then
-we can do data shuffling etc in the touchscreen driver to compensate
-for that.
-
-A useful starting point is probably to do a yaml conversion of
-that binding doc.  Then follow that up by making the doc more flexible
-so that it copes with what you want to do. 
-
-That should give us a good basis on which to then implement the
-handling in driver (which is often easier than defining the binding!)
+Applied to the togreg branch of iio.git.
 
 Jonathan
 
 > 
-> Regards,
-> Oleksij
-> 
+> > ---
+> >  drivers/iio/light/pa12203001.c | 4 +---
+> >  1 file changed, 1 insertion(+), 3 deletions(-)
 > > 
-> > Jonathan
-> >   
-> > > changes v6:
-> > > - get blessing from Dmitry Torokhov
-> > > - rebase against latest iio/testing
-> > > - use simple name for iio_dev->name
-> > > - use Jonathan's version for oversampling-ratio description 
-> > > 
-> > > changes v5:
-> > > - remove type for the settling-time-us property
-> > > 
-> > > changes v4:
-> > > - spell fixes
-> > > - add more comments
-> > > - make code more readable
-> > > - move scan_buf to the priv
-> > > - use FIELD_GET to extract ADC data
-> > > - make some multi line code as one line
-> > > - do not use atomic API for trig_more_count
-> > > - fix build warning on 64bit system
-> > > - add NULL check for the devm_kasprintf()
-> > > - use return devm_iio_device_register(), without additional error
-> > >   printing.
-> > > 
-> > > changes v3:
-> > > - different spell fixes
-> > > - add some notes about driver structure
-> > > - rename the trigger to point on the touchscreen nature of it
-> > > - rename DT binding to oversampling-ratio
-> > > - make sure we have some defaults in case no DT property is set
-> > > 
-> > > changes v2:
-> > > - rework and extend DT binding properties
-> > > - remove touchscreen related code from the IIO ADC driver
-> > > - make trigger be active longer then IRQ is requesting. This is needed
-> > >   to get "inactive" samples
-> > > - make oversampling and settle time configurable
-> > > 
-> > > TI TSC2046 is a touchscreen controller based on 8 channel ADC. Since most of
-> > > this ADC based touchscreen controller share same set of challenges, it
-> > > is better keep then as simple IIO ADC devices attached to a generic
-> > > resistive-adc-touch driver.
-> > > 
-> > > This driver can replace drivers/input/touchscreen/ads7846.c and has
-> > > following advantages over it:
-> > > - less code to maintain
-> > > - shared code paths (resistive-adc-touch, iio-hwmon, etc)
-> > > - can be used as plain IIO ADC to investigate signaling issues or test
-> > >   real capacity of the plates and attached low-pass filters
-> > >   (or use the touchscreen as a microphone if you like ;) )
-> > > 
-> > > Oleksij Rempel (3):
-> > >   dt-bindings:iio:adc: add generic settling-time-us and
-> > >     oversampling-ratio channel properties
-> > >   dt-bindings:iio:adc: add documentation for TI TSC2046 controller
-> > >   iio: adc: add ADC driver for the TI TSC2046 controller
-> > > 
-> > >  .../devicetree/bindings/iio/adc/adc.yaml      |  12 +
-> > >  .../bindings/iio/adc/ti,tsc2046.yaml          | 115 +++
-> > >  MAINTAINERS                                   |   8 +
-> > >  drivers/iio/adc/Kconfig                       |  12 +
-> > >  drivers/iio/adc/Makefile                      |   1 +
-> > >  drivers/iio/adc/ti-tsc2046.c                  | 720 ++++++++++++++++++
-> > >  6 files changed, 868 insertions(+)
-> > >  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,tsc2046.yaml
-> > >  create mode 100644 drivers/iio/adc/ti-tsc2046.c
-> > >   
-> > 
-> >   
+> > diff --git a/drivers/iio/light/pa12203001.c b/drivers/iio/light/pa12203001.c
+> > index bfade6577a38..a52b2c788540 100644
+> > --- a/drivers/iio/light/pa12203001.c
+> > +++ b/drivers/iio/light/pa12203001.c
+> > @@ -186,9 +186,7 @@ static int pa12203001_set_power_state(struct pa12203001_data *data, bool on,
+> >  	}
+> >  
+> >  	if (on) {
+> > -		ret = pm_runtime_get_sync(&data->client->dev);
+> > -		if (ret < 0)
+> > -			pm_runtime_put_noidle(&data->client->dev);
+> > +		ret = pm_runtime_resume_and_get(&data->client->dev);
+> >  
+> >  	} else {
+> >  		pm_runtime_mark_last_busy(&data->client->dev);  
 > 
+> 
+> 
+> Thanks,
+> Mauro
 
