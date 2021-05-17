@@ -7,46 +7,48 @@ X-Spam-Status: No, score=-17.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DF1C433ED
-	for <linux-iio@archiver.kernel.org>; Mon, 17 May 2021 17:00:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 050C4C433B4
+	for <linux-iio@archiver.kernel.org>; Mon, 17 May 2021 17:12:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 67092611BE
-	for <linux-iio@archiver.kernel.org>; Mon, 17 May 2021 17:00:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D4AED6128A
+	for <linux-iio@archiver.kernel.org>; Mon, 17 May 2021 17:12:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237967AbhEQRBt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 May 2021 13:01:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53716 "EHLO mail.kernel.org"
+        id S235955AbhEQRNa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 May 2021 13:13:30 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34486 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S236776AbhEQRBs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 17 May 2021 13:01:48 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 59CE861185;
-        Mon, 17 May 2021 17:00:31 +0000 (UTC)
+        id S235847AbhEQRN3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 17 May 2021 13:13:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7ADCF61263;
+        Mon, 17 May 2021 17:12:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621270831;
-        bh=kvGcl1jg3vnyaJfsKuv2eV98xymBY/ABPqrDZtVJyB0=;
+        s=k20201202; t=1621271532;
+        bh=myekqU/aHMu+SNpPjDj6HSNb54sVhWc06AyYqeEhmNo=;
         h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
-        b=fVIGHOZTsQlYUQcszg6S9WnyLGe/yOvjdGqEr+zql+eoc3CgrQsysU+vKdNpHskPz
-         um7AmYYCfcVkq+FDzxISBJn1ql1aR8BQJJZanZU+EQEYhALjlicRl64NIL68FGrTeE
-         CCIN29uEjNYJw6CwHyB1nQwJK7ZTnFOz+Jv/tq7LlYLXKoTqryDxopH4RmJnbmiVla
-         g+5XdDNyz35v1N2WWwnxys/JPFuiFcjFurjYfxsmU1Qh7CA8Rx6fr5Noas1x3msU8I
-         4eLBOopLtbdEx/26TwQXFtFuxGXFZMFI0YQLQfSlpv10IT0N0hX2FJkSm/hmMaZX8b
-         NiRi52/++rrEw==
-Subject: Re: [PATCH 1/4] iio: imu: inv_mpu6050: Drop use of %hhx format
- string.
+        b=JuCpCfV6Yzo2MEVHxX3JPqBahyG2xLM+rVOy4JFtqvG7iy6jdEcgyXv0ksHRbkYKj
+         eVYWePGxXWmLtp3JeJbkRO5hHqRV0BjFAHk/x+I08IcHPuwDt4Nve5g2ihCdLoI2k5
+         qufBm5gcpz4F9pPy3M28Z4JM2qNH0OWOkUNRjvX+s8H60Ytf4SwLTBLfAX2ZLtIJEH
+         msMsssNVN3cGDY1b9N/QTsIZ3cG8Gn9KBHhps++ZiyxQQ8OBXsMgsgjCTakgCwE2dN
+         oOktwdyhIO3zmxeE+/3SvKsANM9C+J6bhLIQjVhM9zl30gpm6y1/iuzYPP+USe6mit
+         EHGnp8r6NmpmQ==
+Subject: Re: [PATCH 2/4] iio: light: si1133: Drop remaining uses of %hhx
+ format string.
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?Q?Maxime_Roussin-B=c3=a9langer?= 
+        <maxime.roussinbelanger@gmail.com>
 References: <20210517125554.1463156-1-jic23@kernel.org>
- <20210517125554.1463156-2-jic23@kernel.org>
+ <20210517125554.1463156-3-jic23@kernel.org>
 From:   Nathan Chancellor <nathan@kernel.org>
-Message-ID: <f4ef58eb-b9dd-e53b-c5d1-fec3137483eb@kernel.org>
-Date:   Mon, 17 May 2021 10:00:29 -0700
+Message-ID: <ec2a5309-bec8-adb8-61d8-d359e12fdb2f@kernel.org>
+Date:   Mon, 17 May 2021 10:12:10 -0700
 User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
  Thunderbird/78.10.1
 MIME-Version: 1.0
-In-Reply-To: <20210517125554.1463156-2-jic23@kernel.org>
+In-Reply-To: <20210517125554.1463156-3-jic23@kernel.org>
 Content-Type: text/plain; charset=utf-8; format=flowed
 Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -59,39 +61,69 @@ On 5/17/2021 5:55 AM, Jonathan Cameron wrote:
 > unnecessary %h[xudi] and %hh[xudi]")
 > use of these format strings has been discouraged.
 > 
-> Part of a series removing all uses from IIO in the interestings of
-> avoiding providing bad examples for people to copy.
+> As there are not that many in IIO, this is part of an effort to clear
+> them out so we don't have any instances that might get coppied into
+> new drivers.
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Maxime Roussin-Bélanger <maxime.roussinbelanger@gmail.com>
 > Cc: Nathan Chancellor <nathan@kernel.org>
+
 Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
 > ---
->   drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 5 ++---
->   1 file changed, 2 insertions(+), 3 deletions(-)
+>   drivers/iio/light/si1133.c | 14 +++++++-------
+>   1 file changed, 7 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index 6244a07048df..3169d3153b83 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -1314,8 +1314,7 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
->   		for (i = 0; i < INV_NUM_PARTS; ++i) {
->   			if (regval == hw_info[i].whoami) {
->   				dev_warn(regmap_get_device(st->map),
-> -					"whoami mismatch got %#02x (%s)"
-> -					"expected %#02hhx (%s)\n",
-> +					"whoami mismatch got %#02x (%s) expected %#02x (%s)\n",
->   					regval, hw_info[i].name,
->   					st->hw->whoami, st->hw->name);
->   				break;
-> @@ -1323,7 +1322,7 @@ static int inv_check_and_setup_chip(struct inv_mpu6050_state *st)
->   		}
->   		if (i >= INV_NUM_PARTS) {
->   			dev_err(regmap_get_device(st->map),
-> -				"invalid whoami %#02x expected %#02hhx (%s)\n",
-> +				"invalid whoami %#02x expected %#02x (%s)\n",
->   				regval, st->hw->whoami, st->hw->name);
->   			return -ENODEV;
+> diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+> index fd302480262b..0af36176907d 100644
+> --- a/drivers/iio/light/si1133.c
+> +++ b/drivers/iio/light/si1133.c
+> @@ -352,22 +352,22 @@ static int si1133_parse_response_err(struct device *dev, u32 resp, u8 cmd)
+>   
+>   	switch (resp) {
+>   	case SI1133_ERR_OUTPUT_BUFFER_OVERFLOW:
+> -		dev_warn(dev, "Output buffer overflow: %#02hhx\n", cmd);
+> +		dev_warn(dev, "Output buffer overflow: %#02x\n", cmd);
+>   		return -EOVERFLOW;
+>   	case SI1133_ERR_SATURATION_ADC_OR_OVERFLOW_ACCUMULATION:
+> -		dev_warn(dev, "Saturation of the ADC or overflow of accumulation: %#02hhx\n",
+> +		dev_warn(dev, "Saturation of the ADC or overflow of accumulation: %#02x\n",
+>   			 cmd);
+>   		return -EOVERFLOW;
+>   	case SI1133_ERR_INVALID_LOCATION_CMD:
+>   		dev_warn(dev,
+> -			 "Parameter access to an invalid location: %#02hhx\n",
+> +			 "Parameter access to an invalid location: %#02x\n",
+>   			 cmd);
+>   		return -EINVAL;
+>   	case SI1133_ERR_INVALID_CMD:
+> -		dev_warn(dev, "Invalid command %#02hhx\n", cmd);
+> +		dev_warn(dev, "Invalid command %#02x\n", cmd);
+>   		return -EINVAL;
+>   	default:
+> -		dev_warn(dev, "Unknown error %#02hhx\n", cmd);
+> +		dev_warn(dev, "Unknown error %#02x\n", cmd);
+>   		return -EINVAL;
+>   	}
+>   }
+> @@ -400,7 +400,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+>   
+>   	err = regmap_write(data->regmap, SI1133_REG_COMMAND, cmd);
+>   	if (err) {
+> -		dev_warn(dev, "Failed to write command %#02hhx, ret=%d\n", cmd,
+> +		dev_warn(dev, "Failed to write command %#02x, ret=%d\n", cmd,
+>   			 err);
+>   		goto out;
+>   	}
+> @@ -425,7 +425,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+>   					       SI1133_CMD_TIMEOUT_MS * 1000);
+>   		if (err) {
+>   			dev_warn(dev,
+> -				 "Failed to read command %#02hhx, ret=%d\n",
+> +				 "Failed to read command %#02x, ret=%d\n",
+>   				 cmd, err);
+>   			goto out;
 >   		}
 > 
 
