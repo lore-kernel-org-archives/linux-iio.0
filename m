@@ -7,54 +7,54 @@ X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F01EC433B4
-	for <linux-iio@archiver.kernel.org>; Tue, 18 May 2021 23:09:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E109C433ED
+	for <linux-iio@archiver.kernel.org>; Tue, 18 May 2021 23:18:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 43ED66135D
-	for <linux-iio@archiver.kernel.org>; Tue, 18 May 2021 23:09:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7C5986124C
+	for <linux-iio@archiver.kernel.org>; Tue, 18 May 2021 23:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229630AbhERXKp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 18 May 2021 19:10:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59932 "EHLO
+        id S235802AbhERXTj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 18 May 2021 19:19:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230115AbhERXKo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 May 2021 19:10:44 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29AD0C061573
-        for <linux-iio@vger.kernel.org>; Tue, 18 May 2021 16:09:26 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id j6so13541033lfr.11
-        for <linux-iio@vger.kernel.org>; Tue, 18 May 2021 16:09:26 -0700 (PDT)
+        with ESMTP id S237898AbhERXTj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 May 2021 19:19:39 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BFF8C06175F
+        for <linux-iio@vger.kernel.org>; Tue, 18 May 2021 16:18:20 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id j10so16207175lfb.12
+        for <linux-iio@vger.kernel.org>; Tue, 18 May 2021 16:18:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sBsrVwO0k5vVZzlL5NsGIsZu5azbZRJ873wXp6wLn/A=;
-        b=pYkcidfCvZVXRbWO95anHPTNaoUwEzZHPw6AfqLTzozaT2IQv5p7NMsQDP5UBAeE4l
-         di6ibyOTrDpuBQEywQSSSqeJABdG0PG3qPh9sFmNhoMcOHAY0OWEU4NH6LNBaBr6GmSO
-         vxBfBm3sH6TEDskP7nbVwrIFyAOCqlBmPdkun5cKHS/ee55AwN8GN/rwvKgRc+gdhlqh
-         XjCA4W2pyA6TLKr4qyTigNGWO+EWw+ObAUC+50z6yQwERWOFTHsLlcoJqZOFj7hTZaAC
-         BFEHLjFP2N1rhab42U8BqbFQSn3jSlHtRa3rVGNuhLiriItF6h/g4aInczk/FKxhZAnQ
-         gDbA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=M6DpMHKPug9B2DwYGCJdZ2qYD2R7VRxLe67GA8SNIzs=;
+        b=A613ngQ/EbeIWDBDaA6YmXbFt3LA06f/swAd7ZCJCNRyILVbrJNY0yKKQBGZopXDzA
+         jHPjiDvmk1fAi286LWNDzAebqdKD+DvI5LoQsSZAlZzhbr2yvdkXWNMsKbczntUoQQVv
+         SnYtFtp7FluO5W/Yiw1rpjp2wfUG+mGp6eP8dFvOyq6GlFTIBs7mQot4eNxD7KjXl+rc
+         6uzX7B9qvcug70o76H1Zc0Ry+U2NkCSTcBt4RefgEwGOVvmJ6wiHoMwLZq38yidkdarK
+         fSV9USqwQQvsZVrRi/jUejnj1Y9on5W7BuzUtPfgb9bJn9AiDwAlBEstVe4QjCYKZSoV
+         X28w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=sBsrVwO0k5vVZzlL5NsGIsZu5azbZRJ873wXp6wLn/A=;
-        b=EzXpV1YeR+Paet6z7GD7s4OztE0GSExjc4eylx6izXkIglhaqTFuScbZYBXR2mu/ga
-         Cxnk9nzTnwSDP6i7w4w3lYR565BmGbmN1NZKg9s/8Ldl70fUQ8rMWh38PL5H8GiBmM6Y
-         EuCcljczWqDeaLDHglbFc3D1n5y7w0fjNLf1oBQQ8qY7b1WJxjOaO5E7xsvErMCLS/2H
-         vsYUwukn/EZsXjG4YYFIUc9EXa0LmylDWHm7UW6ZPJgGuw5CCzwuSag9R07AzWgxIGtD
-         A5uI70o72tVqxQr3qtOYYwVXuqczn0YaNovn+Dan5JgzyL/afhiHDfjSdxjr9kcH1lmn
-         N7WA==
-X-Gm-Message-State: AOAM5319/Gd/aTGiZenBrPGNQzLCrjgXRtfcKjHxsBJEP5ahWBJQM5bZ
-        Bz+ZCrrImGoVdp4s5RhGdKoYTA==
-X-Google-Smtp-Source: ABdhPJxybEAgmduwxASSqQLbhdhyq9McdC3OAaZN974uxA74lVTZsK5CJsbCopshJzb/w4Nl8RDqKw==
-X-Received: by 2002:a05:6512:3e3:: with SMTP id n3mr5525944lfq.169.1621379364668;
-        Tue, 18 May 2021 16:09:24 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=M6DpMHKPug9B2DwYGCJdZ2qYD2R7VRxLe67GA8SNIzs=;
+        b=EihpKGd3s1lhEAH2PDLu1qk3Qt/8v4Bxy31aDYCRcWVGamh+YU9KCGhB8pY61Rt9tC
+         csLhfmKH29RMzFnjd2kKOdjFP86Y9N8CnwJKI+kQog9gBIGRqLfeMpGrOlfp21TCtYxw
+         4KDIDAmQYaVsanDt/za1KGnCiQiGiHogV07flx2qbPGKERjp5cJUuaIx9bfdtm1sf7Q3
+         /3Swi97k72sQQ/1kLxayJ4CZ/HLtaeYW3M9pxvOqt7AuEmRRblUXZA7F9M1jyRCG0foB
+         8dVsCiZCJD4kezeZY3D04tLDFR6KCeYcJ2KLhpkr9S3dwQoLbkj6bXV8wxFtzB6jP4Y7
+         cZUQ==
+X-Gm-Message-State: AOAM5307pWqm37wgmx5+GmKmV/pi//A570WFXH9/E4sPeA5pvT/TCBQs
+        /WYUeqRIXtG6fGCZJFEyDVW7vw==
+X-Google-Smtp-Source: ABdhPJwdlbXpYO+3KxlUsSBtj2Ciq6dOyJ8wgNDAIrfjWByuKUlX9sgm1I0GqukCzh0j/ITeXTFmDQ==
+X-Received: by 2002:a05:6512:3156:: with SMTP id s22mr5812776lfi.362.1621379898957;
+        Tue, 18 May 2021 16:18:18 -0700 (PDT)
 Received: from localhost.localdomain (c-fdcc225c.014-348-6c756e10.bbcust.telenor.se. [92.34.204.253])
-        by smtp.gmail.com with ESMTPSA id d10sm1666392lfi.79.2021.05.18.16.09.23
+        by smtp.gmail.com with ESMTPSA id d10sm1666392lfi.79.2021.05.18.16.18.18
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 18 May 2021 16:09:24 -0700 (PDT)
+        Tue, 18 May 2021 16:18:18 -0700 (PDT)
 From:   Linus Walleij <linus.walleij@linaro.org>
 To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc:     Hartmut Knaack <knaack.h@gmx.de>,
@@ -66,19 +66,20 @@ Cc:     Hartmut Knaack <knaack.h@gmx.de>,
         Daniel Drake <drake@endlessm.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH 1/5 v3] iio: st_sensors: Create extended attr macro
-Date:   Wed, 19 May 2021 01:07:18 +0200
-Message-Id: <20210518230722.522446-1-linus.walleij@linaro.org>
+Subject: [PATCH 3/5 v3] iio: accel: st_sensors: Stop copying channels
+Date:   Wed, 19 May 2021 01:07:20 +0200
+Message-Id: <20210518230722.522446-3-linus.walleij@linaro.org>
 X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210518230722.522446-1-linus.walleij@linaro.org>
+References: <20210518230722.522446-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Extend ST_SENSORS_LSM_CHANNELS() to a version that will accept extended
-attributes named ST_SENSORS_LSM_CHANNELS_EXT() and wrap the former as a
-specialized version of the former.
+The channels were copied only so that the .ext_info member should become
+assignable. We now have compile-time static assignment so drop this code.
 
 Cc: Hans de Goede <hdegoede@redhat.com>
 Cc: Denis Ciocca <denis.ciocca@st.com>
@@ -88,43 +89,51 @@ Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v2->v3:
-- Rebase and resend.
+- Rebase on the other changes.
 ChangeLog v1->v2:
-- New helper patch from Stephan.
+- Improvement found by Stephan.
 ---
- include/linux/iio/common/st_sensors.h | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/iio/accel/st_accel_core.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 0b9aeb479f48..8e0d76b42db9 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -48,8 +48,8 @@
- #define ST_SENSORS_MAX_NAME			17
- #define ST_SENSORS_MAX_4WAI			8
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index 9abcebf767b1..28fceac9f2f6 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -1339,8 +1339,6 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+ {
+ 	struct st_sensor_data *adata = iio_priv(indio_dev);
+ 	struct st_sensors_platform_data *pdata = dev_get_platdata(adata->dev);
+-	struct iio_chan_spec *channels;
+-	size_t channels_size;
+ 	int err;
  
--#define ST_SENSORS_LSM_CHANNELS(device_type, mask, index, mod, \
--					ch2, s, endian, rbits, sbits, addr) \
-+#define ST_SENSORS_LSM_CHANNELS_EXT(device_type, mask, index, mod, \
-+				    ch2, s, endian, rbits, sbits, addr, ext) \
- { \
- 	.type = device_type, \
- 	.modified = mod, \
-@@ -65,8 +65,14 @@
- 		.storagebits = sbits, \
- 		.endianness = endian, \
- 	}, \
-+	.ext_info = ext, \
- }
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+@@ -1351,15 +1349,9 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+ 		return err;
  
-+#define ST_SENSORS_LSM_CHANNELS(device_type, mask, index, mod, \
-+				ch2, s, endian, rbits, sbits, addr)	\
-+	ST_SENSORS_LSM_CHANNELS_EXT(device_type, mask, index, mod,	\
-+				    ch2, s, endian, rbits, sbits, addr, NULL)
-+
- #define ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL() \
- 		IIO_DEV_ATTR_SAMP_FREQ_AVAIL( \
- 			st_sensors_sysfs_sampling_frequency_avail)
+ 	adata->num_data_channels = ST_ACCEL_NUMBER_DATA_CHANNELS;
++	indio_dev->channels = adata->sensor_settings->ch;
+ 	indio_dev->num_channels = ST_SENSORS_NUMBER_ALL_CHANNELS;
+ 
+-	channels_size = indio_dev->num_channels * sizeof(struct iio_chan_spec);
+-	channels = devm_kmemdup(&indio_dev->dev,
+-				adata->sensor_settings->ch,
+-				channels_size, GFP_KERNEL);
+-	if (!channels)
+-		return -ENOMEM;
+-
+ 	/*
+ 	 * First try specific ACPI methods to retrieve orientation then try the
+ 	 * generic function.
+@@ -1371,7 +1363,6 @@ int st_accel_common_probe(struct iio_dev *indio_dev)
+ 			return err;
+ 	}
+ 
+-	indio_dev->channels = channels;
+ 	adata->current_fullscale = &adata->sensor_settings->fs.fs_avl[0];
+ 	adata->odr = adata->sensor_settings->odr.odr_avl[0].hz;
+ 
 -- 
 2.31.1
 
