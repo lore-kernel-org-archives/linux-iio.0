@@ -2,101 +2,100 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12E42C47076
-	for <linux-iio@archiver.kernel.org>; Fri, 21 May 2021 17:14:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2FDEC47076
+	for <linux-iio@archiver.kernel.org>; Fri, 21 May 2021 17:24:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id ECBBF613E9
-	for <linux-iio@archiver.kernel.org>; Fri, 21 May 2021 17:14:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B40B161168
+	for <linux-iio@archiver.kernel.org>; Fri, 21 May 2021 17:24:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230052AbhEURQG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 21 May 2021 13:16:06 -0400
-Received: from us-smtp-delivery-124.mimecast.com ([170.10.133.124]:29888 "EHLO
-        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S238078AbhEURQF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 May 2021 13:16:05 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1621617282;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=0EumFKksjDikSz13aw1z4DlMrdgBtjs5Kx9HhT7YtI0=;
-        b=Gh2OqwR1O8/GEQTPM/uXzdi+3KAz7Jbis+hTB+fTzS6wP3U00HWJMV7USXAPoRGXWdmiDj
-        7S8M5N/zkDbKmDvSCmjAPwPx1FHV0J8rIVDqXFYLEZL5Oov750Z6Q6kqNqT3fPhpVWqjov
-        DkQAT3VQHkdGpeqZrGaOKeHM0j15fIs=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
- us-mta-526-yd4dNnUpPHisDRHoviwtOw-1; Fri, 21 May 2021 13:14:40 -0400
-X-MC-Unique: yd4dNnUpPHisDRHoviwtOw-1
-Received: from smtp.corp.redhat.com (int-mx07.intmail.prod.int.phx2.redhat.com [10.5.11.22])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        id S231533AbhEURZc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 21 May 2021 13:25:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47524 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230301AbhEURZc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 21 May 2021 13:25:32 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 744BE8015F8;
-        Fri, 21 May 2021 17:14:39 +0000 (UTC)
-Received: from x1.localdomain (ovpn-114-187.ams2.redhat.com [10.36.114.187])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 808FF10013D6;
-        Fri, 21 May 2021 17:14:37 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jeremy Cline <jeremy@jcline.org>, linux-iio@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org
-Subject: [PATCH 8/8] iio: accel: bmc150: Set label based on accel-location for ACPI DUAL250E fwnodes
-Date:   Fri, 21 May 2021 19:14:18 +0200
-Message-Id: <20210521171418.393871-9-hdegoede@redhat.com>
-In-Reply-To: <20210521171418.393871-1-hdegoede@redhat.com>
-References: <20210521171418.393871-1-hdegoede@redhat.com>
+        by mail.kernel.org (Postfix) with ESMTPSA id DD5FB6109F;
+        Fri, 21 May 2021 17:24:06 +0000 (UTC)
+Date:   Fri, 21 May 2021 18:25:28 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     tq17373059@buaa.edu.cn
+Cc:     lars@metafoo.de, Michael.Hennerich@analog.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        baijiaju@tsinghua.edu.cn, TOTE Robot <oslab@tsinghua.edu.cn>
+Subject: Re: [PATCH] iio: adf4350: fix a possible divided-by-zero bug in
+ adf4350_set_freq()
+Message-ID: <20210521182528.014f3870@jic23-huawei>
+In-Reply-To: <20210521061953.35873-1-tq17373059@buaa.edu.cn>
+References: <20210521061953.35873-1-tq17373059@buaa.edu.cn>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.22
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Some Yoga laptops with 1 accelerometer in the display and 1 in the base,
-use an ACPI HID of DUAL250E instead of BOSC0200.
+On Fri, 21 May 2021 14:19:53 +0800
+tq17373059@buaa.edu.cn wrote:
 
-Set the iio-device's label for DUAL250E devices to a value indicating which
-sensor is which, mirroring how we do this for BOSC0200 dual sensor devices.
+> From: Qi Teng <tq17373059@buaa.edu.cn>
+> 
+> The variable st->r1_mod is checked in:
+>   if (st->r0_fract && st->r1_mod)
+> 
+> This indicates that st->r1_mod can be zero. Its value is the same as
+> that in:
+>   st->r0_fract = do_div(tmp, st->r1_mod);
+> 
+> However, st->r1_mod performs as a divisor in this statement, which
+> implies a possible divided-by-zero bug.
+> 
+> To fix this possible bug, st->r1_mod is checked before the division
+> operation. If it is zero, st->r0_fract is set to zero instead of
+> do_div(tmp, st->r1_mod).
+> 
+> Reported-by: TOTE Robot <oslab@tsinghua.edu.cn> 
+> Signed-off-by: Qi Teng <tq17373059@buaa.edu.cn>
 
-Note the DUAL250E fwnode unfortunately does not include a mount-matrix.
+Patch seems to be inverse of the intended.  You are removing a
+divide by 0 protection that isn't present in the current driver.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/iio/accel/bmc150-accel-core.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Also, a fix like this needs a Fixes: tag.
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 932007895f18..08966ee82e43 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -397,6 +397,17 @@ static bool bmc150_apply_acpi_orientation(struct device *dev,
- 	acpi_status status;
- 	int i, j, val[3];
- 
-+	/* Special case for devices with a "DUAL250E" HID */
-+	if (adev && acpi_dev_hid_uid_match(adev, "DUAL250E", NULL)) {
-+		if (strcmp(dev_name(dev), "i2c-DUAL250E:base") == 0)
-+			label = "accel-base";
-+		else
-+			label = "accel-display";
-+
-+		indio_dev->label = label;
-+		return false; /* DUAL250E fwnodes have no mount matrix info */
-+	}
-+
- 	if (!adev || !acpi_dev_hid_uid_match(adev, "BOSC0200", NULL))
- 		return false;
- 
--- 
-2.31.1
+The maths is sufficiently messy that I can't immediately tell if this
+can actually be zero or whether the check you are highlighting is
+paranoia.  Given that, I agree that a fix here makes sense whether
+or not we have a verified bug.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/frequency/adf4350.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+> index 99c6f260cc21..1462a6a5bc6d 100644
+> --- a/drivers/iio/frequency/adf4350.c
+> +++ b/drivers/iio/frequency/adf4350.c
+> @@ -182,10 +182,7 @@ static int adf4350_set_freq(struct adf4350_state *st, unsigned long long freq)
+>  
+>  		tmp = freq * (u64)st->r1_mod + (st->fpfd >> 1);
+>  		do_div(tmp, st->fpfd); /* Div round closest (n + d/2)/d */
+> -		if (st->r1_mod)
+> -			st->r0_fract = do_div(tmp, st->r1_mod);
+> -		else
+> -			st->r0_fract = 0;
+> +		st->r0_fract = do_div(tmp, st->r1_mod);
+>  		st->r0_int = tmp;
+>  	} while (mdiv > st->r0_int);
+>  
 
