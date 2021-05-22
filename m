@@ -6,128 +6,65 @@ X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D901C2B9F2
-	for <linux-iio@archiver.kernel.org>; Sat, 22 May 2021 18:00:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44B04C2B9F2
+	for <linux-iio@archiver.kernel.org>; Sat, 22 May 2021 18:02:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 36FDA61152
-	for <linux-iio@archiver.kernel.org>; Sat, 22 May 2021 18:00:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2650061139
+	for <linux-iio@archiver.kernel.org>; Sat, 22 May 2021 18:02:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230492AbhEVSBo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 22 May 2021 14:01:44 -0400
-Received: from mail.kernel.org ([198.145.29.99]:49186 "EHLO mail.kernel.org"
+        id S229903AbhEVSDX convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 22 May 2021 14:03:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49334 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229903AbhEVSBo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 May 2021 14:01:44 -0400
+        id S231254AbhEVSDW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 May 2021 14:03:22 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 9F22161132;
-        Sat, 22 May 2021 18:00:16 +0000 (UTC)
-Date:   Sat, 22 May 2021 19:01:38 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id 437D26102A;
+        Sat, 22 May 2021 18:01:55 +0000 (UTC)
+Date:   Sat, 22 May 2021 19:03:18 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jeremy Cline <jeremy@jcline.org>, linux-iio@vger.kernel.org,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org
-Subject: Re: [PATCH 0/8] iio: accel: bmc150: Add support for yoga's with
- dual accelerometers with an ACPI HID of DUAL250E
-Message-ID: <20210522190138.1715b095@jic23-huawei>
-In-Reply-To: <20210521171418.393871-1-hdegoede@redhat.com>
-References: <20210521171418.393871-1-hdegoede@redhat.com>
+To:     Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Cc:     <linux-iio@vger.kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH 0/2] Make use of adis lock helpers
+Message-ID: <20210522190318.284b54b5@jic23-huawei>
+In-Reply-To: <20210520115909.466275-1-nuno.sa@analog.com>
+References: <20210520115909.466275-1-nuno.sa@analog.com>
 X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 21 May 2021 19:14:10 +0200
-Hans de Goede <hdegoede@redhat.com> wrote:
+On Thu, 20 May 2021 13:59:07 +0200
+Nuno Sá <nuno.sa@analog.com> wrote:
 
-> Hi All,
+> In [1], some helpers were added to the adis lib to make things a bit
+> more neater when users need to use the device lock. Somehow, these two
+> users were left "behind". Let's make things consistent and make them use
+> the helpers.
+>  
+> [1]: https://patchwork.kernel.org/project/linux-iio/patch/20210218114039.216091-5-nuno.sa@analog.com/
 > 
-> Some 360 degree hinges (yoga) style 2-in-1 devices use 2 bmc150 accels
-> to allow the OS to determine the angle between the display and the base
-> of the device, so that the OS can determine if the 2-in-1 is in laptop
-> or in tablet-mode.
+> Nuno Sá (2):
+>   iio: adis16260: make use of adis lock helpers
+>   iio: adis16136: make use of adis lock helpers
 > 
-> We already support this setup on devices using a single ACPI node
-> with a HID of "BOSC0200" to describe both accelerometers. This patch
-> set extends this support to also support the same setup but then
-> using a HID of "DUAL250E".
+>  drivers/iio/gyro/adis16136.c | 15 ++++++---------
+>  drivers/iio/gyro/adis16260.c |  4 ++--
+>  2 files changed, 8 insertions(+), 11 deletions(-)
 > 
-> While testing this I found some crashes on rmmod, patches 1-2
-> fix those patches, patch 3 does some refactoring and patch 4
-> adds support for the "DUAL250E" HID.
-> 
-> Unfortunately we need some more special handling though, which the
-> rest of the patches are for.
-> 
-> On Windows both accelerometers are read (polled) by a special service
-> and this service calls a DSM (Device Specific Method), which in turn
-> translates the angles to one of laptop/tablet/tent/stand mode and then
-> notifies the EC about the new mode and the EC then enables or disables
-> the builtin keyboard and touchpad based in the mode.
-> 
-> When the 2-in-1 is powered-on or resumed folded in tablet mode the
-> EC senses this independent of the DSM by using a HALL effect sensor
-> which senses that the keyboard has been folded away behind the display.
-> 
-> At power-on or resume the EC disables the keyboard based on this and
-> the only way to get the keyboard to work after this is to call the
-> DSM to re-enable it (similar to how we also need to call a special
-> DSM in the kxcjk-1013.c accel driver to re-enable the keyboard).
-> 
-> Patches 5-7 deal with the DSM mess and patch 8 adds labels to the
-> 2 accelerometers specifying which one is which.
+Applied to the togreg branch of iio.git and pushed out as testing for
+all the normal reasons.
 
-Given only thing I'm planning to do is tweak the line wrapping, I'm
-happy to pick this series up.
-
-The two fixes will slow things down a bit though as we should probably
-get those upstream this cycle.
-
-I'm going to leave this on list for a few days before I take anything
-though, to give others time to take a look.
-
-One side note, cc list includes a few random choices... Seems you've
-accidentally included alsa people as well as IIO ones. 
-
-Thanks
+Thanks,
 
 Jonathan
 
-> 
-> Regards,
-> 
-> Hans
-> 
-> 
-> Hans de Goede (8):
->   iio: accel: bmc150: Fix dereferencing the wrong pointer in
->     bmc150_get/set_second_device
->   iio: accel: bmc150: Don't make the remove function of the second
->     accelerometer unregister itself
->   iio: accel: bmc150: Move check for second ACPI device into a separate
->     function
->   iio: accel: bmc150: Add support for dual-accelerometers with a
->     DUAL250E HID
->   iio: accel: bmc150: Move struct bmc150_accel_data definition to
->     bmc150-accel.h
->   iio: accel: bmc150: Remove bmc150_set/get_second_device() accessor
->     functions
->   iio: accel: bmc150: Add support for DUAL250E ACPI DSM for setting the
->     hinge angle
->   iio: accel: bmc150: Set label based on accel-location for ACPI
->     DUAL250E fwnodes
-> 
->  drivers/iio/accel/bmc150-accel-core.c |  87 ++----------
->  drivers/iio/accel/bmc150-accel-i2c.c  | 192 +++++++++++++++++++++-----
->  drivers/iio/accel/bmc150-accel.h      |  66 ++++++++-
->  3 files changed, 239 insertions(+), 106 deletions(-)
-> 
 
