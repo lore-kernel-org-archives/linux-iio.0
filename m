@@ -2,182 +2,128 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.1 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D264AC47080
-	for <linux-iio@archiver.kernel.org>; Sun, 23 May 2021 16:24:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F23DEC4707A
+	for <linux-iio@archiver.kernel.org>; Sun, 23 May 2021 17:01:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B3E06610A0
-	for <linux-iio@archiver.kernel.org>; Sun, 23 May 2021 16:24:10 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CD66461261
+	for <linux-iio@archiver.kernel.org>; Sun, 23 May 2021 17:01:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231842AbhEWQZg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 23 May 2021 12:25:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57924 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231821AbhEWQZg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 23 May 2021 12:25:36 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AAC666117A;
-        Sun, 23 May 2021 16:24:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1621787049;
-        bh=Z0P4r1dCUgEDfsa4CtP560vDgjEiLt5/rkR+lk+HPYs=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=NF/2GOUBFK8Mq86YxlR2m1l9iJeoaHEbUuBgPQhmS+QqJTF5HvvuIX2DZthlcEjpg
-         T490Z+06r9jF90mO423skhGa5V7t/90k6cFexjTgL+TFAQwtl4cY/KgbC1ylMZ8vGb
-         tkkt1YgsQX9YJYkQZGDhYw1SdvR9QVNCXAzs4SlwWQu8Oxd3suOuYKd5V1JWHtgsOr
-         YHyomTUnpDm3hWdBQQIX6zhMYevEzao6jQ3nQ/vrk3/4AZ5D2NkPAEkoQJjc2a17CO
-         GPNq3uzIkw8iE0om9yCtqTo2q03hN9t8+MZZouRe9OXLyIdrRD8Spov/qUMKDC6/x3
-         +cbVGAhFg6cXg==
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 5/5] iio: accel: mma9553: Use devm managed functions to tidy up probe()
-Date:   Sun, 23 May 2021 17:23:15 +0100
-Message-Id: <20210523162315.1965869-6-jic23@kernel.org>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20210523162315.1965869-1-jic23@kernel.org>
-References: <20210523162315.1965869-1-jic23@kernel.org>
+        id S231861AbhEWRCh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 23 May 2021 13:02:37 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:24593 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231856AbhEWRCh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 May 2021 13:02:37 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1621789270;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=yCRp+M6BmquOFM43iImL6UjJTcvuKJRir6amhOD9dvE=;
+        b=fS0dIinFRHcFuJ3qsIbrteOx/dFWhLV/A8MqDs8ADfwLP210Ze++Pt0mhKmc04Kg+xxGYY
+        mOJk2MGLOiOmY3rVvPckqUrLCSSY9KoAi25+LIDfTCS2reJ5r5AMSfTn1rFX56jBdps/bn
+        gZHXxdylKpFjqOCH/OmCw4UzDuqrXr8=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-591-MxP0frqINMaMpbVeLaQtFQ-1; Sun, 23 May 2021 13:01:08 -0400
+X-MC-Unique: MxP0frqINMaMpbVeLaQtFQ-1
+Received: from smtp.corp.redhat.com (int-mx04.intmail.prod.int.phx2.redhat.com [10.5.11.14])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 40F36107ACC7;
+        Sun, 23 May 2021 17:01:07 +0000 (UTC)
+Received: from x1.localdomain (ovpn-112-61.ams2.redhat.com [10.36.112.61])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id 0EEAA5D9F2;
+        Sun, 23 May 2021 17:01:05 +0000 (UTC)
+From:   Hans de Goede <hdegoede@redhat.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andy@infradead.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Jeremy Cline <jeremy@jcline.org>, linux-iio@vger.kernel.org
+Subject: [PATCH v2 1/9] iio: accel: bmc150: Fix dereferencing the wrong pointer in bmc150_get/set_second_device
+Date:   Sun, 23 May 2021 19:00:55 +0200
+Message-Id: <20210523170103.176958-2-hdegoede@redhat.com>
+In-Reply-To: <20210523170103.176958-1-hdegoede@redhat.com>
+References: <20210523170103.176958-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.79 on 10.5.11.14
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+The drvdata for iio-parent devices points to the struct iio_dev for
+the iio-device. So by directly casting the return from i2c_get_clientdata()
+to struct bmc150_accel_data * the code was ending up storing the second_dev
+pointer in (and retrieving it from) some semi-random offset inside
+struct iio_dev, rather then storing it in the second_dev member of the
+bmc150_accel_data struct.
 
-The error handling in here left runtime pm enabled, and didn't do the
-same steps as occurred in remove.  Moving over to fully devm_ managed
-makes it harder to get this stuff wrong, so let's do that.
+Fix the code to get the struct bmc150_accel_data * pointer to call
+iio_priv() on the struct iio_dev * returned by i2c_get_clientdata(),
+so that the correct pointer gets dereferenced.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+This fixes the following oops on rmmod, caused by trying to
+dereference the wrong return of bmc150_get_second_device():
+
+[  238.980737] BUG: unable to handle page fault for address: 0000000000004710
+[  238.980755] #PF: supervisor read access in kernel mode
+[  238.980760] #PF: error_code(0x0000) - not-present page
+...
+[  238.980841]  i2c_unregister_device.part.0+0x19/0x60
+[  238.980856]  0xffffffffc0815016
+[  238.980863]  i2c_device_remove+0x25/0xb0
+[  238.980869]  __device_release_driver+0x180/0x240
+[  238.980876]  driver_detach+0xd4/0x120
+[  238.980882]  bus_remove_driver+0x5b/0xd0
+[  238.980888]  i2c_del_driver+0x44/0x70
+
+While at it also remove the now no longer sensible checks for data
+being NULL, iio_priv never returns NULL for an iio_dev with non 0
+sized private-data.
+
+Fixes: 5bfb3a4bd8f6 ("iio: accel: bmc150: Check for a second ACPI device for BOSC0200")
+Cc: Jeremy Cline <jeremy@jcline.org>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/iio/accel/mma9553.c | 70 ++++++++++++++++++++-----------------
- 1 file changed, 37 insertions(+), 33 deletions(-)
+ drivers/iio/accel/bmc150-accel-core.c | 10 +++-------
+ 1 file changed, 3 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
-index dc2a3316c1a3..14a9d5fedc06 100644
---- a/drivers/iio/accel/mma9553.c
-+++ b/drivers/iio/accel/mma9553.c
-@@ -375,6 +375,15 @@ static int mma9553_conf_gpio(struct mma9553_data *data)
- 	return 0;
- }
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 04d85ce34e9f..3a3f67930165 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -1809,10 +1809,7 @@ EXPORT_SYMBOL_GPL(bmc150_accel_core_probe);
  
-+static void mma9553_disable_cb(void *_data)
-+{
-+	struct mma9553_data *data = _data;
-+
-+	mutex_lock(&data->mutex);
-+	mma9551_set_device_state(data->client, false);
-+	mutex_unlock(&data->mutex);
-+}
-+
- static int mma9553_init(struct mma9553_data *data)
+ struct i2c_client *bmc150_get_second_device(struct i2c_client *client)
  {
- 	int ret;
-@@ -430,7 +439,11 @@ static int mma9553_init(struct mma9553_data *data)
- 		return ret;
- 	}
+-	struct bmc150_accel_data *data = i2c_get_clientdata(client);
+-
+-	if (!data)
+-		return NULL;
++	struct bmc150_accel_data *data = iio_priv(i2c_get_clientdata(client));
  
--	return mma9551_set_device_state(data->client, true);
-+	ret = mma9551_set_device_state(data->client, true);
-+	if (ret)
-+		return ret;
-+
-+	return devm_add_action_or_reset(&data->client->dev, mma9553_disable_cb, data);
+ 	return data->second_device;
  }
+@@ -1820,10 +1817,9 @@ EXPORT_SYMBOL_GPL(bmc150_get_second_device);
  
- static int mma9553_read_status_word(struct mma9553_data *data, u16 reg,
-@@ -1062,6 +1075,16 @@ static irqreturn_t mma9553_event_handler(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
-+static void mma9553_rpm_set_susp(void *d)
-+{
-+	pm_runtime_set_suspended(d);
-+}
-+
-+static void mma9553_rpm_disable(void *d)
-+{
-+	pm_runtime_disable(d);
-+}
-+
- static int mma9553_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
+ void bmc150_set_second_device(struct i2c_client *client)
  {
-@@ -1105,48 +1128,30 @@ static int mma9553_probe(struct i2c_client *client,
- 		if (ret < 0) {
- 			dev_err(&client->dev, "request irq %d failed\n",
- 				client->irq);
--			goto out_poweroff;
-+			return ret;
- 		}
- 	}
+-	struct bmc150_accel_data *data = i2c_get_clientdata(client);
++	struct bmc150_accel_data *data = iio_priv(i2c_get_clientdata(client));
  
- 	ret = pm_runtime_set_active(&client->dev);
- 	if (ret < 0)
--		goto out_poweroff;
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(&client->dev, mma9553_rpm_set_susp,
-+				       &client->dev);
-+	if (ret)
-+		return ret;
- 
- 	pm_runtime_enable(&client->dev);
-+	ret = devm_add_action_or_reset(&client->dev, mma9553_rpm_disable,
-+				       &client->dev);
-+	if (ret)
-+		return ret;
-+
- 	pm_runtime_set_autosuspend_delay(&client->dev,
- 					 MMA9551_AUTO_SUSPEND_DELAY_MS);
- 	pm_runtime_use_autosuspend(&client->dev);
- 
--	ret = iio_device_register(indio_dev);
--	if (ret < 0) {
--		dev_err(&client->dev, "unable to register iio device\n");
--		goto out_poweroff;
--	}
--
--	dev_dbg(&indio_dev->dev, "Registered device %s\n", name);
--	return 0;
--
--out_poweroff:
--	mma9551_set_device_state(client, false);
--	return ret;
--}
--
--static int mma9553_remove(struct i2c_client *client)
--{
--	struct iio_dev *indio_dev = i2c_get_clientdata(client);
--	struct mma9553_data *data = iio_priv(indio_dev);
--
--	iio_device_unregister(indio_dev);
--
--	pm_runtime_disable(&client->dev);
--	pm_runtime_set_suspended(&client->dev);
--
--	mutex_lock(&data->mutex);
--	mma9551_set_device_state(data->client, false);
--	mutex_unlock(&data->mutex);
--
--	return 0;
-+	return devm_iio_device_register(&client->dev, indio_dev);
+-	if (data)
+-		data->second_device = client;
++	data->second_device = client;
  }
- 
- static __maybe_unused int mma9553_runtime_suspend(struct device *dev)
-@@ -1200,7 +1205,6 @@ static struct i2c_driver mma9553_driver = {
- 		   .pm = &mma9553_pm_ops,
- 		   },
- 	.probe = mma9553_probe,
--	.remove = mma9553_remove,
- 	.id_table = mma9553_id,
- };
+ EXPORT_SYMBOL_GPL(bmc150_set_second_device);
  
 -- 
 2.31.1
