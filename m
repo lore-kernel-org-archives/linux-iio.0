@@ -2,68 +2,71 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FCA1C47091
-	for <linux-iio@archiver.kernel.org>; Sun, 30 May 2021 00:59:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B210C4708F
+	for <linux-iio@archiver.kernel.org>; Sun, 30 May 2021 00:59:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7B3A861003
-	for <linux-iio@archiver.kernel.org>; Sun, 30 May 2021 00:59:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0E94B60FF0
+	for <linux-iio@archiver.kernel.org>; Sun, 30 May 2021 00:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229644AbhE3BBH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 29 May 2021 21:01:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60042 "EHLO
+        id S229667AbhE3BBJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 29 May 2021 21:01:09 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60060 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229585AbhE3BBG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 29 May 2021 21:01:06 -0400
-Received: from mail-qk1-x72d.google.com (mail-qk1-x72d.google.com [IPv6:2607:f8b0:4864:20::72d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F586C061574;
-        Sat, 29 May 2021 17:59:28 -0700 (PDT)
-Received: by mail-qk1-x72d.google.com with SMTP id h20so7992359qko.11;
-        Sat, 29 May 2021 17:59:28 -0700 (PDT)
+        with ESMTP id S229665AbhE3BBI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 29 May 2021 21:01:08 -0400
+Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9BFF7C06174A;
+        Sat, 29 May 2021 17:59:31 -0700 (PDT)
+Received: by mail-qk1-x730.google.com with SMTP id j189so8019884qkf.2;
+        Sat, 29 May 2021 17:59:31 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P2CLZOqNCLOtkIGGc1vQejjtBTOblqWdJI35uJ6GHEM=;
-        b=oLj3OrVzAJeJTDNaIB9ap9f47u8UhfYH2tUtIPbay7NZ0dizDnt4cI6VZKSC+ftu3D
-         EwbrrHuIz5Az0Ory3xitFHeFAwoPIWZyZRuBSAuh2Cnlz5OzDfSZSsAsNb6//9mUDcGC
-         iqfFSODikqQ9TJL7HKIMzJWuQzZHaFe3BJoTi74J2gi0abSVrVSOvm+REPD6bbxJKVtb
-         6PKx/x7BsmncXPWcO9K1br04Zaj+6WtFuAqt+GEri5ZDmdcXDDjDt8u6+vVzSvZCmSRm
-         RqtZYRubEdGuoc+G96/0FLT0h1qu3R5jxUPiQcXmSUj84OCEXS68ZnlRXnBf/RXjfhRd
-         E+gQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=6hVm9pTtY2i0FGIAWRsitMo3N5pAB6nyS8alNSxHtds=;
+        b=tTexZy4YrLakNXtB0R8P3mygTszM9XOCbRMU0KudLyWCneN83W7Bo6wW/XoBcamLt2
+         HqMloKHJg4hxUDy5ka3bFAtSRNA+5kaoWoxJuC6L6VtN5Pc3gw/N4TAXgMIVrCCYXIXr
+         ct38/Au1nv5nPocWJg4IIK/qVPJZskSEI7lIsR7OGlC8m78OPPOe+s7AQ7TgnSLK0v8c
+         d6hBbrF3QGzC5j2SVgONpHo94nyogO4J1OS3GSXUgS5xEk43Y1J8dhOGycLk16O/aDve
+         /z4VdMxnaFxmTuvrg+cOddYrKydg6nLxxgQLw2MO3AdrRqOjXgjfqFS6lfkFVyyu+mku
+         0+0w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=P2CLZOqNCLOtkIGGc1vQejjtBTOblqWdJI35uJ6GHEM=;
-        b=VYuXzDKbuGrdYzVBQIt2Sh0+MyLZaNRghxBX5+lrmYddX+4f2/SmaasQ5jEy0tByue
-         Ot9Jbmsn1McUqQcYBu673XyXDZ8LFqMh/nRRLepK94lR0dJ20Afg0rgfAzEhLx3GO9i/
-         XqSEYg0AIamsJmwd73CvkxDbf2tqKKUvfPGtrK+gl8okmS/oUhe6Y0JTjWWKXLGifGxm
-         Xcx8CcBgr5vuQJqyVt2Rb3TtU2hM0rJ1IwWhuAA6bXs5fKCe5vzXtwLlLeMNvTJg8Gz4
-         K2s3TiAkA7M5ENt/v/UvbcLDZvVTlehSe0/RFUGdI8mmWJUYOxKkXJIUnwAoSmT801j/
-         HIkg==
-X-Gm-Message-State: AOAM531ebUQht1ipbRe2oR7fgHEPqkAS9g5Dkh50z/WB1XUpvTww3hho
-        JnFje0blgv3NzUCS3HsoWzY=
-X-Google-Smtp-Source: ABdhPJy3qy2srNk3wMck8+qd9/IC+9becSiOJivle5PpHuILqSb6eoub8E5uMe4h4okvv6cOuGvwnA==
-X-Received: by 2002:a37:7844:: with SMTP id t65mr10546654qkc.429.1622336367456;
-        Sat, 29 May 2021 17:59:27 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=6hVm9pTtY2i0FGIAWRsitMo3N5pAB6nyS8alNSxHtds=;
+        b=sq5m9cmandQQnJwgxnzWt9LDnzE/Xzf9gV9I9S5zKqwh4U2NmpTsjg2SfQmjX07iCf
+         jWSqPSJNoVn09lFkOFUqrsFdmtti2MVKfuI0WqvVfnSpehYP7iPJCuHgqxyq4m7fpr1+
+         3DMbBi8axjtttU6hYf32XEqRoS+IiQu4smazBtIcnDD5heOvHM3QzRV4qiopSS/HZUkP
+         oxaGAROOwjkV1hY3VOobpppzTB5UW10nbPoqfjBEcRGTgYEKAus/0sIx39WRLnkegBeH
+         7jiI/2DWGHlfvnka/dYleCAfZDeYYSOBDiRZ5Nu0v3Nfqrz9uHPn79whNXmO8d/pV0gT
+         fIeQ==
+X-Gm-Message-State: AOAM532e6mQrrEL0gd6SNykXTt/HQHbDn73kBM5xVO5yh7GJ4E/kap9u
+        ISf+pcdGOuObvPgzOP+0YNE=
+X-Google-Smtp-Source: ABdhPJxEfLkg2F2SR4BvCjoMfMctWceUCe0e79XTssWwYXa4+J+ROn+5rhiEvBNeuyvLwEnVpxxlEg==
+X-Received: by 2002:a05:620a:745:: with SMTP id i5mr10737750qki.324.1622336370879;
+        Sat, 29 May 2021 17:59:30 -0700 (PDT)
 Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id z1sm6382601qki.47.2021.05.29.17.59.26
+        by smtp.gmail.com with ESMTPSA id z1sm6382601qki.47.2021.05.29.17.59.29
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 29 May 2021 17:59:27 -0700 (PDT)
+        Sat, 29 May 2021 17:59:30 -0700 (PDT)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         lars@metafoo.de, pmeerw@pmeerw.net
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v1 0/9] iio: afe: add temperature rescaling support
-Date:   Sat, 29 May 2021 20:59:08 -0400
-Message-Id: <20210530005917.20953-1-liambeguin@gmail.com>
+Subject: [PATCH v1 3/9] iio: afe: rescale: use core to get processed value
+Date:   Sat, 29 May 2021 20:59:11 -0400
+Message-Id: <20210530005917.20953-4-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.30.1.489.g328c10930387
+In-Reply-To: <20210530005917.20953-1-liambeguin@gmail.com>
+References: <20210530005917.20953-1-liambeguin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -72,55 +75,76 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Liam Beguin <lvb@xiphos.com>
 
-Add temperature rescaling support to the IIO Analog Front End driver.
+Make use of the IIO core to compute the source channel's processed
+value. This reduces duplication and will facilitate the addition of
+offsets in the iio-rescale driver.
 
-This series adds support for three kinds of temperature front end
-circuits:
-- temperature-sense-rtd for which the resistance is proportional to the
-  temperature
-- temperature-sense-current for which the current is proportional to the
-  temperature
-- temperature-sense-amplifier for which the voltage is proportional to
-  the temperature
+Signed-off-by: Liam Beguin <lvb@xiphos.com>
+---
+ drivers/iio/afe/iio-rescale.c | 37 ++++++++++-------------------------
+ 1 file changed, 10 insertions(+), 27 deletions(-)
 
-At first I tried to use iio_convert_raw_to_processed() to get more
-precision out of processed values but ran into issues when one of my
-ADCs didn't provide a scale. I tried to address this in first patch.
-
-When adding offset support to iio-rescale, I also noticed that
-iio_read_channel_processed() assumes that the offset is always an
-integer which I tried to address in the second patch.
-If it makes sense to add support for fractional offsets, I could give it
-a try in another series.
-
-Related to: https://patchwork.kernel.org/project/linux-iio/list/?series=483087
-
-Thanks for your time
-
-Liam Beguin (9):
-  iio: inkern: always apply scale requested by consumer
-  iio: inkern: error out on unsupported offset type
-  iio: afe: rescale: use core to get processed value
-  iio: afe: rescale: add offset support
-  iio: afe: rescale: add support for temperature sensors
-  dt-bindings: iio: afe: update MAINTAINERS file
-  dt-bindings: iio: afe: add binding for temperature-sense-rtd
-  dt-bindings: iio: afe: add binding for temperature-sense-current
-  dt-bindings: iio: afe: add binding for temperature-sense-amplifier
-
- .../iio/afe/temperature-sense-amplifier.yaml  |  55 +++++
- .../iio/afe/temperature-sense-current.yaml    |  61 ++++++
- .../iio/afe/temperature-sense-rtd.yaml        |  65 ++++++
- MAINTAINERS                                   |   9 +-
- drivers/iio/afe/iio-rescale.c                 | 190 +++++++++++++++---
- drivers/iio/inkern.c                          |  12 +-
- 6 files changed, 354 insertions(+), 38 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-amplifier.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-current.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
-
-
-base-commit: 9f4ad9e425a1d3b6a34617b8ea226d56a119a717
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index e42ea2b1707d..4d0813b274d1 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -38,36 +38,20 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+ 			    int *val, int *val2, long mask)
+ {
+ 	struct rescale *rescale = iio_priv(indio_dev);
+-	unsigned long long tmp;
+ 	int ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		return iio_read_channel_raw(rescale->source, val);
++		ret = iio_read_channel_processed(rescale->source, val);
+ 
++		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+-		ret = iio_read_channel_scale(rescale->source, val, val2);
+-		switch (ret) {
+-		case IIO_VAL_FRACTIONAL:
+-			*val *= rescale->numerator;
+-			*val2 *= rescale->denominator;
+-			return ret;
+-		case IIO_VAL_INT:
+-			*val *= rescale->numerator;
+-			if (rescale->denominator == 1)
+-				return ret;
+-			*val2 = rescale->denominator;
+-			return IIO_VAL_FRACTIONAL;
+-		case IIO_VAL_FRACTIONAL_LOG2:
+-			tmp = *val * 1000000000LL;
+-			do_div(tmp, rescale->denominator);
+-			tmp *= rescale->numerator;
+-			do_div(tmp, 1000000000LL);
+-			*val = tmp;
+-			return ret;
+-		default:
+-			return -EOPNOTSUPP;
+-		}
++		*val = rescale->numerator;
++		if (rescale->denominator == 1)
++			return IIO_VAL_INT;
++		*val2 = rescale->denominator;
++
++		return IIO_VAL_FRACTIONAL;
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -130,9 +114,8 @@ static int rescale_configure_channel(struct device *dev,
+ 	chan->ext_info = rescale->ext_info;
+ 	chan->type = rescale->cfg->type;
+ 
+-	if (!iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+-	    !iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE)) {
+-		dev_err(dev, "source channel does not support raw/scale\n");
++	if (!iio_channel_has_info(schan, IIO_CHAN_INFO_RAW)) {
++		dev_err(dev, "source channel does not support raw\n");
+ 		return -EINVAL;
+ 	}
+ 
 -- 
 2.30.1.489.g328c10930387
 
