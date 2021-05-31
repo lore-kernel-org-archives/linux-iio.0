@@ -2,166 +2,168 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,
+	MSGID_FROM_MTA_HEADER,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E51AC47083
-	for <linux-iio@archiver.kernel.org>; Mon, 31 May 2021 14:00:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA38C47080
+	for <linux-iio@archiver.kernel.org>; Mon, 31 May 2021 14:10:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 00E896193E
-	for <linux-iio@archiver.kernel.org>; Mon, 31 May 2021 14:00:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 100E96135C
+	for <linux-iio@archiver.kernel.org>; Mon, 31 May 2021 14:10:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231950AbhEaOCc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 May 2021 10:02:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37064 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233022AbhEaOAK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 May 2021 10:00:10 -0400
-Received: from mail-qv1-xf2e.google.com (mail-qv1-xf2e.google.com [IPv6:2607:f8b0:4864:20::f2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 83903C06137F;
-        Mon, 31 May 2021 06:36:58 -0700 (PDT)
-Received: by mail-qv1-xf2e.google.com with SMTP id u13so1769214qvt.7;
-        Mon, 31 May 2021 06:36:58 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:content-transfer-encoding:date:message-id:cc:subject
-         :from:to:references:in-reply-to;
-        bh=Ubdjxd4xLO/bMSsRXMlc/f+cavJirKnWXXDG8pw3VZg=;
-        b=Hn/G0YcYBaopoP+bkODCY7Xc+LDfDY8/JARg/hlRoqIKxv4BtiBd28Aczyk4eRK2qS
-         /asrPYto/imLkR9leLWplLsWs2PtcSJKp9iZiLdNWOSY3SKBt0ct6nd8qf1av9cJ5Xgr
-         +7fHBneQFs+RCM/G0cxiXzd7P0uvYKVy6mRXBujOeHsDy98FlzrzoHdL3qfLg916a62h
-         MaJkQJwHNNFPzZlISWACRxEbOYS0KtoqKdlDn3xUJQvU6L2w82+rCSeIf/yc098lEknv
-         wtnr9OXeiE2BpdnSh3SjBf0DlCZ3A+zDgmFgcFR6Rl/y7ULxNPCe20GNrzTRYqwkzFBI
-         rVuQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:content-transfer-encoding:date
-         :message-id:cc:subject:from:to:references:in-reply-to;
-        bh=Ubdjxd4xLO/bMSsRXMlc/f+cavJirKnWXXDG8pw3VZg=;
-        b=cgAXugz5z+fPsQ6WY9Z8Q7dnDk4T+VkthzYqMJe93XIHzuUbGXFX0BpcyUHJk2esDR
-         vHGOfT9akqxUshG1V3z3jghXva2SbaUxwGZt8BrNm0MVDC0+2tkW5Ts16XSU2pqj1mj3
-         P3pSaMKwMXZMdVs15j7Kvey1135BP4LJzPKaaYKX7TahM9N6Ua0ZSH1e24jNc0eLrpow
-         t+HQhI3W18ihJVyuQ9XDJU5orLCxoTLEJHB3YJyuhAWa5ikjaaDZSgsAN+BiFEIXAQC3
-         AUVWE7GfKKkx84IAIEfUOWyIa4lHNOrWnzGU/bkai7xpeTswNZ84czjU/c5w8jzouj9R
-         DK3w==
-X-Gm-Message-State: AOAM532EL+a2CsN87zsfxDMHXleBFvTAc/V+3uBjufcJnv/f0jJPa1Vg
-        EiigsipfdS4TuqKlZKiRo8s=
-X-Google-Smtp-Source: ABdhPJx0ySdMobnVV3yZlpTYeWj9KuRlzRFeq6H1W/371j4yI7Mk6TcfY4mXd+Od9YaD05m4iUB9EA==
-X-Received: by 2002:a05:6214:e4d:: with SMTP id o13mr3533618qvc.19.1622468217437;
-        Mon, 31 May 2021 06:36:57 -0700 (PDT)
-Received: from localhost (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id n81sm3338846qke.16.2021.05.31.06.36.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 31 May 2021 06:36:56 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Mon, 31 May 2021 09:36:56 -0400
-Message-Id: <CBRGZCQWCG6S.676W3VCPMMUH@shaak>
-Cc:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <robh+dt@kernel.org>
+        id S233011AbhEaOMM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 May 2021 10:12:12 -0400
+Received: from mail-eopbgr60091.outbound.protection.outlook.com ([40.107.6.91]:53302
+        "EHLO EUR04-DB3-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S232729AbhEaOKJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 31 May 2021 10:10:09 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=LIBKrzfXmRmI8e8ptqr0qKHI9ptHl8q2cpbsdGb7gxZDwcKDeKYJAJ/FvV2nRGWehZbzz4KFbjl+8F+2lMo16svdqrQBuDBwd5Bg8I2HNwanaQiSkoJmHdGkJJP/SNCQQr2YY8wuPXzdlJd0vftqEdaUTKMCgowfUgIik/FTajKvNMDqAc2cpMFf5IPlXO/vy8S/NTDo+muzL1X6mIxUL3l4u5Oemy/mi/mu3kGmeihzZ6IiQDzg4ri0ttSchK/nutxSVjEdYQOgMgWr0/EgsduXLqkZQzVMJBXZ2nVLbdca/Uh8yrwnIdehL9f7Z0F1NXIGMpYca1hr36EnOHNfWg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UYdtj5W7IM8TmX8J4Gri0Av/1UHfKuV7xBLQ39TEa5c=;
+ b=adMdjcRg+SwmXRhkTOI1nsl1QXSgajBC7X4NHyLXu9j6vMsjPAltqEEHNSvLQVXt+7mk7l696VM3eKjh6Fbgn9PX4FbGv7F/G3IscW0vLzZ14HJZergdIv28qvY+X4r8qW4J4IqPrf07r5ThBqe9qnqQnUD0vWBKcCW036d9QTcZYBwu9x++EhhO/zBtZ2ZfdcWjoI1LQgwU2SAig2Yb54NFSG+Wft1LoDRQWA61P4nVsmjwRV0fY+IgHP1VjAWy9p38GllBATGWlFuc9CdcabQQzGHj9RGB5Gg3zFq0Pud4MTn+n3tbj+jdXohF/bSXRltwWis2R36HhCmo49jlRA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
+ dkim=pass header.d=axentia.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=UYdtj5W7IM8TmX8J4Gri0Av/1UHfKuV7xBLQ39TEa5c=;
+ b=Arl/UDY7AbREYqzOYYJEa16zm6Yem8atMBwD8LdYzxnPKeKTboOJ0QxV8/VGnDUIAFdjryOkWwjVxUmlxFpU86bYDJDhsxqOiI+P/AR/U8OATFdREOPdMYl5oc4dO7G0GEmQkavVbKjt7VamsOSROR8LIvZIJG2bH3Kg+PuVUh8=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=axentia.se;
+Received: from DB8PR02MB5482.eurprd02.prod.outlook.com (2603:10a6:10:eb::29)
+ by DB6PR02MB3062.eurprd02.prod.outlook.com (2603:10a6:6:24::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20; Mon, 31 May
+ 2021 14:08:25 +0000
+Received: from DB8PR02MB5482.eurprd02.prod.outlook.com
+ ([fe80::d47d:ca8c:4fe6:3908]) by DB8PR02MB5482.eurprd02.prod.outlook.com
+ ([fe80::d47d:ca8c:4fe6:3908%3]) with mapi id 15.20.4173.030; Mon, 31 May 2021
+ 14:08:25 +0000
 Subject: Re: [PATCH v1 4/9] iio: afe: rescale: add offset support
-From:   "Liam Beguin" <liambeguin@gmail.com>
-To:     "Peter Rosin" <peda@axentia.se>, <jic23@kernel.org>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>
+To:     Liam Beguin <liambeguin@gmail.com>, jic23@kernel.org,
+        lars@metafoo.de, pmeerw@pmeerw.net
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org
 References: <20210530005917.20953-1-liambeguin@gmail.com>
  <20210530005917.20953-5-liambeguin@gmail.com>
  <0769aaae-8925-d943-e57d-c787d560a8dc@axentia.se>
-In-Reply-To: <0769aaae-8925-d943-e57d-c787d560a8dc@axentia.se>
+ <CBRGZCQWCG6S.676W3VCPMMUH@shaak>
+From:   Peter Rosin <peda@axentia.se>
+Organization: Axentia Technologies AB
+Message-ID: <01f8d320-05ae-1178-151a-d0d11a23bb55@axentia.se>
+Date:   Mon, 31 May 2021 16:08:23 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.10.1
+In-Reply-To: <CBRGZCQWCG6S.676W3VCPMMUH@shaak>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [85.229.94.233]
+X-ClientProxiedBy: AS8PR04CA0071.eurprd04.prod.outlook.com
+ (2603:10a6:20b:313::16) To DB8PR02MB5482.eurprd02.prod.outlook.com
+ (2603:10a6:10:eb::29)
+MIME-Version: 1.0
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.13.3] (85.229.94.233) by AS8PR04CA0071.eurprd04.prod.outlook.com (2603:10a6:20b:313::16) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4173.20 via Frontend Transport; Mon, 31 May 2021 14:08:24 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 35603eeb-f1aa-4551-587e-08d9243d8e88
+X-MS-TrafficTypeDiagnostic: DB6PR02MB3062:
+X-Microsoft-Antispam-PRVS: <DB6PR02MB306268ADAA504C89D4DF6B59BC3F9@DB6PR02MB3062.eurprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:7219;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: QaO3M/oyeUCWSQDlMgEPWLLXu5dhlGMVhjJxGNtgDLmnaDKUe4uiMZ5b2pnekuN6GU6AgysE+NtXgih4eoCa9ouBA/BMd6M8GAZehTb7zPL2EqJt/i6ZH+y49n7VPIko7EXHGWHVTVX2+K5BcHU1ObG/suu+9OolNsAbbmA5N4MIs/vdff8+DrxZqNpgM+ThF4OJK7LLnrn4s70B617WIuBIrzTAWoTaDUisOSqJbldgFjZdVPa3P+BFQbVtT8aAEQHvDCHKkMzjCvoLvEWKszOARjdXagK5LvNtOY26lXLANP74MoXAFcLjYuSDuizSarEf3lLAsT9g0ymPeT2FJOuvu3XXlTxiX7eiDxHNcPIJDSaIsAPYjUQDacJbgQUkZSDShSMWxsBPpx4DRIjVXU5iJ+/02stdH69OUhh8/A4CBGNZQkncgrk7jMFLfNkOAV6kXJsj7/UfAnlpY/eKgVyTYBDRfLgshyQLjJF59EA++rOr72YBPLDOUzQvjxLDdY130fvIq+6tGLg6jS9husEROgPkMk1a5JH7G7iiIMfTAmqyzMEqZ/69mkQ6lC4Q+lUfTKWULzQB2RhDxwyzKvejgQ8+W/0fidgShVToYK9FNs0Cq8tUt4Gx4z5merRErw7NJRefj9u7E7ib7ZkWNGRpFe7imKdSoISmokscrEuOEJAaFrBiTYxi/mqNBUHp
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR02MB5482.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(366004)(136003)(39830400003)(396003)(346002)(376002)(6486002)(26005)(316002)(2616005)(4326008)(31686004)(5660300002)(36756003)(956004)(31696002)(53546011)(16526019)(66556008)(186003)(16576012)(38100700002)(86362001)(478600001)(36916002)(8676002)(8936002)(66946007)(2906002)(66476007)(43740500002)(45980500001);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 2
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SUc3UjZaWnRZV0JIZ3p5Vzg2djhMQXlLclNEOXZKU21xMk54NXRxYmZjNzhj?=
+ =?utf-8?B?L2QrVnU4TVprTVlVRWVxajVQUEJ0TEgyNHE4ck5yb3EwODRCNjZTTDl0WitG?=
+ =?utf-8?B?VVVTN0gwSUpXcmFtaTFDR3V5eTFoR0VOQnNKQXVNSzRSd0Y0Uzh5SzJRYzE1?=
+ =?utf-8?B?SklaV3lDOUFsU2JESFAzdG52bFlnWDI4a2Juam51NXUxRi9vOHlNWFdiT1Ns?=
+ =?utf-8?B?Y1RVcEFDT0VUQWxSWFRFYldlK3N3L3dmc2djLzZmY05NOHJJbGJSUEJaNzNw?=
+ =?utf-8?B?cDVYZkpmb1kxOSt1R1hiTzQzM1FacHVZRnAxQ1dBTVhQYjFMcG9sK0dEeXpr?=
+ =?utf-8?B?UlJrTi80Vll6eVd5WU9aS1ZvMEM1eFlyUlZOeGJJY1BybzFvWmxpTGhaaldR?=
+ =?utf-8?B?NnQrdVlqWHdjZUlyQ3cydzVNMXllbTBGNGUvNm4xd1VFZjBjenRjanpGOXpl?=
+ =?utf-8?B?VzlaclYzYlRJS1F2Q2x1TEp3dnhjOG8rd0hDakJyS0VweEUxeHpqS1pyKzM1?=
+ =?utf-8?B?WnNvcElFRnlJcnJpd0FNcDZ3dlkrRmVSc3J1N2MxV2szQnBZbEo3NFk3WDY1?=
+ =?utf-8?B?ZkxVZS9uSnRYeGNqZEZDeEx4TFZjdE5sWmFib0lrSWw3SnlBTGMycGFsZXNZ?=
+ =?utf-8?B?ZVpZUDd2QXZuQlRlZFJOSU4rZHRYaEU5N1NOODQ2U1VYTVFkVzJwam1IYUhL?=
+ =?utf-8?B?TnJjUi9hL2xYVlpUVnFYYlZaQ05YQ3AxdnRuN2Z5Z2VHZEhVdElJUmlIMnZY?=
+ =?utf-8?B?RnozdThQbGhBY3lESDVPY0owRnhGU3BTLzBLcU1EeWs1TmpSajJGMjlSSS9U?=
+ =?utf-8?B?S1ZScEVNY3ZVM2ZCZUJsVEs4MW1kVy92d042eGVDV0JPV1pkZUtRa3lCTjZw?=
+ =?utf-8?B?djg3QnIzSFVsTG1HRW1obHVnaDArRlplOFRYUU1ad3RvOGViV3pVdXhYRTg3?=
+ =?utf-8?B?K3Bra3JmVDNTbUdnS1AvV2JKcVJsamQ5SkwxN21BN0VnRU9UU3JSd1RyVjNQ?=
+ =?utf-8?B?Z0hHWXZEQW9Cb3NBZkJraGg0MWNrT0lIZmd3MnQ1RFRLUEhZd1EvemcrVWFZ?=
+ =?utf-8?B?aFBMaSs5KzFDM0hXUVhJVUZtRG1iNXR4cE1qT0pZbU9HT1laK1dtdnZUNWhC?=
+ =?utf-8?B?UzJGOFBrRWwzenR0QXlMcnhqd0ZqbEJaQ3Z0Rm1sL0xhRks5aG9xQ1dXM25U?=
+ =?utf-8?B?ODhxM2NiNVlxNld2clN4cS9JNmxXanVvWFdud2NpbEI1dHQrYlVIVTlJdnpa?=
+ =?utf-8?B?Vk9CNjBDcnlKY3BzT21pa3VRU0VjcU9aZWhVRU0ybExLU0pQcWlvL1R1dzQ3?=
+ =?utf-8?Q?BCMPb7rBss?=
+X-MS-Exchange-AntiSpam-MessageData-1: +i3R4+iNNDwkwCxZF9N/7tBBVxeycyk5Xy189k7KIVgSp+kQMXgVq1iOc8C4kV8XuZ94bS1NDK2ORrtIteIX1+6S884zVSGEKEAb6OT/i1MbaXLDwSiRkyApFl2/far7fyB9aBvnTEO5QtS+kP/0SOSSiKHSNYjFr90rMHpVwZc1lOXRNPxb5KSi9/Le9IGg3Kzt9nwZUOqK049ue61ISp0rshvv68KllaGRthE0CrET2ZcljhpDVNNsoMM8mKTtJXk/z/Xit9TDzbwz437iqAND/AFsVwy2nk+buIxKRaC2duPnTikQftJhXsqlySn6VBd9Y/nkTrRbnCWk1fRxSZeW
+X-OriginatorOrg: axentia.se
+X-MS-Exchange-CrossTenant-Network-Message-Id: 35603eeb-f1aa-4551-587e-08d9243d8e88
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR02MB5482.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 31 May 2021 14:08:25.3730
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: tDIQvzrtFPP9DbS/nrVamZCowjmyg9EhhztCoXplKZ352pIuslmnH//RuUu+FVos
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB6PR02MB3062
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Peter,
+On 2021-05-31 15:36, Liam Beguin wrote:
+> Hi Peter,
+> 
+> On Mon May 31, 2021 at 4:52 AM EDT, Peter Rosin wrote:
+>> Hi!
+>>
+>> Thanks for the patch!
+>>
+>> On 2021-05-30 02:59, Liam Beguin wrote:
+>>> From: Liam Beguin <lvb@xiphos.com>
+>>>
+>>> This is a preparatory change required for the addition of temperature
+>>> sensing front ends.
+>>
+>> I think this is too simplistic. I think that if the upstream iio-dev has
+>> an offset, it should be dealt with (i.e. be rescaled). The rescale
+>> driver
+>> cannot ignore such an upstream offset and then throw in some other
+>> unrelated offset of its own. That would be thoroughly confusing.
+> 
+> I'm not sure I fully understand. The upstream offset should be dealt
+> with when calling iio_read_channel_processed().  That was my main
+> motivation behind using the IIO core to get a processed value.
 
-On Mon May 31, 2021 at 4:52 AM EDT, Peter Rosin wrote:
-> Hi!
->
-> Thanks for the patch!
->
-> On 2021-05-30 02:59, Liam Beguin wrote:
-> > From: Liam Beguin <lvb@xiphos.com>
-> >=20
-> > This is a preparatory change required for the addition of temperature
-> > sensing front ends.
->
-> I think this is too simplistic. I think that if the upstream iio-dev has
-> an offset, it should be dealt with (i.e. be rescaled). The rescale
-> driver
-> cannot ignore such an upstream offset and then throw in some other
-> unrelated offset of its own. That would be thoroughly confusing.
+You can rescale a channel with an offset, but without using processed
+values. I.e. the upstream channel provides raw values, a scale and an
+offset. The current rescale code ignores the upstream offset. I did not
+need that when I created the driver, and at a glace it felt "difficult".
+So I punted.
 
-I'm not sure I fully understand. The upstream offset should be dealt
-with when calling iio_read_channel_processed().  That was my main
-motivation behind using the IIO core to get a processed value.
+But if the rescaler is going to start to handle offsets of any kind, it
+will get very confusing if the upstream offset is ignored. The proper
+way to do that is not something I have thought deeply about, and I
+don't know what the proper behavior is. For a processed channel, the
+offset is baked into the value that is scaled. Maybe the sane thing
+is to do that for a non-processed channel as well? But that gets a bit
+ugly, as it is counter to the simplicity, beauty and efficiency of the
+rescaler driver. In the non-processed case the driver is just adjusting
+the scale value. But since we are talking about proportional
+relationships, it should be possible to rescale a non-processed
+channel with an offset by just adjusting the offset in some way related
+to the rescale factor. Doing it with integer math is the "difficult"
+part...
 
->
-> Also, I see no reason of expose an offset channel if there is no offset.
-
-You're right, I'll add conditions to only expose an offset when
-required.
-
-Liam
-
->
-> Cheers,
-> Peter
->
-> > Signed-off-by: Liam Beguin <lvb@xiphos.com>
-> > ---
-> >  drivers/iio/afe/iio-rescale.c | 12 ++++++++++--
-> >  1 file changed, 10 insertions(+), 2 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescal=
-e.c
-> > index 4d0813b274d1..3bd1f11f21db 100644
-> > --- a/drivers/iio/afe/iio-rescale.c
-> > +++ b/drivers/iio/afe/iio-rescale.c
-> > @@ -31,6 +31,7 @@ struct rescale {
-> >  	struct iio_chan_spec_ext_info *ext_info;
-> >  	s32 numerator;
-> >  	s32 denominator;
-> > +	s32 offset;
-> >  };
-> > =20
-> >  static int rescale_read_raw(struct iio_dev *indio_dev,
-> > @@ -52,6 +53,10 @@ static int rescale_read_raw(struct iio_dev *indio_de=
-v,
-> >  		*val2 =3D rescale->denominator;
-> > =20
-> >  		return IIO_VAL_FRACTIONAL;
-> > +	case IIO_CHAN_INFO_OFFSET:
-> > +		*val =3D rescale->offset;
-> > +
-> > +		return IIO_VAL_INT;
-> >  	default:
-> >  		return -EINVAL;
-> >  	}
-> > @@ -119,8 +124,10 @@ static int rescale_configure_channel(struct device=
- *dev,
-> >  		return -EINVAL;
-> >  	}
-> > =20
-> > -	chan->info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
-> > -		BIT(IIO_CHAN_INFO_SCALE);
-> > +	chan->info_mask_separate =3D
-> > +		BIT(IIO_CHAN_INFO_RAW) |
-> > +		BIT(IIO_CHAN_INFO_SCALE) |
-> > +		BIT(IIO_CHAN_INFO_OFFSET);
-> > =20
-> >  	if (iio_channel_has_available(schan, IIO_CHAN_INFO_RAW))
-> >  		chan->info_mask_separate_available |=3D BIT(IIO_CHAN_INFO_RAW);
-> > @@ -280,6 +287,7 @@ static int rescale_probe(struct platform_device *pd=
-ev)
-> >  	rescale->cfg =3D of_device_get_match_data(dev);
-> >  	rescale->numerator =3D 1;
-> >  	rescale->denominator =3D 1;
-> > +	rescale->offset =3D 0;
-> > =20
-> >  	ret =3D rescale->cfg->props(dev, rescale);
-> >  	if (ret)
-> >=20
-
+Cheers,
+Peter
