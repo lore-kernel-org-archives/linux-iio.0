@@ -2,137 +2,85 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8400FC4708F
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Jun 2021 13:46:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 223C7C47083
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Jun 2021 13:46:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5E426601FE
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Jun 2021 13:46:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0488E60C40
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Jun 2021 13:46:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229641AbhFBNsO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Jun 2021 09:48:14 -0400
-Received: from mail-ed1-f41.google.com ([209.85.208.41]:44650 "EHLO
-        mail-ed1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229640AbhFBNsO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Jun 2021 09:48:14 -0400
-Received: by mail-ed1-f41.google.com with SMTP id u24so2960270edy.11
-        for <linux-iio@vger.kernel.org>; Wed, 02 Jun 2021 06:46:30 -0700 (PDT)
+        id S229667AbhFBNsV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Jun 2021 09:48:21 -0400
+Received: from mail-ed1-f50.google.com ([209.85.208.50]:37882 "EHLO
+        mail-ed1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229640AbhFBNsU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Jun 2021 09:48:20 -0400
+Received: by mail-ed1-f50.google.com with SMTP id b11so3003254edy.4
+        for <linux-iio@vger.kernel.org>; Wed, 02 Jun 2021 06:46:24 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=googlemail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=8Je98vdwgGtbCcmC1tL2m4rsfwT5eXzFMJ/wydFAVxI=;
-        b=qAZURPoO+mrW2955SUeqTdd3gBQzn3ww5H6OCwSZtqRdiUqGReDpbKkMkJ7+09XAs5
-         kq/PnWEVQ8O6nOL1MDCo2ZHXupu21tSnCgqc1na7btj27JCKT4jUhcV0AG0cxxenKS1m
-         +UxW46IpqFltfwSqPz4/hCkEWbLx2sCDmXeK7+UjZ3qQ4T1aJ/fEKIrCTn6f0LJyiwOB
-         lRnMjMxUqKhPwy91nJZocyLAw4DxWWVqAqfcYUBGuOXON8Ibi4bWVzT55mcxzCyrSqBN
-         f2cV8INcFhSBhM4UdLoTy4nBk1KVZ4UDN8FdTCV49qp1FUe0LOcl2kQXKcBg0eGAdFfh
-         ABYw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EBFoud2hj48x46Wgh3PP584CpEIrCCIgTBZ0c8Yhflc=;
+        b=e+qnh7kRVW3JpAHnzSDg+fX42SIhgrOc6XwQxmRlFMVB8mjukcHgk9apvA/bWRc2e0
+         GiQBvmllQFRTMO0tuW9R/XudvJ1yFxpNs0KNgOzf1yII5xLT6YnpIflDiYdFCHxVTDkx
+         yoIXDru3+QROGrIk5H3rRaesVRYAgEylENXOnMp3RS5+XuoquqO6Pt9bbe6AcoVx3WBj
+         9Pqvx8R5a67NJW/PdzbjZlnr2q+LYKOjg5drrFIHH8JsrTNDzqjVeDPj5I9ICc7PrM+w
+         4SLRjE1FgPtp9Xa7PZTumOrscp3SKJcyqox3Qm0nc31oQoAZOTrd8ZBhbbILB31fwV72
+         NkBA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=8Je98vdwgGtbCcmC1tL2m4rsfwT5eXzFMJ/wydFAVxI=;
-        b=gdYcPtqkOW7rhgCRVO3nLZV+AaTHQbBghHJuTrX6Vlz1eiSHHecscJB0nqBmppfg0d
-         xyAGhiW6/BxxGxcMz2NlOz5sSATx/ewDQnL58OpjiupoU8mYfOfNQvUQdMF5S+jyLIFm
-         4J9e2jPr44LFen9TLQmalBlu4rW0FoEkEj09lNiZhyauZ4UNb0Or1lfqxj1a0yHxH8T3
-         icMzroPZfnvXcJzoseDgnyoL4E62PQyOolJiYTlcDURKNInNUf5p8HtMc88/N6f0VyCk
-         eYYcVg9Xlkn4/pnT9Z1w81Y0vEZU4MVFyRRLiPt97SI/Pdn+vA06+8mmgJV5ZzKJUW6B
-         xGxA==
-X-Gm-Message-State: AOAM5336LLSqL1wWlBaOPkvxGzPaLfeKm4ubdXwU1dwL3YD4bYT1quSD
-        9dzqsSIAXKMCiN9ertHtab9wGLvGAB8=
-X-Google-Smtp-Source: ABdhPJwvO/ACc14d4Dmtv1yHqRGr32r69GMQ0fnLgLNj/NkpaAz9BJn4waCGCtaEGnWVBSmZkOXD7g==
-X-Received: by 2002:aa7:d419:: with SMTP id z25mr15366665edq.2.1622641530333;
-        Wed, 02 Jun 2021 06:45:30 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EBFoud2hj48x46Wgh3PP584CpEIrCCIgTBZ0c8Yhflc=;
+        b=PPyJFmQX4njzgZSlhZ6f8MlJRlixlpvAicnkOPe4HIYemfPbdpcyWEeiMlybe8owgu
+         t4lJaV1pgEAdthBareyUhmeeYPpfQ9ziY4+/2PAc/pl1FU4TdIUnnskBrYJenZKS55BP
+         IXUw/xbEfjMOxTmUsDUvp4MdzmksQ0D6K+9jWGohJIfjXjcyEEbl0JLOA/W99VsLxAqz
+         lPWNUUfaNSs06lBeTVu3AFFN5KK+GSoRlQ+B8+hu4oOHuqzErpxEWRpNxw2E2nSLI9jb
+         uTE2fmeo2CWOlC1wKW8yhav5d+/AyPPJKqqG87MSBmqsYM9L+/CLER+Xm0TlYQ1Vs0DX
+         VVOQ==
+X-Gm-Message-State: AOAM532riZL7EgtGjGiA0jRSb+ynzP1AsYuL2w1iI1nHpTPBA02Y+2QK
+        XZboO9D1iHUZFY2ujuEzyqs=
+X-Google-Smtp-Source: ABdhPJyajoyK1HJkbDvFw7h+q5xdM3f/18ht6/42G0jkMGfmRH9KiYVMDmDvaJPLTxFC2gGwlZ6w0Q==
+X-Received: by 2002:a05:6402:1c11:: with SMTP id ck17mr1593907edb.102.1622641524157;
+        Wed, 02 Jun 2021 06:45:24 -0700 (PDT)
 Received: from mars.fritz.box ([2a02:8070:b9d:f200:bee0:f4e2:68f9:3d11])
-        by smtp.googlemail.com with ESMTPSA id n2sm1372305edi.32.2021.06.02.06.45.29
+        by smtp.googlemail.com with ESMTPSA id n2sm1372305edi.32.2021.06.02.06.45.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 02 Jun 2021 06:45:29 -0700 (PDT)
+        Wed, 02 Jun 2021 06:45:23 -0700 (PDT)
 From:   Christoph Fritz <chf.fritz@googlemail.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Rob Herring <robh+dt@kernel.org>
 Cc:     linux-iio@vger.kernel.org
-Subject: [PATCH 2/2] dt-bindings: iio: light: add isl76683 light bindings
-Date:   Wed,  2 Jun 2021 15:45:12 +0200
-Message-Id: <20210602134512.193186-3-chf.fritz@googlemail.com>
+Subject: [PATCH 0/2] Support for isl76683 ambient light sensor
+Date:   Wed,  2 Jun 2021 15:45:10 +0200
+Message-Id: <20210602134512.193186-1-chf.fritz@googlemail.com>
 X-Mailer: git-send-email 2.29.2
-In-Reply-To: <20210602134512.193186-1-chf.fritz@googlemail.com>
-References: <20210602134512.193186-1-chf.fritz@googlemail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds documentation of device tree bindings for Intersil
-isl76683 light sensor.
+This patchstack adds initial support for isl76683 light sensor.
 
-Signed-off-by: Christoph Fritz <chf.fritz@googlemail.com>
----
- .../bindings/iio/light/isil,isl76683.yaml     | 48 +++++++++++++++++++
- 1 file changed, 48 insertions(+)
+Christoph Fritz (2):
+  iio: light: Add support for Intersil isl76683 sensor
+  dt-bindings: iio: light: add isl76683 light bindings
+
+ .../bindings/iio/light/isil,isl76683.yaml     |  48 ++
+ drivers/iio/light/Kconfig                     |  12 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/isl76683.c                  | 604 ++++++++++++++++++
+ 4 files changed, 665 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/light/isil,isl76683.yaml
+ create mode 100644 drivers/iio/light/isl76683.c
 
-diff --git a/Documentation/devicetree/bindings/iio/light/isil,isl76683.yaml b/Documentation/devicetree/bindings/iio/light/isil,isl76683.yaml
-new file mode 100644
-index 000000000000..3e802a29892b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/isil,isl76683.yaml
-@@ -0,0 +1,48 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/light/isil,isil76683.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Intersil isl76683 ambient light sensor
-+
-+maintainers:
-+  - Christoph Fritz <chf.fritz@googlemail.com>
-+
-+description: |
-+  https://www.intersil.com/content/dam/Intersil/documents/isl7/isl76683.pdf
-+
-+properties:
-+  compatible:
-+    enum:
-+      - isil,isl76683
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+
-+        isl76683@74 {
-+            compatible = "isil,isl76683";
-+            reg = <0x74>;
-+            interrupt-parent = <&gpio2>;
-+            interrupts = <20 IRQ_TYPE_FALLING>;
-+        };
-+    };
-+...
 -- 
 2.29.2
 
