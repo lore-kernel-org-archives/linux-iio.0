@@ -2,82 +2,137 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.9 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE7D5C47083
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Jun 2021 11:41:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8400FC4708F
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Jun 2021 13:46:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D52FB61359
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Jun 2021 11:41:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5E426601FE
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Jun 2021 13:46:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229662AbhFBLnT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Jun 2021 07:43:19 -0400
-Received: from mga18.intel.com ([134.134.136.126]:63970 "EHLO mga18.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229482AbhFBLnP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 2 Jun 2021 07:43:15 -0400
-IronPort-SDR: j5yaDyR0GkTVlA5VDidkjsv6ITbtv1PiycEMtkycH8Dm/xMDnsUSzh+28X+YjFKyQi84Y2hVuq
- xZYbwg7nB0dw==
-X-IronPort-AV: E=McAfee;i="6200,9189,10002"; a="191117841"
-X-IronPort-AV: E=Sophos;i="5.83,242,1616482800"; 
-   d="scan'208";a="191117841"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Jun 2021 04:41:31 -0700
-IronPort-SDR: YVSQNeuJiweuR66owrfmALsn361OpHwEI304MotqGnyzTdW9sImLp9E13IBgO4CWse4DwX8hop
- XCx+GC1YJfWw==
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,242,1616482800"; 
-   d="scan'208";a="399695896"
-Received: from unknown (HELO [10.237.72.51]) ([10.237.72.51])
-  by orsmga003.jf.intel.com with ESMTP; 02 Jun 2021 04:41:30 -0700
-Subject: Re: [PATCH v3] counter: Add support for Intel Quadrature Encoder
- Peripheral
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     linux-iio@vger.kernel.org, Felipe Balbi <balbi@kernel.org>,
-        Raymond Tan <raymond.tan@intel.com>
-References: <20210527135838.3853285-1-jarkko.nikula@linux.intel.com>
- <YLcDJ+ZI1fXRpFRe@shinobu>
-From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Message-ID: <d9dc416f-100f-3fb8-d250-3aed8ca8f10b@linux.intel.com>
-Date:   Wed, 2 Jun 2021 14:41:29 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.0
+        id S229641AbhFBNsO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Jun 2021 09:48:14 -0400
+Received: from mail-ed1-f41.google.com ([209.85.208.41]:44650 "EHLO
+        mail-ed1-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229640AbhFBNsO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Jun 2021 09:48:14 -0400
+Received: by mail-ed1-f41.google.com with SMTP id u24so2960270edy.11
+        for <linux-iio@vger.kernel.org>; Wed, 02 Jun 2021 06:46:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8Je98vdwgGtbCcmC1tL2m4rsfwT5eXzFMJ/wydFAVxI=;
+        b=qAZURPoO+mrW2955SUeqTdd3gBQzn3ww5H6OCwSZtqRdiUqGReDpbKkMkJ7+09XAs5
+         kq/PnWEVQ8O6nOL1MDCo2ZHXupu21tSnCgqc1na7btj27JCKT4jUhcV0AG0cxxenKS1m
+         +UxW46IpqFltfwSqPz4/hCkEWbLx2sCDmXeK7+UjZ3qQ4T1aJ/fEKIrCTn6f0LJyiwOB
+         lRnMjMxUqKhPwy91nJZocyLAw4DxWWVqAqfcYUBGuOXON8Ibi4bWVzT55mcxzCyrSqBN
+         f2cV8INcFhSBhM4UdLoTy4nBk1KVZ4UDN8FdTCV49qp1FUe0LOcl2kQXKcBg0eGAdFfh
+         ABYw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8Je98vdwgGtbCcmC1tL2m4rsfwT5eXzFMJ/wydFAVxI=;
+        b=gdYcPtqkOW7rhgCRVO3nLZV+AaTHQbBghHJuTrX6Vlz1eiSHHecscJB0nqBmppfg0d
+         xyAGhiW6/BxxGxcMz2NlOz5sSATx/ewDQnL58OpjiupoU8mYfOfNQvUQdMF5S+jyLIFm
+         4J9e2jPr44LFen9TLQmalBlu4rW0FoEkEj09lNiZhyauZ4UNb0Or1lfqxj1a0yHxH8T3
+         icMzroPZfnvXcJzoseDgnyoL4E62PQyOolJiYTlcDURKNInNUf5p8HtMc88/N6f0VyCk
+         eYYcVg9Xlkn4/pnT9Z1w81Y0vEZU4MVFyRRLiPt97SI/Pdn+vA06+8mmgJV5ZzKJUW6B
+         xGxA==
+X-Gm-Message-State: AOAM5336LLSqL1wWlBaOPkvxGzPaLfeKm4ubdXwU1dwL3YD4bYT1quSD
+        9dzqsSIAXKMCiN9ertHtab9wGLvGAB8=
+X-Google-Smtp-Source: ABdhPJwvO/ACc14d4Dmtv1yHqRGr32r69GMQ0fnLgLNj/NkpaAz9BJn4waCGCtaEGnWVBSmZkOXD7g==
+X-Received: by 2002:aa7:d419:: with SMTP id z25mr15366665edq.2.1622641530333;
+        Wed, 02 Jun 2021 06:45:30 -0700 (PDT)
+Received: from mars.fritz.box ([2a02:8070:b9d:f200:bee0:f4e2:68f9:3d11])
+        by smtp.googlemail.com with ESMTPSA id n2sm1372305edi.32.2021.06.02.06.45.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Jun 2021 06:45:29 -0700 (PDT)
+From:   Christoph Fritz <chf.fritz@googlemail.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     linux-iio@vger.kernel.org
+Subject: [PATCH 2/2] dt-bindings: iio: light: add isl76683 light bindings
+Date:   Wed,  2 Jun 2021 15:45:12 +0200
+Message-Id: <20210602134512.193186-3-chf.fritz@googlemail.com>
+X-Mailer: git-send-email 2.29.2
+In-Reply-To: <20210602134512.193186-1-chf.fritz@googlemail.com>
+References: <20210602134512.193186-1-chf.fritz@googlemail.com>
 MIME-Version: 1.0
-In-Reply-To: <YLcDJ+ZI1fXRpFRe@shinobu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi
+This patch adds documentation of device tree bindings for Intersil
+isl76683 light sensor.
 
-On 6/2/21 7:03 AM, William Breathitt Gray wrote:
-> On Thu, May 27, 2021 at 04:58:38PM +0300, Jarkko Nikula wrote:
->>   Documentation/ABI/testing/sysfs-bus-counter |   9 +
->>   drivers/counter/Kconfig                     |  10 +
->>   drivers/counter/Makefile                    |   1 +
->>   drivers/counter/intel-qep.c                 | 546 ++++++++++++++++++++
->>   4 files changed, 566 insertions(+)
->>   create mode 100644 drivers/counter/intel-qep.c
-> 
-> Hi Jarkko,
-> 
-> I noticed the intel-qep.c file is missing an entry in the MAINTAINERS
-> file. Would you be able to resubmit this patch with a proper entry added
-> to MAINTAINERS so that users have the relevant contact info to reach the
-> maintainers of this driver? You can keep my Signed-off tag on as well so
-> that we know the code has already been reviewed.
-> 
-Ah, added now. I sent the update and didn't dare to add your signature 
-due the sidenote below :-)
+Signed-off-by: Christoph Fritz <chf.fritz@googlemail.com>
+---
+ .../bindings/iio/light/isil,isl76683.yaml     | 48 +++++++++++++++++++
+ 1 file changed, 48 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/isil,isl76683.yaml
 
-Sidenote, to my understanding Signed-off-by requires patch went through 
-that person and Acked-by is used when maintainer accepts the patch but 
-another person commits it with his/her Signed-off-by.
+diff --git a/Documentation/devicetree/bindings/iio/light/isil,isl76683.yaml b/Documentation/devicetree/bindings/iio/light/isil,isl76683.yaml
+new file mode 100644
+index 000000000000..3e802a29892b
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/isil,isl76683.yaml
+@@ -0,0 +1,48 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/light/isil,isil76683.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Intersil isl76683 ambient light sensor
++
++maintainers:
++  - Christoph Fritz <chf.fritz@googlemail.com>
++
++description: |
++  https://www.intersil.com/content/dam/Intersil/documents/isl7/isl76683.pdf
++
++properties:
++  compatible:
++    enum:
++      - isil,isl76683
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++
++        isl76683@74 {
++            compatible = "isil,isl76683";
++            reg = <0x74>;
++            interrupt-parent = <&gpio2>;
++            interrupts = <20 IRQ_TYPE_FALLING>;
++        };
++    };
++...
+-- 
+2.29.2
 
-Jarkko
