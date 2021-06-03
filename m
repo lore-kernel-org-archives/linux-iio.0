@@ -2,77 +2,128 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
+X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E629C4709A
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Jun 2021 17:17:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D70E4C47082
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Jun 2021 18:05:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 205906108E
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Jun 2021 17:17:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BCBE2613E3
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Jun 2021 18:05:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232380AbhFCRTE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 3 Jun 2021 13:19:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50504 "EHLO mail.kernel.org"
+        id S229916AbhFCSHW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 3 Jun 2021 14:07:22 -0400
+Received: from mail.kernel.org ([198.145.29.99]:46294 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232694AbhFCRRZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 3 Jun 2021 13:17:25 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 5C8A96108E;
-        Thu,  3 Jun 2021 17:12:08 +0000 (UTC)
-Date:   Thu, 3 Jun 2021 18:13:51 +0100
+        id S230412AbhFCSGz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 3 Jun 2021 14:06:55 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 91CCE61168;
+        Thu,  3 Jun 2021 18:04:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1622743486;
+        bh=hsvluWMjRK9V+JojbfAuZixzXGd2ri/U860X/FrZ+a0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=IE7FqO7Fu72Bd9vN8PmJ1EKFBI/ypeC0tZLSFIIUKxRu4oXBFA48ZUVmFHxxPmVFR
+         waO2yTJywSd8nGJfCdYHe04Qt8W446isgq40Oh7zdC3NDopfw7wMiA4Fn1rYyEdPDm
+         6QZi7Z4Jy/fxwtr1RIOq/7C+hoQmkMIEn6pufj+wySHHDui9ufnQMprKsUN8Lc0i+L
+         7j0rYBwurb+atjA37LFpwizhtVScYuedmwgbjpV87n1szI21f1a8F+MAKftU8MYqUU
+         lMIdvMYh3Hr1jtoiPvbFsWeyvXWAXZiMk0feBOgVbyfDya/CPLCmT/nvGQ+7qtTErY
+         ZC7HMfdx4NQ2w==
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Stephan Gerhold <stephan@gerhold.net>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: accel: bma180: Add missing 500 Hz / 1000 Hz
- bandwidth
-Message-ID: <20210603181351.3bfba96b@jic23-huawei>
-In-Reply-To: <CACRpkdbT25_MXtJd02g_8JuD-29Heg_CMwRP2ROoRuXjRUGAKQ@mail.gmail.com>
-References: <20210526094408.34298-1-stephan@gerhold.net>
-        <20210526094408.34298-3-stephan@gerhold.net>
-        <CACRpkdbT25_MXtJd02g_8JuD-29Heg_CMwRP2ROoRuXjRUGAKQ@mail.gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+To:     linux-iio@vger.kernel.org
+Cc:     Arnd Bergmann <arnd@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Joe Perches <joe@perches.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        =?UTF-8?q?Maxime=20Roussin-B=C3=A9langer?= 
+        <maxime.roussinbelanger@gmail.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: [PATCH v2 2/4] iio: light: si1133: Drop remaining uses of %hhx format string.
+Date:   Thu,  3 Jun 2021 19:06:10 +0100
+Message-Id: <20210603180612.3635250-3-jic23@kernel.org>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210603180612.3635250-1-jic23@kernel.org>
+References: <20210603180612.3635250-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 26 May 2021 14:12:44 +0200
-Linus Walleij <linus.walleij@linaro.org> wrote:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> On Wed, May 26, 2021 at 11:44 AM Stephan Gerhold <stephan@gerhold.net> wrote:
-> 
-> > According to the BMA253 datasheet [1] and BMA250 datasheet [2] BMA25x
-> > also supports a bandwidth of 500 Hz and 1000 Hz but this was not listed
-> > in the driver for some reason.
-> >
-> > Add it to the bw_table to make the driver match the datasheet.
-> >
-> > [1]: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bma253-ds000.pdf
-> > [2]: https://datasheet.octopart.com/BMA250-Bosch-datasheet-15540103.pdf
-> >
-> > Cc: Peter Meerwald <pmeerw@pmeerw.net>
-> > Cc: Linus Walleij <linus.walleij@linaro.org>
-> > Signed-off-by: Stephan Gerhold <stephan@gerhold.net>  
-> 
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Since:
+commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
+unnecessary %h[xudi] and %hh[xudi]")
+use of these format strings has been discouraged.
 
-Applied to the togreg branch of iio.git and pushed out as testing for 0-day
-and any friends to play with.
+Use the 0x02x form as the length specifier when used with # includes
+the 0x prefix and is very unlikely to be what was intended by the author.
 
-Thanks,
+As there are not that many in IIO, this is part of an effort to clear
+them out so we don't have any instances that might get copied into
+new drivers.
 
-Jonathan
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Maxime Roussin-Bélanger <maxime.roussinbelanger@gmail.com>
+Cc: Nathan Chancellor <nathan@kernel.org>
+---
+ drivers/iio/light/si1133.c | 14 +++++++-------
+ 1 file changed, 7 insertions(+), 7 deletions(-)
 
-> 
-> Yours,
-> Linus Walleij
+diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+index 0accea7090ee..f8c9b2cc322e 100644
+--- a/drivers/iio/light/si1133.c
++++ b/drivers/iio/light/si1133.c
+@@ -352,22 +352,22 @@ static int si1133_parse_response_err(struct device *dev, u32 resp, u8 cmd)
+ 
+ 	switch (resp) {
+ 	case SI1133_ERR_OUTPUT_BUFFER_OVERFLOW:
+-		dev_warn(dev, "Output buffer overflow: %#02hhx\n", cmd);
++		dev_warn(dev, "Output buffer overflow: 0x%02x\n", cmd);
+ 		return -EOVERFLOW;
+ 	case SI1133_ERR_SATURATION_ADC_OR_OVERFLOW_ACCUMULATION:
+-		dev_warn(dev, "Saturation of the ADC or overflow of accumulation: %#02hhx\n",
++		dev_warn(dev, "Saturation of the ADC or overflow of accumulation: 0x%02x\n",
+ 			 cmd);
+ 		return -EOVERFLOW;
+ 	case SI1133_ERR_INVALID_LOCATION_CMD:
+ 		dev_warn(dev,
+-			 "Parameter access to an invalid location: %#02hhx\n",
++			 "Parameter access to an invalid location: 0x%02x\n",
+ 			 cmd);
+ 		return -EINVAL;
+ 	case SI1133_ERR_INVALID_CMD:
+-		dev_warn(dev, "Invalid command %#02hhx\n", cmd);
++		dev_warn(dev, "Invalid command 0x%02x\n", cmd);
+ 		return -EINVAL;
+ 	default:
+-		dev_warn(dev, "Unknown error %#02hhx\n", cmd);
++		dev_warn(dev, "Unknown error 0x%02x\n", cmd);
+ 		return -EINVAL;
+ 	}
+ }
+@@ -400,7 +400,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 
+ 	err = regmap_write(data->regmap, SI1133_REG_COMMAND, cmd);
+ 	if (err) {
+-		dev_warn(dev, "Failed to write command %#02hhx, ret=%d\n", cmd,
++		dev_warn(dev, "Failed to write command 0x%02x, ret=%d\n", cmd,
+ 			 err);
+ 		goto out;
+ 	}
+@@ -425,7 +425,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+ 					       SI1133_CMD_TIMEOUT_MS * 1000);
+ 		if (err) {
+ 			dev_warn(dev,
+-				 "Failed to read command %#02hhx, ret=%d\n",
++				 "Failed to read command 0x%02x, ret=%d\n",
+ 				 cmd, err);
+ 			goto out;
+ 		}
+-- 
+2.31.1
 
