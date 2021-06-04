@@ -2,229 +2,143 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.3 required=3.0 tests=BAYES_00,DKIMWL_WL_MED,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,USER_AGENT_SANE_1
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2925EC47097
-	for <linux-iio@archiver.kernel.org>; Fri,  4 Jun 2021 06:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A931C47083
+	for <linux-iio@archiver.kernel.org>; Fri,  4 Jun 2021 06:45:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 044E161420
-	for <linux-iio@archiver.kernel.org>; Fri,  4 Jun 2021 06:13:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 27C6C613F3
+	for <linux-iio@archiver.kernel.org>; Fri,  4 Jun 2021 06:45:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229995AbhFDGPS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 4 Jun 2021 02:15:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52010 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229833AbhFDGPR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 4 Jun 2021 02:15:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EA7FC06174A
-        for <linux-iio@vger.kernel.org>; Thu,  3 Jun 2021 23:13:32 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lp358-0007K5-2y; Fri, 04 Jun 2021 08:13:22 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lp355-00042H-Oe; Fri, 04 Jun 2021 08:13:19 +0200
-Date:   Fri, 4 Jun 2021 08:13:19 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     "Li, Meng" <Meng.Li@windriver.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] driver: adc: ltc2497: return directly after reading the
- adc conversion value
-Message-ID: <20210604061319.pbj5ptnhxfsz4cec@pengutronix.de>
-References: <20210601092805.18385-1-Meng.Li@windriver.com>
- <20210603172025.314b5ced@jic23-huawei>
- <PH0PR11MB5191C26AA8B6D2B855E19D67F13B9@PH0PR11MB5191.namprd11.prod.outlook.com>
+        id S229913AbhFDGrP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 4 Jun 2021 02:47:15 -0400
+Received: from userp2130.oracle.com ([156.151.31.86]:60634 "EHLO
+        userp2130.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229849AbhFDGrP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 4 Jun 2021 02:47:15 -0400
+Received: from pps.filterd (userp2130.oracle.com [127.0.0.1])
+        by userp2130.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1546etj3078826;
+        Fri, 4 Jun 2021 06:45:21 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
+ : subject : message-id : references : mime-version : content-type :
+ in-reply-to; s=corp-2020-01-29;
+ bh=SM+12bs/cF//qW82eBNiHctbS0B3oN6oI6og++uErus=;
+ b=de0SuW/DK6P9YEVODVSAhBGsfbDAtXFMubYDeFAfXUVsnBa/QKrZmPIOwOxRG6WdTMSZ
+ J4EzH53wmo/29eXhttoYJPibXey1yZ9RpQALOZsmK/Tx9p7bSKaH1iqXsXZce2Y9ulhr
+ hct7vD+b63boluBpuka/WZdfxVQ6qxsiAZBCftnPNq/1EJX5qF7tc12V/yh536VH/1IY
+ E9g+Ay5MRir2iWmVmui/G3zyoCPDrjxAWX0+5XmSsK0cUKweH94fgKg+0pZRLRVaPgUj
+ +VxjSZRiOZbab+EVCYktKsrjd+pIb+0yXMPmmssmisL7Nm27b+h2iqNP3pvGdI39VIrE dQ== 
+Received: from userp3030.oracle.com (userp3030.oracle.com [156.151.31.80])
+        by userp2130.oracle.com with ESMTP id 38ud1sn2wf-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 04 Jun 2021 06:45:21 +0000
+Received: from pps.filterd (userp3030.oracle.com [127.0.0.1])
+        by userp3030.oracle.com (8.16.0.42/8.16.0.42) with SMTP id 1546e7Hr039908;
+        Fri, 4 Jun 2021 06:45:21 GMT
+Received: from pps.reinject (localhost [127.0.0.1])
+        by userp3030.oracle.com with ESMTP id 38uar00r7u-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 04 Jun 2021 06:45:21 +0000
+Received: from userp3030.oracle.com (userp3030.oracle.com [127.0.0.1])
+        by pps.reinject (8.16.0.36/8.16.0.36) with SMTP id 1546jK1g053000;
+        Fri, 4 Jun 2021 06:45:20 GMT
+Received: from aserv0122.oracle.com (aserv0122.oracle.com [141.146.126.236])
+        by userp3030.oracle.com with ESMTP id 38uar00r7m-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Fri, 04 Jun 2021 06:45:20 +0000
+Received: from abhmp0002.oracle.com (abhmp0002.oracle.com [141.146.116.8])
+        by aserv0122.oracle.com (8.14.4/8.14.4) with ESMTP id 1546jG9j018808;
+        Fri, 4 Jun 2021 06:45:16 GMT
+Received: from kadam (/41.212.42.34)
+        by default (Oracle Beehive Gateway v4.0)
+        with ESMTP ; Fri, 04 Jun 2021 06:45:15 +0000
+Date:   Fri, 4 Jun 2021 09:45:10 +0300
+From:   Dan Carpenter <dan.carpenter@oracle.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     jic23@cam.ac.uk, linux-iio@vger.kernel.org
+Subject: Re: [bug report] staging:iio:sca3000 extract old event handling and
+ move to poll for events from buffer
+Message-ID: <20210604064510.GE10983@kadam>
+References: <YLDbdN688C0xBgMn@mwanda>
+ <20210603173842.5d2b1004@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="rusuoff57rpu4cdk"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <PH0PR11MB5191C26AA8B6D2B855E19D67F13B9@PH0PR11MB5191.namprd11.prod.outlook.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+In-Reply-To: <20210603173842.5d2b1004@jic23-huawei>
+User-Agent: Mutt/1.9.4 (2018-02-28)
+X-Proofpoint-ORIG-GUID: QHoUCOVT5uMUBbJC1GGQE1NbnG3bZCF_
+X-Proofpoint-GUID: QHoUCOVT5uMUBbJC1GGQE1NbnG3bZCF_
+X-Proofpoint-Virus-Version: vendor=nai engine=6200 definitions=10004 signatures=668682
+X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 priorityscore=1501
+ suspectscore=0 phishscore=0 lowpriorityscore=0 mlxlogscore=999
+ malwarescore=0 clxscore=1015 spamscore=0 impostorscore=0 adultscore=0
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2106040052
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Thu, Jun 03, 2021 at 05:38:42PM +0100, Jonathan Cameron wrote:
+> On Fri, 28 May 2021 15:00:52 +0300
+> Dan Carpenter <dan.carpenter@oracle.com> wrote:
+> 
+> > Hello Jonathan Cameron,
+> > 
+> > The patch 25888dc51163: "staging:iio:sca3000 extract old event
+> > handling and move to poll for events from buffer" from May 18, 2011,
+> > leads to the following static checker warning:
+> > 
+> > 	drivers/iio/accel/sca3000.c:734 sca3000_read_raw()
+> > 	warn: no-op. '((*val) << 19) >> 19'
+> > 
+> > drivers/iio/accel/sca3000.c
+> >    709  static int sca3000_read_raw(struct iio_dev *indio_dev,
+> >    710                              struct iio_chan_spec const *chan,
+> >    711                              int *val,
+> >    712                              int *val2,
+> >    713                              long mask)
+> >    714  {
+> >    715          struct sca3000_state *st = iio_priv(indio_dev);
+> >    716          int ret;
+> >    717          u8 address;
+> >    718  
+> >    719          switch (mask) {
+> >    720          case IIO_CHAN_INFO_RAW:
+> >    721                  mutex_lock(&st->lock);
+> >    722                  if (chan->type == IIO_ACCEL) {
+> >    723                          if (st->mo_det_use_count) {
+> >    724                                  mutex_unlock(&st->lock);
+> >    725                                  return -EBUSY;
+> >    726                          }
+> >    727                          address = sca3000_addresses[chan->address][0];
+> >    728                          ret = sca3000_read_data_short(st, address, 2);
+> >    729                          if (ret < 0) {
+> >    730                                  mutex_unlock(&st->lock);
+> >    731                                  return ret;
+> >    732                          }
+> >    733                          *val = (be16_to_cpup((__be16 *)st->rx) >> 3) & 0x1FFF;
+> >    734                          *val = ((*val) << (sizeof(*val) * 8 - 13)) >>
+> >                                                   ^^^^^^^^^^^^^^^^^^^^^^^
+> >    735                                  (sizeof(*val) * 8 - 13);
+> >                                         ^^^^^^^^^^^^^^^^^^^^^^^
+> > 
+> > This code works, but it relies on undefined behavior of left shift
+> > overflow and it's very unsatisfying.  Pretty sure there is a UBSan
+> > warning for this at runtime.
+> 
+> Thanks Dan.  Looks like a slightly odd variant on open coded sign_extend32()
+> Should be fine to replace with
+> 
+> *val = sign_extend32(*val, 13);
+> 
+> What can I say, I wrote this a long time ago when I was young and stupid :)
 
---rusuoff57rpu4cdk
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+I didn't think of sign_extend32()...  I was forced to look at some of my
+2009 code the other day and it was *so* bad.  :P
 
-Hello,
+regards,
+dan carpenter
 
-On Fri, Jun 04, 2021 at 02:16:39AM +0000, Li, Meng wrote:
->=20
->=20
-> > -----Original Message-----
-> > From: Jonathan Cameron <jic23@kernel.org>
-> > Sent: Friday, June 4, 2021 12:20 AM
-> > To: Li, Meng <Meng.Li@windriver.com>
-> > Cc: lars@metafoo.de; Michael.Hennerich@analog.com;
-> > pmeerw@pmeerw.net; u.kleine-koenig@pengutronix.de; linux-
-> > kernel@vger.kernel.org; linux-iio@vger.kernel.org
-> > Subject: Re: [PATCH] driver: adc: ltc2497: return directly after readin=
-g the adc
-> > conversion value
-> >=20
-> > [Please note: This e-mail is from an EXTERNAL e-mail address]
-> >=20
-> > On Tue,  1 Jun 2021 17:28:05 +0800
-> > Meng.Li@windriver.com wrote:
-> >=20
-> > > From: Meng Li <Meng.Li@windriver.com>
-> > >
-> > > When read adc conversion value with below command:
-> > > cat /sys/.../iio:device0/in_voltage0-voltage1_raw
-> > > There is an error reported as below:
-> > > ltc2497 0-0014: i2c transfer failed: -EREMOTEIO This i2c transfer
-> > > issue is introduced by commit 69548b7c2c4f ("iio:
-> > > adc: ltc2497: split protocol independent part in a separate module").
-> > > When extract the common code into ltc2497-core.c, it change the code
-> > > logic of function ltc2497core_read(). With wrong reading sequence, the
-> > > action of enable adc channel is sent to chip again during adc channel
-> > > is in conversion status. In this way, there is no ack from chip, and
-> > > then cause i2c transfer failed.
-> > > In order to keep the code logic is the same with original ideal, it is
-> > > need to return direct after reading the adc conversion value.
-
-As background about the choice of the .result_and_measure callback:
-A difference between the ltc2497 (i2c) and ltc2496 (spi) is that for the
-latter reading the result of the last conversion and starting a new is a
-single bus operation and the one cannot be done without the other.
-
-> > > v2:
-> > > According to ltc2497 datasheet, the max value of conversion time is
-> > > 149.9 ms. So, add 20% to the 150msecs so that there is enough time for
-> > > data conversion.
-> >=20
-> > Version change logs go below the --- as we don't want to preserve them
-> > forever in the git history.
-> >=20
-> > I may have lost track of the discussion, but I thought the idea was that
-> > perhaps the longer time period would remove the need for the early retu=
-rn?
-> >=20
->=20
-> No!
-> I think the ret is essential.
-
-I'd like to understand why. Currently ltc2497core_read() looks as
-follows (simplified by dropping error handling, and unrolling the
-result_and_measure callback for the i2c case):
-
-	ltc2497core_wait_conv()
-
-	// result_and_measure(address, NULL)
-	i2c_smbus_write_byte(client, LTC2497_ENABLE | address);
-
-	msleep_interruptible(LTC2497_CONVERSION_TIME_MS)
-
-	// result_and_measure(address, val);
-	i2c_master_recv(client, &buf, 3);
-	i2c_smbus_write_byte(client, LTC2497_ENABLE | address);
-
-
-With the early return you suggest to introduce with your patch you save
-the last i2c_smbus_write_byte call. The data sheet indeed claims to
-start a new conversion at the stop condition.
-
-So either the reading of the conversion result and programming of the
-(maybe) new address has to be done in a single i2c transfer, or we
-have to do something like your patch.
-
-What I don't like about your approach is that it changes the semantic of
-the callback to result_*or*_measure which is something the spi variant
-cannot implement. With the current use of the function this is fine,
-however if at some time in the future we implement a bulk conversion
-shortcut this hurts.
-
-So I suggest to do:
-
----->8----
-=46rom: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-Date: Fri, 4 Jun 2021 08:02:44 +0200
-Subject: [PATCH] iio: ltc2497: Fix reading conversion results
-
-After the result of the previous conversion is read the chip
-automatically starts a new conversion and doesn't accept new i2c
-transfers until this conversion is completed which makes the function
-return failure.
-
-So add an early return iff the programming of the new address isn't
-needed. Note this will not fix the problem in general, but all cases
-that are currently used. Once this changes we get the failure back, but
-this can be addressed when the need arises.
-
-Fixes: 69548b7c2c4f ("iio: adc: ltc2497: split protocol independent part in=
- a separate module ")
-Reported-by: Meng Li <Meng.Li@windriver.com>
-Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
----
- drivers/iio/adc/ltc2497.c | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
-
-diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
---- a/drivers/iio/adc/ltc2497.c
-+++ b/drivers/iio/adc/ltc2497.c
-@@ -41,6 +41,19 @@ static int ltc2497_result_and_measure(struct ltc2497core=
-_driverdata *ddata,
- 		}
-=20
- 		*val =3D (be32_to_cpu(st->buf) >> 14) - (1 << 17);
-+
-+		/*
-+		 * The part started a new conversion at the end of the above i2c
-+		 * transfer, so if the address didn't change since the last call
-+		 * everything is fine and we can return early.
-+		 * If not (which should only happen when some sort of bulk
-+		 * conversion is implemented) we have to program the new
-+		 * address. Note that this probably fails as the conversion that
-+		 * was triggered above is like not complete yet and the two
-+		 * operations have to be done in a single transfer.
-+		 */
-+		if (ddata->addr_prev =3D=3D address)
-+			return 0;
- 	}
-=20
- 	ret =3D i2c_smbus_write_byte(st->client,
-
-Compared to Meng Li's patch this doesn't introduce reporting of bogus
-conversion results once we implement bulk conversion.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---rusuoff57rpu4cdk
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmC5xHwACgkQwfwUeK3K
-7AksVwf8C7Bc3dTHFDtYZyiOnMLTb9kvTP19tXLuBfkOQK0gX+qcHx5Ye1fpStC3
-rFrSdjOuevpxNg+10ANxPnIcxKZscMUxsbYKKLjxP7OfuMGYPh8SQQSneq6jqyzw
-YgQL+BD6watbUOavm8/vMHIJ3pU7r1GmuxJiV6ojB1L0t/C7Xfb7nOnM7Zk7RAsI
-gcSeej44mqNDmIXIYdKLIGca6qYTks3lb31tl3qZzsiwxJ4WSd3cjoo9+suV34yA
-3WmIvSASxuZSjsR1C7AU0/znDsvwEuSiaf23z+kGDcs/SrEc5vlll4e6OMurcUZ4
-HoGD0/Ss9yIH2CYbBZof69mWsUrAjQ==
-=Uurf
------END PGP SIGNATURE-----
-
---rusuoff57rpu4cdk--
