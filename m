@@ -2,110 +2,100 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AC47EC48BCF
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Jun 2021 14:48:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 48918C48BE6
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Jun 2021 16:12:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 90D49610FC
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Jun 2021 14:48:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2E114613EA
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Jun 2021 16:12:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231210AbhFGOui (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Jun 2021 10:50:38 -0400
-Received: from mail-qk1-f180.google.com ([209.85.222.180]:40781 "EHLO
-        mail-qk1-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231186AbhFGOug (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Jun 2021 10:50:36 -0400
-Received: by mail-qk1-f180.google.com with SMTP id u30so16864043qke.7;
-        Mon, 07 Jun 2021 07:48:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=OKwbA7CkZ/dV0H/nAmt5zTOn4ixRO23QkLcRozVJn9c=;
-        b=uB8iMLzLtQnPC4uy6Oy+bBk/7uuGVoR/+yjBxcJLo51kqUK5EtLNNUkfb1zTnPSQ3S
-         JaqbeGS5MY2w/6SiaXbYFMJI4NsV79YtWiu/Ix9Btwc+mvMpgTvIBj28md+H/xfJeyOy
-         sT/8CNCcHctHGK5RY04/DSd/YIw1n+MBaHfW7/zZF4xmFVhXRuz3/OfXAxzV9CHF1jjQ
-         an/9gery/oxlwOW1J25EaXgcf7HyvEtO+GsL2uXeOLHOKibabzlPeIi/xzN3Uk563Ayb
-         DPDezHcalYB4oI4ThK7fWjCkrnznOI96zyjOfdqELjNCK8NLNSpdws6Wpr9bhu8Odkzn
-         2OsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=OKwbA7CkZ/dV0H/nAmt5zTOn4ixRO23QkLcRozVJn9c=;
-        b=OmhGZEVEFxicbpZDGa7nlrawK28CNeKFjYI5kI6Cv30CIeT3zIEmecE81rPAs5TzkJ
-         s/UqetURTSj7zJ5Iw3II456RZkwEjrSXyC+fwAI0EfFS32aZelehVEYO+gxu3A+7h/Yl
-         EyY69vy4AFQjYMYEJrx7ujl+0X3Q+htJSo4q4i5wv/+0Me/uqnmn1SanzKZBcNUeKMtv
-         ACuGnKeCCXz7v7OPZpYZipkBr79NiTqlmChHpSMXNLdRCYWOwMQ9LnmIpDZPzcm/Uhv8
-         EpvXoyXT9sIb4rk5715sa3H5yTME64lKJ5BolVLergf0G1az9n+qe3OiarpHW3yIOgX4
-         /N5w==
-X-Gm-Message-State: AOAM530vVYnsZN+RibhVR5geApxrvhhKDIEYRCY1DhfVvTQSIRNpQyVU
-        WemBF/eOlJ+4sHLehsF96/I=
-X-Google-Smtp-Source: ABdhPJyiAT3fTtx138sRldeyD+npBsaC2xzgmtE0T0miVZU0YmivlFA2jKtw4kCBUGLX6r/13vxohA==
-X-Received: by 2002:a05:620a:f03:: with SMTP id v3mr17338663qkl.96.1623077250208;
-        Mon, 07 Jun 2021 07:47:30 -0700 (PDT)
-Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id s7sm4157855qkp.35.2021.06.07.07.47.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Jun 2021 07:47:29 -0700 (PDT)
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v2 2/8] iio: inkern: apply consumer scale when no channel scale is available
-Date:   Mon,  7 Jun 2021 10:47:12 -0400
-Message-Id: <20210607144718.1724413-3-liambeguin@gmail.com>
-X-Mailer: git-send-email 2.30.1.489.g328c10930387
-In-Reply-To: <20210607144718.1724413-1-liambeguin@gmail.com>
-References: <20210607144718.1724413-1-liambeguin@gmail.com>
+        id S231497AbhFGQOU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Jun 2021 12:14:20 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47404 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231217AbhFGQOQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Jun 2021 12:14:16 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7D1AC6136D;
+        Mon,  7 Jun 2021 16:12:24 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623082345;
+        bh=gWJ1yRLZGxnhleLBM3oUql+Jg14/ZcrDxag8D74fKKA=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=qvcrCsm+JuDoTf/p9Hw8YrrshhK0eVPGgMfWTZNYB/G8/H278DHHe0k8Ccb12VE/J
+         Uoy8FZ2Yl5i4x0pmX7Ow7UjpNHIQAPwAcb2cCilOkp2S7f/9azx7R4Dax/knlbye7o
+         6ZtqxGNs9DJCok3SJZKCCrrP5ij/2RoYk3Z/edbm0qoH1eTZvA1VCf3Qqdwc+ICqwD
+         gqFMsHYfEinqTttGksfLv8I6CdU+vTbh6+L5ggWhOv4Xj0PUHTM6oMCoRLTuPu/W86
+         tEtI89GPZjUcqg7nBaIAXlsHME21O5ldCdP7P8zsgTpGdqyZXhA+JCPYa15lF7UK7l
+         EftorNTCALItw==
+From:   Sasha Levin <sashal@kernel.org>
+To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
+Cc:     Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jiri Kosina <jkosina@suse.cz>, Sasha Levin <sashal@kernel.org>,
+        linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.12 07/49] HID: hid-sensor-hub: Return error for hid_set_field() failure
+Date:   Mon,  7 Jun 2021 12:11:33 -0400
+Message-Id: <20210607161215.3583176-7-sashal@kernel.org>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210607161215.3583176-1-sashal@kernel.org>
+References: <20210607161215.3583176-1-sashal@kernel.org>
 MIME-Version: 1.0
+X-stable: review
+X-Patchwork-Hint: Ignore
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Liam Beguin <lvb@xiphos.com>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-When a consumer calls iio_read_channel_processed() and no channel scale
-is available, it's assumed that the scale is one and the raw value is
-returned as expected.
+[ Upstream commit edb032033da0dc850f6e7740fa1023c73195bc89 ]
 
-On the other hand, if the consumer calls iio_convert_raw_to_processed()
-the scaling factor requested by the consumer is not applied.
+In the function sensor_hub_set_feature(), return error when hid_set_field()
+fails.
 
-This for example causes the consumer to process mV when expecting uV.
-Make sure to always apply the scaling factor requested by the consumer.
-
-Fixes: adc8ec5ff183 ("iio: inkern: pass through raw values if no scaling")
-Signed-off-by: Liam Beguin <lvb@xiphos.com>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Signed-off-by: Jiri Kosina <jkosina@suse.cz>
+Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/inkern.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/hid/hid-sensor-hub.c | 13 +++++++++----
+ 1 file changed, 9 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index b752fe5818e7..b69027690ed5 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -590,10 +590,10 @@ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
- 					IIO_CHAN_INFO_SCALE);
- 	if (scale_type < 0) {
- 		/*
--		 * Just pass raw values as processed if no scaling is
--		 * available.
-+		 * If no channel scaling is available apply consumer scale to
-+		 * raw value and return.
- 		 */
--		*processed = raw;
-+		*processed = raw * scale;
- 		return 0;
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 3dd7d3246737..f9983145d4e7 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -210,16 +210,21 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ 	buffer_size = buffer_size / sizeof(__s32);
+ 	if (buffer_size) {
+ 		for (i = 0; i < buffer_size; ++i) {
+-			hid_set_field(report->field[field_index], i,
+-				      (__force __s32)cpu_to_le32(*buf32));
++			ret = hid_set_field(report->field[field_index], i,
++					    (__force __s32)cpu_to_le32(*buf32));
++			if (ret)
++				goto done_proc;
++
+ 			++buf32;
+ 		}
  	}
- 
+ 	if (remaining_bytes) {
+ 		value = 0;
+ 		memcpy(&value, (u8 *)buf32, remaining_bytes);
+-		hid_set_field(report->field[field_index], i,
+-			      (__force __s32)cpu_to_le32(value));
++		ret = hid_set_field(report->field[field_index], i,
++				    (__force __s32)cpu_to_le32(value));
++		if (ret)
++			goto done_proc;
+ 	}
+ 	hid_hw_request(hsdev->hdev, report, HID_REQ_SET_REPORT);
+ 	hid_hw_wait(hsdev->hdev);
 -- 
-2.30.1.489.g328c10930387
+2.30.2
 
