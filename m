@@ -4,55 +4,58 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BF59C4743D
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:32:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87F89C48BCD
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 345B56120F
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:32:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6B42A61208
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235575AbhFIBev (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Jun 2021 21:34:51 -0400
-Received: from mail-pj1-f47.google.com ([209.85.216.47]:34354 "EHLO
-        mail-pj1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235568AbhFIBeu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jun 2021 21:34:50 -0400
-Received: by mail-pj1-f47.google.com with SMTP id g6-20020a17090adac6b029015d1a9a6f1aso2722460pjx.1;
+        id S235454AbhFIBey (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Jun 2021 21:34:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235427AbhFIBex (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jun 2021 21:34:53 -0400
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 950A1C061787;
+        Tue,  8 Jun 2021 18:32:48 -0700 (PDT)
+Received: by mail-pl1-x62b.google.com with SMTP id v11so3204473ply.6;
         Tue, 08 Jun 2021 18:32:48 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oyDjY2O85FyQCTp9dYnoY5JdVe8zkT4Tb27VuFry0ys=;
-        b=RrC/XuH3+XUHNmodeDqXQsKB3H56048bxwyZ2TqiGbybmvVrbMYLO8YNCzKCSNwTMq
-         DzPBl/wmGWmolkzqfpQcgkItrLTZNEG82+eTtHmNj2TTW0KTm0kEBi76ZpiujVivdeuG
-         gpUDSKjtrulJJMeAEjkFj/8KzyeCO0vTXhM4IxQ70n4Vo+2j03njgkcFbRHdAqWayG0P
-         z9J1M3w1DhDcs9KtfJ660NMSJPRMi3JdQNXwLqngumK7YckvEWrkb/DXc7jRxH4Iq2Xp
-         Q5EeCg20/6zdbrcHDjYNyOLnt6lW5ZnCJ0j0ElmhqLKL301UfSsurEu/GvV4gpkKbykV
-         J5Mg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=lJOl39aSDR3XMZTfLJ4I1sJIXKWA+Mc9CKAY9Y1edUw=;
+        b=N4BtFt7FKmHJOsOu7wd8wbYhg/V8Iacpd+LoaodYrH47vUearjxlWzr6UXsS90bxNN
+         qE3x0WSNUL+PO3Ugc5kt0LAwiszsQi4E1xZbTp1ouAX82RTkCoRY+HTeEIsMkJS497hl
+         7pElnbcH23GzUaPNzETgdXVQN0mxQ/nQM+75UUysaQrmmZSjbhDDD+ovl7rA8iEFEfzJ
+         jjPCPTx+2YjXJ3D+0l2uFbPOfZaB+uwcDv42iYxs6Dh6Q3Jl3rPwEo1d+ecP8a/iEfPf
+         BPdyAzAO71tfgOth5dCS+vdb3G0KYAuxMdnydZ+1/L2qxUYV+nhhdvNW70NHVr371wZc
+         CDiQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=oyDjY2O85FyQCTp9dYnoY5JdVe8zkT4Tb27VuFry0ys=;
-        b=rwOWMQptzm1pPNg8wG37QurmYbqYdVzuPMUPWa8JTSkV4ZjCcTHXydXyY4Hs8x+C0y
-         2DRQivxDwqxnz4y0IhwoCh56hxettJABz5/o1ZrnnYwoIT7F3m1jn/Hur4oJQmceHzRu
-         koNXnnHeMUwLDn82kX7TlyNzl+WYyMwxASIeJ0FG04QJTvfL1RsCCmnlCSfu0XUMTFDW
-         udEISoMcsxwGpCN2+h/nQKefFELFf9i3gi/r2orSJhDczpaX0IW04Y18LP1zHHfj4pdE
-         4orXI2pqyDxHi5mbX+8Ogx686/BfV2pcXHGFzFEykkMY2wdlUBiWTBYk7HH/VoF8bcXL
-         Sw3Q==
-X-Gm-Message-State: AOAM530wTnFN61jFwPNUBFrNpbp7Xn4O9vwWNh9AuqfQdB1il12dS8DL
-        cnQD2CN4nkwwX2P/2yIlByc=
-X-Google-Smtp-Source: ABdhPJyOd/UaMC79oy956Vrpo6w/NopzxFLJZ+5FGzHhb9a3Vj9fMMEIOT4e0hRFH09va6me3QpFGg==
-X-Received: by 2002:a17:90b:4004:: with SMTP id ie4mr29791746pjb.102.1623202308523;
-        Tue, 08 Jun 2021 18:31:48 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=lJOl39aSDR3XMZTfLJ4I1sJIXKWA+Mc9CKAY9Y1edUw=;
+        b=knaeYZNi9yYJUFC2I1TiszWq990rI8y8709ETwzQ1dYrhvyuXY2dqCqCl4jh2zub0W
+         1lw5s7E1uSkePi0NWLhwR6HHjWhWPTUXUrKyt0KH1cAnRvT5aSae+2lY6tSrIoc8m9FL
+         uYWZu+vJImSGyGDMoTeNr9+sCB4mKtoxnfkgF78eFDw3owQQnrRQH4pOtfJi7ggnHSsy
+         RAhu3pfIMTQNrgX+XAM5PYzvpPS/FVUTEGbVdmd1OsFUq+FqjsKxg4rWVzJIN+PKOzr1
+         C86+WP2WWIczj2wQlEaqljOBKFhMHm8xmmd7UlH8rviU+Vo4glFWmM+mYzklQqREaR/g
+         onbA==
+X-Gm-Message-State: AOAM531oeargfLylSEud4+TEInTUZ/MR5bK2WNKdebQnC4rqkvl1YwOl
+        M3i0eiRRmKW6+lvOtn4PA6w=
+X-Google-Smtp-Source: ABdhPJwDjSkwZmmGs7WYbwxZ9wlvEo3/cwEjTyNpABkfh5ykOFVRM2a3J6ExtQshEWSpp03qwauVMg==
+X-Received: by 2002:a17:90b:8d6:: with SMTP id ds22mr29635108pjb.54.1623202365659;
+        Tue, 08 Jun 2021 18:32:45 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id v14sm12659815pgl.86.2021.06.08.18.31.43
+        by smtp.gmail.com with ESMTPSA id v14sm12659815pgl.86.2021.06.08.18.32.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jun 2021 18:31:47 -0700 (PDT)
+        Tue, 08 Jun 2021 18:32:45 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
@@ -64,130 +67,45 @@ Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         jarkko.nikula@linux.intel.com,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v11 00/33] Introduce the Counter character device interface
-Date:   Wed,  9 Jun 2021 10:31:03 +0900
-Message-Id: <cover.1623201081.git.vilhelm.gray@gmail.com>
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v11 11/33] counter: stm32-timer-cnt: Add const qualifier for functions_list array
+Date:   Wed,  9 Jun 2021 10:31:14 +0900
+Message-Id: <46a1e7096dd9280d8f241894186b3c903956a55f.1623201081.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <cover.1623201081.git.vilhelm.gray@gmail.com>
+References: <cover.1623201081.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changes in v11:
- - Migrated Intel QEP to new interface
- - Context adjustments made for documentation
+The struct counter_count functions_list member expects a const enum
+counter_count_function array. This patch adds the const qualifier to the
+stm32_count_functions to match functions_list.
 
-I pulled out a lot of bits and pieces to their own patches; hopefully
-that makes reviewing this patchset much simpler than before. This
-patchset is also available on my personal public git repo for anyone who
-wants a quick way to clone:
-https://gitlab.com/vilhelmgray/iio/-/tree/counter_chrdev_v11
+Cc: Benjamin Gaignard <benjamin.gaignard@st.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/counter/stm32-timer-cnt.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-The patches preceding "counter: Internalize sysfs interface code" are
-primarily cleanup and fixes that can be picked up and applied now to the
-IIO tree if so desired. The "counter: Internalize sysfs interface code"
-patch as well may be considered for pickup because it is relatively safe
-and makes no changes to the userspace interface.
-
-To summarize the main points of this patchset: there are no changes to
-the existing Counter sysfs userspace interface; a Counter character
-device interface is introduced that allows Counter events and associated
-data to be read() by userspace; the events_configure() and
-watch_validate() driver callbacks are introduced to support Counter
-events; and IRQ support is added to the 104-QUAD-8 driver, serving as an
-example of how to support the new Counter events functionality.
-
-Something that should still be discussed: should the struct
-counter_event "status" member be 8 bits or 32 bits wide? This member
-will provide the return status (system error number) of an event
-operation.
-
-William Breathitt Gray (33):
-  docs: counter: Consolidate Counter sysfs attributes documentation
-  docs: counter: Fix spelling
-  counter: 104-quad-8: Remove pointless comment
-  counter: 104-quad-8: Return error when invalid mode during
-    ceiling_write
-  counter: 104-quad-8: Annotate hardware config module parameter
-  counter: 104-quad-8: Add const qualifiers for
-    quad8_preset_register_set
-  counter: 104-quad-8: Add const qualifier for functions_list array
-  counter: interrupt-cnt: Add const qualifier for functions_list array
-  counter: microchip-tcb-capture: Add const qualifier for functions_list
-    array
-  counter: stm32-lptimer-cnt: Add const qualifier for functions_list
-    array
-  counter: stm32-timer-cnt: Add const qualifier for functions_list array
-  counter: 104-quad-8: Add const qualifier for actions_list array
-  counter: ftm-quaddec: Add const qualifier for actions_list array
-  counter: interrupt-cnt: Add const qualifier for actions_list array
-  counter: microchip-tcb-capture: Add const qualifier for actions_list
-    array
-  counter: stm32-lptimer-cnt: Add const qualifier for actions_list array
-  counter: stm32-timer-cnt: Add const qualifier for actions_list array
-  counter: Return error code on invalid modes
-  counter: Standardize to ERANGE for limit exceeded errors
-  counter: Rename counter_signal_value to counter_signal_level
-  counter: Rename counter_count_function to counter_function
-  counter: Internalize sysfs interface code
-  counter: Update counter.h comments to reflect sysfs internalization
-  docs: counter: Update to reflect sysfs internalization
-  counter: Move counter enums to uapi header
-  counter: Add character device interface
-  docs: counter: Document character device interface
-  tools/counter: Create Counter tools
-  counter: Implement signalZ_action_component_id sysfs attribute
-  counter: Implement *_component_id sysfs attributes
-  counter: Implement events_queue_size sysfs attribute
-  counter: 104-quad-8: Replace mutex with spinlock
-  counter: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8
-
- Documentation/ABI/testing/sysfs-bus-counter   |  112 +-
- .../ABI/testing/sysfs-bus-counter-104-quad-8  |   61 -
- .../ABI/testing/sysfs-bus-counter-ftm-quaddec |   16 -
- Documentation/driver-api/generic-counter.rst  |  368 +++-
- .../userspace-api/ioctl/ioctl-number.rst      |    1 +
- MAINTAINERS                                   |    7 +-
- drivers/counter/104-quad-8.c                  |  739 ++++----
- drivers/counter/Kconfig                       |    6 +-
- drivers/counter/Makefile                      |    1 +
- drivers/counter/counter-chrdev.c              |  486 ++++++
- drivers/counter/counter-chrdev.h              |   14 +
- drivers/counter/counter-core.c                |  192 +++
- drivers/counter/counter-sysfs.c               |  953 +++++++++++
- drivers/counter/counter-sysfs.h               |   13 +
- drivers/counter/counter.c                     | 1496 -----------------
- drivers/counter/ftm-quaddec.c                 |   61 +-
- drivers/counter/intel-qep.c                   |  150 +-
- drivers/counter/interrupt-cnt.c               |   75 +-
- drivers/counter/microchip-tcb-capture.c       |  105 +-
- drivers/counter/stm32-lptimer-cnt.c           |  176 +-
- drivers/counter/stm32-timer-cnt.c             |  149 +-
- drivers/counter/ti-eqep.c                     |  221 +--
- include/linux/counter.h                       |  716 ++++----
- include/linux/counter_enum.h                  |   45 -
- include/uapi/linux/counter.h                  |  133 ++
- tools/Makefile                                |   13 +-
- tools/counter/Build                           |    1 +
- tools/counter/Makefile                        |   53 +
- tools/counter/counter_example.c               |   95 ++
- 29 files changed, 3586 insertions(+), 2872 deletions(-)
- delete mode 100644 Documentation/ABI/testing/sysfs-bus-counter-104-quad-8
- delete mode 100644 Documentation/ABI/testing/sysfs-bus-counter-ftm-quaddec
- create mode 100644 drivers/counter/counter-chrdev.c
- create mode 100644 drivers/counter/counter-chrdev.h
- create mode 100644 drivers/counter/counter-core.c
- create mode 100644 drivers/counter/counter-sysfs.c
- create mode 100644 drivers/counter/counter-sysfs.h
- delete mode 100644 drivers/counter/counter.c
- delete mode 100644 include/linux/counter_enum.h
- create mode 100644 include/uapi/linux/counter.h
- create mode 100644 tools/counter/Build
- create mode 100644 tools/counter/Makefile
- create mode 100644 tools/counter/counter_example.c
-
+diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+index 75bc401fdd18..0c18573a7837 100644
+--- a/drivers/counter/stm32-timer-cnt.c
++++ b/drivers/counter/stm32-timer-cnt.c
+@@ -50,7 +50,7 @@ enum stm32_count_function {
+ 	STM32_COUNT_ENCODER_MODE_3,
+ };
+ 
+-static enum counter_count_function stm32_count_functions[] = {
++static const enum counter_count_function stm32_count_functions[] = {
+ 	[STM32_COUNT_SLAVE_MODE_DISABLED] = COUNTER_COUNT_FUNCTION_INCREASE,
+ 	[STM32_COUNT_ENCODER_MODE_1] = COUNTER_COUNT_FUNCTION_QUADRATURE_X2_A,
+ 	[STM32_COUNT_ENCODER_MODE_2] = COUNTER_COUNT_FUNCTION_QUADRATURE_X2_B,
 -- 
 2.32.0
 
