@@ -2,132 +2,84 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE8CC48BD1
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:27:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6F9C48BCD
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:27:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C11EB61354
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:27:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 08F8361354
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:27:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232911AbhFIP3t (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Jun 2021 11:29:49 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54028 "EHLO mail.kernel.org"
+        id S234531AbhFIP3u (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Jun 2021 11:29:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:54050 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
         id S233840AbhFIP3t (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Wed, 9 Jun 2021 11:29:49 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 240E260E0B;
-        Wed,  9 Jun 2021 15:27:54 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623252474;
-        bh=D+uYs2YDFrZoqK0TBSi9H6cpUQWmr7J+BacKjeYKn5g=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=DkZtxrMIZYvj+BeR9Vh4wkDfkf+4ergpUqnoBwAKgr7/mdOqd0FearglwCxCxa5ZN
-         UNa9hE6dBxeGgEOOv5iRzZ7FzzlmReNETCkc19eGCEzb+G80MYZ7zvpSgrigrDQXT6
-         6QCaDjdl7w2/LGTgOUzkvfdTkJic1rotPgOu/+rMADiqCwdUFwuVL84e1Hr1k28Y2M
-         aDQMjxFx7VR5pTz+DknZU1+jk3r21b1TT9MhAclEOpJTKQprqW2WNgwvHLaYfGVSNO
-         dSIQN2mORWp7J9FfMC0gmyMd67LO+9IYqCmTBw4erjK61NLOjVGxcUlUfyIoCUK898
-         KudQSlrlGHSYQ==
-Date:   Wed, 9 Jun 2021 08:27:54 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Joe Perches <joe@perches.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Maxime =?iso-8859-1?Q?Roussin-B=E9langer?= 
-        <maxime.roussinbelanger@gmail.com>
-Subject: Re: [PATCH v2 2/4] iio: light: si1133: Drop remaining uses of %hhx
- format string.
-Message-ID: <YMDd+o8joxdJonLU@Ryzen-9-3900X>
-References: <20210603180612.3635250-1-jic23@kernel.org>
- <20210603180612.3635250-3-jic23@kernel.org>
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 99688611CC;
+        Wed,  9 Jun 2021 15:27:50 +0000 (UTC)
+Date:   Wed, 9 Jun 2021 16:29:42 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
+        a.fatoum@pengutronix.de, kamel.bouhara@bootlin.com,
+        gwendal@chromium.org, alexandre.belloni@bootlin.com,
+        david@lechnology.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        syednwaris@gmail.com, patrick.havelange@essensium.com,
+        fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@st.com, o.rempel@pengutronix.de,
+        jarkko.nikula@linux.intel.com
+Subject: Re: [PATCH v11 14/33] counter: interrupt-cnt: Add const qualifier
+ for actions_list array
+Message-ID: <20210609162942.6bdc6d63@jic23-huawei>
+In-Reply-To: <a3bdffbe7c38eb95ea692ed30aeb50dbb65c9e6f.1623201081.git.vilhelm.gray@gmail.com>
+References: <cover.1623201081.git.vilhelm.gray@gmail.com>
+        <a3bdffbe7c38eb95ea692ed30aeb50dbb65c9e6f.1623201081.git.vilhelm.gray@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20210603180612.3635250-3-jic23@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 07:06:10PM +0100, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Since:
-> commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
-> unnecessary %h[xudi] and %hh[xudi]")
-> use of these format strings has been discouraged.
-> 
-> Use the 0x02x form as the length specifier when used with # includes
-> the 0x prefix and is very unlikely to be what was intended by the author.
-> 
-> As there are not that many in IIO, this is part of an effort to clear
-> them out so we don't have any instances that might get copied into
-> new drivers.
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Maxime Roussin-Bélanger <maxime.roussinbelanger@gmail.com>
-> Cc: Nathan Chancellor <nathan@kernel.org>
+On Wed,  9 Jun 2021 10:31:17 +0900
+William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+> The struct counter_synapse actions_list member expects a const enum
+> counter_synapse_action array. This patch adds the const qualifier to the
+> interrupt_cnt_synapse_actionss to match actions_list.
+> 
+> Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Naming looks unusual...
 
 > ---
->  drivers/iio/light/si1133.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
+>  drivers/counter/interrupt-cnt.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
-> index 0accea7090ee..f8c9b2cc322e 100644
-> --- a/drivers/iio/light/si1133.c
-> +++ b/drivers/iio/light/si1133.c
-> @@ -352,22 +352,22 @@ static int si1133_parse_response_err(struct device *dev, u32 resp, u8 cmd)
+> diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
+> index 827d785e19b4..0e07607f2cd3 100644
+> --- a/drivers/counter/interrupt-cnt.c
+> +++ b/drivers/counter/interrupt-cnt.c
+> @@ -77,7 +77,7 @@ static const struct counter_count_ext interrupt_cnt_ext[] = {
+>  	},
+>  };
 >  
->  	switch (resp) {
->  	case SI1133_ERR_OUTPUT_BUFFER_OVERFLOW:
-> -		dev_warn(dev, "Output buffer overflow: %#02hhx\n", cmd);
-> +		dev_warn(dev, "Output buffer overflow: 0x%02x\n", cmd);
->  		return -EOVERFLOW;
->  	case SI1133_ERR_SATURATION_ADC_OR_OVERFLOW_ACCUMULATION:
-> -		dev_warn(dev, "Saturation of the ADC or overflow of accumulation: %#02hhx\n",
-> +		dev_warn(dev, "Saturation of the ADC or overflow of accumulation: 0x%02x\n",
->  			 cmd);
->  		return -EOVERFLOW;
->  	case SI1133_ERR_INVALID_LOCATION_CMD:
->  		dev_warn(dev,
-> -			 "Parameter access to an invalid location: %#02hhx\n",
-> +			 "Parameter access to an invalid location: 0x%02x\n",
->  			 cmd);
->  		return -EINVAL;
->  	case SI1133_ERR_INVALID_CMD:
-> -		dev_warn(dev, "Invalid command %#02hhx\n", cmd);
-> +		dev_warn(dev, "Invalid command 0x%02x\n", cmd);
->  		return -EINVAL;
->  	default:
-> -		dev_warn(dev, "Unknown error %#02hhx\n", cmd);
-> +		dev_warn(dev, "Unknown error 0x%02x\n", cmd);
->  		return -EINVAL;
->  	}
->  }
-> @@ -400,7 +400,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
+> -static enum counter_synapse_action interrupt_cnt_synapse_actionss[] = {
+> +static const enum counter_synapse_action interrupt_cnt_synapse_actionss[] = {
+
+actions?
+
+Perhaps good to fix that whilst we are here.
+
+>  	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
+>  };
 >  
->  	err = regmap_write(data->regmap, SI1133_REG_COMMAND, cmd);
->  	if (err) {
-> -		dev_warn(dev, "Failed to write command %#02hhx, ret=%d\n", cmd,
-> +		dev_warn(dev, "Failed to write command 0x%02x, ret=%d\n", cmd,
->  			 err);
->  		goto out;
->  	}
-> @@ -425,7 +425,7 @@ static int si1133_command(struct si1133_data *data, u8 cmd)
->  					       SI1133_CMD_TIMEOUT_MS * 1000);
->  		if (err) {
->  			dev_warn(dev,
-> -				 "Failed to read command %#02hhx, ret=%d\n",
-> +				 "Failed to read command 0x%02x, ret=%d\n",
->  				 cmd, err);
->  			goto out;
->  		}
-> -- 
-> 2.31.1
+
