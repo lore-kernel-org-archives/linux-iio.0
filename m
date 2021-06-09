@@ -2,118 +2,83 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2312C48BCF
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:29:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B00AC48BCD
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:30:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B5A1E61359
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:29:42 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F28C760E0B
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:30:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236335AbhFIPbg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Jun 2021 11:31:36 -0400
-Received: from mail.kernel.org ([198.145.29.99]:55310 "EHLO mail.kernel.org"
+        id S236457AbhFIPcI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Jun 2021 11:32:08 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55998 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235379AbhFIPbf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Jun 2021 11:31:35 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D19F560E0B;
-        Wed,  9 Jun 2021 15:29:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623252581;
-        bh=BsamdNAI8z2Eq8d5wyZPH4t38jutckXryySGyH6Lpxc=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=UgW1+hn1XcB+m17u3lSE4bkT8/1SSxb5tLln5SN1fp2ZtJk8dqvS2K4zYcKsWh4iT
-         WfouVQ/uoghAPeqAoeowUjY48HebO0JQAoFUc1z16ZhBsIJO4Jh4HI0832as9HSpZo
-         /uOOkvEgt4EEx0nlezYfFkOv0mq82lWTOvt9V/KCjZESGnB7WVVKICyq70Dvef9wFz
-         PLr+lW4AWF3wTQe774qvsr6Zp99MjHKbPVQ+NiHDIGQMkuMidDOAv63MP7I1X1CI5+
-         iiOSPQCCK0uDqV2ouqKLnGtU0wIh8q9IIeTRVX2PbyRn0/oauNvBh+vEy+T0bl1zIb
-         N6GNfCoRqGMIg==
-Date:   Wed, 9 Jun 2021 08:29:40 -0700
-From:   Nathan Chancellor <nathan@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Joe Perches <joe@perches.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 4/4] iio: light: si1145: Drop use of %hhx format
- specifier.
-Message-ID: <YMDeZMzNoxl1vGjf@Ryzen-9-3900X>
-References: <20210603180612.3635250-1-jic23@kernel.org>
- <20210603180612.3635250-5-jic23@kernel.org>
+        id S236420AbhFIPcH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Jun 2021 11:32:07 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 5011961351;
+        Wed,  9 Jun 2021 15:30:06 +0000 (UTC)
+Date:   Wed, 9 Jun 2021 16:32:00 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
+        a.fatoum@pengutronix.de, kamel.bouhara@bootlin.com,
+        gwendal@chromium.org, alexandre.belloni@bootlin.com,
+        david@lechnology.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        syednwaris@gmail.com, patrick.havelange@essensium.com,
+        fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@st.com, o.rempel@pengutronix.de,
+        jarkko.nikula@linux.intel.com,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: Re: [PATCH v11 16/33] counter: stm32-lptimer-cnt: Add const
+ qualifier for actions_list array
+Message-ID: <20210609163200.281673ac@jic23-huawei>
+In-Reply-To: <785e0daa3633923ede42394f423fcf94c4469154.1623201081.git.vilhelm.gray@gmail.com>
+References: <cover.1623201081.git.vilhelm.gray@gmail.com>
+        <785e0daa3633923ede42394f423fcf94c4469154.1623201081.git.vilhelm.gray@gmail.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210603180612.3635250-5-jic23@kernel.org>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Jun 03, 2021 at 07:06:12PM +0100, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> Since:
-> commit cbacb5ab0aa0 ("docs: printk-formats: Stop encouraging use of
-> unnecessary %h[xudi] and %hh[xudi]")
-> use of these format strings has been discouraged.
-> 
-> As there are only a few such instances in IIO, this is part of a
-> series clearing them out so they don't get copied into new drivers.
-> 
-> Use the 0x02x form as the length specifier when used with # includes
-> the 0x prefix and is very unlikely to be what was intended by the author.
-> 
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Nathan Chancellor <nathan@kernel.org>
+On Wed,  9 Jun 2021 10:31:19 +0900
+William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-Reviewed-by: Nathan Chancellor <nathan@kernel.org>
+> The struct counter_synapse actions_list member expects a const enum
+> counter_synapse_action array. This patch adds the const qualifier to the
+> stm32_lptim_cnt_synapse_actions to match actions_list.
+> 
+> Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Applied.
 
+Thanks,
+
+J
 > ---
->  drivers/iio/light/si1145.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
+>  drivers/counter/stm32-lptimer-cnt.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/light/si1145.c b/drivers/iio/light/si1145.c
-> index 3fb52402fcc3..e2abad48b9f4 100644
-> --- a/drivers/iio/light/si1145.c
-> +++ b/drivers/iio/light/si1145.c
-> @@ -271,7 +271,7 @@ static int si1145_command(struct si1145_data *data, u8 cmd)
->  		if ((ret & ~SI1145_RSP_COUNTER_MASK) == 0) {
->  			if (ret == data->rsp_seq) {
->  				if (time_after(jiffies, stop_jiffies)) {
-> -					dev_warn(dev, "timeout on command %#02hhx\n",
-> +					dev_warn(dev, "timeout on command 0x%02x\n",
->  						 cmd);
->  					ret = -ETIMEDOUT;
->  					break;
-> @@ -291,12 +291,12 @@ static int si1145_command(struct si1145_data *data, u8 cmd)
->  			ret = -EIO;
->  		} else {
->  			if (ret == SI1145_RSP_INVALID_SETTING) {
-> -				dev_warn(dev, "INVALID_SETTING error on command %#02hhx\n",
-> +				dev_warn(dev, "INVALID_SETTING error on command 0x%02x\n",
->  					 cmd);
->  				ret = -EINVAL;
->  			} else {
->  				/* All overflows are treated identically */
-> -				dev_dbg(dev, "overflow, ret=%d, cmd=%#02hhx\n",
-> +				dev_dbg(dev, "overflow, ret=%d, cmd=0x%02x\n",
->  					ret, cmd);
->  				ret = -EOVERFLOW;
->  			}
-> @@ -1299,10 +1299,10 @@ static int si1145_probe(struct i2c_client *client,
->  						SI1145_REG_SEQ_ID);
->  	if (ret < 0)
->  		return ret;
-> -	dev_info(&client->dev, "device ID part %#02hhx rev %#02hhx seq %#02hhx\n",
-> +	dev_info(&client->dev, "device ID part 0x%02x rev 0x%02x seq 0x%02x\n",
->  			part_id, rev_id, seq_id);
->  	if (part_id != data->part_info->part) {
-> -		dev_err(&client->dev, "part ID mismatch got %#02hhx, expected %#02x\n",
-> +		dev_err(&client->dev, "part ID mismatch got 0x%02x, expected 0x%02x\n",
->  				part_id, data->part_info->part);
->  		return -ENODEV;
->  	}
-> -- 
-> 2.31.1
+> diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
+> index 0f7d3f1ec1b6..c19d998df5ba 100644
+> --- a/drivers/counter/stm32-lptimer-cnt.c
+> +++ b/drivers/counter/stm32-lptimer-cnt.c
+> @@ -146,7 +146,7 @@ enum stm32_lptim_synapse_action {
+>  	STM32_LPTIM_SYNAPSE_ACTION_NONE,
+>  };
+>  
+> -static enum counter_synapse_action stm32_lptim_cnt_synapse_actions[] = {
+> +static const enum counter_synapse_action stm32_lptim_cnt_synapse_actions[] = {
+>  	/* Index must match with stm32_lptim_cnt_polarity[] (priv->polarity) */
+>  	[STM32_LPTIM_SYNAPSE_ACTION_RISING_EDGE] = COUNTER_SYNAPSE_ACTION_RISING_EDGE,
+>  	[STM32_LPTIM_SYNAPSE_ACTION_FALLING_EDGE] = COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
+
