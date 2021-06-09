@@ -2,61 +2,107 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
-	INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,
-	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 925CCC48BCD
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 10:14:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4A8CC48BCD
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 13:09:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 67AF361359
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 10:14:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A5E176139A
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 13:09:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236314AbhFIKQb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Jun 2021 06:16:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41362 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234217AbhFIKQb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Jun 2021 06:16:31 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CA76B6128A;
-        Wed,  9 Jun 2021 10:14:21 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1623233662;
-        bh=Hc5RVB21B6PTjPWPFAXn7IjcR5qTkCIyOiAuhY9meYA=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=WlOKsAN1U+txPeC1lMmoj1Y2i3PS6u7lB+mqaayM0Za4oZkn+XNcf1HbDjnm98tMA
-         XPQ3FB62O+z5l1JbwzqkW15bIjasM6OG4UkgfQ9MvNiCvhNwkwq3NHmFdxA+8MHqCh
-         K+buAyspFxfP4bWlmPLELvourFvH/DZf0KGsemXs=
-Date:   Wed, 9 Jun 2021 12:12:48 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
+        id S234817AbhFINLe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Jun 2021 09:11:34 -0400
+Received: from frasgout.his.huawei.com ([185.176.79.56]:3188 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230261AbhFINLd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Jun 2021 09:11:33 -0400
+Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4G0RzP4wZ1z6K5dW;
+        Wed,  9 Jun 2021 21:00:17 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 9 Jun 2021 15:09:37 +0200
+Received: from localhost (10.52.124.126) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 9 Jun 2021
+ 14:09:37 +0100
+Date:   Wed, 9 Jun 2021 14:09:34 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org
-Subject: Re: [PULL] 1st set of IIO new device support, features and cleanups
- for 5.14
-Message-ID: <YMCUINJTQGoP8UsF@kroah.com>
-References: <20210608173258.5d648bec@jic23-huawei>
+CC:     <linux-iio@vger.kernel.org>, Arnd Bergmann <arnd@kernel.org>,
+        "Andy Shevchenko" <andy.shevchenko@gmail.com>,
+        Joe Perches <joe@perches.com>,
+        Nathan Chancellor <nathan@kernel.org>
+Subject: Re: [PATCH v2 0/4] iio: Drop use of %hhx and %hx format strings
+Message-ID: <20210609140934.00002f44@Huawei.com>
+In-Reply-To: <20210603180612.3635250-1-jic23@kernel.org>
+References: <20210603180612.3635250-1-jic23@kernel.org>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210608173258.5d648bec@jic23-huawei>
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.52.124.126]
+X-ClientProxiedBy: lhreml716-chm.china.huawei.com (10.201.108.67) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Jun 08, 2021 at 05:32:58PM +0100, Jonathan Cameron wrote:
-> The following changes since commit d8218b0de51f36f01ed67731ccf174059a33bb1e:
-> 
->   Merge 5.13-rc2 into staging-next (2021-05-17 09:47:44 +0200)
-> 
-> are available in the Git repository at:
-> 
->   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.14a
-> 
-> for you to fetch changes up to 41340965b4f8055f975f73e1e3d23eff8038f013:
-> 
->   Merge branch 'ib-iio-i2c-5.13rc1' into togreg Adds a stub needed to resolve a build conflict for the fxls8962af driver. (2021-06-07 09:20:02 +0100)
+Hi All,
 
-Pulled and pushed out, thanks.
+Not quite sure how I managed to cc Nathan on the patches, but not the
+cover letter.  Anyhow +Cc Nathan.
 
-greg k-h
+@Nathan. I dropped the tags you gave to v1 as described below, but
+it's not a huge change. Very much appreciated if you could take a quick look.
+
+Input from others also appreciated!
+
+Thanks,
+
+Jonathan
+
+
+On Thu,  3 Jun 2021 19:06:08 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
+
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> A wrong use of one of these in
+> https://lore.kernel.org/linux-iio/20210514135927.2926482-1-arnd@kernel.org/
+> included a reference from Nathan to a patch discouraging the use of
+> these strings in general:
+> https://lore.kernel.org/lkml/CAHk-=wgoxnmsj8GEVFJSvTwdnWm8wVJthefNk2n6+4TC=20e0Q@mail.gmail.com/
+> 
+> I did a quick grep and established we only have a few instances of these in
+> IIO anyway, so in the interests of avoiding those existing cases getting
+> cut and paste into new drivers, let's just clear them out now.
+> 
+> Note that patch from Arnd is now also part of this series, due to the
+> length specifier related issue Joe raised.
+> 
+> I have chosen to go with 0x%02x rather than %#04x as I find it more readable.
+> 
+> V2:
+> Use 0x%02x (Joe Perches)
+> Include Arnd's original patch, modified for the above.
+> 
+> Arnd Bergmann (1):
+>   iio: si1133: fix format string warnings
+> 
+> Jonathan Cameron (3):
+>   iio: light: si1133: Drop remaining uses of %hhx format string.
+>   iio: imu: inv_mpu6050: Drop use of %hhx format string.
+>   iio: light: si1145: Drop use of %hhx format specifier.
+> 
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c |  5 ++---
+>  drivers/iio/light/si1133.c                 | 18 +++++++++---------
+>  drivers/iio/light/si1145.c                 | 10 +++++-----
+>  3 files changed, 16 insertions(+), 17 deletions(-)
+> 
+
