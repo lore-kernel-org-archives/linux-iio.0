@@ -2,83 +2,98 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E5FC48BCD
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:26:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86028C48BD1
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:27:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 90FFA61042
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:26:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6FCE660E0B
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 15:27:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234362AbhFIP20 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Jun 2021 11:28:26 -0400
-Received: from mail.kernel.org ([198.145.29.99]:53152 "EHLO mail.kernel.org"
+        id S233992AbhFIP3m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Jun 2021 11:29:42 -0400
+Received: from mail.kernel.org ([198.145.29.99]:53736 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233681AbhFIP2Z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Jun 2021 11:28:25 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 618D060E0B;
-        Wed,  9 Jun 2021 15:26:26 +0000 (UTC)
-Date:   Wed, 9 Jun 2021 16:28:19 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
-        a.fatoum@pengutronix.de, kamel.bouhara@bootlin.com,
-        gwendal@chromium.org, alexandre.belloni@bootlin.com,
-        david@lechnology.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        syednwaris@gmail.com, patrick.havelange@essensium.com,
-        fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@st.com, o.rempel@pengutronix.de,
-        jarkko.nikula@linux.intel.com
-Subject: Re: [PATCH v11 13/33] counter: ftm-quaddec: Add const qualifier for
- actions_list array
-Message-ID: <20210609162819.3b466e32@jic23-huawei>
-In-Reply-To: <db1df2021efb1b98e6d1a50787be5a52a1896574.1623201081.git.vilhelm.gray@gmail.com>
-References: <cover.1623201081.git.vilhelm.gray@gmail.com>
-        <db1df2021efb1b98e6d1a50787be5a52a1896574.1623201081.git.vilhelm.gray@gmail.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S236624AbhFIP3O (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Jun 2021 11:29:14 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 46EB5611CC;
+        Wed,  9 Jun 2021 15:27:19 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1623252439;
+        bh=clxkHF6kkOJoZHlUu2yGVUDzOEmir1oEZ8MFRfQM54o=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=qQbgcQgz85VZYWH+fyLlpvldBtJsHbMPhweNRU0cK9+pwhWyuB5Dwmm3vd8O3VfW5
+         bsAyPqnJGBRrhbIlYNZ+YbY1vdH61PE6Qi7sMvWlcIYHaH5prBj/nukjmYNGPtckfa
+         P1DsqsPG0feGdQS4eX1J99o77cmoQQ6VoOOfrHr+UDEyiLe1RzDLb3tP6iIx9vJVLo
+         zAxWjeIVV4SBWp8SRER2Dittxoc1sDIrzq3oJWsrzkgBb2yhOCJSqEomPTGvgOT6eH
+         GvK8Y+jou1Bs6HTVQQuwvWxTDS6Qklg0xK5O7uu1gKp6dQ2LoPoAlMJR8HNDlKbL++
+         fsfns7krZ+b/A==
+Date:   Wed, 9 Jun 2021 08:27:19 -0700
+From:   Nathan Chancellor <nathan@kernel.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Arnd Bergmann <arnd@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Joe Perches <joe@perches.com>, Arnd Bergmann <arnd@arndb.de>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 1/4] iio: si1133: fix format string warnings
+Message-ID: <YMDd16PAr16BvS7J@Ryzen-9-3900X>
+References: <20210603180612.3635250-1-jic23@kernel.org>
+ <20210603180612.3635250-2-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210603180612.3635250-2-jic23@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed,  9 Jun 2021 10:31:16 +0900
-William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
-
-> The struct counter_synapse actions_list member expects a const enum
-> counter_synapse_action array. This patch adds the const qualifier to the
-> ftm_quaddec_synapse_actions to match actions_list.
+On Thu, Jun 03, 2021 at 07:06:09PM +0100, Jonathan Cameron wrote:
+> From: Arnd Bergmann <arnd@arndb.de>
 > 
-> Cc: Patrick Havelange <patrick.havelange@essensium.com>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-Applied.
+> clang complains about multiple instances of printing an integer
+> using the %hhx format string:
+> 
+> drivers/iio/light/si1133.c:982:4: error: format specifies type 'unsigned char' but the argument has type 'unsigned int' [-Werror,-Wformat]
+>                  part_id, rev_id, mfr_id);
+>                  ^~~~~~~
+> 
+> Print them as a normal integer instead, leaving the "#02"
+> length modifier.
+> 
+> Use the 0x02x form as the length specifier when used with # includes
+> the 0x prefix and is very unlikely to be what was intended by the author.
+> 
+> Fixes: e01e7eaf37d8 ("iio: light: introduce si1133")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Cc: Nathan Chancellor <nathan@kernel.org>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Thanks,
-
-Jonathan
+Reviewed-by: Nathan Chancellor <nathan@kernel.org>
 
 > ---
->  drivers/counter/ftm-quaddec.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/light/si1133.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-> index c2b3fdfd8b77..9371532406ca 100644
-> --- a/drivers/counter/ftm-quaddec.c
-> +++ b/drivers/counter/ftm-quaddec.c
-> @@ -162,7 +162,7 @@ enum ftm_quaddec_synapse_action {
->  	FTM_QUADDEC_SYNAPSE_ACTION_BOTH_EDGES,
->  };
+> diff --git a/drivers/iio/light/si1133.c b/drivers/iio/light/si1133.c
+> index c280b4195003..0accea7090ee 100644
+> --- a/drivers/iio/light/si1133.c
+> +++ b/drivers/iio/light/si1133.c
+> @@ -978,11 +978,11 @@ static int si1133_validate_ids(struct iio_dev *iio_dev)
+>  		return err;
 >  
-> -static enum counter_synapse_action ftm_quaddec_synapse_actions[] = {
-> +static const enum counter_synapse_action ftm_quaddec_synapse_actions[] = {
->  	[FTM_QUADDEC_SYNAPSE_ACTION_BOTH_EDGES] =
->  	COUNTER_SYNAPSE_ACTION_BOTH_EDGES
->  };
-
+>  	dev_info(&iio_dev->dev,
+> -		 "Device ID part %#02hhx rev %#02hhx mfr %#02hhx\n",
+> +		 "Device ID part 0x%02x rev 0x%02x mfr 0x%02x\n",
+>  		 part_id, rev_id, mfr_id);
+>  	if (part_id != SI1133_PART_ID) {
+>  		dev_err(&iio_dev->dev,
+> -			"Part ID mismatch got %#02hhx, expected %#02x\n",
+> +			"Part ID mismatch got 0x%02x, expected 0x%02x\n",
+>  			part_id, SI1133_PART_ID);
+>  		return -ENODEV;
+>  	}
+> -- 
+> 2.31.1
