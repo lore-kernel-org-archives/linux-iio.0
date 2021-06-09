@@ -8,54 +8,51 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28131C48BD1
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 700D7C48BCF
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 147A861027
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5A09861027
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235895AbhFIBff (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Jun 2021 21:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36754 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235884AbhFIBfc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jun 2021 21:35:32 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10395C06178B;
-        Tue,  8 Jun 2021 18:33:28 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id mp5-20020a17090b1905b029016dd057935fso423093pjb.5;
-        Tue, 08 Jun 2021 18:33:28 -0700 (PDT)
+        id S235608AbhFIBfg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Jun 2021 21:35:36 -0400
+Received: from mail-pj1-f47.google.com ([209.85.216.47]:36631 "EHLO
+        mail-pj1-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235841AbhFIBfd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jun 2021 21:35:33 -0400
+Received: by mail-pj1-f47.google.com with SMTP id d5-20020a17090ab305b02901675357c371so437064pjr.1;
+        Tue, 08 Jun 2021 18:33:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ahZ4wxqYj8/PnnRsg7CFwjhhCPg4bzL3Iu0oZpPEJNk=;
-        b=FDGW5jjxYBl+kKCMS9YTEBDfvxM/0VEtfXATZc65wdNzQmz8UuqkfM92rH3MvullfZ
-         eB5WKaO5LuVHMljirIylzAwLp9/nfS0xZWORRdMtt6pYXfQI8IivrXpxvuF0O0BUw3U2
-         LvSH8ZAih2PPwFckAIrX+kB13eUfDC1T7vvIy6WJCQWp63cwhuvS7x0Asuwg376kMHVB
-         rbrbN0W5Y5rlz/6ye1H1NVBfthjnzKENF5EPMvlUTUeRYIeZeWlX/rD1w/6ClzzKc/ot
-         y37OGiw/oZeRMKi9TCaw4T/W/NtGZNjhZZ/kRZPKEZnbI2ZWAWyFPug/lajfXFt3kILP
-         bxAg==
+        bh=BqW2hWGxH1OOe0tpNz1yPTnzMBBEZl3N8Vv1hrlk7eY=;
+        b=Nwj+0+En9LAEEELUjvHh1yiB0ynXLXG4RFBZXEri+yqNmldJc2IE4/nh9igsetTZKi
+         Lu4b3QWO0Sz8vFmUgxKOjDlvhWJEY32U/ZTtjrRcEV55PZIFdgL7Zr16tsxBPuhZJWQ7
+         7Cuwbw12cugFOr/41seJFulF3a15USU+VXWNMOCTOiwJwMX2dtO5u+v2DXryQk7vMrTG
+         Hy28k4yfWUwYT3sMngurgN11ZArDAVEOK2/rBPIbrO8bJlsXlKy24NJ+XcXQ1hZg2Jq+
+         EYp5iDt3FIS7vFv0vsaqiY7uUeGRpkH0B2NYl/VipwrG5QNIRteRwBwYU9MxPCUOCbuZ
+         gSdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ahZ4wxqYj8/PnnRsg7CFwjhhCPg4bzL3Iu0oZpPEJNk=;
-        b=CkK5dzhaYNNSTSROL6haYOSerRaczpnFKHgCLUBbTDrpESTg7HS6/eD7aYIYlqB59D
-         0Peeb/sXxXkpjhpLMXCYrtUWjjIHxc488xvt3a0C5KZR1AWNKoysttfztiBfryGR2MuF
-         V+3tgtgupE/hQ0vFqz+N9+ZggGc5CyrYLgWHVQGIhUcnmHYEnqqhlVmaBN+lfTxZii2z
-         5DkKoXmQNN99uBmpS8GRBit1xCxEZZaEjbNrDuXIG6A5JxYy5wu8+vDcLr2xTkbgHOXu
-         jFlO/vyDoiLCL3Gd6nah1WaMvJ6dATFySUPODEHOE9Mkbs3Nf2Fr+FdN68JC0uCE+dNV
-         sbZg==
-X-Gm-Message-State: AOAM530cNffjsDoM9ih4brq4+P0ZM4wF1Y1Cyz/iZXK5sqq+VEMHvKN/
-        YFZhi37kPxGGe7hAtvtHUf0=
-X-Google-Smtp-Source: ABdhPJxU1XV1SNYwMQaNecIVUytIlu6/3AGUsvUMd4zVgD9V/R+wygJf4LJ8zXkl5C6XA7pShIvWtg==
-X-Received: by 2002:a17:902:d694:b029:103:ec01:12d5 with SMTP id v20-20020a170902d694b0290103ec0112d5mr2979637ply.19.1623202407675;
-        Tue, 08 Jun 2021 18:33:27 -0700 (PDT)
+        bh=BqW2hWGxH1OOe0tpNz1yPTnzMBBEZl3N8Vv1hrlk7eY=;
+        b=fNpYoRlRIm9q2OQPrp2Cmb4qCtTwPRsEbDDAecp1zbYua3KR1sQSkNy+9He95pBRBh
+         NLyr6d8pR4j165GIv7APmY/FS1vVbiNfiH7ADWBOPViGebw/t+Zzqzi40lWhcRinxm02
+         NeKd9TVXSl06q5b0VJffFE6Qb8+1tD1YcVj/dpjEkjoW77kwCdBzLOazzmRmSA7Ky8gc
+         5mwWPpTzOFM+fUEzqKRNT0TFPX+aEtR5zTqK1guDt5BBquhCVytTC/+NWlarAggDYpV9
+         uAgJFl3ozjG6ngGSP3vtlj85JBhwLjtr+zGjGpw9iMYlXotpLeiH3YTSqKT3EewsA1U2
+         l/XQ==
+X-Gm-Message-State: AOAM530UZoheOlg7oFx0XVmcOJUNMK/1OaaOKIf1jE/Ay3yI2Jx1FI2q
+        n+sMB/IcKW4l+/VqtYv/+lg=
+X-Google-Smtp-Source: ABdhPJwzVmCoWtk/cZUjfOEW6VN4qsVxVG/KIj5Bzr+YUe1hi5gnlL4e546ZGpDATbkNjxrdrG3x2w==
+X-Received: by 2002:a17:902:dac3:b029:105:66fc:8ed7 with SMTP id q3-20020a170902dac3b029010566fc8ed7mr3030662plx.6.1623202360188;
+        Tue, 08 Jun 2021 18:32:40 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id v14sm12659815pgl.86.2021.06.08.18.33.22
+        by smtp.gmail.com with ESMTPSA id v14sm12659815pgl.86.2021.06.08.18.32.35
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jun 2021 18:33:27 -0700 (PDT)
+        Tue, 08 Jun 2021 18:32:39 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
@@ -69,9 +66,9 @@ Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
         jarkko.nikula@linux.intel.com,
         William Breathitt Gray <vilhelm.gray@gmail.com>,
         Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Subject: [PATCH v11 19/33] counter: Standardize to ERANGE for limit exceeded errors
-Date:   Wed,  9 Jun 2021 10:31:22 +0900
-Message-Id: <c5dbcd525d1c04c474fc3988ded9b509eb12ac9e.1623201081.git.vilhelm.gray@gmail.com>
+Subject: [PATCH v11 10/33] counter: stm32-lptimer-cnt: Add const qualifier for functions_list array
+Date:   Wed,  9 Jun 2021 10:31:13 +0900
+Message-Id: <08830119594acdb3bc9d36ae2e65b2eb26589ade.1623201081.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1623201081.git.vilhelm.gray@gmail.com>
 References: <cover.1623201081.git.vilhelm.gray@gmail.com>
@@ -81,95 +78,29 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-ERANGE is a semantically better error code to return when an argument
-value falls outside the supported limit range of a device.
+The struct counter_count functions_list member expects a const enum
+counter_count_function array. This patch adds the const qualifier to the
+stm32_lptim_cnt_functions to match functions_list.
 
-Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
-Cc: Alexandre Torgue <alexandre.torgue@st.com>
-Acked-by: Syed Nayyar Waris <syednwaris@gmail.com>
-Reviewed-by: David Lechner <david@lechnology.com>
 Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/104-quad-8.c        | 6 +++---
- drivers/counter/intel-qep.c         | 2 +-
- drivers/counter/interrupt-cnt.c     | 3 +++
  drivers/counter/stm32-lptimer-cnt.c | 2 +-
- 4 files changed, 8 insertions(+), 5 deletions(-)
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index b7d6c1c43655..0409b1771fd9 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -154,7 +154,7 @@ static int quad8_count_write(struct counter_device *counter,
- 
- 	/* Only 24-bit values are supported */
- 	if (val > 0xFFFFFF)
--		return -EINVAL;
-+		return -ERANGE;
- 
- 	mutex_lock(&priv->lock);
- 
-@@ -669,7 +669,7 @@ static ssize_t quad8_count_preset_write(struct counter_device *counter,
- 
- 	/* Only 24-bit values are supported */
- 	if (preset > 0xFFFFFF)
--		return -EINVAL;
-+		return -ERANGE;
- 
- 	mutex_lock(&priv->lock);
- 
-@@ -714,7 +714,7 @@ static ssize_t quad8_count_ceiling_write(struct counter_device *counter,
- 
- 	/* Only 24-bit values are supported */
- 	if (ceiling > 0xFFFFFF)
--		return -EINVAL;
-+		return -ERANGE;
- 
- 	mutex_lock(&priv->lock);
- 
-diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
-index ab10ba33f46a..7b4eb8ff8348 100644
---- a/drivers/counter/intel-qep.c
-+++ b/drivers/counter/intel-qep.c
-@@ -320,7 +320,7 @@ static ssize_t spike_filter_ns_write(struct counter_device *counter,
- 	}
- 
- 	if (length > INTEL_QEPFLT_MAX_COUNT(length))
--		return -EINVAL;
-+		return -ERANGE;
- 
- 	mutex_lock(&qep->lock);
- 	if (qep->enabled) {
-diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-index 0e07607f2cd3..f27dea317965 100644
---- a/drivers/counter/interrupt-cnt.c
-+++ b/drivers/counter/interrupt-cnt.c
-@@ -107,6 +107,9 @@ static int interrupt_cnt_write(struct counter_device *counter,
- {
- 	struct interrupt_cnt_priv *priv = counter->priv;
- 
-+	if (val != (typeof(priv->count.counter))val)
-+		return -ERANGE;
-+
- 	atomic_set(&priv->count, val);
- 
- 	return 0;
 diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
-index 78f383b77bd2..49aeb9e393f3 100644
+index 937439635d53..0f7d3f1ec1b6 100644
 --- a/drivers/counter/stm32-lptimer-cnt.c
 +++ b/drivers/counter/stm32-lptimer-cnt.c
-@@ -283,7 +283,7 @@ static ssize_t stm32_lptim_cnt_ceiling_write(struct counter_device *counter,
- 		return ret;
+@@ -134,7 +134,7 @@ enum stm32_lptim_cnt_function {
+ 	STM32_LPTIM_ENCODER_BOTH_EDGE,
+ };
  
- 	if (ceiling > STM32_LPTIM_MAX_ARR)
--		return -EINVAL;
-+		return -ERANGE;
- 
- 	priv->ceiling = ceiling;
- 
+-static enum counter_count_function stm32_lptim_cnt_functions[] = {
++static const enum counter_count_function stm32_lptim_cnt_functions[] = {
+ 	[STM32_LPTIM_COUNTER_INCREASE] = COUNTER_COUNT_FUNCTION_INCREASE,
+ 	[STM32_LPTIM_ENCODER_BOTH_EDGE] = COUNTER_COUNT_FUNCTION_QUADRATURE_X4,
+ };
 -- 
 2.32.0
 
