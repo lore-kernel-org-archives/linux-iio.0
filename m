@@ -8,51 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EA108C48BCD
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CF1F8C4743D
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D6B0D61027
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B807E61027
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Jun 2021 01:33:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235806AbhFIBfg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Jun 2021 21:35:36 -0400
-Received: from mail-pj1-f51.google.com ([209.85.216.51]:56307 "EHLO
-        mail-pj1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235886AbhFIBfc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jun 2021 21:35:32 -0400
-Received: by mail-pj1-f51.google.com with SMTP id k7so402263pjf.5;
-        Tue, 08 Jun 2021 18:33:30 -0700 (PDT)
+        id S235842AbhFIBfe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Jun 2021 21:35:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36734 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235425AbhFIBfa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Jun 2021 21:35:30 -0400
+Received: from mail-pf1-x42f.google.com (mail-pf1-x42f.google.com [IPv6:2607:f8b0:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B284C061789;
+        Tue,  8 Jun 2021 18:33:22 -0700 (PDT)
+Received: by mail-pf1-x42f.google.com with SMTP id u126so13161034pfu.13;
+        Tue, 08 Jun 2021 18:33:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=aCZji4goj7QXlZQ7G+Tg1qQ7IvLJWZRrdogqrbs3ALM=;
-        b=ACkOCpxDCDfZiguYpTYkrtSKfIleiPywiOpWXj9r+yf0p+9zcSNzh0pRtjhROytMNw
-         hLPENnYIIEYrmOAA0LOWgmi/93MX0Jz7pMSbP0qsCMpbEKvblWsiCyEEm7JRmKkGe0eU
-         N4t8z78PaI96dNN32hwBANoqURCS+bM4B1rhIKZvZLuFH+HIQhppFV25f56+5cWwQMxY
-         i9G68ZCiNlzG28JQVCMB597wvPDvlUczxoWo53+UopMmC1XK+bxIx8SN7bkAHKaC3KaR
-         6DPpstl5RIkDuMJWjIdw17/NXhDzv0F4FQmWSLmN0X+p/WHNMywPFHV3Sr9wmoyFteQf
-         rTkw==
+        bh=bpaFCbrFJuasI9AlHX5tdEfpbbvJOTfDx2HbC+EDf2A=;
+        b=MLDZubyhwJ5ggutZAZCWhOKMgnwHYGDQb2EFGe1VyucR4ZqfDSmstbef1c399iIjYz
+         S2HjKqckmE0W+y27o3EFkb1p0SPXPPILyLEV1XexRvJoGY8AFHxiCljfN/YZ//g3Oa7m
+         0x/NojQHjZRW7BFsOUMma6tRVml8KgiULhDxW5SjBjeC1CuEbWK7BHv5b9f3qK1b5uYw
+         A/tCl3+x1TyqI9qjL1u8+t82QW2I5W0596n/Fic689+YSDRKYRZRCcqExvdqP1QyDcop
+         Qc3RIx+4T5pRIvXNwwb7y6RLXqcK3gwaXItwhHceZgNtXyVvK+Sv9oqac3q/VTY0wSc3
+         AGLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=aCZji4goj7QXlZQ7G+Tg1qQ7IvLJWZRrdogqrbs3ALM=;
-        b=d4WNQfs9F8Il8zAvC+2ANSu4yNBmD+fZSdGEmgDYtgFqMXzu66sJk8RmWE8HE1oF7r
-         xyBSZtZjNacCU+jwwAzrbUz2a4Kcxbm8DfVfUtd+rdtJq5HYDizXviFnuTa7GFgewhJP
-         UUVV8J0ljK407VDYMnRN/o0OskuuAO5gp6qtXis5vGQkMlUSxtk9kyBKhsz81C/e2EFz
-         muU/+pOvIG7NbYTjFrnEMdSaxYzYhLa23bsTJo0IHdk85kWv8v9FdStxTg6Bm0aR1PE4
-         OmiHVLp+jE5ZdOCZXDmtjJulfgDTVVv7H1pbjUSyiqVBUKUtRBvoBSZMZKAHq+lf5uQq
-         Gz2w==
-X-Gm-Message-State: AOAM532j2PGT9qYJ2FLhbNX1S/Z6zbQ//rU52boBhoD/DhKZyA7BterU
-        IIr8td6l+YbBFXRWwkzvdl8=
-X-Google-Smtp-Source: ABdhPJw8Wzw+mTITiTIF/fFew3Ep8DDA++vqep06vunlCkFhn0b+E4h8pgkUdr7Z167dUExBJtOWzQ==
-X-Received: by 2002:a17:90a:a512:: with SMTP id a18mr7852442pjq.215.1623202349999;
-        Tue, 08 Jun 2021 18:32:29 -0700 (PDT)
+        bh=bpaFCbrFJuasI9AlHX5tdEfpbbvJOTfDx2HbC+EDf2A=;
+        b=CbUf7lxyKbTokpuUyhNoFSJfdXpKE7rP1GMXsoJZTQa8Wudbc89cG9hWnZsNEPkgCp
+         9ttCDj8OigEBU4Js2eOMtdYcl1rZl11oZQ+hcgE93GLPAMJMIo8EWQk+NKnmGKhuvGhk
+         c3DyKDMvTBXTmR1OZL7Tf7aYc6DbED//lh43A1NGdGYjRqRyf63vPQYlHtL19jMbiveO
+         OP1yIv3CrwLPw34I4kwhBfwIkir1dfy6gxWDOhKnE7U1yCaZECtFM2KnyNmgJEPGO/Xu
+         HJPoAEV/pe5tJzTTgdtDTcYs6p1vBbAFPjbebgEsEcO6nP4R7aHtP2mM/VtF1BsBGyay
+         iuWA==
+X-Gm-Message-State: AOAM533nIHEs18ddZooOSnF+p7PCG96sv2uJ5BfmfCWW7ov983g3VOC/
+        07gixU93ZSMOKQ9rCl5yfW4=
+X-Google-Smtp-Source: ABdhPJzsOPJM/6kuqrFECT0lLD2DePx4TR5F1IJfH7lQbvKeVNqM/oRoFJB6YrCVYS/7pDcnignSjw==
+X-Received: by 2002:a63:1114:: with SMTP id g20mr1154622pgl.385.1623202402154;
+        Tue, 08 Jun 2021 18:33:22 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id v14sm12659815pgl.86.2021.06.08.18.32.25
+        by smtp.gmail.com with ESMTPSA id v14sm12659815pgl.86.2021.06.08.18.33.17
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 08 Jun 2021 18:32:29 -0700 (PDT)
+        Tue, 08 Jun 2021 18:33:21 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
@@ -64,10 +67,11 @@ Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         jarkko.nikula@linux.intel.com,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v11 08/33] counter: interrupt-cnt: Add const qualifier for functions_list array
-Date:   Wed,  9 Jun 2021 10:31:11 +0900
-Message-Id: <86f7fb77f703cf2508a6b4ee9cf80aa523392976.1623201081.git.vilhelm.gray@gmail.com>
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: [PATCH v11 18/33] counter: Return error code on invalid modes
+Date:   Wed,  9 Jun 2021 10:31:21 +0900
+Message-Id: <6f74bf8b237340ef079b7d3e3553f47434f47f67.1623201081.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1623201081.git.vilhelm.gray@gmail.com>
 References: <cover.1623201081.git.vilhelm.gray@gmail.com>
@@ -77,29 +81,207 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The struct counter_count functions_list member expects a const enum
-counter_count_function array. This patch adds the const qualifier to the
-interrupt__cnt_functions to match functions_list.
+Only a select set of modes (function, action, etc.) are valid for a
+given device configuration. This patch ensures that invalid modes result
+in a return -EINVAL. Such a situation should never occur in reality, but
+it's good to define a default switch cases for the sake of making the
+intent of the code clear.
 
-Cc: Oleksij Rempel <o.rempel@pengutronix.de>
+Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+Cc: Alexandre Torgue <alexandre.torgue@st.com>
+Cc: David Lechner <david@lechnology.com>
+Acked-by: Syed Nayyar Waris <syednwaris@gmail.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/interrupt-cnt.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/counter/104-quad-8.c            | 20 +++++++----
+ drivers/counter/microchip-tcb-capture.c |  6 ++++
+ drivers/counter/stm32-lptimer-cnt.c     | 10 +++---
+ drivers/counter/ti-eqep.c               | 45 +++++++++++--------------
+ 4 files changed, 46 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-index a99ee7996977..827d785e19b4 100644
---- a/drivers/counter/interrupt-cnt.c
-+++ b/drivers/counter/interrupt-cnt.c
-@@ -112,7 +112,7 @@ static int interrupt_cnt_write(struct counter_device *counter,
- 	return 0;
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 09d779544969..b7d6c1c43655 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -273,6 +273,10 @@ static int quad8_function_set(struct counter_device *counter,
+ 			*scale = 2;
+ 			mode_cfg |= QUAD8_CMR_QUADRATURE_X4;
+ 			break;
++		default:
++			/* should never reach this path */
++			mutex_unlock(&priv->lock);
++			return -EINVAL;
+ 		}
+ 	}
+ 
+@@ -349,7 +353,7 @@ static int quad8_action_get(struct counter_device *counter,
+ 	case QUAD8_COUNT_FUNCTION_PULSE_DIRECTION:
+ 		if (synapse->signal->id == signal_a_id)
+ 			*action = QUAD8_SYNAPSE_ACTION_RISING_EDGE;
+-		break;
++		return 0;
+ 	case QUAD8_COUNT_FUNCTION_QUADRATURE_X1:
+ 		if (synapse->signal->id == signal_a_id) {
+ 			quad8_direction_get(counter, count, &direction);
+@@ -359,17 +363,18 @@ static int quad8_action_get(struct counter_device *counter,
+ 			else
+ 				*action = QUAD8_SYNAPSE_ACTION_FALLING_EDGE;
+ 		}
+-		break;
++		return 0;
+ 	case QUAD8_COUNT_FUNCTION_QUADRATURE_X2:
+ 		if (synapse->signal->id == signal_a_id)
+ 			*action = QUAD8_SYNAPSE_ACTION_BOTH_EDGES;
+-		break;
++		return 0;
+ 	case QUAD8_COUNT_FUNCTION_QUADRATURE_X4:
+ 		*action = QUAD8_SYNAPSE_ACTION_BOTH_EDGES;
+-		break;
++		return 0;
++	default:
++		/* should never reach this path */
++		return -EINVAL;
+ 	}
+-
+-	return 0;
  }
  
--static enum counter_count_function interrupt_cnt_functions[] = {
-+static const enum counter_count_function interrupt_cnt_functions[] = {
- 	COUNTER_COUNT_FUNCTION_INCREASE,
- };
+ static const struct counter_ops quad8_ops = {
+@@ -529,6 +534,9 @@ static int quad8_count_mode_set(struct counter_device *counter,
+ 	case COUNTER_COUNT_MODE_MODULO_N:
+ 		cnt_mode = 3;
+ 		break;
++	default:
++		/* should never reach this path */
++		return -EINVAL;
+ 	}
  
+ 	mutex_lock(&priv->lock);
+diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+index 51b8af80f98b..0c9a61962911 100644
+--- a/drivers/counter/microchip-tcb-capture.c
++++ b/drivers/counter/microchip-tcb-capture.c
+@@ -133,6 +133,9 @@ static int mchp_tc_count_function_set(struct counter_device *counter,
+ 		bmr |= ATMEL_TC_QDEN | ATMEL_TC_POSEN;
+ 		cmr |= ATMEL_TC_ETRGEDG_RISING | ATMEL_TC_ABETRG | ATMEL_TC_XC0;
+ 		break;
++	default:
++		/* should never reach this path */
++		return -EINVAL;
+ 	}
+ 
+ 	regmap_write(priv->regmap, ATMEL_TC_BMR, bmr);
+@@ -226,6 +229,9 @@ static int mchp_tc_count_action_set(struct counter_device *counter,
+ 	case MCHP_TC_SYNAPSE_ACTION_BOTH_EDGE:
+ 		edge = ATMEL_TC_ETRGEDG_BOTH;
+ 		break;
++	default:
++		/* should never reach this path */
++		return -EINVAL;
+ 	}
+ 
+ 	return regmap_write_bits(priv->regmap,
+diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
+index c19d998df5ba..78f383b77bd2 100644
+--- a/drivers/counter/stm32-lptimer-cnt.c
++++ b/drivers/counter/stm32-lptimer-cnt.c
+@@ -206,9 +206,10 @@ static int stm32_lptim_cnt_function_set(struct counter_device *counter,
+ 		priv->quadrature_mode = 1;
+ 		priv->polarity = STM32_LPTIM_SYNAPSE_ACTION_BOTH_EDGES;
+ 		return 0;
++	default:
++		/* should never reach this path */
++		return -EINVAL;
+ 	}
+-
+-	return -EINVAL;
+ }
+ 
+ static ssize_t stm32_lptim_cnt_enable_read(struct counter_device *counter,
+@@ -326,9 +327,10 @@ static int stm32_lptim_cnt_action_get(struct counter_device *counter,
+ 	case STM32_LPTIM_ENCODER_BOTH_EDGE:
+ 		*action = priv->polarity;
+ 		return 0;
++	default:
++		/* should never reach this path */
++		return -EINVAL;
+ 	}
+-
+-	return -EINVAL;
+ }
+ 
+ static int stm32_lptim_cnt_action_set(struct counter_device *counter,
+diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+index 65df9ef5b5bc..878725c2f010 100644
+--- a/drivers/counter/ti-eqep.c
++++ b/drivers/counter/ti-eqep.c
+@@ -157,44 +157,39 @@ static int ti_eqep_action_get(struct counter_device *counter,
+ 		 * QEPA and QEPB trigger QCLK.
+ 		 */
+ 		*action = TI_EQEP_SYNAPSE_ACTION_BOTH_EDGES;
+-		break;
++		return 0;
+ 	case TI_EQEP_COUNT_FUNC_DIR_COUNT:
+ 		/* In direction-count mode only rising edge of QEPA is counted
+ 		 * and QEPB gives direction.
+ 		 */
+-		switch (synapse->signal->id) {
+-		case TI_EQEP_SIGNAL_QEPA:
+-			*action = TI_EQEP_SYNAPSE_ACTION_RISING_EDGE;
+-			break;
+-		default:
++		if (synapse->signal->id == TI_EQEP_SIGNAL_QEPB)
+ 			*action = TI_EQEP_SYNAPSE_ACTION_NONE;
+-			break;
+-		}
+-		break;
++		else
++			*action = TI_EQEP_SYNAPSE_ACTION_RISING_EDGE;
++		return 0;
+ 	case TI_EQEP_COUNT_FUNC_UP_COUNT:
+ 	case TI_EQEP_COUNT_FUNC_DOWN_COUNT:
+ 		/* In up/down-count modes only QEPA is counted and QEPB is not
+ 		 * used.
+ 		 */
+-		switch (synapse->signal->id) {
+-		case TI_EQEP_SIGNAL_QEPA:
+-			err = regmap_read(priv->regmap16, QDECCTL, &qdecctl);
+-			if (err)
+-				return err;
+-
+-			if (qdecctl & QDECCTL_XCR)
+-				*action = TI_EQEP_SYNAPSE_ACTION_BOTH_EDGES;
+-			else
+-				*action = TI_EQEP_SYNAPSE_ACTION_RISING_EDGE;
+-			break;
+-		default:
++		if (synapse->signal->id == TI_EQEP_SIGNAL_QEPB) {
+ 			*action = TI_EQEP_SYNAPSE_ACTION_NONE;
+-			break;
++			return 0;
+ 		}
+-		break;
+-	}
+ 
+-	return 0;
++		err = regmap_read(priv->regmap16, QDECCTL, &qdecctl);
++		if (err)
++			return err;
++
++		if (qdecctl & QDECCTL_XCR)
++			*action = TI_EQEP_SYNAPSE_ACTION_BOTH_EDGES;
++		else
++			*action = TI_EQEP_SYNAPSE_ACTION_RISING_EDGE;
++		return 0;
++	default:
++		/* should never reach this path */
++		return -EINVAL;
++	}
+ }
+ 
+ static const struct counter_ops ti_eqep_counter_ops = {
 -- 
 2.32.0
 
