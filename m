@@ -5,62 +5,62 @@ X-Spam-Level:
 X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7335EC48BD1
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:24:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BC87DC48BE5
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:24:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5D1486128A
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:24:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A8B756128A
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:24:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230248AbhFJM0S (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S230247AbhFJM0S (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 10 Jun 2021 08:26:18 -0400
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.84]:12430 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230247AbhFJM0P (ORCPT
+Received: from mo4-p03-ob.smtp.rzone.de ([81.169.146.175]:33204 "EHLO
+        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230345AbhFJM0P (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jun 2021 08:26:15 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1623327848; cv=none;
+ARC-Seal: i=1; a=rsa-sha256; t=1623327849; cv=none;
     d=strato.com; s=strato-dkim-0002;
-    b=du/vEM0BJUmObeD5qFiL9266QvTHKuzLW1lCzmwvRFVOxxuTBnjWVFbRbiPDFMMmR9
-    HKBQEoijPLHkqOofWu1koFnGWixlKe53b/cBAyBnM5S07708+l8I2GwgX58ygvBtq256
-    OrUhT3ySuPx8fbbgDFJEVpTnHUfC+i1cpfOB7h9cK9de/I0ZuT/BOj/G8m7yu0Aaskwb
-    Z2AFyI13DZganEDj6XLVIDh+MujkfK9UAaBaziKtdcAT0eEQNXpIdnSwk6urZmfwhP6c
-    nZOV88QheM4xKRD8TRrF3bg6tUHtqolzIqh/plhShh5/5NSyeE2yxeEiquh6zp7YqyKb
-    b2Ow==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623327848;
+    b=Nc7xTzU4f6vU7FjaLD0c5Xjf72E9RujPXyBumx2J1Jd2xIQwuQ8a+DQjGiirHSATzF
+    gNVU4eMV8io0VzmdslcQC6CkZgEebbZyI7pHT5k1OYUnZQOVPzj+CLPCSIUF2fdyYQwT
+    L+igcDMHOtYdIDglsGic5OuxV5eycdHMSNJ/hemjeiuV7iTu5/3ab2/bofqELGweUAoi
+    CmXCelyMHs79GMK/E3mkHvDM505OHvhYUZbASlZ/CNJp8YvVDn50dSuDEizb3rnMdVkr
+    toXvLYR+Bq2Ar7rLcS+dyTEKJitX+7Xw8WcHwNI9R1sVYgqV14dNt/JHoTBH0hoZxWcw
+    F28w==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623327849;
     s=strato-dkim-0002; d=strato.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=7ZnJWOKXF3bam85beD5D5WnhHWKhMFJvGQTO/dyDe5w=;
-    b=C8q/MMax9vCpMOd7XdLm7b+rRky0MFGwR1SBIusOkba9J6wvKrtSqRZAFdHceVljBH
-    LN3+OSozaKLekRpdBH4fY6a+gKxtZ30FHP/v5AaqzN6v6nZeRYD+eSumcFAQn/idZTgS
-    nGK0uNG4r2w/teHphoBuqjJyX+ADtTFRXR/5JM1Nq8oQB/PA4xf9g+YfKb+2OMit21j/
-    9eQbUsrbsmSmKm4HhLtlGkNSTifc2AtWwe4q+zAkpby30PharIvKHUZDUIbiPsS2Bk8E
-    YxjqWFfqL4z/AtfiQQvkUmXQ82pVdt74ySkzIwmw0WMrjz4MHHfSH/gxRMdvNY4XNyzt
-    LdyQ==
+    bh=aiTLXr6+ZboJpByh7I+hIxTMyKJ2BLZOGqmxqkTxqzA=;
+    b=J2I6sdyk2tlhedrClpvamapxyvspVQRZy+mr9NSmU/0F8V6lh38aUdQsUXeSMWTxXN
+    3+7W3zpIpQOoTlvr391ax5QRa7lQiVoXFhyP+0t01EeX2SJIzYmsT2DHQH8IGA8RhURI
+    bADUNaIbUwPnKXyt1DrNbZfkOKRrbXn7Kiw08KEgm1HsM3y5bw3GawJYZGZdAVvVI1Y/
+    tEho1CprptSVIdKRpqhPZDHpmyqFgjeqF0Il2uZEb+Dp42tbWvYkWkjX58OlY86zkO18
+    mBfHFM2iRUzTX33/DsPVZnIwMzx9tvOXIlBmN1CC3RXmd+Jw8s8K5jmnUthO4/B9Uef9
+    3JMQ==
 ARC-Authentication-Results: i=1; strato.com;
     dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623327848;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623327849;
     s=strato-dkim-0002; d=gerhold.net;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=7ZnJWOKXF3bam85beD5D5WnhHWKhMFJvGQTO/dyDe5w=;
-    b=acF4Mq6im9xox4XgDiYu/tzRFO7tZxjtVhpKmCHVZh4XZNkFqvBbCdXZbyuHrfxCoD
-    +qZ5T/UQzhtr+m5Y/XVhtx6N3SSbc1INOMMKl9Enqs0dIGzL9lqTtqMDr1S1NrQLHjwb
-    2bwzDYL7eHc8MDc1lnIqD88moSJ9ddmmzR5OfnM9rbtBAZZoKDyO1KdOVywLHF6nCBnD
-    nJgtQuk/fnwm7iJaxjyUSJS9t5ZgUf0Wmjkz+5j6GEypUVElOnzNatEvYxdYucwzyeMU
-    Mqy9NGAAmc0mJU9nCT/XrZvauQkKIjjGuNNxukXaTW+jzkNxQn62XIEGUB8AEbskbChr
-    vUxA==
+    bh=aiTLXr6+ZboJpByh7I+hIxTMyKJ2BLZOGqmxqkTxqzA=;
+    b=A8/hmhMnZnXWVZQcRM07ib29mBZzAgx2gy1PO/Gum7YfRxKa9rNChII/bGVJXMO0bw
+    AlMNJcdlNegxazwp4fUq2+odpzxdZ9WMJoluesT5qyXsZ7x+h9FU7TKcrWO+eCGW/Mii
+    roKMmVQKr/nrymxDJ8P5K5SWhiyxOK3JPc1aHFroP7P4pxlGUsnGm5UeppmYTYl1lYfM
+    IY/1IizMnjdZYn7ToIdgJVub88q7cM7o8+6wcb2AEZftJEQn7thbMGEVK9eDLvoXHc4H
+    SNrbMwPHkF3P/WIIjAF497Pvt6PCQYSSb9e01c1UolygbGu8WDR4WCNsD+A51MnJD+ta
+    q0mw==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxA626NTAM6"
 X-RZG-CLASS-ID: mo00
 Received: from droid..
     by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
-    with ESMTPSA id y01375x5ACO7tzv
+    with ESMTPSA id y01375x5ACO9tzy
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Thu, 10 Jun 2021 14:24:07 +0200 (CEST)
+    Thu, 10 Jun 2021 14:24:09 +0200 (CEST)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -72,9 +72,9 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         ~postmarketos/upstreaming@lists.sr.ht,
         Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH v2 4/9] iio: accel: bmc150: Sort all chip names alphabetically / by chip ID
-Date:   Thu, 10 Jun 2021 14:21:21 +0200
-Message-Id: <20210610122126.50504-5-stephan@gerhold.net>
+Subject: [PATCH v2 6/9] iio: accel: bmc150: Add device IDs for BMA253
+Date:   Thu, 10 Jun 2021 14:21:23 +0200
+Message-Id: <20210610122126.50504-7-stephan@gerhold.net>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210610122126.50504-1-stephan@gerhold.net>
 References: <20210610122126.50504-1-stephan@gerhold.net>
@@ -84,194 +84,80 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Right now all the device IDs are listed in seemingly random order,
-make this consistent by ordering those alphabetically. Also, order
-bmc150_accel_chip_info_tbl by chip ID for the same reason.
+BMA253 is mostly like BMA255 and has exactly the same register layout
+as used by the bmc150-accel driver as far I can tell. Making it work
+is as simple as adding new device IDs for it since it has the same
+chip_id = 0xFA (250) as BMA255 and others.
 
-Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 ---
-New patch in v2.
----
- drivers/iio/accel/Kconfig             |  4 +--
- drivers/iio/accel/bmc150-accel-core.c | 40 +++++++++++++--------------
- drivers/iio/accel/bmc150-accel-i2c.c  | 26 ++++++++---------
- drivers/iio/accel/bmc150-accel-spi.c  | 18 ++++++------
- 4 files changed, 44 insertions(+), 44 deletions(-)
+ drivers/iio/accel/Kconfig             | 2 +-
+ drivers/iio/accel/bmc150-accel-core.c | 2 +-
+ drivers/iio/accel/bmc150-accel-i2c.c  | 2 ++
+ drivers/iio/accel/bmc150-accel-spi.c  | 1 +
+ 4 files changed, 5 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 17f6bdcf1db3..883aa8bc4340 100644
+index 883aa8bc4340..1cc01b2c5c92 100644
 --- a/drivers/iio/accel/Kconfig
 +++ b/drivers/iio/accel/Kconfig
-@@ -143,9 +143,9 @@ config BMC150_ACCEL
+@@ -143,7 +143,7 @@ config BMC150_ACCEL
  	select BMC150_ACCEL_SPI if SPI
  	help
  	  Say yes here to build support for the following Bosch accelerometers:
--	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
-+	  BMA222, BMA222E, BMA250E, BMA255, BMA280, BMC150, BMI055.
+-	  BMA222, BMA222E, BMA250E, BMA255, BMA280, BMC150, BMI055.
++	  BMA222, BMA222E, BMA250E, BMA253, BMA255, BMA280, BMC150, BMI055.
  
--	  This is a combo module with both accelerometer and magnetometer.
-+	  BMC150 is a combo module with both accelerometer and magnetometer.
+ 	  BMC150 is a combo module with both accelerometer and magnetometer.
  	  This driver is only implementing accelerometer part, which has
- 	  its own address and register map.
- 
 diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 6fb025b4228f..1210a8b14a3c 100644
+index 1210a8b14a3c..ab41a8e18fa4 100644
 --- a/drivers/iio/accel/bmc150-accel-core.c
 +++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -1089,26 +1089,6 @@ static const struct iio_chan_spec bma280_accel_channels[] =
- 	BMC150_ACCEL_CHANNELS(14);
- 
- static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
--	{
--		.name = "BMC150/BMI055/BMA255",
--		.chip_id = 0xFA,
--		.channels = bmc150_accel_channels,
--		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
--		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
--				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
--				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
--				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
--	},
--	{
--		.name = "BMA250E",
--		.chip_id = 0xF9,
--		.channels = bma250e_accel_channels,
--		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
--		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
--				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
--				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
--				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
--	},
- 	{
- 		.name = "BMA222",
- 		.chip_id = 0x03,
-@@ -1134,6 +1114,26 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
- 				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
- 				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
+@@ -1125,7 +1125,7 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+ 				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
  	},
-+	{
-+		.name = "BMA250E",
-+		.chip_id = 0xF9,
-+		.channels = bma250e_accel_channels,
-+		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
-+		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
-+				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
-+				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
-+				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
-+	},
-+	{
-+		.name = "BMC150/BMI055/BMA255",
-+		.chip_id = 0xFA,
-+		.channels = bmc150_accel_channels,
-+		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
-+		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
-+				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
-+				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
-+				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
-+	},
  	{
- 		.name = "BMA280",
- 		.chip_id = 0xFB,
+-		.name = "BMC150/BMI055/BMA255",
++		.name = "BMC150/BMI055/BMA253/BMA255",
+ 		.chip_id = 0xFA,
+ 		.channels = bmc150_accel_channels,
+ 		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
 diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
-index a0e2782580b7..7db436ddbdce 100644
+index 7db436ddbdce..32ed07354a9a 100644
 --- a/drivers/iio/accel/bmc150-accel-i2c.c
 +++ b/drivers/iio/accel/bmc150-accel-i2c.c
-@@ -213,41 +213,41 @@ static int bmc150_accel_remove(struct i2c_client *client)
- }
- 
- static const struct acpi_device_id bmc150_accel_acpi_match[] = {
--	{"BSBA0150"},
--	{"BMC150A"},
--	{"BMI055A"},
- 	{"BMA0255"},
--	{"BMA250E"},
-+	{"BMA0280"},
- 	{"BMA222"},
- 	{"BMA222E"},
--	{"BMA0280"},
-+	{"BMA250E"},
-+	{"BMC150A"},
-+	{"BMI055A"},
- 	{"BOSC0200"},
-+	{"BSBA0150"},
- 	{"DUAL250E"},
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
- 
- static const struct i2c_device_id bmc150_accel_id[] = {
--	{"bmc150_accel"},
--	{"bmi055_accel"},
--	{"bma255"},
--	{"bma250e"},
+@@ -231,6 +231,7 @@ static const struct i2c_device_id bmc150_accel_id[] = {
  	{"bma222"},
  	{"bma222e"},
-+	{"bma250e"},
-+	{"bma255"},
+ 	{"bma250e"},
++	{"bma253"},
+ 	{"bma255"},
  	{"bma280"},
-+	{"bmc150_accel"},
-+	{"bmi055_accel"},
- 	{}
- };
- 
- MODULE_DEVICE_TABLE(i2c, bmc150_accel_id);
- 
- static const struct of_device_id bmc150_accel_of_match[] = {
--	{ .compatible = "bosch,bmc150_accel" },
--	{ .compatible = "bosch,bmi055_accel" },
--	{ .compatible = "bosch,bma255" },
--	{ .compatible = "bosch,bma250e" },
+ 	{"bmc150_accel"},
+@@ -244,6 +245,7 @@ static const struct of_device_id bmc150_accel_of_match[] = {
  	{ .compatible = "bosch,bma222" },
  	{ .compatible = "bosch,bma222e" },
-+	{ .compatible = "bosch,bma250e" },
-+	{ .compatible = "bosch,bma255" },
+ 	{ .compatible = "bosch,bma250e" },
++	{ .compatible = "bosch,bma253" },
+ 	{ .compatible = "bosch,bma255" },
  	{ .compatible = "bosch,bma280" },
-+	{ .compatible = "bosch,bmc150_accel" },
-+	{ .compatible = "bosch,bmi055_accel" },
- 	{ },
- };
- MODULE_DEVICE_TABLE(of, bmc150_accel_of_match);
+ 	{ .compatible = "bosch,bmc150_accel" },
 diff --git a/drivers/iio/accel/bmc150-accel-spi.c b/drivers/iio/accel/bmc150-accel-spi.c
-index 01b42fa6a015..dc884fa18ad0 100644
+index dc884fa18ad0..54b8c9c8068b 100644
 --- a/drivers/iio/accel/bmc150-accel-spi.c
 +++ b/drivers/iio/accel/bmc150-accel-spi.c
-@@ -34,26 +34,26 @@ static int bmc150_accel_remove(struct spi_device *spi)
- }
- 
- static const struct acpi_device_id bmc150_accel_acpi_match[] = {
--	{"BSBA0150"},
--	{"BMC150A"},
--	{"BMI055A"},
- 	{"BMA0255"},
--	{"BMA250E"},
-+	{"BMA0280"},
- 	{"BMA222"},
- 	{"BMA222E"},
--	{"BMA0280"},
-+	{"BMA250E"},
-+	{"BMC150A"},
-+	{"BMI055A"},
-+	{"BSBA0150"},
- 	{ },
- };
- MODULE_DEVICE_TABLE(acpi, bmc150_accel_acpi_match);
- 
- static const struct spi_device_id bmc150_accel_id[] = {
--	{"bmc150_accel"},
--	{"bmi055_accel"},
--	{"bma255"},
--	{"bma250e"},
+@@ -50,6 +50,7 @@ static const struct spi_device_id bmc150_accel_id[] = {
  	{"bma222"},
  	{"bma222e"},
-+	{"bma250e"},
-+	{"bma255"},
+ 	{"bma250e"},
++	{"bma253"},
+ 	{"bma255"},
  	{"bma280"},
-+	{"bmc150_accel"},
-+	{"bmi055_accel"},
- 	{}
- };
- MODULE_DEVICE_TABLE(spi, bmc150_accel_id);
+ 	{"bmc150_accel"},
 -- 
 2.32.0
 
