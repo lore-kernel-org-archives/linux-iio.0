@@ -7,49 +7,48 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0900C48BE5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD146C48BE0
 	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 13:46:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8A4D361430
+	by mail.kernel.org (Postfix) with ESMTP id B182361404
 	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 13:46:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbhFJNsZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Jun 2021 09:48:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36326 "EHLO
+        id S231299AbhFJNs0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Jun 2021 09:48:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36334 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231146AbhFJNsY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jun 2021 09:48:24 -0400
+        with ESMTP id S231272AbhFJNs0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jun 2021 09:48:26 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C09FBC061574
-        for <linux-iio@vger.kernel.org>; Thu, 10 Jun 2021 06:46:28 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC2F2C061760
+        for <linux-iio@vger.kernel.org>; Thu, 10 Jun 2021 06:46:29 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lrL0t-0002WI-4o
-        for linux-iio@vger.kernel.org; Thu, 10 Jun 2021 15:46:27 +0200
+        id 1lrL0u-0002aO-A1
+        for linux-iio@vger.kernel.org; Thu, 10 Jun 2021 15:46:28 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id D46E463850D
-        for <linux-iio@vger.kernel.org>; Thu, 10 Jun 2021 13:46:24 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 496E6638515
+        for <linux-iio@vger.kernel.org>; Thu, 10 Jun 2021 13:46:27 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id BD7026384F6;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id F0EC06384FA;
         Thu, 10 Jun 2021 13:46:22 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id f2436399;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id a3258e8f;
         Thu, 10 Jun 2021 13:46:22 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
-        Oliver Lang <Oliver.Lang@gossenmetrawatt.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>
-Subject: [PATCH v2 2/4] iio: ltr501: ltr559: fix initialization of LTR501_ALS_CONTR
-Date:   Thu, 10 Jun 2021 15:46:17 +0200
-Message-Id: <20210610134619.2101372-3-mkl@pengutronix.de>
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v2 4/4] iio: ltr501: mark ltr501_chip_info as const
+Date:   Thu, 10 Jun 2021 15:46:19 +0200
+Message-Id: <20210610134619.2101372-5-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210610134619.2101372-1-mkl@pengutronix.de>
 References: <20210610134619.2101372-1-mkl@pengutronix.de>
@@ -63,36 +62,63 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Oliver Lang <Oliver.Lang@gossenmetrawatt.com>
+This patch marks the struct ltr501_chip_info as constant.
 
-The ltr559 chip uses only the lowest bit of the ALS_CONTR register to
-configure between active and stand-by mode. In the original driver
-BIT(1) is used, which does a software reset instead.
-
-This patch fixes the problem by using BIT(0) as als_mode_active for
-the ltr559 chip.
-
-Fixes: 8592a7eefa54 ("iio: ltr501: Add support for ltr559 chip")
-Signed-off-by: Oliver Lang <Oliver.Lang@gossenmetrawatt.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/iio/light/ltr501.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/light/ltr501.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index 0ed3392a33cf..79898b72fe73 100644
+index 74ed2d88a3ed..1830221da48d 100644
 --- a/drivers/iio/light/ltr501.c
 +++ b/drivers/iio/light/ltr501.c
-@@ -1208,7 +1208,7 @@ static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
- 		.als_gain_tbl_size = ARRAY_SIZE(ltr559_als_gain_tbl),
- 		.ps_gain = ltr559_ps_gain_tbl,
- 		.ps_gain_tbl_size = ARRAY_SIZE(ltr559_ps_gain_tbl),
--		.als_mode_active = BIT(1),
-+		.als_mode_active = BIT(0),
- 		.als_gain_mask = BIT(2) | BIT(3) | BIT(4),
- 		.als_gain_shift = 2,
- 		.info = &ltr501_info,
+@@ -152,7 +152,7 @@ struct ltr501_chip_info {
+ struct ltr501_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock_als, lock_ps;
+-	struct ltr501_chip_info *chip_info;
++	const struct ltr501_chip_info *chip_info;
+ 	u8 als_contr, ps_contr;
+ 	int als_period, ps_period; /* period in micro seconds */
+ 	struct regmap *regmap;
+@@ -739,7 +739,7 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+ {
+ 	struct ltr501_data *data = iio_priv(indio_dev);
+ 	int i, ret, freq_val, freq_val2;
+-	struct ltr501_chip_info *info = data->chip_info;
++	const struct ltr501_chip_info *info = data->chip_info;
+ 
+ 	ret = iio_device_claim_direct_mode(indio_dev);
+ 	if (ret)
+@@ -1086,7 +1086,7 @@ static ssize_t ltr501_show_proximity_scale_avail(struct device *dev,
+ 						 char *buf)
+ {
+ 	struct ltr501_data *data = iio_priv(dev_to_iio_dev(dev));
+-	struct ltr501_chip_info *info = data->chip_info;
++	const struct ltr501_chip_info *info = data->chip_info;
+ 	ssize_t len = 0;
+ 	int i;
+ 
+@@ -1108,7 +1108,7 @@ static ssize_t ltr501_show_intensity_scale_avail(struct device *dev,
+ 						 char *buf)
+ {
+ 	struct ltr501_data *data = iio_priv(dev_to_iio_dev(dev));
+-	struct ltr501_chip_info *info = data->chip_info;
++	const struct ltr501_chip_info *info = data->chip_info;
+ 	ssize_t len = 0;
+ 	int i;
+ 
+@@ -1188,7 +1188,7 @@ static const struct iio_info ltr301_info = {
+ 	.write_event_config	= &ltr501_write_event_config,
+ };
+ 
+-static struct ltr501_chip_info ltr501_chip_info_tbl[] = {
++static const struct ltr501_chip_info ltr501_chip_info_tbl[] = {
+ 	[ltr501] = {
+ 		.partid = 0x08,
+ 		.als_gain = ltr501_als_gain_tbl,
 -- 
 2.30.2
 
