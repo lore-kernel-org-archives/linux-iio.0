@@ -2,107 +2,109 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A32CC47094
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 09:41:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43AB3C47094
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 09:56:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3CEAD613E3
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 09:41:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2AE75601FA
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 09:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230151AbhFJJnj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Jun 2021 05:43:39 -0400
-Received: from frasgout.his.huawei.com ([185.176.79.56]:3193 "EHLO
-        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229961AbhFJJni (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jun 2021 05:43:38 -0400
-Received: from fraeml714-chm.china.huawei.com (unknown [172.18.147.206])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4G0zDy6VvHz6M4Xm;
-        Thu, 10 Jun 2021 17:28:50 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml714-chm.china.huawei.com (10.206.15.33) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2176.2; Thu, 10 Jun 2021 11:41:40 +0200
-Received: from localhost (10.52.126.112) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Thu, 10 Jun
- 2021 10:41:39 +0100
-Date:   Thu, 10 Jun 2021 10:41:36 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Chris Lesiak <chris.lesiak@licor.com>
-CC:     Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: humidity: hdc100x: Add margin to the conversion
- time
-Message-ID: <20210610104136.00002e4e@Huawei.com>
-In-Reply-To: <20210609193748.1709308-1-chris.lesiak@licor.com>
-References: <20210609193748.1709308-1-chris.lesiak@licor.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
+        id S230103AbhFJJ6a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Jun 2021 05:58:30 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.82]:15075 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229935AbhFJJ63 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jun 2021 05:58:29 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1623318985; cv=none;
+    d=strato.com; s=strato-dkim-0002;
+    b=kL1jJXcE0xo6QWSo9ju02qX17Yja6qia0RHHSaDIPaePqE581EnCVbPLab1M/dr9MY
+    BSVxYNH6Gwtzy6fvgAr1DFjPXIsahkBXVHuioozgvBLxfzND4uzyGewwtt8KNlgTiAMM
+    fUiJR8yZsD50vf1IbE3hHugPiIQJo0veBWYemaPJIcOT3Sb1B9EqTh4vsCFqhSKoeQpn
+    PxFaAlmBVn9CMkG0ggCTHm2fH1LrOayrlBj+g52l0+63+qiCp69n7XchGVOso7URMCvJ
+    /aIy2hjwUfyZw8ZUihWkdUzXyxZurJSvfpzqyyEhaQ1PiZV6lUpCivQraZ6oPdoSBSMD
+    aYNw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623318985;
+    s=strato-dkim-0002; d=strato.com;
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=FwZnaZ8gRC2vRn8D/qw8fV39RZrjSrX/Xoxl+96C+g4=;
+    b=CN5FOKVr8Brm4CDj7PvePzvTTIXEUU6UCeeIvMVP9BQnRESV61V8CQDNz83qwJWHW4
+    vEflBz4qq7gE9OrPwNb8Chjj0miHqua+IuDr6Y2EvLn2s6zDlExzeZsqVjoYZuq8qlwb
+    LPT1Jk+DboDpIyldBYb6XiVZCeAEpLVfaVajjeHh9xiuxiQnWG4XJJrEDUEDgDfoq0fM
+    UOew+Gw4CNuzDbu3zWHaYXM5hceUmkU4Gg1zDeXCEV/+Mfavek+OKFHZBQRWA9e2KjNn
+    EyQdpSA5qETdoYx/dqFCWjlGblcLyF+pKuYrztdQltacGsG1CKNCgkpMIDgeH2QU1P3z
+    Ewyg==
+ARC-Authentication-Results: i=1; strato.com;
+    dkim=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623318985;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=FwZnaZ8gRC2vRn8D/qw8fV39RZrjSrX/Xoxl+96C+g4=;
+    b=CArtXx1t0EXSp1IAED9rA14stamWxSdP3DsLHg9E6P4gDOpYQjFduTIsorOX9EWmZR
+    Y7QPGnTKHWpt7eDljrwnukswnql4PtnKVlJd2ifBRV08dmZIe157RvK1iej/nuEv3xZj
+    gqR8qDZ7pyS07/gngfFhw9Sb9p+HXGrdi5AA4PzY/wrmlpVzp2+yh/a79eQYlpAMZf6M
+    QdT0n0qSyh/Zrmba5cydYEjr8Vk9pZVwSTTXlLFRt3sGI2guqpn1e8mX4DO26qvL0+5p
+    s3QcnBswoSsIG35ed7BfwHMY86K+cmEzVeEI9UH19WzsItiFOcAUtcPz2nOZ1htxdVeC
+    LNbg==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxA626NTAM6"
+X-RZG-CLASS-ID: mo00
+Received: from droid..
+    by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
+    with ESMTPSA id y01375x5A9uOso0
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Thu, 10 Jun 2021 11:56:24 +0200 (CEST)
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
+        Laurentiu Palcu <laurentiu.palcu@intel.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Stephan Gerhold <stephan@gerhold.net>
+Subject: [PATCH 2/6] dt-bindings: iio: accel: bma255: Document bosch,bma253
+Date:   Thu, 10 Jun 2021 11:52:56 +0200
+Message-Id: <20210610095300.3613-3-stephan@gerhold.net>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20210610095300.3613-1-stephan@gerhold.net>
+References: <20210610095300.3613-1-stephan@gerhold.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.52.126.112]
-X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed,  9 Jun 2021 14:37:48 -0500
-Chris Lesiak <chris.lesiak@licor.com> wrote:
+BMA253 is mostly like BMA255 that is already supported by the
+bmc150-accel driver. Document an extra bosch,bma253 compatible for it.
 
-> The datasheets have the following note for the conversion time
-> specification: "This parameter is specified by design and/or
-> characterization and it is not tested in production."
-> 
-> Parts have been seen that require more time to do 14-bit conversions for
-> the relative humidity channel.  The result is ENXIO due to the address
-> phase of a transfer not getting an ACK.
-> 
-> Delay an additional 1 ms per conversion to allow for additional margin.
-> 
-> Signed-off-by: Chris Lesiak <chris.lesiak@licor.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+ Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Hi Chris
-
-Could you figure out a fixes tag for this one so we can get it backported
-into stable?
-
-If not I can probably guess when I catch up with applying patches.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/humidity/hdc100x.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> index 2a957f19048e..91790aa8beeb 100644
-> --- a/drivers/iio/humidity/hdc100x.c
-> +++ b/drivers/iio/humidity/hdc100x.c
-> @@ -166,7 +166,7 @@ static int hdc100x_get_measurement(struct hdc100x_data *data,
->  				   struct iio_chan_spec const *chan)
->  {
->  	struct i2c_client *client = data->client;
-> -	int delay = data->adc_int_us[chan->address];
-> +	int delay = data->adc_int_us[chan->address] + 1000;
->  	int ret;
->  	__be16 val;
->  
-> @@ -316,7 +316,7 @@ static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct hdc100x_data *data = iio_priv(indio_dev);
->  	struct i2c_client *client = data->client;
-> -	int delay = data->adc_int_us[0] + data->adc_int_us[1];
-> +	int delay = data->adc_int_us[0] + data->adc_int_us[1] + 2000;
->  	int ret;
->  
->  	/* dual read starts at temp register */
+diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+index c2efbb813ca2..8afb0fe8ef5c 100644
+--- a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+@@ -18,6 +18,7 @@ properties:
+     enum:
+       - bosch,bmc150_accel
+       - bosch,bmi055_accel
++      - bosch,bma253
+       - bosch,bma255
+       - bosch,bma250e
+       - bosch,bma222
+-- 
+2.31.1
 
