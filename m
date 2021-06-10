@@ -2,136 +2,127 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=ham
-	autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 814B1C47094
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 11:25:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07FE0C48BD1
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:24:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 58668613DF
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 11:25:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DE0ED613FF
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:24:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230001AbhFJL1k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Jun 2021 07:27:40 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([81.169.146.165]:31037 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229895AbhFJL1k (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jun 2021 07:27:40 -0400
-X-Greylist: delayed 5351 seconds by postgrey-1.27 at vger.kernel.org; Thu, 10 Jun 2021 07:27:39 EDT
-ARC-Seal: i=1; a=rsa-sha256; t=1623324340; cv=none;
+        id S230351AbhFJM0L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Jun 2021 08:26:11 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.84]:21848 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230130AbhFJM0L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jun 2021 08:26:11 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1623327846; cv=none;
     d=strato.com; s=strato-dkim-0002;
-    b=kMaJnRCmK3pM00zwoIAFaK2fzMgsncYpUL6mtB9QYneg7TtPQtE3wFWg3OfQwDH9Az
-    vQHhVCXo72v2zIBrWm0YTJB7LF8QIKCu3hqJDU1BkRJE1oe8W0SlO1+Z8UvhyPiOjIn3
-    ZrMoLwqwYOPY57Z3/pgUOfKCT3CAH0GnFYOTYgwF+c33SZSPsH7BoEmrWTGKIfUD5Ozo
-    eaKIzy9XV9GSLfKTmTWEcD8N8f0qV7icGvc1TjKfmQ2ZZbiBLx/y/lfHKMnUF2wbpUcl
-    OuQBzKVHLGidyTIoyQbBEUFPGvPrhnpjsaSPtstggIY3zBnajGXXMZEcNpm4qeoVMB3j
-    14Fw==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623324340;
+    b=oUX/M8odnIAnnw2D1doRgDiaPGppWg1mZI3ctPQNFB5WCBw4v9vcuVeSY+2Bxzqn6b
+    vwsn1eFUxYIW5vC2u1Uj+OxDgXjAptNVLTb1n/os1oAGodE1VGQgAn7bwFBMaqcxzwy0
+    HIdjZqx4MF7XYzw7y23R/N7LOJ54fZNUbpfk3rPfIwTfz5z1pj5fLeU5+nIf1c286xS4
+    0h3HuAIN2asbmHUPmU167sn+NkX55ejAXKIdnMAj0K6JimOB7nK3KM6UZRVlRLVJsJoY
+    Gg3k4yPiAezx5qOYOF7N+HWOrUWlDOVEqk+Qq04qKqX6Fo82Dfhu2cXGuP3tnIpbRXhf
+    kMdw==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623327846;
     s=strato-dkim-0002; d=strato.com;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=1WVSBndPGbx2t1HrcMlYrtSeGKXkrVerGYD+9o506GE=;
-    b=IPHp0ZWoH/0easmhkjXnqJ2DTV3I4qHNvsyMRWPv6457eeyI49OvMqhLpMrAVwQno8
-    meKRuPlJnkfJEW42WlUtgOAR7IjVLbGDl2r1jOuYF6aZbtvaIb1kRd9J4p5chvfeaE9s
-    GdI5xMYVXHaPH821/PDF+/vKndFNYq5lUeroZYDV1RLOzKiTKVfb2xu8xFErb7FiRi6M
-    vfdql2W60GaxRYsrQhONzaaFOzyhKxQfWm7i29TkChjwJ008UEF/IEmAx9DzVYVLvs+l
-    cGBtCa+UOTg4WjpHxe1cGrKQOBv0V1NLPG2Wa6Ktn60OMiMDYsr+NNgmGTF+2+zVIJNP
-    D52g==
+    bh=N255HoRwbQK6GgNYri2591dhE/OLkqcb75P2f4BWQ3w=;
+    b=a9mK3ozC3pTxjjN0XXbgYOVqs7e12IrChZ6lgGKWdckIfkBl1I7oxJhvds0jVaxzHA
+    XMBePJUrIo55fi6/5iAOkp/6WY0fE3cTMeJLZMaK0+/JGaWxf2Ha2A0c71Ltjv4h6k8S
+    6jhW5gB5cfAuKKoHHwQusboQb1ZxaUaAx7gaQu0RHTYckRKdCexp26+DoT3itCisFAfc
+    w/x6UuhoTQzd9pwZrYL0+DdanCOM4mawJL+cxAqRXjD4zJRBUvNDIYXpyXlqD0xFpIbI
+    +FFKTobRt4X9f9RVRWSk7DOrLaTA+p8egGiz2t0kuQ1LQbRtYqFVvAzlL0swNQ4BO8Tm
+    9DnQ==
 ARC-Authentication-Results: i=1; strato.com;
     dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623324340;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623327846;
     s=strato-dkim-0002; d=gerhold.net;
-    h=In-Reply-To:References:Message-ID:Subject:Cc:To:From:Date:Cc:Date:
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=1WVSBndPGbx2t1HrcMlYrtSeGKXkrVerGYD+9o506GE=;
-    b=QemOYP009w2SfEuWDRiiIWNQY0W6x9Idh4woHRCFtQy1rrp6KP4QBHpYbwZsg9JaBZ
-    YRFle+R0+EBtI8tEtpzaw5RqOYQcxBqtCuQl17npephnMVTjQ2zFpRfM/Xr6h0VoIWFw
-    4TzwTNFr5mPBRAMpWfXKqtn3MUuL6S/zZJ/qZNc5kGBpWUBlDAnxJT02ZNusN7VRiCwf
-    HGxu7CufRZd48hsdzjav5OYl+pjGl0llCY282UjELZ3XyG2ZHWD7kLtVkus+MziMyzjb
-    YK79xZmmu7IUl7frin8860eEOMpVNC+Sk8g16JDvGhpR1k2KMtwBtwr+O3jfaBB/MsV0
-    bsOQ==
+    bh=N255HoRwbQK6GgNYri2591dhE/OLkqcb75P2f4BWQ3w=;
+    b=mrx7uzURySm5jO1HQd7GxJ33XQm5GVNCHtcp2/9S9wz+26gs0b99HqzehRDxtZhds7
+    KV3+sGI/89lRtnjaNOSp5vA/bUPgBhwtFcyMIcFe5YM2cSWrS5of8SczOfH2+onlixUn
+    k7PFvPS3pfA1qTmrZP/CIyhrFSEDvQRPqeQPHER4zsowZSfbFR4VKSgLo/T8oO4sUsez
+    5i1HLyLw/XdLCR2R1OSJ10cvkjvyBFw/FKt8I9UNaODM8EhS5V9UZBjaWq1C4oTNeZX/
+    NGfGEhRvAwe0lLZwXoTa9cr0j+inz04vacoaVpNBKGXXABvLbbRxTogk+RABhCn7tt10
+    aw4g==
 Authentication-Results: strato.com;
     dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVOQ/OcYgojyw4j34+u26zEodhPgRDZ8nxIc/BaYo="
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxA626NTAM6"
 X-RZG-CLASS-ID: mo00
-Received: from gerhold.net
+Received: from droid..
     by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
-    with ESMTPSA id y01375x5ABPetWp
+    with ESMTPSA id y01375x5ACO5tzs
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Thu, 10 Jun 2021 13:25:40 +0200 (CEST)
-Date:   Thu, 10 Jun 2021 13:25:35 +0200
+    Thu, 10 Jun 2021 14:24:05 +0200 (CEST)
 From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Linus Walleij <linus.walleij@linaro.org>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Bastien Nocera <hadess@hadess.net>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: Re: [PATCH 0/6] iio: accel: bmc150: Add support for BMA253/BMA254
-Message-ID: <YMH2r3TXp0+qYiLN@gerhold.net>
-References: <20210610095300.3613-1-stephan@gerhold.net>
- <CAHp75Vc2c3GX5jESbGexnwJ-WUtZHCjVNsqTVykCrViCjH77+Q@mail.gmail.com>
- <YMHt1Z1QKUGMPDZX@gerhold.net>
- <CAHp75Vervzi9zXdWef8vpGZwM5wS3LtuKTY9f5j9QA0Asbea2Q@mail.gmail.com>
+        Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, Bastien Nocera <hadess@hadess.net>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Stephan Gerhold <stephan@gerhold.net>
+Subject: [PATCH v2 1/9] iio: accel: bmc150: Fix bma222 scale unit
+Date:   Thu, 10 Jun 2021 14:21:18 +0200
+Message-Id: <20210610122126.50504-2-stephan@gerhold.net>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210610122126.50504-1-stephan@gerhold.net>
+References: <20210610122126.50504-1-stephan@gerhold.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75Vervzi9zXdWef8vpGZwM5wS3LtuKTY9f5j9QA0Asbea2Q@mail.gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Jun 10, 2021 at 01:51:22PM +0300, Andy Shevchenko wrote:
-> On Thu, Jun 10, 2021 at 1:48 PM Stephan Gerhold <stephan@gerhold.net> wrote:
-> > On Thu, Jun 10, 2021 at 01:29:26PM +0300, Andy Shevchenko wrote:
-> > > On Thu, Jun 10, 2021 at 12:56 PM Stephan Gerhold <stephan@gerhold.net> wrote:
-> > > >
-> > > > The Bosch BMA253 accelerometer is very similar to both BMA254 and BMA255.
-> > > > The current situation is very confusing: BMA254 is supported by the bma180
-> > > > driver, but BMA255 is supported by the bmc150-accel driver.
-> > > >
-> > > > It turns out the bma180 and bmc150-accel drivers have quite some overlap,
-> > > > and BMA253/BMA254 would be a bit better supported in bmc150
-> > > > (which has support for the motion trigger/interrupt).
-> > > >
-> > > > This series adds BMA253 support to bmc150-accel and also moves BMA254
-> > > > over to bmc150, removing some unnecessary code from the bma180 driver.
-> > > >
-> > > > I asked Linus Walleij to test these patches on BMA254 a while ago
-> > > > and he suggested that I already add his Reviewed-by.
-> > >
-> > > I add
-> > >
-> > >
-> > > After addressing comments per patch 1, feel free to add my
-> > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > > to the series.
-> > >
-> >
-> > Thanks for the review!
-> >
-> > I think the re-ordering should be a separate commit to make the diff not
-> > too confusing. Is it fine for you if I send that as a follow-up patch?
-> > I already have two more patches that would conflict with the reordering,
-> > so it would be easier to include that in the next series.
-> >
-> > But I can also re-send the entire series with the extra patch if you
-> > prefer that, just let me know. :)
-> 
-> I think that doing the reordering first (if there are no fixes so far)
-> is a good idea.
-> 
+According to sysfs-bus-iio documentation the unit for accelerometer
+values after applying scale/offset should be m/s^2, not g, which explains
+why the scale values for the other variants in bmc150-accel do not match
+exactly the values given in the datasheet.
 
-OK, I will try to do that somehow. I will probably prepend one of my
-additional patches to this series since it has a Fixes: tag that would
-just cause the stable people headaches later when backporting.
+To get the correct values, we need to multiply the BMA222 scale values
+by g = 9.80665 m/s^2.
 
-Thanks,
-Stephan
+Fixes: a1a210bf29a1 ("iio: accel: bmc150-accel: Add support for BMA222")
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+Added this patch in v2 to avoid conflicts later in case this
+should be backported to a stable kernel.
+---
+ drivers/iio/accel/bmc150-accel-core.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index a3d08d713362..a80ee0fdabc5 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -1145,11 +1145,12 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
+ 		/*
+ 		 * The datasheet page 17 says:
+ 		 * 15.6, 31.3, 62.5 and 125 mg per LSB.
++		 * IIO unit is m/s^2 so multiply by g = 9.80665 m/s^2.
+ 		 */
+-		.scale_table = { {156000, BMC150_ACCEL_DEF_RANGE_2G},
+-				 {313000, BMC150_ACCEL_DEF_RANGE_4G},
+-				 {625000, BMC150_ACCEL_DEF_RANGE_8G},
+-				 {1250000, BMC150_ACCEL_DEF_RANGE_16G} },
++		.scale_table = { {152984, BMC150_ACCEL_DEF_RANGE_2G},
++				 {306948, BMC150_ACCEL_DEF_RANGE_4G},
++				 {612916, BMC150_ACCEL_DEF_RANGE_8G},
++				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
+ 	},
+ 	[bma222e] = {
+ 		.name = "BMA222E",
+-- 
+2.32.0
+
