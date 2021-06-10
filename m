@@ -7,48 +7,48 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 65713C48BDF
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:54:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC4AC48BE8
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:54:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 42908613C1
+	by mail.kernel.org (Postfix) with ESMTP id 028CE613C0
 	for <linux-iio@archiver.kernel.org>; Thu, 10 Jun 2021 12:54:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230305AbhFJM4D (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Jun 2021 08:56:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52514 "EHLO
+        id S230368AbhFJM4E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Jun 2021 08:56:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230035AbhFJM4D (ORCPT
+        with ESMTP id S230366AbhFJM4D (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Jun 2021 08:56:03 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5290EC061760
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 73A27C0617A6
         for <linux-iio@vger.kernel.org>; Thu, 10 Jun 2021 05:54:07 -0700 (PDT)
 Received: from gallifrey.ext.pengutronix.de ([2001:67c:670:201:5054:ff:fe8d:eefb] helo=bjornoya.blackshift.org)
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <mkl@pengutronix.de>)
-        id 1lrKCD-00032s-Oc
+        id 1lrKCD-00033K-QB
         for linux-iio@vger.kernel.org; Thu, 10 Jun 2021 14:54:05 +0200
 Received: from dspam.blackshift.org (localhost [127.0.0.1])
-        by bjornoya.blackshift.org (Postfix) with SMTP id 04C9C63841A
-        for <linux-iio@vger.kernel.org>; Thu, 10 Jun 2021 12:54:02 +0000 (UTC)
+        by bjornoya.blackshift.org (Postfix) with SMTP id 4DA2563841F
+        for <linux-iio@vger.kernel.org>; Thu, 10 Jun 2021 12:54:03 +0000 (UTC)
 Received: from hardanger.blackshift.org (unknown [172.20.34.65])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
          key-exchange ECDHE (P-384) server-signature RSA-PSS (4096 bits) server-digest SHA256)
         (Client did not present a certificate)
-        by bjornoya.blackshift.org (Postfix) with ESMTPS id 6A459638401;
+        by bjornoya.blackshift.org (Postfix) with ESMTPS id 97B89638403;
         Thu, 10 Jun 2021 12:54:01 +0000 (UTC)
 Received: from blackshift.org (localhost [::1])
-        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id 8187c9a2;
+        by hardanger.blackshift.org (OpenSMTPD) with ESMTP id a8b6f0f2;
         Thu, 10 Jun 2021 12:54:00 +0000 (UTC)
 From:   Marc Kleine-Budde <mkl@pengutronix.de>
 To:     linux-iio@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        Oliver Lang <Oliver.Lang@gossenmetrawatt.com>
-Subject: [PATCH 1/4] iio: ltr501: mark register holding upper 8 bits of ALS_DATA{0,1} and PS_DATA as volatile, too
-Date:   Thu, 10 Jun 2021 14:53:55 +0200
-Message-Id: <20210610125358.2096497-2-mkl@pengutronix.de>
+        Oliver Lang <Oliver.Lang@gossenmetrawatt.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>
+Subject: [PATCH 3/4] iio: ltr501: ltr501_read_ps(): add missing endianness conversion
+Date:   Thu, 10 Jun 2021 14:53:57 +0200
+Message-Id: <20210610125358.2096497-4-mkl@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210610125358.2096497-1-mkl@pengutronix.de>
 References: <20210610125358.2096497-1-mkl@pengutronix.de>
@@ -62,60 +62,61 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The regmap is configured for 8 bit registers, uses a RB-Tree cache and
-marks several registers as volatile (i.e. do not cache).
+From: Oliver Lang <Oliver.Lang@gossenmetrawatt.com>
 
-The ALS and PS data registers in the chip are 16 bit wide and spans
-two regmap registers. In the current driver only the base register is
-marked as volatile, resulting in the upper register only read once.
+The PS ADC Channel data is spread over 2 registers in little-endian
+form. This patch adds the missing endianness conversion.
 
-Further the data sheet notes:
-
-| When the I2C read operation starts, all four ALS data registers are
-| locked until the I2C read operation of register 0x8B is completed.
-
-Which results in the registers never update after the 2nd read.
-
-This patch fixes the problem by marking the upper 8 bits of the ALS
-and PS registers as volatile, too.
-
-Fixes: 2f2c96338afc ("iio: ltr501: Add regmap support.")
-Reported-by: Oliver Lang <Oliver.Lang@gossenmetrawatt.com>
+Fixes: 2690be905123 ("iio: Add Lite-On ltr501 ambient light / proximity sensor driver")
+Signed-off-by: Oliver Lang <Oliver.Lang@gossenmetrawatt.com>
 Signed-off-by: Marc Kleine-Budde <mkl@pengutronix.de>
 ---
- drivers/iio/light/ltr501.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/iio/light/ltr501.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
-index b4323d2db0b1..0ed3392a33cf 100644
+index 79898b72fe73..0e3f97ef3cdd 100644
 --- a/drivers/iio/light/ltr501.c
 +++ b/drivers/iio/light/ltr501.c
-@@ -32,9 +32,12 @@
- #define LTR501_PART_ID 0x86
- #define LTR501_MANUFAC_ID 0x87
- #define LTR501_ALS_DATA1 0x88 /* 16-bit, little endian */
-+#define LTR501_ALS_DATA1_UPPER 0x89 /* upper 8 bits of LTR501_ALS_DATA1 */
- #define LTR501_ALS_DATA0 0x8a /* 16-bit, little endian */
-+#define LTR501_ALS_DATA0_UPPER 0x8b /* upper 8 bits of LTR501_ALS_DATA0 */
- #define LTR501_ALS_PS_STATUS 0x8c
- #define LTR501_PS_DATA 0x8d /* 16-bit, little endian */
-+#define LTR501_PS_DATA_UPPER 0x8e /* upper 8 bits of LTR501_PS_DATA */
- #define LTR501_INTR 0x8f /* output mode, polarity, mode */
- #define LTR501_PS_THRESH_UP 0x90 /* 11 bit, ps upper threshold */
- #define LTR501_PS_THRESH_LOW 0x92 /* 11 bit, ps lower threshold */
-@@ -1354,9 +1357,12 @@ static bool ltr501_is_volatile_reg(struct device *dev, unsigned int reg)
+@@ -407,20 +407,16 @@ static int ltr501_read_als(const struct ltr501_data *data, __le16 buf[2])
+ 				buf, 2 * sizeof(__le16));
+ }
+ 
+-static int ltr501_read_ps(const struct ltr501_data *data)
++static int ltr501_read_ps(const struct ltr501_data *data, __le16 *buf)
  {
- 	switch (reg) {
- 	case LTR501_ALS_DATA1:
-+	case LTR501_ALS_DATA1_UPPER:
- 	case LTR501_ALS_DATA0:
-+	case LTR501_ALS_DATA0_UPPER:
- 	case LTR501_ALS_PS_STATUS:
- 	case LTR501_PS_DATA:
-+	case LTR501_PS_DATA_UPPER:
- 		return true;
- 	default:
- 		return false;
+-	int ret, status;
++	int ret;
+ 
+ 	ret = ltr501_drdy(data, LTR501_STATUS_PS_RDY);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = regmap_bulk_read(data->regmap, LTR501_PS_DATA,
+-			       &status, 2);
+-	if (ret < 0)
+-		return ret;
+-
+-	return status;
++	return regmap_bulk_read(data->regmap, LTR501_PS_DATA,
++				buf, sizeof(__le16));
+ }
+ 
+ static int ltr501_read_intr_prst(const struct ltr501_data *data,
+@@ -668,11 +664,11 @@ static int ltr501_read_raw(struct iio_dev *indio_dev,
+ 			break;
+ 		case IIO_PROXIMITY:
+ 			mutex_lock(&data->lock_ps);
+-			ret = ltr501_read_ps(data);
++			ret = ltr501_read_ps(data, buf);
+ 			mutex_unlock(&data->lock_ps);
+ 			if (ret < 0)
+ 				break;
+-			*val = ret & LTR501_PS_DATA_MASK;
++			*val = le16_to_cpu(buf[0]) & LTR501_PS_DATA_MASK;
+ 			ret = IIO_VAL_INT;
+ 			break;
+ 		default:
 -- 
 2.30.2
 
