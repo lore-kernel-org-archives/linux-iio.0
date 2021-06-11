@@ -2,99 +2,210 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDBB4C48BE0
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 17:45:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8912C48BE0
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 17:48:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CF244613D3
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 17:45:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AFCF4613CF
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 17:48:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230409AbhFKRrf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Jun 2021 13:47:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229792AbhFKRre (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jun 2021 13:47:34 -0400
-Received: from mail-pg1-x52a.google.com (mail-pg1-x52a.google.com [IPv6:2607:f8b0:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53D45C061574
-        for <linux-iio@vger.kernel.org>; Fri, 11 Jun 2021 10:45:20 -0700 (PDT)
-Received: by mail-pg1-x52a.google.com with SMTP id e22so3038983pgv.10
-        for <linux-iio@vger.kernel.org>; Fri, 11 Jun 2021 10:45:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xz3LbokVxAEU7e/8q/XwQaECxsUWBTQqaaFXBvmBB6M=;
-        b=JHAKwMpJhYOh5VPnC2uwFVe5URwEETvdXn36LlDWzFG94iR95Z64JDph8ZO+6xnHhj
-         eZE/kIS48MnLnYHf8nVP3OK2Qja97L+SDUgmlutYxXGWBxLA8xBbFWAjy1j15OxJRo+a
-         f8W0wcFnT5kHpYGQ1l/q0McY5kZAiV0W7RLhvegw3UMiGrnxQtrqlbnjL9EXKhat6vdT
-         1Rqr63ZTGTyqcYgnro5uyGt2XYOg17bJJYGlHmSXL/cR4U4MB1Obb4WNI8SftFrU1k40
-         dCNstV84MzxW58tav2G4CJWzNiiWBiMs/QpEdhr84iklNVtHSK6HRAlyNhvC8QGomc3g
-         pk+Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xz3LbokVxAEU7e/8q/XwQaECxsUWBTQqaaFXBvmBB6M=;
-        b=f9cum4Q5E6h9iV4Fi6I5QmQjhzgUhjD2XN2Kc7I1tpvUrPsuSt3i57pn9MySddZud8
-         qrYjwnqZ+UsOGtNr/TkOuSCNGUrodMyh1I2eKmCVBu1to/+mnzHAxNzigOKgTu7iHWlr
-         KD6mMYVFU4iCuwak6Mq+jnMTTm+rcPsx1KqAQThZn3jDfIxu1C/e/jC1IJUm63bwpHXF
-         VoHx/K4JVlcThVTUicgJ9WIDZ5gwbEOYb9IIHdxaI3DZ5BhZtgXQ1svRkUNV+fMeadVT
-         oSb7mjPAJueqWmtdpYCrrAHaqBWfwMJb7OJh0dp2qwXgbjJs4UouPC+OugaoUYy4vsUq
-         8djg==
-X-Gm-Message-State: AOAM532k9lgh5AG8SqMGcByabYdY11WkZW3XhwGhY/AM32pJ2WKuONBE
-        mWagc3xnBzb5XTxm/0WTyJjC0ysDAeUTd7udBSo=
-X-Google-Smtp-Source: ABdhPJy1yqS/TXM25H+rlrT3GOsuUAqdzjaIdYTDCCjffp+hiNqxZggWTS0UpeJ9SvUi+4m4j118sKXVO5uvNM2icv0=
-X-Received: by 2002:a05:6a00:139c:b029:2f7:102c:5393 with SMTP id
- t28-20020a056a00139cb02902f7102c5393mr2542573pfg.40.1623433519792; Fri, 11
- Jun 2021 10:45:19 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210611152614.109361-1-jic23@kernel.org>
-In-Reply-To: <20210611152614.109361-1-jic23@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Fri, 11 Jun 2021 20:45:03 +0300
-Message-ID: <CAHp75VfN93-B-UYCEMfxym-_XS_Edr+G07P6xO+83+gkMeC1LQ@mail.gmail.com>
-Subject: Re: [PATCH 0/7] staging:iio: Header cleanup
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Nuno Sa <Nuno.Sa@analog.com>,
+        id S229530AbhFKRuQ convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Jun 2021 13:50:16 -0400
+Received: from mail.kernel.org ([198.145.29.99]:40132 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229951AbhFKRuP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 11 Jun 2021 13:50:15 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C3AFE613D3;
+        Fri, 11 Jun 2021 17:48:15 +0000 (UTC)
+Date:   Fri, 11 Jun 2021 18:50:10 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+        Michael Hennerich <michael.hennerich@analog.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: core: Add "extended_name" attribute to all
+ channels
+Message-ID: <20210611185010.724432c2@jic23-huawei>
+In-Reply-To: <AJQHUQ.F2KTDP14GT7T2@crapouillou.net>
+References: <20210610124556.34507-1-paul@crapouillou.net>
+        <20210610124556.34507-3-paul@crapouillou.net>
+        <20210610153425.000029b6@Huawei.com>
+        <AJQHUQ.F2KTDP14GT7T2@crapouillou.net>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Jun 11, 2021 at 6:25 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> 0-day recently started giving some reports from the include-what-you-use
-> tool (needs LLVM builds).
->
-> I was curious so decided to give it a spin.  It produces a wealth of
-> information, but the suggestions require a high degree of interpretation
-> and some choices are down to personal taste.
->
-> This set covers resulting changes that I think make sense for remaining
-> IIO drivers in staging (which I just noticed are all Analog devices ones :)
+On Thu, 10 Jun 2021 15:49:58 +0100
+Paul Cercueil <paul@crapouillou.net> wrote:
 
-In general it's a good idea, but the tool doesn't know the project specifics.
-I believe that half of what you have done is simply wrong. That is, we
-have a lot of drivers that include kernel.h which is in its turn a
-rabbit hole of all possible headers and (circular) dependencies. So,
-for this and the other series, please double check that removed
-headers are not removed due to kernel.h (I believe this is the case
-for almost all if not all entries of slab.h, for example).
+> Le jeu., juin 10 2021 at 15:34:25 +0100, Jonathan Cameron 
+> <Jonathan.Cameron@Huawei.com> a écrit :
+> > On Thu, 10 Jun 2021 13:45:56 +0100
+> > Paul Cercueil <paul@crapouillou.net> wrote:
+> >   
+> >>  The point of this new attribute is to make the IIO tree actually
+> >>  parsable.
+> >> 
+> >>  Before, given this attribute as a filename:
+> >>  in_voltage0_aux_sample_rate
+> >> 
+> >>  Userspace had no way to know if the attribute name was
+> >>  "aux_sample_rate" with no extended name, or "sample_rate" with 
+> >> "aux" as
+> >>  the extended name, or just "rate" with "aux_sample" as the extended
+> >>  name.
+> >> 
+> >>  This was somewhat possible to deduce when there was more than one
+> >>  attribute present for a given channel, e.g:
+> >>  in_voltage0_aux_sample_rate
+> >>  in_voltage0_aux_frequency
+> >> 
+> >>  There, it was possible to deduce that "aux" was the extended name. 
+> >> But
+> >>  even with more than one attribute, this wasn't very robust, as two
+> >>  attributes starting with the same prefix (e.g. "sample_rate" and
+> >>  "sample_size") would result in the first part of the prefix being
+> >>  interpreted as being part of the extended name.
+> >> 
+> >>  To address this issue, add an "extended_name" attribute to all 
+> >> channels
+> >>  that actually do have an extended name.  
+> > 
+> > Change the patch title to make it clear that it only applies to those
+> > that have extended_name set.
+> >   
+> >>  For this attribute, the extended
+> >>  name is not present in the filename; so in this example, the file 
+> >> name
+> >>  would be "in_voltage0_extended_name", and reading it would return 
+> >> "aux".  
+> > 
+> > Ah. Now I see the slightly issue with my immediate thought that we 
+> > should
+> > just put this in the label attribute (and not allow both extended_name
+> > and label to be provided).  
+> 
+> Are there cases where extended_name and label are both used?
 
-The other half seems correct. But due to the above I can't give any
-tag on these...
+Not yet and if we add a check as part of your series we can stop it
+happening in future.  Simple checking for the read_label callback
+should be enough.
 
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> If they are exclusive, then it would be fine to put it in the label 
+> attribute. Parsing would be a bit more awkward because of the extended 
+> name but still possible (e.g. libiio would read 'in_voltage0_foo_label' 
+> and check that it returns 'foo').
+
+That would be great!
+
+Jonathan
+
+> 
+> -Paul
+> 
+> > Hmm. It's a bit ugly but given it hopefully doesn't effect that many 
+> > drivers
+> > I could probably live with it.
+> > 
+> > However, needs a patch to Documentation/ABI/testing/sysfs-bus-iio
+> > and a clear statement that this is for backwards compatibility 
+> > reasons.
+> > I don't want to see extended_name getting added to new drivers!
+> > 
+> > Jonathan
+> >   
+> >> 
+> >>  Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+> >>  ---
+> >>   drivers/iio/industrialio-core.c | 41 
+> >> +++++++++++++++++++++++++++++++++
+> >>   1 file changed, 41 insertions(+)
+> >> 
+> >>  diff --git a/drivers/iio/industrialio-core.c 
+> >> b/drivers/iio/industrialio-core.c
+> >>  index ec34d930920c..4cdf9f092d73 100644
+> >>  --- a/drivers/iio/industrialio-core.c
+> >>  +++ b/drivers/iio/industrialio-core.c
+> >>  @@ -723,6 +723,16 @@ static ssize_t iio_read_channel_label(struct 
+> >> device *dev,
+> >>   	return indio_dev->info->read_label(indio_dev, this_attr->c, buf);
+> >>   }
+> >> 
+> >>  +static ssize_t iio_read_channel_extended_name(struct device *dev,
+> >>  +					      struct device_attribute *attr,
+> >>  +					      char *buf)
+> >>  +{
+> >>  +	const struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> >>  +	const struct iio_chan_spec *chan = this_attr->c;
+> >>  +
+> >>  +	return sprintf(buf, "%s\n", chan->extend_name);
+> >>  +}
+> >>  +
+> >>   static ssize_t iio_read_channel_info(struct device *dev,
+> >>   				     struct device_attribute *attr,
+> >>   				     char *buf)
+> >>  @@ -1185,6 +1195,32 @@ static int 
+> >> iio_device_add_channel_label(struct iio_dev *indio_dev,
+> >>   	return 1;
+> >>   }
+> >> 
+> >>  +static int
+> >>  +iio_device_add_channel_extended_name(struct iio_dev *indio_dev,
+> >>  +				     struct iio_chan_spec const *chan)
+> >>  +{
+> >>  +	struct iio_dev_opaque *iio_dev_opaque = 
+> >> to_iio_dev_opaque(indio_dev);
+> >>  +	int ret;
+> >>  +
+> >>  +	if (!chan->extend_name)
+> >>  +		return 0;
+> >>  +
+> >>  +	ret = __iio_add_chan_devattr("extended_name",
+> >>  +				     chan,
+> >>  +				     &iio_read_channel_extended_name,
+> >>  +				     NULL,
+> >>  +				     0,
+> >>  +				     IIO_SEPARATE,
+> >>  +				     &indio_dev->dev,
+> >>  +				     NULL,
+> >>  +				     &iio_dev_opaque->channel_attr_list,
+> >>  +				     false);
+> >>  +	if (ret < 0)
+> >>  +		return ret;
+> >>  +
+> >>  +	return 1;
+> >>  +}
+> >>  +
+> >>   static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+> >>   					 struct iio_chan_spec const *chan,
+> >>   					 enum iio_shared_by shared_by,
+> >>  @@ -1327,6 +1363,11 @@ static int 
+> >> iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+> >>   		return ret;
+> >>   	attrcount += ret;
+> >> 
+> >>  +	ret = iio_device_add_channel_extended_name(indio_dev, chan);
+> >>  +	if (ret < 0)
+> >>  +		return ret;
+> >>  +	attrcount += ret;
+> >>  +
+> >>   	if (chan->ext_info) {
+> >>   		unsigned int i = 0;
+> >>   		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {  
+> >   
+> 
+> 
+
