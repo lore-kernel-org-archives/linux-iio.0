@@ -5,62 +5,62 @@ X-Spam-Level:
 X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BF25C49360
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 08:12:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DE72C48BE5
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 08:12:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 45567610A5
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 08:12:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC7BD613CA
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 08:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229480AbhFKIN6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Jun 2021 04:13:58 -0400
-Received: from mo4-p03-ob.smtp.rzone.de ([85.215.255.104]:36316 "EHLO
-        mo4-p03-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230280AbhFKIN6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jun 2021 04:13:58 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1623399112; cv=none;
+        id S230417AbhFKIN5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Jun 2021 04:13:57 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([81.169.146.170]:13323 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230303AbhFKINy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jun 2021 04:13:54 -0400
+ARC-Seal: i=1; a=rsa-sha256; t=1623399111; cv=none;
     d=strato.com; s=strato-dkim-0002;
-    b=eEonQJtfTPvaOpT4b3dcPpuo61oJgpLJF3jf8tmvFE7ptJ11ixvZQO+B2sIYr87ZNt
-    dj8Ub2uZUBCWTb6UM9fBgsSQMBBbTWFNQ2Fw7nc43PejTll99vS/T+4DnSeP8xDqx26g
-    Cr4MlfILLD0pNaKyKSdCXPghBPatV/xjrVRRQGUgR7+JdYwQbNeednxlH7AfCPU12dGP
-    +VYLNHLp/jLgzjmxSixPSBpucvF00xZBhaE2IfMrV1JBsKj53p0W1jLGU0HvC8PwIIwt
-    eQQi8tAiCWB5bmCMVd6mZ5Pnnmd/wqjbWX+6P9mrMkvwpXgaKHcv7uwmQGMN5yjLWaQY
-    s/nQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623399112;
+    b=Ndm1+A433l7jmzVfIfc+7Xnlkj8bU6DaiIWyq98QbWdsCc3AudKXzWH+BtByYviBWC
+    Fq3bGjJH+7WjhEC5h2ofm+hvMmLwSmQFxEzcoVOKcTQUbyFehmLy7rwhH5IKbH+uf6nj
+    JvRCjVchXqckR3FtrRcfcoaTnCK1+t7EgK16p8j3U1Q7Drs6HoWx9Fp8cYSI2GMw5Jl0
+    NlRIHiVMBBTtNYCxj76/fQcE3bYprzzPTCPhsaTsU9bxJkGLie7VKdMpONNK9FlZX1NJ
+    3AN/XwXMg8S9vqIt5E4kD/i0e2bPP2A+DWl+HVPaLDFJBN5Oar2Z3rZ9WCBG+OplkEIk
+    p9ww==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623399111;
     s=strato-dkim-0002; d=strato.com;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=mzhlFtT0uPEpgxtGsCZLk5RpPAfjBTETW3jiAJ+alHo=;
-    b=RbD3YhmKpVNTmVV7drwxwKOJhJCC3Fw+iwpS38RCL6nzIqw5gVzqlDIAgRCV0nzowH
-    2Wwv5wgSLaz3h4xwshEDOkCl8lPGQnsE8Br71qlv9FW6HDe3k3nUFo4RjiZDauIImAAx
-    ho6Z+cGNIHUKjlq7odqfAmiGxqMyRD2ZspB6omiQd0vAuJjPtPFf9j/oZnYCLE5G9T1A
-    XTFkrNk5qHb6FM87NOgwFZJB7Au+sqjzNgzd2/wfzCoaUXaejs93sW2Vcv0qJcI6uxRQ
-    E61ZlU6VW0UR+UIkqD610qJAqNvZo1458AKCEt+yp6cgfS3SPGGTQ/wSrv/O2wxcJxLP
-    0Mww==
+    bh=YsRVRxp+47703gIvv1C/lpKrQ3eC8Q5Wgd2GCgDRPm0=;
+    b=LPI3OLZVdATQCqforqYE26WPcdNeppX4XJi5NpJBi9m3p2WMgyi5qJIJGi1T5gxvz4
+    gt2eQvUz7M0JMDRFVlZ98C/E1a7RCgUOyygDiXyKSJRGnyiAuWKAUttOS6zvdcCrJ1z0
+    FXl1UtmdgADGxnwpKpoThn3DoJVLHfD5osybi5zdwL47ppVdPnyziRHp7iTx80/NUucU
+    FqEa3J39zvjUKymimlw/xegzkpSjOMQXoAlEBXiOPDDEtYQ7LeD2NE6O7ZV5lIBg8L6U
+    h4kxf7AW0ibBr7TMA0Bb1ac8A1TdwmJ1O3L0W195PlEugYTjrQVixJDPi0GrWoDCHbVs
+    2sug==
 ARC-Authentication-Results: i=1; strato.com;
     dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623399112;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623399111;
     s=strato-dkim-0002; d=gerhold.net;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=mzhlFtT0uPEpgxtGsCZLk5RpPAfjBTETW3jiAJ+alHo=;
-    b=Fn/tioDmXK0mcc0fyDASjMc/HgeDWtYoUhKz6KzTLatO8L7NemRHvSL52NGE+5S94p
-    BP2ydg8RGB2AeZiidm1kR4qMr7xDIjkUpcU3/56RCW9opI08eeSQ1tsVbsVLVmJD/Lyc
-    eemev7sQ8RBm7SGr/lGF57y5Kq6v9ehvibNdSs+oQSmsa0tTZ45FsJtaD2OK9ZDlvalR
-    PzHqp3sZbMQfj/gfIgxRGiphCxZ/IAs60B2OmP7pS070SHjrKr/OodkOva/oRqhl5H/V
-    R279lOZ3oCpUFvHIXYxdxSnL9bsbEk4JkFZrtto2yoPOt+crbw25aU5H2FhJBT00lJ1l
-    Njow==
+    bh=YsRVRxp+47703gIvv1C/lpKrQ3eC8Q5Wgd2GCgDRPm0=;
+    b=hUZzD4IjIiBG2hQOktTUkdcD5Y2evS9FjDq444LHMEv+wTJq7XLJoKmc7iTSkk1mjg
+    jCR8nUzZUV7wDlt0WALrXaLKQ8KSJLJWcXG7FlAp54iHDuf0K6YZ4lbv9IBH2mriXYBg
+    q7UMt15IFpIzgi35NA9EpiYmE8iXJoeh9sSeN1JeenVkft3CAkuwRqiGwBGcYGu7mj/m
+    H1s0HVoX+LhthjyZ5TMtDThNQVq89h+lUgsQgaBHUcZiI3YGPOpZHTdBKfPBwgcaoBRb
+    MfW0G6YO4Z3dDB1J4cUeWDi4KHr9wjdF/aNgJ/XxdDNXWDhjkeXQ+07sFVT+tTD4LZir
+    MM3g==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxA6m6PrPw="
 X-RZG-CLASS-ID: mo00
 Received: from droid..
     by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
-    with ESMTPSA id y01375x5B8Bq02k
+    with ESMTPSA id y01375x5B8Bo02h
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Fri, 11 Jun 2021 10:11:52 +0200 (CEST)
+    Fri, 11 Jun 2021 10:11:50 +0200 (CEST)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -72,9 +72,9 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         ~postmarketos/upstreaming@lists.sr.ht,
         Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH v3 06/10] dt-bindings: iio: accel: bma255: Document bosch,bma253
-Date:   Fri, 11 Jun 2021 10:08:59 +0200
-Message-Id: <20210611080903.14384-7-stephan@gerhold.net>
+Subject: [PATCH v3 04/10] iio: accel: bmc150: Drop duplicated documentation of supported chips
+Date:   Fri, 11 Jun 2021 10:08:57 +0200
+Message-Id: <20210611080903.14384-5-stephan@gerhold.net>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210611080903.14384-1-stephan@gerhold.net>
 References: <20210611080903.14384-1-stephan@gerhold.net>
@@ -84,29 +84,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-BMA253 is mostly like BMA255 that is already supported by the
-bmc150-accel driver. Document an extra bosch,bma253 compatible for it.
+The chips supported by the bmc150-accel driver are clearly documented
+in Kconfig, in the bmc150_accel_chip_info_tbl as well as in all the
+device ID tables in the I2C/SPI drivers. It's easy to forget to update
+the lists in the file header. Drop those entirely to reduce the amount
+of changes required to add new chip variants.
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Reviewed-by: Hans de Goede <hdegoede@redhat.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 ---
- Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml | 1 +
- 1 file changed, 1 insertion(+)
+Changes in v3: Add Andy's Reviewed-by
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
-index c2efbb813ca2..8afb0fe8ef5c 100644
---- a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
-+++ b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
-@@ -18,6 +18,7 @@ properties:
-     enum:
-       - bosch,bmc150_accel
-       - bosch,bmi055_accel
-+      - bosch,bma253
-       - bosch,bma255
-       - bosch,bma250e
-       - bosch,bma222
+New patch in v2. Originally I tried to reorder those too but then it
+caused conflicts in all my following patches so I'm not convinced
+it's worth to try and keep those up to date.
+---
+ drivers/iio/accel/bmc150-accel-core.c | 10 +---------
+ drivers/iio/accel/bmc150-accel-i2c.c  | 10 +---------
+ 2 files changed, 2 insertions(+), 18 deletions(-)
+
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 9ecbd3769593..4b5caa89a3b4 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -1,14 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * 3-axis accelerometer driver supporting following Bosch-Sensortec chips:
+- *  - BMC150
+- *  - BMI055
+- *  - BMA255
+- *  - BMA250E
+- *  - BMA222
+- *  - BMA222E
+- *  - BMA280
+- *
++ * 3-axis accelerometer driver supporting many Bosch-Sensortec chips
+  * Copyright (c) 2014, Intel Corporation.
+  */
+ 
+diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
+index b8bda0dfb495..a0e2782580b7 100644
+--- a/drivers/iio/accel/bmc150-accel-i2c.c
++++ b/drivers/iio/accel/bmc150-accel-i2c.c
+@@ -1,14 +1,6 @@
+ // SPDX-License-Identifier: GPL-2.0-only
+ /*
+- * 3-axis accelerometer driver supporting following I2C Bosch-Sensortec chips:
+- *  - BMC150
+- *  - BMI055
+- *  - BMA255
+- *  - BMA250E
+- *  - BMA222
+- *  - BMA222E
+- *  - BMA280
+- *
++ * 3-axis accelerometer driver supporting many I2C Bosch-Sensortec chips
+  * Copyright (c) 2014, Intel Corporation.
+  */
+ 
 -- 
 2.32.0
 
