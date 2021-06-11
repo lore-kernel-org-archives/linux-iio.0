@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E03B2C48BE0
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 15:24:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A0FCC48BE8
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 15:24:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C2D9C613EE
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 15:24:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7F6666140B
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 15:24:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231757AbhFKP0b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Jun 2021 11:26:31 -0400
-Received: from mail.kernel.org ([198.145.29.99]:58626 "EHLO mail.kernel.org"
+        id S231559AbhFKP0d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Jun 2021 11:26:33 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58698 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231694AbhFKP0Y (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 11 Jun 2021 11:26:24 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id E173B613FA;
-        Fri, 11 Jun 2021 15:24:24 +0000 (UTC)
+        id S231732AbhFKP03 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 11 Jun 2021 11:26:29 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B4CF661403;
+        Fri, 11 Jun 2021 15:24:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623425066;
-        bh=FBJKy5tann1grvl0yu2wQXYgMfNnyiJwMR2/bOESKWA=;
+        s=k20201202; t=1623425071;
+        bh=dMk1apYHGU35BIbC57L7mRT5u/LZgR2A9rwZfev9o4c=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bAwktObW2fCA50iLbgk2UcalfzsIUH8kd6ISuGkQZnFtujvTMNuI3duF4UaUguvvg
-         24TWeZ8MrKnuLcQjF9vcoT0fjLHNAPr+bb36cj0TAAtAX+q6ymGj7FpIKt/53QzI/n
-         QDYejhc2BXGu3xua5gD1d5TK91gaFrxnxFQVEtijymF/4R39E9Y0FgW0v4sEG4XMc8
-         644A6UbKv+jIne54Fa6m6kMSEfstG9LYY+C4lRHYZBYgFsXqa1XaSzfg/Yb75kUYNb
-         YoTDNnYjiLpgmiNNFDNb4GcrRjmFagY+5bCSvW1GhWdJEKGyjmRrvT1osfOZb8IcpY
-         dbqCRy9Lm0OLg==
+        b=iaOSx14J1UTNIR8WI92204WqNxv48iYVgxN92+j3G5Pe0nBWoUHEq++fGCedjTUyx
+         JrP9yLmUgGv6RRJKFoIyky2WtuO1IYzSczFI99JPMV0ANo0yVOEnQU8sHq+BkN9S7x
+         32R+mGuouA1YhqZEXGMA8GypHI8nlTm2jmY/5SFio/81Hp4inVzinMgeLUaE3fR0hn
+         mpQxZ4Iv8Cp8NaRsSr2gDht/WvMYANzz1+Rryy786fCogpBePa5rtIV3vht6SsJTKl
+         3FBfGDYeDpQ/0MRKZ7hXtzsPxZYRypljOBa10d3LBNXVw1Fz/ZzrJLyGVU37Vt4A7A
+         EeP6ifnu/mBZw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Nuno Sa <Nuno.Sa@analog.com>, Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 2/7] staging:iio:addac:adt7316: Cleanup includes
-Date:   Fri, 11 Jun 2021 16:26:09 +0100
-Message-Id: <20210611152614.109361-3-jic23@kernel.org>
+Subject: [PATCH 4/7] staging:iio:frequency: Cleanup includes
+Date:   Fri, 11 Jun 2021 16:26:11 +0100
+Message-Id: <20210611152614.109361-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.31.1
 In-Reply-To: <20210611152614.109361-1-jic23@kernel.org>
 References: <20210611152614.109361-1-jic23@kernel.org>
@@ -50,47 +50,55 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Result of consideration of the output of the include-what-you-use
-tool.  Also a forwards definition of device to avoid any
-ordering of headers issues.
+Based on consideration of the output of the include-what-you-use
+tool.  Remove some unused headers and add some that should be
+directly included.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/addac/adt7316.c | 5 -----
- drivers/staging/iio/addac/adt7316.h | 1 +
- 2 files changed, 1 insertion(+), 5 deletions(-)
+ drivers/staging/iio/frequency/ad9832.c | 3 ++-
+ drivers/staging/iio/frequency/ad9834.c | 6 ++----
+ 2 files changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index ccbafcaaf27e..e81791ee182f 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -8,14 +8,9 @@
- #include <linux/interrupt.h>
- #include <linux/gpio/consumer.h>
- #include <linux/irq.h>
+diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+index 3f1981e287f5..2d78072ff4c3 100644
+--- a/drivers/staging/iio/frequency/ad9832.c
++++ b/drivers/staging/iio/frequency/ad9832.c
+@@ -12,8 +12,9 @@
+ #include <linux/err.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/mutex.h>
+ #include <linux/regulator/consumer.h>
+-#include <linux/slab.h>
+ #include <linux/spi/spi.h>
+ #include <linux/sysfs.h>
+ 
+diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+index 94b131ef8a22..c163e91c1bc4 100644
+--- a/drivers/staging/iio/frequency/ad9834.c
++++ b/drivers/staging/iio/frequency/ad9834.c
+@@ -6,17 +6,15 @@
+  */
+ 
+ #include <linux/clk.h>
+-#include <linux/interrupt.h>
 -#include <linux/workqueue.h>
  #include <linux/device.h>
  #include <linux/kernel.h>
 -#include <linux/slab.h>
  #include <linux/sysfs.h>
 -#include <linux/list.h>
--#include <linux/i2c.h>
--#include <linux/rtc.h>
+ #include <linux/spi/spi.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/err.h>
  #include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/mutex.h>
+ #include <asm/div64.h>
  
  #include <linux/iio/iio.h>
-diff --git a/drivers/staging/iio/addac/adt7316.h b/drivers/staging/iio/addac/adt7316.h
-index 8c2a92ae7157..a1f6324ead59 100644
---- a/drivers/staging/iio/addac/adt7316.h
-+++ b/drivers/staging/iio/addac/adt7316.h
-@@ -10,6 +10,7 @@
- 
- #include <linux/types.h>
- #include <linux/pm.h>
-+struct device;
- 
- #define ADT7316_REG_MAX_ADDR		0x3F
- 
 -- 
 2.31.1
 
