@@ -5,62 +5,60 @@ X-Spam-Level:
 X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 988F6C48BE6
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 521F2C48BE0
 	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 08:11:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 76C0E610A5
+	by mail.kernel.org (Postfix) with ESMTP id 361BC610A5
 	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 08:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230370AbhFKINx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Jun 2021 04:13:53 -0400
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.82]:14489 "EHLO
-        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229480AbhFKINw (ORCPT
+        id S230288AbhFKINw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Jun 2021 04:13:52 -0400
+Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.51]:13871 "EHLO
+        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230303AbhFKINw (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jun 2021 04:13:52 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1623399110; cv=none;
+ARC-Seal: i=1; a=rsa-sha256; t=1623399108; cv=none;
     d=strato.com; s=strato-dkim-0002;
-    b=rJa0CXJtOpSU3lL0pYynb+ui++EASJ1G6AmKy0260etToyFvutnyoZaZF4zUS7uBXh
-    J9gcTevKK1Sq6Azox6FB3TwhooJzc0zdsKp7l2OgHWWEZ164timtd/QSjW55nV19pfOd
-    MlmoQg5KrjxroDv6EiLOairmLkqtmbHA0j5kwC0a16+pMy1T6GEvCJrIT6HQk4oC8u/U
-    YvB40/AExeaNAznJA8nSZ9WQ3CPn74oL+TxrYwfyIUyJ0AEevVVCqpmTciQsIlspVLca
-    Dytk4kbaTzwHR+nCm/LCWwJl00YSuwGQmkCLoUFfKqhJpEdTVE52mQKiFn43kZTzSruU
-    NntQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623399109;
+    b=Yhp1ufU+plb2w7ndSSjd2McDW/6O3DBp8XIN/WdNrZAiQzUxUNln0V8np/bUxgbByI
+    9zO7NDfsznUHs4H7pktf2d5MydrDWU4FM3uaRI3sWhkdBEdPAXWaArt3aLYMHQzg1xEV
+    UgDfLLYrrfMqa3tYVbHk/EBA3fChCkBqRlqLztFDf2gZmNv7LbEzGoOoTBEMX5heBZSi
+    g7tmIt/b8VkxO2nX7OFvp7wya227UMhqBBKlEhL6s3yUmdzhfc4dkAf6B0cIf1EQgpqj
+    srKN+dWweb747WQceLCcBNDJZ4Iz3qbVT23ZSo7F54PNgcVTMfD2ND3T7JyBkW0uFN0Z
+    MWqg==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623399108;
     s=strato-dkim-0002; d=strato.com;
-    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
-    From:Subject:Sender;
-    bh=XVO1Fa7dnQ7VmFIdDutm31MOJ1IonHZYQtHo+zuFpGo=;
-    b=rKUhzoIaxmJBanuFKZUWjGpvtTbekcInLHmty4aYVv7Vh4UVSLeWJ3J7Qy97iJ25TH
-    vOa5to0AxURw1BohGZM5yMBeTl5pl9HnGRaK4JT2iWANHqYpCbJ8+Xhr2nZMqNOzowtX
-    DxXUH4VSj+ffrGfB1L9wj2SW+RLR0EWIpJHrDA2dbWdfEEVwcZ80cOtefv8peHn2znZI
-    KzviYnZqk2goLdSbL+J0kd6elDJZjP4Vkf8372qct3EshMICwo30y7cCLlawJ91sNn6o
-    YZJGOAx2fjH9q1BjtACYOHfuWdqT8k3iMwRpcBsW1eKq5Jf5kKMLfXyVWY303rL0Zbya
-    qq3w==
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=kuM4h7mC8y5z6aurlPPcWWagOJ8KT3YnyvYk99jtCiQ=;
+    b=NWF1Np+K1GBG0HY00wFIhrjCpMG7Kp4cDZXag2lzQr3oFLGuoGqZ34Jl3j/BxFFehs
+    dxPRM0+UXf/CL8UXhE8xF0g6CnWQp9JPUvrZkY2E+DvBH7EvMxFQ73vwTX8OPnv1xQ4C
+    hPWank7Vlnn6KccW6YRSMCdEju/Dw5Lm7xeS6G6xuNX/Wgzir/isd3Y5Q+n6N8yqTwAY
+    xPW8mwDNV8WRhLn/GNzoBwM3q9umgN2Taza0Ju18RPW6e3j3sKcWSxHZg4WoXdfZfivJ
+    Z70v+isjT67DoZjD3RqsaiLgABGgu4uNLir0XCOqKqgqFXzc5BcTqwYqotath3rfrPZX
+    eWbQ==
 ARC-Authentication-Results: i=1; strato.com;
     dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623399109;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623399108;
     s=strato-dkim-0002; d=gerhold.net;
-    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
-    From:Subject:Sender;
-    bh=XVO1Fa7dnQ7VmFIdDutm31MOJ1IonHZYQtHo+zuFpGo=;
-    b=hzaE7+q1J1josNiE/mHK7Cmt6L8/UInr+uIPhqOjo1jEZqi0dprB9M0BX11v9XQ8Yh
-    gpb7/AWMX8qYdZ/xlDTunQk8Ajfuc4DC+Wu74QmXUuvTjkt+KEYA+/NxmMBESXth4SvB
-    L5VaO858V8rlVi0aDlUBxuHGUkWplXKjZbl1RgbozB5XDxPZhogmqayO86AzdvcFgBfo
-    TkrEIFqad8eLbR1yARrjoqEkYHSwRXq3k8mw7vOcXrh/Bq1F559eY8OiOELNvia4odmS
-    92Bc7B9kDMzvIyBYsghBCt3kRiK3wkPLUyhTglpF+cc0mtBHglWmJo8zfYY27GVyhBtV
-    wOQw==
+    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
+    bh=kuM4h7mC8y5z6aurlPPcWWagOJ8KT3YnyvYk99jtCiQ=;
+    b=XzhQsc8DUz71eqnxYECB2t6h2quPB/gMATka+7qRLSnhBj+Smner5e6KQUaQcj1tvP
+    qBO1f2yaFAiRxj8o6QmH4Fo2wSZyklnB93jfbrTUPYXjlK29IUKWz/VP8TueGZzxyVSg
+    7X+Od0URCoCLSuB3CsIrvtS41WN/32ksreIhpDcSjkPykcHcYaq8DM3GlVknf9znuXS7
+    Cf9Cd7MUPatK4p7frlVNPmo00ndnn0WO3qcpWvGzTXQ1psREPoRItoVkaW48ZW5kRRgI
+    hjQJfVvbHZqVRYKnTcr6sP2UUIu2RhWcUmnQD+utSmGyqUpG/WZUqH5JGzXs6zW6bB3E
+    7Zpw==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxA6m6PrPw="
 X-RZG-CLASS-ID: mo00
 Received: from droid..
     by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
-    with ESMTPSA id y01375x5B8Bn02e
+    with ESMTPSA id y01375x5B8Bl02c
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Fri, 11 Jun 2021 10:11:49 +0200 (CEST)
+    Fri, 11 Jun 2021 10:11:47 +0200 (CEST)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -72,55 +70,67 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         ~postmarketos/upstreaming@lists.sr.ht,
         Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH v3 02/10] iio: accel: bmc150: Clarify combo modules in Kconfig
-Date:   Fri, 11 Jun 2021 10:08:55 +0200
-Message-Id: <20210611080903.14384-3-stephan@gerhold.net>
+Subject: [PATCH v3 00/10] iio: accel: bmc150: Add support for BMA253/BMA254
+Date:   Fri, 11 Jun 2021 10:08:53 +0200
+Message-Id: <20210611080903.14384-1-stephan@gerhold.net>
 X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210611080903.14384-1-stephan@gerhold.net>
-References: <20210611080903.14384-1-stephan@gerhold.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The Kconfig option currently says that all Bosch accelerometers
-supported by the bmc150-accel driver are combo chips with both
-accelerometer and magnetometer. This is wrong: actually only BMC150
-is such a combo. The BMA* variants only contain an accelerometer
-and the BMI055 actually is a accelerometer + gyroscope combo.
+The Bosch BMA253 accelerometer is very similar to both BMA254 and BMA255.
+The current situation is very confusing: BMA254 is supported by the bma180
+driver, but BMA255 is supported by the bmc150-accel driver.
 
-Clarify this in the help text and also make the list of supported
-variants complete and sorted for consistency.
+It turns out the bma180 and bmc150-accel drivers have quite some overlap,
+and BMA253/BMA254 would be a bit better supported in bmc150-accel
+(which has support for the motion trigger/interrupt).
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+This series adds BMA253 support to bmc150-accel and also moves BMA254
+over to bmc150, removing some unnecessary code from the bma180 driver.
+
+In v2 I also sneaked in a small fix for the scale table of BMA222
+to simplify backporting for the stable people.
+
 ---
-New patch in v3 after discussion in
-[PATCH v2 4/9] iio: accel: bmc150: Sort all chip names alphabetically / by chip ID
----
- drivers/iio/accel/Kconfig | 7 +++++--
- 1 file changed, 5 insertions(+), 2 deletions(-)
+Changes in v3:
+  - Add new "iio: accel: bmc150: Clarify combo modules in Kconfig" patch
+  - Sort "one-line" chip name lists as well, not just multi-line ones
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 17f6bdcf1db3..cbca6ab7da88 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -143,9 +143,12 @@ config BMC150_ACCEL
- 	select BMC150_ACCEL_SPI if SPI
- 	help
- 	  Say yes here to build support for the following Bosch accelerometers:
--	  BMC150, BMI055, BMA250E, BMA222E, BMA255, BMA280.
-+	  BMA222, BMA222E, BMA250E, BMA255, BMA280, BMC150, BMI055.
-+
-+	  Note that some of these are combo modules:
-+	    - BMC150: accelerometer and magnetometer
-+	    - BMI055: accelerometer and gyroscope
- 
--	  This is a combo module with both accelerometer and magnetometer.
- 	  This driver is only implementing accelerometer part, which has
- 	  its own address and register map.
- 
+v2: https://lore.kernel.org/linux-iio/20210610122126.50504-1-stephan@gerhold.net/
+Changes in v2:
+  - Add new "iio: accel: bmc150: Fix bma222 scale unit" patch at the
+    beginning so the stable people can backport it without conflicts
+  - Add Reviewed-by: from Hans and Andy for all previous patches
+  - Add patch 3 and 4 to have all the chip lists in a consistent order
+  - Fix last patch to also drop BMA254 from the file header in bma180.c
+
+v1: https://lore.kernel.org/linux-iio/20210610095300.3613-1-stephan@gerhold.net/
+
+Stephan Gerhold (10):
+  iio: accel: bmc150: Fix bma222 scale unit
+  iio: accel: bmc150: Clarify combo modules in Kconfig
+  iio: accel: bmc150: Drop misleading/duplicate chip identifiers
+  iio: accel: bmc150: Drop duplicated documentation of supported chips
+  iio: accel: bmc150: Sort all chip names alphabetically / by chip ID
+  dt-bindings: iio: accel: bma255: Document bosch,bma253
+  iio: accel: bmc150: Add device IDs for BMA253
+  dt-bindings: iio: bma255: Allow multiple interrupts
+  dt-bindings: iio: accel: bma180/bma255: Move bma254 to bma255 schema
+  iio: accel: bma180/bmc150: Move BMA254 to bmc150-accel driver
+
+ .../bindings/iio/accel/bosch,bma180.yaml      |  3 +-
+ .../bindings/iio/accel/bosch,bma255.yaml      |  9 +-
+ drivers/iio/accel/Kconfig                     | 11 ++-
+ drivers/iio/accel/bma180.c                    | 92 +++----------------
+ drivers/iio/accel/bmc150-accel-core.c         | 87 ++++++------------
+ drivers/iio/accel/bmc150-accel-i2c.c          | 52 +++++------
+ drivers/iio/accel/bmc150-accel-spi.c          | 31 ++++---
+ drivers/iio/accel/bmc150-accel.h              | 10 --
+ 8 files changed, 98 insertions(+), 197 deletions(-)
+
 -- 
 2.32.0
 
