@@ -2,203 +2,169 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C30C48BE0
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 18:28:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A649C48BD1
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 18:36:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C80A4608FE
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 18:28:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2F014611CD
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Jun 2021 18:36:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229937AbhFKS36 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Jun 2021 14:29:58 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.52]:35252 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229814AbhFKS36 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jun 2021 14:29:58 -0400
-ARC-Seal: i=1; a=rsa-sha256; t=1623436075; cv=none;
-    d=strato.com; s=strato-dkim-0002;
-    b=igPW7lQGUuQRWmFTJtQvDwkSnkC/EvgJg6R/P0n5HSaObz5ewrTZLzH3yEkkx/O6a4
-    ZRr9n5udOo69bniIpU9aKYkVSi8G0nkfmQt69PE6QIClvW4Zxm2CGHsdPu5/L9GmPxxn
-    E/wTwCRkeH0CI5cx6aAdQtxbgB3DkiGmnFid288nxu7kn8f47Mxe6xBkaRqk+VqrVwj5
-    pX+pbBGytCT9oJ6kJ8BwBVbYqReVrsaJM3IbuGKZkEvFrZaPtqH3dLM10kReGRl3iLac
-    P+PktyieVm2hxxH6K98T/3FGQZYm9qNnUXPi8xQR8FXMVBSw6TZpngMmE2Sa/PXUm8JF
-    yBKQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; t=1623436075;
-    s=strato-dkim-0002; d=strato.com;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=1KirUKRlkIwbATC5H+deJHDf5dhhOMKA19Bn9NBavm8=;
-    b=NmWiwhQcF/4VBKhivtmJjiCIbLu1TqijXtE7YKgCD/iYvaPor1nyo2C/wrSW+f+UcU
-    dAziJkFQljr+z49OALlM6xR5Uc0HAu5WVBdyeV9Hn7ynqdHxKCL0WinnvFEOIIJOd7DT
-    pxS3ZwsHTGNc0X52Ef4A1XBP9REScEZRn1eMe2uyAneqXfqorpL4jeYYo7Z5r1U8Z2M+
-    lL7/eZc/jShJCc16SRk0Vg9j+Fn5CZV3tv9ctxKy+8BiRrU1Hwj+C0HpQlha3HxHU8Rn
-    +v6XQI6Dd54DQuClztSAqBCvE8NGpWqqi00dJpNQCy3rUWE35oQrarLxZLDsRgqnXxqq
-    qlKQ==
-ARC-Authentication-Results: i=1; strato.com;
-    dkim=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1623436075;
-    s=strato-dkim-0002; d=gerhold.net;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=1KirUKRlkIwbATC5H+deJHDf5dhhOMKA19Bn9NBavm8=;
-    b=QJonljpdWkWepNL4o3J2Aap88YXks3TYC8gdayZhflfAZr+oLAhveihLh1keK1o99A
-    PIUNlDzLJUrjM7XCaaYboN2eAIXg9k9Bvu5HwO1yeYEZ3aspbth9a99O7mtVUNYSwphZ
-    SMdKxuFIEG4OBhZKLEt9Cf60TgxQ1h75FPTe1bGqPAvHDeVRFMIoYpDU2hk96eg7BoLW
-    VkrB0PCVreLkCDYaCwL1JMV6k2SeoqZNO2LdyB/8dRI3KuCAh2BSfIx7EXBtYE7g1DJn
-    lu3z+F2BtLOPQv8Og+fI530xTe7zNjMoWOHAnrE24YEJDewdXQcg9Oyst8YT9ZQqkWYL
-    AX8g==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxA6m6PrPw="
-X-RZG-CLASS-ID: mo00
-Received: from droid..
-    by smtp.strato.de (RZmta 47.27.2 DYNA|AUTH)
-    with ESMTPSA id y01375x5BIRs2oo
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Fri, 11 Jun 2021 20:27:54 +0200 (CEST)
-From:   Stephan Gerhold <stephan@gerhold.net>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH] iio: accel: bmc150: Use more consistent and accurate scale values
-Date:   Fri, 11 Jun 2021 20:24:42 +0200
-Message-Id: <20210611182442.1971-1-stephan@gerhold.net>
-X-Mailer: git-send-email 2.32.0
+        id S230368AbhFKSiW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Jun 2021 14:38:22 -0400
+Received: from mail-pf1-f169.google.com ([209.85.210.169]:37710 "EHLO
+        mail-pf1-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230136AbhFKSiV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Jun 2021 14:38:21 -0400
+Received: by mail-pf1-f169.google.com with SMTP id y15so5140989pfl.4
+        for <linux-iio@vger.kernel.org>; Fri, 11 Jun 2021 11:36:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=fUJ/xZBWi0+o7KXMJRxhVHE2e0Kp2d40e+j1QkoMD9g=;
+        b=G7uZSSfrA8wQ7E0AwR8amZVJDx6iDbGbEMBHkOEYazk38cxpEWX+L+c+Mgogg9vait
+         VVKUFtuCDcJOPw5v6LoKl1gMDDB82rn0P/FUcTZ/wPz5U8gYfHZp+693gf+RhZfzGK/t
+         fTZnwJfgOFcjtaYCP2ELWIhXpSNwFoei5AOaf5bDePcrlzQVBjowjMVYSicRZcKkWTOF
+         wFYpQP25cimlj1zXIBcLhPicOyDXA6SxTFNmVXRia0EmIHQPADysFVb3KT19dcEZtiwi
+         ILkQSVMBdv+qpb8lDOEJMWhj5Jw3hrs0k0/mZtBJ1xpkbwv584wxG/r4Iyw0hiWwd1FX
+         emMQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=fUJ/xZBWi0+o7KXMJRxhVHE2e0Kp2d40e+j1QkoMD9g=;
+        b=YuUtNTIMKIJifLtrzXGOonALKZfO/OQvjGx4otT1A39ICT7rEfWHxzJu4ZbTYHkAJF
+         ToAH2l9DgFZsYpR+4JAtIt4Klk3sgUrmJDtlBh3tzB80hljFO69zVsdTiwNcipsQv4F2
+         ARwZBipjyJINIc2KmsWnJARH+tX0p77s7qlRTiq6f4cH05Cc6INP5RjpSQOValg/soh9
+         5PmYQtUy4vY90z1WrBEeQAqqWZ0o4THx27E1rOYc3R3DB2A3KCZCLit4kD1OXzAozLE/
+         9pwxU3yhXs2PMyvrZWucpxnUh9wSyRyHIAnjlCjEogkAdXGl1qq1WLw5JeZk7g+f3IAF
+         p6UQ==
+X-Gm-Message-State: AOAM531hTMP+WhqN/niTqunVKZ1RnyW7E7UbT4wMqCOVFiknSA2ac68x
+        z4+YvF3e6G6H3aGKyswXN6FriaViedN1Btdz/srmsSsmmeY=
+X-Google-Smtp-Source: ABdhPJye/tyA93T3ZSc+gzhuQqmsbU6p/5til/xgVhY1Q8QycqsRaB+VGNeXmaY3nb394oEmQB1QQ60j9ldTkGfV4Fc=
+X-Received: by 2002:a05:6a00:a1e:b029:2e2:89d8:5c87 with SMTP id
+ p30-20020a056a000a1eb02902e289d85c87mr9655914pfh.73.1623436523497; Fri, 11
+ Jun 2021 11:35:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210611171355.202903-1-jic23@kernel.org> <CAHp75VdXBQ6FryYrizD=Aw1PPWpLw=2wE-z3vyvwT1A7Ks-Rsw@mail.gmail.com>
+ <20210611192303.755392d1@jic23-huawei>
+In-Reply-To: <20210611192303.755392d1@jic23-huawei>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 11 Jun 2021 21:35:06 +0300
+Message-ID: <CAHp75Vf4DkjGPyneWbOqY-8SC=iSn2V1C3-Vm-batF8wCq=eCw@mail.gmail.com>
+Subject: Re: [PATCH 00/12] iio:accel: Header Cleanups.
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Aleksei Mamlin <mamlinav@gmail.com>,
+        Dan Robertson <dan@dlrobertson.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Harinath Nampally <harinath922@gmail.com>,
+        Jelle van der Waa <jelle@vdwaa.nl>,
+        Jonathan Bakker <xc-racer2@live.ca>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Sean Nyekjaer <sean@geanix.com>,
+        Tomas Melin <tomas.melin@vaisala.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-It is quite strange that BMA222 and BMA222E have very close, yet
-subtly different values in their scale tables. Comparing the datasheets
-this is simply because the "Resolution" for the different measurement
-ranges are documented with different precision.
+On Fri, Jun 11, 2021 at 9:21 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Fri, 11 Jun 2021 20:48:08 +0300
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+>
+> > On Fri, Jun 11, 2021 at 8:14 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> > >
+> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > >
+> > > 0-day recently started running the include-what-you-use checker with LLVM builds.
+> > > After it identified a header we should have dropped in a particular patch,
+> > > I decided to experiment with it a little and see if it was useful for tidying
+> > > up includes that have gotten rather out of sync with the code over the years.
+> > >
+> > > Note the tool is something I'd only advocate using to give you hints on what
+> > > might want adjusting so each of these was done by hand inspection.
+> > >
+> > > I've grouped them by manufacturer as otherwise we would have a lot of patches.
+> > > Note that the big 'many device / device type' drivers have been done separately
+> > > so you won't see them in this series.
+> > >
+> > > I'm rather hoping this approach may ease getting reviews of these, but we
+> > > shall see.  If people have time to look at ones I haven't directly cc'd them
+> > > on that would be great. There are some drivers touched in here where I don't
+> > > know of a current maintainer.
+> >
+> > Same comment as per staging series.
+> >
+> > I know that kernel.h provides some crucial everywhere used macros /
+> > helpers which are in the TODO list to be split.
+> >
+> > I would recommend dropping kernel.h from the drivers and see what's missed.
+> >
+> > These series probably need to be based on splitting out container_of()
+> > and ARRAY_SIZE() first.
+>
+> Tool obligingly tells me at least one item from kernel.h and you have
+> the correct pair (occasionally it's the kernel specific string routines).
+> e.g.
+>  #include "linux/kernel.h"                         // for kstrtouint, ARRAY_SIZE
 
-For example, for +-2g the BMA222 datasheet [1] suggests a resolution
-of 15.6 mg/LSB, while the BMA222E datasheet [2] suggests 15.63 mg/LSB.
+Oh yes, kstrtox.h should be born (I have even somewhere in my tree the
+preliminary split).
 
-Actually, there is no need to rely on the resolution given by the Bosch
-datasheets. The resolution and scale can be calculated more consistently
-and accurately using the range (e.g. +-2g) and the channel size (e.g. 8 bits).
+> > So, no tag from me for now (but I like the idea in general, and thanks
+> > for looking into this).
+> >
+>
+> The tool is rather a blunderbuss for this job which makes it rather time
+> consuming to use.
+>
+> Splitting kernel.h up is a step beyond where I'm interested in going
+> at this stage because it's sure to involve a lot of bike shedding.
 
-Distributing 4g (-2g to 2g) over 8 bits results in an exact resolution
-of (4g / 2^8) = 15.625 mg/LSB which is the same value as in both datasheets,
-just slightly more accurate. Multiplying g = 9.80665 m/s^2 we get a more
-accurate value for the IIO scale table.
+Not really. There is a kind of consensus about the mentioned
+container_of() and ARRAY_SIZE() and similar to be split out from
+kernel.h.
 
-Generalizing this we can calculate the scale tables more accurately using
-(range / 2^bits) * g * 10^6 (because of IIO_VAL_INT_PLUS_MICRO).
+But I understand you and not insisting that you have to go with it. My
+point is that...
 
-Document this and make the scale tables more consistent and accurate
-for all the variants using that formula. Now the scale tables for
-BMA222 and BMA222E are consistent and probably slightly more accurate.
+> I 'could' just drop the kernel.h where added on the basis we were clearly
+> getting it indirectly. I've not included a whole bunch of other suggestions
+> on that basis.
 
-[1]: https://media.digikey.com/pdf/Data%20Sheets/Bosch/BMA222.pdf
-[2]: https://www.mouser.com/datasheet/2/783/BST-BMA222E-DS004-06-1021076.pdf
+(Which is probably not a good idea, because explicit in this case is
+better than implicit, i.e. kernel.h is not guaranteed to be included
+by other headers and I have long standing work to actually make sure
+that most of the headers won't require kernel.h!)
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
----
- drivers/iio/accel/bmc150-accel-core.c | 46 ++++++++++++++-------------
- 1 file changed, 24 insertions(+), 22 deletions(-)
+> Note I didn't include a whole bunch of other headers on the basis
+> they were a bit more esoteric.
+>
+> To give an idea of how noisy this is here's the output another file...
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 43aecd4bf3a4..5ce384ebe6c7 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -1088,19 +1088,21 @@ static const struct iio_chan_spec bmc150_accel_channels[] =
- static const struct iio_chan_spec bma280_accel_channels[] =
- 	BMC150_ACCEL_CHANNELS(14);
- 
-+/*
-+ * The range for the Bosch sensors is typically +-2g/4g/8g/16g, distributed
-+ * over the amount of bits (see above). The scale table can be calculated using
-+ *     (range / 2^bits) * g = (range / 2^bits) * 9.80665 m/s^2
-+ * e.g. for +-2g and 12 bits: (4 / 2^12) * 9.80665 m/s^2 = 0.0095768... m/s^2
-+ * Multiply 10^6 and round to get the values listed below.
-+ */
- static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
- 	{
- 		.name = "BMA222",
- 		.chip_id = 0x03,
- 		.channels = bma222e_accel_channels,
- 		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
--		/*
--		 * The datasheet page 17 says:
--		 * 15.6, 31.3, 62.5 and 125 mg per LSB.
--		 * IIO unit is m/s^2 so multiply by g = 9.80665 m/s^2.
--		 */
--		.scale_table = { {152984, BMC150_ACCEL_DEF_RANGE_2G},
--				 {306948, BMC150_ACCEL_DEF_RANGE_4G},
-+		.scale_table = { {153229, BMC150_ACCEL_DEF_RANGE_2G},
-+				 {306458, BMC150_ACCEL_DEF_RANGE_4G},
- 				 {612916, BMC150_ACCEL_DEF_RANGE_8G},
- 				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
- 	},
-@@ -1109,9 +1111,9 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
- 		.chip_id = 0xF8,
- 		.channels = bma222e_accel_channels,
- 		.num_channels = ARRAY_SIZE(bma222e_accel_channels),
--		.scale_table = { {153277, BMC150_ACCEL_DEF_RANGE_2G},
--				 {306457, BMC150_ACCEL_DEF_RANGE_4G},
--				 {612915, BMC150_ACCEL_DEF_RANGE_8G},
-+		.scale_table = { {153229, BMC150_ACCEL_DEF_RANGE_2G},
-+				 {306458, BMC150_ACCEL_DEF_RANGE_4G},
-+				 {612916, BMC150_ACCEL_DEF_RANGE_8G},
- 				 {1225831, BMC150_ACCEL_DEF_RANGE_16G} },
- 	},
- 	{
-@@ -1119,30 +1121,30 @@ static const struct bmc150_accel_chip_info bmc150_accel_chip_info_tbl[] = {
- 		.chip_id = 0xF9,
- 		.channels = bma250e_accel_channels,
- 		.num_channels = ARRAY_SIZE(bma250e_accel_channels),
--		.scale_table = { {38344, BMC150_ACCEL_DEF_RANGE_2G},
--				 {76590, BMC150_ACCEL_DEF_RANGE_4G},
--				 {153277, BMC150_ACCEL_DEF_RANGE_8G},
--				 {306457, BMC150_ACCEL_DEF_RANGE_16G} },
-+		.scale_table = { {38307, BMC150_ACCEL_DEF_RANGE_2G},
-+				 {76614, BMC150_ACCEL_DEF_RANGE_4G},
-+				 {153229, BMC150_ACCEL_DEF_RANGE_8G},
-+				 {306458, BMC150_ACCEL_DEF_RANGE_16G} },
- 	},
- 	{
- 		.name = "BMA253/BMA254/BMA255/BMC150/BMI055",
- 		.chip_id = 0xFA,
- 		.channels = bmc150_accel_channels,
- 		.num_channels = ARRAY_SIZE(bmc150_accel_channels),
--		.scale_table = { {9610, BMC150_ACCEL_DEF_RANGE_2G},
--				 {19122, BMC150_ACCEL_DEF_RANGE_4G},
--				 {38344, BMC150_ACCEL_DEF_RANGE_8G},
--				 {76590, BMC150_ACCEL_DEF_RANGE_16G} },
-+		.scale_table = { {9577, BMC150_ACCEL_DEF_RANGE_2G},
-+				 {19154, BMC150_ACCEL_DEF_RANGE_4G},
-+				 {38307, BMC150_ACCEL_DEF_RANGE_8G},
-+				 {76614, BMC150_ACCEL_DEF_RANGE_16G} },
- 	},
- 	{
- 		.name = "BMA280",
- 		.chip_id = 0xFB,
- 		.channels = bma280_accel_channels,
- 		.num_channels = ARRAY_SIZE(bma280_accel_channels),
--		.scale_table = { {2392, BMC150_ACCEL_DEF_RANGE_2G},
--				 {4785, BMC150_ACCEL_DEF_RANGE_4G},
--				 {9581, BMC150_ACCEL_DEF_RANGE_8G},
--				 {19152, BMC150_ACCEL_DEF_RANGE_16G} },
-+		.scale_table = { {2394, BMC150_ACCEL_DEF_RANGE_2G},
-+				 {4788, BMC150_ACCEL_DEF_RANGE_4G},
-+				 {9577, BMC150_ACCEL_DEF_RANGE_8G},
-+				 {19154, BMC150_ACCEL_DEF_RANGE_16G} },
- 	},
- };
- 
+...the tool simply doesn't know anything about kernel and header
+guarantees. That's why it tries play dumb.
+
+If you would like to continue with this, please drop the removal of
+the headers that are not guaranteed to be included by others
+(excluding kernel.h from the equation). Otherwise it will become
+someone else's problem to _reinstantiate_ all those headers, and since
+I already had a headache with panic.h, I won't repeat it. Still no tag
+from me, although no explicit NAK (actually opposite, no explicit ACK
+because of the dependencies), you just really need to spend more time
+on this.
+
 -- 
-2.32.0
-
+With Best Regards,
+Andy Shevchenko
