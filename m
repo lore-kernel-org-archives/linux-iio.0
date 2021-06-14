@@ -2,100 +2,131 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAF8C4743C
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:03:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4545BC4743C
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:09:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8139961241
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:03:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 229ED61166
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:09:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234764AbhFNLFi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Jun 2021 07:05:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234850AbhFNLDZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jun 2021 07:03:25 -0400
-Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CD9C061766;
-        Mon, 14 Jun 2021 03:59:54 -0700 (PDT)
-Received: by mail-wm1-x334.google.com with SMTP id u5-20020a7bc0450000b02901480e40338bso9133832wmc.1;
-        Mon, 14 Jun 2021 03:59:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=message-id:subject:from:to:cc:date:in-reply-to:references
-         :user-agent:mime-version:content-transfer-encoding;
-        bh=DInj5R/rNTKUYa5MmlypGH7NbsxUi8WQZHc0g/L+2II=;
-        b=SwQMghAd2tiujUIYjjOvp2St1pgSPAKFzajBy3XPoY7fNrVZ590U1YGUyAN21Hz1cL
-         jagwLJO0+b3MR23EDIrF3bn7fPHF9ZRk3l+E0MMXhRRbIP4YwolhSehmOKLjqsLsNeFf
-         NWZqPO5ZVAmYshtaUVYWPJdHB4Rza9/16COhJdgrkApyZX5rP3sVUMv/ipICtQYwcOaQ
-         UxfCNTpscEML7PfdTAbPrjmD93tZkHuJUaTc0b213oaenFiIo+s/F1mUG24M25s/m9rt
-         8Spszo1L1buCA3TI3s8XLwbLj4R4BkXNgBuQkPVuGL1iUl9Mzp8AkqIw1NI2nNb6qTqC
-         dd1g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
-         :references:user-agent:mime-version:content-transfer-encoding;
-        bh=DInj5R/rNTKUYa5MmlypGH7NbsxUi8WQZHc0g/L+2II=;
-        b=NwuvvQuam49xGmZsgYqzZ51HoMhWYrw+RhyNykVxOg4/MfvDMzg3ZSfINrYtxgmTqR
-         c3G+FBVVWywHs6lwsvk/odDuN1JoL/wDTXpYS3sUx8LTQFDHJsaOxbgSnxxSRk9P3NVC
-         SEMRz+Mep6juwDQH7Pw0l+ytll16bmZgDxQLUuhwgCnjHkgMjFFkMiUd9+aYC/eqDNAz
-         0iEXSYoxvXTLjKvo9S0pzkDiyOCmRPp8Ow1QhGhXCR0huzrv/Px9RebcnuuUubzQZEdw
-         /TYJukdoXhTsEV0WpWSYvwi534gy120S4+uzMCMu5F9eASvOvbZLt3Nn2xHQvmAs1O6+
-         Fzdw==
-X-Gm-Message-State: AOAM533GgKGbMzg8REJZs7YDNzXRqIDKZ+uPuY7cFRjb5A+tnt/WOEwj
-        qVTKyyLLNv8Xnxcb1gdNN2w=
-X-Google-Smtp-Source: ABdhPJzqIhzR3eBera18ZhIQ2iXKOA2JCGNvCir3radAJRGDkjWiUqciaO4g9SLiNCcRpw1eSVm0/A==
-X-Received: by 2002:a05:600c:2046:: with SMTP id p6mr31924804wmg.19.1623668393533;
-        Mon, 14 Jun 2021 03:59:53 -0700 (PDT)
-Received: from [192.168.1.21] ([195.245.23.224])
-        by smtp.gmail.com with ESMTPSA id h18sm8660772wrs.64.2021.06.14.03.59.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 14 Jun 2021 03:59:53 -0700 (PDT)
-Message-ID: <b4e88ed9da1afa4e0738bb04a72700271071f9b8.camel@gmail.com>
-Subject: Re: [PATCH 1/7] iio: ep93xx: Prepare clock before using it
-From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Nikita Shubin <nikita.shubin@maquefel.me>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        linux-kernel@vger.kernel.org
-Date:   Mon, 14 Jun 2021 12:59:52 +0200
-In-Reply-To: <20210614115043.07ea0ae1@jic23-huawei>
-References: <20210613233041.128961-1-alexander.sverdlin@gmail.com>
-         <20210613233041.128961-2-alexander.sverdlin@gmail.com>
-         <20210614115043.07ea0ae1@jic23-huawei>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.40.2 
+        id S234970AbhFNLJK convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Jun 2021 07:09:10 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39158 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S234827AbhFNLGy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 14 Jun 2021 07:06:54 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AE7E56193D;
+        Mon, 14 Jun 2021 10:45:44 +0000 (UTC)
+Date:   Mon, 14 Jun 2021 11:47:44 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: Re: [PATCH 2/2] counter: intel-qep: Use to_pci_dev() helper
+Message-ID: <20210614114744.011e5abc@jic23-huawei>
+In-Reply-To: <20210614093722.rurmqljcvzvlxpjp@pengutronix.de>
+References: <20210611115558.796338-1-jarkko.nikula@linux.intel.com>
+        <20210611115558.796338-2-jarkko.nikula@linux.intel.com>
+        <CAHp75VfBoOvGp7O3-WSWFuXGbQP0EbSQYaJi5B28oBkazkV8+w@mail.gmail.com>
+        <839944ff-e4e3-86c1-8d53-abaf96fa9271@linux.intel.com>
+        <CAHp75VfqUftwaGrJVR0qAkLG=-=qNLEV=9fLAC5SCNtt2i_bJg@mail.gmail.com>
+        <20210614093722.rurmqljcvzvlxpjp@pengutronix.de>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello Jonathan!
+On Mon, 14 Jun 2021 11:37:22 +0200
+Uwe Kleine-König <u.kleine-koenig@pengutronix.de> wrote:
 
-On Mon, 2021-06-14 at 11:50 +0100, Jonathan Cameron wrote:
-> > ...
-> > ep93xx-adc ep93xx-adc: Cannot enable clock
-> > ep93xx-adc: probe of ep93xx-adc failed with error -108
+> On Mon, Jun 14, 2021 at 11:57:46AM +0300, Andy Shevchenko wrote:
+> > +Uwe Kleine-König
 > > 
-> > Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > On Mon, Jun 14, 2021 at 11:24 AM Jarkko Nikula
+> > <jarkko.nikula@linux.intel.com> wrote:  
+> > > On 6/13/21 1:36 PM, Andy Shevchenko wrote:  
+> > > > On Fri, Jun 11, 2021 at 2:57 PM Jarkko Nikula
+> > > > <jarkko.nikula@linux.intel.com> wrote:  
+> > > >>
+> > > >> Use to_pci_dev() helper instead of container_of(d, struct pci_dev, dev);  
+> > > >
+> > > > ...
+> > > >  
+> > > >> -       struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+> > > >> +       struct pci_dev *pdev = to_pci_dev(dev);
+> > > >>          struct intel_qep *qep = pci_get_drvdata(pdev);  
+> > > >
+> > > > Why not change both lines to dev_get_drvdata()?
+> > > >  
+> > > I thought it before and Uwe had a good point why it isn't necessarily a
+> > > good idea:
+> > >
+> > > https://www.spinics.net/lists/linux-pwm/msg15325.html  
+> > 
+> > I understand this point, but the problem is that we often use
+> > different callbacks for different layers. For example, the PM
+> > callbacks are operating with generic 'struct device' and using the PCI
+> > device there is non-flexible layering violation, so in my opinion it's
+> > the opposite to what Uwe says. I.o.w. we need to use corresponding API
+> > to what we have in the callbacks. If the callback comes from generic
+> > level ==> generic APIs more appropriate.  
 > 
-> From cover letter I'm assuming you want these to go through same route as
-> the common clock conversion?  If not shout and I can pick this one up.
+> Without having looked at the driver in question: I (think I) understand
+> both sides here and both variants have their own downside.
+> 
+>  - Using dev_get_drvdata() makes use of the fact that pci_set_drvdata()
+>    is a wrapper around dev_set_drvdata for the pcidev's struct device.
+> 
+>  - Using pci_get_drvdata() adds overhead (for humans only though, the
+>    compiler doesn't care and creates the same code) and having the pci
+>    device in the callback isn't necessary.
+> 
+> My personal opinion is: The first is the graver layer violation because
+> it relies on an implementation detail in the PCI framework. The latter
+> is relying on a fact that is local to the driver only: All devices this
+> driver is bound to are pci devices. The main benefit of explicitly using
+> pci_get_drvdata ∘ to_pci_dev I see is that someone having only shallow
+> knowledge of the PCI stuff can easier match a pci_get_drvdata() to the
+> pci_set_drvdata() called in .probe() than a dev_get_drvdata() and so
+> while it uses a function call/code line more, it is more explicit and
+> more obviously correct.
+> 
+> And regarding your argument about the matching API: I think the above
+> code uses the matching API, that is make a pci_dev from a device using
+> to_pci_dev().
+> 
+> So this is about weighting up- and downsides. How you judge them is
+> subjective. (Though my judgement is naturally the better one :-)
 
-Thank you for the quick reply!
-Yes, it makes sense to take the same route as the CCF conversion, I'll try it
-first. Maybe I'll need to strip these stacktraces as well, I've
-got the whole bunch of complaints on them...
+Personally I'm happy with either
 
--- 
-Alexander Sverdlin.
+dev_set_drvdata / dev_get_drvdata
+or 
+pci_set_drvdata / pci_get_drvdata
 
+In this particular case there is a convenient struct device *dev local
+variable anyway in the probe() (IIRC) so could have done option 1 with
+no loss of readability and a tiny saving in code.
+
+Not worth changing it though is my 0.02€
+
+Jonathan
+
+> 
+> Just my 0.02€
+> Uwe
+> 
 
