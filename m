@@ -7,38 +7,38 @@ X-Spam-Status: No, score=-19.2 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0312CC48BE6
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E62CC48BE8
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:39:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E17F46023F
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:39:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EE4326023F
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235021AbhFNLl5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Jun 2021 07:41:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:59692 "EHLO mail.kernel.org"
+        id S233381AbhFNLl7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Jun 2021 07:41:59 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59696 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233471AbhFNLhV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 14 Jun 2021 07:37:21 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id C0D4F61283;
-        Mon, 14 Jun 2021 11:33:28 +0000 (UTC)
+        id S236053AbhFNLhY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 14 Jun 2021 07:37:24 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 9949561105;
+        Mon, 14 Jun 2021 11:33:34 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1623670410;
-        bh=h7zAOrHasLUWNW7IyHLjIwSpypEVjBIIyS5aFPBrzzU=;
+        s=k20201202; t=1623670416;
+        bh=R0SIWw7QIlIp4dnMNNCvAJ6bdVhUe7SSvOvR7PWf4uo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MoDjqVI1pE4PwIDSAo2yyfCb05NV/41BASu0kMFbraCt/r8kFHq2fmGUwJfGTJAA5
-         MT60SG7wlxcat1nDDKJ7kM9vU0wyu/5Eu9mkSFvg+qeYgIW7xH+Qb8NkWoxHJpfJ4x
-         qcDx/qTl5VClbMxXjDhRZ8a0NiOpra57d0oX6R2y0WhV8JtS6lXZWxH6Hv2+GfqpP3
-         sRxCZq5gDkVbITAWEp3/2H/bbg8lCPBSpSdfSQzubn55XzdjJ1RCf7vCp2xpJcr/+6
-         WVh6Jn563YzOLGaujBGCuJcFE7OAd9UxdiXFsvAhHNG3JoLEBoaJfRHnUv5eM0/+rp
-         j6Na/8Kw7Vwuw==
+        b=KfIJi1K3Q1WhMoXI/3VpRqzguXyTzKzxxJuEwYQB/CM6hd0fiEwHHdU2O0jBe3slM
+         gJwtE67vnIbPYhybLZBx7KFUJX9AClh6Ug9DI8ni5hG8itUyxhRKgNlSxnzi22I3Ca
+         M4zaNJElkCC2KfQ6Cq15bhP4JaSJfzOxvgoH2e+NSgSqt3+p4uEOM5rDww4MEPPHKo
+         SD+adyXMUPq1wJ8L38gA2UMSgPF/GIzdZaUxgYu1a/DtDeHygjrjgniG8RRnmx/lkO
+         SxWbAlpJeCPK4Cp29koOHU3/3Nl3VST/e3UCQ/cyQWYrN9RwrQYlsTLIYED5YQqkqa
+         Tg2Z5i45eWnCA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>
 Cc:     Michael.Hennerich@analog.com, lars@metafoo.de,
         devicetree@vger.kernel.org, Nuno Sa <Nuno.Sa@analog.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 05/17] staging:iio:adc:ad7280a: Use bitfield ops to managed fields in transfers.
-Date:   Mon, 14 Jun 2021 12:34:55 +0100
-Message-Id: <20210614113507.897732-6-jic23@kernel.org>
+Subject: [PATCH 07/17] staging:iio:adc:ad7280a: Standardize extended ABI naming
+Date:   Mon, 14 Jun 2021 12:34:57 +0100
+Message-Id: <20210614113507.897732-8-jic23@kernel.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210614113507.897732-1-jic23@kernel.org>
 References: <20210614113507.897732-1-jic23@kernel.org>
@@ -50,111 +50,292 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The write and two types of read transfer are sufficiently complex that
-they benefit from the clarity of using FIELD_PREP() and FIELD_GET()
+The *_balance_switch_en and *_balance_switch_timer attributes had non
+standard prefixes. Use the ext_info framework to automatically
+create then with in_voltageX-voltageY_ prefix.
+
+Documentation for these two unusual attributes to follow.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/adc/ad7280a.c | 46 ++++++++++++++++++++++++-------
- 1 file changed, 36 insertions(+), 10 deletions(-)
+ drivers/staging/iio/adc/ad7280a.c | 174 ++++++++----------------------
+ 1 file changed, 43 insertions(+), 131 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index 1f7ea5fb1e20..158a792c0bf8 100644
+index 0aeca39388cf..032d6430bebf 100644
 --- a/drivers/staging/iio/adc/ad7280a.c
 +++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -95,6 +95,23 @@
- #define   AD7280A_READ_ADDR_MSK				GENMASK(7, 2)
- #define AD7280A_CNVST_CTRL_REG			0x1D /* D7 to D0, Read/write */
+@@ -156,7 +156,6 @@ static unsigned int ad7280a_devaddr(unsigned int addr)
+ struct ad7280_state {
+ 	struct spi_device		*spi;
+ 	struct iio_chan_spec		*channels;
+-	struct iio_dev_attr		*iio_attr;
+ 	int				slave_num;
+ 	int				scan_cnt;
+ 	int				readback_delay_us;
+@@ -447,37 +446,33 @@ static int ad7280_chain_setup(struct ad7280_state *st)
+ 	return ret;
+ }
  
-+/* Transfer fields */
-+#define AD7280A_TRANS_WRITE_DEVADDR_MSK		GENMASK(31, 27)
-+#define AD7280A_TRANS_WRITE_ADDR_MSK		GENMASK(26, 21)
-+#define AD7280A_TRANS_WRITE_VAL_MSK		GENMASK(20, 13)
-+#define AD7280A_TRANS_WRITE_ALL_MSK		BIT(12)
-+#define AD7280A_TRANS_WRITE_CRC_MSK		GENMASK(10, 3)
-+#define AD7280A_TRANS_WRITE_RES_PATTERN		0x2
-+
-+/* Layouts differ for channel vs other registers */
-+#define AD7280A_TRANS_READ_DEVADDR_MSK		GENMASK(31, 27)
-+#define AD7280A_TRANS_READ_CONV_CHANADDR_MSK	GENMASK(26, 23)
-+#define AD7280A_TRANS_READ_CONV_DATA_MSK	GENMASK(22, 11)
-+#define AD7280A_TRANS_READ_REG_REGADDR_MSK	GENMASK(26, 21)
-+#define AD7280A_TRANS_READ_REG_DATA_MSK		GENMASK(20, 13)
-+#define AD7280A_TRANS_READ_WRITE_ACK_MSK	BIT(10)
-+#define AD7280A_TRANS_READ_CRC_MSK		GENMASK(9, 2)
-+
- /* Magic value used to indicate this special case */
- #define AD7280A_ALL_CELLS				(0xAD << 16)
- 
-@@ -216,10 +233,16 @@ static int __ad7280_read32(struct ad7280_state *st, unsigned int *val)
- static int ad7280_write(struct ad7280_state *st, unsigned int devaddr,
- 			unsigned int addr, bool all, unsigned int val)
+-static ssize_t ad7280_show_balance_sw(struct device *dev,
+-				      struct device_attribute *attr,
+-				      char *buf)
++static ssize_t ad7280_show_balance_sw(struct iio_dev *indio_dev,
++				      uintptr_t private,
++				      const struct iio_chan_spec *chan, char *buf)
  {
--	unsigned int reg = devaddr << 27 | addr << 21 |
--			(val & 0xFF) << 13 | all << 12;
-+	unsigned int reg = FIELD_PREP(AD7280A_TRANS_WRITE_DEVADDR_MSK, devaddr) |
-+		FIELD_PREP(AD7280A_TRANS_WRITE_ADDR_MSK, addr) |
-+		FIELD_PREP(AD7280A_TRANS_WRITE_VAL_MSK, val) |
-+		FIELD_PREP(AD7280A_TRANS_WRITE_ALL_MSK, all);
-+
-+	reg |= FIELD_PREP(AD7280A_TRANS_WRITE_CRC_MSK,
-+			ad7280_calc_crc8(st->crc_tab, reg >> 11));
-+	/* Reserved b010 pattern not included crc calc */
-+	reg |= AD7280A_TRANS_WRITE_RES_PATTERN;
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7280_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
  
--	reg |= ad7280_calc_crc8(st->crc_tab, reg >> 11) << 3 | 0x2;
- 	st->tx = cpu_to_be32(reg);
- 
- 	return spi_write(st->spi, &st->tx, sizeof(st->tx));
-@@ -264,10 +287,11 @@ static int ad7280_read_reg(struct ad7280_state *st, unsigned int devaddr,
- 	if (ad7280_check_crc(st, tmp))
- 		return -EIO;
- 
--	if (((tmp >> 27) != devaddr) || (((tmp >> 21) & 0x3F) != addr))
-+	if ((FIELD_GET(AD7280A_TRANS_READ_DEVADDR_MSK, tmp) != devaddr) ||
-+	    (FIELD_GET(AD7280A_TRANS_READ_REG_REGADDR_MSK, tmp) != addr))
- 		return -EFAULT;
- 
--	return (tmp >> 13) & 0xFF;
-+	return FIELD_GET(AD7280A_TRANS_READ_REG_DATA_MSK, tmp);
+-	return sprintf(buf, "%d\n",
+-		       !!(st->cb_mask[this_attr->address >> 8] &
+-		       (1 << ((this_attr->address & 0xFF) + 2))));
++	return sysfs_emit(buf, "%d\n",
++			  !!(st->cb_mask[chan->address >> 8] &
++			  (1 << ((chan->address & 0xFF) + 2))));
  }
  
- static int ad7280_read_channel(struct ad7280_state *st, unsigned int devaddr,
-@@ -310,10 +334,11 @@ static int ad7280_read_channel(struct ad7280_state *st, unsigned int devaddr,
- 	if (ad7280_check_crc(st, tmp))
- 		return -EIO;
+-static ssize_t ad7280_store_balance_sw(struct device *dev,
+-				       struct device_attribute *attr,
+-				       const char *buf,
+-				       size_t len)
++static ssize_t ad7280_store_balance_sw(struct iio_dev *indio_dev,
++				       uintptr_t private,
++				       const struct iio_chan_spec *chan,
++				       const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7280_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
++	unsigned int devaddr, ch;
+ 	bool readin;
+ 	int ret;
+-	unsigned int devaddr, ch;
  
--	if (((tmp >> 27) != devaddr) || (((tmp >> 23) & 0xF) != addr))
-+	if ((FIELD_GET(AD7280A_TRANS_READ_DEVADDR_MSK, tmp) != devaddr) ||
-+	    (FIELD_GET(AD7280A_TRANS_READ_CONV_CHANADDR_MSK, tmp) != addr))
- 		return -EFAULT;
+ 	ret = strtobool(buf, &readin);
+ 	if (ret)
+ 		return ret;
  
--	return (tmp >> 11) & 0xFFF;
-+	return FIELD_GET(AD7280A_TRANS_READ_CONV_DATA_MSK, tmp);
+-	devaddr = this_attr->address >> 8;
+-	ch = this_attr->address & 0xFF;
++	devaddr = chan->address >> 8;
++	ch = chan->address & 0xFF;
+ 
+ 	mutex_lock(&st->lock);
+ 	if (readin)
+@@ -492,19 +487,18 @@ static ssize_t ad7280_store_balance_sw(struct device *dev,
+ 	return ret ? ret : len;
  }
  
- static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
-@@ -351,8 +376,9 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
- 		if (array)
- 			array[i] = tmp;
- 		/* only sum cell voltages */
--		if (((tmp >> 23) & 0xF) <= AD7280A_CELL_VOLTAGE_6_REG)
--			sum += ((tmp >> 11) & 0xFFF);
-+		if (FIELD_GET(AD7280A_TRANS_READ_CONV_CHANADDR_MSK, tmp) <=
-+		    AD7280A_CELL_VOLTAGE_6_REG)
-+			sum += FIELD_GET(AD7280A_TRANS_READ_CONV_DATA_MSK, tmp);
- 	}
+-static ssize_t ad7280_show_balance_timer(struct device *dev,
+-					 struct device_attribute *attr,
++static ssize_t ad7280_show_balance_timer(struct iio_dev *indio_dev,
++					 uintptr_t private,
++					 const struct iio_chan_spec *chan,
+ 					 char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7280_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	int ret;
+ 	unsigned int msecs;
++	int ret;
  
- 	return sum;
-@@ -407,7 +433,7 @@ static int ad7280_chain_setup(struct ad7280_state *st)
- 			goto error_power_down;
- 		}
+ 	mutex_lock(&st->lock);
+-	ret = ad7280_read_reg(st, this_attr->address >> 8,
+-			      this_attr->address & 0xFF);
++	ret = ad7280_read_reg(st, chan->address >> 8,
++			      (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG);
+ 	mutex_unlock(&st->lock);
  
--		if (n != ad7280a_devaddr(val >> 27)) {
-+		if (n != ad7280a_devaddr(FIELD_GET(AD7280A_TRANS_READ_DEVADDR_MSK, val))) {
- 			ret = -EIO;
- 			goto error_power_down;
- 		}
+ 	if (ret < 0)
+@@ -512,43 +506,50 @@ static ssize_t ad7280_show_balance_timer(struct device *dev,
+ 
+ 	msecs = FIELD_GET(AD7280A_CB_TIMER_VAL_MSK, ret) * 71500;
+ 
+-	return sprintf(buf, "%u\n", msecs);
++	return sysfs_emit(buf, "%u.%u\n", msecs / 1000, msecs % 1000);
+ }
+ 
+-static ssize_t ad7280_store_balance_timer(struct device *dev,
+-					  struct device_attribute *attr,
+-					  const char *buf,
+-					  size_t len)
++static ssize_t ad7280_store_balance_timer(struct iio_dev *indio_dev,
++					  uintptr_t private,
++					  const struct iio_chan_spec *chan,
++					  const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ad7280_state *st = iio_priv(indio_dev);
+-	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+-	unsigned long val;
++	int val, val2;
+ 	int ret;
+ 
+-	ret = kstrtoul(buf, 10, &val);
++	ret = iio_str_to_fixpoint(buf, 1000, &val, &val2);
+ 	if (ret)
+ 		return ret;
+ 
++	val = val * 1000 + val2;
+ 	val /= 71500;
+ 
+ 	if (val > 31)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&st->lock);
+-	ret = ad7280_write(st, this_attr->address >> 8,
+-			   this_attr->address & 0xFF, 0,
++	ret = ad7280_write(st, chan->address >> 8,
++			   (chan->address & 0xFF) + AD7280A_CB1_TIMER_REG, 0,
+ 			   FIELD_PREP(AD7280A_CB_TIMER_VAL_MSK, val));
+ 	mutex_unlock(&st->lock);
+ 
+ 	return ret ? ret : len;
+ }
+ 
+-static struct attribute *ad7280_attributes[AD7280A_MAX_CHAIN *
+-					   AD7280A_CELLS_PER_DEV * 2 + 1];
+-
+-static const struct attribute_group ad7280_attrs_group = {
+-	.attrs = ad7280_attributes,
++static const struct iio_chan_spec_ext_info ad7280_cell_ext_info[] = {
++	{
++		.name = "balance_switch_en",
++		.read = ad7280_show_balance_sw,
++		.write = ad7280_store_balance_sw,
++		.shared = IIO_SEPARATE,
++	}, {
++		.name = "balance_switch_timer",
++		.read = ad7280_show_balance_timer,
++		.write = ad7280_store_balance_timer,
++		.shared = IIO_SEPARATE,
++	},
++	{}
+ };
+ 
+ static const struct iio_event_spec ad7280_events[] = {
+@@ -571,6 +572,7 @@ static void ad7280_voltage_channel_init(struct iio_chan_spec *chan, int i)
+ 	chan->channel2 = chan->channel + 1;
+ 	chan->event_spec = ad7280_events;
+ 	chan->num_event_specs = ARRAY_SIZE(ad7280_events);
++	chan->ext_info = ad7280_cell_ext_info;
+ }
+ 
+ static void ad7280_temp_channel_init(struct iio_chan_spec *chan, int i)
+@@ -663,91 +665,6 @@ static int ad7280_channel_init(struct ad7280_state *st)
+ 	return cnt + 1;
+ }
+ 
+-static int ad7280_balance_switch_attr_init(struct iio_dev_attr *attr,
+-					   struct device *dev, int addr, int i)
+-{
+-	attr->address = addr;
+-	attr->dev_attr.attr.mode = 0644;
+-	attr->dev_attr.show = ad7280_show_balance_sw;
+-	attr->dev_attr.store = ad7280_store_balance_sw;
+-	attr->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
+-						  "in%d-in%d_balance_switch_en",
+-						  i, i + 1);
+-	if (!attr->dev_attr.attr.name)
+-		return -ENOMEM;
+-
+-	return 0;
+-}
+-
+-static int ad7280_balance_timer_attr_init(struct iio_dev_attr *attr,
+-					  struct device *dev, int addr, int i)
+-{
+-	attr->address = addr;
+-	attr->dev_attr.attr.mode = 0644;
+-	attr->dev_attr.show = ad7280_show_balance_timer;
+-	attr->dev_attr.store = ad7280_store_balance_timer;
+-	attr->dev_attr.attr.name = devm_kasprintf(dev, GFP_KERNEL,
+-						  "in%d-in%d_balance_timer",
+-						  i, i + 1);
+-	if (!attr->dev_attr.attr.name)
+-		return -ENOMEM;
+-
+-	return 0;
+-}
+-
+-static int ad7280_init_dev_attrs(struct ad7280_state *st, int dev, int *cnt)
+-{
+-	int addr, ch, i, ret;
+-	struct iio_dev_attr *iio_attr;
+-	struct device *sdev = &st->spi->dev;
+-
+-	for (ch = AD7280A_CELL_VOLTAGE_1_REG; ch <= AD7280A_CELL_VOLTAGE_6_REG; ch++) {
+-		iio_attr = &st->iio_attr[*cnt];
+-		addr = ad7280a_devaddr(dev) << 8 | ch;
+-		i = dev * AD7280A_CELLS_PER_DEV + ch;
+-
+-		ret = ad7280_balance_switch_attr_init(iio_attr, sdev, addr, i);
+-		if (ret < 0)
+-			return ret;
+-
+-		ad7280_attributes[*cnt] = &iio_attr->dev_attr.attr;
+-
+-		(*cnt)++;
+-		iio_attr = &st->iio_attr[*cnt];
+-		addr = ad7280a_devaddr(dev) << 8 | (AD7280A_CB1_TIMER_REG + ch);
+-
+-		ret = ad7280_balance_timer_attr_init(iio_attr, sdev, addr, i);
+-		if (ret < 0)
+-			return ret;
+-
+-		ad7280_attributes[*cnt] = &iio_attr->dev_attr.attr;
+-		(*cnt)++;
+-	}
+-
+-	ad7280_attributes[*cnt] = NULL;
+-
+-	return 0;
+-}
+-
+-static int ad7280_attr_init(struct ad7280_state *st)
+-{
+-	int dev, cnt = 0, ret;
+-
+-	st->iio_attr = devm_kcalloc(&st->spi->dev, 2, sizeof(*st->iio_attr) *
+-				    (st->slave_num + 1) * AD7280A_CELLS_PER_DEV,
+-				    GFP_KERNEL);
+-	if (!st->iio_attr)
+-		return -ENOMEM;
+-
+-	for (dev = 0; dev <= st->slave_num; dev++) {
+-		ret = ad7280_init_dev_attrs(st, dev, &cnt);
+-		if (ret < 0)
+-			return ret;
+-	}
+-
+-	return 0;
+-}
+-
+ static int ad7280a_read_thresh(struct iio_dev *indio_dev,
+ 			       const struct iio_chan_spec *chan,
+ 			       enum iio_event_type type,
+@@ -949,7 +866,6 @@ static const struct iio_info ad7280_info = {
+ 	.read_raw = ad7280_read_raw,
+ 	.read_event_value = &ad7280a_read_thresh,
+ 	.write_event_value = &ad7280a_write_thresh,
+-	.attrs = &ad7280_attrs_group,
+ };
+ 
+ static const struct ad7280_platform_data ad7793_default_pdata = {
+@@ -1030,10 +946,6 @@ static int ad7280_probe(struct spi_device *spi)
+ 	indio_dev->channels = st->channels;
+ 	indio_dev->info = &ad7280_info;
+ 
+-	ret = ad7280_attr_init(st);
+-	if (ret < 0)
+-		return ret;
+-
+ 	ret = devm_iio_device_register(&spi->dev, indio_dev);
+ 	if (ret)
+ 		return ret;
 -- 
 2.32.0
 
