@@ -2,169 +2,100 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 00CB2C2B9F4
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 10:59:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DAF8C4743C
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:03:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DE79861283
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 10:59:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8139961241
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 11:03:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234148AbhFNLA4 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Jun 2021 07:00:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35838 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233915AbhFNK5Q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 14 Jun 2021 06:57:16 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DF5BF61426;
-        Mon, 14 Jun 2021 10:41:32 +0000 (UTC)
-Date:   Mon, 14 Jun 2021 11:43:33 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Andreas Klinger <ak@it-klinger.d>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Mathieu Othacehe <m.othacehe@gmail.com>,
-        Parthiban Nallathambi <pn@denx.de>
-Subject: Re: [PATCH RESEND 0/8] IIO: Alignment fixes part 3 - __aligned(8)
- used to ensure alignment
-Message-ID: <20210614114333.4bf9ec28@jic23-huawei>
-In-Reply-To: <PH0PR03MB6366479D135F6D96D3FD4F1C99319@PH0PR03MB6366.namprd03.prod.outlook.com>
-References: <20210613152301.571002-1-jic23@kernel.org>
-        <PH0PR03MB6366479D135F6D96D3FD4F1C99319@PH0PR03MB6366.namprd03.prod.outlook.com>
-X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S234764AbhFNLFi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Jun 2021 07:05:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36982 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S234850AbhFNLDZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jun 2021 07:03:25 -0400
+Received: from mail-wm1-x334.google.com (mail-wm1-x334.google.com [IPv6:2a00:1450:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E5CD9C061766;
+        Mon, 14 Jun 2021 03:59:54 -0700 (PDT)
+Received: by mail-wm1-x334.google.com with SMTP id u5-20020a7bc0450000b02901480e40338bso9133832wmc.1;
+        Mon, 14 Jun 2021 03:59:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :user-agent:mime-version:content-transfer-encoding;
+        bh=DInj5R/rNTKUYa5MmlypGH7NbsxUi8WQZHc0g/L+2II=;
+        b=SwQMghAd2tiujUIYjjOvp2St1pgSPAKFzajBy3XPoY7fNrVZ590U1YGUyAN21Hz1cL
+         jagwLJO0+b3MR23EDIrF3bn7fPHF9ZRk3l+E0MMXhRRbIP4YwolhSehmOKLjqsLsNeFf
+         NWZqPO5ZVAmYshtaUVYWPJdHB4Rza9/16COhJdgrkApyZX5rP3sVUMv/ipICtQYwcOaQ
+         UxfCNTpscEML7PfdTAbPrjmD93tZkHuJUaTc0b213oaenFiIo+s/F1mUG24M25s/m9rt
+         8Spszo1L1buCA3TI3s8XLwbLj4R4BkXNgBuQkPVuGL1iUl9Mzp8AkqIw1NI2nNb6qTqC
+         dd1g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:user-agent:mime-version:content-transfer-encoding;
+        bh=DInj5R/rNTKUYa5MmlypGH7NbsxUi8WQZHc0g/L+2II=;
+        b=NwuvvQuam49xGmZsgYqzZ51HoMhWYrw+RhyNykVxOg4/MfvDMzg3ZSfINrYtxgmTqR
+         c3G+FBVVWywHs6lwsvk/odDuN1JoL/wDTXpYS3sUx8LTQFDHJsaOxbgSnxxSRk9P3NVC
+         SEMRz+Mep6juwDQH7Pw0l+ytll16bmZgDxQLUuhwgCnjHkgMjFFkMiUd9+aYC/eqDNAz
+         0iEXSYoxvXTLjKvo9S0pzkDiyOCmRPp8Ow1QhGhXCR0huzrv/Px9RebcnuuUubzQZEdw
+         /TYJukdoXhTsEV0WpWSYvwi534gy120S4+uzMCMu5F9eASvOvbZLt3Nn2xHQvmAs1O6+
+         Fzdw==
+X-Gm-Message-State: AOAM533GgKGbMzg8REJZs7YDNzXRqIDKZ+uPuY7cFRjb5A+tnt/WOEwj
+        qVTKyyLLNv8Xnxcb1gdNN2w=
+X-Google-Smtp-Source: ABdhPJzqIhzR3eBera18ZhIQ2iXKOA2JCGNvCir3radAJRGDkjWiUqciaO4g9SLiNCcRpw1eSVm0/A==
+X-Received: by 2002:a05:600c:2046:: with SMTP id p6mr31924804wmg.19.1623668393533;
+        Mon, 14 Jun 2021 03:59:53 -0700 (PDT)
+Received: from [192.168.1.21] ([195.245.23.224])
+        by smtp.gmail.com with ESMTPSA id h18sm8660772wrs.64.2021.06.14.03.59.52
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 14 Jun 2021 03:59:53 -0700 (PDT)
+Message-ID: <b4e88ed9da1afa4e0738bb04a72700271071f9b8.camel@gmail.com>
+Subject: Re: [PATCH 1/7] iio: ep93xx: Prepare clock before using it
+From:   Alexander Sverdlin <alexander.sverdlin@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
+        Nikita Shubin <nikita.shubin@maquefel.me>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        linux-kernel@vger.kernel.org
+Date:   Mon, 14 Jun 2021 12:59:52 +0200
+In-Reply-To: <20210614115043.07ea0ae1@jic23-huawei>
+References: <20210613233041.128961-1-alexander.sverdlin@gmail.com>
+         <20210613233041.128961-2-alexander.sverdlin@gmail.com>
+         <20210614115043.07ea0ae1@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.40.2 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 14 Jun 2021 08:03:20 +0000
-"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
+Hello Jonathan!
 
-> Hi Jonathan,
+On Mon, 2021-06-14 at 11:50 +0100, Jonathan Cameron wrote:
+> > ...
+> > ep93xx-adc ep93xx-adc: Cannot enable clock
+> > ep93xx-adc: probe of ep93xx-adc failed with error -108
+> > 
+> > Signed-off-by: Alexander Sverdlin <alexander.sverdlin@gmail.com>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> > From: Jonathan Cameron <jic23@kernel.org>
-> > Sent: Sunday, June 13, 2021 5:23 PM
-> > To: linux-iio@vger.kernel.org
-> > Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>; Eugen
-> > Hristev <eugen.hristev@microchip.com>; Andreas Klinger <ak@it-  
-> > klinger.d>; Song Qiang <songqiang1304521@gmail.com>; Mathieu  
-> > Othacehe <m.othacehe@gmail.com>; Parthiban Nallathambi
-> > <pn@denx.de>
-> > Subject: [PATCH RESEND 0/8] IIO: Alignment fixes part 3 - __aligned(8)
-> > used to ensure alignment
-> > 
-> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > 
-> > Resent as none of these have had any comments since being sent out
-> > over
-> > a month ago.  Note these are very straight forward, but I've messed up
-> > such things in the past so really appreciate it if someone takes the time
-> > to do a quick sanity check.
-> > 
-> > I have picked up those patches that did get review in first posting and
-> > dropped them from this posting.
-> > 
-> > Cover letter from first posting.
-> > 
-> > I finally got around to do a manual audit of all the calls to
-> > iio_push_to_buffers_with_timestamp() which has the somewhat odd
-> > requirements
-> > of:
-> > 1. 8 byte alignment of the provided buffer.
-> > 2. space for an 8 byte naturally aligned timestamp to be inserted at the
-> >    end.
-> > 
-> > Unfortunately there were rather a lot of these left, but time to bite
-> > the bullet
-> > and clean them up.
-> > 
-> > As discussed previous in
-> > https://urldefense.com/v3/__https://lore.kernel.org/linux-
-> > iio/20200920112742.170751-1-
-> > jic23@kernel.org/__;!!A3Ni8CS0y2Y!uCn6NSpGUvHYdcFazn7flxxjh8RA
-> > RqPCumitrRDDgGAjXF7crgi911KY2v_iyw$
-> > it is not easy to fix the alignment issue without requiring a bounce
-> > buffer
-> > (see part 4 of the alignment fixes for a proposal for that where it is
-> > absolutely necessary).
-> > 
-> > Part 3 contains the cases where the struct approach in part 2 did not
-> > seem
-> > appropriate.  Normally there are two possible reasons for this.
-> > 1.  Would have required an additional memset operation to avoid any
-> >     possibility of leaking kernel data.
-> > 2.  The location of the timestamp may depend on the channels
-> > enabled.
-> >     This normally happens when the max sizeof channels is greater than
-> >     8 bytes.
-> > 
-> > Once all cases are fixes, I'll take a look at hardening against any
-> > accidental reintroductions. Note that on many platforms and usecases
-> > the
-> > bug in question will never occur.
-> > 
-> > Cc: Eugen Hristev <eugen.hristev@microchip.com>
-> > Cc: Andreas Klinger <ak@it-klinger.d>
-> > Cc: Song Qiang <songqiang1304521@gmail.com>
-> > Cc: Mathieu Othacehe <m.othacehe@gmail.com>
-> > Cc: Parthiban Nallathambi <pn@denx.de>
-> > 
-> > Jonathan Cameron (8):
-> >   iio: adc: at91-sama5d2: Fix buffer alignment in
-> >     iio_push_to_buffers_with_timestamp()
-> >   iio: adc: hx711: Fix buffer alignment in
-> >     iio_push_to_buffers_with_timestamp()
-> >   iio: adc: mxs-lradc: Fix buffer alignment in
-> >     iio_push_to_buffers_with_timestamp()
-> >   iio: adc: ti-ads8688: Fix alignment of buffer in
-> >     iio_push_to_buffers_with_timestamp()
-> >   iio: magn: rm3100: Fix alignment of buffer in
-> >     iio_push_to_buffers_with_timestamp()
-> >   iio: light: vcnl4000: Fix buffer alignment in
-> >     iio_push_to_buffers_with_timestamp()
-> >   iio: light: vcnl4035: Fix buffer alignment in
-> >     iio_push_to_buffers_with_timestamp()
-> >   iio: prox: isl29501: Fix buffer alignment in
-> >     iio_push_to_buffers_with_timestamp()
-> > 
-> >  drivers/iio/adc/at91-sama5d2_adc.c     | 3 ++-
-> >  drivers/iio/adc/hx711.c                | 4 ++--
-> >  drivers/iio/adc/mxs-lradc-adc.c        | 3 ++-
-> >  drivers/iio/adc/ti-ads8688.c           | 3 ++-
-> >  drivers/iio/light/vcnl4000.c           | 2 +-
-> >  drivers/iio/light/vcnl4035.c           | 3 ++-
-> >  drivers/iio/magnetometer/rm3100-core.c | 3 ++-
-> >  drivers/iio/proximity/isl29501.c       | 2 +-
-> >  8 files changed, 14 insertions(+), 9 deletions(-)
-> > 
-> > --
-> > 2.32.0  
-> 
-> LGTM. For the whole series:
-> 
-> Reviewed-by: Nuno Sá <nuno.sa@analog.com>
-Thanks!
+> From cover letter I'm assuming you want these to go through same route as
+> the common clock conversion?  If not shout and I can pick this one up.
 
-Given how long they've been sitting around on list...
+Thank you for the quick reply!
+Yes, it makes sense to take the same route as the CCF conversion, I'll try it
+first. Maybe I'll need to strip these stacktraces as well, I've
+got the whole bunch of complaints on them...
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for all the normal reasons.
+-- 
+Alexander Sverdlin.
 
-Thanks,
-
-Jonathan
-
-> 
-> - Nuno Sá
 
