@@ -2,107 +2,76 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
+	SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 758F4C48BE8
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 07:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EF222C48BE6
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 08:24:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 58E1F61153
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 07:16:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C25BD61370
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Jun 2021 08:24:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232475AbhFNHSS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Jun 2021 03:18:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45428 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232096AbhFNHSR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Jun 2021 03:18:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50193C061756
-        for <linux-iio@vger.kernel.org>; Mon, 14 Jun 2021 00:16:14 -0700 (PDT)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lsgog-0000BB-Lg; Mon, 14 Jun 2021 09:15:26 +0200
-Received: from ukl by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1lsgoe-0005Jf-D8; Mon, 14 Jun 2021 09:15:24 +0200
-Date:   Mon, 14 Jun 2021 09:15:21 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Alexander Sverdlin <alexander.sverdlin@gmail.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Nikita Shubin <nikita.shubin@maquefel.me>,
-        Vinod Koul <vkoul@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>, dmaengine@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-pwm@vger.kernel.org, linux-spi@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-fbdev@vger.kernel.org,
-        alsa-devel@alsa-project.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/7] Prepare EP93xx drivers for Common Clock Framework
-Message-ID: <20210614071521.bv6tc5d27tj3yvlv@pengutronix.de>
-References: <20210613233041.128961-1-alexander.sverdlin@gmail.com>
+        id S232598AbhFNI0v (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Jun 2021 04:26:51 -0400
+Received: from mga01.intel.com ([192.55.52.88]:32894 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S232528AbhFNI0v (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 14 Jun 2021 04:26:51 -0400
+IronPort-SDR: KdoLd2vfhDbyi25QDTzzOD0jm8jmGaN5Qz+gDPukvHh0WLAAltb8Ijf4rCMmKW7KwPvq8Cfoyg
+ jrf2WaCpkHPw==
+X-IronPort-AV: E=McAfee;i="6200,9189,10014"; a="227228127"
+X-IronPort-AV: E=Sophos;i="5.83,272,1616482800"; 
+   d="scan'208";a="227228127"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Jun 2021 01:24:48 -0700
+IronPort-SDR: 5Yl4wOrmc+TdxB1HE05suVUwufJn4r3EUW+HEYNp1+AZRbz9AF/gJKZSrEITRSzxODG3Uz2uM3
+ g4mBHfBz06uA==
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.83,272,1616482800"; 
+   d="scan'208";a="451520722"
+Received: from mylly.fi.intel.com (HELO [10.237.72.166]) ([10.237.72.166])
+  by fmsmga008.fm.intel.com with ESMTP; 14 Jun 2021 01:24:47 -0700
+Subject: Re: [PATCH 2/2] counter: intel-qep: Use to_pci_dev() helper
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>
+References: <20210611115558.796338-1-jarkko.nikula@linux.intel.com>
+ <20210611115558.796338-2-jarkko.nikula@linux.intel.com>
+ <CAHp75VfBoOvGp7O3-WSWFuXGbQP0EbSQYaJi5B28oBkazkV8+w@mail.gmail.com>
+From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Message-ID: <839944ff-e4e3-86c1-8d53-abaf96fa9271@linux.intel.com>
+Date:   Mon, 14 Jun 2021 11:24:46 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="tzksnyblxledsl3b"
-Content-Disposition: inline
-In-Reply-To: <20210613233041.128961-1-alexander.sverdlin@gmail.com>
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+In-Reply-To: <CAHp75VfBoOvGp7O3-WSWFuXGbQP0EbSQYaJi5B28oBkazkV8+w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On 6/13/21 1:36 PM, Andy Shevchenko wrote:
+> On Fri, Jun 11, 2021 at 2:57 PM Jarkko Nikula
+> <jarkko.nikula@linux.intel.com> wrote:
+>>
+>> Use to_pci_dev() helper instead of container_of(d, struct pci_dev, dev);
+> 
+> ...
+> 
+>> -       struct pci_dev *pdev = container_of(dev, struct pci_dev, dev);
+>> +       struct pci_dev *pdev = to_pci_dev(dev);
+>>          struct intel_qep *qep = pci_get_drvdata(pdev);
+> 
+> Why not change both lines to dev_get_drvdata()?
+> 
+I thought it before and Uwe had a good point why it isn't necessarily a 
+good idea:
 
---tzksnyblxledsl3b
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+https://www.spinics.net/lists/linux-pwm/msg15325.html
 
-On Mon, Jun 14, 2021 at 01:30:34AM +0200, Alexander Sverdlin wrote:
-> Nikita posted a patch converting EP93xx to use Common Clock Framework. It
-> turns out some cleanup is necessary in the EP93xx drivers to avoid
-> "Enabling unprepared" clock warnings.
->=20
-> Patches with stack traces in the commit messages are tested on EP9302.
-
-One thing to note is: ep93xx currently doesn't provide a clk_prepare
-function, this isn't a problem though because include/linux/clk.h
-provides a dummy if CONFIG_HAVE_CLK_PREPARE isn't defined. So as ep93xx
-doesn't define this symbol the changes here effectively only add a
-might_sleep.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---tzksnyblxledsl3b
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmDHAgYACgkQwfwUeK3K
-7Anz4wf/fZ6UpIbiQ9trvkqr6Bj6ontdmEdjh7ZjZkt/uCGHoWMQ1h2blpmdMD/z
-wzcscbTaQkBDOdRPlWqqRB77EOqy7TdJe7vKeGygZflhyBx6so3Yk+Jf9NhZ73sY
-WpFRQP5v/utpk7qmx7SXBdlJG3mkWmIujPAJd56OX6RwFped6Bqh+bpRv+jMKhHv
-KLWyqkKehDsDd9EQtPokkcgnhvFo584TGv3oWUFi0AtPTgVXCSSNCiIxkR8BKLhs
-/pwCZo/rdneUeHPZpvBsR2AAVefwMmCQphi9CA4JaCsxGkA6Hfa5c1YBpsPXKnSZ
-aL6XNpm9fn67SU0C3GhW4R4lGjRoMQ==
-=giTe
------END PGP SIGNATURE-----
-
---tzksnyblxledsl3b--
+Jarkko
