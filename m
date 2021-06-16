@@ -2,90 +2,56 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-8.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF631C48BE5
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Jun 2021 14:29:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40F79C48BE5
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Jun 2021 15:57:56 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7B81761107
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Jun 2021 14:29:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1C8A761042
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Jun 2021 15:57:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233668AbhFPObK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Jun 2021 10:31:10 -0400
-Received: from aibo.runbox.com ([91.220.196.211]:53210 "EHLO aibo.runbox.com"
+        id S234699AbhFPQAA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Jun 2021 12:00:00 -0400
+Received: from aposti.net ([89.234.176.197]:51006 "EHLO aposti.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232408AbhFPObK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 16 Jun 2021 10:31:10 -0400
-X-Greylist: delayed 3636 seconds by postgrey-1.27 at vger.kernel.org; Wed, 16 Jun 2021 10:31:10 EDT
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=rbx.email;
-         s=selector1; h=Content-Transfer-Encoding:Content-Type:MIME-Version:
-        Message-Id:Date:Subject:Cc:To:From;
-        bh=oBkW26nHbIAk/9SaFxkSIezH97IsiGDnuTBNiewivCQ=; b=r7hhtn8j+tBKG1wkOqD/5V3S/i
-        IZ7aAQOMjOs5GiNzpIRKT34ohay5WUyB8gBna9GEemcddYgRzcj76K1V+HVM2WQl0zgTKl7GJ+2lo
-        XlfXpEaZz+WmIN1De9rHQU9d0EMUdFjC46NeO87f6LJ4rg6xnMpfJl9lhAuXrzQBrlPXdM3ciw3GN
-        XjIQ17yQaUe/06nVa/QKWI6mKtZrcnD99EoqKo64ip6XKlkuBjxniokzFqk0FGgngyulcashyNo3a
-        PAb81jO8HpDqKUUGTMQYepwrz6ZJq6i/tz/KhTZ4WGiS58nWrC0rV+R+Klp8smelR7jRP0X+HuqqQ
-        K+GfD7ng==;
-Received: from [10.9.9.72] (helo=submission01.runbox)
-        by mailtransmit02.runbox with esmtp (Exim 4.86_2)
-        (envelope-from <detegr@rbx.email>)
-        id 1ltVaj-0005ao-HH; Wed, 16 Jun 2021 15:28:25 +0200
-Received: by submission01.runbox with esmtpsa  [Authenticated alias (932193)]  (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.90_1)
-        id 1ltVaM-0003oX-GH; Wed, 16 Jun 2021 15:28:02 +0200
-From:   =?UTF-8?q?Antti=20Ker=C3=A4nen?= <detegr@rbx.email>
-To:     linux-iio@vger.kernel.org
-Cc:     =?UTF-8?q?Antti=20Ker=C3=A4nen?= <detegr@rbx.email>,
-        Hannu Hartikainen <hannu@hrtk.in>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Nuno Sa <nuno.sa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH] iio: adis: set GPIO reset pin direction
-Date:   Wed, 16 Jun 2021 16:25:13 +0300
-Message-Id: <20210616132512.634123-1-detegr@rbx.email>
-X-Mailer: git-send-email 2.31.1
+        id S235183AbhFPP7b (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 16 Jun 2021 11:59:31 -0400
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 0/2] Add "extended_name" to label
+Date:   Wed, 16 Jun 2021 16:57:04 +0100
+Message-Id: <20210616155706.17444-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use GPIOD_OUT_LOW instead of GPIOD_ASIS as the reset pin needs to be an
-active low output pin.
+Hi Jonathan,
 
-Suggested-by: Hannu Hartikainen <hannu@hrtk.in>
-Signed-off-by: Antti Keränen <detegr@rbx.email>
----
-The documentation of GPIO consumer interface states:
+Here's the v2 of my previous patchset which added an "extended_name"
+attribute.
 
-Be aware that there is no default direction for GPIOs. Therefore,
-**using a GPIO without setting its direction first is illegal and will
-result in undefined behavior!**
+Following the discussion on the v1, here's a set of two patches that
+1. make sure we will never have channels with both labels and extended
+   names,
+2. make the extended name available to userspace as the channel's label.
 
-Therefore the direction of the reset GPIO pin should be set as output.
+Cheers,
+-Paul
 
- drivers/iio/imu/adis.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Paul Cercueil (2):
+  iio: core: Forbid use of both labels and extended names
+  iio: core: Support reading extended name as label
 
-diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
-index 319b64b2fd88..7f13b3763732 100644
---- a/drivers/iio/imu/adis.c
-+++ b/drivers/iio/imu/adis.c
-@@ -415,7 +415,7 @@ int __adis_initial_startup(struct adis *adis)
- 	int ret;
- 
- 	/* check if the device has rst pin low */
--	gpio = devm_gpiod_get_optional(&adis->spi->dev, "reset", GPIOD_ASIS);
-+	gpio = devm_gpiod_get_optional(&adis->spi->dev, "reset", GPIOD_OUT_LOW);
- 	if (IS_ERR(gpio))
- 		return PTR_ERR(gpio);
- 
+ drivers/iio/industrialio-core.c | 32 +++++++++++++++++++++++++++++---
+ 1 file changed, 29 insertions(+), 3 deletions(-)
+
 -- 
-2.31.1
+2.30.2
 
