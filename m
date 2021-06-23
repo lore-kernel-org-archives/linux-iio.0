@@ -2,82 +2,150 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.2 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EC67C2B9F4
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Jun 2021 18:38:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 408E3C4743C
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Jun 2021 08:38:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1BA9061289
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Jun 2021 18:38:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 281B460FEB
+	for <linux-iio@archiver.kernel.org>; Wed, 23 Jun 2021 08:38:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232414AbhFVSlE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Jun 2021 14:41:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46996 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230338AbhFVSlD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Jun 2021 14:41:03 -0400
-Received: from mail-il1-x135.google.com (mail-il1-x135.google.com [IPv6:2607:f8b0:4864:20::135])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB469C061574
-        for <linux-iio@vger.kernel.org>; Tue, 22 Jun 2021 11:38:47 -0700 (PDT)
-Received: by mail-il1-x135.google.com with SMTP id x12so209738ill.4
-        for <linux-iio@vger.kernel.org>; Tue, 22 Jun 2021 11:38:47 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:from:date:message-id:subject:to;
-        bh=YfBJOMVnJKbIdhhRlUJj94L22PTEyZFCqjBlyaS4Be8=;
-        b=gp1VQLMtZkRMCFAbE68lER42n4rxSj5ejmnwLgb+7he2cjZiJsP2wQUQhn9jjfT6vr
-         8N3pjc2/A8VFmlYqY1lyg+9SJFdl/QBJbxKC3GTb01Hfc5XAeGH9JlvzY3PL8IPvSwaP
-         HAtU4VV6ZX7yqhPaZ4MHfERHTswoyE0v2i84P901IjmUyYUjTjtI+EbcVpHn1IbGwkKK
-         +Ww4haVjeX4NF7RRjgKLXHSFk7B0VfkQaXs52dNJyOcoF+ee7kBMjYL5sdCZL6WUzzGv
-         6kq0NC9he8u7uMZxjos+fa2W4MLfATOwbyAEnT4G3AleMS0drMz9amdVY7GwgszL086z
-         0R2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:from:date:message-id:subject:to;
-        bh=YfBJOMVnJKbIdhhRlUJj94L22PTEyZFCqjBlyaS4Be8=;
-        b=XjAYNjHgVMw/cfw6jZIXYoSW6LZNQ7E1QLNw2/NsmRDab9Ebw/A0+Mv7pKrw3EENmR
-         I+yTxbzxY3GpVbpeF3xCvZblER5AngIsBeKaI803xnp0h7YSe9VEX4GpxFXxeVMlj1eA
-         7x1CntwRbFLgnzJu5cj2buJsjVdRz8UDlETB4metHsVIcUmvlyDZdxQ2vM+gR2As3kKJ
-         QfsSnvDWh/pfgTph6iSb2mYk40iIhGkhPVL1h4DRO7pTAtuH57dBzntrKrpQxie+OzUE
-         P5RhQzztzerkElmeG6wgEQFBAn+cyi5uUpR6Lqalvmv0NxCeasYRwXy7SOY6UfGS35qN
-         pu4g==
-X-Gm-Message-State: AOAM5322Wq0ru72xOJubGj77a/xVxJ4WB0gzAIoTVqJqXsYdC5GzYb5F
-        fA9LcbPNzeBzuclbXMbgcgvdhVdhO2I7LwRCE74GY7ko
-X-Google-Smtp-Source: ABdhPJxJzixZWjqegOxPeTigOuvVuXgkbeiDhz+9etDcyU4HnWLN0K4ySw20Mnyz7NaKlRRwdV2emVCtcuTmXylsJ30=
-X-Received: by 2002:a92:360e:: with SMTP id d14mr63795ila.106.1624387127049;
- Tue, 22 Jun 2021 11:38:47 -0700 (PDT)
+        id S229954AbhFWIkP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 23 Jun 2021 04:40:15 -0400
+Received: from frasgout.his.huawei.com ([185.176.79.56]:3302 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229833AbhFWIkL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Jun 2021 04:40:11 -0400
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4G8xGY0qJJz6H7Vw;
+        Wed, 23 Jun 2021 16:27:49 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 23 Jun 2021 10:37:51 +0200
+Received: from localhost (10.47.69.138) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 23 Jun
+ 2021 09:37:50 +0100
+Date:   Wed, 23 Jun 2021 09:37:41 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+CC:     Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
+        "Rob Herring" <robh+dt@kernel.org>, <Michael.Hennerich@analog.com>,
+        <lars@metafoo.de>, <devicetree@vger.kernel.org>,
+        Nuno Sa <Nuno.Sa@analog.com>
+Subject: Re: [PATCH 00/17] iio:adc:ad7280a Cleanup and proposed staging
+ graduation.
+Message-ID: <20210623093741.00007d1d@Huawei.com>
+In-Reply-To: <YNIfkaRZtWIXPbAj@marsc.168.1.7>
+References: <20210614113507.897732-1-jic23@kernel.org>
+        <YNIfkaRZtWIXPbAj@marsc.168.1.7>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
 MIME-Version: 1.0
-From:   Alex Roberts <arob109@gmail.com>
-Date:   Tue, 22 Jun 2021 13:38:36 -0500
-Message-ID: <CAPkENw_AL9R-0BGb-_Je96Wit8TBEq=UrF14wkZiO6h1J8BnvQ@mail.gmail.com>
-Subject: Re: using dma buffers for SPI adcs
-To:     linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.69.138]
+X-ClientProxiedBy: lhreml746-chm.china.huawei.com (10.201.108.196) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Jonathan,
+On Tue, 22 Jun 2021 14:36:17 -0300
+Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-Thanks for the information. It appears my original email was sent with
-an old @ieee.org alias, meaning I never received the reply since that
-alias is currently inactive.
+> Hey Jonathan,
+> 
+> On 06/14, Jonathan Cameron wrote:
+> > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > 
+> > Hi All,
+> > 
+> > This one proved an interesting diversion.
+> > 
+> > Work done against a somewhat hacked up QEMU emulation of 3 daisy chained
+> > ad7280a devices (18 channels).  Note that the emulation isn't complete
+> > but does do chaining, CRC, and readout of channels etc in a fashion that
+> > worked with the original driver (up to the bug in patch 1) and continues
+> > to work with the updated version. I've not intention to upstream the
+> > emulation (as would need to make it more completed and flexible), but
+> > happy to share it with anyone who is interested.  
+> 
+> I'm interested in seeing your device emulation with QEMU.
+> I was looking at the ad7150 emulation you shared earlier this year but had
+> some trouble getting the i2c slave created.
 
-My end goal is get an 8-channel ADC working with >100ksps/channel.
-That doesn't seem do-able without an FPGA/PRU/real-time coprocessor to
-offload the SPI controller to for an IIO-based approach. So now I'm
-researching how to do something similar, but with the ASoC framework
-instead of iio, using a different ADC that supports DAIs like NXP SAI
-and TI McASP. But I'm running into issues there too with learning how
-to configure simple-sound-card and a dummy-codec, but I suppose my
-questions there should to go to the ALSA mailing list.
+Sure.  Let me do a bit of tidying up they I'll push a suitable branch out.
+(probably will still have lots of stuff missing!)
 
-Starting to wonder though if I do need to go PRU/real-time coprocessor
-route e,g., Cortex-M4 on same die as microprocessor (e.g, IMX8 and M4,
-STM32MP1 A7 w/ M4, AM3358 w/ PRU, etc.).
+Might take a little while to get to this though.
 
-Thanks,
-Alex.
+> 
+> Being able to see it running, I may feel more confident to provide a review
+> for this set :)
+
+:)
+
+> 
+> Regards,
+> 
+> Marcelo
+> > 
+> > I briefly flirted with posting a patch to just drop the driver entirely,
+> > but the part is still available and it looked like fun + isn't going
+> > to greatly impact maintainability of the subsystem long term so is low
+> > cost even if it goes obsolete sometime soonish.
+> > 
+> > There are lots of things we could do after this set to improved the driver
+> > and make things more flexible, but it should basically 'just work'
+> > 
+> > Anyhow, as normal for staging graduations, last patch has rename detection
+> > turned off so that people can easily see what I am proposing we move
+> > out of staging.
+> > 
+> > Jonathan Cameron (17):
+> >   staging:iio:adc:ad7280a: Fix handing of device address bit reversing.
+> >   staging:iio:adc:ad7280a: Register define cleanup.
+> >   staging:iio:adc:ad7280a: rename _read() to _read_reg()
+> >   staging:iio:adc:ad7280a: Split buff[2] into tx and rx parts
+> >   staging:iio:adc:ad7280a: Use bitfield ops to managed fields in
+> >     transfers.
+> >   staging:iio:adc:ad7280a: Switch to standard event control
+> >   staging:iio:adc:ad7280a: Standardize extended ABI naming
+> >   staging:iio:adc:ad7280a: Drop unused timestamp channel.
+> >   staging:iio:adc:ad7280a: Trivial comment formatting cleanup
+> >   staging:iio:adc:ad7280a: Make oversampling_ratio a runtime control
+> >   staging:iio:adc:ad7280a: Cleanup includes
+> >   staging:iio:ad7280a: Reflect optionality of irq in ABI
+> >   staging:iio:adc:ad7280a: Use a local dev pointer to avoid &spi->dev
+> >   staging:iio:adc:ad7280a: Use device properties to replace platform
+> >     data.
+> >   dt-bindings:iio:adc:ad7280a: Add binding
+> >   iio:adc:ad7280a: Document ABI for cell balance switches
+> >   iio:adc:ad7280a: Move out of staging
+> > 
+> >  .../ABI/testing/sysfs-bus-iio-adc-ad7280a     |   14 +
+> >  .../bindings/iio/adc/adi,ad7280a.yaml         |   87 ++
+> >  drivers/iio/adc/Kconfig                       |   11 +
+> >  drivers/iio/adc/Makefile                      |    1 +
+> >  drivers/iio/adc/ad7280a.c                     | 1116 +++++++++++++++++
+> >  drivers/staging/iio/adc/Kconfig               |   11 -
+> >  drivers/staging/iio/adc/Makefile              |    1 -
+> >  drivers/staging/iio/adc/ad7280a.c             | 1044 ---------------
+> >  drivers/staging/iio/adc/ad7280a.h             |   37 -
+> >  9 files changed, 1229 insertions(+), 1093 deletions(-)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-ad7280a
+> >  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad7280a.yaml
+> >  create mode 100644 drivers/iio/adc/ad7280a.c
+> >  delete mode 100644 drivers/staging/iio/adc/ad7280a.c
+> >  delete mode 100644 drivers/staging/iio/adc/ad7280a.h
+> > 
+> > -- 
+> > 2.32.0
+> >   
+
