@@ -2,94 +2,207 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 19C1AC11F67
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Jul 2021 14:04:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B3604C11F6A
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Jul 2021 14:18:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E5C18613EF
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Jul 2021 14:04:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 97755613FD
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Jul 2021 14:18:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233509AbhGAOGe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Jul 2021 10:06:34 -0400
-Received: from mail-il1-f179.google.com ([209.85.166.179]:45833 "EHLO
-        mail-il1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232631AbhGAOGc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jul 2021 10:06:32 -0400
-Received: by mail-il1-f179.google.com with SMTP id b5so6432705ilc.12;
-        Thu, 01 Jul 2021 07:04:00 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=wbT8Ks1SNmRLlWkzxeU8xdlQA5u/+Yl10JWaWVZb/dQ=;
-        b=XDokCOVNy1sl7UFa44Vwo4YBOQD4rG4FTAf+0i7et9/aqI9j6ayOyHtN1qw8iX+WhJ
-         p5/PnAkYexrrC/nr8kb7pqyzaGxdcLPKh8pKsheO7SJDkBBlXBncfHke1NnPIYi8ubWD
-         ExEgKL/gg8LuPR6vf7tDI6W+dhAUazkU+ui/UBMMr0Ti8O8jGVfSsSjk4jAajBXua5yV
-         JikpNpZXy8xalFOoD+ukKcWZSa6w/DwKq1ntLxglIj/0qKriguZz2wA09LboKikmjK7f
-         nl3ItbmL2h22Isf4rhjT8IGbBOM63Hezg0yST2reKOmkFwfz7cC7x0QtDfFnGhsahoty
-         5j1g==
-X-Gm-Message-State: AOAM533jmrPDEFseWaOO8ngPjR8mhbvHHrDQRN0gg3GWEcMnJgCriCH3
-        pmd9W8eDD6UtftklaFqCh91V4eTZUg==
-X-Google-Smtp-Source: ABdhPJx71za0MYqLZLGjIKph+dBsSeZJNQ43Mf4e2arjbbbCoz00zF0285z+YR4s9PRr63GczYPUfg==
-X-Received: by 2002:a05:6e02:ee2:: with SMTP id j2mr23739395ilk.63.1625148240363;
-        Thu, 01 Jul 2021 07:04:00 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id g14sm14460934ioo.19.2021.07.01.07.03.56
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 07:03:58 -0700 (PDT)
-Received: (nullmailer pid 2278716 invoked by uid 1000);
-        Thu, 01 Jul 2021 14:02:43 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc:     devicetree@vger.kernel.org, jic23@kernel.org,
-        linux-iio@vger.kernel.org, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org
-In-Reply-To: <20210701112803.75815-2-antoniu.miclaus@analog.com>
-References: <20210701112803.75815-1-antoniu.miclaus@analog.com> <20210701112803.75815-2-antoniu.miclaus@analog.com>
-Subject: Re: [PATCH v2 2/2] dt-bindings: iio: frequency: add adrf6780 doc
-Date:   Thu, 01 Jul 2021 08:02:43 -0600
-Message-Id: <1625148163.622224.2278715.nullmailer@robh.at.kernel.org>
+        id S232453AbhGAOU5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Jul 2021 10:20:57 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:18222 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S231844AbhGAOU4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jul 2021 10:20:56 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 161E8Tsj025039;
+        Thu, 1 Jul 2021 10:18:26 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com with ESMTP id 39gsqmv6pn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 01 Jul 2021 10:18:25 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 161EIOWh031548
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 1 Jul 2021 10:18:24 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5; Thu, 1 Jul 2021
+ 10:18:23 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.858.5 via Frontend
+ Transport; Thu, 1 Jul 2021 10:18:23 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.128])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 161EILp4015832;
+        Thu, 1 Jul 2021 10:18:21 -0400
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jic23@kernel.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v3] dt-bindings: iio: frequency: add adrf6780 doc
+Date:   Thu, 1 Jul 2021 17:16:48 +0300
+Message-ID: <20210701141648.131776-1-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.32.0
+MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: 1MwEL1OgORHUxPKqp7F5GwnVUPKs7hUg
+X-Proofpoint-ORIG-GUID: 1MwEL1OgORHUxPKqp7F5GwnVUPKs7hUg
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-07-01_08:2021-07-01,2021-07-01 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 clxscore=1015
+ adultscore=1 impostorscore=0 spamscore=0 mlxlogscore=999
+ priorityscore=1501 suspectscore=0 bulkscore=0 mlxscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2104190000 definitions=main-2107010088
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 01 Jul 2021 14:28:03 +0300, Antoniu Miclaus wrote:
-> Add device tree bindings for the ADRF6780 Upconverter.
-> 
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
-> ---
-> v2: remove `det-en` and `parity-en` from device tree
->  .../bindings/iio/frequency/adi,adrf6780.yaml  | 123 ++++++++++++++++++
->  1 file changed, 123 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
-> 
+Add device tree bindings for the ADRF6780 Upconverter.
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+v3: remove `adi,parity-en` from example after latest changes in v2 
+ .../bindings/iio/frequency/adi,adrf6780.yaml  | 122 ++++++++++++++++++
+ 1 file changed, 122 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
 
-yamllint warnings/errors:
-./Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml:10:1: [warning] wrong indentation: expected 2 but found 0 (indentation)
-./Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml:101:1: [warning] wrong indentation: expected 2 but found 0 (indentation)
-./Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml:109:1: [warning] wrong indentation: expected 2 but found 0 (indentation)
-
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.example.dt.yaml: adrf6780@0: 'adi,parity-en' does not match any of the regexes: 'pinctrl-[0-9]+'
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
-\ndoc reference errors (make refcheckdocs):
-
-See https://patchwork.ozlabs.org/patch/1499502
-
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
+new file mode 100644
+index 000000000000..b191d98bf778
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
+@@ -0,0 +1,122 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,adrf6780.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADRF6780 Microwave Upconverter
++
++maintainers:
++- Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++   wideband, microwave upconverter optimized for point to point microwave
++   radio designs operating in the 5.9 GHz to 23.6 GHz frequency range.
++   https://www.analog.com/en/products/adrf6780.html
++
++properties:
++  compatible:
++    enum:
++      - adi,adrf6780
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 1000000
++
++  clocks:
++    description:
++      Definition of the external clock (see clock/clock-bindings.txt)
++    minItems: 1
++
++  clock-names:
++    description:
++      Must be "lo_in"
++    maxItems: 1
++
++  clock-output-names:
++    maxItems: 1
++
++  adi,vga-buff-en:
++    description:
++      VGA Buffer Enable.
++    type: boolean
++
++  adi,lo-buff-en:
++    description:
++      LO Buffer Enable.
++    type: boolean
++
++  adi,if-mode-en:
++    description:
++      IF Mode Enable.
++    type: boolean
++
++  adi,iq-mode-en:
++    description:
++      IQ Mode Enable.
++    type: boolean
++
++  adi,lo-x2-en:
++    description:
++      LO x2 Enable.
++    type: boolean
++
++  adi,lo-ppf-en:
++    description:
++      LO x1 Enable.
++    type: boolean
++
++  adi,lo-en:
++    description:
++      LO Enable.
++    type: boolean
++
++  adi,uc-bias-en:
++    description:
++      UC Bias Enable.
++    type: boolean
++
++  adi,lo-sideband:
++    description:
++      Switch to the Other LO Sideband.
++    type: boolean
++
++  adi,vdet-out-en:
++    description:
++      VDET Output Select Enable.
++    type: boolean
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 0
++
++  '#clock-cells':
++    const: 0
++
++required:
++- compatible
++- reg
++- clocks
++- clock-names
++
++additionalProperties: false
++
++examples:
++- |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      adrf6780@0{
++        compatible = "adi,adrf6780";
++        reg = <0>;
++        spi-max-frequency = <1000000>;
++        clocks = <&adrf6780_lo>;
++        clock-names = "lo_in";
++      };
++    };
++...
++
+-- 
+2.32.0
 
