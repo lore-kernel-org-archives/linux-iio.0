@@ -3,74 +3,76 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
 X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham
-	autolearn_force=no version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B236FC11F69
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Jul 2021 14:02:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AB5BC11F64
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Jul 2021 14:03:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9BE9361420
-	for <linux-iio@archiver.kernel.org>; Thu,  1 Jul 2021 14:02:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 33A79613F8
+	for <linux-iio@archiver.kernel.org>; Thu,  1 Jul 2021 14:03:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232772AbhGAOF0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 1 Jul 2021 10:05:26 -0400
-Received: from mail-io1-f51.google.com ([209.85.166.51]:36616 "EHLO
-        mail-io1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232545AbhGAOFZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jul 2021 10:05:25 -0400
-Received: by mail-io1-f51.google.com with SMTP id u7so5467118ion.3;
-        Thu, 01 Jul 2021 07:02:55 -0700 (PDT)
+        id S233493AbhGAOG0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 1 Jul 2021 10:06:26 -0400
+Received: from mail-io1-f50.google.com ([209.85.166.50]:34785 "EHLO
+        mail-io1-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232631AbhGAOG0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Jul 2021 10:06:26 -0400
+Received: by mail-io1-f50.google.com with SMTP id g22so7687615iom.1;
+        Thu, 01 Jul 2021 07:03:55 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
          :message-id;
-        bh=mYpWVNkGyyi4+D5Ik3YO8omc3O/tZSWPuO0UlaNpdPE=;
-        b=fAyOVUOcDZSHW58wbxWqW4TAvfLBRU1bsMUNfnY0MSfezl5MchfUJDGivQZnKuVZ1F
-         KitXSDgjX9siYDAEbS7dVfLq5FBKO0t3/nVlKqTg4dypm5+qc2HZ4773O+Q2fR3T1KyA
-         2vq6Nvh2rcpOZqN72dcQyT7xdC/Au2KJ8U4XBBwQ/eefMYD4IajNyGwb7lQutfC0A4Ml
-         n0v8OqeBR+RrEn9xlqaP7/mAqE9Jf8YQ1NmJ0DHDra4LJsmUFi9N2elsboSHfnEFKlku
-         QZJRacqtwKLxPffOeCUFI1lAvfEGeNlq98vzn+R9TW4q6iE3yTdMlpeDiRlQpjqQnrpD
-         l/XA==
-X-Gm-Message-State: AOAM532DMQohQZVFricciUpOwNLlBqjJc8DnoscA1zPUr5TPevWuUkXU
-        v5Vj/HHuULfeRfg7bEzsCw==
-X-Google-Smtp-Source: ABdhPJxvLXDtYCaeHE5BU26+kYkT3YksThGWXzGZkcTWU32ai4Ma0FLwraS4S2gZj5vctoN26xJltA==
-X-Received: by 2002:a05:6602:1846:: with SMTP id d6mr12160079ioi.111.1625148175051;
-        Thu, 01 Jul 2021 07:02:55 -0700 (PDT)
+        bh=SmBXJ9fHetqXtaZ7gjDn9p2NACbKWCG+T7Pvmo1erz4=;
+        b=F/h4brM93Q4dSudqe92SP9u69hxlK7LKggMGYPHLb1aX/nmrQcJFR/5+FmQtZi3on0
+         z6yZXtROQ0WNeglefA7ooBWzzaqMWUXzqcIQb3e1ESK4tbKeiYaATuWApD0DE5DQUX0L
+         CJJd/XuPwxILW7+40EpeXdDMfYz+AMBrfo0AK9V42BQWInklTpzgWEN8sjjpfpwaYamD
+         BtjQTGEL8pHDj/CTweJaNeXWMnMNfIx06tVcrOKTZsc2ZYJJ8Qp3cV2h1Y0d8UidTGbK
+         DT9DIpw7+bWClNxr/l3g70k0kXU/jvzPAjsSq543D075ZkgBPMUfiFuyoVx6CahOg8BQ
+         hg2g==
+X-Gm-Message-State: AOAM531w+emcarDSYlOu7e+XI8dmAFCkAB5JnySHUDHws7qSWhUr6AOb
+        jf7EQ0U9H9uSnmN8YsC36g==
+X-Google-Smtp-Source: ABdhPJwfnI6olZAZZ6EN1RITBI2pL6d1o7qQWw48ciG943n3gVDOQnGTinSKHtu1eq3BGagIUsOS+A==
+X-Received: by 2002:a5d:8154:: with SMTP id f20mr12736753ioo.89.1625148235459;
+        Thu, 01 Jul 2021 07:03:55 -0700 (PDT)
 Received: from robh.at.kernel.org ([64.188.179.248])
-        by smtp.gmail.com with ESMTPSA id m12sm32206iln.43.2021.07.01.07.02.51
+        by smtp.gmail.com with ESMTPSA id a15sm43559ilq.18.2021.07.01.07.03.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 01 Jul 2021 07:02:54 -0700 (PDT)
-Received: (nullmailer pid 2278702 invoked by uid 1000);
+        Thu, 01 Jul 2021 07:03:54 -0700 (PDT)
+Received: (nullmailer pid 2278698 invoked by uid 1000);
         Thu, 01 Jul 2021 14:02:43 -0000
 From:   Rob Herring <robh@kernel.org>
-To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-Cc:     Philipp Zabel <p.zabel@pengutronix.de>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     devicetree@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Rob Herring <robh+dt@kernel.org>,
-        Biju Das <biju.das.jz@bp.renesas.com>,
-        Prabhakar <prabhakar.csengg@gmail.com>,
-        linux-renesas-soc@vger.kernel.org, devicetree@vger.kernel.org
-In-Reply-To: <20210629220328.13366-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-References: <20210629220328.13366-1-prabhakar.mahadev-lad.rj@bp.renesas.com> <20210629220328.13366-2-prabhakar.mahadev-lad.rj@bp.renesas.com>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: Add binding documentation for Renesas RZ/G2L A/D converter
+        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+In-Reply-To: <20210627163244.1090296-6-jic23@kernel.org>
+References: <20210627163244.1090296-1-jic23@kernel.org> <20210627163244.1090296-6-jic23@kernel.org>
+Subject: Re: [PATCH 05/15] dt-bindings: iio: dac: ad5446: Add missing binding document
 Date:   Thu, 01 Jul 2021 08:02:43 -0600
-Message-Id: <1625148163.546497.2278701.nullmailer@robh.at.kernel.org>
+Message-Id: <1625148163.528787.2278697.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 29 Jun 2021 23:03:27 +0100, Lad Prabhakar wrote:
-> Add binding documentation for Renesas RZ/G2L A/D converter block.
+On Sun, 27 Jun 2021 17:32:34 +0100, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
-> Reviewed-by: Biju Das <biju.das.jz@bp.renesas.com>
+> Binding is a little stricter than the Linux driver.
+> 
+> It requires vcc-supply to be present for devices that don't have
+> an internal reference, whereas the driver just prints a message and
+> carries on.  Given this means that it is impossible to establish
+> a scaling of the output channel, let us make it required in the binding
+> schema.
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
 > ---
->  .../bindings/iio/adc/renesas,rzg2l-adc.yaml   | 121 ++++++++++++++++++
->  1 file changed, 121 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
+>  .../bindings/iio/dac/adi,ad5446.yaml          | 105 ++++++++++++++++++
+>  1 file changed, 105 insertions(+)
 > 
 
 My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
@@ -79,16 +81,11 @@ on your patch (DT_CHECKER_FLAGS is new in v5.13):
 yamllint warnings/errors:
 
 dtschema/dtc warnings/errors:
-Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.example.dts:19:18: fatal error: dt-bindings/clock/r9a07g044-cpg.h: No such file or directory
-   19 |         #include <dt-bindings/clock/r9a07g044-cpg.h>
-      |                  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-compilation terminated.
-make[1]: *** [scripts/Makefile.lib:380: Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.example.dt.yaml] Error 1
-make[1]: *** Waiting for unfinished jobs....
-make: *** [Makefile:1416: dt_binding_check] Error 2
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/dac/ti,dac7512.example.dt.yaml: dac@0: 'vcc-supply' is a required property
+	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/dac/adi,ad5446.yaml
 \ndoc reference errors (make refcheckdocs):
 
-See https://patchwork.ozlabs.org/patch/1498675
+See https://patchwork.ozlabs.org/patch/1497723
 
 This check can fail if there are any dependencies. The base for a patch
 series is generally the most recent rc1.
