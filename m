@@ -2,54 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-12.7 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC292C07E99
-	for <linux-iio@archiver.kernel.org>; Sat,  3 Jul 2021 16:55:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 676BAC07E99
+	for <linux-iio@archiver.kernel.org>; Sat,  3 Jul 2021 16:57:36 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A5FB06193D
-	for <linux-iio@archiver.kernel.org>; Sat,  3 Jul 2021 16:55:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4A88E6193A
+	for <linux-iio@archiver.kernel.org>; Sat,  3 Jul 2021 16:57:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229639AbhGCQ6S (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 3 Jul 2021 12:58:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48578 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229562AbhGCQ6R (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Jul 2021 12:58:17 -0400
-Received: from mail.andi.de1.cc (mail.andi.de1.cc [IPv6:2a01:238:4321:8900:456f:ecd6:43e:202c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15124C061762;
-        Sat,  3 Jul 2021 09:55:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:Content-Type:
-        MIME-Version:References:In-Reply-To:Message-ID:Subject:Cc:To:From:Date:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=Vggw9YPIH2+nZjkRtdf8oMGdKMPN/MJ+ayBYJkv/pa8=; b=n+Bh+yZF9zvjBx5VSehhsPIrMh
-        7GNmh8vaOw6pwis5zwBjoJTCwBQbPKAMR6/ts+GWVfzag3Xg9vjRNg4eUB/6kCQTDKmy+7IGkwfvv
-        r+FX1qvx9+Ongto1YPsYoeR75AmV5egj7eyJ05sHK+nSZ7ir98FpjMOotGFkRiMbHaw8=;
-Received: from p200300ccff37da001a3da2fffebfd33a.dip0.t-ipconnect.de ([2003:cc:ff37:da00:1a3d:a2ff:febf:d33a] helo=aktux)
-        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.89)
-        (envelope-from <andreas@kemnade.info>)
-        id 1lzivd-0000fd-UL; Sat, 03 Jul 2021 18:55:42 +0200
-Date:   Sat, 3 Jul 2021 18:55:40 +0200
-From:   Andreas Kemnade <andreas@kemnade.info>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
-        devicetree@vger.kernel.org, lars@metafoo.de,
-        linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, sre@kernel.org, robh+dt@kernel.org,
-        leonard.crestez@nxp.com, lee.jones@linaro.org
-Subject: Re: [Letux-kernel] [PATCH 0/4] mfd: rn5t618: Extend ADC support
-Message-ID: <20210703185540.5b6bec20@aktux>
-In-Reply-To: <20210703183932.75c7012a@aktux>
-References: <20210703084224.31623-1-andreas@kemnade.info>
-        <20210703165950.6e2aeb89@jic23-huawei>
-        <20210703183932.75c7012a@aktux>
-X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        id S229787AbhGCRAH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 3 Jul 2021 13:00:07 -0400
+Received: from mail.kernel.org ([198.145.29.99]:48250 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229529AbhGCRAH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Jul 2021 13:00:07 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B9A9561627;
+        Sat,  3 Jul 2021 16:57:29 +0000 (UTC)
+Date:   Sat, 3 Jul 2021 17:59:52 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Simon Xue <xxm@rock-chips.com>
+Cc:     linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, Johan Jonker <jbx6244@gmail.com>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: adc: rockchip_saradc: add support for rk3568
+ saradc
+Message-ID: <20210703175952.238e6218@jic23-huawei>
+In-Reply-To: <20210702021527.146343-1-xxm@rock-chips.com>
+References: <20210702021403.146293-1-xxm@rock-chips.com>
+        <20210702021527.146343-1-xxm@rock-chips.com>
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
@@ -57,36 +47,71 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 3 Jul 2021 18:39:40 +0200
-Andreas Kemnade <andreas@kemnade.info> wrote:
+On Fri,  2 Jul 2021 10:15:27 +0800
+Simon Xue <xxm@rock-chips.com> wrote:
 
-> Hi,
-> 
-> On Sat, 3 Jul 2021 16:59:50 +0100
-> Jonathan Cameron <jic23@kernel.org> wrote:
-> 
-> > On Sat,  3 Jul 2021 10:42:20 +0200
-> > Andreas Kemnade <andreas@kemnade.info> wrote:
-> >   
-> > > Add devicetree support so that consumers can reference the channels
-> > > via devicetree, especially the power subdevice can make use of that
-> > > to provide voltage_now properties.    
-> > 
-> > Does the mapping vary from board to board?  Often these mappings are
-> > internal to the chip so might as well be provided hard coded in the
-> > relevant drivers rather than via DT. See drivers that have iio_map
-> > structure arrays.
-> >   
-> Most things are internal to the chip, but 
-> AIN1/AIN0 are external and could be connected to anything.
-> 
-hmm, iio_map stuff looks nice, so before messing with devicetree,
-I could solve 90% of the problem by just using iio_map? For my use
-cases it is enough to have the internal stuff at the moment. That would
-simplify stuff a lot.
+A small amount of info on the device is always useful in a commit like this.
+Here, perhaps you could call out that it is similar to some other device, but
+with 8 channels?
 
-So I could go forward with the iio_map stuff now, and if there is a use
-case for AIN1/0, the devicetree stuff can be added later?
+Otherwise, looks good to me.  DT patch is fine as well.  I'll let them sit
+a little longer though to give others time to comment.
 
-Regards,
-Andreas
+The dtsi change requested by Johan goes via a different tree anyway so doesn't
+need to be part of this series.
+
+Jonathan
+
+> Signed-off-by: Simon Xue <xxm@rock-chips.com>
+> ---
+>  drivers/iio/adc/rockchip_saradc.c | 22 +++++++++++++++++++++-
+>  1 file changed, 21 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+> index 12584f1631d8..f3eb8d2e50dc 100644
+> --- a/drivers/iio/adc/rockchip_saradc.c
+> +++ b/drivers/iio/adc/rockchip_saradc.c
+> @@ -35,7 +35,7 @@
+>  #define SARADC_DLY_PU_SOC_MASK		0x3f
+>  
+>  #define SARADC_TIMEOUT			msecs_to_jiffies(100)
+> -#define SARADC_MAX_CHANNELS		6
+> +#define SARADC_MAX_CHANNELS		8
+>  
+>  struct rockchip_saradc_data {
+>  	const struct iio_chan_spec	*channels;
+> @@ -192,6 +192,23 @@ static const struct rockchip_saradc_data rk3399_saradc_data = {
+>  	.clk_rate = 1000000,
+>  };
+>  
+> +static const struct iio_chan_spec rockchip_rk3568_saradc_iio_channels[] = {
+> +	SARADC_CHANNEL(0, "adc0", 10),
+> +	SARADC_CHANNEL(1, "adc1", 10),
+> +	SARADC_CHANNEL(2, "adc2", 10),
+> +	SARADC_CHANNEL(3, "adc3", 10),
+> +	SARADC_CHANNEL(4, "adc4", 10),
+> +	SARADC_CHANNEL(5, "adc5", 10),
+> +	SARADC_CHANNEL(6, "adc6", 10),
+> +	SARADC_CHANNEL(7, "adc7", 10),
+> +};
+> +
+> +static const struct rockchip_saradc_data rk3568_saradc_data = {
+> +	.channels = rockchip_rk3568_saradc_iio_channels,
+> +	.num_channels = ARRAY_SIZE(rockchip_rk3568_saradc_iio_channels),
+> +	.clk_rate = 1000000,
+> +};
+> +
+>  static const struct of_device_id rockchip_saradc_match[] = {
+>  	{
+>  		.compatible = "rockchip,saradc",
+> @@ -202,6 +219,9 @@ static const struct of_device_id rockchip_saradc_match[] = {
+>  	}, {
+>  		.compatible = "rockchip,rk3399-saradc",
+>  		.data = &rk3399_saradc_data,
+> +	}, {
+> +		.compatible = "rockchip,rk3568-saradc",
+> +		.data = &rk3568_saradc_data,
+>  	},
+>  	{},
+>  };
+
