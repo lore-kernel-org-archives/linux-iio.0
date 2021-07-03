@@ -2,215 +2,75 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=unavailable
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC297C11F6C
-	for <linux-iio@archiver.kernel.org>; Fri,  2 Jul 2021 11:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F8D4C07E9B
+	for <linux-iio@archiver.kernel.org>; Sat,  3 Jul 2021 08:42:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C9070613EB
-	for <linux-iio@archiver.kernel.org>; Fri,  2 Jul 2021 11:14:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6A7CE613FB
+	for <linux-iio@archiver.kernel.org>; Sat,  3 Jul 2021 08:42:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231823AbhGBLRW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 2 Jul 2021 07:17:22 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:32110 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231130AbhGBLRW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Jul 2021 07:17:22 -0400
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 162BBUmV029723;
-        Fri, 2 Jul 2021 07:14:49 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 39h859wfk7-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 02 Jul 2021 07:14:49 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 162BEmBl005019
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 2 Jul 2021 07:14:48 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
- Fri, 2 Jul 2021 07:14:47 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
- Fri, 2 Jul 2021 07:14:47 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.858.5 via Frontend
- Transport; Fri, 2 Jul 2021 07:14:47 -0400
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.128])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 162BEhEK008901;
-        Fri, 2 Jul 2021 07:14:45 -0400
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jic23@kernel.org>, <devicetree@vger.kernel.org>,
-        <robh+dt@kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v4 2/2] dt-bindings: iio: frequency: add adrf6780 doc
-Date:   Fri, 2 Jul 2021 14:12:39 +0300
-Message-ID: <20210702111239.174189-2-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210702111239.174189-1-antoniu.miclaus@analog.com>
-References: <20210702111239.174189-1-antoniu.miclaus@analog.com>
+        id S229975AbhGCIpQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 3 Jul 2021 04:45:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54704 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229829AbhGCIpQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Jul 2021 04:45:16 -0400
+Received: from mail.andi.de1.cc (mail.andi.de1.cc [IPv6:2a01:238:4321:8900:456f:ecd6:43e:202c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8002DC061764;
+        Sat,  3 Jul 2021 01:42:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:MIME-Version:
+        Message-Id:Date:Subject:To:From:Sender:Reply-To:Cc:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=ygQ/dHoI16d9t9CiCap4vqQ0iOswu0jckuAtsh9qAn0=; b=Ogm1pWu5ATnJNwGnM//rPJXFwT
+        jhvozEeKfD6Czi4uacoca1Njk9q4muTn3j5H422KVyNQxHtE1obu2qV1x/ID6JfOO7HqwuYHlJ8Gi
+        9M3pVn0asYwCzKR6WFooGY9vx3JbiHEXmuDI5X76Faow3I3GeK4Kl8UmSLwB5rUznhbc=;
+Received: from p200300ccff37da001a3da2fffebfd33a.dip0.t-ipconnect.de ([2003:cc:ff37:da00:1a3d:a2ff:febf:d33a] helo=aktux)
+        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <andreas@kemnade.info>)
+        id 1lzbES-0006NR-OJ; Sat, 03 Jul 2021 10:42:36 +0200
+Received: from andi by aktux with local (Exim 4.92)
+        (envelope-from <andreas@kemnade.info>)
+        id 1lzbES-0008Gw-7s; Sat, 03 Jul 2021 10:42:36 +0200
+From:   Andreas Kemnade <andreas@kemnade.info>
+To:     lee.jones@linaro.org, robh+dt@kernel.org, jic23@kernel.org,
+        lars@metafoo.de, sre@kernel.org, andreas@kemnade.info,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-pm@vger.kernel.org,
+        leonard.crestez@nxp.com, letux-kernel@openphoenux.org
+Subject: [PATCH 0/4] mfd: rn5t618: Extend ADC support
+Date:   Sat,  3 Jul 2021 10:42:20 +0200
+Message-Id: <20210703084224.31623-1-andreas@kemnade.info>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: LlprigCi3-qXD_QRxFjBuHK1rHmqKohi
-X-Proofpoint-ORIG-GUID: LlprigCi3-qXD_QRxFjBuHK1rHmqKohi
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-02_03:2021-07-02,2021-07-02 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- malwarescore=0 priorityscore=1501 phishscore=0 impostorscore=0 mlxscore=0
- adultscore=0 spamscore=0 mlxlogscore=999 bulkscore=0 clxscore=1015
- suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2107020063
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add device tree bindings for the ADRF6780 Upconverter.
+Add devicetree support so that consumers can reference the channels
+via devicetree, especially the power subdevice can make use of that
+to provide voltage_now properties.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- changes in v4:
-  - fix dt_binding_check detected issues
-  - update license to GPL-2.0-only OR BSD-2-Clause
-  - add dependencies schema
-  - other minor fixes based on the review received
+Andreas Kemnade (4):
+  dt-bindings: mfd: ricoh,rn5t618: ADC related nodes and properties
+  mfd: rn5t618: Add of compatibles for ADC and power
+  iio: rn5t618: Add devicetree support
+  power: supply: rn5t618: Add voltage_now property
 
- .../bindings/iio/frequency/adi,adrf6780.yaml  | 119 ++++++++++++++++++
- 1 file changed, 119 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
+ .../bindings/mfd/ricoh,rn5t618.yaml           | 53 ++++++++++++++++++
+ drivers/iio/adc/rn5t618-adc.c                 | 14 ++++-
+ drivers/mfd/rn5t618.c                         |  6 +-
+ drivers/power/supply/rn5t618_power.c          | 56 +++++++++++++++++++
+ 4 files changed, 126 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
-new file mode 100644
-index 000000000000..61a7a45837ae
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
-@@ -0,0 +1,119 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/frequency/adi,adrf6780.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: ADRF6780 Microwave Upconverter
-+
-+maintainers:
-+  - Antoniu Miclaus <antoniu.miclaus@analog.com>
-+
-+description: |
-+   Wideband, microwave upconverter optimized for point to point microwave
-+   radio designs operating in the 5.9 GHz to 23.6 GHz frequency range.
-+
-+   https://www.analog.com/en/products/adrf6780.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adrf6780
-+
-+  reg:
-+    maxItems: 1
-+
-+  spi-max-frequency:
-+    maximum: 1000000
-+
-+  clocks:
-+    description:
-+      Definition of the external clock.
-+    minItems: 1
-+
-+  clock-names:
-+    items:
-+      - const: lo_in
-+  
-+  clock-output-names:
-+    maxItems: 1
-+
-+  adi,vga-buff-en:
-+    description:
-+      VGA Buffer Enable.
-+    type: boolean
-+
-+  adi,lo-buff-en:
-+    description:
-+      LO Buffer Enable.
-+    type: boolean
-+
-+  adi,if-mode-en:
-+    description:
-+      IF Mode Enable.
-+    type: boolean
-+
-+  adi,iq-mode-en:
-+    description:
-+      IQ Mode Enable.
-+    type: boolean
-+
-+  adi,lo-x2-en:
-+    description:
-+      LO x2 Enable.
-+    type: boolean
-+
-+  adi,lo-ppf-en:
-+    description:
-+      LO x1 Enable.
-+    type: boolean
-+
-+  adi,lo-en:
-+    description:
-+      LO Enable.
-+    type: boolean
-+
-+  adi,uc-bias-en:
-+    description:
-+      UC Bias Enable.
-+    type: boolean
-+
-+  adi,lo-sideband:
-+    description:
-+      Switch to the Other LO Sideband.
-+    type: boolean
-+
-+  adi,vdet-out-en:
-+    description:
-+      VDET Output Select Enable.
-+    type: boolean
-+
-+  '#clock-cells':
-+    const: 0
-+
-+dependencies:
-+  adi,lo-x2-en: [ "adi,lo-en" ]
-+  adi,lo-ppf-en: [ "adi,lo-en" ]
-+
-+required:
-+  - compatible
-+  - reg
-+  - clocks
-+  - clock-names
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      adrf6780@0 {
-+        compatible = "adi,adrf6780";
-+        reg = <0>;
-+        spi-max-frequency = <1000000>;
-+        clocks = <&adrf6780_lo>;
-+        clock-names = "lo_in";
-+      };
-+    };
-+...
 -- 
-2.32.0
+2.30.2
 
