@@ -2,75 +2,108 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 08280C07E9B
-	for <linux-iio@archiver.kernel.org>; Tue,  6 Jul 2021 11:56:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C95CC07E96
+	for <linux-iio@archiver.kernel.org>; Tue,  6 Jul 2021 16:10:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E623561CB2
-	for <linux-iio@archiver.kernel.org>; Tue,  6 Jul 2021 11:55:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 28461619D2
+	for <linux-iio@archiver.kernel.org>; Tue,  6 Jul 2021 16:10:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234824AbhGFL6h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 6 Jul 2021 07:58:37 -0400
-Received: from mga04.intel.com ([192.55.52.120]:46211 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S240661AbhGFLrD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 6 Jul 2021 07:47:03 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10036"; a="207272505"
-X-IronPort-AV: E=Sophos;i="5.83,328,1616482800"; 
-   d="scan'208";a="207272505"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jul 2021 04:40:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.83,328,1616482800"; 
-   d="scan'208";a="427558916"
-Received: from mylly.fi.intel.com (HELO [10.237.72.174]) ([10.237.72.174])
-  by orsmga002.jf.intel.com with ESMTP; 06 Jul 2021 04:40:02 -0700
-Subject: Re: [PATCH v12 00/17] Introduce the Counter character device
- interface
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>, jic23@kernel.org
-Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
-        a.fatoum@pengutronix.de, kamel.bouhara@bootlin.com,
-        gwendal@chromium.org, alexandre.belloni@bootlin.com,
-        david@lechnology.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        syednwaris@gmail.com, patrick.havelange@essensium.com,
-        fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@st.com, o.rempel@pengutronix.de
-References: <cover.1625471640.git.vilhelm.gray@gmail.com>
-From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Message-ID: <5bdd9ee6-86af-3bcc-43ff-418fd1a2e3e8@linux.intel.com>
-Date:   Tue, 6 Jul 2021 14:40:01 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S230086AbhGFQMi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 6 Jul 2021 12:12:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54772 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229773AbhGFQMa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Jul 2021 12:12:30 -0400
+Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32060C06175F;
+        Tue,  6 Jul 2021 09:09:50 -0700 (PDT)
+Received: by mail-qv1-xf33.google.com with SMTP id w5so9967396qvu.10;
+        Tue, 06 Jul 2021 09:09:50 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=aLIjEv3Y3XGxT5C/sRBa0wIugXh2Hwubx4IA7LHkqcs=;
+        b=ooslgVwkuacSRwFRUx3MQosPkIjBAmT1hvngoQwho/oDPfTpn98k0W0nJhrBCbg2ZU
+         i/rSq4Yi0vlHu/tQC3sPFeQtkFQ0YlTG18WgLeySs2Vl4wcsxVYI/eFK+6mxY7mbAbSD
+         hKZ2QIP1j8I+2Jy25o04vpuWy8A+5t3MODrI/FUAx/Oa4i2Q9JqgoLfUunz0m4fEP72h
+         pygiXZ7BoWDQyqyJPPBiBHSHZIjpAeRYssrHWKC1g2iacdnFbCCVpXG5jYqIa67N9/qg
+         000TSkBguEzHmRer+4Y0fl4HHcRWP8cHTqQwtxOuoJtoEAgohdiIcLsXswzVFJZjaXYO
+         5VZw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=aLIjEv3Y3XGxT5C/sRBa0wIugXh2Hwubx4IA7LHkqcs=;
+        b=CSXOjFtEIkkZZVuU4mmzDcsSVA4Jl3JEw2MkLwE1FVP/SFIuhJp0e9qILymucu4O96
+         15XebaL9Gw2tTlw6i1G3fiVtYwCwoxbs3EcmxLDo8A8Ps8S0H5wgIHnZ4ijhZyRzDY/m
+         hFR2Olyu0ansu+iABifczfJbuFF2K4BBxS30AzelFik7sr/KmalwAkNFvo7Zdj5hdusN
+         xY1cTjxf133/kT5BY9uoORctaeONf93zjpkXwkbRTKb5EjW3krhGCcBS8fAAocC7Q1JP
+         4dgerfBcRIy21G+ceVsyVWErLBPBhRC70pitSPYM7eiSGNS82Da+VppoP6ds309qzwTk
+         jTAg==
+X-Gm-Message-State: AOAM533dHSIwpIPOwRTd5TxlWNuit/UkobSQPw2SJQn/OiKDEtErGpEn
+        kDKkeb9iuMUVMPctUoJGSP4=
+X-Google-Smtp-Source: ABdhPJwbcFRmDtFITFktcIQ5QmKVh4aTMpyIGd5fZYXuEHQMzLSfYmURJnVZHsdhwxqeCopttVvqYg==
+X-Received: by 2002:ad4:5012:: with SMTP id s18mr19056044qvo.42.1625587789942;
+        Tue, 06 Jul 2021 09:09:49 -0700 (PDT)
+Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
+        by smtp.gmail.com with ESMTPSA id n64sm6995371qkd.79.2021.07.06.09.09.49
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 06 Jul 2021 09:09:49 -0700 (PDT)
+From:   Liam Beguin <liambeguin@gmail.com>
+To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
+        lars@metafoo.de, pmeerw@pmeerw.net
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org
+Subject: [PATCH v4 01/10] iio: inkern: apply consumer scale on IIO_VAL_INT cases
+Date:   Tue,  6 Jul 2021 12:09:33 -0400
+Message-Id: <20210706160942.3181474-2-liambeguin@gmail.com>
+X-Mailer: git-send-email 2.30.1.489.g328c10930387
+In-Reply-To: <20210706160942.3181474-1-liambeguin@gmail.com>
+References: <20210706160942.3181474-1-liambeguin@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <cover.1625471640.git.vilhelm.gray@gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi
+From: Liam Beguin <lvb@xiphos.com>
 
-On 7/5/21 11:18 AM, William Breathitt Gray wrote:
-> To summarize the main points of this patchset: there are no changes to
-> the existing Counter sysfs userspace interface; a Counter character
-> device interface is introduced that allows Counter events and associated
-> data to be read() by userspace; the events_configure() and
-> watch_validate() driver callbacks are introduced to support Counter
-> events; and IRQ support is added to the 104-QUAD-8 driver, serving as an
-> example of how to support the new Counter events functionality.
-> 
-I quickly tested this set on top of linux-next next-20210706 and didn't 
-see any issue with intel-qep.c. However I noticed two mutex issues in 
-patch 15/17. Perhaps visible due the CONFIG_DEBUG_MUTEXES=y etc. I have on.
+When a consumer calls iio_read_channel_processed() and the channel has
+an integer scale, the scale channel scale is applied and the processed
+value is returned as expected.
 
-I'll be out of office next few weeks so cannot test if you have a new 
-version meanwhile but wanted to share no show stopper from intel-qep.c 
-and those two mutex warnings.
+On the other hand, if the consumer calls iio_convert_raw_to_processed()
+the scaling factor requested by the consumer is not applied.
 
-Jarkko
+This for example causes the consumer to process mV when expecting uV.
+Make sure to always apply the scaling factor requested by the consumer.
+
+Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
+Signed-off-by: Liam Beguin <lvb@xiphos.com>
+---
+ drivers/iio/inkern.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 391a3380a1d1..b752fe5818e7 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -599,7 +599,7 @@ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
+ 
+ 	switch (scale_type) {
+ 	case IIO_VAL_INT:
+-		*processed = raw64 * scale_val;
++		*processed = raw64 * scale_val * scale;
+ 		break;
+ 	case IIO_VAL_INT_PLUS_MICRO:
+ 		if (scale_val2 < 0)
+-- 
+2.30.1.489.g328c10930387
+
