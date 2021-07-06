@@ -2,69 +2,71 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C78DDC11F68
-	for <linux-iio@archiver.kernel.org>; Tue,  6 Jul 2021 16:10:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00F0DC11F6A
+	for <linux-iio@archiver.kernel.org>; Tue,  6 Jul 2021 16:10:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A998C619D2
+	by mail.kernel.org (Postfix) with ESMTP id E2349619D2
 	for <linux-iio@archiver.kernel.org>; Tue,  6 Jul 2021 16:10:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230146AbhGFQMk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S230150AbhGFQMk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Tue, 6 Jul 2021 12:12:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54770 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230026AbhGFQMa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Jul 2021 12:12:30 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B00EC061574;
-        Tue,  6 Jul 2021 09:09:50 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id w13so14824097qtc.0;
-        Tue, 06 Jul 2021 09:09:50 -0700 (PDT)
+        with ESMTP id S230111AbhGFQMc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Jul 2021 12:12:32 -0400
+Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 92478C061762;
+        Tue,  6 Jul 2021 09:09:52 -0700 (PDT)
+Received: by mail-qk1-x735.google.com with SMTP id s4so1998867qkm.13;
+        Tue, 06 Jul 2021 09:09:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1kqT32/5c/ZxywbX7jV+5ehOOW0Fuzi3oVM2IO0aUmI=;
-        b=KQP1UBBkZLo47IG0mW68Sm9hK/FCHaEOkZcvRl8Mkqk2h49OInqcpOxq6DZd9PsC2M
-         /JDizXgg8WD4oE/xogaplVohuI42mLvnM+IO+KrcZB6x5E0UV0anuheUTaKek49Tz3mx
-         2vEHNgju+J1r3ktvYoEVlIXvh+yqiOfmbPdL8RJlT/shtDUTYon3fNQaY3l38zLblc49
-         DmVO2s3LgJ9BjMDd51cBHMJZauB9YMwD6saCXpccBkIsI6FXHdE3BsOxo2+MbClZzNVo
-         dfFG3/vTNpsGbiTBTQwFuAf6BKcvXaaTsr5jM8hAayMHhRxaEjEJ+OlymXlhZC29PkVS
-         DHbA==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=zhQeMelYWNMHpFAMGtlyl1sUbg34IFFWmo4FOYtEzaY=;
+        b=e0hCouqsW64PHJjeDsZcvlMX0fF+yG2B4GOys0Gnr2fBJpupvojuz8dY/Q9A8679FY
+         S8MHosmBnXJ7UrYak1JL3q/DuhWU2au4hTL9YhQUv5PtyVnu+MLTFfhrAiKcCO9Vxthi
+         u4rmSR8D5nakvZ2g1Wah9RqVN+Y0Uppn5wAxKYrEwBHTU3hDEOjmsdkFzUiQ9yI2qnK5
+         3ZemMJbto7Bu23LdOwROmHXKF9pUXluFI35j5Y8h4yEI8gjVHGB5k1DsVN+El1QWsLFs
+         uEc2nEkgluTOYBL/S4jRmPM0sMrWVoAChqyAntF/quXozIGHLoTHCq4UUloX6SksXTQ0
+         hlew==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=1kqT32/5c/ZxywbX7jV+5ehOOW0Fuzi3oVM2IO0aUmI=;
-        b=nmk5oHF+JlzCEPBS0J+7zBjDDx0tcKOODixHWonRfftbO/sysAKoJhtdS4FTePUpnX
-         o+wbKx66epwqOOnPGHw8Rbl8b5GPZEmSOaCHKxU7kXtHMXa6tIcvcaFV4RKW3fyg6V1X
-         V7x84j2mhYMBL1P1W92WSDREVaAhLgZwvaK1X9SWiJjIkEjqkRW9EoXQzw4jTJ5CHQ07
-         58e7hPvFblJm1ch0hflfCoDgo+jyTy2GRcny7BYSpe3F+NaMGF/cQs53/sFZkM2ziLXX
-         XG6fpvANDH7yC60ROFraGqfDZoipt2o0q8ESmk1TTSHdzPw4jQyfeVk5dO6HlQQsQoEz
-         V/RQ==
-X-Gm-Message-State: AOAM531WMNww/beKyE5iuINfIIU+ITkPhxfqtQcBmdCTTFV+OthXIZbV
-        AKDzTfZHiY28QJILDedZIOE=
-X-Google-Smtp-Source: ABdhPJxKPXUuUGCvAXdHxQCZ0GJczCmu4ZmYrg/MpBYSdqT+IMkUvNzNtwhZ49hzTkaG5sElBrD99A==
-X-Received: by 2002:ac8:4799:: with SMTP id k25mr2361973qtq.333.1625587789031;
-        Tue, 06 Jul 2021 09:09:49 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=zhQeMelYWNMHpFAMGtlyl1sUbg34IFFWmo4FOYtEzaY=;
+        b=KTUEh6CZuAT3nXrgYfYgsRCOiIBnwE6vvD5WcqBK77lGjIW0lpBZT2ywj16PBaoud2
+         YISDNRkjj5OrXvHGX3iieDaFazmyTzf8xMeAPTxr3iOumq53Me2ciAmxfFyesRcYMYbt
+         ssA9c2nUvQTgGkyeclsBht4mZUD78uq2OkC+yGYGMgYeJ+5245vA0Q9RZ4PzRl+mBnF0
+         0pgd3LxKZtXH1R3BJVyJ3j8E4JKdSv0RRgDLnDwgwm+hcV7ilahmq0RHBjcnwmCHESG3
+         gSBeKwPIaSgtC8z9891GlwIBw5CF5w5K16c2rMxHnKbYPfS1rRd6I1DttqdoneT7rmvJ
+         ibuQ==
+X-Gm-Message-State: AOAM531Ty97NOorWBCfK0MXeYIkSQDPlex4A6fCNBA12pjovYrVZbHK5
+        FLlac9/bpbCoKiHu1HwHcX4=
+X-Google-Smtp-Source: ABdhPJzdxZQwbe9P4qh/yzdn8sxRTWBkNFxFgn/AxzjugkpgplSlI+nloIU4RnToC1ARVEBZMz4H/g==
+X-Received: by 2002:a37:a688:: with SMTP id p130mr4641361qke.257.1625587791818;
+        Tue, 06 Jul 2021 09:09:51 -0700 (PDT)
 Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id n64sm6995371qkd.79.2021.07.06.09.09.48
+        by smtp.gmail.com with ESMTPSA id n64sm6995371qkd.79.2021.07.06.09.09.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 06 Jul 2021 09:09:48 -0700 (PDT)
+        Tue, 06 Jul 2021 09:09:51 -0700 (PDT)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         lars@metafoo.de, pmeerw@pmeerw.net
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v4 00/10] iio: afe: add temperature rescaling support
-Date:   Tue,  6 Jul 2021 12:09:32 -0400
-Message-Id: <20210706160942.3181474-1-liambeguin@gmail.com>
+Subject: [PATCH v4 03/10] iio: inkern: make a best effort on offset calculation
+Date:   Tue,  6 Jul 2021 12:09:35 -0400
+Message-Id: <20210706160942.3181474-4-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.30.1.489.g328c10930387
+In-Reply-To: <20210706160942.3181474-1-liambeguin@gmail.com>
+References: <20210706160942.3181474-1-liambeguin@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -73,270 +75,61 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Liam Beguin <lvb@xiphos.com>
 
-Add temperature rescaling support to the IIO Analog Front End driver.
+iio_convert_raw_to_processed_unlocked() assumes the offset is an
+integer. Make a best effort to get a valid offset value for fractional
+cases without breaking implicit truncations.
 
-This series includes minor bug fixes and adds support for RTD temperature
-sensors as well as temperature transducers.
+Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
+Signed-off-by: Liam Beguin <lvb@xiphos.com>
+---
+ drivers/iio/inkern.c | 32 +++++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
 
-At first I tried to use iio_convert_raw_to_processed() to get more
-precision out of processed values but ran into issues when one of my
-ADCs didn't provide a scale. I tried to address this in the first two
-patches.
-
-When adding offset support to iio-rescale, I also noticed that
-iio_read_channel_processed() assumes that the offset is always an
-integer which I tried to address in the third patch without breaking
-valid implicit truncations.
-
-Related to: https://patchwork.kernel.org/project/linux-iio/list/?series=483087
-
-Changes since v3:
-- drop unnecessary fallthrough statements
-- drop redundant local variables in some calculations
-- fix s64 divisions on 32bit platforms by using do_div
-- add comment describing iio-rescaler offset calculation
-- drop unnecessary MAINTAINERS entry
-
-Changes since v2:
-- don't break implicit offset truncations
-- make a best effort to get a valid value for fractional types
-- drop return value change in iio_convert_raw_to_processed_unlocked()
-- don't rely on processed value for offset calculation
-- add INT_PLUS_{MICRO,NANO} support in iio-rescale
-- revert generic implementation in favor of temperature-sense-rtd and
-  temperature-transducer
-- add separate section to MAINTAINERS file
-
-Changes since v1:
-- rebase on latest iio `testing` branch
-- also apply consumer scale on integer channel scale types
-- don't break implicit truncation in processed channel offset
-  calculation
-- drop temperature AFE flavors in favor of a simpler generic
-  implementation
-
-Thanks for your time
-
-Liam Beguin (10):
-  iio: inkern: apply consumer scale on IIO_VAL_INT cases
-  iio: inkern: apply consumer scale when no channel scale is available
-  iio: inkern: make a best effort on offset calculation
-  iio: afe: rescale: reduce risk of integer overflow
-  iio: afe: rescale: add INT_PLUS_{MICRO,NANO} support
-  iio: afe: rescale: add offset support
-  iio: afe: rescale: add RTD temperature sensor support
-  iio: afe: rescale: add temperature transducers
-  dt-bindings: iio: afe: add bindings for temperature-sense-rtd
-  dt-bindings: iio: afe: add bindings for temperature transducers
-
- .../iio/afe/temperature-sense-rtd.yaml        | 101 ++++++++++
- .../iio/afe/temperature-transducer.yaml       | 111 +++++++++++
- drivers/iio/afe/iio-rescale.c                 | 173 +++++++++++++++++-
- drivers/iio/inkern.c                          |  40 +++-
- 4 files changed, 413 insertions(+), 12 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
-
-Range-diff against v3:
- -:  ------------ >  1:  42a7a1047edc iio: inkern: apply consumer scale on IIO_VAL_INT cases
- -:  ------------ >  2:  a1cd89fdad11 iio: inkern: apply consumer scale when no channel scale is available
- 1:  e74ff6b2f663 !  3:  ed0721fb6bd1 iio: inkern: make a best effort on offset calculation
-    @@ drivers/iio/inkern.c: EXPORT_SYMBOL_GPL(iio_read_channel_average_raw);
-     +	int offset_type, offset_val, offset_val2;
-      	s64 raw64 = raw;
-     -	int ret;
-    -+	int tmp;
-      
-     -	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET);
-     -	if (ret >= 0)
-    @@ drivers/iio/inkern.c: EXPORT_SYMBOL_GPL(iio_read_channel_average_raw);
-     +		case IIO_VAL_INT:
-     +			break;
-     +		case IIO_VAL_INT_PLUS_MICRO:
-    -+			fallthrough;
-     +		case IIO_VAL_INT_PLUS_NANO:
-     +			/*
-     +			 * Both IIO_VAL_INT_PLUS_MICRO and IIO_VAL_INT_PLUS_NANO
-    @@ drivers/iio/inkern.c: EXPORT_SYMBOL_GPL(iio_read_channel_average_raw);
-     +			 */
-     +			break;
-     +		case IIO_VAL_FRACTIONAL:
-    -+			tmp = offset_val / offset_val2;
-    -+			offset_val = tmp;
-    ++			offset_val /= offset_val2;
-     +			break;
-     +		case IIO_VAL_FRACTIONAL_LOG2:
-    -+			tmp = offset_val / (1 << offset_val2);
-    -+			offset_val = tmp;
-    ++			offset_val /= (1 << offset_val2);
-     +			break;
-     +		default:
-     +			return -EINVAL;
- 2:  a5696ca3c14f !  4:  e23e6cb26b92 iio: afe: rescale: reduce risk of integer overflow
-    @@ drivers/iio/afe/iio-rescale.c: static int rescale_read_raw(struct iio_dev *indio
-     +			tmp = (s64)*val * rescale->numerator;
-     +			tmp2 = (s64)*val2 * rescale->denominator;
-     +			factor = gcd(tmp, tmp2);
-    -+			*val = tmp / factor;
-    -+			*val2 = tmp2 / factor;
-    ++			do_div(tmp, factor);
-    ++			*val = tmp;
-    ++			do_div(tmp2, factor);
-    ++			*val2 = tmp2;
-      			return ret;
-      		case IIO_VAL_INT:
-      			*val *= rescale->numerator;
- 3:  2b435a2f58e8 !  5:  28203b672942 iio: afe: rescale: add INT_PLUS_{MICRO,NANO} support
-    @@ drivers/iio/afe/iio-rescale.c: static int rescale_read_raw(struct iio_dev *indio
-      			*val = tmp;
-      			return ret;
-     +		case IIO_VAL_INT_PLUS_NANO:
-    -+			fallthrough;
-     +		case IIO_VAL_INT_PLUS_MICRO:
-     +			tmp = (s64)*val * rescale->numerator;
-     +			*val = div_s64(tmp, rescale->denominator);
- 4:  577020b8326b !  6:  a6c944ae0f99 iio: afe: rescale: add offset support
-    @@ drivers/iio/afe/iio-rescale.c: static int rescale_read_raw(struct iio_dev *indio
-     +		 * Processed channels are scaled 1-to-1 and source offset is
-     +		 * already taken into account.
-     +		 *
-    -+		 * In other cases, the final offset value is defined by:
-    ++		 * In other cases, real world measurement are expressed as:
-    ++		 *
-    ++		 *	schan_scale * (raw + schan_offset)
-    ++		 *
-    ++		 * Given that the rescaler parameters are applied recursively:
-    ++		 *
-    ++		 *	rescaler_scale * (schan_scale * (raw + schan_offset) +
-    ++		 *		rescaler_offset)
-    ++		 *
-    ++		 * Or,
-    ++		 *
-    ++		 *	(rescaler_scale * schan_scale) * (raw +
-    ++		 *		(schan_offset +	rescaler_offset / schan_scale)
-    ++		 *
-    ++		 * Thus, reusing the original expression the parameters exposed
-    ++		 * to userspace are:
-    ++		 *
-    ++		 *	scale = schan_scale * rescaler_scale
-     +		 *	offset = schan_offset + rescaler_offset / schan_scale
-     +		 */
-     +		if (rescale->chan_processed) {
-    @@ drivers/iio/afe/iio-rescale.c: static int rescale_read_raw(struct iio_dev *indio
-     +					 IIO_CHAN_INFO_OFFSET)) {
-     +			ret = iio_read_channel_offset(rescale->source,
-     +						      &schan_off, NULL);
-    -+			if (ret < 0)
-    -+				return ret;
-    -+			else if (ret != IIO_VAL_INT)
-    -+				return -EOPNOTSUPP;
-    ++			if (ret != IIO_VAL_INT)
-    ++				return ret < 0 ? ret : -EOPNOTSUPP;
-     +		}
-     +
-     +		ret = iio_read_channel_scale(rescale->source, &scale, &scale2);
-    @@ drivers/iio/afe/iio-rescale.c: static int rescale_read_raw(struct iio_dev *indio
-     +		case IIO_VAL_INT_PLUS_NANO:
-     +			tmp = (s64)rescale->offset * 1000000000UL;
-     +			tmp2 = ((s64)scale * 1000000000UL) + scale2;
-    -+			factor = gcd(tmp, tmp2);
-    -+			tmp /= factor;
-    -+			tmp2 /= factor;
-     +			*val = div_s64(tmp, tmp2) + schan_off;
-     +			return IIO_VAL_INT;
-     +		case IIO_VAL_INT_PLUS_MICRO:
-     +			tmp = (s64)rescale->offset * 1000000UL;
-     +			tmp2 = ((s64)scale * 1000000UL) + scale2;
-    -+			factor = gcd(tmp, tmp2);
-    -+			tmp /= factor;
-    -+			tmp2 /= factor;
-     +			*val = div_s64(tmp, tmp2) + schan_off;
-     +			return IIO_VAL_INT;
-     +		default:
- 5:  0add5863ff00 =  7:  cc5eb96512d5 iio: afe: rescale: add RTD temperature sensor support
- 6:  0306e16020d4 =  8:  d8aa257aad35 iio: afe: rescale: add temperature transducers
- 7:  6906c5a21861 !  9:  f038d6a08ea2 dt-bindings: iio: afe: add bindings for temperature-sense-rtd
-    @@ Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml (new)
-     +      Channel node of a voltage io-channel.
-     +
-     +  '#io-channel-cells':
-    -+    const: 1
-    ++    const: 0
-     +
-     +  excitation-current-microamp:
-     +    description: The current fed through the RTD sensor.
-    @@ Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml (new)
-     +  - |
-     +    pt1000_1: temperature-sensor0 {
-     +        compatible = "temperature-sense-rtd";
-    -+        #io-channel-cells = <1>;
-    ++        #io-channel-cells = <0>;
-     +        io-channels = <&temp_adc1 0>;
-     +
-     +        excitation-current-microamp = <1000>; /* i = U/R = 5 / 5000 */
-    @@ Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml (new)
-     +        r-naught-ohms = <1000>;
-     +    };
-     +...
-    -
-    - ## MAINTAINERS ##
-    -@@ MAINTAINERS: F:	Documentation/devicetree/bindings/iio/afe/current-sense-shunt.yaml
-    - F:	Documentation/devicetree/bindings/iio/afe/voltage-divider.yaml
-    - F:	drivers/iio/afe/iio-rescale.c
-    - 
-    -+IIO UNIT CONVERTER (TEMPERATURE)
-    -+M:	Liam Beguin <liambeguin@gmail.com>
-    -+R:	Peter Rosin <peda@axentia.se>
-    -+L:	linux-iio@vger.kernel.org
-    -+S:	Maintained
-    -+F:	Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
-    -+
-    - IKANOS/ADI EAGLE ADSL USB DRIVER
-    - M:	Matthieu Castet <castet.matthieu@free.fr>
-    - M:	Stanislaw Gruszka <stf_xl@wp.pl>
- 8:  ac8d4eef179b ! 10:  1db42cb25254 dt-bindings: iio: afe: add bindings for temperature transducers
-    @@ Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml (new)
-     +      Channel node of a voltage io-channel.
-     +
-     +  '#io-channel-cells':
-    -+    const: 1
-    ++    const: 0
-     +
-     +  sense-offset-millicelsius:
-     +    description: |
-    @@ Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml (new)
-     +  - |
-     +    ad950: temperature-sensor-0 {
-     +        compatible = "temperature-transducer";
-    -+        #io-channel-cells = <1>;
-    ++        #io-channel-cells = <0>;
-     +        io-channels = <&temp_adc 3>;
-     +
-     +        sense-offset-millicelsius = <(-273150)>; /* Kelvin to degrees Celsius */
-    @@ Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml (new)
-     +  - |
-     +    znq_tmp: temperature-sensor-1 {
-     +        compatible = "temperature-transducer";
-    -+        #io-channel-cells = <1>;
-    ++        #io-channel-cells = <0>;
-     +        io-channels = <&temp_adc 2>;
-     +
-     +        sense-offset-millicelsius = <(-273150)>; /* Kelvin to degrees Celsius */
-     +        alpha-ppm-per-celsius = <4000>; /* 4 mV/K */
-     +    };
-     +...
-    -
-    - ## MAINTAINERS ##
-    -@@ MAINTAINERS: R:	Peter Rosin <peda@axentia.se>
-    - L:	linux-iio@vger.kernel.org
-    - S:	Maintained
-    - F:	Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
-    -+F:	Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
-    - 
-    - IKANOS/ADI EAGLE ADSL USB DRIVER
-    - M:	Matthieu Castet <castet.matthieu@free.fr>
-
-base-commit: 6cbb3aa0f9d5d23221df787cf36f74d3866fdb78
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index b69027690ed5..5e74d8983874 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -578,13 +578,35 @@ EXPORT_SYMBOL_GPL(iio_read_channel_average_raw);
+ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
+ 	int raw, int *processed, unsigned int scale)
+ {
+-	int scale_type, scale_val, scale_val2, offset;
++	int scale_type, scale_val, scale_val2;
++	int offset_type, offset_val, offset_val2;
+ 	s64 raw64 = raw;
+-	int ret;
+ 
+-	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET);
+-	if (ret >= 0)
+-		raw64 += offset;
++	offset_type = iio_channel_read(chan, &offset_val, &offset_val2,
++				       IIO_CHAN_INFO_OFFSET);
++	if (offset_type >= 0) {
++		switch (offset_type) {
++		case IIO_VAL_INT:
++			break;
++		case IIO_VAL_INT_PLUS_MICRO:
++		case IIO_VAL_INT_PLUS_NANO:
++			/*
++			 * Both IIO_VAL_INT_PLUS_MICRO and IIO_VAL_INT_PLUS_NANO
++			 * implicitely truncate the offset to it's integer form.
++			 */
++			break;
++		case IIO_VAL_FRACTIONAL:
++			offset_val /= offset_val2;
++			break;
++		case IIO_VAL_FRACTIONAL_LOG2:
++			offset_val /= (1 << offset_val2);
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		raw64 += offset_val;
++	}
+ 
+ 	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
+ 					IIO_CHAN_INFO_SCALE);
 -- 
 2.30.1.489.g328c10930387
 
