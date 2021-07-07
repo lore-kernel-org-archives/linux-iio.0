@@ -2,120 +2,74 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-17.3 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_SANE_1 autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 970D3C07E95
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Jul 2021 12:51:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C48E0C07E95
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Jul 2021 13:30:55 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 7A7B461C73
-	for <linux-iio@archiver.kernel.org>; Wed,  7 Jul 2021 12:51:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A4AE160D07
+	for <linux-iio@archiver.kernel.org>; Wed,  7 Jul 2021 13:30:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231785AbhGGMyE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 7 Jul 2021 08:54:04 -0400
-Received: from www381.your-server.de ([78.46.137.84]:39826 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231790AbhGGMyC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Jul 2021 08:54:02 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=yJeOhbOJDYkUVgdgU7Itn/JNUArEaxGirBx87wO49EE=; b=lTwgxqtUmUgvE5p5EA+OSsVv+L
-        GOMEebq36D7lZw2suu76NOADegKEQ+AbBHBD7JxI7bW9ZwJO36UgqO/o4xiv4M7qaV7zfgSRBHb6d
-        1FeEngILPEI4BdGEMENGHbKM8Tn1Hkw30D7CMDimd3gU3icDrx49NXug2UVsy5SUlWh6yy5EIMqb3
-        CR78D7gv3aryHWox1/ESfNMV4jmhkg5XL7bTC4pGW34gfHygA6VAESA2qQeX4XPU+JQI+cco0ocYZ
-        4SPkU4dNAHPCa1Hd3WRR+1w9eWfHrXg5H0I0O5PA/jqY0Lm2OJ/Wltv3AXRvnvW7uvipXUrOR9t5j
-        DgAimuwA==;
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1m16ip-000GIc-AB; Wed, 07 Jul 2021 14:32:11 +0200
-Received: from [2001:a61:2b10:2e01:9e5c:8eff:fe01:8578]
-        by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1m16ip-0000Mj-54; Wed, 07 Jul 2021 14:32:11 +0200
+        id S231816AbhGGNdf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 7 Jul 2021 09:33:35 -0400
+Received: from mail-lf1-f51.google.com ([209.85.167.51]:36640 "EHLO
+        mail-lf1-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231761AbhGGNde (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Jul 2021 09:33:34 -0400
+Received: by mail-lf1-f51.google.com with SMTP id y42so4109064lfa.3
+        for <linux-iio@vger.kernel.org>; Wed, 07 Jul 2021 06:30:53 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:message-id:date:from:subject:to:cc:in-reply-to
+         :references;
+        bh=WtLzF0PsDR294VsIIMxk4OtyyNT8nUHidsByZULzof8=;
+        b=Bgmx2heK0T5kpjt2rmYXFiaiyla2Lb8CzyJvQy7A0A21U5xQXgM0Mxi4NtVF7oI7d9
+         Im5sml4VEdoZbu4QtymxAhkzdQ9Z25izAVjHWm2lES9LPFwEKvRMMpPzzwczhNr+7Tr1
+         ZEwQmAwhU2HSKUGNP4ouxKYyUazeaEC92iVcveM1CZLVI0V/4wHy+cRcmm9CnxHGi2X2
+         qGadPagNq6G4S/t5NyPuW4LvA6ldqk+1PgNX0I0Ji8AJBvtuYFQUve6ExnuOGNIDBnxX
+         dB17eHeKwD6xDhoKJSca4kOPQQsAfjgICz71JN8itLMOeGuVXPJAtHO56ipJas+PWJOA
+         QF1g==
+X-Gm-Message-State: AOAM530Uf6N45/iyrdUoCTnfY53M7NbLOXyY+NGXJ/Eni8WKPA1dPcTq
+        T1MxCwMZgw1m1ATf8U4A+jA=
+X-Google-Smtp-Source: ABdhPJzsDopu0cpa3yr/H9ff4D+yNzOLGtkuO3IP8PBXf/pFpg1jo9FDjbUK6I7CsUDPVYP+/lx1lg==
+X-Received: by 2002:a19:6e43:: with SMTP id q3mr19017702lfk.265.1625664652610;
+        Wed, 07 Jul 2021 06:30:52 -0700 (PDT)
+Received: from localhost (88-112-11-80.elisa-laajakaista.fi. [88.112.11.80])
+        by smtp.gmail.com with ESMTPSA id a8sm2015771ljq.127.2021.07.07.06.30.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 07 Jul 2021 06:30:52 -0700 (PDT)
+Message-ID: <60e5ac8c.1c69fb81.c69f0.abab@mx.google.com>
+Date:   Wed, 07 Jul 2021 16:30:51 +0300
+From:   Hannu Hartikainen <hannu@hrtk.in>
 Subject: Re: [RESEND PATCH] iio: adis: set GPIO reset pin direction
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>,
-        =?UTF-8?Q?Antti_Ker=c3=a4nen?= <detegr@rbx.email>,
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        "Sa, Nuno" <Nuno.Sa@analog.com>,
+        Antti =?iso-8859-1?q?Ker=E4nen?= <detegr@rbx.email>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Cc:     Hannu Hartikainen <hannu@hrtk.in>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+Cc:     "Hennerich, Michael" <Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>
+In-Reply-To: <f82dcd9f-c7f1-1619-9ff2-95066b82c77f@metafoo.de>
 References: <20210706092922.v555jjvxbyv52ifw@haukka.localdomain>
- <PH0PR03MB63661EDEE130924514602A84991A9@PH0PR03MB6366.namprd03.prod.outlook.com>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <6f2a3147-11df-c85e-849e-f7a9d92a71fd@metafoo.de>
-Date:   Wed, 7 Jul 2021 14:32:10 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
-MIME-Version: 1.0
-In-Reply-To: <PH0PR03MB63661EDEE130924514602A84991A9@PH0PR03MB6366.namprd03.prod.outlook.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 8bit
-Content-Language: en-US
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.2/26224/Wed Jul  7 13:08:29 2021)
+        <PH0PR03MB63661EDEE130924514602A84991A9@PH0PR03MB6366.namprd03.prod.outlook.com>
+        <60e595b9.1c69fb81.5284.9247@mx.google.com>
+        <f82dcd9f-c7f1-1619-9ff2-95066b82c77f@metafoo.de>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 7/7/21 10:36 AM, Sa, Nuno wrote:
->> From: Antti Keränen <detegr@rbx.email>
->> Sent: Tuesday, July 6, 2021 11:29 AM
->> To: linux-iio@vger.kernel.org
->> Cc: Antti Keränen <detegr@rbx.email>; Hannu Hartikainen
->> <hannu@hrtk.in>; Lars-Peter Clausen <lars@metafoo.de>; Hennerich,
->> Michael <Michael.Hennerich@analog.com>; Sa, Nuno
->> <Nuno.Sa@analog.com>; Jonathan Cameron <jic23@kernel.org>
->> Subject: [RESEND PATCH] iio: adis: set GPIO reset pin direction
->>
->> Use GPIOD_OUT_LOW instead of GPIOD_ASIS as the reset pin needs
->> to be an
->> active low output pin.
->>
->> Suggested-by: Hannu Hartikainen <hannu@hrtk.in>
->> Signed-off-by: Antti Keränen <detegr@rbx.email>
->> ---
->> The documentation of GPIO consumer interface states:
->>
->> Be aware that there is no default direction for GPIOs. Therefore,
->> **using a GPIO without setting its direction first is illegal and will
->> result in undefined behavior!**
->>
->> Therefore the direction of the reset GPIO pin should be set as output.
->>
->>   drivers/iio/imu/adis.c | 2 +-
->>   1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/imu/adis.c b/drivers/iio/imu/adis.c
->> index 319b64b2fd88..7f13b3763732 100644
->> --- a/drivers/iio/imu/adis.c
->> +++ b/drivers/iio/imu/adis.c
->> @@ -415,7 +415,7 @@ int __adis_initial_startup(struct adis *adis)
->>   	int ret;
->>
->>   	/* check if the device has rst pin low */
->> -	gpio = devm_gpiod_get_optional(&adis->spi->dev, "reset",
->> GPIOD_ASIS);
->> +	gpio = devm_gpiod_get_optional(&adis->spi->dev, "reset",
->> GPIOD_OUT_LOW);
->>   	if (IS_ERR(gpio))
->>   		return PTR_ERR(gpio);
->>
-> Hi,
->
-> Thanks for the patch. Forcing the device reset was intentional
-> (thus the GPIO_ASIS). But what Lars is suggesting is a good idea
-> and a neat improvement here.
->
-GPIO_ASIS leaves the direction of the GPIO untouched. If the default is 
-input, the GPIO will stay as an input, in which case triggering the 
-reset does not work.
+On Wed, 7 Jul 2021 14:25:06 +0200, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> GPIOD_OUT_LOW does not mean that the GPIO is active low. OUT_LOW just 
+> means that the GPIO is configured as output in the non-asserted 
+> state[1]. Whether it is active low or active high is configured through 
+> the flags associated with the GPIO descriptor. E.g. when using 
+> devicetree this is typically the field after the GPIO offset.
 
+Oh, I misunderstood that. Thanks for pointing it out and sorry for the
+confusion!
 
+Your original suggestion of using GPIOD_OUT_HIGH sounds good to me,
+then.
+
+Hannu
