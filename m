@@ -2,246 +2,181 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.0 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-17.5 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ECA10C11F67
-	for <linux-iio@archiver.kernel.org>; Fri,  9 Jul 2021 15:59:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BB75C07E99
+	for <linux-iio@archiver.kernel.org>; Fri,  9 Jul 2021 16:24:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D9A89613B7
-	for <linux-iio@archiver.kernel.org>; Fri,  9 Jul 2021 15:59:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7CDB1613CF
+	for <linux-iio@archiver.kernel.org>; Fri,  9 Jul 2021 16:24:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232462AbhGIQB7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 9 Jul 2021 12:01:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52484 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232456AbhGIQB4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Jul 2021 12:01:56 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61DAAC0613DD;
-        Fri,  9 Jul 2021 08:59:11 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id j184so9768954qkd.6;
-        Fri, 09 Jul 2021 08:59:11 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=jnVWARWTCSXZft0d/rvK/it2ULZETAzN1k/HpOM9luE=;
-        b=QuItFyaXIDP1Wy63yXLUUYeD3/IbdF8l98rgt0ILvQdPziBRRtyqN6UxI2v41bdB0P
-         hFmDhjh/6s/0ifQnmPFua+y+DQ9s2+g8KIEXcfo6KvimbJL3gXaFYhl+FZlzWEMTS/O0
-         UURlf48pEZLVOWOT8RalKkeIM2ERfKWsUSJT4UhZspmRkSxHFWnlyfBRIhDDiwrkhhDX
-         c5lOGV1eiO17UqqOzC7LWU+kIrD3F2H7/e/38VvI2b/d4JnHHSAwQ22ADuZ1ohNO1iKy
-         F5rra/+O0ejlSp98iyYbJaMJ8yDKFcMzRquL4A3XGQuqa+doxo1OQSEBKDCAinV+g25K
-         dxmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=jnVWARWTCSXZft0d/rvK/it2ULZETAzN1k/HpOM9luE=;
-        b=Mydfq3VaNgK9J8N5QTHQ96U9vyCx+vA0444j5OcOdViwps1Bffu9cDVQOQzHhVGiY1
-         p0E1ZSg0N24nrhNSRlNPmCnbcF7ct3ZXSqQtuBr1G8ZlVbIxQDrNZ/WGOsK1C2HLpg8m
-         5sOeNmo9tIFa215BdfM/kmvfyKL50cHw+V+94YSjkgtf+gXZl8avXnz8/hHLJRsBQy2G
-         4YFg2qcz9PW6phfV/qpjD08BETEnY3ehpsp5J2dFVsu6JzBbFBRleVe7IkuBsnIXEeN/
-         MUtMV91EEq6xVI5IooFp96GE7SfGQ0ZEdz1U8ge8eDdMY+5S00ZHCHJ0dy2SILKRbsRx
-         WlzA==
-X-Gm-Message-State: AOAM532q9QfMX4A3y6zioMwFsfnuqSf/O1qobMYLTgXi/mkZfJbK5IxE
-        Yjmk0b+lJlubxMNE6VUDJ9g=
-X-Google-Smtp-Source: ABdhPJwogphgM3LF0u6Q8D1F0RyYVVrr/f3ky/UsP+vf5XBOr27AhlTyC05P8D2oK96tPdYxa9ahZQ==
-X-Received: by 2002:a37:a8cc:: with SMTP id r195mr31261770qke.174.1625846350594;
-        Fri, 09 Jul 2021 08:59:10 -0700 (PDT)
-Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id x15sm2606071qkm.66.2021.07.09.08.59.09
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 09 Jul 2021 08:59:10 -0700 (PDT)
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     liambeguin@gmail.com, lars@metafoo.de,
-        Michael.Hennerich@analog.com, jic23@kernel.org,
-        charles-antoine.couret@essensium.com, Nuno.Sa@analog.com
+        id S229487AbhGIQ1J (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 9 Jul 2021 12:27:09 -0400
+Received: from mail-eopbgr00106.outbound.protection.outlook.com ([40.107.0.106]:1248
+        "EHLO EUR02-AM5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S229459AbhGIQ1I (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 9 Jul 2021 12:27:08 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=BqnrhV+UhSOo3ziBqSPkd1AQ+ZtoJ9kazjXn/x9Eg/3LEGt3zW5lwOcoVHgEhkpGiwd0ttif4YG8w09FyoS1wP/IHL21O3OpcKHHmlGc8NKS23yrwaAnLwzcKPj+FZjzaN20z5dL6X+EwQhVJEPaom/jOWQwpcLnCvhQtLGKT9u9ThzIgijA2ja1fgH5MxeUQ2O6Fp3rRanTOjf/zrG/iWT1+G9hBqVTvBpiec78JlSPF5XlXWhbZDYAs1gFiY4tqdLW3byLiKfMP9hlMySarfQSSFAQtzjIFmv0PojHEXZxpqrUH24SWA3j8xSzuujjacUPnMifFAQzy1Kr09yNkA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EEz8GlVXGOfxqhxm6e/QkFiDH2qJ9OWMp5VYbZ6fHOU=;
+ b=X21460WB09JeDnWV3ME7Zw+AVhjfvkzsIaARVz/Ol6tl8epfNAMQRw9FT6TFNHg6zyHRJbSyG6MbtWcaeD3q5+PiaAJS5CTEgDzK6v/D4H8+Sk8gtNSE4QbcA+ICpyzl0UsT29tchGEncgWAdPZdIUfd3pjVZdVR7UwegVRBwvBe4i7bkK9kEIL4A9aFqdKxTyqwc5Kh+A9sUV2dhUvAd35MBrtAPgLQ0b8vtnLvljkxjNNwmhoBamZvSxisMdzIjSVqyusSiqY8kOikMPjjAH9gQdqWug5KuhnLn4gI1RKSlrExAgtEBt3eXCPwyw9JAkIr9n1M/zwmNI82MSE5Vw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
+ dkim=pass header.d=axentia.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
+ s=selector2;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=EEz8GlVXGOfxqhxm6e/QkFiDH2qJ9OWMp5VYbZ6fHOU=;
+ b=cjhbGOP3CbIMeH8WNu9IgEnZWbBDhK85LLWf8jAKZCrz3q3/L6kqOxwX9VbGC/buROcM0Iv9kr+JLu3R82NheY2uqb9N/dIY2Jx8lsgnZ/4nsboUU+APRHugzHCiYB6k81AcnxDGCmWJZ4rqhpYD6SY62TW/i5UKgeRHtY3gzLI=
+Authentication-Results: kernel.org; dkim=none (message not signed)
+ header.d=none;kernel.org; dmarc=none action=none header.from=axentia.se;
+Received: from DB8PR02MB5482.eurprd02.prod.outlook.com (2603:10a6:10:eb::29)
+ by DB7PR02MB3818.eurprd02.prod.outlook.com (2603:10a6:5:b::24) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4308.22; Fri, 9 Jul 2021 16:24:22 +0000
+Received: from DB8PR02MB5482.eurprd02.prod.outlook.com
+ ([fe80::14ca:a41:2218:3578]) by DB8PR02MB5482.eurprd02.prod.outlook.com
+ ([fe80::14ca:a41:2218:3578%6]) with mapi id 15.20.4287.023; Fri, 9 Jul 2021
+ 16:24:22 +0000
+Subject: Re: [PATCH v4 04/10] iio: afe: rescale: reduce risk of integer
+ overflow
+To:     Liam Beguin <liambeguin@gmail.com>, jic23@kernel.org,
+        lars@metafoo.de, pmeerw@pmeerw.net
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v2 3/4] iio: adc: ad7949: add support for internal vref
-Date:   Fri,  9 Jul 2021 11:58:55 -0400
-Message-Id: <20210709155856.1732245-4-liambeguin@gmail.com>
-X-Mailer: git-send-email 2.30.1.489.g328c10930387
-In-Reply-To: <20210709155856.1732245-1-liambeguin@gmail.com>
-References: <20210709155856.1732245-1-liambeguin@gmail.com>
+References: <20210706160942.3181474-1-liambeguin@gmail.com>
+ <20210706160942.3181474-5-liambeguin@gmail.com>
+From:   Peter Rosin <peda@axentia.se>
+Organization: Axentia Technologies AB
+Message-ID: <13409f37-ecd4-5afb-e1ca-59f1f1f805b8@axentia.se>
+Date:   Fri, 9 Jul 2021 18:24:20 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
+In-Reply-To: <20210706160942.3181474-5-liambeguin@gmail.com>
+Content-Type: text/plain; charset=utf-8
+Content-Language: sv-SE
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: AM6P191CA0038.EURP191.PROD.OUTLOOK.COM
+ (2603:10a6:209:7f::15) To DB8PR02MB5482.eurprd02.prod.outlook.com
+ (2603:10a6:10:eb::29)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-MS-Exchange-MessageSentRepresentingType: 1
+Received: from [192.168.13.3] (85.229.94.233) by AM6P191CA0038.EURP191.PROD.OUTLOOK.COM (2603:10a6:209:7f::15) with Microsoft SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4308.20 via Frontend Transport; Fri, 9 Jul 2021 16:24:21 +0000
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 87b3e6ab-e711-4875-1b0a-08d942f60267
+X-MS-TrafficTypeDiagnostic: DB7PR02MB3818:
+X-Microsoft-Antispam-PRVS: <DB7PR02MB3818650B0BD14B8325C3CACABC189@DB7PR02MB3818.eurprd02.prod.outlook.com>
+X-MS-Oob-TLC-OOBClassifiers: OLM:5236;
+X-MS-Exchange-SenderADCheck: 1
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: PZqB1svluEiGR2u87WhG4g+eKUdu5Ex6XMUGN8I2PrQ9YUiM6YTEkJ1+MzP7d2MNxGUkaZtZHidZ7RjTkxjd5f7wNZ1QV0iPJ1uWtSDWkSpVpg6IgSmohcb30RcqqFFsP0+Dd6eL2+D4XQb+e7RBh43ISC4JaVxypGsD4BPH5+t5QJ2e4XcLTfPwP/0MWaRy4yGnVuElEqEZgSot2x1nHIpE5mZFlbCYPibnFWMgITaBO9Nk6oM1/Q5fUI5qhsDU4SXepJjr7LBodzuoEdu6Umzm1OPnTIgRCAz+B0lUQO8iqINLRcGnW1b+6gZhrRLFconKINBY7W6XVI6pRD/C9hxmqpoZdrHEbAEMXPh5IwEuBsKjVNA/5TYumVoeOOvbcaFoGyLSW220gkXWFN0TxqBIM0uqRAR/GD7uE8aa78lofBR3XHa+TEsT5Jo8goGEPhBhwjoA1EqUHwQkO+6TR0zGr4P8PKRsf/P7fx3/RoT1FXM1hq/aNgdquqo66C4xCTdqa/mLDDCG6fK4BOb7wXVqZ9+gbYOIUO9MZ5EMaf9Okf1R3rPblQm94faQa3pkuzBg+9qCQ7wt3eW+vugjG34GipGNZQ+konwvm4Nm1HJcp/eMyJtyt6QEvSVuIa4Z3w6zi/900fw+Wn61o86+n5e2zdQ2/IXBOjYovlkuj7pxEgfRXYbIMRtkJO9oeXvJWYpVvuMyv1DFg+maMoeEtrRt6xoa0mwr9otdoZ7JD9g=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DB8PR02MB5482.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(136003)(396003)(376002)(39830400003)(346002)(366004)(31686004)(6486002)(86362001)(66946007)(316002)(26005)(31696002)(5660300002)(16576012)(478600001)(2906002)(36916002)(36756003)(38100700002)(53546011)(8676002)(186003)(66476007)(66556008)(4326008)(8936002)(83380400001)(2616005)(956004)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?cUpDT2taUkRra3RoZTMzNVFOYkdja0g3a3BhUHIydVJYZ0FqbGd4RUtPNVYx?=
+ =?utf-8?B?Q0JoSytxS0pkRDEwVHZmS1RrUzBySVlyRFFrYkVlbWRvblJjdGhXSlNXck5i?=
+ =?utf-8?B?N0p3V0hYemlSSUd1TDBVVFRRcUtYa0tZYXNVWUMycTJwQnFHYlhHVllDS0RP?=
+ =?utf-8?B?R1lrM0VjWmliUUZqQlVzcWI5UEJRRVdDUXJMS0lwdkRvUVZJN241MWZWeWJX?=
+ =?utf-8?B?MFdOV1VQbTBmWEZmbVdKT1JjbGoxcmM2aTNPMlFLZEZDOWF1c3hCRVk4ZTRH?=
+ =?utf-8?B?aW05NlJ2RFd1TjJVRm80dkVUQ3dOTzMwYnp1b0R3aHg5R3lzNTh0cERtQ2Ey?=
+ =?utf-8?B?UUM5MjhEcU9WSHgyOVViN3hRM1dZdjk0ZlpyT090MnM3dWdnYmpZQm8xZnNo?=
+ =?utf-8?B?V29QZmRvOTcwY3F2WFVQWTlhZVFtOEg0YjJ4NExpVkZoNTU0M2ltekdJWDNr?=
+ =?utf-8?B?WGJBWjZUekE4UVlkeVBPa25ZdkNKWFFTbGVOOEhiQmxyR2tjYjVuMzV6WUxp?=
+ =?utf-8?B?RU80THNaUnRMZW94YWFUNjVLZTZoWTZCeGJEYkhxR3ZrbmlhbUM1dzNJOW1t?=
+ =?utf-8?B?V1VoMTAzaW5ka0F5c2lIT0oxVVdmTWQ2VWJyd0lkcWJ1MmorZ3dLdHhrVVVS?=
+ =?utf-8?B?QU9OUDBoMUlFM1hNUitEOE1BZVYycE01OTBGZlAxQUJyRGZuYmpEc0VPczV0?=
+ =?utf-8?B?dXBKZnAxYTZUaUQzQ1QxODloOTlLazR6Vmx5ckgvMHl4MXBDTW13VGNUTFBO?=
+ =?utf-8?B?OEJYbm96TFh2Z3gxdjQvb2paYTQ1QTE2Q29UaFd2by9GSmRTSGlMV1ltMG4z?=
+ =?utf-8?B?Qm9jaWwrMWNTcWl1SExwcFczM2ZwY3l5cUNiWlhVQlR3NzFRekJiZTRqY3Mv?=
+ =?utf-8?B?aUNFSE4yOTY1TytSRVpTZkFxWHJaSGQ4MDRvcENNa2RDL2huVXQ1dHFtOHZ6?=
+ =?utf-8?B?SWtGYUsvTTZCcmhYTFgxYXprN0R6ZzRFRlNDaytYL2xhcGlOTlQ3N1RvUy9O?=
+ =?utf-8?B?SmRvZXNNcjNYMnR1TXFLY1d3OGV4bDRZMXlZU0RZeWR0N3pSMjZqRmdjQXRQ?=
+ =?utf-8?B?Q0Vnc3htOS9DeU8yWlI4dUdBR2NEeEdCVFQ2ZVRuenFMMmF1OGE5c1VGR1lE?=
+ =?utf-8?B?SmNxbFMzYUxzZEhzc3Exc3FHWXdQWEpFSHd6MUJ6eXVpTFQrK3k5NVBrZkgx?=
+ =?utf-8?B?SDdGRzBHck5DRVpSRG5PN0NDYXRwMitrTW0zOHF1TWNOY2MxZkc0L2MvM0Za?=
+ =?utf-8?B?Z3Z6VlgvUmM4UWx2WW84dlNLMHREK1VqQkQ3ZS90QlBsNWphVHdaOHNvSXQ5?=
+ =?utf-8?B?K1JnY08rY253SnRXTzA0cUtXcVN6VTNLNEJGVHIwbW16Mkd4dERwZ1M1VTZh?=
+ =?utf-8?B?bzExUG52Q0QvdjZ4U3gvMVBCd0xVR2RYaENzc2ZtOTVNZFZoUzlPYy9jNjdY?=
+ =?utf-8?B?MXpJUHh3S2tVeit6dWtJcDZxb1JFYk80OXphR3RFeEN0WmhscUZpVkt6ZytZ?=
+ =?utf-8?B?a0ZWaW1nRDJ4WkxTN2I1Y2xJaGI1NzkvZE5sRXhybktIb3Y1cTNyTHNmT2xH?=
+ =?utf-8?B?QkNjWTNTY1RkMlVPV3VQRnBmRmtBK05BNHRTb1k1RkY1S1p1aytMRGpES2E3?=
+ =?utf-8?B?WkwvL2xKN21iMzBENGUwa1A2UURWT011QkxjVFh3SzJTWE8xRGhzeVJtWkMz?=
+ =?utf-8?B?Q1ZrK2J2NkU0SmNYQWZTSDluTEE4VGMyOGRPR1hialN5ci93MFJhckZCY2J4?=
+ =?utf-8?Q?Buvf86fhB55zb+55OMBYjeasnbBglHx/zBXZVd4?=
+X-OriginatorOrg: axentia.se
+X-MS-Exchange-CrossTenant-Network-Message-Id: 87b3e6ab-e711-4875-1b0a-08d942f60267
+X-MS-Exchange-CrossTenant-AuthSource: DB8PR02MB5482.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 Jul 2021 16:24:22.0914
+ (UTC)
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: QOn9mtNAXHMu/4AJy+cqJpnHFdMdC2h5m5EoZUJNDet0S/43+qQ4RwjiyRdeO2Og
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR02MB3818
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Liam Beguin <lvb@xiphos.com>
 
-Add support for selecting a custom reference voltage from the
-devicetree. If an external source is used, a vref regulator should be
-defined in the devicetree.
+On 2021-07-06 18:09, Liam Beguin wrote:
+> From: Liam Beguin <lvb@xiphos.com>
+> 
+> Reduce the risk of integer overflow by doing the scale calculation with
+> 64bit integers and looking for a Greatest Common Divider for both parts
+> of the fractional value.
+> 
+> Signed-off-by: Liam Beguin <lvb@xiphos.com>
+> ---
+>  drivers/iio/afe/iio-rescale.c | 12 +++++++++---
+>  1 file changed, 9 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+> index 774eb3044edd..ba3bdcc69b16 100644
+> --- a/drivers/iio/afe/iio-rescale.c
+> +++ b/drivers/iio/afe/iio-rescale.c
+> @@ -39,7 +39,8 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+>  			    int *val, int *val2, long mask)
+>  {
+>  	struct rescale *rescale = iio_priv(indio_dev);
+> -	unsigned long long tmp;
+> +	s64 tmp, tmp2;
+> +	u32 factor;
+>  	int ret;
+>  
+>  	switch (mask) {
+> @@ -67,8 +68,13 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+>  		}
+>  		switch (ret) {
+>  		case IIO_VAL_FRACTIONAL:
+> -			*val *= rescale->numerator;
+> -			*val2 *= rescale->denominator;
+> +			tmp = (s64)*val * rescale->numerator;
+> +			tmp2 = (s64)*val2 * rescale->denominator;
+> +			factor = gcd(tmp, tmp2);
 
-Signed-off-by: Liam Beguin <lvb@xiphos.com>
----
- drivers/iio/adc/ad7949.c | 94 ++++++++++++++++++++++++++++++++++------
- 1 file changed, 80 insertions(+), 14 deletions(-)
+Hi!
 
-diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
-index 770112ac820f..a20fd81a0830 100644
---- a/drivers/iio/adc/ad7949.c
-+++ b/drivers/iio/adc/ad7949.c
-@@ -31,6 +31,7 @@
- #define AD7949_CFG_VAL_BW_FULL			1
- #define AD7949_CFG_VAL_BW_QUARTER		0
- #define AD7949_CFG_BIT_REF		GENMASK(5, 3)
-+#define AD7949_CFG_VAL_REF_EXTERNAL		BIT(1)
- #define AD7949_CFG_BIT_SEQ		GENMASK(2, 1)
- #define AD7949_CFG_BIT_RBN		BIT(0)
- 
-@@ -40,6 +41,33 @@ enum {
- 	ID_AD7689,
- };
- 
-+/**
-+ * enum ad7949_ref - Reference selection
-+ *
-+ * AD7949_REF_INT_2500:     Internal reference and temperature sensor enabled.
-+ *                          Vref=2.5V, buffered output
-+ * AD7949_REF_INT_4096:     Internal reference and temperature sensor enabled.
-+ *                          Vref=4.096V, buffered output
-+ * AD7949_REF_EXT_TEMP:     Use external reference, temperature sensor enabled.
-+ *                          Internal buffer disabled
-+ * AD7949_REF_EXT_TEMP_BUF: Use external reference, internal buffer and
-+ *                          temperature sensor enabled.
-+ * AD7949_REF_RSRV_4:       Do not use
-+ * AD7949_REF_RSRV_5:       Do not use
-+ * AD7949_REF_EXT:          Use external reference, internal buffer and
-+ *                          temperature sensor disabled.
-+ * AD7949_REF_EXT_BUF:      Use external reference, internal buffer enabled.
-+ *                          Internal reference and temperature sensor disabled.
-+ */
-+enum ad7949_ref {
-+	AD7949_REF_INT_2500 = 0,
-+	AD7949_REF_INT_4096,
-+	AD7949_REF_EXT_TEMP,
-+	AD7949_REF_EXT_TEMP_BUF,
-+	AD7949_REF_EXT = 6,
-+	AD7949_REF_EXT_BUF,
-+};
-+
- struct ad7949_adc_spec {
- 	u8 num_channels;
- 	u8 resolution;
-@@ -55,6 +83,7 @@ static const struct ad7949_adc_spec ad7949_adc_spec[] = {
-  * struct ad7949_adc_chip - AD ADC chip
-  * @lock: protects write sequences
-  * @vref: regulator generating Vref
-+ * @refsel: reference selection
-  * @indio_dev: reference to iio structure
-  * @spi: reference to spi structure
-  * @resolution: resolution of the chip
-@@ -66,6 +95,7 @@ static const struct ad7949_adc_spec ad7949_adc_spec[] = {
- struct ad7949_adc_chip {
- 	struct mutex lock;
- 	struct regulator *vref;
-+	enum ad7949_ref refsel;
- 	struct iio_dev *indio_dev;
- 	struct spi_device *spi;
- 	u8 resolution;
-@@ -243,12 +273,28 @@ static int ad7949_spi_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 
- 	case IIO_CHAN_INFO_SCALE:
--		ret = regulator_get_voltage(ad7949_adc->vref);
--		if (ret < 0)
--			return ret;
-+		switch (ad7949_adc->refsel) {
-+		case AD7949_REF_INT_2500:
-+			*val = 2500;
-+			break;
-+		case AD7949_REF_INT_4096:
-+			*val = 4096;
-+			break;
-+		case AD7949_REF_EXT_TEMP:
-+		case AD7949_REF_EXT_TEMP_BUF:
-+		case AD7949_REF_EXT:
-+		case AD7949_REF_EXT_BUF:
-+			ret = regulator_get_voltage(ad7949_adc->vref);
-+			if (ret < 0)
-+				return ret;
-+
-+			/* convert value back to mV */
-+			*val = ret / 1000;
-+			break;
-+		}
- 
--		*val = ret / 5000;
--		return IIO_VAL_INT;
-+		*val2 = (1 << ad7949_adc->resolution) - 1;
-+		return IIO_VAL_FRACTIONAL;
- 	}
- 
- 	return -EINVAL;
-@@ -287,7 +333,7 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
- 		FIELD_PREP(AD7949_CFG_BIT_INCC, AD7949_CFG_VAL_INCC_UNIPOLAR_GND) |
- 		FIELD_PREP(AD7949_CFG_BIT_INX, ad7949_adc->current_channel) |
- 		FIELD_PREP(AD7949_CFG_BIT_BW, AD7949_CFG_VAL_BW_FULL) |
--		FIELD_PREP(AD7949_CFG_BIT_REF, AD7949_REF_EXT_BUF) |
-+		FIELD_PREP(AD7949_CFG_BIT_REF, ad7949_adc->refsel) |
- 		FIELD_PREP(AD7949_CFG_BIT_SEQ, 0x0) |
- 		FIELD_PREP(AD7949_CFG_BIT_RBN, 1);
- 
-@@ -306,6 +352,7 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
- static int ad7949_spi_probe(struct spi_device *spi)
- {
- 	struct device *dev = &spi->dev;
-+	struct device_node *np = dev->of_node;
- 	const struct ad7949_adc_spec *spec;
- 	struct ad7949_adc_chip *ad7949_adc;
- 	struct iio_dev *indio_dev;
-@@ -332,16 +379,35 @@ static int ad7949_spi_probe(struct spi_device *spi)
- 	ad7949_adc->resolution = spec->resolution;
- 	ad7949_set_bits_per_word(ad7949_adc);
- 
--	ad7949_adc->vref = devm_regulator_get(dev, "vref");
--	if (IS_ERR(ad7949_adc->vref)) {
--		dev_err(dev, "fail to request regulator\n");
--		return PTR_ERR(ad7949_adc->vref);
-+	/* Set default devicetree parameters */
-+	ad7949_adc->refsel = AD7949_REF_EXT_BUF;
-+	of_property_read_u32(np, "adi,reference-select", &ad7949_adc->refsel);
-+	switch (ad7949_adc->refsel) {
-+	case AD7949_REF_INT_2500:
-+	case AD7949_REF_INT_4096:
-+	case AD7949_REF_EXT_TEMP:
-+	case AD7949_REF_EXT_TEMP_BUF:
-+	case AD7949_REF_EXT:
-+	case AD7949_REF_EXT_BUF:
-+		break;
-+	default:
-+		dev_err(dev, "invalid adi,reference-select value (%d)\n",
-+			ad7949_adc->refsel);
-+		return -EINVAL;
- 	}
- 
--	ret = regulator_enable(ad7949_adc->vref);
--	if (ret < 0) {
--		dev_err(dev, "fail to enable regulator\n");
--		return ret;
-+	if (ad7949_adc->refsel & AD7949_CFG_VAL_REF_EXTERNAL) {
-+		ad7949_adc->vref = devm_regulator_get(dev, "vref");
-+		if (IS_ERR(ad7949_adc->vref)) {
-+			dev_err(dev, "fail to request regulator\n");
-+			return PTR_ERR(ad7949_adc->vref);
-+		}
-+
-+		ret = regulator_enable(ad7949_adc->vref);
-+		if (ret < 0) {
-+			dev_err(dev, "fail to enable regulator\n");
-+			return ret;
-+		}
- 	}
- 
- 	mutex_init(&ad7949_adc->lock);
--- 
-2.30.1.489.g328c10930387
+gcd() isn't exactly free. I do not think it is suitable to call it for each
+and every value. So, if you really need it, then it should only be used
+when there is an actual overflow (or if there is a high risk if that's
+somehow easier).
 
+Cheers,
+Peter
+
+> +			do_div(tmp, factor);
+> +			*val = tmp;
+> +			do_div(tmp2, factor);
+> +			*val2 = tmp2;
+>  			return ret;
+>  		case IIO_VAL_INT:
+>  			*val *= rescale->numerator;
+> 
