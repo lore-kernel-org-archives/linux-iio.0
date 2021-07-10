@@ -5,41 +5,41 @@ X-Spam-Level:
 X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32B35C07E9C
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Jul 2021 02:18:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D29C07E9C
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Jul 2021 02:18:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1E8C9613D1
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Jul 2021 02:18:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D02B8613C3
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Jul 2021 02:18:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231896AbhGJCVJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 9 Jul 2021 22:21:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37506 "EHLO mail.kernel.org"
+        id S231790AbhGJCVM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 9 Jul 2021 22:21:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37546 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231924AbhGJCU6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 9 Jul 2021 22:20:58 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id AC163613C3;
-        Sat, 10 Jul 2021 02:18:13 +0000 (UTC)
+        id S231956AbhGJCVB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 9 Jul 2021 22:21:01 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DDB7613B5;
+        Sat, 10 Jul 2021 02:18:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625883494;
-        bh=Y0GwOy4Lmr59/pXyXz8NNZVStDpQ9FYyZfvaB9IwRkc=;
+        s=k20201202; t=1625883497;
+        bh=qkyStRzVzgmsKgEzw3Yf2YV5ytw5pKCpkSfz7p/4k00=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=BL3UnpCs+2+FvPeDkxmof5yAEbNqJWZyi8uaZocMCkF+f6/xVq38QySGAjClyXq4Z
-         H0LTudq2IUwIHJEG7SJJPnH28NfgvP44VzlXNZJbBW0IbT+JDvvnaSy735VIpGyCkJ
-         q3Xa9qFAyHCihPUenl531/O9LPpg7c5JbmT/+J0V73fBkl+GlkjxQTxAxboJEU9Fn6
-         qZCSDkK6VM8uzAa1BkAnEwSjSNmVfyhngu4yZ3e/b/UZ5alRJBPJmvIK/Xn4nFSJ1q
-         69uolw9LWGqU+JQmY5WEi6qH1etDBqeQbe7CAZxV1+r3jVNRiAaicW5vk/DvXgAkf5
-         52TDEVqacMcTw==
+        b=mFd1hHs5JSaeuuLQoxjf9jdgwMae3cplR9DQOUM6+tnAmf7iJ+BfiDCxLq7k4lC5J
+         QXKTyL2NAGhKYLbo+qFOSze6xPWuQiEnezQKzOAhjN+MpcF38O4Kh/odRhZdIo8v7i
+         9rFcSwLZL/FuhmVPheR4VepwVwZ33AH4b+AezPwCYkmUvooENHZF9sDVpOqn0Rv7fx
+         pwgaQbA8/AnvE7exJIjww/QfcEi7F2dmApb58qAeSkx0knKQRaBQ2KsN4Is/XLFADf
+         GzC5bEM8Jy8GLaaTd//fcL0bn6JrlS1W7AB9AIMsTxi77eyGMSp/2tVrJjUwvD8TW/
+         xxCPBW3fKUUcw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Sean Nyekjaer <sean@geanix.com>,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 018/114] iio: imu: st_lsm6dsx: correct ODR in header
-Date:   Fri,  9 Jul 2021 22:16:12 -0400
-Message-Id: <20210710021748.3167666-18-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 020/114] iio: magn: bmc150: Balance runtime pm + use pm_runtime_resume_and_get()
+Date:   Fri,  9 Jul 2021 22:16:14 -0400
+Message-Id: <20210710021748.3167666-20-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210710021748.3167666-1-sashal@kernel.org>
 References: <20210710021748.3167666-1-sashal@kernel.org>
@@ -51,47 +51,75 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Sean Nyekjaer <sean@geanix.com>
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit f7d5c18a8c371c306d73757547c2e0d6cfc764b3 ]
+[ Upstream commit 264da512431495e542fcaf56ffe75e7df0e7db74 ]
 
-Fix wrongly stated 13 Hz ODR for accelerometers, the correct ODR is 12.5 Hz
+probe() error paths after runtime pm is enabled, should disable it.
+remove() should not call pm_runtime_put_noidle() as there is no
+matching get() to have raised the reference count.  This case
+has no affect a the runtime pm core protects against going negative.
 
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
-Acked-by: Lorenzo Bianconi <lorenzo@kernel.org>
+Whilst here use pm_runtime_resume_and_get() to tidy things up a little.
+coccicheck script didn't get this one due to complex code structure so
+found by inspection.
+
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
+Link: https://lore.kernel.org/r/20210509113354.660190-12-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/magnetometer/bmc150_magn.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index 7cedaab096a7..e8d242ee6743 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -15,19 +15,19 @@
-  *
-  * Supported sensors:
-  * - LSM6DS3:
-- *   - Accelerometer/Gyroscope supported ODR [Hz]: 13, 26, 52, 104, 208, 416
-+ *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, 208, 416
-  *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
-  *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
-  *   - FIFO size: 8KB
-  *
-  * - LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC/LSM6DS3TR-C:
-- *   - Accelerometer/Gyroscope supported ODR [Hz]: 13, 26, 52, 104, 208, 416
-+ *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, 208, 416
-  *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
-  *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
-  *   - FIFO size: 4KB
-  *
-  * - LSM6DSO/LSM6DSOX/ASM330LHH/LSM6DSR/ISM330DHCX/LSM6DST/LSM6DSOP:
-- *   - Accelerometer/Gyroscope supported ODR [Hz]: 13, 26, 52, 104, 208, 416,
-+ *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, 208, 416,
-  *     833
-  *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
-  *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
+diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
+index 00f9766bad5c..8ed548ef6924 100644
+--- a/drivers/iio/magnetometer/bmc150_magn.c
++++ b/drivers/iio/magnetometer/bmc150_magn.c
+@@ -262,7 +262,7 @@ static int bmc150_magn_set_power_state(struct bmc150_magn_data *data, bool on)
+ 	int ret;
+ 
+ 	if (on) {
+-		ret = pm_runtime_get_sync(data->dev);
++		ret = pm_runtime_resume_and_get(data->dev);
+ 	} else {
+ 		pm_runtime_mark_last_busy(data->dev);
+ 		ret = pm_runtime_put_autosuspend(data->dev);
+@@ -271,9 +271,6 @@ static int bmc150_magn_set_power_state(struct bmc150_magn_data *data, bool on)
+ 	if (ret < 0) {
+ 		dev_err(data->dev,
+ 			"failed to change power state to %d\n", on);
+-		if (on)
+-			pm_runtime_put_noidle(data->dev);
+-
+ 		return ret;
+ 	}
+ #endif
+@@ -963,12 +960,14 @@ int bmc150_magn_probe(struct device *dev, struct regmap *regmap,
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret < 0) {
+ 		dev_err(dev, "unable to register iio device\n");
+-		goto err_buffer_cleanup;
++		goto err_disable_runtime_pm;
+ 	}
+ 
+ 	dev_dbg(dev, "Registered device %s\n", name);
+ 	return 0;
+ 
++err_disable_runtime_pm:
++	pm_runtime_disable(dev);
+ err_buffer_cleanup:
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ err_free_irq:
+@@ -992,7 +991,6 @@ int bmc150_magn_remove(struct device *dev)
+ 
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_set_suspended(dev);
+-	pm_runtime_put_noidle(dev);
+ 
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 
 -- 
 2.30.2
 
