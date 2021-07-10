@@ -5,41 +5,41 @@ X-Spam-Level:
 X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
 	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D29C07E9C
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Jul 2021 02:18:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D996C11F67
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Jul 2021 02:18:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D02B8613C3
-	for <linux-iio@archiver.kernel.org>; Sat, 10 Jul 2021 02:18:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5B888613D4
+	for <linux-iio@archiver.kernel.org>; Sat, 10 Jul 2021 02:18:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231790AbhGJCVM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 9 Jul 2021 22:21:12 -0400
-Received: from mail.kernel.org ([198.145.29.99]:37546 "EHLO mail.kernel.org"
+        id S232039AbhGJCVO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 9 Jul 2021 22:21:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37530 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231956AbhGJCVB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 9 Jul 2021 22:21:01 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 4DDB7613B5;
-        Sat, 10 Jul 2021 02:18:16 +0000 (UTC)
+        id S231948AbhGJCVA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 9 Jul 2021 22:21:00 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 049B6613D1;
+        Sat, 10 Jul 2021 02:18:14 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1625883497;
-        bh=qkyStRzVzgmsKgEzw3Yf2YV5ytw5pKCpkSfz7p/4k00=;
+        s=k20201202; t=1625883495;
+        bh=o8aaZx/XYxtSU9+pu+I4Ex0S+DBTO+g8Ltz2DKKNK0A=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mFd1hHs5JSaeuuLQoxjf9jdgwMae3cplR9DQOUM6+tnAmf7iJ+BfiDCxLq7k4lC5J
-         QXKTyL2NAGhKYLbo+qFOSze6xPWuQiEnezQKzOAhjN+MpcF38O4Kh/odRhZdIo8v7i
-         9rFcSwLZL/FuhmVPheR4VepwVwZ33AH4b+AezPwCYkmUvooENHZF9sDVpOqn0Rv7fx
-         pwgaQbA8/AnvE7exJIjww/QfcEi7F2dmApb58qAeSkx0knKQRaBQ2KsN4Is/XLFADf
-         GzC5bEM8Jy8GLaaTd//fcL0bn6JrlS1W7AB9AIMsTxi77eyGMSp/2tVrJjUwvD8TW/
-         xxCPBW3fKUUcw==
+        b=kbAT+6qhuLIRCdsXY7rSGLeAf8JYxfHceIAmLCmAOlx7P4HrCRbl8ZO5r5yVn7/RW
+         geQjCQKMFxw9ku/fL/hFQG6BIp3xI5xy7kwkROZV90bIGdo6vbTp6geLkKXMiCTNXX
+         YMWvRyEV5QNHB2sTUlPXqAfpE+YOn/c1mKd/q15c2OHVG6JSU4Qf9h7Rn5D+gPRMU3
+         T6R6VZhZFvi+Ycmr6Nlr+1KXfTdTFLeE5QSlcv2huWe1kT1o0Bj/ZvsCnJu7nOe2ua
+         ScjkQW32xzMbmFRR0o0m3d68XwV9UQgkfS9qAuwG/Wk+/ypxez1VqrpHy4j0KLquEk
+         lB7vH5yCkZhRA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
+        Rui Miguel Silva <rui.silva@linaro.org>,
         Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
         Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.13 020/114] iio: magn: bmc150: Balance runtime pm + use pm_runtime_resume_and_get()
-Date:   Fri,  9 Jul 2021 22:16:14 -0400
-Message-Id: <20210710021748.3167666-20-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.13 019/114] iio: gyro: fxa21002c: Balance runtime pm + use pm_runtime_resume_and_get().
+Date:   Fri,  9 Jul 2021 22:16:13 -0400
+Message-Id: <20210710021748.3167666-19-sashal@kernel.org>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20210710021748.3167666-1-sashal@kernel.org>
 References: <20210710021748.3167666-1-sashal@kernel.org>
@@ -53,72 +53,65 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-[ Upstream commit 264da512431495e542fcaf56ffe75e7df0e7db74 ]
+[ Upstream commit 41120ebbb1eb5e9dec93320e259d5b2c93226073 ]
 
-probe() error paths after runtime pm is enabled, should disable it.
-remove() should not call pm_runtime_put_noidle() as there is no
-matching get() to have raised the reference count.  This case
-has no affect a the runtime pm core protects against going negative.
+In both the probe() error path and remove() pm_runtime_put_noidle()
+is called which will decrement the runtime pm reference count.
+However, there is no matching function to have raised the reference count.
+Not this isn't a fix as the runtime pm core will stop the reference count
+going negative anyway.
 
-Whilst here use pm_runtime_resume_and_get() to tidy things up a little.
-coccicheck script didn't get this one due to complex code structure so
-found by inspection.
+An alternative would have been to raise the count in these paths, but
+it is not clear why that would be necessary.
+
+Whilst we are here replace some boilerplate with pm_runtime_resume_and_get()
+Found using coccicheck script under review at:
+https://lore.kernel.org/lkml/20210427141946.2478411-1-Julia.Lawall@inria.fr/
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Rui Miguel Silva <rui.silva@linaro.org>
 Reviewed-by: Mauro Carvalho Chehab <mchehab+huawei@kernel.org>
-Link: https://lore.kernel.org/r/20210509113354.660190-12-jic23@kernel.org
+Link: https://lore.kernel.org/r/20210509113354.660190-2-jic23@kernel.org
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- drivers/iio/magnetometer/bmc150_magn.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/iio/gyro/fxas21002c_core.c | 11 +----------
+ 1 file changed, 1 insertion(+), 10 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index 00f9766bad5c..8ed548ef6924 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -262,7 +262,7 @@ static int bmc150_magn_set_power_state(struct bmc150_magn_data *data, bool on)
- 	int ret;
+diff --git a/drivers/iio/gyro/fxas21002c_core.c b/drivers/iio/gyro/fxas21002c_core.c
+index 645461c70454..6a85f231fd57 100644
+--- a/drivers/iio/gyro/fxas21002c_core.c
++++ b/drivers/iio/gyro/fxas21002c_core.c
+@@ -366,14 +366,7 @@ static int fxas21002c_write(struct fxas21002c_data *data,
  
- 	if (on) {
--		ret = pm_runtime_get_sync(data->dev);
-+		ret = pm_runtime_resume_and_get(data->dev);
- 	} else {
- 		pm_runtime_mark_last_busy(data->dev);
- 		ret = pm_runtime_put_autosuspend(data->dev);
-@@ -271,9 +271,6 @@ static int bmc150_magn_set_power_state(struct bmc150_magn_data *data, bool on)
- 	if (ret < 0) {
- 		dev_err(data->dev,
- 			"failed to change power state to %d\n", on);
--		if (on)
--			pm_runtime_put_noidle(data->dev);
+ static int  fxas21002c_pm_get(struct fxas21002c_data *data)
+ {
+-	struct device *dev = regmap_get_device(data->regmap);
+-	int ret;
 -
- 		return ret;
- 	}
- #endif
-@@ -963,12 +960,14 @@ int bmc150_magn_probe(struct device *dev, struct regmap *regmap,
- 	ret = iio_device_register(indio_dev);
- 	if (ret < 0) {
- 		dev_err(dev, "unable to register iio device\n");
--		goto err_buffer_cleanup;
-+		goto err_disable_runtime_pm;
- 	}
+-	ret = pm_runtime_get_sync(dev);
+-	if (ret < 0)
+-		pm_runtime_put_noidle(dev);
+-
+-	return ret;
++	return pm_runtime_resume_and_get(regmap_get_device(data->regmap));
+ }
  
- 	dev_dbg(dev, "Registered device %s\n", name);
- 	return 0;
- 
-+err_disable_runtime_pm:
-+	pm_runtime_disable(dev);
- err_buffer_cleanup:
- 	iio_triggered_buffer_cleanup(indio_dev);
- err_free_irq:
-@@ -992,7 +991,6 @@ int bmc150_magn_remove(struct device *dev)
- 
+ static int  fxas21002c_pm_put(struct fxas21002c_data *data)
+@@ -1004,7 +997,6 @@ int fxas21002c_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ pm_disable:
  	pm_runtime_disable(dev);
  	pm_runtime_set_suspended(dev);
 -	pm_runtime_put_noidle(dev);
  
- 	iio_triggered_buffer_cleanup(indio_dev);
+ 	return ret;
+ }
+@@ -1018,7 +1010,6 @@ void fxas21002c_core_remove(struct device *dev)
+ 
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_set_suspended(dev);
+-	pm_runtime_put_noidle(dev);
+ }
+ EXPORT_SYMBOL_GPL(fxas21002c_core_remove);
  
 -- 
 2.30.2
