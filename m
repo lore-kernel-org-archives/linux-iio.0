@@ -2,72 +2,83 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED autolearn=unavailable
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.1 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD5DAC11F80
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Jul 2021 07:10:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97C81C07E9C
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Jul 2021 07:21:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9EC3F610CD
-	for <linux-iio@archiver.kernel.org>; Mon, 12 Jul 2021 07:10:03 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 83B76613E4
+	for <linux-iio@archiver.kernel.org>; Mon, 12 Jul 2021 07:21:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241367AbhGLHMF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 12 Jul 2021 03:12:05 -0400
-Received: from gloria.sntech.de ([185.11.138.130]:55942 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241557AbhGLHDz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 12 Jul 2021 03:03:55 -0400
-Received: from ip5f5aa64a.dynamic.kabel-deutschland.de ([95.90.166.74] helo=diego.localnet)
-        by gloria.sntech.de with esmtpsa (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <heiko@sntech.de>)
-        id 1m2pw5-0002Tz-Iw; Mon, 12 Jul 2021 09:01:01 +0200
-From:   Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To:     Jonathan Cameron <jic23@kernel.org>, Simon Xue <xxm@rock-chips.com>
-Cc:     linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, Johan Jonker <jbx6244@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Simon Xue <xxm@rock-chips.com>
-Subject: Re: [PATCH v2 1/2] dt-bindings: iio: adc: rockchip-saradc: add description for rk3568
-Date:   Mon, 12 Jul 2021 09:01:00 +0200
-Message-ID: <5271950.MlmRxi5KL8@diego>
-In-Reply-To: <20210712014437.97427-1-xxm@rock-chips.com>
-References: <20210712014437.97427-1-xxm@rock-chips.com>
+        id S240910AbhGLHYB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 12 Jul 2021 03:24:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37980 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1343882AbhGLHUI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Jul 2021 03:20:08 -0400
+Received: from mail.andi.de1.cc (mail.andi.de1.cc [IPv6:2a01:238:4321:8900:456f:ecd6:43e:202c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52C10C025397;
+        Mon, 12 Jul 2021 00:11:35 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=kemnade.info; s=20180802; h=Content-Transfer-Encoding:Content-Type:
+        MIME-Version:References:In-Reply-To:Message-ID:Subject:To:From:Date:Sender:
+        Reply-To:Cc:Content-ID:Content-Description:Resent-Date:Resent-From:
+        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
+        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=4Ku+fho4Qa2ctqbzzklG68fzz9r2UqJK370+yapiLZc=; b=ag7kV+FXM4JBQH7e2//dT1ivFv
+        A59SAxXTXopPlbcEbf+RoxCFo0UquO5n03eZLpE4Gh+7KE/cDJfcUy5RtV3h/E1+WhRnqKkogLEBO
+        C61h1r1gvS0HVVVxIX3kSR8Be0J7H0+bx+WlSiyuKEq9WFAMZOHYYBKBFILR0vs5T8TI=;
+Received: from p200300ccff0a76001a3da2fffebfd33a.dip0.t-ipconnect.de ([2003:cc:ff0a:7600:1a3d:a2ff:febf:d33a] helo=aktux)
+        by mail.andi.de1.cc with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.89)
+        (envelope-from <andreas@kemnade.info>)
+        id 1m2q6E-0005aH-RK; Mon, 12 Jul 2021 09:11:30 +0200
+Date:   Mon, 12 Jul 2021 09:11:30 +0200
+From:   Andreas Kemnade <andreas@kemnade.info>
+To:     Jonathan Cameron <jic23@kernel.org>, lars@metafoo.de,
+        sre@kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        letux-kernel@openphoenux.org
+Subject: Re: [PATCH v2 2/2] power: supply: rn5t618: Add voltage_now property
+Message-ID: <20210712091130.2096cf23@aktux>
+In-Reply-To: <20210711112039.43c4af7b@jic23-huawei>
+References: <20210705113637.28908-1-andreas@kemnade.info>
+ <20210705113637.28908-3-andreas@kemnade.info>
+ <20210711112039.43c4af7b@jic23-huawei>
+X-Mailer: Claws Mail 3.17.3 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7Bit
-Content-Type: text/plain; charset="us-ascii"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Am Montag, 12. Juli 2021, 03:44:37 CEST schrieb Simon Xue:
-> Add description for rk3568 saradc.
+On Sun, 11 Jul 2021 11:20:39 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
+
+> On Mon,  5 Jul 2021 13:36:37 +0200
+> Andreas Kemnade <andreas@kemnade.info> wrote:
 > 
-> Signed-off-by: Simon Xue <xxm@rock-chips.com>
-
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-
-> ---
->  Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml | 1 +
->  1 file changed, 1 insertion(+)
+> > Read voltage_now via IIO and provide the property.
+> > 
+> > Signed-off-by: Andreas Kemnade <andreas@kemnade.info>
+> > Reported-by: kernel test robot <lkp@intel.com>  
+> Huh?  Seems unlikely it pointed out that this patch was necessary in general.
+> If highlighting a particular fix in an earlier version, then state what it was
+> in the commit message. Note for fixes that get rolled into patches, it's
+> often just mentioned in the change log and we skip the tag because it can
+> cause confusion.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
-> index 1bb76197787b..e512a14e41b4 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.yaml
-> @@ -20,6 +20,7 @@ properties:
->                - rockchip,px30-saradc
->                - rockchip,rk3308-saradc
->                - rockchip,rk3328-saradc
-> +              - rockchip,rk3568-saradc
->                - rockchip,rv1108-saradc
->            - const: rockchip,rk3399-saradc
->  
-> 
+The robot found a problem in v1 (missing depends on IIO). It is fixed
+now. The message from the bot tells to add a tag. It seems not to make
+sense. But probably the bot is also running on public branches (which
+will not be rebase) and uses the same message where it actually makes
+sense.
 
+I will send a v3 with that tag removed and the other comment addressed.
 
-
-
+Regards,
+Andreas
