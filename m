@@ -2,261 +2,167 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-12.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=unavailable
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A67C07E95
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Jul 2021 04:21:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF443C07E95
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Jul 2021 04:34:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D620861260
-	for <linux-iio@archiver.kernel.org>; Tue, 13 Jul 2021 04:21:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9C97D60FF3
+	for <linux-iio@archiver.kernel.org>; Tue, 13 Jul 2021 04:34:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229470AbhGMEXu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 13 Jul 2021 00:23:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46964 "EHLO
+        id S229470AbhGMEh0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 13 Jul 2021 00:37:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229436AbhGMEXt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Jul 2021 00:23:49 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A11C8C0613DD;
-        Mon, 12 Jul 2021 21:21:00 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id q190so20353004qkd.2;
-        Mon, 12 Jul 2021 21:21:00 -0700 (PDT)
+        with ESMTP id S229436AbhGMEhZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Jul 2021 00:37:25 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 874AEC0613DD;
+        Mon, 12 Jul 2021 21:34:36 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id g8so3799410qtj.1;
+        Mon, 12 Jul 2021 21:34:36 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=mime-version:content-transfer-encoding:date:message-id:from:to:cc
-         :subject:references:in-reply-to;
-        bh=8NA/aiB+EPeP5agFXPDEWwbuZmONbn8hs65mOdjo90E=;
-        b=u2ZZ/wddx4jiSxD+EsMWy/YdYWsP5gJA2u8vA7b4HUutkMaY4jEuRuuIsVNLH37RKs
-         wsEsPU6a8kAH0ZHXClKZFb+ihojE3s54kH1H61RrhQTagTbsgLusrGgPI9CMb6r3Vlm1
-         mpuPggKGhymrEP8CHsfy1dE9h48i3SMFxfu8RIbnINz9R8gdqe8NzX2o97bAaq17jIlm
-         EOC0ewFhHbX2vf2QC1Or60awM+sKG9u9yL0wSQZI1A0Ztr96fKsQwpM5bv7f4ee59B3B
-         dVhVQTkWk9CJG7yz94tXByZKWE12rgazwjuOg68/T1VolPiNDEVZ65ofmP6c0uZs24Rf
-         +MNg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=7ZvGxca2T5yVy2NGNqrtVScB3QVnEfEEyh0E6AQOPKc=;
+        b=LitkUp5sZBZo3984BGL89K6YY3jH04iKA+jdWGrtMGPddu9rcLG84ZBpAFf5IsohQI
+         QwR+RAXLGStPqtKbYRc016ieWZUkm76RaTSwS8PnjxgxQ6tL52Dj473K2wwp8EhzRnQP
+         UgJ+yjWY7p041b+YGo5Nk2jxYpHgfS+EXcGjrRneR4EFhEVewORyzigKzM88jhXQlfTP
+         wyKqJpoZxRrxjhBW2xjKxNEdGhG21wozZPwqFjJ3S3WUEdM1rPHO18E/1HANqQLi03j5
+         S6RXau//drHwx0UnU/5LG3L0nlUFXBoEuQ1dJvm7aczjCGx/am5WYwMHg7jqp5GW1nvZ
+         xI+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:content-transfer-encoding:date
-         :message-id:from:to:cc:subject:references:in-reply-to;
-        bh=8NA/aiB+EPeP5agFXPDEWwbuZmONbn8hs65mOdjo90E=;
-        b=r+BNFQnrAmku+ftDKHer0blm4IX71pkwvKl9sXDB0eBqzG0TrcV38o+9XtzoKKE/PH
-         4+q8ZKn/h8/IW+52fJ6cKzGcCIjv2WM9GS6ObKwE1LWrhs16oaM8awwChLXQJh985M8/
-         enFxc96WQUE/ShZTQmXwO5Jgi8jzePK44sO7X9WIFUMyrNUGMBtaUX2H5ChfPgKeE/zF
-         wPpmtEb7EAjTAUOu6VRPNV/Vc65yWjA2w/f4+6VZP8E2tyMhwB5VbHPoeWWmv+P2zcJn
-         P3HyYwB2kLNGNQe3NrGBVR8+0JWoyXqPZbj9lKqx3fysVpjqQEDhJAQIJGloTrHs9rkb
-         udYw==
-X-Gm-Message-State: AOAM532cJP4yz0UHI+EzB234HN2I8DuTWAsNSyDo+meSwacWgbQBcnZG
-        /VSXspnvcfuIb+Tcw0hrLUA=
-X-Google-Smtp-Source: ABdhPJzGNriWBi2sW60H9zEhh/xjic7z/9LY0JmnqxQ5ohSy4+gi4yc7IWaSYzqt8ivS+6MnGhy0gQ==
-X-Received: by 2002:ae9:ed03:: with SMTP id c3mr2156146qkg.418.1626150059668;
-        Mon, 12 Jul 2021 21:20:59 -0700 (PDT)
-Received: from localhost (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id x15sm7379996qkm.66.2021.07.12.21.20.58
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 12 Jul 2021 21:20:59 -0700 (PDT)
-Mime-Version: 1.0
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain; charset=UTF-8
-Date:   Tue, 13 Jul 2021 00:20:57 -0400
-Message-Id: <CCRQ33B4B96F.3IX5IUAK24F49@shaak>
-From:   "Liam Beguin" <liambeguin@gmail.com>
-To:     "Rob Herring" <robh@kernel.org>
-Cc:     <peda@axentia.se>, <jic23@kernel.org>, <lars@metafoo.de>,
-        <pmeerw@pmeerw.net>, <linux-kernel@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v4 10/10] dt-bindings: iio: afe: add bindings for
- temperature transducers
-References: <20210706160942.3181474-1-liambeguin@gmail.com>
- <20210706160942.3181474-11-liambeguin@gmail.com>
- <20210712161156.GA2029104@robh.at.kernel.org>
-In-Reply-To: <20210712161156.GA2029104@robh.at.kernel.org>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=7ZvGxca2T5yVy2NGNqrtVScB3QVnEfEEyh0E6AQOPKc=;
+        b=QWOMoOw/vpur9VSPZ7PY5Jc9RBp6PkidrN/IMZ91xzhjXndsFlycmEgAUkgrkgGnTm
+         hWMau0TJjKSMLOHrpmhvpDXYWzJ2TUfxsh2bclNl8FZ8qRmdhePyYTLTssTVmPACBFDa
+         72qYgFnOL/k7rGtTdisQiGxV4XgV8EvQ68anNu25MCw7SmpeS3NIdLCdb0yPbXcEAHD3
+         ztFA9Ct0IOGH7zFpWCusMKVBhkslAtAZkfvUKfHDUHXhw9BopdkcpykN1Xz+fBe6VhfL
+         OHGHpkN/msEwXgY+PKehbzJPJ2RGBcw95Go6vmbsJXjDc3YaiaVy2Kbnu0tRRHAGVqbX
+         6LKQ==
+X-Gm-Message-State: AOAM5307r58mteWPB91fz3pNhgfWOLVUMqFqNiPivDiAsfGpCpXo6X94
+        HBycVF+2xrV9fOQ+UVZIbB0=
+X-Google-Smtp-Source: ABdhPJyu4avkkoJpdjTedxiqxAXTDU1cmd7UZhhPqZitxB2JJIuZesq1g9KEbpNPbLmCfNYBroWv1w==
+X-Received: by 2002:ac8:4703:: with SMTP id f3mr2143401qtp.345.1626150875684;
+        Mon, 12 Jul 2021 21:34:35 -0700 (PDT)
+Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
+        by smtp.gmail.com with ESMTPSA id x16sm7311455qkn.130.2021.07.12.21.34.34
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 12 Jul 2021 21:34:35 -0700 (PDT)
+From:   Liam Beguin <liambeguin@gmail.com>
+To:     liambeguin@gmail.com, lars@metafoo.de,
+        Michael.Hennerich@analog.com, jic23@kernel.org,
+        charles-antoine.couret@essensium.com, Nuno.Sa@analog.com
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org
+Subject: [PATCH v3 1/4] iio: adc: ad7949: define and use bitfield names
+Date:   Tue, 13 Jul 2021 00:34:22 -0400
+Message-Id: <20210713043425.3321230-2-liambeguin@gmail.com>
+X-Mailer: git-send-email 2.30.1.489.g328c10930387
+In-Reply-To: <20210713043425.3321230-1-liambeguin@gmail.com>
+References: <20210713043425.3321230-1-liambeguin@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon Jul 12, 2021 at 12:11 PM EDT, Rob Herring wrote:
-> On Tue, Jul 06, 2021 at 12:09:42PM -0400, Liam Beguin wrote:
-> > From: Liam Beguin <lvb@xiphos.com>
-> >=20
-> > An ADC is often used to measure other quantities indirectly.
-> > This binding describe one case, the measurement of a temperature
-> > through a temperature transducer (either voltage or current).
-> >=20
-> > Signed-off-by: Liam Beguin <lvb@xiphos.com>
-> > ---
-> >  .../iio/afe/temperature-transducer.yaml       | 111 ++++++++++++++++++
-> >  1 file changed, 111 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/afe/temperatu=
-re-transducer.yaml
-> >=20
-> > diff --git a/Documentation/devicetree/bindings/iio/afe/temperature-tran=
-sducer.yaml b/Documentation/devicetree/bindings/iio/afe/temperature-transdu=
-cer.yaml
-> > new file mode 100644
-> > index 000000000000..b5a4fbfe75e4
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/afe/temperature-transducer.=
-yaml
-> > @@ -0,0 +1,111 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-> > +%YAML 1.2
-> > +---
-> > +$id: http://devicetree.org/schemas/iio/afe/temperature-transducer.yaml=
-#
-> > +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> > +
-> > +title: Temperature Transducer
-> > +
-> > +maintainers:
-> > +  - Liam Beguin <lvb@xiphos.com>
-> > +
-> > +description: |
-> > +  A temperature transducer is a device that converts a thermal quantit=
-y
-> > +  into any other physical quantity. This binding applies to temperatur=
-e to
-> > +  voltage (like the LTC2997), and temperature to current (like the AD5=
-90)
-> > +  linear transducers.
-> > +  In both cases these are assumed to be connected to a voltage ADC.
-> > +
-> > +  When an io-channel measures the output voltage of a temperature anal=
-og front
-> > +  end such as a temperature transducer, the interesting measurement is=
- almost
-> > +  always the corresponding temperature, not the voltage output. This b=
-inding
-> > +  describes such a circuit.
-> > +
-> > +  The general transfer function here is (using SI units)
-> > +    V(T) =3D Rsense * Isense(T)
-> > +    T =3D (Isense(T) / alpha) + offset
-> > +    T =3D 1 / (Rsense * alpha) * (V + offset * Rsense * alpha)
-> > +
-> > +  When using a temperature to voltage transducer, Rsense is set to 1.
-> > +
-> > +  The following circuits show a temperature to current and a temperatu=
-re to
-> > +  voltage transducer that can be used with this binding.
-> > +
-> > +           VCC
-> > +          -----
-> > +            |
-> > +        +---+---+
-> > +        | AD590 |                               VCC
-> > +        +---+---+                              -----
-> > +            |                                    |
-> > +            V proportional to T             +----+----+
-> > +            |                          D+ --+         |
-> > +            +---- Vout                      | LTC2997 +--- Vout
-> > +            |                          D- --+         |
-> > +        +---+----+                          +---------+
-> > +        | Rsense |                               |
-> > +        +---+----+                             -----
-> > +            |                                   GND
-> > +          -----
-> > +           GND
-> > +
-> > +properties:
-> > +  compatible:
-> > +    const: temperature-transducer
-> > +
-> > +  io-channels:
-> > +    maxItems: 1
-> > +    description: |
-> > +      Channel node of a voltage io-channel.
-> > +
-> > +  '#io-channel-cells':
-> > +    const: 0
+From: Liam Beguin <lvb@xiphos.com>
 
-Hi Rob,
+Replace raw configuration register values by using FIELD_PREP and
+defines to improve readability.
 
->
-> This is a io-channel consumer and producer?
->
+Signed-off-by: Liam Beguin <lvb@xiphos.com>
+---
+ drivers/iio/adc/ad7949.c | 50 +++++++++++++++++++++++++++++++++-------
+ 1 file changed, 42 insertions(+), 8 deletions(-)
 
-Yes, this is a consumer and a producer.
-It consumes a single ADC channel and can be fed to something like hwmon.
-
-> > +
-> > +  sense-offset-millicelsius:
-> > +    description: |
-> > +      Temperature offset. The default is <0>.
-> > +      This offset is commonly used to convert from Kelvins to degrees =
-Celsius.
-> > +      In that case, sense-offset-millicelsius would be set to <(-27315=
-0)>.
->
-> default: 0
->
-> > +
-> > +  sense-resistor-ohms:
-> > +    description: |
-> > +      The sense resistor. Defaults to <1>.
-> > +      Set sense-resistor-ohms to <1> when using a temperature to volta=
-ge
-> > +      transducer.
->
-> default: 1
->
-> Though why would we set the value to 1 if the default is 1?
->
-
-I can rephrase this. I meant to say that the default will make this
-behave like a temperature to voltage transducer.
-
-Liam
-
-> > +
-> > +  alpha-ppm-per-celsius:
-> > +    description: |
-> > +      Sometimes referred to as output gain, slope, or temperature coef=
-ficient.
-> > +
-> > +      alpha is expressed in parts per million which can be micro-amps =
-per
-> > +      degrees Celsius or micro-volts per degrees Celsius. The is the m=
-ain
-> > +      characteristic of a temperature transducer and should be stated =
-in the
-> > +      datasheet.
-> > +
-> > +additionalProperties: false
->
-> Blank line here.
->
-> > +required:
-> > +  - compatible
-> > +  - io-channels
-> > +  - alpha-ppm-per-celsius
-> > +
-> > +examples:
-> > +  - |
-> > +    ad950: temperature-sensor-0 {
-> > +        compatible =3D "temperature-transducer";
-> > +        #io-channel-cells =3D <0>;
-> > +        io-channels =3D <&temp_adc 3>;
-> > +
-> > +        sense-offset-millicelsius =3D <(-273150)>; /* Kelvin to degree=
-s Celsius */
-> > +        sense-resistor-ohms =3D <8060>;
-> > +        alpha-ppm-per-celsius =3D <1>; /* 1 uA/K */
-> > +    };
-> > +  - |
-> > +    znq_tmp: temperature-sensor-1 {
-> > +        compatible =3D "temperature-transducer";
-> > +        #io-channel-cells =3D <0>;
-> > +        io-channels =3D <&temp_adc 2>;
-> > +
-> > +        sense-offset-millicelsius =3D <(-273150)>; /* Kelvin to degree=
-s Celsius */
-> > +        alpha-ppm-per-celsius =3D <4000>; /* 4 mV/K */
-> > +    };
-> > +...
-> > --=20
-> > 2.30.1.489.g328c10930387
-> >=20
-> >=20
+diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
+index 1b4b3203e428..0b549b8bd7a9 100644
+--- a/drivers/iio/adc/ad7949.c
++++ b/drivers/iio/adc/ad7949.c
+@@ -11,12 +11,37 @@
+ #include <linux/module.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/spi/spi.h>
++#include <linux/bitfield.h>
+ 
+-#define AD7949_MASK_CHANNEL_SEL		GENMASK(9, 7)
+ #define AD7949_MASK_TOTAL		GENMASK(13, 0)
+-#define AD7949_OFFSET_CHANNEL_SEL	7
+-#define AD7949_CFG_READ_BACK		0x1
+-#define AD7949_CFG_REG_SIZE_BITS	14
++
++/* CFG: Configuration Update */
++#define AD7949_CFG_BIT_OVERWRITE	BIT(13)
++
++/* INCC: Input Channel Configuration */
++#define AD7949_CFG_BIT_INCC		GENMASK(12, 10)
++#define AD7949_CFG_VAL_INCC_UNIPOLAR_GND	7
++#define AD7949_CFG_VAL_INCC_UNIPOLAR_COMM	6
++#define AD7949_CFG_VAL_INCC_UNIPOLAR_DIFF	4
++#define AD7949_CFG_VAL_INCC_TEMP		3
++#define AD7949_CFG_VAL_INCC_BIPOLAR		2
++#define AD7949_CFG_VAL_INCC_BIPOLAR_DIFF	0
++
++/* INX: Input channel Selection in a binary fashion */
++#define AD7949_CFG_BIT_INX		GENMASK(9, 7)
++
++/* BW: select bandwidth for low-pass filter. Full or Quarter */
++#define AD7949_CFG_BIT_BW_FULL			BIT(6)
++
++/* REF: reference/buffer selection */
++#define AD7949_CFG_BIT_REF		GENMASK(5, 3)
++#define AD7949_CFG_VAL_REF_EXT_BUF		7
++
++/* SEQ: channel sequencer. Allows for scanning channels */
++#define AD7949_CFG_BIT_SEQ		GENMASK(2, 1)
++
++/* RB: Read back the CFG register */
++#define AD7949_CFG_BIT_RBN		BIT(0)
+ 
+ enum {
+ 	ID_AD7949 = 0,
+@@ -109,8 +134,8 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
+ 	 */
+ 	for (i = 0; i < 2; i++) {
+ 		ret = ad7949_spi_write_cfg(ad7949_adc,
+-					   channel << AD7949_OFFSET_CHANNEL_SEL,
+-					   AD7949_MASK_CHANNEL_SEL);
++					   FIELD_PREP(AD7949_CFG_BIT_INX, channel),
++					   AD7949_CFG_BIT_INX);
+ 		if (ret)
+ 			return ret;
+ 		if (channel == ad7949_adc->current_channel)
+@@ -214,10 +239,19 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
+ {
+ 	int ret;
+ 	int val;
++	u16 cfg;
+ 
+-	/* Sequencer disabled, CFG readback disabled, IN0 as default channel */
+ 	ad7949_adc->current_channel = 0;
+-	ret = ad7949_spi_write_cfg(ad7949_adc, 0x3C79, AD7949_MASK_TOTAL);
++
++	cfg = FIELD_PREP(AD7949_CFG_BIT_OVERWRITE, 1) |
++		FIELD_PREP(AD7949_CFG_BIT_INCC, AD7949_CFG_VAL_INCC_UNIPOLAR_GND) |
++		FIELD_PREP(AD7949_CFG_BIT_INX, ad7949_adc->current_channel) |
++		FIELD_PREP(AD7949_CFG_BIT_BW_FULL, 1) |
++		FIELD_PREP(AD7949_CFG_BIT_REF, AD7949_CFG_VAL_REF_EXT_BUF) |
++		FIELD_PREP(AD7949_CFG_BIT_SEQ, 0x0) |
++		FIELD_PREP(AD7949_CFG_BIT_RBN, 1);
++
++	ret = ad7949_spi_write_cfg(ad7949_adc, cfg, AD7949_MASK_TOTAL);
+ 
+ 	/*
+ 	 * Do two dummy conversions to apply the first configuration setting.
+-- 
+2.30.1.489.g328c10930387
 
