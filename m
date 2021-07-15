@@ -8,53 +8,53 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DE69C47E48
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Jul 2021 14:17:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CC50C47E4B
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Jul 2021 14:17:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2C4EF613D0
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Jul 2021 14:17:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 85352613CC
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Jul 2021 14:17:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238643AbhGOOUq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 15 Jul 2021 10:20:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50194 "EHLO
+        id S238690AbhGOOUt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 15 Jul 2021 10:20:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237908AbhGOOUq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jul 2021 10:20:46 -0400
-Received: from mail-wm1-x32d.google.com (mail-wm1-x32d.google.com [IPv6:2a00:1450:4864:20::32d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F6D6C06175F;
-        Thu, 15 Jul 2021 07:17:51 -0700 (PDT)
-Received: by mail-wm1-x32d.google.com with SMTP id g8-20020a1c9d080000b02901f13dd1672aso5358513wme.0;
-        Thu, 15 Jul 2021 07:17:51 -0700 (PDT)
+        with ESMTP id S238665AbhGOOUs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jul 2021 10:20:48 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 00473C06175F;
+        Thu, 15 Jul 2021 07:17:53 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id l17-20020a05600c1d11b029021f84fcaf75so6168837wms.1;
+        Thu, 15 Jul 2021 07:17:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=euuNJ4QYLqPQyiZ3jGVxRpNge1xVHhts30tJq3NSewA=;
-        b=iP9CnI8hw5AucGUo4ibuV7X7+IOeU8Wz+IyyUELpEbqXZwRHL6AcgMDhawMKXHYK/a
-         A4VbNiBdfvvPSsiB7x8w5TKMSNzg4Z6rmn+DoawQ37tAyGMTqN6xuhnNK8QDYfEesBNX
-         N31JfgaId6hJcFP1yj2ci3tYKQ+U1tJDpQcPY8E+NJSoL2UYsTNO4RYYzKaCA7ahPpOK
-         QKKgZsiUNhZzzfC32DBORQnH+4QoNzZh6qQEb1c340LgT+TsaHllPkpjtwIsNMOThy0N
-         PxWzdaEndJ/rxio/VVEmcJSyksJHETquLxj8E9SuB3pO41FLYmLW6Vfv6nAvvWarbFzC
-         WKUg==
+        bh=WlcQjV1pVGOdbbJgTKcaNM0AAWDKgA3E4feJJrmCLBs=;
+        b=JSHy2P38ya/DHrqRszHIyHx6r4x5mXZOeteeXd631reo6Y05ZYpWxhGAE284a6HkEM
+         R5XejMxtLKqvpifIMWJvLQj1tc6u2qGnb8z5YRA0DGCFWZkN7loSKHZDNlrUIRfClmko
+         Sm689jCIy8cLcMqShcpiS70Tltmtsd42p+IMrhXvw7uKqT9FaW/p19Ls/1l6x3USO+X3
+         qJ9yKlszmesIxVb1QkDYNWQqRyI3/lAz0n7Jah7oWw3dD1xmpNkRJilQxCTKXfzwzqsO
+         KBPA1yE/697sjqb+hzQM1tmSLCybn3g8c1/0hOR8RDAnb0S2Voap038l3YM2Bzgxvvrx
+         MGqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=euuNJ4QYLqPQyiZ3jGVxRpNge1xVHhts30tJq3NSewA=;
-        b=kq2m+feGSuBXKXlKH7RFlL4FYc5kxkL9nLDbcwbxagv1I+cjbiI2UoqDwO/7MMLMqj
-         lSzD/V2n84rdEasdTYSCvK7NSfYLNeJQ7toqGLIbk2mzPnG5tY0dZMc12zsEKkR4eCCM
-         xxR3Us3qnRI1bz0hdR5LjJqLWD/FtjTzCrMDxOBCYM1U+QtJsRkgIcXU2sZ/GSieauUP
-         rdnKjxqCa54JV7Cep/vkNVmghh6EQn/MG6B0uKd5n+PvHcmoQr2eI+Lr1xu7OTZNpDYz
-         KtiXgyg03Z+fg6Kwmc8f6bkAXA/BmDsSh74Xyhn0/rTdhIdPgjfOzekhyCZqW7lWnKlA
-         QTLQ==
-X-Gm-Message-State: AOAM530AzOZVxv6+ysWy7YgUydAMlRS6a0+7Wcn7xXKudQTf4L03tX+W
-        Mwqw40MPacYohI2kaxAdVT4fe6T7qqV4GUx4vmE=
-X-Google-Smtp-Source: ABdhPJxN9ozidyCRDgOmdDS23wabGlt/+1rL2H83PSoDSjhV72hSL8NWqSA/kv7Y3gBIxSTBvnPvPA==
-X-Received: by 2002:a05:600c:214a:: with SMTP id v10mr10397911wml.17.1626358670207;
-        Thu, 15 Jul 2021 07:17:50 -0700 (PDT)
+        bh=WlcQjV1pVGOdbbJgTKcaNM0AAWDKgA3E4feJJrmCLBs=;
+        b=r1ch1FGIez8KIa0+5CAOWv1g1RPoPDCR0VrPiBZkI++sdRRP2DLGHNAo2wTFxBQswM
+         IUKGbaxg8wZYfirfy2o3/si9zAF3xuwVJxENQLaril11xyhWqwTOyw/YvD+Euy8kQoEm
+         E+Dn1v17pGeQEV3Z5fJe7AbUa8UxqMB8YaOYQtm3h+EJLlG70fF60gMoyZYJqUxMBu5A
+         yq/BIcnY9U2Orim14YlB9n2GxcrkPCvBFi6LzRe0w0JuggBksNZsV70G1IWmr8ddGJ+4
+         UcYvtwwgIkepTy/Quek21q6K2J6zSWykFVDiltcuOVnhXeiEZTEWi+Cmpyh0zT3s1OD8
+         y42Q==
+X-Gm-Message-State: AOAM530sMcM3UfrOLI68mg9Xwc0oOBTmvl5Dn1fMwFmD//dukKqp9Poa
+        R3EpnJv+5Du8RweR67T4nCW8c8Ih4SRDmAiNs0k=
+X-Google-Smtp-Source: ABdhPJwLU6f+GNqlVZ74sviIzwZHetRsfXAWmohgY9YwygGiXaXxK+QaqXsdPuHfUlud1LH9YSZi6Q==
+X-Received: by 2002:a7b:c934:: with SMTP id h20mr4794896wml.59.1626358672602;
+        Thu, 15 Jul 2021 07:17:52 -0700 (PDT)
 Received: from poker.lan (static.2-229-210-222.ip198.fastwebnet.it. [2.229.210.222])
-        by smtp.gmail.com with ESMTPSA id u16sm7989094wrw.36.2021.07.15.07.17.48
+        by smtp.gmail.com with ESMTPSA id u16sm7989094wrw.36.2021.07.15.07.17.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jul 2021 07:17:49 -0700 (PDT)
+        Thu, 15 Jul 2021 07:17:52 -0700 (PDT)
 From:   Andrea Merello <andrea.merello@gmail.com>
 To:     jic23@kernel.org, lars@metafoo.de
 Cc:     robh+dt@kernel.org, matt.ranostay@konsulko.com,
@@ -62,9 +62,9 @@ Cc:     robh+dt@kernel.org, matt.ranostay@konsulko.com,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Andrea Merello <andrea.merello@gmail.com>,
         Andrea Merello <andrea.merello@iit.it>
-Subject: [PATCH 1/4] iio: add modifiers for linear acceleration
-Date:   Thu, 15 Jul 2021 16:17:39 +0200
-Message-Id: <20210715141742.15072-2-andrea.merello@gmail.com>
+Subject: [PATCH 3/4] dt-bindings: iio: imu: add bosch BNO055 serdev driver bindings
+Date:   Thu, 15 Jul 2021 16:17:41 +0200
+Message-Id: <20210715141742.15072-4-andrea.merello@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210715141742.15072-1-andrea.merello@gmail.com>
 References: <20210715141742.15072-1-andrea.merello@gmail.com>
@@ -72,14 +72,8 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch is preparatory for adding the Bosh BNO055 IMU driver.
-The said IMU can report raw accelerations (among x, y and z axis)
-as well as the so called "linear accelerations" (again, among x,
-y and z axis) which is basically the acceleration after subtracting
-gravity.
-
-This patch adds IIO_MOD_ACCEL_LINEAR_X, IIO_MOD_ACCEL_LINEAR_Y and
-IIO_MOD_ACCEL_LINEAR_Z modifiers to te IIO core.
+Introduce new documentation file for the BNO055 serdev driver that will
+be included in next patches of this same series
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 Cc: Andrea Merello <andrea.merello@gmail.com>
@@ -90,43 +84,56 @@ Cc: Vlad Dogaru <vlad.dogaru@intel.com>
 Cc: linux-kernel@vger.kernel.org
 Cc: linux-iio@vger.kernel.org
 ---
- drivers/iio/industrialio-core.c | 3 +++
- include/uapi/linux/iio/types.h  | 4 +++-
- 2 files changed, 6 insertions(+), 1 deletion(-)
+ .../bindings/iio/imu/bosch,bno055-serial.yaml | 40 +++++++++++++++++++
+ 1 file changed, 40 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/bosch,bno055-serial.yaml
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 6d2175eb7af2..e378f48240ad 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -134,6 +134,9 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_ETHANOL] = "ethanol",
- 	[IIO_MOD_H2] = "h2",
- 	[IIO_MOD_O2] = "o2",
-+	[IIO_MOD_ACCEL_LINEAR_X] = "linear_x",
-+	[IIO_MOD_ACCEL_LINEAR_Y] = "linear_y",
-+	[IIO_MOD_ACCEL_LINEAR_Z] = "linear_z"
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 48c13147c0a8..db00f7c45f48 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -95,6 +95,9 @@ enum iio_modifier {
- 	IIO_MOD_ETHANOL,
- 	IIO_MOD_H2,
- 	IIO_MOD_O2,
-+	IIO_MOD_ACCEL_LINEAR_X,
-+	IIO_MOD_ACCEL_LINEAR_Y,
-+	IIO_MOD_ACCEL_LINEAR_Z,
- };
- 
- enum iio_event_type {
-@@ -114,4 +117,3 @@ enum iio_event_direction {
- };
- 
- #endif /* _UAPI_IIO_TYPES_H_ */
--
+diff --git a/Documentation/devicetree/bindings/iio/imu/bosch,bno055-serial.yaml b/Documentation/devicetree/bindings/iio/imu/bosch,bno055-serial.yaml
+new file mode 100644
+index 000000000000..743c784ebc94
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/imu/bosch,bno055-serial.yaml
+@@ -0,0 +1,40 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/imu/bosch,bno055-serial.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Serial-attached Bosch BNO055
++
++maintainers:
++  - Jonathan Cameron <jic23@kernel.org>
++
++description: |
++  Inertial Measurement Unit with Accelerometer, Gyroscope, Magnetometer and
++  internal MCU for sensor fusion
++  https://www.bosch-sensortec.com/products/smart-sensors/bno055/
++
++properties:
++  compatible:
++    enum:
++     - bosch,bno055-serial
++
++  reset-gpios:
++    maxItems: 1
++
++  clocks:
++    maxItems: 1
++
++required:
++  - compatible
++
++additionalProperties: false
++
++examples:
++ - |
++   #include <dt-bindings/gpio/gpio.h>
++   bno055 {
++      compatible = "bosch,bno055-serial";
++      reset-gpios = <&gpio0 54 GPIO_ACTIVE_LOW>;
++      clocks = <&imu_clk>;
++   };
 -- 
 2.17.1
 
