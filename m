@@ -8,53 +8,53 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 652FAC47E48
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Jul 2021 14:17:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C6D6C47E4B
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Jul 2021 14:18:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4D21A613CC
-	for <linux-iio@archiver.kernel.org>; Thu, 15 Jul 2021 14:17:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 15AB761374
+	for <linux-iio@archiver.kernel.org>; Thu, 15 Jul 2021 14:18:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237908AbhGOOUs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 15 Jul 2021 10:20:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50202 "EHLO
+        id S238709AbhGOOUw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 15 Jul 2021 10:20:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238664AbhGOOUr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jul 2021 10:20:47 -0400
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05A57C061760;
-        Thu, 15 Jul 2021 07:17:53 -0700 (PDT)
-Received: by mail-wr1-x436.google.com with SMTP id l7so8009482wrv.7;
-        Thu, 15 Jul 2021 07:17:52 -0700 (PDT)
+        with ESMTP id S238703AbhGOOUu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Jul 2021 10:20:50 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 831B1C061760;
+        Thu, 15 Jul 2021 07:17:55 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id b14-20020a1c1b0e0000b02901fc3a62af78so6160244wmb.3;
+        Thu, 15 Jul 2021 07:17:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=tkwetnUGFuyH0JeLFqH9i1+XLYJ6Y0OHDjl5YBncYgE=;
-        b=Fqw4rYJTfR0YRscRrCzweoOqEoF8JLycmURrNDU4ECKyPRo2W1RpmuhAfr8mwSTz9y
-         wEsFcLoWPn1n6wB+uVDN+Oo+W8BWFHEnzs+mljlkOTC8erAHzIeA3GV/xaXIre/OS7CD
-         QLPhxhs7pMHnNOEuc52NXC1fNtyI3RYQuDiAIfw3vS4ANTRritflV2rQyiGMHvfA1q+Q
-         Q1C/jC7uwSWbfL/LTWxvp7nRNEdwAMO3P6tYHVNTnGGkJPdfpzemDR5BOxBQmgzZVtxX
-         H4kD9R2Zj3skDAPFIRWPuXWGUeft6w5RkoFA3A9o3fe9ItzgGklmVEW5FYjPQLVITeKE
-         SCfA==
+        bh=H17yw0w5ym8pmaNchuyI1FtJ6NP9X69ZuYt6DTafajs=;
+        b=QEclpBGY3nKLnTDpikDqCKU/rqGP1Pt11KOuyiiqfpOPbnWBomqpClq4m/D4rM015t
+         +s1pYjZNZt4t61/u5vCadWvK0uyTg6CPLsfGXoeoqjXaB+VZcYWy44NhMWWW3FL7UJSX
+         gqORgxyRnZMTbq02GD362f45aGxJg1pWLNarYDCcJJAs2Q5XxyF9IIb/7yHKH+HxajTL
+         4FdhrynueYBZV1x4hFtTmU3HxMieQjIkqFeXqaT9AWYI44T/EdkhbAgfgmGMiswhOi0v
+         g6wX5X3kFXe5H+3ZBDCMlS25PHa1Go3acTNNI/bs4YHWTtv3g9J3CJiA0o8Ja5vF8U6e
+         bK+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=tkwetnUGFuyH0JeLFqH9i1+XLYJ6Y0OHDjl5YBncYgE=;
-        b=nL/6KCp+MAiFuigmFbUCIVm7GhZkf+Z+bATu7DIjhCYv4NE04dR1IVqLoQvvRgveaS
-         k9Bt+R+vEW7tVhACEKgwb4pJ43jy4ljqakBxy/g0YoBj12tp5ejI56/z87/0WCtSmcs6
-         /fpuHev0V/WaXgBx2au8zxUWrNLq+RWD85Va9h+K+bNOLiAXfr1WOV+RNO040vy839gS
-         R8i9kdjpBxFDMZ+g5zkwvxzyEzxc//s/JZUOsjlt4BxoqljkKG7Xh/WIW86sYJC2KR01
-         fIRZqcrAqI6V8sCbTn0JW4B0z/NaA20jhNpPqI58gOQTr4wn1tQqBKrlifNo1/tK3Wc2
-         DIrA==
-X-Gm-Message-State: AOAM531haak5LI06EqVduIrP/XFYIbyuc3KdB121CbH4xMbN8Yw9denf
-        qBswUGEh696T4Q6OKuBfXE8=
-X-Google-Smtp-Source: ABdhPJz8GMf5fMaUS1RlhAxWhv7lsJWfA/D3mOwtVOWzre1LJIqaiFhcBQKzuAgsDM0cJGo07UPcnA==
-X-Received: by 2002:a5d:6da2:: with SMTP id u2mr5799024wrs.134.1626358671401;
-        Thu, 15 Jul 2021 07:17:51 -0700 (PDT)
+        bh=H17yw0w5ym8pmaNchuyI1FtJ6NP9X69ZuYt6DTafajs=;
+        b=MA0ETnBWYhU8chRaVd1PyhSZvLyNoVErPA6kD/Bg05uJln4MY9MsWBdbwpA7je8Ui2
+         jpI1nriSEcexa5TSuAI8/SdA3rcUOMrTHqrpfVWv87Xxg7c3A1QWSu+DDKCtr6U6NM6d
+         qAtiGjR8KCt4UCDsV/prvI+7b57I+ZHtUuodQ5nWyrZhmvpFHGDona7m05PfpgU2V4wa
+         OmsOLqlorF89/Rlhmvzvcwb0GkG/CkdeOhq4Rr2yQs3mIc8Jc/Hw8xe3AtpirjI3JqLd
+         O4tVy1CXGj17a8eX1DNJfAT3tifipb7XsOzR6Xy2KggnXmo5wrgnIcPz2ds1Ewwh23br
+         i/TQ==
+X-Gm-Message-State: AOAM530bi6UDoU0slpaqkOZsXOZYnMkOcKciOQzJHkDmRUevs/IIU/5f
+        PoN6tdqxClZpctAyDDeswvs=
+X-Google-Smtp-Source: ABdhPJxgOUfDtolmaDQyuqrWBf7IB+fGYdXbqekEwhx4zB7ghlnbr+nihXubRD02fbjbfeHAQz41Ng==
+X-Received: by 2002:a7b:c0c9:: with SMTP id s9mr4917118wmh.188.1626358674094;
+        Thu, 15 Jul 2021 07:17:54 -0700 (PDT)
 Received: from poker.lan (static.2-229-210-222.ip198.fastwebnet.it. [2.229.210.222])
-        by smtp.gmail.com with ESMTPSA id u16sm7989094wrw.36.2021.07.15.07.17.50
+        by smtp.gmail.com with ESMTPSA id u16sm7989094wrw.36.2021.07.15.07.17.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 15 Jul 2021 07:17:50 -0700 (PDT)
+        Thu, 15 Jul 2021 07:17:53 -0700 (PDT)
 From:   Andrea Merello <andrea.merello@gmail.com>
 To:     jic23@kernel.org, lars@metafoo.de
 Cc:     robh+dt@kernel.org, matt.ranostay@konsulko.com,
@@ -62,9 +62,9 @@ Cc:     robh+dt@kernel.org, matt.ranostay@konsulko.com,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         Andrea Merello <andrea.merello@gmail.com>,
         Andrea Merello <andrea.merello@iit.it>
-Subject: [PATCH 2/4] iio: imu: add Bosch Sensortec BNO055 core driver
-Date:   Thu, 15 Jul 2021 16:17:40 +0200
-Message-Id: <20210715141742.15072-3-andrea.merello@gmail.com>
+Subject: [PATCH 4/4] iio: imu: add BNO055 serdev driver
+Date:   Thu, 15 Jul 2021 16:17:42 +0200
+Message-Id: <20210715141742.15072-5-andrea.merello@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210715141742.15072-1-andrea.merello@gmail.com>
 References: <20210715141742.15072-1-andrea.merello@gmail.com>
@@ -72,19 +72,9 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds a core driver for the BNO055 IMU from Bosch. This IMU
-can be connected via both serial and I2C busses; separate patches will
-add support for them.
-
-The driver supports "AMG" (Accelerometer, Magnetometer, Gyroscope) mode,
-that provides raw data from the said internal sensors, and a couple of
-"fusion" modes (i.e. the IMU also do calculations in order to provide
-euler angles, quaternions, linear acceleration and gravity measurements).
-
-In fusion modes the AMG data is still available (with some calibration
-refinements done by the IMU), but certain settings such as low pass
-filters cut-off frequency and sensors ranges are fixed, while in AMG mode
-they can be customized; this is why AMG mode can still be interesting.
+This path adds a serdev driver for communicating to a BNO055 IMU
+via serial bus, and enables the BNO055 core driver to work in this
+scenario.
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 Cc: Andrea Merello <andrea.merello@gmail.com>
@@ -95,1452 +85,616 @@ Cc: Vlad Dogaru <vlad.dogaru@intel.com>
 Cc: linux-kernel@vger.kernel.org
 Cc: linux-iio@vger.kernel.org
 ---
- drivers/iio/imu/Kconfig         |    1 +
- drivers/iio/imu/Makefile        |    1 +
- drivers/iio/imu/bno055/Kconfig  |    7 +
- drivers/iio/imu/bno055/Makefile |    6 +
- drivers/iio/imu/bno055/bno055.c | 1361 +++++++++++++++++++++++++++++++
- drivers/iio/imu/bno055/bno055.h |   12 +
- 6 files changed, 1388 insertions(+)
- create mode 100644 drivers/iio/imu/bno055/Kconfig
- create mode 100644 drivers/iio/imu/bno055/Makefile
- create mode 100644 drivers/iio/imu/bno055/bno055.c
- create mode 100644 drivers/iio/imu/bno055/bno055.h
+ drivers/iio/imu/bno055/Kconfig     |   5 +
+ drivers/iio/imu/bno055/Makefile    |   1 +
+ drivers/iio/imu/bno055/bno055_sl.c | 576 +++++++++++++++++++++++++++++
+ 3 files changed, 582 insertions(+)
+ create mode 100644 drivers/iio/imu/bno055/bno055_sl.c
 
-diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-index 001ca2c3ff95..f1d7d4b5e222 100644
---- a/drivers/iio/imu/Kconfig
-+++ b/drivers/iio/imu/Kconfig
-@@ -52,6 +52,7 @@ config ADIS16480
- 	  ADIS16485, ADIS16488 inertial sensors.
- 
- source "drivers/iio/imu/bmi160/Kconfig"
-+source "drivers/iio/imu/bno055/Kconfig"
- 
- config FXOS8700
- 	tristate
-diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
-index c82748096c77..6eb612034722 100644
---- a/drivers/iio/imu/Makefile
-+++ b/drivers/iio/imu/Makefile
-@@ -15,6 +15,7 @@ adis_lib-$(CONFIG_IIO_ADIS_LIB_BUFFER) += adis_buffer.o
- obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
- 
- obj-y += bmi160/
-+obj-y += bno055/
- 
- obj-$(CONFIG_FXOS8700) += fxos8700_core.o
- obj-$(CONFIG_FXOS8700_I2C) += fxos8700_i2c.o
 diff --git a/drivers/iio/imu/bno055/Kconfig b/drivers/iio/imu/bno055/Kconfig
-new file mode 100644
-index 000000000000..2bfed8df4554
---- /dev/null
+index 2bfed8df4554..6d2e8c9f85b7 100644
+--- a/drivers/iio/imu/bno055/Kconfig
 +++ b/drivers/iio/imu/bno055/Kconfig
-@@ -0,0 +1,7 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+#
-+# driver for Bosh bmo055
-+#
+@@ -5,3 +5,8 @@
+ 
+ config BOSH_BNO055_IIO
+ 	tristate
 +
-+config BOSH_BNO055_IIO
-+	tristate
++config BOSH_BNO055_SERIAL
++	tristate "Bosh BNO055 attached via serial bus"
++	depends on SERIAL_DEV_BUS
++	select BOSH_BNO055_IIO
 diff --git a/drivers/iio/imu/bno055/Makefile b/drivers/iio/imu/bno055/Makefile
-new file mode 100644
-index 000000000000..15c5ddf8d648
---- /dev/null
+index 15c5ddf8d648..b704b10b6bd1 100644
+--- a/drivers/iio/imu/bno055/Makefile
 +++ b/drivers/iio/imu/bno055/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for bosh bno055
-+#
-+
-+obj-$(CONFIG_BOSH_BNO055_IIO) += bno055.o
-diff --git a/drivers/iio/imu/bno055/bno055.c b/drivers/iio/imu/bno055/bno055.c
+@@ -4,3 +4,4 @@
+ #
+ 
+ obj-$(CONFIG_BOSH_BNO055_IIO) += bno055.o
++obj-$(CONFIG_BOSH_BNO055_SERIAL) += bno055_sl.o
+diff --git a/drivers/iio/imu/bno055/bno055_sl.c b/drivers/iio/imu/bno055/bno055_sl.c
 new file mode 100644
-index 000000000000..888a88bb13d5
+index 000000000000..9604d73d126c
 --- /dev/null
-+++ b/drivers/iio/imu/bno055/bno055.c
-@@ -0,0 +1,1361 @@
++++ b/drivers/iio/imu/bno055/bno055_sl.c
+@@ -0,0 +1,576 @@
 +// SPDX-License-Identifier: GPL-2.0-or-later
 +/*
-+ * IIO driver for Bosh BNO055 IMU
++ * Serial line interface for Bosh BNO055 IMU (via serdev).
++ * This file implements serial communication up to the register read/write
++ * level.
 + *
 + * Copyright (C) 2021 Istituto Italiano di Tecnologia
 + * Electronic Design Laboratory
 + * Written by Andrea Merello <andrea.merello@iit.it>
 + *
-+ * Portions of this driver are taken from the BNO055 driver patch
-+ * from Vlad Dogaru which is Copyright (c) 2016, Intel Corporation.
-+ *
-+ * This driver is also based on BMI160 driver, which is:
-+ *	Copyright (c) 2016, Intel Corporation.
-+ *	Copyright (c) 2019, Martin Kelly.
++ * This driver is besed on
++ *	Plantower PMS7003 particulate matter sensor driver
++ *	Which is
++ *	Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
 + */
 +
-+#include <linux/clk.h>
-+#include <linux/firmware.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/irq.h>
++#include <linux/completion.h>
++#include <linux/device.h>
++#include <linux/errno.h>
++#include <linux/jiffies.h>
++#include <linux/kernel.h>
++#include <linux/mod_devicetable.h>
 +#include <linux/module.h>
 +#include <linux/mutex.h>
++#include <linux/of_irq.h>
 +#include <linux/regmap.h>
-+#include <linux/util_macros.h>
++#include <linux/serdev.h>
 +
 +#include "bno055.h"
 +
-+#define BNO055_FW_NAME "bno055-caldata"
-+#define BNO055_FW_EXT ".dat"
-+
-+/* common registers */
-+#define BNO055_PAGESEL_REG		0x7
-+
-+/* page 0 registers */
-+#define BNO055_CHIP_ID_REG		0x0
-+#define BNO055_CHIP_ID_MAGIC 0xA0
-+#define BNO055_SW_REV_LSB_REG		0x4
-+#define BNO055_SW_REV_MSB_REG		0x5
-+#define BNO055_ACC_DATA_X_LSB_REG	0x8
-+#define BNO055_ACC_DATA_Y_LSB_REG	0xA
-+#define BNO055_ACC_DATA_Z_LSB_REG	0xC
-+#define BNO055_MAG_DATA_X_LSB_REG	0xE
-+#define BNO055_MAG_DATA_Y_LSB_REG	0x10
-+#define BNO055_MAG_DATA_Z_LSB_REG	0x12
-+#define BNO055_GYR_DATA_X_LSB_REG	0x14
-+#define BNO055_GYR_DATA_Y_LSB_REG	0x16
-+#define BNO055_GYR_DATA_Z_LSB_REG	0x18
-+#define BNO055_EUL_DATA_X_LSB_REG	0x1A
-+#define BNO055_EUL_DATA_Y_LSB_REG	0x1C
-+#define BNO055_EUL_DATA_Z_LSB_REG	0x1E
-+#define BNO055_QUAT_DATA_W_LSB_REG	0x20
-+#define BNO055_LIA_DATA_X_LSB_REG	0x28
-+#define BNO055_LIA_DATA_Y_LSB_REG	0x2A
-+#define BNO055_LIA_DATA_Z_LSB_REG	0x2C
-+#define BNO055_GRAVITY_DATA_X_LSB_REG	0x2E
-+#define BNO055_GRAVITY_DATA_Y_LSB_REG	0x30
-+#define BNO055_GRAVITY_DATA_Z_LSB_REG	0x32
-+#define BNO055_TEMP_REG			0x34
-+#define BNO055_CALIB_STAT_REG		0x35
-+#define BNO055_CALIB_STAT_MASK 3
-+#define BNO055_CALIB_STAT_MAGN_SHIFT 0
-+#define BNO055_CALIB_STAT_ACCEL_SHIFT 2
-+#define BNO055_CALIB_STAT_GYRO_SHIFT 4
-+#define BNO055_CALIB_STAT_SYS_SHIFT 6
-+#define BNO055_SYS_TRIGGER_REG		0x3F
-+#define BNO055_SYS_TRIGGER_RST_INT BIT(6)
-+#define BNO055_SYS_TRIGGER_CLK_SEL BIT(7)
-+#define BNO055_OPR_MODE_REG		0x3D
-+#define BNO055_OPR_MODE_CONFIG 0x0
-+#define BNO055_OPR_MODE_AMG 0x7
-+#define BNO055_OPR_MODE_FUSION_FMC_OFF 0xB
-+#define BNO055_OPR_MODE_FUSION 0xC
-+#define BNO055_UNIT_SEL_REG		0x3B
-+#define BNO055_UNIT_SEL_ANDROID BIT(7)
-+#define BNO055_CALDATA_START		0x55
-+#define BNO055_CALDATA_END		0x6A
-+#define BNO055_CALDATA_LEN (BNO055_CALDATA_END - BNO055_CALDATA_START + 1)
++#define BNO055_SL_DRIVER_NAME "bno055-sl"
 +
 +/*
-+ * The difference in address between the register that contains the
-+ * value and the register that contains the offset.  This applies for
-+ * accel, gyro and magn channels.
++ * Register writes cmd have the following format
++ * +------+------+-----+-----+----- ... ----+
++ * | 0xAA | 0xOO | REG | LEN | payload[LEN] |
++ * +------+------+-----+-----+----- ... ----+
++ *
++ * Register write responses have the following format
++ * +------+----------+
++ * | 0xEE | ERROCODE |
++ * +------+----------+
++ *
++ * Register read have the following format
++ * +------+------+-----+-----+
++ * | 0xAA | 0xO1 | REG | LEN |
++ * +------+------+-----+-----+
++ *
++ * Successful register read response have the following format
++ * +------+-----+----- ... ----+
++ * | 0xBB | LEN | payload[LEN] |
++ * +------+-----+----- ... ----+
++ *
++ * Failed register read response have the following format
++ * +------+--------+
++ * | 0xEE | ERRCODE|  (ERRCODE always > 1)
++ * +------+--------+
++ *
++ * Error codes are
++ * 01: OK
++ * 02: read/write FAIL
++ * 04: invalid address
++ * 05: write on RO
++ * 06: wrong start byte
++ * 07: bus overrun
++ * 08: len too high
++ * 09: len too low
++ * 10: bus RX byte timeout (timeout is 30mS)
++ *
++ *
++ * **WORKAROUND ALERT**
++ *
++ * Serial communication seems very fragile: the BNO055 buffer seems to overflow
++ * very easy; BNO055 seems able to sink few bytes, then it needs a brief pause.
++ * On the other hand, it is also picky on timeout: if there is a pause > 30mS in
++ * between two bytes then the transaction fails (IMU internal RX FSM resets).
++ *
++ * BMU055 has been seen also failing to process commands in case we send them
++ * too close each other (or if it is somehow busy?)
++ *
++ * One idea would be to split data in chunks, and then wait 1-2mS between
++ * chunks (we hope not to exceed 30mS delay for any reason - which should
++ * be pretty a lot of time for us), and eventually retry in case the BNO055
++ * gets upset for any reason. This seems to work in avoiding the overflow
++ * errors, but indeed it seems slower than just perform a retry when an overflow
++ * error occur.
++ * In particular I saw these scenarios:
++ * 1) If we send 2 bytes per time, then the IMU never(?) overflows.
++ * 2) If we send 4 bytes per time (i.e. the full header), then the IMU could
++ *    overflow, but it seem to sink all 4 bytes, then it returns error.
++ * 3) If we send more than 4 bytes, the IMU could overflow, and I saw it sending
++ *    error after 4 bytes are sent; we have troubles in synchronizing again,
++ *    because we are still sending data, and the IMU interprets it as the 1st
++ *    byte of a new command.
++ *
++ * So, we workaround all this in the following way:
++ * In case of read we don't split the header but we rely on retries; This seems
++ * convenient for data read (where we TX only the hdr).
++ * For TX we split the transmission in 2-bytes chunks so that, we should not
++ * only avoid case 2 (which is still manageable), but we also hopefully avoid
++ * case 3, that would be by far worse.
 + */
-+#define BNO055_REG_OFFSET_ADDR		0x4D
 +
-+/* page 1 registers */
-+#define PG1(x) ((x) | 0x80)
-+#define BNO055_ACC_CONFIG_REG		PG1(0x8)
-+#define BNO055_ACC_CONFIG_LPF_MASK 0x1C
-+#define BNO055_ACC_CONFIG_LPF_SHIFT 0x2
-+#define BNO055_ACC_CONFIG_RANGE_MASK 0x3
-+#define BNO055_ACC_CONFIG_RANGE_SHIFT 0x0
-+#define BNO055_MAG_CONFIG_REG		PG1(0x9)
-+#define BNO055_MAG_CONFIG_HIGHACCURACY 0x18
-+#define BNO055_MAG_CONFIG_ODR_MASK 0x7
-+#define BNO055_MAG_CONFIG_ODR_SHIFT 0
-+#define BNO055_GYR_CONFIG_REG		PG1(0xA)
-+#define BNO055_GYR_CONFIG_RANGE_MASK 0x7
-+#define BNO055_GYR_CONFIG_RANGE_SHIFT 0
-+#define BNO055_GYR_CONFIG_LPF_MASK 0x38
-+#define BNO055_GYR_CONFIG_LPF_SHIFT 3
-+#define BNO055_INT_MSK			PG1(0xF)
-+#define BNO055_INT_EN			PG1(0x10)
-+#define BNO055_INT_ACC_BSX_DRDY BIT(0)
-+#define BNO055_INT_MAG_DRDY BIT(1)
-+#define BNO055_INT_GYR_DRDY BIT(4)
-+#define BNO055_UID_REG			PG1(0x50)
-+#define BNO055_UID_LEN (0xF)
++/* Read operation overhead:
++ * 4 bytes req + 2byte resp hdr
++ * 6 bytes = 60 bit (considering 1start + 1stop bits).
++ * 60/115200 = ~520uS
++ * In 520uS we could read back about 34 bytes that means 3 samples, this means
++ * that in case of scattered read in which the gap is 3 samples or less it is
++ * still convenient to go for a burst.
++ * We have to take into account also IMU response time - IMU seems to be often
++ * reasonably quick to respond, but sometimes it seems to be in some "critical
++ * section" in which it delays handling of serial protocol.
++ * By experiment, it seems convenient to burst up to about 5/6-samples-long gap
++ */
 +
-+static const int bno055_mag_odr_vals[] = {2, 6, 8, 10, 15, 20, 25, 30};
-+static const int bno055_acc_lpf_vals[] = {781, 1563, 3125, 6250,
-+					    12500, 25000, 50000, 100000};
-+static const int bno055_acc_ranges[] = {2, 4, 8, 16};
-+static const int bno055_gyr_lpf_vals[] = {523, 230, 116, 47, 23, 12, 64, 32};
-+static const int bno055_gyr_ranges[] = {2000, 1000, 500, 250, 125};
++#define BNO055_SL_XFER_BURST_BREAK_THRESHOLD 6
 +
-+struct bno055_priv {
-+	struct regmap *regmap;
-+	struct device *dev;
-+	struct clk *clk;
-+	int operation_mode;
-+	int xfer_burst_break_thr;
++struct bno055_sl_priv {
++	struct serdev_device *serdev;
++	struct completion cmd_complete;
++	enum {
++		CMD_NONE,
++		CMD_READ,
++		CMD_WRITE,
++	} expect_response;
++	int expected_data_len;
++	u8 *response_buf;
++	enum {
++		STATUS_OK = 0,  /* command OK */
++		STATUS_FAIL = 1,/* IMU communicated an error */
++		STATUS_CRIT = -1/* serial communication with IMU failed */
++	} cmd_status;
 +	struct mutex lock;
-+	u8 uid[BNO055_UID_LEN];
++
++	/* Only accessed in behalf of RX callback context. No lock needed. */
++	struct {
++		enum {
++			RX_IDLE,
++			RX_START,
++			RX_DATA
++		} state;
++		int databuf_count;
++		int expected_len;
++		int type;
++	} rx;
++
++	/* Never accessed in behalf of RX callback context. No lock needed */
++	bool cmd_stale;
 +};
 +
-+static int find_closest_unsorted(int val, const int arr[], int len)
-+{
-+	int i;
-+	int best_idx, best_delta, delta;
-+	int first = 1;
-+
-+	for (i = 0; i < len; i++) {
-+		delta = abs(arr[i] - val);
-+		if (first || delta < best_delta) {
-+			best_delta = delta;
-+			best_idx = i;
-+		}
-+		first = 0;
-+	}
-+
-+	return best_idx;
-+}
-+
-+static bool bno055_regmap_volatile(struct device *dev, unsigned int reg)
-+{
-+	if ((reg >= 0x8 && reg <= 0x3A) ||
-+	    /* when in fusion mode, config is updated by chip */
-+	    reg == BNO055_MAG_CONFIG_REG ||
-+	    reg == BNO055_ACC_CONFIG_REG ||
-+	    reg == BNO055_GYR_CONFIG_REG ||
-+	    (reg >= BNO055_CALDATA_START && reg <= BNO055_CALDATA_END))
-+		return true;
-+	return false;
-+}
-+
-+static bool bno055_regmap_readable(struct device *dev, unsigned int reg)
-+{
-+	if ((reg <= 0x7F && reg >= 0x6B) ||
-+	    reg == 0x3C ||
-+	    (reg <= PG1(0x7F) && reg >= PG1(0x60)) ||
-+	    (reg <= PG1(0x4F) && reg >= PG1(0x20)) ||
-+	    reg == PG1(0xE) ||
-+	    (reg <= PG1(0x6) && reg >= PG1(0x0)))
-+		return false;
-+	return true;
-+}
-+
-+static bool bno055_regmap_writeable(struct device *dev, unsigned int reg)
-+{
-+	if ((!bno055_regmap_readable(dev, reg)) ||
-+	    (reg <= 0x3A && reg >= 0x8) ||
-+	    reg <= 0x6 ||
-+	    (reg <= PG1(0x5F) && reg >= PG1(0x50)))
-+		return false;
-+	return true;
-+}
-+
-+static const struct regmap_range_cfg bno055_regmap_ranges[] = {
-+	{
-+		.range_min = 0,
-+		.range_max = 0x7f * 2,
-+		.selector_reg = BNO055_PAGESEL_REG,
-+		.selector_mask = 0xff,
-+		.selector_shift = 0,
-+		.window_start = 0,
-+		.window_len = 0x80
-+	},
-+};
-+
-+const struct regmap_config bno055_regmap_config = {
-+	.name      = "bno055",
-+	.reg_bits  = 8,
-+	.val_bits  = 8,
-+	.ranges = bno055_regmap_ranges,
-+	.num_ranges = 1,
-+	.volatile_reg = bno055_regmap_volatile,
-+	.max_register = 0x80 * 2,
-+	.writeable_reg = bno055_regmap_writeable,
-+	.readable_reg = bno055_regmap_readable,
-+	.cache_type = REGCACHE_RBTREE,
-+};
-+EXPORT_SYMBOL_GPL(bno055_regmap_config);
-+
-+static int bno055_reg_read(struct bno055_priv *priv,
-+			   unsigned int reg, unsigned int *val)
-+{
-+	int res = regmap_read(priv->regmap, reg, val);
-+
-+	if (res && res != -ERESTARTSYS) {
-+		dev_err(priv->dev, "Regmap read error. adr: 0x%x, res: %d",
-+			reg,  res);
-+	}
-+
-+	return res;
-+}
-+
-+static int bno055_reg_write(struct bno055_priv *priv,
-+			    unsigned int reg, unsigned int val)
-+{
-+	int res = regmap_write(priv->regmap, reg, val);
-+
-+	if (res && res != -ERESTARTSYS) {
-+		dev_err(priv->dev, "Regmap write error. adr: 0x%x, res: %d",
-+			reg,  res);
-+	}
-+
-+	return res;
-+}
-+
-+static int bno055_reg_update_bits(struct bno055_priv *priv, unsigned int reg,
-+				  unsigned int mask, unsigned int val)
-+{
-+	int res = regmap_update_bits(priv->regmap, reg, mask, val);
-+
-+	if (res && res != -ERESTARTSYS) {
-+		dev_err(priv->dev, "Regmap update_bits  error. adr: 0x%x, res: %d",
-+			reg,  res);
-+	}
-+
-+	return res;
-+}
-+
-+/* must be called in configuration mode */
-+int bno055_calibration_load(struct bno055_priv *priv, const struct firmware *fw)
-+{
-+	int i;
-+	unsigned int tmp;
-+	u8 cal[BNO055_CALDATA_LEN];
-+	int read, tot_read = 0;
-+	int ret = 0;
-+	char *buf = kmalloc(fw->size + 1, GFP_KERNEL);
-+
-+	if (!buf)
-+		return -ENOMEM;
-+
-+	memcpy(buf, fw->data, fw->size);
-+	buf[fw->size] = '\0';
-+	for (i = 0; i < BNO055_CALDATA_LEN; i++) {
-+		ret = sscanf(buf + tot_read, "%x%n",
-+			     &tmp, &read);
-+		if (ret != 1 || tmp > 0xff) {
-+			ret = -EINVAL;
-+			goto exit;
-+		}
-+		cal[i] = tmp;
-+		tot_read += read;
-+	}
-+	dev_dbg(priv->dev, "loading cal data: %*ph", BNO055_CALDATA_LEN, cal);
-+	ret = regmap_bulk_write(priv->regmap, BNO055_CALDATA_START,
-+				cal, BNO055_CALDATA_LEN);
-+exit:
-+	kfree(buf);
-+	return ret;
-+}
-+
-+static int bno055_init(struct bno055_priv *priv, const struct firmware *caldata)
-+{
-+	int res;
-+
-+	res = bno055_reg_write(priv, BNO055_SYS_TRIGGER_REG,
-+			       (priv->clk ? BNO055_SYS_TRIGGER_CLK_SEL : 0) |
-+			       BNO055_SYS_TRIGGER_RST_INT);
-+	if (res)
-+		return res;
-+
-+	msleep(100);
-+	res = bno055_reg_write(priv, BNO055_OPR_MODE_REG,
-+			       BNO055_OPR_MODE_CONFIG);
-+	if (res)
-+		return res;
-+
-+	/* use standard SI units */
-+	res = bno055_reg_write(priv, BNO055_UNIT_SEL_REG,
-+			       BNO055_UNIT_SEL_ANDROID);
-+	if (res)
-+		return res;
-+
-+	if (caldata) {
-+		res = bno055_calibration_load(priv, caldata);
-+		if (res)
-+			dev_warn(priv->dev, "failed to load calibration data with error %d",
-+				 res);
-+	}
-+
-+	/*
-+	 * Start in fusion mode (all data available), but with magnetometer auto
-+	 * calibration switched off, in order not to overwrite magnetometer
-+	 * calibration data in case one want to keep it untouched.
-+	 */
-+	priv->operation_mode = BNO055_OPR_MODE_FUSION_FMC_OFF;
-+	return bno055_reg_write(priv, BNO055_OPR_MODE_REG,
-+				priv->operation_mode);
-+}
-+
-+static void bno055_uninit(void *arg)
-+{
-+	struct bno055_priv *priv = arg;
-+
-+	bno055_reg_write(priv, BNO055_INT_EN, 0);
-+
-+	clk_disable_unprepare(priv->clk);
-+}
-+
-+#define BNO055_CHANNEL(_type, _axis, _index, _address, _sep, _sh) {	\
-+	.address = _address,						\
-+	.type = _type,							\
-+	.modified = 1,							\
-+	.channel2 = IIO_MOD_##_axis,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | (_sep),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | (_sh),	\
-+	.scan_index = _index,						\
-+	.scan_type = {							\
-+		.sign = 's',						\
-+		.realbits = 16,						\
-+		.storagebits = 16,					\
-+		.endianness = IIO_LE,					\
-+		.repeat = IIO_MOD_##_axis == IIO_MOD_QUATERNION ? 4 : 0 \
-+	},								\
-+}
-+
-+/* scan indexes follow DATA register order */
-+enum bmi160_scan_axis {
-+	BNO055_SCAN_ACCEL_X,
-+	BNO055_SCAN_ACCEL_Y,
-+	BNO055_SCAN_ACCEL_Z,
-+	BNO055_SCAN_MAGN_X,
-+	BNO055_SCAN_MAGN_Y,
-+	BNO055_SCAN_MAGN_Z,
-+	BNO055_SCAN_GYRO_X,
-+	BNO055_SCAN_GYRO_Y,
-+	BNO055_SCAN_GYRO_Z,
-+	BNO055_SCAN_HEADING,
-+	BNO055_SCAN_ROLL,
-+	BNO055_SCAN_PITCH,
-+	BNO055_SCAN_QUATERNION,
-+	BNO055_SCAN_LIA_X,
-+	BNO055_SCAN_LIA_Y,
-+	BNO055_SCAN_LIA_Z,
-+	BNO055_SCAN_GRAVITY_X,
-+	BNO055_SCAN_GRAVITY_Y,
-+	BNO055_SCAN_GRAVITY_Z,
-+	BNO055_SCAN_TIMESTAMP,
-+};
-+
-+static const struct iio_chan_spec bno055_channels[] = {
-+	/* accelerometer */
-+	BNO055_CHANNEL(IIO_ACCEL, X, BNO055_SCAN_ACCEL_X,
-+		       BNO055_ACC_DATA_X_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)),
-+	BNO055_CHANNEL(IIO_ACCEL, Y, BNO055_SCAN_ACCEL_Y,
-+		       BNO055_ACC_DATA_Y_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)),
-+	BNO055_CHANNEL(IIO_ACCEL, Z, BNO055_SCAN_ACCEL_Z,
-+		       BNO055_ACC_DATA_Z_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)),
-+	/* gyroscope */
-+	BNO055_CHANNEL(IIO_ANGL_VEL, X, BNO055_SCAN_GYRO_X,
-+		       BNO055_GYR_DATA_X_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)),
-+	BNO055_CHANNEL(IIO_ANGL_VEL, Y, BNO055_SCAN_GYRO_Y,
-+		       BNO055_GYR_DATA_Y_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)),
-+	BNO055_CHANNEL(IIO_ANGL_VEL, Z, BNO055_SCAN_GYRO_Z,
-+		       BNO055_GYR_DATA_Z_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY)),
-+	/* magnetometer */
-+	BNO055_CHANNEL(IIO_MAGN, X, BNO055_SCAN_MAGN_X,
-+		       BNO055_MAG_DATA_X_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	BNO055_CHANNEL(IIO_MAGN, Y, BNO055_SCAN_MAGN_Y,
-+		       BNO055_MAG_DATA_Y_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	BNO055_CHANNEL(IIO_MAGN, Z, BNO055_SCAN_MAGN_Z,
-+		       BNO055_MAG_DATA_Z_LSB_REG, BIT(IIO_CHAN_INFO_OFFSET),
-+		       BIT(IIO_CHAN_INFO_SAMP_FREQ)),
-+	/* euler angle */
-+	BNO055_CHANNEL(IIO_ROT, X, BNO055_SCAN_HEADING,
-+		       BNO055_EUL_DATA_X_LSB_REG, 0, 0),
-+	BNO055_CHANNEL(IIO_ROT, Y, BNO055_SCAN_ROLL,
-+		       BNO055_EUL_DATA_Y_LSB_REG, 0, 0),
-+	BNO055_CHANNEL(IIO_ROT, Z, BNO055_SCAN_PITCH,
-+		       BNO055_EUL_DATA_Z_LSB_REG, 0, 0),
-+	/* quaternion */
-+	BNO055_CHANNEL(IIO_ROT, QUATERNION, BNO055_SCAN_QUATERNION,
-+		       BNO055_QUAT_DATA_W_LSB_REG, 0, 0),
-+
-+	/* linear acceleration */
-+	BNO055_CHANNEL(IIO_ACCEL, ACCEL_LINEAR_X, BNO055_SCAN_LIA_X,
-+		       BNO055_LIA_DATA_X_LSB_REG, 0, 0),
-+	BNO055_CHANNEL(IIO_ACCEL, ACCEL_LINEAR_Y, BNO055_SCAN_LIA_Y,
-+		       BNO055_LIA_DATA_Y_LSB_REG, 0, 0),
-+	BNO055_CHANNEL(IIO_ACCEL, ACCEL_LINEAR_Z, BNO055_SCAN_LIA_Z,
-+		       BNO055_LIA_DATA_Z_LSB_REG, 0, 0),
-+
-+	/* gravity vector */
-+	BNO055_CHANNEL(IIO_GRAVITY, X, BNO055_SCAN_GRAVITY_X,
-+		       BNO055_GRAVITY_DATA_X_LSB_REG, 0, 0),
-+	BNO055_CHANNEL(IIO_GRAVITY, Y, BNO055_SCAN_GRAVITY_Y,
-+		       BNO055_GRAVITY_DATA_Y_LSB_REG, 0, 0),
-+	BNO055_CHANNEL(IIO_GRAVITY, Z, BNO055_SCAN_GRAVITY_Z,
-+		       BNO055_GRAVITY_DATA_Z_LSB_REG, 0, 0),
-+
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.scan_index = -1
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(BNO055_SCAN_TIMESTAMP),
-+};
-+
-+static int bno055_get_regmask(struct bno055_priv *priv, int *val, int *val2,
-+			      int reg, int mask, int shift,
-+			      const int tbl[], int k)
-+{
-+	int hwval, idx;
-+	int ret = bno055_reg_read(priv, reg, &hwval);
-+
-+	if (ret)
-+		return ret;
-+	if (val2)
-+		*val2 = 0;
-+	idx = (hwval & mask) >> shift;
-+	*val = tbl[idx] / k;
-+
-+	if (k == 1)
-+		return IIO_VAL_INT;
-+
-+	*val2 = (tbl[idx] % k) * 10000;
-+	return IIO_VAL_INT_PLUS_MICRO;
-+}
-+
-+static int bno055_set_regmask(struct bno055_priv *priv, int val, int val2,
-+			      int reg, int mask, int shift,
-+			      const int table[], int table_len, int k)
-+
++static int bno055_sl_send_chunk(struct bno055_sl_priv *priv, u8 *data, int len)
 +{
 +	int ret;
-+	int hwval = find_closest_unsorted(val * k + val2 / 10000,
-+					  table, table_len);
-+	/*
-+	 * The closest value the HW supports is only one in fusion mode,
-+	 * and it is autoselected, so don't do anything, just return OK,
-+	 * as the closest possible value has been (virtually) selected
-+	 */
-+	if (priv->operation_mode != BNO055_OPR_MODE_AMG)
-+		return 0;
 +
-+	dev_dbg(priv->dev, "WR config - reg, mask, val: 0x%x, 0x%x, 0x%x",
-+		reg, mask, hwval);
-+
-+	ret = bno055_reg_write(priv, BNO055_OPR_MODE_REG,
-+			       BNO055_OPR_MODE_CONFIG);
-+	if (ret)
-+		return ret;
-+
-+	ret = bno055_reg_update_bits(priv, reg, mask, hwval << shift);
-+
-+	if (ret)
-+		return ret;
-+
-+	return bno055_reg_write(priv, BNO055_OPR_MODE_REG,
-+				BNO055_OPR_MODE_AMG);
++	dev_dbg(&priv->serdev->dev, "send (len: %d): %*ph", len, len, data);
++	ret = serdev_device_write(priv->serdev, data, len,
++				  msecs_to_jiffies(25));
++	if (ret < len)
++		return ret < 0 ? ret : -EIO;
 +	return 0;
 +}
 +
-+#define bno055_get_mag_odr(p, v, v2) \
-+	bno055_get_regmask(p, v, v2, \
-+			   BNO055_MAG_CONFIG_REG, BNO055_MAG_CONFIG_ODR_MASK, \
-+			   BNO055_MAG_CONFIG_ODR_SHIFT, bno055_mag_odr_vals, 1)
-+
-+#define bno055_set_mag_odr(p, v, v2) \
-+	bno055_set_regmask(p, v, v2, \
-+			   BNO055_MAG_CONFIG_REG, BNO055_MAG_CONFIG_ODR_MASK, \
-+			   BNO055_MAG_CONFIG_ODR_SHIFT, \
-+			   bno055_mag_odr_vals, \
-+			   ARRAY_SIZE(bno055_mag_odr_vals), 1)
-+
-+#define bno055_get_acc_lpf(p, v, v2) \
-+	bno055_get_regmask(p, v, v2, \
-+			   BNO055_ACC_CONFIG_REG, BNO055_ACC_CONFIG_LPF_MASK, \
-+			   BNO055_ACC_CONFIG_LPF_SHIFT, \
-+			   bno055_acc_lpf_vals, 100)
-+
-+#define bno055_set_acc_lpf(p, v, v2) \
-+	bno055_set_regmask(p, v, v2, \
-+			   BNO055_ACC_CONFIG_REG, BNO055_ACC_CONFIG_LPF_MASK, \
-+			   BNO055_ACC_CONFIG_LPF_SHIFT, \
-+			   bno055_acc_lpf_vals, \
-+			   ARRAY_SIZE(bno055_acc_lpf_vals), 100)
-+
-+#define bno055_get_acc_range(p, v, v2) \
-+	bno055_get_regmask(priv, v, v2, \
-+			   BNO055_ACC_CONFIG_REG, \
-+			   BNO055_ACC_CONFIG_RANGE_MASK, \
-+			   BNO055_ACC_CONFIG_RANGE_SHIFT, bno055_acc_ranges, 1)
-+
-+#define bno055_set_acc_range(p, v, v2) \
-+	bno055_set_regmask(p, v, v2, \
-+			   BNO055_ACC_CONFIG_REG, \
-+			   BNO055_ACC_CONFIG_RANGE_MASK,  \
-+			   BNO055_ACC_CONFIG_RANGE_SHIFT, \
-+			   bno055_acc_ranges, ARRAY_SIZE(bno055_acc_ranges), 1)
-+
-+#define bno055_get_gyr_lpf(p, v, v2) \
-+	bno055_get_regmask(p, v, v2, \
-+			   BNO055_GYR_CONFIG_REG, BNO055_GYR_CONFIG_LPF_MASK, \
-+			   BNO055_GYR_CONFIG_LPF_SHIFT, bno055_gyr_lpf_vals, 1)
-+
-+#define bno055_set_gyr_lpf(p, v, v2) \
-+	bno055_set_regmask(p, v, v2, \
-+			   BNO055_GYR_CONFIG_REG, BNO055_GYR_CONFIG_LPF_MASK, \
-+			   BNO055_GYR_CONFIG_LPF_SHIFT, \
-+			   bno055_gyr_lpf_vals, \
-+			   ARRAY_SIZE(bno055_gyr_lpf_vals), 1)
-+
-+#define bno055_get_gyr_range(p, v, v2) \
-+	bno055_get_regmask(p, v, v2, \
-+			   BNO055_GYR_CONFIG_REG, \
-+			   BNO055_GYR_CONFIG_RANGE_MASK,  \
-+			   BNO055_GYR_CONFIG_RANGE_SHIFT, \
-+			   bno055_gyr_ranges, 1)
-+
-+#define bno055_set_gyr_range(p, v, v2) \
-+	bno055_set_regmask(p, v, v2, \
-+			   BNO055_GYR_CONFIG_REG, \
-+			   BNO055_GYR_CONFIG_RANGE_MASK, \
-+			   BNO055_GYR_CONFIG_RANGE_SHIFT, \
-+			   bno055_gyr_ranges, ARRAY_SIZE(bno055_gyr_ranges), 1)
-+
-+static int bno055_read_simple_chan(struct iio_dev *indio_dev,
-+				   struct iio_chan_spec const *chan,
-+				   int *val, int *val2, long mask)
-+{
-+	struct bno055_priv *priv = iio_priv(indio_dev);
-+	__le16 raw_val;
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = regmap_bulk_read(priv->regmap, chan->address,
-+				       &raw_val, 2);
-+		if (ret < 0)
-+			return ret;
-+		*val = (s16)le16_to_cpu(raw_val);
-+		*val2 = 0;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (priv->operation_mode != BNO055_OPR_MODE_AMG) {
-+			*val = 0;
-+		} else {
-+			ret = regmap_bulk_read(priv->regmap,
-+					       chan->address +
-+					       BNO055_REG_OFFSET_ADDR,
-+					       &raw_val, 2);
-+			if (ret < 0)
-+				return ret;
-+			*val = -(s16)le16_to_cpu(raw_val);
-+		}
-+		*val2 = 0;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 1;
-+		switch (chan->type) {
-+		case IIO_GRAVITY:
-+			/* Table 3-35: 1 m/s^2 = 100 LSB */
-+		case IIO_ACCEL:
-+			/* Table 3-17: 1 m/s^2 = 100 LSB */
-+			*val2 = 100;
-+			break;
-+		case IIO_MAGN:
-+			/*
-+			 * Table 3-19: 1 uT = 16 LSB.  But we need
-+			 * Gauss: 1G = 0.1 uT.
-+			 */
-+			*val2 = 160;
-+			break;
-+		case IIO_ANGL_VEL:
-+			/* Table 3-22: 1 Rps = 900 LSB */
-+			*val2 = 900;
-+			break;
-+		case IIO_ROT:
-+			/* Table 3-28: 1 degree = 16 LSB */
-+			*val2 = 16;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+		return IIO_VAL_FRACTIONAL;
-+	default:
-+		return -EINVAL;
-+
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (chan->type == IIO_MAGN)
-+			return bno055_get_mag_odr(priv, val, val2);
-+		else
-+			return -EINVAL;
-+
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		switch (chan->type) {
-+		case IIO_ANGL_VEL:
-+			return bno055_get_gyr_lpf(priv, val, val2);
-+		case IIO_ACCEL:
-+			return bno055_get_acc_lpf(priv, val, val2);
-+		default:
-+			return -EINVAL;
-+		}
-+	}
-+}
-+
-+static int bno055_read_temp_chan(struct iio_dev *indio_dev, int *val)
-+{
-+	struct bno055_priv *priv = iio_priv(indio_dev);
-+	unsigned int raw_val;
-+	int ret;
-+
-+	ret = regmap_read(priv->regmap, BNO055_TEMP_REG, &raw_val);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Tables 3-36 and 3-37: one byte of priv, signed, 1 LSB = 1C.
-+	 * ABI wants milliC.
-+	 */
-+	*val = raw_val * 1000;
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int bno055_read_quaternion(struct iio_dev *indio_dev,
-+				  struct iio_chan_spec const *chan,
-+				  int size, int *vals, int *val_len,
-+				  long mask)
-+{
-+	struct bno055_priv *priv = iio_priv(indio_dev);
-+	__le16 raw_vals[4];
-+	int i, ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (size < 4)
-+			return -EINVAL;
-+		ret = regmap_bulk_read(priv->regmap,
-+				       BNO055_QUAT_DATA_W_LSB_REG,
-+				       raw_vals, sizeof(raw_vals));
-+		if (ret < 0)
-+			return ret;
-+		for (i = 0; i < 4; i++)
-+			vals[i] = (s16)le16_to_cpu(raw_vals[i]);
-+		*val_len = 4;
-+		return IIO_VAL_INT_MULTIPLE;
-+	case IIO_CHAN_INFO_SCALE:
-+		/* Table 3-31: 1 quaternion = 2^14 LSB */
-+		if (size < 2)
-+			return -EINVAL;
-+		vals[0] = 1;
-+		vals[1] = 1 << 14;
-+		return IIO_VAL_FRACTIONAL;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int _bno055_read_raw_multi(struct iio_dev *indio_dev,
-+				  struct iio_chan_spec const *chan,
-+				  int size, int *vals, int *val_len,
-+				  long mask)
-+{
-+	switch (chan->type) {
-+	case IIO_MAGN:
-+	case IIO_ACCEL:
-+	case IIO_ANGL_VEL:
-+	case IIO_GRAVITY:
-+		if (size < 2)
-+			return -EINVAL;
-+		*val_len = 2;
-+		return bno055_read_simple_chan(indio_dev, chan,
-+					       &vals[0], &vals[1],
-+					       mask);
-+
-+	case IIO_TEMP:
-+		*val_len = 1;
-+		return bno055_read_temp_chan(indio_dev, &vals[0]);
-+
-+	case IIO_ROT:
-+		/*
-+		 * Rotation is exposed as either a quaternion or three
-+		 * Euler angles.
-+		 */
-+		if (chan->channel2 == IIO_MOD_QUATERNION)
-+			return bno055_read_quaternion(indio_dev, chan,
-+						      size, vals,
-+						      val_len, mask);
-+		if (size < 2)
-+			return -EINVAL;
-+		*val_len = 2;
-+		return bno055_read_simple_chan(indio_dev, chan,
-+					       &vals[0], &vals[1],
-+					       mask);
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int bno055_read_raw_multi(struct iio_dev *indio_dev,
-+				 struct iio_chan_spec const *chan,
-+				 int size, int *vals, int *val_len,
-+				 long mask)
++/*
++ * Sends a read or write command.
++ * 'data' can be NULL (used in read case). 'len' parameter is always valid; in
++ * case 'data' is non-NULL then it must match 'data' size.
++ */
++static int bno055_sl_do_send_cmd(struct bno055_sl_priv *priv,
++				 int read, int addr, int len, u8 *data)
 +{
 +	int ret;
-+	struct bno055_priv *priv = iio_priv(indio_dev);
++	int chunk_len;
++	u8 hdr[] = {0xAA, !!read, addr, len};
 +
-+	mutex_lock(&priv->lock);
-+	ret = _bno055_read_raw_multi(indio_dev, chan, size,
-+				     vals, val_len, mask);
-+	mutex_unlock(&priv->lock);
++	if (read) {
++		ret = bno055_sl_send_chunk(priv, hdr, 4);
++	} else {
++		ret = bno055_sl_send_chunk(priv, hdr, 2);
++		if (ret)
++			goto fail;
++
++		usleep_range(2000, 3000);
++		ret = bno055_sl_send_chunk(priv, hdr + 2, 2);
++	}
++	if (ret)
++		goto fail;
++
++	if (data) {
++		while (len) {
++			chunk_len = min(len, 2);
++			usleep_range(2000, 3000);
++			ret = bno055_sl_send_chunk(priv, data, chunk_len);
++			if (ret)
++				goto fail;
++			data += chunk_len;
++			len -= chunk_len;
++		}
++	}
++
++	return 0;
++fail:
++	/* waiting more than 30mS should clear the BNO055 internal state */
++	usleep_range(40000, 50000);
 +	return ret;
 +}
 +
-+static int _bno055_write_raw(struct iio_dev *iio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long mask)
++static int bno_sl_send_cmd(struct bno055_sl_priv *priv,
++			   int read, int addr, int len, u8 *data)
 +{
-+	struct bno055_priv *priv = iio_priv(iio_dev);
++	const int retry_max = 5;
++	int retry = retry_max;
++	int ret = 0;
 +
-+	switch (chan->type) {
-+	case IIO_MAGN:
-+		switch (mask) {
-+		case IIO_CHAN_INFO_SAMP_FREQ:
-+			return bno055_set_mag_odr(priv, val, val2);
++	/*
++	 * In case previous command was interrupted we still neet to wait it to
++	 * complete before we can issue new commands
++	 */
++	if (priv->cmd_stale) {
++		ret = wait_for_completion_interruptible_timeout(&priv->cmd_complete,
++								msecs_to_jiffies(100));
++		if (ret == -ERESTARTSYS)
++			return -ERESTARTSYS;
 +
-+		default:
-+			return -EINVAL;
++		priv->cmd_stale = false;
++		/* if serial protocol broke, bail out */
++		if (priv->cmd_status == STATUS_CRIT)
++			goto exit;
++	}
++
++	/*
++	 * Try to convince the IMU to cooperate.. as explained in the comments
++	 * at the top of this file, the IMU could also refuse the command (i.e.
++	 * it is not ready yet); retry in this case.
++	 */
++	while (retry--) {
++		mutex_lock(&priv->lock);
++		priv->expect_response = read ? CMD_READ : CMD_WRITE;
++		reinit_completion(&priv->cmd_complete);
++		mutex_unlock(&priv->lock);
++
++		if (retry != (retry_max - 1))
++			dev_dbg(&priv->serdev->dev, "cmd retry: %d",
++				retry_max - retry);
++		ret = bno055_sl_do_send_cmd(priv, read, addr, len, data);
++		if (ret)
++			continue;
++
++		ret = wait_for_completion_interruptible_timeout(&priv->cmd_complete,
++								msecs_to_jiffies(100));
++		if (ret == -ERESTARTSYS) {
++			priv->cmd_stale = true;
++			return -ERESTARTSYS;
++		} else if (!ret) {
++			ret = -ETIMEDOUT;
++			break;
++		}
++		ret = 0;
++
++		/*
++		 * Poll if the IMU returns error (i.e busy), break if the IMU
++		 * returns OK or if the serial communication broke
++		 */
++		if (priv->cmd_status <= 0)
++			break;
++	}
++
++exit:
++	if (ret)
++		return ret;
++	if (priv->cmd_status == STATUS_CRIT)
++		return -EIO;
++	if (priv->cmd_status == STATUS_FAIL)
++		return -EINVAL;
++	return 0;
++}
++
++static int bno055_sl_write_reg(void *context, const void *data, size_t count)
++{
++	int ret;
++	int reg;
++	u8 *write_data = (u8 *)data + 1;
++	struct bno055_sl_priv *priv = context;
++
++	if (count < 2) {
++		dev_err(&priv->serdev->dev, "Invalid write count %d", count);
++		return -EINVAL;
++	}
++
++	reg = ((u8 *)data)[0];
++	dev_dbg(&priv->serdev->dev, "wr reg 0x%x = 0x%x", reg, ((u8 *)data)[1]);
++	ret = bno_sl_send_cmd(priv, 0, reg, count - 1, write_data);
++
++	return ret;
++}
++
++static int bno055_sl_read_reg(void *context,
++			      const void *reg, size_t reg_size,
++			      void *val, size_t val_size)
++{
++	int ret;
++	int reg_addr;
++	struct bno055_sl_priv *priv = context;
++
++	if (reg_size != 1) {
++		dev_err(&priv->serdev->dev, "Invalid read regsize %d",
++			reg_size);
++		return -EINVAL;
++	}
++
++	if (val_size > 128) {
++		dev_err(&priv->serdev->dev, "Invalid read valsize %d",
++			val_size);
++		return -EINVAL;
++	}
++
++	reg_addr = ((u8 *)reg)[0];
++	dev_dbg(&priv->serdev->dev, "rd reg 0x%x (len %d)", reg_addr, val_size);
++	mutex_lock(&priv->lock);
++	priv->expected_data_len = val_size;
++	priv->response_buf = val;
++	mutex_unlock(&priv->lock);
++
++	ret = bno_sl_send_cmd(priv, 1, reg_addr, val_size, NULL);
++
++	mutex_lock(&priv->lock);
++	priv->response_buf = NULL;
++	mutex_unlock(&priv->lock);
++
++	return ret;
++}
++
++/*
++ * Handler for received data; this is called from the reicever callback whenever
++ * it got some packet from the serial bus. The status tell us whether the
++ * packet is valid (i.e. header ok && received payload len consistent wrt the
++ * header). It's now our responsability to check whether this is what we
++ * expected, of whether we got some unexpected, yet valid, packet.
++ */
++static void bno055_sl_handle_rx(struct bno055_sl_priv *priv, int status)
++{
++	mutex_lock(&priv->lock);
++	switch (priv->expect_response) {
++	case CMD_NONE:
++		dev_warn(&priv->serdev->dev, "received unexpected, yet valid, data from sensor");
++		mutex_unlock(&priv->lock);
++		return;
++
++	case CMD_READ:
++		priv->cmd_status = status;
++		if (status == STATUS_OK &&
++		    priv->rx.databuf_count != priv->expected_data_len) {
++			/*
++			 * If we got here, then the lower layer serial protocol
++			 * seems consistent with itself; if we got an unexpected
++			 * amount of data then signal it as a non critical error
++			 */
++			priv->cmd_status = STATUS_FAIL;
++			dev_warn(&priv->serdev->dev, "received an unexpected amount of, yet valid, data from sensor");
 +		}
 +		break;
-+	case IIO_ACCEL:
-+		switch (mask) {
-+		case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+			return bno055_set_acc_lpf(priv, val, val2);
 +
-+		default:
-+			return -EINVAL;
-+		}
-+	case IIO_ANGL_VEL:
-+		switch (mask) {
-+		case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+			return bno055_set_gyr_lpf(priv, val, val2);
-+		}
-+	default:
-+		return -EINVAL;
++	case CMD_WRITE:
++		priv->cmd_status = status;
++		break;
 +	}
 +
-+	return 0;
-+}
-+
-+static int bno055_write_raw(struct iio_dev *iio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val, int val2, long mask)
-+{
-+	int ret;
-+	struct bno055_priv *priv = iio_priv(iio_dev);
-+
-+	mutex_lock(&priv->lock);
-+	ret = _bno055_write_raw(iio_dev, chan, val, val2, mask);
++	priv->expect_response = CMD_NONE;
++	complete(&priv->cmd_complete);
 +	mutex_unlock(&priv->lock);
-+
-+	return ret;
 +}
-+
-+static ssize_t in_magn_sampling_frequency_available_show(struct device *dev,
-+							 struct device_attribute *attr,
-+							 char *buf)
-+{
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	return scnprintf(buf, PAGE_SIZE, "%s\n",
-+			 (priv->operation_mode != BNO055_OPR_MODE_AMG) ? "20" :
-+			 "2 6 8 10 15 20 25 30");
-+}
-+
-+static ssize_t in_accel_range_available_show(struct device *dev,
-+					     struct device_attribute *attr,
-+					     char *buf)
-+{
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	return scnprintf(buf, PAGE_SIZE, "%s\n",
-+			 (priv->operation_mode != BNO055_OPR_MODE_AMG) ? "4" :
-+			 "2 4 8 16");
-+}
-+
-+static ssize_t
-+in_accel_filter_low_pass_3db_frequency_available_show(struct device *dev,
-+						      struct device_attribute *attr,
-+						      char *buf)
-+{
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	return scnprintf(buf, PAGE_SIZE, "%s\n",
-+			 (priv->operation_mode != BNO055_OPR_MODE_AMG) ? "62.5" :
-+			 "7.81 15.63 31.25 62.5 125 250 500 1000");
-+}
-+
-+static ssize_t in_anglvel_range_available_show(struct device *dev,
-+					       struct device_attribute *attr,
-+					       char *buf)
-+{
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	return scnprintf(buf, PAGE_SIZE, "%s\n",
-+			 (priv->operation_mode != BNO055_OPR_MODE_AMG) ? "2000" :
-+			 "125 250 500 1000 2000");
-+}
-+
-+static ssize_t
-+in_anglvel_filter_low_pass_3db_frequency_available_show(struct device *dev,
-+							struct device_attribute *attr,
-+							char *buf)
-+{
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	return scnprintf(buf, PAGE_SIZE, "%s\n",
-+			 (priv->operation_mode != BNO055_OPR_MODE_AMG) ? "32" :
-+			  "12 23 47 32 64 116 230 523");
-+}
-+
-+static ssize_t bno055_operation_mode_show(struct device *dev,
-+					  struct device_attribute *attr,
-+					  char *buf)
-+{
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	return scnprintf(buf, PAGE_SIZE, "%s\n",
-+			 (priv->operation_mode == BNO055_OPR_MODE_AMG) ? "amg" :
-+			 (priv->operation_mode == BNO055_OPR_MODE_FUSION) ?
-+			 "fusion" : "fusion_fmc_off");
-+}
-+
-+static ssize_t bno055_operation_mode_store(struct device *dev,
-+					   struct device_attribute *attr,
-+					   const char *buf, size_t len)
-+{
-+	int res;
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	if (sysfs_streq(buf, "amg"))
-+		priv->operation_mode = BNO055_OPR_MODE_AMG;
-+	else if (sysfs_streq(buf, "fusion"))
-+		priv->operation_mode = BNO055_OPR_MODE_FUSION;
-+	else if (sysfs_streq(buf, "fusion_fmc_off"))
-+		priv->operation_mode = BNO055_OPR_MODE_FUSION_FMC_OFF;
-+	else
-+		return -EINVAL;
-+
-+	mutex_lock(&priv->lock);
-+	res = bno055_reg_write(priv, BNO055_OPR_MODE_REG,
-+			       BNO055_OPR_MODE_CONFIG);
-+	if (res) {
-+		mutex_unlock(&priv->lock);
-+		return res;
-+	}
-+
-+	res = bno055_reg_write(priv, BNO055_OPR_MODE_REG, priv->operation_mode);
-+	mutex_unlock(&priv->lock);
-+
-+	return res ? res : len;
-+}
-+
-+static ssize_t bno055_in_accel_range_show(struct device *dev,
-+					  struct device_attribute *attr,
-+					  char *buf)
-+{
-+	int val;
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	int res = bno055_get_acc_range(priv, &val, NULL);
-+
-+	if (res < 0)
-+		return res;
-+
-+	return scnprintf(buf, PAGE_SIZE, "%d\n", val);
-+}
-+
-+static ssize_t bno055_in_accel_range_store(struct device *dev,
-+					   struct device_attribute *attr,
-+					   const char *buf, size_t len)
-+{
-+	int ret;
-+	unsigned long val;
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	ret = kstrtoul(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&priv->lock);
-+	ret = bno055_set_acc_range(priv, val, 0);
-+	mutex_unlock(&priv->lock);
-+
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t bno055_in_gyr_range_show(struct device *dev,
-+					struct device_attribute *attr,
-+					char *buf)
-+{
-+	int val;
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+	int res = bno055_get_gyr_range(priv, &val, NULL);
-+
-+	if (res < 0)
-+		return res;
-+
-+	return scnprintf(buf, PAGE_SIZE, "%d\n", val);
-+}
-+
-+static ssize_t bno055_in_gyr_range_store(struct device *dev,
-+					 struct device_attribute *attr,
-+					 const char *buf, size_t len)
-+{
-+	int ret;
-+	unsigned long val;
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	ret = kstrtoul(buf, 10, &val);
-+	if (ret)
-+		return ret;
-+
-+	mutex_lock(&priv->lock);
-+	ret = bno055_set_gyr_range(priv, val, 0);
-+	mutex_unlock(&priv->lock);
-+
-+	return ret ? ret : len;
-+}
-+
-+static ssize_t bno055_get_calib_status(struct device *dev, char *buf, int which)
-+{
-+	int val;
-+	int ret;
-+	const char *calib_str;
-+	static const char * const calib_status[] = {"bad", "barely enough",
-+						   "fair", "good"};
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	if (priv->operation_mode == BNO055_OPR_MODE_AMG ||
-+	    (priv->operation_mode == BNO055_OPR_MODE_FUSION_FMC_OFF &&
-+	     which == BNO055_CALIB_STAT_MAGN_SHIFT)) {
-+		calib_str = "idle";
-+	} else {
-+		mutex_lock(&priv->lock);
-+		ret = bno055_reg_read(priv, BNO055_CALIB_STAT_REG, &val);
-+		mutex_unlock(&priv->lock);
-+
-+		if (ret)
-+			return -EIO;
-+
-+		val = (val >> which) & BNO055_CALIB_STAT_MASK;
-+		calib_str = calib_status[val];
-+	}
-+
-+	return scnprintf(buf, PAGE_SIZE, "%s\n", calib_str);
-+}
-+
-+static ssize_t in_calibration_data_show(struct device *dev,
-+					struct device_attribute *attr,
-+					char *buf)
-+{
-+	int ret;
-+	int size;
-+	int i;
-+	u8 data[BNO055_CALDATA_LEN];
-+	struct bno055_priv *priv = iio_priv(dev_to_iio_dev(dev));
-+
-+	mutex_lock(&priv->lock);
-+	ret = bno055_reg_write(priv, BNO055_OPR_MODE_REG,
-+			       BNO055_OPR_MODE_CONFIG);
-+	if (ret)
-+		goto unlock;
-+
-+	ret = regmap_bulk_read(priv->regmap, BNO055_CALDATA_START, data,
-+			       BNO055_CALDATA_LEN);
-+	if (ret)
-+		goto unlock;
-+
-+	ret = bno055_reg_write(priv, BNO055_OPR_MODE_REG, priv->operation_mode);
-+	mutex_unlock(&priv->lock);
-+	if (ret)
-+		return ret;
-+
-+	for (size = 0, i = 0; i < BNO055_CALDATA_LEN; i++) {
-+		ret = scnprintf(buf + size,
-+				PAGE_SIZE - size, "%02x%c", data[i],
-+				(i + 1 < BNO055_CALDATA_LEN) ? ' ' : '\n');
-+		if (ret < 0)
-+			return ret;
-+		size += ret;
-+	}
-+
-+	return size;
-+unlock:
-+	mutex_unlock(&priv->lock);
-+	return ret;
-+}
-+
-+static ssize_t in_autocalibration_status_sys_show(struct device *dev,
-+						  struct device_attribute *a,
-+						  char *buf)
-+{
-+	return bno055_get_calib_status(dev, buf, BNO055_CALIB_STAT_SYS_SHIFT);
-+}
-+
-+static ssize_t in_autocalibration_status_accel_show(struct device *dev,
-+						    struct device_attribute *a,
-+						    char *buf)
-+{
-+	return bno055_get_calib_status(dev, buf, BNO055_CALIB_STAT_ACCEL_SHIFT);
-+}
-+
-+static ssize_t in_autocalibration_status_gyro_show(struct device *dev,
-+						   struct device_attribute *a,
-+						   char *buf)
-+{
-+	return bno055_get_calib_status(dev, buf, BNO055_CALIB_STAT_GYRO_SHIFT);
-+}
-+
-+static ssize_t in_autocalibration_status_magn_show(struct device *dev,
-+						   struct device_attribute *a,
-+						   char *buf)
-+{
-+	return bno055_get_calib_status(dev, buf, BNO055_CALIB_STAT_MAGN_SHIFT);
-+}
-+
-+static IIO_DEVICE_ATTR_RO(in_magn_sampling_frequency_available,
-+			  0);
-+
-+static IIO_DEVICE_ATTR(operation_mode, 0644,
-+		       bno055_operation_mode_show,
-+		       bno055_operation_mode_store, 0);
-+
-+static IIO_CONST_ATTR(operation_mode_available,
-+		      "amg fusion fusion_fmc_off");
-+
-+static IIO_DEVICE_ATTR(in_accel_range, 0644,
-+		       bno055_in_accel_range_show,
-+		       bno055_in_accel_range_store, 0);
-+
-+static IIO_DEVICE_ATTR_RO(in_accel_range_available, 0);
-+static IIO_DEVICE_ATTR_RO(in_accel_filter_low_pass_3db_frequency_available, 0);
-+
-+static IIO_DEVICE_ATTR(in_anglvel_range, 0644,
-+		       bno055_in_gyr_range_show,
-+		       bno055_in_gyr_range_store, 0);
-+
-+static IIO_DEVICE_ATTR_RO(in_anglvel_range_available, 0);
-+static IIO_DEVICE_ATTR_RO(in_anglvel_filter_low_pass_3db_frequency_available, 0);
-+
-+static IIO_DEVICE_ATTR_RO(in_autocalibration_status_sys, 0);
-+static IIO_DEVICE_ATTR_RO(in_autocalibration_status_accel, 0);
-+static IIO_DEVICE_ATTR_RO(in_autocalibration_status_gyro, 0);
-+static IIO_DEVICE_ATTR_RO(in_autocalibration_status_magn, 0);
-+static IIO_DEVICE_ATTR_RO(in_calibration_data, 0);
-+
-+static struct attribute *bno055_attrs[] = {
-+	&iio_dev_attr_in_magn_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_accel_range_available.dev_attr.attr,
-+	&iio_dev_attr_in_accel_range.dev_attr.attr,
-+	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_in_anglvel_range_available.dev_attr.attr,
-+	&iio_dev_attr_in_anglvel_range.dev_attr.attr,
-+	&iio_dev_attr_in_anglvel_filter_low_pass_3db_frequency_available.dev_attr.attr,
-+	&iio_const_attr_operation_mode_available.dev_attr.attr,
-+	&iio_dev_attr_operation_mode.dev_attr.attr,
-+	&iio_dev_attr_in_autocalibration_status_sys.dev_attr.attr,
-+	&iio_dev_attr_in_autocalibration_status_accel.dev_attr.attr,
-+	&iio_dev_attr_in_autocalibration_status_gyro.dev_attr.attr,
-+	&iio_dev_attr_in_autocalibration_status_magn.dev_attr.attr,
-+	&iio_dev_attr_in_calibration_data.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group bno055_attrs_group = {
-+	.attrs = bno055_attrs,
-+};
-+
-+static const struct iio_info bno055_info = {
-+	.read_raw_multi = bno055_read_raw_multi,
-+	.write_raw = bno055_write_raw,
-+	.attrs = &bno055_attrs_group,
-+};
 +
 +/*
-+ * Reads len samples from the HW, stores them in buf starting from buf_idx,
-+ * and applies mask to cull (skip) unneeded samples.
-+ * Updates buf_idx incrementing with the number of stored samples.
-+ * Samples from HW are xferred into buf, then in-place copy on buf is
-+ * performed in order to cull samples that need to be skipped.
-+ * This avoids copies of the first samples until we hit the 1st sample to skip,
-+ * and also avoids having an extra bounce buffer.
-+ * buf must be able to contain len elements inspite of how many samples we are
-+ * going to cull.
++ * Serdev receiver FSM. This tracks the serial communication and parse the
++ * header. It pushes packets to bno055_sl_handle_rx(), eventually communicating
++ * failures (i.e. malformed packets).
++ * Idellay it doesn't know anything about upper layer (i.e. if this is the
++ * packet we were really expecting), but since we copies the payload into the
++ * receiver buffer (that is not valid when i.e. we don't expect data), we
++ * snoop a bit in the upper layer..
++ * Also, we assume to RX one pkt per time (i.e. the HW doesn't send anything
++ * unless we require to AND we don't queue more than one request per time).
 + */
-+static int bno055_scan_xfer(struct bno055_priv *priv,
-+			    int start_ch, int len, unsigned long mask,
-+			    __le16 *buf, int *buf_idx)
++static int bno055_sl_receive_buf(struct serdev_device *serdev,
++				 const unsigned char *buf, size_t size)
 +{
-+	int buf_base = *buf_idx;
-+	const int base = BNO055_ACC_DATA_X_LSB_REG;
-+	int ret;
-+	int i, j, n;
-+	__le16 *dst, *src;
-+	bool quat_in_read = false;
-+	int offs_fixup = 0;
-+	int xfer_len = len;
++	int status;
++	struct bno055_sl_priv *priv = serdev_device_get_drvdata(serdev);
++	int _size = size;
 +
-+	/* All chans are made up 1 16bit sample, except for quaternion
-+	 * that is made up 4 16-bit values.
-+	 * For us the quaternion CH is just like 4 regular CHs.
-+	 * If out read starts past the quaternion make sure to adjust the
-+	 * starting offset; if the quaternion is contained in our scan then
-+	 * make sure to adjust the read len.
-+	 */
-+	if (start_ch > BNO055_SCAN_QUATERNION) {
-+		start_ch += 3;
-+	} else if ((start_ch <= BNO055_SCAN_QUATERNION) &&
-+		 ((start_ch + len) > BNO055_SCAN_QUATERNION)) {
-+		quat_in_read = true;
-+		xfer_len += 3;
++	if (size == 0)
++		return 0;
++
++	dev_dbg(&priv->serdev->dev, "recv (len %d): %*ph ", size, size, buf);
++	switch (priv->rx.state) {
++	case RX_IDLE:
++		/*
++		 * New packet.
++		 * Check for its 1st byte, that identifies the pkt type.
++		 */
++		if (buf[0] != 0xEE && buf[0] != 0xBB) {
++			dev_err(&priv->serdev->dev,
++				"Invalid packet start %x", buf[0]);
++			bno055_sl_handle_rx(priv, STATUS_CRIT);
++			break;
++		}
++		priv->rx.type = buf[0];
++		priv->rx.state = RX_START;
++		size--;
++		buf++;
++		priv->rx.databuf_count = 0;
++		fallthrough;
++
++	case RX_START:
++		/*
++		 * Packet RX in progress, we expect either 1-byte len or 1-byte
++		 * status depending by the packet type.
++		 */
++		if (size == 0)
++			break;
++
++		if (priv->rx.type == 0xEE) {
++			if (size > 1) {
++				dev_err(&priv->serdev->dev, "EE pkt. Extra data received");
++				status = STATUS_CRIT;
++
++			} else {
++				status = (buf[0] == 1) ? STATUS_OK : STATUS_FAIL;
++			}
++			bno055_sl_handle_rx(priv, status);
++			priv->rx.state = RX_IDLE;
++			break;
++
++		} else {
++			/*priv->rx.type == 0xBB */
++			priv->rx.state = RX_DATA;
++			priv->rx.expected_len = buf[0];
++			size--;
++			buf++;
++		}
++		fallthrough;
++
++	case RX_DATA:
++		/* Header parsed; now receiving packet data payload */
++		if (size == 0)
++			break;
++
++		if (priv->rx.databuf_count + size > priv->rx.expected_len) {
++			/*
++			 * This is a inconsistency in serial protocol, we lost
++			 * sync and we don't know how to handle further data
++			 */
++			dev_err(&priv->serdev->dev, "BB pkt. Extra data received");
++			bno055_sl_handle_rx(priv, STATUS_CRIT);
++			priv->rx.state = RX_IDLE;
++			break;
++		}
++
++		mutex_lock(&priv->lock);
++		/*
++		 * NULL e.g. when read cmd is stale or when no read cmd is
++		 * actually pending.
++		 */
++		if (priv->response_buf &&
++		    /*
++		     * Snoop on the upper layer protocol stuff to make sure not
++		     * to write to an invalid memory. Apart for this, let's the
++		     * upper layer manage any inconsistency wrt expected data
++		     * len (as long as the serial protocol is consistent wrt
++		     * itself (i.e. response header is consistent with received
++		     * response len.
++		     */
++		    (priv->rx.databuf_count + size <= priv->expected_data_len))
++			memcpy(priv->response_buf + priv->rx.databuf_count,
++			       buf, size);
++		mutex_unlock(&priv->lock);
++
++		priv->rx.databuf_count += size;
++
++		/*
++		 * Reached expected len advertised by the IMU for the current
++		 * packet. Pass it to the upper layer (for us it is just valid).
++		 */
++		if (priv->rx.databuf_count == priv->rx.expected_len) {
++			bno055_sl_handle_rx(priv, STATUS_OK);
++			priv->rx.state = RX_IDLE;
++		}
++		break;
 +	}
 +
-+	ret = regmap_bulk_read(priv->regmap,
-+			       base + start_ch * sizeof(__le16),
-+			       buf + buf_base,
-+			       xfer_len * sizeof(__le16));
++	return _size;
++}
++
++static const struct serdev_device_ops bno055_sl_serdev_ops = {
++	.receive_buf = bno055_sl_receive_buf,
++	.write_wakeup = serdev_device_write_wakeup,
++};
++
++static struct regmap_bus bno055_sl_regmap_bus = {
++	.write = bno055_sl_write_reg,
++	.read = bno055_sl_read_reg,
++};
++
++static int bno055_sl_probe(struct serdev_device *serdev)
++{
++	struct bno055_sl_priv *priv;
++	struct regmap *regmap;
++	int ret;
++	int irq = 0;
++
++	priv = devm_kzalloc(&serdev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	serdev_device_set_drvdata(serdev, priv);
++	priv->serdev = serdev;
++	mutex_init(&priv->lock);
++	init_completion(&priv->cmd_complete);
++
++	serdev_device_set_client_ops(serdev, &bno055_sl_serdev_ops);
++	ret = devm_serdev_device_open(&serdev->dev, serdev);
 +	if (ret)
 +		return ret;
 +
-+	for_each_set_bit(i, &mask, len) {
-+		if (quat_in_read && ((start_ch + i) > BNO055_SCAN_QUATERNION))
-+			offs_fixup = 3;
-+
-+		dst = buf + *buf_idx;
-+		src = buf + buf_base + offs_fixup + i;
-+
-+		n = ((start_ch + i) == BNO055_SCAN_QUATERNION) ? 4 : 1;
-+
-+		if (dst != src) {
-+			for (j = 0; j < n; j++)
-+				dst[j] = src[j];
-+		}
-+
-+		*buf_idx += n;
++	if (serdev_device_set_baudrate(serdev, 115200) != 115200) {
++		dev_err(&serdev->dev, "Cannot set required baud rate");
++		return -EIO;
 +	}
-+	return 0;
++
++	ret = serdev_device_set_parity(serdev, SERDEV_PARITY_NONE);
++	if (ret) {
++		dev_err(&serdev->dev, "Cannot set required parity setting");
++		return ret;
++	}
++	serdev_device_set_flow_control(serdev, false);
++
++	regmap = devm_regmap_init(&serdev->dev, &bno055_sl_regmap_bus,
++				  priv, &bno055_regmap_config);
++	if (IS_ERR(regmap)) {
++		dev_err(&serdev->dev, "Unable to init register map");
++		return PTR_ERR(regmap);
++	}
++
++	if (serdev->dev.of_node) {
++		irq = of_irq_get(serdev->dev.of_node, 0);
++		if (irq == -EPROBE_DEFER)
++			return irq;
++		if (irq <= 0) {
++			dev_info(&serdev->dev,
++				 "Can't get IRQ resource (err %d)", irq);
++			irq = 0;
++		}
++	}
++
++	return bno055_probe(&serdev->dev, regmap, irq,
++			    BNO055_SL_XFER_BURST_BREAK_THRESHOLD);
 +}
 +
-+static irqreturn_t bno055_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *iio_dev = pf->indio_dev;
-+	struct bno055_priv *priv = iio_priv(iio_dev);
-+	struct {
-+		__le16 chans[(BNO055_GRAVITY_DATA_Z_LSB_REG -
-+			      BNO055_ACC_DATA_X_LSB_REG) / 2];
-+		s64 timestamp __aligned(8);
-+	} buf;
-+	bool thr_hit;
-+	int quat;
-+	int ret;
-+	int start, end, xfer_start, next = 0;
-+	int buf_idx = 0;
-+	bool finish = false;
-+	unsigned long mask;
++static const struct of_device_id bno055_sl_of_match[] = {
++	{ .compatible = "bosch,bno055-serial" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, bno055_sl_of_match);
 +
-+	/* we have less than 32 chs, all masks fit in an ulong */
-+	start = find_first_bit(iio_dev->active_scan_mask, iio_dev->masklength);
-+	xfer_start = start;
-+	if (start == iio_dev->masklength)
-+		goto done;
-+
-+	mutex_lock(&priv->lock);
-+	while (!finish) {
-+		end = find_next_zero_bit(iio_dev->active_scan_mask,
-+					 iio_dev->masklength, start);
-+		if (end == iio_dev->masklength) {
-+			finish = true;
-+		} else {
-+			next = find_next_bit(iio_dev->active_scan_mask,
-+					     iio_dev->masklength, end);
-+			if (next == iio_dev->masklength) {
-+				finish = true;
-+			} else {
-+				quat = ((next > BNO055_SCAN_QUATERNION) &&
-+					(end <= BNO055_SCAN_QUATERNION)) ? 3 : 0;
-+				thr_hit = (next - end + quat) >
-+					priv->xfer_burst_break_thr;
-+			}
-+		}
-+
-+		if (thr_hit || finish) {
-+			mask = *iio_dev->active_scan_mask >> xfer_start;
-+			ret = bno055_scan_xfer(priv, xfer_start,
-+					       end - xfer_start,
-+					       mask, buf.chans, &buf_idx);
-+			if (ret)
-+				goto done;
-+			xfer_start = next;
-+		}
-+		start = next;
-+	}
-+	iio_push_to_buffers_with_timestamp(iio_dev, &buf, pf->timestamp);
-+done:
-+	mutex_unlock(&priv->lock);
-+	iio_trigger_notify_done(iio_dev->trig);
-+	return IRQ_HANDLED;
-+}
-+
-+int bno055_probe(struct device *dev, struct regmap *regmap, int irq,
-+		 int xfer_burst_break_thr)
-+{
-+	int ver, rev;
-+	int res;
-+	unsigned int val;
-+	struct gpio_desc *rst;
-+	struct iio_dev *iio_dev;
-+	struct bno055_priv *priv;
-+	/* base name + separator + UID + ext + zero */
-+	char fw_name_buf[sizeof(BNO055_FW_NAME BNO055_FW_EXT) +
-+			 BNO055_UID_LEN * 2 + 1 + 1];
-+	const struct firmware *caldata;
-+
-+	iio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
-+	if (!iio_dev)
-+		return -ENOMEM;
-+
-+	iio_dev->name = "bno055";
-+	priv = iio_priv(iio_dev);
-+	memset(priv, 0, sizeof(*priv));
-+	mutex_init(&priv->lock);
-+	priv->regmap = regmap;
-+	priv->dev = dev;
-+	priv->xfer_burst_break_thr = xfer_burst_break_thr;
-+	rst = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_HIGH);
-+	if (IS_ERR(rst) && (PTR_ERR(rst) != -EPROBE_DEFER)) {
-+		dev_err(dev, "Failed to get reset GPIO");
-+		return PTR_ERR(rst);
-+	}
-+
-+	priv->clk = devm_clk_get_optional(dev, "clk");
-+	if (IS_ERR(priv->clk) && (PTR_ERR(priv->clk) != -EPROBE_DEFER)) {
-+		dev_err(dev, "Failed to get CLK");
-+		return PTR_ERR(priv->clk);
-+	}
-+
-+	clk_prepare_enable(priv->clk);
-+
-+	if (rst) {
-+		usleep_range(5000, 10000);
-+		gpiod_set_value_cansleep(rst, 0);
-+		usleep_range(650000, 750000);
-+	}
-+
-+	res = devm_add_action_or_reset(dev, bno055_uninit, priv);
-+	if (res)
-+		return res;
-+
-+	res = bno055_reg_read(priv, BNO055_CHIP_ID_REG, &val);
-+	if (res)
-+		return res;
-+
-+	if (val != BNO055_CHIP_ID_MAGIC) {
-+		dev_err(dev, "Unrecognized chip ID 0x%x", val);
-+		return -ENODEV;
-+	}
-+	dev_dbg(dev, "Found BMO055 chip");
-+
-+	res = regmap_bulk_read(priv->regmap, BNO055_UID_REG,
-+			       priv->uid, BNO055_UID_LEN);
-+	if (res)
-+		return res;
-+
-+	dev_info(dev, "unique ID: %*ph", BNO055_UID_LEN, priv->uid);
-+
-+	/*
-+	 * This has nothing to do with the IMU firmware, this is for sensor
-+	 * calibration data.
-+	 */
-+	sprintf(fw_name_buf, BNO055_FW_NAME "-%*phN" BNO055_FW_EXT,
-+		BNO055_UID_LEN, priv->uid);
-+	res = request_firmware(&caldata, fw_name_buf, dev);
-+	if (res)
-+		res = request_firmware(&caldata,
-+				       BNO055_FW_NAME BNO055_FW_EXT, dev);
-+
-+	if (res) {
-+		dev_notice(dev, "Failed to load calibration data firmware file; this has nothing to do with IMU main firmware.");
-+		dev_notice(dev,	"You can calibrate your IMU (look for 'in_autocalibration_status*' files in sysfs) and then copy 'in_calibration_data' to your firmware file");
-+		caldata = NULL;
-+	}
-+
-+	res = bno055_init(priv, caldata);
-+	if (res)
-+		return res;
-+
-+	if (caldata)
-+		release_firmware(caldata);
-+
-+	res = regmap_read(priv->regmap,
-+			  BNO055_SW_REV_LSB_REG, &rev);
-+	if (res)
-+		return res;
-+
-+	res = regmap_read(priv->regmap,
-+			  BNO055_SW_REV_MSB_REG, &ver);
-+	if (res)
-+		return res;
-+
-+	dev_info(dev, "Firmware version %x.%x", ver, rev);
-+
-+	iio_dev->channels = bno055_channels;
-+	iio_dev->num_channels = ARRAY_SIZE(bno055_channels);
-+	iio_dev->info = &bno055_info;
-+	iio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	res = devm_iio_triggered_buffer_setup(dev, iio_dev,
-+					      iio_pollfunc_store_time,
-+					      bno055_trigger_handler, NULL);
-+	if (res)
-+		return res;
-+
-+	return devm_iio_device_register(dev, iio_dev);
-+}
-+EXPORT_SYMBOL_GPL(bno055_probe);
++static struct serdev_device_driver bno055_sl_driver = {
++	.driver = {
++		.name = BNO055_SL_DRIVER_NAME,
++		.of_match_table = bno055_sl_of_match,
++	},
++	.probe = bno055_sl_probe,
++};
++module_serdev_device_driver(bno055_sl_driver);
 +
 +MODULE_AUTHOR("Andrea Merello <andrea.merello@iit.it>");
-+MODULE_DESCRIPTION("Bosch BNO055 driver");
++MODULE_DESCRIPTION("Bosch BNO055 serdev interface");
 +MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/imu/bno055/bno055.h b/drivers/iio/imu/bno055/bno055.h
-new file mode 100644
-index 000000000000..163ab8068e7c
---- /dev/null
-+++ b/drivers/iio/imu/bno055/bno055.h
-@@ -0,0 +1,12 @@
-+/* SPDX-License-Identifier: GPL-2.0-or-later */
-+#ifndef __BNO055_H__
-+#define __BNO055_H__
-+
-+#include <linux/device.h>
-+#include <linux/regmap.h>
-+
-+int bno055_probe(struct device *dev, struct regmap *regmap, int irq,
-+		 int xfer_burst_break_thr);
-+extern const struct regmap_config bno055_regmap_config;
-+
-+#endif
 -- 
 2.17.1
 
