@@ -2,602 +2,347 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.7 required=3.0 tests=BAYES_00,DKIM_ADSP_CUSTOM_MED,
+	FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS autolearn=no
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 831D5C636CA
-	for <linux-iio@archiver.kernel.org>; Fri, 16 Jul 2021 11:42:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 92DF6C07E95
+	for <linux-iio@archiver.kernel.org>; Fri, 16 Jul 2021 12:39:23 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 616A5613FE
-	for <linux-iio@archiver.kernel.org>; Fri, 16 Jul 2021 11:42:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 76AF6613E9
+	for <linux-iio@archiver.kernel.org>; Fri, 16 Jul 2021 12:39:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232631AbhGPLpX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 16 Jul 2021 07:45:23 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:5402 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S232069AbhGPLpX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 16 Jul 2021 07:45:23 -0400
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 16GBaU81004068;
-        Fri, 16 Jul 2021 07:42:28 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com with ESMTP id 39tw63j92w-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 16 Jul 2021 07:42:27 -0400
-Received: from SCSQMBX10.ad.analog.com (SCSQMBX10.ad.analog.com [10.77.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 16GBgPWx031127
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 16 Jul 2021 07:42:26 -0400
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
- Fri, 16 Jul 2021 04:42:24 -0700
-Received: from SCSQMBX11.ad.analog.com (10.77.17.10) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
- Fri, 16 Jul 2021 04:42:24 -0700
-Received: from zeus.spd.analog.com (10.66.68.11) by scsqmbx11.ad.analog.com
- (10.77.17.10) with Microsoft SMTP Server id 15.2.858.5 via Frontend
- Transport; Fri, 16 Jul 2021 04:42:24 -0700
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.134])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 16GBgLLR006350;
-        Fri, 16 Jul 2021 07:42:22 -0400
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <jic23@kernel.org>, <devicetree@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v6 1/2] iio: frequency: adrf6780: add support for ADRF6780
-Date:   Fri, 16 Jul 2021 14:42:09 +0300
-Message-ID: <20210716114210.141560-1-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.32.0
+        id S232554AbhGPMmQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 16 Jul 2021 08:42:16 -0400
+Received: from mga18.intel.com ([134.134.136.126]:52873 "EHLO mga18.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S238678AbhGPMmQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 16 Jul 2021 08:42:16 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10046"; a="197987569"
+X-IronPort-AV: E=Sophos;i="5.84,244,1620716400"; 
+   d="scan'208";a="197987569"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2021 05:39:17 -0700
+X-IronPort-AV: E=Sophos;i="5.84,244,1620716400"; 
+   d="scan'208";a="573653461"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga001-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 16 Jul 2021 05:39:15 -0700
+Received: from andy by smile with local (Exim 4.94.2)
+        (envelope-from <andy.shevchenko@gmail.com>)
+        id 1m4N7U-00EE5o-Ug; Fri, 16 Jul 2021 15:39:08 +0300
+Date:   Fri, 16 Jul 2021 15:39:08 +0300
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+To:     Andrea Merello <andrea.merello@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org, Andrea Merello <andrea.merello@iit.it>
+Subject: Re: [PATCH 2/4] iio: imu: add Bosch Sensortec BNO055 core driver
+Message-ID: <YPF97IvnlUDtIHar@smile.fi.intel.com>
+References: <20210715141742.15072-1-andrea.merello@gmail.com>
+ <20210715141742.15072-3-andrea.merello@gmail.com>
+ <CAHp75Vf_Og2wjRy2j0gC37DgR0x9B_F5iSUj8VOtWkhWjgiOag@mail.gmail.com>
+ <CAN8YU5NKGLO6a4wqaW07NAU-OdsdBohoXzMCBcskaFsCRtrGhw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: IB9T49fmHf7LSzpikpo_fER3E00oMmB-
-X-Proofpoint-ORIG-GUID: IB9T49fmHf7LSzpikpo_fER3E00oMmB-
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
- definitions=2021-07-16_04:2021-07-16,2021-07-16 signatures=0
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 suspectscore=0
- impostorscore=0 mlxlogscore=999 spamscore=0 lowpriorityscore=0
- malwarescore=0 clxscore=1015 phishscore=0 priorityscore=1501 adultscore=0
- bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2104190000 definitions=main-2107160070
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <CAN8YU5NKGLO6a4wqaW07NAU-OdsdBohoXzMCBcskaFsCRtrGhw@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADRF6780 is a silicon germanium (SiGe) design, wideband,
-microwave upconverter optimized for point to point microwave
-radio designs operating in the 5.9 GHz to 23.6 GHz frequency
-range.
+On Fri, Jul 16, 2021 at 11:19:31AM +0200, Andrea Merello wrote:
+> Il giorno gio 15 lug 2021 alle ore 18:50 Andy Shevchenko
+> <andy.shevchenko@gmail.com> ha scritto:
+> > On Thu, Jul 15, 2021 at 5:21 PM Andrea Merello <andrea.merello@gmail.com> wrote:
 
-Datasheet:
-https://www.analog.com/media/en/technical-documentation/data-sheets/ADRF6780.pdf
+...
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-changes in v6:
- - fix warning detected by kernel test robot
- drivers/iio/frequency/Kconfig    |  12 +
- drivers/iio/frequency/Makefile   |   1 +
- drivers/iio/frequency/adrf6780.c | 474 +++++++++++++++++++++++++++++++
- 3 files changed, 487 insertions(+)
- create mode 100644 drivers/iio/frequency/adrf6780.c
+> > > Cc: linux-kernel@vger.kernel.org
+> > > Cc: linux-iio@vger.kernel.org
+> >
+> > Instead of polluting commit messages with this, use --to and --cc
+> > parameters. You may utilize my script [1] which finds automatically to
+> > whom to send (of course it allows manually to add more).
+> >
+> > [1]: https://github.com/andy-shev/home-bin-tools/blob/master/ge2maintainer.sh
+> 
+> I thought it was a good & widespread practice, sorry. Will drop from
+> future series respin.
 
-diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
-index 240b81502512..2c9e0559e8a4 100644
---- a/drivers/iio/frequency/Kconfig
-+++ b/drivers/iio/frequency/Kconfig
-@@ -49,5 +49,17 @@ config ADF4371
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called adf4371.
-+
-+config ADRF6780
-+        tristate "Analog Devices ADRF6780 Microwave Upconverter"
-+        depends on SPI
-+        depends on COMMON_CLK
-+        help
-+          Say yes here to build support for Analog Devices ADRF6780
-+          5.9 GHz to 23.6 GHz, Wideband, Microwave Upconverter.
-+
-+          To compile this driver as a module, choose M here: the
-+          module will be called adrf6780.
-+
- endmenu
- endmenu
-diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
-index 518b1e50caef..ae3136c79202 100644
---- a/drivers/iio/frequency/Makefile
-+++ b/drivers/iio/frequency/Makefile
-@@ -7,3 +7,4 @@
- obj-$(CONFIG_AD9523) += ad9523.o
- obj-$(CONFIG_ADF4350) += adf4350.o
- obj-$(CONFIG_ADF4371) += adf4371.o
-+obj-$(CONFIG_ADRF6780) += adrf6780.o
-diff --git a/drivers/iio/frequency/adrf6780.c b/drivers/iio/frequency/adrf6780.c
-new file mode 100644
-index 000000000000..6643dbc541c7
---- /dev/null
-+++ b/drivers/iio/frequency/adrf6780.c
-@@ -0,0 +1,474 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * ADRF6780 driver
-+ *
-+ * Copyright 2021 Analog Devices Inc.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/clk.h>
-+#include <linux/clkdev.h>
-+#include <linux/clk-provider.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/spi/spi.h>
-+
-+#include <asm/unaligned.h>
-+
-+/* ADRF6780 Register Map */
-+#define ADRF6780_REG_CONTROL			0x00
-+#define ADRF6780_REG_ALARM_READBACK		0x01
-+#define ADRF6780_REG_ALARM_MASKS		0x02
-+#define ADRF6780_REG_ENABLE			0x03
-+#define ADRF6780_REG_LINEARIZE			0x04
-+#define ADRF6780_REG_LO_PATH			0x05
-+#define ADRF6780_REG_ADC_CONTROL		0x06
-+#define ADRF6780_REG_ADC_OUTPUT			0x0C
-+
-+/* ADRF6780_REG_CONTROL Map */
-+#define ADRF6780_PARITY_EN_MSK			BIT(15)
-+#define ADRF6780_SOFT_RESET_MSK			BIT(14)
-+#define ADRF6780_CHIP_ID_MSK			GENMASK(11, 4)
-+#define ADRF6780_CHIP_ID			0xA
-+#define ADRF6780_CHIP_REVISION_MSK		GENMASK(3, 0)
-+
-+/* ADRF6780_REG_ALARM_READBACK Map */
-+#define ADRF6780_PARITY_ERROR_MSK		BIT(15)
-+#define ADRF6780_TOO_FEW_ERRORS_MSK		BIT(14)
-+#define ADRF6780_TOO_MANY_ERRORS_MSK		BIT(13)
-+#define ADRF6780_ADDRESS_RANGE_ERROR_MSK	BIT(12)
-+
-+/* ADRF6780_REG_ENABLE Map */
-+#define ADRF6780_VGA_BUFFER_EN_MSK		BIT(8)
-+#define ADRF6780_DETECTOR_EN_MSK		BIT(7)
-+#define ADRF6780_LO_BUFFER_EN_MSK		BIT(6)
-+#define ADRF6780_IF_MODE_EN_MSK			BIT(5)
-+#define ADRF6780_IQ_MODE_EN_MSK			BIT(4)
-+#define ADRF6780_LO_X2_EN_MSK			BIT(3)
-+#define ADRF6780_LO_PPF_EN_MSK			BIT(2)
-+#define ADRF6780_LO_EN_MSK			BIT(1)
-+#define ADRF6780_UC_BIAS_EN_MSK			BIT(0)
-+
-+/* ADRF6780_REG_LINEARIZE Map */
-+#define ADRF6780_RDAC_LINEARIZE_MSK		GENMASK(7, 0)
-+
-+/* ADRF6780_REG_LO_PATH Map */
-+#define ADRF6780_LO_SIDEBAND_MSK		BIT(10)
-+#define ADRF6780_Q_PATH_PHASE_ACCURACY_MSK	GENMASK(7, 4)
-+#define ADRF6780_I_PATH_PHASE_ACCURACY_MSK	GENMASK(3, 0)
-+
-+/* ADRF6780_REG_ADC_CONTROL Map */
-+#define ADRF6780_VDET_OUTPUT_SELECT_MSK		BIT(3)
-+#define ADRF6780_ADC_START_MSK			BIT(2)
-+#define ADRF6780_ADC_EN_MSK			BIT(1)
-+#define ADRF6780_ADC_CLOCK_EN_MSK		BIT(0)
-+
-+/* ADRF6780_REG_ADC_OUTPUT Map */
-+#define ADRF6780_ADC_STATUS_MSK			BIT(8)
-+#define ADRF6780_ADC_VALUE_MSK			GENMASK(7, 0)
-+
-+struct adrf6780_dev {
-+	struct spi_device	*spi;
-+	struct clk		*clkin;
-+	/* Protect against concurrent accesses to the device */
-+	struct mutex		lock;
-+	bool			vga_buff_en;
-+	bool			lo_buff_en;
-+	bool			if_mode_en;
-+	bool			iq_mode_en;
-+	bool			lo_x2_en;
-+	bool			lo_ppf_en;
-+	bool			lo_en;
-+	bool			uc_bias_en;
-+	bool			lo_sideband;
-+	bool			vdet_out_en;
-+	u8			data[3] ____cacheline_aligned;
-+};
-+
-+static int adrf6780_spi_read(struct adrf6780_dev *dev, unsigned int reg,
-+			      unsigned int *val)
-+{
-+	int ret;
-+	struct spi_transfer t = {0};
-+
-+	dev->data[0] = 0x80 | (reg << 1);
-+	dev->data[1] = 0x0;
-+	dev->data[2] = 0x0;
-+
-+	t.rx_buf = &dev->data[0];
-+	t.tx_buf = &dev->data[0];
-+	t.len = 3;
-+
-+	ret = spi_sync_transfer(dev->spi, &t, 1);
-+	if (ret)
-+		return ret;
-+
-+	*val = (get_unaligned_be24(&dev->data[0]) >> 1) & GENMASK(15, 0);
-+
-+	return ret;
-+}
-+
-+static int adrf6780_spi_write(struct adrf6780_dev *dev,
-+				      unsigned int reg,
-+				      unsigned int val)
-+{
-+	put_unaligned_be24((val << 1) | (reg << 17), &dev->data[0]);
-+
-+	return spi_write(dev->spi, &dev->data[0], 3);
-+}
-+
-+static int adrf6780_spi_update_bits(struct adrf6780_dev *dev, unsigned int reg,
-+			       unsigned int mask, unsigned int val)
-+{
-+	int ret;
-+	unsigned int data, temp;
-+
-+	ret = adrf6780_spi_read(dev, reg, &data);
-+	if (ret)
-+		return ret;
-+
-+	temp = (data & ~mask) | (val & mask);
-+
-+	return adrf6780_spi_write(dev, reg, temp);
-+}
-+
-+static int adrf6780_read_voltage_raw(struct adrf6780_dev *dev, unsigned int *read_val)
-+{
-+	int ret;
-+
-+	mutex_lock(&dev->lock);
-+
-+	ret = adrf6780_spi_update_bits(dev, ADRF6780_REG_ADC_CONTROL,
-+					ADRF6780_ADC_EN_MSK |
-+					ADRF6780_ADC_CLOCK_EN_MSK |
-+					ADRF6780_ADC_START_MSK,
-+					FIELD_PREP(ADRF6780_ADC_EN_MSK, 1) |
-+					FIELD_PREP(ADRF6780_ADC_CLOCK_EN_MSK, 1) |
-+					FIELD_PREP(ADRF6780_ADC_START_MSK, 1));
-+	if (ret)
-+		goto exit;
-+
-+	usleep_range(200, 250);
-+
-+	ret = adrf6780_spi_read(dev, ADRF6780_REG_ADC_OUTPUT, read_val);
-+	if (ret)
-+		goto exit;
-+
-+	if (!(read_val & ADRF6780_ADC_STATUS_MSK)) {
-+		ret = -EINVAL;
-+		goto exit;
-+	}
-+
-+	ret = adrf6780_spi_update_bits(dev, ADRF6780_REG_ADC_CONTROL,
-+					ADRF6780_ADC_START_MSK,
-+					FIELD_PREP(ADRF6780_ADC_START_MSK, 0));
-+	if (ret)
-+		goto exit;
-+
-+	ret = adrf6780_spi_read(dev, ADRF6780_REG_ADC_OUTPUT, read_val);
-+
-+exit:
-+	mutex_unlock(&dev->lock);
-+	return ret;
-+}
-+
-+static int adrf6780_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long info)
-+{
-+	struct adrf6780_dev *dev = iio_priv(indio_dev);
-+	unsigned int data;
-+	int ret;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = adrf6780_read_voltage_raw(dev, &data);
-+		if (ret)
-+			return ret;
-+
-+		*val = data & ADRF6780_ADC_VALUE_MSK;
-+
-+		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = adrf6780_spi_read(dev, ADRF6780_REG_LINEARIZE, &data);
-+		if (ret)
-+			return ret;
-+
-+		*val = data & ADRF6780_RDAC_LINEARIZE_MSK;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_PHASE:
-+		ret = adrf6780_spi_read(dev, ADRF6780_REG_LO_PATH, &data);
-+		if (ret)
-+			return ret;
-+
-+		switch (chan->channel2) {
-+		case IIO_MOD_I:
-+			*val = data & ADRF6780_I_PATH_PHASE_ACCURACY_MSK;
-+
-+			return IIO_VAL_INT;
-+		case IIO_MOD_Q:
-+			*val = FIELD_GET(ADRF6780_Q_PATH_PHASE_ACCURACY_MSK, data);
-+
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int adrf6780_write_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int val, int val2, long info)
-+{
-+	struct adrf6780_dev *dev = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return adrf6780_spi_write(dev, ADRF6780_REG_LINEARIZE, val);
-+	case IIO_CHAN_INFO_PHASE:
-+		switch (chan->channel2) {
-+		case IIO_MOD_I:
-+			mutex_lock(&dev->lock);
-+			ret = adrf6780_spi_update_bits(dev, ADRF6780_REG_LO_PATH,
-+							ADRF6780_I_PATH_PHASE_ACCURACY_MSK,
-+							FIELD_PREP(ADRF6780_I_PATH_PHASE_ACCURACY_MSK, val));
-+			mutex_unlock(&dev->lock);
-+
-+			return ret;
-+		case IIO_MOD_Q:
-+			mutex_lock(&dev->lock);
-+			ret = adrf6780_spi_update_bits(dev, ADRF6780_REG_LO_PATH,
-+							ADRF6780_Q_PATH_PHASE_ACCURACY_MSK,
-+							FIELD_PREP(ADRF6780_Q_PATH_PHASE_ACCURACY_MSK, val));
-+			mutex_unlock(&dev->lock);
-+
-+			return ret;
-+		default:
-+			return -EINVAL;
-+		}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int adrf6780_reg_access(struct iio_dev *indio_dev,
-+				unsigned int reg,
-+				unsigned int write_val,
-+				unsigned int *read_val)
-+{
-+	struct adrf6780_dev *dev = iio_priv(indio_dev);
-+
-+	if (read_val)
-+		return adrf6780_spi_read(dev, reg, read_val);
-+	else
-+		return adrf6780_spi_write(dev, reg, write_val);
-+}
-+
-+static const struct iio_info adrf6780_info = {
-+	.read_raw = adrf6780_read_raw,
-+	.write_raw = adrf6780_write_raw,
-+	.debugfs_reg_access = &adrf6780_reg_access,
-+};
-+
-+#define ADRF6780_CHAN(_channel) {			\
-+	.type = IIO_VOLTAGE,				\
-+	.output = 1,					\
-+	.indexed = 1,					\
-+	.channel = _channel,				\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
-+		BIT(IIO_CHAN_INFO_SCALE)		\
-+}
-+
-+#define ADRF6780_CHAN_IQ(_channel, rf_comp) {			\
-+	.type = IIO_ALTVOLTAGE,					\
-+	.modified = 1,						\
-+	.output = 1,						\
-+	.indexed = 1,						\
-+	.channel2 = IIO_MOD_##rf_comp,				\
-+	.channel = _channel,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_PHASE)		\
-+}
-+
-+static const struct iio_chan_spec adrf6780_channels[] = {
-+	ADRF6780_CHAN(0),
-+	ADRF6780_CHAN_IQ(0, I),
-+	ADRF6780_CHAN_IQ(0, Q),
-+};
-+
-+static int adrf6780_reset(struct adrf6780_dev *dev)
-+{
-+	int ret;
-+	struct spi_device *spi = dev->spi;
-+
-+	ret = adrf6780_spi_update_bits(dev, ADRF6780_REG_CONTROL,
-+				 ADRF6780_SOFT_RESET_MSK,
-+				 FIELD_PREP(ADRF6780_SOFT_RESET_MSK, 1));
-+	if (ret) {
-+		dev_err(&spi->dev, "ADRF6780 SPI software reset failed.\n");
-+		return ret;
-+	}
-+
-+	ret = adrf6780_spi_update_bits(dev, ADRF6780_REG_CONTROL,
-+				 ADRF6780_SOFT_RESET_MSK,
-+				 FIELD_PREP(ADRF6780_SOFT_RESET_MSK, 0));
-+	if (ret) {
-+		dev_err(&spi->dev, "ADRF6780 SPI software reset disable failed.\n");
-+		return ret;
-+	}
-+
-+	return 0;
-+}
-+
-+static int adrf6780_init(struct adrf6780_dev *dev)
-+{
-+	int ret;
-+	unsigned int chip_id, enable_reg, enable_reg_msk;
-+	struct spi_device *spi = dev->spi;
-+
-+	/* Perform a software reset */
-+	ret = adrf6780_reset(dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = adrf6780_spi_read(dev, ADRF6780_REG_CONTROL, &chip_id);
-+	if (ret)
-+		return ret;
-+
-+	chip_id = FIELD_GET(ADRF6780_CHIP_ID_MSK, chip_id);
-+	if (chip_id != ADRF6780_CHIP_ID) {
-+		dev_err(&spi->dev, "ADRF6780 Invalid Chip ID.\n");
-+		return -EINVAL;
-+	}
-+
-+	enable_reg_msk = ADRF6780_VGA_BUFFER_EN_MSK |
-+			ADRF6780_DETECTOR_EN_MSK |
-+			ADRF6780_LO_BUFFER_EN_MSK |
-+			ADRF6780_IF_MODE_EN_MSK |
-+			ADRF6780_IQ_MODE_EN_MSK |
-+			ADRF6780_LO_X2_EN_MSK |
-+			ADRF6780_LO_PPF_EN_MSK |
-+			ADRF6780_LO_EN_MSK |
-+			ADRF6780_UC_BIAS_EN_MSK;
-+
-+	enable_reg = FIELD_PREP(ADRF6780_VGA_BUFFER_EN_MSK, dev->vga_buff_en) |
-+			FIELD_PREP(ADRF6780_DETECTOR_EN_MSK, 1) |
-+			FIELD_PREP(ADRF6780_LO_BUFFER_EN_MSK, dev->lo_buff_en) |
-+			FIELD_PREP(ADRF6780_IF_MODE_EN_MSK, dev->if_mode_en) |
-+			FIELD_PREP(ADRF6780_IQ_MODE_EN_MSK, dev->iq_mode_en) |
-+			FIELD_PREP(ADRF6780_LO_X2_EN_MSK, dev->lo_x2_en) |
-+			FIELD_PREP(ADRF6780_LO_PPF_EN_MSK, dev->lo_ppf_en) |
-+			FIELD_PREP(ADRF6780_LO_EN_MSK, dev->lo_en) |
-+			FIELD_PREP(ADRF6780_UC_BIAS_EN_MSK, dev->uc_bias_en);
-+
-+	ret = adrf6780_spi_update_bits(dev, ADRF6780_REG_ENABLE, enable_reg_msk, enable_reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = adrf6780_spi_update_bits(dev, ADRF6780_REG_LO_PATH,
-+						ADRF6780_LO_SIDEBAND_MSK,
-+						FIELD_PREP(ADRF6780_LO_SIDEBAND_MSK, dev->lo_sideband));
-+	if (ret)
-+		return ret;
-+
-+	return adrf6780_spi_update_bits(dev, ADRF6780_REG_ADC_CONTROL,
-+						ADRF6780_VDET_OUTPUT_SELECT_MSK,
-+						FIELD_PREP(ADRF6780_VDET_OUTPUT_SELECT_MSK, dev->vdet_out_en));
-+}
-+
-+static void adrf6780_clk_disable(void *data)
-+{
-+	clk_disable_unprepare(data);
-+}
-+
-+static void adrf6780_dt_parse(struct adrf6780_dev *dev)
-+{
-+	struct spi_device *spi = dev->spi;
-+
-+	dev->vga_buff_en = device_property_read_bool(&spi->dev, "adi,vga-buff-en");
-+	dev->lo_buff_en = device_property_read_bool(&spi->dev, "adi,lo-buff-en");
-+	dev->if_mode_en = device_property_read_bool(&spi->dev, "adi,if-mode-en");
-+	dev->iq_mode_en = device_property_read_bool(&spi->dev, "adi,iq-mode-en");
-+	dev->lo_x2_en = device_property_read_bool(&spi->dev, "adi,lo-x2-en");
-+	dev->lo_ppf_en = device_property_read_bool(&spi->dev, "adi,lo-ppf-en");
-+	dev->lo_en = device_property_read_bool(&spi->dev, "adi,lo-en");
-+	dev->uc_bias_en = device_property_read_bool(&spi->dev, "adi,uc-bias-en");
-+	dev->lo_sideband = device_property_read_bool(&spi->dev, "adi,lo-sideband");
-+	dev->vdet_out_en = device_property_read_bool(&spi->dev, "adi,vdet-out-en");
-+}
-+
-+static int adrf6780_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct adrf6780_dev *dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*dev));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	dev = iio_priv(indio_dev);
-+
-+	indio_dev->info = &adrf6780_info;
-+	indio_dev->name = "adrf6780";
-+	indio_dev->channels = adrf6780_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(adrf6780_channels);
-+
-+	dev->spi = spi;
-+
-+	adrf6780_dt_parse(dev);
-+
-+	dev->clkin = devm_clk_get(&spi->dev, "lo_in");
-+	if (IS_ERR(dev->clkin))
-+		return PTR_ERR(dev->clkin);
-+
-+	ret = clk_prepare_enable(dev->clkin);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(&spi->dev, adrf6780_clk_disable, dev->clkin);
-+	if (ret < 0)
-+		return ret;
-+
-+	mutex_init(&dev->lock);
-+
-+	ret = adrf6780_init(dev);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(&spi->dev, indio_dev);
-+}
-+
-+static const struct spi_device_id adrf6780_id[] = {
-+	{ "adrf6780", 0 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, adrf6780_id);
-+
-+static const struct of_device_id adrf6780_of_match[] = {
-+	{ .compatible = "adi,adrf6780" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, adrf6780_of_match);
-+
-+static struct spi_driver adrf6780_driver = {
-+	.driver = {
-+		.name = "adrf6780",
-+		.of_match_table = adrf6780_of_match,
-+	},
-+	.probe = adrf6780_probe,
-+	.id_table = adrf6780_id,
-+};
-+module_spi_driver(adrf6780_driver);
-+
-+MODULE_AUTHOR("Antoniu Miclaus <antoniu.miclaus@analog.com");
-+MODULE_DESCRIPTION("Analog Devices ADRF6780");
-+MODULE_LICENSE("GPL v2");
+It's good to notify people who either maintainer or involved enough. Putting
+mailing lists into Cc explicitly is not good practice.
+
+...
+
+> > > +#define BNO055_UNIT_SEL_ANDROID BIT(7)
+> >
+> > Android? What does this mean?
+> 
+> Sensors support the so-called "Android" and "Windows" modes. They
+> differs about pitch direction (CW vs CCW). I'd like to stick close to
+> the datasheet names, but I can add a comment here.
+
+Keeping as in the data sheet is okay, but since it's very confusing naming,
+the comment in the is a must.
+
+...
+
+> > Useless parentheses. If the LEN is a plain number, use decimal, if
+> > it's limited by register width, use the form of (BIT(x) - 1). In such
+> > a case it's easy to see how many bits are used for it.
+> 
+> It's byte number, defined by how many 8-bits registers make up the
+> UID. I'll go for a decimal and I'll drop the parentheses.
+
+15 seems the right one then?
+
+...
+
+> > > +       int i;
+> > > +       int best_idx, best_delta, delta;
+> > > +       int first = 1;
+> >
+> > Use reversed xmas tree order.
+> 
+> Looks like the kernel code is plenty of declarations in random order,
+> neither I can find any clue about this in coding-style.rst. Where does
+> this come from?
+
+Easier to read. Just from practice and wishes of several maintainers.
+
+> If that's mandatory then I'll do. If that's about a mere preference,
+> then I honestly prefer to put all declaration-plus-initialization
+> after all declarations-olny (but I can use reversed xmas tree order
+> inside each block, if you want).
+
+I'm not a maintainer here, but for the record I do not like this style at all.
+
+...
+
+> > > +       if ((reg >= 0x8 && reg <= 0x3A) ||
+> >
+> > Use names instead of values here and in similar places elsewhere.
+> 
+> When I wrote this, I was actually unsure about which is best :) Do you
+> have a strong opinion on this?
+> 
+> My point:
+> Most of this is just about register areas, which are bounded by
+> addresses - register meaning is of no interest here. Using numerical
+> addresses here IMO is a little advantageous because it is at least
+> clear which is the greatest number, and it is less prone to swapping
+> by mistake start/end registers vrt greater-than/lesser-than comparison
+> operators.
+> 
+> It's still true that when comparing address against a specific
+> register address (e.g. reg == BNO055_MAG_CONFIG_REG) there is no
+> advantage in using numerical addresses, and it can be better to use
+> names (because e.g. you simply know that specific register is
+> volatile).
+
+Try your best here. Magic numbers in general are not good.
+
+...
+
+> > > +           /* when in fusion mode, config is updated by chip */
+> > > +           reg == BNO055_MAG_CONFIG_REG ||
+> > > +           reg == BNO055_ACC_CONFIG_REG ||
+> > > +           reg == BNO055_GYR_CONFIG_REG ||
+> > > +           (reg >= BNO055_CALDATA_START && reg <= BNO055_CALDATA_END))
+> >
+> > Please, split this to 3 or more conditionals that are easier to read
+> > (logically separated).
+> > Same comment to the rest of the similar functions.
+> 
+> Do you mean splitting into separate if statements? OK.
+
+Yes. Several if:s.
+
+...
+
+> > > +       if (res && res != -ERESTARTSYS) {
+> >
+> > Shouldn't RESTARTSYS be handled on a regmap level?
+> 
+> Can you please elaborate on this?
+
+I meant if you need to take care about this it seems to me that it has to be
+thought of on regmap level. I.o.w. what is the rationale behind this additional
+check?
+
+...
+
+> > Sounds like NIH hex2bin().
+> 
+> Indeed.. I've failed to find out this helper. Looking at the code it
+> seems it wouldn't work as drop-in replacement here, because of spaces
+> in the HEX string. But I might just decide to format the HEX string
+> without spaces in order to being able to use hex2bin().
+
+I'm not even sure why it's in ASCII instead being directly binary file.
+
+...
+
+> > > +               for (i = 0; i < 4; i++)
+> > > +                       vals[i] = (s16)le16_to_cpu(raw_vals[i]);
+> >
+> > Extract this to be a helper like there are for u32 and u64.
+> 
+> Could you please point me to those helpers? I don't know what you are
+> referring to.
+
+Read include/linux/byteorder/generic.h to the end.
+
+...
+
+> > > +               vals[1] = 1 << 14;
+> >
+> > BIT(14) But still magic.
+> 
+> Why magic? there is a comment a few line above explaining this - maybe
+> I can move it a couple of LOCs below. And BTW conceptually it is about
+> math (2^14), it has nothing to do with BITs.
+
+I see. Up to you then.
+
+...
+
+> > IIO core should do this, besides the fact that it must use sysfs_emit().
+> > Ditto for the similar.
+> 
+> Ok for sysfs_emit(), thanks. But what do you mean with "IIO core
+> should do this"? Can you please elaborate?
+
+I believe that IIO has a generic method to print tables via sysfs. AFAIR it is
+done via "_avail".
+
+...
+
+> > > +       static const char * const calib_status[] = {"bad", "barely enough",
+> > > +                                                  "fair", "good"};
+> >
+> > Please use better indentation
+> >
+> >     static char ... foo[] = {
+> >         { a, b, c, d, }
+> >     };
+> 
+> OK, but why nested parentheses?
+
+In this case is not needed, just typed as more often seen pattern :)
+
+...
+
+> > Isn't it better to use the request_firmware() interface or something similar?
+> 
+> No: I already use request_firmware() for getting the initial
+> calibration data (if any), but the IMU sometimes (re)calibrates. This
+> function is for getting current IMU calibration, so we need to read it
+> from registers (especially you want to get it the 1st time, in order
+> to create the calibration file that request_firmware() will fetch next
+> time you boot).
+> 
+> > If IIO doesn't provide the common attributes for this it probably
+> > should and it has to be a binary one.
+> 
+> I couldn't find anything for it. I wasn't sure whether exposing
+> calibration data using IIO attribute is something that other drivers
+> might need to do, hence whether it could make sense to make it generic
+> or not.. I wasn't even sure that an IIO attribute is the right place
+> to expose it, indeed :)
+
+Okay, this is for maintainers to decide.
+
+...
+
+> > > +        * that is made up 4 16-bit values.
+> > > +        * For us the quaternion CH is just like 4 regular CHs.
+> > > +        * If out read starts past the quaternion make sure to adjust the
+> > > +        * starting offset; if the quaternion is contained in our scan then
+> > > +        * make sure to adjust the read len.
+> >
+> > Your lines here like a drunk person. use the space more monotonically.
+> 
+> Do you mean: Assuming you are sticking to the old 80-cols-long lines
+> (which is still do, unless in few cases), then some lines still have
+> room for more words, and you could reflow the text ?
+
+Yes.
+
+...
+
+> > > +       while (!finish) {
+> > > +               end = find_next_zero_bit(iio_dev->active_scan_mask,
+> > > +                                        iio_dev->masklength, start);
+> > > +               if (end == iio_dev->masklength) {
+> > > +                       finish = true;
+> >
+> > NIH for_each_clear_bit().
+> 
+> Not sure it is convenient to use for_each_clear_bit(): Here we're
+> searching for contiguous blocks of set-bits, and we only want indexes
+> of first and last set-bit in a block; alternate calls to
+> find_next_zero_bit() and find_next_bit() seem appropriate here to me.
+> 
+> Do you have in mind a better/simpler implementation using or_each_clear_bit() ?
+
+bitmap_find_next_zero_area(buf, len, pos, n, mask)	Find bit free area
+bitmap_find_next_zero_area_off(buf, len, pos, n, mask, mask_off)
+bitmap_next_clear_region(map, &start, &end, nbits)	Find next clear region
+bitmap_next_set_region(map, &start, &end, nbits)	Find next set region
+bitmap_for_each_clear_region(map, rs, re, start, end)	Iterate over all clear regions
+bitmap_for_each_set_region(map, rs, re, start, end)
+
+...
+
+> > > +       /* base name + separator + UID + ext + zero */
+> > > +       char fw_name_buf[sizeof(BNO055_FW_NAME BNO055_FW_EXT) +
+> > > +                        BNO055_UID_LEN * 2 + 1 + 1];
+> >
+> > Perhaps devm_kasprintf()?
+> 
+> Wouldn't this keep the buffer allocated until the device is removed?
+> We just need this buffer while probing.
+
+You free to call devm_kfree() when appropriate.
+
+...
+
+> > > +       sprintf(fw_name_buf, BNO055_FW_NAME "-%*phN" BNO055_FW_EXT,
+> >
+> > Simply define a format string as FW_FMT somewhere above and use it here.
+> 
+> OK (but BNO055_FW_NAME and BNO055_FW_EXT contribute to build up two
+> different strings, so they will not go away, rather they will be used
+> in both FW_FMT and the other one definitions)
+
+#define _FW_FMT \
+	_FW_NAME "..." _FW_EXT
+
+?
+
+> > > +               BNO055_UID_LEN, priv->uid);
+
+...
+
+> > > +#include <linux/device.h>
+> >
+> > No user of this.
+> 
+> Will drop this
+
+I think you will need to replace it with a forward declaration.
+
+> > > +int bno055_probe(struct device *dev, struct regmap *regmap, int irq,
+> > > +                int xfer_burst_break_thr);
+
 -- 
-2.32.0
+With Best Regards,
+Andy Shevchenko
+
 
