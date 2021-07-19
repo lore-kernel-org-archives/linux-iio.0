@@ -2,159 +2,98 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B8CEFC636C9
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 09:02:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F490C12002
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 09:03:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9AE826100C
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 09:02:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1917A6100C
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 09:03:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235382AbhGSIVt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Jul 2021 04:21:49 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:19376 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235374AbhGSIVt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jul 2021 04:21:49 -0400
-Received: from twspam01.aspeedtech.com (localhost [127.0.0.2] (may be forged))
-        by twspam01.aspeedtech.com with ESMTP id 16J7otGD015590
-        for <linux-iio@vger.kernel.org>; Mon, 19 Jul 2021 15:50:55 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 16J7nRHu015325;
-        Mon, 19 Jul 2021 15:49:27 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 19 Jul
- 2021 16:05:49 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
-        <p.zabel@pengutronix.de>, <billy_tsai@aspeedtech.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <raltherr@google.com>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [v1 6/7] iio: adc: aspeed: Add compensation phase.
-Date:   Mon, 19 Jul 2021 16:06:06 +0800
-Message-ID: <20210719080607.28712-7-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210719080607.28712-1-billy_tsai@aspeedtech.com>
-References: <20210719080607.28712-1-billy_tsai@aspeedtech.com>
+        id S235150AbhGSIWk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Jul 2021 04:22:40 -0400
+Received: from mail-pj1-f46.google.com ([209.85.216.46]:44892 "EHLO
+        mail-pj1-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235129AbhGSIWj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jul 2021 04:22:39 -0400
+Received: by mail-pj1-f46.google.com with SMTP id p4-20020a17090a9304b029016f3020d867so11985395pjo.3;
+        Mon, 19 Jul 2021 02:03:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
+         :subject:to:cc;
+        bh=7CPkM/PC09FWcMi9Eu2o6KPkbaMxUaV2+b6rFKLJXGg=;
+        b=RlMHSiKGPgNvAqmJ3fONaKQbOFJTLMSj5hkuBRmAkXFUvk9VgkhtQauD/lHDJ0V293
+         a9rEDjQE1wcLG3+CtoQQqHHs2hiKUqT4iueRg+GvJcD5/Eiw9fnOCyCOIfuudY3PSNaO
+         hm23uhpE09sOaQF3Cp2eedFlNaXk8711LXNrpoDtQ7F9sApMlBK7Km0CdbuKUfUYt8Rb
+         IzoifFITJZP5QvBrzVaVNXKoFBUHfFBdc3CzKhO6BqAPNLEUoqxxQhFwOoZdhoTmhw0p
+         0xppCdho7nLRVVwfDjS/NrLkZCTNupJR1zTrjD6Yiq15fPo4XVUsJE76t31QDWCSnpsi
+         hcuQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
+         :from:date:message-id:subject:to:cc;
+        bh=7CPkM/PC09FWcMi9Eu2o6KPkbaMxUaV2+b6rFKLJXGg=;
+        b=YRxYcjq5L15IOYj1TPve6TQ5u6raAGhjwQxGDNzai8DqQn7YRsmib28EEOoZdCS+89
+         J5eOhfOSphmOTz6BirFhLHI5Hadl3lAgwTxBZED2gUzsSdxNmwvx0DzGFjBmQ21caCVk
+         HVGWpXeWXmSpAS9+FahyCdhD4Xpf/a32UDBNqtv0Pdajd5anZmqjdVW7LxtxnJvlWxnP
+         pyVvznQxuxGf/GLX/CyPJKnpda9x7HWE1ttff8CVgajehXS+LrfRVsgA9OHUg6rXt4Qd
+         qjjM3ByvmjHrFCF2wvm1e2PEjPapTWqUzXtcrUKnkuF5Q4VEnQpPesYS+zDzNJDwlI42
+         sBsg==
+X-Gm-Message-State: AOAM533He/3g1s3CTZBOlX1lVlWs1jWCepCv0h4Vu9WDy1v/Q1pML6pa
+        IGW2DWbEbQK8n+PYO8jP2tyVr1nZYZwKENMZY8g=
+X-Google-Smtp-Source: ABdhPJyn3qqVixEIfkAnSijssrjGnopSVbkwIY4FHUI8uQay2fOdBTPh7WjOakScsOJsqzN1tfKrMrzj8vjPgBeQvLA=
+X-Received: by 2002:a17:902:eb52:b029:129:bc24:ce5e with SMTP id
+ i18-20020a170902eb52b0290129bc24ce5emr18514435pli.67.1626685338969; Mon, 19
+ Jul 2021 02:02:18 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 16J7nRHu015325
+References: <20210715141742.15072-1-andrea.merello@gmail.com>
+ <20210715141742.15072-3-andrea.merello@gmail.com> <CAHp75Vf_Og2wjRy2j0gC37DgR0x9B_F5iSUj8VOtWkhWjgiOag@mail.gmail.com>
+In-Reply-To: <CAHp75Vf_Og2wjRy2j0gC37DgR0x9B_F5iSUj8VOtWkhWjgiOag@mail.gmail.com>
+Reply-To: andrea.merello@gmail.com
+From:   Andrea Merello <andrea.merello@gmail.com>
+Date:   Mon, 19 Jul 2021 11:02:07 +0200
+Message-ID: <CAN8YU5MFMqh3wZo-yOOE8och3x089kYWjtrr83Jt8wCQTKFE8Q@mail.gmail.com>
+Subject: Re: [PATCH 2/4] iio: imu: add Bosch Sensortec BNO055 core driver
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        vlad.dogaru@intel.com, linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Andrea Merello <andrea.merello@iit.it>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds a compensation phase to improve the accurate of adc
-measurement. This is the builtin function though input half of the
-reference voltage to get the adc offset.
+Il giorno gio 15 lug 2021 alle ore 18:50 Andy Shevchenko
+<andy.shevchenko@gmail.com> ha scritto:
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- drivers/iio/adc/aspeed_adc.c | 51 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 50 insertions(+), 1 deletion(-)
+>
+> > +/* must be called in configuration mode */
+> > +int bno055_calibration_load(struct bno055_priv *priv, const struct firmware *fw)
+> > +{
+> > +       int i;
+> > +       unsigned int tmp;
+> > +       u8 cal[BNO055_CALDATA_LEN];
+> > +       int read, tot_read = 0;
+> > +       int ret = 0;
+> > +       char *buf = kmalloc(fw->size + 1, GFP_KERNEL);
+> > +
+> > +       if (!buf)
+> > +               return -ENOMEM;
+> > +
+> > +       memcpy(buf, fw->data, fw->size);
+>
+> kmemdup() ?
+>
 
-diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index b33ff9f0a3af..b0d7a58cb7f5 100644
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -56,6 +56,7 @@
- #define ASPEED_ADC_INIT_POLLING_TIME	500
- #define ASPEED_ADC_INIT_TIMEOUT		500000
- #define ASPEED_ADC_DEF_SAMPLING_RATE	250000
-+#define ASPEED_ADC_MAX_RAW_DATA		GENMASK(9, 0)
- 
- enum aspeed_adc_version {
- 	aspeed_adc_ast2400,
-@@ -79,6 +80,7 @@ struct aspeed_adc_data {
- 	struct reset_control	*rst;
- 	int			vref;
- 	u32			sample_period_ns;
-+	int			cv;
- };
- 
- #define ASPEED_CHAN(_idx, _data_reg_addr) {			\
-@@ -110,6 +112,48 @@ static const struct iio_chan_spec aspeed_adc_iio_channels[] = {
- 	ASPEED_CHAN(15, 0x2E),
- };
- 
-+static int aspeed_adc_compensation(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct aspeed_adc_data *data = iio_priv(indio_dev);
-+	u32 index, adc_raw = 0;
-+	u32 adc_engine_control_reg_val =
-+		readl(data->base + ASPEED_REG_ENGINE_CONTROL);
-+	adc_engine_control_reg_val |=
-+		(ASPEED_ADC_OPERATION_MODE_NORMAL | ASPEED_ADC_ENGINE_ENABLE);
-+
-+	/*
-+	 * Enable compensating sensing:
-+	 * After that, the input voltage of adc will force to half of the reference
-+	 * voltage. So the expected reading raw data will become half of the max
-+	 * value. We can get compensating value = 0x200 - adc read raw value.
-+	 * It is recommended to average at least 10 samples to get a final CV.
-+	 */
-+	writel(adc_engine_control_reg_val | ASPEED_ADC_CTRL_COMPENSATION |
-+		       ASPEED_ADC_CTRL_CHANNEL_ENABLE(0),
-+	       data->base + ASPEED_REG_ENGINE_CONTROL);
-+	/*
-+	 * After enable compensating sensing mode need to wait some time for adc stable
-+	 * Experiment result is 1ms.
-+	 */
-+	mdelay(1);
-+
-+	for (index = 0; index < 16; index++) {
-+		/*
-+		 * Waiting for the sampling period ensures that the value acquired
-+		 * is fresh each time.
-+		 */
-+		ndelay(data->sample_period_ns);
-+		adc_raw += readw(data->base + aspeed_adc_iio_channels[0].address);
-+	}
-+	adc_raw >>= 4;
-+	data->cv = BIT(ASPEED_RESOLUTION_BITS - 1) - adc_raw;
-+	writel(adc_engine_control_reg_val,
-+	       data->base + ASPEED_REG_ENGINE_CONTROL);
-+	dev_dbg(data->dev, "compensating value = %d\n", data->cv);
-+	return 0;
-+}
-+
- static int aspeed_adc_set_sampling_rate(struct iio_dev *indio_dev, u32 rate)
- {
- 	struct aspeed_adc_data *data = iio_priv(indio_dev);
-@@ -138,7 +182,11 @@ static int aspeed_adc_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		*val = readw(data->base + chan->address);
-+		*val = readw(data->base + chan->address) + data->cv;
-+		if (*val < 0)
-+			*val = 0;
-+		else if (*val >= ASPEED_ADC_MAX_RAW_DATA)
-+			*val = ASPEED_ADC_MAX_RAW_DATA;
- 		return IIO_VAL_INT;
- 
- 	case IIO_CHAN_INFO_SCALE:
-@@ -338,6 +386,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto clk_enable_error;
- 	aspeed_adc_set_sampling_rate(indio_dev, ASPEED_ADC_DEF_SAMPLING_RATE);
-+	aspeed_adc_compensation(pdev);
- 	adc_engine_control_reg_val =
- 		readl(data->base + ASPEED_REG_ENGINE_CONTROL);
- 	/* Start all channels in normal mode. */
--- 
-2.25.1
-
+As a second thought: no, the whole point of reallocating and copying
+here, is that we want to allocate an extra byte; kmemdup() will
+allocate and copy only the very same amount of memory
