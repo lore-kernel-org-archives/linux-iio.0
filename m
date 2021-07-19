@@ -2,104 +2,227 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-2.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9091C07E9B
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 10:33:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEEFC12002
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 11:26:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A4FE761006
-	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 10:33:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4CAA8610F7
+	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 11:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235621AbhGSJwu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 19 Jul 2021 05:52:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50764 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235440AbhGSJwu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jul 2021 05:52:50 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D866CC061574;
-        Mon, 19 Jul 2021 02:40:12 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id d9so4882191pfv.4;
-        Mon, 19 Jul 2021 03:33:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20161025;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=Lu76TUF5t5P7dhULSWQL1jOmPG4hRwR7T2VCuhQQuSc=;
-        b=s/e2GR87SdKlpiDUPcwZ+dquU6uA39GKut+j1/4HcntzhbYi3Z7/E8VVQDfxiBGt9s
-         TOwP3W4uDRwEkYNx6sLQxz8/xmY+FwFbW3nWxk5Mt7SQrqefrvXHDJ/Dh6ZewK3qwCnx
-         RtmyF/EPz0wUZLHw6PxG4QkLRem5eWFeAOnNlkMeOi4zJsrom0YszNhftGIAD+VvcCf0
-         Whs77pdZvsdc7xqM2ljwWgkL4ERK0QfG1yKw5x6xYpVh6J7hiaY7Fzb20VKrKUzNHoMn
-         oJ1OHSrvqWYvh787wWCiR9PfR5JIwFds1prNGj4qV7QJpoDGSRkTVNLJhVF9atqHui7i
-         p12Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=Lu76TUF5t5P7dhULSWQL1jOmPG4hRwR7T2VCuhQQuSc=;
-        b=i/25vCHiK8fQoJrlZoflHnCHBpCZ7JcsJNxUQNWZ1pRarvROAbyT2gnFofXImcHDzK
-         HbX1WynWQN76Yhn0/lH5nl/Yvwncb+1cBhZ6bsz4jdC9PiazPRzCMEtpRtTQAIYSTkvG
-         3rZWrfUHIvXXU/b/IvKgpyszUkB5VHCXvgEmuLW5u+CSTSwQHGc2nFk6MPTUQrGia9jT
-         zmdkvjOhEEl8DOA3svEasvrDcKHtPpH4a9f+raZQi3n0mf6+txMswXFxxUx1YNwphlEh
-         igFPSUaHedr083x6+xlpZfLKAzUZJBTgp4aSD2c4Uhd4wC3/f3G9pFl/ZgIol2RVyZ6W
-         gKiQ==
-X-Gm-Message-State: AOAM530Ddxn3wh8AiTZjlhM4qyJhZ9yDmQJqdDBffmFV89vwWhZBMNlQ
-        /3R+LfJxtGmzhganqEgwMnhnI0i5vUB4y5P2h1nmQ5QYCKQK5pyx
-X-Google-Smtp-Source: ABdhPJyc6W2WqVVRhAqL8WPMeFs3lJRq2sffzWDsBMKIVXyG30vBCtTy1sl0G9+nn7MncbPvQs7tLgVu8y17tvuavIE=
-X-Received: by 2002:a05:6a00:9a5:b029:30d:fad7:4515 with SMTP id
- u37-20020a056a0009a5b029030dfad74515mr25338538pfg.28.1626690808507; Mon, 19
- Jul 2021 03:33:28 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210715141742.15072-1-andrea.merello@gmail.com>
- <20210715141742.15072-3-andrea.merello@gmail.com> <CAHp75Vf_Og2wjRy2j0gC37DgR0x9B_F5iSUj8VOtWkhWjgiOag@mail.gmail.com>
- <CAN8YU5NKGLO6a4wqaW07NAU-OdsdBohoXzMCBcskaFsCRtrGhw@mail.gmail.com> <YPF97IvnlUDtIHar@smile.fi.intel.com>
-In-Reply-To: <YPF97IvnlUDtIHar@smile.fi.intel.com>
-Reply-To: andrea.merello@gmail.com
-From:   Andrea Merello <andrea.merello@gmail.com>
-Date:   Mon, 19 Jul 2021 12:33:16 +0200
-Message-ID: <CAN8YU5MMtP8M7jTDP2S3EBM-PM1dsxVLEgGyB-3BtY5xUF+JTQ@mail.gmail.com>
-Subject: Re: [PATCH 2/4] iio: imu: add Bosch Sensortec BNO055 core driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        id S236364AbhGSKqR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 19 Jul 2021 06:46:17 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.81]:18584 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236292AbhGSKqQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jul 2021 06:46:16 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1626694005;
+    s=strato-dkim-0002; d=gerhold.net;
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=EU27wwecFrV7EsbZx1jhBFJBmbc5/vqkmCkJSV+r7Ck=;
+    b=S2g5VkkYR299BOPuhmDpesffWkYuj20tGzrs6UHkwNqQ+pW9mOqI4eDrrOcFtPBvee
+    mkDISePeWnp59CPLvspuxscxmXOzCxF7Ui4lwujL9BDjhnoFINrUO97KMTHuqUw3vFmK
+    AimvTGl6tspK4nF26746yO/vJk9JzabJQ0gWdirsDa2cgF8m1Pch5bONb+Xzl9X3aAcb
+    6lusYBwpTbkPfzxj1uk67b0Xt0RmQYbTsNSlnF4nmglMo1T5g87gWDghB451dHFTmnRs
+    YAjThHqnaU7vt3b5HYsbUQgAhzLuybTN+WDKeNcudogpiB8EL1az6a4f1acyk1leEOYE
+    Rt/Q==
+Authentication-Results: strato.com;
+    dkim=none
+X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxB4m6O43/v"
+X-RZG-CLASS-ID: mo00
+Received: from droid..
+    by smtp.strato.de (RZmta 47.28.1 DYNA|AUTH)
+    with ESMTPSA id g02a44x6JBQi27e
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
+        (Client did not present a certificate);
+    Mon, 19 Jul 2021 13:26:44 +0200 (CEST)
+From:   Stephan Gerhold <stephan@gerhold.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Content-Type: text/plain; charset="UTF-8"
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Hans de Goede <hdegoede@redhat.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        ~postmarketos/upstreaming@lists.sr.ht,
+        Nikita Travkin <nikita@trvn.ru>,
+        Stephan Gerhold <stephan@gerhold.net>
+Subject: [PATCH 3/4] iio: accel: bmc150: Make it possible to configure INT2 instead of INT1
+Date:   Mon, 19 Jul 2021 13:21:55 +0200
+Message-Id: <20210719112156.27087-4-stephan@gerhold.net>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210719112156.27087-1-stephan@gerhold.net>
+References: <20210719112156.27087-1-stephan@gerhold.net>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-> > > > +               for (i = 0; i < 4; i++)
-> > > > +                       vals[i] = (s16)le16_to_cpu(raw_vals[i]);
-> > >
-> > > Extract this to be a helper like there are for u32 and u64.
-> >
-> > Could you please point me to those helpers? I don't know what you are
-> > referring to.
->
-> Read include/linux/byteorder/generic.h to the end.
+Some Bosch accelerometers have two interrupt pins (INT1 and INT2).
+At the moment, the driver uses only the first one, which is fine for
+most situations. However, some boards might only have INT2 connected
+for some reason.
 
-I realized that implementing an helper like the other ones wouldn't
-work in this specific case: I'd say a reasonable helper would take a
-ptr to a s16 as its destination argument, but here we are assigning to
-a int vector; so our brand new helper would be of no use here.
+Add the necessary bits and configuration to set up INT2. Then try
+to detect this situation at least for device tree setups by checking
+if the first interrupt (the one picked by the I2C/SPI core) is actually
+named "INT2" using the interrupt-names property.
 
-What I can do is to implement a macroized helper that would have no
-issues wrt ptr type; I guess something like this:
+of_irq_get_byname() returns either 0 or some error code in case
+the driver probed without device tree, so in all other cases we fall
+back to configuring INT1 as before.
 
-#define le16_to_cpu_signed_array(dst, src, len) \
-({ \
-    size_t __i; \
-    for (__i = 0; __i < len; __i++) \
-        dst[__i] = (s16)le16_to_cpu(src[__i]); \
-})
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+ drivers/iio/accel/bmc150-accel-core.c | 71 ++++++++++++++++++++++-----
+ 1 file changed, 59 insertions(+), 12 deletions(-)
 
-What's your opinion here? should I go with something like this or do
-you prefer to let the open-coded implementation stay in this specific
-case?
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index 5ce384ebe6c7..8d3dd3c2bcc2 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -10,6 +10,7 @@
+ #include <linux/delay.h>
+ #include <linux/slab.h>
+ #include <linux/acpi.h>
++#include <linux/of_irq.h>
+ #include <linux/pm.h>
+ #include <linux/pm_runtime.h>
+ #include <linux/iio/iio.h>
+@@ -57,12 +58,18 @@
+ #define BMC150_ACCEL_RESET_VAL			0xB6
+ 
+ #define BMC150_ACCEL_REG_INT_MAP_0		0x19
+-#define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
++#define BMC150_ACCEL_INT_MAP_0_BIT_INT1_SLOPE	BIT(2)
+ 
+ #define BMC150_ACCEL_REG_INT_MAP_1		0x1A
+-#define BMC150_ACCEL_INT_MAP_1_BIT_DATA		BIT(0)
+-#define BMC150_ACCEL_INT_MAP_1_BIT_FWM		BIT(1)
+-#define BMC150_ACCEL_INT_MAP_1_BIT_FFULL	BIT(2)
++#define BMC150_ACCEL_INT_MAP_1_BIT_INT1_DATA	BIT(0)
++#define BMC150_ACCEL_INT_MAP_1_BIT_INT1_FWM	BIT(1)
++#define BMC150_ACCEL_INT_MAP_1_BIT_INT1_FFULL	BIT(2)
++#define BMC150_ACCEL_INT_MAP_1_BIT_INT2_FFULL	BIT(5)
++#define BMC150_ACCEL_INT_MAP_1_BIT_INT2_FWM	BIT(6)
++#define BMC150_ACCEL_INT_MAP_1_BIT_INT2_DATA	BIT(7)
++
++#define BMC150_ACCEL_REG_INT_MAP_2		0x1B
++#define BMC150_ACCEL_INT_MAP_2_BIT_INT2_SLOPE	BIT(2)
+ 
+ #define BMC150_ACCEL_REG_INT_RST_LATCH		0x21
+ #define BMC150_ACCEL_INT_MODE_LATCH_RESET	0x80
+@@ -81,6 +88,7 @@
+ 
+ #define BMC150_ACCEL_REG_INT_OUT_CTRL		0x20
+ #define BMC150_ACCEL_INT_OUT_CTRL_INT1_LVL	BIT(0)
++#define BMC150_ACCEL_INT_OUT_CTRL_INT2_LVL	BIT(2)
+ 
+ #define BMC150_ACCEL_REG_INT_5			0x27
+ #define BMC150_ACCEL_SLOPE_DUR_MASK		0x03
+@@ -476,21 +484,24 @@ static bool bmc150_apply_acpi_orientation(struct device *dev,
+ }
+ #endif
+ 
+-static const struct bmc150_accel_interrupt_info {
++struct bmc150_accel_interrupt_info {
+ 	u8 map_reg;
+ 	u8 map_bitmask;
+ 	u8 en_reg;
+ 	u8 en_bitmask;
+-} bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
++};
++
++static const struct bmc150_accel_interrupt_info
++bmc150_accel_interrupts_int1[BMC150_ACCEL_INTERRUPTS] = {
+ 	{ /* data ready interrupt */
+ 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
+-		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_DATA,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT1_DATA,
+ 		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
+ 		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_DATA_EN,
+ 	},
+ 	{  /* motion interrupt */
+ 		.map_reg = BMC150_ACCEL_REG_INT_MAP_0,
+-		.map_bitmask = BMC150_ACCEL_INT_MAP_0_BIT_SLOPE,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_0_BIT_INT1_SLOPE,
+ 		.en_reg = BMC150_ACCEL_REG_INT_EN_0,
+ 		.en_bitmask =  BMC150_ACCEL_INT_EN_BIT_SLP_X |
+ 			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
+@@ -498,19 +509,55 @@ static const struct bmc150_accel_interrupt_info {
+ 	},
+ 	{ /* fifo watermark interrupt */
+ 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
+-		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_FWM,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT1_FWM,
++		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
++		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FWM_EN,
++	},
++};
++
++static const struct bmc150_accel_interrupt_info
++bmc150_accel_interrupts_int2[BMC150_ACCEL_INTERRUPTS] = {
++	{ /* data ready interrupt */
++		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT2_DATA,
++		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
++		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_DATA_EN,
++	},
++	{  /* motion interrupt */
++		.map_reg = BMC150_ACCEL_REG_INT_MAP_2,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_2_BIT_INT2_SLOPE,
++		.en_reg = BMC150_ACCEL_REG_INT_EN_0,
++		.en_bitmask =  BMC150_ACCEL_INT_EN_BIT_SLP_X |
++			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
++			BMC150_ACCEL_INT_EN_BIT_SLP_Z
++	},
++	{ /* fifo watermark interrupt */
++		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
++		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT2_FWM,
+ 		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
+ 		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FWM_EN,
+ 	},
+ };
+ 
+ static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
+-					  struct bmc150_accel_data *data)
++					  struct bmc150_accel_data *data, int irq)
+ {
++	const struct bmc150_accel_interrupt_info *irq_info = NULL;
++	struct device *dev = regmap_get_device(data->regmap);
+ 	int i;
+ 
++	/*
++	 * For now we map all interrupts to the same output pin.
++	 * However, some boards may have just INT2 (and not INT1) connected,
++	 * so we try to detect which IRQ it is based on the interrupt-names.
++	 * Without interrupt-names, we assume the irq belongs to INT1.
++	 */
++	irq_info = bmc150_accel_interrupts_int1;
++	if (irq == of_irq_get_byname(dev->of_node, "INT2"))
++		irq_info = bmc150_accel_interrupts_int2;
++
+ 	for (i = 0; i < BMC150_ACCEL_INTERRUPTS; i++)
+-		data->interrupts[i].info = &bmc150_accel_interrupts[i];
++		data->interrupts[i].info = &irq_info[i];
+ }
+ 
+ static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
+@@ -1714,7 +1761,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 			goto err_buffer_cleanup;
+ 		}
+ 
+-		bmc150_accel_interrupts_setup(indio_dev, data);
++		bmc150_accel_interrupts_setup(indio_dev, data, irq);
+ 
+ 		ret = bmc150_accel_triggers_setup(indio_dev, data);
+ 		if (ret)
+-- 
+2.32.0
+
