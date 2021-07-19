@@ -2,45 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.9 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
-	version=3.4.0
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CEEFC12002
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B1E4AC07E9D
 	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 11:26:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4CAA8610F7
+	by mail.kernel.org (Postfix) with ESMTP id 9E7936112D
 	for <linux-iio@archiver.kernel.org>; Mon, 19 Jul 2021 11:26:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236364AbhGSKqR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S236373AbhGSKqR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 19 Jul 2021 06:46:17 -0400
-Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.81]:18584 "EHLO
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.83]:9212 "EHLO
         mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236292AbhGSKqQ (ORCPT
+        with ESMTP id S236314AbhGSKqQ (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Jul 2021 06:46:16 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1626694005;
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1626694004;
     s=strato-dkim-0002; d=gerhold.net;
     h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
     From:Subject:Sender;
-    bh=EU27wwecFrV7EsbZx1jhBFJBmbc5/vqkmCkJSV+r7Ck=;
-    b=S2g5VkkYR299BOPuhmDpesffWkYuj20tGzrs6UHkwNqQ+pW9mOqI4eDrrOcFtPBvee
-    mkDISePeWnp59CPLvspuxscxmXOzCxF7Ui4lwujL9BDjhnoFINrUO97KMTHuqUw3vFmK
-    AimvTGl6tspK4nF26746yO/vJk9JzabJQ0gWdirsDa2cgF8m1Pch5bONb+Xzl9X3aAcb
-    6lusYBwpTbkPfzxj1uk67b0Xt0RmQYbTsNSlnF4nmglMo1T5g87gWDghB451dHFTmnRs
-    YAjThHqnaU7vt3b5HYsbUQgAhzLuybTN+WDKeNcudogpiB8EL1az6a4f1acyk1leEOYE
-    Rt/Q==
+    bh=LVm6WgdyvhCXK+JELu0sKh9VaQqtj3Jm5KMQSw4rLoQ=;
+    b=ZAGMQOR7+SrENkHFeSuunAi/ZmoHKI3T3baIcOivaO2DJnW+iRKzLmY6f3g1tYL5Jg
+    tziCjC0P4GQwVRL3+8aMCu/rlIjF47nqSvJzpNqnzmu6wHBf0Qsmrn236OIq1zgzA+Oz
+    eltL/pEWRdAdxNg6yhL8ZhHY1K8JB+O2dp7ruHK8vrF+H3qNvj8mOnB+4opLB2R/v5MB
+    V/8I2oAbqmRrsdYPDMrpUmI+xEG8XTqYb8/P++5FN+FlgTOZqH82glA2TLX6B64PNjfG
+    GQjUvpmoeB/uWymrB7q4mY8gXSCCQgobbPnNE2h03BY1UnWKJr89r16+3UBRw2TZzBrp
+    QRBQ==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXS7IYBkLahKxB4m6O43/v"
 X-RZG-CLASS-ID: mo00
 Received: from droid..
     by smtp.strato.de (RZmta 47.28.1 DYNA|AUTH)
-    with ESMTPSA id g02a44x6JBQi27e
+    with ESMTPSA id g02a44x6JBQh27c
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Mon, 19 Jul 2021 13:26:44 +0200 (CEST)
+    Mon, 19 Jul 2021 13:26:43 +0200 (CEST)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -52,9 +51,9 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         ~postmarketos/upstreaming@lists.sr.ht,
         Nikita Travkin <nikita@trvn.ru>,
         Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH 3/4] iio: accel: bmc150: Make it possible to configure INT2 instead of INT1
-Date:   Mon, 19 Jul 2021 13:21:55 +0200
-Message-Id: <20210719112156.27087-4-stephan@gerhold.net>
+Subject: [PATCH 1/4] dt-bindings: iio: accel: bma255: Add interrupt-names
+Date:   Mon, 19 Jul 2021 13:21:53 +0200
+Message-Id: <20210719112156.27087-2-stephan@gerhold.net>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210719112156.27087-1-stephan@gerhold.net>
 References: <20210719112156.27087-1-stephan@gerhold.net>
@@ -64,165 +63,43 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Some Bosch accelerometers have two interrupt pins (INT1 and INT2).
-At the moment, the driver uses only the first one, which is fine for
-most situations. However, some boards might only have INT2 connected
-for some reason.
-
-Add the necessary bits and configuration to set up INT2. Then try
-to detect this situation at least for device tree setups by checking
-if the first interrupt (the one picked by the I2C/SPI core) is actually
-named "INT2" using the interrupt-names property.
-
-of_irq_get_byname() returns either 0 or some error code in case
-the driver probed without device tree, so in all other cases we fall
-back to configuring INT1 as before.
+The binding already allows specifying both interrupt pins, but there
+is currently no way to describe a board where (for whatever reason)
+only INT2 is connected. Make it possible to use "interrupt-names"
+to make it explicit which interrupt pin is meant in the interrupts.
 
 Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
 ---
- drivers/iio/accel/bmc150-accel-core.c | 71 ++++++++++++++++++++++-----
- 1 file changed, 59 insertions(+), 12 deletions(-)
+ .../devicetree/bindings/iio/accel/bosch,bma255.yaml      | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index 5ce384ebe6c7..8d3dd3c2bcc2 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -10,6 +10,7 @@
- #include <linux/delay.h>
- #include <linux/slab.h>
- #include <linux/acpi.h>
-+#include <linux/of_irq.h>
- #include <linux/pm.h>
- #include <linux/pm_runtime.h>
- #include <linux/iio/iio.h>
-@@ -57,12 +58,18 @@
- #define BMC150_ACCEL_RESET_VAL			0xB6
+diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+index 5b35856b1942..897a1d808ef5 100644
+--- a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+@@ -49,6 +49,14 @@ properties:
+       the second (optional) interrupt listed must be the one connected to the
+       INT2 pin (if available). The type should be IRQ_TYPE_EDGE_RISING.
  
- #define BMC150_ACCEL_REG_INT_MAP_0		0x19
--#define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
-+#define BMC150_ACCEL_INT_MAP_0_BIT_INT1_SLOPE	BIT(2)
- 
- #define BMC150_ACCEL_REG_INT_MAP_1		0x1A
--#define BMC150_ACCEL_INT_MAP_1_BIT_DATA		BIT(0)
--#define BMC150_ACCEL_INT_MAP_1_BIT_FWM		BIT(1)
--#define BMC150_ACCEL_INT_MAP_1_BIT_FFULL	BIT(2)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_INT1_DATA	BIT(0)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_INT1_FWM	BIT(1)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_INT1_FFULL	BIT(2)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_INT2_FFULL	BIT(5)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_INT2_FWM	BIT(6)
-+#define BMC150_ACCEL_INT_MAP_1_BIT_INT2_DATA	BIT(7)
++  interrupt-names:
++    minItems: 1
++    maxItems: 2
++    items:
++      enum:
++        - INT1
++        - INT2
 +
-+#define BMC150_ACCEL_REG_INT_MAP_2		0x1B
-+#define BMC150_ACCEL_INT_MAP_2_BIT_INT2_SLOPE	BIT(2)
+   mount-matrix:
+     description: an optional 3x3 mounting rotation matrix.
  
- #define BMC150_ACCEL_REG_INT_RST_LATCH		0x21
- #define BMC150_ACCEL_INT_MODE_LATCH_RESET	0x80
-@@ -81,6 +88,7 @@
- 
- #define BMC150_ACCEL_REG_INT_OUT_CTRL		0x20
- #define BMC150_ACCEL_INT_OUT_CTRL_INT1_LVL	BIT(0)
-+#define BMC150_ACCEL_INT_OUT_CTRL_INT2_LVL	BIT(2)
- 
- #define BMC150_ACCEL_REG_INT_5			0x27
- #define BMC150_ACCEL_SLOPE_DUR_MASK		0x03
-@@ -476,21 +484,24 @@ static bool bmc150_apply_acpi_orientation(struct device *dev,
- }
- #endif
- 
--static const struct bmc150_accel_interrupt_info {
-+struct bmc150_accel_interrupt_info {
- 	u8 map_reg;
- 	u8 map_bitmask;
- 	u8 en_reg;
- 	u8 en_bitmask;
--} bmc150_accel_interrupts[BMC150_ACCEL_INTERRUPTS] = {
-+};
-+
-+static const struct bmc150_accel_interrupt_info
-+bmc150_accel_interrupts_int1[BMC150_ACCEL_INTERRUPTS] = {
- 	{ /* data ready interrupt */
- 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
--		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_DATA,
-+		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT1_DATA,
- 		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
- 		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_DATA_EN,
- 	},
- 	{  /* motion interrupt */
- 		.map_reg = BMC150_ACCEL_REG_INT_MAP_0,
--		.map_bitmask = BMC150_ACCEL_INT_MAP_0_BIT_SLOPE,
-+		.map_bitmask = BMC150_ACCEL_INT_MAP_0_BIT_INT1_SLOPE,
- 		.en_reg = BMC150_ACCEL_REG_INT_EN_0,
- 		.en_bitmask =  BMC150_ACCEL_INT_EN_BIT_SLP_X |
- 			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
-@@ -498,19 +509,55 @@ static const struct bmc150_accel_interrupt_info {
- 	},
- 	{ /* fifo watermark interrupt */
- 		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
--		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_FWM,
-+		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT1_FWM,
-+		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
-+		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FWM_EN,
-+	},
-+};
-+
-+static const struct bmc150_accel_interrupt_info
-+bmc150_accel_interrupts_int2[BMC150_ACCEL_INTERRUPTS] = {
-+	{ /* data ready interrupt */
-+		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
-+		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT2_DATA,
-+		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
-+		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_DATA_EN,
-+	},
-+	{  /* motion interrupt */
-+		.map_reg = BMC150_ACCEL_REG_INT_MAP_2,
-+		.map_bitmask = BMC150_ACCEL_INT_MAP_2_BIT_INT2_SLOPE,
-+		.en_reg = BMC150_ACCEL_REG_INT_EN_0,
-+		.en_bitmask =  BMC150_ACCEL_INT_EN_BIT_SLP_X |
-+			BMC150_ACCEL_INT_EN_BIT_SLP_Y |
-+			BMC150_ACCEL_INT_EN_BIT_SLP_Z
-+	},
-+	{ /* fifo watermark interrupt */
-+		.map_reg = BMC150_ACCEL_REG_INT_MAP_1,
-+		.map_bitmask = BMC150_ACCEL_INT_MAP_1_BIT_INT2_FWM,
- 		.en_reg = BMC150_ACCEL_REG_INT_EN_1,
- 		.en_bitmask = BMC150_ACCEL_INT_EN_BIT_FWM_EN,
- 	},
- };
- 
- static void bmc150_accel_interrupts_setup(struct iio_dev *indio_dev,
--					  struct bmc150_accel_data *data)
-+					  struct bmc150_accel_data *data, int irq)
- {
-+	const struct bmc150_accel_interrupt_info *irq_info = NULL;
-+	struct device *dev = regmap_get_device(data->regmap);
- 	int i;
- 
-+	/*
-+	 * For now we map all interrupts to the same output pin.
-+	 * However, some boards may have just INT2 (and not INT1) connected,
-+	 * so we try to detect which IRQ it is based on the interrupt-names.
-+	 * Without interrupt-names, we assume the irq belongs to INT1.
-+	 */
-+	irq_info = bmc150_accel_interrupts_int1;
-+	if (irq == of_irq_get_byname(dev->of_node, "INT2"))
-+		irq_info = bmc150_accel_interrupts_int2;
-+
- 	for (i = 0; i < BMC150_ACCEL_INTERRUPTS; i++)
--		data->interrupts[i].info = &bmc150_accel_interrupts[i];
-+		data->interrupts[i].info = &irq_info[i];
- }
- 
- static int bmc150_accel_set_interrupt(struct bmc150_accel_data *data, int i,
-@@ -1714,7 +1761,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
- 			goto err_buffer_cleanup;
- 		}
- 
--		bmc150_accel_interrupts_setup(indio_dev, data);
-+		bmc150_accel_interrupts_setup(indio_dev, data, irq);
- 
- 		ret = bmc150_accel_triggers_setup(indio_dev, data);
- 		if (ret)
+@@ -73,6 +81,7 @@ examples:
+             vddio-supply = <&vddio>;
+             vdd-supply = <&vdd>;
+             interrupts = <57 IRQ_TYPE_EDGE_RISING>;
++            interrupt-names = "INT1";
+         };
+     };
+   - |
 -- 
 2.32.0
 
