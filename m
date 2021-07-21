@@ -2,200 +2,78 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-5.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_GIT autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA81DC636CA
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 11:34:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F43C07E9B
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 11:34:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A5FC26108B
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 11:34:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2DF2F6108B
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 11:34:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238287AbhGUKx3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 21 Jul 2021 06:53:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34082 "EHLO
+        id S238381AbhGUKxb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 21 Jul 2021 06:53:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240075AbhGUKNW (ORCPT
+        with ESMTP id S240076AbhGUKNW (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Jul 2021 06:13:22 -0400
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 69124C061786;
-        Wed, 21 Jul 2021 03:53:36 -0700 (PDT)
-Received: by mail-wr1-x431.google.com with SMTP id u1so1710140wrs.1;
-        Wed, 21 Jul 2021 03:53:36 -0700 (PDT)
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05143C0613E3;
+        Wed, 21 Jul 2021 03:53:34 -0700 (PDT)
+Received: by mail-wr1-x42f.google.com with SMTP id t5so1667695wrw.12;
+        Wed, 21 Jul 2021 03:53:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=VY/9svY8ri8J4HJB23mBSJ/+qTZUMwQ0pz41nlKr5Ho=;
-        b=YWnO+USkjnO5T2m5gLAxX67ySUlO6++H2MCylJvm2p79QjAH8L51dWHjdB5aVay9kG
-         JyO6dJQmu9Z1SguNUh7w+2oqP0Uxiz1XaoOaWmBk1pM9RGJMYGnS64YPoZBgKBNGhfnI
-         t5IrU8t994999JKdPGzdSduTI9MSkq8PMhGJwQC0+fVBGDU3VjGFgH/3oXQW/mJzI8Gv
-         ZyUCCXVwU9yMnoqU6DXigfdHsGQPFu+PQDZEfGdMgtowZFdSCoPHZehxB62LbfTLnQkP
-         N2nTFlyarBGtaVZ1tAchYBJmt1VIFNGye1mxm+OlOre0PdhN3um+wYENiaUP1vL3OfFB
-         w47g==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yzbLbux/68486Y2tXJMTmUXc6xUCOk7k8Yvz8fB3OtQ=;
+        b=u0RWOSywh7VPAm139VCfl8AMSMwpzxYcLpwNKYAgCtb1tmd5GqFHwJ3RsLCa0mvz+b
+         PsfwIrrhA1cea/YsXvJbfYKu0Bd+dJ4jrf/L/xVRP0zNeDrZ7uu6z09kDArFMqzv6Oi8
+         HTe9tb/2/FcUJISKwn8yCqIPaKG1zObj0R141eTCtszZ+/N32mNoKyo5Tf3pHq+DLWAd
+         +MFIPuMAj3IlbXTXke9SH+M7Lm2ELc0B2Ucz2TBUkV0zTSKEmQMg5PRh/R2xTmbP4dKl
+         Sm4Hdlp+JvqSeDloah8saEuX3zHmECoV/iv33P+AXIvdR03WwxrlsvpjPn4HbDBJrUC/
+         wOCg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=VY/9svY8ri8J4HJB23mBSJ/+qTZUMwQ0pz41nlKr5Ho=;
-        b=XSVOfQ3Iseyr41EZnSEY9DiL+/xQIJpFH14pq/vHvskgfY0bk7vanCxg8mL6fXxzvJ
-         kO1jwr1N7eattUpKHexN6JSB0u/ienTHoiUnkKm7CoLh5cBmXgefs2Qwuz+bv6Xlu+U5
-         HF2XVRlbLH8vtpcPf+MDxb+K6ymQ7Di9cACWpjUzChPv2+2ud1hKpWBclEod2/onRfs7
-         Rkg96LthTArilsFcZVJrwVWou/F1J/LhCX03tvxBPSVHrrRmhBJz4rgf41HwxfdoCtMv
-         KixMYearZMGYf+hbfoWKOk6wbV13PwHnzhsQ7TBfrzUSqvJaf0fsj3naVnHRDrCg28j8
-         UP8w==
-X-Gm-Message-State: AOAM533YuHQCvuE/+va3YVC2wZViIyhCAnjJtDlrbx4kRdC84ZHQeRNH
-        ojL9tTnUMnF71AN1kzanTO0=
-X-Google-Smtp-Source: ABdhPJwEM7tQ+AFc/Peod8XhYAnaYCA6Afxl9x/dhxCyZk4i9BVstPwidcDJ1SLPirxcdROow7YB8w==
-X-Received: by 2002:a5d:64cc:: with SMTP id f12mr16661084wri.201.1626864814868;
-        Wed, 21 Jul 2021 03:53:34 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=yzbLbux/68486Y2tXJMTmUXc6xUCOk7k8Yvz8fB3OtQ=;
+        b=iyjuSmOdqHGTyq7dqoe206v9rDK+eT9S+PKoPd0macaQrfYQEFZU1F9HywPS/RKCtV
+         FzhTRc3a6W12wfgTbbR9uPbeLPa/pALCKsI/VWAHoZWkzR8edaTBN2WQcVVvVnP18vnd
+         mtANzi9jltm95ANy76HWEpYPzalx7xHC69BcJ0utdtOI37c8Zin0JQIWORdEwWcV2A3E
+         RoaAgrIcSt7HXkzxWsUIiDaS2Nj7Sx56UyEPFFGFhgQMsGlPREDITb0DtMkTbQR+4Kdg
+         S1ec9C2F0h4wK9sPE5B+pNB5EAaP9S0Zpov9ux0zZge/TzF5vr4uD+ch3VG+JvrZNk09
+         X+yw==
+X-Gm-Message-State: AOAM5309vYNjslaT1Uru5zHtseUVQ8hoXhaPXzo+4I5eVmGGBGsMj6jL
+        U26oG9ZPeDgFQyYqCuNij5Cqr20UdmrcmVos
+X-Google-Smtp-Source: ABdhPJwZxRabAFdGNCCNR2ghnjg4C1j340MjyvSQtM5A/lllHsQZ/zBVnk5UWNt3hC/1QAw5z7ahcg==
+X-Received: by 2002:a5d:414b:: with SMTP id c11mr43118273wrq.162.1626864812507;
+        Wed, 21 Jul 2021 03:53:32 -0700 (PDT)
 Received: from monk.home (astrasbourg-157-1-7-84.w90-40.abo.wanadoo.fr. [90.40.218.84])
-        by smtp.gmail.com with ESMTPSA id o14sm26933641wrj.66.2021.07.21.03.53.34
+        by smtp.gmail.com with ESMTPSA id o14sm26933641wrj.66.2021.07.21.03.53.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 21 Jul 2021 03:53:34 -0700 (PDT)
+        Wed, 21 Jul 2021 03:53:32 -0700 (PDT)
 From:   citral23 <cbranchereau@gmail.com>
 To:     paul@crapouillou.net
 Cc:     jic23@kernel.org, lars@metafoo.de, linux-mips@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         robh+dt@kernel.org, devicetree@vger.kernel.org, linux@roeck-us.net,
-        contact@artur-rojek.eu, citral23 <cbranchereau@gmail.com>
-Subject: [PATCH 3/6] iio/adc: ingenic: add JZ4760 support to the sadc driver
-Date:   Wed, 21 Jul 2021 12:53:14 +0200
-Message-Id: <20210721105317.36742-4-cbranchereau@gmail.com>
+        contact@artur-rojek.eu
+Subject: [PATCH] Ingenic: iio/adc: add JZ4760(B) support to the 
+Date:   Wed, 21 Jul 2021 12:53:11 +0200
+Message-Id: <20210721105317.36742-1-cbranchereau@gmail.com>
 X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210721105317.36742-1-cbranchereau@gmail.com>
-References: <20210721105317.36742-1-cbranchereau@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Signed-off-by: citral23 <cbranchereau@gmail.com>
----
- drivers/iio/adc/ingenic-adc.c | 64 +++++++++++++++++++++++++++++++++++
- 1 file changed, 64 insertions(+)
+This is a set of patches to add support for the JZ4760(B) socs
+to ingenic-sadc, those socs have 3 aux channels, and the JZ4760B
+has an extra register to set the battery divider as internal or 
+external.
 
-diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
-index 40f2d8c2cf72..285e7aa8e37a 100644
---- a/drivers/iio/adc/ingenic-adc.c
-+++ b/drivers/iio/adc/ingenic-adc.c
-@@ -71,6 +71,7 @@
- #define JZ4725B_ADC_BATTERY_HIGH_VREF_BITS	10
- #define JZ4740_ADC_BATTERY_HIGH_VREF		(7500 * 0.986)
- #define JZ4740_ADC_BATTERY_HIGH_VREF_BITS	12
-+#define JZ4760_ADC_BATTERY_VREF			2500
- #define JZ4770_ADC_BATTERY_VREF			1200
- #define JZ4770_ADC_BATTERY_VREF_BITS		12
- 
-@@ -295,6 +296,10 @@ static const int jz4740_adc_battery_scale_avail[] = {
- 	JZ_ADC_BATTERY_LOW_VREF, JZ_ADC_BATTERY_LOW_VREF_BITS,
- };
- 
-+static const int jz4760_adc_battery_scale_avail[] = {
-+	JZ4760_ADC_BATTERY_VREF, JZ4770_ADC_BATTERY_VREF_BITS,
-+};
-+
- static const int jz4770_adc_battery_raw_avail[] = {
- 	0, 1, (1 << JZ4770_ADC_BATTERY_VREF_BITS) - 1,
- };
-@@ -339,6 +344,8 @@ static int jz4725b_adc_init_clk_div(struct device *dev, struct ingenic_adc *adc)
- 	return 0;
- }
- 
-+
-+
- static int jz4770_adc_init_clk_div(struct device *dev, struct ingenic_adc *adc)
- {
- 	struct clk *parent_clk;
-@@ -400,6 +407,47 @@ static const struct iio_chan_spec jz4740_channels[] = {
- 	},
- };
- 
-+static const struct iio_chan_spec jz4760_channels[] = {
-+	{
-+		.extend_name = "aux0",
-+		.type = IIO_VOLTAGE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.indexed = 1,
-+		.channel = INGENIC_ADC_AUX0,
-+		.scan_index = -1,
-+	},
-+	{
-+		.extend_name = "aux",
-+		.type = IIO_VOLTAGE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.indexed = 1,
-+		.channel = INGENIC_ADC_AUX,
-+		.scan_index = -1,
-+	},
-+	{
-+		.extend_name = "battery",
-+		.type = IIO_VOLTAGE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_separate_available = BIT(IIO_CHAN_INFO_RAW) |
-+						BIT(IIO_CHAN_INFO_SCALE),
-+		.indexed = 1,
-+		.channel = INGENIC_ADC_BATTERY,
-+		.scan_index = -1,
-+	},
-+	{
-+		.extend_name = "aux2",
-+		.type = IIO_VOLTAGE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.indexed = 1,
-+		.channel = INGENIC_ADC_AUX2,
-+		.scan_index = -1,
-+	},
-+};
-+
- static const struct iio_chan_spec jz4770_channels[] = {
- 	{
- 		.type = IIO_VOLTAGE,
-@@ -526,6 +574,20 @@ static const struct ingenic_adc_soc_data jz4740_adc_soc_data = {
- 	.init_clk_div = NULL, /* no ADCLK register on JZ4740 */
- };
- 
-+static const struct ingenic_adc_soc_data jz4760_adc_soc_data = {
-+	.battery_high_vref = JZ4760_ADC_BATTERY_VREF,
-+	.battery_high_vref_bits = JZ4770_ADC_BATTERY_VREF_BITS,
-+	.battery_raw_avail = jz4770_adc_battery_raw_avail,
-+	.battery_raw_avail_size = ARRAY_SIZE(jz4770_adc_battery_raw_avail),
-+	.battery_scale_avail = jz4760_adc_battery_scale_avail,
-+	.battery_scale_avail_size = ARRAY_SIZE(jz4760_adc_battery_scale_avail),
-+	.battery_vref_mode = false,
-+	.has_aux_md = true,
-+	.channels = jz4760_channels,
-+	.num_channels = ARRAY_SIZE(jz4760_channels),
-+	.init_clk_div = jz4770_adc_init_clk_div,
-+};
-+
- static const struct ingenic_adc_soc_data jz4770_adc_soc_data = {
- 	.battery_high_vref = JZ4770_ADC_BATTERY_VREF,
- 	.battery_high_vref_bits = JZ4770_ADC_BATTERY_VREF_BITS,
-@@ -621,6 +683,7 @@ static int ingenic_adc_read_raw(struct iio_dev *iio_dev,
- 		return ingenic_adc_read_chan_info_raw(iio_dev, chan, val);
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->channel) {
-+		case INGENIC_ADC_AUX0:
- 		case INGENIC_ADC_AUX:
- 		case INGENIC_ADC_AUX2:
- 			*val = JZ_ADC_AUX_VREF;
-@@ -832,6 +895,7 @@ static int ingenic_adc_probe(struct platform_device *pdev)
- static const struct of_device_id ingenic_adc_of_match[] = {
- 	{ .compatible = "ingenic,jz4725b-adc", .data = &jz4725b_adc_soc_data, },
- 	{ .compatible = "ingenic,jz4740-adc", .data = &jz4740_adc_soc_data, },
-+	{ .compatible = "ingenic,jz4760-adc", .data = &jz4760_adc_soc_data, },
- 	{ .compatible = "ingenic,jz4770-adc", .data = &jz4770_adc_soc_data, },
- 	{ },
- };
--- 
-2.30.2
 
