@@ -5,65 +5,65 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6AC9C636CE
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 03:07:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9C3DC636C8
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 03:07:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D3DA5611C1
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 03:07:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B0D0E610A0
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 03:07:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231666AbhGUC0g (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Jul 2021 22:26:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43006 "EHLO
+        id S231856AbhGUC0p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Jul 2021 22:26:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231359AbhGUC0Z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jul 2021 22:26:25 -0400
-Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 743DEC061574;
-        Tue, 20 Jul 2021 20:07:02 -0700 (PDT)
-Received: by mail-qt1-x829.google.com with SMTP id q15so1065099qtp.0;
-        Tue, 20 Jul 2021 20:07:02 -0700 (PDT)
+        with ESMTP id S231432AbhGUC01 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jul 2021 22:26:27 -0400
+Received: from mail-qv1-xf35.google.com (mail-qv1-xf35.google.com [IPv6:2607:f8b0:4864:20::f35])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3BF8FC061574;
+        Tue, 20 Jul 2021 20:07:05 -0700 (PDT)
+Received: by mail-qv1-xf35.google.com with SMTP id ay16so282612qvb.12;
+        Tue, 20 Jul 2021 20:07:05 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=OKwbA7CkZ/dV0H/nAmt5zTOn4ixRO23QkLcRozVJn9c=;
-        b=tpT0Bo0saWDiswje5emv5emtlmtpDKJqhEw32Dm+/AqpGcCMns0YWXgNkSEDaFyJ6s
-         gCyTU23DQt4+eAz8NiDnjC4qQ5wecJYrpnyj7oc1jUsGlNPYA+AtRw4Nmb4ZSq2l3EnR
-         nXCDjzNAajq1GziHbTokT4iHxAmF0hzDFJT2CkpXnojc0anOxsQqTaofChO+mfEGZQPs
-         d0fZBuACGXNQhEsE2tCh5hHgfAAXliCY3iqAvxzvuR4tSLjFTWKUp7jAao1KIkUNY8Jy
-         /wckLOYCx3bu+GSUPKdZpWfyIDTWlPkZHeFh+/yevuANDyndr3e8Ml5Ctab+AnLSprn/
-         FJtA==
+        bh=KxRWxmUWooh8K8wECdDWjv2qMB1v7LjacHyh+1GZlIs=;
+        b=jG7T/o6af+b1FGPAiPh53sHSINRFk6kcIBKwTZ6RDWSgRqEclxkI42G6t3wsSgKDBX
+         /BQpGNps3TOb34oUWrmOVluFYccEAxAwXY6jFypNvMmYtnOQJI1i1I59xoOWGLWHAaF6
+         31NnBl60aMIw382WEozMGYQLpqvaNmJOGTDgKZQzlSlAnhpP1e5lC0e9/kQSxVJgFlcg
+         +wGtNMGRX6jXdV7sveuDZ1a8Nm//i6RqnPnLO/Cvcdm0DMuCGYXlxbAzCu0t2ye3tELi
+         BS6IRR6d3+BxwBODc8fQCciRaQ2g8yvP3UxSYO/rbZTVXTcvt7yVTjn6J/rcivk2X/Ro
+         8uVw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=OKwbA7CkZ/dV0H/nAmt5zTOn4ixRO23QkLcRozVJn9c=;
-        b=OTmKuD7IM7aKX4JxA0C2GJUiQ4q0EgJmYObKA/iMrb581FOHsdzLGNF9d87Y65lZ7j
-         p3dEDY1EcAYGQL4CcxcyOUXiw8hN1On+6Mlz9ZafYdxIZHXHDj8OZbNpjPYfV4ppS0S+
-         6LHipblJQJCHiD8Z1GdSoRFyFr+EkQS4LBIjKOSvVHEkEgQrQ1zDhgNnJ2KFbZaaZRdg
-         Jlvv2GAK3N8lDika5NzcPDtaxzL0HI3n24a/MdrEqXnLNl1xEyMnFvBHS8TpSu+zb1h+
-         AT7230CUCuSBja2LD0g4D8hYKENVpPF8gDy4mtyWIVXpQL6O8TIksE9q9QD4Xlj38vs3
-         Uuxw==
-X-Gm-Message-State: AOAM530hHEM0yIS3Zhk4d6CIilLohIMro82gWxhRmpcSbRN+5a1lTgUa
-        7+NRWPhNtkYNvHU8RhurOSE=
-X-Google-Smtp-Source: ABdhPJxP9OgxwC3BWp8HPuEJCPPTiTkrLCVMGTSbFULt6l66+Emzl1EerVGjeAa+ySSty5NRjDpVGQ==
-X-Received: by 2002:a05:622a:d5:: with SMTP id p21mr3817934qtw.75.1626836821656;
-        Tue, 20 Jul 2021 20:07:01 -0700 (PDT)
+        bh=KxRWxmUWooh8K8wECdDWjv2qMB1v7LjacHyh+1GZlIs=;
+        b=WPRw3TD1zxpdGNCW/RFHZnjM/AWFOYB0LyQsjBNQ6H61IE8pra64eVZTWmbRjHoeiO
+         aPC375ZHB7ekCOg03oQY/OnNjCGI7qSmFql9cu1k6jV5Xx46dwqU7MDs3jUL7RclWh1E
+         1OjakvIB7QKSmz60v2saN7pjBb+xXhJvGwzppnMMAV6meZtIVWeB+xd48jeUSSiM9Wut
+         peYezumePPVwHrXf8ElXYm3TlVuYS+AKzxJT1ysReZGqSwvZyulzRCDpq57LmJSl7fmF
+         otnYSco75bRBoWtttBWDfLrKKX5I9w39qhS5AHjP2lQXarn43rHQi1lsqjryzabCum31
+         4APA==
+X-Gm-Message-State: AOAM533he1zcpCO9P0sp8ga9p2z4a1JneYTKOqeU7G9lf4CPKGtHDpxz
+        lU/tVc5aySlmf0XmwjDDMY4=
+X-Google-Smtp-Source: ABdhPJyxBk5XcHK1Px5RdTIVQ8bYgzv5M+hgxwW6B8rp4MVoE9vKbmq/+LEk/8m6gMUfVdjU4MG2OA==
+X-Received: by 2002:a05:6214:242b:: with SMTP id gy11mr33839017qvb.9.1626836824487;
+        Tue, 20 Jul 2021 20:07:04 -0700 (PDT)
 Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id g76sm10561024qke.127.2021.07.20.20.07.00
+        by smtp.gmail.com with ESMTPSA id g76sm10561024qke.127.2021.07.20.20.07.03
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jul 2021 20:07:01 -0700 (PDT)
+        Tue, 20 Jul 2021 20:07:04 -0700 (PDT)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         lars@metafoo.de, pmeerw@pmeerw.net
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v6 02/13] iio: inkern: apply consumer scale when no channel scale is available
-Date:   Tue, 20 Jul 2021 23:06:02 -0400
-Message-Id: <20210721030613.3105327-3-liambeguin@gmail.com>
+Subject: [PATCH v6 05/13] iio: afe: rescale: add INT_PLUS_{MICRO,NANO} support
+Date:   Tue, 20 Jul 2021 23:06:05 -0400
+Message-Id: <20210721030613.3105327-6-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.30.1.489.g328c10930387
 In-Reply-To: <20210721030613.3105327-1-liambeguin@gmail.com>
 References: <20210721030613.3105327-1-liambeguin@gmail.com>
@@ -75,40 +75,39 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Liam Beguin <lvb@xiphos.com>
 
-When a consumer calls iio_read_channel_processed() and no channel scale
-is available, it's assumed that the scale is one and the raw value is
-returned as expected.
+Some ADCs use IIO_VAL_INT_PLUS_{NANO,MICRO} scale types.
+Add support for these to allow using the iio-rescaler with them.
 
-On the other hand, if the consumer calls iio_convert_raw_to_processed()
-the scaling factor requested by the consumer is not applied.
-
-This for example causes the consumer to process mV when expecting uV.
-Make sure to always apply the scaling factor requested by the consumer.
-
-Fixes: adc8ec5ff183 ("iio: inkern: pass through raw values if no scaling")
 Signed-off-by: Liam Beguin <lvb@xiphos.com>
 ---
- drivers/iio/inkern.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/afe/iio-rescale.c | 14 ++++++++++++++
+ 1 file changed, 14 insertions(+)
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index b752fe5818e7..b69027690ed5 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -590,10 +590,10 @@ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
- 					IIO_CHAN_INFO_SCALE);
- 	if (scale_type < 0) {
- 		/*
--		 * Just pass raw values as processed if no scaling is
--		 * available.
-+		 * If no channel scaling is available apply consumer scale to
-+		 * raw value and return.
- 		 */
--		*processed = raw;
-+		*processed = raw * scale;
- 		return 0;
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index d0669fd8eac5..2b73047365cc 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -41,6 +41,20 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 		do_div(tmp, 1000000000LL);
+ 		*val = tmp;
+ 		return scale_type;
++	case IIO_VAL_INT_PLUS_NANO:
++		tmp = ((s64)*val * 1000000000LL + *val2) * rescale->numerator;
++		tmp = div_s64(tmp, rescale->denominator);
++
++		*val = div_s64(tmp, 1000000000LL);
++		*val2 = tmp - *val * 1000000000LL;
++		return scale_type;
++	case IIO_VAL_INT_PLUS_MICRO:
++		tmp = ((s64)*val * 1000000LL + *val2) * rescale->numerator;
++		tmp = div_s64(tmp, rescale->denominator);
++
++		*val = div_s64(tmp, 1000000);
++		*val2 = tmp - *val * 1000000;
++		return scale_type;
+ 	default:
+ 		return -EOPNOTSUPP;
  	}
- 
 -- 
 2.30.1.489.g328c10930387
 
