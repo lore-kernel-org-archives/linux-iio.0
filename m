@@ -8,62 +8,62 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36B92C07E9B
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 03:08:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99701C636C9
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 03:09:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0EC1C611C1
-	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 03:08:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7D71661029
+	for <linux-iio@archiver.kernel.org>; Wed, 21 Jul 2021 03:09:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231765AbhGUC1i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 20 Jul 2021 22:27:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43096 "EHLO
+        id S231786AbhGUC0l (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 20 Jul 2021 22:26:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231756AbhGUC0k (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jul 2021 22:26:40 -0400
-Received: from mail-qk1-x731.google.com (mail-qk1-x731.google.com [IPv6:2607:f8b0:4864:20::731])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0807AC0613E0;
-        Tue, 20 Jul 2021 20:07:13 -0700 (PDT)
-Received: by mail-qk1-x731.google.com with SMTP id s193so872332qke.4;
-        Tue, 20 Jul 2021 20:07:12 -0700 (PDT)
+        with ESMTP id S231447AbhGUC02 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Jul 2021 22:26:28 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D40BC061762;
+        Tue, 20 Jul 2021 20:07:06 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id z25so997092qto.12;
+        Tue, 20 Jul 2021 20:07:06 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GBxLtWhEZsYL5lfe8/wLjcrrsUgudlTtucyNHZMYMQk=;
-        b=fOaY69lbuts10kKaqZ0eocvUPYPzq+XmHmkus9YUsrdpL+EC9m3xmrTkEPmpGkc1Wt
-         327EKfhyimv2Mv/Ie05WzHvPeL2jZ70DADMv8rgCApFcZWh72DjDpYUiFcYJ/94HzT+R
-         xOYV0E//WvXXNgnCvQ8sScO39cfhYlmXSfAwylpHZ6bAKdnPgRW+79xO4EgkDHlTFfJW
-         QHufIZn/ghYZ9tCMTgarIwe3uK5cxMLihsN6r/SD8ivfddQTAQe4LQIilYH1uWmEMuOG
-         yfxW7T12u349fRI9haOgFHe2NMn4s+pqvII17RG1L4UsqGkT6OISiTOplsvCB6mhvBRV
-         f5XQ==
+        bh=qYrh4kaa4Okjc79DXSnbAcrxZZJ0CDhm5w5KA6D2OhM=;
+        b=Sx9OkTxPKPPDLdIBE6qOVMDwShaNhmBM6IZbVRkWVJIgJtYCJP86doprveTqXzSkXa
+         gym2uSap8ZaKIMjgBT849hP5HK5czDTcc3z62RC22axHH8jW/iI7IyiUqRw9MdUm7nY5
+         KbP16XrM1bfk7gvua/Nmnzsl/z3tNUmGeqCuD2R9R5bZPr6mTsX3xbTkrt256iM+Ln0O
+         pS+FmVSDpoxQDiOqBSZmASehcOIR5THBAcypNjnVjgZrrWw+Mer9sGzjdAuwnwlkQY3Q
+         4v2THuxUzFFnjcMmKrfqz3qSWOT0fvMBpy7c1laa/4ZJOq26aE7PZIMVh3HKpusJz8E9
+         f20Q==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GBxLtWhEZsYL5lfe8/wLjcrrsUgudlTtucyNHZMYMQk=;
-        b=p6PVBD53T+MMgLSxW4F3PfaNQ+4FGKJ6hQ0O6busVn8r6N5qY0wkd/chRVO7sAxGPR
-         q77U81WiE/a223kK8SZsEhn8e9On43ZD+7s0QpDKUIRInpzgPSn6KQipYbC/wPyFpQte
-         rGRxalE/8qHTOnx6ivM+YiKXY68uDqcT8xtDkRVhpU+ihO3mxUE6I34JoCokk/B52Ap3
-         pW0cZLY1h67vZRpbnKZkVLBaVb4mgo7hn4hatsjhbrJ9Qm/aDkF6BxErqCRLirayqddo
-         of7BL3gNDEL8hXu8YrXC9LKiFGKYGPpSebzRDr+YzrOzDoIM/2kFTU4FVuVPOZ8KSto2
-         ZUow==
-X-Gm-Message-State: AOAM5332SeaC76QSN9Z5Z4w3DDvkT/h0EiySmw6sQw4zHt3jfxIKdr5S
-        ob8riuTVIB0jMndTD4uFfZs=
-X-Google-Smtp-Source: ABdhPJyMTVTQBqf6Xy0foGGb4wr4dcTmPTf+Bk5XNZNWU5dESbc8BZgKDeaY2rYaUKzEKSVkf8HWxw==
-X-Received: by 2002:ae9:f805:: with SMTP id x5mr32483942qkh.373.1626836832254;
-        Tue, 20 Jul 2021 20:07:12 -0700 (PDT)
+        bh=qYrh4kaa4Okjc79DXSnbAcrxZZJ0CDhm5w5KA6D2OhM=;
+        b=r13vGe+O3StLoAvW/Sb7AseYHgn1GZcN4TCQDBhmHEoh+NyMTYuj1wfMANu7Nw3KJA
+         uhoEKCIVY6NyvUB3sVg0fsrKpkeKyc/2HqH0u6UZMwlhYZ7s2v2J2Hs3KUchrZoSwMZh
+         j3Asl+Q76BCfgZOs7cqX276iozTSiEATQbC1sw5L5Wn/O5yBV2UoxdBYgYpZDa6Glxtl
+         r9VNo5rpwH/28aIrqJoSGLO1wG54jiT8ep76XuU59HSXBkkG10CpdMOYY2BgV3dd/mQm
+         KA3W1L5bclFVxvEooNc2xdoO5Vn0xqevWcq5ek+4MiojnUhtrZgpBLF+P+lH0WfAyj79
+         N2XA==
+X-Gm-Message-State: AOAM533HadcfP0WVQc84w0a4Ixg86gQjgF4iPo81Y8ibB4+bMaVvi7xl
+        Iva+LmiUignmTjGjgPxCqY0=
+X-Google-Smtp-Source: ABdhPJytsST9J8qOzA8XJUYzfR7Lku2lI9p5Wqnumlj7ulsKCqRvnsOEXFXuPWUJPxaqfIhh5g2hGw==
+X-Received: by 2002:ac8:76da:: with SMTP id q26mr16774969qtr.183.1626836825368;
+        Tue, 20 Jul 2021 20:07:05 -0700 (PDT)
 Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id g76sm10561024qke.127.2021.07.20.20.07.11
+        by smtp.gmail.com with ESMTPSA id g76sm10561024qke.127.2021.07.20.20.07.04
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 20 Jul 2021 20:07:11 -0700 (PDT)
+        Tue, 20 Jul 2021 20:07:05 -0700 (PDT)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         lars@metafoo.de, pmeerw@pmeerw.net
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v6 13/13] dt-bindings: iio: afe: add bindings for temperature transducers
-Date:   Tue, 20 Jul 2021 23:06:13 -0400
-Message-Id: <20210721030613.3105327-14-liambeguin@gmail.com>
+Subject: [PATCH v6 06/13] iio: afe: rescale: add offset support
+Date:   Tue, 20 Jul 2021 23:06:06 -0400
+Message-Id: <20210721030613.3105327-7-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.30.1.489.g328c10930387
 In-Reply-To: <20210721030613.3105327-1-liambeguin@gmail.com>
 References: <20210721030613.3105327-1-liambeguin@gmail.com>
@@ -75,136 +75,149 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Liam Beguin <lvb@xiphos.com>
 
-An ADC is often used to measure other quantities indirectly.
-This binding describe one case, the measurement of a temperature
-through a temperature transducer (either voltage or current).
+This is a preparatory change required for the addition of temperature
+sensing front ends.
 
 Signed-off-by: Liam Beguin <lvb@xiphos.com>
 ---
- .../iio/afe/temperature-transducer.yaml       | 114 ++++++++++++++++++
- 1 file changed, 114 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
+ drivers/iio/afe/iio-rescale.c   | 80 +++++++++++++++++++++++++++++++++
+ include/linux/iio/afe/rescale.h |  4 ++
+ 2 files changed, 84 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml b/Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
-new file mode 100644
-index 000000000000..cfbf5350db27
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
-@@ -0,0 +1,114 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/afe/temperature-transducer.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index 2b73047365cc..6f6a711ae3ae 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -60,11 +60,46 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 	}
+ }
+ 
++int rescale_process_offset(struct rescale *rescale, int scale_type,
++			   int scale, int scale2, int schan_off,
++			   int *val, int *val2)
++{
++	s64 tmp, tmp2;
 +
-+title: Temperature Transducer
++	switch (scale_type) {
++	case IIO_VAL_FRACTIONAL:
++		tmp = (s64)rescale->offset * scale2;
++		*val = div_s64(tmp, scale) + schan_off;
++		return IIO_VAL_INT;
++	case IIO_VAL_INT:
++		*val = div_s64(rescale->offset, scale) + schan_off;
++		return IIO_VAL_INT;
++	case IIO_VAL_FRACTIONAL_LOG2:
++		tmp = (s64)rescale->offset * (1 << scale2);
++		*val = div_s64(tmp, scale) + schan_off;
++		return IIO_VAL_INT;
++	case IIO_VAL_INT_PLUS_NANO:
++		tmp = (s64)rescale->offset * 1000000000;
++		tmp2 = ((s64)scale * 1000000000L) + scale2;
++		*val = div64_s64(tmp, tmp2) + schan_off;
++		return IIO_VAL_INT;
++	case IIO_VAL_INT_PLUS_MICRO:
++		tmp = (s64)rescale->offset * 1000000L;
++		tmp2 = ((s64)scale * 1000000L) + scale2;
++		*val = div64_s64(tmp, tmp2) + schan_off;
++		return IIO_VAL_INT;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
 +
-+maintainers:
-+  - Liam Beguin <liambeguin@gmail.com>
+ static int rescale_read_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan,
+ 			    int *val, int *val2, long mask)
+ {
+ 	struct rescale *rescale = iio_priv(indio_dev);
++	int scale, scale2;
++	int schan_off = 0;
+ 	int ret;
+ 
+ 	switch (mask) {
+@@ -91,6 +126,47 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+ 			ret = iio_read_channel_scale(rescale->source, val, val2);
+ 		}
+ 		return rescale_process_scale(rescale, ret, val, val2);
++	case IIO_CHAN_INFO_OFFSET:
++		/*
++		 * Processed channels are scaled 1-to-1 and source offset is
++		 * already taken into account.
++		 *
++		 * In other cases, real world measurement are expressed as:
++		 *
++		 *	schan_scale * (raw + schan_offset)
++		 *
++		 * Given that the rescaler parameters are applied recursively:
++		 *
++		 *	rescaler_scale * (schan_scale * (raw + schan_offset) +
++		 *		rescaler_offset)
++		 *
++		 * Or,
++		 *
++		 *	(rescaler_scale * schan_scale) * (raw +
++		 *		(schan_offset +	rescaler_offset / schan_scale)
++		 *
++		 * Thus, reusing the original expression the parameters exposed
++		 * to userspace are:
++		 *
++		 *	scale = schan_scale * rescaler_scale
++		 *	offset = schan_offset + rescaler_offset / schan_scale
++		 */
++		if (rescale->chan_processed) {
++			*val = rescale->offset;
++			return IIO_VAL_INT;
++		}
 +
-+description: |
-+  A temperature transducer is a device that converts a thermal quantity
-+  into any other physical quantity. This binding applies to temperature to
-+  voltage (like the LTC2997), and temperature to current (like the AD590)
-+  linear transducers.
-+  In both cases these are assumed to be connected to a voltage ADC.
++		if (iio_channel_has_info(rescale->source->channel,
++					 IIO_CHAN_INFO_OFFSET)) {
++			ret = iio_read_channel_offset(rescale->source,
++						      &schan_off, NULL);
++			if (ret != IIO_VAL_INT)
++				return ret < 0 ? ret : -EOPNOTSUPP;
++		}
 +
-+  When an io-channel measures the output voltage of a temperature analog front
-+  end such as a temperature transducer, the interesting measurement is almost
-+  always the corresponding temperature, not the voltage output. This binding
-+  describes such a circuit.
++		ret = iio_read_channel_scale(rescale->source, &scale, &scale2);
++		return rescale_process_offset(rescale, ret, scale, scale2,
++					      schan_off, val, val2);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -167,6 +243,9 @@ static int rescale_configure_channel(struct device *dev,
+ 	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 		BIT(IIO_CHAN_INFO_SCALE);
+ 
++	if (rescale->offset)
++		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
 +
-+  The general transfer function here is (using SI units)
-+    V(T) = Rsense * Isense(T)
-+    T = (Isense(T) / alpha) + offset
-+    T = 1 / (Rsense * alpha) * (V + offset * Rsense * alpha)
-+
-+  When using a temperature to voltage transducer, Rsense is set to 1.
-+
-+  The following circuits show a temperature to current and a temperature to
-+  voltage transducer that can be used with this binding.
-+
-+           VCC
-+          -----
-+            |
-+        +---+---+
-+        | AD590 |                               VCC
-+        +---+---+                              -----
-+            |                                    |
-+            V proportional to T             +----+----+
-+            |                          D+ --+         |
-+            +---- Vout                      | LTC2997 +--- Vout
-+            |                          D- --+         |
-+        +---+----+                          +---------+
-+        | Rsense |                               |
-+        +---+----+                             -----
-+            |                                   GND
-+          -----
-+           GND
-+
-+properties:
-+  compatible:
-+    const: temperature-transducer
-+
-+  io-channels:
-+    maxItems: 1
-+    description: |
-+      Channel node of a voltage io-channel.
-+
-+  '#io-channel-cells':
-+    const: 0
-+
-+  sense-offset-millicelsius:
-+    description: |
-+      Temperature offset.
-+      This offset is commonly used to convert from Kelvins to degrees Celsius.
-+      In that case, sense-offset-millicelsius would be set to <(-273150)>.
-+    default: 0
-+
-+  sense-resistor-ohms:
-+    description: |
-+      The sense resistor.
-+      By default sense-resistor-ohms cancels out the resistor making the
-+      circuit behave like a temperature transducer.
-+    default: 1
-+
-+  alpha-ppm-per-celsius:
-+    description: |
-+      Sometimes referred to as output gain, slope, or temperature coefficient.
-+
-+      alpha is expressed in parts per million which can be micro-amps per
-+      degrees Celsius or micro-volts per degrees Celsius. The is the main
-+      characteristic of a temperature transducer and should be stated in the
-+      datasheet.
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - io-channels
-+  - alpha-ppm-per-celsius
-+
-+examples:
-+  - |
-+    ad950: temperature-sensor-0 {
-+        compatible = "temperature-transducer";
-+        #io-channel-cells = <0>;
-+        io-channels = <&temp_adc 3>;
-+
-+        sense-offset-millicelsius = <(-273150)>; /* Kelvin to degrees Celsius */
-+        sense-resistor-ohms = <8060>;
-+        alpha-ppm-per-celsius = <1>; /* 1 uA/K */
-+    };
-+  - |
-+    znq_tmp: temperature-sensor-1 {
-+        compatible = "temperature-transducer";
-+        #io-channel-cells = <0>;
-+        io-channels = <&temp_adc 2>;
-+
-+        sense-offset-millicelsius = <(-273150)>; /* Kelvin to degrees Celsius */
-+        alpha-ppm-per-celsius = <4000>; /* 4 mV/K */
-+    };
-+...
+ 	/*
+ 	 * Using .read_avail() is fringe to begin with and makes no sense
+ 	 * whatsoever for processed channels, so we make sure that this cannot
+@@ -331,6 +410,7 @@ static int rescale_probe(struct platform_device *pdev)
+ 	rescale->cfg = of_device_get_match_data(dev);
+ 	rescale->numerator = 1;
+ 	rescale->denominator = 1;
++	rescale->offset = 0;
+ 
+ 	ret = rescale->cfg->props(dev, rescale);
+ 	if (ret)
+diff --git a/include/linux/iio/afe/rescale.h b/include/linux/iio/afe/rescale.h
+index 14d4ee1227c6..b152ac487403 100644
+--- a/include/linux/iio/afe/rescale.h
++++ b/include/linux/iio/afe/rescale.h
+@@ -23,8 +23,12 @@ struct rescale {
+ 	bool chan_processed;
+ 	s32 numerator;
+ 	s32 denominator;
++	s32 offset;
+ };
+ 
+ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 			  int *val, int *val2);
++int rescale_process_offset(struct rescale *rescale, int scale_type,
++			   int scale, int scale2, int schan_off,
++			   int *val, int *val2);
+ #endif /* __IIO_RESCALE_H__ */
 -- 
 2.30.1.489.g328c10930387
 
