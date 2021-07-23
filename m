@@ -2,30 +2,30 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UPPERCASE_50_75,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B7CBC4338F
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Jul 2021 08:16:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D512C4338F
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Jul 2021 08:16:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 26F8860E8E
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Jul 2021 08:16:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 125C560EBD
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Jul 2021 08:16:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234361AbhGWHfp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Jul 2021 03:35:45 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:29983 "EHLO
+        id S234300AbhGWHft (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Jul 2021 03:35:49 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:29994 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234328AbhGWHfn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Jul 2021 03:35:43 -0400
+        with ESMTP id S234313AbhGWHfs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Jul 2021 03:35:48 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 16N7x6Rc041950;
+        by twspam01.aspeedtech.com with ESMTP id 16N7x6Wf041952;
         Fri, 23 Jul 2021 15:59:06 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
  (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Fri, 23 Jul
- 2021 16:15:40 +0800
+ 2021 16:15:41 +0800
 From:   Billy Tsai <billy_tsai@aspeedtech.com>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
@@ -34,9 +34,9 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [v2 3/8] iio: adc: aspeed: completes the bitfield declare.
-Date:   Fri, 23 Jul 2021 16:16:16 +0800
-Message-ID: <20210723081621.29477-4-billy_tsai@aspeedtech.com>
+Subject: [v2 7/8] iio: adc: aspeed: Fix the calculate error of clock.
+Date:   Fri, 23 Jul 2021 16:16:20 +0800
+Message-ID: <20210723081621.29477-8-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210723081621.29477-1-billy_tsai@aspeedtech.com>
 References: <20210723081621.29477-1-billy_tsai@aspeedtech.com>
@@ -47,105 +47,106 @@ X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 16N7x6Rc041950
+X-MAIL: twspam01.aspeedtech.com 16N7x6Wf041952
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch completes the declare of adc register bitfields and uses the
-same prefix ASPEED_ADC_* for these bitfields.
+The adc clcok formula is
+ast2400/2500:
+ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0] + 1)
+ast2600:
+ADC clock period = PCLK * 2 * (ADC0C[15:0] + 1)
+They all have one fixed divided 2 and the legacy driver didn't handle it.
+This patch register the fixed factory clock device as the parent of adc
+clock scaler to fix this issue.
 
 Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 ---
- drivers/iio/adc/aspeed_adc.c | 40 ++++++++++++++++++++++++------------
- 1 file changed, 27 insertions(+), 13 deletions(-)
+ drivers/iio/adc/aspeed_adc.c | 28 +++++++++++++++++++++++-----
+ 1 file changed, 23 insertions(+), 5 deletions(-)
 
 diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 19efaa41bc34..99466a5924c7 100644
+index 0153b28b83b7..7e674b607e36 100644
 --- a/drivers/iio/adc/aspeed_adc.c
 +++ b/drivers/iio/adc/aspeed_adc.c
-@@ -16,6 +16,7 @@
- #include <linux/reset.h>
- #include <linux/spinlock.h>
- #include <linux/types.h>
-+#include <linux/bitfield.h>
+@@ -80,6 +80,7 @@ struct aspeed_adc_data {
+ 	struct device		*dev;
+ 	void __iomem		*base;
+ 	spinlock_t		clk_lock;
++	struct clk_hw		*fixed_div_clk;
+ 	struct clk_hw		*clk_prescaler;
+ 	struct clk_hw		*clk_scaler;
+ 	struct reset_control	*rst;
+@@ -310,6 +311,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	int ret;
+ 	u32 adc_engine_control_reg_val;
+ 	char scaler_clk_name[32];
++	char fixed_div_clk_name[32];
  
- #include <linux/iio/iio.h>
- #include <linux/iio/driver.h>
-@@ -28,15 +29,28 @@
- #define ASPEED_REG_INTERRUPT_CONTROL	0x04
- #define ASPEED_REG_VGA_DETECT_CONTROL	0x08
- #define ASPEED_REG_CLOCK_CONTROL	0x0C
--#define ASPEED_REG_MAX			0xC0
--
--#define ASPEED_OPERATION_MODE_POWER_DOWN	(0x0 << 1)
--#define ASPEED_OPERATION_MODE_STANDBY		(0x1 << 1)
--#define ASPEED_OPERATION_MODE_NORMAL		(0x7 << 1)
--
--#define ASPEED_ENGINE_ENABLE		BIT(0)
--
--#define ASPEED_ADC_CTRL_INIT_RDY	BIT(8)
-+#define ASPEED_REG_COMPENSATION_TRIM	0xC4
-+#define ASPEED_REG_MAX			0xCC
-+
-+#define ASPEED_ADC_ENGINE_ENABLE		BIT(0)
-+#define ASPEED_ADC_OPERATION_MODE		GENMASK(3, 1)
-+#define ASPEED_ADC_OPERATION_MODE_POWER_DOWN	FIELD_PREP(ASPEED_ADC_OPERATION_MODE, 0)
-+#define ASPEED_ADC_OPERATION_MODE_STANDBY	FIELD_PREP(ASPEED_ADC_OPERATION_MODE, 1)
-+#define ASPEED_ADC_OPERATION_MODE_NORMAL	FIELD_PREP(ASPEED_ADC_OPERATION_MODE, 7)
-+#define ASPEED_ADC_CTRL_COMPENSATION		BIT(4)
-+#define ASPEED_ADC_AUTO_COMPENSATION		BIT(5)
-+#define ASPEED_ADC_REF_VOLTAGE			GENMASK(7, 6)
-+#define ASPEED_ADC_REF_VOLTAGE_2500mV		FIELD_PREP(ASPEED_ADC_REF_VOLTAGE, 0)
-+#define ASPEED_ADC_REF_VOLTAGE_1200mV		FIELD_PREP(ASPEED_ADC_REF_VOLTAGE, 1)
-+#define ASPEED_ADC_REF_VOLTAGE_EXT_HIGH		FIELD_PREP(ASPEED_ADC_REF_VOLTAGE, 2)
-+#define ASPEED_ADC_REF_VOLTAGE_EXT_LOW		FIELD_PREP(ASPEED_ADC_REF_VOLTAGE, 3)
-+#define ASPEED_ADC_CTRL_INIT_RDY		BIT(8)
-+#define ASPEED_ADC_CH7_MODE			BIT(12)
-+#define ASPEED_ADC_CH7_NORMAL			FIELD_PREP(ASPEED_ADC_CH7_MODE, 0)
-+#define ASPEED_ADC_CH7_BATTERY			FIELD_PREP(ASPEED_ADC_CH7_MODE, 1)
-+#define ASPEED_ADC_BATTERY_SENSING_ENABLE	BIT(13)
-+#define ASPEED_ADC_CTRL_CHANNEL			GENMASK(31, 16)
-+#define ASPEED_ADC_CTRL_CHANNEL_ENABLE(ch)	FIELD_PREP(ASPEED_ADC_CTRL_CHANNEL, BIT(ch))
+ 	model_data = of_device_get_match_data(&pdev->dev);
+ 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*data));
+@@ -328,10 +330,15 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	spin_lock_init(&data->clk_lock);
+ 	clk_parent_name = of_clk_get_parent_name(pdev->dev.of_node, 0);
+ 	if (model_data->version <= aspeed_adc_ast2500) {
++		/* ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0] + 1) */
++		data->fixed_div_clk = clk_hw_register_fixed_factor(
++			&pdev->dev, "fixed-div", clk_parent_name, 0, 1, 2);
++		if (IS_ERR(data->fixed_div_clk))
++			return PTR_ERR(data->fixed_div_clk);
+ 		data->clk_prescaler = clk_hw_register_divider(
+-					&pdev->dev, "prescaler", clk_parent_name, 0,
+-					data->base + ASPEED_REG_CLOCK_CONTROL,
+-					17, 15, 0, &data->clk_lock);
++			&pdev->dev, "prescaler", "fixed-div", 0,
++			data->base + ASPEED_REG_CLOCK_CONTROL, 17, 15, 0,
++			&data->clk_lock);
+ 		if (IS_ERR(data->clk_prescaler))
+ 			return PTR_ERR(data->clk_prescaler);
  
- #define ASPEED_ADC_INIT_POLLING_TIME	500
- #define ASPEED_ADC_INIT_TIMEOUT		500000
-@@ -226,7 +240,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+@@ -349,14 +356,23 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 			goto scaler_error;
+ 		}
+ 	} else {
++		/* ADC clock period = period of PCLK * 2 * (ADC0C[15:0] + 1) */
++		snprintf(fixed_div_clk_name, sizeof(fixed_div_clk_name), "fixed-div-%s",
++			 pdev->name);
++		data->fixed_div_clk = clk_hw_register_fixed_factor(
++			&pdev->dev, fixed_div_clk_name, clk_parent_name, 0, 1, 2);
++		if (IS_ERR(data->fixed_div_clk))
++			return PTR_ERR(data->fixed_div_clk);
+ 		snprintf(scaler_clk_name, sizeof(scaler_clk_name), "scaler-%s",
+ 			 pdev->name);
+ 		data->clk_scaler = clk_hw_register_divider(
+ 			&pdev->dev, scaler_clk_name, clk_parent_name, 0,
+ 			data->base + ASPEED_REG_CLOCK_CONTROL, 0, 16, 0,
+ 			&data->clk_lock);
+-		if (IS_ERR(data->clk_scaler))
+-			return PTR_ERR(data->clk_scaler);
++		if (IS_ERR(data->clk_scaler)) {
++			ret = PTR_ERR(data->clk_scaler);
++			goto scaler_error;
++		}
+ 	}
  
- 	if (model_data->wait_init_sequence) {
- 		/* Enable engine in normal mode. */
--		writel(ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE,
-+		writel(ASPEED_ADC_OPERATION_MODE_NORMAL | ASPEED_ADC_ENGINE_ENABLE,
- 		       data->base + ASPEED_REG_ENGINE_CONTROL);
+ 	data->rst = devm_reset_control_get_shared(&pdev->dev, NULL);
+@@ -430,6 +446,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ scaler_error:
+ 	if (model_data->version <= aspeed_adc_ast2500)
+ 		clk_hw_unregister_divider(data->clk_prescaler);
++	clk_hw_unregister_fixed_factor(data->fixed_div_clk);
+ 	return ret;
+ }
  
- 		/* Wait for initial sequence complete. */
-@@ -246,7 +260,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 		goto clk_enable_error;
+@@ -448,6 +465,7 @@ static int aspeed_adc_remove(struct platform_device *pdev)
+ 	clk_hw_unregister_divider(data->clk_scaler);
+ 	if (model_data->version <= aspeed_adc_ast2500)
+ 		clk_hw_unregister_divider(data->clk_prescaler);
++	clk_hw_unregister_fixed_factor(data->fixed_div_clk);
  
- 	adc_engine_control_reg_val = GENMASK(31, 16) |
--		ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE;
-+		ASPEED_ADC_OPERATION_MODE_NORMAL | ASPEED_ADC_ENGINE_ENABLE;
- 	writel(adc_engine_control_reg_val,
- 		data->base + ASPEED_REG_ENGINE_CONTROL);
- 
-@@ -264,7 +278,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
  	return 0;
- 
- iio_register_error:
--	writel(ASPEED_OPERATION_MODE_POWER_DOWN,
-+	writel(ASPEED_ADC_OPERATION_MODE_POWER_DOWN,
- 		data->base + ASPEED_REG_ENGINE_CONTROL);
- 	clk_disable_unprepare(data->clk_scaler->clk);
- clk_enable_error:
-@@ -283,7 +297,7 @@ static int aspeed_adc_remove(struct platform_device *pdev)
- 	struct aspeed_adc_data *data = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
--	writel(ASPEED_OPERATION_MODE_POWER_DOWN,
-+	writel(ASPEED_ADC_OPERATION_MODE_POWER_DOWN,
- 		data->base + ASPEED_REG_ENGINE_CONTROL);
- 	clk_disable_unprepare(data->clk_scaler->clk);
- 	reset_control_assert(data->rst);
+ }
 -- 
 2.25.1
 
