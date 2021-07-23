@@ -2,25 +2,24 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 09926C4338F
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Jul 2021 08:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B823C4338F
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Jul 2021 08:15:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E292460F12
-	for <linux-iio@archiver.kernel.org>; Fri, 23 Jul 2021 08:15:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4631160E52
+	for <linux-iio@archiver.kernel.org>; Fri, 23 Jul 2021 08:15:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234311AbhGWHfS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 23 Jul 2021 03:35:18 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:29933 "EHLO
+        id S234189AbhGWHfX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 23 Jul 2021 03:35:23 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:29940 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234348AbhGWHfS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Jul 2021 03:35:18 -0400
+        with ESMTP id S234030AbhGWHfX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Jul 2021 03:35:23 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 16N7x5V2041949;
+        by twspam01.aspeedtech.com with ESMTP id 16N7x5gb041948;
         Fri, 23 Jul 2021 15:59:05 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
@@ -34,86 +33,55 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [v2 2/8] dt-bindings: iio: adc: Binding ast2600 adc.
-Date:   Fri, 23 Jul 2021 16:16:15 +0800
-Message-ID: <20210723081621.29477-3-billy_tsai@aspeedtech.com>
+Subject: [v2 0/8] Add support for ast2600 ADC
+Date:   Fri, 23 Jul 2021 16:16:13 +0800
+Message-ID: <20210723081621.29477-1-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210723081621.29477-1-billy_tsai@aspeedtech.com>
-References: <20210723081621.29477-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
 X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 16N7x5V2041949
+X-MAIL: twspam01.aspeedtech.com 16N7x5gb041948
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch add more description about aspeed adc and add two property
-for ast2600:
-- vref: used to configure reference voltage.
-- battery-sensing: used to enable battery sensing mode for last channel.
+This patch serials make aspeed_adc.c can support ast2600.
+In additional,
+patch #6 is used to improve the adc accurate 
+patch #7 is used to fix the clock issue in the original code.
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- .../bindings/iio/adc/aspeed,adc.yaml          | 28 +++++++++++++++++--
- 1 file changed, 26 insertions(+), 2 deletions(-)
+Changes since v1:
+dt-bindings:
+  - Fix the aspeed,adc.yaml check error.
+  - Add battery-sensing property.
+aspeed_adc.c:
+  - Change the init flow:
+    Clock and reference voltage setting should be completed before adc
+    engine enable.
+  - Change the default sampling rate to meet most user case.
+  - Add patch #8 to suppoert battery sensing mode.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed,adc.yaml b/Documentation/devicetree/bindings/iio/adc/aspeed,adc.yaml
-index 23f3da1ffca3..a562a7fbc30c 100644
---- a/Documentation/devicetree/bindings/iio/adc/aspeed,adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/aspeed,adc.yaml
-@@ -10,14 +10,26 @@ maintainers:
-   - Joel Stanley <joel@jms.id.au>
- 
- description:
--  This device is a 10-bit converter for 16 voltage channels.  All inputs are
--  single ended.
-+  • 10-bits resolution for 16 voltage channels.
-+  At ast2400/ast2500 the device has only one engine with 16 voltage channels.
-+  At ast2600 the device split into two individual engine and each contains 8 voltage channels.
-+  • Channel scanning can be non-continuous.
-+  • Programmable ADC clock frequency.
-+  • Programmable upper and lower bound for each channels.
-+  • Interrupt when larger or less than bounds for each channels.
-+  • Support hysteresis for each channels.
-+  • Buildin a compensating method.
-+  Additional feature at ast2600
-+  • Internal or External reference voltage.
-+  • Support 2 Internal reference voltage 1.2v or 2.5v.
-+  • Integrate dividing circuit for battery sensing.
- 
- properties:
-   compatible:
-     enum:
-       - aspeed,ast2400-adc
-       - aspeed,ast2500-adc
-+      - aspeed,ast2600-adc
- 
-   reg:
-     maxItems: 1
-@@ -33,6 +45,18 @@ properties:
-   "#io-channel-cells":
-     const: 1
- 
-+  vref:
-+    minItems: 900
-+    maxItems: 2700
-+    default: 2500
-+    description:
-+      ADC Reference voltage in millivolts.
-+
-+  battery-sensing:
-+    type: boolean
-+    description:
-+      Inform the driver that last channel will be used to sensor battery.
-+
- required:
-   - compatible
-   - reg
+Billy Tsai (8):
+  dt-bindings: iio: adc: rename the aspeed adc yaml
+  dt-bindings: iio: adc: Binding ast2600 adc.
+  iio: adc: aspeed: completes the bitfield declare.
+  iio: adc: aspeed: Allow driver to support ast2600
+  iio: adc: aspeed: Add func to set sampling rate.
+  iio: adc: aspeed: Add compensation phase.
+  iio: adc: aspeed: Fix the calculate error of clock.
+  iio: adc: aspeed: Support battery sensing.
+
+ .../bindings/iio/adc/aspeed,adc.yaml          |  79 ++++
+ .../bindings/iio/adc/aspeed,ast2400-adc.yaml  |  55 ---
+ drivers/iio/adc/aspeed_adc.c                  | 376 ++++++++++++++----
+ 3 files changed, 385 insertions(+), 125 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed,adc.yaml
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed,ast2400-adc.yaml
+
 -- 
 2.25.1
 
