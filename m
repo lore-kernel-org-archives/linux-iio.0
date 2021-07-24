@@ -4,26 +4,26 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 61D49C4320A
-	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 14:40:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CCBDC4338F
+	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 14:42:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3EAE560EBA
-	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 14:40:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 28B1460EAF
+	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 14:42:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229672AbhGXOAJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 24 Jul 2021 10:00:09 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60148 "EHLO mail.kernel.org"
+        id S229667AbhGXOBk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 24 Jul 2021 10:01:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:60272 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229545AbhGXOAI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Jul 2021 10:00:08 -0400
+        id S229545AbhGXOBk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 24 Jul 2021 10:01:40 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 54AFF60E98;
-        Sat, 24 Jul 2021 14:40:36 +0000 (UTC)
-Date:   Sat, 24 Jul 2021 15:43:08 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id EF7D060E97;
+        Sat, 24 Jul 2021 14:42:08 +0000 (UTC)
+Date:   Sat, 24 Jul 2021 15:44:41 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
@@ -33,7 +33,7 @@ Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
         linux-i2c@vger.kernel.org, Wolfram Sang <wsa@kernel.org>
 Subject: Re: [PATCH v1.1 2/2] iio: dac: dac5571: Fix chip id detection for
  OF devices
-Message-ID: <20210724154308.55afb03c@jic23-huawei>
+Message-ID: <20210724154441.1d49c713@jic23-huawei>
 In-Reply-To: <20210724000654.23168-1-laurent.pinchart@ideasonboard.com>
 References: <20210723183114.26017-3-laurent.pinchart@ideasonboard.com>
         <20210724000654.23168-1-laurent.pinchart@ideasonboard.com>
@@ -73,21 +73,16 @@ Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
 > Signed-off-by: Jose Cazarin <joseespiriki@gmail.com>
 > Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
 > Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Side note I failed to put in the review email.
 
-Interesting problem that I hadn't previously realised could happen.
-
-One request though, can we use device_get_match_data() here rather than
-the of specific version?  Include property.h as well for that.
-
-That should allow the same issue with compatible to work correctly when
-using PRP0001 based ACPI methods. 
-https://elixir.bootlin.com/linux/v5.14-rc1/source/drivers/acpi/bus.c#L891
-Will result in acpi_of_device_get_match_data() being called which will
-match to the of_device_id table.
+I definitely prefer a whole new series even when a change is just to
+a single patch like this.  Much easier to track and eventually pick
+up as one unit.
 
 Thanks,
 
 Jonathan
+
 
 > ---
 > Changes since v1:
