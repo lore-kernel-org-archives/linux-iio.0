@@ -2,189 +2,140 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-5.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=no
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.6 required=3.0 tests=BAYES_00,
+	DKIM_ADSP_CUSTOM_MED,DKIM_INVALID,DKIM_SIGNED,FREEMAIL_FORGED_FROMDOMAIN,
+	FREEMAIL_FROM,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7EB49C4338F
-	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 18:04:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0E4BC432BE
+	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 19:05:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6586860E91
-	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 18:04:01 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8329060E98
+	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 19:05:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229852AbhGXRX3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 24 Jul 2021 13:23:29 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36146 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229461AbhGXRX2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Jul 2021 13:23:28 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A7F0E60E8F;
-        Sat, 24 Jul 2021 18:03:56 +0000 (UTC)
-Date:   Sat, 24 Jul 2021 19:06:28 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Stephan Gerhold <stephan@gerhold.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS
-        <devicetree@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Andy
-        Shevchenko <andy.shevchenko@gmail.com>," 
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        Nikita Travkin <nikita@trvn.ru>
-Subject: Re: [PATCH 3/4] iio: accel: bmc150: Make it possible to configure
- INT2 instead of INT1
-Message-ID: <20210724190614.3593dcd1@jic23-huawei>
-In-Reply-To: <CAHp75VcZDSL5u2bP_ZFySmk7cPkHRycyA-+gMqSVWCpgFXhn7Q@mail.gmail.com>
-References: <20210719112156.27087-1-stephan@gerhold.net>
-        <20210719112156.27087-4-stephan@gerhold.net>
-        <CACRpkdYNqi0EDrtC3j=cu5cp17sEJ6_nf2KRn-hxCxgbTGhgXw@mail.gmail.com>
-        <CAHp75VcsVFO2Oizpyeh53MNt2v9yD81vXp1xKCVX-U4zb-KTdg@mail.gmail.com>
-        <YPWV537oN3gDpAQS@gerhold.net>
-        <CAHp75Vdjotgi9RrmKQC4J_QQSYdRWwp+-8aHGkChx6VFLPDh-Q@mail.gmail.com>
-        <YPW1xGtLyLNGKqjJ@gerhold.net>
-        <CAHp75VcZDSL5u2bP_ZFySmk7cPkHRycyA-+gMqSVWCpgFXhn7Q@mail.gmail.com>
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
+        id S229535AbhGXSY6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 24 Jul 2021 14:24:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229530AbhGXSY6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Jul 2021 14:24:58 -0400
+Received: from mail-wr1-x433.google.com (mail-wr1-x433.google.com [IPv6:2a00:1450:4864:20::433])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6BB5C061757;
+        Sat, 24 Jul 2021 12:05:28 -0700 (PDT)
+Received: by mail-wr1-x433.google.com with SMTP id z7so5927123wrn.11;
+        Sat, 24 Jul 2021 12:05:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=TFqPeTJizFnfUZM7Q40k9J0nA9MRhn5b8J6dQsSbkSU=;
+        b=g5nY822zTiAYbbkQ4YvFuTxrqBbrNXQb0J6QLorJ6+V4lidZ71xypTmFB5e/wdlDmv
+         Z+S+OLK1FmyQGep01xTB9/9vn1uhuGI15sgbW8RtkRAmwMqqd/9Nr6kTLFB/sVD89NBN
+         GHmttZTJEYENNoHHQu//YH1hsPWfQwXbsz3xoVJY/20eomOzxcPzl0AaNFTgiKwY552B
+         Ea6wuEb/61dxpYp1AbFlCR8kKoW7UyP/W++yhJL/uNRP6DJknEGKGRZ3sjI8qthxEr7z
+         Ecw1XE4wmkW2iui+tO7c2Ngx6ArEqnijunxPClK1wF44rkXMuOdPnLF3JX3jG2D5SjrE
+         IxbQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=TFqPeTJizFnfUZM7Q40k9J0nA9MRhn5b8J6dQsSbkSU=;
+        b=R+1PviGawqTnxE/gmNIJ4cQ5PLSYy+zPRkHlHTJrv5vnnfBm/q6P1uiUU6gZzR7I5C
+         geoupOK+U7rgoAZ/0eDWD4lzKjsiLNdxWhuTLKeO6iEdWYYjpbAT46TzfpZPWYRTEEYJ
+         mvW5Sq9LXebzF4HeXTsDtYOYgQBsevNJB4Ub3zYgJ42TYaVjTDD7setmmt/4zp8xydxi
+         o43PV6HQtxz+78aL0z4bBF9JqBFArJ093H4ABtCXDUYQ+JnixQTGYrLbjNWISXjT5gJH
+         WRl6+oBLapXx4qi27JuBhUvUJGYsqo/4AsfowFr/UbWSU6COrzDGoPPqhEZoDX9DwKiB
+         0NNQ==
+X-Gm-Message-State: AOAM530q+9UHp3WaLC8frgU6DYJYAO6U5Oy3fxDXyMKYdt20aw2wOpol
+        xOBxtbAWFY4qbbLbqc7NpaQ=
+X-Google-Smtp-Source: ABdhPJyER3AGOSAzaJBWOSY3FIvCmfsIuvtui436ER79FTl14zfHObSDGR1r7fovxH8clCA5FgzmBg==
+X-Received: by 2002:a5d:4a4c:: with SMTP id v12mr10875840wrs.256.1627153527415;
+        Sat, 24 Jul 2021 12:05:27 -0700 (PDT)
+Received: from monk.home (astrasbourg-157-1-7-84.w90-40.abo.wanadoo.fr. [90.40.218.84])
+        by smtp.gmail.com with ESMTPSA id j15sm1117798wms.20.2021.07.24.12.05.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 24 Jul 2021 12:05:27 -0700 (PDT)
+From:   Christophe Branchereau <cbranchereau@gmail.com>
+Cc:     jic23@kernel.org, lars@metafoo.de, linux-mips@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, devicetree@vger.kernel.org, linux@roeck-us.net,
+        contact@artur-rojek.eu, paul@crapouillou.net,
+        Christophe Branchereau <cbranchereau@gmail.com>
+Subject: [PATCH v3 1/5] iio/adc: ingenic: rename has_aux2 to has_aux_md
+Date:   Sat, 24 Jul 2021 21:04:45 +0200
+Message-Id: <20210724190449.221894-2-cbranchereau@gmail.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210724190449.221894-1-cbranchereau@gmail.com>
+References: <20210724190449.221894-1-cbranchereau@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 19 Jul 2021 21:05:48 +0300
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+The jz4760(b) socs have 3 aux channels.
 
-> On Mon, Jul 19, 2021 at 8:29 PM Stephan Gerhold <stephan@gerhold.net> wrote:
-> >
-> > On Mon, Jul 19, 2021 at 07:19:05PM +0300, Andy Shevchenko wrote:  
-> > > On Mon, Jul 19, 2021 at 6:11 PM Stephan Gerhold <stephan@gerhold.net> wrote:  
-> > > > On Mon, Jul 19, 2021 at 06:01:01PM +0300, Andy Shevchenko wrote:  
-> > > > > On Mon, Jul 19, 2021 at 5:07 PM Linus Walleij <linus.walleij@linaro.org> wrote:  
-> > > > > > On Mon, Jul 19, 2021 at 1:26 PM Stephan Gerhold <stephan@gerhold.net> wrote:  
-> 
-> ...
-> 
-> > > > > > >  #include <linux/acpi.h>
-> > > > > > > +#include <linux/of_irq.h>  
-> > > > > > (...)  
-> > > > > > > +       irq_info = bmc150_accel_interrupts_int1;
-> > > > > > > +       if (irq == of_irq_get_byname(dev->of_node, "INT2"))
-> > > > > > > +               irq_info = bmc150_accel_interrupts_int2;  
-> > > > > >
-> > > > > > This looks a bit DT-specific, but I don't see that ACPI has
-> > > > > > named IRQs so I don't know what to do about it either.  
-> > > > >
-> > > > > Yeah, we only have so far the (de facto) established way of naming
-> > > > > GPIO based IRQs, and not IOxAPIC ones.
-> > > > >  
-> > > > > > What does platform_get_irq_byname() do on ACPI systems?  
-> > > > >
-> > > > > See above.
-> > > > >  
-> > > > > > If there is no obvious fix I would leave it like this until the
-> > > > > > first ACPI used needing this comes along, but I think maybe
-> > > > > > Andy has suggestions.  
-> > > > >
-> > > > > The platform_get_irq_byname() should do something similar that has
-> > > > > been done in platform_get_irq() WRT ACPI.
-> > > > > Here for sure the platform_get_irq_byname() or its optional variant
-> > > > > should be used.  
-> > > >
-> > > > I don't think there is a platform device here, we only have the
-> > > > i2c_client or spi_device. That's why I didn't use
-> > > > platform_get_irq_byname(). :)
-> > > >
-> > > > Is there something equivalent for I2C/SPI drivers?  
-> > >
-> > > Not yet. You probably need to supply some code there to allow
-> > > multi-IRQ devices (in resource provider agnostic way).
-> > >
-> > > You need to provide fwnode_get_irq_byname() to be similar with
-> > > https://elixir.bootlin.com/linux/latest/source/drivers/base/property.c#L1010
-> > >
-> > > Then use it in the drivers.
-> > >
-> > > And/or integrate into frameworks somehow (something in between the
-> > > lines: https://elixir.bootlin.com/linux/latest/source/drivers/i2c/i2c-core-base.c#L461).
-> > >  
-> >
-> > Well, I don't think anyone has an ACPI use case for this right now so
-> > it's probably better if this is done by someone who actually needs this
-> > and can test it somewhere. :)
-> >
-> > I actually just "copied" this approach from some other IIO drivers where
-> > this is done similarly (and additionally checked the source code to make
-> > sure this won't break anything for ACPI platforms).  
-> 
-> I see in today's Linux Next snapshot:
-> 
-> drivers/iio/accel/fxls8962af-core.c:774:        irq =
-> of_irq_get_byname(of_node, "INT2");
-> drivers/iio/accel/mma8452.c:1616:               irq2 =
-> of_irq_get_byname(client->dev.of_node, "INT2");
-> drivers/iio/gyro/fxas21002c_core.c:834: irq1 = of_irq_get_byname(np, "INT1");
-> drivers/iio/imu/adis16480.c:1265:               irq =
-> of_irq_get_byname(of_node, adis16480_int_pin_names[i]);
-> drivers/iio/imu/bmi160/bmi160_core.c:655:       irq =
-> of_irq_get_byname(of_node, "INT1");
-> drivers/iio/imu/bmi160/bmi160_core.c:661:       irq =
-> of_irq_get_byname(of_node, "INT2");
-> 
-> I believe we may stop distributing this and actually start using a
-> common API. I don't want this to be spread again over all IIO. Btw, I
-> have LSM9DS0, which supports two INT pins for IMU and currently it
-> uses hard coded pin mapping.
+The purpose of has_aux2 is to set the MD bits used to select
+the AUX channel to be sampled, not to describe the hardware.
 
-I'm definitely keen to tidy this up, though I'd also rather not tie it
-to this particular series.
+Rename it to a more appropriate name.
 
-> 
-> Side note to Jonathan, I believe the below may be (lazily) converted
-> to fwnode / device properties APIs.
+Signed-off-by: Christophe Branchereau <cbranchereau@gmail.com>
+---
+ drivers/iio/adc/ingenic-adc.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Yup.  I know we still have a bunch of these to tidy up.
-Might take a while to get to them though!
-
-> 
-> drivers/iio/adc/ab8500-gpadc.c:1041:    nchans =
-> of_get_available_child_count(np);
-> drivers/iio/adc/ad7124.c:747:   st->num_channels =
-> of_get_available_child_count(np);
-> drivers/iio/adc/berlin2-adc.c:287:      struct device_node *parent_np
-> = of_get_parent(pdev->dev.of_node);
-> drivers/iio/adc/qcom-pm8xxx-xoadc.c:830:        adc->nchans =
-> of_get_available_child_count(np);
-> drivers/iio/adc/qcom-spmi-adc5.c:650:   channel_name = of_get_property(node,
-> drivers/iio/adc/qcom-spmi-adc5.c:813:   adc->nchannels =
-> of_get_available_child_count(node);
-> drivers/iio/adc/qcom-spmi-vadc.c:743:   vadc->nchannels =
-> of_get_available_child_count(node);
-> drivers/iio/adc/stm32-adc.c:1630:static int
-> stm32_adc_of_get_resolution(struct iio_dev *indio_dev)
-> drivers/iio/adc/stm32-adc.c:1935:       ret =
-> stm32_adc_of_get_resolution(indio_dev);
-> drivers/iio/adc/xilinx-xadc-core.c:1248:        chan_node =
-> of_get_child_by_name(np, "xlnx,channels");
-> drivers/iio/imu/adis16480.c:1293:static int
-> adis16480_of_get_ext_clk_pin(struct adis16480 *st,
-> drivers/iio/imu/adis16480.c:1328:       pin =
-> adis16480_of_get_ext_clk_pin(st, of_node);
-> drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c:68:           mux_node =
-> of_get_child_by_name(dev->of_node, "i2c-gate")
-> ;
-> drivers/iio/industrialio-core.c:1877:   label =
-> of_get_property(indio_dev->dev.of_node, "label", NULL);
-> drivers/iio/inkern.c:228:               if (np && !of_get_property(np,
-> "io-channel-ranges", NULL))
-> drivers/iio/temperature/ltc2983.c:1275: st->num_channels =
-> of_get_available_child_count(dev->of_node);
-> 
-> 
+diff --git a/drivers/iio/adc/ingenic-adc.c b/drivers/iio/adc/ingenic-adc.c
+index 34c03a264f74..40f2d8c2cf72 100644
+--- a/drivers/iio/adc/ingenic-adc.c
++++ b/drivers/iio/adc/ingenic-adc.c
+@@ -92,7 +92,7 @@ struct ingenic_adc_soc_data {
+ 	const int *battery_scale_avail;
+ 	size_t battery_scale_avail_size;
+ 	unsigned int battery_vref_mode: 1;
+-	unsigned int has_aux2: 1;
++	unsigned int has_aux_md: 1;
+ 	const struct iio_chan_spec *channels;
+ 	unsigned int num_channels;
+ 	int (*init_clk_div)(struct device *dev, struct ingenic_adc *adc);
+@@ -506,7 +506,7 @@ static const struct ingenic_adc_soc_data jz4725b_adc_soc_data = {
+ 	.battery_scale_avail = jz4725b_adc_battery_scale_avail,
+ 	.battery_scale_avail_size = ARRAY_SIZE(jz4725b_adc_battery_scale_avail),
+ 	.battery_vref_mode = true,
+-	.has_aux2 = false,
++	.has_aux_md = false,
+ 	.channels = jz4740_channels,
+ 	.num_channels = ARRAY_SIZE(jz4740_channels),
+ 	.init_clk_div = jz4725b_adc_init_clk_div,
+@@ -520,7 +520,7 @@ static const struct ingenic_adc_soc_data jz4740_adc_soc_data = {
+ 	.battery_scale_avail = jz4740_adc_battery_scale_avail,
+ 	.battery_scale_avail_size = ARRAY_SIZE(jz4740_adc_battery_scale_avail),
+ 	.battery_vref_mode = true,
+-	.has_aux2 = false,
++	.has_aux_md = false,
+ 	.channels = jz4740_channels,
+ 	.num_channels = ARRAY_SIZE(jz4740_channels),
+ 	.init_clk_div = NULL, /* no ADCLK register on JZ4740 */
+@@ -534,7 +534,7 @@ static const struct ingenic_adc_soc_data jz4770_adc_soc_data = {
+ 	.battery_scale_avail = jz4770_adc_battery_scale_avail,
+ 	.battery_scale_avail_size = ARRAY_SIZE(jz4770_adc_battery_scale_avail),
+ 	.battery_vref_mode = false,
+-	.has_aux2 = true,
++	.has_aux_md = true,
+ 	.channels = jz4770_channels,
+ 	.num_channels = ARRAY_SIZE(jz4770_channels),
+ 	.init_clk_div = jz4770_adc_init_clk_div,
+@@ -581,7 +581,7 @@ static int ingenic_adc_read_chan_info_raw(struct iio_dev *iio_dev,
+ 
+ 	/* We cannot sample AUX/AUX2 in parallel. */
+ 	mutex_lock(&adc->aux_lock);
+-	if (adc->soc_data->has_aux2 && engine == 0) {
++	if (adc->soc_data->has_aux_md && engine == 0) {
+ 		bit = BIT(chan->channel == INGENIC_ADC_AUX2);
+ 		ingenic_adc_set_config(adc, JZ_ADC_REG_CFG_AUX_MD, bit);
+ 	}
+-- 
+2.30.2
 
