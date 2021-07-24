@@ -6,33 +6,43 @@ X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED04DC4338F
-	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 15:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6288FC4338F
+	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 15:46:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C420660E92
-	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 15:40:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3B42F60E90
+	for <linux-iio@archiver.kernel.org>; Sat, 24 Jul 2021 15:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229771AbhGXPAA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 24 Jul 2021 11:00:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38258 "EHLO mail.kernel.org"
+        id S230046AbhGXPFl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 24 Jul 2021 11:05:41 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229545AbhGXO77 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 24 Jul 2021 10:59:59 -0400
+        id S229545AbhGXPFl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 24 Jul 2021 11:05:41 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C2F7360EAF;
-        Sat, 24 Jul 2021 15:40:29 +0000 (UTC)
-Date:   Sat, 24 Jul 2021 16:43:01 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id D981360E8C;
+        Sat, 24 Jul 2021 15:46:08 +0000 (UTC)
+Date:   Sat, 24 Jul 2021 16:48:40 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Alexandru Ardelean <aardelean@deviqon.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        denis.ciocca@st.com
-Subject: Re: [PATCH 1/4] iio: pressure: st_pressure: use
- devm_iio_triggered_buffer_setup() for buffer
-Message-ID: <20210724164301.54008712@jic23-huawei>
-In-Reply-To: <20210720074642.223293-1-aardelean@deviqon.com>
-References: <20210720074642.223293-1-aardelean@deviqon.com>
+To:     Yizhuo <yzhai003@ucr.edu>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Mugilraj Dhavachelvan <dmugil2000@gmail.com>,
+        Olivier Moysan <olivier.moysan@st.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: stm32-dfsdm: Fix the uninitialized use if
+ regmap_read() fails
+Message-ID: <20210724164840.7381053b@jic23-huawei>
+In-Reply-To: <20210719195313.40341-1-yzhai003@ucr.edu>
+References: <20210719195313.40341-1-yzhai003@ucr.edu>
 X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -41,117 +51,60 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 20 Jul 2021 10:46:39 +0300
-Alexandru Ardelean <aardelean@deviqon.com> wrote:
+On Mon, 19 Jul 2021 19:53:11 +0000
+Yizhuo <yzhai003@ucr.edu> wrote:
 
-> The st_press_allocate_ring() function calls iio_triggered_buffer_setup() to
-> allocate a triggered buffer.
+> Inside function stm32_dfsdm_irq(), the variable "status", "int_en"
+> could be uninitialized if the regmap_read() fails and returns an error
+> code.  However, they are directly used in the later context to decide
+> the control flow, which is potentially unsafe.
 > 
-> But the same can be done with devm_iio_triggered_buffer_setup() and then
-> the st_press_common_remove() no longer needs to manually deallocate it.
+> Fixes: e2e6771c64625 ("IIO: ADC: add STM32 DFSDM sigma delta ADC support")
 > 
-> We know that the parent of the IIO device is used to manage other instances
-> of the devm unwind, so it can be used in the st_press_allocate_ring() as
-> well.
+> Signed-off-by: Yizhuo <yzhai003@ucr.edu>
 
-This raises an interesting point.  This driver mixes and matches between
-hanging devm off the parent and off the iio_dev->dev.
+Hi Yizhou
 
-That's probably not a good thing to do as it could lead to an odd unwind
-order.  I'm pretty sure the changes here are fine, but we should take
-a closer look...
+I want to get some review of this from people familiar with the
+hardware as there is a small possibility your reordering might have
+introduced a problem.
 
-Series applied to the togreg branch of iio.git and pushed out as testing.
+> ---
+>  drivers/iio/adc/stm32-dfsdm-adc.c | 9 +++++++--
+>  1 file changed, 7 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+> index 1cfefb3b5e56..d8b78aead942 100644
+> --- a/drivers/iio/adc/stm32-dfsdm-adc.c
+> +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+> @@ -1292,9 +1292,11 @@ static irqreturn_t stm32_dfsdm_irq(int irq, void *arg)
+>  	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+>  	struct regmap *regmap = adc->dfsdm->regmap;
+>  	unsigned int status, int_en;
+> +	int ret;
+>  
+> -	regmap_read(regmap, DFSDM_ISR(adc->fl_id), &status);
+> -	regmap_read(regmap, DFSDM_CR2(adc->fl_id), &int_en);
 
-You can do the same thing with the trigger with only slightly more complex
-patch, but I'd like to discuss whether there are races because of the current
-dev mix and match before that.
-
-Thanks,
+Moving this later is only valid if there aren't any side effects.
+The current ordering is strange enough it makes me wonder if there might be!
 
 Jonathan
 
-
-> 
-> Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
-> ---
->  drivers/iio/pressure/st_pressure.h        | 5 -----
->  drivers/iio/pressure/st_pressure_buffer.c | 9 ++-------
->  drivers/iio/pressure/st_pressure_core.c   | 6 +-----
->  3 files changed, 3 insertions(+), 17 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/st_pressure.h b/drivers/iio/pressure/st_pressure.h
-> index 9417b3bd7513..156e6a72dc5c 100644
-> --- a/drivers/iio/pressure/st_pressure.h
-> +++ b/drivers/iio/pressure/st_pressure.h
-> @@ -43,7 +43,6 @@ static __maybe_unused const struct st_sensors_platform_data default_press_pdata
+> +	ret = regmap_read(regmap, DFSDM_ISR(adc->fl_id), &status);
+> +	if (ret)
+> +		return IRQ_HANDLED;
 >  
->  #ifdef CONFIG_IIO_BUFFER
->  int st_press_allocate_ring(struct iio_dev *indio_dev);
-> -void st_press_deallocate_ring(struct iio_dev *indio_dev);
->  int st_press_trig_set_state(struct iio_trigger *trig, bool state);
->  #define ST_PRESS_TRIGGER_SET_STATE (&st_press_trig_set_state)
->  #else /* CONFIG_IIO_BUFFER */
-> @@ -51,10 +50,6 @@ static inline int st_press_allocate_ring(struct iio_dev *indio_dev)
->  {
->  	return 0;
->  }
-> -
-> -static inline void st_press_deallocate_ring(struct iio_dev *indio_dev)
-> -{
-> -}
->  #define ST_PRESS_TRIGGER_SET_STATE NULL
->  #endif /* CONFIG_IIO_BUFFER */
->  
-> diff --git a/drivers/iio/pressure/st_pressure_buffer.c b/drivers/iio/pressure/st_pressure_buffer.c
-> index b651e7c31e90..25dbd5476b26 100644
-> --- a/drivers/iio/pressure/st_pressure_buffer.c
-> +++ b/drivers/iio/pressure/st_pressure_buffer.c
-> @@ -41,13 +41,8 @@ static const struct iio_buffer_setup_ops st_press_buffer_setup_ops = {
->  
->  int st_press_allocate_ring(struct iio_dev *indio_dev)
->  {
-> -	return iio_triggered_buffer_setup(indio_dev, NULL,
-> -		&st_sensors_trigger_handler, &st_press_buffer_setup_ops);
-> -}
-> -
-> -void st_press_deallocate_ring(struct iio_dev *indio_dev)
-> -{
-> -	iio_triggered_buffer_cleanup(indio_dev);
-> +	return devm_iio_triggered_buffer_setup(indio_dev->dev.parent, indio_dev,
-> +		NULL, &st_sensors_trigger_handler, &st_press_buffer_setup_ops);
->  }
->  
->  MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-> diff --git a/drivers/iio/pressure/st_pressure_core.c b/drivers/iio/pressure/st_pressure_core.c
-> index 4ff6d40e3670..ab1c17fac807 100644
-> --- a/drivers/iio/pressure/st_pressure_core.c
-> +++ b/drivers/iio/pressure/st_pressure_core.c
-> @@ -718,7 +718,7 @@ int st_press_common_probe(struct iio_dev *indio_dev)
->  		err = st_sensors_allocate_trigger(indio_dev,
->  						  ST_PRESS_TRIGGER_OPS);
->  		if (err < 0)
-> -			goto st_press_probe_trigger_error;
-> +			return err;
+>  	if (status & DFSDM_ISR_REOCF_MASK) {
+>  		/* Read the data register clean the IRQ status */
+> @@ -1303,6 +1305,9 @@ static irqreturn_t stm32_dfsdm_irq(int irq, void *arg)
 >  	}
 >  
->  	err = iio_device_register(indio_dev);
-> @@ -733,8 +733,6 @@ int st_press_common_probe(struct iio_dev *indio_dev)
->  st_press_device_register_error:
->  	if (press_data->irq > 0)
->  		st_sensors_deallocate_trigger(indio_dev);
-> -st_press_probe_trigger_error:
-> -	st_press_deallocate_ring(indio_dev);
->  	return err;
->  }
->  EXPORT_SYMBOL(st_press_common_probe);
-> @@ -746,8 +744,6 @@ void st_press_common_remove(struct iio_dev *indio_dev)
->  	iio_device_unregister(indio_dev);
->  	if (press_data->irq > 0)
->  		st_sensors_deallocate_trigger(indio_dev);
-> -
-> -	st_press_deallocate_ring(indio_dev);
->  }
->  EXPORT_SYMBOL(st_press_common_remove);
->  
+>  	if (status & DFSDM_ISR_ROVRF_MASK) {
+> +		ret = regmap_read(regmap, DFSDM_CR2(adc->fl_id), &int_en);
+> +		if (ret)
+> +			return IRQ_HANDLED;
+>  		if (int_en & DFSDM_CR2_ROVRIE_MASK)
+>  			dev_warn(&indio_dev->dev, "Overrun detected\n");
+>  		regmap_update_bits(regmap, DFSDM_ICR(adc->fl_id),
 
