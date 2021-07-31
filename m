@@ -5,66 +5,66 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F091BC43214
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6E8F6C4320A
 	for <linux-iio@archiver.kernel.org>; Sat, 31 Jul 2021 22:51:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DDADD60F36
+	by mail.kernel.org (Postfix) with ESMTP id 5468360F36
 	for <linux-iio@archiver.kernel.org>; Sat, 31 Jul 2021 22:51:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231965AbhGaWvU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 31 Jul 2021 18:51:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46132 "EHLO
+        id S231984AbhGaWvI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 31 Jul 2021 18:51:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232003AbhGaWvR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 31 Jul 2021 18:51:17 -0400
-Received: from mail-pj1-x1035.google.com (mail-pj1-x1035.google.com [IPv6:2607:f8b0:4864:20::1035])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D7EC0613D5;
-        Sat, 31 Jul 2021 15:51:07 -0700 (PDT)
-Received: by mail-pj1-x1035.google.com with SMTP id pj14-20020a17090b4f4eb029017786cf98f9so8901697pjb.2;
-        Sat, 31 Jul 2021 15:51:07 -0700 (PDT)
+        with ESMTP id S231954AbhGaWvH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 31 Jul 2021 18:51:07 -0400
+Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F0D28C0613D5;
+        Sat, 31 Jul 2021 15:50:59 -0700 (PDT)
+Received: by mail-pl1-x636.google.com with SMTP id i10so15395060pla.3;
+        Sat, 31 Jul 2021 15:50:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+oxhLW/JAeUr8T6pG8sP91Z111DWd3TJdv6xrLbTH7o=;
-        b=AVL9sng0SrOVPr0ecOpe8MXE7oF7gzO2XEeqLZirveu95khdif/X3JY//3+Wopeq3T
-         LGI3dw8nCqC2mrRdWOIGAcSdcjUuFIapQz0HPD3+cTYZgMbbqnVZNkidufgUAaMnL9HT
-         yYDvNCvsFvKVEqQXC1rB3zpPtxG/jfqodoj91/j6LOir6GEjoWoaxMfaNjvOMQnWq+6m
-         yDUBdzQyzGTosVSr6UtQefxB0JNhGVsSJzLC0mQplczR61BMkulpPD/LITxiTXq4EX9C
-         XxEU/ySz6828kv3vaRBVM8H79CjpXCltM6hyQ5VH37whPzhcr52GnV5xgSBa0JCkQAQG
-         VmQQ==
+        bh=kkYno5k2Oj/w12pA+PO0ZF1OUj36pZFeWyQiTXky8BE=;
+        b=RL+Z723nZCa1YekHfCYJiUZl081k8XF4+b8I7hYev1FjXtDmeJIQg/l21lA5yawzLr
+         c/oYmL60crTe5HTDBuOOOFALjqfPmnJvByI26pHAUhmRuAvJ+tF5lkt/n2qHMAKIUYOp
+         gIoiGeLigow2E6z4EdROsZCLXstXPvqdMLVz2dcNaKzXUeLkByRR9ygAsR7DNAYDcsdK
+         dMWiBnjSkjDU9ONb70dtXYjcby3jFyXZr+q4MtCpP42rriVJkqGjDhYkTApt6k16pTrM
+         biIv0pzmBMQD1xg63BbYrwetSJSEhwnnSzlmRSLIHEbvvDI/g0XLYsprctmgc3I5IwCQ
+         8y2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+oxhLW/JAeUr8T6pG8sP91Z111DWd3TJdv6xrLbTH7o=;
-        b=XiRWq76a3l3Gw4mVJo6osLfszh5LwQKHxG55riBOT4Yio9CVtjJr1Z6pWBXlDRdujd
-         v7XlDhQTrsZBcCotERs/KRTyu8gM7R8wnfaLsxjZWarXk2Hw/8iMiwMnZ4otIQOaNH33
-         CZfaPlbDxbVyb3mJ/hSYXiQEZ4gXRcFIXsBXrjixE69N9J/zkdmCB6TuQcEHBiJq1GC/
-         AhiMNT6lhN0oWvGF5ASFoq8nWYzT8UpixTozzNFOF7KTarvfSEx5HHA45ktqcZX7JW/S
-         gn6Mg96a+XsEB7k7gNPvz9EBFIQln/LlIB6fq8MJj1sbvOdIhX+LZKVc0pxXrTls2TQ7
-         /2bg==
-X-Gm-Message-State: AOAM530g4aosZBHriZDX9P05kWT0vwQiaaxzx7wl2OYE+KtJQZ55bAhY
-        ycujBOs3s0Ps0Dc832Szug4=
-X-Google-Smtp-Source: ABdhPJxTPlR7eg1CM11kTxq6x8s810BUvyjkf2nypP8A4sRrN07/j9GAQlkHd7WrBbq4bol9nk7gyA==
-X-Received: by 2002:a17:902:da8a:b029:12c:4261:a2d6 with SMTP id j10-20020a170902da8ab029012c4261a2d6mr8113679plx.50.1627771867488;
-        Sat, 31 Jul 2021 15:51:07 -0700 (PDT)
+        bh=kkYno5k2Oj/w12pA+PO0ZF1OUj36pZFeWyQiTXky8BE=;
+        b=MUznU5BjZTKX/UDRnjZ0QGz6S0b+i510F/BuuZZJtyt1K4qgOHKKYTD0q4sKYtIzb9
+         FStB/b51zIzVQlxAezsaXB95SMI4KpfNb7T9lOuob3fPfY32DbkIyalIuO83beCGyyjF
+         sSdN8lz7PsLTFwSXj3zwI6FPCVHiCf4oKT8HXUWWANWP7GIlTR4ENsvz6/E6/eJwknwA
+         FZmFYOLM9MBoMkBKxI5LH12MIG7AvsqQyeBWbP0Oh08eojyGxEhpMLoQ3GKcNUYniGZc
+         Ur70jfN8mhS61JbtH7tkHBu1lb5VGvY0SWciGCdgL+Au3SrOn11+q4uidWhfsn0bYtZp
+         ZGCg==
+X-Gm-Message-State: AOAM533Jf3psxKZJZxC4WVN3/G1+cSoTdGDkN0CGSEHw8HK0a5B1u4m0
+        ysrxkklOtzfkTTNgm79BbEc=
+X-Google-Smtp-Source: ABdhPJxbYvioZaHUsfEMPIQphMzWoS59wHNaCVUC7Uki14za22illxT+0Frn+dhpzwkyGVrnEsd3wQ==
+X-Received: by 2002:a17:90a:9411:: with SMTP id r17mr9965132pjo.49.1627771859400;
+        Sat, 31 Jul 2021 15:50:59 -0700 (PDT)
 Received: from localhost.localdomain ([125.62.118.205])
-        by smtp.googlemail.com with ESMTPSA id 20sm6980578pfi.170.2021.07.31.15.51.03
+        by smtp.googlemail.com with ESMTPSA id 20sm6980578pfi.170.2021.07.31.15.50.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 31 Jul 2021 15:51:07 -0700 (PDT)
+        Sat, 31 Jul 2021 15:50:58 -0700 (PDT)
 From:   Puranjay Mohan <puranjay12@gmail.com>
 To:     Michael.Hennerich@analog.com, alexandru.ardelean@analog.com,
         jic23@kernel.org, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         lars@metafoo.de, Dragos.Bogdan@analog.com, Darius.Berghe@analog.com
 Cc:     Puranjay Mohan <puranjay12@gmail.com>
-Subject: [PATCH v7 3/3] iio: accel: adxl355: Add triggered buffer support
-Date:   Sun,  1 Aug 2021 04:20:45 +0530
-Message-Id: <20210731225045.399445-4-puranjay12@gmail.com>
+Subject: [PATCH v7 1/3] dt-bindings: iio: accel: Add DT binding doc for ADXL355
+Date:   Sun,  1 Aug 2021 04:20:43 +0530
+Message-Id: <20210731225045.399445-2-puranjay12@gmail.com>
 X-Mailer: git-send-email 2.30.1
 In-Reply-To: <20210731225045.399445-1-puranjay12@gmail.com>
 References: <20210731225045.399445-1-puranjay12@gmail.com>
@@ -74,240 +74,108 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Provide a way for continuous data capture by setting up buffer support. The
-data ready signal exposed at the DRDY pin of the ADXL355 is exploited as
-a hardware interrupt which triggers to fill the buffer.
+Add devicetree binding document for ADXL355, a 3-Axis MEMS Accelerometer.
 
 Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>
 ---
- drivers/iio/accel/adxl355.h      |   2 +-
- drivers/iio/accel/adxl355_core.c | 102 ++++++++++++++++++++++++++++++-
- drivers/iio/accel/adxl355_i2c.c  |   3 +-
- drivers/iio/accel/adxl355_spi.c  |   2 +-
- 4 files changed, 104 insertions(+), 5 deletions(-)
+ .../bindings/iio/accel/adi,adxl355.yaml       | 88 +++++++++++++++++++
+ 1 file changed, 88 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl355.yaml
 
-diff --git a/drivers/iio/accel/adxl355.h b/drivers/iio/accel/adxl355.h
-index 322b0abb8..f0a376e6d 100644
---- a/drivers/iio/accel/adxl355.h
-+++ b/drivers/iio/accel/adxl355.h
-@@ -15,5 +15,5 @@ extern const struct regmap_access_table adxl355_readable_regs_tbl;
- extern const struct regmap_access_table adxl355_writeable_regs_tbl;
- 
- int adxl355_core_probe(struct device *dev, struct regmap *regmap,
--		       const char *name);
-+		       const char *name, int irq);
- #endif /* _ADXL355_H_ */
-diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
-index 47fbb31bc..f9dc2a530 100644
---- a/drivers/iio/accel/adxl355_core.c
-+++ b/drivers/iio/accel/adxl355_core.c
-@@ -9,6 +9,10 @@
- 
- #include <asm/unaligned.h>
- #include <linux/bitfield.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
- #include <linux/iio/iio.h>
- #include <linux/limits.h>
- #include <linux/math64.h>
-@@ -172,6 +176,7 @@ static const struct adxl355_chan_info adxl355_chans[] = {
- };
- 
- struct adxl355_data {
-+	int irq;
- 	struct regmap *regmap;
- 	struct device *dev;
- 	struct mutex lock; /* lock to protect op_mode */
-@@ -181,6 +186,12 @@ struct adxl355_data {
- 	int calibbias[3];
- 	int adxl355_hpf_3db_table[7][2];
- 	u8 transf_buf[3] ____cacheline_aligned;
-+	struct iio_trigger      *dready_trig;
-+	/* Ensure correct alignment of timestamp when present */
-+	struct {
-+		__be32 channels[3];
-+		s64 ts;
-+	} buffer ____cacheline_aligned;
- };
- 
- static int adxl355_set_op_mode(struct adxl355_data *data,
-@@ -499,12 +510,46 @@ static int adxl355_read_avail(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static const unsigned long adxl355_avail_scan_masks[] = {
-+	GENMASK(3, 0),
-+	0
-+};
+diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl355.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl355.yaml
+new file mode 100644
+index 000000000..5da3fd5ad
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl355.yaml
+@@ -0,0 +1,88 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/accel/adi,adxl355.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- static const struct iio_info adxl355_info = {
- 	.read_raw	= adxl355_read_raw,
- 	.write_raw	= adxl355_write_raw,
- 	.read_avail	= &adxl355_read_avail
- };
- 
-+static const struct iio_trigger_ops adxl355_trigger_ops = {
-+	.validate_device = &iio_trigger_validate_own_device,
-+};
++title: Analog Devices ADXL355 3-Axis, Low noise MEMS Accelerometer
 +
-+static irqreturn_t adxl355_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct adxl355_data *data = iio_priv(indio_dev);
-+	int ret;
++maintainers:
++  - Puranjay Mohan <puranjay12@gmail.com>
 +
-+	mutex_lock(&data->lock);
++description: |
++  Analog Devices ADXL355 3-Axis, Low noise MEMS Accelerometer that supports
++  both I2C & SPI interfaces
++    https://www.analog.com/en/products/adxl355.html
 +
-+	ret = regmap_bulk_read(data->regmap, ADXL355_XDATA3_REG,
-+			       data->buffer.channels,
-+			       9);
-+	if (ret)
-+		goto out_unlock_notify;
++properties:
++  compatible:
++    enum:
++      - adi,adxl355
 +
-+	iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
-+					   pf->timestamp);
++  reg:
++    maxItems: 1
 +
-+out_unlock_notify:
-+	mutex_unlock(&data->lock);
-+	iio_trigger_notify_done(indio_dev->trig);
++  interrupts:
++    minItems: 1
++    maxItems: 3
++    description: |
++      Type should be IRQ_TYPE_LEVEL_HIGH.
++      Three configurable interrupt lines exist.
 +
-+	return IRQ_HANDLED;
-+}
++  interrupt-names:
++    description: Specify which interrupt line is in use.
++    items:
++      enum:
++        - INT1
++        - INT2
++        - DRDY
++    minItems: 1
++    maxItems: 3
 +
- #define ADXL355_ACCEL_CHANNEL(index, reg, axis) {			\
- 	.type = IIO_ACCEL,						\
- 	.address = reg,							\
-@@ -518,6 +563,7 @@ static const struct iio_info adxl355_info = {
- 	.info_mask_shared_by_type_available =				\
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |				\
- 		BIT(IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY),	\
-+	.scan_index = index,						\
- 	.scan_type = {							\
- 		.sign = 's',						\
- 		.realbits = 20,						\
-@@ -537,17 +583,56 @@ static const struct iio_chan_spec adxl355_channels[] = {
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 				      BIT(IIO_CHAN_INFO_SCALE) |
- 				      BIT(IIO_CHAN_INFO_OFFSET),
-+		.scan_index = 3,
- 		.scan_type = {
- 			.sign = 's',
- 			.realbits = 12,
- 			.storagebits = 16,
- 			.endianness = IIO_BE,
- 		},
--	}
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(4)
- };
- 
-+static int adxl355_probe_trigger(struct iio_dev *indio_dev)
-+{
-+	struct adxl355_data *data = iio_priv(indio_dev);
-+	int ret;
++  vdd-supply:
++    description: Regulator that provides power to the sensor
 +
-+	if (!data->irq) {
-+		dev_info(data->dev, "no irq, using polling\n");
-+		return 0;
-+	}
++  vddio-supply:
++    description: Regulator that provides power to the bus
 +
-+	data->dready_trig = devm_iio_trigger_alloc(data->dev, "%s-dev%d",
-+						   indio_dev->name,
-+						   indio_dev->id);
-+	if (!data->dready_trig)
-+		return -ENOMEM;
++  spi-max-frequency: true
 +
-+	data->dready_trig->ops = &adxl355_trigger_ops;
-+	iio_trigger_set_drvdata(data->dready_trig, indio_dev);
++required:
++  - compatible
++  - reg
 +
-+	ret = devm_request_irq(data->dev, data->irq,
-+			       &iio_trigger_generic_data_rdy_poll,
-+			       IRQF_ONESHOT, "adxl355_irq", data->dready_trig);
-+	if (ret < 0)
-+		return dev_err_probe(data->dev, ret, "request irq %d failed\n",
-+				     data->irq);
++additionalProperties: false
 +
-+	ret = devm_iio_trigger_register(data->dev, data->dready_trig);
-+	if (ret) {
-+		dev_err(data->dev, "iio trigger register failed\n");
-+		return ret;
-+	}
++examples:
++  - |
++        #include <dt-bindings/gpio/gpio.h>
++        #include <dt-bindings/interrupt-controller/irq.h>
++        i2c {
++                #address-cells = <1>;
++                #size-cells = <0>;
 +
-+	indio_dev->trig = iio_trigger_get(data->dready_trig);
++                /* Example for a I2C device node */
++                accelerometer@1d {
++                        compatible = "adi,adxl355";
++                        reg = <0x1d>;
++                        interrupt-parent = <&gpio>;
++                        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
++                        interrupt-names = "DRDY";
++                };
++        };
++  - |
++        #include <dt-bindings/gpio/gpio.h>
++        #include <dt-bindings/interrupt-controller/irq.h>
++        spi {
++                #address-cells = <1>;
++                #size-cells = <0>;
 +
-+	return 0;
-+}
-+
- int adxl355_core_probe(struct device *dev, struct regmap *regmap,
--		       const char *name)
-+		       const char *name, int irq)
- {
- 	struct adxl355_data *data;
- 	struct iio_dev *indio_dev;
-@@ -560,6 +645,7 @@ int adxl355_core_probe(struct device *dev, struct regmap *regmap,
- 	data = iio_priv(indio_dev);
- 	data->regmap = regmap;
- 	data->dev = dev;
-+	data->irq = irq;
- 	data->op_mode = ADXL355_STANDBY;
- 	mutex_init(&data->lock);
- 
-@@ -568,6 +654,7 @@ int adxl355_core_probe(struct device *dev, struct regmap *regmap,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = adxl355_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(adxl355_channels);
-+	indio_dev->available_scan_masks = adxl355_avail_scan_masks;
- 
- 	ret = adxl355_setup(data);
- 	if (ret < 0) {
-@@ -575,6 +662,17 @@ int adxl355_core_probe(struct device *dev, struct regmap *regmap,
- 		return ret;
- 	}
- 
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
-+					      &iio_pollfunc_store_time,
-+					      &adxl355_trigger_handler, NULL);
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret,
-+				     "iio triggered buffer setup failed\n");
-+
-+	ret = adxl355_probe_trigger(indio_dev);
-+	if (ret < 0)
-+		return ret;
-+
- 	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL_GPL(adxl355_core_probe);
-diff --git a/drivers/iio/accel/adxl355_i2c.c b/drivers/iio/accel/adxl355_i2c.c
-index e3070ee81..c18521819 100644
---- a/drivers/iio/accel/adxl355_i2c.c
-+++ b/drivers/iio/accel/adxl355_i2c.c
-@@ -31,7 +31,8 @@ static int adxl355_i2c_probe(struct i2c_client *client)
- 		return PTR_ERR(regmap);
- 	}
- 
--	return adxl355_core_probe(&client->dev, regmap, client->name);
-+	return adxl355_core_probe(&client->dev, regmap, client->name,
-+				  client->irq);
- }
- 
- static const struct i2c_device_id adxl355_i2c_id[] = {
-diff --git a/drivers/iio/accel/adxl355_spi.c b/drivers/iio/accel/adxl355_spi.c
-index a16bd1407..f9ba153f6 100644
---- a/drivers/iio/accel/adxl355_spi.c
-+++ b/drivers/iio/accel/adxl355_spi.c
-@@ -34,7 +34,7 @@ static int adxl355_spi_probe(struct spi_device *spi)
- 		return PTR_ERR(regmap);
- 	}
- 
--	return adxl355_core_probe(&spi->dev, regmap, id->name);
-+	return adxl355_core_probe(&spi->dev, regmap, id->name, spi->irq);
- }
- 
- static const struct spi_device_id adxl355_spi_id[] = {
++                accelerometer@0 {
++                        compatible = "adi,adxl355";
++                        reg = <0>;
++                        spi-max-frequency = <1000000>;
++                        interrupt-parent = <&gpio>;
++                        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
++                        interrupt-names = "DRDY";
++                };
++        };
 -- 
 2.30.1
 
