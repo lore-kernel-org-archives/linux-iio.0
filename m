@@ -2,197 +2,196 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34826C04FE3
-	for <linux-iio@archiver.kernel.org>; Sun,  1 Aug 2021 19:40:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3FAC432BE
+	for <linux-iio@archiver.kernel.org>; Sun,  1 Aug 2021 19:51:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1E19561050
-	for <linux-iio@archiver.kernel.org>; Sun,  1 Aug 2021 19:40:33 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C8A9661042
+	for <linux-iio@archiver.kernel.org>; Sun,  1 Aug 2021 19:51:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231925AbhHATkk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 1 Aug 2021 15:40:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34928 "EHLO
+        id S229990AbhHATvy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 1 Aug 2021 15:51:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37720 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231785AbhHATkb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 1 Aug 2021 15:40:31 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 28FF0C061799;
-        Sun,  1 Aug 2021 12:40:23 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id m11so10321970qtx.7;
-        Sun, 01 Aug 2021 12:40:23 -0700 (PDT)
+        with ESMTP id S229497AbhHATvx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 1 Aug 2021 15:51:53 -0400
+Received: from mail-yb1-xb32.google.com (mail-yb1-xb32.google.com [IPv6:2607:f8b0:4864:20::b32])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70CF4C06175F;
+        Sun,  1 Aug 2021 12:51:45 -0700 (PDT)
+Received: by mail-yb1-xb32.google.com with SMTP id x192so25338031ybe.0;
+        Sun, 01 Aug 2021 12:51:45 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=R5EJ5Gnotkd7ffF8IJqFhFOyVW3BEMA9J80b/3joIJo=;
-        b=khCOP/CAZUFPUggKGpoFL2EBdz3UXIPUwp7FrRee7+IvmWLmGshoYcRazovwO/0bIR
-         HoVVLLjZqaZnBdkoaOuQ76mRFC4KxexnGYfaSw+oC52SbTccU1/FKYpYlO8Fgbnj+C++
-         JuJE9dB2OeIjVtyRm9X9MpCXDp7oChAmCTfgAGz5ce1jFEukaxLmYu2glBrLDygCGKXG
-         LJglGdScgDzRqSzMs1GLNfL56kchOsYVvKqoH1/PcYqNwVNd74LPAZEhpcDtpeOXsIT7
-         2xtkGIl8KSpMdVzsdI9O/G2QckA7KHiIYQadHVuZOv9XJ5X6NKrYC9B089B4kqMORwq6
-         C3xA==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=I3qD/rZ0V+eZxmDbUBpM/NiZcHDu60IOJgfYrVNP/bc=;
+        b=UWZRTpPfyQpQkOBjIXupYutSmPKNEtqcuw6cbNPojUx31DAVFmaM0uGVfD3dbyM5kL
+         xwkt1AzcELfRrRG3897H9Q7uI3ynoyzYthmQy90EknruW110MEwQz7VRkjqmMbohobgw
+         UCm0MQKk6ALPCOPq1e6pnHKsxggW68EAH7J/R7US5ownOQbWEnviDhEQmD5d9kqPT1X1
+         1MK2MEhZEu1FeP+jwwjsDVXnarSVa9kOV42srcfQ5LIEsCrNGaLlrnBB4csawJDVEXfO
+         PHsEj4ey+CAQW9ENMd4mX6GciukrqgjYVdjwYqJK1Ji4CvrFqf1zRZARFI7pVVAG0fHi
+         +1fA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=R5EJ5Gnotkd7ffF8IJqFhFOyVW3BEMA9J80b/3joIJo=;
-        b=AvEbb67VQ0wT9putbLrdlPjcZ98jUtQMsJIrN12cnwYZyY5uHMRu9shufWq8oNdVNa
-         8fjD5KOUU83ptCi5AIaID6t+X/1rm8dp2X5t0HYbW5eart3qO2s6oJMEReE558tA+Fcd
-         hOeyJWZM3KQ8QTNucR6qqr3ApdJSX9sByHJR+5Ot1B4SAHldJPVOFVEP01GMz91SvLHw
-         Du/D68YFjDZtA4WJUYMoZXtj53+LRxuAah5/AY9UGxV85lfoK+H1fyx1aut/fU9z6z99
-         Kb1nwlYZmW3Z2HjTBCYpoPAhwX2V8H1SH4WZT8+SKPbzEqT6GW4+v8Hj6vjf13DL3G3N
-         MG5A==
-X-Gm-Message-State: AOAM533DeHDrOjeci8UAnVx2tK64iup48EB2aB1qq2zWG+Rsk+392hQa
-        PEhvpZkgMc2Kin4WhkGIH+0=
-X-Google-Smtp-Source: ABdhPJyc3xX/ss1pVYBdk0wigqmT67Ms891lDBijJPr/6O0UQ+cBpw7QnOhPurWBb3LXEkHKvRXALQ==
-X-Received: by 2002:ac8:7545:: with SMTP id b5mr11272072qtr.297.1627846822332;
-        Sun, 01 Aug 2021 12:40:22 -0700 (PDT)
-Received: from shaak.. (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id f10sm3621606qto.31.2021.08.01.12.40.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 01 Aug 2021 12:40:21 -0700 (PDT)
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v7 12/13] dt-bindings: iio: afe: add bindings for temperature-sense-rtd
-Date:   Sun,  1 Aug 2021 15:39:59 -0400
-Message-Id: <20210801194000.3646303-13-liambeguin@gmail.com>
-X-Mailer: git-send-email 2.30.1.489.g328c10930387
-In-Reply-To: <20210801194000.3646303-1-liambeguin@gmail.com>
-References: <20210801194000.3646303-1-liambeguin@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=I3qD/rZ0V+eZxmDbUBpM/NiZcHDu60IOJgfYrVNP/bc=;
+        b=p9G8IKIis2Tsz9l6cIUWzaIrK/pSvMc4l25tOPFuwPUjoPXNVvifU/TIxSVQernCV7
+         MQg8Zhbc4/FhUWdCgDGoAb6KcdA88NkswkRzsadHb6/DbfYKbDYDSQbM/fKGP3V4DTwX
+         OT9KFwnZ0zuPs4xegEApAPOejqnObx3G4+EsBfVTr06l6qH8yuX/W9+hgGnlctzIMDyp
+         uCjuIylKkHzNvwTkI2MTMUQycIzMHKkra0SnGk/Zri6msLXv8YVDYHkUVuPCG+Urf+OX
+         PLpfc25dUfA//DdeCVGTehg+usmQdVnB2LQBtEcxZGVp638WYqy3XNutIzY9cquMflNW
+         jNMg==
+X-Gm-Message-State: AOAM531yh8PcbSMaIX30/EZL0howxVk0WSURhZb+ndy4faZFb8cXjStN
+        kavSnieVFECDWSIK9RK6o0zd6xXzoqqzldgYln8=
+X-Google-Smtp-Source: ABdhPJw7LS93H0i4bkzbrHg6bKZWyyhnvXHEnxMWG27SMcjNvQR5TGwBcMoCWf19lZaiXTiRlFhcOLADHqjJNSZQycE=
+X-Received: by 2002:a25:dad7:: with SMTP id n206mr16449292ybf.119.1627847504684;
+ Sun, 01 Aug 2021 12:51:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20210726182850.14328-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20210726182850.14328-3-prabhakar.mahadev-lad.rj@bp.renesas.com>
+ <20210731181142.430c50f8@jic23-huawei> <CA+V-a8vMdFrrcw3iqbSzd4oN_x6CijOwYo7eSFuf8LhfB6SFRg@mail.gmail.com>
+ <20210801175947.2b49878d@jic23-huawei>
+In-Reply-To: <20210801175947.2b49878d@jic23-huawei>
+From:   "Lad, Prabhakar" <prabhakar.csengg@gmail.com>
+Date:   Sun, 1 Aug 2021 20:51:18 +0100
+Message-ID: <CA+V-a8ukR39BsvUd055p8w-kafZ-SQDXydkJXag7c+7m3MEihg@mail.gmail.com>
+Subject: Re: [PATCH v3 2/3] iio: adc: Add driver for Renesas RZ/G2L A/D converter
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Magnus Damm <magnus.damm@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Liam Beguin <lvb@xiphos.com>
+Hi Jonathan,
 
-An ADC is often used to measure other quantities indirectly. This
-binding describe one case, the measurement of a temperature through the
-voltage across an RTD resistor such as a PT1000.
+On Sun, Aug 1, 2021 at 5:57 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> On Sat, 31 Jul 2021 19:31:52 +0100
+> "Lad, Prabhakar" <prabhakar.csengg@gmail.com> wrote:
+>
+> > Hi Jonathan,
+> >
+> > Thank you for the review.
+> >
+>
+> ...
+>
+> > > > +#define DRIVER_NAME          "rzg2l-adc"
+> > >
+> > > As only used in one place, just put it inline there so we don't need
+> > > to go find if we want to know the value - I'm lazy.
+> > >
+> > Its being used in two places
+> > 1: indio_dev->name = DRIVER_NAME #In probe call
+> > 2: .name = DRIVER_NAME # In platform_driver struct
+> >
+> > Let me know if you want me to replace them inline and drop the above macro.
+>
+> oops.  Searching apparently failed me ;)  Fine as is.
+>
+> ...
+>
+>
+> > > > +static const struct iio_info rzg2l_adc_iio_info = {
+> > > > +     .read_raw = rzg2l_adc_read_raw,
+> > > > +     .read_label = rzg2l_adc_read_label,
+> > > > +};
+> > > > +
+> > > > +static irqreturn_t rzg2l_adc_isr(int irq, void *dev_id)
+> > > > +{
+> > > > +     struct rzg2l_adc *adc = (struct rzg2l_adc *)dev_id;
+> > >
+> > > No need for explicit cast from void * to another pointer type.
+> > > This is always valid without in C.
+> > >
+> > Agreed.
+> >
+> > > > +     unsigned long intst;
+> > > > +     u32 reg;
+> > > > +     int ch;
+> > > > +
+> > > > +     reg = rzg2l_adc_readl(adc, RZG2L_ADSTS);
+> > > > +
+> > > > +     /* A/D conversion channel select error interrupt */
+> > > > +     if (reg & RZG2L_ADSTS_CSEST) {
+> > > > +             rzg2l_adc_writel(adc, RZG2L_ADSTS, reg);
+> > > > +             return IRQ_HANDLED;
+> > > > +     }
+> > > > +
+> > > > +     intst = reg & RZG2L_ADSTS_INTST_MASK;
+> > > > +     if (!intst)
+> > > > +             return IRQ_NONE;
+> > > > +
+> > > > +     for_each_set_bit(ch, &intst, RZG2L_ADC_MAX_CHANNELS) {
+> > > > +             if (intst & BIT(ch))
+> > >
+> > > I'm missing how this if can fail given we only end up in here when the bit is
+> > > set.
+> > >
+> > ADC has 8 channels RZG2L_ADSTS register bits [0:7] will be set to 1
+> > when the given channel ADC conversion has been completed. So the above
+> > if condition checks if the bit is set to 1 and then reads the
+> > corresponding value of that channel.
+>
+> Just looking at the two lines of code above
+> for_each_set_bit(ch, &intst, RZG2L_ADC_MAX_CHANNELS)
+> will only call the the next line if the bit is set.  E.g. It will only call
+> it
+> if (intst & BIT(ch))
+>
+> So you can only get into the body of the for loop if this bit is set and the
+> condition is always true.  Hence drop
+> if (intst & BIT(ch))
+>
+Agreed can be dropped.
 
-Signed-off-by: Liam Beguin <lvb@xiphos.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../iio/afe/temperature-sense-rtd.yaml        | 101 ++++++++++++++++++
- 1 file changed, 101 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
+> >
+> > > > +                     adc->last_val[ch] = rzg2l_adc_readl(adc, RZG2L_ADCR(ch)) &
+> > > > +                                         RZG2L_ADCR_AD_MASK;
+> > > > +     }
+> > > > +
+> > > > +     /* clear the channel interrupt */
+> > > > +     rzg2l_adc_writel(adc, RZG2L_ADSTS, reg);
+> > > > +
+> > > > +     complete(&adc->completion);
+> > > > +
+> > > > +     return IRQ_HANDLED;
+> > > > +}
+> > > > +
+>
+> ...
+>
+> > > > +
+> > > > +     pm_runtime_enable(dev);
+> > >
+> > > I think you also want to set the state to suspended to ensure the resume is
+> > > called on get.
+> > >
+> > pm_runtime_set_suspended() should only be called when runtime is
+> > disabled or is it that I am missing something ?
+>
+> If you want the runtime pm code to assume your device is suspended initially
+> then you set the state before you call pm_runtime_enable(dev).
+>
+OK will call pm_runtime_set_suspended() before enabling.
 
-diff --git a/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml b/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
-new file mode 100644
-index 000000000000..336ce96371db
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
-@@ -0,0 +1,101 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/afe/temperature-sense-rtd.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Temperature Sense RTD
-+
-+maintainers:
-+  - Liam Beguin <liambeguin@gmail.com>
-+
-+description: |
-+  RTDs (Resistance Temperature Detectors) are a kind of temperature sensors
-+  used to get a linear voltage to temperature reading within a give range
-+  (usually 0 to 100 degrees Celsius).
-+
-+  When an io-channel measures the output voltage across an RTD such as a
-+  PT1000, the interesting measurement is almost always the corresponding
-+  temperature, not the voltage output. This binding describes such a circuit.
-+
-+  The general transfer function here is (using SI units)
-+
-+    V = R(T) * iexc
-+    R(T) = r0 * (1 + alpha * T)
-+    T = 1 / (alpha * r0 * iexc) * (V - r0 * iexc)
-+
-+  The following circuit matches what's in the examples section.
-+
-+           5V0
-+          -----
-+            |
-+        +---+----+
-+        |  R 5k  |
-+        +---+----+
-+            |
-+            V 1mA
-+            |
-+            +---- Vout
-+            |
-+        +---+----+
-+        | PT1000 |
-+        +---+----+
-+            |
-+          -----
-+           GND
-+
-+properties:
-+  compatible:
-+    const: temperature-sense-rtd
-+
-+  io-channels:
-+    maxItems: 1
-+    description: |
-+      Channel node of a voltage io-channel.
-+
-+  '#io-channel-cells':
-+    const: 0
-+
-+  excitation-current-microamp:
-+    description: The current fed through the RTD sensor.
-+
-+  alpha-ppm-per-celsius:
-+    description: |
-+      alpha can also be expressed in micro-ohms per ohm Celsius. It's a linear
-+      approximation of the resistance versus temperature relationship
-+      between 0 and 100 degrees Celsius.
-+
-+      alpha = (R_100 - R_0) / (100 * R_0)
-+
-+      Where, R_100 is the resistance of the sensor at 100 degrees Celsius, and
-+      R_0 (or r-naught-ohms) is the resistance of the sensor at 0 degrees
-+      Celsius.
-+
-+      Pure platinum has an alpha of 3925. Industry standards such as IEC60751
-+      and ASTM E-1137 specify an alpha of 3850.
-+
-+  r-naught-ohms:
-+    description: |
-+      Resistance of the sensor at 0 degrees Celsius.
-+      Common values are 100 for PT100, 500 for PT500, and 1000 for PT1000
-+
-+additionalProperties: false
-+required:
-+  - compatible
-+  - io-channels
-+  - excitation-current-microamp
-+  - alpha-ppm-per-celsius
-+  - r-naught-ohms
-+
-+examples:
-+  - |
-+    pt1000_1: temperature-sensor0 {
-+        compatible = "temperature-sense-rtd";
-+        #io-channel-cells = <0>;
-+        io-channels = <&temp_adc1 0>;
-+
-+        excitation-current-microamp = <1000>; /* i = U/R = 5 / 5000 */
-+        alpha-ppm-per-celsius = <3908>;
-+        r-naught-ohms = <1000>;
-+    };
-+...
--- 
-2.30.1.489.g328c10930387
-
+Cheers,
+Prabhakar
