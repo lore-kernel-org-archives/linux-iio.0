@@ -2,43 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 821F3C432BE
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Aug 2021 15:57:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B098AC43216
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Aug 2021 15:57:24 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 70A026113D
-	for <linux-iio@archiver.kernel.org>; Mon,  2 Aug 2021 15:57:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 92ECD61102
+	for <linux-iio@archiver.kernel.org>; Mon,  2 Aug 2021 15:57:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235184AbhHBP5b (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 Aug 2021 11:57:31 -0400
-Received: from mo4-p01-ob.smtp.rzone.de ([85.215.255.50]:36478 "EHLO
-        mo4-p01-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235243AbhHBP5b (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Aug 2021 11:57:31 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1627919825;
+        id S235430AbhHBP5d (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 Aug 2021 11:57:33 -0400
+Received: from mo4-p02-ob.smtp.rzone.de ([85.215.255.81]:34595 "EHLO
+        mo4-p02-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235429AbhHBP5d (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Aug 2021 11:57:33 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1627919826;
     s=strato-dkim-0002; d=gerhold.net;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=gY1bbe/6ELA+Jh65/Sb7YEW5x3mr2LzaxSbGJqQczGU=;
-    b=YLNXwTDzdUYHMG2bt+IMqYfzCcEW8ZJdT0cUTlFudb7YRqLLwyRtDsZ/XkIftExoPf
-    82/FHT0BvAB9aro+ilIUzuyCF+OB6wetAWSJLTG8CDnmBxecX2xJEnPTCu8ga0yg8Zs5
-    IPWyXGX082A6OdOnMWokILiACB/RLSpMohZQG4vuAlm3oByReXEpgl027M4qRT6OtZ6V
-    cJHqObnq/0JIl2RlXdc9vtdMTj1kPP+IXysE99qWF1H9mry9ZfWt5V7WIazIUFdOq9uA
-    PDr2JKCTZrv/GIdbTKg5Q1Pz69J7xeFTYkXdD/iynhJE/vD6Egjyq1tnJWIhjn/3GqwH
-    Rr1w==
+    h=References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Cc:Date:
+    From:Subject:Sender;
+    bh=PBDUzAA2uZL8rx4T0qqlTZQwhvXnyhX6ulO6O6mtELA=;
+    b=DYI9hI9jUINOLNxFQnukJwn5zLmQEUfZTOVhSlTUDUMiOBkGUf6a+db2b7HgYX/XbQ
+    ybVLFqFQZZoJvzNZlZz06Wvx9Y2PyFH5tFr7xyBcGNAvRRulNH+yqlF44jyrGtf7cGUo
+    v40ZZoQFp4W1dFfgwkhzc9KxyJPPFNWsPun3ScZg7oSz2MVfirnEVcugpklfEFlk+/LP
+    YMZyhWe9XqydQQxQLsrRcpe3xIe+2pQMKVull2WdihHyIBFctlXR1bNmhlwdZ0iNL9QN
+    3dTE46V7J5N5RNTsvDHP8UzNws8kfotWLsTj+jhA4DVSmX8uJzctMRwj64MU+wIVDwlZ
+    Jjxg==
 Authentication-Results: strato.com;
     dkim=none
 X-RZG-AUTH: ":P3gBZUipdd93FF5ZZvYFPugejmSTVR2nRPhVORvLd4SsytBXTbAOHjRHIhr0eF6M4Q=="
 X-RZG-CLASS-ID: mo00
 Received: from droid..
     by smtp.strato.de (RZmta 47.30.0 DYNA|AUTH)
-    with ESMTPSA id e095f1x72Fv42RB
+    with ESMTPSA id e095f1x72Fv52RE
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
         (Client did not present a certificate);
-    Mon, 2 Aug 2021 17:57:04 +0200 (CEST)
+    Mon, 2 Aug 2021 17:57:05 +0200 (CEST)
 From:   Stephan Gerhold <stephan@gerhold.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
@@ -49,45 +50,78 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         ~postmarketos/upstreaming@lists.sr.ht,
         Nikita Travkin <nikita@trvn.ru>,
-        Stephan Gerhold <stephan@gerhold.net>
-Subject: [PATCH v2 0/4] iio: accel: bmc150: Add support for INT2 and BMC156
-Date:   Mon,  2 Aug 2021 17:56:53 +0200
-Message-Id: <20210802155657.102766-1-stephan@gerhold.net>
+        Stephan Gerhold <stephan@gerhold.net>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 2/4] dt-bindings: iio: accel: bma255: Add bosch,bmc156_accel
+Date:   Mon,  2 Aug 2021 17:56:55 +0200
+Message-Id: <20210802155657.102766-3-stephan@gerhold.net>
 X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210802155657.102766-1-stephan@gerhold.net>
+References: <20210802155657.102766-1-stephan@gerhold.net>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series makes it possible to set up interrupts with the BMC150 driver
-on boards where only the INT2 pin is connected (and not INT1). This is
-particularly always the case for BMC156 since for some reason it only
-has the INT2 pin and not the INT1 pin.
+BMC156 is very smilar to BMC150, but it has only one accelerometer
+interrupt pin. It would make sense if only INT1 was exposed but someone
+at Bosch decided to only have an INT2 pin.
 
-These changes were already partially discussed here:
-https://lore.kernel.org/linux-iio/YMOphuXSoODIVX06@gerhold.net/
+In this case, it does not make sense if the first interrupt pin is
+treated as INT1 (since that pin does not exist). Add a note to the
+bindings that the first interrupt pin is treated as INT2 for BMC156.
 
-Changes in v2:
-  - PATCH 1/4: Clarify order of "interrupts" with "interrupt-names"
-  - PATCH 4/4: Wrap a long line, clarify BOSCH_UNKNOWN with a comment
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Stephan Gerhold <stephan@gerhold.net>
+---
+ .../bindings/iio/accel/bosch,bma255.yaml       | 18 ++++++++++++++++++
+ 1 file changed, 18 insertions(+)
 
-v1: https://lore.kernel.org/linux-iio/20210719112156.27087-1-stephan@gerhold.net/
-
-Stephan Gerhold (4):
-  dt-bindings: iio: accel: bma255: Add interrupt-names
-  dt-bindings: iio: accel: bma255: Add bosch,bmc156_accel
-  iio: accel: bmc150: Make it possible to configure INT2 instead of INT1
-  iio: accel: bmc150: Add support for BMC156
-
- .../bindings/iio/accel/bosch,bma255.yaml      | 34 +++++++-
- drivers/iio/accel/Kconfig                     |  5 +-
- drivers/iio/accel/bmc150-accel-core.c         | 78 +++++++++++++++----
- drivers/iio/accel/bmc150-accel-i2c.c          | 10 ++-
- drivers/iio/accel/bmc150-accel-spi.c          | 10 ++-
- drivers/iio/accel/bmc150-accel.h              | 20 ++++-
- 6 files changed, 134 insertions(+), 23 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+index 253b2051d0b1..478e75ae0885 100644
+--- a/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
++++ b/Documentation/devicetree/bindings/iio/accel/bosch,bma255.yaml
+@@ -26,6 +26,7 @@ properties:
+       - bosch,bma255
+       - bosch,bma280
+       - bosch,bmc150_accel
++      - bosch,bmc156_accel
+       - bosch,bmi055_accel
+ 
+       # bma180 driver in Linux
+@@ -50,6 +51,9 @@ properties:
+       the one connected to the INT2 pin (if available). The type should be
+       IRQ_TYPE_EDGE_RISING.
+ 
++      BMC156 does not have an INT1 pin, therefore the first interrupt pin is
++      always treated as INT2.
++
+   interrupt-names:
+     minItems: 1
+     maxItems: 2
+@@ -85,6 +89,20 @@ examples:
+             interrupt-names = "INT1";
+         };
+     };
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        accelerometer@10 {
++            compatible = "bosch,bmc156_accel";
++            reg = <0x10>;
++            vddio-supply = <&vddio>;
++            vdd-supply = <&vdd>;
++            interrupts = <116 IRQ_TYPE_EDGE_RISING>;
++            interrupt-names = "INT2";
++        };
++    };
+   - |
+     # include <dt-bindings/interrupt-controller/irq.h>
+     spi {
 -- 
 2.32.0
 
