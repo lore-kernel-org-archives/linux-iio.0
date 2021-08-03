@@ -8,54 +8,54 @@ X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34E9CC4338F
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Aug 2021 12:07:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8379BC4320A
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Aug 2021 12:08:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1E2386052B
-	for <linux-iio@archiver.kernel.org>; Tue,  3 Aug 2021 12:07:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6BC4A6052B
+	for <linux-iio@archiver.kernel.org>; Tue,  3 Aug 2021 12:08:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235736AbhHCMIJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 3 Aug 2021 08:08:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51544 "EHLO
+        id S236017AbhHCMIX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 3 Aug 2021 08:08:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51616 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235773AbhHCMII (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Aug 2021 08:08:08 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D60E0C061764;
-        Tue,  3 Aug 2021 05:07:56 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id mt6so29408117pjb.1;
-        Tue, 03 Aug 2021 05:07:56 -0700 (PDT)
+        with ESMTP id S236011AbhHCMIW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Aug 2021 08:08:22 -0400
+Received: from mail-pl1-x632.google.com (mail-pl1-x632.google.com [IPv6:2607:f8b0:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C234CC06175F;
+        Tue,  3 Aug 2021 05:08:08 -0700 (PDT)
+Received: by mail-pl1-x632.google.com with SMTP id j3so8336228plx.4;
+        Tue, 03 Aug 2021 05:08:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=GKMCNriu6Oe0b4ijgDqgdhWJc4dVQTXn+gR1UFw9WGc=;
-        b=t16QRjZIxcuYdstsPWLMVOH/nKmuF5tZxc61xEAvfR0GMoxYmpjaQeUAS8sUFqX9jl
-         YAjhlkc964yIo8VUWzcnAI5hI0QNDqpJXnAFTtLaR81HI4UGEm7iODItlB9BKddN5M6t
-         qU/eHbDqLg3xO2WqXTUoeMolqnhBPPtmfr1sWKwqMnNrAqw8BRXJFKNS/2/kmxOBrixu
-         JotPQAyEfy38LcVluV5FmfUksZHpQ4mtN0JWc3XaO+ElD/KITPegAlAzbiQaVjvc9D+X
-         NCrO20OOyxtjKvMEwmVt9uEr/joDaV40IgIEdh/jzM61V0B69ZasMH4yrmNLOCpe2XCi
-         ltNg==
+        bh=501FGUGr+wDXj4ObY1nsPy9qx/iYl7JAzl3fYbbvm8A=;
+        b=qlb0Pg8Z2sxZpfE/7kIP6ga7BhRE5IJQlkgcnqMCeqNiCjf4m9HF2R+mjiVDr0GOC3
+         5xWEtOiqQFNSWUpLJedN/vFXJju301LT1izE/p+EoP50OSZgnjQiksRe4PSMAzBssOrn
+         CkW7tIDUYzkAicGr+GvST9ocGtlkiEGmx4FMXAMWXy/Ej65lMjpwnmnJKuCpUdRmAhsF
+         WY5dQtpAhrCuZXVi3tiqVViSUabSxp9rTckn8BJIBDtFtnAQM1lCb33fiBQDOVqMuOCE
+         yOZ3sUVbuqL1j8UVpJaqOSH0hKAY+aGHMoG4L7qmZc6QYglYBs9HFlA7TMyWDgpNj8y0
+         0ykg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=GKMCNriu6Oe0b4ijgDqgdhWJc4dVQTXn+gR1UFw9WGc=;
-        b=o3dXxI+a2r/NZKS2Qy0XQKLlZuMvJnqrycI3x0WGArr/KsV6yv9xA2gjElVTGcM/5U
-         RL3brh6nrMcb5XmNSyFvaz/SomlgZJf7pHQ2Ye6QB0L3XnRePfYZrStuk3pyD268aAyW
-         V1tc1ohfClx3e5nV4d3sLQcD7Bvl6JHzyAjAKxda0yrtBDOu99Bs01rmyAsnIBlTbzAa
-         ZoLypjW3IudoR4vC32dQ0XUmpivMUdMX6pYMOB3GCmjZIXAJiN5+TJoasHngt2w/4x10
-         ZJvHUrBhySXPii3LRmcepoHdLRnQGOoKeV1JlJXXvpKZaBlRSQWyL6LLFkgsCBQ1VPmt
-         MBKQ==
-X-Gm-Message-State: AOAM533OkIcKQRM2H+8y/MjsWHvWPUzkZEubtOzalVm8q65LO+J2aZAH
-        J7MYVdt+G0TcBy5biMI2k6s=
-X-Google-Smtp-Source: ABdhPJyLpOQSNtH7EmIuEBrCh2Djo5Spq15M66GUUwHZD0BSAe1IAKjafBjht842rzJiws9CuFZIJQ==
-X-Received: by 2002:a17:90a:fc6:: with SMTP id 64mr22516402pjz.1.1627992476483;
-        Tue, 03 Aug 2021 05:07:56 -0700 (PDT)
+        bh=501FGUGr+wDXj4ObY1nsPy9qx/iYl7JAzl3fYbbvm8A=;
+        b=gHlOSZG8HeGK8Ez2ewjE8A/sH7cFnPvds96xEKH5V1Xi4LBU5Hx4VunblP65+99PfG
+         AhroWfsShtLL5emPBLHNW1beeCr0h4T+UA16zvI6EpCgdiLhA1RPSZILDFfhK1J0VJJv
+         6oHs7u/9GditC5dzYtLPLKl+z+gClNC55rjCIVIxo6QbZ/veGjuq5CHZUUZ23VS5AV2r
+         exRivc+9QCWP7MNCeL8s45D2m6HyZGIc5ybWe4Nkbu2TanrRMs9KJxmffJXXAS3Nt1k5
+         YuGzEk5/rddGZSWxndzusIBe2o59DV1VYgL0wUx2zLeCxcoDCVsGlowUrv4Ds8AaUeEi
+         mDEQ==
+X-Gm-Message-State: AOAM532b4Ld+wb7jn21HChi6DXdSm67ce2mqfKX1gEHY6vAhiy/t/ZEw
+        c41b6mImI2rN0mGHdBQn43w=
+X-Google-Smtp-Source: ABdhPJxEesajGKEIQhtGzkslsvrJkluGB50it7++nhfjHg85zq2a8a0USBbxLYNfCX4E8rlKmAs3Hg==
+X-Received: by 2002:a17:90a:fd10:: with SMTP id cv16mr4132237pjb.134.1627992488359;
+        Tue, 03 Aug 2021 05:08:08 -0700 (PDT)
 Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id n35sm7197502pfv.152.2021.08.03.05.07.51
+        by smtp.gmail.com with ESMTPSA id n35sm7197502pfv.152.2021.08.03.05.08.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 Aug 2021 05:07:55 -0700 (PDT)
+        Tue, 03 Aug 2021 05:08:07 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     jic23@kernel.org
 Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
@@ -67,11 +67,10 @@ Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
         fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
         alexandre.torgue@st.com, o.rempel@pengutronix.de,
         jarkko.nikula@linux.intel.com,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-Subject: [PATCH v14 13/17] counter: Implement signalZ_action_component_id sysfs attribute
-Date:   Tue,  3 Aug 2021 21:06:23 +0900
-Message-Id: <7a9fc7e7272650e0d43b23a6ba65bffe889f4c86.1627990337.git.vilhelm.gray@gmail.com>
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v14 15/17] counter: Implement events_queue_size sysfs attribute
+Date:   Tue,  3 Aug 2021 21:06:25 +0900
+Message-Id: <f96446090ae4a671ca310a01920eaf4db70bfc84.1627990337.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <cover.1627990337.git.vilhelm.gray@gmail.com>
 References: <cover.1627990337.git.vilhelm.gray@gmail.com>
@@ -81,110 +80,120 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The Generic Counter chrdev interface expects users to supply component
-IDs in order to select Synapses for requests. In order for users to know
-what component ID belongs to which Synapse this information must be
-exposed. The signalZ_action_component_id attribute provides a way for
-users to discover what component ID belongs to the respective Synapse.
+The events_queue_size sysfs attribute provides a way for users to
+dynamically configure the Counter events queue size for the Counter
+character device interface. The size is in number of struct
+counter_event data structures. The number of elements will be rounded-up
+to a power of 2 due to a requirement of the kfifo_alloc function called
+during reallocation of the queue.
 
-Cc: Gwendal Grignou <gwendal@chromium.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>
-Reviewed-by: David Lechner <david@lechnology.com>
+Cc: Oleksij Rempel <o.rempel@pengutronix.de>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- Documentation/ABI/testing/sysfs-bus-counter |  7 ++++
- drivers/counter/counter-sysfs.c             | 46 ++++++++++++++++++++-
- 2 files changed, 52 insertions(+), 1 deletion(-)
+ Documentation/ABI/testing/sysfs-bus-counter |  8 ++++
+ drivers/counter/counter-sysfs.c             | 45 +++++++++++++++++++++
+ 2 files changed, 53 insertions(+)
 
 diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
-index dee79b606847..9809d8a47431 100644
+index e0e99adb0ecc..84ebb1ed28ed 100644
 --- a/Documentation/ABI/testing/sysfs-bus-counter
 +++ b/Documentation/ABI/testing/sysfs-bus-counter
-@@ -203,6 +203,13 @@ Description:
- 		both edges:
- 			Any state transition.
+@@ -233,6 +233,14 @@ Description:
+ 		shorter or equal to configured value are ignored. Value 0 means
+ 		filter is disabled.
  
-+What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_component_id
++What:		/sys/bus/counter/devices/counterX/events_queue_size
 +KernelVersion:	5.15
 +Contact:	linux-iio@vger.kernel.org
 +Description:
-+		Read-only attribute that indicates the component ID of the
-+		respective Synapse of Count Y for Signal Z.
++		Size of the Counter events queue in number of struct
++		counter_event data structures. The number of elements will be
++		rounded-up to a power of 2.
 +
- What:		/sys/bus/counter/devices/counterX/countY/spike_filter_ns
- KernelVersion:	5.14
+ What:		/sys/bus/counter/devices/counterX/name
+ KernelVersion:	5.2
  Contact:	linux-iio@vger.kernel.org
 diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sysfs.c
-index dbb507c9da11..11bef9f8190f 100644
+index df1d75e0d7b8..d2d6495f73c5 100644
 --- a/drivers/counter/counter-sysfs.c
 +++ b/drivers/counter/counter-sysfs.c
-@@ -393,7 +393,6 @@ static int counter_avail_attr_create(struct device *const dev,
- 	struct counter_attribute *counter_attr;
- 	struct device_attribute *dev_attr;
- 
--	/* Allocate Counter attribute */
- 	counter_attr = devm_kzalloc(dev, sizeof(*counter_attr), GFP_KERNEL);
- 	if (!counter_attr)
- 		return -ENOMEM;
-@@ -535,6 +534,46 @@ static int counter_name_attr_create(struct device *const dev,
+@@ -3,11 +3,13 @@
+  * Generic Counter sysfs interface
+  * Copyright (C) 2020 William Breathitt Gray
+  */
++#include <linux/bitops.h>
+ #include <linux/counter.h>
+ #include <linux/device.h>
+ #include <linux/err.h>
+ #include <linux/gfp.h>
+ #include <linux/kernel.h>
++#include <linux/kfifo.h>
+ #include <linux/kstrtox.h>
+ #include <linux/list.h>
+ #include <linux/string.h>
+@@ -785,12 +787,49 @@ static int counter_num_counts_read(struct counter_device *counter, u8 *val)
  	return 0;
  }
  
-+static ssize_t counter_comp_id_show(struct device *dev,
-+				    struct device_attribute *attr, char *buf)
++static int counter_events_queue_size_read(struct counter_device *counter,
++					  u64 *val)
 +{
-+	const size_t id = (size_t)to_counter_attribute(attr)->comp.priv;
-+
-+	return sprintf(buf, "%zu\n", id);
-+}
-+
-+static int counter_comp_id_attr_create(struct device *const dev,
-+				       struct counter_attribute_group *const group,
-+				       const char *name, const size_t id)
-+{
-+	struct counter_attribute *counter_attr;
-+
-+	/* Allocate Counter attribute */
-+	counter_attr = devm_kzalloc(dev, sizeof(*counter_attr), GFP_KERNEL);
-+	if (!counter_attr)
-+		return -ENOMEM;
-+
-+	/* Generate component ID name */
-+	name = devm_kasprintf(dev, GFP_KERNEL, "%s_component_id", name);
-+	if (!name)
-+		return -ENOMEM;
-+
-+	/* Configure Counter attribute */
-+	counter_attr->comp.priv = (void *)id;
-+
-+	/* Configure device attribute */
-+	sysfs_attr_init(&counter_attr->dev_attr.attr);
-+	counter_attr->dev_attr.attr.name = name;
-+	counter_attr->dev_attr.attr.mode = 0444;
-+	counter_attr->dev_attr.show = counter_comp_id_show;
-+
-+	/* Store list node */
-+	list_add(&counter_attr->l, &group->attr_list);
-+	group->num_attr++;
-+
++	*val = kfifo_size(&counter->events);
 +	return 0;
 +}
 +
- static struct counter_comp counter_signal_comp = {
- 	.type = COUNTER_COMP_SIGNAL_LEVEL,
- 	.name = "signal",
-@@ -629,6 +668,11 @@ static int counter_sysfs_synapses_add(struct counter_device *const counter,
- 					  COUNTER_SCOPE_COUNT, count);
- 		if (err < 0)
- 			return err;
++static int counter_events_queue_size_write(struct counter_device *counter,
++					   u64 val)
++{
++	DECLARE_KFIFO_PTR(events, struct counter_event);
++	int err = 0;
 +
-+		/* Create Synapse component ID attribute */
-+		err = counter_comp_id_attr_create(dev, group, comp.name, i);
-+		if (err < 0)
-+			return err;
- 	}
++	/* Verify chrdev is not currently being used */
++	if (test_and_set_bit_lock(0, counter->chrdev_lock))
++		return -EBUSY;
++
++	/* Allocate new events queue */
++	err = kfifo_alloc(&events, val, GFP_KERNEL);
++	if (err)
++		goto exit_early;
++
++	/* Swap in new events queue */
++	kfifo_free(&counter->events);
++	counter->events.kfifo = events.kfifo;
++
++exit_early:
++	clear_bit_unlock(0, counter->chrdev_lock);
++
++	return err;
++}
++
+ static struct counter_comp counter_num_signals_comp =
+ 	COUNTER_COMP_DEVICE_U8("num_signals", counter_num_signals_read, NULL);
  
- 	return 0;
+ static struct counter_comp counter_num_counts_comp =
+ 	COUNTER_COMP_DEVICE_U8("num_counts", counter_num_counts_read, NULL);
+ 
++static struct counter_comp counter_events_queue_size_comp =
++	COUNTER_COMP_DEVICE_U64("events_queue_size",
++				counter_events_queue_size_read,
++				counter_events_queue_size_write);
++
+ static int counter_sysfs_attr_add(struct counter_device *const counter,
+ 				  struct counter_attribute_group *cattr_group)
+ {
+@@ -829,6 +868,12 @@ static int counter_sysfs_attr_add(struct counter_device *const counter,
+ 	if (err < 0)
+ 		return err;
+ 
++	/* Create events_queue_size attribute */
++	err = counter_attr_create(dev, cattr_group,
++				  &counter_events_queue_size_comp, scope, NULL);
++	if (err < 0)
++		return err;
++
+ 	/* Create an attribute for each extension */
+ 	for (i = 0; i < counter->num_ext; i++) {
+ 		ext = &counter->ext[i];
 -- 
 2.32.0
 
