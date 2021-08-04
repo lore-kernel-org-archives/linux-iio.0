@@ -2,565 +2,540 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_1
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
+	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DB5AEC4320A
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Aug 2021 15:47:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C850DC4320A
+	for <linux-iio@archiver.kernel.org>; Wed,  4 Aug 2021 16:06:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B7B5060F14
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Aug 2021 15:47:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id AF8EC60F25
+	for <linux-iio@archiver.kernel.org>; Wed,  4 Aug 2021 16:06:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239350AbhHDPsE convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 4 Aug 2021 11:48:04 -0400
-Received: from mout.kundenserver.de ([212.227.126.187]:36781 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239343AbhHDPsE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Aug 2021 11:48:04 -0400
-Received: from localhost ([31.220.117.74]) by mrelayeu.kundenserver.de
- (mreue011 [212.227.15.167]) with ESMTPSA (Nemesis) id
- 1N1Oo7-1n8KhZ067X-012nSZ; Wed, 04 Aug 2021 17:46:46 +0200
-Date:   Wed, 4 Aug 2021 17:46:42 +0200
-From:   Andreas Klinger <ak@it-klinger.de>
-To:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Jiri Kosina <trivial@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Chris Packham <chris.packham@alliedtelesis.co.nz>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Krzysztof Kozlowski <krzk@kernel.org>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Vadim Pasternak <vadimp@nvidia.com>,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Tomasz Duszynski <tomasz.duszynski@octakon.com>
-Subject: [PATCH v2 2/2] iio: chemical: Add driver support for sgp40
-Message-ID: <20210804154641.GA3237@arbad>
+        id S231602AbhHDQHC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 4 Aug 2021 12:07:02 -0400
+Received: from alt-proxy16.mail.unifiedlayer.com ([70.40.197.35]:50343 "EHLO
+        gproxy9-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S229944AbhHDQG4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Aug 2021 12:06:56 -0400
+X-Greylist: delayed 1352 seconds by postgrey-1.27 at vger.kernel.org; Wed, 04 Aug 2021 12:06:56 EDT
+Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
+        by gproxy9.mail.unifiedlayer.com (Postfix) with ESMTP id 392758028A1C
+        for <linux-iio@vger.kernel.org>; Wed,  4 Aug 2021 15:44:06 +0000 (UTC)
+Received: from md-in-79.webhostbox.net ([43.225.55.182])
+        by cmsmtp with ESMTP
+        id BJ3rmVCe6oTT8BJ3smvm7p; Wed, 04 Aug 2021 15:44:06 +0000
+X-Authority-Reason: nr=8
+X-Authority-Analysis: v=2.4 cv=LMCj/La9 c=1 sm=1 tr=0 ts=610ab5c6
+ a=LfuyaZh/8e9VOkaVZk0aRw==:117 a=LfuyaZh/8e9VOkaVZk0aRw==:17
+ a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=MhDmnRu9jo8A:10:nop_rcvd_month_year
+ a=oz0wMknONp8A:10:endurance_base64_authed_username_1 a=jtbBNqsHAAAA:8
+ a=vU9dKmh3AAAA:8 a=VwQbUJbxAAAA:8 a=NFmCyV0TXFebMMqy87AA:9
+ a=sfIEtMYjypgA:10:uccc_2email_address a=RWaeYqt-Cn-VcsFsiLGo:22
+ a=rsP06fVo5MYu2ilr0aT5:22 a=AjGcO6oz07-iQ99wixmX:22
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
+        ; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
+        :Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
+        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
+        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
+        List-Post:List-Owner:List-Archive;
+        bh=a8Rq/J+E3S1/xJ/cJPPB6NUlt/O+q9k4rcDcFMRFHI4=; b=K5EQ1AkPCTGVx9iAXgBMU7crII
+        BSN2Sgkb92pFnMDcOKyCxG4Zi9AtE7OSHO+D4lieOzZ0dUltPhWJAYq11XXELGIzV3Blf8FOCcdB0
+        E7VPzU6TKkDsn8ICPFJiBXnRnHSwYGBOq0hvRtaPGcjtE6DlA43CiWGEKMaRFgvmN7VoUEqZ4H+BC
+        1BKvtoVGhtVoFH9WGIACXHtmnYa3ySfGkyAs8c+OmB0IqNaTp53GMRB+2a8Xt5aemylDj42fpTo1m
+        l/tuoNLXq5KAnkWnTHeVzNscXQV+WZoOzw6no+9D1yX0i3RMfElcPVNNeU6V+5jjjGD6KGwuRjnNO
+        SzOz0TDw==;
+Received: from [117.193.211.230] (port=50072 helo=localhost.localdomain)
+        by md-in-79.webhostbox.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <navin@linumiz.com>)
+        id 1mBJ3q-0041Rh-Mj; Wed, 04 Aug 2021 15:44:02 +0000
+From:   Navin Sankar Velliangiri <navin@linumiz.com>
+To:     jic23@kernel.org
+Cc:     lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        ardeleanalex@gmail.com, navin@linumiz.com
+Subject: [PATCH v3 1/2] iio: temperature: Add MAX31865 RTD Support
+Date:   Wed,  4 Aug 2021 21:12:53 +0530
+Message-Id: <20210804154254.241118-1-navin@linumiz.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8BIT
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-Provags-ID: V03:K1:PjU1IreT6eKgtlmX5OuUG1X09O2/m41DBX21sOsfmjO+qwJABLR
- bHgTYpVEZDfCFnQneldvxxet6gjbp9ME6QbQsYcE2ODaIy7GEUVQhV9jyaJgzQ+nMbLcFwu
- Tm/LG8Eff/E411JGW7qfWvxVj1EQlSEasxeCxxqMsaI7rO+XBhC2BXCzSpIraWaner6SeE4
- yhh3egvMYMRotHpsbhdmg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:Q7r8YWCYoWw=:7j6u6mNv/QGSiel1AWNmxF
- 2KmtP8REs91P7XjKYYQzcKlDrHrH6nsVictZR3iDWdCa9qd4TK0lPSqTrxoeQJxmg9Bycd3FF
- DrkxqAAfCJ+5BmI9Htv9MVTd7+JWnVHTC4nlRlbkLzyv2RMJfCmHlYZ3c86xWXxGGVAAaxhGT
- DufhWDhSVGaEDvs2FIyFkIXuGKOvQ9dSoeyu/xSA2iW1Tbv5zxqZyTR+2ADomJZpklGqjU5co
- f4lN/Qogyldi1O2wlqbrK3SMTQ5g0OzuQFWeeFQwcbcW4dwY2uZsdakfO+41bQQSOG6x3nfAe
- 3I5nJhWo9lHLIpRXY4J96vEXp8oimqJ932n5iM9hcWCDYTOKBT0cTZBx0wz0Z1kWt60kSR0+V
- gyLdxueI9MeV1CzYM4mvbSSX7ijaOljfbI3lLNyugMlenWw0CXeyE7sp0Jg9QssDb79drHICj
- ALdkUjeV24Qh0rr3Au4SvH+U9gkScRuzwTET48pfZbW6S/SecF2JIaT7R+KqyBOtLtMnd8gIT
- /J/HXu/bITTYIAxhKEkt9ogFWwP8SjPCY67IjmLUeGAflcD01zwngtl3/ErXVsv9WUcJvBF8z
- tr/78jumYelVII9NlHxwcpidxvfbEyK9/rQ8/3WWc7+hUGE1XbeKMfVtt131OPhSo7EduNfAq
- jxJ9IpcW5uWlhv7Q7nfj8agbBJF1qkjhof0LAXoXH3dqIQ96KVO9ANenFZ9905sklG1sg3aQD
- ga126P6bEYkVmqP6zl692JHDKcwje0kNPb+qOLHmdaDHiWP4WHcKE7KwyjHhRB6IRYOXK/kl5
- IA2gXd6Le0ha1QHJJr2rg2dWTeMlz5TJvP7BdEva1lFII70cZEbGgpe5kWuQAu4seKehsVQ
+Content-Transfer-Encoding: 8bit
+X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
+X-AntiAbuse: Primary Hostname - md-in-79.webhostbox.net
+X-AntiAbuse: Original Domain - vger.kernel.org
+X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
+X-AntiAbuse: Sender Address Domain - linumiz.com
+X-BWhitelist: no
+X-Source-IP: 117.193.211.230
+X-Source-L: No
+X-Exim-ID: 1mBJ3q-0041Rh-Mj
+X-Source: 
+X-Source-Args: 
+X-Source-Dir: 
+X-Source-Sender: (localhost.localdomain) [117.193.211.230]:50072
+X-Source-Auth: linumcmc
+X-Email-Count: 5
+X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
+X-Local-Domain: yes
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-sgp40 is a gas sensor used for measuring the air quality.
+This patch adds support for Maxim MAX31865 RTD temperature
+sensor support.
 
-This driver is reading the raw resistance value which can be passed to
-an userspace algorithm for further calculation.
+More information can be found in:
+https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
 
-The raw value is also used to calculate an estimated absolute voc index
-in the range from 0 to 500. For this purpose the raw_mean value of the
-resistance for which the index value is 250 might be set up as a
-calibration step. This can be done with in_resistance_calibbias.
+Signed-off-by: Navin Sankar Velliangiri <navin@linumiz.com>
 
-Compensation of relative humidity and temperature is supported and can
-be used by writing to output values of out_humidityrelative_raw and
-out_temp_raw.
-
-There is a predecesor sensor type (sgp30) already existing. This driver
-module was not extended because the new sensor is quite different in its
-i2c telegrams.
-
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 ---
- .../ABI/testing/sysfs-bus-iio-chemical-sgp40  |  31 ++
- MAINTAINERS                                   |   6 +
- drivers/iio/chemical/Kconfig                  |  11 +
- drivers/iio/chemical/Makefile                 |   1 +
- drivers/iio/chemical/sgp40.c                  | 372 ++++++++++++++++++
- 5 files changed, 421 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp40
- create mode 100644 drivers/iio/chemical/sgp40.c
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp40 b/Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp40
+Note:
+Changes in v2:
+	-> removed unnecessary header #include <linux/util_macros.h>
+	-> implemented mutex to protect the device state
+	-> Added __cacheline_aligned buffer to hold the raw temperature data
+	-> implemented separate function to enable_bias() & disable_bias()
+	-> call max31865_init() func when updating the filter
+	-> Added ABI documentation for reference & testing
+	-> dropped spi_set_drvdata()
+
+Changes in v3:
+	-> Moved buf[2] __cacheline_aligned to last element of struct
+	max31865_data
+	-> get_unaligned_be16 is used to express the raw temp data
+	-> Added in_temp_filter_notch_frequency_avail to check available
+	frequency
+	-> removed mutex lock & unlock in max31865_probe() func
+---
+ .../sysfs-bus-iio-temperature-max31865        |  20 +
+ drivers/iio/temperature/Kconfig               |  10 +
+ drivers/iio/temperature/Makefile              |   1 +
+ drivers/iio/temperature/max31865.c            | 355 ++++++++++++++++++
+ 4 files changed, 386 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
+ create mode 100644 drivers/iio/temperature/max31865.c
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865 b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
 new file mode 100644
-index 000000000000..469a7c00fad4
+index 000000000000..368655539627
 --- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp40
-@@ -0,0 +1,31 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_temp_raw
-+Date:		August 2021
-+KernelVersion:	5.15
-+Contact:	Andreas Klinger <ak@it-klinger.de>
++++ b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
+@@ -0,0 +1,20 @@
++What:		/sys/bus/iio/devices/iio:deviceX/fault_ovuv
++KernelVersion:	5.11
++Contact:	linux-iio@vger.kernel.org
 +Description:
-+		Set the temperature. This value is sent to the sensor for
-+		temperature compensation.
-+		Default value: 25000 (25 °C)
++		Overvoltage or Undervoltage Input fault. The internal circuitry
++		is protected from excessive voltages applied to the thermocouple
++		cables at FORCE+, FORCE2, RTDIN+ & RTDIN-. This circuitry turn
++		off when the input voltage is negative or greater than VDD.
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/out_humidityrelative_raw
-+Date:		August 2021
-+KernelVersion:	5.15
-+Contact:	Andreas Klinger <ak@it-klinger.de>
++		Reading returns '1' if input voltage is negative or greater
++		than VDD, otherwise '0'.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_temp_filter_notch_frequency
++KernelVersion:	5.11
++Contact:	linux-iio@vger.kernel.org
 +Description:
-+		Set the relative humidity. This value is sent to the sensor for
-+		humidity compensation.
-+		Default value: 50000 (50 % relative humidity)
++		Notch frequency in Hz for a noise rejection filter. Used i.e for
++		line noise rejection.
 +
-+What:		/sys/bus/iio/devices/iio:deviceX/in_resistance_calibbias
-+Date:		August 2021
-+KernelVersion:	5.15
-+Contact:	Andreas Klinger <ak@it-klinger.de>
-+Description:
-+		Set the bias value for the resistance which is used for
-+		calculation of in_concentration_input as follows:
-+
-+		x = (in_resistance_raw - in_resistance_calibbias) * 0.65
-+
-+		in_concentration_input = 500 / (1 + e^x)
-+
-+		Default value: 30000
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 19135a9d778e..60f5e57ef385 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16707,6 +16707,12 @@ F:	drivers/iio/chemical/scd30_core.c
- F:	drivers/iio/chemical/scd30_i2c.c
- F:	drivers/iio/chemical/scd30_serial.c
++		Valid notch filter values are 50 Hz and 60 Hz.
+diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+index 4df60082c1fa..c9412abca069 100644
+--- a/drivers/iio/temperature/Kconfig
++++ b/drivers/iio/temperature/Kconfig
+@@ -128,4 +128,14 @@ config MAX31856
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called max31856.
  
-+SENSIRION SGP40 GAS SENSOR DRIVER
-+M:	Andreas Klinger <ak@it-klinger.de>
-+S:	Maintained
-+F:	Documentation/ABI/testing/sysfs-bus-iio-chemical-sgp40
-+F:	drivers/iio/chemical/sgp40.c
-+
- SENSIRION SPS30 AIR POLLUTION SENSOR DRIVER
- M:	Tomasz Duszynski <tduszyns@gmail.com>
- S:	Maintained
-diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-index a4920646e9be..c03667e62732 100644
---- a/drivers/iio/chemical/Kconfig
-+++ b/drivers/iio/chemical/Kconfig
-@@ -131,6 +131,17 @@ config SENSIRION_SGP30
- 	  To compile this driver as module, choose M here: the
- 	  module will be called sgp30.
- 
-+config SENSIRION_SGP40
-+	tristate "Sensirion SGP40 gas sensor"
-+	depends on I2C
-+	select CRC8
++config MAX31865
++	tristate "MAX31865 RTD to Digital converter"
++	depends on SPI
 +	help
-+	  Say Y here to build I2C interface to support Sensirion SGP40 gas
-+	  sensor
++	  If you say yes here you get support for MAX31865
++	  thermocouple sensor chip connected via SPI.
 +
-+	  To compile this driver as module, choose M here: the
-+	  module will be called sgp40.
++	  This driver can also be build as a module. If so, the module
++	  will be called max31865.
 +
- config SPS30
- 	tristate
- 	select IIO_BUFFER
-diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
-index 4898690cc155..d07af581f234 100644
---- a/drivers/iio/chemical/Makefile
-+++ b/drivers/iio/chemical/Makefile
-@@ -16,6 +16,7 @@ obj-$(CONFIG_SCD30_CORE) += scd30_core.o
- obj-$(CONFIG_SCD30_I2C) += scd30_i2c.o
- obj-$(CONFIG_SCD30_SERIAL) += scd30_serial.o
- obj-$(CONFIG_SENSIRION_SGP30)	+= sgp30.o
-+obj-$(CONFIG_SENSIRION_SGP40)	+= sgp40.o
- obj-$(CONFIG_SPS30) += sps30.o
- obj-$(CONFIG_SPS30_I2C) += sps30_i2c.o
- obj-$(CONFIG_SPS30_SERIAL) += sps30_serial.o
-diff --git a/drivers/iio/chemical/sgp40.c b/drivers/iio/chemical/sgp40.c
+ endmenu
+diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+index 90c113115422..a8f3187258dc 100644
+--- a/drivers/iio/temperature/Makefile
++++ b/drivers/iio/temperature/Makefile
+@@ -8,6 +8,7 @@ obj-$(CONFIG_LTC2983) += ltc2983.o
+ obj-$(CONFIG_HID_SENSOR_TEMP) += hid-sensor-temperature.o
+ obj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o
+ obj-$(CONFIG_MAX31856) += max31856.o
++obj-$(CONFIG_MAX31865) += max31865.o
+ obj-$(CONFIG_MLX90614) += mlx90614.o
+ obj-$(CONFIG_MLX90632) += mlx90632.o
+ obj-$(CONFIG_TMP006) += tmp006.o
+diff --git a/drivers/iio/temperature/max31865.c b/drivers/iio/temperature/max31865.c
 new file mode 100644
-index 000000000000..fdbe75b56873
+index 000000000000..dfeba8f3f6e4
 --- /dev/null
-+++ b/drivers/iio/chemical/sgp40.c
-@@ -0,0 +1,372 @@
-+// SPDX-License-Identifier: GPL-2.0+
++++ b/drivers/iio/temperature/max31865.c
+@@ -0,0 +1,355 @@
++// SPDX-License-Identifier: GPL-2.0-only
++
 +/*
-+ * sgp40.c - Support for Sensirion SGP40 Gas Sensor
++ * Copyright (c) Linumiz 2021
 + *
-+ * Copyright (C) 2021 Andreas Klinger <ak@it-klinger.de>
++ * max31865.c - Maxim MAX31865 RTD-to-Digital Converter sensor driver
 + *
-+ * I2C slave address: 0x59
-+ *
-+ * Datasheet can be found here:
-+ * https://www.sensirion.com/file/datasheet_sgp40
-+ *
-+ * There are two functionalities supported:
-+ *
-+ * 1) read raw logarithmic resistance value from sensor
-+ *    --> useful to pass it to the algorithm of the sensor vendor for
-+ *    measuring deteriorations and improvements of air quality.
-+ *
-+ * 2) calculate an estimated absolute voc index (0 - 500 index points) for
-+ *    measuring the air quality.
-+ *    For this purpose the value of the resistance for which the voc index
-+ *    will be 250 can be set up using calibbias.
-+ *
-+ * Compensation values of relative humidity and temperature can be set up
-+ * by writing to the out values of temp and humidityrelative.
++ * Author: Navin Sankar Velliangiri <navin@linumiz.com>
 + */
 +
++#include <linux/ctype.h>
++#include <linux/delay.h>
++#include <linux/err.h>
++#include <linux/init.h>
 +#include <linux/module.h>
 +#include <linux/iio/iio.h>
 +#include <linux/iio/sysfs.h>
-+#include <linux/delay.h>
-+#include <linux/mutex.h>
-+#include <linux/i2c.h>
-+#include <linux/crc8.h>
++#include <linux/spi/spi.h>
++#include <asm/unaligned.h>
 +
 +/*
-+ * floating point calculation of voc is done as integer
-+ * where numbers are multiplied by 1 << SGP40_CALC_POWER
++ * The MSB of the register value determines whether the following byte will
++ * be written or read. If it is 0, read will follow and if it is 1, write
++ * will follow.
 + */
-+#define SGP40_CALC_POWER	14
++#define MAX31865_RD_WR_BIT			BIT(7)
 +
-+#define SGP40_CRC8_POLYNOMIAL	0x31
-+#define SGP40_CRC8_INIT		0xff
++#define MAX31865_CFG_VBIAS			BIT(7)
++#define MAX31865_CFG_1SHOT			BIT(5)
++#define MAX31865_3WIRE_RTD			BIT(4)
++#define MAX31865_FAULT_STATUS_CLEAR		BIT(1)
++#define MAX31865_FILTER_50HZ			BIT(0)
 +
-+DECLARE_CRC8_TABLE(sgp40_crc8_table);
++/* The MAX31865 registers */
++#define MAX31865_CFG_REG			0x00
++#define MAX31865_RTD_MSB			0x01
++#define MAX31865_FAULT_STATUS			0x07
 +
-+struct sgp40_data {
-+	struct device		*dev;
-+	struct i2c_client	*client;
-+	int			rht;
-+	int			temp;
-+	int			res_calibbias;
-+	struct mutex		lock;
-+};
++#define MAX31865_FAULT_OVUV			BIT(2)
 +
-+struct sgp40_tg_measure {
-+	u8	command[2];
-+	__be16	rht_ticks;
-+	u8	rht_crc;
-+	__be16	temp_ticks;
-+	u8	temp_crc;
-+} __packed;
-+
-+struct sgp40_tg_result {
-+	__be16	res_ticks;
-+	u8	res_crc;
-+} __packed;
-+
-+static const struct iio_chan_spec sgp40_channels[] = {
-+	{
-+		.type = IIO_CONCENTRATION,
-+		.channel2 = IIO_MOD_VOC,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+	},
-+	{
-+		.type = IIO_RESISTANCE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_CALIBBIAS),
-+	},
-+	{
++static const struct iio_chan_spec max31865_channels[] = {
++	{	/* RTD Temperature */
 +		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.output = 1,
-+	},
-+	{
-+		.type = IIO_HUMIDITYRELATIVE,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.output = 1,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE)
 +	},
 +};
 +
-+/*
-+ * taylor approximation of e^x:
-+ * y = 1 + x + x^2 / 2 + x^3 / 6 + x^4 / 24 + ... + x^n / n!
-+ *
-+ * Because we are calculating x real value multiplied by 2^power we get
-+ * an additional 2^power^n to divide for every element. For a reasonable
-+ * precision this would overflow after a few iterations. Therefore we
-+ * divide the x^n part whenever its about to overflow (xmax).
-+ */
++struct max31865_data {
++	struct spi_device *spi;
++	struct mutex lock;
++	bool filter_50hz;
++	bool three_wire;
++	u8 buf[2] ____cacheline_aligned;
++};
 +
-+static u32 sgp40_exp(int exp, u32 power, u32 rounds)
++static int max31865_read(struct max31865_data *data, u8 reg,
++			 unsigned int read_size)
 +{
-+        u32 x, y, xp;
-+        u32 factorial, divider, xmax;
-+        int sign = 1;
-+	int i; 
-+
-+        if (exp == 0) 
-+                return 1 << power;
-+        else if (exp < 0) {
-+                sign = -1;
-+                exp *= -1;
-+        }
-+
-+        xmax = 0x7FFFFFFF / exp;
-+        x = exp;
-+        xp = 1; 
-+        factorial = 1; 
-+        y = 1 << power;
-+        divider = 0; 
-+
-+        for (i = 1; i <= rounds; i++) {
-+                xp *= x; 
-+                factorial *= i; 
-+                y += (xp >> divider) / factorial;
-+                divider += power;
-+                /* divide when next multiplication would overflow */
-+                if (xp >= xmax) {
-+                        xp >>= power;
-+                        divider -= power;
-+                }
-+        }
-+   
-+        if (sign == -1)
-+                return (1 << (power * 2)) / y; 
-+        else
-+                return y; 
++	return spi_write_then_read(data->spi, &reg, 1, data->buf, read_size);
 +}
 +
-+static int sgp40_calc_voc(struct sgp40_data *data, u16 resistance_raw, int *voc)
++static int max31865_write(struct max31865_data *data, size_t len)
 +{
-+	int x;
-+	u32 exp = 0;
-+
-+	/* we calculate as a multiple of 16384 (2^14) */
-+	mutex_lock(&data->lock);
-+	x = ((int)resistance_raw - data->res_calibbias) * 106;
-+	mutex_unlock(&data->lock);
-+
-+	/* voc = 500 / (1 + e^x) */
-+	exp = sgp40_exp(x, SGP40_CALC_POWER, 18);
-+	*voc = 500 * ((1 << (SGP40_CALC_POWER * 2)) / ((1<<SGP40_CALC_POWER) + exp));
-+
-+	dev_dbg(data->dev, "raw: %d res_calibbias: %d x: %d exp: %d voc: %d\n",
-+				resistance_raw, data->res_calibbias, x, exp, *voc);
-+
-+	return 0;
++	return spi_write(data->spi, data->buf, len);
 +}
 +
-+static int sgp40_measure_resistance_raw(struct sgp40_data *data, u16 *resistance_raw)
++static int enable_bias(struct max31865_data *data)
 +{
++	u8 cfg;
 +	int ret;
-+	struct i2c_client *client = data->client;
-+	u32 ticks;
-+	u16 ticks16;
-+	u8 crc;
-+	struct sgp40_tg_measure tg = {.command = {0x26, 0x0F}};
-+	struct sgp40_tg_result tgres;
 +
-+	mutex_lock(&data->lock);
-+	
-+	ticks = (data->rht / 10) * 65535 / 10000;
-+	ticks16 = (u16)clamp(ticks, 0u, 65535u); /* clamp between 0 .. 100 %rH */
-+	tg.rht_ticks = cpu_to_be16(ticks16);
-+	tg.rht_crc = crc8(sgp40_crc8_table, (u8 *)&tg.rht_ticks, 2, SGP40_CRC8_INIT);
-+
-+	ticks = ((data->temp + 45000) / 10 ) * 65535 / 17500;
-+	ticks16 = (u16)clamp(ticks, 0u, 65535u); /* clamp between -45 .. +130 °C */
-+	tg.temp_ticks = cpu_to_be16(ticks16);
-+	tg.temp_crc = crc8(sgp40_crc8_table, (u8 *)&tg.temp_ticks, 2, SGP40_CRC8_INIT);
-+
-+	mutex_unlock(&data->lock);
-+
-+	ret = i2c_master_send(client, (const char *)&tg, sizeof(tg));
-+	if (ret != sizeof(tg)) {
-+		dev_warn(data->dev, "i2c_master_send ret: %d sizeof: %d\n", ret, sizeof(tg));
-+		return -EIO;
-+	}
-+	msleep(30);
-+
-+	ret = i2c_master_recv(client, (u8 *)&tgres, sizeof(tgres));
-+	if (ret < 0)
++	ret = max31865_read(data, MAX31865_CFG_REG, 1);
++	if (ret)
 +		return ret;
-+	if (ret != sizeof(tgres)) {
-+		dev_warn(data->dev, "i2c_master_recv ret: %d sizeof: %d\n", ret, sizeof(tgres));
-+		return -EIO;
-+	}
 +
-+	crc = crc8(sgp40_crc8_table, (u8 *)&tgres.res_ticks, 2, SGP40_CRC8_INIT);
-+	if (crc != tgres.res_crc) {
-+		dev_err(data->dev, "CRC error while measure-raw\n");
-+		return -EIO;
-+	}
++	cfg = data->buf[0];
 +
-+	*resistance_raw = be16_to_cpu(tgres.res_ticks);
++	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
++	data->buf[1] = cfg | MAX31865_CFG_VBIAS;
 +
-+	return 0;
++	return max31865_write(data, 2);
 +}
 +
-+static int sgp40_read_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan, int *val,
-+			int *val2, long mask)
++static int disable_bias(struct max31865_data *data)
 +{
-+	struct sgp40_data *data = iio_priv(indio_dev);
-+	int ret, voc;
-+	u16 resistance_raw;
++	u8 cfg;
++	int ret;
++
++	ret = max31865_read(data, MAX31865_CFG_REG, 1);
++	if (ret)
++		return ret;
++
++	cfg = data->buf[0];
++	cfg &= ~MAX31865_CFG_VBIAS;
++
++	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
++	data->buf[1] = cfg;
++
++	return max31865_write(data, 2);
++}
++
++static int max31865_rtd_read(struct max31865_data *data, int *val)
++{
++	u8 reg;
++	int ret;
++
++	/* Enable BIAS to start the conversion */
++	ret = enable_bias(data);
++	if (ret)
++		return ret;
++
++	/* wait 10.5ms before initiating the conversion */
++	msleep(11);
++
++	ret = max31865_read(data, MAX31865_CFG_REG, 1);
++	if (ret)
++		return ret;
++
++	reg = data->buf[0];
++	reg |= MAX31865_CFG_1SHOT | MAX31865_FAULT_STATUS_CLEAR;
++	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
++	data->buf[1] = reg;
++
++	ret = max31865_write(data, 2);
++	if (ret)
++		return ret;
++
++	if (data->filter_50hz) {
++		/* 50Hz filter mode requires 62.5ms to complete */
++		msleep(63);
++	} else {
++		/* 60Hz filter mode requires 52ms to complete */
++		msleep(52);
++	}
++
++	ret = max31865_read(data, MAX31865_RTD_MSB, 2);
++	if (ret)
++		return ret;
++
++	*val = get_unaligned_be16(&data->buf) >> 1;
++
++	return disable_bias(data);
++}
++
++static int max31865_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long mask)
++{
++	struct max31865_data *data = iio_priv(indio_dev);
++	int ret;
 +
 +	switch (mask) {
 +	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_RESISTANCE:
-+			ret = sgp40_measure_resistance_raw(data, &resistance_raw);
-+			if (ret)
-+				return ret;
-+			*val = resistance_raw;
-+			return IIO_VAL_INT;
-+		case IIO_TEMP:
-+			mutex_lock(&data->lock);
-+			*val = data->temp;
-+			mutex_unlock(&data->lock);
-+			return IIO_VAL_INT;
-+		case IIO_HUMIDITYRELATIVE:
-+			mutex_lock(&data->lock);
-+			*val = data->rht;
-+			mutex_unlock(&data->lock);
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+	case IIO_CHAN_INFO_PROCESSED:
-+		ret = sgp40_measure_resistance_raw(data, &resistance_raw);
-+		if (ret)
-+			return ret;
-+		ret = sgp40_calc_voc(data, resistance_raw, &voc);
-+		if (ret)
-+			return ret;
-+		*val = voc / (1 << SGP40_CALC_POWER);
-+		/*
-+		 * calculation should fit into integer, where:
-+		 * voc <= (500 * 2^SGP40_CALC_POWER) = 8192000
-+		 * (with SGP40_CALC_POWER = 14)
-+		 */
-+		*val2 = ((voc % (1 << SGP40_CALC_POWER)) * 244) / (1 << (SGP40_CALC_POWER - 12));
-+		dev_dbg(data->dev, "voc: %d val: %d.%06d\n", voc, *val, *val2);
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_CALIBBIAS:
 +		mutex_lock(&data->lock);
-+		*val = data->res_calibbias;
++		ret = max31865_rtd_read(data, val);
 +		mutex_unlock(&data->lock);
++		if (ret)
++			return ret;
 +		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		/* Temp. Data resolution is 0.03125 degree centigrade */
++		*val = 31;
++		*val2 = 250000; /* 1000 * 0.03125 */
++		return IIO_VAL_INT_PLUS_MICRO;
 +	default:
 +		return -EINVAL;
 +	}
 +}
 +
-+static int sgp40_write_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan, int val,
-+			int val2, long mask)
++static int max31865_init(struct max31865_data *data)
 +{
-+	struct sgp40_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		switch (chan->type) {
-+		case IIO_TEMP:
-+			if ((val < -45000) || (val > 130000))
-+				return -EINVAL;
-+			mutex_lock(&data->lock);
-+			data->temp = val;
-+			mutex_unlock(&data->lock);
-+			return 0;
-+		case IIO_HUMIDITYRELATIVE:
-+			if ((val < 0) || (val > 100000))
-+				return -EINVAL;
-+			mutex_lock(&data->lock);
-+			data->rht = val;
-+			mutex_unlock(&data->lock);
-+			return 0;
-+		default:
-+			return -EINVAL;
-+		}
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		if ((val < 20000) || (val > 52768))
-+			return -EINVAL;
-+		mutex_lock(&data->lock);
-+		data->res_calibbias = val;
-+		mutex_unlock(&data->lock);
-+		return 0;
-+	}
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info sgp40_info = {
-+	.read_raw	= sgp40_read_raw,
-+	.write_raw	= sgp40_write_raw,
-+};
-+
-+static int sgp40_probe(struct i2c_client *client,
-+		     const struct i2c_device_id *id)
-+{
-+	struct device *dev = &client->dev;
-+	struct iio_dev *indio_dev;
-+	struct sgp40_data *data;
++	u8 cfg;
 +	int ret;
 +
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	ret = max31865_read(data, MAX31865_CFG_REG, 1);
++	if (ret)
++		return ret;
++
++	cfg = data->buf[0];
++
++	if (data->three_wire)
++		/* 3-wire RTD connection */
++		cfg |= MAX31865_3WIRE_RTD;
++
++	if (data->filter_50hz)
++		/* 50Hz noise rejection filter */
++		cfg |= MAX31865_FILTER_50HZ;
++
++	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
++	data->buf[1] = cfg;
++
++	return max31865_write(data, 2);
++}
++
++static ssize_t show_fault(struct device *dev, u8 faultbit, char *buf)
++{
++	int ret;
++	bool fault;
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct max31865_data *data = iio_priv(indio_dev);
++
++	ret = max31865_read(data, MAX31865_FAULT_STATUS, 1);
++	if (ret)
++		return ret;
++
++	fault = data->buf[0] & faultbit;
++
++	return sprintf(buf, "%d\n", fault);
++}
++
++static ssize_t show_fault_ovuv(struct device *dev,
++			      struct device_attribute *attr,
++			      char *buf)
++{
++	return show_fault(dev, MAX31865_FAULT_OVUV, buf);
++}
++
++static ssize_t show_filter(struct device *dev,
++			   struct device_attribute *attr,
++			   char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct max31865_data *data = iio_priv(indio_dev);
++
++	return sprintf(buf, "%d\n", data->filter_50hz ? 50 : 60);
++}
++
++static ssize_t show_avail_notch_frequency(struct device *dev,
++					  struct device_attribute *attr,
++					  char *buf)
++{
++	return snprintf(buf, 12, "50 Hz\n60 Hz");
++}
++
++static ssize_t set_filter(struct device *dev,
++			  struct device_attribute *attr,
++			  const char *buf,
++			  size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct max31865_data *data = iio_priv(indio_dev);
++	unsigned int freq;
++	int ret;
++
++	ret = kstrtouint(buf, 10, &freq);
++	if (ret)
++		return ret;
++
++	switch (freq) {
++	case 50:
++		data->filter_50hz = true;
++		break;
++	case 60:
++		data->filter_50hz = false;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	mutex_lock(&data->lock);
++	ret = max31865_init(data);
++	mutex_unlock(&data->lock);
++	if (ret)
++		return ret;
++
++	return len;
++}
++
++static IIO_DEVICE_ATTR(fault_ovuv, 0444, show_fault_ovuv, NULL, 0);
++static IIO_DEVICE_ATTR(in_temp_filter_notch_frequency_avail, 0444,
++		     show_avail_notch_frequency, NULL, 0);
++static IIO_DEVICE_ATTR(in_temp_filter_notch_frequency, 0644,
++		    show_filter, set_filter, 0);
++
++static struct attribute *max31865_attributes[] = {
++	&iio_dev_attr_fault_ovuv.dev_attr.attr,
++	&iio_dev_attr_in_temp_filter_notch_frequency_avail.dev_attr.attr,
++	&iio_dev_attr_in_temp_filter_notch_frequency.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group max31865_group = {
++	.attrs = max31865_attributes,
++};
++
++static const struct iio_info max31865_info = {
++	.read_raw = max31865_read_raw,
++	.attrs = &max31865_group,
++};
++
++static int max31865_probe(struct spi_device *spi)
++{
++	const struct spi_device_id *id = spi_get_device_id(spi);
++	struct iio_dev *indio_dev;
++	struct max31865_data *data;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
 +	if (!indio_dev)
 +		return -ENOMEM;
 +
 +	data = iio_priv(indio_dev);
-+	data->client = client;
-+	data->dev = dev;
-+
-+	crc8_populate_msb(sgp40_crc8_table, SGP40_CRC8_POLYNOMIAL);
-+
++	data->spi = spi;
++	data->filter_50hz = false;
 +	mutex_init(&data->lock);
 +
-+	/* set default values */
-+	data->rht = 50000;		/* 50 % */
-+	data->temp = 25000;		/* 25 °C */
-+	data->res_calibbias = 30000;	/* resistance raw value for voc index of 250 */
-+
-+	indio_dev->info = &sgp40_info;
++	indio_dev->info = &max31865_info;
 +	indio_dev->name = id->name;
 +	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = sgp40_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(sgp40_channels);
++	indio_dev->channels = max31865_channels;
++	indio_dev->num_channels = ARRAY_SIZE(max31865_channels);
 +
-+	ret = devm_iio_device_register(dev, indio_dev);
-+	if (ret)
-+		dev_err(dev, "failed to register iio device\n");
++	if (of_property_read_bool(spi->dev.of_node, "maxim,3-wire")) {
++		/* select 3 wire */
++		data->three_wire = 1;
++	} else {
++		/* select 2 or 4 wire */
++		data->three_wire = 0;
++	}
 +
-+	return ret;
++	ret = max31865_init(data);
++	if (ret) {
++		dev_err(&spi->dev, "error: Failed to configure max31865\n");
++		return ret;
++	}
++
++	return devm_iio_device_register(&spi->dev, indio_dev);
 +}
 +
-+static const struct i2c_device_id sgp40_id[] = {
-+	{ "sgp40" },
++static const struct spi_device_id max31865_id[] = {
++	{ "max31865", 0 },
 +	{ }
 +};
++MODULE_DEVICE_TABLE(spi, max31865_id);
 +
-+MODULE_DEVICE_TABLE(i2c, sgp40_id);
-+
-+static const struct of_device_id sgp40_dt_ids[] = {
-+	{ .compatible = "sensirion,sgp40" },
++static const struct of_device_id max31865_of_match[] = {
++	{ .compatible = "maxim,max31865" },
 +	{ }
 +};
++MODULE_DEVICE_TABLE(of, max31865_of_match);
 +
-+MODULE_DEVICE_TABLE(of, sgp40_dt_ids);
-+
-+static struct i2c_driver sgp40_driver = {
++static struct spi_driver max31865_driver = {
 +	.driver = {
-+		.name = "sgp40",
-+		.of_match_table = sgp40_dt_ids,
++		.name	= "max31865",
++		.of_match_table = max31865_of_match,
 +	},
-+	.probe = sgp40_probe,
-+	.id_table = sgp40_id,
++	.probe = max31865_probe,
++	.id_table = max31865_id,
 +};
-+module_i2c_driver(sgp40_driver);
++module_spi_driver(max31865_driver);
 +
-+MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
-+MODULE_DESCRIPTION("Sensirion SGP40 gas sensor");
++MODULE_AUTHOR("Navin Sankar Velliangiri <navin@linumiz.com>");
++MODULE_DESCRIPTION("Maxim MAX31865 RTD-to-Digital Converter sensor driver");
 +MODULE_LICENSE("GPL v2");
 -- 
-2.20.1
+2.32.0
+
