@@ -2,540 +2,261 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.6 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-5.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C850DC4320A
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Aug 2021 16:06:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA895C4338F
+	for <linux-iio@archiver.kernel.org>; Wed,  4 Aug 2021 16:50:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AF8EC60F25
-	for <linux-iio@archiver.kernel.org>; Wed,  4 Aug 2021 16:06:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 959C460FC3
+	for <linux-iio@archiver.kernel.org>; Wed,  4 Aug 2021 16:50:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231602AbhHDQHC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 4 Aug 2021 12:07:02 -0400
-Received: from alt-proxy16.mail.unifiedlayer.com ([70.40.197.35]:50343 "EHLO
-        gproxy9-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S229944AbhHDQG4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Aug 2021 12:06:56 -0400
-X-Greylist: delayed 1352 seconds by postgrey-1.27 at vger.kernel.org; Wed, 04 Aug 2021 12:06:56 EDT
-Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
-        by gproxy9.mail.unifiedlayer.com (Postfix) with ESMTP id 392758028A1C
-        for <linux-iio@vger.kernel.org>; Wed,  4 Aug 2021 15:44:06 +0000 (UTC)
-Received: from md-in-79.webhostbox.net ([43.225.55.182])
-        by cmsmtp with ESMTP
-        id BJ3rmVCe6oTT8BJ3smvm7p; Wed, 04 Aug 2021 15:44:06 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=LMCj/La9 c=1 sm=1 tr=0 ts=610ab5c6
- a=LfuyaZh/8e9VOkaVZk0aRw==:117 a=LfuyaZh/8e9VOkaVZk0aRw==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=MhDmnRu9jo8A:10:nop_rcvd_month_year
- a=oz0wMknONp8A:10:endurance_base64_authed_username_1 a=jtbBNqsHAAAA:8
- a=vU9dKmh3AAAA:8 a=VwQbUJbxAAAA:8 a=NFmCyV0TXFebMMqy87AA:9
- a=sfIEtMYjypgA:10:uccc_2email_address a=RWaeYqt-Cn-VcsFsiLGo:22
- a=rsP06fVo5MYu2ilr0aT5:22 a=AjGcO6oz07-iQ99wixmX:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
-        ; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
-        :Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=a8Rq/J+E3S1/xJ/cJPPB6NUlt/O+q9k4rcDcFMRFHI4=; b=K5EQ1AkPCTGVx9iAXgBMU7crII
-        BSN2Sgkb92pFnMDcOKyCxG4Zi9AtE7OSHO+D4lieOzZ0dUltPhWJAYq11XXELGIzV3Blf8FOCcdB0
-        E7VPzU6TKkDsn8ICPFJiBXnRnHSwYGBOq0hvRtaPGcjtE6DlA43CiWGEKMaRFgvmN7VoUEqZ4H+BC
-        1BKvtoVGhtVoFH9WGIACXHtmnYa3ySfGkyAs8c+OmB0IqNaTp53GMRB+2a8Xt5aemylDj42fpTo1m
-        l/tuoNLXq5KAnkWnTHeVzNscXQV+WZoOzw6no+9D1yX0i3RMfElcPVNNeU6V+5jjjGD6KGwuRjnNO
-        SzOz0TDw==;
-Received: from [117.193.211.230] (port=50072 helo=localhost.localdomain)
-        by md-in-79.webhostbox.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <navin@linumiz.com>)
-        id 1mBJ3q-0041Rh-Mj; Wed, 04 Aug 2021 15:44:02 +0000
-From:   Navin Sankar Velliangiri <navin@linumiz.com>
-To:     jic23@kernel.org
-Cc:     lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        ardeleanalex@gmail.com, navin@linumiz.com
-Subject: [PATCH v3 1/2] iio: temperature: Add MAX31865 RTD Support
-Date:   Wed,  4 Aug 2021 21:12:53 +0530
-Message-Id: <20210804154254.241118-1-navin@linumiz.com>
-X-Mailer: git-send-email 2.32.0
+        id S239645AbhHDQur (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 4 Aug 2021 12:50:47 -0400
+Received: from frasgout.his.huawei.com ([185.176.79.56]:3582 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229798AbhHDQur (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Aug 2021 12:50:47 -0400
+Received: from fraeml711-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4GfyQy4lRhz6DKBl;
+        Thu,  5 Aug 2021 00:50:18 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml711-chm.china.huawei.com (10.206.15.60) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.2; Wed, 4 Aug 2021 18:50:32 +0200
+Received: from localhost (10.47.91.83) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2176.2; Wed, 4 Aug 2021
+ 17:50:31 +0100
+Date:   Wed, 4 Aug 2021 17:50:02 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Andrea Merello <andrea.merello@gmail.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "Andrea Merello" <andrea.merello@iit.it>
+Subject: Re: [PATCH 2/4] iio: imu: add Bosch Sensortec BNO055 core driver
+Message-ID: <20210804175002.000059c5@Huawei.com>
+In-Reply-To: <CAN8YU5OrXy0c5D+5141izDJHxqSakGsbrnkug2M56qczxK0BfQ@mail.gmail.com>
+References: <20210715141742.15072-1-andrea.merello@gmail.com>
+        <20210715141742.15072-3-andrea.merello@gmail.com>
+        <20210717163236.1553fbfa@jic23-huawei>
+        <CAN8YU5NctVMPfNZn7ya-Jw7yE=NQDBq1aweWn0fX0Rp1p1P=aw@mail.gmail.com>
+        <20210724180823.692b203f@jic23-huawei>
+        <CAN8YU5PcrR-xM5A=3jd50=UaY9wWDJZGBqajmvM8Te1Ly14Hew@mail.gmail.com>
+        <20210731190103.6e2a3d41@jic23-huawei>
+        <CAN8YU5OrXy0c5D+5141izDJHxqSakGsbrnkug2M56qczxK0BfQ@mail.gmail.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - md-in-79.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - linumiz.com
-X-BWhitelist: no
-X-Source-IP: 117.193.211.230
-X-Source-L: No
-X-Exim-ID: 1mBJ3q-0041Rh-Mj
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (localhost.localdomain) [117.193.211.230]:50072
-X-Source-Auth: linumcmc
-X-Email-Count: 5
-X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
-X-Local-Domain: yes
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.91.83]
+X-ClientProxiedBy: lhreml747-chm.china.huawei.com (10.201.108.197) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds support for Maxim MAX31865 RTD temperature
-sensor support.
+On Wed, 4 Aug 2021 12:06:46 +0200
+Andrea Merello <andrea.merello@gmail.com> wrote:
 
-More information can be found in:
-https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
+> Il giorno sab 31 lug 2021 alle ore 19:58 Jonathan Cameron
+> <jic23@kernel.org> ha scritto:
+> >
+> > On Mon, 26 Jul 2021 16:36:49 +0200
+> > Andrea Merello <andrea.merello@gmail.com> wrote:
+> >  
+> > > just a few of in-line comment below; OK for all the rest of your
+> > > comment, thanks!
+> > >  
+> > > > > > > +static int bno055_reg_write(struct bno055_priv *priv,
+> > > > > > > +                         unsigned int reg, unsigned int val)
+> > > > > > > +{
+> > > > > > > +     int res = regmap_write(priv->regmap, reg, val);
+> > > > > > > +
+> > > > > > > +     if (res && res != -ERESTARTSYS) {  
+> > > > > >
+> > > > > > I think Andy asked about these, so I won't repeat...
+> > > > > > Nice to get rid of those and just be able to make the regmap calls inline though...  
+> > > > >
+> > > > > Ok for inline. I've just answered in another mail to Andy's comments
+> > > > > for the rest.  
+> > >
+> > > Indeed, so far I couldn't understand what do you really mean. Should I
+> > > move those check+dev_err() inside the regmap core layer ?  
+> >
+> > Better to move any necessary print to the caller of the reg_write() where any
+> > error message can often give more information.  Adding wrappers just to print
+> > an error message normally mostly serves to make the code a little harder to
+> > review.  
+> 
+> Isn't this like doing a cut-and-paste of check+dev_err() in more than
+> a dozen places in the code?
+> 
+> If you just want more information about the caller then we could
+> macroize those functions, so they can also print the caller code line
+> number (or they could accept an additional argument, which is the code
+> line number to print, and then a macro helper that adds that last
+> argument can be used to invoke them).. But this wouldn't address your
+> second point..
+It's a trade off between reviewability which these wrappers make worse
+and short code.
 
-Signed-off-by: Navin Sankar Velliangiri <navin@linumiz.com>
+My personal preference is don't bother with messages on simple reg read /write
+failures.  If it happens you either get an error reported to userspace and
+can do some more debug, or the driver doesn't probe - again, more debug to 
+be done even if you know it was a read or write.
 
----
+> 
+> > >  
+> > > > > > > +     /*
+> > > > > > > +      * Start in fusion mode (all data available), but with magnetometer auto
+> > > > > > > +      * calibration switched off, in order not to overwrite magnetometer
+> > > > > > > +      * calibration data in case one want to keep it untouched.  
+> > > > > >
+> > > > > > Why might you? good to have a default that is what people most commonly want...
+> > > > > > If there is a usecase for this then it may be better to have a 'disable autocalibration
+> > > > > > and manually reload a fixed calibration' path.  
+> > > > >
+> > > > > I'm not sure whether disabling autocalibration for magnetometer is
+> > > > > just a matter of saving some power, or whether this has the purpose of
+> > > > > carefully doing the calibration far from magnetic disturbances,
+> > > > > avoiding screwing the calibration every time you briefly pass by a
+> > > > > piece of iron. I think I found some clues for this second
+> > > > > interpretation poking on the internet, but I don't know whether they
+> > > > > were right.  
+> > > >
+> > > > It's possible if the calibration routines have much faster response than
+> > > > you'd normally expect.  
+> > >
+> > > This HW function is called "Fast Magnetometer Calibration".. But I
+> > > don't know how fast is it..  
+> >
+> > Nice  - got to love informative datasheets :)
+> >  
+> > >
+> > >  
+> > > > > > > +     &iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
+> > > > > > > +     &iio_dev_attr_in_anglvel_range_available.dev_attr.attr,  
+> > > > > >
+> > > > > > Hmm. Range typically maps to something else (normally scale, but these smart
+> > > > > > sensors can do weird things)  
+> > > > >
+> > > > > Here the scaling doesn't change, just the range. I *think* that by
+> > > > > changing range you also get better or worse precision.  
+> > > >
+> > > > oh goody.  Make sure the default is maximum range + when you document this
+> > > > we will have to be careful to make it clear we don't want this to be used in
+> > > > drivers where scale is an option.  Perhaps we just put it in a device
+> > > > specific ABI file.
+> > > >  
+> > >
+> > > The default is to run the IMU with fusion mode enabled; in this mode
+> > > those parameters are locked by the HW to a given value (which is not
+> > > the maximum e.g. in case of accelerometer range).
+> > >
+> > > If the user disables the fusion mode, then those parameters become
+> > > tweakable, but shouldn't they just remain at their previous values
+> > > (the one set by fusion mode), unless the user change also them?  
+> >
+> > That makes sense to me.
+> >  
+> > >
+> > > I.o.w the only chance we have for assigning them a "default" value is
+> > > when the fusion is switched off, but this would mean that switching
+> > > off fusion mode also has a side effect on those values (which I'm
+> > > unsure if we really want to happen).  
+> >
+> > Thanks for the explanation.  Ok. Fine to have the range here, but please
+> > sanity check we have appropriate ABI documentation in the main ABI doc
+> > Documentation/ABI/testing/sysfs-bus-iio.  
+> 
+> So you are inclined to generalize this thing, rather than keeping it
+> as bno055 specific..
 
-Note:
-Changes in v2:
-	-> removed unnecessary header #include <linux/util_macros.h>
-	-> implemented mutex to protect the device state
-	-> Added __cacheline_aligned buffer to hold the raw temperature data
-	-> implemented separate function to enable_bias() & disable_bias()
-	-> call max31865_init() func when updating the filter
-	-> Added ABI documentation for reference & testing
-	-> dropped spi_set_drvdata()
+My mistake.  I thought we had it already defined but seems we have avoided
+it even though we have gotten close a few times ;)
 
-Changes in v3:
-	-> Moved buf[2] __cacheline_aligned to last element of struct
-	max31865_data
-	-> get_unaligned_be16 is used to express the raw temp data
-	-> Added in_temp_filter_notch_frequency_avail to check available
-	frequency
-	-> removed mutex lock & unlock in max31865_probe() func
----
- .../sysfs-bus-iio-temperature-max31865        |  20 +
- drivers/iio/temperature/Kconfig               |  10 +
- drivers/iio/temperature/Makefile              |   1 +
- drivers/iio/temperature/max31865.c            | 355 ++++++++++++++++++
- 4 files changed, 386 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
- create mode 100644 drivers/iio/temperature/max31865.c
+sysfs-bus-iio-bno055 should be fine
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865 b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
-new file mode 100644
-index 000000000000..368655539627
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
-@@ -0,0 +1,20 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/fault_ovuv
-+KernelVersion:	5.11
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Overvoltage or Undervoltage Input fault. The internal circuitry
-+		is protected from excessive voltages applied to the thermocouple
-+		cables at FORCE+, FORCE2, RTDIN+ & RTDIN-. This circuitry turn
-+		off when the input voltage is negative or greater than VDD.
-+
-+		Reading returns '1' if input voltage is negative or greater
-+		than VDD, otherwise '0'.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_temp_filter_notch_frequency
-+KernelVersion:	5.11
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Notch frequency in Hz for a noise rejection filter. Used i.e for
-+		line noise rejection.
-+
-+		Valid notch filter values are 50 Hz and 60 Hz.
-diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-index 4df60082c1fa..c9412abca069 100644
---- a/drivers/iio/temperature/Kconfig
-+++ b/drivers/iio/temperature/Kconfig
-@@ -128,4 +128,14 @@ config MAX31856
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called max31856.
- 
-+config MAX31865
-+	tristate "MAX31865 RTD to Digital converter"
-+	depends on SPI
-+	help
-+	  If you say yes here you get support for MAX31865
-+	  thermocouple sensor chip connected via SPI.
-+
-+	  This driver can also be build as a module. If so, the module
-+	  will be called max31865.
-+
- endmenu
-diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-index 90c113115422..a8f3187258dc 100644
---- a/drivers/iio/temperature/Makefile
-+++ b/drivers/iio/temperature/Makefile
-@@ -8,6 +8,7 @@ obj-$(CONFIG_LTC2983) += ltc2983.o
- obj-$(CONFIG_HID_SENSOR_TEMP) += hid-sensor-temperature.o
- obj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o
- obj-$(CONFIG_MAX31856) += max31856.o
-+obj-$(CONFIG_MAX31865) += max31865.o
- obj-$(CONFIG_MLX90614) += mlx90614.o
- obj-$(CONFIG_MLX90632) += mlx90632.o
- obj-$(CONFIG_TMP006) += tmp006.o
-diff --git a/drivers/iio/temperature/max31865.c b/drivers/iio/temperature/max31865.c
-new file mode 100644
-index 000000000000..dfeba8f3f6e4
---- /dev/null
-+++ b/drivers/iio/temperature/max31865.c
-@@ -0,0 +1,355 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+
-+/*
-+ * Copyright (c) Linumiz 2021
-+ *
-+ * max31865.c - Maxim MAX31865 RTD-to-Digital Converter sensor driver
-+ *
-+ * Author: Navin Sankar Velliangiri <navin@linumiz.com>
-+ */
-+
-+#include <linux/ctype.h>
-+#include <linux/delay.h>
-+#include <linux/err.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/spi/spi.h>
-+#include <asm/unaligned.h>
-+
-+/*
-+ * The MSB of the register value determines whether the following byte will
-+ * be written or read. If it is 0, read will follow and if it is 1, write
-+ * will follow.
-+ */
-+#define MAX31865_RD_WR_BIT			BIT(7)
-+
-+#define MAX31865_CFG_VBIAS			BIT(7)
-+#define MAX31865_CFG_1SHOT			BIT(5)
-+#define MAX31865_3WIRE_RTD			BIT(4)
-+#define MAX31865_FAULT_STATUS_CLEAR		BIT(1)
-+#define MAX31865_FILTER_50HZ			BIT(0)
-+
-+/* The MAX31865 registers */
-+#define MAX31865_CFG_REG			0x00
-+#define MAX31865_RTD_MSB			0x01
-+#define MAX31865_FAULT_STATUS			0x07
-+
-+#define MAX31865_FAULT_OVUV			BIT(2)
-+
-+static const struct iio_chan_spec max31865_channels[] = {
-+	{	/* RTD Temperature */
-+		.type = IIO_TEMP,
-+		.info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE)
-+	},
-+};
-+
-+struct max31865_data {
-+	struct spi_device *spi;
-+	struct mutex lock;
-+	bool filter_50hz;
-+	bool three_wire;
-+	u8 buf[2] ____cacheline_aligned;
-+};
-+
-+static int max31865_read(struct max31865_data *data, u8 reg,
-+			 unsigned int read_size)
-+{
-+	return spi_write_then_read(data->spi, &reg, 1, data->buf, read_size);
-+}
-+
-+static int max31865_write(struct max31865_data *data, size_t len)
-+{
-+	return spi_write(data->spi, data->buf, len);
-+}
-+
-+static int enable_bias(struct max31865_data *data)
-+{
-+	u8 cfg;
-+	int ret;
-+
-+	ret = max31865_read(data, MAX31865_CFG_REG, 1);
-+	if (ret)
-+		return ret;
-+
-+	cfg = data->buf[0];
-+
-+	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
-+	data->buf[1] = cfg | MAX31865_CFG_VBIAS;
-+
-+	return max31865_write(data, 2);
-+}
-+
-+static int disable_bias(struct max31865_data *data)
-+{
-+	u8 cfg;
-+	int ret;
-+
-+	ret = max31865_read(data, MAX31865_CFG_REG, 1);
-+	if (ret)
-+		return ret;
-+
-+	cfg = data->buf[0];
-+	cfg &= ~MAX31865_CFG_VBIAS;
-+
-+	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
-+	data->buf[1] = cfg;
-+
-+	return max31865_write(data, 2);
-+}
-+
-+static int max31865_rtd_read(struct max31865_data *data, int *val)
-+{
-+	u8 reg;
-+	int ret;
-+
-+	/* Enable BIAS to start the conversion */
-+	ret = enable_bias(data);
-+	if (ret)
-+		return ret;
-+
-+	/* wait 10.5ms before initiating the conversion */
-+	msleep(11);
-+
-+	ret = max31865_read(data, MAX31865_CFG_REG, 1);
-+	if (ret)
-+		return ret;
-+
-+	reg = data->buf[0];
-+	reg |= MAX31865_CFG_1SHOT | MAX31865_FAULT_STATUS_CLEAR;
-+	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
-+	data->buf[1] = reg;
-+
-+	ret = max31865_write(data, 2);
-+	if (ret)
-+		return ret;
-+
-+	if (data->filter_50hz) {
-+		/* 50Hz filter mode requires 62.5ms to complete */
-+		msleep(63);
-+	} else {
-+		/* 60Hz filter mode requires 52ms to complete */
-+		msleep(52);
-+	}
-+
-+	ret = max31865_read(data, MAX31865_RTD_MSB, 2);
-+	if (ret)
-+		return ret;
-+
-+	*val = get_unaligned_be16(&data->buf) >> 1;
-+
-+	return disable_bias(data);
-+}
-+
-+static int max31865_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct max31865_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&data->lock);
-+		ret = max31865_rtd_read(data, val);
-+		mutex_unlock(&data->lock);
-+		if (ret)
-+			return ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		/* Temp. Data resolution is 0.03125 degree centigrade */
-+		*val = 31;
-+		*val2 = 250000; /* 1000 * 0.03125 */
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int max31865_init(struct max31865_data *data)
-+{
-+	u8 cfg;
-+	int ret;
-+
-+	ret = max31865_read(data, MAX31865_CFG_REG, 1);
-+	if (ret)
-+		return ret;
-+
-+	cfg = data->buf[0];
-+
-+	if (data->three_wire)
-+		/* 3-wire RTD connection */
-+		cfg |= MAX31865_3WIRE_RTD;
-+
-+	if (data->filter_50hz)
-+		/* 50Hz noise rejection filter */
-+		cfg |= MAX31865_FILTER_50HZ;
-+
-+	data->buf[0] = MAX31865_CFG_REG | MAX31865_RD_WR_BIT;
-+	data->buf[1] = cfg;
-+
-+	return max31865_write(data, 2);
-+}
-+
-+static ssize_t show_fault(struct device *dev, u8 faultbit, char *buf)
-+{
-+	int ret;
-+	bool fault;
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct max31865_data *data = iio_priv(indio_dev);
-+
-+	ret = max31865_read(data, MAX31865_FAULT_STATUS, 1);
-+	if (ret)
-+		return ret;
-+
-+	fault = data->buf[0] & faultbit;
-+
-+	return sprintf(buf, "%d\n", fault);
-+}
-+
-+static ssize_t show_fault_ovuv(struct device *dev,
-+			      struct device_attribute *attr,
-+			      char *buf)
-+{
-+	return show_fault(dev, MAX31865_FAULT_OVUV, buf);
-+}
-+
-+static ssize_t show_filter(struct device *dev,
-+			   struct device_attribute *attr,
-+			   char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct max31865_data *data = iio_priv(indio_dev);
-+
-+	return sprintf(buf, "%d\n", data->filter_50hz ? 50 : 60);
-+}
-+
-+static ssize_t show_avail_notch_frequency(struct device *dev,
-+					  struct device_attribute *attr,
-+					  char *buf)
-+{
-+	return snprintf(buf, 12, "50 Hz\n60 Hz");
-+}
-+
-+static ssize_t set_filter(struct device *dev,
-+			  struct device_attribute *attr,
-+			  const char *buf,
-+			  size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct max31865_data *data = iio_priv(indio_dev);
-+	unsigned int freq;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 10, &freq);
-+	if (ret)
-+		return ret;
-+
-+	switch (freq) {
-+	case 50:
-+		data->filter_50hz = true;
-+		break;
-+	case 60:
-+		data->filter_50hz = false;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	mutex_lock(&data->lock);
-+	ret = max31865_init(data);
-+	mutex_unlock(&data->lock);
-+	if (ret)
-+		return ret;
-+
-+	return len;
-+}
-+
-+static IIO_DEVICE_ATTR(fault_ovuv, 0444, show_fault_ovuv, NULL, 0);
-+static IIO_DEVICE_ATTR(in_temp_filter_notch_frequency_avail, 0444,
-+		     show_avail_notch_frequency, NULL, 0);
-+static IIO_DEVICE_ATTR(in_temp_filter_notch_frequency, 0644,
-+		    show_filter, set_filter, 0);
-+
-+static struct attribute *max31865_attributes[] = {
-+	&iio_dev_attr_fault_ovuv.dev_attr.attr,
-+	&iio_dev_attr_in_temp_filter_notch_frequency_avail.dev_attr.attr,
-+	&iio_dev_attr_in_temp_filter_notch_frequency.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group max31865_group = {
-+	.attrs = max31865_attributes,
-+};
-+
-+static const struct iio_info max31865_info = {
-+	.read_raw = max31865_read_raw,
-+	.attrs = &max31865_group,
-+};
-+
-+static int max31865_probe(struct spi_device *spi)
-+{
-+	const struct spi_device_id *id = spi_get_device_id(spi);
-+	struct iio_dev *indio_dev;
-+	struct max31865_data *data;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	data->spi = spi;
-+	data->filter_50hz = false;
-+	mutex_init(&data->lock);
-+
-+	indio_dev->info = &max31865_info;
-+	indio_dev->name = id->name;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = max31865_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(max31865_channels);
-+
-+	if (of_property_read_bool(spi->dev.of_node, "maxim,3-wire")) {
-+		/* select 3 wire */
-+		data->three_wire = 1;
-+	} else {
-+		/* select 2 or 4 wire */
-+		data->three_wire = 0;
-+	}
-+
-+	ret = max31865_init(data);
-+	if (ret) {
-+		dev_err(&spi->dev, "error: Failed to configure max31865\n");
-+		return ret;
-+	}
-+
-+	return devm_iio_device_register(&spi->dev, indio_dev);
-+}
-+
-+static const struct spi_device_id max31865_id[] = {
-+	{ "max31865", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, max31865_id);
-+
-+static const struct of_device_id max31865_of_match[] = {
-+	{ .compatible = "maxim,max31865" },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, max31865_of_match);
-+
-+static struct spi_driver max31865_driver = {
-+	.driver = {
-+		.name	= "max31865",
-+		.of_match_table = max31865_of_match,
-+	},
-+	.probe = max31865_probe,
-+	.id_table = max31865_id,
-+};
-+module_spi_driver(max31865_driver);
-+
-+MODULE_AUTHOR("Navin Sankar Velliangiri <navin@linumiz.com>");
-+MODULE_DESCRIPTION("Maxim MAX31865 RTD-to-Digital Converter sensor driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.32.0
+> 
+> > One thing to think about is how range would generalize.   These sensors are
+> > symmetric, but not all are - a range that is higher in postive than negative
+> > is definitely possible.  Perhaps we need to name it to make it clear we are
+> > talking magnitude here?  
+> 
+> I'm open to suggestions here.
+
+It's challenging to define a clean way of specifying two linked values.
+We could define rangemax, rangemin and rely on the fact that any bit of IIO
+ABI can affect other bits, but that's messy given our only current user
+doesn't care.
+
+
+> 
+> The word "range" in my mind just recalls the idea of a minimum/maximum
+> interval in which the sensor works, without recalling me the idea of
+> "scaling" or changes to the unit too much; this is why I originally
+> chosen this name, but that might be just mine personal taste.
+
+We may regret it but let's stick with your range definition as is, with suitable
+docs and keeping it device specific for now.
+
+> 
+> > Ideally it should state something about range should be used only when it has no
+> > affect on scaling.  Hopefully we'll not get a device where it has an affect
+> > but it's non linear as that doesn't make any sense.  I'd imagine a range
+> > control in hardware either is proportional to the scale, or has no affect on
+> > it as here.  
+> 
+> I may have a wrong memory here, but I think I've seen something like
+> this on some current-sense chips, which were available for various
+> current ranges, but their output scale changed in non linear way wrt
+> the range.
+> 
+> Or I can imagine a device in which you can set the internal amplifier
+> gain, and this will affect both the scale (because of the amplifier
+> gain itself) and the range (because the amplifier output does saturate
+> at a different voltage) with a linear relationship, but there is also
+> another bound: the physical sensor attached to the amplifier
+> mechanically clamp to a given max value, that happen to be less than
+> the saturation point of the amp at is minimum gain. This would lead to
+> a non-linear net relationship between scale and range because at the
+> minimum gain the range doesn't extends as much as you would expect.
+> 
+> .. But even in non linear cases, just having the scale may be OK..
+> Maybe we can just say that range can be used only if there are at
+> least two values for which we have the same scale value; otherwise
+> just having the scale attribute would suffice and thus we stick on
+> that.. We may think about allowing a RO range attribute, alongside the
+> scale attribute, for non obvious cases.
+
+For read only, you can use the read_avail approach to provide a range
+for the actual channel.  We do this for various in kernel consumer
+users that need to know the range of values they might get.
+
+That is only ever read only though, because of the difficulty of
+allowing rights to two bounds together.
+
+So we have devices where changing the scale will result in
+inX_raw_avail changing (IIRC) and that's not necessarily linear.
+
+Jonathan
+
+> 
+> 
+> > Thanks,
+> >
+> > Jonathan
+> >  
+> > >
+> > > Andrea  
+> >  
 
