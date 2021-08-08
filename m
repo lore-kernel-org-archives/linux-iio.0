@@ -2,41 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D74BCC4320A
-	for <linux-iio@archiver.kernel.org>; Sun,  8 Aug 2021 16:45:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B012C4320A
+	for <linux-iio@archiver.kernel.org>; Sun,  8 Aug 2021 16:58:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A742760EE7
-	for <linux-iio@archiver.kernel.org>; Sun,  8 Aug 2021 16:45:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 19A7460EBC
+	for <linux-iio@archiver.kernel.org>; Sun,  8 Aug 2021 16:58:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231822AbhHHQp6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 Aug 2021 12:45:58 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38350 "EHLO mail.kernel.org"
+        id S231869AbhHHQ7R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 Aug 2021 12:59:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33016 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231357AbhHHQp5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 8 Aug 2021 12:45:57 -0400
+        id S230169AbhHHQ7Q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 8 Aug 2021 12:59:16 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 7B89860EB9;
-        Sun,  8 Aug 2021 16:45:36 +0000 (UTC)
-Date:   Sun, 8 Aug 2021 17:48:26 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id 35D34601FC;
+        Sun,  8 Aug 2021 16:58:53 +0000 (UTC)
+Date:   Sun, 8 Aug 2021 18:01:43 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Simon Xue <xxm@rock-chips.com>
-Cc:     linux-rockchip@lists.infradead.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, Johan Jonker <jbx6244@gmail.com>,
-        Heiko Stuebner <heiko@sntech.de>,
+To:     Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Cc:     Geert Uytterhoeven <geert+renesas@glider.be>,
+        Rob Herring <robh+dt@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, David Wu <david.wu@rock-chips.com>
-Subject: Re: [PATCH v2] iio: adc: rockchip_saradc: add voltage notifier so
- get referenced voltage once at probe
-Message-ID: <20210808174826.7b82b7bf@jic23-huawei>
-In-Reply-To: <20210806105524.231838-1-xxm@rock-chips.com>
-References: <20210806105524.231838-1-xxm@rock-chips.com>
+        Magnus Damm <magnus.damm@gmail.com>,
+        Philipp Zabel <p.zabel@pengutronix.de>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>
+Subject: Re: [PATCH v4 0/3] Renesas RZ/G2L ADC driver support
+Message-ID: <20210808180143.6b3dc882@jic23-huawei>
+In-Reply-To: <20210804202118.25745-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+References: <20210804202118.25745-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -45,130 +48,75 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri,  6 Aug 2021 18:55:24 +0800
-Simon Xue <xxm@rock-chips.com> wrote:
+On Wed,  4 Aug 2021 21:21:15 +0100
+Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com> wrote:
 
-> From: David Wu <david.wu@rock-chips.com>
+> Hi All,
 > 
-> Add voltage notifier, no need to query regulator voltage for
-> every saradc read, just get regulator voltage once at probe.
+> This patch series adds ADC support for Renesas RZ/G2L family.
 > 
-> Signed-off-by: Simon Xue <xxm@rock-chips.com>
-> Signed-off-by: David Wu <david.wu@rock-chips.com>
-> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+> Patches apply on top of v5.14-rc2.
+Hi Lad, I'm fine with this, but need to pull my tree forwards
+to include the header that is only in rc2.
 
-Looks like Andy's v1 reviews crossed with your v2.
-Given you are going to be doing a v3 because of signed-off-by ordering as per Andy's
-comments please tidy up the other thing he mentioned (repeated below).
-
-Otherwise looks good to me.
+I'll probably do that later in the week then pick up patches 1 and 2.
 
 Thanks,
 
 Jonathan
-
-
-> ---
->  drivers/iio/adc/rockchip_saradc.c | 47 ++++++++++++++++++++++++++-----
->  1 file changed, 40 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-> index f3eb8d2e50dc..295da1ad6edb 100644
-> --- a/drivers/iio/adc/rockchip_saradc.c
-> +++ b/drivers/iio/adc/rockchip_saradc.c
-> @@ -49,10 +49,12 @@ struct rockchip_saradc {
->  	struct clk		*clk;
->  	struct completion	completion;
->  	struct regulator	*vref;
-> +	int			uv_vref;
->  	struct reset_control	*reset;
->  	const struct rockchip_saradc_data *data;
->  	u16			last_val;
->  	const struct iio_chan_spec *last_chan;
-> +	struct notifier_block nb;
->  };
->  
->  static void rockchip_saradc_power_down(struct rockchip_saradc *info)
-> @@ -105,13 +107,7 @@ static int rockchip_saradc_read_raw(struct iio_dev *indio_dev,
->  		mutex_unlock(&indio_dev->mlock);
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
-> -		ret = regulator_get_voltage(info->vref);
-> -		if (ret < 0) {
-> -			dev_err(&indio_dev->dev, "failed to get voltage\n");
-> -			return ret;
-> -		}
-> -
-> -		*val = ret / 1000;
-> +		*val = info->uv_vref / 1000;
->  		*val2 = chan->scan_type.realbits;
->  		return IIO_VAL_FRACTIONAL_LOG2;
->  	default:
-> @@ -298,6 +294,26 @@ static irqreturn_t rockchip_saradc_trigger_handler(int irq, void *p)
->  	return IRQ_HANDLED;
->  }
->  
-> +static int rockchip_saradc_volt_notify(struct notifier_block *nb,
-> +						   unsigned long event,
-> +						   void *data)
-> +{
-> +	struct rockchip_saradc *info =
-> +			container_of(nb, struct rockchip_saradc, nb);
-> +
-> +	if (event & REGULATOR_EVENT_VOLTAGE_CHANGE)
-> +		info->uv_vref = (unsigned long)data;
-> +
-> +	return NOTIFY_OK;
-> +}
-> +
-> +static void rockchip_saradc_regulator_action(void *data)
-> +{
-> +	struct rockchip_saradc *info = data;
-> +
-> +	regulator_unregister_notifier(info->vref, &info->nb);
-> +}
-> +
->  static int rockchip_saradc_probe(struct platform_device *pdev)
->  {
->  	struct rockchip_saradc *info = NULL;
-> @@ -410,6 +426,13 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  		return ret;
->  	}
->  
-> +	info->uv_vref = regulator_get_voltage(info->vref);
-> +	if (info->uv_vref < 0) {
-> +		dev_err(&pdev->dev, "failed to get voltage\n");
-> +		ret = info->uv_vref;
-> +		return ret;
-> +	}
-
-Andy suggested a cleaner form of this (which I also prefer) is
-
-	ret = regulator_get_voltage(info->vref);
-	if (ret < 0)
-		return ret;
-
-	info->uv_vref = ret;
-
-> +
->  	ret = clk_prepare_enable(info->pclk);
->  	if (ret < 0) {
->  		dev_err(&pdev->dev, "failed to enable pclk\n");
-> @@ -450,6 +473,16 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	if (ret)
->  		return ret;
->  
-> +	info->nb.notifier_call = rockchip_saradc_volt_notify;
-> +	ret = regulator_register_notifier(info->vref, &info->nb);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = devm_add_action_or_reset(&pdev->dev,
-> +				       rockchip_saradc_regulator_action, info);
-> +	if (ret)
-> +		return ret;
-> +
->  	return devm_iio_device_register(&pdev->dev, indio_dev);
->  }
->  
+> Cheers,
+> Prabhakar
+> 
+> Changes for v4:
+> * Fixed registering action to assert resets on failure/remove
+>   as reported by Philip.
+> * Fixed review comments suggested by Jonathan.
+> * Included RB tag from Rob for patch 1/3
+> * Note DTS patch applies on top of https://git.kernel.org/pub/scm/
+>   linux/kernel/git/geert/renesas-devel.git/log/
+>   ?h=renesas-arm-dt-for-v5.15
+> 
+> Changes for v3 (as requested by Jonathan):
+> * Made use of FIELD_PREP()
+> * Renamed _CLEAR to _MASK and inverted inline as required
+> * Moved |= pair's on same lines
+> * Made use of sysfs_emit() while reading the labels
+> * Used for_each_bit_set() in rzg2l_adc_isr()
+> * Renamed rzg2l_adc_parse_of() -> rzg2l_adc_parse_properties()
+> * Used devm_add_action_or_reset() for asserting the reset signals and
+>   disabling pm_runtime and eventually removing remove() callback
+> * Added comments in isr handler for channel select interrupt
+> * Moved enabling/disabling of pclk during hw init in rzg2l_adc_hw_init()
+> * Dropped clock patch 3/4 (https://lore.kernel.org/patchwork/patch/1462152/)
+>   from previous series as its queued up in renesas-clk-for-v5.15
+> 
+> Changes for v2:
+> * Update binding doc, dropped gpios/renesas-rzg2l,adc-trigger-mode
+>   properties included channel property to represent each wired channel.
+> * Fixed review comments pointed by Alexandru, implemented pm runtime
+>   support, dropped mlock usage
+> * Fixed review comments pointed by Jonathan, renamed the macros,
+>   simplified the code.
+> * Included clock and DT patches
+> 
+> v1: https://patchwork.kernel.org/project/linux-renesas-soc/cover/
+>     20210629220328.13366-1-prabhakar.mahadev-lad.rj@bp.renesas.com/
+> 
+> Lad Prabhakar (3):
+>   dt-bindings: iio: adc: Add binding documentation for Renesas RZ/G2L
+>     A/D converter
+>   iio: adc: Add driver for Renesas RZ/G2L A/D converter
+>   arm64: dts: renesas: r9a07g044: Add ADC node
+> 
+>  .../bindings/iio/adc/renesas,rzg2l-adc.yaml   | 134 ++++
+>  MAINTAINERS                                   |   8 +
+>  arch/arm64/boot/dts/renesas/r9a07g044.dtsi    |  42 ++
+>  drivers/iio/adc/Kconfig                       |  10 +
+>  drivers/iio/adc/Makefile                      |   1 +
+>  drivers/iio/adc/rzg2l_adc.c                   | 600 ++++++++++++++++++
+>  6 files changed, 795 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
+>  create mode 100644 drivers/iio/adc/rzg2l_adc.c
+> 
 
