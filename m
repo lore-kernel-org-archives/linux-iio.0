@@ -5,66 +5,66 @@ X-Spam-Level:
 X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04F1CC4320A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 94746C3F6A3
 	for <linux-iio@archiver.kernel.org>; Sun,  8 Aug 2021 01:57:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C43026115C
-	for <linux-iio@archiver.kernel.org>; Sun,  8 Aug 2021 01:57:44 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7103460C41
+	for <linux-iio@archiver.kernel.org>; Sun,  8 Aug 2021 01:57:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230139AbhHHB5w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 7 Aug 2021 21:57:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43160 "EHLO
+        id S230216AbhHHB5y (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 7 Aug 2021 21:57:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43166 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230030AbhHHB5v (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 Aug 2021 21:57:51 -0400
+        with ESMTP id S230197AbhHHB5y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 Aug 2021 21:57:54 -0400
 Received: from mail-qv1-xf2f.google.com (mail-qv1-xf2f.google.com [IPv6:2607:f8b0:4864:20::f2f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3160C061760;
-        Sat,  7 Aug 2021 18:57:32 -0700 (PDT)
-Received: by mail-qv1-xf2f.google.com with SMTP id dk2so7188934qvb.3;
-        Sat, 07 Aug 2021 18:57:32 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CD466C0613CF;
+        Sat,  7 Aug 2021 18:57:34 -0700 (PDT)
+Received: by mail-qv1-xf2f.google.com with SMTP id em4so7219276qvb.0;
+        Sat, 07 Aug 2021 18:57:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=A37saODTcesuUxyXgpe8ielCQCcU0J71Gt99ymfG4a4=;
-        b=bTvSdeRS2GvrOKEmvzNae0msWjCDDoQcG4I+V3WfQAFksXc1RJHhjiqHDV0Nbp/0QO
-         NIFCI6U9ryZZYTVhDH6UD1E73VUjo4phsuG4pcux8RldxHvXrqclEKMfqrf2Nn5JJ8AP
-         CCqpHkegBWxKglqULkJzk+5SRK2sPeES9IMsuB6Tsgny5UF7AtD0lupcFfk7ywhYpsih
-         QhwxT7aNZZm8cygBDw/G8NZhbfVFF4FCmvbc47EFf+c+dPytT1iuhT8Ez8keUxH1slZW
-         pt9Ngch1F8Z5HM+KetG6ybeMevCoDEDLUH/eUHFeuAkQkeBNJIUt0/lt9xbLgQeVlCfc
-         sxNA==
+        bh=615kMpMCOocH22xvYuBl/egorml5TWflMxM6T2l3ME4=;
+        b=RZpZDh5Nf9S1QhoBOJRE8JjpsRm34WH+ogmJ+Ec9B+JOVOmXpaGCu1340y7cvwxq3j
+         PnzjiIiivp45gBNCXI41aIWGGEfy/3FBQgM4uwc6EIPLbcx+bkBt4f4mYk0zP8giEbYP
+         9TmrNFvhfi61h6tT5YwBAMU5IxOv+eyh399hLa63qWY6FWwmItvffpHOvghR4E0ecBvF
+         7TiRLzBlc8vapDoZIk4uhZ54TReoLhQBxWjbHCSFfIH/Ek/qEDfd24En0H2XAf3/drQi
+         qtz2RsCWb7lQ5yTl9z+/jNvwT9QmimqxjneZRT4yWqWa11aTZsbDpVSg+YBF3kr8a4of
+         cw7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=A37saODTcesuUxyXgpe8ielCQCcU0J71Gt99ymfG4a4=;
-        b=G2TY5lUCgr6XgG3kn2Qh/4mOOw2PZWmRL/HtaDrwom9iK/noTVw2870zgeAbfOeOLs
-         mxpcmEmStkuKtttGgLcjLj60ufvxarl4OqyNiOM0nnbgU4nN/Ih/AWnAJtq5b19CPsLt
-         d5leA+NYsBNTWf3KSZqxD8Ehqe/gFCDyvMbWjm5uSVbtYN0h9YOfFbaaTuAQ5sadh3WQ
-         ue/rQqj42SlKFDuBb0NB6DrzX1Zc2SxlCWtcLrZTueBR/3DLg/1K8fKFYipUVLvv4w4X
-         mXe2wEp4H9VXjlVQUQkBTHKCOja9OHr8p3h+fAD9O7snTciHlwTzAb8m+QYlQUthItD2
-         sHcw==
-X-Gm-Message-State: AOAM5322PQHNbQKDL3juJ0J3FFji7a7XJDlTmkEoJ86H37UyjPZdHka/
-        vY5On+i0hsELN2efbCJrTcI03qMIsdWgLA==
-X-Google-Smtp-Source: ABdhPJz7mwF2WHZhrow+CCmSBsNNPPt+sw8vzuy7tBaFkc71vtlVOqE+VD9VnItqoF7JS/siSO3gFw==
-X-Received: by 2002:a0c:ead1:: with SMTP id y17mr18252583qvp.12.1628387852144;
-        Sat, 07 Aug 2021 18:57:32 -0700 (PDT)
+        bh=615kMpMCOocH22xvYuBl/egorml5TWflMxM6T2l3ME4=;
+        b=aBgbz1O0p3mN8thGLd6+3P/YjgAWdLqrRWeIDTBoixQEAbFqavyyNX3xu4pSyQOQwJ
+         lb4K/UyIMiMo+MREWYWtvrvGkD2gCE+ziamUIKXVYK7fGuDH5ybnl/+7e/g6pIU8oqeX
+         Nxay9OBF0IqjM9xIE1qHFQCDCXs7HOpT4hvwwDbboFPoDz9t/ipKo0BQNNEtFhKGeTmW
+         KrDYESMRmmWURLIThqtFzMsI2v6VY0IP+E+1OL1LlSxw0JHflmQy9GZ0mw/XLP9T2Sjn
+         dLmBl+Utjdaf1Jaiz5NQrDvVCtAym8F+EDyAb5We9WluvUJUFJsMvpWVQvqkIywGSbXf
+         AtKg==
+X-Gm-Message-State: AOAM533ktrOiD8ZiN3f4Wpx5eZpila/kzLgGOJ13wzEqq6E5oRuwlHDb
+        m1j7AHTc5tu6aWjjfirfTVo=
+X-Google-Smtp-Source: ABdhPJw9r9YoePEnovkVjBP6vSKTAZ8PqeNQVXkNc3+dfJQgL7PKXzZtslkEVdAEVDd9DEL/JmYOoQ==
+X-Received: by 2002:a05:6214:1933:: with SMTP id es19mr170063qvb.42.1628387854101;
+        Sat, 07 Aug 2021 18:57:34 -0700 (PDT)
 Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id k24sm1569612qki.11.2021.08.07.18.57.31
+        by smtp.gmail.com with ESMTPSA id k24sm1569612qki.11.2021.08.07.18.57.33
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 Aug 2021 18:57:31 -0700 (PDT)
+        Sat, 07 Aug 2021 18:57:33 -0700 (PDT)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, lars@metafoo.de,
         Michael.Hennerich@analog.com, jic23@kernel.org,
         charles-antoine.couret@essensium.com, Nuno.Sa@analog.com
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v5 2/5] iio: adc: ad7949: fix spi messages on non 14-bit controllers
-Date:   Sat,  7 Aug 2021 21:56:56 -0400
-Message-Id: <20210808015659.2955443-3-liambeguin@gmail.com>
+Subject: [PATCH v5 4/5] dt-bindings: iio: adc: ad7949: add per channel reference
+Date:   Sat,  7 Aug 2021 21:56:58 -0400
+Message-Id: <20210808015659.2955443-5-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.32.0.452.g940fe202adcb
 In-Reply-To: <20210808015659.2955443-1-liambeguin@gmail.com>
 References: <20210808015659.2955443-1-liambeguin@gmail.com>
@@ -76,179 +76,118 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Liam Beguin <lvb@xiphos.com>
 
-This driver supports devices with 14-bit and 16-bit sample sizes.
-This is not always handled properly by spi controllers and can fail. To
-work around this limitation, pad samples to 16-bit and split the sample
-into two 8-bit messages in the event that only 8-bit messages are
-supported by the controller.
+Add bindings documentation describing per channel reference voltage
+selection.
+This adds the adi,internal-ref-microvolt property, and child nodes for
+each channel. This is required to properly configure the ADC sample
+request based on which reference source should be used for the
+calculation.
 
 Signed-off-by: Liam Beguin <lvb@xiphos.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- drivers/iio/adc/ad7949.c | 75 +++++++++++++++++++++++++++++++++-------
- 1 file changed, 63 insertions(+), 12 deletions(-)
+ .../bindings/iio/adc/adi,ad7949.yaml          | 69 +++++++++++++++++--
+ 1 file changed, 65 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7949.c b/drivers/iio/adc/ad7949.c
-index 937241ee2a22..3f94ae639a44 100644
---- a/drivers/iio/adc/ad7949.c
-+++ b/drivers/iio/adc/ad7949.c
-@@ -14,7 +14,6 @@
- #include <linux/bitfield.h>
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7949.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7949.yaml
+index 9b56bd4d5510..893f72b8081e 100644
+--- a/Documentation/devicetree/bindings/iio/adc/adi,ad7949.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7949.yaml
+@@ -26,19 +26,63 @@ properties:
+   reg:
+     maxItems: 1
  
- #define AD7949_MASK_TOTAL		GENMASK(13, 0)
--#define AD7949_CFG_REG_SIZE_BITS	14
- 
- /* CFG: Configuration Update */
- #define AD7949_CFG_BIT_OVERWRITE	BIT(13)
-@@ -68,9 +67,11 @@ static const struct ad7949_adc_spec ad7949_adc_spec[] = {
-  * @indio_dev: reference to iio structure
-  * @spi: reference to spi structure
-  * @resolution: resolution of the chip
-+ * @bits_per_word: number of bits per SPI word
-  * @cfg: copy of the configuration register
-  * @current_channel: current channel in use
-  * @buffer: buffer to send / receive data to / from device
-+ * @buf8b: be16 buffer to exchange data with the device in 8-bit transfers
-  */
- struct ad7949_adc_chip {
- 	struct mutex lock;
-@@ -78,28 +79,46 @@ struct ad7949_adc_chip {
- 	struct iio_dev *indio_dev;
- 	struct spi_device *spi;
- 	u8 resolution;
-+	u8 bits_per_word;
- 	u16 cfg;
- 	unsigned int current_channel;
- 	u16 buffer ____cacheline_aligned;
-+	__be16 buf8b;
- };
- 
- static int ad7949_spi_write_cfg(struct ad7949_adc_chip *ad7949_adc, u16 val,
- 				u16 mask)
- {
- 	int ret;
--	int bits_per_word = ad7949_adc->resolution;
--	int shift = bits_per_word - AD7949_CFG_REG_SIZE_BITS;
- 	struct spi_message msg;
- 	struct spi_transfer tx[] = {
- 		{
--			.tx_buf = &ad7949_adc->buffer,
- 			.len = 2,
--			.bits_per_word = bits_per_word,
-+			.bits_per_word = ad7949_adc->bits_per_word,
- 		},
- 	};
- 
- 	ad7949_adc->cfg = (val & mask) | (ad7949_adc->cfg & ~mask);
--	ad7949_adc->buffer = ad7949_adc->cfg << shift;
++  vrefin-supply:
++    description:
++      Buffered ADC reference voltage supply.
 +
-+	switch (ad7949_adc->bits_per_word) {
-+	case 16:
-+		tx[0].tx_buf = &ad7949_adc->buffer;
-+		ad7949_adc->buffer = ad7949_adc->cfg << 2;
-+		break;
-+	case 14:
-+		tx[0].tx_buf = &ad7949_adc->buffer;
-+		ad7949_adc->buffer = ad7949_adc->cfg;
-+		break;
-+	case 8:
-+		/* Here, type is big endian as it must be sent in two transfers */
-+		tx[0].tx_buf = &ad7949_adc->buf8b;
-+		ad7949_adc->buf8b = cpu_to_be16(ad7949_adc->cfg << 2);
-+		break;
-+	default:
-+		dev_err(&ad7949_adc->indio_dev->dev, "unsupported BPW\n");
-+		return -EINVAL;
-+	}
+   vref-supply:
+     description:
+-      ADC reference voltage supply
++      Unbuffered ADC reference voltage supply.
+ 
+   spi-max-frequency: true
+ 
+-  "#io-channel-cells":
++  '#io-channel-cells':
+     const: 1
+ 
++  '#address-cells':
++    const: 1
 +
- 	spi_message_init_with_transfers(&msg, tx, 1);
- 	ret = spi_sync(ad7949_adc->spi, &msg);
- 
-@@ -116,17 +135,19 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
- {
- 	int ret;
- 	int i;
--	int bits_per_word = ad7949_adc->resolution;
--	int mask = GENMASK(ad7949_adc->resolution - 1, 0);
- 	struct spi_message msg;
- 	struct spi_transfer tx[] = {
- 		{
--			.rx_buf = &ad7949_adc->buffer,
- 			.len = 2,
--			.bits_per_word = bits_per_word,
-+			.bits_per_word = ad7949_adc->bits_per_word,
- 		},
- 	};
- 
-+	if (ad7949_adc->bits_per_word == 8)
-+		tx[0].rx_buf = &ad7949_adc->buf8b;
-+	else
-+		tx[0].rx_buf = &ad7949_adc->buffer;
++  '#size-cells':
++    const: 0
 +
- 	/*
- 	 * 1: write CFG for sample N and read old data (sample N-2)
- 	 * 2: if CFG was not changed since sample N-1 then we'll get good data
-@@ -144,7 +165,6 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
- 	}
- 
- 	/* 3: write something and read actual data */
--	ad7949_adc->buffer = 0;
- 	spi_message_init_with_transfers(&msg, tx, 1);
- 	ret = spi_sync(ad7949_adc->spi, &msg);
- 	if (ret)
-@@ -158,7 +178,25 @@ static int ad7949_spi_read_channel(struct ad7949_adc_chip *ad7949_adc, int *val,
- 
- 	ad7949_adc->current_channel = channel;
- 
--	*val = ad7949_adc->buffer & mask;
-+	switch (ad7949_adc->bits_per_word) {
-+	case 16:
-+		*val = ad7949_adc->buffer;
-+		/* Shift-out padding bits */
-+		*val >>= 16 - ad7949_adc->resolution;
-+		break;
-+	case 14:
-+		*val = ad7949_adc->buffer & GENMASK(13, 0);
-+		break;
-+	case 8:
-+		/* Here, type is big endian as data was sent in two transfers */
-+		*val = be16_to_cpu(ad7949_adc->buf8b);
-+		/* Shift-out padding bits */
-+		*val >>= 16 - ad7949_adc->resolution;
-+		break;
-+	default:
-+		dev_err(&ad7949_adc->indio_dev->dev, "unsupported BPW\n");
-+		return -EINVAL;
-+	}
- 
- 	return 0;
- }
-@@ -266,6 +304,7 @@ static int ad7949_spi_init(struct ad7949_adc_chip *ad7949_adc)
- 
- static int ad7949_spi_probe(struct spi_device *spi)
- {
-+	u32 spi_ctrl_mask = spi->controller->bits_per_word_mask;
- 	struct device *dev = &spi->dev;
- 	const struct ad7949_adc_spec *spec;
- 	struct ad7949_adc_chip *ad7949_adc;
-@@ -292,6 +331,18 @@ static int ad7949_spi_probe(struct spi_device *spi)
- 	indio_dev->num_channels = spec->num_channels;
- 	ad7949_adc->resolution = spec->resolution;
- 
-+	/* Set SPI bits per word */
-+	if (spi_ctrl_mask & SPI_BPW_MASK(ad7949_adc->resolution)) {
-+		ad7949_adc->bits_per_word = ad7949_adc->resolution;
-+	} else if (spi_ctrl_mask == SPI_BPW_MASK(16)) {
-+		ad7949_adc->bits_per_word = 16;
-+	} else if (spi_ctrl_mask == SPI_BPW_MASK(8)) {
-+		ad7949_adc->bits_per_word = 8;
-+	} else {
-+		dev_err(dev, "unable to find common BPW with spi controller\n");
-+		return -EINVAL;
-+	}
+ required:
+   - compatible
+   - reg
+-  - vref-supply
 +
- 	ad7949_adc->vref = devm_regulator_get(dev, "vref");
- 	if (IS_ERR(ad7949_adc->vref)) {
- 		dev_err(dev, "fail to request regulator\n");
++patternProperties:
++  '^channel@([0-7])$':
++    type: object
++    description: |
++      Represents the external channels which are connected to the ADC.
++
++    properties:
++      reg:
++        description: |
++          The channel number.
++          Up to 4 channels, numbered from 0 to 3 for adi,ad7682.
++          Up to 8 channels, numbered from 0 to 7 for adi,ad7689 and adi,ad7949.
++        items:
++          minimum: 0
++          maximum: 7
++
++      adi,internal-ref-microvolt:
++        description: |
++          Internal reference voltage selection in microvolts.
++
++          If no internal reference is specified, the channel will default to the
++          external reference defined by vrefin-supply (or vref-supply).
++          vrefin-supply will take precedence over vref-supply if both are defined.
++
++          If no supplies are defined, the reference selection will default to
++          4096mV internal reference.
++
++        enum: [2500000, 4096000]
++        default: 4096000
++
++    required:
++      - reg
++
++    additionalProperties: false
+ 
+ additionalProperties: false
+ 
+@@ -49,9 +93,26 @@ examples:
+         #size-cells = <0>;
+ 
+         adc@0 {
++            #address-cells = <1>;
++            #size-cells = <0>;
++
+             compatible = "adi,ad7949";
+             reg = <0>;
+-            vref-supply = <&vdd_supply>;
++            vrefin-supply = <&vdd_supply>;
++
++            channel@0 {
++                adi,internal-ref-microvolt = <4096000>;
++                reg = <0>;
++            };
++
++            channel@1 {
++                adi,internal-ref-microvolt = <2500000>;
++                reg = <1>;
++            };
++
++            channel@2 {
++                reg = <2>;
++            };
+         };
+     };
+ ...
 -- 
 2.32.0.452.g940fe202adcb
 
