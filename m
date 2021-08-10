@@ -2,129 +2,150 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-0.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,
-	URIBL_BLOCKED autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 899B4C4320A
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Aug 2021 15:43:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 37548C4338F
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Aug 2021 18:45:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6C3C760C40
-	for <linux-iio@archiver.kernel.org>; Tue, 10 Aug 2021 15:43:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1CB1960E9B
+	for <linux-iio@archiver.kernel.org>; Tue, 10 Aug 2021 18:45:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243209AbhHJPn7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 Aug 2021 11:43:59 -0400
-Received: from mout.gmx.net ([212.227.17.20]:47579 "EHLO mout.gmx.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242153AbhHJPn7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 10 Aug 2021 11:43:59 -0400
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=gmx.net;
-        s=badeba3b8450; t=1628610195;
-        bh=f9yoZklWAOjRko5GEHne/rB2HxvyimqQxu/6RVsxWfM=;
-        h=X-UI-Sender-Class:Date:From:To:Cc:Subject:References:In-Reply-To;
-        b=gaNLTcUfYmNM6APGQiF0FHtnKBz1zKej6HpnDaAgzlhG4E4nolV22WYw1d9mw+2Ns
-         K4MT7IXSfb7VXEFBMevPZ93nvFZJOqq3FBeug+5SrVpcPSfkZDKKLRaxJJc/VKO03P
-         hI6cHuNhjDVvTJGl2HqqzCULIGUdIq1dWdsNecnU=
-X-UI-Sender-Class: 01bb95c1-4bf8-414a-932a-4f6e2808ef9c
-Received: from titan ([79.150.72.99]) by mail.gmx.net (mrgmx104
- [212.227.17.174]) with ESMTPSA (Nemesis) id 1McpJq-1mlzNZ1L0s-00a0AJ; Tue, 10
- Aug 2021 17:43:15 +0200
-Date:   Tue, 10 Aug 2021 17:43:03 +0200
-From:   Len Baker <len.baker@gmx.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Len Baker <len.baker@gmx.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Kees Cook <keescook@chromium.org>,
-        linux-hardening@vger.kernel.org,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2] drivers/iio: Remove all strcpy() uses in favor of
- strscpy()
-Message-ID: <20210810154303.GA2508@titan>
-References: <20210807152225.9403-1-len.baker@gmx.com>
- <20210808172503.5187cd24@jic23-huawei>
- <CAHp75VfSX-7UqH9Lbr_GxQRY3dGjGo7H8++kBdrrSds1p6nB1Q@mail.gmail.com>
- <20210809102131.000021eb@Huawei.com>
- <20210809161422.GA2619@titan>
- <CAHp75VfyJ1zSmgenn3V-2tF-X9uZJ1tByyJfJOydXZSV1as3GA@mail.gmail.com>
- <CAHp75VeAf_GYcF--=wXJmJZPr1YHn_gLFAFGHwsMCDX7Mxs5zw@mail.gmail.com>
+        id S231681AbhHJSqL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 Aug 2021 14:46:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231406AbhHJSqI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Aug 2021 14:46:08 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5B315C0613C1;
+        Tue, 10 Aug 2021 11:45:46 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id t3so22468850plg.9;
+        Tue, 10 Aug 2021 11:45:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ApjcOuh7duZILh8T6JLUB1Jdv+YHLxNkLoCXW/z5nfY=;
+        b=dcnP4jw5UI8nCSfi/syI5q9gL/kCyB8rWwt7nwllSuIcM0XtYoAbVa6eWY3Ow5Z4/r
+         8ZPSH3RCrUCMKYoxAl48j+IIlKdeHY2dLm37jkGI/SEtwLmNfeD7WHbpskZbX8SoG2KJ
+         kSlUx4kF7SzRochmnIh7U2qZ04m047T+bzTcwdYkY0o+Jc5RPeblTq2sIXmJtfqCbruH
+         Nblgl1TGQORhuv1uHljXAVSn0w4/FR136fvb9n+cdtw7Th0UziS7ohV/NtBgr7Z+o1zG
+         y7Aq2Iph4Dv2eeKVCM0Z5Tt3TvLHGBd5mGaVlJfO3ovj9pH+5oSADoB6OSO6Dvus9GEH
+         u8Og==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=ApjcOuh7duZILh8T6JLUB1Jdv+YHLxNkLoCXW/z5nfY=;
+        b=jIG8Xp+WRxSXZ7fR5/N1QIbJSUr3nBAdHrAh0K+lSqF64Mcl4dzvUpJdPVwbTWp+cK
+         x5vydjeWbBGYD4kffZ4KIXIwlZDwm/a0HkFjqcdmalErcPLmq2IQ/dY84LcewJRNO/ph
+         2cQ65WrtQ3zpoEFCAZwrJqxhL2nZMY/4ADtSoRg7SvbZzL159ogBJHJq/SCVueUZg7eY
+         f+j/JXoLNix9c35iwDu3/xMXJE8Hbyjx3sR/yL2dNJbQWC2NhRrXneQVLltsWb2moCY+
+         nZFzTUDyvkr49cZePQPnvn+N2Ni0evlH6bCBVWXq8uLAPmL449P64IKMC7zeZeaPqk4Y
+         5SDA==
+X-Gm-Message-State: AOAM532eFFP89hc9xGNWMwm2RY93+zyFIcgKwVdbY+0gnaGNlHmUVpqC
+        sqW6IxY8v+FQ4oyx/eWYlR3Amw+ABtPC+ut5
+X-Google-Smtp-Source: ABdhPJyGB11DnKQqwRlqB0bhsQVRQ50tgIHv0X1zL13EgqCJpYK+prTKs4GNxBMWXyqjVkGeF3pIDA==
+X-Received: by 2002:a17:90a:4681:: with SMTP id z1mr18196522pjf.131.1628621145705;
+        Tue, 10 Aug 2021 11:45:45 -0700 (PDT)
+Received: from localhost.localdomain ([125.62.119.16])
+        by smtp.googlemail.com with ESMTPSA id f4sm29933733pgi.68.2021.08.10.11.45.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 10 Aug 2021 11:45:45 -0700 (PDT)
+From:   Puranjay Mohan <puranjay12@gmail.com>
+To:     Michael.Hennerich@analog.com, jic23@kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, lars@metafoo.de,
+        Dragos.Bogdan@analog.com, Darius.Berghe@analog.com,
+        andy.shevchenko@gmail.com
+Cc:     Puranjay Mohan <puranjay12@gmail.com>
+Subject: [PATCH v10 0/2] iio: accel: add support for ADXL355
+Date:   Wed, 11 Aug 2021 00:15:34 +0530
+Message-Id: <20210810184536.34443-1-puranjay12@gmail.com>
+X-Mailer: git-send-email 2.30.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <CAHp75VeAf_GYcF--=wXJmJZPr1YHn_gLFAFGHwsMCDX7Mxs5zw@mail.gmail.com>
-X-Provags-ID: V03:K1:cRHTKwbL0WqT843vcAOgaEC2gKAhlW/Nz3Siys7qUczMedk2Sbz
- CYN4XnCy+VCfuctiQz9MiYdV5tnke7l4479UWw9mSEI7qzLnwIdoeFbWEj+BKtMZaWPVbkn
- trYBZMDm8S+jM0W5vVjDREqytula4FEoFEuF9qybQUNsUbJquEdW6/QwOOnaRB2rKHsA2vY
- rY+5uB2126WMJm6t9xDQg==
-X-UI-Out-Filterresults: notjunk:1;V03:K0:VZWlOome2sY=:7hkCJf7Tk4hkI7kJ3dIFPt
- 8tK3bg5/XlCkE+AeqXrX3+HxOLVmNaM3vuMDqj4LOmQhbUdI5OG10C1d5a8IYyu6Ti8TAuQ9D
- ja0T8XxUpLRI8vZDqvMzHXJIbW+lHdCsKhCXD7miGhVSFQL7xAlsLKVVsEmZVfJBRYUOo+TeQ
- qGtjyQJwUVWUkcz366Y0nS9ZWuuXgVUUX3H8GQn5m2CT3uWiAMVtaChiHZXucm/HBS9S/BdKG
- L87yLEBZr7EpTguHVMTtWOZVEbGm5j/L9U/c1CkzWhbwcvoH5RO+YKul+tirAhxWjMVAk60Sf
- 8atQrQSdktM3B0SeDoTIVjFu2WdQo+Pd7xASoCgfXJbzonvTBGcBvB1e12BCF5QusxjPjse3E
- 2EjOHLvaZjaBVqz7WW1Vo827qgK387et7r4e9Ru+DxzoE9q4CQR0b8hepQRXefNN9SVNB8dCF
- g0X6jmJe+Szpmlm34awqWB9ulCH4DGIAqirzrmefkVC+7A+861RExTO7Ux2lD6n1kId2/NyUB
- FtGe16ELqiNdDE20+xndkX3Pg2mL5LsfZ4Pwa3METKwCglQuoecOA8X2gxZw4HwoEcfpzW+Ae
- d18+S4wbAWjuV2X8oZq92I+V3aCLBrZvJnZprjbyZpY7D68U4fFABoJktK7ZbDhrmhBp0gWgJ
- f4uAT3B5vK0xCW2KsTjqeXWFz1OAhfu5hKKZPc3udIJcObwzoznA0T+/75EMzxq/LQujctCbH
- h4z+7Oto8UCefyDxkuQyI2jJTjoyvRCKmtUzsIiMmHMuJYBRhF/pJ6NdALjTTsUuMTcrDpLI+
- L3L4vZQjrXdrsWg0/PhJLdAixhndGMgpJGMwat5GiBEnwnHRsAafTGrOE1sNWO8LqGn8OdOHY
- +PPMCz9IxfTkTwk4xnaPYBKOugp9H7hWPQvF46tyb+wDon3hRVia6F2rGUxfvIkLFRHpIpCef
- YYajSEVtSy3oDeIyqGjdwWPV/ziEkt3X8kUVBksfPDKwKkvJn7aalvw1laAyxytI1kWcL20fE
- q4omv7Dh6htr5og+YV42Dv5kuP4vyGY2IxEEP0XwCh2x+zDACsxFoFAhTVmekBqdw2thwwJZf
- G2R1JA6i5fBOWbUdUbZxVa7HucMs/pFqNOYX6A57Quk9dPKwT5rGBT7LQ==
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy, David and Jonathan
+Add the dt-bindings and the driver for ADXL355 3-axis MEMS Accelerometer.
 
-First of all thanks you very much for your code snippets ;)
-More below.
+Changes since v9:
+1. Fix white space issues, remove extra lines.
+2. Include bits.h and device.h
+3. Add commas to non-terminal lines in structs etc.
 
-On Tue, Aug 10, 2021 at 03:11:01PM +0300, Andy Shevchenko wrote:
-> On Tue, Aug 10, 2021 at 3:06 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Mon, Aug 9, 2021 at 7:14 PM Len Baker <len.baker@gmx.com> wrote:
->
->
->
-> > Even if we leave the logic as is, this might be better
-> >
-> > if (orient[0] =3D=3D '-')
-> >    str =3D devm_kstrdup(dev, orient + 1, GFP_KERNEL);
->
-> > else if (orient[0] !=3D '0' || orient[1] !=3D '\0')
-> >    str =3D devm_kasprintf(dev, GFP_KERNEL, "-%s", orient);
-> > else
-> >    str =3D devm_kstrdup(dev, orient, GFP_KERNEL);
+Changes since v8:
+1. Make scale and offset defines inline and remove them.
+2. Change dt-binding doc to state interrupt polarity only for DRDY pin.
+3. Remove triggered buffer support from this patch series.
 
-I think the above snippet is the right one: Is compact and easy
-to understand.
+Changes since v7:
+1. Update MAINTAINERS to show all driver files.
+2. Set CONFIGS for buffered support in Kconfig.
 
->
-> Or these two swapped for better reading
->
->  else if (orient[0] =3D=3D '0' **&& orient[1] =3D=3D '\0')
->     str =3D devm_kstrdup(dev, orient, GFP_KERNEL);
-> else
->     str =3D devm_kasprintf(dev, GFP_KERNEL, "-%s", orient);
->
-> And with a comment added that we negate the result according to the
-> rules: 1) drop leading '-' (minus); 2) leave 0 as is; add leading '-'
-> (minus).
->
-> > if (!str)
-> >    return -ENOMEM;
+Changes since v6:
+1. Use interrupt-names property in device tree document.
+2. Add triggered buffer support.
+3. Use a static table for offset and data registers.
+4. Fix coding style issues.
+5. move defines from header to c file.
 
-Also, I think that it is better to leave the logic as is and don't
-try to use always the +/- sign.
+Changes since v5:
+1. Used get_unaligned_be24() and  get_unaligned_be16() to parse
+acceleration and temperature data. This solves sparse errors and also
+make the code more understandable.
 
-Again thanks to all for the feedback.
+Changes since v4:
+1. Fix errors reported by sparse.
 
-Regards,
-Len
+Changes since v3:
+1. Fix errors in yaml DT doc.
+2. Change SPDX-License-Identifier to GPL-2.0-only OR BSD-2-Clause
+
+Changes since v2:
+1. Add separate DT binding doc in yaml.
+2. Use ____cacheline_aligned buffer for regmap_bulk_read/write calls.
+3. Make code consistent by using same style in switch case.
+4. Use FIELD_PREP in place of custom macros.
+5. Make Kconfig description more informative.
+
+Changes since v1:
+1. Remove the declarations for static regmap structures from adxl355.h.
+This was missed in the v1 and caused errors.
+2. Make switch case statements consistent by directly returning from
+each case rather than saving the return in a variable.
+3. Some coding style changes.
+
+Changes since v0:
+1. Move adxl355_hpf_3db_table to adxl355_data structure. This is done to make
+sure that each device gets its own table.
+2. Make local regmap definitions private to adxl355_core.c.
+3. Other minor coding style changes.
+
+Puranjay Mohan (2):
+  dt-bindings: iio: accel: Add DT binding doc for ADXL355
+  iio: accel: Add driver support for ADXL355
+
+ .../bindings/iio/accel/adi,adxl355.yaml       |  88 +++
+ MAINTAINERS                                   |  10 +
+ drivers/iio/accel/Kconfig                     |  29 +
+ drivers/iio/accel/Makefile                    |   3 +
+ drivers/iio/accel/adxl355.h                   |  20 +
+ drivers/iio/accel/adxl355_core.c              | 582 ++++++++++++++++++
+ drivers/iio/accel/adxl355_i2c.c               |  62 ++
+ drivers/iio/accel/adxl355_spi.c               |  65 ++
+ 8 files changed, 859 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl355.yaml
+ create mode 100644 drivers/iio/accel/adxl355.h
+ create mode 100644 drivers/iio/accel/adxl355_core.c
+ create mode 100644 drivers/iio/accel/adxl355_i2c.c
+ create mode 100644 drivers/iio/accel/adxl355_spi.c
+
+-- 
+2.30.1
+
