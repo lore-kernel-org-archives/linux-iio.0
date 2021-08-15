@@ -2,46 +2,45 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,MAILING_LIST_MULTI,
-	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4B13C4338F
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Aug 2021 16:06:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A19D0C4338F
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Aug 2021 16:28:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8686C61185
-	for <linux-iio@archiver.kernel.org>; Sun, 15 Aug 2021 16:06:56 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 84261611AD
+	for <linux-iio@archiver.kernel.org>; Sun, 15 Aug 2021 16:28:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229453AbhHOQHZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 15 Aug 2021 12:07:25 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35188 "EHLO mail.kernel.org"
+        id S231322AbhHOQ31 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 15 Aug 2021 12:29:27 -0400
+Received: from mail.kernel.org ([198.145.29.99]:57190 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229452AbhHOQHZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 15 Aug 2021 12:07:25 -0400
+        id S229490AbhHOQ31 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 15 Aug 2021 12:29:27 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 59E226121E;
-        Sun, 15 Aug 2021 16:06:53 +0000 (UTC)
-Date:   Sun, 15 Aug 2021 17:09:51 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id 75655611C4;
+        Sun, 15 Aug 2021 16:28:52 +0000 (UTC)
+Date:   Sun, 15 Aug 2021 17:31:50 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Michael Hennerich" <Michael.Hennerich@analog.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>
-Subject: Re: [PATCH 2/2] iio:adc:ad7124: Convert to fwnode handling of child
- node parsing.
-Message-ID: <20210815170951.52378891@jic23-huawei>
-In-Reply-To: <20210727192013.00003f3c@Huawei.com>
-References: <20210725172458.487343-1-jic23@kernel.org>
-        <20210725172458.487343-3-jic23@kernel.org>
-        <CAHp75VcgMkPw8BudKkF9MN2ijjDuT=VRo3FivVcjEYsEY4L-0w@mail.gmail.com>
-        <20210727145141.0000230d@Huawei.com>
-        <CAHp75Ve6L+5zAwBJ5ep2VExyNDaSSrEBAonfMT6cFCxEpgUQQA@mail.gmail.com>
-        <20210727192013.00003f3c@Huawei.com>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
+        fabrice.gasnier@st.com
+Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
+        a.fatoum@pengutronix.de, kamel.bouhara@bootlin.com,
+        gwendal@chromium.org, alexandre.belloni@bootlin.com,
+        david@lechnology.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        syednwaris@gmail.com, patrick.havelange@essensium.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        o.rempel@pengutronix.de, jarkko.nikula@linux.intel.com,
+        Dan Carpenter <dan.carpenter@oracle.com>
+Subject: Re: [PATCH v15 02/13] counter: Internalize sysfs interface code
+Message-ID: <20210815173150.29454ed9@jic23-huawei>
+In-Reply-To: <9844c0b2845fc001f64ebb0a4bc6d7fb7a08571a.1628511445.git.vilhelm.gray@gmail.com>
+References: <cover.1628511445.git.vilhelm.gray@gmail.com>
+        <9844c0b2845fc001f64ebb0a4bc6d7fb7a08571a.1628511445.git.vilhelm.gray@gmail.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -50,89 +49,521 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 27 Jul 2021 19:20:13 +0100
-Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
+On Mon,  9 Aug 2021 21:37:27 +0900
+William Breathitt Gray <vilhelm.gray@gmail.com> wrote:
 
-> On Tue, 27 Jul 2021 17:16:07 +0300
-> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> This is a reimplementation of the Generic Counter driver interface.
+> There are no modifications to the Counter subsystem userspace interface,
+> so existing userspace applications should continue to run seamlessly.
 > 
-> > On Tue, Jul 27, 2021 at 4:52 PM Jonathan Cameron
-> > <Jonathan.Cameron@huawei.com> wrote:  
-> > > On Sun, 25 Jul 2021 23:33:12 +0300
-> > > Andy Shevchenko <andy.shevchenko@gmail.com> wrote:    
-> > > > On Sun, Jul 25, 2021 at 8:22 PM Jonathan Cameron <jic23@kernel.org> wrote:    
-> > 
-> > ...
-> >   
-> > > > > -       for_each_available_child_of_node(np, child) {
-> > > > > +       device_for_each_child_node(dev, child) {    
-> > > >
-> > > > Isn't this
-> > > >   fwnode_for_each_available_child_node()
-> > > > better to use?    
-> > >
-> > > Given we would be extracting the fwnode just to call this
-> > > loop, I'd say no, device version makes more sense..
-> > >    
-> > > >
-> > > > ...
-> > > >
-> > > > So the gaps I see are
-> > > >   device_get_available_child_node_count()
-> > > > and
-> > > >   device_for_each_available_child_node()    
-> > >
-> > > Do we then fix the fact that
-> > > device_for_each_child_node() will call the _available() form
-> > > for device tree?  That seems inconsistent currently and
-> > > I was assuming that was deliberate...    
-> > 
-> > I'm not sure I got your point. Mine (see below) is to add the APIs
-> > that you want to use as a direct replacement of the corresponding OF
-> > counterparts.  
-> +CC Rafael,
+> The purpose of this patch is to internalize the sysfs interface code
+> among the various counter drivers into a shared module. Counter drivers
+> pass and take data natively (i.e. u8, u64, etc.) and the shared counter
+> module handles the translation between the sysfs interface and the
+> device drivers. This guarantees a standard userspace interface for all
+> counter drivers, and helps generalize the Generic Counter driver ABI in
+> order to support the Generic Counter chrdev interface (introduced in a
+> subsequent patch) without significant changes to the existing counter
+> drivers.
+> 
+> Note, Counter device registration is the same as before: drivers
+> populate a struct counter_device with components and callbacks, then
+> pass the structure to the devm_counter_register function. However,
+> what's different now is how the Counter subsystem code handles this
+> registration internally.
+> 
+> Whereas before callbacks would interact directly with sysfs data, this
+> interaction is now abstracted and instead callbacks interact with native
+> C data types. The counter_comp structure forms the basis for Counter
+> extensions.
+> 
+> The counter-sysfs.c file contains the code to parse through the
+> counter_device structure and register the requested components and
+> extensions. Attributes are created and populated based on type, with
+> respective translation functions to handle the mapping between sysfs and
+> the counter driver callbacks.
+> 
+> The translation performed for each attribute is straightforward: the
+> attribute type and data is parsed from the counter_attribute structure,
+> the respective counter driver read/write callback is called, and sysfs
+> I/O is handled before or after the driver read/write function is called.
+> 
+> Cc: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+> Cc: Patrick Havelange <patrick.havelange@essensium.com>
+> Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
+> Cc: Fabrice Gasnier <fabrice.gasnier@st.com>
+> Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>
+> Cc: Alexandre Torgue <alexandre.torgue@st.com>
+> Cc: Dan Carpenter <dan.carpenter@oracle.com>
+> Acked-by: Syed Nayyar Waris <syednwaris@gmail.com>
+> Reviewed-by: David Lechner <david@lechnology.com>
+> Tested-by: David Lechner <david@lechnology.com>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Hi William,
 
-Rafael, if you have a chance to give input on the questions below it would
-be much appreciated.
+Given we haven't had any of the reviews of the stm32 and ftm-quadec
+changes I took a closer look myself.
 
-Thanks,
+A side effect of the warning fixes is that we now have some 'magic numbers'
+for register fields.  Some of them were there already, but now there are more.
+
+My suggestions is that you use some defines (or indeed the original enums
+if appropriate) to provide text names to the register field values.
+I've highlighted another driver that does it the way I'd like to see it done.
+
+So unfortunately it looks like this this refactor is going to be in the next
+kernel cycle :(  Hopefully we can get it queued up early though so you have
+something to do any revisions of the latter patches against.
 
 Jonathan
 
-> 
-> The oddity is that device_for_each_child_node() is a direct replacement
-> of the for_each_available_child_of_node() other than the obvious
-> use of device rather than the of node.
-> 
-> https://elixir.bootlin.com/linux/v5.14-rc3/source/drivers/of/property.c#L939
-> 
-> static struct fwnode_handle *
-> of_fwnode_get_next_child_node(const struct fwnode_handle *fwnode,
-> 			      struct fwnode_handle *child)
-> {
-> 	return of_fwnode_handle(of_get_next_available_child(to_of_node(fwnode),
-> 							    to_of_node(child)));
-> }
-> 
-> So the question becomes whether there is any desire at all to have a
-> version of the device_for_each_child_node() that does not check
-> if it is available or not.
-> 
-> Looks like it goes all the way back.  Rafael, any comment on why the available
-> for is used here and whether it makes sense to introduce separate
-> versions for looping over children that cover the _available_ and everything
-> cases?
-> 
-> https://git.kernel.org/pub/scm/linux/kernel/git/torvalds/linux.git/commit/drivers/base/property.c?id=8a0662d9ed2968e1186208336a8e1fab3fdfea63
-> 
-> I'm kind of assuming this was deliberate as we don't want to encourage
-> accessing disabled firmware nodes.
-> 
-> Jonathan
-> 
-> >   
-> > > > Both of them I think are easy to add and avoid possible breakage.    
-> > 
-> >   
-> 
+
+
+...
+
+> -static int mchp_tc_count_action_set(struct counter_device *counter,
+> -				    struct counter_count *count,
+> -				    struct counter_synapse *synapse,
+> -				    size_t action)
+> +static int mchp_tc_count_action_write(struct counter_device *counter,
+> +				      struct counter_count *count,
+> +				      struct counter_synapse *synapse,
+> +				      enum counter_synapse_action action)
+>  {
+>  	struct mchp_tc_data *const priv = counter->priv;
+>  	u32 edge = ATMEL_TC_ETRGEDG_NONE;
+> @@ -217,16 +205,16 @@ static int mchp_tc_count_action_set(struct counter_device *counter,
+>  		return -EINVAL;
+>  
+>  	switch (action) {
+> -	case MCHP_TC_SYNAPSE_ACTION_NONE:
+> +	case COUNTER_SYNAPSE_ACTION_NONE:
+>  		edge = ATMEL_TC_ETRGEDG_NONE;
+
+This is a good example of the sort of use of defines for field values I'm suggesting
+for other similar cases. Basically do it like this.
+
+
+>  		break;
+> -	case MCHP_TC_SYNAPSE_ACTION_RISING_EDGE:
+> +	case COUNTER_SYNAPSE_ACTION_RISING_EDGE:
+>  		edge = ATMEL_TC_ETRGEDG_RISING;
+>  		break;
+> -	case MCHP_TC_SYNAPSE_ACTION_FALLING_EDGE:
+> +	case COUNTER_SYNAPSE_ACTION_FALLING_EDGE:
+>  		edge = ATMEL_TC_ETRGEDG_FALLING;
+>  		break;
+> -	case MCHP_TC_SYNAPSE_ACTION_BOTH_EDGE:
+> +	case COUNTER_SYNAPSE_ACTION_BOTH_EDGES:
+>  		edge = ATMEL_TC_ETRGEDG_BOTH;
+>  		break;
+>  	default:
+> @@ -240,8 +228,7 @@ static int mchp_tc_count_action_set(struct counter_device *counter,
+>  }
+>  
+
+> diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
+> index 13656957c45f..23d43b71f9e4 100644
+> --- a/drivers/counter/stm32-lptimer-cnt.c
+> +++ b/drivers/counter/stm32-lptimer-cnt.c
+> @@ -17,6 +17,7 @@
+>  #include <linux/module.h>
+>  #include <linux/pinctrl/consumer.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/types.h>
+>  
+>  struct stm32_lptim_cnt {
+>  	struct counter_device counter;
+> @@ -107,11 +108,7 @@ static int stm32_lptim_setup(struct stm32_lptim_cnt *priv, int enable)
+>  	return regmap_update_bits(priv->regmap, STM32_LPTIM_CFGR, mask, val);
+>  }
+>  
+> -/**
+> - * enum stm32_lptim_cnt_function - enumerates LPTimer counter & encoder modes
+> - * @STM32_LPTIM_COUNTER_INCREASE: up count on IN1 rising, falling or both edges
+> - * @STM32_LPTIM_ENCODER_BOTH_EDGE: count on both edges (IN1 & IN2 quadrature)
+> - *
+> +/*
+>   * In non-quadrature mode, device counts up on active edge.
+>   * In quadrature mode, encoder counting scenarios are as follows:
+>   * +---------+----------+--------------------+--------------------+
+> @@ -129,33 +126,20 @@ static int stm32_lptim_setup(struct stm32_lptim_cnt *priv, int enable)
+>   * | edges   | Low  ->  |   Up     |   Down  |   Down   |   Up    |
+>   * +---------+----------+----------+---------+----------+---------+
+>   */
+> -enum stm32_lptim_cnt_function {
+> -	STM32_LPTIM_COUNTER_INCREASE,
+> -	STM32_LPTIM_ENCODER_BOTH_EDGE,
+> -};
+> -
+>  static const enum counter_function stm32_lptim_cnt_functions[] = {
+> -	[STM32_LPTIM_COUNTER_INCREASE] = COUNTER_FUNCTION_INCREASE,
+> -	[STM32_LPTIM_ENCODER_BOTH_EDGE] = COUNTER_FUNCTION_QUADRATURE_X4,
+> -};
+> -
+> -enum stm32_lptim_synapse_action {
+> -	STM32_LPTIM_SYNAPSE_ACTION_RISING_EDGE,
+> -	STM32_LPTIM_SYNAPSE_ACTION_FALLING_EDGE,
+> -	STM32_LPTIM_SYNAPSE_ACTION_BOTH_EDGES,
+> -	STM32_LPTIM_SYNAPSE_ACTION_NONE,
+> +	COUNTER_FUNCTION_INCREASE,
+> +	COUNTER_FUNCTION_QUADRATURE_X4,
+>  };
+>  
+>  static const enum counter_synapse_action stm32_lptim_cnt_synapse_actions[] = {
+> -	/* Index must match with stm32_lptim_cnt_polarity[] (priv->polarity) */
+> -	[STM32_LPTIM_SYNAPSE_ACTION_RISING_EDGE] = COUNTER_SYNAPSE_ACTION_RISING_EDGE,
+> -	[STM32_LPTIM_SYNAPSE_ACTION_FALLING_EDGE] = COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
+> -	[STM32_LPTIM_SYNAPSE_ACTION_BOTH_EDGES] = COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
+> -	[STM32_LPTIM_SYNAPSE_ACTION_NONE] = COUNTER_SYNAPSE_ACTION_NONE,
+> +	COUNTER_SYNAPSE_ACTION_RISING_EDGE,
+> +	COUNTER_SYNAPSE_ACTION_FALLING_EDGE,
+> +	COUNTER_SYNAPSE_ACTION_BOTH_EDGES,
+> +	COUNTER_SYNAPSE_ACTION_NONE,
+>  };
+>  
+>  static int stm32_lptim_cnt_read(struct counter_device *counter,
+> -				struct counter_count *count, unsigned long *val)
+> +				struct counter_count *count, u64 *val)
+>  {
+>  	struct stm32_lptim_cnt *const priv = counter->priv;
+>  	u32 cnt;
+> @@ -170,28 +154,28 @@ static int stm32_lptim_cnt_read(struct counter_device *counter,
+>  	return 0;
+>  }
+>  
+> -static int stm32_lptim_cnt_function_get(struct counter_device *counter,
+> -					struct counter_count *count,
+> -					size_t *function)
+> +static int stm32_lptim_cnt_function_read(struct counter_device *counter,
+> +					 struct counter_count *count,
+> +					 enum counter_function *function)
+>  {
+>  	struct stm32_lptim_cnt *const priv = counter->priv;
+>  
+>  	if (!priv->quadrature_mode) {
+> -		*function = STM32_LPTIM_COUNTER_INCREASE;
+> +		*function = COUNTER_FUNCTION_INCREASE;
+>  		return 0;
+>  	}
+>  
+> -	if (priv->polarity == STM32_LPTIM_SYNAPSE_ACTION_BOTH_EDGES) {
+> -		*function = STM32_LPTIM_ENCODER_BOTH_EDGE;
+> +	if (priv->polarity == 2) {
+
+This wants to have some sort of define for the register field value
+it corresponds to.
+
+> +		*function = COUNTER_FUNCTION_QUADRATURE_X4;
+>  		return 0;
+>  	}
+>  
+>  	return -EINVAL;
+>  }
+>  
+> -static int stm32_lptim_cnt_function_set(struct counter_device *counter,
+> -					struct counter_count *count,
+> -					size_t function)
+> +static int stm32_lptim_cnt_function_write(struct counter_device *counter,
+> +					  struct counter_count *count,
+> +					  enum counter_function function)
+>  {
+>  	struct stm32_lptim_cnt *const priv = counter->priv;
+>  
+> @@ -199,12 +183,12 @@ static int stm32_lptim_cnt_function_set(struct counter_device *counter,
+>  		return -EBUSY;
+>  
+>  	switch (function) {
+> -	case STM32_LPTIM_COUNTER_INCREASE:
+> +	case COUNTER_FUNCTION_INCREASE:
+>  		priv->quadrature_mode = 0;
+>  		return 0;
+> -	case STM32_LPTIM_ENCODER_BOTH_EDGE:
+> +	case COUNTER_FUNCTION_QUADRATURE_X4:
+>  		priv->quadrature_mode = 1;
+> -		priv->polarity = STM32_LPTIM_SYNAPSE_ACTION_BOTH_EDGES;
+> +		priv->polarity = 2;
+>  		return 0;
+>  	default:
+>  		/* should never reach this path */
+> @@ -212,9 +196,9 @@ static int stm32_lptim_cnt_function_set(struct counter_device *counter,
+>  	}
+>  }
+
+...
+
+>  
+> -static int stm32_lptim_cnt_action_get(struct counter_device *counter,
+> -				      struct counter_count *count,
+> -				      struct counter_synapse *synapse,
+> -				      size_t *action)
+> +static int stm32_lptim_cnt_action_read(struct counter_device *counter,
+> +				       struct counter_count *count,
+> +				       struct counter_synapse *synapse,
+> +				       enum counter_synapse_action *action)
+>  {
+>  	struct stm32_lptim_cnt *const priv = counter->priv;
+> -	size_t function;
+> +	enum counter_function function;
+>  	int err;
+>  
+> -	err = stm32_lptim_cnt_function_get(counter, count, &function);
+> +	err = stm32_lptim_cnt_function_read(counter, count, &function);
+>  	if (err)
+>  		return err;
+>  
+>  	switch (function) {
+> -	case STM32_LPTIM_COUNTER_INCREASE:
+> +	case COUNTER_FUNCTION_INCREASE:
+>  		/* LP Timer acts as up-counter on input 1 */
+> -		if (synapse->signal->id == count->synapses[0].signal->id)
+> -			*action = priv->polarity;
+> -		else
+> -			*action = STM32_LPTIM_SYNAPSE_ACTION_NONE;
+> -		return 0;
+> -	case STM32_LPTIM_ENCODER_BOTH_EDGE:
+> -		*action = priv->polarity;
+> -		return 0;
+> +		if (synapse->signal->id != count->synapses[0].signal->id) {
+> +			*action = COUNTER_SYNAPSE_ACTION_NONE;
+> +			return 0;
+> +		}
+> +
+> +		switch (priv->polarity) {
+> +		case 0:
+
+These correspond to particular bits. As you use them elsewhere I think
+you need some defines.
+
+> +			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
+> +			return 0;
+> +		case 1:
+> +			*action = COUNTER_SYNAPSE_ACTION_FALLING_EDGE;
+> +			return 0;
+> +		case 2:
+> +			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
+> +			return 0;
+> +		default:
+> +			/* should never reach this path */
+> +			return -EINVAL;
+> +		}
+> +	case COUNTER_FUNCTION_QUADRATURE_X4:
+> +		switch (priv->polarity) {
+> +		case 0:
+> +			*action = COUNTER_SYNAPSE_ACTION_RISING_EDGE;
+> +			return 0;
+> +		case 1:
+> +			*action = COUNTER_SYNAPSE_ACTION_FALLING_EDGE;
+> +			return 0;
+> +		case 2:
+> +			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
+> +			return 0;
+> +		default:
+> +			/* should never reach this path */
+> +			return -EINVAL;
+> +		}
+>  	default:
+>  		/* should never reach this path */
+>  		return -EINVAL;
+>  	}
+>  }
+>  
+> -static int stm32_lptim_cnt_action_set(struct counter_device *counter,
+> -				      struct counter_count *count,
+> -				      struct counter_synapse *synapse,
+> -				      size_t action)
+> +static int stm32_lptim_cnt_action_write(struct counter_device *counter,
+> +					struct counter_count *count,
+> +					struct counter_synapse *synapse,
+> +					enum counter_synapse_action action)
+>  {
+>  	struct stm32_lptim_cnt *const priv = counter->priv;
+> -	size_t function;
+> +	enum counter_function function;
+>  	int err;
+>  
+>  	if (stm32_lptim_is_enabled(priv))
+>  		return -EBUSY;
+>  
+> -	err = stm32_lptim_cnt_function_get(counter, count, &function);
+> +	err = stm32_lptim_cnt_function_read(counter, count, &function);
+>  	if (err)
+>  		return err;
+>  
+>  	/* only set polarity when in counter mode (on input 1) */
+> -	if (function == STM32_LPTIM_COUNTER_INCREASE
+> -	    && synapse->signal->id == count->synapses[0].signal->id) {
+> -		switch (action) {
+> -		case STM32_LPTIM_SYNAPSE_ACTION_RISING_EDGE:
+> -		case STM32_LPTIM_SYNAPSE_ACTION_FALLING_EDGE:
+> -		case STM32_LPTIM_SYNAPSE_ACTION_BOTH_EDGES:
+> -			priv->polarity = action;
+> -			return 0;
+> -		}
+> -	}
+> +	if (function != COUNTER_FUNCTION_INCREASE
+> +	    || synapse->signal->id != count->synapses[0].signal->id)
+> +		return -EINVAL;
+>  
+> -	return -EINVAL;
+> +	switch (action) {
+> +	case COUNTER_SYNAPSE_ACTION_RISING_EDGE:
+> +		priv->polarity = 0;
+> +		return 0;
+> +	case COUNTER_SYNAPSE_ACTION_FALLING_EDGE:
+> +		priv->polarity = 1;
+> +		return 0;
+> +	case COUNTER_SYNAPSE_ACTION_BOTH_EDGES:
+> +		priv->polarity = 2;
+> +		return 0;
+> +	default:
+> +		return -EINVAL;
+> +	}
+>  }
+>  
+>  static const struct counter_ops stm32_lptim_cnt_ops = {
+>  	.count_read = stm32_lptim_cnt_read,
+> -	.function_get = stm32_lptim_cnt_function_get,
+> -	.function_set = stm32_lptim_cnt_function_set,
+> -	.action_get = stm32_lptim_cnt_action_get,
+> -	.action_set = stm32_lptim_cnt_action_set,
+> +	.function_read = stm32_lptim_cnt_function_read,
+> +	.function_write = stm32_lptim_cnt_function_write,
+> +	.action_read = stm32_lptim_cnt_action_read,
+> +	.action_write = stm32_lptim_cnt_action_write,
+>  };
+>  
+>  static struct counter_signal stm32_lptim_cnt_signals[] = {
+> diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+> index 3fb0debd7425..8b3759096d04 100644
+> --- a/drivers/counter/stm32-timer-cnt.c
+> +++ b/drivers/counter/stm32-timer-cnt.c
+> @@ -13,6 +13,7 @@
+>  #include <linux/module.h>
+>  #include <linux/pinctrl/consumer.h>
+>  #include <linux/platform_device.h>
+> +#include <linux/types.h>
+>  
+>  #define TIM_CCMR_CCXS	(BIT(8) | BIT(0))
+>  #define TIM_CCMR_MASK	(TIM_CCMR_CC1S | TIM_CCMR_CC2S | \
+> @@ -36,29 +37,15 @@ struct stm32_timer_cnt {
+>  	struct stm32_timer_regs bak;
+>  };
+>  
+> -/**
+> - * enum stm32_count_function - enumerates stm32 timer counter encoder modes
+> - * @STM32_COUNT_SLAVE_MODE_DISABLED: counts on internal clock when CEN=1
+> - * @STM32_COUNT_ENCODER_MODE_1: counts TI1FP1 edges, depending on TI2FP2 level
+> - * @STM32_COUNT_ENCODER_MODE_2: counts TI2FP2 edges, depending on TI1FP1 level
+> - * @STM32_COUNT_ENCODER_MODE_3: counts on both TI1FP1 and TI2FP2 edges
+> - */
+> -enum stm32_count_function {
+> -	STM32_COUNT_SLAVE_MODE_DISABLED,
+> -	STM32_COUNT_ENCODER_MODE_1,
+> -	STM32_COUNT_ENCODER_MODE_2,
+> -	STM32_COUNT_ENCODER_MODE_3,
+> -};
+> -
+>  static const enum counter_function stm32_count_functions[] = {
+> -	[STM32_COUNT_SLAVE_MODE_DISABLED] = COUNTER_FUNCTION_INCREASE,
+> -	[STM32_COUNT_ENCODER_MODE_1] = COUNTER_FUNCTION_QUADRATURE_X2_A,
+> -	[STM32_COUNT_ENCODER_MODE_2] = COUNTER_FUNCTION_QUADRATURE_X2_B,
+> -	[STM32_COUNT_ENCODER_MODE_3] = COUNTER_FUNCTION_QUADRATURE_X4,
+> +	COUNTER_FUNCTION_INCREASE,
+> +	COUNTER_FUNCTION_QUADRATURE_X2_A,
+> +	COUNTER_FUNCTION_QUADRATURE_X2_B,
+> +	COUNTER_FUNCTION_QUADRATURE_X4,
+>  };
+>  
+>  static int stm32_count_read(struct counter_device *counter,
+> -			    struct counter_count *count, unsigned long *val)
+> +			    struct counter_count *count, u64 *val)
+>  {
+>  	struct stm32_timer_cnt *const priv = counter->priv;
+>  	u32 cnt;
+> @@ -70,8 +57,7 @@ static int stm32_count_read(struct counter_device *counter,
+>  }
+>  
+>  static int stm32_count_write(struct counter_device *counter,
+> -			     struct counter_count *count,
+> -			     const unsigned long val)
+> +			     struct counter_count *count, const u64 val)
+>  {
+>  	struct stm32_timer_cnt *const priv = counter->priv;
+>  	u32 ceiling;
+> @@ -83,9 +69,9 @@ static int stm32_count_write(struct counter_device *counter,
+>  	return regmap_write(priv->regmap, TIM_CNT, val);
+>  }
+>  
+> -static int stm32_count_function_get(struct counter_device *counter,
+> -				    struct counter_count *count,
+> -				    size_t *function)
+> +static int stm32_count_function_read(struct counter_device *counter,
+> +				     struct counter_count *count,
+> +				     enum counter_function *function)
+>  {
+>  	struct stm32_timer_cnt *const priv = counter->priv;
+>  	u32 smcr;
+> @@ -94,40 +80,40 @@ static int stm32_count_function_get(struct counter_device *counter,
+>  
+>  	switch (smcr & TIM_SMCR_SMS) {
+>  	case 0:
+
+As below, these case values should be named.
+
+> -		*function = STM32_COUNT_SLAVE_MODE_DISABLED;
+> +		*function = COUNTER_FUNCTION_INCREASE;
+>  		return 0;
+>  	case 1:
+> -		*function = STM32_COUNT_ENCODER_MODE_1;
+> +		*function = COUNTER_FUNCTION_QUADRATURE_X2_A;
+>  		return 0;
+>  	case 2:
+> -		*function = STM32_COUNT_ENCODER_MODE_2;
+> +		*function = COUNTER_FUNCTION_QUADRATURE_X2_B;
+>  		return 0;
+>  	case 3:
+> -		*function = STM32_COUNT_ENCODER_MODE_3;
+> +		*function = COUNTER_FUNCTION_QUADRATURE_X4;
+>  		return 0;
+>  	default:
+>  		return -EINVAL;
+>  	}
+>  }
+>  
+> -static int stm32_count_function_set(struct counter_device *counter,
+> -				    struct counter_count *count,
+> -				    size_t function)
+> +static int stm32_count_function_write(struct counter_device *counter,
+> +				      struct counter_count *count,
+> +				      enum counter_function function)
+>  {
+>  	struct stm32_timer_cnt *const priv = counter->priv;
+>  	u32 cr1, sms;
+>  
+>  	switch (function) {
+> -	case STM32_COUNT_SLAVE_MODE_DISABLED:
+> +	case COUNTER_FUNCTION_INCREASE:
+>  		sms = 0;
+This code is odd in the original driver as sms is just set to the values of the 'function'
+enum.  Having said that, I think with the refactored code you want some symbolic names (defines)
+for the register field values.
+
+>  		break;
+> -	case STM32_COUNT_ENCODER_MODE_1:
+> +	case COUNTER_FUNCTION_QUADRATURE_X2_A:
+>  		sms = 1;
+>  		break;
+> -	case STM32_COUNT_ENCODER_MODE_2:
+> +	case COUNTER_FUNCTION_QUADRATURE_X2_B:
+>  		sms = 2;
+>  		break;
+> -	case STM32_COUNT_ENCODER_MODE_3:
+> +	case COUNTER_FUNCTION_QUADRATURE_X4:
+>  		sms = 3;
+>  		break;
+>  	default:
+
+...
+
 
