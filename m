@@ -2,125 +2,197 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-20.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	URIBL_BLOCKED,USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 061E3C19F3E
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Aug 2021 15:52:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8974C4338F
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Aug 2021 15:55:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4F10360ED5
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Aug 2021 15:52:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BEF2C60C3E
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Aug 2021 15:55:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240376AbhHQPxO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Aug 2021 11:53:14 -0400
-Received: from relay12.mail.gandi.net ([217.70.178.232]:44191 "EHLO
-        relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240413AbhHQPuh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 17 Aug 2021 11:50:37 -0400
-Received: (Authenticated sender: jacopo@jmondi.org)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 66BBE200005;
-        Tue, 17 Aug 2021 15:49:14 +0000 (UTC)
-From:   Jacopo Mondi <jacopo@jmondi.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Rob Herring <robh+dt@kernel.org>
-Cc:     Jacopo Mondi <jacopo@jmondi.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH 1/2] dt-bindings: iio: chemical: Document senseair,sunrise CO2 sensor
-Date:   Tue, 17 Aug 2021 17:49:50 +0200
-Message-Id: <20210817154951.50208-2-jacopo@jmondi.org>
-X-Mailer: git-send-email 2.32.0
-In-Reply-To: <20210817154951.50208-1-jacopo@jmondi.org>
-References: <20210817154951.50208-1-jacopo@jmondi.org>
+        id S237767AbhHQP4R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Aug 2021 11:56:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:50800 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S240525AbhHQPwJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 17 Aug 2021 11:52:09 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id D860B60C3E;
+        Tue, 17 Aug 2021 15:51:18 +0000 (UTC)
+Date:   Tue, 17 Aug 2021 16:54:18 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "hui.liu" <hui.liu@mediatek.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        <robh+dt@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <srv_heupstream@mediatek.com>, <zhiyong.tao@mediatek.com>,
+        <chun-hung.wu@mediatek.com>, <yingjoe.chen@mediatek.com>,
+        <seiya.wang@mediatek.com>, <matthias.bgg@gmail.com>,
+        <s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Subject: Re: [PATCH v1 1/2] iio: mtk-auxadc: add support IIO_CHAN_INFO_RAW
+ case
+Message-ID: <20210817165418.4b1cfdce@jic23-huawei>
+In-Reply-To: <470d4a7fbbcbcaa35aa9dcbaab6a2b77f98dc528.camel@mediatek.com>
+References: <20210812054844.30575-1-hui.liu@mediatek.com>
+        <20210812054844.30575-2-hui.liu@mediatek.com>
+        <20210812190725.00007449@Huawei.com>
+        <042625639032bffe73b60a5c6274511e58e34ef4.camel@mediatek.com>
+        <20210814171007.6892ae94@jic23-huawei>
+        <470d4a7fbbcbcaa35aa9dcbaab6a2b77f98dc528.camel@mediatek.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add documentation for the Senseair Sunrise 006-0-0007 CO2 NDIR sensor.
+On Tue, 17 Aug 2021 16:37:52 +0800
+hui.liu <hui.liu@mediatek.com> wrote:
 
-Signed-off-by: Jacopo Mondi <jacopo@jmondi.org>
----
- .../iio/chemical/senseair,sunrise.yaml        | 51 +++++++++++++++++++
- .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
- 2 files changed, 53 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
+> On Sat, 2021-08-14 at 17:10 +0100, Jonathan Cameron wrote:
+> > On Fri, 13 Aug 2021 11:46:24 +0800
+> > hui.liu <hui.liu@mediatek.com> wrote:
+> >   
+> > > On Thu, 2021-08-12 at 19:07 +0100, Jonathan Cameron wrote:  
+> > > > On Thu, 12 Aug 2021 13:48:43 +0800
+> > > > Hui Liu <hui.liu@mediatek.com> wrote:
+> > > >     
+> > > > > Add support IIO_CHAN_INFO_RAW case.    
+> > > > 
+> > > > Why?
+> > > > 
+> > > > We almost never support both RAW and PROCESSED as userspace
+> > > > should be
+> > > > fine to use either.  There are a few reasons we've let drivers do
+> > > > this but I would like know why it matters to you and it
+> > > > definitely
+> > > > needs to be in the patch description.
+> > > >     
+> > > 
+> > > Hi Jonathan,
+> > > 
+> > > 1. To support ADC consumers' different types of requirement: some
+> > > consumers want to call iio_read_channel_raw to get raw data, the
+> > > others
+> > > use iio_read_channel_processed to get voltage.  
+> > 
+> > Give an example of the consumer using the raw channel readback
+> > (without
+> > acess to any scaling information?)
+> >   
+> 
+> > > 2. In our origin driver, if consumer call
+> > > iio_read_channel_processed,
+> > > read back value is raw data. 
+> > > 
+> > > Could we use SCALE instead of PROCESSED in patch for next version,
+> > > or
+> > > what's your suggestion?  
+> > 
+> > That would unfortunately be a userspace ABI change.  We can add
+> > interfaces
+> > but taking them away is normally a problem :( 
+> > 
+> > Your reasons here are fine, subject to information on what consumer
+> > cares
+> > about having _RAW, please resend the patch with this information
+> > added
+> > to the description.
+> > 
+> > Thanks,
+> > 
+> > Jonathan  
+> 
+> 1. We found afe/iio-rescale.c, dac/dpot-dac.c and multiplexer/iio-mux.c 
+> call iio_read_channel_raw to get raw data. If they use our ADC driver,
+> I think we should support _RAW case. 
+> If we support _RAW case, we will add more information in v2
+> description.
 
-diff --git a/Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml b/Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
-new file mode 100644
-index 000000000000..b77196666187
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
-@@ -0,0 +1,51 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/chemical/senseair,sunrise.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Senseair Sunrise 006-0-0007 CO2 Sensor
-+
-+maintainers:
-+  - Jacopo Mondi <jacopo@jmondi.org>
-+
-+description: |
-+  Senseair Sunrise 006-0-0007 is a NDIR CO2 sensor. It supports I2C or UART buses
-+  for communications and control.
-+
-+  Datasheets:
-+    https://rmtplusstoragesenseair.blob.core.windows.net/docs/Dev/publicerat/PSP11704.pdf
-+    https://rmtplusstoragesenseair.blob.core.windows.net/docs/Dev/publicerat/PSH11649.pdf
-+    https://rmtplusstoragesenseair.blob.core.windows.net/docs/Dev/publicerat/TDE5531.pdf
-+    https://rmtplusstoragesenseair.blob.core.windows.net/docs/Market/publicerat/TDE7318.pdf
-+
-+properties:
-+  compatible:
-+    const: senseair,sunrise-006-0-0007
-+
-+  reg:
-+    maxItems: 1
-+
-+  ndry-gpios:
-+    description: Phandle to the GPIO line connected to the nDRY pin. Active low.
-+
-+  en-gpios:
-+    description: Phandle to the GPIO line connected to the EN pin. Active high.
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      sunrise@68 {
-+        compatible = "senseair,sunrise-006-0-0007";
-+        reg = <0x68>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 944a14926e02..c60502eb3d36 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -1000,6 +1000,8 @@ patternProperties:
-     description: Shenzhen SEI Robotics Co., Ltd
-   "^semtech,.*":
-     description: Semtech Corporation
-+  "^senseair,.*":
-+    description: Senseair AB
-   "^sensirion,.*":
-     description: Sensirion AG
-   "^sensortek,.*":
---
-2.32.0
+iio-rescale has recently gained support for processed.
+https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/commit/drivers/iio/afe/iio-rescale.c?h=testing&id=53ebee9499805add3eef630d998c40812e6a1c39
+dpot-dac is a rather obscure special case, so I doubt you actually have one of those.
+If iio-mux is relevant then we should add processed support to that driver as well.
+
+I would rather see those users of the interface fixed than us
+having to tweak lots of drivers to provide _raw when it isn't appropriate for
+that piece of hardware.
+
+Jonathan
+
+> 
+> 2. Since we change _PROCESSED readback value from raw data to voltage,
+> our consumer will make the changes synchronously. 
+> 
+> > > 
+> > > Thanks.
+> > >   
+> > > > > 
+> > > > > Signed-off-by: Hui Liu <hui.liu@mediatek.com>
+> > > > > ---
+> > > > >  drivers/iio/adc/mt6577_auxadc.c | 16 +++++++++++++++-
+> > > > >  1 file changed, 15 insertions(+), 1 deletion(-)
+> > > > > 
+> > > > > diff --git a/drivers/iio/adc/mt6577_auxadc.c
+> > > > > b/drivers/iio/adc/mt6577_auxadc.c
+> > > > > index 79c1dd68b909..e995d43287b2 100644
+> > > > > --- a/drivers/iio/adc/mt6577_auxadc.c
+> > > > > +++ b/drivers/iio/adc/mt6577_auxadc.c
+> > > > > @@ -60,7 +60,8 @@ static const struct mtk_auxadc_compatible
+> > > > > mt6765_compat = {
+> > > > >  		.type = IIO_VOLTAGE,				
+> > > > >    
+> > > > >  \
+> > > > >  		.indexed = 1,					
+> > > > >    
+> > > > >  \
+> > > > >  		.channel = (idx),				
+> > > > >     \
+> > > > > -		.info_mask_separate =
+> > > > > BIT(IIO_CHAN_INFO_PROCESSED), \
+> > > > > +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	
+> > > > >    
+> > > > >  \
+> > > > > +				      BIT(IIO_CHAN_INFO_PROCESS
+> > > > > ED), \
+> > > > >  }
+> > > > >  
+> > > > >  static const struct iio_chan_spec mt6577_auxadc_iio_channels[]
+> > > > > = {
+> > > > > @@ -181,6 +182,19 @@ static int mt6577_auxadc_read_raw(struct
+> > > > > iio_dev *indio_dev,
+> > > > >  	struct mt6577_auxadc_device *adc_dev =
+> > > > > iio_priv(indio_dev);
+> > > > >  
+> > > > >  	switch (info) {
+> > > > > +	case IIO_CHAN_INFO_RAW:
+> > > > > +		*val = mt6577_auxadc_read(indio_dev, chan);
+> > > > > +		if (*val < 0) {
+> > > > > +			dev_notice(indio_dev->dev.parent,
+> > > > > +				"failed to sample data on
+> > > > > channel[%d]\n",
+> > > > > +				chan->channel);
+> > > > > +			return *val;
+> > > > > +		}
+> > > > > +		if (adc_dev->dev_comp->sample_data_cali)
+> > > > > +			*val = mt_auxadc_get_cali_data(*val,
+> > > > > true);
+> > > > > +
+> > > > > +		return IIO_VAL_INT;
+> > > > > +
+> > > > >  	case IIO_CHAN_INFO_PROCESSED:
+> > > > >  		*val = mt6577_auxadc_read(indio_dev, chan);
+> > > > >  		if (*val < 0) {    
+> > > > 
+> > > >     
+> > 
+> >   
 
