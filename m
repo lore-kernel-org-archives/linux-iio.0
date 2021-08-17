@@ -2,70 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-20.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
+	INCLUDES_PULL_REQUEST,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDD47C4338F
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Aug 2021 12:44:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 880D1C4338F
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Aug 2021 15:09:59 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 928CC60F5C
-	for <linux-iio@archiver.kernel.org>; Tue, 17 Aug 2021 12:44:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6076761073
+	for <linux-iio@archiver.kernel.org>; Tue, 17 Aug 2021 15:09:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230323AbhHQMog (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 17 Aug 2021 08:44:36 -0400
-Received: from first.geanix.com ([116.203.34.67]:37256 "EHLO first.geanix.com"
+        id S237063AbhHQPKb convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 17 Aug 2021 11:10:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:33174 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229539AbhHQMog (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 17 Aug 2021 08:44:36 -0400
-Received: from zen.. (unknown [185.17.218.86])
-        by first.geanix.com (Postfix) with ESMTPSA id 5BD39440EB8;
-        Tue, 17 Aug 2021 12:44:01 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1629204241; bh=wsMAzbXu+CYg3T+rFliUvr1a08eDPZiV6+ghNN5JGKc=;
-        h=From:To:Cc:Subject:Date;
-        b=ZFnFsJQNbi3yyPD28vIclL2nQG5Kl+mtg6lmQa+tXXQuKKVpmqdzjB/vRctonCFI3
-         MVlBCFCu6EtYqLsU3w+mc0jPssC92m2y0ZDdxCGSau9opTGUcPXBUP3WWxxCll1uEB
-         9YKAoTZOPMPodQ84BPrg7Lkz5lVF/OixIczOF25xB8kkJjdI8Wn+A8Gv0X5wF4/h08
-         Sv7TUrFA3iV+s4LMxLtxloE/Kz25aLyNIBj1invzZUg+1emQp4btYHPYu1i3tQZajL
-         iYsUhsdgmQwlgFqZEvBl4vyp7/0+po8E1ZAnGPprplhONBmEMNVwbL1ADNupOzns1Y
-         hBq+J5PKBNPeQ==
-From:   Sean Nyekjaer <sean@geanix.com>
-To:     jic23@kernel.org, andriy.shevchenko@linux.intel.com
-Cc:     linux-iio@vger.kernel.org, Sean Nyekjaer <sean@geanix.com>
-Subject: [PATCH] iio: accel: fxls8962af: return IRQ_HANDLED when fifo is flushed
-Date:   Tue, 17 Aug 2021 14:43:36 +0200
-Message-Id: <20210817124336.1672169-1-sean@geanix.com>
-X-Mailer: git-send-email 2.32.0
+        id S237052AbhHQPKa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 17 Aug 2021 11:10:30 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F127A61073;
+        Tue, 17 Aug 2021 15:09:56 +0000 (UTC)
+Date:   Tue, 17 Aug 2021 16:12:58 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
+Subject: [PULL] 2nd set of new IIO device support, cleanups and fixes for
+ the 5.15 cycle.
+Message-ID: <20210817161258.2e015e20@jic23-huawei>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-fxls8962af_fifo_flush() will return the samples flushed.
-So return IRQ_NONE only if an error is returned.
+The following changes since commit f805ef1ce5d695c260986fdf2e28f5d6c98cf3a8:
 
-Fixes: 79e3a5bdd9ef ("iio: accel: fxls8962af: add hw buffered sampling")
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
----
- drivers/iio/accel/fxls8962af-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+  Merge tag 'iio-for-5.15a' of https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into staging-next (2021-08-15 08:32:07 +0200)
 
-diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-index 078d87865fde..6b36eb362d07 100644
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -738,7 +738,7 @@ static irqreturn_t fxls8962af_interrupt(int irq, void *p)
- 
- 	if (reg & FXLS8962AF_INT_STATUS_SRC_BUF) {
- 		ret = fxls8962af_fifo_flush(indio_dev);
--		if (ret)
-+		if (ret < 0)
- 			return IRQ_NONE;
- 
- 		return IRQ_HANDLED;
--- 
-2.32.0
+are available in the Git repository at:
 
+  https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.15b
+
+for you to fetch changes up to d484c21bacfa8bd2fa9fc26393ec59108f508c4c:
+
+  iio: adc: Add driver for Renesas RZ/G2L A/D converter (2021-08-15 17:03:13 +0100)
+
+----------------------------------------------------------------
+2nd set of new IIO device support and cleanups for the 5.15 cycle.
+
+A small pull request to pick up a few new drivers and some cleanup
+and fix patches.
+
+New device support
+* ad5110 non-volatile digital potentiometer
+  - New driver
+* renesas rzl/gl2 12-bit / 8 channel ADC block
+  - New driver and bindings
+
+Minor or late breaking fixes and cleanups
+* ltc2983
+  - Fix a false assumption of initial interrupt during probe().
+* hp03
+  - Use devm_* to simplify probe and allow the remove function to be dropped.
+* rockchip_saradc
+  - Use a regulator notifier to reduce overheads of querying the scale.
+
+----------------------------------------------------------------
+David Wu (1):
+      iio: adc: rockchip_saradc: add voltage notifier so get referenced voltage once at probe
+
+Lad Prabhakar (2):
+      dt-bindings: iio: adc: Add binding documentation for Renesas RZ/G2L A/D converter
+      iio: adc: Add driver for Renesas RZ/G2L A/D converter
+
+Mugilraj Dhavachelvan (2):
+      dt-bindings: iio: potentiometer: Add AD5110 in trivial-devices
+      iio: potentiometer: Add driver support for AD5110
+
+Nuno Sá (1):
+      iio: ltc2983: fix device probe
+
+Théo Borém Fabris (1):
+      iio: pressure: hp03: update device probe to register with devm functions
+
+ .../bindings/iio/adc/renesas,rzg2l-adc.yaml        | 134 +++++
+ .../devicetree/bindings/trivial-devices.yaml       |   2 +
+ MAINTAINERS                                        |  14 +
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/rockchip_saradc.c                  |  47 +-
+ drivers/iio/adc/rzg2l_adc.c                        | 600 +++++++++++++++++++++
+ drivers/iio/potentiometer/Kconfig                  |  10 +
+ drivers/iio/potentiometer/Makefile                 |   1 +
+ drivers/iio/potentiometer/ad5110.c                 | 344 ++++++++++++
+ drivers/iio/pressure/hp03.c                        |  36 +-
+ drivers/iio/temperature/ltc2983.c                  |  30 +-
+ 12 files changed, 1177 insertions(+), 52 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
+ create mode 100644 drivers/iio/adc/rzg2l_adc.c
+ create mode 100644 drivers/iio/potentiometer/ad5110.c
