@@ -7,30 +7,30 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1183C432BE
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 11:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9E1C4338F
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 11:11:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BA25D61058
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 11:11:55 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 07A4F61058
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 11:11:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235718AbhHRLM2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Aug 2021 07:12:28 -0400
+        id S235588AbhHRLM3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Aug 2021 07:12:29 -0400
 Received: from relay3-d.mail.gandi.net ([217.70.183.195]:50709 "EHLO
         relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235328AbhHRLMV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Aug 2021 07:12:21 -0400
+        with ESMTP id S235572AbhHRLMY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Aug 2021 07:12:24 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 0A6256000F;
-        Wed, 18 Aug 2021 11:11:45 +0000 (UTC)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id AE75960013;
+        Wed, 18 Aug 2021 11:11:48 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-iio@vger.kernel.org, <linux-kernel@vger.kernel.org>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 09/16] iio: adc: max1027: Create a helper to configure the channels to scan
-Date:   Wed, 18 Aug 2021 13:11:32 +0200
-Message-Id: <20210818111139.330636-10-miquel.raynal@bootlin.com>
+Subject: [PATCH 13/16] iio: adc: max1027: Prepare re-using the EOC interrupt
+Date:   Wed, 18 Aug 2021 13:11:36 +0200
+Message-Id: <20210818111139.330636-14-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210818111139.330636-1-miquel.raynal@bootlin.com>
 References: <20210818111139.330636-1-miquel.raynal@bootlin.com>
@@ -41,57 +41,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-These bits are meant to be reused for triggered buffers setup.
+Right now the driver only has hardware trigger support, which makes use
+of the End Of Conversion (EOC) interrupt by:
+- Enabling the external trigger
+- At completion of the conversion, run a generic handler
+- Push the data to the IIO subsystem by using the triggered buffer
+  infrastructure, which may not only serve this purpose.
+
+In fact, the interrupt will fire for more reasons than just a hardware
+trigger condition, so make a dedicated interrupt handler which will be
+enhanced by the upcoming changes to handle more situations.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/adc/max1027.c | 26 ++++++++++++++++++--------
- 1 file changed, 18 insertions(+), 8 deletions(-)
+ drivers/iio/adc/max1027.c | 22 ++++++++++++++++++++--
+ 1 file changed, 20 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 4a78c9cbc339..223c9e4abd86 100644
+index 2d6485591761..8d86e77fb5db 100644
 --- a/drivers/iio/adc/max1027.c
 +++ b/drivers/iio/adc/max1027.c
-@@ -236,6 +236,22 @@ struct max1027_state {
- 	u8				reg ____cacheline_aligned;
- };
+@@ -472,6 +472,24 @@ static int max1027_read_scan(struct iio_dev *indio_dev)
+ 	return 0;
+ }
  
-+/* Scan from 0 to the highest requested channel */
-+static int max1027_configure_chans_to_scan(struct iio_dev *indio_dev)
++static irqreturn_t max1027_eoc_irq_handler(int irq, void *private)
 +{
++	struct iio_dev *indio_dev = private;
 +	struct max1027_state *st = iio_priv(indio_dev);
-+	int ret;
++	int ret = 0;
 +
-+	/* The temperature could be avoided but it simplifies a bit the logic */
-+	st->reg = MAX1027_CONV_REG | MAX1027_SCAN_0_N | MAX1027_TEMP;
-+	st->reg |= MAX1027_CHAN(fls(*indio_dev->active_scan_mask) - 2);
-+	ret = spi_write(st->spi, &st->reg, 1);
-+	if (ret < 0)
-+		return ret;
++	if (st->cnvst_trigger) {
++		ret = max1027_read_scan(indio_dev);
++		iio_trigger_notify_done(indio_dev->trig);
++	}
 +
-+	return 0;
++	if (ret)
++		dev_err(&indio_dev->dev,
++			"Cannot read scanned values (%d)\n", ret);
++
++	return IRQ_HANDLED;
 +}
 +
- static int max1027_configure_trigger(struct iio_dev *indio_dev)
+ static irqreturn_t max1027_trigger_handler(int irq, void *private)
  {
- 	struct max1027_state *st = iio_priv(indio_dev);
-@@ -391,14 +407,8 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
- 		if (ret)
- 			return ret;
+ 	struct iio_poll_func *pf = private;
+@@ -563,11 +581,11 @@ static int max1027_probe(struct spi_device *spi)
+ 		}
  
--		/*
--		 * Scan from 0 to the highest requested channel. The temperature
--		 * could be avoided but it simplifies a bit the logic.
--		 */
--		st->reg = MAX1027_CONV_REG | MAX1027_SCAN_0_N | MAX1027_TEMP;
--		st->reg |= MAX1027_CHAN(fls(*indio_dev->active_scan_mask) - 2);
--		ret = spi_write(st->spi, &st->reg, 1);
--		if (ret < 0)
-+		ret = max1027_configure_chans_to_scan(indio_dev);
-+		if (ret)
+ 		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
+-						iio_trigger_generic_data_rdy_poll,
++						max1027_eoc_irq_handler,
+ 						NULL,
+ 						IRQF_TRIGGER_FALLING,
+ 						spi->dev.driver->name,
+-						st->trig);
++						indio_dev);
+ 		if (ret < 0) {
+ 			dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
  			return ret;
- 	} else {
- 		/*
 -- 
 2.27.0
 
