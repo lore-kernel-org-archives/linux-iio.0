@@ -2,410 +2,150 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BADC432BE
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 09:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8665BC432BE
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 09:31:06 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BFA6360230
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 09:28:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 73C1E60551
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 09:31:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232078AbhHRJ2p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Aug 2021 05:28:45 -0400
-Received: from first.geanix.com ([116.203.34.67]:37260 "EHLO first.geanix.com"
+        id S233093AbhHRJbh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Aug 2021 05:31:37 -0400
+Received: from mga04.intel.com ([192.55.52.120]:11326 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231769AbhHRJ2h (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 18 Aug 2021 05:28:37 -0400
-Received: from zen.. (unknown [185.17.218.86])
-        by first.geanix.com (Postfix) with ESMTPSA id 62C97440E26;
-        Wed, 18 Aug 2021 09:27:58 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
-        t=1629278878; bh=3oQPaB7fw73JQseoKRVBdxU4lIDDdfS4UVgzJHoINHE=;
-        h=From:To:Cc:Subject:Date;
-        b=dtPX2V9k21B4QvAGqgXljbVd/s6RQ3guWD+zxKwLtAuXK3ynltqjiQAriTS0EX10F
-         CzkE50T6nOi9+rzi8y8AYkvTGexYUertShdcMS3A4oGQMr0u3fQArYdbXzn+h4hM+I
-         cVV1NHVz/EJUOiezpoUm4HA8rPA5N7TuCQTWQtMTWetpRM1uhizbiyTIUJUyOYS2iX
-         UaftBSHY72C4tDmW2qul/lS2UFS1mlf/V2/AS8+BdabWQfHjYtluRV7Opsk2EY1g73
-         mDTf/pVsFgKwMyVefnZ3+bZdA5+qzjRrZxn4FgNqAFz8hw45lUYearqNquSbzPnELs
-         8dSwXId4fw7Jg==
-From:   Sean Nyekjaer <sean@geanix.com>
-To:     jic23@kernel.org, andriy.shevchenko@linux.intel.com
-Cc:     Sean Nyekjaer <sean@geanix.com>, linux-iio@vger.kernel.org
-Subject: [PATCH 1/2] iio: accel: fxls8962af: add threshold event handling
-Date:   Wed, 18 Aug 2021 11:27:40 +0200
-Message-Id: <20210818092741.2114155-1-sean@geanix.com>
-X-Mailer: git-send-email 2.32.0
+        id S233118AbhHRJaa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 18 Aug 2021 05:30:30 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10079"; a="214442552"
+X-IronPort-AV: E=Sophos;i="5.84,330,1620716400"; 
+   d="scan'208";a="214442552"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2021 02:29:52 -0700
+X-IronPort-AV: E=Sophos;i="5.84,330,1620716400"; 
+   d="scan'208";a="520880187"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga003-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 18 Aug 2021 02:29:50 -0700
+Received: from andy by smile with local (Exim 4.94.2)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mGHtH-00B404-V0; Wed, 18 Aug 2021 12:29:43 +0300
+Date:   Wed, 18 Aug 2021 12:29:43 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jacopo Mondi <jacopo@jmondi.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: chemical: Add Senseair Sunrise 006-0-007 driver
+Message-ID: <YRzTB/IsdcX/WpbL@smile.fi.intel.com>
+References: <20210817154951.50208-1-jacopo@jmondi.org>
+ <20210817154951.50208-3-jacopo@jmondi.org>
+ <YRvqvt4qVVe1+K1/@smile.fi.intel.com>
+ <20210818080213.d56phfmjlwbgzlca@uno.localdomain>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
+In-Reply-To: <20210818080213.d56phfmjlwbgzlca@uno.localdomain>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add event channels that controls the creation of motion events.
+On Wed, Aug 18, 2021 at 10:02:13AM +0200, Jacopo Mondi wrote:
+> On Tue, Aug 17, 2021 at 07:58:38PM +0300, Andy Shevchenko wrote:
+> > On Tue, Aug 17, 2021 at 05:49:51PM +0200, Jacopo Mondi wrote:
+> > > Add support for the Senseair Sunrise 006-0-0007 driver through the
+> > > IIO subsystem.
+> >
+> > Datasheet tag / link?
+> 
+> It's reported in the bindings document, I can copy it here
 
-Signed-off-by: Sean Nyekjaer <sean@geanix.com>
----
- drivers/iio/accel/fxls8962af-core.c | 257 +++++++++++++++++++++++++++-
- 1 file changed, 255 insertions(+), 2 deletions(-)
+Yes, please, as a tag
 
-diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-index 6b36eb362d07..1b97c82b5b05 100644
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -22,6 +22,7 @@
- #include <linux/regmap.h>
- 
- #include <linux/iio/buffer.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/kfifo_buf.h>
- #include <linux/iio/sysfs.h>
-@@ -30,6 +31,7 @@
- 
- #define FXLS8962AF_INT_STATUS			0x00
- #define FXLS8962AF_INT_STATUS_SRC_BOOT		BIT(0)
-+#define FXLS8962AF_INT_STATUS_SRC_SDCD_OT	BIT(4)
- #define FXLS8962AF_INT_STATUS_SRC_BUF		BIT(5)
- #define FXLS8962AF_INT_STATUS_SRC_DRDY		BIT(7)
- #define FXLS8962AF_TEMP_OUT			0x01
-@@ -73,6 +75,7 @@
- #define FXLS8962AF_ASLP_COUNT_LSB		0x1e
- 
- #define FXLS8962AF_INT_EN			0x20
-+#define FXLS8962AF_INT_EN_SDCD_OT_EN		BIT(5)
- #define FXLS8962AF_INT_EN_BUF_EN		BIT(6)
- #define FXLS8962AF_INT_PIN_SEL			0x21
- #define FXLS8962AF_INT_PIN_SEL_MASK		GENMASK(7, 0)
-@@ -96,8 +99,14 @@
- #define FXLS8962AF_ORIENT_THS_REG		0x2c
- 
- #define FXLS8962AF_SDCD_INT_SRC1		0x2d
-+#define FXLS8962AF_SDCD_INT_SRC1_X_OT		BIT(5)
-+#define FXLS8962AF_SDCD_INT_SRC1_Y_OT		BIT(3)
-+#define FXLS8962AF_SDCD_INT_SRC1_Z_OT		BIT(1)
- #define FXLS8962AF_SDCD_INT_SRC2		0x2e
- #define FXLS8962AF_SDCD_CONFIG1			0x2f
-+#define FXLS8962AF_SDCD_CONFIG1_Z_OT_EN		BIT(3)
-+#define FXLS8962AF_SDCD_CONFIG1_Y_OT_EN		BIT(4)
-+#define FXLS8962AF_SDCD_CONFIG1_X_OT_EN		BIT(5)
- #define FXLS8962AF_SDCD_CONFIG2			0x30
- #define FXLS8962AF_SDCD_OT_DBCNT		0x31
- #define FXLS8962AF_SDCD_WT_DBCNT		0x32
-@@ -152,6 +161,9 @@ struct fxls8962af_data {
- 	int64_t timestamp, old_timestamp;	/* Only used in hw fifo mode. */
- 	struct iio_mount_matrix orientation;
- 	u8 watermark;
-+	u8 enable_event;
-+	u16 lower_thres;
-+	u16 upper_thres;
- };
- 
- const struct regmap_config fxls8962af_regmap_conf = {
-@@ -451,6 +463,18 @@ static int fxls8962af_write_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static int fxls8962af_event_setup(struct fxls8962af_data *data, int state)
-+{
-+	int ret;
-+
-+	/* Enable wakeup interrupt */
-+	ret = regmap_update_bits(data->regmap, FXLS8962AF_INT_EN,
-+				 FXLS8962AF_INT_EN_SDCD_OT_EN,
-+				 state ? FXLS8962AF_INT_EN_SDCD_OT_EN : 0);
-+
-+	return ret;
-+}
-+
- static int fxls8962af_set_watermark(struct iio_dev *indio_dev, unsigned val)
- {
- 	struct fxls8962af_data *data = iio_priv(indio_dev);
-@@ -463,6 +487,182 @@ static int fxls8962af_set_watermark(struct iio_dev *indio_dev, unsigned val)
- 	return 0;
- }
- 
-+static int fxls8962af_read_event(struct iio_dev *indio_dev,
-+				 const struct iio_chan_spec *chan,
-+				 enum iio_event_type type,
-+				 enum iio_event_direction dir,
-+				 enum iio_event_info info,
-+				 int *val, int *val2)
-+{
-+	struct fxls8962af_data *data = iio_priv(indio_dev);
-+	u16 raw_val;
-+	int ret;
-+
-+	if (type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	/*
-+	 * Read only upper-threshold register as the lower-threshold register have the
-+	 * same value with reversed sign.
-+	 */
-+	ret = regmap_bulk_read(data->regmap, FXLS8962AF_SDCD_UTHS_LSB,
-+			       &raw_val, (chan->scan_type.storagebits / 8));
-+	if (ret)
-+		return ret;
-+
-+	*val = sign_extend32(raw_val, chan->scan_type.realbits - 1);
-+	*val2 = 0;
-+
-+	return IIO_VAL_INT;
-+}
-+
-+static int fxls8962af_write_event(struct iio_dev *indio_dev,
-+				  const struct iio_chan_spec *chan,
-+				  enum iio_event_type type,
-+				  enum iio_event_direction dir,
-+				  enum iio_event_info info,
-+				  int val, int val2)
-+{
-+	struct fxls8962af_data *data = iio_priv(indio_dev);
-+	int is_active;
-+	int ret;
-+
-+	if (type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	if (val < 0 || val > 2047)
-+		return -EINVAL;
-+
-+	if (data->enable_event)
-+		return -EBUSY;
-+
-+	/* Add the same value to the lower-threshold register with a reversed sign */
-+	data->lower_thres = (-val & 0x80000000) >> 20 | (val & 0x7FF);
-+	data->upper_thres = (val & 0x80000000) >> 20 | (val & 0x7FF);
-+
-+	is_active = fxls8962af_is_active(data);
-+	if (is_active) {
-+		ret = fxls8962af_standby(data);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	ret = regmap_bulk_write(data->regmap, FXLS8962AF_SDCD_LTHS_LSB,
-+				&data->lower_thres, (chan->scan_type.storagebits / 8));
-+	ret = regmap_bulk_write(data->regmap, FXLS8962AF_SDCD_UTHS_LSB,
-+				&data->upper_thres, (chan->scan_type.storagebits / 8));
-+
-+	if (is_active)
-+		ret = fxls8962af_active(data);
-+
-+	return ret;
-+}
-+
-+static int
-+fxls8962af_read_event_config(struct iio_dev *indio_dev,
-+			     const struct iio_chan_spec *chan,
-+			     enum iio_event_type type,
-+			     enum iio_event_direction dir)
-+{
-+	struct fxls8962af_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	switch (chan->channel2) {
-+	case IIO_MOD_X:
-+		ret = FXLS8962AF_SDCD_CONFIG1_X_OT_EN & data->enable_event;
-+		break;
-+	case IIO_MOD_Y:
-+		ret = FXLS8962AF_SDCD_CONFIG1_Y_OT_EN & data->enable_event;
-+		break;
-+	case IIO_MOD_Z:
-+		ret = FXLS8962AF_SDCD_CONFIG1_Z_OT_EN & data->enable_event;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return !!ret;
-+}
-+
-+static int
-+fxls8962af_write_event_config(struct iio_dev *indio_dev,
-+			      const struct iio_chan_spec *chan,
-+			      enum iio_event_type type,
-+			      enum iio_event_direction dir, int state)
-+{
-+	struct fxls8962af_data *data = iio_priv(indio_dev);
-+	u8 enable_event, enable_bits;
-+	int ret;
-+
-+	if (type != IIO_EV_TYPE_THRESH)
-+		return -EINVAL;
-+
-+	fxls8962af_standby(data);
-+
-+	switch (chan->channel2) {
-+	case IIO_MOD_X:
-+		enable_bits = FXLS8962AF_SDCD_CONFIG1_X_OT_EN;
-+		break;
-+	case IIO_MOD_Y:
-+		enable_bits = FXLS8962AF_SDCD_CONFIG1_Y_OT_EN;
-+		break;
-+	case IIO_MOD_Z:
-+		enable_bits = FXLS8962AF_SDCD_CONFIG1_Z_OT_EN;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	if (state)
-+		enable_event = data->enable_event | enable_bits;
-+	else
-+		enable_event = data->enable_event & ~enable_bits;
-+
-+	if (data->enable_event == enable_event)
-+		return 0;
-+
-+	/* Enable events */
-+	ret = regmap_write(data->regmap, FXLS8962AF_SDCD_CONFIG1, enable_event | 0x80);
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * Enable update of SDCD_REF_X/Y/Z values with the current decimated and
-+	 * trimmed X/Y/Z acceleration input data. This allows for acceleration
-+	 * slope detection with Data(n) to Data(nâ€“1) always used as the input
-+	 * to the window comparator.
-+	 */
-+	ret = regmap_write(data->regmap, FXLS8962AF_SDCD_CONFIG2, enable_event > 0 ? 0xC0 : 0x00);
-+	if (ret)
-+		return ret;
-+
-+	ret = fxls8962af_event_setup(data, state);
-+	if (ret)
-+		return ret;
-+
-+	data->enable_event = enable_event;
-+
-+	if (data->enable_event > 0) {
-+		fxls8962af_active(data);
-+		ret = fxls8962af_power_on(data);
-+	} else {
-+		if (!iio_buffer_enabled(indio_dev))
-+			ret = fxls8962af_power_off(data);
-+	}
-+
-+	return ret;
-+}
-+
-+static const struct iio_event_spec fxls8962af_event = {
-+	.type = IIO_EV_TYPE_THRESH,
-+	.dir = IIO_EV_DIR_EITHER,
-+	.mask_separate = BIT(IIO_EV_INFO_VALUE) |
-+			 BIT(IIO_EV_INFO_ENABLE)
-+};
-+
- #define FXLS8962AF_CHANNEL(axis, reg, idx) { \
- 	.type = IIO_ACCEL, \
- 	.address = reg, \
-@@ -481,6 +681,8 @@ static int fxls8962af_set_watermark(struct iio_dev *indio_dev, unsigned val)
- 		.shift = 4, \
- 		.endianness = IIO_BE, \
- 	}, \
-+	.event_spec = &fxls8962af_event, \
-+	.num_event_specs = 1, \
- }
- 
- #define FXLS8962AF_TEMP_CHANNEL { \
-@@ -522,6 +724,10 @@ static const struct iio_info fxls8962af_info = {
- 	.read_raw = &fxls8962af_read_raw,
- 	.write_raw = &fxls8962af_write_raw,
- 	.write_raw_get_fmt = fxls8962af_write_raw_get_fmt,
-+	.read_event_value = fxls8962af_read_event,
-+	.write_event_value = fxls8962af_write_event,
-+	.read_event_config = fxls8962af_read_event_config,
-+	.write_event_config = fxls8962af_write_event_config,
- 	.read_avail = fxls8962af_read_avail,
- 	.hwfifo_set_watermark = fxls8962af_set_watermark,
- };
-@@ -605,7 +811,8 @@ static int fxls8962af_buffer_predisable(struct iio_dev *indio_dev)
- 
- 	ret = __fxls8962af_fifo_set_mode(data, false);
- 
--	fxls8962af_active(data);
-+	if (data->enable_event)
-+		fxls8962af_active(data);
- 
- 	return ret;
- }
-@@ -614,7 +821,10 @@ static int fxls8962af_buffer_postdisable(struct iio_dev *indio_dev)
- {
- 	struct fxls8962af_data *data = iio_priv(indio_dev);
- 
--	return fxls8962af_power_off(data);
-+	if (data->enable_event == 0)
-+		fxls8962af_power_off(data);
-+
-+	return 0;
- }
- 
- static const struct iio_buffer_setup_ops fxls8962af_buffer_ops = {
-@@ -725,6 +935,41 @@ static int fxls8962af_fifo_flush(struct iio_dev *indio_dev)
- 	return count;
- }
- 
-+static int fxls8962af_event_interrupt(struct iio_dev *indio_dev)
-+{
-+	struct fxls8962af_data *data = iio_priv(indio_dev);
-+	s64 ts = iio_get_time_ns(indio_dev);
-+	unsigned int reg;
-+	int ret;
-+
-+	ret = regmap_read(data->regmap, FXLS8962AF_SDCD_INT_SRC1, &reg);
-+	if (ret | (reg < 0))
-+		return -EINVAL;
-+
-+	if (reg & FXLS8962AF_SDCD_INT_SRC1_X_OT)
-+		iio_push_event(indio_dev,
-+				IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_X,
-+					IIO_EV_TYPE_THRESH,
-+					IIO_EV_DIR_EITHER),
-+				ts);
-+
-+	if (reg & FXLS8962AF_SDCD_INT_SRC1_Y_OT)
-+		iio_push_event(indio_dev,
-+				IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Y,
-+					IIO_EV_TYPE_THRESH,
-+					IIO_EV_DIR_EITHER),
-+				ts);
-+
-+	if (reg & FXLS8962AF_SDCD_INT_SRC1_Z_OT)
-+		iio_push_event(indio_dev,
-+				IIO_MOD_EVENT_CODE(IIO_ACCEL, 0, IIO_MOD_Z,
-+					IIO_EV_TYPE_THRESH,
-+					IIO_EV_DIR_EITHER),
-+				ts);
-+
-+	return ret;
-+}
-+
- static irqreturn_t fxls8962af_interrupt(int irq, void *p)
- {
- 	struct iio_dev *indio_dev = p;
-@@ -744,6 +989,14 @@ static irqreturn_t fxls8962af_interrupt(int irq, void *p)
- 		return IRQ_HANDLED;
- 	}
- 
-+	if (reg & FXLS8962AF_INT_STATUS_SRC_SDCD_OT) {
-+		ret = fxls8962af_event_interrupt(indio_dev);
-+		if (ret < 0)
-+			return IRQ_NONE;
-+
-+		return IRQ_HANDLED;
-+	}
-+
- 	return IRQ_NONE;
- }
- 
+Datasheet: ...
+Signed-of-by: ...
+
+...
+
+> > > +config SUNRISE
+> >
+> > Too generic name for configuration and module,
+> 
+> I got the same feeling but at the same time SUNRISE_006_0_0007 seems a
+> bit too long. Would you suggest to go for that one ? Should I also
+> rename the .c file accordingly ?
+
+I would go with something like sunrise_air_6 or whatever part of the model.
+I haven't read datasheet to propose better naming.
+
+Also possible to have something like sunrise_air_meter.c (and corresponding
+Kconfig).
+
+...
+
+> > > + * TODO: Add support for controllable EN pin
+> > > + * TODO: Add support for single-shot operations by using the nDRY pin.
+> >
+> > Ditto.
+> >
+> > If it's not ready, then make it ready.
+> 
+> If I place myself in the perspective of someone interested in
+> verifying support for this chip in linux, I would first be happy I
+> found a driver for it, then I would even be happier if I got a clear
+> notice of what features the driver supports and which ones are missing.
+> Even more so if I look at bindings and find mention of two GPIO lines
+> which I don't see handled in the driver. A TODO note would make it
+> clear that those features are missing.
+> 
+> The "make it ready" it's a little bit a non-sense to me, can you count
+> how many drivers support -all- the features a device provides ? In the
+> test board I'm using those lines are not even wired, should I throw
+> around code I cannot even test ?
+
+My point is that TODO means that somebody is working or will work on this.
+Is it the case? Then my comment applies, if not, replace this with something more
+realistic, like
+ * Feature list that driver does NOT support (yet):
+ *  1) ...
+ *  2) ...
+
+...
+
+> > > +	i2c_smbus_read_byte(client);
+> >
+> > Can you use regmap I²C API?
+> 
+> Do you think it's worth it ?
+> I admit I never used regmap API so far, but I always got the
+> impression that for such simple devices it's a bit an overkill. What
+> benefit would it bring here ?
+
+Some of nice features for debugging and tracing are in the generic support for
+free. On top if even this will be part of multi-function device than you won;t
+need to rewrite the driver. I would definitely go for it.
+
+...
+
+> > > +			return ret ? ret : IIO_VAL_INT;
+> >
+> > Can be written as
+> >
+> > 			return ret ?: IIO_VAL_INT;
+> >
+> > but up to maintainers.
+> >
+> 
+> You know I never saw this syntax before ? :D
+> I'll use it!
+
+It's the C standard :-)
+
 -- 
-2.32.0
+With Best Regards,
+Andy Shevchenko
+
 
