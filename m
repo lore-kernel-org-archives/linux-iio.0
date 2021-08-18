@@ -4,33 +4,33 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C9E1C4338F
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 11:11:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B270DC432BE
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 11:11:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 07A4F61058
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 11:11:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 96B0D6109E
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 11:11:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235588AbhHRLM3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Aug 2021 07:12:29 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:50709 "EHLO
+        id S235655AbhHRLMa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Aug 2021 07:12:30 -0400
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:57015 "EHLO
         relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235572AbhHRLMY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Aug 2021 07:12:24 -0400
+        with ESMTP id S235649AbhHRLM0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Aug 2021 07:12:26 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id AE75960013;
-        Wed, 18 Aug 2021 11:11:48 +0000 (UTC)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id AD88B60016;
+        Wed, 18 Aug 2021 11:11:50 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-iio@vger.kernel.org, <linux-kernel@vger.kernel.org>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 13/16] iio: adc: max1027: Prepare re-using the EOC interrupt
-Date:   Wed, 18 Aug 2021 13:11:36 +0200
-Message-Id: <20210818111139.330636-14-miquel.raynal@bootlin.com>
+Subject: [PATCH 16/16] iio: adc: max1027: Enable software triggers to be used without IRQ
+Date:   Wed, 18 Aug 2021 13:11:39 +0200
+Message-Id: <20210818111139.330636-17-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210818111139.330636-1-miquel.raynal@bootlin.com>
 References: <20210818111139.330636-1-miquel.raynal@bootlin.com>
@@ -41,65 +41,50 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Right now the driver only has hardware trigger support, which makes use
-of the End Of Conversion (EOC) interrupt by:
-- Enabling the external trigger
-- At completion of the conversion, run a generic handler
-- Push the data to the IIO subsystem by using the triggered buffer
-  infrastructure, which may not only serve this purpose.
-
-In fact, the interrupt will fire for more reasons than just a hardware
-trigger condition, so make a dedicated interrupt handler which will be
-enhanced by the upcoming changes to handle more situations.
+Software triggers do not need a device IRQ to work. As opposed to
+hardware triggers which need it to yield the data to the IIO core,
+software triggers run a dedicated thread which does all the tasks on
+their behalf. Then, the end of conversion status may either come from an
+interrupt or from a sufficient enough extra delay. IRQs are not
+mandatory so move the triggered buffer setup out of the IRQ condition.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/adc/max1027.c | 22 ++++++++++++++++++++--
- 1 file changed, 20 insertions(+), 2 deletions(-)
+ drivers/iio/adc/max1027.c | 20 +++++++++++---------
+ 1 file changed, 11 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 2d6485591761..8d86e77fb5db 100644
+index bb437e43adaf..e767437a578e 100644
 --- a/drivers/iio/adc/max1027.c
 +++ b/drivers/iio/adc/max1027.c
-@@ -472,6 +472,24 @@ static int max1027_read_scan(struct iio_dev *indio_dev)
- 	return 0;
- }
+@@ -567,16 +567,18 @@ static int max1027_probe(struct spi_device *spi)
+ 	if (!st->buffer)
+ 		return -ENOMEM;
  
-+static irqreturn_t max1027_eoc_irq_handler(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct max1027_state *st = iio_priv(indio_dev);
-+	int ret = 0;
-+
-+	if (st->cnvst_trigger) {
-+		ret = max1027_read_scan(indio_dev);
-+		iio_trigger_notify_done(indio_dev->trig);
++	/* Enable triggered buffers */
++	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
++					      &iio_pollfunc_store_time,
++					      &max1027_trigger_handler,
++					      NULL);
++	if (ret < 0) {
++		dev_err(&indio_dev->dev, "Failed to setup buffer\n");
++		return ret;
 +	}
 +
-+	if (ret)
-+		dev_err(&indio_dev->dev,
-+			"Cannot read scanned values (%d)\n", ret);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static irqreturn_t max1027_trigger_handler(int irq, void *private)
- {
- 	struct iio_poll_func *pf = private;
-@@ -563,11 +581,11 @@ static int max1027_probe(struct spi_device *spi)
- 		}
- 
- 		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
--						iio_trigger_generic_data_rdy_poll,
-+						max1027_eoc_irq_handler,
- 						NULL,
- 						IRQF_TRIGGER_FALLING,
- 						spi->dev.driver->name,
--						st->trig);
-+						indio_dev);
- 		if (ret < 0) {
- 			dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
- 			return ret;
++	/* If there is an EOC interrupt, enable the hardware trigger (cnvst) */
+ 	if (spi->irq) {
+-		ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
+-						      &iio_pollfunc_store_time,
+-						      &max1027_trigger_handler,
+-						      NULL);
+-		if (ret < 0) {
+-			dev_err(&indio_dev->dev, "Failed to setup buffer\n");
+-			return ret;
+-		}
+-
+ 		st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
+ 						  indio_dev->name);
+ 		if (st->trig == NULL) {
 -- 
 2.27.0
 
