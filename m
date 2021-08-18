@@ -2,214 +2,143 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4494C4338F
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 09:08:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A17EC4338F
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 09:28:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9558E6108E
-	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 09:08:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 533CE60230
+	for <linux-iio@archiver.kernel.org>; Wed, 18 Aug 2021 09:28:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229864AbhHRJJE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 Aug 2021 05:09:04 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54426 "EHLO mail.kernel.org"
+        id S232144AbhHRJ2n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 Aug 2021 05:28:43 -0400
+Received: from first.geanix.com ([116.203.34.67]:37262 "EHLO first.geanix.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231285AbhHRJJE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 18 Aug 2021 05:09:04 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 439D561053;
-        Wed, 18 Aug 2021 09:08:27 +0000 (UTC)
-Date:   Wed, 18 Aug 2021 10:11:28 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Puranjay Mohan <puranjay12@gmail.com>
-Cc:     "Hennerich, Michael" <Michael.Hennerich@analog.com>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Bogdan, Dragos" <Dragos.Bogdan@analog.com>,
-        "Berghe, Darius" <Darius.Berghe@analog.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>
-Subject: Re: [PATCH v12 2/2] iio: accel: Add driver support for ADXL355
-Message-ID: <20210818101128.7c1f40ee@jic23-huawei>
-In-Reply-To: <CANk7y0gY7HHdfwPYq3KFSTbaZM+sT4XSxv2yDvx2_io=9hLX0A@mail.gmail.com>
-References: <20210811073027.124619-1-puranjay12@gmail.com>
-        <20210811073027.124619-3-puranjay12@gmail.com>
-        <20210815164654.3c51a8e3@jic23-huawei>
-        <CANk7y0gY7HHdfwPYq3KFSTbaZM+sT4XSxv2yDvx2_io=9hLX0A@mail.gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
+        id S232078AbhHRJ2h (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 18 Aug 2021 05:28:37 -0400
+Received: from zen.. (unknown [185.17.218.86])
+        by first.geanix.com (Postfix) with ESMTPSA id AC9D1440E67;
+        Wed, 18 Aug 2021 09:27:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1629278879; bh=7OexsiGMFhZSZqpYn/nK8lxHAvclLOclVQX7QSOOPaw=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References;
+        b=Rgo74AymfXsdhXPBH6obrbDp3P3yrpQOwHbf0iE+RHh/4A5mNsMKcmCeDEX6oc4Du
+         dHecSedW8I/UDTK5Y+c7pNcfL/rROMr7O4tgM9thG6UzCWLoOkjFE3sNsyqkQAYlaf
+         2ol1VWBhDibxwxeDqnSYFUtwSlZD5HcMlU5bH2IyiY9F2EN5DaQIzNontbhBhLPZHJ
+         /Bk+98frl+t69+j+g0IL7tFgJg9/vmC7j9fk32Qssh2JPBn06wgGPEYzJotYgV0rjW
+         KDW8BZzSpVWYigzB3YUWpXJId5mjlc5bqn85XODCDNb5jSTdZNmtHCXabKqeq0dv/S
+         HDXDLVWHQLuOA==
+From:   Sean Nyekjaer <sean@geanix.com>
+To:     jic23@kernel.org, andriy.shevchenko@linux.intel.com
+Cc:     Sean Nyekjaer <sean@geanix.com>, linux-iio@vger.kernel.org
+Subject: [PATCH 2/2] iio: accel: fxls8962af: add wake on event
+Date:   Wed, 18 Aug 2021 11:27:41 +0200
+Message-Id: <20210818092741.2114155-2-sean@geanix.com>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20210818092741.2114155-1-sean@geanix.com>
+References: <20210818092741.2114155-1-sean@geanix.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 15 Aug 2021 21:59:42 +0530
-Puranjay Mohan <puranjay12@gmail.com> wrote:
+This add ways for the SoC to wake from accelerometer wake events.
 
-> On Sun, Aug 15, 2021 at 9:14 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> >
-> > On Wed, 11 Aug 2021 13:00:27 +0530
-> > Puranjay Mohan <puranjay12@gmail.com> wrote:
-> >  
-> > > ADXL355 is a 3-axis MEMS Accelerometer. It offers low noise density,
-> > > low 0g offset drift, low power with selectable measurement ranges.
-> > > It also features programmable high-pass and low-pass filters.
-> > >
-> > > Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/adxl354_adxl355.pdf
-> > > Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
-> > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > > Signed-off-by: Puranjay Mohan <puranjay12@gmail.com>  
-> > Hi Puranjay,
-> >
-> > I took one last look at this so I can apply it without looking again assuming
-> > the dt review is fine.  Noticed one issue with error handling, but I can tidy
-> > that up whilst applying assuming you aren't doing a v13 for some other reason.
-> > If you are please incorporate these changes as well.
-> >  
-> 
-> Hi Jonathan, It would be great if you could make these changes while
-> applying. I am not doing a v13 as all comments have been covered
-> earlier.
-> I shall be thankful to you.
-I ended up tweaking those 3 functions a little more than I was originally planning
-so please check it all looks good to you.
+In the suspend function we skip disabling the sensor if wakeup-source
+and events are activated.
+If the buffer is enabled it will be deactivated before suspend, as the
+buffer is quite small.
 
-Series applied to the togreg branch of iio.git and pushed out as testing
-for 0-day to poke at.  Note these won't hit mainline until 5.16 now.
+Signed-off-by: Sean Nyekjaer <sean@geanix.com>
+---
+ drivers/iio/accel/fxls8962af-core.c | 48 +++++++++++++++++++++++++++--
+ 1 file changed, 46 insertions(+), 2 deletions(-)
 
-Thanks,
-
-Jonathan
-
-> 
-> > Thanks,
-> >
-> > Jonathan
-> >
-> >
-> > ...
-> >  
-> > > +
-> > > +static int adxl355_set_odr(struct adxl355_data *data,
-> > > +                        enum adxl355_odr odr)
-> > > +{
-> > > +     int ret = 0;
-> > > +
-> > > +     mutex_lock(&data->lock);
-> > > +
-> > > +     if (data->odr == odr)
-> > > +             goto out_unlock;
-> > > +
-> > > +     ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
-> > > +     if (ret < 0)
-> > > +             goto out_unlock;
-> > > +
-> > > +     ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
-> > > +                              ADXL355_FILTER_ODR_MSK,
-> > > +                              FIELD_PREP(ADXL355_FILTER_ODR_MSK, odr));
-> > > +     if (ret < 0)
-> > > +             goto out_unlock;
-> > > +
-> > > +     data->odr = odr;
-> > > +     adxl355_fill_3db_frequency_table(data);
-> > > +
-> > > +out_unlock:
-> > > +     ret = adxl355_set_op_mode(data, ADXL355_MEASUREMENT);  
-> >
-> > As below, we should do this because it risks returning success when a failure
-> > actually occured.  Again, unless you are respinning for some other reason I'll
-> > add the logic whilst applying.
-> >  
-> > > +     mutex_unlock(&data->lock);
-> > > +     return ret;
-> > > +}
-> > > +
-> > > +static int adxl355_set_hpf_3db(struct adxl355_data *data,
-> > > +                            enum adxl355_hpf_3db hpf)
-> > > +{
-> > > +     int ret = 0;
-> > > +
-> > > +     mutex_lock(&data->lock);
-> > > +
-> > > +     if (data->hpf_3db == hpf)
-> > > +             goto unlock;
-> > > +
-> > > +     ret = adxl355_set_op_mode(data, ADXL355_STANDBY);
-> > > +     if (ret < 0)
-> > > +             goto set_opmode_unlock;
-> > > +
-> > > +     ret = regmap_update_bits(data->regmap, ADXL355_FILTER_REG,
-> > > +                              ADXL355_FILTER_HPF_MSK,
-> > > +                              FIELD_PREP(ADXL355_FILTER_HPF_MSK, hpf));
-> > > +     if (!ret)
-> > > +             data->hpf_3db = hpf;
-> > > +
-> > > +set_opmode_unlock:
-> > > +     ret = adxl355_set_op_mode(data, ADXL355_MEASUREMENT);  
-> >
-> > We can't do this as it might potentially eat an error that meant the regmap
-> > update didn't occur.  To avoid that a little dance is needed using a second
-> > return value and we only set ret = ret2 if ret == 0
-> >
-> > Alternatively we just have a separate error handling path which doesn't set
-> > ret for the adxl355_set_op_mode(). I'll probably go with that as it's more
-> > code but easier to read.
-> >
-> >
-> >  
-> > > +unlock:
-> > > +     mutex_unlock(&data->lock);
-> > > +     return ret;
-> > > +}
-> > > +  
-> >
-> > ...
-> >  
-> > > +static int adxl355_write_raw(struct iio_dev *indio_dev,
-> > > +                          struct iio_chan_spec const *chan,
-> > > +                          int val, int val2, long mask)
-> > > +{
-> > > +     struct adxl355_data *data = iio_priv(indio_dev);
-> > > +     int odr_idx, hpf_idx, calibbias;
-> > > +
-> > > +     switch (mask) {
-> > > +     case IIO_CHAN_INFO_SAMP_FREQ:
-> > > +             odr_idx = adxl355_find_match(adxl355_odr_table,
-> > > +                                          ARRAY_SIZE(adxl355_odr_table),
-> > > +                                          val, val2);
-> > > +             if (odr_idx < 0)
-> > > +                     return odr_idx;
-> > > +
-> > > +             return adxl355_set_odr(data, odr_idx);
-> > > +     case IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY:
-> > > +             hpf_idx = adxl355_find_match(data->adxl355_hpf_3db_table,
-> > > +                                     ARRAY_SIZE(data->adxl355_hpf_3db_table),  
-> >
-> > Mixing different indentation styles isn't very nice for readability.
-> > I'll tweak this whilst applying.
-> >  
-> > > +                                          val, val2);
-> > > +             if (hpf_idx < 0)
-> > > +                     return hpf_idx;
-> > > +
-> > > +             return adxl355_set_hpf_3db(data, hpf_idx);
-> > > +     case IIO_CHAN_INFO_CALIBBIAS:
-> > > +             calibbias = clamp_t(int, val, S16_MIN, S16_MAX);
-> > > +
-> > > +             return adxl355_set_calibbias(data, chan->address, calibbias);
-> > > +     default:
-> > > +             return -EINVAL;
-> > > +     }
-> > > +}  
-> > ...  
-> 
-> 
-> 
+diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
+index 1b97c82b5b05..60d50759de12 100644
+--- a/drivers/iio/accel/fxls8962af-core.c
++++ b/drivers/iio/accel/fxls8962af-core.c
+@@ -160,6 +160,7 @@ struct fxls8962af_data {
+ 	} scan;
+ 	int64_t timestamp, old_timestamp;	/* Only used in hw fifo mode. */
+ 	struct iio_mount_matrix orientation;
++	int irq;
+ 	u8 watermark;
+ 	u8 enable_event;
+ 	u16 lower_thres;
+@@ -1114,6 +1115,7 @@ int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq)
+ 	data = iio_priv(indio_dev);
+ 	dev_set_drvdata(dev, indio_dev);
+ 	data->regmap = regmap;
++	data->irq = irq;
+ 
+ 	ret = iio_read_mount_matrix(dev, &data->orientation);
+ 	if (ret)
+@@ -1183,6 +1185,9 @@ int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq)
+ 	if (ret)
+ 		return ret;
+ 
++	if (dev_fwnode(dev) && device_property_read_bool(dev, "wakeup-source"))
++		device_init_wakeup(dev, true);
++
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+ EXPORT_SYMBOL_GPL(fxls8962af_core_probe);
+@@ -1208,9 +1213,48 @@ static int __maybe_unused fxls8962af_runtime_resume(struct device *dev)
+ 	return fxls8962af_active(data);
+ }
+ 
++static int __maybe_unused fxls8962af_suspend(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct fxls8962af_data *data = iio_priv(indio_dev);
++
++
++	if (device_may_wakeup(dev) && data->enable_event) {
++		enable_irq_wake(data->irq);
++
++		/*
++		 * Disable buffer, as the buffer is so small the device will wake
++		 * almost immediately.
++		 */
++		if (iio_buffer_enabled(indio_dev))
++			fxls8962af_buffer_predisable(indio_dev);
++	} else {
++		fxls8962af_runtime_suspend(dev);
++	}
++
++	return 0;
++}
++
++static int __maybe_unused fxls8962af_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct fxls8962af_data *data = iio_priv(indio_dev);
++
++	if (device_may_wakeup(dev) && data->enable_event) {
++		disable_irq_wake(data->irq);
++
++		if (iio_buffer_enabled(indio_dev))
++			fxls8962af_buffer_postenable(indio_dev);
++	} else {
++		fxls8962af_runtime_resume(dev);
++	}
++
++	return 0;
++}
++
+ const struct dev_pm_ops fxls8962af_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+-				pm_runtime_force_resume)
++	SET_SYSTEM_SLEEP_PM_OPS(fxls8962af_suspend,
++				fxls8962af_resume)
+ 	SET_RUNTIME_PM_OPS(fxls8962af_runtime_suspend,
+ 			   fxls8962af_runtime_resume, NULL)
+ };
+-- 
+2.32.0
 
