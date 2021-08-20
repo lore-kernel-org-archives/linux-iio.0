@@ -6,64 +6,64 @@ X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 79C84C432BE
-	for <linux-iio@archiver.kernel.org>; Fri, 20 Aug 2021 19:18:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C114C4338F
+	for <linux-iio@archiver.kernel.org>; Fri, 20 Aug 2021 19:18:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 64FC46112E
-	for <linux-iio@archiver.kernel.org>; Fri, 20 Aug 2021 19:18:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 04CA461004
+	for <linux-iio@archiver.kernel.org>; Fri, 20 Aug 2021 19:18:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238808AbhHTTSq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 20 Aug 2021 15:18:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46282 "EHLO
+        id S236654AbhHTTSr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 20 Aug 2021 15:18:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46294 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238277AbhHTTSl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Aug 2021 15:18:41 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 076A1C0613CF;
-        Fri, 20 Aug 2021 12:17:58 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id u21so5324112qtw.8;
-        Fri, 20 Aug 2021 12:17:57 -0700 (PDT)
+        with ESMTP id S238427AbhHTTSm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Aug 2021 15:18:42 -0400
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03E8CC0617AD;
+        Fri, 20 Aug 2021 12:18:00 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id t190so11935526qke.7;
+        Fri, 20 Aug 2021 12:17:59 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=XMRICZfY4ADl2DVliKOzvM085ZlUKV9RB8+CiwFV7h4=;
-        b=t+5nTxWjFzI2lu2FdMy+BNYLCV4KSo75259r877f9nIyabDDD61UzR1MdQ4A3X/nQ+
-         3QiCoMyb7SS+0Eqt3ersa4D98AnIh9ECz+NP6jL76WmSBDuKK3oDnSKkPW3qdrOVIiaX
-         XWsMnSEjCsCiACreR4LeIjLAOPe6RTUxiu4tTddywTj1Hbx0/zRAOAaheGspv9KjM3nu
-         B2gocB6sA5sc8KJScH3/EHAPb4bUEUsZHdOpfl1UE+EiT6gSd58CATvoQGJEqBlXoKpc
-         bT2sKgB5CNzw2e4izqKCURJM5Te8vOzVym2p8usmtYuQmdiSDdFopHJIw4ahlCAZ6TnP
-         hQVg==
+        bh=R+zgKUXTnho1DuYnz2N4IQ26TfKFFIYe0e2gWK71jNo=;
+        b=SVDHAG5esKb79+7OfCI/tq1W+FWERAgwfbL8+y1Rig9RZBLXFyO51oAqUpTaQ0iDuH
+         oHnZioX1bwoVAPA5ZxnHt57dsncxgvevEcl/OXDkyXU3iKkqJxf2LCqq+vup/k+5B4XJ
+         BhZdhlDXEu2I3nmBmi9r5nzXPr6+4uBf+F8jmAcoHaqs5ykiAu4kaF85HjNuEukz0T/1
+         TTCUsWHKzZ0fG0strInWQu3nvTTyiSaYp4HcfleUMlE8nK/L280FAfHTzYA0ny6U3QQD
+         WE6pIzb4SCMzT27CopxB2gRi8XwGJvw2xh7rZeQ6Nnx9t3Dpogx+afAS1GW30e8Ifssd
+         bMgA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=XMRICZfY4ADl2DVliKOzvM085ZlUKV9RB8+CiwFV7h4=;
-        b=hw4D+4Hoqw0H62ZKmjo8RyeF4YPkQiQrI2Lz1GyF+tTS5pHjsZEVjiWNH2B7ozJFkR
-         aj/w7udWmWoxsHeRjUUoOkk7WzXZW4iH/5OU6qGx6mf4KDOcr/2brkEIRB5lW2Qdbp3S
-         BVSamVOce95w9tjrDUAeEawHmpNwd+KJWvepnWnzNcPf8YzPrKHj2CJiF8TGz7t5nBvL
-         qe1ERML73VvYzfqkmfh61+D7dtPeD2dKEbxdR+txhceDEMaUgr6d86zq7pda/Ktfe3T1
-         gGhCPJ1wZk6GfJ8w9s7UvjuPxxSf1FyCr6/6utkZ99BRShndcIeNp0pysN/2EdxhBHTY
-         JgbQ==
-X-Gm-Message-State: AOAM530lx0qEV1IY7cxd5+LYZfeMj5ePLvnLpodh0Mld3Sl6PVGus46Q
-        JeaeZEF3rLZJHZz//3r6gEg=
-X-Google-Smtp-Source: ABdhPJxY2csI8jtU7G//w3xPsyByEj3Xe705LcgNd/G71DQdjCLq3w/J9xHNeOK+PGCa+mXPGlOGxw==
-X-Received: by 2002:ac8:7612:: with SMTP id t18mr19270274qtq.324.1629487077251;
-        Fri, 20 Aug 2021 12:17:57 -0700 (PDT)
+        bh=R+zgKUXTnho1DuYnz2N4IQ26TfKFFIYe0e2gWK71jNo=;
+        b=hpzbDTZT9M7A2kRj6xjdG+A/adMMUtTBpyupBMenxFrR+04F+fT9ZubpP7eDfPT9Uu
+         EezD4WpJjLq5s1+uATBpB6SlYLyOTsrLFYt9mmkO3BQojeL1knJqx3Rll3tFdCNePlJM
+         fiRtDDR0Ax0SC9nuWdAGNawg5W/TuWqZXJoN2slnHQVfn9J34QTayrFwzAze3TSclE46
+         RcYtNYc1HcsSre6lz1oCUFJ3WDnPCT0EXWeZsZRjXO3zBI1xoL/PUT3F+YBdLqOnn7Rb
+         EMEKzC6SlBmteVo8gOcNTlNAeVIZJC5EUUvmBckYpgbjKrGEmmENZ59FxwQCfnKGrlcQ
+         rsNw==
+X-Gm-Message-State: AOAM532+gdz4iFsaHApOtWjDNxFcmozpZ9NKVHte1zFPkOTL7ehRq4jB
+        a+m2x7ofP/u3vZN6yLoK0RI=
+X-Google-Smtp-Source: ABdhPJzlx/k+lLv0AhZ1tNdWtJNj/r3JQZ7JvAzfQXSFD2IOMvryS3kpiUHd1ZgBsXVNeu+QWSAECQ==
+X-Received: by 2002:a37:6103:: with SMTP id v3mr10319950qkb.12.1629487079253;
+        Fri, 20 Aug 2021 12:17:59 -0700 (PDT)
 Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id o6sm3603869qkp.111.2021.08.20.12.17.56
+        by smtp.gmail.com with ESMTPSA id o6sm3603869qkp.111.2021.08.20.12.17.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Aug 2021 12:17:56 -0700 (PDT)
+        Fri, 20 Aug 2021 12:17:58 -0700 (PDT)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v8 05/14] iio: afe: rescale: add INT_PLUS_{MICRO,NANO} support
-Date:   Fri, 20 Aug 2021 15:17:05 -0400
-Message-Id: <20210820191714.69898-6-liambeguin@gmail.com>
+Subject: [PATCH v8 07/14] iio: afe: rescale: use s64 for temporary scale calculations
+Date:   Fri, 20 Aug 2021 15:17:07 -0400
+Message-Id: <20210820191714.69898-8-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.32.0.452.g940fe202adcb
 In-Reply-To: <20210820191714.69898-1-liambeguin@gmail.com>
 References: <20210820191714.69898-1-liambeguin@gmail.com>
@@ -75,67 +75,42 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Liam Beguin <lvb@xiphos.com>
 
-Some ADCs use IIO_VAL_INT_PLUS_{NANO,MICRO} scale types.
-Add support for these to allow using the iio-rescaler with them.
+All four scaling coefficients can take signed values.
+Make tmp a signed 64-bit integer and switch to div_s64() to preserve
+signs during 64-bit divisions.
 
 Signed-off-by: Liam Beguin <lvb@xiphos.com>
 ---
- drivers/iio/afe/iio-rescale.c | 35 +++++++++++++++++++++++++++++++++++
- 1 file changed, 35 insertions(+)
+ drivers/iio/afe/iio-rescale.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index d0669fd8eac5..8488f1d83527 100644
+index 48a8096f68ca..809e966f7058 100644
 --- a/drivers/iio/afe/iio-rescale.c
 +++ b/drivers/iio/afe/iio-rescale.c
-@@ -22,6 +22,9 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+@@ -21,7 +21,7 @@
+ int rescale_process_scale(struct rescale *rescale, int scale_type,
  			  int *val, int *val2)
  {
- 	unsigned long long tmp;
-+	s32 rem;
-+	u32 mult;
-+	u32 neg;
- 
- 	switch (scale_type) {
- 	case IIO_VAL_FRACTIONAL:
-@@ -40,6 +43,38 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+-	unsigned long long tmp;
++	s64 tmp;
+ 	s32 rem;
+ 	u32 mult;
+ 	u32 neg;
+@@ -38,10 +38,10 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 		*val2 = rescale->denominator;
+ 		return IIO_VAL_FRACTIONAL;
+ 	case IIO_VAL_FRACTIONAL_LOG2:
+-		tmp = *val * 1000000000LL;
+-		do_div(tmp, rescale->denominator);
++		tmp = (s64)*val * 1000000000LL;
++		tmp = div_s64(tmp, rescale->denominator);
  		tmp *= rescale->numerator;
- 		do_div(tmp, 1000000000LL);
+-		do_div(tmp, 1000000000LL);
++		tmp = div_s64(tmp, 1000000000LL);
  		*val = tmp;
-+		return scale_type;
-+	case IIO_VAL_INT_PLUS_NANO:
-+	case IIO_VAL_INT_PLUS_MICRO:
-+		if (scale_type == IIO_VAL_INT_PLUS_NANO)
-+			mult = 1000000000LL;
-+		else
-+			mult = 1000000LL;
-+		/*
-+		 * For IIO_VAL_INT_PLUS_{MICRO,NANO} scale types if *val OR
-+		 * *val2 is negative the schan scale is negative
-+		 */
-+		neg = *val < 0 || *val2 < 0;
-+
-+		tmp = (s64)abs(*val) * abs(rescale->numerator);
-+		*val = div_s64_rem(tmp, abs(rescale->denominator), &rem);
-+
-+		tmp = (s64)rem * mult + (s64)abs(*val2) * abs(rescale->numerator);
-+		tmp = div_s64(tmp, abs(rescale->denominator));
-+
-+		*val += div_s64_rem(tmp, mult, val2);
-+
-+		/*
-+		 * If only one of the rescaler elements or the schan scale is
-+		 * negative, the combined scale is negative.
-+		 */
-+		if (neg ^ ((rescale->numerator < 0) ^ (rescale->denominator < 0))) {
-+			if (*val)
-+				*val = -*val;
-+			else
-+				*val2 = -*val2;
-+		}
-+
  		return scale_type;
- 	default:
- 		return -EOPNOTSUPP;
+ 	case IIO_VAL_INT_PLUS_NANO:
 -- 
 2.32.0.452.g940fe202adcb
 
