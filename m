@@ -8,62 +8,62 @@ X-Spam-Status: No, score=-15.7 required=3.0 tests=BAYES_00,DKIM_SIGNED,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B170C432BE
-	for <linux-iio@archiver.kernel.org>; Fri, 20 Aug 2021 19:18:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E52B9C43214
+	for <linux-iio@archiver.kernel.org>; Fri, 20 Aug 2021 19:18:17 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6007161004
-	for <linux-iio@archiver.kernel.org>; Fri, 20 Aug 2021 19:18:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D177661004
+	for <linux-iio@archiver.kernel.org>; Fri, 20 Aug 2021 19:18:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239217AbhHTTSx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 20 Aug 2021 15:18:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46288 "EHLO
+        id S239353AbhHTTSy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 20 Aug 2021 15:18:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238706AbhHTTSp (ORCPT
+        with ESMTP id S238723AbhHTTSp (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Aug 2021 15:18:45 -0400
-Received: from mail-qk1-x730.google.com (mail-qk1-x730.google.com [IPv6:2607:f8b0:4864:20::730])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DDBAC06129E;
-        Fri, 20 Aug 2021 12:18:02 -0700 (PDT)
-Received: by mail-qk1-x730.google.com with SMTP id y144so11942987qkb.6;
-        Fri, 20 Aug 2021 12:18:02 -0700 (PDT)
+Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F4E5C061575;
+        Fri, 20 Aug 2021 12:18:04 -0700 (PDT)
+Received: by mail-qk1-x732.google.com with SMTP id 14so11953696qkc.4;
+        Fri, 20 Aug 2021 12:18:04 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20161025;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=YnnFSbZWVuY/lp3GGbUfkpd0TSOBOPS1Fj7ATDd62Jc=;
-        b=I0nxilWJsRfK6KtVkgqY1F+/052IFgYsFi0t+OjNXb5/PwEZFX3DA9Ur4ERAnX8GJo
-         cOO+Quz3JR/+GxzwAf6Nf2lvnLyz7uT5SPVSJEmJuqq0DFXkStJr+VpVOr8XFqTiufiz
-         c601xsY2Bo/RcQYPfL+SnDKZimjgoMTaGE21QnAmHkvR0q/RmP6TU25g9d8twzbawXrz
-         KYz4pYtEDVXu1z4Pgh9xm4npobIhayS9s5gYz/IHdvEe+ya/xKwr64DFB2Mt91/LJtpJ
-         OORaIMUZLZba89uJKWWdvE8qAudL6BvC631/F1LMsqlxpGrt+worD9u/6i5PEfqKVWzf
-         Ypgw==
+        bh=+eLtC7JNuGxTnORcSm7E5kaYd0kc5jriuJPklML6vkM=;
+        b=io06IjKIAKAV/u574Zq+DnR6x/4Cxf/C7zpEFPJEjFo6o0RhuVKBYaY+rTML5h9HfY
+         UcoyrN2K5aIGIBIBcC8/c8Wrtl4Z4ggZPhtHMmz0fjmatLRAWC91FavgDLRFz4eqI8wc
+         Jju53yYDf7y1NDgysa3HrnVG4KWZrriWRz+JbV44F6Zxob8/90y8quazYsSUbyW0WZ10
+         meNwopX1kXJygTJHNDplPWUSprBXTeGgFOOGPtvNcOu8JsyWMoz/IbQbtYDfkMeX2ngG
+         /I7qoWd6yIOAnQyF2bozwhwdNOHx7SB7MQv4uvGUQB/NUYzlZUPntyHTyTmq4TLNn7Yg
+         VU/w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20161025;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=YnnFSbZWVuY/lp3GGbUfkpd0TSOBOPS1Fj7ATDd62Jc=;
-        b=Le4kUv0Emvy/yxDkNjdFEWIgDGYMHV14SPn31EtkOX74TrBWjY9kVSHIsUDdo1iLWo
-         iosMnyNgfHCY7LvzItbY46IxiaYnXupp/6iFdLUpnAxZIaa0vKiWqt7s6+REghFU7ZTw
-         jPMLJhb4urQhCZFvL4QjrIJtCqaiRWfz4x1rKCpwKmykYG7k4dhEwCnO9r4lNFvDdygk
-         JCKHkiMZd7Wu/8mjSWnog9/5ZDeX6A3gmDM7ah2ZAUHGdPzgAFAh3S2Ft4T/qlmskMzK
-         AMl4z5N/S1z2OGiKM5kfGSudRbOpPSQCI21WCwM9zDjK0hLEDdb6eGXcU7A4I1fFfCYQ
-         wOhw==
-X-Gm-Message-State: AOAM532qrbQVaTxCpeSBFswGH74yrjIkF9Jtv8bECZYRbxmw+m2x3hTq
-        pzHYdh2RA35kRyYXLT9fByE=
-X-Google-Smtp-Source: ABdhPJwxWS8FwzBKx8rfEPSBwNSO4R9/W4j+cQ4I+2f0wsrarpZxDoUQUQ0evZ1PRY5OlXj0LNaNHA==
-X-Received: by 2002:a05:620a:2045:: with SMTP id d5mr3628969qka.281.1629487081316;
-        Fri, 20 Aug 2021 12:18:01 -0700 (PDT)
+        bh=+eLtC7JNuGxTnORcSm7E5kaYd0kc5jriuJPklML6vkM=;
+        b=q25iRXGJ4jQ4vRCdVU/+u7cigAMOGjR4I695uHL5bvSUxs/0JaCH6o24K8iItrHbg0
+         qM/wvc38CQTlgaKx2ZRiyPxllXZohf5fZ2J4Fqsg/KppPxDPccn0d6hw6wW6PNWlk/RG
+         qHKPYE/FmRfr5RyLBoaCKbGjixQq09zSSepGwKXNEtPPC0CclGWYeFXDt8nt9FuuEUnw
+         qAYEfXbL/kAYZdB4PjSIUa5CfpZxZjsrKGR4RAoBdywwPKKU6rBagTYPb42/VCxrdJ6Y
+         6UkDtMhV+Zt9XaifWpt62AOAujlmsdOfo9/KIjtFaWGNlIfDZ7lbFdEtBpTeaG69jwDE
+         sPCQ==
+X-Gm-Message-State: AOAM53306KeJm9rRbqHGrxuOTZZfGyE6ZjhSDkvJyr+nfdO80YSx/gOC
+        y91plRWoitskIHbiPYtOBCXdgWL36dY=
+X-Google-Smtp-Source: ABdhPJw6y7hFM/TMxDwmnM3oDGB/RhwsbLyUPbfcGi6FXH+fgA70GJaE31sPOnvAT2mgVt64KgE31g==
+X-Received: by 2002:a37:a60f:: with SMTP id p15mr10120471qke.377.1629487083584;
+        Fri, 20 Aug 2021 12:18:03 -0700 (PDT)
 Received: from shaak.xiphos.ca (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id o6sm3603869qkp.111.2021.08.20.12.18.00
+        by smtp.gmail.com with ESMTPSA id o6sm3603869qkp.111.2021.08.20.12.18.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 20 Aug 2021 12:18:00 -0700 (PDT)
+        Fri, 20 Aug 2021 12:18:03 -0700 (PDT)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v8 09/14] iio: afe: rescale: fix accuracy for small fractional scales
-Date:   Fri, 20 Aug 2021 15:17:09 -0400
-Message-Id: <20210820191714.69898-10-liambeguin@gmail.com>
+Subject: [PATCH v8 11/14] iio: afe: rescale: add RTD temperature sensor support
+Date:   Fri, 20 Aug 2021 15:17:11 -0400
+Message-Id: <20210820191714.69898-12-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.32.0.452.g940fe202adcb
 In-Reply-To: <20210820191714.69898-1-liambeguin@gmail.com>
 References: <20210820191714.69898-1-liambeguin@gmail.com>
@@ -75,62 +75,93 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Liam Beguin <lvb@xiphos.com>
 
-The approximation caused by integer divisions can be costly on smaller
-scale values since the decimal part is significant compared to the
-integer part. Switch to an IIO_VAL_INT_PLUS_NANO scale type in such
-cases to maintain accuracy.
+An RTD (Resistance Temperature Detector) is a kind of temperature
+sensor used to get a linear voltage to temperature reading within a
+give range (usually 0 to 100 degrees Celsius). Common types of RTDs
+include PT100, PT500, and PT1000.
 
 Signed-off-by: Liam Beguin <lvb@xiphos.com>
 ---
- drivers/iio/afe/iio-rescale.c | 27 +++++++++++++++++++++++++--
- 1 file changed, 25 insertions(+), 2 deletions(-)
+ drivers/iio/afe/iio-rescale.c | 48 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 48 insertions(+)
 
 diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index c408c4057c08..7304306c9806 100644
+index 7304306c9806..8cdcb6ffb563 100644
 --- a/drivers/iio/afe/iio-rescale.c
 +++ b/drivers/iio/afe/iio-rescale.c
-@@ -22,7 +22,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 			  int *val, int *val2)
- {
- 	s64 tmp;
--	s32 rem;
-+	s32 rem, rem2;
- 	u32 mult;
- 	u32 neg;
+@@ -386,10 +386,52 @@ static int rescale_voltage_divider_props(struct device *dev,
+ 	return 0;
+ }
  
-@@ -38,8 +38,31 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 		tmp = (s64)*val * 1000000000LL;
- 		tmp = div_s64(tmp, rescale->denominator);
- 		tmp *= rescale->numerator;
--		tmp = div_s64(tmp, 1000000000LL);
++static int rescale_temp_sense_rtd_props(struct device *dev,
++					struct rescale *rescale)
++{
++	u32 factor;
++	u32 alpha;
++	u32 iexc;
++	u32 tmp;
++	int ret;
++	u32 r0;
 +
-+		tmp = div_s64_rem(tmp, 1000000000LL, &rem);
- 		*val = tmp;
++	ret = device_property_read_u32(dev, "excitation-current-microamp",
++				       &iexc);
++	if (ret) {
++		dev_err(dev, "failed to read excitation-current-microamp: %d\n",
++			ret);
++		return ret;
++	}
 +
-+		/*
-+		 * For small values, the approximation can be costly,
-+		 * change scale type to maintain accuracy.
-+		 *
-+		 * 100 vs. 10000000 NANO caps the error to about 100 ppm.
-+		 */
-+		if (scale_type == IIO_VAL_FRACTIONAL)
-+			tmp = *val2;
-+		else
-+			tmp = 1 << *val2;
++	ret = device_property_read_u32(dev, "alpha-ppm-per-celsius", &alpha);
++	if (ret) {
++		dev_err(dev, "failed to read alpha-ppm-per-celsius: %d\n",
++			ret);
++		return ret;
++	}
 +
-+		 if (abs(rem) > 10000000 && abs(*val / tmp) < 100) {
-+			 *val = div_s64_rem(*val, tmp, &rem2);
++	ret = device_property_read_u32(dev, "r-naught-ohms", &r0);
++	if (ret) {
++		dev_err(dev, "failed to read r-naught-ohms: %d\n", ret);
++		return ret;
++	}
 +
-+			 *val2 = div_s64(rem, tmp);
-+			 if (rem2)
-+				 *val2 += div_s64(rem2 * 1000000000LL, tmp);
++	tmp = r0 * iexc * alpha / 1000000;
++	factor = gcd(tmp, 1000000);
++	rescale->numerator = 1000000 / factor;
++	rescale->denominator = tmp / factor;
 +
-+			 return IIO_VAL_INT_PLUS_NANO;
-+		 }
++	rescale->offset = -1 * ((r0 * iexc) / 1000);
 +
- 		return scale_type;
- 	case IIO_VAL_INT_PLUS_NANO:
- 	case IIO_VAL_INT_PLUS_MICRO:
++	return 0;
++}
++
+ enum rescale_variant {
+ 	CURRENT_SENSE_AMPLIFIER,
+ 	CURRENT_SENSE_SHUNT,
+ 	VOLTAGE_DIVIDER,
++	TEMP_SENSE_RTD,
+ };
+ 
+ static const struct rescale_cfg rescale_cfg[] = {
+@@ -405,6 +447,10 @@ static const struct rescale_cfg rescale_cfg[] = {
+ 		.type = IIO_VOLTAGE,
+ 		.props = rescale_voltage_divider_props,
+ 	},
++	[TEMP_SENSE_RTD] = {
++		.type = IIO_TEMP,
++		.props = rescale_temp_sense_rtd_props,
++	},
+ };
+ 
+ static const struct of_device_id rescale_match[] = {
+@@ -414,6 +460,8 @@ static const struct of_device_id rescale_match[] = {
+ 	  .data = &rescale_cfg[CURRENT_SENSE_SHUNT], },
+ 	{ .compatible = "voltage-divider",
+ 	  .data = &rescale_cfg[VOLTAGE_DIVIDER], },
++	{ .compatible = "temperature-sense-rtd",
++	  .data = &rescale_cfg[TEMP_SENSE_RTD], },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, rescale_match);
 -- 
 2.32.0.452.g940fe202adcb
 
