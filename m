@@ -2,29 +2,30 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1869AC432BE
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Aug 2021 07:01:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EC3F1C4338F
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Aug 2021 07:02:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EA36361250
-	for <linux-iio@archiver.kernel.org>; Mon, 23 Aug 2021 07:01:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D387F61222
+	for <linux-iio@archiver.kernel.org>; Mon, 23 Aug 2021 07:02:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231715AbhHWHCk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 23 Aug 2021 03:02:40 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:60623 "EHLO
+        id S234428AbhHWHCo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 23 Aug 2021 03:02:44 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:14755 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234258AbhHWHCj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Aug 2021 03:02:39 -0400
+        with ESMTP id S234258AbhHWHCo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Aug 2021 03:02:44 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 17N6hHQB051028;
-        Mon, 23 Aug 2021 14:43:17 +0800 (GMT-8)
+        by twspam01.aspeedtech.com with ESMTP id 17N6hHAT051029;
+        Mon, 23 Aug 2021 14:43:19 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
  (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 23 Aug
- 2021 15:01:45 +0800
+ 2021 15:01:47 +0800
 From:   Billy Tsai <billy_tsai@aspeedtech.com>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
@@ -34,10 +35,12 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [v4 00/15] Add support for ast2600 ADC
-Date:   Mon, 23 Aug 2021 15:02:25 +0800
-Message-ID: <20210823070240.12600-1-billy_tsai@aspeedtech.com>
+Subject: [v4 09/15] iio: adc: aspeed: Use devm_add_action_or_reset.
+Date:   Mon, 23 Aug 2021 15:02:34 +0800
+Message-ID: <20210823070240.12600-10-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210823070240.12600-1-billy_tsai@aspeedtech.com>
+References: <20210823070240.12600-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -45,61 +48,172 @@ X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 17N6hHQB051028
+X-MAIL: twspam01.aspeedtech.com 17N6hHAT051029
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch serials make aspeed_adc.c can support ast2600 and backward
-compatible.
+This patch use devm_add_action_or_reset to handle the error in probe
+phase.
 
-Change since v3:
-dt-bindings:
-  - Fix properties:aspeed,int_vref_mv type error.
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+---
+ drivers/iio/adc/aspeed_adc.c | 92 +++++++++++++++++++++---------------
+ 1 file changed, 55 insertions(+), 37 deletions(-)
 
-Change since v2:
-dt-bindings:
-  - Create a new dt-bindings for ast2600 adc
-aspeed_adc.c:
-  - Splits the patch for more details
-  - Remove version enum and use the flags in model data to distinguish
-  hardware feature
-  - Support trimming data get and set.
-  - Use devm_add_action_or_reset to simplify probe error handling.
-
-Changes since v1:
-dt-bindings:
-  - Fix the aspeed,adc.yaml check error.
-  - Add battery-sensing property.
-aspeed_adc.c:
-  - Change the init flow:
-    Clock and reference voltage setting should be completed before adc
-    engine enable.
-  - Change the default sampling rate to meet most user case.
-  - Add patch #8 to suppoert battery sensing mode.
-
-Billy Tsai (15):
-  dt-bindings: iio: adc: Add ast2600-adc bindings
-  iio: adc: aspeed: completes the bitfield declare.
-  iio: adc: aspeed: set driver data when adc probe.
-  iio: adc: aspeed: Keep model data to driver data.
-  iio: adc: aspeed: Refactory model data structure
-  iio: adc: aspeed: Add vref config function
-  iio: adc: aspeed: Set num_channels with model data
-  iio: adc: aspeed: Use model_data to set clk scaler.
-  iio: adc: aspeed: Use devm_add_action_or_reset.
-  iio: adc: aspeed: Support ast2600 adc.
-  iio: adc: aspeed: Fix the calculate error of clock.
-  iio: adc: aspeed: Add func to set sampling rate.
-  iio: adc: aspeed: Add compensation phase.
-  iio: adc: aspeed: Support battery sensing.
-  iio: adc: aspeed: Get and set trimming data.
-
- .../bindings/iio/adc/aspeed,ast2600-adc.yaml  |  97 +++
- drivers/iio/adc/aspeed_adc.c                  | 562 +++++++++++++++---
- 2 files changed, 569 insertions(+), 90 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml
-
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index 52db38be9699..1c87e12a0cab 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -187,6 +187,27 @@ static const struct iio_info aspeed_adc_iio_info = {
+ 	.debugfs_reg_access = aspeed_adc_reg_access,
+ };
+ 
++static void aspeed_adc_unregister_divider(void *data)
++{
++	struct clk_hw *clk = data;
++
++	clk_hw_unregister_divider(clk);
++}
++
++static void aspeed_adc_reset_assert(void *data)
++{
++	struct reset_control *rst = data;
++
++	reset_control_assert(rst);
++}
++
++static void aspeed_adc_clk_disable_unprepare(void *data)
++{
++	struct clk *clk = data;
++
++	clk_disable_unprepare(clk);
++}
++
+ static int aspeed_adc_vref_config(struct iio_dev *indio_dev)
+ {
+ 	struct aspeed_adc_data *data = iio_priv(indio_dev);
+@@ -232,6 +253,12 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 			&data->clk_lock);
+ 		if (IS_ERR(data->clk_prescaler))
+ 			return PTR_ERR(data->clk_prescaler);
++
++		ret = devm_add_action_or_reset(data->dev,
++					       aspeed_adc_unregister_divider,
++					       data->clk_prescaler);
++		if (ret)
++			return ret;
+ 		snprintf(clk_parent_name, 32, clk_name);
+ 		scaler_flags = CLK_SET_RATE_PARENT;
+ 	}
+@@ -244,23 +271,30 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
+ 		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
+ 		data->model_data->scaler_bit_width, 0, &data->clk_lock);
+-	if (IS_ERR(data->clk_scaler)) {
+-		ret = PTR_ERR(data->clk_scaler);
+-		goto scaler_error;
+-	}
++	if (IS_ERR(data->clk_scaler))
++		return PTR_ERR(data->clk_scaler);
++
++	ret = devm_add_action_or_reset(data->dev, aspeed_adc_unregister_divider,
++				       data->clk_scaler);
++	if (ret)
++		return ret;
+ 
+ 	data->rst = devm_reset_control_get_exclusive(&pdev->dev, NULL);
+ 	if (IS_ERR(data->rst)) {
+ 		dev_err(&pdev->dev,
+ 			"invalid or missing reset controller device tree entry");
+-		ret = PTR_ERR(data->rst);
+-		goto reset_error;
++		return PTR_ERR(data->rst);
+ 	}
+ 	reset_control_deassert(data->rst);
+ 
++	ret = devm_add_action_or_reset(data->dev, aspeed_adc_reset_assert,
++				       data->rst);
++	if (ret)
++		return ret;
++
+ 	ret = aspeed_adc_vref_config(indio_dev);
+ 	if (ret)
+-		goto vref_config_error;
++		return ret;
+ 
+ 	if (data->model_data->wait_init_sequence) {
+ 		/* Enable engine in normal mode. */
+@@ -277,13 +311,19 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 					 ASPEED_ADC_INIT_POLLING_TIME,
+ 					 ASPEED_ADC_INIT_TIMEOUT);
+ 		if (ret)
+-			goto poll_timeout_error;
++			return ret;
+ 	}
+ 
+ 	/* Start all channels in normal mode. */
+ 	ret = clk_prepare_enable(data->clk_scaler->clk);
+ 	if (ret)
+-		goto clk_enable_error;
++		return ret;
++
++	ret = devm_add_action_or_reset(data->dev,
++				       aspeed_adc_clk_disable_unprepare,
++				       data->clk_scaler->clk);
++	if (ret)
++		return ret;
+ 
+ 	adc_engine_control_reg_val =
+ 		ASPEED_ADC_CTRL_CHANNEL |
+@@ -299,41 +339,19 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	indio_dev->num_channels = data->model_data->num_channels;
+ 
+ 	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		goto iio_register_error;
+-
++	if (ret) {
++		writel(FIELD_PREP(ASPEED_ADC_OP_MODE,
++				  ASPEED_ADC_OP_MODE_PWR_DOWN),
++		       data->base + ASPEED_REG_ENGINE_CONTROL);
++		return ret;
++	}
+ 	return 0;
+-
+-iio_register_error:
+-	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_PWR_DOWN),
+-	       data->base + ASPEED_REG_ENGINE_CONTROL);
+-	clk_disable_unprepare(data->clk_scaler->clk);
+-clk_enable_error:
+-poll_timeout_error:
+-vref_config_error:
+-	reset_control_assert(data->rst);
+-reset_error:
+-	clk_hw_unregister_divider(data->clk_scaler);
+-scaler_error:
+-	if (data->model_data->need_prescaler)
+-		clk_hw_unregister_divider(data->clk_prescaler);
+-	return ret;
+ }
+ 
+ static int aspeed_adc_remove(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+-	struct aspeed_adc_data *data = iio_priv(indio_dev);
+-
+ 	iio_device_unregister(indio_dev);
+-	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_PWR_DOWN),
+-	       data->base + ASPEED_REG_ENGINE_CONTROL);
+-	clk_disable_unprepare(data->clk_scaler->clk);
+-	reset_control_assert(data->rst);
+-	clk_hw_unregister_divider(data->clk_scaler);
+-	if (data->model_data->need_prescaler)
+-		clk_hw_unregister_divider(data->clk_prescaler);
+-
+ 	return 0;
+ }
+ 
 -- 
 2.25.1
 
