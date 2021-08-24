@@ -2,35 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	UNWANTED_LANGUAGE_BODY,USER_AGENT_GIT autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A9D6FC4338F
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 00:22:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 052D2C4338F
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 00:23:03 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 855286120A
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 00:22:40 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CFD796120A
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 00:23:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231552AbhHYAXY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 Aug 2021 20:23:24 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:64426 "EHLO
+        id S234259AbhHYAXq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 Aug 2021 20:23:46 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:38370 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234259AbhHYAXX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Aug 2021 20:23:23 -0400
+        with ESMTP id S235197AbhHYAXq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Aug 2021 20:23:46 -0400
 Received: (from root@localhost)
-        by twspam01.aspeedtech.com id 17P043qO093735
-        for <linux-iio@vger.kernel.org>; Wed, 25 Aug 2021 08:04:03 +0800 (GMT-8)
+        by twspam01.aspeedtech.com id 17P04QtL094614
+        for <linux-iio@vger.kernel.org>; Wed, 25 Aug 2021 08:04:26 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
-Message-Id: <202108250004.17P043qO093735@twspam01.aspeedtech.com>
+Message-Id: <202108250004.17P04QtL094614@twspam01.aspeedtech.com>
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 17O8rGgR098397;
-        Tue, 24 Aug 2021 16:53:16 +0800 (GMT-8)
+        by twspam01.aspeedtech.com with ESMTP id 17O8rHKq098405;
+        Tue, 24 Aug 2021 16:53:17 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
  (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Aug
- 2021 17:11:48 +0800
+ 2021 17:11:49 +0800
 From:   Billy Tsai <billy_tsai@aspeedtech.com>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
@@ -40,8 +41,8 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [RESEND v4 09/15] iio: adc: aspeed: Use devm_add_action_or_reset.
-Date:   Tue, 24 Aug 2021 17:12:37 +0800
+Subject: [RESEND v4 15/15] iio: adc: aspeed: Get and set trimming data.
+Date:   Tue, 24 Aug 2021 17:12:43 +0800
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
 References: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
@@ -52,173 +53,159 @@ X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 17P043qO093735
+X-MAIL: twspam01.aspeedtech.com 17P04QtL094614
 X-MSS:  FORWARD@twspam01.aspeedtech.com
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch use devm_add_action_or_reset to handle the error in probe
-phase.
+The adc controller have trimming register for fine-tune the reference
+voltage. The trimming value come from the otp register which will be
+written before chip product. This patch will read this otp value and
+configure it to the adc register when adc controller probe and using dts
+property "aspeed,trim-data-valid" to determine whether to execute this
+flow.
 
 Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 ---
- drivers/iio/adc/aspeed_adc.c | 92 +++++++++++++++++++++---------------
- 1 file changed, 55 insertions(+), 37 deletions(-)
+ drivers/iio/adc/aspeed_adc.c | 68 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 68 insertions(+)
 
 diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 52db38be9699..1c87e12a0cab 100644
+index 0c5d84e82561..bd7fb23f3510 100644
 --- a/drivers/iio/adc/aspeed_adc.c
 +++ b/drivers/iio/adc/aspeed_adc.c
-@@ -187,6 +187,27 @@ static const struct iio_info aspeed_adc_iio_info = {
- 	.debugfs_reg_access = aspeed_adc_reg_access,
+@@ -25,6 +25,8 @@
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
+ #include <linux/bitfield.h>
++#include <linux/regmap.h>
++#include <linux/mfd/syscon.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/driver.h>
+@@ -72,6 +74,11 @@
+  */
+ #define ASPEED_ADC_DEF_SAMPLING_RATE	65000
+ 
++struct aspeed_adc_trim_locate {
++	const unsigned int offset;
++	const unsigned int field;
++};
++
+ struct aspeed_adc_model_data {
+ 	const char *model_name;
+ 	unsigned int min_sampling_rate;	// Hz
+@@ -82,6 +89,7 @@ struct aspeed_adc_model_data {
+ 	bool bat_sense_sup;
+ 	u8 scaler_bit_width;
+ 	unsigned int num_channels;
++	const struct aspeed_adc_trim_locate *trim_locate;
  };
  
-+static void aspeed_adc_unregister_divider(void *data)
+ struct adc_gain {
+@@ -136,6 +144,44 @@ static const struct iio_chan_spec aspeed_adc_iio_channels[] = {
+ 	ASPEED_CHAN(15, 0x2E),
+ };
+ 
++static int aspeed_adc_set_trim_data(struct iio_dev *indio_dev)
 +{
-+	struct clk_hw *clk = data;
++	struct device_node *syscon;
++	struct regmap *scu;
++	u32 scu_otp, trimming_val;
++	struct aspeed_adc_data *data = iio_priv(indio_dev);
 +
-+	clk_hw_unregister_divider(clk);
++	syscon = of_find_node_by_name(NULL, "syscon");
++	if (syscon == NULL) {
++		dev_warn(data->dev, "Couldn't find syscon node\n");
++		return -EOPNOTSUPP;
++	}
++	scu = syscon_node_to_regmap(syscon);
++	if (IS_ERR(scu)) {
++		dev_warn(data->dev, "Failed to get syscon regmap\n");
++		return -EOPNOTSUPP;
++	}
++	if (data->model_data->trim_locate) {
++		if (regmap_read(scu, data->model_data->trim_locate->offset,
++				&scu_otp)) {
++			dev_warn(data->dev,
++				 "Failed to get adc trimming data\n");
++			trimming_val = 0x8;
++		} else {
++			trimming_val =
++				((scu_otp) &
++				 (data->model_data->trim_locate->field)) >>
++				__ffs(data->model_data->trim_locate->field);
++		}
++		dev_dbg(data->dev,
++			"trimming val = %d, offset = %08x, fields = %08x\n",
++			trimming_val, data->model_data->trim_locate->offset,
++			data->model_data->trim_locate->field);
++		writel(trimming_val, data->base + ASPEED_REG_COMPENSATION_TRIM);
++	}
++	return 0;
 +}
 +
-+static void aspeed_adc_reset_assert(void *data)
-+{
-+	struct reset_control *rst = data;
-+
-+	reset_control_assert(rst);
-+}
-+
-+static void aspeed_adc_clk_disable_unprepare(void *data)
-+{
-+	struct clk *clk = data;
-+
-+	clk_disable_unprepare(clk);
-+}
-+
- static int aspeed_adc_vref_config(struct iio_dev *indio_dev)
+ static int aspeed_adc_compensation(struct iio_dev *indio_dev)
  {
  	struct aspeed_adc_data *data = iio_priv(indio_dev);
-@@ -232,6 +253,12 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 			&data->clk_lock);
- 		if (IS_ERR(data->clk_prescaler))
- 			return PTR_ERR(data->clk_prescaler);
-+
-+		ret = devm_add_action_or_reset(data->dev,
-+					       aspeed_adc_unregister_divider,
-+					       data->clk_prescaler);
-+		if (ret)
-+			return ret;
- 		snprintf(clk_parent_name, 32, clk_name);
- 		scaler_flags = CLK_SET_RATE_PARENT;
- 	}
-@@ -244,23 +271,30 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
- 		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
- 		data->model_data->scaler_bit_width, 0, &data->clk_lock);
--	if (IS_ERR(data->clk_scaler)) {
--		ret = PTR_ERR(data->clk_scaler);
--		goto scaler_error;
--	}
-+	if (IS_ERR(data->clk_scaler))
-+		return PTR_ERR(data->clk_scaler);
-+
-+	ret = devm_add_action_or_reset(data->dev, aspeed_adc_unregister_divider,
-+				       data->clk_scaler);
-+	if (ret)
-+		return ret;
- 
- 	data->rst = devm_reset_control_get_exclusive(&pdev->dev, NULL);
- 	if (IS_ERR(data->rst)) {
- 		dev_err(&pdev->dev,
- 			"invalid or missing reset controller device tree entry");
--		ret = PTR_ERR(data->rst);
--		goto reset_error;
-+		return PTR_ERR(data->rst);
- 	}
- 	reset_control_deassert(data->rst);
- 
-+	ret = devm_add_action_or_reset(data->dev, aspeed_adc_reset_assert,
-+				       data->rst);
-+	if (ret)
-+		return ret;
-+
- 	ret = aspeed_adc_vref_config(indio_dev);
+@@ -506,6 +552,10 @@ static int aspeed_adc_probe(struct platform_device *pdev)
  	if (ret)
--		goto vref_config_error;
-+		return ret;
+ 		return ret;
  
- 	if (data->model_data->wait_init_sequence) {
- 		/* Enable engine in normal mode. */
-@@ -277,13 +311,19 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 					 ASPEED_ADC_INIT_POLLING_TIME,
- 					 ASPEED_ADC_INIT_TIMEOUT);
- 		if (ret)
--			goto poll_timeout_error;
-+			return ret;
- 	}
- 
- 	/* Start all channels in normal mode. */
- 	ret = clk_prepare_enable(data->clk_scaler->clk);
- 	if (ret)
--		goto clk_enable_error;
-+		return ret;
++	if (of_find_property(data->dev->of_node, "aspeed,trim-data-valid",
++			     NULL))
++		aspeed_adc_set_trim_data(indio_dev);
 +
-+	ret = devm_add_action_or_reset(data->dev,
-+				       aspeed_adc_clk_disable_unprepare,
-+				       data->clk_scaler->clk);
-+	if (ret)
-+		return ret;
- 
- 	adc_engine_control_reg_val =
- 		ASPEED_ADC_CTRL_CHANNEL |
-@@ -299,41 +339,19 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	indio_dev->num_channels = data->model_data->num_channels;
- 
- 	ret = iio_device_register(indio_dev);
--	if (ret)
--		goto iio_register_error;
--
-+	if (ret) {
-+		writel(FIELD_PREP(ASPEED_ADC_OP_MODE,
-+				  ASPEED_ADC_OP_MODE_PWR_DOWN),
-+		       data->base + ASPEED_REG_ENGINE_CONTROL);
-+		return ret;
-+	}
- 	return 0;
--
--iio_register_error:
--	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_PWR_DOWN),
--	       data->base + ASPEED_REG_ENGINE_CONTROL);
--	clk_disable_unprepare(data->clk_scaler->clk);
--clk_enable_error:
--poll_timeout_error:
--vref_config_error:
--	reset_control_assert(data->rst);
--reset_error:
--	clk_hw_unregister_divider(data->clk_scaler);
--scaler_error:
--	if (data->model_data->need_prescaler)
--		clk_hw_unregister_divider(data->clk_prescaler);
--	return ret;
- }
- 
- static int aspeed_adc_remove(struct platform_device *pdev)
- {
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--	struct aspeed_adc_data *data = iio_priv(indio_dev);
--
- 	iio_device_unregister(indio_dev);
--	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_PWR_DOWN),
--	       data->base + ASPEED_REG_ENGINE_CONTROL);
--	clk_disable_unprepare(data->clk_scaler->clk);
--	reset_control_assert(data->rst);
--	clk_hw_unregister_divider(data->clk_scaler);
--	if (data->model_data->need_prescaler)
--		clk_hw_unregister_divider(data->clk_prescaler);
--
+ 	if (of_find_property(data->dev->of_node, "aspeed,battery-sensing",
+ 			     NULL)) {
+ 		if (data->model_data->bat_sense_sup) {
+@@ -579,6 +629,21 @@ static int aspeed_adc_remove(struct platform_device *pdev)
  	return 0;
  }
  
++static const struct aspeed_adc_trim_locate ast2500_adc_trim = {
++	.offset = 0x154,
++	.field = GENMASK(31, 28),
++};
++
++static const struct aspeed_adc_trim_locate ast2600_adc0_trim = {
++	.offset = 0x5d0,
++	.field = GENMASK(3, 0),
++};
++
++static const struct aspeed_adc_trim_locate ast2600_adc1_trim = {
++	.offset = 0x5d0,
++	.field = GENMASK(7, 4),
++};
++
+ static const struct aspeed_adc_model_data ast2400_model_data = {
+ 	.model_name = "ast2400-adc",
+ 	.vref_fixed = 2500, // mV
+@@ -598,6 +663,7 @@ static const struct aspeed_adc_model_data ast2500_model_data = {
+ 	.need_prescaler = true,
+ 	.scaler_bit_width = 10,
+ 	.num_channels = 16,
++	.trim_locate = &ast2500_adc_trim,
+ };
+ 
+ static const struct aspeed_adc_model_data ast2600_adc0_model_data = {
+@@ -608,6 +674,7 @@ static const struct aspeed_adc_model_data ast2600_adc0_model_data = {
+ 	.bat_sense_sup = true,
+ 	.scaler_bit_width = 16,
+ 	.num_channels = 8,
++	.trim_locate = &ast2600_adc0_trim,
+ };
+ 
+ static const struct aspeed_adc_model_data ast2600_adc1_model_data = {
+@@ -618,6 +685,7 @@ static const struct aspeed_adc_model_data ast2600_adc1_model_data = {
+ 	.bat_sense_sup = true,
+ 	.scaler_bit_width = 16,
+ 	.num_channels = 8,
++	.trim_locate = &ast2600_adc1_trim,
+ };
+ 
+ static const struct of_device_id aspeed_adc_matches[] = {
 -- 
 2.25.1
 
