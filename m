@@ -2,25 +2,24 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D03C4338F
-	for <linux-iio@archiver.kernel.org>; Tue, 24 Aug 2021 09:11:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 157B0C432BE
+	for <linux-iio@archiver.kernel.org>; Tue, 24 Aug 2021 09:12:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C0DA261262
-	for <linux-iio@archiver.kernel.org>; Tue, 24 Aug 2021 09:11:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E6B3F61165
+	for <linux-iio@archiver.kernel.org>; Tue, 24 Aug 2021 09:11:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235433AbhHXJMe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 Aug 2021 05:12:34 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:55626 "EHLO
+        id S235461AbhHXJMn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 Aug 2021 05:12:43 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:18488 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235264AbhHXJMe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Aug 2021 05:12:34 -0400
+        with ESMTP id S235264AbhHXJMm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Aug 2021 05:12:42 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 17O8rEke098382;
+        by twspam01.aspeedtech.com with ESMTP id 17O8rEbJ098381;
         Tue, 24 Aug 2021 16:53:14 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
@@ -35,12 +34,10 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [RESEND v4 02/15] iio: adc: aspeed: completes the bitfield declare.
-Date:   Tue, 24 Aug 2021 17:12:30 +0800
-Message-ID: <20210824091243.9393-3-billy_tsai@aspeedtech.com>
+Subject: [RESEND v4 00/15] Add support for ast2600 ADC
+Date:   Tue, 24 Aug 2021 17:12:28 +0800
+Message-ID: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
-References: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -48,129 +45,62 @@ X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 17O8rEke098382
+X-MAIL: twspam01.aspeedtech.com 17O8rEbJ098381
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch completes the declare of adc register bitfields and uses the
-same prefix ASPEED_ADC_* for these bitfields.
+This patch serials make aspeed_adc.c can support ast2600 and backward
+compatible.
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- drivers/iio/adc/aspeed_adc.c | 56 +++++++++++++++++++++++++-----------
- 1 file changed, 39 insertions(+), 17 deletions(-)
+RESEND due to miss some patches when sent patch v4.
+Change since v3:
+dt-bindings:
+  - Fix properties:aspeed,int_vref_mv type error.
 
-diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 19efaa41bc34..7010d56ac3b9 100644
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -3,6 +3,7 @@
-  * Aspeed AST2400/2500 ADC
-  *
-  * Copyright (C) 2017 Google, Inc.
-+ * Copyright (C) 2021 Aspeed Technology Inc.
-  */
- 
- #include <linux/clk.h>
-@@ -16,6 +17,7 @@
- #include <linux/reset.h>
- #include <linux/spinlock.h>
- #include <linux/types.h>
-+#include <linux/bitfield.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/driver.h>
-@@ -28,15 +30,31 @@
- #define ASPEED_REG_INTERRUPT_CONTROL	0x04
- #define ASPEED_REG_VGA_DETECT_CONTROL	0x08
- #define ASPEED_REG_CLOCK_CONTROL	0x0C
--#define ASPEED_REG_MAX			0xC0
--
--#define ASPEED_OPERATION_MODE_POWER_DOWN	(0x0 << 1)
--#define ASPEED_OPERATION_MODE_STANDBY		(0x1 << 1)
--#define ASPEED_OPERATION_MODE_NORMAL		(0x7 << 1)
--
--#define ASPEED_ENGINE_ENABLE		BIT(0)
--
--#define ASPEED_ADC_CTRL_INIT_RDY	BIT(8)
-+#define ASPEED_REG_COMPENSATION_TRIM	0xC4
-+#define ASPEED_REG_MAX			0xCC
-+
-+#define ASPEED_ADC_ENGINE_ENABLE		BIT(0)
-+#define ASPEED_ADC_OP_MODE			GENMASK(3, 1)
-+#define ASPEED_ADC_OP_MODE_PWR_DOWN		0
-+#define ASPEED_ADC_OP_MODE_STANDBY		1
-+#define ASPEED_ADC_OP_MODE_NORMAL		7
-+#define ASPEED_ADC_CTRL_COMPENSATION		BIT(4)
-+#define ASPEED_ADC_AUTO_COMPENSATION		BIT(5)
-+#define ASPEED_ADC_REF_VOLTAGE			GENMASK(7, 6)
-+#define ASPEED_ADC_REF_VOLTAGE_2500mV		0
-+#define ASPEED_ADC_REF_VOLTAGE_1200mV		1
-+#define ASPEED_ADC_REF_VOLTAGE_EXT_HIGH		2
-+#define ASPEED_ADC_REF_VOLTAGE_EXT_LOW		3
-+#define ASPEED_ADC_BAT_SENSING_DIV		BIT(6)
-+#define ASPEED_ADC_BAT_SENSING_DIV_2_3		0
-+#define ASPEED_ADC_BAT_SENSING_DIV_1_3		1
-+#define ASPEED_ADC_CTRL_INIT_RDY		BIT(8)
-+#define ASPEED_ADC_CH7_MODE			BIT(12)
-+#define ASPEED_ADC_CH7_NORMAL			0
-+#define ASPEED_ADC_CH7_BAT			1
-+#define ASPEED_ADC_BAT_SENSING_ENABLE		BIT(13)
-+#define ASPEED_ADC_CTRL_CHANNEL			GENMASK(31, 16)
-+#define ASPEED_ADC_CTRL_CHANNEL_ENABLE(ch)	FIELD_PREP(ASPEED_ADC_CTRL_CHANNEL, BIT(ch))
- 
- #define ASPEED_ADC_INIT_POLLING_TIME	500
- #define ASPEED_ADC_INIT_TIMEOUT		500000
-@@ -226,7 +244,9 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 
- 	if (model_data->wait_init_sequence) {
- 		/* Enable engine in normal mode. */
--		writel(ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE,
-+		writel(FIELD_PREP(ASPEED_ADC_OP_MODE,
-+				  ASPEED_ADC_OP_MODE_NORMAL) |
-+			       ASPEED_ADC_ENGINE_ENABLE,
- 		       data->base + ASPEED_REG_ENGINE_CONTROL);
- 
- 		/* Wait for initial sequence complete. */
-@@ -245,10 +265,12 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	if (ret)
- 		goto clk_enable_error;
- 
--	adc_engine_control_reg_val = GENMASK(31, 16) |
--		ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE;
-+	adc_engine_control_reg_val =
-+		ASPEED_ADC_CTRL_CHANNEL |
-+		FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_NORMAL) |
-+		ASPEED_ADC_ENGINE_ENABLE;
- 	writel(adc_engine_control_reg_val,
--		data->base + ASPEED_REG_ENGINE_CONTROL);
-+	       data->base + ASPEED_REG_ENGINE_CONTROL);
- 
- 	model_data = of_device_get_match_data(&pdev->dev);
- 	indio_dev->name = model_data->model_name;
-@@ -264,8 +286,8 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	return 0;
- 
- iio_register_error:
--	writel(ASPEED_OPERATION_MODE_POWER_DOWN,
--		data->base + ASPEED_REG_ENGINE_CONTROL);
-+	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_PWR_DOWN),
-+	       data->base + ASPEED_REG_ENGINE_CONTROL);
- 	clk_disable_unprepare(data->clk_scaler->clk);
- clk_enable_error:
- poll_timeout_error:
-@@ -283,8 +305,8 @@ static int aspeed_adc_remove(struct platform_device *pdev)
- 	struct aspeed_adc_data *data = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
--	writel(ASPEED_OPERATION_MODE_POWER_DOWN,
--		data->base + ASPEED_REG_ENGINE_CONTROL);
-+	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_PWR_DOWN),
-+	       data->base + ASPEED_REG_ENGINE_CONTROL);
- 	clk_disable_unprepare(data->clk_scaler->clk);
- 	reset_control_assert(data->rst);
- 	clk_hw_unregister_divider(data->clk_scaler);
+Change since v2:
+dt-bindings:
+  - Create a new dt-bindings for ast2600 adc
+aspeed_adc.c:
+  - Splits the patch for more details
+  - Remove version enum and use the flags in model data to distinguish
+  hardware feature
+  - Support trimming data get and set.
+  - Use devm_add_action_or_reset to simplify probe error handling.
+
+Changes since v1:
+dt-bindings:
+  - Fix the aspeed,adc.yaml check error.
+  - Add battery-sensing property.
+aspeed_adc.c:
+  - Change the init flow:
+    Clock and reference voltage setting should be completed before adc
+    engine enable.
+  - Change the default sampling rate to meet most user case.
+  - Add patch #8 to suppoert battery sensing mode.
+
+Billy Tsai (15):
+  dt-bindings: iio: adc: Add ast2600-adc bindings
+  iio: adc: aspeed: completes the bitfield declare.
+  iio: adc: aspeed: set driver data when adc probe.
+  iio: adc: aspeed: Keep model data to driver data.
+  iio: adc: aspeed: Refactory model data structure
+  iio: adc: aspeed: Add vref config function
+  iio: adc: aspeed: Set num_channels with model data
+  iio: adc: aspeed: Use model_data to set clk scaler.
+  iio: adc: aspeed: Use devm_add_action_or_reset.
+  iio: adc: aspeed: Support ast2600 adc.
+  iio: adc: aspeed: Fix the calculate error of clock.
+  iio: adc: aspeed: Add func to set sampling rate.
+  iio: adc: aspeed: Add compensation phase.
+  iio: adc: aspeed: Support battery sensing.
+  iio: adc: aspeed: Get and set trimming data.
+
+ .../bindings/iio/adc/aspeed,ast2600-adc.yaml  |  97 +++
+ drivers/iio/adc/aspeed_adc.c                  | 562 +++++++++++++++---
+ 2 files changed, 569 insertions(+), 90 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed,ast2600-adc.yaml
+
 -- 
 2.25.1
 
