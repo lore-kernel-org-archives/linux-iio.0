@@ -2,162 +2,175 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.5 required=3.0 tests=BAYES_00,DKIM_INVALID,
-	DKIM_SIGNED,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8898DC4338F
-	for <linux-iio@archiver.kernel.org>; Tue, 24 Aug 2021 05:33:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E6D03C4338F
+	for <linux-iio@archiver.kernel.org>; Tue, 24 Aug 2021 09:11:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 665F661212
-	for <linux-iio@archiver.kernel.org>; Tue, 24 Aug 2021 05:33:15 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C0DA261262
+	for <linux-iio@archiver.kernel.org>; Tue, 24 Aug 2021 09:11:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234015AbhHXFd6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 Aug 2021 01:33:58 -0400
-Received: from gproxy1-pub.mail.unifiedlayer.com ([69.89.25.95]:51557 "EHLO
-        gproxy1-pub.mail.unifiedlayer.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S229885AbhHXFd5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Aug 2021 01:33:57 -0400
-X-Greylist: delayed 1486 seconds by postgrey-1.27 at vger.kernel.org; Tue, 24 Aug 2021 01:33:57 EDT
-Received: from cmgw13.mail.unifiedlayer.com (unknown [10.0.90.128])
-        by gproxy1.mail.unifiedlayer.com (Postfix) with ESMTP id AA12A802BF33
-        for <linux-iio@vger.kernel.org>; Tue, 24 Aug 2021 05:08:24 +0000 (UTC)
-Received: from md-in-79.webhostbox.net ([43.225.55.182])
-        by cmsmtp with ESMTP
-        id IOfemsF5joTT8IOffmLrKS; Tue, 24 Aug 2021 05:08:24 +0000
-X-Authority-Reason: nr=8
-X-Authority-Analysis: v=2.4 cv=LMCj/La9 c=1 sm=1 tr=0 ts=61247ec8
- a=LfuyaZh/8e9VOkaVZk0aRw==:117 a=LfuyaZh/8e9VOkaVZk0aRw==:17
- a=dLZJa+xiwSxG16/P+YVxDGlgEgI=:19 a=MhDmnRu9jo8A:10:nop_rcvd_month_year
- a=oz0wMknONp8A:10:endurance_base64_authed_username_1 a=vU9dKmh3AAAA:8
- a=gEfo2CItAAAA:8 a=jtbBNqsHAAAA:8 a=-5KMCkUntxd5Z1t9gYsA:9
- a=rsP06fVo5MYu2ilr0aT5:22 a=sptkURWiP4Gy88Gu7hUp:22 a=RWaeYqt-Cn-VcsFsiLGo:22
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=linumiz.com
-        ; s=default; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:Subject
-        :Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:Content-Description:
-        Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:
-        In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:List-Subscribe:
-        List-Post:List-Owner:List-Archive;
-        bh=W/AymKeoHSfLUuRKlptGcYxIuqB0gsHM2oq89IBZLKg=; b=P6UsbKfnPihTPc85sKE2/oaeAr
-        pbsDFxoda/d4uALhLOb5BeSEbRcTPFxQJZkYU0M7cXTmk8N+1zI57q/YiVvRmX5JFydbRSTX3vSrF
-        Nh051VKoCbly8hND5hua/4VmD2+4iwgN4SZR+bxmF8nj29O9UpbEwQKXL4+Ntl/sLRUS4V1XYXANJ
-        fHL6dbskrk4/Mk93MrsDTybSJLbnyi/90R6GmJY6z2f+u3wXJsnDHCjotQt/TPg/qbSAQoRhe9Csy
-        WNcjH8qZ0l+eqd8zosNsq8Y1bpNFeT1ToTBOY2R+8EGx5FzIjMxYhxDtNp4tr8ricklqVIoqkBPLC
-        9fwPH6Vw==;
-Received: from [117.193.211.180] (port=56148 helo=localhost.localdomain)
-        by md-in-79.webhostbox.net with esmtps  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <navin@linumiz.com>)
-        id 1mIOfd-000R5G-Hn; Tue, 24 Aug 2021 05:08:21 +0000
-From:   Navin Sankar Velliangiri <navin@linumiz.com>
-To:     jic23@kernel.org
-Cc:     navin@linumiz.com, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, ardeleanalex@gmail.com,
-        robh+dt@kernel.org, devicetree@vger.kernel.org
-Subject: [PATCH v4 2/2] dt-bindings: iio: temperature: add MAXIM max31865 support
-Date:   Tue, 24 Aug 2021 10:36:50 +0530
-Message-Id: <20210824050650.72619-1-navin@linumiz.com>
-X-Mailer: git-send-email 2.32.0
+        id S235433AbhHXJMe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 Aug 2021 05:12:34 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:55626 "EHLO
+        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235264AbhHXJMe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Aug 2021 05:12:34 -0400
+Received: from mail.aspeedtech.com ([192.168.0.24])
+        by twspam01.aspeedtech.com with ESMTP id 17O8rEke098382;
+        Tue, 24 Aug 2021 16:53:14 +0800 (GMT-8)
+        (envelope-from billy_tsai@aspeedtech.com)
+Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
+ (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Aug
+ 2021 17:11:46 +0800
+From:   Billy Tsai <billy_tsai@aspeedtech.com>
+To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
+        <p.zabel@pengutronix.de>, <lgirdwood@gmail.com>,
+        <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
+CC:     <BMC-SW@aspeedtech.com>
+Subject: [RESEND v4 02/15] iio: adc: aspeed: completes the bitfield declare.
+Date:   Tue, 24 Aug 2021 17:12:30 +0800
+Message-ID: <20210824091243.9393-3-billy_tsai@aspeedtech.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
+References: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - md-in-79.webhostbox.net
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - linumiz.com
-X-BWhitelist: no
-X-Source-IP: 117.193.211.180
-X-Source-L: No
-X-Exim-ID: 1mIOfd-000R5G-Hn
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
-X-Source-Sender: (localhost.localdomain) [117.193.211.180]:56148
-X-Source-Auth: linumcmc
-X-Email-Count: 9
-X-Source-Cap: bGludW1jbWM7aG9zdGdhdG9yO21kLWluLTc5LndlYmhvc3Rib3gubmV0
-X-Local-Domain: yes
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-Originating-IP: [192.168.2.149]
+X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
+ (192.168.0.24)
+X-DNSRBL: 
+X-MAIL: twspam01.aspeedtech.com 17O8rEke098382
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add DT bindings for MAXIM max31865 RTD sensor.
+This patch completes the declare of adc register bitfields and uses the
+same prefix ASPEED_ADC_* for these bitfields.
 
-Signed-off-by: Navin Sankar Velliangiri <navin@linumiz.com>
-
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 ---
-Note:
-Changes in v2:
-	-> Changed the name RTD to Resistance Temperature Detector
-	-> renamed maxim,no-of-wires to 3-wire
-	-> fixed code alignment for the example
+ drivers/iio/adc/aspeed_adc.c | 56 +++++++++++++++++++++++++-----------
+ 1 file changed, 39 insertions(+), 17 deletions(-)
 
-Changes in v3:
-	-> Added more information about 3 wire RTD connection
----
- .../iio/temperature/maxim,max31865.yaml       | 52 +++++++++++++++++++
- 1 file changed, 52 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/maxim,max31865.yaml
-
-diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim,max31865.yaml b/Documentation/devicetree/bindings/iio/temperature/maxim,max31865.yaml
-new file mode 100644
-index 000000000000..aafb33b16549
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/temperature/maxim,max31865.yaml
-@@ -0,0 +1,52 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/temperature/maxim,max31865.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index 19efaa41bc34..7010d56ac3b9 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -3,6 +3,7 @@
+  * Aspeed AST2400/2500 ADC
+  *
+  * Copyright (C) 2017 Google, Inc.
++ * Copyright (C) 2021 Aspeed Technology Inc.
+  */
+ 
+ #include <linux/clk.h>
+@@ -16,6 +17,7 @@
+ #include <linux/reset.h>
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
++#include <linux/bitfield.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/driver.h>
+@@ -28,15 +30,31 @@
+ #define ASPEED_REG_INTERRUPT_CONTROL	0x04
+ #define ASPEED_REG_VGA_DETECT_CONTROL	0x08
+ #define ASPEED_REG_CLOCK_CONTROL	0x0C
+-#define ASPEED_REG_MAX			0xC0
+-
+-#define ASPEED_OPERATION_MODE_POWER_DOWN	(0x0 << 1)
+-#define ASPEED_OPERATION_MODE_STANDBY		(0x1 << 1)
+-#define ASPEED_OPERATION_MODE_NORMAL		(0x7 << 1)
+-
+-#define ASPEED_ENGINE_ENABLE		BIT(0)
+-
+-#define ASPEED_ADC_CTRL_INIT_RDY	BIT(8)
++#define ASPEED_REG_COMPENSATION_TRIM	0xC4
++#define ASPEED_REG_MAX			0xCC
 +
-+title: Maxim MAX31865 Resistance Temperature Detector.
-+
-+maintainers:
-+  - Navin Sankar Velliangiri <navin@linumiz.com>
-+
-+description: |
-+  https://datasheets.maximintegrated.com/en/ds/MAX31865.pdf
-+
-+properties:
-+  compatible:
-+    const: maxim,max31865
-+
-+  reg:
-+    maxItems: 1
-+
-+  maxim,3-wire:
-+    description:
-+      Identifies the number of wires used by the RTD. Setting this property
-+      enables 3-wire RTD connection. Else 2-wire or 4-wire RTD connection.
-+    type: boolean
-+
-+  spi-max-frequency: true
-+  spi-cpha: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - spi-cpha
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    spi {
-+       #address-cells = <1>;
-+       #size-cells = <0>;
-+
-+       temp_sensor@0 {
-+         compatible = "maxim,max31865";
-+         reg = <0>;
-+         spi-max-frequency = <400000>;
-+         spi-cpha;
-+         maxim,3-wire;
-+       };
-+    };
-+...
++#define ASPEED_ADC_ENGINE_ENABLE		BIT(0)
++#define ASPEED_ADC_OP_MODE			GENMASK(3, 1)
++#define ASPEED_ADC_OP_MODE_PWR_DOWN		0
++#define ASPEED_ADC_OP_MODE_STANDBY		1
++#define ASPEED_ADC_OP_MODE_NORMAL		7
++#define ASPEED_ADC_CTRL_COMPENSATION		BIT(4)
++#define ASPEED_ADC_AUTO_COMPENSATION		BIT(5)
++#define ASPEED_ADC_REF_VOLTAGE			GENMASK(7, 6)
++#define ASPEED_ADC_REF_VOLTAGE_2500mV		0
++#define ASPEED_ADC_REF_VOLTAGE_1200mV		1
++#define ASPEED_ADC_REF_VOLTAGE_EXT_HIGH		2
++#define ASPEED_ADC_REF_VOLTAGE_EXT_LOW		3
++#define ASPEED_ADC_BAT_SENSING_DIV		BIT(6)
++#define ASPEED_ADC_BAT_SENSING_DIV_2_3		0
++#define ASPEED_ADC_BAT_SENSING_DIV_1_3		1
++#define ASPEED_ADC_CTRL_INIT_RDY		BIT(8)
++#define ASPEED_ADC_CH7_MODE			BIT(12)
++#define ASPEED_ADC_CH7_NORMAL			0
++#define ASPEED_ADC_CH7_BAT			1
++#define ASPEED_ADC_BAT_SENSING_ENABLE		BIT(13)
++#define ASPEED_ADC_CTRL_CHANNEL			GENMASK(31, 16)
++#define ASPEED_ADC_CTRL_CHANNEL_ENABLE(ch)	FIELD_PREP(ASPEED_ADC_CTRL_CHANNEL, BIT(ch))
+ 
+ #define ASPEED_ADC_INIT_POLLING_TIME	500
+ #define ASPEED_ADC_INIT_TIMEOUT		500000
+@@ -226,7 +244,9 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 
+ 	if (model_data->wait_init_sequence) {
+ 		/* Enable engine in normal mode. */
+-		writel(ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE,
++		writel(FIELD_PREP(ASPEED_ADC_OP_MODE,
++				  ASPEED_ADC_OP_MODE_NORMAL) |
++			       ASPEED_ADC_ENGINE_ENABLE,
+ 		       data->base + ASPEED_REG_ENGINE_CONTROL);
+ 
+ 		/* Wait for initial sequence complete. */
+@@ -245,10 +265,12 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto clk_enable_error;
+ 
+-	adc_engine_control_reg_val = GENMASK(31, 16) |
+-		ASPEED_OPERATION_MODE_NORMAL | ASPEED_ENGINE_ENABLE;
++	adc_engine_control_reg_val =
++		ASPEED_ADC_CTRL_CHANNEL |
++		FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_NORMAL) |
++		ASPEED_ADC_ENGINE_ENABLE;
+ 	writel(adc_engine_control_reg_val,
+-		data->base + ASPEED_REG_ENGINE_CONTROL);
++	       data->base + ASPEED_REG_ENGINE_CONTROL);
+ 
+ 	model_data = of_device_get_match_data(&pdev->dev);
+ 	indio_dev->name = model_data->model_name;
+@@ -264,8 +286,8 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	return 0;
+ 
+ iio_register_error:
+-	writel(ASPEED_OPERATION_MODE_POWER_DOWN,
+-		data->base + ASPEED_REG_ENGINE_CONTROL);
++	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_PWR_DOWN),
++	       data->base + ASPEED_REG_ENGINE_CONTROL);
+ 	clk_disable_unprepare(data->clk_scaler->clk);
+ clk_enable_error:
+ poll_timeout_error:
+@@ -283,8 +305,8 @@ static int aspeed_adc_remove(struct platform_device *pdev)
+ 	struct aspeed_adc_data *data = iio_priv(indio_dev);
+ 
+ 	iio_device_unregister(indio_dev);
+-	writel(ASPEED_OPERATION_MODE_POWER_DOWN,
+-		data->base + ASPEED_REG_ENGINE_CONTROL);
++	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_PWR_DOWN),
++	       data->base + ASPEED_REG_ENGINE_CONTROL);
+ 	clk_disable_unprepare(data->clk_scaler->clk);
+ 	reset_control_assert(data->rst);
+ 	clk_hw_unregister_divider(data->clk_scaler);
 -- 
-2.32.0
+2.25.1
 
