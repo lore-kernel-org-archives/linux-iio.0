@@ -2,148 +2,199 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,MSGID_FROM_MTA_HEADER,SPF_HELO_NONE,SPF_PASS,
-	USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AB39BC4338F
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 00:25:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEF9FC4320A
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 02:07:58 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8BF9360238
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 00:25:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 503E96127B
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 02:07:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236067AbhHYAZt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 Aug 2021 20:25:49 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:7492 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235933AbhHYAZs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Aug 2021 20:25:48 -0400
-Received: (from root@localhost)
-        by twspam01.aspeedtech.com id 17P06SAB097297
-        for <linux-iio@vger.kernel.org>; Wed, 25 Aug 2021 08:06:28 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Message-Id: <202108250006.17P06SAB097297@twspam01.aspeedtech.com>
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 17O8rGKK098395;
-        Tue, 24 Aug 2021 16:53:16 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 24 Aug
- 2021 17:11:48 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
-        <p.zabel@pengutronix.de>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [RESEND v4 08/15] iio: adc: aspeed: Use model_data to set clk scaler.
-Date:   Tue, 24 Aug 2021 17:12:36 +0800
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
-References: <20210824091243.9393-1-billy_tsai@aspeedtech.com>
+        id S234529AbhHYCIl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 Aug 2021 22:08:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40182 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233459AbhHYCIk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Aug 2021 22:08:40 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD02BC061757
+        for <linux-iio@vger.kernel.org>; Tue, 24 Aug 2021 19:07:55 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id x11so48417367ejv.0
+        for <linux-iio@vger.kernel.org>; Tue, 24 Aug 2021 19:07:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=konsulko.com; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mALU2OxiIEpDeQPoyzzGecoM8LDDe/irgGpVpeQGSjA=;
+        b=OIax5qFi/IiMERcd/Jpo2h1N9p5ntKuapy4yhSVBcM1NGfMYJFhKac+fSpyn+k321n
+         LUb1RH+GpbeIq/ZzCnpFDgLhgGu1VYUXWIqS1JvUgY2vI9Xk2nbBGRfkzWb2C490GVIc
+         Uw225CYx/MQc2YC9YebMpZd7c4Yo/S2TD449o=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=mALU2OxiIEpDeQPoyzzGecoM8LDDe/irgGpVpeQGSjA=;
+        b=hiyjl3oQS3Strjexj3/PShe2agwDSgd6VZuYlgUKrfAvEMmBN/0xClW5KpJCVGtoBm
+         tY/yMli2WzBFyCgfxwoxjxnMAsOgDG7/hUZkKQ+tR7uVfpA/joZgOnAGzuZQClr954Mq
+         4JBI/rpvwsDamzysSCCztkVJUoBA+W9fMuWNENMbFMt/VSCLqwstqDzjlfB9zURdoJE3
+         oSI2g2FylpNwlxPK4dXSchNZ1peNMPd0Bpg3hOppSgLVw3TsDey7sKilsPhTcMCTxjPF
+         eit58fHQ0798bjLA1zaKV7xmmplQ2lRlnnHYdcFjuUB/9e4DMhkHolArkVv0SHfIPl4K
+         0qww==
+X-Gm-Message-State: AOAM531iuWGz0W5Xjp1A/B4g9JHLhDQ3UxkcUSzihtZsVD2AbJVZ4JGx
+        0j9JVl5KCQXNccqMMu7eTsTYmg==
+X-Google-Smtp-Source: ABdhPJyOqJuZwxrIprkfcVEgJwgd5N9QqJj5Or6ftV8IKcDjXfwXyOgSZIkcig4UQRZYlPAk2B7XAQ==
+X-Received: by 2002:a17:906:bcdb:: with SMTP id lw27mr44563471ejb.292.1629857274400;
+        Tue, 24 Aug 2021 19:07:54 -0700 (PDT)
+Received: from taos.k.g (lan.nucleusys.com. [92.247.61.126])
+        by smtp.gmail.com with ESMTPSA id ly7sm6793240ejb.109.2021.08.24.19.07.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 24 Aug 2021 19:07:53 -0700 (PDT)
+From:   Matt Ranostay <matt.ranostay@konsulko.com>
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org,
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH] iio: magnetometer: ak8975: add AK09116 support
+Date:   Wed, 25 Aug 2021 05:07:38 +0300
+Message-Id: <20210825020738.35877-1-matt.ranostay@konsulko.com>
+X-Mailer: git-send-email 2.20.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 17P06SAB097297
-X-MSS:  FORWARD@twspam01.aspeedtech.com
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch use need_prescaler and scaler_bit_width to set the adc clock
-scaler.
+Add additional AK09116 to the magnetometer driver which has the same
+register mapping and scaling as the AK09112 device.
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+Signed-off-by: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/adc/aspeed_adc.c | 39 +++++++++++++++++++++---------------
- 1 file changed, 23 insertions(+), 16 deletions(-)
+ .../iio/magnetometer/asahi-kasei,ak8975.yaml  |  2 ++
+ drivers/iio/magnetometer/Kconfig              |  2 +-
+ drivers/iio/magnetometer/ak8975.c             | 35 +++++++++++++++++++
+ 3 files changed, 38 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 2d6215a91f99..52db38be9699 100644
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -202,9 +202,10 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- {
- 	struct iio_dev *indio_dev;
- 	struct aspeed_adc_data *data;
--	const char *clk_parent_name;
- 	int ret;
- 	u32 adc_engine_control_reg_val;
-+	unsigned long scaler_flags = 0;
-+	char clk_name[32], clk_parent_name[32];
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml b/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
+index a0a1ffe017df..c552b2b7751a 100644
+--- a/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
++++ b/Documentation/devicetree/bindings/iio/magnetometer/asahi-kasei,ak8975.yaml
+@@ -17,11 +17,13 @@ properties:
+           - asahi-kasei,ak8963
+           - asahi-kasei,ak09911
+           - asahi-kasei,ak09912
++          - asahi-kasei,ak09916
+       - enum:
+           - ak8975
+           - ak8963
+           - ak09911
+           - ak09912
++          - ak09916
+         deprecated: true
  
- 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -221,24 +222,28 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+   reg:
+diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+index 74ad5701c6c2..565ee41ccb3a 100644
+--- a/drivers/iio/magnetometer/Kconfig
++++ b/drivers/iio/magnetometer/Kconfig
+@@ -28,7 +28,7 @@ config AK8975
+ 	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to build support for Asahi Kasei AK8975, AK8963,
+-	  AK09911 or AK09912 3-Axis Magnetometer.
++	  AK09911, AK09912 or AK09916 3-Axis Magnetometer.
  
- 	/* Register ADC clock prescaler with source specified by device tree. */
- 	spin_lock_init(&data->clk_lock);
--	clk_parent_name = of_clk_get_parent_name(pdev->dev.of_node, 0);
--
--	data->clk_prescaler = clk_hw_register_divider(
--				&pdev->dev, "prescaler", clk_parent_name, 0,
--				data->base + ASPEED_REG_CLOCK_CONTROL,
--				17, 15, 0, &data->clk_lock);
--	if (IS_ERR(data->clk_prescaler))
--		return PTR_ERR(data->clk_prescaler);
--
-+	snprintf(clk_parent_name, 32, of_clk_get_parent_name(pdev->dev.of_node, 0));
-+	if (data->model_data->need_prescaler) {
-+		snprintf(clk_name, 32, "%s-prescaler",
-+			 data->model_data->model_name);
-+		data->clk_prescaler = clk_hw_register_divider(
-+			&pdev->dev, clk_name, clk_parent_name, 0,
-+			data->base + ASPEED_REG_CLOCK_CONTROL, 17, 15, 0,
-+			&data->clk_lock);
-+		if (IS_ERR(data->clk_prescaler))
-+			return PTR_ERR(data->clk_prescaler);
-+		snprintf(clk_parent_name, 32, clk_name);
-+		scaler_flags = CLK_SET_RATE_PARENT;
-+	}
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called ak8975.
+diff --git a/drivers/iio/magnetometer/ak8975.c b/drivers/iio/magnetometer/ak8975.c
+index 42b8a2680e3a..6e82dc54a417 100644
+--- a/drivers/iio/magnetometer/ak8975.c
++++ b/drivers/iio/magnetometer/ak8975.c
+@@ -78,6 +78,7 @@
+  */
+ #define AK09912_REG_WIA1		0x00
+ #define AK09912_REG_WIA2		0x01
++#define AK09916_DEVICE_ID		0x09
+ #define AK09912_DEVICE_ID		0x04
+ #define AK09911_DEVICE_ID		0x05
+ 
+@@ -208,6 +209,7 @@ enum asahi_compass_chipset {
+ 	AK8963,
+ 	AK09911,
+ 	AK09912,
++	AK09916,
+ };
+ 
+ enum ak_ctrl_reg_addr {
+@@ -345,6 +347,31 @@ static const struct ak_def ak_def_array[] = {
+ 			AK09912_REG_HXL,
+ 			AK09912_REG_HYL,
+ 			AK09912_REG_HZL},
++	},
++	{
++		.type = AK09916,
++		.raw_to_gauss = ak09912_raw_to_gauss,
++		.range = 32752,
++		.ctrl_regs = {
++			AK09912_REG_ST1,
++			AK09912_REG_ST2,
++			AK09912_REG_CNTL2,
++			AK09912_REG_ASAX,
++			AK09912_MAX_REGS},
++		.ctrl_masks = {
++			AK09912_REG_ST1_DRDY_MASK,
++			AK09912_REG_ST2_HOFL_MASK,
++			0,
++			AK09912_REG_CNTL2_MODE_MASK},
++		.ctrl_modes = {
++			AK09912_REG_CNTL_MODE_POWER_DOWN,
++			AK09912_REG_CNTL_MODE_ONCE,
++			AK09912_REG_CNTL_MODE_SELF_TEST,
++			AK09912_REG_CNTL_MODE_FUSE_ROM},
++		.data_regs = {
++			AK09912_REG_HXL,
++			AK09912_REG_HYL,
++			AK09912_REG_HZL},
+ 	}
+ };
+ 
+@@ -425,6 +452,7 @@ static int ak8975_who_i_am(struct i2c_client *client,
  	/*
- 	 * Register ADC clock scaler downstream from the prescaler. Allow rate
- 	 * setting to adjust the prescaler as well.
- 	 */
-+	snprintf(clk_name, 32, "%s-scaler", data->model_data->model_name);
- 	data->clk_scaler = clk_hw_register_divider(
--				&pdev->dev, "scaler", "prescaler",
--				CLK_SET_RATE_PARENT,
--				data->base + ASPEED_REG_CLOCK_CONTROL,
--				0, 10, 0, &data->clk_lock);
-+		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
-+		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
-+		data->model_data->scaler_bit_width, 0, &data->clk_lock);
- 	if (IS_ERR(data->clk_scaler)) {
- 		ret = PTR_ERR(data->clk_scaler);
- 		goto scaler_error;
-@@ -310,7 +315,8 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- reset_error:
- 	clk_hw_unregister_divider(data->clk_scaler);
- scaler_error:
--	clk_hw_unregister_divider(data->clk_prescaler);
-+	if (data->model_data->need_prescaler)
-+		clk_hw_unregister_divider(data->clk_prescaler);
- 	return ret;
- }
+ 	 * Signature for each device:
+ 	 * Device   |  WIA1      |  WIA2
++	 * AK09916  |  DEVICE_ID_|  AK09916_DEVICE_ID
+ 	 * AK09912  |  DEVICE_ID |  AK09912_DEVICE_ID
+ 	 * AK09911  |  DEVICE_ID |  AK09911_DEVICE_ID
+ 	 * AK8975   |  DEVICE_ID |  NA
+@@ -452,6 +480,10 @@ static int ak8975_who_i_am(struct i2c_client *client,
+ 		if (wia_val[1] == AK09912_DEVICE_ID)
+ 			return 0;
+ 		break;
++	case AK09916:
++		if (wia_val[1] == AK09916_DEVICE_ID)
++			return 0;
++		break;
+ 	default:
+ 		dev_err(&client->dev, "Type %d unknown\n", type);
+ 	}
+@@ -1057,6 +1089,7 @@ static const struct i2c_device_id ak8975_id[] = {
+ 	{"AK8963", AK8963},
+ 	{"ak09911", AK09911},
+ 	{"ak09912", AK09912},
++	{"ak09916", AK09916},
+ 	{}
+ };
  
-@@ -325,7 +331,8 @@ static int aspeed_adc_remove(struct platform_device *pdev)
- 	clk_disable_unprepare(data->clk_scaler->clk);
- 	reset_control_assert(data->rst);
- 	clk_hw_unregister_divider(data->clk_scaler);
--	clk_hw_unregister_divider(data->clk_prescaler);
-+	if (data->model_data->need_prescaler)
-+		clk_hw_unregister_divider(data->clk_prescaler);
- 
- 	return 0;
- }
+@@ -1071,6 +1104,8 @@ static const struct of_device_id ak8975_of_match[] = {
+ 	{ .compatible = "ak09911", },
+ 	{ .compatible = "asahi-kasei,ak09912", },
+ 	{ .compatible = "ak09912", },
++	{ .compatible = "asahi-kasei,ak09916", },
++	{ .compatible = "ak09916", },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, ak8975_of_match);
 -- 
-2.25.1
+2.20.1
 
