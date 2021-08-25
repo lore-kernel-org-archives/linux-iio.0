@@ -7,24 +7,24 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7002AC41537
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 15:34:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0847CC2BBCD
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 15:35:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 515166109E
-	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 15:34:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id DD8426112D
+	for <linux-iio@archiver.kernel.org>; Wed, 25 Aug 2021 15:35:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241911AbhHYPfn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 Aug 2021 11:35:43 -0400
-Received: from mslow1.mail.gandi.net ([217.70.178.240]:42415 "EHLO
+        id S241908AbhHYPfp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 Aug 2021 11:35:45 -0400
+Received: from mslow1.mail.gandi.net ([217.70.178.240]:58659 "EHLO
         mslow1.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241931AbhHYPfh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Aug 2021 11:35:37 -0400
+        with ESMTP id S241936AbhHYPfi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Aug 2021 11:35:38 -0400
 Received: from relay6-d.mail.gandi.net (unknown [217.70.183.198])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 1B1DDCDEE2;
-        Wed, 25 Aug 2021 15:26:46 +0000 (UTC)
+        by mslow1.mail.gandi.net (Postfix) with ESMTP id 13C57CDFD4;
+        Wed, 25 Aug 2021 15:26:50 +0000 (UTC)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 24404C0004;
-        Wed, 25 Aug 2021 15:26:22 +0000 (UTC)
+        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 2DFA3C0002;
+        Wed, 25 Aug 2021 15:26:26 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -41,9 +41,9 @@ Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-input@vger.kernel.org, linux-omap@vger.kernel.org,
         linux-clk@vger.kernel.org,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH 30/40] iio: adc: ti_am335x_adc: Replace license text with SPDX tag
-Date:   Wed, 25 Aug 2021 17:25:08 +0200
-Message-Id: <20210825152518.379386-31-miquel.raynal@bootlin.com>
+Subject: [PATCH 32/40] iio: adc: ti_am335x_adc: Get rid of useless gotos
+Date:   Wed, 25 Aug 2021 17:25:10 +0200
+Message-Id: <20210825152518.379386-33-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210825152518.379386-1-miquel.raynal@bootlin.com>
 References: <20210825152518.379386-1-miquel.raynal@bootlin.com>
@@ -54,36 +54,41 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Drop the text license and replace it with an equivalent SPDX license tag
-identifier.
+Gotos jumping to a return statement are not really useful, drop them.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/adc/ti_am335x_adc.c | 10 +---------
- 1 file changed, 1 insertion(+), 9 deletions(-)
+ drivers/iio/adc/ti_am335x_adc.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index f748d49f10f4..a5da1fedbc5c 100644
+index dd2200d2f214..00bbf557e86c 100644
 --- a/drivers/iio/adc/ti_am335x_adc.c
 +++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -1,16 +1,8 @@
-+// SPDX-License-Identifier: GPL-2.0-only
- /*
-  * TI ADC MFD driver
-  *
-  * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
-- *
-- * This program is free software; you can redistribute it and/or
-- * modify it under the terms of the GNU General Public License as
-- * published by the Free Software Foundation version 2.
-- *
-- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-- * kind, whether express or implied; without even the implied warranty
-- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-- * GNU General Public License for more details.
-  */
+@@ -616,11 +616,11 @@ static int tiadc_probe(struct platform_device *pdev)
+ 						IRQF_SHARED,
+ 						&tiadc_buffer_setup_ops);
+ 	if (err)
+-		goto err_free_channels;
++		return err;
  
- #include <linux/kernel.h>
+ 	err = iio_device_register(indio_dev);
+ 	if (err)
+-		goto err_buffer_unregister;
++		return err;
+ 
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+@@ -632,8 +632,7 @@ static int tiadc_probe(struct platform_device *pdev)
+ 
+ err_dma:
+ 	iio_device_unregister(indio_dev);
+-err_buffer_unregister:
+-err_free_channels:
++
+ 	return err;
+ }
+ 
 -- 
 2.27.0
 
