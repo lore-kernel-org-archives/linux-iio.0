@@ -2,133 +2,165 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+X-Spam-Status: No, score=-15.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,
+	MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AC09C432BE
-	for <linux-iio@archiver.kernel.org>; Thu, 26 Aug 2021 18:36:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA546C432BE
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Aug 2021 03:48:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3ED9D61004
-	for <linux-iio@archiver.kernel.org>; Thu, 26 Aug 2021 18:36:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C5B2360FC1
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Aug 2021 03:48:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232759AbhHZShO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 26 Aug 2021 14:37:14 -0400
-Received: from smtp09.smtpout.orange.fr ([80.12.242.131]:58504 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231310AbhHZShN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 Aug 2021 14:37:13 -0400
-Received: from pop-os.home ([90.126.253.178])
-        by mwinf5d32 with ME
-        id mJcR250023riaq203JcRH1; Thu, 26 Aug 2021 20:36:25 +0200
-X-ME-Helo: pop-os.home
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Thu, 26 Aug 2021 20:36:25 +0200
-X-ME-IP: 90.126.253.178
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To:     jic23@kernel.org, lars@metafoo.de, ardeleanalex@gmail.com,
-        andy.shevchenko@gmail.com
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH v3] iio: adc128s052: Simplify 'adc128_probe()'
-Date:   Thu, 26 Aug 2021 20:36:22 +0200
-Message-Id: <4fa7fcc59c40e27af0569138d656c698a53dbd44.1630002770.git.christophe.jaillet@wanadoo.fr>
-X-Mailer: git-send-email 2.30.2
+        id S244186AbhH0DtB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 26 Aug 2021 23:49:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44312 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S244215AbhH0DtA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 Aug 2021 23:49:00 -0400
+Received: from mail-pl1-x62f.google.com (mail-pl1-x62f.google.com [IPv6:2607:f8b0:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8453C0613C1;
+        Thu, 26 Aug 2021 20:48:12 -0700 (PDT)
+Received: by mail-pl1-x62f.google.com with SMTP id q3so3109479plx.4;
+        Thu, 26 Aug 2021 20:48:12 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JqqSaS+xFujsg063LbIZ6FBQCRzCA3jZ3HiQj8yEsME=;
+        b=AgugwqMn5os6t3tUSyTcSvTf2l8zIzffj+S3/N8V1kjd2adSs0Coe2rmeeEB+NUGq5
+         +Nax/9LNA/4+rDZHly/8IJWb+lqcC4MLTTZMFL2DugCmdfuaQKd2nYrbJjAZL4cAEJH4
+         xxYDS5c3VFVWpFnxtm+vZl+rIvYg4GIT3vWRZDTHtnaDkVnjs2W16k9kRChz2woZoM7C
+         lDJxq2/YqCjBbjaC8nE8FFHAZ1Loy38POo1E1I6O1w7I67Ogoa++sqcNhXhU9sEX7D/P
+         lHJYzNwZBmA/1ouche3oqhgEnOlUW9cgStv9qXgDCdfCQy18tgGdsiSLn3xXMtjsUJrz
+         kmLw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=JqqSaS+xFujsg063LbIZ6FBQCRzCA3jZ3HiQj8yEsME=;
+        b=KIC40b3qsFFNtyixa1KOQCrgYi/PMPbjjCYE122FR/zQuCvzuYo/M3OnrNar8w9IFj
+         g0xbXGsnMtO7ozM1oGHZH2aC9e24/d38ud8wCr3Pnuhdxa59LUL9ooI5Do7czqHVmzo2
+         jLhGp6tBPZcbtzUTCaJaY2LG5rYq2oQSBraoZkTIQawQTlykwTRYMG/ByaxapvsdGzki
+         AKRHl1jckVR4BFWZCW94v3HMr4p4tclEtey983k88IkUXwaAzKh8+eD4b8eoHxnDE8yL
+         n/TCq6F1Pzf+AhPiDUfieCMs+IGW88JJWpLxOjqdYVChuXCAV2f0slygjupRVz3bgKE9
+         f7GQ==
+X-Gm-Message-State: AOAM5321RgDfL+6OtH4KeVEWvf50gMNxgbSdFVUWS2IThqQiYaT66TGo
+        rPT3umV3oQC3j6UwBNB9DWs=
+X-Google-Smtp-Source: ABdhPJxNo38rlYLjA8U+ThfxFyw8VE6JDAO6SORGaGgH34iHp7uxCutHV+aYWuq2bXb6OENxHHVuVA==
+X-Received: by 2002:a17:90b:3e81:: with SMTP id rj1mr8246555pjb.99.1630036092191;
+        Thu, 26 Aug 2021 20:48:12 -0700 (PDT)
+Received: from localhost.localdomain ([156.146.35.76])
+        by smtp.gmail.com with ESMTPSA id o6sm4364693pjk.4.2021.08.26.20.48.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 26 Aug 2021 20:48:11 -0700 (PDT)
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
+To:     jic23@kernel.org
+Cc:     linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
+        a.fatoum@pengutronix.de, kamel.bouhara@bootlin.com,
+        gwendal@chromium.org, alexandre.belloni@bootlin.com,
+        david@lechnology.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        syednwaris@gmail.com, patrick.havelange@essensium.com,
+        fabrice.gasnier@st.com, mcoquelin.stm32@gmail.com,
+        alexandre.torgue@st.com, o.rempel@pengutronix.de,
+        jarkko.nikula@linux.intel.com,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v16 00/14] Introduce the Counter character device interface
+Date:   Fri, 27 Aug 2021 12:47:44 +0900
+Message-Id: <cover.1630031207.git.vilhelm.gray@gmail.com>
+X-Mailer: git-send-email 2.33.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Turn 'adc128_probe()' into a full resource managed function to simplify the
-code.
+Changes in v16:
+ - Define magic numbers for stm32-lptimer-cnt clock polarities
+ - Define magic numbers for stm32-timer-cnt encoder modes
+ - Bump KernelVersion to 5.16 in sysfs-bus-counter ABI documentation
+ - Fix typos in driver API generic-counter.rst documentation file
 
-This way, the .remove function can be removed.
-Doing so, the only 'spi_get_drvdata()' call is removed and the
-corresponding 'spi_set_drvdata()' can be removed as well.
+For convenience, this patchset is also available on my personal git
+repo: https://gitlab.com/vilhelmgray/iio/-/tree/counter_chrdev_v16
 
-Suggested-by: Alexandru Ardelean <ardeleanalex@gmail.com>
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
----
-Compile tested only.
+The patches preceding "counter: Internalize sysfs interface code" are
+primarily cleanup and fixes that can be picked up and applied now to the
+IIO tree if so desired. The "counter: Internalize sysfs interface code"
+patch as well may be considered for pickup because it is relatively safe
+and makes no changes to the userspace interface.
 
-When reviewing, pay special attention to the 'spi_set_drvdata()' call
-removal. I recently introduced a regression with a too aggressive cleanup
-like that.
+To summarize the main points of this patchset: there are no changes to
+the existing Counter sysfs userspace interface; a Counter character
+device interface is introduced that allows Counter events and associated
+data to be read() by userspace; the events_configure() and
+watch_validate() driver callbacks are introduced to support Counter
+events; and IRQ support is added to the 104-QUAD-8 driver, serving as an
+example of how to support the new Counter events functionality.
 
-This patch should be applied after
-https://lore.kernel.org/linux-iio/f33069f0-601b-4bbb-3766-026f7a161912-39ZsbGIQGT5GWvitb5QawA@public.gmane.org/T/#meb792dcd6540f87d9ae041660ca4738a776e924a
+William Breathitt Gray (14):
+  counter: stm32-lptimer-cnt: Provide defines for clock polarities
+  counter: stm32-timer-cnt: Provide defines for slave mode selection
+  counter: Internalize sysfs interface code
+  counter: Update counter.h comments to reflect sysfs internalization
+  docs: counter: Update to reflect sysfs internalization
+  counter: Move counter enums to uapi header
+  counter: Add character device interface
+  docs: counter: Document character device interface
+  tools/counter: Create Counter tools
+  counter: Implement signalZ_action_component_id sysfs attribute
+  counter: Implement *_component_id sysfs attributes
+  counter: Implement events_queue_size sysfs attribute
+  counter: 104-quad-8: Replace mutex with spinlock
+  counter: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8
 
-v1 --> v2: just garbage --> ignore
-v1 --> v3: Simplify 'adc128_disable_regulator()'
----
- drivers/iio/adc/ti-adc128s052.c | 26 +++++++++-----------------
- 1 file changed, 9 insertions(+), 17 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-counter   |   38 +-
+ Documentation/driver-api/generic-counter.rst  |  358 +++-
+ .../userspace-api/ioctl/ioctl-number.rst      |    1 +
+ MAINTAINERS                                   |    3 +-
+ drivers/counter/104-quad-8.c                  |  699 ++++----
+ drivers/counter/Kconfig                       |    6 +-
+ drivers/counter/Makefile                      |    1 +
+ drivers/counter/counter-chrdev.c              |  553 ++++++
+ drivers/counter/counter-chrdev.h              |   14 +
+ drivers/counter/counter-core.c                |  191 +++
+ drivers/counter/counter-sysfs.c               |  960 +++++++++++
+ drivers/counter/counter-sysfs.h               |   13 +
+ drivers/counter/counter.c                     | 1496 -----------------
+ drivers/counter/ftm-quaddec.c                 |   60 +-
+ drivers/counter/intel-qep.c                   |  144 +-
+ drivers/counter/interrupt-cnt.c               |   62 +-
+ drivers/counter/microchip-tcb-capture.c       |   91 +-
+ drivers/counter/stm32-lptimer-cnt.c           |  212 ++-
+ drivers/counter/stm32-timer-cnt.c             |  195 +--
+ drivers/counter/ti-eqep.c                     |  180 +-
+ include/linux/counter.h                       |  715 ++++----
+ include/linux/counter_enum.h                  |   45 -
+ include/linux/mfd/stm32-lptimer.h             |    5 +
+ include/linux/mfd/stm32-timers.h              |    4 +
+ include/uapi/linux/counter.h                  |  154 ++
+ tools/Makefile                                |   13 +-
+ tools/counter/Build                           |    1 +
+ tools/counter/Makefile                        |   53 +
+ tools/counter/counter_example.c               |   93 +
+ 29 files changed, 3569 insertions(+), 2791 deletions(-)
+ create mode 100644 drivers/counter/counter-chrdev.c
+ create mode 100644 drivers/counter/counter-chrdev.h
+ create mode 100644 drivers/counter/counter-core.c
+ create mode 100644 drivers/counter/counter-sysfs.c
+ create mode 100644 drivers/counter/counter-sysfs.h
+ delete mode 100644 drivers/counter/counter.c
+ delete mode 100644 include/linux/counter_enum.h
+ create mode 100644 include/uapi/linux/counter.h
+ create mode 100644 tools/counter/Build
+ create mode 100644 tools/counter/Makefile
+ create mode 100644 tools/counter/counter_example.c
 
-diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-index 3143f35a6509..ce0cfe40b219 100644
---- a/drivers/iio/adc/ti-adc128s052.c
-+++ b/drivers/iio/adc/ti-adc128s052.c
-@@ -132,6 +132,11 @@ static const struct iio_info adc128_info = {
- 	.read_raw = adc128_read_raw,
- };
- 
-+static void adc128_disable_regulator(void *reg)
-+{
-+	regulator_disable(reg);
-+}
-+
- static int adc128_probe(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev;
-@@ -151,8 +156,6 @@ static int adc128_probe(struct spi_device *spi)
- 	adc = iio_priv(indio_dev);
- 	adc->spi = spi;
- 
--	spi_set_drvdata(spi, indio_dev);
--
- 	indio_dev->name = spi_get_device_id(spi)->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->info = &adc128_info;
-@@ -167,23 +170,13 @@ static int adc128_probe(struct spi_device *spi)
- 	ret = regulator_enable(adc->reg);
- 	if (ret < 0)
- 		return ret;
-+	ret = devm_add_action_or_reset(&spi->dev, adc128_disable_regulator, adc->reg);
-+	if (ret)
-+		return ret;
- 
- 	mutex_init(&adc->lock);
- 
--	ret = iio_device_register(indio_dev);
--
--	return ret;
--}
--
--static int adc128_remove(struct spi_device *spi)
--{
--	struct iio_dev *indio_dev = spi_get_drvdata(spi);
--	struct adc128 *adc = iio_priv(indio_dev);
--
--	iio_device_unregister(indio_dev);
--	regulator_disable(adc->reg);
--
--	return 0;
-+	return devm_iio_device_register(&spi->dev, indio_dev);
- }
- 
- static const struct of_device_id adc128_of_match[] = {
-@@ -225,7 +218,6 @@ static struct spi_driver adc128_driver = {
- 		.acpi_match_table = ACPI_PTR(adc128_acpi_match),
- 	},
- 	.probe = adc128_probe,
--	.remove = adc128_remove,
- 	.id_table = adc128_id,
- };
- module_spi_driver(adc128_driver);
+
+base-commit: 5ffeb17c0d3dd44704b4aee83e297ec07666e4d6
 -- 
-2.30.2
+2.32.0
 
