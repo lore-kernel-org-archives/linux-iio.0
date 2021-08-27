@@ -2,81 +2,92 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.7 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
-	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=ham autolearn_force=no
+X-Spam-Status: No, score=-10.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
 	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E9ABC432BE
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Aug 2021 16:34:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 014B4C432BE
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Aug 2021 22:29:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EA69360F14
-	for <linux-iio@archiver.kernel.org>; Fri, 27 Aug 2021 16:34:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D3F7560E99
+	for <linux-iio@archiver.kernel.org>; Fri, 27 Aug 2021 22:29:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231392AbhH0Qf2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 27 Aug 2021 12:35:28 -0400
-Received: from smtp13.smtpout.orange.fr ([80.12.242.135]:34957 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S229675AbhH0Qf1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Aug 2021 12:35:27 -0400
-Received: from [192.168.1.18] ([90.126.253.178])
-        by mwinf5d74 with ME
-        id mgaY2500Q3riaq203gaZQx; Fri, 27 Aug 2021 18:34:37 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: Y2hyaXN0b3BoZS5qYWlsbGV0QHdhbmFkb28uZnI=
-X-ME-Date: Fri, 27 Aug 2021 18:34:37 +0200
-X-ME-IP: 90.126.253.178
-Subject: Re: [PATCH v2] iio: adc128s052: Simplify 'adc128_probe()'
-To:     Dan Carpenter <dan.carpenter@oracle.com>
-Cc:     jic23@kernel.org, lars@metafoo.de, ardeleanalex@gmail.com,
-        andy.shevchenko@gmail.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-References: <d769321da74eea17a1260b48d4ab16f416b37c74.1630002390.git.christophe.jaillet@wanadoo.fr>
- <20210827073536.GD1931@kadam>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-ID: <9bd1b2a1-1d86-3907-e62b-f1ecc2dc9995@wanadoo.fr>
-Date:   Fri, 27 Aug 2021 18:34:32 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.11.0
+        id S232126AbhH0Wad (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 27 Aug 2021 18:30:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46388 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232094AbhH0Wac (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Aug 2021 18:30:32 -0400
+Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4623FC0613D9
+        for <linux-iio@vger.kernel.org>; Fri, 27 Aug 2021 15:29:43 -0700 (PDT)
+Received: by mail-lf1-x133.google.com with SMTP id j4so17342228lfg.9
+        for <linux-iio@vger.kernel.org>; Fri, 27 Aug 2021 15:29:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=rFaSbuczchhLDZy5IY7CfcdpB7jHvLBT1t633LMuncw=;
+        b=nubkUMFUVkgLxbDco9G/dSh/5gNYK+UmcBJkqiQ1Pwn2Lq2j4Ghj/IxwiVMOnG6fcz
+         SLZLmU/ldK7b2wdBPVZgC8eYngHHpU5ciHMUPtr9br7uMvnf1oTUggd2LoDqWiuwx6W6
+         0+6VLbcRUiocf66sK8aGIDOOaYOADHY1UO37LXTb8RlD15+QSDXAyqFU/FEWidfsnes6
+         kfeVg2Qzg11qyOUWTskLNCrlletWXtrX4JO5FlMN6QqjI2pIv2MxBhNmfeNKm494jtoJ
+         Sxw0UWRaAbAJnR9xImqNtMEyHhbRf1RW3LIIggbpOwBLfkKd+KmDIfCqh50tsdMO4FMq
+         maQQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=rFaSbuczchhLDZy5IY7CfcdpB7jHvLBT1t633LMuncw=;
+        b=B/C5GtLMgZWe/SGa1afMuNMPppTx4W4DGnNYEde2bavoJfbovGOPc5PEJin0dPPERM
+         Cx9A4gPDu4jmcSqlMLomMJdTn45YhYwQHF6R394KL2u+DRBmC7aV84BHJ/hSs2px+OeV
+         aas5dEEmit9lYaVSEzz60CbS1Oqd+0cPUe55BReAAXLTgxsIStR9oqhsb3DQEhKiWhud
+         969feXpTjWMZC5LYUjXQ2mqXPM0UizTAQacq7/t9dc0GdadzwOu/0MCH/cWDitZnLye4
+         Y+nbEPHIk0azRKg5wtZbqTQvAIMiTlTnkFLf72kZPDuAcwTI3zxSQUG6r3M7X4BPOlYW
+         SNHA==
+X-Gm-Message-State: AOAM532gjTp7Jpkamr3L1jvGSi/JsYNDqNnSpfRLHh3UpxRYIhV9Fu3V
+        /0zZduGh+pfW9roKgCkAZ0ouKUcPIwSZ6NLfeja4lA==
+X-Google-Smtp-Source: ABdhPJx2q28ldwj0ajOBA8MBETJnfnHIp6VwYvSBdVZJ/w8UN+S70Nk9fgNBGp3ebW9iNqwY/6pGtBki98f/G9yOGXQ=
+X-Received: by 2002:a05:6512:132a:: with SMTP id x42mr8177132lfu.291.1630103381632;
+ Fri, 27 Aug 2021 15:29:41 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20210827073536.GD1931@kadam>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
+References: <20210823112204.243255-1-aardelean@deviqon.com> <20210823112204.243255-3-aardelean@deviqon.com>
+In-Reply-To: <20210823112204.243255-3-aardelean@deviqon.com>
+From:   Linus Walleij <linus.walleij@linaro.org>
+Date:   Sat, 28 Aug 2021 00:29:30 +0200
+Message-ID: <CACRpkdbrh5WX6whZYXbN44HDY1S-ztCHy3E_6X4oDfvMALwWyA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/5] iio: st_sensors: remove st_sensors_deallocate_trigger()
+ function
+To:     Alexandru Ardelean <aardelean@deviqon.com>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        Denis CIOCCA <denis.ciocca@st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Le 27/08/2021 à 09:35, Dan Carpenter a écrit :
-> On Thu, Aug 26, 2021 at 08:28:08PM +0200, Christophe JAILLET wrote:
->> @@ -172,13 +167,23 @@ static int adc128_probe(struct spi_device *spi)
->>   	ret = regulator_enable(adc->reg);
->>   	if (ret < 0)
->>   		return ret;
->> -	ret = devm_add_action_or_reset(&spi->dev, adc128_disable_regulator, adc->reg);
->> -	if (ret)
->> -		return ret;
->>   
->>   	mutex_init(&adc->lock);
->>   
->> -	return devm_iio_device_register(&spi->dev, indio_dev);
->> +	ret = iio_device_register(indio_dev);
->> +
->> +	return ret;
-> 
-> Since you're resending anyway then please do:
-> 
-> 	return iio_device_register(indio_dev);
-> 
-> regards,
-> dan carpenter
-> 
-> 
+On Mon, Aug 23, 2021 at 1:22 PM Alexandru Ardelean
+<aardelean@deviqon.com> wrote:
 
-Hi Dan,
-This v2 should not be taken into account.
-I've sent a v3 just after which already implements what you propose.
+> This change converts the st_sensors_allocate_trigger() to use
+> device-managed functions.
+>
+> The parent device of the IIO device object is used. This is based on the
+> assumption that all other devm_ calls in the ST sensors use this reference.
+>
+> That makes the st_sensors_deallocate_trigger() function un-needed, so it
+> can be removed.
+>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
 
-Other comments on this v3 are welcome.
+Nice!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-CJ
+Yours,
+Linus Walleij
