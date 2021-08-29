@@ -2,46 +2,41 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-20.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,MENTIONS_GIT_HOSTING,SPF_HELO_NONE,SPF_PASS,
+	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04968C432BE
-	for <linux-iio@archiver.kernel.org>; Sun, 29 Aug 2021 14:09:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62CC5C432BE
+	for <linux-iio@archiver.kernel.org>; Sun, 29 Aug 2021 14:17:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CE84F60F39
-	for <linux-iio@archiver.kernel.org>; Sun, 29 Aug 2021 14:09:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3FA0F60F3A
+	for <linux-iio@archiver.kernel.org>; Sun, 29 Aug 2021 14:17:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235369AbhH2OKO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 29 Aug 2021 10:10:14 -0400
-Received: from mail.kernel.org ([198.145.29.99]:36654 "EHLO mail.kernel.org"
+        id S235350AbhH2OSO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 29 Aug 2021 10:18:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37394 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229463AbhH2OKN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 29 Aug 2021 10:10:13 -0400
+        id S231199AbhH2OSN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 29 Aug 2021 10:18:13 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id DCFE260F25;
-        Sun, 29 Aug 2021 14:09:17 +0000 (UTC)
-Date:   Sun, 29 Aug 2021 15:12:32 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id 9058260295;
+        Sun, 29 Aug 2021 14:17:18 +0000 (UTC)
+Date:   Sun, 29 Aug 2021 15:20:21 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lucas Stankus <lucas.p.stankus@gmail.com>
-Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Bogdan, Dragos" <Dragos.Bogdan@analog.com>,
-        Darius <Darius.Berghe@analog.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 2/2] iio: accel: Add driver support for ADXL313
-Message-ID: <20210829151232.29cb1ee1@jic23-huawei>
-In-Reply-To: <CACKVXZDpBXK-RRQy4OJ=i+mCFxP=LVBZe0GjAkg_GXZ8hCiSng@mail.gmail.com>
-References: <cover.1628713039.git.lucas.p.stankus@gmail.com>
-        <69f3b83eaf31d657cdb522839dc0102384d50681.1628713039.git.lucas.p.stankus@gmail.com>
-        <CAHp75VeTWmegWR6viGOV=QYxTFnPcntG6pdKn=rVyvniHGTAog@mail.gmail.com>
-        <CACKVXZDpBXK-RRQy4OJ=i+mCFxP=LVBZe0GjAkg_GXZ8hCiSng@mail.gmail.com>
+To:     Len Baker <len.baker@gmx.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Joe Perches <joe@perches.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Kees Cook <keescook@chromium.org>,
+        linux-hardening@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5] drivers/iio: Remove all strcpy() uses
+Message-ID: <20210829152021.7b5cae16@jic23-huawei>
+In-Reply-To: <20210815174204.126593-1-len.baker@gmx.com>
+References: <20210815174204.126593-1-len.baker@gmx.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -50,266 +45,126 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 18 Aug 2021 17:01:43 -0300
-Lucas Stankus <lucas.p.stankus@gmail.com> wrote:
+On Sun, 15 Aug 2021 19:42:04 +0200
+Len Baker <len.baker@gmx.com> wrote:
 
-> On Thu, Aug 12, 2021 at 8:06 AM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> >
-> > On Thu, Aug 12, 2021 at 12:19 AM Lucas Stankus
-> > <lucas.p.stankus@gmail.com> wrote:  
-> > >
-> > > ADXL313 is a small, thin, low power, 3-axis accelerometer with high
-> > > resolution measurement up to +/-4g. It includes an integrated 32-level
-> > > FIFO and has activity and inactivity sensing capabilities.  
-> >
-> > Thanks for an update, my comments below.
-> > After addressing them, feel free to add
-> > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> >  
+> strcpy() performs no bounds checking on the destination buffer. This
+> could result in linear overflows beyond the end of the buffer, leading
+> to all kinds of misbehaviors. So, remove all the uses and add
+> devm_kstrdup() or devm_kasprintf() instead.
 > 
-> Sorry for the late reply. I've addressed most of your comments for the
-> v4, but the two I've commented below.
->
-
-> >
-> > Provide a kernel doc for the probe()
-> >  
+> Also, modify the "for" loop conditions to clarify the access to the
+> st->orientation.rotation buffer.
 > 
-> Is there some driver that did something similar that I can take
-> inspiration from? I'm not sure where I should add this doc and how I
-> should format it, so a north would be appreciated :)
-
-https://elixir.bootlin.com/linux/latest/source/Documentation/doc-guide/kernel-doc.rst
-
-In theory all exported functions should have kernel-doc, but in practice
-we sometimes skip it for a function only intended to have one or two users.
-However, in this case the "setup" parameter is sufficiently unusual that
-it would be good to have detailed documents.  Make sure to run a test build
-of the docs to pick up on any formatting issues.  That help file explains how
-to do it.
-
+> This patch is an effort to clean up the proliferation of str*()
+> functions in the kernel and a previous step in the path to remove
+> the strcpy function from the kernel entirely [1].
 > 
-> > > +int adxl313_core_probe(struct device *dev,
-> > > +                      struct regmap *regmap,
-> > > +                      const char *name,
-> > > +                      int (*interface_specific_setup)(struct device *,
-> > > +                                                      struct regmap *))  
-> >
-> > Ditto for the "setup" name.
-> >  
-> > > +{
-> > > +       struct adxl313_data *data;
-> > > +       struct iio_dev *indio_dev;
-> > > +       int ret;
-> > > +
-> > > +       indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-> > > +       if (!indio_dev)
-> > > +               return -ENOMEM;
-> > > +
-> > > +       data = iio_priv(indio_dev);
-> > > +       data->regmap = regmap;
-> > > +       mutex_init(&data->lock);
-> > > +
-> > > +       indio_dev->name = name;
-> > > +       indio_dev->info = &adxl313_info;
-> > > +       indio_dev->modes = INDIO_DIRECT_MODE;
-> > > +       indio_dev->channels = adxl313_channels;
-> > > +       indio_dev->num_channels = ARRAY_SIZE(adxl313_channels);
-> > > +
-> > > +       ret = adxl313_setup(dev, data, interface_specific_setup);
-> > > +       if (ret) {
-> > > +               dev_err(dev, "ADXL313 setup failed\n");
-> > > +               return ret;
-> > > +       }
-> > > +
-> > > +       return devm_iio_device_register(dev, indio_dev);
-> > > +}
-> > > +EXPORT_SYMBOL_GPL(adxl313_core_probe);
-> > > +
-> > > +MODULE_AUTHOR("Lucas Stankus <lucas.p.stankus@gmail.com>");
-> > > +MODULE_DESCRIPTION("ADXL313 3-Axis Digital Accelerometer core driver");
-> > > +MODULE_LICENSE("GPL v2");
-> > > diff --git a/drivers/iio/accel/adxl313_i2c.c b/drivers/iio/accel/adxl313_i2c.c
-> > > new file mode 100644
-> > > index 000000000000..517c6f1c43ad
-> > > --- /dev/null
-> > > +++ b/drivers/iio/accel/adxl313_i2c.c
-> > > @@ -0,0 +1,65 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/*
-> > > + * ADXL313 3-Axis Digital Accelerometer
-> > > + *
-> > > + * Copyright (c) 2021 Lucas Stankus <lucas.p.stankus@gmail.com>
-> > > + *
-> > > + * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL313.pdf
-> > > + */
-> > > +
-> > > +#include <linux/i2c.h>
-> > > +#include <linux/module.h>
-> > > +#include <linux/regmap.h>
-> > > +
-> > > +#include "adxl313.h"
-> > > +
-> > > +static const struct regmap_config adxl313_i2c_regmap_config = {
-> > > +       .reg_bits       = 8,
-> > > +       .val_bits       = 8,
-> > > +       .rd_table       = &adxl313_readable_regs_table,
-> > > +       .wr_table       = &adxl313_writable_regs_table,
-> > > +       .max_register   = 0x39,
-> > > +};
-> > > +
-> > > +static int adxl313_i2c_probe(struct i2c_client *client)
-> > > +{
-> > > +       struct regmap *regmap;
-> > > +
-> > > +       regmap = devm_regmap_init_i2c(client, &adxl313_i2c_regmap_config);
-> > > +       if (IS_ERR(regmap)) {
-> > > +               dev_err(&client->dev, "Error initializing i2c regmap: %ld\n",
-> > > +                       PTR_ERR(regmap));
-> > > +               return PTR_ERR(regmap);
-> > > +       }
-> > > +
-> > > +       return adxl313_core_probe(&client->dev, regmap, client->name, NULL);
-> > > +}
-> > > +
-> > > +static const struct i2c_device_id adxl313_i2c_id[] = {
-> > > +       { "adxl313" },
-> > > +       { }
-> > > +};
-> > > +
-> > > +MODULE_DEVICE_TABLE(i2c, adxl313_i2c_id);
-> > > +
-> > > +static const struct of_device_id adxl313_of_match[] = {
-> > > +       { .compatible = "adi,adxl313" },
-> > > +       { }
-> > > +};
-> > > +
-> > > +MODULE_DEVICE_TABLE(of, adxl313_of_match);
-> > > +
-> > > +static struct i2c_driver adxl313_i2c_driver = {
-> > > +       .driver = {
-> > > +               .name   = "adxl313_i2c",
-> > > +               .of_match_table = adxl313_of_match,
-> > > +       },
-> > > +       .probe_new      = adxl313_i2c_probe,
-> > > +       .id_table       = adxl313_i2c_id  
-> >
-> > + Comma
-> >  
-> > > +};
-> > > +
-> > > +module_i2c_driver(adxl313_i2c_driver);
-> > > +
-> > > +MODULE_AUTHOR("Lucas Stankus <lucas.p.stankus@gmail.com>");
-> > > +MODULE_DESCRIPTION("ADXL313 3-Axis Digital Accelerometer I2C driver");
-> > > +MODULE_LICENSE("GPL v2");
-> > > diff --git a/drivers/iio/accel/adxl313_spi.c b/drivers/iio/accel/adxl313_spi.c
-> > > new file mode 100644
-> > > index 000000000000..4d625b1753a5
-> > > --- /dev/null
-> > > +++ b/drivers/iio/accel/adxl313_spi.c
-> > > @@ -0,0 +1,91 @@
-> > > +// SPDX-License-Identifier: GPL-2.0-only
-> > > +/*
-> > > + * ADXL313 3-Axis Digital Accelerometer
-> > > + *
-> > > + * Copyright (c) 2021 Lucas Stankus <lucas.p.stankus@gmail.com>
-> > > + *
-> > > + * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADXL313.pdf
-> > > + */
-> > > +
-> > > +#include <linux/module.h>
-> > > +#include <linux/regmap.h>
-> > > +#include <linux/spi/spi.h>
-> > > +
-> > > +#include "adxl313.h"
-> > > +
-> > > +static const struct regmap_config adxl313_spi_regmap_config = {
-> > > +       .reg_bits       = 8,
-> > > +       .val_bits       = 8,
-> > > +       .rd_table       = &adxl313_readable_regs_table,
-> > > +       .wr_table       = &adxl313_writable_regs_table,
-> > > +       .max_register   = 0x39,
-> > > +        /* Setting bits 7 and 6 enables multiple-byte read */
-> > > +       .read_flag_mask = BIT(7) | BIT(6),
-> > > +};
-> > > +
-> > > +static int adxl313_spi_setup(struct device *dev, struct regmap *regmap)
-> > > +{
-> > > +       struct spi_device *spi = container_of(dev, struct spi_device, dev);
-> > > +       int ret;
-> > > +
-> > > +       if (spi->mode & SPI_3WIRE) {
-> > > +               ret = regmap_write(regmap, ADXL313_REG_DATA_FORMAT,
-> > > +                                  ADXL313_SPI_3WIRE);
-> > > +               if (ret)
-> > > +                       return ret;
-> > > +       }
-> > > +
-> > > +       return regmap_update_bits(regmap, ADXL313_REG_POWER_CTL,
-> > > +                                 ADXL313_I2C_DISABLE, ADXL313_I2C_DISABLE);
-> > > +}
-> > > +
-> > > +static int adxl313_spi_probe(struct spi_device *spi)
-> > > +{
-> > > +       const struct spi_device_id *id = spi_get_device_id(spi);
-> > > +       struct regmap *regmap;
-> > > +       int ret;
-> > > +
-> > > +       spi->mode |= SPI_MODE_3;
-> > > +       ret = spi_setup(spi);
-> > > +       if (ret)
-> > > +               return ret;
-> > > +
-> > > +       regmap = devm_regmap_init_spi(spi, &adxl313_spi_regmap_config);
-> > > +       if (IS_ERR(regmap)) {
-> > > +               dev_err(&spi->dev, "Error initializing spi regmap: %ld\n",
-> > > +                       PTR_ERR(regmap));
-> > > +               return PTR_ERR(regmap);
-> > > +       }
-> > > +
-> > > +       return adxl313_core_probe(&spi->dev, regmap, id->name,
-> > > +                                 &adxl313_spi_setup);
-> > > +}
-> > > +
-> > > +static const struct spi_device_id adxl313_spi_id[] = {
-> > > +       { "adxl313" },
-> > > +       { }
-> > > +};
-> > > +
-> > > +MODULE_DEVICE_TABLE(spi, adxl313_spi_id);
-> > > +
-> > > +static const struct of_device_id adxl313_of_match[] = {
-> > > +       { .compatible = "adi,adxl313" },
-> > > +       { }
-> > > +};
-> > > +
-> > > +MODULE_DEVICE_TABLE(of, adxl313_of_match);
-> > > +
-> > > +static struct spi_driver adxl313_spi_driver = {
-> > > +       .driver = {
-> > > +               .name   = "adxl313_spi",
-> > > +               .of_match_table = adxl313_of_match,
-> > > +       },
-> > > +       .probe          = adxl313_spi_probe,
-> > > +       .id_table       = adxl313_spi_id  
-> >
-> > + Comma
-> >  
-> > > +};
-> > > +
-> > > +module_spi_driver(adxl313_spi_driver);
-> > > +
-> > > +MODULE_AUTHOR("Lucas Stankus <lucas.p.stankus@gmail.com>");
-> > > +MODULE_DESCRIPTION("ADXL313 3-Axis Digital Accelerometer SPI driver");
-> > > +MODULE_LICENSE("GPL v2");
-> > > --
-> > > 2.32.0
-> > >  
-> >
-> >
-> > --
-> > With Best Regards,
-> > Andy Shevchenko  
+> [1] https://github.com/KSPP/linux/issues/88
+> 
+> Signed-off-by: Len Baker <len.baker@gmx.com>
+Applied.
+
+Thanks,
+
+Jonathan
+
+> ---
+> The previous versions can be found in:
+> 
+> v1
+> https://lore.kernel.org/linux-hardening/20210801171157.17858-1-len.baker@gmx.com/
+> 
+> v2
+> https://lore.kernel.org/linux-hardening/20210807152225.9403-1-len.baker@gmx.com/
+> 
+> v3
+> https://lore.kernel.org/linux-hardening/20210814090618.8920-1-len.baker@gmx.com/
+> 
+> v4
+> https://lore.kernel.org/linux-hardening/20210814135509.4500-1-len.baker@gmx.com/
+> 
+> Changelog v1 -> v2
+> - Modify the commit changelog to inform that the motivation of this
+>   patch is to remove the strcpy() function from the kernel entirely
+>   (Jonathan Cameron).
+> 
+> Changelog v2 -> v3
+> - Rewrite the code using devm_kstrdup() and devm_kasprintf() functions
+>   (Andy Shevchenko).
+> - Rebase against v5.14-rc5.
+> 
+> Changelog v3 -> v4
+> - Reorder the variables (Andy Shevchenko).
+> - Get the device in the definition block (Andy Shevchenko).
+> - Reword the comment (Andy Shevchenko).
+> - Change the conditions in the "if" statement to clarify the "0" check
+>   (Andy Shevchenko).
+> 
+> Changelog v4 -> v5
+> - Use the strcmp() function to clarify the "0" check (Joe Perches).
+> - Modify the "for" loop conditions to clarify the access to the
+>   st->orientation.rotation buffer (Joe Perches).
+> 
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c | 36 +++++++++++++---------
+>  1 file changed, 21 insertions(+), 15 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c
+> index f282e9cc34c5..6aee6c989485 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_magn.c
+> @@ -261,6 +261,7 @@ int inv_mpu_magn_set_rate(const struct inv_mpu6050_state *st, int fifo_rate)
+>   */
+>  int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st)
+>  {
+> +	struct device *dev = regmap_get_device(st->map);
+>  	const char *orient;
+>  	char *str;
+>  	int i;
+> @@ -279,22 +280,27 @@ int inv_mpu_magn_set_orient(struct inv_mpu6050_state *st)
+>  		st->magn_orient.rotation[4] = st->orientation.rotation[1];
+>  		st->magn_orient.rotation[5] = st->orientation.rotation[2];
+>  		/* z <- -z */
+> -		for (i = 0; i < 3; ++i) {
+> -			orient = st->orientation.rotation[6 + i];
+> -			/* use length + 2 for adding minus sign if needed */
+> -			str = devm_kzalloc(regmap_get_device(st->map),
+> -					   strlen(orient) + 2, GFP_KERNEL);
+> -			if (str == NULL)
+> +		for (i = 6; i < 9; ++i) {
+> +			orient = st->orientation.rotation[i];
+> +
+> +			/*
+> +			 * The value is negated according to one of the following
+> +			 * rules:
+> +			 *
+> +			 * 1) Drop leading minus.
+> +			 * 2) Leave 0 as is.
+> +			 * 3) Add leading minus.
+> +			 */
+> +			if (orient[0] == '-')
+> +				str = devm_kstrdup(dev, orient + 1, GFP_KERNEL);
+> +			else if (!strcmp(orient, "0"))
+> +				str = devm_kstrdup(dev, orient, GFP_KERNEL);
+> +			else
+> +				str = devm_kasprintf(dev, GFP_KERNEL, "-%s", orient);
+> +			if (!str)
+>  				return -ENOMEM;
+> -			if (strcmp(orient, "0") == 0) {
+> -				strcpy(str, orient);
+> -			} else if (orient[0] == '-') {
+> -				strcpy(str, &orient[1]);
+> -			} else {
+> -				str[0] = '-';
+> -				strcpy(&str[1], orient);
+> -			}
+> -			st->magn_orient.rotation[6 + i] = str;
+> +
+> +			st->magn_orient.rotation[i] = str;
+>  		}
+>  		break;
+>  	default:
+> --
+> 2.25.1
+> 
 
