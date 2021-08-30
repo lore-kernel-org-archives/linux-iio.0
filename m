@@ -2,85 +2,92 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-2.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,DKIM_VALID_AU,FREEMAIL_FORGED_FROMDOMAIN,FREEMAIL_FROM,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 11B43C432BE
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 17:22:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C6F7C4320E
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 17:41:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EB8DB60F44
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 17:22:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 63EEE604AC
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 17:41:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238131AbhH3RWy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Aug 2021 13:22:54 -0400
-Received: from mx21.baidu.com ([220.181.3.85]:33838 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238084AbhH3RWw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 30 Aug 2021 13:22:52 -0400
-Received: from BC-Mail-Ex29.internal.baidu.com (unknown [172.31.51.23])
-        by Forcepoint Email with ESMTPS id 9B26B3DC9456682C681D;
-        Tue, 31 Aug 2021 01:21:55 +0800 (CST)
-Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-Ex29.internal.baidu.com (172.31.51.23) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Tue, 31 Aug 2021 01:21:54 +0800
-Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Tue, 31 Aug 2021 01:21:54 +0800
-From:   Cai Huoqing <caihuoqing@baidu.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>,
-        <shawnguo@kernel.org>, <s.hauer@pengutronix.de>,
-        <kernel@pengutronix.de>, <festevam@gmail.com>, <linux-imx@nxp.com>,
-        <alex.dewar90@gmail.com>
-CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>,
-        "Cai Huoqing" <caihuoqing@baidu.com>
-Subject: [PATCH 5/6] MAINTAINERS: Add the driver info of the NXP IMX8QXP ADC
-Date:   Tue, 31 Aug 2021 01:21:39 +0800
-Message-ID: <20210830172140.414-6-caihuoqing@baidu.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210830172140.414-1-caihuoqing@baidu.com>
-References: <20210830172140.414-1-caihuoqing@baidu.com>
+        id S238226AbhH3RmU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Aug 2021 13:42:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37814 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S238194AbhH3RmT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Aug 2021 13:42:19 -0400
+Received: from mail-lf1-x136.google.com (mail-lf1-x136.google.com [IPv6:2a00:1450:4864:20::136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9770AC061575;
+        Mon, 30 Aug 2021 10:41:25 -0700 (PDT)
+Received: by mail-lf1-x136.google.com with SMTP id p38so32960318lfa.0;
+        Mon, 30 Aug 2021 10:41:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20161025;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lZOE6NdYi7YGPVoRW2vvmAPerIza6xFYslQzFR4ZBtE=;
+        b=AB1J0NmrLstVowEAiKWurJRlP2pbZhAKNC40qWhnjtDw4U6fogsrSQx7sxPXkxeL8h
+         KqJ6C2h3gCdVs0ZMr+kwQATPZaUtTEiWvwcm4U9+lpVKTJqv6/BdUlnaD86nl6S0LmB2
+         YKuZTGLZKCTq0UlhzS6QyieGeh6QufxKVjlw3lSot6Ngg4Oj3U45ZL9ktQdNPQRxjoSg
+         SXklBgCtTxh0L9gSmMFbKJjC23VOyDVJMBHNOPYVhdJTRxlqZ7d7ptwVKu5IwB+6TRi2
+         NhFHUnyyxdBbD4oY76M49syF2N0ZGf8Ry03BKJJoH9+62hgL1+CcPcunW44zEOcRcA3t
+         y5zA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20161025;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lZOE6NdYi7YGPVoRW2vvmAPerIza6xFYslQzFR4ZBtE=;
+        b=EACxsn3acJkquPPjE6WvbVKnF3ldH9P6qY0C3G+uZLBtejZ6JATpJQ1Jvhvufuc06K
+         z1P+q9344GTUkuPyCCh/yz5NJGnX5lghOTra43ihxneSEn6hwPCiB1ZRZkZ5OXUkTOjj
+         4fz/yrGhYK8X1WO8bpuC/KnmuMATnrbfavLnBbBxUe/2DV67XgvFqAHRygYc7AJ9UrJT
+         +WfuiYiuhhiGW+oh1L6N6m/5xObws7Np2DefZ54jFXR7Uy3ig69dz+0/yT1bsga+IDTF
+         MDaX+Mc/Clo3jP6GPy2F7yeB+GBPovsoFzJ1g8Me1PDU+cypFmu1BGBHFFMCICviIXMP
+         NECg==
+X-Gm-Message-State: AOAM531p0CtyesXbC4mxe2g3CqSzJD5SoZJ6jIu3pFvZKjJP9Atwr9fS
+        8KuRHs3YfuMiyF+y91s2pk/pjFJDHYsVPZ6lOwo=
+X-Google-Smtp-Source: ABdhPJxPCpk3CIRP6sbIr9jWcESA/cBvGxq9HPNlVRkhIW40nQT4VjSrn/CKh1mxsXM2ZRlXzyTBswE0UPmiBD7253o=
+X-Received: by 2002:a19:5f0d:: with SMTP id t13mr17970186lfb.229.1630345283860;
+ Mon, 30 Aug 2021 10:41:23 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.31.63.8]
-X-ClientProxiedBy: BC-Mail-Ex15.internal.baidu.com (172.31.51.55) To
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
+References: <20210830172140.414-1-caihuoqing@baidu.com> <20210830172140.414-2-caihuoqing@baidu.com>
+In-Reply-To: <20210830172140.414-2-caihuoqing@baidu.com>
+From:   Fabio Estevam <festevam@gmail.com>
+Date:   Mon, 30 Aug 2021 14:41:12 -0300
+Message-ID: <CAOMZO5CG_NtGC3ZJv+qy2YOk-J6gLyZpUMty+jna3v4V6DfmnQ@mail.gmail.com>
+Subject: Re: [PATCH 1/6] iio: adc: Init the driver for NXP i.MX8QuadXPlus
+To:     Cai Huoqing <caihuoqing@baidu.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>, alex.dewar90@gmail.com,
+        linux-iio@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>,
+        "moderated list:ARM/FREESCALE IMX / MXC ARM ARCHITECTURE" 
+        <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The NXP i.MX 8QuadXPlus SOC has a new ADC IP. After adding
-the driver support for it, I add the driver info of the
-NXP IMX8QXP ADC to MAINTAINERS file.
+Hi Cai,
 
-Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+On Mon, Aug 30, 2021 at 2:22 PM Cai Huoqing <caihuoqing@baidu.com> wrote:
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 0147a85bc38b..058394fd3387 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13463,6 +13463,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/display/imx/nxp,imx8mq-dcss.yaml
- F:	drivers/gpu/drm/imx/dcss/
- 
-+NXP i.MX 8QXP ADC DRIVER
-+M:	Cai Huoqing <caihuoqing@baidu.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+F:	Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
-+F:	drivers/iio/adc/imx8qxp-adc.c
-+
- NXP PF8100/PF8121A/PF8200 PMIC REGULATOR DEVICE DRIVER
- M:	Jagan Teki <jagan@amarulasolutions.com>
- S:	Maintained
--- 
-2.25.1
+> +static int imx8qxp_adc_probe(struct platform_device *pdev)
+> +{
+> +       return 0;
+> +}
 
+This is not the correct way to split the series.
+
+Patches 1, 2, 3, and 5 could be squashed into a single patch.
+
+Thanks
