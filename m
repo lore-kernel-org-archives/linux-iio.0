@@ -7,29 +7,29 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 396B0C43214
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 17:21:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4388AC43214
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 17:22:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 25A1360F56
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 17:21:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2D5E160F6C
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 17:22:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238077AbhH3RWu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Aug 2021 13:22:50 -0400
-Received: from mx21.baidu.com ([220.181.3.85]:33564 "EHLO baidu.com"
+        id S238101AbhH3RWx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Aug 2021 13:22:53 -0400
+Received: from mx20.baidu.com ([111.202.115.85]:33844 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238040AbhH3RWt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 30 Aug 2021 13:22:49 -0400
-Received: from BC-Mail-Ex32.internal.baidu.com (unknown [172.31.51.26])
-        by Forcepoint Email with ESMTPS id D6C896276C212D3AE1AA;
-        Tue, 31 Aug 2021 01:21:52 +0800 (CST)
+        id S238076AbhH3RWv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 30 Aug 2021 13:22:51 -0400
+Received: from BC-Mail-Ex28.internal.baidu.com (unknown [172.31.51.22])
+        by Forcepoint Email with ESMTPS id E7B60F8622CC044D1A8D;
+        Tue, 31 Aug 2021 01:21:55 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-Ex32.internal.baidu.com (172.31.51.26) with Microsoft SMTP Server
+ BC-Mail-Ex28.internal.baidu.com (172.31.51.22) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Tue, 31 Aug 2021 01:21:52 +0800
+ 15.1.2176.2; Tue, 31 Aug 2021 01:21:55 +0800
 Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Tue, 31 Aug 2021 01:21:51 +0800
+ 15.1.2308.14; Tue, 31 Aug 2021 01:21:55 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>,
         <shawnguo@kernel.org>, <s.hauer@pengutronix.de>,
@@ -39,9 +39,9 @@ CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         "Cai Huoqing" <caihuoqing@baidu.com>
-Subject: [PATCH 2/6] iio: adc: Add configuration for NXP i.MX8QuadXPlus ADC driver
-Date:   Tue, 31 Aug 2021 01:21:36 +0800
-Message-ID: <20210830172140.414-3-caihuoqing@baidu.com>
+Subject: [PATCH 6/6] iio: imx8qxp-adc: Add the copyright for NXP i.MX8QuadXPlus ADC driver
+Date:   Tue, 31 Aug 2021 01:21:40 +0800
+Message-ID: <20210830172140.414-7-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210830172140.414-1-caihuoqing@baidu.com>
 References: <20210830172140.414-1-caihuoqing@baidu.com>
@@ -54,48 +54,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The NXP i.MX 8QuadXPlus SOC has a new ADC IP, so add the configuration
-for NXP i.MX8QuadXPlus ADC driver.
+Add the copyright for NXP i.MX8QuadXPlus ADC driver.
 
 Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
 ---
- drivers/iio/adc/Kconfig  | 10 ++++++++++
- drivers/iio/adc/Makefile |  1 +
- 2 files changed, 11 insertions(+)
+ drivers/iio/adc/imx8qxp-adc.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index af168e1c9fdb..fa8ad63d6ac2 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -530,6 +530,16 @@ config IMX7D_ADC
- 	  This driver can also be built as a module. If so, the module will be
- 	  called imx7d_adc.
+diff --git a/drivers/iio/adc/imx8qxp-adc.c b/drivers/iio/adc/imx8qxp-adc.c
+index d39bf382c582..dbb6761f1768 100644
+--- a/drivers/iio/adc/imx8qxp-adc.c
++++ b/drivers/iio/adc/imx8qxp-adc.c
+@@ -1,6 +1,14 @@
+ // SPDX-License-Identifier: GPL-2.0+
+ /*
+  * NXP i.MX8QXP ADC driver
++ *
++ * Based on the work of Haibo Chen <haibo.chen@nxp.com>
++ * The initial developer of the original code is Haibo Chen.
++ * Portions created by Haibo Chen are Copyright (C) 2018 NXP.
++ * All Rights Reserved.
++ *
++ * Copyright (C) 2018 NXP
++ * Copyright (C) 2021 Cai Huoqing
+  */
  
-+config IMX8QXP_ADC
-+	tristate "NXP IMX8QXP ADC driver"
-+	depends on ARCH_MXC_ARM64 || COMPILE_TEST
-+	depends on HAS_IOMEM
-+	help
-+	  Say yes here to build support for IMX8QXP ADC.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called imx8qxp-adc.
-+
- config LP8788_ADC
- 	tristate "LP8788 ADC driver"
- 	depends on MFD_LP8788
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index d68550f493e3..d3f53549720c 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -46,6 +46,7 @@ obj-$(CONFIG_FSL_MX25_ADC) += fsl-imx25-gcq.o
- obj-$(CONFIG_HI8435) += hi8435.o
- obj-$(CONFIG_HX711) += hx711.o
- obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
-+obj-$(CONFIG_IMX8QXP_ADC) += imx8qxp-adc.o
- obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
- obj-$(CONFIG_INGENIC_ADC) += ingenic-adc.o
- obj-$(CONFIG_INTEL_MRFLD_ADC) += intel_mrfld_adc.o
+ #include <linux/clk.h>
 -- 
 2.25.1
 
