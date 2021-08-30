@@ -2,40 +2,49 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
+	USER_AGENT_SANE_2 autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7215C432BE
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 12:23:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 10243C43214
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 12:28:31 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9020361155
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 12:23:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EC23C6113C
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 12:28:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236809AbhH3MYV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Aug 2021 08:24:21 -0400
-Received: from mail.kernel.org ([198.145.29.99]:60632 "EHLO mail.kernel.org"
+        id S232248AbhH3M3X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Aug 2021 08:29:23 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42788 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232442AbhH3MYV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 30 Aug 2021 08:24:21 -0400
+        id S230423AbhH3M3W (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 30 Aug 2021 08:29:22 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id BC01E61154;
-        Mon, 30 Aug 2021 12:23:24 +0000 (UTC)
-Date:   Mon, 30 Aug 2021 13:26:36 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id BF92660FA0;
+        Mon, 30 Aug 2021 12:28:23 +0000 (UTC)
+Date:   Mon, 30 Aug 2021 13:31:35 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Eugen Hristev <eugen.hristev@microchip.com>
-Cc:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <nicolas.ferre@microchip.com>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <robh+dt@kernel.org>,
-        <ludovic.desroches@microchip.com>
-Subject: Re: [PATCH v2 00/10] iio: adc: at91-sama5d2_adc: add support for
- sama7g5
-Message-ID: <20210830132636.16dde030@jic23-huawei>
-In-Reply-To: <20210824115441.681253-1-eugen.hristev@microchip.com>
-References: <20210824115441.681253-1-eugen.hristev@microchip.com>
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>, bcousson@baylibre.com,
+        Tony Lindgren <tony@atomide.com>,
+        Tero Kristo <t-kristo@ti.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        "Ryan J . Barnett" <ryan.barnett@collins.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-input@vger.kernel.org, linux-omap@vger.kernel.org,
+        linux-clk@vger.kernel.org
+Subject: Re: [PATCH 04/40] dt-bindings: iio: adc: ti,am3359-adc: New yaml
+ description
+Message-ID: <20210830133135.63125430@jic23-huawei>
+In-Reply-To: <20210825152518.379386-5-miquel.raynal@bootlin.com>
+References: <20210825152518.379386-1-miquel.raynal@bootlin.com>
+        <20210825152518.379386-5-miquel.raynal@bootlin.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -44,68 +53,113 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 24 Aug 2021 14:54:31 +0300
-Eugen Hristev <eugen.hristev@microchip.com> wrote:
+On Wed, 25 Aug 2021 17:24:42 +0200
+Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 
-> Hi,
+> This ADC was already described in a text file also containing an MFD
+> description an a touchscreen description:
+> Documentation/devicetree/bindings/input/touchscreen/ti-tsc-adc.txt
+> Let's add a proper description for this hardware.
 > 
-> This series adds support for sama7g5.
-> 
-> The sama7g5 is slightly different from sama5d2, but has the same basic
-> operations. The register map is a bit different, so, I added some primitives
-> to differentiate between the two classes of hardware blocks (sama5d2-sam9x60
-> and sama7g5).
-> 
-> Sama7g5 has 16 channels ADC, no resistive touch, and extra features
-> (FIFOs, better oversampling , not implemented yet).
-> 
-> It is a rework of the series initially sent here:
-> https://marc.info/?l=linux-iio&m=161461656807826&w=2
-> 
-> I reworked this according to review by Jonathan, meaning that first I created
-> a no-op patch that will convert the driver to a more platform specific data
-> dedicated type of driver. This adds various structures that hold things like
-> register layout and channel information.
-> After this I created few patches that implement the main differences between
-> sama7g5 and older products: the end-of-conversion new register. I added
-> helper functions to make code more easy to read and more simple.
-> One the last patches adds the layout and channels for sama7g5.
-> At this moment in linux-next, the DT for sama7g5 and sama7g5ek is present,
-> and the last patches add and enable this node in DT for this board.
-> 
-> Eugen
-0-8 applied with the minor tweak mentioned in a reply to relevant patch.
+> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 
-I'll assume 9-10 will got via normal soc related tree.
+Hi Miquel,
 
-Note that I'm queuing these up for the merge window after this one now
-(5.16).
+We'd do this different today, but this seems to be an accurate conversion
+of what we have.  I'll assume this series may well go via mfd, so
 
-Thanks,
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Jonathan
-
+> ---
+>  .../bindings/iio/adc/ti,am3359-adc.yaml       | 81 +++++++++++++++++++
+>  1 file changed, 81 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti,am3359-adc.yaml
 > 
-> 
-> 
-> Eugen Hristev (10):
->   dt-bindings: iio: adc: at91-sama5d2: add compatible for sama7g5-adc
->   iio: adc: at91-sama5d2_adc: initialize hardware after clock is started
->   iio: adc: at91-sama5d2_adc: remove unused definition
->   iio: adc: at91-sama5d2_adc: convert to platform specific data
->     structures
->   iio: adc: at91-sama5d2-adc: add support for separate end of conversion
->     registers
->   iio: adc: at91-sama5d2_adc: add helper for COR register
->   iio: adc: at91-sama5d2_adc: add support for sama7g5 device
->   iio: adc: at91-sama5d2_adc: update copyright and authors information
->   ARM: dts: at91: sama7g5: add node for the ADC
->   ARM: dts: at91: sama7g5ek: enable ADC on the board
-> 
->  .../bindings/iio/adc/atmel,sama5d2-adc.yaml   |   1 +
->  arch/arm/boot/dts/at91-sama7g5ek.dts          |   8 +
->  arch/arm/boot/dts/sama7g5.dtsi                |  16 +
->  drivers/iio/adc/at91-sama5d2_adc.c            | 586 ++++++++++++------
->  4 files changed, 425 insertions(+), 186 deletions(-)
-> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/ti,am3359-adc.yaml b/Documentation/devicetree/bindings/iio/adc/ti,am3359-adc.yaml
+> new file mode 100644
+> index 000000000000..85d9d642dc67
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/ti,am3359-adc.yaml
+> @@ -0,0 +1,81 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/ti,am3359-adc.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: TI AM3359 ADC
+> +
+> +maintainers:
+> +  - Miquel Raynal <miquel.raynal@bootlin.com>
+> +
+> +properties:
+> +  compatible:
+> +    const: ti,am3359-adc
+> +
+> +  '#io-channel-cells':
+> +    const: 1
+> +
+> +  ti,adc-channels:
+> +    description: List of analog inputs available for ADC. AIN0 = 0, AIN1 = 1 and
+> +      so on untill AIN7 = 7.
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    minItems: 1
+> +    maxItems: 8
+> +
+> +  ti,chan-step-opendelay:
+> +    description: List of open delays for each channel of ADC in the order of
+> +      ti,adc-channels. The value corresponds to the number of ADC clock cycles
+> +      to wait after applying the step configuration registers and before sending
+> +      the start of ADC conversion. Maximum value is 0x3FFFF.
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    minItems: 1
+> +    maxItems: 8
+> +
+> +  ti,chan-step-sampledelay:
+> +    description: List of sample delays for each channel of ADC in the order of
+> +      ti,adc-channels. The value corresponds to the number of ADC clock cycles
+> +      to sample (to hold start of conversion high). Maximum value is 0xFF.
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    minItems: 1
+> +    maxItems: 8
+> +
+> +  ti,chan-step-avg:
+> +    description: Number of averages to be performed for each channel of ADC. If
+> +      average is 16 (this is also the maximum) then input is sampled 16 times
+> +      and averaged to get more accurate value. This increases the time taken by
+> +      ADC to generate a sample. Maximum value is 16.
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    minItems: 1
+> +    maxItems: 8
+> +
+> +required:
+> +  - compatible
+> +  - '#io-channel-cells'
+> +  - ti,adc-channels
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/arm-gic.h>
+> +
+> +    tscadc: tscadc@0 {
+> +        compatible = "ti,am3359-tscadc";
+> +        reg = <0x0 0x1000>;
+> +        interrupts = <GIC_SPI 16 IRQ_TYPE_LEVEL_HIGH>;
+> +        clocks = <&adc_tsc_fck>;
+> +        clock-names = "fck";
+> +        status = "disabled";
+> +        dmas = <&edma 53 0>, <&edma 57 0>;
+> +        dma-names = "fifo0", "fifo1";
+> +
+> +        adc {
+> +            compatible = "ti,am3359-adc";
+> +            #io-channel-cells = <1>;
+> +            ti,adc-channels = <4 5 6 7>;
+> +            ti,chan-step-opendelay = <0x098 0x3ffff 0x098 0x0>;
+> +            ti,chan-step-sampledelay = <0xff 0x0 0xf 0x0>;
+> +            ti,chan-step-avg = <16 2 4 8>;
+> +        };
+> +    };
 
