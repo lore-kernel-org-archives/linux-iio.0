@@ -6,35 +6,34 @@ X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA84AC4320E
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 10:44:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F580C4320A
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 10:47:38 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8AEEC610C9
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 10:44:46 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E6ADE610FA
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 10:47:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236380AbhH3Kpj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Aug 2021 06:45:39 -0400
-Received: from mail.kernel.org ([198.145.29.99]:41676 "EHLO mail.kernel.org"
+        id S236410AbhH3Ks3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 30 Aug 2021 06:48:29 -0400
+Received: from mail.kernel.org ([198.145.29.99]:44734 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235989AbhH3Kpi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 30 Aug 2021 06:45:38 -0400
+        id S236408AbhH3Ks3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 30 Aug 2021 06:48:29 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 41519610A8;
-        Mon, 30 Aug 2021 10:44:42 +0000 (UTC)
-Date:   Mon, 30 Aug 2021 11:47:53 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id ED69E610F9;
+        Mon, 30 Aug 2021 10:47:33 +0000 (UTC)
+Date:   Mon, 30 Aug 2021 11:50:46 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Miquel Raynal <miquel.raynal@bootlin.com>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         linux-iio@vger.kernel.org, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 13/16] iio: adc: max1027: Prepare re-using the EOC
- interrupt
-Message-ID: <20210830114753.263e9a50@jic23-huawei>
-In-Reply-To: <20210818111139.330636-14-miquel.raynal@bootlin.com>
+Subject: Re: [PATCH 15/16] iio: adc: max1027: Support software triggers
+Message-ID: <20210830115046.3727ccc4@jic23-huawei>
+In-Reply-To: <20210818111139.330636-16-miquel.raynal@bootlin.com>
 References: <20210818111139.330636-1-miquel.raynal@bootlin.com>
-        <20210818111139.330636-14-miquel.raynal@bootlin.com>
+        <20210818111139.330636-16-miquel.raynal@bootlin.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -43,85 +42,95 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 18 Aug 2021 13:11:36 +0200
+On Wed, 18 Aug 2021 13:11:38 +0200
 Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 
-> Right now the driver only has hardware trigger support, which makes use
-> of the End Of Conversion (EOC) interrupt by:
-> - Enabling the external trigger
-> - At completion of the conversion, run a generic handler
-> - Push the data to the IIO subsystem by using the triggered buffer
->   infrastructure, which may not only serve this purpose.
+> Now that max1027_trigger_handler() has been freed from handling hardware
+> triggers EOC situations, we can use it for what it has been designed in
+> the first place: trigger software originated conversions.
+
+As mentioned earlier, this is not how I'd normally expect this sort of
+case to be handled. I'd be expecting the cnvst trigger to still be calling
+this function and the function to do the relevant check to ensure it
+knows the data is already available in that case.
+
+> In other
+> words, when userspace initiates a conversion with a sysfs trigger or a
+> hrtimer trigger, we must do all configuration steps, ie:
+> 1- Configuring the trigger
+> 2- Configuring the channels to scan
+> 3- Starting the conversion (actually done automatically by step 2 in
+>    this case)
+> 4- Waiting for the conversion to end
+> 5- Retrieving the data from the ADC
+> 6- Push the data to the IIO core and notify it
 > 
-> In fact, the interrupt will fire for more reasons than just a hardware
-> trigger condition, so make a dedicated interrupt handler which will be
-> enhanced by the upcoming changes to handle more situations.
+> Add the missing steps to this helper and drop the trigger verification
+> hook otherwise software triggers would simply not be accepted at all.
 > 
 > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > ---
->  drivers/iio/adc/max1027.c | 22 ++++++++++++++++++++--
->  1 file changed, 20 insertions(+), 2 deletions(-)
+>  drivers/iio/adc/max1027.c | 26 ++++++++++++++------------
+>  1 file changed, 14 insertions(+), 12 deletions(-)
 > 
 > diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-> index 2d6485591761..8d86e77fb5db 100644
+> index 8c5995ae59f2..bb437e43adaf 100644
 > --- a/drivers/iio/adc/max1027.c
 > +++ b/drivers/iio/adc/max1027.c
-> @@ -472,6 +472,24 @@ static int max1027_read_scan(struct iio_dev *indio_dev)
->  	return 0;
+> @@ -413,17 +413,6 @@ static int max1027_debugfs_reg_access(struct iio_dev *indio_dev,
+>  	return spi_write(st->spi, val, 1);
 >  }
 >  
-> +static irqreturn_t max1027_eoc_irq_handler(int irq, void *private)
-> +{
-> +	struct iio_dev *indio_dev = private;
-> +	struct max1027_state *st = iio_priv(indio_dev);
-> +	int ret = 0;
-> +
-> +	if (st->cnvst_trigger) {
-> +		ret = max1027_read_scan(indio_dev);
-> +		iio_trigger_notify_done(indio_dev->trig);
-
-Hmm. Having read on I now realise how you have decided to handle this.
-For the 'data ready' type interrupts you are bypassing the triggering
-framework entirely. in which case iio_trigger_notify_done() is irrelevant
-as the iio_trigger_poll() has never been called.
-
-Normally we only do this sort of bypassing of the trigger infrastructure
-when there is a hw fifo involved and hence a given 'interrupt' doesn't
-represent a single trigger.  Where possible we do expose the trigger
-because it can in turn be used to trigger other devices. 
-In this driver that is currently prevented by the validate_device() callback
-for the trigger so arguably the change you make here has no affect.
-
-I wonder how hard it would be to change things to allow the validate_device()
-protection to be dropped.  There is a slightly nasty corner case where another
-device is attached to this trigger but this device is not.  We don't need to
-make that 'work' as such because it makes little sense, but we do need to ensure
-that things don't blow up if someone configure it like that.
-
-> +	}
-> +
-> +	if (ret)
-> +		dev_err(&indio_dev->dev,
-> +			"Cannot read scanned values (%d)\n", ret);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static irqreturn_t max1027_trigger_handler(int irq, void *private)
+> -static int max1027_validate_trigger(struct iio_dev *indio_dev,
+> -				    struct iio_trigger *trig)
+> -{
+> -	struct max1027_state *st = iio_priv(indio_dev);
+> -
+> -	if (st->trig != trig)
+> -		return -EINVAL;
+> -
+> -	return 0;
+> -}
+> -
+>  static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
 >  {
->  	struct iio_poll_func *pf = private;
-> @@ -563,11 +581,11 @@ static int max1027_probe(struct spi_device *spi)
->  		}
+>  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> @@ -512,7 +501,21 @@ static irqreturn_t max1027_trigger_handler(int irq, void *private)
 >  
->  		ret = devm_request_threaded_irq(&spi->dev, spi->irq,
-> -						iio_trigger_generic_data_rdy_poll,
-> +						max1027_eoc_irq_handler,
->  						NULL,
->  						IRQF_TRIGGER_FALLING,
->  						spi->dev.driver->name,
-> -						st->trig);
-> +						indio_dev);
->  		if (ret < 0) {
->  			dev_err(&indio_dev->dev, "Failed to allocate IRQ.\n");
->  			return ret;
+>  	pr_debug("%s(irq=%d, private=0x%p)\n", __func__, irq, private);
+>  
+> +	ret = max1027_configure_trigger(indio_dev);
+
+I'd not expect to see this ever time.  The configuration shouldn't change
+from one call of this function to the next.
+
+> +	if (ret)
+> +		goto out;
+> +
+> +	ret = max1027_configure_chans_to_scan(indio_dev);
+
+This should also not change unless it is also responsible for the 'go' signal.
+If that's true then it is badly named.
+
+> +	if (ret)
+> +		goto out;
+> +
+> +	ret = max1027_wait_eoc(indio_dev);
+> +	if (ret)
+> +		goto out;
+> +
+>  	ret = max1027_read_scan(indio_dev);
+> +
+> +out:
+>  	if (ret)
+>  		dev_err(&indio_dev->dev,
+>  			"Cannot read scanned values (%d)\n", ret);
+> @@ -529,7 +532,6 @@ static const struct iio_trigger_ops max1027_trigger_ops = {
+>  
+>  static const struct iio_info max1027_info = {
+>  	.read_raw = &max1027_read_raw,
+> -	.validate_trigger = &max1027_validate_trigger,
+>  	.debugfs_reg_access = &max1027_debugfs_reg_access,
+>  };
+>  
 
