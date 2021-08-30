@@ -6,25 +6,25 @@ X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
 	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,
 	USER_AGENT_SANE_2 autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D2CBC432BE
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 14:26:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CFBD7C432BE
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 14:29:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 44ED56023E
-	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 14:26:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B2DF260F57
+	for <linux-iio@archiver.kernel.org>; Mon, 30 Aug 2021 14:29:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237537AbhH3O1l convert rfc822-to-8bit (ORCPT
+        id S237305AbhH3OaO convert rfc822-to-8bit (ORCPT
         <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 Aug 2021 10:27:41 -0400
-Received: from mail.kernel.org ([198.145.29.99]:38134 "EHLO mail.kernel.org"
+        Mon, 30 Aug 2021 10:30:14 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39000 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S237522AbhH3O1l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 30 Aug 2021 10:27:41 -0400
+        id S237205AbhH3OaO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 30 Aug 2021 10:30:14 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 58EEE60F45;
-        Mon, 30 Aug 2021 14:26:45 +0000 (UTC)
-Date:   Mon, 30 Aug 2021 15:29:56 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id 3EA0360F4B;
+        Mon, 30 Aug 2021 14:29:17 +0000 (UTC)
+Date:   Mon, 30 Aug 2021 15:32:27 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     "Sa, Nuno" <Nuno.Sa@analog.com>
 Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
@@ -32,15 +32,14 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 03/16] iio: adc: max1027: Push only the requested
- samples
-Message-ID: <20210830152956.58331a8d@jic23-huawei>
-In-Reply-To: <MW4PR03MB6363FE3BAF40A383D244ADC399CB9@MW4PR03MB6363.namprd03.prod.outlook.com>
+Subject: Re: [PATCH 14/16] iio: adc: max1027: Consolidate the end of
+ conversion helper
+Message-ID: <20210830153227.7f5809d1@jic23-huawei>
+In-Reply-To: <MW4PR03MB6363F50DC6A4B5D682BA16E299CB9@MW4PR03MB6363.namprd03.prod.outlook.com>
 References: <20210818111139.330636-1-miquel.raynal@bootlin.com>
-        <20210818111139.330636-4-miquel.raynal@bootlin.com>
-        <SJ0PR03MB6359415E120CFD3EFAF417F599C19@SJ0PR03MB6359.namprd03.prod.outlook.com>
-        <20210830110756.733d5201@jic23-huawei>
-        <MW4PR03MB6363FE3BAF40A383D244ADC399CB9@MW4PR03MB6363.namprd03.prod.outlook.com>
+        <20210818111139.330636-15-miquel.raynal@bootlin.com>
+        <20210830113716.1f7cdc6f@jic23-huawei>
+        <MW4PR03MB6363F50DC6A4B5D682BA16E299CB9@MW4PR03MB6363.namprd03.prod.outlook.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -49,146 +48,114 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 30 Aug 2021 10:49:50 +0000
+On Mon, 30 Aug 2021 12:44:48 +0000
 "Sa, Nuno" <Nuno.Sa@analog.com> wrote:
 
 > > -----Original Message-----
 > > From: Jonathan Cameron <jic23@kernel.org>
-> > Sent: Monday, August 30, 2021 12:08 PM
-> > To: Sa, Nuno <Nuno.Sa@analog.com>
-> > Cc: Miquel Raynal <miquel.raynal@bootlin.com>; Lars-Peter Clausen
-> > <lars@metafoo.de>; Thomas Petazzoni
+> > Sent: Monday, August 30, 2021 12:37 PM
+> > To: Miquel Raynal <miquel.raynal@bootlin.com>
+> > Cc: Lars-Peter Clausen <lars@metafoo.de>; Thomas Petazzoni
 > > <thomas.petazzoni@bootlin.com>; linux-iio@vger.kernel.org; linux-
 > > kernel@vger.kernel.org
-> > Subject: Re: [PATCH 03/16] iio: adc: max1027: Push only the requested
-> > samples
+> > Subject: Re: [PATCH 14/16] iio: adc: max1027: Consolidate the end of
+> > conversion helper
 > > 
-> > [External]
-> > 
-> > On Fri, 20 Aug 2021 07:10:48 +0000
-> > "Sa, Nuno" <Nuno.Sa@analog.com> wrote:
+> > On Wed, 18 Aug 2021 13:11:37 +0200
+> > Miquel Raynal <miquel.raynal@bootlin.com> wrote:
 > >   
-> > > > -----Original Message-----
-> > > > From: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > Sent: Wednesday, August 18, 2021 1:11 PM
-> > > > To: Jonathan Cameron <jic23@kernel.org>; Lars-Peter Clausen
-> > > > <lars@metafoo.de>
-> > > > Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>; linux-
-> > > > iio@vger.kernel.org; linux-kernel@vger.kernel.org; Miquel Raynal
-> > > > <miquel.raynal@bootlin.com>
-> > > > Subject: [PATCH 03/16] iio: adc: max1027: Push only the requested
-> > > > samples
-> > > >
-> > > > [External]
-> > > >
-> > > > When a triggered scan occurs, the identity of the desired channels  
-> > is  
-> > > > known in indio_dev->active_scan_mask. Instead of reading and
-> > > > pushing to
-> > > > the IIO buffers all channels each time, scan the minimum amount  
-> > of  
-> > > > channels (0 to maximum requested chan, to be exact) and only
-> > > > provide the
-> > > > samples requested by the user.
-> > > >
-> > > > For example, if the user wants channels 1, 4 and 5, all channels  
-> > from  
-> > > > 0 to 5 will be scanned but only the desired channels will be pushed  
-> > to  
-> > > > the IIO buffers.
-> > > >
-> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > > ---
-> > > >  drivers/iio/adc/max1027.c | 25 +++++++++++++++++++++----
-> > > >  1 file changed, 21 insertions(+), 4 deletions(-)
-> > > >
-> > > > diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-> > > > index b753658bb41e..8ab660f596b5 100644
-> > > > --- a/drivers/iio/adc/max1027.c
-> > > > +++ b/drivers/iio/adc/max1027.c
-> > > > @@ -360,6 +360,9 @@ static int max1027_set_trigger_state(struct
-> > > > iio_trigger *trig, bool state)
-> > > >  	struct max1027_state *st = iio_priv(indio_dev);
-> > > >  	int ret;
-> > > >
-> > > > +	if (bitmap_empty(indio_dev->active_scan_mask, indio_dev-  
-> > > > >masklength))  
-> > > > +		return -EINVAL;
-> > > > +  
+> > > Now that we have a dedicated handler for End Of Conversion  
+> > interrupts,  
+> > > let's create a second path:
+> > > - Situation 1: we are using the external hardware trigger, a  
+> > conversion  
+> > >   has been triggered and the ADC pushed the data to its FIFO, we  
+> > need to  
+> > >   retrieve the data and push it to the IIO buffers.
+> > > - Situation 2: we are not using the external hardware trigger, hence  
+> > we  
+> > >   are likely waiting in a blocked thread waiting for this interrupt to
+> > >   happen: in this case we just wake up the waiting thread.
 > > >
-> > > I'm not sure this can actually happen. If you try to enable the buffer
-> > > with no scan element, it should give you an error before you reach
-> > > this point...
-> > >  
-> > > >  	if (state) {
-> > > >  		/* Start acquisition on cnvst */
-> > > >  		st->reg = MAX1027_SETUP_REG |
-> > > > MAX1027_CKS_MODE0 |
-> > > > @@ -368,9 +371,12 @@ static int max1027_set_trigger_state(struct
-> > > > iio_trigger *trig, bool state)
-> > > >  		if (ret < 0)
-> > > >  			return ret;
-> > > >
-> > > > -		/* Scan from 0 to max */
-> > > > -		st->reg = MAX1027_CONV_REG | MAX1027_CHAN(0) |
-> > > > -			  MAX1027_SCAN_N_M | MAX1027_TEMP;
-> > > > +		/*
-> > > > +		 * Scan from 0 to the highest requested channel. The
-> > > > temperature
-> > > > +		 * could be avoided but it simplifies a bit the logic.
-> > > > +		 */
-> > > > +		st->reg = MAX1027_CONV_REG |
-> > > > MAX1027_SCAN_0_N | MAX1027_TEMP;
-> > > > +		st->reg |= MAX1027_CHAN(fls(*indio_dev-  
-> > > > >active_scan_mask) - 2);  
-> > > >  		ret = spi_write(st->spi, &st->reg, 1);
-> > > >  		if (ret < 0)
-> > > >  			return ret;
-> > > > @@ -391,11 +397,22 @@ static irqreturn_t
-> > > > max1027_trigger_handler(int irq, void *private)
-> > > >  	struct iio_poll_func *pf = private;
-> > > >  	struct iio_dev *indio_dev = pf->indio_dev;
-> > > >  	struct max1027_state *st = iio_priv(indio_dev);
-> > > > +	unsigned int scanned_chans = fls(*indio_dev-  
-> > > > >active_scan_mask);  
-> > > > +	u16 *buf = st->buffer;  
+> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > ---
+> > >  drivers/iio/adc/max1027.c | 20 +++++++++++++++++---
+> > >  1 file changed, 17 insertions(+), 3 deletions(-)
 > > >
-> > > I think sparse will complain here. buffer is a __be16 restricted
-> > > type so you should not mix those...  
-> > > > +	unsigned int bit;
-> > > >
-> > > >  	pr_debug("%s(irq=%d, private=0x%p)\n", __func__, irq,
-> > > >  
-> > private);in/20210818_miquel_raynal_bring_software_triggers_support
-> > _to_max1027_like_adcs.mbx  
-> > > >
-> > > >  	/* fill buffer with all channel */
-> > > > -	spi_read(st->spi, st->buffer, indio_dev->masklength * 2);
-> > > > +	spi_read(st->spi, st->buffer, scanned_chans * 2);
-> > > > +
-> > > > +	/* Only keep the channels selected by the user */
-> > > > +	for_each_set_bit(bit, indio_dev->active_scan_mask,
-> > > > +			 indio_dev->masklength) {
-> > > > +		if (buf[0] != st->buffer[bit])
-> > > > +			buf[0] = st->buffer[bit];  
+> > > diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+> > > index 8d86e77fb5db..8c5995ae59f2 100644
+> > > --- a/drivers/iio/adc/max1027.c
+> > > +++ b/drivers/iio/adc/max1027.c
+> > > @@ -235,6 +235,7 @@ struct max1027_state {
+> > >  	struct iio_trigger		*trig;
+> > >  	__be16				*buffer;
+> > >  	struct mutex			lock;
+> > > +	bool				data_rdy;
+> > >  	bool				cnvst_trigger;
+> > >  	u8				reg ____cacheline_aligned;
+> > >  };
+> > > @@ -243,12 +244,22 @@ static  
+> > DECLARE_WAIT_QUEUE_HEAD(max1027_queue);  
 > > >
-> > > Since we are here, when looking into the driver, I realized
-> > > that st->buffer is not DMA safe. In IIO, we kind of want to enforce
-> > > that all buffers that are passed to spi/i2c buses are safe... Maybe
-> > > this is something you can include in your series.  
+> > >  static int max1027_wait_eoc(struct iio_dev *indio_dev)
+> > >  {
+> > > +	struct max1027_state *st = iio_priv(indio_dev);
+> > >  	unsigned int conversion_time =  
+> > MAX1027_CONVERSION_UDELAY;  
+> > > +	int ret;
+> > >
+> > > -	if (indio_dev->active_scan_mask)
+> > > -		conversion_time *= hweight32(*indio_dev-
+> > >active_scan_mask);
+> > > +	if (st->spi->irq) {
+> > > +		ret =  
+> > wait_event_interruptible_timeout(max1027_queue,  
+> > > +						       st->data_rdy, HZ /  
+> > 1000);  
+> > > +		st->data_rdy = false;
+> > > +		if (ret == -ERESTARTSYS)
+> > > +			return ret;
+> > > +	} else {
+> > > +		if (indio_dev->active_scan_mask)
+> > > +			conversion_time *= hweight32(*indio_dev-
+> > >active_scan_mask);
+> > >
+> > > -	usleep_range(conversion_time, conversion_time * 2);
+> > > +		usleep_range(conversion_time, conversion_time * 2);
+> > > +	}
+> > >
+> > >  	return 0;
+> > >  }
+> > > @@ -481,6 +492,9 @@ static irqreturn_t  
+> > max1027_eoc_irq_handler(int irq, void *private)  
+> > >  	if (st->cnvst_trigger) {
+> > >  		ret = max1027_read_scan(indio_dev);
+> > >  		iio_trigger_notify_done(indio_dev->trig);
+> > > +	} else {
+> > > +		st->data_rdy = true;
+> > > +		wake_up(&max1027_queue);  
 > > 
-> > Why is it not?  st->buffer is result of a devm_kmalloc_array() call and
-> > that should provide a DMA safe buffer as I understand it.
+> > I can't see why a queue is appropriate for this.  Use a completion and
+> > have
+> > one per instance of the device.  No need for the flag etc in that case as
+> > complete() means we have had an interrupt.
 > >   
 > 
-> That's a good question. I'm not sure how I came to that conclusion which
-> is clearly wrong. Though I think the buffer might share the line with the
-> mutex...
-Pointer shares a line.  The buffer it points to doesn't as allocated
-by separate heap allocation.
+> In the case that 'st-> cnvst_trigger' is not set but the spi IRQ
+> is present, we will wait until we get 'wake_up()' called from here. I wonder if
+> that is a good idea as the device own trigger is not being used. FWIW, I think this
+> sync logic is a bit confusing... I would still use the normal trigger infrastructure
+> ('iio_trigger_generic_data_rdy_poll()') and use the 'cnvst_trigger' flag in the
+> trigger handler to manually start conversions + wait till eoc. But I might be missing
+> something though.
+> 
+> Regarding this handler, I just realized that this is the hard IRQ handler which
+> might end up calling 'max1027_read_scan()' which in turn calls 'spi_read()'. Am I
+> missing something here?
+Good point.  This will need to be the threaded handler if done like this.
 
 J
+
 > 
 > - Nuno Sá
-> 
 
