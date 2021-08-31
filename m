@@ -2,137 +2,68 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
-	version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED69C432BE
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:51:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D5484C43214
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:55:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F34E960F23
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:51:47 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BE89C60F23
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:55:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240033AbhHaHwl convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 31 Aug 2021 03:52:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239865AbhHaHwl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Aug 2021 03:52:41 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0321C061575
-        for <linux-iio@vger.kernel.org>; Tue, 31 Aug 2021 00:51:46 -0700 (PDT)
-Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1mKyYK-0005uf-BA; Tue, 31 Aug 2021 09:51:28 +0200
-Received: from pza by lupine with local (Exim 4.92)
-        (envelope-from <p.zabel@pengutronix.de>)
-        id 1mKyYF-0002yy-JK; Tue, 31 Aug 2021 09:51:23 +0200
-Message-ID: <4bc2bf196efd540933e6a781a44af20142e3d5d3.camel@pengutronix.de>
-Subject: Re: [v5 09/15] iio: adc: aspeed: Use devm_add_action_or_reset.
-From:   Philipp Zabel <p.zabel@pengutronix.de>
-To:     Billy Tsai <billy_tsai@aspeedtech.com>, jic23@kernel.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        joel@jms.id.au, andrew@aj.id.au, lgirdwood@gmail.com,
-        broonie@kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
-Cc:     BMC-SW@aspeedtech.com
-Date:   Tue, 31 Aug 2021 09:51:23 +0200
-In-Reply-To: <20210831071458.2334-10-billy_tsai@aspeedtech.com>
-References: <20210831071458.2334-1-billy_tsai@aspeedtech.com>
-         <20210831071458.2334-10-billy_tsai@aspeedtech.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
-User-Agent: Evolution 3.30.5-1.1 
+        id S240088AbhHaHzz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 Aug 2021 03:55:55 -0400
+Received: from protonic.xs4all.nl ([83.163.252.89]:46016 "EHLO
+        protonic.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240042AbhHaHzx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Aug 2021 03:55:53 -0400
+X-Greylist: delayed 308 seconds by postgrey-1.27 at vger.kernel.org; Tue, 31 Aug 2021 03:55:52 EDT
+Received: from ert768.prtnl (ert768.prtnl [192.168.224.11])
+        by sparta.prtnl (Postfix) with ESMTP id B6CD644A024D;
+        Tue, 31 Aug 2021 09:49:47 +0200 (CEST)
+From:   Roan van Dijk <roan@protonic.nl>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, david@protonic.nl,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Roan van Dijk <roan@protonic.nl>
+Subject: [PATCH 0/3] iio: chemical: Add support for Sensirion SCD4x CO2 sensor 
+Date:   Tue, 31 Aug 2021 09:48:25 +0200
+Message-Id: <20210831074832.16310-1-roan@protonic.nl>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
-X-SA-Exim-Mail-From: p.zabel@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Billy,
+This series adds support for the Sensirion SCD4x sensor. 
 
-On Tue, 2021-08-31 at 15:14 +0800, Billy Tsai wrote:
-> This patch use devm_add_action_or_reset to handle the error in probe
-> phase.
-> 
-> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
-> ---
->  drivers/iio/adc/aspeed_adc.c | 112 +++++++++++++++++++++--------------
->  1 file changed, 66 insertions(+), 46 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-> index e53d1541ad1d..af00d9752c1e 100644
-> --- a/drivers/iio/adc/aspeed_adc.c
-> +++ b/drivers/iio/adc/aspeed_adc.c
-[...]
-> @@ -242,6 +271,11 @@ static int aspeed_adc_probe(struct platform_device *pdev)
->  			&data->clk_lock);
->  		if (IS_ERR(data->clk_prescaler))
->  			return PTR_ERR(data->clk_prescaler);
-> +		ret = devm_add_action_or_reset(data->dev,
-> +					       aspeed_adc_unregister_divider,
-> +					       data->clk_prescaler);
-> +		if (ret)
-> +			return ret;
+The driver supports continuous reads of temperature, relative humdity and CO2 
+concentration. There is an interval of 5 seconds between readings. During
+this interval the drivers checks if the sensor has new data available.
 
-I think here you could switch to devm_clk_hw_register_divider() instead.
+The driver is based on the scd30 driver. However, The scd4x has become too 
+different to just expand the scd30 driver. I made a new driver instead of
+expanding the scd30 driver. I hope I made the right choice by doing so?
 
+Roan van Dijk (3):
+  dt-bindings: iio: chemical: sensirion,scd4x: Add yaml description
+  MAINTAINERS: Add myself as maintainer of the scd4x driver
+  drivers: iio: chemical: Add support for Sensirion SCD4x CO2 sensor
 
->  		snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name),
->  			 clk_name);
->  		scaler_flags = CLK_SET_RATE_PARENT;
-> @@ -256,23 +290,30 @@ static int aspeed_adc_probe(struct platform_device *pdev)
->  		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
->  		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
->  		data->model_data->scaler_bit_width, 0, &data->clk_lock);
-> -	if (IS_ERR(data->clk_scaler)) {
-> -		ret = PTR_ERR(data->clk_scaler);
-> -		goto scaler_error;
-> -	}
-> +	if (IS_ERR(data->clk_scaler))
-> +		return PTR_ERR(data->clk_scaler);
-> +
-> +	ret = devm_add_action_or_reset(data->dev, aspeed_adc_unregister_divider,
-> +				       data->clk_scaler);
-> +	if (ret)
-> +		return ret;
+ .../iio/chemical/sensirion,scd4x.yaml         |  45 ++
+ MAINTAINERS                                   |   6 +
+ drivers/iio/chemical/Kconfig                  |  13 +
+ drivers/iio/chemical/Makefile                 |   1 +
+ drivers/iio/chemical/scd4x.c                  | 707 ++++++++++++++++++
+ 5 files changed, 772 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/chemical/sensirion,scd4x.yaml
+ create mode 100644 drivers/iio/chemical/scd4x.c
 
-Same as above.
+-- 
+2.30.2
 
-[...]
-> @@ -281,6 +322,10 @@ static int aspeed_adc_probe(struct platform_device *pdev)
->  			       ASPEED_ADC_ENGINE_ENABLE,
->  		       data->base + ASPEED_REG_ENGINE_CONTROL);
->  
-> +		ret = devm_add_action_or_reset(data->dev, aspeed_adc_power_down,
-> +					       data);
-> +		if (ret)
-> +			return ret;
->  		/* Wait for initial sequence complete. */
->  		ret = readl_poll_timeout(data->base + ASPEED_REG_ENGINE_CONTROL,
->  					 adc_engine_control_reg_val,
-[...]
-> @@ -303,6 +354,11 @@ static int aspeed_adc_probe(struct platform_device *pdev)
->  		ASPEED_ADC_ENGINE_ENABLE;
->  	writel(adc_engine_control_reg_val,
->  	       data->base + ASPEED_REG_ENGINE_CONTROL);
-> +	ret = devm_add_action_or_reset(data->dev,
-> +				       aspeed_adc_power_down,
-> +				       data);
-> +	if (ret)
-> +		return ret;
-
-Should this be if (!model_dta->wait_init_sequence) ? Otherwise it looks
-like you've already registered the same aspeed_adc_power_down action
-above.
-
-regards
-Philipp
