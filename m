@@ -2,26 +2,26 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
+	USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 84C27C432BE
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:14:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 74BC2C432BE
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:14:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 66A8460200
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:14:32 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5FB3E60FF2
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:14:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239119AbhHaHP0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 31 Aug 2021 03:15:26 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:51433 "EHLO
+        id S239112AbhHaHPb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 Aug 2021 03:15:31 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:19153 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239112AbhHaHP0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Aug 2021 03:15:26 -0400
+        with ESMTP id S232209AbhHaHPb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Aug 2021 03:15:31 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 17V6sc5v028274;
-        Tue, 31 Aug 2021 14:54:38 +0800 (GMT-8)
+        by twspam01.aspeedtech.com with ESMTP id 17V6sdB2028283;
+        Tue, 31 Aug 2021 14:54:39 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
  (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 31 Aug
@@ -35,9 +35,9 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [v5 11/15] iio: adc: aspeed: Fix the calculate error of clock.
-Date:   Tue, 31 Aug 2021 15:14:54 +0800
-Message-ID: <20210831071458.2334-12-billy_tsai@aspeedtech.com>
+Subject: [v5 15/15] iio: adc: aspeed: Get and set trimming data.
+Date:   Tue, 31 Aug 2021 15:14:58 +0800
+Message-ID: <20210831071458.2334-16-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210831071458.2334-1-billy_tsai@aspeedtech.com>
 References: <20210831071458.2334-1-billy_tsai@aspeedtech.com>
@@ -48,84 +48,161 @@ X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 17V6sc5v028274
+X-MAIL: twspam01.aspeedtech.com 17V6sdB2028283
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADC clock formula is
-ast2400/2500:
-ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0] + 1)
-ast2600:
-ADC clock period = PCLK * 2 * (ADC0C[15:0] + 1)
-They all have one fixed divided 2 and the legacy driver didn't handle it.
-This patch register the fixed factory clock device as the parent of ADC
-clock scaler to fix this issue.
+The ADC controller has a trimming register for fine-tune the reference
+voltage. The trimming value comes from the OTP register which will be
+written during chip production. This patch will read this OTP value and
+configure it to the ADC register when the ADC controller probes and using
+dts property "aspeed,trim-data-valid" to determine whether to execute this
+flow.
 
 Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 ---
- drivers/iio/adc/aspeed_adc.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/iio/adc/aspeed_adc.c | 71 ++++++++++++++++++++++++++++++++++++
+ 1 file changed, 71 insertions(+)
 
 diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 40b7ba58c1dc..349377b9fac0 100644
+index b594a723db2e..fddd7508099f 100644
 --- a/drivers/iio/adc/aspeed_adc.c
 +++ b/drivers/iio/adc/aspeed_adc.c
-@@ -4,6 +4,12 @@
-  *
-  * Copyright (C) 2017 Google, Inc.
-  * Copyright (C) 2021 Aspeed Technology Inc.
-+ *
-+ * ADC clock formula:
-+ * Ast2400/Ast2500:
-+ * clock period = period of PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0] + 1)
-+ * Ast2600:
-+ * clock period = period of PCLK * 2 * (ADC0C[15:0] + 1)
+@@ -25,6 +25,8 @@
+ #include <linux/spinlock.h>
+ #include <linux/types.h>
+ #include <linux/bitfield.h>
++#include <linux/regmap.h>
++#include <linux/mfd/syscon.h>
+ 
+ #include <linux/iio/iio.h>
+ #include <linux/iio/driver.h>
+@@ -80,6 +82,11 @@
   */
+ #define ASPEED_ADC_DEF_SAMPLING_RATE	65000
  
- #include <linux/clk.h>
-@@ -85,6 +91,7 @@ struct aspeed_adc_data {
- 	struct regulator	*regulator;
- 	void __iomem		*base;
- 	spinlock_t		clk_lock;
-+	struct clk_hw		*fixed_div_clk;
- 	struct clk_hw		*clk_prescaler;
- 	struct clk_hw		*clk_scaler;
- 	struct reset_control	*rst;
-@@ -204,6 +211,13 @@ static void aspeed_adc_unregister_divider(void *data)
- 	clk_hw_unregister_divider(clk);
- }
- 
-+static void aspeed_adc_unregister_fixed_divider(void *data)
-+{
-+	struct clk_hw *clk = data;
++struct aspeed_adc_trim_locate {
++	const unsigned int offset;
++	const unsigned int field;
++};
 +
-+	clk_hw_unregister_fixed_factor(clk);
+ struct aspeed_adc_model_data {
+ 	const char *model_name;
+ 	unsigned int min_sampling_rate;	// Hz
+@@ -90,6 +97,7 @@ struct aspeed_adc_model_data {
+ 	bool bat_sense_sup;
+ 	u8 scaler_bit_width;
+ 	unsigned int num_channels;
++	const struct aspeed_adc_trim_locate *trim_locate;
+ };
+ 
+ struct adc_gain {
+@@ -165,6 +173,44 @@ static const struct iio_chan_spec aspeed_adc_iio_bat_channels[] = {
+ 	ASPEED_BAT_CHAN(7, 0x1E),
+ };
+ 
++static int aspeed_adc_set_trim_data(struct iio_dev *indio_dev)
++{
++	struct device_node *syscon;
++	struct regmap *scu;
++	u32 scu_otp, trimming_val;
++	struct aspeed_adc_data *data = iio_priv(indio_dev);
++
++	syscon = of_find_node_by_name(NULL, "syscon");
++	if (syscon == NULL) {
++		dev_warn(data->dev, "Couldn't find syscon node\n");
++		return -EOPNOTSUPP;
++	}
++	scu = syscon_node_to_regmap(syscon);
++	if (IS_ERR(scu)) {
++		dev_warn(data->dev, "Failed to get syscon regmap\n");
++		return -EOPNOTSUPP;
++	}
++	if (data->model_data->trim_locate) {
++		if (regmap_read(scu, data->model_data->trim_locate->offset,
++				&scu_otp)) {
++			dev_warn(data->dev,
++				 "Failed to get adc trimming data\n");
++			trimming_val = 0x8;
++		} else {
++			trimming_val =
++				((scu_otp) &
++				 (data->model_data->trim_locate->field)) >>
++				__ffs(data->model_data->trim_locate->field);
++		}
++		dev_dbg(data->dev,
++			"trimming val = %d, offset = %08x, fields = %08x\n",
++			trimming_val, data->model_data->trim_locate->offset,
++			data->model_data->trim_locate->field);
++		writel(trimming_val, data->base + ASPEED_REG_COMPENSATION_TRIM);
++	}
++	return 0;
 +}
 +
- static void aspeed_adc_reset_assert(void *data)
+ static int aspeed_adc_compensation(struct iio_dev *indio_dev)
  {
- 	struct reset_control *rst = data;
-@@ -328,6 +342,19 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	spin_lock_init(&data->clk_lock);
- 	snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name), "%s",
- 		 of_clk_get_parent_name(pdev->dev.of_node, 0));
-+	snprintf(clk_name, ARRAY_SIZE(clk_name), "%s-fixed-div",
-+		 data->model_data->model_name);
-+	data->fixed_div_clk = clk_hw_register_fixed_factor(
-+		&pdev->dev, clk_name, clk_parent_name, 0, 1, 2);
-+	if (IS_ERR(data->fixed_div_clk))
-+		return PTR_ERR(data->fixed_div_clk);
-+
-+	ret = devm_add_action_or_reset(data->dev,
-+				       aspeed_adc_unregister_fixed_divider,
-+				       data->clk_prescaler);
-+	if (ret)
-+		return ret;
-+	snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name), clk_name);
+ 	struct aspeed_adc_data *data = iio_priv(indio_dev);
+@@ -545,6 +591,13 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
- 	if (data->model_data->need_prescaler) {
- 		snprintf(clk_name, ARRAY_SIZE(clk_name), "%s-prescaler",
++	if (of_find_property(data->dev->of_node, "aspeed,trim-data-valid",
++			     NULL)) {
++		ret = aspeed_adc_set_trim_data(indio_dev);
++		if (ret)
++			return ret;
++	}
++
+ 	if (of_find_property(data->dev->of_node, "aspeed,battery-sensing",
+ 			     NULL)) {
+ 		if (data->model_data->bat_sense_sup) {
+@@ -616,6 +669,21 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	return ret;
+ }
+ 
++static const struct aspeed_adc_trim_locate ast2500_adc_trim = {
++	.offset = 0x154,
++	.field = GENMASK(31, 28),
++};
++
++static const struct aspeed_adc_trim_locate ast2600_adc0_trim = {
++	.offset = 0x5d0,
++	.field = GENMASK(3, 0),
++};
++
++static const struct aspeed_adc_trim_locate ast2600_adc1_trim = {
++	.offset = 0x5d0,
++	.field = GENMASK(7, 4),
++};
++
+ static const struct aspeed_adc_model_data ast2400_model_data = {
+ 	.model_name = "ast2400-adc",
+ 	.vref_fixed_mv = 2500,
+@@ -635,6 +703,7 @@ static const struct aspeed_adc_model_data ast2500_model_data = {
+ 	.need_prescaler = true,
+ 	.scaler_bit_width = 10,
+ 	.num_channels = 16,
++	.trim_locate = &ast2500_adc_trim,
+ };
+ 
+ static const struct aspeed_adc_model_data ast2600_adc0_model_data = {
+@@ -645,6 +714,7 @@ static const struct aspeed_adc_model_data ast2600_adc0_model_data = {
+ 	.bat_sense_sup = true,
+ 	.scaler_bit_width = 16,
+ 	.num_channels = 8,
++	.trim_locate = &ast2600_adc0_trim,
+ };
+ 
+ static const struct aspeed_adc_model_data ast2600_adc1_model_data = {
+@@ -655,6 +725,7 @@ static const struct aspeed_adc_model_data ast2600_adc1_model_data = {
+ 	.bat_sense_sup = true,
+ 	.scaler_bit_width = 16,
+ 	.num_channels = 8,
++	.trim_locate = &ast2600_adc1_trim,
+ };
+ 
+ static const struct of_device_id aspeed_adc_matches[] = {
 -- 
 2.25.1
 
