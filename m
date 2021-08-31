@@ -2,174 +2,132 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C22C5C432BE
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:14:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D38DAC432BE
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:39:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9973A60200
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:14:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id B2E9C61008
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239340AbhHaHPq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 31 Aug 2021 03:15:46 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:16726 "EHLO
-        twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239324AbhHaHPq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Aug 2021 03:15:46 -0400
-Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 17V6sdx6028275;
-        Tue, 31 Aug 2021 14:54:39 +0800 (GMT-8)
-        (envelope-from billy_tsai@aspeedtech.com)
-Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
- (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Tue, 31 Aug
- 2021 15:13:36 +0800
-From:   Billy Tsai <billy_tsai@aspeedtech.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-        <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
-        <p.zabel@pengutronix.de>, <lgirdwood@gmail.com>,
-        <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [v5 12/15] iio: adc: aspeed: Add func to set sampling rate.
-Date:   Tue, 31 Aug 2021 15:14:55 +0800
-Message-ID: <20210831071458.2334-13-billy_tsai@aspeedtech.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20210831071458.2334-1-billy_tsai@aspeedtech.com>
-References: <20210831071458.2334-1-billy_tsai@aspeedtech.com>
+        id S239938AbhHaHkT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 Aug 2021 03:40:19 -0400
+Received: from relay11.mail.gandi.net ([217.70.178.231]:48251 "EHLO
+        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239932AbhHaHkT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Aug 2021 03:40:19 -0400
+Received: (Authenticated sender: jacopo@jmondi.org)
+        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 033CF100013;
+        Tue, 31 Aug 2021 07:39:21 +0000 (UTC)
+Date:   Tue, 31 Aug 2021 09:40:11 +0200
+From:   Jacopo Mondi <jacopo@jmondi.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3.1 2/3] iio: chemical: Add Senseair Sunrise 006-0-007
+ driver
+Message-ID: <20210831074011.d6f5rsix2mgxqba5@uno.localdomain>
+References: <20210822184927.94673-3-jacopo@jmondi.org>
+ <20210823073639.13688-1-jacopo@jmondi.org>
+ <20210829175413.7ce30bfa@jic23-huawei>
+ <20210830162051.rjqlhwvtguaivt3p@uno.localdomain>
+ <20210830181117.6808f085@jic23-huawei>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [192.168.2.149]
-X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
- (192.168.0.24)
-X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 17V6sdx6028275
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20210830181117.6808f085@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add the function to set the sampling rate and keep the sampling period
-for a driver used to wait the fresh value.
-In addition, since the ADC clock is required when initializing the ADC
-device, move clk_prepare_enable ahead of the initialization phase.
+Hi Jonathan,
+   two more clarification requests, sorry to bother :)
 
-Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
----
- drivers/iio/adc/aspeed_adc.c | 59 ++++++++++++++++++++++++------------
- 1 file changed, 40 insertions(+), 19 deletions(-)
+On Mon, Aug 30, 2021 at 06:11:17PM +0100, Jonathan Cameron wrote:
+> On Mon, 30 Aug 2021 18:20:51 +0200
+> > > > +static int sunrise_write_word(struct sunrise_dev *sunrise, u8 reg, u16 data)
+> > > > +{
+> > > > +	__be16 be_data = cpu_to_be16(data);
+> > > > +	int ret;
+> > > > +
+> > > > +	sunrise_wakeup(sunrise);
+> > >
+> > > Hmm. Technically there isn't anything stopping another user of the i2c bus sneaking in
+> > > between the wakeup and the following command.  That would make the device going back
+> > > to sleep a lot more likely.  I can't off the top of my head remember if regmap lets
+> > > you lock the bus.  If not, you'll have to use the underlying i2c bus locking functions.
+> > > https://elixir.bootlin.com/linux/latest/source/drivers/iio/temperature/mlx90614.c#L432
+> > > gives an example.
+> >
+> > Right, there might be another call stealing the wakeup session!
+> >
+> > I should lock the underlying i2c bus, probably not root adapter like
+> > mlx90614 does but only the segment.
+>
+> Ideally only segment as you say as could be some muxes involved.
 
-diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 349377b9fac0..1333d7a88427 100644
---- a/drivers/iio/adc/aspeed_adc.c
-+++ b/drivers/iio/adc/aspeed_adc.c
-@@ -73,6 +73,12 @@
- 
- #define ASPEED_ADC_INIT_POLLING_TIME	500
- #define ASPEED_ADC_INIT_TIMEOUT		500000
-+/*
-+ * When the sampling rate is too high, the ADC may not have enough charging
-+ * time, resulting in a low voltage value. Thus, the default uses a slow
-+ * sampling rate for most use cases.
-+ */
-+#define ASPEED_ADC_DEF_SAMPLING_RATE	65000
- 
- struct aspeed_adc_model_data {
- 	const char *model_name;
-@@ -96,6 +102,7 @@ struct aspeed_adc_data {
- 	struct clk_hw		*clk_scaler;
- 	struct reset_control	*rst;
- 	int			vref_mv;
-+	u32			sample_period_ns;
- };
- 
- #define ASPEED_CHAN(_idx, _data_reg_addr) {			\
-@@ -127,6 +134,24 @@ static const struct iio_chan_spec aspeed_adc_iio_channels[] = {
- 	ASPEED_CHAN(15, 0x2E),
- };
- 
-+static int aspeed_adc_set_sampling_rate(struct iio_dev *indio_dev, u32 rate)
-+{
-+	struct aspeed_adc_data *data = iio_priv(indio_dev);
-+
-+	if (rate < data->model_data->min_sampling_rate ||
-+	    rate > data->model_data->max_sampling_rate)
-+		return -EINVAL;
-+	/* Each sampling needs 12 clocks to convert.*/
-+	clk_set_rate(data->clk_scaler->clk, rate * ASPEED_CLOCKS_PER_SAMPLE);
-+	rate = clk_get_rate(data->clk_scaler->clk);
-+	data->sample_period_ns = DIV_ROUND_UP_ULL(
-+		(u64)NSEC_PER_SEC * ASPEED_CLOCKS_PER_SAMPLE, rate);
-+	dev_dbg(data->dev, "Adc clock = %d sample period = %d ns", rate,
-+		data->sample_period_ns);
-+
-+	return 0;
-+}
-+
- static int aspeed_adc_read_raw(struct iio_dev *indio_dev,
- 			       struct iio_chan_spec const *chan,
- 			       int *val, int *val2, long mask)
-@@ -157,17 +182,9 @@ static int aspeed_adc_write_raw(struct iio_dev *indio_dev,
- 				struct iio_chan_spec const *chan,
- 				int val, int val2, long mask)
- {
--	struct aspeed_adc_data *data = iio_priv(indio_dev);
--
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		if (val < data->model_data->min_sampling_rate ||
--			val > data->model_data->max_sampling_rate)
--			return -EINVAL;
--
--		clk_set_rate(data->clk_scaler->clk,
--				val * ASPEED_CLOCKS_PER_SAMPLE);
--		return 0;
-+		return aspeed_adc_set_sampling_rate(indio_dev, val);
- 
- 	case IIO_CHAN_INFO_SCALE:
- 	case IIO_CHAN_INFO_RAW:
-@@ -409,6 +426,20 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
-+	ret = clk_prepare_enable(data->clk_scaler->clk);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(data->dev,
-+				       aspeed_adc_clk_disable_unprepare,
-+				       data->clk_scaler->clk);
-+	if (ret)
-+		return ret;
-+
-+	ret = aspeed_adc_set_sampling_rate(indio_dev, ASPEED_ADC_DEF_SAMPLING_RATE);
-+	if (ret)
-+		return ret;
-+
- 	if (data->model_data->wait_init_sequence) {
- 		adc_engine_control_reg_val =
- 			readl(data->base + ASPEED_REG_ENGINE_CONTROL);
-@@ -436,16 +467,6 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	}
- 
- 	/* Start all channels in normal mode. */
--	ret = clk_prepare_enable(data->clk_scaler->clk);
--	if (ret)
--		return ret;
--
--	ret = devm_add_action_or_reset(data->dev,
--				       aspeed_adc_clk_disable_unprepare,
--				       data->clk_scaler->clk);
--	if (ret)
--		return ret;
--
- 	adc_engine_control_reg_val =
- 		readl(data->base + ASPEED_REG_ENGINE_CONTROL);
- 	adc_engine_control_reg_val |=
--- 
-2.25.1
+If not that i2c_smbus_xfer() which is called by my wakeup and by the
+regmap_smbus_* calls tries to lock the segment as well, so we deadlock :)
 
+And actually, locking the underlying i2c segment seems even too
+strict, what we have to guarantee is that no other read/write function
+call from this driver interrupts a [wakeup-trasactions] sequence.
+
+Wouldn't it be better if I handle that with a dedicated mutex ?
+
+>
+> >
+> > >
+> > > Perhaps worth a look is the regmap-sccb implementation which has a dance that looks
+> > > a tiny bit like what you have to do here (be it for a different reason).
+> > > It might be nice to do something similar here and have a custom regmap bus which
+> > > has the necessary wakeups in the relevant places.
+> > >
+> > > Note I haven't thought it through in depth, so it might not work!
+> >
+> > the dance is similar if not regmap-sccb tranfers a byte instead of
+> > sending only the R/W bit (notice the usage of I2C_SMBUS_QUICK here and
+> > I2C_SMBUS_BYTE in regmap-sccb). Practically speaking it makes no
+> > difference as the sensor nacks the first message, so the underlying
+> > bus implementation bails out, but that's a bit of work-by-accident
+> > thing, isn't it ?
+> >
+> > If fine with you, I would stick to this implementation and hold the
+> > segment locked between the wakup and the actual messages.
+>
+> That's fine.  I was just thinking you could hid the magic in a custom regmap then
+> the rest of the driver would not have to be aware of it.  Slightly neater than
+> wrapping regmap functions with this extra call in the wrapper.
+>
+
+[snip]
+
+> > > > +		}
+> > > > +
+> > > > +	case IIO_CHAN_INFO_SCALE:
+> > > > +		/* Chip temperature scale = 1/100 */
+> > >
+> > > IIO temperatures are measured in milli degrees.  1lsb = 1/100*1000 degrees centigrade seems very accurate
+> > > for a device like this!  I'm guessing this should be 10.
+> >
+> > Ah yes, I thought it had to be given in the chip's native format,
+> > which is 1/100 degree.
+> >
+> > I guess I should then multiply by 10 the temperature raw read and
+> > return IIO_VAL_INT here.
+>
+> You could do that, but can cause a mess if buffered support comes along later as
+> it is then not a whole number of bits for putting in the buffer.
+>
+
+Care to clarify ? What shouldn't I do here ? Multiply by 10 the raw
+value (which I think is wrong as pointed out in a later reply) or
+return IIO_VAL_INT ? Sorry I didn't get the connection with the number
+of bits to put in the buffer :)
+
+Thanks
+   j
