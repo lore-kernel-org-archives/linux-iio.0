@@ -2,132 +2,137 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
-	autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-13.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS autolearn=ham autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D38DAC432BE
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:39:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1ED69C432BE
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:51:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B2E9C61008
-	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:39:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id F34E960F23
+	for <linux-iio@archiver.kernel.org>; Tue, 31 Aug 2021 07:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239938AbhHaHkT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 31 Aug 2021 03:40:19 -0400
-Received: from relay11.mail.gandi.net ([217.70.178.231]:48251 "EHLO
-        relay11.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239932AbhHaHkT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Aug 2021 03:40:19 -0400
-Received: (Authenticated sender: jacopo@jmondi.org)
-        by relay11.mail.gandi.net (Postfix) with ESMTPSA id 033CF100013;
-        Tue, 31 Aug 2021 07:39:21 +0000 (UTC)
-Date:   Tue, 31 Aug 2021 09:40:11 +0200
-From:   Jacopo Mondi <jacopo@jmondi.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3.1 2/3] iio: chemical: Add Senseair Sunrise 006-0-007
- driver
-Message-ID: <20210831074011.d6f5rsix2mgxqba5@uno.localdomain>
-References: <20210822184927.94673-3-jacopo@jmondi.org>
- <20210823073639.13688-1-jacopo@jmondi.org>
- <20210829175413.7ce30bfa@jic23-huawei>
- <20210830162051.rjqlhwvtguaivt3p@uno.localdomain>
- <20210830181117.6808f085@jic23-huawei>
+        id S240033AbhHaHwl convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 Aug 2021 03:52:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239865AbhHaHwl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Aug 2021 03:52:41 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0321C061575
+        for <linux-iio@vger.kernel.org>; Tue, 31 Aug 2021 00:51:46 -0700 (PDT)
+Received: from lupine.hi.pengutronix.de ([2001:67c:670:100:3ad5:47ff:feaf:1a17] helo=lupine)
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1mKyYK-0005uf-BA; Tue, 31 Aug 2021 09:51:28 +0200
+Received: from pza by lupine with local (Exim 4.92)
+        (envelope-from <p.zabel@pengutronix.de>)
+        id 1mKyYF-0002yy-JK; Tue, 31 Aug 2021 09:51:23 +0200
+Message-ID: <4bc2bf196efd540933e6a781a44af20142e3d5d3.camel@pengutronix.de>
+Subject: Re: [v5 09/15] iio: adc: aspeed: Use devm_add_action_or_reset.
+From:   Philipp Zabel <p.zabel@pengutronix.de>
+To:     Billy Tsai <billy_tsai@aspeedtech.com>, jic23@kernel.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
+        joel@jms.id.au, andrew@aj.id.au, lgirdwood@gmail.com,
+        broonie@kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Cc:     BMC-SW@aspeedtech.com
+Date:   Tue, 31 Aug 2021 09:51:23 +0200
+In-Reply-To: <20210831071458.2334-10-billy_tsai@aspeedtech.com>
+References: <20210831071458.2334-1-billy_tsai@aspeedtech.com>
+         <20210831071458.2334-10-billy_tsai@aspeedtech.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.30.5-1.1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20210830181117.6808f085@jic23-huawei>
+X-SA-Exim-Connect-IP: 2001:67c:670:100:3ad5:47ff:feaf:1a17
+X-SA-Exim-Mail-From: p.zabel@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
-   two more clarification requests, sorry to bother :)
+Hi Billy,
 
-On Mon, Aug 30, 2021 at 06:11:17PM +0100, Jonathan Cameron wrote:
-> On Mon, 30 Aug 2021 18:20:51 +0200
-> > > > +static int sunrise_write_word(struct sunrise_dev *sunrise, u8 reg, u16 data)
-> > > > +{
-> > > > +	__be16 be_data = cpu_to_be16(data);
-> > > > +	int ret;
-> > > > +
-> > > > +	sunrise_wakeup(sunrise);
-> > >
-> > > Hmm. Technically there isn't anything stopping another user of the i2c bus sneaking in
-> > > between the wakeup and the following command.  That would make the device going back
-> > > to sleep a lot more likely.  I can't off the top of my head remember if regmap lets
-> > > you lock the bus.  If not, you'll have to use the underlying i2c bus locking functions.
-> > > https://elixir.bootlin.com/linux/latest/source/drivers/iio/temperature/mlx90614.c#L432
-> > > gives an example.
-> >
-> > Right, there might be another call stealing the wakeup session!
-> >
-> > I should lock the underlying i2c bus, probably not root adapter like
-> > mlx90614 does but only the segment.
->
-> Ideally only segment as you say as could be some muxes involved.
+On Tue, 2021-08-31 at 15:14 +0800, Billy Tsai wrote:
+> This patch use devm_add_action_or_reset to handle the error in probe
+> phase.
+> 
+> Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+> ---
+>  drivers/iio/adc/aspeed_adc.c | 112 +++++++++++++++++++++--------------
+>  1 file changed, 66 insertions(+), 46 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+> index e53d1541ad1d..af00d9752c1e 100644
+> --- a/drivers/iio/adc/aspeed_adc.c
+> +++ b/drivers/iio/adc/aspeed_adc.c
+[...]
+> @@ -242,6 +271,11 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+>  			&data->clk_lock);
+>  		if (IS_ERR(data->clk_prescaler))
+>  			return PTR_ERR(data->clk_prescaler);
+> +		ret = devm_add_action_or_reset(data->dev,
+> +					       aspeed_adc_unregister_divider,
+> +					       data->clk_prescaler);
+> +		if (ret)
+> +			return ret;
 
-If not that i2c_smbus_xfer() which is called by my wakeup and by the
-regmap_smbus_* calls tries to lock the segment as well, so we deadlock :)
+I think here you could switch to devm_clk_hw_register_divider() instead.
 
-And actually, locking the underlying i2c segment seems even too
-strict, what we have to guarantee is that no other read/write function
-call from this driver interrupts a [wakeup-trasactions] sequence.
 
-Wouldn't it be better if I handle that with a dedicated mutex ?
+>  		snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name),
+>  			 clk_name);
+>  		scaler_flags = CLK_SET_RATE_PARENT;
+> @@ -256,23 +290,30 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+>  		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
+>  		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
+>  		data->model_data->scaler_bit_width, 0, &data->clk_lock);
+> -	if (IS_ERR(data->clk_scaler)) {
+> -		ret = PTR_ERR(data->clk_scaler);
+> -		goto scaler_error;
+> -	}
+> +	if (IS_ERR(data->clk_scaler))
+> +		return PTR_ERR(data->clk_scaler);
+> +
+> +	ret = devm_add_action_or_reset(data->dev, aspeed_adc_unregister_divider,
+> +				       data->clk_scaler);
+> +	if (ret)
+> +		return ret;
 
->
-> >
-> > >
-> > > Perhaps worth a look is the regmap-sccb implementation which has a dance that looks
-> > > a tiny bit like what you have to do here (be it for a different reason).
-> > > It might be nice to do something similar here and have a custom regmap bus which
-> > > has the necessary wakeups in the relevant places.
-> > >
-> > > Note I haven't thought it through in depth, so it might not work!
-> >
-> > the dance is similar if not regmap-sccb tranfers a byte instead of
-> > sending only the R/W bit (notice the usage of I2C_SMBUS_QUICK here and
-> > I2C_SMBUS_BYTE in regmap-sccb). Practically speaking it makes no
-> > difference as the sensor nacks the first message, so the underlying
-> > bus implementation bails out, but that's a bit of work-by-accident
-> > thing, isn't it ?
-> >
-> > If fine with you, I would stick to this implementation and hold the
-> > segment locked between the wakup and the actual messages.
->
-> That's fine.  I was just thinking you could hid the magic in a custom regmap then
-> the rest of the driver would not have to be aware of it.  Slightly neater than
-> wrapping regmap functions with this extra call in the wrapper.
->
+Same as above.
 
-[snip]
+[...]
+> @@ -281,6 +322,10 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+>  			       ASPEED_ADC_ENGINE_ENABLE,
+>  		       data->base + ASPEED_REG_ENGINE_CONTROL);
+>  
+> +		ret = devm_add_action_or_reset(data->dev, aspeed_adc_power_down,
+> +					       data);
+> +		if (ret)
+> +			return ret;
+>  		/* Wait for initial sequence complete. */
+>  		ret = readl_poll_timeout(data->base + ASPEED_REG_ENGINE_CONTROL,
+>  					 adc_engine_control_reg_val,
+[...]
+> @@ -303,6 +354,11 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+>  		ASPEED_ADC_ENGINE_ENABLE;
+>  	writel(adc_engine_control_reg_val,
+>  	       data->base + ASPEED_REG_ENGINE_CONTROL);
+> +	ret = devm_add_action_or_reset(data->dev,
+> +				       aspeed_adc_power_down,
+> +				       data);
+> +	if (ret)
+> +		return ret;
 
-> > > > +		}
-> > > > +
-> > > > +	case IIO_CHAN_INFO_SCALE:
-> > > > +		/* Chip temperature scale = 1/100 */
-> > >
-> > > IIO temperatures are measured in milli degrees.  1lsb = 1/100*1000 degrees centigrade seems very accurate
-> > > for a device like this!  I'm guessing this should be 10.
-> >
-> > Ah yes, I thought it had to be given in the chip's native format,
-> > which is 1/100 degree.
-> >
-> > I guess I should then multiply by 10 the temperature raw read and
-> > return IIO_VAL_INT here.
->
-> You could do that, but can cause a mess if buffered support comes along later as
-> it is then not a whole number of bits for putting in the buffer.
->
+Should this be if (!model_dta->wait_init_sequence) ? Otherwise it looks
+like you've already registered the same aspeed_adc_power_down action
+above.
 
-Care to clarify ? What shouldn't I do here ? Multiply by 10 the raw
-value (which I think is wrong as pointed out in a later reply) or
-return IIO_VAL_INT ? Sorry I didn't get the connection with the number
-of bits to put in the buffer :)
-
-Thanks
-   j
+regards
+Philipp
