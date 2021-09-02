@@ -7,21 +7,21 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A539C433EF
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:52:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D66AC00306
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:52:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 241D061152
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:52:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EF1D76113E
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:52:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347707AbhIBVxb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 Sep 2021 17:53:31 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:37395 "EHLO
+        id S1347744AbhIBVxh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 Sep 2021 17:53:37 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:37657 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347717AbhIBVx1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2021 17:53:27 -0400
+        with ESMTP id S1347741AbhIBVxd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2021 17:53:33 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id D5289240008;
-        Thu,  2 Sep 2021 21:52:25 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 7E2A9240003;
+        Thu,  2 Sep 2021 21:52:31 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -40,9 +40,9 @@ Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Jason Reeder <jreeder@ti.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v2 20/46] mfd: ti_am335x_tscadc: Always provide an idle configuration
-Date:   Thu,  2 Sep 2021 23:51:18 +0200
-Message-Id: <20210902215144.507243-21-miquel.raynal@bootlin.com>
+Subject: [PATCH v2 23/46] mfd: ti_am335x_tscadc: Replace the header license text with SPDX tag
+Date:   Thu,  2 Sep 2021 23:51:21 +0200
+Message-Id: <20210902215144.507243-24-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210902215144.507243-1-miquel.raynal@bootlin.com>
 References: <20210902215144.507243-1-miquel.raynal@bootlin.com>
@@ -53,49 +53,44 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The idle register is valid no matter if the touchscreen is used or not,
-let's always configure it.
+Drop the text license and replace it with an equivalent SPDX license tag
+identifier.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/mfd/ti_am335x_tscadc.c | 8 +++++---
- 1 file changed, 5 insertions(+), 3 deletions(-)
+ include/linux/mfd/ti_am335x_tscadc.h | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index 4a24fc1141cf..5f189da99468 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -223,16 +223,16 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
- 	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index 02963b6ebbac..334ce1a879df 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -1,21 +1,13 @@
+-#ifndef __LINUX_TI_AM335X_TSCADC_MFD_H
+-#define __LINUX_TI_AM335X_TSCADC_MFD_H
+-
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * TI Touch Screen / ADC MFD driver
+  *
+  * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License as
+- * published by the Free Software Foundation version 2.
+- *
+- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+- * kind, whether express or implied; without even the implied warranty
+- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
  
--	/* Set register bits for Idle Config Mode */
- 	if (tsc_wires > 0) {
- 		tscadc->tsc_wires = tsc_wires;
- 		if (tsc_wires == 5)
- 			ctrl |= CNTRLREG_5WIRE | CNTRLREG_TSCENB;
- 		else
- 			ctrl |= CNTRLREG_4WIRE | CNTRLREG_TSCENB;
--		tscadc_idle_config(tscadc);
- 	}
++#ifndef __LINUX_TI_AM335X_TSCADC_MFD_H
++#define __LINUX_TI_AM335X_TSCADC_MFD_H
++
+ #include <linux/mfd/core.h>
  
-+	tscadc_idle_config(tscadc);
-+
- 	/* Enable the TSC module enable bit */
- 	ctrl |= CNTRLREG_TSCSSENB;
- 	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
-@@ -323,8 +323,10 @@ static int __maybe_unused tscadc_resume(struct device *dev)
- 			ctrl |= CNTRLREG_5WIRE | CNTRLREG_TSCENB;
- 		else
- 			ctrl |= CNTRLREG_4WIRE | CNTRLREG_TSCENB;
--		tscadc_idle_config(tscadc);
- 	}
-+
-+	tscadc_idle_config(tscadc);
-+
- 	ctrl |= CNTRLREG_TSCSSENB;
- 	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
- 
+ #define REG_RAWIRQSTATUS	0x024
 -- 
 2.27.0
 
