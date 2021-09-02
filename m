@@ -2,138 +2,145 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2 autolearn=ham
+X-Spam-Status: No, score=-19.9 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
+	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,
+	INCLUDES_CR_TRAILER,INCLUDES_PATCH,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=unavailable
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A86D7C432BE
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 09:26:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB08C4320A
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 09:58:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 80377610CC
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 09:26:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A6C0460F6C
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 09:58:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245494AbhIBJ10 convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 Sep 2021 05:27:26 -0400
-Received: from relay2-d.mail.gandi.net ([217.70.183.194]:62203 "EHLO
-        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245489AbhIBJ1Z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2021 05:27:25 -0400
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay2-d.mail.gandi.net (Postfix) with ESMTPSA id E1E9740006;
-        Thu,  2 Sep 2021 09:26:25 +0000 (UTC)
-Date:   Thu, 2 Sep 2021 11:26:19 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        id S232215AbhIBJ65 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 Sep 2021 05:58:57 -0400
+Received: from fllv0016.ext.ti.com ([198.47.19.142]:34176 "EHLO
+        fllv0016.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231544AbhIBJ64 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2021 05:58:56 -0400
+Received: from lelv0266.itg.ti.com ([10.180.67.225])
+        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 1829vZVF024830;
+        Thu, 2 Sep 2021 04:57:35 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
+        s=ti-com-17Q1; t=1630576655;
+        bh=nEoymP6uiFiiUs51DwV54eLM+vIw5+7/A3ZrzYKIF2w=;
+        h=Subject:To:CC:References:From:Date:In-Reply-To;
+        b=TLIJKYvgitFbshk0d29u9N5kCnhcT3+knLZvP3vYItsrYveDUKecS+YatT/pPvl05
+         hSQDAb3sz8jcT0Aaq8931DzYe0U6ZDIrcihspwTgFCor2dBWfIAWczmbhEgnuvArjb
+         /G07zugGFS/zX6BM+/7B1itjIVb0hQgWy3GX6Ex0=
+Received: from DFLE105.ent.ti.com (dfle105.ent.ti.com [10.64.6.26])
+        by lelv0266.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 1829vZL5107782
+        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Thu, 2 Sep 2021 04:57:35 -0500
+Received: from DFLE113.ent.ti.com (10.64.6.34) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 2
+ Sep 2021 04:57:34 -0500
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE113.ent.ti.com
+ (10.64.6.34) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
+ Frontend Transport; Thu, 2 Sep 2021 04:57:34 -0500
+Received: from [10.250.100.73] (ileax41-snat.itg.ti.com [10.172.224.153])
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 1829vU2G106438;
+        Thu, 2 Sep 2021 04:57:31 -0500
+Subject: Re: [PATCH 28/40] mfd: ti_am335x_tscadc: Add ADC1/magnetic reader
+ support
+To:     Miquel Raynal <miquel.raynal@bootlin.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>, <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 12/16] iio: adc: max1027: Introduce an end of conversion
- helper
-Message-ID: <20210902112619.248bca16@xps13>
-In-Reply-To: <SJ0PR03MB635976F76F5121FFF26E858B99C19@SJ0PR03MB6359.namprd03.prod.outlook.com>
-References: <20210818111139.330636-1-miquel.raynal@bootlin.com>
-        <20210818111139.330636-13-miquel.raynal@bootlin.com>
-        <SJ0PR03MB635976F76F5121FFF26E858B99C19@SJ0PR03MB6359.namprd03.prod.outlook.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        "Ryan J . Barnett" <ryan.barnett@collins.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-input@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+        <linux-clk@vger.kernel.org>, Jason Reeder <jreeder@ti.com>
+References: <20210825152518.379386-1-miquel.raynal@bootlin.com>
+ <20210825152518.379386-29-miquel.raynal@bootlin.com>
+ <732e002d-d732-5411-1be4-1ecafc993da5@ti.com> <20210902084706.7cd54453@xps13>
+From:   Grygorii Strashko <grygorii.strashko@ti.com>
+Message-ID: <2e1cb934-c85a-34ca-c701-0d845bf0680a@ti.com>
+Date:   Thu, 2 Sep 2021 12:57:30 +0300
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+In-Reply-To: <20210902084706.7cd54453@xps13>
+Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
+X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Nuno,
 
-"Sa, Nuno" <Nuno.Sa@analog.com> wrote on Fri, 20 Aug 2021 07:28:17
-+0000:
 
-> > -----Original Message-----
-> > From: Miquel Raynal <miquel.raynal@bootlin.com>
-> > Sent: Wednesday, August 18, 2021 1:12 PM
-> > To: Jonathan Cameron <jic23@kernel.org>; Lars-Peter Clausen
-> > <lars@metafoo.de>
-> > Cc: Thomas Petazzoni <thomas.petazzoni@bootlin.com>; linux-
-> > iio@vger.kernel.org; linux-kernel@vger.kernel.org; Miquel Raynal
-> > <miquel.raynal@bootlin.com>
-> > Subject: [PATCH 12/16] iio: adc: max1027: Introduce an end of
-> > conversion helper
-> > 
-> > [External]
-> > 
-> > For now this helper only waits for the maximum duration of a
-> > conversion,
-> > but it will soon be improved to properly handle the end of conversion
-> > interrupt.
-> > 
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  drivers/iio/adc/max1027.c | 23 +++++++++++++++++++++--
-> >  1 file changed, 21 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-> > index afc3ce69f7ea..2d6485591761 100644
-> > --- a/drivers/iio/adc/max1027.c
-> > +++ b/drivers/iio/adc/max1027.c
-> > @@ -60,6 +60,9 @@
-> >  #define MAX1027_NAVG_32   (0x03 << 2)
-> >  #define MAX1027_AVG_EN    BIT(4)
-> > 
-> > +/* Device can achieve 300ksps so we assume a 3.33us conversion
-> > delay */
-> > +#define MAX1027_CONVERSION_UDELAY 4
-> > +
-> >  enum max1027_id {
-> >  	max1027,
-> >  	max1029,
-> > @@ -236,6 +239,20 @@ struct max1027_state {
-> >  	u8				reg ____cacheline_aligned;
-> >  };
-> > 
-> > +static DECLARE_WAIT_QUEUE_HEAD(max1027_queue);
-> > +
-> > +static int max1027_wait_eoc(struct iio_dev *indio_dev)
-> > +{
-> > +	unsigned int conversion_time =
-> > MAX1027_CONVERSION_UDELAY;
-> > +
-> > +	if (indio_dev->active_scan_mask)
-> > +		conversion_time *= hweight32(*indio_dev-  
-> > >active_scan_mask);  
-> > +
-> > +	usleep_range(conversion_time, conversion_time * 2);
-> > +
-> > +	return 0;
-> > +}
-> > +
-> >  /* Scan from 0 to the highest requested channel */
-> >  static int max1027_configure_chans_to_scan(struct iio_dev
-> > *indio_dev)
-> >  {
-> > @@ -310,9 +327,11 @@ static int max1027_read_single_value(struct
-> > iio_dev *indio_dev,
-> >  	/*
-> >  	 * For an unknown reason, when we use the mode "10" (write
-> >  	 * conversion register), the interrupt doesn't occur every time.
-> > -	 * So we just wait 1 ms.
-> > +	 * So we just wait the maximum conversion time and deliver
-> > the value.
-> >  	 */
-> > -	mdelay(1);
-> > +	ret = max1027_wait_eoc(indio_dev);
-> > +	if (ret)
-> > +		return ret;  
+On 02/09/2021 09:47, Miquel Raynal wrote:
+> Hi Grygorii,
 > 
-> I'm a bit confused here... Why are we looking at the active_scan_mask?
-> Aren't we preventing this for running concurrently with buffering?
+> Grygorii Strashko <grygorii.strashko@ti.com> wrote on Wed, 1 Sep 2021
+> 22:26:25 +0300:
+> 
+>> On 25/08/2021 18:25, Miquel Raynal wrote:
+>>> Introduce a new compatible that has another set of driver data,
+>>> targeting am437x SoCs with a magnetic reader instead of the
+>>> touchscreen and a more featureful set of registers.
+>>>
+>>> Co-developed-by: Jason Reeder <jreeder@ti.com>
+>>> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+>>> Signed-off-by: Jason Reeder <jreeder@ti.com>
+>>> ---
+>>>    drivers/mfd/ti_am335x_tscadc.c       | 43 ++++++++++++++++++++++------
+>>>    include/linux/mfd/ti_am335x_tscadc.h |  9 +++++-
+>>>    2 files changed, 43 insertions(+), 9 deletions(-)
+>>>
+>>> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+>>> index 1a30610dc65f..f4f6b9db4d2a 100644
+>>> --- a/drivers/mfd/ti_am335x_tscadc.c
+>>> +++ b/drivers/mfd/ti_am335x_tscadc.c
+>>> @@ -122,9 +122,9 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>>>    	const __be32 *cur;
+>>>    	struct clk *clk;
+>>>    	u32 val;
+>>> -	bool use_tsc = false;
+>>> +	bool use_tsc = false, use_mag = false;
+>>>    	int tscmag_wires = 0, adc_channels = 0, readouts = 0, cell_idx = 0;
+>>> -	int total_channels, err;
+>>> +	int mag_tracks = 0, total_channels, err;
+>>>    >   	/* Allocate memory for device */
+>>>    	tscadc = devm_kzalloc(&pdev->dev, sizeof(*tscadc), GFP_KERNEL);
+>>> @@ -146,6 +146,12 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>>>    		of_property_read_u32(node, "ti,coordiante-readouts", &readouts);
+>>>    		if (tscmag_wires)
+>>>    			use_tsc = true;
+>>> +	} else {
+>>> +		node = of_get_child_by_name(pdev->dev.of_node, "mag");
+>>> +		of_property_read_u32(node, "ti,tracks", &mag_tracks);
+>>
+>> "ti,tracks" seems undocumented?
+> 
+> Well that's true and almost on purpose, I am not focusing on the
+> magnetic reader feature, it is not supported, I don't have one, I don't
+> plan to add support for it. But in the driver I need to know how many
+> "tracks" are unavailable for the ADC in order to implement the entire
+> logic (this block comes from TI and the naming from Jason Reeder).
+> 
+> I am not comfortable writing a binding file for a device that I won't
+> use, it's the best way to miss something and have stable broken
+> bindings in the future. So I assumed it was not a big deal to have this
+> property in the code, which may be updated/removed/enhanced later if
+> needed without having to mess with the code too much. What do you think?
 
-Sorry for the confusion, at this stage the "if (active_masks)" is
-useless, I moved it later in the series when we actually start to use
-this EOC helper for the buffered reads as well.
+Sry, it's not ok.
+You need to (a) add binding or (b) w/a it in some way -
+like drop it and use const value instead, for example.
 
-Thanks,
-Miquèl
+-- 
+Best regards,
+grygorii
