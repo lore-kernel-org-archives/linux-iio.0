@@ -7,21 +7,21 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B452C433FE
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:14:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A8E2C43219
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:14:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 26C96610A1
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:14:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 20FD361051
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:14:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347027AbhIBVPq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 Sep 2021 17:15:46 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:57241 "EHLO
+        id S1347059AbhIBVPr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 Sep 2021 17:15:47 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:37715 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346729AbhIBVPm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2021 17:15:42 -0400
+        with ESMTP id S1346973AbhIBVPp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2021 17:15:45 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 6C84E24000B;
-        Thu,  2 Sep 2021 21:14:42 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id EEAB224000D;
+        Thu,  2 Sep 2021 21:14:44 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -29,9 +29,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Nuno Sa <Nuno.Sa@analog.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v2 05/16] iio: adc: max1027: Minimize the number of converted channels
-Date:   Thu,  2 Sep 2021 23:14:26 +0200
-Message-Id: <20210902211437.503623-6-miquel.raynal@bootlin.com>
+Subject: [PATCH v2 08/16] iio: adc: max1027: Simplify the _set_trigger_state() helper
+Date:   Thu,  2 Sep 2021 23:14:29 +0200
+Message-Id: <20210902211437.503623-9-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210902211437.503623-1-miquel.raynal@bootlin.com>
 References: <20210902211437.503623-1-miquel.raynal@bootlin.com>
@@ -42,108 +42,53 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Provide a list of ->available_scan_masks which match the device's
-capabilities. Basically, the devices is able to scan from 0 to N, N
-being the highest voltage channel requested by the user. The temperature
-can be included or not, but cannot be retrieved alone.
-
-The consequence is, instead of reading and pushing to the IIO buffers
-all channels each time, the "minimum" number of channels will be scanned
-and pushed based on the ->active_scan_mask.
-
-For example, if the user wants channels 1, 4 and 5, all channels from
-0 to 5 will be scanned and pushed to the IIO buffers. The core will then
-filter out the unneeded samples based on the ->active_scan_mask that has
-been selected and only channels 1, 4 and 5 will be available to the user
-in the shared buffer.
+The call to max1027_enable_trigger() is the same in both cases thanks to
+the 'state' variable, so factorize a little bit to simplify the code and
+explain why we call this helper.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/adc/max1027.c | 46 +++++++++++++++++++++++++++++++++------
- 1 file changed, 39 insertions(+), 7 deletions(-)
+ drivers/iio/adc/max1027.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
 diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 1167d50c1d67..3c41d2c0ed2a 100644
+index 7611d96fc901..9269931ca09d 100644
 --- a/drivers/iio/adc/max1027.c
 +++ b/drivers/iio/adc/max1027.c
-@@ -172,18 +172,39 @@ static const struct iio_chan_spec max1231_channels[] = {
- 	MAX1X31_CHANNELS(12),
- };
+@@ -395,11 +395,17 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
+ 	struct max1027_state *st = iio_priv(indio_dev);
+ 	int ret;
  
-+#define MAX1X27_SCAN_MASK_TEMP BIT(0)
++	/*
++	 * In order to disable the convst trigger, start acquisition on
++	 * conversion register write, which basically disables triggering
++	 * conversions upon cnvst changes and thus has the effect of disabling
++	 * the external hardware trigger.
++	 */
++	ret = max1027_enable_trigger(indio_dev, state);
++	if (ret)
++		return ret;
 +
-+#define MAX1X27_SCAN_MASKS(temp)					\
-+	GENMASK(1, 1 - (temp)), GENMASK(2, 1 - (temp)),			\
-+	GENMASK(3, 1 - (temp)), GENMASK(4, 1 - (temp)),			\
-+	GENMASK(5, 1 - (temp)), GENMASK(6, 1 - (temp)),			\
-+	GENMASK(7, 1 - (temp)), GENMASK(8, 1 - (temp))
-+
-+#define MAX1X29_SCAN_MASKS(temp)					\
-+	MAX1X27_SCAN_MASKS(temp),					\
-+	GENMASK(9, 1 - (temp)), GENMASK(10, 1 - (temp)),		\
-+	GENMASK(11, 1 - (temp)), GENMASK(12, 1 - (temp))
-+
-+#define MAX1X31_SCAN_MASKS(temp)					\
-+	MAX1X29_SCAN_MASKS(temp),					\
-+	GENMASK(13, 1 - (temp)), GENMASK(14, 1 - (temp)),		\
-+	GENMASK(15, 1 - (temp)), GENMASK(16, 1 - (temp))
-+
- static const unsigned long max1027_available_scan_masks[] = {
--	0x000001ff,
-+	MAX1X27_SCAN_MASKS(0),
-+	MAX1X27_SCAN_MASKS(1),
- 	0x00000000,
- };
- 
- static const unsigned long max1029_available_scan_masks[] = {
--	0x00001fff,
-+	MAX1X29_SCAN_MASKS(0),
-+	MAX1X29_SCAN_MASKS(1),
- 	0x00000000,
- };
- 
- static const unsigned long max1031_available_scan_masks[] = {
--	0x0001ffff,
-+	MAX1X31_SCAN_MASKS(0),
-+	MAX1X31_SCAN_MASKS(1),
- 	0x00000000,
- };
- 
-@@ -368,9 +389,15 @@ static int max1027_set_trigger_state(struct iio_trigger *trig, bool state)
- 		if (ret < 0)
- 			return ret;
- 
--		/* Scan from 0 to max */
--		st->reg = MAX1027_CONV_REG | MAX1027_CHAN(0) |
--			  MAX1027_SCAN_N_M | MAX1027_TEMP;
-+		/*
-+		 * Scan from chan 0 to the highest requested channel.
-+		 * Include temperature on demand.
-+		 */
-+		st->reg = MAX1027_CONV_REG | MAX1027_SCAN_0_N;
-+		st->reg |= MAX1027_CHAN(fls(*indio_dev->active_scan_mask) - 2);
-+		if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
-+			st->reg |= MAX1027_TEMP;
-+
+ 	if (state) {
+-		ret = max1027_enable_trigger(indio_dev, state);
+-		if (ret)
+-			return ret;
+-
+ 		/*
+ 		 * Scan from chan 0 to the highest requested channel.
+ 		 * Include temperature on demand.
+@@ -412,11 +418,6 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
  		ret = spi_write(st->spi, &st->reg, 1);
  		if (ret < 0)
  			return ret;
-@@ -391,9 +418,14 @@ static irqreturn_t max1027_trigger_handler(int irq, void *private)
- 	struct iio_poll_func *pf = private;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct max1027_state *st = iio_priv(indio_dev);
-+	unsigned int scanned_chans;
-+
-+	scanned_chans = fls(*indio_dev->active_scan_mask) - 1;
-+	if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
-+		scanned_chans++;
+-	} else {
+-		/* Start acquisition on conversion register write */
+-		ret = max1027_enable_trigger(indio_dev, state);
+-		if (ret)
+-			return ret;
+ 	}
  
- 	/* fill buffer with all channel */
--	spi_read(st->spi, st->buffer, indio_dev->masklength * 2);
-+	spi_read(st->spi, st->buffer, scanned_chans * 2);
- 
- 	iio_push_to_buffers(indio_dev, st->buffer);
- 
+ 	return 0;
 -- 
 2.27.0
 
