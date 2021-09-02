@@ -7,21 +7,21 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD38EC433EF
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:14:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E8EEC433F5
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:14:52 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C69B7610C8
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:14:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3B3F8610A0
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Sep 2021 21:14:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347108AbhIBVPs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 Sep 2021 17:15:48 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:34289 "EHLO
+        id S1346837AbhIBVPt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 Sep 2021 17:15:49 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:45861 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346987AbhIBVPq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2021 17:15:46 -0400
+        with ESMTP id S1347021AbhIBVPr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Sep 2021 17:15:47 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id C159B24000F;
-        Thu,  2 Sep 2021 21:14:45 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 51B3B240011;
+        Thu,  2 Sep 2021 21:14:47 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -29,9 +29,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Nuno Sa <Nuno.Sa@analog.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v2 09/16] iio: adc: max1027: Ensure a default cnvst trigger configuration
-Date:   Thu,  2 Sep 2021 23:14:30 +0200
-Message-Id: <20210902211437.503623-10-miquel.raynal@bootlin.com>
+Subject: [PATCH v2 11/16] iio: adc: max1027: Prevent single channel accesses during buffer reads
+Date:   Thu,  2 Sep 2021 23:14:32 +0200
+Message-Id: <20210902211437.503623-12-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210902211437.503623-1-miquel.raynal@bootlin.com>
 References: <20210902211437.503623-1-miquel.raynal@bootlin.com>
@@ -42,12 +42,14 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-We don't expect the (hardware) cnvst trigger to be enabled at boot time,
-this is a user choice made in sysfs and there is a dedicated callback to
-enable/disable this trigger. Hence, we can just ensure it is disabled in
-the probe at initialization time and then assume that whenever a
-->read_raw() call happens, the trigger has been disabled and conversions
-will start on register write.
+When hardware buffers are enabled (the cnvst pin being the trigger), one
+should not mess with the device state by requesting a single channel
+read.
+
+There is already a iio_buffer_enabled() check in *_read_single_value()
+to merely prevent this situation but the check is inconsistent since
+buffers can be enabled after the if clause anyway. Instead, use the core
+mutex by calling iio_device_claim/release_direct_mode().
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
@@ -55,32 +57,32 @@ Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
  1 file changed, 5 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 9269931ca09d..476b90f12330 100644
+index f4cb5c75604b..57f62ea2d7aa 100644
 --- a/drivers/iio/adc/max1027.c
 +++ b/drivers/iio/adc/max1027.c
-@@ -288,10 +288,6 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
- 		return -EBUSY;
- 	}
+@@ -296,10 +296,9 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+ 	int ret;
+ 	struct max1027_state *st = iio_priv(indio_dev);
  
--	ret = max1027_enable_trigger(indio_dev, false);
--	if (ret)
--		return ret;
--
- 	/* Configure conversion register with the requested chan */
- 	st->reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel) |
- 		  MAX1027_NOSCAN;
-@@ -541,6 +537,11 @@ static int max1027_probe(struct spi_device *spi)
- 		goto free_buffer;
- 	}
- 
-+	/* Assume conversion on register write for now */
-+	ret = max1027_enable_trigger(indio_dev, false);
+-	if (iio_buffer_enabled(indio_dev)) {
+-		dev_warn(&indio_dev->dev, "trigger mode already enabled");
+-		return -EBUSY;
+-	}
++	ret = iio_device_claim_direct_mode(indio_dev);
 +	if (ret)
 +		return ret;
-+
- 	return devm_iio_device_register(&spi->dev, indio_dev);
  
- free_buffer:
+ 	/* Configure conversion register with the requested chan */
+ 	st->reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel) |
+@@ -325,6 +324,8 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+ 	if (ret < 0)
+ 		return ret;
+ 
++	iio_device_release_direct_mode(indio_dev);
++
+ 	*val = be16_to_cpu(st->buffer[0]);
+ 
+ 	return IIO_VAL_INT;
 -- 
 2.27.0
 
