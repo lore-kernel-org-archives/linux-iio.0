@@ -7,32 +7,31 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BAB62C433EF
-	for <linux-iio@archiver.kernel.org>; Fri,  3 Sep 2021 14:48:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75D71C433EF
+	for <linux-iio@archiver.kernel.org>; Fri,  3 Sep 2021 14:48:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A1D6C610E5
-	for <linux-iio@archiver.kernel.org>; Fri,  3 Sep 2021 14:48:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5A16A610E5
+	for <linux-iio@archiver.kernel.org>; Fri,  3 Sep 2021 14:48:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349488AbhICOtB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 Sep 2021 10:49:01 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:46645 "EHLO
+        id S230332AbhICOtZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 Sep 2021 10:49:25 -0400
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:41709 "EHLO
         relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349248AbhICOtB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Sep 2021 10:49:01 -0400
+        with ESMTP id S1349502AbhICOtO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Sep 2021 10:49:14 -0400
 Received: (Authenticated sender: jacopo@jmondi.org)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 3A4DF60003;
-        Fri,  3 Sep 2021 14:47:59 +0000 (UTC)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id E029E60011;
+        Fri,  3 Sep 2021 14:48:07 +0000 (UTC)
 From:   Jacopo Mondi <jacopo@jmondi.org>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Matt Ranostay <matt.ranostay@konsulko.com>,
         Magnus Damm <magnus.damm@gmail.com>
-Cc:     Jacopo Mondi <jacopo@jmondi.org>, linux-iio@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 1/3] dt-bindings: iio: chemical: Document senseair,sunrise CO2 sensor
-Date:   Fri,  3 Sep 2021 16:48:26 +0200
-Message-Id: <20210903144828.497166-2-jacopo@jmondi.org>
+Cc:     Jacopo Mondi <jacopo@jmondi.org>, linux-iio@vger.kernel.org
+Subject: [PATCH v4 3/3] iio: ABI: docs: Document Senseair Sunrise ABI
+Date:   Fri,  3 Sep 2021 16:48:28 +0200
+Message-Id: <20210903144828.497166-4-jacopo@jmondi.org>
 X-Mailer: git-send-email 2.32.0
 In-Reply-To: <20210903144828.497166-1-jacopo@jmondi.org>
 References: <20210903144828.497166-1-jacopo@jmondi.org>
@@ -42,90 +41,58 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add documentation for the Senseair Sunrise 006-0-0007 CO2 NDIR sensor.
+Add documentation for the sysfs attributes of the sunrise_co2 driver.
 
 Signed-off-by: Jacopo Mondi <jacopo@jmondi.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../iio/chemical/senseair,sunrise.yaml        | 55 +++++++++++++++++++
- .../devicetree/bindings/vendor-prefixes.yaml  |  2 +
- 2 files changed, 57 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
+ .../sysfs-bus-iio-chemical-sunrise-co2        | 38 +++++++++++++++++++
+ 1 file changed, 38 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-chemical-sunrise-co2
 
-diff --git a/Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml b/Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-chemical-sunrise-co2 b/Documentation/ABI/testing/sysfs-bus-iio-chemical-sunrise-co2
 new file mode 100644
-index 000000000000..337fe09e4bb8
+index 000000000000..bbdbf9dd4818
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/chemical/senseair,sunrise.yaml
-@@ -0,0 +1,55 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/chemical/senseair,sunrise.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
++++ b/Documentation/ABI/testing/sysfs-bus-iio-chemical-sunrise-co2
+@@ -0,0 +1,38 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_co2_calibration_factory
++Date:		August 2021
++KernelVersion:
++Contact:	Jacopo Mondi <jacopo@jmondi.org>
++Description:
++		Writing '1' triggers a 'Factory' calibration cycle.
 +
-+title: Senseair Sunrise 006-0-0007 CO2 Sensor
++What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_co2_calibration_background
++Date:		August 2021
++KernelVersion:
++Contact:	Jacopo Mondi <jacopo@jmondi.org>
++Description:
++		Writing '1' triggers a 'Background' calibration cycle.
 +
-+maintainers:
-+  - Jacopo Mondi <jacopo@jmondi.org>
++What:		/sys/bus/iio/devices/iio:deviceX/error_status_available
++Date:		August 2021
++KernelVersion:
++Contact:	Jacopo Mondi <jacopo@jmondi.org>
++Description:
++		Reading returns the list of possible chip error status.
++		Available options are:
++		- 'error_fatal': Analog front-end initialization error
++		- 'error_i2c': Read/write to non-existing register
++		- 'error_algorithm': Corrupted parameters
++		- 'error_calibration': Calibration has failed
++		- 'error_self_diagnostic': Internal interface failure
++		- 'error_out_of_range': Measured concentration out of scale
++		- 'error_memory': Error during memory operations
++		- 'error_no_measurement': Cleared at first measurement
++		- 'error_low_voltage': Sensor regulated voltage too low
++		- 'error_measurement_timeout': Unable to complete measurement
 +
-+description: |
-+  Senseair Sunrise 006-0-0007 is a NDIR CO2 sensor. It supports I2C or UART buses
-+  for communications and control.
-+
-+  Datasheets:
-+    https://rmtplusstoragesenseair.blob.core.windows.net/docs/Dev/publicerat/PSP11704.pdf
-+    https://rmtplusstoragesenseair.blob.core.windows.net/docs/Dev/publicerat/PSH11649.pdf
-+    https://rmtplusstoragesenseair.blob.core.windows.net/docs/Dev/publicerat/TDE5531.pdf
-+    https://rmtplusstoragesenseair.blob.core.windows.net/docs/Market/publicerat/TDE7318.pdf
-+
-+properties:
-+  compatible:
-+    const: senseair,sunrise-006-0-0007
-+
-+  reg:
-+    maxItems: 1
-+
-+  ndry-gpios:
-+    maxItems: 1
-+    description:
-+      Phandle to the GPIO line connected to the nDRY pin. Typically active low.
-+
-+  en-gpios:
-+    maxItems: 1
-+    description:
-+      Phandle to the GPIO line connected to the EN pin. Typically active high.
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      co2-sensor@68 {
-+        compatible = "senseair,sunrise-006-0-0007";
-+        reg = <0x68>;
-+      };
-+    };
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-index 07fb0d25fc15..8415e6067ce1 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -1008,6 +1008,8 @@ patternProperties:
-     description: Shenzhen SEI Robotics Co., Ltd
-   "^semtech,.*":
-     description: Semtech Corporation
-+  "^senseair,.*":
-+    description: Senseair AB
-   "^sensirion,.*":
-     description: Sensirion AG
-   "^sensortek,.*":
++What:		/sys/bus/iio/devices/iio:deviceX/error_status
++Date:		August 2021
++KernelVersion:
++Contact:	Jacopo Mondi <jacopo@jmondi.org>
++Description:
++		Reading returns the current chip error status.
 -- 
 2.32.0
 
