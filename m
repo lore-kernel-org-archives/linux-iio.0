@@ -2,55 +2,39 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-15.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+X-Spam-Status: No, score=-10.5 required=3.0 tests=BAYES_00,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EDA2BC433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  5 Sep 2021 13:23:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8731CC433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Sep 2021 13:36:15 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BD51660F14
-	for <linux-iio@archiver.kernel.org>; Sun,  5 Sep 2021 13:23:02 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 66E8260F45
+	for <linux-iio@archiver.kernel.org>; Sun,  5 Sep 2021 13:36:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231917AbhIENYE convert rfc822-to-8bit (ORCPT
+        id S229566AbhIENhR convert rfc822-to-8bit (ORCPT
         <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 5 Sep 2021 09:24:04 -0400
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:52519 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231754AbhIENYE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Sep 2021 09:24:04 -0400
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay6-d.mail.gandi.net (Postfix) with ESMTPSA id 1C587C0006;
-        Sun,  5 Sep 2021 13:22:56 +0000 (UTC)
-Date:   Sun, 5 Sep 2021 15:22:56 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Grygorii Strashko <grygorii.strashko@ti.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>, <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-input@vger.kernel.org>,
-        <linux-omap@vger.kernel.org>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Ryan Barnett <ryan.barnett@collins.com>,
-        Jason Reeder <jreeder@ti.com>
-Subject: Re: [PATCH v2 33/46] mfd: ti_am335x_tscadc: Move control register
- configuration
-Message-ID: <20210905152256.48259b8d@xps13>
-In-Reply-To: <20210905141830.1a0deaa9@jic23-huawei>
-References: <20210902215144.507243-1-miquel.raynal@bootlin.com>
-        <20210902215144.507243-34-miquel.raynal@bootlin.com>
-        <3bc1f515-0b3c-ad0c-9624-4d4804899007@ti.com>
-        <20210905141830.1a0deaa9@jic23-huawei>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Sun, 5 Sep 2021 09:37:17 -0400
+Received: from mail.kernel.org ([198.145.29.99]:41628 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229583AbhIENhQ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 5 Sep 2021 09:37:16 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 25A2C600CC;
+        Sun,  5 Sep 2021 13:36:10 +0000 (UTC)
+Date:   Sun, 5 Sep 2021 14:39:33 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Dragos Bogdan <dragos.bogdan@analog.com>
+Subject: Re: [PATCH 0/5] Fixes and improvements to the ADIS lib/devices
+Message-ID: <20210905143933.4f492b78@jic23-huawei>
+In-Reply-To: <20210903141423.517028-1-nuno.sa@analog.com>
+References: <20210903141423.517028-1-nuno.sa@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8BIT
@@ -58,44 +42,55 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+On Fri, 3 Sep 2021 16:14:18 +0200
+Nuno Sá <nuno.sa@analog.com> wrote:
 
-jic23@kernel.org wrote on Sun, 5 Sep 2021 14:18:52 +0100:
-
-> On Fri, 3 Sep 2021 16:24:22 +0300
-> Grygorii Strashko <grygorii.strashko@ti.com> wrote:
+> This series adds some fixes and improvements for the ADIS library and
+> devices. There are two fixes:
+>  
+> 1) On the library 'adis_init()' function, a call to 'adis_enable_irq()'
+> was being done. That does not make sense because
+> '__adis_initial_startup()' will reset the device and put the data ready
+> pin in the default state. For some drivers, these could mean that we
+> were leaving probe in a state different from the desired one.
+> 2) The adis16480 driver was registering a managed reset action to put
+> the device into sleep mode in the unbinding path. Well, not all devices
+> supported by the driver support sleep mode.
+>  
+> The rest of the series is a minor improvement about passing the handling of
+> enabling/disabling IRQs (for devices that cannot unmask the data ready
+> pin) inside the library.
 > 
-> > On 03/09/2021 00:51, Miquel Raynal wrote:  
-> > > The datasheet states that most of the configuration should be set in the
-> > > control register in the first place, before actually enabling the
-> > > hardware. So far only half of the configuration was made in the first
-> > > step, which does not make really sense and would complicating the code
-> > > when introducing support for the am437x hardware.
-> > > 
-> > > Let's move that register write a bit below to enclose more configuration.
-> > > 
-> > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > > ---
-> > >   drivers/mfd/ti_am335x_tscadc.c | 2 ++
-> > >   1 file changed, 2 insertions(+)
-> > > 
-> > > diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-> > > index 29ada9da8826..a0db3e4ff265 100644
-> > > --- a/drivers/mfd/ti_am335x_tscadc.c
-> > > +++ b/drivers/mfd/ti_am335x_tscadc.c
-> > > @@ -239,6 +239,8 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
-> > >   	}
-> > >   	regmap_write(tscadc->regmap, REG_CTRL, tscadc->ctrl);
-> > >   
-> > > +	regmap_write(tscadc->regmap, REG_CTRL, tscadc->ctrl);
-> > > +    
-> > 
-> > Strange change - above 2 lines a the same !?  
-> 
-> Yup, Looks like this one got handled earlier and the rebase went wrong.
-> So drop it.
+> Nuno Sá (5):
+>   iio: adis: do not disabe IRQs in 'adis_init()'
+>   iio: adis: handle devices that cannot unmask the drdy pin
+>   iio: adis16475: make use of the new unmasked_drdy flag
+>   iio: adis16460: make use of the new unmasked_drdy flag
+>   iio: adis16480: fix devices that do not support sleep mode
 
-Exactly. That's a rebase issue I didn't notice.
+Hi Nuno.
+
+Series looks good to me but I'd like it to sit on list a little longer before
+I take any of it.
+
+Would have been 'nice' to have had the two fixes at the start of the series
+as they should probably go via stable whereas the 3 patches moving things
+into the core are 5.16 material.
+
+Looks like I should be fine picking two fixes up even in this order though so
+not a big issue.
 
 Thanks,
-Miquèl
+
+Jonathan
+
+> 
+>  drivers/iio/imu/adis.c         | 17 ++++++++++++++++-
+>  drivers/iio/imu/adis16460.c    | 18 +-----------------
+>  drivers/iio/imu/adis16475.c    | 19 +------------------
+>  drivers/iio/imu/adis16480.c    | 14 +++++++++++---
+>  drivers/iio/imu/adis_trigger.c |  4 ++++
+>  include/linux/iio/imu/adis.h   |  2 ++
+>  6 files changed, 35 insertions(+), 39 deletions(-)
+> 
+
