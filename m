@@ -5,31 +5,31 @@ X-Spam-Level:
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DD1E4C433FE
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Sep 2021 01:57:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A48E3C433F5
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Sep 2021 01:57:53 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C552B6109D
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Sep 2021 01:57:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8C08260E98
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Sep 2021 01:57:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232845AbhIGB6x (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Sep 2021 21:58:53 -0400
-Received: from mx21.baidu.com ([220.181.3.85]:56948 "EHLO baidu.com"
+        id S242215AbhIGB6z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Sep 2021 21:58:55 -0400
+Received: from mx21.baidu.com ([220.181.3.85]:57068 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229835AbhIGB6v (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 6 Sep 2021 21:58:51 -0400
-Received: from BC-Mail-Ex23.internal.baidu.com (unknown [172.31.51.17])
-        by Forcepoint Email with ESMTPS id 2C1288AFED56B243199A;
-        Tue,  7 Sep 2021 09:57:43 +0800 (CST)
+        id S241950AbhIGB6z (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 6 Sep 2021 21:58:55 -0400
+Received: from BC-Mail-Ex24.internal.baidu.com (unknown [172.31.51.18])
+        by Forcepoint Email with ESMTPS id E8B0BA6CB2062E1B6BEC;
+        Tue,  7 Sep 2021 09:57:40 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-Ex23.internal.baidu.com (172.31.51.17) with Microsoft SMTP Server
+ BC-Mail-Ex24.internal.baidu.com (172.31.51.18) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Tue, 7 Sep 2021 09:57:42 +0800
+ 15.1.2242.12; Tue, 7 Sep 2021 09:57:40 +0800
 Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Tue, 7 Sep 2021 09:57:42 +0800
+ 15.1.2308.14; Tue, 7 Sep 2021 09:57:40 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
 To:     <caihuoqing@baidu.com>
 CC:     Jonathan Cameron <jic23@kernel.org>,
@@ -43,9 +43,9 @@ CC:     Jonathan Cameron <jic23@kernel.org>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>
-Subject: [PATCH v3 3/3] MAINTAINERS:  Add the driver info of the NXP IMX8QXP ADC
-Date:   Tue, 7 Sep 2021 09:57:23 +0800
-Message-ID: <20210907015724.1377-4-caihuoqing@baidu.com>
+Subject: [PATCH v3 2/3] dt-bindings: iio: adc: Add the binding documentation for NXP IMX8QXP ADC
+Date:   Tue, 7 Sep 2021 09:57:22 +0800
+Message-ID: <20210907015724.1377-3-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210907015724.1377-1-caihuoqing@baidu.com>
 References: <20210907015724.1377-1-caihuoqing@baidu.com>
@@ -58,33 +58,112 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The NXP i.MX 8QuadXPlus SOC has a new ADC IP. After adding
-the driver support for it, I add the driver info of the
-NXP IMX8QXP ADC to MAINTAINERS file.
+The NXP i.MX 8QuadXPlus SOC has a new ADC IP, so add the binding
+documentation for NXP IMX8QXP ADC.
 
 Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
 ---
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+v1->v2: *Fix some indentation issues.
+        *Mark status as okay.
+        *Change clock2 source.
+v1 link:
+https://patchwork.kernel.org/project/linux-arm-kernel/patch/20210830172140.414-5-caihuoqing@baidu.com/
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index f800abca74b0..de98fcf75b01 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13475,6 +13475,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/display/imx/nxp,imx8mq-dcss.yaml
- F:	drivers/gpu/drm/imx/dcss/
- 
-+NXP i.MX 8QXP ADC DRIVER
-+M:	Cai Huoqing <caihuoqing@baidu.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+F:	Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
-+F:	drivers/iio/adc/imx8qxp-adc.c
+ .../bindings/iio/adc/nxp,imx8qxp-adc.yaml     | 85 +++++++++++++++++++
+ 1 file changed, 85 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+new file mode 100644
+index 000000000000..77501898a563
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+@@ -0,0 +1,85 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/nxp,imx8qxp-adc.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- NXP PF8100/PF8121A/PF8200 PMIC REGULATOR DEVICE DRIVER
- M:	Jagan Teki <jagan@amarulasolutions.com>
- S:	Maintained
++title: NXP IMX8QXP ADC bindings
++
++maintainers:
++  - Cai Huoqing <caihuoqing@baidu.com>
++
++description:
++  Supports the ADC found on the IMX8QXP SoC.
++
++properties:
++  compatible:
++    const: nxp,imx8qxp-adc
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  clocks:
++    maxItems: 2
++
++  clock-names:
++    items:
++      - const: per
++      - const: ipg
++
++  assigned-clocks:
++    maxItems: 1
++
++  assigned-clocks-rate:
++    maxItems: 1
++
++  power-domains:
++    maxItems: 1
++
++  status:
++    const: disable
++
++  "#io-channel-cells":
++    const: 1
++
++required:
++  - compatible
++  - reg
++  - interrupts
++  - interrupts-parent
++  - clocks
++  - clock-names
++  - assigned-clocks
++  - assigned-clock-rates
++  - power-domains
++  - state
++  - "#address-cells"
++  - "#size-cells"
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/arm-gic.h>
++    #include <dt-bindings/firmware/imx/rsrc.h>
++    soc {
++        #address-cells = <1>;
++        #size-cells = <1>;
++        adc@5a880000 {
++            compatible = "nxp,imx8qxp-adc";
++            reg = <0x0 0x5a880000 0x0 0x10000>;
++            interrupts = <GIC_SPI 240 IRQ_TYPE_LEVEL_HIGH>;
++            clocks = <&clk IMX_SC_R_ADC_0>,
++                     <&clk IMX_SC_R_ADC_0>;
++            clock-names = "per", "ipg";
++            assigned-clocks = <&clk IMX_SC_R_ADC_0>;
++            assigned-clock-rates = <24000000>;
++            power-domains = <&pd IMX_SC_R_ADC_0>;
++            status = "okay";
++            #io-channel-cells = <1>;
++        };
++    };
++...
 -- 
 2.25.1
 
