@@ -2,87 +2,121 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B563C433EF
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Sep 2021 15:04:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E360C433F5
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Sep 2021 15:25:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 497E0611BF
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Sep 2021 15:04:04 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 3E9E061104
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Sep 2021 15:25:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230437AbhIHPFL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 8 Sep 2021 11:05:11 -0400
-Received: from mail.kernelconcepts.de ([188.40.83.200]:40632 "EHLO
+        id S1348439AbhIHP04 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 8 Sep 2021 11:26:56 -0400
+Received: from mail.kernelconcepts.de ([188.40.83.200]:40664 "EHLO
         mail.kernelconcepts.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230427AbhIHPFK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Sep 2021 11:05:10 -0400
-Received: from [217.146.132.69] (helo=[192.168.2.34])
+        with ESMTP id S1344656AbhIHP04 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Sep 2021 11:26:56 -0400
+Received: from [217.146.132.69] (helo=yoda.kc.loc)
         by mail.kernelconcepts.de with esmtpsa (TLS1.2:ECDHE_RSA_AES_128_GCM_SHA256:128)
         (Exim 4.89)
         (envelope-from <florian.boor@kernelconcepts.de>)
-        id 1mNz7B-0000k6-7v; Wed, 08 Sep 2021 17:03:53 +0200
-Subject: Re: [PATCH] iio: adc: ad799x: Implement selecting external reference
- voltage input on AD7991, AD7995 and AD7999.
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Jonathan.Cameron@huawei.com,
-        Michael.Hennerich@analog.com
-References: <20210830145934.11024-1-florian.boor@kernelconcepts.de>
- <20210905122653.0e081ab2@jic23-huawei>
+        id 1mNzSI-0000tc-7n; Wed, 08 Sep 2021 17:25:42 +0200
 From:   Florian Boor <florian.boor@kernelconcepts.de>
-Message-ID: <8734fb80-011d-cb07-8cfb-6a1c06417034@kernelconcepts.de>
-Date:   Wed, 8 Sep 2021 17:03:52 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org, Jonathan.Cameron@huawei.com,
+        Michael.Hennerich@analog.com,
+        Florian Boor <florian.boor@kernelconcepts.de>
+Subject: [PATCH v2 2/2] dt-binding: iio: Add documentation for AD799x driver
+Date:   Wed,  8 Sep 2021 17:25:25 +0200
+Message-Id: <20210908152525.2946785-2-florian.boor@kernelconcepts.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20210908152525.2946785-1-florian.boor@kernelconcepts.de>
+References: <20210908152525.2946785-1-florian.boor@kernelconcepts.de>
 MIME-Version: 1.0
-In-Reply-To: <20210905122653.0e081ab2@jic23-huawei>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+New documentation for AD799x series of I²C ADC ICs.
 
-On 05.09.21 13:26, Jonathan Cameron wrote:
-> On Mon, 30 Aug 2021 16:59:34 +0200
-> Normal convention on this (not helped here by the complete lack of
-> a binding document for this device) would be that the driver would
-> use the external vref is vref-supply is present.
-> 
-> Currently the driver uses devm_regulator_get().  In this case it
-> should be using devm_regulator_get_optional() as that will avoid a
-> 'fake' regulator being provided.  
+Signed-off-by: Florian Boor <florian.boor@kernelconcepts.de>
+---
+ .../bindings/iio/adc/adi,ad799x.yaml          | 61 +++++++++++++++++++
+ 1 file changed, 61 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad799x.yaml
 
-okay right - in this case we could get rid of the additional setting and only if
-there is no vref-supply provided we need to get a dummy.
-
-> The driver will need a few changes to handle the possible error return
-> from that call, but it shouldn't be too complicated.
-
-I'll send an updated patch...
-
-> If you are willing it would be great to have a binding description for
-> this driver. I'm no sure how it has slipped through the net for so long!
-
-I'll add this as well.
-
-Greetings
-
-Florian
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad799x.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad799x.yaml
+new file mode 100644
+index 000000000000..90b3b01482fe
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/adi,ad799x.yaml
+@@ -0,0 +1,61 @@
++# SPDX-License-Identifier: GPL-2.0
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/adi,ad799x.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Analog Devices AD7991, AD7992, AD7993, AD7994, AD7995, AD7997, AD7998,
++       AD7999 and similar analog to digital converters
++
++maintainers:
++  - Michael Hennerich, Analog Devices Inc. <Michael.Hennerich@analog.com>
++
++description: |
++  Specifications on the converters can be found at:
++    AD7991, AD7995, AD7999:
++      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7991_7995_7999.pdf
++    AD7992:
++      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7992.pdf
++    AD7993, AD7994:
++      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7993_7994.pdf
++    AD7997, AD7998:
++      https://www.analog.com/media/en/technical-documentation/data-sheets/AD7997_7998.pdf
++
++properties:
++  compatible:
++    enum:
++      - adi,ad7991
++      - adi,ad7992
++      - adi,ad7993
++      - adi,ad7994
++      - adi,ad7995
++      - adi,ad7997
++      - adi,ad7998
++      - adi,ad7999
++
++  reg:
++    maxItems: 1
++
++  vcc-supply:
++    description:
++      ADC power supply
++
++  vref-supply:
++    description:
++      ADC reference voltage supply, optional for AD7991, AD7995 and AD7999
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++        adc1: ad7991@28 {
++                reg = <0x28>;
++                compatible = "adi,ad7991";
++                vcc-supply = <&vcc_3v3>;
++                vref-supply = <&adc_vref>;
++        };
++...
 -- 
-The dream of yesterday                  Florian Boor
-is the hope of today                    Tel: +49(0) 271-338857-15
-and the reality of tomorrow.		Fax: +49(0) 271-338857-29
-[Robert Hutchings Goddard, 1904]        florian.boor@kernelconcepts.de
-                                        http://www.kernelconcepts.de/en
+2.30.2
 
-kernel concepts GmbH
-Hauptstraße 16
-57074 Siegen
-Deutschland
-Geschäftsführer: Ole Reinhardt
-HR Siegen, HR B 9613
