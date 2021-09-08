@@ -2,88 +2,86 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-14.0 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
+	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2605DC433EF
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Sep 2021 19:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 503A3C433FE
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Sep 2021 10:56:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 044CB61108
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Sep 2021 19:05:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 30D2461104
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Sep 2021 10:56:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344719AbhIGTG3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Sep 2021 15:06:29 -0400
-Received: from mail-oo1-f45.google.com ([209.85.161.45]:45696 "EHLO
-        mail-oo1-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230203AbhIGTG3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Sep 2021 15:06:29 -0400
-Received: by mail-oo1-f45.google.com with SMTP id m14-20020a4ad50e000000b002912a944a47so83313oos.12;
-        Tue, 07 Sep 2021 12:05:22 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20161025;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=xG8XtyNOMTr7L9vWlv1RtoU+mRp0MG0nj8OT2PfaaKc=;
-        b=C34wVMJ5tMM0b2DGnZBo+YVSKG/fDsJcj7n8OvhDYwdg85BEWFwEcU//vpk0SlMDjY
-         V0ASZ46lHbYDQwPpc3inqqCRBodrG9/lxuyaDunYD37ca2RMvsJ//46Bam7cyOKTL/xz
-         Mm2QUhkn85ZACFGCHW9OnJMJ7LhC0rt+gd0vKI6NvvIXvBDjgI/4QNw46g4praRfqLvd
-         4fn6xju8agGv9mLZKKYkJEaLJe9iqyvhzcKaz418yM8tWHtSOY56DWmlm0iqk3U88Mj6
-         qS/9ZhqbTXC7qCy9POqnYVdqpaR0x3Bd2bMcjOI+NBcZ6LS/0p56Y5Rz/bvNAAakjQIl
-         YTWw==
-X-Gm-Message-State: AOAM531jg/H4KgIUtxeh+xBupBpIbt1yn0AdYve2/95pDCrn+6iIWxlC
-        4aYl5Ggpj8yv4p7u2O4QNw==
-X-Google-Smtp-Source: ABdhPJwvKHJB56QW0OLh0B8b9pk8wolbsjN+Be2o3jJnyFZbM/oWiz/ufQhm/BNt1/K79q4MgwqJXQ==
-X-Received: by 2002:a4a:5742:: with SMTP id u63mr1145298ooa.87.1631041522404;
-        Tue, 07 Sep 2021 12:05:22 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.gmail.com with ESMTPSA id x22sm2391802oox.26.2021.09.07.12.05.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Sep 2021 12:05:21 -0700 (PDT)
-Received: (nullmailer pid 168046 invoked by uid 1000);
-        Tue, 07 Sep 2021 19:05:20 -0000
-Date:   Tue, 7 Sep 2021 14:05:20 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-        Tony Lindgren <tony@atomide.com>,
+        id S1348953AbhIHK5t (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 8 Sep 2021 06:57:49 -0400
+Received: from mx20.baidu.com ([111.202.115.85]:39978 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S242347AbhIHK5r (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 8 Sep 2021 06:57:47 -0400
+Received: from BJHW-Mail-Ex03.internal.baidu.com (unknown [10.127.64.13])
+        by Forcepoint Email with ESMTPS id 9CC0367B9CD6297E3102;
+        Wed,  8 Sep 2021 18:56:37 +0800 (CST)
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BJHW-Mail-Ex03.internal.baidu.com (10.127.64.13) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Wed, 8 Sep 2021 18:56:37 +0800
+Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Wed, 8 Sep 2021 18:56:36 +0800
+From:   Cai Huoqing <caihuoqing@baidu.com>
+To:     <caihuoqing@baidu.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>, bcousson@baylibre.com,
-        linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Lokesh Vutla <lokeshvutla@ti.com>,
-        Tero Kristo <kristo@kernel.org>,
-        Ryan Barnett <ryan.barnett@collins.com>,
-        linux-iio@vger.kernel.org, Jason Reeder <jreeder@ti.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-omap@vger.kernel.org,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Grygorii Strashko <grygorii.strashko@ti.com>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Vignesh Raghavendra <vigneshr@ti.com>
-Subject: Re: [PATCH v2 07/46] dt-bindings: iio: adc: ti,am3359-adc: Describe
- am4372 ADC compatible
-Message-ID: <YTe38HWmbICuwGjf@robh.at.kernel.org>
-References: <20210902215144.507243-1-miquel.raynal@bootlin.com>
- <20210902215144.507243-8-miquel.raynal@bootlin.com>
+        Heiko Stuebner <heiko@sntech.de>, <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-rockchip@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: [PATCH] iio: adc: rockchip_saradc: Make use of the helper function devm_platform_ioremap_resource()
+Date:   Wed, 8 Sep 2021 18:56:30 +0800
+Message-ID: <20210908105631.1474-1-caihuoqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20210902215144.507243-8-miquel.raynal@bootlin.com>
+Content-Type: text/plain
+X-Originating-IP: [172.31.63.8]
+X-ClientProxiedBy: BJHW-Mail-Ex15.internal.baidu.com (10.127.64.38) To
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 02 Sep 2021 23:51:05 +0200, Miquel Raynal wrote:
-> A more recent version of the am3359 ADC is available on certain SoCs of
-> the am437x family. This IP has evolved a little bit and deserves its own
-> compatible.
-> 
-> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> ---
->  Documentation/devicetree/bindings/iio/adc/ti,am3359-adc.yaml | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
+Use the devm_platform_ioremap_resource() helper instead of
+calling platform_get_resource() and devm_ioremap_resource()
+separately
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+---
+ drivers/iio/adc/rockchip_saradc.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+index a237fe469a30..a56a0d7337ca 100644
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -319,7 +319,6 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+ 	struct rockchip_saradc *info = NULL;
+ 	struct device_node *np = pdev->dev.of_node;
+ 	struct iio_dev *indio_dev = NULL;
+-	struct resource	*mem;
+ 	const struct of_device_id *match;
+ 	int ret;
+ 	int irq;
+@@ -348,8 +347,7 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+ 		return -EINVAL;
+ 	}
+ 
+-	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+-	info->regs = devm_ioremap_resource(&pdev->dev, mem);
++	info->regs = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(info->regs))
+ 		return PTR_ERR(info->regs);
+ 
+-- 
+2.25.1
+
