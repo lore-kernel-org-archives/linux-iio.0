@@ -2,116 +2,155 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-7.2 required=3.0 tests=BAYES_00,DKIM_SIGNED,
+	DKIM_VALID,HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,NICE_REPLY_A,
+	SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_1 autolearn=no autolearn_force=no
+	version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BCFAC433F5
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Sep 2021 13:17:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3FC8C433F5
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Sep 2021 13:51:26 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4E73D60E94
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Sep 2021 13:17:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C1F8660F6C
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Sep 2021 13:51:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244377AbhIINTA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 9 Sep 2021 09:19:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:35404 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1358489AbhIINLR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 9 Sep 2021 09:11:17 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0DAE161501;
-        Thu,  9 Sep 2021 12:01:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188880;
-        bh=SY6y8U71EGd4aHjByJyQV570JiwGzg0mb0VxOk/josg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qVWXli0qiWWnoZf/apDvKbvj4UAxoCxAWaXRJ9FNSXAi8mTN5MhoNXloXIHxC6x86
-         YL6Iq0oahGEmqxCu2A8AkmF1eP9oEYymQXK9VHwXhOU8DkzMloCWmUpH0bw9G/diY7
-         +cVRCXfM9z3ckCRNsvVWMBt3d2Ud1c/s7A3UrdYMiLffgXoxX8z+B6v9E+miTkjW/Y
-         Qw61rrG1rIoWJfO6kL1ncFRNkfoezrYT8MMuEswGVoyt7G/5Cmag6uZUW626xDksbK
-         kESsbF/jvNMNwbCpYEJ7qUYChEDzN2nTxdgp3Td/n3w60+5+uXuppqHyK0UZY4FdLl
-         ECMbcucW2p84w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        kernel test robot <lkp@intel.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.4 03/35] iio: dac: ad5624r: Fix incorrect handling of an optional regulator.
-Date:   Thu,  9 Sep 2021 08:00:44 -0400
-Message-Id: <20210909120116.150912-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210909120116.150912-1-sashal@kernel.org>
-References: <20210909120116.150912-1-sashal@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
+        id S1355327AbhIINwe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 9 Sep 2021 09:52:34 -0400
+Received: from mx0b-001b2d01.pphosted.com ([148.163.158.5]:34302 "EHLO
+        mx0b-001b2d01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1353565AbhIINuu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Sep 2021 09:50:50 -0400
+Received: from pps.filterd (m0098417.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.16.0.43/8.16.0.43) with SMTP id 189DWhkx065648;
+        Thu, 9 Sep 2021 09:49:22 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=subject : to : cc :
+ references : from : message-id : date : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=YOADUv/wRxpcFSdNFbl1N5SS8ZlACAZ0KlTyLm4aDps=;
+ b=n7w+t2kFOfaLxKEtctq/oQ0c5vHnWtUd6fnRpZFPXof/hmmR40e4vYuqVI0/lszcUhps
+ axcCzpIy1Xu3vGvKK4d+bSEaNg/crwlxshGKVOl2ylvqazd5DM+aBtmIKMcUtjWmFTyX
+ s4ZslOJxA4Ob2bLlya6TMKGX4ymIDgF1Ml/XBRsF8cFCYs2CgFqt+pTZgQdVRu/CWMrk
+ 65FF90PTvwyQdQVOXPMRZRQnzDCYf4OyjY++unGdKbbp4Lz/YsFBJ3JWtpUwUDcfD9Zt
+ 2Pn1p/oKyGJ+dJPK63EWdOQMJfAzGGj0NQaTy73NREtlO8FJV/h7DzE8jJiVrd5TDNR/ Rw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3aygjvd0rd-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Sep 2021 09:49:21 -0400
+Received: from m0098417.ppops.net (m0098417.ppops.net [127.0.0.1])
+        by pps.reinject (8.16.0.43/8.16.0.43) with SMTP id 189DXCZ6067716;
+        Thu, 9 Sep 2021 09:49:21 -0400
+Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
+        by mx0a-001b2d01.pphosted.com with ESMTP id 3aygjvd0r5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Sep 2021 09:49:21 -0400
+Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
+        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 189DhQZD003673;
+        Thu, 9 Sep 2021 13:49:20 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma04wdc.us.ibm.com with ESMTP id 3axcnr5as3-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 09 Sep 2021 13:49:20 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 189DnKje43909514
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 9 Sep 2021 13:49:20 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id EC73AAE0A4;
+        Thu,  9 Sep 2021 13:49:19 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 69537AE097;
+        Thu,  9 Sep 2021 13:49:19 +0000 (GMT)
+Received: from [9.163.8.88] (unknown [9.163.8.88])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu,  9 Sep 2021 13:49:19 +0000 (GMT)
+Subject: Re: Looking for clarification on sysfs IIO devices, do _raw devices
+ require both _offset and _scale?
+To:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Cc:     "openbmc@lists.ozlabs.org" <openbmc@lists.ozlabs.org>,
+        Ed Tanous <ed@tanous.net>, Ed Tanous <edtanous@google.com>
+References: <cc74f30f-9ab8-45ce-1f44-8e55c3f9c5ce@linux.vnet.ibm.com>
+ <5c79425f-6e88-36b6-cdfe-4080738d039f@metafoo.de>
+From:   Bruce Mitchell <bruce.mitchell@linux.vnet.ibm.com>
+Message-ID: <b9f78f37-fbb6-ea68-48c1-917cf42ca57f@linux.vnet.ibm.com>
+Date:   Thu, 9 Sep 2021 06:49:19 -0700
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
+In-Reply-To: <5c79425f-6e88-36b6-cdfe-4080738d039f@metafoo.de>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: Lr1GrOcjFNSdsgCM1r13fjtaz44hDdli
+X-Proofpoint-ORIG-GUID: boH-cdt_nHT8P33EbzGCirfKyTQ5Vcfg
 Content-Transfer-Encoding: 8bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.391,18.0.790
+ definitions=2021-09-09_04:2021-09-09,2021-09-09 signatures=0
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
+ malwarescore=0 bulkscore=0 phishscore=0 spamscore=0 suspectscore=0
+ adultscore=0 clxscore=1011 priorityscore=1501 mlxscore=0 mlxlogscore=999
+ impostorscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109030001 definitions=main-2109090083
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On 9/9/2021 00:12, Lars-Peter Clausen wrote:
+> On 9/9/21 12:10 AM, Bruce Mitchell wrote:
+>> In reference to:
+>> https://www.kernel.org/doc/Documentation/ABI/testing/sysfs-bus-iio
+>>
+>> I have Temperature, Pressure, and Humidity IIO sensors.
+>> IIO _raw devices look like this on sysfs:
+>>   this happens to be a SI7020 type device with 2 sensors
+>>     /sys/bus/iio/devices/iio:device0/in_humidityrelative_offset
+>>     /sys/bus/iio/devices/iio:device0/in_humidityrelative_raw
+>>     /sys/bus/iio/devices/iio:device0/in_humidityrelative_scale
+>>     /sys/bus/iio/devices/iio:device0/in_temp_offset
+>>     /sys/bus/iio/devices/iio:device0/in_temp_raw
+>>     /sys/bus/iio/devices/iio:device0/in_temp_scale
+>>
+>> Other IIO _input devices look like this on sysfs:
+>>   this happens to be a DPS310 device with 2 sensors
+>>      /sys/bus/iio/devices/iio:device1/in_temp_input
+>>      /sys/bus/iio/devices/iio:device1/in_pressure_input
+>>
+>> As I read it if the IIO device was an _input type on sysfs,
+>> just read it (and possibly scale it for units).
+>>
+>> But if the IIO device was a _raw type on sysfs my understanding
+>> is that it must be accompanied by a _offset and a _scale for
+>> at least temperature, pressure, humidity, voltage, and current
+>> sensors.
+>> Is that correct?
+>>
+>> Further for any IIO device that is a _raw type on sysfs is it
+>> required to be accompanied by a _offset and a _scale as well?
+> 
+> Hi,
+> 
+> That sounds about right.
+> 
+> The _input name is historically and comes from hwmon framework. It means 
+> that the data has been processed by the kernel driver and converted to 
+> the right SI units for the channel type. This is usually used for sensor 
+> that have a non-linear transfer function. `raw` on the other hand means 
+> the data is just as it is reported by the hardware. The reason for this 
+> is that conversion to SI units is often not lossless, since we have 
+> finite precision. So it is up to the application to decide whether it 
+> wants to work on the raw data or how it wants to round the converted data.
+> 
+> `input` attributes never have scale and offset since they are already in 
+> the right unit. For raw scale and offset are optional. If scale does not 
+> exist assume it is 1, if offset does not exist assume it is 0. You'll 
+> rarely see a device with raw attributes without scale, but there are 
+> quite a few without offset.
+> 
+> - Lars
+> 
+> 
 
-[ Upstream commit 97683c851f9cdbd3ea55697cbe2dcb6af4287bbd ]
+Thank you Lars!
 
-The naming of the regulator is problematic.  VCC is usually a supply
-voltage whereas these devices have a separate VREF pin.
-
-Secondly, the regulator core might have provided a stub regulator if
-a real regulator wasn't provided. That would in turn have failed to
-provide a voltage when queried. So reality was that there was no way
-to use the internal reference.
-
-In order to avoid breaking any dts out in the wild, make sure to fallback
-to the original vcc naming if vref is not available.
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20210627163244.1090296-9-jic23@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/dac/ad5624r_spi.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
-index 5489ec43b95d..e5cefdb674f8 100644
---- a/drivers/iio/dac/ad5624r_spi.c
-+++ b/drivers/iio/dac/ad5624r_spi.c
-@@ -231,7 +231,7 @@ static int ad5624r_probe(struct spi_device *spi)
- 	if (!indio_dev)
- 		return -ENOMEM;
- 	st = iio_priv(indio_dev);
--	st->reg = devm_regulator_get(&spi->dev, "vcc");
-+	st->reg = devm_regulator_get_optional(&spi->dev, "vref");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
-@@ -242,6 +242,22 @@ static int ad5624r_probe(struct spi_device *spi)
- 			goto error_disable_reg;
- 
- 		voltage_uv = ret;
-+	} else {
-+		if (PTR_ERR(st->reg) != -ENODEV)
-+			return PTR_ERR(st->reg);
-+		/* Backwards compatibility. This naming is not correct */
-+		st->reg = devm_regulator_get_optional(&spi->dev, "vcc");
-+		if (!IS_ERR(st->reg)) {
-+			ret = regulator_enable(st->reg);
-+			if (ret)
-+				return ret;
-+
-+			ret = regulator_get_voltage(st->reg);
-+			if (ret < 0)
-+				goto error_disable_reg;
-+
-+			voltage_uv = ret;
-+		}
- 	}
- 
- 	spi_set_drvdata(spi, indio_dev);
 -- 
-2.30.2
+Bruce
 
