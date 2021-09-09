@@ -2,116 +2,69 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-19.4 required=3.0 tests=BAYES_00,DKIMWL_WL_HIGH,
-	DKIM_SIGNED,DKIM_VALID,DKIM_VALID_AU,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-3.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS
+	autolearn=no autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9444C433FE
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Sep 2021 13:10:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5CF0C43217
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Sep 2021 13:10:54 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9B863611AF
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Sep 2021 13:10:53 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D116D611AD
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Sep 2021 13:10:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346746AbhIINL5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 9 Sep 2021 09:11:57 -0400
-Received: from mail.kernel.org ([198.145.29.99]:54048 "EHLO mail.kernel.org"
+        id S1356061AbhIINMA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 9 Sep 2021 09:12:00 -0400
+Received: from mga17.intel.com ([192.55.52.151]:16567 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1357959AbhIINFn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 9 Sep 2021 09:05:43 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 5BA11632A4;
-        Thu,  9 Sep 2021 12:00:19 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1631188820;
-        bh=SY6y8U71EGd4aHjByJyQV570JiwGzg0mb0VxOk/josg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=FhAzSy8lZiLuA1rU26fGaW1BND9VZl85nUk424mQ2VII6rFfDbL1Jh0ZHgjl24fZE
-         4iMxVNsbPA40Gwy5Tlb8nlbGDYjqYYq/40xFbu7roUTD7ZDznRfe9zXHo0CI27JSBX
-         1T5GLT6GoqYQ27ZR8SZ90YSTWxB0FgC6LA73oI8Lr4EfJyroFRh3rHgWhpBOw8GNH6
-         qt9UuqncDt+mqlBtXF/QGbi3QAXaJV7CYgOW+VpcIMuuNjdAM+xHhTVuUQSKKfIj9u
-         1fJbT7sE190nxB9+rpFWL97PXIWEFPa8jEpxDJA7NSUrptCFequQK8Owv/rsMeD3ti
-         YkR4NsbQrfQ7w==
-From:   Sasha Levin <sashal@kernel.org>
-To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        kernel test robot <lkp@intel.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Sasha Levin <sashal@kernel.org>, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.9 03/48] iio: dac: ad5624r: Fix incorrect handling of an optional regulator.
-Date:   Thu,  9 Sep 2021 07:59:30 -0400
-Message-Id: <20210909120015.150411-3-sashal@kernel.org>
-X-Mailer: git-send-email 2.30.2
-In-Reply-To: <20210909120015.150411-1-sashal@kernel.org>
-References: <20210909120015.150411-1-sashal@kernel.org>
+        id S1358541AbhIINHk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 9 Sep 2021 09:07:40 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10101"; a="200983497"
+X-IronPort-AV: E=Sophos;i="5.85,280,1624345200"; 
+   d="scan'208";a="200983497"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2021 06:05:45 -0700
+X-IronPort-AV: E=Sophos;i="5.85,280,1624345200"; 
+   d="scan'208";a="466487379"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.68.40])
+  by fmsmga007-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 09 Sep 2021 06:05:44 -0700
+Received: from andy by smile with local (Exim 4.95-RC2)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mOJkL-001cuH-Fe;
+        Thu, 09 Sep 2021 16:05:41 +0300
+Date:   Thu, 9 Sep 2021 16:05:41 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jacopo Mondi <jacopo@jmondi.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Magnus Damm <magnus.damm@gmail.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v5 4/4] iio: ABI: Document in_concentration_co2_scale
+Message-ID: <YToGpTR0aJ97GxG0@smile.fi.intel.com>
+References: <20210909094537.218064-1-jacopo@jmondi.org>
+ <20210909094537.218064-5-jacopo@jmondi.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-stable: review
-X-Patchwork-Hint: Ignore
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20210909094537.218064-5-jacopo@jmondi.org>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Thu, Sep 09, 2021 at 11:45:37AM +0200, Jacopo Mondi wrote:
+> Document the 'in_concentration_co2_scale' standard IIO attribute.
 
-[ Upstream commit 97683c851f9cdbd3ea55697cbe2dcb6af4287bbd ]
+...
 
-The naming of the regulator is problematic.  VCC is usually a supply
-voltage whereas these devices have a separate VREF pin.
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_concentration_co2_scale
 
-Secondly, the regulator core might have provided a stub regulator if
-a real regulator wasn't provided. That would in turn have failed to
-provide a voltage when queried. So reality was that there was no way
-to use the internal reference.
+I don't know the history of the discussion about this attribute but it seems
+too specific to have in list of kinda generic ones.
 
-In order to avoid breaking any dts out in the wild, make sure to fallback
-to the original vcc naming if vref is not available.
+Shouldn't be rather air / gas / etc used instead of CO2?
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reported-by: kernel test robot <lkp@intel.com>
-Acked-by: Nuno Sá <nuno.sa@analog.com>
-Link: https://lore.kernel.org/r/20210627163244.1090296-9-jic23@kernel.org
-Signed-off-by: Sasha Levin <sashal@kernel.org>
----
- drivers/iio/dac/ad5624r_spi.c | 18 +++++++++++++++++-
- 1 file changed, 17 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/dac/ad5624r_spi.c b/drivers/iio/dac/ad5624r_spi.c
-index 5489ec43b95d..e5cefdb674f8 100644
---- a/drivers/iio/dac/ad5624r_spi.c
-+++ b/drivers/iio/dac/ad5624r_spi.c
-@@ -231,7 +231,7 @@ static int ad5624r_probe(struct spi_device *spi)
- 	if (!indio_dev)
- 		return -ENOMEM;
- 	st = iio_priv(indio_dev);
--	st->reg = devm_regulator_get(&spi->dev, "vcc");
-+	st->reg = devm_regulator_get_optional(&spi->dev, "vref");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
-@@ -242,6 +242,22 @@ static int ad5624r_probe(struct spi_device *spi)
- 			goto error_disable_reg;
- 
- 		voltage_uv = ret;
-+	} else {
-+		if (PTR_ERR(st->reg) != -ENODEV)
-+			return PTR_ERR(st->reg);
-+		/* Backwards compatibility. This naming is not correct */
-+		st->reg = devm_regulator_get_optional(&spi->dev, "vcc");
-+		if (!IS_ERR(st->reg)) {
-+			ret = regulator_enable(st->reg);
-+			if (ret)
-+				return ret;
-+
-+			ret = regulator_get_voltage(st->reg);
-+			if (ret < 0)
-+				goto error_disable_reg;
-+
-+			voltage_uv = ret;
-+		}
- 	}
- 
- 	spi_set_drvdata(spi, indio_dev);
 -- 
-2.30.2
+With Best Regards,
+Andy Shevchenko
+
 
