@@ -2,34 +2,33 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
-	autolearn=unavailable autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
+	SPF_PASS,USER_AGENT_GIT autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5091BC433FE
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Sep 2021 07:13:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C4AB1C433FE
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Sep 2021 07:14:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2DBC4610A6
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Sep 2021 07:13:57 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A92F461108
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Sep 2021 07:14:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231528AbhILHPI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 12 Sep 2021 03:15:08 -0400
-Received: from mx21.baidu.com ([220.181.3.85]:51088 "EHLO baidu.com"
+        id S232166AbhILHPM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 12 Sep 2021 03:15:12 -0400
+Received: from mx20.baidu.com ([111.202.115.85]:51168 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229783AbhILHPH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 12 Sep 2021 03:15:07 -0400
-Received: from BC-Mail-Ex29.internal.baidu.com (unknown [172.31.51.23])
-        by Forcepoint Email with ESMTPS id BA1FF5F56688E55BC8B1;
-        Sun, 12 Sep 2021 15:13:51 +0800 (CST)
+        id S229783AbhILHPM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 12 Sep 2021 03:15:12 -0400
+Received: from BC-Mail-Ex32.internal.baidu.com (unknown [172.31.51.26])
+        by Forcepoint Email with ESMTPS id 8F40083A1DF70830CC91;
+        Sun, 12 Sep 2021 15:13:48 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-Ex29.internal.baidu.com (172.31.51.23) with Microsoft SMTP Server
+ BC-Mail-Ex32.internal.baidu.com (172.31.51.26) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Sun, 12 Sep 2021 15:13:50 +0800
+ 15.1.2242.12; Sun, 12 Sep 2021 15:13:48 +0800
 Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.62.12) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Sun, 12 Sep 2021 15:13:50 +0800
+ 15.1.2308.14; Sun, 12 Sep 2021 15:13:47 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>,
         <shawnguo@kernel.org>, <s.hauer@pengutronix.de>,
@@ -39,12 +38,10 @@ CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>,
         "Cai Huoqing" <caihuoqing@baidu.com>
-Subject: [PATCH v4 3/3] MAINTAINERS: Add the driver info of the NXP IMX8QXP ADC
-Date:   Sun, 12 Sep 2021 15:13:34 +0800
-Message-ID: <20210912071334.1745-4-caihuoqing@baidu.com>
+Subject: [PATCH v4 0/3] iio: imx8qxp-adc: Add driver support for NXP IMX8QXP ADC
+Date:   Sun, 12 Sep 2021 15:13:31 +0800
+Message-ID: <20210912071334.1745-1-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.32.0.windows.2
-In-Reply-To: <20210912071334.1745-1-caihuoqing@baidu.com>
-References: <20210912071334.1745-1-caihuoqing@baidu.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -55,33 +52,53 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The NXP i.MX 8QuadXPlus SOC has a new ADC IP. After adding
-the driver support for it, I add the driver info of the
-NXP IMX8QXP ADC to MAINTAINERS file.
+The NXP i.MX 8QuadXPlus SOC has a new ADC IP. These patches add
+driver support for this ADC
 
-Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
----
- MAINTAINERS | 7 +++++++
- 1 file changed, 7 insertions(+)
+dt-bindings: iio: adc:
+v1->v2:	*Fix some indentation issues.
+	*Mark status as okay.
+	*Change clock2 source.
+v3->v4:	*Sort header file declarations in alphabetical order.
+	*Remove explicitly cast from "void *".
+	*Make use of dev_err_probe().
+	*Add some blank lines to help readability.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 5a61cb2d0cd4..2115db14f5d2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -13476,6 +13476,13 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/display/imx/nxp,imx8mq-dcss.yaml
- F:	drivers/gpu/drm/imx/dcss/
- 
-+NXP i.MX 8QXP ADC DRIVER
-+M:	Cai Huoqing <caihuoqing@baidu.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+F:	Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
-+F:	drivers/iio/adc/imx8qxp-adc.c
-+
- NXP PF8100/PF8121A/PF8200 PMIC REGULATOR DEVICE DRIVER
- M:	Jagan Teki <jagan@amarulasolutions.com>
- S:	Maintained
+iio: imx8qxp-adc:
+v1->v2:	*Squash patches 1, 2, 3, and 5 into a single patch.
+	*Add device specific prefix.
+	*Remove the brackets around individual numbers.
+	*Make use of FIELD_PREP() and FIELD_GET().
+	*Remove a lot of cache values.
+	*Replace mlock with adc->lock.
+	*Move adc->value read from isr to the completion.
+	*Set pm_runtime_disable/_put_noidle() before adc_disable.
+	*Add error handler-err_disable_reg/err_unprepare_clk.
+v2->v3:	*Add "return 0" to adc_runtime_resume()
+v3->v4:	*Sort header file declarations in alphabetical order.
+	*Remove explicitly cast from "void *".
+	*Make use of dev_err_probe().
+	*Add some blank lines to help readability.
+
+v1 link:
+https://patchwork.kernel.org/project/linux-arm-kernel/patch/20210830172140.414-4-caihuoqing@baidu.com/
+v3 link:
+https://patchwork.kernel.org/project/linux-arm-kernel/cover/20210907015724.1377-1-caihuoqing@baidu.com/
+
+Cai Huoqing (3):
+  iio: imx8qxp-adc: Add binding documentation for NXP IMX8QXP ADC
+  dt-bindings: iio: adc: Add binding documentation for NXP IMX8QXP ADC
+  MAINTAINERS:  Add the driver info of the NXP IMX8QXP ADC
+
+ .../bindings/iio/adc/nxp,imx8qxp-adc.yaml     |  88 ++++
+ MAINTAINERS                                   |   7 +
+ drivers/iio/adc/Kconfig                       |  10 +
+ drivers/iio/adc/Makefile                      |   1 +
+ drivers/iio/adc/imx8qxp-adc.c                 | 461 ++++++++++++++++++
+ 5 files changed, 567 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+ create mode 100644 drivers/iio/adc/imx8qxp-adc.c
+
 -- 
 2.25.1
 
