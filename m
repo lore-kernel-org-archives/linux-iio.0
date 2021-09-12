@@ -4,97 +4,84 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
-	autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10C4BC433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Sep 2021 06:41:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5091BC433FE
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Sep 2021 07:13:57 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C31DB60F92
-	for <linux-iio@archiver.kernel.org>; Sun, 12 Sep 2021 06:41:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2DBC4610A6
+	for <linux-iio@archiver.kernel.org>; Sun, 12 Sep 2021 07:13:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229783AbhILGmq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 12 Sep 2021 02:42:46 -0400
-Received: from mx20.baidu.com ([111.202.115.85]:48466 "EHLO baidu.com"
+        id S231528AbhILHPI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 12 Sep 2021 03:15:08 -0400
+Received: from mx21.baidu.com ([220.181.3.85]:51088 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S229535AbhILGmp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 12 Sep 2021 02:42:45 -0400
-Received: from BC-Mail-Ex03.internal.baidu.com (unknown [172.31.51.43])
-        by Forcepoint Email with ESMTPS id 4FA382798FCFEE9D74E4;
-        Sun, 12 Sep 2021 14:41:17 +0800 (CST)
+        id S229783AbhILHPH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 12 Sep 2021 03:15:07 -0400
+Received: from BC-Mail-Ex29.internal.baidu.com (unknown [172.31.51.23])
+        by Forcepoint Email with ESMTPS id BA1FF5F56688E55BC8B1;
+        Sun, 12 Sep 2021 15:13:51 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-Ex03.internal.baidu.com (172.31.51.43) with Microsoft SMTP Server
+ BC-Mail-Ex29.internal.baidu.com (172.31.51.23) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Sun, 12 Sep 2021 14:41:16 +0800
-Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.62.11) by
+ 15.1.2242.12; Sun, 12 Sep 2021 15:13:50 +0800
+Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.62.12) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Sun, 12 Sep 2021 14:41:16 +0800
+ 15.1.2308.14; Sun, 12 Sep 2021 15:13:50 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
-To:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
-        <jic23@kernel.org>
-CC:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        Cai Huoqing <caihuoqing@baidu.com>
-Subject: [PATCH v2] iio: adc: ad799x: Add a single error handling block at the end of the function.
-Date:   Sun, 12 Sep 2021 14:41:01 +0800
-Message-ID: <20210912064101.539-1-caihuoqing@baidu.com>
+To:     <jic23@kernel.org>, <lars@metafoo.de>, <robh+dt@kernel.org>,
+        <shawnguo@kernel.org>, <s.hauer@pengutronix.de>,
+        <kernel@pengutronix.de>, <festevam@gmail.com>, <linux-imx@nxp.com>,
+        <aardelean@deviqon.com>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>,
+        "Cai Huoqing" <caihuoqing@baidu.com>
+Subject: [PATCH v4 3/3] MAINTAINERS: Add the driver info of the NXP IMX8QXP ADC
+Date:   Sun, 12 Sep 2021 15:13:34 +0800
+Message-ID: <20210912071334.1745-4-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.32.0.windows.2
+In-Reply-To: <20210912071334.1745-1-caihuoqing@baidu.com>
+References: <20210912071334.1745-1-caihuoqing@baidu.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [172.31.62.11]
-X-ClientProxiedBy: BJHW-Mail-Ex05.internal.baidu.com (10.127.64.15) To
+X-Originating-IP: [172.31.62.12]
+X-ClientProxiedBy: BC-Mail-Ex29.internal.baidu.com (172.31.51.23) To
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-A single error handling block at the end of the function could
-be brought in to make code a little more concise.
+The NXP i.MX 8QuadXPlus SOC has a new ADC IP. After adding
+the driver support for it, I add the driver info of the
+NXP IMX8QXP ADC to MAINTAINERS file.
 
 Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
 ---
-v1->v2:
-Change the error path-error_disable_reg from "st->vref" to "st->reg".
+ MAINTAINERS | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
- drivers/iio/adc/ad799x.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
-index 18bf8386d50a..d3dbc4c1e375 100644
---- a/drivers/iio/adc/ad799x.c
-+++ b/drivers/iio/adc/ad799x.c
-@@ -891,20 +891,23 @@ static int __maybe_unused ad799x_resume(struct device *dev)
- 	}
- 	ret = regulator_enable(st->vref);
- 	if (ret) {
--		regulator_disable(st->reg);
- 		dev_err(dev, "Unable to enable vref regulator\n");
--		return ret;
-+		goto error_disable_reg;
- 	}
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 5a61cb2d0cd4..2115db14f5d2 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -13476,6 +13476,13 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/display/imx/nxp,imx8mq-dcss.yaml
+ F:	drivers/gpu/drm/imx/dcss/
  
- 	/* resync config */
- 	ret = ad799x_update_config(st, st->config);
--	if (ret) {
--		regulator_disable(st->vref);
--		regulator_disable(st->reg);
--		return ret;
--	}
-+	if (ret)
-+		goto error_disable_vref;
- 
- 	return 0;
++NXP i.MX 8QXP ADC DRIVER
++M:	Cai Huoqing <caihuoqing@baidu.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++F:	Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
++F:	drivers/iio/adc/imx8qxp-adc.c
 +
-+error_disable_vref:
-+	regulator_disable(st->vref);
-+error_disable_reg:
-+	regulator_disable(st->reg);
-+
-+	return ret;
- }
- 
- static SIMPLE_DEV_PM_OPS(ad799x_pm_ops, ad799x_suspend, ad799x_resume);
+ NXP PF8100/PF8121A/PF8200 PMIC REGULATOR DEVICE DRIVER
+ M:	Jagan Teki <jagan@amarulasolutions.com>
+ S:	Maintained
 -- 
 2.25.1
 
