@@ -2,30 +2,30 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-13.9 required=3.0 tests=BAYES_00,
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,UNWANTED_LANGUAGE_BODY,
-	URIBL_BLOCKED,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EF873C433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Sep 2021 07:51:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43138C433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Sep 2021 07:51:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D79C760FC0
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Sep 2021 07:51:41 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2F97F60FDA
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Sep 2021 07:51:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237692AbhIMHw4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Sep 2021 03:52:56 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:16451 "EHLO
+        id S237739AbhIMHxB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Sep 2021 03:53:01 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:40273 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237706AbhIMHw4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Sep 2021 03:52:56 -0400
+        with ESMTP id S237788AbhIMHxB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Sep 2021 03:53:01 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 18D7VLk0004721;
-        Mon, 13 Sep 2021 15:31:21 +0800 (GMT-8)
+        by twspam01.aspeedtech.com with ESMTP id 18D7VMhl004723;
+        Mon, 13 Sep 2021 15:31:22 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
  (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 13 Sep
- 2021 15:51:06 +0800
+ 2021 15:51:07 +0800
 From:   Billy Tsai <billy_tsai@aspeedtech.com>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
@@ -35,9 +35,9 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [v6 06/11] iio: adc: aspeed: Support ast2600 adc.
-Date:   Mon, 13 Sep 2021 15:53:32 +0800
-Message-ID: <20210913075337.19991-7-billy_tsai@aspeedtech.com>
+Subject: [v6 08/11] iio: adc: aspeed: Add func to set sampling rate.
+Date:   Mon, 13 Sep 2021 15:53:34 +0800
+Message-ID: <20210913075337.19991-9-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210913075337.19991-1-billy_tsai@aspeedtech.com>
 References: <20210913075337.19991-1-billy_tsai@aspeedtech.com>
@@ -48,191 +48,127 @@ X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 18D7VLk0004721
+X-MAIL: twspam01.aspeedtech.com 18D7VMhl004723
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Make driver to support ast2600 adc device.
-- Use shared reset controller
-- Complete the vref configure function
-- Add the model data for ast2600 adc
+Add the function to set the sampling rate and keep the sampling period
+for a driver used to wait the fresh value.
+In addition, since the ADC clock is required when initializing the ADC
+device, move clk_prepare_enable ahead of the initialization phase.
 
 Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 ---
- drivers/iio/adc/aspeed_adc.c | 101 +++++++++++++++++++++++++++++++++--
- 1 file changed, 96 insertions(+), 5 deletions(-)
+ drivers/iio/adc/aspeed_adc.c | 58 ++++++++++++++++++++++++------------
+ 1 file changed, 39 insertions(+), 19 deletions(-)
 
 diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 0a18893c47f0..3ec4e1a2ddd3 100644
+index 262b5f80c728..cf1e0be9d11f 100644
 --- a/drivers/iio/adc/aspeed_adc.c
 +++ b/drivers/iio/adc/aspeed_adc.c
-@@ -1,6 +1,6 @@
- // SPDX-License-Identifier: GPL-2.0-only
- /*
-- * Aspeed AST2400/2500 ADC
-+ * Aspeed AST2400/2500/2600 ADC
-  *
-  * Copyright (C) 2017 Google, Inc.
-  * Copyright (C) 2021 Aspeed Technology Inc.
-@@ -14,6 +14,7 @@
- #include <linux/module.h>
- #include <linux/of_platform.h>
- #include <linux/platform_device.h>
-+#include <linux/regulator/consumer.h>
- #include <linux/reset.h>
- #include <linux/spinlock.h>
- #include <linux/types.h>
-@@ -81,6 +82,7 @@ struct aspeed_adc_model_data {
- struct aspeed_adc_data {
- 	struct device		*dev;
- 	const struct aspeed_adc_model_data *model_data;
-+	struct regulator	*regulator;
- 	void __iomem		*base;
- 	spinlock_t		clk_lock;
- 	struct clk_hw		*clk_prescaler;
-@@ -217,14 +219,79 @@ static void aspeed_adc_power_down(void *data)
- 	       priv_data->base + ASPEED_REG_ENGINE_CONTROL);
- }
+@@ -73,6 +73,12 @@
  
-+static void aspeed_adc_reg_disable(void *data)
+ #define ASPEED_ADC_INIT_POLLING_TIME	500
+ #define ASPEED_ADC_INIT_TIMEOUT		500000
++/*
++ * When the sampling rate is too high, the ADC may not have enough charging
++ * time, resulting in a low voltage value. Thus, the default uses a slow
++ * sampling rate for most use cases.
++ */
++#define ASPEED_ADC_DEF_SAMPLING_RATE	65000
+ 
+ struct aspeed_adc_model_data {
+ 	const char *model_name;
+@@ -96,6 +102,7 @@ struct aspeed_adc_data {
+ 	struct clk_hw		*clk_scaler;
+ 	struct reset_control	*rst;
+ 	int			vref_mv;
++	u32			sample_period_ns;
+ };
+ 
+ #define ASPEED_CHAN(_idx, _data_reg_addr) {			\
+@@ -127,6 +134,24 @@ static const struct iio_chan_spec aspeed_adc_iio_channels[] = {
+ 	ASPEED_CHAN(15, 0x2E),
+ };
+ 
++static int aspeed_adc_set_sampling_rate(struct iio_dev *indio_dev, u32 rate)
 +{
-+	struct regulator *reg = data;
++	struct aspeed_adc_data *data = iio_priv(indio_dev);
 +
-+	regulator_disable(reg);
++	if (rate < data->model_data->min_sampling_rate ||
++	    rate > data->model_data->max_sampling_rate)
++		return -EINVAL;
++	/* Each sampling needs 12 clocks to convert.*/
++	clk_set_rate(data->clk_scaler->clk, rate * ASPEED_CLOCKS_PER_SAMPLE);
++	rate = clk_get_rate(data->clk_scaler->clk);
++	data->sample_period_ns = DIV_ROUND_UP_ULL(
++		(u64)NSEC_PER_SEC * ASPEED_CLOCKS_PER_SAMPLE, rate);
++	dev_dbg(data->dev, "Adc clock = %d sample period = %d ns", rate,
++		data->sample_period_ns);
++
++	return 0;
 +}
 +
- static int aspeed_adc_vref_config(struct iio_dev *indio_dev)
+ static int aspeed_adc_read_raw(struct iio_dev *indio_dev,
+ 			       struct iio_chan_spec const *chan,
+ 			       int *val, int *val2, long mask)
+@@ -157,17 +182,9 @@ static int aspeed_adc_write_raw(struct iio_dev *indio_dev,
+ 				struct iio_chan_spec const *chan,
+ 				int val, int val2, long mask)
  {
- 	struct aspeed_adc_data *data = iio_priv(indio_dev);
-+	int ret;
-+	u32 adc_engine_control_reg_val;
+-	struct aspeed_adc_data *data = iio_priv(indio_dev);
+-
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+-		if (val < data->model_data->min_sampling_rate ||
+-			val > data->model_data->max_sampling_rate)
+-			return -EINVAL;
+-
+-		clk_set_rate(data->clk_scaler->clk,
+-				val * ASPEED_CLOCKS_PER_SAMPLE);
+-		return 0;
++		return aspeed_adc_set_sampling_rate(indio_dev, val);
  
- 	if (data->model_data->vref_fixed_mv) {
- 		data->vref_mv = data->model_data->vref_fixed_mv;
- 		return 0;
- 	}
-+	adc_engine_control_reg_val =
-+		readl(data->base + ASPEED_REG_ENGINE_CONTROL);
-+	data->regulator = devm_regulator_get_optional(data->dev, "vref");
-+	if (!IS_ERR(data->regulator)) {
-+		ret = regulator_enable(data->regulator);
-+		if (ret)
-+			return ret;
-+		ret = devm_add_action_or_reset(
-+			data->dev, aspeed_adc_reg_disable, data->regulator);
-+		if (ret)
-+			return ret;
-+		data->vref_mv = regulator_get_voltage(data->regulator);
-+		/* Conversion from uV to mV */
-+		data->vref_mv /= 1000;
-+		if ((data->vref_mv >= 1550) && (data->vref_mv <= 2700))
-+			writel(adc_engine_control_reg_val |
-+				FIELD_PREP(
-+					ASPEED_ADC_REF_VOLTAGE,
-+					ASPEED_ADC_REF_VOLTAGE_EXT_HIGH),
-+			data->base + ASPEED_REG_ENGINE_CONTROL);
-+		else if ((data->vref_mv >= 900) && (data->vref_mv <= 1650))
-+			writel(adc_engine_control_reg_val |
-+				FIELD_PREP(
-+					ASPEED_ADC_REF_VOLTAGE,
-+					ASPEED_ADC_REF_VOLTAGE_EXT_LOW),
-+			data->base + ASPEED_REG_ENGINE_CONTROL);
-+		else {
-+			dev_err(data->dev, "Regulator voltage %d not support",
-+				data->vref_mv);
-+			return -EOPNOTSUPP;
-+		}
-+	} else {
-+		if (PTR_ERR(data->regulator) != -ENODEV)
-+			return PTR_ERR(data->regulator);
-+		data->vref_mv = 2500000;
-+		of_property_read_u32(data->dev->of_node,
-+				     "aspeed,int-vref-microvolt",
-+				     &data->vref_mv);
-+		/* Conversion from uV to mV */
-+		data->vref_mv /= 1000;
-+		if (data->vref_mv == 2500)
-+			writel(adc_engine_control_reg_val |
-+				FIELD_PREP(ASPEED_ADC_REF_VOLTAGE,
-+						ASPEED_ADC_REF_VOLTAGE_2500mV),
-+			data->base + ASPEED_REG_ENGINE_CONTROL);
-+		else if (data->vref_mv == 1200)
-+			writel(adc_engine_control_reg_val |
-+				FIELD_PREP(ASPEED_ADC_REF_VOLTAGE,
-+						ASPEED_ADC_REF_VOLTAGE_1200mV),
-+			data->base + ASPEED_REG_ENGINE_CONTROL);
-+		else {
-+			dev_err(data->dev, "Voltage %d not support", data->vref_mv);
-+			return -EOPNOTSUPP;
-+		}
-+	}
-+
- 	return 0;
- }
- 
-@@ -281,7 +348,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	if (IS_ERR(data->clk_scaler))
- 		return PTR_ERR(data->clk_scaler);
- 
--	data->rst = devm_reset_control_get_exclusive(&pdev->dev, NULL);
-+	data->rst = devm_reset_control_get_shared(&pdev->dev, NULL);
- 	if (IS_ERR(data->rst)) {
- 		dev_err(&pdev->dev,
- 			"invalid or missing reset controller device tree entry");
-@@ -298,9 +365,13 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	case IIO_CHAN_INFO_SCALE:
+ 	case IIO_CHAN_INFO_RAW:
+@@ -392,6 +409,19 @@ static int aspeed_adc_probe(struct platform_device *pdev)
  	if (ret)
  		return ret;
  
-+	adc_engine_control_reg_val =
-+		readl(data->base + ASPEED_REG_ENGINE_CONTROL);
-+	adc_engine_control_reg_val |=
-+		FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_NORMAL) |
-+		ASPEED_ADC_ENGINE_ENABLE;
- 	/* Enable engine in normal mode. */
--	writel(FIELD_PREP(ASPEED_ADC_OP_MODE, ASPEED_ADC_OP_MODE_NORMAL) |
--		       ASPEED_ADC_ENGINE_ENABLE,
-+	writel(adc_engine_control_reg_val,
- 	       data->base + ASPEED_REG_ENGINE_CONTROL);
- 
- 	ret = devm_add_action_or_reset(data->dev, aspeed_adc_power_down,
-@@ -368,9 +439,29 @@ static const struct aspeed_adc_model_data ast2500_model_data = {
- 	.num_channels = 16,
- };
- 
-+static const struct aspeed_adc_model_data ast2600_adc0_model_data = {
-+	.model_name = "ast2600-adc0",
-+	.min_sampling_rate = 10000,
-+	.max_sampling_rate = 500000,
-+	.wait_init_sequence = true,
-+	.scaler_bit_width = 16,
-+	.num_channels = 8,
-+};
++	ret = clk_prepare_enable(data->clk_scaler->clk);
++	if (ret)
++		return ret;
++	ret = devm_add_action_or_reset(data->dev,
++				       aspeed_adc_clk_disable_unprepare,
++				       data->clk_scaler->clk);
++	if (ret)
++		return ret;
++	ret = aspeed_adc_set_sampling_rate(indio_dev,
++					   ASPEED_ADC_DEF_SAMPLING_RATE);
++	if (ret)
++		return ret;
 +
-+static const struct aspeed_adc_model_data ast2600_adc1_model_data = {
-+	.model_name = "ast2600-adc1",
-+	.min_sampling_rate = 10000,
-+	.max_sampling_rate = 500000,
-+	.wait_init_sequence = true,
-+	.scaler_bit_width = 16,
-+	.num_channels = 8,
-+};
-+
- static const struct of_device_id aspeed_adc_matches[] = {
- 	{ .compatible = "aspeed,ast2400-adc", .data = &ast2400_model_data },
- 	{ .compatible = "aspeed,ast2500-adc", .data = &ast2500_model_data },
-+	{ .compatible = "aspeed,ast2600-adc0", .data = &ast2600_adc0_model_data },
-+	{ .compatible = "aspeed,ast2600-adc1", .data = &ast2600_adc1_model_data },
- 	{},
- };
- MODULE_DEVICE_TABLE(of, aspeed_adc_matches);
-@@ -386,5 +477,5 @@ static struct platform_driver aspeed_adc_driver = {
- module_platform_driver(aspeed_adc_driver);
+ 	adc_engine_control_reg_val =
+ 		readl(data->base + ASPEED_REG_ENGINE_CONTROL);
+ 	adc_engine_control_reg_val |=
+@@ -418,16 +448,6 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 			return ret;
+ 	}
  
- MODULE_AUTHOR("Rick Altherr <raltherr@google.com>");
--MODULE_DESCRIPTION("Aspeed AST2400/2500 ADC Driver");
-+MODULE_DESCRIPTION("Aspeed AST2400/2500/2600 ADC Driver");
- MODULE_LICENSE("GPL");
+-	ret = clk_prepare_enable(data->clk_scaler->clk);
+-	if (ret)
+-		return ret;
+-
+-	ret = devm_add_action_or_reset(data->dev,
+-				       aspeed_adc_clk_disable_unprepare,
+-				       data->clk_scaler->clk);
+-	if (ret)
+-		return ret;
+-
+ 	/* Start all channels in normal mode. */
+ 	adc_engine_control_reg_val =
+ 		readl(data->base + ASPEED_REG_ENGINE_CONTROL);
 -- 
 2.25.1
 
