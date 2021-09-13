@@ -2,29 +2,30 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 64D21C4332F
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Sep 2021 07:51:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 42F19C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Sep 2021 07:51:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 466B560F9F
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Sep 2021 07:51:23 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 26F3A60FF2
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Sep 2021 07:51:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237808AbhIMHwh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Sep 2021 03:52:37 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:32122 "EHLO
+        id S237653AbhIMHwl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Sep 2021 03:52:41 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:11303 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237806AbhIMHwg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Sep 2021 03:52:36 -0400
+        with ESMTP id S237725AbhIMHwl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Sep 2021 03:52:41 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 18D7VKnB004716;
-        Mon, 13 Sep 2021 15:31:20 +0800 (GMT-8)
+        by twspam01.aspeedtech.com with ESMTP id 18D7VLLY004718;
+        Mon, 13 Sep 2021 15:31:21 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
  (192.168.0.24) with Microsoft SMTP Server (TLS) id 15.0.1497.2; Mon, 13 Sep
- 2021 15:51:05 +0800
+ 2021 15:51:06 +0800
 From:   Billy Tsai <billy_tsai@aspeedtech.com>
 To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <robh+dt@kernel.org>, <joel@jms.id.au>, <andrew@aj.id.au>,
@@ -34,10 +35,12 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
 CC:     <BMC-SW@aspeedtech.com>
-Subject: [v6 00/11] Add support for ast2600 ADC
-Date:   Mon, 13 Sep 2021 15:53:26 +0800
-Message-ID: <20210913075337.19991-1-billy_tsai@aspeedtech.com>
+Subject: [v6 03/11] iio: adc: aspeed: Add vref config function
+Date:   Mon, 13 Sep 2021 15:53:29 +0800
+Message-ID: <20210913075337.19991-4-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20210913075337.19991-1-billy_tsai@aspeedtech.com>
+References: <20210913075337.19991-1-billy_tsai@aspeedtech.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -45,76 +48,69 @@ X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 18D7VKnB004716
+X-MAIL: twspam01.aspeedtech.com 18D7VLLY004718
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch serials make aspeed_adc.c can support ast2600 and backward
-compatible.
+Add the function to check the vref_fixed_mv and set the value to driver
+data.
 
-Change since v5:
-aspeed_adc.c:
-  - Use devm_clk_hw_register_divider()
-  - Enabling and setting the ADC to normal mode is a necessary flow, so
-  take it out of the condition.
+Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
+---
+ drivers/iio/adc/aspeed_adc.c | 18 +++++++++++++++++-
+ 1 file changed, 17 insertions(+), 1 deletion(-)
 
-Change since v4:
-dt-bindings:
-  - Add clocks maxItems.
-  - Rename the property to meet the property-units.yaml.
-  - Add the description for the difference between adc0 and adc1.
-aspeed_adc.c:
-  - Use new property name to get internal reference voltage: units from mv
-  to uv.
-  - Fix -Wnonnull warning caused by snprintf parameters.
-  - Add suffix mv to the vref parameters.
-  - Use ARRAY_SIZE instead of 32.
-  - Add a reset action for ADC power down and Use devm_iio_device_register.
-  - Fix typo error.
-  - Separate the offset interface of ch7 when battery sensing enable
-
-Change since v3:
-dt-bindings:
-  - Fix properties:aspeed,int_vref_mv type error.
-
-Change since v2:
-dt-bindings:
-  - Create a new dt-bindings for ast2600 adc
-aspeed_adc.c:
-  - Splits the patch for more details
-  - Remove version enum and use the flags in model data to distinguish
-  hardware feature
-  - Support trimming data get and set.
-  - Use devm_add_action_or_reset to simplify probe error handling.
-
-Changes since v1:
-dt-bindings:
-  - Fix the aspeed,adc.yaml check error.
-  - Add battery-sensing property.
-aspeed_adc.c:
-  - Change the init flow:
-    Clock and reference voltage setting should be completed before adc
-    engine enable.
-  - Change the default sampling rate to meet most user case.
-  - Add patch #8 to suppoert battery sensing mode.
-
-Billy Tsai (11):
-  iio: adc: aspeed: Keep model data to driver data.
-  iio: adc: aspeed: Restructure the model data
-  iio: adc: aspeed: Add vref config function
-  iio: adc: aspeed: Use model_data to set clk scaler.
-  iio: adc: aspeed: Use devm_add_action_or_reset.
-  iio: adc: aspeed: Support ast2600 adc.
-  iio: adc: aspeed: Fix the calculate error of clock.
-  iio: adc: aspeed: Add func to set sampling rate.
-  iio: adc: aspeed: Add compensation phase.
-  iio: adc: aspeed: Support battery sensing.
-  iio: adc: aspeed: Get and set trimming data.
-
- drivers/iio/adc/aspeed_adc.c | 554 +++++++++++++++++++++++++++++------
- 1 file changed, 459 insertions(+), 95 deletions(-)
-
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index cc808ec89a0f..aec335956310 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -130,7 +130,7 @@ static int aspeed_adc_read_raw(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT;
+ 
+ 	case IIO_CHAN_INFO_SCALE:
+-		*val = data->model_data->vref_fixed_mv;
++		*val = data->vref_mv;
+ 		*val2 = ASPEED_RESOLUTION_BITS;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 
+@@ -195,6 +195,17 @@ static const struct iio_info aspeed_adc_iio_info = {
+ 	.debugfs_reg_access = aspeed_adc_reg_access,
+ };
+ 
++static int aspeed_adc_vref_config(struct iio_dev *indio_dev)
++{
++	struct aspeed_adc_data *data = iio_priv(indio_dev);
++
++	if (data->model_data->vref_fixed_mv) {
++		data->vref_mv = data->model_data->vref_fixed_mv;
++		return 0;
++	}
++	return 0;
++}
++
+ static int aspeed_adc_probe(struct platform_device *pdev)
+ {
+ 	struct iio_dev *indio_dev;
+@@ -250,6 +261,10 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	}
+ 	reset_control_deassert(data->rst);
+ 
++	ret = aspeed_adc_vref_config(indio_dev);
++	if (ret)
++		goto vref_config_error;
++
+ 	if (data->model_data->wait_init_sequence) {
+ 		/* Enable engine in normal mode. */
+ 		writel(FIELD_PREP(ASPEED_ADC_OP_MODE,
+@@ -298,6 +313,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 	clk_disable_unprepare(data->clk_scaler->clk);
+ clk_enable_error:
+ poll_timeout_error:
++vref_config_error:
+ 	reset_control_assert(data->rst);
+ reset_error:
+ 	clk_hw_unregister_divider(data->clk_scaler);
 -- 
 2.25.1
 
