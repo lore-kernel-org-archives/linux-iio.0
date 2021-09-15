@@ -7,21 +7,21 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3CD5FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2D26C4727C
 	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 16:00:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2A15F61269
+	by mail.kernel.org (Postfix) with ESMTP id BA9C461371
 	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 16:00:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234461AbhIOQCG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S238483AbhIOQCG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 15 Sep 2021 12:02:06 -0400
-Received: from relay8-d.mail.gandi.net ([217.70.183.201]:50603 "EHLO
+Received: from relay8-d.mail.gandi.net ([217.70.183.201]:43721 "EHLO
         relay8-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238373AbhIOQBz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Sep 2021 12:01:55 -0400
+        with ESMTP id S238128AbhIOQCB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Sep 2021 12:02:01 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id D86491BF213;
-        Wed, 15 Sep 2021 16:00:33 +0000 (UTC)
+        by relay8-d.mail.gandi.net (Postfix) with ESMTPSA id 7C0EB1BF215;
+        Wed, 15 Sep 2021 16:00:39 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -39,11 +39,10 @@ Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         Ryan Barnett <ryan.barnett@collins.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Jason Reeder <jreeder@ti.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 42/47] iio: adc: ti_am335x_adc: Add a unit to the timeout delay
-Date:   Wed, 15 Sep 2021 17:59:03 +0200
-Message-Id: <20210915155908.476767-43-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH v3 45/47] ARM: dts: am437x-cm-t43: Use a correctly spelled DT property
+Date:   Wed, 15 Sep 2021 17:59:06 +0200
+Message-Id: <20210915155908.476767-46-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210915155908.476767-1-miquel.raynal@bootlin.com>
 References: <20210915155908.476767-1-miquel.raynal@bootlin.com>
@@ -54,50 +53,29 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The lack of unit in the macro name kind of tricked me when I was
-troubleshooting an issue. Physical constants should always get a unit.
+Back in 2014 a property got misspelled "ti,coordiante-readouts" instead
+of "ti,coordinate-readouts".
+
+The year after it got fixed but both are still supported, although this
+is not a reason to continue using this old deprecated property.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/adc/ti_am335x_adc.c      | 4 ++--
- include/linux/mfd/ti_am335x_tscadc.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/am437x-cm-t43.dts | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 6f47a1ace3d4..e7dba10b29b4 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -101,7 +101,7 @@ static int tiadc_wait_idle(struct tiadc_device *adc_dev)
- 
- 	return readl_poll_timeout(adc_dev->mfd_tscadc->tscadc_base + REG_ADCFSM,
- 				  val, !(val & SEQ_STATUS), 10,
--				  IDLE_TIMEOUT * 1000 * adc_dev->channels);
-+				  IDLE_TIMEOUT_MS * 1000 * adc_dev->channels);
- }
- 
- static void tiadc_step_config(struct iio_dev *indio_dev)
-@@ -461,7 +461,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
- 	am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
- 
- 	/* Wait for Fifo threshold interrupt */
--	timeout = jiffies + msecs_to_jiffies(IDLE_TIMEOUT * adc_dev->channels);
-+	timeout = jiffies + msecs_to_jiffies(IDLE_TIMEOUT_MS * adc_dev->channels);
- 	while (1) {
- 		fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
- 		if (fifo1count)
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index 9a412e6d764b..223e5840f3a3 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -141,7 +141,7 @@
-  *
-  * max processing time: 266431 * 308ns = 83ms(approx)
-  */
--#define IDLE_TIMEOUT		83 /* milliseconds */
-+#define IDLE_TIMEOUT_MS		83 /* milliseconds */
- 
- #define TSCADC_CELLS		2
+diff --git a/arch/arm/boot/dts/am437x-cm-t43.dts b/arch/arm/boot/dts/am437x-cm-t43.dts
+index 5ce8e684e7d3..3e3354780db8 100644
+--- a/arch/arm/boot/dts/am437x-cm-t43.dts
++++ b/arch/arm/boot/dts/am437x-cm-t43.dts
+@@ -399,7 +399,7 @@ &tscadc {
+ 	tsc {
+ 		ti,wires = <4>;
+ 		ti,x-plate-resistance = <200>;
+-		ti,coordiante-readouts = <5>;
++		ti,coordinate-readouts = <5>;
+ 		ti,wire-config = <0x00 0x11 0x22 0x33>;
+ 	};
  
 -- 
 2.27.0
