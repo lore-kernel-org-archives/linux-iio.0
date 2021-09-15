@@ -7,21 +7,21 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 71CBAC433FE
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70937C433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:51:51 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 59D09606A5
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:51:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 57F4B606A5
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:51:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238047AbhIOPxH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Sep 2021 11:53:07 -0400
-Received: from relay12.mail.gandi.net ([217.70.178.232]:60359 "EHLO
+        id S238509AbhIOPxI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Sep 2021 11:53:08 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:54007 "EHLO
         relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238623AbhIOPwn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Sep 2021 11:52:43 -0400
+        with ESMTP id S238627AbhIOPwp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Sep 2021 11:52:45 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 43C22200013;
-        Wed, 15 Sep 2021 15:51:23 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id AF057200014;
+        Wed, 15 Sep 2021 15:51:24 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -29,9 +29,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Nuno Sa <Nuno.Sa@analog.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v3 07/14] iio: adc: max1027: Simplify the _set_trigger_state() helper
-Date:   Wed, 15 Sep 2021 17:51:10 +0200
-Message-Id: <20210915155117.475962-8-miquel.raynal@bootlin.com>
+Subject: [PATCH v3 09/14] iio: adc: max1027: Create a helper to configure the channels to scan
+Date:   Wed, 15 Sep 2021 17:51:12 +0200
+Message-Id: <20210915155117.475962-10-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210915155117.475962-1-miquel.raynal@bootlin.com>
 References: <20210915155117.475962-1-miquel.raynal@bootlin.com>
@@ -42,53 +42,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The call to max1027_enable_trigger() is the same in both cases thanks to
-the 'state' variable, so factorize a little bit to simplify the code and
-explain why we call this helper.
+These bits are meant to be reused for triggered buffers setup.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/adc/max1027.c | 19 ++++++++++---------
- 1 file changed, 10 insertions(+), 9 deletions(-)
+ drivers/iio/adc/max1027.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index d1a9ffa68c38..b7cc77c2c01d 100644
+index 62570953653a..254df6a28cd8 100644
 --- a/drivers/iio/adc/max1027.c
 +++ b/drivers/iio/adc/max1027.c
-@@ -409,11 +409,17 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
+@@ -271,6 +271,19 @@ struct max1027_state {
+ 	u8				reg ____cacheline_aligned;
+ };
+ 
++/* Scan from chan 0 to the highest requested channel. Include temperature on demand. */
++static int max1027_configure_chans_and_start(struct iio_dev *indio_dev)
++{
++	struct max1027_state *st = iio_priv(indio_dev);
++
++	st->reg = MAX1027_CONV_REG | MAX1027_SCAN_0_N;
++	st->reg |= MAX1027_CHAN(fls(*indio_dev->active_scan_mask) - 2);
++	if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
++		st->reg |= MAX1027_TEMP;
++
++	return spi_write(st->spi, &st->reg, 1);
++}
++
+ static int max1027_enable_trigger(struct iio_dev *indio_dev, bool enable)
+ {
  	struct max1027_state *st = iio_priv(indio_dev);
+@@ -402,7 +415,6 @@ static int max1027_validate_trigger(struct iio_dev *indio_dev,
+ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
+ {
+ 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+-	struct max1027_state *st = iio_priv(indio_dev);
  	int ret;
  
-+	/*
-+	 * In order to disable the convst trigger, start acquisition on
-+	 * conversion register write, which basically disables triggering
-+	 * conversions upon cnvst changes and thus has the effect of disabling
-+	 * the external hardware trigger.
-+	 */
-+	ret = max1027_enable_trigger(indio_dev, state);
-+	if (ret)
-+		return ret;
-+
+ 	/*
+@@ -416,17 +428,8 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
+ 		return ret;
+ 
  	if (state) {
--		ret = max1027_enable_trigger(indio_dev, state);
--		if (ret)
--			return ret;
+-		/*
+-		 * Scan from chan 0 to the highest requested channel.
+-		 * Include temperature on demand.
+-		 */
+-		st->reg = MAX1027_CONV_REG | MAX1027_SCAN_0_N;
+-		st->reg |= MAX1027_CHAN(fls(*indio_dev->active_scan_mask) - 2);
+-		if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
+-			st->reg |= MAX1027_TEMP;
 -
- 		/*
- 		 * Scan from chan 0 to the highest requested channel.
- 		 * Include temperature on demand.
-@@ -426,11 +432,6 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
- 		ret = spi_write(st->spi, &st->reg, 1);
- 		if (ret < 0)
+-		ret = spi_write(st->spi, &st->reg, 1);
+-		if (ret < 0)
++		ret = max1027_configure_chans_and_start(indio_dev);
++		if (ret)
  			return ret;
--	} else {
--		/* Start acquisition on conversion register write */
--		ret = max1027_enable_trigger(indio_dev, state);
--		if (ret)
--			return ret;
  	}
  
- 	return 0;
 -- 
 2.27.0
 
