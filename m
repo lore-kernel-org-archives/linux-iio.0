@@ -2,25 +2,26 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-11.8 required=3.0 tests=BAYES_00,
-	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,
-	SPF_PASS,USER_AGENT_GIT autolearn=ham autolearn_force=no version=3.4.0
+X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
+	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C819BC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D76B3C43219
 	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:51:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id AF2FB606A5
+	by mail.kernel.org (Postfix) with ESMTP id BEE8560BD3
 	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:51:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238448AbhIOPxG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S238168AbhIOPxG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 15 Sep 2021 11:53:06 -0400
-Received: from relay12.mail.gandi.net ([217.70.178.232]:47405 "EHLO
+Received: from relay12.mail.gandi.net ([217.70.178.232]:54683 "EHLO
         relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238348AbhIOPwm (ORCPT
+        with ESMTP id S238615AbhIOPwm (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Sep 2021 11:52:42 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 0797F20000D;
-        Wed, 15 Sep 2021 15:51:17 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id F3D58200012;
+        Wed, 15 Sep 2021 15:51:20 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -28,126 +29,137 @@ To:     Jonathan Cameron <jic23@kernel.org>,
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Nuno Sa <Nuno.Sa@analog.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v3 00/14] Bring external triggers support to MAX1027-like ADCs
-Date:   Wed, 15 Sep 2021 17:51:03 +0200
-Message-Id: <20210915155117.475962-1-miquel.raynal@bootlin.com>
+Subject: [PATCH v3 04/14] iio: adc: max1027: Minimize the number of converted channels
+Date:   Wed, 15 Sep 2021 17:51:07 +0200
+Message-Id: <20210915155117.475962-5-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20210915155117.475962-1-miquel.raynal@bootlin.com>
+References: <20210915155117.475962-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Until now the max1027.c driver, which handles 10-bit devices (max10xx)
-and 12-bit devices (max12xx), only supported hardware triggers. When a
-hardware trigger is not wired it is very convenient to trigger periodic
-conversions with timers or on userspace demand with a sysfs
-trigger. Overall, when several values are needed at the same time, using
-triggers and buffers improves quite a lot the performances.
+Provide a list of ->available_scan_masks which match the device's
+capabilities. Basically, these devices are able to scan from 0 to N, N
+being the highest voltage channel requested by the user. The temperature
+can be included or not, but cannot be retrieved alone.
 
-This series does a bit of cleaning/code reorganization before actually
-bringing more flexibility to the driver, up to the point where it is
-possible to use an external trigger even without the IRQ line wired.
+The consequence is, instead of reading and pushing to the IIO buffers
+all channels each time, the "minimum" number of channels will be scanned
+and pushed based on the ->active_scan_mask.
 
-This series is currently based on a v5.15-rc1 kernel and the external
-triggering mechanism has been tested on a custom board where the IRQ and
-the EOC lines have not been populated.
+For example, if the user wants channels 1, 4 and 5, all channels from
+0 to 5 will be scanned and pushed to the IIO buffers. The core will then
+filter out the unneeded samples based on the ->active_scan_mask that has
+been selected and only channels 1, 4 and 5 will be available to the user
+in the shared buffer.
 
-How to test sysfs triggers:
-    echo 0 > /sys/bus/iio/devices/iio_sysfs_trigger/add_trigger
-    cat /sys/bus/iio/devices/iio_sysfs_trigger/trigger0/name > \
-        /sys/bus/iio/devices/iio:device0/trigger/current_trigger
-    echo 1 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltageX_en
-    echo 1 > /sys/bus/iio/devices/iio:device0/scan_elements/in_voltageY_en
-    echo 1 > /sys/bus/iio/devices/iio:device0/buffer/enable
-    cat /dev/iio\:device0 > /tmp/data &
-    echo 1 > /sys/bus/iio/devices/trigger0/trigger_now
-    od -t x1 /tmp/data
+Provide a comment in the code explaining this logic.
 
-Cheers,
-Miquèl
+Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+---
+ drivers/iio/adc/max1027.c | 60 ++++++++++++++++++++++++++++++++++-----
+ 1 file changed, 53 insertions(+), 7 deletions(-)
 
-Changes in v3:
-* Rebased on top of v5.15-rc1.
-* Dropped the useless change from devm_kmalloc to kmalloc because I
-  thought devm_kmalloc allocations were still not suitable for DMA
-  purposes.
-* Added a comment explaining the use of the available and active masks
-  in the code as suggested by Jonathan.
-* Released the lock used in iio_device_claim_direct_mode() in the two
-  error paths.
-* Did not move the call to reinit_completion before
-  wait_for_completion_timeout() as advised by Nuno because the
-  triggering is done before entering the waiting thread, so there is a
-  world were we reinit a completion object right before waiting for it
-  (which would lead to a timeout).
-* Deeply rewored the various handlers (see my answer to
-  "[PATCH v2 15/16] iio: adc: max1027: Add support for external  triggers"
-
-Changes in v2:
-[All]
-* Overall quite a few changes, I'll try to list them here but I made
-  significant changes on the last few commits so it's hard to have an
-  exhaustive and detailed list.
-* Simplified the return statements as advised by Nuno.
-* Dropped useless debug messages.
-* Used iio_trigger_validate_own_device() instead of an internal
-  variable when possible.
-* Added Nuno's Reviewed-by's when relevant.
-[Created a new patch to fix the style]
-[Created a new patch to ensure st->buffer is DMA-safe]
-[Push only the requested samples]
-* Dropped a useless check over active_scan_mask mask in
-  ->set_trigger_state().
-* Dropped the st->buffer indirection with a missing __be16 type.
-* Do not push only the requested samples in the IIO buffers, rely on the
-  core to handle this by providing additional 'available_scan_masks'
-  instead of dropping this entry from the initial setup.
-[Create a helper to configure the trigger]
-* Avoided messing with new lines.
-* Dropped cnvst_trigger, used a function parameter instead.
-[Prevent single channel accesses during buffer reads]
-* Used iio_device_claim_direct_mode() when relevant.
-* Dropped the extra iio_buffer_enabled() call.
-* Prevented returning with a mutex held.
-[Introduce an end of conversion helper]
-* Moved the check against active scan mask to the very end of the series
-  where we actually make use of it.
-* Moved the Queue declaration to another patch.
-[Dropped the patch: Prepare re-using the EOC interrupt]
-[Consolidate the end of conversion helper]
-* Used a dynamic completion object instead of a static queue.
-* Reworded the commit message to actually describe what this commit
-  does.
-[Support software triggers]
-* Dropped the patch and replaced it with something hopefully close to
-  what Jonathan and Nuno described in their reviews.
-[Enable software triggers to be  used without IRQ]
-* Wrote a more generic commit message, not focusing on software
-  triggers.
-
-
-Miquel Raynal (14):
-  iio: adc: max1027: Fix style
-  iio: adc: max1027: Drop extra warning message
-  iio: adc: max1027: Drop useless debug messages
-  iio: adc: max1027: Minimize the number of converted channels
-  iio: adc: max1027: Rename a helper
-  iio: adc: max1027: Create a helper to enable/disable the cnvst trigger
-  iio: adc: max1027: Simplify the _set_trigger_state() helper
-  iio: adc: max1027: Ensure a default cnvst trigger configuration
-  iio: adc: max1027: Create a helper to configure the channels to scan
-  iio: adc: max1027: Prevent single channel accesses during buffer reads
-  iio: adc: max1027: Separate the IRQ handler from the read logic
-  iio: adc: max1027: Introduce an end of conversion helper
-  iio: adc: max1027: Deeply rework interrupt handling
-  iio: adc: max1027: Don't reject external triggers when there is no IRQ
-
- drivers/iio/adc/max1027.c | 301 ++++++++++++++++++++++++++++----------
- 1 file changed, 223 insertions(+), 78 deletions(-)
-
+diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+index f27044324141..7c1c76673be2 100644
+--- a/drivers/iio/adc/max1027.c
++++ b/drivers/iio/adc/max1027.c
+@@ -172,18 +172,53 @@ static const struct iio_chan_spec max1231_channels[] = {
+ 	MAX1X31_CHANNELS(12),
+ };
+ 
++/*
++ * These devices are able to scan from 0 to N, N being the highest voltage
++ * channel requested by the user. The temperature can be included or not,
++ * but cannot be retrieved alone. Based on the below
++ * ->available_scan_masks, the core will select the most appropriate
++ * ->active_scan_mask and the "minimum" number of channels will be
++ * scanned and pushed to the buffers.
++ *
++ * For example, if the user wants channels 1, 4 and 5, all channels from
++ * 0 to 5 will be scanned and pushed to the IIO buffers. The core will then
++ * filter out the unneeded samples based on the ->active_scan_mask that has
++ * been selected and only channels 1, 4 and 5 will be available to the user
++ * in the shared buffer.
++ */
++#define MAX1X27_SCAN_MASK_TEMP BIT(0)
++
++#define MAX1X27_SCAN_MASKS(temp)					\
++	GENMASK(1, 1 - (temp)), GENMASK(2, 1 - (temp)),			\
++	GENMASK(3, 1 - (temp)), GENMASK(4, 1 - (temp)),			\
++	GENMASK(5, 1 - (temp)), GENMASK(6, 1 - (temp)),			\
++	GENMASK(7, 1 - (temp)), GENMASK(8, 1 - (temp))
++
++#define MAX1X29_SCAN_MASKS(temp)					\
++	MAX1X27_SCAN_MASKS(temp),					\
++	GENMASK(9, 1 - (temp)), GENMASK(10, 1 - (temp)),		\
++	GENMASK(11, 1 - (temp)), GENMASK(12, 1 - (temp))
++
++#define MAX1X31_SCAN_MASKS(temp)					\
++	MAX1X29_SCAN_MASKS(temp),					\
++	GENMASK(13, 1 - (temp)), GENMASK(14, 1 - (temp)),		\
++	GENMASK(15, 1 - (temp)), GENMASK(16, 1 - (temp))
++
+ static const unsigned long max1027_available_scan_masks[] = {
+-	0x000001ff,
++	MAX1X27_SCAN_MASKS(0),
++	MAX1X27_SCAN_MASKS(1),
+ 	0x00000000,
+ };
+ 
+ static const unsigned long max1029_available_scan_masks[] = {
+-	0x00001fff,
++	MAX1X29_SCAN_MASKS(0),
++	MAX1X29_SCAN_MASKS(1),
+ 	0x00000000,
+ };
+ 
+ static const unsigned long max1031_available_scan_masks[] = {
+-	0x0001ffff,
++	MAX1X31_SCAN_MASKS(0),
++	MAX1X31_SCAN_MASKS(1),
+ 	0x00000000,
+ };
+ 
+@@ -368,9 +403,15 @@ static int max1027_set_trigger_state(struct iio_trigger *trig, bool state)
+ 		if (ret < 0)
+ 			return ret;
+ 
+-		/* Scan from 0 to max */
+-		st->reg = MAX1027_CONV_REG | MAX1027_CHAN(0) |
+-			  MAX1027_SCAN_N_M | MAX1027_TEMP;
++		/*
++		 * Scan from chan 0 to the highest requested channel.
++		 * Include temperature on demand.
++		 */
++		st->reg = MAX1027_CONV_REG | MAX1027_SCAN_0_N;
++		st->reg |= MAX1027_CHAN(fls(*indio_dev->active_scan_mask) - 2);
++		if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
++			st->reg |= MAX1027_TEMP;
++
+ 		ret = spi_write(st->spi, &st->reg, 1);
+ 		if (ret < 0)
+ 			return ret;
+@@ -391,9 +432,14 @@ static irqreturn_t max1027_trigger_handler(int irq, void *private)
+ 	struct iio_poll_func *pf = private;
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct max1027_state *st = iio_priv(indio_dev);
++	unsigned int scanned_chans;
++
++	scanned_chans = fls(*indio_dev->active_scan_mask) - 1;
++	if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
++		scanned_chans++;
+ 
+ 	/* fill buffer with all channel */
+-	spi_read(st->spi, st->buffer, indio_dev->masklength * 2);
++	spi_read(st->spi, st->buffer, scanned_chans * 2);
+ 
+ 	iio_push_to_buffers(indio_dev, st->buffer);
+ 
 -- 
 2.27.0
 
