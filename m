@@ -7,128 +7,90 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBE10C4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:51:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F11AC433F5
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:52:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B59FD61179
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:51:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0880D606A5
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Sep 2021 15:52:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238065AbhIOPxJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Sep 2021 11:53:09 -0400
-Received: from relay12.mail.gandi.net ([217.70.178.232]:34993 "EHLO
+        id S238758AbhIOPxT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Sep 2021 11:53:19 -0400
+Received: from relay12.mail.gandi.net ([217.70.178.232]:53463 "EHLO
         relay12.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238452AbhIOPwm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Sep 2021 11:52:42 -0400
+        with ESMTP id S238257AbhIOPxF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Sep 2021 11:53:05 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 784B3200017;
-        Wed, 15 Sep 2021 15:51:22 +0000 (UTC)
+        by relay12.mail.gandi.net (Postfix) with ESMTPSA id 78650200010;
+        Wed, 15 Sep 2021 15:51:25 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Nuno Sa <Nuno.Sa@analog.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH v3 06/14] iio: adc: max1027: Create a helper to enable/disable the cnvst trigger
-Date:   Wed, 15 Sep 2021 17:51:09 +0200
-Message-Id: <20210915155117.475962-7-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH v3 10/14] iio: adc: max1027: Prevent single channel accesses during buffer reads
+Date:   Wed, 15 Sep 2021 17:51:13 +0200
+Message-Id: <20210915155117.475962-11-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210915155117.475962-1-miquel.raynal@bootlin.com>
 References: <20210915155117.475962-1-miquel.raynal@bootlin.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Type: text/plain; charset="utf-8"
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There are two ways to physically trigger a conversion:
-- A falling edge on the cnvst pin
-- A write operation on the conversion register
+When hardware buffers are enabled (the cnvst pin being the trigger), one
+should not mess with the device state by requesting a single channel
+read.
 
-Let's create a helper for this.
+There is already a iio_buffer_enabled() check in *_read_single_value()
+to merely prevent this situation but the check is inconsistent since
+buffers can be enabled after the if clause anyway. Instead, use the core
+mutex by calling iio_device_claim/release_direct_mode().
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/adc/max1027.c | 41 ++++++++++++++++++++++++---------------
- 1 file changed, 25 insertions(+), 16 deletions(-)
+ drivers/iio/adc/max1027.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index e84f49f21778..d1a9ffa68c38 100644
+index 254df6a28cd8..c7663e5dd38a 100644
 --- a/drivers/iio/adc/max1027.c
 +++ b/drivers/iio/adc/max1027.c
-@@ -271,6 +271,25 @@ struct max1027_state {
- 	u8				reg ____cacheline_aligned;
- };
+@@ -310,10 +310,9 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+ 	int ret;
+ 	struct max1027_state *st = iio_priv(indio_dev);
  
-+static int max1027_enable_trigger(struct iio_dev *indio_dev, bool enable)
-+{
-+	struct max1027_state *st = iio_priv(indio_dev);
-+
-+	st->reg = MAX1027_SETUP_REG | MAX1027_REF_MODE2;
-+
-+	/*
-+	 * Start acquisition on:
-+	 * MODE0: external hardware trigger wired to the cnvst input pin
-+	 * MODE2: conversion register write
-+	 */
-+	if (enable)
-+		st->reg |= MAX1027_CKS_MODE0;
-+	else
-+		st->reg |= MAX1027_CKS_MODE2;
-+
-+	return spi_write(st->spi, &st->reg, 1);
-+}
-+
- static int max1027_read_single_value(struct iio_dev *indio_dev,
- 				     struct iio_chan_spec const *chan,
- 				     int *val)
-@@ -283,14 +302,9 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
- 		return -EBUSY;
- 	}
- 
--	/* Start acquisition on conversion register write */
--	st->reg = MAX1027_SETUP_REG | MAX1027_REF_MODE2 | MAX1027_CKS_MODE2;
--	ret = spi_write(st->spi, &st->reg, 1);
--	if (ret < 0) {
--		dev_err(&indio_dev->dev,
--			"Failed to configure setup register\n");
-+	ret = max1027_enable_trigger(indio_dev, false);
-+	if (ret)
- 		return ret;
+-	if (iio_buffer_enabled(indio_dev)) {
+-		dev_warn(&indio_dev->dev, "trigger mode already enabled");
+-		return -EBUSY;
 -	}
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
  
  	/* Configure conversion register with the requested chan */
  	st->reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel) |
-@@ -396,11 +410,8 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
- 	int ret;
- 
- 	if (state) {
--		/* Start acquisition on cnvst */
--		st->reg = MAX1027_SETUP_REG | MAX1027_CKS_MODE0 |
--			  MAX1027_REF_MODE2;
--		ret = spi_write(st->spi, &st->reg, 1);
--		if (ret < 0)
-+		ret = max1027_enable_trigger(indio_dev, state);
-+		if (ret)
- 			return ret;
- 
- 		/*
-@@ -417,10 +428,8 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
- 			return ret;
- 	} else {
- 		/* Start acquisition on conversion register write */
--		st->reg = MAX1027_SETUP_REG | MAX1027_CKS_MODE2	|
--			  MAX1027_REF_MODE2;
--		ret = spi_write(st->spi, &st->reg, 1);
--		if (ret < 0)
-+		ret = max1027_enable_trigger(indio_dev, state);
-+		if (ret)
- 			return ret;
+@@ -324,6 +323,7 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+ 	if (ret < 0) {
+ 		dev_err(&indio_dev->dev,
+ 			"Failed to configure conversion register\n");
++		iio_device_release_direct_mode(indio_dev);
+ 		return ret;
  	}
+ 
+@@ -336,6 +336,9 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+ 
+ 	/* Read result */
+ 	ret = spi_read(st->spi, st->buffer, (chan->type == IIO_TEMP) ? 4 : 2);
++
++	iio_device_release_direct_mode(indio_dev);
++
+ 	if (ret < 0)
+ 		return ret;
  
 -- 
 2.27.0
