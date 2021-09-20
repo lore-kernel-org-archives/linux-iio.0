@@ -2,118 +2,202 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-15.5 required=3.0 tests=BAYES_00,INCLUDES_CR_TRAILER,
+	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 185FDC433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Sep 2021 17:39:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E010AC433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Sep 2021 18:51:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id F3957611C2
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Sep 2021 17:39:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C69EC61159
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Sep 2021 18:51:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245491AbhITRlN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Sep 2021 13:41:13 -0400
-Received: from smtp-relay-internal-0.canonical.com ([185.125.188.122]:49976
-        "EHLO smtp-relay-internal-0.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1352346AbhITRjN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Sep 2021 13:39:13 -0400
-Received: from mail-pj1-f70.google.com (mail-pj1-f70.google.com [209.85.216.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S1385958AbhITSwy convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Sep 2021 14:52:54 -0400
+Received: from mail.kernel.org ([198.145.29.99]:37312 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1385888AbhITSwh (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 20 Sep 2021 14:52:37 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 7FA1440267
-        for <linux-iio@vger.kernel.org>; Mon, 20 Sep 2021 17:37:43 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1632159465;
-        bh=CQtfdbe1O3s9BEshGw98z5OXNdM0i7hCrZwLtn3F8cg=;
-        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
-        b=gPUwfg4ujek7uKG0VrK4g0L6mpoVRWRWk0peffAoz+SXNDg/Aa0MmBIp1knwjE+Wf
-         0LHShfOJnXqKdbgrQuQ9+EysMTUdTbIkZkcrNu1DyJhRC7Zi3XFXpX24y4NFgbGGBj
-         ZPSFdwIbDUMlxxAt0bOSTDw6lGynxEUOL4XLMCtiuMh30YPB+egBePfhXsywW2veBq
-         7wR95avR4oNbIaCRZMFYtbqvk5xlThe4/7nk6NgrUF0GkgATJ/GNOmonE23+qtJcpg
-         hd4qWDqqMNhYpM+aG7ah3wDvnCS7gEjWf9rxDynijNgcu4n2yNHJgLC6tqFBBkHaY3
-         EkVY39hl/mA1w==
-Received: by mail-pj1-f70.google.com with SMTP id m9-20020a17090a34c900b0019c8d5075beso368709pjf.2
-        for <linux-iio@vger.kernel.org>; Mon, 20 Sep 2021 10:37:43 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=CQtfdbe1O3s9BEshGw98z5OXNdM0i7hCrZwLtn3F8cg=;
-        b=m1hb7S6bmTQsGg4GaDKE9Ir3ieZCX5e00tuxFJPLJkls5MbRTb6uu3UgnKBdhvH72F
-         YrAJSKRirRCPEuwyTLWuYY2t9MFmPyPI8XOI36WkFD5kAsPZddBjHoQYFoUHrC39lIxH
-         JukWHqGw9sSZcwGLBMMdp3mwjUrRhfTI9vP5yqGUCZlu4zehU2NjFsQECEiaQO2FJ5rY
-         SD6bODs+6HB6Galtgp4GfEJU4gIDQLcEtamW++mj8IJjLS2VUS3BJTXBfAXTLN7zAx3p
-         eAbU3gk1r7K3M/UKu2CyyGt4zXD6kLUUJkqucpG+eSceEYY2HuO14z79Lv8hNbMBLaK1
-         6p9A==
-X-Gm-Message-State: AOAM531CsJqs5BUqhhzwaPmMeDcPZI7AQpBnqdLNh8VwEbOwbjdpZkBv
-        0QkhudVZF1zmzaL2lIdFzTNaP45iiR0e70KLOQhnAmstJJCyCuPhjZbGDjfsTXR6FsJ00m4n47l
-        mSgzgfNrpX4P3xiZf+5qZC58+ZDZxQ0nWZi0Aiw==
-X-Received: by 2002:a65:5845:: with SMTP id s5mr24080731pgr.227.1632159461678;
-        Mon, 20 Sep 2021 10:37:41 -0700 (PDT)
-X-Google-Smtp-Source: ABdhPJyCnJ9SLA7DSqx8gP32eeM3/WHlWuJYoH5BlFMtXi3QlDixSt/zezxCCbHLKKlROcKaXGFBKQ==
-X-Received: by 2002:a65:5845:: with SMTP id s5mr24080711pgr.227.1632159461484;
-        Mon, 20 Sep 2021 10:37:41 -0700 (PDT)
-Received: from localhost.localdomain ([69.163.84.166])
-        by smtp.gmail.com with ESMTPSA id o12sm9763848pgn.33.2021.09.20.10.37.40
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 20 Sep 2021 10:37:41 -0700 (PDT)
-From:   Tim Gardner <tim.gardner@canonical.com>
-To:     linux-iio@vger.kernel.org
-Cc:     tim.gardner@canonical.com,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Syed Nayyar Waris <syednwaris@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH v2][next] counter: Add default statement to switch() in quad8_function_read()
-Date:   Mon, 20 Sep 2021 11:37:37 -0600
-Message-Id: <20210920173737.21445-1-tim.gardner@canonical.com>
-X-Mailer: git-send-email 2.33.0
+        by mail.kernel.org (Postfix) with ESMTPSA id 1D2C5613AD;
+        Mon, 20 Sep 2021 18:00:35 +0000 (UTC)
+Date:   Mon, 20 Sep 2021 19:04:19 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     "Chindris, Mihail" <Mihail.Chindris@analog.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>,
+        "Bogdan, Dragos" <Dragos.Bogdan@analog.com>,
+        "alexandru.ardelean@analog.com" <alexandru.ardelean@analog.com>
+Subject: Re: [PATCH v5 1/6] iio: Add output buffer support
+Message-ID: <20210920190419.04291227@jic23-huawei>
+In-Reply-To: <SJ0PR03MB6359EFF08F0830A5D0EE181199A09@SJ0PR03MB6359.namprd03.prod.outlook.com>
+References: <20210916182914.1810-1-mihail.chindris@analog.com>
+        <20210916182914.1810-2-mihail.chindris@analog.com>
+        <20210919180244.1f935bcd@jic23-huawei>
+        <SJ0PR03MB6359EFF08F0830A5D0EE181199A09@SJ0PR03MB6359.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-v2: Add the correct Cc's
+On Mon, 20 Sep 2021 08:02:29 +0000
+"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
 
-Coverity complains of a possible use of an uninitialized variable
-in quad8_action_read().
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Sunday, September 19, 2021 7:03 PM
+> > To: Chindris, Mihail <Mihail.Chindris@analog.com>
+> > Cc: linux-kernel@vger.kernel.org; linux-iio@vger.kernel.org;
+> > lars@metafoo.de; Hennerich, Michael
+> > <Michael.Hennerich@analog.com>; Sa, Nuno
+> > <Nuno.Sa@analog.com>; Bogdan, Dragos
+> > <Dragos.Bogdan@analog.com>; alexandru.ardelean@analog.com
+> > Subject: Re: [PATCH v5 1/6] iio: Add output buffer support
+> > 
+> > On Thu, 16 Sep 2021 18:29:09 +0000
+> > Mihail Chindris <mihail.chindris@analog.com> wrote:
+> >   
+> > > Currently IIO only supports buffer mode for capture devices like  
+> > ADCs. Add  
+> > > support for buffered mode for output devices like DACs.
+> > >
+> > > The output buffer implementation is analogous to the input buffer
+> > > implementation. Instead of using read() to get data from the buffer  
+> > write()  
+> > > is used to copy data into the buffer.
+> > >
+> > > poll() with POLLOUT will wakeup if there is space available.
+> > >
+> > > Drivers can remove data from a buffer using iio_pop_from_buffer(),  
+> > the  
+> > > function can e.g. called from a trigger handler to write the data to
+> > > hardware.
+> > >
+> > > A buffer can only be either a output buffer or an input, but not both.  
+> > So,  
+> > > for a device that has an ADC and DAC path, this will mean 2 IIO  
+> > buffers  
+> > > (one for each direction).
+> > >
+> > > The direction of the buffer is decided by the new direction field of  
+> > the  
+> > > iio_buffer struct and should be set after allocating and before  
+> > registering  
+> > > it.
+> > >
+> > > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+> > > Signed-off-by: Alexandru Ardelean  
+> > <alexandru.ardelean@analog.com>  
+> > > Signed-off-by: Mihail Chindris <mihail.chindris@analog.com>  
+> > 
+> > A few minor things inline.  I would have expected the missing check
+> > on insert_buffer to have resulted in a nasty deference of a null pointer
+> > though which does make me nervous about whether we have tested
+> > this
+> > series enough.
+> > 
+> > Jonathan
+> >   
+> > > ---
+> > >  drivers/iio/iio_core.h            |   4 +
+> > >  drivers/iio/industrialio-buffer.c | 120  
+> > +++++++++++++++++++++++++++++-  
+> > >  drivers/iio/industrialio-core.c   |   1 +
+> > >  include/linux/iio/buffer.h        |   7 ++
+> > >  include/linux/iio/buffer_impl.h   |  11 +++
+> > >  5 files changed, 141 insertions(+), 2 deletions(-)
+> > >
+> > > diff --git a/drivers/iio/iio_core.h b/drivers/iio/iio_core.h
+> > > index 8f4a9b264962..61e318431de9 100644
+> > > --- a/drivers/iio/iio_core.h
+> > > +++ b/drivers/iio/iio_core.h
+> > > @@ -68,12 +68,15 @@ __poll_t iio_buffer_poll_wrapper(struct file  
+> > *filp,  
+> > >  				 struct poll_table_struct *wait);
+> > >  ssize_t iio_buffer_read_wrapper(struct file *filp, char __user *buf,
+> > >  				size_t n, loff_t *f_ps);
+> > > +ssize_t iio_buffer_write_wrapper(struct file *filp, const char __user  
+> > *buf,  
+> > > +				 size_t n, loff_t *f_ps);
+> > >
+> > >  int iio_buffers_alloc_sysfs_and_mask(struct iio_dev *indio_dev);
+> > >  void iio_buffers_free_sysfs_and_mask(struct iio_dev *indio_dev);
+> > >
+> > >  #define iio_buffer_poll_addr (&iio_buffer_poll_wrapper)
+> > >  #define iio_buffer_read_outer_addr (&iio_buffer_read_wrapper)
+> > > +#define iio_buffer_write_outer_addr  
+> > (&iio_buffer_write_wrapper)  
+> > >
+> > >  void iio_disable_all_buffers(struct iio_dev *indio_dev);
+> > >  void iio_buffer_wakeup_poll(struct iio_dev *indio_dev);
+> > > @@ -83,6 +86,7 @@ void iio_device_detach_buffers(struct iio_dev  
+> > *indio_dev);  
+> > >
+> > >  #define iio_buffer_poll_addr NULL
+> > >  #define iio_buffer_read_outer_addr NULL
+> > > +#define iio_buffer_write_outer_addr NULL
+> > >
+> > >  static inline int iio_buffers_alloc_sysfs_and_mask(struct iio_dev  
+> > *indio_dev)  
+> > >  {
+> > > diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-  
+> > buffer.c  
+> > > index a95cc2da56be..a2a34c5652a7 100644
+> > > --- a/drivers/iio/industrialio-buffer.c
+> > > +++ b/drivers/iio/industrialio-buffer.c
+> > > @@ -161,6 +161,62 @@ static ssize_t iio_buffer_read(struct file *filp,  
+> > char __user *buf,  
+> > >  	return ret;
+> > >  }
+> > >
+> > > +static size_t iio_buffer_space_available(struct iio_buffer *buf)
+> > > +{
+> > > +	if (buf->access->space_available)
+> > > +		return buf->access->space_available(buf);
+> > > +
+> > > +	return SIZE_MAX;
+> > > +}
+> > > +
+> > > +static ssize_t iio_buffer_write(struct file *filp, const char __user  
+> > *buf,  
+> > > +				size_t n, loff_t *f_ps)
+> > > +{
+> > > +	struct iio_dev_buffer_pair *ib = filp->private_data;
+> > > +	struct iio_buffer *rb = ib->buffer;
+> > > +	struct iio_dev *indio_dev = ib->indio_dev;
+> > > +	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+> > > +	int ret;
+> > > +	size_t written;
+> > > +
+> > > +	if (!indio_dev->info)
+> > > +		return -ENODEV;
+> > > +
+> > > +	if (!rb || !rb->access->write)
+> > > +		return -EINVAL;
+> > > +  
+> 
+> As the buffer implementation can support both 'read()' and 'write()', the following
+> check might make sense:
+> 
+> if (rb->direction != IIO_BUFFER_DIRECTION_OUT)
+>       return -EPERM;
 
-CID 119643 (#1 of 1): Uninitialized scalar variable (UNINIT)
-4. uninit_use: Using uninitialized value function.
-346        switch (function) {
+Makes sense.  Whether EPERM is the right error code is a different question.
+Doesn't seem perfectly aligned with this case, but it's not too bad.
 
-The call to quad8_function_read() could theoretically return without
-assigning a value to '*function', thus causing the use of an
-ininitialized variable 'function' in quad8_action_read().
+Jonathan
 
-Fix this by adding a default statement to the switch in
-quad8_function_read() and returning an error.
-
-Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: Syed Nayyar Waris <syednwaris@gmail.com>
-Cc: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
----
- drivers/counter/104-quad-8.c | 2 ++
- 1 file changed, 2 insertions(+)
-
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index c587f295d720..3a69d35b82ea 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -215,6 +215,8 @@ static int quad8_function_read(struct counter_device *counter,
- 		case 2:
- 			*function = COUNTER_FUNCTION_QUADRATURE_X4;
- 			break;
-+		default:
-+			return -1;
- 		}
- 	else
- 		*function = COUNTER_FUNCTION_PULSE_DIRECTION;
--- 
-2.33.0
+> 
+> If going with this, we should add an extra patch to do a similar thing on the read side...
+> 
+> - Nuno Sá
+> 
 
