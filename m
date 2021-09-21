@@ -7,21 +7,21 @@ X-Spam-Status: No, score=-16.7 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_GIT
 	autolearn=ham autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 397DDC433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Sep 2021 11:54:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB2CFC433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Sep 2021 11:54:33 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2231B61178
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Sep 2021 11:54:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id BA1B160EDF
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Sep 2021 11:54:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232766AbhIULz5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 21 Sep 2021 07:55:57 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:53535 "EHLO
+        id S232611AbhIULz7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 21 Sep 2021 07:55:59 -0400
+Received: from relay10.mail.gandi.net ([217.70.178.230]:38337 "EHLO
         relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232631AbhIULzv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Sep 2021 07:55:51 -0400
+        with ESMTP id S232616AbhIULzp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Sep 2021 07:55:45 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 047D1240005;
-        Tue, 21 Sep 2021 11:54:21 +0000 (UTC)
+        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 57092240015;
+        Tue, 21 Sep 2021 11:54:16 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -29,9 +29,9 @@ To:     Jonathan Cameron <jic23@kernel.org>,
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Nuno Sa <Nuno.Sa@analog.com>,
         Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v4 16/16] iio: adc: max1027: Don't reject external triggers when there is no IRQ
-Date:   Tue, 21 Sep 2021 13:54:08 +0200
-Message-Id: <20210921115408.66711-17-miquel.raynal@bootlin.com>
+Subject: [PATCH v4 09/16] iio: adc: max1027: Create a helper to configure the channels to scan
+Date:   Tue, 21 Sep 2021 13:54:01 +0200
+Message-Id: <20210921115408.66711-10-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210921115408.66711-1-miquel.raynal@bootlin.com>
 References: <20210921115408.66711-1-miquel.raynal@bootlin.com>
@@ -42,60 +42,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-External triggers do not necessarily need the EOC interrupt to be
-populated to work properly. The end of conversion status may either come
-from an interrupt or from a sufficient enough extra delay. IRQs are not
-mandatory so move the triggered buffer setup out of the IRQ condition
-and add the logic to wait enough time for all the requested conversions
-to be in the device's FIFO.
+These bits are meant to be reused for triggered buffers setup.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/adc/max1027.c | 23 ++++++++++++++---------
- 1 file changed, 14 insertions(+), 9 deletions(-)
+ drivers/iio/adc/max1027.c | 27 +++++++++++++++------------
+ 1 file changed, 15 insertions(+), 12 deletions(-)
 
 diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index 02735c604f82..45dc8a625fa3 100644
+index 62570953653a..254df6a28cd8 100644
 --- a/drivers/iio/adc/max1027.c
 +++ b/drivers/iio/adc/max1027.c
-@@ -288,6 +288,9 @@ static int max1027_wait_eoc(struct iio_dev *indio_dev)
- 		if (!ret)
- 			return ret;
- 	} else {
-+		if (indio_dev->active_scan_mask)
-+			conversion_time *= hweight32(*indio_dev->active_scan_mask);
+@@ -271,6 +271,19 @@ struct max1027_state {
+ 	u8				reg ____cacheline_aligned;
+ };
+ 
++/* Scan from chan 0 to the highest requested channel. Include temperature on demand. */
++static int max1027_configure_chans_and_start(struct iio_dev *indio_dev)
++{
++	struct max1027_state *st = iio_priv(indio_dev);
 +
- 		usleep_range(conversion_time, conversion_time * 2);
++	st->reg = MAX1027_CONV_REG | MAX1027_SCAN_0_N;
++	st->reg |= MAX1027_CHAN(fls(*indio_dev->active_scan_mask) - 2);
++	if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
++		st->reg |= MAX1027_TEMP;
++
++	return spi_write(st->spi, &st->reg, 1);
++}
++
+ static int max1027_enable_trigger(struct iio_dev *indio_dev, bool enable)
+ {
+ 	struct max1027_state *st = iio_priv(indio_dev);
+@@ -402,7 +415,6 @@ static int max1027_validate_trigger(struct iio_dev *indio_dev,
+ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
+ {
+ 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+-	struct max1027_state *st = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	/*
+@@ -416,17 +428,8 @@ static int max1027_set_cnvst_trigger_state(struct iio_trigger *trig, bool state)
+ 		return ret;
+ 
+ 	if (state) {
+-		/*
+-		 * Scan from chan 0 to the highest requested channel.
+-		 * Include temperature on demand.
+-		 */
+-		st->reg = MAX1027_CONV_REG | MAX1027_SCAN_0_N;
+-		st->reg |= MAX1027_CHAN(fls(*indio_dev->active_scan_mask) - 2);
+-		if (*indio_dev->active_scan_mask & MAX1X27_SCAN_MASK_TEMP)
+-			st->reg |= MAX1027_TEMP;
+-
+-		ret = spi_write(st->spi, &st->reg, 1);
+-		if (ret < 0)
++		ret = max1027_configure_chans_and_start(indio_dev);
++		if (ret)
+ 			return ret;
  	}
  
-@@ -567,16 +570,18 @@ static int max1027_probe(struct spi_device *spi)
- 	if (!st->buffer)
- 		return -ENOMEM;
- 
-+	/* Enable triggered buffers */
-+	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-+					      &iio_pollfunc_store_time,
-+					      &max1027_trigger_handler,
-+					      NULL);
-+	if (ret < 0) {
-+		dev_err(&indio_dev->dev, "Failed to setup buffer\n");
-+		return ret;
-+	}
-+
-+	/* If there is an EOC interrupt, register the cnvst hardware trigger */
- 	if (spi->irq) {
--		ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
--						      &iio_pollfunc_store_time,
--						      &max1027_trigger_handler,
--						      NULL);
--		if (ret < 0) {
--			dev_err(&indio_dev->dev, "Failed to setup buffer\n");
--			return ret;
--		}
--
- 		st->trig = devm_iio_trigger_alloc(&spi->dev, "%s-trigger",
- 						  indio_dev->name);
- 		if (!st->trig) {
 -- 
 2.27.0
 
