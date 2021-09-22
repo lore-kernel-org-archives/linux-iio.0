@@ -2,279 +2,215 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 X-Spam-Level: 
-X-Spam-Status: No, score=-18.8 required=3.0 tests=BAYES_00,DKIM_SIGNED,
-	DKIM_VALID,DKIM_VALID_AU,HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,
-	INCLUDES_PATCH,MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT
+X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
+	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_SANE_2
 	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FB38C433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Sep 2021 15:35:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 195C5C433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Sep 2021 15:42:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3C6B761350
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Sep 2021 15:35:20 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EAAF561214
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Sep 2021 15:42:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236499AbhIVPgs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Sep 2021 11:36:48 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:60088 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236473AbhIVPgr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Sep 2021 11:36:47 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18MDUPFo022772;
-        Wed, 22 Sep 2021 17:34:58 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=W8XXkKBm0rhuV3yFT8B+PPX99+Xhb2iTk0d2aJwB2XQ=;
- b=hNHG4zuZPqSMd74fqUgoemy89KEBsU7/SeTtuRIW7w1EndnXasPZK9+rdoq+KFg5t3Ix
- a2Pls1dKAOIPCeufobBChAhCg4VBCGRooDaLTuUFqPHcArPKwMEegc9t/GdWZM50Nxad
- 98s69CjC2L3xtFbeZB8pg2rSlQ+mAkzOjYzRfixlVN+aMv6tIwcts7ZWjjqP7WstkFNr
- JEkS644uRcKQAQ4b50hNCUPCcMYIFKqoUfbxobqUju506HCHppd8bTTs60p/CBsK9JOp
- 1w6J08GqUGb8S+IOocTkghWAC14n22ZKxolVqhVY6A6J2z7+9tl/zkInL+AOXzD0g7p9 +A== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 3b81h0akve-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 22 Sep 2021 17:34:58 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id E039E10002A;
-        Wed, 22 Sep 2021 17:34:57 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id D6B2D24187A;
-        Wed, 22 Sep 2021 17:34:57 +0200 (CEST)
-Received: from localhost (10.75.127.49) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.18; Wed, 22 Sep 2021 17:34:57
- +0200
-From:   Olivier Moysan <olivier.moysan@foss.st.com>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: [PATCH v2 6/7] iio: adc: stm32-adc: add vrefint calibration support
-Date:   Wed, 22 Sep 2021 17:34:17 +0200
-Message-ID: <20210922153418.21033-7-olivier.moysan@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210922153418.21033-1-olivier.moysan@foss.st.com>
-References: <20210922153418.21033-1-olivier.moysan@foss.st.com>
+        id S232318AbhIVPnt convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Sep 2021 11:43:49 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:44515 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231712AbhIVPns (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Sep 2021 11:43:48 -0400
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id 512F1E0005;
+        Wed, 22 Sep 2021 15:42:15 +0000 (UTC)
+Date:   Wed, 22 Sep 2021 17:42:14 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        bcousson@baylibre.com, Tony Lindgren <tony@atomide.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-omap@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Ryan Barnett <ryan.barnett@collins.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Jason Reeder <jreeder@ti.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v3 17/47] mfd: ti_am335x_tscadc: Use driver data
+Message-ID: <20210922174214.7aee560a@xps13>
+In-Reply-To: <YUtFX/6I4VuBHXgf@google.com>
+References: <20210915155908.476767-1-miquel.raynal@bootlin.com>
+        <20210915155908.476767-18-miquel.raynal@bootlin.com>
+        <YUtFX/6I4VuBHXgf@google.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.49]
-X-ClientProxiedBy: SFHDAG2NODE1.st.com (10.75.127.4) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-22_05,2021-09-22_01,2020-04-07_01
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support of vrefint calibration.
-If a channel is labeled as vrefint, get vrefint calibration
-from non volatile memory for this channel.
-vrefint channel is exposed as a processed channel returning
-the actual value of vrefp:
-vrefp = 3.3 x vrefint_cal / vrefint_data
+Hi Lee,
 
-A conversion on vrefint channel allows to update scale
-factor according to vrefint deviation, compared to vrefint
-calibration value.
+lee.jones@linaro.org wrote on Wed, 22 Sep 2021 16:01:51 +0100:
 
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
----
- drivers/iio/adc/stm32-adc.c | 76 ++++++++++++++++++++++++++++++++++---
- 1 file changed, 70 insertions(+), 6 deletions(-)
+> On Wed, 15 Sep 2021, Miquel Raynal wrote:
+> 
+> > So far every sub-cell parameter in this driver was hardcoded: cell name,
+> > cell compatible, specific clock name and desired clock frequency.
+> > 
+> > As we are about to introduce support for ADC1/magnetic reader, we need a
+> > bit of flexibility. Let's add a driver data structure which will contain
+> > these information.
+> > 
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > ---
+> >  drivers/mfd/ti_am335x_tscadc.c       | 25 +++++++++++++++++++------
+> >  include/linux/mfd/ti_am335x_tscadc.h |  9 +++++++++
+> >  2 files changed, 28 insertions(+), 6 deletions(-)
+> > 
+> > diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+> > index ba821109e98b..fbc8e338188a 100644
+> > --- a/drivers/mfd/ti_am335x_tscadc.c
+> > +++ b/drivers/mfd/ti_am335x_tscadc.c
+> > @@ -137,6 +137,8 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+> >  		return -EINVAL;
+> >  	}
+> >  
+> > +	tscadc->data = of_device_get_match_data(&pdev->dev);
+> > +
+> >  	node = of_get_child_by_name(pdev->dev.of_node, "tsc");
+> >  	of_property_read_u32(node, "ti,wires", &tsc_wires);
+> >  	of_property_read_u32(node, "ti,coordiante-readouts", &readouts);
+> > @@ -212,7 +214,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+> >  		goto err_disable_clk;
+> >  	}
+> >  
+> > -	tscadc->clk_div = (clk_get_rate(clk) / ADC_CLK) - 1;
+> > +	tscadc->clk_div = (clk_get_rate(clk) / tscadc->data->target_clk_rate) - 1;
+> >  	regmap_write(tscadc->regmap, REG_CLKDIV, tscadc->clk_div);
+> >  
+> >  	/* Set the control register bits */
+> > @@ -241,8 +243,8 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+> >  	if (tsc_wires > 0) {
+> >  		tscadc->tsc_cell = tscadc->used_cells;
+> >  		cell = &tscadc->cells[tscadc->used_cells++];
+> > -		cell->name = "TI-am335x-tsc";
+> > -		cell->of_compatible = "ti,am3359-tsc";
+> > +		cell->name = tscadc->data->name_tscmag;
+> > +		cell->of_compatible = tscadc->data->compat_tscmag;
+> >  		cell->platform_data = &tscadc;
+> >  		cell->pdata_size = sizeof(tscadc);
+> >  	}
+> > @@ -251,8 +253,8 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+> >  	if (adc_channels > 0) {
+> >  		tscadc->adc_cell = tscadc->used_cells;
+> >  		cell = &tscadc->cells[tscadc->used_cells++];
+> > -		cell->name = "TI-am335x-adc";
+> > -		cell->of_compatible = "ti,am3359-adc";
+> > +		cell->name = tscadc->data->name_adc;
+> > +		cell->of_compatible = tscadc->data->compat_adc;
+> >  		cell->platform_data = &tscadc;
+> >  		cell->pdata_size = sizeof(tscadc);
+> >  	}
+> > @@ -338,8 +340,19 @@ static int __maybe_unused tscadc_resume(struct device *dev)
+> >  
+> >  static SIMPLE_DEV_PM_OPS(tscadc_pm_ops, tscadc_suspend, tscadc_resume);
+> >  
+> > +static const struct ti_tscadc_data tscdata = {
+> > +	.name_tscmag = "TI-am335x-tsc",
+> > +	.compat_tscmag = "ti,am3359-tsc",
+> > +	.name_adc = "TI-am335x-adc",
+> > +	.compat_adc = "ti,am3359-adc",
+> > +	.target_clk_rate = ADC_CLK,
+> > +};
+> > +
+> >  static const struct of_device_id ti_tscadc_dt_ids[] = {
+> > -	{ .compatible = "ti,am3359-tscadc", },
+> > +	{
+> > +		.compatible = "ti,am3359-tscadc",
+> > +		.data = &tscdata,
+> > +	},
+> >  	{ }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, ti_tscadc_dt_ids);
+> > diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> > index ffc091b77633..0f581c15d95a 100644
+> > --- a/include/linux/mfd/ti_am335x_tscadc.h
+> > +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> > @@ -162,11 +162,20 @@
+> >  
+> >  #define TSCADC_CELLS		2
+> >  
+> > +struct ti_tscadc_data {
+> > +	char *name_tscmag;
+> > +	char *compat_tscmag;
+> > +	char *name_adc;
+> > +	char *compat_adc;  
+> 
+> I think these names should be improved.
+> 
+> What is tscmag?
+> 
+> Does that represent both the Magnetic Reader and the Touchscreen?
 
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index 5a7ac45a0725..c427e439bf4a 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -21,6 +21,7 @@
- #include <linux/io.h>
- #include <linux/iopoll.h>
- #include <linux/module.h>
-+#include <linux/nvmem-consumer.h>
- #include <linux/platform_device.h>
- #include <linux/pm_runtime.h>
- #include <linux/of.h>
-@@ -41,6 +42,7 @@
- #define STM32_ADC_TIMEOUT_US		100000
- #define STM32_ADC_TIMEOUT	(msecs_to_jiffies(STM32_ADC_TIMEOUT_US / 1000))
- #define STM32_ADC_HW_STOP_DELAY_MS	100
-+#define STM32_ADC_VREFINT_VOLTAGE	3300
- 
- #define STM32_DMA_BUFFER_SIZE		PAGE_SIZE
- 
-@@ -137,6 +139,16 @@ struct stm32_adc_regs {
- 	int shift;
- };
- 
-+/**
-+ * struct stm32_adc_vrefint - stm32 ADC internal reference voltage data
-+ * @vrefint_cal:	vrefint calibration value from nvmem
-+ * @vrefint_data:	vrefint actual value
-+ */
-+struct stm32_adc_vrefint {
-+	u32 vrefint_cal;
-+	u32 vrefint_data;
-+};
-+
- /**
-  * struct stm32_adc_regspec - stm32 registers definition
-  * @dr:			data register offset
-@@ -186,6 +198,7 @@ struct stm32_adc;
-  * @unprepare:		optional unprepare routine (disable, power-down)
-  * @irq_clear:		routine to clear irqs
-  * @smp_cycles:		programmable sampling time (ADC clock cycles)
-+ * @ts_vrefint_ns:	vrefint minimum sampling time in ns
-  */
- struct stm32_adc_cfg {
- 	const struct stm32_adc_regspec	*regs;
-@@ -199,6 +212,7 @@ struct stm32_adc_cfg {
- 	void (*unprepare)(struct iio_dev *);
- 	void (*irq_clear)(struct iio_dev *indio_dev, u32 msk);
- 	const unsigned int *smp_cycles;
-+	const unsigned int ts_vrefint_ns;
- };
- 
- /**
-@@ -223,6 +237,7 @@ struct stm32_adc_cfg {
-  * @pcsel:		bitmask to preselect channels on some devices
-  * @smpr_val:		sampling time settings (e.g. smpr1 / smpr2)
-  * @cal:		optional calibration data on some devices
-+ * @vrefint:		internal reference voltage data
-  * @chan_name:		channel name array
-  * @num_diff:		number of differential channels
-  * @int_ch:		internal channel indexes array
-@@ -248,6 +263,7 @@ struct stm32_adc {
- 	u32			pcsel;
- 	u32			smpr_val[2];
- 	struct stm32_adc_calib	cal;
-+	struct stm32_adc_vrefint vrefint;
- 	char			chan_name[STM32_ADC_CH_MAX][STM32_ADC_CH_SZ];
- 	u32			num_diff;
- 	int			int_ch[STM32_ADC_INT_CH_NB];
-@@ -1343,6 +1359,7 @@ static int stm32_adc_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
- 		ret = iio_device_claim_direct_mode(indio_dev);
- 		if (ret)
- 			return ret;
-@@ -1350,6 +1367,10 @@ static int stm32_adc_read_raw(struct iio_dev *indio_dev,
- 			ret = stm32_adc_single_conv(indio_dev, chan, val);
- 		else
- 			ret = -EINVAL;
-+
-+		if (mask == IIO_CHAN_INFO_PROCESSED && adc->vrefint.vrefint_cal)
-+			*val = STM32_ADC_VREFINT_VOLTAGE * adc->vrefint.vrefint_cal / *val;
-+
- 		iio_device_release_direct_mode(indio_dev);
- 		return ret;
- 
-@@ -1819,7 +1840,10 @@ static void stm32_adc_chan_init_one(struct iio_dev *indio_dev,
- 	chan->datasheet_name = name;
- 	chan->scan_index = scan_index;
- 	chan->indexed = 1;
--	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-+	if (chan->channel == adc->int_ch[STM32_ADC_INT_CH_VREFINT])
-+		chan->info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED);
-+	else
-+		chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
- 	chan->info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
- 					 BIT(IIO_CHAN_INFO_OFFSET);
- 	chan->scan_type.sign = 'u';
-@@ -1921,6 +1945,36 @@ static int stm32_adc_legacy_chan_init(struct iio_dev *indio_dev,
- 	return scan_index;
- }
- 
-+static int stm32_adc_populate_int_ch(struct iio_dev *indio_dev, const char *ch_name,
-+				     int chan)
-+{
-+	struct stm32_adc *adc = iio_priv(indio_dev);
-+	u16 vrefint;
-+	int i, ret;
-+
-+	for (i = 0; i < STM32_ADC_INT_CH_NB; i++) {
-+		if (!strncmp(stm32_adc_ic[i].name, ch_name, STM32_ADC_CH_SZ)) {
-+			adc->int_ch[i] = chan;
-+
-+			if (stm32_adc_ic[i].idx != STM32_ADC_INT_CH_VREFINT)
-+				continue;
-+
-+			/* Get calibration data for vrefint channel */
-+			ret = nvmem_cell_read_u16(&indio_dev->dev, "vrefint", &vrefint);
-+			if (ret && ret != -ENOENT && ret != -EOPNOTSUPP) {
-+				dev_err(&indio_dev->dev, "nvmem access error %d\n", ret);
-+				return ret;
-+			}
-+			if (ret == -ENOENT)
-+				dev_dbg(&indio_dev->dev, "vrefint calibration not found\n");
-+			else
-+				adc->vrefint.vrefint_cal = vrefint;
-+		}
-+	}
-+
-+	return 0;
-+}
-+
- static int stm32_adc_generic_chan_init(struct iio_dev *indio_dev,
- 				       struct stm32_adc *adc,
- 				       struct iio_chan_spec *channels)
-@@ -1929,7 +1983,7 @@ static int stm32_adc_generic_chan_init(struct iio_dev *indio_dev,
- 	const struct stm32_adc_info *adc_info = adc->cfg->adc_info;
- 	struct device_node *child;
- 	const char *name;
--	int val, scan_index = 0, ret, i;
-+	int val, scan_index = 0, ret;
- 	bool differential;
- 	u32 vin[2];
- 
-@@ -1949,10 +2003,9 @@ static int stm32_adc_generic_chan_init(struct iio_dev *indio_dev,
- 				return -EINVAL;
- 			}
- 			strncpy(adc->chan_name[val], name, STM32_ADC_CH_SZ);
--			for (i = 0; i < STM32_ADC_INT_CH_NB; i++) {
--				if (!strncmp(stm32_adc_ic[i].name, name, STM32_ADC_CH_SZ))
--					adc->int_ch[i] = val;
--			}
-+			ret = stm32_adc_populate_int_ch(indio_dev, name, val);
-+			if (ret)
-+				goto err;
- 		} else if (ret != -EINVAL) {
- 			dev_err(&indio_dev->dev, "Invalid label %d\n", ret);
- 			goto err;
-@@ -2059,6 +2112,16 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev, bool timestamping)
- 		 */
- 		of_property_read_u32_index(node, "st,min-sample-time-nsecs",
- 					   i, &smp);
-+
-+		/*
-+		 * For vrefint channel, ensure that the sampling time cannot
-+		 * be lower than the one specified in the datasheet
-+		 */
-+		if (channels[i].channel == adc->int_ch[STM32_ADC_INT_CH_VREFINT] &&
-+		    smp < adc->cfg->ts_vrefint_ns) {
-+			smp = adc->cfg->ts_vrefint_ns;
-+		}
-+
- 		/* Prepare sampling time settings */
- 		stm32_adc_smpr_init(adc, channels[i].channel, smp);
- 	}
-@@ -2365,6 +2428,7 @@ static const struct stm32_adc_cfg stm32mp1_adc_cfg = {
- 	.unprepare = stm32h7_adc_unprepare,
- 	.smp_cycles = stm32h7_adc_smp_cycles,
- 	.irq_clear = stm32h7_adc_irq_clear,
-+	.ts_vrefint_ns = 4300,
- };
- 
- static const struct of_device_id stm32_adc_of_match[] = {
--- 
-2.17.1
+Not exactly, it represents *either* the magnetic reader *or* the
+touchscreen.
 
+Basically you can have either one version of the hardware which
+is a regular ADC that can be also used as a touchscreen controller, or
+you can have another version of the hardware which is a regular ADC
+that can be also used as a magnetic reader.
+
+Both features can be used as the same time (ts + adc or mag + adc),
+hence we need a name for the touchscreen child node and for the adc
+child node *or* a name for the magnetic reader chil node and for the adc
+child node.
+
+> If so, I'd prefer that you split them.  If not, I need more info.
+> 
+> For readability, I suggest;
+> 
+>   touchscreen_name
+>   touchscreen_compatible
+>   mag_reader_name
+>   mag_reader_compatible
+>   adc_name
+>   adc_compatible
+>   etc
+> 
+
+I can certainly improve the names though.
+
+> What is a magnetic reader anyway?
+> 
+> Does it read the magnetic stripe on a payment card?
+
+Yes!
+
+> 
+> > +	unsigned int target_clk_rate;
+> > +};
+> > +
+> >  struct ti_tscadc_dev {
+> >  	struct device *dev;
+> >  	struct regmap *regmap;
+> >  	void __iomem *tscadc_base;
+> >  	phys_addr_t tscadc_phys_base;
+> > +	const struct ti_tscadc_data *data;
+> >  	int irq;
+> >  	int used_cells;	/* 1-2 */
+> >  	int tsc_wires;  
+> 
+
+
+Thanks,
+Miquèl
