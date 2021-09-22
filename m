@@ -7,20 +7,20 @@ X-Spam-Status: No, score=-16.8 required=3.0 tests=BAYES_00,
 	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,USER_AGENT_GIT autolearn=ham
 	autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0560CC433F5
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Sep 2021 08:15:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCB7BC433F5
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Sep 2021 08:15:34 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D61F66124A
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Sep 2021 08:15:29 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9C0C06127A
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Sep 2021 08:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233475AbhIVIQ6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Sep 2021 04:16:58 -0400
-Received: from twspam01.aspeedtech.com ([211.20.114.71]:37038 "EHLO
+        id S233570AbhIVIRD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Sep 2021 04:17:03 -0400
+Received: from twspam01.aspeedtech.com ([211.20.114.71]:44209 "EHLO
         twspam01.aspeedtech.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233438AbhIVIQ6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Sep 2021 04:16:58 -0400
+        with ESMTP id S233564AbhIVIRC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Sep 2021 04:17:02 -0400
 Received: from mail.aspeedtech.com ([192.168.0.24])
-        by twspam01.aspeedtech.com with ESMTP id 18M7scjK099787;
+        by twspam01.aspeedtech.com with ESMTP id 18M7scJG099784;
         Wed, 22 Sep 2021 15:54:38 +0800 (GMT-8)
         (envelope-from billy_tsai@aspeedtech.com)
 Received: from BillyTsai-pc.aspeed.com (192.168.2.149) by TWMBX02.aspeed.com
@@ -34,10 +34,10 @@ To:     <jic23@kernel.org>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
         <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-aspeed@lists.ozlabs.org>, <linux-kernel@vger.kernel.org>
-CC:     <BMC-SW@aspeedtech.com>
-Subject: [v7 07/11] iio: adc: aspeed: Fix the calculate error of clock.
-Date:   Wed, 22 Sep 2021 16:15:16 +0800
-Message-ID: <20210922081520.30580-8-billy_tsai@aspeedtech.com>
+CC:     <BMC-SW@aspeedtech.com>, kernel test robot <lkp@intel.com>
+Subject: [v7 04/11] iio: adc: aspeed: Use model_data to set clk scaler.
+Date:   Wed, 22 Sep 2021 16:15:13 +0800
+Message-ID: <20210922081520.30580-5-billy_tsai@aspeedtech.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20210922081520.30580-1-billy_tsai@aspeedtech.com>
 References: <20210922081520.30580-1-billy_tsai@aspeedtech.com>
@@ -48,84 +48,102 @@ X-Originating-IP: [192.168.2.149]
 X-ClientProxiedBy: TWMBX02.aspeed.com (192.168.0.24) To TWMBX02.aspeed.com
  (192.168.0.24)
 X-DNSRBL: 
-X-MAIL: twspam01.aspeedtech.com 18M7scjK099787
+X-MAIL: twspam01.aspeedtech.com 18M7scJG099784
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADC clock formula is
-ast2400/2500:
-ADC clock period = PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0] + 1)
-ast2600:
-ADC clock period = PCLK * 2 * (ADC0C[15:0] + 1)
-They all have one fixed divided 2 and the legacy driver didn't handle it.
-This patch register the fixed factory clock device as the parent of ADC
-clock scaler to fix this issue.
+This patch uses need_prescaler and scaler_bit_width to set the ADC clock
+scaler.
 
+Reported-by: kernel test robot <lkp@intel.com>
 Signed-off-by: Billy Tsai <billy_tsai@aspeedtech.com>
 ---
- drivers/iio/adc/aspeed_adc.c | 27 +++++++++++++++++++++++++++
- 1 file changed, 27 insertions(+)
+ drivers/iio/adc/aspeed_adc.c | 43 ++++++++++++++++++++++--------------
+ 1 file changed, 27 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
-index 3ec4e1a2ddd3..a24be2a4f69c 100644
+index aec335956310..e53d1541ad1d 100644
 --- a/drivers/iio/adc/aspeed_adc.c
 +++ b/drivers/iio/adc/aspeed_adc.c
-@@ -4,6 +4,12 @@
-  *
-  * Copyright (C) 2017 Google, Inc.
-  * Copyright (C) 2021 Aspeed Technology Inc.
-+ *
-+ * ADC clock formula:
-+ * Ast2400/Ast2500:
-+ * clock period = period of PCLK * 2 * (ADC0C[31:17] + 1) * (ADC0C[9:0] + 1)
-+ * Ast2600:
-+ * clock period = period of PCLK * 2 * (ADC0C[15:0] + 1)
-  */
- 
- #include <linux/clk.h>
-@@ -85,6 +91,7 @@ struct aspeed_adc_data {
- 	struct regulator	*regulator;
- 	void __iomem		*base;
- 	spinlock_t		clk_lock;
-+	struct clk_hw		*fixed_div_clk;
- 	struct clk_hw		*clk_prescaler;
- 	struct clk_hw		*clk_scaler;
- 	struct reset_control	*rst;
-@@ -197,6 +204,13 @@ static const struct iio_info aspeed_adc_iio_info = {
- 	.debugfs_reg_access = aspeed_adc_reg_access,
- };
- 
-+static void aspeed_adc_unregister_fixed_divider(void *data)
-+{
-+	struct clk_hw *clk = data;
-+
-+	clk_hw_unregister_fixed_factor(clk);
-+}
-+
- static void aspeed_adc_reset_assert(void *data)
+@@ -210,9 +210,10 @@ static int aspeed_adc_probe(struct platform_device *pdev)
  {
- 	struct reset_control *rst = data;
-@@ -321,6 +335,19 @@ static int aspeed_adc_probe(struct platform_device *pdev)
- 	spin_lock_init(&data->clk_lock);
- 	snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name), "%s",
- 		 of_clk_get_parent_name(pdev->dev.of_node, 0));
-+	snprintf(clk_name, ARRAY_SIZE(clk_name), "%s-fixed-div",
-+		 data->model_data->model_name);
-+	data->fixed_div_clk = clk_hw_register_fixed_factor(
-+		&pdev->dev, clk_name, clk_parent_name, 0, 1, 2);
-+	if (IS_ERR(data->fixed_div_clk))
-+		return PTR_ERR(data->fixed_div_clk);
-+
-+	ret = devm_add_action_or_reset(data->dev,
-+				       aspeed_adc_unregister_fixed_divider,
-+				       data->fixed_div_clk);
-+	if (ret)
-+		return ret;
-+	snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name), clk_name);
+ 	struct iio_dev *indio_dev;
+ 	struct aspeed_adc_data *data;
+-	const char *clk_parent_name;
+ 	int ret;
+ 	u32 adc_engine_control_reg_val;
++	unsigned long scaler_flags = 0;
++	char clk_name[32], clk_parent_name[32];
  
- 	if (data->model_data->need_prescaler) {
- 		snprintf(clk_name, ARRAY_SIZE(clk_name), "%s-prescaler",
+ 	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -229,24 +230,32 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 
+ 	/* Register ADC clock prescaler with source specified by device tree. */
+ 	spin_lock_init(&data->clk_lock);
+-	clk_parent_name = of_clk_get_parent_name(pdev->dev.of_node, 0);
+-
+-	data->clk_prescaler = clk_hw_register_divider(
+-				&pdev->dev, "prescaler", clk_parent_name, 0,
+-				data->base + ASPEED_REG_CLOCK_CONTROL,
+-				17, 15, 0, &data->clk_lock);
+-	if (IS_ERR(data->clk_prescaler))
+-		return PTR_ERR(data->clk_prescaler);
+-
++	snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name), "%s",
++		 of_clk_get_parent_name(pdev->dev.of_node, 0));
++
++	if (data->model_data->need_prescaler) {
++		snprintf(clk_name, ARRAY_SIZE(clk_name), "%s-prescaler",
++			 data->model_data->model_name);
++		data->clk_prescaler = clk_hw_register_divider(
++			&pdev->dev, clk_name, clk_parent_name, 0,
++			data->base + ASPEED_REG_CLOCK_CONTROL, 17, 15, 0,
++			&data->clk_lock);
++		if (IS_ERR(data->clk_prescaler))
++			return PTR_ERR(data->clk_prescaler);
++		snprintf(clk_parent_name, ARRAY_SIZE(clk_parent_name),
++			 clk_name);
++		scaler_flags = CLK_SET_RATE_PARENT;
++	}
+ 	/*
+ 	 * Register ADC clock scaler downstream from the prescaler. Allow rate
+ 	 * setting to adjust the prescaler as well.
+ 	 */
++	snprintf(clk_name, ARRAY_SIZE(clk_name), "%s-scaler",
++		 data->model_data->model_name);
+ 	data->clk_scaler = clk_hw_register_divider(
+-				&pdev->dev, "scaler", "prescaler",
+-				CLK_SET_RATE_PARENT,
+-				data->base + ASPEED_REG_CLOCK_CONTROL,
+-				0, 10, 0, &data->clk_lock);
++		&pdev->dev, clk_name, clk_parent_name, scaler_flags,
++		data->base + ASPEED_REG_CLOCK_CONTROL, 0,
++		data->model_data->scaler_bit_width, 0, &data->clk_lock);
+ 	if (IS_ERR(data->clk_scaler)) {
+ 		ret = PTR_ERR(data->clk_scaler);
+ 		goto scaler_error;
+@@ -318,7 +327,8 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ reset_error:
+ 	clk_hw_unregister_divider(data->clk_scaler);
+ scaler_error:
+-	clk_hw_unregister_divider(data->clk_prescaler);
++	if (data->model_data->need_prescaler)
++		clk_hw_unregister_divider(data->clk_prescaler);
+ 	return ret;
+ }
+ 
+@@ -333,7 +343,8 @@ static int aspeed_adc_remove(struct platform_device *pdev)
+ 	clk_disable_unprepare(data->clk_scaler->clk);
+ 	reset_control_assert(data->rst);
+ 	clk_hw_unregister_divider(data->clk_scaler);
+-	clk_hw_unregister_divider(data->clk_prescaler);
++	if (data->model_data->need_prescaler)
++		clk_hw_unregister_divider(data->clk_prescaler);
+ 
+ 	return 0;
+ }
 -- 
 2.25.1
 
