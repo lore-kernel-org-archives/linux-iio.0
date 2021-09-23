@@ -4,91 +4,147 @@ X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 X-Spam-Level: 
 X-Spam-Status: No, score=-15.3 required=3.0 tests=BAYES_00,
 	HEADER_FROM_DIFFERENT_DOMAINS,INCLUDES_CR_TRAILER,INCLUDES_PATCH,
-	MAILING_LIST_MULTI,NICE_REPLY_A,SPF_HELO_NONE,SPF_PASS,UNPARSEABLE_RELAY,
-	URIBL_BLOCKED,USER_AGENT_SANE_1 autolearn=unavailable autolearn_force=no
-	version=3.4.0
+	MAILING_LIST_MULTI,SPF_HELO_NONE,SPF_PASS,URIBL_BLOCKED,USER_AGENT_SANE_2
+	autolearn=unavailable autolearn_force=no version=3.4.0
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50285C4332F
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Sep 2021 09:16:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 86C7AC433F5
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Sep 2021 09:33:21 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3B25061283
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Sep 2021 09:16:58 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 683936124E
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Sep 2021 09:33:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240126AbhIWJS2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 23 Sep 2021 05:18:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59126 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240124AbhIWJS1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Sep 2021 05:18:27 -0400
-Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E0891C061574;
-        Thu, 23 Sep 2021 02:16:55 -0700 (PDT)
-Received: from [127.0.0.1] (localhost [127.0.0.1])
-        (Authenticated sender: eballetbo)
-        with ESMTPSA id B67B81F44019
-Subject: Re: [PATCH 6/9] iio: common: cros_ec_sensors: simplify getting
- .driver_data
-To:     Wolfram Sang <wsa+renesas@sang-engineering.com>,
-        linux-kernel@vger.kernel.org
-Cc:     linux-renesas-soc@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>,
+        id S240166AbhIWJeu convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 23 Sep 2021 05:34:50 -0400
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:44503 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240158AbhIWJeu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Sep 2021 05:34:50 -0400
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by relay4-d.mail.gandi.net (Postfix) with ESMTPSA id B80B2E0011;
+        Thu, 23 Sep 2021 09:33:13 +0000 (UTC)
+Date:   Thu, 23 Sep 2021 11:33:12 +0200
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Lee Jones <lee.jones@linaro.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Benson Leung <bleung@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>, linux-iio@vger.kernel.org
-References: <20210920090522.23784-1-wsa+renesas@sang-engineering.com>
- <20210920090522.23784-7-wsa+renesas@sang-engineering.com>
-From:   Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Message-ID: <716533b5-380d-be72-b45e-d9909f09286b@collabora.com>
-Date:   Thu, 23 Sep 2021 11:16:47 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.12.0
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        bcousson@baylibre.com, Tony Lindgren <tony@atomide.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-omap@vger.kernel.org,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Lokesh Vutla <lokeshvutla@ti.com>,
+        Tero Kristo <kristo@kernel.org>,
+        Ryan Barnett <ryan.barnett@collins.com>,
+        Grygorii Strashko <grygorii.strashko@ti.com>,
+        Jason Reeder <jreeder@ti.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v3 36/47] mfd: ti_am335x_tscadc: Support the correctly
+ spelled DT property
+Message-ID: <20210923113312.14fc9027@xps13>
+In-Reply-To: <YUxEsfOvn7Vr8F2c@google.com>
+References: <20210915155908.476767-1-miquel.raynal@bootlin.com>
+        <20210915155908.476767-37-miquel.raynal@bootlin.com>
+        <YUtSVo9HBAiomswv@google.com>
+        <20210923101922.2c108d2b@xps13>
+        <YUxEsfOvn7Vr8F2c@google.com>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20210920090522.23784-7-wsa+renesas@sang-engineering.com>
-Content-Type: text/plain; charset=utf-8
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Wolfram,
+Hi Lee,
 
-On 20/9/21 11:05, Wolfram Sang wrote:
-> We should get 'driver_data' from 'struct device' directly. Going via
-> platform_device is an unneeded step back and forth.
+lee.jones@linaro.org wrote on Thu, 23 Sep 2021 10:11:13 +0100:
+
+> On Thu, 23 Sep 2021, Miquel Raynal wrote:
 > 
-> Signed-off-by: Wolfram Sang <wsa+renesas@sang-engineering.com>
+> > Hi Lee,
+> > 
+> > lee.jones@linaro.org wrote on Wed, 22 Sep 2021 16:57:10 +0100:
+> >   
+> > > On Wed, 15 Sep 2021, Miquel Raynal wrote:
+> > >   
+> > > > There was in the past a typo in the coordinate readouts property. The
+> > > > bindings have been updated, the touchscreen driver as well and now
+> > > > supports both. However, the MFD driver that is in charge of verifying
+> > > > the validity of the property only checks the bogus one. Add support for
+> > > > the correctly spelled DT property.
+> > > > 
+> > > > Fixes: c9aeb249bf72 ("Input: ti_am335x_tsc - fix spelling mistake in TSC/ADC DT binding")
+> > > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > > > Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > > ---
+> > > >  drivers/mfd/ti_am335x_tscadc.c | 8 +++++++-
+> > > >  1 file changed, 7 insertions(+), 1 deletion(-)
+> > > > 
+> > > > diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+> > > > index 155a8ed879b3..aa46ed669016 100644
+> > > > --- a/drivers/mfd/ti_am335x_tscadc.c
+> > > > +++ b/drivers/mfd/ti_am335x_tscadc.c
+> > > > @@ -144,8 +144,14 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+> > > >  	if (tscadc->data->has_tsc) {
+> > > >  		node = of_get_child_by_name(pdev->dev.of_node, "tsc");
+> > > >  		of_property_read_u32(node, "ti,wires", &tscmag_wires);
+> > > > -		of_property_read_u32(node, "ti,coordiante-readouts", &readouts);
+> > > > +		err = of_property_read_u32(node, "ti,coordinate-readouts",
+> > > > +					   &readouts);
+> > > > +		if (err < 0)
+> > > > +			of_property_read_u32(node, "ti,coordiante-readouts",
+> > > > +					     &readouts);
+> > > > +    
+> > > 
+> > > How long are you proposing that we support this churn?  
+> > 
+> > Well, I am not proposing anything, I am just "fixing" the driver so
+> > that it fits the bindings :) Given the fact that at the end of this
+> > series there is a patch that changes the "coordiante" typo to
+> > "coordinate" in a device tree source file, I believe it is still too
+> > soon...  
+> 
+> If this is something you're changing in this set, please reconsider.
+> 
+> I'd rather have a slightly misspelled documented property than being
+> forced to support 2 for any length of time.
 
-Acked-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+I am not suggesting anything here:
+- "coordiante" was introduced back in 2014.
+- "coordinate" was introduced shortly later.
+- "coordiante" was considered part of the "stable API" back in 2014 and
+  even though the right spelling got introduced very shortly after, DT
+  stability rules wanted us to support it forever.
+- The touchscreen driver has immediately be fixed to support both but
+  not the MFD driver, and this does not make any sense!
 
-I'm fine to pick this patch through chrome-platform tree if Jonathan is fine, or
-can go through his tree.
+We *should* either support only one property (1) or support both in the
+two drivers (2), but supporting the two in one driver and supporting
+only one in the other one does not make any sense (given the fact that
+these two drives are tied together, the touchscreen driver does not
+exist without the MFD driver). That is what I am fixing here.
 
-I plan also to pick patch  "[PATCH 8/9] platform: chrome: cros_ec_sensorhub:
-simplify getting .driver_data"
+Is #1 valid? Theoretically it's the best scenario. In practice it is
+not (yet) possible because the two versions are still used in the
+mainline device trees:
+$ git grep coordiante-readouts -- arch/arm/boot/dts/ | wc -l
+1
+$ git grep coordinate-readouts -- arch/arm/boot/dts/ | wc -l
+5
+
+So in this series I am fixing the MFD driver to be sure it handles
+correctly the correctly spelled DT property which is used by 5 boards
+since at least 6 years and I am also updating the remaining DT to use
+the correctly spelled property as well.
+
+I suppose we could propose to drop support for the "coordiante"
+version of that property in a few years but if we decide to do it right
+now we're definitely gonna break users.
 
 Thanks,
-  Enric
-
-> ---
-> 
-> Build tested only. buildbot is happy.
-> 
->  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> index 28bde13003b7..b2725c6adc7f 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> @@ -831,8 +831,7 @@ EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
->  
->  static int __maybe_unused cros_ec_sensors_resume(struct device *dev)
->  {
-> -	struct platform_device *pdev = to_platform_device(dev);
-> -	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
->  	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
->  	int ret = 0;
->  
-> 
+Miquèl
