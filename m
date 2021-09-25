@@ -2,172 +2,72 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E2A8C433EF
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Sep 2021 02:23:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F1C8EC433EF
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Sep 2021 14:26:37 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 74B73610EA
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Sep 2021 02:23:18 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D327A60EE4
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Sep 2021 14:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347561AbhIYCYv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 24 Sep 2021 22:24:51 -0400
-Received: from mx22.baidu.com ([220.181.50.185]:38510 "EHLO baidu.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1343687AbhIYCYv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 24 Sep 2021 22:24:51 -0400
-Received: from BJHW-Mail-Ex15.internal.baidu.com (unknown [10.127.64.38])
-        by Forcepoint Email with ESMTPS id D040B8D9494F694AD9C3;
-        Sat, 25 Sep 2021 10:06:16 +0800 (CST)
-Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BJHW-Mail-Ex15.internal.baidu.com (10.127.64.38) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Sat, 25 Sep 2021 10:06:16 +0800
-Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Sat, 25 Sep 2021 10:06:15 +0800
-From:   Cai Huoqing <caihuoqing@baidu.com>
-To:     <caihuoqing@baidu.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Shawn Guo <shawnguo@kernel.org>,
-        "Sascha Hauer" <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>
-Subject: [PATCH v6 2/3] dt-bindings: iio: adc: Add binding documentation for NXP IMX8QXP ADC
-Date:   Sat, 25 Sep 2021 10:05:46 +0800
-Message-ID: <20210925020555.129-3-caihuoqing@baidu.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210925020555.129-1-caihuoqing@baidu.com>
-References: <20210925020555.129-1-caihuoqing@baidu.com>
+        id S1343745AbhIYO2L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 25 Sep 2021 10:28:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:59418 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233738AbhIYO2L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 25 Sep 2021 10:28:11 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id CFC2760E94;
+        Sat, 25 Sep 2021 14:26:34 +0000 (UTC)
+Date:   Sat, 25 Sep 2021 15:30:23 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     linux-arm-kernel@lists.infradead.org,
+        linux-samsung-soc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: exynos: describe drivers in KConfig
+Message-ID: <20210925153023.06ef72ec@jic23-huawei>
+In-Reply-To: <20210924133515.112357-1-krzysztof.kozlowski@canonical.com>
+References: <20210924133515.112357-1-krzysztof.kozlowski@canonical.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [172.31.63.8]
-X-ClientProxiedBy: BC-Mail-Ex31.internal.baidu.com (172.31.51.25) To
- BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
-X-Baidu-BdMsfe-DateCheck: 1_BJHW-Mail-Ex15_2021-09-25 10:06:16:819
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The NXP i.MX 8QuadXPlus SOC a new ADC IP, so add
-binding documentation for NXP IMX8QXP ADC.
+On Fri, 24 Sep 2021 15:35:15 +0200
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
 
-Reviewed-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
----
-v1->v2:
-        *Fix some indentation issues.
-        *Mark status as okay.
-        *Change clock2 source.
-v3->v4:
-        *Remove 'status' from examples.
-        *Remove unused 'state'.
-        *Remove interrupts-parent.
-        *Change num of address/size-cells from 1 to 2.
-v4->v5:
-        *Remove unused properties
-v1 link:
-https://patchwork.kernel.org/project/linux-arm-kernel/patch/20210830172140.414-5-caihuoqing@baidu.com/
-v3 link:
-https://patchwork.kernel.org/project/linux-arm-kernel/patch/20210907015724.1377-3-caihuoqing@baidu.com/
-v4 link:
-https://patchwork.kernel.org/project/linux-arm-kernel/patch/20210912071334.1745-3-caihuoqing@baidu.com/
-v5 link:
-https://patchwork.kernel.org/project/linux-arm-kernel/patch/20210921052821.91-3-caihuoqing@baidu.com/
+> Describe better which driver applies to which SoC, to make configuring
+> kernel for Samsung SoC easier.
+> 
+> Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 
- .../bindings/iio/adc/nxp,imx8qxp-adc.yaml     | 78 +++++++++++++++++++
- 1 file changed, 78 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+Seems reasonable.  Applied thanks,
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml b/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
-new file mode 100644
-index 000000000000..9c59a20a6032
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
-@@ -0,0 +1,78 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/nxp,imx8qxp-adc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: NXP IMX8QXP ADC bindings
-+
-+maintainers:
-+  - Cai Huoqing <caihuoqing@baidu.com>
-+
-+description:
-+  Supports the ADC found on the IMX8QXP SoC.
-+
-+properties:
-+  compatible:
-+    const: nxp,imx8qxp-adc
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  clocks:
-+    maxItems: 2
-+
-+  clock-names:
-+    items:
-+      - const: per
-+      - const: ipg
-+
-+  assigned-clocks:
-+    maxItems: 1
-+
-+  assigned-clock-rates:
-+    maxItems: 1
-+
-+  power-domains:
-+    maxItems: 1
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+  - clocks
-+  - clock-names
-+  - assigned-clocks
-+  - assigned-clock-rates
-+  - power-domains
-+  - "#io-channel-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/arm-gic.h>
-+    #include <dt-bindings/firmware/imx/rsrc.h>
-+    soc {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+        adc@5a880000 {
-+            compatible = "nxp,imx8qxp-adc";
-+            reg = <0x0 0x5a880000 0x0 0x10000>;
-+            interrupts = <GIC_SPI 240 IRQ_TYPE_LEVEL_HIGH>;
-+            clocks = <&clk IMX_SC_R_ADC_0>,
-+                     <&clk IMX_SC_R_ADC_0>;
-+            clock-names = "per", "ipg";
-+            assigned-clocks = <&clk IMX_SC_R_ADC_0>;
-+            assigned-clock-rates = <24000000>;
-+            power-domains = <&pd IMX_SC_R_ADC_0>;
-+            #io-channel-cells = <1>;
-+        };
-+    };
-+...
--- 
-2.25.1
+Jonathan
+
+> ---
+>  drivers/iio/adc/Kconfig | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index af168e1c9fdb..6cc1268da184 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -430,9 +430,9 @@ config EXYNOS_ADC
+>  	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || ARCH_S5PV210 || (OF && COMPILE_TEST)
+>  	depends on HAS_IOMEM
+>  	help
+> -	  Core support for the ADC block found in the Samsung EXYNOS series
+> -	  of SoCs for drivers such as the touchscreen and hwmon to use to share
+> -	  this resource.
+> +	  Driver for the ADC block found in the Samsung S3C (S3C2410, S3C2416,
+> +	  S3C2440, S3C2443, S3C6410), S5Pv210 and Exynos SoCs.
+> +	  Choose Y here only if you build for such Samsung SoC.
+>  
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called exynos_adc.
 
