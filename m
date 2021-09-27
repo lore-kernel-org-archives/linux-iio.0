@@ -2,29 +2,29 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05F4DC433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 08:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9536FC433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 08:31:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D7CF260F94
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 08:31:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7BC8E610A2
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 08:31:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233439AbhI0IdC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S233465AbhI0IdC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 27 Sep 2021 04:33:02 -0400
-Received: from mx22.baidu.com ([220.181.50.185]:38156 "EHLO baidu.com"
+Received: from mx22.baidu.com ([220.181.50.185]:38158 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233337AbhI0IdB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S233417AbhI0IdB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Mon, 27 Sep 2021 04:33:01 -0400
-Received: from BC-Mail-Ex03.internal.baidu.com (unknown [172.31.51.43])
-        by Forcepoint Email with ESMTPS id F1FA295BAE256D84D0D6;
-        Mon, 27 Sep 2021 16:14:44 +0800 (CST)
+Received: from BC-Mail-Ex07.internal.baidu.com (unknown [172.31.51.47])
+        by Forcepoint Email with ESMTPS id C26F8183A0D47E84DEA2;
+        Mon, 27 Sep 2021 16:14:37 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-Ex03.internal.baidu.com (172.31.51.43) with Microsoft SMTP Server
+ BC-Mail-EX07.internal.baidu.com (172.31.51.47) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Mon, 27 Sep 2021 16:14:44 +0800
+ 15.1.2242.12; Mon, 27 Sep 2021 16:14:37 +0800
 Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Mon, 27 Sep 2021 16:14:43 +0800
+ 15.1.2308.14; Mon, 27 Sep 2021 16:14:36 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
 To:     <caihuoqing@baidu.com>
 CC:     Linus Walleij <linus.walleij@linaro.org>,
@@ -48,12 +48,10 @@ CC:     Linus Walleij <linus.walleij@linaro.org>,
         <linux-amlogic@lists.infradead.org>,
         <linux-arm-msm@vger.kernel.org>,
         <linux-rockchip@lists.infradead.org>
-Subject: [PATCH 3/9] iio: adc: lpc18xx_adc: Make use of the helper function dev_err_probe()
-Date:   Mon, 27 Sep 2021 16:14:19 +0800
-Message-ID: <20210927081426.762-3-caihuoqing@baidu.com>
+Subject: [PATCH 1/9] iio: adc: ab8500-gpadc: Make use of the helper function dev_err_probe()
+Date:   Mon, 27 Sep 2021 16:14:17 +0800
+Message-ID: <20210927081426.762-1-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210927081426.762-1-caihuoqing@baidu.com>
-References: <20210927081426.762-1-caihuoqing@baidu.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [172.31.63.8]
@@ -71,41 +69,29 @@ gets printed.
 
 Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
 ---
- drivers/iio/adc/lpc18xx_adc.c | 16 ++++++++--------
- 1 file changed, 8 insertions(+), 8 deletions(-)
+ drivers/iio/adc/ab8500-gpadc.c | 9 ++++-----
+ 1 file changed, 4 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/adc/lpc18xx_adc.c b/drivers/iio/adc/lpc18xx_adc.c
-index 3566990ae87d..caa7feb4219f 100644
---- a/drivers/iio/adc/lpc18xx_adc.c
-+++ b/drivers/iio/adc/lpc18xx_adc.c
-@@ -137,19 +137,19 @@ static int lpc18xx_adc_probe(struct platform_device *pdev)
- 		return PTR_ERR(adc->base);
+diff --git a/drivers/iio/adc/ab8500-gpadc.c b/drivers/iio/adc/ab8500-gpadc.c
+index 7b5212ba5501..c58d0e2ae538 100644
+--- a/drivers/iio/adc/ab8500-gpadc.c
++++ b/drivers/iio/adc/ab8500-gpadc.c
+@@ -1146,11 +1146,10 @@ static int ab8500_gpadc_probe(struct platform_device *pdev)
  
- 	adc->clk = devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(adc->clk)) {
--		dev_err(&pdev->dev, "error getting clock\n");
--		return PTR_ERR(adc->clk);
+ 	/* The VTVout LDO used to power the AB8500 GPADC */
+ 	gpadc->vddadc = devm_regulator_get(dev, "vddadc");
+-	if (IS_ERR(gpadc->vddadc)) {
+-		ret = PTR_ERR(gpadc->vddadc);
+-		dev_err(dev, "failed to get vddadc\n");
+-		return ret;
 -	}
-+	if (IS_ERR(adc->clk))
-+		return dev_err_probe(&pdev->dev,
-+				     PTR_ERR(adc->clk),
-+				     "error getting clock\n");
++	if (IS_ERR(gpadc->vddadc))
++		return dev_err_probe(dev,
++				     PTR_ERR(gpadc->vddadc),
++				     "failed to get vddadc\n");
  
- 	rate = clk_get_rate(adc->clk);
- 	clkdiv = DIV_ROUND_UP(rate, LPC18XX_ADC_CLK_TARGET);
- 
- 	adc->vref = devm_regulator_get(&pdev->dev, "vref");
--	if (IS_ERR(adc->vref)) {
--		dev_err(&pdev->dev, "error getting regulator\n");
--		return PTR_ERR(adc->vref);
--	}
-+	if (IS_ERR(adc->vref))
-+		return dev_err_probe(&pdev->dev,
-+				     PTR_ERR(adc->vref),
-+				     "error getting regulator\n");
- 
- 	indio_dev->name = dev_name(&pdev->dev);
- 	indio_dev->info = &lpc18xx_adc_info;
+ 	ret = regulator_enable(gpadc->vddadc);
+ 	if (ret) {
 -- 
 2.25.1
 
