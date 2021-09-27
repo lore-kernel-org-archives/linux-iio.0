@@ -2,29 +2,29 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EE0BC433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 08:32:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ACC4C433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 08:33:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 26A3E60F44
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 08:32:50 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 0D82C60F44
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 08:33:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233514AbhI0Ie0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Sep 2021 04:34:26 -0400
-Received: from mx22.baidu.com ([220.181.50.185]:39682 "EHLO baidu.com"
+        id S233565AbhI0Ieh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Sep 2021 04:34:37 -0400
+Received: from mx24.baidu.com ([111.206.215.185]:39768 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233417AbhI0Ie0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 27 Sep 2021 04:34:26 -0400
-Received: from BC-Mail-EX04.internal.baidu.com (unknown [172.31.51.44])
-        by Forcepoint Email with ESMTPS id B85041FB9F94DBD29FD4;
-        Mon, 27 Sep 2021 16:32:47 +0800 (CST)
+        id S233529AbhI0Ie3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 27 Sep 2021 04:34:29 -0400
+Received: from BJHW-MAIL-EX04.internal.baidu.com (unknown [10.127.64.14])
+        by Forcepoint Email with ESMTPS id 70576373237A66F66292;
+        Mon, 27 Sep 2021 16:32:50 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-EX04.internal.baidu.com (172.31.51.44) with Microsoft SMTP Server
+ BJHW-MAIL-EX04.internal.baidu.com (10.127.64.14) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Mon, 27 Sep 2021 16:32:47 +0800
+ 15.1.2308.14; Mon, 27 Sep 2021 16:32:50 +0800
 Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Mon, 27 Sep 2021 16:32:47 +0800
+ 15.1.2308.14; Mon, 27 Sep 2021 16:32:49 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
 To:     <caihuoqing@baidu.com>
 CC:     Kevin Tsai <ktsai@capellamicro.com>,
@@ -32,10 +32,12 @@ CC:     Kevin Tsai <ktsai@capellamicro.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Linus Walleij <linus.walleij@linaro.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH 1/4] iio: light: cm3605: Make use of the helper function dev_err_probe()
-Date:   Mon, 27 Sep 2021 16:32:35 +0800
-Message-ID: <20210927083238.949-1-caihuoqing@baidu.com>
+Subject: [PATCH 2/4] iio: light: cm36651: Make use of the helper function dev_err_probe()
+Date:   Mon, 27 Sep 2021 16:32:36 +0800
+Message-ID: <20210927083238.949-2-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210927083238.949-1-caihuoqing@baidu.com>
+References: <20210927083238.949-1-caihuoqing@baidu.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [172.31.63.8]
@@ -53,38 +55,28 @@ gets printed.
 
 Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
 ---
- drivers/iio/light/cm3605.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ drivers/iio/light/cm36651.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/light/cm3605.c b/drivers/iio/light/cm3605.c
-index 4c83953672be..0b90564213e8 100644
---- a/drivers/iio/light/cm3605.c
-+++ b/drivers/iio/light/cm3605.c
-@@ -211,10 +211,10 @@ static int cm3605_probe(struct platform_device *pdev)
- 	}
+diff --git a/drivers/iio/light/cm36651.c b/drivers/iio/light/cm36651.c
+index fd83a19929bc..c7cc4b0fe8b2 100644
+--- a/drivers/iio/light/cm36651.c
++++ b/drivers/iio/light/cm36651.c
+@@ -632,10 +632,10 @@ static int cm36651_probe(struct i2c_client *client,
+ 	cm36651 = iio_priv(indio_dev);
  
- 	cm3605->vdd = devm_regulator_get(dev, "vdd");
--	if (IS_ERR(cm3605->vdd)) {
--		dev_err(dev, "failed to get VDD regulator\n");
--		return PTR_ERR(cm3605->vdd);
+ 	cm36651->vled_reg = devm_regulator_get(&client->dev, "vled");
+-	if (IS_ERR(cm36651->vled_reg)) {
+-		dev_err(&client->dev, "get regulator vled failed\n");
+-		return PTR_ERR(cm36651->vled_reg);
 -	}
-+	if (IS_ERR(cm3605->vdd))
-+		return dev_err_probe(dev, PTR_ERR(cm3605->vdd),
-+				     "failed to get VDD regulator\n");
-+
- 	ret = regulator_enable(cm3605->vdd);
++	if (IS_ERR(cm36651->vled_reg))
++		return dev_err_probe(&client->dev,
++				     PTR_ERR(cm36651->vled_reg),
++				     "get regulator vled failed\n");
+ 
+ 	ret = regulator_enable(cm36651->vled_reg);
  	if (ret) {
- 		dev_err(dev, "failed to enable VDD regulator\n");
-@@ -223,8 +223,7 @@ static int cm3605_probe(struct platform_device *pdev)
- 
- 	cm3605->aset = devm_gpiod_get(dev, "aset", GPIOD_OUT_HIGH);
- 	if (IS_ERR(cm3605->aset)) {
--		dev_err(dev, "no ASET GPIO\n");
--		ret = PTR_ERR(cm3605->aset);
-+		ret = dev_err_probe(dev, PTR_ERR(cm3605->aset), "no ASET GPIO\n");
- 		goto out_disable_vdd;
- 	}
- 
 -- 
 2.25.1
 
