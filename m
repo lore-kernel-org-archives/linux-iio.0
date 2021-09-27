@@ -2,115 +2,92 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EEA81C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 16:40:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04271C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 20:10:01 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id CF0F06108E
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 16:40:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D124560FF2
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Sep 2021 20:10:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235466AbhI0QmQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Sep 2021 12:42:16 -0400
-Received: from mx07-00178001.pphosted.com ([185.132.182.106]:35632 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S235463AbhI0QmP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Sep 2021 12:42:15 -0400
-Received: from pps.filterd (m0046668.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 18RAccN9016754;
-        Mon, 27 Sep 2021 18:40:18 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=subject : to : cc :
- references : from : message-id : date : mime-version : in-reply-to :
- content-type : content-transfer-encoding; s=selector1;
- bh=3cUaM13ESIaimd9wicHJ6CmL5u8o5wVuRy7GsckzHkI=;
- b=Rhe/st5cXpwbNhNGonO107ZDod1wya4ZWYrLBd8zipZ+F2FziOwCzcQig9+UISeRbx5d
- WobWAtYSh2LuYPH1Pu44iF74wWu2wo6jgEF0+lI11hcyXG2iP1C9Rb49KVw0lbvZsCiY
- o8/UIHflStKEqe2ljuvHeWYYiyElaLj+baJxTei7unOBUemah7aqJhCJKMQrxdWlzaIY
- mp6rBTzs6gpH/p+LlkFmLv9xKt2WXzU/7AHD/XEYo6B5zIuCILYO3uOIi5jnB6ftOnOo
- RNWx1ynxmlg7pNnvItwXYGJ3UXU3C2ITywlsItNXTKXWA43V7sGCUroJNU8509DGPgkd 8w== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 3bbau5294a-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 27 Sep 2021 18:40:18 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D73BD10002A;
-        Mon, 27 Sep 2021 18:40:17 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id CE4782C4213;
-        Mon, 27 Sep 2021 18:40:17 +0200 (CEST)
-Received: from [10.211.13.71] (10.75.127.47) by SFHDAG2NODE2.st.com
- (10.75.127.5) with Microsoft SMTP Server (TLS) id 15.0.1497.18; Mon, 27 Sep
- 2021 18:40:16 +0200
-Subject: Re: [PATCH v3 0/7] iio: adc: stm32-adc: add internal channels support
-To:     Olivier Moysan <olivier.moysan@foss.st.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        id S236750AbhI0ULi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Sep 2021 16:11:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53256 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236810AbhI0ULh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Sep 2021 16:11:37 -0400
+Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59819C061575;
+        Mon, 27 Sep 2021 13:09:59 -0700 (PDT)
+Received: by mail-ed1-x530.google.com with SMTP id v18so38730528edc.11;
+        Mon, 27 Sep 2021 13:09:59 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=vWCgs3XZtqQ75S4Sam0oUHvtow8EHQKNfWFQPQcnRsY=;
+        b=CjCqPN4lsrmL/kgXYQ/RxflbFh56hSOKqIeyX1W/oIBfrq4g8nLspVD4sQMrn+40Rh
+         Rx4viRYm7QpwSajB8/nS9I5EnOQAzL0pUBz4lQns538q/Qteac9sWhcfIIrmfsOSKzsU
+         M/PAXh8x8DmXoA/RtTV/ChQhPTk8C8Id1hnlJcijflS84t+U/LfK3VqO+GuY2jbR/wSS
+         Jeouq+xThsOnrcpcRddG2ODCpZRewj156How3JR4A1KMdpDZs7HuWvu3b5Y3uekBZh/f
+         anAzLHdRSEeqsXP37MCrOfOLFAdqYOJXZV5OWmUogHnZBCe+LfWz2FGRBS/GFuXNmIlm
+         9OmA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=vWCgs3XZtqQ75S4Sam0oUHvtow8EHQKNfWFQPQcnRsY=;
+        b=UQpxaWpQs5jfXDlGKB1btQVWc28wYVXarxzaxtg32GTd8vsC/Kbx//jTXHymsZD7wZ
+         zfIMFbP4T7bKaWfg6Eqccqg3GZ7h9DrVwEbI39UxoLdC+QlEMKlyXaZ4xu7tzznnXmlp
+         BGwq7XT8R8OsxJsykn+0K5eD/U55eCpbqbRf/qZXqOE33rtGiOgLRYyAsF+80yauO+QD
+         e27baglC0soiDMeEJxJcKXKvTUIEhstFd+twVDytkXP54EMrm0uxqenO0EMGVfzERXMh
+         KnQfziuC6O/HU/rgSyHFX6jIKtgU/J1YckTUV1jO6iHsJfhtCX/T6cFz76beqOfdKVLM
+         JRXA==
+X-Gm-Message-State: AOAM531yRwsV0BG+bA4FdIvEGzl9RrNnmzpSxWN3slJxL2xxZSbeCGKw
+        0illVw72TlpELzMjwlyKt0CIGSDls8VrTKbpvqQ=
+X-Google-Smtp-Source: ABdhPJzCjvA/IcL6veR1cMq/hHfeR/9BjzJWC1sc8TXInJGO6uEWxkVIvtfeGVw/Xg4fYEEF9aI0SBlYG9XiAfkPmrs=
+X-Received: by 2002:a17:906:f92:: with SMTP id q18mr2161486ejj.353.1632773397700;
+ Mon, 27 Sep 2021 13:09:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20210927081426.762-1-caihuoqing@baidu.com> <20210927081426.762-6-caihuoqing@baidu.com>
+In-Reply-To: <20210927081426.762-6-caihuoqing@baidu.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Mon, 27 Sep 2021 22:09:47 +0200
+Message-ID: <CAFBinCAatVy_9abUJ7A6frbsOqDqAzVe9oDJODOS5MC7aCcDVg@mail.gmail.com>
+Subject: Re: [PATCH 6/9] iio: adc: meson_saradc: Make use of the helper
+ function dev_err_probe()
+To:     Cai Huoqing <caihuoqing@baidu.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-References: <20210924083410.12332-1-olivier.moysan@foss.st.com>
-From:   Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Message-ID: <6948e726-1a1c-7143-dd36-710e8396c63b@foss.st.com>
-Date:   Mon, 27 Sep 2021 18:40:15 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
- Thunderbird/68.10.0
-MIME-Version: 1.0
-In-Reply-To: <20210924083410.12332-1-olivier.moysan@foss.st.com>
-Content-Type: text/plain; charset="utf-8"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.75.127.47]
-X-ClientProxiedBy: SFHDAG2NODE2.st.com (10.75.127.5) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
- definitions=2021-09-27_06,2021-09-24_02,2020-04-07_01
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 9/24/21 10:34 AM, Olivier Moysan wrote:
-> This patchset adds support of ADC2 internal channels VDDCORE, VREFINT and VBAT
-> on STM32MP15x SoCs. The generic IIO channel bindings is also introduced here
-> to provide this feature. The legacy channel binding is kept for backward compatibility.
-> 
-> Changes in v2:
-> - Add 'deprecated' to channels legacy properties in ADC bindings
-> - Add set/clr service for common registers, to make code more generic in
->   internal channels enable/disable services.
-> - Expose vrefint channel as a processed channel to return
->   the actual value of vrefp.
-> - Minor code improvements
-> 
-> Changes in v3:
-> - fix vrefint sampling time check.
-> 
-> Olivier Moysan (7):
->   dt-bindings: iio: stm32-adc: add generic channel binding
->   dt-bindings: iio: stm32-adc: add nvmem support for vrefint internal
->     channel
->   iio: adc: stm32-adc: split channel init into several routines
->   iio: adc: stm32-adc: add support of generic channels binding
->   iio: adc: stm32-adc: add support of internal channels
+Hello,
+
+first of all: thanks for this patch!
+
+On Mon, Sep 27, 2021 at 10:15 AM Cai Huoqing <caihuoqing@baidu.com> wrote:
+[...]
+> +       if (IS_ERR(priv->clkin))
+> +               return dev_err_probe(&pdev->dev,
+> +                                    PTR_ERR(priv->clkin),
+Is there any specific reason why you put PTR_ERR() on a separate line?
+it would still fit into the line above and be below the old 80 chars
+per line limit.
+For priv->vref you already have it the way I am suggesting there.
+
+[...]
+> +       if (IS_ERR(priv->core_clk))
+> +               return dev_err_probe(&pdev->dev,
+> +                                    PTR_ERR(priv->core_clk),
+the same question as above applies here as well
 
 
-Hi Olivier,
-
-I've one remark on patch "... add support of internal channels".
-
-For the other patches, you can add my
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-
-Thanks!
-Fabrice
-
->   iio: adc: stm32-adc: add vrefint calibration support
->   iio: adc: stm32-adc: use generic binding for sample-time>
->  .../bindings/iio/adc/st,stm32-adc.yaml        | 108 ++++-
->  drivers/iio/adc/stm32-adc-core.h              |   8 +
->  drivers/iio/adc/stm32-adc.c                   | 426 ++++++++++++++++--
->  3 files changed, 487 insertions(+), 55 deletions(-)
-> 
+Best regards,
+Martin
