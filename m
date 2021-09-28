@@ -2,21 +2,21 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10893C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 13:34:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E11CFC43217
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 13:34:14 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EB92360F9D
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 13:34:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CF8606128B
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 13:34:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241233AbhI1Nfu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Sep 2021 09:35:50 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:50361 "EHLO
+        id S241592AbhI1Nfv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Sep 2021 09:35:51 -0400
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:60745 "EHLO
         relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241445AbhI1NfN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Sep 2021 09:35:13 -0400
+        with ESMTP id S241457AbhI1NfU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Sep 2021 09:35:20 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id E728E6000C;
-        Tue, 28 Sep 2021 13:33:29 +0000 (UTC)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id AB1BF6001C;
+        Tue, 28 Sep 2021 13:33:38 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -34,11 +34,10 @@ Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Ryan Barnett <ryan.barnett@collins.com>,
         Grygorii Strashko <grygorii.strashko@ti.com>,
         Jason Reeder <jreeder@ti.com>, <linux-kernel@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v4 43/48] iio: adc: ti_am335x_adc: Add a unit to the timeout delay
-Date:   Tue, 28 Sep 2021 15:31:38 +0200
-Message-Id: <20210928133143.157329-44-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH v4 47/48] ARM: dts: am43xx: Describe the magnetic reader/ADC1 hardware module
+Date:   Tue, 28 Sep 2021 15:31:42 +0200
+Message-Id: <20210928133143.157329-48-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210928133143.157329-1-miquel.raynal@bootlin.com>
 References: <20210928133143.157329-1-miquel.raynal@bootlin.com>
@@ -49,51 +48,79 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The lack of unit in the macro name kind of tricked me when I was
-troubleshooting an issue. Physical constants should always get a unit.
+This hardware module is close to the am33xx ADC module but instead of
+featuring a touchscreen it has a magnetic reader capability.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Tony Lindgren <tony@atomide.com>
 ---
- drivers/iio/adc/ti_am335x_adc.c      | 4 ++--
- include/linux/mfd/ti_am335x_tscadc.h | 2 +-
- 2 files changed, 3 insertions(+), 3 deletions(-)
+ arch/arm/boot/dts/am437x-l4.dtsi     | 31 ++++++++++++++++++++++++++--
+ arch/arm/boot/dts/am43xx-clocks.dtsi |  7 +++++++
+ 2 files changed, 36 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index 6f47a1ace3d4..e7dba10b29b4 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -101,7 +101,7 @@ static int tiadc_wait_idle(struct tiadc_device *adc_dev)
+diff --git a/arch/arm/boot/dts/am437x-l4.dtsi b/arch/arm/boot/dts/am437x-l4.dtsi
+index ba58e6b0da1d..8f2268c02778 100644
+--- a/arch/arm/boot/dts/am437x-l4.dtsi
++++ b/arch/arm/boot/dts/am437x-l4.dtsi
+@@ -2378,11 +2378,38 @@ hdq: hdq@0 {
+ 		};
  
- 	return readl_poll_timeout(adc_dev->mfd_tscadc->tscadc_base + REG_ADCFSM,
- 				  val, !(val & SEQ_STATUS), 10,
--				  IDLE_TIMEOUT * 1000 * adc_dev->channels);
-+				  IDLE_TIMEOUT_MS * 1000 * adc_dev->channels);
- }
+ 		target-module@4c000 {			/* 0x4834c000, ap 114 72.0 */
+-			compatible = "ti,sysc";
+-			status = "disabled";
++			compatible = "ti,sysc-omap4", "ti,sysc";
++			reg = <0x4c000 0x4>,
++			      <0x4c010 0x4>;
++			reg-names = "rev", "sysc";
++			ti,sysc-sidle = <SYSC_IDLE_FORCE>,
++					<SYSC_IDLE_NO>,
++					<SYSC_IDLE_SMART>;
++			clocks = <&l3s_clkctrl AM4_L3S_ADC1_CLKCTRL 0>;
++			clock-names = "fck";
+ 			#address-cells = <1>;
+ 			#size-cells = <1>;
+ 			ranges = <0x0 0x4c000 0x2000>;
++
++			magadc: magadc@0 {
++				compatible = "ti,am4372-magadc";
++				reg = <0x0 0x2000>;
++				interrupts = <GIC_SPI 115 IRQ_TYPE_LEVEL_HIGH>;
++				clocks = <&adc_mag_fck>;
++				clock-names = "fck";
++				dmas = <&edma 54 0>, <&edma 55 0>;
++				dma-names = "fifo0", "fifo1";
++				status = "disabled";
++
++				mag {
++					compatible = "ti,am4372-mag";
++				};
++
++				adc {
++					#io-channel-cells = <1>;
++					compatible ="ti,am4372-adc";
++				};
++			};
+ 		};
  
- static void tiadc_step_config(struct iio_dev *indio_dev)
-@@ -461,7 +461,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
- 	am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
+ 		target-module@80000 {			/* 0x48380000, ap 123 42.0 */
+diff --git a/arch/arm/boot/dts/am43xx-clocks.dtsi b/arch/arm/boot/dts/am43xx-clocks.dtsi
+index 314fc5975acb..66e892fa3398 100644
+--- a/arch/arm/boot/dts/am43xx-clocks.dtsi
++++ b/arch/arm/boot/dts/am43xx-clocks.dtsi
+@@ -444,6 +444,13 @@ wdt1_fck: wdt1_fck@422c {
+ 		reg = <0x422c>;
+ 	};
  
- 	/* Wait for Fifo threshold interrupt */
--	timeout = jiffies + msecs_to_jiffies(IDLE_TIMEOUT * adc_dev->channels);
-+	timeout = jiffies + msecs_to_jiffies(IDLE_TIMEOUT_MS * adc_dev->channels);
- 	while (1) {
- 		fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
- 		if (fifo1count)
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index 5225e3fc194d..ba13e043d910 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -141,7 +141,7 @@
-  *
-  * max processing time: 266431 * 308ns = 83ms(approx)
-  */
--#define IDLE_TIMEOUT		83 /* milliseconds */
-+#define IDLE_TIMEOUT_MS		83 /* milliseconds */
- 
- #define TSCADC_CELLS		2
- 
++	adc_mag_fck: adc_mag_fck@424c {
++		#clock-cells = <0>;
++		compatible = "ti,mux-clock";
++		clocks = <&sys_clkin_ck>, <&dpll_per_m2_ck>;
++		reg = <0x424c>;
++	};
++
+ 	l3_gclk: l3_gclk {
+ 		#clock-cells = <0>;
+ 		compatible = "fixed-factor-clock";
 -- 
 2.27.0
 
