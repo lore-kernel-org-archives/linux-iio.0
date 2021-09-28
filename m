@@ -2,101 +2,110 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C69EC433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 14:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF4C5C433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 14:36:41 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 81BE26120C
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 14:30:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A767260F6E
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 14:36:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241274AbhI1OcJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Sep 2021 10:32:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52812 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241267AbhI1OcH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Sep 2021 10:32:07 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 762E6C06161C
-        for <linux-iio@vger.kernel.org>; Tue, 28 Sep 2021 07:30:27 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id i25so93828816lfg.6
-        for <linux-iio@vger.kernel.org>; Tue, 28 Sep 2021 07:30:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=Uh1B6XTocg/PuNZlNsHJ5qn3ywJ0pfLGKGnm5l1sB1s=;
-        b=bt1vQ9mFtLWbSomTDSPbF5QE3RLYCRSGiCjPdnKP0BYNmZ22nN/5dQreFOHtJlZP9A
-         w1Ju27SQF3MMrUPKopIdjsdV0fU69078TLg3O6fDK6EtaBVBFxWWwokt6QgWln5o8xT/
-         0FE64IiWO7MHsJ9hCkLWJ0A73tKdDUIHDA2H6cYZe3v+aaEsZvFVbmFcynWdoX4JFqyW
-         VHhtrRCMq587NZq3jdj7pcF+xc6daSurloZBhgz178YbCvxjCtZ9KIVs5/G/eVu3cZz0
-         O2DoTHqZJqv61DW3iDhIzQkvY9RLrrmCkYy5YJEATVCpeoiBUANGdDnTN7VJiWwB9a31
-         i2FA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=Uh1B6XTocg/PuNZlNsHJ5qn3ywJ0pfLGKGnm5l1sB1s=;
-        b=feyQ3k5XhqXAkIFbmDxEAiyKl2nWQc/VFog2xXmOY2spobokvJ0FrOM124aCB8uXMi
-         sY0RbgTweWdahDqupthFuKDElPDhO6yLlSzR88VPhZrJTmO6gpOy8OjxBZCaeZ1W7G8p
-         nac0rN/V5XEEic4vrbGqUEXSTg75vYd1vlIm7X1ru+XgcfAYMbKc5WG0HrojzNdEqVFM
-         l45P+gzSBVipbj86vYwXV4V4m/zLH+9yW2wOPAaXxq8eDKTW/vo1dWMYcrcZi1MXeylC
-         A5/Url1MWlSAuPsvDGlnk0hHXw/FP0hcCjUW1IwKPez1xxe6OzCRaNrVeyC3VK2CdbOa
-         RW7w==
-X-Gm-Message-State: AOAM530T2ugRp4rScM8Y+3JI0dgqAWMDEDl+gj81uh1Y0hXGyK/qgobM
-        EwGs7P/YAMOoFMIXb3gNgoYeua+njw9dKPF22DOPmMLDHko=
-X-Google-Smtp-Source: ABdhPJxrQ91FcoG1j8MqOj19A8jz0Mbb51yvmE4ezgOpcY+fkN/eVADQarawxS3wzP2LfC8q5vYwAWJL1ZqFFqpb/1o=
-X-Received: by 2002:a05:651c:1124:: with SMTP id e4mr253677ljo.261.1632839421344;
- Tue, 28 Sep 2021 07:30:21 -0700 (PDT)
-MIME-Version: 1.0
-References: <20210928141956.2148-1-caihuoqing@baidu.com> <20210928141956.2148-7-caihuoqing@baidu.com>
-In-Reply-To: <20210928141956.2148-7-caihuoqing@baidu.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Tue, 28 Sep 2021 16:30:09 +0200
-Message-ID: <CACRpkdYSKnk0v2FEPg5h4p_ODtepXoH9=a=8hiTa7BP3goaPKA@mail.gmail.com>
-Subject: Re: [PATCH v3 7/9] iio: adc: qcom-pm8xxx-xoadc: Make use of the
- helper function dev_err_probe()
-To:     Cai Huoqing <caihuoqing@baidu.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        id S241316AbhI1OiU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Sep 2021 10:38:20 -0400
+Received: from mx22.baidu.com ([220.181.50.185]:60638 "EHLO baidu.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S241152AbhI1OiM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 28 Sep 2021 10:38:12 -0400
+Received: from BJHW-Mail-Ex01.internal.baidu.com (unknown [10.127.64.11])
+        by Forcepoint Email with ESMTPS id 76BABABF5FD0DB62B957;
+        Tue, 28 Sep 2021 22:20:17 +0800 (CST)
+Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
+ BJHW-Mail-Ex01.internal.baidu.com (10.127.64.11) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Tue, 28 Sep 2021 22:20:17 +0800
+Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2308.14; Tue, 28 Sep 2021 22:20:16 +0800
+From:   Cai Huoqing <caihuoqing@baidu.com>
+To:     <caihuoqing@baidu.com>
+CC:     Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Shawn Guo <shawnguo@kernel.org>,
         Sascha Hauer <s.hauer@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        "Pengutronix Kernel Team" <kernel@pengutronix.de>,
         Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
+        "NXP Linux Team" <linux-imx@nxp.com>,
         Vladimir Zapolskiy <vz@mleia.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
+        "Neil Armstrong" <narmstrong@baylibre.com>,
         Kevin Hilman <khilman@baylibre.com>,
         Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        "Bjorn Andersson" <bjorn.andersson@linaro.org>,
         Heiko Stuebner <heiko@sntech.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:ARM/Amlogic Meson..." <linux-amlogic@lists.infradead.org>,
-        MSM <linux-arm-msm@vger.kernel.org>,
-        "open list:ARM/Rockchip SoC..." <linux-rockchip@lists.infradead.org>
-Content-Type: text/plain; charset="UTF-8"
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-amlogic@lists.infradead.org>,
+        <linux-arm-msm@vger.kernel.org>,
+        <linux-rockchip@lists.infradead.org>
+Subject: [PATCH v3 3/9] iio: adc: lpc18xx_adc: Make use of the helper function dev_err_probe()
+Date:   Tue, 28 Sep 2021 22:19:49 +0800
+Message-ID: <20210928141956.2148-3-caihuoqing@baidu.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20210928141956.2148-1-caihuoqing@baidu.com>
+References: <20210928141956.2148-1-caihuoqing@baidu.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+X-Originating-IP: [172.31.63.8]
+X-ClientProxiedBy: BJHW-Mail-Ex13.internal.baidu.com (10.127.64.36) To
+ BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Sep 28, 2021 at 4:20 PM Cai Huoqing <caihuoqing@baidu.com> wrote:
+When possible use dev_err_probe help to properly deal with the
+PROBE_DEFER error, the benefit is that DEFER issue will be logged
+in the devices_deferred debugfs file.
+Using dev_err_probe() can reduce code size, and the error value
+gets printed.
 
-> When possible use dev_err_probe help to properly deal with the
-> PROBE_DEFER error, the benefit is that DEFER issue will be logged
-> in the devices_deferred debugfs file.
-> Using dev_err_probe() can reduce code size, and the error value
-> gets printed.
->
-> BTW, change the return value from 'ENXIO' to 'ENODEV',
-> perfer ENODEV which means no such device.
->
-> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
-> ---
-> v2->v3: Update the changelog.
+Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+---
+v1->v2: Remove the separate line of PTR_ERR().
 
-Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+ drivers/iio/adc/lpc18xx_adc.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
-Yours,
-Linus Walleij
+diff --git a/drivers/iio/adc/lpc18xx_adc.c b/drivers/iio/adc/lpc18xx_adc.c
+index 3566990ae87d..caa7feb4219f 100644
+--- a/drivers/iio/adc/lpc18xx_adc.c
++++ b/drivers/iio/adc/lpc18xx_adc.c
+@@ -137,19 +137,17 @@ static int lpc18xx_adc_probe(struct platform_device *pdev)
+ 		return PTR_ERR(adc->base);
+ 
+ 	adc->clk = devm_clk_get(&pdev->dev, NULL);
+-	if (IS_ERR(adc->clk)) {
+-		dev_err(&pdev->dev, "error getting clock\n");
+-		return PTR_ERR(adc->clk);
+-	}
++	if (IS_ERR(adc->clk))
++		return dev_err_probe(&pdev->dev, PTR_ERR(adc->clk),
++				     "error getting clock\n");
+ 
+ 	rate = clk_get_rate(adc->clk);
+ 	clkdiv = DIV_ROUND_UP(rate, LPC18XX_ADC_CLK_TARGET);
+ 
+ 	adc->vref = devm_regulator_get(&pdev->dev, "vref");
+-	if (IS_ERR(adc->vref)) {
+-		dev_err(&pdev->dev, "error getting regulator\n");
+-		return PTR_ERR(adc->vref);
+-	}
++	if (IS_ERR(adc->vref))
++		return dev_err_probe(&pdev->dev, PTR_ERR(adc->vref),
++				     "error getting regulator\n");
+ 
+ 	indio_dev->name = dev_name(&pdev->dev);
+ 	indio_dev->info = &lpc18xx_adc_info;
+-- 
+2.25.1
+
