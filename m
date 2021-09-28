@@ -2,47 +2,40 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 334D3C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 01:39:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A284C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 01:41:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1D0286127A
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 01:39:39 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2FBE361260
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 01:41:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238582AbhI1BlP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Sep 2021 21:41:15 -0400
-Received: from mx24.baidu.com ([111.206.215.185]:48232 "EHLO baidu.com"
+        id S238438AbhI1Bmt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Sep 2021 21:42:49 -0400
+Received: from mx24.baidu.com ([111.206.215.185]:49524 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S238509AbhI1BlN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 27 Sep 2021 21:41:13 -0400
-Received: from BC-Mail-EX04.internal.baidu.com (unknown [172.31.51.44])
-        by Forcepoint Email with ESMTPS id 888D1C2B45025B972A84;
-        Tue, 28 Sep 2021 09:39:33 +0800 (CST)
+        id S238437AbhI1Bms (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 27 Sep 2021 21:42:48 -0400
+Received: from BC-Mail-Ex31.internal.baidu.com (unknown [172.31.51.25])
+        by Forcepoint Email with ESMTPS id 78A349228FC2B4B57F4C;
+        Tue, 28 Sep 2021 09:41:08 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BC-Mail-EX04.internal.baidu.com (172.31.51.44) with Microsoft SMTP Server
+ BC-Mail-Ex31.internal.baidu.com (172.31.51.25) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2242.12; Tue, 28 Sep 2021 09:39:33 +0800
+ 15.1.2242.12; Tue, 28 Sep 2021 09:41:07 +0800
 Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Tue, 28 Sep 2021 09:39:32 +0800
+ 15.1.2308.14; Tue, 28 Sep 2021 09:41:07 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
 To:     <caihuoqing@baidu.com>
-CC:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "Vladimir Zapolskiy" <vz@mleia.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: [PATCH v2 8/8] iio: dac: ti-dac7311: Make use of the helper function dev_err_probe()
-Date:   Tue, 28 Sep 2021 09:39:01 +0800
-Message-ID: <20210928013902.1341-8-caihuoqing@baidu.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 2/2] iio: st_lsm9ds0: Make use of the helper function dev_err_probe()
+Date:   Tue, 28 Sep 2021 09:40:54 +0800
+Message-ID: <20210928014055.1431-2-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20210928013902.1341-1-caihuoqing@baidu.com>
-References: <20210928013902.1341-1-caihuoqing@baidu.com>
+In-Reply-To: <20210928014055.1431-1-caihuoqing@baidu.com>
+References: <20210928014055.1431-1-caihuoqing@baidu.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-Originating-IP: [172.31.63.8]
@@ -60,27 +53,40 @@ gets printed.
 
 Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
 ---
- drivers/iio/dac/ti-dac7311.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+ drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_core.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/dac/ti-dac7311.c b/drivers/iio/dac/ti-dac7311.c
-index 9d0b253be841..09218c3029f0 100644
---- a/drivers/iio/dac/ti-dac7311.c
-+++ b/drivers/iio/dac/ti-dac7311.c
-@@ -266,10 +266,9 @@ static int ti_dac_probe(struct spi_device *spi)
- 	ti_dac->resolution = spec->resolution;
+diff --git a/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_core.c b/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_core.c
+index b3a43a3b04ff..9fb06b7cde3c 100644
+--- a/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_core.c
++++ b/drivers/iio/imu/st_lsm9ds0/st_lsm9ds0_core.c
+@@ -24,10 +24,10 @@ static int st_lsm9ds0_power_enable(struct device *dev, struct st_lsm9ds0 *lsm9ds
  
- 	ti_dac->vref = devm_regulator_get(dev, "vref");
--	if (IS_ERR(ti_dac->vref)) {
--		dev_err(dev, "error to get regulator\n");
--		return PTR_ERR(ti_dac->vref);
+ 	/* Regulators not mandatory, but if requested we should enable them. */
+ 	lsm9ds0->vdd = devm_regulator_get(dev, "vdd");
+-	if (IS_ERR(lsm9ds0->vdd)) {
+-		dev_err(dev, "unable to get Vdd supply\n");
+-		return PTR_ERR(lsm9ds0->vdd);
 -	}
-+	if (IS_ERR(ti_dac->vref))
-+		return dev_err_probe(dev, PTR_ERR(ti_dac->vref),
-+				     "error to get regulator\n");
++	if (IS_ERR(lsm9ds0->vdd))
++		return dev_err_probe(dev, PTR_ERR(lsm9ds0->vdd),
++				     "unable to get Vdd supply\n");
++
+ 	ret = regulator_enable(lsm9ds0->vdd);
+ 	if (ret) {
+ 		dev_warn(dev, "Failed to enable specified Vdd supply\n");
+@@ -36,9 +36,9 @@ static int st_lsm9ds0_power_enable(struct device *dev, struct st_lsm9ds0 *lsm9ds
  
- 	ret = regulator_enable(ti_dac->vref);
- 	if (ret < 0) {
+ 	lsm9ds0->vdd_io = devm_regulator_get(dev, "vddio");
+ 	if (IS_ERR(lsm9ds0->vdd_io)) {
+-		dev_err(dev, "unable to get Vdd_IO supply\n");
+ 		regulator_disable(lsm9ds0->vdd);
+-		return PTR_ERR(lsm9ds0->vdd_io);
++		return dev_err_probe(dev, PTR_ERR(lsm9ds0->vdd_io),
++				     "unable to get Vdd_IO supply\n");
+ 	}
+ 	ret = regulator_enable(lsm9ds0->vdd_io);
+ 	if (ret) {
 -- 
 2.25.1
 
