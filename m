@@ -2,21 +2,21 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06889C43219
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 13:32:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F854C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 13:33:02 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E0A6D60FC2
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 13:32:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 488D861246
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 13:33:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241255AbhI1Nec (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Sep 2021 09:34:32 -0400
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:46605 "EHLO
+        id S241284AbhI1Nej (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Sep 2021 09:34:39 -0400
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:56375 "EHLO
         relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241142AbhI1NeW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Sep 2021 09:34:22 -0400
+        with ESMTP id S241166AbhI1Ne1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Sep 2021 09:34:27 -0400
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 5C5586000C;
-        Tue, 28 Sep 2021 13:32:40 +0000 (UTC)
+        by relay3-d.mail.gandi.net (Postfix) with ESMTPSA id 923CA60014;
+        Tue, 28 Sep 2021 13:32:44 +0000 (UTC)
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -36,9 +36,9 @@ Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Jason Reeder <jreeder@ti.com>, <linux-kernel@vger.kernel.org>,
         Miquel Raynal <miquel.raynal@bootlin.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v4 21/48] mfd: ti_am335x_tscadc: Reorder the initialization steps
-Date:   Tue, 28 Sep 2021 15:31:16 +0200
-Message-Id: <20210928133143.157329-22-miquel.raynal@bootlin.com>
+Subject: [PATCH v4 23/48] mfd: ti_am335x_tscadc: Replace the header license text with SPDX tag
+Date:   Tue, 28 Sep 2021 15:31:18 +0200
+Message-Id: <20210928133143.157329-24-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20210928133143.157329-1-miquel.raynal@bootlin.com>
 References: <20210928133143.157329-1-miquel.raynal@bootlin.com>
@@ -49,77 +49,45 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-TI AM335X TRM [1] states that most of the configuration should be set in
-the control register in the first place, before actually enabling the
-hardware with the subsystem enable bit.
-
-So far only half of the configuration was made in the first step (before
-enabling the "subsystem"), which does not make really sense. Also, the
-probe and the resume patch were acting differently. Let's harmonize all
-this by following these steps:
-1/ Configure the CLKDIV register
-2/ Configure the CTRL register
-3/ Configure the idle configuration
-4/ Really enable the device by rewriting the CTRL register with the
-   subsystem enable bit set.
-
-[1] https://www.ti.com/lit/pdf/spruh73
+Drop the text license and replace it with an equivalent SPDX license tag
+identifier.
 
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/mfd/ti_am335x_tscadc.c | 11 +++++------
- 1 file changed, 5 insertions(+), 6 deletions(-)
+ include/linux/mfd/ti_am335x_tscadc.h | 16 ++++------------
+ 1 file changed, 4 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
-index d1f70224e457..01c2b7d1c18c 100644
---- a/drivers/mfd/ti_am335x_tscadc.c
-+++ b/drivers/mfd/ti_am335x_tscadc.c
-@@ -219,8 +219,6 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 
- 	/* Set the control register bits */
- 	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
--	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index c9c6f0b29181..2b8a5f58a3b6 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -1,21 +1,13 @@
+-#ifndef __LINUX_TI_AM335X_TSCADC_MFD_H
+-#define __LINUX_TI_AM335X_TSCADC_MFD_H
 -
- 	if (tsc_wires > 0) {
- 		tscadc->tsc_wires = tsc_wires;
- 		if (tsc_wires == 5)
-@@ -228,6 +226,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
- 		else
- 			ctrl |= CNTRLREG_4WIRE | CNTRLREG_TSCENB;
- 	}
-+	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
++/* SPDX-License-Identifier: GPL-2.0-only */
+ /*
+  * TI Touch Screen / ADC MFD driver
+  *
+  * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
+- *
+- * This program is free software; you can redistribute it and/or
+- * modify it under the terms of the GNU General Public License as
+- * published by the Free Software Foundation version 2.
+- *
+- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
+- * kind, whether express or implied; without even the implied warranty
+- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+- * GNU General Public License for more details.
+  */
  
- 	tscadc_idle_config(tscadc);
- 
-@@ -313,9 +312,9 @@ static int __maybe_unused tscadc_resume(struct device *dev)
- 	pm_runtime_get_sync(dev);
- 
- 	/* context restore */
--	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
--	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
-+	regmap_write(tscadc->regmap, REG_CLKDIV, tscadc->clk_div);
- 
-+	ctrl = CNTRLREG_STEPCONFIGWRT |	CNTRLREG_STEPID;
- 	if (tscadc->tsc_wires > 0) {
- 		if (tscadc->tsc_wires == 5)
- 			ctrl |= CNTRLREG_5WIRE | CNTRLREG_TSCENB;
-@@ -323,13 +322,13 @@ static int __maybe_unused tscadc_resume(struct device *dev)
- 			ctrl |= CNTRLREG_4WIRE | CNTRLREG_TSCENB;
- 	}
- 
-+	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
++#ifndef __LINUX_TI_AM335X_TSCADC_MFD_H
++#define __LINUX_TI_AM335X_TSCADC_MFD_H
 +
- 	tscadc_idle_config(tscadc);
+ #include <linux/mfd/core.h>
  
- 	ctrl |= CNTRLREG_TSCSSENB;
- 	regmap_write(tscadc->regmap, REG_CTRL, ctrl);
- 
--	regmap_write(tscadc->regmap, REG_CLKDIV, tscadc->clk_div);
--
- 	return 0;
- }
- 
+ #define REG_RAWIRQSTATUS	0x024
 -- 
 2.27.0
 
