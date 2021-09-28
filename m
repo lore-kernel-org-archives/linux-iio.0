@@ -2,29 +2,29 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6DACC433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 14:20:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7B837C4332F
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 14:20:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B34DB61215
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 14:20:14 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6953661288
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Sep 2021 14:20:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241137AbhI1OVw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Sep 2021 10:21:52 -0400
-Received: from mx24.baidu.com ([111.206.215.185]:48514 "EHLO baidu.com"
+        id S241161AbhI1OWG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Sep 2021 10:22:06 -0400
+Received: from mx24.baidu.com ([111.206.215.185]:48858 "EHLO baidu.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S241003AbhI1OVw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 28 Sep 2021 10:21:52 -0400
-Received: from BJHW-Mail-Ex02.internal.baidu.com (unknown [10.127.64.12])
-        by Forcepoint Email with ESMTPS id 446133CB622D7C7A9271;
-        Tue, 28 Sep 2021 22:20:10 +0800 (CST)
+        id S241203AbhI1OWE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 28 Sep 2021 10:22:04 -0400
+Received: from BJHW-Mail-Ex11.internal.baidu.com (unknown [10.127.64.34])
+        by Forcepoint Email with ESMTPS id AE35FBE4A2BB5652BBAB;
+        Tue, 28 Sep 2021 22:20:23 +0800 (CST)
 Received: from BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) by
- BJHW-Mail-Ex02.internal.baidu.com (10.127.64.12) with Microsoft SMTP Server
+ BJHW-Mail-Ex11.internal.baidu.com (10.127.64.34) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Tue, 28 Sep 2021 22:20:10 +0800
+ 15.1.2308.14; Tue, 28 Sep 2021 22:20:23 +0800
 Received: from LAPTOP-UKSR4ENP.internal.baidu.com (172.31.63.8) by
  BJHW-MAIL-EX27.internal.baidu.com (10.127.64.42) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
- 15.1.2308.14; Tue, 28 Sep 2021 22:20:08 +0800
+ 15.1.2308.14; Tue, 28 Sep 2021 22:20:22 +0800
 From:   Cai Huoqing <caihuoqing@baidu.com>
 To:     <caihuoqing@baidu.com>
 CC:     Linus Walleij <linus.walleij@linaro.org>,
@@ -48,9 +48,9 @@ CC:     Linus Walleij <linus.walleij@linaro.org>,
         <linux-amlogic@lists.infradead.org>,
         <linux-arm-msm@vger.kernel.org>,
         <linux-rockchip@lists.infradead.org>
-Subject: [PATCH v3 2/9] iio: adc: imx7d_adc: Make use of the helper function dev_err_probe()
-Date:   Tue, 28 Sep 2021 22:19:48 +0800
-Message-ID: <20210928141956.2148-2-caihuoqing@baidu.com>
+Subject: [PATCH v3 4/9] iio: adc: max1118: Make use of the helper function dev_err_probe()
+Date:   Tue, 28 Sep 2021 22:19:50 +0800
+Message-ID: <20210928141956.2148-4-caihuoqing@baidu.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20210928141956.2148-1-caihuoqing@baidu.com>
 References: <20210928141956.2148-1-caihuoqing@baidu.com>
@@ -71,38 +71,27 @@ gets printed.
 
 Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
 ---
- drivers/iio/adc/imx7d_adc.c | 16 +++++-----------
- 1 file changed, 5 insertions(+), 11 deletions(-)
+ drivers/iio/adc/max1118.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
-index 4969a5f941e3..f47360cbff3b 100644
---- a/drivers/iio/adc/imx7d_adc.c
-+++ b/drivers/iio/adc/imx7d_adc.c
-@@ -496,19 +496,13 @@ static int imx7d_adc_probe(struct platform_device *pdev)
- 		return irq;
+diff --git a/drivers/iio/adc/max1118.c b/drivers/iio/adc/max1118.c
+index 8cec9d949083..a41bc570be21 100644
+--- a/drivers/iio/adc/max1118.c
++++ b/drivers/iio/adc/max1118.c
+@@ -221,10 +221,9 @@ static int max1118_probe(struct spi_device *spi)
  
- 	info->clk = devm_clk_get(dev, "adc");
--	if (IS_ERR(info->clk)) {
--		ret = PTR_ERR(info->clk);
--		dev_err(dev, "Failed getting clock, err = %d\n", ret);
--		return ret;
--	}
-+	if (IS_ERR(info->clk))
-+		return dev_err_probe(dev, PTR_ERR(info->clk), "Failed getting clock\n");
- 
- 	info->vref = devm_regulator_get(dev, "vref");
--	if (IS_ERR(info->vref)) {
--		ret = PTR_ERR(info->vref);
--		dev_err(dev,
--			"Failed getting reference voltage, err = %d\n", ret);
--		return ret;
--	}
-+	if (IS_ERR(info->vref))
-+		return dev_err_probe(dev, PTR_ERR(info->vref),
-+				     "Failed getting reference voltage\n");
- 
- 	platform_set_drvdata(pdev, indio_dev);
- 
+ 	if (id->driver_data == max1118) {
+ 		adc->reg = devm_regulator_get(&spi->dev, "vref");
+-		if (IS_ERR(adc->reg)) {
+-			dev_err(&spi->dev, "failed to get vref regulator\n");
+-			return PTR_ERR(adc->reg);
+-		}
++		if (IS_ERR(adc->reg))
++			return dev_err_probe(&spi->dev, PTR_ERR(adc->reg),
++					     "failed to get vref regulator\n");
+ 		ret = regulator_enable(adc->reg);
+ 		if (ret)
+ 			return ret;
 -- 
 2.25.1
 
