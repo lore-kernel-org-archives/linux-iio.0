@@ -2,164 +2,130 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E164FC433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Sep 2021 22:02:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 85EE8C433FE
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 02:08:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C717861A0B
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Sep 2021 22:02:38 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 68F0261242
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 02:08:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343717AbhI3WEU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Sep 2021 18:04:20 -0400
-Received: from relay10.mail.gandi.net ([217.70.178.230]:38109 "EHLO
-        relay10.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229644AbhI3WEU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Sep 2021 18:04:20 -0400
-Received: (Authenticated sender: alexandre.belloni@bootlin.com)
-        by relay10.mail.gandi.net (Postfix) with ESMTPSA id 7798C240007;
-        Thu, 30 Sep 2021 22:02:35 +0000 (UTC)
-Date:   Fri, 1 Oct 2021 00:02:34 +0200
-From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+        id S1351481AbhJACJv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Sep 2021 22:09:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54492 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230293AbhJACJv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Sep 2021 22:09:51 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E725EC06176A
+        for <linux-iio@vger.kernel.org>; Thu, 30 Sep 2021 19:08:07 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id d4-20020a17090ad98400b0019ece228690so8133140pjv.5
+        for <linux-iio@vger.kernel.org>; Thu, 30 Sep 2021 19:08:07 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=WVRLRhzvoKVV20Ol7H+QJEsX2wP17yl5wh+OP+kaCs8=;
+        b=ImYgPQO/Z0EATtIW0D0s1Q/ULFZodvL1tLgNNRxnKPXYjb0DCV1nBcZb9GBI51o8Z5
+         vfdQQlaf7rodUOMRGiVLp9m0MgTQI/hu9x2QjmHICQHGOV6rF++Y7yzruuxIll31M0Gv
+         d09/DCfkSWoU0F5CiJcQjtHv7WZZ9QWyby05HSERmrl6KV82ifuuIGZtKwJHXteJMxuR
+         /V7R3GsCYl5n29hL07wZBLlwOxEnq5kI0NV8dBOlgsWu6AUIxAB6TZEjRvv+ML8JP7Td
+         j4Pn5FOJZbu3Q6Fw2cPxqY1LWg1eCRpUYYlKoDJFMOPhdQZP5DCIXyprdUtOFY1bnz4e
+         S18A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=WVRLRhzvoKVV20Ol7H+QJEsX2wP17yl5wh+OP+kaCs8=;
+        b=a/FjyKF/c8X1oFZhGWqh7nRa1G+kZ42avlio5OqXpGW7GfjsFGK6jNseyjFC6c6E8z
+         mVF8zHdG9g98g1U0agBOyifAaziEZh538DI8VfdejrEAw/SYQGAUAxokJnWSDYCrMV/5
+         uznAzEf6t243GP7jnykvRm1d1l6ztZrDyRb43mkbLTrLmZEZqZ57+9oyNo1Y2LhMAhIJ
+         xczPLNlnxWqHs08HXjRrzvyMSPnN0dtG3ghq/dpYDIICSbcXJ4JPg3K5GISsfAfR3tZ0
+         uF6iVWhJuoqecFY3/GXVX8jp1ZimoBKM7hu8yFwa2PX3dmp6dPkltL72YM56nrcOKRP2
+         9cBw==
+X-Gm-Message-State: AOAM532VV3kiVoBFq5fj9KqlTC2Lcz/b8UWSIifWpXi2PXB9IJcZY0sk
+        aBpWf7h5PG261hbHR1sOx54cR/A/bWw=
+X-Google-Smtp-Source: ABdhPJwCuEl5tXtdarlXoT8851RUXS5bLLV/S/jqmMcIuxzXNr5XXxy58dJanuKpji+OWlwYt4z3Xw==
+X-Received: by 2002:a17:902:bcc6:b0:12d:bd30:bc4d with SMTP id o6-20020a170902bcc600b0012dbd30bc4dmr8393808pls.18.1633054087503;
+        Thu, 30 Sep 2021 19:08:07 -0700 (PDT)
+Received: from shinobu ([156.146.35.76])
+        by smtp.gmail.com with ESMTPSA id b11sm4291594pge.57.2021.09.30.19.08.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Sep 2021 19:08:06 -0700 (PDT)
+Date:   Fri, 1 Oct 2021 11:08:02 +0900
+From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Alexandru Ardelean <aardelean@deviqon.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Maxime Ripard <maxime@cerno.tech>
-Subject: Re: [PATCH] iio: adc: nau7802: convert probe to full device-managed
-Message-ID: <YVYz+rY9euHC4lb4@piout.net>
-References: <20210926154932.3287590-1-aardelean@deviqon.com>
- <20210930171023.2bf5a414@jic23-huawei>
+Cc:     linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Kamel Bouhara <kamel.bouhara@bootlin.com>
+Subject: Re: [PATCH] counter: microchip-tcb-capture: Tidy up a false
+ kernel-doc /** marking.
+Message-ID: <YVZtgkZQi3Vbqx4e@shinobu>
+References: <20210930170347.101153-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="Xs9zZcQ8ihzl5qEf"
 Content-Disposition: inline
-In-Reply-To: <20210930171023.2bf5a414@jic23-huawei>
+In-Reply-To: <20210930170347.101153-1-jic23@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 30/09/2021 17:10:23+0100, Jonathan Cameron wrote:
-> On Sun, 26 Sep 2021 18:49:32 +0300
-> Alexandru Ardelean <aardelean@deviqon.com> wrote:
-> 
-> > This is a trivial conversion to device-managed functions.
-> > The mutex_destroy() calls are redundant, as the data will be free'd anyway.
-> > 
-> > And the IRQ and IIO register functions both have device-managed
-> > equivalents.
-> > 
-> > Signed-off-by: Alexandru Ardelean <aardelean@deviqon.com>
-> 
-> +CC Maxime and Alexandre.
-> 
-> Looks simple enough to me that I won't wait on their replies to queue it up.
-> Obviously feedback welcome though!
-> 
-> Applied to the togreg branch of iio.git and pushed out as testing for 0-day
-> to see if it can find stuff we missed.
-> 
 
-This seems good to me too
-Reviewed-by: Alexandre Belloni <alexandre.belloni@bootlin.com>
+--Xs9zZcQ8ihzl5qEf
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> > ---
-> >  drivers/iio/adc/nau7802.c | 50 +++++++--------------------------------
-> >  1 file changed, 9 insertions(+), 41 deletions(-)
-> > 
-> > diff --git a/drivers/iio/adc/nau7802.c b/drivers/iio/adc/nau7802.c
-> > index bb70b51d25b1..976c235f3079 100644
-> > --- a/drivers/iio/adc/nau7802.c
-> > +++ b/drivers/iio/adc/nau7802.c
-> > @@ -428,8 +428,6 @@ static int nau7802_probe(struct i2c_client *client,
-> >  
-> >  	st = iio_priv(indio_dev);
-> >  
-> > -	i2c_set_clientdata(client, indio_dev);
-> > -
-> >  	indio_dev->name = dev_name(&client->dev);
-> >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> >  	indio_dev->info = &nau7802_info;
-> > @@ -495,13 +493,13 @@ static int nau7802_probe(struct i2c_client *client,
-> >  	 * will enable them back when we will need them..
-> >  	 */
-> >  	if (client->irq) {
-> > -		ret = request_threaded_irq(client->irq,
-> > -				NULL,
-> > -				nau7802_eoc_trigger,
-> > -				IRQF_TRIGGER_HIGH | IRQF_ONESHOT |
-> > -				IRQF_NO_AUTOEN,
-> > -				client->dev.driver->name,
-> > -				indio_dev);
-> > +		ret = devm_request_threaded_irq(&client->dev, client->irq,
-> > +						NULL,
-> > +						nau7802_eoc_trigger,
-> > +						IRQF_TRIGGER_HIGH | IRQF_ONESHOT |
-> > +						IRQF_NO_AUTOEN,
-> > +						client->dev.driver->name,
-> > +						indio_dev);
-> >  		if (ret) {
-> >  			/*
-> >  			 * What may happen here is that our IRQ controller is
-> > @@ -526,7 +524,7 @@ static int nau7802_probe(struct i2c_client *client,
-> >  		ret = i2c_smbus_write_byte_data(st->client, NAU7802_REG_CTRL2,
-> >  					  NAU7802_CTRL2_CRS(st->sample_rate));
-> >  		if (ret)
-> > -			goto error_free_irq;
-> > +			return ret;
-> >  	}
-> >  
-> >  	/* Setup the ADC channels available on the board */
-> > @@ -536,36 +534,7 @@ static int nau7802_probe(struct i2c_client *client,
-> >  	mutex_init(&st->lock);
-> >  	mutex_init(&st->data_lock);
-> >  
-> > -	ret = iio_device_register(indio_dev);
-> > -	if (ret < 0) {
-> > -		dev_err(&client->dev, "Couldn't register the device.\n");
-> > -		goto error_device_register;
-> > -	}
-> > -
-> > -	return 0;
-> > -
-> > -error_device_register:
-> > -	mutex_destroy(&st->lock);
-> > -	mutex_destroy(&st->data_lock);
-> > -error_free_irq:
-> > -	if (client->irq)
-> > -		free_irq(client->irq, indio_dev);
-> > -
-> > -	return ret;
-> > -}
-> > -
-> > -static int nau7802_remove(struct i2c_client *client)
-> > -{
-> > -	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> > -	struct nau7802_state *st = iio_priv(indio_dev);
-> > -
-> > -	iio_device_unregister(indio_dev);
-> > -	mutex_destroy(&st->lock);
-> > -	mutex_destroy(&st->data_lock);
-> > -	if (client->irq)
-> > -		free_irq(client->irq, indio_dev);
-> > -
-> > -	return 0;
-> > +	return devm_iio_device_register(&client->dev, indio_dev);
-> >  }
-> >  
-> >  static const struct i2c_device_id nau7802_i2c_id[] = {
-> > @@ -582,7 +551,6 @@ MODULE_DEVICE_TABLE(of, nau7802_dt_ids);
-> >  
-> >  static struct i2c_driver nau7802_driver = {
-> >  	.probe = nau7802_probe,
-> > -	.remove = nau7802_remove,
-> >  	.id_table = nau7802_i2c_id,
-> >  	.driver = {
-> >  		   .name = "nau7802",
-> 
+On Thu, Sep 30, 2021 at 06:03:47PM +0100, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>=20
+> Deals with
+> W=3D1 warning This comment starts with '/**', but isn't a kernel-doc comm=
+ent.
+>=20
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Kamel Bouhara <kamel.bouhara@bootlin.com>
+> Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
 
--- 
-Alexandre Belloni, co-owner and COO, Bootlin
-Embedded Linux and Kernel engineering
-https://bootlin.com
+Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+
+> ---
+>  drivers/counter/microchip-tcb-capture.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>=20
+> diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/mi=
+crochip-tcb-capture.c
+> index 79e0c84a3b81..0ab1b2716784 100644
+> --- a/drivers/counter/microchip-tcb-capture.c
+> +++ b/drivers/counter/microchip-tcb-capture.c
+> @@ -1,5 +1,5 @@
+>  // SPDX-License-Identifier: GPL-2.0-only
+> -/**
+> +/*
+>   * Copyright (C) 2020 Microchip
+>   *
+>   * Author: Kamel Bouhara <kamel.bouhara@bootlin.com>
+> --=20
+> 2.33.0
+>=20
+
+--Xs9zZcQ8ihzl5qEf
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmFWbW4ACgkQhvpINdm7
+VJKnqQ/7BiKhAPBW5dJXlXwSpKQGKKFG8vD8pcjVVjsHGJuyjFmauWIVdN4Sj8f1
+oi+cCka4gUB/1kHjkKJn8GeJtmCaKOL8KsxzScHQKkg9x/+RBMgLLn80RTiK6VAl
+N5xrYLVPd8N5HedRUHnvL4JN1PzAHlrYAjlplqyxx/2ULSwyvuvAVtXzmHvpmTZZ
+RE6DakFxpVyLQCD3h8WiLsyib3C1nJ3dmxGCVClnxD27jBCMnzr96eZdzXx8F8f2
+TM1D6eRngBTZ+2H8f4+nF7XCm7twafXC3z64Ay8gNRxNqT/pIgg3SEsf4wWqhsfZ
+RWoMvNq30YrofFnLSvoVtGqt3kvXejUJFuXVNluMC7TQOOUmRc6VscZcBIUONWfo
+R4EHUYRpS3tfGBRJFRFbhPSSYyuRk5lc3E8DarQvCM4sXblmX51OytnNHnoCamee
+osLE78MnNeQW6zpO/X52TCFW1BLOPGrkyQYwA/eKZ/yLAPZJwHzQxYxs70UKYBJg
+cExDchW1s5/uD/ABYIpO2ZzmlXDMjQV9uPOlXoReotUGd/LDHEI5BqEckox6fzro
+lFEkSg0k3xHbhk8GtHUnRjbY4efsFq5oydgaThKNEEstt08A/XIMWmCi678lb8hY
+gOSxjmiVdTaZzJ8xG2hFkIQLIsgbcAAwrOXTYTp12do+ONl0skc=
+=2OH0
+-----END PGP SIGNATURE-----
+
+--Xs9zZcQ8ihzl5qEf--
