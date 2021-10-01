@@ -2,108 +2,76 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 06D4FC433F5
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 07:26:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3C022C433F5
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 12:00:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id DA76861A3A
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 07:26:52 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 18AA561A85
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 12:00:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352484AbhJAH2f convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Oct 2021 03:28:35 -0400
-Received: from relay5-d.mail.gandi.net ([217.70.183.197]:42845 "EHLO
-        relay5-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231466AbhJAH2f (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Oct 2021 03:28:35 -0400
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay5-d.mail.gandi.net (Postfix) with ESMTPSA id BB62F1C0002;
-        Fri,  1 Oct 2021 07:26:49 +0000 (UTC)
-Date:   Fri, 1 Oct 2021 09:26:48 +0200
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Lee Jones <lee.jones@linaro.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
+        id S1354206AbhJAMCN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Oct 2021 08:02:13 -0400
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:59252
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1354205AbhJAMCL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Oct 2021 08:02:11 -0400
+Received: from localhost (1.general.cking.uk.vpn [10.172.193.212])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id C559440186;
+        Fri,  1 Oct 2021 12:00:18 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1633089618;
+        bh=xoVeBwEbq5yYbiC4MKK88HqPxlCFGkYEHA+6yK4TZTA=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version:Content-Type;
+        b=p1BeaFQ3coUHtNeEOxSWXmLfJIOD2R8e8FtDlN3E4OAKig7Wd0rxW1Mhx1drNO9dX
+         w2rjQ/A32OQpuUe9lrBVfHweu7KZpUGqXto90jf0HrDEWLwK2PamMgJ1ww2eWp6Yrb
+         NK7ppO1l8n73F38kpKfYvqC7rBI/eqJgZFPFax2xWI+5ExE8KBYqQPIjLjhHezD17O
+         deBMeiL8VLAygvegr/ER3nWo9st/BgZfYnDEpKly73jSCo2Fp/71ZhdWDnY1pA5Wqj
+         V867cDEXBTLiDirFjE4hpUN8vmOrJymx7xtcpP3xL5Ir3mNRnV2SjLao5vHv2thlVc
+         J8rTqh+z6BiZg==
+From:   Colin King <colin.king@canonical.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        bcousson@baylibre.com, Tony Lindgren <tony@atomide.com>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 36/48] mfd: ti_am335x_tscadc: Add ADC1/magnetic
- reader support
-Message-ID: <20211001092648.37350b6a@xps13>
-In-Reply-To: <202109290654.q78br8Dx-lkp@intel.com>
-References: <20210928133143.157329-37-miquel.raynal@bootlin.com>
-        <202109290654.q78br8Dx-lkp@intel.com>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Joel Stanley <joel@jms.id.au>,
+        Andrew Jeffery <andrew@aj.id.au>,
+        Billy Tsai <billy_tsai@aspeedtech.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-aspeed@lists.ozlabs.org
+Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH][next] iio: adc: aspeed: Fix spelling mistake "battey" -> "battery"
+Date:   Fri,  1 Oct 2021 13:00:18 +0100
+Message-Id: <20211001120018.17570-1-colin.king@canonical.com>
+X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello Lee,
+From: Colin Ian King <colin.king@canonical.com>
 
-- reduced a bit the Cc: list
+There is a spelling mistake in a dev_warn message. Fix it.
 
-lkp@intel.com wrote on Wed, 29 Sep 2021 06:32:16 +0800:
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/adc/aspeed_adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> Hi Miquel,
-> 
-> I love your patch! Perhaps something to improve:
-> 
-> [auto build test WARNING on lee-mfd/for-mfd-next]
-> [also build test WARNING on jic23-iio/togreg robh/for-next v5.15-rc3 next-20210922]
-> [If your patch is applied to the wrong git tree, kindly drop us a note.
-> And when submitting patch, we suggest to use '--base' as documented in
-> https://git-scm.com/docs/git-format-patch]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Miquel-Raynal/TI-AM437X-ADC1/20210928-213524
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git for-mfd-next
-> config: microblaze-randconfig-r033-20210928 (attached as .config)
-> compiler: microblaze-linux-gcc (GCC) 11.2.0
-> reproduce (this is a W=1 build):
->         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # https://github.com/0day-ci/linux/commit/43a01cf6413f2be038b0d466c7c3f6f16b40e2c3
->         git remote add linux-review https://github.com/0day-ci/linux
->         git fetch --no-tags linux-review Miquel-Raynal/TI-AM437X-ADC1/20210928-213524
->         git checkout 43a01cf6413f2be038b0d466c7c3f6f16b40e2c3
->         # save the attached .config to linux build tree
->         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross ARCH=microblaze 
-> 
-> If you fix the issue, kindly add following tag as appropriate
-> Reported-by: kernel test robot <lkp@intel.com>
-> 
-> All warnings (new ones prefixed by >>):
-> 
->    drivers/mfd/ti_am335x_tscadc.c: In function 'ti_tscadc_probe':
-> >> drivers/mfd/ti_am335x_tscadc.c:124:31: warning: variable 'use_mag' set but not used [-Wunused-but-set-variable]  
->      124 |         bool use_tsc = false, use_mag = false;
->          |                               ^~~~~~~
+diff --git a/drivers/iio/adc/aspeed_adc.c b/drivers/iio/adc/aspeed_adc.c
+index 3e9850a43372..a957cad1bfab 100644
+--- a/drivers/iio/adc/aspeed_adc.c
++++ b/drivers/iio/adc/aspeed_adc.c
+@@ -581,7 +581,7 @@ static int aspeed_adc_probe(struct platform_device *pdev)
+ 			}
+ 		} else
+ 			dev_warn(&pdev->dev,
+-				 "Failed to enable battey-sensing mode\n");
++				 "Failed to enable battery-sensing mode\n");
+ 	}
+ 
+ 	ret = clk_prepare_enable(data->clk_scaler->clk);
+-- 
+2.32.0
 
-It's strange, on my side I didn't get any warnings (using an older GCC,
-perhaps not with all the flags enabled either). Anyway, let's remove
-the noise, I have a fixup patch which can be applied without disturbing
-any of the other patches.
-
-Lee, do you prefer that I send a fixup patch or a v5 for patch "mfd:
-ti_am335x_tscadc: Add ADC1/magnetic reader support"? (provided of
-course that the other patches are fine to you).
-
->    In file included from drivers/mfd/ti_am335x_tscadc.c:20:
->    drivers/mfd/ti_am335x_tscadc.c: At top level:
->    include/linux/mfd/ti_am335x_tscadc.h:126:38: error: 'HZ_PER_MHZ' undeclared here (not in a function)
->      126 | #define TSC_ADC_CLK             (3 * HZ_PER_MHZ)
->          |                                      ^~~~~~~~~~
->    drivers/mfd/ti_am335x_tscadc.c:354:28: note: in expansion of macro 'TSC_ADC_CLK'
->      354 |         .target_clk_rate = TSC_ADC_CLK,
->          |                            ^~~~~~~~~~~
-
-For this one I don't believe this is a real warning, units.h is
-introduced in a precedent patch, HZ_PER_MHZ is a new macro but it is
-upstream now so I think it can safely be discarded.
-
-Thanks,
-Miquèl
