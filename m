@@ -2,20 +2,20 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2FFBFC43217
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 07:03:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29001C433EF
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 07:03:08 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1DA8B619F5
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 07:03:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1212660551
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 07:03:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352291AbhJAHEt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Oct 2021 03:04:49 -0400
-Received: from protonic.xs4all.nl ([83.163.252.89]:53918 "EHLO
+        id S231148AbhJAHEu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Oct 2021 03:04:50 -0400
+Received: from protonic.xs4all.nl ([83.163.252.89]:53940 "EHLO
         protonic.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231182AbhJAHEs (ORCPT
+        with ESMTP id S237478AbhJAHEs (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Oct 2021 03:04:48 -0400
 Received: from ert768.prtnl (ert768.prtnl [192.168.224.11])
-        by sparta.prtnl (Postfix) with ESMTP id 0E04244A0250;
+        by sparta.prtnl (Postfix) with ESMTP id 2DA5A44A0252;
         Fri,  1 Oct 2021 09:02:59 +0200 (CEST)
 From:   Roan van Dijk <roan@protonic.nl>
 To:     Jonathan Cameron <jic23@kernel.org>
@@ -25,9 +25,9 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-kernel@vger.kernel.org, david@protonic.nl,
         Lars-Peter Clausen <lars@metafoo.de>,
         Roan van Dijk <roan@protonic.nl>
-Subject: [PATCH v4 2/4] MAINTAINERS: Add myself as maintainer of the scd4x driver
-Date:   Fri,  1 Oct 2021 09:02:52 +0200
-Message-Id: <20211001070254.3940795-3-roan@protonic.nl>
+Subject: [PATCH v4 4/4] iio: documentation: Document scd4x calibration use
+Date:   Fri,  1 Oct 2021 09:02:54 +0200
+Message-Id: <20211001070254.3940795-5-roan@protonic.nl>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211001070254.3940795-1-roan@protonic.nl>
 References: <20211001070254.3940795-1-roan@protonic.nl>
@@ -37,28 +37,108 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add entries from Documentation/ABI/testing/sysfs-bus-iio-scd30
+to Documentation/ABI/testing/sysfs-bus-iio. The attributes of the scd4x
+and scd30 are common.
+
+Remove Documentation/ABI/testing/sysfs-bus-iio-scd30.
+
 Signed-off-by: Roan van Dijk <roan@protonic.nl>
 ---
- MAINTAINERS | 6 ++++++
- 1 file changed, 6 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio       | 41 +++++++++++++++++++
+ Documentation/ABI/testing/sysfs-bus-iio-scd30 | 34 ---------------
+ 2 files changed, 41 insertions(+), 34 deletions(-)
+ delete mode 100644 Documentation/ABI/testing/sysfs-bus-iio-scd30
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 76e0fdcdd877..d6016b2112f6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -16874,6 +16874,12 @@ F:	drivers/iio/chemical/scd30_core.c
- F:	drivers/iio/chemical/scd30_i2c.c
- F:	drivers/iio/chemical/scd30_serial.c
- 
-+SENSIRION SCD4X CARBON DIOXIDE SENSOR DRIVER
-+M:	Roan van Dijk <roan@protonic.nl>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/chemical/sensirion,scd4x.yaml
-+F:	drivers/iio/chemical/scd4x.c
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 6ad47a67521c..c27347d3608e 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1957,3 +1957,44 @@ Description:
+ 		Specify the percent for light sensor relative to the channel
+ 		absolute value that a data field should change before an event
+ 		is generated. Units are a percentage of the prior reading.
 +
- SENSIRION SGP40 GAS SENSOR DRIVER
- M:	Andreas Klinger <ak@it-klinger.de>
- S:	Maintained
++What:		/sys/bus/iio/devices/iio:deviceX/calibration_auto_enable
++Date:		June 2020
++KernelVersion:	5.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Some sensors have the ability to apply auto calibration at
++		runtime. For example, it may be necessary to compensate for
++		contaminant build-up in a measurement chamber or optical
++		element deterioration that would otherwise lead to sensor drift.
++
++		Writing 1 or 0 to this attribute will respectively activate or
++		deactivate this auto calibration function.
++
++		Upon reading, the current status is returned.
++
++What:		/sys/bus/iio/devices/iio:deviceX/calibration_forced_value
++Date:		June 2020
++KernelVersion:	5.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Some sensors have the ability to apply a manual calibration using
++		a known measurement value, perhaps obtained from an external
++		reference device.
++
++		Writing a value to this function will force such a calibration
++		change. For the scd30 the value should be from the range
++		[400 1 2000].
++
++		Note for the scd30 that a valid value may only be obtained once
++		it is has been written. Until then any read back of this value
++		should be ignored. As for the scd4x an error will be returned
++		immediately if the manual calibration has failed.
++
++What:		/sys/bus/iio/devices/iio:deviceX/calibration_forced_value_available
++KernelVersion:  5.15
++Contact:        linux-iio@vger.kernel.org
++Description:
++		Available range for the forced calibration value, expressed as:
++
++		- a range specified as "[min step max]"
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-scd30 b/Documentation/ABI/testing/sysfs-bus-iio-scd30
+deleted file mode 100644
+index b9712f390bec..000000000000
+--- a/Documentation/ABI/testing/sysfs-bus-iio-scd30
++++ /dev/null
+@@ -1,34 +0,0 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/calibration_auto_enable
+-Date:		June 2020
+-KernelVersion:	5.8
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Contaminants build-up in the measurement chamber or optical
+-		elements deterioration leads to sensor drift.
+-
+-		One can compensate for sensor drift by using automatic self
+-		calibration procedure (asc).
+-
+-		Writing 1 or 0 to this attribute will respectively activate or
+-		deactivate asc.
+-
+-		Upon reading current asc status is returned.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/calibration_forced_value
+-Date:		June 2020
+-KernelVersion:	5.8
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Contaminants build-up in the measurement chamber or optical
+-		elements deterioration leads to sensor drift.
+-
+-		One can compensate for sensor drift by using forced
+-		recalibration (frc). This is useful in case there's known
+-		co2 reference available nearby the sensor.
+-
+-		Picking value from the range [400 1 2000] and writing it to the
+-		sensor will set frc.
+-
+-		Upon reading current frc value is returned. Note that after
+-		power cycling default value (i.e 400) is returned even though
+-		internally sensor had recalibrated itself.
 -- 
 2.30.2
 
