@@ -2,153 +2,98 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95BC0C433FE
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 18:15:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 14143C433F5
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Oct 2021 13:02:10 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 80BCE6135E
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Oct 2021 18:15:59 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E959361AF0
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Oct 2021 13:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355727AbhJASRm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Oct 2021 14:17:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50386 "EHLO
+        id S232983AbhJBNDy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Oct 2021 09:03:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355682AbhJASRh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Oct 2021 14:17:37 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C12C4C0613E6
-        for <linux-iio@vger.kernel.org>; Fri,  1 Oct 2021 11:15:44 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id a18so4706640wru.4
-        for <linux-iio@vger.kernel.org>; Fri, 01 Oct 2021 11:15:44 -0700 (PDT)
+        with ESMTP id S233093AbhJBNDy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Oct 2021 09:03:54 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85816C0613EC;
+        Sat,  2 Oct 2021 06:02:08 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id x7so43724010edd.6;
+        Sat, 02 Oct 2021 06:02:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:content-transfer-encoding:in-reply-to;
-        bh=ACQZtp1I6ehmhXOr+taNCKAcsnyXPtbzuyGGTR/Sk4o=;
-        b=URP+RNHMY4mcptX+LKb8Bxb6vfONQ1248fO/YjHxHVSFXtUrR5/scGmWv4rLAbohai
-         DzR22249PNVFk+c6JmT4UlUcXXQQLN2dISbFGzDwRtrjFwfrZWXwkaPNnof/zeuwZkkI
-         8uMd5cNCKdnuhWAnJlyA2pahAIu63bFdEA1afcmNRzwrAtlo3CSQX51VM0cOSIYodCKN
-         87zhNakO8oreHV2TLry7+2LhGKwt9JvoqkkM5t0OGo9dzXlmDYSW9CpFEJtnwHHg+pQI
-         sazFgj4qat9r6ysvpZirdVOWSziIJcBzUZWjOg6TfXUckeYmJ6B3HuddmIpueBjGAX5f
-         jD3A==
+        d=googlemail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ndllisJpfri3hb1olUYJenRfRB5AbrAxzqRPTi6j654=;
+        b=kqogW/uhlIxcQTtD4H2CvFfmWs499lz0u1RvmeXfGNfCXzcR1fLHhyhYSUUPun0Pk7
+         elB8dK7MWMXVNYG1sM3lSVzYm84IfwbW6A6MloOSCJNCMmnZq9Tqh4BnDtNoOs1bAKF6
+         wBC2zpt6CzqqbmGX5mDKOiXEUh6H40XskQBGw/8ib8WRRPitFdeFTGSnh1ZefUjcfUy2
+         zfqD766y31hlg9/8TY/Wc7D+jfnsp1Ch+rrWU3/+nWsJ5VYXAl0aFVaO8VFjzmajU9zq
+         AlNtQBmAwmlPMp8eKnLSL2ABkE7mSkDFivB1+MrKnfl8bnSoLb4uPJ4SakEzJkkOE3EE
+         rnKg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:content-transfer-encoding
-         :in-reply-to;
-        bh=ACQZtp1I6ehmhXOr+taNCKAcsnyXPtbzuyGGTR/Sk4o=;
-        b=CCPFvjpsTe4Njyu1/g0ndV04ksRsQqrWeDLg0WLkBefD8IgXIp9Ok6EBkVTiFy4RrH
-         E5pSN4vPCTyOax62iLDjGKnWzpifNOSJybCX2dLtdGaI8F2NExbBVDe86mvP1AhOzItZ
-         Hh3RSk81T3D8+Q9Xr2wFcudIc3bzDbBsE451gsK2rQP44HtuOty+tcWSCBIR7PWFT5rW
-         oWSTZcgUz6SXNoPlw0qHkfBD3LpWe/piOUPdMpLmMYn3iTcXwp3kFtEWBD6VZJkqAG66
-         LOgfLXaiZuRpJOmsBtruXNVSLWOVnEG7Kq5v0cEr9m7JdtXUOr9X4BfdDz82JIoEcKDG
-         brVQ==
-X-Gm-Message-State: AOAM531z/govwDUNbL8iKph29BSiJlarvza9oQqoTeHPiBVGKDHbXEzz
-        srMGc5DwrX6KI9AOynMEckIGTVjKvM+AoQ==
-X-Google-Smtp-Source: ABdhPJxOZOm7Wcb37Kx3aO/UuDSejX2tY3JEq6nFN5jofAVflQn4LtvjXF6tfXYensAFj95xA7gMww==
-X-Received: by 2002:a05:6000:c3:: with SMTP id q3mr14192785wrx.361.1633112143285;
-        Fri, 01 Oct 2021 11:15:43 -0700 (PDT)
-Received: from google.com ([95.148.6.233])
-        by smtp.gmail.com with ESMTPSA id k26sm8679499wms.39.2021.10.01.11.15.42
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 01 Oct 2021 11:15:42 -0700 (PDT)
-Date:   Fri, 1 Oct 2021 19:15:41 +0100
-From:   Lee Jones <lee.jones@linaro.org>
-To:     Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        bcousson@baylibre.com, Tony Lindgren <tony@atomide.com>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 36/48] mfd: ti_am335x_tscadc: Add ADC1/magnetic reader
- support
-Message-ID: <YVdQTSQiNMw6fobl@google.com>
-References: <20210928133143.157329-37-miquel.raynal@bootlin.com>
- <202109290654.q78br8Dx-lkp@intel.com>
- <20211001092648.37350b6a@xps13>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ndllisJpfri3hb1olUYJenRfRB5AbrAxzqRPTi6j654=;
+        b=oW35YKfH1z4ErilKfFT+oyOp/PLKdcUAOCDiyGknezb660AbZ+mfAiXdDL2bpscmEi
+         /H1ckl8hz1bj7ArdYhIJNZ14lZn/SDOOF4CjULz8W+NR98fmXVfT3zRmYGr4anRr6yuZ
+         NQi8ZqR4Gq9+zBDJHfI4al2lm6Plz7Giv2MW1SDRdmUaEqx9oVjHOi9bzzDg4thz0GE8
+         2r3I2Uq6B/Ig6Tgm1D6+rQFYwOjEEAi0yxlvux9WvrYlntphUwWngQHMjJ84q2XlIx4a
+         0eFvBvUhMb7qXbAVpF1e61kEyVk4vXLNrvL6Nw5f2HWpyjwcJVKWwDRjbF/+ZeTJauhG
+         BhoQ==
+X-Gm-Message-State: AOAM532so8LKlFRUEuszngkClUJ6KdpW6ieaBfueieuysbqOaqqPO3KI
+        +goRbIIE4FilonTrXHzFVrbrm1wsv8ARsnI8+Js=
+X-Google-Smtp-Source: ABdhPJxD7CMyGM7QpQq/DlkZDaDLq0WriVeer/gNXyc23grxbsElTIc3j3RxOEb0CSkMyPT3TA7hcGtTOfUpyz8+Xqo=
+X-Received: by 2002:a05:6402:1848:: with SMTP id v8mr1215860edy.0.1633179726993;
+ Sat, 02 Oct 2021 06:02:06 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: 8bit
-In-Reply-To: <20211001092648.37350b6a@xps13>
+References: <20210928141956.2148-1-caihuoqing@baidu.com> <20210928141956.2148-6-caihuoqing@baidu.com>
+In-Reply-To: <20210928141956.2148-6-caihuoqing@baidu.com>
+From:   Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Date:   Sat, 2 Oct 2021 15:01:56 +0200
+Message-ID: <CAFBinCB+tYAjqhyO-UAsZxqm6FkK8Q8TGPJ_ehuxwgRSSRZDJA@mail.gmail.com>
+Subject: Re: [PATCH v3 6/9] iio: adc: meson_saradc: Make use of the helper
+ function dev_err_probe()
+To:     Cai Huoqing <caihuoqing@baidu.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Heiko Stuebner <heiko@sntech.de>,
+        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-amlogic@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org, linux-rockchip@lists.infradead.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 01 Oct 2021, Miquel Raynal wrote:
+On Tue, Sep 28, 2021 at 4:20 PM Cai Huoqing <caihuoqing@baidu.com> wrote:
+>
+> When possible use dev_err_probe help to properly deal with the
+> PROBE_DEFER error, the benefit is that DEFER issue will be logged
+> in the devices_deferred debugfs file.
+> Using dev_err_probe() can reduce code size, and the error value
+> gets printed.
+>
+> Signed-off-by: Cai Huoqing <caihuoqing@baidu.com>
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+as well as:
+Reviewed-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+# Odroid-C1
 
-> Hello Lee,
-> 
-> - reduced a bit the Cc: list
-> 
-> lkp@intel.com wrote on Wed, 29 Sep 2021 06:32:16 +0800:
-> 
-> > Hi Miquel,
-> > 
-> > I love your patch! Perhaps something to improve:
-> > 
-> > [auto build test WARNING on lee-mfd/for-mfd-next]
-> > [also build test WARNING on jic23-iio/togreg robh/for-next v5.15-rc3 next-20210922]
-> > [If your patch is applied to the wrong git tree, kindly drop us a note.
-> > And when submitting patch, we suggest to use '--base' as documented in
-> > https://git-scm.com/docs/git-format-patch]
-> > 
-> > url:    https://github.com/0day-ci/linux/commits/Miquel-Raynal/TI-AM437X-ADC1/20210928-213524
-> > base:   https://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git for-mfd-next
-> > config: microblaze-randconfig-r033-20210928 (attached as .config)
-> > compiler: microblaze-linux-gcc (GCC) 11.2.0
-> > reproduce (this is a W=1 build):
-> >         wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-> >         chmod +x ~/bin/make.cross
-> >         # https://github.com/0day-ci/linux/commit/43a01cf6413f2be038b0d466c7c3f6f16b40e2c3
-> >         git remote add linux-review https://github.com/0day-ci/linux
-> >         git fetch --no-tags linux-review Miquel-Raynal/TI-AM437X-ADC1/20210928-213524
-> >         git checkout 43a01cf6413f2be038b0d466c7c3f6f16b40e2c3
-> >         # save the attached .config to linux build tree
-> >         COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross ARCH=microblaze 
-> > 
-> > If you fix the issue, kindly add following tag as appropriate
-> > Reported-by: kernel test robot <lkp@intel.com>
-> > 
-> > All warnings (new ones prefixed by >>):
-> > 
-> >    drivers/mfd/ti_am335x_tscadc.c: In function 'ti_tscadc_probe':
-> > >> drivers/mfd/ti_am335x_tscadc.c:124:31: warning: variable 'use_mag' set but not used [-Wunused-but-set-variable]  
-> >      124 |         bool use_tsc = false, use_mag = false;
-> >          |                               ^~~~~~~
-> 
-> It's strange, on my side I didn't get any warnings (using an older GCC,
-> perhaps not with all the flags enabled either). Anyway, let's remove
-> the noise, I have a fixup patch which can be applied without disturbing
-> any of the other patches.
-> 
-> Lee, do you prefer that I send a fixup patch or a v5 for patch "mfd:
-> ti_am335x_tscadc: Add ADC1/magnetic reader support"? (provided of
-> course that the other patches are fine to you).
+Thanks for your contribution!
 
-Fix this patch up please.
 
-It would be odd to apply a known broken patch.
-
-> >    In file included from drivers/mfd/ti_am335x_tscadc.c:20:
-> >    drivers/mfd/ti_am335x_tscadc.c: At top level:
-> >    include/linux/mfd/ti_am335x_tscadc.h:126:38: error: 'HZ_PER_MHZ' undeclared here (not in a function)
-> >      126 | #define TSC_ADC_CLK             (3 * HZ_PER_MHZ)
-> >          |                                      ^~~~~~~~~~
-> >    drivers/mfd/ti_am335x_tscadc.c:354:28: note: in expansion of macro 'TSC_ADC_CLK'
-> >      354 |         .target_clk_rate = TSC_ADC_CLK,
-> >          |                            ^~~~~~~~~~~
-> 
-> For this one I don't believe this is a real warning, units.h is
-> introduced in a precedent patch, HZ_PER_MHZ is a new macro but it is
-> upstream now so I think it can safely be discarded.
-> 
-> Thanks,
-> Miquèl
-
--- 
-Lee Jones [李琼斯]
-Senior Technical Lead - Developer Services
-Linaro.org │ Open source software for Arm SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Best regards,
+Martin
