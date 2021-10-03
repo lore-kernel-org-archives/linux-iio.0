@@ -2,37 +2,37 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81F9EC433F5
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 15:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7797CC43219
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 15:29:22 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 65BF961A38
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 15:29:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5D92561A38
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 15:29:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230512AbhJCPbI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Oct 2021 11:31:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34354 "EHLO mail.kernel.org"
+        id S231140AbhJCPbJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Oct 2021 11:31:09 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34426 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230516AbhJCPbC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Oct 2021 11:31:02 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 6F0B961A54;
-        Sun,  3 Oct 2021 15:29:14 +0000 (UTC)
+        id S231132AbhJCPbI (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Oct 2021 11:31:08 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6062361A4F;
+        Sun,  3 Oct 2021 15:29:20 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633274955;
-        bh=cT8CtZIAglZ5K25Xjr5BJpFkMg8ng0NQscE/+vcmfQs=;
+        s=k20201202; t=1633274961;
+        bh=QcJU86k2Lx5NZ2UC/bYzR5+8NKWQVg0c7QV5PFTArXI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Xt1E6ReNpKy9WFqWYb9ttnFk2pPCN9pGwaWdsnbSBnVMP0/06FU8Uv+t9lRlMFYiA
-         JNHwOwn3iZZGH+dBD2EmjCx0WGR7DHcy/8feMjrHexWTSg3W0hzCKiBOQmprjBJ/7h
-         2711MOwXEPc7TvQvoDtOq4CzuB82kX864DpIoUuOBfNjcqxPeeH+Ns4LB2JWU7boyX
-         4b0/CcfMwA3Mj0JsfnaBOAMgTh3Gq8AQmGWNt4ixit6IOC/Xmjcb1R2DH+mGV0pW5q
-         QbhCPr+43Ap4zyyB0XwsZt4JUmqpeydXOpV++vio3P+eBglglcFK/RlvOtiAYlzK7x
-         /h9MUwg8Zn5eQ==
+        b=FvIDCo9HsZ7QmpFDuzaYnqw4LltdKWCAkhDRlQ0dz6nNsaLPVWXYJRPSQoGZkel47
+         1pXb9VPGFsip9AxpPQ/BjThh/2yqJ9So93AzNksUR4lj6MEqNw1Wb4EnQHiA7ZHdip
+         9jjgHQu2ifuHxrZ0kIOmMDs5kirBbN+LXRTxTUMKbFcR5iTzTgymb3cBPKNcwdXMlE
+         F8CpyB4NnVj4GY3uTuIECclbvAWiOLKfvI6JyM5Pfp24Ab61ohH3CK6qjG1+8ZbqzO
+         4uNEbN2cDOPai46mhJ0ZtUFyf+rk0IyFH4B4wxkRL8YjDAWUfSj8/ZMeAxWmiic8i8
+         dnnHfpVDM0o0g==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [RFC PATCH 03/11] iio: industrialio-buffer.c: Bring includes up to date.
-Date:   Sun,  3 Oct 2021 16:32:58 +0100
-Message-Id: <20211003153306.391766-4-jic23@kernel.org>
+Subject: [RFC PATCH 07/11] iio: configfs: Bring includes up to date
+Date:   Sun,  3 Oct 2021 16:33:02 +0100
+Message-Id: <20211003153306.391766-8-jic23@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211003153306.391766-1-jic23@kernel.org>
 References: <20211003153306.391766-1-jic23@kernel.org>
@@ -44,61 +44,34 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Note that a lot of functionality has moved around in IIO over the
-years and header includes have not always kept track.
-
-Based on manual inspection suggestions from the
-include-what-you-use-tool adjusted to take into account certain
-'super headers' used in the kernel.
-
-Includes reordering headers to alphabetical order (mostly in order so
-not done in a separate patch).
+Based on manual inspection of the suggestions from the
+include-what-you-use tool
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/industrialio-buffer.c | 23 +++++++++++++++++++----
- 1 file changed, 19 insertions(+), 4 deletions(-)
+ drivers/iio/industrialio-configfs.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index ed7a5c0a31e1..f5ab3a43d5d6 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -9,16 +9,31 @@
-  * - Better memory allocation techniques?
-  * - Alternative access techniques?
+diff --git a/drivers/iio/industrialio-configfs.c b/drivers/iio/industrialio-configfs.c
+index 47900de1f105..37f530faa131 100644
+--- a/drivers/iio/industrialio-configfs.c
++++ b/drivers/iio/industrialio-configfs.c
+@@ -6,12 +6,11 @@
   */
-+#include <linux/align.h>
-+#include <linux/bitmap.h>
-+#include <linux/bitops.h>
- #include <linux/anon_inodes.h>
--#include <linux/kernel.h>
--#include <linux/export.h>
- #include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/export.h>
- #include <linux/file.h>
- #include <linux/fs.h>
--#include <linux/cdev.h>
--#include <linux/slab.h>
-+#include <linux/kernel.h>
-+#include <linux/kref.h>
-+#include <linux/kstrtox.h>
-+#include <linux/list.h>
-+#include <linux/math.h>
-+#include <linux/minmax.h>
-+#include <linux/mutex.h>
- #include <linux/poll.h>
-+#include <linux/sched.h>
- #include <linux/sched/signal.h>
-+#include <linux/slab.h>
-+#include <linux/stat.h>
-+#include <linux/string.h>
-+#include <linux/sysfs.h>
-+#include <linux/uaccess.h>
-+#include <linux/wait.h>
  
- #include <linux/iio/iio.h>
- #include "iio_core.h"
+ #include <linux/configfs.h>
+-#include <linux/module.h>
++#include <linux/export.h>
+ #include <linux/init.h>
+-#include <linux/kmod.h>
+-#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
+ 
+-#include <linux/iio/iio.h>
+ #include <linux/iio/configfs.h>
+ 
+ static const struct config_item_type iio_root_group_type = {
 -- 
 2.33.0
 
