@@ -2,37 +2,37 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C1100C433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 15:29:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 09FEDC433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 15:29:25 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A707B61A38
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 15:29:21 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E756E61A54
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 15:29:24 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230516AbhJCPbI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Oct 2021 11:31:08 -0400
-Received: from mail.kernel.org ([198.145.29.99]:34420 "EHLO mail.kernel.org"
+        id S231137AbhJCPbL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Oct 2021 11:31:11 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34446 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231140AbhJCPbH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Oct 2021 11:31:07 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id D1FCB61A6E;
-        Sun,  3 Oct 2021 15:29:18 +0000 (UTC)
+        id S231133AbhJCPbK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Oct 2021 11:31:10 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id BD83261A50;
+        Sun,  3 Oct 2021 15:29:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1633274959;
-        bh=nT+cRMXj5xw6AugnDASLt7gRyvT2J39h1vAF9RnEXPA=;
+        s=k20201202; t=1633274962;
+        bh=dvH0bxqeV9kJS9Uf4j4GyWge6JxAA5EEgCHJdWlrb+g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VcJwsRinRjgCPBdgTF7MJwz2KAwe3ijeIZGqwc23ikntAyt2Kun1SIz6iHWEqzEhi
-         v5MWQmjdFAVDGyE7gUWtGnCcuNPBv6kCf9L8LoDkO0INhETn+12JhNv403npr5yCuP
-         2ANxvqEAjNJC3eOj1UDL+NnEd8STCrs/H8hem9zvh6BAuDjJcoZ9I/Avrt9B7kGEnK
-         HhMN5LDgG1PEOmhyhNc67K+0Bpgcu+FJQsKH3t57lpmEsmBY30sdnYrnTPkTU+5Kza
-         +v75z6b+Ey3fL9toSt2e+KuAWl7vp+hwMlIiNaqFkS687JAB8+X2tuQDdbhOALsguX
-         o50fkztR1VpPw==
+        b=U+h+bZvLPFjHETYaJr93/3heaUrDMXoswk6SkmoJkl4zJ1Wv3EnlZszx0FhRnOYVr
+         WS2i12SMMk9oZykycwOzZ3uZGjZY12zkNt7u+pkXpqy2SW6RH2oR1LGKWJ7D7EoDVo
+         2Hb4K3dztuhsoylwm9z59jl7iEVVU38d4JRG5GdGsLPlQdgH8Z4KFNBVQlQe1yDhz1
+         7htBBKp35+iaNAXJ+p7J4+KF+HIlBpjO7v7xLTzkLA/1hP6r2c09q4goaL2lTD+eXf
+         cGXV/Cv/SKThgxWYC4aKwEDr/vkIZOuHb1xO+qKfXmY1CQu0RJeYSDWjvo1Po73qyx
+         aiFPThRjclAng==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [RFC PATCH 06/11] iio: inkern: Bring includes up to date.
-Date:   Sun,  3 Oct 2021 16:33:01 +0100
-Message-Id: <20211003153306.391766-7-jic23@kernel.org>
+Subject: [RFC PATCH 08/11] iio: misc core files: Bring includes up to date
+Date:   Sun,  3 Oct 2021 16:33:03 +0100
+Message-Id: <20211003153306.391766-9-jic23@kernel.org>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211003153306.391766-1-jic23@kernel.org>
 References: <20211003153306.391766-1-jic23@kernel.org>
@@ -44,36 +44,75 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Based on manual inspection of the suggestions from the
+Small utility files from the IIO core grouped together in this commit.
+Based on manual inspection fo the suggestions from the
 include-what-you-use tool.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/inkern.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+ drivers/iio/industrialio-sw-device.c       | 8 +++++---
+ drivers/iio/industrialio-sw-trigger.c      | 9 ++++++---
+ drivers/iio/industrialio-triggered-event.c | 3 ++-
+ 3 files changed, 13 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index 72c130d9fecb..2b478261f9a2 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -3,11 +3,16 @@
-  *
-  * Copyright (c) 2011 Jonathan Cameron
+diff --git a/drivers/iio/industrialio-sw-device.c b/drivers/iio/industrialio-sw-device.c
+index 49f775f16ad5..6bcea1bacec2 100644
+--- a/drivers/iio/industrialio-sw-device.c
++++ b/drivers/iio/industrialio-sw-device.c
+@@ -5,11 +5,13 @@
+  * Copyright (c) 2016 Intel Corporation
   */
-+#include <linux/device.h>
- #include <linux/err.h>
- #include <linux/export.h>
+ 
+-#include <linux/module.h>
++#include <linux/err.h>
+ #include <linux/init.h>
+-#include <linux/kmod.h>
+ #include <linux/list.h>
 -#include <linux/slab.h>
-+#include <linux/list.h>
-+#include <linux/math64.h>
- #include <linux/mutex.h>
- #include <linux/of.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
 +#include <linux/printk.h>
-+#include <linux/slab.h>
 +#include <linux/string.h>
  
+ #include <linux/iio/sw_device.h>
+ #include <linux/iio/configfs.h>
+diff --git a/drivers/iio/industrialio-sw-trigger.c b/drivers/iio/industrialio-sw-trigger.c
+index 9ae793a70b8b..66796ca59676 100644
+--- a/drivers/iio/industrialio-sw-trigger.c
++++ b/drivers/iio/industrialio-sw-trigger.c
+@@ -5,11 +5,14 @@
+  * Copyright (c) 2015 Intel Corporation
+  */
+ 
+-#include <linux/module.h>
++#include <linux/err.h>
++#include <linux/export.h>
+ #include <linux/init.h>
+-#include <linux/kmod.h>
+ #include <linux/list.h>
+-#include <linux/slab.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/printk.h>
++#include <linux/string.h>
+ 
+ #include <linux/iio/sw_trigger.h>
+ #include <linux/iio/configfs.h>
+diff --git a/drivers/iio/industrialio-triggered-event.c b/drivers/iio/industrialio-triggered-event.c
+index 4bedc65c9fe3..91179482dc4f 100644
+--- a/drivers/iio/industrialio-triggered-event.c
++++ b/drivers/iio/industrialio-triggered-event.c
+@@ -3,8 +3,9 @@
+  * Copyright (C) 2015 Cogent Embedded, Inc.
+  */
+ 
+-#include <linux/kernel.h>
++#include <linux/err.h>
+ #include <linux/export.h>
++#include <linux/interrupt.h>
+ #include <linux/module.h>
  #include <linux/iio/iio.h>
- #include "iio_core.h"
+ #include <linux/iio/triggered_event.h>
 -- 
 2.33.0
 
