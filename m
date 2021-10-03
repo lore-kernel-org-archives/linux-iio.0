@@ -2,73 +2,80 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 36C18C433EF
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Oct 2021 23:28:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A1D2C433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 12:13:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 0920661A78
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Oct 2021 23:28:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5EF2961267
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 12:13:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229940AbhJBX3x (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Oct 2021 19:29:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41316 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229911AbhJBX3x (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Oct 2021 19:29:53 -0400
-Received: from bombadil.infradead.org (bombadil.infradead.org [IPv6:2607:7c80:54:e::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4094CC061714;
-        Sat,  2 Oct 2021 16:28:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=bombadil.20210309; h=Content-Transfer-Encoding:
-        MIME-Version:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:In-Reply-To:References;
-        bh=Ra/JlvMS1JTAccs5WeqBxECVBNLxUjnfS6eMMFq8SR4=; b=IoeFNrRPbNrh8XclSVUdSdSOzX
-        KJR0ulX65E26sPA/oghxIxvU9PNKGpal9vdRcuv9Liq+1AB1KIOalEkNZtIjdgAtqQzMlNxMaoL/h
-        Q/Uu7EX7xmRMYi36woWli6gILqsvpu7i6a0GLtT57xWhXm6aXmeVggFK0dOJiWP0UZBGheY2m+LIS
-        8ryWDwFL+2/ilyUP4SxO2AHKCxbDn59vrgbfK1MG7wOZI41y0pWjENsI8giY+LkQ1WNEyinfI9Xcg
-        27s/UgU3gPkgRIGAbggfqDj2E5tGaocCvdu9sGmwYEWah1PQQ5zBGUK8uMs85ym/nFSSHe0ozwi2d
-        FJySkGlA==;
-Received: from [2601:1c0:6280:3f0::aa0b] (helo=bombadil.infradead.org)
-        by bombadil.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1mWoQG-002tT3-HK; Sat, 02 Oct 2021 23:28:04 +0000
-From:   Randy Dunlap <rdunlap@infradead.org>
-To:     linux-kernel@vger.kernel.org
-Cc:     Randy Dunlap <rdunlap@infradead.org>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH -next] iio: chemical: SENSEAIR_SUNRISE_CO2 depends on I2C
-Date:   Sat,  2 Oct 2021 16:28:03 -0700
-Message-Id: <20211002232803.5108-1-rdunlap@infradead.org>
-X-Mailer: git-send-email 2.31.1
+        id S230136AbhJCMPb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Oct 2021 08:15:31 -0400
+Received: from mail.kernel.org ([198.145.29.99]:49314 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230010AbhJCMPb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 3 Oct 2021 08:15:31 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id B6B06611C0;
+        Sun,  3 Oct 2021 12:13:42 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1633263224;
+        bh=35nnMRDj5kylJXFuz8iYzx66KGRy+jcLf/tsXrF8eD0=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=rqyOU9ma/3sL6JMNHf3Kssn3IcSJxTXEB5PPlJdm/oa5y4K+G7dzDSA7seeeS0eEp
+         JrlIwJSvEgLtljT7f4WJc3B+1ZntlsvaoXI++xxtmGHwBjC35g4SN7Uq7j73MkW4In
+         lvvhqoS6MPIi4DkFzTGSr7vGi+lNW9SzTJ/OMhKHZInT/VfZCVAC3+ScJfiwI77KVV
+         iqXq+6Hv8s5/JQq1s2Jaekl//WwkM9M5oLymmPsmq5IGUaa5hiwcAWK8b9N4S2rdEz
+         S9q64NtwMAc7yIyKFUnDGaN6NUfq8UMH5Tw9yvzirm3BOY2YI9qRn4zsQMenL7u2z9
+         aTwFiC3+aQpoA==
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org, Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH 1/7] platform/chrome: cros_ec_sensorhub_ring - avoid including iio.h
+Date:   Sun,  3 Oct 2021 13:17:05 +0100
+Message-Id: <20211003121711.279736-2-jic23@kernel.org>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211003121711.279736-1-jic23@kernel.org>
+References: <20211003121711.279736-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Fix kconfig symbol dependency warning:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-WARNING: unmet direct dependencies detected for REGMAP_I2C
-  Depends on [n]: I2C [=n]
-  Selected by [y]:
-  - SENSEAIR_SUNRISE_CO2 [=y] && IIO [=y]
+struct iio_dev is only used in the platform code as an opaque pointer
+type so let us add a forwards definition instead of including the main
+IIO header.
 
-Fixes: c3253a3fdc77 ("iio: chemical: Add Senseair Sunrise 006-0-007 drive")
-Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-Cc: Jacopo Mondi <jacopo@jmondi.org>
-Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: linux-iio@vger.kernel.org
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/chemical/Kconfig |    1 +
- 1 file changed, 1 insertion(+)
+ drivers/platform/chrome/cros_ec_sensorhub_ring.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
---- linux-next-20211001.orig/drivers/iio/chemical/Kconfig
-+++ linux-next-20211001/drivers/iio/chemical/Kconfig
-@@ -172,6 +172,7 @@ config SPS30_SERIAL
+diff --git a/drivers/platform/chrome/cros_ec_sensorhub_ring.c b/drivers/platform/chrome/cros_ec_sensorhub_ring.c
+index 98e37080f760..26ab852e1e1f 100644
+--- a/drivers/platform/chrome/cros_ec_sensorhub_ring.c
++++ b/drivers/platform/chrome/cros_ec_sensorhub_ring.c
+@@ -7,7 +7,6 @@
  
- config SENSEAIR_SUNRISE_CO2
- 	tristate "Senseair Sunrise 006-0-0007 CO2 sensor"
-+	depends on I2C
- 	select REGMAP_I2C
- 	help
- 	  Say yes here to build support for Senseair Sunrise 006-0-0007 CO2
+ #include <linux/delay.h>
+ #include <linux/device.h>
+-#include <linux/iio/iio.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+ #include <linux/platform_data/cros_ec_commands.h>
+@@ -19,6 +18,8 @@
+ 
+ #include "cros_ec_trace.h"
+ 
++struct iio_dev;
++
+ /* Precision of fixed point for the m values from the filter */
+ #define M_PRECISION BIT(23)
+ 
+-- 
+2.33.0
+
