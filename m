@@ -2,218 +2,217 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF4CC433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 16:00:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D0408C433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 16:00:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1627F6124C
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 16:00:36 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id A851261166
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Oct 2021 16:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231158AbhJCQCW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Oct 2021 12:02:22 -0400
-Received: from mail.kernel.org ([198.145.29.99]:50476 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S230426AbhJCQCW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 3 Oct 2021 12:02:22 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id E58A961215;
-        Sun,  3 Oct 2021 16:00:33 +0000 (UTC)
-Date:   Sun, 3 Oct 2021 17:04:31 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Subject: Re: [PATCH] iio: cros_ec: Update header includes
-Message-ID: <20211003170431.00dab6bc@jic23-huawei>
-In-Reply-To: <20210608212834.4046618-1-jic23@kernel.org>
-References: <20210608212834.4046618-1-jic23@kernel.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
+        id S230482AbhJCQC3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Oct 2021 12:02:29 -0400
+Received: from us-smtp-delivery-124.mimecast.com ([216.205.24.124]:25034 "EHLO
+        us-smtp-delivery-124.mimecast.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230426AbhJCQC2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Oct 2021 12:02:28 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1633276839;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=vNokHA0aOscw6CYIcmFpDMpysV4wVMOoz9cpSVv/BUw=;
+        b=coqzeAjP4LyOfUFZaZFpzNMPu36aJIhpfaW2sY6zOx3ArWCZCOudA17G4sVphpyaFw86aT
+        cDKxHOqlgPSjbaAjf7xayLeqbsZr2VNRt35U2qWVYqbPA902UIx2MLRkPNPkcznioy5Yzo
+        WL1KZwMipPsLnEZuTXrxrTw6F1xFI2k=
+Received: from mail-ed1-f71.google.com (mail-ed1-f71.google.com
+ [209.85.208.71]) (Using TLS) by relay.mimecast.com with ESMTP id
+ us-mta-349-jf0y0QmQN9eZQgEsxaijHg-1; Sun, 03 Oct 2021 12:00:38 -0400
+X-MC-Unique: jf0y0QmQN9eZQgEsxaijHg-1
+Received: by mail-ed1-f71.google.com with SMTP id h8-20020a50cdc8000000b003dad77857f7so4993440edj.22
+        for <linux-iio@vger.kernel.org>; Sun, 03 Oct 2021 09:00:38 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:subject:to:cc:references:from:message-id:date
+         :user-agent:mime-version:in-reply-to:content-language
+         :content-transfer-encoding;
+        bh=vNokHA0aOscw6CYIcmFpDMpysV4wVMOoz9cpSVv/BUw=;
+        b=WpX1AflcJUvRiHYoYzIPfhiSZHRIH5vxVCHnUVGxq9lU28kVsSTgAwHd6SH0zwxzPw
+         keTQera980Q5lZ6Sk9Kf4MvmvgenbYmbwEdzJ/XxVOPEQ2gKYluc6/NcIe8wJdI3DYdJ
+         Gg/QwjvFAJ18wx4uZrCXGSzzeNi9O1RCn0kysLTTKejn6Nlb+hm5FVCuWNgCpXnxlM8K
+         IKUKOtoEF3aLxu8p4eL5ntE/iLsqxH5IBYItbc/YvAMhhfGJU94D01+iLfXgDx5gYxwq
+         m4aeba5D6a8qo8zE9HPcFgzsvXbQK6R6Fyhd1UXlOR2cXXO9bvcNuoac2XM2euBwTLvz
+         ejjw==
+X-Gm-Message-State: AOAM530ynoDNBz4OkBUhe2vQjHpoukJzCp3IwTbfdyeWnTnm2HIgzDgB
+        2Ee5GlAybAx7HhvL5x/DsHHBdeI5D/pPH+CBaSeR2JUPjP+Bz2jVqGwTlo0/f9SJ53EiPN6JhXa
+        lhGKTwkAcVeFt/9tgq/QA
+X-Received: by 2002:a50:bf02:: with SMTP id f2mr12001460edk.226.1633276837507;
+        Sun, 03 Oct 2021 09:00:37 -0700 (PDT)
+X-Google-Smtp-Source: ABdhPJzl8XlPkmMRTTtTohi0dtAHN4zOLETSbUrAAnvIlwvR55wIonZDElNZdcm2Hmwuw34Mcf6FgQ==
+X-Received: by 2002:a50:bf02:: with SMTP id f2mr12001423edk.226.1633276837255;
+        Sun, 03 Oct 2021 09:00:37 -0700 (PDT)
+Received: from x1.localdomain (2001-1c00-0c1e-bf00-1054-9d19-e0f0-8214.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:1054:9d19:e0f0:8214])
+        by smtp.gmail.com with ESMTPSA id d22sm5571292ejj.47.2021.10.03.09.00.36
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 03 Oct 2021 09:00:36 -0700 (PDT)
+Subject: Re: [RESEND v2 1/5] iio: accel: mma9551/mma9553: Drop explicit ACPI
+ match support
+To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <20211003160212.417909-1-jic23@kernel.org>
+ <20211003160212.417909-2-jic23@kernel.org>
+From:   Hans de Goede <hdegoede@redhat.com>
+Message-ID: <931c1396-0822-f5de-b1ea-ebe43362bf37@redhat.com>
+Date:   Sun, 3 Oct 2021 18:00:36 +0200
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.11.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20211003160212.417909-2-jic23@kernel.org>
+Content-Type: text/plain; charset=utf-8
+Content-Language: en-US
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue,  8 Jun 2021 22:28:34 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Hi,
 
+On 10/3/21 6:02 PM, Jonathan Cameron wrote:
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> General driver churn doesn't always include updates of header includes.
-> Manual review of the output of the include-what-you-use checker lead to the
-> following cleanup. Hopefuly this brings things back to a good state for the
-> cros_ec sensor drivers.
+> The IDs look highly suspicious as they are just the part numbers in
+> capitals, so lets drop these if no one screams.
+> 
+> Note:
+> - MMA is registered PNP ID for Micromedia AG (not a part of Freescale)
+> - Googling doesn't show any results for such ACPI _HID to be present
+>   in the wild
 > 
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Gwendal Grignou <gwendal@chromium.org>
-> Cc: Guenter Roeck <groeck@chromium.org>
-> Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-I've sent a new version of this (at least partly because I'd forgotten I'd
-done it before and no reply to this since posting in June :(
+> Acked-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Reviewed-by: Alexandru Ardelean <aardelean@deviqon.com>
 
-Anyhow, that version only deals with IIO headers so is smaller and easier
-to consider in isolation.  If people prefer this one I'm happy as well.
+I'm not aware of any boards actually using these ACPI ids, so:
 
-Thanks,
+Acked-by: Hans de Goede <hdegoede@redhat.com>
 
-Jonathan
+Regards,
+
+Hans
+
 
 > ---
->  drivers/iio/accel/cros_ec_accel_legacy.c                  | 7 +------
->  drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c    | 8 ++------
->  drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c      | 7 ++-----
->  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 6 ++++--
->  drivers/iio/light/cros_ec_light_prox.c                    | 8 ++------
->  drivers/iio/pressure/cros_ec_baro.c                       | 7 ++-----
->  6 files changed, 13 insertions(+), 30 deletions(-)
+>  drivers/iio/accel/mma9551.c | 21 ---------------------
+>  drivers/iio/accel/mma9553.c | 21 ---------------------
+>  2 files changed, 42 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/cros_ec_accel_legacy.c b/drivers/iio/accel/cros_ec_accel_legacy.c
-> index b6f3471b62dc..5b24b762b2dd 100644
-> --- a/drivers/iio/accel/cros_ec_accel_legacy.c
-> +++ b/drivers/iio/accel/cros_ec_accel_legacy.c
-> @@ -9,17 +9,12 @@
->   * Accelerometer access is presented through iio sysfs.
->   */
+> diff --git a/drivers/iio/accel/mma9551.c b/drivers/iio/accel/mma9551.c
+> index 4c359fb05480..2b74f67536a3 100644
+> --- a/drivers/iio/accel/mma9551.c
+> +++ b/drivers/iio/accel/mma9551.c
+> @@ -435,17 +435,6 @@ static int mma9551_gpio_probe(struct iio_dev *indio_dev)
+>  	return 0;
+>  }
 >  
-> -#include <linux/delay.h>
->  #include <linux/device.h>
-> -#include <linux/iio/buffer.h>
->  #include <linux/iio/common/cros_ec_sensors_core.h>
->  #include <linux/iio/iio.h>
-> -#include <linux/iio/kfifo_buf.h>
-> -#include <linux/iio/trigger_consumer.h>
-> -#include <linux/iio/triggered_buffer.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> -#include <linux/slab.h>
-> +#include <linux/mutex.h>
->  #include <linux/platform_data/cros_ec_commands.h>
->  #include <linux/platform_data/cros_ec_proto.h>
->  #include <linux/platform_device.h>
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> index af801e203623..497deaf9d96a 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c
-> @@ -10,20 +10,16 @@
->   * iio sysfs.
->   */
+> -static const char *mma9551_match_acpi_device(struct device *dev)
+> -{
+> -	const struct acpi_device_id *id;
+> -
+> -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> -	if (!id)
+> -		return NULL;
+> -
+> -	return dev_name(dev);
+> -}
+> -
+>  static int mma9551_probe(struct i2c_client *client,
+>  			 const struct i2c_device_id *id)
+>  {
+> @@ -464,8 +453,6 @@ static int mma9551_probe(struct i2c_client *client,
 >  
-> -#include <linux/delay.h>
->  #include <linux/device.h>
-> -#include <linux/iio/buffer.h>
->  #include <linux/iio/common/cros_ec_sensors_core.h>
->  #include <linux/iio/iio.h>
-> -#include <linux/iio/kfifo_buf.h>
-> -#include <linux/iio/trigger.h>
->  #include <linux/iio/triggered_buffer.h>
-> -#include <linux/iio/trigger_consumer.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/mutex.h>
->  #include <linux/platform_data/cros_ec_commands.h>
->  #include <linux/platform_device.h>
-> -#include <linux/slab.h>
+>  	if (id)
+>  		name = id->name;
+> -	else if (ACPI_HANDLE(&client->dev))
+> -		name = mma9551_match_acpi_device(&client->dev);
 >  
->  #define DRV_NAME "cros-ec-lid-angle"
+>  	ret = mma9551_init(data);
+>  	if (ret < 0)
+> @@ -591,13 +578,6 @@ static const struct dev_pm_ops mma9551_pm_ops = {
+>  			   mma9551_runtime_resume, NULL)
+>  };
 >  
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> index 376a5b30010a..de8b01501cc5 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> @@ -9,18 +9,15 @@
->   */
+> -static const struct acpi_device_id mma9551_acpi_match[] = {
+> -	{"MMA9551", 0},
+> -	{},
+> -};
+> -
+> -MODULE_DEVICE_TABLE(acpi, mma9551_acpi_match);
+> -
+>  static const struct i2c_device_id mma9551_id[] = {
+>  	{"mma9551", 0},
+>  	{}
+> @@ -608,7 +588,6 @@ MODULE_DEVICE_TABLE(i2c, mma9551_id);
+>  static struct i2c_driver mma9551_driver = {
+>  	.driver = {
+>  		   .name = MMA9551_DRV_NAME,
+> -		   .acpi_match_table = ACPI_PTR(mma9551_acpi_match),
+>  		   .pm = &mma9551_pm_ops,
+>  		   },
+>  	.probe = mma9551_probe,
+> diff --git a/drivers/iio/accel/mma9553.c b/drivers/iio/accel/mma9553.c
+> index ba3ecb3b57dc..32c9a79ebfec 100644
+> --- a/drivers/iio/accel/mma9553.c
+> +++ b/drivers/iio/accel/mma9553.c
+> @@ -1062,17 +1062,6 @@ static irqreturn_t mma9553_event_handler(int irq, void *private)
+>  	return IRQ_HANDLED;
+>  }
 >  
->  #include <linux/device.h>
-> -#include <linux/iio/buffer.h>
->  #include <linux/iio/common/cros_ec_sensors_core.h>
->  #include <linux/iio/iio.h>
-> -#include <linux/iio/kfifo_buf.h>
-> -#include <linux/iio/trigger_consumer.h>
-> -#include <linux/iio/triggered_buffer.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/mutex.h>
->  #include <linux/platform_data/cros_ec_commands.h>
->  #include <linux/platform_data/cros_ec_proto.h>
->  #include <linux/platform_device.h>
-> -#include <linux/slab.h>
+> -static const char *mma9553_match_acpi_device(struct device *dev)
+> -{
+> -	const struct acpi_device_id *id;
+> -
+> -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+> -	if (!id)
+> -		return NULL;
+> -
+> -	return dev_name(dev);
+> -}
+> -
+>  static int mma9553_probe(struct i2c_client *client,
+>  			 const struct i2c_device_id *id)
+>  {
+> @@ -1091,8 +1080,6 @@ static int mma9553_probe(struct i2c_client *client,
 >  
->  #define CROS_EC_SENSORS_MAX_CHANNELS 4
+>  	if (id)
+>  		name = id->name;
+> -	else if (ACPI_HANDLE(&client->dev))
+> -		name = mma9553_match_acpi_device(&client->dev);
+>  	else
+>  		return -ENOSYS;
 >  
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> index 28bde13003b7..370d1017b533 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> @@ -12,12 +12,14 @@
->  #include <linux/iio/iio.h>
->  #include <linux/iio/kfifo_buf.h>
->  #include <linux/iio/sysfs.h>
-> -#include <linux/iio/trigger.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/iio/triggered_buffer.h>
-> +#include <linux/irqreturn.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> -#include <linux/slab.h>
-> +#include <linux/mutex.h>
-> +#include <linux/pm.h>
-> +#include <linux/time.h>
->  #include <linux/platform_data/cros_ec_commands.h>
->  #include <linux/platform_data/cros_ec_proto.h>
->  #include <linux/platform_data/cros_ec_sensorhub.h>
-> diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
-> index de472f23d1cb..062e02adac65 100644
-> --- a/drivers/iio/light/cros_ec_light_prox.c
-> +++ b/drivers/iio/light/cros_ec_light_prox.c
-> @@ -6,19 +6,15 @@
->   */
+> @@ -1230,13 +1217,6 @@ static const struct dev_pm_ops mma9553_pm_ops = {
+>  			   mma9553_runtime_resume, NULL)
+>  };
 >  
->  #include <linux/device.h>
-> -#include <linux/iio/buffer.h>
->  #include <linux/iio/common/cros_ec_sensors_core.h>
->  #include <linux/iio/iio.h>
-> -#include <linux/iio/kfifo_buf.h>
-> -#include <linux/iio/trigger.h>
-> -#include <linux/iio/triggered_buffer.h>
-> -#include <linux/iio/trigger_consumer.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/mutex.h>
->  #include <linux/platform_data/cros_ec_commands.h>
->  #include <linux/platform_data/cros_ec_proto.h>
->  #include <linux/platform_device.h>
-> -#include <linux/slab.h>
->  
->  /*
->   * We only represent one entry for light or proximity. EC is merging different
-> diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
-> index 2f882e109423..5a0d9dd1e78a 100644
-> --- a/drivers/iio/pressure/cros_ec_baro.c
-> +++ b/drivers/iio/pressure/cros_ec_baro.c
-> @@ -6,16 +6,13 @@
->   */
->  
->  #include <linux/device.h>
-> -#include <linux/iio/buffer.h>
->  #include <linux/iio/common/cros_ec_sensors_core.h>
->  #include <linux/iio/iio.h>
-> -#include <linux/iio/kfifo_buf.h>
-> -#include <linux/iio/trigger.h>
-> -#include <linux/iio/triggered_buffer.h>
->  #include <linux/iio/trigger_consumer.h>
->  #include <linux/kernel.h>
->  #include <linux/module.h>
-> -#include <linux/slab.h>
-> +#include <linux/mod_devicetable.h>
-> +#include <linux/mutex.h>
->  #include <linux/platform_data/cros_ec_commands.h>
->  #include <linux/platform_data/cros_ec_proto.h>
->  #include <linux/platform_device.h>
+> -static const struct acpi_device_id mma9553_acpi_match[] = {
+> -	{"MMA9553", 0},
+> -	{},
+> -};
+> -
+> -MODULE_DEVICE_TABLE(acpi, mma9553_acpi_match);
+> -
+>  static const struct i2c_device_id mma9553_id[] = {
+>  	{"mma9553", 0},
+>  	{},
+> @@ -1247,7 +1227,6 @@ MODULE_DEVICE_TABLE(i2c, mma9553_id);
+>  static struct i2c_driver mma9553_driver = {
+>  	.driver = {
+>  		   .name = MMA9553_DRV_NAME,
+> -		   .acpi_match_table = ACPI_PTR(mma9553_acpi_match),
+>  		   .pm = &mma9553_pm_ops,
+>  		   },
+>  	.probe = mma9553_probe,
+> 
 
