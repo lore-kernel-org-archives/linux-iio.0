@@ -2,66 +2,72 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F389C43217
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Oct 2021 09:30:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93777C433F5
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Oct 2021 13:46:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 5C56261175
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Oct 2021 09:30:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 5B87F61040
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Oct 2021 13:46:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240726AbhJGJcY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 7 Oct 2021 05:32:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42774 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240696AbhJGJcU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Oct 2021 05:32:20 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BDCCC061746
-        for <linux-iio@vger.kernel.org>; Thu,  7 Oct 2021 02:30:26 -0700 (PDT)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mYPjC-00061Y-2A; Thu, 07 Oct 2021 11:30:14 +0200
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1mYPjA-0000Oc-WD; Thu, 07 Oct 2021 11:30:12 +0200
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Rob Herring <robh+dt@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Subject: [PATCH v2 0/2] iio: adc: tsc2046: fixes 
-Date:   Thu,  7 Oct 2021 11:30:05 +0200
-Message-Id: <20211007093007.1466-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+        id S241655AbhJGNsl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 7 Oct 2021 09:48:41 -0400
+Received: from smtp1.axis.com ([195.60.68.17]:31231 "EHLO smtp1.axis.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S233315AbhJGNsk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 7 Oct 2021 09:48:40 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1633614407;
+  x=1665150407;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=8lbGmN5aTYUWpTT7bwn68N3KpmMMI4aep5ZHTQ3lg5w=;
+  b=bbuwjHZLRqbO6MQyGAtKTIG4GKNsQzVuy3DNyYtm/HOL08zSUPoO3Ifp
+   S0MlIQ7ubnqFSPd610NPPierd4QUJdH6CWfsf/BsyPth1bZUCkdYmAqdG
+   NCxdmH/KZ0PLbRLJrfDeidHbfklYLXKa8ZCckflbrpewQoyyzQSkd9Sla
+   2FlVzahjmA1+eMzDrOzdrSKwBiKwCBR7fbLJtux2JZ12J7eZf+GU82qU3
+   nbg1g7p88i2oRwg5Bt3qU6tRO4WX45GrPwiNPXUCK80/fUAHeSer6gJHG
+   CMueXpopMhor0rxDdZl+9OVHuDQpB/Sm9ZP2vi0zsXTlqvebwrPEFCFz2
+   w==;
+From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
+To:     <peda@axentia.se>, <jic23@kernel.org>, <devicetree@vger.kernel.org>
+CC:     <kernel@axis.com>, <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
+        <robh+dt@kernel.org>, <linux-kernel@vger.kernel.org>,
+        Vincent Whitchurch <vincent.whitchurch@axis.com>
+Subject: [PATCH v2 0/3] Add settle time support to iio-mux
+Date:   Thu, 7 Oct 2021 15:46:38 +0200
+Message-ID: <20211007134641.13417-1-vincent.whitchurch@axis.com>
+X-Mailer: git-send-email 2.28.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-changes v2:
-- Rebase on latest iio/testing
-- extend commit message of the "..fix sleeping in atomic.." patch
+On one of our boards we use gpio-mux with iio-mux to read voltages using an ADC
+from a few different channels, and on this board the input voltage needs some
+time to stabilize after a switch of the mux.
 
-Oleksij Rempel (2):
-  iio: adc: tsc2046: fix scan interval warning
-  iio: adc: tsc2046: fix sleeping in atomic context warning and a
-    deadlock after iio_trigger_poll() call
+This series add devicetree and driver support for this kind of hardware which
+requries a settle time after muxing.
 
- drivers/iio/adc/ti-tsc2046.c | 104 ++++++++++++++++++++---------------
- 1 file changed, 59 insertions(+), 45 deletions(-)
+v1 -> v2:
+- Move property support to iio-mux and delay handling to mux core as suggested
+  by Peter.
+
+v1: https://lore.kernel.org/all/20211004153640.20650-1-vincent.whitchurch@axis.com/
+
+Vincent Whitchurch (3):
+  mux: add support for delay after muxing
+  dt-bindings: iio: io-channel-mux: Add property for settle time
+  iio: multiplexer: iio-mux: Support settle-time-us property
+
+ .../iio/multiplexer/io-channel-mux.yaml       |  5 +++
+ drivers/iio/multiplexer/iio-mux.c             |  7 +++-
+ drivers/mux/core.c                            | 36 ++++++++++++++++---
+ include/linux/mux/consumer.h                  | 23 +++++++++---
+ include/linux/mux/driver.h                    |  4 +++
+ 5 files changed, 65 insertions(+), 10 deletions(-)
 
 -- 
-2.30.2
+2.28.0
 
