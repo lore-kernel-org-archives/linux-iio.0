@@ -2,59 +2,57 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2B32C433F5
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Oct 2021 08:02:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F392EC4332F
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Oct 2021 08:02:09 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A1CC661076
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Oct 2021 08:02:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CC4CC610CC
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Oct 2021 08:02:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233691AbhJGIEA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 7 Oct 2021 04:04:00 -0400
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:19286 "EHLO
+        id S240412AbhJGIEC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 7 Oct 2021 04:04:02 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:50982 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S240397AbhJGIDX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Oct 2021 04:03:23 -0400
+        by vger.kernel.org with ESMTP id S240465AbhJGID2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Oct 2021 04:03:28 -0400
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1975TvsS002754;
-        Thu, 7 Oct 2021 04:00:58 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com with ESMTP id 3bhtt1gmh9-1
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 1975TinB001941;
+        Thu, 7 Oct 2021 04:01:21 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 3bhtt1gmkc-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 07 Oct 2021 04:00:58 -0400
-Received: from SCSQMBX10.ad.analog.com (SCSQMBX10.ad.analog.com [10.77.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 19780tcM046280
+        Thu, 07 Oct 2021 04:01:21 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 19781KBj062524
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 7 Oct 2021 04:00:56 -0400
-Received: from SCSQCASHYB6.ad.analog.com (10.77.17.132) by
- SCSQMBX10.ad.analog.com (10.77.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
- Thu, 7 Oct 2021 01:00:54 -0700
-Received: from SCSQMBX10.ad.analog.com (10.77.17.5) by
- SCSQCASHYB6.ad.analog.com (10.77.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
- Thu, 7 Oct 2021 01:00:54 -0700
-Received: from zeus.spd.analog.com (10.66.68.11) by scsqmbx10.ad.analog.com
- (10.77.17.5) with Microsoft SMTP Server id 15.2.858.5 via Frontend Transport;
- Thu, 7 Oct 2021 01:00:54 -0700
+        Thu, 7 Oct 2021 04:01:20 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5; Thu, 7 Oct 2021
+ 04:01:19 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.858.5 via Frontend Transport;
+ Thu, 7 Oct 2021 04:01:19 -0400
 Received: from ubuntuservermchindri.ad.analog.com ([10.32.225.109])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 19780oHv008100;
-        Thu, 7 Oct 2021 04:00:51 -0400
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 19780oHx008100;
+        Thu, 7 Oct 2021 04:01:17 -0400
 From:   Mihail Chindris <mihail.chindris@analog.com>
 To:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>
 CC:     <lars@metafoo.de>, <Michael.Hennerich@analog.com>,
         <jic23@kernel.org>, <nuno.sa@analog.com>,
         <dragos.bogdan@analog.com>, <alexandru.ardelean@analog.com>,
         Mihail Chindris <mihail.chindris@analog.com>
-Subject: [PATCH v6 0/6] iio: Add output buffer support
-Date:   Thu, 7 Oct 2021 08:00:29 +0000
-Message-ID: <20211007080035.2531-1-mihail.chindris@analog.com>
+Subject: [PATCH v6 2/6] iio: kfifo-buffer: Add output buffer support
+Date:   Thu, 7 Oct 2021 08:00:31 +0000
+Message-ID: <20211007080035.2531-3-mihail.chindris@analog.com>
 X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20211007080035.2531-1-mihail.chindris@analog.com>
+References: <20211007080035.2531-1-mihail.chindris@analog.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: hlRRmfVGKFRqMZmmSbatt1lKi8SgSPoz
-X-Proofpoint-GUID: hlRRmfVGKFRqMZmmSbatt1lKi8SgSPoz
+X-Proofpoint-ORIG-GUID: XlBNBUk2FleYN1gJGb51upgQr6Q_eP6n
+X-Proofpoint-GUID: XlBNBUk2FleYN1gJGb51upgQr6Q_eP6n
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
  definitions=2021-10-06_04,2021-10-07_01,2020-04-07_01
@@ -67,66 +65,85 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changelog v5 -> v6:
-  * https://lore.kernel.org/all/20210916182914.1810-1-mihail.chindris@analog.com
-  * Fix check in  iio_update_buffers adding test on insert_buffer 
-  * Return if check in iio_update_buffers fails.
-  * Fix length typo
-  * Add rb->direction check in both read and write functions.
-  * Add fixes tags
-  * Add  Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com> line
-  * Remove unnecessary (u8 *) cast
-  * Remove unnecessary AD5766_NUM_CH define
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-Changelog v4 -> v5:
-  * https://lore.kernel.org/all/20210820165927.4524-1-mihail.chindris@analog.com
-  * Remove ad3552r example from series and replace with the update of an
-    existing driver: ad5662. Will add ad3552r in other another series.
-  * Make normal comment from kernel-doc comment. (A bot was complaining about that)
-  * Add indio_dev->info check 
-  * Rename iio_buffer_remove_sample -> iio_pop_from_buffer
-  * Fix comment of remove_from: sample -> scan
-  * Change iio_pop_from_buffer data type to void * to be consistent with
-    iio_push_to_buffers
-  * Remove use watermark, in our kernel is not used and I can't think of an
-    usecase for it.
-  * Reimplement write to increment buffer index and handle blocking and
-    noblocking calls
-  * Move `if (insert_buffer->direction == IIO_BUFFER_DIRECTION_OUT)` outside lock
-  * Remove redundant checks of `if (insert_buffer->direction ==
-    IIO_BUFFER_DIRECTION_OUT)`
+Add output buffer support to the kfifo buffer implementation.
 
-Alexandru Ardelean (1):
-  iio: triggered-buffer: extend support to configure output buffers
+The implementation is straight forward and mostly just wraps the kfifo
+API to provide the required operations.
 
-Lars-Peter Clausen (1):
-  iio: kfifo-buffer: Add output buffer support
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Signed-off-by: Mihail Chindris <mihail.chindris@analog.com>
+---
+ drivers/iio/buffer/kfifo_buf.c | 50 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 50 insertions(+)
 
-Mihail Chindris (4):
-  iio: Add output buffer support
-  drivers: iio: dac: ad5766: Fix dt property name
-  Documentation:devicetree:bindings:iio:dac: Fix val
-  drivers:iio:dac:ad5766.c: Add trigger buffer
-
- .../bindings/iio/dac/adi,ad5766.yaml          |   2 +-
- drivers/iio/accel/adxl372.c                   |   1 +
- drivers/iio/accel/bmc150-accel-core.c         |   1 +
- drivers/iio/adc/at91-sama5d2_adc.c            |   4 +-
- .../buffer/industrialio-triggered-buffer.c    |   8 +-
- drivers/iio/buffer/kfifo_buf.c                |  50 +++++++
- .../cros_ec_sensors/cros_ec_sensors_core.c    |   5 +-
- .../common/hid-sensors/hid-sensor-trigger.c   |   5 +-
- drivers/iio/dac/ad5766.c                      |  48 ++++++-
- drivers/iio/iio_core.h                        |   4 +
- drivers/iio/industrialio-buffer.c             | 127 +++++++++++++++++-
- drivers/iio/industrialio-core.c               |   1 +
- include/linux/iio/buffer.h                    |   7 +
- include/linux/iio/buffer_impl.h               |  11 ++
- include/linux/iio/triggered_buffer.h          |  11 +-
- 15 files changed, 269 insertions(+), 16 deletions(-)
-
-
-base-commit: 94a853eca720ac9e385e59f27e859b4a01123f58
+diff --git a/drivers/iio/buffer/kfifo_buf.c b/drivers/iio/buffer/kfifo_buf.c
+index 516eb3465de1..7368db2d5c32 100644
+--- a/drivers/iio/buffer/kfifo_buf.c
++++ b/drivers/iio/buffer/kfifo_buf.c
+@@ -138,10 +138,60 @@ static void iio_kfifo_buffer_release(struct iio_buffer *buffer)
+ 	kfree(kf);
+ }
+ 
++static size_t iio_kfifo_buf_space_available(struct iio_buffer *r)
++{
++	struct iio_kfifo *kf = iio_to_kfifo(r);
++	size_t avail;
++
++	mutex_lock(&kf->user_lock);
++	avail = kfifo_avail(&kf->kf);
++	mutex_unlock(&kf->user_lock);
++
++	return avail;
++}
++
++static int iio_kfifo_remove_from(struct iio_buffer *r, void *data)
++{
++	int ret;
++	struct iio_kfifo *kf = iio_to_kfifo(r);
++
++	if (kfifo_size(&kf->kf) < 1)
++		return -EBUSY;
++
++	ret = kfifo_out(&kf->kf, data, 1);
++	if (ret != 1)
++		return -EBUSY;
++
++	wake_up_interruptible_poll(&r->pollq, POLLOUT | POLLWRNORM);
++
++	return 0;
++}
++
++static int iio_kfifo_write(struct iio_buffer *r, size_t n,
++	const char __user *buf)
++{
++	struct iio_kfifo *kf = iio_to_kfifo(r);
++	int ret, copied;
++
++	mutex_lock(&kf->user_lock);
++	if (!kfifo_initialized(&kf->kf) || n < kfifo_esize(&kf->kf))
++		ret = -EINVAL;
++	else
++		ret = kfifo_from_user(&kf->kf, buf, n, &copied);
++	mutex_unlock(&kf->user_lock);
++	if (ret)
++		return ret;
++
++	return copied;
++}
++
+ static const struct iio_buffer_access_funcs kfifo_access_funcs = {
+ 	.store_to = &iio_store_to_kfifo,
+ 	.read = &iio_read_kfifo,
+ 	.data_available = iio_kfifo_buf_data_available,
++	.remove_from = &iio_kfifo_remove_from,
++	.write = &iio_kfifo_write,
++	.space_available = &iio_kfifo_buf_space_available,
+ 	.request_update = &iio_request_update_kfifo,
+ 	.set_bytes_per_datum = &iio_set_bytes_per_datum_kfifo,
+ 	.set_length = &iio_set_length_kfifo,
 -- 
 2.27.0
 
