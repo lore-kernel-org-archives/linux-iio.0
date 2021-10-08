@@ -2,21 +2,21 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D5CC3C433EF
-	for <linux-iio@archiver.kernel.org>; Fri,  8 Oct 2021 10:17:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B53EAC433F5
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Oct 2021 10:17:29 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9E0C361037
-	for <linux-iio@archiver.kernel.org>; Fri,  8 Oct 2021 10:17:25 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 99DEE60FA0
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Oct 2021 10:17:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239228AbhJHKTR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 8 Oct 2021 06:19:17 -0400
-Received: from protonic.xs4all.nl ([83.163.252.89]:54394 "EHLO
+        id S239635AbhJHKTT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 8 Oct 2021 06:19:19 -0400
+Received: from protonic.xs4all.nl ([83.163.252.89]:54430 "EHLO
         protonic.xs4all.nl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239304AbhJHKTQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Oct 2021 06:19:16 -0400
+        with ESMTP id S239583AbhJHKTR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Oct 2021 06:19:17 -0400
 Received: from ert768.prtnl (ert768.prtnl [192.168.224.11])
-        by sparta.prtnl (Postfix) with ESMTP id E2C9D44A024E;
-        Fri,  8 Oct 2021 12:17:16 +0200 (CEST)
+        by sparta.prtnl (Postfix) with ESMTP id 5786844A0252;
+        Fri,  8 Oct 2021 12:17:17 +0200 (CEST)
 From:   Roan van Dijk <roan@protonic.nl>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Rob Herring <robh+dt@kernel.org>,
@@ -25,95 +25,120 @@ Cc:     Rob Herring <robh+dt@kernel.org>,
         linux-kernel@vger.kernel.org, david@protonic.nl,
         Lars-Peter Clausen <lars@metafoo.de>,
         Roan van Dijk <roan@protonic.nl>
-Subject: [PATCH v5 0/4] iio: chemical: Add support for Sensirion SCD4x CO2 sensor
-Date:   Fri,  8 Oct 2021 12:17:02 +0200
-Message-Id: <20211008101706.755942-1-roan@protonic.nl>
+Subject: [PATCH v5 4/4] iio: documentation: Document scd4x calibration use
+Date:   Fri,  8 Oct 2021 12:17:06 +0200
+Message-Id: <20211008101706.755942-5-roan@protonic.nl>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211008101706.755942-1-roan@protonic.nl>
+References: <20211008101706.755942-1-roan@protonic.nl>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series adds support for the Sensirion SCD4x sensor.
+Add entries from Documentation/ABI/testing/sysfs-bus-iio-scd30
+to Documentation/ABI/testing/sysfs-bus-iio. The attributes of the scd4x
+and scd30 are common.
 
-The driver supports continuous reads of temperature, relative humdity and CO2
-concentration. There is an interval of 5 seconds between readings. During
-this interval the drivers checks if the sensor has new data available.
+Remove Documentation/ABI/testing/sysfs-bus-iio-scd30.
 
-The driver is based on the scd30 driver. However, The scd4x has become too
-different to just expand the scd30 driver. I made a new driver instead of
-expanding the scd30 driver. I hope I made the right choice by doing so?
-
-Changes since v5:
-scd4x.c:
-  - Fix bug in trigger_handler
-
-Changes since v4:
-scd4x.c:
-  - Minor fixes in documentation
-  - Reorder trigger_handler so memcpy is not needed anymore
-Documentation:
-  - Change information about the KernelVersion for the 
-    calibration_forced_value_available
-
-Changes since v3:
-scd4x.c
-  - Change read and write_and_fetch function parameter. CRC byte is now
-    hidden inside the function.
-  - Fix minor style issues
-  - Add calibration_forced_value_available attribute to the driver
-  - Remove including BUFFER_TRIGGERED
-  - Change calibbias to raw ADC readings rather than converting it to
-    milli degrees C.
-Documentation:
-  - Change description of driver attributes
-  - Add calibration_forced_value_available documentation
-
-Changes since v2:
-scd4x.c:
-  - Change boolean operations
-  - Document scope of lock
-  - Remove device *dev from struct
-  - Add goto block for errror handling
-  - Add function to read value per channel in read_raw
-  - Fix bug with lock in error paths
-  - Remove conversion of humidity and temperature values
-  - Add scale and offset to temperature channel
-  - Add scale to humidity channel
-  - Move memset out of locked section
-  - Remove unused irq functions
-  - Move device register at end of probe function
-Documentation:
-  - Copy content of sysfs-bus-iio-scd30 to sysfs-bus-iio
-  - Remove Documentation/ABI/testing/sysfs-bus-iio-scd30
-
-Changes since v1:
-dt-bindings:
-  - Separated compatible string for each sensor type
-scd4x.c:
-  - Changed probe, resume and suspend functions to static
-  - Added SIMPLE_DEV_PM_OPS function call for power management
-    operations.
-
-Roan van Dijk (4):
-  dt-bindings: iio: chemical: sensirion,scd4x: Add yaml description
-  MAINTAINERS: Add myself as maintainer of the scd4x driver
-  drivers: iio: chemical: Add support for Sensirion SCD4x CO2 sensor
-  iio: documentation: Document scd4x calibration use
-
- Documentation/ABI/testing/sysfs-bus-iio       |  41 ++
- Documentation/ABI/testing/sysfs-bus-iio-scd30 |  34 -
- .../iio/chemical/sensirion,scd4x.yaml         |  46 ++
- MAINTAINERS                                   |   6 +
- drivers/iio/chemical/Kconfig                  |  13 +
- drivers/iio/chemical/Makefile                 |   1 +
- drivers/iio/chemical/scd4x.c                  | 689 ++++++++++++++++++
- 7 files changed, 796 insertions(+), 34 deletions(-)
+Signed-off-by: Roan van Dijk <roan@protonic.nl>
+---
+ Documentation/ABI/testing/sysfs-bus-iio       | 41 +++++++++++++++++++
+ Documentation/ABI/testing/sysfs-bus-iio-scd30 | 34 ---------------
+ 2 files changed, 41 insertions(+), 34 deletions(-)
  delete mode 100644 Documentation/ABI/testing/sysfs-bus-iio-scd30
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/sensirion,scd4x.yaml
- create mode 100644 drivers/iio/chemical/scd4x.c
 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 6ad47a67521c..c27347d3608e 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1957,3 +1957,44 @@ Description:
+ 		Specify the percent for light sensor relative to the channel
+ 		absolute value that a data field should change before an event
+ 		is generated. Units are a percentage of the prior reading.
++
++What:		/sys/bus/iio/devices/iio:deviceX/calibration_auto_enable
++Date:		June 2020
++KernelVersion:	5.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Some sensors have the ability to apply auto calibration at
++		runtime. For example, it may be necessary to compensate for
++		contaminant build-up in a measurement chamber or optical
++		element deterioration that would otherwise lead to sensor drift.
++
++		Writing 1 or 0 to this attribute will respectively activate or
++		deactivate this auto calibration function.
++
++		Upon reading, the current status is returned.
++
++What:		/sys/bus/iio/devices/iio:deviceX/calibration_forced_value
++Date:		June 2020
++KernelVersion:	5.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Some sensors have the ability to apply a manual calibration using
++		a known measurement value, perhaps obtained from an external
++		reference device.
++
++		Writing a value to this function will force such a calibration
++		change. For the scd30 the value should be from the range
++		[400 1 2000].
++
++		Note for the scd30 that a valid value may only be obtained once
++		it is has been written. Until then any read back of this value
++		should be ignored. As for the scd4x an error will be returned
++		immediately if the manual calibration has failed.
++
++What:		/sys/bus/iio/devices/iio:deviceX/calibration_forced_value_available
++KernelVersion:  5.15
++Contact:        linux-iio@vger.kernel.org
++Description:
++		Available range for the forced calibration value, expressed as:
++
++		- a range specified as "[min step max]"
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-scd30 b/Documentation/ABI/testing/sysfs-bus-iio-scd30
+deleted file mode 100644
+index b9712f390bec..000000000000
+--- a/Documentation/ABI/testing/sysfs-bus-iio-scd30
++++ /dev/null
+@@ -1,34 +0,0 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/calibration_auto_enable
+-Date:		June 2020
+-KernelVersion:	5.8
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Contaminants build-up in the measurement chamber or optical
+-		elements deterioration leads to sensor drift.
+-
+-		One can compensate for sensor drift by using automatic self
+-		calibration procedure (asc).
+-
+-		Writing 1 or 0 to this attribute will respectively activate or
+-		deactivate asc.
+-
+-		Upon reading current asc status is returned.
+-
+-What:		/sys/bus/iio/devices/iio:deviceX/calibration_forced_value
+-Date:		June 2020
+-KernelVersion:	5.8
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Contaminants build-up in the measurement chamber or optical
+-		elements deterioration leads to sensor drift.
+-
+-		One can compensate for sensor drift by using forced
+-		recalibration (frc). This is useful in case there's known
+-		co2 reference available nearby the sensor.
+-
+-		Picking value from the range [400 1 2000] and writing it to the
+-		sensor will set frc.
+-
+-		Upon reading current frc value is returned. Note that after
+-		power cycling default value (i.e 400) is returned even though
+-		internally sensor had recalibrated itself.
 -- 
 2.30.2
 
