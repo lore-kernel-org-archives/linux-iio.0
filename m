@@ -2,158 +2,221 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 804D9C433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Oct 2021 10:08:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B0EA2C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Oct 2021 11:01:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 68BFE60F43
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Oct 2021 10:08:09 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 957EE60EB4
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Oct 2021 11:01:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235774AbhJKKKI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Oct 2021 06:10:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40408 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235695AbhJKKKH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Oct 2021 06:10:07 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D01C061570
-        for <linux-iio@vger.kernel.org>; Mon, 11 Oct 2021 03:08:07 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id na16-20020a17090b4c1000b0019f5bb661f9so13126912pjb.0
-        for <linux-iio@vger.kernel.org>; Mon, 11 Oct 2021 03:08:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=u66x+DvFzcvxDL4R401DA3OxtOZOzKWRxFNlQpUAwk4=;
-        b=bhIfWYIIsEpxeC2fqXuWaiwromauVoxgfuX1ZjnFfvYMuku409+s0YOxThZsFfvtbG
-         DxXcwxPkufZJu3igkA0k8zj7ZmILEUtmERd/15rsRPXodJgriQf/EjfSZhz4R2FUG+u3
-         L/lNgosrQpVUM2VxcQ98jGq2Mz4PFKJMV4P5F5liLsAKc+/h3esK+lo9XAr6HeXQA1VW
-         K7AvDBvqNIeE/LSnRCL9lUzEUyRmcUgb9fYKHZI1ps9YdIA8TBoyHgQWLNeIdxReDnub
-         A8Udfs+tXulfA1d92hQpLXRLOQiDBPE+MNjTFmqOWhAV0gNakLCSbBwtFwaLbqY4VUU8
-         LMEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=u66x+DvFzcvxDL4R401DA3OxtOZOzKWRxFNlQpUAwk4=;
-        b=e/2mX2cM6QeKICUUP5NFynOHcxMFouwBGxkl4tYIVboGB+E5l02IvAvPzyHirZ8ytU
-         9p3SByxGWCDzGDZwrpvX0X5r2lWzdn2B400C7yM9jmYP1Qmpn8mirg3oRfN+Q+dQUrnd
-         zZ3sPaKwUO/oxTdEU1v3OyfXywDxD+sNxaiZAsyLa0kZXyuDrX5rPKoqucCaR9ZVPuse
-         Ne7g0O3B9bF7dA/Z/63bD5v17DNm2YjhFKN7063F83hr3qSV50gBDFsM/hKJ3NnMNb8B
-         q2KLfLJKfph6TLPxML1dlG51xk+vfwBQzPWjNPsgxsgnfNG7mRersO4Z1yV15utndjUb
-         d5ug==
-X-Gm-Message-State: AOAM531wGVLbroLSvWsJ97c0oecfRdBQt7lP1XwJMcER/g2y4omit0xV
-        5BNYCmd2CJxu0jhbngMEgNbxGzt1IqTyQET3fuki4Q==
-X-Google-Smtp-Source: ABdhPJw32gI1+wJBKZuA3dhXVX7I7x2jha8F2ADZUukokqUNwu8HWhMiXDfHvVNzI720oozgZqJbHscFj9IXZst17DI=
-X-Received: by 2002:a17:90a:190:: with SMTP id 16mr29679685pjc.152.1633946887083;
- Mon, 11 Oct 2021 03:08:07 -0700 (PDT)
+        id S236024AbhJKLDm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Oct 2021 07:03:42 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:9904 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S236017AbhJKLDl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Oct 2021 07:03:41 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19B75POc027354;
+        Mon, 11 Oct 2021 07:01:41 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 3bm8qfu2sb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 11 Oct 2021 07:01:41 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 19BB1eTO030031
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 11 Oct 2021 07:01:40 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
+ Mon, 11 Oct 2021 07:01:39 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
+ Mon, 11 Oct 2021 07:01:39 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.858.5 via Frontend Transport;
+ Mon, 11 Oct 2021 07:01:38 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.136])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 19BB1Y4u009888;
+        Mon, 11 Oct 2021 07:01:36 -0400
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <antoniu.miclaus@analog.com>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v7 2/2] dt-bindings: iio: frequency: add adrf6780 doc
+Date:   Mon, 11 Oct 2021 14:00:11 +0300
+Message-ID: <20211011110011.104063-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211011110011.104063-1-antoniu.miclaus@analog.com>
+References: <20211011110011.104063-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-References: <20210924152607.28580-1-tim.gardner@canonical.com>
-In-Reply-To: <20210924152607.28580-1-tim.gardner@canonical.com>
-From:   Robert Foss <robert.foss@linaro.org>
-Date:   Mon, 11 Oct 2021 12:07:55 +0200
-Message-ID: <CAG3jFysLheGY1_8Vq_hq-5K_d_-zsN-H=c_+8s=wW-AHOTwqqg@mail.gmail.com>
-Subject: Re: [PATCH] drm/bridge: parade-ps8640: check return values in ps8640_aux_transfer()
-To:     Tim Gardner <tim.gardner@canonical.com>
-Cc:     dri-devel <dri-devel@lists.freedesktop.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Syed Nayyar Waris <syednwaris@gmail.com>,
-        Andrzej Hajda <a.hajda@samsung.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Laurent Pinchart <Laurent.pinchart@ideasonboard.com>,
-        Jonas Karlman <jonas@kwiboo.se>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>, linux-iio@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: sAGEmhTFvJHHSPT5iVkaRpTlEOJCxlVv
+X-Proofpoint-GUID: sAGEmhTFvJHHSPT5iVkaRpTlEOJCxlVv
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.391,FMLib:17.0.607.475
+ definitions=2021-10-11_03,2021-10-07_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 phishscore=0
+ adultscore=0 suspectscore=0 impostorscore=0 malwarescore=0 mlxlogscore=999
+ lowpriorityscore=0 clxscore=1015 spamscore=0 priorityscore=1501
+ bulkscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110110063
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hey Tim,
+Add device tree bindings for the ADRF6780 Upconverter.
 
-Thanks for submitting this.
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+changes in v7:
+ - improve description of the device properties based on the feedback
+   received from the datasheet people
+ .../bindings/iio/frequency/adi,adrf6780.yaml  | 131 ++++++++++++++++++
+ 1 file changed, 131 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
 
-I'm seeing some checkpatch --strict warnings. Could you fix them and
-resubmit the series?
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
+new file mode 100644
+index 000000000000..3a8ea93f4e0c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
+@@ -0,0 +1,131 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,adrf6780.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADRF6780 Microwave Upconverter
++
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++   Wideband, microwave upconverter optimized for point to point microwave
++   radio designs operating in the 5.9 GHz to 23.6 GHz frequency range.
++
++   https://www.analog.com/en/products/adrf6780.html
++
++properties:
++  compatible:
++    enum:
++      - adi,adrf6780
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 1000000
++
++  clocks:
++    description:
++      Definition of the external clock.
++    minItems: 1
++
++  clock-names:
++    items:
++      - const: lo_in
++
++  clock-output-names:
++    maxItems: 1
++
++  adi,vga-buff-en:
++    description:
++      RF Variable Gain Amplifier Buffer Enable. Gain is controlled by
++      the voltage on the VATT pin.
++    type: boolean
++
++  adi,lo-buff-en:
++    description:
++      Local Oscillator Amplifier Enable. Disable to put the part in
++      a power down state.
++    type: boolean
++
++  adi,if-mode-en:
++    description:
++      Intermediate Frequency Mode Enable. Either IF Mode or I/Q Mode
++      can be enabled at a time.
++    type: boolean
++
++  adi,iq-mode-en:
++    description:
++      I/Q Mode Enable. Either IF Mode or I/Q Mode can be enabled at a
++      time.
++    type: boolean
++
++  adi,lo-x2-en:
++    description:
++      Double the Local Oscillator output frequency from the Local
++      Oscillator Input Frequency. Either LOx1 or LOx2 can be enabled
++      at a time.
++    type: boolean
++
++  adi,lo-ppf-en:
++    description:
++      Local Oscillator input frequency equal to the Local Oscillator
++      output frequency (LO x1). Either LOx1 or LOx2 can be enabled
++      at a time.
++    type: boolean
++
++  adi,lo-en:
++    description:
++      Enable additional cirtuitry in the LO chain. Disable to put the
++      part in a power down state.
++    type: boolean
++
++  adi,uc-bias-en:
++    description:
++      Enable all bias circuitry thourghout the entire part.
++      Disable to put the part in a power down state.
++    type: boolean
++
++  adi,lo-sideband:
++    description:
++      Switch to the Lower LO Sideband. By default the Upper LO
++      sideband is enabled.
++    type: boolean
++
++  adi,vdet-out-en:
++    description:
++      VDET Output Select Enable. Expose the RF detector output to the
++      VDET external pin.
++    type: boolean
++
++  '#clock-cells':
++    const: 0
++
++dependencies:
++  adi,lo-x2-en: [ "adi,lo-en" ]
++  adi,lo-ppf-en: [ "adi,lo-en" ]
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      adrf6780@0 {
++        compatible = "adi,adrf6780";
++        reg = <0>;
++        spi-max-frequency = <1000000>;
++        clocks = <&adrf6780_lo>;
++        clock-names = "lo_in";
++      };
++    };
++...
+-- 
+2.33.0
 
-On Fri, 24 Sept 2021 at 17:26, Tim Gardner <tim.gardner@canonical.com> wrote:
->
-> Coverity complains of an unused return code:
->
-> CID 120459 (#1 of 1): Unchecked return value (CHECKED_RETURN)
-> 7. check_return: Calling regmap_bulk_write without checking return value (as is
-
-Checkpatch is unhappy about the length of this line.
-
-> done elsewhere 199 out of 291 times).
-> 204        regmap_bulk_write(map, PAGE0_SWAUX_ADDR_7_0, addr_len,
-> 205                          ARRAY_SIZE(addr_len));
->
-> While I was at it I noticed 2 other places where return codes were not being
-> used, or used incorrectly (which is a real bug).
->
-> Fix these errors by correctly using the returned error codes.
->
-> Cc: William Breathitt Gray <vilhelm.gray@gmail.com>
-> Cc: Syed Nayyar Waris <syednwaris@gmail.com>
-> Cc: Andrzej Hajda <a.hajda@samsung.com>
-> Cc: Neil Armstrong <narmstrong@baylibre.com>
-> Cc: Robert Foss <robert.foss@linaro.org>
-> Cc: Laurent Pinchart <Laurent.pinchart@ideasonboard.com>
-> Cc: Jonas Karlman <jonas@kwiboo.se>
-> Cc: Jernej Skrabec <jernej.skrabec@gmail.com>
-> Cc: David Airlie <airlied@linux.ie>
-> Cc: Daniel Vetter <daniel@ffwll.ch>
-> Cc: linux-iio@vger.kernel.org
-> Cc: linux-kernel@vger.kernel.org
-> Cc: dri-devel@lists.freedesktop.org
-> Signed-off-by: Tim Gardner <tim.gardner@canonical.com>
-> ---
->  drivers/gpu/drm/bridge/parade-ps8640.c | 14 +++++++++++---
->  1 file changed, 11 insertions(+), 3 deletions(-)
->
-> diff --git a/drivers/gpu/drm/bridge/parade-ps8640.c b/drivers/gpu/drm/bridge/parade-ps8640.c
-> index 3aaa90913bf8..591da962970a 100644
-> --- a/drivers/gpu/drm/bridge/parade-ps8640.c
-> +++ b/drivers/gpu/drm/bridge/parade-ps8640.c
-> @@ -201,8 +201,12 @@ static ssize_t ps8640_aux_transfer(struct drm_dp_aux *aux,
->         addr_len[PAGE0_SWAUX_LENGTH - base] = (len == 0) ? SWAUX_NO_PAYLOAD :
->                                               ((len - 1) & SWAUX_LENGTH_MASK);
->
-> -       regmap_bulk_write(map, PAGE0_SWAUX_ADDR_7_0, addr_len,
-> +       ret = regmap_bulk_write(map, PAGE0_SWAUX_ADDR_7_0, addr_len,
->                           ARRAY_SIZE(addr_len));
-
-Align to open parenthesis.
-
-> +       if (ret) {
-> +               DRM_DEV_ERROR(dev, "failed to bulk write ADDR_7_0: %d\n", ret);
-> +               return ret;
-> +       }
->
->         if (len && (request == DP_AUX_NATIVE_WRITE ||
->                     request == DP_AUX_I2C_WRITE)) {
-> @@ -218,13 +222,17 @@ static ssize_t ps8640_aux_transfer(struct drm_dp_aux *aux,
->                 }
->         }
->
-> -       regmap_write(map, PAGE0_SWAUX_CTRL, SWAUX_SEND);
-> +       ret = regmap_write(map, PAGE0_SWAUX_CTRL, SWAUX_SEND);
-> +       if (ret) {
-> +               DRM_DEV_ERROR(dev, "failed to write SEND: %d\n", ret);
-> +               return ret;
-> +       }
->
->         /* Zero delay loop because i2c transactions are slow already */
->         regmap_read_poll_timeout(map, PAGE0_SWAUX_CTRL, data,
->                                  !(data & SWAUX_SEND), 0, 50 * 1000);
->
-> -       regmap_read(map, PAGE0_SWAUX_STATUS, &data);
-> +       ret = regmap_read(map, PAGE0_SWAUX_STATUS, &data);
->         if (ret) {
->                 DRM_DEV_ERROR(dev, "failed to read PAGE0_SWAUX_STATUS: %d\n",
->                               ret);
-> --
-> 2.33.0
->
