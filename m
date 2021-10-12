@@ -2,216 +2,96 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D93D7C43219
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Oct 2021 13:22:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EA8F3C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Oct 2021 17:28:46 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C1B5E610C9
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Oct 2021 13:22:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C8FD961076
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Oct 2021 17:28:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236727AbhJLNYp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Oct 2021 09:24:45 -0400
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:44310 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S236738AbhJLNYk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Oct 2021 09:24:40 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19CAv4j6013459;
-        Tue, 12 Oct 2021 15:22:20 +0200
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
- subject : date : message-id : in-reply-to : references : mime-version :
- content-type; s=selector1;
- bh=YPYrwvAiX914U8uW0f9AIFwRwTu5lxAhkXAMOfZgYGw=;
- b=0IMapOYCBGmviqV1NJeGHOYWe5mQkYefLtwFoh3kkjx/XriFZzR9aftG8N0IG39r6uHL
- DX5GCcqMIZPiwpcZpbGbstYAt8/NRdhakL66/UXFg0B7qVFnhxWK3W2XohRy+F304lz6
- 7hNOuhyTz/PBcu5fgaFprRITs+80kHSa6g/ISKbSndirnpG9zHiXpYzS1b/Zts6Sd8xs
- X3+Y2kzONKnpWQiJB/d9mqW2+0OPouqhqktldiBL6xoRZp7IEOSOqdL32poPb8a+5VdH
- cPIc086sAHkzUKHCSAF+hcAO4Q8gJagwUpQhIHxZ5KfEYM2+N5nJEpuk+LOt64GI6kY0 pg== 
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx07-00178001.pphosted.com with ESMTP id 3bn7qv9cb3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 12 Oct 2021 15:22:20 +0200
-Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 2062110002A;
-        Tue, 12 Oct 2021 15:22:20 +0200 (CEST)
-Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
-        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 155D82291AC;
-        Tue, 12 Oct 2021 15:22:20 +0200 (CEST)
-Received: from localhost (10.75.127.50) by SFHDAG2NODE2.st.com (10.75.127.5)
- with Microsoft SMTP Server (TLS) id 15.0.1497.18; Tue, 12 Oct 2021 15:22:19
- +0200
-From:   Olivier Moysan <olivier.moysan@foss.st.com>
-To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Olivier Moysan <olivier.moysan@foss.st.com>,
-        Rob Herring <robh+dt@kernel.org>
-CC:     <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux-stm32@st-md-mailman.stormreply.com>
-Subject: [PATCH v4 7/7] iio: adc: stm32-adc: use generic binding for sample-time
-Date:   Tue, 12 Oct 2021 15:19:24 +0200
-Message-ID: <20211012131924.31952-8-olivier.moysan@foss.st.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211012131924.31952-1-olivier.moysan@foss.st.com>
-References: <20211012131924.31952-1-olivier.moysan@foss.st.com>
+        id S231368AbhJLRar (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Oct 2021 13:30:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44600 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230306AbhJLRar (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Oct 2021 13:30:47 -0400
+Received: from mail-ed1-x52d.google.com (mail-ed1-x52d.google.com [IPv6:2a00:1450:4864:20::52d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89B83C061570;
+        Tue, 12 Oct 2021 10:28:45 -0700 (PDT)
+Received: by mail-ed1-x52d.google.com with SMTP id y12so2420582eda.4;
+        Tue, 12 Oct 2021 10:28:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=jYV5uswBdPhLkzQCchLXy1vzDSrs7wbq+uP4fTIgJew=;
+        b=EqiiBxf9HamAePfjyBIkSQxkgGGjmVmOOiUHx7Af964g/OmYXmEtvMqcdu7TmFHfnm
+         SNMA2cwgQebfN/8LOqxFf4EwKL5q8vWO0mO+RI0iqHOpKUxe6D3TiNTzNKY7/bq+UIzM
+         o6ykO2t18179Gfmk5eXRhicIeBSeYXJvyfZRK1dHbLbZCUoC2hFZvA5uhE4LvD3uVB8g
+         NTeBDOOCprN2VsmEIhK1mjcDtyVTZ3TGeCqoU9jXMhshslPECIaIDL8lSaypDsgQPW0T
+         /huc9Te52IDjRzd4EENstG+YzLkeINGlNUyl0nTp3FzqbuQzWQwoAnho+H8CdC7xka7R
+         eIkA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=jYV5uswBdPhLkzQCchLXy1vzDSrs7wbq+uP4fTIgJew=;
+        b=aqtObiwoDaYE8utncOUkWSJSo+hEoS2Y0tF1Dk94eqT06DyoHjjAT6Y01mKkOBIy31
+         vKO6lH7eoyp5cBo2I4GIh2xQxzSaxe/VMFXYWTQ9q+7ITbn/LldgGOF1PuTVHvUyqvP1
+         ex5AH4X2+iheVp/eU9yTSmOuKOvKJL7CTxVIEFU8+nwJxQ9ZiMLEmJS55Vde3CqI/Bt6
+         F1RsCDAq1KR3WVgZhvLtEVXXQ9ctELvJSb8ORyzEUMrOZ0Ekx/za75sxAtIP53meysfn
+         YjumRNMjMMwgr64F7c/wLUFa9hW3s/O4UnQEUgODE6Uvq6tjWKJdER7EIDH+WyEygOqt
+         VoLg==
+X-Gm-Message-State: AOAM531CIWXgQRQ4rvGTq5biLdq6fnQ30P6oZUHsaAFAfQz1bR5Otv77
+        PzPNPQzSaJamw1O7oQ3kcla/4KKSmHFFYtaitGO/WhzO7t6nQ0Mj
+X-Google-Smtp-Source: ABdhPJylsYNadtxJaenpcnUtTiNrM4FgodsUYbNb7BPGrQnMd7AAoOjjIUX49eIg+nwVBLusEB7wq5LbutUl63nydto=
+X-Received: by 2002:a17:906:eb86:: with SMTP id mh6mr34830343ejb.141.1634059724156;
+ Tue, 12 Oct 2021 10:28:44 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain
-X-Originating-IP: [10.75.127.50]
-X-ClientProxiedBy: SFHDAG2NODE3.st.com (10.75.127.6) To SFHDAG2NODE2.st.com
- (10.75.127.5)
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
- definitions=2021-10-12_03,2021-10-12_01,2020-04-07_01
+References: <20211011092028.2310144-1-yangyingliang@huawei.com>
+In-Reply-To: <20211011092028.2310144-1-yangyingliang@huawei.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 12 Oct 2021 23:27:56 +0300
+Message-ID: <CAHp75VdAbhmd1UeFmyN1qPYOh-GKWmdStAC7WRSn91=UpDQ+Tw@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: core: fix double free in iio_device_unregister_sysfs()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>, ars@metafoo.de,
+        Jonathan Cameron <jic23@kernel.org>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add st,min-sample-time-nsecs to channel generic binding.
-Sample time can be defined par channel node. If a channel
-is configured as differential, the same sample time applies
-for both inputs.
-Keep support of legacy st,min-sample-time-nsecs property
-for backward compatibility.
+On Mon, Oct 11, 2021 at 12:12 PM Yang Yingliang
+<yangyingliang@huawei.com> wrote:
+>
+> I got the double free report:
+>
+> BUG: KASAN: double-free or invalid-free in kfree+0xce/0x390
+>
+> CPU: 0 PID: 359 Comm: xrun Tainted: G        W         5.15.0-rc3-00109-g4dfd49fafc4d-dirty #474 523b7f3c65c42247635e2ac04a95f61f9f36678d
+> Hardware name: QEMU Standard PC (i440FX + PIIX, 1996), BIOS 1.13.0-1ubuntu1.1 04/01/2014
+> Call Trace:
+>  dump_stack_lvl+0xe2/0x152
+>  print_address_description.constprop.7+0x21/0x150
+>  kasan_report_invalid_free+0x6f/0xa0
+>  __kasan_slab_free+0x125/0x140
+>  slab_free_freelist_hook+0x10d/0x240
+>  kfree+0xce/0x390
+>  iio_device_unregister_sysfs+0x108/0x13b [industrialio]
+>  iio_dev_release+0x9e/0x10e [industrialio]
+>  device_release+0xa5/0x240
+>  kobject_put+0x1e5/0x540
+>  put_device+0x20/0x30
+>  devm_iio_device_release+0x21/0x30 [industrialio]
+>  release_nodes+0xc3/0x3b0
+>  devres_release_group+0x1da/0x2c0
+>  i2c_device_probe+0x628/0xbb0
+>  really_probe+0x285/0xc30
 
-Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
-Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
----
- drivers/iio/adc/stm32-adc.c | 70 ++++++++++++++++++++++---------------
- 1 file changed, 41 insertions(+), 29 deletions(-)
+Please, reduce this noise to the ~4-5 important lines only!
 
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index 5269bb87d094..6245434f8377 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -1805,6 +1805,13 @@ static void stm32_adc_smpr_init(struct stm32_adc *adc, int channel, u32 smp_ns)
- 	u32 period_ns, shift = smpr->shift, mask = smpr->mask;
- 	unsigned int smp, r = smpr->reg;
- 
-+	/*
-+	 * For vrefint channel, ensure that the sampling time cannot
-+	 * be lower than the one specified in the datasheet
-+	 */
-+	if (channel == adc->int_ch[STM32_ADC_INT_CH_VREFINT])
-+		smp_ns = max(smp_ns, adc->cfg->ts_vrefint_ns);
-+
- 	/* Determine sampling time (ADC clock cycles) */
- 	period_ns = NSEC_PER_SEC / adc->common->rate;
- 	for (smp = 0; smp <= STM32_ADC_MAX_SMP; smp++)
-@@ -1881,6 +1888,13 @@ static int stm32_adc_get_legacy_chan_count(struct iio_dev *indio_dev, struct stm
- 		num_channels += ret;
- 	}
- 
-+	/* Optional sample time is provided either for each, or all channels */
-+	ret = of_property_count_u32_elems(node, "st,min-sample-time-nsecs");
-+	if (ret > 1 && ret != num_channels) {
-+		dev_err(&indio_dev->dev, "Invalid st,min-sample-time-nsecs\n");
-+		return -EINVAL;
-+	}
-+
- 	return num_channels;
- }
- 
-@@ -1896,6 +1910,7 @@ static int stm32_adc_legacy_chan_init(struct iio_dev *indio_dev,
- 	int scan_index = 0, val, ret, i;
- 	struct property *prop;
- 	const __be32 *cur;
-+	u32 smp = 0;
- 
- 	if (num_diff) {
- 		ret = of_property_read_u32_array(node, "st,adc-diff-channels",
-@@ -1938,6 +1953,19 @@ static int stm32_adc_legacy_chan_init(struct iio_dev *indio_dev,
- 		scan_index++;
- 	}
- 
-+	for (i = 0; i < scan_index; i++) {
-+		/*
-+		 * Using of_property_read_u32_index(), smp value will only be
-+		 * modified if valid u32 value can be decoded. This allows to
-+		 * get either no value, 1 shared value for all indexes, or one
-+		 * value per channel.
-+		 */
-+		of_property_read_u32_index(node, "st,min-sample-time-nsecs", i, &smp);
-+
-+		/* Prepare sampling time settings */
-+		stm32_adc_smpr_init(adc, channels[i].channel, smp);
-+	}
-+
- 	return scan_index;
- }
- 
-@@ -2030,6 +2058,19 @@ static int stm32_adc_generic_chan_init(struct iio_dev *indio_dev,
- 
- 		stm32_adc_chan_init_one(indio_dev, &channels[scan_index], val,
- 					vin[1], scan_index, differential);
-+
-+		ret = of_property_read_u32(child, "st,min-sample-time-ns", &val);
-+		/* st,min-sample-time-ns is optional */
-+		if (!ret) {
-+			stm32_adc_smpr_init(adc, channels[scan_index].channel, val);
-+			if (differential)
-+				stm32_adc_smpr_init(adc, vin[1], val);
-+		} else if (ret != -EINVAL) {
-+			dev_err(&indio_dev->dev, "Invalid st,min-sample-time-ns property %d\n",
-+				ret);
-+			goto err;
-+		}
-+
- 		scan_index++;
- 	}
- 
-@@ -2048,7 +2089,6 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev, bool timestamping)
- 	const struct stm32_adc_info *adc_info = adc->cfg->adc_info;
- 	struct iio_chan_spec *channels;
- 	int scan_index = 0, num_channels = 0, ret, i;
--	u32 smp = 0;
- 	bool legacy = false;
- 
- 	for (i = 0; i < STM32_ADC_INT_CH_NB; i++)
-@@ -2076,13 +2116,6 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev, bool timestamping)
- 		return -EINVAL;
- 	}
- 
--	/* Optional sample time is provided either for each, or all channels */
--	ret = of_property_count_u32_elems(node, "st,min-sample-time-nsecs");
--	if (ret > 1 && ret != num_channels) {
--		dev_err(&indio_dev->dev, "Invalid st,min-sample-time-nsecs\n");
--		return -EINVAL;
--	}
--
- 	if (timestamping)
- 		num_channels++;
- 
-@@ -2099,27 +2132,6 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev, bool timestamping)
- 		return ret;
- 	scan_index = ret;
- 
--	for (i = 0; i < scan_index; i++) {
--		/*
--		 * Using of_property_read_u32_index(), smp value will only be
--		 * modified if valid u32 value can be decoded. This allows to
--		 * get either no value, 1 shared value for all indexes, or one
--		 * value per channel.
--		 */
--		of_property_read_u32_index(node, "st,min-sample-time-nsecs",
--					   i, &smp);
--
--		/*
--		 * For vrefint channel, ensure that the sampling time cannot
--		 * be lower than the one specified in the datasheet
--		 */
--		if (channels[i].channel == adc->int_ch[STM32_ADC_INT_CH_VREFINT])
--			smp = max(smp, adc->cfg->ts_vrefint_ns);
--
--		/* Prepare sampling time settings */
--		stm32_adc_smpr_init(adc, channels[i].channel, smp);
--	}
--
- 	if (timestamping) {
- 		struct iio_chan_spec *timestamp = &channels[scan_index];
- 
 -- 
-2.17.1
-
+With Best Regards,
+Andy Shevchenko
