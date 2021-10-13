@@ -2,157 +2,120 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 705C1C4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 20:07:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 87B98C433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 20:32:43 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 4CA1460551
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 20:07:30 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 70F0D610FE
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 20:32:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231308AbhJMUJd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 13 Oct 2021 16:09:33 -0400
-Received: from smtp06.smtpout.orange.fr ([80.12.242.128]:56570 "EHLO
-        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230474AbhJMUJc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Oct 2021 16:09:32 -0400
-Received: from [192.168.1.18] ([92.140.161.106])
-        by smtp.orange.fr with ESMTPA
-        id akX7mo550TdRTakX8mpqgx; Wed, 13 Oct 2021 22:07:26 +0200
-X-ME-Helo: [192.168.1.18]
-X-ME-Auth: YWZlNiIxYWMyZDliZWIzOTcwYTEyYzlhMmU3ZiQ1M2U2MzfzZDfyZTMxZTBkMTYyNDBjNDJlZmQ3ZQ==
-X-ME-Date: Wed, 13 Oct 2021 22:07:26 +0200
-X-ME-IP: 92.140.161.106
-Subject: Re: [PATCH v3] iio: adc128s052: Simplify 'adc128_probe()'
+        id S229768AbhJMUeq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Oct 2021 16:34:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50212 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229733AbhJMUep (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Oct 2021 16:34:45 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14885C06174E
+        for <linux-iio@vger.kernel.org>; Wed, 13 Oct 2021 13:32:42 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1makvR-0007Ec-Rk; Wed, 13 Oct 2021 22:32:33 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1makvQ-0005mV-Fl; Wed, 13 Oct 2021 22:32:32 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1makvQ-0000Ps-Es; Wed, 13 Oct 2021 22:32:32 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     lars@metafoo.de, ardeleanalex@gmail.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-References: <4fa7fcc59c40e27af0569138d656c698a53dbd44.1630002770.git.christophe.jaillet@wanadoo.fr>
- <20210829181612.0b366561@jic23-huawei>
-From:   Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Message-ID: <a9e71dfa-8ecc-aa0d-7e02-bcc6003ae896@wanadoo.fr>
-Date:   Wed, 13 Oct 2021 22:07:25 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Brown <broonie@kernel.org>, kernel@pengutronix.de,
+        linux-iio@vger.kernel.org, linux-spi@vger.kernel.org
+Subject: [PATCH 03/15] iio: accel: bmi088: Make bmi088_accel_core_remove() return void
+Date:   Wed, 13 Oct 2021 22:32:11 +0200
+Message-Id: <20211013203223.2694577-4-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20211013203223.2694577-1-u.kleine-koenig@pengutronix.de>
+References: <20211013203223.2694577-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-In-Reply-To: <20210829181612.0b366561@jic23-huawei>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=UTF-8
+X-Patch-Hashes: v=1; h=sha256; i=47b07Tl6Kkb0cBFoLDA3POhzluluk58LiCtxdyy8nM0=; m=MHX9YV6gq1NLCJ2dPZ71KGY8ElRJr9RbowJQ7VgmlTw=; p=cWMbetov6SRlF4mtcqhmc7uOUmFm3pucHYE0XYh2WMI=; g=0d4cb60fa1fdfd38c668842f931ab30f626a9912
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFnQeoACgkQwfwUeK3K7Al99Qf/c9n XdRfOoXMzYI3jxyObbVkKKUdnzb0qvMbiH0j4eMuIupyxmh7lWIYRZxS0mf7NTRUQHzqWNA1z1g0o Sj7pKarAP9T+VdiIDru9prQanLIEZrzaL03tsCk7Hx4YPcnxljLosEu5ZahhqfCG6TwfEwOTiXFwD htuU1GWsPt1ZFmyLwA8k+7eizBBy0ccIxbqQ8sJsEuCAzKWLjOkFjBrMw27+mCMoaUr6WaYhhqEF8 K7DrxDKioKCsCvBzm2npg4j5xyuHOFQKLSufy3/ldHKcNiM/BY7vuKq1XtRemC6/vRnzFBbLOVxIc mh+sG+/BLFa+9obJxvJ8WoYXZCv973w==
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Le 29/08/2021 à 19:16, Jonathan Cameron a écrit :
-> On Thu, 26 Aug 2021 20:36:22 +0200
-> Christophe JAILLET <christophe.jaillet@wanadoo.fr> wrote:
-> 
->> Turn 'adc128_probe()' into a full resource managed function to simplify the
->> code.
->>
->> This way, the .remove function can be removed.
->> Doing so, the only 'spi_get_drvdata()' call is removed and the
->> corresponding 'spi_set_drvdata()' can be removed as well.
->>
->> Suggested-by: Alexandru Ardelean <ardeleanalex@gmail.com>
->> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
->> Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
-> Looks good to me, but as mentioned this will need to wait for the
-> fix to go upstream.
-> 
-> Give me a poke if I seem to have lost it once that's true.
+Up to now bmi088_accel_core_remove() returns zero unconditionally. Make
+it return void instead which makes it easier to see in the callers that
+there is no error to handle.
 
-Hi,
+Also the return value of spi remove callbacks is ignored anyway.
 
-looks like it's fine now. So this is a gentle reminder :)
-The fix is in -next (see [1])
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/iio/accel/bmi088-accel-core.c | 4 +---
+ drivers/iio/accel/bmi088-accel-spi.c  | 4 +++-
+ drivers/iio/accel/bmi088-accel.h      | 2 +-
+ 3 files changed, 5 insertions(+), 5 deletions(-)
 
-CJ
-
-[1]: 
-https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git/log/drivers/iio/adc/ti-adc128s052.c
-
-> 
-> Thanks,
-> 
-> Jonathan
-> 
->> ---
->> Compile tested only.
->>
->> When reviewing, pay special attention to the 'spi_set_drvdata()' call
->> removal. I recently introduced a regression with a too aggressive cleanup
->> like that.
->>
->> This patch should be applied after
->> https://lore.kernel.org/linux-iio/f33069f0-601b-4bbb-3766-026f7a161912-39ZsbGIQGT5GWvitb5QawA@public.gmane.org/T/#meb792dcd6540f87d9ae041660ca4738a776e924a
->>
->> v1 --> v2: just garbage --> ignore
->> v1 --> v3: Simplify 'adc128_disable_regulator()'
->> ---
->>   drivers/iio/adc/ti-adc128s052.c | 26 +++++++++-----------------
->>   1 file changed, 9 insertions(+), 17 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
->> index 3143f35a6509..ce0cfe40b219 100644
->> --- a/drivers/iio/adc/ti-adc128s052.c
->> +++ b/drivers/iio/adc/ti-adc128s052.c
->> @@ -132,6 +132,11 @@ static const struct iio_info adc128_info = {
->>   	.read_raw = adc128_read_raw,
->>   };
->>   
->> +static void adc128_disable_regulator(void *reg)
->> +{
->> +	regulator_disable(reg);
->> +}
->> +
->>   static int adc128_probe(struct spi_device *spi)
->>   {
->>   	struct iio_dev *indio_dev;
->> @@ -151,8 +156,6 @@ static int adc128_probe(struct spi_device *spi)
->>   	adc = iio_priv(indio_dev);
->>   	adc->spi = spi;
->>   
->> -	spi_set_drvdata(spi, indio_dev);
->> -
->>   	indio_dev->name = spi_get_device_id(spi)->name;
->>   	indio_dev->modes = INDIO_DIRECT_MODE;
->>   	indio_dev->info = &adc128_info;
->> @@ -167,23 +170,13 @@ static int adc128_probe(struct spi_device *spi)
->>   	ret = regulator_enable(adc->reg);
->>   	if (ret < 0)
->>   		return ret;
->> +	ret = devm_add_action_or_reset(&spi->dev, adc128_disable_regulator, adc->reg);
->> +	if (ret)
->> +		return ret;
->>   
->>   	mutex_init(&adc->lock);
->>   
->> -	ret = iio_device_register(indio_dev);
->> -
->> -	return ret;
->> -}
->> -
->> -static int adc128_remove(struct spi_device *spi)
->> -{
->> -	struct iio_dev *indio_dev = spi_get_drvdata(spi);
->> -	struct adc128 *adc = iio_priv(indio_dev);
->> -
->> -	iio_device_unregister(indio_dev);
->> -	regulator_disable(adc->reg);
->> -
->> -	return 0;
->> +	return devm_iio_device_register(&spi->dev, indio_dev);
->>   }
->>   
->>   static const struct of_device_id adc128_of_match[] = {
->> @@ -225,7 +218,6 @@ static struct spi_driver adc128_driver = {
->>   		.acpi_match_table = ACPI_PTR(adc128_acpi_match),
->>   	},
->>   	.probe = adc128_probe,
->> -	.remove = adc128_remove,
->>   	.id_table = adc128_id,
->>   };
->>   module_spi_driver(adc128_driver);
-> 
-> 
+diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
+index a06dae5c971d..d74465214feb 100644
+--- a/drivers/iio/accel/bmi088-accel-core.c
++++ b/drivers/iio/accel/bmi088-accel-core.c
+@@ -536,7 +536,7 @@ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
+ EXPORT_SYMBOL_GPL(bmi088_accel_core_probe);
+ 
+ 
+-int bmi088_accel_core_remove(struct device *dev)
++void bmi088_accel_core_remove(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct bmi088_accel_data *data = iio_priv(indio_dev);
+@@ -546,8 +546,6 @@ int bmi088_accel_core_remove(struct device *dev)
+ 	pm_runtime_disable(dev);
+ 	pm_runtime_set_suspended(dev);
+ 	bmi088_accel_power_down(data);
+-
+-	return 0;
+ }
+ EXPORT_SYMBOL_GPL(bmi088_accel_core_remove);
+ 
+diff --git a/drivers/iio/accel/bmi088-accel-spi.c b/drivers/iio/accel/bmi088-accel-spi.c
+index dd1e3f6cf211..758ad2f12896 100644
+--- a/drivers/iio/accel/bmi088-accel-spi.c
++++ b/drivers/iio/accel/bmi088-accel-spi.c
+@@ -58,7 +58,9 @@ static int bmi088_accel_probe(struct spi_device *spi)
+ 
+ static int bmi088_accel_remove(struct spi_device *spi)
+ {
+-	return bmi088_accel_core_remove(&spi->dev);
++	bmi088_accel_core_remove(&spi->dev);
++
++	return 0;
+ }
+ 
+ static const struct spi_device_id bmi088_accel_id[] = {
+diff --git a/drivers/iio/accel/bmi088-accel.h b/drivers/iio/accel/bmi088-accel.h
+index 5c25f16b672c..5d40c7cf1cbc 100644
+--- a/drivers/iio/accel/bmi088-accel.h
++++ b/drivers/iio/accel/bmi088-accel.h
+@@ -13,6 +13,6 @@ extern const struct dev_pm_ops bmi088_accel_pm_ops;
+ 
+ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+ 			    const char *name, bool block_supported);
+-int bmi088_accel_core_remove(struct device *dev);
++void bmi088_accel_core_remove(struct device *dev);
+ 
+ #endif /* BMI088_ACCEL_H */
+-- 
+2.30.2
 
