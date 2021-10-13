@@ -2,50 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EC50FC4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 20:32:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 366E7C4321E
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 20:32:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D9CE9610CE
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 20:32:43 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1FC17610D0
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 20:32:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229733AbhJMUeq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 13 Oct 2021 16:34:46 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50204 "EHLO
+        id S229759AbhJMUer (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Oct 2021 16:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50228 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbhJMUep (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Oct 2021 16:34:45 -0400
+        with ESMTP id S229773AbhJMUeq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Oct 2021 16:34:46 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13BCAC061570
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C4483C061749
         for <linux-iio@vger.kernel.org>; Wed, 13 Oct 2021 13:32:42 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1makvR-0007Eb-Rk; Wed, 13 Oct 2021 22:32:33 +0200
+        id 1makvS-0007Ef-H9; Wed, 13 Oct 2021 22:32:34 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1makvQ-0005mS-1Q; Wed, 13 Oct 2021 22:32:32 +0200
+        id 1makvR-0005me-PV; Wed, 13 Oct 2021 22:32:33 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1makvQ-0000Pg-0R; Wed, 13 Oct 2021 22:32:32 +0200
+        id 1makvR-0000Qc-OH; Wed, 13 Oct 2021 22:32:33 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Mark Brown <broonie@kernel.org>, Wolfram Sang <wsa@kernel.org>,
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Cc:     Mark Brown <broonie@kernel.org>, Wolfram Sang <wsa@kernel.org>,
         kernel@pengutronix.de, linux-i2c@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-spi@vger.kernel.org
-Subject: [PATCH 02/15] iio: accel: bmc150: Make bmc150_accel_core_remove() return void
-Date:   Wed, 13 Oct 2021 22:32:10 +0200
-Message-Id: <20211013203223.2694577-3-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 10/15] iio: dac: ad5686: Make ad5686_remove() return void
+Date:   Wed, 13 Oct 2021 22:32:18 +0200
+Message-Id: <20211013203223.2694577-11-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211013203223.2694577-1-u.kleine-koenig@pengutronix.de>
 References: <20211013203223.2694577-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=NuQ/2prwJlZUSbk5YWEBdpBR2biPcMNKD5aVzW5Uvfk=; m=8dMEYFJx/Fvy0gBbjIys4WnTx/5HPUJMsgL+Jl1IE5g=; p=kVulruz0w8YQqYuVfq1BJbTfnEmyZGiiUhxrivteCT4=; g=92df2cd184b9901d6029b06ac709f84ca42396f2
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFnQecACgkQwfwUeK3K7AkrUQf9FFO qwGtR0o4RoiJNw4//CZQl2dDLotOVfaojxyxkfaSS1qlyMQaWeWuhzucgb49zi63dVb2dH8oo2eUT du/IYu114woI6626if2UcrZG4/YK2He7IB1yHaUvsQ+oIQlTA0KfY4qCa5I+zrg9fXTRM98X0Q5su mg4T99FoZyG7E9nrgq+S++O07kfIVOAf2/Ld7i8TFn8nDNgxGdRcSmuuWR/Jw31+mySB+YzmjUj9O Qu88wFils1IhHnwrwyhniQ9DVeVDIsTNJ/Kg3PGEUTwSsQhzWZYosBIux/OlGOM1UaEyZaz4aXJIk y4hv3nauVnXkxoJaUBpVCZaA1jJpdmA==
+X-Patch-Hashes: v=1; h=sha256; i=QMuejyC7ti9iGWS4aq/Mg0auEumbcjLiUXg/6aTZyBQ=; m=18nqVQag2sEsyeOjvHnHOLnTqoP0ugWwZtchoOSDR3k=; p=FQEaBCbRRXyB/WZS/lmheIp7jSbyhBnXSI6quIwXiRI=; g=630156e673f7eef71dec8aae3b38e903b2786a9f
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmFnQgUACgkQwfwUeK3K7AllSAf/axM 0Cnkf6812caWnaHugOJkOGsnpP6O0D1tzoTc48ZIrn6/mWmCD0e3idtA/gHfc0ECqcwYSthl+sHxB UulHOXvkmelkDVG5CNSuJ3hCPo8MRoLGxAd62VF9cDavkq4ipdKdA2M52vAUq//pH7wjKCZhkOPE7 McihWXbd90DERLNcIIXyliYHsCnLkMLxsmRNL27sjGpb0saa9DM69efe+NJ/RoEK51h3/mXTg4jpq tju3FclQk62HiunfEh5F6TFn3koVMWnU1ZV8q4PHKIBY4ivFgR9NaSyEW5Fgota5wVmNrKEE8TqEe HPhFma58kuTC3Jgi3ZCdua0Wbiy3ODQ==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -55,85 +56,85 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Up to now bmc150_accel_core_remove() returns zero unconditionally. Make
-it return void instead which makes it easier to see in the callers that
-there is no error to handle.
+Up to now ad5686_remove() returns zero unconditionally. Make it return
+void instead which makes it easier to see in the callers that there is
+no error to handle.
 
 Also the return value of i2c and spi remove callbacks is ignored anyway.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/accel/bmc150-accel-core.c | 4 +---
- drivers/iio/accel/bmc150-accel-i2c.c  | 4 +++-
- drivers/iio/accel/bmc150-accel-spi.c  | 4 +++-
- drivers/iio/accel/bmc150-accel.h      | 2 +-
+ drivers/iio/dac/ad5686-spi.c | 4 +++-
+ drivers/iio/dac/ad5686.c     | 4 +---
+ drivers/iio/dac/ad5686.h     | 2 +-
+ drivers/iio/dac/ad5696-i2c.c | 4 +++-
  4 files changed, 8 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index e8693a42ad46..590016830a6f 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -1799,7 +1799,7 @@ int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
- }
- EXPORT_SYMBOL_GPL(bmc150_accel_core_probe);
+diff --git a/drivers/iio/dac/ad5686-spi.c b/drivers/iio/dac/ad5686-spi.c
+index 0188ded5137c..2628810fdbb1 100644
+--- a/drivers/iio/dac/ad5686-spi.c
++++ b/drivers/iio/dac/ad5686-spi.c
+@@ -97,7 +97,9 @@ static int ad5686_spi_probe(struct spi_device *spi)
  
--int bmc150_accel_core_remove(struct device *dev)
-+void bmc150_accel_core_remove(struct device *dev)
+ static int ad5686_spi_remove(struct spi_device *spi)
+ {
+-	return ad5686_remove(&spi->dev);
++	ad5686_remove(&spi->dev);
++
++	return 0;
+ }
+ 
+ static const struct spi_device_id ad5686_spi_id[] = {
+diff --git a/drivers/iio/dac/ad5686.c b/drivers/iio/dac/ad5686.c
+index fcb64f20ff64..8f001db775f4 100644
+--- a/drivers/iio/dac/ad5686.c
++++ b/drivers/iio/dac/ad5686.c
+@@ -538,7 +538,7 @@ int ad5686_probe(struct device *dev,
+ }
+ EXPORT_SYMBOL_GPL(ad5686_probe);
+ 
+-int ad5686_remove(struct device *dev)
++void ad5686_remove(struct device *dev)
  {
  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
-@@ -1819,8 +1819,6 @@ int bmc150_accel_core_remove(struct device *dev)
- 
- 	regulator_bulk_disable(ARRAY_SIZE(data->regulators),
- 			       data->regulators);
+ 	struct ad5686_state *st = iio_priv(indio_dev);
+@@ -546,8 +546,6 @@ int ad5686_remove(struct device *dev)
+ 	iio_device_unregister(indio_dev);
+ 	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
 -
 -	return 0;
  }
- EXPORT_SYMBOL_GPL(bmc150_accel_core_remove);
+ EXPORT_SYMBOL_GPL(ad5686_remove);
  
-diff --git a/drivers/iio/accel/bmc150-accel-i2c.c b/drivers/iio/accel/bmc150-accel-i2c.c
-index 88bd8a25f142..9e52df9a8f07 100644
---- a/drivers/iio/accel/bmc150-accel-i2c.c
-+++ b/drivers/iio/accel/bmc150-accel-i2c.c
-@@ -213,7 +213,9 @@ static int bmc150_accel_remove(struct i2c_client *client)
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index f89a6f92b427..cd5fff9e9d53 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -154,7 +154,7 @@ int ad5686_probe(struct device *dev,
+ 		 const char *name, ad5686_write_func write,
+ 		 ad5686_read_func read);
+ 
+-int ad5686_remove(struct device *dev);
++void ad5686_remove(struct device *dev);
+ 
+ 
+ #endif /* __DRIVERS_IIO_DAC_AD5686_H__ */
+diff --git a/drivers/iio/dac/ad5696-i2c.c b/drivers/iio/dac/ad5696-i2c.c
+index 24a6a4a5a2e0..93f0e0e66c22 100644
+--- a/drivers/iio/dac/ad5696-i2c.c
++++ b/drivers/iio/dac/ad5696-i2c.c
+@@ -67,7 +67,9 @@ static int ad5686_i2c_probe(struct i2c_client *i2c,
+ 
+ static int ad5686_i2c_remove(struct i2c_client *i2c)
  {
- 	bmc150_acpi_dual_accel_remove(client);
- 
--	return bmc150_accel_core_remove(&client->dev);
-+	bmc150_accel_core_remove(&client->dev);
+-	return ad5686_remove(&i2c->dev);
++	ad5686_remove(&i2c->dev);
 +
 +	return 0;
  }
  
- static const struct acpi_device_id bmc150_accel_acpi_match[] = {
-diff --git a/drivers/iio/accel/bmc150-accel-spi.c b/drivers/iio/accel/bmc150-accel-spi.c
-index 191e312dc91a..11559567cb39 100644
---- a/drivers/iio/accel/bmc150-accel-spi.c
-+++ b/drivers/iio/accel/bmc150-accel-spi.c
-@@ -37,7 +37,9 @@ static int bmc150_accel_probe(struct spi_device *spi)
- 
- static int bmc150_accel_remove(struct spi_device *spi)
- {
--	return bmc150_accel_core_remove(&spi->dev);
-+	bmc150_accel_core_remove(&spi->dev);
-+
-+	return 0;
- }
- 
- static const struct acpi_device_id bmc150_accel_acpi_match[] = {
-diff --git a/drivers/iio/accel/bmc150-accel.h b/drivers/iio/accel/bmc150-accel.h
-index 1bb5023e8ed9..7775c5edaeef 100644
---- a/drivers/iio/accel/bmc150-accel.h
-+++ b/drivers/iio/accel/bmc150-accel.h
-@@ -88,7 +88,7 @@ struct bmc150_accel_data {
- int bmc150_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
- 			    enum bmc150_type type, const char *name,
- 			    bool block_supported);
--int bmc150_accel_core_remove(struct device *dev);
-+void bmc150_accel_core_remove(struct device *dev);
- extern const struct dev_pm_ops bmc150_accel_pm_ops;
- extern const struct regmap_config bmc150_regmap_conf;
- 
+ static const struct i2c_device_id ad5686_i2c_id[] = {
 -- 
 2.30.2
 
