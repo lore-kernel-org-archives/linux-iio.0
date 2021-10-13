@@ -2,87 +2,86 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 34B38C433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 09:50:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 947F4C433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 09:53:13 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1DABF60C40
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 09:50:12 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 72EE360527
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Oct 2021 09:53:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239188AbhJMJwN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 13 Oct 2021 05:52:13 -0400
-Received: from mga12.intel.com ([192.55.52.136]:51040 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239187AbhJMJv7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 13 Oct 2021 05:51:59 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10135"; a="207506725"
-X-IronPort-AV: E=Sophos;i="5.85,370,1624345200"; 
-   d="scan'208";a="207506725"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 13 Oct 2021 02:49:21 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.85,370,1624345200"; 
-   d="scan'208";a="491390570"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 13 Oct 2021 02:49:18 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 4FBFD37B; Wed, 13 Oct 2021 12:49:25 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Yang Yingliang <yangyingliang@huawei.com>,
-        Hulk Robot <hulkci@huawei.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v2 1/2] iio: buffer: Fix double-free in iio_buffers_alloc_sysfs_and_mask()
-Date:   Wed, 13 Oct 2021 12:49:22 +0300
-Message-Id: <20211013094923.2473-2-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211013094923.2473-1-andriy.shevchenko@linux.intel.com>
-References: <20211013094923.2473-1-andriy.shevchenko@linux.intel.com>
+        id S238054AbhJMJzP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Oct 2021 05:55:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41436 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S239305AbhJMJxR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Oct 2021 05:53:17 -0400
+Received: from mail-ed1-x535.google.com (mail-ed1-x535.google.com [IPv6:2a00:1450:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4FA9CC061746;
+        Wed, 13 Oct 2021 02:51:14 -0700 (PDT)
+Received: by mail-ed1-x535.google.com with SMTP id d3so7783084edp.3;
+        Wed, 13 Oct 2021 02:51:14 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=CPBt/4KUoaneMkVHcjVEd+UeNw6KJR5ixhmRH7r0XSE=;
+        b=Pw4XojORQxY2ifs+HKqaiQpiPCTMywJyV4fa+uVdzb6vlxETKfuON4mMIZooLlmBd+
+         fvkMtopmTnBUzyMaanYlY6axXdckNH58/VTZYu8Sa1bYS5Bzwe3eWbEKBb66eWfyJ+ml
+         ZuTab+wEmM/byeHYymPx5S7nWgITAGUysLRGdvT19lxiYLf40iE9mTGvAQs/UNM+sCj1
+         KrtpLtGaaWO+HmNP73oldPb5YhLtlo285WpbFwjWQ4ypqHIaSKipsJbu+NeUbryPdEw6
+         kPe40PUL11qlWjfH0KWEQVutjav67zREqdekxGL9AftcSfAD4dgX1j4rjPOSseZ+xofv
+         RNMA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=CPBt/4KUoaneMkVHcjVEd+UeNw6KJR5ixhmRH7r0XSE=;
+        b=3pCbSNR+8R56aCKQ9M97xNz70FSx1qvdisMJMavofw0CPsIPUlAOkRjScu+2hwyPRa
+         ouxTppMpHhL6XuQqa6WU87fbxHSNMNkqqSsWbsxAHsJxSmK1VdvIjfx98cWsffGku+XD
+         Rlr/TWw9/tOScQJ7Qs4dzCqktBqnbfOU5yYqqrQCd3gZ4/G+LoIHvK98OepBZEBYkdjL
+         d8rh4wqaTZXAo296LPj826/Q7+HX+j/wPFUlBtTmoZtB12/sB6J235E6HXrmR7dMHN3n
+         0gQtvBVMV85tV+/cMDpEmwrgpke/VU2ZX3WrRqZe8D+TObpPO77myVPsk4EUFT/iY13J
+         RbLA==
+X-Gm-Message-State: AOAM5305VD8pxkKuiAG8LIxs7GLSzm2sdiF/46d3DlaWPVnrX1tK5Ayc
+        1LyQ80hAysibJU7AuVXj7CX3wyCd3p+PszkCous=
+X-Google-Smtp-Source: ABdhPJxf86UVc3m9pU19cXQgmJcDmqtB5+RigtFoifMlf8XDpRtGJZh9Cs+CRPHeAxtdOqVnxxfQOuvh90SQW+kC+Vk=
+X-Received: by 2002:a05:6402:143b:: with SMTP id c27mr8211050edx.224.1634118672857;
+ Wed, 13 Oct 2021 02:51:12 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20211012092513.1349295-1-yangyingliang@huawei.com>
+ <CA+U=DsrHSwaiS7mT4rcHT_ZQwfPg+-Hwm-jkib11+m7W-VA_FQ@mail.gmail.com>
+ <CAHp75Vf+DHNxiP5HzsKzzh5hFmr20P8SzOTnLXAvhC5Vb6hzMA@mail.gmail.com>
+ <61c28865036cd40a96f2d1bb4c27fbbb08c2d3a5.camel@perches.com>
+ <CAHp75VfBXuMboFr6czRipXKfBpBNj8Syo9cvhiMXD7VaVaka+Q@mail.gmail.com>
+ <fe8a022750e911159abcac979bada51940c03d72.camel@perches.com>
+ <CAHp75Vdx1=q=5sNkn9o=mqnufxYiXnssmMJtXw9goFskGijc1w@mail.gmail.com>
+ <04c752b5-3814-34d0-82e4-9d0d46af433f@huawei.com> <CAHp75VeoOj0bvGBO3PaMMD4sQTRF=rpxxLQXKeyFucpvofbV1w@mail.gmail.com>
+In-Reply-To: <CAHp75VeoOj0bvGBO3PaMMD4sQTRF=rpxxLQXKeyFucpvofbV1w@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 13 Oct 2021 12:50:36 +0300
+Message-ID: <CAHp75VfRH3Z=-j=GVqzpuPGc5sPet+Jdd6WqnGmhTLW=Gm2VaQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: buffer: Fix double-free in iio_buffers_alloc_sysfs_and_mask()
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     Joe Perches <joe@perches.com>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Yang Yingliang <yangyingliang@huawei.com>
+On Wed, Oct 13, 2021 at 12:28 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Wed, Oct 13, 2021 at 12:17 PM Yang Yingliang
+> <yangyingliang@huawei.com> wrote:
 
-When __iio_buffer_alloc_sysfs_and_mask() failed, 'unwind_idx' should be
-set to 'i - 1' to prevent double-free when cleanup resources.
+> I could send a v2 on your behalf.
 
-BUG: KASAN: double-free or invalid-free in __iio_buffer_free_sysfs_and_mask+0x32/0xb0 [industrialio]
-Call Trace:
- kfree+0x117/0x4c0
- __iio_buffer_free_sysfs_and_mask+0x32/0xb0 [industrialio]
- iio_buffers_alloc_sysfs_and_mask+0x60d/0x1570 [industrialio]
- __iio_device_register+0x483/0x1a30 [industrialio]
- ina2xx_probe+0x625/0x980 [ina2xx_adc]
+Looking into code further I think that your patch is good as is, see
+v2 I have just sent.
 
-Reported-by: Hulk Robot <hulkci@huawei.com>
-Fixes: ee708e6baacd ("iio: buffer: introduce support for attaching more IIO buffers")
-Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/industrialio-buffer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 4209e933ab80..bb181d11573c 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -1616,7 +1616,7 @@ int iio_buffers_alloc_sysfs_and_mask(struct iio_dev *indio_dev)
- 		buffer = iio_dev_opaque->attached_buffers[i];
- 		ret = __iio_buffer_alloc_sysfs_and_mask(buffer, indio_dev, i);
- 		if (ret) {
--			unwind_idx = i;
-+			unwind_idx = i - 1;
- 			goto error_unwind_sysfs_and_mask;
- 		}
- 	}
 -- 
-2.33.0
-
+With Best Regards,
+Andy Shevchenko
