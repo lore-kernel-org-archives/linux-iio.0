@@ -2,83 +2,239 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1986C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Oct 2021 11:55:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E3C47C433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Oct 2021 13:13:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 870C060295
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Oct 2021 11:55:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C5FB0610CC
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Oct 2021 13:13:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231248AbhJNL5U (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Oct 2021 07:57:20 -0400
-Received: from mga09.intel.com ([134.134.136.24]:12485 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229994AbhJNL5T (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 14 Oct 2021 07:57:19 -0400
-X-IronPort-AV: E=McAfee;i="6200,9189,10136"; a="227557121"
-X-IronPort-AV: E=Sophos;i="5.85,372,1624345200"; 
-   d="scan'208";a="227557121"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2021 04:55:15 -0700
-X-IronPort-AV: E=Sophos;i="5.85,372,1624345200"; 
-   d="scan'208";a="442726077"
-Received: from smile.fi.intel.com (HELO smile) ([10.237.72.159])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Oct 2021 04:55:13 -0700
-Received: from andy by smile with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1mb28I-000C7i-Py;
-        Thu, 14 Oct 2021 17:54:58 +0300
-Date:   Thu, 14 Oct 2021 17:54:58 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Yang Yingliang <yangyingliang@huawei.com>
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        lars@metafoo.de, jic23@kernel.org, hdegoede@redhat.com,
-        ddvlad@gmail.com
-Subject: Re: [PATCH] iio: accel: kxcjk-1013: Fix possible memory leak in
- probe and remove
-Message-ID: <YWhEwqdHbPTAfvto@smile.fi.intel.com>
-References: <20211014035338.3750416-1-yangyingliang@huawei.com>
+        id S231325AbhJNNPs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Oct 2021 09:15:48 -0400
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:40522 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S231166AbhJNNPr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Oct 2021 09:15:47 -0400
+Received: from pps.filterd (m0046660.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19EBk87d020021;
+        Thu, 14 Oct 2021 15:13:20 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-type; s=selector1;
+ bh=fEiEp/KNdDVRTPjRoHGgkIiSQMo3Xj7w4dLVXvt3NkM=;
+ b=N41mMaQzjjsXOrC1MtQhZGxRqch4C+hDBo4PgiIw03DW9K+XCGTbFJ5sR63CPTZWLneO
+ +sxuqTkxkBf7qYiSE+Qz/hYS3jrGAftbCUKt9UOAfwuoOH5HaFnd0GHnRMREfKqz5gqB
+ GKhKzHlMy5evgg5RUinBFQmOCcjfKVqhKqidEzkxt21jDZHXPRj+lI6kcRWpeX67j7XY
+ TTFWqohxHhaZSyHkAJE5C4eitjnRrCwLfcjkAuMVYbOtfLO3cUfDF8Lp6o+yDxM36TSQ
+ OSBxm/B15Z8w4vMv/OWqWIClXMUUKa3sgcozNmpoifhZ4bQISDvH8jCjqotWmMa81mxd wg== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com with ESMTP id 3bpkye8fyg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 14 Oct 2021 15:13:20 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id C1B2010002A;
+        Thu, 14 Oct 2021 15:13:19 +0200 (CEST)
+Received: from Webmail-eu.st.com (sfhdag2node2.st.com [10.75.127.5])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id B928222179A;
+        Thu, 14 Oct 2021 15:13:19 +0200 (CEST)
+Received: from localhost (10.75.127.48) by SFHDAG2NODE2.st.com (10.75.127.5)
+ with Microsoft SMTP Server (TLS) id 15.0.1497.18; Thu, 14 Oct 2021 15:13:19
+ +0200
+From:   Olivier Moysan <olivier.moysan@foss.st.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Rob Herring <robh+dt@kernel.org>
+CC:     <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: [PATCH v5 1/7] dt-bindings: iio: stm32-adc: add generic channel binding
+Date:   Thu, 14 Oct 2021 15:12:22 +0200
+Message-ID: <20211014131228.4692-2-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211014131228.4692-1-olivier.moysan@foss.st.com>
+References: <20211014131228.4692-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211014035338.3750416-1-yangyingliang@huawei.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.48]
+X-ClientProxiedBy: SFHDAG1NODE2.st.com (10.75.127.2) To SFHDAG2NODE2.st.com
+ (10.75.127.5)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-14_08,2021-10-14_02,2020-04-07_01
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Oct 14, 2021 at 11:53:38AM +0800, Yang Yingliang wrote:
-> When ACPI type is ACPI_SMO8500, the data->dready_trig will not be set, the
-> memory allocated by iio_triggered_buffer_setup() will not be freed, and cause
-> memory leak as follows:
+Add ADC generic channel binding. This binding should
+be used as an alternate to legacy channel properties
+whenever possible.
+ADC generic channel binding allows to identify supported
+internal channels through the following reserved label names:
+"vddcore", "vrefint" and "vbat".
+This binding also allows to set a different sampling time
+for each channel.
 
-It seems it's not first time I'm telling you to shrink the noise in the commit
-message.  Can you please LEARN this once and forever?
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+Reviewed-by: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+---
+ .../bindings/iio/adc/st,stm32-adc.yaml        | 100 ++++++++++++++++--
+ 1 file changed, 93 insertions(+), 7 deletions(-)
 
-> unreferenced object 0xffff888009551400 (size 512):
->   comm "i2c-SMO8500-125", pid 911, jiffies 4294911787 (age 83.852s)
->   hex dump (first 32 bytes):
->     02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
->     00 00 00 00 00 00 00 00 20 e2 e5 c0 ff ff ff ff  ........ .......
->   backtrace:
->     [<0000000041ce75ee>] kmem_cache_alloc_trace+0x16d/0x360
->     [<000000000aeb17b0>] iio_kfifo_allocate+0x41/0x130 [kfifo_buf]
->     [<000000004b40c1f5>] iio_triggered_buffer_setup_ext+0x2c/0x210 [industrialio_triggered_buffer]
->     [<000000004375b15f>] kxcjk1013_probe+0x10c3/0x1d81 [kxcjk_1013]
->     [<0000000020115b9a>] i2c_device_probe+0xa31/0xbe0
->     [<00000000d9f581a6>] really_probe+0x299/0xc30
->     [<00000000c6c16cde>] __driver_probe_device+0x357/0x500
->     [<00000000909852a1>] driver_probe_device+0x4e/0x140
->     [<000000008419ba53>] __device_attach_driver+0x257/0x340
->     [<00000000533bb466>] bus_for_each_drv+0x166/0x1e0
->     [<000000005bf45d75>] __device_attach+0x272/0x420
->     [<0000000075220311>] bus_probe_device+0x1eb/0x2a0
->     [<0000000015587e85>] device_add+0xbf0/0x1f90
->     [<0000000086901b9e>] i2c_new_client_device+0x622/0xb20
->     [<000000000865ca18>] new_device_store+0x1fa/0x420
->     [<0000000059a3d183>] dev_attr_store+0x58/0x80
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+index a58334c3bb76..2083e1723970 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.yaml
+@@ -222,6 +222,12 @@ patternProperties:
+       '#io-channel-cells':
+         const: 1
+ 
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
+       interrupts:
+         description: |
+           IRQ Line for the ADC instance. Valid values are:
+@@ -256,6 +262,7 @@ patternProperties:
+             - 20 channels, numbered from 0 to 19 (for in0..in19) on stm32h7 and
+               stm32mp1.
+         $ref: /schemas/types.yaml#/definitions/uint32-array
++        deprecated: true
+ 
+       st,adc-diff-channels:
+         description: |
+@@ -265,7 +272,9 @@ patternProperties:
+           <vinp vinn>, <vinp vinn>,... vinp and vinn are numbered from 0 to 19.
+ 
+           Note: At least one of "st,adc-channels" or "st,adc-diff-channels" is
+-          required. Both properties can be used together. Some channels can be
++          required if no adc generic channel is defined. These legacy channel
++          properties are exclusive with adc generic channel bindings.
++          Both properties can be used together. Some channels can be
+           used as single-ended and some other ones as differential (mixed). But
+           channels can't be configured both as single-ended and differential.
+         $ref: /schemas/types.yaml#/definitions/uint32-matrix
+@@ -279,6 +288,7 @@ patternProperties:
+                 "vinn" indicates negative input number
+               minimum: 0
+               maximum: 19
++        deprecated: true
+ 
+       st,min-sample-time-nsecs:
+         description:
+@@ -289,6 +299,42 @@ patternProperties:
+           list, to set sample time resp. for all channels, or independently for
+           each channel.
+         $ref: /schemas/types.yaml#/definitions/uint32-array
++        deprecated: true
++
++    patternProperties:
++      "^channel@([0-9]|1[0-9])$":
++        type: object
++        $ref: "adc.yaml"
++        description: Represents the external channels which are connected to the ADC.
++
++        properties:
++          reg:
++            items:
++              minimum: 0
++              maximum: 19
++
++          label:
++            description: |
++              Unique name to identify which channel this is.
++              Reserved label names "vddcore", "vrefint" and "vbat"
++              are used to identify internal channels with matching names.
++
++          diff-channels:
++            $ref: /schemas/types.yaml#/definitions/uint32-array
++            items:
++              minimum: 0
++              maximum: 19
++
++          st,min-sample-time-ns:
++            description: |
++              Minimum sampling time in nanoseconds. Depending on hardware (board)
++              e.g. high/low analog input source impedance, fine tune of ADC
++              sampling time may be recommended.
++
++        required:
++          - reg
++
++        additionalProperties: false
+ 
+     allOf:
+       - if:
+@@ -369,12 +415,6 @@ patternProperties:
+ 
+     additionalProperties: false
+ 
+-    anyOf:
+-      - required:
+-          - st,adc-channels
+-      - required:
+-          - st,adc-diff-channels
+-
+     required:
+       - compatible
+       - reg
+@@ -451,4 +491,50 @@ examples:
+         // other adc child node follow...
+       };
+ 
++  - |
++    // Example 3: with stm32mp157c to setup ADC2 with:
++    // - internal channels 13, 14, 15.
++      #include <dt-bindings/interrupt-controller/arm-gic.h>
++      #include <dt-bindings/clock/stm32mp1-clks.h>
++      adc122: adc@48003000 {
++        compatible = "st,stm32mp1-adc-core";
++        reg = <0x48003000 0x400>;
++        interrupts = <GIC_SPI 18 IRQ_TYPE_LEVEL_HIGH>,
++                     <GIC_SPI 90 IRQ_TYPE_LEVEL_HIGH>;
++        clocks = <&rcc ADC12>, <&rcc ADC12_K>;
++        clock-names = "bus", "adc";
++        booster-supply = <&booster>;
++        vdd-supply = <&vdd>;
++        vdda-supply = <&vdda>;
++        vref-supply = <&vref>;
++        st,syscfg = <&syscfg>;
++        interrupt-controller;
++        #interrupt-cells = <1>;
++        #address-cells = <1>;
++        #size-cells = <0>;
++        adc@100 {
++          compatible = "st,stm32mp1-adc";
++          #io-channel-cells = <1>;
++          reg = <0x100>;
++          interrupts = <1>;
++          #address-cells = <1>;
++          #size-cells = <0>;
++          channel@13 {
++            reg = <13>;
++            label = "vrefint";
++            st,min-sample-time-ns = <9000>;
++          };
++          channel@14 {
++            reg = <14>;
++            label = "vddcore";
++            st,min-sample-time-ns = <9000>;
++          };
++          channel@15 {
++            reg = <15>;
++            label = "vbat";
++            st,min-sample-time-ns = <9000>;
++          };
++        };
++      };
++
+ ...
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.17.1
 
