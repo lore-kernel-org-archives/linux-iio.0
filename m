@@ -2,109 +2,120 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC215C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Oct 2021 17:38:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BA62C433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Oct 2021 17:40:49 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 97E5760F93
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Oct 2021 17:38:34 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id ED71E60F93
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Oct 2021 17:40:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231180AbhJNRki (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Oct 2021 13:40:38 -0400
-Received: from meesny.iki.fi ([195.140.195.201]:58788 "EHLO meesny.iki.fi"
+        id S233044AbhJNRmx convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Oct 2021 13:42:53 -0400
+Received: from mail.kernel.org ([198.145.29.99]:55952 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S233552AbhJNRki (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 14 Oct 2021 13:40:38 -0400
-Received: from groot.intra.skream.org (mobile-user-2e84bd-76.dhcp.inet.fi [46.132.189.76])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        id S232779AbhJNRmw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 14 Oct 2021 13:42:52 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        (Authenticated sender: pekka.korpinen)
-        by meesny.iki.fi (Postfix) with ESMTPSA id 5DEF820054;
-        Thu, 14 Oct 2021 20:38:31 +0300 (EEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi; s=meesny;
-        t=1634233111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=q8+w7okSOx/BOQbKgOezP2IcqpFc5kkNNTtE4GU2tNM=;
-        b=PPpG0Im+ZeXouQ6uCp62sDUMtmwNlZ+ZXbZw1Xlw8nAQmcvaCAsIvyNHTNbyembmXe2iwj
-        NZH2B/XhELK2L5OzxKfI7zqJ5IJ+5KqDNvsLe4a9ZCDZOwjoQWDdrHBzccGKCIWdXmy3k/
-        z5CDdEQX0S3dXVcFt2Iywj5LkJOi5IA=
-From:   Pekka Korpinen <pekka.korpinen@iki.fi>
-Cc:     Pekka Korpinen <pekka.korpinen@iki.fi>,
+        by mail.kernel.org (Postfix) with ESMTPSA id EF3A361037;
+        Thu, 14 Oct 2021 17:40:43 +0000 (UTC)
+Date:   Thu, 14 Oct 2021 18:44:55 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Cai Huoqing <caihuoqing@baidu.com>,
+        Arnd Bergmann <arnd@kernel.org>,
+        Shawn Guo <shawnguo@kernel.org>,
+        Sascha Hauer <s.hauer@pengutronix.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Arnd Bergmann <arnd@arndb.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Jean-Francois Dagenais <jeff.dagenais@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2 RESEND] iio: dac: ad5446: Fix ad5622_write() return value
-Date:   Thu, 14 Oct 2021 20:37:38 +0300
-Message-Id: <20211014173738.2446-1-pekka.korpinen@iki.fi>
-X-Mailer: git-send-email 2.33.0
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        NXP Linux Team <linux-imx@nxp.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: imx8qxp-adc: mark PM functions as __maybe_unused
+Message-ID: <20211014184448.474849a9@jic23-huawei>
+In-Reply-To: <50f71530-bab0-58f4-cf90-a7c1b60b9716@infradead.org>
+References: <20211013144338.2261316-1-arnd@kernel.org>
+        <20211014012936.GA2999@LAPTOP-UKSR4ENP.internal.baidu.com>
+        <50f71530-bab0-58f4-cf90-a7c1b60b9716@infradead.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-ARC-Authentication-Results: i=1;
-        ORIGINATING;
-        auth=pass smtp.auth=pekka.korpinen smtp.mailfrom=pekka.korpinen@iki.fi
-ARC-Seal: i=1; s=meesny; d=iki.fi; t=1634233111; a=rsa-sha256; cv=none;
-        b=vKuDbYDbq8iU6jE2Hfw1xELLKCxsYVlJYaPz5XPfW5YKRuLURpkPnrbVMmzN7ipy+bW7pR
-        YaADd6xt9FWjyPAFlEDhMhI80nHegMRzlafI7rg2nXVmasTrAqN9rBK9Ci/vEZ77GjdU3E
-        o8srsSYmkykEfs0a0us7ArtwHClFU2I=
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=iki.fi;
-        s=meesny; t=1634233111;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=q8+w7okSOx/BOQbKgOezP2IcqpFc5kkNNTtE4GU2tNM=;
-        b=aPaJ7qRs6m73yrtx7gbPW96SK1nq+LpNXeoHhCAFgR3Pe0sLO51vJvXg2ZcBn2rRBUToDA
-        DmOv0v4GuCT3kDK3hyTl/jN+IB6SAC7thcsNMiB5VQH5OpakAR/t4Hyg7zPzRiB+iKN15Q
-        0CLHp7AU8vf8/90C0VCpgEatCjvO4Yo=
-To:     unlisted-recipients:; (no To-header on input)
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On success i2c_master_send() returns the number of bytes written. The
-call from iio_write_channel_info(), however, expects the return value to
-be zero on success.
+On Wed, 13 Oct 2021 18:40:41 -0700
+Randy Dunlap <rdunlap@infradead.org> wrote:
 
-This bug causes incorrect consumption of the sysfs buffer in
-iio_write_channel_info(). When writing more than two characters to
-out_voltage0_raw, the ad5446 write handler is called multiple times
-causing unexpected behavior.
+> On 10/13/21 6:29 PM, Cai Huoqing wrote:
+> > On 13 10月 21 16:43:26, Arnd Bergmann wrote:  
+> >> From: Arnd Bergmann <arnd@arndb.de>
+> >>
+> >> Without CONFIG_PM_SLEEP, the runtime suspend/resume functions
+> >> are unused, producing a warning:
+> >>
+> >> drivers/iio/adc/imx8qxp-adc.c:433:12: error: 'imx8qxp_adc_runtime_resume' defined but not used [-Werror=unused-function]
+> >>    433 | static int imx8qxp_adc_runtime_resume(struct device *dev)
+> >>        |            ^~~~~~~~~~~~~~~~~~~~~~~~~~
+> >> drivers/iio/adc/imx8qxp-adc.c:419:12: error: 'imx8qxp_adc_runtime_suspend' defined but not used [-Werror=unused-function]
+> >>    419 | static int imx8qxp_adc_runtime_suspend(struct device *dev)
+> >>        |            ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+> >>
+> >> Mark them as __maybe_unused to shut up the compiler.
+> >>
+> >> Fixes: 7bce634d02e6 ("iio: imx8qxp-adc: Add driver support for NXP IMX8QXP ADC")
+> >> Signed-off-by: Arnd Bergmann <arnd@arndb.de>  
+> > 
+> > Reviewed-by: Cai Huoqing <caihuoqing@baidu.com>  
+> 
+> Looks the same as
+> https://lore.kernel.org/all/20211013014658.2798-1-caihuoqing@baidu.com/
+> 
+> but that one is mixing the Fixes: tag.
 
-Fixes: 3ec36a2cf0d5 ("iio:ad5446: Add support for I2C based DACs")
-Signed-off-by: Pekka Korpinen <pekka.korpinen@iki.fi>
----
-v1->v2: Check against expected result, otherwise -EIO. Add Fixes tag.
+Given Cai replied to this one and the presence of the fixes tag + my inherent
+laziness, applied this one to the togreg branch of iio.git. I'll push that
+out as testing to let 0-day poke it before pushing it out for next to pick up
+in a day or 2.
 
-A similar bug was fixed for ad5064.c in 2015 - commit 03fe472ef33b
-("iio:ad5064: Make sure ad5064_i2c_write() returns 0 on success").
+Thanks,
 
- drivers/iio/dac/ad5446.c | 9 ++++++++-
- 1 file changed, 8 insertions(+), 1 deletion(-)
+Jonathan
 
-diff --git a/drivers/iio/dac/ad5446.c b/drivers/iio/dac/ad5446.c
-index 488ec69967d6..e50718422411 100644
---- a/drivers/iio/dac/ad5446.c
-+++ b/drivers/iio/dac/ad5446.c
-@@ -531,8 +531,15 @@ static int ad5622_write(struct ad5446_state *st, unsigned val)
- {
- 	struct i2c_client *client = to_i2c_client(st->dev);
- 	__be16 data = cpu_to_be16(val);
-+	int ret;
-+
-+	ret = i2c_master_send(client, (char *)&data, sizeof(data));
-+	if (ret < 0)
-+		return ret;
-+	if (ret != sizeof(data))
-+		return -EIO;
- 
--	return i2c_master_send(client, (char *)&data, sizeof(data));
-+	return 0;
- }
- 
- /*
--- 
-2.33.0
+> 
+> >> ---
+> >>   drivers/iio/adc/imx8qxp-adc.c | 4 ++--
+> >>   1 file changed, 2 insertions(+), 2 deletions(-)
+> >>
+> >> diff --git a/drivers/iio/adc/imx8qxp-adc.c b/drivers/iio/adc/imx8qxp-adc.c
+> >> index 5030e0d8318d..901dd8e1b32f 100644
+> >> --- a/drivers/iio/adc/imx8qxp-adc.c
+> >> +++ b/drivers/iio/adc/imx8qxp-adc.c
+> >> @@ -416,7 +416,7 @@ static int imx8qxp_adc_remove(struct platform_device *pdev)
+> >>   	return 0;
+> >>   }
+> >>   
+> >> -static int imx8qxp_adc_runtime_suspend(struct device *dev)
+> >> +static __maybe_unused int imx8qxp_adc_runtime_suspend(struct device *dev)
+> >>   {
+> >>   	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> >>   	struct imx8qxp_adc *adc = iio_priv(indio_dev);
+> >> @@ -430,7 +430,7 @@ static int imx8qxp_adc_runtime_suspend(struct device *dev)
+> >>   	return 0;
+> >>   }
+> >>   
+> >> -static int imx8qxp_adc_runtime_resume(struct device *dev)
+> >> +static __maybe_unused int imx8qxp_adc_runtime_resume(struct device *dev)
+> >>   {
+> >>   	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> >>   	struct imx8qxp_adc *adc = iio_priv(indio_dev);
+> >> --   
+> 
+> 
+> 
+> 
 
