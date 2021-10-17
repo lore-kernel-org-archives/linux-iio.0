@@ -2,63 +2,81 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A0A7C433EF
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 13:51:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD407C433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 14:02:47 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id EC13161054
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 13:51:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 8BC1061252
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 14:02:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343774AbhJQNxy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Oct 2021 09:53:54 -0400
-Received: from mail.kernel.org ([198.145.29.99]:57770 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S242336AbhJQNxy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 17 Oct 2021 09:53:54 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0D46461027;
-        Sun, 17 Oct 2021 13:51:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1634478704;
-        bh=wJArX8ewuoelcOM089foeU0E8LxBl4M7aRz9fvqueNw=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=BhXRwrmqyiUM3WRs8L1qda973z8Z3zVvIVtVapURG6io1+iA1xxt7uNRbZLGNcEzU
-         yAcnJtEl3vN9HOOWs8UEYWCEHF+oM0roScDnXQQS2jrodW3uN0dCdvXh6zxd3OOPuE
-         c3pXxNuNi35IWUHhgfdE54ORfkgHC8NyDu5cPcF0=
-Date:   Sun, 17 Oct 2021 15:51:42 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     jic23@kernel.org, linux-stm32@st-md-mailman.stormreply.com,
-        kernel@pengutronix.de, a.fatoum@pengutronix.de,
-        kamel.bouhara@bootlin.com, gwendal@chromium.org,
-        alexandre.belloni@bootlin.com, david@lechnology.com,
+        id S236906AbhJQOE4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Oct 2021 10:04:56 -0400
+Received: from relay7-d.mail.gandi.net ([217.70.183.200]:36301 "EHLO
+        relay7-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232132AbhJQOEz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Oct 2021 10:04:55 -0400
+Received: (Authenticated sender: alexandre.belloni@bootlin.com)
+        by relay7-d.mail.gandi.net (Postfix) with ESMTPSA id 5112E20005;
+        Sun, 17 Oct 2021 14:02:42 +0000 (UTC)
+Date:   Sun, 17 Oct 2021 16:02:42 +0200
+From:   Alexandre Belloni <alexandre.belloni@bootlin.com>
+To:     Greg KH <gregkh@linuxfoundation.org>
+Cc:     William Breathitt Gray <vilhelm.gray@gmail.com>, jic23@kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com, kernel@pengutronix.de,
+        a.fatoum@pengutronix.de, kamel.bouhara@bootlin.com,
+        gwendal@chromium.org, david@lechnology.com,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org, syednwaris@gmail.com,
         patrick.havelange@essensium.com, fabrice.gasnier@st.com,
         mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
         o.rempel@pengutronix.de, jarkko.nikula@linux.intel.com,
         Dan Carpenter <dan.carpenter@oracle.com>
-Subject: Re: [PATCH v17 5/9] counter: Implement signalZ_action_component_id
- sysfs attribute
-Message-ID: <YWwqbmSoLFxiKDTa@kroah.com>
+Subject: Re: [PATCH v17 2/9] counter: Add character device interface
+Message-ID: <YWwtAm0o6wVMG6xc@piout.net>
 References: <cover.1632884256.git.vilhelm.gray@gmail.com>
- <a6c81b2f1f5d0b8d59b1ebe4f0fed04914b07547.1632884256.git.vilhelm.gray@gmail.com>
+ <b8b8c64b4065aedff43699ad1f0e2f8d1419c15b.1632884256.git.vilhelm.gray@gmail.com>
+ <YWwqE5T6h5j14M/M@kroah.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <a6c81b2f1f5d0b8d59b1ebe4f0fed04914b07547.1632884256.git.vilhelm.gray@gmail.com>
+In-Reply-To: <YWwqE5T6h5j14M/M@kroah.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Sep 29, 2021 at 12:16:02PM +0900, William Breathitt Gray wrote:
-> +static ssize_t counter_comp_id_show(struct device *dev,
-> +				    struct device_attribute *attr, char *buf)
-> +{
-> +	const size_t id = (size_t)to_counter_attribute(attr)->comp.priv;
-> +
-> +	return sprintf(buf, "%zu\n", id);
+On 17/10/2021 15:50:11+0200, Greg KH wrote:
+> Note, review of this now that it has been submitted in a pull request to
+> me, sorry I missed this previously...
+> 
+> On Wed, Sep 29, 2021 at 12:15:59PM +0900, William Breathitt Gray wrote:
+> > +static int counter_chrdev_open(struct inode *inode, struct file *filp)
+> > +{
+> > +	struct counter_device *const counter = container_of(inode->i_cdev,
+> > +							    typeof(*counter),
+> > +							    chrdev);
+> > +
+> > +	/* Ensure chrdev is not opened more than 1 at a time */
+> > +	if (!atomic_add_unless(&counter->chrdev_lock, 1, 1))
+> > +		return -EBUSY;
+> 
+> I understand the feeling that you wish to stop userspace from doing
+> this, but really, it does not work.  Eventhough you are doing this
+> correctly (you should see all the other attempts at doing this), you are
+> not preventing userspace from having multiple processes access this
+> device node at the same time, so please, don't even attempt to stop this
+> from happening.
+> 
+> So you can drop the atomic "lock" you have here, it's not needed at all.
+> 
 
-sysfs_emit()?
+Could you elaborate a bit here because we've had a similar thing in the
+RTC subsystem:
 
-> +}
-> +
+https://elixir.bootlin.com/linux/latest/source/drivers/rtc/dev.c#L28
 
+And it would mean I can remove rtc->flags completely.
+
+
+-- 
+Alexandre Belloni, co-owner and COO, Bootlin
+Embedded Linux and Kernel engineering
+https://bootlin.com
