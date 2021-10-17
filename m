@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BFB7C433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 01:56:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B64A4C4332F
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 01:56:19 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6D7C960F8F
+	by mail.kernel.org (Postfix) with ESMTP id 998A660F59
 	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 01:56:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235366AbhJQB6P (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Oct 2021 21:58:15 -0400
-Received: from vern.gendns.com ([98.142.107.122]:48320 "EHLO vern.gendns.com"
+        id S244871AbhJQB6X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Oct 2021 21:58:23 -0400
+Received: from vern.gendns.com ([98.142.107.122]:48322 "EHLO vern.gendns.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244822AbhJQB6N (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Oct 2021 21:58:13 -0400
+        id S244830AbhJQB6P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Oct 2021 21:58:15 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=lechnology.com; s=default; h=Content-Transfer-Encoding:MIME-Version:
         References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
         Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
         Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
         List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=/zJFA1/ApbUButziAVTyPfPd0dIklGtFb9nwExj0Sds=; b=tFYjUzQJAir5dUw9j3jTiHXWl9
-        xRrxkuOAos2Ayw0nPlXvCiVAzFoEwZUpeJBXbO0a+7B8b7zbKxIfmGd5yf0GU4qVnmrWFw4Oup2x8
-        xt1dg7sMdMpSAunJRpom3292ujLo78cPbDd4fxeqd+UZEvZprxVwpKjn1T24ZYLXd0GmgCUIBGlf/
-        d//SelhKaoYSR8AnFBYV5GBw1PZqkazm8VtwFpL88FbD0lm86brob0Qp1H8bHRFQ9YGipRiz9WGpU
-        rRwnfexudaCbI0m+Zl2Es7toTHdQGHitHOzzpsI8bqHVTKIpre1a0ZO+8/VYTdifH+P2NAyCMTjl1
-        fNXvIGIw==;
+        bh=j9IRzaf6FPIjz8sK9QpS3IucQ9AuW3vUL2+PvONAE7Q=; b=JzXqxuxp6yXaSzaVmVVKboLWPi
+        Db3CXQkDp0vT4VHVfx0rhfypHTNs0mQeIO+5BBDHZrfHcXvyd1leXn13M3WLNKYYkK0yU5eLkJRGE
+        p8FbDyLGT+/HHR8ogfU+c2A5v/N/SUamgzUwsrbNHxkNBSzA1vfdC4tPi89VXYiT/j1nAkGPILhQH
+        nf9y7qJS59povssq5ylqXaUaJgHOZzN60fzdltesIFRQKNnSBc7Ig+Np3tm6Z0M43o73yCn8kA6EI
+        1PyUx4pfzviLgUguLo8SO/qOKLJV/pQhUA7Vo1OJxsktJozfDU23KTgX/8Ne3BDSlJ+0AXFAXb/+M
+        2Tjj828g==;
 Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:41624 helo=freyr.lechnology.com)
         by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         (Exim 4.94.2)
         (envelope-from <david@lechnology.com>)
-        id 1mbv45-0004D2-5F; Sat, 16 Oct 2021 21:34:19 -0400
+        id 1mbv48-0004D2-52; Sat, 16 Oct 2021 21:34:22 -0400
 From:   David Lechner <david@lechnology.com>
 To:     linux-iio@vger.kernel.org
 Cc:     David Lechner <david@lechnology.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>,
         Robert Nelson <robertcnelson@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 2/8] counter/ti-eqep: add support for direction
-Date:   Sat, 16 Oct 2021 20:33:37 -0500
-Message-Id: <20211017013343.3385923-3-david@lechnology.com>
+Subject: [PATCH 6/8] docs: counter: add latch_mode and latched_count sysfs attributes
+Date:   Sat, 16 Oct 2021 20:33:41 -0500
+Message-Id: <20211017013343.3385923-7-david@lechnology.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20211017013343.3385923-1-david@lechnology.com>
 References: <20211017013343.3385923-1-david@lechnology.com>
@@ -59,106 +59,108 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds support for direction to the TI eQEP counter driver. It adds
-both a direction attribute to sysfs and a direction change event to
-the chrdev. The direction change event type is new public API.
+This documents new counterX/latch_mode* and
+counterX/countY/latched_count* attributes.
+
+The counterX/signalY/*_available are moved to the
+counterX/countY/*_available section similar to the way we already have
+The counterX/*_component_id and The counterX/signalY/*_component_id
+grouped together so that we don't have to start a 3rd redundant section
+for device-level *_available section.
 
 Signed-off-by: David Lechner <david@lechnology.com>
 ---
- drivers/counter/ti-eqep.c    | 33 +++++++++++++++++++++++++++++++++
- include/uapi/linux/counter.h |  2 ++
- 2 files changed, 35 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-counter | 39 ++++++++++++++++-----
+ 1 file changed, 30 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
-index b7c79435e127..9881e5115da6 100644
---- a/drivers/counter/ti-eqep.c
-+++ b/drivers/counter/ti-eqep.c
-@@ -106,6 +106,15 @@
- #define QCLR_PCE		BIT(1)
- #define QCLR_INT		BIT(0)
+diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
+index 37d960a8cb1b..78bb1a501007 100644
+--- a/Documentation/ABI/testing/sysfs-bus-counter
++++ b/Documentation/ABI/testing/sysfs-bus-counter
+@@ -59,10 +59,13 @@ What:		/sys/bus/counter/devices/counterX/countY/error_noise_available
+ What:		/sys/bus/counter/devices/counterX/countY/function_available
+ What:		/sys/bus/counter/devices/counterX/countY/prescaler_available
+ What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_available
++What:		/sys/bus/counter/devices/counterX/latch_mode_available
++What:		/sys/bus/counter/devices/counterX/signalY/index_polarity_available
++What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode_available
+ KernelVersion:	5.2
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+-		Discrete set of available values for the respective Count Y
++		Discrete set of available values for the respective component
+ 		configuration are listed in this file. Values are delimited by
+ 		newline characters.
  
-+#define QEPSTS_UPEVNT		BIT(7)
-+#define QEPSTS_FDF		BIT(6)
-+#define QEPSTS_QDF		BIT(5)
-+#define QEPSTS_QDLF		BIT(4)
-+#define QEPSTS_COEF		BIT(3)
-+#define QEPSTS_CDEF		BIT(2)
-+#define QEPSTS_FIMF		BIT(1)
-+#define QEPSTS_PCEF		BIT(0)
-+
- /* EQEP Inputs */
- enum {
- 	TI_EQEP_SIGNAL_QEPA,	/* QEPA/XCLK */
-@@ -286,6 +295,9 @@ static int ti_eqep_events_configure(struct counter_device *counter)
- 		case COUNTER_EVENT_UNDERFLOW:
- 			qeint |= QEINT_PCU;
- 			break;
-+		case COUNTER_EVENT_DIRECTION_CHANGE:
-+			qeint |= QEINT_QDC;
-+			break;
- 		}
- 	}
+@@ -147,6 +150,14 @@ Description:
+ 			updates	the respective count. Quadrature encoding
+ 			determines the direction.
  
-@@ -298,6 +310,7 @@ static int ti_eqep_watch_validate(struct counter_device *counter,
- 	switch (watch->event) {
- 	case COUNTER_EVENT_OVERFLOW:
- 	case COUNTER_EVENT_UNDERFLOW:
-+	case COUNTER_EVENT_DIRECTION_CHANGE:
- 		return 0;
- 	default:
- 		return -EINVAL;
-@@ -371,11 +384,27 @@ static int ti_eqep_position_enable_write(struct counter_device *counter,
- 	return 0;
- }
++What:		/sys/bus/counter/devices/counterX/countY/latched_count
++KernelVersion:	5.16
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Latched count data of Count Y represented as a string. The value
++		is latched in based on the trigger selected by the
++		counterX/latch_mode attribute.
++
+ What:		/sys/bus/counter/devices/counterX/countY/name
+ KernelVersion:	5.2
+ Contact:	linux-iio@vger.kernel.org
+@@ -209,6 +220,7 @@ What:		/sys/bus/counter/devices/counterX/countY/count_mode_component_id
+ What:		/sys/bus/counter/devices/counterX/countY/direction_component_id
+ What:		/sys/bus/counter/devices/counterX/countY/enable_component_id
+ What:		/sys/bus/counter/devices/counterX/countY/error_noise_component_id
++What:		/sys/bus/counter/devices/counterX/countY/latched_count_component_id
+ What:		/sys/bus/counter/devices/counterX/countY/prescaler_component_id
+ What:		/sys/bus/counter/devices/counterX/countY/preset_component_id
+ What:		/sys/bus/counter/devices/counterX/countY/preset_enable_component_id
+@@ -218,6 +230,7 @@ What:		/sys/bus/counter/devices/counterX/signalY/cable_fault_enable_component_id
+ What:		/sys/bus/counter/devices/counterX/signalY/filter_clock_prescaler_component_id
+ What:		/sys/bus/counter/devices/counterX/signalY/index_polarity_component_id
+ What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode_component_id
++What:		/sys/bus/counter/devices/latch_mode_component_id
+ What:		/sys/bus/counter/devices/unit_timer_enable_component_id
+ What:		/sys/bus/counter/devices/unit_timer_period_component_id
+ What:		/sys/bus/counter/devices/unit_timer_time_component_id
+@@ -244,6 +257,22 @@ Description:
+ 		counter_event data structures. The number of elements will be
+ 		rounded-up to a power of 2.
  
-+static int ti_eqep_direction_read(struct counter_device *counter,
-+				  struct counter_count *count,
-+				  enum counter_count_direction *direction)
-+{
-+	struct ti_eqep_cnt *priv = counter->priv;
-+	u32 qepsts;
++What:		/sys/bus/counter/devices/counterX/latch_mode
++KernelVersion:	5.16
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write attribute that selects the trigger for latching
++		values. Valid values are device-specific (given by
++		latch_mode_available attribute) and may include:
 +
-+	regmap_read(priv->regmap16, QEPSTS, &qepsts);
++		"Read count":
++			Reading the countY/count attribute latches values.
 +
-+	*direction = (qepsts & QEPSTS_QDF) ? COUNTER_COUNT_DIRECTION_FORWARD
-+					   : COUNTER_COUNT_DIRECTION_BACKWARD;
++		"Unit timeout":
++			Unit timer timeout event latches values.
 +
-+	return 0;
-+}
++		The latched values can be read from latched_* attributes.
 +
- static struct counter_comp ti_eqep_position_ext[] = {
- 	COUNTER_COMP_CEILING(ti_eqep_position_ceiling_read,
- 			     ti_eqep_position_ceiling_write),
- 	COUNTER_COMP_ENABLE(ti_eqep_position_enable_read,
- 			    ti_eqep_position_enable_write),
-+	COUNTER_COMP_DIRECTION(ti_eqep_direction_read),
- };
+ What:		/sys/bus/counter/devices/counterX/name
+ KernelVersion:	5.2
+ Contact:	linux-iio@vger.kernel.org
+@@ -298,14 +327,6 @@ Description:
+ 		Active level of index input Signal Y; irrelevant in
+ 		non-synchronous load mode.
  
- static struct counter_signal ti_eqep_signals[] = {
-@@ -442,6 +471,10 @@ static irqreturn_t ti_eqep_irq_handler(int irq, void *dev_id)
- 	if (qflg & QFLG_PCU)
- 		counter_push_event(counter, COUNTER_EVENT_UNDERFLOW, 0);
- 
-+	if (qflg & QFLG_QDC)
-+		counter_push_event(counter, COUNTER_EVENT_DIRECTION_CHANGE, 0);
-+
-+
- 	regmap_set_bits(priv->regmap16, QCLR, ~0);
- 
- 	return IRQ_HANDLED;
-diff --git a/include/uapi/linux/counter.h b/include/uapi/linux/counter.h
-index d0aa95aeff7b..36dd3b474d09 100644
---- a/include/uapi/linux/counter.h
-+++ b/include/uapi/linux/counter.h
-@@ -61,6 +61,8 @@ enum counter_event_type {
- 	COUNTER_EVENT_THRESHOLD,
- 	/* Index signal detected */
- 	COUNTER_EVENT_INDEX,
-+	/* Direction change detected */
-+	COUNTER_EVENT_DIRECTION_CHANGE,
- };
- 
- /**
+-What:		/sys/bus/counter/devices/counterX/signalY/index_polarity_available
+-What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode_available
+-KernelVersion:	5.2
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		Discrete set of available values for the respective Signal Y
+-		configuration are listed in this file.
+-
+ What:		/sys/bus/counter/devices/counterX/signalY/name
+ KernelVersion:	5.2
+ Contact:	linux-iio@vger.kernel.org
 -- 
 2.25.1
 
