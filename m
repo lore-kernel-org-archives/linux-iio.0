@@ -2,47 +2,45 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E312C433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 01:56:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED50EC433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 01:56:35 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2703E60F8F
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 01:56:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id C8EAF60F8F
+	for <linux-iio@archiver.kernel.org>; Sun, 17 Oct 2021 01:56:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244832AbhJQB6f (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 16 Oct 2021 21:58:35 -0400
-Received: from vern.gendns.com ([98.142.107.122]:48350 "EHLO vern.gendns.com"
+        id S244910AbhJQB6n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Oct 2021 21:58:43 -0400
+Received: from vern.gendns.com ([98.142.107.122]:48362 "EHLO vern.gendns.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244847AbhJQB6d (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 16 Oct 2021 21:58:33 -0400
+        id S244849AbhJQB6j (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 16 Oct 2021 21:58:39 -0400
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=lechnology.com; s=default; h=Content-Transfer-Encoding:MIME-Version:
-        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:
-        Content-Type:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=wPH2jK/OOV+TnEhd20yJJMhH7lEufQUYCOiUumD6kYQ=; b=YvEe9aC6fbNmSWJ46wHblq47Ty
-        qdkQ1yht4qtkQA1U9k00ZBeR7d7uxViAXSYv+i5F74CkL0wdMOB7otLx2lHgzLI2UbKUiPnA2S2ia
-        xk04PGz756bEMvfUnRFMxmt6JBA6N3UXAOP9By4H5VmrX7oar4yokGZCKo79iuGZjZZZ2Dh9LhlV+
-        KMG7sngs1sc8GcKl1Vr1ye4v7aHhk0DF7pfTbhK2lr+1W/x+CoCL60G9M4AXFIDGuY4+FHBYC9aLM
-        tByFwJlzH8iGR8gCoX0P8z4j1O1lFIr/IkNuqyy+X727kgSYbOz1L7aqNPgrsLAVTAqfUzuVgAZTw
-        6OgvROZA==;
+        Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
+        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
+        :Resent-Message-ID:In-Reply-To:References:List-Id:List-Help:List-Unsubscribe:
+        List-Subscribe:List-Post:List-Owner:List-Archive;
+        bh=oy8DSyGv+jeXmkM7TMu2S60qW6NEmMHEMDkXehA/CE0=; b=WTTXdJZS9XL/KWAAhX67Grq0kU
+        ObLxbh9xN+katVJXZd+mBXCWYAKdxV15H5mn5wq8dyP93QKbPgvUrtll6P5zu1LfAgruWoBwacDew
+        NbbeoYmTzdD/o9SgeRXl00oalUbhtgmE09ujq4T+xja+zDZjZY4Utdn85sM61EEAOl0OIiXbgu0F9
+        gjsvtFnjYB9Wy3VUTWhvFYEiY7HaQwaysWMQnPN1lhIyEvfv6R85ysu8Nq/8nqpmQgxcsHrJEzopH
+        iYT3cq6a1C4LMV0IP5wTcOAsx0iUN2z5yg+FeezsHZnE0ybp7BmwclNEgltjaMqJ0+1iVkaGgQaqn
+        hlixPg9g==;
 Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:41624 helo=freyr.lechnology.com)
         by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
         (Exim 4.94.2)
         (envelope-from <david@lechnology.com>)
-        id 1mbv49-0004D2-NG; Sat, 16 Oct 2021 21:34:23 -0400
+        id 1mbv43-0004D2-KJ; Sat, 16 Oct 2021 21:34:17 -0400
 From:   David Lechner <david@lechnology.com>
 To:     linux-iio@vger.kernel.org
 Cc:     David Lechner <david@lechnology.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>,
         Robert Nelson <robertcnelson@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 8/8] docs: counter: add edge_capture_unit_* attributes
-Date:   Sat, 16 Oct 2021 20:33:43 -0500
-Message-Id: <20211017013343.3385923-9-david@lechnology.com>
+Subject: [PATCH 0/8] counter: ti-eqep: implement features for speed measurement
+Date:   Sat, 16 Oct 2021 20:33:35 -0500
+Message-Id: <20211017013343.3385923-1-david@lechnology.com>
 X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20211017013343.3385923-1-david@lechnology.com>
-References: <20211017013343.3385923-1-david@lechnology.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
@@ -59,76 +57,34 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This adds documentation for new counter subsystem edge_capture_unit_*
-sysfs attributes.
+Now that the counter subsystem has a new chrdev for events, we can use this to
+add new features to the TI eQEP driver to be able to do accurate speed
+measurement.
 
-Signed-off-by: David Lechner <david@lechnology.com>
----
- Documentation/ABI/testing/sysfs-bus-counter | 37 +++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+This adds two new device-level components, a Unit Timer and an Edge Capture
+Unit. I don't have much knowledge about other available counter hardware, so
+I don't know if it makes sense to try to make these more generic, e.g.
+counterX/timerY/* and counterX/captureY/*. For now, they are just flat
+(counterX/unit_timer_* and counterX/edge_capture_unit_*) and assume there is
+only one instance per counter device.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-counter b/Documentation/ABI/testing/sysfs-bus-counter
-index 78bb1a501007..6c192c8c2b55 100644
---- a/Documentation/ABI/testing/sysfs-bus-counter
-+++ b/Documentation/ABI/testing/sysfs-bus-counter
-@@ -59,6 +59,7 @@ What:		/sys/bus/counter/devices/counterX/countY/error_noise_available
- What:		/sys/bus/counter/devices/counterX/countY/function_available
- What:		/sys/bus/counter/devices/counterX/countY/prescaler_available
- What:		/sys/bus/counter/devices/counterX/countY/signalZ_action_available
-+What:		/sys/bus/counter/devices/counterX/edge_capture_unit_prescaler_available
- What:		/sys/bus/counter/devices/counterX/latch_mode_available
- What:		/sys/bus/counter/devices/counterX/signalY/index_polarity_available
- What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode_available
-@@ -230,6 +231,10 @@ What:		/sys/bus/counter/devices/counterX/signalY/cable_fault_enable_component_id
- What:		/sys/bus/counter/devices/counterX/signalY/filter_clock_prescaler_component_id
- What:		/sys/bus/counter/devices/counterX/signalY/index_polarity_component_id
- What:		/sys/bus/counter/devices/counterX/signalY/synchronous_mode_component_id
-+What:		/sys/bus/counter/devices/edge_capture_unit_enable_component_id
-+What:		/sys/bus/counter/devices/edge_capture_unit_latched_period_component_id
-+What:		/sys/bus/counter/devices/edge_capture_unit_max_period_component_id
-+What:		/sys/bus/counter/devices/edge_capture_unit_prescaler_component_id
- What:		/sys/bus/counter/devices/latch_mode_component_id
- What:		/sys/bus/counter/devices/unit_timer_enable_component_id
- What:		/sys/bus/counter/devices/unit_timer_period_component_id
-@@ -249,6 +254,38 @@ Description:
- 		shorter or equal to configured value are ignored. Value 0 means
- 		filter is disabled.
- 
-+What:		/sys/bus/counter/devices/edge_capture_unit_enable
-+KernelVersion:	5.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write attribute that starts or stops the Edge Capture Unit.
-+		Valid values are boolean.
-+
-+What:		/sys/bus/counter/devices/edge_capture_unit_latched_period
-+KernelVersion:	5.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Latched period of the Edge Capture Unit represented as a string.
-+		The value is latched in based on the trigger selected by the
-+		counterX/latch_mode attribute. Units are nanoseconds.
-+
-+What:		/sys/bus/counter/devices/edge_capture_unit_max_period
-+KernelVersion:	5.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write attribute that selects the maximum period that can
-+		be measured by the Edge Capture Unit. Units are nanoseconds.
-+
-+What:		/sys/bus/counter/devices/edge_capture_unit_prescaler
-+KernelVersion:	5.16
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write attribute that selects the how the
-+		counterX/countY/count value is scaled coming in to the Edge
-+		Capture Unit. This acts like a clock divider, e.g. if a value
-+		of 4 is selected, the Edge Capture Unit will measure the period
-+		between every 4 counts.
-+
- What:		/sys/bus/counter/devices/counterX/events_queue_size
- KernelVersion:	5.16
- Contact:	linux-iio@vger.kernel.org
+This has been tested on a BeagleBone Blue with LEGO MINDSTORMS motors.
+
+David Lechner (8):
+  counter/ti-eqep: implement over/underflow events
+  counter/ti-eqep: add support for direction
+  counter/ti-eqep: add support for unit timer
+  docs: counter: add unit timer sysfs attributes
+  counter/ti-eqep: add support for latched position
+  docs: counter: add latch_mode and latched_count sysfs attributes
+  counter/ti-eqep: add support for edge capture unit
+  docs: counter: add edge_capture_unit_* attributes
+
+ Documentation/ABI/testing/sysfs-bus-counter | 100 +++-
+ drivers/counter/ti-eqep.c                   | 482 +++++++++++++++++++-
+ include/uapi/linux/counter.h                |   4 +
+ 3 files changed, 575 insertions(+), 11 deletions(-)
+
 -- 
 2.25.1
 
