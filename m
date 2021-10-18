@@ -2,204 +2,218 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B104FC433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Oct 2021 10:45:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DB65C433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Oct 2021 11:11:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 92FA5610A3
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Oct 2021 10:45:24 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4FB1361353
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Oct 2021 11:11:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229519AbhJRKre (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Oct 2021 06:47:34 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43356 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229653AbhJRKre (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 18 Oct 2021 06:47:34 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPS id 23FC7610A3
-        for <linux-iio@vger.kernel.org>; Mon, 18 Oct 2021 10:45:23 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1634553923;
-        bh=Ap7XEP7xXlsWnqOwNO2qaKh9CKM7ORw5YQnKyyPZNVg=;
-        h=From:To:Subject:Date:From;
-        b=SpdkSNvWyymdg2yYDGWx05zX7mD4z71oS2J1Wg1oIpzA5keIgLx0dcQ8MOoBOOiMH
-         oLAm1Rlw6EMDL/lwgmp81tu1bzjCq+RzJO3Dwh7lw1VM4VTI6MSCIEOu0WoyFlHSxN
-         N8A2jUP6+KC/4fmUeBhQz8bOD9SQk7hUmxCyTUL2cuzcdECCjjvmCP5EwQGhxf2cmz
-         jbpLxIUC3efVBjL+BVDRpiOidmcM0QK4YoA1zRB/+J+ftyxciWYooxjv7v3pt9EGOO
-         fIgJ1wyI2AiZISC4T1PQe5qLjUHuSmA2tq/3d9nspprKtJlZQuCk7HUUaVwjHVNQBk
-         cQUjZD1ujqV8w==
-From:   bugzilla-daemon@bugzilla.kernel.org
-To:     linux-iio@vger.kernel.org
-Subject: [Bug 214751] New: Lenovo Yoga Chromebook C630 i7 missing support for
- sound, microphone, touchscreen and gyroscope
-Date:   Mon, 18 Oct 2021 10:45:22 +0000
-X-Bugzilla-Reason: None
-X-Bugzilla-Type: new
-X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Product: Drivers
-X-Bugzilla-Component: IIO
-X-Bugzilla-Version: 2.5
-X-Bugzilla-Keywords: 
-X-Bugzilla-Severity: normal
-X-Bugzilla-Who: waownn@gmail.com
-X-Bugzilla-Status: NEW
-X-Bugzilla-Resolution: 
-X-Bugzilla-Priority: P1
-X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
-X-Bugzilla-Flags: 
-X-Bugzilla-Changed-Fields: bug_id short_desc product version
- cf_kernel_version rep_platform op_sys cf_tree bug_status bug_severity
- priority component assigned_to reporter cf_regression
-Message-ID: <bug-214751-217253@https.bugzilla.kernel.org/>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
-X-Bugzilla-URL: https://bugzilla.kernel.org/
-Auto-Submitted: auto-generated
+        id S230494AbhJRLNR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Oct 2021 07:13:17 -0400
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:44574 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S230470AbhJRLNQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Oct 2021 07:13:16 -0400
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with SMTP id 19IAxTdW018686;
+        Mon, 18 Oct 2021 07:11:05 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com with ESMTP id 3bruyr2vj7-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 18 Oct 2021 07:11:04 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 19IBB3Jo019160
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 18 Oct 2021 07:11:03 -0400
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
+ Mon, 18 Oct 2021 07:11:02 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.858.5;
+ Mon, 18 Oct 2021 07:11:02 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.858.5 via Frontend
+ Transport; Mon, 18 Oct 2021 07:11:02 -0400
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.112])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 19IBAxTH022582;
+        Mon, 18 Oct 2021 07:11:00 -0400
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+CC:     <antoniu.miclaus@analog.com>, Rob Herring <robh@kernel.org>
+Subject: [PATCH v8 2/2] dt-bindings: iio: frequency: add adrf6780 doc
+Date:   Mon, 18 Oct 2021 14:09:31 +0300
+Message-ID: <20211018110931.82225-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.33.1
+In-Reply-To: <20211018110931.82225-1-antoniu.miclaus@analog.com>
+References: <20211018110931.82225-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: JvilKUmkR7vEzMluCkexEffj_TEskLLf
+X-Proofpoint-GUID: JvilKUmkR7vEzMluCkexEffj_TEskLLf
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.182.1,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.0.607.475
+ definitions=2021-10-18_03,2021-10-14_02,2020-04-07_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 bulkscore=0
+ mlxscore=0 malwarescore=0 adultscore=0 priorityscore=1501 phishscore=0
+ impostorscore=0 spamscore=0 clxscore=1015 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2109230001 definitions=main-2110180069
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-https://bugzilla.kernel.org/show_bug.cgi?id=3D214751
+Add device tree bindings for the ADRF6780 Upconverter.
 
-            Bug ID: 214751
-           Summary: Lenovo Yoga Chromebook C630 i7 missing support for
-                    sound, microphone, touchscreen and gyroscope
-           Product: Drivers
-           Version: 2.5
-    Kernel Version: Kernel: 5.14.9-1-default
-          Hardware: x86-64
-                OS: Linux
-              Tree: Mainline
-            Status: NEW
-          Severity: normal
-          Priority: P1
-         Component: IIO
-          Assignee: drivers_iio@kernel-bugs.kernel.org
-          Reporter: waownn@gmail.com
-        Regression: No
+Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+no changes in v8
+ .../bindings/iio/frequency/adi,adrf6780.yaml  | 131 ++++++++++++++++++
+ 1 file changed, 131 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
 
-Description of problem:
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
+new file mode 100644
+index 000000000000..3a8ea93f4e0c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,adrf6780.yaml
+@@ -0,0 +1,131 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,adrf6780.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADRF6780 Microwave Upconverter
++
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++   Wideband, microwave upconverter optimized for point to point microwave
++   radio designs operating in the 5.9 GHz to 23.6 GHz frequency range.
++
++   https://www.analog.com/en/products/adrf6780.html
++
++properties:
++  compatible:
++    enum:
++      - adi,adrf6780
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 1000000
++
++  clocks:
++    description:
++      Definition of the external clock.
++    minItems: 1
++
++  clock-names:
++    items:
++      - const: lo_in
++
++  clock-output-names:
++    maxItems: 1
++
++  adi,vga-buff-en:
++    description:
++      RF Variable Gain Amplifier Buffer Enable. Gain is controlled by
++      the voltage on the VATT pin.
++    type: boolean
++
++  adi,lo-buff-en:
++    description:
++      Local Oscillator Amplifier Enable. Disable to put the part in
++      a power down state.
++    type: boolean
++
++  adi,if-mode-en:
++    description:
++      Intermediate Frequency Mode Enable. Either IF Mode or I/Q Mode
++      can be enabled at a time.
++    type: boolean
++
++  adi,iq-mode-en:
++    description:
++      I/Q Mode Enable. Either IF Mode or I/Q Mode can be enabled at a
++      time.
++    type: boolean
++
++  adi,lo-x2-en:
++    description:
++      Double the Local Oscillator output frequency from the Local
++      Oscillator Input Frequency. Either LOx1 or LOx2 can be enabled
++      at a time.
++    type: boolean
++
++  adi,lo-ppf-en:
++    description:
++      Local Oscillator input frequency equal to the Local Oscillator
++      output frequency (LO x1). Either LOx1 or LOx2 can be enabled
++      at a time.
++    type: boolean
++
++  adi,lo-en:
++    description:
++      Enable additional cirtuitry in the LO chain. Disable to put the
++      part in a power down state.
++    type: boolean
++
++  adi,uc-bias-en:
++    description:
++      Enable all bias circuitry thourghout the entire part.
++      Disable to put the part in a power down state.
++    type: boolean
++
++  adi,lo-sideband:
++    description:
++      Switch to the Lower LO Sideband. By default the Upper LO
++      sideband is enabled.
++    type: boolean
++
++  adi,vdet-out-en:
++    description:
++      VDET Output Select Enable. Expose the RF detector output to the
++      VDET external pin.
++    type: boolean
++
++  '#clock-cells':
++    const: 0
++
++dependencies:
++  adi,lo-x2-en: [ "adi,lo-en" ]
++  adi,lo-ppf-en: [ "adi,lo-en" ]
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      adrf6780@0 {
++        compatible = "adi,adrf6780";
++        reg = <0>;
++        spi-max-frequency = <1000000>;
++        clocks = <&adrf6780_lo>;
++        clock-names = "lo_in";
++      };
++    };
++...
+-- 
+2.33.1
 
-Lenovo Yoga Chromebook C630 missing support for sound, microphone, touchscr=
-een
-and gyroscope
-
-I don't know
-
-Steps to Reproduce:
-
-    Install openSUSE tumbleweed on Lenovo Yoga Chromebook C630 i7
-
-    Sound, microphone, touchscreen and gyroscope don't work
-
-
-dmesg -l err
-
-[ 0.102481] x86/cpu: SGX disabled by BIOS.
-
-[ 1.773005] bbswitch: No discrete VGA device found
-
-[ 6.557733] bbswitch: No discrete VGA device found
-
-[ 7.619221] raydium_ts i2c-RAYD0001:00: failed to get reset gpio: -16
-
-[ 7.644559] elants_i2c i2c-ELAN0001:00: nothing at this address
-
-[ 7.778824] cros-ec-typec GOOG0014:00: No port entries found.
-
-[ 8.992072] snd_soc_skl 0000:00:1f.3: Fallback tplg fw dfw_sst.bin load fai=
-led
-with -2
-
-[ 8.992190] snd_soc_skl 0000:00:1f.3: Failed to init topology!
-
-[ 8.992269] snd_soc_skl 0000:00:1f.3: ASoC: error at snd_soc_component_prob=
-e on
-0000:00:1f.3: -2 [ 8.992423] kbl_da7219_max98357a kbl_da7219_mx98357a: ASoC:
-failed to instantiate card -2
-
-
-dmesg -l warn
-
-[ 0.112434] MDS CPU bug present and SMT on, data leak possible. See
-https://www.kernel.org/doc/html/latest/admin-guide/hw-vuln/mds.html for more
-details.
-
-[ 0.112434] #2 #3 #4 #5 #6 #7
-
-[ 0.797040] i8042**: PNP: PS/2 appears to have AUX port disabled, if this is
-incorrect please boot with i8042.nopnp**
-
-[ 0.797490] i8042**: Warning: Keylock active**
-
-[ 1.745759] systemd[1]: /usr/lib/systemd/system/plymouth-start.service:15: =
-Unit
-configured to use KillMode=3Dnone. This is unsafe, as it disables systemd's
-process lifecycle management for the service. Please update your service to=
- use
-a safer KillMode=3D, such as 'mixed' or 'control-group'. Support for
-KillMode=3Dnone is deprecated and will eventually be removed.
-
-[ 1.772713] bbswitch**: loading out-of-tree module taints kernel.**
-
-[ 7.619142] elants_i2c i2c-ELAN0001:00**: supply vcc33 not found, using dum=
-my
-regulator**
-
-[ 7.619161] raydium_ts i2c-RAYD0001:00**: supply avdd not found, using dummy
-regulator**
-
-[ 7.619176] elants_i2c i2c-ELAN0001:00**: supply vccio not found, using dum=
-my
-regulator**
-
-[ 7.619192] raydium_ts i2c-RAYD0001:00**: supply vccio not found, using dum=
-my
-regulator**
-
-[ 7.764465] raydium_ts**: probe of i2c-RAYD0001:00 failed with error -16**
-
-[ 7.780375] elan_i2c i2c-ELAN0000:00**: supply vcc not found, using dummy
-regulator**
-
-[ 8.377570] Could not create tracefs 'cros_ec_sensorhub_filter' directory
-
-[ 8.377575] Could not create tracefs 'cros_ec_sensorhub_data' directory
-
-[ 8.377578] Could not create tracefs 'cros_ec_sensorhub_timestamp' directory
-
-[ 8.377583] Could not create tracefs 'cros_ec_request_done' directory
-
-[ 8.377586] Could not create tracefs 'cros_ec_request_start' directory
-
-[ 8.393085] da7219 i2c-DLGS7219:00**: Using default DAI clk names:
-da7219-dai-wclk, da7219-dai-bclk**
-
-[ 8.659892] thermal thermal_zone7**: failed to read out thermal zone (-61)**
-
-[ 8.980605] HDMI HDA Codec ehdaudio0D2**: Max dais supported: 3**
-
-[ 8.991953] snd_soc_skl 0000:00:1f.3**: Direct firmware load for
-9d71-GOOGLE-NAMIMAX-0-tplg.bin failed with error -2**
-
-[ 8.992017] snd_soc_skl 0000:00:1f.3**: Direct firmware load for
-kbl_da7219_mx98357a-tplg.bin failed with error -2**
-
-[ 8.992067] snd_soc_skl 0000:00:1f.3**: Direct firmware load for dfw_sst.bin
-failed with error -2**
-
-[ 8.992851] kbl_da7219_max98357a**: probe of kbl_da7219_mx98357a failed with
-error -2**
-
-[ 94.340046] pcieport 0000:00:1c.0**: PCIe Bus Error: severity=3DCorrected,
-type=3DPhysical Layer, (Receiver ID)**
-
-[ 94.340051] pcieport 0000:00:1c.0**: device [8086:9d13] error
-status/mask=3D00000001/00002000**
-
-[ 94.340058] pcieport 0000:00:1c.0**: [ 0] RxErr**
-
---=20
-You may reply to this email to add a comment.
-
-You are receiving this mail because:
-You are watching the assignee of the bug.=
