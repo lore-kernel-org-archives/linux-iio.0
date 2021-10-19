@@ -2,152 +2,87 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B9AC433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Oct 2021 09:36:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 18A30C433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Oct 2021 09:43:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3B7BC6137F
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Oct 2021 09:36:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id E415D6115B
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Oct 2021 09:43:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235072AbhJSJjF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Oct 2021 05:39:05 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43398 "EHLO mail.kernel.org"
+        id S234840AbhJSJpj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Oct 2021 05:45:39 -0400
+Received: from mail.kernel.org ([198.145.29.99]:52286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234914AbhJSJjE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 19 Oct 2021 05:39:04 -0400
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 8920B6137E;
-        Tue, 19 Oct 2021 09:36:51 +0000 (UTC)
+        id S234808AbhJSJpj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 19 Oct 2021 05:45:39 -0400
+Received: by mail.kernel.org (Postfix) with ESMTPSA id EFF156112D;
+        Tue, 19 Oct 2021 09:43:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1634636212;
-        bh=pQfb+WE4kD/i2MDVdnlwCf0bkkH1uIT9fgG0VVGzPpM=;
+        s=korg; t=1634636606;
+        bh=DZwmjeCAXB03o91bj1EaBUQyyfs7UNkKFHs43AVOEmw=;
         h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Ehg9NqJ26gM56d76yWBIwdvNczt+/LwQwoofv/2i1NqG5ypl9WYpGVi1Bl7p58QRf
-         kpBA8prTvGtZthsvg7pkYTtjScsapoUjKKsQpvzXULd63L130AffJY1UuMH6/dYs80
-         HTZZi602r1VMM9n/bjqr0oLzOBF41lcO17gwK9YM=
-Date:   Tue, 19 Oct 2021 11:36:49 +0200
+        b=Aq++3wodW1MvRK+V0d3Eitl5GhJHvxo1n8qsxiSpf3LtmL15qUv43ozlPJCutse1b
+         zZnIiWmRz8uRgoesX/52yzoR5fmcu1xJIkSz8CQgDieZECQJs9GJsDKo1gaBXCfesk
+         Yzuca/Uhc+utGiHM8hkW6/eQ67d41sToQHVyA2MA=
+Date:   Tue, 19 Oct 2021 11:43:23 +0200
 From:   Greg KH <gregkh@linuxfoundation.org>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     David Lechner <david@lechnology.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] counter: drop chrdev_lock
-Message-ID: <YW6RsdSa9mfpoS2d@kroah.com>
-References: <20211017185521.3468640-1-david@lechnology.com>
- <YW0673OckeCY6Qs/@shinobu>
- <e8158cd7-fbde-5a9a-f4d9-a863745e3d58@lechnology.com>
- <YW5rVLrbrVVJ75SY@shinobu>
- <YW5uxIQ1WuW66cf0@kroah.com>
- <YW5xUtWdvW5zHFx5@shinobu>
- <YW5zzVJZ89cFW9bD@kroah.com>
- <YW53v22RyU/DCBBx@shinobu>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org
+Subject: Re: [PULL V3] 1st set of IIO new device support, features and
+ cleanup for  the 5.16 cycle
+Message-ID: <YW6TO7re7r9mR4Er@kroah.com>
+References: <20211018192351.39245b42@jic23-huawei>
+ <YW5v6OPgC84X73Qg@kroah.com>
+ <20211019084227.475ecdb0@jic23-huawei>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <YW53v22RyU/DCBBx@shinobu>
+In-Reply-To: <20211019084227.475ecdb0@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Oct 19, 2021 at 04:46:07PM +0900, William Breathitt Gray wrote:
-> On Tue, Oct 19, 2021 at 09:29:17AM +0200, Greg KH wrote:
-> > On Tue, Oct 19, 2021 at 04:18:42PM +0900, William Breathitt Gray wrote:
-> > > On Tue, Oct 19, 2021 at 09:07:48AM +0200, Greg KH wrote:
-> > > > On Tue, Oct 19, 2021 at 03:53:08PM +0900, William Breathitt Gray wrote:
-> > > > > On Mon, Oct 18, 2021 at 11:03:49AM -0500, David Lechner wrote:
-> > > > > > On 10/18/21 4:14 AM, William Breathitt Gray wrote:
-> > > > > > > On Sun, Oct 17, 2021 at 01:55:21PM -0500, David Lechner wrote:
-> > > > > > >> diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sysfs.c
-> > > > > > >> index 1ccd771da25f..7bf8882ff54d 100644
-> > > > > > >> --- a/drivers/counter/counter-sysfs.c
-> > > > > > >> +++ b/drivers/counter/counter-sysfs.c
-> > > > > > >> @@ -796,25 +796,18 @@ static int counter_events_queue_size_write(struct counter_device *counter,
-> > > > > > >>   					   u64 val)
-> > > > > > >>   {
-> > > > > > >>   	DECLARE_KFIFO_PTR(events, struct counter_event);
-> > > > > > >> -	int err = 0;
-> > > > > > >> -
-> > > > > > >> -	/* Ensure chrdev is not opened more than 1 at a time */
-> > > > > > >> -	if (!atomic_add_unless(&counter->chrdev_lock, 1, 1))
-> > > > > > >> -		return -EBUSY;
-> > > > > > >> +	int err;
-> > > > > > >>   
-> > > > > > >>   	/* Allocate new events queue */
-> > > > > > >>   	err = kfifo_alloc(&events, val, GFP_KERNEL);
-> > > > > > >>   	if (err)
-> > > > > > >> -		goto exit_early;
-> > > > > > >> +		return err;
-> > > > > > >>   
-> > > > > > >>   	/* Swap in new events queue */
-> > > > > > >>   	kfifo_free(&counter->events);
-> > > > > > >>   	counter->events.kfifo = events.kfifo;
-> > > > > > > 
-> > > > > > > Do we need to hold the events_lock mutex here for this swap in case
-> > > > > > > counter_chrdev_read() is in the middle of reading the kfifo to
-> > > > > > > userspace, or do the kfifo macros already protect us from a race
-> > > > > > > condition here?
-> > > > > > > 
-> > > > > > Another possibility might be to disallow changing the size while
-> > > > > > events are enabled. Otherwise, we also need to protect against
-> > > > > > write after free.
-> > > > > > 
-> > > > > > I considered this:
-> > > > > > 
-> > > > > > 	swap(counter->events.kfifo, events.kfifo);
-> > > > > > 	kfifo_free(&events);
-> > > > > > 
-> > > > > > But I'm not sure that would be safe enough.
-> > > > > 
-> > > > > I think it depends on whether it's safe to call kfifo_free() while other
-> > > > > kfifo_*() calls are executing. I suspect it is not safe because I don't
-> > > > > think kfifo_free() waits until all kfifo read/write operations are
-> > > > > finished before freeing -- but if I'm wrong here please let me know.
-> > > > > 
-> > > > > Because of that, will need to hold the counter->events_lock afterall so
-> > > > > that we don't modify the events fifo while a kfifo read/write is going
-> > > > > on, lest we suffer an address fault. This can happen regardless of
-> > > > > whether you swap before or after the kfifo_free() because the old fifo
-> > > > > address could still be in use within those uncompleted kfifo_*() calls
-> > > > > if they were called before the swap but don't complete before the
-> > > > > kfifo_free().
-> > > > > 
-> > > > > So we have a problem now that I think you have already noticed: the
-> > > > > kfifo_in() call in counter_push_events() also needs protection, but it's
-> > > > > executing within an interrupt context so we can't try to lock a mutex
-> > > > > lest we end up sleeping.
-> > > > > 
-> > > > > One option we have is as you suggested: we disallow changing size while
-> > > > > events are enabled. However, that will require us to keep track of when
-> > > > > events are disabled and implement a spinlock to ensure that we don't
-> > > > > disable events in the middle of a kfifo_in().
-> > > > > 
-> > > > > Alternatively, we could change events_lock to a spinlock and use it to
-> > > > > protect all these operations on the counter->events fifo. Would this
-> > > > > alternative be a better option so that we avoid creating another
-> > > > > separate lock?
-> > > > 
-> > > > I would recommend just having a single lock here if at all possible,
-> > > > until you determine that there a performance problem that can be
-> > > > measured that would require it to be split up.
-> > > > 
-> > > > thanks,
-> > > > 
-> > > > greg k-h
+On Tue, Oct 19, 2021 at 08:42:27AM +0100, Jonathan Cameron wrote:
+> On Tue, 19 Oct 2021 09:12:40 +0200
+> Greg KH <gregkh@linuxfoundation.org> wrote:
+> 
+> > On Mon, Oct 18, 2021 at 07:23:51PM +0100, Jonathan Cameron wrote:
+> > > The following changes since commit 6880fa6c56601bb8ed59df6c30fd390cc5f6dd8f:
 > > > 
-> > > All right let's go with a single events_lock spinlock then. David, if
-> > > you make those changes and submit a v2, I'll be okay with this patch and
-> > > can provide my ack for it.
+> > >   Linux 5.15-rc1 (2021-09-12 16:28:37 -0700)
+> > > 
+> > > are available in the Git repository at:
+> > > 
+> > >   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-5.16a-split-take3  
 > > 
-> > Wait, no, you need one patch to remove the atomic lock for the open
-> > "protection" and then another one for the other locks.  The original
-> > patch here was fine, but can be part of a patch series, don't lump them
-> > all together into one huge change.
+> > Almost :(
+> > 
+> > I get the following error from my scripts:
+> > 
+> > Commit: 4862202a0171 ("dt-bindings: iio: magnetometer: asahi-kasei,ak8975 add vid reg")
+> > 	Fixes tag: Fixes: 7e000fbff7a0 ("dt-bindings: iio: magnetometer: ak8975: convert format to yaml, add maintainer")
+> > 	Has these problem(s):
+> > 	        - empty lines surround the Fixes tag
+> > 
+> > Also, there was a merge conflict in drivers/iio/adc/aspeed_adc.c, but
+> > that was easy for me to resolve.
 > > 
 > > thanks,
 > > 
 > > greg k-h
 > 
-> Understood. I'll provide my ack for this patch here then.
+> Sigh.
 > 
-> Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+> The version of your scripts I have doesn't check for that particular one.
+> Anywhere I can get a newer version from?
 
-Thanks, now queued up!
+Sure, it's here:
+	https://github.com/gregkh/gregkh-linux/blob/master/work/verify_fixes.sh
+and:
+	https://github.com/gregkh/gregkh-linux/blob/master/work/verify_signedoff.sh
+
+> V4 sent out. *crosses fingers*  Naturally the commit above was early
+> in the series so I had to fix all the other fixes tags again.
+
+Ick, sorry.  I'll go try that now...
 
 greg k-h
