@@ -2,26 +2,26 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7C1C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Oct 2021 15:21:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C15C43219
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Oct 2021 15:21:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 2FDE96115A
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Oct 2021 15:21:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 1AE7A6115A
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Oct 2021 15:21:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233392AbhJSPXQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Oct 2021 11:23:16 -0400
-Received: from mail-bn7nam10on2087.outbound.protection.outlook.com ([40.107.92.87]:45153
-        "EHLO NAM10-BN7-obe.outbound.protection.outlook.com"
+        id S233671AbhJSPXS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Oct 2021 11:23:18 -0400
+Received: from mail-bn8nam11on2067.outbound.protection.outlook.com ([40.107.236.67]:18040
+        "EHLO NAM11-BN8-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S233677AbhJSPXN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 19 Oct 2021 11:23:13 -0400
+        id S231189AbhJSPXR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 19 Oct 2021 11:23:17 -0400
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Bs7wUs42JXKt2wXiRoglCtQyqbykIMq9GfCjELEQpzgAqgN/WQoshjeQ3pkZBKY48DenJVjWK/YOfFHM9vIcfAatq1R8Z8PdTx4JsnpMYv6KTcTwanYsljh2/h4bO6EpNgmZfjsnr8wqeXwmRlHU9qf5DQbxzEAO01nyLdXqx6AMmbotFitXwBd7ljSv0dKx6xfX6wAxoH95FBlUqIpKOFvDoLpY9GqrDQjtXPf8WEHyTgNXVya5WDF/gx0DeL69XWJyiDu4/bcvT18rIz83MlNgnoVGEDRDJE0/xrM9AWHWbMRPZXsL+QGftDcGh3ysqzTEMKcY4T1EGhUVszCpqQ==
+ b=H9W+7CP8SW6yaQRzn4ceFSsiF5y/3BJnHEW14MwsUoGqV8ig15v7e6IRNK303BSOYKPkx3fXTFPSsB8wA0NGMNStiAYiPDlWTIqxmFINnSZ/pZKGUNq4XjFKmW3/t9lEzuq6u6ip0xhRW53zrb4LzHcdibQMuwg4fdrMLZTb2PV3alnuRroydWcylX6a6s0nkfetFa76Apnry0/UOHBa5LnsFLlTZ9YJinbWhvZpgi8qkwaKolvHYC3pMq4JVeuFmy+0l6Mg+hDVXKjd8+yajDSZEeWjy52f6pFh8+lZk3uq6KC9wNl12JL5tFJsj1rNrfVAQcw0MKSFWLClmfgaYQ==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=g015nim8vgp52WwgrtqdkfVGmFDaS3hqY0e9qwWxoK8=;
- b=YwZ/IP8scrYyIWPMLKPTxpFNACIiLu+9XftPk+B8GwxxeB0B87YnsfSruLId7CMVWq5Nx/+YW6/HCy/kLavLwCmjUudFOmQYBnoxfmHRjPNqIndoCNrXwPWRQ1+aWf11eXwqVx60Jd1qd+PIOW37WI4EJeuARv/+eenj+P7cAyLVk0I62Fovj9Lsmt/NLA1WNq7RgcsuZvA0OTlx4DVNhgY7z9X1io47mcLy7RHOs1iWChylu4ZMgP3Cs3CTwmUv2Z79D5FVeu5a0UrtgrsmPhv/gG/3qEOIrbmSV79b30n7PJwD4yhrc700nlJ2UlqUxHFpq8kF8xB9tEBeVG591Q==
+ bh=3nxzBRLSLiUrwm3jabPFngYSqsME4yTpVGTjF1Fu+/s=;
+ b=Wedlw6uKkRd08FuzWyRUBnmtnGFTDSJ0ftQ/zrv4OuM/UFYdkQAUiGkPN0AYYf59OINzcsdmITXI6dVrCz91djnImt644rWOAMjtV4UugNsQoFeWWUnthNRsJCRH4d/sKEDIy/jBzffiPpAJZpIzjT1D8vkOlDXAZ1IupKUuVJZqVm8owSECri/wyPsoneFUgq2ejxBJKlT441WyycWJaUH0CQoUqwzlKRvbGPgKmHElwSF4wM73Z3hDjyx08CQTb0fT58CYKTVil8tTy71WYosCziepDqJJYTX/rxiZkSr8FFrhJNlc/bMRaSm8/jMpp5hwu1OKFrDpB8qvAQxZdA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.80.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -29,18 +29,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=g015nim8vgp52WwgrtqdkfVGmFDaS3hqY0e9qwWxoK8=;
- b=VVOJtz2YOGl+t/OFxLSywbfcj0zYcD23kHeVrdNFUxujjqyD4I6yLsQgUjjyL6/7F17TLxCSyaGM/XehYkkD9Xhcm+ZMTbdeyFQVTIE5T90ZAZVO4D+yfrqyE277VLTsZFAFSnmF2NNXpyzsOa4HON+ql6VD4W3AsR5/K7Nt/cU=
-Received: from DS7PR07CA0014.namprd07.prod.outlook.com (2603:10b6:5:3af::17)
- by DM8PR02MB8122.namprd02.prod.outlook.com (2603:10b6:8:1b::20) with
+ bh=3nxzBRLSLiUrwm3jabPFngYSqsME4yTpVGTjF1Fu+/s=;
+ b=lduyQrWW4433oN5NWO+qe7Hi2W+uMmtKkaDYZzAEoLB9BKE9BVQOO92xBwu+DneLN4fgsVT/NmOVXFszPvNF6QNS5Z2ffdqXVGqu/kzT30DwCp5uyrlMIUHZyYaGlF6CyZrXfR0Uk2iorowc3iW1tFGm/zHo/JmTUTtFx3S/rPk=
+Received: from DS7PR07CA0010.namprd07.prod.outlook.com (2603:10b6:5:3af::29)
+ by DM5PR02MB3179.namprd02.prod.outlook.com (2603:10b6:4:66::28) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16; Tue, 19 Oct
- 2021 15:20:59 +0000
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.18; Tue, 19 Oct
+ 2021 15:21:01 +0000
 Received: from DM3NAM02FT058.eop-nam02.prod.protection.outlook.com
- (2603:10b6:5:3af:cafe::eb) by DS7PR07CA0014.outlook.office365.com
- (2603:10b6:5:3af::17) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.15 via Frontend
- Transport; Tue, 19 Oct 2021 15:20:59 +0000
+ (2603:10b6:5:3af:cafe::69) by DS7PR07CA0010.outlook.office365.com
+ (2603:10b6:5:3af::29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4608.16 via Frontend
+ Transport; Tue, 19 Oct 2021 15:21:01 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.80.198)
  smtp.mailfrom=xilinx.com; vger.kernel.org; dkim=none (message not signed)
  header.d=none;vger.kernel.org; dmarc=pass action=none header.from=xilinx.com;
@@ -50,7 +50,7 @@ Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
 Received: from xir-pvapexch01.xlnx.xilinx.com (149.199.80.198) by
  DM3NAM02FT058.mail.protection.outlook.com (10.13.5.42) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4608.15 via Frontend Transport; Tue, 19 Oct 2021 15:20:58 +0000
+ 15.20.4608.15 via Frontend Transport; Tue, 19 Oct 2021 15:21:01 +0000
 Received: from xir-pvapexch02.xlnx.xilinx.com (172.21.17.17) by
  xir-pvapexch01.xlnx.xilinx.com (172.21.17.15) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
@@ -70,131 +70,289 @@ Envelope-to: anand.ashok.dumbre@xilinx.com,
 Received: from [10.71.188.1] (port=8251 helo=xiranandash40.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <anand.ashok.dumbre@xilinx.com>)
-        id 1mcqv4-00030B-3h; Tue, 19 Oct 2021 16:20:50 +0100
+        id 1mcqv4-00030B-7X; Tue, 19 Oct 2021 16:20:50 +0100
 From:   Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
 To:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
         <lars@metafoo.de>, <linux-iio@vger.kernel.org>, <git@xilinx.com>,
         <michal.simek@xilinx.com>, <pmeerw@pmeerw.net>,
         <devicetree@vger.kernel.org>
 CC:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
-Subject: [PATCH v7 0/4]  Add Xilinx AMS Driver
-Date:   Tue, 19 Oct 2021 16:20:44 +0100
-Message-ID: <20211019152048.28983-1-anand.ashok.dumbre@xilinx.com>
+Subject: [PATCH v7 3/4] dt-bindings: iio: adc: Add Xilinx AMS binding documentation
+Date:   Tue, 19 Oct 2021 16:20:47 +0100
+Message-ID: <20211019152048.28983-4-anand.ashok.dumbre@xilinx.com>
 X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211019152048.28983-1-anand.ashok.dumbre@xilinx.com>
+References: <20211019152048.28983-1-anand.ashok.dumbre@xilinx.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 65b8e37a-7bfd-4183-d87f-08d993140dd7
-X-MS-TrafficTypeDiagnostic: DM8PR02MB8122:
-X-Microsoft-Antispam-PRVS: <DM8PR02MB8122D75F8D84E624315AE967A9BD9@DM8PR02MB8122.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 2b3ed4ea-8e1e-42b9-6595-08d993140f5b
+X-MS-TrafficTypeDiagnostic: DM5PR02MB3179:
+X-Microsoft-Antispam-PRVS: <DM5PR02MB3179EB1A20D3AA6F34420332A9BD9@DM5PR02MB3179.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:7691;
+X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 3h/JC3vAZoyLjNv7KIEIuNyPxoFwvNJNFKQKu3iP4p3mbant1Z/2tei5fTJNVvZWyZ+xfHha/ZoeaiLknYWZKSgJCnmk9ocaywHBPdbDMPvyp8Kq3mkOOgBcxeckFZoQSiW4phfClzrjJe6yo/GAQKFsUlHVW92krUiM8JowCFVXMVbKZD67lncan7OmUlVz1WebjP6r8NNRw3oROEI83VxxBEOzqfqRsoCOBoSZbgkgfzej9TzN+h+tpLgDxQXvOUoiaXzaEGbG2rUyMr1mwdRlbLV82VMreyo5oVokhHpLv9y8Et3Y+OOevd+cfeX9GBBTnABpSugPacFcWcLNsnVRattC9MJbo899ibDkpUOAVAvBfvd48JCzVcHrJ2DAuTI3c6w0OygMoK9XwXlfdwmhpnaHXXWGXEdbHhe91xqzMIl25UbtZ9g6L/MT7s5scgcZlvRtKgMQ9rTcpcQ2GSeMp72NOc9N/sVsrNoZLl2CDkoAQCig3WBNFlih8qKYuRkQ1ZDV3xc9dLkBgdIeockiq0G3Uu2D7kc1simkXTztmi4BCUHqUgedYmNy8TCrMe8Vsr4rzfLQ+SZetzQrUeTpAg4S143QHbhTzulEMGUVFpafHj0DkQeJtqfMFVmgJdR395kncLNLm7eEOvlPYka1GkAfzKUF8Zu5vs+4yMUsbQubeWQM8gnyuLwHhhHUzOx+X7E2GweXzZ2tiy6sUOT0J1itgqYN0luwY+S+Vcfg8VFZw8FwdzAlz8oVmj9b
-X-Forefront-Antispam-Report: CIP:149.199.80.198;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:xir-pvapexch01.xlnx.xilinx.com;PTR:unknown-80-198.xilinx.com;CAT:NONE;SFS:(36840700001)(46966006)(8936002)(508600001)(1076003)(4326008)(47076005)(7636003)(316002)(2906002)(82310400003)(26005)(186003)(336012)(36860700001)(83380400001)(2616005)(356005)(110136005)(8676002)(36756003)(5660300002)(107886003)(7696005)(36906005)(70586007)(426003)(70206006)(9786002)(6666004)(103116003)(102446001)(2101003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: /hxdkTS7HhoAd77qLqevdJYkYRsgvOGSgca/Mt5q6gbMe+jsdgqIrJyxg8GywixuT2mmL1EwvJBbrtXRriBkFT6f0fTr0TunlwP37KoEmLyd0Kf0eEn2rd1A9UbRuMY4V9HjTwp//Y0JTCvPThlJ3Y8F2LbwE1yFJWs9Fb1jbd4rd7waM1o0b15NqWMF5hDFVJBwXCafFxSIdQ4mLgs1jxjnrjoYQqlmkMVvHdI+/r549PXGWPJMR93xUURLZYz+qkefZ/I4XZdrju6DKfFEb5K3OlriYPuwlX63Pwc4AfRvcSdKViQajYEf+5R5MP6Qs037MYIRYrZJqrHXuME5iBTzbZyxAbGh7AxrzP8oaRmD2Y4F2fm9HTtuNlIOd/lqZ/yVFOW6PyUvDR53PNiAnbBTLLxw/USuwwFPJHnH/6XzdRy3ZdcBhp3SN/N54sbyXQxJto+e/tR2wSJzRPGmNheZuqAFML95Rf5wAjwu0Hm4y8OaHw4Pk9TVWsUymNpbWK/YFI2iFH1PXOxwDZoGp/Us85rBySN2mPIaihYGrIoxsYNXquSotuEjWjJ02MNLVyMcTLQJ5t1wRibiDp5CUCy0DhNZCajBEtbDFdoQpM+Ux/bbl4v3UESHotAk2f2p8F+9U5IkUxtE+m4fvAvxlMW6jPByYk3mcaA7jBZ4oDSPYKd7gtltURZf3X2Ly3Vu9tKuVrS5zQUnDL4Rbft0B1vXVFGmQrXUB8fLWCP84k4Oepj3BpD7BQPGH8C7q9QI9072UG5xXQa+/xgIfl2Z2OpuS+lYzJa7zQ4H1U29C9iSCbyf0cLgYhrm6ITIp44icUDIddhh8/zZVYRZxJFRsiosu9/1g/b12N2UTGL0MYY3LFf4zzjQUD1wwjY2oGuL
+X-Forefront-Antispam-Report: CIP:149.199.80.198;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:xir-pvapexch01.xlnx.xilinx.com;PTR:unknown-80-198.xilinx.com;CAT:NONE;SFS:(46966006)(36840700001)(966005)(36906005)(6666004)(70206006)(356005)(336012)(8936002)(26005)(7696005)(107886003)(426003)(2616005)(508600001)(83380400001)(36860700001)(4326008)(36756003)(110136005)(2906002)(70586007)(103116003)(47076005)(9786002)(8676002)(7636003)(1076003)(82310400003)(5660300002)(186003)(316002)(102446001)(2101003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2021 15:20:58.8255
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 19 Oct 2021 15:21:01.3663
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 65b8e37a-7bfd-4183-d87f-08d993140dd7
+X-MS-Exchange-CrossTenant-Network-Message-Id: 2b3ed4ea-8e1e-42b9-6595-08d993140f5b
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.80.198];Helo=[xir-pvapexch01.xlnx.xilinx.com]
 X-MS-Exchange-CrossTenant-AuthSource: DM3NAM02FT058.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM8PR02MB8122
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR02MB3179
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add Xilinx AMS driver which is used for Xilinx's ZynqMP AMS controller.
-This AMS driver is used to report various interface voltages and temperatures
-across the system.
-This driver will be used by iio-hwmon to repport voltages and temperatures
-across the system by using various channel interfaces.
-This driver handles AMS module including PS-Sysmon & PL-Sysmon. The binding
-documentation is added for understanding of AMS, PS, PL Sysmon Channels.
+Xilinx AMS have several ADC channels that can be used for measurement of
+different voltages and temperatures. Document the same in the bindings.
 
-Changes in v2:
-	- Added documentation for sysfs (Patch-2)
-	- Addressed code style review comments
-	- Patch-2 (Now it is Patch-3)
-		- Arranged the includes in alphabetical order
-		- Removed the wrapper 'ams_pl_write_reg()' and used writel
-		  instead
-		- Removed the unnecessary delay of 1ms and used polling of EOC
-		  instead
-		- Removed spin_lock and used mutex only.
-		- Used request_irq() instead of devm_request_irq() and handled
-		  respective error conditions
-		- Moved contents of xilinx-ams.h to inline with xilinx-ams.c
-	- Patch-1
-		- Addressed Documentation style comments
-
-Changes in v3:
-	- Updated bindings document with the suggested modification in v2 review
-	- Removed documentation for sysfs
-	- Removed extended names for channels in the Xilinx AMS driver
-	- Modified dts to use ranges for child nodes
-	- Reduced address and size cells to 32-bit instead of 64-bit
-
-Changes in v4:
-	- Updated bindings document with the suggested modification in v3 review
-	- Changed the Device Tree property 'ranges' for child nodes
-	- Used Channel Numbers as 'reg' value in DT to avoid confusion
-	- Removed unused NULL arguments as suggested in v3 patch review
-	- Addressed comments on Device Tree property naming
-
-Changes in v5:
-	- Updated bindings document to the YAML format
-	- Updated bindings document with the suggested modification in v4 review
-	- Renamed iio_pl_info struct to iio_ams_info in Xilinx AMS driver
-	- Updated the Xilinx AMS driver to not use iio_priv_to_dev function
-	- Updated Xilinx AMS node to reflect the changes in bindings document
-	- Update MAINTAINERS file
-
-Changes in v6:
-	- Removed all tabs from bindings document.
-	- Removed the xlnx,ext-channels node from the device tree since
-	  it is not neeeded.
-	- Fixed unit addresses for ps-ams and pl-ams.
-	- Removed the names property from bindings.
-	- Fixed warnings from checkpatch.pl in the driver.
-	- devm_add_action_or_reset() used for exit/error path.
-	- devm_request_irq() for managed irq request instead of
-	  request_irq()
-
-Changes in v7:
-	- Added use of FIELD_PREP and FIELD_GET.
-	- Added the spinlocks back the v1 which were removed in v2 for
-	  no justifiable reason and replaced with the same mutex. This
-	  caused deadlocks.
-	- Removed the buffered mode information from channel config.
-	- Usage of wrapper functions for devm_add_action_or_reset
-	  callbacks to avoid typecasting functions.
-	- Usage of devm_platform_iremap_resource().
-	- Handled platform_get_irq() return values.
-	- Removed the remove() callback.
-	- Fixed the dt-bindings.
-
-Anand Ashok Dumbre (4):
-  arm64: zynqmp: DT: Add Xilinx AMS node
-  iio: adc: Add Xilinx AMS driver
-  dt-bindings: iio: adc: Add Xilinx AMS binding documentation
-  MAINTAINERS: Add maintainer for xilinx-ams
-
- .../bindings/iio/adc/xlnx,zynqmp-ams.yaml     |  227 +++
- MAINTAINERS                                   |    7 +
- arch/arm64/boot/dts/xilinx/zynqmp.dtsi        |   26 +-
- drivers/iio/adc/Kconfig                       |   13 +
- drivers/iio/adc/Makefile                      |    1 +
- drivers/iio/adc/xilinx-ams.c                  | 1338 +++++++++++++++++
- 6 files changed, 1611 insertions(+), 1 deletion(-)
+Signed-off-by: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+---
+ .../bindings/iio/adc/xlnx,zynqmp-ams.yaml     | 227 ++++++++++++++++++
+ 1 file changed, 227 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
- create mode 100644 drivers/iio/adc/xilinx-ams.c
 
+diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
+new file mode 100644
+index 000000000000..87992db389b2
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
+@@ -0,0 +1,227 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/xlnx,zynqmp-ams.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Xilinx Zynq Ultrascale AMS controller
++
++maintainers:
++  - Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
++
++description: |
++  The AMS (Analog Monitoring System) includes an ADC as well as on-chip sensors
++  that can be used to sample external voltages and monitor on-die operating
++  conditions, such as temperature and supply voltage levels.
++  The AMS has two SYSMON blocks which are PL (Programmable Logic) SYSMON and
++  PS (Processing System) SYSMON.
++  All designs should have AMS registers, but PS and PL are optional. The
++  AMS controller can work with only PS, only PL and both PS and PL
++  configurations. Please specify registers according to your design. Devicetree
++  should always have AMS module property. Providing PS & PL module is optional.
++
++  AMS Channel Details
++  ```````````````````
++  Sysmon Block  |Channel|                       Details                                 |Measurement
++                |Number |                                                               |Type
++  ---------------------------------------------------------------------------------------------------------
++  AMS CTRL      |0      |System PLLs voltage measurement, VCC_PSPLL.                    |Voltage
++                |1      |Battery voltage measurement, VCC_PSBATT.                       |Voltage
++                |2      |PL Internal voltage measurement, VCCINT.                       |Voltage
++                |3      |Block RAM voltage measurement, VCCBRAM.                        |Voltage
++                |4      |PL Aux voltage measurement, VCCAUX.                            |Voltage
++                |5      |Voltage measurement for six DDR I/O PLLs, VCC_PSDDR_PLL.       |Voltage
++                |6      |VCC_PSINTFP_DDR voltage measurement.                           |Voltage
++  ---------------------------------------------------------------------------------------------------------
++  PS Sysmon     |7      |LPD temperature measurement.                                   |Temperature
++                |8      |FPD temperature measurement (REMOTE).                          |Temperature
++                |9      |VCC PS LPD voltage measurement (supply1).                      |Voltage
++                |10     |VCC PS FPD voltage measurement (supply2).                      |Voltage
++                |11     |PS Aux voltage reference (supply3).                            |Voltage
++                |12     |DDR I/O VCC voltage measurement.                               |Voltage
++                |13     |PS IO Bank 503 voltage measurement (supply5).                  |Voltage
++                |14     |PS IO Bank 500 voltage measurement (supply6).                  |Voltage
++                |15     |VCCO_PSIO1 voltage measurement.                                |Voltage
++                |16     |VCCO_PSIO2 voltage measurement.                                |Voltage
++                |17     |VCC_PS_GTR voltage measurement (VPS_MGTRAVCC).                 |Voltage
++                |18     |VTT_PS_GTR voltage measurement (VPS_MGTRAVTT).                 |Voltage
++                |19     |VCC_PSADC voltage measurement.                                 |Voltage
++  ---------------------------------------------------------------------------------------------------------
++  PL Sysmon     |20     |PL temperature measurement.                                    |Temperature
++                |21     |PL Internal voltage measurement, VCCINT.                       |Voltage
++                |22     |PL Auxiliary voltage measurement, VCCAUX.                      |Voltage
++                |23     |ADC Reference P+ voltage measurement.                          |Voltage
++                |24     |ADC Reference N- voltage measurement.                          |Voltage
++                |25     |PL Block RAM voltage measurement, VCCBRAM.                     |Voltage
++                |26     |LPD Internal voltage measurement, VCC_PSINTLP (supply4).       |Voltage
++                |27     |FPD Internal voltage measurement, VCC_PSINTFP (supply5).       |Voltage
++                |28     |PS Auxiliary voltage measurement (supply6).                    |Voltage
++                |29     |PL VCCADC voltage measurement (vccams).                        |Voltage
++                |30     |Differential analog input signal voltage measurment.           |Voltage
++                |31     |VUser0 voltage measurement (supply7).                          |Voltage
++                |32     |VUser1 voltage measurement (supply8).                          |Voltage
++                |33     |VUser2 voltage measurement (supply9).                          |Voltage
++                |34     |VUser3 voltage measurement (supply10).                         |Voltage
++                |35     |Auxiliary ch 0 voltage measurement (VAux0).                    |Voltage
++                |36     |Auxiliary ch 1 voltage measurement (VAux1).                    |Voltage
++                |37     |Auxiliary ch 2 voltage measurement (VAux2).                    |Voltage
++                |38     |Auxiliary ch 3 voltage measurement (VAux3).                    |Voltage
++                |39     |Auxiliary ch 4 voltage measurement (VAux4).                    |Voltage
++                |40     |Auxiliary ch 5 voltage measurement (VAux5).                    |Voltage
++                |41     |Auxiliary ch 6 voltage measurement (VAux6).                    |Voltage
++                |42     |Auxiliary ch 7 voltage measurement (VAux7).                    |Voltage
++                |43     |Auxiliary ch 8 voltage measurement (VAux8).                    |Voltage
++                |44     |Auxiliary ch 9 voltage measurement (VAux9).                    |Voltage
++                |45     |Auxiliary ch 10 voltage measurement (VAux10).                  |Voltage
++                |46     |Auxiliary ch 11 voltage measurement (VAux11).                  |Voltage
++                |47     |Auxiliary ch 12 voltage measurement (VAux12).                  |Voltage
++                |48     |Auxiliary ch 13 voltage measurement (VAux13).                  |Voltage
++                |49     |Auxiliary ch 14 voltage measurement (VAux14).                  |Voltage
++                |50     |Auxiliary ch 15 voltage measurement (VAux15).                  |Voltage
++  --------------------------------------------------------------------------------------------------------
++
++properties:
++  compatible:
++    enum:
++      - xlnx,zynqmp-ams
++
++  interrupts:
++    maxItems: 1
++
++  reg:
++    description: AMS Controller register space
++    maxItems: 1
++
++  ranges:
++    description:
++      Maps the child address space for PS and/or PL.
++    maxItems: 1
++
++  '#address-cells':
++    const: 1
++
++  '#size-cells':
++    const: 1
++
++  '#io-channel-cells':
++    const: 1
++
++  ams-ps@0:
++    type: object
++    description: |
++      PS (Processing System) SYSMON is memory mapped to PS. This block has
++      built-in alarm generation logic that is used to interrupt the processor
++      based on condition set.
++
++    properties:
++      compatible:
++        enum:
++          - xlnx,zynqmp-ams-ps
++
++      reg:
++        description: Register Space for PS-SYSMON
++        maxItems: 1
++
++    required:
++      - compatible
++      - reg
++
++    additionalProperties: false
++
++  ams-pl@400:
++    type: object
++    description:
++      PL-SYSMON is capable of monitoring off chip voltage and temperature.
++      PL-SYSMON block has DRP, JTAG and I2C interface to enable monitoring
++      from external master. Out of this interface currently only DRP is
++      supported. This block has alarm generation logic that is used to
++      interrupt the processor based on condition set.
++
++    properties:
++      compatible:
++        items:
++          - enum:
++              - xlnx,zynqmp-ams-pl
++
++      reg:
++        description: Register Space for PL-SYSMON.
++        maxItems: 1
++
++      '#address-cells':
++        const: 1
++
++      '#size-cells':
++        const: 0
++
++    patternProperties:
++      "^channel@([2-4][0-9]|50)$":
++        type: object
++        description:
++          Describes the external channels connected.
++
++        properties:
++          reg:
++            description:
++              Pair of pins the channel is connected to. This value is
++              same as Channel Number for a particular channel.
++            minimum: 20
++            maximum: 50
++
++          xlnx,bipolar:
++            $ref: /schemas/types.yaml#/definitions/flag
++            type: boolean
++            description:
++              If the set channel is used in bipolar mode.
++
++        required:
++          - reg
++
++        additionalProperties: false
++
++required:
++  - compatible
++  - reg
++  - ranges
++
++additionalProperties: false
++
++examples:
++  - |
++    bus {
++        #address-cells = <2>;
++        #size-cells = <2>;
++
++        xilinx_ams: ams@ffa50000 {
++            compatible = "xlnx,zynqmp-ams";
++            interrupt-parent = <&gic>;
++            interrupts = <0 56 4>;
++            reg = <0x0 0xffa50000 0x0 0x800>;
++            #address-cells = <1>;
++            #size-cells = <1>;
++            #io-channel-cells = <1>;
++            ranges = <0 0 0xffa50800 0x800>;
++
++            ams_ps: ams-ps@0 {
++                compatible = "xlnx,zynqmp-ams-ps";
++                reg = <0 0x400>;
++            };
++
++            ams_pl: ams-pl@400 {
++                compatible = "xlnx,zynqmp-ams-pl";
++                reg = <0x400 0x400>;
++                #address-cells = <1>;
++                #size-cells = <0>;
++                channel@30 {
++                    reg = <30>;
++                    xlnx,bipolar;
++                };
++                channel@31 {
++                    reg = <31>;
++                };
++                channel@38 {
++                    reg = <38>;
++                    xlnx,bipolar;
++                };
++            };
++        };
++    };
 -- 
 2.17.1
 
