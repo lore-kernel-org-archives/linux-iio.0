@@ -2,101 +2,111 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98C0FC433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Oct 2021 08:58:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B87EC433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Oct 2021 11:21:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6C74861004
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Oct 2021 08:58:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 2D5C861057
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Oct 2021 11:21:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229555AbhJTJAV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Oct 2021 05:00:21 -0400
-Received: from www381.your-server.de ([78.46.137.84]:34520 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229548AbhJTJAV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Oct 2021 05:00:21 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:MIME-Version:Message-Id:Date:
-        Subject:Cc:To:From:Sender:Reply-To:Content-Type:Content-ID:
-        Content-Description:Resent-Date:Resent-From:Resent-Sender:Resent-To:Resent-Cc
-        :Resent-Message-ID:In-Reply-To:References;
-        bh=G+QUqrP73yDjsmwjIZXZw584eAIDjnoLRFHwM2FaSZ8=; b=cxYvfMBzgQIEFF2fhfqyY4GSME
-        DVaEs8By1fzSfiStMf53tHjzwXdW8cptFzMlsbAoqllpJ2EGGSXdqmSmBKk4bKa8Ca5nbikPr1f1i
-        XQQIOFfi7dd5A4Fv8Dcjy7fV+Gamm7+xcfX2Rtpu/yxqZvxtf8raVgOjwIEqX1e87S21dlE2Cc+5O
-        XSAJcbhCAz6B1zi2GT8Ooh092XR1ykfrBezV8vBzO5BVKtrrGGq5wjZR0TZK+SXL9ISptIdqe1gnE
-        6kNX/gdad/NHVTRP3IH9P8LGv2drb9T0CxXUiffmMMBwEpT7yTwrjtYgtV/HFcnMJs8omREgIyHBH
-        3EbJH27A==;
-Received: from sslproxy02.your-server.de ([78.47.166.47])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1md7QE-000BDE-H2; Wed, 20 Oct 2021 10:58:06 +0200
-Received: from [82.135.83.71] (helo=lars-desktop.fritz.box)
-        by sslproxy02.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1md7QE-000RNp-Cl; Wed, 20 Oct 2021 10:58:06 +0200
-From:   Lars-Peter Clausen <lars@metafoo.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Fabio Estevam <festevam@gmail.com>, linux-iio@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] iio: imx7d_adc: Don't pass IIO device to imx7d_adc_{enable,disable}()
-Date:   Wed, 20 Oct 2021 10:57:54 +0200
-Message-Id: <20211020085754.16654-1-lars@metafoo.de>
-X-Mailer: git-send-email 2.20.1
+        id S230063AbhJTLXn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Oct 2021 07:23:43 -0400
+Received: from mga12.intel.com ([192.55.52.136]:31187 "EHLO mga12.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230058AbhJTLXn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 20 Oct 2021 07:23:43 -0400
+X-IronPort-AV: E=McAfee;i="6200,9189,10142"; a="208858566"
+X-IronPort-AV: E=Sophos;i="5.87,166,1631602800"; 
+   d="scan'208";a="208858566"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2021 04:21:27 -0700
+X-IronPort-AV: E=Sophos;i="5.87,166,1631602800"; 
+   d="scan'208";a="527017742"
+Received: from smile.fi.intel.com (HELO smile) ([10.237.72.159])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 20 Oct 2021 04:21:23 -0700
+Received: from andy by smile with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1md9ea-000CLD-1P;
+        Wed, 20 Oct 2021 14:21:04 +0300
+Date:   Wed, 20 Oct 2021 14:21:04 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Hayes Wang <hayeswang@realtek.com>, nicfae@realtek.com,
+        wlanfae@realtek.com, pctech@realtek.com, security@realtek.com
+Cc:     Maxim Levitsky <maximlevitsky@gmail.com>,
+        Hans de Goede <hdegoede@redhat.com>,
+        "linux-realtek-soc@lists.infradead.org" 
+        <linux-realtek-soc@lists.infradead.org>,
+        Oder Chiou <oder_chiou@realtek.com>,
+        Pkshih <pkshih@realtek.com>, nic_swsd <nic_swsd@realtek.com>,
+        Derek =?utf-8?B?W+aWueW+t+e+qV0=?= <derek.fang@realtek.com>,
+        Kailang <kailang@realtek.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "info@ayaneo.com" <info@ayaneo.com>
+Subject: Re: BMI160 accelerometer on AyaNeo tablet
+Message-ID: <YW/7oKPZORexnyN1@smile.fi.intel.com>
+References: <CACAwPwb7edLzX-KO1XVNWuQ3w=U0BfA=_kwiGCjZOpKfZpc2pw@mail.gmail.com>
+ <CACAwPwYQHRcrabw9=0tvenPzAcwwW1pTaR6a+AEWBF9Hqf_wXQ@mail.gmail.com>
+ <CAHp75VcEZ19zUU-Ps=kAYJDX1bkxmOqmHii36HE2ujC3gROkNQ@mail.gmail.com>
+ <CACAwPwaj_ekK6j9S4CRu6tRTPyjffgDhL3UFnhoYSyJSkAkmpw@mail.gmail.com>
+ <YW3ErLKGtmyhSFd3@smile.fi.intel.com>
+ <CACAwPwYrxxFstQgYHhPOhMwUz_5RprSuoPNHL7m9ft1i-N2icQ@mail.gmail.com>
+ <CAHp75VdCF_Fhso-uS_4JL7a9X90_nQ5JcyCwpeLM3b-YKVqjYw@mail.gmail.com>
+ <cd43fddcf9b74f6eaa4dd5a8cdd71bf2@realtek.com>
+ <CAHp75VfB2FULb_jfQNg0wF9Z4jPkrKfmw6hSwtLg8Y1NhKks8g@mail.gmail.com>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26327/Tue Oct 19 13:35:20 2021)
+In-Reply-To: <CAHp75VfB2FULb_jfQNg0wF9Z4jPkrKfmw6hSwtLg8Y1NhKks8g@mail.gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The `imx7d_adc_enable()` and `imx7d_adc_disable()` functions are used as
-the suspend and resume callbacks for the device. When called as
-suspend/resume functions they are called with the platform_device's device
-as their parameter.
++Cc: another set of emails from Realtek as per Hayes' email.
 
-In addition the functions are called on device probe and remove. In this
-case they are passed the struct device of the IIO device that the driver
-registers.
+Please waterfall to the people inside Realtek who can answer the question.
+(Note, you may access this discussion in full via:
+https://lore.kernel.org/linux-iio/CACAwPwYQHRcrabw9=0tvenPzAcwwW1pTaR6a+AEWBF9Hqf_wXQ@mail.gmail.com/T/#u)
 
-This works because in the `imx7d_adc_{enable,disable}()` functions the
-passed struct device is only ever used as a parameter to `dev_get_drvdata()`
-and `dev_get_drvdata()` returns the same value for the platform device and
-the IIO device.
+The problem here is to have an official confirmation of what 10ec:5280
+ID is from Realtek's point of view.
 
-But for consistency we should pass the same struct device to the
-`imx7d_adc_{enable,disable}()` in all cases. This will avoid accidental
-breakage if the device is ever used for something more than
-`dev_get_drvdata()`.
+Context: the current discussion and a patch state that it's related
+to gyro sensor. Is it so?
 
-Another motivation is that `dev_get_drvdata()` on the IIO device relies on
-the IIO core calling `dev_set_drvdata()`. Something we want to remove.
+On Wed, Oct 20, 2021 at 10:36:12AM +0300, Andy Shevchenko wrote:
+> On Wednesday, October 20, 2021, Hayes Wang <hayeswang@realtek.com> wrote:
+> > Andy Shevchenko <andy.shevchenko@gmail.com>
+> > > Sent: Tuesday, October 19, 2021 5:59 PM
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/adc/imx7d_adc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+...
 
-diff --git a/drivers/iio/adc/imx7d_adc.c b/drivers/iio/adc/imx7d_adc.c
-index 4969a5f941e3..7abf0ad526a3 100644
---- a/drivers/iio/adc/imx7d_adc.c
-+++ b/drivers/iio/adc/imx7d_adc.c
-@@ -528,12 +528,11 @@ static int imx7d_adc_probe(struct platform_device *pdev)
- 
- 	imx7d_adc_feature_config(info);
- 
--	ret = imx7d_adc_enable(&indio_dev->dev);
-+	ret = imx7d_adc_enable(dev);
- 	if (ret)
- 		return ret;
- 
--	ret = devm_add_action_or_reset(dev, __imx7d_adc_disable,
--				       &indio_dev->dev);
-+	ret = devm_add_action_or_reset(dev, __imx7d_adc_disable, dev);
- 	if (ret)
- 		return ret;
- 
+> > > > > Realtek probably should make this ID marked somehow broken and not
+> > use
+> > > > > in their products in case the answer to the first of the above
+> > question
+> > > > > is "yes". (Of course in case the ID will be used for solely PCI
+> > enumerated
+> > > > > product there will be no conflict, I just propose to be on the
+> > safest side,
+> > > > > but remark should be made somewhere).
+> > >
+> > > Any comments from Realtek, please?
+> >
+> > Excuse me. I don't know this device, so I don't know who I could forward.
+> > Maybe you could try our contract window from our web site.
+> > https://www.realtek.com/en/cu-1-en/cu-1-taiwan-en
+> 
+> Thanks for reply. I will try my best, but I am afraid that what you suggest
+> will be a long loop (and I believe the people behind that form are not
+> technical, they probably won’t understand the topic). I think you may pull
+> strings inside much faster. Just ask somebody who is technical superior in
+> your team / organization. Ideally inside company you may have a dedicated
+> people who responsible for allocating PCI and ACPI IDs.
+
 -- 
-2.20.1
+With Best Regards,
+Andy Shevchenko
+
 
