@@ -2,186 +2,370 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69AD3C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Oct 2021 10:35:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C32B1C433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Oct 2021 11:02:20 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 488A061205
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Oct 2021 10:35:51 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9D7FE610CF
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Oct 2021 11:02:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230308AbhJUKiG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Oct 2021 06:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40930 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230267AbhJUKiF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Oct 2021 06:38:05 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC0B2C06161C;
-        Thu, 21 Oct 2021 03:35:49 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id kk10so208575pjb.1;
-        Thu, 21 Oct 2021 03:35:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZIQ1evG3JcfP14fnAmThR7DabXSKbcX4zhT17hg7Jpc=;
-        b=ECp2xJ4eWy9H8KkGyneV/LJsYm9Ap+21RMBdPYbgJ5SWCNzEGpAaxuushG7hsgN+Ii
-         ZWPpAP1PN+ar8FwjHl3fDfZPIixXOr6l2zN8ySsBicCUv5X4JG/nyiTv1JSIY1qWxEky
-         NKCLxqfjaBKzz684Ymfo6lYqXQz5r8/AOD0aKR5/yvQ17qanPfHPUCdeEO8uKKeLOJOb
-         4v1vtMOwIz4S7ffNCPb4nJJgWZKPBBf7dUsvZzSk+Dd5IOaBhbU76wiEZ88X1FTDhkNC
-         bBBWKkFoYeW/zwTwUDtge5K0KmOhZzKIRHun+xTGYyPhC1+nOsUX6IzCxS3MMRVOj/Lv
-         UmNg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=ZIQ1evG3JcfP14fnAmThR7DabXSKbcX4zhT17hg7Jpc=;
-        b=BkCd+NC4LsNlF3VxaAqaSJPokfNZQ7Qprl5+c4y4klWYLrhHbHN7DXbbMHsK1mFtTO
-         LTreYQFu/X1EHQWBducuo0T7VyiNzteMnT2yMKE1+XKzLi0h1jdnHmKXOsAjM/mKGqlq
-         hq38C66Y9qBqswTaetG8p7uhujfBdfbPZSjsSnaKJ1Q/AhBJ8CfI0gOvf9/xzAIqd2Mu
-         AqTvOquS1nfzMHqM+p9YaXx21FzZN+Gi2mglDkOJe/1AcIU3tP1I7P4Z4ToNUa1sh5oP
-         IgASiPz/eflAhJqFmACGDIta06IZ91dQugzHy1gAX3aDG/VzwsWmbSsdFn95lptE4qRv
-         pzvQ==
-X-Gm-Message-State: AOAM530FKubg9QTNj3+m+uTfsLrtUwzUs0GGNQJ2wBVdOk/81HUew8Yt
-        2KU/6bgyAUFxz7v1OIAOsok=
-X-Google-Smtp-Source: ABdhPJzS1bp6aB4U0Dk4hRaow1971KKUEJujX0ARUme/LPN/WaAfxUvO9fgOzcSN0ljNgtuVCZegUw==
-X-Received: by 2002:a17:902:d48a:b0:13f:4411:8ae9 with SMTP id c10-20020a170902d48a00b0013f44118ae9mr4407316plg.86.1634812549442;
-        Thu, 21 Oct 2021 03:35:49 -0700 (PDT)
-Received: from localhost.localdomain ([156.146.35.76])
-        by smtp.gmail.com with ESMTPSA id z1sm5872156pfh.150.2021.10.21.03.35.46
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Oct 2021 03:35:48 -0700 (PDT)
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     gregkh@linuxfoundation.org
-Cc:     david@lechnology.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH] counter: Fix use-after-free race condition for events_queue_size write
-Date:   Thu, 21 Oct 2021 19:35:40 +0900
-Message-Id: <20211021103540.955639-1-vilhelm.gray@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        id S230235AbhJULEc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Oct 2021 07:04:32 -0400
+Received: from mail.kernel.org ([198.145.29.99]:34328 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229567AbhJULE0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 21 Oct 2021 07:04:26 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 9D27C60FF2;
+        Thu, 21 Oct 2021 11:02:08 +0000 (UTC)
+Date:   Thu, 21 Oct 2021 12:06:26 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+Cc:     <linux-kernel@vger.kernel.org>, <lars@metafoo.de>,
+        <linux-iio@vger.kernel.org>, <git@xilinx.com>,
+        <michal.simek@xilinx.com>, <pmeerw@pmeerw.net>,
+        <devicetree@vger.kernel.org>,
+        Manish Narani <manish.narani@xilinx.com>
+Subject: Re: [PATCH v7 2/4] iio: adc: Add Xilinx AMS driver
+Message-ID: <20211021120626.56cf1b8d@jic23-huawei>
+In-Reply-To: <20211019152048.28983-3-anand.ashok.dumbre@xilinx.com>
+References: <20211019152048.28983-1-anand.ashok.dumbre@xilinx.com>
+        <20211019152048.28983-3-anand.ashok.dumbre@xilinx.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-A race condition is possible when writing to events_queue_size where the
-events kfifo is freed during the execution of a kfifo_in(), resulting in
-a use-after-free. This patch prevents such a scenario by protecting the
-events queue in operation with a spinlock and locking before performing
-the events queue size adjustment.
+On Tue, 19 Oct 2021 16:20:46 +0100
+Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com> wrote:
 
-The existing events_lock mutex is renamed to events_out_lock to reflect
-that it only protects events queue out operations. Because the events
-queue in operations can occur in an interrupt context, a new
-events_in_lock spinlock is introduced and utilized.
+> The AMS includes an ADC as well as on-chip sensors that can be used to
+> sample external voltages and monitor on-die operating conditions, such
+> as temperature and supply voltage levels. The AMS has two SYSMON blocks.
+> PL-SYSMON block is capable of monitoring off chip voltage and
+> temperature.
+> PL-SYSMON block has DRP, JTAG and I2C interface to enable monitoring
+> from external master. Out of these interface currently only DRP is
+> supported.
+> Other block PS-SYSMON is memory mapped to PS.
+> The AMS can use internal channels to monitor voltage and temperature as
+> well as one primary and up to 16 auxiliary channels for measuring
+> external voltages.
+> The voltage and temperature monitoring channels also have event
+> capability which allows to generate an interrupt when their value falls
+> below or raises above a set threshold.
+> 
+> Signed-off-by: Manish Narani <manish.narani@xilinx.com>
+> Signed-off-by: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
 
-Fixes: feff17a550c7 ("counter: Implement events_queue_size sysfs attribute")
-Cc: David Lechner <david@lechnology.com>
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- drivers/counter/counter-chrdev.c | 10 ++++++----
- drivers/counter/counter-sysfs.c  |  7 +++++++
- include/linux/counter.h          |  6 ++++--
- 3 files changed, 17 insertions(+), 6 deletions(-)
+It would be good at some point to move away from of specific firmware property
+reading, but on a platform like this I guess you can be fairly sure no one will
+be using ACPI or other firmware description options so I'm not going to insist
+on it for an initial merge.
 
-diff --git a/drivers/counter/counter-chrdev.c b/drivers/counter/counter-chrdev.c
-index b747dc81c..afa41c517 100644
---- a/drivers/counter/counter-chrdev.c
-+++ b/drivers/counter/counter-chrdev.c
-@@ -82,10 +82,10 @@ static ssize_t counter_chrdev_read(struct file *filp, char __user *buf,
- 				return -ENODEV;
- 		}
- 
--		if (mutex_lock_interruptible(&counter->events_lock))
-+		if (mutex_lock_interruptible(&counter->events_out_lock))
- 			return -ERESTARTSYS;
- 		err = kfifo_to_user(&counter->events, buf, len, &copied);
--		mutex_unlock(&counter->events_lock);
-+		mutex_unlock(&counter->events_out_lock);
- 		if (err < 0)
- 			return err;
- 	} while (!copied);
-@@ -437,7 +437,8 @@ int counter_chrdev_add(struct counter_device *const counter)
- 	spin_lock_init(&counter->events_list_lock);
- 	mutex_init(&counter->n_events_list_lock);
- 	init_waitqueue_head(&counter->events_wait);
--	mutex_init(&counter->events_lock);
-+	spin_lock_init(&counter->events_in_lock);
-+	mutex_init(&counter->events_out_lock);
- 
- 	/* Initialize character device */
- 	cdev_init(&counter->chrdev, &counter_fops);
-@@ -560,7 +561,8 @@ void counter_push_event(struct counter_device *const counter, const u8 event,
- 		ev.watch.component = comp_node->component;
- 		ev.status = -counter_get_data(counter, comp_node, &ev.value);
- 
--		copied += kfifo_in(&counter->events, &ev, 1);
-+		copied += kfifo_in_spinlocked_noirqsave(&counter->events, &ev,
-+							1, &counter->events_in_lock);
- 	}
- 
- exit_early:
-diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sysfs.c
-index 8c2d7c29e..03564c3af 100644
---- a/drivers/counter/counter-sysfs.c
-+++ b/drivers/counter/counter-sysfs.c
-@@ -12,6 +12,8 @@
- #include <linux/kfifo.h>
- #include <linux/kstrtox.h>
- #include <linux/list.h>
-+#include <linux/mutex.h>
-+#include <linux/spinlock.h>
- #include <linux/string.h>
- #include <linux/sysfs.h>
- #include <linux/types.h>
-@@ -797,6 +799,7 @@ static int counter_events_queue_size_write(struct counter_device *counter,
- {
- 	DECLARE_KFIFO_PTR(events, struct counter_event);
- 	int err;
-+	unsigned long flags;
- 
- 	/* Allocate new events queue */
- 	err = kfifo_alloc(&events, val, GFP_KERNEL);
-@@ -804,8 +807,12 @@ static int counter_events_queue_size_write(struct counter_device *counter,
- 		return err;
- 
- 	/* Swap in new events queue */
-+	mutex_lock(&counter->events_out_lock);
-+	spin_lock_irqsave(&counter->events_in_lock, flags);
- 	kfifo_free(&counter->events);
- 	counter->events.kfifo = events.kfifo;
-+	spin_unlock_irqrestore(&counter->events_in_lock, flags);
-+	mutex_unlock(&counter->events_out_lock);
- 
- 	return 0;
- }
-diff --git a/include/linux/counter.h b/include/linux/counter.h
-index 0fd99e255..b7d0a00a6 100644
---- a/include/linux/counter.h
-+++ b/include/linux/counter.h
-@@ -296,7 +296,8 @@ struct counter_ops {
-  * @n_events_list_lock:	lock to protect Counter next events list operations
-  * @events:		queue of detected Counter events
-  * @events_wait:	wait queue to allow blocking reads of Counter events
-- * @events_lock:	lock to protect Counter events queue read operations
-+ * @events_in_lock:	lock to protect Counter events queue in operations
-+ * @events_out_lock:	lock to protect Counter events queue out operations
-  * @ops_exist_lock:	lock to prevent use during removal
-  */
- struct counter_device {
-@@ -323,7 +324,8 @@ struct counter_device {
- 	struct mutex n_events_list_lock;
- 	DECLARE_KFIFO_PTR(events, struct counter_event);
- 	wait_queue_head_t events_wait;
--	struct mutex events_lock;
-+	spinlock_t events_in_lock;
-+	struct mutex events_out_lock;
- 	struct mutex ops_exist_lock;
- };
- 
+Other comment I have are fairly minor but we need to leave some time
+for other reviews and in particular DT binding review.
 
-base-commit: 8135cc5b270b3f224615bdee8bd7d66afee87991
--- 
-2.33.1
+> ---
+>  drivers/iio/adc/Kconfig      |   13 +
+>  drivers/iio/adc/Makefile     |    1 +
+>  drivers/iio/adc/xilinx-ams.c | 1341 ++++++++++++++++++++++++++++++++++
+>  3 files changed, 1355 insertions(+)
+>  create mode 100644 drivers/iio/adc/xilinx-ams.c
+
+...
+
+> diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+> new file mode 100644
+> index 000000000000..597cdda8a618
+> --- /dev/null
+> +++ b/drivers/iio/adc/xilinx-ams.c
+> @@ -0,0 +1,1341 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Xilinx AMS driver
+> + *
+> + *  Copyright (C) 2021 Xilinx, Inc.
+> + *
+> + *  Manish Narani <mnarani@xilinx.com>
+> + *  Rajnikant Bhojani <rajnikant.bhojani@xilinx.com>
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/delay.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/iopoll.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+#include <linux/mod_devicetable.h> for the of_device_id structure defintion.
+
+> +#include <linux/of_address.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +
+> +#include <linux/iio/events.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+...
+
+> +/**
+> + * struct ams - Driver data for xilinx-ams
+> + * @base: physical base address of device
+> + * @ps_base: physical base address of PS device
+> + * @pl_base: physical base address of PL device
+> + * @clk: clocks associated with the device
+> + * @dev: pointer to device struct
+> + * @lock: to handle multiple user interaction
+> + * @intr_lock: to protect interrupt mask values
+> + * @masked_alarm: currently masked due to alarm
+> + * @alarm_mask: alarm configuration
+> + * @interrupt_mask: interrupt configuration
+> + * @irq: interrupt number of the sysmon
+> + * @ams_unmask_work: re-enables event once the event condition disappears
+> + *
+> + * This structure contains necessary state for Sysmon driver to operate
+> + */
+> +struct ams {
+> +	void __iomem *base;
+> +	void __iomem *ps_base;
+> +	void __iomem *pl_base;
+> +	struct clk *clk;
+> +	struct device *dev;
+> +	/* check kernel doc above */
+> +	struct mutex lock;
+> +	/* check kernel doc above */
+> +	spinlock_t intr_lock;
+> +	unsigned int alarm_mask;
+Docs should be same order as the fields.
+> +	unsigned int masked_alarm;
+> +	u64 intr_mask;
+
+That's not the name in the docs.  Run kernel-doc script over this and
+fix all the errors / warnings.
+
+> +	int irq;
+> +	struct delayed_work ams_unmask_work;
+> +};
+> +
+
+...
+
+> +
+> +static irqreturn_t ams_irq(int irq, void *data)
+> +{
+> +	struct iio_dev *indio_dev = data;
+> +	struct ams *ams = iio_priv(indio_dev);
+> +	u32 isr0;
+> +
+> +	spin_lock(&ams->intr_lock);
+> +
+> +	isr0 = readl(ams->base + AMS_ISR_0);
+> +
+> +	/* only process alarms that are not masked */
+> +	isr0 &= ~((ams->intr_mask & AMS_ISR0_ALARM_MASK) | ams->masked_alarm);
+> +
+> +	if (!isr0)
+
+lock held.
+
+> +		return IRQ_NONE;
+> +
+> +	/* clear interrupt */
+> +	writel(isr0, ams->base + AMS_ISR_0);
+> +
+> +	/* Mask the alarm interrupts until cleared */
+> +	ams->masked_alarm |= isr0;
+> +	ams_update_intrmask(ams, 0, 0);
+> +
+> +	ams_handle_events(indio_dev, isr0);
+> +
+> +	schedule_delayed_work(&ams->ams_unmask_work,
+> +			      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
+> +
+> +	spin_unlock(&ams->intr_lock);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+
+...
+
+> +
+> +static int ams_parse_dt(struct iio_dev *indio_dev, struct platform_device *pdev)
+> +{
+> +	struct ams *ams = iio_priv(indio_dev);
+> +	struct iio_chan_spec *ams_channels, *dev_channels;
+> +	struct device_node *child_node = NULL, *np = pdev->dev.of_node;
+> +	int ret, vol_ch_cnt = 0, temp_ch_cnt = 0, i, rising_off, falling_off;
+> +	unsigned int num_channels = 0;
+> +
+> +	/* Initialize buffer for channel specification */
+> +	ams_channels = kzalloc(sizeof(ams_ps_channels) +
+> +			       sizeof(ams_pl_channels) +
+> +			       sizeof(ams_ctrl_channels), GFP_KERNEL);
+> +	if (!ams_channels)
+> +		return -ENOMEM;
+> +
+> +	if (of_device_is_available(np)) {
+> +		ret = ams_init_module(indio_dev, np, ams_channels);
+> +		if (ret < 0)
+> +			goto err;
+> +
+> +		num_channels += ret;
+> +	}
+> +
+> +	for_each_child_of_node(np, child_node) {
+> +		if (of_device_is_available(child_node)) {
+> +			ret = ams_init_module(indio_dev, child_node,
+> +					      ams_channels + num_channels);
+> +			if (ret < 0)
+> +				goto err;
+
+for_each_child_of_node() holds a reference if we jump out of the loop
+before it terminates.
+https://elixir.bootlin.com/linux/latest/source/drivers/of/base.c#L715
+is where it ultimately releases that reference when the loop is terminating.
+Her you need to do it manually with an of_node_put() call
+
+> +
+> +			num_channels += ret;
+> +		}
+> +	}
+> +
+> +	for (i = 0; i < num_channels; i++) {
+> +		if (ams_channels[i].type == IIO_VOLTAGE)
+> +			ams_channels[i].channel = vol_ch_cnt++;
+> +		else
+> +			ams_channels[i].channel = temp_ch_cnt++;
+> +
+> +		if (ams_channels[i].scan_index < (AMS_PS_SEQ_MAX * 3)) {
+> +			/* set threshold to max and min for each channel */
+> +			falling_off =
+> +				ams_get_alarm_offset(ams_channels[i].scan_index,
+> +						     IIO_EV_DIR_FALLING);
+> +			rising_off =
+> +				ams_get_alarm_offset(ams_channels[i].scan_index,
+> +						     IIO_EV_DIR_RISING);
+> +			if (ams_channels[i].scan_index >= AMS_PS_SEQ_MAX) {
+> +				writel(AMS_ALARM_THR_MIN,
+> +				       ams->pl_base + falling_off);
+> +				writel(AMS_ALARM_THR_MAX,
+> +				       ams->pl_base + rising_off);
+> +			} else {
+> +				writel(AMS_ALARM_THR_MIN,
+> +				       ams->ps_base + falling_off);
+> +				writel(AMS_ALARM_THR_MAX,
+> +				       ams->ps_base + rising_off);
+> +			}
+> +		}
+> +	}
+> +
+> +	dev_channels = devm_kzalloc(&pdev->dev, sizeof(*dev_channels) *
+> +				    num_channels, GFP_KERNEL);
+> +	if (!dev_channels) {
+> +		ret = -ENOMEM;
+> +		goto err;
+> +	}
+
+We now have the option of devm_krealloc()   If you used that in conjunction
+with devm_kzalloc to replace the kzalloc above, you could avoid this need to
+copy.  Not important though if you prefer doing this manual version.
+
+> +
+> +	memcpy(dev_channels, ams_channels,
+> +	       sizeof(*ams_channels) * num_channels);
+> +	indio_dev->channels = dev_channels;
+> +	indio_dev->num_channels = num_channels;
+> +
+> +	ret = 0;
+> +err:
+> +	kfree(ams_channels);
+> +
+> +	return ret;
+> +}
+> +
+
+...
+
+> +static int ams_probe(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct ams *ams;
+> +	int ret;
+> +
+> +	if (!pdev->dev.of_node)
+> +		return -ENODEV;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*ams));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	ams = iio_priv(indio_dev);
+> +	mutex_init(&ams->lock);
+> +	spin_lock_init(&ams->intr_lock);
+> +
+> +	indio_dev->name = "xilinx-ams";
+> +
+> +	indio_dev->info = &iio_ams_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	ams->base = devm_platform_ioremap_resource(pdev, 0);
+> +	if (IS_ERR(ams->base))
+> +		return PTR_ERR(ams->base);
+> +
+> +	ams->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(ams->clk))
+> +		return PTR_ERR(ams->clk);
+> +	clk_prepare_enable(ams->clk);
+> +	devm_add_action_or_reset(&pdev->dev, ams_clk_disable_unprepare,
+> +				 ams->clk);
+> +
+> +	INIT_DELAYED_WORK(&ams->ams_unmask_work, ams_unmask_worker);
+> +	devm_add_action_or_reset(&pdev->dev, ams_cancel_delayed_work,
+> +				 &ams->ams_unmask_work);
+> +
+> +	ret = ams_init_device(ams);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to initialize AMS\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = ams_parse_dt(indio_dev, pdev);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failure in parsing DT\n");
+> +		return ret;
+> +	}
+> +
+> +	ams_enable_channel_sequence(indio_dev);
+> +
+> +	ams->irq = platform_get_irq(pdev, 0);
+> +	if (ams->irq == -EPROBE_DEFER) {
+> +		ret = -EPROBE_DEFER;
+> +		return ret;
+> +	}
+> +
+> +	ret = devm_request_irq(&pdev->dev, ams->irq, &ams_irq, 0, "ams-irq",
+> +			       indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed to register interrupt\n");
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+> +
+
+return devm_...
+
+> +	return ret;
+> +}
+> +
+
 
