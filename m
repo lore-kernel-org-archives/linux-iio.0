@@ -2,101 +2,103 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3300C4332F
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Oct 2021 17:13:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7DC1BC433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Oct 2021 19:43:48 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C402560F57
-	for <linux-iio@archiver.kernel.org>; Sun, 24 Oct 2021 17:13:17 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4CCD6604D2
+	for <linux-iio@archiver.kernel.org>; Sun, 24 Oct 2021 19:43:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231482AbhJXRPh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 24 Oct 2021 13:15:37 -0400
-Received: from www381.your-server.de ([78.46.137.84]:54152 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231730AbhJXRPg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Oct 2021 13:15:36 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
-        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=IaMYS+cLpglLi8ceKKvHbWr24RAnA38Ao+XpmQ0jPww=; b=LSW0B6pxjLlvE/HwoCFYp0rIw8
-        DzFPduYznCYdGKOc38TNn1Ytn62r/XQamHn3hnwIBGF+aKnNLu/aHOwlOnz/HBxFcjqLOD5JAMunS
-        bAkf+AVkiC1G3KYrsn0FvTvzYszrZ54VJOVw0BnXgBc1qqOLlMxyMD74s2jVzLoE32m4says034kD
-        qDv5tupktOnvC50P6JXz2uYhH/eYIVCdqKyi92xq4ouEuT2p72IsqVOAVjrCYGTudHoJtBsVvb79l
-        hKH6PR4oZC3GF79VXyozbX2hkt1vDT/gM0eAUH+T+HGTXpBZB4eWYUW+9JDGsxyfhpnF4efYe5GdP
-        UG7fVlSQ==;
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1meh3Z-000BgS-1f; Sun, 24 Oct 2021 19:13:13 +0200
-Received: from [82.135.83.71] (helo=lars-desktop.fritz.box)
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1meh3Y-000VNB-Sl; Sun, 24 Oct 2021 19:13:12 +0200
-From:   Lars-Peter Clausen <lars@metafoo.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Tiberiu Breana <tiberiu.a.breana@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 2/3] iio: kxsd9: Don't return error code in trigger handler
-Date:   Sun, 24 Oct 2021 19:12:50 +0200
-Message-Id: <20211024171251.22896-2-lars@metafoo.de>
-X-Mailer: git-send-email 2.20.1
-In-Reply-To: <20211024171251.22896-1-lars@metafoo.de>
-References: <20211024171251.22896-1-lars@metafoo.de>
+        id S231739AbhJXTqH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 24 Oct 2021 15:46:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42778 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230520AbhJXTqG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 24 Oct 2021 15:46:06 -0400
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E373C061745
+        for <linux-iio@vger.kernel.org>; Sun, 24 Oct 2021 12:43:45 -0700 (PDT)
+Received: by mail-qt1-x833.google.com with SMTP id y11so8452272qtn.13
+        for <linux-iio@vger.kernel.org>; Sun, 24 Oct 2021 12:43:45 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=usp.br; s=usp-google;
+        h=date:from:to:cc:subject:message-id:mime-version:content-disposition
+         :content-transfer-encoding;
+        bh=4T1h/6MdNJIw0PPm4TEcxKFEMqXNYmxYZcwSKomTJoU=;
+        b=ePhq4DD4vYJwbaIb2ECaxBpkPV3hzJPWQgjoe7AdGOK3R4UGX8PSPO3cv2JFLhDOiv
+         w0qhRX0w1yx+rZZIvnzMzcwt7DrgPafaVbOFK5klrrt7G6r87ZwbQauhYcmKPRJXZld5
+         fY9qQIxW2x+kqN0VfxP5OtYplUJJgdnvmhiSsRw/8+Owju8F+gkcHZwX74EwazMBKWda
+         N2Vp/UENJxPzlHYnDi5X7dzbEq986OQyPekwx+/0XQLrJGJ7disE5iq5ce8TyjIZUdRW
+         dXZjWwynf6Z3OEjm1jIHox8dtAAR9IdaqZ61VZElFQLT4RvVq8TLfKE+OehmVotgadpB
+         cc8g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:mime-version
+         :content-disposition:content-transfer-encoding;
+        bh=4T1h/6MdNJIw0PPm4TEcxKFEMqXNYmxYZcwSKomTJoU=;
+        b=Y+Ejbu0P4BLUD8CcQYRu++mRBlxRhV58wNehdQGjYJAY3XanGoCKweJzdgFIpzVq0G
+         iI4b8lDTGqImVhSGjI1TlmMD44Ja9iZfrz7QyQj95e5+cYDbyK84FhH6dmemp+DUgR0x
+         kGzQZf9KsMHh+x3ZJ6nNjJ7BeIk4owh+yTk/Td91B2aoTJ1ycTdlMAKUwkMUhIBIItLM
+         46L+QhCAuNP/WKr5tGyILAU4UqxwTEm8orQJhFj5zXWsqv8POZtgU9bZDK3OHjWXDtzm
+         JtkqsgBhBTLyiK5wi+ec461OV3NktvsE9q8B/pL6q0pGO54a55R0MKURWxENO+bqJb27
+         Pl4Q==
+X-Gm-Message-State: AOAM533lwYmk2SnDdo1fMI4LLdhoaZGWbEK6SkIp/9rv76hSwzBsNmvx
+        95BwLjAJ2A4p/ze/Bm1tdviNFg==
+X-Google-Smtp-Source: ABdhPJyj4j7EzR6DsNeSrBj8n/XeKi48Tc9FcFD/6edaoTvrtJRsPP7TBfb4OJGLA68gn5La79/o3Q==
+X-Received: by 2002:ac8:58d3:: with SMTP id u19mr13440124qta.29.1635104624242;
+        Sun, 24 Oct 2021 12:43:44 -0700 (PDT)
+Received: from Andryuu.br ([2804:431:c7fd:423:9dac:f639:6086:598])
+        by smtp.gmail.com with ESMTPSA id m66sm7521178qkb.87.2021.10.24.12.43.42
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 24 Oct 2021 12:43:43 -0700 (PDT)
+Date:   Sun, 24 Oct 2021 16:43:39 -0300
+From:   =?iso-8859-1?Q?Andr=E9?= Gustavo Nakagomi Lopez <andregnl@usp.br>
+To:     jic23@kernel.org, lars@metafoo.de, vz@mleia.com
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, andregnl@usp.br
+Subject: [PATCH] iio: adc: lpc18xx_adc: Reorder clk_get_rate function call
+Message-ID: <YXW3azIjPzGjvjTX@Andryuu.br>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26332/Sun Oct 24 10:18:48 2021)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-IIO trigger handlers need to return one of the irqreturn_t values.
-Returning an error code is not supported.
+clk_get_rate is not garanteed to work if called before clk_prepare_enable.
 
-The kxsd9 interrupt handler returns an error code if reading the data
-registers fails. In addition when exiting due to an error the trigger
-handler does not call `iio_trigger_notify_done()`. Which when not done
-keeps the triggered disabled forever.
+Reorder clk_get_rate, so it's called after clk_prepare_enable and
+after devm_add_action_or_reset of lpc18xx_clk_disable.
 
-Modify the code so that the function returns a valid irqreturn_t value as
-well as calling `iio_trigger_notify_done()` on all exit paths.
-
-Since we can't return the error code make sure to at least log it as part
-of the error message.
-
-Fixes: 0427a106a98a ("iio: accel: kxsd9: Add triggered buffer handling")
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: André Gustavo Nakagomi Lopez <andregnl@usp.br>
 ---
- drivers/iio/accel/kxsd9.c | 6 +++---
+ drivers/iio/adc/lpc18xx_adc.c | 6 +++---
  1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 2faf85ca996e..552eba5e8b4f 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -224,14 +224,14 @@ static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
- 			       hw_values.chan,
- 			       sizeof(hw_values.chan));
- 	if (ret) {
--		dev_err(st->dev,
--			"error reading data\n");
--		return ret;
-+		dev_err(st->dev, "error reading data: %d\n", ret);
-+		goto out;
- 	}
+diff --git a/drivers/iio/adc/lpc18xx_adc.c b/drivers/iio/adc/lpc18xx_adc.c
+index ceefa4d793cf..ae9c9384f23e 100644
+--- a/drivers/iio/adc/lpc18xx_adc.c
++++ b/drivers/iio/adc/lpc18xx_adc.c
+@@ -157,9 +157,6 @@ static int lpc18xx_adc_probe(struct platform_device *pdev)
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(adc->clk),
+ 				     "error getting clock\n");
  
- 	iio_push_to_buffers_with_timestamp(indio_dev,
- 					   &hw_values,
- 					   iio_get_time_ns(indio_dev));
-+out:
- 	iio_trigger_notify_done(indio_dev->trig);
+-	rate = clk_get_rate(adc->clk);
+-	clkdiv = DIV_ROUND_UP(rate, LPC18XX_ADC_CLK_TARGET);
+-
+ 	adc->vref = devm_regulator_get(&pdev->dev, "vref");
+ 	if (IS_ERR(adc->vref))
+ 		return dev_err_probe(&pdev->dev, PTR_ERR(adc->vref),
+@@ -192,6 +189,9 @@ static int lpc18xx_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		return ret;
  
- 	return IRQ_HANDLED;
++	rate = clk_get_rate(adc->clk);
++	clkdiv = DIV_ROUND_UP(rate, LPC18XX_ADC_CLK_TARGET);
++
+ 	adc->cr_reg = (clkdiv << LPC18XX_ADC_CR_CLKDIV_SHIFT) |
+ 			LPC18XX_ADC_CR_PDN;
+ 	writel(adc->cr_reg, adc->base + LPC18XX_ADC_CR);
 -- 
-2.20.1
+2.33.0
 
