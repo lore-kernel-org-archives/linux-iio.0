@@ -2,53 +2,53 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BBE59C433F5
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 10:19:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61542C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 10:19:07 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A36A76103C
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 10:19:06 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 4B98360232
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 10:19:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230115AbhJ1KV0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Oct 2021 06:21:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58062 "EHLO
+        id S230178AbhJ1KVa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 28 Oct 2021 06:21:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbhJ1KVU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Oct 2021 06:21:20 -0400
-Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32017C061745;
-        Thu, 28 Oct 2021 03:18:53 -0700 (PDT)
-Received: by mail-ed1-x52a.google.com with SMTP id r4so22141273edi.5;
-        Thu, 28 Oct 2021 03:18:53 -0700 (PDT)
+        with ESMTP id S230119AbhJ1KVV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Oct 2021 06:21:21 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A251C061570;
+        Thu, 28 Oct 2021 03:18:54 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id s1so22708243edd.3;
+        Thu, 28 Oct 2021 03:18:54 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=nkhuLzEUCNcvTjcsf4bVXjrayhI46SI8Gxb7tDI+o1Y=;
-        b=E0DbQ62Z9GeOvr63mpZS+AvF/jrXvf28q2yJPZ9buY/dp/WD8PZ4KWFWhUkrKzVewN
-         0VMBYxhqIjIPZ1YhA+BZQCKypLKXr/SHDXocu4ztENUqnr7Qecd+XpXERuna3mPN457c
-         UEtJ8DYZkIpDy+XzZ2Z4tTPZDePEVqZtKz46rmYIHxZoxZL4Bw5xPqGd5It2B9AH6w89
-         eSMvuQxlwqk4x2dyWccbi35Ob4J8+UJVrUUu9oKA0WjTuaNGnu6+Qeu7gylHdbVIuYaP
-         dbghon7isMN4ny1R8xSGDALq4vnabj4Tj7194SncJeMeO7rjDuc1iDex7J3x4XQBLLQR
-         pjZg==
+        bh=+QFzjiOgZlkTkCXooTGKu0LNv93OJOH/5M4+aQNGloA=;
+        b=eYvJv7jSeHtayGXTcpptwWrjEUI0SikAoklswFnshW9ED91ae7SOsZBz8Sw475kHBT
+         rafZFRR4bzOfoFQrrc2gPHvOwGc9iJkJnabjO/7vX2/f/kr27E9GXd370uQQUcK29SLT
+         l0jyjp4PANFOfJC2mwVaRMlmjREnXvpc8lN9eagPen9GgzsZxDHy5gRpz/bz8w6ChXiC
+         dS+zliBOuUBbFq04Ck/HUHq2q9fNulvLr6atvpVOu6OpBSBWHIVPjNgb5esfWWoc/9CU
+         BQmGVIiJZXoBXKeK5U8iwQle9jzDRSHuNqO5fmSTebr9s7i8zbXUJzodzkGp/MAEkQBL
+         oozw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=nkhuLzEUCNcvTjcsf4bVXjrayhI46SI8Gxb7tDI+o1Y=;
-        b=qm+/CE31jOVeQfDn5d5wpnG99SgPQiU292A16Tq5/Zlu/pAIb/4W/fifU7nCo7Cssx
-         mOYrKNj2IAL76FTm9pDBwlp/INklBk9xsYlMX+cxYkjpEUiMf5tndKtUJTi8IEccOr7T
-         FIoM2FIs7hA9r9ARwdAB405xyl4Hte2Jv2A46qB3qkrjax03pSY2mqSUihAXHpM8y7w7
-         a5coej3SZTlEnA9L9F7vTm+SHhbgaPfrZWYNtLbHqQUOaq2PJE5+SNPFwL1c3CYDl4Hw
-         KRJRJy6OP6tsNGYGlX85p18tc2w/USky1Vo3uDPfa9j3ZxR549wRXPTLK0ttnwzLSOii
-         OqPQ==
-X-Gm-Message-State: AOAM532nVfp8IdB6WzvpZrZVcetLKIq/debgyvkRk+QxHKIBJtfbKKXF
-        gd+RK6cmQvdED8kNjMINLFs=
-X-Google-Smtp-Source: ABdhPJzhttW7rWuSpD6zf5/jIjjHryUoTdHMucoHnKeg/DapBNEtUdZk6lwPOJ7gpuzVBVrKkzL48g==
-X-Received: by 2002:a05:6402:270b:: with SMTP id y11mr5033341edd.387.1635416330910;
-        Thu, 28 Oct 2021 03:18:50 -0700 (PDT)
+        bh=+QFzjiOgZlkTkCXooTGKu0LNv93OJOH/5M4+aQNGloA=;
+        b=X2kTBkrgkDGs8qDjNjLxnbr1kVOqDIWadk/F/9EvGAwqqNfrxjr8/bTv4GaB1f4c1k
+         ewek8yEQaRXO/DAbrc1tR2EBkHuT+ERY5Ccfu4Iqm4WMxTeHZuY72Jm6rWys3CmdjUJH
+         sizNaTysZbUkSW8Qp1lJZpMD2nKaVBrSFEDNbnmcsjsHkW5Di/MEEb76yR4HQIFYGYdg
+         7CE3cXmhkOoSZsasQlzCGAvfS4STuN0bmT/VtkJibHROgEWZsv54635jgantXiyD03wx
+         eolsBdtJlUMzrYOHxKGbP83XVUPIDbTfaduK3KWL+ZLlT2lImSKFMhXy3m4G6ecTigmp
+         3mqA==
+X-Gm-Message-State: AOAM531P2v6/J+Gyz2cDzSM3k6NrxYeZvwlSZSc4wDYQi7VU6/8pR9Zq
+        t/tk7m+e0h7x+OmT+pZGUyk=
+X-Google-Smtp-Source: ABdhPJwT8l25YZIpOIXicJcEtJmj5J9o66PzaoPxfoVzRPhg6UmzLUMBUc7bf6jAkRU5SwNg/KX5xw==
+X-Received: by 2002:a17:907:e8b:: with SMTP id ho11mr4331419ejc.300.1635416332774;
+        Thu, 28 Oct 2021 03:18:52 -0700 (PDT)
 Received: from poker.lan (static.2-229-210-222.ip198.fastwebnet.it. [2.229.210.222])
-        by smtp.googlemail.com with ESMTPSA id mp9sm1175071ejc.48.2021.10.28.03.18.50
+        by smtp.googlemail.com with ESMTPSA id mp9sm1175071ejc.48.2021.10.28.03.18.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 03:18:50 -0700 (PDT)
+        Thu, 28 Oct 2021 03:18:52 -0700 (PDT)
 From:   Andrea Merello <andrea.merello@gmail.com>
 To:     jic23@kernel.org, mchehab+huawei@kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -57,9 +57,9 @@ Cc:     lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
         matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
         jacopo@jmondi.org, Andrea Merello <andrea.merello@gmail.com>,
         Andrea Merello <andrea.merello@iit.it>
-Subject: [v2 02/10] iio: document linear acceleration modifiers
-Date:   Thu, 28 Oct 2021 12:18:32 +0200
-Message-Id: <20211028101840.24632-3-andrea.merello@gmail.com>
+Subject: [v2 04/10] iio: add modifiers for linear acceleration
+Date:   Thu, 28 Oct 2021 12:18:34 +0200
+Message-Id: <20211028101840.24632-5-andrea.merello@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211028101840.24632-1-andrea.merello@gmail.com>
 References: <20210715141742.15072-1-andrea.merello@gmail.com>
@@ -68,30 +68,54 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch introduces ABI documentation for new iio modifiers used for
-reporting "linear acceleration" measures.
+This patch is preparatory for adding the Bosh BNO055 IMU driver.
+The said IMU can report raw accelerations (among x, y and z axis)
+as well as the so called "linear accelerations" (again, among x,
+y and z axis) which is basically the acceleration after subtracting
+gravity.
+
+This patch adds IIO_MOD_ACCEL_LINEAR_X, IIO_MOD_ACCEL_LINEAR_Y and
+IIO_MOD_ACCEL_LINEAR_Z modifiers to te IIO core.
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 8 ++++++++
- 1 file changed, 8 insertions(+)
+ drivers/iio/industrialio-core.c | 3 +++
+ include/uapi/linux/iio/types.h  | 4 +++-
+ 2 files changed, 6 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 6ad47a67521c..5147a00bf24a 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -1957,3 +1957,11 @@ Description:
- 		Specify the percent for light sensor relative to the channel
- 		absolute value that a data field should change before an event
- 		is generated. Units are a percentage of the prior reading.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_x_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_y_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_accel_linear_z_raw
-+KernelVersion:	5.15
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw (unscaled) linear acceleration readings.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 2dbb37e09b8c..a79cb32207e4 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -134,6 +134,9 @@ static const char * const iio_modifier_names[] = {
+ 	[IIO_MOD_ETHANOL] = "ethanol",
+ 	[IIO_MOD_H2] = "h2",
+ 	[IIO_MOD_O2] = "o2",
++	[IIO_MOD_ACCEL_LINEAR_X] = "linear_x",
++	[IIO_MOD_ACCEL_LINEAR_Y] = "linear_y",
++	[IIO_MOD_ACCEL_LINEAR_Z] = "linear_z"
+ };
+ 
+ /* relies on pairs of these shared then separate */
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 48c13147c0a8..db00f7c45f48 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -95,6 +95,9 @@ enum iio_modifier {
+ 	IIO_MOD_ETHANOL,
+ 	IIO_MOD_H2,
+ 	IIO_MOD_O2,
++	IIO_MOD_ACCEL_LINEAR_X,
++	IIO_MOD_ACCEL_LINEAR_Y,
++	IIO_MOD_ACCEL_LINEAR_Z,
+ };
+ 
+ enum iio_event_type {
+@@ -114,4 +117,3 @@ enum iio_event_direction {
+ };
+ 
+ #endif /* _UAPI_IIO_TYPES_H_ */
+-
 -- 
 2.17.1
 
