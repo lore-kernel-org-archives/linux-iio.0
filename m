@@ -2,145 +2,101 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2420C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 13:42:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 62D55C433F5
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 13:47:28 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C796861038
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 13:42:54 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 350CE61038
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 13:47:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230265AbhJ1NpU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Oct 2021 09:45:20 -0400
-Received: from vern.gendns.com ([98.142.107.122]:58772 "EHLO vern.gendns.com"
+        id S229945AbhJ1Ntu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 28 Oct 2021 09:49:50 -0400
+Received: from mail.kernel.org ([198.145.29.99]:42838 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229887AbhJ1NpT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 28 Oct 2021 09:45:19 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=SVlgNf+ucxEPseJvy+L/+bBmOwRajcw4V+PyOl9QXbA=; b=Al5M4BbYU+HjwYm6e9i0JgWcH0
-        cxzOwIHAF0fEp1eLeTCENiW1kD+SZzd4yODLESrUw0E6VzKkTk7lk9Fq/srfxd6Ue4ksLyylVB968
-        m9yF4fNokuhAENlbDJsbHZZrfixIhdxWrVifhLNudShT3OZolwaTPx5FyMBttWMXtcR8O6Bei2dgD
-        ixyag8870IuuX8myLCo8AjieTOJslZBxy6sEawQxcF+K4ASUUL23/G4cyyHYCUCEcp8FPk87np7Wz
-        bfv17pVsxmB5IKmKbW3vjV6I+7MTa767PKZWrNVAJacUAdoe5YhHfPmHFJLKlc+MhEOLVtXc63Nzy
-        NQu/nviw==;
-Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:47982 helo=[192.168.0.134])
-        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <david@lechnology.com>)
-        id 1mg5g0-00013p-Ck; Thu, 28 Oct 2021 09:42:50 -0400
-Subject: Re: [PATCH 3/8] counter/ti-eqep: add support for unit timer
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     linux-iio@vger.kernel.org, Robert Nelson <robertcnelson@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <20211017013343.3385923-1-david@lechnology.com>
- <20211017013343.3385923-4-david@lechnology.com> <YXZvQSU6bRRaWD89@shinobu>
- <253916e2-a808-8786-ac72-60a1a62b1531@lechnology.com>
- <YXpVyjnrrmRbpHJU@shinobu>
-From:   David Lechner <david@lechnology.com>
-Message-ID: <f5e40a22-3c7f-4d4d-d160-fe5b5a7dd72e@lechnology.com>
-Date:   Thu, 28 Oct 2021 08:42:49 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S229887AbhJ1Ntt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 28 Oct 2021 09:49:49 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id 0FDE961056;
+        Thu, 28 Oct 2021 13:47:20 +0000 (UTC)
+Date:   Thu, 28 Oct 2021 14:51:47 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Yang Yingliang <yangyingliang@huawei.com>
+Cc:     <linux-kernel@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <lars@metafoo.de>, <hdegoede@redhat.com>,
+        <andriy.shevchenko@linux.intel.com>, <ddvlad@gmail.com>
+Subject: Re: [PATCH v2] iio: accel: kxcjk-1013: Fix possible memory leak in
+ probe and remove
+Message-ID: <20211028145147.7ad93c5f@jic23-huawei>
+In-Reply-To: <20211025124159.2700301-1-yangyingliang@huawei.com>
+References: <20211025124159.2700301-1-yangyingliang@huawei.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <YXpVyjnrrmRbpHJU@shinobu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vern.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10/28/21 2:48 AM, William Breathitt Gray wrote:
-> On Wed, Oct 27, 2021 at 10:28:59AM -0500, David Lechner wrote:
->> On 10/25/21 3:48 AM, William Breathitt Gray wrote:
->>> On Sat, Oct 16, 2021 at 08:33:38PM -0500, David Lechner wrote:
->>>> This adds support to the TI eQEP counter driver for the Unit Timer.
->>>> The Unit Timer is a device-level extension that provides a timer to be
->>>> used for speed calculations. The sysfs interface for the Unit Timer is
->>>> new and will be documented in a later commit. It contains a R/W time
->>>> attribute for the current time, a R/W period attribute for the timeout
->>>> period and a R/W enable attribute to start/stop the timer. It also
->>>> implements a timeout event on the chrdev interface that is triggered
->>>> each time the period timeout is reached.
->>>>
->>>> Signed-off-by: David Lechner <david@lechnology.com>
->>>
->>> I'll comment on the sysfs interface in the respective docs patch. Some
->>> comments regarding this patch below.
->>>
->>
->> ...
->>
->>>> +static int ti_eqep_unit_timer_period_write(struct counter_device *counter,
->>>> +					   u64 value)
->>>> +{
->>>> +	struct ti_eqep_cnt *priv = counter->priv;
->>>> +	u32 quprd;
->>>> +
->>>> +	/* convert nanoseconds to timer ticks */
->>>> +	quprd = value = mul_u64_u32_div(value, priv->sysclkout_rate, NSEC_PER_SEC);
->>>> +	if (quprd != value)
->>>> +		return -ERANGE;
->>>> +
->>>> +	/* protect against infinite unit timeout interrupts */
->>>> +	if (quprd == 0)
->>>> +		return -EINVAL;
->>>
->>> I doubt there's any practical reason for a user to set the timer period
->>> to 0, but perhaps we should not try to protect users from themselves
->>> here. It's very obvious and expected that setting the timer period to 0
->>> results in timeouts as quickly as possible, so really the user should be
->>> left to reap the fruits of their decision regardless of how asinine that
->>> decision is.
->>
->> Even if the operating system ceases operation because the interrupt
->> handler keeps running because clearing the interrupt has no effect
->> in this condition?
-> 
-> I don't disagree with you that configuring the device to repeatedly
-> timeout without pause would be a waste of system resources. However, it
-> is more appropriate for this protection to be located in a userspace
-> application rather than the driver code here.
-> 
-> The purpose of a driver is to expose the functionality of a device in an
-> understandable and consistent manner. Drivers should not dictate what a
-> user does with their device, but rather should help facilitate the
-> user's control so that the device behaves as would be expected given
-> such an interface.
-> 
-> For this particular case, the device is capable of sending an interrupt
-> when a timeout events occurs, and the timeout period can be adjusted;
-> setting the timeout period lower and lower results in less and less time
-> between timeout events. The behavior and result of setting the timeout
-> period lower is well-defined and predictable; it is intuitive that
-> configuring the timeout period to 0, the lowest value possible, results
-> in the shortest time possible between timeouts: no pause at all.
-> 
-> As long as the functionality of this device is exposed in such an
-> understandable and consistent manner, the driver succeeds in serving its
-> purpose. So I believe a timeout period of 0 is a valid configuration
-> for this driver to allow, albeit a seemingly pointless one for users to
-> actually choose. To that end, simply set the default value of QUPRD to
-> non-zero on probe() as you do already in this patch and let the user be
-> free to adjust if they so decide.
-> 
-> William Breathitt Gray
-> 
+On Mon, 25 Oct 2021 20:41:59 +0800
+Yang Yingliang <yangyingliang@huawei.com> wrote:
 
-I disagree. I consider this a crash. The system becomes completely
-unusable and you have to pull power to turn it off, potentially
-leading to data loss and disk corruption.
+> When ACPI type is ACPI_SMO8500, the data->dready_trig will not be set, the
+> memory allocated by iio_triggered_buffer_setup() will not be freed, and cause
+> memory leak as follows:
+> 
+> unreferenced object 0xffff888009551400 (size 512):
+>   comm "i2c-SMO8500-125", pid 911, jiffies 4294911787 (age 83.852s)
+>   hex dump (first 32 bytes):
+>     02 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00  ................
+>     00 00 00 00 00 00 00 00 20 e2 e5 c0 ff ff ff ff  ........ .......
+>   backtrace:
+>     [<0000000041ce75ee>] kmem_cache_alloc_trace+0x16d/0x360
+>     [<000000000aeb17b0>] iio_kfifo_allocate+0x41/0x130 [kfifo_buf]
+>     [<000000004b40c1f5>] iio_triggered_buffer_setup_ext+0x2c/0x210 [industrialio_triggered_buffer]
+>     [<000000004375b15f>] kxcjk1013_probe+0x10c3/0x1d81 [kxcjk_1013]
+> 
+> Fix it by remove data->dready_trig condition in probe and remove.
+> 
+> Reported-by: Hulk Robot <hulkci@huawei.com>
+> Fixes: a25691c1f967 ("iio: accel: kxcjk1013: allow using an external trigger")
+> Signed-off-by: Yang Yingliang <yangyingliang@huawei.com>
+> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
+Applied to the fixes-togreg branch of iio.git.  Note this will hit mainline after the merge window
+now.   Also, we should look at taking this driver fully over to devm managed functions.
+Looks easy to do and would have avoided this particular leak.
+
+Jonathan
+
+> ---
+> v2:
+>   drop some calltrace in commit message
+> ---
+>  drivers/iio/accel/kxcjk-1013.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index a51fdd3c9b5b..24c9387c2968 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -1595,8 +1595,7 @@ static int kxcjk1013_probe(struct i2c_client *client,
+>  	return 0;
+>  
+>  err_buffer_cleanup:
+> -	if (data->dready_trig)
+> -		iio_triggered_buffer_cleanup(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+>  err_trigger_unregister:
+>  	if (data->dready_trig)
+>  		iio_trigger_unregister(data->dready_trig);
+> @@ -1618,8 +1617,8 @@ static int kxcjk1013_remove(struct i2c_client *client)
+>  	pm_runtime_disable(&client->dev);
+>  	pm_runtime_set_suspended(&client->dev);
+>  
+> +	iio_triggered_buffer_cleanup(indio_dev);
+>  	if (data->dready_trig) {
+> -		iio_triggered_buffer_cleanup(indio_dev);
+>  		iio_trigger_unregister(data->dready_trig);
+>  		iio_trigger_unregister(data->motion_trig);
+>  	}
 
