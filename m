@@ -2,166 +2,573 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B73CAC4321E
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 10:19:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F8AAC433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 10:26:39 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A529F61106
-	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 10:19:16 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 00391610F8
+	for <linux-iio@archiver.kernel.org>; Thu, 28 Oct 2021 10:26:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230298AbhJ1KVl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 28 Oct 2021 06:21:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58110 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230164AbhJ1KV1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 28 Oct 2021 06:21:27 -0400
-Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6000FC061348;
-        Thu, 28 Oct 2021 03:19:00 -0700 (PDT)
-Received: by mail-ed1-x52e.google.com with SMTP id f8so1065806edy.4;
-        Thu, 28 Oct 2021 03:19:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=IYMJ1SQ6lQ2KjlKECGxmF550jn3k3LZot5Yu269+eIE=;
-        b=mYF5eSnNAmgjPPLmAoSdkkqCtsVQrQz1pC53sT5kI6IyuGQsLRa2Y48HFnv5VEhRx9
-         E4iZSvajO7dEmKRhGZIaY6zuuWRh+SNK5wEr/DwBOUdf3/c3LRutxLotpX/J0b7ghmJz
-         Ed4rtORX8AV/YHa8m3GD2t1cTMtiVvtS4sRcNI9n/9pH0cZVr/5G46tes/8JvvQkG8vU
-         DrRHPTXePUSTTliKYUoHWKTrr1uuo+x/aCRiU0KVzTlGn3w744C8e5w4pE5xcBB3MTLH
-         yUuVTeGmM7x26QRfq1cdwYN6dGPkOY/bP18MGzP91ULoz56jvaI+o9bRrOLGRNWljxkC
-         VRQg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references;
-        bh=IYMJ1SQ6lQ2KjlKECGxmF550jn3k3LZot5Yu269+eIE=;
-        b=r4YTMB/iQmMc+V+cWSvqikZeOGqZh9+syaUH5hz7X/ySUJjdyNihWlq8hzBXoKuQUA
-         LktyGXeLvVKawvQN/o72lFgXkSlO6CaTWygYxbkSAKcbA5lebtCXHaKt8IAlY82WKdNn
-         la4NMuJuJ4cKXG8VwZLlDc7KdDqJpqKFQu3gdERnXpesv8xbgCDr00jO3HZ/dkzyXMZn
-         BijmVQz0d3+wFyKoXSJhWXGTUiAUAxZ1IrbiU3XrQwQHmwxLoRJtizVQDbdcT+rFBCcu
-         VRy9VAQH7hcwPMVV4UoHnruvP2On1RSeMkH538FuaZmMMHwe0aTlZDNKeR4jynqgreUv
-         9w7A==
-X-Gm-Message-State: AOAM533m2EGFFAo4jv+G31MBqM9683PNU3JsDQcAw0UYon+tLA5gVtD+
-        hTHv2GB5ZOCJhmfnVdmPapI=
-X-Google-Smtp-Source: ABdhPJxTBGUkKJxxYEJLEI/FuwF4nr1/VUJLtN9+4uYdGeitlhI5Hx2avR/Hy5jx4/XPzt6+rM0Nuw==
-X-Received: by 2002:a17:906:6952:: with SMTP id c18mr4270935ejs.31.1635416338808;
-        Thu, 28 Oct 2021 03:18:58 -0700 (PDT)
-Received: from poker.lan (static.2-229-210-222.ip198.fastwebnet.it. [2.229.210.222])
-        by smtp.googlemail.com with ESMTPSA id mp9sm1175071ejc.48.2021.10.28.03.18.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 28 Oct 2021 03:18:58 -0700 (PDT)
-From:   Andrea Merello <andrea.merello@gmail.com>
-To:     jic23@kernel.org, mchehab+huawei@kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org
-Cc:     lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
-        matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
-        jacopo@jmondi.org, Andrea Merello <andrea.merello@gmail.com>,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: [v2 10/10] iio: imu: add BNO055 I2C driver
-Date:   Thu, 28 Oct 2021 12:18:40 +0200
-Message-Id: <20211028101840.24632-11-andrea.merello@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20211028101840.24632-1-andrea.merello@gmail.com>
-References: <20210715141742.15072-1-andrea.merello@gmail.com>
- <20211028101840.24632-1-andrea.merello@gmail.com>
+        id S229835AbhJ1K3E convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 28 Oct 2021 06:29:04 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39750 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229626AbhJ1K3E (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 28 Oct 2021 06:29:04 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id B37DB60231;
+        Thu, 28 Oct 2021 10:26:35 +0000 (UTC)
+Date:   Thu, 28 Oct 2021 11:31:01 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "Sa, Nuno" <Nuno.Sa@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v2 1/2] iio: frequency: admv1013: add support for
+ ADMV1013
+Message-ID: <20211028113101.0587a658@jic23-huawei>
+In-Reply-To: <CY4PR03MB3399339315289769615E4DCD9B869@CY4PR03MB3399.namprd03.prod.outlook.com>
+References: <20211027092333.5270-1-antoniu.miclaus@analog.com>
+        <20211027184324.51811ef1@jic23-huawei>
+        <CY4PR03MB3399339315289769615E4DCD9B869@CY4PR03MB3399.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This path adds an I2C driver for communicating to a BNO055 IMU via I2C bus
-and it enables the BNO055 core driver to work in this scenario.
+On Thu, 28 Oct 2021 10:08:08 +0000
+"Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
 
-Signed-off-by: Andrea Merello <andrea.merello@iit.it>
----
- drivers/iio/imu/bno055/Kconfig      |  6 ++++
- drivers/iio/imu/bno055/Makefile     |  1 +
- drivers/iio/imu/bno055/bno055_i2c.c | 54 +++++++++++++++++++++++++++++
- 3 files changed, 61 insertions(+)
- create mode 100644 drivers/iio/imu/bno055/bno055_i2c.c
+> Hello Jonathan,
+> 
+> Thanks for the review!
+> 
+> Regarding the interface for the Mixer Offset adjustments: 
+> ADMV1013_MIXER_OFF_ADJ_P
+> ADMV1013_MIXER_OFF_ADJ_N
+> 
+> These parameters are related to the LO feedthrough offset calibration.
+> (LO and sideband suppression)
+> 
+> On this matter, my suggestion would be to add IIO calibration types, something like:
+> IIO_CHAN_INFO_CALIBFEEDTROUGH_POS
+> IIO_CHAN_INFO_CALIBFEEDTROUGH_NEG
 
-diff --git a/drivers/iio/imu/bno055/Kconfig b/drivers/iio/imu/bno055/Kconfig
-index 941e43f0368d..87200787d548 100644
---- a/drivers/iio/imu/bno055/Kconfig
-+++ b/drivers/iio/imu/bno055/Kconfig
-@@ -7,3 +7,9 @@ config BOSH_BNO055_SERIAL
- 	tristate "Bosh BNO055 attached via serial bus"
- 	depends on SERIAL_DEV_BUS
- 	select BOSH_BNO055_IIO
-+
-+config BOSH_BNO055_I2C
-+	tristate "Bosh BNO055 attached via I2C bus"
-+	depends on I2C
-+	select REGMAP_I2C
-+	select BOSH_BNO055_IIO
-diff --git a/drivers/iio/imu/bno055/Makefile b/drivers/iio/imu/bno055/Makefile
-index 7285ade2f4b9..eaf24018cb28 100644
---- a/drivers/iio/imu/bno055/Makefile
-+++ b/drivers/iio/imu/bno055/Makefile
-@@ -2,3 +2,4 @@
- 
- obj-$(CONFIG_BOSH_BNO055_IIO) += bno055.o
- obj-$(CONFIG_BOSH_BNO055_SERIAL) += bno055_sl.o
-+obj-$(CONFIG_BOSH_BNO055_I2C) += bno055_i2c.o
-diff --git a/drivers/iio/imu/bno055/bno055_i2c.c b/drivers/iio/imu/bno055/bno055_i2c.c
-new file mode 100644
-index 000000000000..eea0daa6a61d
---- /dev/null
-+++ b/drivers/iio/imu/bno055/bno055_i2c.c
-@@ -0,0 +1,54 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * I2C interface for Bosh BNO055 IMU.
-+ * This file implements I2C communication up to the register read/write
-+ * level.
-+ *
-+ * Copyright (C) 2021 Istituto Italiano di Tecnologia
-+ * Electronic Design Laboratory
-+ * Written by Andrea Merello <andrea.merello@iit.it>
-+ */
-+
-+#include <linux/i2c.h>
-+#include <linux/regmap.h>
-+#include <linux/module.h>
-+
-+#include "bno055.h"
-+
-+#define BNO055_I2C_XFER_BURST_BREAK_THRESHOLD 3 /* FIXME */
-+
-+static int bno055_i2c_probe(struct i2c_client *client,
-+			    const struct i2c_device_id *id)
-+{
-+	struct regmap *regmap =
-+		devm_regmap_init_i2c(client, &bno055_regmap_config);
-+
-+	if (IS_ERR(regmap)) {
-+		dev_err(&client->dev, "Unable to init register map");
-+		return PTR_ERR(regmap);
-+	}
-+
-+	return bno055_probe(&client->dev, regmap,
-+			    BNO055_I2C_XFER_BURST_BREAK_THRESHOLD);
-+
-+	return 0;
-+}
-+
-+static const struct i2c_device_id bno055_i2c_id[] = {
-+	{"bno055", 0},
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(i2c, bno055_i2c_id);
-+
-+static struct i2c_driver bno055_driver = {
-+	.driver = {
-+		.name = "bno055-i2c",
-+	},
-+	.probe = bno055_i2c_probe,
-+	.id_table = bno055_i2c_id
-+};
-+module_i2c_driver(bno055_driver);
-+
-+MODULE_AUTHOR("Andrea Merello");
-+MODULE_DESCRIPTION("Bosch BNO055 I2C interface");
-+MODULE_LICENSE("GPL v2");
--- 
-2.17.1
+These sound too specific to me - we want an interface that is potentially useful
+in other places.  They are affecting the 'channel' which here is
+simply an alt voltage channel, but I'm assuming it's something like
+separate analog tweaks to the positive and negative of the differential pair?
+
+Current channel is represented as a single index, but one route to this would be
+to have it as a differential pair.
+
+out_altvoltage0-1_phase
+for the attribute that applies at the level of the differential pair and
+
+out_altvoltage0_calibbias
+out_altvoltage1_calibbias
+For the P and N signal specific attributes.
+
+I'm kind of guessing what these tweaks actually map to though so that may
+not make sense.
+
+Lars, guessing you are more familiar with this sort of device than me,
+what do you think makes sense here?
+
+Thanks,
+
+Jonathan
+
+
+> 
+> Looking forward to your feedback.
+> 
+> Regards,
+> --
+> Antoniu Miclăuş
+> 
+> > -----Original Message-----
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Wednesday, October 27, 2021 8:43 PM
+> > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
+> > Cc: robh+dt@kernel.org; linux-iio@vger.kernel.org;
+> > devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; Sa, Nuno
+> > <Nuno.Sa@analog.com>
+> > Subject: Re: [PATCH v2 1/2] iio: frequency: admv1013: add support for
+> > ADMV1013
+> > 
+> > [External]
+> > 
+> > On Wed, 27 Oct 2021 12:23:32 +0300
+> > Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+> >   
+> > > The ADMV1013 is a wideband, microwave upconverter optimized
+> > > for point to point microwave radio designs operating in the
+> > > 24 GHz to 44 GHz radio frequency (RF) range.
+> > >
+> > > Datasheet:
+> > > https://www.analog.com/media/en/technical-documentation/data-  
+> > sheets/ADMV1013.pdf  
+> > >
+> > > Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>  
+> > Hi Antoniu.
+> > 
+> > A few small things inline, but main issue in here is the use of the
+> > IIO_VAL_INT_MULTIPLE
+> > There are very very few uses for that type (1 IIRC) and it isn't to combine
+> > multiple
+> > values into a single sysfs attribute as shown here.  As such those offset
+> > interfaces
+> > need a rethink.  We may well have to define some new ABI to support them
+> > but I don't
+> > see a reason to not maintain the normal sysfs rule of one value per attribute.
+> > 
+> > 
+> > ..
+> >   
+> > > diff --git a/drivers/iio/frequency/Makefile  
+> > b/drivers/iio/frequency/Makefile  
+> > > index 518b1e50caef..559922a8196e 100644
+> > > --- a/drivers/iio/frequency/Makefile
+> > > +++ b/drivers/iio/frequency/Makefile
+> > > @@ -7,3 +7,4 @@
+> > >  obj-$(CONFIG_AD9523) += ad9523.o
+> > >  obj-$(CONFIG_ADF4350) += adf4350.o
+> > >  obj-$(CONFIG_ADF4371) += adf4371.o
+> > > +obj-$(CONFIG_ADMV1013) += admv1013.o
+> > > diff --git a/drivers/iio/frequency/admv1013.c  
+> > b/drivers/iio/frequency/admv1013.c  
+> > > new file mode 100644
+> > > index 000000000000..91254605013c
+> > > --- /dev/null
+> > > +++ b/drivers/iio/frequency/admv1013.c
+> > > @@ -0,0 +1,578 @@
+> > > +// SPDX-License-Identifier: GPL-2.0-only
+> > > +/*
+> > > + * ADMV1013 driver
+> > > + *
+> > > + * Copyright 2021 Analog Devices Inc.
+> > > + */
+> > > +
+> > > +#include <linux/bitfield.h>
+> > > +#include <linux/bitops.h>
+> > > +#include <linux/bits.h>
+> > > +#include <linux/clk.h>
+> > > +#include <linux/clkdev.h>
+> > > +#include <linux/clk-provider.h>
+> > > +#include <linux/device.h>
+> > > +#include <linux/iio/iio.h>
+> > > +#include <linux/module.h>  
+> > Recheck this list.  Should have
+> > property.h and mod_devicetable.h
+> >   
+> > > +#include <linux/notifier.h>
+> > > +#include <linux/regmap.h>  
+> > 
+> > and not regmap as you aren't using it.
+> >   
+> > > +#include <linux/regulator/consumer.h>
+> > > +#include <linux/spi/spi.h>
+> > > +
+> > > +#include <asm/unaligned.h>  
+> > 
+> > ...
+> >   
+> > > +/* ADMV1013_REG_OFFSET_ADJUST_Q Map */
+> > > +#define ADMV1013_MIXER_OFF_ADJ_Q_P_MSK  
+> > 	GENMASK(15, 9)  
+> > > +#define ADMV1013_MIXER_OFF_ADJ_Q_N_MSK		GENMASK(8,  
+> > 2)
+> > Given these two registers have the same form, could you use generic naming
+> > and just have them defined once?
+> >   
+> > > +
+> > > +/* ADMV1013_REG_QUAD Map */
+> > > +#define ADMV1013_QUAD_SE_MODE_MSK		GENMASK(9,  
+> > 6)  
+> > > +#define ADMV1013_QUAD_FILTERS_MSK		GENMASK(3, 0)
+> > > +
+> > > +/* ADMV1013_REG_VVA_TEMP_COMP Map */
+> > > +#define ADMV1013_VVA_TEMP_COMP_MSK  
+> > 	GENMASK(15, 0)  
+> > > +
+> > > +struct admv1013_state {
+> > > +	struct spi_device	*spi;
+> > > +	struct clk		*clkin;
+> > > +	/* Protect against concurrent accesses to the device */  
+> > 
+> > Also against concurrent access to data.  Maybe other state in software as
+> > well?
+> > This comment needs to cover everything the lock protects - if it were just
+> > serialization of accesses to the device then the spi subsystem would handle
+> > that fine for us.
+> >   
+> > > +	struct mutex		lock;
+> > > +	struct regulator	*reg;
+> > > +	struct notifier_block	nb;
+> > > +	unsigned int		quad_se_mode;
+> > > +	bool			vga_pd;
+> > > +	bool			mixer_pd;
+> > > +	bool			quad_pd;
+> > > +	bool			bg_pd;
+> > > +	bool			mixer_if_en;
+> > > +	bool			det_en;
+> > > +	u8			data[3] ____cacheline_aligned;
+> > > +};  
+> > 
+> > ...
+> >   
+> > > +static int admv1013_read_raw(struct iio_dev *indio_dev,
+> > > +			     struct iio_chan_spec const *chan,
+> > > +			     int *val, int *val2, long info)
+> > > +{
+> > > +	struct admv1013_state *st = iio_priv(indio_dev);
+> > > +	unsigned int data;
+> > > +	int ret;
+> > > +
+> > > +	switch (info) {
+> > > +	case IIO_CHAN_INFO_OFFSET:
+> > > +		if (chan->channel2 == IIO_MOD_I) {
+> > > +			ret = admv1013_spi_read(st,  
+> > ADMV1013_REG_OFFSET_ADJUST_I, &data);  
+> > > +			if (ret)
+> > > +				return ret;
+> > > +
+> > > +			*val =  
+> > FIELD_GET(ADMV1013_MIXER_OFF_ADJ_I_P_MSK, data);  
+> > > +			*val2 =  
+> > FIELD_GET(ADMV1013_MIXER_OFF_ADJ_I_N_MSK, data);
+> > 
+> > I mention above about generic naming for these masks.  Advantage is then
+> > that this
+> > code can be
+> > 
+> > 		if (chan->channel2 == IIO_MOD_I)
+> > 			addr = ADMV1013_REG_OFFSET_ADJUST_I;
+> > 		else
+> > 			addr = ADMV1013_REG_OFFSET_ADJUST_Q;
+> > 
+> > 		ret = admv1013_spi_read(st, addr, &data);
+> > 		if (ret)
+> > 			return ret;
+> > 
+> > 		*val = FIELD_GET(ADMV1013_MIXER_OFF_ADJ_P_MSK,
+> > data);
+> > 		*val2 = FIELD_GET(ADMV1013_MIXER_OFF_ADJ_Q_MSK,
+> > data);
+> > 
+> > 		return IIO_VAL_INT_MULTIPLE;
+> > 
+> > However, returning multiple integers is normally reserved for things like
+> > quaternions where the individual parts have no meaning except when they
+> > are all present.
+> > It's not intended for pairs like this. It should also only be used with the special
+> > read_raw_multi callback.
+> > 
+> > So we need to rethink this interface. I'm not entirely sure what it is
+> > doing so I'm open to suggestions on what the interface should be!
+> > The description on the datasheet suggest to me these are for calibration
+> > tweaking
+> > in which case they should be related to calibbias not offset as they aren't
+> > something
+> > we should apply to a raw value in userspace (which is what offset is for).
+> > 
+> >   
+> > > +		} else {
+> > > +			ret = admv1013_spi_read(st,  
+> > ADMV1013_REG_OFFSET_ADJUST_Q, &data);  
+> > > +			if (ret)
+> > > +				return ret;
+> > > +
+> > > +			*val =  
+> > FIELD_GET(ADMV1013_MIXER_OFF_ADJ_Q_P_MSK, data);  
+> > > +			*val2 =  
+> > FIELD_GET(ADMV1013_MIXER_OFF_ADJ_Q_N_MSK, data);  
+> > > +		}
+> > > +
+> > > +		return IIO_VAL_INT_MULTIPLE;
+> > > +	case IIO_CHAN_INFO_PHASE:
+> > > +		if (chan->channel2 == IIO_MOD_I) {
+> > > +			ret = admv1013_spi_read(st,  
+> > ADMV1013_REG_LO_AMP_I, &data);  
+> > > +			if (ret)
+> > > +				return ret;
+> > > +
+> > > +			*val =  
+> > FIELD_GET(ADMV1013_LOAMP_PH_ADJ_I_FINE_MSK, data);
+> > 
+> > As above, the masks match for these two branches of if / else, so with a
+> > generic
+> > name you should be able to share more code and only have to select the
+> > right register.
+> >   
+> > > +		} else {
+> > > +			ret = admv1013_spi_read(st,  
+> > ADMV1013_REG_LO_AMP_Q, &data);  
+> > > +			if (ret)
+> > > +				return ret;
+> > > +
+> > > +			*val =  
+> > FIELD_GET(ADMV1013_LOAMP_PH_ADJ_Q_FINE_MSK, data);  
+> > > +		}
+> > > +
+> > > +		return IIO_VAL_INT;
+> > > +	default:
+> > > +		return -EINVAL;
+> > > +	}
+> > > +}
+> > > +
+> > > +static int admv1013_write_raw(struct iio_dev *indio_dev,
+> > > +			      struct iio_chan_spec const *chan,
+> > > +			      int val, int val2, long info)
+> > > +{
+> > > +	struct admv1013_state *st = iio_priv(indio_dev);
+> > > +	int ret;
+> > > +
+> > > +	switch (info) {
+> > > +	case IIO_CHAN_INFO_OFFSET:
+> > > +		val2 /= 100000;
+> > > +
+> > > +		if (chan->channel2 == IIO_MOD_I)
+> > > +			ret = admv1013_spi_update_bits(st,  
+> > ADMV1013_REG_OFFSET_ADJUST_I,  
+> > > +  
+> > ADMV1013_MIXER_OFF_ADJ_I_P_MSK |  
+> > > +  
+> > ADMV1013_MIXER_OFF_ADJ_I_N_MSK,  
+> > > +  
+> > FIELD_PREP(ADMV1013_MIXER_OFF_ADJ_I_P_MSK, val) |  
+> > > +  
+> > FIELD_PREP(ADMV1013_MIXER_OFF_ADJ_I_N_MSK, val2));
+> > 
+> > As above, this isn't in inline with the normal ABI conventions so needs a
+> > rethink.  As far as I can
+> > establish these two values are independent though the datasheet provides
+> > limited information.
+> >   
+> > > +		else
+> > > +			ret = admv1013_spi_update_bits(st,  
+> > ADMV1013_REG_OFFSET_ADJUST_Q,  
+> > > +  
+> > ADMV1013_MIXER_OFF_ADJ_Q_P_MSK |  
+> > > +  
+> > ADMV1013_MIXER_OFF_ADJ_Q_N_MSK,  
+> > > +  
+> > FIELD_PREP(ADMV1013_MIXER_OFF_ADJ_Q_P_MSK, val) |  
+> > > +  
+> > FIELD_PREP(ADMV1013_MIXER_OFF_ADJ_Q_N_MSK, val2));  
+> > > +
+> > > +		return ret;
+> > > +	case IIO_CHAN_INFO_PHASE:
+> > > +		if (chan->channel2 == IIO_MOD_I)
+> > > +			return admv1013_spi_update_bits(st,  
+> > ADMV1013_REG_LO_AMP_I,  
+> > > +  
+> > 	ADMV1013_LOAMP_PH_ADJ_I_FINE_MSK,  
+> > > +  
+> > 	FIELD_PREP(ADMV1013_LOAMP_PH_ADJ_I_FINE_MSK, val));  
+> > > +		else
+> > > +			return admv1013_spi_update_bits(st,  
+> > ADMV1013_REG_LO_AMP_Q,  
+> > > +  
+> > 	ADMV1013_LOAMP_PH_ADJ_Q_FINE_MSK,  
+> > > +  
+> > 	FIELD_PREP(ADMV1013_LOAMP_PH_ADJ_Q_FINE_MSK, val));  
+> > > +	default:
+> > > +		return -EINVAL;
+> > > +	}
+> > > +}
+> > > +
+> > > +static int admv1013_update_quad_filters(struct admv1013_state *st)
+> > > +{
+> > > +	unsigned int filt_raw;
+> > > +	u64 rate = clk_get_rate(st->clkin);
+> > > +
+> > > +	if (rate >= 5400000000 && rate <= 7000000000)  
+> > 
+> > To reduce chance of 0s issues you could use the HZ_PER_MHZ definition in
+> > include/linux/units.h
+> > Nice to avoid counting so many zeros when reviewing.
+> >   
+> > > +		filt_raw = 15;
+> > > +	else if (rate >= 5400000000 && rate <= 8000000000)
+> > > +		filt_raw = 10;
+> > > +	else if (rate >= 6600000000 && rate <= 9200000000)
+> > > +		filt_raw = 5;
+> > > +	else
+> > > +		filt_raw = 0;
+> > > +
+> > > +	return __admv1013_spi_update_bits(st, ADMV1013_REG_QUAD,
+> > > +					ADMV1013_QUAD_FILTERS_MSK,
+> > > +  
+> > 	FIELD_PREP(ADMV1013_QUAD_FILTERS_MSK, filt_raw));  
+> > > +}
+> > > +  
+> >   
+> > > +static int admv1013_reg_access(struct iio_dev *indio_dev,
+> > > +			       unsigned int reg,
+> > > +			       unsigned int write_val,
+> > > +			       unsigned int *read_val)
+> > > +{
+> > > +	struct admv1013_state *st = iio_priv(indio_dev);
+> > > +	int ret;
+> > > +
+> > > +	if (read_val)
+> > > +		ret = admv1013_spi_read(st, reg, read_val);  
+> > 
+> > 		return amdv1013_spi_read() etc is a bit more concise for now
+> > loss of readability.
+> >   
+> > > +	else
+> > > +		ret = admv1013_spi_write(st, reg, write_val);
+> > > +
+> > > +	return ret;
+> > > +}
+> > > +  
+> > 
+> > ...
+> > 
+> >   
+> > > +
+> > > +#define ADMV1013_CHAN(_channel, rf_comp) {			\
+> > > +	.type = IIO_ALTVOLTAGE,					\
+> > > +	.modified = 1,						\
+> > > +	.output = 1,						\
+> > > +	.indexed = 1,						\
+> > > +	.channel2 = IIO_MOD_##rf_comp,				\
+> > > +	.channel = _channel,					\
+> > > +	.info_mask_separate = BIT(IIO_CHAN_INFO_PHASE) |	\
+> > > +		BIT(IIO_CHAN_INFO_OFFSET)			\
+> > > +	}
+> > > +
+> > > +static const struct iio_chan_spec admv1013_channels[] = {
+> > > +	ADMV1013_CHAN(0, I),
+> > > +	ADMV1013_CHAN(0, Q),
+> > > +};  
+> > 
+> > ...
+> >   
+> > > +
+> > > +static int admv1013_properties_parse(struct admv1013_state *st)
+> > > +{
+> > > +	int ret;
+> > > +	struct spi_device *spi = st->spi;
+> > > +
+> > > +	st->vga_pd = device_property_read_bool(&spi->dev, "adi,vga-pd");
+> > > +	st->mixer_pd = device_property_read_bool(&spi->dev, "adi,mixer-  
+> > pd");  
+> > > +	st->quad_pd = device_property_read_bool(&spi->dev, "adi,quad-  
+> > pd");  
+> > > +	st->bg_pd = device_property_read_bool(&spi->dev, "adi,bg-pd");
+> > > +	st->mixer_if_en = device_property_read_bool(&spi->dev,  
+> > "adi,mixer-if-en");  
+> > > +	st->det_en = device_property_read_bool(&spi->dev, "adi,det-en");  
+> > 
+> > Comments on these in the binding document.
+> >   
+> > > +
+> > > +	ret = device_property_read_u32(&spi->dev, "adi,quad-se-mode",  
+> > &st->quad_se_mode);  
+> > > +	if (ret)
+> > > +		st->quad_se_mode = 12;
+> > > +
+> > > +	st->reg = devm_regulator_get(&spi->dev, "vcm");
+> > > +	if (IS_ERR(st->reg))
+> > > +		return dev_err_probe(&spi->dev, PTR_ERR(st->reg),
+> > > +				     "failed to get the common-mode  
+> > voltage\n");  
+> > > +
+> > > +	st->clkin = devm_clk_get(&spi->dev, "lo_in");
+> > > +	if (IS_ERR(st->clkin))
+> > > +		return dev_err_probe(&spi->dev, PTR_ERR(st->clkin),
+> > > +				     "failed to get the LO input clock\n");
+> > > +
+> > > +	return 0;
+> > > +}
+> > > +
+> > > +static int admv1013_probe(struct spi_device *spi)
+> > > +{
+> > > +	struct iio_dev *indio_dev;
+> > > +	struct admv1013_state *st;
+> > > +	int ret;
+> > > +
+> > > +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> > > +	if (!indio_dev)
+> > > +		return -ENOMEM;
+> > > +
+> > > +	st = iio_priv(indio_dev);
+> > > +
+> > > +	indio_dev->info = &admv1013_info;
+> > > +	indio_dev->name = "admv1013";
+> > > +	indio_dev->channels = admv1013_channels;
+> > > +	indio_dev->num_channels = ARRAY_SIZE(admv1013_channels);
+> > > +
+> > > +	st->spi = spi;
+> > > +
+> > > +	ret = admv1013_properties_parse(st);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	ret = regulator_enable(st->reg);
+> > > +	if (ret) {
+> > > +		dev_err(&spi->dev, "Failed to enable specified Common-  
+> > Mode Voltage!\n");  
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	ret = devm_add_action_or_reset(&spi->dev,  
+> > admv1013_reg_disable,  
+> > > +				       st->reg);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	ret = clk_prepare_enable(st->clkin);
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	ret = devm_add_action_or_reset(&spi->dev, admv1013_clk_disable,  
+> > st->clkin);  
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	st->nb.notifier_call = admv1013_freq_change;
+> > > +	ret = clk_notifier_register(st->clkin, &st->nb);  
+> > 
+> > There seems to be a devm_clk_notifier_registers() which you should use.
+> >   
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	ret = devm_add_action_or_reset(&spi->dev,  
+> > admv1013_clk_notifier_unreg, st);  
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	mutex_init(&st->lock);
+> > > +
+> > > +	ret = admv1013_init(st);
+> > > +	if (ret) {
+> > > +		dev_err(&spi->dev, "admv1013 init failed\n");
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	ret = devm_add_action_or_reset(&spi->dev,  
+> > admv1013_powerdown, st);  
+> > > +	if (ret)
+> > > +		return ret;
+> > > +
+> > > +	return devm_iio_device_register(&spi->dev, indio_dev);
+> > > +}
+> > > +  
+> > 
+> > ...  
+> 
 
