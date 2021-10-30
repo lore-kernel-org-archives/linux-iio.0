@@ -2,83 +2,138 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA68EC433EF
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 14:59:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5CAC433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 15:10:11 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id BF38260FD9
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 14:59:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 235346101E
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 15:10:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231968AbhJ3PCA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Oct 2021 11:02:00 -0400
-Received: from mail.kernel.org ([198.145.29.99]:43846 "EHLO mail.kernel.org"
+        id S230086AbhJ3PMk convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Oct 2021 11:12:40 -0400
+Received: from mail.kernel.org ([198.145.29.99]:47286 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231922AbhJ3PCA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Oct 2021 11:02:00 -0400
+        id S229993AbhJ3PMj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Oct 2021 11:12:39 -0400
 Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id A890560F56;
-        Sat, 30 Oct 2021 14:59:28 +0000 (UTC)
-Date:   Sat, 30 Oct 2021 16:03:57 +0100
+        by mail.kernel.org (Postfix) with ESMTPSA id EB0BE60F93;
+        Sat, 30 Oct 2021 15:10:06 +0000 (UTC)
+Date:   Sat, 30 Oct 2021 16:14:35 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Martin Fuzzey <mfuzzey@parkeon.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: mma8452: Fix trigger reference couting
-Message-ID: <20211030160357.6191e2a8@jic23-huawei>
-In-Reply-To: <3bf78fdf-c6df-dd77-a1f1-61800c0ebe37@metafoo.de>
-References: <20211024092700.6844-1-lars@metafoo.de>
-        <20211028150731.753d4e40@jic23-huawei>
-        <3bf78fdf-c6df-dd77-a1f1-61800c0ebe37@metafoo.de>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v2 1/2] iio: frequency: admv1013: add support for
+ ADMV1013
+Message-ID: <20211030161435.6ceaab21@jic23-huawei>
+In-Reply-To: <PH0PR03MB636669F27992B59B8A7B603D99879@PH0PR03MB6366.namprd03.prod.outlook.com>
+References: <20211027092333.5270-1-antoniu.miclaus@analog.com>
+        <20211027184324.51811ef1@jic23-huawei>
+        <CY4PR03MB3399339315289769615E4DCD9B869@CY4PR03MB3399.namprd03.prod.outlook.com>
+        <20211028113101.0587a658@jic23-huawei>
+        <PH0PR03MB636669F27992B59B8A7B603D99879@PH0PR03MB6366.namprd03.prod.outlook.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 28 Oct 2021 21:52:46 +0200
-Lars-Peter Clausen <lars@metafoo.de> wrote:
+On Fri, 29 Oct 2021 07:49:41 +0000
+"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
 
-> On 10/28/21 4:07 PM, Jonathan Cameron wrote:
-> > On Sun, 24 Oct 2021 11:26:59 +0200
-> > Lars-Peter Clausen <lars@metafoo.de> wrote:
-> >  
-> >> The mma8452 driver directly assigns a trigger to the struct iio_dev. The
-> >> IIO core when done using this trigger will call `iio_trigger_put()` to drop
-> >> the reference count by 1.
-> >>
-> >> Without the matching `iio_trigger_get()` in the driver the reference count
-> >> can reach 0 too early, the trigger gets freed while still in use and a
-> >> use-after-free occurs.
-> >>
-> >> Fix this by getting a reference to the trigger before assigning it to the
-> >> IIO device.
-> >>
-> >> Fixes: ae6d9ce05691 ("iio: mma8452: Add support for interrupt driven triggers.")
-> >> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>  
-> > Gah. I thought we'd gotten all these years ago. I guess this one slipped through
-> > the net.  
-> Btw. we already have iio_trigger_set_immutable(), which handles the 
-> reference counting. I was think of adding a iio(_device)_trigger_set() 
-> that does the same except not setting the trig_readonly flag. And then 
-> eventually move the trigger to iio_dev_opaque. Any concerns with this?
+> Hi Jonathan,
+> 
+> > -----Original Message-----
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Thursday, October 28, 2021 12:31 PM
+> > To: Miclaus, Antoniu <Antoniu.Miclaus@analog.com>
+> > Cc: robh+dt@kernel.org; linux-iio@vger.kernel.org;
+> > devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; Sa, Nuno
+> > <Nuno.Sa@analog.com>; Lars-Peter Clausen <lars@metafoo.de>
+> > Subject: Re: [PATCH v2 1/2] iio: frequency: admv1013: add support for
+> > ADMV1013
+> > 
+> > On Thu, 28 Oct 2021 10:08:08 +0000
+> > "Miclaus, Antoniu" <Antoniu.Miclaus@analog.com> wrote:
+> >   
+> > > Hello Jonathan,
+> > >
+> > > Thanks for the review!
+> > >
+> > > Regarding the interface for the Mixer Offset adjustments:
+> > > ADMV1013_MIXER_OFF_ADJ_P
+> > > ADMV1013_MIXER_OFF_ADJ_N
+> > >
+> > > These parameters are related to the LO feedthrough offset  
+> > calibration.  
+> > > (LO and sideband suppression)
+> > >
+> > > On this matter, my suggestion would be to add IIO calibration types,  
+> > something like:  
+> > > IIO_CHAN_INFO_CALIBFEEDTROUGH_POS
+> > > IIO_CHAN_INFO_CALIBFEEDTROUGH_NEG  
+> > 
+> > These sound too specific to me - we want an interface that is
+> > potentially useful
+> > in other places.  They are affecting the 'channel' which here is
+> > simply an alt voltage channel, but I'm assuming it's something like
+> > separate analog tweaks to the positive and negative of the differential
+> > pair?  
+> 
+> That's also my understanding. This kind of calibration seems to be very
+> specific for TX local oscillators...
+> 
+> > Current channel is represented as a single index, but one route to this
+> > would be
+> > to have it as a differential pair.
+> > 
+> > out_altvoltage0-1_phase
+> > for the attribute that applies at the level of the differential pair and
+> > 
+> > out_altvoltage0_calibbias
+> > out_altvoltage1_calibbias
+> > For the P and N signal specific attributes.  
+> 
+> Honestly, I'm not very enthusiastic with having out_altvoltage{0|1} as the
+> this applies to a single channel... Having this with separate indexes feels
+> odd to me. Even though we have the phase with "0-1", this can be a place
+> for misuse and confusion...
+> 
+> I was thinking about modifiers (to kind of represent differential channels)
+> but I don't think it would work out here... What about IIO_CHAN_INFO_CALIBBIAS_P
+> and  IIO_CHAN_INFO_CALIBBIAS_N? Or maybe just something like
+> IIO_CHAN_INFO_CALIBBIAS_DIFF and internally in IIO we would automatically
+> create both P and N sysfs files since I don't think it makes senses in any case to
+> just define one of the calibrations... Anyways, these are my 5 cents :)
 
-No concerns, seems like as sensible change given how things are evolving.
-Obviously some other stuff that would need changing before we can
-actually move trig.
+Definitely not a modifier.  It's almost arguable that these are different
+characteristics of the channel so I can live with the ABI perhaps, but
+unless this is a very common thing I'm not sure I want to burn 2 chan info
+bits for them. Note we are running very low on those anyway without changing
+how those are handled.  We will need to tackle that anyway, but let's not
+tie that to this driver.
 
-One early step would be to modify iio_trigger_notify_done() to take
-a struct iio_dev rather than a struct iio_trigger.  A job for a coccinelle
-script I think!  That function name might need a rethink along with the
-parameter change.
+I don't like the idea of adding core magic to spin multiple files from one
+without more usecases.  So for now use extended attributes for these if
+we go this way.
 
-Hmm. Looks like we have a few drivers passing indio_dev->trig to iio_trigger_poll
-as well which is a little odd.  mma8452 is one of them and it's not using
-an immutable trigger or validate_trigger() so unexpected results if anyone
-changes the trigger...  Possibly not fatal as the interrupt will probably
-not occur but not correct either...
+I think I still prefer the separate channels approach.  Note this is how
+we deal with devices that are capable of either single ended or differential
+operation.  The channel numbering is reflecting the wire in both cases.
+However, I'm not sure we've ever made it clear the ABI would apply like this.
+We may have devices that use this interface but expect it to not apply to
+the differential case....
 
 Jonathan
+
+> 
+> - Nuno Sá
+
