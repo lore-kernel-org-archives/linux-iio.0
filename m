@@ -2,113 +2,140 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E553EC433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 15:12:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D2D5C433EF
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 15:49:44 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id B46D7600CD
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 15:12:08 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 27ED660E9C
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 15:49:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230086AbhJ3POi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Oct 2021 11:14:38 -0400
-Received: from www381.your-server.de ([78.46.137.84]:58714 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229993AbhJ3POh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Oct 2021 11:14:37 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=051ynGXUf8lsGhkjxVAQwHJzi1pW88P6WHqfNb6Du1U=; b=MrNcO+61lWUWaIqEtdqyz6INAH
-        ySuQn4Trr9vId8nVUB3FuFcpyDo5nJkkC832kPAYYpAYXxtmtiDnkB+D48IlyNQc6hq7/A/HVAyr+
-        DJOXBEx020PMM+nuweFPHcaZA7NLtKR3OkSndeAiAhGWgatFLMO6kv5yJuEjw1n1jFvimaNy3ugY2
-        OZBPmRX5nLIRJiYmf0eebzQjdoF9y8bSR9IVzJ9GibAamLhNhO4r95PSeSz/AA25U20oSnmPlgRn/
-        HvnqgDXdT4uoCgGYukKMPWRIknLWMknwTBQjKd7w8LwVC0syFLgLwwraMdyzpgT3tt0PsOtiTScp2
-        nhY2yWog==;
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1mgq1a-000AU7-QY; Sat, 30 Oct 2021 17:12:02 +0200
-Received: from [82.135.83.71] (helo=[192.168.178.20])
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1mgq1a-000OHB-Kk; Sat, 30 Oct 2021 17:12:02 +0200
-Subject: Re: [PATCH 1/2] iio: mma8452: Fix trigger reference couting
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Martin Fuzzey <mfuzzey@parkeon.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-References: <20211024092700.6844-1-lars@metafoo.de>
- <20211028150731.753d4e40@jic23-huawei>
- <3bf78fdf-c6df-dd77-a1f1-61800c0ebe37@metafoo.de>
- <20211030160357.6191e2a8@jic23-huawei>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <86c1aa49-edc4-c02c-7ab7-4d075819a847@metafoo.de>
-Date:   Sat, 30 Oct 2021 17:12:02 +0200
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S232008AbhJ3PwM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Oct 2021 11:52:12 -0400
+Received: from mail.kernel.org ([198.145.29.99]:58484 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231995AbhJ3PwM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Oct 2021 11:52:12 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id AAB1260E8C;
+        Sat, 30 Oct 2021 15:49:38 +0000 (UTC)
+Date:   Sat, 30 Oct 2021 16:54:06 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     cosmin.tanislav@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>, linux-gpio@vger.kernel.org
+Subject: Re: [PATCH 3/3] iio: addac: add AD74413R driver
+Message-ID: <20211030165406.149b9036@jic23-huawei>
+In-Reply-To: <CAA+onPPObFeXQwJ450M=5Ue3uE6Cui0M0X49qgn_U1D6su=BcA@mail.gmail.com>
+References: <20211028134849.3664969-1-demonsingur@gmail.com>
+        <20211028134849.3664969-3-demonsingur@gmail.com>
+        <20211028165847.4baa8566@jic23-huawei>
+        <CAA+onPPObFeXQwJ450M=5Ue3uE6Cui0M0X49qgn_U1D6su=BcA@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <20211030160357.6191e2a8@jic23-huawei>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26338/Sat Oct 30 10:21:41 2021)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10/30/21 5:03 PM, Jonathan Cameron wrote:
-> On Thu, 28 Oct 2021 21:52:46 +0200
-> Lars-Peter Clausen <lars@metafoo.de> wrote:
->
->> On 10/28/21 4:07 PM, Jonathan Cameron wrote:
->>> On Sun, 24 Oct 2021 11:26:59 +0200
->>> Lars-Peter Clausen <lars@metafoo.de> wrote:
->>>   
->>>> The mma8452 driver directly assigns a trigger to the struct iio_dev. The
->>>> IIO core when done using this trigger will call `iio_trigger_put()` to drop
->>>> the reference count by 1.
->>>>
->>>> Without the matching `iio_trigger_get()` in the driver the reference count
->>>> can reach 0 too early, the trigger gets freed while still in use and a
->>>> use-after-free occurs.
->>>>
->>>> Fix this by getting a reference to the trigger before assigning it to the
->>>> IIO device.
->>>>
->>>> Fixes: ae6d9ce05691 ("iio: mma8452: Add support for interrupt driven triggers.")
->>>> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
->>> Gah. I thought we'd gotten all these years ago. I guess this one slipped through
->>> the net.
->> Btw. we already have iio_trigger_set_immutable(), which handles the
->> reference counting. I was think of adding a iio(_device)_trigger_set()
->> that does the same except not setting the trig_readonly flag. And then
->> eventually move the trigger to iio_dev_opaque. Any concerns with this?
-> No concerns, seems like as sensible change given how things are evolving.
-> Obviously some other stuff that would need changing before we can
-> actually move trig.
->
-> One early step would be to modify iio_trigger_notify_done() to take
-> a struct iio_dev rather than a struct iio_trigger.  A job for a coccinelle
-> script I think!  That function name might need a rethink along with the
-> parameter change.
+@Linus, some gpio related discussion below...
 
-That was my first idea, but then I was like why do we even have to call 
-notify_done()? Can't we automate this, given all the bugs we had around 
-this over the years.
+On Fri, 29 Oct 2021 00:38:31 +0300
+Cosmin Tanislav <demonsingur@gmail.com> wrote:
 
-Sill work in progress: 
-https://github.com/larsclausen/linux/commit/d6ed694c9e512e1f7f3b40ad06b153feca8d7bb1 
-but I think this will work.
+Too much context removed. I had to go back and look earlier in the thread
+to work out what was being discussed.  Particularly as I think these aren't
+even in order!
 
->
-> Hmm. Looks like we have a few drivers passing indio_dev->trig to iio_trigger_poll
-> as well which is a little odd.  mma8452 is one of them and it's not using
-> an immutable trigger or validate_trigger() so unexpected results if anyone
-> changes the trigger...  Possibly not fatal as the interrupt will probably
-> not occur but not correct either...
-Yep, that's on my radar too. And one of the reasons to move the trigger 
-to the opaque structure so this type of error can not happen.
+> > Often these are 1/(N**2) rather than 1/(N**2 - 1) as here.
+> > Noise level is probably high enough this doesn't really matter though.
+> > Data sheets are never entirely clear if ranges are inclusive or not...  
+> 
+> My max values are defined as being inclusive.
+> On a 13bit DAC, raw values are in the range of 0 to 2**13 - 1, inclusive.
+> 
+OK
+
+> > Rule it out in the dt binding and enforce it at probe time not here which  
+> is far too late.
+> > As below, this should be prevented at probe time not runtime.  
+> 
+> This is done so that the GPIO indices are kept the same as the hardware
+> channels, 0, 1, 2, 3.
+> Depending on their mode, some GPIOs can only be read and some of them can
+> only be written to.
+> I'm not sure how you would want to do this at probe time?
+
+I'm not totally following, but took more a look at the datasheet.
+
+Device has 4 GPO pins whch is fine.  Those are simple output only pins. For
+those, if they are in a mode where you are controlling them then you can
+cache the value - if they are in comparator mode then they aren't really
+acting as GPIO pins at all the value you are reading is reflecting the
+input on the other side of the device on a different pin. So in that
+case don't register these with the GPIO subsystem at all.
+Instead you are registering channels selected from A,B,C,D 
+
+> 
+> Logic parallel mode is reserved for set_multiple, when the GPIO is in logic
+> mode.
+So, it took me a while to understand what we would loose by 'only' providing
+the logic parallel mode.  If we only had logic high / logic low as the options
+then a sensible driver option would be to map any GPO configuration to the
+logic parallel mode.  It enables more functionality.  However, that got me thinking
+for why we had high impedance and 100kOhms as options.
+
+These allow you to implement shared buses over these pins.  Which incidentally
+should probably be mapped through to the various gpio subsystem controls
+to reflect these options.
+
+So the state combinations you might well have would be...
+
+Logic low / logic high
+100kOhm pull down / logic high (something like an i2c bus would use this)
+tristate so logic low / logic high / high impedance.(don't care or off)
+
+Other than the first one, these require you to not be in the GPO mode.
+
+However, this is all stuff that depends on what these are wired to - so the
+dts should reflect that rather than simply setting the mode to one of
+
++          0 - GPO_CONFIG_100K_PULL_DOWN
++          1 - GPO_CONFIG_LOGIC
++          3 - GPO_CONFIG_DEBOUNCED_COMPARATOR
++          4 - GPO_CONFIG_HIGH_IMPEDANCE
+
+The only exception being the debounce comparator. So the question is where
+would that be wired to?
+
+> GPIOs are referred to as GPO in the datasheet, so I used this name in the
+> driver too.
+
+Sort of... As above, the output pins are GPO, the input pins are the ones
+the comparator is running on - whilst there value is relected on the outputs
+when in the right mode (and that's the only one you can read them in) they
+are not the same channel.  I'm not sure they should map to the same index...
+
+> 
+> > Error out of this function is fine, but why not just leave this channel  
+> disabled
+> rather than failing to probe which I think is what will currently happen?
+> 
+> Sure, I could make invalid channel and gpo functions fallback to default
+> function.
+> But why tolerate errors in the dts configuration?
+
+I don't think it is an error but rather a function you haven't enabled yet
+in a specific driver.  dts is for the hardware, not your particular driver.
+
+Mind you, I think the binding around this needs to change entirely anyway
+so this will probably not end up relevant.
+
+Jonathan
+
+
