@@ -2,118 +2,306 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4350C433EF
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 16:40:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8D72C4332F
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 17:00:00 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9EFB960F55
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 16:40:31 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 9CC1560F92
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 17:00:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229845AbhJ3QnB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Oct 2021 12:43:01 -0400
-Received: from vern.gendns.com ([98.142.107.122]:33430 "EHLO vern.gendns.com"
+        id S229474AbhJ3RC2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Oct 2021 13:02:28 -0400
+Received: from mail.kernel.org ([198.145.29.99]:39954 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229694AbhJ3QnA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Oct 2021 12:43:00 -0400
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=uamXSidjKkCn8xY6LAC2GoNAiGwksP7TQlMQJqx20Ms=; b=hPPV1QLCODnMO3kWcCkhMoMR6E
-        C4ku2VYCL4nIMKYJZtYkEkgWEwAl71miMYL1U0pVNkA4M0oUTkBXJY/nGnnrha30Bqp+qmW5FrG1/
-        fZPQgPxs6RZE2uR6ul9cR0p3OoGSymk6ew0eMptXpay/a7UYO8v7y4HhWAhmlixgdDomYEutmdmcr
-        Y9PmBdUXRBwQRSmJlo1pfxrqvLh6RW1KBZc8IRaraVdk2XDq6yu2fTZOrfwG3MIIuHbjJRnLTEnga
-        pIFg8BpoRKYymwUOE5xUHLEagm8hh+IatmxSjCjA6U/Q4hioqKDAw73tFdbxtuLjNTmswE01lOcXu
-        i9wC570Q==;
-Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:42744 helo=[192.168.0.134])
-        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <david@lechnology.com>)
-        id 1mgrOv-0005Ok-4Q; Sat, 30 Oct 2021 12:40:28 -0400
-Subject: Re: [PATCH 4/8] docs: counter: add unit timer sysfs attributes
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     linux-iio@vger.kernel.org, Robert Nelson <robertcnelson@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <20211017013343.3385923-1-david@lechnology.com>
- <20211017013343.3385923-5-david@lechnology.com> <YXj1xc6DdeOrUKjW@shinobu>
- <6e96cdd9-d1f1-6861-59eb-c4e6b9a2ffb9@lechnology.com>
- <YXpYUIUIQe+oxwXK@shinobu>
-From:   David Lechner <david@lechnology.com>
-Message-ID: <d5d7454b-e0a0-7436-10d7-dcb402885479@lechnology.com>
-Date:   Sat, 30 Oct 2021 11:40:27 -0500
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.13.0
+        id S230075AbhJ3RC1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 30 Oct 2021 13:02:27 -0400
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id C332B60E8F;
+        Sat, 30 Oct 2021 16:59:55 +0000 (UTC)
+Date:   Sat, 30 Oct 2021 18:04:23 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Gwendal Grignou <gwendal@chromium.org>
+Cc:     lars@metafoo.de, swboyd@chromium.org, andy.shevchenko@gmail.com,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 3/5] iio: proximity: Add SX9324 support
+Message-ID: <20211030180423.6451830e@jic23-huawei>
+In-Reply-To: <20211030111827.1494139-4-gwendal@chromium.org>
+References: <20211030111827.1494139-1-gwendal@chromium.org>
+        <20211030111827.1494139-4-gwendal@chromium.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-In-Reply-To: <YXpYUIUIQe+oxwXK@shinobu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vern.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 10/28/21 2:59 AM, William Breathitt Gray wrote:
-> On Wed, Oct 27, 2021 at 10:30:36AM -0500, David Lechner wrote:
->> On 10/27/21 1:46 AM, William Breathitt Gray wrote:
->>> On Sat, Oct 16, 2021 at 08:33:39PM -0500, David Lechner wrote:
->>>> This documents new unit timer sysfs attributes for the counter
->>>> subsystem.
->>>>
->>>> Signed-off-by: David Lechner <david@lechnology.com>
->>>
->>> Hello David,
->>>
->>> The unit timer is effectively a Count in its own right, so instead of
->>> introducing new sysfs attributes you can just implement it as another
->>> Count in the driver. Count 0 is "QPOSCNT", so set the name of this new
->>> Count 1 as "Unit Timer" (or the datasheet naming if more apt) to
->>> differentiate the Counts. You can then provide the "unit_timer_enable",
->>> "unit_timer_period", and "unit_timer_time" functionalities as respective
->>> Count 1 extensions ("enable" and "period") and Count 1 "count".
+On Sat, 30 Oct 2021 04:18:25 -0700
+Gwendal Grignou <gwendal@chromium.org> wrote:
+
+> Semtech SAR sensor SX9324 is an evolution of the SX9310:
+> It has 4 phases that can be configure to capture and process data
+> from any of 3 CS pins and provide independent detection:
+> proximity, table proximity or body proximity.
 > 
-> Actually if the counter function here is COUNTER_FUNCTION_DECREASE, then
-
-It is an increasing counter.
-
-> instead of introducing a new "period" extension, define this as a
-> "ceiling" extension; that's what ceiling represents in the Counter
-> interface: "the upper limit for the respective counter", which is the
-> period of a timer counting down to a timeout.
-
-In one of the other patches, you made a comment about the semantics
-of ceiling with relation to the overflow event. We can indeed treat
-the timer as a counter and the period as the ceiling. However, the
-unit timer event occurs when the count is equal to the period (ceiling)
-whereas an overflow event occurs when the count exceeds the ceiling.
-So what would this event be called in generic counter terms? "timeout"
-doesn't seem right.
-
+> Gather antenna data:
+> echo sx9324-dev3 > trigger/current_trigger
+> echo 1 > scan_elements/in_proximity0_en
+> echo 1 > buffer/enable
+> od -v -An --endian=big -t d2 -w2 /dev/iio\:device3
+> (at 10Hz, the default).
 > 
-> William Breathitt Gray
+> Trigger events:
+> Setting:
+> thresh_falling_period: 2 (events)
+> thresh_rising_period: 2 (events)
+> in_proximity0_thresh_either_value: 300
+> in_proximity0_thresh_either_hysteresis: 72
 > 
->>>
->>> If you believe it appropriate, you can provide the raw timer ticks via
->>> the Count 1 "count" while a nanoseconds interface is provided via a
->>> Count 1 extension "timeout" (or something similar).
->>>
+> using iio_event_monitor /dev/iio\:deviceX, approaching my hand to the
+> antenna pad, I see:
+> ...
+> Event: time: 1634763907532035297, type: proximity, channel: 0, evtype:
+> thresh, direction: falling
+> Event: time: 1634763910138104640, type: proximity, channel: 0, evtype:
+> thresh, direction: rising
+> ...
+> 
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 
-One area where this concept of treating a timer as a counter potentially
-breaks down is the issue of CPU frequency scaling. By treating the unit
-timer as a timer, then the kernel could take care of any changes in clock
-rate internally by automatically adjusting the prescalar and period on
-rate change events. But if we are just treating it as a counter, then we
-should probably just have an attribute that provides the clock rate and
-if we want to support CPU frequency scaling, add an event that indicates
-that the clock rate changed.
+Various comment inline, but biggest one is lack of docs of non standard ABI
+which means discussion is very difficult.
+
+Jonathan
+
+> ---
+>  drivers/iio/proximity/Kconfig  |  18 +
+>  drivers/iio/proximity/Makefile |   3 +-
+>  drivers/iio/proximity/sx9324.c | 931 +++++++++++++++++++++++++++++++++
+>  3 files changed, 951 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/proximity/sx9324.c
+> 
+> diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
+> index 7c7203ca3ac63..aaddf97f9b219 100644
+> --- a/drivers/iio/proximity/Kconfig
+> +++ b/drivers/iio/proximity/Kconfig
+> @@ -112,11 +112,15 @@ config SRF04
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called srf04.
+>  
+> +config SX_COMMON
+> +	tristate
+> +
+>  config SX9310
+>  	tristate "SX9310/SX9311 Semtech proximity sensor"
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	select REGMAP_I2C
+> +	select SX_COMMON
+>  	depends on I2C
+>  	help
+>  	  Say Y here to build a driver for Semtech's SX9310/SX9311 capacitive
+> @@ -125,6 +129,20 @@ config SX9310
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called sx9310.
+>  
+> +config SX9324
+> +	tristate "SX9324 Semtech proximity sensor"
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	select REGMAP_I2C
+> +	select SX_COMMON
+> +	depends on I2C
+> +	help
+> +	  Say Y here to build a driver for Semtech's SX9324
+> +	  proximity/button sensor.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called sx9324.
+> +
+>  config SX9500
+>  	tristate "SX9500 Semtech proximity sensor"
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
+> index cbdac09433eb5..1b026fedc396c 100644
+> --- a/drivers/iio/proximity/Makefile
+> +++ b/drivers/iio/proximity/Makefile
+> @@ -14,7 +14,8 @@ obj-$(CONFIG_RFD77402)		+= rfd77402.o
+>  obj-$(CONFIG_SRF04)		+= srf04.o
+>  obj-$(CONFIG_SRF08)		+= srf08.o
+>  obj-$(CONFIG_SX9310)		+= sx9310.o
+> +obj-$(CONFIG_SX9324)		+= sx9324.o
+> +obj-$(CONFIG_SX_COMMON) 	+= sx_common.o
+Previous patch...
+
+>  obj-$(CONFIG_SX9500)		+= sx9500.o
+>  obj-$(CONFIG_VCNL3020)		+= vcnl3020.o
+>  obj-$(CONFIG_VL53L0X_I2C)	+= vl53l0x-i2c.o
+> -
+stray
+
+> diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+> new file mode 100644
+> index 0000000000000..41d9c950c5abd
+> --- /dev/null
+> +++ b/drivers/iio/proximity/sx9324.c
+> @@ -0,0 +1,931 @@
+> +// SPDX-License-Identifier: GPL-2.0
+> +/*
+> + * Copyright 2021 Google LLC.
+> + *
+> + * Driver for Semtech's SX9324 capacitive proximity/button solution.
+> + * Based on SX9324 driver and copy of datasheet at:
+> + * https://edit.wpgdadawant.com/uploads/news_file/program/2019/30184/tech_files/program_30184_suggest_other_file.pdf
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + */
+
+SPDX tag usually means we can drop the GPL license blurb.
+
+> +
+
+> +
+> +/* 4 channels, as defined in STAT0: PH0, PH1, PH2 and PH3. */
+> +#define SX9324_NUM_CHANNELS		4
+> +/* 3 CS pins: CS0, CS1, CS2. */
+> +#define SX9324_NUM_PINS			3
+> +
+> +#define SX9324_CHANNEL(idx)						\
+> +	{								\
+> +		.type = IIO_PROXIMITY,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+> +				      BIT(IIO_CHAN_INFO_HARDWAREGAIN),	\
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
+> +		.info_mask_separate_available =				\
+> +			BIT(IIO_CHAN_INFO_HARDWAREGAIN),		\
+> +		.indexed = 1,						\
+> +		.channel = idx,						\
+> +		.address = SX9324_REG_DIFF_MSB,				\
+> +		.event_spec = sx_common_events,				\
+> +		.num_event_specs = ARRAY_SIZE(sx_common_events),	\
+> +		.scan_index = idx,					\
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 12,					\
+> +			.storagebits = 16,				\
+> +			.endianness = IIO_BE,				\
+> +		},							\
+> +	}
+> +
+> +static const struct iio_chan_spec sx9324_channels[] = {
+> +	SX9324_CHANNEL(0),			/* Phase 0 */
+> +	SX9324_CHANNEL(1),			/* Phase 1 */
+> +	SX9324_CHANNEL(2),			/* Phase 2 */
+> +	SX9324_CHANNEL(3),			/* Phase 3 */
+> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +};
+> +
+> +static const char * const sx9324_cs_pin_usage[] = { "HZ", "MI", "DS", "GD" };
+> +
+> +static ssize_t sx9324_phase_configuration_show(struct device *dev,
+> +					       struct device_attribute *attr,
+> +					       char *buf)
+> +{
+> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct sx_common_data *data = iio_priv(indio_dev);
+> +	unsigned int val;
+> +	int i, ret, pin_idx;
+> +	size_t len = 0;
+> +
+> +	ret = regmap_read(data->regmap, SX9324_REG_AFE_PH0 + this_attr->address, &val);
+> +
+> +	for (i = 0; i < SX9324_NUM_PINS; i++) {
+> +		pin_idx = (val & SX9324_REG_AFE_PH0_PIN_MASK(i)) >> (2 * i);
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%s,",
+> +				 sx9324_cs_pin_usage[pin_idx]);
+> +	}
+> +	buf[len - 1] = '\n';
+> +	return len;
+> +}
+> +
+> +static ssize_t sx9324_phase_configuration_store(struct device *dev,
+> +						struct device_attribute *attr,
+> +						const char *buf,
+> +						size_t len)
+> +{
+> +	return -EINVAL;
+
+Don't do this. If they are read only treat them correctly as such
+with appropriate permissions etc.
+
+> +}
+> +
+> +#define IIO_DEV_ATTR_PHASE_CONFIG(_idx) \
+> +IIO_DEVICE_ATTR(in_proximity_configuration##_idx, 0644, \
+> +		sx9324_phase_configuration_show, \
+> +		sx9324_phase_configuration_store, _idx)
+> +
+> +static IIO_DEV_ATTR_PHASE_CONFIG(0);
+> +static IIO_DEV_ATTR_PHASE_CONFIG(1);
+> +static IIO_DEV_ATTR_PHASE_CONFIG(2);
+> +static IIO_DEV_ATTR_PHASE_CONFIG(3);
+
+Documentation of these? I'm not going to comment on them without appropriate
+docs in
+
+Documentation/ABI/testing/
+
+Just wastes time figuring out what they are.
+
+
+...
+
+
+
+> +static int sx9324_write_raw(struct iio_dev *indio_dev,
+> +			    const struct iio_chan_spec *chan, int val, int val2,
+> +			    long mask)
+> +{
+> +	struct sx_common_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		return sx9324_set_samp_freq(data, val, val2);
+> +	case IIO_CHAN_INFO_HARDWAREGAIN:
+> +		return sx9324_write_gain(data, chan, val);
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static struct attribute *sx9324_attributes[] = {
+> +	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+
+As mentioned in previous review, ideally move this to using the
+read_avail callback.
+
+> +	&iio_dev_attr_in_proximity_configuration0.dev_attr.attr,
+> +	&iio_dev_attr_in_proximity_configuration1.dev_attr.attr,
+> +	&iio_dev_attr_in_proximity_configuration2.dev_attr.attr,
+> +	&iio_dev_attr_in_proximity_configuration3.dev_attr.attr,
+> +	NULL
+> +};
+
+...
+
+> +
+> +static const struct acpi_device_id sx9324_acpi_match[] = {
+> +	{ "STH9324", SX9324_WHOAMI_VALUE},
+
+Any reference to a board, preferably with a dump of the DSDT/SSDT
+that uses this or an official doc etc to justify that it's valid?
+
+STH isn't in the pnp database so if it's in the wild we need a comment
+to say where.
+
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(acpi, sx9324_acpi_match);
+> +
+...
 
