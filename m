@@ -2,231 +2,116 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F98C433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 17:20:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F4D5C433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Oct 2021 07:33:45 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 6A6EF60FC3
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Oct 2021 17:20:27 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7899860EFF
+	for <linux-iio@archiver.kernel.org>; Sun, 31 Oct 2021 07:33:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231462AbhJ3RW4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Oct 2021 13:22:56 -0400
-Received: from mail.kernel.org ([198.145.29.99]:42430 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S231134AbhJ3RW4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 30 Oct 2021 13:22:56 -0400
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id C776C60F9B;
-        Sat, 30 Oct 2021 17:20:24 +0000 (UTC)
-Date:   Sat, 30 Oct 2021 18:24:52 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     lars@metafoo.de, swboyd@chromium.org, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH 4/5] dt-bindings: iio: Add sx9324 binding
-Message-ID: <20211030182452.76712323@jic23-huawei>
-In-Reply-To: <20211030111827.1494139-5-gwendal@chromium.org>
-References: <20211030111827.1494139-1-gwendal@chromium.org>
-        <20211030111827.1494139-5-gwendal@chromium.org>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
+        id S230309AbhJaHgP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 31 Oct 2021 03:36:15 -0400
+Received: from www381.your-server.de ([78.46.137.84]:57618 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229697AbhJaHgP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 31 Oct 2021 03:36:15 -0400
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
+         s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
+        In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
+        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+        Resent-To:Resent-Cc:Resent-Message-ID;
+        bh=/Kz4Nl7/ygoukCVewyCImg7B3E+WFW6kJ/c7aDREi+g=; b=jQu20gNNFRaRUoJ9IZmw+osQSA
+        /FWlyT+QBZdd8jXoGi3W0eZixvbJfoTAsp6Mnoq53Me3ds4RF37+eE3JXbsc3MSslomD5ptC6T848
+        HwKQu8Rac8C7BS7LqSp/B8jvmzAqUyAWW4OwsBQ1HcOqDO8Se/K6ZxWQqHDXy2oLf0hr5Ze81VP6M
+        WVxNXyt9iPh/fS9y3TdAPTdJUXL38sWLg4gtjPnIHfJ1Gwpds29crwIoUEVdWzfJ4sKDSKPochBuO
+        paXlrOt5qTssik6O29BxV2y/ahA7yMlGbZVdv2R1enP/nUxUiR1t82yD14Ee60PImtQDyas7Y0f2h
+        UCwklFoQ==;
+Received: from sslproxy06.your-server.de ([78.46.172.3])
+        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <lars@metafoo.de>)
+        id 1mh5Lb-000FTb-3w; Sun, 31 Oct 2021 08:33:43 +0100
+Received: from [82.135.83.71] (helo=lars-desktop.fritz.box)
+        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <lars@metafoo.de>)
+        id 1mh5La-00059C-VK; Sun, 31 Oct 2021 08:33:42 +0100
+From:   Lars-Peter Clausen <lars@metafoo.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 2/2] iio: viio_trigger_alloc(): Correctly free trigger on error
+Date:   Sun, 31 Oct 2021 08:32:31 +0100
+Message-Id: <20211031073231.13780-2-lars@metafoo.de>
+X-Mailer: git-send-email 2.20.1
+In-Reply-To: <20211031073231.13780-1-lars@metafoo.de>
+References: <20211031073231.13780-1-lars@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Authenticated-Sender: lars@metafoo.de
+X-Virus-Scanned: Clear (ClamAV 0.103.3/26338/Sat Oct 30 10:21:41 2021)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 30 Oct 2021 04:18:26 -0700
-Gwendal Grignou <gwendal@chromium.org> wrote:
+Once device_initialize() has been called on a struct device the device must
+be freed by decreasing the reference count rather than directly freeing the
+underlying memory.
 
-> Similar to SX9310, add biddings to setup sx9324 hardware properties.
-> SX9324 is a little different, introduce 4 phases to be configured in 2
-> pairs over 3 antennas.
-> 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-This has a high degree of black magic.
+This is so that any additional state and resources associated with the
+device get properly freed.
 
-I'm curious - is there a fairly heavy weight userspace library interpreting
-the various readings?  If so I don't suppose it's available anywhere to look at?
-If you can point to any public info on this part that would also be great.
+In this particular case there are no additional resources associated with
+the device and no additional reference count. So there is no resource leak
+or use-after-free by freeing the struct device directly
 
-Thanks,
+But in order to follow best practices and avoid accidental future breakage
+use put_device() instead of kfree() to free the device when an error
+occurs.
 
-Jonathan
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/industrialio-trigger.c | 12 +++++-------
+ 1 file changed, 5 insertions(+), 7 deletions(-)
 
-> ---
->  .../iio/proximity/semtech,sx9324.yaml         | 141 ++++++++++++++++++
->  1 file changed, 141 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> new file mode 100644
-> index 0000000000000..fe9edf15c16d4
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> @@ -0,0 +1,141 @@
-> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-> +%YAML 1.2
-> +---
-> +$id: http://devicetree.org/schemas/iio/proximity/semtech,sx9310.yaml#
-> +$schema: http://devicetree.org/meta-schemas/core.yaml#
-> +
-> +title: Semtech's SX9324 capacitive proximity sensor
-> +
-> +maintainers:
-> +  - Gwendal Grignou <gwendal@chromium.org>
-> +  - Daniel Campello <campello@chromium.org>
-> +
-> +description: |
-> +  Semtech's SX9324 proximity sensor.
-> +
-> +properties:
-> +  compatible:
-> +    enum:
-> +      - semtech,sx9324x
-> +
-> +  reg:
-> +    maxItems: 1
-> +
-> +  interrupts:
-> +    description:
-> +      The sole interrupt generated by the device used to announce the
-> +      preceding reading request has finished and that data is
-> +      available or that a close/far proximity event has happened.
-No need to say sole given maxItems: 1
-Perhaps...
-
-	Generated by device to announce preceding read request has finished
-	and data is available or that a close/far proximity event has happened.
-
-> +    maxItems: 1
-> +
-> +  vdd-supply:
-> +    description: Main power supply
-> +
-> +  svdd-supply:
-> +    description: Host interface power supply
-> +
-> +  "#io-channel-cells":
-> +    const: 1
-
-Curious -  Do we have consumers of this?
-
-> +
-> +  semtech,ph0-pin:
-> +    $ref: /schemas/types.yaml#/definitions/uint32-array
-> +    description: |
-> +      Indicates how each CS pin is used during phase 0.
-> +      Each of the 3 pins have the following value -
-> +      0 : unused (high impedance)
-> +      1 : measured input
-> +      2 : dynamic shield
-> +      3 : grounded.
-> +      For instance, CS0 measured, CS1 shield and CS2 ground is [1, 2, 3]
-> +    items:
-> +      enum: [ 0, 1, 2, 3 ]
-> +    minItems: 3
-> +    maxItems: 3
-> +
-> +  semtech,ph1-pin:
-> +  semtech,ph2-pin:
-> +  semtech,ph3-pin:
-> +    Same as ph0-pin
-
-I'm curious - why would you chose different combinations?  I guess because of
-different wiring.  If that's the case, is there a documented 'right' choice
-for a given wiring.   I'm just wondering if we are better off describing
-what is connected to these pins and having the driver pick a valid control
-sequence.  That might simplify things.  If not then fair enough.
-
-> +
-> +  semtech,resolution01
-> +    $ref: /schemas/types.yaml#definitions/uint32
-> +    enum: [0, 1, 2, 3, 4, 5, 6, 7]
-> +    description:
-> +      Capacitance measurement resolution. For phase 0 and 1.
-> +      Higher the number, higher the resolution.
-
-Can we not give something more meaningful than high is higher?
-I don't have the datasheet for this part and the 9330 that I'm
-looking at is rather unhelpful on this.  I have no idea how anyone
-using that datasheet would figure out what to set this to!
-
-> +    default: 4
-> +
-> +  semtech,resolution23
-> +    $ref: /schemas/types.yaml#definitions/uint32
-> +    enum: [0, 1, 2, 3, 4, 5, 6, 7]
-> +    description:
-> +      Capacitance measurement resolution. For phase 2 and 3
-> +    default: 4
-> +
-> +  semtech,startup-sensor:
-> +    $ref: /schemas/types.yaml#definitions/uint32
-> +    enum: [0, 1, 2, 3]
-> +    default: 0
-> +    description:
-> +      Phase used for start-up proximity detection.
-> +      It is used when we enable a phase to remove static offset and measure
-> +      only capacitance changes introduced by the user.
-> +
-> +  semtech,proxraw-strength01:
-> +    $ref: /schemas/types.yaml#definitions/uint32
-> +    enum: [0, 1, 2, 3, 4, 5, 6, 7]
-> +    default: 1
-> +    description:
-> +      PROXRAW filter strength for phase 0 and 1. A value of 0 represents off,i
-> +      and other values represent 1-1/N.
-> +
-> +  semtech,proxraw-strength23:
-> +    $ref: /schemas/types.yaml#definitions/uint32
-> +    enum: [0, 1, 2, 3, 4, 5, 6, 7]
-> +    default: 1
-> +    description:
-> +      PROXRAW filter strength for phase 2 and 3. A value of 0 represents off,i
-> +      and other values represent 1-1/N.
-> +
-> +  semtech,avg-pos-strength:
-> +    $ref: /schemas/types.yaml#definitions/uint32
-> +    enum: [0, 16, 64, 128, 256, 512, 1024, 4294967295]
-> +    default: 16
-> +    description:
-> +      Average positive filter strength. A value of 0 represents off and
-> +      UINT_MAX (4294967295) represents infinite. Other values
-> +      represent 1-1/N.
-> +
-> +required:
-> +  - compatible
-> +  - reg
-> +  - "#io-channel-cells"
-> +
-> +additionalProperties: false
-> +
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    i2c {
-> +      #address-cells = <1>;
-> +      #size-cells = <0>;
-> +      proximity@28 {
-> +        compatible = "semtech,sx9310";
-> +        reg = <0x28>;
-> +        interrupt-parent = <&pio>;
-> +        interrupts = <5 IRQ_TYPE_LEVEL_LOW 5>;
-> +        vdd-supply = <&pp3300_a>;
-> +        svdd-supply = <&pp1800_prox>;
-> +        #io-channel-cells = <1>;
-> +        semtech,ph0-pin = <1, 2, 3>;
-> +        semtech,ph1-pin = <3, 2, 1>;
-> +        semtech,ph2-pin = <1, 2, 3>;
-> +        semtech,ph3-pin = <3, 2, 1>;
-> +        semtech,resolution01 = 2;
-> +        semtech,resolution23 = 2;
-> +        semtech,startup-sensor = <1>;
-> +        semtech,proxraw-strength01 = <2>;
-> +        semtech,proxraw-strength23 = <2>;
-> +        semtech,avg-pos-strength = <64>;
-> +      };
-> +    };
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 93990ff1dfe3..d566e8d4a14b 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -480,7 +480,7 @@ static void iio_trig_release(struct device *device)
+ 	struct iio_trigger *trig = to_iio_trigger(device);
+ 	int i;
+ 
+-	if (trig->subirq_base) {
++	if (trig->subirq_base > 0) {
+ 		for (i = 0; i < CONFIG_IIO_CONSUMERS_PER_TRIGGER; i++) {
+ 			irq_modify_status(trig->subirq_base + i,
+ 					  IRQ_NOAUTOEN,
+@@ -541,11 +541,11 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+ 					    CONFIG_IIO_CONSUMERS_PER_TRIGGER,
+ 					    0);
+ 	if (trig->subirq_base < 0)
+-		goto free_trig;
++		goto err_put_trig;
+ 
+ 	trig->name = kvasprintf(GFP_KERNEL, fmt, vargs);
+ 	if (trig->name == NULL)
+-		goto free_descs;
++		goto err_put_trig;
+ 
+ 	trig->subirq_chip.name = trig->name;
+ 	trig->subirq_chip.irq_mask = &iio_trig_subirqmask;
+@@ -559,10 +559,8 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+ 
+ 	return trig;
+ 
+-free_descs:
+-	irq_free_descs(trig->subirq_base, CONFIG_IIO_CONSUMERS_PER_TRIGGER);
+-free_trig:
+-	kfree(trig);
++err_put_trig:
++	put_device(&trig->dev);
+ 	return NULL;
+ }
+ 
+-- 
+2.20.1
 
