@@ -2,98 +2,109 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D22FC433EF
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Nov 2021 07:18:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F0C17C433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Nov 2021 07:18:42 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id E007C6108C
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Nov 2021 07:18:28 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CF864610A8
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Nov 2021 07:18:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229984AbhKAHVA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 Nov 2021 03:21:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43264 "EHLO
+        id S230312AbhKAHVO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 Nov 2021 03:21:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229622AbhKAHVA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Nov 2021 03:21:00 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DFE25C061714
-        for <linux-iio@vger.kernel.org>; Mon,  1 Nov 2021 00:18:26 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id m14so15526414pfc.9
-        for <linux-iio@vger.kernel.org>; Mon, 01 Nov 2021 00:18:26 -0700 (PDT)
+        with ESMTP id S229882AbhKAHVO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Nov 2021 03:21:14 -0400
+Received: from mail-pl1-x629.google.com (mail-pl1-x629.google.com [IPv6:2607:f8b0:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9F20CC061746
+        for <linux-iio@vger.kernel.org>; Mon,  1 Nov 2021 00:18:39 -0700 (PDT)
+Received: by mail-pl1-x629.google.com with SMTP id r5so11013466pls.1
+        for <linux-iio@vger.kernel.org>; Mon, 01 Nov 2021 00:18:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4pCewSSNJEuxiUVt+gE7eMNdki1eyy+VCPDX8QW2nb8=;
-        b=UIBvaanNE/B+CFTUb/PYnCR3VeHFaD7USCi8CaJVZbJrYNlePrrd33LNxzrosIcAz8
-         Dz5tgaDo9zW7d+Mo4E/hUxgRYt4doM9w5TL2daxkAurHvu8SlJPW5cxyUbCVxReWTD/9
-         kZdAQbvfke3Gf7h20LZX7B8r2JNnNFA+RUy/k=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GuLak6n2D+xx1jRMo02bIST3H8cpHj9A6SUpEXVo4Kg=;
+        b=XZSCUcC/6QicC38QcP0/x/qElDTIdCY6WA75RoT4CoDg+krz9F41NdNTzmz1+D7FF6
+         e95pYi9u/AQJZGaUalIrPZGd9fkdlNoMQ+AcUI2cQ5TbpiFaNXZZr8pOPSKWRx3Ywy0V
+         QTvotVNfsx4ttSQovh+Gzg8LvPZIsaACouzLQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=4pCewSSNJEuxiUVt+gE7eMNdki1eyy+VCPDX8QW2nb8=;
-        b=J/17R5HcPLjKz4yMEHYPYPY526hvpLX1PgXSCNz+Fv71aBrw4kcklf++yRR1fcX8+C
-         U5sB1lv0JjxRS+rRL72h9Y6b+L4rwP9VtTYGP5UkEpOz4JUUxipvpUD9NT8YVzAe4vE5
-         h6ePDZ/mZFitRVi5q6t9URcqMf/pr+q7CDU1SSuRhk5NJYnnlqObNIk9RpuL01XqXqDy
-         vKhnUR5ns3Nk1Vs+SR0ZChCXhdsIQKjZ+xCux7VQG4syetSRICzRiaTrFVjkWgE6E9w8
-         lbIbdMW4Y2Wm0QoJM2+NI71B1OndgGWOQMij3fXTcnBrNf2J5glKCT5kPqtfU91NmmNF
-         SeDQ==
-X-Gm-Message-State: AOAM531++eo4JI6jra1P3273bIq3WCd56gdFEN8woWtzgTDUGvhlm9kC
-        K6LAFIJw6hbRA77fldchJJicNQ==
-X-Google-Smtp-Source: ABdhPJxTzLxW7TP37vgPvLMqbnWOjh4SXB+tyEatfYTXIjLktU4pWAhn6jRYcAsWK0Oks7gzJMPx/A==
-X-Received: by 2002:a62:1b86:0:b0:47b:d112:96d4 with SMTP id b128-20020a621b86000000b0047bd11296d4mr27145674pfb.52.1635751106377;
-        Mon, 01 Nov 2021 00:18:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GuLak6n2D+xx1jRMo02bIST3H8cpHj9A6SUpEXVo4Kg=;
+        b=bmHBWcANWI1QLwo6KoJh05nhq6SIrGFq5wNjhScUQbAmQbUzbCe14IdkfDvh7/LQux
+         8dKjpT8iMGPRTnoBDN7UouYCHSJRVHxb+GOEd4ajgg3cYUNMRkNvBUoctBJYHr6OzfGV
+         G2rL2I9qR9awjFaYzQNkHHoyG5N90rZHcpJxSG49hk0/IHetXC5dBlnaCUTHj8IWJMAm
+         SI8/CKi2IeLoHHM7LZfEZlx4lRTcbVO/nKx6+tP7HMP5A8hTKkG9w48FIU3/zU9hHYBD
+         H+UcDlnmEuSrOyGRmSNKgo7kLzNoDtGE02vc4yBPu4u14vpYl8k2PfTAXeU+2P6ZEhJk
+         IKtA==
+X-Gm-Message-State: AOAM532miXEZtJFFDn3OBDy7ikwajXvtlnq46iobFzySw9Omhb+hnYe8
+        wjf3YVyJ+XeGgCT57Q9E4Mv8iBF3EZhvOQ==
+X-Google-Smtp-Source: ABdhPJxWIcszVXkfBKkPAfbWQApn3qgCvEAyRGUVVaVv4JugMLnAXNzuqZDrgvYYu7NagCyWAscxxg==
+X-Received: by 2002:a17:903:283:b0:141:c7ae:122b with SMTP id j3-20020a170903028300b00141c7ae122bmr10757498plr.53.1635751119100;
+        Mon, 01 Nov 2021 00:18:39 -0700 (PDT)
 Received: from localhost ([2620:15c:202:201:3f65:b35d:616a:31bd])
-        by smtp.gmail.com with UTF8SMTPSA id f19sm8074431pfc.72.2021.11.01.00.18.25
+        by smtp.gmail.com with UTF8SMTPSA id mi11sm17598776pjb.5.2021.11.01.00.18.38
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 01 Nov 2021 00:18:26 -0700 (PDT)
+        Mon, 01 Nov 2021 00:18:38 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     jic23@kernel.org, lars@metafoo.de
 Cc:     andy.shevchenko@gmail.com, linux-iio@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 0/4] iio: Use scan_type shift and realbits when processing raw data
-Date:   Mon,  1 Nov 2021 00:18:18 -0700
-Message-Id: <20211101071822.522178-1-gwendal@chromium.org>
+Subject: [PATCH 2/4] iio: ti-ads1015: Remove shift variable ads1015_read_raw
+Date:   Mon,  1 Nov 2021 00:18:20 -0700
+Message-Id: <20211101071822.522178-3-gwendal@chromium.org>
 X-Mailer: git-send-email 2.33.1.1089.g2158813163f-goog
+In-Reply-To: <20211101071822.522178-1-gwendal@chromium.org>
+References: <20211101071822.522178-1-gwendal@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Using scan_type has source of truth, use shift and realbits instead of
-constants when processing reading sensor registers to produce raw sysfs
-entries.
-The same shit and realbits are already used by the libiio user-space
-library to present channel information from device buffer.
+By using scan_type.realbits when processing raw data,
+we use scan_type.shit only once, thus we don't need to define a local
+variable for it anymore.
 
-Fix only a handful of drivers, where channel scan_type was accessible
-in the function handling the raw data request.
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+---
+ drivers/iio/adc/ti-ads1015.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-In mpl3115, use a 16 bit big endian buffer when reading temperature
-channel to improve readability.
-
-Gwendal Grignou (4):
-  iio: Use scan_type shift and realbits when processing raw data
-  iio: ti-ads1015: Remove shift variable ads1015_read_raw
-  iio: xilinx-xadc-core: Use local variable in xadc_read_raw
-  iio: mpl3115: Use scan_type.shift and realbit in mpl3115_read_raw
-
- drivers/iio/accel/bma220_spi.c     |  3 ++-
- drivers/iio/accel/kxcjk-1013.c     |  3 ++-
- drivers/iio/accel/mma7455_core.c   |  3 ++-
- drivers/iio/accel/sca3000.c        |  5 +++--
- drivers/iio/accel/stk8312.c        |  2 +-
- drivers/iio/accel/stk8ba50.c       |  3 ++-
- drivers/iio/adc/ad7266.c           |  3 ++-
- drivers/iio/adc/at91-sama5d2_adc.c |  3 ++-
- drivers/iio/adc/ti-adc12138.c      |  3 ++-
- drivers/iio/adc/ti-ads1015.c       |  8 +++-----
- drivers/iio/adc/xilinx-xadc-core.c |  2 +-
- drivers/iio/magnetometer/mag3110.c |  6 ++++--
- drivers/iio/pressure/mpl3115.c     | 16 +++++++++++-----
- 13 files changed, 37 insertions(+), 23 deletions(-)
-
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index b0352e91ac165..b92d4cd1b8238 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -464,9 +464,7 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&data->lock);
+ 	switch (mask) {
+-	case IIO_CHAN_INFO_RAW: {
+-		int shift = chan->scan_type.shift;
+-
++	case IIO_CHAN_INFO_RAW:
+ 		ret = iio_device_claim_direct_mode(indio_dev);
+ 		if (ret)
+ 			break;
+@@ -487,7 +485,8 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+ 			goto release_direct;
+ 		}
+ 
+-		*val = sign_extend32(*val >> shift, 15 - shift);
++		*val = sign_extend32(*val >> chan->scan_type.shift,
++				     chan->scan_type.realbits - 1);
+ 
+ 		ret = ads1015_set_power_state(data, false);
+ 		if (ret < 0)
+@@ -497,7 +496,6 @@ static int ads1015_read_raw(struct iio_dev *indio_dev,
+ release_direct:
+ 		iio_device_release_direct_mode(indio_dev);
+ 		break;
+-	}
+ 	case IIO_CHAN_INFO_SCALE:
+ 		idx = data->channel_data[chan->address].pga;
+ 		*val = ads1015_fullscale_range[idx];
 -- 
 2.33.1.1089.g2158813163f-goog
 
