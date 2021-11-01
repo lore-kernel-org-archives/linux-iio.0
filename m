@@ -2,159 +2,160 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7A01C433F5
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Nov 2021 07:30:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F5F0C43217
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Nov 2021 09:39:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id C9E2861078
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Nov 2021 07:30:45 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EF9EE60EBC
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Nov 2021 09:39:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229882AbhKAHdR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 Nov 2021 03:33:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45982 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229827AbhKAHdR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Nov 2021 03:33:17 -0400
-Received: from mail-il1-x12c.google.com (mail-il1-x12c.google.com [IPv6:2607:f8b0:4864:20::12c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C121C061714
-        for <linux-iio@vger.kernel.org>; Mon,  1 Nov 2021 00:30:44 -0700 (PDT)
-Received: by mail-il1-x12c.google.com with SMTP id k1so2214380ilo.7
-        for <linux-iio@vger.kernel.org>; Mon, 01 Nov 2021 00:30:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=xU2cXrqOXyOLtBq5BiTmyyx5wFqXZ6uaNrFpZguPuls=;
-        b=PmAggCQW4Is+Gf1CvDphSCwX8vn7rqQVeCr1swRo76GvL2Vf+FQzQy6V5n6IiFZ5el
-         WY92PqSm8h+BVbkVjVSkQ5gJlm+hTsNB5VBNtKKSmETma+5eQLTeyIgm8zMEfuPHGwQw
-         iHBkshnO7tFECY4IsPoRSWZUxpG7+NUGgw4CQ=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=xU2cXrqOXyOLtBq5BiTmyyx5wFqXZ6uaNrFpZguPuls=;
-        b=LGBUizbsmgcHM18F3upn/SKN0kwG2WIeFfkeOd82JRW1O1IEtgb5HbPuG8QzWAdwh3
-         qMmjxp0bhgtqy9ilitVCOM1a9y1H0e6M1QT2gKEjGmBvZ+SIh5f1DhdFjzelRIo+SBQ8
-         OghajuEC8hySap+YbMico1ZHA+s1ZUAjiRtyYvjjDVoX6lJ1tsOrHcas9sNfo97j3y12
-         iUw2nmJ/GAOPJJnkGM5j4WZZXgCMRkwGjRP5N668nfxnXultKuDSmCoXqWOnIkTtuwV1
-         KX7lnqacWQYf+8cPGbLVh5oEB+UgL+V8/L0zqNlLqLSIMINxnRiG0L0Z7P3XU7nN9S0h
-         OTmw==
-X-Gm-Message-State: AOAM530ks2zCNvPcUxBs2m+g8Xm7TI3awFgUJjJp0jhzIKPBn5k2dOjq
-        WA66VMhFdfh2Ec0hNorJsEbo2jgmiz29YZbV2AQ+4Q==
-X-Google-Smtp-Source: ABdhPJzj7jw2CWZieRQMFAUYeMRN8lPJ63qhtoxTIyGN7ItUQr0LnilAhXWwJt1aLq+pY2yDL5MoVTaLCBs1NdEqGl0=
-X-Received: by 2002:a05:6e02:17cf:: with SMTP id z15mr18935755ilu.214.1635751843476;
- Mon, 01 Nov 2021 00:30:43 -0700 (PDT)
-MIME-Version: 1.0
-References: <20211030111827.1494139-1-gwendal@chromium.org>
- <20211030111827.1494139-2-gwendal@chromium.org> <c71a2781-f5f6-0725-dbdf-aaa823883be1@metafoo.de>
- <20211030170903.68b7e561@jic23-huawei>
-In-Reply-To: <20211030170903.68b7e561@jic23-huawei>
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Mon, 1 Nov 2021 00:30:31 -0700
-Message-ID: <CAPUE2ut-iWNmJEqUEwW=7sb-aqoTLNV-uL6=t3SNQRyQT6ePRg@mail.gmail.com>
-Subject: Re: [PATCH 1/5] iio: Use .realbits to extend a small signed integer
+        id S233391AbhKAJmD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 Nov 2021 05:42:03 -0400
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4044 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233524AbhKAJkB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Nov 2021 05:40:01 -0400
+Received: from fraeml734-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4HjSWJ1kTyz67tX9;
+        Mon,  1 Nov 2021 17:33:00 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml734-chm.china.huawei.com (10.206.15.215) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.15; Mon, 1 Nov 2021 10:37:23 +0100
+Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.15; Mon, 1 Nov
+ 2021 09:37:23 +0000
+Date:   Mon, 1 Nov 2021 09:37:22 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, swboyd@chromium.org,
-        andy.shevchenko@gmail.com, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+CC:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        linux-iio <linux-iio@vger.kernel.org>
+Subject: Re: [RFC PATCH 00/11] IIO: Bring core header includes up to date.
+Message-ID: <20211101093722.000011ba@Huawei.com>
+In-Reply-To: <20211031205618.67cf9ffd@jic23-huawei>
+References: <20211003153306.391766-1-jic23@kernel.org>
+        <20211031170854.6990d79e@jic23-huawei>
+        <20211031171206.75960513@jic23-huawei>
+        <CAHp75Vc3m8+iFX+aufv6f79GcR+GCFSrmnb8R95fYHng=tGE8g@mail.gmail.com>
+        <20211031205618.67cf9ffd@jic23-huawei>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 3.17.8 (GTK+ 2.24.33; i686-w64-mingw32)
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.41]
+X-ClientProxiedBy: lhreml731-chm.china.huawei.com (10.201.108.82) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Oct 30, 2021 at 9:04 AM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Sat, 30 Oct 2021 13:35:19 +0200
-> Lars-Peter Clausen <lars@metafoo.de> wrote:
->
-> > On 10/30/21 1:18 PM, Gwendal Grignou wrote:
-> > > When calling sign_extend32() on a channel, use its .realbit information
-> > > to limit the number of bits to process, instead of a constant.
-> > >
-> > > Changed only simple sign_extend32() calls, when .realbits was defined in
-> > > the same file. Use 'grep -r sign_extend32 $(grep -lr realbits drivers/iio/)'
-> > > to locate the files.
-> > >
-> > > Some files were not processed:
-> > > gyro/fxas21002c_core.c : function parameter changes needed.
-> > > health/max30102.c: Incomplete channel definition.
-> > > health/max30100.c
-> >
-> > I think this is good work, but it seems a bit out of place in this
-> > series. I think it will be easier to get this reviewed and merged if it
-> > is submitted independently. It might make sense to only have the sx9310
-> > changes as part of this series and send the other ones as a separate patch.
-When moving code to sx9310, I notice we were using constants instead
-of realbits, and I look at how other driver deal with bit information.
-> >
-> > What's also missing in the commit description is the motivation for
-> > this. The generated code will be a bit more complex, so there needs to
-> > be a good justification. E.g. having a single source of truth for this
-> > data and avoiding accidental mistakes.
-That's the idea, I will update the commit accordingly.
-> >
-> > The patch also uses `shift` were applicable, which is not mentioned in
-> > the commit dscription.
->
-> Be careful.  I have seen devices (with FIFOs) where the realbits doesn't
-> necessarily match with a separate read path used for polled reads.
->
-> It is an option for the sca3000 for example but that's carrying a hack where
-> ignore that and rely on some coincidental data alignment to pretend realbits
-> is 13 when it's actually 11.
-I see the hack in sca3000_ring_int_process(). The driver reconciles
-the FIFO and raw data access by presenting elements as carrying 13
-bits of information, assuming the 2 LSB are 0.
-Given user space should get the same data when reading using the _raw
-attributes or the buffer, given libiio use scan_type information to
-process buffer data, (see libiio iio_channel_convert())
-it makes sense for the kernel to always use scan_type as well when
-presenting the _raw attributes.
->
-> Still in general it's a reasonable change but agree with Lars, separate series
-> please.
-Will do.
->
-> >
-> >
-> > > [...]
-> > > diff --git a/drivers/iio/pressure/mpl3115.c b/drivers/iio/pressure/mpl3115.c
-> > > index 1eb9e7b29e050..355854f0f59d2 100644
-> > > --- a/drivers/iio/pressure/mpl3115.c
-> > > +++ b/drivers/iio/pressure/mpl3115.c
-> > > @@ -74,7 +74,7 @@ static int mpl3115_read_raw(struct iio_dev *indio_dev,
-> > >                         int *val, int *val2, long mask)
-> > >   {
-> > >     struct mpl3115_data *data = iio_priv(indio_dev);
-> > > -   __be32 tmp = 0;
-> > > +   __be16 tmp = 0;
-> > >     int ret;
-> > The be32 to be16 change might warrant its own patch. This is definitely
-> > changing the behavior of the driver. And I don't think it is correct the
-> > way its done. For the pressure data it is reading 3 bytes, which will
-> > cause a stack overflow.
-You're right, it is wrong as is. Resent in a separate patch.
-> > >
-> > >     switch (mask) {
-> > > @@ -96,7 +96,7 @@ static int mpl3115_read_raw(struct iio_dev *indio_dev,
-> > >                     mutex_unlock(&data->lock);
-> > >                     if (ret < 0)
-> > >                             break;
-> > > -                   *val = be32_to_cpu(tmp) >> 12;
-> > > +                   *val = be32_to_cpu(tmp) >> chan->scan_type.shift;
-> > >                     ret = IIO_VAL_INT;
-> > >                     break;
-> > >             case IIO_TEMP: /* in 0.0625 celsius / LSB */
-> > > @@ -111,7 +111,8 @@ static int mpl3115_read_raw(struct iio_dev *indio_dev,
-> > >                     mutex_unlock(&data->lock);
-> > >                     if (ret < 0)
-> > >                             break;
-> > > -                   *val = sign_extend32(be32_to_cpu(tmp) >> 20, 11);
-> > > +                   *val = sign_extend32(be16_to_cpu(tmp) >> chan->scan_type.shift,
-> > > +                                        chan->scan_type.realbits - 1);
-> > >                     ret = IIO_VAL_INT;
-> > >                     break;
-> > >             default:
-> >
->
-Thanks for the prompt reviews and the feedback,
+On Sun, 31 Oct 2021 20:56:18 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-Gwendal.
+> On Sun, 31 Oct 2021 22:21:44 +0200
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> 
+> > On Sun, Oct 31, 2021 at 7:07 PM Jonathan Cameron <jic23@kernel.org> wrote:  
+> > > On Sun, 31 Oct 2021 17:08:54 +0000
+> > > Jonathan Cameron <jic23@kernel.org> wrote:    
+> > > > On Sun,  3 Oct 2021 16:32:55 +0100
+> > > > Jonathan Cameron <jic23@kernel.org> wrote:    
+> > 
+> > ...
+> >   
+> > > > Given ongoing churn in core kernel includes as Andy cleans them up, I've
+> > > > pushed this particular work out on a branch at
+> > > >
+> > > > https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=iio-iwyu-cleanups
+> > > >
+> > > > This will get me 0-day exposure and allow me to keep moving these
+> > > > forwards as the core kernel headers change.    
+> > 
+> > Thanks! I'm in favour of the work. Here are few things though:
+> > - blank line in between of the groups of headers (like before iio/*)  
+> 
+> Ok. I was trying to leave style in keeping with what was there in drivers,
+> but fair enough can standardise on that.
+> 
+> > - fixing properly bitops.h and other typos (hope lkp will tell you about)  
+> 
+> Huh. I'll watch out for that as getting clean builds...
+Or not ;)  Seems I did the normal stupid thing of adding just one more tweak
+and forgot to build before pushing out.
+
+Indeed, the build bot did it's job perfectly!
+
+Jonathan
+
+> 
+> > - thinking more about the list of very-low-level includes (see below)  
+> 
+> Agreed.  I'm not sure on some of these - one of the big reasons this is a
+> work in progress.
+> 
+> > 
+> > On top of that, the main idea behind header usage is to make sure we
+> > have no circular and other hell dependencies in the *headers*, C-files
+> > can go with more relaxed rules (but again, I'm in favour of the series
+> > and effort).  
+> 
+> Agreed, but added advantage of this tooling is identifying the entirely
+> pointless includes - of which there are lots.  Getting rid of those was
+> my main motivation in this.
+> 
+> Getting the balance right is going to be the trick and I'd rather a tool
+> that told us (more or less) that we have things correct than rely on 'common practice'.  
+> 
+> >   
+> > > > I would like to start merging 'some' of these in the meantime and
+> > > > there are some precursor cleanup patches that I'll pull out separately.
+> > > >
+> > > > Perhaps most 'useful' is the top patch in that branch which is the iwyu
+> > > > mapping file I've put together to get it to make more reasonable suggestions.
+> > > > Note that there are some cases where the answer isn't obvious and some
+> > > > where you can't push iwyu to do the right thing.
+> > > >
+> > > > One example is struct regmap which is deliberately opaque.
+> > > > iwyu always wants a forwards definition of it in all files where pointers
+> > > > to it occur, but personally I think including linux/regmap.h is sufficient
+> > > > as that will always have the forwards definition needed.
+> > > >
+> > > > Note this branch will rebase frequently and may well eat babies.
+> > > > In particularly I will be cherry picking Andy and anyone else's work
+> > > > to the top of it and making changes through the rest of the patches as
+> > > > that affects them.
+> > > >
+> > > > I'm not particularly expecting feedback, but I do want to avoid duplicate
+> > > > work.  I'm also likely to 'fixing' new code as it comes in based on this
+> > > > toolchain - I may main in reviews or just fix it whilst applying (and tell
+> > > > people obviously!)
+> > > >
+> > > > Long term plan here is to bring consistency to includes with benefits
+> > > > of resilience and hopefully reducing just how much code is actually pulled
+> > > > in whilst compiling.    
+> > >
+> > > I forgot to mention that I've take a stricter view since doing this series
+> > > so it needs an update even in the tree above. This mostly affects
+> > > err.h, errno.h, stddef.h and types.h    
+> > 
+> > I don't think we need to include stddef.h to every C file, it should
+> > be guaranteed via something like types.h or so.  
+> 
+> There are places with stddef.h but not types.h required. I debated which
+> way to go on that and hence ended up with both for now, but it's obviously easy
+> to tweak.
+> 
+> It may be that long term we look to have a standard kernel iwyu mapping file.
+> It's possible to build in a fair bit of flexibility but maybe we'll need to
+> tweak the tool to allow us even more.
+> 
+> Jonathan
+> 
+> 
+> >   
+> > > I'll update those in that tree sometime this week.    
+> >   
+> 
+
