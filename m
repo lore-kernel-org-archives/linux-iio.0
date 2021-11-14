@@ -2,245 +2,82 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDC43C433EF
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Nov 2021 13:20:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 960BAC433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Nov 2021 13:24:27 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A9AD261037
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Nov 2021 13:20:35 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 7930860EFD
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Nov 2021 13:24:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235982AbhKNNX1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Nov 2021 08:23:27 -0500
-Received: from mail.kernel.org ([198.145.29.99]:52636 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S235950AbhKNNX1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 14 Nov 2021 08:23:27 -0500
-Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by mail.kernel.org (Postfix) with ESMTPSA id 03BA960C4D;
-        Sun, 14 Nov 2021 13:20:31 +0000 (UTC)
-Date:   Sun, 14 Nov 2021 13:25:18 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Cc:     <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 1/2] iio:amplifiers:ad7293: add support for AD7293
-Message-ID: <20211114132518.5228c30f@jic23-huawei>
-In-Reply-To: <20211108152238.189650-1-antoniu.miclaus@analog.com>
-References: <20211108152238.189650-1-antoniu.miclaus@analog.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
+        id S234722AbhKNN1O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Nov 2021 08:27:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33258 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231401AbhKNN1L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Nov 2021 08:27:11 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C8664C061746;
+        Sun, 14 Nov 2021 05:24:16 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id r8so24889449wra.7;
+        Sun, 14 Nov 2021 05:24:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FTQDUuuYOeGXlpCl1WEix6oSc8ili0Czj+dST23vHVM=;
+        b=MpukiRJzSg4v6dqygvWPHfY7dEQfTDziN6WmZfdPygY8eeeA1uHJ9E/6UpS0AuvfS+
+         HEFY8fh9+R9pwZ2R96UTbKTkQw5/o2JYeNbBfuyQAFVqG4pdrWAnY+q4MRFMOdjp4C0/
+         rAC/bhsKq2J5cp5OxIisr5C/ADIb/dVHll6QFCmnP17GnN5FHC4H+wdtJNnRPJ5QR0N/
+         YuxTQY3Ds5mBakJE3ZAQP3XzA5yDVwBW+Au8fe/kT5i3WIHOfQZquGvaplAhxoNY/+Nr
+         nQ7x3r2NzTnMeCbVJqM7ADuPndDGbDbxED17uWjUCFd1VcNyKKBVtYtV76n5IJvu3xbL
+         RLwQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=FTQDUuuYOeGXlpCl1WEix6oSc8ili0Czj+dST23vHVM=;
+        b=pDiHQR2AyZG8m06Cd4mitAQSQdBXQb258EpMxb3bDCOmxcd/i8F/Eva+K9tNf6e0Ne
+         4oQSvvWPeDJWQdoIlk0S4mXNeCnmIYQ09caqXCfbMT0fZ6U8XwoqYdz+eLUs7LrTYEj/
+         1mVMjLcLnR5YhPSJFveJ0FGmVBcR0w3i7fhot8V5HYT1I64ZTZZfYSNYJ7OjUK1FWeRM
+         e3QP+taxdlXCzNaaOj0x4IuHEmbx4ETG2yHLREPsEYBCU1NmPhWhFVeX4n8m03ZoB4G8
+         6FMQ7teCNJvSiipcSBvu8hE8QgbTu/4AtJEVU/rNxnkEw7IgRAE9wXgl0oQ+Ax5GNSQN
+         3xBg==
+X-Gm-Message-State: AOAM5334aASCr+GVzlBYZVwJCa40o12jo3BUcXvtGJKj56d766ad7A3L
+        YnZnfvSWx1QYKh2I0vJWL4FK6cD6i+8=
+X-Google-Smtp-Source: ABdhPJzcWoSckMiY7nRgC8xcCbxR3dQJvh3W0bWx8zv+l/+931jsTVs9fNfnZOOBQdihKgERAmKQ9Q==
+X-Received: by 2002:a5d:68d2:: with SMTP id p18mr37623975wrw.21.1636896255491;
+        Sun, 14 Nov 2021 05:24:15 -0800 (PST)
+Received: from localhost.localdomain (138.23.87.79.rev.sfr.net. [79.87.23.138])
+        by smtp.gmail.com with ESMTPSA id h7sm10858003wrt.64.2021.11.14.05.24.14
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 14 Nov 2021 05:24:14 -0800 (PST)
+From:   Gilles Talis <gilles.talis@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net,
+        robh+dt@kernel.org, linux-iio@vger.kernel.org
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Gilles Talis <gilles.talis@gmail.com>
+Subject: [PATCH 0/2] iio: humidity: add support for Sensirion SHTC3
+Date:   Sun, 14 Nov 2021 14:23:33 +0100
+Message-Id: <20211114132335.47651-1-gilles.talis@gmail.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 8 Nov 2021 17:22:37 +0200
-Antoniu Miclaus <antoniu.miclaus@analog.com> wrote:
+Add the dt-bindings and driver for the Sensirion SHTC3 humidity sensor
 
-> The AD7293 is a Power Amplifier drain current controller
-> containing functionality for general-purpose monitoring
-> and control of current, voltage, and temperature, integrated
-> into a single chip solution with an SPI-compatible interface.
-> 
-> Datasheet:
-> https://www.analog.com/media/en/technical-documentation/data-sheets/AD7293.pdf
-> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+Gilles Talis (2):
+  iio: humidity: Add support for Sensirion SHTC3 sensor
+  dt-bindings: trivial-devices: Add Sensirion SHTC3 humidity sensor
 
+ .../devicetree/bindings/trivial-devices.yaml  |   2 +
+ drivers/iio/humidity/Kconfig                  |  11 +
+ drivers/iio/humidity/Makefile                 |   1 +
+ drivers/iio/humidity/shtc3.c                  | 286 ++++++++++++++++++
+ 4 files changed, 300 insertions(+)
+ create mode 100644 drivers/iio/humidity/shtc3.c
 
-Hi Antoniu,
-
-Looks good to me.  A few really minor editorial type things that I noticed
-whilst reading through this version.
-
-All are in the up to you or can be added later categories.  So subject to DT review
-and anyone else noticing things they want changing I'm happy to either pick this
-version up or a v3 that tidies up minor corners.
-
-
-> diff --git a/drivers/iio/amplifiers/ad7293.c b/drivers/iio/amplifiers/ad7293.c
-> new file mode 100644
-> index 000000000000..15aac5ad3407
-> --- /dev/null
-> +++ b/drivers/iio/amplifiers/ad7293.c
-
-
-...
-
-> +
-> +static int ad7293_get_offset(struct ad7293_state *st, unsigned int ch, u16 *offset)
-> +{
-> +	if (ch < AD7293_TSENSE_MIN_OFFSET_CH)
-> +		return ad7293_spi_read(st, AD7293_REG_VIN0_OFFSET + ch, offset);
-> +	else if (ch < AD7293_ISENSE_MIN_OFFSET_CH)
-> +		return ad7293_spi_read(st, AD7293_REG_TSENSE_INT_OFFSET + (ch - 4), offset);
-> +	else if (ch < AD7293_VOUT_MIN_OFFSET_CH)
-> +		return ad7293_spi_read(st, AD7293_REG_ISENSE0_OFFSET + (ch - 7), offset);
-> +	else if (ch <= AD7293_VOUT_MAX_OFFSET_CH)
-> +		return ad7293_spi_read(st, AD7293_REG_UNI_VOUT0_OFFSET + (ch - 11), offset);
-> +	else
-> +		return -EINVAL;
-> +}
-> +
-> +static int ad7293_set_offset(struct ad7293_state *st, unsigned int ch, u16 offset)
-> +{
-> +	if (ch < AD7293_TSENSE_MIN_OFFSET_CH)
-> +		return ad7293_spi_write(st, AD7293_REG_VIN0_OFFSET + ch, offset);
-> +	else if (ch < AD7293_ISENSE_MIN_OFFSET_CH)
-> +		return ad7293_spi_write(st, AD7293_REG_TSENSE_INT_OFFSET + (ch - AD7293_TSENSE_MIN_OFFSET_CH), offset);
-> +	else if (ch < AD7293_VOUT_MIN_OFFSET_CH)
-> +		return ad7293_spi_write(st, AD7293_REG_ISENSE0_OFFSET + (ch - AD7293_ISENSE_MIN_OFFSET_CH), offset);
-> +	else if (ch <= AD7293_VOUT_MAX_OFFSET_CH)
-> +		return ad7293_spi_update_bits(st, AD7293_REG_UNI_VOUT0_OFFSET + (ch - AD7293_VOUT_MIN_OFFSET_CH),
-> +						AD7293_REG_VOUT_OFFSET_MSK,
-> +						FIELD_PREP(AD7293_REG_VOUT_OFFSET_MSK, offset));
-> +	else
-> +		return -EINVAL;
-
-final else doesn't add much so I'd just have a return -EINVAL; after if the if stack..
-i.e.
-	return -EINVAL;
-
-> +}
-> +
-
-...
-
-> +static int ad7293_dac_write_raw(struct ad7293_state *st, unsigned int ch, u16 raw)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&st->lock);
-> +
-> +	ret = __ad7293_spi_update_bits(st, AD7293_REG_DAC_EN, 1 << ch, 1 << ch);
-
-You could use BIT(ch) for all these 1 << ch though they are fairly clear as it
-stands if you would prefer not to for some reason.
-
-> +	if (ret)
-> +		goto exit;
-> +
-> +	ret =  __ad7293_spi_write(st, AD7293_REG_UNI_VOUT0 + ch,
-> +				  FIELD_PREP(AD7293_REG_DATA_RAW_MSK, raw));
-> +
-> +exit:
-> +	mutex_unlock(&st->lock);
-> +
-> +	return ret;
-> +}
-> +
-
-
-...
-
-> +
-> +static int ad7293_write_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int val, int val2, long info)
-> +{
-> +	struct ad7293_state *st = iio_priv(indio_dev);
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (chan->type) {
-> +		case IIO_VOLTAGE:
-> +			if (!chan->output)
-> +				return -EINVAL;
-> +
-> +			return ad7293_dac_write_raw(st, chan->channel, val);
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		switch (chan->type) {
-> +		case IIO_VOLTAGE:
-> +			if (chan->output)
-> +				return ad7293_set_offset(st, chan->channel + AD7293_VOUT_MIN_OFFSET_CH, val);
-> +			else
-> +				return ad7293_set_offset(st, chan->channel, val);
-
-It is common not to provide a full range of avail attributes, but perhaps it makes sense to provide
-ranges that are valid for these offsets and possibly the DAC output range above.
-Both such things can be useful both to userspace and to in kernel drivers using these channels.
-
-> +		case IIO_CURRENT:
-> +			return ad7293_set_offset(st, chan->channel + AD7293_ISENSE_MIN_OFFSET_CH, val);
-> +		case IIO_TEMP:
-> +			return ad7293_set_offset(st, chan->channel + AD7293_TSENSE_MIN_OFFSET_CH, val);
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	case IIO_CHAN_INFO_SCALE:
-> +		switch (chan->type) {
-> +		case IIO_VOLTAGE:
-> +			return ad7293_adc_set_scale(st, chan->channel, val);
-> +		case IIO_CURRENT:
-> +			return ad7293_isense_set_scale(st, chan->channel, val);
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-
-...
-> +
-> +#define AD7293_CHAN_ADC(_channel) {				\
-> +	.type = IIO_VOLTAGE,					\
-> +	.output = 0,						\
-> +	.indexed = 1,						\
-> +	.channel = _channel,					\
-> +	.info_mask_separate =					\
-> +		BIT(IIO_CHAN_INFO_RAW) |			\
-> +		BIT(IIO_CHAN_INFO_SCALE) |			\
-> +		BIT(IIO_CHAN_INFO_OFFSET),			\
-> +	.info_mask_shared_by_type_available =			\
-> +		BIT(IIO_CHAN_INFO_SCALE)			\
-> +}
-> +
-> +#define AD7293_CHAN_DAC(_channel) {				\
-> +	.type = IIO_VOLTAGE,					\
-> +	.output = 1,						\
-> +	.indexed = 1,						\
-> +	.channel = _channel,					\
-> +	.info_mask_separate =					\
-> +		BIT(IIO_CHAN_INFO_RAW) |			\
-> +		BIT(IIO_CHAN_INFO_OFFSET),			\
-> +	.info_mask_shared_by_type_available =			\
-> +		BIT(IIO_CHAN_INFO_OFFSET),			\
-> +}
-> +
-> +#define AD7293_CHAN_ISENSE(_channel) {				\
-> +	.type = IIO_CURRENT,					\
-> +	.output = 0,						\
-> +	.indexed = 1,						\
-> +	.channel = _channel,					\
-> +	.info_mask_separate =					\
-> +		BIT(IIO_CHAN_INFO_RAW) |			\
-> +		BIT(IIO_CHAN_INFO_OFFSET) |			\
-> +		BIT(IIO_CHAN_INFO_SCALE),			\
-> +	.info_mask_shared_by_type_available =			\
-> +		BIT(IIO_CHAN_INFO_SCALE)			\
-> +}
-> +
-> +#define AD7293_CHAN_TEMP(_channel) {				\
-> +	.type = IIO_TEMP,					\
-> +	.output = 0,						\
-> +	.indexed = 1,						\
-> +	.channel = _channel,					\
-> +	.info_mask_separate =					\
-> +		BIT(IIO_CHAN_INFO_RAW) |			\
-> +		BIT(IIO_CHAN_INFO_OFFSET),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-> +}
-
-...
-
-
-Thanks,
-
-Jonathan
+-- 
+2.27.0
 
