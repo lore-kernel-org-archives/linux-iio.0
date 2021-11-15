@@ -2,62 +2,62 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8B66C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 03:44:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB029C433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 03:44:32 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 9072A61B4D
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 03:44:26 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id CEE3261B4E
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 03:44:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237063AbhKODrL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Nov 2021 22:47:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50838 "EHLO
+        id S237074AbhKODrP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Nov 2021 22:47:15 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50788 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237005AbhKODqu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Nov 2021 22:46:50 -0500
-Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7491FC061746;
-        Sun, 14 Nov 2021 19:43:55 -0800 (PST)
-Received: by mail-qv1-xf2b.google.com with SMTP id s9so10445955qvk.12;
-        Sun, 14 Nov 2021 19:43:55 -0800 (PST)
+        with ESMTP id S236904AbhKODqq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Nov 2021 22:46:46 -0500
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F014FC061200;
+        Sun, 14 Nov 2021 19:43:44 -0800 (PST)
+Received: by mail-qt1-x82e.google.com with SMTP id 8so4756047qtx.5;
+        Sun, 14 Nov 2021 19:43:44 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ULLabupwpKZ9q0uzoJvIF5vhkAHSbV+6NawrmKl86jU=;
-        b=YPsPndXsufgMAjwX+0mAHSmIjffN/anUwJ2PTqrKhaKIqnIVPEysGRIwqPGhrxZgrK
-         ikU90sS+216cYhdvp6X5YOIIBqnXbvnLDoJE602hIpoBmyJxXm0RBzJ1wn+vVZQlbrcZ
-         egK/bcvJl2sVwM+cKludIBhTugpcTmhk7hq7KiQt9c5p4obN2k33TDbm70ZhOH7Xwk5n
-         AQ4LZ+DmmrapBPd7sjsn9gnEbFaKPWEj8dWvAPFZi1PA9WMv4wLg8lOhChNehZe3aY8s
-         kB911cNLhE8aNOpO3bXON852akTbEzWGHKWo4l/OcnvBtcuMn2HaIrCbE4AiHq6rj7PA
-         OA3g==
+        bh=l0Xi6ZFTcGrFltb6tqOU/b1e/rqtTlkrNbyKOULVJ8Q=;
+        b=oQag/Q37DaqugGCMp7S6eHvewC94q2DDuB47+Ldkx7Sskw1NnyQ4Z2t2FKL1i42AG2
+         DkNlFyV0oz/7xOOM0Oe3j54IZNGZGC96gPYz46eMR7qAq3SO/9OPKLT7iKlMyqIwRr4X
+         PRTeFZ+8bDnT/8MdtWypStLdWOMgwkI2HqEd7i+/5fdYYlx+hbxH4dbpx0CTlxd5vU+A
+         le2MPorPYCFEUtyxaJ8vIwqfgPQfJcwhqSch+2VA9au6A0oz7JNb/qwusb2Dxh0pe18U
+         9Ie0+18QM3kkhMMHh+9xFG1Tq4RnAXLl17wssh8obNQ6wm4DUsCmNivmBefvNyXX1u/+
+         BFMg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ULLabupwpKZ9q0uzoJvIF5vhkAHSbV+6NawrmKl86jU=;
-        b=7vIAHuc+AVxnltVnTSQWDtygYSmAmghWMGK1WA+CR2v35T4pnMP6kEI2ZHMfznJijb
-         Upf9pbe/xzUf/1kJ8AGjoNzjNLsx4Ctp6STYp4cvPgsOVLGVfF2n56sZnuO/SaTYx4Dq
-         P+rSzfF0vDYFU2KSNutWnRp98GTqJbHSxMgVqSBv/xcjYAvtl5lcbphayqNO+76Q/AdG
-         E2vWfqmWeJVwutP7pgl9RuQgdexGh3xnlkTnUZkUyZqb1LXCrsd90qt7rte7E5hBBakO
-         2jX77krgos+faWxcP9ZaA9J7zUSbpv0B2CuE5aGvSb7kpWqkAhvX9BwIWvlRwPx9gmb4
-         W0DQ==
-X-Gm-Message-State: AOAM531PuCXBw//vpVRFiv9bZds/AjzdfwCZnEiZ0xoOgs+pz8cn6tfm
-        W7EVveJyXYxEipWZg2TPhdSZF8FS6vw=
-X-Google-Smtp-Source: ABdhPJz3CT2phySirIRZCTcHO911TUPPF4oXibyT0E6xf2aW91lBsp6wLHXGreA/GGVzLdk4id+skQ==
-X-Received: by 2002:a0c:fa07:: with SMTP id q7mr34051205qvn.18.1636947834600;
-        Sun, 14 Nov 2021 19:43:54 -0800 (PST)
+        bh=l0Xi6ZFTcGrFltb6tqOU/b1e/rqtTlkrNbyKOULVJ8Q=;
+        b=Xaeo7ZNYuscv6U+EbOvTAz5q0gHckDfkuZrRdSuSIDBui950DoFFJ9fuuz0+NXBlNW
+         VH5X+Na+68AiBqUws9vbo8HZtTQv0GSqw2OAoJfEOQTpqvOpY+dKXEmMDTXIGuJWhLk0
+         nYA7WloLYrFbY6if0GC9qFNOOESXVQZrL1wwy8+VRfoZ3pmFIpxyo1zRF4lfpYUM15I9
+         NvWfCucJur/kfZRTEUFKJufxwWv0sJwRcPqLBk5w0ENiuOAj1xyFeo97RUxXJ5nWEL3w
+         zXHL5Y0UYf53w4alRwQPovmB1WzOLIUzRPfRxp9iZqKnwWCjBbnFlmDuLLZtXEqm3NyW
+         AgoQ==
+X-Gm-Message-State: AOAM532V8ozzrEnz1Jb1UrfbTrmVrSEEjuKI+3+Heq1WNO6lEqh/s3j7
+        d9edSG/Q0AYhQinHbSB3PiinTMLYLgA=
+X-Google-Smtp-Source: ABdhPJw/NfKZ1RKmNhtiw/zJakdR2nQvGutBolbVL/GcsTHwahcHsSLlSPcMXM8lqRvjTmwvBzVbIw==
+X-Received: by 2002:a05:622a:1484:: with SMTP id t4mr36756230qtx.57.1636947824160;
+        Sun, 14 Nov 2021 19:43:44 -0800 (PST)
 Received: from shaak.. (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id h5sm206519qkn.62.2021.11.14.19.43.53
+        by smtp.gmail.com with ESMTPSA id h5sm206519qkn.62.2021.11.14.19.43.43
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Nov 2021 19:43:54 -0800 (PST)
+        Sun, 14 Nov 2021 19:43:43 -0800 (PST)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v9 14/14] dt-bindings: iio: afe: add bindings for temperature transducers
-Date:   Sun, 14 Nov 2021 22:43:34 -0500
-Message-Id: <20211115034334.1713050-15-liambeguin@gmail.com>
+Subject: [PATCH v9 03/14] iio: inkern: make a best effort on offset calculation
+Date:   Sun, 14 Nov 2021 22:43:23 -0500
+Message-Id: <20211115034334.1713050-4-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.32.0.452.g940fe202adcb
 In-Reply-To: <20211115034334.1713050-1-liambeguin@gmail.com>
 References: <20211115034334.1713050-1-liambeguin@gmail.com>
@@ -69,137 +69,61 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Liam Beguin <lvb@xiphos.com>
 
-An ADC is often used to measure other quantities indirectly.
-This binding describe one case, the measurement of a temperature
-through a temperature transducer (either voltage or current).
+iio_convert_raw_to_processed_unlocked() assumes the offset is an
+integer. Make a best effort to get a valid offset value for fractional
+cases without breaking implicit truncations.
 
+Fixes: 48e44ce0f881 ("iio:inkern: Add function to read the processed value")
 Signed-off-by: Liam Beguin <lvb@xiphos.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../iio/afe/temperature-transducer.yaml       | 114 ++++++++++++++++++
- 1 file changed, 114 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
+ drivers/iio/inkern.c | 32 +++++++++++++++++++++++++++-----
+ 1 file changed, 27 insertions(+), 5 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml b/Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
-new file mode 100644
-index 000000000000..cfbf5350db27
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/afe/temperature-transducer.yaml
-@@ -0,0 +1,114 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/afe/temperature-transducer.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index dbe13fad3cbb..aff6d2d3447c 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -595,13 +595,35 @@ EXPORT_SYMBOL_GPL(iio_read_channel_average_raw);
+ static int iio_convert_raw_to_processed_unlocked(struct iio_channel *chan,
+ 	int raw, int *processed, unsigned int scale)
+ {
+-	int scale_type, scale_val, scale_val2, offset;
++	int scale_type, scale_val, scale_val2;
++	int offset_type, offset_val, offset_val2;
+ 	s64 raw64 = raw;
+-	int ret;
+ 
+-	ret = iio_channel_read(chan, &offset, NULL, IIO_CHAN_INFO_OFFSET);
+-	if (ret >= 0)
+-		raw64 += offset;
++	offset_type = iio_channel_read(chan, &offset_val, &offset_val2,
++				       IIO_CHAN_INFO_OFFSET);
++	if (offset_type >= 0) {
++		switch (offset_type) {
++		case IIO_VAL_INT:
++			break;
++		case IIO_VAL_INT_PLUS_MICRO:
++		case IIO_VAL_INT_PLUS_NANO:
++			/*
++			 * Both IIO_VAL_INT_PLUS_MICRO and IIO_VAL_INT_PLUS_NANO
++			 * implicitely truncate the offset to it's integer form.
++			 */
++			break;
++		case IIO_VAL_FRACTIONAL:
++			offset_val /= offset_val2;
++			break;
++		case IIO_VAL_FRACTIONAL_LOG2:
++			offset_val /= (1 << offset_val2);
++			break;
++		default:
++			return -EINVAL;
++		}
 +
-+title: Temperature Transducer
-+
-+maintainers:
-+  - Liam Beguin <liambeguin@gmail.com>
-+
-+description: |
-+  A temperature transducer is a device that converts a thermal quantity
-+  into any other physical quantity. This binding applies to temperature to
-+  voltage (like the LTC2997), and temperature to current (like the AD590)
-+  linear transducers.
-+  In both cases these are assumed to be connected to a voltage ADC.
-+
-+  When an io-channel measures the output voltage of a temperature analog front
-+  end such as a temperature transducer, the interesting measurement is almost
-+  always the corresponding temperature, not the voltage output. This binding
-+  describes such a circuit.
-+
-+  The general transfer function here is (using SI units)
-+    V(T) = Rsense * Isense(T)
-+    T = (Isense(T) / alpha) + offset
-+    T = 1 / (Rsense * alpha) * (V + offset * Rsense * alpha)
-+
-+  When using a temperature to voltage transducer, Rsense is set to 1.
-+
-+  The following circuits show a temperature to current and a temperature to
-+  voltage transducer that can be used with this binding.
-+
-+           VCC
-+          -----
-+            |
-+        +---+---+
-+        | AD590 |                               VCC
-+        +---+---+                              -----
-+            |                                    |
-+            V proportional to T             +----+----+
-+            |                          D+ --+         |
-+            +---- Vout                      | LTC2997 +--- Vout
-+            |                          D- --+         |
-+        +---+----+                          +---------+
-+        | Rsense |                               |
-+        +---+----+                             -----
-+            |                                   GND
-+          -----
-+           GND
-+
-+properties:
-+  compatible:
-+    const: temperature-transducer
-+
-+  io-channels:
-+    maxItems: 1
-+    description: |
-+      Channel node of a voltage io-channel.
-+
-+  '#io-channel-cells':
-+    const: 0
-+
-+  sense-offset-millicelsius:
-+    description: |
-+      Temperature offset.
-+      This offset is commonly used to convert from Kelvins to degrees Celsius.
-+      In that case, sense-offset-millicelsius would be set to <(-273150)>.
-+    default: 0
-+
-+  sense-resistor-ohms:
-+    description: |
-+      The sense resistor.
-+      By default sense-resistor-ohms cancels out the resistor making the
-+      circuit behave like a temperature transducer.
-+    default: 1
-+
-+  alpha-ppm-per-celsius:
-+    description: |
-+      Sometimes referred to as output gain, slope, or temperature coefficient.
-+
-+      alpha is expressed in parts per million which can be micro-amps per
-+      degrees Celsius or micro-volts per degrees Celsius. The is the main
-+      characteristic of a temperature transducer and should be stated in the
-+      datasheet.
-+
-+additionalProperties: false
-+
-+required:
-+  - compatible
-+  - io-channels
-+  - alpha-ppm-per-celsius
-+
-+examples:
-+  - |
-+    ad950: temperature-sensor-0 {
-+        compatible = "temperature-transducer";
-+        #io-channel-cells = <0>;
-+        io-channels = <&temp_adc 3>;
-+
-+        sense-offset-millicelsius = <(-273150)>; /* Kelvin to degrees Celsius */
-+        sense-resistor-ohms = <8060>;
-+        alpha-ppm-per-celsius = <1>; /* 1 uA/K */
-+    };
-+  - |
-+    znq_tmp: temperature-sensor-1 {
-+        compatible = "temperature-transducer";
-+        #io-channel-cells = <0>;
-+        io-channels = <&temp_adc 2>;
-+
-+        sense-offset-millicelsius = <(-273150)>; /* Kelvin to degrees Celsius */
-+        alpha-ppm-per-celsius = <4000>; /* 4 mV/K */
-+    };
-+...
++		raw64 += offset_val;
++	}
+ 
+ 	scale_type = iio_channel_read(chan, &scale_val, &scale_val2,
+ 					IIO_CHAN_INFO_SCALE);
 -- 
 2.32.0.452.g940fe202adcb
 
