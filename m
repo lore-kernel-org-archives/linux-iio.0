@@ -2,128 +2,82 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B421C4332F
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 11:01:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1990DC433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 11:12:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 3BEF963236
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 11:01:05 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id EF81B61B3A
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 11:12:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237726AbhKOLD6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Nov 2021 06:03:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237776AbhKOLBf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Nov 2021 06:01:35 -0500
-Received: from mail-ed1-x530.google.com (mail-ed1-x530.google.com [IPv6:2a00:1450:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E2EDC061767
-        for <linux-iio@vger.kernel.org>; Mon, 15 Nov 2021 02:58:29 -0800 (PST)
-Received: by mail-ed1-x530.google.com with SMTP id e3so33543251edu.4
-        for <linux-iio@vger.kernel.org>; Mon, 15 Nov 2021 02:58:29 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=W7ElyeVUPPU9LKXMiMMgz6zNgMEvLtv3GY5xJWumrsM=;
-        b=B7OBpWcTi3Z5PvS4edgFAtNjOrwf8UKf1hIfSnvcLjCjTEIQ3EIsE17fxM9w0KJJ7W
-         12dexcf60rUIzu5rRsr97daOvVFz97LgMz0UrM4LQK7TazEQkVs/KjhiRa1fR/ryBagu
-         0vcZP6LTDiNUcURCP/prtqEr31bai95dVLDP9a9JAXG+URWXytJURT+Td4At85tpDhK7
-         gl7IIV41SozhHtRXJNL/kwlrd+u9A+zkPHGT/2AFeSbDohxb+vcnoRDt8jfioqtxiOtm
-         tylLpLaH0L2UBSkB4ZsR9HjUIyNhMoYpEb9B9cNYprD4SIqW91ukRCQ0nQGJLPRTx89F
-         brDQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=W7ElyeVUPPU9LKXMiMMgz6zNgMEvLtv3GY5xJWumrsM=;
-        b=R9aTI5kBnwxwKZ0HElIy8lMUHuyl9F2mSGLy6aHujmCzvutKTwkrTLRIrLj9DdKyGJ
-         1OXvENvexLvDiEZ8pn2xGKELaxksR3xG05f6dVeBu0X0HNCxsyJp5pdBG8TonGmNRyj0
-         BUq/9H2V96sE++wKGnQG1lX7+tN5IxOaIzFFA1/hijrodI1+Edr4Qdi4vXtfBxydF4Jc
-         pqzANKVSRgmzHeRjtTka9jMAJrIhAnjfOrKP50NZItwW6BGIV2tSJ68r4Wgh9N2Ubhvf
-         hnzzYd9dqnNFvU6L7MEKz11B5KFEH6KrTLo586dJ4JS48FMBx/w8tilB05GYkwRd6gdP
-         vJNA==
-X-Gm-Message-State: AOAM532wQLk1OapViuEgYrY90c4CWe1tsz0PirGI1XCyAVH9CwvgnXVZ
-        pxTUgs39tva5foK9L2XU1AZV7LJHPNZOIWVfTuw=
-X-Google-Smtp-Source: ABdhPJzoK8lHO9O7IkYNEw+526nQnogtwhSjsVVqYXl/f1Qiw1OACN+ZNrNgnXX5wW9tuRncTltGTOLyzahKxrgpLS0=
-X-Received: by 2002:a50:fb09:: with SMTP id d9mr19602469edq.283.1636973908131;
- Mon, 15 Nov 2021 02:58:28 -0800 (PST)
-MIME-Version: 1.0
-References: <20211115104147.18669-1-nuno.sa@analog.com>
-In-Reply-To: <20211115104147.18669-1-nuno.sa@analog.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 15 Nov 2021 12:57:46 +0200
-Message-ID: <CAHp75Vc+AyaDmvssME39YO2LOY+yBb7QyNCnvNWJxYr-Of16ig@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: adxrs290: fix data signedness
-To:     =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
+        id S231200AbhKOLPb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Nov 2021 06:15:31 -0500
+Received: from mga02.intel.com ([134.134.136.20]:23733 "EHLO mga02.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S230456AbhKOLPa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 15 Nov 2021 06:15:30 -0500
+X-IronPort-AV: E=McAfee;i="6200,9189,10168"; a="220631468"
+X-IronPort-AV: E=Sophos;i="5.87,236,1631602800"; 
+   d="scan'208";a="220631468"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 03:12:35 -0800
+X-IronPort-AV: E=Sophos;i="5.87,236,1631602800"; 
+   d="scan'208";a="535475373"
+Received: from smile.fi.intel.com ([10.237.72.184])
+  by orsmga001-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Nov 2021 03:12:33 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1mmZuS-0072To-Vi;
+        Mon, 15 Nov 2021 13:12:24 +0200
+Date:   Mon, 15 Nov 2021 13:12:24 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Nishant Malpani <nish.malpani25@gmail.com>,
-        Kister Genesis Jimenez <kister.jimenez@analog.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+        Yang Yingliang <yangyingliang@huawei.com>
+Subject: Re: [PATCH v2 0/2] iio: buffer: allocation and freeing buffers fix
+ and optimization
+Message-ID: <YZJAmCsnD2QRNoCs@smile.fi.intel.com>
+References: <20211013094923.2473-1-andriy.shevchenko@linux.intel.com>
+ <20211017152611.13fb0357@jic23-huawei>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211017152611.13fb0357@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 12:41 PM Nuno S=C3=A1 <nuno.sa@analog.com> wrote:
->
-> From: Kister Genesis Jimenez <kister.jimenez@analog.com>
->
-> Properly sign-extend the rate and temperature data.
+On Sun, Oct 17, 2021 at 03:26:11PM +0100, Jonathan Cameron wrote:
+> On Wed, 13 Oct 2021 12:49:21 +0300
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> 
+> > Yang submitted a fix, but I think the code can be refactored a bit to be more
+> > robust against similar mistakes in the future, if any.
+> > 
+> > In v2:
+> > - put SoB Yang's patch (it's good for backporting)
+> > - added refactoring patch on top of Yang's fix
+> > 
+> > Andy Shevchenko (1):
+> >   iio: buffer: Use dedicated variable in
+> >     iio_buffers_alloc_sysfs_and_mask()
+> > 
+> > Yang Yingliang (1):
+> >   iio: buffer: Fix double-free in iio_buffers_alloc_sysfs_and_mask()
+> > 
+> >  drivers/iio/industrialio-buffer.c | 18 +++++++-----------
+> >  1 file changed, 7 insertions(+), 11 deletions(-)
+> > 
+> 1st patch applied to the fixes-togreg branch of iio.git. I may well end up
+> sending these in the merge window anyway in which case I'll probably stick patch 2
+> on top of it before sending.  If not I'll pick that up next cycle now.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Is it a right time now?
 
-> Fixes: 2c8920fff1457 ("iio: gyro: Add driver support for ADXRS290")
-> Signed-off-by: Kister Genesis Jimenez <kister.jimenez@analog.com>
-> Signed-off-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-> ---
-> changes in v2:
->  * removed redundant temp & 0xFFF.
->
-> changes in v3:
->  * full name in Signed-off-by tag.
->
->  drivers/iio/gyro/adxrs290.c | 5 +++--
->  1 file changed, 3 insertions(+), 2 deletions(-)
->
-> diff --git a/drivers/iio/gyro/adxrs290.c b/drivers/iio/gyro/adxrs290.c
-> index 3e0734ddafe3..600e9725da78 100644
-> --- a/drivers/iio/gyro/adxrs290.c
-> +++ b/drivers/iio/gyro/adxrs290.c
-> @@ -7,6 +7,7 @@
->   */
->
->  #include <linux/bitfield.h>
-> +#include <linux/bitops.h>
->  #include <linux/delay.h>
->  #include <linux/device.h>
->  #include <linux/kernel.h>
-> @@ -124,7 +125,7 @@ static int adxrs290_get_rate_data(struct iio_dev *ind=
-io_dev, const u8 cmd, int *
->                 goto err_unlock;
->         }
->
-> -       *val =3D temp;
-> +       *val =3D sign_extend32(temp, 15);
->
->  err_unlock:
->         mutex_unlock(&st->lock);
-> @@ -146,7 +147,7 @@ static int adxrs290_get_temp_data(struct iio_dev *ind=
-io_dev, int *val)
->         }
->
->         /* extract lower 12 bits temperature reading */
-> -       *val =3D temp & 0x0FFF;
-> +       *val =3D sign_extend32(temp, 11);
->
->  err_unlock:
->         mutex_unlock(&st->lock);
-> --
-> 2.33.1
->
-
-
---=20
+-- 
 With Best Regards,
 Andy Shevchenko
+
+
