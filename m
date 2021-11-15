@@ -2,215 +2,117 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99B9DC433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 03:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9064EC433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 04:18:40 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 8419461B6F
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 03:45:48 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 6030C61BC2
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Nov 2021 04:18:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237148AbhKODsj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Nov 2021 22:48:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50786 "EHLO
+        id S230271AbhKOEV1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Nov 2021 23:21:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58504 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236590AbhKODqp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Nov 2021 22:46:45 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95E3C061202;
-        Sun, 14 Nov 2021 19:43:45 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id j17so14414469qtx.2;
-        Sun, 14 Nov 2021 19:43:45 -0800 (PST)
+        with ESMTP id S230293AbhKOEVW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Nov 2021 23:21:22 -0500
+Received: from mail-pl1-x635.google.com (mail-pl1-x635.google.com [IPv6:2607:f8b0:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52310C061746;
+        Sun, 14 Nov 2021 20:18:22 -0800 (PST)
+Received: by mail-pl1-x635.google.com with SMTP id y8so7892245plg.1;
+        Sun, 14 Nov 2021 20:18:22 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=UbEAz7/Cn9UDWRCP1DwPP6+dnbZoJceTj6XSahw11p4=;
-        b=Wj36hlxjHpuwzVT2J1hIS/p17YlFwiUxPEp15JjQlKMXVev/Wb6+hMoremFgCfwxK6
-         7I0IdBDXEf0Egq28R9cU9ioR55Bsmi6hboLvUjEKdbhio94hCg2jPIZsQmodPM42DOXk
-         QoaWPags2vS2PL53xlCIiTQKejegaAe0zO9cd9YGMAtnBP8EkbTuzcyZpnyqOq2fsU2t
-         H7apqpD0ASxeP6oFuwUMq73iD6DLa/JSS6l6pRh+Qk/P3VvDQ4EIHgnVeVClZUON65mQ
-         K36cF1yP1IVneplDxeYzJOB/JoqvpY8czU2yKmlGk5Y5UR5qp9pvXhLlBrRLEJ108v7u
-         lsDg==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=zv3FZFDa9f+2j3PeejvbeVmRdaCyODNvuYwLOlYEPkM=;
+        b=VXb5K929vEMzj97pDzs0PXiXFoZ8Km6hWj5/BkCXmV+HpHBXDsS9luWik3RIl33fv+
+         XMjh/bxKik+zjF+z/gGmJqrDiVeI3/Y+3BYZU38gojmlNL9g8gDosNnlip9ysesmyy9/
+         G3qkk3A0i1SSlLVV6VVb+EwD/jIa3wVkA5rba4Qxexax1SAiWiB4/g4FWkQCs7RHSIkf
+         tzg15ZOQtpfldLPV0u5T+js8Y/EbXxU0xNHXrfECXZ4Z0kjfg3YT7kl6q97JnnUZZJ5T
+         08HBGfv1Cy5PhV6ArmunI7YmTXbQkjDkwFCzUF/cR7vS4uKF+i3Ll64+I8AOwfHqC7Ox
+         cnjQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=UbEAz7/Cn9UDWRCP1DwPP6+dnbZoJceTj6XSahw11p4=;
-        b=AWK8QNifGOvugDyQzzf2S/nu5NA4JZmcmoE4GvN8NHk3l6V3eeRCXkiKu+sOnh//du
-         g+6cuuc8NyPYNsAFROZh+03vkXMDKkwnuxn+7bMTIRCiBbil80ZvlGVxzewejHbyVZRY
-         i5uw2kE6h8Vzn3FIMBweZnVMxIXnRjiOYWkbnn5zap2wNaWs6fyFH8hYgOxzyfuoeXFp
-         OqMrqoRmaqTx8adxRsEEGkSJPSXCl+DOsMtVMJJ8n8S8MfVkHzQm7YsuCd7v+AnccDZK
-         K5ZlWZ0aOeZzG9ZD+amq2abSrzycgGKuZnjfYI6kuxS/4XrOsOBvOwkA26opA8MEg++I
-         D2+A==
-X-Gm-Message-State: AOAM531z5prdl7rq58kx153zQLfGxe7kvUyaMC5aW6MDpRql6MwkEdgP
-        GW+H2FbFpX414/UZ3NhW0zk=
-X-Google-Smtp-Source: ABdhPJx/jXLyhqvoOfbg73y9n1K6KME5CuynIBK5hiEandg4/Yl0vmFlNqO9LGwtuT4eD3c00ND1AA==
-X-Received: by 2002:ac8:5f84:: with SMTP id j4mr38091240qta.271.1636947825071;
-        Sun, 14 Nov 2021 19:43:45 -0800 (PST)
-Received: from shaak.. (198-48-202-89.cpe.pppoe.ca. [198.48.202.89])
-        by smtp.gmail.com with ESMTPSA id h5sm206519qkn.62.2021.11.14.19.43.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Nov 2021 19:43:44 -0800 (PST)
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
-        lars@metafoo.de
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v9 04/14] iio: afe: rescale: expose scale processing function
-Date:   Sun, 14 Nov 2021 22:43:24 -0500
-Message-Id: <20211115034334.1713050-5-liambeguin@gmail.com>
-X-Mailer: git-send-email 2.32.0.452.g940fe202adcb
-In-Reply-To: <20211115034334.1713050-1-liambeguin@gmail.com>
-References: <20211115034334.1713050-1-liambeguin@gmail.com>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=zv3FZFDa9f+2j3PeejvbeVmRdaCyODNvuYwLOlYEPkM=;
+        b=F8q1gLq/50N56bsRNi16cH03yRjQ2TdexSMCCM02ve9v8Pwz1/pc+T5KIfYaOhAifE
+         QVQXVMEHCS/d1Lmx36jeBZD8hsnbXrtRsXelGIy4VvypHAPFXFy96y/mruGwO2ic6Zro
+         kp78CiWbSKhE8Dj6iu7MCG8QTnCa2ek+QKdC/l3y3OTfyklP+FHCov2Ar2OyR6+7ZlWd
+         YwfAzu3fjSisr5Cqe9MkieVD0nBR59hvE5WLz4MKgsdzT1WJDxPzJb8h0yeURO5w1Sm+
+         RYX4DVlvfuUnZ35i1k6ziWAHBuCTJ4vmvQ8Z3mI+4jeWNN7SpTZZX9vD6HT4ak5D8jYt
+         U36g==
+X-Gm-Message-State: AOAM533LBUmn5mjqDvvV2RaPBttfdRiF6Bek04nHRK0krkQ3EFgSqTeg
+        paYnd0nL2M6ND6P3E9XID1M=
+X-Google-Smtp-Source: ABdhPJyto7ZuVYw/P5Z2853eYUZdPudgQAGiqtwBJhcvb+A6ObKAhxXUpKmYl/AmKMBe4XVQNdgmpA==
+X-Received: by 2002:a17:902:d2cf:b0:141:b347:df9d with SMTP id n15-20020a170902d2cf00b00141b347df9dmr32090970plc.37.1636949901748;
+        Sun, 14 Nov 2021 20:18:21 -0800 (PST)
+Received: from ?IPV6:2600:8802:600:10b:e5cf:8396:baa0:58f1? ([2600:8802:600:10b:e5cf:8396:baa0:58f1])
+        by smtp.gmail.com with ESMTPSA id q6sm10304260pgn.42.2021.11.14.20.18.19
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sun, 14 Nov 2021 20:18:20 -0800 (PST)
+Message-ID: <b6f5515e-ca60-d0cc-7970-b7ae853c820c@gmail.com>
+Date:   Sun, 14 Nov 2021 20:18:20 -0800
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.3.0
+Subject: Re: [PATCH v4] mips: bcm63xx: add support for clk_get_parent()
+Content-Language: en-US
+To:     Randy Dunlap <rdunlap@infradead.org>, linux-kernel@vger.kernel.org
+Cc:     kernel test robot <lkp@intel.com>,
+        Russell King <rmk+kernel@armlinux.org.uk>,
+        Artur Rojek <contact@artur-rojek.eu>,
+        Paul Cercueil <paul@crapouillou.net>,
+        linux-mips@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        bcm-kernel-feedback-list@broadcom.com,
+        Jonas Gorski <jonas.gorski@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+References: <20211115004218.13034-1-rdunlap@infradead.org>
+From:   Florian Fainelli <f.fainelli@gmail.com>
+In-Reply-To: <20211115004218.13034-1-rdunlap@infradead.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Liam Beguin <lvb@xiphos.com>
 
-In preparation for the addition of kunit tests, expose the logic
-responsible for combining channel scales.
 
-Signed-off-by: Liam Beguin <lvb@xiphos.com>
----
- drivers/iio/afe/iio-rescale.c   | 65 ++++++++++++++-------------------
- include/linux/iio/afe/rescale.h | 30 +++++++++++++++
- 2 files changed, 58 insertions(+), 37 deletions(-)
- create mode 100644 include/linux/iio/afe/rescale.h
+On 11/14/2021 4:42 PM, Randy Dunlap wrote:
+> BCM63XX selects HAVE_LEGACY_CLK but does not provide/support
+> clk_get_parent(), so add a simple implementation of that
+> function so that callers of it will build without errors.
+> 
+> Fixes these build errors:
+> 
+> mips-linux-ld: drivers/iio/adc/ingenic-adc.o: in function `jz4770_adc_init_clk_div':
+> ingenic-adc.c:(.text+0xe4): undefined reference to `clk_get_parent'
+> mips-linux-ld: drivers/iio/adc/ingenic-adc.o: in function `jz4725b_adc_init_clk_div':
+> ingenic-adc.c:(.text+0x1b8): undefined reference to `clk_get_parent'
+> 
+> Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
+> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
+> Reported-by: kernel test robot <lkp@intel.com>
+> Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+> Cc: Artur Rojek <contact@artur-rojek.eu>
+> Cc: Paul Cercueil <paul@crapouillou.net>
+> Cc: linux-mips@vger.kernel.org
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: linux-iio@vger.kernel.org
+> Cc: Florian Fainelli <f.fainelli@gmail.com>
+> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Cc: Russell King <linux@armlinux.org.uk>
+> Cc: bcm-kernel-feedback-list@broadcom.com
+> Cc: Jonas Gorski <jonas.gorski@gmail.com>
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
 
-diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index 774eb3044edd..d0669fd8eac5 100644
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -11,35 +11,46 @@
- #include <linux/gcd.h>
- #include <linux/iio/consumer.h>
- #include <linux/iio/iio.h>
-+#include <linux/iio/afe/rescale.h>
- #include <linux/module.h>
- #include <linux/of.h>
- #include <linux/of_device.h>
- #include <linux/platform_device.h>
- #include <linux/property.h>
- 
--struct rescale;
--
--struct rescale_cfg {
--	enum iio_chan_type type;
--	int (*props)(struct device *dev, struct rescale *rescale);
--};
-+int rescale_process_scale(struct rescale *rescale, int scale_type,
-+			  int *val, int *val2)
-+{
-+	unsigned long long tmp;
- 
--struct rescale {
--	const struct rescale_cfg *cfg;
--	struct iio_channel *source;
--	struct iio_chan_spec chan;
--	struct iio_chan_spec_ext_info *ext_info;
--	bool chan_processed;
--	s32 numerator;
--	s32 denominator;
--};
-+	switch (scale_type) {
-+	case IIO_VAL_FRACTIONAL:
-+		*val *= rescale->numerator;
-+		*val2 *= rescale->denominator;
-+		return scale_type;
-+	case IIO_VAL_INT:
-+		*val *= rescale->numerator;
-+		if (rescale->denominator == 1)
-+			return scale_type;
-+		*val2 = rescale->denominator;
-+		return IIO_VAL_FRACTIONAL;
-+	case IIO_VAL_FRACTIONAL_LOG2:
-+		tmp = *val * 1000000000LL;
-+		do_div(tmp, rescale->denominator);
-+		tmp *= rescale->numerator;
-+		do_div(tmp, 1000000000LL);
-+		*val = tmp;
-+		return scale_type;
-+	default:
-+		return -EOPNOTSUPP;
-+	}
-+}
- 
- static int rescale_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val, int *val2, long mask)
- {
- 	struct rescale *rescale = iio_priv(indio_dev);
--	unsigned long long tmp;
- 	int ret;
- 
- 	switch (mask) {
-@@ -65,27 +76,7 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
- 		} else {
- 			ret = iio_read_channel_scale(rescale->source, val, val2);
- 		}
--		switch (ret) {
--		case IIO_VAL_FRACTIONAL:
--			*val *= rescale->numerator;
--			*val2 *= rescale->denominator;
--			return ret;
--		case IIO_VAL_INT:
--			*val *= rescale->numerator;
--			if (rescale->denominator == 1)
--				return ret;
--			*val2 = rescale->denominator;
--			return IIO_VAL_FRACTIONAL;
--		case IIO_VAL_FRACTIONAL_LOG2:
--			tmp = *val * 1000000000LL;
--			do_div(tmp, rescale->denominator);
--			tmp *= rescale->numerator;
--			do_div(tmp, 1000000000LL);
--			*val = tmp;
--			return ret;
--		default:
--			return -EOPNOTSUPP;
--		}
-+		return rescale_process_scale(rescale, ret, val, val2);
- 	default:
- 		return -EINVAL;
- 	}
-diff --git a/include/linux/iio/afe/rescale.h b/include/linux/iio/afe/rescale.h
-new file mode 100644
-index 000000000000..14d4ee1227c6
---- /dev/null
-+++ b/include/linux/iio/afe/rescale.h
-@@ -0,0 +1,30 @@
-+/* SPDX-License-Identifier: GPL-2.0-only */
-+/*
-+ * Copyright (C) 2021 Liam Beguin <liambeguin@gmail.com>
-+ */
-+
-+#ifndef __IIO_RESCALE_H__
-+#define __IIO_RESCALE_H__
-+
-+#include <linux/iio/iio.h>
-+
-+struct rescale;
-+
-+struct rescale_cfg {
-+	enum iio_chan_type type;
-+	int (*props)(struct device *dev, struct rescale *rescale);
-+};
-+
-+struct rescale {
-+	const struct rescale_cfg *cfg;
-+	struct iio_channel *source;
-+	struct iio_chan_spec chan;
-+	struct iio_chan_spec_ext_info *ext_info;
-+	bool chan_processed;
-+	s32 numerator;
-+	s32 denominator;
-+};
-+
-+int rescale_process_scale(struct rescale *rescale, int scale_type,
-+			  int *val, int *val2);
-+#endif /* __IIO_RESCALE_H__ */
+Acked-by: Florian Fainelli <f.fainelli@gmail.com>
 -- 
-2.32.0.452.g940fe202adcb
-
+Florian
