@@ -2,110 +2,56 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8F0C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Nov 2021 08:56:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F2BDC433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Nov 2021 08:56:30 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id D952661BE5
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Nov 2021 08:56:11 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 538A661BE6
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Nov 2021 08:56:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232552AbhKPI7H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Nov 2021 03:59:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232741AbhKPI6S (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Nov 2021 03:58:18 -0500
-Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5EFC061570;
-        Tue, 16 Nov 2021 00:55:16 -0800 (PST)
-Received: by mail-pg1-x52c.google.com with SMTP id h63so10122800pgc.12;
-        Tue, 16 Nov 2021 00:55:16 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9wuK2JM7pYYK7PmRiy77xGnegksjiUGl/GD+82KJ9KA=;
-        b=Rm01oHmLcVI99f59n7+IGw28B0Rc78Op12dy7tVzZi4kxvsJ1CAILkiXaIjkBOgtEz
-         UN+SCki7wYJpTktfu9lBsi65z2SfwCUIbZ06kev5ddroesDxySGdmsFsvyJtQIRJFnAk
-         wi9/LccrYn+H2BHaa4h0H0+JP8d1CKcOZVdd4pHj3Y0LkFx/Sx3BcaOE0Ea1cqxiqvhU
-         MqYT9nepvdI+lUXvnof57jn/CAqjdHsk7pn/VaztRRQuQv4WxsqD0WKVmAxjckk3S/3a
-         tqVOwC8fWaNGRDi59gRnt8/cNGm/svlj2WCaPBQ07WNWrMfFt4PH3AY5MeUbcKcC1ZJS
-         Nqtw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9wuK2JM7pYYK7PmRiy77xGnegksjiUGl/GD+82KJ9KA=;
-        b=a0kZU+7KcilIDSac5948dTrAqdaRFwUpCoWQjSEBGHtNWMxf8EoH+saBz6V7UYJUK1
-         l6jvD6N+tSQtaFG4LHfKAgnbVKQTF0Y+SspwMru+hJEIGVnrtPaGAINz9wgczANOfYl6
-         dndQUx3+OZXPmDCSqneDuTIZ5+qi/w005I7FoxXMXwec80RpYusn3/8I2Vgf7AySwzKv
-         IaIc63D58CfbgAF7cdUXfkL77Z8JvkHFgkwCoK8Q9Le4Xvn3SrMKwxoDRfLctkXRagRC
-         VYza3NcT1jbIRjkucZkDdtUN0OEYrRueHL06ukOcwNHjcaZ9x/+NWasHzvut+UadejBL
-         iJgQ==
-X-Gm-Message-State: AOAM530dZLD8jdo+3/bETsO4QboqpUkODjm7pF5ZDSpEVL+cenWqLCCG
-        ZxkC5tzoAZyZ0ufinCZ+g02znriU0rnCXMzfzDQ=
-X-Google-Smtp-Source: ABdhPJxz7J/5wr41dIgVdELYoASUX5KoLZMfrsXOIXE58Qew4a7xLyrP4bWVXmWoM2xBev3puPrNe9Un7aMisw7bZX8=
-X-Received: by 2002:a63:584e:: with SMTP id i14mr3798329pgm.356.1637052915589;
- Tue, 16 Nov 2021 00:55:15 -0800 (PST)
+        id S232686AbhKPI7Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Nov 2021 03:59:25 -0500
+Received: from mail.bizjoindeal.pl ([80.211.97.164]:53160 "EHLO
+        mail.bizjoindeal.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232720AbhKPI7X (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Nov 2021 03:59:23 -0500
+Received: by mail.bizjoindeal.pl (Postfix, from userid 1001)
+        id 93FB9A28BD; Tue, 16 Nov 2021 08:46:23 +0000 (GMT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=bizjoindeal.pl;
+        s=mail; t=1637052392;
+        bh=JZuQ1fK7zFtz2oeUB7Xfid9vb7kUywdmDd2OluR8ywA=;
+        h=Date:From:To:Subject:From;
+        b=tSHnU3E0K55SyY13InMRZ9imr+USb62/XuLi3wZJj1r8zaIaiXlE69vlTGBt++Q2b
+         u8OPKBEgdsJyeOPSzL6/T+6fPoRALyvW1Qt2izAnLj7ddyLgjdEnvRjVFa0WUsmZqo
+         +ftAoYl89h+5PtPY038fHCqX2sEHtufH7+k+ZX599CpMpbh+E2GCbnloYt7KaQyFNo
+         bt6ze2NaXR9fq1m/t79hNOQBMljNa0Yya8aeqHxng+fssSkMatl/lrlglHD6M34Gg5
+         SR59qR0UyyUKaJDbHmfrvySL8JiwMyYccuLIXcAkGeR5uDuWKMBfQHONqiaPnmDons
+         /DRdFz9XwUgIQ==
+Received: by mail.bizjoindeal.pl for <linux-iio@vger.kernel.org>; Tue, 16 Nov 2021 08:46:10 GMT
+Message-ID: <20211116074500-0.1.60.f089.0.7384hwtc59@bizjoindeal.pl>
+Date:   Tue, 16 Nov 2021 08:46:10 GMT
+From:   "Dorian Kwiatkowski" <dorian.kwiatkowski@bizjoindeal.pl>
+To:     <linux-iio@vger.kernel.org>
+Subject: Fotowoltaika dla firm
+X-Mailer: mail.bizjoindeal.pl
 MIME-Version: 1.0
-References: <20211115141925.60164-1-paul@crapouillou.net> <20211115141925.60164-7-paul@crapouillou.net>
-In-Reply-To: <20211115141925.60164-7-paul@crapouillou.net>
-From:   Alexandru Ardelean <ardeleanalex@gmail.com>
-Date:   Tue, 16 Nov 2021 10:55:04 +0200
-Message-ID: <CA+U=DspKfDmLhSg6fqz44w-BmmuP1Ju_RuMhS5+ZJXRUzq97fg@mail.gmail.com>
-Subject: Re: [PATCH 06/15] iio: buffer-dmaengine: Enable write support
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Nov 15, 2021 at 4:20 PM Paul Cercueil <paul@crapouillou.net> wrote:
->
-> Use the iio_dma_buffer_write() and iio_dma_buffer_space_available()
-> functions provided by the buffer-dma core, to enable write support in
-> the buffer-dmaengine code.
->
+Dzie=C5=84 dobry,
 
-This is a bit related to the comment about
-iio_dma_buffer_space_available() in patch 4
+kontaktuj=C4=99 si=C4=99 z Pa=C5=84stwem, poniewa=C5=BC dostrzegam mo=C5=BC=
+liwo=C5=9B=C4=87 redukcji op=C5=82at za pr=C4=85d.
 
-But otherwise:
+Odpowiednio dobrana instalacja fotowoltaiczna to rozwi=C4=85zanie, kt=C3=B3=
+re pozwala wygenerowa=C4=87 spore oszcz=C4=99dno=C5=9Bci w skali roku.
 
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Chcia=C5=82bym porozmawia=C4=87 z Pa=C5=84stwem o tego typu rozwi=C4=85za=
+niu, a tak=C5=BCe przedstawi=C4=87 wst=C4=99pne kalkulacje.
 
+Czy s=C4=85 Pa=C5=84stwo zainteresowani?
 
-> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
-> ---
->  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 2 ++
->  1 file changed, 2 insertions(+)
->
-> diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> index ac26b04aa4a9..5cde8fd81c7f 100644
-> --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
-> @@ -123,12 +123,14 @@ static void iio_dmaengine_buffer_release(struct iio_buffer *buf)
->
->  static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
->         .read = iio_dma_buffer_read,
-> +       .write = iio_dma_buffer_write,
->         .set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
->         .set_length = iio_dma_buffer_set_length,
->         .request_update = iio_dma_buffer_request_update,
->         .enable = iio_dma_buffer_enable,
->         .disable = iio_dma_buffer_disable,
->         .data_available = iio_dma_buffer_data_available,
-> +       .space_available = iio_dma_buffer_space_available,
->         .release = iio_dmaengine_buffer_release,
->
->         .modes = INDIO_BUFFER_HARDWARE,
-> --
-> 2.33.0
->
+Pozdrawiam,
+Dorian Kwiatkowski
