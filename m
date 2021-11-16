@@ -2,112 +2,110 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B91E2C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Nov 2021 08:55:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D8F0C433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Nov 2021 08:56:12 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id A2CE863214
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Nov 2021 08:55:07 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id D952661BE5
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Nov 2021 08:56:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232627AbhKPI6C (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Nov 2021 03:58:02 -0500
-Received: from elvis.franken.de ([193.175.24.41]:52966 "EHLO elvis.franken.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S232602AbhKPI6B (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 16 Nov 2021 03:58:01 -0500
-Received: from uucp (helo=alpha)
-        by elvis.franken.de with local-bsmtp (Exim 3.36 #1)
-        id 1mmuF0-0006gG-01; Tue, 16 Nov 2021 09:54:58 +0100
-Received: by alpha.franken.de (Postfix, from userid 1000)
-        id 0775BC2D9C; Tue, 16 Nov 2021 09:46:21 +0100 (CET)
-Date:   Tue, 16 Nov 2021 09:46:20 +0100
-From:   Thomas Bogendoerfer <tsbogend@alpha.franken.de>
-To:     Randy Dunlap <rdunlap@infradead.org>
-Cc:     linux-kernel@vger.kernel.org, kernel test robot <lkp@intel.com>,
-        Russell King <rmk+kernel@armlinux.org.uk>,
-        Artur Rojek <contact@artur-rojek.eu>,
-        Paul Cercueil <paul@crapouillou.net>,
-        linux-mips@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, Florian Fainelli <f.fainelli@gmail.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        bcm-kernel-feedback-list@broadcom.com,
-        Jonas Gorski <jonas.gorski@gmail.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v4] mips: bcm63xx: add support for clk_get_parent()
-Message-ID: <20211116084620.GB21168@alpha.franken.de>
-References: <20211115004218.13034-1-rdunlap@infradead.org>
+        id S232552AbhKPI7H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Nov 2021 03:59:07 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47488 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232741AbhKPI6S (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Nov 2021 03:58:18 -0500
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5EFC061570;
+        Tue, 16 Nov 2021 00:55:16 -0800 (PST)
+Received: by mail-pg1-x52c.google.com with SMTP id h63so10122800pgc.12;
+        Tue, 16 Nov 2021 00:55:16 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=9wuK2JM7pYYK7PmRiy77xGnegksjiUGl/GD+82KJ9KA=;
+        b=Rm01oHmLcVI99f59n7+IGw28B0Rc78Op12dy7tVzZi4kxvsJ1CAILkiXaIjkBOgtEz
+         UN+SCki7wYJpTktfu9lBsi65z2SfwCUIbZ06kev5ddroesDxySGdmsFsvyJtQIRJFnAk
+         wi9/LccrYn+H2BHaa4h0H0+JP8d1CKcOZVdd4pHj3Y0LkFx/Sx3BcaOE0Ea1cqxiqvhU
+         MqYT9nepvdI+lUXvnof57jn/CAqjdHsk7pn/VaztRRQuQv4WxsqD0WKVmAxjckk3S/3a
+         tqVOwC8fWaNGRDi59gRnt8/cNGm/svlj2WCaPBQ07WNWrMfFt4PH3AY5MeUbcKcC1ZJS
+         Nqtw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=9wuK2JM7pYYK7PmRiy77xGnegksjiUGl/GD+82KJ9KA=;
+        b=a0kZU+7KcilIDSac5948dTrAqdaRFwUpCoWQjSEBGHtNWMxf8EoH+saBz6V7UYJUK1
+         l6jvD6N+tSQtaFG4LHfKAgnbVKQTF0Y+SspwMru+hJEIGVnrtPaGAINz9wgczANOfYl6
+         dndQUx3+OZXPmDCSqneDuTIZ5+qi/w005I7FoxXMXwec80RpYusn3/8I2Vgf7AySwzKv
+         IaIc63D58CfbgAF7cdUXfkL77Z8JvkHFgkwCoK8Q9Le4Xvn3SrMKwxoDRfLctkXRagRC
+         VYza3NcT1jbIRjkucZkDdtUN0OEYrRueHL06ukOcwNHjcaZ9x/+NWasHzvut+UadejBL
+         iJgQ==
+X-Gm-Message-State: AOAM530dZLD8jdo+3/bETsO4QboqpUkODjm7pF5ZDSpEVL+cenWqLCCG
+        ZxkC5tzoAZyZ0ufinCZ+g02znriU0rnCXMzfzDQ=
+X-Google-Smtp-Source: ABdhPJxz7J/5wr41dIgVdELYoASUX5KoLZMfrsXOIXE58Qew4a7xLyrP4bWVXmWoM2xBev3puPrNe9Un7aMisw7bZX8=
+X-Received: by 2002:a63:584e:: with SMTP id i14mr3798329pgm.356.1637052915589;
+ Tue, 16 Nov 2021 00:55:15 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211115004218.13034-1-rdunlap@infradead.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20211115141925.60164-1-paul@crapouillou.net> <20211115141925.60164-7-paul@crapouillou.net>
+In-Reply-To: <20211115141925.60164-7-paul@crapouillou.net>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Tue, 16 Nov 2021 10:55:04 +0200
+Message-ID: <CA+U=DspKfDmLhSg6fqz44w-BmmuP1Ju_RuMhS5+ZJXRUzq97fg@mail.gmail.com>
+Subject: Re: [PATCH 06/15] iio: buffer-dmaengine: Enable write support
+To:     Paul Cercueil <paul@crapouillou.net>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        =?UTF-8?Q?Christian_K=C3=B6nig?= <christian.koenig@amd.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>, linux-media@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Nov 14, 2021 at 04:42:18PM -0800, Randy Dunlap wrote:
-> BCM63XX selects HAVE_LEGACY_CLK but does not provide/support
-> clk_get_parent(), so add a simple implementation of that
-> function so that callers of it will build without errors.
-> 
-> Fixes these build errors:
-> 
-> mips-linux-ld: drivers/iio/adc/ingenic-adc.o: in function `jz4770_adc_init_clk_div':
-> ingenic-adc.c:(.text+0xe4): undefined reference to `clk_get_parent'
-> mips-linux-ld: drivers/iio/adc/ingenic-adc.o: in function `jz4725b_adc_init_clk_div':
-> ingenic-adc.c:(.text+0x1b8): undefined reference to `clk_get_parent'
-> 
-> Fixes: e7300d04bd08 ("MIPS: BCM63xx: Add support for the Broadcom BCM63xx family of SOCs." )
-> Signed-off-by: Randy Dunlap <rdunlap@infradead.org>
-> Reported-by: kernel test robot <lkp@intel.com>
-> Suggested-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
-> Cc: Artur Rojek <contact@artur-rojek.eu>
-> Cc: Paul Cercueil <paul@crapouillou.net>
-> Cc: linux-mips@vger.kernel.org
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: linux-iio@vger.kernel.org
-> Cc: Florian Fainelli <f.fainelli@gmail.com>
-> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Cc: Russell King <linux@armlinux.org.uk>
-> Cc: bcm-kernel-feedback-list@broadcom.com
-> Cc: Jonas Gorski <jonas.gorski@gmail.com>
-> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Acked-by: Russell King (Oracle) <rmk+kernel@armlinux.org.uk>
+On Mon, Nov 15, 2021 at 4:20 PM Paul Cercueil <paul@crapouillou.net> wrote:
+>
+> Use the iio_dma_buffer_write() and iio_dma_buffer_space_available()
+> functions provided by the buffer-dma core, to enable write support in
+> the buffer-dmaengine code.
+>
+
+This is a bit related to the comment about
+iio_dma_buffer_space_available() in patch 4
+
+But otherwise:
+
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+
+
+> Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 > ---
-> v1 and v2 were:
-> [PATCH] iio/adc: ingenic: fix (MIPS) ingenic-adc build errors
->   (limiting this driver to MACH_INGENIC in Kconfig)
-> v3: add clk_get_parent() to arch/mips/bcm63xx/clk.c
-> v4:
->   add Fixes:, Suggested-by:, Reviewed-by: Acked-by:
->   drop blank line between function and EXPORT_SYMBOL(); (Andy)
-> 
->  arch/mips/bcm63xx/clk.c |    7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> --- linux-next-20211112.orig/arch/mips/bcm63xx/clk.c
-> +++ linux-next-20211112/arch/mips/bcm63xx/clk.c
-> @@ -381,6 +381,12 @@ void clk_disable(struct clk *clk)
->  
->  EXPORT_SYMBOL(clk_disable);
->  
-> +struct clk *clk_get_parent(struct clk *clk)
-> +{
-> +	return NULL;
-> +}
-> +EXPORT_SYMBOL(clk_get_parent);
-> +
->  unsigned long clk_get_rate(struct clk *clk)
->  {
->  	if (!clk)
-
-applied to mips-fixes.
-
-Thomas.
-
--- 
-Crap can work. Given enough thrust pigs will fly, but it's not necessarily a
-good idea.                                                [ RFC1925, 2.3 ]
+>  drivers/iio/buffer/industrialio-buffer-dmaengine.c | 2 ++
+>  1 file changed, 2 insertions(+)
+>
+> diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> index ac26b04aa4a9..5cde8fd81c7f 100644
+> --- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> +++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+> @@ -123,12 +123,14 @@ static void iio_dmaengine_buffer_release(struct iio_buffer *buf)
+>
+>  static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
+>         .read = iio_dma_buffer_read,
+> +       .write = iio_dma_buffer_write,
+>         .set_bytes_per_datum = iio_dma_buffer_set_bytes_per_datum,
+>         .set_length = iio_dma_buffer_set_length,
+>         .request_update = iio_dma_buffer_request_update,
+>         .enable = iio_dma_buffer_enable,
+>         .disable = iio_dma_buffer_disable,
+>         .data_available = iio_dma_buffer_data_available,
+> +       .space_available = iio_dma_buffer_space_available,
+>         .release = iio_dmaengine_buffer_release,
+>
+>         .modes = INDIO_BUFFER_HARDWARE,
+> --
+> 2.33.0
+>
