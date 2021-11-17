@@ -2,26 +2,26 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from mail.kernel.org (mail.kernel.org [198.145.29.99])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3066DC4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 17 Nov 2021 16:10:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AD002C433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 17 Nov 2021 16:10:50 +0000 (UTC)
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by mail.kernel.org (Postfix) with ESMTP id 1BAD9608FB
-	for <linux-iio@archiver.kernel.org>; Wed, 17 Nov 2021 16:10:49 +0000 (UTC)
+	by mail.kernel.org (Postfix) with ESMTP id 926C1608FB
+	for <linux-iio@archiver.kernel.org>; Wed, 17 Nov 2021 16:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232725AbhKQQNq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 17 Nov 2021 11:13:46 -0500
-Received: from mail-bn8nam12on2044.outbound.protection.outlook.com ([40.107.237.44]:54696
-        "EHLO NAM12-BN8-obe.outbound.protection.outlook.com"
+        id S229841AbhKQQNs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 17 Nov 2021 11:13:48 -0500
+Received: from mail-mw2nam12on2073.outbound.protection.outlook.com ([40.107.244.73]:28096
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S232073AbhKQQNl (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 17 Nov 2021 11:13:41 -0500
+        id S232144AbhKQQNm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 17 Nov 2021 11:13:42 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=hIIYGTBBn8UQ31pIk43GRK2pvdP9Zlfdcd4ft9ncHj2hvwXqh5f85Gp0cU3difqqsE/b3FiItOiqw397OzQKOAD7Jfyj5n08Nnjw5rOMKdHwTA7u6vKKX65bOMier415rRDMqOqfF1jVdenRcuBDbBoyZgyF/tFPBDdKf1zsqSQsIWHpPuR3BYXLg4kV9CG/z3ZIYHn66Vt91GT0JsUIWAEr39QQ4jokU81CxGPYUT/ZAnY25gSgqzDkg1U7bEQJ+fi9/f9ZufM5xhkb+SnL45k9oBxHdTtFFLHq1nXBZ4y1BTKvtTLjbns/A0g2eRzfKtHFRlddWzVjbllBjF0RuQ==
+ b=JngBKGsxe2uZMWvcqLvqSNkh1YkWTYFNEHW++CfCCdi6kVnyJpRzCiwSqHf+wM73DlB3Cg62AFxH5DNSkzgUYncRLAdv2HAWZuoHEEVlEI4NNBRlRqCPKCg3xF/3+8sadG07KBGRMIUW52KvOF9Z72vamHBRkjzhhLmEMrT5krhhjRaibbbF6gS69r+2d2rNzyHNqC8fwPbG5RuPbqlFeehaKSCGA7FHuc8sI06BsUxVf/CjlYdfP3j2KqDT8ZrkOJq3YIKUKzjKqUBZUUX3Wk4339MP/55vhozsArZLPpH7NPsjHsertBYozLq7tRTFZP052i0Ti4fIihvpv/YAbg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=IQ/MGkAWI2JN+XbJ/rh4fCzf0wpVeH0QKtVIy03fiS8=;
- b=ZSis/aXWSDNvD2SD6Mp1ia/N77/chz0WuafuacFlemvEN2dhtyl+J7oULfiwS0UCQka9xSbufZorUnGWi7wTWobusntMfIvLa/ateQFGbhd2SMuQFTfdRwukkzvx0Y219MZK683iWmJy/JeDo//Cexc0mnNFk86Fp/j54LaAx3m/6bkrG1YcY7+Siu4SaexpPwRVqZT8NcmiNPW8D7PIorNJmFbQinMjlociGB2UNJF7qdDfqSRUS0tVSKcnU5MzA/9xITSxCrgL6IvYbmvvirZ6I0jPksRF5Zrzt0edB2KgshfvxuwJvSLO4/Q3IkGSkjaWbe7ZZs5ufMkliwBoFg==
+ bh=JmVlCzmvuBcqkDONTtQyAXgD120L3C519ZQiyfjLWIw=;
+ b=Nh6IfSnw+QsXzqw+CcQiCf/JHrL4VAQk6Pvpdy48OoS98v1/pVE7d21mrdVO2nTMBibWHLHnL7HYcdJAvfW9jjgQV7uElj4CSR0nri/olTBsV/k7RfnnVOYP+C+ooR7YDSLl0nmHh21sB35QydqKWXWKI4mOzk2pGVdN+uNcQdBf8WB3IFru6STm9cQMu+/M65pvlVh4a9qUZuOUu8rOOZG6aTs+pdvye+WOwyw+hRIh8uyJm+tNRQOB2TlLuMFuBLeF6tXYqQdoHK1pnHaKiXmdplJ8AT/rrDehE2H6CPZD6Q4CuACa+1w/7n+2mxygxXFLtZln219npvPAsy5tyA==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.80.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -29,34 +29,33 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=IQ/MGkAWI2JN+XbJ/rh4fCzf0wpVeH0QKtVIy03fiS8=;
- b=AP3Mv2XDTixGdZm4TQMWEOiScyMWnn17eaakOwIbksjaSI3OixJwEHU0Lw04oeI+JD+FRd5F5fCFlV3diu8HkAH8VnHu2nM9Rjnx47TSs2bmFyahpuZokoQANIR560AhWyHK8y0vRE5lxLRodeh4fyHVT1XJFXL53ZcXHwneD4s=
-Received: from BN9PR03CA0337.namprd03.prod.outlook.com (2603:10b6:408:f6::12)
- by SJ0PR02MB7134.namprd02.prod.outlook.com (2603:10b6:a03:2a3::13) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.27; Wed, 17 Nov
- 2021 16:10:39 +0000
-Received: from BN1NAM02FT045.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:f6:cafe::67) by BN9PR03CA0337.outlook.office365.com
- (2603:10b6:408:f6::12) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4690.27 via Frontend
- Transport; Wed, 17 Nov 2021 16:10:39 +0000
+ bh=JmVlCzmvuBcqkDONTtQyAXgD120L3C519ZQiyfjLWIw=;
+ b=og0agyO6t42UpmuJIpTsBTBSK+4uuAKeOAOZucNJrq6QIp8CaV0Yxo4onz4keFamiGJ83B0JQ9vMR7+/DWDbbNx/FGUjEBSRV/tkvFZdu6tp6QMcs+eIrArQXJjWT6aM+P9vF/3XioMLSeZdK2x1rJ902e8+iHMbpQepHO6rl1g=
+Received: from SN2PR01CA0012.prod.exchangelabs.com (2603:10b6:804:2::22) by
+ CH2PR02MB6759.namprd02.prod.outlook.com (2603:10b6:610:7c::12) with Microsoft
+ SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.4713.21; Wed, 17 Nov 2021 16:10:40 +0000
+Received: from SN1NAM02FT0011.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:804:2:cafe::a0) by SN2PR01CA0012.outlook.office365.com
+ (2603:10b6:804:2::22) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19 via Frontend
+ Transport; Wed, 17 Nov 2021 16:10:40 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.80.198)
  smtp.mailfrom=xilinx.com; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.80.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.80.198; helo=xir-pvapexch01.xlnx.xilinx.com;
-Received: from xir-pvapexch01.xlnx.xilinx.com (149.199.80.198) by
- BN1NAM02FT045.mail.protection.outlook.com (10.13.2.156) with Microsoft SMTP
+ client-ip=149.199.80.198; helo=xir-pvapexch02.xlnx.xilinx.com;
+Received: from xir-pvapexch02.xlnx.xilinx.com (149.199.80.198) by
+ SN1NAM02FT0011.mail.protection.outlook.com (10.97.5.171) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.20.4690.19 via Frontend Transport; Wed, 17 Nov 2021 16:10:39 +0000
-Received: from xir-pvapexch01.xlnx.xilinx.com (172.21.17.15) by
- xir-pvapexch01.xlnx.xilinx.com (172.21.17.15) with Microsoft SMTP Server
+ 15.20.4690.19 via Frontend Transport; Wed, 17 Nov 2021 16:10:40 +0000
+Received: from xir-pvapexch02.xlnx.xilinx.com (172.21.17.17) by
+ xir-pvapexch02.xlnx.xilinx.com (172.21.17.17) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.14; Wed, 17 Nov 2021 16:10:36 +0000
 Received: from smtp.xilinx.com (172.21.105.197) by
- xir-pvapexch01.xlnx.xilinx.com (172.21.17.15) with Microsoft SMTP Server id
+ xir-pvapexch02.xlnx.xilinx.com (172.21.17.17) with Microsoft SMTP Server id
  15.1.2176.14 via Frontend Transport; Wed, 17 Nov 2021 16:10:36 +0000
 Envelope-to: anand.ashok.dumbre@xilinx.com,
  git@xilinx.com,
@@ -73,7 +72,7 @@ Envelope-to: anand.ashok.dumbre@xilinx.com,
 Received: from [10.71.188.1] (port=38490 helo=xiranandash40.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <anand.ashok.dumbre@xilinx.com>)
-        id 1mnNW2-0000gH-5U; Wed, 17 Nov 2021 16:10:30 +0000
+        id 1mnNW2-0000gH-1H; Wed, 17 Nov 2021 16:10:30 +0000
 From:   Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
 To:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
         <lars@metafoo.de>, <linux-iio@vger.kernel.org>, <git@xilinx.com>,
@@ -82,9 +81,9 @@ To:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
         <andriy.shevchenko@linux.intel.com>,
         <heikki.krogerus@linux.intel.com>
 CC:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
-Subject: [PATCH v10 4/5] dt-bindings: iio: adc: Add Xilinx AMS binding documentation
-Date:   Wed, 17 Nov 2021 16:10:27 +0000
-Message-ID: <20211117161028.11775-5-anand.ashok.dumbre@xilinx.com>
+Subject: [PATCH v10 1/5] device property: Add fwnode_iomap()
+Date:   Wed, 17 Nov 2021 16:10:24 +0000
+Message-ID: <20211117161028.11775-2-anand.ashok.dumbre@xilinx.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211117161028.11775-1-anand.ashok.dumbre@xilinx.com>
 References: <20211117161028.11775-1-anand.ashok.dumbre@xilinx.com>
@@ -92,273 +91,85 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 372cb981-6c27-48f3-c16c-08d9a9e4cc2b
-X-MS-TrafficTypeDiagnostic: SJ0PR02MB7134:
-X-Microsoft-Antispam-PRVS: <SJ0PR02MB71342DEC0ECD7AC5FB7E9BC9A99A9@SJ0PR02MB7134.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: fa116cb6-51f4-4f59-e19e-08d9a9e4ccf0
+X-MS-TrafficTypeDiagnostic: CH2PR02MB6759:
+X-Microsoft-Antispam-PRVS: <CH2PR02MB6759B25F66B35E3028F3A6FEA99A9@CH2PR02MB6759.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:8273;
+X-MS-Oob-TLC-OOBClassifiers: OLM:862;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: kT1zlmaS9OkHt7aYFq94O+g6iQ6YdEefHTd9LSGsjT8GC/+1A+W/r7qe9MkX1k4xSxeL0P7gQWcpzN9LB3ahOxTlfHF3AyiXtmPmBia+Lixt5P/uCtep702M+23WmEW4MPkUu5EvS/QAzh00mD9D5rIfiV6F42twrCK+Qp+KKh1D6lU/8Hd/ce0oDWcNdFLjcsPFY1qs/v4ZIJu+lgwwJo/7Ji4ZFOMZHW3zLIwMAI/ka7f+nAdKsiNfLgrkKlXjUirPusdwxJtWp1bohU/j+46Fm0Na8K5VplpZaylhk7A7h/6j63D4Rr9H06Nrwy8aIGgOpHWZeAY9J5eYkgK3fYipGLo0ZoxM7c0h3TtqD0WctKQ6FWlp1VvDY/av9GwQ7wcJH+UBU6ydyfjBeBbZ2eD4NhgHp47yJV9MJG009fh7P/TbkPd1iRbzZ9vrABAYoGP+0vyO36CZetgQ2eWhyJBaRRYRgVZ5IwPbfrKl/5HngODqpuTHavAztE2++9AAT+yaMWK9qyiiTckqclEiNi8U+tBDoRIjoLPY2EVokqcmaHG5UPiY0aY+BBMpm2fxj2Q2+chgeyO+KBsShTxpJpCVChLghIMtvUIwAmqduttPLNP55lpLffiP57qHr8tPkqFEBuckwBX0QBCh1OsStk43OkZ5AD3lFtXcXKZIgz+E1f5REnesf2TFT8qdGPj6dr97Ey4hok5RDYG+vIJen+vxAfVGdAaX41SFDcp0JbG0r5JUdLbQ9XVCiVueTnTOV/pr50HfFuvytp5g2pWPais9lA9NbuHnGpMCICtN8OwzFO+fOgso/wxUWQPUdIPAuJNNKADeTEv1I7s9jM2++FUBmTyYMMbmDdbPyEcsPhgnEzv+46wz2lPhpRE+UwTQwhwtymZdS60z/RTfEz/3ey3x1EAIWLQhPjWPGgtMBZM=
-X-Forefront-Antispam-Report: CIP:149.199.80.198;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:xir-pvapexch01.xlnx.xilinx.com;PTR:unknown-80-198.xilinx.com;CAT:NONE;SFS:(36840700001)(46966006)(336012)(426003)(36906005)(5660300002)(921005)(2906002)(316002)(2616005)(7696005)(4326008)(1076003)(36860700001)(36756003)(103116003)(966005)(186003)(508600001)(110136005)(26005)(8676002)(83380400001)(6666004)(47076005)(70206006)(107886003)(70586007)(9786002)(8936002)(7636003)(82310400003)(356005)(102446001)(83996005)(2101003);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: 3Q6IAqYoD54m+uvR1mGRtw4/GXq8onMj+smqvX0GH3KjcHEPhHTNxog8Aj51idOhaXXdC0N81yvHIDavse0A8yW9AJDNH5G4CKMBhWwtxJCeQgwQV9crDGgNwU3zsyYFCYsIIiRuFBSoNgAzUZafDfUV2Y0ar4cisNnfgAJxn72JgR742M0OD8SblvcXAt2zfSQJv9AUZ3i8IIy77T46Mue4OLzgavd2a9pRV5kb09EAQZgQYggoKIvz55pMdzSmMQBbq/ivZSsKRJFj6nlWre7VJeF5u6CZrP4M/bCwx5V7ShqkDV25uHbXq2/Zm10bFxCDaIH5vHCcyfcAfK7blWm6Sp5DWwud1qnn1kevUVElRkkoqb0DMqMCe9hDvYr+6jKkLRCNf54riXK8T53CFEPp2BItMTl5Kj69v4CP53DuCBnq9KwBu5T14W72MZCij4jm62aIPdCuS8NjNFQhinJLJr3EUF0FgIk7zsA5zAIvrfa2xrkNNyKy0swFJjBvri9elUvrK2VrtVDO9GFmP1nmqB+R7oLQ0ivBZRl7MEJHmwWoLHcspFu31U86sCSB3RuIMMshHri56HGHgqc4U08h9l6dq5Pl5gPlyPUv8+ke5ZrK/SY9/KFfr4Qxkw6YrXe3OUR+LF6X5jWila1ZM43OoBzUqMUfBWeTovNHpuV8DuxEYJsZ/l0em67LjR5SR3BSwOpC/zdLCZPSybBA1p2RswVBRCheiSvE8Qk6ktRojrIzvj9cpNmVgP9VSeIes0jAlr4zqPSPoDMNiqMQ20pbBUXDbsmcx4erp9daqxA=
+X-Forefront-Antispam-Report: CIP:149.199.80.198;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:xir-pvapexch02.xlnx.xilinx.com;PTR:unknown-80-198.xilinx.com;CAT:NONE;SFS:(46966006)(36840700001)(921005)(356005)(2616005)(7636003)(6666004)(426003)(70586007)(5660300002)(336012)(1076003)(47076005)(107886003)(70206006)(8936002)(26005)(186003)(103116003)(4326008)(508600001)(7696005)(9786002)(36756003)(8676002)(82310400003)(36860700001)(2906002)(110136005)(316002)(36906005)(102446001)(83996005)(2101003);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2021 16:10:39.1003
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 17 Nov 2021 16:10:40.2923
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 372cb981-6c27-48f3-c16c-08d9a9e4cc2b
+X-MS-Exchange-CrossTenant-Network-Message-Id: fa116cb6-51f4-4f59-e19e-08d9a9e4ccf0
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.80.198];Helo=[xir-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT045.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.80.198];Helo=[xir-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0011.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: SJ0PR02MB7134
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CH2PR02MB6759
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Xilinx AMS have several ADC channels that can be used for measurement of
-different voltages and temperatures. Document the same in the bindings.
+This patch introduces a new helper routine - fwnode_iomap(), which
+allows to map the memory mapped IO for a given device node.
 
+This implementation does not cover the ACPI case and may be expanded
+in the future. The main purpose here is to be able to develop resource
+provider agnostic drivers.
+
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- .../bindings/iio/adc/xlnx,zynqmp-ams.yaml     | 227 ++++++++++++++++++
- 1 file changed, 227 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
+ drivers/base/property.c  | 16 ++++++++++++++++
+ include/linux/property.h |  2 ++
+ 2 files changed, 18 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml b/Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
-new file mode 100644
-index 000000000000..87992db389b2
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
-@@ -0,0 +1,227 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/xlnx,zynqmp-ams.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index f1f35b48ab8b..f2e38be3a999 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -958,6 +958,22 @@ int fwnode_irq_get(const struct fwnode_handle *fwnode, unsigned int index)
+ }
+ EXPORT_SYMBOL(fwnode_irq_get);
+ 
++/**
++ * fwnode_iomap - Maps the memory mapped IO for a given fwnode
++ * @fwnode:	Pointer to the firmware node
++ * @index:	Index of the IO range
++ *
++ * Returns a pointer to the mapped memory.
++ */
++void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index)
++{
++	if (is_of_node(fwnode))
++		return of_iomap(to_of_node(fwnode), index);
 +
-+title: Xilinx Zynq Ultrascale AMS controller
++	return NULL;
++}
++EXPORT_SYMBOL(fwnode_iomap);
 +
-+maintainers:
-+  - Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+ /**
+  * fwnode_graph_get_next_endpoint - Get next endpoint firmware node
+  * @fwnode: Pointer to the parent firmware node
+diff --git a/include/linux/property.h b/include/linux/property.h
+index 88fa726a76df..6670d5a1ec2a 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -122,6 +122,8 @@ void fwnode_handle_put(struct fwnode_handle *fwnode);
+ 
+ int fwnode_irq_get(const struct fwnode_handle *fwnode, unsigned int index);
+ 
++void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index);
 +
-+description: |
-+  The AMS (Analog Monitoring System) includes an ADC as well as on-chip sensors
-+  that can be used to sample external voltages and monitor on-die operating
-+  conditions, such as temperature and supply voltage levels.
-+  The AMS has two SYSMON blocks which are PL (Programmable Logic) SYSMON and
-+  PS (Processing System) SYSMON.
-+  All designs should have AMS registers, but PS and PL are optional. The
-+  AMS controller can work with only PS, only PL and both PS and PL
-+  configurations. Please specify registers according to your design. Devicetree
-+  should always have AMS module property. Providing PS & PL module is optional.
-+
-+  AMS Channel Details
-+  ```````````````````
-+  Sysmon Block  |Channel|                       Details                                 |Measurement
-+                |Number |                                                               |Type
-+  ---------------------------------------------------------------------------------------------------------
-+  AMS CTRL      |0      |System PLLs voltage measurement, VCC_PSPLL.                    |Voltage
-+                |1      |Battery voltage measurement, VCC_PSBATT.                       |Voltage
-+                |2      |PL Internal voltage measurement, VCCINT.                       |Voltage
-+                |3      |Block RAM voltage measurement, VCCBRAM.                        |Voltage
-+                |4      |PL Aux voltage measurement, VCCAUX.                            |Voltage
-+                |5      |Voltage measurement for six DDR I/O PLLs, VCC_PSDDR_PLL.       |Voltage
-+                |6      |VCC_PSINTFP_DDR voltage measurement.                           |Voltage
-+  ---------------------------------------------------------------------------------------------------------
-+  PS Sysmon     |7      |LPD temperature measurement.                                   |Temperature
-+                |8      |FPD temperature measurement (REMOTE).                          |Temperature
-+                |9      |VCC PS LPD voltage measurement (supply1).                      |Voltage
-+                |10     |VCC PS FPD voltage measurement (supply2).                      |Voltage
-+                |11     |PS Aux voltage reference (supply3).                            |Voltage
-+                |12     |DDR I/O VCC voltage measurement.                               |Voltage
-+                |13     |PS IO Bank 503 voltage measurement (supply5).                  |Voltage
-+                |14     |PS IO Bank 500 voltage measurement (supply6).                  |Voltage
-+                |15     |VCCO_PSIO1 voltage measurement.                                |Voltage
-+                |16     |VCCO_PSIO2 voltage measurement.                                |Voltage
-+                |17     |VCC_PS_GTR voltage measurement (VPS_MGTRAVCC).                 |Voltage
-+                |18     |VTT_PS_GTR voltage measurement (VPS_MGTRAVTT).                 |Voltage
-+                |19     |VCC_PSADC voltage measurement.                                 |Voltage
-+  ---------------------------------------------------------------------------------------------------------
-+  PL Sysmon     |20     |PL temperature measurement.                                    |Temperature
-+                |21     |PL Internal voltage measurement, VCCINT.                       |Voltage
-+                |22     |PL Auxiliary voltage measurement, VCCAUX.                      |Voltage
-+                |23     |ADC Reference P+ voltage measurement.                          |Voltage
-+                |24     |ADC Reference N- voltage measurement.                          |Voltage
-+                |25     |PL Block RAM voltage measurement, VCCBRAM.                     |Voltage
-+                |26     |LPD Internal voltage measurement, VCC_PSINTLP (supply4).       |Voltage
-+                |27     |FPD Internal voltage measurement, VCC_PSINTFP (supply5).       |Voltage
-+                |28     |PS Auxiliary voltage measurement (supply6).                    |Voltage
-+                |29     |PL VCCADC voltage measurement (vccams).                        |Voltage
-+                |30     |Differential analog input signal voltage measurment.           |Voltage
-+                |31     |VUser0 voltage measurement (supply7).                          |Voltage
-+                |32     |VUser1 voltage measurement (supply8).                          |Voltage
-+                |33     |VUser2 voltage measurement (supply9).                          |Voltage
-+                |34     |VUser3 voltage measurement (supply10).                         |Voltage
-+                |35     |Auxiliary ch 0 voltage measurement (VAux0).                    |Voltage
-+                |36     |Auxiliary ch 1 voltage measurement (VAux1).                    |Voltage
-+                |37     |Auxiliary ch 2 voltage measurement (VAux2).                    |Voltage
-+                |38     |Auxiliary ch 3 voltage measurement (VAux3).                    |Voltage
-+                |39     |Auxiliary ch 4 voltage measurement (VAux4).                    |Voltage
-+                |40     |Auxiliary ch 5 voltage measurement (VAux5).                    |Voltage
-+                |41     |Auxiliary ch 6 voltage measurement (VAux6).                    |Voltage
-+                |42     |Auxiliary ch 7 voltage measurement (VAux7).                    |Voltage
-+                |43     |Auxiliary ch 8 voltage measurement (VAux8).                    |Voltage
-+                |44     |Auxiliary ch 9 voltage measurement (VAux9).                    |Voltage
-+                |45     |Auxiliary ch 10 voltage measurement (VAux10).                  |Voltage
-+                |46     |Auxiliary ch 11 voltage measurement (VAux11).                  |Voltage
-+                |47     |Auxiliary ch 12 voltage measurement (VAux12).                  |Voltage
-+                |48     |Auxiliary ch 13 voltage measurement (VAux13).                  |Voltage
-+                |49     |Auxiliary ch 14 voltage measurement (VAux14).                  |Voltage
-+                |50     |Auxiliary ch 15 voltage measurement (VAux15).                  |Voltage
-+  --------------------------------------------------------------------------------------------------------
-+
-+properties:
-+  compatible:
-+    enum:
-+      - xlnx,zynqmp-ams
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  reg:
-+    description: AMS Controller register space
-+    maxItems: 1
-+
-+  ranges:
-+    description:
-+      Maps the child address space for PS and/or PL.
-+    maxItems: 1
-+
-+  '#address-cells':
-+    const: 1
-+
-+  '#size-cells':
-+    const: 1
-+
-+  '#io-channel-cells':
-+    const: 1
-+
-+  ams-ps@0:
-+    type: object
-+    description: |
-+      PS (Processing System) SYSMON is memory mapped to PS. This block has
-+      built-in alarm generation logic that is used to interrupt the processor
-+      based on condition set.
-+
-+    properties:
-+      compatible:
-+        enum:
-+          - xlnx,zynqmp-ams-ps
-+
-+      reg:
-+        description: Register Space for PS-SYSMON
-+        maxItems: 1
-+
-+    required:
-+      - compatible
-+      - reg
-+
-+    additionalProperties: false
-+
-+  ams-pl@400:
-+    type: object
-+    description:
-+      PL-SYSMON is capable of monitoring off chip voltage and temperature.
-+      PL-SYSMON block has DRP, JTAG and I2C interface to enable monitoring
-+      from external master. Out of this interface currently only DRP is
-+      supported. This block has alarm generation logic that is used to
-+      interrupt the processor based on condition set.
-+
-+    properties:
-+      compatible:
-+        items:
-+          - enum:
-+              - xlnx,zynqmp-ams-pl
-+
-+      reg:
-+        description: Register Space for PL-SYSMON.
-+        maxItems: 1
-+
-+      '#address-cells':
-+        const: 1
-+
-+      '#size-cells':
-+        const: 0
-+
-+    patternProperties:
-+      "^channel@([2-4][0-9]|50)$":
-+        type: object
-+        description:
-+          Describes the external channels connected.
-+
-+        properties:
-+          reg:
-+            description:
-+              Pair of pins the channel is connected to. This value is
-+              same as Channel Number for a particular channel.
-+            minimum: 20
-+            maximum: 50
-+
-+          xlnx,bipolar:
-+            $ref: /schemas/types.yaml#/definitions/flag
-+            type: boolean
-+            description:
-+              If the set channel is used in bipolar mode.
-+
-+        required:
-+          - reg
-+
-+        additionalProperties: false
-+
-+required:
-+  - compatible
-+  - reg
-+  - ranges
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    bus {
-+        #address-cells = <2>;
-+        #size-cells = <2>;
-+
-+        xilinx_ams: ams@ffa50000 {
-+            compatible = "xlnx,zynqmp-ams";
-+            interrupt-parent = <&gic>;
-+            interrupts = <0 56 4>;
-+            reg = <0x0 0xffa50000 0x0 0x800>;
-+            #address-cells = <1>;
-+            #size-cells = <1>;
-+            #io-channel-cells = <1>;
-+            ranges = <0 0 0xffa50800 0x800>;
-+
-+            ams_ps: ams-ps@0 {
-+                compatible = "xlnx,zynqmp-ams-ps";
-+                reg = <0 0x400>;
-+            };
-+
-+            ams_pl: ams-pl@400 {
-+                compatible = "xlnx,zynqmp-ams-pl";
-+                reg = <0x400 0x400>;
-+                #address-cells = <1>;
-+                #size-cells = <0>;
-+                channel@30 {
-+                    reg = <30>;
-+                    xlnx,bipolar;
-+                };
-+                channel@31 {
-+                    reg = <31>;
-+                };
-+                channel@38 {
-+                    reg = <38>;
-+                    xlnx,bipolar;
-+                };
-+            };
-+        };
-+    };
+ unsigned int device_get_child_node_count(struct device *dev);
+ 
+ static inline bool device_property_read_bool(struct device *dev,
 -- 
 2.17.1
 
