@@ -2,173 +2,79 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10FBFC433FE
-	for <linux-iio@archiver.kernel.org>; Sat, 20 Nov 2021 10:26:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 28DEDC433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 20 Nov 2021 14:13:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229718AbhKTK3o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 20 Nov 2021 05:29:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42712 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229509AbhKTK3n (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 20 Nov 2021 05:29:43 -0500
-Received: from mail-pg1-x52b.google.com (mail-pg1-x52b.google.com [IPv6:2607:f8b0:4864:20::52b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1846CC06173E
-        for <linux-iio@vger.kernel.org>; Sat, 20 Nov 2021 02:26:40 -0800 (PST)
-Received: by mail-pg1-x52b.google.com with SMTP id t4so3525388pgn.9
-        for <linux-iio@vger.kernel.org>; Sat, 20 Nov 2021 02:26:40 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=+aGXs54SvBPT1qAbro6uKB+LYwJ6W7ByRifNSq1Q+Hk=;
-        b=R/qg18Ww9jxF2QxMUvGAwUBkSr1Yy5tz3nnAeHNlBSIju4K88BsxHNLbFIMAA5Ncyd
-         oYyn9H0x8hP12Xad9RB/zvSYwLsuBXK8WRwJoGsGOMs2uzOHw0GBTZa9bIx8L5fyGcsT
-         geaO0IEQBqO3jGPSw5D5Qd4fTjRIPViucQxps=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=+aGXs54SvBPT1qAbro6uKB+LYwJ6W7ByRifNSq1Q+Hk=;
-        b=oo1Woxj0TY/K9Z47xMQE9ooVAJPExxlGnXzyS4iJexmSXZOmYokOYuZtNBRUt7PYaz
-         uX2qKlk1v0H5FsRszY6Vtgeu+RSkJM/s5NPmRA4Y75ovznqj9Sf/tdcLk4p1F4sM3GcP
-         omrcb1PM/PiB3hKPMNyk3tBFX2X82v3nLdct3A0gkUNUNhcnjuIdrvyrIdFNYfYTjy/R
-         te5615Sa5SusguaqvJBFAxUmRzVH2cdHJypIo0LLPCVfKC+w3mDP5rCGyaqGhditWH5G
-         fXHkb50Ljdwky8tCE0iu/OUenCBFesiAAL6TKrzNwSgJCheG2LQWuKoT4AW7pBdJ/CPi
-         8wvg==
-X-Gm-Message-State: AOAM531Scg2CGhPxdZIymz59RrgGp/7pTFpq6pMcK0re+tLkU2Z61Q5p
-        DwLGfujkeMwo1l3o0nbU7NhemA==
-X-Google-Smtp-Source: ABdhPJwHjDJ/PEHPYynNXxl5EqLVsyXl5sx7087tQLIRiS7I1Eov0ckVSjMnn3Qw+UrquBIFTNipmw==
-X-Received: by 2002:a63:be4e:: with SMTP id g14mr22806030pgo.194.1637403999600;
-        Sat, 20 Nov 2021 02:26:39 -0800 (PST)
-Received: from localhost ([2620:15c:202:201:913f:8f64:e1fa:a751])
-        by smtp.gmail.com with UTF8SMTPSA id na13sm2105540pjb.11.2021.11.20.02.26.38
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 20 Nov 2021 02:26:39 -0800 (PST)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     jic23@kernel.org, lars@metafoo.de, swboyd@chromium.org
-Cc:     andy.shevchenko@gmail.com, linux-iio@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2 2/3] dt-bindings: iio: Add sx9360 binding
-Date:   Sat, 20 Nov 2021 02:26:33 -0800
-Message-Id: <20211120102634.1688190-3-gwendal@chromium.org>
-X-Mailer: git-send-email 2.34.0.rc2.393.gf8c9666880-goog
-In-Reply-To: <20211120102634.1688190-1-gwendal@chromium.org>
-References: <20211120102634.1688190-1-gwendal@chromium.org>
+        id S231523AbhKTOQF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 20 Nov 2021 09:16:05 -0500
+Received: from mail.kernel.org ([198.145.29.99]:54518 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231293AbhKTOQE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 20 Nov 2021 09:16:04 -0500
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by mail.kernel.org (Postfix) with ESMTPSA id F345760551;
+        Sat, 20 Nov 2021 14:12:58 +0000 (UTC)
+Date:   Sat, 20 Nov 2021 14:17:50 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Yang Yingliang <yangyingliang@huawei.com>
+Subject: Re: [PATCH v2 0/2] iio: buffer: allocation and freeing buffers fix
+ and optimization
+Message-ID: <20211120141750.3e7738cf@jic23-huawei>
+In-Reply-To: <YZJAmCsnD2QRNoCs@smile.fi.intel.com>
+References: <20211013094923.2473-1-andriy.shevchenko@linux.intel.com>
+        <20211017152611.13fb0357@jic23-huawei>
+        <YZJAmCsnD2QRNoCs@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.30; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add binding to configure Semtech sx9360 sensor.
-It is a simpler version of sx9324.
+On Mon, 15 Nov 2021 13:12:24 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
-Changes since v2:
-- Fix cut and paste error.
-- Add . at end of sentence.
+> On Sun, Oct 17, 2021 at 03:26:11PM +0100, Jonathan Cameron wrote:
+> > On Wed, 13 Oct 2021 12:49:21 +0300
+> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> >   
+> > > Yang submitted a fix, but I think the code can be refactored a bit to be more
+> > > robust against similar mistakes in the future, if any.
+> > > 
+> > > In v2:
+> > > - put SoB Yang's patch (it's good for backporting)
+> > > - added refactoring patch on top of Yang's fix
+> > > 
+> > > Andy Shevchenko (1):
+> > >   iio: buffer: Use dedicated variable in
+> > >     iio_buffers_alloc_sysfs_and_mask()
+> > > 
+> > > Yang Yingliang (1):
+> > >   iio: buffer: Fix double-free in iio_buffers_alloc_sysfs_and_mask()
+> > > 
+> > >  drivers/iio/industrialio-buffer.c | 18 +++++++-----------
+> > >  1 file changed, 7 insertions(+), 11 deletions(-)
+> > >   
+> > 1st patch applied to the fixes-togreg branch of iio.git. I may well end up
+> > sending these in the merge window anyway in which case I'll probably stick patch 2
+> > on top of it before sending.  If not I'll pick that up next cycle now.  
+> 
+> Is it a right time now?
+> 
+Applied, but needed a bit of hand tweaking as patches have crossed with this.
 
- .../iio/proximity/semtech,sx9360.yaml         | 90 +++++++++++++++++++
- 1 file changed, 90 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml
+Pushed out as testing for 0-day to see if we missed anything.
 
-diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml
-new file mode 100644
-index 00000000000000..326dabfb3eb2ac
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml
-@@ -0,0 +1,90 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/proximity/semtech,sx9310.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Semtech's SX9360 capacitive proximity sensor
-+
-+maintainers:
-+  - Gwendal Grignou <gwendal@chromium.org>
-+  - Daniel Campello <campello@chromium.org>
-+
-+description: |
-+  Semtech's SX9360 proximity sensor.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - semtech,sx9360
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    description:
-+      Generated by device to announce preceding read request has finished
-+      and data is available or that a close/far proximity event has happened.
-+    maxItems: 1
-+
-+  vdd-supply:
-+    description: Main power supply
-+
-+  svdd-supply:
-+    description: Host interface power supply
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+  semtech,resolution:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    enum: [8, 16, 32, 64, 128, 256, 512, 1024]
-+    description:
-+      Capacitance measurement resolution. For both phases, "reference" and
-+      "measurement". Higher the number, higher the resolution.
-+    default: 128
-+
-+  semtech,proxraw-strength:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    min: 0
-+    max: 7
-+    default: 1
-+    description:
-+      PROXRAW filter strength for both phase. A value of 0 represents off,
-+      and other values represent 1-1/2^N.
-+
-+  semtech,avg-pos-strength:
-+    $ref: /schemas/types.yaml#definitions/uint32
-+    enum: [0, 16, 64, 128, 256, 512, 1024, 4294967295]
-+    default: 16
-+    description:
-+      Average positive filter strength. A value of 0 represents off and
-+      UINT_MAX (4294967295) represents infinite. Other values
-+      represent 1-1/N.
-+
-+required:
-+  - compatible
-+  - reg
-+  - "#io-channel-cells"
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+      proximity@28 {
-+        compatible = "semtech,sx9360";
-+        reg = <0x28>;
-+        interrupt-parent = <&pio>;
-+        interrupts = <5 IRQ_TYPE_LEVEL_LOW 5>;
-+        vdd-supply = <&pp3300_a>;
-+        svdd-supply = <&pp1800_prox>;
-+        #io-channel-cells = <1>;
-+        semtech,resolution = 2;
-+        semtech,proxraw-strength = <2>;
-+        semtech,avg-pos-strength = <64>;
-+      };
-+    };
--- 
-2.34.0.rc2.393.gf8c9666880-goog
+Thanks,
+
+Jonathan
+
 
