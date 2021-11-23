@@ -2,35 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B64E5C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:07:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6BCAC433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:07:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239706AbhKWVKW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Nov 2021 16:10:22 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40364 "EHLO mail.kernel.org"
+        id S239659AbhKWVKY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Nov 2021 16:10:24 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40398 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239711AbhKWVKN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Nov 2021 16:10:13 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 632F46023D;
-        Tue, 23 Nov 2021 21:07:03 +0000 (UTC)
+        id S239859AbhKWVKU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 23 Nov 2021 16:10:20 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 8C45460FE7;
+        Tue, 23 Nov 2021 21:07:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637701624;
-        bh=pPyl3puDnQ2YVwDAg9Av2Db11yYm6u2B5Vk0Ez8BCMY=;
+        s=k20201202; t=1637701632;
+        bh=sKWuV7l7ZDhygRgQvyQCxcVkH5PmDnsa9hQNtgcUDNg=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=de+U/FpRZNNmqe97RVGNlMZYygTp6bLLyXNfu748eyS/JJI9f17qvTo3siowCKyhx
-         glPVwfvj02kD5bpfevBNFdjhWE/+CAVR+xvuaWvApo6UkUbLkIpJOkTgqRddJcmaQ1
-         HSOVQalk6WzgfKqCIfaaW4YbwRgdrnc/ibw2VvUblMg1EVY0TeiA9d85Z2ao2ghhBW
-         mIGK7K4oTeti06WpiOfx8xV/qTFhwqxLVUJnwn9HUL2PYoGxFMORnoc1OJTwjeRyHl
-         /4D30k5/7Twfbmd5UvPCcq5xnggyLFzvHRYQsjgOHfGhYqm9Dr8er6HxhHVz72ShYd
-         QtgXUBl2dkBFw==
+        b=SbIwBnOlbeMYWmgABeCwHd+nq6bF749OKJD7jo/3viedll0H2aFVDdOmT1ddqIOlu
+         TQAP+AmK6kiCCGxx6sBoztOdF6PKmOhbQSXCX3FwVCy6/1ZMprNc9o51xStGsqpyUP
+         DADfQjUuh1mApjovWmEq08pjfqQSLkRhqtVEELqKCX1lWEPo7WuwW9ZJ56X7RtHlZI
+         I7RYEVtrOzfqEbHPLV8Wyar/cv3M7OEAdl5WQ/99huQkfJq/tKNalbK9KQDnE6k+M2
+         6fG8rm9kRadzPvLbl8C4vcYEJTl1xh9KO82QDlRZGhnvQfEvC+mSEQjLVkmlH0Myy+
+         GjYLWg1uFt6dw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Paul Cercueil <paul@crapouillou.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 37/49] iio:magn:hmc5843: Switch from CONFIG_PM_SLEEP guards to pm_ptr() / __maybe_unused
-Date:   Tue, 23 Nov 2021 21:10:07 +0000
-Message-Id: <20211123211019.2271440-38-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 41/49] iio:pressure:bmp280: Switch from CONFIG_PM guards to pm_ptr() / __maybe_unused
+Date:   Tue, 23 Nov 2021 21:10:11 +0000
+Message-Id: <20211123211019.2271440-42-jic23@kernel.org>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211123211019.2271440-1-jic23@kernel.org>
 References: <20211123211019.2271440-1-jic23@kernel.org>
@@ -43,67 +44,77 @@ X-Mailing-List: linux-iio@vger.kernel.org
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
 Letting the compiler remove these functions when the kernel is built
-without CONFIG_PM_SLEEP support is simpler and less error prone than the
+without CONFIG_PM support is simpler and less error prone than the
 use of #ifdef based config guards.
 
 Removing instances of this approach from IIO also stops them being
 copied into new drivers.
 
-The pm_ptr() macro only removes the reference if CONFIG_PM is not
-set. It is possible for CONFIG_PM=y without CONFIG_SLEEP, so this
-will not always remove the pm_ops structure.
-
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/magnetometer/hmc5843.h     | 5 -----
- drivers/iio/magnetometer/hmc5843_i2c.c | 2 +-
- drivers/iio/magnetometer/hmc5843_spi.c | 2 +-
- 3 files changed, 2 insertions(+), 7 deletions(-)
+ drivers/iio/pressure/bmp280-core.c | 6 ++----
+ drivers/iio/pressure/bmp280-i2c.c  | 2 +-
+ drivers/iio/pressure/bmp280-spi.c  | 2 +-
+ 3 files changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/magnetometer/hmc5843.h b/drivers/iio/magnetometer/hmc5843.h
-index 9120c8bbf3dd..c3444f3ab1dc 100644
---- a/drivers/iio/magnetometer/hmc5843.h
-+++ b/drivers/iio/magnetometer/hmc5843.h
-@@ -55,13 +55,8 @@ void hmc5843_common_remove(struct device *dev);
- int hmc5843_common_suspend(struct device *dev);
- int hmc5843_common_resume(struct device *dev);
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index 6b7da40f99c8..0653e1ea88da 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -1138,8 +1138,7 @@ int bmp280_common_probe(struct device *dev,
+ }
+ EXPORT_SYMBOL(bmp280_common_probe);
  
--#ifdef CONFIG_PM_SLEEP
- static __maybe_unused SIMPLE_DEV_PM_OPS(hmc5843_pm_ops,
- 					hmc5843_common_suspend,
- 					hmc5843_common_resume);
--#define HMC5843_PM_OPS (&hmc5843_pm_ops)
--#else
--#define HMC5843_PM_OPS NULL
--#endif
+-#ifdef CONFIG_PM
+-static int bmp280_runtime_suspend(struct device *dev)
++static __maybe_unused int bmp280_runtime_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct bmp280_data *data = iio_priv(indio_dev);
+@@ -1147,7 +1146,7 @@ static int bmp280_runtime_suspend(struct device *dev)
+ 	return regulator_bulk_disable(BMP280_NUM_SUPPLIES, data->supplies);
+ }
  
- #endif /* HMC5843_CORE_H */
-diff --git a/drivers/iio/magnetometer/hmc5843_i2c.c b/drivers/iio/magnetometer/hmc5843_i2c.c
-index bc6e12f1d521..a7359f439f10 100644
---- a/drivers/iio/magnetometer/hmc5843_i2c.c
-+++ b/drivers/iio/magnetometer/hmc5843_i2c.c
-@@ -93,7 +93,7 @@ MODULE_DEVICE_TABLE(of, hmc5843_of_match);
- static struct i2c_driver hmc5843_driver = {
+-static int bmp280_runtime_resume(struct device *dev)
++static __maybe_unused int bmp280_runtime_resume(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct bmp280_data *data = iio_priv(indio_dev);
+@@ -1159,7 +1158,6 @@ static int bmp280_runtime_resume(struct device *dev)
+ 	usleep_range(data->start_up_time, data->start_up_time + 100);
+ 	return data->chip_info->chip_config(data);
+ }
+-#endif /* CONFIG_PM */
+ 
+ const struct dev_pm_ops bmp280_dev_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+diff --git a/drivers/iio/pressure/bmp280-i2c.c b/drivers/iio/pressure/bmp280-i2c.c
+index 8b03ea15c0d0..35045bd92846 100644
+--- a/drivers/iio/pressure/bmp280-i2c.c
++++ b/drivers/iio/pressure/bmp280-i2c.c
+@@ -58,7 +58,7 @@ static struct i2c_driver bmp280_i2c_driver = {
  	.driver = {
- 		.name	= "hmc5843",
--		.pm	= HMC5843_PM_OPS,
-+		.pm	= pm_ptr(&hmc5843_pm_ops),
- 		.of_match_table = hmc5843_of_match,
+ 		.name	= "bmp280",
+ 		.of_match_table = bmp280_of_i2c_match,
+-		.pm = &bmp280_dev_pm_ops,
++		.pm = pm_ptr(&bmp280_dev_pm_ops),
  	},
- 	.id_table	= hmc5843_id,
-diff --git a/drivers/iio/magnetometer/hmc5843_spi.c b/drivers/iio/magnetometer/hmc5843_spi.c
-index 89cf59a62c28..c1bd2ff3c64a 100644
---- a/drivers/iio/magnetometer/hmc5843_spi.c
-+++ b/drivers/iio/magnetometer/hmc5843_spi.c
-@@ -90,7 +90,7 @@ MODULE_DEVICE_TABLE(spi, hmc5843_id);
- static struct spi_driver hmc5843_driver = {
- 		.driver = {
- 				.name = "hmc5843",
--				.pm = HMC5843_PM_OPS,
-+				.pm = pm_ptr(&hmc5843_pm_ops),
- 		},
- 		.id_table = hmc5843_id,
- 		.probe = hmc5843_spi_probe,
+ 	.probe		= bmp280_i2c_probe,
+ 	.id_table	= bmp280_i2c_id,
+diff --git a/drivers/iio/pressure/bmp280-spi.c b/drivers/iio/pressure/bmp280-spi.c
+index 625b86878ad8..41f6cc56d229 100644
+--- a/drivers/iio/pressure/bmp280-spi.c
++++ b/drivers/iio/pressure/bmp280-spi.c
+@@ -109,7 +109,7 @@ static struct spi_driver bmp280_spi_driver = {
+ 	.driver = {
+ 		.name = "bmp280",
+ 		.of_match_table = bmp280_of_spi_match,
+-		.pm = &bmp280_dev_pm_ops,
++		.pm = pm_ptr(&bmp280_dev_pm_ops),
+ 	},
+ 	.id_table = bmp280_spi_id,
+ 	.probe = bmp280_spi_probe,
 -- 
 2.34.0
 
