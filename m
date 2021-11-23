@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC75C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:07:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A7CAC433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:07:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239571AbhKWVK0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S239722AbhKWVK0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Tue, 23 Nov 2021 16:10:26 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40394 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:40372 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239728AbhKWVKS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Nov 2021 16:10:18 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id CDACF60FC1;
-        Tue, 23 Nov 2021 21:07:08 +0000 (UTC)
+        id S239716AbhKWVKP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 23 Nov 2021 16:10:15 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 6ED4260FC3;
+        Tue, 23 Nov 2021 21:07:05 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637701630;
-        bh=n8ZK+v3kjyN+iI9/lY9Rj7gjEyJKxUFaRfgmFFpG3Kc=;
+        s=k20201202; t=1637701626;
+        bh=kztSKeAV/syJqtLcl2pqVaOWZUGwRM2EFsBo0VTIbTs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=tzesbO9i6s87Aa1dnWhs6sTuX69viigTOGojpv0at8dTf6wEb1V6j4KEMtgRLaRYF
-         5zvfVw28KkXdAMai6oV21R03KgkZn989W9lhdVb/+zYlJtJrDPfcjRZOrHqisaUypD
-         5miGcdDOCIzu/7EOELC5LSCXusgAQmJarrAkoD0UAOTeQ5yeOyuLZW9qMW1KCO/MeS
-         Mv5u1dkSJrz6tOImUruG59huYUCYs6GSQiH1JTGeTTrq5HudII6NhyOjcq8XD13IlJ
-         XWuV33R+HZmslh3kDQTb+hUE8qm9n2u9k8T6hVDg/+aKBLpnMGEDZjIkl7e/vlOTUM
-         l9+142Hdvoclw==
+        b=b3EbBgWprewG03SMm6wk43S6fn9pyBXRXut+Rmg//j+PHqBw2/pUPeSEuDhubt2vR
+         bA/3gLTCyr7+ewC3CVe5uE82DJqL4Y33hDKVHupWwt+rCGHObfWOOuTqDpYX2sxaz0
+         tkgywTUFhktnm25irADEBGSAifZCC+vra07w6TvNGUzYZgjjJikc68Ceoeb3Qh3RK9
+         ilDWG7b8L2UdkhSxZUp66nurrA95hfoEuoH7umdsOJ8nb8Yr5ZPbMDRzfG05eU+WnF
+         sg3IO/HI5T8dddIr4aymlpZRuteZyFX4/95ZAq3T796UFT86vQBOCYulrFSKXaBYTG
+         ZySC0XeUz4VgQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Paul Cercueil <paul@crapouillou.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 40/49] iio:pressure:mpl3115: Switch from CONFIG_PM_SLEEP guards to pm_ptr() / __maybe_unused
-Date:   Tue, 23 Nov 2021 21:10:10 +0000
-Message-Id: <20211123211019.2271440-41-jic23@kernel.org>
+Subject: [PATCH 38/49] iio:magn:mag3110: Switch from CONFIG_PM_SLEEP guards to pm_ptr() / __maybe_unused
+Date:   Tue, 23 Nov 2021 21:10:08 +0000
+Message-Id: <20211123211019.2271440-39-jic23@kernel.org>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211123211019.2271440-1-jic23@kernel.org>
 References: <20211123211019.2271440-1-jic23@kernel.org>
@@ -55,50 +55,52 @@ will not always remove the pm_ops structure.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/pressure/mpl3115.c | 11 +++--------
+ drivers/iio/magnetometer/mag3110.c | 11 +++--------
  1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/pressure/mpl3115.c b/drivers/iio/pressure/mpl3115.c
-index e95b9a5475b4..8148655537c9 100644
---- a/drivers/iio/pressure/mpl3115.c
-+++ b/drivers/iio/pressure/mpl3115.c
-@@ -301,14 +301,13 @@ static int mpl3115_remove(struct i2c_client *client)
+diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+index 17c62d806218..475fdff037f7 100644
+--- a/drivers/iio/magnetometer/mag3110.c
++++ b/drivers/iio/magnetometer/mag3110.c
+@@ -573,8 +573,7 @@ static int mag3110_remove(struct i2c_client *client)
  	return 0;
  }
  
 -#ifdef CONFIG_PM_SLEEP
--static int mpl3115_suspend(struct device *dev)
-+static __maybe_unused int mpl3115_suspend(struct device *dev)
+-static int mag3110_suspend(struct device *dev)
++static __maybe_unused int mag3110_suspend(struct device *dev)
  {
- 	return mpl3115_standby(iio_priv(i2c_get_clientdata(
- 		to_i2c_client(dev))));
- }
- 
--static int mpl3115_resume(struct device *dev)
-+static __maybe_unused int mpl3115_resume(struct device *dev)
- {
- 	struct mpl3115_data *data = iio_priv(i2c_get_clientdata(
+ 	struct mag3110_data *data = iio_priv(i2c_get_clientdata(
  		to_i2c_client(dev)));
-@@ -318,10 +317,6 @@ static int mpl3115_resume(struct device *dev)
+@@ -600,7 +599,7 @@ static int mag3110_suspend(struct device *dev)
+ 	return 0;
  }
  
- static SIMPLE_DEV_PM_OPS(mpl3115_pm_ops, mpl3115_suspend, mpl3115_resume);
--#define MPL3115_PM_OPS (&mpl3115_pm_ops)
+-static int mag3110_resume(struct device *dev)
++static __maybe_unused int mag3110_resume(struct device *dev)
+ {
+ 	struct mag3110_data *data = iio_priv(i2c_get_clientdata(
+ 		to_i2c_client(dev)));
+@@ -624,10 +623,6 @@ static int mag3110_resume(struct device *dev)
+ }
+ 
+ static SIMPLE_DEV_PM_OPS(mag3110_pm_ops, mag3110_suspend, mag3110_resume);
+-#define MAG3110_PM_OPS (&mag3110_pm_ops)
 -#else
--#define MPL3115_PM_OPS NULL
+-#define MAG3110_PM_OPS NULL
 -#endif
  
- static const struct i2c_device_id mpl3115_id[] = {
- 	{ "mpl3115", 0 },
-@@ -339,7 +334,7 @@ static struct i2c_driver mpl3115_driver = {
+ static const struct i2c_device_id mag3110_id[] = {
+ 	{ "mag3110", 0 },
+@@ -645,7 +640,7 @@ static struct i2c_driver mag3110_driver = {
  	.driver = {
- 		.name	= "mpl3115",
- 		.of_match_table = mpl3115_of_match,
--		.pm	= MPL3115_PM_OPS,
-+		.pm	= pm_ptr(&mpl3115_pm_ops),
+ 		.name	= "mag3110",
+ 		.of_match_table = mag3110_of_match,
+-		.pm	= MAG3110_PM_OPS,
++		.pm	= pm_ptr(&mag3110_pm_ops),
  	},
- 	.probe = mpl3115_probe,
- 	.remove = mpl3115_remove,
+ 	.probe = mag3110_probe,
+ 	.remove = mag3110_remove,
 -- 
 2.34.0
 
