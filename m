@@ -2,35 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC9E1C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:07:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C19DC433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239594AbhKWVKd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Nov 2021 16:10:33 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40468 "EHLO mail.kernel.org"
+        id S239728AbhKWVKf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Nov 2021 16:10:35 -0500
+Received: from mail.kernel.org ([198.145.29.99]:40484 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239859AbhKWVKa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Nov 2021 16:10:30 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 647A360FC1;
-        Tue, 23 Nov 2021 21:07:20 +0000 (UTC)
+        id S240334AbhKWVKe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 23 Nov 2021 16:10:34 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 1619260FE8;
+        Tue, 23 Nov 2021 21:07:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637701641;
-        bh=RP7Gu9UT6Yh2RoNNNNIQ+sAlrgRpgy7qPy5NzZu3qYg=;
+        s=k20201202; t=1637701645;
+        bh=mBjZPkhTJAlcqWthrXDVyp7eMz51l6280njDVIvnVt0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gDWvEIbHFNPwSYQswJiMGc97tu056kfq1kFwlglY96fqpovf7e2m+WAIQGZ+QGJ+/
-         Bfvo2wtzUMMLiLAet/krwJRrHZQ+3sMKagSZlZeU4xNFXlls5Hz+7wluuAhOWTYYID
-         N/oY7ev51bOF617pDTtl+3FlUyEkY00Tod+vxJkvIPrIe8x/PiywZpLZ80aoIhyxC2
-         Q3Z5RF/jVM2tg2SiTZrl6N6KTL86WUiB5ByU6A9UkUdSHSdi6+onxGfdInL8qIN06Q
-         7ywc7vxi7NkFMGayU2kG61NAuf6oi7YQXvKJvAo7Euy8BXVo5Y2bRlAOPhVFez/suP
-         COo+mGs8aFYSg==
+        b=MwwsmAzSQwHvBQp6YKWc0fCPfVkuj149Rse7R34oAWaNID170xzDik4KCa881EI/Y
+         clCX2UYat5vvi8WRRBSVDq4t5cMmYvKfkybcmVGqXQho9tsemC3HtGmqDbHOYoTb/H
+         2S+cYloGMIYSqga8rwmkGETUKoUQeQdXhzljJUiPMrLbg2ilkPP8DKPoepG85u0Axw
+         W80NNuVNbtRc+99h4l/kygCBti1H9pAGZYNGeVQlso6lUBbCDzq0WqsFO37XOiA+05
+         tNIYqumQkn8J5ULU5uMQUlpCbxLNSSM3cAu3j3iE5Vu9nI6TVCfcJBMRbEBXOZ6Kyo
+         Gd4VXuLzvufdg==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Paul Cercueil <paul@crapouillou.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 46/49] iio:temperature:tmp006: Switch from CONFIG_PM_SLEEP guards to pm_ptr() / __maybe_unused
-Date:   Tue, 23 Nov 2021 21:10:16 +0000
-Message-Id: <20211123211019.2271440-47-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 48/49] iio:gyro:mpu3050: Switch from CONFIG_PM guards to pm_ptr() / __maybe_unused
+Date:   Tue, 23 Nov 2021 21:10:18 +0000
+Message-Id: <20211123211019.2271440-49-jic23@kernel.org>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211123211019.2271440-1-jic23@kernel.org>
 References: <20211123211019.2271440-1-jic23@kernel.org>
@@ -43,54 +44,59 @@ X-Mailing-List: linux-iio@vger.kernel.org
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
 Letting the compiler remove these functions when the kernel is built
-without CONFIG_PM_SLEEP support is simpler and less error prone than the
+without CONFIG_PM support is simpler and less error prone than the
 use of #ifdef based config guards.
 
 Removing instances of this approach from IIO also stops them being
 copied into new drivers.
 
-The pm_ptr() macro only removes the reference if CONFIG_PM is not
-set. It is possible for CONFIG_PM=y without CONFIG_SLEEP, so this
-will not always remove the pm_ops structure.
-
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/temperature/tmp006.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/iio/gyro/mpu3050-core.c | 8 +++-----
+ drivers/iio/gyro/mpu3050-i2c.c  | 2 +-
+ 2 files changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/temperature/tmp006.c b/drivers/iio/temperature/tmp006.c
-index e4943a0bc9aa..beac388e56f5 100644
---- a/drivers/iio/temperature/tmp006.c
-+++ b/drivers/iio/temperature/tmp006.c
-@@ -261,17 +261,15 @@ static int tmp006_probe(struct i2c_client *client,
- 	return devm_iio_device_register(&client->dev, indio_dev);
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index ea387efab62d..4ec107b9e779 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -1281,19 +1281,17 @@ int mpu3050_common_remove(struct device *dev)
  }
+ EXPORT_SYMBOL(mpu3050_common_remove);
  
--#ifdef CONFIG_PM_SLEEP
--static int tmp006_suspend(struct device *dev)
-+static __maybe_unused int tmp006_suspend(struct device *dev)
+-#ifdef CONFIG_PM
+-static int mpu3050_runtime_suspend(struct device *dev)
++static __maybe_unused int mpu3050_runtime_suspend(struct device *dev)
  {
- 	return tmp006_power(dev, false);
+ 	return mpu3050_power_down(iio_priv(dev_get_drvdata(dev)));
  }
  
--static int tmp006_resume(struct device *dev)
-+static __maybe_unused int tmp006_resume(struct device *dev)
+-static int mpu3050_runtime_resume(struct device *dev)
++static __maybe_unused int mpu3050_runtime_resume(struct device *dev)
  {
- 	return tmp006_power(dev, true);
+ 	return mpu3050_power_up(iio_priv(dev_get_drvdata(dev)));
  }
--#endif
+-#endif /* CONFIG_PM */
  
- static SIMPLE_DEV_PM_OPS(tmp006_pm_ops, tmp006_suspend, tmp006_resume);
- 
-@@ -284,7 +282,7 @@ MODULE_DEVICE_TABLE(i2c, tmp006_id);
- static struct i2c_driver tmp006_driver = {
+-const struct dev_pm_ops mpu3050_dev_pm_ops = {
++const __maybe_unused struct dev_pm_ops mpu3050_dev_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+ 				pm_runtime_force_resume)
+ 	SET_RUNTIME_PM_OPS(mpu3050_runtime_suspend,
+diff --git a/drivers/iio/gyro/mpu3050-i2c.c b/drivers/iio/gyro/mpu3050-i2c.c
+index ef5bcbc4b45b..820133cad601 100644
+--- a/drivers/iio/gyro/mpu3050-i2c.c
++++ b/drivers/iio/gyro/mpu3050-i2c.c
+@@ -114,7 +114,7 @@ static struct i2c_driver mpu3050_i2c_driver = {
  	.driver = {
- 		.name	= "tmp006",
--		.pm	= &tmp006_pm_ops,
-+		.pm	= pm_ptr(&tmp006_pm_ops),
+ 		.of_match_table = mpu3050_i2c_of_match,
+ 		.name = "mpu3050-i2c",
+-		.pm = &mpu3050_dev_pm_ops,
++		.pm = pm_ptr(&mpu3050_dev_pm_ops),
  	},
- 	.probe = tmp006_probe,
- 	.id_table = tmp006_id,
+ };
+ module_i2c_driver(mpu3050_i2c_driver);
 -- 
 2.34.0
 
