@@ -2,36 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC795C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DD9C4332F
 	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:07:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240334AbhKWVKi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S239635AbhKWVKi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Tue, 23 Nov 2021 16:10:38 -0500
-Received: from mail.kernel.org ([198.145.29.99]:40474 "EHLO mail.kernel.org"
+Received: from mail.kernel.org ([198.145.29.99]:40494 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239635AbhKWVKd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Nov 2021 16:10:33 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 0AC3460FE7;
-        Tue, 23 Nov 2021 21:07:21 +0000 (UTC)
+        id S239859AbhKWVKg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 23 Nov 2021 16:10:36 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 3B0F260FC3;
+        Tue, 23 Nov 2021 21:07:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637701643;
-        bh=867xwiImbbcYCPHk9Q7wJlRPxcEFxSBNxxo/sqbKcB8=;
+        s=k20201202; t=1637701647;
+        bh=3WMSH2p9hgrSj0O6WilIfR05MT5zELoGQ0clNxa4FWM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=nlgDJFNuTZYlzGmUfvTa4oKLpQmlku9by2ek308M5/L+51HvCa0pR28asiC1Ae3mT
-         bMzg5ddxULI/jqDbOOdRoIYJ80NZT6s4MW3TyPqX0jxHkItAlYwz+xis6xBIe9E72q
-         HWaM2tlF0rxQ3yNyMX5XKWRvlMmIpV4kBzTUOJ4btD19N3JxtWomYF2lQo/jIUbvTo
-         MgzKAnYl0HqwjZKZZ5JBrhIu8/4qXftNNlEExG2bfTMSy4E+ilkTf79DdsrMVUxrpE
-         RHVopG66FmYAugiPVKtTESU78Q6s4gh/OdrhNKW7I6vuN3RbxyaP1Oib9cPYvgDKQX
-         7Lw/FI+kWkyUg==
+        b=CNMgbUQuiFqpjP5Mrsj1MxaeOFmNUoddaOrgP/loatueOlW2P2q9exYmzuAWaawT7
+         wVdOMOh9lmmlmMlBzGlsVAwowHn9d1PVM1ogOWgvknWSaxQrMCsu233GJ80OPpAUc7
+         0KovNf0/z09jHPQkYibWchA36O7TOHIw5UEEf7sLxIW5IJJo3aDpJ+BTD/EP8h2XD5
+         Syxs0g5vySnr8dCKysJUA3fDTbXtwiS4XVGd4EZzBjD9f1sa09aKQpPQvzeir1Tq/D
+         owluwNiMMX2aU4btwgD6ssifc7/3qROoX3LjWL/V0Q9ovwVP+q/5eqAILkT91gDXT9
+         5bvABcrrU3QNA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Paul Cercueil <paul@crapouillou.net>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Manivannan Sadhasivam <mani@kernel.org>
-Subject: [PATCH 47/49] iio:temperature:tmp007: Switch from CONFIG_PM_SLEEP guards to pm_ptr() / __maybe_unused
-Date:   Tue, 23 Nov 2021 21:10:17 +0000
-Message-Id: <20211123211019.2271440-48-jic23@kernel.org>
+        Matt Ranostay <matt.ranostay@konsulko.com>
+Subject: [PATCH 49/49] iio:chemical:atlas: Switch from CONFIG_PM guards to pm_ptr() / __maybe_unused
+Date:   Tue, 23 Nov 2021 21:10:19 +0000
+Message-Id: <20211123211019.2271440-50-jic23@kernel.org>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211123211019.2271440-1-jic23@kernel.org>
 References: <20211123211019.2271440-1-jic23@kernel.org>
@@ -44,62 +44,60 @@ X-Mailing-List: linux-iio@vger.kernel.org
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
 Letting the compiler remove these functions when the kernel is built
-without CONFIG_PM_SLEEP support is simpler and less error prone than the
+without CONFIG_PM support is simpler and less error prone than the
 use of #ifdef based config guards.
 
 Removing instances of this approach from IIO also stops them being
 copied into new drivers.
 
-The pm_ptr() macro only removes the reference if CONFIG_PM is not
-set. It is possible for CONFIG_PM=y without CONFIG_SLEEP, so this
-will not always remove the pm_ops structure.
-
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Manivannan Sadhasivam <mani@kernel.org>
+Cc: Matt Ranostay <matt.ranostay@konsulko.com>
 ---
- drivers/iio/temperature/tmp007.c | 8 +++-----
- 1 file changed, 3 insertions(+), 5 deletions(-)
+ drivers/iio/chemical/atlas-sensor.c | 10 ++++------
+ 1 file changed, 4 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/temperature/tmp007.c b/drivers/iio/temperature/tmp007.c
-index b422371a4674..9a1b7f63500e 100644
---- a/drivers/iio/temperature/tmp007.c
-+++ b/drivers/iio/temperature/tmp007.c
-@@ -537,8 +537,7 @@ static int tmp007_probe(struct i2c_client *client,
- 	return devm_iio_device_register(&client->dev, indio_dev);
+diff --git a/drivers/iio/chemical/atlas-sensor.c b/drivers/iio/chemical/atlas-sensor.c
+index 04b44a327614..7bacd0bd6f19 100644
+--- a/drivers/iio/chemical/atlas-sensor.c
++++ b/drivers/iio/chemical/atlas-sensor.c
+@@ -737,8 +737,7 @@ static int atlas_remove(struct i2c_client *client)
+ 	return atlas_set_powermode(data, 0);
  }
  
--#ifdef CONFIG_PM_SLEEP
--static int tmp007_suspend(struct device *dev)
-+static __maybe_unused int tmp007_suspend(struct device *dev)
+-#ifdef CONFIG_PM
+-static int atlas_runtime_suspend(struct device *dev)
++static __maybe_unused int atlas_runtime_suspend(struct device *dev)
  {
- 	struct tmp007_data *data = iio_priv(i2c_get_clientdata(
- 			to_i2c_client(dev)));
-@@ -546,7 +545,7 @@ static int tmp007_suspend(struct device *dev)
- 	return tmp007_powerdown(data);
+ 	struct atlas_data *data =
+ 		     iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+@@ -746,16 +745,15 @@ static int atlas_runtime_suspend(struct device *dev)
+ 	return atlas_set_powermode(data, 0);
  }
  
--static int tmp007_resume(struct device *dev)
-+static __maybe_unused int tmp007_resume(struct device *dev)
+-static int atlas_runtime_resume(struct device *dev)
++static __maybe_unused int atlas_runtime_resume(struct device *dev)
  {
- 	struct tmp007_data *data = iio_priv(i2c_get_clientdata(
- 			to_i2c_client(dev)));
-@@ -554,7 +553,6 @@ static int tmp007_resume(struct device *dev)
- 	return i2c_smbus_write_word_swapped(data->client, TMP007_CONFIG,
- 			data->config | TMP007_CONFIG_CONV_EN);
+ 	struct atlas_data *data =
+ 		     iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+ 
+ 	return atlas_set_powermode(data, 1);
  }
 -#endif
  
- static SIMPLE_DEV_PM_OPS(tmp007_pm_ops, tmp007_suspend, tmp007_resume);
- 
-@@ -574,7 +572,7 @@ static struct i2c_driver tmp007_driver = {
+-static const struct dev_pm_ops atlas_pm_ops = {
++static __maybe_unused const struct dev_pm_ops atlas_pm_ops = {
+ 	SET_RUNTIME_PM_OPS(atlas_runtime_suspend,
+ 			   atlas_runtime_resume, NULL)
+ };
+@@ -764,7 +762,7 @@ static struct i2c_driver atlas_driver = {
  	.driver = {
- 		.name	= "tmp007",
- 		.of_match_table = tmp007_of_match,
--		.pm	= &tmp007_pm_ops,
-+		.pm	= pm_ptr(&tmp007_pm_ops),
+ 		.name	= ATLAS_DRV_NAME,
+ 		.of_match_table	= atlas_dt_ids,
+-		.pm	= &atlas_pm_ops,
++		.pm	= pm_ptr(&atlas_pm_ops),
  	},
- 	.probe		= tmp007_probe,
- 	.id_table	= tmp007_id,
+ 	.probe		= atlas_probe,
+ 	.remove		= atlas_remove,
 -- 
 2.34.0
 
