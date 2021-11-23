@@ -2,35 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8247C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:06:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3641EC433FE
+	for <linux-iio@archiver.kernel.org>; Tue, 23 Nov 2021 21:06:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234304AbhKWVJL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 23 Nov 2021 16:09:11 -0500
-Received: from mail.kernel.org ([198.145.29.99]:39850 "EHLO mail.kernel.org"
+        id S234240AbhKWVJO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 23 Nov 2021 16:09:14 -0500
+Received: from mail.kernel.org ([198.145.29.99]:39880 "EHLO mail.kernel.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S234224AbhKWVJF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Nov 2021 16:09:05 -0500
-Received: by mail.kernel.org (Postfix) with ESMTPSA id 06C1360FD8;
-        Tue, 23 Nov 2021 21:05:55 +0000 (UTC)
+        id S234479AbhKWVJN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 23 Nov 2021 16:09:13 -0500
+Received: by mail.kernel.org (Postfix) with ESMTPSA id 7C00C60FE6;
+        Tue, 23 Nov 2021 21:05:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1637701557;
-        bh=JRDU7ooOViv/ExO2/8kLivBk8M6t33akhx3+LubKhzQ=;
+        s=k20201202; t=1637701561;
+        bh=rVzJEu9HkUXc7z2nTxYwPLNrr5h2cWKkNv8peMwL1pU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=pwKv4LTYfXLmtTXTkhI0YUOxOUwvDnHkNhknDMqBhXO0e6Ac9Zb9T4KwLBNpMzI2o
-         QlwAfOGxzhqip7C1UYAdIeG9sDwStchQ+g20fA4bfftSb55afgWcGjNY5LbCR/MLsQ
-         8BVL6V569dPjV1c1rtfM6oGhNynpITTMHQRRSpUYhzi7KXAUfH4IiCYuM3s5J5O/3p
-         KsUjcvSSpQC5/YAyilojoHCa41rLo4IwVnQTX7jkeGi7Fz3VL0KGJoV1avCTcwmLGd
-         +RIDQO8+D34GD/00nQqIn1e69vW2caN28BGf74IvpXwaqv053isCjPt7A6uND86+HB
-         xkuHj1XqavnOg==
+        b=I4XezPKU3QAEO2M4hwxelaIlizHaBhDUaZkw5IuTvmuaxOA14o8gqsJusPS+Brlhz
+         u/8mZF+pa9q8IWNwKySrfIdvLC27qk3Prlm6csw9X6xrUUU4olBi0uwdepfVqE6jTy
+         9GyB0p/Kyv780+m7VMoiIt5g2Yb/FcRfC5HVZaVlS1aZudqOnkahUJg/iC5RZ0/+rt
+         DJ3pBRJT/9TqptL5ZXqiBW1nsFvaqWTKEZ59DVICE1rAAefqbbJh0n/V4j1qTPtnQL
+         yfsz5ZfENqIuTHDG8mOWUwmPIChkO6A3ltfXzvPdWKunTq6UA9+1Z4rDrdVM7R9Lu8
+         Faa+6R6cpLC5g==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Paul Cercueil <paul@crapouillou.net>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 03/49] iio:accel:dmard06: Switch from CONFIG_PM_SLEEP guards to pm_ptr() / __maybe_unused
-Date:   Tue, 23 Nov 2021 21:09:33 +0000
-Message-Id: <20211123211019.2271440-4-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH 05/49] iio:accel:mc3230: Switch from CONFIG_PM_SLEEP guards to pm_ptr() / __maybe_unused
+Date:   Tue, 23 Nov 2021 21:09:35 +0000
+Message-Id: <20211123211019.2271440-6-jic23@kernel.org>
 X-Mailer: git-send-email 2.34.0
 In-Reply-To: <20211123211019.2271440-1-jic23@kernel.org>
 References: <20211123211019.2271440-1-jic23@kernel.org>
@@ -54,61 +55,51 @@ set. It is possible for CONFIG_PM=y without CONFIG_SLEEP, so this
 will not always remove the pm_ops structure.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Hans de Goede <hdegoede@redhat.com>
 ---
- drivers/iio/accel/dmard06.c | 12 ++++--------
- 1 file changed, 4 insertions(+), 8 deletions(-)
+ drivers/iio/accel/mc3230.c | 8 +++-----
+ 1 file changed, 3 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/accel/dmard06.c b/drivers/iio/accel/dmard06.c
-index de2868c28d95..a0e8d0ab700b 100644
---- a/drivers/iio/accel/dmard06.c
-+++ b/drivers/iio/accel/dmard06.c
-@@ -7,6 +7,7 @@
- 
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
-+#include <linux/compiler.h>
- #include <linux/i2c.h>
- #include <linux/iio/iio.h>
- 
-@@ -170,8 +171,7 @@ static int dmard06_probe(struct i2c_client *client,
- 	return devm_iio_device_register(&client->dev, indio_dev);
+diff --git a/drivers/iio/accel/mc3230.c b/drivers/iio/accel/mc3230.c
+index 735002b716f3..139c7f6839df 100644
+--- a/drivers/iio/accel/mc3230.c
++++ b/drivers/iio/accel/mc3230.c
+@@ -160,8 +160,7 @@ static int mc3230_remove(struct i2c_client *client)
+ 	return mc3230_set_opcon(iio_priv(indio_dev), MC3230_MODE_OPCON_STANDBY);
  }
  
 -#ifdef CONFIG_PM_SLEEP
--static int dmard06_suspend(struct device *dev)
-+static __maybe_unused int dmard06_suspend(struct device *dev)
+-static int mc3230_suspend(struct device *dev)
++static __maybe_unused int mc3230_suspend(struct device *dev)
  {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct dmard06_data *dmard06 = iio_priv(indio_dev);
-@@ -185,7 +185,7 @@ static int dmard06_suspend(struct device *dev)
- 	return 0;
+ 	struct mc3230_data *data;
+ 
+@@ -170,7 +169,7 @@ static int mc3230_suspend(struct device *dev)
+ 	return mc3230_set_opcon(data, MC3230_MODE_OPCON_STANDBY);
  }
  
--static int dmard06_resume(struct device *dev)
-+static __maybe_unused int dmard06_resume(struct device *dev)
+-static int mc3230_resume(struct device *dev)
++static __maybe_unused int mc3230_resume(struct device *dev)
  {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct dmard06_data *dmard06 = iio_priv(indio_dev);
-@@ -200,10 +200,6 @@ static int dmard06_resume(struct device *dev)
- }
+ 	struct mc3230_data *data;
  
- static SIMPLE_DEV_PM_OPS(dmard06_pm_ops, dmard06_suspend, dmard06_resume);
--#define DMARD06_PM_OPS (&dmard06_pm_ops)
--#else
--#define DMARD06_PM_OPS NULL
+@@ -178,7 +177,6 @@ static int mc3230_resume(struct device *dev)
+ 
+ 	return mc3230_set_opcon(data, MC3230_MODE_OPCON_WAKE);
+ }
 -#endif
  
- static const struct i2c_device_id dmard06_id[] = {
- 	{ "dmard05", 0 },
-@@ -227,7 +223,7 @@ static struct i2c_driver dmard06_driver = {
+ static SIMPLE_DEV_PM_OPS(mc3230_pm_ops, mc3230_suspend, mc3230_resume);
+ 
+@@ -191,7 +189,7 @@ MODULE_DEVICE_TABLE(i2c, mc3230_i2c_id);
+ static struct i2c_driver mc3230_driver = {
  	.driver = {
- 		.name = DMARD06_DRV_NAME,
- 		.of_match_table = dmard06_of_match,
--		.pm = DMARD06_PM_OPS,
-+		.pm = pm_ptr(&dmard06_pm_ops),
+ 		.name = "mc3230",
+-		.pm = &mc3230_pm_ops,
++		.pm = pm_ptr(&mc3230_pm_ops),
  	},
- };
- module_i2c_driver(dmard06_driver);
+ 	.probe		= mc3230_probe,
+ 	.remove		= mc3230_remove,
 -- 
 2.34.0
 
