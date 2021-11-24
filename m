@@ -2,148 +2,172 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CB430C433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Nov 2021 18:38:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB2AC433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Nov 2021 22:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350760AbhKXSl1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Nov 2021 13:41:27 -0500
-Received: from mga05.intel.com ([192.55.52.43]:5871 "EHLO mga05.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243530AbhKXSl1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Nov 2021 13:41:27 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10178"; a="321580174"
-X-IronPort-AV: E=Sophos;i="5.87,261,1631602800"; 
-   d="scan'208";a="321580174"
-Received: from fmsmga001.fm.intel.com ([10.253.24.23])
-  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Nov 2021 10:37:07 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,261,1631602800"; 
-   d="scan'208";a="650486810"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by fmsmga001.fm.intel.com with ESMTP; 24 Nov 2021 10:37:04 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1mpx8c-0005CO-IY; Wed, 24 Nov 2021 18:36:58 +0000
-Date:   Thu, 25 Nov 2021 02:36:39 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Liam Beguin <liambeguin@gmail.com>, peda@axentia.se,
-        jic23@kernel.org, lars@metafoo.de
-Cc:     kbuild-all@lists.01.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org
-Subject: Re: [PATCH v9 10/14] iio: test: add basic tests for the iio-rescale
- driver
-Message-ID: <202111250238.lNOwhSKW-lkp@intel.com>
-References: <20211115034334.1713050-11-liambeguin@gmail.com>
+        id S245200AbhKXW5n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Nov 2021 17:57:43 -0500
+Received: from mail-dm6nam11on2047.outbound.protection.outlook.com ([40.107.223.47]:12116
+        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S244373AbhKXW5m (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 24 Nov 2021 17:57:42 -0500
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=Vcp7q2fAAiplfOzZRWqCWNAZ143Z1xgcqElxSJGFVWN8UVEbpue1+XpbDBkTF1pKTtnXi10g+jdiq9pnRp4QtNZq9E1iuNm92Gy5WSvOzocKycdXIGMEBbMYkuoSNHZDIpKYgpWa9tcae1+0vZkiTDTpia42u3vvF5lrP+L10+38SpmE4bSnGmJ0oUUe+jOkG10dB+bQRSGOQ+3qHCf4L45aCcJpNfjlVaZZDiPg4HQ6SasH/uonv4UovFyvqzd0fjfvmCIn3ouK7/JFMZrqNIN8w53NGtYOv+aXjZrprgugaIZ/axUC3fPRcprsgnWeaXCqu5JL02iJFtgair1SlQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=JmVlCzmvuBcqkDONTtQyAXgD120L3C519ZQiyfjLWIw=;
+ b=mgH8dTw0rTgFztpIQMrptQE3vVWdjHkLVH8Hh8ciRPzxa4M87AKdPZ0GPIcuxNTrEqs3Vul7nAZms20nNrvvKj10FGFYI/3jdd7W5EwyMeNI5H4WdztpkK2fSOmwXhMG4LqZbZN0mO0b63O4lAUWV3vHkPTETiVdCWOca8IoljCtGNsnBE1P4ZLajC2C9wYYVF9oab8jhLVhiiYaAvSuw9WpfJ6VhR0/02FzK0Th4Lrw4ilMBQbCX7kMpIOagfJJKjrzNvV6lTW4bAukuSMFA5ZICa6zgTucXOmEMBfJWFVNds17rG0DJowixI2nb4XHhI4YzxmPWIeZ6BjyUEFibA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 149.199.80.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
+ dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
+ dkim=none (message not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=JmVlCzmvuBcqkDONTtQyAXgD120L3C519ZQiyfjLWIw=;
+ b=iI0c3t8E6roSLDKz1SeOJMzMyiuqUPEjjuCWE6GKotsGC+kTIVzmuOOxkpCsrDH0duNgcEPNGSs9vbw8i6+1Iy3yTgf8RH1BcdiMds3d2B2sxbSOfecNbP34BIrZdI+6A2qyT3jlBVEXn1q0pEtyRW1q4aLUQ6/xU2dzc7QfQus=
+Received: from BN8PR04CA0027.namprd04.prod.outlook.com (2603:10b6:408:70::40)
+ by CO6PR02MB8801.namprd02.prod.outlook.com (2603:10b6:303:140::21) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Wed, 24 Nov
+ 2021 22:54:30 +0000
+Received: from BN1NAM02FT029.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:408:70:cafe::3d) by BN8PR04CA0027.outlook.office365.com
+ (2603:10b6:408:70::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend
+ Transport; Wed, 24 Nov 2021 22:54:30 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.80.198)
+ smtp.mailfrom=xilinx.com; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=xilinx.com;
+Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
+ 149.199.80.198 as permitted sender) receiver=protection.outlook.com;
+ client-ip=149.199.80.198; helo=xir-pvapexch01.xlnx.xilinx.com;
+Received: from xir-pvapexch01.xlnx.xilinx.com (149.199.80.198) by
+ BN1NAM02FT029.mail.protection.outlook.com (10.13.2.143) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.20.4734.20 via Frontend Transport; Wed, 24 Nov 2021 22:54:30 +0000
+Received: from xir-pvapexch02.xlnx.xilinx.com (172.21.17.17) by
+ xir-pvapexch01.xlnx.xilinx.com (172.21.17.15) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2176.14; Wed, 24 Nov 2021 22:54:28 +0000
+Received: from smtp.xilinx.com (172.21.105.198) by
+ xir-pvapexch02.xlnx.xilinx.com (172.21.17.17) with Microsoft SMTP Server id
+ 15.1.2176.14 via Frontend Transport; Wed, 24 Nov 2021 22:54:28 +0000
+Envelope-to: anand.ashok.dumbre@xilinx.com,
+ git@xilinx.com,
+ michal.simek@xilinx.com,
+ linux-kernel@vger.kernel.org,
+ jic23@kernel.org,
+ lars@metafoo.de,
+ linux-iio@vger.kernel.org,
+ gregkh@linuxfoundation.org,
+ rafael@kernel.org,
+ linux-acpi@vger.kernel.org,
+ andriy.shevchenko@linux.intel.com,
+ heikki.krogerus@linux.intel.com
+Received: from [10.71.188.1] (port=41256 helo=xiranandash40.xilinx.com)
+        by smtp.xilinx.com with esmtp (Exim 4.90)
+        (envelope-from <anand.ashok.dumbre@xilinx.com>)
+        id 1mq19f-0003SI-3g; Wed, 24 Nov 2021 22:54:19 +0000
+From:   Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+To:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
+        <lars@metafoo.de>, <linux-iio@vger.kernel.org>, <git@xilinx.com>,
+        <michal.simek@xilinx.com>, <gregkh@linuxfoundation.org>,
+        <rafael@kernel.org>, <linux-acpi@vger.kernel.org>,
+        <andriy.shevchenko@linux.intel.com>,
+        <heikki.krogerus@linux.intel.com>
+CC:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+Subject: [PATCH v11 1/5] device property: Add fwnode_iomap()
+Date:   Wed, 24 Nov 2021 22:54:03 +0000
+Message-ID: <20211124225407.17793-2-anand.ashok.dumbre@xilinx.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20211124225407.17793-1-anand.ashok.dumbre@xilinx.com>
+References: <20211124225407.17793-1-anand.ashok.dumbre@xilinx.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211115034334.1713050-11-liambeguin@gmail.com>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+Content-Type: text/plain
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
+X-MS-Office365-Filtering-Correlation-Id: 991491d0-e706-41ea-d569-08d9af9d5fef
+X-MS-TrafficTypeDiagnostic: CO6PR02MB8801:
+X-Microsoft-Antispam-PRVS: <CO6PR02MB8801988D9FC70A3B2FBE70CFA9619@CO6PR02MB8801.namprd02.prod.outlook.com>
+X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
+X-MS-Oob-TLC-OOBClassifiers: OLM:862;
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: w1V5S+mpSnIAQpgq94/zwN+rpGWWQ81edunF04Af1fP4okE/YB9bmAY3C66KIsIQE5I/PbkMJAR+3Zw8WqNbGmPZeD/QwKiYNH0D8YnRPTRUJQlv0US3Hu6GAmU5vulUid27xUKKuDNk/Gyic11rfz/UMA0p23pewyae3FsDuSopCf0YT2/pFCjlrtZFy5YSrCeDgC2344tJjOFZCtd/FeH3wRP8NffcdKCNmOaZQAnpErzIum28eWFeNJpDl2IAXKKHMXK/tkF9c+AUBl/twwFnGTNR4Wgq0+gRXbFJVcjvqRYOREAzxsVlRYYltp+Jc1Nko4CYL/Lgaj4LC25zicBr8NMbwvre6/4PbGHEskmDpG3AX6FAniFZ4DtOXKfeW5CjPZFZnhr7uDzv/h4eb0ctK6zXoaInxcUROKYS1kb8dvtuptKGMJmzHQJjfEqcXVglHZ+N6LLUe3aT2RsqjHhGtX0phpG3M1qFhb/s4YsSZyB2yV/Fs9BWcS5ZnLWUW4REoRaPxnZv32VR8oW6RGXT66mfpFZF8wJjNeQBCh7HAws+qsy4PF9ellurhaDWlCO2JHoB0CvsevsnJIyExYj1apO7Jp4ppYUzXoUjGpEn74j9JNOWdO3jMXcc8egQ7Zibwj1fVuDo/IYno2etqVLCg3SRubQ1pv1O4BxcBt22MutCqAtu5quPbpc7ioGGuph0Svh2pRFssjbsG1B1zaLzuCeb377uRTwwBTv6wlGJI1xGC1kpvY4fZZ9VhjApRRFQE3tp9jtXDjRV1dzt1kbL4V0RpVB3gRquy6vk2JU=
+X-Forefront-Antispam-Report: CIP:149.199.80.198;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:xir-pvapexch01.xlnx.xilinx.com;PTR:unknown-80-198.xilinx.com;CAT:NONE;SFS:(36840700001)(46966006)(47076005)(1076003)(110136005)(2906002)(6666004)(8936002)(356005)(4326008)(82310400004)(5660300002)(36756003)(103116003)(336012)(7696005)(7636003)(508600001)(316002)(8676002)(70206006)(186003)(107886003)(26005)(36860700001)(921005)(70586007)(9786002)(426003)(2616005)(102446001)(2101003)(83996005);DIR:OUT;SFP:1101;
+X-OriginatorOrg: xilinx.com
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2021 22:54:30.2226
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: 991491d0-e706-41ea-d569-08d9af9d5fef
+X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.80.198];Helo=[xir-pvapexch01.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT029.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR02MB8801
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Liam,
+This patch introduces a new helper routine - fwnode_iomap(), which
+allows to map the memory mapped IO for a given device node.
 
-Thank you for the patch! Yet something to improve:
+This implementation does not cover the ACPI case and may be expanded
+in the future. The main purpose here is to be able to develop resource
+provider agnostic drivers.
 
-[auto build test ERROR on 2b6bff0b122785f09cfbdc34b1aa9edceea6e4c1]
-
-url:    https://github.com/0day-ci/linux/commits/Liam-Beguin/iio-afe-add-temperature-rescaling-support/20211115-114729
-base:   2b6bff0b122785f09cfbdc34b1aa9edceea6e4c1
-config: openrisc-randconfig-c003-20211115 (https://download.01.org/0day-ci/archive/20211125/202111250238.lNOwhSKW-lkp@intel.com/config)
-compiler: or1k-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/bef63a2e36c2ceccc6f5954ab7e7cbb178c08fd8
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Liam-Beguin/iio-afe-add-temperature-rescaling-support/20211115-114729
-        git checkout bef63a2e36c2ceccc6f5954ab7e7cbb178c08fd8
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=openrisc SHELL=/bin/bash
-
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
-
-All errors (new ones prefixed by >>):
-
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_set_suspend':
-   (.text+0x46c): undefined reference to `fb_set_suspend'
-   (.text+0x46c): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `fb_set_suspend'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_resume_worker':
-   drm_fb_helper.c:(.text+0x4d8): undefined reference to `fb_set_suspend'
-   drm_fb_helper.c:(.text+0x4d8): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `fb_set_suspend'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_unregister_fbi':
-   (.text+0x76c): undefined reference to `unregister_framebuffer'
-   (.text+0x76c): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `unregister_framebuffer'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_fini':
-   (.text+0x878): undefined reference to `framebuffer_release'
-   (.text+0x878): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `framebuffer_release'
-   or1k-linux-ld: (.text+0x9f0): undefined reference to `fb_dealloc_cmap'
-   (.text+0x9f0): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `fb_dealloc_cmap'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_sys_read':
-   (.text+0xa40): undefined reference to `fb_sys_read'
-   (.text+0xa40): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `fb_sys_read'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_alloc_fbi':
-   (.text+0x25e8): undefined reference to `framebuffer_alloc'
-   (.text+0x25e8): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `framebuffer_alloc'
-   or1k-linux-ld: (.text+0x2620): undefined reference to `fb_alloc_cmap'
-   (.text+0x2620): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `fb_alloc_cmap'
-   or1k-linux-ld: (.text+0x2648): undefined reference to `framebuffer_release'
-   (.text+0x2648): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `framebuffer_release'
-   or1k-linux-ld: (.text+0x2788): undefined reference to `fb_dealloc_cmap'
-   (.text+0x2788): relocation truncated to fit: R_OR1K_INSN_REL_26 against undefined symbol `fb_dealloc_cmap'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `__drm_fb_helper_initial_config_and_unlock':
-   drm_fb_helper.c:(.text+0x2854): undefined reference to `register_framebuffer'
-   drm_fb_helper.c:(.text+0x2854): additional relocation overflows omitted from the output
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_set_suspend_unlocked':
-   (.text+0x37a8): undefined reference to `fb_set_suspend'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_generic_probe':
-   drm_fb_helper.c:(.text+0x45c4): undefined reference to `fb_deferred_io_init'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_cfb_imageblit':
-   (.text+0x4bd4): undefined reference to `cfb_imageblit'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_cfb_copyarea':
-   (.text+0x4c54): undefined reference to `cfb_copyarea'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_cfb_fillrect':
-   (.text+0x4cd4): undefined reference to `cfb_fillrect'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_sys_imageblit':
-   (.text+0x4d54): undefined reference to `sys_imageblit'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_sys_copyarea':
-   (.text+0x4dd4): undefined reference to `sys_copyarea'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_sys_fillrect':
-   (.text+0x4e54): undefined reference to `sys_fillrect'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fb_helper_sys_write':
-   (.text+0x4ecc): undefined reference to `fb_sys_write'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fbdev_fb_fillrect':
-   drm_fb_helper.c:(.text+0x5108): undefined reference to `cfb_fillrect'
-   or1k-linux-ld: drm_fb_helper.c:(.text+0x5148): undefined reference to `sys_fillrect'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fbdev_fb_imageblit':
-   drm_fb_helper.c:(.text+0x51c8): undefined reference to `cfb_imageblit'
-   or1k-linux-ld: drm_fb_helper.c:(.text+0x5208): undefined reference to `sys_imageblit'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fbdev_fb_copyarea':
-   drm_fb_helper.c:(.text+0x5288): undefined reference to `cfb_copyarea'
-   or1k-linux-ld: drm_fb_helper.c:(.text+0x52c8): undefined reference to `sys_copyarea'
-   or1k-linux-ld: drivers/gpu/drm/drm_fb_helper.o: in function `drm_fbdev_cleanup':
-   drm_fb_helper.c:(.text+0x5570): undefined reference to `fb_deferred_io_cleanup'
-   or1k-linux-ld: drivers/iio/test/iio-test-rescale.o: in function `iio_rescale_test_offset':
-   iio-test-rescale.c:(.text+0x34): undefined reference to `kunit_kmalloc_array'
->> or1k-linux-ld: iio-test-rescale.c:(.text+0xc4): undefined reference to `kunit_binary_assert_format'
-   or1k-linux-ld: iio-test-rescale.c:(.text+0xc8): undefined reference to `kunit_binary_assert_format'
->> or1k-linux-ld: iio-test-rescale.c:(.text+0x12c): undefined reference to `kunit_do_assertion'
->> or1k-linux-ld: iio-test-rescale.c:(.text+0x148): undefined reference to `kunit_binary_str_assert_format'
-   or1k-linux-ld: iio-test-rescale.c:(.text+0x14c): undefined reference to `kunit_binary_str_assert_format'
-   or1k-linux-ld: iio-test-rescale.c:(.text+0x1b0): undefined reference to `kunit_do_assertion'
-   or1k-linux-ld: drivers/iio/test/iio-test-rescale.o: in function `iio_rescale_test_scale':
-   iio-test-rescale.c:(.text+0x380): undefined reference to `kunit_kmalloc_array'
-   or1k-linux-ld: iio-test-rescale.c:(.text+0x420): undefined reference to `kunit_binary_assert_format'
-   or1k-linux-ld: iio-test-rescale.c:(.text+0x440): undefined reference to `kunit_binary_assert_format'
-   or1k-linux-ld: iio-test-rescale.c:(.text+0x470): undefined reference to `kunit_do_assertion'
-   or1k-linux-ld: iio-test-rescale.c:(.text+0x6bc): undefined reference to `kunit_do_assertion'
-   or1k-linux-ld: iio-test-rescale.c:(.text+0x730): undefined reference to `kunit_do_assertion'
-
+Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Signed-off-by: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+ drivers/base/property.c  | 16 ++++++++++++++++
+ include/linux/property.h |  2 ++
+ 2 files changed, 18 insertions(+)
+
+diff --git a/drivers/base/property.c b/drivers/base/property.c
+index f1f35b48ab8b..f2e38be3a999 100644
+--- a/drivers/base/property.c
++++ b/drivers/base/property.c
+@@ -958,6 +958,22 @@ int fwnode_irq_get(const struct fwnode_handle *fwnode, unsigned int index)
+ }
+ EXPORT_SYMBOL(fwnode_irq_get);
+ 
++/**
++ * fwnode_iomap - Maps the memory mapped IO for a given fwnode
++ * @fwnode:	Pointer to the firmware node
++ * @index:	Index of the IO range
++ *
++ * Returns a pointer to the mapped memory.
++ */
++void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index)
++{
++	if (is_of_node(fwnode))
++		return of_iomap(to_of_node(fwnode), index);
++
++	return NULL;
++}
++EXPORT_SYMBOL(fwnode_iomap);
++
+ /**
+  * fwnode_graph_get_next_endpoint - Get next endpoint firmware node
+  * @fwnode: Pointer to the parent firmware node
+diff --git a/include/linux/property.h b/include/linux/property.h
+index 88fa726a76df..6670d5a1ec2a 100644
+--- a/include/linux/property.h
++++ b/include/linux/property.h
+@@ -122,6 +122,8 @@ void fwnode_handle_put(struct fwnode_handle *fwnode);
+ 
+ int fwnode_irq_get(const struct fwnode_handle *fwnode, unsigned int index);
+ 
++void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index);
++
+ unsigned int device_get_child_node_count(struct device *dev);
+ 
+ static inline bool device_property_read_bool(struct device *dev,
+-- 
+2.17.1
+
