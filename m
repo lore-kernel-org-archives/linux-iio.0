@@ -2,23 +2,23 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AB2AC433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Nov 2021 22:54:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B493C433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Nov 2021 22:54:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245200AbhKXW5n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Nov 2021 17:57:43 -0500
-Received: from mail-dm6nam11on2047.outbound.protection.outlook.com ([40.107.223.47]:12116
-        "EHLO NAM11-DM6-obe.outbound.protection.outlook.com"
+        id S1345609AbhKXW5p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Nov 2021 17:57:45 -0500
+Received: from mail-mw2nam12on2083.outbound.protection.outlook.com ([40.107.244.83]:53748
+        "EHLO NAM12-MW2-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S244373AbhKXW5m (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Nov 2021 17:57:42 -0500
+        id S245750AbhKXW5n (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 24 Nov 2021 17:57:43 -0500
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=Vcp7q2fAAiplfOzZRWqCWNAZ143Z1xgcqElxSJGFVWN8UVEbpue1+XpbDBkTF1pKTtnXi10g+jdiq9pnRp4QtNZq9E1iuNm92Gy5WSvOzocKycdXIGMEBbMYkuoSNHZDIpKYgpWa9tcae1+0vZkiTDTpia42u3vvF5lrP+L10+38SpmE4bSnGmJ0oUUe+jOkG10dB+bQRSGOQ+3qHCf4L45aCcJpNfjlVaZZDiPg4HQ6SasH/uonv4UovFyvqzd0fjfvmCIn3ouK7/JFMZrqNIN8w53NGtYOv+aXjZrprgugaIZ/axUC3fPRcprsgnWeaXCqu5JL02iJFtgair1SlQ==
+ b=il28iO4tWIVJszsl7xWIsPqeio6tibrPBbLNWeWF5Zoc75+G4JgZFFXTbjUzuOVXhA5oR0/qEs/Uhmy5NIeer9iDf4DrBHryu4LAP8qpaRmQktt7iRU33UQGT/aTcz7PNvR47YWZK6DBVmMzkRUzvvmuz9g704QZkj5aUcE556Utd17GqSVLl2LjPYW7zAO5fRUit0R6QT72YtmATnQ8nJCoaq5/3U9k2EIMv65PiW9L3TcgLy4Wjizl5vjdDQEJy+hzsYsOlcthlTWpa88/iz/pERKz8a+yoJ6Rb5DSHOz/5dszrITIbTsKJ2AzwkTwmf7h1yuePXsW61fMQEyx6w==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=JmVlCzmvuBcqkDONTtQyAXgD120L3C519ZQiyfjLWIw=;
- b=mgH8dTw0rTgFztpIQMrptQE3vVWdjHkLVH8Hh8ciRPzxa4M87AKdPZ0GPIcuxNTrEqs3Vul7nAZms20nNrvvKj10FGFYI/3jdd7W5EwyMeNI5H4WdztpkK2fSOmwXhMG4LqZbZN0mO0b63O4lAUWV3vHkPTETiVdCWOca8IoljCtGNsnBE1P4ZLajC2C9wYYVF9oab8jhLVhiiYaAvSuw9WpfJ6VhR0/02FzK0Th4Lrw4ilMBQbCX7kMpIOagfJJKjrzNvV6lTW4bAukuSMFA5ZICa6zgTucXOmEMBfJWFVNds17rG0DJowixI2nb4XHhI4YzxmPWIeZ6BjyUEFibA==
+ bh=OtInwOZdeVEv/mVAoyjyShNbMdJktLZZSN9OtMrfOzk=;
+ b=QDJ2hbKO5vxl1shF2mlb6XmiE4TbpB7vSK+ewrFx+9eeaAuw3HU9ZV0taHudCx2QJamD9yNhgfiXIaUgCz0A2i0OgCm7kWyrsQT6a4J9ZIaW+O6OYTqzzrOd4YShKtkBR5OsQ4U/QkEia04g6V7MsG/egJT7JuY12xD+Wcncxt/41DtP8mZb8RghOHr+fNB/CAC/sCzWep22tBbJNvSd6+ohZDrhX/oN7HHEleZGvVAcceIaRmOBeF04o2JFaVgkieD/MMhBTiWKCOymtp210uSuTwD/INISyDWA/9vLr+4H+sKqlNs+Ih4Mgf8S/Wd6bxiD0egHkHIXp8NKAV/9FQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  149.199.80.198) smtp.rcpttodomain=vger.kernel.org smtp.mailfrom=xilinx.com;
  dmarc=pass (p=none sp=none pct=100) action=none header.from=xilinx.com;
@@ -26,16 +26,16 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=xilinx.onmicrosoft.com; s=selector2-xilinx-onmicrosoft-com;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=JmVlCzmvuBcqkDONTtQyAXgD120L3C519ZQiyfjLWIw=;
- b=iI0c3t8E6roSLDKz1SeOJMzMyiuqUPEjjuCWE6GKotsGC+kTIVzmuOOxkpCsrDH0duNgcEPNGSs9vbw8i6+1Iy3yTgf8RH1BcdiMds3d2B2sxbSOfecNbP34BIrZdI+6A2qyT3jlBVEXn1q0pEtyRW1q4aLUQ6/xU2dzc7QfQus=
-Received: from BN8PR04CA0027.namprd04.prod.outlook.com (2603:10b6:408:70::40)
- by CO6PR02MB8801.namprd02.prod.outlook.com (2603:10b6:303:140::21) with
+ bh=OtInwOZdeVEv/mVAoyjyShNbMdJktLZZSN9OtMrfOzk=;
+ b=Kpj0EVcLBFH2v2CuLj1GZmyH9Auui+YchYxggM+nqWq64F8aHLy0cZ3oKQ9i8J4uRA22TkMotQeQtu8Uxp0sibkprU2hOCsLWzqV2EKzpMEaBHvskj13LQmc3t91JuKwigI4TEV86etyN3/nePKCxjsjQXFy3oDmS4dOdPr5V/I=
+Received: from SN7PR04CA0152.namprd04.prod.outlook.com (2603:10b6:806:125::7)
+ by DM6PR02MB6560.namprd02.prod.outlook.com (2603:10b6:5:1bb::17) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.19; Wed, 24 Nov
- 2021 22:54:30 +0000
-Received: from BN1NAM02FT029.eop-nam02.prod.protection.outlook.com
- (2603:10b6:408:70:cafe::3d) by BN8PR04CA0027.outlook.office365.com
- (2603:10b6:408:70::40) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4713.21; Wed, 24 Nov
+ 2021 22:54:31 +0000
+Received: from SN1NAM02FT0008.eop-nam02.prod.protection.outlook.com
+ (2603:10b6:806:125:cafe::e7) by SN7PR04CA0152.outlook.office365.com
+ (2603:10b6:806:125::7) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.4734.20 via Frontend
  Transport; Wed, 24 Nov 2021 22:54:30 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.80.198)
@@ -43,13 +43,13 @@ X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 149.199.80.198)
  header.d=none;dmarc=pass action=none header.from=xilinx.com;
 Received-SPF: Pass (protection.outlook.com: domain of xilinx.com designates
  149.199.80.198 as permitted sender) receiver=protection.outlook.com;
- client-ip=149.199.80.198; helo=xir-pvapexch01.xlnx.xilinx.com;
-Received: from xir-pvapexch01.xlnx.xilinx.com (149.199.80.198) by
- BN1NAM02FT029.mail.protection.outlook.com (10.13.2.143) with Microsoft SMTP
+ client-ip=149.199.80.198; helo=xir-pvapexch02.xlnx.xilinx.com;
+Received: from xir-pvapexch02.xlnx.xilinx.com (149.199.80.198) by
+ SN1NAM02FT0008.mail.protection.outlook.com (10.97.5.9) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.20.4734.20 via Frontend Transport; Wed, 24 Nov 2021 22:54:30 +0000
 Received: from xir-pvapexch02.xlnx.xilinx.com (172.21.17.17) by
- xir-pvapexch01.xlnx.xilinx.com (172.21.17.15) with Microsoft SMTP Server
+ xir-pvapexch02.xlnx.xilinx.com (172.21.17.17) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
  15.1.2176.14; Wed, 24 Nov 2021 22:54:28 +0000
 Received: from smtp.xilinx.com (172.21.105.198) by
@@ -58,6 +58,7 @@ Received: from smtp.xilinx.com (172.21.105.198) by
 Envelope-to: anand.ashok.dumbre@xilinx.com,
  git@xilinx.com,
  michal.simek@xilinx.com,
+ manish.narani@xilinx.com,
  linux-kernel@vger.kernel.org,
  jic23@kernel.org,
  lars@metafoo.de,
@@ -70,7 +71,7 @@ Envelope-to: anand.ashok.dumbre@xilinx.com,
 Received: from [10.71.188.1] (port=41256 helo=xiranandash40.xilinx.com)
         by smtp.xilinx.com with esmtp (Exim 4.90)
         (envelope-from <anand.ashok.dumbre@xilinx.com>)
-        id 1mq19f-0003SI-3g; Wed, 24 Nov 2021 22:54:19 +0000
+        id 1mq19f-0003SI-VX; Wed, 24 Nov 2021 22:54:20 +0000
 From:   Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
 To:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
         <lars@metafoo.de>, <linux-iio@vger.kernel.org>, <git@xilinx.com>,
@@ -78,10 +79,11 @@ To:     <linux-kernel@vger.kernel.org>, <jic23@kernel.org>,
         <rafael@kernel.org>, <linux-acpi@vger.kernel.org>,
         <andriy.shevchenko@linux.intel.com>,
         <heikki.krogerus@linux.intel.com>
-CC:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
-Subject: [PATCH v11 1/5] device property: Add fwnode_iomap()
-Date:   Wed, 24 Nov 2021 22:54:03 +0000
-Message-ID: <20211124225407.17793-2-anand.ashok.dumbre@xilinx.com>
+CC:     Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        Manish Narani <manish.narani@xilinx.com>
+Subject: [PATCH v11 3/5] iio: adc: Add Xilinx AMS driver
+Date:   Wed, 24 Nov 2021 22:54:05 +0000
+Message-ID: <20211124225407.17793-4-anand.ashok.dumbre@xilinx.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20211124225407.17793-1-anand.ashok.dumbre@xilinx.com>
 References: <20211124225407.17793-1-anand.ashok.dumbre@xilinx.com>
@@ -89,85 +91,1523 @@ MIME-Version: 1.0
 Content-Type: text/plain
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 991491d0-e706-41ea-d569-08d9af9d5fef
-X-MS-TrafficTypeDiagnostic: CO6PR02MB8801:
-X-Microsoft-Antispam-PRVS: <CO6PR02MB8801988D9FC70A3B2FBE70CFA9619@CO6PR02MB8801.namprd02.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 8ce43045-446c-485a-4261-08d9af9d603d
+X-MS-TrafficTypeDiagnostic: DM6PR02MB6560:
+X-Microsoft-Antispam-PRVS: <DM6PR02MB6560BEC2DADF867A7A021EC7A9619@DM6PR02MB6560.namprd02.prod.outlook.com>
 X-Auto-Response-Suppress: DR, RN, NRN, OOF, AutoReply
-X-MS-Oob-TLC-OOBClassifiers: OLM:862;
+X-MS-Oob-TLC-OOBClassifiers: OLM:2000;
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: w1V5S+mpSnIAQpgq94/zwN+rpGWWQ81edunF04Af1fP4okE/YB9bmAY3C66KIsIQE5I/PbkMJAR+3Zw8WqNbGmPZeD/QwKiYNH0D8YnRPTRUJQlv0US3Hu6GAmU5vulUid27xUKKuDNk/Gyic11rfz/UMA0p23pewyae3FsDuSopCf0YT2/pFCjlrtZFy5YSrCeDgC2344tJjOFZCtd/FeH3wRP8NffcdKCNmOaZQAnpErzIum28eWFeNJpDl2IAXKKHMXK/tkF9c+AUBl/twwFnGTNR4Wgq0+gRXbFJVcjvqRYOREAzxsVlRYYltp+Jc1Nko4CYL/Lgaj4LC25zicBr8NMbwvre6/4PbGHEskmDpG3AX6FAniFZ4DtOXKfeW5CjPZFZnhr7uDzv/h4eb0ctK6zXoaInxcUROKYS1kb8dvtuptKGMJmzHQJjfEqcXVglHZ+N6LLUe3aT2RsqjHhGtX0phpG3M1qFhb/s4YsSZyB2yV/Fs9BWcS5ZnLWUW4REoRaPxnZv32VR8oW6RGXT66mfpFZF8wJjNeQBCh7HAws+qsy4PF9ellurhaDWlCO2JHoB0CvsevsnJIyExYj1apO7Jp4ppYUzXoUjGpEn74j9JNOWdO3jMXcc8egQ7Zibwj1fVuDo/IYno2etqVLCg3SRubQ1pv1O4BxcBt22MutCqAtu5quPbpc7ioGGuph0Svh2pRFssjbsG1B1zaLzuCeb377uRTwwBTv6wlGJI1xGC1kpvY4fZZ9VhjApRRFQE3tp9jtXDjRV1dzt1kbL4V0RpVB3gRquy6vk2JU=
-X-Forefront-Antispam-Report: CIP:149.199.80.198;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:xir-pvapexch01.xlnx.xilinx.com;PTR:unknown-80-198.xilinx.com;CAT:NONE;SFS:(36840700001)(46966006)(47076005)(1076003)(110136005)(2906002)(6666004)(8936002)(356005)(4326008)(82310400004)(5660300002)(36756003)(103116003)(336012)(7696005)(7636003)(508600001)(316002)(8676002)(70206006)(186003)(107886003)(26005)(36860700001)(921005)(70586007)(9786002)(426003)(2616005)(102446001)(2101003)(83996005);DIR:OUT;SFP:1101;
+X-Microsoft-Antispam-Message-Info: DMrDWRPskYasVbEvzd65KIXoUGOnkbzpMYvE5DRhdMuIXqagVzISDrX49szLQxOY10UH2BXYTxV52TeCeR4wYwpQbb6JzLAqHHnLTNrs0IHK67Ra1wtF/o8Je5ut1b6hyFE7D3JLq/4bQSXv+L1dhVAMIVGSIPOEXaQOJSzBqLxumTEQ7vMKcU8lece6LDBpr5MU+6+pjx91cSJ3sVjs+oAYMceDcML7yvHD/5va3b4EaY1OCsNpQPtN8jBN+5YIaVneNFFqW8JTOlKXz9W+W35KZj5J+fbO0NQQ5kqSXbBht/h7l8pGFA4pRdXtLfA2shVpPsmnU8s5ppSATQ7GeXeXsj8LopXsFmR7pZ7BNtQccoAgy8bOWQfShukQrFxvbZRCYsU4SgO3zN0XC/d1HByLO46nAeOpxab2PapSyx2D2O04ZdaRX4CKFNvaku4ZTt+nEA4RIAeC/znUOnLeIyLUYIl6lvjaj4Ijylfw6TJfNIm79IRi/gIRM+rePQXjcKYIQSVbjOGIGum72h9U3b3Hp/C9/2NPmZafD2JVzCf5/LVynbyBi1Mf1xaT+4+gUUVpepxZomEuEkdbFY8mR8E7loPjbMLOOHOr1grUFhzF62+FQcsQWoRDJbjq+qRG6tcqn+rVh1g5ysqW9Fu0SLz2+TWpRa9S3mJCsx/uNuOJu/zxTFo24u3uk7txpe88w4/HXOQ2zLCzifbjN4aXjJovuy6MFvQupf8nyZiSoz0k1PHaZyE3V7YfCMBIKvUTjuILVy/2ocMee7jfCL0ett3ZXF/jG2GCMaUAgN0WiOI=
+X-Forefront-Antispam-Report: CIP:149.199.80.198;CTRY:IE;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:xir-pvapexch02.xlnx.xilinx.com;PTR:unknown-80-198.xilinx.com;CAT:NONE;SFS:(36840700001)(46966006)(70206006)(70586007)(47076005)(36756003)(316002)(7696005)(103116003)(4326008)(9786002)(5660300002)(107886003)(110136005)(356005)(7636003)(2906002)(54906003)(186003)(83380400001)(1076003)(336012)(6666004)(921005)(82310400004)(26005)(8936002)(30864003)(8676002)(426003)(2616005)(508600001)(36860700001)(102446001)(2101003)(83996005)(579004);DIR:OUT;SFP:1101;
 X-OriginatorOrg: xilinx.com
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2021 22:54:30.2226
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 24 Nov 2021 22:54:30.6220
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 991491d0-e706-41ea-d569-08d9af9d5fef
+X-MS-Exchange-CrossTenant-Network-Message-Id: 8ce43045-446c-485a-4261-08d9af9d603d
 X-MS-Exchange-CrossTenant-Id: 657af505-d5df-48d0-8300-c31994686c5c
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.80.198];Helo=[xir-pvapexch01.xlnx.xilinx.com]
-X-MS-Exchange-CrossTenant-AuthSource: BN1NAM02FT029.eop-nam02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=657af505-d5df-48d0-8300-c31994686c5c;Ip=[149.199.80.198];Helo=[xir-pvapexch02.xlnx.xilinx.com]
+X-MS-Exchange-CrossTenant-AuthSource: SN1NAM02FT0008.eop-nam02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: CO6PR02MB8801
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM6PR02MB6560
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch introduces a new helper routine - fwnode_iomap(), which
-allows to map the memory mapped IO for a given device node.
+The AMS includes an ADC as well as on-chip sensors that can be used to
+sample external voltages and monitor on-die operating conditions, such
+as temperature and supply voltage levels. The AMS has two SYSMON blocks.
+PL-SYSMON block is capable of monitoring off chip voltage and
+temperature.
 
-This implementation does not cover the ACPI case and may be expanded
-in the future. The main purpose here is to be able to develop resource
-provider agnostic drivers.
+PL-SYSMON block has DRP, JTAG and I2C interface to enable monitoring
+from an external master. Out of these interfaces currently only DRP is
+supported. Other block PS-SYSMON is memory mapped to PS.
 
-Suggested-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+The AMS can use internal channels to monitor voltage and temperature as
+well as one primary and up to 16 auxiliary channels for measuring
+external voltages.
+
+The voltage and temperature monitoring channels also have event capability
+which allows to generate an interrupt when their value falls below or
+raises above a set threshold.
+
+Co-developed-by: Manish Narani <manish.narani@xilinx.com>
+Signed-off-by: Manish Narani <manish.narani@xilinx.com>
 Signed-off-by: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/base/property.c  | 16 ++++++++++++++++
- include/linux/property.h |  2 ++
- 2 files changed, 18 insertions(+)
+ drivers/iio/adc/Kconfig      |   15 +
+ drivers/iio/adc/Makefile     |    1 +
+ drivers/iio/adc/xilinx-ams.c | 1425 ++++++++++++++++++++++++++++++++++
+ 3 files changed, 1441 insertions(+)
+ create mode 100644 drivers/iio/adc/xilinx-ams.c
 
-diff --git a/drivers/base/property.c b/drivers/base/property.c
-index f1f35b48ab8b..f2e38be3a999 100644
---- a/drivers/base/property.c
-+++ b/drivers/base/property.c
-@@ -958,6 +958,22 @@ int fwnode_irq_get(const struct fwnode_handle *fwnode, unsigned int index)
- }
- EXPORT_SYMBOL(fwnode_irq_get);
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 8bf5b62a73f4..f6efe11ea1a8 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -1288,4 +1288,19 @@ config XILINX_XADC
+ 	  The driver can also be build as a module. If so, the module will be called
+ 	  xilinx-xadc.
  
-+/**
-+ * fwnode_iomap - Maps the memory mapped IO for a given fwnode
-+ * @fwnode:	Pointer to the firmware node
-+ * @index:	Index of the IO range
++config XILINX_AMS
++	tristate "Xilinx AMS driver"
++	depends on ARCH_ZYNQMP || COMPILE_TEST
++	depends on HAS_IOMEM
++	help
++	  Say yes here to have support for the Xilinx AMS for Ultrascale/Ultrascale+
++	  System Monitor. With this you can measure and monitor the Voltages and
++	  Temperature values on the SOC.
++
++	  The driver supports Voltage and Temperature monitoring on Xilinx Ultrascale
++	  devices.
++
++	  The driver can also be built as a module. If so, the module will be called
++	  xilinx-ams.
++
+ endmenu
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index d3f53549720c..4a8f1833993b 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -115,4 +115,5 @@ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
+ obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+ xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
+ obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
++obj-$(CONFIG_XILINX_AMS) += xilinx-ams.o
+ obj-$(CONFIG_SD_ADC_MODULATOR) += sd_adc_modulator.o
+diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+new file mode 100644
+index 000000000000..568e60d547ba
+--- /dev/null
++++ b/drivers/iio/adc/xilinx-ams.c
+@@ -0,0 +1,1425 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Xilinx AMS driver
 + *
-+ * Returns a pointer to the mapped memory.
++ *  Copyright (C) 2021 Xilinx, Inc.
++ *
++ *  Manish Narani <mnarani@xilinx.com>
++ *  Rajnikant Bhojani <rajnikant.bhojani@xilinx.com>
 + */
-+void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index)
-+{
-+	if (is_of_node(fwnode))
-+		return of_iomap(to_of_node(fwnode), index);
 +
-+	return NULL;
++#include <linux/bits.h>
++#include <linux/bitfield.h>
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/iopoll.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/overflow.h>
++#include <linux/platform_device.h>
++#include <linux/property.h>
++#include <linux/slab.h>
++
++#include <linux/iio/events.h>
++#include <linux/iio/iio.h>
++
++/* AMS registers definitions */
++#define AMS_ISR_0			0x010
++#define AMS_ISR_1			0x014
++#define AMS_IER_0			0x020
++#define AMS_IER_1			0x024
++#define AMS_IDR_0			0x028
++#define AMS_IDR_1			0x02c
++#define AMS_PS_CSTS			0x040
++#define AMS_PL_CSTS			0x044
++
++#define AMS_VCC_PSPLL0			0x060
++#define AMS_VCC_PSPLL3			0x06C
++#define AMS_VCCINT			0x078
++#define AMS_VCCBRAM			0x07C
++#define AMS_VCCAUX			0x080
++#define AMS_PSDDRPLL			0x084
++#define AMS_PSINTFPDDR			0x09C
++
++#define AMS_VCC_PSPLL0_CH		48
++#define AMS_VCC_PSPLL3_CH		51
++#define AMS_VCCINT_CH			54
++#define AMS_VCCBRAM_CH			55
++#define AMS_VCCAUX_CH			56
++#define AMS_PSDDRPLL_CH			57
++#define AMS_PSINTFPDDR_CH		63
++
++#define AMS_REG_CONFIG0			0x100
++#define AMS_REG_CONFIG1			0x104
++#define AMS_REG_CONFIG3			0x10C
++#define AMS_REG_CONFIG4			0x110
++#define AMS_REG_SEQ_CH0			0x120
++#define AMS_REG_SEQ_CH1			0x124
++#define AMS_REG_SEQ_CH2			0x118
++
++#define AMS_VUSER0_MASK			BIT(0)
++#define AMS_VUSER1_MASK			BIT(1)
++#define AMS_VUSER2_MASK			BIT(2)
++#define AMS_VUSER3_MASK			BIT(3)
++
++#define AMS_TEMP			0x000
++#define AMS_SUPPLY1			0x004
++#define AMS_SUPPLY2			0x008
++#define AMS_VP_VN			0x00c
++#define AMS_VREFP			0x010
++#define AMS_VREFN			0x014
++#define AMS_SUPPLY3			0x018
++#define AMS_SUPPLY4			0x034
++#define AMS_SUPPLY5			0x038
++#define AMS_SUPPLY6			0x03c
++#define AMS_SUPPLY7			0x200
++#define AMS_SUPPLY8			0x204
++#define AMS_SUPPLY9			0x208
++#define AMS_SUPPLY10			0x20c
++#define AMS_VCCAMS			0x210
++#define AMS_TEMP_REMOTE			0x214
++
++#define AMS_REG_VAUX(x)			(0x40 + 4 * (x))
++
++#define AMS_PS_RESET_VALUE		0xFFFF
++#define AMS_PL_RESET_VALUE		0xFFFF
++
++#define AMS_CONF0_CHANNEL_NUM_MASK	GENMASK(6, 0)
++
++#define AMS_CONF1_SEQ_MASK		GENMASK(15, 12)
++#define AMS_CONF1_SEQ_DEFAULT		FIELD_PREP(AMS_CONF1_SEQ_MASK, 0)
++#define AMS_CONF1_SEQ_CONTINUOUS	FIELD_PREP(AMS_CONF1_SEQ_MASK, 1)
++#define AMS_CONF1_SEQ_SINGLE_CHANNEL	FIELD_PREP(AMS_CONF1_SEQ_MASK, 2)
++
++#define AMS_REG_SEQ0_MASK		GENMASK(15, 0)
++#define AMS_REG_SEQ2_MASK		GENMASK(21, 16)
++#define AMS_REG_SEQ1_MASK		GENMASK(37, 22)
++
++#define AMS_PS_SEQ_MASK			GENMASK(21, 0)
++#define AMS_PL_SEQ_MASK			GENMASK(59, 22)
++
++#define AMS_ALARM_TEMP			0x140
++#define AMS_ALARM_SUPPLY1		0x144
++#define AMS_ALARM_SUPPLY2		0x148
++#define AMS_ALARM_SUPPLY3		0x160
++#define AMS_ALARM_SUPPLY4		0x164
++#define AMS_ALARM_SUPPLY5		0x168
++#define AMS_ALARM_SUPPLY6		0x16c
++#define AMS_ALARM_SUPPLY7		0x180
++#define AMS_ALARM_SUPPLY8		0x184
++#define AMS_ALARM_SUPPLY9		0x188
++#define AMS_ALARM_SUPPLY10		0x18c
++#define AMS_ALARM_VCCAMS		0x190
++#define AMS_ALARM_TEMP_REMOTE		0x194
++#define AMS_ALARM_THRESHOLD_OFF_10	0x10
++#define AMS_ALARM_THRESHOLD_OFF_20	0x20
++
++#define AMS_ALARM_THR_DIRECT_MASK	BIT(1)
++#define AMS_ALARM_THR_MIN		0x0000
++#define AMS_ALARM_THR_MAX		(BIT(16) - 1)
++
++#define AMS_ALARM_MASK			GENMASK(63, 0)
++#define AMS_NO_OF_ALARMS		32
++#define AMS_PL_ALARM_START		16
++#define AMS_PL_ALARM_MASK		GENMASK(31, 16)
++#define AMS_ISR0_ALARM_MASK		GENMASK(31, 0)
++#define AMS_ISR1_ALARM_MASK		(GENMASK(31, 29) | GENMASK(4, 0))
++#define AMS_ISR1_EOC_MASK		BIT(3)
++#define AMS_ISR1_INTR_MASK		GENMASK(63, 32)
++#define AMS_ISR0_ALARM_2_TO_0_MASK	GENMASK(2, 0)
++#define AMS_ISR0_ALARM_6_TO_3_MASK	GENMASK(6, 3)
++#define AMS_ISR0_ALARM_12_TO_7_MASK	GENMASK(13, 8)
++#define AMS_CONF1_ALARM_2_TO_0_MASK	GENMASK(3, 1)
++#define AMS_CONF1_ALARM_6_TO_3_MASK	GENMASK(11, 8)
++#define AMS_CONF1_ALARM_12_TO_7_MASK	GENMASK(5, 0)
++#define AMS_REGCFG1_ALARM_MASK  \
++	(AMS_CONF1_ALARM_2_TO_0_MASK | AMS_CONF1_ALARM_6_TO_3_MASK | BIT(0))
++#define AMS_REGCFG3_ALARM_MASK		AMS_CONF1_ALARM_12_TO_7_MASK
++
++#define AMS_PS_CSTS_PS_READY		(BIT(27) | BIT(16))
++#define AMS_PL_CSTS_ACCESS_MASK		BIT(1)
++
++#define AMS_PL_MAX_FIXED_CHANNEL	10
++#define AMS_PL_MAX_EXT_CHANNEL		20
++
++#define AMS_INIT_POLL_TIME		200
++#define AMS_INIT_TIMEOUT_US		10000
++#define AMS_UNMASK_TIMEOUT_MS		500
++
++/*
++ * Following scale and offset value is derived from
++ * UG580 (v1.7) December 20, 2016
++ */
++#define AMS_SUPPLY_SCALE_1VOLT		1000
++#define AMS_SUPPLY_SCALE_3VOLT		3000
++#define AMS_SUPPLY_SCALE_6VOLT		6000
++#define AMS_SUPPLY_SCALE_DIV_BIT	16
++
++#define AMS_TEMP_SCALE			509314
++#define AMS_TEMP_SCALE_DIV_BIT		16
++#define AMS_TEMP_OFFSET			-((280230LL << 16) / 509314)
++
++enum ams_alarm_bit {
++	AMS_ALARM_BIT_TEMP = 0,
++	AMS_ALARM_BIT_SUPPLY1 = 1,
++	AMS_ALARM_BIT_SUPPLY2 = 2,
++	AMS_ALARM_BIT_SUPPLY3 = 3,
++	AMS_ALARM_BIT_SUPPLY4 = 4,
++	AMS_ALARM_BIT_SUPPLY5 = 5,
++	AMS_ALARM_BIT_SUPPLY6 = 6,
++	AMS_ALARM_BIT_RESERVED = 7,
++	AMS_ALARM_BIT_SUPPLY7 = 8,
++	AMS_ALARM_BIT_SUPPLY8 = 9,
++	AMS_ALARM_BIT_SUPPLY9 = 10,
++	AMS_ALARM_BIT_SUPPLY10 = 11,
++	AMS_ALARM_BIT_VCCAMS = 12,
++	AMS_ALARM_BIT_TEMP_REMOTE = 13,
++};
++
++enum ams_seq {
++	AMS_SEQ_VCC_PSPLL = 0,
++	AMS_SEQ_VCC_PSBATT = 1,
++	AMS_SEQ_VCCINT = 2,
++	AMS_SEQ_VCCBRAM = 3,
++	AMS_SEQ_VCCAUX = 4,
++	AMS_SEQ_PSDDRPLL = 5,
++	AMS_SEQ_INTDDR = 6,
++};
++
++enum ams_ps_pl_seq {
++	AMS_SEQ_CALIB = 0,
++	AMS_SEQ_RSVD_1 = 1,
++	AMS_SEQ_RSVD_2 = 2,
++	AMS_SEQ_TEST = 3,
++	AMS_SEQ_RSVD_4 = 4,
++	AMS_SEQ_SUPPLY4 = 5,
++	AMS_SEQ_SUPPLY5 = 6,
++	AMS_SEQ_SUPPLY6 = 7,
++	AMS_SEQ_TEMP = 8,
++	AMS_SEQ_SUPPLY2 = 9,
++	AMS_SEQ_SUPPLY1 = 10,
++	AMS_SEQ_VP_VN = 11,
++	AMS_SEQ_VREFP = 12,
++	AMS_SEQ_VREFN = 13,
++	AMS_SEQ_SUPPLY3 = 14,
++	AMS_SEQ_CURRENT_MON = 15,
++	AMS_SEQ_SUPPLY7 = 16,
++	AMS_SEQ_SUPPLY8 = 17,
++	AMS_SEQ_SUPPLY9 = 18,
++	AMS_SEQ_SUPPLY10 = 19,
++	AMS_SEQ_VCCAMS = 20,
++	AMS_SEQ_TEMP_REMOTE = 21,
++	AMS_SEQ_MAX = 22
++};
++
++#define AMS_PS_SEQ_MAX		AMS_SEQ_MAX
++#define AMS_SEQ(x)		(AMS_SEQ_MAX + (x))
++#define PS_SEQ(x)		(x)
++#define PL_SEQ(x)		(AMS_PS_SEQ_MAX + (x))
++#define AMS_CTRL_SEQ_BASE	(AMS_PS_SEQ_MAX * 3)
++
++#define AMS_CHAN_TEMP(_scan_index, _addr) { \
++	.type = IIO_TEMP, \
++	.indexed = 1, \
++	.address = (_addr), \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++		BIT(IIO_CHAN_INFO_SCALE) | \
++		BIT(IIO_CHAN_INFO_OFFSET), \
++	.event_spec = ams_temp_events, \
++	.scan_index = _scan_index, \
++	.num_event_specs = ARRAY_SIZE(ams_temp_events), \
 +}
-+EXPORT_SYMBOL(fwnode_iomap);
 +
- /**
-  * fwnode_graph_get_next_endpoint - Get next endpoint firmware node
-  * @fwnode: Pointer to the parent firmware node
-diff --git a/include/linux/property.h b/include/linux/property.h
-index 88fa726a76df..6670d5a1ec2a 100644
---- a/include/linux/property.h
-+++ b/include/linux/property.h
-@@ -122,6 +122,8 @@ void fwnode_handle_put(struct fwnode_handle *fwnode);
- 
- int fwnode_irq_get(const struct fwnode_handle *fwnode, unsigned int index);
- 
-+void __iomem *fwnode_iomap(struct fwnode_handle *fwnode, int index);
++#define AMS_CHAN_VOLTAGE(_scan_index, _addr, _alarm) { \
++	.type = IIO_VOLTAGE, \
++	.indexed = 1, \
++	.address = (_addr), \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++		BIT(IIO_CHAN_INFO_SCALE), \
++	.event_spec = (_alarm) ? ams_voltage_events : NULL, \
++	.scan_index = _scan_index, \
++	.num_event_specs = (_alarm) ? ARRAY_SIZE(ams_voltage_events) : 0, \
++}
 +
- unsigned int device_get_child_node_count(struct device *dev);
- 
- static inline bool device_property_read_bool(struct device *dev,
++#define AMS_PS_CHAN_TEMP(_scan_index, _addr) \
++	AMS_CHAN_TEMP(PS_SEQ(_scan_index), _addr)
++#define AMS_PS_CHAN_VOLTAGE(_scan_index, _addr) \
++	AMS_CHAN_VOLTAGE(PS_SEQ(_scan_index), _addr, true)
++
++#define AMS_PL_CHAN_TEMP(_scan_index, _addr) \
++	AMS_CHAN_TEMP(PL_SEQ(_scan_index), _addr)
++#define AMS_PL_CHAN_VOLTAGE(_scan_index, _addr, _alarm) \
++	AMS_CHAN_VOLTAGE(PL_SEQ(_scan_index), _addr, _alarm)
++#define AMS_PL_AUX_CHAN_VOLTAGE(_auxno) \
++	AMS_CHAN_VOLTAGE(PL_SEQ(AMS_SEQ(_auxno)), \
++			AMS_REG_VAUX(_auxno), false)
++#define AMS_CTRL_CHAN_VOLTAGE(_scan_index, _addr) \
++	AMS_CHAN_VOLTAGE(PL_SEQ(AMS_SEQ(AMS_SEQ(_scan_index))), \
++			_addr, false)
++
++/**
++ * struct ams - Driver data for xilinx-ams
++ * @base: physical base address of device
++ * @ps_base: physical base address of PS device
++ * @pl_base: physical base address of PL device
++ * @clk: clocks associated with the device
++ * @dev: pointer to device struct
++ * @lock: to handle multiple user interaction
++ * @intr_lock: to protect interrupt mask values
++ * @alarm_mask: alarm configuration
++ * @current_masked_alarm: currently masked due to alarm
++ * @intr_mask: interrupt configuration
++ * @ams_unmask_work: re-enables event once the event condition disappears
++ *
++ * This structure contains necessary state for Sysmon driver to operate
++ */
++struct ams {
++	void __iomem *base;
++	void __iomem *ps_base;
++	void __iomem *pl_base;
++	struct clk *clk;
++	struct device *dev;
++	struct mutex lock;
++	spinlock_t intr_lock;
++	unsigned int alarm_mask;
++	unsigned int current_masked_alarm;
++	u64 intr_mask;
++	struct delayed_work ams_unmask_work;
++};
++
++static inline void ams_ps_update_reg(struct ams *ams, unsigned int offset,
++				     u32 mask, u32 data)
++{
++	u32 val, regval;
++
++	val = readl(ams->ps_base + offset);
++	regval = (val & ~mask) | (data & mask);
++	writel(regval, ams->ps_base + offset);
++}
++
++static inline void ams_pl_update_reg(struct ams *ams, unsigned int offset,
++				     u32 mask, u32 data)
++{
++	u32 val, regval;
++
++	val = readl(ams->pl_base + offset);
++	regval = (val & ~mask) | (data & mask);
++	writel(regval, ams->pl_base + offset);
++}
++
++static void ams_update_intrmask(struct ams *ams, u64 mask, u64 val)
++{
++	u32 regval;
++
++	ams->intr_mask = (ams->intr_mask & ~mask) | (val & mask);
++
++	regval = ~(ams->intr_mask | ams->current_masked_alarm);
++	writel(regval, ams->base + AMS_IER_0);
++
++	regval = ~(FIELD_GET(AMS_ISR1_INTR_MASK, ams->intr_mask));
++	writel(regval, ams->base + AMS_IER_1);
++
++	regval = ams->intr_mask | ams->current_masked_alarm;
++	writel(regval, ams->base + AMS_IDR_0);
++
++	regval = FIELD_GET(AMS_ISR1_INTR_MASK, ams->intr_mask);
++	writel(regval, ams->base + AMS_IDR_1);
++}
++
++static void ams_disable_all_alarms(struct ams *ams)
++{
++	/* disable PS module alarm */
++	if (ams->ps_base) {
++		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_REGCFG1_ALARM_MASK,
++				  AMS_REGCFG1_ALARM_MASK);
++		ams_ps_update_reg(ams, AMS_REG_CONFIG3, AMS_REGCFG3_ALARM_MASK,
++				  AMS_REGCFG3_ALARM_MASK);
++	}
++
++	/* disable PL module alarm */
++	if (ams->pl_base) {
++		ams_pl_update_reg(ams, AMS_REG_CONFIG1,
++				  AMS_REGCFG1_ALARM_MASK,
++				  AMS_REGCFG1_ALARM_MASK);
++		ams_pl_update_reg(ams, AMS_REG_CONFIG3,
++				  AMS_REGCFG3_ALARM_MASK,
++				  AMS_REGCFG3_ALARM_MASK);
++	}
++}
++
++static void ams_update_ps_alarm(struct ams *ams, unsigned long alarm_mask)
++{
++	u32 cfg;
++	u32 val;
++
++	val = FIELD_GET(AMS_ISR0_ALARM_2_TO_0_MASK, alarm_mask);
++	cfg = ~(FIELD_PREP(AMS_CONF1_ALARM_2_TO_0_MASK, val));
++
++	val = FIELD_GET(AMS_ISR0_ALARM_6_TO_3_MASK, alarm_mask);
++	cfg &= ~(FIELD_PREP(AMS_CONF1_ALARM_6_TO_3_MASK, val));
++
++	ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_REGCFG1_ALARM_MASK, cfg);
++
++	val = FIELD_GET(AMS_ISR0_ALARM_12_TO_7_MASK, alarm_mask);
++	cfg = ~(FIELD_PREP(AMS_CONF1_ALARM_12_TO_7_MASK, val));
++	ams_ps_update_reg(ams, AMS_REG_CONFIG3, AMS_REGCFG3_ALARM_MASK, cfg);
++}
++
++static void ams_update_pl_alarm(struct ams *ams, unsigned long alarm_mask)
++{
++	unsigned long pl_alarm_mask;
++	u32 cfg;
++	u32 val;
++
++	pl_alarm_mask = FIELD_GET(AMS_PL_ALARM_MASK, alarm_mask);
++
++	val = FIELD_GET(AMS_ISR0_ALARM_2_TO_0_MASK, pl_alarm_mask);
++	cfg = ~(FIELD_PREP(AMS_CONF1_ALARM_2_TO_0_MASK, val));
++
++	val = FIELD_GET(AMS_ISR0_ALARM_6_TO_3_MASK, pl_alarm_mask);
++	cfg &= ~(FIELD_PREP(AMS_CONF1_ALARM_6_TO_3_MASK, val));
++
++	ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_REGCFG1_ALARM_MASK, cfg);
++
++	val = FIELD_GET(AMS_ISR0_ALARM_12_TO_7_MASK, pl_alarm_mask);
++	cfg = ~(FIELD_PREP(AMS_CONF1_ALARM_12_TO_7_MASK, val));
++	ams_pl_update_reg(ams, AMS_REG_CONFIG3, AMS_REGCFG3_ALARM_MASK, cfg);
++}
++
++static void ams_update_alarm(struct ams *ams, unsigned long alarm_mask)
++{
++	unsigned long flags;
++
++	if (ams->ps_base)
++		ams_update_ps_alarm(ams, alarm_mask);
++
++	if (ams->pl_base)
++		ams_update_pl_alarm(ams, alarm_mask);
++
++	spin_lock_irqsave(&ams->intr_lock, flags);
++	ams_update_intrmask(ams, AMS_ISR0_ALARM_MASK, ~alarm_mask);
++	spin_unlock_irqrestore(&ams->intr_lock, flags);
++}
++
++static void ams_enable_channel_sequence(struct iio_dev *indio_dev)
++{
++	struct ams *ams = iio_priv(indio_dev);
++	unsigned long long scan_mask;
++	int i;
++	u32 regval;
++
++	/*
++	 * Enable channel sequence. First 22 bits of scan_mask represent
++	 * PS channels, and next remaining bits represent PL channels.
++	 */
++
++	/* Run calibration of PS & PL as part of the sequence */
++	scan_mask = BIT(0) | BIT(AMS_PS_SEQ_MAX);
++	for (i = 0; i < indio_dev->num_channels; i++)
++		scan_mask |= BIT_ULL(indio_dev->channels[i].scan_index);
++
++	if (ams->ps_base) {
++		/* put sysmon in a soft reset to change the sequence */
++		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
++				  AMS_CONF1_SEQ_DEFAULT);
++
++		/* configure basic channels */
++		regval = FIELD_GET(AMS_REG_SEQ0_MASK, scan_mask);
++		writel(regval, ams->ps_base + AMS_REG_SEQ_CH0);
++
++		regval = FIELD_GET(AMS_REG_SEQ2_MASK, scan_mask);
++		writel(regval, ams->ps_base + AMS_REG_SEQ_CH2);
++
++		/* set continuous sequence mode */
++		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
++				  AMS_CONF1_SEQ_CONTINUOUS);
++	}
++
++	if (ams->pl_base) {
++		/* put sysmon in a soft reset to change the sequence */
++		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
++				  AMS_CONF1_SEQ_DEFAULT);
++
++		/* configure basic channels */
++		scan_mask = FIELD_GET(AMS_PL_SEQ_MASK, scan_mask);
++
++		regval = FIELD_GET(AMS_REG_SEQ0_MASK, scan_mask);
++		writel(regval, ams->pl_base + AMS_REG_SEQ_CH0);
++
++		regval = FIELD_GET(AMS_REG_SEQ1_MASK, scan_mask);
++		writel(regval, ams->pl_base + AMS_REG_SEQ_CH1);
++
++		regval = FIELD_GET(AMS_REG_SEQ2_MASK, scan_mask);
++		writel(regval, ams->pl_base + AMS_REG_SEQ_CH2);
++
++		/* set continuous sequence mode */
++		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
++				  AMS_CONF1_SEQ_CONTINUOUS);
++	}
++}
++
++static int ams_init_device(struct ams *ams)
++{
++	u32 reg, value;
++	u32 expect = AMS_PS_CSTS_PS_READY;
++	int ret;
++
++	/* reset AMS */
++	if (ams->ps_base) {
++		writel(AMS_PS_RESET_VALUE, ams->ps_base + AMS_VP_VN);
++
++		ret = readl_poll_timeout(ams->base + AMS_PS_CSTS, reg,
++					 (reg & expect), AMS_INIT_POLL_TIME,
++					 AMS_INIT_TIMEOUT_US);
++		if (ret)
++			return ret;
++
++		/* put sysmon in a default state */
++		ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
++				  AMS_CONF1_SEQ_DEFAULT);
++	}
++
++	if (ams->pl_base) {
++		value = readl(ams->base + AMS_PL_CSTS);
++		if (value == 0)
++			return 0;
++
++		writel(AMS_PL_RESET_VALUE, ams->pl_base + AMS_VP_VN);
++
++		/* put sysmon in a default state */
++		ams_pl_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
++				  AMS_CONF1_SEQ_DEFAULT);
++	}
++
++	ams_disable_all_alarms(ams);
++
++	/* Disable interrupt */
++	ams_update_intrmask(ams, AMS_ALARM_MASK, AMS_ALARM_MASK);
++
++	/* Clear any pending interrupt */
++	writel(AMS_ISR0_ALARM_MASK, ams->base + AMS_ISR_0);
++	writel(AMS_ISR1_ALARM_MASK, ams->base + AMS_ISR_1);
++
++	return 0;
++}
++
++static int ams_enable_single_channel(struct ams *ams, unsigned int offset)
++{
++	u8 channel_num;
++
++	switch (offset) {
++	case AMS_VCC_PSPLL0:
++		channel_num = AMS_VCC_PSPLL0_CH;
++		break;
++	case AMS_VCC_PSPLL3:
++		channel_num = AMS_VCC_PSPLL3_CH;
++		break;
++	case AMS_VCCINT:
++		channel_num = AMS_VCCINT_CH;
++		break;
++	case AMS_VCCBRAM:
++		channel_num = AMS_VCCBRAM_CH;
++		break;
++	case AMS_VCCAUX:
++		channel_num = AMS_VCCAUX_CH;
++		break;
++	case AMS_PSDDRPLL:
++		channel_num = AMS_PSDDRPLL_CH;
++		break;
++	case AMS_PSINTFPDDR:
++		channel_num = AMS_PSINTFPDDR_CH;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	/* set single channel, sequencer off mode */
++	ams_ps_update_reg(ams, AMS_REG_CONFIG1, AMS_CONF1_SEQ_MASK,
++			  AMS_CONF1_SEQ_SINGLE_CHANNEL);
++
++	/* write the channel number */
++	ams_ps_update_reg(ams, AMS_REG_CONFIG0, AMS_CONF0_CHANNEL_NUM_MASK,
++			  channel_num);
++
++	return 0;
++}
++
++static int ams_read_vcc_reg(struct ams *ams, unsigned int offset, u32 *data)
++{
++	u32 reg;
++	u32 expect = AMS_ISR1_EOC_MASK;
++	int ret;
++
++	ret = ams_enable_single_channel(ams, offset);
++	if (ret)
++		return ret;
++
++	ret = readl_poll_timeout(ams->base + AMS_ISR_1, reg,
++				 (reg & expect), AMS_INIT_POLL_TIME, AMS_INIT_TIMEOUT_US);
++	if (ret)
++		return ret;
++
++	*data = readl(ams->base + offset);
++
++	return 0;
++}
++
++static int ams_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long mask)
++{
++	struct ams *ams = iio_priv(indio_dev);
++	int ret;
++	int regval;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&ams->lock);
++		if (chan->scan_index >= AMS_CTRL_SEQ_BASE) {
++			ret = ams_read_vcc_reg(ams, chan->address, val);
++			if (ret) {
++				mutex_unlock(&ams->lock);
++				return ret;
++			}
++			ams_enable_channel_sequence(indio_dev);
++		} else if (chan->scan_index >= AMS_PS_SEQ_MAX)
++			*val = readl(ams->pl_base + chan->address);
++		else
++			*val = readl(ams->ps_base + chan->address);
++		mutex_unlock(&ams->lock);
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_VOLTAGE:
++			if (chan->scan_index < AMS_PS_SEQ_MAX) {
++				switch (chan->address) {
++				case AMS_SUPPLY1:
++				case AMS_SUPPLY2:
++				case AMS_SUPPLY3:
++				case AMS_SUPPLY4:
++				case AMS_SUPPLY9:
++				case AMS_SUPPLY10:
++				case AMS_VCCAMS:
++					*val = AMS_SUPPLY_SCALE_3VOLT;
++					break;
++				case AMS_SUPPLY5:
++				case AMS_SUPPLY6:
++				case AMS_SUPPLY7:
++				case AMS_SUPPLY8:
++					*val = AMS_SUPPLY_SCALE_6VOLT;
++					break;
++				default:
++					*val = AMS_SUPPLY_SCALE_1VOLT;
++					break;
++				}
++			} else if (chan->scan_index >= AMS_PS_SEQ_MAX &&
++				   chan->scan_index < AMS_CTRL_SEQ_BASE) {
++				switch (chan->address) {
++				case AMS_SUPPLY1:
++				case AMS_SUPPLY2:
++				case AMS_SUPPLY3:
++				case AMS_SUPPLY4:
++				case AMS_SUPPLY5:
++				case AMS_SUPPLY6:
++				case AMS_VCCAMS:
++				case AMS_VREFP:
++				case AMS_VREFN:
++					*val = AMS_SUPPLY_SCALE_3VOLT;
++					break;
++				case AMS_SUPPLY7:
++					regval = readl(ams->pl_base + AMS_REG_CONFIG4);
++					if (FIELD_GET(AMS_VUSER0_MASK, regval))
++						*val = AMS_SUPPLY_SCALE_6VOLT;
++					else
++						*val = AMS_SUPPLY_SCALE_3VOLT;
++					break;
++				case AMS_SUPPLY8:
++					regval = readl(ams->pl_base + AMS_REG_CONFIG4);
++					if (FIELD_GET(AMS_VUSER1_MASK, regval))
++						*val = AMS_SUPPLY_SCALE_6VOLT;
++					else
++						*val = AMS_SUPPLY_SCALE_3VOLT;
++					break;
++				case AMS_SUPPLY9:
++					regval = readl(ams->pl_base + AMS_REG_CONFIG4);
++					if (FIELD_GET(AMS_VUSER2_MASK, regval))
++						*val = AMS_SUPPLY_SCALE_6VOLT;
++					else
++						*val = AMS_SUPPLY_SCALE_3VOLT;
++					break;
++				case AMS_SUPPLY10:
++					regval = readl(ams->pl_base + AMS_REG_CONFIG4);
++					if (FIELD_GET(AMS_VUSER3_MASK, regval))
++						*val = AMS_SUPPLY_SCALE_6VOLT;
++					else
++						*val = AMS_SUPPLY_SCALE_3VOLT;
++					break;
++				case AMS_VP_VN:
++				case AMS_REG_VAUX(0) ... AMS_REG_VAUX(15):
++					*val = AMS_SUPPLY_SCALE_1VOLT;
++					break;
++				default:
++					*val = AMS_SUPPLY_SCALE_1VOLT;
++					break;
++				}
++			} else {
++				switch (chan->address) {
++				case AMS_VCC_PSPLL0:
++				case AMS_VCC_PSPLL3:
++				case AMS_VCCINT:
++				case AMS_VCCBRAM:
++				case AMS_VCCAUX:
++				case AMS_PSDDRPLL:
++				case AMS_PSINTFPDDR:
++					*val = AMS_SUPPLY_SCALE_3VOLT;
++					break;
++				default:
++					*val = AMS_SUPPLY_SCALE_1VOLT;
++					break;
++				}
++			}
++			*val2 = AMS_SUPPLY_SCALE_DIV_BIT;
++			return IIO_VAL_FRACTIONAL_LOG2;
++		case IIO_TEMP:
++			*val = AMS_TEMP_SCALE;
++			*val2 = AMS_TEMP_SCALE_DIV_BIT;
++			return IIO_VAL_FRACTIONAL_LOG2;
++		default:
++			return -EINVAL;
++		}
++	case IIO_CHAN_INFO_OFFSET:
++		/* Only the temperature channel has an offset */
++		*val = AMS_TEMP_OFFSET;
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int ams_get_alarm_offset(int scan_index, enum iio_event_direction dir)
++{
++	int offset;
++
++	if (scan_index >= AMS_PS_SEQ_MAX)
++		scan_index -= AMS_PS_SEQ_MAX;
++
++	if (dir == IIO_EV_DIR_FALLING) {
++		if (scan_index < AMS_SEQ_SUPPLY7)
++			offset = AMS_ALARM_THRESHOLD_OFF_10;
++		else
++			offset = AMS_ALARM_THRESHOLD_OFF_20;
++	} else {
++		offset = 0;
++	}
++
++	switch (scan_index) {
++	case AMS_SEQ_TEMP:
++		return AMS_ALARM_TEMP + offset;
++	case AMS_SEQ_SUPPLY1:
++		return AMS_ALARM_SUPPLY1 + offset;
++	case AMS_SEQ_SUPPLY2:
++		return AMS_ALARM_SUPPLY2 + offset;
++	case AMS_SEQ_SUPPLY3:
++		return AMS_ALARM_SUPPLY3 + offset;
++	case AMS_SEQ_SUPPLY4:
++		return AMS_ALARM_SUPPLY4 + offset;
++	case AMS_SEQ_SUPPLY5:
++		return AMS_ALARM_SUPPLY5 + offset;
++	case AMS_SEQ_SUPPLY6:
++		return AMS_ALARM_SUPPLY6 + offset;
++	case AMS_SEQ_SUPPLY7:
++		return AMS_ALARM_SUPPLY7 + offset;
++	case AMS_SEQ_SUPPLY8:
++		return AMS_ALARM_SUPPLY8 + offset;
++	case AMS_SEQ_SUPPLY9:
++		return AMS_ALARM_SUPPLY9 + offset;
++	case AMS_SEQ_SUPPLY10:
++		return AMS_ALARM_SUPPLY10 + offset;
++	case AMS_SEQ_VCCAMS:
++		return AMS_ALARM_VCCAMS + offset;
++	case AMS_SEQ_TEMP_REMOTE:
++		return AMS_ALARM_TEMP_REMOTE + offset;
++	default:
++		return 0;
++	}
++}
++
++static const struct iio_chan_spec *ams_event_to_channel(struct iio_dev *dev,
++							u32 event)
++{
++	int scan_index = 0, i;
++
++	if (event >= AMS_PL_ALARM_START) {
++		event -= AMS_PL_ALARM_START;
++		scan_index = AMS_PS_SEQ_MAX;
++	}
++
++	switch (event) {
++	case AMS_ALARM_BIT_TEMP:
++		scan_index += AMS_SEQ_TEMP;
++		break;
++	case AMS_ALARM_BIT_SUPPLY1:
++		scan_index += AMS_SEQ_SUPPLY1;
++		break;
++	case AMS_ALARM_BIT_SUPPLY2:
++		scan_index += AMS_SEQ_SUPPLY2;
++		break;
++	case AMS_ALARM_BIT_SUPPLY3:
++		scan_index += AMS_SEQ_SUPPLY3;
++		break;
++	case AMS_ALARM_BIT_SUPPLY4:
++		scan_index += AMS_SEQ_SUPPLY4;
++		break;
++	case AMS_ALARM_BIT_SUPPLY5:
++		scan_index += AMS_SEQ_SUPPLY5;
++		break;
++	case AMS_ALARM_BIT_SUPPLY6:
++		scan_index += AMS_SEQ_SUPPLY6;
++		break;
++	case AMS_ALARM_BIT_SUPPLY7:
++		scan_index += AMS_SEQ_SUPPLY7;
++		break;
++	case AMS_ALARM_BIT_SUPPLY8:
++		scan_index += AMS_SEQ_SUPPLY8;
++		break;
++	case AMS_ALARM_BIT_SUPPLY9:
++		scan_index += AMS_SEQ_SUPPLY9;
++		break;
++	case AMS_ALARM_BIT_SUPPLY10:
++		scan_index += AMS_SEQ_SUPPLY10;
++		break;
++	case AMS_ALARM_BIT_VCCAMS:
++		scan_index += AMS_SEQ_VCCAMS;
++		break;
++	case AMS_ALARM_BIT_TEMP_REMOTE:
++		scan_index += AMS_SEQ_TEMP_REMOTE;
++		break;
++	default:
++		break;
++	}
++
++	for (i = 0; i < dev->num_channels; i++)
++		if (dev->channels[i].scan_index == scan_index)
++			break;
++
++	return &dev->channels[i];
++}
++
++static int ams_get_alarm_mask(int scan_index)
++{
++	int bit = 0;
++
++	if (scan_index >= AMS_PS_SEQ_MAX) {
++		bit = AMS_PL_ALARM_START;
++		scan_index -= AMS_PS_SEQ_MAX;
++	}
++
++	switch (scan_index) {
++	case AMS_SEQ_TEMP:
++		return BIT(AMS_ALARM_BIT_TEMP + bit);
++	case AMS_SEQ_SUPPLY1:
++		return BIT(AMS_ALARM_BIT_SUPPLY1 + bit);
++	case AMS_SEQ_SUPPLY2:
++		return BIT(AMS_ALARM_BIT_SUPPLY2 + bit);
++	case AMS_SEQ_SUPPLY3:
++		return BIT(AMS_ALARM_BIT_SUPPLY3 + bit);
++	case AMS_SEQ_SUPPLY4:
++		return BIT(AMS_ALARM_BIT_SUPPLY4 + bit);
++	case AMS_SEQ_SUPPLY5:
++		return BIT(AMS_ALARM_BIT_SUPPLY5 + bit);
++	case AMS_SEQ_SUPPLY6:
++		return BIT(AMS_ALARM_BIT_SUPPLY6 + bit);
++	case AMS_SEQ_SUPPLY7:
++		return BIT(AMS_ALARM_BIT_SUPPLY7 + bit);
++	case AMS_SEQ_SUPPLY8:
++		return BIT(AMS_ALARM_BIT_SUPPLY8 + bit);
++	case AMS_SEQ_SUPPLY9:
++		return BIT(AMS_ALARM_BIT_SUPPLY9 + bit);
++	case AMS_SEQ_SUPPLY10:
++		return BIT(AMS_ALARM_BIT_SUPPLY10 + bit);
++	case AMS_SEQ_VCCAMS:
++		return BIT(AMS_ALARM_BIT_VCCAMS + bit);
++	case AMS_SEQ_TEMP_REMOTE:
++		return BIT(AMS_ALARM_BIT_TEMP_REMOTE + bit);
++	default:
++		return 0;
++	}
++}
++
++static int ams_read_event_config(struct iio_dev *indio_dev,
++				 const struct iio_chan_spec *chan,
++				 enum iio_event_type type,
++				 enum iio_event_direction dir)
++{
++	struct ams *ams = iio_priv(indio_dev);
++
++	return !!(ams->alarm_mask & ams_get_alarm_mask(chan->scan_index));
++}
++
++static int ams_write_event_config(struct iio_dev *indio_dev,
++				  const struct iio_chan_spec *chan,
++				  enum iio_event_type type,
++				  enum iio_event_direction dir,
++				  int state)
++{
++	struct ams *ams = iio_priv(indio_dev);
++	unsigned int alarm;
++
++	alarm = ams_get_alarm_mask(chan->scan_index);
++
++	mutex_lock(&ams->lock);
++
++	if (state)
++		ams->alarm_mask |= alarm;
++	else
++		ams->alarm_mask &= ~alarm;
++
++	ams_update_alarm(ams, ams->alarm_mask);
++
++	mutex_unlock(&ams->lock);
++
++	return 0;
++}
++
++static int ams_read_event_value(struct iio_dev *indio_dev,
++				const struct iio_chan_spec *chan,
++				enum iio_event_type type,
++				enum iio_event_direction dir,
++				enum iio_event_info info, int *val, int *val2)
++{
++	struct ams *ams = iio_priv(indio_dev);
++	unsigned int offset = ams_get_alarm_offset(chan->scan_index, dir);
++
++	mutex_lock(&ams->lock);
++
++	if (chan->scan_index >= AMS_PS_SEQ_MAX)
++		*val = readl(ams->pl_base + offset);
++	else
++		*val = readl(ams->ps_base + offset);
++
++	mutex_unlock(&ams->lock);
++
++	return IIO_VAL_INT;
++}
++
++static int ams_write_event_value(struct iio_dev *indio_dev,
++				 const struct iio_chan_spec *chan,
++				 enum iio_event_type type,
++				 enum iio_event_direction dir,
++				 enum iio_event_info info, int val, int val2)
++{
++	struct ams *ams = iio_priv(indio_dev);
++	unsigned int offset;
++
++	mutex_lock(&ams->lock);
++
++	/* Set temperature channel threshold to direct threshold */
++	if (chan->type == IIO_TEMP) {
++		offset = ams_get_alarm_offset(chan->scan_index, IIO_EV_DIR_FALLING);
++
++		if (chan->scan_index >= AMS_PS_SEQ_MAX)
++			ams_pl_update_reg(ams, offset,
++					  AMS_ALARM_THR_DIRECT_MASK,
++					  AMS_ALARM_THR_DIRECT_MASK);
++		else
++			ams_ps_update_reg(ams, offset,
++					  AMS_ALARM_THR_DIRECT_MASK,
++					  AMS_ALARM_THR_DIRECT_MASK);
++	}
++
++	offset = ams_get_alarm_offset(chan->scan_index, dir);
++	if (chan->scan_index >= AMS_PS_SEQ_MAX)
++		writel(val, ams->pl_base + offset);
++	else
++		writel(val, ams->ps_base + offset);
++
++	mutex_unlock(&ams->lock);
++
++	return 0;
++}
++
++static void ams_handle_event(struct iio_dev *indio_dev, u32 event)
++{
++	const struct iio_chan_spec *chan;
++
++	chan = ams_event_to_channel(indio_dev, event);
++
++	if (chan->type == IIO_TEMP) {
++		/*
++		 * The temperature channel only supports over-temperature
++		 * events.
++		 */
++		iio_push_event(indio_dev,
++			       IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_RISING),
++			       iio_get_time_ns(indio_dev));
++	} else {
++		/*
++		 * For other channels we don't know whether it is a upper or
++		 * lower threshold event. Userspace will have to check the
++		 * channel value if it wants to know.
++		 */
++		iio_push_event(indio_dev,
++			       IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
++						    IIO_EV_TYPE_THRESH,
++						    IIO_EV_DIR_EITHER),
++			       iio_get_time_ns(indio_dev));
++	}
++}
++
++static void ams_handle_events(struct iio_dev *indio_dev, unsigned long events)
++{
++	unsigned int bit;
++
++	for_each_set_bit(bit, &events, AMS_NO_OF_ALARMS)
++		ams_handle_event(indio_dev, bit);
++}
++
++/**
++ * ams_unmask_worker - ams alarm interrupt unmask worker
++ * @work :		work to be done
++ *
++ * The ZynqMP threshold interrupts are level sensitive. Since we can't make the
++ * threshold condition go way from within the interrupt handler, this means as
++ * soon as a threshold condition is present we would enter the interrupt handler
++ * again and again. To work around this we mask all active threshold interrupts
++ * in the interrupt handler and start a timer. In this timer we poll the
++ * interrupt status and only if the interrupt is inactive we unmask it again.
++ */
++static void ams_unmask_worker(struct work_struct *work)
++{
++	struct ams *ams = container_of(work, struct ams, ams_unmask_work.work);
++	unsigned int status, unmask;
++
++	spin_lock_irq(&ams->intr_lock);
++
++	status = readl(ams->base + AMS_ISR_0);
++
++	/* Clear those bits which are not active anymore */
++	unmask = (ams->current_masked_alarm ^ status) & ams->current_masked_alarm;
++
++	/* Clear status of disabled alarm */
++	unmask |= ams->intr_mask;
++
++	ams->current_masked_alarm &= status;
++
++	/* Also clear those which are masked out anyway */
++	ams->current_masked_alarm &= ~ams->intr_mask;
++
++	/* Clear the interrupts before we unmask them */
++	writel(unmask, ams->base + AMS_ISR_0);
++
++	ams_update_intrmask(ams, ~AMS_ALARM_MASK, ~AMS_ALARM_MASK);
++
++	spin_unlock_irq(&ams->intr_lock);
++
++	/* If still pending some alarm re-trigger the timer */
++	if (ams->current_masked_alarm)
++		schedule_delayed_work(&ams->ams_unmask_work,
++				      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
++}
++
++static irqreturn_t ams_irq(int irq, void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct ams *ams = iio_priv(indio_dev);
++	u32 isr0;
++
++	spin_lock(&ams->intr_lock);
++
++	isr0 = readl(ams->base + AMS_ISR_0);
++
++	/* Only process alarms that are not masked */
++	isr0 &= ~((ams->intr_mask & AMS_ISR0_ALARM_MASK) | ams->current_masked_alarm);
++	if (!isr0) {
++		spin_unlock(&ams->intr_lock);
++		return IRQ_NONE;
++	}
++
++	/* Clear interrupt */
++	writel(isr0, ams->base + AMS_ISR_0);
++
++	/* Mask the alarm interrupts until cleared */
++	ams->current_masked_alarm |= isr0;
++	ams_update_intrmask(ams, ~AMS_ALARM_MASK, ~AMS_ALARM_MASK);
++
++	ams_handle_events(indio_dev, isr0);
++
++	schedule_delayed_work(&ams->ams_unmask_work,
++			      msecs_to_jiffies(AMS_UNMASK_TIMEOUT_MS));
++
++	spin_unlock(&ams->intr_lock);
++
++	return IRQ_HANDLED;
++}
++
++static const struct iio_event_spec ams_temp_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE) | BIT(IIO_EV_INFO_VALUE),
++	},
++};
++
++static const struct iio_event_spec ams_voltage_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_RISING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++	},
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_FALLING,
++		.mask_separate = BIT(IIO_EV_INFO_VALUE),
++	},
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
++static const struct iio_chan_spec ams_ps_channels[] = {
++	AMS_PS_CHAN_TEMP(AMS_SEQ_TEMP, AMS_TEMP),
++	AMS_PS_CHAN_TEMP(AMS_SEQ_TEMP_REMOTE, AMS_TEMP_REMOTE),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY1, AMS_SUPPLY1),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY2, AMS_SUPPLY2),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY3, AMS_SUPPLY3),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY4, AMS_SUPPLY4),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY5, AMS_SUPPLY5),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY6, AMS_SUPPLY6),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY7, AMS_SUPPLY7),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY8, AMS_SUPPLY8),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY9, AMS_SUPPLY9),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_SUPPLY10, AMS_SUPPLY10),
++	AMS_PS_CHAN_VOLTAGE(AMS_SEQ_VCCAMS, AMS_VCCAMS),
++};
++
++static const struct iio_chan_spec ams_pl_channels[] = {
++	AMS_PL_CHAN_TEMP(AMS_SEQ_TEMP, AMS_TEMP),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY1, AMS_SUPPLY1, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY2, AMS_SUPPLY2, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_VREFP, AMS_VREFP, false),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_VREFN, AMS_VREFN, false),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY3, AMS_SUPPLY3, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY4, AMS_SUPPLY4, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY5, AMS_SUPPLY5, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY6, AMS_SUPPLY6, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_VCCAMS, AMS_VCCAMS, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_VP_VN, AMS_VP_VN, false),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY7, AMS_SUPPLY7, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY8, AMS_SUPPLY8, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY9, AMS_SUPPLY9, true),
++	AMS_PL_CHAN_VOLTAGE(AMS_SEQ_SUPPLY10, AMS_SUPPLY10, true),
++	AMS_PL_AUX_CHAN_VOLTAGE(0),
++	AMS_PL_AUX_CHAN_VOLTAGE(1),
++	AMS_PL_AUX_CHAN_VOLTAGE(2),
++	AMS_PL_AUX_CHAN_VOLTAGE(3),
++	AMS_PL_AUX_CHAN_VOLTAGE(4),
++	AMS_PL_AUX_CHAN_VOLTAGE(5),
++	AMS_PL_AUX_CHAN_VOLTAGE(6),
++	AMS_PL_AUX_CHAN_VOLTAGE(7),
++	AMS_PL_AUX_CHAN_VOLTAGE(8),
++	AMS_PL_AUX_CHAN_VOLTAGE(9),
++	AMS_PL_AUX_CHAN_VOLTAGE(10),
++	AMS_PL_AUX_CHAN_VOLTAGE(11),
++	AMS_PL_AUX_CHAN_VOLTAGE(12),
++	AMS_PL_AUX_CHAN_VOLTAGE(13),
++	AMS_PL_AUX_CHAN_VOLTAGE(14),
++	AMS_PL_AUX_CHAN_VOLTAGE(15),
++};
++
++static const struct iio_chan_spec ams_ctrl_channels[] = {
++	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCC_PSPLL, AMS_VCC_PSPLL0),
++	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCC_PSBATT, AMS_VCC_PSPLL3),
++	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCCINT, AMS_VCCINT),
++	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCCBRAM, AMS_VCCBRAM),
++	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_VCCAUX, AMS_VCCAUX),
++	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_PSDDRPLL, AMS_PSDDRPLL),
++	AMS_CTRL_CHAN_VOLTAGE(AMS_SEQ_INTDDR, AMS_PSINTFPDDR),
++};
++
++static int ams_get_ext_chan(struct fwnode_handle *chan_node,
++			    struct iio_chan_spec *channels, int num_channels)
++{
++	struct iio_chan_spec *chan;
++	struct fwnode_handle *child;
++	unsigned int reg, ext_chan;
++	int ret;
++
++	fwnode_for_each_child_node(chan_node, child) {
++		ret = fwnode_property_read_u32(child, "reg", &reg);
++		if (ret || reg > AMS_PL_MAX_EXT_CHANNEL + 30)
++			continue;
++
++		chan = &channels[num_channels];
++		ext_chan = reg + AMS_PL_MAX_FIXED_CHANNEL - 30;
++		memcpy(chan, &ams_pl_channels[ext_chan], sizeof(*channels));
++
++		if (fwnode_property_read_bool(child, "xlnx,bipolar"))
++			chan->scan_type.sign =	's';
++
++		num_channels++;
++	}
++
++	return num_channels;
++}
++
++static void ams_iounmap(void *data)
++{
++	iounmap(data);
++}
++
++static int ams_init_module(struct iio_dev *indio_dev,
++			   struct fwnode_handle *fwnode,
++			   struct iio_chan_spec *channels)
++{
++	struct device *dev = indio_dev->dev.parent;
++	struct ams *ams = iio_priv(indio_dev);
++	int num_channels = 0;
++	int ret;
++
++	if (fwnode_property_match_string(fwnode, "compatible",
++					 "xlnx,zynqmp-ams-ps") == 0) {
++		ams->ps_base = fwnode_iomap(fwnode, 0);
++		if (!ams->ps_base)
++			return -ENXIO;
++		ret = devm_add_action_or_reset(dev, ams_iounmap, ams->ps_base);
++		if (ret < 0)
++			return ret;
++
++		/* add PS channels to iio device channels */
++		memcpy(channels, ams_ps_channels,
++		       sizeof(ams_ps_channels));
++		num_channels += ARRAY_SIZE(ams_ps_channels);
++	} else if (fwnode_property_match_string(fwnode, "compatible",
++						"xlnx,zynqmp-ams-pl") == 0) {
++		ams->pl_base = fwnode_iomap(fwnode, 0);
++		if (!ams->pl_base)
++			return -ENXIO;
++
++		ret = devm_add_action_or_reset(dev, ams_iounmap, ams->pl_base);
++		if (ret < 0)
++			return ret;
++
++		/* Copy only first 10 fix channels */
++		memcpy(channels, ams_pl_channels,
++		       AMS_PL_MAX_FIXED_CHANNEL * sizeof(*channels));
++		num_channels += AMS_PL_MAX_FIXED_CHANNEL;
++
++		num_channels = ams_get_ext_chan(fwnode, channels,
++						num_channels);
++	} else if (fwnode_property_match_string(fwnode, "compatible",
++						"xlnx,zynqmp-ams") == 0) {
++		/* add AMS channels to iio device channels */
++		memcpy(channels, ams_ctrl_channels,
++		       sizeof(ams_ctrl_channels));
++		num_channels += ARRAY_SIZE(ams_ctrl_channels);
++	} else {
++		return -EINVAL;
++	}
++
++	return num_channels;
++}
++
++static int ams_parse_firmware(struct iio_dev *indio_dev)
++{
++	struct ams *ams = iio_priv(indio_dev);
++	struct iio_chan_spec *ams_channels, *dev_channels;
++	struct device *dev = indio_dev->dev.parent;
++	struct fwnode_handle *child = NULL;
++	struct fwnode_handle *fwnode = dev_fwnode(dev);
++	size_t ams_size, dev_size;
++	int ret, ch_cnt = 0, i, rising_off, falling_off;
++	unsigned int num_channels = 0;
++
++	ams_size = ARRAY_SIZE(ams_ps_channels) + ARRAY_SIZE(ams_pl_channels) +
++		ARRAY_SIZE(ams_ctrl_channels);
++
++	/* Initialize buffer for channel specification */
++	ams_channels = devm_kcalloc(dev, ams_size, sizeof(*ams_channels), GFP_KERNEL);
++	if (!ams_channels)
++		return -ENOMEM;
++
++	if (fwnode_device_is_available(fwnode)) {
++		ret = ams_init_module(indio_dev, fwnode, ams_channels);
++		if (ret < 0)
++			return ret;
++
++		num_channels += ret;
++	}
++
++	fwnode_for_each_child_node(fwnode, child) {
++		if (fwnode_device_is_available(child)) {
++			ret = ams_init_module(indio_dev, child,
++					      ams_channels + num_channels);
++			if (ret < 0) {
++				fwnode_handle_put(child);
++				return ret;
++			}
++
++			num_channels += ret;
++		}
++	}
++
++	for (i = 0; i < num_channels; i++) {
++		ams_channels[i].channel = ch_cnt++;
++
++		if (ams_channels[i].scan_index < AMS_CTRL_SEQ_BASE) {
++			/* set threshold to max and min for each channel */
++			falling_off =
++				ams_get_alarm_offset(ams_channels[i].scan_index,
++						     IIO_EV_DIR_FALLING);
++			rising_off =
++				ams_get_alarm_offset(ams_channels[i].scan_index,
++						     IIO_EV_DIR_RISING);
++			if (ams_channels[i].scan_index >= AMS_PS_SEQ_MAX) {
++				writel(AMS_ALARM_THR_MIN,
++				       ams->pl_base + falling_off);
++				writel(AMS_ALARM_THR_MAX,
++				       ams->pl_base + rising_off);
++			} else {
++				writel(AMS_ALARM_THR_MIN,
++				       ams->ps_base + falling_off);
++				writel(AMS_ALARM_THR_MAX,
++				       ams->ps_base + rising_off);
++			}
++		}
++	}
++
++	dev_size = sizeof(*dev_channels) * num_channels;
++	dev_channels = devm_krealloc(dev, ams_channels, dev_size, GFP_KERNEL);
++	if (!dev_channels)
++		ret = -ENOMEM;
++
++	indio_dev->channels = dev_channels;
++	indio_dev->num_channels = num_channels;
++
++	return 0;
++}
++
++static const struct iio_info iio_ams_info = {
++	.read_raw = &ams_read_raw,
++	.read_event_config = &ams_read_event_config,
++	.write_event_config = &ams_write_event_config,
++	.read_event_value = &ams_read_event_value,
++	.write_event_value = &ams_write_event_value,
++};
++
++static const struct of_device_id ams_of_match_table[] = {
++	{ .compatible = "xlnx,zynqmp-ams" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, ams_of_match_table);
++
++static void ams_clk_disable_unprepare(void *data)
++{
++	clk_disable_unprepare(data);
++}
++
++static void ams_cancel_delayed_work(void *data)
++{
++	cancel_delayed_work(data);
++}
++
++static int ams_probe(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev;
++	struct ams *ams;
++	int ret;
++	int irq;
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*ams));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	ams = iio_priv(indio_dev);
++	mutex_init(&ams->lock);
++	spin_lock_init(&ams->intr_lock);
++
++	indio_dev->name = "xilinx-ams";
++
++	indio_dev->info = &iio_ams_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ams->base = devm_platform_ioremap_resource(pdev, 0);
++	if (IS_ERR(ams->base))
++		return PTR_ERR(ams->base);
++
++	ams->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(ams->clk))
++		return PTR_ERR(ams->clk);
++
++	ret = clk_prepare_enable(ams->clk);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_add_action_or_reset(&pdev->dev, ams_clk_disable_unprepare, ams->clk);
++	if (ret < 0)
++		return ret;
++
++	INIT_DELAYED_WORK(&ams->ams_unmask_work, ams_unmask_worker);
++	ret = devm_add_action_or_reset(&pdev->dev, ams_cancel_delayed_work,
++				       &ams->ams_unmask_work);
++	if (ret < 0)
++		return ret;
++
++	ret = ams_parse_firmware(indio_dev);
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret, "failure in parsing DT\n");
++
++	ret = ams_init_device(ams);
++	if (ret)
++		return dev_err_probe(&pdev->dev, ret, "failed to initialize AMS\n");
++
++	ams_enable_channel_sequence(indio_dev);
++
++	irq = platform_get_irq(pdev, 0);
++	if (irq < 0)
++		return ret;
++
++	ret = devm_request_irq(&pdev->dev, irq, &ams_irq, 0, "ams-irq",
++			       indio_dev);
++	if (ret < 0)
++		return dev_err_probe(&pdev->dev, ret, "failed to register interrupt\n");
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	return devm_iio_device_register(&pdev->dev, indio_dev);
++}
++
++static int __maybe_unused ams_suspend(struct device *dev)
++{
++	struct ams *ams = iio_priv(dev_get_drvdata(dev));
++
++	clk_disable_unprepare(ams->clk);
++
++	return 0;
++}
++
++static int __maybe_unused ams_resume(struct device *dev)
++{
++	struct ams *ams = iio_priv(dev_get_drvdata(dev));
++
++	return clk_prepare_enable(ams->clk);
++}
++
++static SIMPLE_DEV_PM_OPS(ams_pm_ops, ams_suspend, ams_resume);
++
++static struct platform_driver ams_driver = {
++	.probe = ams_probe,
++	.driver = {
++		.name = "xilinx-ams",
++		.pm = &ams_pm_ops,
++		.of_match_table = ams_of_match_table,
++	},
++};
++module_platform_driver(ams_driver);
++
++MODULE_LICENSE("GPL v2");
++MODULE_AUTHOR("Xilinx, Inc.");
 -- 
 2.17.1
 
