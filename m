@@ -2,83 +2,78 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CC5BDC433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 28 Nov 2021 17:23:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A26F7C433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 28 Nov 2021 17:32:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346629AbhK1R1N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 28 Nov 2021 12:27:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46138 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358656AbhK1RZN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Nov 2021 12:25:13 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81B20C06175B
-        for <linux-iio@vger.kernel.org>; Sun, 28 Nov 2021 09:20:15 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2324660F5D
-        for <linux-iio@vger.kernel.org>; Sun, 28 Nov 2021 17:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8EFA0C53FC7;
-        Sun, 28 Nov 2021 17:20:13 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1638120014;
-        bh=evYm1iKAaGb58pnaoCcX6AjBdF5XxIXimhJCJ+hLYCo=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GRpR27jlHAFiDeNK2XbmZd2Ffwjbxe5dGPNailmoKh2mzjf+nfaPgAporPoDv4+X8
-         XGGixPSpJe1ErvvbAZyL24gCC254rwr4yAYWEINnGrwusuZF0sFUY9vH4yFpVulKK5
-         5uL+Lywq0e1kZaW88aaSVzQ34yR5QPragb+a0C2Qc0bZq/scFujaUFEIg15+SELJVs
-         B13kflIQZb35zZQo3WkvMi6uBjzsxhfrg8FdnrHkmC7LrLWnw4cH6ko9RrgQj9Bh7x
-         ppLC+slyrHR70sTbOkZAMptp5f/BM1tn4+2GEDPgjjhNo3JPHVdsbsgMjFTRo1LKFJ
-         bg3fNNDQ2f6xQ==
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 10/12] iio:dummy: Drop set but unused variable len.
-Date:   Sun, 28 Nov 2021 17:24:43 +0000
-Message-Id: <20211128172445.2616166-11-jic23@kernel.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20211128172445.2616166-1-jic23@kernel.org>
-References: <20211128172445.2616166-1-jic23@kernel.org>
+        id S1345602AbhK1RfZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 28 Nov 2021 12:35:25 -0500
+Received: from mail-qt1-f179.google.com ([209.85.160.179]:36828 "EHLO
+        mail-qt1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231342AbhK1RdY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 28 Nov 2021 12:33:24 -0500
+Received: by mail-qt1-f179.google.com with SMTP id t11so14061816qtw.3;
+        Sun, 28 Nov 2021 09:30:07 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=+jKqrj/WwaNlYQiS2d47yOVc+IwZPP/7wtu0i19l0uk=;
+        b=CwN0fS9H1xXmeRDKAOdqtSvAD0b/Xqo4+6eRODFq7Sxa1wq1ioBJOqvjkJYxFmYXv2
+         jxmMKEsZZ3/6I8akCNulihjxvWt3fD1ssB9jAdTqABOowema3dIckG7Nzy5SlCET2CEM
+         F+7kxHGPYe4V9ebhs21rn7n0+wiOXFSjs/llnhhET4D32q53A9CvVZuSCjabU1qjTQrA
+         bvk+iuClrjU4jQ/Jq2Bogym5Xw5Gp9TRxeAweKd+97UkQ7eJxdbu0+ctrDKunZBJVjl0
+         zYdOGnVlOwvq1iWM6dhX9lj/YNHZdxnkhTn+KDcruBBw6qszQGHLRArK1+FuDC8NHtsR
+         smFA==
+X-Gm-Message-State: AOAM530BX3mGI3E0F9tq1Ymi6D/PF3Hie4P4cknrNdoimV/Oxvb4lP8g
+        OBQsTUKDmhtYFl89ZxHK4w==
+X-Google-Smtp-Source: ABdhPJyDAAP/LbwCCL98ISWrUgbzX1/5IkV/c1emeBrdgvZRdiHZDOC4u4wJJGnqZTnJdZGzPeoz3g==
+X-Received: by 2002:a05:622a:1901:: with SMTP id w1mr37564889qtc.134.1638120607335;
+        Sun, 28 Nov 2021 09:30:07 -0800 (PST)
+Received: from robh.at.kernel.org ([2607:fb90:2edc:4e01:e871:814a:5254:ea69])
+        by smtp.gmail.com with ESMTPSA id y9sm7078746qko.74.2021.11.28.09.30.04
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 28 Nov 2021 09:30:06 -0800 (PST)
+Received: (nullmailer pid 2773123 invoked by uid 1000);
+        Sun, 28 Nov 2021 17:30:02 -0000
+Date:   Sun, 28 Nov 2021 11:30:02 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     linux-gpio@vger.kernel.org, Bartosz Golaszewski <brgl@bgdev.pl>,
+        cosmin.tanislav@analog.com,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v7 2/3] dt-bindings: iio: add AD74413R
+Message-ID: <YaO8mttxPXP4Fowm@robh.at.kernel.org>
+References: <20211127192510.35723-1-demonsingur@gmail.com>
+ <20211127192510.35723-3-demonsingur@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20211127192510.35723-3-demonsingur@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Sat, 27 Nov 2021 21:25:09 +0200, Cosmin Tanislav wrote:
+> The AD74412R and AD74413R are quad-channel software configurable input/output
+> solutions for building and process control applications. They contain
+> functionality for analog output, analog input, digital input, resistance
+> temperature detector, and thermocouple measurements integrated
+> into a single chip solution with an SPI interface.
+> The devices feature a 16-bit ADC and four configurable 13-bit DACs to provide
+> four configurable input/output channels and a suite of diagnostic functions.
+> The AD74413R differentiates itself from the AD74412R by being HART-compatible.
+> 
+> Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+> ---
+>  .../bindings/iio/addac/adi,ad74413r.yaml      | 158 ++++++++++++++++++
+>  include/dt-bindings/iio/addac/adi,ad74413r.h  |  21 +++
+>  2 files changed, 179 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/addac/adi,ad74413r.yaml
+>  create mode 100644 include/dt-bindings/iio/addac/adi,ad74413r.h
+> 
 
-Not sure what the thinking was here, as lost to history, but the
-variable is clearly not used so get rid of it.
-
-Warning seen with clang W=1 tests (may be present with other compilers
-and build options).
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- drivers/iio/dummy/iio_simple_dummy_buffer.c | 2 --
- 1 file changed, 2 deletions(-)
-
-diff --git a/drivers/iio/dummy/iio_simple_dummy_buffer.c b/drivers/iio/dummy/iio_simple_dummy_buffer.c
-index 59aa60d4ca37..d81c2b2dad82 100644
---- a/drivers/iio/dummy/iio_simple_dummy_buffer.c
-+++ b/drivers/iio/dummy/iio_simple_dummy_buffer.c
-@@ -45,7 +45,6 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
- {
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
--	int len = 0;
- 	u16 *data;
- 
- 	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
-@@ -79,7 +78,6 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
- 					  indio_dev->masklength, j);
- 			/* random access read from the 'device' */
- 			data[i] = fakedata[j];
--			len += 2;
- 		}
- 	}
- 
--- 
-2.34.1
-
+Reviewed-by: Rob Herring <robh@kernel.org>
