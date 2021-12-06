@@ -2,89 +2,173 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 934EDC4332F
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Dec 2021 14:54:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7816C433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Dec 2021 15:53:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344773AbhLFO6A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Dec 2021 09:58:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50970 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344755AbhLFO57 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Dec 2021 09:57:59 -0500
-Received: from mail-wm1-x329.google.com (mail-wm1-x329.google.com [IPv6:2a00:1450:4864:20::329])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A08BC0613F8;
-        Mon,  6 Dec 2021 06:54:30 -0800 (PST)
-Received: by mail-wm1-x329.google.com with SMTP id 77-20020a1c0450000000b0033123de3425so10660964wme.0;
-        Mon, 06 Dec 2021 06:54:30 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hroQBssVxccXajSIae+vPPzUFUCBfFmeKRgOcB2d4Jg=;
-        b=laMQzgB9Kc7SGSnTUCCGTKOhZsn2+fU4lLtJWBUTXBJTfe4kNE4bzeP5J//rVa/OL2
-         a84DsGfDpn41aP2kQLXahj7MBW4GA5I7M+YxPpxfVuZNv6m2pJHVbMSmrWhU0+0E+s3E
-         +pfKfG5XOxHKt7uhfgkGdqAuWfheNsNdizAlhCkQcYFGRUy5V8QONplcUuttldY7DOMy
-         vZLlf443NJyd6xS/4qx7HICV/aXlhY5LNimJfvkD38nGS8tvCth6IExYGUFo8Ji0qaIv
-         2c72jw66U8IN0OdZauDmqbxY8KQlC6CpzR1s5USZwvcGW+sogZ4izNEi52+PNAhYn6ot
-         +BEQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=hroQBssVxccXajSIae+vPPzUFUCBfFmeKRgOcB2d4Jg=;
-        b=uDQ+jNzVvSVIX1WnrjM+mtWHIS769ShgGnud55UM2UdhVCJY4bodEbCiYCXZCkTd3I
-         6bXnpBhQaYrzNqoBP0aEOEB3zSasYWezJlKtoXysfc8LN7UKHZcq0U1q/hSlIYYCnnXD
-         pE1ektT0Bch64QFM6xicx4nCeXfU8XH3oW1ghNSacaJccD44ZYHXo1adV2vEy2/DvJWK
-         e3TeOLWA6ourQh775U0AjbOCTakomYIuCo8e+U++0oTm5TojYBkSRWX8MFl5ojifBnCJ
-         1AIcRumKaZHyPXPcyrhVfvheTrR79pFFc0PqfIQk21DN+1v+8Dxt8nV3QFhb3ZCRFFHA
-         TEjA==
-X-Gm-Message-State: AOAM530s/pnmEqYRqJIGHNGjKH/KxCpbtRgrYDmBxznAAu5w6s5oFdkR
-        HcaXGleIDXyRgpnDw83cX4oWoGD3vjo=
-X-Google-Smtp-Source: ABdhPJwZE6cTUOHICfFzcEVWtMASsJaXM3HxaMiAyaWZhGFpqA1EIUcGmP+pJr3aOVZ93eKwXxqkSg==
-X-Received: by 2002:a7b:c155:: with SMTP id z21mr38803253wmi.107.1638802469123;
-        Mon, 06 Dec 2021 06:54:29 -0800 (PST)
-Received: from localhost (pd9e51d39.dip0.t-ipconnect.de. [217.229.29.57])
-        by smtp.gmail.com with ESMTPSA id z14sm11783269wrp.70.2021.12.06.06.54.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Dec 2021 06:54:28 -0800 (PST)
-From:   Thierry Reding <thierry.reding@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH] dt-bindings: iio: exynos-adc: Use correct node name
-Date:   Mon,  6 Dec 2021 15:54:27 +0100
-Message-Id: <20211206145427.218436-1-thierry.reding@gmail.com>
-X-Mailer: git-send-email 2.33.1
+        id S1381196AbhLFP4k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Dec 2021 10:56:40 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:7072 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1378972AbhLFPwj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Dec 2021 10:52:39 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1B6CA2vv031880;
+        Mon, 6 Dec 2021 10:49:08 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3csj9d8vcw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 06 Dec 2021 10:49:08 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 1B6Fn710016086
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 6 Dec 2021 10:49:07 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 6 Dec 2021
+ 10:49:06 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 6 Dec 2021 10:49:06 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.181])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 1B6Fn3pL002802;
+        Mon, 6 Dec 2021 10:49:05 -0500
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v6 2/3] dt-bindings: iio: frequency: add admv1013 doc
+Date:   Mon, 6 Dec 2021 17:48:44 +0200
+Message-ID: <20211206154845.268445-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20211206154845.268445-1-antoniu.miclaus@analog.com>
+References: <20211206154845.268445-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: cWgRFvq1-WB3490Qji6MoYWX-864mrpp
+X-Proofpoint-ORIG-GUID: cWgRFvq1-WB3490Qji6MoYWX-864mrpp
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2021-12-06_05,2021-12-06_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
+ mlxlogscore=999 impostorscore=0 malwarescore=0 spamscore=0 suspectscore=0
+ priorityscore=1501 mlxscore=0 phishscore=0 clxscore=1015
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2112060099
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Thierry Reding <treding@nvidia.com>
+Add device tree bindings for the ADMV1013 Upconverter.
 
-According to the murata,ncp15wb473 DT bindings, the node name should be
-"thermistor", so use that in order to make the example validate.
-
-Signed-off-by: Thierry Reding <treding@nvidia.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- .../devicetree/bindings/iio/adc/samsung,exynos-adc.yaml         | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+changes in v6:
+ - add `input-mode` property
+ - 
+ .../bindings/iio/frequency/adi,admv1013.yaml  | 91 +++++++++++++++++++
+ 1 file changed, 91 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv1013.yaml
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml
-index c65921e66dc1..81c87295912c 100644
---- a/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/samsung,exynos-adc.yaml
-@@ -136,7 +136,7 @@ examples:
-         samsung,syscon-phandle = <&pmu_system_controller>;
- 
-         /* NTC thermistor is a hwmon device */
--        ncp15wb473 {
-+        thermistor {
-             compatible = "murata,ncp15wb473";
-             pullup-uv = <1800000>;
-             pullup-ohm = <47000>;
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv1013.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv1013.yaml
+new file mode 100644
+index 000000000000..63f0d574c08d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv1013.yaml
+@@ -0,0 +1,91 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,admv1013.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADMV1013 Microwave Upconverter
++
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++   Wideband, microwave upconverter optimized for point to point microwave
++   radio designs operating in the 24 GHz to 44 GHz frequency range.
++
++   https://www.analog.com/en/products/admv1013.html
++
++properties:
++  compatible:
++    enum:
++      - adi,admv1013
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 1000000
++
++  clocks:
++    description:
++      Definition of the external clock.
++    minItems: 1
++
++  clock-names:
++    items:
++      - const: lo_in
++
++  vcm-supply:
++    description:
++      Analog voltage regulator.
++
++  adi,detector-enable:
++    description:
++      Enable the Envelope Detector available at output pins VENV_P and
++      VENV_N. Disable to reduce power consumption.
++    type: boolean
++
++  adi,input-mode:
++    description:
++      Select the input mode.
++      iq - in-phase quadrature (I/Q) input
++      if - complex intermediate frequency (IF) input
++    enum: [iq, if]
++
++  adi,quad-se-mode:
++    description:
++      Switch the LO path from differential to single-ended operation.
++      se-neg - Single-Ended Mode, Negative Side Disabled.
++      se-pos - Single-Ended Mode, Positive Side Disabled.
++      diff - Differential Mode.
++    enum: [se-neg, se-pos, diff]
++
++  '#clock-cells':
++    const: 0
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - vcm-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      admv1013@0{
++        compatible = "adi,admv1013";
++        reg = <0>;
++        spi-max-frequency = <1000000>;
++        clocks = <&admv1013_lo>;
++        clock-names = "lo_in";
++        vcm-supply = <&vcm>;
++        adi,quad-se-mode = "diff";
++        adi,detector-enable;
++      };
++    };
++...
 -- 
-2.33.1
+2.34.1
 
