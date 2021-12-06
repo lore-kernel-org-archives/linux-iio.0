@@ -2,161 +2,101 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA066C433F5
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Dec 2021 19:45:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 646FFC433F5
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Dec 2021 19:53:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245534AbhLFTtJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Dec 2021 14:49:09 -0500
-Received: from vern.gendns.com ([98.142.107.122]:43066 "EHLO vern.gendns.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S245093AbhLFTtJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 6 Dec 2021 14:49:09 -0500
-X-Greylist: delayed 1277 seconds by postgrey-1.27 at vger.kernel.org; Mon, 06 Dec 2021 14:49:08 EST
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=lechnology.com; s=default; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:
-        Resent-Sender:Resent-To:Resent-Cc:Resent-Message-ID:List-Id:List-Help:
-        List-Unsubscribe:List-Subscribe:List-Post:List-Owner:List-Archive;
-        bh=YA/G+b1h/jbDVfkm8Yg0kCmi1TBIab78m8yWhAJ7R8o=; b=R+9y0NUMqiKrlPN4lpSoyvz0fW
-        jQbGzn4WAxDZQzG8I009nr2DImAIOnDschwKKikKKwdlzMpHZ5QVQ0EpD4VLy1Pu+k4SO/MgVUqXF
-        EaK20+oa6tj/o1Vr38Yf1U1LW9L0DBc1a33iDrBjr/LQQY9obm2aPxactXiOKB1i8JSCxYLW++Y05
-        MmDAWB6Zuxd4meS8LzKhexhcIGE2++8lgrtO5is/Vjnrkt4JQYutniZK6bi93ZMhGfqxw40X4Tk2u
-        ShHGe/kMWn5xayGFsmntw0VMmX+UhiV1FiOMI57xnQrHC5H/KnKvuOJAzGqYhcfmHVioUax6bJE41
-        9CuqpwKQ==;
-Received: from 108-198-5-147.lightspeed.okcbok.sbcglobal.net ([108.198.5.147]:49508 helo=[192.168.0.134])
-        by vern.gendns.com with esmtpsa  (TLS1.2) tls TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256
-        (Exim 4.94.2)
-        (envelope-from <david@lechnology.com>)
-        id 1muJaz-0005Ni-JU; Mon, 06 Dec 2021 14:24:20 -0500
-Subject: Re: [PATCH v1] counter: interrupt-cnt: add counter_push_event()
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Jonathan Cameron <jic23@kernel.org>
-References: <20211123134540.416695-1-o.rempel@pengutronix.de>
- <YZ3XAeYyfGblfaOi@shinobu> <20211124072720.GA30281@pengutronix.de>
- <YZ7tv79LQwLL7h3T@shinobu>
-From:   David Lechner <david@lechnology.com>
-Message-ID: <f73650b6-5a08-9ea9-9ecb-c47665ef07b0@lechnology.com>
-Date:   Mon, 6 Dec 2021 13:24:18 -0600
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
-MIME-Version: 1.0
-In-Reply-To: <YZ7tv79LQwLL7h3T@shinobu>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-AntiAbuse: This header was added to track abuse, please include it with any abuse report
-X-AntiAbuse: Primary Hostname - vern.gendns.com
-X-AntiAbuse: Original Domain - vger.kernel.org
-X-AntiAbuse: Originator/Caller UID/GID - [47 12] / [47 12]
-X-AntiAbuse: Sender Address Domain - lechnology.com
-X-Get-Message-Sender-Via: vern.gendns.com: authenticated_id: davidmain+lechnology.com/only user confirmed/virtual account not confirmed
-X-Authenticated-Sender: vern.gendns.com: davidmain@lechnology.com
-X-Source: 
-X-Source-Args: 
-X-Source-Dir: 
+        id S1348796AbhLFT5Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Dec 2021 14:57:25 -0500
+Received: from mail-ot1-f42.google.com ([209.85.210.42]:33413 "EHLO
+        mail-ot1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1348599AbhLFT5V (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Dec 2021 14:57:21 -0500
+Received: by mail-ot1-f42.google.com with SMTP id 35-20020a9d08a6000000b00579cd5e605eso15157433otf.0;
+        Mon, 06 Dec 2021 11:53:52 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=FEXfkV7DzfDOJwDiaMHFm7upzA8Sh7nLlaXOwLGj1BE=;
+        b=VedFdf0VhLZWwtlF9+GyktKViRKs7uoBop5BDlwjKHvA5Exifb+tw+8EkBaoo59ead
+         jhY6hStCWlIokNklvuowFHQzRMJKFUSUpbNtRBlpidCddwklO9ix361M1QXEOZIZ3doF
+         Zurrrj1moiXGoyejG+eWgo8oc1bCwN3KcD9oG3EegxyfD76ZDO9Hz+Z6i5CUrlIfmr7q
+         uQ+f+h4MyTSuEdNOFKbXQPKI9n4/0s7HNF4x7B8i1VHTj/kWXttYpF45SxzV5ZhRI0In
+         NUgYg6YB3BQcOOk+jeFFIVsNxQ8lHrJeOMkT416qzF8LSrz1UUn6oQ+IUj4Kl519e12Y
+         xNoA==
+X-Gm-Message-State: AOAM533b36oi2syD1kzWBXZcLW8kG0ZNfsuVdajvCZU3b0wI07DbGhXr
+        +dfuaRVkwPVBDsQJLXZOgXBTSzSuvQ==
+X-Google-Smtp-Source: ABdhPJxqPcwZqRSvz/gvJxol+w0vc9LVGdjC/iJystk++DcVt34euIEQfUOhOsHSNlSNtMeenxx9rw==
+X-Received: by 2002:a9d:67d5:: with SMTP id c21mr31326344otn.128.1638820432263;
+        Mon, 06 Dec 2021 11:53:52 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id e28sm2894339oiy.10.2021.12.06.11.53.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 06 Dec 2021 11:53:51 -0800 (PST)
+Received: (nullmailer pid 2482589 invoked by uid 1000);
+        Mon, 06 Dec 2021 19:53:49 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Mihail Chindris <mihail.chindris@analog.com>
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        alexandru.ardelean@analog.com, broonie@kernel.org,
+        Michael.Hennerich@analog.com, nuno.sa@analog.com,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, jic23@kernel.org, dragos.bogdan@analog.com
+In-Reply-To: <20211206163529.3528-1-mihail.chindris@analog.com>
+References: <20211206163529.3528-1-mihail.chindris@analog.com>
+Subject: Re: [RESEND, PATCH v6 1/2] dt-bindings: iio: dac: Add adi,ad3552r.yaml
+Date:   Mon, 06 Dec 2021 13:53:49 -0600
+Message-Id: <1638820429.528698.2482588.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 11/24/21 7:58 PM, William Breathitt Gray wrote:
-> On Wed, Nov 24, 2021 at 08:27:20AM +0100, Oleksij Rempel wrote:
->> Hi William,
->>
->> On Wed, Nov 24, 2021 at 03:09:05PM +0900, William Breathitt Gray wrote:
->>> On Tue, Nov 23, 2021 at 02:45:40PM +0100, Oleksij Rempel wrote:
->>>> Add counter_push_event() to notify user space about new pulses
->>>>
->>>> Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
->>>> ---
->>>>   drivers/counter/interrupt-cnt.c | 2 ++
->>>>   1 file changed, 2 insertions(+)
->>>>
->>>> diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
->>>> index 8514a87fcbee..b237137b552b 100644
->>>> --- a/drivers/counter/interrupt-cnt.c
->>>> +++ b/drivers/counter/interrupt-cnt.c
->>>> @@ -31,6 +31,8 @@ static irqreturn_t interrupt_cnt_isr(int irq, void *dev_id)
->>>>   
->>>>   	atomic_inc(&priv->count);
->>>>   
->>>> +	counter_push_event(&priv->counter, COUNTER_EVENT_OVERFLOW, 0);
->>>> +
->>>>   	return IRQ_HANDLED;
->>>>   }
->>>>   
->>>> -- 
->>>> 2.30.2
->>>
->>> Hi Oleksij,
->>>
->>> It looks like this is pushing a COUNTER_EVENT_OVERFLOW event every time
->>> an interrupt is handled, which I suspect is not what you want to happen.
->>> The COUNTER_EVENT_OVERFLOW event indicates a count value overflow event,
->>> so you'll need to check for a count value overflow before pushing the
->>> event.
->>>
->>> It would be good idea to implement a ceiling extension as well (you can
->>> use the COUNTER_COMP_CEILING() macro) so that users can configure the
->>> particular point where the value overflows.
->>
->> Thank you!
->>
->> What would be the best and resource effective strategy for periodically
->> getting frequency of interrupts/pulses? This is actual information which is
->> needed for my use case.
->>
->> So far, I was pushing every event to the user space, which is working
->> but probably not the most resource effective method of doing it.
->>
->> Regards,
->> Oleskij
->> -- 
->> Pengutronix e.K.                           |                             |
->> Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
->> 31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
->> Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
+On Mon, 06 Dec 2021 16:35:29 +0000, Mihail Chindris wrote:
+> Add documentation for ad3552r
 > 
-> We could introduce a new Counter change-of-state event type which would
-> trigger whenever the count value changes, but I agree with you that this
-> is likely not the best way for us to derive the frequency of the
-> interrupts due to the indirection of handling and parsing the event
-> data.
-> 
-> Instead, perhaps introducing a "frequency" or "period" Count extension
-> would make more sense here. This extension could report the value delta
-> between counts, or alternatively the time delta from which you can
-> derive frequency. Regarding implementation, you can store the previous
-> value in a variable, updating it whenever an interrupt occurs, and
-> compute the particular delta every time a read is requested by the user.
-> 
-> David Lechner is implementing something similar for the TI eQEP driver
-> to expose speed, so I'm CCing them here in case this is of interest to
-> them.
+> Signed-off-by: Mihail Chindris <mihail.chindris@analog.com>
+> ---
+>  .../bindings/iio/dac/adi,ad3552r.yaml         | 190 ++++++++++++++++++
+>  1 file changed, 190 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/adi,ad3552r.yaml
 > 
 
-Based on my experience, I would recommend that counter drivers be as
-"thin" as possible. They shouldn't try to provide any information that
-the hardware itself doesn't provide. In other words, the kernel should
-provide userspace the information needed to calculate the speed/rate
-but not try to do the actual calculation in the kernel. Inevitably
-there are nuances for specific use cases that can't all possibly be
-handled by such an implementation.
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-I've tried using gpio interrupts to try to calculate speed/rate in
-the kernel before and it simply doesn't work reliably. Interrupts
-get missed and the calculation will be off.
+yamllint warnings/errors:
+./Documentation/devicetree/bindings/iio/dac/adi,ad3552r.yaml:64:11: [warning] wrong indentation: expected 8 but found 10 (indentation)
+./Documentation/devicetree/bindings/iio/dac/adi,ad3552r.yaml:102:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
+./Documentation/devicetree/bindings/iio/dac/adi,ad3552r.yaml:104:9: [warning] wrong indentation: expected 10 but found 8 (indentation)
 
-For really slow counts (i.e. 1 count/second), I can see a use for
-generating an event on each count though. For high rates, I would
-just read the count every 100ms in usespace and divide the change in
-the number of counts by the time period to get the rate.
+dtschema/dtc warnings/errors:
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dts:21.17-27: Warning (reg_format): /example-0/ad3552r:reg: property has invalid length (4 bytes) (#address-cells == 1, #size-cells == 1)
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dts:24.25-35: Warning (reg_format): /example-0/ad3552r/channel@0:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dts:28.25-35: Warning (reg_format): /example-0/ad3552r/channel@1:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dts:19.17-36.13: Warning (unit_address_vs_reg): /example-0/ad3552r: node has a reg or ranges property, but no unit name
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dt.yaml: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dt.yaml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dt.yaml: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dt.yaml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dts:23.27-26.19: Warning (avoid_default_addr_size): /example-0/ad3552r/channel@0: Relying on default #address-cells value
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dts:23.27-26.19: Warning (avoid_default_addr_size): /example-0/ad3552r/channel@0: Relying on default #size-cells value
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dts:27.27-35.17: Warning (avoid_default_addr_size): /example-0/ad3552r/channel@1: Relying on default #address-cells value
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dts:27.27-35.17: Warning (avoid_default_addr_size): /example-0/ad3552r/channel@1: Relying on default #size-cells value
+Documentation/devicetree/bindings/iio/dac/adi,ad3552r.example.dt.yaml: Warning (unique_unit_address): Failed prerequisite 'avoid_default_addr_size'
 
+doc reference errors (make refcheckdocs):
 
+See https://patchwork.ozlabs.org/patch/1564044
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
