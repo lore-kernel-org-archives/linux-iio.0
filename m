@@ -2,60 +2,62 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 536EFC433EF
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Dec 2021 15:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D9EDC433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Dec 2021 15:55:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239191AbhLGP6o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Dec 2021 10:58:44 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:2678 "EHLO
+        id S239250AbhLGP6q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Dec 2021 10:58:46 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:6878 "EHLO
         mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S233306AbhLGP6n (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Dec 2021 10:58:43 -0500
+        by vger.kernel.org with ESMTP id S233306AbhLGP6q (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Dec 2021 10:58:46 -0500
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1B79SLqg031788;
-        Tue, 7 Dec 2021 10:55:05 -0500
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1B79quvv032573;
+        Tue, 7 Dec 2021 10:55:08 -0500
 Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3csj9debmc-1
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3csj9debmj-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 07 Dec 2021 10:55:04 -0500
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 1B7Ft3Ix042482
+        Tue, 07 Dec 2021 10:55:08 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 1B7Ft7jP042488
         (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 7 Dec 2021 10:55:03 -0500
+        Tue, 7 Dec 2021 10:55:07 -0500
 Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 7 Dec 2021 10:55:02 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ 15.2.986.14; Tue, 7 Dec 2021 10:55:06 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
  ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 7 Dec 2021 10:55:02 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 7 Dec 2021 10:55:02 -0500
+ 15.2.986.14; Tue, 7 Dec 2021 10:55:06 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 7 Dec 2021 10:55:06 -0500
 Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.181])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 1B7Ft0E4009082;
-        Tue, 7 Dec 2021 10:55:01 -0500
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 1B7Ft0E6009082;
+        Tue, 7 Dec 2021 10:55:03 -0500
 From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
 To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
         <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>
 CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v3 1/4] iio: add filter subfolder
-Date:   Tue, 7 Dec 2021 17:54:42 +0200
-Message-ID: <20211207155445.247444-1-antoniu.miclaus@analog.com>
+Subject: [PATCH v3 3/4] dt-bindings:iio:filter: add admv8818 doc
+Date:   Tue, 7 Dec 2021 17:54:44 +0200
+Message-ID: <20211207155445.247444-3-antoniu.miclaus@analog.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20211207155445.247444-1-antoniu.miclaus@analog.com>
+References: <20211207155445.247444-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
 X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: tETX8QP86PeuUIzeZP-ltfwyDdjv5k4l
-X-Proofpoint-ORIG-GUID: tETX8QP86PeuUIzeZP-ltfwyDdjv5k4l
+X-Proofpoint-GUID: j3tvicE4QaGmQm-BWd5N0NybFbN3Bvvp
+X-Proofpoint-ORIG-GUID: j3tvicE4QaGmQm-BWd5N0NybFbN3Bvvp
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2021-12-07_06,2021-12-06_02,2021-12-02_01
 X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 adultscore=0
- mlxlogscore=928 impostorscore=0 malwarescore=0 spamscore=0 suspectscore=0
+ mlxlogscore=999 impostorscore=0 malwarescore=0 spamscore=0 suspectscore=0
  priorityscore=1501 mlxscore=0 phishscore=0 clxscore=1015
  lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
  engine=8.12.0-2110150000 definitions=main-2112070097
@@ -63,68 +65,89 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add filter subfolder for IIO devices that handle filter functionality.
+Add device tree bindings for the ADMV8818 Filter.
 
 Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/Kconfig         | 1 +
- drivers/iio/Makefile        | 1 +
- drivers/iio/filter/Kconfig  | 8 ++++++++
- drivers/iio/filter/Makefile | 6 ++++++
- 4 files changed, 16 insertions(+)
- create mode 100644 drivers/iio/filter/Kconfig
- create mode 100644 drivers/iio/filter/Makefile
+changes in v3:
+ - remove clock from `required` since it is optional.
+ .../bindings/iio/filter/adi,admv8818.yaml     | 67 +++++++++++++++++++
+ 1 file changed, 67 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 2334ad249b46..3a496a28bad4 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -77,6 +77,7 @@ source "drivers/iio/chemical/Kconfig"
- source "drivers/iio/common/Kconfig"
- source "drivers/iio/dac/Kconfig"
- source "drivers/iio/dummy/Kconfig"
-+source "drivers/iio/filter/Kconfig"
- source "drivers/iio/frequency/Kconfig"
- source "drivers/iio/gyro/Kconfig"
- source "drivers/iio/health/Kconfig"
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 65e39bd4f934..97d2fbcf0950 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -24,6 +24,7 @@ obj-y += common/
- obj-y += dac/
- obj-y += dummy/
- obj-y += gyro/
-+obj-y += filter/
- obj-y += frequency/
- obj-y += health/
- obj-y += humidity/
-diff --git a/drivers/iio/filter/Kconfig b/drivers/iio/filter/Kconfig
+diff --git a/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml b/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
 new file mode 100644
-index 000000000000..e268bba43852
+index 000000000000..96b6a9eddd09
 --- /dev/null
-+++ b/drivers/iio/filter/Kconfig
-@@ -0,0 +1,8 @@
-+#
-+# Filter drivers
-+#
-+# When adding new entries keep the list in alphabetical order
++++ b/Documentation/devicetree/bindings/iio/filter/adi,admv8818.yaml
+@@ -0,0 +1,67 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/filter/adi,admv8818.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+menu "Filters"
++title: ADMV8818 Digitally Tunable, High-Pass and Low-Pass Filter
 +
-+endmenu
-diff --git a/drivers/iio/filter/Makefile b/drivers/iio/filter/Makefile
-new file mode 100644
-index 000000000000..cc0892c01142
---- /dev/null
-+++ b/drivers/iio/filter/Makefile
-@@ -0,0 +1,6 @@
-+# SPDX-License-Identifier: GPL-2.0
-+#
-+# Makefile for industrial I/O Filter drivers
-+#
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
 +
-+# When adding new entries keep the list in alphabetical order
++description: |
++    Fully monolithic microwave integrated circuit (MMIC) that
++    features a digitally selectable frequency of operation.
++    The device features four independently controlled high-pass
++    filters (HPFs) and four independently controlled low-pass filters
++    (LPFs) that span the 2 GHz to 18 GHz frequency range.
++
++    https://www.analog.com/en/products/admv8818.html
++
++properties:
++  compatible:
++    enum:
++      - adi,admv8818
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 10000000
++
++  clocks:
++    description:
++      Definition of the external clock.
++    minItems: 1
++
++  clock-names:
++    items:
++      - const: rf_in
++
++  clock-output-names:
++    maxItems: 1
++
++  '#clock-cells':
++    const: 0
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      admv8818@0 {
++        compatible = "adi,admv8818";
++        reg = <0>;
++        spi-max-frequency = <10000000>;
++        clocks = <&admv8818_rfin>;
++        clock-names = "rf_in";
++      };
++    };
++...
++
 -- 
 2.34.1
 
