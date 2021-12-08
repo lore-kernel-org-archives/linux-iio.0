@@ -2,112 +2,270 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACE4BC433EF
-	for <linux-iio@archiver.kernel.org>; Wed,  8 Dec 2021 03:26:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C1C6DC433EF
+	for <linux-iio@archiver.kernel.org>; Wed,  8 Dec 2021 04:42:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243848AbhLHD35 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Dec 2021 22:29:57 -0500
-Received: from mga06.intel.com ([134.134.136.31]:36822 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243839AbhLHD35 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 7 Dec 2021 22:29:57 -0500
-X-IronPort-AV: E=McAfee;i="6200,9189,10191"; a="298542677"
-X-IronPort-AV: E=Sophos;i="5.87,296,1631602800"; 
-   d="scan'208";a="298542677"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Dec 2021 19:26:25 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.87,296,1631602800"; 
-   d="scan'208";a="462603579"
-Received: from lkp-server02.sh.intel.com (HELO 9e1e9f9b3bcb) ([10.239.97.151])
-  by orsmga006.jf.intel.com with ESMTP; 07 Dec 2021 19:26:23 -0800
-Received: from kbuild by 9e1e9f9b3bcb with local (Exim 4.92)
-        (envelope-from <lkp@intel.com>)
-        id 1munb4-000NLE-Oc; Wed, 08 Dec 2021 03:26:22 +0000
-Date:   Wed, 8 Dec 2021 11:26:01 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Gwendal Grignou <gwendal@chromium.org>, jic23@kernel.org,
-        lars@metafoo.de, swboyd@chromium.org
-Cc:     kbuild-all@lists.01.org, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: Re: [PATCH v5 3/5] iio: proximity: Add SX9324 support
-Message-ID: <202112081125.pcOSkAMQ-lkp@intel.com>
-References: <20211208004311.3098571-4-gwendal@chromium.org>
+        id S244255AbhLHEpi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Dec 2021 23:45:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47966 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S235223AbhLHEph (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Dec 2021 23:45:37 -0500
+Received: from mail-oi1-x22e.google.com (mail-oi1-x22e.google.com [IPv6:2607:f8b0:4864:20::22e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3EAAC061746
+        for <linux-iio@vger.kernel.org>; Tue,  7 Dec 2021 20:42:05 -0800 (PST)
+Received: by mail-oi1-x22e.google.com with SMTP id bk14so2463531oib.7
+        for <linux-iio@vger.kernel.org>; Tue, 07 Dec 2021 20:42:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=z2aGa9ea1fQKEBlxlZHZH2LZbqY+PGQN/EgiDfeUvZI=;
+        b=kcrPIhVSCR/eug/X87zA7XxPJUgw5oUon7Hfau8KrUypzwXm3GmLeSh26M6Xqf74z2
+         MYLQbEIkFPi3io56Cy5WdeUgH2Cgcsroh0EbwkxSaZXwg2lZp/zf1M4NcmoBkKhzdRZn
+         k9bHJPR1WmNll4H8Ni7tsd7l0wQwMhhh35Foc=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=z2aGa9ea1fQKEBlxlZHZH2LZbqY+PGQN/EgiDfeUvZI=;
+        b=V/GjNIEBsDi36LOt+Puoai5W4PbTO8WGvzsZR3IxAUvld822xDLoKQ0VdcmRrRAYiO
+         VQoCCiFI9XNHee7ir+kIow6kBdXg3qzfbgO07x/Kz0USm9TeNkmuAfXB3AQh0XAQVhvA
+         dkbL+R8Sfkr5MYe0fpPDfvu2C+4RChK4ePBtEUy1l8KfEJS1RwoNh+CmGTW505aEG9cN
+         ViwMeUEz4bIHCdZw2JGKZpTvlXsPukQwX/38n7YbVjvKGWjHHETtl8vvw++ImYFkFxhH
+         P1jcqvbKY64STgJcQU95hDOHPNC4R33opXVg+7W9+2afhpfGDgUrntWkGB/rb5G0terd
+         T/bg==
+X-Gm-Message-State: AOAM530D36uD09ZCQpHGGSakx9TQBY9abiPGchhBsYeJVmGnhZkuFz48
+        aV6I6Rxz/C/OibuQFXgajmJWNuU7h2SErkhX8LKbxQ==
+X-Google-Smtp-Source: ABdhPJydPbyP8O5WMcKuKUG7MmFxq5NwKsvFIHMO4Xot01k2ixm8Z7KDay4g11U4GKhYH3TZwVwG85ABC5hPSq2Ejr4=
+X-Received: by 2002:a05:6808:211f:: with SMTP id r31mr9369804oiw.64.1638938525227;
+ Tue, 07 Dec 2021 20:42:05 -0800 (PST)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 7 Dec 2021 23:42:04 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20211208004311.3098571-4-gwendal@chromium.org>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+In-Reply-To: <20211208004311.3098571-5-gwendal@chromium.org>
+References: <20211208004311.3098571-1-gwendal@chromium.org> <20211208004311.3098571-5-gwendal@chromium.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.9.1
+Date:   Tue, 7 Dec 2021 23:42:04 -0500
+Message-ID: <CAE-0n50Jz0qu+8tog3ex5K+LL4fBTxOxnM0u5TNq5E8M+kRNAQ@mail.gmail.com>
+Subject: Re: [PATCH v5 4/5] dt-bindings: iio: Add sx9324 binding
+To:     Gwendal Grignou <gwendal@chromium.org>, jic23@kernel.org,
+        lars@metafoo.de, robh+dt@kernel.org
+Cc:     andy.shevchenko@gmail.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Gwendal,
++Rob *crosses fingers*
 
-Thank you for the patch! Perhaps something to improve:
+Quoting Gwendal Grignou (2021-12-07 16:43:10)
+> Similar to SX9310, add biddings to setup sx9324 hardware properties.
+> SX9324 is a little different, introduce 4 phases to be configured in 2
+> pairs over 3 antennas.
+>
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> ---
+> Changes in v5:
+> - Use consistent field naming, prefixed with phX.
+>
+> Changes in v4:
+> - Use const instead of single enum
+> - Specify ph0-pin better
+> - Recopy type information for phX-pin
+> - Fix cut and paste errors.
+>
+> Changes in v3:
+> - Remove duplicate information.
+> - Use intervals instead of enum.
+> - Fix filter description.
+>
+> Changes in v2:
+> - Fix interrupt documentation wording.
+>
+>  .../iio/proximity/semtech,sx9324.yaml         | 161 ++++++++++++++++++
 
-[auto build test WARNING on jic23-iio/togreg]
-[also build test WARNING on v5.16-rc4 next-20211207]
-[If your patch is applied to the wrong git tree, kindly drop us a note.
-And when submitting patch, we suggest to use '--base' as documented in
-https://git-scm.com/docs/git-format-patch]
+Please add Rob for dt binding review. I'm not sure if the
+semi-autonomous robot runs without Cc robh+dt
 
-url:    https://github.com/0day-ci/linux/commits/Gwendal-Grignou/Expand-Semtech-SAR-Sensors-support/20211208-084635
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20211208/202112081125.pcOSkAMQ-lkp@intel.com/config)
-compiler: nios2-linux-gcc (GCC) 11.2.0
-reproduce (this is a W=1 build):
-        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # https://github.com/0day-ci/linux/commit/d02716a5c3a619239e594e6ba6af2ec38fd3de3d
-        git remote add linux-review https://github.com/0day-ci/linux
-        git fetch --no-tags linux-review Gwendal-Grignou/Expand-Semtech-SAR-Sensors-support/20211208-084635
-        git checkout d02716a5c3a619239e594e6ba6af2ec38fd3de3d
-        # save the config file to linux build tree
-        mkdir build_dir
-        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=nios2 SHELL=/bin/bash drivers/iio/proximity/
+>  1 file changed, 161 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> new file mode 100644
+> index 00000000000000..ac9581b0d31364
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> @@ -0,0 +1,161 @@
+> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/proximity/semtech,sx9324.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Semtech's SX9324 capacitive proximity sensor
+> +
+> +maintainers:
+> +  - Gwendal Grignou <gwendal@chromium.org>
+> +  - Daniel Campello <campello@chromium.org>
+> +
+> +description: |
+> +  Semtech's SX9324 proximity sensor.
+> +
+> +properties:
+> +  compatible:
+> +    const: semtech,sx9324
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description:
+> +      Generated by device to announce preceding read request has finished
+> +      and data is available or that a close/far proximity event has happened.
+> +    maxItems: 1
+> +
+> +  vdd-supply:
+> +    description: Main power supply
+> +
+> +  svdd-supply:
+> +    description: Host interface power supply
+> +
+> +  "#io-channel-cells":
+> +    const: 1
+> +
+> +  semtech,ph0-pin:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description: |
+> +      Array of 3 entries. Index represent the id of the CS pin.
+> +      Value indicates how each CS pin is used during phase 0.
+> +      Each of the 3 pins have the following value -
+> +      0 : unused (high impedance)
+> +      1 : measured input
+> +      2 : dynamic shield
+> +      3 : grounded.
+> +      For instance, CS0 measured, CS1 shield and CS2 ground is [1, 2, 3]
+> +    items:
+> +      enum: [ 0, 1, 2, 3 ]
+> +    minItems: 3
+> +    maxItems: 3
+> +
+> +  semtech,ph1-pin:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description: Same as ph0-pin for phase 1.
+> +    items:
+> +      enum: [ 0, 1, 2, 3 ]
+> +    minItems: 3
+> +    maxItems: 3
+> +
+> +  semtech,ph2-pin:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description: Same as ph0-pin for phase 2.
+> +    items:
+> +      enum: [ 0, 1, 2, 3 ]
+> +    minItems: 3
+> +    maxItems: 3
+> +
+> +  semtech,ph3-pin:
+> +    $ref: /schemas/types.yaml#/definitions/uint32-array
+> +    description: Same as ph0-pin for phase 3.
+> +    items:
+> +      enum: [ 0, 1, 2, 3 ]
+> +    minItems: 3
+> +    maxItems: 3
+> +
+> +
+> +  semtech,ph01-resolution:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    enum: [8, 16, 32, 64, 128, 256, 512, 1024]
+> +    description:
+> +      Capacitance measurement resolution. For phase 0 and 1.
+> +      Higher the number, higher the resolution.
+> +    default: 128
+> +
+> +  semtech,ph23-resolution:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    enum: [8, 16, 32, 64, 128, 256, 512, 1024]
+> +    description:
+> +      Capacitance measurement resolution. For phase 2 and 3
+> +    default: 128
+> +
+> +  semtech,startup-sensor:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    enum: [0, 1, 2, 3]
+> +    default: 0
+> +    description: |
+> +      Phase used for start-up proximity detection.
+> +      It is used when we enable a phase to remove static offset and measure
+> +      only capacitance changes introduced by the user.
+> +
+> +  semtech,ph01-proxraw-strength:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    min: 0
+> +    max: 7
+> +    default: 1
+> +    description:
+> +      PROXRAW filter strength for phase 0 and 1. A value of 0 represents off,
+> +      and other values represent 1-1/2^N.
+> +
+> +  semtech,ph23-proxraw-strength:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    min: 0
+> +    max: 7
+> +    default: 1
+> +    description:
+> +      Same as proxraw-strength01, for phase 2 and 3.
 
-If you fix the issue, kindly add following tag as appropriate
-Reported-by: kernel test robot <lkp@intel.com>
+We could have a single property then that uses index 0 for phase 0 and 1
+and index 1 for phase 2 and 3 if we're worried about them being
+different between the two joined phases. Same comment applies to the
+resolution.
 
-All warnings (new ones prefixed by >>):
+> +
+> +  semtech,avg-pos-strength:
+> +    $ref: /schemas/types.yaml#definitions/uint32
+> +    enum: [0, 16, 64, 128, 256, 512, 1024, 4294967295]
+> +    default: 16
+> +    description: |
+> +      Average positive filter strength. A value of 0 represents off and
+> +      UINT_MAX (4294967295) represents infinite. Other values
+> +      represent 1-1/N.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - "#io-channel-cells"
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    i2c {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +      proximity@28 {
+> +        compatible = "semtech,sx9324";
+> +        reg = <0x28>;
+> +        interrupt-parent = <&pio>;
+> +        interrupts = <5 IRQ_TYPE_LEVEL_LOW 5>;
+> +        vdd-supply = <&pp3300_a>;
+> +        svdd-supply = <&pp1800_prox>;
+> +        #io-channel-cells = <1>;
+> +        semtech,ph0-pin = <1, 2, 3>;
+> +        semtech,ph1-pin = <3, 2, 1>;
+> +        semtech,ph2-pin = <1, 2, 3>;
+> +        semtech,ph3-pin = <3, 2, 1>;
 
-   drivers/iio/proximity/sx9324.c: In function 'sx9324_phase_configuration_show':
->> drivers/iio/proximity/sx9324.c:166:16: warning: variable 'ret' set but not used [-Wunused-but-set-variable]
-     166 |         int i, ret, pin_idx;
-         |                ^~~
-   At top level:
-   drivers/iio/proximity/sx9324.c:871:36: warning: 'sx9324_acpi_match' defined but not used [-Wunused-const-variable=]
-     871 | static const struct acpi_device_id sx9324_acpi_match[] = {
-         |                                    ^~~~~~~~~~~~~~~~~
+The comma should be removed. Have you run 'make dt_binding_check'?
 
-
-vim +/ret +166 drivers/iio/proximity/sx9324.c
-
-   158	
-   159	static ssize_t sx9324_phase_configuration_show(struct iio_dev *indio_dev,
-   160						       uintptr_t private,
-   161						       const struct iio_chan_spec *chan,
-   162						       char *buf)
-   163	{
-   164		struct sx_common_data *data = iio_priv(indio_dev);
-   165		unsigned int val;
- > 166		int i, ret, pin_idx;
-   167		size_t len = 0;
-   168	
-   169		ret = regmap_read(data->regmap, SX9324_REG_AFE_PH0 + chan->channel, &val);
-   170	
-   171		for (i = 0; i < SX9324_NUM_PINS; i++) {
-   172			pin_idx = (val & SX9324_REG_AFE_PH0_PIN_MASK(i)) >> (2 * i);
-   173			len += scnprintf(buf + len, PAGE_SIZE - len, "%s,",
-   174					 sx9324_cs_pin_usage[pin_idx]);
-   175		}
-   176		buf[len - 1] = '\n';
-   177		return len;
-   178	}
-   179	
-
----
-0-DAY CI Kernel Test Service, Intel Corporation
-https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
+> +        semtech,ph01-resolution = 2;
+> +        semtech,ph23-resolution = 2;
+> +        semtech,startup-sensor = <1>;
+> +        semtech,ph01-proxraw-strength = <2>;
+> +        semtech,ph23-proxraw-strength = <2>;
+> +        semtech,avg-pos-strength = <64>;
+> +      };
+> +    };
