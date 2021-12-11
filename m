@@ -2,239 +2,109 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D249FC433FE
-	for <linux-iio@archiver.kernel.org>; Fri, 10 Dec 2021 22:28:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D7482C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 11 Dec 2021 02:22:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235860AbhLJWbm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 10 Dec 2021 17:31:42 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56744 "EHLO
+        id S244009AbhLKC0L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 10 Dec 2021 21:26:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53140 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233286AbhLJWbl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Dec 2021 17:31:41 -0500
-Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 79BCCC061746;
-        Fri, 10 Dec 2021 14:28:06 -0800 (PST)
-Received: by mail-pf1-x430.google.com with SMTP id n26so9695689pff.3;
-        Fri, 10 Dec 2021 14:28:06 -0800 (PST)
+        with ESMTP id S243747AbhLKC0L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Dec 2021 21:26:11 -0500
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29E60C0617A1
+        for <linux-iio@vger.kernel.org>; Fri, 10 Dec 2021 18:22:35 -0800 (PST)
+Received: by mail-ed1-x52e.google.com with SMTP id o20so35725047eds.10
+        for <linux-iio@vger.kernel.org>; Fri, 10 Dec 2021 18:22:35 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=g1Fndq6mwW0NhE7RrUnl/fT7Cbruf7CL95nMSwq0+yM=;
-        b=VdpkDYQc4R3TnPZPOSyCuAkcz/N20FeYzuaBG1jiZpVX5csw3xs3LOY4rVaOiDYFas
-         00FrPg/TbaCN3MMRk8aft95N41KE6ReJ+uPfMIWMnM0+fP4muF3yPwIq77zy7Iivbi7C
-         mFaBxKRett/kOq32KQqJhizPET9SUusNHylCw9tBCF3k1A3qy2LuZYfILinOfdv4sVeM
-         9F9NSCDKx44NYmxrLExt/jqBmxzCVEd6aEHC1MHoGhmpBQbUUGJjoJCCOzsauDGyVHxd
-         8wdj+lMHepulniBJF/Z4VRI9W5/4Ehg2vh+4ZU8YGXiUnrwae+hg3HIXnS5AYjcWBlCO
-         wS4A==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BN1rqnmoBfuCzzscvm3YOnK3Hq7APTJunkR2e6AyI44=;
+        b=OlOB76TD4cnwKGMSNsqhD27bIGeNBDINaYaPIW606KZgbr4YcpmhVQpRZ5i7HoU25f
+         /gI0gVIIVCFayaXW5CeZBZo5k+GtXYQ2D/y3h5WAD9MrExseetqHU1+3zGzcOlQoLR0P
+         zanBl3z97aC2zyy9oQ3rUdTV9mxpR9uZ4NGcGgkGRM9vDAvtYb+f4gHC4adV+Bdo8ZF1
+         m9LAsszA/U6mjYJH2ySLjicW6cGh+3w8wLo/IiHWpKvQL1zmu7tabwkuHSt4zKfCorhr
+         Fq9JUc3griRTifpQN93SZEkgnsObl1CFUXqoeWhXQ0nB868+o4DL30s3RXlVGjVz6xKS
+         vh2g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=g1Fndq6mwW0NhE7RrUnl/fT7Cbruf7CL95nMSwq0+yM=;
-        b=HuDh6000Of4faNd83TDzxpmNjAb/iwXZ6qWoviwzOH35X0BHp8TX4irP7QxdNUG1Br
-         dMTSL1C6Rj6WzE4ZDhfbaVtJ72ieOfjFdKHSmt2QqasZCdutKhFYFB0ozG7/l4Y07uc/
-         QvartKJd8STPeJLxg5ClfdP9Yw7Unskka0nSkCh+2FakyWZ34ikMf3Jpg3WKaAPJX6Wl
-         zlfglj/RdPdCGTzmGgLFnI55XZItKyT98o5mNLxRYOYQKnXNqSr103KDAMn4gamLz75A
-         fTnrnMLZFAX+vrU+dwJcINl9KbidvOgsjL/rhFdLzpZ4LW7BWVukBM+vP018FNiQwHcj
-         wv4g==
-X-Gm-Message-State: AOAM530guDm8phovvsa3NvKxBV1fA2A0Z4wmSib88A+A/Bz5eDS3F9z5
-        QYfB+Va31RAFET3M/9neW8o=
-X-Google-Smtp-Source: ABdhPJymXhwrBm6I/hJFtTyDBIsRNR4G0I+M8Rm6ap+8l55+98V/bN+YRXN7l91nJrKyjOUTn4VgHg==
-X-Received: by 2002:a63:d50b:: with SMTP id c11mr40768870pgg.278.1639175285956;
-        Fri, 10 Dec 2021 14:28:05 -0800 (PST)
-Received: from shinobu ([37.120.154.45])
-        by smtp.gmail.com with ESMTPSA id a26sm4034845pfh.161.2021.12.10.14.28.03
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BN1rqnmoBfuCzzscvm3YOnK3Hq7APTJunkR2e6AyI44=;
+        b=nz1Lsltx7/7gfmlk1VXF/ffhqk39AyQn38Kh4Kx1kywLGs8+ilNNh8vdqT8xB/WHs4
+         YcbK1CSpEtrWankvrUOwJ5r4LJptgFl0AG4ZYom58f/+KQ6ZEIEZHcF0V3VLHPw+WyLq
+         kQewL9dmRIqhgbsN3HGVOtiIBjXc84xGy+677YeRCy1bVzUqPSGAJ2TCDxudRiEtfC/d
+         G78dC1Owl1+T/psoswkYVlh+RHL8QrvPjrdTKAWlvrJKyQHyEFm5F+71OZBlQPGA3cdW
+         oGnbRA+IV6BY70gUMMfFBDHkhTAQhKRQhFQ+9XJ8cKVF4l5Upi/52Qv7Rtq4H7+m9y59
+         pqPw==
+X-Gm-Message-State: AOAM530MBC1AemNZeM32a95PU2kZOzCQfVqX14iYbAQNX4yATQBr6uD3
+        Ul4cYY+dpppOmyleP2ZV/qyREQ==
+X-Google-Smtp-Source: ABdhPJyIY1FSnIyvZJddEk0bFdLO16sKK4IFXhAd18ZGe1ELTgmf+D8v0J1Iu5Q7EEzNY4Q7QN5HPQ==
+X-Received: by 2002:a17:907:2bd0:: with SMTP id gv16mr27304054ejc.121.1639189353667;
+        Fri, 10 Dec 2021 18:22:33 -0800 (PST)
+Received: from lion.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id s2sm2449424ejn.96.2021.12.10.18.22.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 10 Dec 2021 14:28:05 -0800 (PST)
-Date:   Sat, 11 Dec 2021 07:28:00 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Yanteng Si <siyanteng01@gmail.com>
-Cc:     corbet@lwn.net, chenhuacai@kernel.org, linux-doc@vger.kernel.org,
-        linux-iio@vger.kernel.org, Yanteng Si <siyanteng@loongson.cn>
-Subject: Re: [PATCH] counter: Add the necessary colons and indents to the
- comments of counter_compi
-Message-ID: <YbPUcMljr3LUmeMB@shinobu>
-References: <20211205130816.4121898-1-siyanteng@loongson.cn>
+        Fri, 10 Dec 2021 18:22:33 -0800 (PST)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+X-Google-Original-From: Caleb Connolly <caleb@connolly.tech>
+To:     caleb.connolly@linaro.org, sumit.semwal@linaro.org,
+        amit.pundir@linaro.org, john.stultz@linaro.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-msm@vger.kernel.org, Caleb Connolly <caleb@connolly.tech>
+Subject: [PATCH 0/7] iio: adc: introduce Qualcomm SPMI Round Robin ADC
+Date:   Sat, 11 Dec 2021 02:22:17 +0000
+Message-Id: <20211211022224.3488860-1-caleb@connolly.tech>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="XaEPONa1/2J+TUcy"
-Content-Disposition: inline
-In-Reply-To: <20211205130816.4121898-1-siyanteng@loongson.cn>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The RRADC is responsible for reading data about the current and
+voltage from the USB or DC in jacks, it can also read the battery
+ID (resistence) and some temperatures. It is found on the PMI8998 and
+PM660 Qualcomm PMICs.
 
---XaEPONa1/2J+TUcy
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+The RRADC has to calibrate some ADC values based on which chip fab
+the PMIC was produced in, to facilitate this the patch
+("mfd: qcom-spmi-pmic: expose the PMIC revid information to clients")
+exposes the PMIC revision information as a struct and registers it
+as driver data in the Qualcomm SPMI PMIC driver so that it can be 
+read by the RRADC.
 
-On Sun, Dec 05, 2021 at 09:08:16PM +0800, Yanteng Si wrote:
-> Fix warning as:
->=20
-> linux-next/Documentation/driver-api/generic-counter:234: ./include/linux/=
-counter.h:43: WARNING: Unexpected indentation.
-> linux-next/Documentation/driver-api/generic-counter:234: ./include/linux/=
-counter.h:45: WARNING: Block quote ends without a blank line; unexpected un=
-indent.
->=20
-> Signed-off-by: Yanteng Si <siyanteng@loongson.cn>
+Caleb Connolly (7):
+  mfd: qcom-spmi-pmic: expose the PMIC revid information to clients
+  dt-bindings: iio: adc: document qcom-spmi-rradc
+  iio: adc: qcom-spmi-rradc: introduce round robin adc
+  arm64: dts: qcom: pmi8998: add rradc node
+  arm64: dts: qcom: sdm845-oneplus: enable rradc
+  arm64: dts: qcom: sdm845-db845c: enable rradc
+  arm64: dts: qcom: sdm845-xiaomi-beryllium: enable RRADC
 
-Hello Yanteng,
+ .../bindings/iio/adc/qcom,spmi-rradc.yaml     |   54 +
+ arch/arm64/boot/dts/qcom/pmi8998.dtsi         |    8 +
+ arch/arm64/boot/dts/qcom/sdm845-db845c.dts    |    4 +
+ .../boot/dts/qcom/sdm845-oneplus-common.dtsi  |    4 +
+ .../boot/dts/qcom/sdm845-xiaomi-beryllium.dts |    4 +
+ drivers/iio/adc/Kconfig                       |   13 +
+ drivers/iio/adc/Makefile                      |    1 +
+ drivers/iio/adc/qcom-spmi-rradc.c             | 1020 +++++++++++++++++
+ drivers/mfd/qcom-spmi-pmic.c                  |  103 +-
+ include/soc/qcom/qcom-pmic.h                  |   58 +
+ 10 files changed, 1216 insertions(+), 53 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
+ create mode 100644 drivers/iio/adc/qcom-spmi-rradc.c
+ create mode 100644 include/soc/qcom/qcom-pmic.h
 
-Thank you for the patch. Is this fixing commit aaec1a0f76ec ("counter:
-Internalize sysfs interface code")?
+-- 
+2.34.1
 
-William Breathitt Gray
-
-> ---
->  include/linux/counter.h | 40 ++++++++++++++++++++--------------------
->  1 file changed, 20 insertions(+), 20 deletions(-)
->=20
-> diff --git a/include/linux/counter.h b/include/linux/counter.h
-> index b7d0a00a61cf..dfbde2808998 100644
-> --- a/include/linux/counter.h
-> +++ b/include/linux/counter.h
-> @@ -38,64 +38,64 @@ enum counter_comp_type {
->   * @type:		Counter component data type
->   * @name:		device-specific component name
->   * @priv:		component-relevant data
-> - * @action_read		Synapse action mode read callback. The read value of the
-> + * @action_read:		Synapse action mode read callback. The read value of t=
-he
->   *			respective Synapse action mode should be passed back via
->   *			the action parameter.
-> - * @device_u8_read	Device u8 component read callback. The read value of =
-the
-> + * @device_u8_read:		Device u8 component read callback. The read value o=
-f the
->   *			respective Device u8 component should be passed back via
->   *			the val parameter.
-> - * @count_u8_read	Count u8 component read callback. The read value of the
-> + * @count_u8_read:		Count u8 component read callback. The read value of =
-the
->   *			respective Count u8 component should be passed back via
->   *			the val parameter.
-> - * @signal_u8_read	Signal u8 component read callback. The read value of =
-the
-> + * @signal_u8_read:		Signal u8 component read callback. The read value o=
-f the
->   *			respective Signal u8 component should be passed back via
->   *			the val parameter.
-> - * @device_u32_read	Device u32 component read callback. The read value of
-> + * @device_u32_read:		Device u32 component read callback. The read value=
- of
->   *			the respective Device u32 component should be passed
->   *			back via the val parameter.
-> - * @count_u32_read	Count u32 component read callback. The read value of =
-the
-> + * @count_u32_read:		Count u32 component read callback. The read value o=
-f the
->   *			respective Count u32 component should be passed back via
->   *			the val parameter.
-> - * @signal_u32_read	Signal u32 component read callback. The read value of
-> + * @signal_u32_read:		Signal u32 component read callback. The read value=
- of
->   *			the respective Signal u32 component should be passed
->   *			back via the val parameter.
-> - * @device_u64_read	Device u64 component read callback. The read value of
-> + * @device_u64_read:		Device u64 component read callback. The read value=
- of
->   *			the respective Device u64 component should be passed
->   *			back via the val parameter.
-> - * @count_u64_read	Count u64 component read callback. The read value of =
-the
-> + * @count_u64_read:		Count u64 component read callback. The read value o=
-f the
->   *			respective Count u64 component should be passed back via
->   *			the val parameter.
-> - * @signal_u64_read	Signal u64 component read callback. The read value of
-> + * @signal_u64_read:		Signal u64 component read callback. The read value=
- of
->   *			the respective Signal u64 component should be passed
->   *			back via the val parameter.
-> - * @action_write	Synapse action mode write callback. The write value of
-> + * @action_write:		Synapse action mode write callback. The write value of
->   *			the respective Synapse action mode is passed via the
->   *			action parameter.
-> - * @device_u8_write	Device u8 component write callback. The write value =
-of
-> + * @device_u8_write:		Device u8 component write callback. The write valu=
-e of
->   *			the respective Device u8 component is passed via the val
->   *			parameter.
-> - * @count_u8_write	Count u8 component write callback. The write value of
-> + * @count_u8_write:		Count u8 component write callback. The write value =
-of
->   *			the respective Count u8 component is passed via the val
->   *			parameter.
-> - * @signal_u8_write	Signal u8 component write callback. The write value =
-of
-> + * @signal_u8_write:		Signal u8 component write callback. The write valu=
-e of
->   *			the respective Signal u8 component is passed via the val
->   *			parameter.
-> - * @device_u32_write	Device u32 component write callback. The write valu=
-e of
-> + * @device_u32_write:		Device u32 component write callback. The write va=
-lue of
->   *			the respective Device u32 component is passed via the
->   *			val parameter.
-> - * @count_u32_write	Count u32 component write callback. The write value =
-of
-> + * @count_u32_write:		Count u32 component write callback. The write valu=
-e of
->   *			the respective Count u32 component is passed via the val
->   *			parameter.
-> - * @signal_u32_write	Signal u32 component write callback. The write valu=
-e of
-> + * @signal_u32_write:		Signal u32 component write callback. The write va=
-lue of
->   *			the respective Signal u32 component is passed via the
->   *			val parameter.
-> - * @device_u64_write	Device u64 component write callback. The write valu=
-e of
-> + * @device_u64_write:		Device u64 component write callback. The write va=
-lue of
->   *			the respective Device u64 component is passed via the
->   *			val parameter.
-> - * @count_u64_write	Count u64 component write callback. The write value =
-of
-> + * @count_u64_write:		Count u64 component write callback. The write valu=
-e of
->   *			the respective Count u64 component is passed via the val
->   *			parameter.
-> - * @signal_u64_write	Signal u64 component write callback. The write valu=
-e of
-> + * @signal_u64_write:		Signal u64 component write callback. The write va=
-lue of
->   *			the respective Signal u64 component is passed via the
->   *			val parameter.
->   */
-> --=20
-> 2.27.0
->=20
-
---XaEPONa1/2J+TUcy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmGz1FoACgkQhvpINdm7
-VJJ4bBAA56i8pfMleCjtojCPdvwPHtbVoPjZzf7IkNnnwP71CTFPFHBXlz2UOeUW
-ZuKjoccEI0rJOxCqJGPMAmBgYTY/OjFfOn9p/HDWNcFDoD5fJ0WlpCWpizTjt52O
-mn/obJAvn+9gcuc4Fh+7soU4CthL96/70yFXvziGMRXPT2J7ZGADLVnfx7HXSMx3
-fV/tHkoxIv+5oIqR6+RfrAh72NUCV7h1PoO0WS9HiMtdlr2RlkKZZch0Ol4K2+tH
-zRSv6UUNfbE7AODHV63dzbdYTEDYOG5SF7DeUbuybUJL+r9EOAIX5m2Ta0hWaLQL
-gb8Joi4ftgZFfcvieOHyCr3xhlQcoFj3eWoXTS0KNqFDtfIMi4BUTFL4ja9i1Kv2
-o6GXbvKacYm6CNN4nODQDV7IpcuQ0EBBHwLpbpcQ546FThd/7XsM79oYsDJlB86R
-4EH9MVsCstl3oc//wcovr9kY2rHub2zLCPobX2t1iDqmDKs2MTlyI1uGn3nkfCwX
-HGLh1zBprTsNI7dDmwEkeJBQ+3WMhggI/YGMMqxUaO5oLFQfvu8f4qxzxUEmnsGt
-Egvdqpoi7Jb3CvQwzVy0nxpx+6BjK6RHVCRjk+XDrOgJyc5xIiSX7PIJcP0ftnIa
-XPDVFLMdR7dxNswRDhCxFPbGnMGZWpRImMT+b3oEKATE6MSvNlY=
-=6ucm
------END PGP SIGNATURE-----
-
---XaEPONa1/2J+TUcy--
