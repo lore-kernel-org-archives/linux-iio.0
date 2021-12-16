@@ -2,36 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7C48FC433F5
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 19:15:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C32B1C433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 19:16:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240833AbhLPTPw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Dec 2021 14:15:52 -0500
-Received: from www381.your-server.de ([78.46.137.84]:39588 "EHLO
+        id S240851AbhLPTQQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Dec 2021 14:16:16 -0500
+Received: from www381.your-server.de ([78.46.137.84]:40196 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240854AbhLPTPw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Dec 2021 14:15:52 -0500
+        with ESMTP id S236663AbhLPTQQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Dec 2021 14:16:16 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
          s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
         In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=CDPvn8b31egAz1HKjY5jFWPvVQkT7kY/I/1pE5AWPbw=; b=CgDfkpvYA/7vMKh7ezOfBsbDgO
-        11WAcKI6/vijaXY3k2zMZaS51GxqA8Hx38iewaaRIXUu5ECsmjHvNygHVZht3M89Etu5I9P/WrOvc
-        HxK0Dm0UCuB8C2bEWXbd7YjZJOcEDXo1z5luQnokme3SziJbXfHx3YKy9byxC+gWFf7S9Jgbwag4m
-        mnCmxp1Z259zeX65udaCJmaNBnVM6JssI9CoeVeZ6LpbsOIwcMhrU05RDx/RGmXIts12mcHEu615R
-        p6v1EDiwAHOtwm4xQmtt+pN4JXQolUb2u83FQ7SBWjyjmEezt7fMI1sHima6tcGFjQYoS93F+9oXL
-        gANwfjYA==;
+        bh=vdl9zE0bwtgAURW1zwHQzGevj3ka6TrGrNg4I0Y0ZSM=; b=Y7cISdTn6ydeFMLa25QmPtvXsW
+        W55dXN3VA5WMMyR4MXLLKuohy4CbfQjMMg8lI44omJFtEkMHA/9mhAhTo4zcw5Qw7saOES83u0601
+        NCRGdVMQFFY4TiCtm6QzSW+73+Iur2OyL25liRk9U2Gs5wdR+8C/ftX+/ndBbgINkVwF4HqeITgC2
+        9HBqTFWKsYFd6sqe0MnhrR2AUlneeygBi0HoGJE4q21yoBaucMtEYwPyvm00fiNKtyA5m84o93sMw
+        i6Q+Rq+/OUgSZWFsBZta3kne/MoL8zoQlyZHF6lZCnronweaxlJAlcryOB+H1SUjgJjbBunWF6L8P
+        BA05jqog==;
 Received: from sslproxy06.your-server.de ([78.46.172.3])
         by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <lars@metafoo.de>)
-        id 1mxvuk-000B4d-GL; Thu, 16 Dec 2021 19:55:38 +0100
+        id 1mxvuk-000B4m-T4; Thu, 16 Dec 2021 19:55:38 +0100
 Received: from [2001:a61:2bc8:8501:9e5c:8eff:fe01:8578] (helo=lars-desktop.fritz.box)
         by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <lars@metafoo.de>)
-        id 1mxvrc-000HSt-Lc; Thu, 16 Dec 2021 19:52:24 +0100
+        id 1mxvrc-000HSt-6N; Thu, 16 Dec 2021 19:52:24 +0100
 From:   Lars-Peter Clausen <lars@metafoo.de>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -46,9 +46,9 @@ Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         Jacopo Mondi <jacopo+renesas@jmondi.org>,
         Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
         linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 13/13] iio: sps30: Use sysfs_emit()
-Date:   Thu, 16 Dec 2021 19:52:17 +0100
-Message-Id: <20211216185217.1054495-14-lars@metafoo.de>
+Subject: [PATCH 11/13] iio: ms_sensors: Use sysfs_emit()
+Date:   Thu, 16 Dec 2021 19:52:15 +0100
+Message-Id: <20211216185217.1054495-12-lars@metafoo.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211216185217.1054495-1-lars@metafoo.de>
 References: <20211216185217.1054495-1-lars@metafoo.de>
@@ -64,27 +64,36 @@ sysfs_emit() is preferred over raw s*printf() for sysfs attributes since it
 knows about the sysfs buffer specifics and has some built-in checks for
 size and alignment.
 
-Use sysfs_emit() to format the custom `cleaning_period` device attribute of
-the sps30 driver.
+Use sysfs_emit() to format the custom `battery_low` and `heater_enable`
+device attributes of the ms_sensors driver shared code.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/chemical/sps30.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/common/ms_sensors/ms_sensors_i2c.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
-index d51314505115..abd67559e451 100644
---- a/drivers/iio/chemical/sps30.c
-+++ b/drivers/iio/chemical/sps30.c
-@@ -221,7 +221,7 @@ static ssize_t cleaning_period_show(struct device *dev,
+diff --git a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
+index 16ea697e945c..3eb790aec4b2 100644
+--- a/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
++++ b/drivers/iio/common/ms_sensors/ms_sensors_i2c.c
+@@ -324,7 +324,7 @@ ssize_t ms_sensors_show_battery_low(struct ms_ht_dev *dev_data,
  	if (ret)
  		return ret;
  
--	return sprintf(buf, "%d\n", be32_to_cpu(val));
-+	return sysfs_emit(buf, "%d\n", be32_to_cpu(val));
+-	return sprintf(buf, "%d\n", (config_reg & 0x40) >> 6);
++	return sysfs_emit(buf, "%d\n", (config_reg & 0x40) >> 6);
  }
+ EXPORT_SYMBOL(ms_sensors_show_battery_low);
  
- static ssize_t cleaning_period_store(struct device *dev, struct device_attribute *attr,
+@@ -351,7 +351,7 @@ ssize_t ms_sensors_show_heater(struct ms_ht_dev *dev_data,
+ 	if (ret)
+ 		return ret;
+ 
+-	return sprintf(buf, "%d\n", (config_reg & 0x4) >> 2);
++	return sysfs_emit(buf, "%d\n", (config_reg & 0x4) >> 2);
+ }
+ EXPORT_SYMBOL(ms_sensors_show_heater);
+ 
 -- 
 2.30.2
 
