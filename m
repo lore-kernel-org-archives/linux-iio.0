@@ -2,36 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CEDCC433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 19:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 306C2C433F5
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 19:17:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240882AbhLPTRB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Dec 2021 14:17:01 -0500
-Received: from www381.your-server.de ([78.46.137.84]:41548 "EHLO
+        id S240895AbhLPTRR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 16 Dec 2021 14:17:17 -0500
+Received: from www381.your-server.de ([78.46.137.84]:42130 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236663AbhLPTRB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Dec 2021 14:17:01 -0500
+        with ESMTP id S240892AbhLPTRR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Dec 2021 14:17:17 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
          s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
         In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=zg3tGTdZa0eTLdicXi6mF8GgXF1bZQHxWij19C9BLPE=; b=Au2RVtCfOwh2qxG05Z4dN1qj7C
-        WQikeeinV6eckyCCmWpb+OZI/+Oh6wmXqg0s8j1hbFXgok3EAdSvY+FEqdW0MStxl5CLlpvoVGgnj
-        udLyyn90PhKwmzpwiQqhC2Z400Mnu36ENVK6pX7nr8UqVmLm83gO8SRf3ZeqvclkmbU6cHUEnEUzW
-        eKk8TZ9oyNGiOKRHjtDB4N3OUzlhQ7C1lq7YcWCTT9jkZ8M+4wXcL1JBW/2e2yhNFzK9gs9j0SSQq
-        rotllZATLg/KIR09+F6dgLPRU4OcgsMkpBdwE0JsoKC+dipRb2Y/peGVXbU8/ScZnpyBMnukcQMKw
-        8iezThuA==;
+        bh=hCRseAsLnOW9qZ6QMybhImyCcn6O1pSm39G2tEkDXdE=; b=PBjI+V+O8rNfdC/l9O9bwD6d0y
+        8EZbP+yfm381/QAEOVOvaLuEw/kMC3nNSE9J6+yuEKlc9zFlikh6vtLVu4d3TqbS9Iub+HYcSt2do
+        81uX0gQ/0D6ytA2GOVbQbWPp/sPcpAnD41EYVXVgrS94zlC6gXR3OzGGkmU+0mXoPJ/LrhYh7b8sm
+        WHQPVHXQyRfKyfYEkubACpW33fMV40sZLibfR0/eTlGcp7vgyIX3KBdkgajCIt7vfuVunGYzpcxNO
+        vp46QcKGuI5Ye9K8hOSKJhY72u/D3YH8iYrLWNLO3BGBuJH6DsPzXKTBMgfS0cJ4sTjCdWorkQNmL
+        w1sU5ljA==;
 Received: from sslproxy06.your-server.de ([78.46.172.3])
         by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <lars@metafoo.de>)
-        id 1mxvrc-000ASO-2s; Thu, 16 Dec 2021 19:52:24 +0100
+        id 1mxvul-000B4u-AV; Thu, 16 Dec 2021 19:55:39 +0100
 Received: from [2001:a61:2bc8:8501:9e5c:8eff:fe01:8578] (helo=lars-desktop.fritz.box)
         by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <lars@metafoo.de>)
-        id 1mxvrb-000HSt-Nx; Thu, 16 Dec 2021 19:52:23 +0100
+        id 1mxvrc-000HSt-Dz; Thu, 16 Dec 2021 19:52:24 +0100
 From:   Lars-Peter Clausen <lars@metafoo.de>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -46,9 +46,9 @@ Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         Jacopo Mondi <jacopo+renesas@jmondi.org>,
         Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
         linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 09/13] iio: max31865: Use sysfs_emit()
-Date:   Thu, 16 Dec 2021 19:52:13 +0100
-Message-Id: <20211216185217.1054495-10-lars@metafoo.de>
+Subject: [PATCH 12/13] iio: scd4x: Use sysfs_emit()
+Date:   Thu, 16 Dec 2021 19:52:16 +0100
+Message-Id: <20211216185217.1054495-13-lars@metafoo.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211216185217.1054495-1-lars@metafoo.de>
 References: <20211216185217.1054495-1-lars@metafoo.de>
@@ -64,36 +64,27 @@ sysfs_emit() is preferred over raw s*printf() for sysfs attributes since it
 knows about the sysfs buffer specifics and has some built-in checks for
 size and alignment.
 
-Use sysfs_emit() to format the custom ``in_filter_notch_center_frequency`
-and fault_ovuv` device attributes of the max31865 driver.
+Use sysfs_emit() to format the custom `calibration_auto_enable` device
+attribute of the scd4x driver.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/temperature/max31865.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/chemical/scd4x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/temperature/max31865.c b/drivers/iio/temperature/max31865.c
-index 4c8d6e6cf677..86c3f3509a26 100644
---- a/drivers/iio/temperature/max31865.c
-+++ b/drivers/iio/temperature/max31865.c
-@@ -208,7 +208,7 @@ static ssize_t show_fault(struct device *dev, u8 faultbit, char *buf)
+diff --git a/drivers/iio/chemical/scd4x.c b/drivers/iio/chemical/scd4x.c
+index 267bc3c05338..20d4e7584e92 100644
+--- a/drivers/iio/chemical/scd4x.c
++++ b/drivers/iio/chemical/scd4x.c
+@@ -423,7 +423,7 @@ static ssize_t calibration_auto_enable_show(struct device *dev,
  
- 	fault = data->buf[0] & faultbit;
+ 	val = (be16_to_cpu(bval) & SCD4X_READY_MASK) ? 1 : 0;
  
--	return sprintf(buf, "%d\n", fault);
-+	return sysfs_emit(buf, "%d\n", fault);
+-	return sprintf(buf, "%d\n", val);
++	return sysfs_emit(buf, "%d\n", val);
  }
  
- static ssize_t show_fault_ovuv(struct device *dev,
-@@ -225,7 +225,7 @@ static ssize_t show_filter(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct max31865_data *data = iio_priv(indio_dev);
- 
--	return sprintf(buf, "%d\n", data->filter_50hz ? 50 : 60);
-+	return sysfs_emit(buf, "%d\n", data->filter_50hz ? 50 : 60);
- }
- 
- static ssize_t set_filter(struct device *dev,
+ static ssize_t calibration_auto_enable_store(struct device *dev,
 -- 
 2.30.2
 
