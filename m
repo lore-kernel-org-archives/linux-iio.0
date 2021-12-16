@@ -2,36 +2,33 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DA17C433F5
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 08:21:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70650C433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 08:22:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229653AbhLPIVO convert rfc822-to-8bit (ORCPT
+        id S229661AbhLPIWj convert rfc822-to-8bit (ORCPT
         <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 16 Dec 2021 03:21:14 -0500
-Received: from mslow1.mail.gandi.net ([217.70.178.240]:45335 "EHLO
-        mslow1.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229471AbhLPIVO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Dec 2021 03:21:14 -0500
-Received: from relay9-d.mail.gandi.net (unknown [217.70.183.199])
-        by mslow1.mail.gandi.net (Postfix) with ESMTP id 33BE8D3992
-        for <linux-iio@vger.kernel.org>; Thu, 16 Dec 2021 08:16:15 +0000 (UTC)
+        Thu, 16 Dec 2021 03:22:39 -0500
+Received: from relay1-d.mail.gandi.net ([217.70.183.193]:56747 "EHLO
+        relay1-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229471AbhLPIWi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Dec 2021 03:22:38 -0500
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by relay9-d.mail.gandi.net (Postfix) with ESMTPSA id 9E5CDFF810;
-        Thu, 16 Dec 2021 08:15:53 +0000 (UTC)
-Date:   Thu, 16 Dec 2021 09:15:52 +0100
+        by relay1-d.mail.gandi.net (Postfix) with ESMTPSA id A09F1240008;
+        Thu, 16 Dec 2021 08:22:36 +0000 (UTC)
+Date:   Thu, 16 Dec 2021 09:22:35 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     Alexandru Ardelean <ardeleanalex@gmail.com>
 Cc:     linux-iio <linux-iio@vger.kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH 02/10] iio: core: Enhance the kernel doc of modes and
- currentmodes iio_dev entries
-Message-ID: <20211216091552.0917520f@xps13>
-In-Reply-To: <CA+U=Dsq_HewmCchxauGe6YKpWaNBAb5rP3xvzNQ6K7n7KpbpvA@mail.gmail.com>
+Subject: Re: [PATCH 04/10] iio: adc: stm32-dfsdm: Avoid dereferencing
+ ->currentmode
+Message-ID: <20211216092235.56e69441@xps13>
+In-Reply-To: <CA+U=DspvsLxYyhrvNfEBGPKuJ1a6-L=WjnQE-hvjMVp2g-9nxQ@mail.gmail.com>
 References: <20211215151344.163036-1-miquel.raynal@bootlin.com>
-        <20211215151344.163036-3-miquel.raynal@bootlin.com>
-        <CA+U=Dsq_HewmCchxauGe6YKpWaNBAb5rP3xvzNQ6K7n7KpbpvA@mail.gmail.com>
+        <20211215151344.163036-5-miquel.raynal@bootlin.com>
+        <CA+U=DspvsLxYyhrvNfEBGPKuJ1a6-L=WjnQE-hvjMVp2g-9nxQ@mail.gmail.com>
 Organization: Bootlin
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -43,52 +40,69 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 Hi Alexandru,
 
-ardeleanalex@gmail.com wrote on Thu, 16 Dec 2021 08:24:51 +0200:
+ardeleanalex@gmail.com wrote on Thu, 16 Dec 2021 08:47:02 +0200:
 
-> On Wed, Dec 15, 2021 at 10:04 PM Miquel Raynal
+> On Wed, Dec 15, 2021 at 10:03 PM Miquel Raynal
 > <miquel.raynal@bootlin.com> wrote:
 > >
-> > Let's provide more details about these two variables because their
-> > understanding may not be straightforward for someone not used to the IIO
-> > subsystem internal logic. The different modes will soon be also be more
-> > documented for the same reason.
+> > This is an internal variable of the core, let's use the
+> > iio_buffer_enabled() helper which is exported for the following purpose:
+> > telling if the current mode is a buffered mode, which is precisely what
+> > this driver looks for.
 > >
 > > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 > > ---
-> >  include/linux/iio/iio.h | 10 ++++++++--
-> >  1 file changed, 8 insertions(+), 2 deletions(-)
+> >  drivers/iio/adc/stm32-dfsdm-adc.c | 5 ++---
+> >  1 file changed, 2 insertions(+), 3 deletions(-)
 > >
-> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > index 06433c2c2968..0312da2e83f8 100644
-> > --- a/include/linux/iio/iio.h
-> > +++ b/include/linux/iio/iio.h
-> > @@ -487,8 +487,14 @@ struct iio_buffer_setup_ops {
-> >
-> >  /**
-> >   * struct iio_dev - industrial I/O device
-> > - * @modes:             [DRIVER] operating modes supported by device
-> > - * @currentmode:       [INTERN] current operating mode
-> > + * @modes:             [DRIVER] list of operating modes supported by the IIO  
+> > diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+> > index 1cfefb3b5e56..a3b8827d3bbf 100644
+> > --- a/drivers/iio/adc/stm32-dfsdm-adc.c
+> > +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+> > @@ -466,8 +466,7 @@ static int stm32_dfsdm_channels_configure(struct iio_dev *indio_dev,
+> >          * In continuous mode, use fast mode configuration,
+> >          * if it provides a better resolution.
+> >          */
+> > -       if (adc->nconv == 1 && !trig &&
+> > -           (indio_dev->currentmode & INDIO_BUFFER_SOFTWARE)) {
+> > +       if (adc->nconv == 1 && !trig && iio_buffer_enabled(indio_dev)) {  
 > 
-> I'd argue that it may make sense to highlight that this list of modes
-> is represented as a bitmask.
-> When reading docs, it may not be obvious at first (I guess).
+> This may become tricky if other modes get added later.
+> STM does a relatively good job in updating and re-using their drivers
+> (even if some of them do look quirky sometimes).
+> 
+> So, the question here would be: is "iio_buffer_enabled(indio_dev)"
+> going to be valid [in this place] once INDIO_BUFFER_TRIGGERED or
+> INDIO_BUFFER_HARDWARE get added?
 
-That is a good idea. I'll add this to the next iteration.
+I would argue, is this a real problem? Today iio_buffer_enabled() seem
+to handle well what this driver is expecting. If tomorrow someone adds
+another mode, that is his/her responsibility to state "okay, this
+section is not common to all buffer styles *anymore*, so we need to do
+a more fine grained check against ->currentmodes than
+iio_buffer_enabled() does". In that case using the ->currentmodes
+getter would be the right way to go, but only at that particular
+moment, not today.
 
-> > + *                     device, this list should be initialized before
-> > + *                     registering the IIO device and can be filed up by the
-> > + *                     IIO core depending on the features advertised by the
-> > + *                     driver during other steps of the registration
-> > + * @currentmode:       [INTERN] operating mode currently in use, may be
-> > + *                     eventually checked by device drivers but should be
-> > + *                     considered read-only as this is a core internal bit
-> >   * @dev:               [DRIVER] device structure, should be assigned a parent
-> >   *                     and owner
-> >   * @buffer:            [DRIVER] any buffer present
+> 
+> I'd also ping some STM people for some feedback, acks or testing.
+> 
+> >                 if (fl->flo[1].res >= fl->flo[0].res) {
+> >                         fl->fast = 1;
+> >                         flo = &fl->flo[1];
+> > @@ -562,7 +561,7 @@ static int stm32_dfsdm_filter_configure(struct iio_dev *indio_dev,
+> >                 cr1 = DFSDM_CR1_RCH(chan->channel);
+> >
+> >                 /* Continuous conversions triggered by SPI clk in buffer mode */
+> > -               if (indio_dev->currentmode & INDIO_BUFFER_SOFTWARE)
+> > +               if (iio_buffer_enabled(indio_dev))
+> >                         cr1 |= DFSDM_CR1_RCONT(1);
+> >
+> >                 cr1 |= DFSDM_CR1_RSYNC(fl->sync_mode);
 > > --
 > > 2.27.0
 > >  
+
 
 Thanks,
 Miquèl
