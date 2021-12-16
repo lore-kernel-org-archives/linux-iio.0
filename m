@@ -2,36 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 193F5C433F5
-	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 18:52:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88702C4332F
+	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 18:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236342AbhLPSw0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S236343AbhLPSw0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 16 Dec 2021 13:52:26 -0500
-Received: from www381.your-server.de ([78.46.137.84]:47636 "EHLO
+Received: from www381.your-server.de ([78.46.137.84]:47620 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236380AbhLPSwY (ORCPT
+        with ESMTP id S236342AbhLPSwY (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Dec 2021 13:52:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
          s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
         In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=BCf6rL7suy31qtSRmW0qJcAFOKEchD2zVJwybYzJx8A=; b=ltUcjVN689OMn6JFtiV4KH7mdE
-        ZZ5Wk+U4r7JYgfdnbUuy4IefAyMB7YYesMDKhCfe/b+6uWVKV6h9ukxN3ei3vvUAFmVJzKONXPMEU
-        BdXd9NRvMy33MXiIibkZuyiOwxxxZD7I+5TI7aOVU3K7x0w+UY0lwhUwWkDG2WWn8qXt+q0ODU9fB
-        3mSficbg+EkoA0lD9CMxblghyi+Tt/QMczqc8nwIB6buGb0tO08FDc8H4b2f/GLS54vIprlC72vzA
-        beEeCIvZmyZupSbb4CaIzz2Y8YRfwFaJ85JxspvddvW2JOae1iwVerh+f00VpJj5gs4TBBdkuAllP
-        R0xJ4Rtw==;
+        bh=nJGvWbNUcwqrAcL+2UrBy97HSgqPc1NpffgPID/0Ow4=; b=jj1EjfKegetCxKd1AyWrjTO9cn
+        bbIW1YZWJHmWKScx97HfvBCw3Sj+vAdJgHUWRMgmT+70/b1vyzhevGhTNgfv+i4qffwA6DUGI2YyI
+        c/Ih0WZAnDiLkeFWcxmL3pY2GF99atS8dk0mW3kIPQHsf5++hpVHXoQOTISRPE60bFcq3GOjAjehW
+        8jMJdqnsqpUkx3bw4I4NcBQuNZiS60Wn5Zu5YmeEH6mvNlHUcTxHOS77HbEOmXWIZ23BaAHu+L/nD
+        MG51qDVt5ZrQzoWK+K2iLMcBEp5Mrr7w+/znG5GbhamK9WZj6QqO7DfVW8DzM1Ndnrs10Wc2BxwrH
+        sMKARj9g==;
 Received: from sslproxy06.your-server.de ([78.46.172.3])
         by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <lars@metafoo.de>)
-        id 1mxvrb-000ASJ-J4; Thu, 16 Dec 2021 19:52:23 +0100
+        id 1mxvrb-000ASC-3V; Thu, 16 Dec 2021 19:52:23 +0100
 Received: from [2001:a61:2bc8:8501:9e5c:8eff:fe01:8578] (helo=lars-desktop.fritz.box)
         by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <lars@metafoo.de>)
-        id 1mxvrb-000HSt-9B; Thu, 16 Dec 2021 19:52:23 +0100
+        id 1mxvra-000HSt-Py; Thu, 16 Dec 2021 19:52:22 +0100
 From:   Lars-Peter Clausen <lars@metafoo.de>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -46,9 +46,9 @@ Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         Jacopo Mondi <jacopo+renesas@jmondi.org>,
         Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
         linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 07/13] iio: lm3533: Use sysfs_emit()
-Date:   Thu, 16 Dec 2021 19:52:11 +0100
-Message-Id: <20211216185217.1054495-8-lars@metafoo.de>
+Subject: [PATCH 05/13] iio: as3935: Use sysfs_emit()
+Date:   Thu, 16 Dec 2021 19:52:09 +0100
+Message-Id: <20211216185217.1054495-6-lars@metafoo.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211216185217.1054495-1-lars@metafoo.de>
 References: <20211216185217.1054495-1-lars@metafoo.de>
@@ -64,45 +64,36 @@ sysfs_emit() is preferred over raw s*printf() for sysfs attributes since it
 knows about the sysfs buffer specifics and has some built-in checks for
 size and alignment.
 
-Use sysfs_emit() to format the custom device attributes of the lm3533
-driver.
+Use sysfs_emit() to format the custom `noise_level_tripped` device
+attribute of the as3935 driver.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/light/lm3533-als.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/proximity/as3935.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
-index 8a621244dd01..827bc25269e9 100644
---- a/drivers/iio/light/lm3533-als.c
-+++ b/drivers/iio/light/lm3533-als.c
-@@ -417,7 +417,7 @@ static ssize_t show_thresh_either_en(struct device *dev,
- 		enable = 0;
- 	}
- 
--	return scnprintf(buf, PAGE_SIZE, "%u\n", enable);
-+	return sysfs_emit(buf, "%u\n", enable);
- }
- 
- static ssize_t store_thresh_either_en(struct device *dev,
-@@ -474,7 +474,7 @@ static ssize_t show_zone(struct device *dev,
- 	if (ret)
+diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+index d62766b6b39e..3eb40aa0b1e0 100644
+--- a/drivers/iio/proximity/as3935.c
++++ b/drivers/iio/proximity/as3935.c
+@@ -122,7 +122,7 @@ static ssize_t as3935_sensor_sensitivity_show(struct device *dev,
  		return ret;
+ 	val = (val & AS3935_AFE_MASK) >> 1;
  
--	return scnprintf(buf, PAGE_SIZE, "%u\n", zone);
-+	return sysfs_emit(buf, "%u\n", zone);
+-	return sprintf(buf, "%d\n", val);
++	return sysfs_emit(buf, "%d\n", val);
  }
  
- enum lm3533_als_attribute_type {
-@@ -530,7 +530,7 @@ static ssize_t show_als_attr(struct device *dev,
- 	if (ret)
- 		return ret;
+ static ssize_t as3935_sensor_sensitivity_store(struct device *dev,
+@@ -153,7 +153,7 @@ static ssize_t as3935_noise_level_tripped_show(struct device *dev,
+ 	int ret;
  
--	return scnprintf(buf, PAGE_SIZE, "%u\n", val);
-+	return sysfs_emit(buf, "%u\n", val);
- }
+ 	mutex_lock(&st->lock);
+-	ret = sprintf(buf, "%d\n", !time_after(jiffies, st->noise_tripped + HZ));
++	ret = sysfs_emit(buf, "%d\n", !time_after(jiffies, st->noise_tripped + HZ));
+ 	mutex_unlock(&st->lock);
  
- static ssize_t store_als_attr(struct device *dev,
+ 	return ret;
 -- 
 2.30.2
 
