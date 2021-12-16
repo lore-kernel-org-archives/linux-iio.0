@@ -2,36 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6295DC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 446E6C433EF
 	for <linux-iio@archiver.kernel.org>; Thu, 16 Dec 2021 18:52:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236376AbhLPSwZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S236420AbhLPSwZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Thu, 16 Dec 2021 13:52:25 -0500
-Received: from www381.your-server.de ([78.46.137.84]:47624 "EHLO
+Received: from www381.your-server.de ([78.46.137.84]:47632 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236343AbhLPSwY (ORCPT
+        with ESMTP id S236376AbhLPSwY (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Dec 2021 13:52:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
          s=default2002; h=Content-Transfer-Encoding:MIME-Version:References:
         In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Sender:Reply-To:Content-Type:
         Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
         Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=4kuUEpQU78qLO/yQEkNwNzCVPsFNFf8sfMxWcmFuQjQ=; b=YQc9Xgc5V2Lgzp7upm2tKDC29x
-        FlUx93KB62UBcHeOdmNJ6j1bSQ6dNYrQC1u431LluJAh7H1kHxjX1beCi533K56wz2MkIeyhJEqd4
-        Ljnvrx21wc5631RRPK8lmmtJHvPEFtCd47fzSMACFOklN26XTUOhtU4mve92o8CAe3qwerJV+Kd6P
-        qXHOIuFQuJuhduGtrBrxtLFdRXYiNMPEFo09Oz55BWHd7G7x6+umsJJjXwfNzmcyLpdqk2M8J4fM8
-        vy9vDYU+AJfhsM7w4a/uq+zrKxgXIdeK74mFdVicA8dRJRTz3D2YMCoaZhOtJCR0+jW4eU2g8NejF
-        N/xjq+/w==;
+        bh=7cvx790pwuy2FZQtM7URaUvK+FVvl+IqKyJYUudlEag=; b=m1iLy2mq5oavWPAck6ba4rQVpd
+        jqu5gNf1+ZWBr6AueB3PsWirKTVjuLL8MGPhcvR1YQWCDx64QdeBr+4yoOfbbTSTGEzR51tG2w+cV
+        ef9wtL4y2xct5Vu2GvWdUOA6jsfk9uxQszjR37+bNmpbCb9byuygZG6Bg/pZRRT2dmktWNL74ABQd
+        Q9osM0ee4Pf2ip9Kk8PuMHjFng01DfPIF/hCmzjMGXbAJskNHDRG06/4qttu14gghC+/PH4eLUmTV
+        xt59Se1q9H0Bqc9NkUY3sP7qNiOeCLk5dtcffp5iwFB6QAiOP7P+IUignmPzTeHGaZflpsxRrMyCi
+        ln6J5Kog==;
 Received: from sslproxy06.your-server.de ([78.46.172.3])
         by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92.3)
         (envelope-from <lars@metafoo.de>)
-        id 1mxvra-000AS4-Lp; Thu, 16 Dec 2021 19:52:22 +0100
+        id 1mxvrb-000ASF-As; Thu, 16 Dec 2021 19:52:23 +0100
 Received: from [2001:a61:2bc8:8501:9e5c:8eff:fe01:8578] (helo=lars-desktop.fritz.box)
         by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <lars@metafoo.de>)
-        id 1mxvra-000HSt-BE; Thu, 16 Dec 2021 19:52:22 +0100
+        id 1mxvrb-000HSt-1R; Thu, 16 Dec 2021 19:52:23 +0100
 From:   Lars-Peter Clausen <lars@metafoo.de>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -46,9 +46,9 @@ Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         Jacopo Mondi <jacopo+renesas@jmondi.org>,
         Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
         linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 03/13] iio: ad7192: Use sysfs_emit()
-Date:   Thu, 16 Dec 2021 19:52:07 +0100
-Message-Id: <20211216185217.1054495-4-lars@metafoo.de>
+Subject: [PATCH 06/13] iio: ina2xx-adc: sysfs_emit()
+Date:   Thu, 16 Dec 2021 19:52:10 +0100
+Message-Id: <20211216185217.1054495-7-lars@metafoo.de>
 X-Mailer: git-send-email 2.30.2
 In-Reply-To: <20211216185217.1054495-1-lars@metafoo.de>
 References: <20211216185217.1054495-1-lars@metafoo.de>
@@ -64,36 +64,27 @@ sysfs_emit() is preferred over raw s*printf() for sysfs attributes since it
 knows about the sysfs buffer specifics and has some built-in checks for
 size and alignment.
 
-Use sysfs_emit() to format the custom `ac_excication` and `bridge_swtich`
-attributes of the ad7192 driver.
+Use sysfs_emit() to format the custom `in_allow_async_readout` device
+attribute of the ina2xx-adc driver.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/adc/ad7192.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ina2xx-adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
-index cc990205f306..47d3f56edcbc 100644
---- a/drivers/iio/adc/ad7192.c
-+++ b/drivers/iio/adc/ad7192.c
-@@ -433,7 +433,7 @@ static ssize_t ad7192_show_ac_excitation(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7192_state *st = iio_priv(indio_dev);
+diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
+index 352f27657238..4e66473b0821 100644
+--- a/drivers/iio/adc/ina2xx-adc.c
++++ b/drivers/iio/adc/ina2xx-adc.c
+@@ -539,7 +539,7 @@ static ssize_t ina2xx_allow_async_readout_show(struct device *dev,
+ {
+ 	struct ina2xx_chip_info *chip = iio_priv(dev_to_iio_dev(dev));
  
--	return sprintf(buf, "%d\n", !!(st->mode & AD7192_MODE_ACX));
-+	return sysfs_emit(buf, "%d\n", !!(st->mode & AD7192_MODE_ACX));
+-	return sprintf(buf, "%d\n", chip->allow_async_readout);
++	return sysfs_emit(buf, "%d\n", chip->allow_async_readout);
  }
  
- static ssize_t ad7192_show_bridge_switch(struct device *dev,
-@@ -443,7 +443,7 @@ static ssize_t ad7192_show_bridge_switch(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7192_state *st = iio_priv(indio_dev);
- 
--	return sprintf(buf, "%d\n", !!(st->gpocon & AD7192_GPOCON_BPDSW));
-+	return sysfs_emit(buf, "%d\n", !!(st->gpocon & AD7192_GPOCON_BPDSW));
- }
- 
- static ssize_t ad7192_set(struct device *dev,
+ static ssize_t ina2xx_allow_async_readout_store(struct device *dev,
 -- 
 2.30.2
 
