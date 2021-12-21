@@ -2,46 +2,46 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BACFAC433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Dec 2021 10:46:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F219C4332F
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Dec 2021 10:46:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234048AbhLUKqH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 21 Dec 2021 05:46:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50734 "EHLO
+        id S233864AbhLUKqI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 21 Dec 2021 05:46:08 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50744 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
         with ESMTP id S230377AbhLUKqH (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Dec 2021 05:46:07 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBB50C061574
-        for <linux-iio@vger.kernel.org>; Tue, 21 Dec 2021 02:46:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 29126C061756
+        for <linux-iio@vger.kernel.org>; Tue, 21 Dec 2021 02:46:07 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzcei-0005BB-O7; Tue, 21 Dec 2021 11:46:04 +0100
+        id 1mzcej-0005BQ-7b; Tue, 21 Dec 2021 11:46:05 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzcei-005nfv-0Z; Tue, 21 Dec 2021 11:46:03 +0100
+        id 1mzcej-005ngB-6A; Tue, 21 Dec 2021 11:46:04 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzceg-0004BV-Qw; Tue, 21 Dec 2021 11:46:02 +0100
+        id 1mzcei-0004CY-1b; Tue, 21 Dec 2021 11:46:04 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Patrick Havelange <patrick.havelange@essensium.com>,
+To:     David Lechner <david@lechnology.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 2/8] counter: ftm-quaddec: Use container_of instead of struct counter_device::priv
-Date:   Tue, 21 Dec 2021 11:45:40 +0100
-Message-Id: <20211221104546.214066-3-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 8/8] counter: Remove unused member from struct counter_device
+Date:   Tue, 21 Dec 2021 11:45:46 +0100
+Message-Id: <20211221104546.214066-9-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211221104546.214066-1-u.kleine-koenig@pengutronix.de>
 References: <20211221104546.214066-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=BLGgbKMWZQKSAyjRUdMvXiPE7PeMpJ6W8Y/gNVLaPbQ=; m=aj1hUrB8DlH//87Ydw8Bemkjf0cLnFHRoYJEeeBnUfI=; p=O6E+g1NOkcrJHwxshcrDT/kwLeZH9H/HJ0p6iqUb3Zc=; g=ba193b2403a26e3f2c830b4207aeb7b8d7652685
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHBsDIACgkQwfwUeK3K7AkjFwf/Z+s aPbKKu9y3QG6gzgKXVIXvCg/YvmgmrA/o+IEmMp7m1FyxUs2CVJ83/JQ1jNGZB6bjfHnT+5OzgzEU fKAoYdEbdIWQlHuXfxYv9Xa5FrvvKuvLzdSRqm1IPf7WM+gIeufwqBz4yykKHTwmOsgGOUJpdAMR8 v04MLAH41tkEfFJztxZFOYmVdQAqftuT1KOXc+Tek2tZwIuiecp6YKNhdVA05iCTVzxBb89vaLEvf uHCfovZ1yzhSJDVBx+jp3Ao0vGfJM41QVkn0Hqltdp+Qf51jBlqo4woG1ju5FRfp38VD2vRuReg7n v5get7KQuA9luvgKhF1qJSc834iyAgg==
+X-Patch-Hashes: v=1; h=sha256; i=Y0NkBLHZbTPV9AgKvEXqVQXBuc1J1Y5wZlZqUt+q8z8=; m=gRJhxNFIrXvCs2HMMhrXRYXJ62P50jhM9VxuUIFr16M=; p=2zqxcELaKv036XA4cqHni0/9tKYCfObbbaJb80+Waf0=; g=66d467d4dda659dec3678c8363304f55cb46ce85
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHBsFIACgkQwfwUeK3K7Ak4BQf+Jab Qe3ZLW5+lF0d5ZR9GNedPSuZVa54hNR9n8KeVlE68fdhXjdDB5V+GKDNjN2do9Zh6pvDkqoVgT5cd yLjSIUdDnzshi304AduYuD+kPig8lWozhUwR4IlJ4OG/tvaNh0iW2UUbbRszBC1lsTb08f0bvL+1/ bDAw4xafTThYVlUWQ2x1JTQfBsd9tvbabkYewGmjzSN0G/pTa9Q9P/+5sNpMmEARWF30P6YDLgqT1 zB3FWl3pyLO7qj+bz7f5FlF7rYMre+LN/BH4doMfx5Im39EVXtWvOiz6Z2rLKxGV6xnnskwI+TxVb E65U+vojgrFIiq8EyLeds4XPrE7Il0Q==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -51,87 +51,52 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Using counter->priv is a memory read and so more expensive than
-container_of which is only an addition. (In this case even a noop
-because the offset is 0.)
+The functionality priv was designed for can better be accomplished using
+container_of. All drivers have been converted, so drop this now unused
+member.
 
-So container_of is expected to be a tad faster, it's type-safe, and
-produces smaller code (ARCH=arm allmodconfig):
-
-	add/remove: 0/0 grow/shrink: 0/5 up/down: 0/-60 (-60)
-	Function                                     old     new   delta
-	ftm_quaddec_set_prescaler                    612     600     -12
-	ftm_quaddec_probe                            596     584     -12
-	ftm_quaddec_get_prescaler                    156     144     -12
-	ftm_quaddec_count_write                      232     220     -12
-	ftm_quaddec_count_read                       152     140     -12
-	Total: Before=5096, After=5036, chg -1.18%
+Just one assignment was missed in the conversion of the ti-eqep driver.
+This is unused and so can be safely dropped, too.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/ftm-quaddec.c | 14 +++++++++-----
- 1 file changed, 9 insertions(+), 5 deletions(-)
+ drivers/counter/ti-eqep.c | 1 -
+ include/linux/counter.h   | 3 ---
+ 2 files changed, 4 deletions(-)
 
-diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-index 5ef0478709cd..b58a4f54e97b 100644
---- a/drivers/counter/ftm-quaddec.c
-+++ b/drivers/counter/ftm-quaddec.c
-@@ -33,6 +33,11 @@ struct ftm_quaddec {
- 	struct mutex ftm_quaddec_mutex;
- };
+diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+index 9e0e46bca4c2..8cdc9ab98859 100644
+--- a/drivers/counter/ti-eqep.c
++++ b/drivers/counter/ti-eqep.c
+@@ -402,7 +402,6 @@ static int ti_eqep_probe(struct platform_device *pdev)
+ 	priv->counter.num_counts = ARRAY_SIZE(ti_eqep_counts);
+ 	priv->counter.signals = ti_eqep_signals;
+ 	priv->counter.num_signals = ARRAY_SIZE(ti_eqep_signals);
+-	priv->counter.priv = priv;
  
-+static inline struct ftm_quaddec *ftm_from_counter(struct counter_device *counter)
-+{
-+	return container_of(counter, struct ftm_quaddec, counter);
-+}
-+
- static void ftm_read(struct ftm_quaddec *ftm, uint32_t offset, uint32_t *data)
- {
- 	if (ftm->big_endian)
-@@ -118,7 +123,7 @@ static void ftm_quaddec_disable(void *ftm)
- static int ftm_quaddec_get_prescaler(struct counter_device *counter,
- 				     struct counter_count *count, u32 *cnt_mode)
- {
--	struct ftm_quaddec *ftm = counter->priv;
-+	struct ftm_quaddec *ftm = ftm_from_counter(counter);
- 	uint32_t scflags;
+ 	platform_set_drvdata(pdev, priv);
  
- 	ftm_read(ftm, FTM_SC, &scflags);
-@@ -131,7 +136,7 @@ static int ftm_quaddec_get_prescaler(struct counter_device *counter,
- static int ftm_quaddec_set_prescaler(struct counter_device *counter,
- 				     struct counter_count *count, u32 cnt_mode)
- {
--	struct ftm_quaddec *ftm = counter->priv;
-+	struct ftm_quaddec *ftm = ftm_from_counter(counter);
+diff --git a/include/linux/counter.h b/include/linux/counter.h
+index b7d0a00a61cf..fd58f36ea2f7 100644
+--- a/include/linux/counter.h
++++ b/include/linux/counter.h
+@@ -287,7 +287,6 @@ struct counter_ops {
+  * @num_counts:		number of Counts specified in @counts
+  * @ext:		optional array of Counter device extensions
+  * @num_ext:		number of Counter device extensions specified in @ext
+- * @priv:		optional private data supplied by driver
+  * @dev:		internal device structure
+  * @chrdev:		internal character device structure
+  * @events_list:	list of current watching Counter events
+@@ -314,8 +313,6 @@ struct counter_device {
+ 	struct counter_comp *ext;
+ 	size_t num_ext;
  
- 	mutex_lock(&ftm->ftm_quaddec_mutex);
- 
-@@ -162,7 +167,7 @@ static int ftm_quaddec_count_read(struct counter_device *counter,
- 				  struct counter_count *count,
- 				  u64 *val)
- {
--	struct ftm_quaddec *const ftm = counter->priv;
-+	struct ftm_quaddec *const ftm = ftm_from_counter(counter);
- 	uint32_t cntval;
- 
- 	ftm_read(ftm, FTM_CNT, &cntval);
-@@ -176,7 +181,7 @@ static int ftm_quaddec_count_write(struct counter_device *counter,
- 				   struct counter_count *count,
- 				   const u64 val)
- {
--	struct ftm_quaddec *const ftm = counter->priv;
-+	struct ftm_quaddec *const ftm = ftm_from_counter(counter);
- 
- 	if (val != 0) {
- 		dev_warn(&ftm->pdev->dev, "Can only accept '0' as new counter value\n");
-@@ -292,7 +297,6 @@ static int ftm_quaddec_probe(struct platform_device *pdev)
- 	ftm->counter.num_counts = 1;
- 	ftm->counter.signals = ftm_quaddec_signals;
- 	ftm->counter.num_signals = ARRAY_SIZE(ftm_quaddec_signals);
--	ftm->counter.priv = ftm;
- 
- 	mutex_init(&ftm->ftm_quaddec_mutex);
- 
+-	void *priv;
+-
+ 	struct device dev;
+ 	struct cdev chrdev;
+ 	struct list_head events_list;
 -- 
 2.33.0
 
