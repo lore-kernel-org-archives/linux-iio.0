@@ -2,47 +2,46 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0267C4321E
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Dec 2021 10:46:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8E35EC433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Dec 2021 10:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234104AbhLUKqI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 21 Dec 2021 05:46:08 -0500
+        id S234077AbhLUKqH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 21 Dec 2021 05:46:07 -0500
 Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234050AbhLUKqH (ORCPT
+        with ESMTP id S234020AbhLUKqH (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Dec 2021 05:46:07 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 25032C061751
-        for <linux-iio@vger.kernel.org>; Tue, 21 Dec 2021 02:46:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F382EC061746
+        for <linux-iio@vger.kernel.org>; Tue, 21 Dec 2021 02:46:06 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzcei-0005BH-O6; Tue, 21 Dec 2021 11:46:04 +0100
+        id 1mzcei-0005BD-O6; Tue, 21 Dec 2021 11:46:04 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzcei-005ng2-F6; Tue, 21 Dec 2021 11:46:03 +0100
+        id 1mzcei-005nfy-5M; Tue, 21 Dec 2021 11:46:03 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzceh-0004C6-DM; Tue, 21 Dec 2021 11:46:03 +0100
+        id 1mzceh-0004Bv-0I; Tue, 21 Dec 2021 11:46:03 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     Kamel Bouhara <kamel.bouhara@bootlin.com>,
+To:     Jarkko Nikula <jarkko.nikula@linux.intel.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH 5/8] counter: microchip-tcp-capture: Use container_of instead of struct counter_device::priv
-Date:   Tue, 21 Dec 2021 11:45:43 +0100
-Message-Id: <20211221104546.214066-6-u.kleine-koenig@pengutronix.de>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 3/8] counter: intel-qeb: Use container_of instead of struct counter_device::priv
+Date:   Tue, 21 Dec 2021 11:45:41 +0100
+Message-Id: <20211221104546.214066-4-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211221104546.214066-1-u.kleine-koenig@pengutronix.de>
 References: <20211221104546.214066-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=+mGMCzcHVB52IvHhf9leKp6Y9DlWvz9ld0t8InuL0Q4=; m=m4jRnAmJlhgb59M+JVnjEsk6IMQPqWL9MFo6aBi4ZGA=; p=AXyjvzc03RwiiDbH4rGJn2dLLt6SLlipHOAxCyxAePg=; g=0118e46f757cd59c8cf911fec853a5b5c7162064
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHBsEIACgkQwfwUeK3K7AkrRAgAn5X rbIhFZqaAclK48bgp/jaTqoNE3hvRtJDGKyKqMCNUIFt394aZZ0H9VmwtJYsOD2eGk0csSWcqpJUK uNmPXRTbJMzwtvx4CEbleKsmcfTRQmQGbaSVL/4Zalh5vIQYcsjBp1ZHnV0YKBaVpoDMaUWxnAUBs EH3RWdkpc0qI8eCJJBeo2a5RjdbCgePbFurA8tkV7J3PX/cQWXpOOk7pstJyISzDtbmHaWWM7mj9f fgrMaZrTemxCV0HgyCn0AGZA3JAJ5lOvCdTn9dRdl1MZay7ZkFP+9DYaiMKXlIU/9tanMqzPu63s3 x/71Ax7/ii/XmTowtkYyseMrhpFVVHA==
+X-Patch-Hashes: v=1; h=sha256; i=ThNGokgiWcn75qYGbTuomR6f88obJKYrRrSmNBoFD5I=; m=Hg8zE/asUx2g3czk+o5m3SY3gEaouSs/V53jAvhKGzw=; p=ZyUJpfCbrjrA8N6THSfxjmBhtCsfDdq6XEd4Xr1NFZY=; g=e137413badb1a0c1fd78f5213f3b717e8703a1de
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHBsDUACgkQwfwUeK3K7AlL7wf/d79 RnEH3XmALXk6BQ5vAaTzhNTWG9S/+v5u9NKZvF9p+zGAg5OCE5es/tbqueYNC5IiV0mbUJRoU3POK 3Hi/PZGnQVT5OnJVg39at/9kzUEaK5VEwI/WV+oUn56wLKROysBrpOd9POQLN/H1+P9Y3qpZW9SU5 TSNdHHTUXiLnTLHnvPUiAaSwE9ABPFuDueHHb33qoV/PPL62D3rJiyrxQbiqHT0WLLVzfcOfvEca7 5NPmgmMKTkCQhgt1j2yLGWd2qIrFf++rVZNzsX3//MqRyNNAf9k0cYQm8OVS0MWQiokP+Pw9aNhjk wN6CIs/TJsP6c5l6xd9V3Yn84Euv55g==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -53,105 +52,136 @@ List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 Using counter->priv is a memory read and so more expensive than
-container_of which is only an addition.
+container_of which is only an addition. (In this case even a noop
+because the offset is 0.)
 
 So container_of is expected to be a tad faster, it's type-safe, and
 produces smaller code (ARCH=arm allmodconfig):
 
-	add/remove: 0/0 grow/shrink: 1/6 up/down: 12/-68 (-56)
+	add/remove: 0/0 grow/shrink: 0/10 up/down: 0/-116 (-116)
 	Function                                     old     new   delta
-	mchp_tc_count_function_write                1016    1028     +12
-	mchp_tc_count_action_write                   204     196      -8
-	mchp_tc_probe                               1376    1364     -12
-	mchp_tc_count_signal_read                    360     348     -12
-	mchp_tc_count_read                           264     252     -12
-	mchp_tc_count_function_read                  108      96     -12
-	mchp_tc_count_action_read                    392     380     -12
-	Total: Before=5920, After=5864, chg -0.95%
+	intel_qep_spike_filter_ns_write              552     544      -8
+	intel_qep_spike_filter_ns_read               252     240     -12
+	intel_qep_probe                              692     680     -12
+	intel_qep_preset_enable_write                276     264     -12
+	intel_qep_preset_enable_read                 164     152     -12
+	intel_qep_enable_write                       500     488     -12
+	intel_qep_enable_read                         80      68     -12
+	intel_qep_count_read                         140     128     -12
+	intel_qep_ceiling_write                      260     248     -12
+	intel_qep_ceiling_read                       140     128     -12
+	Total: Before=4867, After=4751, chg -2.38%
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/microchip-tcb-capture.c | 18 +++++++++++-------
- 1 file changed, 11 insertions(+), 7 deletions(-)
+ drivers/counter/intel-qep.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
-index 0ab1b2716784..031e79f5f06a 100644
---- a/drivers/counter/microchip-tcb-capture.c
-+++ b/drivers/counter/microchip-tcb-capture.c
-@@ -32,6 +32,11 @@ struct mchp_tc_data {
- 	bool trig_inverted;
+diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
+index 0924d16de6e2..168f8f5357cf 100644
+--- a/drivers/counter/intel-qep.c
++++ b/drivers/counter/intel-qep.c
+@@ -74,6 +74,11 @@ struct intel_qep {
+ 	u32 qepmax;
  };
  
-+static inline struct mchp_tc_data *mchp_tc_from_counter(struct counter_device *counter)
++static inline struct intel_qep *intel_qep_from_counter(struct counter_device *counter)
 +{
-+	return container_of(counter, struct mchp_tc_data, counter);
++	return container_of(counter, struct intel_qep, counter);
 +}
 +
- static const enum counter_function mchp_tc_count_functions[] = {
- 	COUNTER_FUNCTION_INCREASE,
- 	COUNTER_FUNCTION_QUADRATURE_X4,
-@@ -72,7 +77,7 @@ static int mchp_tc_count_function_read(struct counter_device *counter,
- 				       struct counter_count *count,
- 				       enum counter_function *function)
+ static inline u32 intel_qep_readl(struct intel_qep *qep, u32 offset)
  {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = mchp_tc_from_counter(counter);
+ 	return readl(qep->regs + offset);
+@@ -109,7 +114,7 @@ static void intel_qep_init(struct intel_qep *qep)
+ static int intel_qep_count_read(struct counter_device *counter,
+ 				struct counter_count *count, u64 *val)
+ {
+-	struct intel_qep *const qep = counter->priv;
++	struct intel_qep *const qep = intel_qep_from_counter(counter);
  
- 	if (priv->qdec_mode)
- 		*function = COUNTER_FUNCTION_QUADRATURE_X4;
-@@ -86,7 +91,7 @@ static int mchp_tc_count_function_write(struct counter_device *counter,
+ 	pm_runtime_get_sync(qep->dev);
+ 	*val = intel_qep_readl(qep, INTEL_QEPCOUNT);
+@@ -176,7 +181,7 @@ static struct counter_synapse intel_qep_count_synapses[] = {
+ static int intel_qep_ceiling_read(struct counter_device *counter,
+ 				  struct counter_count *count, u64 *ceiling)
+ {
+-	struct intel_qep *qep = counter->priv;
++	struct intel_qep *qep = intel_qep_from_counter(counter);
+ 
+ 	pm_runtime_get_sync(qep->dev);
+ 	*ceiling = intel_qep_readl(qep, INTEL_QEPMAX);
+@@ -188,7 +193,7 @@ static int intel_qep_ceiling_read(struct counter_device *counter,
+ static int intel_qep_ceiling_write(struct counter_device *counter,
+ 				   struct counter_count *count, u64 max)
+ {
+-	struct intel_qep *qep = counter->priv;
++	struct intel_qep *qep = intel_qep_from_counter(counter);
+ 	int ret = 0;
+ 
+ 	/* Intel QEP ceiling configuration only supports 32-bit values */
+@@ -213,7 +218,7 @@ static int intel_qep_ceiling_write(struct counter_device *counter,
+ static int intel_qep_enable_read(struct counter_device *counter,
+ 				 struct counter_count *count, u8 *enable)
+ {
+-	struct intel_qep *qep = counter->priv;
++	struct intel_qep *qep = intel_qep_from_counter(counter);
+ 
+ 	*enable = qep->enabled;
+ 
+@@ -223,7 +228,7 @@ static int intel_qep_enable_read(struct counter_device *counter,
+ static int intel_qep_enable_write(struct counter_device *counter,
+ 				  struct counter_count *count, u8 val)
+ {
+-	struct intel_qep *qep = counter->priv;
++	struct intel_qep *qep = intel_qep_from_counter(counter);
+ 	u32 reg;
+ 	bool changed;
+ 
+@@ -256,7 +261,7 @@ static int intel_qep_spike_filter_ns_read(struct counter_device *counter,
+ 					  struct counter_count *count,
+ 					  u64 *length)
+ {
+-	struct intel_qep *qep = counter->priv;
++	struct intel_qep *qep = intel_qep_from_counter(counter);
+ 	u32 reg;
+ 
+ 	pm_runtime_get_sync(qep->dev);
+@@ -277,7 +282,7 @@ static int intel_qep_spike_filter_ns_write(struct counter_device *counter,
+ 					   struct counter_count *count,
+ 					   u64 length)
+ {
+-	struct intel_qep *qep = counter->priv;
++	struct intel_qep *qep = intel_qep_from_counter(counter);
+ 	u32 reg;
+ 	bool enable;
+ 	int ret = 0;
+@@ -326,7 +331,7 @@ static int intel_qep_preset_enable_read(struct counter_device *counter,
  					struct counter_count *count,
- 					enum counter_function function)
+ 					u8 *preset_enable)
  {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = mchp_tc_from_counter(counter);
- 	u32 bmr, cmr;
+-	struct intel_qep *qep = counter->priv;
++	struct intel_qep *qep = intel_qep_from_counter(counter);
+ 	u32 reg;
  
- 	regmap_read(priv->regmap, ATMEL_TC_BMR, &bmr);
-@@ -148,7 +153,7 @@ static int mchp_tc_count_signal_read(struct counter_device *counter,
- 				     struct counter_signal *signal,
- 				     enum counter_signal_level *lvl)
+ 	pm_runtime_get_sync(qep->dev);
+@@ -341,7 +346,7 @@ static int intel_qep_preset_enable_read(struct counter_device *counter,
+ static int intel_qep_preset_enable_write(struct counter_device *counter,
+ 					 struct counter_count *count, u8 val)
  {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = mchp_tc_from_counter(counter);
- 	bool sigstatus;
- 	u32 sr;
+-	struct intel_qep *qep = counter->priv;
++	struct intel_qep *qep = intel_qep_from_counter(counter);
+ 	u32 reg;
+ 	int ret = 0;
  
-@@ -169,7 +174,7 @@ static int mchp_tc_count_action_read(struct counter_device *counter,
- 				     struct counter_synapse *synapse,
- 				     enum counter_synapse_action *action)
- {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = mchp_tc_from_counter(counter);
- 	u32 cmr;
+@@ -429,7 +434,6 @@ static int intel_qep_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	qep->counter.num_counts = ARRAY_SIZE(intel_qep_counter_count);
+ 	qep->counter.signals = intel_qep_signals;
+ 	qep->counter.num_signals = ARRAY_SIZE(intel_qep_signals);
+-	qep->counter.priv = qep;
+ 	qep->enabled = false;
  
- 	regmap_read(priv->regmap, ATMEL_TC_REG(priv->channel[0], CMR), &cmr);
-@@ -197,7 +202,7 @@ static int mchp_tc_count_action_write(struct counter_device *counter,
- 				      struct counter_synapse *synapse,
- 				      enum counter_synapse_action action)
- {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = mchp_tc_from_counter(counter);
- 	u32 edge = ATMEL_TC_ETRGEDG_NONE;
- 
- 	/* QDEC mode is rising edge only */
-@@ -230,7 +235,7 @@ static int mchp_tc_count_action_write(struct counter_device *counter,
- static int mchp_tc_count_read(struct counter_device *counter,
- 			      struct counter_count *count, u64 *val)
- {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = mchp_tc_from_counter(counter);
- 	u32 cnt;
- 
- 	regmap_read(priv->regmap, ATMEL_TC_REG(priv->channel[0], CV), &cnt);
-@@ -369,7 +374,6 @@ static int mchp_tc_probe(struct platform_device *pdev)
- 	priv->counter.counts = mchp_tc_counts;
- 	priv->counter.num_signals = ARRAY_SIZE(mchp_tc_count_signals);
- 	priv->counter.signals = mchp_tc_count_signals;
--	priv->counter.priv = priv;
- 
- 	return devm_counter_register(&pdev->dev, &priv->counter);
- }
+ 	pm_runtime_put(dev);
 -- 
 2.33.0
 
