@@ -2,121 +2,104 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D90BBC4321E
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Dec 2021 13:01:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29432C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Dec 2021 13:11:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237991AbhLUNB1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 21 Dec 2021 08:01:27 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:16648 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S237988AbhLUNB1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Dec 2021 08:01:27 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 1BL9nuC4027858;
-        Tue, 21 Dec 2021 08:01:20 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3d2pyqm2m3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 21 Dec 2021 08:01:20 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 1BLD1Jck013994
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 21 Dec 2021 08:01:19 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 21 Dec
- 2021 08:01:18 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 21 Dec 2021 08:01:18 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.181])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 1BLD1BQh024109;
-        Tue, 21 Dec 2021 08:01:15 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v7 3/3] Documentation:ABI:testing:admv1013: add ABI docs
-Date:   Tue, 21 Dec 2021 13:22:06 +0200
-Message-ID: <20211221112206.97066-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20211221112206.97066-1-antoniu.miclaus@analog.com>
-References: <20211221112206.97066-1-antoniu.miclaus@analog.com>
+        id S233955AbhLUNLw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 21 Dec 2021 08:11:52 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56042 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229732AbhLUNLw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Dec 2021 08:11:52 -0500
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E5E8C061574;
+        Tue, 21 Dec 2021 05:11:52 -0800 (PST)
+Date:   Tue, 21 Dec 2021 21:11:24 +0800
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1640092309;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=oprC6AqEZlljn0whAPn3fKd+gyRj8zLKxcVCNMVOEWk=;
+        b=KnfFQwdVIAt5Vea137fPlU1OSK3PIlKgUY8Pel9OyjFANc9X1rJNBKMUYqrHf/zRGxNMU+
+        VPQl6BnNL88QDhDelE36NR31bF7DevlQzE0fPEHlnxz+81z05pFLOa8SGizoh+zbHOfzec
+        MotC2WF7quAR5fGuMLty1iLuahHPgFU=
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+From:   Cai Huoqing <cai.huoqing@linux.dev>
+To:     haibo.chen@nxp.com
+Cc:     jic23@kernel.org, robh+dt@kernel.org, lars@metafoo.de,
+        linux-iio@vger.kernel.org, linux-imx@nxp.com,
+        devicetree@vger.kernel.org, shawnguo@kernel.org, festevam@gmail.com
+Subject: Re: [PATCH 1/2] MAINTAINERS: add imx7d/imx6sx/imx6ul/imx8qxp and
+ vf610 adc maintainer
+Message-ID: <20211221131124.GA23836@chq-T47>
+References: <1640073000-32629-1-git-send-email-haibo.chen@nxp.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: G5c2vhHyJ2a6RujJvVibxsOz6svQ66o6
-X-Proofpoint-ORIG-GUID: G5c2vhHyJ2a6RujJvVibxsOz6svQ66o6
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2021-12-21_04,2021-12-21_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 malwarescore=0 bulkscore=0
- phishscore=0 mlxlogscore=999 priorityscore=1501 impostorscore=0
- lowpriorityscore=0 mlxscore=0 clxscore=1015 spamscore=0 suspectscore=0
- adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2110150000 definitions=main-2112210059
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <1640073000-32629-1-git-send-email-haibo.chen@nxp.com>
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add documentation for the use of the Local Oscillator Feedthrough Offset
-calibration.
+On 21 12月 21 15:49:59, haibo.chen@nxp.com wrote:
+> From: Haibo Chen <haibo.chen@nxp.com>
+> 
+> Add myself as imx7d/imx6sx/imx6ul/imx8qxp and vf610 adc maintainer.
+> 
+> Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+> 
+> ---
+> 
+> First, thanks Cai Huoqing upstream the i.MX 8QXP ADC driver, really appreciate!
+> 
+> For some unknown issue, I miss all imx8qxp adc related mail threads,
+> now I actively maintain all i.MX ADC downstream drivers, so add myself
+> here as maintainer, and make sure I can be cc/to when there is any new patch.
+> 
+> ---
+>  MAINTAINERS | 12 ++++++++++++
+>  1 file changed, 12 insertions(+)
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index c87a3f5e302a..210bded08641 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -13792,11 +13792,23 @@ F:	drivers/gpu/drm/imx/dcss/
+>  
+>  NXP i.MX 8QXP ADC DRIVER
+>  M:	Cai Huoqing <cai.huoqing@linux.dev>
+> +M:	Haibo Chen <haibo.chen@nxp.com>
+> +L:	linux-imx@nxp.com
+This driver is based on the work of Haibo Chen <haibo.chen@nxp.com>,
+it's ok to add this, here.
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-changes in v7:
- - rename `phase` -> `calibphase`
- - specify that the phase values are unscaled
- .../testing/sysfs-bus-iio-frequency-admv1013  | 38 +++++++++++++++++++
- 1 file changed, 38 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1013
+Reviewed-by: Cai Huoqing <cai.huoqing@linux.dev>
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1013 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1013
-new file mode 100644
-index 000000000000..105bae9e2f5c
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1013
-@@ -0,0 +1,38 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0-1_i_calibphase
-+KernelVersion:
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write unscaled value for the Local Oscillatior path quadrature I phase shift.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0-1_q_calibphase
-+KernelVersion:
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write unscaled value for the Local Oscillatior path quadrature Q phase shift.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibbias
-+KernelVersion:
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the Local Oscillatior Feedthrough Offset Calibration I Positive
-+		side.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibbias
-+KernelVersion:
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the Local Oscillatior Feedthrough Offset Calibration Q Positive side.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage1_i_calibbias
-+KernelVersion:
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write raw value for the Local Oscillatior Feedthrough Offset Calibration I Negative
-+		side.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage1_q_calibbias
-+KernelVersion:
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write raw value for the Local Oscillatior Feedthrough Offset Calibration Q Negative
-+		side.
--- 
-2.34.1
-
+Thanks,
+Cai
+>  L:	linux-iio@vger.kernel.org
+>  S:	Maintained
+>  F:	Documentation/devicetree/bindings/iio/adc/nxp,imx8qxp-adc.yaml
+>  F:	drivers/iio/adc/imx8qxp-adc.c
+>  
+> +NXP i.MX 7D/6SX/6UL AND VF610 ADC DRIVER
+> +M:	Haibo Chen <haibo.chen@nxp.com>
+> +L:	linux-iio@vger.kernel.org
+> +L:	linux-imx@nxp.com
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/adc/fsl,imx7d-adc.yaml
+> +F:	Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
+> +F:	drivers/iio/adc/imx7d_adc.c
+> +F:	drivers/iio/adc/vf610_adc.c
+> +
+>  NXP PF8100/PF8121A/PF8200 PMIC REGULATOR DEVICE DRIVER
+>  M:	Jagan Teki <jagan@amarulasolutions.com>
+>  S:	Maintained
+> -- 
+> 2.25.1
+> 
