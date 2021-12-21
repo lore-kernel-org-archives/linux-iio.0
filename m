@@ -2,46 +2,50 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E72AC43219
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Dec 2021 10:46:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51BAAC433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Dec 2021 10:46:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234136AbhLUKqJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 21 Dec 2021 05:46:09 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50742 "EHLO
+        id S234754AbhLUKqN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 21 Dec 2021 05:46:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234051AbhLUKqH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Dec 2021 05:46:07 -0500
+        with ESMTP id S234301AbhLUKqM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Dec 2021 05:46:12 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0CAD2C061747
-        for <linux-iio@vger.kernel.org>; Tue, 21 Dec 2021 02:46:07 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC4ECC06173F
+        for <linux-iio@vger.kernel.org>; Tue, 21 Dec 2021 02:46:11 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzcei-0005B5-O7; Tue, 21 Dec 2021 11:46:04 +0100
+        id 1mzcel-0005BM-V2; Tue, 21 Dec 2021 11:46:08 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzceh-005nfs-H5; Tue, 21 Dec 2021 11:46:02 +0100
+        id 1mzcei-005ngA-QG; Tue, 21 Dec 2021 11:46:04 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1mzceg-0004BS-JV; Tue, 21 Dec 2021 11:46:02 +0100
+        id 1mzceh-0004CS-Ru; Tue, 21 Dec 2021 11:46:03 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Syed Nayyar Waris <syednwaris@gmail.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/8] counter: 104-quad-8: Use container_of instead of struct counter_device::priv
-Date:   Tue, 21 Dec 2021 11:45:39 +0100
-Message-Id: <20211221104546.214066-2-u.kleine-koenig@pengutronix.de>
+To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>
+Cc:     linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Subject: [PATCH 7/8] counter: stm32-timer-cnt: Use container_of instead of struct counter_device::priv
+Date:   Tue, 21 Dec 2021 11:45:45 +0100
+Message-Id: <20211221104546.214066-8-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211221104546.214066-1-u.kleine-koenig@pengutronix.de>
 References: <20211221104546.214066-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=CnBH63zzo+tqIzwX0lexnwgBN96xH+nVjDGI1acY4RE=; m=WBq4e46WGgS0dLi5xghMITgc9qKFAxSgpTl9JAlgCl4=; p=LfndeIs0fXVbHBSKaxGOiyMpLhehIJekYg4LQfX76U4=; g=d7209755a97347fa53efe3344d0d29e29e1dbe0d
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHBsC8ACgkQwfwUeK3K7AkaRAf+OSR 4Unldn3jMWyf4io2BQ6yR/IlA0Gxf740sFVQKVw0NHMDBqtuxK2o3mU+57SK9JlSjqyquIYMlvdMB NZRSMWHgs6JBNjOMcEx1274bZLbjsRlj5fNixFOuVNBpy5prhWTlvxunMVraSFUl0eWUxLiMVkvmr 1JAr98qzo1UJLi2Ux1c2S5OE6xuU2+lna+xFqWorqi2+qTYKWsS7defGZ56e0k49almcjhdBMLYZM iKlqxljkvHnlw1/wXjKsgQ5tVAyN6doKDbexr9Vlfwy+sVnCXrzd5f9+1XAXZrukucVD6oqCb+HxY iNvUbrhUBmhtrQIS52tOnlr6FWZqpYw==
+X-Patch-Hashes: v=1; h=sha256; i=1Puab3XzxTVHN4jt651Xcm2ayt/NNTv3C4elozlzC2c=; m=/5nCYZ7WihDc/POXwyjyGoYCMmam3kFfXztb+Karnfk=; p=PcKDfqcYgcbKTwKZqW51cpBm6Qds+AfbyFYCjb3Ofbk=; g=1bfafced00b53cbf6f10ae27a2268b0e8968d011
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHBsEkACgkQwfwUeK3K7AmJKwgAmBL 8/QWoB+RYTBqLn7TQTv6QsEBT9f2ye7dhiiWn9EX0va0ygaWeyG0bvdx+3cFihsja5F6Xzt8FdlAf 3DSfrMwWSSvOfTDO+lXWfJySxktxhth1UX/XtB8S+FMQb7zBHlb1nM2VN0m7aeuuRMKCRgH/EchME 5Ch019QIQIIhpr7uPok7oBKDH59361kH76T69Zszld/dLkb4mLs94FrvaptA8kKjzzn14iwQcc3x3 OAhyXy7yYBY3xXyPZHF+Ldxe6qpPprHAQHIW72hU/qgYI0feQZdKSpN8ViJi9X2qheDRwagfCv8Kr tcqlsn9HP/pltFBp00WXKVN+z7o2q5Q==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -52,324 +56,137 @@ List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 Using counter->priv is a memory read and so more expensive than
-container_of which is only an addition.
+container_of which is only an addition. (In this case even a noop
+because the offset is 0.)
 
 So container_of is expected to be a tad faster, it's type-safe, and
 produces smaller code (ARCH=arm allmodconfig):
 
-	add/remove: 0/0 grow/shrink: 5/17 up/down: 76/-172 (-96)
+	add/remove: 0/0 grow/shrink: 0/11 up/down: 0/-132 (-132)
 	Function                                     old     new   delta
-	quad8_function_write                         612     648     +36
-	quad8_count_mode_write                       296     312     +16
-	quad8_count_enable_write                     232     248     +16
-	quad8_events_configure                       384     388      +4
-	quad8_count_preset_enable_write              264     268      +4
-	quad8_signal_fck_prescaler_read              108     104      -4
-	quad8_count_enable_read                      100      96      -4
-	quad8_synchronous_mode_set                   304     296      -8
-	quad8_signal_cable_fault_read                240     232      -8
-	quad8_signal_cable_fault_enable_write        244     236      -8
-	quad8_index_polarity_set                     200     192      -8
-	quad8_function_read                          292     284      -8
-	quad8_count_read                             304     296      -8
-	quad8_count_preset_write                     160     152      -8
-	quad8_count_ceiling_read                     216     208      -8
-	quad8_signal_read                            212     200     -12
-	quad8_signal_cable_fault_enable_read         108      96     -12
-	quad8_probe                                 1116    1104     -12
-	quad8_error_noise_get                        156     144     -12
-	quad8_direction_read                         156     144     -12
-	quad8_action_read                            836     824     -12
-	quad8_watch_validate                         528     500     -28
-	Total: Before=11802, After=11706, chg -0.81%
+	stm32_timer_cnt_probe                        436     424     -12
+	stm32_count_write                            312     300     -12
+	stm32_count_read                             236     224     -12
+	stm32_count_function_write                   492     480     -12
+	stm32_count_function_read                    396     384     -12
+	stm32_count_enable_write                     488     476     -12
+	stm32_count_enable_read                      236     224     -12
+	stm32_count_direction_read                   240     228     -12
+	stm32_count_ceiling_write                    200     188     -12
+	stm32_count_ceiling_read                     236     224     -12
+	stm32_action_read                            492     480     -12
+	Total: Before=5504, After=5372, chg -2.40%
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/104-quad-8.c | 64 +++++++++++++++++++-----------------
- 1 file changed, 34 insertions(+), 30 deletions(-)
+ drivers/counter/stm32-timer-cnt.c | 24 ++++++++++++++----------
+ 1 file changed, 14 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 1cbd60aaed69..a9e75c70ad30 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -109,11 +109,16 @@ struct quad8 {
- #define QUAD8_CMR_QUADRATURE_X2 0x10
- #define QUAD8_CMR_QUADRATURE_X4 0x18
+diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
+index 0546e932db0c..ac0bea6ce690 100644
+--- a/drivers/counter/stm32-timer-cnt.c
++++ b/drivers/counter/stm32-timer-cnt.c
+@@ -37,6 +37,11 @@ struct stm32_timer_cnt {
+ 	struct stm32_timer_regs bak;
+ };
  
-+static struct quad8 *quad8_from_counter(struct counter_device *counter)
++static inline struct stm32_timer_cnt *stm32_count_from_counter(struct counter_device *counter)
 +{
-+	return container_of(counter, struct quad8, counter);
++	return container_of(counter, struct stm32_timer_cnt, counter);
 +}
 +
- static int quad8_signal_read(struct counter_device *counter,
- 			     struct counter_signal *signal,
- 			     enum counter_signal_level *level)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 	unsigned int state;
- 
- 	/* Only Index signal levels can be read */
-@@ -131,7 +136,7 @@ static int quad8_signal_read(struct counter_device *counter,
- static int quad8_count_read(struct counter_device *counter,
+ static const enum counter_function stm32_count_functions[] = {
+ 	COUNTER_FUNCTION_INCREASE,
+ 	COUNTER_FUNCTION_QUADRATURE_X2_A,
+@@ -47,7 +52,7 @@ static const enum counter_function stm32_count_functions[] = {
+ static int stm32_count_read(struct counter_device *counter,
  			    struct counter_count *count, u64 *val)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned int flags;
- 	unsigned int borrow;
-@@ -163,7 +168,7 @@ static int quad8_count_read(struct counter_device *counter,
- static int quad8_count_write(struct counter_device *counter,
- 			     struct counter_count *count, u64 val)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned long irqflags;
- 	int i;
-@@ -213,7 +218,7 @@ static int quad8_function_read(struct counter_device *counter,
- 			       struct counter_count *count,
- 			       enum counter_function *function)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const int id = count->id;
- 	unsigned long irqflags;
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
+ 	u32 cnt;
  
-@@ -243,7 +248,7 @@ static int quad8_function_write(struct counter_device *counter,
- 				struct counter_count *count,
- 				enum counter_function function)
+ 	regmap_read(priv->regmap, TIM_CNT, &cnt);
+@@ -59,7 +64,7 @@ static int stm32_count_read(struct counter_device *counter,
+ static int stm32_count_write(struct counter_device *counter,
+ 			     struct counter_count *count, const u64 val)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const int id = count->id;
- 	unsigned int *const quadrature_mode = priv->quadrature_mode + id;
- 	unsigned int *const scale = priv->quadrature_scale + id;
-@@ -305,7 +310,7 @@ static int quad8_direction_read(struct counter_device *counter,
- 				struct counter_count *count,
- 				enum counter_count_direction *direction)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 	unsigned int ud_flag;
- 	const unsigned int flag_addr = priv->base + 2 * count->id + 1;
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
+ 	u32 ceiling;
  
-@@ -335,7 +340,7 @@ static int quad8_action_read(struct counter_device *counter,
- 			     struct counter_synapse *synapse,
- 			     enum counter_synapse_action *action)
+ 	regmap_read(priv->regmap, TIM_ARR, &ceiling);
+@@ -73,7 +78,7 @@ static int stm32_count_function_read(struct counter_device *counter,
+ 				     struct counter_count *count,
+ 				     enum counter_function *function)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	int err;
- 	enum counter_function function;
- 	const size_t signal_a_id = count->synapses[0].signal->id;
-@@ -399,7 +404,7 @@ enum {
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
+ 	u32 smcr;
  
- static int quad8_events_configure(struct counter_device *counter)
+ 	regmap_read(priv->regmap, TIM_SMCR, &smcr);
+@@ -100,7 +105,7 @@ static int stm32_count_function_write(struct counter_device *counter,
+ 				      struct counter_count *count,
+ 				      enum counter_function function)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	unsigned long irq_enabled = 0;
- 	unsigned long irqflags;
- 	size_t channel;
-@@ -442,7 +447,7 @@ static int quad8_events_configure(struct counter_device *counter)
- static int quad8_watch_validate(struct counter_device *counter,
- 				const struct counter_watch *watch)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
+ 	u32 cr1, sms;
  
- 	if (watch->channel > QUAD8_NUM_COUNTERS - 1)
- 		return -EINVAL;
-@@ -497,7 +502,7 @@ static int quad8_index_polarity_get(struct counter_device *counter,
- 				    struct counter_signal *signal,
- 				    u32 *index_polarity)
+ 	switch (function) {
+@@ -140,7 +145,7 @@ static int stm32_count_direction_read(struct counter_device *counter,
+ 				      struct counter_count *count,
+ 				      enum counter_count_direction *direction)
  {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 	const size_t channel_id = signal->id - 16;
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
+ 	u32 cr1;
  
- 	*index_polarity = priv->index_polarity[channel_id];
-@@ -509,7 +514,7 @@ static int quad8_index_polarity_set(struct counter_device *counter,
- 				    struct counter_signal *signal,
- 				    u32 index_polarity)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const size_t channel_id = signal->id - 16;
- 	const int base_offset = priv->base + 2 * channel_id + 1;
- 	unsigned long irqflags;
-@@ -538,7 +543,7 @@ static int quad8_synchronous_mode_get(struct counter_device *counter,
- 				      struct counter_signal *signal,
- 				      u32 *synchronous_mode)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 	const size_t channel_id = signal->id - 16;
- 
- 	*synchronous_mode = priv->synchronous_mode[channel_id];
-@@ -550,7 +555,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
- 				      struct counter_signal *signal,
- 				      u32 synchronous_mode)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const size_t channel_id = signal->id - 16;
- 	const int base_offset = priv->base + 2 * channel_id + 1;
- 	unsigned long irqflags;
-@@ -589,7 +594,7 @@ static int quad8_count_mode_read(struct counter_device *counter,
- 				 struct counter_count *count,
- 				 enum counter_count_mode *cnt_mode)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 
- 	/* Map 104-QUAD-8 count mode to Generic Counter count mode */
- 	switch (priv->count_mode[count->id]) {
-@@ -614,7 +619,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
- 				  struct counter_count *count,
- 				  enum counter_count_mode cnt_mode)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	unsigned int count_mode;
- 	unsigned int mode_cfg;
- 	const int base_offset = priv->base + 2 * count->id + 1;
-@@ -661,7 +666,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
- static int quad8_count_enable_read(struct counter_device *counter,
- 				   struct counter_count *count, u8 *enable)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 
- 	*enable = priv->ab_enable[count->id];
- 
-@@ -671,7 +676,7 @@ static int quad8_count_enable_read(struct counter_device *counter,
- static int quad8_count_enable_write(struct counter_device *counter,
- 				    struct counter_count *count, u8 enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned long irqflags;
- 	unsigned int ior_cfg;
-@@ -699,7 +704,7 @@ static const char *const quad8_noise_error_states[] = {
- static int quad8_error_noise_get(struct counter_device *counter,
- 				 struct counter_count *count, u32 *noise_error)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 	const int base_offset = priv->base + 2 * count->id + 1;
- 
- 	*noise_error = !!(inb(base_offset) & QUAD8_FLAG_E);
-@@ -710,7 +715,7 @@ static int quad8_error_noise_get(struct counter_device *counter,
- static int quad8_count_preset_read(struct counter_device *counter,
- 				   struct counter_count *count, u64 *preset)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 
- 	*preset = priv->preset[count->id];
- 
-@@ -736,7 +741,7 @@ static void quad8_preset_register_set(struct quad8 *const priv, const int id,
- static int quad8_count_preset_write(struct counter_device *counter,
- 				    struct counter_count *count, u64 preset)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	unsigned long irqflags;
- 
- 	/* Only 24-bit values are supported */
-@@ -755,7 +760,7 @@ static int quad8_count_preset_write(struct counter_device *counter,
- static int quad8_count_ceiling_read(struct counter_device *counter,
+ 	regmap_read(priv->regmap, TIM_CR1, &cr1);
+@@ -153,7 +158,7 @@ static int stm32_count_direction_read(struct counter_device *counter,
+ static int stm32_count_ceiling_read(struct counter_device *counter,
  				    struct counter_count *count, u64 *ceiling)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	unsigned long irqflags;
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
+ 	u32 arr;
  
- 	spin_lock_irqsave(&priv->lock, irqflags);
-@@ -780,7 +785,7 @@ static int quad8_count_ceiling_read(struct counter_device *counter,
- static int quad8_count_ceiling_write(struct counter_device *counter,
+ 	regmap_read(priv->regmap, TIM_ARR, &arr);
+@@ -166,7 +171,7 @@ static int stm32_count_ceiling_read(struct counter_device *counter,
+ static int stm32_count_ceiling_write(struct counter_device *counter,
  				     struct counter_count *count, u64 ceiling)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	unsigned long irqflags;
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
  
- 	/* Only 24-bit values are supported */
-@@ -807,7 +812,7 @@ static int quad8_count_preset_enable_read(struct counter_device *counter,
- 					  struct counter_count *count,
- 					  u8 *preset_enable)
+ 	if (ceiling > priv->max_arr)
+ 		return -ERANGE;
+@@ -181,7 +186,7 @@ static int stm32_count_ceiling_write(struct counter_device *counter,
+ static int stm32_count_enable_read(struct counter_device *counter,
+ 				   struct counter_count *count, u8 *enable)
  {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
+ 	u32 cr1;
  
- 	*preset_enable = !priv->preset_enable[count->id];
+ 	regmap_read(priv->regmap, TIM_CR1, &cr1);
+@@ -194,7 +199,7 @@ static int stm32_count_enable_read(struct counter_device *counter,
+ static int stm32_count_enable_write(struct counter_device *counter,
+ 				    struct counter_count *count, u8 enable)
+ {
+-	struct stm32_timer_cnt *const priv = counter->priv;
++	struct stm32_timer_cnt *const priv = stm32_count_from_counter(counter);
+ 	u32 cr1;
  
-@@ -818,7 +823,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
- 					   struct counter_count *count,
- 					   u8 preset_enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const int base_offset = priv->base + 2 * count->id + 1;
- 	unsigned long irqflags;
- 	unsigned int ior_cfg;
-@@ -845,7 +850,7 @@ static int quad8_signal_cable_fault_read(struct counter_device *counter,
- 					 struct counter_signal *signal,
- 					 u8 *cable_fault)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const size_t channel_id = signal->id / 2;
- 	unsigned long irqflags;
- 	bool disabled;
-@@ -875,7 +880,7 @@ static int quad8_signal_cable_fault_enable_read(struct counter_device *counter,
- 						struct counter_signal *signal,
- 						u8 *enable)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 	const size_t channel_id = signal->id / 2;
- 
- 	*enable = !!(priv->cable_fault_enable & BIT(channel_id));
-@@ -887,7 +892,7 @@ static int quad8_signal_cable_fault_enable_write(struct counter_device *counter,
- 						 struct counter_signal *signal,
- 						 u8 enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const size_t channel_id = signal->id / 2;
- 	unsigned long irqflags;
- 	unsigned int cable_fault_enable;
-@@ -913,7 +918,7 @@ static int quad8_signal_fck_prescaler_read(struct counter_device *counter,
- 					   struct counter_signal *signal,
- 					   u8 *prescaler)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = quad8_from_counter(counter);
- 
- 	*prescaler = priv->fck_prescaler[signal->id / 2];
- 
-@@ -924,7 +929,7 @@ static int quad8_signal_fck_prescaler_write(struct counter_device *counter,
- 					    struct counter_signal *signal,
- 					    u8 prescaler)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = quad8_from_counter(counter);
- 	const size_t channel_id = signal->id / 2;
- 	const int base_offset = priv->base + 2 * channel_id;
- 	unsigned long irqflags;
-@@ -1150,7 +1155,6 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 	priv->counter.num_counts = ARRAY_SIZE(quad8_counts);
- 	priv->counter.signals = quad8_signals;
- 	priv->counter.num_signals = ARRAY_SIZE(quad8_signals);
+ 	if (enable) {
+@@ -336,7 +341,6 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
+ 	priv->counter.num_counts = 1;
+ 	priv->counter.signals = stm32_signals;
+ 	priv->counter.num_signals = ARRAY_SIZE(stm32_signals);
 -	priv->counter.priv = priv;
- 	priv->base = base[id];
  
- 	spin_lock_init(&priv->lock);
+ 	platform_set_drvdata(pdev, priv);
+ 
 -- 
 2.33.0
 
