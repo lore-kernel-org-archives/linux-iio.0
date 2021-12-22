@@ -2,52 +2,52 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id F0417C433FE
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Dec 2021 18:38:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9E66C433F5
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Dec 2021 18:51:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344771AbhLVSiw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Dec 2021 13:38:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34190 "EHLO
+        id S1344902AbhLVSvD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Dec 2021 13:51:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37004 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233997AbhLVSiw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Dec 2021 13:38:52 -0500
-Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F0B0C061574;
-        Wed, 22 Dec 2021 10:38:52 -0800 (PST)
-Received: by mail-qv1-xf36.google.com with SMTP id r6so3067574qvr.13;
-        Wed, 22 Dec 2021 10:38:52 -0800 (PST)
+        with ESMTP id S1344899AbhLVSvC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Dec 2021 13:51:02 -0500
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CAC2C061574;
+        Wed, 22 Dec 2021 10:51:02 -0800 (PST)
+Received: by mail-qt1-x82d.google.com with SMTP id j17so2816420qtx.2;
+        Wed, 22 Dec 2021 10:51:02 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=date:from:to:cc:subject:message-id:references:mime-version
          :content-disposition:in-reply-to;
-        bh=Nf5MgBjXqmTQasO6KZdp2Qw6UGHqoTSrSt9BT1Gsnd4=;
-        b=TV2EmI7uhCw68jYA9t1cerE/vqxUO5eKp98LCALYoUvvrtXrvZLRIMjKaYrdlL3/36
-         X1tjwqYFo0DO97WxkR7o33UfwVyJSJogDkBFjt+YjtGd5I4lS20oZdMng49Ygut4BOJh
-         MdeY8wSUVzsmGPg4qCIYm/cpA4XFJbn2G3uvFQWZvwmLbns3t4luMtyYIO41ZZG/fFKy
-         L9tYXjBHiaPqrrsnD65TbeF47Pkw9eUqwe9VsgI6SJb6XbM2cfErxBDRfyKuWuDyap3r
-         IaWOjzWjU6hmsn65FEZvS2AsxqZc5FcqSg2vr6xPJmpT3ut6pVH4AuC7ghzBq6Pr0PVs
-         zTkw==
+        bh=TOPXNxn1ZtQrXll8PkTIOOIN5IXFNZD4uJ0Nc4o/BwU=;
+        b=lXNI0j1gopwX96HLRZ2tf1VDJI5hFCZn93xxAfXDfKpHOtu2bvGITNl3R9w7s+VnRa
+         O6IyS6e1ztb32DvcvwOT7MKvbTLzZCu+OYJBWHuyazF6/lqChqUXEAUV6be+jawc3pdX
+         gGRz6TN14F4CI39TX5i7AQX28Tl9hHu2eHR27jrnKMVRtWo5wcW1llXYj1o+OBo+w934
+         yt3wVA2TgY/m/eCOwSYUCEaTt2k7wbqQ5G7/mND0IH8BRHV+FDyRFa/WfXPi4HmRjBLP
+         MMa7CoG+Jip1MKhLHmK/uJ2AUlseNy1Drx+mfEVtWVacqxz9BisqudVneYMTUqf+trCo
+         QJzA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=Nf5MgBjXqmTQasO6KZdp2Qw6UGHqoTSrSt9BT1Gsnd4=;
-        b=a3eG9Pu9jtKeMziMQ9FZgSuSSsbmYsECZ1tp4LFesvG7k3MPk94SYR/dNWufeoCYzj
-         67/RoDd3aoGKFmvI3D/q0oAJjZbLJWSDhsexxjE8RAWlb4xd9M/4UNUc3vOUyYJUoeVJ
-         LRLZFPc91i4Hgd6KdBdVpi/EWpBc5rDvSFwaTurORsK1Bg+NEhvtv7G12Q6BGn31WkRH
-         pTPgEvDnW8ZwYWAeJRNziqno+BpW0cIihnleEyEhiJvhr5+OerOngfQ+WCxZ2zt8bfv1
-         RTGfOJ9IWJAsodHXLTKktvl5HGMhESO4XYaJ61Thdx+5XiajbKonvQ65clyn0Di4x2fl
-         jItQ==
-X-Gm-Message-State: AOAM532fvjWubICvy7O+LpZy1C6rcCFwW2WDc9VQzHzK/jMTQBGm4AST
-        l6hHrWc6lBF79O8/u6sPp04=
-X-Google-Smtp-Source: ABdhPJwMUNy/FD+LSUG8fSt+A9sruxy6dsJ/uwwEFxfr394TsSBDePVrWrQBgiewiBYOCJzaydGJBA==
-X-Received: by 2002:a05:6214:2a8e:: with SMTP id jr14mr3578976qvb.75.1640198331459;
-        Wed, 22 Dec 2021 10:38:51 -0800 (PST)
+        bh=TOPXNxn1ZtQrXll8PkTIOOIN5IXFNZD4uJ0Nc4o/BwU=;
+        b=F8ODVbQm4YZYME2s52jy1uP+L9bYlG/aRtCBz40DyD3TQr8Si+5nGfKj0nULuvj+Hj
+         juFjlclZPUaB01GorqvZ5SajiMEMo03mFOdURq2NOZcfjZtGJvIFKDXpP6VvIvNWvatA
+         rZQfetbzSRHOsECo9Ge9MtsW7J0AslMFrXoCxy8YIQ3O/M0HTvd0qVRgMo57ESGCRYO4
+         Q96RgDcD0GmvaEvOkwDt/NvtaAUEHyCDq/p470Ntsx/MA6ZSGnCsIlQfVm2Rveeg/gWn
+         mfw5ozGHGaaab6/qK+KK2qSyMfmEOcJuIx9Jb/7wvUY6KdP8SlQmOiN7gBn/NUvAxeHN
+         ldig==
+X-Gm-Message-State: AOAM531A1uYWHzWunfIiyyBIAz0nZgPUMChQHJEQFdrMlehRLUGo4qMl
+        alXdxXCbUWLZxt9tyC3f6i4SWd6MlWI=
+X-Google-Smtp-Source: ABdhPJzYpAm9FgoO+HqQLJg1R27FSEvsxZgxQJXY0VbYgsjiSNSAzWqslo23bAxl9lOHBFQyQRSYLA==
+X-Received: by 2002:ac8:5894:: with SMTP id t20mr3213356qta.450.1640199061677;
+        Wed, 22 Dec 2021 10:51:01 -0800 (PST)
 Received: from shaak (69-165-204-82.cable.teksavvy.com. [69.165.204.82])
-        by smtp.gmail.com with ESMTPSA id n129sm2241061qkn.64.2021.12.22.10.38.50
+        by smtp.gmail.com with ESMTPSA id bl16sm2690830qkb.44.2021.12.22.10.50.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 22 Dec 2021 10:38:50 -0800 (PST)
-Date:   Wed, 22 Dec 2021 13:38:47 -0500
+        Wed, 22 Dec 2021 10:51:01 -0800 (PST)
+Date:   Wed, 22 Dec 2021 13:50:57 -0500
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
@@ -56,55 +56,65 @@ Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
         linux-iio <linux-iio@vger.kernel.org>,
         devicetree <devicetree@vger.kernel.org>,
         Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v11 09/15] iio: afe: rescale: reduce risk of integer
- overflow
-Message-ID: <YcNwt5RFMNFUimD/@shaak>
+Subject: Re: [PATCH v11 10/15] iio: afe: rescale: make use of units.h
+Message-ID: <YcNzkbSsG1wyz2MV@shaak>
 References: <20211222034646.222189-1-liambeguin@gmail.com>
- <20211222034646.222189-10-liambeguin@gmail.com>
- <CAHp75Vc0aWrFtNK1ZkHkwP62zNXQJaDcn9pc8Uhfq0kOnWzmJg@mail.gmail.com>
+ <20211222034646.222189-11-liambeguin@gmail.com>
+ <CAHp75VeGNuYiqqHzv9cAbHKy-h3dnazf2YEvgJ4fwb88wgY48w@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75Vc0aWrFtNK1ZkHkwP62zNXQJaDcn9pc8Uhfq0kOnWzmJg@mail.gmail.com>
+In-Reply-To: <CAHp75VeGNuYiqqHzv9cAbHKy-h3dnazf2YEvgJ4fwb88wgY48w@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Dec 22, 2021 at 02:29:04PM +0200, Andy Shevchenko wrote:
+On Wed, Dec 22, 2021 at 02:33:52PM +0200, Andy Shevchenko wrote:
 > On Wed, Dec 22, 2021 at 5:47 AM Liam Beguin <liambeguin@gmail.com> wrote:
 > >
 > > From: Liam Beguin <lvb@xiphos.com>
 > >
-> > Reduce the risk of integer overflow by doing the scale calculation on
-> > a 64-bit integer. Since the rescaling is only performed on *val, reuse
-> > the IIO_VAL_FRACTIONAL_LOG2 case.
+> > Make use of well-defined SI metric prefixes to improve code readability.
 > 
 > ...
 > 
-> > -               tmp = 1 << *val2;
+> >         case IIO_VAL_FRACTIONAL_LOG2:
+> > -               tmp = (s64)*val * 1000000000LL;
+> > +               tmp = (s64)*val * NANO;
+> >                 tmp = div_s64(tmp, rescale->denominator);
+> >                 tmp *= rescale->numerator;
+> >
+> > -               tmp = div_s64_rem(tmp, 1000000000LL, &rem);
+> > +               tmp = div_s64_rem(tmp, NANO, &rem);
+> >                 *val = tmp;
 > 
-> At some point this should be BIT()
+> Thanks! The important part of this conversion is to get one trick,
+> i.e. NANO and GIGA are both represented by 10^9. We need to be sure
+> that here we use the proper sign of the power of these numbers. So
+> please double check in all cases that the chosen SI prefixes are
+> correct from the power sign point of view, e.g. it is 10^-9 and not
+> 10^9 or otherwise.
 
-I'm not against changing this, but (to me at least) 1 << *val2 seems
-more explicit as we're not working with bitfields. No?
+I get the difference, but I guess I'm not sure I understand how you want me to
+use them. I was using NANO here as that made most sense for me.
 
-> Rule of thumb (in accordance with C standard), always use unsigned
-> value as left operand of the _left_ shift.
+If we go by the positive vs. negative powers of ten, I should always use
+GIGA as we're multiplying by 10^9 and dividing by 10^9. Is that what you
+expected?
 
-Right, that makes sense! In practice though, since we'll most likely
-never use higher bits of *val2 with IIO_VAL_FRACTIONAL_LOG2, would it be
-enough to simply typecast?
-
-	tmp = 1 << (unsigned int)*val2;
+IMO, that wouldn't be as clear, but I believe you know better.
 
 Cheers,
 Liam
 
-> > +               if (scale_type == IIO_VAL_FRACTIONAL)
-> > +                       tmp = *val2;
-> > +               else
-> > +                       tmp = 1 << *val2;
+> ...
 > 
+> >                 *val2 = rem / (int)tmp;
+> >                 if (rem2)
+> > -                       *val2 += div_s64((s64)rem2 * 1000000000LL, tmp);
+> > +                       *val2 += div_s64((s64)rem2 * NANO, tmp);
+> 
+> Ditto here and for the rest
 > 
 > -- 
 > With Best Regards,
