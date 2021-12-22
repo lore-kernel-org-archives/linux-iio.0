@@ -2,88 +2,111 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D4282C433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Dec 2021 18:51:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F4C7C433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Dec 2021 18:54:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344910AbhLVSv1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Dec 2021 13:51:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37110 "EHLO
+        id S234390AbhLVSya (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Dec 2021 13:54:30 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37776 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344899AbhLVSv0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Dec 2021 13:51:26 -0500
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D243C061574;
-        Wed, 22 Dec 2021 10:51:26 -0800 (PST)
-Received: by mail-ed1-x533.google.com with SMTP id bm14so12253824edb.5;
-        Wed, 22 Dec 2021 10:51:26 -0800 (PST)
+        with ESMTP id S1344925AbhLVSya (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Dec 2021 13:54:30 -0500
+Received: from mail-ed1-x529.google.com (mail-ed1-x529.google.com [IPv6:2a00:1450:4864:20::529])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE805C061574;
+        Wed, 22 Dec 2021 10:54:29 -0800 (PST)
+Received: by mail-ed1-x529.google.com with SMTP id y22so12351222edq.2;
+        Wed, 22 Dec 2021 10:54:29 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc;
-        bh=KYTh2CwssS/3FtePDunwZjTT7AQdZfmbx8r4C9A/7rk=;
-        b=NkCq+PT+dxAtqEM4hO3GIGerh5pEAHRJ/tvQvHEAIqTVPFb1VzvT5vbB/p603Mc3TX
-         Ma5ejfdhhqTPhqiK+LanVD9cR6xKmKUWkgKx68Qr33HeuZeEgsDo5oJ0xhAuWKjD82XY
-         uPK9MpnzYeaiZfev1navurWuAW/b2be/zz1EFNhb/l6N7BHAY1r+mdJcK0z4piVR3Swz
-         Qc4KJqFuNZBxbocb0TcAIRAJgfMadSLBGB63cJfqxoTo6t2J6tdEOdbL7NIx5kKq9uyd
-         rGIU+f4MRcwGnDTl9W5JY7YUL8TJFgLbQZgUHQ5gxobtloyQqPkEj4zCxsIyp0ynaYoU
-         EVig==
+        bh=D2jS399/It1fJ+Sb/NuhbTruLk9QV9W0IDo5OUKxHQ4=;
+        b=quc6TH6kAsqvBlyeSfQvY+pgIS8cnQqk2L7/gS9HqKXcicJpJyyvszpr4JBEzuvttL
+         94mR1Ilg8TkyFXHtNj5vb6DhjyBuVtlV2wCYyAjSiHTkjNqsWY4kDao4nVSD1OrU5/dX
+         AbSYSy2v5Dwi4M962EvMoZbanfgrbdPkhDMZpnGkACm3mwgJw5Cx8h+XWXKsuwPTDbim
+         FexfGncIb3SzTZnvnZ/wdJ+VOAh2ox1EO8ytQ9pkdI9qU+yqksekz0FcgYlLj+kp1JHZ
+         ZuLfCQ+EEVmDdL2mGRNrj1cIC7nO6PiijFlMR8OToTrEBX6ZuVcHo/lxCMX4XXrYbkk2
+         SafA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc;
-        bh=KYTh2CwssS/3FtePDunwZjTT7AQdZfmbx8r4C9A/7rk=;
-        b=BEN3X0XVKFRXQpVUtoa1+1PYYUNEqhbxCPW171Hg2QjntrRZjHTcYmx8KrcXGZ8Pbr
-         kPQCxcU9ln3h6xNJI4+tcjdagZ10Xxw61WfTxJ+cRn/YEbaFcNTNQxViDDkADEbu6eSJ
-         M0bgkeG+fG42l/jQ6DEH3ucNBRhH2Q9GyIeZjwvYtngnt+2qutlqPNPpfTCm9pWZMg3R
-         DiTqjUmrRUThvp+Tfm5o5zhGldAFrF6fhROdz+yY7oscEKn4GWEU3fQ3JyGYTq6w/yTK
-         QKcdwfLzgxG0aihjWjp3iI21RwA+IGtz7+0KsODjgIktuv2YZWwPM53J4Mo3l484I7yy
-         cpOw==
-X-Gm-Message-State: AOAM532y2bNI5UaZzBuEwnkdxpXAJhKJs4izTrq72hg9uwyyZ7kVvSvk
-        5F4NXSiHeMeyPRMF+yVZrm8uWayiHxYzYQBHVNQ=
-X-Google-Smtp-Source: ABdhPJyCRsdCg1paGM0b6KJFzrwBvF+whD52FtJVNqLzVlcBfwUrtUieqKtiF4oFQWciu1uukzbB/kN0jiZfv0E3pl4=
-X-Received: by 2002:a17:907:97cd:: with SMTP id js13mr2183968ejc.497.1640199084990;
- Wed, 22 Dec 2021 10:51:24 -0800 (PST)
+        bh=D2jS399/It1fJ+Sb/NuhbTruLk9QV9W0IDo5OUKxHQ4=;
+        b=rNqe5YO00rct3OwPsooxIFdlJGIGVWmhhlBaOud7qv9ttsCZQDiPpT3JtQI+qCl6PK
+         bGUNUa7YSkvMNqX9tHvPoyHSsYrG3SkxsfOzjqC5Pg+XhlC1DCkGFiTrPfWH86WYqVAY
+         En0yi+J8mWrPPGJ6/rS6k36TfuBr7iwk9CqzB41SYJJiua4NBrr8Y46n4hofqhHUPsVZ
+         aOAy3c567z9n44O3WCJuQ2wwSxr69mXekDLjp6OCnoH8XcO669PbJY5QvQ4K1o34ymbE
+         0umrZ30mGbOqEezfycvUXD7ZbcXEFMbPSesLUw8MJIWryVBZXJYgKK2xPgJwDENQYYi8
+         QH8w==
+X-Gm-Message-State: AOAM531hS3n2dWaxquwAnAaiD7zwCU1tObmUAtBVjYLM+eSo/VIZx7ef
+        YX4+5eog05VoKTZsY1+vh0bDZl0pG1sskxJ4z7K1gEfc+Gk=
+X-Google-Smtp-Source: ABdhPJzKwc9fnChtXEWF+d2DdQwtLWvq8Wo1rOo3bA+Derw5cFqXnv01TCR2WoGenae340ckXOOUIGwFKWps9x5jrYg=
+X-Received: by 2002:aa7:cd75:: with SMTP id ca21mr4026016edb.242.1640199268479;
+ Wed, 22 Dec 2021 10:54:28 -0800 (PST)
 MIME-Version: 1.0
-References: <YcIpAKV7Cmi0o7PU@debian-BULLSEYE-live-builder-AMD64>
-In-Reply-To: <YcIpAKV7Cmi0o7PU@debian-BULLSEYE-live-builder-AMD64>
+References: <20211222034646.222189-1-liambeguin@gmail.com> <20211222034646.222189-5-liambeguin@gmail.com>
+ <CAHp75Vc009o5EunYP3QAB8up8hMrRL7oNax7cjphCFVUgSKXRw@mail.gmail.com> <YcNscJ/fQhI7h6Uq@shaak>
+In-Reply-To: <YcNscJ/fQhI7h6Uq@shaak>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 22 Dec 2021 20:49:26 +0200
-Message-ID: <CAHp75VcU8B8fydh874p6HpgGXXRYvNGdphH=i17JHB3DYJ1JZQ@mail.gmail.com>
-Subject: Re: [PATCH] drivers:iio:dac make expression evaluation 64-bit
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mihail Chindris <mihail.chindris@analog.com>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>
+Date:   Wed, 22 Dec 2021 20:52:30 +0200
+Message-ID: <CAHp75Vf6iN7yEdubKFkf+fXupVTco-toZN=a5+KNXG4Yv6oT3Q@mail.gmail.com>
+Subject: Re: [PATCH v11 04/15] iio: afe: rescale: expose scale processing function
+To:     Liam Beguin <liambeguin@gmail.com>
+Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
 Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, Dec 22, 2021 at 5:59 PM Muhammad Usama Anjum
-<usama.anjum@collabora.com> wrote:
->
-> Two 32-bit values are being evaluated using 32-bit arithmetic and then
-> passed to s64 type. It is wrong. Expression should be evaluated using
-> 64-bit arithmetic and then passed.
+On Wed, Dec 22, 2021 at 8:20 PM Liam Beguin <liambeguin@gmail.com> wrote:
+> On Wed, Dec 22, 2021 at 12:21:01PM +0200, Andy Shevchenko wrote:
+> > On Wed, Dec 22, 2021 at 5:46 AM Liam Beguin <liambeguin@gmail.com> wrote:
 
 ...
 
->         dac->ch_data[ch].scale_dec = DIV_ROUND_CLOSEST((s64)rem * 1000000,
->                                                         65536);
+> > >  #include <linux/iio/consumer.h>
+> > >  #include <linux/iio/iio.h>
+> > > +#include <linux/iio/afe/rescale.h>
+> >
+> > It should go before the consumer.h, no?
+>
+> I don't mind making the change, but why should it go before consumer.h?
 
-Shouldn't the above be fixed as well? Has anybody tried to compile on
-32-bit arch this?
+'a' is earlier than 'c' in the alphabet, no?
 
-> -       dac->ch_data[ch].offset_int = div_s64_rem(v_min * 65536, span, &rem);
-> +       dac->ch_data[ch].offset_int = div_s64_rem(v_min * 65536L, span, &rem);
->         tmp = (s64)rem * 1000000;
->         dac->ch_data[ch].offset_dec = div_s64(tmp, span);
->  }
+...
+
+> > And I would rather move the entire IIO group of headers...
+>
+> I can do that too. Do we have a convention for the ordering of #includes?
+> What's usually the rule/guideline for this?
+
+Guidelines suggest sorting without clear instructions. But in IIO and
+pin control I suggest people use this kind of grouping.
+
+> > >  #include <linux/module.h>
+> > >  #include <linux/of.h>
+> > >  #include <linux/of_device.h>
+> > >  #include <linux/platform_device.h>
+> > >  #include <linux/property.h>
+> >
+> > ... somewhere here (with blank line above).
+> >
+> > > -struct rescale;
+
+...
+
+> > Missed types.h and forward declarations like
+> > struct device;
+>
+> Okay. will add linux/types.h
+
+What about forward declaration?
 
 -- 
 With Best Regards,
