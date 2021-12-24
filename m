@@ -2,83 +2,79 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8F7F4C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Dec 2021 16:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C3561C433EF
+	for <linux-iio@archiver.kernel.org>; Fri, 24 Dec 2021 14:59:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349275AbhLWQiY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 23 Dec 2021 11:38:24 -0500
-Received: from www381.your-server.de ([78.46.137.84]:34024 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240125AbhLWQiY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Dec 2021 11:38:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:
-        MIME-Version:Date:Message-ID:From:References:Cc:To:Subject:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=xclLypP0lYpJWHJx1fDqFO+MLwhcLhCsssUQkOWIW7o=; b=eLAxm37CVubS/3z1Rv/qNPKimf
-        1A1ZPrevCrlOxjw7SyVlm873hMd6/RbwpiX6c90/eE7pfbVtkAV1FWUdLST3AwaAvLoUpS3SEb+5F
-        mS98ggcVdiTb3YHHuhPvqivqJCIXgPV8JEBPdxm6f9wMEXPF8DRPhFMAY6K1gZE+qlQsPnVY2BGNk
-        AQt6tJprZ08/daFYUJ+JPrrSLXOZDDU6NY3nGndOELMath842vgHJdpS2IHF/JjLpIkZ6FlbyIfkV
-        y8ZLg1MFrP4LjjtuJjyZzsxIxcJS0N/h3MqTa+dZyh6Mb911wvvO/hcl+YVd+q8euF90rzilb56hY
-        YTKZfzZw==;
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1n0R6h-000C54-Tw; Thu, 23 Dec 2021 17:38:19 +0100
-Received: from [2001:a61:2bc8:8501:9e5c:8eff:fe01:8578]
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1n0R6h-000S0O-FP; Thu, 23 Dec 2021 17:38:19 +0100
-Subject: Re: [PATCH] drivers:iio:dac make expression evaluation 64-bit
-To:     Muhammad Usama Anjum <usama.anjum@collabora.com>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mihail Chindris <mihail.chindris@analog.com>,
-        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        Collabora Kernel ML <kernel@collabora.com>,
-        kernel-janitors <kernel-janitors@vger.kernel.org>
-References: <YcIpAKV7Cmi0o7PU@debian-BULLSEYE-live-builder-AMD64>
- <CAHp75VcU8B8fydh874p6HpgGXXRYvNGdphH=i17JHB3DYJ1JZQ@mail.gmail.com>
- <eb59f405-24c6-69b8-beb1-465bfb783f61@collabora.com>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <16f84d86-4135-8a19-c5e1-3fbe8db78947@metafoo.de>
-Date:   Thu, 23 Dec 2021 17:38:19 +0100
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.14.0
+        id S1353002AbhLXO7T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 24 Dec 2021 09:59:19 -0500
+Received: from smtp-relay-canonical-0.canonical.com ([185.125.188.120]:37220
+        "EHLO smtp-relay-canonical-0.canonical.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1352999AbhLXO7T (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Dec 2021 09:59:19 -0500
+Received: from HP-EliteBook-840-G7.. (1-171-246-32.dynamic-ip.hinet.net [1.171.246.32])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-canonical-0.canonical.com (Postfix) with ESMTPSA id 713B241933;
+        Fri, 24 Dec 2021 14:59:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1640357951;
+        bh=4tETf+TR8k8tlTxIJMQAaz/Rs8+Y89BnDyFUfMAEh7Y=;
+        h=From:To:Cc:Subject:Date:Message-Id:MIME-Version;
+        b=ulMIx2vxVYEnqITGTCNkYFpP/y6VvlrufJI+hv1Vhfud0HwBeTN3SjrdipkHJK6PV
+         RQyGwsrva9bqxHUiruniysMoti47KOZApBSm9kFDZfcrrZitqpKvDgCdsKAE5Yiual
+         K6YMem1RxqO+1LzZVU5tzLD36e8o324eB7vgi02pYraeUXkMPti2RZzQHIRKDzhdiD
+         SgMqY9C85mGJC9ITeAi0OX/B3ixRyzfu/OBUw0tBNEFPbCei6OBdYuZciHm660eJO1
+         cExG1HPtbWrurfR4zb3VpTsKJ5IkomzEiECrezMpj2ka+qamEbRVWP1Ct2hQHSg0PJ
+         jgUik8fro6Ctg==
+From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
+To:     jic23@kernel.org, lars@metafoo.de
+Cc:     Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Chris Lesiak <chris.lesiak@licor.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: humidity: hdc100x: Add ACPI HID table
+Date:   Fri, 24 Dec 2021 22:59:01 +0800
+Message-Id: <20211224145903.368999-1-kai.heng.feng@canonical.com>
+X-Mailer: git-send-email 2.33.1
 MIME-Version: 1.0
-In-Reply-To: <eb59f405-24c6-69b8-beb1-465bfb783f61@collabora.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Content-Transfer-Encoding: 7bit
-Content-Language: en-US
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.3/26399/Thu Dec 23 10:42:51 2021)
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 12/23/21 5:34 PM, Muhammad Usama Anjum wrote:
-> On 12/22/21 11:49 PM, Andy Shevchenko wrote:
->> On Wed, Dec 22, 2021 at 5:59 PM Muhammad Usama Anjum
->> <usama.anjum@collabora.com> wrote:
->>> Two 32-bit values are being evaluated using 32-bit arithmetic and then
->>> passed to s64 type. It is wrong. Expression should be evaluated using
->>> 64-bit arithmetic and then passed.
->> ...
->>
->>>          dac->ch_data[ch].scale_dec = DIV_ROUND_CLOSEST((s64)rem * 1000000,
->>>                                                          65536);
->> Shouldn't the above be fixed as well? Has anybody tried to compile on
->> 32-bit arch this?
-> No, it correct already. In this case, rem is being typecasted to s64 and
-> then multiplied with a 32-bit number, 1000000. Thus 64-bit arithmetic is
-> being performed here.
+x86 boards may use ACPI HID "HDC1010" to for hdc100x device.
 
-What Andy means is that this needs to be DIV_S64_ROUND_CLOSEST() to work 
-on 32-bit platforms. But it is clearly unrelated to your change and 
-should be in its own patch.
+So add an ACPI match table for that accordingly.
+
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+---
+ drivers/iio/humidity/hdc100x.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
+
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+index 9e0fce917ce4c..ad1dfac543c52 100644
+--- a/drivers/iio/humidity/hdc100x.c
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -417,10 +417,18 @@ static const struct of_device_id hdc100x_dt_ids[] = {
+ };
+ MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
+ 
++static const struct acpi_device_id hdc100x_acpi_match[] = {
++	{"HDC1010"},
++	{ },
++};
++
++MODULE_DEVICE_TABLE(acpi, hdc100x_acpi_match);
++
+ static struct i2c_driver hdc100x_driver = {
+ 	.driver = {
+ 		.name	= "hdc100x",
+ 		.of_match_table = hdc100x_dt_ids,
++		.acpi_match_table = ACPI_PTR(hdc100x_acpi_match),
+ 	},
+ 	.probe = hdc100x_probe,
+ 	.id_table = hdc100x_id,
+-- 
+2.33.1
 
