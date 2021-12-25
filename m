@@ -2,48 +2,48 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F6AFC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A5AC4332F
 	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:11:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232204AbhLYQLO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S232206AbhLYQLO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sat, 25 Dec 2021 11:11:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43866 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232206AbhLYQLO (ORCPT
+        with ESMTP id S232141AbhLYQLO (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:11:14 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE12CC061759
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C0C3CC061401
         for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 08:11:13 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dU-0008DQ-LM; Sat, 25 Dec 2021 17:11:08 +0100
+        id 1n19dV-0008Ds-B4; Sat, 25 Dec 2021 17:11:09 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dS-006ah4-BD; Sat, 25 Dec 2021 17:11:05 +0100
+        id 1n19dU-006ahY-My; Sat, 25 Dec 2021 17:11:07 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dR-0007fc-DW; Sat, 25 Dec 2021 17:11:05 +0100
+        id 1n19dT-0007hT-EK; Sat, 25 Dec 2021 17:11:07 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        kernel@pengutronix.de
-Subject: [PATCH v1 09/23] counter: ftm-quaddec: Convert to counter_priv() wrapper
-Date:   Sat, 25 Dec 2021 17:10:42 +0100
-Message-Id: <20211225161056.682797-10-u.kleine-koenig@pengutronix.de>
+        kernel@pengutronix.de, Kamel Bouhara <kamel.bouhara@bootlin.com>
+Subject: [PATCH v1 19/23] counter: microchip-tcb-capture: Convert to new counter registration
+Date:   Sat, 25 Dec 2021 17:10:52 +0100
+Message-Id: <20211225161056.682797-20-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 References: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=Qqpt+RIrORwuC+ko5p/I1RZVPs6DxJb6yX67Xpe80y8=; m=O/hbHSowifJBTpUmrGb87d4c+26dGvtHSBxVMu37a1o=; p=6pn1OojDAH74dd/doVZuAymC4K8Kkh3FuAv9xfxzgvs=; g=310c4b20e4d7bee8e70610ad57b3dedc48ab7907
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQksACgkQwfwUeK3K7AkxhAf/Y7p olhsVfAca4oOlcTHm+hQP+ipzklEsT/3I4fidKMoowlMZQQxi5MfMFh+LUWnEFSJTOP1jqoOiMLYi M8MXJ/7U5T/T9v0t64y2DfOaRpkuRy5MJLExleiYnzE7uVC3ugrj/qxnCXLg5+yz/gx+Y6orBXSqN dC5cbs3zUjFXHDDlC9JRw/7nFlCBnKNPxKXAYpydgnTtnB+RD8LYnR7aB0REzfbaF3s5PzOGCcUVK RMsA9O3N0KWnew8TRbRpACO6RyN+aKvfdExBV562eOu8DVVuvfJ4C0bG8R+RN8bKmM9NBxybvuS+8 Bkc5zcz74uPRf3zfgdtXOb6VzkFZfdA==
+X-Patch-Hashes: v=1; h=sha256; i=dv9/MB9ifmvflPx4I7yzugNX/qYSHDw48jNRaimmjns=; m=Lg450KFF5D1MfioZnm9kqgLihfB7va57Kt9CmXZSEBA=; p=fP6Lk91Cz9Gsb+bIJK0LoB4rqMYyruwHd3+HrDK8CPU=; g=458a5d35c2067fefd08d90c9bd8140398197f70b
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQncACgkQwfwUeK3K7AlZeAgAkgX PmdyiatHUyqdffuXc3Es4wbWtjMbQGLLOWGlnowqo8nuCmF+Q1LcIS31GYzFAkERez7fYv2+zlJb+ WoWPc+IRY81vJS6EjmrzxIgCAcEBLGM4qLoVmOzhLjQgNvZan6ckuF7fg4JzCnSBZaVz5JnSPIFHi go4X9zG0t7PQ71U8Rso0x4ToK/1cH7cG4p6Ac+WQVh7kCwjFxQ+1Xq2G3pxEnyyL16MjOLeTkitMD 7NBmgzU+FUsYNVOwLNXNcWnKJAbtnFCbXKc3PVPkAW3y1Z5bN1IHzdPd+KGH4WrIMSozoa7+GM6a+ AULD6EuY6IgcW6aOeAcHTUuT9GkYqxA==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -53,53 +53,78 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a straight forward conversion to the new counter_priv() wrapper.
+This fixes device lifetime issues where it was possible to free a live
+struct device.
 
+Fixes: 106b104137fd ("counter: Add microchip TCB capture counter")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/ftm-quaddec.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/counter/microchip-tcb-capture.c | 30 ++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-index 9272f7b58beb..f5d92df6a611 100644
---- a/drivers/counter/ftm-quaddec.c
-+++ b/drivers/counter/ftm-quaddec.c
-@@ -118,7 +118,7 @@ static void ftm_quaddec_disable(void *ftm)
- static int ftm_quaddec_get_prescaler(struct counter_device *counter,
- 				     struct counter_count *count, u32 *cnt_mode)
- {
--	struct ftm_quaddec *ftm = counter->priv;
-+	struct ftm_quaddec *ftm = counter_priv(counter);
- 	uint32_t scflags;
+diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+index 1b56b7444668..70c1d28546be 100644
+--- a/drivers/counter/microchip-tcb-capture.c
++++ b/drivers/counter/microchip-tcb-capture.c
+@@ -24,7 +24,6 @@
  
- 	ftm_read(ftm, FTM_SC, &scflags);
-@@ -131,7 +131,7 @@ static int ftm_quaddec_get_prescaler(struct counter_device *counter,
- static int ftm_quaddec_set_prescaler(struct counter_device *counter,
- 				     struct counter_count *count, u32 cnt_mode)
- {
--	struct ftm_quaddec *ftm = counter->priv;
-+	struct ftm_quaddec *ftm = counter_priv(counter);
+ struct mchp_tc_data {
+ 	const struct atmel_tcb_config *tc_cfg;
+-	struct counter_device counter;
+ 	struct regmap *regmap;
+ 	int qdec_mode;
+ 	int num_channels;
+@@ -296,6 +295,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	const struct atmel_tcb_config *tcb_config;
+ 	const struct of_device_id *match;
++	struct counter_device *counter;
+ 	struct mchp_tc_data *priv;
+ 	char clk_name[7];
+ 	struct regmap *regmap;
+@@ -303,9 +303,10 @@ static int mchp_tc_probe(struct platform_device *pdev)
+ 	int channel;
+ 	int ret, i;
  
- 	mutex_lock(&ftm->ftm_quaddec_mutex);
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
++	counter = devm_counter_alloc(&pdev->dev, sizeof(*priv));
++	if (!counter)
+ 		return -ENOMEM;
++	priv = counter_priv(counter);
  
-@@ -162,7 +162,7 @@ static int ftm_quaddec_count_read(struct counter_device *counter,
- 				  struct counter_count *count,
- 				  u64 *val)
- {
--	struct ftm_quaddec *const ftm = counter->priv;
-+	struct ftm_quaddec *const ftm = counter_priv(counter);
- 	uint32_t cntval;
+ 	match = of_match_node(atmel_tc_of_match, np->parent);
+ 	tcb_config = match->data;
+@@ -360,16 +361,19 @@ static int mchp_tc_probe(struct platform_device *pdev)
  
- 	ftm_read(ftm, FTM_CNT, &cntval);
-@@ -176,7 +176,7 @@ static int ftm_quaddec_count_write(struct counter_device *counter,
- 				   struct counter_count *count,
- 				   const u64 val)
- {
--	struct ftm_quaddec *const ftm = counter->priv;
-+	struct ftm_quaddec *const ftm = counter_priv(counter);
+ 	priv->tc_cfg = tcb_config;
+ 	priv->regmap = regmap;
+-	priv->counter.name = dev_name(&pdev->dev);
+-	priv->counter.parent = &pdev->dev;
+-	priv->counter.ops = &mchp_tc_ops;
+-	priv->counter.num_counts = ARRAY_SIZE(mchp_tc_counts);
+-	priv->counter.counts = mchp_tc_counts;
+-	priv->counter.num_signals = ARRAY_SIZE(mchp_tc_count_signals);
+-	priv->counter.signals = mchp_tc_count_signals;
+-	priv->counter.priv = priv;
+-
+-	return devm_counter_register(&pdev->dev, &priv->counter);
++	counter->name = dev_name(&pdev->dev);
++	counter->parent = &pdev->dev;
++	counter->ops = &mchp_tc_ops;
++	counter->num_counts = ARRAY_SIZE(mchp_tc_counts);
++	counter->counts = mchp_tc_counts;
++	counter->num_signals = ARRAY_SIZE(mchp_tc_count_signals);
++	counter->signals = mchp_tc_count_signals;
++
++	ret = devm_counter_add(&pdev->dev, counter);
++	if (ret < 0)
++		return dev_err_probe(&pdev->dev, ret, "Failed to add counter\n");
++ 
++	return 0;
+ }
  
- 	if (val != 0) {
- 		dev_warn(&ftm->pdev->dev, "Can only accept '0' as new counter value\n");
+ static const struct of_device_id mchp_tc_dt_ids[] = {
 -- 
 2.33.0
 
