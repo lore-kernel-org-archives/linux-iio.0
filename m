@@ -2,48 +2,50 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7C3C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 015EAC433EF
 	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:11:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232235AbhLYQLW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S232242AbhLYQLW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sat, 25 Dec 2021 11:11:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232236AbhLYQLU (ORCPT
+        with ESMTP id S232234AbhLYQLU (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:11:20 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECE4FC06175E
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EC3A5C06175D
         for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 08:11:19 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dU-0008D8-LL; Sat, 25 Dec 2021 17:11:09 +0100
+        id 1n19dU-0008Do-NF; Sat, 25 Dec 2021 17:11:08 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dQ-006agg-PK; Sat, 25 Dec 2021 17:11:04 +0100
+        id 1n19dU-006ahT-Ax; Sat, 25 Dec 2021 17:11:07 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dP-0007eM-Rs; Sat, 25 Dec 2021 17:11:03 +0100
+        id 1n19dT-0007h7-0c; Sat, 25 Dec 2021 17:11:07 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        kernel@pengutronix.de
-Subject: [PATCH v1 01/23] counter: Use container_of instead of drvdata to track counter_device
-Date:   Sat, 25 Dec 2021 17:10:34 +0100
-Message-Id: <20211225161056.682797-2-u.kleine-koenig@pengutronix.de>
+        kernel@pengutronix.de, Felipe Balbi <balbi@kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Raymond Tan <raymond.tan@intel.com>
+Subject: [PATCH v1 17/23] counter: intel-qep: Convert to new counter registration
+Date:   Sat, 25 Dec 2021 17:10:50 +0100
+Message-Id: <20211225161056.682797-18-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 References: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=WhZLdLliam1HUvYgAAdyYZqU7b1Ox6SZw+AoFf3AYfo=; m=9wq0CKsz7Zt+5kbGc6ZP9L3j/ut+4WtFH3D3A21gjvg=; p=TR5ghLNVD5w+ejoxev7uMl+j4ICbXKPQUuSfB2Fckww=; g=fd9c9e8d0472fe9e05d9e8e3943c38b880e5b1dd
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQiUACgkQwfwUeK3K7AmXGwf/dOI Vz+taCDWLsHwJsJ3yvcsALTXbWSgYSkrS7AI28Ezgn4kcfnUF01/Q5XrCh/+7UdpS9mB4NEZXqNol /Ihpn9n9wA5SR15G+Ar2r1RdnZ/y8O422+YyF1ZA5JqzHnfY3l6TiWxQXZjXWUcv9e4uXqMa082yC HaznIsGXGJNAN60epSYIsHsXG/EE0hVdMKTMnF4jjLn0t/x7nxUvijN56uaD8cqN5jLfK+6rE0Bru mnZgqkzJ/td1CDxifafS/zQkx3lQ6HsCvbEHA0bkBoiNe1/GMP94/FvKztlFD97jQsy4Sx6N7BvVF rxVnQiSH1GEPVyDcW5JuRVL83IFOaKA==
+X-Patch-Hashes: v=1; h=sha256; i=xxaNj3Lr4F2nUU3L5jyLeMsoD9IgL3Fywde/z31RhRA=; m=3R8rN/LzNzQo1FXHZXjRMSNmOPiOoCX+fEd8aOKojqA=; p=PZNhgfrkhFxeqmpbLIe6pog2VoENjnSIHj4tDDoSTLs=; g=470d5595051e38ec00ec649e099aa79724b1deb2
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQm8ACgkQwfwUeK3K7Amm+Af/cSK Un7Yfo00MYF1bHfXHhZJL7JwHx6yyokjJw5vBimh+TOHlXorVahKIJkOGQcjd3ggZXmKwr9jyjghm CmCMGZrWE5+9pC8k/g9dEN1YU3wiEM7Hau15Rk8TPPl6WZh+RiXbYDdPCIMNzcEz0e4mwdHs/tzA7 OCIZOPngbilpVwoHVjqzlh1fJglhVGODb3Qj8DRwjn4LYaq8XspZ2NNe6gcjDME2o3Uun6Yq8zRhT kusF5Ep/N4IVp9zSXNP7i+U+E1yuZCZomy01WeWfL5Xc1terre5cq8TWX7UoGqZW9Iv+zpt8mU3Jr J53EVA9beN4SNjcnmNTqiPju8Z/M43A==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -53,40 +55,79 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The counter core uses drvdata to find a struct counter_device from a
-struct device. However as the device is a member of struct counter_device,
-the lookup can be done faster (and a bit type safe) using container_of.
+This fixes device lifetime issues where it was possible to free a live
+struct device.
 
-There are no other users of drvdata, so the call to dev_set_drvdata can
-go away, too.
-
+Fixes: b711f687a1c1 ("counter: Add support for Intel Quadrature Encoder Peripheral")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/counter-core.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/counter/intel-qep.c | 28 ++++++++++++++++------------
+ 1 file changed, 16 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index 5acc54539623..f053a43c6c04 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -26,7 +26,8 @@ static DEFINE_IDA(counter_ida);
+diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
+index 8f84a48508ac..47a6a9dfc9e8 100644
+--- a/drivers/counter/intel-qep.c
++++ b/drivers/counter/intel-qep.c
+@@ -63,7 +63,6 @@
+ #define INTEL_QEP_CLK_PERIOD_NS		10
  
- static void counter_device_release(struct device *dev)
+ struct intel_qep {
+-	struct counter_device counter;
+ 	struct mutex lock;
+ 	struct device *dev;
+ 	void __iomem *regs;
+@@ -392,14 +391,16 @@ static struct counter_count intel_qep_counter_count[] = {
+ 
+ static int intel_qep_probe(struct pci_dev *pci, const struct pci_device_id *id)
  {
--	struct counter_device *const counter = dev_get_drvdata(dev);
-+	struct counter_device *const counter =
-+		container_of(dev, struct counter_device, dev);
++	struct counter_device *counter;
+ 	struct intel_qep *qep;
+ 	struct device *dev = &pci->dev;
+ 	void __iomem *regs;
+ 	int ret;
  
- 	counter_chrdev_remove(counter);
- 	ida_free(&counter_ida, dev->id);
-@@ -78,7 +79,6 @@ int counter_register(struct counter_device *const counter)
- 		dev->of_node = counter->parent->of_node;
- 	}
- 	device_initialize(dev);
--	dev_set_drvdata(dev, counter);
+-	qep = devm_kzalloc(dev, sizeof(*qep), GFP_KERNEL);
+-	if (!qep)
++	counter = devm_counter_alloc(dev, sizeof(*qep));
++	if (!counter)
+ 		return -ENOMEM;
++	qep = counter_priv(counter);
  
- 	err = counter_sysfs_add(counter);
- 	if (err < 0)
+ 	ret = pcim_enable_device(pci);
+ 	if (ret)
+@@ -422,20 +423,23 @@ static int intel_qep_probe(struct pci_dev *pci, const struct pci_device_id *id)
+ 	intel_qep_init(qep);
+ 	pci_set_drvdata(pci, qep);
+ 
+-	qep->counter.name = pci_name(pci);
+-	qep->counter.parent = dev;
+-	qep->counter.ops = &intel_qep_counter_ops;
+-	qep->counter.counts = intel_qep_counter_count;
+-	qep->counter.num_counts = ARRAY_SIZE(intel_qep_counter_count);
+-	qep->counter.signals = intel_qep_signals;
+-	qep->counter.num_signals = ARRAY_SIZE(intel_qep_signals);
+-	qep->counter.priv = qep;
++	counter->name = pci_name(pci);
++	counter->parent = dev;
++	counter->ops = &intel_qep_counter_ops;
++	counter->counts = intel_qep_counter_count;
++	counter->num_counts = ARRAY_SIZE(intel_qep_counter_count);
++	counter->signals = intel_qep_signals;
++	counter->num_signals = ARRAY_SIZE(intel_qep_signals);
+ 	qep->enabled = false;
+ 
+ 	pm_runtime_put(dev);
+ 	pm_runtime_allow(dev);
+ 
+-	return devm_counter_register(&pci->dev, &qep->counter);
++	ret = devm_counter_add(&pci->dev, counter);
++	if (ret < 0)
++		return dev_err_probe(&pci->dev, ret, "Failed to add counter\n");
++
++	return 0;
+ }
+ 
+ static void intel_qep_remove(struct pci_dev *pci)
 -- 
 2.33.0
 
