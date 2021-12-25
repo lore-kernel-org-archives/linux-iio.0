@@ -2,48 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A3C25C43219
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB84BC41535
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:11:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232225AbhLYQLV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 25 Dec 2021 11:11:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43916 "EHLO
+        id S232226AbhLYQLS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 25 Dec 2021 11:11:18 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232223AbhLYQLU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:11:20 -0500
+        with ESMTP id S232227AbhLYQLR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:11:17 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2DFDC061757
-        for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 08:11:19 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76DF9C061759
+        for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 08:11:16 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dU-0008DN-LK; Sat, 25 Dec 2021 17:11:08 +0100
+        id 1n19dY-0008D7-PN; Sat, 25 Dec 2021 17:11:12 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dS-006agr-3r; Sat, 25 Dec 2021 17:11:05 +0100
+        id 1n19dQ-006agf-Lm; Sat, 25 Dec 2021 17:11:03 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dQ-0007es-Dt; Sat, 25 Dec 2021 17:11:04 +0100
+        id 1n19dP-0007eG-Mi; Sat, 25 Dec 2021 17:11:03 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        kernel@pengutronix.de
-Subject: [PATCH v1 04/23] counter: Provide a wrapper to access device private data
-Date:   Sat, 25 Dec 2021 17:10:37 +0100
-Message-Id: <20211225161056.682797-5-u.kleine-koenig@pengutronix.de>
+        kernel@pengutronix.de, David Lechner <david@lechnology.com>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Felipe Balbi <balbi@kernel.org>,
+        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+        Kamel Bouhara <kamel.bouhara@bootlin.com>,
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        Patrick Havelange <patrick.havelange@essensium.com>,
+        Raymond Tan <raymond.tan@intel.com>
+Subject: [PATCH v1 00/23] counter: cleanups and device lifetime fixes
+Date:   Sat, 25 Dec 2021 17:10:33 +0100
+Message-Id: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
-References: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=nzQ4DnbOEgzHi7qbM8FcV4rIskOl3PDISWEFqgrONvE=; m=5uhD8Y8IZ4ytbBJcTc1wfOxi3FuwAZvDpWmUecQv954=; p=rSRrtmEFfPgDVQa4FhzU+CjOfeIKDMTamuJlb7/VKiY=; g=906fdcea6105edfcfeb026b61556fa3378e94ade
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQjEACgkQwfwUeK3K7An+Agf+IN9 29f4EHKE2tLKR48ciJUrrTz0hmtIK26lQrUdddooTkvzuwqJVAGCtAeN9HsjWM+REsqqjKh6x4dPD KprfjbKNrX4ApT9vq1li4fV/7KYhHat1r1/1IRTYz2WkMHXlh6dU6geX2sK7ylroguSrq7C3jtaYg f/MxiJRLM4WLG/2wCNhQdghtVVrddNtNHMQRTdQPSJ9glc1QHlR99U31n9Q8GbIyjliKp86BMRkhG nD9uUq6pfbpKSxlQvcQUAfX/b84rK7al/wxWcuuLZHPtgBJ3I+UfY0mU0HBE8FSr6hHEiKgyWNTAb usL50ahlLaK602d8f8UEI5fxoWHWhNQ==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -53,53 +56,57 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-For now this just wraps accessing struct counter_device::priv. However
-this is about to change and converting drivers to this helper
-individually makes fixing device lifetime issues result in easier to
-review patches.
+Hello,
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/counter/counter-core.c | 12 ++++++++++++
- include/linux/counter.h        |  2 ++
- 2 files changed, 14 insertions(+)
+this serie's goal is to fix struct device lifetime issues as pointed out
+in patch #13. The patches up to patch #12 are only prepatory and cleanup
+patches. Patch #13 provides the needed functions to fix the issues in
+all drivers (patches #15 to #22). The last patch removes the then unused
+API calls.
 
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index f053a43c6c04..00c41f28c101 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -45,6 +45,18 @@ static struct bus_type counter_bus_type = {
- 
- static dev_t counter_devt;
- 
-+/**
-+ * counter_priv - access counter device private data
-+ * @counter: counter device
-+ *
-+ * Get the counter device private data
-+ */
-+void *counter_priv(const struct counter_device *const counter)
-+{
-+	return counter->priv;
-+}
-+EXPORT_SYMBOL_GPL(counter_priv);
-+
- /**
-  * counter_register - register Counter to the system
-  * @counter:	pointer to Counter to register
-diff --git a/include/linux/counter.h b/include/linux/counter.h
-index b7d0a00a61cf..8daaa38c71d8 100644
---- a/include/linux/counter.h
-+++ b/include/linux/counter.h
-@@ -329,6 +329,8 @@ struct counter_device {
- 	struct mutex ops_exist_lock;
- };
- 
-+void *counter_priv(const struct counter_device *const counter);
-+
- int counter_register(struct counter_device *const counter);
- void counter_unregister(struct counter_device *const counter);
- int devm_counter_register(struct device *dev,
+Best regards
+Uwe
+
+Uwe Kleine-König (23):
+  counter: Use container_of instead of drvdata to track counter_device
+  counter: ftm-quaddec: Drop unused platform_set_drvdata()
+  counter: microchip-tcb-capture: Drop unused platform_set_drvdata()
+  counter: Provide a wrapper to access device private data
+  counter: 104-quad-8: Convert to counter_priv() wrapper
+  counter: interrupt-cnt: Convert to counter_priv() wrapper
+  counter: microchip-tcb-capture: Convert to counter_priv() wrapper
+  counter: intel-qep: Convert to counter_priv() wrapper
+  counter: ftm-quaddec: Convert to counter_priv() wrapper
+  counter: ti-eqep: Convert to counter_priv() wrapper
+  counter: stm32-lptimer-cnt: Convert to counter_priv() wrapper
+  counter: stm32-timer-cnt: Convert to counter_priv() wrapper
+  counter: Provide alternative counter registration functions
+  counter: Update documentation for new counter registration functions
+  counter: 104-quad-8: Convert to new counter registration
+  counter: interrupt-cnt: Convert to new counter registration
+  counter: intel-qep: Convert to new counter registration
+  counter: ftm-quaddec: Convert to new counter registration
+  counter: microchip-tcb-capture: Convert to new counter registration
+  counter: stm32-timer-cnt: Convert to new counter registration
+  counter: stm32-lptimer-cnt: Convert to new counter registration
+  counter: ti-eqep: Convert to new counter registration
+  counter: remove old and now unused registration API
+
+ Documentation/driver-api/generic-counter.rst |  10 +-
+ drivers/counter/104-quad-8.c                 |  88 +++++-----
+ drivers/counter/counter-core.c               | 168 +++++++++++++------
+ drivers/counter/ftm-quaddec.c                |  37 ++--
+ drivers/counter/intel-qep.c                  |  46 ++---
+ drivers/counter/interrupt-cnt.c              |  38 +++--
+ drivers/counter/microchip-tcb-capture.c      |  44 ++---
+ drivers/counter/stm32-lptimer-cnt.c          |  51 +++---
+ drivers/counter/stm32-timer-cnt.c            |  48 +++---
+ drivers/counter/ti-eqep.c                    |  47 +++---
+ include/linux/counter.h                      |  15 +-
+ 11 files changed, 345 insertions(+), 247 deletions(-)
+
+
+base-commit: a7904a538933c525096ca2ccde1e60d0ee62c08e
 -- 
 2.33.0
 
