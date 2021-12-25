@@ -2,329 +2,137 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 27591C4167D
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:11:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 06ED0C433EF
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:19:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232234AbhLYQLW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 25 Dec 2021 11:11:22 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43928 "EHLO
+        id S232231AbhLYQTy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 25 Dec 2021 11:19:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232237AbhLYQLU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:11:20 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB0A5C06175B
-        for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 08:11:19 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n19dU-0008DI-LO; Sat, 25 Dec 2021 17:11:08 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n19dR-006agu-Mw; Sat, 25 Dec 2021 17:11:04 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n19dQ-0007f2-LQ; Sat, 25 Dec 2021 17:11:04 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        kernel@pengutronix.de
-Subject: [PATCH v1 05/23] counter: 104-quad-8: Convert to counter_priv() wrapper
-Date:   Sat, 25 Dec 2021 17:10:38 +0100
-Message-Id: <20211225161056.682797-6-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.33.0
-In-Reply-To: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
-References: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S229987AbhLYQTy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:19:54 -0500
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04683C061401;
+        Sat, 25 Dec 2021 08:19:53 -0800 (PST)
+Received: by mail-ed1-x52c.google.com with SMTP id m21so45480349edc.0;
+        Sat, 25 Dec 2021 08:19:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=UsdPYpm1DtVrhyxxHtm/LRi0HP6GcDMlcCiYeTd9gAY=;
+        b=DBuPiQjuMuhPNfWWQy6bNRFOKdcwLTJbYbtu/VPNqL3NITwnLHm8oXZzVoJtbbVLt6
+         gpYl5Vtji8Iht7Py1LIjWZqa9dIDF9hYVFFmqQ6qSmO0Id8rORquYHO/TzWmFHKTFemr
+         aEDWcXGKPWv4m91k6JnPHImDeQuBFmVPv0JF42/9QZ+8Hnpsh+V14gl1YbGGF0R0I3lc
+         HvP1QwBGMmhhGzzAIoXhPMRJe8B6lpR0P6Fw0VtF/iy2GIPmVVGu8lHkoDg1YHpdHIHl
+         +kcm5hYi/PXeXaKAhBfdonoTLABlwFqY/AL2AcYMkXzBIqM6ygL31I50+Jj1cweN63jS
+         myMw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=UsdPYpm1DtVrhyxxHtm/LRi0HP6GcDMlcCiYeTd9gAY=;
+        b=yNu5yQRG1F70Ig/0zckGv62IV1y9fTmSwFWpHFbIkpl3oMGva8DKc2bAQ4cU5tkI4Q
+         r+zW3alUvwMYQ0/kFZHSCnhvsDYf8Azh+/Hefbwx1xqGVid1ua7EcB/nR9rARBFgLhdZ
+         blHAr+pA2Yel3iBzhYv8dzf8/H/fFZ/N5oSxazB8OTm7dWd9oQF4OFcJQnQLL8gDeG4W
+         Zn/WD9nlyNVQ5V05n3HgeGvU/QuMfiSXT+4DLarCFXR9y8vvNAoCbhMD5OTM7XrzMEg5
+         uHsAS8r1A1S3zErZXuCz+GZaKuFHD+DT8zDwA249qbm2cSOIofxQywVqutvrtSQeq+Ws
+         12zg==
+X-Gm-Message-State: AOAM53004N4LA1SMtCOJQdmgi1h440GWN21J9gqLKTIv0MybifHcpOpF
+        3Gm1vWwXQOZXv8FChObkCGmpPzfNHZl9cxlqta8=
+X-Google-Smtp-Source: ABdhPJxGyNpikOCL5/GEECxckYkRk1Ur/E/IGIyu2LWJJKZsC3jsfXtHUs+THG9Fy/XdQiG4nntekHnYWpiwsFhqzBg=
+X-Received: by 2002:a05:6402:4301:: with SMTP id m1mr9059887edc.125.1640449192335;
+ Sat, 25 Dec 2021 08:19:52 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=2li7EcT1pI6y+cXzT7sU9LbImqn5zqD+6LFhC2hgrfo=; m=O/hbHSowifJBTpUmrGb87d4c+26dGvtHSBxVMu37a1o=; p=Vj0QnOLzzbu6vrliCcvR0Kgg/+HyMDcj2uOiLTZOe64=; g=56c3540259478bfc49b3ad8cb9a30b3f0b353f5b
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQjUACgkQwfwUeK3K7AkXrwf/aig b/sS49ikScTbvIJOQefi5fOfY8tkLRoBpmDt5flYSLNHSSCHhnnJGeG4iqrCBbqFvzPBFLZ+d2O0a Pt8q9Rt22VLgTnb98JfCQWiO+/4UJolrl8FziW+fExCTQ8/8hSYHDDJENu8LlVLcgZWux5QdUaFQg L27fb5QqxpHDprR5xMavexYYdC/igJA38nuyhCKUWwoB4wLhVOOfjE7v6oEM/8YUwyaN0L2x06KGY qOIpG67ztN7DGhrGnln2NGlcQsfv4+kdAq502B5ZXYSd1v7M78RhyiaADhHlypOMe1KXCCiAPPyyR K1K02nMFe+5Bdgl1Zl5tcjeoCL351Bw==
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+References: <20211224145903.368999-1-kai.heng.feng@canonical.com>
+ <CAHp75Vd3RhVUe_Yoz-fPErzYcV=+gtOVsxNTmn2_52JbSUaMaA@mail.gmail.com> <CAAd53p7bu=+bs5c2Y1LQLC7fPLUihNX_QHw-yOh=fUKUdXWWhg@mail.gmail.com>
+In-Reply-To: <CAAd53p7bu=+bs5c2Y1LQLC7fPLUihNX_QHw-yOh=fUKUdXWWhg@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sat, 25 Dec 2021 18:19:16 +0200
+Message-ID: <CAHp75VeVFcaJJeacDCMBEaAVNXUgEF_oaHWXUpHobAYX4EmBuQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: humidity: hdc100x: Add ACPI HID table
+To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
+Cc:     "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Chris Lesiak <chris.lesiak@licor.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a straight forward conversion to the new counter_priv() wrapper.
+On Sat, Dec 25, 2021 at 3:05 PM Kai-Heng Feng
+<kai.heng.feng@canonical.com> wrote:
+> On Sat, Dec 25, 2021 at 7:32 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Friday, December 24, 2021, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
+> >>
+> >> x86 boards may use ACPI HID "HDC1010" to for hdc100x device.
+> >>
+> >> So add an ACPI match table for that accordingly.
+> >
+> > No. We do not add abusing IDs blindly.
+> > Why this is in use? Is the creative creator of that informed that is an ACPI spec abuse?
+>
+> Can you please elaborate more on this topic? How is this an ACPI spec abuse?
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/counter/104-quad-8.c | 58 ++++++++++++++++++------------------
- 1 file changed, 29 insertions(+), 29 deletions(-)
+Yes, https://uefi.org/PNP_ACPI_Registry has links to PNP and ACPI ID registries.
+Note, the main differences between them are:
+- PNP uses 3-letter vendor ID, ACPI uses 4-letter
+- PNP is in maintenance mode and shouldn't be expanded
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 1cbd60aaed69..6e5286cd1d4e 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -113,7 +113,7 @@ static int quad8_signal_read(struct counter_device *counter,
- 			     struct counter_signal *signal,
- 			     enum counter_signal_level *level)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	unsigned int state;
- 
- 	/* Only Index signal levels can be read */
-@@ -131,7 +131,7 @@ static int quad8_signal_read(struct counter_device *counter,
- static int quad8_count_read(struct counter_device *counter,
- 			    struct counter_count *count, u64 *val)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned int flags;
- 	unsigned int borrow;
-@@ -163,7 +163,7 @@ static int quad8_count_read(struct counter_device *counter,
- static int quad8_count_write(struct counter_device *counter,
- 			     struct counter_count *count, u64 val)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned long irqflags;
- 	int i;
-@@ -213,7 +213,7 @@ static int quad8_function_read(struct counter_device *counter,
- 			       struct counter_count *count,
- 			       enum counter_function *function)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int id = count->id;
- 	unsigned long irqflags;
- 
-@@ -243,7 +243,7 @@ static int quad8_function_write(struct counter_device *counter,
- 				struct counter_count *count,
- 				enum counter_function function)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int id = count->id;
- 	unsigned int *const quadrature_mode = priv->quadrature_mode + id;
- 	unsigned int *const scale = priv->quadrature_scale + id;
-@@ -305,7 +305,7 @@ static int quad8_direction_read(struct counter_device *counter,
- 				struct counter_count *count,
- 				enum counter_count_direction *direction)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	unsigned int ud_flag;
- 	const unsigned int flag_addr = priv->base + 2 * count->id + 1;
- 
-@@ -335,7 +335,7 @@ static int quad8_action_read(struct counter_device *counter,
- 			     struct counter_synapse *synapse,
- 			     enum counter_synapse_action *action)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	int err;
- 	enum counter_function function;
- 	const size_t signal_a_id = count->synapses[0].signal->id;
-@@ -399,7 +399,7 @@ enum {
- 
- static int quad8_events_configure(struct counter_device *counter)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned long irq_enabled = 0;
- 	unsigned long irqflags;
- 	size_t channel;
-@@ -442,7 +442,7 @@ static int quad8_events_configure(struct counter_device *counter)
- static int quad8_watch_validate(struct counter_device *counter,
- 				const struct counter_watch *watch)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 
- 	if (watch->channel > QUAD8_NUM_COUNTERS - 1)
- 		return -EINVAL;
-@@ -497,7 +497,7 @@ static int quad8_index_polarity_get(struct counter_device *counter,
- 				    struct counter_signal *signal,
- 				    u32 *index_polarity)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
- 
- 	*index_polarity = priv->index_polarity[channel_id];
-@@ -509,7 +509,7 @@ static int quad8_index_polarity_set(struct counter_device *counter,
- 				    struct counter_signal *signal,
- 				    u32 index_polarity)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
- 	const int base_offset = priv->base + 2 * channel_id + 1;
- 	unsigned long irqflags;
-@@ -538,7 +538,7 @@ static int quad8_synchronous_mode_get(struct counter_device *counter,
- 				      struct counter_signal *signal,
- 				      u32 *synchronous_mode)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
- 
- 	*synchronous_mode = priv->synchronous_mode[channel_id];
-@@ -550,7 +550,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
- 				      struct counter_signal *signal,
- 				      u32 synchronous_mode)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
- 	const int base_offset = priv->base + 2 * channel_id + 1;
- 	unsigned long irqflags;
-@@ -589,7 +589,7 @@ static int quad8_count_mode_read(struct counter_device *counter,
- 				 struct counter_count *count,
- 				 enum counter_count_mode *cnt_mode)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 
- 	/* Map 104-QUAD-8 count mode to Generic Counter count mode */
- 	switch (priv->count_mode[count->id]) {
-@@ -614,7 +614,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
- 				  struct counter_count *count,
- 				  enum counter_count_mode cnt_mode)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned int count_mode;
- 	unsigned int mode_cfg;
- 	const int base_offset = priv->base + 2 * count->id + 1;
-@@ -661,7 +661,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
- static int quad8_count_enable_read(struct counter_device *counter,
- 				   struct counter_count *count, u8 *enable)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 
- 	*enable = priv->ab_enable[count->id];
- 
-@@ -671,7 +671,7 @@ static int quad8_count_enable_read(struct counter_device *counter,
- static int quad8_count_enable_write(struct counter_device *counter,
- 				    struct counter_count *count, u8 enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned long irqflags;
- 	unsigned int ior_cfg;
-@@ -699,7 +699,7 @@ static const char *const quad8_noise_error_states[] = {
- static int quad8_error_noise_get(struct counter_device *counter,
- 				 struct counter_count *count, u32 *noise_error)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id + 1;
- 
- 	*noise_error = !!(inb(base_offset) & QUAD8_FLAG_E);
-@@ -710,7 +710,7 @@ static int quad8_error_noise_get(struct counter_device *counter,
- static int quad8_count_preset_read(struct counter_device *counter,
- 				   struct counter_count *count, u64 *preset)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 
- 	*preset = priv->preset[count->id];
- 
-@@ -736,7 +736,7 @@ static void quad8_preset_register_set(struct quad8 *const priv, const int id,
- static int quad8_count_preset_write(struct counter_device *counter,
- 				    struct counter_count *count, u64 preset)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned long irqflags;
- 
- 	/* Only 24-bit values are supported */
-@@ -755,7 +755,7 @@ static int quad8_count_preset_write(struct counter_device *counter,
- static int quad8_count_ceiling_read(struct counter_device *counter,
- 				    struct counter_count *count, u64 *ceiling)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned long irqflags;
- 
- 	spin_lock_irqsave(&priv->lock, irqflags);
-@@ -780,7 +780,7 @@ static int quad8_count_ceiling_read(struct counter_device *counter,
- static int quad8_count_ceiling_write(struct counter_device *counter,
- 				     struct counter_count *count, u64 ceiling)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned long irqflags;
- 
- 	/* Only 24-bit values are supported */
-@@ -807,7 +807,7 @@ static int quad8_count_preset_enable_read(struct counter_device *counter,
- 					  struct counter_count *count,
- 					  u8 *preset_enable)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 
- 	*preset_enable = !priv->preset_enable[count->id];
- 
-@@ -818,7 +818,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
- 					   struct counter_count *count,
- 					   u8 preset_enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id + 1;
- 	unsigned long irqflags;
- 	unsigned int ior_cfg;
-@@ -845,7 +845,7 @@ static int quad8_signal_cable_fault_read(struct counter_device *counter,
- 					 struct counter_signal *signal,
- 					 u8 *cable_fault)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
- 	unsigned long irqflags;
- 	bool disabled;
-@@ -875,7 +875,7 @@ static int quad8_signal_cable_fault_enable_read(struct counter_device *counter,
- 						struct counter_signal *signal,
- 						u8 *enable)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
- 
- 	*enable = !!(priv->cable_fault_enable & BIT(channel_id));
-@@ -887,7 +887,7 @@ static int quad8_signal_cable_fault_enable_write(struct counter_device *counter,
- 						 struct counter_signal *signal,
- 						 u8 enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
- 	unsigned long irqflags;
- 	unsigned int cable_fault_enable;
-@@ -913,7 +913,7 @@ static int quad8_signal_fck_prescaler_read(struct counter_device *counter,
- 					   struct counter_signal *signal,
- 					   u8 *prescaler)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 
- 	*prescaler = priv->fck_prescaler[signal->id / 2];
- 
-@@ -924,7 +924,7 @@ static int quad8_signal_fck_prescaler_write(struct counter_device *counter,
- 					    struct counter_signal *signal,
- 					    u8 prescaler)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
- 	const int base_offset = priv->base + 2 * channel_id;
- 	unsigned long irqflags;
+So, Since above should formally satisfy the PNP ID, the HDC is not a
+TI vendor ID in the PNP ID registry.
+
+The section in the spec that refers to it:
+https://uefi.org/specs/ACPI/6.4/06_Device_Configuration/Device_Configuration.html#hid-hardware-id
+
+> I did suggest them to use PRP0001, but I also don't think this is an abuse.
+
+The PRP0001 is not an abuse per se, but rather it is highly _not_
+recommended for a production use.
+
+> > What devices are those? Is it available on the market? Where is the link to DSDT?
+>
+> It's not on the market yet.
+
+Thank God!
+
+> Do you need the full DSDT? Or just the
+> part of the ACPI device?
+> I'll need approve from customer to disclose these info.
+
+This is a requirement only for the devices on the market when nobody
+prevented the disaster from becoming... Since it's not yet, no need
+for it.
+
+> > Does TI has an ID for that?
+>
+> I was told by customer this is approved by TI.
+
+How can TI approve that for "HARDCOM ELEKTRONIK & DATATEKNIK"? Is
+there evidence that this company has been bought by TI or TI got full
+rights on their IPs?
+
+ACPI: TEXAS INSTRUMENTS TXNW
+PNP: TEXAS INSTURMENTS TXN
+(seems a typo in the company's name, but it should be notified to the
+appropriate channels)
+
+So, the ID should start with one of the above, and not HDC as far as I
+understood.
+
+PNP: TEXAS MICROSYSTEM TMI
+This one probably is not related, but I'm not informed.
+
+I would like you (and your customer) to point to my blog post on the
+topic and it explains how the things should be done with the ACPI IDs:
+https://andy-shev.dreamwidth.org/151340.html
+
+Hope this will help and be resolved soon.
+
 -- 
-2.33.0
-
+With Best Regards,
+Andy Shevchenko
