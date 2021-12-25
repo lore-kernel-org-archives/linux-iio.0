@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C550C4167E
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:11:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50961C433FE
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232209AbhLYQLR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 25 Dec 2021 11:11:17 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43890 "EHLO
+        id S232227AbhLYQLU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 25 Dec 2021 11:11:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43914 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232224AbhLYQLQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:11:16 -0500
+        with ESMTP id S232225AbhLYQLU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:11:20 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E121EC061757
-        for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 08:11:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E78F2C061759
+        for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 08:11:19 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dY-0008DO-Bp; Sat, 25 Dec 2021 17:11:12 +0100
+        id 1n19dU-0008Df-LJ; Sat, 25 Dec 2021 17:11:08 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dS-006agx-6g; Sat, 25 Dec 2021 17:11:05 +0100
+        id 1n19dT-006ahM-JB; Sat, 25 Dec 2021 17:11:06 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n19dQ-0007fI-W4; Sat, 25 Dec 2021 17:11:04 +0100
+        id 1n19dS-0007gk-JI; Sat, 25 Dec 2021 17:11:06 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
@@ -34,16 +34,16 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         kernel@pengutronix.de
-Subject: [PATCH v1 07/23] counter: microchip-tcb-capture: Convert to counter_priv() wrapper
-Date:   Sat, 25 Dec 2021 17:10:40 +0100
-Message-Id: <20211225161056.682797-8-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v1 15/23] counter: 104-quad-8: Convert to new counter registration
+Date:   Sat, 25 Dec 2021 17:10:48 +0100
+Message-Id: <20211225161056.682797-16-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 References: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=Hp2T2iFLn7CFN8KF5qhl8Yel9BpU8tmTjZCiPEA8/Ww=; m=O/hbHSowifJBTpUmrGb87d4c+26dGvtHSBxVMu37a1o=; p=BYcvZ0zO3MM6N3oWt5xWrZtJqTSlsGv5VeTpFmQXUpI=; g=1eb51e809fab672de15f82de80b728ef59b6bca7
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQkMACgkQwfwUeK3K7AlAawf9Flr LP8LzkmKT+q1E3UtUSBPeOPcD5+v//ye8zhkr4NEIp/21T1ZL+cJgVpLcKHOOHxVYBAVcVhf3neQF LAHEFje12/fTCedHrte0mXiyT28BF3641/J9qQKEei+BYrplpu37oxBQYMcC94KjyIQi/bfv96+U0 DTp5iy233GMLvMJkqvXreAMpvdIVyHYuZMTKPlccEaHrdchF2WP3DJEEYVIPFm+BNsNopuuSygpQ1 GuBeNcBmCY+uFAaFj0ED2KpMcJCGkm9hswUSHoS/dEbygqtWhtF4x2nuPgWjk8GmSJRZ8XiDjUs/2 6W1142pmEahMSsONvgboGSqBdQhUClQ==
+X-Patch-Hashes: v=1; h=sha256; i=ZtADFGaT3pReUDCp6p4U90YjwbLIDXlnIOr6HRnmtLY=; m=pbo3Y1HF6couiwYuFg94n5YrXFI5OfbngAy8wR499l8=; p=9T2VgKJ2eje47rywTJ6/saJnMhmjCuNjIyTkzfOfSWI=; g=3a91f95ee9cf0c45d6c66af744f555e14211bea6
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQmYACgkQwfwUeK3K7AmLKwgAlnB 4HBBAtkzOAredAXYnq/iDE4+KmU0B9J8fu31NEeu8YY0aOfxjpLf6YlEAN3tuXkbIt68geLaO+qOl ofK9tjr5YV/ZvQYOAnDHOOG0d7TzacDY/ldT8LoUpNHZyYASswCl40w3ko0dsaJ3xPhsxteQPN4Sm +kkqUoj/uGADe11CTM5mEHrwV8wMl2s+ygDMlZuDkhUWnDLKpt6sVVK2L4JNITX3EHSZ2GpNUDpPf kDUxTL/VIBTmQuq389Ma4Qv2A+kbHmnrzJ++pCmFD2EX9d/k8P3l2HWqiGAGyg+mJFsCEtIIUlE04 eTwiN8w4Ch43tEIxaAe5M013OTZQHiQ==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -53,71 +53,83 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a straight forward conversion to the new counter_priv() wrapper.
+This fixes device lifetime issues where it was possible to free a live
+struct device.
 
+Fixes: f1d8a071d45b ("counter: 104-quad-8: Add Generic Counter interface support")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/microchip-tcb-capture.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+ drivers/counter/104-quad-8.c | 30 +++++++++++++++++-------------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
-index bb69f2e0ba93..1b56b7444668 100644
---- a/drivers/counter/microchip-tcb-capture.c
-+++ b/drivers/counter/microchip-tcb-capture.c
-@@ -72,7 +72,7 @@ static int mchp_tc_count_function_read(struct counter_device *counter,
- 				       struct counter_count *count,
- 				       enum counter_function *function)
- {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = counter_priv(counter);
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 6e5286cd1d4e..4315b14f239e 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -52,7 +52,6 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
+  */
+ struct quad8 {
+ 	spinlock_t lock;
+-	struct counter_device counter;
+ 	unsigned int fck_prescaler[QUAD8_NUM_COUNTERS];
+ 	unsigned int preset[QUAD8_NUM_COUNTERS];
+ 	unsigned int count_mode[QUAD8_NUM_COUNTERS];
+@@ -1127,6 +1126,7 @@ static irqreturn_t quad8_irq_handler(int irq, void *private)
  
- 	if (priv->qdec_mode)
- 		*function = COUNTER_FUNCTION_QUADRATURE_X4;
-@@ -86,7 +86,7 @@ static int mchp_tc_count_function_write(struct counter_device *counter,
- 					struct counter_count *count,
- 					enum counter_function function)
+ static int quad8_probe(struct device *dev, unsigned int id)
  {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = counter_priv(counter);
- 	u32 bmr, cmr;
++	struct counter_device *counter;
+ 	struct quad8 *priv;
+ 	int i, j;
+ 	unsigned int base_offset;
+@@ -1138,19 +1138,19 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 		return -EBUSY;
+ 	}
  
- 	regmap_read(priv->regmap, ATMEL_TC_BMR, &bmr);
-@@ -148,7 +148,7 @@ static int mchp_tc_count_signal_read(struct counter_device *counter,
- 				     struct counter_signal *signal,
- 				     enum counter_signal_level *lvl)
- {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = counter_priv(counter);
- 	bool sigstatus;
- 	u32 sr;
+-	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
++	counter = devm_counter_alloc(dev, sizeof(*priv));
++	if (!counter)
+ 		return -ENOMEM;
++	priv = counter_priv(counter);
  
-@@ -169,7 +169,7 @@ static int mchp_tc_count_action_read(struct counter_device *counter,
- 				     struct counter_synapse *synapse,
- 				     enum counter_synapse_action *action)
- {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = counter_priv(counter);
- 	u32 cmr;
+ 	/* Initialize Counter device and driver data */
+-	priv->counter.name = dev_name(dev);
+-	priv->counter.parent = dev;
+-	priv->counter.ops = &quad8_ops;
+-	priv->counter.counts = quad8_counts;
+-	priv->counter.num_counts = ARRAY_SIZE(quad8_counts);
+-	priv->counter.signals = quad8_signals;
+-	priv->counter.num_signals = ARRAY_SIZE(quad8_signals);
+-	priv->counter.priv = priv;
++	counter->name = dev_name(dev);
++	counter->parent = dev;
++	counter->ops = &quad8_ops;
++	counter->counts = quad8_counts;
++	counter->num_counts = ARRAY_SIZE(quad8_counts);
++	counter->signals = quad8_signals;
++	counter->num_signals = ARRAY_SIZE(quad8_signals);
+ 	priv->base = base[id];
  
- 	regmap_read(priv->regmap, ATMEL_TC_REG(priv->channel[0], CMR), &cmr);
-@@ -197,7 +197,7 @@ static int mchp_tc_count_action_write(struct counter_device *counter,
- 				      struct counter_synapse *synapse,
- 				      enum counter_synapse_action action)
- {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = counter_priv(counter);
- 	u32 edge = ATMEL_TC_ETRGEDG_NONE;
+ 	spin_lock_init(&priv->lock);
+@@ -1192,11 +1192,15 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 	outb(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, base[id] + QUAD8_REG_CHAN_OP);
  
- 	/* QDEC mode is rising edge only */
-@@ -230,7 +230,7 @@ static int mchp_tc_count_action_write(struct counter_device *counter,
- static int mchp_tc_count_read(struct counter_device *counter,
- 			      struct counter_count *count, u64 *val)
- {
--	struct mchp_tc_data *const priv = counter->priv;
-+	struct mchp_tc_data *const priv = counter_priv(counter);
- 	u32 cnt;
+ 	err = devm_request_irq(dev, irq[id], quad8_irq_handler, IRQF_SHARED,
+-			       priv->counter.name, priv);
++			       counter->name, priv);
+ 	if (err)
+ 		return err;
  
- 	regmap_read(priv->regmap, ATMEL_TC_REG(priv->channel[0], CV), &cnt);
+-	return devm_counter_register(dev, &priv->counter);
++	err = devm_counter_add(dev, counter);
++	if (err < 0)
++		return dev_err_probe(dev, err, "Failed to add counter\n");
++
++	return 0;
+ }
+ 
+ static struct isa_driver quad8_driver = {
 -- 
 2.33.0
 
