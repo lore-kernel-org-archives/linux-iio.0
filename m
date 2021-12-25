@@ -2,156 +2,78 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3090BC433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 13:05:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D8383C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Dec 2021 16:11:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231735AbhLYNFg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 25 Dec 2021 08:05:36 -0500
-Received: from smtp-relay-internal-1.canonical.com ([185.125.188.123]:53842
-        "EHLO smtp-relay-internal-1.canonical.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231719AbhLYNFg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 08:05:36 -0500
-Received: from mail-oi1-f199.google.com (mail-oi1-f199.google.com [209.85.167.199])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
-        (No client certificate requested)
-        by smtp-relay-internal-1.canonical.com (Postfix) with ESMTPS id 26A783FFD4
-        for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 13:05:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1640437530;
-        bh=5vgRgsACjyf0KpwZ4x9GcJr9J4OAYwXoNUUUezQLgDc=;
-        h=MIME-Version:References:In-Reply-To:From:Date:Message-ID:Subject:
-         To:Cc:Content-Type;
-        b=mrBxaNboGGkBzjwYzds86DoqJZMEQV3GRjfbojidYgWgDButKBIKbM2xydv0m/1N8
-         ket00qf2gmTeEE7bWzE1YXZVkobDdMSgdYvWPquNqXD2TTrtc17MWyzNV6divnLfSW
-         vZO4ykzjn1If3//C50Oq2ML3wXwj5KxVWGVpFDEyk779qoR8mN/81OL2staDxaVPc9
-         GF3XDHSO6HUHeC3wMPLjalMKGC/hB1zBitT8yuM8iKyw/eKzVeEpiblDElgE/EP+Xr
-         Y3wCUekaqUIpMkd+ZE8RWyNPWZDa9E7Mf/KvDYFyCArFOjOqKlbcsPhi6Pk0xKje2i
-         ZoXsSZYZqSjYg==
-Received: by mail-oi1-f199.google.com with SMTP id r65-20020aca4444000000b002bce52a8122so6288515oia.14
-        for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 05:05:30 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=5vgRgsACjyf0KpwZ4x9GcJr9J4OAYwXoNUUUezQLgDc=;
-        b=OuFS2BHOJ8yslEvHiLV0ssO4FX30XXxE6jUlf3hM4q3wKr+kqtVqhh+lddrBTGL1Up
-         u3CLnRTvLNs5iwsD2h3gFfm+BE0Yilva6aXKT3BHO1LECbUYxwP3ztIADJ2I4lJR7Igb
-         ibM5mbBp/J5ECn+zcNHzuyZws4U738oyY2L+1eM4XIlZicN+mzW+YgQT1rQn71qVTQ9o
-         GD1vwknCpaBk8CwnvQI77om5jTcmGrzeQu7CYP5wjhVX6Ql5pxu/Q2MP1qAZfJXFtN5l
-         H32CAfFCXc4oDS+1Y+3dShtIiRNSZWUn962D8rbi+uAGygM6df+vTRtV24ytADcO4hXB
-         poUQ==
-X-Gm-Message-State: AOAM5311XgT5Y5gB+pUYJ4brTByJqY7gnH/Kl3bNDNwfYvZaGKmNrNLh
-        ifp6XYEt+iNZdPNHNhXVnSWMFrLJI1u3xJqPIU//pydRtZvNfFrL0CyniI1XCOIB0usV5f0zdi6
-        +F+Sri/QFBVPHxCUfndZHyyQgOiZjJxWwsSwd8u+m8JzcWV8JhLYlPg==
-X-Received: by 2002:a05:6808:199c:: with SMTP id bj28mr7775525oib.98.1640437528977;
-        Sat, 25 Dec 2021 05:05:28 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJywtcV8AugdqKTUuFYNwYzhOpgFEsipGaIvGTQ7BlGJn7EdZ03wzS7bG4U9zk080L/wAGwxtR5BygeeP15fWjk=
-X-Received: by 2002:a05:6808:199c:: with SMTP id bj28mr7775512oib.98.1640437528728;
- Sat, 25 Dec 2021 05:05:28 -0800 (PST)
+        id S232218AbhLYQLO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 25 Dec 2021 11:11:14 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232204AbhLYQLO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Dec 2021 11:11:14 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7F43C061757
+        for <linux-iio@vger.kernel.org>; Sat, 25 Dec 2021 08:11:13 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n19dU-0008DE-LM; Sat, 25 Dec 2021 17:11:09 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n19dR-006agm-AU; Sat, 25 Dec 2021 17:11:04 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n19dQ-0007ep-8L; Sat, 25 Dec 2021 17:11:04 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        kernel@pengutronix.de
+Subject: [PATCH v1 03/23] counter: microchip-tcb-capture: Drop unused platform_set_drvdata()
+Date:   Sat, 25 Dec 2021 17:10:36 +0100
+Message-Id: <20211225161056.682797-4-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
+References: <20211225161056.682797-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-References: <20211224145903.368999-1-kai.heng.feng@canonical.com> <CAHp75Vd3RhVUe_Yoz-fPErzYcV=+gtOVsxNTmn2_52JbSUaMaA@mail.gmail.com>
-In-Reply-To: <CAHp75Vd3RhVUe_Yoz-fPErzYcV=+gtOVsxNTmn2_52JbSUaMaA@mail.gmail.com>
-From:   Kai-Heng Feng <kai.heng.feng@canonical.com>
-Date:   Sat, 25 Dec 2021 21:05:17 +0800
-Message-ID: <CAAd53p7bu=+bs5c2Y1LQLC7fPLUihNX_QHw-yOh=fUKUdXWWhg@mail.gmail.com>
-Subject: Re: [PATCH] iio: humidity: hdc100x: Add ACPI HID table
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Chris Lesiak <chris.lesiak@licor.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=UTF-8
+X-Patch-Hashes: v=1; h=sha256; i=IJqGyNaenfaZbz/IO7oJSnAPP05nliYMDFydrRs1onw=; m=qa0/nnsbHdKDuWY5QI5nC4IISJUbD9bjLmxbmrIZnvk=; p=F2i/tqBhLyub3ogMOMnX0RwvzyCzrWApj0iUvOTunpc=; g=11af2e19c7ba28dd17ba312c8215a1b669ce6c19
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHHQi0ACgkQwfwUeK3K7AmSdQf/S0I ST5Q39syyo2eunyu+FBy9V3nEaNSlhjCmSOykkS1GUjmVR+Jpe46Y+Ug155/GHTGbGf4ScfYUtZmL wP4D+zMUGKTwHCzNwnubLk4bikdhscC17YKDgZH6OG8EHhQXrbrMpcQVtj59lCLxLoqiSUn1N77km ++kXEOFweSdsWMNJQitzwqxzdVEqTWfwrVbhhdCBqIiIL0w5fiFrnUv68mesNt71hzyElytCV6Feh FyByxFNWuj81LywFAUHCa5aQQiFeJOcnwWMhVr8HPAu7qXL602cjcTdN4Jp8MvXs9WsT/GJ7U8jBj 886glyO0kIrrR/FxXAzdqq7PB83aCGw==
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Dec 25, 2021 at 7:32 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
->
->
-> On Friday, December 24, 2021, Kai-Heng Feng <kai.heng.feng@canonical.com> wrote:
->>
->> x86 boards may use ACPI HID "HDC1010" to for hdc100x device.
->>
->> So add an ACPI match table for that accordingly.
->
->
-> No. We do not add abusing IDs blindly.
-> Why this is in use? Is the creative creator of that informed that is an ACPI spec abuse?
+The driver doesn't ever use platform_get_drvdata, so drop this unused
+call.
 
-Can you please elaborate more on this topic? How is this an ACPI spec abuse?
-I did suggest them to use PRP0001, but I also don't think this is an abuse.
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ drivers/counter/microchip-tcb-capture.c | 2 --
+ 1 file changed, 2 deletions(-)
 
-> What devices are those? Is it available on the market? Where is the link to DSDT?
+diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+index 0ab1b2716784..bb69f2e0ba93 100644
+--- a/drivers/counter/microchip-tcb-capture.c
++++ b/drivers/counter/microchip-tcb-capture.c
+@@ -307,8 +307,6 @@ static int mchp_tc_probe(struct platform_device *pdev)
+ 	if (!priv)
+ 		return -ENOMEM;
+ 
+-	platform_set_drvdata(pdev, priv);
+-
+ 	match = of_match_node(atmel_tc_of_match, np->parent);
+ 	tcb_config = match->data;
+ 	if (!tcb_config) {
+-- 
+2.33.0
 
-It's not on the market yet. Do you need the full DSDT? Or just the
-part of the ACPI device?
-I'll need approve from customer to disclose these info.
-
->
-> Does TI has an ID for that?
-
-I was told by customer this is approved by TI.
-
->
-> NAK until all above is answered in the commit message and all parties are informed.
-
-OK, I hope this can be resolved.
-
-Kai-Heng
-
->
->
->>
->> Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
->> ---
->>  drivers/iio/humidity/hdc100x.c | 8 ++++++++
->>  1 file changed, 8 insertions(+)
->>
->> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
->> index 9e0fce917ce4c..ad1dfac543c52 100644
->> --- a/drivers/iio/humidity/hdc100x.c
->> +++ b/drivers/iio/humidity/hdc100x.c
->> @@ -417,10 +417,18 @@ static const struct of_device_id hdc100x_dt_ids[] = {
->>  };
->>  MODULE_DEVICE_TABLE(of, hdc100x_dt_ids);
->>
->> +static const struct acpi_device_id hdc100x_acpi_match[] = {
->> +       {"HDC1010"},
->> +       { },
->
->
-> No comma.
->
->>
->> +};
->> +
->> +MODULE_DEVICE_TABLE(acpi, hdc100x_acpi_match);
->> +
->>  static struct i2c_driver hdc100x_driver = {
->>         .driver = {
->>                 .name   = "hdc100x",
->>                 .of_match_table = hdc100x_dt_ids,
->> +               .acpi_match_table = ACPI_PTR(hdc100x_acpi_match),
->
->
-> Use of ACPI_PTR() is wrong here.
->
->>
->>         },
->>         .probe = hdc100x_probe,
->>         .id_table = hdc100x_id,
->> --
->> 2.33.1
->>
->
->
-> --
-> With Best Regards,
-> Andy Shevchenko
->
->
