@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5C98C43217
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Dec 2021 09:45:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FC71C4332F
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Dec 2021 09:45:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233205AbhL0Jpw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Dec 2021 04:45:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43294 "EHLO
+        id S235908AbhL0Jpy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Dec 2021 04:45:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235847AbhL0Jpq (ORCPT
+        with ESMTP id S235845AbhL0Jpq (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Dec 2021 04:45:46 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3888C061761
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 96322C06175E
         for <linux-iio@vger.kernel.org>; Mon, 27 Dec 2021 01:45:43 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZV-0006YV-1F; Mon, 27 Dec 2021 10:45:37 +0100
+        id 1n1mZU-0006YN-G4; Mon, 27 Dec 2021 10:45:36 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZT-006u91-Hs; Mon, 27 Dec 2021 10:45:34 +0100
+        id 1n1mZS-006u8s-Tx; Mon, 27 Dec 2021 10:45:34 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZS-0005Uh-3w; Mon, 27 Dec 2021 10:45:34 +0100
+        id 1n1mZR-0005U5-IO; Mon, 27 Dec 2021 10:45:33 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
@@ -35,19 +35,17 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
         linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        "Felipe Balbi (Intel)" <balbi@kernel.org>,
-        Raymond Tan <raymond.tan@intel.com>
-Subject: [PATCH v2 08/23] counter: intel-qep: Convert to counter_priv() wrapper
-Date:   Mon, 27 Dec 2021 10:45:11 +0100
-Message-Id: <20211227094526.698714-9-u.kleine-koenig@pengutronix.de>
+        Syed Nayyar Waris <syednwaris@gmail.com>
+Subject: [PATCH v2 05/23] counter: 104-quad-8: Convert to counter_priv() wrapper
+Date:   Mon, 27 Dec 2021 10:45:08 +0100
+Message-Id: <20211227094526.698714-6-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
 References: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=g9BfXIkcjNw5YS2h7I7k7foNDE7mpF/qCH/1d9F0FUc=; m=O/hbHSowifJBTpUmrGb87d4c+26dGvtHSBxVMu37a1o=; p=Ax69rXrNAqJUpt+mx9VJqrku88dhLzmNBLAaw6ZG0OY=; g=990ae56b2628066bb62ad34907d77560123f896f
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHJiokACgkQwfwUeK3K7AnEoAf/T5N 92vfZEE1HMTJqGRIyk0gNvdQkKutMiulbms1DLopqHbUODrdm8r4e9WeviYY4WDCzjvTLsycfgl7l 9PHfKe1DagNdR9WgRBcfETe9bgcdJ2iL6D8vwUVAM+8cVDP/hISbi7hnoidNA8Gvhs6Bgxcn2Enct VFa4pGIz/u7Flu/Rn80Z8nSo5c7w29rxDBwSAhY77qR/K8MNQXHG9LWKa68y8YvkVc2s9YjsFLQyN PQfHKC85jIqBei0hIVtEtqS0W2lrHJX9NT4nqEkQ2aFAyi0zxmzCxZSO8gwk2lZpKORbWxVVd45OY Lp++wf+MyaO8l41x4F8DCpPeg6I8GsQ==
+X-Patch-Hashes: v=1; h=sha256; i=2li7EcT1pI6y+cXzT7sU9LbImqn5zqD+6LFhC2hgrfo=; m=O/hbHSowifJBTpUmrGb87d4c+26dGvtHSBxVMu37a1o=; p=Vj0QnOLzzbu6vrliCcvR0Kgg/+HyMDcj2uOiLTZOe64=; g=56c3540259478bfc49b3ad8cb9a30b3f0b353f5b
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHJincACgkQwfwUeK3K7AloiAf9H1r 0wkWeiSyBxl7U4MO3cFO2RE3qKfR7y+pyb2au58yY3opHaJa8/92soqbEQO+FU/9jMG4Eb+pB4d3i VA+b1X4Na1J+IEPGit5uKZ3Ye+vz7kWrxrdlEYxV59Zks9bTlnTJkm7XXqvU2PBT3f/zwBwPFMMXg iNiDS3qftR65tcf2SP1hhkH3JLea12VzygvjmCCBdSVMgF0qIvdOis6IJ6i88Fk03uJW01d5hkFoQ Po2bIClq2DKJR+rtXkC74GpwNgS3I5vpDUrYv8av2dbQ7lLhd3WGXzgA3skxjUtfJhvoF1UiIu8HP jnArm3UI0bnuYA4EiDFGnkjvsHuwI8A==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -61,94 +59,274 @@ This is a straight forward conversion to the new counter_priv() wrapper.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/intel-qep.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/counter/104-quad-8.c | 58 ++++++++++++++++++------------------
+ 1 file changed, 29 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/counter/intel-qep.c b/drivers/counter/intel-qep.c
-index 0924d16de6e2..8f84a48508ac 100644
---- a/drivers/counter/intel-qep.c
-+++ b/drivers/counter/intel-qep.c
-@@ -109,7 +109,7 @@ static void intel_qep_init(struct intel_qep *qep)
- static int intel_qep_count_read(struct counter_device *counter,
- 				struct counter_count *count, u64 *val)
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 1cbd60aaed69..6e5286cd1d4e 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -113,7 +113,7 @@ static int quad8_signal_read(struct counter_device *counter,
+ 			     struct counter_signal *signal,
+ 			     enum counter_signal_level *level)
  {
--	struct intel_qep *const qep = counter->priv;
-+	struct intel_qep *const qep = counter_priv(counter);
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 	unsigned int state;
  
- 	pm_runtime_get_sync(qep->dev);
- 	*val = intel_qep_readl(qep, INTEL_QEPCOUNT);
-@@ -176,7 +176,7 @@ static struct counter_synapse intel_qep_count_synapses[] = {
- static int intel_qep_ceiling_read(struct counter_device *counter,
- 				  struct counter_count *count, u64 *ceiling)
+ 	/* Only Index signal levels can be read */
+@@ -131,7 +131,7 @@ static int quad8_signal_read(struct counter_device *counter,
+ static int quad8_count_read(struct counter_device *counter,
+ 			    struct counter_count *count, u64 *val)
  {
--	struct intel_qep *qep = counter->priv;
-+	struct intel_qep *qep = counter_priv(counter);
- 
- 	pm_runtime_get_sync(qep->dev);
- 	*ceiling = intel_qep_readl(qep, INTEL_QEPMAX);
-@@ -188,7 +188,7 @@ static int intel_qep_ceiling_read(struct counter_device *counter,
- static int intel_qep_ceiling_write(struct counter_device *counter,
- 				   struct counter_count *count, u64 max)
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const int base_offset = priv->base + 2 * count->id;
+ 	unsigned int flags;
+ 	unsigned int borrow;
+@@ -163,7 +163,7 @@ static int quad8_count_read(struct counter_device *counter,
+ static int quad8_count_write(struct counter_device *counter,
+ 			     struct counter_count *count, u64 val)
  {
--	struct intel_qep *qep = counter->priv;
-+	struct intel_qep *qep = counter_priv(counter);
- 	int ret = 0;
- 
- 	/* Intel QEP ceiling configuration only supports 32-bit values */
-@@ -213,7 +213,7 @@ static int intel_qep_ceiling_write(struct counter_device *counter,
- static int intel_qep_enable_read(struct counter_device *counter,
- 				 struct counter_count *count, u8 *enable)
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const int base_offset = priv->base + 2 * count->id;
+ 	unsigned long irqflags;
+ 	int i;
+@@ -213,7 +213,7 @@ static int quad8_function_read(struct counter_device *counter,
+ 			       struct counter_count *count,
+ 			       enum counter_function *function)
  {
--	struct intel_qep *qep = counter->priv;
-+	struct intel_qep *qep = counter_priv(counter);
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const int id = count->id;
+ 	unsigned long irqflags;
  
- 	*enable = qep->enabled;
- 
-@@ -223,7 +223,7 @@ static int intel_qep_enable_read(struct counter_device *counter,
- static int intel_qep_enable_write(struct counter_device *counter,
- 				  struct counter_count *count, u8 val)
+@@ -243,7 +243,7 @@ static int quad8_function_write(struct counter_device *counter,
+ 				struct counter_count *count,
+ 				enum counter_function function)
  {
--	struct intel_qep *qep = counter->priv;
-+	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
- 	bool changed;
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const int id = count->id;
+ 	unsigned int *const quadrature_mode = priv->quadrature_mode + id;
+ 	unsigned int *const scale = priv->quadrature_scale + id;
+@@ -305,7 +305,7 @@ static int quad8_direction_read(struct counter_device *counter,
+ 				struct counter_count *count,
+ 				enum counter_count_direction *direction)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 	unsigned int ud_flag;
+ 	const unsigned int flag_addr = priv->base + 2 * count->id + 1;
  
-@@ -256,7 +256,7 @@ static int intel_qep_spike_filter_ns_read(struct counter_device *counter,
+@@ -335,7 +335,7 @@ static int quad8_action_read(struct counter_device *counter,
+ 			     struct counter_synapse *synapse,
+ 			     enum counter_synapse_action *action)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	int err;
+ 	enum counter_function function;
+ 	const size_t signal_a_id = count->synapses[0].signal->id;
+@@ -399,7 +399,7 @@ enum {
+ 
+ static int quad8_events_configure(struct counter_device *counter)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	unsigned long irq_enabled = 0;
+ 	unsigned long irqflags;
+ 	size_t channel;
+@@ -442,7 +442,7 @@ static int quad8_events_configure(struct counter_device *counter)
+ static int quad8_watch_validate(struct counter_device *counter,
+ 				const struct counter_watch *watch)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 
+ 	if (watch->channel > QUAD8_NUM_COUNTERS - 1)
+ 		return -EINVAL;
+@@ -497,7 +497,7 @@ static int quad8_index_polarity_get(struct counter_device *counter,
+ 				    struct counter_signal *signal,
+ 				    u32 *index_polarity)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 	const size_t channel_id = signal->id - 16;
+ 
+ 	*index_polarity = priv->index_polarity[channel_id];
+@@ -509,7 +509,7 @@ static int quad8_index_polarity_set(struct counter_device *counter,
+ 				    struct counter_signal *signal,
+ 				    u32 index_polarity)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const size_t channel_id = signal->id - 16;
+ 	const int base_offset = priv->base + 2 * channel_id + 1;
+ 	unsigned long irqflags;
+@@ -538,7 +538,7 @@ static int quad8_synchronous_mode_get(struct counter_device *counter,
+ 				      struct counter_signal *signal,
+ 				      u32 *synchronous_mode)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 	const size_t channel_id = signal->id - 16;
+ 
+ 	*synchronous_mode = priv->synchronous_mode[channel_id];
+@@ -550,7 +550,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
+ 				      struct counter_signal *signal,
+ 				      u32 synchronous_mode)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const size_t channel_id = signal->id - 16;
+ 	const int base_offset = priv->base + 2 * channel_id + 1;
+ 	unsigned long irqflags;
+@@ -589,7 +589,7 @@ static int quad8_count_mode_read(struct counter_device *counter,
+ 				 struct counter_count *count,
+ 				 enum counter_count_mode *cnt_mode)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 
+ 	/* Map 104-QUAD-8 count mode to Generic Counter count mode */
+ 	switch (priv->count_mode[count->id]) {
+@@ -614,7 +614,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
+ 				  struct counter_count *count,
+ 				  enum counter_count_mode cnt_mode)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	unsigned int count_mode;
+ 	unsigned int mode_cfg;
+ 	const int base_offset = priv->base + 2 * count->id + 1;
+@@ -661,7 +661,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
+ static int quad8_count_enable_read(struct counter_device *counter,
+ 				   struct counter_count *count, u8 *enable)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 
+ 	*enable = priv->ab_enable[count->id];
+ 
+@@ -671,7 +671,7 @@ static int quad8_count_enable_read(struct counter_device *counter,
+ static int quad8_count_enable_write(struct counter_device *counter,
+ 				    struct counter_count *count, u8 enable)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const int base_offset = priv->base + 2 * count->id;
+ 	unsigned long irqflags;
+ 	unsigned int ior_cfg;
+@@ -699,7 +699,7 @@ static const char *const quad8_noise_error_states[] = {
+ static int quad8_error_noise_get(struct counter_device *counter,
+ 				 struct counter_count *count, u32 *noise_error)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 	const int base_offset = priv->base + 2 * count->id + 1;
+ 
+ 	*noise_error = !!(inb(base_offset) & QUAD8_FLAG_E);
+@@ -710,7 +710,7 @@ static int quad8_error_noise_get(struct counter_device *counter,
+ static int quad8_count_preset_read(struct counter_device *counter,
+ 				   struct counter_count *count, u64 *preset)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 
+ 	*preset = priv->preset[count->id];
+ 
+@@ -736,7 +736,7 @@ static void quad8_preset_register_set(struct quad8 *const priv, const int id,
+ static int quad8_count_preset_write(struct counter_device *counter,
+ 				    struct counter_count *count, u64 preset)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	unsigned long irqflags;
+ 
+ 	/* Only 24-bit values are supported */
+@@ -755,7 +755,7 @@ static int quad8_count_preset_write(struct counter_device *counter,
+ static int quad8_count_ceiling_read(struct counter_device *counter,
+ 				    struct counter_count *count, u64 *ceiling)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	unsigned long irqflags;
+ 
+ 	spin_lock_irqsave(&priv->lock, irqflags);
+@@ -780,7 +780,7 @@ static int quad8_count_ceiling_read(struct counter_device *counter,
+ static int quad8_count_ceiling_write(struct counter_device *counter,
+ 				     struct counter_count *count, u64 ceiling)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	unsigned long irqflags;
+ 
+ 	/* Only 24-bit values are supported */
+@@ -807,7 +807,7 @@ static int quad8_count_preset_enable_read(struct counter_device *counter,
  					  struct counter_count *count,
- 					  u64 *length)
+ 					  u8 *preset_enable)
  {
--	struct intel_qep *qep = counter->priv;
-+	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
  
- 	pm_runtime_get_sync(qep->dev);
-@@ -277,7 +277,7 @@ static int intel_qep_spike_filter_ns_write(struct counter_device *counter,
+ 	*preset_enable = !priv->preset_enable[count->id];
+ 
+@@ -818,7 +818,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
  					   struct counter_count *count,
- 					   u64 length)
+ 					   u8 preset_enable)
  {
--	struct intel_qep *qep = counter->priv;
-+	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
- 	bool enable;
- 	int ret = 0;
-@@ -326,7 +326,7 @@ static int intel_qep_preset_enable_read(struct counter_device *counter,
- 					struct counter_count *count,
- 					u8 *preset_enable)
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const int base_offset = priv->base + 2 * count->id + 1;
+ 	unsigned long irqflags;
+ 	unsigned int ior_cfg;
+@@ -845,7 +845,7 @@ static int quad8_signal_cable_fault_read(struct counter_device *counter,
+ 					 struct counter_signal *signal,
+ 					 u8 *cable_fault)
  {
--	struct intel_qep *qep = counter->priv;
-+	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const size_t channel_id = signal->id / 2;
+ 	unsigned long irqflags;
+ 	bool disabled;
+@@ -875,7 +875,7 @@ static int quad8_signal_cable_fault_enable_read(struct counter_device *counter,
+ 						struct counter_signal *signal,
+ 						u8 *enable)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
+ 	const size_t channel_id = signal->id / 2;
  
- 	pm_runtime_get_sync(qep->dev);
-@@ -341,7 +341,7 @@ static int intel_qep_preset_enable_read(struct counter_device *counter,
- static int intel_qep_preset_enable_write(struct counter_device *counter,
- 					 struct counter_count *count, u8 val)
+ 	*enable = !!(priv->cable_fault_enable & BIT(channel_id));
+@@ -887,7 +887,7 @@ static int quad8_signal_cable_fault_enable_write(struct counter_device *counter,
+ 						 struct counter_signal *signal,
+ 						 u8 enable)
  {
--	struct intel_qep *qep = counter->priv;
-+	struct intel_qep *qep = counter_priv(counter);
- 	u32 reg;
- 	int ret = 0;
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const size_t channel_id = signal->id / 2;
+ 	unsigned long irqflags;
+ 	unsigned int cable_fault_enable;
+@@ -913,7 +913,7 @@ static int quad8_signal_fck_prescaler_read(struct counter_device *counter,
+ 					   struct counter_signal *signal,
+ 					   u8 *prescaler)
+ {
+-	const struct quad8 *const priv = counter->priv;
++	const struct quad8 *const priv = counter_priv(counter);
  
+ 	*prescaler = priv->fck_prescaler[signal->id / 2];
+ 
+@@ -924,7 +924,7 @@ static int quad8_signal_fck_prescaler_write(struct counter_device *counter,
+ 					    struct counter_signal *signal,
+ 					    u8 prescaler)
+ {
+-	struct quad8 *const priv = counter->priv;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const size_t channel_id = signal->id / 2;
+ 	const int base_offset = priv->base + 2 * channel_id;
+ 	unsigned long irqflags;
 -- 
 2.33.0
 
