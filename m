@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 75140C43217
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Dec 2021 09:46:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 29702C433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Dec 2021 09:46:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235968AbhL0Jp6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Dec 2021 04:45:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43320 "EHLO
+        id S235991AbhL0JqA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Dec 2021 04:46:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235873AbhL0Jps (ORCPT
+        with ESMTP id S235842AbhL0Jps (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Dec 2021 04:45:48 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB195C06139B
-        for <linux-iio@vger.kernel.org>; Mon, 27 Dec 2021 01:45:45 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7930AC06179C
+        for <linux-iio@vger.kernel.org>; Mon, 27 Dec 2021 01:45:44 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZV-0006Yz-Ko; Mon, 27 Dec 2021 10:45:37 +0100
+        id 1n1mZV-0006ZD-Kd; Mon, 27 Dec 2021 10:45:37 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZV-006u9S-0x; Mon, 27 Dec 2021 10:45:36 +0100
+        id 1n1mZV-006u9W-2t; Mon, 27 Dec 2021 10:45:36 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZT-0005Wg-F1; Mon, 27 Dec 2021 10:45:35 +0100
+        id 1n1mZT-0005X5-Si; Mon, 27 Dec 2021 10:45:35 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
@@ -35,18 +35,18 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
         linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Oleksij Rempel <linux@rempel-privat.de>
-Subject: [PATCH v2 16/23] counter: interrupt-cnt: Convert to new counter registration
-Date:   Mon, 27 Dec 2021 10:45:19 +0100
-Message-Id: <20211227094526.698714-17-u.kleine-koenig@pengutronix.de>
+        Syed Nayyar Waris <syednwaris@gmail.com>,
+        Patrick Havelange <patrick.havelange@essensium.com>
+Subject: [PATCH v2 18/23] counter: ftm-quaddec: Convert to new counter registration
+Date:   Mon, 27 Dec 2021 10:45:21 +0100
+Message-Id: <20211227094526.698714-19-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
 References: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=dfP4l5w7ij74pFCONBGSQx967EIzwUTODlebX85hIO4=; m=5Rmlhi4KMYhV00ngpcAw0obj1vkEwMFEkVi2+kKODFo=; p=tT372UEGiB4ImOXweb/KmTPszacBXG8ynoOOb+pqbLc=; g=d9e26ed0cad4bc9bdf671970698802a146c6b949
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHJirEACgkQwfwUeK3K7AmZewf7Bnu CIYM/g5BT5WGvaDJB5+ufhTra9D/vvc1SKXBKi9ojJYXPMLfU2QTKDBHdFn1sGQNaWlz41wgHtn0W LqklpfFfJQtOE2FJuKnjlFdUlYXp3B0BpqniOfgXhwH88xoxIVL54btbvW1a1gZ2JmH/GAo6LP1zo 4OOOZA+1ot6cRqtnOW33iu3acnef7zXdpoGliZ9zeaw5mOV6zQcVjk76HDjpbWAHrflRNEe7oGTNT jll4hNFI+xnw9xp5Q1vKzUUGeJWrFS1ncDZiIG3z/o1Kf+xIHeGht0XYOm4Y359LBoI2SQlldQ3Lq O7IK8jp4FlPpxqF3OikzeeBTOaOUJsw==
+X-Patch-Hashes: v=1; h=sha256; i=T9Exz3wKL9LBHOoGq1qDfP1qZAK927KAHy9K6Esz8lk=; m=ZZb0WZj9AWrp3lat8A5ZAyjFwLerq6gaSWzN2AryO3E=; p=U1R/fDU5JZactEOvNpJJG8CxM7TwsyPeNRNDZk3R2Es=; g=c6c3f53e9d55102ae135c93040b25acca47de566
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHJirgACgkQwfwUeK3K7AmMbgf9HjH 8c2xrk8rnUQCxfDZZ0QsnrupwObWG97KB+sRr8EBvXMaopw1ExI+NdQqAPeJ1E4SzJlc1r3zyGuWF /9uB7DECelUCYHbkjMIqLNY/Zn3DhWPpcvvegm3xHB71XHMtwpm15ov4zGna3CqC6b2qSpBaTWlOa D8Awm+ns3YKWC4nxC1YYRoz2g4EPRtsI9sOGbVSHZhl456CAX1RTcKQ2E6i5XzWbDurjBXzaVCywA UMwTRwRHLwj4iwXYo/vYAhF8OYmkSib/D4D9cN/50mLX9wdL26cTxtgGm5r7naZVEzVeFKsfmWTSg jwVIG6L8+SNp8Txk/aW1gMxkz0rOMKg==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -59,83 +59,111 @@ X-Mailing-List: linux-iio@vger.kernel.org
 This fixes device lifetime issues where it was possible to free a live
 struct device.
 
-Fixes: a55ebd47f21f ("counter: add IRQ or GPIO based counter")
+Fixes: a3b9a99980d9 ("counter: add FlexTimer Module Quadrature decoder counter driver")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/interrupt-cnt.c | 28 ++++++++++++++++------------
- 1 file changed, 16 insertions(+), 12 deletions(-)
+ drivers/counter/104-quad-8.c  |  7 ++++---
+ drivers/counter/ftm-quaddec.c | 27 +++++++++++++--------------
+ 2 files changed, 17 insertions(+), 17 deletions(-)
 
-diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-index 4bf706ef46e2..9e99702470c2 100644
---- a/drivers/counter/interrupt-cnt.c
-+++ b/drivers/counter/interrupt-cnt.c
-@@ -16,7 +16,6 @@
+diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
+index 4315b14f239e..680c7ba943a4 100644
+--- a/drivers/counter/104-quad-8.c
++++ b/drivers/counter/104-quad-8.c
+@@ -1084,7 +1084,8 @@ static struct counter_count quad8_counts[] = {
  
- struct interrupt_cnt_priv {
- 	atomic_t count;
--	struct counter_device counter;
- 	struct gpio_desc *gpio;
- 	int irq;
- 	bool enabled;
-@@ -148,12 +147,14 @@ static const struct counter_ops interrupt_cnt_ops = {
- static int interrupt_cnt_probe(struct platform_device *pdev)
+ static irqreturn_t quad8_irq_handler(int irq, void *private)
  {
- 	struct device *dev = &pdev->dev;
+-	struct quad8 *const priv = private;
++	struct counter_device *counter = private;
++	struct quad8 *const priv = counter_priv(counter);
+ 	const unsigned long base = priv->base;
+ 	unsigned long irq_status;
+ 	unsigned long channel;
+@@ -1115,7 +1116,7 @@ static irqreturn_t quad8_irq_handler(int irq, void *private)
+ 			continue;
+ 		}
+ 
+-		counter_push_event(&priv->counter, event, channel);
++		counter_push_event(counter, event, channel);
+ 	}
+ 
+ 	/* Clear pending interrupts on device */
+@@ -1192,7 +1193,7 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 	outb(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, base[id] + QUAD8_REG_CHAN_OP);
+ 
+ 	err = devm_request_irq(dev, irq[id], quad8_irq_handler, IRQF_SHARED,
+-			       counter->name, priv);
++			       counter->name, counter);
+ 	if (err)
+ 		return err;
+ 
+diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
+index f5d92df6a611..c636183b1337 100644
+--- a/drivers/counter/ftm-quaddec.c
++++ b/drivers/counter/ftm-quaddec.c
+@@ -26,7 +26,6 @@
+ 	})
+ 
+ struct ftm_quaddec {
+-	struct counter_device counter;
+ 	struct platform_device *pdev;
+ 	void __iomem *ftm_base;
+ 	bool big_endian;
+@@ -259,15 +258,16 @@ static struct counter_count ftm_quaddec_counts = {
+ 
+ static int ftm_quaddec_probe(struct platform_device *pdev)
+ {
 +	struct counter_device *counter;
- 	struct interrupt_cnt_priv *priv;
+ 	struct ftm_quaddec *ftm;
+-
+ 	struct device_node *node = pdev->dev.of_node;
+ 	struct resource *io;
  	int ret;
  
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
-+	counter = devm_counter_alloc(dev, sizeof(*priv));
+-	ftm = devm_kzalloc(&pdev->dev, sizeof(*ftm), GFP_KERNEL);
+-	if (!ftm)
++	counter = devm_counter_alloc(&pdev->dev, sizeof(*ftm));
 +	if (!counter)
  		return -ENOMEM;
-+	priv = counter_priv(counter);
++	ftm = counter_priv(counter);
  
- 	priv->irq = platform_get_irq_optional(pdev,  0);
- 	if (priv->irq == -ENXIO)
-@@ -184,8 +185,8 @@ static int interrupt_cnt_probe(struct platform_device *pdev)
- 	if (!priv->signals.name)
- 		return -ENOMEM;
- 
--	priv->counter.signals = &priv->signals;
--	priv->counter.num_signals = 1;
-+	counter->signals = &priv->signals;
-+	counter->num_signals = 1;
- 
- 	priv->synapses.actions_list = interrupt_cnt_synapse_actions;
- 	priv->synapses.num_actions = ARRAY_SIZE(interrupt_cnt_synapse_actions);
-@@ -199,12 +200,11 @@ static int interrupt_cnt_probe(struct platform_device *pdev)
- 	priv->cnts.ext = interrupt_cnt_ext;
- 	priv->cnts.num_ext = ARRAY_SIZE(interrupt_cnt_ext);
- 
--	priv->counter.priv = priv;
--	priv->counter.name = dev_name(dev);
--	priv->counter.parent = dev;
--	priv->counter.ops = &interrupt_cnt_ops;
--	priv->counter.counts = &priv->cnts;
--	priv->counter.num_counts = 1;
-+	counter->name = dev_name(dev);
-+	counter->parent = dev;
-+	counter->ops = &interrupt_cnt_ops;
-+	counter->counts = &priv->cnts;
+ 	io = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+ 	if (!io) {
+@@ -283,14 +283,13 @@ static int ftm_quaddec_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "Failed to map memory region\n");
+ 		return -EINVAL;
+ 	}
+-	ftm->counter.name = dev_name(&pdev->dev);
+-	ftm->counter.parent = &pdev->dev;
+-	ftm->counter.ops = &ftm_quaddec_cnt_ops;
+-	ftm->counter.counts = &ftm_quaddec_counts;
+-	ftm->counter.num_counts = 1;
+-	ftm->counter.signals = ftm_quaddec_signals;
+-	ftm->counter.num_signals = ARRAY_SIZE(ftm_quaddec_signals);
+-	ftm->counter.priv = ftm;
++	counter->name = dev_name(&pdev->dev);
++	counter->parent = &pdev->dev;
++	counter->ops = &ftm_quaddec_cnt_ops;
++	counter->counts = &ftm_quaddec_counts;
 +	counter->num_counts = 1;
++	counter->signals = ftm_quaddec_signals;
++	counter->num_signals = ARRAY_SIZE(ftm_quaddec_signals);
  
- 	irq_set_status_flags(priv->irq, IRQ_NOAUTOEN);
- 	ret = devm_request_irq(dev, priv->irq, interrupt_cnt_isr,
-@@ -213,7 +213,11 @@ static int interrupt_cnt_probe(struct platform_device *pdev)
+ 	mutex_init(&ftm->ftm_quaddec_mutex);
+ 
+@@ -300,9 +299,9 @@ static int ftm_quaddec_probe(struct platform_device *pdev)
  	if (ret)
  		return ret;
  
--	return devm_counter_register(dev, &priv->counter);
-+	ret = devm_counter_add(dev, counter);
-+	if (ret < 0)
-+		return dev_err_probe(dev, ret, "Failed to add counter\n");
-+
-+	return 0;
- }
+-	ret = devm_counter_register(&pdev->dev, &ftm->counter);
++	ret = devm_counter_add(&pdev->dev, counter);
+ 	if (ret)
+-		return ret;
++		return dev_err_probe(&pdev->dev, ret, "Failed to add counter\n");
  
- static const struct of_device_id interrupt_cnt_of_match[] = {
+ 	return 0;
+ }
 -- 
 2.33.0
 
