@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EA2EC433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 27 Dec 2021 09:45:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5E25EC433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 27 Dec 2021 09:45:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235855AbhL0Jpr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Dec 2021 04:45:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43266 "EHLO
+        id S235856AbhL0Jpt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Dec 2021 04:45:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43300 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233208AbhL0Jpn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Dec 2021 04:45:43 -0500
+        with ESMTP id S229837AbhL0Jpr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Dec 2021 04:45:47 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 49D59C061757
-        for <linux-iio@vger.kernel.org>; Mon, 27 Dec 2021 01:45:43 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4877BC061784
+        for <linux-iio@vger.kernel.org>; Mon, 27 Dec 2021 01:45:44 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZU-0006YL-G3; Mon, 27 Dec 2021 10:45:36 +0100
+        id 1n1mZV-0006aW-UT; Mon, 27 Dec 2021 10:45:37 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZS-006u8y-Qi; Mon, 27 Dec 2021 10:45:34 +0100
+        id 1n1mZV-006u9p-NW; Mon, 27 Dec 2021 10:45:37 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZR-0005UQ-Ol; Mon, 27 Dec 2021 10:45:33 +0100
+        id 1n1mZU-0005Xy-LL; Mon, 27 Dec 2021 10:45:36 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
@@ -34,19 +34,17 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>
-Subject: [PATCH v2 06/23] counter: interrupt-cnt: Convert to counter_priv() wrapper
-Date:   Mon, 27 Dec 2021 10:45:09 +0100
-Message-Id: <20211227094526.698714-7-u.kleine-koenig@pengutronix.de>
+        linux-kernel@vger.kernel.org, David Lechner <david@lechnology.com>
+Subject: [PATCH v2 22/23] counter: ti-eqep: Convert to new counter registration
+Date:   Mon, 27 Dec 2021 10:45:25 +0100
+Message-Id: <20211227094526.698714-23-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
 References: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=UvwkBYGga9JlM2GrCZHQufITek7q8mZMRp/+AZAdT4Q=; m=O/hbHSowifJBTpUmrGb87d4c+26dGvtHSBxVMu37a1o=; p=56An2X6rtAsiBaEov/PPWPUqFKFmMen+S5ZlWV2LPYw=; g=01fd9e214cb17a28c3343b0247151e3c2d035f98
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHJinwACgkQwfwUeK3K7AlfTAf8DwU 3hqg2EEYwluoZGgOm3yN/GpMWkswGNZmCA+V3f4OOLVlsc3TmTwDY2QPo4pDG4xc4ylgeUyEudYhB C5bvyvgloy8Tnrxdr5sYLtTgR37oQDtPcT/4ztrJq8TUyPW/q6lzBRpmKyAdkEBQBooUp2r0U2hY6 DUbDX4NXe2t8nnaLidpptNZqlCkNyEe4NjkTve0nhqavOC/S5xdWOzRRc8Kl2yBdmP/AVn1MHF1/g SFSfTQt36o6SxCCnkYe3z6kXrXkfUwgzqfh0WkgrDc0m8Dd43PM5NJalvKGdfCtpubJeIRjdgC7sh CvkGsrA8XiNhGswGYGfnR3ZZplcQDGw==
+X-Patch-Hashes: v=1; h=sha256; i=GmxK8UwCXaWtt50/KLdEtDwbtlCliwQiHnCQoruLRn0=; m=7e6USNn1wpqWAd9V4lBOEi/21Vzmyhs+ECn2Z/KBah0=; p=98X7zTLS7wTFeVlzVCE+MddH8du4Z8u170KsDRrFkyo=; g=633544383990f45a36bcdd6305008c879ade25d0
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHJisYACgkQwfwUeK3K7Anpywf/QKT fqrtp0lWUHIrVcxALgKhLPJAb7vs9ze+vAZGs2SKpAfXzKUl4eucOeH2WGXM03CHuVIAT1UCp2VOj 70soJHKMHDtYjfRN4PYHu4KsBNriaDFv8VVQ3yQKGnuB4MI6XI3lpggW09d7CtgE9BmNtIvVno3Fn QmYc5CnCfKdT8OVe7T10ntAqdpgb2XLgRMSy74LVu3BQvyFydlxVxjNwS/80IgLSXJSVen6XNdQwl ONnV4DkiSFVfmP/XdrHBGcvNo6zbZmR1YfAM8B/0NB6CcJMeqf5/xMhMWwdfWyDgfkazIsWYBtka/ fh039zob3dxCT5ujzb9xco4VClFqKRA==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -56,62 +54,84 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a straight forward conversion to the new counter_priv() wrapper.
+This fixes device lifetime issues where it was possible to free a live
+struct device.
 
+Fixes: f213729f6796 ("counter: new TI eQEP driver")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/interrupt-cnt.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+ drivers/counter/ti-eqep.c | 29 +++++++++++++++--------------
+ 1 file changed, 15 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-index 8514a87fcbee..4bf706ef46e2 100644
---- a/drivers/counter/interrupt-cnt.c
-+++ b/drivers/counter/interrupt-cnt.c
-@@ -37,7 +37,7 @@ static irqreturn_t interrupt_cnt_isr(int irq, void *dev_id)
- static int interrupt_cnt_enable_read(struct counter_device *counter,
- 				     struct counter_count *count, u8 *enable)
+diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+index abeda966e7be..3b49b492d182 100644
+--- a/drivers/counter/ti-eqep.c
++++ b/drivers/counter/ti-eqep.c
+@@ -368,13 +368,15 @@ static const struct regmap_config ti_eqep_regmap16_config = {
+ static int ti_eqep_probe(struct platform_device *pdev)
  {
--	struct interrupt_cnt_priv *priv = counter->priv;
-+	struct interrupt_cnt_priv *priv = counter_priv(counter);
+ 	struct device *dev = &pdev->dev;
++	struct counter_device *counter;
+ 	struct ti_eqep_cnt *priv;
+ 	void __iomem *base;
+ 	int err;
  
- 	*enable = priv->enabled;
+-	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
++	counter = devm_counter_alloc(dev, sizeof(*priv));
++	if (!counter)
+ 		return -ENOMEM;
++	priv = counter_priv(counter);
  
-@@ -47,7 +47,7 @@ static int interrupt_cnt_enable_read(struct counter_device *counter,
- static int interrupt_cnt_enable_write(struct counter_device *counter,
- 				      struct counter_count *count, u8 enable)
+ 	base = devm_platform_ioremap_resource(pdev, 0);
+ 	if (IS_ERR(base))
+@@ -390,16 +392,15 @@ static int ti_eqep_probe(struct platform_device *pdev)
+ 	if (IS_ERR(priv->regmap16))
+ 		return PTR_ERR(priv->regmap16);
+ 
+-	priv->counter.name = dev_name(dev);
+-	priv->counter.parent = dev;
+-	priv->counter.ops = &ti_eqep_counter_ops;
+-	priv->counter.counts = ti_eqep_counts;
+-	priv->counter.num_counts = ARRAY_SIZE(ti_eqep_counts);
+-	priv->counter.signals = ti_eqep_signals;
+-	priv->counter.num_signals = ARRAY_SIZE(ti_eqep_signals);
+-	priv->counter.priv = priv;
++	counter->name = dev_name(dev);
++	counter->parent = dev;
++	counter->ops = &ti_eqep_counter_ops;
++	counter->counts = ti_eqep_counts;
++	counter->num_counts = ARRAY_SIZE(ti_eqep_counts);
++	counter->signals = ti_eqep_signals;
++	counter->num_signals = ARRAY_SIZE(ti_eqep_signals);
+ 
+-	platform_set_drvdata(pdev, priv);
++	platform_set_drvdata(pdev, counter);
+ 
+ 	/*
+ 	 * Need to make sure power is turned on. On AM33xx, this comes from the
+@@ -409,7 +410,7 @@ static int ti_eqep_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(dev);
+ 	pm_runtime_get_sync(dev);
+ 
+-	err = counter_register(&priv->counter);
++	err = counter_add(counter);
+ 	if (err < 0) {
+ 		pm_runtime_put_sync(dev);
+ 		pm_runtime_disable(dev);
+@@ -421,10 +422,10 @@ static int ti_eqep_probe(struct platform_device *pdev)
+ 
+ static int ti_eqep_remove(struct platform_device *pdev)
  {
--	struct interrupt_cnt_priv *priv = counter->priv;
-+	struct interrupt_cnt_priv *priv = counter_priv(counter);
+-	struct ti_eqep_cnt *priv = platform_get_drvdata(pdev);
++	struct counter_device *counter = platform_get_drvdata(pdev);
+ 	struct device *dev = &pdev->dev;
  
- 	if (priv->enabled == enable)
- 		return 0;
-@@ -85,7 +85,7 @@ static int interrupt_cnt_action_read(struct counter_device *counter,
- static int interrupt_cnt_read(struct counter_device *counter,
- 			      struct counter_count *count, u64 *val)
- {
--	struct interrupt_cnt_priv *priv = counter->priv;
-+	struct interrupt_cnt_priv *priv = counter_priv(counter);
+-	counter_unregister(&priv->counter);
++	counter_unregister(counter);
+ 	pm_runtime_put_sync(dev);
+ 	pm_runtime_disable(dev);
  
- 	*val = atomic_read(&priv->count);
- 
-@@ -95,7 +95,7 @@ static int interrupt_cnt_read(struct counter_device *counter,
- static int interrupt_cnt_write(struct counter_device *counter,
- 			       struct counter_count *count, const u64 val)
- {
--	struct interrupt_cnt_priv *priv = counter->priv;
-+	struct interrupt_cnt_priv *priv = counter_priv(counter);
- 
- 	if (val != (typeof(priv->count.counter))val)
- 		return -ERANGE;
-@@ -122,7 +122,7 @@ static int interrupt_cnt_signal_read(struct counter_device *counter,
- 				     struct counter_signal *signal,
- 				     enum counter_signal_level *level)
- {
--	struct interrupt_cnt_priv *priv = counter->priv;
-+	struct interrupt_cnt_priv *priv = counter_priv(counter);
- 	int ret;
- 
- 	if (!priv->gpio)
 -- 
 2.33.0
 
