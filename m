@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A6F8C433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D821FC433F5
 	for <linux-iio@archiver.kernel.org>; Mon, 27 Dec 2021 09:45:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235875AbhL0Jp4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 27 Dec 2021 04:45:56 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43312 "EHLO
+        id S235949AbhL0Jp5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 27 Dec 2021 04:45:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43322 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235880AbhL0Jpt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Dec 2021 04:45:49 -0500
+        with ESMTP id S235874AbhL0Jps (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Dec 2021 04:45:48 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3A3FBC0613B1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Dec 2021 01:45:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 27A35C06139C
+        for <linux-iio@vger.kernel.org>; Mon, 27 Dec 2021 01:45:46 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZZ-0006Ye-8J; Mon, 27 Dec 2021 10:45:41 +0100
+        id 1n1mZY-0006YX-68; Mon, 27 Dec 2021 10:45:40 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZU-006u9N-6C; Mon, 27 Dec 2021 10:45:35 +0100
+        id 1n1mZT-006u9B-PS; Mon, 27 Dec 2021 10:45:35 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n1mZT-0005WH-95; Mon, 27 Dec 2021 10:45:35 +0100
+        id 1n1mZS-0005VU-L9; Mon, 27 Dec 2021 10:45:34 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
@@ -35,17 +35,22 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
         linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-kernel@vger.kernel.org,
-        Syed Nayyar Waris <syednwaris@gmail.com>
-Subject: [PATCH v2 15/23] counter: 104-quad-8: Convert to new counter registration
-Date:   Mon, 27 Dec 2021 10:45:18 +0100
-Message-Id: <20211227094526.698714-16-u.kleine-koenig@pengutronix.de>
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-stm32@st-md-mailman.stormreply.com,
+        Benjamin Gaignard <benjamin.gaignard@st.com>,
+        linux-arm-kernel@lists.infradead.org
+Subject: [PATCH v2 11/23] counter: stm32-lptimer-cnt: Convert to counter_priv() wrapper
+Date:   Mon, 27 Dec 2021 10:45:14 +0100
+Message-Id: <20211227094526.698714-12-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
 References: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Patch-Hashes: v=1; h=sha256; i=ZtADFGaT3pReUDCp6p4U90YjwbLIDXlnIOr6HRnmtLY=; m=pbo3Y1HF6couiwYuFg94n5YrXFI5OfbngAy8wR499l8=; p=9T2VgKJ2eje47rywTJ6/saJnMhmjCuNjIyTkzfOfSWI=; g=3a91f95ee9cf0c45d6c66af744f555e14211bea6
-X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHJiq0ACgkQwfwUeK3K7AkYpgf+NgH eaHP1vSgEHqbsFwhmCjMc/xsk94plXdoAEEzML9Ajgdcd0CbZh9hkhtf1joyHzQzRfcYoAVPp8YQo bmx9zJ79zfTDaDK9loRHdM9hKq1qYcr+gx7eXX3mXCfQ7+BH6of/xJ2AF5uBHO4CPvnkQcmpf2CT9 v8C8y75b51UjNOFGYUNLnbmkdztZnGq0srN6oabUVI+T8+zkypK2QHrneVh64ICXcfPi8Gtij88TM Udvx29Ka8sEbnRTCnGiGZYBmInvcPcHqb0qvO5FvX5RwXy4f1TV0m2BGFLCTp03WI8RnLC9mwf2l8 cA0ZZK22Q8iBMfctNOgJzOuKSeSrqeA==
+X-Patch-Hashes: v=1; h=sha256; i=0yX2wuHepSgzmHBcBjV+l+JzQO1R5LNoMTHdUc1ehqw=; m=O/hbHSowifJBTpUmrGb87d4c+26dGvtHSBxVMu37a1o=; p=MPuYNGn6o/9dZFmQfs3kSBFCwdmcbQB8/ZjqZVWw3zU=; g=a38dfe0269317a90960ceb5e30dd5407f739ecfc
+X-Patch-Sig: m=pgp; i=u.kleine-koenig@pengutronix.de; s=0x0D2511F322BFAB1C1580266BE2DCDD9132669BD6; b=iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHJipoACgkQwfwUeK3K7AltAwf8DEV frM7dihZGOsaLBmO8lEahoCcZAYQxAuLnybfc16Bv9itVLiwLwWdJVrpZzOrf57GeMAujdgWu7Mw+ Bajt5ewVEh5ctYJqzJKwdPvPXP69i/kZ4hwusGhcod0OZbxtnSAXORZ2uhc5qLD3xIvjRCUsIhaAA 3yM+4APn537hIEYtlietWfOQ0oMHrmYFjNew+z7d5Tbic62vKt7EwdX0ul+DZI4HFPU0NRMrCArnd oSGGsewwmN1VwooZomoH4RpR1k+O7BXTNZW9+JWi7iws8RaHF8SozeqISG8mygKgNfvrRU+MKXqkY Iqbqu5LJfa9Hoz2Pou+G+kyxk/VW8Yw==
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
 X-SA-Exim-Mail-From: ukl@pengutronix.de
@@ -55,83 +60,98 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This fixes device lifetime issues where it was possible to free a live
-struct device.
+This is a straight forward conversion to the new counter_priv() wrapper.
 
-Fixes: f1d8a071d45b ("counter: 104-quad-8: Add Generic Counter interface support")
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/104-quad-8.c | 30 +++++++++++++++++-------------
- 1 file changed, 17 insertions(+), 13 deletions(-)
+ drivers/counter/stm32-lptimer-cnt.c | 18 +++++++++---------
+ 1 file changed, 9 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 6e5286cd1d4e..4315b14f239e 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -52,7 +52,6 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
-  */
- struct quad8 {
- 	spinlock_t lock;
--	struct counter_device counter;
- 	unsigned int fck_prescaler[QUAD8_NUM_COUNTERS];
- 	unsigned int preset[QUAD8_NUM_COUNTERS];
- 	unsigned int count_mode[QUAD8_NUM_COUNTERS];
-@@ -1127,6 +1126,7 @@ static irqreturn_t quad8_irq_handler(int irq, void *private)
- 
- static int quad8_probe(struct device *dev, unsigned int id)
+diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
+index 5168833b1fdf..9cf00e929cc0 100644
+--- a/drivers/counter/stm32-lptimer-cnt.c
++++ b/drivers/counter/stm32-lptimer-cnt.c
+@@ -141,7 +141,7 @@ static const enum counter_synapse_action stm32_lptim_cnt_synapse_actions[] = {
+ static int stm32_lptim_cnt_read(struct counter_device *counter,
+ 				struct counter_count *count, u64 *val)
  {
-+	struct counter_device *counter;
- 	struct quad8 *priv;
- 	int i, j;
- 	unsigned int base_offset;
-@@ -1138,19 +1138,19 @@ static int quad8_probe(struct device *dev, unsigned int id)
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+ 	u32 cnt;
+ 	int ret;
+ 
+@@ -158,7 +158,7 @@ static int stm32_lptim_cnt_function_read(struct counter_device *counter,
+ 					 struct counter_count *count,
+ 					 enum counter_function *function)
+ {
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+ 
+ 	if (!priv->quadrature_mode) {
+ 		*function = COUNTER_FUNCTION_INCREASE;
+@@ -177,7 +177,7 @@ static int stm32_lptim_cnt_function_write(struct counter_device *counter,
+ 					  struct counter_count *count,
+ 					  enum counter_function function)
+ {
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+ 
+ 	if (stm32_lptim_is_enabled(priv))
  		return -EBUSY;
- 	}
+@@ -200,7 +200,7 @@ static int stm32_lptim_cnt_enable_read(struct counter_device *counter,
+ 				       struct counter_count *count,
+ 				       u8 *enable)
+ {
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+ 	int ret;
  
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
-+	counter = devm_counter_alloc(dev, sizeof(*priv));
-+	if (!counter)
- 		return -ENOMEM;
-+	priv = counter_priv(counter);
+ 	ret = stm32_lptim_is_enabled(priv);
+@@ -216,7 +216,7 @@ static int stm32_lptim_cnt_enable_write(struct counter_device *counter,
+ 					struct counter_count *count,
+ 					u8 enable)
+ {
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+ 	int ret;
  
- 	/* Initialize Counter device and driver data */
--	priv->counter.name = dev_name(dev);
--	priv->counter.parent = dev;
--	priv->counter.ops = &quad8_ops;
--	priv->counter.counts = quad8_counts;
--	priv->counter.num_counts = ARRAY_SIZE(quad8_counts);
--	priv->counter.signals = quad8_signals;
--	priv->counter.num_signals = ARRAY_SIZE(quad8_signals);
--	priv->counter.priv = priv;
-+	counter->name = dev_name(dev);
-+	counter->parent = dev;
-+	counter->ops = &quad8_ops;
-+	counter->counts = quad8_counts;
-+	counter->num_counts = ARRAY_SIZE(quad8_counts);
-+	counter->signals = quad8_signals;
-+	counter->num_signals = ARRAY_SIZE(quad8_signals);
- 	priv->base = base[id];
+ 	/* Check nobody uses the timer, or already disabled/enabled */
+@@ -241,7 +241,7 @@ static int stm32_lptim_cnt_ceiling_read(struct counter_device *counter,
+ 					struct counter_count *count,
+ 					u64 *ceiling)
+ {
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
  
- 	spin_lock_init(&priv->lock);
-@@ -1192,11 +1192,15 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 	outb(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, base[id] + QUAD8_REG_CHAN_OP);
+ 	*ceiling = priv->ceiling;
  
- 	err = devm_request_irq(dev, irq[id], quad8_irq_handler, IRQF_SHARED,
--			       priv->counter.name, priv);
-+			       counter->name, priv);
- 	if (err)
- 		return err;
+@@ -252,7 +252,7 @@ static int stm32_lptim_cnt_ceiling_write(struct counter_device *counter,
+ 					 struct counter_count *count,
+ 					 u64 ceiling)
+ {
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
  
--	return devm_counter_register(dev, &priv->counter);
-+	err = devm_counter_add(dev, counter);
-+	if (err < 0)
-+		return dev_err_probe(dev, err, "Failed to add counter\n");
-+
-+	return 0;
- }
+ 	if (stm32_lptim_is_enabled(priv))
+ 		return -EBUSY;
+@@ -277,7 +277,7 @@ static int stm32_lptim_cnt_action_read(struct counter_device *counter,
+ 				       struct counter_synapse *synapse,
+ 				       enum counter_synapse_action *action)
+ {
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+ 	enum counter_function function;
+ 	int err;
  
- static struct isa_driver quad8_driver = {
+@@ -321,7 +321,7 @@ static int stm32_lptim_cnt_action_write(struct counter_device *counter,
+ 					struct counter_synapse *synapse,
+ 					enum counter_synapse_action action)
+ {
+-	struct stm32_lptim_cnt *const priv = counter->priv;
++	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+ 	enum counter_function function;
+ 	int err;
+ 
 -- 
 2.33.0
 
