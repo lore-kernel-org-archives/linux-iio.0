@@ -2,48 +2,47 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBB32C4167D
-	for <linux-iio@archiver.kernel.org>; Wed, 29 Dec 2021 15:44:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CA54C433F5
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Dec 2021 15:45:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240639AbhL2Po7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S240637AbhL2Po7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Wed, 29 Dec 2021 10:44:59 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51348 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240608AbhL2Po4 (ORCPT
+        with ESMTP id S240607AbhL2Po4 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Dec 2021 10:44:56 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B8B6C06175A
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A3FEC061756
         for <linux-iio@vger.kernel.org>; Wed, 29 Dec 2021 07:44:56 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2b8H-0006qY-8c; Wed, 29 Dec 2021 16:44:53 +0100
+        id 1n2b8H-0006qK-8e; Wed, 29 Dec 2021 16:44:53 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2b8G-007KHU-Qa; Wed, 29 Dec 2021 16:44:52 +0100
+        id 1n2b8D-007KGh-Tm; Wed, 29 Dec 2021 16:44:49 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2b8F-00015D-Qw; Wed, 29 Dec 2021 16:44:51 +0100
+        id 1n2b8C-00011q-8L; Wed, 29 Dec 2021 16:44:48 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc:     linux-iio@vger.kernel.org, kernel@pengutronix.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org,
-        Patrick Havelange <patrick.havelange@essensium.com>
-Subject: [PATCH v3 18/23] counter: ftm-quaddec: Convert to new counter registration
-Date:   Wed, 29 Dec 2021 16:44:36 +0100
-Message-Id: <20211229154441.38045-19-u.kleine-koenig@pengutronix.de>
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3 01/23] counter: Use container_of instead of drvdata to track counter_device
+Date:   Wed, 29 Dec 2021 16:44:19 +0100
+Message-Id: <20211229154441.38045-2-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211229154441.38045-1-u.kleine-koenig@pengutronix.de>
 References: <20211229154441.38045-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2604; h=from:subject; bh=dEjv5+WDibUQXP80AqPnPObQXmoq70SGZBTr6K5rpzQ=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzIJPVcEOLoF6nRh7AcGLwuW1Sbhc0blFhQMHBrzK WdyQ1OaJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYcyCTwAKCRDB/BR4rcrsCYzJCA CHNsAeYsS+8fSEr++mFdlWXII/Zatlb0zvCK9hWoC11V7q9hKCaLq7Z7nRxCWdL8uelDrlQR93fFqd 6Umt9iqd/u528xP5PX87yB3Gw4riu96l5kO9lrJ34c/4YfEMQvYK4nPzULbgj0Z+P56W0EkKjp6YVe +a5Z8hSVmtq0OM5KHTi41Jcl8QNF1wPSPVfzNFD7uwT++Y8NSAYWUaeTcLYidHEKmFtXami2bm0tpv kXPawvtbroMZwv0y6aPYLejlOSRoYiCyF1HJZxQLMRmjxm5EFH4bLydyCA1Cog4kPLWYm7nc76cE9e FJBJW651AjL1qXT0YgT1q01lx+30mI
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1396; h=from:subject; bh=g5AkavRPc9KasQPrhOwNqTslienH33kFzd0pJErlhlU=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzIIQSLFOJ/a/KGmVNCh/amQvSqREydHIQgQrU5Zf 7izYy/SJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYcyCEAAKCRDB/BR4rcrsCcmCB/ 9Ul1LyNCJzuJh1N891ue1F1mKn/GbQ7g1z9/4Ntnf6SJ9nE16vS2ZdsKef4pcueM5CIf9WbnM6ht/R Q/AmYb5mhYdjWSa0e0sHWSYC6hpiveHaj3bkthaAeYy4U8Fiut/wJaRaauuo9RlPITQOqDUwVcGMgt zmjqrXYWlKmbemowvWu4+aQeH153fRsF04iyI8VWkiqqMGKaFr1IkbyDt2uhQABzbgzVknBoIqdGHR tPw9uljdAklBwp53ektD3xDl2jL/iAKuzx/bABZBKdPdzP8/LZkEg4QlHnf0DcJGtrJ6lHIpZI816y DobbHiascSdouKjqeMFPzITYEXZP7M
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -54,83 +53,42 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This fixes device lifetime issues where it was possible to free a live
-struct device.
+The counter core uses drvdata to find a struct counter_device from a
+struct device. However as the device is a member of struct counter_device,
+the lookup can be done faster (and a bit type safe) using container_of.
 
-Fixes: a3b9a99980d9 ("counter: add FlexTimer Module Quadrature decoder counter driver")
+There are no other users of drvdata, so the call to dev_set_drvdata can
+go away, too.
+
 Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/ftm-quaddec.c | 26 +++++++++++++-------------
- 1 file changed, 13 insertions(+), 13 deletions(-)
+ drivers/counter/counter-core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
-index f5d92df6a611..2a58582a9df4 100644
---- a/drivers/counter/ftm-quaddec.c
-+++ b/drivers/counter/ftm-quaddec.c
-@@ -26,7 +26,6 @@
- 	})
+diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
+index 5acc54539623..f053a43c6c04 100644
+--- a/drivers/counter/counter-core.c
++++ b/drivers/counter/counter-core.c
+@@ -26,7 +26,8 @@ static DEFINE_IDA(counter_ida);
  
- struct ftm_quaddec {
--	struct counter_device counter;
- 	struct platform_device *pdev;
- 	void __iomem *ftm_base;
- 	bool big_endian;
-@@ -259,15 +258,17 @@ static struct counter_count ftm_quaddec_counts = {
- 
- static int ftm_quaddec_probe(struct platform_device *pdev)
+ static void counter_device_release(struct device *dev)
  {
-+	struct counter_device *counter;
- 	struct ftm_quaddec *ftm;
+-	struct counter_device *const counter = dev_get_drvdata(dev);
++	struct counter_device *const counter =
++		container_of(dev, struct counter_device, dev);
  
- 	struct device_node *node = pdev->dev.of_node;
- 	struct resource *io;
- 	int ret;
- 
--	ftm = devm_kzalloc(&pdev->dev, sizeof(*ftm), GFP_KERNEL);
--	if (!ftm)
-+	counter = devm_counter_alloc(&pdev->dev, sizeof(*ftm));
-+	if (!counter)
- 		return -ENOMEM;
-+	ftm = counter_priv(counter);
- 
- 	io = platform_get_resource(pdev, IORESOURCE_MEM, 0);
- 	if (!io) {
-@@ -283,14 +284,13 @@ static int ftm_quaddec_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "Failed to map memory region\n");
- 		return -EINVAL;
+ 	counter_chrdev_remove(counter);
+ 	ida_free(&counter_ida, dev->id);
+@@ -78,7 +79,6 @@ int counter_register(struct counter_device *const counter)
+ 		dev->of_node = counter->parent->of_node;
  	}
--	ftm->counter.name = dev_name(&pdev->dev);
--	ftm->counter.parent = &pdev->dev;
--	ftm->counter.ops = &ftm_quaddec_cnt_ops;
--	ftm->counter.counts = &ftm_quaddec_counts;
--	ftm->counter.num_counts = 1;
--	ftm->counter.signals = ftm_quaddec_signals;
--	ftm->counter.num_signals = ARRAY_SIZE(ftm_quaddec_signals);
--	ftm->counter.priv = ftm;
-+	counter->name = dev_name(&pdev->dev);
-+	counter->parent = &pdev->dev;
-+	counter->ops = &ftm_quaddec_cnt_ops;
-+	counter->counts = &ftm_quaddec_counts;
-+	counter->num_counts = 1;
-+	counter->signals = ftm_quaddec_signals;
-+	counter->num_signals = ARRAY_SIZE(ftm_quaddec_signals);
+ 	device_initialize(dev);
+-	dev_set_drvdata(dev, counter);
  
- 	mutex_init(&ftm->ftm_quaddec_mutex);
- 
-@@ -300,9 +300,9 @@ static int ftm_quaddec_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	ret = devm_counter_register(&pdev->dev, &ftm->counter);
-+	ret = devm_counter_add(&pdev->dev, counter);
- 	if (ret)
--		return ret;
-+		return dev_err_probe(&pdev->dev, ret, "Failed to add counter\n");
- 
- 	return 0;
- }
+ 	err = counter_sysfs_add(counter);
+ 	if (err < 0)
 -- 
 2.34.1
 
