@@ -2,82 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7946C433F5
-	for <linux-iio@archiver.kernel.org>; Wed, 29 Dec 2021 13:49:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0A3CC433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Dec 2021 15:44:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236706AbhL2Ntd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 29 Dec 2021 08:49:33 -0500
-Received: from mga12.intel.com ([192.55.52.136]:5537 "EHLO mga12.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S229554AbhL2Ntd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 29 Dec 2021 08:49:33 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1640785773; x=1672321773;
-  h=message-id:date:mime-version:subject:to:cc:references:
-   from:in-reply-to:content-transfer-encoding;
-  bh=anZN01Crx5ZF6OUj2MH0zGoUy0Or8FI4/GF+5LBVEBc=;
-  b=ElGIgVGeRtL+SGmKcM+6KpUFRCFia7CEk2j+idiZz4wPwFyh+N9vQf0p
-   pwgqywSEfEDI3KIv9q8v8n+XbbcKS8sPIuskCAJeTuI23mfVpCThYqtwq
-   +oRdHHKsvYIYYVdzRPY4V7MGVGrlo6QIR6mXNtaU4C0gTCzo0BRqXXI+M
-   89hDccxL2euPcq7VPYJhpUrnMyciqySJxsVR9nT80XHMgznuAje2fJVCr
-   jlS+SzXbdYH3/TPxQWpsJ+wVGsUzv41SZEfO0lzSlUgjKXYxlbUZNNVmf
-   Avk6rzPFSjh3zhb67tYjsvlWqTAZag6ueKrul3Zch1sr8OA1QGIsRFM1b
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10211"; a="221516560"
-X-IronPort-AV: E=Sophos;i="5.88,245,1635231600"; 
-   d="scan'208";a="221516560"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Dec 2021 05:49:33 -0800
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.88,245,1635231600"; 
-   d="scan'208";a="524821653"
-Received: from mylly.fi.intel.com (HELO [10.237.72.50]) ([10.237.72.50])
-  by fmsmga007.fm.intel.com with ESMTP; 29 Dec 2021 05:49:30 -0800
-Message-ID: <1d3c1df9-42b8-e451-f622-32d8c1e6d1b5@linux.intel.com>
-Date:   Wed, 29 Dec 2021 15:49:29 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Firefox/91.0 Thunderbird/91.4.1
-Subject: Re: [PATCH v2 13/23] counter: Provide alternative counter
- registration functions
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>, kernel@pengutronix.de,
+        id S240614AbhL2Po5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 29 Dec 2021 10:44:57 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51332 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S240601AbhL2Po4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Dec 2021 10:44:56 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 635FAC061401
+        for <linux-iio@vger.kernel.org>; Wed, 29 Dec 2021 07:44:56 -0800 (PST)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n2b8H-0006qU-8c; Wed, 29 Dec 2021 16:44:53 +0100
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
+        (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n2b8F-007KHK-VV; Wed, 29 Dec 2021 16:44:51 +0100
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1n2b8F-00014b-3L; Wed, 29 Dec 2021 16:44:51 +0100
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     linux-iio@vger.kernel.org, kernel@pengutronix.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org
-References: <20211227094526.698714-1-u.kleine-koenig@pengutronix.de>
- <20211227094526.698714-14-u.kleine-koenig@pengutronix.de>
- <20211228180017.37c2703d@jic23-huawei>
-From:   Jarkko Nikula <jarkko.nikula@linux.intel.com>
-In-Reply-To: <20211228180017.37c2703d@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+        linux-kernel@vger.kernel.org, Jonathan Corbet <corbet@lwn.net>
+Subject: [PATCH v3 14/23] counter: Update documentation for new counter registration functions
+Date:   Wed, 29 Dec 2021 16:44:32 +0100
+Message-Id: <20211229154441.38045-15-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20211229154441.38045-1-u.kleine-koenig@pengutronix.de>
+References: <20211229154441.38045-1-u.kleine-koenig@pengutronix.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1617; h=from:subject; bh=TASnXEH0lKlhSbBqFcgfSSsxVpWQVBj8v5aw8rDjyLo=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzIJAbsujyQnO74nW8GN1Q48yFonVn/gcNuRf6YZz YmlfROKJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYcyCQAAKCRDB/BR4rcrsCeMsB/ 9Ph8A0sFeBLDxXqgu3t8qiOeUrzOpZ9klRNgk2lgvwiF4Goqex/TlX25PIc/s7glKbtRb14qqEbyFw 8Xf/w1msF0RGsaikCmcU4Mwohi4/uiZwPRchi5DSz5lHDUdnT7NnU/wbDRqJ1okHnvhdvtOX6FtS5m mHM5YE6dcgBA24qjpDI95ayOtLD8oU9/t+J3QXNidpYWulgmaf5G4ZsnjsiItkSdETV9CRpbESD78e D1R1VFBgN3s6+IBp9CgfYCbPEgnWX0OmoQdlqcMP77sP3lf6uyocPhwH2H/ska1pQzzzylVxbV2lNJ 5v/Wy1e3ohI/bN+zyrnornC1wv9SkS
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 12/28/21 20:00, Jonathan Cameron wrote:
-> On Mon, 27 Dec 2021 10:45:16 +0100
-> Uwe Kleine-König         <u.kleine-koenig@pengutronix.de> wrote:
->> +	if (err < 0)
->> +		goto err_chrdev_add;
->> +
->> +	device_initialize(dev);
->> +	/* Configure device structure for Counter */
->> +	dev->type = &counter_device_type;
->> +	dev->bus = &counter_bus_type;
->> +	dev->devt = MKDEV(MAJOR(counter_devt), id);
-> 
-> As 0-day pointed out id not initialized.
-> 
-This was the reason why second counter instance initialization failed 
-for me when testing the patch 17. I fixed it locally by changing the 
-line a few rows above the MKDEV():
+In order to replace the counter registration API also update the
+documentation to the new way.
 
--	dev->id = err;
-+	dev->id = id = err;
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
+---
+ Documentation/driver-api/generic-counter.rst | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/Documentation/driver-api/generic-counter.rst b/Documentation/driver-api/generic-counter.rst
+index 1b487a331467..71ccc30e586b 100644
+--- a/Documentation/driver-api/generic-counter.rst
++++ b/Documentation/driver-api/generic-counter.rst
+@@ -262,11 +262,11 @@ order to communicate with the device: to read and write various Signals
+ and Counts, and to set and get the "action mode" and "function mode" for
+ various Synapses and Counts respectively.
+ 
+-A defined counter_device structure may be registered to the system by
+-passing it to the counter_register function, and unregistered by passing
+-it to the counter_unregister function. Similarly, the
+-devm_counter_register function may be used if device memory-managed
+-registration is desired.
++A counter_device structure is allocated using counter_alloc() and then
++registered to the system by passing it to the counter_add() function, and
++unregistered by passing it to the counter_unregister function. There are
++device managed variants of these functions: devm_counter_alloc() and
++devm_counter_add().
+ 
+ The struct counter_comp structure is used to define counter extensions
+ for Signals, Synapses, and Counts.
+-- 
+2.34.1
+
