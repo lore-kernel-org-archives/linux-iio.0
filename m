@@ -2,52 +2,49 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D8864C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B36C43217
 	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240961AbhL3PDS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Dec 2021 10:03:18 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46766 "EHLO
+        id S240991AbhL3PDT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Dec 2021 10:03:19 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240660AbhL3PDK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:03:10 -0500
+        with ESMTP id S235987AbhL3PDL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:03:11 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF35C06173E
-        for <linux-iio@vger.kernel.org>; Thu, 30 Dec 2021 07:03:10 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16E62C061574
+        for <linux-iio@vger.kernel.org>; Thu, 30 Dec 2021 07:03:11 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxQ-0000cU-6N; Thu, 30 Dec 2021 16:03:08 +0100
+        id 1n2wxQ-0000eE-Uj; Thu, 30 Dec 2021 16:03:08 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxN-007VL1-SG; Thu, 30 Dec 2021 16:03:05 +0100
+        id 1n2wxQ-007VLQ-4f; Thu, 30 Dec 2021 16:03:07 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxM-0007i3-Lg; Thu, 30 Dec 2021 16:03:04 +0100
+        id 1n2wxO-0007ji-OB; Thu, 30 Dec 2021 16:03:06 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel@pengutronix.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
+        Kamel Bouhara <kamel.bouhara@bootlin.com>,
         linux-arm-kernel@lists.infradead.org,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v4 11/23] counter: stm32-lptimer-cnt: Convert to counter_priv() wrapper
-Date:   Thu, 30 Dec 2021 16:02:48 +0100
-Message-Id: <20211230150300.72196-12-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 19/23] counter: microchip-tcb-capture: Convert to new counter registration
+Date:   Thu, 30 Dec 2021 16:02:56 +0100
+Message-Id: <20211230150300.72196-20-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
 References: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=3728; h=from:subject; bh=HzpiF2hM7TUPP6R0Q8sjl1mleB8WWDqnHZa5zXo9C1Q=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzcmNMowiChMBSWxMR+GhqtTMOuc77XHdTRdcTAEG HfEiyxCJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3JjQAKCRDB/BR4rcrsCRZ+B/ 4yPolbyDT6/f2itAP6FVVWrMKwBy2ark9XYvvASOMVv/Bisr0fRnfJIOl5ecEUXay0yguUAh6CphIu rsYavJpz6QpPfm1ilX4jCiR+qBSZSFH7UOJOBAD0EcWpIZx2Ye6r9LAW7+TczDj7uke1LVcPLQkC2/ T8PisQ6c5P2UiSumHKLP4WZbJfYfPM5Tj91pvv8ONUrcRyCNAtwTDuqHjTMg6hSL2juojNJSFBFJAh K2eXmSCsF3qoXfPmP8oYwaOFD9pVSYtjmEscgZz+snPbK+ImcFN+MOhRAc25ov/srHOQGFIZvb0jCH ICExfnjQoB06yCVoDKiIYLb120xW1F
+X-Developer-Signature: v=1; a=openpgp-sha256; l=2719; h=from:subject; bh=zB+CDNRsuxtlUU3rZ1sxiJLgaa2yFfN99F8RAiurySQ=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzcmrlDQHuK37H1+c9Bpu199PVTJSMIqu3KLWowaZ WDQ+eoOJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3JqwAKCRDB/BR4rcrsCcsGCA CAS6bB5s7l2MlQdqU/kFS8bAJ/INJDd1qH4mMHS1qGuep2XEJ1H5TDtud8iMgod3TepuxJh3a6G1L4 0Ke1Tq7f++PDTDKGlSISlagLsFN4/cOGIWJY7iAAe+3NIJOeBBaaq6mxXZtCe+5S4yQHSkRoPlzDD5 oefRH/SI4TOFhcV4WbohgeCCMxPJkUp7uvpvkMNlBR6F0RN234ySiB9qh6gRqkLO0bRMYZm9DVWCa3 qKd0Zum3E8KWKSc6uYY61dnJeR/uGxU6mkNJp3YCOD4j+YXr34A6NPTG4q+xItmOtMraahUsf0T+XK oTdhZm4LyqaNEMHDGNmvbnuY3/iUqu
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -58,100 +55,80 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a straight forward conversion to the new counter_priv() wrapper.
+This fixes device lifetime issues where it was possible to free a live
+struct device.
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Fixes: 106b104137fd ("counter: Add microchip TCB capture counter")
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/stm32-lptimer-cnt.c | 18 +++++++++---------
- 1 file changed, 9 insertions(+), 9 deletions(-)
+ drivers/counter/microchip-tcb-capture.c | 30 ++++++++++++++-----------
+ 1 file changed, 17 insertions(+), 13 deletions(-)
 
-diff --git a/drivers/counter/stm32-lptimer-cnt.c b/drivers/counter/stm32-lptimer-cnt.c
-index 5168833b1fdf..9cf00e929cc0 100644
---- a/drivers/counter/stm32-lptimer-cnt.c
-+++ b/drivers/counter/stm32-lptimer-cnt.c
-@@ -141,7 +141,7 @@ static const enum counter_synapse_action stm32_lptim_cnt_synapse_actions[] = {
- static int stm32_lptim_cnt_read(struct counter_device *counter,
- 				struct counter_count *count, u64 *val)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
- 	u32 cnt;
- 	int ret;
+diff --git a/drivers/counter/microchip-tcb-capture.c b/drivers/counter/microchip-tcb-capture.c
+index 1b56b7444668..00844445143b 100644
+--- a/drivers/counter/microchip-tcb-capture.c
++++ b/drivers/counter/microchip-tcb-capture.c
+@@ -24,7 +24,6 @@
  
-@@ -158,7 +158,7 @@ static int stm32_lptim_cnt_function_read(struct counter_device *counter,
- 					 struct counter_count *count,
- 					 enum counter_function *function)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+ struct mchp_tc_data {
+ 	const struct atmel_tcb_config *tc_cfg;
+-	struct counter_device counter;
+ 	struct regmap *regmap;
+ 	int qdec_mode;
+ 	int num_channels;
+@@ -296,6 +295,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
+ 	struct device_node *np = pdev->dev.of_node;
+ 	const struct atmel_tcb_config *tcb_config;
+ 	const struct of_device_id *match;
++	struct counter_device *counter;
+ 	struct mchp_tc_data *priv;
+ 	char clk_name[7];
+ 	struct regmap *regmap;
+@@ -303,9 +303,10 @@ static int mchp_tc_probe(struct platform_device *pdev)
+ 	int channel;
+ 	int ret, i;
  
- 	if (!priv->quadrature_mode) {
- 		*function = COUNTER_FUNCTION_INCREASE;
-@@ -177,7 +177,7 @@ static int stm32_lptim_cnt_function_write(struct counter_device *counter,
- 					  struct counter_count *count,
- 					  enum counter_function function)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
+-	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+-	if (!priv)
++	counter = devm_counter_alloc(&pdev->dev, sizeof(*priv));
++	if (!counter)
+ 		return -ENOMEM;
++	priv = counter_priv(counter);
  
- 	if (stm32_lptim_is_enabled(priv))
- 		return -EBUSY;
-@@ -200,7 +200,7 @@ static int stm32_lptim_cnt_enable_read(struct counter_device *counter,
- 				       struct counter_count *count,
- 				       u8 *enable)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
- 	int ret;
+ 	match = of_match_node(atmel_tc_of_match, np->parent);
+ 	tcb_config = match->data;
+@@ -360,16 +361,19 @@ static int mchp_tc_probe(struct platform_device *pdev)
  
- 	ret = stm32_lptim_is_enabled(priv);
-@@ -216,7 +216,7 @@ static int stm32_lptim_cnt_enable_write(struct counter_device *counter,
- 					struct counter_count *count,
- 					u8 enable)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
- 	int ret;
+ 	priv->tc_cfg = tcb_config;
+ 	priv->regmap = regmap;
+-	priv->counter.name = dev_name(&pdev->dev);
+-	priv->counter.parent = &pdev->dev;
+-	priv->counter.ops = &mchp_tc_ops;
+-	priv->counter.num_counts = ARRAY_SIZE(mchp_tc_counts);
+-	priv->counter.counts = mchp_tc_counts;
+-	priv->counter.num_signals = ARRAY_SIZE(mchp_tc_count_signals);
+-	priv->counter.signals = mchp_tc_count_signals;
+-	priv->counter.priv = priv;
+-
+-	return devm_counter_register(&pdev->dev, &priv->counter);
++	counter->name = dev_name(&pdev->dev);
++	counter->parent = &pdev->dev;
++	counter->ops = &mchp_tc_ops;
++	counter->num_counts = ARRAY_SIZE(mchp_tc_counts);
++	counter->counts = mchp_tc_counts;
++	counter->num_signals = ARRAY_SIZE(mchp_tc_count_signals);
++	counter->signals = mchp_tc_count_signals;
++
++	ret = devm_counter_add(&pdev->dev, counter);
++	if (ret < 0)
++		return dev_err_probe(&pdev->dev, ret, "Failed to add counter\n");
++
++	return 0;
+ }
  
- 	/* Check nobody uses the timer, or already disabled/enabled */
-@@ -241,7 +241,7 @@ static int stm32_lptim_cnt_ceiling_read(struct counter_device *counter,
- 					struct counter_count *count,
- 					u64 *ceiling)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
- 
- 	*ceiling = priv->ceiling;
- 
-@@ -252,7 +252,7 @@ static int stm32_lptim_cnt_ceiling_write(struct counter_device *counter,
- 					 struct counter_count *count,
- 					 u64 ceiling)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
- 
- 	if (stm32_lptim_is_enabled(priv))
- 		return -EBUSY;
-@@ -277,7 +277,7 @@ static int stm32_lptim_cnt_action_read(struct counter_device *counter,
- 				       struct counter_synapse *synapse,
- 				       enum counter_synapse_action *action)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
- 	enum counter_function function;
- 	int err;
- 
-@@ -321,7 +321,7 @@ static int stm32_lptim_cnt_action_write(struct counter_device *counter,
- 					struct counter_synapse *synapse,
- 					enum counter_synapse_action action)
- {
--	struct stm32_lptim_cnt *const priv = counter->priv;
-+	struct stm32_lptim_cnt *const priv = counter_priv(counter);
- 	enum counter_function function;
- 	int err;
- 
+ static const struct of_device_id mchp_tc_dt_ids[] = {
 -- 
 2.34.1
 
