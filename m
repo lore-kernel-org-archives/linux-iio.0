@@ -2,48 +2,46 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 999F0C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E8A1C433EF
 	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:03:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240532AbhL3PDP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Dec 2021 10:03:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46748 "EHLO
+        id S240651AbhL3PDL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Dec 2021 10:03:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46734 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240533AbhL3PDJ (ORCPT
+        with ESMTP id S240416AbhL3PDJ (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:03:09 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A73EC061756
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42B5FC061401
         for <linux-iio@vger.kernel.org>; Thu, 30 Dec 2021 07:03:09 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxP-0000cO-0W; Thu, 30 Dec 2021 16:03:07 +0100
+        id 1n2wxP-0000cW-0V; Thu, 30 Dec 2021 16:03:07 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxM-007VKk-E5; Thu, 30 Dec 2021 16:03:03 +0100
+        id 1n2wxO-007VL6-34; Thu, 30 Dec 2021 16:03:05 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxL-0007h1-F2; Thu, 30 Dec 2021 16:03:03 +0100
+        id 1n2wxN-0007iP-3l; Thu, 30 Dec 2021 16:03:05 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel@pengutronix.de,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Syed Nayyar Waris <syednwaris@gmail.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v4 05/23] counter: 104-quad-8: Convert to counter_priv() wrapper
-Date:   Thu, 30 Dec 2021 16:02:42 +0100
-Message-Id: <20211230150300.72196-6-u.kleine-koenig@pengutronix.de>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v4 13/23] counter: Provide alternative counter registration functions
+Date:   Thu, 30 Dec 2021 16:02:50 +0100
+Message-Id: <20211230150300.72196-14-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
 References: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=11165; h=from:subject; bh=LHPajDrT7KgO3JB/EI/js3kS9n+Fol7dZ5UteMk8rmY=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzclfErUiML5+vqwXxRZ4j5GmqnZzR5t5PFzjBJWX xX+ttaSJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3JXwAKCRDB/BR4rcrsCSKOCA CdSYCv6oCwN9xfd+dzPYuhZLEsdS5Q05BTGGZhrhpa8t+vlAIukcS186pgvdu0i7sP+g6Xem0Wh4lP hV3UX8MEKVkE2VAff7SWXcKGyIQtX0bNb5OzO7oHNxa8BCb5jG0zpW2LSggfgcyIvxfsNNVUcGNpwF waXYzwHqqSrcXVenfUSb+CmFJWehdaj+cQdjEjO5aAiZ1vho0eLERMB20sCKWGiZzvAquWFFBC05Dy 6XCehqyJpUbyYwOAgeADssD2/GVg76htOu8+xVhIIkJL7tbXLqtaBbmavzn+Dqd4a8fp0eTnHbFn51 k2wHopUUzNPLsxRLSZOmMYipb1+MJ0
+X-Developer-Signature: v=1; a=openpgp-sha256; l=8502; h=from:subject; bh=d9g2++kV0+/OGAwQOU1ysXUYhLQtCAC8Q+3ueNORjnU=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzcmUETtRjb7JXD7MH0u8ErRYfWIY7xxgSw7o5hva qYYBfH+JATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3JlAAKCRDB/BR4rcrsCb7HB/ 0Q/Z//nafOYG9/LVEdexNVSRwwlGDl/W26BahClsW9yxY4t7OM7F8qbqqc2u/JYMMwuxgYLEPefGq2 n09b+7TOX/rc2qIMc5mO9SOnGnBO53Zi1s6yzJGdjJr5oW2aqq3aQBWdr+idVbFlEbLXLJziUE6OQB z/JfO+ZnvotDBntG0dYiRbix6avMlyISsxJT68S+QP7yIm+Vv/FZJAKX70NWEuaswEmc03Mbc9QzNV FKlUwG7yPCQ7RoZgjVCsnznqR/sxy4c2iQnWNcYOcJQz3K0bSJOXQjzD7dSyxiDosKgx5s0So6cwMk qT/RVhbnWdNbKqATLsBJh/bp+pZP6G
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -54,271 +52,296 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a straight forward conversion to the new counter_priv() wrapper.
+The current implementation gets device lifetime tracking wrong. The
+problem is that allocation of struct counter_device is controlled by the
+individual drivers but this structure contains a struct device that
+might have to live longer than a driver is bound. As a result a command
+sequence like:
 
-Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+	{ sleep 5; echo bang; } > /dev/counter0 &
+	sleep 1;
+	echo 40000000.timer:counter > /sys/bus/platform/drivers/stm32-timer-counter/unbind
+
+can keep a reference to the struct device and unbinding results in
+freeing the memory occupied by this device resulting in an oops.
+
+This commit provides two new functions (plus some helpers):
+ - counter_alloc() to allocate a struct counter_device that is
+   automatically freed once the embedded struct device is released
+ - counter_add() to register such a device.
+
+Note that this commit doesn't fix any issues, all drivers have to be
+converted to these new functions to correct the lifetime problems.
+
+Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/104-quad-8.c | 56 ++++++++++++++++++------------------
- 1 file changed, 28 insertions(+), 28 deletions(-)
+ drivers/counter/counter-core.c | 168 ++++++++++++++++++++++++++++++++-
+ include/linux/counter.h        |  15 +++
+ 2 files changed, 181 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index a97027db0446..41b4d6f4583c 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -112,7 +112,7 @@ static int quad8_signal_read(struct counter_device *counter,
- 			     struct counter_signal *signal,
- 			     enum counter_signal_level *level)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	unsigned int state;
+diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
+index 00c41f28c101..b3fa15bbcbdb 100644
+--- a/drivers/counter/counter-core.c
++++ b/drivers/counter/counter-core.c
+@@ -15,6 +15,7 @@
+ #include <linux/kdev_t.h>
+ #include <linux/module.h>
+ #include <linux/mutex.h>
++#include <linux/slab.h>
+ #include <linux/types.h>
+ #include <linux/wait.h>
  
- 	/* Only Index signal levels can be read */
-@@ -130,7 +130,7 @@ static int quad8_signal_read(struct counter_device *counter,
- static int quad8_count_read(struct counter_device *counter,
- 			    struct counter_count *count, u64 *val)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned int flags;
- 	unsigned int borrow;
-@@ -162,7 +162,7 @@ static int quad8_count_read(struct counter_device *counter,
- static int quad8_count_write(struct counter_device *counter,
- 			     struct counter_count *count, u64 val)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned long irqflags;
- 	int i;
-@@ -212,7 +212,7 @@ static int quad8_function_read(struct counter_device *counter,
- 			       struct counter_count *count,
- 			       enum counter_function *function)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int id = count->id;
- 	unsigned long irqflags;
+@@ -24,6 +25,16 @@
+ /* Provides a unique ID for each counter device */
+ static DEFINE_IDA(counter_ida);
  
-@@ -242,7 +242,7 @@ static int quad8_function_write(struct counter_device *counter,
- 				struct counter_count *count,
- 				enum counter_function function)
++struct counter_device_allochelper {
++	struct counter_device counter;
++
++	/*
++	 * This is cache line aligned to ensure private data behaves like if it
++	 * were kmalloced separately.
++	 */
++	unsigned long privdata[] ____cacheline_aligned;
++};
++
+ static void counter_device_release(struct device *dev)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int id = count->id;
- 	unsigned int *const quadrature_mode = priv->quadrature_mode + id;
- 	unsigned int *const scale = priv->quadrature_scale + id;
-@@ -304,7 +304,7 @@ static int quad8_direction_read(struct counter_device *counter,
- 				struct counter_count *count,
- 				enum counter_count_direction *direction)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	unsigned int ud_flag;
- 	const unsigned int flag_addr = priv->base + 2 * count->id + 1;
+ 	struct counter_device *const counter =
+@@ -31,6 +42,9 @@ static void counter_device_release(struct device *dev)
  
-@@ -334,7 +334,7 @@ static int quad8_action_read(struct counter_device *counter,
- 			     struct counter_synapse *synapse,
- 			     enum counter_synapse_action *action)
+ 	counter_chrdev_remove(counter);
+ 	ida_free(&counter_ida, dev->id);
++
++	if (!counter->legacy_device)
++		kfree(container_of(counter, struct counter_device_allochelper, counter));
+ }
+ 
+ static struct device_type counter_device_type = {
+@@ -53,7 +67,14 @@ static dev_t counter_devt;
+  */
+ void *counter_priv(const struct counter_device *const counter)
  {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
+-	return counter->priv;
++	if (counter->legacy_device) {
++		return counter->priv;
++	} else {
++		struct counter_device_allochelper *ch =
++			container_of(counter, struct counter_device_allochelper, counter);
++
++		return &ch->privdata;
++	}
+ }
+ EXPORT_SYMBOL_GPL(counter_priv);
+ 
+@@ -74,6 +95,8 @@ int counter_register(struct counter_device *const counter)
+ 	int id;
  	int err;
- 	enum counter_function function;
- 	const size_t signal_a_id = count->synapses[0].signal->id;
-@@ -397,7 +397,7 @@ enum {
  
- static int quad8_events_configure(struct counter_device *counter)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned long irq_enabled = 0;
- 	unsigned long irqflags;
- 	struct counter_event_node *event_node;
-@@ -495,7 +495,7 @@ static int quad8_index_polarity_get(struct counter_device *counter,
- 				    struct counter_signal *signal,
- 				    u32 *index_polarity)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
++	counter->legacy_device = true;
++
+ 	/* Acquire unique ID */
+ 	id = ida_alloc(&counter_ida, GFP_KERNEL);
+ 	if (id < 0)
+@@ -114,6 +137,95 @@ int counter_register(struct counter_device *const counter)
+ }
+ EXPORT_SYMBOL_GPL(counter_register);
  
- 	*index_polarity = priv->index_polarity[channel_id];
-@@ -507,7 +507,7 @@ static int quad8_index_polarity_set(struct counter_device *counter,
- 				    struct counter_signal *signal,
- 				    u32 index_polarity)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
- 	const int base_offset = priv->base + 2 * channel_id + 1;
- 	unsigned long irqflags;
-@@ -536,7 +536,7 @@ static int quad8_synchronous_mode_get(struct counter_device *counter,
- 				      struct counter_signal *signal,
- 				      u32 *synchronous_mode)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
++/**
++ * counter_alloc - allocate a counter_device
++ * @sizeof_priv: size of the driver private data
++ *
++ * This is part one of counter registration. The structure is allocated
++ * dynamically to ensure the right lifetime for the embedded struct device.
++ *
++ * If this succeeds, call counter_put() to get rid of the counter_device again.
++ */
++struct counter_device *counter_alloc(size_t sizeof_priv)
++{
++	struct counter_device_allochelper *ch;
++	struct counter_device *counter;
++	struct device *dev;
++	int err;
++
++	ch = kzalloc(sizeof(*ch) + sizeof_priv, GFP_KERNEL);
++	if (!ch) {
++		err = -ENOMEM;
++		goto err_alloc_ch;
++	}
++
++	counter = &ch->counter;
++	dev = &counter->dev;
++
++	/* Acquire unique ID */
++	err = ida_alloc(&counter_ida, GFP_KERNEL);
++	if (err < 0)
++		goto err_ida_alloc;
++	dev->id = err;
++
++	mutex_init(&counter->ops_exist_lock);
++	dev->type = &counter_device_type;
++	dev->bus = &counter_bus_type;
++	dev->devt = MKDEV(MAJOR(counter_devt), dev->id);
++
++	err = counter_chrdev_add(counter);
++	if (err < 0)
++		goto err_chrdev_add;
++
++	device_initialize(dev);
++
++	return counter;
++
++err_chrdev_add:
++
++	ida_free(&counter_ida, dev->id);
++err_ida_alloc:
++
++	kfree(ch);
++err_alloc_ch:
++
++	return ERR_PTR(err);
++}
++EXPORT_SYMBOL_GPL(counter_alloc);
++
++void counter_put(struct counter_device *counter)
++{
++	put_device(&counter->dev);
++}
++EXPORT_SYMBOL_GPL(counter_put);
++
++/**
++ * counter_add - complete registration of a counter
++ * @counter: the counter to add
++ *
++ * This is part two of counter registration.
++ *
++ * If this succeeds, call counter_unregister() to get rid of the counter_device again.
++ */
++int counter_add(struct counter_device *counter)
++{
++	int err;
++	struct device *dev = &counter->dev;
++
++	if (counter->parent) {
++		dev->parent = counter->parent;
++		dev->of_node = counter->parent->of_node;
++	}
++
++	err = counter_sysfs_add(counter);
++	if (err < 0)
++		return err;
++
++	/* implies device_add(dev) */
++	return cdev_device_add(&counter->chrdev, dev);
++}
++EXPORT_SYMBOL_GPL(counter_add);
++
+ /**
+  * counter_unregister - unregister Counter from the system
+  * @counter:	pointer to Counter to unregister
+@@ -134,7 +246,8 @@ void counter_unregister(struct counter_device *const counter)
  
- 	*synchronous_mode = priv->synchronous_mode[channel_id];
-@@ -548,7 +548,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
- 				      struct counter_signal *signal,
- 				      u32 synchronous_mode)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
- 	const int base_offset = priv->base + 2 * channel_id + 1;
- 	unsigned long irqflags;
-@@ -587,7 +587,7 @@ static int quad8_count_mode_read(struct counter_device *counter,
- 				 struct counter_count *count,
- 				 enum counter_count_mode *cnt_mode)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
+ 	mutex_unlock(&counter->ops_exist_lock);
  
- 	/* Map 104-QUAD-8 count mode to Generic Counter count mode */
- 	switch (priv->count_mode[count->id]) {
-@@ -612,7 +612,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
- 				  struct counter_count *count,
- 				  enum counter_count_mode cnt_mode)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned int count_mode;
- 	unsigned int mode_cfg;
- 	const int base_offset = priv->base + 2 * count->id + 1;
-@@ -659,7 +659,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
- static int quad8_count_enable_read(struct counter_device *counter,
- 				   struct counter_count *count, u8 *enable)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
+-	put_device(&counter->dev);
++	if (counter->legacy_device)
++		put_device(&counter->dev);
+ }
+ EXPORT_SYMBOL_GPL(counter_unregister);
  
- 	*enable = priv->ab_enable[count->id];
+@@ -168,6 +281,57 @@ int devm_counter_register(struct device *dev,
+ }
+ EXPORT_SYMBOL_GPL(devm_counter_register);
  
-@@ -669,7 +669,7 @@ static int quad8_count_enable_read(struct counter_device *counter,
- static int quad8_count_enable_write(struct counter_device *counter,
- 				    struct counter_count *count, u8 enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id;
- 	unsigned long irqflags;
- 	unsigned int ior_cfg;
-@@ -697,7 +697,7 @@ static const char *const quad8_noise_error_states[] = {
- static int quad8_error_noise_get(struct counter_device *counter,
- 				 struct counter_count *count, u32 *noise_error)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id + 1;
++static void devm_counter_put(void *counter)
++{
++	counter_put(counter);
++}
++
++/**
++ * devm_counter_alloc - allocate a counter_device
++ * @dev: the device to register the release callback for
++ * @sizeof_priv: size of the driver private data
++ *
++ * This is the device managed version of counter_add(). It registers a cleanup
++ * callback to care for calling counter_put().
++ */
++struct counter_device *devm_counter_alloc(struct device *dev, size_t sizeof_priv)
++{
++	struct counter_device *counter;
++	int err;
++
++	counter = counter_alloc(sizeof_priv);
++	if (IS_ERR(counter))
++		return counter;
++
++	err = devm_add_action_or_reset(dev, devm_counter_put, counter);
++	if (err < 0)
++		return ERR_PTR(err);
++
++	return counter;
++}
++EXPORT_SYMBOL_GPL(devm_counter_alloc);
++
++/**
++ * devm_counter_add - complete registration of a counter
++ * @dev: the device to register the release callback for
++ * @counter: the counter to add
++ *
++ * This is the device managed version of counter_add(). It registers a cleanup
++ * callback to care for calling counter_unregister().
++ */
++int devm_counter_add(struct device *dev,
++		     struct counter_device *const counter)
++{
++	int err;
++
++	err = counter_add(counter);
++	if (err < 0)
++		return err;
++
++	return devm_add_action_or_reset(dev, devm_counter_release, counter);
++}
++EXPORT_SYMBOL_GPL(devm_counter_add);
++
+ #define COUNTER_DEV_MAX 256
  
- 	*noise_error = !!(inb(base_offset) & QUAD8_FLAG_E);
-@@ -708,7 +708,7 @@ static int quad8_error_noise_get(struct counter_device *counter,
- static int quad8_count_preset_read(struct counter_device *counter,
- 				   struct counter_count *count, u64 *preset)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
+ static int __init counter_init(void)
+diff --git a/include/linux/counter.h b/include/linux/counter.h
+index 627f1757f6bb..ed8d5820f0d1 100644
+--- a/include/linux/counter.h
++++ b/include/linux/counter.h
+@@ -327,14 +327,29 @@ struct counter_device {
+ 	spinlock_t events_in_lock;
+ 	struct mutex events_out_lock;
+ 	struct mutex ops_exist_lock;
++
++	/*
++	 * This can go away once all drivers are converted to
++	 * counter_alloc()/counter_add().
++	 */
++	bool legacy_device;
+ };
  
- 	*preset = priv->preset[count->id];
+ void *counter_priv(const struct counter_device *const counter);
  
-@@ -734,7 +734,7 @@ static void quad8_preset_register_set(struct quad8 *const priv, const int id,
- static int quad8_count_preset_write(struct counter_device *counter,
- 				    struct counter_count *count, u64 preset)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned long irqflags;
+ int counter_register(struct counter_device *const counter);
++
++struct counter_device *counter_alloc(size_t sizeof_priv);
++void counter_put(struct counter_device *const counter);
++int counter_add(struct counter_device *const counter);
++
+ void counter_unregister(struct counter_device *const counter);
+ int devm_counter_register(struct device *dev,
+ 			  struct counter_device *const counter);
++struct counter_device *devm_counter_alloc(struct device *dev,
++					  size_t sizeof_priv);
++int devm_counter_add(struct device *dev,
++		     struct counter_device *const counter);
+ void counter_push_event(struct counter_device *const counter, const u8 event,
+ 			const u8 channel);
  
- 	/* Only 24-bit values are supported */
-@@ -753,7 +753,7 @@ static int quad8_count_preset_write(struct counter_device *counter,
- static int quad8_count_ceiling_read(struct counter_device *counter,
- 				    struct counter_count *count, u64 *ceiling)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned long irqflags;
- 
- 	spin_lock_irqsave(&priv->lock, irqflags);
-@@ -778,7 +778,7 @@ static int quad8_count_ceiling_read(struct counter_device *counter,
- static int quad8_count_ceiling_write(struct counter_device *counter,
- 				     struct counter_count *count, u64 ceiling)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	unsigned long irqflags;
- 
- 	/* Only 24-bit values are supported */
-@@ -805,7 +805,7 @@ static int quad8_count_preset_enable_read(struct counter_device *counter,
- 					  struct counter_count *count,
- 					  u8 *preset_enable)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 
- 	*preset_enable = !priv->preset_enable[count->id];
- 
-@@ -816,7 +816,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
- 					   struct counter_count *count,
- 					   u8 preset_enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const int base_offset = priv->base + 2 * count->id + 1;
- 	unsigned long irqflags;
- 	unsigned int ior_cfg;
-@@ -843,7 +843,7 @@ static int quad8_signal_cable_fault_read(struct counter_device *counter,
- 					 struct counter_signal *signal,
- 					 u8 *cable_fault)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
- 	unsigned long irqflags;
- 	bool disabled;
-@@ -873,7 +873,7 @@ static int quad8_signal_cable_fault_enable_read(struct counter_device *counter,
- 						struct counter_signal *signal,
- 						u8 *enable)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
- 
- 	*enable = !!(priv->cable_fault_enable & BIT(channel_id));
-@@ -885,7 +885,7 @@ static int quad8_signal_cable_fault_enable_write(struct counter_device *counter,
- 						 struct counter_signal *signal,
- 						 u8 enable)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
- 	unsigned long irqflags;
- 	unsigned int cable_fault_enable;
-@@ -911,7 +911,7 @@ static int quad8_signal_fck_prescaler_read(struct counter_device *counter,
- 					   struct counter_signal *signal,
- 					   u8 *prescaler)
- {
--	const struct quad8 *const priv = counter->priv;
-+	const struct quad8 *const priv = counter_priv(counter);
- 
- 	*prescaler = priv->fck_prescaler[signal->id / 2];
- 
-@@ -922,7 +922,7 @@ static int quad8_signal_fck_prescaler_write(struct counter_device *counter,
- 					    struct counter_signal *signal,
- 					    u8 prescaler)
- {
--	struct quad8 *const priv = counter->priv;
-+	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
- 	const int base_offset = priv->base + 2 * channel_id;
- 	unsigned long irqflags;
 -- 
 2.34.1
 
