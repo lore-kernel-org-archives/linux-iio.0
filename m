@@ -2,52 +2,48 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DC5B6C3525C
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:03:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B845FC433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:03:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241187AbhL3PDZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Dec 2021 10:03:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46776 "EHLO
+        id S240673AbhL3PDL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Dec 2021 10:03:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46728 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240539AbhL3PDL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:03:11 -0500
+        with ESMTP id S235987AbhL3PDJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:03:09 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5AE2CC061401
-        for <linux-iio@vger.kernel.org>; Thu, 30 Dec 2021 07:03:11 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34468C061574
+        for <linux-iio@vger.kernel.org>; Thu, 30 Dec 2021 07:03:09 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxQ-0000dq-LY; Thu, 30 Dec 2021 16:03:08 +0100
+        id 1n2wxP-0000cS-0W; Thu, 30 Dec 2021 16:03:07 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxP-007VLR-UG; Thu, 30 Dec 2021 16:03:07 +0100
+        id 1n2wxN-007VKz-DF; Thu, 30 Dec 2021 16:03:04 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxO-0007jt-Vv; Thu, 30 Dec 2021 16:03:06 +0100
+        id 1n2wxM-0007hh-E9; Thu, 30 Dec 2021 16:03:04 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel@pengutronix.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org,
+        David Lechner <david@lechnology.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v4 20/23] counter: stm32-timer-cnt: Convert to new counter registration
-Date:   Thu, 30 Dec 2021 16:02:57 +0100
-Message-Id: <20211230150300.72196-21-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 10/23] counter: ti-eqep: Convert to counter_priv() wrapper
+Date:   Thu, 30 Dec 2021 16:02:47 +0100
+Message-Id: <20211230150300.72196-11-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
 References: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2408; h=from:subject; bh=yamPh52MWvtBuq1kwhHgzE8DC1LccrX53waJcMLV5Ao=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzcmv2YDALYtMQDBjFVY7z1y0vh4yin3H9exKf8He MpsunwCJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3JrwAKCRDB/BR4rcrsCfJBB/ 0e5hM0NoFJaHD14gPHYYux/XWg3iPAG7ZhGj0EGyLztSsKeAra+nb+1ccCW7UQTJt/1WLWu9vB7M2R w1i/dx+LUnoZ1PKvV+b5tQFZ4ulnQf5yJS68VomEi7s7LBja4bTGigx4FfoQei5UK/6p/RDeapy8L7 CI1aPUMVyqD5idJBxCkGJxtq95mt5jV8fKKTye6N5aNCDIiCmZ3XqxPGUP5tQPNir/KmKUKY0G8G44 I+nthHRnQEv5yRTC3hmn6nbms/A2SiCDiaJIXKtCEHF9jwPjYh0tMjnPd6SpDx8DKBMMn7oe6TDexs 5YJO/FdT7z6jzC/nSyGX3qztZuMyOY
+X-Developer-Signature: v=1; a=openpgp-sha256; l=829; h=from:subject; bh=clJiyVXIrRIZYJmMECycG/pD3PRCe3LwdrG+txBx0IM=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzcmIWd0YnByq4yiZTr/5UV94QLdILGFtEk06Rwp/ jvyq6cGJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3JiAAKCRDB/BR4rcrsCXW9B/ 9FyidRAqCzRmkrchrtsYfBM24iZXYWOH8n976OTeY37jh5lfPFJT6slwsCIQNrdLpLnpobYjfJtabR pBW7xq7GUzDkRmHknG5x7zkUM4Vfwk54q2RVipe72AO1BO6z03/co1A+c7cs8CW77RNLqvwWL1yf7q 7F9JjAGurUwU6CTbCpvgNMwhy0Zh78ULvPFAUQbL88kohZJW2tFduXhfBO4h6lgtq01eMxYqt67a7L ptxiB9zbwE0BbShSWmtuJePMcMdxJvTBfCAa2m7f0TUC4fNcwx8PH+Mb6QZnnx+DavQSjVR10x/GTR OjJz8zvVQRSnJZI8uCeN9lU9nHfB7c
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -58,79 +54,28 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This fixes device lifetime issues where it was possible to free a live
-struct device.
+This is a straight forward conversion to the new counter_priv() wrapper.
 
-Fixes: ad29937e206f ("counter: Add STM32 Timer quadrature encoder")
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Acked-by: David Lechner <david@lechnology.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/stm32-timer-cnt.c | 30 ++++++++++++++++++------------
- 1 file changed, 18 insertions(+), 12 deletions(-)
+ drivers/counter/ti-eqep.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/counter/stm32-timer-cnt.c b/drivers/counter/stm32-timer-cnt.c
-index 4b05b198a8d8..5779ae7c73cf 100644
---- a/drivers/counter/stm32-timer-cnt.c
-+++ b/drivers/counter/stm32-timer-cnt.c
-@@ -29,7 +29,6 @@ struct stm32_timer_regs {
- };
+diff --git a/drivers/counter/ti-eqep.c b/drivers/counter/ti-eqep.c
+index 9e0e46bca4c2..2c70b900a6cf 100644
+--- a/drivers/counter/ti-eqep.c
++++ b/drivers/counter/ti-eqep.c
+@@ -89,7 +89,7 @@ struct ti_eqep_cnt {
  
- struct stm32_timer_cnt {
--	struct counter_device counter;
- 	struct regmap *regmap;
- 	struct clk *clk;
- 	u32 max_arr;
-@@ -317,31 +316,38 @@ static int stm32_timer_cnt_probe(struct platform_device *pdev)
- 	struct stm32_timers *ddata = dev_get_drvdata(pdev->dev.parent);
- 	struct device *dev = &pdev->dev;
- 	struct stm32_timer_cnt *priv;
-+	struct counter_device *counter;
-+	int ret;
- 
- 	if (IS_ERR_OR_NULL(ddata))
- 		return -EINVAL;
- 
--	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
--	if (!priv)
-+	counter = devm_counter_alloc(dev, sizeof(*priv));
-+	if (!counter)
- 		return -ENOMEM;
- 
-+	priv = counter_priv(counter);
-+
- 	priv->regmap = ddata->regmap;
- 	priv->clk = ddata->clk;
- 	priv->max_arr = ddata->max_arr;
- 
--	priv->counter.name = dev_name(dev);
--	priv->counter.parent = dev;
--	priv->counter.ops = &stm32_timer_cnt_ops;
--	priv->counter.counts = &stm32_counts;
--	priv->counter.num_counts = 1;
--	priv->counter.signals = stm32_signals;
--	priv->counter.num_signals = ARRAY_SIZE(stm32_signals);
--	priv->counter.priv = priv;
-+	counter->name = dev_name(dev);
-+	counter->parent = dev;
-+	counter->ops = &stm32_timer_cnt_ops;
-+	counter->counts = &stm32_counts;
-+	counter->num_counts = 1;
-+	counter->signals = stm32_signals;
-+	counter->num_signals = ARRAY_SIZE(stm32_signals);
- 
- 	platform_set_drvdata(pdev, priv);
- 
- 	/* Register Counter device */
--	return devm_counter_register(dev, &priv->counter);
-+	ret = devm_counter_add(dev, counter);
-+	if (ret < 0)
-+		dev_err_probe(dev, ret, "Failed to add counter\n");
-+
-+	return ret;
+ static struct ti_eqep_cnt *ti_eqep_count_from_counter(struct counter_device *counter)
+ {
+-	return container_of(counter, struct ti_eqep_cnt, counter);
++	return counter_priv(counter);
  }
  
- static int __maybe_unused stm32_timer_cnt_suspend(struct device *dev)
+ static int ti_eqep_count_read(struct counter_device *counter,
 -- 
 2.34.1
 
