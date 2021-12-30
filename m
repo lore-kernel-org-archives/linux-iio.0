@@ -2,117 +2,147 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BEC7C433FE
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:04:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 38BDEC433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:08:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241309AbhL3PEL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Dec 2021 10:04:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46876 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241308AbhL3PDg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:03:36 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6C4C061761
-        for <linux-iio@vger.kernel.org>; Thu, 30 Dec 2021 07:03:33 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxQ-0000cK-69; Thu, 30 Dec 2021 16:03:08 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxL-007VKV-F7; Thu, 30 Dec 2021 16:03:02 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxK-0007fw-3q; Thu, 30 Dec 2021 16:03:02 +0100
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel@pengutronix.de,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Patrick Havelange <patrick.havelange@essensium.com>,
-        Kamel Bouhara <kamel.bouhara@bootlin.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Syed Nayyar Waris <syednwaris@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        Raymond Tan <raymond.tan@intel.com>,
-        "Felipe Balbi (Intel)" <balbi@kernel.org>,
-        David Lechner <david@lechnology.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Jonathan Corbet <corbet@lwn.net>, linux-doc@vger.kernel.org
-Subject: [PATCH v4 00/23] counter: cleanups and device lifetime fixes
-Date:   Thu, 30 Dec 2021 16:02:37 +0100
-Message-Id: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.34.1
+        id S231403AbhL3PIO convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Dec 2021 10:08:14 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:52054 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229609AbhL3PIO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:08:14 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E40BC61693;
+        Thu, 30 Dec 2021 15:08:13 +0000 (UTC)
+Received: from jic23-huawei (cpc108967-cmbg20-2-0-cust86.5-4.cable.virginm.net [81.101.6.87])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by smtp.kernel.org (Postfix) with ESMTPSA id A56F9C36AE9;
+        Thu, 30 Dec 2021 15:08:10 +0000 (UTC)
+Date:   Thu, 30 Dec 2021 15:13:57 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>
+Cc:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH 0/3] Add support for LTC2688
+Message-ID: <20211230151357.6c7dea0d@jic23-huawei>
+In-Reply-To: <20211214165608.7903-1-nuno.sa@analog.com>
+References: <20211214165608.7903-1-nuno.sa@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2532; h=from:subject; bh=AOu1ipuy51ViJtY8+UrNDZQ8jBgMAGOEi7FVF4Yd7rI=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzcn5BHBaiDQ8cEt776wfv9nWuKqQqGj/puI+WcPv PA8RpYSJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3J+QAKCRDB/BR4rcrsCUcSCA CfKRDdmC0XRJCNVa+WlilBBS1clYGRm99fyrJzTeKcvzB+TkcfWtSl4Mt3rxrI8MprDol2cltD3Ixg 2othS8Ec3bbw2oJUAMPXjA0bkSczWGlPshbUUmgbCl8f3GUhO24I5JUqXJFDaVzjkOGMxCAnu/440k XYcWqGeV7lJeGaBx+DpV5e/abV1DJY9KvJqNh1ZLdHvCTDZtTTPIkABJTS7+MwCrpgNHsrgO+UGSkF AOm4dgHzzKEwYu4cq6hH64t9qm3XrR/7819gHuYSybV+vf3oomYh+eMFXpVDsI4cVmqBQWBIHoNsxb 5ssNycrLJCAUZLiIYykybN0h3bPHk1
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello,
+On Tue, 14 Dec 2021 17:56:05 +0100
+Nuno Sá <nuno.sa@analog.com> wrote:
 
-On Thu, Dec 30, 2021 at 02:19:25PM +0100, Greg Kroah-Hartman wrote:
-> Please rebase and resend the series against my char-misc-next branch.
+> The ABI defined for this driver has some subtleties that were previously
+> discussed in this RFC [1]. This might not be the final state but,
+> hopefully, we are close to it:
+> 
+> toggle mode channels:
+> 
+>  * out_voltageY_toggle_en
+>  * out_voltageY_raw1
+>  * out_voltageY_symbol
+> 
+> dither mode channels:
+> 
+>  * out_voltageY_dither_en
+>  * out_voltageY_dither_raw
+>  * out_voltageY_dither_raw_available
+>  * out_voltageY_dither_frequency
+>  * out_voltageY_dither_frequency_available
+>  * out_voltageY_dither_phase
+>  * out_voltageY_dither_phase_available
+> 
+> Default channels won't have any of the above ABIs. A channel is toggle
+> capable if the devicetree 'adi,toggle-mode' flag is set. For dither, the
+> assumption is more silent. If 'adi,toggle-mode' is not given and a
+> channel is associated with a TGPx pin through 'adi,toggle-dither-input',
+> then the channel is assumed to be dither capable (there's no point in
+> having a dither capable channel without an input clock).
+> 
+> There are some stuff where I'm still not 100% convinced though:
+> 
+> 1. out_voltageY_dither_raw refers to the dither amplitude. There are some
+> differences but in essence, the same scale as the raw attr applies. That
+> is not true for the offset as it's always 0. This is stated in the ABI
+> file and being an amplitude is more or less obvious. However, I'm not
+> sure if it's still valuable to have an ut_voltageY_dither_offset?
 
-this series is just v3 taken via b4 to collect the latest acks into
-account and then rebased to Greg's char-misc-next.
+I think if we have out_voltageY_offset then we should have
+out_voltageY_dither_offset to avoid any potential confusion + appropriate
+ABI docs text to make it clear that that the more specific _offset takes
+precedence.  I have some vague recollection we had a debate about a similar
+case in the past where we had
+in_voltageX_offset that covered lots of channels and in_voltage99_offset
+(number made up) that just happened to be different.  Not sure any
+driver takes advantage of ABI perhaps allowing (not sure it's written down)
+a more specific attribute to override a generic one...
 
-Uwe Kleine-König (23):
-  counter: Use container_of instead of drvdata to track counter_device
-  counter: ftm-quaddec: Drop unused platform_set_drvdata()
-  counter: microchip-tcb-capture: Drop unused platform_set_drvdata()
-  counter: Provide a wrapper to access device private data
-  counter: 104-quad-8: Convert to counter_priv() wrapper
-  counter: interrupt-cnt: Convert to counter_priv() wrapper
-  counter: microchip-tcb-capture: Convert to counter_priv() wrapper
-  counter: intel-qep: Convert to counter_priv() wrapper
-  counter: ftm-quaddec: Convert to counter_priv() wrapper
-  counter: ti-eqep: Convert to counter_priv() wrapper
-  counter: stm32-lptimer-cnt: Convert to counter_priv() wrapper
-  counter: stm32-timer-cnt: Convert to counter_priv() wrapper
-  counter: Provide alternative counter registration functions
-  counter: Update documentation for new counter registration functions
-  counter: 104-quad-8: Convert to new counter registration
-  counter: interrupt-cnt: Convert to new counter registration
-  counter: intel-qep: Convert to new counter registration
-  counter: ftm-quaddec: Convert to new counter registration
-  counter: microchip-tcb-capture: Convert to new counter registration
-  counter: stm32-timer-cnt: Convert to new counter registration
-  counter: stm32-lptimer-cnt: Convert to new counter registration
-  counter: ti-eqep: Convert to new counter registration
-  counter: remove old and now unused registration API
+> 
+> 2. For now, if 'adi,toggle-dither-input' is given, a correspondent clock
+> as to be given as well. While this makes sense for dither channels, I'm
+> not so sure for toggle ones. I can easily see a toggled channel being
+> controlled by, for example, an host GPIO.
 
- Documentation/driver-api/generic-counter.rst |  10 +-
- drivers/counter/104-quad-8.c                 |  91 ++++-----
- drivers/counter/counter-core.c               | 186 ++++++++++++++-----
- drivers/counter/ftm-quaddec.c                |  36 ++--
- drivers/counter/intel-qep.c                  |  46 ++---
- drivers/counter/interrupt-cnt.c              |  38 ++--
- drivers/counter/microchip-tcb-capture.c      |  44 ++---
- drivers/counter/stm32-lptimer-cnt.c          |  51 ++---
- drivers/counter/stm32-timer-cnt.c            |  48 ++---
- drivers/counter/ti-eqep.c                    |  31 ++--
- include/linux/counter.h                      |  15 +-
- 11 files changed, 355 insertions(+), 241 deletions(-)
+I agree.  But I think we can relax this when needed rather than it being
+necessary to allow for more complex toggle conditions from the start.
+Generating a clock driven set of voltages is probably a common usecase
+for toggle mode so fine to just support that one until another usecase
+comes along.
 
+> 
+> 3. Dither capable channels are being silently "assumed" by the driver.
+> Not sure if an "adi,mode" dt property would make sense. Having this
+> explicitly could make it easier to express some dependencies in the
+> bindings file.
 
-base-commit: e75a58db41df67e6282104aaae073bc8b43b8dc8
--- 
-2.34.1
+I kind of like the assumed default of toggle if the pin is wired up, but
+if you prefer an explicit control it becomes a question of whether
+Rob (and maybe others) think the binding is sane or not.
+
+> 
+> 4. For now the clocks property is not part of the channels object.
+> The reason for this is that we only have 3 possible clocks for 16
+> channels so I wanted to avoid getting and enabling the same clock more
+> than once. But that is not really an issue and together with 3) it
+> could, again, make it easier to express some dependencies in the bindings
+> file. That said, I'm pending in doing this property a channel one (as it
+> truly is) unless I get feedback otherwise.
+
+Interesting question on how to do this.  Maybe a questions where Rob's
+input would be particularly useful.  Likely to be similar cases somewhere
+else from a dt-binding point of view.
+
+Jonathan
+
+> 
+> [1]: https://marc.info/?l=linux-iio&m=163662843603265&w=2
+> 
+> Nuno Sá (3):
+>   iio: dac: add support for ltc2688
+>   iio: ABI: add ABI file for the LTC2688 DAC
+>   dt-bindings: iio: Add ltc2688 documentation
+> 
+>  .../ABI/testing/sysfs-bus-iio-dac-ltc2688     |   67 +
+>  .../bindings/iio/dac/adi,ltc2688.yaml         |  146 +++
+>  MAINTAINERS                                   |    9 +
+>  drivers/iio/dac/Kconfig                       |   11 +
+>  drivers/iio/dac/Makefile                      |    1 +
+>  drivers/iio/dac/ltc2688.c                     | 1081 +++++++++++++++++
+>  6 files changed, 1315 insertions(+)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-dac-ltc2688
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/adi,ltc2688.yaml
+>  create mode 100644 drivers/iio/dac/ltc2688.c
+> 
 
