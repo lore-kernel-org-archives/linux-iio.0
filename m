@@ -2,47 +2,48 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63499C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:03:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4292DC4332F
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:03:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240633AbhL3PDK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Dec 2021 10:03:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46736 "EHLO
+        id S240748AbhL3PDM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Dec 2021 10:03:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236527AbhL3PDJ (ORCPT
+        with ESMTP id S240531AbhL3PDJ (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:03:09 -0500
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 47A20C061746
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 510B5C061748
         for <linux-iio@vger.kernel.org>; Thu, 30 Dec 2021 07:03:09 -0800 (PST)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxP-0000cN-0W; Thu, 30 Dec 2021 16:03:07 +0100
+        id 1n2wxP-0000cT-0V; Thu, 30 Dec 2021 16:03:07 +0100
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
         (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxM-007VKd-5H; Thu, 30 Dec 2021 16:03:03 +0100
+        id 1n2wxN-007VKq-He; Thu, 30 Dec 2021 16:03:04 +0100
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1n2wxK-0007ge-To; Thu, 30 Dec 2021 16:03:02 +0100
+        id 1n2wxM-0007hS-6Z; Thu, 30 Dec 2021 16:03:04 +0100
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
         kernel@pengutronix.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Patrick Havelange <patrick.havelange@essensium.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v4 04/23] counter: Provide a wrapper to access device private data
-Date:   Thu, 30 Dec 2021 16:02:41 +0100
-Message-Id: <20211230150300.72196-5-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH v4 09/23] counter: ftm-quaddec: Convert to counter_priv() wrapper
+Date:   Thu, 30 Dec 2021 16:02:46 +0100
+Message-Id: <20211230150300.72196-10-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
 References: <20211230150300.72196-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1735; h=from:subject; bh=gwTcLyaNBCRv6samAKX7CDEmd/NSNG4p8Rf1+F2db1g=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzclcCkangyngsqMsFhuBC6WQeCVmM9oXO6GWhGI8 sXX6rxyJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3JXAAKCRDB/BR4rcrsCfXtB/ 4vYWLNjtw5b1tqnL5YgGlPX5n/1ENtkJ49kBzT1fVrrAZp48n6xtrbhl+b6qdo5WaGLuqZl0fUYtTw 3Ez2j970Y5ZqoP7K5wVX5ptz3FRmGaJvYE8AIHND0I1TzT/s3K3A/Mw071kkhLbhMp/BJ5BajGskoO WeX7Yvv2ZR6n9lF8XEPbsB1CAwFZtWcUsiD3JTEmERCTAOFByGVicWyu6aI1//aGqVEbWfSw3RUyKj 7zoHXLoB19C+7JFXKnqiIOcnLnD10EWlrdgze07/pa9D70e6Mo1605gsTAh06hS7FtI3NcZ6+taigk 6vYik+IVO3ZiGOUzl5+xl52NfyPpcD
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1951; h=from:subject; bh=CBgQ6yn9pj3aVonUUpdY82noKJTEGFd3OM3t7zq90/s=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBhzcmDbT6rcc1P8BZoC0eWIxD1oV+ZfaY7kIdK/vmy liV1RpmJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYc3JgwAKCRDB/BR4rcrsCQ2GB/ 0Q6plju+eAhouN2ZrGgDiZteRwcZEIlvDKFJm4GD6NQIQmdgXYempruQEQQHq1Vdgud8H7xx09lXaF lHzxs9c85l6oSqOHY0ODM9NR4rlsxRSi05Udz1Twbf2NY8eIcm5oNR8fw8RzUzXcNWbcAHjBUsCZtg ZcopPbTblQf4Ch3FNj29eJHfHD4uGhE6WYWE/4uuX4mfAJe69WKJxVY+C/UhUf8rUYENnCtDgWbczx JQt2wfyGM/sAmGwNWEqCmL5zkSYrRNAZUBVCzLempUta3dL+zdsYjbY4DwJxvqCeDigaXWkkwn1IwJ JgoL2q7sZiFJo4bZXcpxL4t9kyiuFt
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -53,55 +54,55 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-For now this just wraps accessing struct counter_device::priv. However
-this is about to change and converting drivers to this helper
-individually makes fixing device lifetime issues result in easier to
-review patches.
+This is a straight forward conversion to the new counter_priv() wrapper.
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/counter/counter-core.c | 12 ++++++++++++
- include/linux/counter.h        |  2 ++
- 2 files changed, 14 insertions(+)
+ drivers/counter/ftm-quaddec.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index f053a43c6c04..00c41f28c101 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -45,6 +45,18 @@ static struct bus_type counter_bus_type = {
+diff --git a/drivers/counter/ftm-quaddec.c b/drivers/counter/ftm-quaddec.c
+index 9272f7b58beb..f5d92df6a611 100644
+--- a/drivers/counter/ftm-quaddec.c
++++ b/drivers/counter/ftm-quaddec.c
+@@ -118,7 +118,7 @@ static void ftm_quaddec_disable(void *ftm)
+ static int ftm_quaddec_get_prescaler(struct counter_device *counter,
+ 				     struct counter_count *count, u32 *cnt_mode)
+ {
+-	struct ftm_quaddec *ftm = counter->priv;
++	struct ftm_quaddec *ftm = counter_priv(counter);
+ 	uint32_t scflags;
  
- static dev_t counter_devt;
+ 	ftm_read(ftm, FTM_SC, &scflags);
+@@ -131,7 +131,7 @@ static int ftm_quaddec_get_prescaler(struct counter_device *counter,
+ static int ftm_quaddec_set_prescaler(struct counter_device *counter,
+ 				     struct counter_count *count, u32 cnt_mode)
+ {
+-	struct ftm_quaddec *ftm = counter->priv;
++	struct ftm_quaddec *ftm = counter_priv(counter);
  
-+/**
-+ * counter_priv - access counter device private data
-+ * @counter: counter device
-+ *
-+ * Get the counter device private data
-+ */
-+void *counter_priv(const struct counter_device *const counter)
-+{
-+	return counter->priv;
-+}
-+EXPORT_SYMBOL_GPL(counter_priv);
-+
- /**
-  * counter_register - register Counter to the system
-  * @counter:	pointer to Counter to register
-diff --git a/include/linux/counter.h b/include/linux/counter.h
-index dfbde2808998..627f1757f6bb 100644
---- a/include/linux/counter.h
-+++ b/include/linux/counter.h
-@@ -329,6 +329,8 @@ struct counter_device {
- 	struct mutex ops_exist_lock;
- };
+ 	mutex_lock(&ftm->ftm_quaddec_mutex);
  
-+void *counter_priv(const struct counter_device *const counter);
-+
- int counter_register(struct counter_device *const counter);
- void counter_unregister(struct counter_device *const counter);
- int devm_counter_register(struct device *dev,
+@@ -162,7 +162,7 @@ static int ftm_quaddec_count_read(struct counter_device *counter,
+ 				  struct counter_count *count,
+ 				  u64 *val)
+ {
+-	struct ftm_quaddec *const ftm = counter->priv;
++	struct ftm_quaddec *const ftm = counter_priv(counter);
+ 	uint32_t cntval;
+ 
+ 	ftm_read(ftm, FTM_CNT, &cntval);
+@@ -176,7 +176,7 @@ static int ftm_quaddec_count_write(struct counter_device *counter,
+ 				   struct counter_count *count,
+ 				   const u64 val)
+ {
+-	struct ftm_quaddec *const ftm = counter->priv;
++	struct ftm_quaddec *const ftm = counter_priv(counter);
+ 
+ 	if (val != 0) {
+ 		dev_warn(&ftm->pdev->dev, "Can only accept '0' as new counter value\n");
 -- 
 2.34.1
 
