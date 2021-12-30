@@ -2,176 +2,317 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A87C433F5
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:08:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 727E0C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Dec 2021 15:22:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232091AbhL3PIj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Dec 2021 10:08:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48190 "EHLO
+        id S235144AbhL3PWe convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Dec 2021 10:22:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229609AbhL3PIj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:08:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 425EAC061574
-        for <linux-iio@vger.kernel.org>; Thu, 30 Dec 2021 07:08:39 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n2x2e-0002NA-4e; Thu, 30 Dec 2021 16:08:32 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n2x2b-007VMX-5P; Thu, 30 Dec 2021 16:08:28 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n2x2a-00081Q-4e; Thu, 30 Dec 2021 16:08:28 +0100
-Date:   Thu, 30 Dec 2021 16:08:28 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Kamel Bouhara <kamel.bouhara@bootlin.com>,
-        Ahmad Fatoum <a.fatoum@pengutronix.de>,
-        David Lechner <david@lechnology.com>,
-        Jonathan Corbet <corbet@lwn.net>, linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        linux-kernel@vger.kernel.org,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>,
-        kernel@pengutronix.de,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Syed Nayyar Waris <syednwaris@gmail.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Patrick Havelange <patrick.havelange@essensium.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v3 00/23] counter: cleanups and device lifetime fixes
-Message-ID: <20211230150828.iy7julxbvlcupazx@pengutronix.de>
-References: <20211229154441.38045-1-u.kleine-koenig@pengutronix.de>
- <20211230085351.pywngltvdam25emx@pengutronix.de>
- <20211230145826.7f23becb@jic23-huawei>
+        with ESMTP id S234127AbhL3PWd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Dec 2021 10:22:33 -0500
+Received: from haggis.mythic-beasts.com (haggis.mythic-beasts.com [IPv6:2a00:1098:0:86:1000:0:2:1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76069C061574;
+        Thu, 30 Dec 2021 07:22:33 -0800 (PST)
+Received: from [81.101.6.87] (port=57032 helo=jic23-huawei)
+        by haggis.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92.3)
+        (envelope-from <jic23@jic23.retrosnub.co.uk>)
+        id 1n2xGB-0005aB-Bi; Thu, 30 Dec 2021 15:22:31 +0000
+Date:   Thu, 30 Dec 2021 15:28:16 +0000
+From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+To:     "Sa, Nuno" <Nuno.Sa@analog.com>
+Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Hennerich, Michael" <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH 1/3] iio: dac: add support for ltc2688
+Message-ID: <20211230152816.56d4abed@jic23-huawei>
+In-Reply-To: <PH0PR03MB67867E372410B3C707FE9F2999789@PH0PR03MB6786.namprd03.prod.outlook.com>
+References: <20211214165608.7903-1-nuno.sa@analog.com>
+        <20211214165608.7903-2-nuno.sa@analog.com>
+        <20211216141110.0a4dc0c3@jic23-huawei>
+        <PH0PR03MB67867E372410B3C707FE9F2999789@PH0PR03MB6786.namprd03.prod.outlook.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7547pgm5uqxs232y"
-Content-Disposition: inline
-In-Reply-To: <20211230145826.7f23becb@jic23-huawei>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8BIT
+X-BlackCat-Spam-Score: 4
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Fri, 17 Dec 2021 12:31:57 +0000
+"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
 
---7547pgm5uqxs232y
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> > From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+> > Sent: Thursday, December 16, 2021 3:11 PM
+> > To: Sa, Nuno <Nuno.Sa@analog.com>
+> > Cc: linux-iio@vger.kernel.org; devicetree@vger.kernel.org; Rob
+> > Herring <robh+dt@kernel.org>; Lars-Peter Clausen
+> > <lars@metafoo.de>; Hennerich, Michael
+> > <Michael.Hennerich@analog.com>
+> > Subject: Re: [PATCH 1/3] iio: dac: add support for ltc2688
+> > 
+> > [External]
+> > 
+> > On Tue, 14 Dec 2021 17:56:06 +0100
+> > Nuno Sá <nuno.sa@analog.com> wrote:
+> >   
+> > > The LTC2688 is a 16 channel, 16 bit, +-15V DAC with an integrated
+> > > precision reference. It is guaranteed monotonic and has built in
+> > > rail-to-rail output buffers that can source or sink up to 20 mA.
+> > >
+> > > Signed-off-by: Nuno Sá <nuno.sa@analog.com>  
+> > 
+> > I'm not that keen on toggle having to be clock driven, but I guess we
+> > can
+> > always change that later when usecases come along.
+> >   
+> 
+> I did wrote about some concerns with toggle (among others) in the cover.
+> When you have the time, some feedback in there would be very welcome :).
 
-On Thu, Dec 30, 2021 at 02:58:26PM +0000, Jonathan Cameron wrote:
-> On Thu, 30 Dec 2021 09:53:51 +0100
-> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote:
->=20
-> > Hello,
-> >=20
-> > On Wed, Dec 29, 2021 at 04:44:18PM +0100, Uwe Kleine-K=F6nig wrote:
-> > > this is v3 of my series to fix device lifetime issues in the counter
-> > > framework. This hopefully addresses all things pointed out for v2.
-> > >=20
-> > > Note this depends on 60f07e74f86b (which is in next) now. Full diffst=
-at
-> > > below.
-> > >=20
-> > > Things that could be further improved:
-> > >=20
-> > > [...]
-> > >=20
-> > > Uwe Kleine-K=F6nig (23):
-> > >   counter: Use container_of instead of drvdata to track counter_device
-> > >   counter: ftm-quaddec: Drop unused platform_set_drvdata()
-> > >   counter: microchip-tcb-capture: Drop unused platform_set_drvdata()
-> > >   counter: Provide a wrapper to access device private data
-> > >   counter: 104-quad-8: Convert to counter_priv() wrapper
-> > >   counter: interrupt-cnt: Convert to counter_priv() wrapper
-> > >   counter: microchip-tcb-capture: Convert to counter_priv() wrapper
-> > >   counter: intel-qep: Convert to counter_priv() wrapper
-> > >   counter: ftm-quaddec: Convert to counter_priv() wrapper
-> > >   counter: ti-eqep: Convert to counter_priv() wrapper
-> > >   counter: stm32-lptimer-cnt: Convert to counter_priv() wrapper
-> > >   counter: stm32-timer-cnt: Convert to counter_priv() wrapper
-> > >   counter: Provide alternative counter registration functions
-> > >   counter: Update documentation for new counter registration functions
-> > >   counter: 104-quad-8: Convert to new counter registration
-> > >   counter: interrupt-cnt: Convert to new counter registration
-> > >   counter: intel-qep: Convert to new counter registration
-> > >   counter: ftm-quaddec: Convert to new counter registration
-> > >   counter: microchip-tcb-capture: Convert to new counter registration
-> > >   counter: stm32-timer-cnt: Convert to new counter registration
-> > >   counter: stm32-lptimer-cnt: Convert to new counter registration
-> > >   counter: ti-eqep: Convert to new counter registration
-> > >   counter: remove old and now unused registration API
-> > >=20
-> > >  Documentation/driver-api/generic-counter.rst |  10 +-
-> > >  drivers/counter/104-quad-8.c                 |  93 +++++-----
-> > >  drivers/counter/counter-core.c               | 186 ++++++++++++++---=
---
-> > >  drivers/counter/ftm-quaddec.c                |  36 ++--
-> > >  drivers/counter/intel-qep.c                  |  46 ++---
-> > >  drivers/counter/interrupt-cnt.c              |  38 ++--
-> > >  drivers/counter/microchip-tcb-capture.c      |  44 ++---
-> > >  drivers/counter/stm32-lptimer-cnt.c          |  51 ++---
-> > >  drivers/counter/stm32-timer-cnt.c            |  48 ++---
-> > >  drivers/counter/ti-eqep.c                    |  31 ++--
-> > >  include/linux/counter.h                      |  15 +-
-> > >  11 files changed, 356 insertions(+), 242 deletions(-)
-> > >=20
-> > > Range-diff against v2:
-> > > [...]
-> > >=20
-> > > base-commit: a7904a538933c525096ca2ccde1e60d0ee62c08e
-> > > prerequisite-patch-id: 9459ad8bc78190558df9123f8bebe28ca1c396ea =20
-> >=20
-> > All patches have a blessing by at least one of William and Jonathan.
->=20
-> For future reference (may be fine this time) William has final say on cou=
-nter
-> stuff as the maintainer so treat my input as just another set of eyes.
+Doh.  Guess I didn't look at the cover letter. Now replied to that as well.
 
-Yeah, right. William only didn't ack patch 13 but wrote in reply it in v2:
+> 
+> Anyways, for toggle mode, I do agree that "has to be clock driven" is likely to harsh.
+> Right now if a toggle channel is associated with a TGPx pin, then a clock is 
+> mandatory and that's the condition that probably should be made optional.
+> Someone can very well want to drive the outputs with a GPIO even though
+> in that case we could argue to use the SW_TOGGLE.
 
-	I agree with the approach taken in this patch, and I don't have much to
-	add after the suggestions Lars-Peter and Jonathan have already given. So
-	assuming those are addressed in the next version I expect to Ack this
-	patch as well.
+I wonder if we also need the case where the toggle source is invisible to us
+as it's the output of some other hardware.  Obviously would be nice to model
+that hardware in DT but that might not always be possible.
 
-So I assume it's just that William didn't have the time yet to look into
-v3 (or v4 that I just sent out) yet.
 
-Best regards and thanks to all who gave feedback to improve this patch
-set,
-Uwe
+> > > +
+> > > +static int ltc2688_read_raw(struct iio_dev *indio_dev,
+> > > +			    struct iio_chan_spec const *chan, int *val,
+> > > +			    int *val2, long m)
+> > > +{
+> > > +	struct ltc2688_state *st = iio_priv(indio_dev);
+> > > +	int ret;
+> > > +
+> > > +	switch (m) {
+> > > +	case IIO_CHAN_INFO_RAW:
+> > > +		ret = ltc2688_dac_code_read(st, chan->channel,  
+> > LT2688_INPUT_A,  
+> > > +					    val);
+> > > +		if (ret)
+> > > +			return ret;
+> > > +
+> > > +		return IIO_VAL_INT;
+> > > +	case IIO_CHAN_INFO_OFFSET:
+> > > +		return ltc2688_offset_get(st, chan->channel, val);
+> > > +	case IIO_CHAN_INFO_SCALE:
+> > > +		*val2 = 16;
+> > > +		return ltc2688_scale_get(st, chan->channel, val);  
+> > 
+> > I'm not against functions returning the IIO_VAL_* like this, but if they
+> > are I expect the function to set val2 as well.
+> > 
+> > I'd suggest return 0 on success and then do similar to what you have
+> > done for code_read above.  
+> 
+> Typically I do like to save lines of code when doable and readability is
+> not hurt which is the case. I'm not doing the same for the code_read
+> because that one is also used from the extended_info interface. That
+> said, I don't have strong feeling about this so I can do as you suggest.
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+Either option is fine for me.  Set val2 inside _scale_get() or return 0
+from that and then do a return IIO_VAL_INT_PLUS_MICRO here.
 
---7547pgm5uqxs232y
-Content-Type: application/pgp-signature; name="signature.asc"
+The particular combination at the moment is rather inconsistent as
+val, val2 and the return value should all come from the same 'source'
+whether it's here, or in _scale_get()
 
------BEGIN PGP SIGNATURE-----
+> 
+> > > +	case IIO_CHAN_INFO_CALIBBIAS:
+> > > +		ret = regmap_read(st->regmap,
+> > > +				  LTC2688_CMD_CH_OFFSET(chan-
+> > >channel), val);
+> > > +		if (ret)
+> > > +			return ret;
+> > > +
+> > > +		/* Just 13 bits used. 2LSB ignored */
+> > > +		*val >>= 2;  
+> > FIELD_GET() would get rid of need for the comment.
+> >   
+> > > +		return IIO_VAL_INT;
+> > > +	case IIO_CHAN_INFO_CALIBSCALE:
+> > > +		ret = regmap_read(st->regmap,
+> > > +				  LTC2688_CMD_CH_GAIN(chan-
+> > >channel), val);
+> > > +		if (ret)
+> > > +			return ret;
+> > > +
+> > > +		return IIO_VAL_INT;
+> > > +	default:
+> > > +		return -EINVAL;
+> > > +	}
+> > > +}  
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHNy2gACgkQwfwUeK3K
-7AkVxgf/YEpJYjM3bn0tJoCZm5z1+9HEyxBcCdYvZkrR/r1W76x+QjoTmtqoUkOw
-W2dJAKUIPtSZrkPAqUudrsQPnWo7wIBGKtC1tW6E38jCe9o7A/SFFopedwIF9clI
-X28pk3rY9kFj9l6WK4yef2abY7hGAyi3eYyorm8QJzkdQF3HuiR2BEFevGKcEGMr
-HRvP6V5NZ06+pYkNI4arg0hqFAlJZb9h+LdrhcQjFxYW4HROL+pe4iy1xkEGKVQO
-mwbVNjhEfNaLwKUm58fyNr77vebIPhNrTuiRDM/f+gKcu07zThgxiaS/CLH5Tqkw
-OoVyfyqM6/6thSXjoor4nmGo/xH2Ew==
-=Y3X/
------END PGP SIGNATURE-----
+...
 
---7547pgm5uqxs232y--
+> > > +
+> > > +static const char * const ltc2688_dither_phase[] = {
+> > > +	"0", "90", "180", "270",
+> > > +};
+> > > +
+> > > +static const struct iio_enum ltc2688_dither_phase_enum = {
+> > > +	.items = ltc2688_dither_phase,
+> > > +	.num_items = ARRAY_SIZE(ltc2688_dither_phase),
+> > > +	.set = ltc2688_set_dither_phase,
+> > > +	.get = ltc2688_get_dither_phase,
+> > > +};
+> > > +
+> > > +#define LTC2688_CHAN_EXT_INFO(_name, _what, _shared) {	\
+> > > +	.name = _name,					\
+> > > +	.read = ltc2688_read_ext,			\
+> > > +	.write = ltc2688_write_ext,			\  
+> > 
+> > I'm not really convinced big multiplexer functions are a good idea here.
+> > They seem to save little code and hurt readability a bit.  
+> 
+> I think this is a very common pattern seen in IIO and probably HWMON no?
+> Anyways, I'm ok with either way so I can just extend the macro to accept
+> the individual functions. I have to admit that in some cases (when locking is
+> required in some case blocks) I'm also not a big fan of these multiplexes
+> functions. And I think I'm calling individual functions in all the case blocks
+> anyways...
+
+Common pattern, but not always a good idea.  All depends on how much
+common code there is.  In this case I don't think there is enough for it
+to make sense.
+
+>   
+> > > +	.private = (_what),				\
+> > > +	.shared = (_shared),				\
+> > > +}
+> > > +
+
+...
+
+> > > +	 */
+> > > +	LTC2688_CHAN_EXT_INFO("dither_frequency",  
+> > LTC2688_DITHER_FREQ,  
+> > > +			      IIO_SEPARATE),
+> > > +	LTC2688_CHAN_EXT_INFO("dither_frequency_available",
+> > > +			      LTC2688_DITHER_FREQ_AVAIL,  
+> > IIO_SEPARATE),  
+> > > +	IIO_ENUM("dither_phase", IIO_SEPARATE,  
+> > &ltc2688_dither_phase_enum),  
+> > > +	IIO_ENUM_AVAILABLE("dither_phase", IIO_SEPARATE,
+> > > +			   &ltc2688_dither_phase_enum),
+> > > +	LTC2688_CHAN_EXT_INFO("dither_en",  
+> > LTC2688_DITHER_TOGGLE_ENABLE,  
+> > > +			      IIO_SEPARATE),
+> > > +	LTC2688_CHAN_EXT_INFO("powerdown",  
+> > LTC2688_POWERDOWN, IIO_SEPARATE),  
+> > > +	{}
+> > > +};
+> > > +
+> > > +static const struct iio_chan_spec_ext_info ltc2688_ext_info[] = {
+> > > +	LTC2688_CHAN_EXT_INFO("powerdown",  
+> > LTC2688_POWERDOWN, IIO_SEPARATE),  
+> > > +	{}
+> > > +};
+> > > +  
+> >   
+> > > +
+> > > +enum {
+> > > +	LTC2688_CHAN_TD_TGP1,
+> > > +	LTC2688_CHAN_TD_TGP2,
+> > > +	LTC2688_CHAN_TD_TGP3,
+> > > +	LTC2688_CHAN_TD_MAX
+> > > +};  
+> >   
+> > > +/* Helper struct to deal with dither channels binded to TGPx pins */
+> > > +struct ltc2688_dither_helper {
+> > > +	u8 chan[LTC2688_DAC_CHANNELS];
+> > > +	u8 n_chans;
+> > > +};
+> > > +  
+> > bitmap perhaps given ordering doesn't matter (I think)
+> >   
+> 
+> Yeah, did not thought about it but I think it will look better with a bitmap yes.
+> Although I'm not sure if I will continue with this approach or make the clocks
+> property a per channel one (more on this in the cover letter).
+
+I'm not sure how the per channel version will look so leaving this entirely
+up to you!
+
+> > 
+> > ...
+> >   
+> > > +
+> > > +static int ltc2688_channel_config(struct ltc2688_state *st)
+> > > +{
+> > > +	struct fwnode_handle *fwnode = dev_fwnode(&st->spi-
+> > >dev), *child;
+> > > +	struct ltc2688_dither_helper tgp[LTC2688_CHAN_TD_MAX] =  
+> > {0};  
+> > > +	u32 reg, clk_input, val, mask, tmp[2];
+> > > +	unsigned long clk_msk = 0;
+> > > +	int ret, span;
+> > > +  
+> > 
+> > I think you need to sanity check you have a fwnode  
+> 
+> AFAICT, it's done by us already :)
+> 
+> https://elixir.bootlin.com/linux/latest/source/drivers/base/property.c#L741
+
+Ah.  Good point. Ignore that one then.
+
+> 
+> > > +	fwnode_for_each_available_child_node(fwnode, child) {  
+> > 
+> > I guess this is because of the whole
+> > device_for_each_available_child_node() not
+> > existing discussion that isn't resolved.  
+> 
+> exactly... I wanted the available option and this was the only way I
+> could find...
+> 
+
+Hmm. I need to revisit that discussion and see where we got to.
+
+> >   
+> > > +static bool ltc2688_reg_writable(struct device *dev, unsigned int  
+> > reg)  
+> > > +{
+> > > +	if (reg <= LTC2688_CMD_UPDATE_ALL && reg !=  
+> > LTC2688_CMD_THERMAL_STAT)
+> > 
+> > Isn't UPDATE_ALL the last register?  So how do you get higher than
+> > that?
+> > Definitely needs a comment if there is a reason that check is
+> > necessary.  
+> 
+> If you look at the commands table you see that on the write side
+> we jump from 0x76 to 0x78 (UPDATE_ALL=0x7c). 0x77 refers to
+> reading the thermal status reg which is not writable. Actually in the
+> end, as it's a read the command for reading the thermal status will
+> be 0xf7.
+
+I'm lost on this.   My confusion is how you get > LTC2688_CMD_UPDATE_ALL
+Possibly that's what you are referring to with teh read command being 0xf...
+Maybe try to distil this info down to a brief comment for next
+version?
+
+> 
+> > > +		return true;
+> > > +
+> > > +	return false;
+> > > +}
+
+Thanks,
+
+Jonathan
+
