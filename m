@@ -2,900 +2,1083 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9C77C433F5
-	for <linux-iio@archiver.kernel.org>; Mon,  3 Jan 2022 09:22:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BD0EC433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  3 Jan 2022 10:44:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232383AbiACJW4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 3 Jan 2022 04:22:56 -0500
-Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:22000 "EHLO
-        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S231158AbiACJWy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Jan 2022 04:22:54 -0500
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20385sJM018145;
-        Mon, 3 Jan 2022 04:22:46 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3damr7u392-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 03 Jan 2022 04:22:45 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 2039Mif3034284
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 3 Jan 2022 04:22:44 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 3 Jan 2022
- 04:22:43 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 3 Jan 2022 04:22:43 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.181])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2039Maum025546;
-        Mon, 3 Jan 2022 04:22:40 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH 1/3] iio:frequency:admv1014: add support for ADMV1014
-Date:   Mon, 3 Jan 2022 11:21:59 +0200
-Message-ID: <20220103092201.21576-2-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220103092201.21576-1-antoniu.miclaus@analog.com>
-References: <20220103092201.21576-1-antoniu.miclaus@analog.com>
+        id S232726AbiACKog (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 3 Jan 2022 05:44:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45800 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S231356AbiACKof (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Jan 2022 05:44:35 -0500
+Received: from mail-pf1-x432.google.com (mail-pf1-x432.google.com [IPv6:2607:f8b0:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A17A7C061761;
+        Mon,  3 Jan 2022 02:44:35 -0800 (PST)
+Received: by mail-pf1-x432.google.com with SMTP id t187so15562483pfb.11;
+        Mon, 03 Jan 2022 02:44:35 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=8LXX20cu3DP/P14vF1/ik9v7JnSOw/gtDFblxcqEz+E=;
+        b=Shq0SdkO5BEhT4HVFc5LJYV2Dpfwl91NNj6AhQklp3w00C6WFdGSdtZwrD+ST29rpZ
+         PcNtClE8J0T7DmEa+kwuW7c5N8O9KfhMPFAWR1On8uu94IJsxijz4t/f2Cdoqcd3TFSu
+         1QQ6F2AGOLXlktJ7bSxMp5WtDsJa0OqO31QZjHN+aMv9aRu5qa9/xEAFoHCO1u2QJCrd
+         Hg5/ELBjMGB+oZIBMiDtwLJw18ikOoqY2eoYZPNX4QS5oua3VwBM2uFVInY3762Vo/za
+         Rwx38Cv2Wn7+mGgfPhAsxYy1OLlTK/EH3gZ0AmgEPwIGgn5BP0IH/FsyMLiLe1G/EuGz
+         nuWw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=8LXX20cu3DP/P14vF1/ik9v7JnSOw/gtDFblxcqEz+E=;
+        b=iAy1hqQTLgEaCbElkLClOKr0VhxwvRA+xxEoHGc+TUt8TQQDPRzqtPV60T8y34jF2M
+         w50wIWnSKD99johgX6zBObvXIVbDf1HZ7j7uyAyM1s/coOgUWNTiQ6XGZhghUohltO3k
+         JlLjBX2L0OgAfFzg83kt6kxQT2lJ8HTFm4EBaMZLd5hfsmXkd1BVMXcdVKYTaGMOKL1u
+         T6I7nRlkM/O9fugr+I6QTXgY4uC2wcjEAe/+L5FXbf2hSOLPgPncdgfqYrHCNy3ZDre+
+         /qWkPH8tY1mCRx0veVUyBOksRfSVue81yhxazQDMT+/onxhAK/AuhANuVbqYjexXvhQH
+         FPxA==
+X-Gm-Message-State: AOAM531TO6Okc/kwjALLOHgQ3Nhax0fzX9sTJMLZxexoq0yYWdsWfRH1
+        1MgVFA2qnPT73A3Jh9GPY60pSkwxnWhjma9it4dooJW24dw=
+X-Google-Smtp-Source: ABdhPJxMQG5/CZ8CJfNaCxzOEzvAiFQBlVBX5/m+F1R/EPCyKQmFszx3JJ2xar/6ssc77i22fpt+d9jyEPgjAdDwKNM=
+X-Received: by 2002:a63:6886:: with SMTP id d128mr40022712pgc.418.1641206674817;
+ Mon, 03 Jan 2022 02:44:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: GpCWr0hnTXFMFV-oPp5cJt0ts5r0T5fw
-X-Proofpoint-GUID: GpCWr0hnTXFMFV-oPp5cJt0ts5r0T5fw
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.790,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-01-03_03,2022-01-01_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 clxscore=1015
- adultscore=0 spamscore=0 impostorscore=0 suspectscore=0 priorityscore=1501
- phishscore=0 malwarescore=0 lowpriorityscore=0 mlxscore=0 mlxlogscore=999
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2110150000
- definitions=main-2201030063
+References: <20211231132011.1245611-1-drhunter95@gmail.com>
+In-Reply-To: <20211231132011.1245611-1-drhunter95@gmail.com>
+From:   Alexandru Ardelean <ardeleanalex@gmail.com>
+Date:   Mon, 3 Jan 2022 12:44:22 +0200
+Message-ID: <CA+U=Dso9sWGZnu1re9Mf4GqrhO6sJk+aTfsA0qeEyyM0kTwMiA@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] add TI ads1018 driver to iio
+To:     Iain Hunter <drhunter95@gmail.com>
+Cc:     iain@hunterembedded.co.uk, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
+        Tomislav Denis <tomislav.denis@avl.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Fabio Estevam <festevam@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADMV1014 is a silicon germanium (SiGe), wideband,
-microwave downconverter optimized for point to point microwave
-radio designs operating in the 24 GHz to 44 GHz frequency range.
+On Fri, Dec 31, 2021 at 6:23 PM Iain Hunter <drhunter95@gmail.com> wrote:
+>
 
-Datasheet:
-https://www.analog.com/media/en/technical-documentation/data-sheets/ADMV1014.pdf
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/frequency/Kconfig    |  10 +
- drivers/iio/frequency/Makefile   |   1 +
- drivers/iio/frequency/admv1014.c | 784 +++++++++++++++++++++++++++++++
- 3 files changed, 795 insertions(+)
- create mode 100644 drivers/iio/frequency/admv1014.c
+Hey,
 
-diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
-index 2c9e0559e8a4..493221f42077 100644
---- a/drivers/iio/frequency/Kconfig
-+++ b/drivers/iio/frequency/Kconfig
-@@ -50,6 +50,16 @@ config ADF4371
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called adf4371.
- 
-+config ADMV1014
-+	tristate "Analog Devices ADMV1014 Microwave Downconverter"
-+	depends on SPI && COMMON_CLK && 64BIT
-+	help
-+	  Say yes here to build support for Analog Devices ADMV1014
-+	  24 GHz to 44 GHz, Wideband, Microwave Downconverter.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called admv1014.
-+
- config ADRF6780
-         tristate "Analog Devices ADRF6780 Microwave Upconverter"
-         depends on SPI
-diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
-index ae3136c79202..5f0348e5eb53 100644
---- a/drivers/iio/frequency/Makefile
-+++ b/drivers/iio/frequency/Makefile
-@@ -7,4 +7,5 @@
- obj-$(CONFIG_AD9523) += ad9523.o
- obj-$(CONFIG_ADF4350) += adf4350.o
- obj-$(CONFIG_ADF4371) += adf4371.o
-+obj-$(CONFIG_ADMV1014) += admv1014.o
- obj-$(CONFIG_ADRF6780) += adrf6780.o
-diff --git a/drivers/iio/frequency/admv1014.c b/drivers/iio/frequency/admv1014.c
-new file mode 100644
-index 000000000000..2b6c38e82f92
---- /dev/null
-+++ b/drivers/iio/frequency/admv1014.c
-@@ -0,0 +1,784 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * ADMV1014 driver
-+ *
-+ * Copyright 2021 Analog Devices Inc.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/clk.h>
-+#include <linux/clkdev.h>
-+#include <linux/clk-provider.h>
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/notifier.h>
-+#include <linux/property.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
-+#include <linux/units.h>
-+
-+#include <asm/unaligned.h>
-+
-+/* ADMV1014 Register Map */
-+#define ADMV1014_REG_SPI_CONTROL		0x00
-+#define ADMV1014_REG_ALARM			0x01
-+#define ADMV1014_REG_ALARM_MASKS		0x02
-+#define ADMV1014_REG_ENABLE			0x03
-+#define ADMV1014_REG_QUAD			0x04
-+#define ADMV1014_REG_LO_AMP_PHASE_ADJUST1	0x05
-+#define ADMV1014_REG_MIXER			0x07
-+#define ADMV1014_REG_IF_AMP			0x08
-+#define ADMV1014_REG_IF_AMP_BB_AMP		0x09
-+#define ADMV1014_REG_BB_AMP_AGC			0x0A
-+#define ADMV1014_REG_VVA_TEMP_COMP		0x0B
-+
-+/* ADMV1014_REG_SPI_CONTROL Map */
-+#define ADMV1014_PARITY_EN_MSK			BIT(15)
-+#define ADMV1014_SPI_SOFT_RESET_MSK		BIT(14)
-+#define ADMV1014_CHIP_ID_MSK			GENMASK(11, 4)
-+#define ADMV1014_CHIP_ID			0x9
-+#define ADMV1014_REVISION_ID_MSK		GENMASK(3, 0)
-+
-+/* ADMV1014_REG_ALARM Map */
-+#define ADMV1014_PARITY_ERROR_MSK		BIT(15)
-+#define ADMV1014_TOO_FEW_ERRORS_MSK		BIT(14)
-+#define ADMV1014_TOO_MANY_ERRORS_MSK		BIT(13)
-+#define ADMV1014_ADDRESS_RANGE_ERROR_MSK	BIT(12)
-+
-+/* ADMV1014_REG_ENABLE Map */
-+#define ADMV1014_IBIAS_PD_MSK			BIT(14)
-+#define ADMV1014_P1DB_COMPENSATION_MSK		GENMASK(13, 12)
-+#define ADMV1014_IF_AMP_PD_MSK			BIT(11)
-+#define ADMV1014_QUAD_BG_PD_MSK			BIT(9)
-+#define ADMV1014_BB_AMP_PD_MSK			BIT(8)
-+#define ADMV1014_QUAD_IBIAS_PD_MSK		BIT(7)
-+#define ADMV1014_DET_EN_MSK			BIT(6)
-+#define ADMV1014_BG_PD_MSK			BIT(5)
-+
-+/* ADMV1014_REG_QUAD Map */
-+#define ADMV1014_QUAD_SE_MODE_MSK		GENMASK(9, 6)
-+#define ADMV1014_QUAD_FILTERS_MSK		GENMASK(3, 0)
-+
-+/* ADMV1014_REG_LO_AMP_PHASE_ADJUST1 Map */
-+#define ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK	GENMASK(15, 9)
-+#define ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK	GENMASK(8, 2)
-+
-+/* ADMV1014_REG_MIXER Map */
-+#define ADMV1014_MIXER_VGATE_MSK		GENMASK(15, 9)
-+#define ADMV1014_DET_PROG_MSK			GENMASK(6, 0)
-+
-+/* ADMV1014_REG_IF_AMP Map */
-+#define ADMV1014_IF_AMP_COARSE_GAIN_I_MSK	GENMASK(11, 8)
-+#define ADMV1014_IF_AMP_FINE_GAIN_Q_MSK		GENMASK(7, 4)
-+#define ADMV1014_IF_AMP_FINE_GAIN_I_MSK		GENMASK(3, 0)
-+
-+/* ADMV1014_REG_IF_AMP_BB_AMP Map */
-+#define ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK	GENMASK(15, 12)
-+#define ADMV1014_BB_AMP_OFFSET_Q_MSK		GENMASK(9, 5)
-+#define ADMV1014_BB_AMP_OFFSET_I_MSK		GENMASK(4, 0)
-+
-+/* ADMV1014_REG_BB_AMP_AGC Map */
-+#define ADMV1014_BB_AMP_REF_GEN_MSK		GENMASK(6, 3)
-+#define ADMV1014_BB_AMP_GAIN_CTRL_MSK		GENMASK(2, 1)
-+#define ADMV1014_BB_SWITCH_HIGH_LOW_CM_MSK	BIT(0)
-+
-+/* ADMV1014_REG_VVA_TEMP_COMP Map */
-+#define ADMV1014_VVA_TEMP_COMP_MSK		GENMASK(15, 0)
-+
-+/* ADMV1014 Miscellaneous Defines */
-+#define ADMV1014_READ				BIT(7)
-+#define ADMV1014_REG_ADDR_READ_MSK		GENMASK(6, 1)
-+#define ADMV1014_REG_ADDR_WRITE_MSK		GENMASK(22, 17)
-+#define ADMV1014_REG_DATA_MSK			GENMASK(16, 1)
-+
-+enum {
-+	ADMV1014_IQ_MODE,
-+	ADMV1014_IF_MODE
-+};
-+
-+enum {
-+	ADMV1014_SE_MODE_POS = 6,
-+	ADMV1014_SE_MODE_NEG = 9,
-+	ADMV1014_SE_MODE_DIFF = 12
-+};
-+
-+enum {
-+	ADMV1014_GAIN_COARSE,
-+	ADMV1014_GAIN_FINE,
-+};
-+
-+static const int detector_table[] = {0, 1, 2, 4, 8, 16, 32, 64};
-+
-+struct admv1014_state {
-+	struct spi_device	*spi;
-+	struct clk		*clkin;
-+	struct notifier_block	nb;
-+	/* Protect against concurrent accesses to the device and to data*/
-+	struct mutex		lock;
-+	struct regulator	*reg;
-+	unsigned int		input_mode;
-+	unsigned int		quad_se_mode;
-+	unsigned int		p1db_comp;
-+	bool			det_en;
-+	u8			data[3] ____cacheline_aligned;
-+};
-+
-+static const int mixer_vgate_table[] = {106, 107, 108, 110, 111, 112, 113, 114, 117, 118, 119, 120, 122, 123, 44, 45};
-+
-+static int __admv1014_spi_read(struct admv1014_state *st, unsigned int reg,
-+			       unsigned int *val)
-+{
-+	int ret;
-+	struct spi_transfer t = {0};
-+
-+	st->data[0] = ADMV1014_READ | FIELD_PREP(ADMV1014_REG_ADDR_READ_MSK, reg);
-+	st->data[1] = 0x0;
-+	st->data[2] = 0x0;
-+
-+	t.rx_buf = &st->data[0];
-+	t.tx_buf = &st->data[0];
-+	t.len = 3;
-+
-+	ret = spi_sync_transfer(st->spi, &t, 1);
-+	if (ret)
-+		return ret;
-+
-+	*val = FIELD_GET(ADMV1014_REG_DATA_MSK, get_unaligned_be24(&st->data[0]));
-+
-+	return ret;
-+}
-+
-+static int admv1014_spi_read(struct admv1014_state *st, unsigned int reg,
-+			     unsigned int *val)
-+{
-+	int ret;
-+
-+	mutex_lock(&st->lock);
-+	ret = __admv1014_spi_read(st, reg, val);
-+	mutex_unlock(&st->lock);
-+
-+	return ret;
-+}
-+
-+static int __admv1014_spi_write(struct admv1014_state *st,
-+				unsigned int reg,
-+				unsigned int val)
-+{
-+	put_unaligned_be24(FIELD_PREP(ADMV1014_REG_DATA_MSK, val) |
-+			   FIELD_PREP(ADMV1014_REG_ADDR_WRITE_MSK, reg), &st->data[0]);
-+
-+	return spi_write(st->spi, &st->data[0], 3);
-+}
-+
-+static int admv1014_spi_write(struct admv1014_state *st, unsigned int reg,
-+			      unsigned int val)
-+{
-+	int ret;
-+
-+	mutex_lock(&st->lock);
-+	ret = __admv1014_spi_write(st, reg, val);
-+	mutex_unlock(&st->lock);
-+
-+	return ret;
-+}
-+
-+static int __admv1014_spi_update_bits(struct admv1014_state *st, unsigned int reg,
-+				      unsigned int mask, unsigned int val)
-+{
-+	int ret;
-+	unsigned int data, temp;
-+
-+	ret = __admv1014_spi_read(st, reg, &data);
-+	if (ret)
-+		return ret;
-+
-+	temp = (data & ~mask) | (val & mask);
-+
-+	return __admv1014_spi_write(st, reg, temp);
-+}
-+
-+static int admv1014_spi_update_bits(struct admv1014_state *st, unsigned int reg,
-+				    unsigned int mask, unsigned int val)
-+{
-+	int ret;
-+
-+	mutex_lock(&st->lock);
-+	ret = __admv1014_spi_update_bits(st, reg, mask, val);
-+	mutex_unlock(&st->lock);
-+
-+	return ret;
-+}
-+
-+static int admv1014_update_quad_filters(struct admv1014_state *st)
-+{
-+	unsigned int filt_raw;
-+	u64 rate = clk_get_rate(st->clkin);
-+
-+	if (rate >= (5400 * HZ_PER_MHZ) && rate <= (7000 * HZ_PER_MHZ))
-+		filt_raw = 15;
-+	else if (rate >= (5400 * HZ_PER_MHZ) && rate <= (8000 * HZ_PER_MHZ))
-+		filt_raw = 10;
-+	else if (rate >= (6600 * HZ_PER_MHZ) && rate <= (9200 * HZ_PER_MHZ))
-+		filt_raw = 5;
-+	else
-+		filt_raw = 0;
-+
-+	return __admv1014_spi_update_bits(st, ADMV1014_REG_QUAD,
-+					ADMV1014_QUAD_FILTERS_MSK,
-+					FIELD_PREP(ADMV1014_QUAD_FILTERS_MSK, filt_raw));
-+}
-+
-+static int admv1014_update_vcm_settings(struct admv1014_state *st)
-+{
-+	unsigned int i, vcm_mv, vcm_comp, bb_sw_high_low_cm;
-+	int ret;
-+
-+	vcm_mv = regulator_get_voltage(st->reg) / 1000;
-+	for (i = 0; i < ARRAY_SIZE(mixer_vgate_table); i++) {
-+		vcm_comp = 1050 + (i * 50) + (i / 8 * 50);
-+		if (vcm_mv == vcm_comp) {
-+			ret = __admv1014_spi_update_bits(st, ADMV1014_REG_MIXER,
-+							 ADMV1014_MIXER_VGATE_MSK,
-+							 FIELD_PREP(ADMV1014_MIXER_VGATE_MSK,
-+								    mixer_vgate_table[i]));
-+			if (ret)
-+				return ret;
-+
-+			bb_sw_high_low_cm = ~(i / 8);
-+
-+			return __admv1014_spi_update_bits(st, ADMV1014_REG_BB_AMP_AGC,
-+							  ADMV1014_BB_AMP_REF_GEN_MSK |
-+							  ADMV1014_BB_SWITCH_HIGH_LOW_CM_MSK,
-+							  FIELD_PREP(ADMV1014_BB_AMP_REF_GEN_MSK, i) |
-+							  FIELD_PREP(ADMV1014_BB_SWITCH_HIGH_LOW_CM_MSK, bb_sw_high_low_cm));
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int admv1014_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long info)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+	unsigned int data;
-+	int ret;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_OFFSET:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP_BB_AMP, &data);
-+		if (ret)
-+			return ret;
-+
-+		if (chan->channel2 == IIO_MOD_I)
-+			*val = FIELD_GET(ADMV1014_BB_AMP_OFFSET_I_MSK, data);
-+		else
-+			*val = FIELD_GET(ADMV1014_BB_AMP_OFFSET_Q_MSK, data);
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_PHASE:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_LO_AMP_PHASE_ADJUST1, &data);
-+		if (ret)
-+			return ret;
-+
-+		if (chan->channel2 == IIO_MOD_I)
-+			*val = FIELD_GET(ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK, data);
-+		else
-+			*val = FIELD_GET(ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK, data);
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_MIXER, &data);
-+		if (ret)
-+			return ret;
-+
-+		*val = FIELD_GET(ADMV1014_DET_PROG_MSK, data);
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_HARDWAREGAIN:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_BB_AMP_AGC, &data);
-+		if (ret)
-+			return ret;
-+
-+		*val = FIELD_GET(ADMV1014_BB_AMP_GAIN_CTRL_MSK, data);
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int admv1014_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long info)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (chan->channel2 == IIO_MOD_I)
-+			return admv1014_spi_update_bits(st, ADMV1014_REG_IF_AMP_BB_AMP,
-+							ADMV1014_BB_AMP_OFFSET_I_MSK,
-+							FIELD_PREP(ADMV1014_BB_AMP_OFFSET_I_MSK, val));
-+		else
-+			return admv1014_spi_update_bits(st, ADMV1014_REG_IF_AMP_BB_AMP,
-+							ADMV1014_BB_AMP_OFFSET_Q_MSK,
-+							FIELD_PREP(ADMV1014_BB_AMP_OFFSET_Q_MSK, val));
-+	case IIO_CHAN_INFO_PHASE:
-+		if (chan->channel2 == IIO_MOD_I)
-+			return admv1014_spi_update_bits(st, ADMV1014_REG_LO_AMP_PHASE_ADJUST1,
-+							ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK,
-+							FIELD_PREP(ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK, val));
-+		else
-+			return admv1014_spi_update_bits(st, ADMV1014_REG_LO_AMP_PHASE_ADJUST1,
-+							ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK,
-+							FIELD_PREP(ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK, val));
-+	case IIO_CHAN_INFO_SCALE:
-+		return admv1014_spi_update_bits(st, ADMV1014_REG_MIXER,
-+						ADMV1014_DET_PROG_MSK,
-+						FIELD_PREP(ADMV1014_DET_PROG_MSK, val));
-+	case IIO_CHAN_INFO_HARDWAREGAIN:
-+		return admv1014_spi_update_bits(st, ADMV1014_REG_BB_AMP_AGC,
-+						ADMV1014_BB_AMP_GAIN_CTRL_MSK,
-+						FIELD_PREP(ADMV1014_BB_AMP_GAIN_CTRL_MSK, val));
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static ssize_t admv1014_read(struct iio_dev *indio_dev,
-+			     uintptr_t private,
-+			     const struct iio_chan_spec *chan,
-+			     char *buf)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+	unsigned int data;
-+	int ret;
-+
-+	switch ((u32)private) {
-+	case ADMV1014_GAIN_COARSE:
-+		if (chan->channel2 == IIO_MOD_I) {
-+			ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP, &data);
-+			if (ret)
-+				return ret;
-+
-+			data = FIELD_GET(ADMV1014_IF_AMP_COARSE_GAIN_I_MSK, data);
-+		} else {
-+			ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP_BB_AMP, &data);
-+			if (ret)
-+				return ret;
-+
-+			data = FIELD_GET(ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK, data);
-+		}
-+		break;
-+	case ADMV1014_GAIN_FINE:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP, &data);
-+		if (ret)
-+			return ret;
-+
-+		if (chan->channel2 == IIO_MOD_I)
-+			data = FIELD_GET(ADMV1014_IF_AMP_FINE_GAIN_I_MSK, data);
-+		else
-+			data = FIELD_GET(ADMV1014_IF_AMP_FINE_GAIN_Q_MSK, data);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return sysfs_emit(buf, "%u\n", data);
-+}
-+
-+static ssize_t admv1014_write(struct iio_dev *indio_dev,
-+			      uintptr_t private,
-+			      const struct iio_chan_spec *chan,
-+			      const char *buf, size_t len)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+	unsigned int data, addr, msk;
-+	int ret;
-+
-+	ret = kstrtou32(buf, 10, &data);
-+	if (ret)
-+		return ret;
-+
-+	switch ((u32)private) {
-+	case ADMV1014_GAIN_COARSE:
-+		if (chan->channel2 == IIO_MOD_I) {
-+			addr = ADMV1014_REG_IF_AMP;
-+			msk = ADMV1014_IF_AMP_COARSE_GAIN_I_MSK;
-+			data = FIELD_PREP(ADMV1014_IF_AMP_COARSE_GAIN_I_MSK, data);
-+		} else {
-+			addr = ADMV1014_REG_IF_AMP_BB_AMP;
-+			msk = ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK;
-+			data = FIELD_PREP(ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK, data);
-+		}
-+		break;
-+	case ADMV1014_GAIN_FINE:
-+		addr = ADMV1014_REG_IF_AMP;
-+
-+		if (chan->channel2 == IIO_MOD_I) {
-+			msk = ADMV1014_IF_AMP_FINE_GAIN_I_MSK;
-+			data = FIELD_PREP(ADMV1014_IF_AMP_FINE_GAIN_I_MSK, data);
-+		} else {
-+			msk = ADMV1014_IF_AMP_FINE_GAIN_Q_MSK;
-+			data = FIELD_PREP(ADMV1014_IF_AMP_FINE_GAIN_Q_MSK, data);
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	ret = admv1014_spi_update_bits(st, addr, msk, data);
-+
-+	return ret ? ret : len;
-+}
-+
-+static int admv1014_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long info)
-+{
-+	switch (info) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*vals = detector_table;
-+		*type = IIO_VAL_INT;
-+		*length = ARRAY_SIZE(detector_table);
-+
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int admv1014_reg_access(struct iio_dev *indio_dev,
-+			       unsigned int reg,
-+			       unsigned int write_val,
-+			       unsigned int *read_val)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (read_val)
-+		ret = admv1014_spi_read(st, reg, read_val);
-+	else
-+		ret = admv1014_spi_write(st, reg, write_val);
-+
-+	return ret;
-+}
-+
-+static const struct iio_info admv1014_info = {
-+	.read_raw = admv1014_read_raw,
-+	.write_raw = admv1014_write_raw,
-+	.read_avail = &admv1014_read_avail,
-+	.debugfs_reg_access = &admv1014_reg_access,
-+};
-+
-+static int admv1014_freq_change(struct notifier_block *nb, unsigned long action, void *data)
-+{
-+	struct admv1014_state *st = container_of(nb, struct admv1014_state, nb);
-+	int ret;
-+
-+	if (action == POST_RATE_CHANGE) {
-+		mutex_lock(&st->lock);
-+		ret = notifier_from_errno(admv1014_update_quad_filters(st));
-+		mutex_unlock(&st->lock);
-+		return ret;
-+	}
-+
-+	return NOTIFY_OK;
-+}
-+
-+#define _ADMV1014_EXT_INFO(_name, _shared, _ident) { \
-+		.name = _name, \
-+		.read = admv1014_read, \
-+		.write = admv1014_write, \
-+		.private = _ident, \
-+		.shared = _shared, \
-+}
-+
-+static const struct iio_chan_spec_ext_info admv1014_ext_info[] = {
-+	_ADMV1014_EXT_INFO("gain_coarse", IIO_SEPARATE, ADMV1014_GAIN_COARSE),
-+	_ADMV1014_EXT_INFO("gain_fine", IIO_SEPARATE, ADMV1014_GAIN_FINE),
-+	{ },
-+};
-+
-+#define ADMV1014_CHAN(_channel, rf_comp) {				\
-+	.type = IIO_ALTVOLTAGE,						\
-+	.modified = 1,							\
-+	.output = 0,							\
-+	.indexed = 1,							\
-+	.channel2 = IIO_MOD_##rf_comp,					\
-+	.channel = _channel,						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_PHASE) |		\
-+		BIT(IIO_CHAN_INFO_OFFSET),				\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_HARDWAREGAIN)	\
-+	}
-+
-+#define ADMV1014_CHAN_GAIN(_channel, rf_comp, _admv1014_ext_info) {	\
-+	.type = IIO_ALTVOLTAGE,						\
-+	.modified = 1,							\
-+	.output = 0,							\
-+	.indexed = 1,							\
-+	.channel2 = IIO_MOD_##rf_comp,					\
-+	.channel = _channel,						\
-+	.ext_info = _admv1014_ext_info					\
-+	}
-+
-+#define ADMV1014_CHAN_DETECTOR(_channel) {				\
-+	.type = IIO_POWER,						\
-+	.modified = 1,							\
-+	.output = 0,							\
-+	.indexed = 1,							\
-+	.channel = _channel,						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),			\
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE)	\
-+	}
-+
-+static const struct iio_chan_spec admv1014_channels[] = {
-+	ADMV1014_CHAN(0, I),
-+	ADMV1014_CHAN(0, Q),
-+	ADMV1014_CHAN_GAIN(0, I, admv1014_ext_info),
-+	ADMV1014_CHAN_GAIN(0, Q, admv1014_ext_info),
-+	ADMV1014_CHAN_DETECTOR(0)
-+};
-+
-+static int admv1014_init(struct admv1014_state *st)
-+{
-+	int ret;
-+	unsigned int chip_id, enable_reg, enable_reg_msk;
-+	struct spi_device *spi = st->spi;
-+
-+	/* Perform a software reset */
-+	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
-+					 ADMV1014_SPI_SOFT_RESET_MSK,
-+					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 1));
-+	if (ret) {
-+		dev_err(&spi->dev, "ADMV1014 SPI software reset failed.\n");
-+		return ret;
-+	}
-+
-+	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
-+					 ADMV1014_SPI_SOFT_RESET_MSK,
-+					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 0));
-+	if (ret) {
-+		dev_err(&spi->dev, "ADMV1014 SPI software reset disable failed.\n");
-+		return ret;
-+	}
-+
-+	ret = admv1014_spi_write(st, ADMV1014_REG_VVA_TEMP_COMP, 0x727C);
-+	if (ret) {
-+		dev_err(&spi->dev, "Writing default Temperature Compensation value failed.\n");
-+		return ret;
-+	}
-+
-+	ret = admv1014_spi_read(st, ADMV1014_REG_SPI_CONTROL, &chip_id);
-+	if (ret)
-+		return ret;
-+
-+	chip_id = (chip_id & ADMV1014_CHIP_ID_MSK) >> 4;
-+	if (chip_id != ADMV1014_CHIP_ID) {
-+		dev_err(&spi->dev, "Invalid Chip ID.\n");
-+		return -EINVAL;
-+	}
-+
-+	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_QUAD,
-+					 ADMV1014_QUAD_SE_MODE_MSK,
-+					 FIELD_PREP(ADMV1014_QUAD_SE_MODE_MSK,
-+						    st->quad_se_mode));
-+	if (ret) {
-+		dev_err(&spi->dev, "Writing Quad SE Mode failed.\n");
-+		return ret;
-+	}
-+
-+	ret = admv1014_update_quad_filters(st);
-+	if (ret) {
-+		dev_err(&spi->dev, "Update Quad Filters failed.\n");
-+		return ret;
-+	}
-+
-+	ret = admv1014_update_vcm_settings(st);
-+	if (ret) {
-+		dev_err(&spi->dev, "Update VCM Settings failed.\n");
-+		return ret;
-+	}
-+
-+	enable_reg_msk = ADMV1014_P1DB_COMPENSATION_MSK |
-+			 ADMV1014_IF_AMP_PD_MSK |
-+			 ADMV1014_BB_AMP_PD_MSK |
-+			 ADMV1014_DET_EN_MSK;
-+
-+	enable_reg = FIELD_PREP(ADMV1014_P1DB_COMPENSATION_MSK, st->p1db_comp) |
-+		     FIELD_PREP(ADMV1014_IF_AMP_PD_MSK, !(st->input_mode)) |
-+		     FIELD_PREP(ADMV1014_BB_AMP_PD_MSK, st->input_mode) |
-+		     FIELD_PREP(ADMV1014_DET_EN_MSK, st->det_en);
-+
-+	return __admv1014_spi_update_bits(st, ADMV1014_REG_ENABLE, enable_reg_msk, enable_reg);
-+}
-+
-+static void admv1014_clk_disable(void *data)
-+{
-+	clk_disable_unprepare(data);
-+}
-+
-+static void admv1014_reg_disable(void *data)
-+{
-+	regulator_disable(data);
-+}
-+
-+static void admv1014_powerdown(void *data)
-+{
-+	unsigned int enable_reg, enable_reg_msk;
-+
-+	/* Disable all components in the Enable Register */
-+	enable_reg_msk = ADMV1014_IBIAS_PD_MSK |
-+			ADMV1014_IF_AMP_PD_MSK |
-+			ADMV1014_QUAD_BG_PD_MSK |
-+			ADMV1014_BB_AMP_PD_MSK |
-+			ADMV1014_QUAD_IBIAS_PD_MSK |
-+			ADMV1014_BG_PD_MSK;
-+
-+	enable_reg = FIELD_PREP(ADMV1014_IBIAS_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_IF_AMP_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_QUAD_BG_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_BB_AMP_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_QUAD_IBIAS_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_BG_PD_MSK, 1);
-+
-+	admv1014_spi_update_bits(data, ADMV1014_REG_ENABLE, enable_reg_msk, enable_reg);
-+}
-+
-+static int admv1014_properties_parse(struct admv1014_state *st)
-+{
-+	int ret;
-+	const char *str;
-+	struct spi_device *spi = st->spi;
-+
-+	st->det_en = device_property_read_bool(&spi->dev, "adi,detector-enable");
-+
-+	st->p1db_comp = device_property_read_bool(&spi->dev, "adi,p1db-comp-enable");
-+	if (st->p1db_comp)
-+		st->p1db_comp = 3;
-+
-+	ret = device_property_read_string(&spi->dev, "adi,input-mode", &str);
-+	if (ret)
-+		st->input_mode = ADMV1014_IQ_MODE;
-+
-+	if (!strcmp(str, "iq"))
-+		st->input_mode = ADMV1014_IQ_MODE;
-+	else if (!strcmp(str, "if"))
-+		st->input_mode = ADMV1014_IF_MODE;
-+	else
-+		return -EINVAL;
-+
-+	ret = device_property_read_string(&spi->dev, "adi,quad-se-mode", &str);
-+	if (ret)
-+		st->quad_se_mode = ADMV1014_SE_MODE_DIFF;
-+
-+	if (!strcmp(str, "diff"))
-+		st->quad_se_mode = ADMV1014_SE_MODE_DIFF;
-+	else if (!strcmp(str, "se-pos"))
-+		st->quad_se_mode = ADMV1014_SE_MODE_POS;
-+	else if (!strcmp(str, "se-neg"))
-+		st->quad_se_mode = ADMV1014_SE_MODE_NEG;
-+	else
-+		return -EINVAL;
-+
-+	st->reg = devm_regulator_get(&spi->dev, "vcm");
-+	if (IS_ERR(st->reg))
-+		return dev_err_probe(&spi->dev, PTR_ERR(st->reg),
-+				     "failed to get the common-mode voltage\n");
-+
-+	st->clkin = devm_clk_get(&spi->dev, "lo_in");
-+	if (IS_ERR(st->clkin))
-+		return dev_err_probe(&spi->dev, PTR_ERR(st->clkin),
-+				     "failed to get the LO input clock\n");
-+
-+	return 0;
-+}
-+
-+static int admv1014_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct admv1014_state *st;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+
-+	indio_dev->info = &admv1014_info;
-+	indio_dev->name = "admv1014";
-+	indio_dev->channels = admv1014_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(admv1014_channels);
-+
-+	st->spi = spi;
-+
-+	ret = admv1014_properties_parse(st);
-+	if (ret)
-+		return ret;
-+
-+	ret = regulator_enable(st->reg);
-+	if (ret) {
-+		dev_err(&spi->dev, "Failed to enable specified Common-Mode Voltage!\n");
-+		return ret;
-+	}
-+
-+	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->reg);
-+	if (ret)
-+		return ret;
-+
-+	ret = clk_prepare_enable(st->clkin);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(&spi->dev, admv1014_clk_disable, st->clkin);
-+	if (ret)
-+		return ret;
-+
-+	st->nb.notifier_call = admv1014_freq_change;
-+	ret = devm_clk_notifier_register(&spi->dev, st->clkin, &st->nb);
-+	if (ret)
-+		return ret;
-+
-+	mutex_init(&st->lock);
-+
-+	ret = admv1014_init(st);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(&spi->dev, admv1014_powerdown, st);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(&spi->dev, indio_dev);
-+}
-+
-+static const struct spi_device_id admv1014_id[] = {
-+	{ "admv1014", 0 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, admv1014_id);
-+
-+static const struct of_device_id admv1014_of_match[] = {
-+	{ .compatible = "adi,admv1014" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, admv1014_of_match);
-+
-+static struct spi_driver admv1014_driver = {
-+	.driver = {
-+		.name = "admv1014",
-+		.of_match_table = admv1014_of_match,
-+	},
-+	.probe = admv1014_probe,
-+	.id_table = admv1014_id,
-+};
-+module_spi_driver(admv1014_driver);
-+
-+MODULE_AUTHOR("Antoniu Miclaus <antoniu.miclaus@analog.com");
-+MODULE_DESCRIPTION("Analog Devices ADMV1014");
-+MODULE_LICENSE("GPL v2");
--- 
-2.34.1
+And Happy New Year :)
 
+This commit requires a description.
+Maybe run the checkpatch.pl script for some stylistics.
+
+And a few other comments inline :)
+
+
+> Signed-off-by: Iain Hunter <drhunter95@gmail.com>
+> ---
+>  drivers/iio/adc/Kconfig      |  12 +
+>  drivers/iio/adc/Makefile     |   1 +
+>  drivers/iio/adc/ti-ads1018.c | 840 +++++++++++++++++++++++++++++++++++
+>  3 files changed, 853 insertions(+)
+>  create mode 100644 drivers/iio/adc/ti-ads1018.c
+>
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 8bf5b62a73f4..129194755c03 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -1131,6 +1131,18 @@ config TI_ADS1015
+>           This driver can also be built as a module. If so, the module will be
+>           called ti-ads1015.
+>
+> +config TI_ADS1018
+> +       tristate "Texas Instruments ADS1018 ADC"
+> +       depends on SPI
+> +       select IIO_BUFFER
+> +       select IIO_TRIGGERED_BUFFER
+> +       help
+> +         If you say yes here you get support for Texas Instruments ADS1018
+> +         ADC chip.
+> +
+> +         To compile this driver as a module, choose M here: the
+> +         module will be called ti-ads1018.
+> +
+>  config TI_ADS7950
+>         tristate "Texas Instruments ADS7950 ADC driver"
+>         depends on SPI && GPIOLIB
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index d3f53549720c..da462538ec17 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -101,6 +101,7 @@ obj-$(CONFIG_TI_ADC108S102) += ti-adc108s102.o
+>  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>  obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
+>  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+> +obj-$(CONFIG_TI_ADS1018) += ti-ads1018.o
+>  obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
+>  obj-$(CONFIG_TI_ADS8344) += ti-ads8344.o
+>  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+> diff --git a/drivers/iio/adc/ti-ads1018.c b/drivers/iio/adc/ti-ads1018.c
+> new file mode 100644
+> index 000000000000..b22cd0a4d0bb
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-ads1018.c
+> @@ -0,0 +1,840 @@
+> +// SPDX-License-Identifier: GPL-2.0-only
+> +/*
+> + * ADS1018 - Texas Instruments Analog-to-Digital Converter
+> + *
+> + * Copyright 2021 Iain Hunter <iain@hunterembedded.co.uk>
+> + *
+> + * Based on ti-ads1015.c
+> + * Copyright (c) 2016, Intel Corporation.
+> + *
+> + * IIO driver for 12 bit SPI ADC ADS1018 from TI
+> + *
+> + */
+> +#include <linux/module.h>
+> +#include <linux/init.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/mutex.h>
+> +#include <linux/delay.h>
+> +#include <linux/bitfield.h>
+> +#include <asm/unaligned.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +
+> +#define ADS1018_DRV_NAME "ads1018"
+> +
+> +#define ADS1018_CHANNELS               8
+> +
+> +#define ADS1018_CFG_NOP_MASK           GENMASK(2, 1)
+> +#define ADS1018_CFG_PULL_UP_MASK       BIT(3)
+> +#define ADS1018_CFG_TS_MODE_MASK       BIT(4)
+> +#define ADS1018_CFG_DR_MASK            GENMASK(7, 5)
+> +#define ADS1018_CFG_MODE_MASK          BIT(8)
+> +#define ADS1018_CFG_PGA_MASK           GENMASK(11, 9)
+> +#define ADS1018_CFG_MUX_MASK           GENMASK(14, 12)
+> +
+> +#define ADS1018_PGA_2_048V                     1
+> +
+> +#define ADS1018_MODE_SINGLE_SHOT               1
+> +#define ADS1018_MODE_CONTINUOUS                        0
+> +
+> +#define ADS1018_STATE_RATE_128                 0
+> +#define ADS1018_STATE_RATE_250                 1
+> +#define ADS1018_STATE_RATE_490                 2
+> +#define ADS1018_STATE_RATE_920                 3
+> +#define ADS1018_STATE_RATE_1600                        4
+> +#define ADS1018_STATE_RATE_2400                        5
+> +#define ADS1018_STATE_RATE_3300                        6
+> +
+> +#define ADS1018_TS_MODE_ADC                    0
+> +#define ADS1018_TS_MODE_TEMP                   1
+> +
+> +#define ADS1018_PULLUP_DOUT_DISABLE            0
+> +#define ADS1018_PULLUP_DOUT_ENABLE             1
+> +
+> +#define ADS1018_NOP_UPDATE_CONFIG              1
+> +#define ADS1018_RESERVED                       1
+> +
+> +#define ADS1018_CONFIGURE    \
+> +               (FIELD_PREP(ADS1018_CFG_PGA_MASK, ADS1018_PGA_2_048V) |         \
+> +                FIELD_PREP(ADS1018_CFG_MODE_MASK, ADS1018_MODE_CONTINUOUS) |   \
+> +                FIELD_PREP(ADS1018_CFG_DR_MASK, ADS1018_STATE_RATE_2400) |     \
+> +                FIELD_PREP(ADS1018_CFG_TS_MODE_MASK, ADS1018_TS_MODE_ADC) |    \
+> +                FIELD_PREP(ADS1018_CFG_PULL_UP_MASK, ADS1018_PULLUP_DOUT_ENABLE) | \
+> +                FIELD_PREP(ADS1018_CFG_NOP_MASK, ADS1018_NOP_UPDATE_CONFIG)|   \
+> +                               ADS1018_RESERVED)
+> +
+> +#define ADS1018_SLEEP_DELAY_MS                 2000
+> +#define ADS1018_DEFAULT_PGA                    2
+> +#define ADS1018_DEFAULT_DATA_RATE              4
+> +#define ADS1018_DEFAULT_CHAN                   0
+> +
+> +enum chip_ids {
+> +       ADS1018};
+
+//stylistic
+enum closing bracket on separate line;
+
+> +
+> +enum ads1018_channels {
+> +       ADS1018_AIN0_AIN1 = 0,
+> +       ADS1018_AIN0_AIN3,
+> +       ADS1018_AIN1_AIN3,
+> +       ADS1018_AIN2_AIN3,
+> +       ADS1018_AIN0,
+> +       ADS1018_AIN1,
+> +       ADS1018_AIN2,
+> +       ADS1018_AIN3,
+> +       ADS1018_TIMESTAMP,
+> +};
+> +
+> +struct ti_ads1018_chip_info {
+> +       const struct iio_chan_spec *channels;
+> +       unsigned int num_channels;
+> +};
+> +
+> +#define NUM_DIFF_CHAN  2
+> +unsigned int ti_ads1018_diff_channels[NUM_DIFF_CHAN];
+
+Using this global here will mean that only 1 device can use
+diff-channels in the entire system.
+So, if you have more than device in a system, the configuration of one
+device will get used by both/all devices probed here.
+
+This should be moved on the ti_ads1018_state struct.
+That way, each device can live with it's own separate configuration.
+
+> +
+> +static const unsigned int ads1018_data_rate[] = {
+> +       128, 250, 490, 920, 1600, 2400, 3300
+> +};
+> +
+> +/*
+> + * Translation from PGA bits to full-scale positive and negative input voltage
+> + * range in mV
+> + */
+> +static int ads1018_fullscale_range[] = {
+> +       6144, 4096, 2048, 1024, 512, 256
+> +};
+> +
+> +#define ADS1018_V_CHAN(_chan, _addr) {                         \
+> +       .type = IIO_VOLTAGE,                                    \
+> +       .indexed = 1,                                           \
+> +       .address = _addr,                                       \
+> +       .channel = _chan,                                       \
+> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> +                               BIT(IIO_CHAN_INFO_SCALE) |      \
+> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> +       .info_mask_separate_available = \
+> +                               BIT(IIO_CHAN_INFO_SCALE) |      \
+> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> +       .scan_index = _addr,                                    \
+> +       .scan_type = {                                          \
+> +               .sign = 's',                                    \
+> +               .realbits = 12,                                 \
+> +               .storagebits = 16,                              \
+> +               .shift = 4,                                     \
+> +               .endianness = IIO_CPU,                          \
+> +       },                                                      \
+> +       .datasheet_name = "AIN"#_chan,                          \
+> +}
+> +
+> +#define ADS1018_V_DIFF_CHAN(_chan, _chan2, _addr) {            \
+> +       .type = IIO_VOLTAGE,                                    \
+> +       .differential = 1,                                      \
+> +       .indexed = 1,                                           \
+> +       .address = _addr,                                       \
+> +       .channel = _chan,                                       \
+> +       .channel2 = _chan2,                                     \
+> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |          \
+> +                               BIT(IIO_CHAN_INFO_SCALE) |      \
+> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> +       .info_mask_separate_available = \
+> +                               BIT(IIO_CHAN_INFO_SCALE) |      \
+> +                               BIT(IIO_CHAN_INFO_SAMP_FREQ),   \
+> +       .scan_index = _addr,                                    \
+> +       .scan_type = {                                          \
+> +               .sign = 's',                                    \
+> +               .realbits = 12,                                 \
+> +               .storagebits = 16,                              \
+> +               .shift = 4,                                     \
+> +               .endianness = IIO_CPU,                          \
+> +       },                                                      \
+> +       .datasheet_name = "AIN"#_chan"-AIN"#_chan2,             \
+> +}
+> +
+> +struct ads1018_channel_data {
+> +       bool enabled;
+> +       unsigned int pga;
+> +       unsigned int data_rate;
+> +};
+> +
+> +struct ti_ads1018_state {
+> +       struct spi_device *spi;
+> +       struct spi_transfer scan_single_xfer[1];
+> +       struct spi_message scan_single_msg;
+> +
+> +       struct iio_trigger *trig;
+> +       /*
+> +        * Protects ADC ops, e.g: concurrent sysfs/buffered
+> +        * data reads, configuration updates
+> +        */
+> +       struct mutex lock;
+> +       struct ads1018_channel_data channel_data[ADS1018_CHANNELS];
+> +       unsigned int current_config;
+> +       unsigned int settings;
+> +       const unsigned int *data_rate;
+> +       /*
+> +        * Set to true when the ADC is switched to the continuous-conversion
+> +        * mode and exits from a power-down state.  This flag is used to avoid
+> +        * getting the stale result from the conversion register.
+> +        */
+> +       bool conv_invalid;
+> +       /*
+> +        * DMA (thus cache coherency maintenance) requires the
+> +        * transfer buffers to live in their own cache lines.
+> +        *
+> +        */
+> +       unsigned char   spi_rx_buf[sizeof(u32)]
+> +                               ____cacheline_aligned;
+> +       unsigned char   spi_tx_buf[sizeof(u32)]
+> +                               ____cacheline_aligned;
+> +};
+> +
+> +static const struct iio_chan_spec ti_ads1018_channels[] = {
+> +       ADS1018_V_DIFF_CHAN(0, 1, ADS1018_AIN0_AIN1),
+> +       ADS1018_V_DIFF_CHAN(0, 3, ADS1018_AIN0_AIN3),
+> +       ADS1018_V_DIFF_CHAN(1, 3, ADS1018_AIN1_AIN3),
+> +       ADS1018_V_DIFF_CHAN(2, 3, ADS1018_AIN2_AIN3),
+> +       ADS1018_V_CHAN(0, ADS1018_AIN0),
+> +       ADS1018_V_CHAN(1, ADS1018_AIN1),
+> +       ADS1018_V_CHAN(2, ADS1018_AIN2),
+> +       ADS1018_V_CHAN(3, ADS1018_AIN3),
+> +       IIO_CHAN_SOFT_TIMESTAMP(ADS1018_TIMESTAMP),
+> +};
+> +
+> +static const struct ti_ads1018_chip_info ti_ads1018_chip = {
+> +       .channels       = ti_ads1018_channels,
+> +       .num_channels   = ARRAY_SIZE(ti_ads1018_channels),
+> +};
+> +
+> +static int ti_ads1018_write_config_register(struct ti_ads1018_state *st, int value)
+> +{
+> +       int ret;
+> +
+> +       /* Write new value to the first 2 bytes of the 4 byte SPI transfer */
+> +       put_unaligned_be16(value, (void *)&st->spi_tx_buf[0]);
+> +       put_unaligned_be16(0x0000, (void *)&st->spi_tx_buf[2]);
+> +
+> +       ret = spi_sync(st->spi, &st->scan_single_msg);
+> +       if (ret)
+> +               return ret;
+> +
+> +       /* Update the state current config based on result of this write
+> +        * the updated config register value is in second 16 bit word
+> +        * which is third and fourth byte
+> +        */
+> +       st->current_config = get_unaligned_be16((void *)&st->spi_rx_buf[2]);
+> +
+> +       return 0;
+> +}
+> +
+> +static int __maybe_unused
+> +ads1018_set_power_state(struct ti_ads1018_state *st, bool on)
+> +{
+> +       int ret;
+> +       struct spi_device *spi = st->spi;
+> +       struct device *dev = &(spi->dev);
+> +
+> +       if (pm_runtime_enabled(dev)) {
+> +               if (on) {
+> +                       ret = pm_runtime_resume_and_get(dev);
+> +               } else {
+> +                       pm_runtime_mark_last_busy(dev);
+> +                       ret = pm_runtime_put_autosuspend(dev);
+> +               }
+> +
+> +               return ret < 0 ? ret : 0;
+> +       } else {
+> +               return 0;
+> +       }
+
+this if() block has too many levels of indentation;
+to simplify, you can do early exits:
+
+if (!pm_runtime_enabled(dev))
+   return 0;
+
+if (on)
+   return pm_runtime_resume_and_get(dev);
+
+pm_runtime_mark_last_busy(dev);
+return pm_runtime_put_autosuspend(dev);
+
+> +}
+> +
+> +static
+> +int ads1018_get_adc_result(struct ti_ads1018_state *st, int chan, int *val)
+> +{
+> +       int ret, pga, dr, dr_old, conv_time;
+> +       unsigned int old, mask, cfg;
+> +       unsigned int cmd;
+> +
+> +       if (chan < 0 || chan >= ADS1018_CHANNELS)
+> +               return -EINVAL;
+> +
+> +       old = st->current_config;
+> +       pga = st->channel_data[chan].pga;
+> +       dr = st->channel_data[chan].data_rate;
+> +       mask =  ADS1018_CFG_MUX_MASK | ADS1018_CFG_PGA_MASK |
+> +                       ADS1018_CFG_DR_MASK;
+> +       cfg = FIELD_PREP(ADS1018_CFG_MUX_MASK, chan) |
+> +             FIELD_PREP(ADS1018_CFG_PGA_MASK, pga) |
+> +             FIELD_PREP(ADS1018_CFG_DR_MASK, dr);
+> +
+> +       cfg = (old & ~mask) | (cfg & mask);
+> +       if (old != cfg) {
+> +               /* Update the configuration to the new one  */
+> +               ret = ti_ads1018_write_config_register(st, cfg);
+> +               if (ret)
+> +                       return ret;
+> +               st->conv_invalid = true;
+> +       }
+> +
+> +       if (st->conv_invalid) {
+> +               dr_old = FIELD_GET(ADS1018_CFG_DR_MASK, old);
+> +
+> +               conv_time = DIV_ROUND_UP(USEC_PER_SEC, st->data_rate[dr_old]);
+> +               conv_time += DIV_ROUND_UP(USEC_PER_SEC, st->data_rate[dr]);
+> +               conv_time += conv_time / 10; /* 10% internal clock inaccuracy */
+> +               usleep_range(conv_time, conv_time + 1);
+> +               st->conv_invalid = false;
+> +       }
+> +
+> +       /* For just a data read cmd is 0x0000 */
+> +       cmd = 0x0000;
+> +       put_unaligned_be16(cmd, (void *)&st->spi_tx_buf[0]);
+> +       put_unaligned_be16(0x0000, (void *)&st->spi_tx_buf[2]);
+> +
+> +       ret = spi_sync(st->spi, &st->scan_single_msg);
+> +       if (ret)
+> +               return ret;
+> +
+> +       *val = get_unaligned_be16((void *)&st->spi_rx_buf[0]);
+> +       return 0;
+> +}
+> +
+> +static irqreturn_t ti_ads1018_trigger_handler(int irq, void *p)
+> +{
+> +       struct iio_poll_func *pf = p;
+> +       struct iio_dev *indio_dev = pf->indio_dev;
+> +       struct ti_ads1018_state *st = iio_priv(indio_dev);
+> +       /* Ensure natural alignment of timestamp */
+> +       struct {
+> +               s16 chan;
+> +               s64 timestamp __aligned(8);
+> +
+> +       } scan;
+> +
+> +       int chan, ret, res;
+> +
+> +       memset(&scan, 0, sizeof(scan));
+> +
+> +       mutex_lock(&st->lock);
+> +       chan = find_first_bit(indio_dev->active_scan_mask,
+> +                             indio_dev->masklength);
+> +       ret = ads1018_get_adc_result(st, chan, &res);
+> +       if (ret < 0) {
+> +               mutex_unlock(&st->lock);
+> +               goto err;
+> +       }
+> +
+> +       scan.chan = res;
+> +       mutex_unlock(&st->lock);
+> +
+> +       iio_push_to_buffers_with_timestamp(indio_dev, &scan,
+> +                                          iio_get_time_ns(indio_dev));
+> +
+> +err:
+> +       iio_trigger_notify_done(indio_dev->trig);
+> +
+> +       return IRQ_HANDLED;
+> +}
+> +
+> +static int ads1018_set_scale(struct ti_ads1018_state *st,
+> +                            struct iio_chan_spec const *chan,
+> +                            int scale, int uscale)
+> +{
+> +       int fullscale = div_s64((scale * 1000000LL + uscale) <<
+> +                               (chan->scan_type.realbits - 1), 1000000);
+> +       int i;
+> +
+> +       for (i = 0; i < ARRAY_SIZE(ads1018_fullscale_range); i++) {
+> +               if (ads1018_fullscale_range[i] == fullscale) {
+> +                       st->channel_data[chan->address].pga = i;
+> +                       return 0;
+> +               }
+> +       }
+> +
+> +       return -EINVAL;
+> +}
+> +
+> +static int ads1018_set_data_rate(struct ti_ads1018_state *st, int chan, int rate)
+> +{
+> +       int i;
+> +
+> +       for (i = 0; i < ARRAY_SIZE(ads1018_data_rate); i++) {
+
+This looks quirky.
+It assumes that the number of elements in st->data_rate[i] is the same
+as in ads1018_data_rate.
+Which raises a few questions: why should we assign "
+st->channel_data=ads1018_data_rate" if it's the same/constant array?
+will there be another device added?
+
+Another idea is to add a 0 / -1 terminator value to the array.
+Something like:        for (i = 0;st->data_rate[i]   /* != -1 */ ;  i++) {
+
+> +               if (st->data_rate[i] == rate) {
+> +                       st->channel_data[chan].data_rate = i;
+> +                       return 0;
+> +               }
+> +       }
+> +
+> +       return -EINVAL;
+> +}
+> +
+> +static int ads1018_read_raw(struct iio_dev *indio_dev,
+> +                           struct iio_chan_spec const *chan, int *val,
+> +                           int *val2, long mask)
+> +{
+> +       struct ti_ads1018_state *st = iio_priv(indio_dev);
+> +       int ret, idx;
+> +
+> +       mutex_lock(&st->lock);
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_RAW: {
+> +               int shift = chan->scan_type.shift;
+> +               int sign_bit = chan->scan_type.realbits - 1;
+> +
+> +               ret = iio_device_claim_direct_mode(indio_dev);
+> +               if (ret)
+> +                       break;
+> +
+> +               ret = ads1018_set_power_state(st, true);
+> +               if (ret < 0)
+> +                       goto release_direct;
+> +
+> +               ret = ads1018_get_adc_result(st, chan->address, val);
+> +               if (ret < 0) {
+> +                       ads1018_set_power_state(st, false);
+> +                       goto release_direct;
+> +               }
+> +
+> +               *val = sign_extend32(*val >> shift, sign_bit);
+> +
+> +               ret = ads1018_set_power_state(st, false);
+> +               if (ret < 0)
+> +                       goto release_direct;
+> +
+> +               ret = IIO_VAL_INT;
+> +release_direct:
+> +               iio_device_release_direct_mode(indio_dev);
+> +               break;
+> +       }
+> +       case IIO_CHAN_INFO_SCALE:
+> +               idx = st->channel_data[chan->address].pga;
+> +               *val = ads1018_fullscale_range[idx];
+> +               *val2 = chan->scan_type.realbits - 1;
+> +               ret = IIO_VAL_FRACTIONAL_LOG2;
+> +               break;
+> +       case IIO_CHAN_INFO_SAMP_FREQ:
+> +               idx = st->channel_data[chan->address].data_rate;
+> +               *val = st->data_rate[idx];
+> +               ret = IIO_VAL_INT;
+> +               break;
+> +       default:
+> +               ret = -EINVAL;
+> +               break;
+> +       }
+> +       mutex_unlock(&st->lock);
+> +
+> +       return ret;
+> +}
+> +
+> +static int ads1018_read_avail(struct iio_dev *indio_dev,
+> +                               struct iio_chan_spec const *chan,
+> +                               const int **vals, int *type, int *length,
+> +                               long mask)
+> +{
+> +       struct ti_ads1018_state *st = iio_priv(indio_dev);
+> +       int idx;
+> +
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_SCALE:
+> +               idx = st->channel_data[chan->address].pga;
+> +               *length = sizeof(int) / sizeof(int);
+> +               *vals = &(ads1018_fullscale_range[idx]);
+> +               *type = IIO_VAL_INT;
+> +               return IIO_AVAIL_LIST;
+> +       case IIO_CHAN_INFO_SAMP_FREQ:
+> +               idx = st->channel_data[chan->address].data_rate;
+> +               *length = sizeof(int) / sizeof(int);
+> +               *vals = &(st->data_rate[idx]);
+> +               *type = IIO_VAL_INT;
+> +               return IIO_AVAIL_LIST;
+> +       default:
+> +               return -EINVAL;
+> +       }
+> +}
+> +
+> +static int ads1018_write_raw(struct iio_dev *indio_dev,
+> +                            struct iio_chan_spec const *chan, int val,
+> +                            int val2, long mask)
+> +{
+> +       struct ti_ads1018_state *st = iio_priv(indio_dev);
+> +       int ret;
+> +
+> +       mutex_lock(&st->lock);
+> +       switch (mask) {
+> +       case IIO_CHAN_INFO_SCALE:
+> +               ret = ads1018_set_scale(st, chan, val, val2);
+> +               break;
+> +       case IIO_CHAN_INFO_SAMP_FREQ:
+> +               ret = ads1018_set_data_rate(st, chan->address, val);
+> +               break;
+> +       default:
+> +               ret = -EINVAL;
+> +               break;
+> +       }
+> +       mutex_unlock(&st->lock);
+> +
+> +       return ret;
+> +}
+> +
+> +static int ads1018_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +       return ads1018_set_power_state(iio_priv(indio_dev), true);
+> +}
+> +
+> +static int ads1018_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +       return ads1018_set_power_state(iio_priv(indio_dev), false);
+> +}
+> +
+> +static const struct iio_buffer_setup_ops ti_ads1018_buffer_setup_ops = {
+> +       .preenable      = ads1018_buffer_preenable,
+> +       .postdisable    = ads1018_buffer_postdisable,
+> +       .validate_scan_mask = &iio_validate_scan_mask_onehot,
+> +};
+> +
+> +static IIO_CONST_ATTR_NAMED(ads1018_scale_available, scale_available,
+> +       "3 2 1 0.5 0.25 0.125");
+> +
+> +static IIO_CONST_ATTR_NAMED(ads1018_sampling_frequency_available,
+> +       sampling_frequency_available, "128 250 490 920 1600 2400 3300");
+> +
+> +static struct attribute *ads1018_attributes[] = {
+> +       &iio_const_attr_ads1018_scale_available.dev_attr.attr,
+> +       &iio_const_attr_ads1018_sampling_frequency_available.dev_attr.attr,
+> +       NULL,
+> +};
+> +
+> +static const struct attribute_group ads1018_attribute_group = {
+> +       .attrs = ads1018_attributes,
+> +};
+> +
+> +
+> +static const struct iio_info ti_ads1018_info = {
+> +       .read_raw       = ads1018_read_raw,
+> +       .read_avail     = ads1018_read_avail,
+> +       .write_raw      = ads1018_write_raw,
+> +       .attrs          = &ads1018_attribute_group,
+> +};
+> +
+> +static int ads1018_validate_diff_channels(
+> +       struct device *dev, struct fwnode_handle *node,
+> +       unsigned int *diff_channels, unsigned int *channel)
+> +{
+> +       switch (diff_channels[0]) {
+> +
+> +       case 0:{
+
+stylistically, the opening bracket of the case-block goes on the next line
+though, checkpatch may complain
+
+> +               if (diff_channels[1] == 1)
+> +                       *channel = ADS1018_AIN0_AIN1;
+> +               else if (diff_channels[1] == 3)
+> +                       *channel = ADS1018_AIN0_AIN3;
+> +               else {
+> +                       dev_err(dev, "invalid diff channel <%u %u> on %pfw\n",
+> +                               diff_channels[0], diff_channels[1],
+> +                               node);
+> +                       fwnode_handle_put(node);
+
+all these fwnode_handle_put() calls should be moved to the caller;
+and maybe use the error condition to call them;
+doing this here looks a bit too decoupled/spread across the file;
+
+> +                       return -EINVAL;
+> +                       }
+> +               break;
+> +               }
+> +       case 1:{
+> +               if (diff_channels[1] == 3)
+> +                       *channel = ADS1018_AIN1_AIN3;
+> +               else {
+> +                       dev_err(dev, "invalid diff channel <%u %u> on %pfw\n",
+> +                               diff_channels[0], diff_channels[1],
+> +                               node);
+> +                       fwnode_handle_put(node);
+> +                       return -EINVAL;
+
+these if() else () blocks also can be reduced in indentation
+
+something like:
+if (diff_channels[1] == 3) {
+    *channel = ADS1018_AIN1_AIN3;;
+    return 0;
+}
+
+dev_err(dev, "invalid diff channel <%u %u> on %pfw\n",
+              diff_channels[0], diff_channels[1],
+               node);
+
+return -EINVAL;
+
+> +               }
+> +               break;
+> +               }
+> +       case 2:{
+> +               if (diff_channels[1] == 3)
+> +                       *channel = ADS1018_AIN2_AIN3;
+> +               else {
+> +                       dev_err(dev, "invalid diff channel <%u %u> on %pfw\n",
+> +                               diff_channels[0], diff_channels[1],
+> +                               node);
+> +                       fwnode_handle_put(node);
+> +                       return -EINVAL;
+> +               }
+> +               break;
+> +               }
+> +       }
+> +       return 0;
+> +}
+> +
+> +
+
+nitpick: remove extra line here
+
+> +static int ads1018_device_get_channels_config(struct spi_device *spi)
+> +{
+> +       struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +       struct ti_ads1018_state *data = iio_priv(indio_dev);
+> +       struct device *dev = &spi->dev;
+> +       struct fwnode_handle *node;
+> +       int i = -1;
+
+while not init this to -EINVAL directly?
+
+> +
+> +       if (!spi->dev.of_node ||
+> +           !of_get_next_child(spi->dev.of_node, NULL))
+> +               return -EINVAL;
+> +
+> +       device_for_each_child_node(dev, node) {
+> +               u32 pval;
+> +               unsigned int channel;
+> +               size_t number_diff_channels;
+> +
+> +               if (!fwnode_property_read_u32(node, "ti,adc-channels", &pval)) {
+> +                       channel = pval+ADS1018_AIN0;
+> +                       if (channel > ADS1018_AIN3) {
+> +                               dev_err(dev,
+> +                                       "invalid single ended channel %u on %pfw\n",
+> +                                       channel, node);
+> +                               fwnode_handle_put(node);
+> +                               return -EINVAL;
+> +                       }
+> +               }
+> +
+> +               number_diff_channels = fwnode_property_read_u32_array(node,
+> +                               "ti,adc-diff-channels", NULL,
+> +                               NUM_DIFF_CHAN);
+> +
+> +               if ((number_diff_channels == NUM_DIFF_CHAN) &&
+> +                    (!fwnode_property_read_u32_array(node,
+> +                                       "ti,adc-diff-channels",
+> +                                       ti_ads1018_diff_channels,
+> +                                       NUM_DIFF_CHAN))) {
+> +
+> +                       if (!ads1018_validate_diff_channels(dev, node,
+> +                                                               ti_ads1018_diff_channels,
+> +                                                               &channel))
+> +                               return -EINVAL;
+> +               }
+> +
+> +               data->channel_data[channel].enabled = 1;
+> +               data->channel_data[channel].pga = ADS1018_DEFAULT_PGA;
+> +               data->channel_data[channel].data_rate = ADS1018_DEFAULT_DATA_RATE;
+> +
+> +               i++;
+> +       }
+> +
+> +       return i < 0 ? -EINVAL : 0;
+> +}
+> +
+> +static void ads1018_get_channels_config(struct spi_device *spi)
+> +{
+> +       struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +       struct ti_ads1018_state *data = iio_priv(indio_dev);
+> +       unsigned int k;
+> +
+> +       if (!ads1018_device_get_channels_config(spi))
+> +               return;
+
+this looks a bit quirky;
+the ads1018_device_get_channels_config() returns -EINVAL or 0
+maybe i missed it: but could it return something else than these 2 values?
+if yes, i would return this to the probe() function and fail the probe
+
+also, the fallback here is silent in some cases;
+maybe add a log-message about it?
+otherwise people would be puzzled as to what went wrong in their DT
+
+though, to be honest, I would fail the entire probe on all -EINVAL
+errors and [probably] allow a default configuration *only* if there is
+no OF-node/fwnode
+i'm not sure that drivers need to fallback on bad DT configuration,
+and doing so may sometimes be worse than just failing the probe;
+but that's another debathe;
+
+> +       /* fallback on default configuration */
+> +       for (k = 0; k < ADS1018_CHANNELS; ++k) {
+> +               data->channel_data[k].enabled = 0;
+> +               data->channel_data[k].pga = ADS1018_DEFAULT_PGA;
+> +               data->channel_data[k].data_rate = ADS1018_DEFAULT_DATA_RATE;
+> +       }
+> +}
+> +
+> +static int ads1018_set_conv_mode(struct ti_ads1018_state *st, int mode)
+> +{
+> +       int updatedConfig;
+> +
+> +       updatedConfig = st->current_config & ~(ADS1018_CFG_MODE_MASK);
+> +       updatedConfig |= FIELD_PREP(ADS1018_CFG_MODE_MASK, mode);
+> +
+> +       return ti_ads1018_write_config_register(st, updatedConfig);
+> +}
+> +
+> +static int ti_ads1018_set_trigger_state(struct iio_trigger *trig, bool enable)
+> +{
+> +       return 0;
+> +}
+> +
+> +static const struct iio_trigger_ops ti_ads1018_trigger_ops = {
+> +       .set_trigger_state = ti_ads1018_set_trigger_state,
+> +       .validate_device = iio_trigger_validate_own_device,
+> +};
+> +
+> +static void ads1018_disable(void *data)
+> +{
+> +       struct ti_ads1018_state *st = (struct ti_ads1018_state *) data;
+> +       struct spi_device *spi = st->spi;
+> +
+> +       pm_runtime_disable(&spi->dev);
+> +       pm_runtime_set_suspended(&spi->dev);
+> +       pm_runtime_put_noidle(&spi->dev);
+> +
+> +       /* power down single shot mode */
+> +       ads1018_set_conv_mode(st, ADS1018_MODE_SINGLE_SHOT);
+> +}
+> +
+> +static int ti_ads1018_probe(struct spi_device *spi)
+> +{
+> +       const struct ti_ads1018_chip_info *info;
+> +       struct ti_ads1018_state *st;
+> +       struct iio_dev *indio_dev;
+> +       int ret;
+> +       int i;
+> +       int config;
+> +
+> +       indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+> +       if (!indio_dev)
+> +               return -ENOMEM;
+> +
+> +       st = iio_priv(indio_dev);
+> +
+> +       st->spi = spi;
+> +       config = ADS1018_CONFIGURE;
+> +       spi_set_drvdata(spi, indio_dev);
+> +
+> +       mutex_init(&st->lock);
+> +
+> +       info = &ti_ads1018_chip;
+> +       indio_dev->name = spi_get_device_id(spi)->name;
+> +       indio_dev->dev.parent = &spi->dev;
+> +       indio_dev->modes = INDIO_DIRECT_MODE;
+> +       indio_dev->channels = info->channels;
+> +       indio_dev->num_channels = info->num_channels;
+> +       indio_dev->info = &ti_ads1018_info;
+> +       st->data_rate = &ads1018_data_rate[0];
+> +
+> +       ret = devm_add_action_or_reset(&spi->dev, ads1018_disable,
+> +                                      st);
+> +
+> +       if (ret)
+> +               return ret;
+> +
+> +       /* allocate and then register trigger with IIO core */
+> +       st->trig = devm_iio_trigger_alloc(indio_dev->dev.parent, "%s-dev%d",
+> +                                         indio_dev->name,
+> +                                         iio_device_id(indio_dev));
+> +       if (st->trig == NULL)
+> +               return -ENOMEM;
+> +
+> +       st->trig->ops = &ti_ads1018_trigger_ops;
+> +
+> +       devm_iio_trigger_register(indio_dev->dev.parent, st->trig);
+
+This requires an error check.
+ret =  devm_iio_trigger_register(indio_dev->dev.parent, st->trig);
+if (ret)
+   return ret;
+
+> +
+> +       /* set the default trigger */
+> +       indio_dev->trig = iio_trigger_get(st->trig);
+> +
+> +       ads1018_get_channels_config(spi);
+> +
+> +       /* Find out if DT has enabled any of the channels, only one allowed so
+> +        * just take the first one
+> +        */
+> +       for (i = 0; i < info->num_channels; i++)
+> +               if (st->channel_data[i].enabled == 1)
+> +                       break;
+> +
+> +       /* If a channel was enabled set it by default in the device */
+> +       if (i < info->num_channels) {
+> +               /* mask out the mux bits  */
+> +               config &= ~(ADS1018_CFG_MUX_MASK);
+> +               config |= FIELD_PREP(ADS1018_CFG_MUX_MASK, i);
+> +       }
+> +
+> +       /*
+> +        * Always use 4 * 8 bit transfer mode so that the status is read back
+> +        * in the second 16 bit word. This allows us to track when updated
+> +        * configuration needs to be applied.
+> +        */
+> +       st->scan_single_xfer[0].tx_buf = &st->spi_tx_buf[0];
+> +       st->scan_single_xfer[0].rx_buf = &st->spi_rx_buf[0];
+> +       st->scan_single_xfer[0].len = 4;
+> +       st->scan_single_xfer[0].cs_change = 0;
+> +       st->scan_single_xfer[0].bits_per_word = 8;
+> +
+> +       spi_message_init_with_transfers(&st->scan_single_msg,
+> +                                       st->scan_single_xfer, 1);
+> +
+> +       ret = ti_ads1018_write_config_register(st, config);
+> +       if (ret < 0) {
+> +               dev_err(&spi->dev, "ads1018 configuration failed\n");
+> +               return ret;
+> +       }
+> +
+> +       ret = devm_iio_triggered_buffer_setup(indio_dev->dev.parent,
+> +                                        indio_dev, NULL,
+> +                                        ti_ads1018_trigger_handler,
+> +                                        &ti_ads1018_buffer_setup_ops);
+> +       if (ret < 0) {
+> +               dev_err(&spi->dev, "iio triggered buffer setup failed\n");
+> +               return ret;
+> +       }
+> +
+> +       ret = ads1018_set_conv_mode(st, ADS1018_MODE_CONTINUOUS);
+> +       if (ret)
+> +               return ret;
+> +
+> +       st->conv_invalid = true;
+> +
+> +       ret = pm_runtime_set_active(&spi->dev);
+> +       if (ret)
+> +               return ret;
+
+// stylistic
+add an empty line here
+
+> +       pm_runtime_set_autosuspend_delay(&spi->dev, ADS1018_SLEEP_DELAY_MS);
+> +       pm_runtime_use_autosuspend(&spi->dev);
+> +       pm_runtime_enable(&spi->dev);
+> +
+> +       return devm_iio_device_register(&spi->dev, indio_dev);
+> +}
+> +
+> +#ifdef CONFIG_PM
+
+There's a recent trend/switch to not use this define.
+See:
+https://patchwork.kernel.org/project/linux-iio/list/?series=602256
+
+> +static int ads1018_runtime_suspend(struct device *dev)
+> +{
+> +       struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +       struct ti_ads1018_state *st = iio_priv(indio_dev);
+> +
+> +       return ads1018_set_conv_mode(st, ADS1018_MODE_SINGLE_SHOT);
+> +}
+> +
+> +static int ads1018_runtime_resume(struct device *dev)
+> +{
+> +       struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +       struct ti_ads1018_state *st = iio_priv(indio_dev);
+> +       int ret;
+> +
+> +       ret = ads1018_set_conv_mode(st, ADS1018_MODE_CONTINUOUS);
+> +       if (!ret)
+> +               st->conv_invalid = true;
+> +
+> +       return ret;
+> +}
+> +#endif
+> +
+> +static const struct dev_pm_ops ads1018_pm_ops = {
+> +       SET_RUNTIME_PM_OPS(ads1018_runtime_suspend,
+> +                          ads1018_runtime_resume, NULL)
+> +};
+> +
+> +static const struct spi_device_id ti_ads1018_id[] = {
+> +       { "ads1018", ADS1018 },
+> +       { }
+> +};
+> +MODULE_DEVICE_TABLE(spi, ti_ads1018_id);
+> +
+> +static const struct of_device_id ads1018_of_table[] = {
+> +       { .compatible = "ti,ads1018", .data = &ti_ads1018_chip },
+> +       { },
+
+// mostly stylistic
+Comma can be removed: it's a null terminator.
+
+> +};
+> +MODULE_DEVICE_TABLE(of, ads1018_of_table);
+> +
+> +static struct spi_driver ti_ads1018_driver = {
+> +       .driver = {
+> +               .name = ADS1018_DRV_NAME,
+
+maybe just use the value directly here; the ADS1018_DRV_NAME macros
+isn't used anywhere else;
+
+> +               .of_match_table = ads1018_of_table,
+> +               .pm = &ads1018_pm_ops,
+> +       },
+> +       .probe          = ti_ads1018_probe,
+> +       .id_table       = ti_ads1018_id,
+> +};
+> +module_spi_driver(ti_ads1018_driver);
+> +
+> +MODULE_AUTHOR("Iain Hunter <iain@hunterembedded.co.uk>");
+> +MODULE_DESCRIPTION("TI TI_ADS1018 ADC");
+> +MODULE_LICENSE("GPL v2");
+> --
+> 2.25.1
+>
