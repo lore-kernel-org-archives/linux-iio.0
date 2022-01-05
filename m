@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BDB9CC4332F
-	for <linux-iio@archiver.kernel.org>; Wed,  5 Jan 2022 18:34:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2270DC4167D
+	for <linux-iio@archiver.kernel.org>; Wed,  5 Jan 2022 18:34:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243065AbiAESe3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 5 Jan 2022 13:34:29 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42046 "EHLO
+        id S243135AbiAESei (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 5 Jan 2022 13:34:38 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243073AbiAESe1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jan 2022 13:34:27 -0500
-Received: from mail-wm1-x336.google.com (mail-wm1-x336.google.com [IPv6:2a00:1450:4864:20::336])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4653C061201
-        for <linux-iio@vger.kernel.org>; Wed,  5 Jan 2022 10:34:26 -0800 (PST)
-Received: by mail-wm1-x336.google.com with SMTP id a83-20020a1c9856000000b00344731e044bso3785936wme.1
-        for <linux-iio@vger.kernel.org>; Wed, 05 Jan 2022 10:34:26 -0800 (PST)
+        with ESMTP id S243044AbiAESeY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Jan 2022 13:34:24 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2C2AC034009
+        for <linux-iio@vger.kernel.org>; Wed,  5 Jan 2022 10:34:23 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id e5so42388wrc.5
+        for <linux-iio@vger.kernel.org>; Wed, 05 Jan 2022 10:34:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2VD8BhFQsi1gAqizHlVU3fMYSmPUmL03WAYruvW0snE=;
-        b=jpVf08kdAsBCv9Fz1w8bfk9PWLBPKBl9jzBJsjlc/B4Uw7dDo0HJSxclDVckHXkeD3
-         Ed89gG+Jy8B1f91gnAnK6RzuZLwz0ZhG81vZtGMNGWsSxWZUQ5u4S47VBWtdSdemKV+7
-         RwswXCHkcHRQYKVEI4zbckjsWmLTHwE/KAenkOaaOe0r1lJjjyvYbTNZWONLAks9O8Lt
-         4uGuc0gatO2kVE6unROXpwzYYmXIGOePVlp4CtzONKWd93tjEamYaKBTH2MmHPohAaA9
-         qCQ5AWZJlIhH3Jm0eJFA5tWi54zYiHkUoBXtom4WrMPFzCYjWC0WFN+RnCe6ksonxx0t
-         vJag==
+        bh=+lqRhrkooB1DRVf4+Ugj5CfxzFlazGWH1jNE3D3s2OI=;
+        b=m63AUIcP/hsHWSNy4ffYkMVz4F4XPKbOSnUAtPfhTPYKxz2CWKcL+NaYAolE8zBPjG
+         Fr/0zi7WXIGgT3q3AacedKNriA8Xc06cBYJ6Db1wL/Y+uGXmCR2p5RzRvYhMPDRsg4fC
+         nPMYW0LZdRAuTp0Oy+Hl1x5tYleyBkuKM+Gd3TuIoWLVKE2Vf1e0JSh9CjHQR9SIzo0x
+         dIw1lTyesCUKED/kPmw7xBD54q35SAIO0PGEuUWESduc18u4+VPZNWBKVYryMmVnPRkt
+         mQHrRoC5pr4jNy9b4Md25tVo5Yq5jAaZOSVdJHxWN2azJiWNvdEU8draZERY4AyiRox8
+         hvlw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2VD8BhFQsi1gAqizHlVU3fMYSmPUmL03WAYruvW0snE=;
-        b=DX0NwbyXrZ/VQHR8e940FeZ17pM93D3xxGiyitsQB2tbAbhtRBHbhyX9YLP1mRhg2u
-         JlJyHhKcHfgkmMBWPvkckegkDg7HGtt4/nZAnOgBxOOzXYPVR1WIqngnK5yIgthnE4Yv
-         vIg5lJ71BuJLBPOfIDPnkAPVZ69VCx36YXDb7Xj8vwCIx8UGVfqpn7OJFIq7HvcnpW6h
-         frzEN3fS7zmoQa9IuND8Vw2YjOs0dM8qfNj0W1i2L4IZtatEEahoo70VG+KUoGqpKGpr
-         vKLICcqmLhJtrlAJHaUxwehFIeaEdNZe6/OafbQx+IxQcv7s50hHNIPsLiTxMpr/qsQg
-         LjrA==
-X-Gm-Message-State: AOAM530Mu8GqXPBCOFNj7z7J6WoqG7b2uscnCbQBD11xDHgBvRDYeNK5
-        FktrlLRJst4icENcpTsM2Cwiew==
-X-Google-Smtp-Source: ABdhPJy+Q4ONifaTzqm79p0+0JVlKoXxb6uoAj5vX4aBkr8L4Bh2cHFh9pPBz3ji3n1eSLAiTW/vWA==
-X-Received: by 2002:a05:600c:4013:: with SMTP id i19mr3986331wmm.93.1641407665309;
-        Wed, 05 Jan 2022 10:34:25 -0800 (PST)
+        bh=+lqRhrkooB1DRVf4+Ugj5CfxzFlazGWH1jNE3D3s2OI=;
+        b=ZuRCnA7g0Awj/QBw5xY3FHITTcbAxLxoyqPqxZtpRT+Sb6dOEMc3iZ1BugUQgIHmtM
+         wQwczd2rCbTXVW813281icewIx16PQflz9bbFFFRq/urp4+TYg2VRhXjGtq4+mowrhYO
+         8VOfcZo48aifl+pn9O3OlNWIbHAPZAw6n2BupHDrNUOS4QRsdcyelmSljAOI0VJGvnFy
+         ZvFo9FNtDQz6J3kX3/OEKh1mpfzu/VKx8BSNyqzPcwB22iIto8gjIU2IRZ2/438ISj4T
+         B7/DAIoCy9IZNpo7PYjsX885Ni04XLCxBrRdFThoAd3KhcgbPHGXbB7iF/kIMRRTtzRc
+         U5Kw==
+X-Gm-Message-State: AOAM533g96TKFqh2Je55rfcp85fLUhLqjgn0aHComvP7+GMXuyqWYuM1
+        BXfCtRo9R86YUf3MWxCuBNBYZw==
+X-Google-Smtp-Source: ABdhPJz0N3u0K3ODf2ENu2o1jEqFhMpLXF2rMl6y8dWXUQjJhWNHaKquJILWYcgj37lywdEaVbmcmw==
+X-Received: by 2002:adf:df89:: with SMTP id z9mr3502651wrl.505.1641407662295;
+        Wed, 05 Jan 2022 10:34:22 -0800 (PST)
 Received: from localhost.localdomain ([81.178.195.252])
-        by smtp.gmail.com with ESMTPSA id o1sm3272215wmc.38.2022.01.05.10.34.24
+        by smtp.gmail.com with ESMTPSA id o1sm3272215wmc.38.2022.01.05.10.34.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 05 Jan 2022 10:34:24 -0800 (PST)
+        Wed, 05 Jan 2022 10:34:21 -0800 (PST)
 From:   Caleb Connolly <caleb.connolly@linaro.org>
 To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -58,9 +58,9 @@ To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         linux-arm-msm@vger.kernel.org
 Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
         john.stultz@linaro.org
-Subject: [PATCH v2 7/7] arm64: dts: qcom: sdm845-xiaomi-beryllium: enable RRADC
-Date:   Wed,  5 Jan 2022 18:33:53 +0000
-Message-Id: <20220105183353.2505744-8-caleb.connolly@linaro.org>
+Subject: [PATCH v2 4/7] arm64: dts: qcom: pmi8998: add rradc node
+Date:   Wed,  5 Jan 2022 18:33:50 +0000
+Message-Id: <20220105183353.2505744-5-caleb.connolly@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220105183353.2505744-1-caleb.connolly@linaro.org>
 References: <20220105183353.2505744-1-caleb.connolly@linaro.org>
@@ -70,28 +70,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Enable the PMI8998 RRADC.
+Add a DT node for the Round Robin ADC found in the PMI8998 PMIC.
 
 Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ arch/arm64/boot/dts/qcom/pmi8998.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-index 580d4cc1296f..481132b0cee4 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-xiaomi-beryllium.dts
-@@ -312,6 +312,10 @@ resin {
- 	};
- };
- 
-+&pmi8998_rradc {
-+	status = "okay";
-+};
+diff --git a/arch/arm64/boot/dts/qcom/pmi8998.dtsi b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+index 0fef5f113f05..da10668c361d 100644
+--- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+@@ -18,6 +18,14 @@ pmi8998_gpio: gpios@c000 {
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+ 		};
 +
- /* QUAT I2S Uses 1 I2S SD Line for audio on TAS2559/60 amplifiers */
- &q6afedai {
- 	qi2s@22 {
++		pmi8998_rradc: rradc@4500 {
++			compatible = "qcom,pmi8998-rradc";
++			reg = <0x4500>;
++			#io-channel-cells = <1>;
++
++			status = "disabled";
++		};
+ 	};
+ 
+ 	pmi8998_lsid1: pmic@3 {
 -- 
 2.34.1
 
