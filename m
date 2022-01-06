@@ -2,144 +2,93 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2C260C433F5
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Jan 2022 17:32:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E513C433F5
+	for <linux-iio@archiver.kernel.org>; Thu,  6 Jan 2022 17:39:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241881AbiAFRcU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Jan 2022 12:32:20 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41782 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241966AbiAFRby (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jan 2022 12:31:54 -0500
-Received: from mail-wr1-x431.google.com (mail-wr1-x431.google.com [IPv6:2a00:1450:4864:20::431])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1ECDDC034005
-        for <linux-iio@vger.kernel.org>; Thu,  6 Jan 2022 09:31:53 -0800 (PST)
-Received: by mail-wr1-x431.google.com with SMTP id k18so6171149wrg.11
-        for <linux-iio@vger.kernel.org>; Thu, 06 Jan 2022 09:31:53 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=TbWlOa+hsmRbWWmesGbsstTW9dDTf4G9JG7ns6wKhLk=;
-        b=CnyIcB/jT2CzxEgA8+7z04Q/WRIVwcZ7FSSASbZr+SAWAH27O8u99CH0TlLvRxk30a
-         gvrN0iM1D8tp1XxQkLapSl30zJeDofCxaXF7Y13KShhfqli/AoXJAS3mZeTcMAXul/Zr
-         LkjoEvShnzzVueWuBL5ARM2eOC1yzKAyiEKB80hcbsGL4Ahzm/iGCo161CW4kX3C/+LW
-         XR0WacWaoAK7slEtVM27QhYK7XSvB5aLqFV5y9DsWkh0WtjJk7mlth1AmyS1nscO1/V9
-         QnKvlnH+ELGWrvbhw5EKQzSMM5v8s53zNR7TJyUbfbMvdfCUbuxZB2iic0vwB9di/Onc
-         uyFA==
+        id S241891AbiAFRjn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Jan 2022 12:39:43 -0500
+Received: from mail-oo1-f54.google.com ([209.85.161.54]:42684 "EHLO
+        mail-oo1-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S242182AbiAFRjm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jan 2022 12:39:42 -0500
+Received: by mail-oo1-f54.google.com with SMTP id y13-20020a4a624d000000b002daae38b0b5so824124oog.9;
+        Thu, 06 Jan 2022 09:39:41 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=TbWlOa+hsmRbWWmesGbsstTW9dDTf4G9JG7ns6wKhLk=;
-        b=Bk2CRRLE66f/+XFmfq7lKZxoZG9vxX8nsT8No2y/io0TewqdH4A2gpINnemS2qxD1C
-         7Pogoy9PnCwymVLKa1K/aoa9oW9sTNX4AcLi1XNK7uTo14THFZyyCAH0GPkkSWNRnqRc
-         UqmkcX0gGu1bePNHcbNvLSUnP/2jqD55gYFjAM1JOHPDcilQPbsc3gd0v4Zr+bjhhPiD
-         jg+tLo1Ducs9nc1AmLhP28mznb2W0vKamDsLg3PM8hcOlKpGC2U3Q16ZHZYEg/OCbMJq
-         gjx47fJY2+UQN2lWEdoO0KIpz6T8s8wSrGM7qwffeGzqi8DHbRj3TnWgDnEp1ByD/3E2
-         kLZw==
-X-Gm-Message-State: AOAM5334JF5ZUKqJe3COc8L6yve/h5lb5U34DyZdguao2le8c+nQKyDk
-        ygpBIuW1c4Rod7iqzEO84QZwhQ==
-X-Google-Smtp-Source: ABdhPJzgRYpe8Pq6PgoaGLcgywxFdk/+bxopSnyz+zfHBQ2gLvT1aTDCwo4b+VSz+LHGmHGsg3uHeg==
-X-Received: by 2002:a5d:5552:: with SMTP id g18mr52284534wrw.488.1641490311708;
-        Thu, 06 Jan 2022 09:31:51 -0800 (PST)
-Received: from localhost.localdomain ([81.178.195.252])
-        by smtp.gmail.com with ESMTPSA id b16sm2575594wmq.41.2022.01.06.09.31.50
+        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
+         :message-id;
+        bh=LTH0gxxPTzrpGqblk9l5CWXYgHHQ9ZotfUBcWF1DvpM=;
+        b=oPpV4Y9EFDQGG+sNCKhwvw9xkckE6JV2ESvWBcGsnosKOsGIYmE4oxYnnoYZntTQVE
+         Yg8lIsH0IyC5qduo+wYguNX0YoF3tWGR+lYLbhC7W9bfkoYWhetTOXfpaecvnOT0mCVK
+         Bd4XMX/kYcBRWtatqkpBHI9Fi3TErhbehB8VnN5OarU6DVTewIfwX9qMIFNM76h0W4py
+         N9X6NDoBb3JAL9vJ2VeNx0j2OnsfLOKYLDDJUo4vfMYahVVuRffBS71Hd1rokzmDbdwz
+         y/jNss7AemLJGpbMQ2niF5qbrwR+ozeESzUgAgfWUraI1UPOxXSXy15RcAPIVXeyaaql
+         xmKA==
+X-Gm-Message-State: AOAM532TlL8WoXXHFreSYqqOJcTUyVMX/B+gqx/EUpjPtZS/BH4Z6yBH
+        V/QcRdnp/eOublANOx4KccQORv+XbA==
+X-Google-Smtp-Source: ABdhPJzyP3uuOjPrPqhC3d1Qqu7NKHHwGoHsgf/2aYa8QFCfQy1jTMC6nDHxXabAKYUx+wyz030djA==
+X-Received: by 2002:a4a:8701:: with SMTP id z1mr38966341ooh.68.1641490781532;
+        Thu, 06 Jan 2022 09:39:41 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id u14sm449787ote.62.2022.01.06.09.39.40
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 09:31:51 -0800 (PST)
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
-        john.stultz@linaro.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH v3 2/7] dt-bindings: iio: adc: document qcom-spmi-rradc
-Date:   Thu,  6 Jan 2022 17:31:26 +0000
-Message-Id: <20220106173131.3279580-3-caleb.connolly@linaro.org>
-X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220106173131.3279580-1-caleb.connolly@linaro.org>
-References: <20220106173131.3279580-1-caleb.connolly@linaro.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        Thu, 06 Jan 2022 09:39:41 -0800 (PST)
+Received: (nullmailer pid 1361796 invoked by uid 1000);
+        Thu, 06 Jan 2022 17:39:39 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Cixi Geng <gengcixi@gmail.com>
+Cc:     lgirdwood@gmail.com, lars@metafoo.de, jic23@kernel.org,
+        baolin.wang7@gmail.com, broonie@kernel.org, robh+dt@kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, zhang.lyra@gmail.com,
+        orsonzhai@gmail.com, yuming.zhu1@unisoc.com
+In-Reply-To: <20220106125947.139523-2-gengcixi@gmail.com>
+References: <20220106125947.139523-1-gengcixi@gmail.com> <20220106125947.139523-2-gengcixi@gmail.com>
+Subject: Re: [PATCH 1/7] dt-bindings:iio:adc: add sprd,ump9620-adc dtbindings
+Date:   Thu, 06 Jan 2022 11:39:39 -0600
+Message-Id: <1641490779.987704.1361793.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add dt-binding docs for the Qualcomm SPMI RRADC found in PMICs like
-PMI8998 and PMI8994
+On Thu, 06 Jan 2022 20:59:41 +0800, Cixi Geng wrote:
+> From: Cixi Geng <cixi.geng1@unisoc.com>
+> 
+> sprd,ump9620-adc is one variant of sc27xx series, add ump9620 in
+> dtbindings.
+> 
+> Signed-off-by: Chunyan Zhang <zhang.lyra@gmail.com>
+> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> ---
+>  .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+> 
 
-Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
----
- .../bindings/iio/adc/qcom,spmi-rradc.yaml     | 54 +++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
-new file mode 100644
-index 000000000000..11d47c46a48d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
-@@ -0,0 +1,54 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/qcom,spmi-rradc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Qualcomm's SPMI PMIC Round Robin ADC
-+
-+maintainers:
-+  - Caleb Connolly <caleb.connolly@linaro.org>
-+
-+description: |
-+  The Qualcomm SPMI Round Robin ADC (RRADC) provides interface to clients to read the
-+  voltage, current and temperature for supported peripherals such as the battery thermistor
-+  die temperature, charger temperature, USB and DC input voltage / current and battery ID
-+  resistor.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,pmi8998-rradc
-+      - qcom,pm660-rradc
-+
-+  reg:
-+    description: rradc base address and length in the SPMI PMIC register map
-+    maxItems: 1
-+
-+  qcom,batt-id-delay-ms:
-+    description:
-+      Sets the hardware settling time for the battery ID resistor.
-+    enum: [0, 1, 4, 12, 20, 40, 60, 80]
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pmic {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      pmic_rradc: adc@4500 {
-+          compatible = "qcom,pmi8998-rradc";
-+          reg = <0x4500>;
-+          #io-channel-cells  = <1>;
-+      };
-+    };
-+...
--- 
-2.34.1
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml: else: 'nvmem-cell-names' is not one of ['$ref', 'additionalItems', 'additionalProperties', 'allOf', 'anyOf', 'const', 'contains', 'default', 'dependencies', 'dependentRequired', 'dependentSchemas', 'deprecated', 'description', 'else', 'enum', 'exclusiveMaximum', 'exclusiveMinimum', 'items', 'if', 'minItems', 'minimum', 'maxItems', 'maximum', 'multipleOf', 'not', 'oneOf', 'pattern', 'patternProperties', 'properties', 'required', 'then', 'type', 'typeSize', 'unevaluatedProperties', 'uniqueItems']
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml: then: 'nvmem-cell-names' is not one of ['$ref', 'additionalItems', 'additionalProperties', 'allOf', 'anyOf', 'const', 'contains', 'default', 'dependencies', 'dependentRequired', 'dependentSchemas', 'deprecated', 'description', 'else', 'enum', 'exclusiveMaximum', 'exclusiveMinimum', 'items', 'if', 'minItems', 'minimum', 'maxItems', 'maximum', 'multipleOf', 'not', 'oneOf', 'pattern', 'patternProperties', 'properties', 'required', 'then', 'type', 'typeSize', 'unevaluatedProperties', 'uniqueItems']
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml: ignoring, error in schema: else
+Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.example.dt.yaml:0:0: /example-0/pmic/adc@480: failed to match any schema with compatible: ['sprd,sc2731-adc']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/1576074
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
