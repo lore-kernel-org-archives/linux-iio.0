@@ -2,46 +2,47 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC48FC4332F
-	for <linux-iio@archiver.kernel.org>; Thu,  6 Jan 2022 18:25:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2EF6C433F5
+	for <linux-iio@archiver.kernel.org>; Fri,  7 Jan 2022 03:20:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242737AbiAFSZd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 6 Jan 2022 13:25:33 -0500
-Received: from mail-oo1-f42.google.com ([209.85.161.42]:45604 "EHLO
-        mail-oo1-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242739AbiAFSZb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jan 2022 13:25:31 -0500
-Received: by mail-oo1-f42.google.com with SMTP id l10-20020a4a840a000000b002dc09752694so852250oog.12;
-        Thu, 06 Jan 2022 10:25:31 -0800 (PST)
+        id S1345808AbiAGDUg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 6 Jan 2022 22:20:36 -0500
+Received: from mail-oi1-f181.google.com ([209.85.167.181]:34358 "EHLO
+        mail-oi1-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1344897AbiAGDUg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 6 Jan 2022 22:20:36 -0500
+Received: by mail-oi1-f181.google.com with SMTP id r131so6539469oig.1;
+        Thu, 06 Jan 2022 19:20:35 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
          :content-transfer-encoding;
-        bh=+1b8xpRYxZ8vmZgumm9JuvwJZHTxs74RlVPJnbYxN54=;
-        b=6LQ8G/u5/vITcAYomYrGqQaDApTOEOLmMl3h7OnqqropHSE7xvNWq63vaBLvtwXswF
-         FfEzdIWy0ekLFia7xkKe2l0c2RYSO31UPFpArrjo7L9v2K+ncZn85NBqc+KeCB6i30Uc
-         yP64NfxASa/44MvvqS8auIUn/4c58h8h6jkAtBbho4pgdI3JLu+Orp3379tTIYOYCuy5
-         X4OohLx9VxFitUpeV044pr7vyWdiR1G31hTBF+s6L2ts/1SQ5J+eTWMy/chUITm0qWeX
-         K6KpV32nUImzqAtYIMl7iHkXCPiexX9Ljnq4cA8XNod020y1KFy+CJVkJ5inUaJAGdMo
-         IakA==
-X-Gm-Message-State: AOAM531byy0GLEkxd1eN53FW/Imem5cGprnGFM4zGWLiTr9qz7untqmc
-        ZvfxUawAROYDRyVBvQ8nTLlgdDakUQ==
-X-Google-Smtp-Source: ABdhPJxOg9d7S+nH7Ow7Pl1QUcRGuNmgke+MFJ4NpJB8DgqESzYqHfSD7oJu/egfBzNw/9xjD79V1A==
-X-Received: by 2002:a4a:be90:: with SMTP id o16mr36439739oop.28.1641493531034;
-        Thu, 06 Jan 2022 10:25:31 -0800 (PST)
+        bh=xcznktkJ1RYJEtl2X8NHggtUN6UgM0jAUxrx7u5OfmU=;
+        b=XgQqy2ECMu/4C2hMfET/OPYhMmtV1NOMNdBFgg79a4nHctocy63VoC/HRK7jMeF1JP
+         scLZGcjuHB5hOG53B+zWxVi1SkqVBehKfzoc24Kxr3XcSCCCvNoWK8HHA4z19d8rYI+x
+         qVPDQyoKwqvZiabzzdun9obJZXaAVUvKz/2rV/HG3VTH6nq71Y2PjGQHysY0kA3frUbR
+         RwEywcxcfpcaJok88Zsdm7dDgLBDJaAsH/y4YxohfIfW/X+bXeHZXLxRkKv7ncqiczGJ
+         BL3tLBs9JiUWTuvmJdEVmpCveNE9ZB6dCgJyMvJdURJuIxmLkri0zbZtG34cYQ/W8JmB
+         /VWA==
+X-Gm-Message-State: AOAM530oHLsoxJ2qm4s0r+EHty/GE/N0PSAq1vLa+MrWp4E6fTD2DLX9
+        JBGrNIXczhGYdCNkeYeql2w+jZJxzA==
+X-Google-Smtp-Source: ABdhPJzkfDZsJe0Ec4+qpKI0hXa2NFntKTcAzP1stxz5Nm4ujZoYDwby6QDk1u9/7k8pSZln1obcKQ==
+X-Received: by 2002:a05:6808:208e:: with SMTP id s14mr8803729oiw.170.1641525635296;
+        Thu, 06 Jan 2022 19:20:35 -0800 (PST)
 Received: from xps15.herring.priv (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
-        by smtp.googlemail.com with ESMTPSA id r13sm484949oth.21.2022.01.06.10.25.30
+        by smtp.googlemail.com with ESMTPSA id c3sm820747oiw.8.2022.01.06.19.20.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 06 Jan 2022 10:25:30 -0800 (PST)
+        Thu, 06 Jan 2022 19:20:34 -0800 (PST)
 From:   Rob Herring <robh@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Tony Lindgren <tony@atomide.com>
+To:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH] dt-bindings: iio/adc: ti,palmas-gpadc: Split interrupt fields in example
-Date:   Thu,  6 Jan 2022 12:25:11 -0600
-Message-Id: <20220106182518.1435497-3-robh@kernel.org>
+Subject: [PATCH] dt-bindings: iio: adi,ltc2983: Fix 64-bit property sizes
+Date:   Thu,  6 Jan 2022 21:20:26 -0600
+Message-Id: <20220107032026.2408196-1-robh@kernel.org>
 X-Mailer: git-send-email 2.32.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
@@ -49,31 +50,51 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Best practice for multi-cell property values is to bracket each multi-cell
-value.
+The '/bits/ 64' notation applies the next <> list of values. Another <> list
+is encoded as 32-bits by default. IOW, each <> list needs to be preceeded
+with '/bits/ 64'.
+
+While the dts format allows this, as a rule we don't mix sizes for DT
+properties since all size information is lost in the dtb file.
 
 Signed-off-by: Rob Herring <robh@kernel.org>
 ---
- .../devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml        | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ .../bindings/iio/temperature/adi,ltc2983.yaml | 22 +++++++++----------
+ 1 file changed, 11 insertions(+), 11 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml b/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
-index 7b895784e008..57a31356082e 100644
---- a/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,palmas-gpadc.yaml
-@@ -74,9 +74,9 @@ examples:
-         compatible = "ti,twl6035-pmic", "ti,palmas-pmic";
-         adc {
-             compatible = "ti,palmas-gpadc";
--            interrupts = <18 0
--                          16 0
--                          17 0>;
-+            interrupts = <18 0>,
-+                         <16 0>,
-+                         <17 0>;
-             #io-channel-cells = <1>;
-             ti,channel0-current-microamp = <5>;
-             ti,channel3-current-microamp = <10>;
+diff --git a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+index 0f79d9a01c49..722781aa4697 100644
+--- a/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
++++ b/Documentation/devicetree/bindings/iio/temperature/adi,ltc2983.yaml
+@@ -448,17 +448,17 @@ examples:
+                         reg = <20>;
+                         adi,sensor-type = <9>; //custom thermocouple
+                         adi,single-ended;
+-                        adi,custom-thermocouple = /bits/ 64
+-                                 <(-50220000) 0>,
+-                                 <(-30200000) 99100000>,
+-                                 <(-5300000) 135400000>,
+-                                 <0 273150000>,
+-                                 <40200000 361200000>,
+-                                 <55300000 522100000>,
+-                                 <88300000 720300000>,
+-                                 <132200000 811200000>,
+-                                 <188700000 922500000>,
+-                                 <460400000 1000000000>; //10 pairs
++                        adi,custom-thermocouple =
++                                 /bits/ 64 <(-50220000) 0>,
++                                 /bits/ 64 <(-30200000) 99100000>,
++                                 /bits/ 64 <(-5300000) 135400000>,
++                                 /bits/ 64 <0 273150000>,
++                                 /bits/ 64 <40200000 361200000>,
++                                 /bits/ 64 <55300000 522100000>,
++                                 /bits/ 64 <88300000 720300000>,
++                                 /bits/ 64 <132200000 811200000>,
++                                 /bits/ 64 <188700000 922500000>,
++                                 /bits/ 64 <460400000 1000000000>; //10 pairs
+                };
+ 
+         };
 -- 
 2.32.0
 
