@@ -2,221 +2,270 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 939F7C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Jan 2022 12:39:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 868B6C433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Jan 2022 13:39:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245594AbiAJMjN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Jan 2022 07:39:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36742 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236630AbiAJMjK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Jan 2022 07:39:10 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3180CC061748
-        for <linux-iio@vger.kernel.org>; Mon, 10 Jan 2022 04:39:10 -0800 (PST)
-Received: from ptx.hi.pengutronix.de ([2001:67c:670:100:1d::c0])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1n6tx1-0007Gd-W2; Mon, 10 Jan 2022 13:39:03 +0100
-Received: from ore by ptx.hi.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1n6tx1-00083y-CO; Mon, 10 Jan 2022 13:39:03 +0100
-Date:   Mon, 10 Jan 2022 13:39:03 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     devicetree@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>
-Subject: Re: [PATCH v1 1/1] iio: adc: tsc2046: rework the trigger state
- machine
-Message-ID: <20220110123903.GC3326@pengutronix.de>
-References: <20220107074017.2762347-1-o.rempel@pengutronix.de>
- <20220109154404.75e0ed2f@jic23-huawei>
+        id S232834AbiAJNj4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Jan 2022 08:39:56 -0500
+Received: from frasgout.his.huawei.com ([185.176.79.56]:4377 "EHLO
+        frasgout.his.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S232695AbiAJNj4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Jan 2022 08:39:56 -0500
+Received: from fraeml735-chm.china.huawei.com (unknown [172.18.147.201])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4JXZgr64Tqz688s4;
+        Mon, 10 Jan 2022 21:39:52 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml735-chm.china.huawei.com (10.206.15.216) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.20; Mon, 10 Jan 2022 14:39:53 +0100
+Received: from localhost (10.47.90.214) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.20; Mon, 10 Jan
+ 2022 13:39:52 +0000
+Date:   Mon, 10 Jan 2022 13:39:57 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Anand Ashok Dumbre <ANANDASH@xilinx.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        git <git@xilinx.com>, Michal Simek <michals@xilinx.com>,
+        "gregkh@linuxfoundation.org" <gregkh@linuxfoundation.org>,
+        "rafael@kernel.org" <rafael@kernel.org>,
+        "linux-acpi@vger.kernel.org" <linux-acpi@vger.kernel.org>,
+        "heikki.krogerus@linux.intel.com" <heikki.krogerus@linux.intel.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        'Anand Dumbre' <ananddumbre8@gmail.com>
+Subject: Re: [PATCH v12 0/5] Add Xilinx AMS Driver
+Message-ID: <20220110133957.00005728@Huawei.com>
+In-Reply-To: <BY5PR02MB6916F611A1B0511B814D840EA9509@BY5PR02MB6916.namprd02.prod.outlook.com>
+References: <20211203212358.31444-1-anand.ashok.dumbre@xilinx.com>
+        <BY5PR02MB691657682B94F4D3DBDA007EA9769@BY5PR02MB6916.namprd02.prod.outlook.com>
+        <20211216113717.1c0e43dc@jic23-huawei>
+        <BY5PR02MB6916F611A1B0511B814D840EA9509@BY5PR02MB6916.namprd02.prod.outlook.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220109154404.75e0ed2f@jic23-huawei>
-X-Sent-From: Pengutronix Hildesheim
-X-URL:  http://www.pengutronix.de/
-X-IRC:  #ptxdist @freenode
-X-Accept-Language: de,en
-X-Accept-Content-Type: text/plain
-X-Uptime: 09:12:59 up 30 days, 16:58, 71 users,  load average: 0.10, 0.15,
- 0.15
-User-Agent: Mutt/1.10.1 (2018-07-13)
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::c0
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.47.90.214]
+X-ClientProxiedBy: lhreml728-chm.china.huawei.com (10.201.108.79) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Jan 09, 2022 at 03:44:04PM +0000, Jonathan Cameron wrote:
-> On Fri,  7 Jan 2022 08:40:17 +0100
-> Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+On Mon, 10 Jan 2022 05:17:26 +0000
+Anand Ashok Dumbre <ANANDASH@xilinx.com> wrote:
+
+> Hi Cameron,
 > 
-> > Initially this was designed to:
-> > | Fix sleeping in atomic context warning and a deadlock after iio_trigger_poll()
-> > | call
-> > |
-> > | If iio_trigger_poll() is called after IRQ was disabled, we will call
-> > | reenable_trigger() directly from hard IRQ or hrtimer context instead of
-> > | IRQ thread. In this case we will run in to multiple issue as sleeping in atomic
-> > | context and a deadlock.
-> > |
-> > | To avoid this issue, rework the trigger to use state machine. All state
-> > | changes are done over the hrtimer, so it allows us to drop fsleep() and
-> > | avoid the deadlock.
+> I see in the patchwork that the patches have been accepted. 
+> When can I expect to see the driver in mainline?
+
+The merge window just opened today, and these were in a pull request
+to Greg, so he has them in his char-misc tree.
+
+So, now we just have to wait for Greg to send a pull request to Linus
+and Linus to pull it. That should happen sometime in next 2 weeks in
+time for rc1.
+
+Jonathan
+
+> 
+> Thanks,
+> Anand
+> 
+> > -----Original Message-----
+> > From: Jonathan Cameron <jic23@kernel.org>
+> > Sent: Thursday 16 December 2021 5:07 PM
+> > To: Anand Ashok Dumbre <ANANDASH@xilinx.com>
+> > Cc: linux-kernel@vger.kernel.org; lars@metafoo.de; linux-
+> > iio@vger.kernel.org; git <git@xilinx.com>; Michal Simek
+> > <michals@xilinx.com>; gregkh@linuxfoundation.org; rafael@kernel.org;
+> > linux-acpi@vger.kernel.org; heikki.krogerus@linux.intel.com; Andy
+> > Shevchenko <andriy.shevchenko@linux.intel.com>; 'Anand Dumbre'
+> > <ananddumbre8@gmail.com>
+> > Subject: Re: [PATCH v12 0/5] Add Xilinx AMS Driver
 > > 
-> > This issue was fixed by: 9020ef659885 ("iio: trigger: Fix a scheduling
-> > whilst atomic issue seen on tsc2046").
+> > On Wed, 15 Dec 2021 12:11:21 +0000
+> > Anand Ashok Dumbre <ANANDASH@xilinx.com> wrote:
+> >   
+> > > Ping!  
 > > 
-> > Even if the root cause of this issue probably will and can be fixed in the iio
-> > core, this patch can be seen as clean-up to provide better internal state
-> > machine.
-> 
-> Probably want to update this text?
-
-ack
-
-> A few comments below.
+> > Other than ideally getting a few more eyes on the stuff in drivers/base I'm
+> > fine with this series.
 > > 
-> > Fixes: 9374e8f5a38d ("iio: adc: add ADC driver for the TI TSC2046 controller")
-> 
-> From above isn't this now fixed?  The cleanup here is just making things easier
-> to follow I think...
-
-done
-
-> > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> > ---
-> >  drivers/iio/adc/ti-tsc2046.c | 102 ++++++++++++++++++++---------------
-> >  1 file changed, 58 insertions(+), 44 deletions(-)
+> > Thanks,
 > > 
-> > diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
-> > index d84ae6b008c1..91f6bd5effe7 100644
-> > --- a/drivers/iio/adc/ti-tsc2046.c
-> > +++ b/drivers/iio/adc/ti-tsc2046.c
-> > @@ -123,14 +123,21 @@ struct tsc2046_adc_ch_cfg {
-> >  	unsigned int oversampling_ratio;
-> >  };
-> >  
-> > +enum tsc2046_state {
-> > +	TSC2046_STATE_STANDBY,
-> > +	TSC2046_STATE_ENABLE_IRQ_POLL,
-> > +	TSC2046_STATE_POLL,
-> > +	TSC2046_STATE_ENABLE_IRQ,
-> > +};
-> > +
-> >  struct tsc2046_adc_priv {
-> >  	struct spi_device *spi;
-> >  	const struct tsc2046_adc_dcfg *dcfg;
-> >  
-> >  	struct iio_trigger *trig;
-> >  	struct hrtimer trig_timer;
-> > -	spinlock_t trig_lock;
-> > -	unsigned int trig_more_count;
-> > +	enum tsc2046_state state;
-> > +	spinlock_t state_lock;
-> >  
-> >  	struct spi_transfer xfer;
-> >  	struct spi_message msg;
-> > @@ -411,21 +418,47 @@ static const struct iio_info tsc2046_adc_info = {
-> >  	.update_scan_mode = tsc2046_adc_update_scan_mode,
-> >  };
-> >  
-> > -static enum hrtimer_restart tsc2046_adc_trig_more(struct hrtimer *hrtimer)
-> > +static enum hrtimer_restart tsc2046_adc_timer(struct hrtimer *hrtimer)
-> >  {
-> >  	struct tsc2046_adc_priv *priv = container_of(hrtimer,
-> >  						     struct tsc2046_adc_priv,
-> >  						     trig_timer);
-> >  	unsigned long flags;
-> >  
-> > -	spin_lock_irqsave(&priv->trig_lock, flags);
-> > -
-> > -	disable_irq_nosync(priv->spi->irq);
-> > -
-> > -	priv->trig_more_count++;
-> > -	iio_trigger_poll(priv->trig);
-> > -
-> > -	spin_unlock_irqrestore(&priv->trig_lock, flags);
-> > +	spin_lock_irqsave(&priv->state_lock, flags);
-> > +	switch (priv->state) {
-> > +	case TSC2046_STATE_ENABLE_IRQ_POLL:
-> > +		/*
-> > +		 * IRQ handler called iio_trigger_poll() to sample ADC.
-> > +		 * Here we
-> > +		 * - re-enable IRQs
-> > +		 * - start hrtimer for timeout if no IRQ will occur
-> > +		 */
-> > +		priv->state = TSC2046_STATE_POLL;
-> > +		enable_irq(priv->spi->irq);
+> > Jonathan
+> >   
+> > >  
+> > > > -----Original Message-----
+> > > > From: Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>
+> > > > Sent: Friday 3 December 2021 9:24 PM
+> > > > To: linux-kernel@vger.kernel.org; jic23@kernel.org; lars@metafoo.de;
+> > > > linux- iio@vger.kernel.org; git <git@xilinx.com>; Michal Simek
+> > > > <michals@xilinx.com>; gregkh@linuxfoundation.org; rafael@kernel.org;
+> > > > linux-acpi@vger.kernel.org; heikki.krogerus@linux.intel.com
+> > > > Cc: Anand Ashok Dumbre <ANANDASH@xilinx.com>
+> > > > Subject: [PATCH v12 0/5] Add Xilinx AMS Driver
+> > > >
+> > > > Add Xilinx AMS driver which is used for Xilinx's ZynqMP AMS controller.
+> > > > This AMS driver is used to report various interface voltages and
+> > > > temperatures across the system.
+> > > > This driver will be used by iio-hwmon to repport voltages and
+> > > > temperatures across the system by using various channel interfaces.
+> > > > This driver handles AMS module including PS-Sysmon & PL-Sysmon. The
+> > > > binding documentation is added for understanding of AMS, PS, PL
+> > > > Sysmon Channels.
+> > > >
+> > > > Changes in v2:
+> > > > 	- Added documentation for sysfs (Patch-2)
+> > > > 	- Addressed code style review comments
+> > > > 	- Patch-2 (Now it is Patch-3)
+> > > > 		- Arranged the includes in alphabetical order
+> > > > 		- Removed the wrapper 'ams_pl_write_reg()' and used writel
+> > > > 		  instead
+> > > > 		- Removed the unnecessary delay of 1ms and used polling of  
+> > EOC  
+> > > > 		  instead
+> > > > 		- Removed spin_lock and used mutex only.
+> > > > 		- Used request_irq() instead of devm_request_irq() and  
+> > handled  
+> > > > 		  respective error conditions
+> > > > 		- Moved contents of xilinx-ams.h to inline with xilinx-ams.c
+> > > > 	- Patch-1
+> > > > 		- Addressed Documentation style comments
+> > > >
+> > > > Changes in v3:
+> > > > 	- Updated bindings document with the suggested modification in v2
+> > > > review
+> > > > 	- Removed documentation for sysfs
+> > > > 	- Removed extended names for channels in the Xilinx AMS driver
+> > > > 	- Modified dts to use ranges for child nodes
+> > > > 	- Reduced address and size cells to 32-bit instead of 64-bit
+> > > >
+> > > > Changes in v4:
+> > > > 	- Updated bindings document with the suggested modification in v3
+> > > > review
+> > > > 	- Changed the Device Tree property 'ranges' for child nodes
+> > > > 	- Used Channel Numbers as 'reg' value in DT to avoid confusion
+> > > > 	- Removed unused NULL arguments as suggested in v3 patch review
+> > > > 	- Addressed comments on Device Tree property naming
+> > > >
+> > > > Changes in v5:
+> > > > 	- Updated bindings document to the YAML format
+> > > > 	- Updated bindings document with the suggested modification in v4
+> > > > review
+> > > > 	- Renamed iio_pl_info struct to iio_ams_info in Xilinx AMS driver
+> > > > 	- Updated the Xilinx AMS driver to not use iio_priv_to_dev function
+> > > > 	- Updated Xilinx AMS node to reflect the changes in bindings
+> > > > document
+> > > > 	- Update MAINTAINERS file
+> > > >
+> > > > Changes in v6:
+> > > > 	- Removed all tabs from bindings document.
+> > > > 	- Removed the xlnx,ext-channels node from the device tree since
+> > > > 	  it is not neeeded.
+> > > > 	- Fixed unit addresses for ps-ams and pl-ams.
+> > > > 	- Removed the names property from bindings.
+> > > > 	- Fixed warnings from checkpatch.pl in the driver.
+> > > > 	- devm_add_action_or_reset() used for exit/error path.
+> > > > 	- devm_request_irq() for managed irq request instead of
+> > > > 	  request_irq()
+> > > >
+> > > > Changes in v7:
+> > > > 	- Added use of FIELD_PREP and FIELD_GET.
+> > > > 	- Added the spinlocks back the v1 which were removed in v2 for
+> > > > 	  no justifiable reason and replaced with the same mutex. This
+> > > > 	  caused deadlocks.
+> > > > 	- Removed the buffered mode information from channel config.
+> > > > 	- Usage of wrapper functions for devm_add_action_or_reset
+> > > > 	  callbacks to avoid typecasting functions.
+> > > > 	- Usage of devm_platform_iremap_resource().
+> > > > 	- Handled platform_get_irq() return values.
+> > > > 	- Removed the remove() callback.
+> > > > 	- Fixed the dt-bindings.
+> > > >
+> > > > Changes in v8:
+> > > > 	- Replaced *_of_() APIs with fwnode.
+> > > > 	- Added missing headers.
+> > > > 	- Fixed documentation.
+> > > > 	- Added devm_add_action_or_reset() for iounmap.
+> > > > 	- Restructured read_raw function.
+> > > > 	- Added helper functions.
+> > > > 	- Usage of GENMASK for all masks.
+> > > > 	- Added defaults for most switch cases. Some can't be added
+> > > > 	  since the default will never occur.
+> > > >
+> > > > Changes in v9:
+> > > > 	- Added a fwnode_iomap().
+> > > > 	- Fixed Kconfig indentation.
+> > > > 	- Added the overflow checks before memory allocation.
+> > > > 	- Usage of fwnode_iomap() instead of iomap().
+> > > > 	- Rename ams_parse_dt() to ams_parse_firmware().
+> > > >
+> > > > Changes in v10:
+> > > > 	- Fixed licence in zynqmp.dtsi.
+> > > > 	- Changed the macros to use BIT().
+> > > > 	- Realign some code to fit within 100 chars.
+> > > > 	- Modified readl_poll_timeout usage.
+> > > > 	- Usage of array_size() instead of check_mul_overflow().
+> > > > 	- Usage of dev_err_probe() instead of dev_err().
+> > > > 	- Usage of kcalloc instead of kzalloc()
+> > > >
+> > > > Changes in v11:
+> > > > 	- Added missing bitfield.h.
+> > > > 	- Fixed AMS_ALARM_THR_MIN macro.
+> > > > 	- Added terminators to enums where necessary.
+> > > > 	- Added explicit values as suggested to enums.
+> > > > 	- Removed redundant macros.
+> > > > 	- Added delay value for readl_poll_timeout.
+> > > > 	- Corrected shadowed error return.
+> > > > 	- Corrected formatting errors.
+> > > > 	- Added default cases where missing.
+> > > > 	- Made ams_parse_firmware() a single parameter functions.
+> > > > 	- Usage of devm_kcalloc() and devm_krealloc().
+> > > > 	- Directly returning from dev_err_probe().
+> > > > 	- Renamed masked_alarm to current_masked_alarm.
+> > > >
+> > > > Changes in v12:
+> > > > 	- GENMASK_ULL usage for 64bit values.
+> > > > 	- Added ams_iounmap_ps and amsiomap_pl instead of generic
+> > > > 	  function.
+> > > > 	- Hex values to use all capital letters.
+> > > > 	- Fixed a case of wrong kernel doc.
+> > > > 	- Modified macro voltage names to reflect the scale.
+> > > > 	- Maximize single line usage wherever possible.
+> > > > 	- Handling of fwnode_iomap when CONFIG_OF_ADDRESS is not
+> > > > 	  enabled.
+> > > > 	- ams_read_raw() - Reduce the size of switch statements by
+> > > > 	  using helper functions for IIO_CHAN_INFO_SCALE.
+> > > > 	- ams_read_raw() - Mutex unlocking in a single place using goto.
+> > > >
+> > > > Anand Ashok Dumbre (5):
+> > > >   device property: Add fwnode_iomap()
+> > > >   arm64: zynqmp: DT: Add Xilinx AMS node
+> > > >   iio: adc: Add Xilinx AMS driver
+> > > >   dt-bindings: iio: adc: Add Xilinx AMS binding documentation
+> > > >   MAINTAINERS: Add maintainer for xilinx-ams
+> > > >
+> > > >  .../bindings/iio/adc/xlnx,zynqmp-ams.yaml     |  227 +++
+> > > >  MAINTAINERS                                   |    7 +
+> > > >  arch/arm64/boot/dts/xilinx/zynqmp.dtsi        |   24 +
+> > > >  drivers/base/property.c                       |   16 +
+> > > >  drivers/iio/adc/Kconfig                       |   15 +
+> > > >  drivers/iio/adc/Makefile                      |    1 +
+> > > >  drivers/iio/adc/xilinx-ams.c                  | 1450 +++++++++++++++++
+> > > >  include/linux/property.h                      |    2 +
+> > > >  8 files changed, 1742 insertions(+)  create mode 100644
+> > > > Documentation/devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml
+> > > >  create mode 100644 drivers/iio/adc/xilinx-ams.c
+> > > >
+> > > > --
+> > > > 2.17.1  
+> > >  
 > 
-> I comment on this below, but I'm not sure why you don't move the enable_irq()
-> here out of this timer function and then have the first entry of the timer
-> go directly to TSC2046_STATE_POLL after a longer initial wait.
 
-Hm... yes. You are right.
-
-> It's been a long time since I looked at this, so perhaps I'm missing the
-> point.  What you have here works as far as I can see, it just seems to push
-> more than necessary into the state machine.
-
-The IRQ line is a level shifter connected to one of channels muxed to the core
-ADC. If we switch internal muxer to different channel, the IRQ line will
-change the state.
-
-So, we need a trigger which:
-- do not triggers if we do ADC readings.
-- keeps triggering as long as we have some state changes on the IRQ line
-- trigger only with specific rate
-- still triggers for some amount of time after last interrupt event was
-  detected. Current implementation is doing only one extra read.
-
-I reworked it a bit, will send new patch soon.
-
-> > +		hrtimer_start(&priv->trig_timer,
-> > +			      ns_to_ktime(priv->scan_interval_us *
-> > +					  NSEC_PER_USEC),
-> > +			      HRTIMER_MODE_REL_SOFT);
-> > +		break;
-
-
-> > -
-> > -	spin_unlock_irqrestore(&priv->trig_lock, flags);
-> > +	tim = ns_to_ktime((priv->scan_interval_us - priv->time_per_scan_us) *
-> > +			  NSEC_PER_USEC);
-> > +	hrtimer_start(&priv->trig_timer, tim, HRTIMER_MODE_REL_SOFT);
-> 
-> This moves enabling the irq to the first instance of the timer - is that ever too late?
-
-no, we should disable IRQ if we do readings anyway.
-
-> >  }
-> >  
-> >  static int tsc2046_adc_set_trigger_state(struct iio_trigger *trig, bool enable)
-> > @@ -493,8 +506,8 @@ static int tsc2046_adc_set_trigger_state(struct iio_trigger *trig, bool enable)
-> >  	if (enable) {
-> >  		enable_irq(priv->spi->irq);
-> >  	} else {
-> > +		hrtimer_cancel(&priv->trig_timer);
-> 
-> So this will wait for the callback to finish.  However, is there a chance
-> of an interrupt just after this but before disable_irq that ends up
-> starting the timer again?
-
-Yes, you are right. I'll rework it.
-
-Regards,
-Oleksij
--- 
-Pengutronix e.K.                           |                             |
-Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
-31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
-Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
