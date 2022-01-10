@@ -2,40 +2,40 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F80C433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Jan 2022 19:31:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0265C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Jan 2022 19:31:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243499AbiAJTbB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Jan 2022 14:31:01 -0500
-Received: from mga17.intel.com ([192.55.52.151]:48345 "EHLO mga17.intel.com"
+        id S243542AbiAJTbD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Jan 2022 14:31:03 -0500
+Received: from mga04.intel.com ([192.55.52.120]:21940 "EHLO mga04.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S243488AbiAJTbB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S243510AbiAJTbB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Mon, 10 Jan 2022 14:31:01 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1641843061; x=1673379061;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=FVsXAu/V6GXY3m9grnOAWS9q+Cf5i6O+WwUAv3by8tE=;
-  b=N3ItHtKpAB2UgZKhMDL0kJh+PtrUcgpGFjjCdsGMKjEFBfWCRx1pRwop
-   ksILhtOXHYMy/P+i54TM4fBG1XHbrb+kLm3niarPZAPfnV9HNJuz2mvOR
-   rQB6obvBCTcoMqWSgijyots+OUnNuCGR+msylDs/Z034MJ+4CEMqiISgu
-   Lp0SHu0SfbFJ4JgrI/wvYnBrXc5pjXmHZatMKngW4etKSbv/Ssf/XhyJ3
-   5sOF4kOIA/ECciNz5jD/CXmNXpbMAITeNmrOPxOFFU3NfX7WNdO0JO12E
-   iVeJ3F2dpNhHIU5eFHTHOIPTh4cH690Jrt/3CcaBjduBNsZxKhp1MXKj8
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="224000751"
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=RxYOq7hNnHUydTJret/bzJJ7FKiRggRskn0+xuXTnOE=;
+  b=TBkZKP2xzBxML5bc5guYljwagQXDdA7nsuC0W5R6gLcD/huvw7gKE1KE
+   rcwyBR35zogUF+PUnbAJwmkiDtLF0uA6sRLNqN8PI63UNYVY1i79HTtJC
+   mP0ZzEABNqOBqheu5n2Q2bw+X+m1b11esr0OhpDT0/NAidt3MA0DgkZfB
+   rqXU57TLJQpdPSFpcjZEcDx5pvDWWJpzt4wsGZz+Hef5Ez9uuj36oCO1v
+   J34uu+PJAz71O0JdWdLWUQI6vJOUCthqqcptcBSu2Xaxh6cRk+2IIFT4z
+   7oTfxexsHOdZJY7wsNbvlChMnTxre2xR9yDewOrwvdSHbXEkzWkYRIOrA
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="242118803"
 X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="224000751"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 11:31:01 -0800
+   d="scan'208";a="242118803"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 11:31:01 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="762259260"
+   d="scan'208";a="592450674"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 10 Jan 2022 11:30:58 -0800
+  by fmsmga004.fm.intel.com with ESMTP; 10 Jan 2022 11:30:57 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 3690316B; Mon, 10 Jan 2022 21:31:09 +0200 (EET)
+        id 17955120; Mon, 10 Jan 2022 21:31:08 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
@@ -48,56 +48,67 @@ Cc:     Andy Gross <agross@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Rosin <peda@axentia.se>
-Subject: [PATCH v2 3/5] iio: adc: twl4030-madc: Re-use generic struct s16_fract
-Date:   Mon, 10 Jan 2022 21:31:02 +0200
-Message-Id: <20220110193104.75225-3-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 1/5] math.h: Introduce data types for fractional numbers
+Date:   Mon, 10 Jan 2022 21:31:00 +0200
+Message-Id: <20220110193104.75225-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220110193104.75225-1-andriy.shevchenko@linux.intel.com>
-References: <20220110193104.75225-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Instead of custom data type re-use generic struct s16_fract.
-No changes intended.
+Introduce a macro to produce data types like
+
+	struct TYPE_fract {
+		__TYPE numerator;
+		__TYPE denominator;
+	};
+
+to be used in the code wherever it's needed.
+
+In the following changes convert some users to it.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
 
+May be pulled via IIO tree.
+
 v2: no changes
 
- drivers/iio/adc/twl4030-madc.c | 9 +--------
- 1 file changed, 1 insertion(+), 8 deletions(-)
+ include/linux/math.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
 
-diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
-index 6ce40cc4568a..f8f8aea15612 100644
---- a/drivers/iio/adc/twl4030-madc.c
-+++ b/drivers/iio/adc/twl4030-madc.c
-@@ -231,13 +231,7 @@ static const struct iio_chan_spec twl4030_madc_iio_channels[] = {
+diff --git a/include/linux/math.h b/include/linux/math.h
+index 53674a327e39..439b8f0b9ebd 100644
+--- a/include/linux/math.h
++++ b/include/linux/math.h
+@@ -2,6 +2,7 @@
+ #ifndef _LINUX_MATH_H
+ #define _LINUX_MATH_H
  
- static struct twl4030_madc_data *twl4030_madc;
++#include <linux/types.h>
+ #include <asm/div64.h>
+ #include <uapi/linux/kernel.h>
  
--struct twl4030_prescale_divider_ratios {
--	s16 numerator;
--	s16 denominator;
--};
--
--static const struct twl4030_prescale_divider_ratios
--twl4030_divider_ratios[16] = {
-+static const struct s16_fract twl4030_divider_ratios[16] = {
- 	{1, 1},		/* CHANNEL 0 No Prescaler */
- 	{1, 1},		/* CHANNEL 1 No Prescaler */
- 	{6, 10},	/* CHANNEL 2 */
-@@ -256,7 +250,6 @@ twl4030_divider_ratios[16] = {
- 	{5, 11},	/* CHANNEL 15 */
- };
+@@ -106,6 +107,17 @@
+ }							\
+ )
  
--
- /* Conversion table from -3 to 55 degrees Celcius */
- static int twl4030_therm_tbl[] = {
- 	30800,	29500,	28300,	27100,
++#define __STRUCT_FRACT(type)				\
++struct type##_fract {					\
++	__##type numerator;				\
++	__##type denominator;				\
++};
++__STRUCT_FRACT(s16)
++__STRUCT_FRACT(u16)
++__STRUCT_FRACT(s32)
++__STRUCT_FRACT(u32)
++#undef __STRUCT_FRACT
++
+ /*
+  * Multiplies an integer by a fraction, while avoiding unnecessary
+  * overflow or loss of precision.
 -- 
 2.34.1
 
