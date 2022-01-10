@@ -2,72 +2,78 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86067C433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Jan 2022 08:50:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E976DC433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Jan 2022 10:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240876AbiAJIug (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Jan 2022 03:50:36 -0500
-Received: from mailgw02.mediatek.com ([210.61.82.184]:46506 "EHLO
-        mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
-        with ESMTP id S241539AbiAJIsz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Jan 2022 03:48:55 -0500
-X-UUID: 80c9cf384c1745c9bed726b7e2eda8c3-20220110
-X-UUID: 80c9cf384c1745c9bed726b7e2eda8c3-20220110
-Received: from mtkcas11.mediatek.inc [(172.21.101.40)] by mailgw02.mediatek.com
-        (envelope-from <guodong.liu@mediatek.com>)
-        (Generic MTA with TLSv1.2 ECDHE-RSA-AES256-SHA384 256/256)
-        with ESMTP id 1112372910; Mon, 10 Jan 2022 16:48:45 +0800
-Received: from mtkcas10.mediatek.inc (172.21.101.39) by
- mtkmbs10n1.mediatek.inc (172.21.101.34) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA384) id
- 15.2.792.15; Mon, 10 Jan 2022 16:48:44 +0800
-Received: from localhost.localdomain (10.17.3.154) by mtkcas10.mediatek.inc
- (172.21.101.73) with Microsoft SMTP Server id 15.0.1497.2 via Frontend
- Transport; Mon, 10 Jan 2022 16:48:43 +0800
-From:   Guodong Liu <guodong.liu@mediatek.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        id S243543AbiAJKBV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Jan 2022 05:01:21 -0500
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:34640 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S243533AbiAJKBT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Jan 2022 05:01:19 -0500
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: kholk11)
+        with ESMTPSA id 457071F43727
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1641808876;
+        bh=sCbXhyaML9yHLR6eOlxKHATu7/M/ieT6rftGRXxPcvs=;
+        h=Subject:To:Cc:References:From:Date:In-Reply-To:From;
+        b=VcTCvAr6h2ngNSpA4KSiENz4jlKUdD8W5M6Da9YQ0wZTS9frVuM8S9mn9ua6wyzf4
+         L6AQnSXUTcHCeRE1vbBTL9STlrdHgtRbf5ZlH5h+BaXhsH1Kie4VabwWx10fDANhJ+
+         Ohe9z5OdAvg0MC21100rjvRlm/fhYJXCdBMp8+Tzj+Phs5nRYcqfVHrYI5bqTrtCpP
+         tTxLswO3cmMXMY1APQXv6L04iEj0iNuGCBo/TlyoxITGbH9YVrPq1Js3LIvty9Omjd
+         1NNmiqNwE6+sxccRP7A+8qJmb4QKnZ8bUsvNJ102y+VK1uX27d7ZIEA+J9NlXfK3Sw
+         Qfk3MJsYFpEcg==
+Subject: Re: [PATCH v1 1/2] dt-bindings: iio: adc: Add compatible for Mediatek
+ MT8186
+To:     Guodong Liu <guodong.liu@mediatek.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Matthias Brugger <matthias.bgg@gmail.com>,
         Zhiyong Tao <zhiyong.tao@mediatek.com>
-CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <Project_Global_Chrome_Upstream_Group@mediatek.com>,
-        Guodong Liu <guodong.liu@mediatek.com>
-Subject: [PATCH v1 1/2] dt-bindings: iio: adc: Add compatible for Mediatek MT8186
-Date:   Mon, 10 Jan 2022 16:48:40 +0800
-Message-ID: <20220110084841.575-1-guodong.liu@mediatek.com>
-X-Mailer: git-send-email 2.25.1
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org,
+        Project_Global_Chrome_Upstream_Group@mediatek.com
+References: <20220110084841.575-1-guodong.liu@mediatek.com>
+From:   AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@collabora.com>
+Message-ID: <02a18741-2015-73d2-9a5c-a28c1b15894f@collabora.com>
+Date:   Mon, 10 Jan 2022 11:01:13 +0100
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
+ Thunderbird/78.13.0
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-MTK:  N
+In-Reply-To: <20220110084841.575-1-guodong.liu@mediatek.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Language: en-US
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This commit adds dt-binding documentation of auxadc for Mediatek MT8186 SoC
-Platform.
+Il 10/01/22 09:48, Guodong Liu ha scritto:
+> This commit adds dt-binding documentation of auxadc for Mediatek MT8186 SoC
+> Platform.
+> 
+> Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
 
-Signed-off-by: Guodong Liu <guodong.liu@mediatek.com>
----
- .../devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml      | 1 +
- 1 file changed, 1 insertion(+)
+Acked-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-index b939f9652e3a..65581ad4b816 100644
---- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
-@@ -34,6 +34,7 @@ properties:
-       - items:
-           - enum:
-               - mediatek,mt8183-auxadc
-+              - mediatek,mt8186-auxadc
-               - mediatek,mt8195-auxadc
-               - mediatek,mt8516-auxadc
-           - const: mediatek,mt8173-auxadc
--- 
-2.25.1
-
+> ---
+>   .../devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml      | 1 +
+>   1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+> index b939f9652e3a..65581ad4b816 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+> +++ b/Documentation/devicetree/bindings/iio/adc/mediatek,mt2701-auxadc.yaml
+> @@ -34,6 +34,7 @@ properties:
+>         - items:
+>             - enum:
+>                 - mediatek,mt8183-auxadc
+> +              - mediatek,mt8186-auxadc
+>                 - mediatek,mt8195-auxadc
+>                 - mediatek,mt8516-auxadc
+>             - const: mediatek,mt8173-auxadc
+> 
