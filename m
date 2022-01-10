@@ -2,44 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BFF2C433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 10 Jan 2022 18:51:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 88F80C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 10 Jan 2022 19:31:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242047AbiAJSvo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 10 Jan 2022 13:51:44 -0500
-Received: from mga04.intel.com ([192.55.52.120]:18507 "EHLO mga04.intel.com"
+        id S243499AbiAJTbB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 10 Jan 2022 14:31:01 -0500
+Received: from mga17.intel.com ([192.55.52.151]:48345 "EHLO mga17.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S241986AbiAJSvo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 10 Jan 2022 13:51:44 -0500
+        id S243488AbiAJTbB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 10 Jan 2022 14:31:01 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1641840704; x=1673376704;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=fWcyZfu0zV/E0m/O9x2TQoChBExtoI+yu9H4BVJDPSs=;
-  b=N1AG7oW/fb1f6NZnvghhQDx0aGJw8Xc3nP7nyKsLMYywYrjQsk/zzFop
-   t7hkN1KvLgnfmeFmFKL+fBbe3Y/wIHDNG2ByZb2ZhH+ILgyjc6Cddy6mx
-   Br5ukJL5UUBw6tb+NiGE2wjn0VKxw5TbJcm6D2YUirRpOxXLn+bQ4rTjQ
-   rPNob3LAVlqLE4867mc/RsL1y3zhmIPYf+sX0xezg/c4HDt33qKZ96a5U
-   R0JpiTyq3NnWmR7Mhz+oPqTRHUzG+mOVVUKRVhrUkNsfOsGWWw+6JUZ2V
-   IP13MMHYCXMQCjwjmftEoe8FMyOvAnat3vLssLs8NQuhRqa+RP7mdYGgj
+  t=1641843061; x=1673379061;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=FVsXAu/V6GXY3m9grnOAWS9q+Cf5i6O+WwUAv3by8tE=;
+  b=N3ItHtKpAB2UgZKhMDL0kJh+PtrUcgpGFjjCdsGMKjEFBfWCRx1pRwop
+   ksILhtOXHYMy/P+i54TM4fBG1XHbrb+kLm3niarPZAPfnV9HNJuz2mvOR
+   rQB6obvBCTcoMqWSgijyots+OUnNuCGR+msylDs/Z034MJ+4CEMqiISgu
+   Lp0SHu0SfbFJ4JgrI/wvYnBrXc5pjXmHZatMKngW4etKSbv/Ssf/XhyJ3
+   5sOF4kOIA/ECciNz5jD/CXmNXpbMAITeNmrOPxOFFU3NfX7WNdO0JO12E
+   iVeJ3F2dpNhHIU5eFHTHOIPTh4cH690Jrt/3CcaBjduBNsZxKhp1MXKj8
    Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="242111264"
+X-IronPort-AV: E=McAfee;i="6200,9189,10223"; a="224000751"
 X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="242111264"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 10:51:44 -0800
+   d="scan'208";a="224000751"
+Received: from fmsmga006.fm.intel.com ([10.253.24.20])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 11:31:01 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,277,1635231600"; 
-   d="scan'208";a="575917216"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Jan 2022 10:51:41 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1n6zkQ-008z5l-SX;
-        Mon, 10 Jan 2022 20:50:26 +0200
-Date:   Mon, 10 Jan 2022 20:50:26 +0200
+   d="scan'208";a="762259260"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga006.fm.intel.com with ESMTP; 10 Jan 2022 11:30:58 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 3690316B; Mon, 10 Jan 2022 21:31:09 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Andreas Kemnade <andreas@kemnade.info>,
         linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
@@ -49,40 +48,56 @@ Cc:     Andy Gross <agross@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Rosin <peda@axentia.se>
-Subject: Re: [PATCH v1 4/5] iio: adc: qcom-vadc-common: Re-use generic struct
- u32_fract
-Message-ID: <Ydx/8vZj1jvkkkm0@smile.fi.intel.com>
-References: <20220110181711.65054-1-andriy.shevchenko@linux.intel.com>
- <20220110181711.65054-4-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 3/5] iio: adc: twl4030-madc: Re-use generic struct s16_fract
+Date:   Mon, 10 Jan 2022 21:31:02 +0200
+Message-Id: <20220110193104.75225-3-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220110193104.75225-1-andriy.shevchenko@linux.intel.com>
+References: <20220110193104.75225-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220110181711.65054-4-andriy.shevchenko@linux.intel.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jan 10, 2022 at 08:17:10PM +0200, Andy Shevchenko wrote:
-> Instead of custom data type re-use generic struct u32_fract.
-> No changes intended.
+Instead of custom data type re-use generic struct s16_fract.
+No changes intended.
 
-...
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
 
-> -/**
-> - * struct vadc_prescale_ratio - Represent scaling ratio for ADC input.
-> - * @num: the inverse numerator of the gain applied to the input channel.
-> - * @den: the inverse denominator of the gain applied to the input channel.
-> - */
-> -struct vadc_prescale_ratio {
-> -	u32 num;
-> -	u32 den;
-> -};
+v2: no changes
 
-Definitely forgot to compile this one.
+ drivers/iio/adc/twl4030-madc.c | 9 +--------
+ 1 file changed, 1 insertion(+), 8 deletions(-)
 
+diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+index 6ce40cc4568a..f8f8aea15612 100644
+--- a/drivers/iio/adc/twl4030-madc.c
++++ b/drivers/iio/adc/twl4030-madc.c
+@@ -231,13 +231,7 @@ static const struct iio_chan_spec twl4030_madc_iio_channels[] = {
+ 
+ static struct twl4030_madc_data *twl4030_madc;
+ 
+-struct twl4030_prescale_divider_ratios {
+-	s16 numerator;
+-	s16 denominator;
+-};
+-
+-static const struct twl4030_prescale_divider_ratios
+-twl4030_divider_ratios[16] = {
++static const struct s16_fract twl4030_divider_ratios[16] = {
+ 	{1, 1},		/* CHANNEL 0 No Prescaler */
+ 	{1, 1},		/* CHANNEL 1 No Prescaler */
+ 	{6, 10},	/* CHANNEL 2 */
+@@ -256,7 +250,6 @@ twl4030_divider_ratios[16] = {
+ 	{5, 11},	/* CHANNEL 15 */
+ };
+ 
+-
+ /* Conversion table from -3 to 55 degrees Celcius */
+ static int twl4030_therm_tbl[] = {
+ 	30800,	29500,	28300,	27100,
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
