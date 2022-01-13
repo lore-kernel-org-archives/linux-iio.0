@@ -2,183 +2,347 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5AE93C433F5
-	for <linux-iio@archiver.kernel.org>; Wed, 12 Jan 2022 21:45:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15B55C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 13 Jan 2022 01:54:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231807AbiALVpr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 12 Jan 2022 16:45:47 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36070 "EHLO
+        id S231472AbiAMByZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 12 Jan 2022 20:54:25 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230245AbiALVpq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jan 2022 16:45:46 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2A93C06173F;
-        Wed, 12 Jan 2022 13:45:45 -0800 (PST)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id AA6BCB8211C;
-        Wed, 12 Jan 2022 21:45:44 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C6540C36AE5;
-        Wed, 12 Jan 2022 21:45:28 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1642023943;
-        bh=Rl4cYWMV8h1J8XxpmCmzqZfaoBMwLhpNARBfd20DoT4=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=Khszb13U1jmu+m7bsIzdnnnT1iCYGXg5GGE42/oJuMQsK9Yn6UuauPQmmihxCed8g
-         I1F6FNxWdahiv8HObXLZ1MgG9aNbNh1vuWd5lPBPEE8jOf+os+a0Eg3ZNc61OeDpAd
-         oG1pZPxuhBAj0VIDmNNIk5GiF3ZYFM98qq+jWT/t93oYg9ih3f230JowrUn42Y60WL
-         bkt6CNPh+5WsNOS7M+9MpTJWTFF/zRWDIyY+MuNMqob1T2eWMhLpwtYRPlw8g7cffu
-         gO+N6rZqa7cTguyMABuPC7x4dDwKst9lAVidnA7ik+1nWq+j4fbnhftwUHOLMDmzq6
-         MQ+g/36gi+i7A==
-Date:   Wed, 12 Jan 2022 21:45:25 +0000
-From:   Mark Brown <broonie@kernel.org>
-To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?iso-8859-1?Q?S=F6derlund?= 
-        <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-Message-ID: <Yd9L9SZ+g13iyKab@sirena.org.uk>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
- <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
+        with ESMTP id S231445AbiAMByY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Jan 2022 20:54:24 -0500
+Received: from mail-wm1-x32b.google.com (mail-wm1-x32b.google.com [IPv6:2a00:1450:4864:20::32b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F676C06173F;
+        Wed, 12 Jan 2022 17:54:24 -0800 (PST)
+Received: by mail-wm1-x32b.google.com with SMTP id ay4-20020a05600c1e0400b0034a81a94607so1802712wmb.1;
+        Wed, 12 Jan 2022 17:54:24 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=nk7OH+nOiRxeK+/bJunmQEJyfwz+0sa8qIG16MO4xZ8=;
+        b=QMwC23ZSc0Xwq9R4i37vWfNRm4kkKetWYWqAdriZlNa9SKArjmXeyoFnzToU7pfSg+
+         d5g4Z7l7ajuA9Lbck2zE1Ll9kncGhhaQrorYK5Q3qACK2d2jtJpfbTaWGoDuQQ4qhnSg
+         PPLch2b96md9ToEDfwXpM11Sk6K1MS15825lgmu52hT2Ivr70TQ+k1ChXpTcTezslypx
+         5MfMe+hzowz3/EgsbvV2ZM5MClOztfKjw1D7D2wouW8i6XWQieQUnd4xF+2pwxL0sIWL
+         OzFVh7OYWkk8TIHg3aFDjqw4Kwdjmfu8jyaPY81ROCmx5sqx1IMugwirwax2DQmr+loh
+         Ybvw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=nk7OH+nOiRxeK+/bJunmQEJyfwz+0sa8qIG16MO4xZ8=;
+        b=5zdXTSt0wHBW8m9WSXa+JCyJT/TyytKbuL5QoajHd7+PfPb0FIMzAbI67VS7MvSpuK
+         s0SrQF5TsOorB5tSh6Mu23iUL1YFF6oOifEf8WiTHdgwBHCCr2JHjyLN3c0rM+rL6Qmw
+         xyPhPNpA3SDjtiPVauBO0t6zS90ciWKvKT3MBt7Lyq9TP+aAafQq32psTUt6kc5+mIYo
+         W/sZVwDuW5E2F7fsOfHuLj3Zwmu9htJLRsdfQm8J3VUH0pc9P24savBaZhe6LyS2M2yN
+         8QSNtid207Z7VMstZhHECuOJvDXwfFfg9c6qKLOyzIquJl+VGbV9NOlvlb9B01y4l4dW
+         Sygg==
+X-Gm-Message-State: AOAM533SLXbhLRmpAJBwE6SFwaAvJ6hXz0ce75OzAanSKfDAbGsexwYL
+        1/2e6BXsuwfdMzEej5pbZxpqKBlJ3DDpgw60W3Q=
+X-Google-Smtp-Source: ABdhPJz0wYdsqmkdfAue8Q70i6h82CifssqNeOwi2IqNDIICb7OzR9D32moJHfqvOUaVA8tPtXz4ljQZlqD0pO3XxAs=
+X-Received: by 2002:a1c:770b:: with SMTP id t11mr1776414wmi.61.1642038862648;
+ Wed, 12 Jan 2022 17:54:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="bKSGz4pQDpFpvPus"
-Content-Disposition: inline
-In-Reply-To: <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
-X-Cookie: Bridge ahead.  Pay troll.
+References: <20220106125947.139523-1-gengcixi@gmail.com> <20220106125947.139523-4-gengcixi@gmail.com>
+ <CADBw62pBCdrbRspTV9Yck4DP8DE=ECGmEtD74NOtm1YRT3DM8w@mail.gmail.com>
+In-Reply-To: <CADBw62pBCdrbRspTV9Yck4DP8DE=ECGmEtD74NOtm1YRT3DM8w@mail.gmail.com>
+From:   Cixi Geng <gengcixi@gmail.com>
+Date:   Thu, 13 Jan 2022 09:53:25 +0800
+Message-ID: <CAF12kFu6O-gfiqp4j24zxC_GqCwJ2Q5KGYYaCtnagmUFB_bsVg@mail.gmail.com>
+Subject: Re: [PATCH 3/7] iio: adc: sc27xx: structure adjuststment and optimization
+To:     Baolin Wang <baolin.wang7@gmail.com>
+Cc:     Orson Zhai <orsonzhai@gmail.com>,
+        Chunyan Zhang <zhang.lyra@gmail.com>, jic23@kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>, lgirdwood@gmail.com,
+        Mark Brown <broonie@kernel.org>,
+        =?UTF-8?B?5pyx546J5piOIChZdW1pbmcgWmh1LzExNDU3KQ==?= 
+        <yuming.zhu1@unisoc.com>, linux-iio@vger.kernel.org,
+        Devicetree List <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-
---bKSGz4pQDpFpvPus
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Wed, Jan 12, 2022 at 10:31:21PM +0100, Uwe Kleine-K=F6nig wrote:
-> On Wed, Jan 12, 2022 at 11:27:02AM +0100, Geert Uytterhoeven wrote:
-
-(Do we really need *all* the CCs here?)
-
-> That convinces me, that platform_get_irq_optional() is a bad name. The
-> only difference to platform_get_irq is that it's silent. And returning
-> a dummy irq value (which would make it aligned with the other _optional
-> functions) isn't possible.
-
-There is regulator_get_optional() which is I believe the earliest of
-these APIs, it doesn't return a dummy either (and is silent too) - this
-is because regulator_get() does return a dummy since it's the vastly
-common case that regulators must be physically present and them not
-being found is due to there being an error in the system description.
-It's unfortunate that we've ended up with these two different senses for
-_optional(), people frequently get tripped up by it.
-
-> > To me it sounds much more logical for the driver to check if an
-> > optional irq is non-zero (available) or zero (not available), than to
-> > sprinkle around checks for -ENXIO. In addition, you have to remember
-> > that this one returns -ENXIO, while other APIs use -ENOENT or -ENOSYS
-> > (or some other error code) to indicate absence. I thought not having
-> > to care about the actual error code was the main reason behind the
-> > introduction of the *_optional() APIs.
-
-> No, the main benefit of gpiod_get_optional() (and clk_get_optional()) is
-> that you can handle an absent GPIO (or clk) as if it were available.
-
-Similarly for the regulator API, kind of.
-
---bKSGz4pQDpFpvPus
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmHfS/QACgkQJNaLcl1U
-h9BO/wf/X52fQIYQFCYJDsHS4pHQDXMDv8aCyyoEen4dO7d7t6fuflAYrOGj/MXP
-UkHWhHmjH5EJrD5XQQmsOLQV5qXKD/mmvAuXQzNA/aUITdBah/r9xt3Y2nYb4+zR
-Nm3ZzFmvTZVLATEdRt39LZxBwD/gCkwQpEd1tSBKsiNsq2k9eyGs6zff3Aj5xUzC
-+9zfg/GCQOESdU+jRATqvdl69QGdA5N6dPgzgIQEtecGNmx02jn8bEqmaN0SX1NZ
-zQXn1ChOAI4lWDhW4uAEnD4aF8hUN//xR2DiHIjNuGFgb7vTKdJgbI0iG2iH30Nm
-zgsgo5YMgTHurpX6yL8pMaJC54r/Pg==
-=MHmO
------END PGP SIGNATURE-----
-
---bKSGz4pQDpFpvPus--
+Baolin Wang <baolin.wang7@gmail.com> =E4=BA=8E2022=E5=B9=B41=E6=9C=887=E6=
+=97=A5=E5=91=A8=E4=BA=94 15:03=E5=86=99=E9=81=93=EF=BC=9A
+>
+> On Thu, Jan 6, 2022 at 9:00 PM Cixi Geng <gengcixi@gmail.com> wrote:
+> >
+> > From: Cixi Geng <cixi.geng1@unisoc.com>
+> >
+> > Introduce one variant device data structure to be compatible
+> > with SC2731 PMIC since it has different scale and ratio calculation
+> > and so on.
+> >
+> > Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
+> > Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
+> > ---
+> >  drivers/iio/adc/sc27xx_adc.c | 94 ++++++++++++++++++++++++++++++------
+> >  1 file changed, 79 insertions(+), 15 deletions(-)
+> >
+> > diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.=
+c
+> > index aee076c8e2b1..d2712e54ee79 100644
+> > --- a/drivers/iio/adc/sc27xx_adc.c
+> > +++ b/drivers/iio/adc/sc27xx_adc.c
+> > @@ -12,9 +12,9 @@
+> >  #include <linux/slab.h>
+> >
+> >  /* PMIC global registers definition */
+> > -#define SC27XX_MODULE_EN               0xc08
+> > +#define SC2731_MODULE_EN               0xc08
+> >  #define SC27XX_MODULE_ADC_EN           BIT(5)
+> > -#define SC27XX_ARM_CLK_EN              0xc10
+> > +#define SC2731_ARM_CLK_EN              0xc10
+> >  #define SC27XX_CLK_ADC_EN              BIT(5)
+> >  #define SC27XX_CLK_ADC_CLK_EN          BIT(6)
+> >
+> > @@ -78,6 +78,23 @@ struct sc27xx_adc_data {
+> >         int channel_scale[SC27XX_ADC_CHANNEL_MAX];
+> >         u32 base;
+> >         int irq;
+> > +       const struct sc27xx_adc_variant_data *var_data;
+> > +};
+> > +
+> > +/*
+> > + * Since different PMICs of SC27xx series can have different
+> > + * address and ratio, we should save ratio config and base
+> > + * in the device data structure.
+> > + */
+> > +struct sc27xx_adc_variant_data {
+> > +       u32 module_en;
+> > +       u32 clk_en;
+> > +       u32 scale_shift;
+> > +       u32 scale_mask;
+> > +       const struct sc27xx_adc_linear_graph *bscale_cal;
+> > +       const struct sc27xx_adc_linear_graph *sscale_cal;
+> > +       void (*init_scale)(struct sc27xx_adc_data *data);
+> > +       int (*get_ratio)(int channel, int scale);
+> >  };
+> >
+> >  struct sc27xx_adc_linear_graph {
+> > @@ -103,6 +120,16 @@ static struct sc27xx_adc_linear_graph small_scale_=
+graph =3D {
+> >         100, 341,
+> >  };
+> >
+> > +static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_cal=
+ib =3D {
+> > +       4200, 850,
+> > +       3600, 728,
+> > +};
+> > +
+> > +static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_c=
+alib =3D {
+> > +       1000, 838,
+> > +       100, 84,
+> > +};
+>
+> The original big_scale_graph_calib and small_scale_graph_calib are for
+> SC2731 PMIC, why add new structure definition for SC2731?
+>
+> > +
+> >  static const struct sc27xx_adc_linear_graph big_scale_graph_calib =3D =
+{
+> >         4200, 856,
+> >         3600, 733,
+> > @@ -130,11 +157,11 @@ static int sc27xx_adc_scale_calibration(struct sc=
+27xx_adc_data *data,
+> >         size_t len;
+> >
+> >         if (big_scale) {
+> > -               calib_graph =3D &big_scale_graph_calib;
+> > +               calib_graph =3D data->var_data->bscale_cal;
+> >                 graph =3D &big_scale_graph;
+> >                 cell_name =3D "big_scale_calib";
+> >         } else {
+> > -               calib_graph =3D &small_scale_graph_calib;
+> > +               calib_graph =3D data->var_data->sscale_cal;
+> >                 graph =3D &small_scale_graph;
+> >                 cell_name =3D "small_scale_calib";
+> >         }
+> > @@ -160,7 +187,7 @@ static int sc27xx_adc_scale_calibration(struct sc27=
+xx_adc_data *data,
+> >         return 0;
+> >  }
+> >
+> > -static int sc27xx_adc_get_ratio(int channel, int scale)
+> > +static int sc2731_adc_get_ratio(int channel, int scale)
+> >  {
+> >         switch (channel) {
+> >         case 1:
+> > @@ -185,6 +212,21 @@ static int sc27xx_adc_get_ratio(int channel, int s=
+cale)
+> >         return SC27XX_VOLT_RATIO(1, 1);
+> >  }
+> >
+> > +/*
+> > + * According to the datasheet set specific value on some channel.
+> > + */
+> > +static void sc2731_adc_scale_init(struct sc27xx_adc_data *data)
+> > +{
+> > +       int i;
+> > +
+> > +       for (i =3D 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
+> > +               if (i =3D=3D 5)
+> > +                       data->channel_scale[i] =3D 1;
+> > +               else
+> > +                       data->channel_scale[i] =3D 0;
+> > +       }
+> > +}
+>
+> This is unnecessary I think, please see sc27xx_adc_write_raw() that
+> can set the channel scale.
+Did you mean that all the PMIC's scale_init function should put into
+the sc27xx_adc_write_raw?
+but the scale_init is all different by each PMIC, if implemented in
+the write_raw, will add a lot of
+if or switch_case branch
+>
+> > +
+> >  static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
+> >                            int scale, int *val)
+> >  {
+> > @@ -208,10 +250,11 @@ static int sc27xx_adc_read(struct sc27xx_adc_data=
+ *data, int channel,
+> >                 goto disable_adc;
+> >
+> >         /* Configure the channel id and scale */
+> > -       tmp =3D (scale << SC27XX_ADC_SCALE_SHIFT) & SC27XX_ADC_SCALE_MA=
+SK;
+> > +       tmp =3D (scale << data->var_data->scale_shift) & data->var_data=
+->scale_mask;
+> >         tmp |=3D channel & SC27XX_ADC_CHN_ID_MASK;
+> >         ret =3D regmap_update_bits(data->regmap, data->base + SC27XX_AD=
+C_CH_CFG,
+> > -                                SC27XX_ADC_CHN_ID_MASK | SC27XX_ADC_SC=
+ALE_MASK,
+> > +                                SC27XX_ADC_CHN_ID_MASK |
+> > +                                data->var_data->scale_mask,
+> >                                  tmp);
+> >         if (ret)
+> >                 goto disable_adc;
+> > @@ -262,8 +305,9 @@ static void sc27xx_adc_volt_ratio(struct sc27xx_adc=
+_data *data,
+> >                                   int channel, int scale,
+> >                                   u32 *div_numerator, u32 *div_denomina=
+tor)
+> >  {
+> > -       u32 ratio =3D sc27xx_adc_get_ratio(channel, scale);
+> > +       u32 ratio;
+> >
+> > +       ratio =3D data->var_data->get_ratio(channel, scale);
+> >         *div_numerator =3D ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
+> >         *div_denominator =3D ratio & SC27XX_RATIO_DENOMINATOR_MASK;
+> >  }
+> > @@ -432,13 +476,13 @@ static int sc27xx_adc_enable(struct sc27xx_adc_da=
+ta *data)
+> >  {
+> >         int ret;
+> >
+> > -       ret =3D regmap_update_bits(data->regmap, SC27XX_MODULE_EN,
+> > +       ret =3D regmap_update_bits(data->regmap, data->var_data->module=
+_en,
+> >                                  SC27XX_MODULE_ADC_EN, SC27XX_MODULE_AD=
+C_EN);
+> >         if (ret)
+> >                 return ret;
+> >
+> >         /* Enable ADC work clock and controller clock */
+> > -       ret =3D regmap_update_bits(data->regmap, SC27XX_ARM_CLK_EN,
+> > +       ret =3D regmap_update_bits(data->regmap, data->var_data->clk_en=
+,
+> >                                  SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK=
+_EN,
+> >                                  SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK=
+_EN);
+> >         if (ret)
+> > @@ -456,10 +500,10 @@ static int sc27xx_adc_enable(struct sc27xx_adc_da=
+ta *data)
+> >         return 0;
+> >
+> >  disable_clk:
+> > -       regmap_update_bits(data->regmap, SC27XX_ARM_CLK_EN,
+> > +       regmap_update_bits(data->regmap, data->var_data->clk_en,
+> >                            SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN, 0=
+);
+> >  disable_adc:
+> > -       regmap_update_bits(data->regmap, SC27XX_MODULE_EN,
+> > +       regmap_update_bits(data->regmap, data->var_data->module_en,
+> >                            SC27XX_MODULE_ADC_EN, 0);
+> >
+> >         return ret;
+> > @@ -470,21 +514,39 @@ static void sc27xx_adc_disable(void *_data)
+> >         struct sc27xx_adc_data *data =3D _data;
+> >
+> >         /* Disable ADC work clock and controller clock */
+> > -       regmap_update_bits(data->regmap, SC27XX_ARM_CLK_EN,
+> > +       regmap_update_bits(data->regmap, data->var_data->clk_en,
+> >                            SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN, 0=
+);
+> >
+> > -       regmap_update_bits(data->regmap, SC27XX_MODULE_EN,
+> > +       regmap_update_bits(data->regmap, data->var_data->module_en,
+> >                            SC27XX_MODULE_ADC_EN, 0);
+> >  }
+> >
+> > +static const struct sc27xx_adc_variant_data sc2731_data =3D {
+> > +       .module_en =3D SC2731_MODULE_EN,
+> > +       .clk_en =3D SC2731_ARM_CLK_EN,
+> > +       .scale_shift =3D SC27XX_ADC_SCALE_SHIFT,
+> > +       .scale_mask =3D SC27XX_ADC_SCALE_MASK,
+> > +       .bscale_cal =3D &sc2731_big_scale_graph_calib,
+> > +       .sscale_cal =3D &sc2731_small_scale_graph_calib,
+> > +       .init_scale =3D sc2731_adc_scale_init,
+> > +       .get_ratio =3D sc2731_adc_get_ratio,
+> > +};
+> > +
+> >  static int sc27xx_adc_probe(struct platform_device *pdev)
+> >  {
+> >         struct device *dev =3D &pdev->dev;
+> >         struct device_node *np =3D dev->of_node;
+> >         struct sc27xx_adc_data *sc27xx_data;
+> > +       const struct sc27xx_adc_variant_data *pdata;
+> >         struct iio_dev *indio_dev;
+> >         int ret;
+> >
+> > +       pdata =3D of_device_get_match_data(dev);
+> > +       if (!pdata) {
+> > +               dev_err(dev, "No matching driver data found\n");
+> > +               return -EINVAL;
+> > +       }
+> > +
+> >         indio_dev =3D devm_iio_device_alloc(dev, sizeof(*sc27xx_data));
+> >         if (!indio_dev)
+> >                 return -ENOMEM;
+> > @@ -520,6 +582,8 @@ static int sc27xx_adc_probe(struct platform_device =
+*pdev)
+> >         }
+> >
+> >         sc27xx_data->dev =3D dev;
+> > +       sc27xx_data->var_data =3D pdata;
+> > +       sc27xx_data->var_data->init_scale(sc27xx_data);
+> >
+> >         ret =3D sc27xx_adc_enable(sc27xx_data);
+> >         if (ret) {
+> > @@ -546,7 +610,7 @@ static int sc27xx_adc_probe(struct platform_device =
+*pdev)
+> >  }
+> >
+> >  static const struct of_device_id sc27xx_adc_of_match[] =3D {
+> > -       { .compatible =3D "sprd,sc2731-adc", },
+> > +       { .compatible =3D "sprd,sc2731-adc", .data =3D &sc2731_data},
+> >         { }
+> >  };
+> >  MODULE_DEVICE_TABLE(of, sc27xx_adc_of_match);
+> > --
+> > 2.25.1
+> >
+>
+>
+> --
+> Baolin Wang
