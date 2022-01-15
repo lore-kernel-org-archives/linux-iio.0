@@ -2,263 +2,153 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CFDAC433EF
-	for <linux-iio@archiver.kernel.org>; Fri, 14 Jan 2022 20:30:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A25FC433EF
+	for <linux-iio@archiver.kernel.org>; Sat, 15 Jan 2022 09:27:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244267AbiANUaj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 14 Jan 2022 15:30:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48656 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239832AbiANUaj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Jan 2022 15:30:39 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50C97C06161C
-        for <linux-iio@vger.kernel.org>; Fri, 14 Jan 2022 12:30:39 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8TCl-0001fN-N3; Fri, 14 Jan 2022 21:29:47 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8TCi-00AJbq-3s; Fri, 14 Jan 2022 21:29:43 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8TCg-0002hC-MP; Fri, 14 Jan 2022 21:29:42 +0100
-Date:   Fri, 14 Jan 2022 21:29:39 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Mark Brown <broonie@kernel.org>, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, netdev@vger.kernel.org,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        platform-driver-x86@vger.kernel.org,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Borislav Petkov <bp@alien8.de>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        openipmi-developer@lists.sourceforge.net,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Tony Luck <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] driver core: platform: Rename
- platform_get_irq_optional() to platform_get_irq_silent()
-Message-ID: <20220114202939.5kq5ud5opfosjlyc@pengutronix.de>
-References: <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
- <YeA7CjOyJFkpuhz/@sirena.org.uk>
- <20220113194358.xnnbhsoyetihterb@pengutronix.de>
- <386a7f56-38c8-229c-4fec-4b38a77c4121@omp.ru>
+        id S231476AbiAOJ1p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 15 Jan 2022 04:27:45 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:57380 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S229507AbiAOJ1p (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jan 2022 04:27:45 -0500
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20F6Pfgl006905;
+        Sat, 15 Jan 2022 04:27:25 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3dks07rnn6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Sat, 15 Jan 2022 04:27:25 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 20F9ROjP058177
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Sat, 15 Jan 2022 04:27:24 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Sat, 15 Jan 2022 04:27:23 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Sat, 15 Jan 2022 04:27:22 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Sat, 15 Jan 2022 04:27:22 -0500
+Received: from NSA-L01.ad.analog.com ([10.32.224.71])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 20F9RBL5010081;
+        Sat, 15 Jan 2022 04:27:14 -0500
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH v2 0/3] Add support for LTC2688 
+Date:   Sat, 15 Jan 2022 10:27:02 +0100
+Message-ID: <20220115092705.491-1-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="gs4ynp4fq77e5cup"
-Content-Disposition: inline
-In-Reply-To: <386a7f56-38c8-229c-4fec-4b38a77c4121@omp.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: LHeLNkaEMsyXtcV2kCUSG6LNIVWdq4Ux
+X-Proofpoint-ORIG-GUID: LHeLNkaEMsyXtcV2kCUSG6LNIVWdq4Ux
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-15_01,2022-01-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0
+ malwarescore=0 suspectscore=0 priorityscore=1501 spamscore=0
+ lowpriorityscore=0 mlxlogscore=999 bulkscore=0 adultscore=0 clxscore=1011
+ mlxscore=0 phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201150055
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The ABI defined for this driver has some subtleties that were previously
+discussed in this RFC [1]. This might not be the final state but,
+hopefully, we are close to it:
 
---gs4ynp4fq77e5cup
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+toggle mode channels:
 
-On Fri, Jan 14, 2022 at 10:45:38PM +0300, Sergey Shtylyov wrote:
-> On 1/13/22 10:43 PM, Uwe Kleine-K=F6nig wrote:
->=20
-> > The subsystems regulator, clk and gpio have the concept of a dummy
-> > resource. For regulator, clk and gpio there is a semantic difference
-> > between the regular _get() function and the _get_optional() variant.
-> > (One might return the dummy resource, the other won't. Unfortunately
-> > which one implements which isn't the same for these three.) The
-> > difference between platform_get_irq() and platform_get_irq_optional() is
-> > only that the former might emit an error message and the later won't.
-> >=20
-> > To prevent people's expectations that there is a semantic difference
-> > between these too, rename platform_get_irq_optional() to
-> > platform_get_irq_silent() to make the actual difference more obvious.
-> >=20
-> > The #define for the old name can and should be removed once all patches
-> > currently in flux still relying on platform_get_irq_optional() are
-> > fixed.
->=20
->    Hm... I'm afraid that with this #define they would never get fixed... =
-:-)
+ * out_voltageY_toggle_en
+ * out_voltageY_raw0
+ * out_voltageY_raw1
+ * out_voltageY_symbol
 
-I will care for it.
+dither mode channels:
 
-> > Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> > ---
-> > Hello,
-> >=20
-> > On Thu, Jan 13, 2022 at 02:45:30PM +0000, Mark Brown wrote:
-> >> On Thu, Jan 13, 2022 at 12:08:31PM +0100, Uwe Kleine-K=F6nig wrote:
-> >>
-> >>> This is all very unfortunate. In my eyes b) is the most sensible
-> >>> sense, but the past showed that we don't agree here. (The most annoyi=
-ng
-> >>> part of regulator_get is the warning that is emitted that regularily
-> >>> makes customers ask what happens here and if this is fixable.)
-> >>
-> >> Fortunately it can be fixed, and it's safer to clearly specify things.
-> >> The prints are there because when the description is wrong enough to
-> >> cause things to blow up we can fail to boot or run messily and
-> >> forgetting to describe some supplies (or typoing so they haven't done
-> >> that) and people were having a hard time figuring out what might've
-> >> happened.
-> >=20
-> > Yes, that's right. I sent a patch for such a warning in 2019 and pinged
-> > occationally. Still waiting for it to be merged :-\
-> > (https://lore.kernel.org/r/20190625100412.11815-1-u.kleine-koenig@pengu=
-tronix.de)
-> >=20
-> >>> I think at least c) is easy to resolve because
-> >>> platform_get_irq_optional() isn't that old yet and mechanically
-> >>> replacing it by platform_get_irq_silent() should be easy and safe.
-> >>> And this is orthogonal to the discussion if -ENOXIO is a sensible ret=
-urn
-> >>> value and if it's as easy as it could be to work with errors on irq
-> >>> lookups.
-> >>
-> >> It'd certainly be good to name anything that doesn't correspond to one
-> >> of the existing semantics for the API (!) something different rather
-> >> than adding yet another potentially overloaded meaning.
-> >=20
-> > It seems we're (at least) three who agree about this. Here is a patch
-> > fixing the name.
->=20
->    I can't say I genrally agree with this patch...
+ * out_voltageY_dither_en
+ * out_voltageY_dither_raw
+ * out_voltageY_dither_raw_available
+ * out_voltageY_dither_offset
+ * out_voltageY_dither_frequency
+ * out_voltageY_dither_frequency_available
+ * out_voltageY_dither_phase
+ * out_voltageY_dither_phase_available
 
-Yes, I didn't count you to the three people signaling agreement.
+Default channels won't have any of the above ABIs. A channel is toggle
+capable if the devicetree 'adi,toggle-mode' flag is set. For dither, the
+assumption is more silent. If 'adi,toggle-mode' is not given and a
+channel is associated with a TGPx pin through 'adi,toggle-dither-input',
+then the channel is assumed to be dither capable (there's no point in
+having a dither capable channel without an input clock).
 
-> [...]
-> > diff --git a/include/linux/platform_device.h b/include/linux/platform_d=
-evice.h
-> > index 7c96f169d274..6d495f15f717 100644
-> > --- a/include/linux/platform_device.h
-> > +++ b/include/linux/platform_device.h
-> > @@ -69,7 +69,14 @@ extern void __iomem *
-> >  devm_platform_ioremap_resource_byname(struct platform_device *pdev,
-> >  				      const char *name);
-> >  extern int platform_get_irq(struct platform_device *, unsigned int);
-> > -extern int platform_get_irq_optional(struct platform_device *, unsigne=
-d int);
-> > +extern int platform_get_irq_silent(struct platform_device *, unsigned =
-int);
-> > +
-> > +/*
-> > + * platform_get_irq_optional was recently renamed to platform_get_irq_=
-silent.
-> > + * Fixup users to not break patches that were created before the renam=
-e.
-> > + */
-> > +#define platform_get_irq_optional(pdev, index) platform_get_irq_silent=
-(pdev, index)
-> > +
->=20
->    Yeah, why bother fixing if it compiles anyway?
+changes in v2:
 
-The plan is to remove the define in one or two kernel releases. The idea
-is only to not break patches that are currently in next.
+ ltc2688:
+  * Use local buffer for regmap read. Do not assume that reg is part of
+larger buffer;
+  * Renamed GPIO to "clr" so that is consistent with the datasheet;
+  * Renamed 'mask' and 'm' to info. 'mask' is a thing from the past;
+  * Removed 'LTC2688_CHAN_TOGGLE()' and defined to static ext_info arrays;
+  * Use 'regmap_set_bits' to set external ref;
+  * Use FIELD_{PREP|GET} for dither amplitude and channel calibbias where
+only 13bits are used;
+  * Use 'regmap_write()' instead of update_bits for channels settings;
+  * Init 'val' at the beginning of the channel configuration loop
+(and drop mask);
+  * Comment 'ltc2688_reg_writable()' to account for the special condition;
+  * Kmemdup default channels so that it can be safely changed per probed
+device;
+  * Replace extended info multiplexer functions by individual functions;
+  * Use raw0 ABI for toggle channels;
+  * Use dedicated offset ABI for dither channels;
+  * Misc changes (spell fixes, blank lines...);
+  * Have a clock property per channel. Note that we this I moved to OF
+since we now have to use 'devm_get_clk_from_child()' which is using
+device_node. Note that I could use 'to_of_node()' but mixing of.h and
+property.h does not feel like a good idea.
 
->    I think an inline wrapper with an indication to gcc that the function =
-is deprecated
-> (I just forgot how it should look) would be better instead...
+ ABI:
+  * Added out_voltageY_raw0 ABI for toggle mode;
+  * Added out_voltageY_dither_offset.
 
-The deprecated function annotation is generally frowned upon. See
-771c035372a0.
+ Bindings:
+  * Use standard microvolt unit;
+  * Added constrains for adi,output-range-microvolt and removed negative
+values from the dts example;
+  * Moved clocks to the channel object;
+  * Dropped clock-names;
+  * Add a dependency between 'adi,toggle-dither-input' and 'clocks'.
+ 
+[1]: https://marc.info/?l=linux-iio&m=163662843603265&w=2
 
-Best regards
-Uwe
+Nuno Sá (3):
+  iio: dac: add support for ltc2688
+  iio: ABI: add ABI file for the LTC2688 DAC
+  dt-bindings: iio: Add ltc2688 documentation
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+ .../ABI/testing/sysfs-bus-iio-dac-ltc2688     |   80 ++
+ .../bindings/iio/dac/adi,ltc2688.yaml         |  147 +++
+ MAINTAINERS                                   |    9 +
+ drivers/iio/dac/Kconfig                       |   11 +
+ drivers/iio/dac/Makefile                      |    1 +
+ drivers/iio/dac/ltc2688.c                     | 1070 +++++++++++++++++
+ 6 files changed, 1318 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-dac-ltc2688
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/adi,ltc2688.yaml
+ create mode 100644 drivers/iio/dac/ltc2688.c
 
---gs4ynp4fq77e5cup
-Content-Type: application/pgp-signature; name="signature.asc"
+-- 
+2.33.1
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHh3S8ACgkQwfwUeK3K
-7AkDXQf/U5FAV2AAfHdpPoYhXkPobJeAf5Dqsq9HthaQ/4EsbgoDzhwXUQuRqgGp
-s3l08rbKnPAXvuz91TT4s4P4EfflDVbvLMELaacliZW9A2Zubif0kRa5i7noZtww
-bMiLnHbf6jZNoGKWayBhA0I+mD3ItG2bJkiZMPC9EauwofQRd5TZEOFEnf0MOQYR
-WDceoBK0StFIaNP+azd2h5Mkfo+sy70ZLX3i1E5+f2X9Iac4pOldU5N65ldsgg9N
-AVzKdnYk6h5IpXqZaytMAGpMn9j4OQHJGDLA8zo0jjwjnK+1JHnoGFwlJO43H0af
-61XlzqllsW1diNuTEAhAtFOrNwsDYQ==
-=Iw62
------END PGP SIGNATURE-----
-
---gs4ynp4fq77e5cup--
