@@ -2,218 +2,112 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6BDEDC433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 15 Jan 2022 15:22:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27109C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 15 Jan 2022 15:35:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232965AbiAOPWP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 15 Jan 2022 10:22:15 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41742 "EHLO
+        id S231950AbiAOPfK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 15 Jan 2022 10:35:10 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44550 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231894AbiAOPWO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jan 2022 10:22:14 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31BECC061574
-        for <linux-iio@vger.kernel.org>; Sat, 15 Jan 2022 07:22:14 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8krk-00024Z-CN; Sat, 15 Jan 2022 16:21:16 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8kra-00ASwx-3H; Sat, 15 Jan 2022 16:21:05 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8krY-0003aa-TV; Sat, 15 Jan 2022 16:21:04 +0100
-Date:   Sat, 15 Jan 2022 16:21:02 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Geert Uytterhoeven <geert@linux-m68k.org>
-Cc:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        ALSA Development Mailing List <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        linux-phy@lists.infradead.org, Jiri Slaby <jirislaby@kernel.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        with ESMTP id S231941AbiAOPfK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jan 2022 10:35:10 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 302C4C061574;
+        Sat, 15 Jan 2022 07:35:10 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A365060DE4;
+        Sat, 15 Jan 2022 15:35:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5BEFDC36AE7;
+        Sat, 15 Jan 2022 15:35:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642260909;
+        bh=/VBeUKZXVWZTYhtG5JF/BtJ1VEpoQctqvNrVSZW3ftE=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ec0yE40k5CG6UfEJVjP7TxLo2YkMakm6jbhxGGNus9HvzomtcZzVB2F/m8uqfcK7X
+         3Lt/Wk90SRx6B2YgN+lYu2dTjhPBSd1Ga76m+XywUM0oNVm8Swp0GfgM9aArow+qa7
+         1XeGHRtr/EGHN2eczUBwWPUTE4JfVThm2/22/2/qqSjiT97xr++kViOqTEfiUowqS5
+         ULiNsRd8m6BDmLf1TGHtdhPlVWvGMhiavD/+Dzf4Rxo0fMartv46ebRpbzdjV9qz8n
+         7bsOBTsH8opQesUelZmTa17NPx4k8k8/jV0nk2DFYR2293/4P8r7J/d/tKNzpeXas/
+         pwr2BLfAktTSw==
+Date:   Sat, 15 Jan 2022 15:41:07 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Evgeny Boger <boger@wirenboard.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Maxime Ripard <maxime@cerno.tech>,
+        Chen-Yu Tsai <wens@csie.org>, linux-sunxi@lists.linux.dev,
         Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Tony Luck <tony.luck@intel.com>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Eric Auger <eric.auger@redhat.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        platform-driver-x86@vger.kernel.org,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        linux-edac@vger.kernel.org, Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Hans de Goede <hdegoede@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>,
-        Linux MMC List <linux-mmc@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH] driver core: platform: Rename
- platform_get_irq_optional() to platform_get_irq_silent()
-Message-ID: <20220115152102.m47snsdrw2elagak@pengutronix.de>
-References: <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <20220113110831.wvwbm75hbfysbn2d@pengutronix.de>
- <YeA7CjOyJFkpuhz/@sirena.org.uk>
- <20220113194358.xnnbhsoyetihterb@pengutronix.de>
- <YeCI47ltlWzjzjYy@sirena.org.uk>
- <1df04d74-8aa2-11f1-54e9-34d0e8f4e58b@omp.ru>
- <20220113224319.akljsjtu7ps75vun@pengutronix.de>
- <CAMuHMdWjo36UGde3g5ysdXpLJn=mrPp31SDODuQNPUqoc-ARrQ@mail.gmail.com>
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/3] iio: adc: sun4i-gpadc-iio: no temp sensor on R40
+Message-ID: <20220115154052.51634f37@jic23-huawei>
+In-Reply-To: <85db7e8a-2b9a-7e44-ec96-b804201a3491@wirenboard.com>
+References: <20211119191456.510435-1-boger@wirenboard.com>
+        <20211119191456.510435-2-boger@wirenboard.com>
+        <20211122091132.yjudzei3bdqmnxq6@gilmour>
+        <20211122124115.00005186@Huawei.com>
+        <85db7e8a-2b9a-7e44-ec96-b804201a3491@wirenboard.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="ocudook43fjcrvv4"
-Content-Disposition: inline
-In-Reply-To: <CAMuHMdWjo36UGde3g5ysdXpLJn=mrPp31SDODuQNPUqoc-ARrQ@mail.gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Tue, 11 Jan 2022 16:13:02 +0300
+Evgeny Boger <boger@wirenboard.com> wrote:
 
---ocudook43fjcrvv4
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Jan 14, 2022 at 10:58:51AM +0100, Geert Uytterhoeven wrote:
-> Hi Uwe,
+> 22.11.2021 15:41, Jonathan Cameron =D0=BF=D0=B8=D1=88=D0=B5=D1=82:
+> > On Mon, 22 Nov 2021 10:11:32 +0100
+> > Maxime Ripard <maxime@cerno.tech> wrote:
+> > =20
+> >> On Fri, Nov 19, 2021 at 10:14:54PM +0300, Evgeny Boger wrote: =20
+> >>> R40 SoC has touchscreen controller also serving as general-purpose AD=
+C.
+> >>> The hardware is very similar to A31, except that R40 has separate
+> >>> calibrated thermal sensor IP (handled by sun8i_thermal).
+> >>>
+> >>> Despite the temperature sensor in the RTP is never mentioned in
+> >>> the R40 family user manuals, it appears to be working. However,
+> >>> it's not very useful as it lacks calibration data and there is another
+> >>> fully functioning temperature sensor anyway.
+> >>>
+> >>> This patch disables the temperature sensor in RTP/GPADC IP on R40.
+> >>>
+> >>> The reason for disabling the temperature sensor is that the IP
+> >>> needs to be switched back and forth between RTP and GPADC modes for
+> >>> temperature measurements. Not only this introduces delays, but it also
+> >>> disturbs external circuitry by injecting current into ADC inputs.
+> >>>
+> >>> Signed-off-by: Evgeny Boger <boger@wirenboard.com> =20
+> >> Acked-by: Maxime Ripard <maxime@cerno.tech> =20
+> > +Cc linux-iio@vger.kernel.org
+> >
+> > I'm fine with this and assuming Lee is happy to pick it up + send
+> > me an immutable branch in case anything crosses with it this cycle..
+> >
+> > Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com> =20
 >=20
-> On Thu, Jan 13, 2022 at 11:43 PM Uwe Kleine-K=F6nig
-> <u.kleine-koenig@pengutronix.de> wrote:
-> > On Thu, Jan 13, 2022 at 11:57:43PM +0300, Sergey Shtylyov wrote:
-> > > On 1/13/22 11:17 PM, Mark Brown wrote:
-> > > >> The subsystems regulator, clk and gpio have the concept of a dummy
-> > > >> resource. For regulator, clk and gpio there is a semantic differen=
-ce
-> > > >> between the regular _get() function and the _get_optional() varian=
-t.
-> > > >> (One might return the dummy resource, the other won't. Unfortunate=
-ly
-> > > >> which one implements which isn't the same for these three.) The
-> > > >> difference between platform_get_irq() and platform_get_irq_optiona=
-l() is
-> > > >> only that the former might emit an error message and the later won=
-'t.
-> > >
-> > >    This is only a current difference but I'm still going to return 0 =
-ISO
-> > > -ENXIO from latform_get_irq_optional(), no way I'd leave that -ENXIO =
-there
-> > > alone... :-)
-> >
-> > This would address a bit of the critic in my commit log. But as 0 isn't
-> > a dummy value like the dummy values that exist for clk, gpiod and
-> > regulator I still think that the naming is a bad idea because it's not
-> > in the spirit of the other *_get_optional functions.
-> >
-> > Seeing you say that -ENXIO is a bad return value for
-> > platform_get_irq_optional() and 0 should be used instead, I wonder why
-> > not changing platform_get_irq() to return 0 instead of -ENXIO, too.
-> > This question is for now only about a sensible semantic. That actually
-> > changing platform_get_irq() is probably harder than changing
-> > platform_get_irq_optional() is a different story.
-> >
-> > If only platform_get_irq_optional() is changed and given that the
-> > callers have to do something like:
-> >
-> >         if (this_irq_exists()):
-> >                 ... (e.g. request_irq)
-> >         else:
-> >                 ... (e.g. setup polling)
-> >
-> > I really think it's a bad idea that this_irq_exists() has to be
-> > different for platform_get_irq() vs. platform_get_irq_optional().
+> Hi Jonathan!
 >=20
-> For platform_get_irq(), the IRQ being absent is an error condition,
-> hence it should return an error code.
-> For platform_get_irq_optional(), the IRQ being absent is not an error
-> condition, hence it should not return an error code, and 0 is OK.
+> Is there anything else I should do to make this patch series accepted?
 
-Please show a few examples how this simplifies the code. If it's only
-that a driver has to check for =3D=3D 0 instead of =3D=3D -ENXIO, than that=
-'s
-not a good enough motivation to make platform_get_irq_optional()
-different to platform_get_irq().
+Perhaps try a resend to Lee Jones, making sure to cc linux-iio
+Chances are it just got missed in the deluge!
 
-Best regards
-Uwe
+Jonathan
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---ocudook43fjcrvv4
-Content-Type: application/pgp-signature; name="signature.asc"
+>=20
+>=20
+> > Thanks,
+> >
+> > Jonathan
+> > =20
+> >> Maxime
+> >> =20
+>=20
 
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHi5kAACgkQwfwUeK3K
-7AmxjQf+LjEMbZ2BLPsszWOOyw2Xtjn8mpuOmCBImErsT+AnE5G2nUp9a//M8hxr
-OxUaITVBvGpeAOf8afjOnacEHqcvNJGUdWblNwEGdc7auyl6qSe7agtR2LDjM5ir
-x233Ner1R+O8K0t4zRM2+g/LeLLNwL9Y+9y6swNJvQcsqzy0z86I7/R1ebWk9NMa
-w1paYTwYlIyghKS5pAN7yXeIAJFP9DFBDy0KGZG8uA+MZn1WWTk/vwK4/NR5XcrY
-WXb6zM/0lZtQWhYlKW/dcj4b3LlOo8dgfuGuu8WIqoKxY0230JDSg1E+5ZNLyKq3
-7VzijyuxAzaTNhwSnAvUB2ToosLs1g==
-=EUgY
------END PGP SIGNATURE-----
-
---ocudook43fjcrvv4--
