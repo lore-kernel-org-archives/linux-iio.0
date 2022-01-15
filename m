@@ -2,184 +2,166 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3CACC433EF
-	for <linux-iio@archiver.kernel.org>; Sat, 15 Jan 2022 18:13:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A880C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 15 Jan 2022 18:15:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233394AbiAOSNZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 15 Jan 2022 13:13:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51004 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231278AbiAOSNZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jan 2022 13:13:25 -0500
-Received: from haggis.mythic-beasts.com (haggis.mythic-beasts.com [IPv6:2a00:1098:0:86:1000:0:2:1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF30C061574;
-        Sat, 15 Jan 2022 10:13:24 -0800 (PST)
-Received: from [81.101.6.87] (port=47194 helo=jic23-huawei)
-        by haggis.mythic-beasts.com with esmtpsa (TLS1.2:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <jic23@jic23.retrosnub.co.uk>)
-        id 1n8nYH-0002Hi-35; Sat, 15 Jan 2022 18:13:21 +0000
-Date:   Sat, 15 Jan 2022 18:19:22 +0000
-From:   Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-To:     Oleksij Rempel <o.rempel@pengutronix.de>
-Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: adc: tsc2046: add .read_raw support
-Message-ID: <20220115181922.7d947226@jic23-huawei>
-In-Reply-To: <20220111131848.GE3326@pengutronix.de>
-References: <20220107093527.3046331-1-o.rempel@pengutronix.de>
-        <20220109155956.003167f1@jic23-huawei>
-        <20220111131848.GE3326@pengutronix.de>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        id S232561AbiAOSPd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 15 Jan 2022 13:15:33 -0500
+Received: from mga01.intel.com ([192.55.52.88]:57563 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S231278AbiAOSPd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 15 Jan 2022 13:15:33 -0500
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1642270533; x=1673806533;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kIwoazCFR7DJjHKdzbRi05ynIhAGB8XqO7nxwNlhL54=;
+  b=b5zriw5W1W2KkLDQbfj1imo/xsWR8vk+/XDRJr93PgN6K6Yc1u/gYvlF
+   zoaHEDAO3zfOi3E4p2TJNdzTThMnAUckefGwbR0NpiRk71hZRv9zkrb3W
+   I/AKRfFHIz1cSDmQRU4o0wR9ld3EC/yZ8WFypXrbWISZYTFJ0JMhzvH+0
+   CrBdld4UItqX2WRvFY4DhUVqEdGOx43V+KyxJVB80H5f1nRcmJBOg7wDW
+   pYV2W14nQNJvlgns4TkMpE9E3wECWGys6fAd+njlTgMswl7yF+S+5R3wa
+   9J5TJPcwopyx5VlXkQT1r/KrDBY8vK4uDTo526wl46iinV+/m8qq+uNnG
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10228"; a="268801627"
+X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
+   d="scan'208";a="268801627"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jan 2022 10:15:33 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,290,1635231600"; 
+   d="scan'208";a="476139453"
+Received: from lkp-server01.sh.intel.com (HELO 276f1b88eecb) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 15 Jan 2022 10:15:30 -0800
+Received: from kbuild by 276f1b88eecb with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1n8naM-000ABy-6P; Sat, 15 Jan 2022 18:15:30 +0000
+Date:   Sun, 16 Jan 2022 02:15:14 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Rob Herring <robh+dt@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH v2 1/3] iio: dac: add support for ltc2688
+Message-ID: <202201160237.Mxs5GYw3-lkp@intel.com>
+References: <20220115092705.491-2-nuno.sa@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
-X-BlackCat-Spam-Score: 4
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220115092705.491-2-nuno.sa@analog.com>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 11 Jan 2022 14:18:48 +0100
-Oleksij Rempel <o.rempel@pengutronix.de> wrote:
+Hi "Nuno,
 
-> Hi Jonathan,
-> 
-> On Sun, Jan 09, 2022 at 04:00:09PM +0000, Jonathan Cameron wrote:
-> > On Fri,  7 Jan 2022 10:35:27 +0100
-> > Oleksij Rempel <o.rempel@pengutronix.de> wrote:
-> >   
-> > > Add read_raw() support to make use of iio_hwmon and other iio clients.
-> > > 
-> > > Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>  
-> > Hi Oleksij
-> > 
-> > Main questions in here are around settling time and the interface used for that.
-> >   
-> > > ---
-> > >  drivers/iio/adc/ti-tsc2046.c | 114 ++++++++++++++++++++++++++++++++---
-> > >  1 file changed, 106 insertions(+), 8 deletions(-)
-> > > 
-> > > @@ -252,16 +266,47 @@ static u16 tsc2046_adc_get_value(struct tsc2046_adc_atom *buf)
-> > >  static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
-> > >  				u32 *effective_speed_hz)
-> > >  {
-> > > +	struct tsc2046_adc_ch_cfg *ch = &priv->ch_cfg[ch_idx];
-> > > +	struct tsc2046_adc_atom *rx_buf, *tx_buf;
-> > > +	unsigned int val, val_normalized = 0;
-> > > +	int ret, i, count_skip = 0, max_count;
-> > >  	struct spi_transfer xfer;
-> > >  	struct spi_message msg;
-> > > -	int ret;
-> > > +	u8 cmd;
-> > > +
-> > > +	if (!effective_speed_hz) {
-> > > +		count_skip = tsc2046_adc_time_to_count(priv, ch->settling_time_us);
-> > > +		max_count = count_skip + ch->oversampling_ratio;
-> > > +	} else {
-> > > +		max_count = 1;
-> > > +	}
-> > > +
-> > > +	tx_buf = kcalloc(max_count, sizeof(*tx_buf), GFP_KERNEL);
-> > > +	if (!tx_buf)
-> > > +		return -ENOMEM;
-> > > +
-> > > +	rx_buf = kcalloc(max_count, sizeof(*rx_buf), GFP_KERNEL);
-> > > +	if (!rx_buf) {
-> > > +		ret = -ENOMEM;
-> > > +		goto free_tx;
-> > > +	}  
-> > 
-> > I guess these are fine to do everytime because you expect this to be used in
-> > paths which aren't called at a particularly high frequency?  
-> 
-> Yes, this was my assumption as well. Instead of preallocating buffer of
-> max size, I hope it is less ugly.
-> 
-> > These buffers could get rather large so maybe you need a cap on settling time?  
-> 
-> What do you mean by "cap on settling"?
+I love your patch! Yet something to improve:
 
-In theory the buffer needed could get very large, so perhap set a maximum reasonable
-size (1 page perhaps) and report an error if the settling time is too large to fit
-in that space.
+[auto build test ERROR on jic23-iio/togreg]
+[also build test ERROR on robh/for-next linus/master v5.16 next-20220115]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-> 
-> >   
-> > > +
-> > > +	/*
-> > > +	 * Do not enable automatic power down on working samples. Otherwise the
-> > > +	 * plates will never be completely charged.
-> > > +	 */
-> > > +	cmd = tsc2046_adc_get_cmd(priv, ch_idx, true);
-> > > +
-> > > +	for (i = 0; i < max_count - 1; i++)
-> > > +		tx_buf[i].cmd = cmd;
-> > > +
-> > > +	/* automatically power down on last sample */
-> > > +	tx_buf[i].cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
-> > >  
-> > >  	memset(&xfer, 0, sizeof(xfer));
-> > > -	priv->tx_one->cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
-> > > -	priv->tx_one->data = 0;
-> > > -	xfer.tx_buf = priv->tx_one;
-> > > -	xfer.rx_buf = priv->rx_one;  
-> > 
-> > Are these used for anything else?  If not probably need to drop them and
-> > their allocation.  
-> 
-> done
-> 
-> > > -	xfer.len = sizeof(*priv->tx_one);
-> > > +	xfer.tx_buf = tx_buf;
-> > > +	xfer.rx_buf = rx_buf;
-> > > +	xfer.len = sizeof(*tx_buf) * max_count;  
-> > 
-> > This could be very big and more than possible some spi controllers will fail
-> > it (or does the SPI core handle splitting very large transfers?)  Maybe a loop
-> > is needed with smaller fixed size transfers?  
-> 
-> I can't exclude possible issue with some of SPI drivers. But SPI level
-> optimizations should be done on SPI driver or framework level.
+url:    https://github.com/0day-ci/linux/commits/Nuno-S/Add-support-for-LTC2688/20220115-172930
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+config: alpha-allyesconfig (https://download.01.org/0day-ci/archive/20220116/202201160237.Mxs5GYw3-lkp@intel.com/config)
+compiler: alpha-linux-gcc (GCC) 11.2.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/0day-ci/linux/commit/d91bcc420e0c6077053e559f676fa4ae76114ba5
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Nuno-S/Add-support-for-LTC2688/20220115-172930
+        git checkout d91bcc420e0c6077053e559f676fa4ae76114ba5
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross O=build_dir ARCH=alpha SHELL=/bin/bash
 
-As above, I think you want to set a reasonable limit otherwise it will fail
-on an awful lot of hardware if someone sets a silly value...
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
 
-> 
-> > >  	spi_message_init_with_transfers(&msg, &xfer, 1);
-> > >  
-> > >  	/*
-> > > @@ -272,13 +317,25 @@ static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
-> > >  	if (ret) {
-> > >  		dev_err_ratelimited(&priv->spi->dev, "SPI transfer failed %pe\n",
-> > >  				    ERR_PTR(ret));
-> > > +		*val2 = chan->scan_type.realbits;
-> > > +		return IIO_VAL_FRACTIONAL_LOG2;
-> > > +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> > > +		*val = priv->ch_cfg[chan->channel].oversampling_ratio;
-> > > +		return IIO_VAL_INT;
-> > > +	case IIO_CHAN_INFO_DEBOUNCE_COUNT:  
-> > 
-> > These are unusual. I think they've only been used for the more literal bounce suppression
-> > of a human step counting algorithm.
-> > 
-> > I'd probably not expect to see the both even if we decide this is applicable.  
-> 
-> Ok, i do not need this information so far. I'll remove it
-> 
-> > > +		*val = tsc2046_adc_time_to_count(priv,
-> > > +				priv->ch_cfg[chan->channel].settling_time_us);  
-> > 
-> > Setting time is often about external circuitry so it's a bit unusual to expose
-> > it to userspace rather than making it a device tree property and just making
-> > sure the driver doesn't provide a reading until appropriate debounce has passed.
-> > Here is coming from DT anyway, so what benefit do these two read only channel
-> > properties provide?  
-> 
-> No benefit. Will remove it.
-> 
-> Regards,
-> Oleksij
+All errors (new ones prefixed by >>):
 
+>> drivers/iio/dac/ltc2688.c:590:18: error: initialization of 'ssize_t (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'long int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} from incompatible pointer type 'int (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} [-Werror=incompatible-pointer-types]
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:604:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     604 |         LTC2688_CHAN_EXT_INFO("toggle_en", LTC2688_CMD_TOGGLE_DITHER_EN,
+         |         ^~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:590:18: note: (near initialization for 'ltc2688_toggle_sym_ext_info[2].write')
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:604:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     604 |         LTC2688_CHAN_EXT_INFO("toggle_en", LTC2688_CMD_TOGGLE_DITHER_EN,
+         |         ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/iio/dac/ltc2688.c:590:18: error: initialization of 'ssize_t (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'long int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} from incompatible pointer type 'int (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} [-Werror=incompatible-pointer-types]
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:619:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     619 |         LTC2688_CHAN_EXT_INFO("toggle_en", LTC2688_CMD_TOGGLE_DITHER_EN,
+         |         ^~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:590:18: note: (near initialization for 'ltc2688_toggle_ext_info[2].write')
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:619:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     619 |         LTC2688_CHAN_EXT_INFO("toggle_en", LTC2688_CMD_TOGGLE_DITHER_EN,
+         |         ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/iio/dac/ltc2688.c:590:18: error: initialization of 'ssize_t (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'long int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} from incompatible pointer type 'int (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} [-Werror=incompatible-pointer-types]
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:639:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     639 |         LTC2688_CHAN_EXT_INFO("dither_frequency", 0, IIO_SEPARATE,
+         |         ^~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:590:18: note: (near initialization for 'ltc2688_dither_ext_info[3].write')
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:639:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     639 |         LTC2688_CHAN_EXT_INFO("dither_frequency", 0, IIO_SEPARATE,
+         |         ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/iio/dac/ltc2688.c:590:18: error: initialization of 'ssize_t (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'long int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} from incompatible pointer type 'int (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} [-Werror=incompatible-pointer-types]
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:641:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     641 |         LTC2688_CHAN_EXT_INFO("dither_frequency_available",
+         |         ^~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:590:18: note: (near initialization for 'ltc2688_dither_ext_info[4].write')
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:641:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     641 |         LTC2688_CHAN_EXT_INFO("dither_frequency_available",
+         |         ^~~~~~~~~~~~~~~~~~~~~
+>> drivers/iio/dac/ltc2688.c:590:18: error: initialization of 'ssize_t (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'long int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} from incompatible pointer type 'int (*)(struct iio_dev *, uintptr_t,  const struct iio_chan_spec *, const char *, size_t)' {aka 'int (*)(struct iio_dev *, long unsigned int,  const struct iio_chan_spec *, const char *, long unsigned int)'} [-Werror=incompatible-pointer-types]
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:647:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     647 |         LTC2688_CHAN_EXT_INFO("dither_en", LTC2688_CMD_TOGGLE_DITHER_EN,
+         |         ^~~~~~~~~~~~~~~~~~~~~
+   drivers/iio/dac/ltc2688.c:590:18: note: (near initialization for 'ltc2688_dither_ext_info[7].write')
+     590 |         .write = (_write),                                              \
+         |                  ^
+   drivers/iio/dac/ltc2688.c:647:9: note: in expansion of macro 'LTC2688_CHAN_EXT_INFO'
+     647 |         LTC2688_CHAN_EXT_INFO("dither_en", LTC2688_CMD_TOGGLE_DITHER_EN,
+         |         ^~~~~~~~~~~~~~~~~~~~~
+   cc1: some warnings being treated as errors
+
+
+vim +590 drivers/iio/dac/ltc2688.c
+
+   586	
+   587	#define LTC2688_CHAN_EXT_INFO(_name, _what, _shared, _read, _write) {	\
+   588		.name = _name,							\
+   589		.read = (_read),						\
+ > 590		.write = (_write),						\
+   591		.private = (_what),						\
+   592		.shared = (_shared),						\
+   593	}
+   594	
+
+---
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
