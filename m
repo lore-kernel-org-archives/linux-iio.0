@@ -2,230 +2,287 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31C50C433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 15 Jan 2022 18:38:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52C8CC433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 15 Jan 2022 18:46:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233182AbiAOSiE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 15 Jan 2022 13:38:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56326 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233161AbiAOSiE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jan 2022 13:38:04 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B71C061574
-        for <linux-iio@vger.kernel.org>; Sat, 15 Jan 2022 10:38:03 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8nvA-0003Jj-3l; Sat, 15 Jan 2022 19:37:00 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtps  (TLS1.3) tls TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384
-        (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8nux-00AUOf-7m; Sat, 15 Jan 2022 19:36:46 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1n8nuv-0005gB-Q6; Sat, 15 Jan 2022 19:36:45 +0100
-Date:   Sat, 15 Jan 2022 19:36:43 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-phy@lists.infradead.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Guenter Roeck <groeck@chromium.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        John Garry <john.garry@huawei.com>,
-        Robert Richter <rric@kernel.org>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        Borislav Petkov <bp@alien8.de>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        linux-arm-kernel@lists.infradead.org, linux-edac@vger.kernel.org,
-        Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        linux-spi@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        linux-mediatek@lists.infradead.org,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
- (summary)
-Message-ID: <20220115183643.6zxalxqxrhkfgdfq@pengutronix.de>
-References: <20220110195449.12448-1-s.shtylyov@omp.ru>
- <20220110195449.12448-2-s.shtylyov@omp.ru>
+        id S233155AbiAOSqG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 15 Jan 2022 13:46:06 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:50410 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S230304AbiAOSqG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Jan 2022 13:46:06 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9B478B80A72;
+        Sat, 15 Jan 2022 18:46:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6D87FC36AE5;
+        Sat, 15 Jan 2022 18:46:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1642272363;
+        bh=whQ8uNyDbpEy/G7Yas7JugsPMYKeBy4tvjBVcxsb8OA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=cyLW0NJpUjExD1P4hjNorI3427pPrmzLCqGyMOSXtUPC/K9s3PGTvSeYrE8u0ae9w
+         L5ZRqVkTsV2SOlhpx368Orw586/mpHsnNLq2v1Fw/LHnX4KW3GnPyIj0VOt0n+Z3Ua
+         5HjfaIDIVKdBZRZCo9VZdbbzqMhiS+cLx3/kZrjeoxOwFV7OEoZn87L6D1dHdB0NU5
+         6m74kQScYYNZdm4KNenXevLFwOQ/Tfc4yKFSrfz+O89CIkCyVUac8M4fZj+bHqrHVy
+         AdxmOi2ZMO0/gyzFBefq4I1Sf+4k9p36+E3YCV8N3sD57P2dlMmbJfobOKQWmaReLo
+         jS95InmSp0Lcw==
+Date:   Sat, 15 Jan 2022 18:52:03 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Andreas Kemnade <andreas@kemnade.info>,
+        linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Rosin <peda@axentia.se>
+Subject: Re: [PATCH v2 5/5] iio: afe: iio-rescale: Re-use generic struct
+ s32_fract
+Message-ID: <20220115185203.567780e8@jic23-huawei>
+In-Reply-To: <20220110193104.75225-5-andriy.shevchenko@linux.intel.com>
+References: <20220110193104.75225-1-andriy.shevchenko@linux.intel.com>
+        <20220110193104.75225-5-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="j6ppxzwmobiijznr"
-Content-Disposition: inline
-In-Reply-To: <20220110195449.12448-2-s.shtylyov@omp.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Mon, 10 Jan 2022 21:31:04 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
---j6ppxzwmobiijznr
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Instead of custom data type re-use generic struct s32_fract.
+> No changes intended.
+> 
+> The new member is put to be the first one to avoid additional
+> pointer arithmetic. Besides that one may switch to use fract
+> member to perform container_of(), which will be no-op in this
+> case, to get struct rescale.
+> 
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-Hello,
+I'm not totally sold on this series showing there is a strong case for
+these macros so interested to hear what others think.
+Boiler plate removal is always nice of course...
 
-I'm trying to objectively summarize the discussions in this thread in
-the hope this helps finding a way that most people can live with.
+One trivial comment inline on this one.
 
-First a description of the status quo:
+> ---
+> 
+> I found this better in order how code is structurally (re)organized.
+> I may rebase this on top of ongoing AFE series.
+> 
+> Also reveals possibility to switch to rational best approximation.
+> But this is another story...
 
-There are several function pairs *get() and *get_optional() that however
-are different in various aspects. Their relevant properties are listes
-in the following table. Ideally each line had only identical entries.
+Now that may well justify introducing this shared infrastructure :)
 
-					| clk_get		| gpiod_get		| platform_get_irq	| regulator_get		|
-	return value			|			|			|			|			|
-	on not-found			| ERR_PTR(-ENOENT)	| ERR_PTR(-ENOENT)	| -ENXIO		| dummy[1]	=
-	|
-	(plain get)			|			|			|			|			|
-					|			|			|			|			|
-	return value			|			|			|			|			|
-	on not-found			| dummy[1]		| dummy[1]		| -ENXIO		| ERR_PTR(-ENOENT)	|
-	(get_optional)			|			|			|			|			|
-					|			|			|			|			|
-	emits an error message		|			|			|			|			|
-	on error (including 		| no			| no			| yes[2]		| no			|
-	not-found)			|			|			|			|			|
-					|			|			|			|			|
-	get_optional emits an error	|			|			|			|			|
-	message on error (including	| no			| no			| no			| no			|
-	not-found)			|			|			|			|			|
-					|			|			|			|			|
-	summary:			| returning a dummy	| returning a dummy	| doesn't emit an	| ret=
-urning error code	|
-	*_get_optional() differs from	| on not-found		| on not-found		| error mess=
-age		| on not-found		|
-	*_get by:			|			|			|			|			|
+> 
+> v2: no changes
+> 
+>  drivers/iio/afe/iio-rescale.c | 74 +++++++++++++++++------------------
+>  1 file changed, 37 insertions(+), 37 deletions(-)
+> 
+> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+> index 774eb3044edd..0368bca8a485 100644
+> --- a/drivers/iio/afe/iio-rescale.c
+> +++ b/drivers/iio/afe/iio-rescale.c
+> @@ -11,6 +11,7 @@
+>  #include <linux/gcd.h>
+>  #include <linux/iio/consumer.h>
+>  #include <linux/iio/iio.h>
+> +#include <linux/math.h>
+>  #include <linux/module.h>
+>  #include <linux/of.h>
+>  #include <linux/of_device.h>
+> @@ -21,17 +22,16 @@ struct rescale;
+>  
+>  struct rescale_cfg {
+>  	enum iio_chan_type type;
+> -	int (*props)(struct device *dev, struct rescale *rescale);
+> +	int (*props)(struct device *dev, struct s32_fract *fract);
+>  };
+>  
+>  struct rescale {
+> +	struct s32_fract fract;
+>  	const struct rescale_cfg *cfg;
+>  	struct iio_channel *source;
+>  	struct iio_chan_spec chan;
+>  	struct iio_chan_spec_ext_info *ext_info;
+>  	bool chan_processed;
+> -	s32 numerator;
+> -	s32 denominator;
+>  };
+>  
+>  static int rescale_read_raw(struct iio_dev *indio_dev,
+> @@ -39,6 +39,7 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+>  			    int *val, int *val2, long mask)
+>  {
+>  	struct rescale *rescale = iio_priv(indio_dev);
+> +	struct s32_fract *fract = &rescale->fract;
+>  	unsigned long long tmp;
+>  	int ret;
+>  
+> @@ -67,19 +68,19 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+>  		}
+>  		switch (ret) {
+>  		case IIO_VAL_FRACTIONAL:
+> -			*val *= rescale->numerator;
+> -			*val2 *= rescale->denominator;
+> +			*val *= fract->numerator;
+> +			*val2 *= fract->denominator;
+>  			return ret;
+>  		case IIO_VAL_INT:
+> -			*val *= rescale->numerator;
+> -			if (rescale->denominator == 1)
+> +			*val *= fract->numerator;
+> +			if (fract->denominator == 1)
+>  				return ret;
+> -			*val2 = rescale->denominator;
+> +			*val2 = fract->denominator;
+>  			return IIO_VAL_FRACTIONAL;
+>  		case IIO_VAL_FRACTIONAL_LOG2:
+>  			tmp = *val * 1000000000LL;
+> -			do_div(tmp, rescale->denominator);
+> -			tmp *= rescale->numerator;
+> +			do_div(tmp, fract->denominator);
+> +			tmp *= fract->numerator;
+>  			do_div(tmp, 1000000000LL);
+>  			*val = tmp;
+>  			return ret;
+> @@ -175,7 +176,7 @@ static int rescale_configure_channel(struct device *dev,
+>  }
+>  
+>  static int rescale_current_sense_amplifier_props(struct device *dev,
+> -						 struct rescale *rescale)
+> +						 struct s32_fract *fract)
+>  {
+>  	u32 sense;
+>  	u32 gain_mult = 1;
+> @@ -199,22 +200,22 @@ static int rescale_current_sense_amplifier_props(struct device *dev,
+>  	 * numerator/denominator from overflowing.
+>  	 */
+>  	factor = gcd(sense, 1000000);
+> -	rescale->numerator = 1000000 / factor;
+> -	rescale->denominator = sense / factor;
+> +	fract->numerator = 1000000 / factor;
+> +	fract->denominator = sense / factor;
+>  
+> -	factor = gcd(rescale->numerator, gain_mult);
+> -	rescale->numerator /= factor;
+> -	rescale->denominator *= gain_mult / factor;
+> +	factor = gcd(fract->numerator, gain_mult);
+> +	fract->numerator /= factor;
+> +	fract->denominator *= gain_mult / factor;
+>  
+> -	factor = gcd(rescale->denominator, gain_div);
+> -	rescale->numerator *= gain_div / factor;
+> -	rescale->denominator /= factor;
+> +	factor = gcd(fract->denominator, gain_div);
+> +	fract->numerator *= gain_div / factor;
+> +	fract->denominator /= factor;
+>  
+>  	return 0;
+>  }
+>  
+>  static int rescale_current_sense_shunt_props(struct device *dev,
+> -					     struct rescale *rescale)
+> +					     struct s32_fract *fract)
+>  {
+>  	u32 shunt;
+>  	u32 factor;
+> @@ -228,35 +229,33 @@ static int rescale_current_sense_shunt_props(struct device *dev,
+>  	}
+>  
+>  	factor = gcd(shunt, 1000000);
+> -	rescale->numerator = 1000000 / factor;
+> -	rescale->denominator = shunt / factor;
+> +	fract->numerator = 1000000 / factor;
+> +	fract->denominator = shunt / factor;
+>  
+>  	return 0;
+>  }
+>  
+>  static int rescale_voltage_divider_props(struct device *dev,
+> -					 struct rescale *rescale)
+> +					 struct s32_fract *fract)
+>  {
+>  	int ret;
+>  	u32 factor;
+>  
+> -	ret = device_property_read_u32(dev, "output-ohms",
+> -				       &rescale->denominator);
+> +	ret = device_property_read_u32(dev, "output-ohms", &fract->denominator);
+>  	if (ret) {
+>  		dev_err(dev, "failed to read output-ohms: %d\n", ret);
+>  		return ret;
+>  	}
+>  
+> -	ret = device_property_read_u32(dev, "full-ohms",
+> -				       &rescale->numerator);
+> +	ret = device_property_read_u32(dev, "full-ohms", &fract->numerator);
+>  	if (ret) {
+>  		dev_err(dev, "failed to read full-ohms: %d\n", ret);
+>  		return ret;
+>  	}
+>  
+> -	factor = gcd(rescale->numerator, rescale->denominator);
+> -	rescale->numerator /= factor;
+> -	rescale->denominator /= factor;
+> +	factor = gcd(fract->numerator, fract->denominator);
+> +	fract->numerator /= factor;
+> +	fract->denominator /= factor;
+>  
+>  	return 0;
+>  }
+> @@ -299,6 +298,7 @@ static int rescale_probe(struct platform_device *pdev)
+>  	struct iio_dev *indio_dev;
+>  	struct iio_channel *source;
+>  	struct rescale *rescale;
+> +	struct s32_fract *fract;
+>  	int sizeof_ext_info;
+>  	int sizeof_priv;
+>  	int i;
+> @@ -322,24 +322,24 @@ static int rescale_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>  
+>  	rescale = iio_priv(indio_dev);
+> -
+> +	rescale->source = source;
 
+There seems to be more reorganizing going on in here than is necessary
+for the function of this patch. At very least, description should
+call it out.  Why move setting source?
 
-	[1] the dummy value is a valid resource descriptor, the API functions
-	    are a noop for this dummy value. This dummy value is NULL for
-	    all three subsystems.
-	[2] no error is printed for -EPROBE_DEFER.
+>  	rescale->cfg = of_device_get_match_data(dev);
+> -	rescale->numerator = 1;
+> -	rescale->denominator = 1;
+>  
+> -	ret = rescale->cfg->props(dev, rescale);
+> +	fract = &rescale->fract;
+> +	fract->numerator = 1;
+> +	fract->denominator = 1;
+> +
+> +	ret = rescale->cfg->props(dev, fract);
+>  	if (ret)
+>  		return ret;
+>  
+> -	if (!rescale->numerator || !rescale->denominator) {
+> +	if (!fract->numerator || !fract->denominator) {
+>  		dev_err(dev, "invalid scaling factor.\n");
+>  		return -EINVAL;
+>  	}
+>  
+>  	platform_set_drvdata(pdev, indio_dev);
+>  
+> -	rescale->source = source;
+> -
+>  	indio_dev->name = dev_name(dev);
+>  	indio_dev->info = &rescale_info;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
 
-The inversion between clk+gpio vs. regulator is unforunate, swaping one
-or the other would be good for consistency, but this isn't the topic of
-this thread. Only so much: It's not agreed upon which variant is the
-better one and the difference is of historical origin.
-
-There are now different suggestions to improve the situation regarding
-platform_get_irq() compared to the other functions:
-
-a) by Sergey
-   platform_get_irq_optional() is changed to return 0 on not-found.
-
-b) by Uwe
-   rename platform_get_irq_optional() to platform_get_irq_silent()
-
-The argument pro a) is:
-
-	platform_get_irq_optional() is aligned to clk_get() and
-	gpiod_get() by returning 0 on not-found.
-
-The argument contra a)=20
-
-	The return value 0 for platform_get_irq() is only syntactically
-	nearer to the dummy value of clk_get() and gpiod_get(). A dummy
-	value isn't available and probably not sensible to introduce for
-	irq because most drivers have to check for the not-found
-	situation anyhow to setup polling.=20
-
-The argument pro b) is:
-
-	The relevant difference between platform_get_irq() and its
-	optional variant is that the latter is silent. This is a
-	different concept for the meaning of optional compared to the
-	other *_get_optional().
-
-The argument contra b) is:
-
-	The chosen name is bad, because driver authors might wonder what
-	a silent irq is.
-
----- end of summary
-=09
-A possible compromise: We can have both. We rename
-platform_get_irq_optional() to platform_get_irq_silent() (or
-platform_get_irq_silently() if this is preferred) and once all users are
-are changed (which can be done mechanically), we reintroduce a
-platform_get_irq_optional() with Sergey's suggested semantic (i.e.
-return 0 on not-found, no error message printking).
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---j6ppxzwmobiijznr
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmHjFDcACgkQwfwUeK3K
-7Al8ywf+IeUGmQ++ZSqrHA1sy8iG93DkE7XqgEI+/OYaQABSzKpE6w55cBp0EbHJ
-TXkVcUUkd5e6eFtr5FwZEgzO1/vKIlB6IkuD5jbuqXJy0oRz9whaVLAJvpYN/mmy
-KTHzmFssgA4mbUBx8XRteoVSNn6k9z0UF6EGrb0Vyfu70Q4yTdZKDP2mznyAnLee
-rw1Oj2UCu2Jn5QrSTg0jNrPqGbHrmEeadE08d3oZRpL/ZcO1Er30Oj3aYFDiiE1V
-p0J5fzDs0GZN4r/mwNSUDyq2edsIF3F2/ILOt05pf6AsFudhufarTMh2VWIu/mz7
-mMHkAm6dYTtw1VKd1mp/RwSpxhhJSw==
-=6uea
------END PGP SIGNATURE-----
-
---j6ppxzwmobiijznr--
