@@ -2,187 +2,97 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22A32C433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 16 Jan 2022 18:15:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34A04C433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 16 Jan 2022 21:25:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235980AbiAPSPe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 16 Jan 2022 13:15:34 -0500
-Received: from mxout03.lancloud.ru ([45.84.86.113]:59572 "EHLO
-        mxout03.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235965AbiAPSPd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Jan 2022 13:15:33 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout03.lancloud.ru 2173F206F618
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-CC:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        "ALSA Development Mailing List" <alsa-devel@alsa-project.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-phy@lists.infradead.org>, Jiri Slaby <jirislaby@kernel.org>,
-        <openipmi-developer@lists.sourceforge.net>,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        "Bartosz Golaszewski" <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        Saravanan Sekar <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        "William Breathitt Gray" <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        "Borislav Petkov" <bp@alien8.de>,
-        Sebastian Reichel <sre@kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        <platform-driver-x86@vger.kernel.org>,
-        Benson Leung <bleung@chromium.org>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, Tony Luck <tony.luck@intel.com>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "Linux MMC List" <linux-mmc@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        James Morse <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Richard Weinberger <richard@nod.at>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        <linux-mediatek@lists.infradead.org>,
-        "Brian Norris" <computersforpeace@gmail.com>,
-        <netdev@vger.kernel.org>
-References: <20220110201014.mtajyrfcfznfhyqm@pengutronix.de>
- <YdyilpjC6rtz6toJ@lunn.ch>
- <CAMuHMdWK3RKVXRzMASN4HaYfLckdS7rBvSopafq+iPADtGEUzA@mail.gmail.com>
- <20220112085009.dbasceh3obfok5dc@pengutronix.de>
- <CAMuHMdWsMGPiQaPS0-PJ_+Mc5VQ37YdLfbHr_aS40kB+SfW-aw@mail.gmail.com>
- <20220112213121.5ruae5mxwj6t3qiy@pengutronix.de>
- <Yd9L9SZ+g13iyKab@sirena.org.uk>
- <29f0c65d-77f2-e5b2-f6cc-422add8a707d@omp.ru>
- <20220114092557.jrkfx7ihg26ekzci@pengutronix.de>
- <61b80939-357d-14f5-df99-b8d102a4e1a1@omp.ru>
- <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <57af1851-9341-985e-7b28-d2ba86770ecb@omp.ru>
-Date:   Sun, 16 Jan 2022 21:15:20 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S233648AbiAPVZy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 16 Jan 2022 16:25:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35604 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229802AbiAPVZy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Jan 2022 16:25:54 -0500
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65845C061574;
+        Sun, 16 Jan 2022 13:25:53 -0800 (PST)
+Received: by mail-ed1-x52a.google.com with SMTP id k15so57272190edk.13;
+        Sun, 16 Jan 2022 13:25:53 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=dkHqHGWDMO2S8ErOMYU2TYQtBD+QqkroZ/Io7kj/iR4=;
+        b=BrRDtjxRT60E15V2/0H4zOS3YU6bnNJC81ILKU/s1ZI7siQBj3ev/WBMpB4xYuVcRX
+         2/AY4rX3RwN77jVRjT0u5FKf/RAiSX5VY9fxp2BVSwtjFDeVOChO9zOmmo2H/VQwSyW/
+         vOwADbFk+8gNKq5No2mffBwSUYdpdce3mOE/1oxANNIU/TD5Jh9kgbaWYzFZFKYxrHly
+         H9U2jjYzPsVFNUoqzYAYA2OU50WRJMfrWBJYE/Tq88bgHiTHC9gb1I6p+vnKoYsDf9Jp
+         yNm7g9660wQfR34zXtNeWZBfEKDui1o3BbyhI+3Hlb0LGuWtl7Dz944v/w72DmfLy8cM
+         o6OA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=dkHqHGWDMO2S8ErOMYU2TYQtBD+QqkroZ/Io7kj/iR4=;
+        b=Dwh8jheXqeOEeHRL2qUdHwci8vteaV3WTH0vOpqvgc2ZXtlxA6B6vJTylil62QL3ls
+         Oy3Ub58d3Uan1/Jv05wGzsr+96HVAkBih0zDm6BKXcXwJ/YPfCyMadJgTOJdKJl6dITp
+         0kD5zk7pc78Y7wASRt5B2I25N+Bn8KM5A+ZXt7ziAsgr7ceAMtYbVjmKDQE7aOnmOU3C
+         hv/LpF4KSPEJ8TbaVaiwc6ht3K5bIgW0l3mRMzmMkmBfoBfpEQTmU95DH9nqIyeVAJn6
+         By54skWIdX1076XTLvlrypJ/HRtU1VbrDMfY5lvqp6fQnBdfe8qgTHcD3Hd2ACGLpRsU
+         zZKw==
+X-Gm-Message-State: AOAM530CDV0U3ZjGhlpGxO4d/pnrnjRG7fms0xEQq6PapRNrgoyTi6Fx
+        ZPdeJowEeEvZyK5hSwniqg0kGC8pHeXOgnzjs5uKjTkKLfPTGw==
+X-Google-Smtp-Source: ABdhPJw3izEHJeXRQXktWVVbIEMep10jJrLdsI2kPye/SIoyiHeQDSW1tOwc0xglXUGVQmeO1UFHTbDCLDdwSieiwSs=
+X-Received: by 2002:a17:906:8693:: with SMTP id g19mr9445928ejx.579.1642368351891;
+ Sun, 16 Jan 2022 13:25:51 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20220114202226.ugzklxv4wzr6egwj@pengutronix.de>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 8bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT01.lancloud.ru (fd00:f066::141) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+References: <20220115092705.491-1-nuno.sa@analog.com> <20220116173429.698919f7@jic23-huawei>
+In-Reply-To: <20220116173429.698919f7@jic23-huawei>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 16 Jan 2022 23:25:15 +0200
+Message-ID: <CAHp75VczFs8QpsY7tuB-h4X=H54nyjABA4qDSmpQ+FRYAHZdrA@mail.gmail.com>
+Subject: Re: [PATCH v2 0/3] Add support for LTC2688
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     =?UTF-8?B?TnVubyBTw6E=?= <nuno.sa@analog.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        "Rafael J. Wysocki" <rafael@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello!
+On Sun, Jan 16, 2022 at 7:28 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+>
+>
+> >   * Have a clock property per channel. Note that we this I moved to OF
+> > since we now have to use 'devm_get_clk_from_child()' which is using
+> > device_node. Note that I could use 'to_of_node()' but mixing of.h and
+> > property.h does not feel like a good idea.
+>
+> Ah, that's unfortunate given the clk is only needed in certain modes...
+>
+> Andy/Rafael/Rob, any thoughts on how we should handle this?  Obviously
+> ACPI and clocks is generally a no go, but in this particular case we
+> aren't looking at a power management related use of clocks, but rather
+> using the clk framework to provide a way to control one of our inputs
+> used to generate the output dithered signal...  If the device just its
+> own clock then we'd just control it directly with no problems, but it uses
+> and external source.
+>
+> We don't know of anyone actually looking at this device in conjunction with
+> ACPI so maybe just using dt specific calls for now rather than generic
+> firmware properties is the best we can do.
 
-On 1/14/22 11:22 PM, Uwe Kleine-König wrote:
+The problem is the CCF is so OF-centric and maintainer(s) seems
+skeptical about switching it to use fwnode APIs (they wanted, last
+time I tried, to show how exactly it will be used, so here is your
+chance!), but OTOH switching to fwnode API is a half made road,
+because for ACPI we might need a glue layer which may be way too
+tricky to be considered as a part of this series.
 
->>>>>>> To me it sounds much more logical for the driver to check if an
->>>>>>> optional irq is non-zero (available) or zero (not available), than to
->>>>>>> sprinkle around checks for -ENXIO. In addition, you have to remember
->>>>>>> that this one returns -ENXIO, while other APIs use -ENOENT or -ENOSYS
->>>>>>> (or some other error code) to indicate absence. I thought not having
->>>>>>> to care about the actual error code was the main reason behind the
->>>>>>> introduction of the *_optional() APIs.
->>>>>
->>>>>> No, the main benefit of gpiod_get_optional() (and clk_get_optional()) is
->>>>>> that you can handle an absent GPIO (or clk) as if it were available.
->>>>
->>>>    Hm, I've just looked at these and must note that they match 1:1 with
->>>> platform_get_irq_optional(). Unfortunately, we can't however behave the
->>>> same way in request_irq() -- because it has to support IRQ0 for the sake
->>>> of i8253 drivers in arch/...
->>>
->>> Let me reformulate your statement to the IMHO equivalent:
->>>
->>> 	If you set aside the differences between
->>> 	platform_get_irq_optional() and gpiod_get_optional(),
->>
->>    Sorry, I should make it clear this is actually the diff between a would-be
->> platform_get_irq_optional() after my patch, not the current code...
-> 
-> The similarity is that with your patch both gpiod_get_optional() and
-> platform_get_irq_optional() return NULL and 0 on not-found. The relevant
-> difference however is that for a gpiod NULL is a dummy value, while for
-> irqs it's not. So the similarity is only syntactically, but not
-> semantically.
-
-   I have noting to say here, rather than optional IRQ could well have a different
-meaning than for clk/gpio/etc.
-
-[...]
->>> However for an interupt this cannot work. You will always have to check
->>> if the irq is actually there or not because if it's not you cannot just
->>> ignore that. So there is no benefit of an optional irq.
->>>
->>> Leaving error message reporting aside, the introduction of
->>> platform_get_irq_optional() allows to change
->>>
->>> 	irq = platform_get_irq(...);
->>> 	if (irq < 0 && irq != -ENXIO) {
->>> 		return irq;
->>> 	} else if (irq >= 0) {
->>
->>    Rather (irq > 0) actually, IRQ0 is considered invalid (but still returned).
-> 
-> This is a topic I don't feel strong for, so I'm sloppy here. If changing
-> this is all that is needed to convince you of my point ...
-
-   Note that we should absolutely (and first of all) stop returning 0 from platform_get_irq()
-on a "real" IRQ0. Handling that "still good" zero absolutely doesn't scale e.g. for the subsystems
-(like libata) which take 0 as an indication that the polling mode should be used... We can't afford
-to be sloppy here. ;-)
-
-[...]
-
-> Best regards
-> Uwe
-
-MBR, Sergey
+-- 
+With Best Regards,
+Andy Shevchenko
