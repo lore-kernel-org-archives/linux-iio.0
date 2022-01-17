@@ -2,249 +2,99 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DE9D9C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Jan 2022 08:29:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70D7AC433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Jan 2022 08:34:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238183AbiAQI3I (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Jan 2022 03:29:08 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40294 "EHLO
+        id S238281AbiAQIej (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Jan 2022 03:34:39 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41588 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238168AbiAQI3E (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jan 2022 03:29:04 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58898C061574
-        for <linux-iio@vger.kernel.org>; Mon, 17 Jan 2022 00:29:04 -0800 (PST)
-Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ore@pengutronix.de>)
-        id 1n9NNm-0007eR-Fs; Mon, 17 Jan 2022 09:28:54 +0100
-Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ore@pengutronix.de>)
-        id 1n9NNl-00E8vk-5R; Mon, 17 Jan 2022 09:28:53 +0100
-From:   Oleksij Rempel <o.rempel@pengutronix.de>
+        with ESMTP id S238257AbiAQIeh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jan 2022 03:34:37 -0500
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE586C061574;
+        Mon, 17 Jan 2022 00:34:36 -0800 (PST)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: usama.anjum)
+        with ESMTPSA id B4D1B1F4135B
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1642408475;
+        bh=xoK0jv3NtU8ZkFPzIzfvCTtQcjyKWM9goIUF47mzE/o=;
+        h=Subject:From:To:Cc:Date:In-Reply-To:References:From;
+        b=IqPEoxEtxahmxn6slrmLI5kbao8z63Jjv3ia08ySyB2cwgvYAjuXWtX/zfe6H8SVu
+         LVU6yeTfN5PyztamR8/+VsrtSEok9fHjGiQKH/Q4VQD9k+eO3ktHcOimWf9KPHA/tJ
+         35gFyCbIUM2qBZgGg0rjph6PN1V7dqTh2/ukELJ8pcrqXjaTITDGaTZZIJyC1NHSGR
+         yfOEyKC5i1RUhzJeePiBaWs/vG2NG2RXQ8bmKxDzt+WdoGX/79A3IxpjQmZQXZ0Nga
+         ZyFxn3DJ55nAST/jHMH4Woogxhc79M2UKW7WOexmE/UBYqDKp+QqCJ4xTkOihpaKBb
+         VmRwclfcTAidQ==
+Message-ID: <b5b69eac10039de1b287df90279f464bd70e1de0.camel@collabora.com>
+Subject: Re: [PATCH] iio: frequency: admv1013: remove the always true
+ condition
+From:   Muhammad Usama Anjum <usama.anjum@collabora.com>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v3 1/2] iio: adc: tsc2046: add .read_raw support
-Date:   Mon, 17 Jan 2022 09:28:51 +0100
-Message-Id: <20220117082852.3370869-1-o.rempel@pengutronix.de>
-X-Mailer: git-send-email 2.30.2
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Muhammad Usama Anjum <usama.anjum@collabora.com>
+Date:   Mon, 17 Jan 2022 13:34:28 +0500
+In-Reply-To: <20220115180941.709a667a@jic23-huawei>
+References: <YdS3gJYtECMaDDjA@debian-BULLSEYE-live-builder-AMD64>
+         <20220115180941.709a667a@jic23-huawei>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.38.3-1 
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
-X-SA-Exim-Mail-From: ore@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add read_raw() support to make use of iio_hwmon and other iio clients.
+On Sat, 2022-01-15 at 18:09 +0000, Jonathan Cameron wrote:
+> On Wed, 5 Jan 2022 02:09:20 +0500
+> Muhammad Usama Anjum <usama.anjum@collabora.com> wrote:
+> 
+> > unsigned int variable is always greater than or equal to zero. Make the
+> > if condition simple.
+> > 
+> > Signed-off-by: Muhammad Usama Anjum <usama.anjum@collabora.com>
+> Hi,
+> 
+> + CC Antoniu and this should have a Fixes tag.
+> 
+> Thanks,
+> 
+> Jonathan
+> 
+Fixes: da35a7b526d9 ("iio: frequency: admv1013: add support for ADMV1013")
 
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
----
- drivers/iio/adc/ti-tsc2046.c | 118 ++++++++++++++++++++++++++++-------
- 1 file changed, 97 insertions(+), 21 deletions(-)
+Please let me know if I should send a V2 with this tag included.
 
-diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
-index 7ac1fc4b04c2..95771ceba206 100644
---- a/drivers/iio/adc/ti-tsc2046.c
-+++ b/drivers/iio/adc/ti-tsc2046.c
-@@ -86,6 +86,7 @@
- #define TI_TSC2046_EXT_POLL_CNT			3
- #define TI_TSC2046_POLL_CNT \
- 	(TI_TSC2046_MIN_POLL_CNT + TI_TSC2046_EXT_POLL_CNT)
-+#define TI_TSC2046_INT_VREF			2500
- 
- /* Represents a HW sample */
- struct tsc2046_adc_atom {
-@@ -166,9 +167,6 @@ struct tsc2046_adc_priv {
- 	struct tsc2046_adc_atom *rx;
- 	struct tsc2046_adc_atom *tx;
- 
--	struct tsc2046_adc_atom *rx_one;
--	struct tsc2046_adc_atom *tx_one;
--
- 	unsigned int count;
- 	unsigned int groups;
- 	u32 effective_speed_hz;
-@@ -184,6 +182,8 @@ struct tsc2046_adc_priv {
- 	.type = IIO_VOLTAGE,					\
- 	.indexed = 1,						\
- 	.channel = index,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
- 	.datasheet_name = "#name",				\
- 	.scan_index = index,					\
- 	.scan_type = {						\
-@@ -247,6 +247,14 @@ static u8 tsc2046_adc_get_cmd(struct tsc2046_adc_priv *priv, int ch_idx,
- 	else
- 		pd = 0;
- 
-+	switch (ch_idx) {
-+	case TI_TSC2046_ADDR_TEMP1:
-+	case TI_TSC2046_ADDR_AUX:
-+	case TI_TSC2046_ADDR_VBAT:
-+	case TI_TSC2046_ADDR_TEMP0:
-+		pd |= TI_TSC2046_SER | TI_TSC2046_PD1_VREF_ON;
-+	}
-+
- 	return TI_TSC2046_START | FIELD_PREP(TI_TSC2046_ADDR, ch_idx) | pd;
- }
- 
-@@ -258,16 +266,50 @@ static u16 tsc2046_adc_get_value(struct tsc2046_adc_atom *buf)
- static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
- 				u32 *effective_speed_hz)
- {
-+	struct tsc2046_adc_ch_cfg *ch = &priv->ch_cfg[ch_idx];
-+	struct tsc2046_adc_atom *rx_buf, *tx_buf;
-+	unsigned int val, val_normalized = 0;
-+	int ret, i, count_skip = 0, max_count;
- 	struct spi_transfer xfer;
- 	struct spi_message msg;
--	int ret;
-+	u8 cmd;
-+
-+	if (!effective_speed_hz) {
-+		count_skip = tsc2046_adc_time_to_count(priv, ch->settling_time_us);
-+		max_count = count_skip + ch->oversampling_ratio;
-+	} else {
-+		max_count = 1;
-+	}
-+
-+	if (sizeof(*tx_buf) * max_count > PAGE_SIZE)
-+		return -ENOSPC;
-+
-+	tx_buf = kcalloc(max_count, sizeof(*tx_buf), GFP_KERNEL);
-+	if (!tx_buf)
-+		return -ENOMEM;
-+
-+	rx_buf = kcalloc(max_count, sizeof(*rx_buf), GFP_KERNEL);
-+	if (!rx_buf) {
-+		ret = -ENOMEM;
-+		goto free_tx;
-+	}
-+
-+	/*
-+	 * Do not enable automatic power down on working samples. Otherwise the
-+	 * plates will never be completely charged.
-+	 */
-+	cmd = tsc2046_adc_get_cmd(priv, ch_idx, true);
-+
-+	for (i = 0; i < max_count - 1; i++)
-+		tx_buf[i].cmd = cmd;
-+
-+	/* automatically power down on last sample */
-+	tx_buf[i].cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
- 
- 	memset(&xfer, 0, sizeof(xfer));
--	priv->tx_one->cmd = tsc2046_adc_get_cmd(priv, ch_idx, false);
--	priv->tx_one->data = 0;
--	xfer.tx_buf = priv->tx_one;
--	xfer.rx_buf = priv->rx_one;
--	xfer.len = sizeof(*priv->tx_one);
-+	xfer.tx_buf = tx_buf;
-+	xfer.rx_buf = rx_buf;
-+	xfer.len = sizeof(*tx_buf) * max_count;
- 	spi_message_init_with_transfers(&msg, &xfer, 1);
- 
- 	/*
-@@ -278,13 +320,25 @@ static int tsc2046_adc_read_one(struct tsc2046_adc_priv *priv, int ch_idx,
- 	if (ret) {
- 		dev_err_ratelimited(&priv->spi->dev, "SPI transfer failed %pe\n",
- 				    ERR_PTR(ret));
--		return ret;
-+		goto free_bufs;
- 	}
- 
- 	if (effective_speed_hz)
- 		*effective_speed_hz = xfer.effective_speed_hz;
- 
--	return tsc2046_adc_get_value(priv->rx_one);
-+	for (i = 0; i < max_count - count_skip; i++) {
-+		val = tsc2046_adc_get_value(&rx_buf[count_skip + i]);
-+		val_normalized += val;
-+	}
-+
-+	ret = DIV_ROUND_UP(val_normalized, max_count - count_skip);
-+
-+free_bufs:
-+	kfree(rx_buf);
-+free_tx:
-+	kfree(tx_buf);
-+
-+	return ret;
- }
- 
- static size_t tsc2046_adc_group_set_layout(struct tsc2046_adc_priv *priv,
-@@ -391,6 +445,37 @@ static irqreturn_t tsc2046_adc_trigger_handler(int irq, void *p)
- 	return IRQ_HANDLED;
- }
- 
-+static int tsc2046_adc_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long m)
-+{
-+	struct tsc2046_adc_priv *priv = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (m) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = tsc2046_adc_read_one(priv, chan->channel, NULL);
-+		if (ret < 0)
-+			return ret;
-+
-+		*val = ret;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		/*
-+		 * Note: the TSC2046 has internal voltage divider on the VBAT
-+		 * line. This divider can be influenced by external divider.
-+		 * So, it is better to use external voltage-divider driver
-+		 * instead, which is calculating complete chain.
-+		 */
-+		*val = TI_TSC2046_INT_VREF;
-+		*val2 = chan->scan_type.realbits;
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static int tsc2046_adc_update_scan_mode(struct iio_dev *indio_dev,
- 					const unsigned long *active_scan_mask)
- {
-@@ -421,6 +506,7 @@ static int tsc2046_adc_update_scan_mode(struct iio_dev *indio_dev,
- }
- 
- static const struct iio_info tsc2046_adc_info = {
-+	.read_raw	  = tsc2046_adc_read_raw,
- 	.update_scan_mode = tsc2046_adc_update_scan_mode,
- };
- 
-@@ -563,16 +649,6 @@ static int tsc2046_adc_setup_spi_msg(struct tsc2046_adc_priv *priv)
- 	size_t size;
- 	int ret;
- 
--	priv->tx_one = devm_kzalloc(&priv->spi->dev, sizeof(*priv->tx_one),
--				    GFP_KERNEL);
--	if (!priv->tx_one)
--		return -ENOMEM;
--
--	priv->rx_one = devm_kzalloc(&priv->spi->dev, sizeof(*priv->rx_one),
--				    GFP_KERNEL);
--	if (!priv->rx_one)
--		return -ENOMEM;
--
- 	/*
- 	 * Make dummy read to set initial power state and get real SPI clock
- 	 * freq. It seems to be not important which channel is used for this
--- 
-2.30.2
+Thanks,
+Usama
+> > ---
+> >  drivers/iio/frequency/admv1013.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/frequency/admv1013.c b/drivers/iio/frequency/admv1013.c
+> > index 6cdeb50143af..3f3c478e9baa 100644
+> > --- a/drivers/iio/frequency/admv1013.c
+> > +++ b/drivers/iio/frequency/admv1013.c
+> > @@ -348,7 +348,7 @@ static int admv1013_update_mixer_vgate(struct admv1013_state *st)
+> >  
+> > 
+> > 
+> > 
+> >  	vcm = regulator_get_voltage(st->reg);
+> >  
+> > 
+> > 
+> > 
+> > -	if (vcm >= 0 && vcm < 1800000)
+> > +	if (vcm < 1800000)
+> >  		mixer_vgate = (2389 * vcm / 1000000 + 8100) / 100;
+> >  	else if (vcm > 1800000 && vcm < 2600000)
+> >  		mixer_vgate = (2375 * vcm / 1000000 + 125) / 100;
+> 
+
 
