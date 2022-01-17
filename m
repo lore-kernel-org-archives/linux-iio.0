@@ -2,117 +2,133 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6594BC433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 17 Jan 2022 13:38:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51742C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 17 Jan 2022 16:41:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232007AbiAQNiB convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 17 Jan 2022 08:38:01 -0500
-Received: from mail-qk1-f173.google.com ([209.85.222.173]:44683 "EHLO
-        mail-qk1-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230190AbiAQNiB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jan 2022 08:38:01 -0500
-Received: by mail-qk1-f173.google.com with SMTP id t1so2837055qkt.11;
-        Mon, 17 Jan 2022 05:38:00 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=Vgyxr7ztzV60Xeh7Q7gRuypGNAwuqlHo855fT6ZQ17E=;
-        b=PiUDFWDBmU1+9vD4LZmuVbR65V+lCU9F7loiGmX1eZujZTseE8D/3n5/gK3z/DarOl
-         FgwlLnRenmiBBehgtd+rIidprM7p26l03tsCuJVY7kl8KZzV0a1AFr3PCeKYdgLuovtN
-         2PdoJ8xqSuQS6GjvwpU+2RKSBgGaWEjWiOCWnzZYMn4Huncw/C10BepaY4pUZy1ldVCa
-         kLm/aFCLHPSYgIHItB/kpxYZSi0Y7BaXC1NX5cXIlQOx51n4h7chhUGHKfvEYlERUgzr
-         sm+HTEDGRnSwkKCgZAgjiS0Bbv6Wciam5yS9ZNeKlgBX+ghOzHxthf3qvzbvcMBqFNMG
-         qZcg==
-X-Gm-Message-State: AOAM533pUQzBzSmKA6RUzx1GGUD6jpJgwso7Shooe9JhEx+JDWnegzkK
-        XP/hCP60M1k6g83EqfYgI23+N+rJJGNE3PtveCI=
-X-Google-Smtp-Source: ABdhPJzgqH7VQOVtjyKwk0O6xlkP5eJCKSaa1kHhuN3q3ZPuNR5LB9Fx/9eQnXEjz8YssSHj1lIGXO8rpmxps9J+78A=
-X-Received: by 2002:a05:620a:4714:: with SMTP id bs20mr2943693qkb.8.1642426680287;
- Mon, 17 Jan 2022 05:38:00 -0800 (PST)
+        id S241110AbiAQQlO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 17 Jan 2022 11:41:14 -0500
+Received: from mx0a-00128a01.pphosted.com ([148.163.135.77]:30830 "EHLO
+        mx0a-00128a01.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S237683AbiAQQlO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Jan 2022 11:41:14 -0500
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 20HE5ahC022577;
+        Mon, 17 Jan 2022 11:41:06 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3dn4wyhqnb-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 17 Jan 2022 11:41:05 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 20HGf43T064958
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 17 Jan 2022 11:41:04 -0500
+Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 17 Jan 2022 11:41:03 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 17 Jan 2022 11:41:03 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 17 Jan 2022 11:41:03 -0500
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 20HGes81012846;
+        Mon, 17 Jan 2022 11:40:56 -0500
+From:   Cristian Pop <cristian.pop@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>, Cristian Pop <cristian.pop@analog.com>
+Subject: [PATCH v1 1/2] dt:bindings:iio:frequency: Add ADMV4420 doc
+Date:   Mon, 17 Jan 2022 18:52:46 +0200
+Message-ID: <20220117165247.15718-1-cristian.pop@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220107181723.54392-1-paul@crapouillou.net> <IKXS5R.AB16PVIGN8Z9@crapouillou.net>
-In-Reply-To: <IKXS5R.AB16PVIGN8Z9@crapouillou.net>
-From:   "Rafael J. Wysocki" <rafael@kernel.org>
-Date:   Mon, 17 Jan 2022 14:37:45 +0100
-Message-ID: <CAJZ5v0htDq+qFhEoV+PLQ9_pOy_xa7+rMoaGtqK7QpEbpUDA+Q@mail.gmail.com>
-Subject: Re: [PATCH v3 0/6] DEV_PM_OPS macros rework v3
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Arnd Bergmann <arnd@arndb.de>, Len Brown <len.brown@intel.com>,
-        Pavel Machek <pavel@ucw.cz>, list@opendingux.net,
-        linux-iio@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-mmc <linux-mmc@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: NvqntSvOezvVh2VyCaZ45n6amTrluZ6P
+X-Proofpoint-ORIG-GUID: NvqntSvOezvVh2VyCaZ45n6amTrluZ6P
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-01-17_07,2022-01-14_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 phishscore=0
+ mlxlogscore=999 priorityscore=1501 suspectscore=0 clxscore=1015
+ impostorscore=0 adultscore=0 mlxscore=0 bulkscore=0 malwarescore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2110150000 definitions=main-2201170105
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+Add device tree bindings for the ADMV4420 K band downconverter.
 
-On Sun, Jan 16, 2022 at 1:05 PM Paul Cercueil <paul@crapouillou.net> wrote:
->
-> Hi Rafael,
->
-> Could patches [1/6] and [2/6] make it to 5.17-rc1, or at least -rc2?
+Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+---
+ .../bindings/iio/frequency/adi,admv4420.yaml  | 54 +++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
 
-Yes.  I'm going to send a PR with the whole series later today.
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
+new file mode 100644
+index 000000000000..f26af2718f23
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
+@@ -0,0 +1,54 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,admv4420.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: ADMV4420 K Band Downconverter
++
++maintainers:
++- Cristian Pop <cristian.pop@analog.com>
++
++description: |
++    The ADMV4420 is a highly integrated, double balanced, active
++    mixer with an integrated fractional-N synthesizer, ideally suited
++    for next generation K band satellite communications
++properties:
++  compatible:
++    enum:
++      - adi,admv4420
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 1000000
++
++  adi,lo_freq_hz:
++    description: LO Frequency
++    $ref: /schemas/types.yaml#/definitions/uint64
++
++  adi,ref_ext_single_ended_en:
++    description: External reference selected.
++    type: boolean
++
++required:
++- compatible
++- reg
++
++additionalProperties: false
++
++examples:
++- |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      admv4420@0 {
++        compatible = "adi,admv4420";
++        reg = <0>;
++        spi-max-frequency = <1000000>;
++        adi,lo_freq_hz = /bits/ 64 <16743700000>;
++        adi,ref_ext_single_ended_en;
++      };
++    };
++...
+-- 
+2.17.1
 
-> I'm afraid that if these two have to wait for the 5.18 cycle, then I'll
-> have more drivers to fix later.
->
-> Should I add a Fixes tag maybe?
-
-No need, thanks!
-
-> Le ven., janv. 7 2022 at 18:17:17 +0000, Paul Cercueil
-> <paul@crapouillou.net> a écrit :
-> > Hi,
-> >
-> > A V2 of my patchset that tweaks a bit the *_DEV_PM_OPS() macros that
-> > were introduced recently.
-> >
-> > Changes since V2:
-> > * [1/6]: - Keep UNIVERSAL_DEV_PM_OPS() macro deprecated
-> >          - Rework commit message
-> > * [3/6]: - Reorder the code to have non-private macros together in the
-> >            file
-> >        - Add comment about the necesity to use the new export macro
-> >          when the dev_pm_ops has to be exported
-> > * [5/6]: Add comment about the necesity to use the new export macro
-> >          when the dev_pm_ops has to be exported
-> >
-> > Cheers,
-> > -Paul
-> >
-> > Paul Cercueil (6):
-> >   PM: core: Remove DEFINE_UNIVERSAL_DEV_PM_OPS() macro
-> >   PM: core: Remove static qualifier in DEFINE_SIMPLE_DEV_PM_OPS macro
-> >   PM: core: Add EXPORT[_GPL]_SIMPLE_DEV_PM_OPS macros
-> >   PM: runtime: Add DEFINE_RUNTIME_DEV_PM_OPS() macro
-> >   PM: runtime: Add EXPORT[_GPL]_RUNTIME_DEV_PM_OPS macros
-> >   iio: pressure: bmp280: Use new PM macros
-> >
-> >  drivers/iio/pressure/bmp280-core.c | 11 ++----
-> >  drivers/iio/pressure/bmp280-i2c.c  |  2 +-
-> >  drivers/iio/pressure/bmp280-spi.c  |  2 +-
-> >  drivers/mmc/host/jz4740_mmc.c      |  4 +--
-> >  drivers/mmc/host/mxcmmc.c          |  2 +-
-> >  include/linux/pm.h                 | 55
-> > ++++++++++++++++++++++--------
-> >  include/linux/pm_runtime.h         | 24 +++++++++++++
-> >  7 files changed, 71 insertions(+), 29 deletions(-)
-> >
-> > --
-> > 2.34.1
-> >
->
->
