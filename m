@@ -2,166 +2,160 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D84BC4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 19 Jan 2022 18:29:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E245DC433F5
+	for <linux-iio@archiver.kernel.org>; Wed, 19 Jan 2022 19:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356752AbiASS3m (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 19 Jan 2022 13:29:42 -0500
-Received: from mxout02.lancloud.ru ([45.84.86.82]:60414 "EHLO
-        mxout02.lancloud.ru" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356737AbiASS3l (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Jan 2022 13:29:41 -0500
-Received: from LanCloud
-DKIM-Filter: OpenDKIM Filter v2.11.0 mxout02.lancloud.ru EFD8920BF006
-Received: from LanCloud
-Received: from LanCloud
-Received: from LanCloud
-From:   Sergey Shtylyov <s.shtylyov@omp.ru>
-Subject: Re: [PATCH 1/2] platform: make platform_get_irq_optional() optional
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        "Geert Uytterhoeven" <geert@linux-m68k.org>
-CC:     Andrew Lunn <andrew@lunn.ch>, Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        KVM list <kvm@vger.kernel.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        "Linus Walleij" <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>,
-        "ALSA Development Mailing List" <alsa-devel@alsa-project.org>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Guenter Roeck <groeck@chromium.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        MTD Maling List <linux-mtd@lists.infradead.org>,
-        Linux I2C <linux-i2c@vger.kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        <linux-phy@lists.infradead.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        "David S. Miller" <davem@davemloft.net>,
-        Khuong Dinh <khuong@os.amperecomputing.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        Kamal Dasu <kdasu.kdev@gmail.com>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list <bcm-kernel-feedback-list@broadcom.com>,
-        "open list:SERIAL DRIVERS" <linux-serial@vger.kernel.org>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        <platform-driver-x86@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Robert Richter <rric@kernel.org>,
-        "Saravanan Sekar" <sravanhome@gmail.com>,
-        Corey Minyard <minyard@acm.org>,
-        Linux PM list <linux-pm@vger.kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        "Mauro Carvalho Chehab" <mchehab@kernel.org>,
-        John Garry <john.garry@huawei.com>,
-        Peter Korsgaard <peter@korsgaard.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        "Mark Brown" <broonie@kernel.org>, Borislav Petkov <bp@alien8.de>,
-        Takashi Iwai <tiwai@suse.com>,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        <openipmi-developer@lists.sourceforge.net>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Linux ARM <linux-arm-kernel@lists.infradead.org>,
-        <linux-edac@vger.kernel.org>, "Tony Luck" <tony.luck@intel.com>,
-        Richard Weinberger <richard@nod.at>,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>,
-        netdev <netdev@vger.kernel.org>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        Cornelia Huck <cohuck@redhat.com>,
-        "Linux MMC List" <linux-mmc@vger.kernel.org>,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        Vinod Koul <vkoul@kernel.org>,
-        "James Morse" <james.morse@arm.com>,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        "Sebastian Reichel" <sre@kernel.org>,
-        =?UTF-8?Q?Niklas_S=c3=b6derlund?= <niklas.soderlund@ragnatech.se>,
-        <linux-mediatek@lists.infradead.org>,
-        "Brian Norris" <computersforpeace@gmail.com>,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>
-References: <20220117092444.opoedfcf5k5u6otq@pengutronix.de>
- <CAMuHMdUgZUeraHadRAi2Z=DV+NuNBrKPkmAKsvFvir2MuquVoA@mail.gmail.com>
- <20220117114923.d5vajgitxneec7j7@pengutronix.de>
- <CAMuHMdWCKERO20R2iVHq8P=BaoauoBAtiampWzfMRYihi3Sb0g@mail.gmail.com>
- <20220117170609.yxaamvqdkivs56ju@pengutronix.de>
- <CAMuHMdXbuZqEpYivyS6hkaRN+CwTOGaHq_OROwVAWvDD6OXODQ@mail.gmail.com>
- <20220118090913.pjumkq4zf4iqtlha@pengutronix.de>
- <CAMuHMdUW8+Y_=uszD+JOZO3Lpa9oDayk+GO+cg276i2f2T285w@mail.gmail.com>
- <20220118120806.pbjsat4ulg3vnhsh@pengutronix.de>
- <CAMuHMdWkwV9XE_R5FZ=jPtDwLpDbEngG6+X2JmiDJCZJZvUjYA@mail.gmail.com>
- <20220118142945.6y3rmvzt44pjpr4z@pengutronix.de>
- <6370798a-7a7e-243d-99f9-09bf772ddbac@omp.ru>
-Organization: Open Mobile Platform
-Message-ID: <96ff907a-4ad2-5b2e-9bcc-09592d65a6df@omp.ru>
-Date:   Wed, 19 Jan 2022 21:29:28 +0300
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:78.0) Gecko/20100101
- Thunderbird/78.10.1
+        id S1356964AbiASTFh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 19 Jan 2022 14:05:37 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52566 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1356952AbiASTFg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Jan 2022 14:05:36 -0500
+Received: from mail-yb1-xb30.google.com (mail-yb1-xb30.google.com [IPv6:2607:f8b0:4864:20::b30])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A1744C061574
+        for <linux-iio@vger.kernel.org>; Wed, 19 Jan 2022 11:05:36 -0800 (PST)
+Received: by mail-yb1-xb30.google.com with SMTP id p5so10319595ybd.13
+        for <linux-iio@vger.kernel.org>; Wed, 19 Jan 2022 11:05:36 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=EaZyfOoMLEkSok9ijG+OY14umVQP0UqIXegtGhL1RE8=;
+        b=JlRPqZXYafVV/X1cy6KtGd7Oq2XGypjt8tGtOaTrdL4R5rOMYGNOpiMOg6H7T/zChw
+         mSx0aXXLhIC09fKIelE4RLBuXhuAE79QVJhhcGkjNwRFcz1013qcMH+CdcF23ojDtEgH
+         u1eMvvoEVVnUngUHATWfJNNqJryaZh484O/IXCeriP6A2ALthZiOur31QLDPtb1MBxFc
+         BFckgfwdLwSoTxuIQ0Y5xv2PPOPRZ4PdOGg9myxLTU0UonlaGsT29AD07K2Y7zif5tXy
+         TTsGm8AYaFF+UCweB4DOscqDJuwcPhhwzAhDY503pt4zrcyH5L+kJVIR+t/bDaRq+3u9
+         IF6A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=EaZyfOoMLEkSok9ijG+OY14umVQP0UqIXegtGhL1RE8=;
+        b=p56CMgbFzxmWvrwlT/KrYnxQaKEaz2U8r3dl46w3kwBfRbETPNTKOuuV8xzgli1OU8
+         7hXexItVUSfziFFZyE1asi3nZ2oWLldGsGx5/WDWqNmibC8KXZmui6XRW5mAi39bEzUr
+         aXVNfTEeDqt7WjzR+vHwxok+tanUjrAJC81hU+IBF6kQ8APxfPdwny7QHLr1dnMijgWI
+         FK5Klpm2BkRupmdGZmyvf+F9caiYu3aa83xVnvFHGeKSRr7J/5H97OZxLcBEdIuQr3QQ
+         Imz14wXKVqmxtog/jb/DSqBChQ4Ckn+Oj+d95U3CT6zkvW+BocR4QzCGt8gb+DERPQWq
+         ij4g==
+X-Gm-Message-State: AOAM531Mr/8DILyw33lhgg2EGXeXkJ2hzIFPvOT3rQ1VU/z4805TFUx6
+        u514P/hKyeXSq2FDywWL7C1jIs4uZe76kuSVfPw=
+X-Google-Smtp-Source: ABdhPJyZlfBlJqM4mLCx1hFwrlAzfizsBSsaEaAcCKzpq9IWzRzfsplgRMxXC30zJrLmdzHzBKsHXvn6LRPdW7X9qgI=
+X-Received: by 2002:a25:7445:: with SMTP id p66mr12039260ybc.623.1642619135839;
+ Wed, 19 Jan 2022 11:05:35 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <6370798a-7a7e-243d-99f9-09bf772ddbac@omp.ru>
-Content-Type: text/plain; charset="windows-1252"
-Content-Language: en-US
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [192.168.11.198]
-X-ClientProxiedBy: LFEXT02.lancloud.ru (fd00:f066::142) To
- LFEX1907.lancloud.ru (fd00:f066::207)
+References: <CACAwPwb7edLzX-KO1XVNWuQ3w=U0BfA=_kwiGCjZOpKfZpc2pw@mail.gmail.com>
+ <CACAwPwYQHRcrabw9=0tvenPzAcwwW1pTaR6a+AEWBF9Hqf_wXQ@mail.gmail.com>
+ <CAHp75VcEZ19zUU-Ps=kAYJDX1bkxmOqmHii36HE2ujC3gROkNQ@mail.gmail.com>
+ <CACAwPwaj_ekK6j9S4CRu6tRTPyjffgDhL3UFnhoYSyJSkAkmpw@mail.gmail.com>
+ <YW3ErLKGtmyhSFd3@smile.fi.intel.com> <CACAwPwYrxxFstQgYHhPOhMwUz_5RprSuoPNHL7m9ft1i-N2icQ@mail.gmail.com>
+ <CAHp75VdCF_Fhso-uS_4JL7a9X90_nQ5JcyCwpeLM3b-YKVqjYw@mail.gmail.com>
+ <cd43fddcf9b74f6eaa4dd5a8cdd71bf2@realtek.com> <CAHp75VfB2FULb_jfQNg0wF9Z4jPkrKfmw6hSwtLg8Y1NhKks8g@mail.gmail.com>
+ <YW/7oKPZORexnyN1@smile.fi.intel.com> <YZPvIKYsEM4zPZp7@smile.fi.intel.com>
+In-Reply-To: <YZPvIKYsEM4zPZp7@smile.fi.intel.com>
+From:   Maxim Levitsky <maximlevitsky@gmail.com>
+Date:   Wed, 19 Jan 2022 21:05:25 +0200
+Message-ID: <CACAwPwauWAcin3Vj4cOM1uejrCz-eRX_3Hp_iZFap--yuXK0jg@mail.gmail.com>
+Subject: Re: BMI160 accelerometer on AyaNeo tablet
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Hayes Wang <hayeswang@realtek.com>, nicfae@realtek.com,
+        wlanfae@realtek.com, pctech@realtek.com, security@realtek.com,
+        Hans de Goede <hdegoede@redhat.com>,
+        "linux-realtek-soc@lists.infradead.org" 
+        <linux-realtek-soc@lists.infradead.org>,
+        Oder Chiou <oder_chiou@realtek.com>,
+        Pkshih <pkshih@realtek.com>, nic_swsd <nic_swsd@realtek.com>,
+        =?UTF-8?B?RGVyZWsgW+aWueW+t+e+qV0=?= <derek.fang@realtek.com>,
+        Kailang <kailang@realtek.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "info@ayaneo.com" <info@ayaneo.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 1/19/22 7:12 PM, Sergey Shtylyov wrote:
+> Any news from Aya-Neo? Have you fixed and issued a new firmware, please?
 
-[...]
->>> So there's still a need for two functions.
->>
->> Or a single function not emitting an error message together with the
->> callers being responsible for calling dev_err().
->>
->> So the options in my preference order (first is best) are:
->>
->>  - Remove the printk from platform_get_irq() and remove
->>    platform_get_irq_optional();
-> 
->    Strong NAK here:
-> - dev_err() in our function saves a lot of (repeatable!) comments;
+Nothing I heard of. Anything I can do to further help with this?
 
-   s/comments/code/.
-   Actually, I think I can accept the removal of dev_err_probe() in platform_get_irq()
-as this is not a common practice anyway (yet? :-))...
+Best regards,
+   Maxim Levitsky
 
-> - we've already discussed that it's more optimal to check againt 0 than
-
-   Against. :-)
-
->   against -ENXIO in the callers.
-
-   And we also aim to be the error code agnostic in the callers...
-
->>  - Rename platform_get_irq_optional() to platform_get_irq_silently()
-> 
->    NAK as well. We'd better off complaining about irq < 0 in this function.
-
->>  - Keep platform_get_irq_optional() as is
-> 
->    NAK, it's suboptimal in the call sites.
-
-   s/in/on/.
-
-[...]
-
->> Best regards
->> Uwe
-
-MBR, Sergey
+On Tue, Nov 16, 2021 at 7:50 PM Andy Shevchenko
+<andriy.shevchenko@linux.intel.com> wrote:
+>
+> I filed the form, Cc'ed this to more people from Realtek, still no respon=
+se on
+> the topic. Does Realtek really cares about their IDs?
+>
+> Any news from Aya-Neo? Have you fixed and issued a new firmware, please?
+>
+> On Wed, Oct 20, 2021 at 02:21:04PM +0300, Andy Shevchenko wrote:
+> > +Cc: another set of emails from Realtek as per Hayes' email.
+> >
+> > Please waterfall to the people inside Realtek who can answer the questi=
+on.
+> > (Note, you may access this discussion in full via:
+> > https://lore.kernel.org/linux-iio/CACAwPwYQHRcrabw9=3D0tvenPzAcwwW1pTaR=
+6a+AEWBF9Hqf_wXQ@mail.gmail.com/T/#u)
+> >
+> > The problem here is to have an official confirmation of what 10ec:5280
+> > ID is from Realtek's point of view.
+> >
+> > Context: the current discussion and a patch state that it's related
+> > to gyro sensor. Is it so?
+> >
+> > On Wed, Oct 20, 2021 at 10:36:12AM +0300, Andy Shevchenko wrote:
+> > > On Wednesday, October 20, 2021, Hayes Wang <hayeswang@realtek.com> wr=
+ote:
+> > > > Andy Shevchenko <andy.shevchenko@gmail.com>
+> > > > > Sent: Tuesday, October 19, 2021 5:59 PM
+> >
+> > ...
+> >
+> > > > > > > Realtek probably should make this ID marked somehow broken an=
+d not
+> > > > use
+> > > > > > > in their products in case the answer to the first of the abov=
+e
+> > > > question
+> > > > > > > is "yes". (Of course in case the ID will be used for solely P=
+CI
+> > > > enumerated
+> > > > > > > product there will be no conflict, I just propose to be on th=
+e
+> > > > safest side,
+> > > > > > > but remark should be made somewhere).
+> > > > >
+> > > > > Any comments from Realtek, please?
+> > > >
+> > > > Excuse me. I don't know this device, so I don't know who I could fo=
+rward.
+> > > > Maybe you could try our contract window from our web site.
+> > > > https://www.realtek.com/en/cu-1-en/cu-1-taiwan-en
+> > >
+> > > Thanks for reply. I will try my best, but I am afraid that what you s=
+uggest
+> > > will be a long loop (and I believe the people behind that form are no=
+t
+> > > technical, they probably won=E2=80=99t understand the topic). I think=
+ you may pull
+> > > strings inside much faster. Just ask somebody who is technical superi=
+or in
+> > > your team / organization. Ideally inside company you may have a dedic=
+ated
+> > > people who responsible for allocating PCI and ACPI IDs.
+> >
+> > --
+> > With Best Regards,
+> > Andy Shevchenko
+> >
+> >
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
+>
+>
