@@ -2,40 +2,40 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B174C4332F
-	for <linux-iio@archiver.kernel.org>; Mon, 24 Jan 2022 17:20:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B91CC433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 24 Jan 2022 17:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244385AbiAXRUb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:20:31 -0500
-Received: from mga04.intel.com ([192.55.52.120]:37867 "EHLO mga04.intel.com"
+        id S244413AbiAXRUd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:20:33 -0500
+Received: from mga02.intel.com ([134.134.136.20]:35243 "EHLO mga02.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244359AbiAXRU2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:20:28 -0500
+        id S244324AbiAXRU3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 24 Jan 2022 12:20:29 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643044828; x=1674580828;
+  t=1643044829; x=1674580829;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=RVVPkYMMp87PkJON1Ymf9k5n3tLKBCKMpBFOUFvL4KE=;
-  b=CNqgUIJpNinmvHkbc5uF6q7BsgPtimJh1pL/FLaTbDLMhJJ46WTtN18F
-   ZESEIJcBE8FlFb8cJ/4/y5qKgKR1mFM7K2f4mwROKvn6+ePSv+gA5dOY2
-   S0+Jj9GmZJWcK/0bu5Fa658oKPEWdHjzL51v9imoPx8vv/Sm9z05nU//x
-   JIlA0MQGtoIoqK0pIZOxwtVGV59IrGaYcwPPzEDKddgAsk26Z9KEFF5vf
-   bpAn7BWUaKA5fHDbj3A/zSnt3mSNSyT1hExwyPnvrscKFM1cYZD/pDvW7
-   AUPZBgE48I3UkWxWID2Rl2t1XHbJVN+SSgARJMVREa6VAswKWC478aYD+
+  bh=se/aEC9HgTBzxLx3OJbYihBez8zl3RiKCuUOJXNE4gU=;
+  b=EQ3zGLjSjSRMPxfPQkdJ1Th5KxAtTLidmuk1RTQ+z7H/rDj1ykJDP0O0
+   Ox3CrJi6WWSxRYydDRGs+TVBm/xPEhfqRE2L/d8yi6lO01BWXM/zOrNo6
+   MDsEchm2BaeMlth9N425DeXutbP5b86XdAarPiJ4iqsXF5dwZESfcR9xa
+   Om0TDAwqYbF7VUOCWC6gwwulMc0Xn24zB+FP4aNePpIEBYeIsic92A09C
+   GcJpEDG4riINVoxJbR6s1FCOg2+iQmMOFjH8e6Tg+pqk2NP4gGlnn0dat
+   JcalsGi6voYbyLDE0t1euHQs6KS3xwcIiYiDLpJ/fC2U3a5tayMBROkLb
    g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="244933222"
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="233460796"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="244933222"
-Received: from orsmga004.jf.intel.com ([10.7.209.38])
-  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 09:20:26 -0800
+   d="scan'208";a="233460796"
+Received: from fmsmga007.fm.intel.com ([10.253.24.52])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 09:20:25 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="627578404"
+   d="scan'208";a="532144834"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga004.jf.intel.com with ESMTP; 24 Jan 2022 09:20:22 -0800
+  by fmsmga007.fm.intel.com with ESMTP; 24 Jan 2022 09:20:22 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id A244AB7; Mon, 24 Jan 2022 19:20:35 +0200 (EET)
+        id BCD55A51; Mon, 24 Jan 2022 19:20:35 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Andreas Kemnade <andreas@kemnade.info>,
@@ -46,9 +46,9 @@ Cc:     Andy Gross <agross@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Rosin <peda@axentia.se>
-Subject: [PATCH v3 2/6] iio: adc: rn5t618: Re-use generic struct u16_fract
-Date:   Mon, 24 Jan 2022 19:20:28 +0200
-Message-Id: <20220124172032.87893-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 5/6] iio: afe: iio-rescale: Group rescale field assignments in ->probe()
+Date:   Mon, 24 Jan 2022 19:20:31 +0200
+Message-Id: <20220124172032.87893-5-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220124172032.87893-1-andriy.shevchenko@linux.intel.com>
 References: <20220124172032.87893-1-andriy.shevchenko@linux.intel.com>
@@ -58,40 +58,36 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Instead of custom data type re-use generic struct u16_fract.
-No changes intended.
+Group rescale field assignments in the ->probe() for better maintenance.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v3: no changes
- drivers/iio/adc/rn5t618-adc.c | 7 +------
- 1 file changed, 1 insertion(+), 6 deletions(-)
+v3: new patch
+ drivers/iio/afe/iio-rescale.c | 4 +---
+ 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/rn5t618-adc.c b/drivers/iio/adc/rn5t618-adc.c
-index 7d891b4ea461..6bf32907f01d 100644
---- a/drivers/iio/adc/rn5t618-adc.c
-+++ b/drivers/iio/adc/rn5t618-adc.c
-@@ -42,11 +42,6 @@ struct rn5t618_adc_data {
- 	int irq;
- };
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index 774eb3044edd..8b9d2aa1502e 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -322,7 +322,7 @@ static int rescale_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
  
--struct rn5t618_channel_ratios {
--	u16 numerator;
--	u16 denominator;
--};
+ 	rescale = iio_priv(indio_dev);
 -
- enum rn5t618_channels {
- 	LIMMON = 0,
- 	VBAT,
-@@ -58,7 +53,7 @@ enum rn5t618_channels {
- 	AIN0
- };
++	rescale->source = source;
+ 	rescale->cfg = of_device_get_match_data(dev);
+ 	rescale->numerator = 1;
+ 	rescale->denominator = 1;
+@@ -338,8 +338,6 @@ static int rescale_probe(struct platform_device *pdev)
  
--static const struct rn5t618_channel_ratios rn5t618_ratios[8] = {
-+static const struct u16_fract rn5t618_ratios[8] = {
- 	[LIMMON] = {50, 32}, /* measured across 20mOhm, amplified by 32 */
- 	[VBAT] = {2, 1},
- 	[VADP] = {3, 1},
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+-	rescale->source = source;
+-
+ 	indio_dev->name = dev_name(dev);
+ 	indio_dev->info = &rescale_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
 -- 
 2.34.1
 
