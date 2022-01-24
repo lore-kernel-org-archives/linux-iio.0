@@ -2,40 +2,40 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5B91CC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04B79C4332F
 	for <linux-iio@archiver.kernel.org>; Mon, 24 Jan 2022 17:20:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244413AbiAXRUd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 24 Jan 2022 12:20:33 -0500
-Received: from mga02.intel.com ([134.134.136.20]:35243 "EHLO mga02.intel.com"
+        id S244384AbiAXRUb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 24 Jan 2022 12:20:31 -0500
+Received: from mga14.intel.com ([192.55.52.115]:58855 "EHLO mga14.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S244324AbiAXRU3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 24 Jan 2022 12:20:29 -0500
+        id S244321AbiAXRU2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 24 Jan 2022 12:20:28 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1643044829; x=1674580829;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=se/aEC9HgTBzxLx3OJbYihBez8zl3RiKCuUOJXNE4gU=;
-  b=EQ3zGLjSjSRMPxfPQkdJ1Th5KxAtTLidmuk1RTQ+z7H/rDj1ykJDP0O0
-   Ox3CrJi6WWSxRYydDRGs+TVBm/xPEhfqRE2L/d8yi6lO01BWXM/zOrNo6
-   MDsEchm2BaeMlth9N425DeXutbP5b86XdAarPiJ4iqsXF5dwZESfcR9xa
-   Om0TDAwqYbF7VUOCWC6gwwulMc0Xn24zB+FP4aNePpIEBYeIsic92A09C
-   GcJpEDG4riINVoxJbR6s1FCOg2+iQmMOFjH8e6Tg+pqk2NP4gGlnn0dat
-   JcalsGi6voYbyLDE0t1euHQs6KS3xwcIiYiDLpJ/fC2U3a5tayMBROkLb
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="233460796"
+  t=1643044828; x=1674580828;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=gDQSUskimsF+BvPq9Sv63P2zlzyWFSa/xN8KMVRN7Z4=;
+  b=fsqK1u14VR/IvEwTXzV+ZUYVeOIO9w5GqP9psy+4Gmlerk+3snU6GfUI
+   IcQmKO04COQCzuNknVvnQ1UYYI7IruBm3HFyb+Qk4UQn9J14UzGPMV+Ho
+   IZAzNWn+WN5/tOLGf0/qQlvW31Lx8CN1UqJkRhM3elnv1LCWJyEbvTZxH
+   rLXJotScuYBDNLTPxHikaOwpocr3o6yh4W7YM7K4aCSpDKLcBbii0mPcN
+   PIBDuQ9YvFfESF8E00XLns50IMtVeiLSbWlwy28XZR6gSc2cxN4osIby+
+   cabA2IA65x104JpkCcSEf1OhJyuY0i2cFzptLDwtmA2UOK0m76ASVvtAn
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10236"; a="246316985"
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="233460796"
-Received: from fmsmga007.fm.intel.com ([10.253.24.52])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 09:20:25 -0800
+   d="scan'208";a="246316985"
+Received: from fmsmga003.fm.intel.com ([10.253.24.29])
+  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 24 Jan 2022 09:20:25 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,311,1635231600"; 
-   d="scan'208";a="532144834"
+   d="scan'208";a="617320047"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga007.fm.intel.com with ESMTP; 24 Jan 2022 09:20:22 -0800
+  by FMSMGA003.fm.intel.com with ESMTP; 24 Jan 2022 09:20:22 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id BCD55A51; Mon, 24 Jan 2022 19:20:35 +0200 (EET)
+        id 97045178; Mon, 24 Jan 2022 19:20:35 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Andreas Kemnade <andreas@kemnade.info>,
@@ -46,48 +46,68 @@ Cc:     Andy Gross <agross@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Rosin <peda@axentia.se>
-Subject: [PATCH v3 5/6] iio: afe: iio-rescale: Group rescale field assignments in ->probe()
-Date:   Mon, 24 Jan 2022 19:20:31 +0200
-Message-Id: <20220124172032.87893-5-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v3 1/6] math.h: Introduce data types for fractional numbers
+Date:   Mon, 24 Jan 2022 19:20:27 +0200
+Message-Id: <20220124172032.87893-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220124172032.87893-1-andriy.shevchenko@linux.intel.com>
-References: <20220124172032.87893-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Group rescale field assignments in the ->probe() for better maintenance.
+Introduce a macro to produce data types like
+
+	struct TYPE_fract {
+		__TYPE numerator;
+		__TYPE denominator;
+	};
+
+to be used in the code wherever it's needed.
+
+In the following changes convert some users to it.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v3: new patch
- drivers/iio/afe/iio-rescale.c | 4 +---
- 1 file changed, 1 insertion(+), 3 deletions(-)
 
-diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index 774eb3044edd..8b9d2aa1502e 100644
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -322,7 +322,7 @@ static int rescale_probe(struct platform_device *pdev)
- 		return -ENOMEM;
+May be pulled via IIO tree.
+
+v3: no changes
+v2: no changes
+
+ include/linux/math.h | 12 ++++++++++++
+ 1 file changed, 12 insertions(+)
+
+diff --git a/include/linux/math.h b/include/linux/math.h
+index 53674a327e39..439b8f0b9ebd 100644
+--- a/include/linux/math.h
++++ b/include/linux/math.h
+@@ -2,6 +2,7 @@
+ #ifndef _LINUX_MATH_H
+ #define _LINUX_MATH_H
  
- 	rescale = iio_priv(indio_dev);
--
-+	rescale->source = source;
- 	rescale->cfg = of_device_get_match_data(dev);
- 	rescale->numerator = 1;
- 	rescale->denominator = 1;
-@@ -338,8 +338,6 @@ static int rescale_probe(struct platform_device *pdev)
++#include <linux/types.h>
+ #include <asm/div64.h>
+ #include <uapi/linux/kernel.h>
  
- 	platform_set_drvdata(pdev, indio_dev);
+@@ -106,6 +107,17 @@
+ }							\
+ )
  
--	rescale->source = source;
--
- 	indio_dev->name = dev_name(dev);
- 	indio_dev->info = &rescale_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
++#define __STRUCT_FRACT(type)				\
++struct type##_fract {					\
++	__##type numerator;				\
++	__##type denominator;				\
++};
++__STRUCT_FRACT(s16)
++__STRUCT_FRACT(u16)
++__STRUCT_FRACT(s32)
++__STRUCT_FRACT(u32)
++#undef __STRUCT_FRACT
++
+ /*
+  * Multiplies an integer by a fraction, while avoiding unnecessary
+  * overflow or loss of precision.
 -- 
 2.34.1
 
