@@ -2,224 +2,210 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9269CC433FE
-	for <linux-iio@archiver.kernel.org>; Sun, 30 Jan 2022 03:45:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A6AAC433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 30 Jan 2022 11:40:17 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353933AbiA3Do7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 29 Jan 2022 22:44:59 -0500
-Received: from wout1-smtp.messagingengine.com ([64.147.123.24]:48187 "EHLO
-        wout1-smtp.messagingengine.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1353926AbiA3Do5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 29 Jan 2022 22:44:57 -0500
-Received: from compute5.internal (compute5.nyi.internal [10.202.2.45])
-        by mailout.west.internal (Postfix) with ESMTP id C9AAE320167D;
-        Sat, 29 Jan 2022 22:44:56 -0500 (EST)
-Received: from mailfrontend1 ([10.202.2.162])
-  by compute5.internal (MEProxy); Sat, 29 Jan 2022 22:44:57 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
-        cc:cc:content-transfer-encoding:date:date:from:from:in-reply-to
-        :in-reply-to:message-id:mime-version:references:reply-to:sender
-        :subject:subject:to:to; s=fm1; bh=kK2U+mdU12rx5tRGN21QFrTCFOKPO9
-        nuqkez8Dekhy8=; b=oZ71AkN+cHDUSGHiri2Z2yTOYRp8ht+X40eNJfO8EIVdC+
-        NCiGJ//t7Whz8JbdrJjGlM7Z/GdbQkts0RdEpyeLu6VEuoz54Pm42s5A5pX+kkPY
-        HUBuuDAlgmg1taDxb0HhH95PAChY5YqgaTTI6+Ar/+147MvEGbHdQm0nZ8Vsio7A
-        OUhTwmfd+Re5tjpGtDBR5pxAHfUxRcGTTlzNpiUhihOrtHe8M7iLCGnNYpW1ZaWJ
-        adEHD9kgPUyalfPE9cflKk+cWUlBKS1JdNaVKdSXIQJ9t/C4SS/+wIxQc1bgyuV5
-        NAV7q6X+GWb0fLAq5kfpuCSzyigfXA1UlvJqC3Kw==
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
-        messagingengine.com; h=cc:cc:content-transfer-encoding:date:date
-        :from:from:in-reply-to:in-reply-to:message-id:mime-version
-        :references:reply-to:sender:subject:subject:to:to:x-me-proxy
-        :x-me-proxy:x-me-sender:x-me-sender:x-sasl-enc; s=fm1; bh=kK2U+m
-        dU12rx5tRGN21QFrTCFOKPO9nuqkez8Dekhy8=; b=f+u4N1gzjm8vqDlHnFi0is
-        dM/o51La+zQHMvtKYKktIoEaCcYmhEZoJeMyO2HlqbyCJl79PDkZrCTW1EQDsrOX
-        hfUF5zwZJ1A1+xR3PKLItjQAcxQK9Is4arM5QqTujO8xdX2UmXNq96y2eZZE5C9c
-        zLaS8EHvIIUtjDUuig+CzBfFi6VCqjQs5hRyxK4H93AUJgknGn6kKdul6W3RHTvL
-        53tBHL1PSKI6S+nw69Pb3NPPXjyCztrC8/KYHUu3LAUpcg8mz25F/ZYTCbjyh8Pb
-        fQcW8mPCtPHtzjN577QBpQqW3MuGNfCWUFz1GKY9SmqjQCq7niQzz/+ePErWyVMA
-        ==
-X-ME-Sender: <xms:uAn2YccHukd3DUyQQLmLXYnTw_VIaY3Kuv1EkYLnydSO4RxgafgH1A>
-    <xme:uAn2YeM1nLLgNW8p4UXM9fcmCfJ6jRLYGitAlnIwVJaU9scBZU5bnMQJROnIWP3tW
-    aC9-MHCK1dA-UH-fw>
-X-ME-Received: <xmr:uAn2Ydg7keN0V2Z_peaLe2-eY4IpFTB9GsvGMUvIFRkMLNOF9qzt5U8XLUoy-rxHyH8_IGZ8iOl1l9uvlRm5s6T7Ps3gHW5Ea4ecKpuGUc7kKRRQGm7j-x42G1Pj1t_JXRgQSA>
-X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvvddrfeekgdegvdcutefuodetggdotefrodftvf
-    curfhrohhfihhlvgemucfhrghsthforghilhdpqfgfvfdpuffrtefokffrpgfnqfghnecu
-    uegrihhlohhuthemuceftddtnecusecvtfgvtghiphhivghnthhsucdlqddutddtmdenuc
-    fjughrpefhvffufffkofgjfhgggfestdekredtredttdenucfhrhhomhepufgrmhhuvghl
-    ucfjohhllhgrnhguuceoshgrmhhuvghlsehshhholhhlrghnugdrohhrgheqnecuggftrf
-    grthhtvghrnhepudfhjeefvdfhgfefheetgffhieeigfefhefgvddvveefgeejheejvdfg
-    jeehueeinecuvehluhhsthgvrhfuihiivgeptdenucfrrghrrghmpehmrghilhhfrhhomh
-    epshgrmhhuvghlsehshhholhhlrghnugdrohhrgh
-X-ME-Proxy: <xmx:uAn2YR_3nSDv-8aIqj-ThWns9L37WtZSSSq94-cEnljCUcaBE_UojQ>
-    <xmx:uAn2YYvWH74SzZHPuXOriih4_8kJHB_d0onwuIR5SLxZNirP8Bvugw>
-    <xmx:uAn2YYHXWWH7J5ephqMzMbiBEWTxhvnrzcrO2Jsey0ho24S0fRG4sw>
-    <xmx:uAn2Yd_-Wg93zVEK_hsKkAfm8P_J8A_szbYxIVhe9KC1IDaU66lrkQ>
-Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
- 29 Jan 2022 22:44:55 -0500 (EST)
-From:   Samuel Holland <samuel@sholland.org>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        id S1346954AbiA3LkQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 30 Jan 2022 06:40:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1354678AbiA3LkP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Jan 2022 06:40:15 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B45CC061714;
+        Sun, 30 Jan 2022 03:40:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 259F2610D5;
+        Sun, 30 Jan 2022 11:40:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4378BC340E4;
+        Sun, 30 Jan 2022 11:40:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643542814;
+        bh=OD20yGGe1ZXowJDHG6nb9wBY2ov04C9DoiWPunmjBMs=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=GnUZJDzo9hxCrQiRFd2/vECcNEIKKT2PWdMAjlzJ0YxmZuoND0OJIyPycLyPdWOzu
+         UHKHYZLKLKmvnEhW4aChjZVMQN9BEYayAH/LnRQ3Ljte1xdtrmpTMa1RZR9ZFicFZJ
+         B+ScNJ+fUsBMdFZM3timw31A5vKlSoJRGKwfMR3VzIOWQOu/neMnC80CEdOpfK3Vtk
+         D21dyMyPQ1aI0dhfmLzR3jZo3Go381lk92AzWtE9QxKO1pftPBdUU8B5Jq0pp6HRnE
+         IjNRvqgxPEgO9fYpSybRt/ml6tD87psEydPH99jlovtGVCRX6M1wl6jWxYxh3IoTUE
+         yiZ7n5ZUwsNYw==
+Date:   Sun, 30 Jan 2022 11:46:38 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Samuel Holland <samuel@sholland.org>
-Subject: [PATCH 3/3] iio: accel: st_accel: Add support for Silan SC7A20
-Date:   Sat, 29 Jan 2022 21:44:41 -0600
-Message-Id: <20220130034441.15474-4-samuel@sholland.org>
-X-Mailer: git-send-email 2.33.1
-In-Reply-To: <20220130034441.15474-1-samuel@sholland.org>
-References: <20220130034441.15474-1-samuel@sholland.org>
+        Rob Herring <robh+dt@kernel.org>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH V1 5/6] iio: accel: sca3300: Add inclination channels.
+Message-ID: <20220130114638.20097dd8@jic23-huawei>
+In-Reply-To: <CAHp75VeNFj3Hz1+quqpuWGuVYhPFngC20Gk=AfG+ZVEsrU9Qeg@mail.gmail.com>
+References: <20220124093912.2429190-1-Qing-wu.Li@leica-geosystems.com.cn>
+        <20220124093912.2429190-6-Qing-wu.Li@leica-geosystems.com.cn>
+        <CAHp75VeNFj3Hz1+quqpuWGuVYhPFngC20Gk=AfG+ZVEsrU9Qeg@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This chip appears to be a clone of the LIS2DH. The new description is a
-copy of the LIS2DH's description with a different WAI value.
+On Mon, 24 Jan 2022 15:19:09 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-Signed-off-by: Samuel Holland <samuel@sholland.org>
----
+> On Mon, Jan 24, 2022 at 11:39 AM LI Qingwu
+> <Qing-wu.Li@leica-geosystems.com.cn> wrote:
+> >
+> > Different with SCA3300, SCL3300 can output inclination angles.
+> > Angles are formed from acceleration with following equations:
+> > ANG_X =3D atan2(accx / =E2=88=9A(accy^2 + accz^2)),
+> > ANG_Y =3D atan2(accy / =E2=88=9A(accx^2 + accz^2)),
+> > ANG_Z =3D atan2(accz / =E2=88=9A(accx^2 + accy^2)),
+> >
+> > The commit add output of the raw value,scale
+> > and scale_available of angles.
+> > add interface for enable/disable of the angle output.
+> >
+> > new interfaces: =20
+>=20
+> New
+>=20
+> > in_incli_en
 
- drivers/iio/accel/st_accel.h      |  2 +
- drivers/iio/accel/st_accel_core.c | 79 +++++++++++++++++++++++++++++++
- drivers/iio/accel/st_accel_i2c.c  |  5 ++
- 3 files changed, 86 insertions(+)
+Why?  There are only a few reasons to have an enable for a
+channel and they don't include something that we might only
+sometimes read (tend to be temporal channels such as step
+counters where we want to be able to pause their counting,
+or output channels).
 
-diff --git a/drivers/iio/accel/st_accel.h b/drivers/iio/accel/st_accel.h
-index 8750dea56fcb..00e056c21bfc 100644
---- a/drivers/iio/accel/st_accel.h
-+++ b/drivers/iio/accel/st_accel.h
-@@ -36,6 +36,7 @@ enum st_accel_type {
- 	LIS3DHH,
- 	LIS2DE12,
- 	LIS2HH12,
-+	SC7A20,
- 	ST_ACCEL_MAX,
- };
- 
-@@ -61,6 +62,7 @@ enum st_accel_type {
- #define LIS3DE_ACCEL_DEV_NAME		"lis3de"
- #define LIS2DE12_ACCEL_DEV_NAME		"lis2de12"
- #define LIS2HH12_ACCEL_DEV_NAME		"lis2hh12"
-+#define SC7A20_ACCEL_DEV_NAME		"sc7a20"
- 
- #ifdef CONFIG_IIO_BUFFER
- int st_accel_allocate_ring(struct iio_dev *indio_dev);
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 31ea19d0ba71..d9aa0ff1922b 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -1087,6 +1087,85 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
- 		.multi_read_bit = true,
- 		.bootime = 2,
- 	},
-+	{
-+		.wai = 0x11,
-+		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
-+		.sensors_supported = {
-+			[0] = SC7A20_ACCEL_DEV_NAME,
-+		},
-+		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
-+		.odr = {
-+			.addr = 0x20,
-+			.mask = 0xf0,
-+			.odr_avl = {
-+				{ .hz = 1, .value = 0x01, },
-+				{ .hz = 10, .value = 0x02, },
-+				{ .hz = 25, .value = 0x03, },
-+				{ .hz = 50, .value = 0x04, },
-+				{ .hz = 100, .value = 0x05, },
-+				{ .hz = 200, .value = 0x06, },
-+				{ .hz = 400, .value = 0x07, },
-+				{ .hz = 1600, .value = 0x08, },
-+			},
-+		},
-+		.pw = {
-+			.addr = 0x20,
-+			.mask = 0xf0,
-+			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
-+		},
-+		.enable_axis = {
-+			.addr = ST_SENSORS_DEFAULT_AXIS_ADDR,
-+			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
-+		},
-+		.fs = {
-+			.addr = 0x23,
-+			.mask = 0x30,
-+			.fs_avl = {
-+				[0] = {
-+					.num = ST_ACCEL_FS_AVL_2G,
-+					.value = 0x00,
-+					.gain = IIO_G_TO_M_S_2(1000),
-+				},
-+				[1] = {
-+					.num = ST_ACCEL_FS_AVL_4G,
-+					.value = 0x01,
-+					.gain = IIO_G_TO_M_S_2(2000),
-+				},
-+				[2] = {
-+					.num = ST_ACCEL_FS_AVL_8G,
-+					.value = 0x02,
-+					.gain = IIO_G_TO_M_S_2(4000),
-+				},
-+				[3] = {
-+					.num = ST_ACCEL_FS_AVL_16G,
-+					.value = 0x03,
-+					.gain = IIO_G_TO_M_S_2(12000),
-+				},
-+			},
-+		},
-+		.bdu = {
-+			.addr = 0x23,
-+			.mask = 0x80,
-+		},
-+		.drdy_irq = {
-+			.int1 = {
-+				.addr = 0x22,
-+				.mask = 0x10,
-+			},
-+			.addr_ihl = 0x25,
-+			.mask_ihl = 0x02,
-+			.stat_drdy = {
-+				.addr = ST_SENSORS_DEFAULT_STAT_ADDR,
-+				.mask = 0x07,
-+			},
-+		},
-+		.sim = {
-+			.addr = 0x23,
-+			.value = BIT(0),
-+		},
-+		.multi_read_bit = true,
-+		.bootime = 2,
-+	},
- };
- 
- /* Default accel DRDY is available on INT1 pin */
-diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
-index c0ce78eebad9..7f5888570e87 100644
---- a/drivers/iio/accel/st_accel_i2c.c
-+++ b/drivers/iio/accel/st_accel_i2c.c
-@@ -107,6 +107,10 @@ static const struct of_device_id st_accel_of_match[] = {
- 		.compatible = "st,lis2hh12",
- 		.data = LIS2HH12_ACCEL_DEV_NAME,
- 	},
-+	{
-+		.compatible = "silan,sc7a20",
-+		.data = SC7A20_ACCEL_DEV_NAME,
-+	},
- 	{},
- };
- MODULE_DEVICE_TABLE(of, st_accel_of_match);
-@@ -142,6 +146,7 @@ static const struct i2c_device_id st_accel_id_table[] = {
- 	{ LIS3DE_ACCEL_DEV_NAME },
- 	{ LIS2DE12_ACCEL_DEV_NAME },
- 	{ LIS2HH12_ACCEL_DEV_NAME },
-+	{ SC7A20_ACCEL_DEV_NAME },
- 	{},
- };
- MODULE_DEVICE_TABLE(i2c, st_accel_id_table);
--- 
-2.33.1
+> > in_incli_scale
+> > in_incli_scale_available
+> > in_incli_x_raw
+> > in_incli_y_raw
+> > in_incli_z_raw =20
+>=20
+> Indent them by 2 spaces.
+>=20
+> Wondering if these need to be described in ABI documentation.
+It's standard ABI, though we don't give much description of what
+exactly these ease. It might be possible to add more information
+to the generic docs, but that would require looking very carefully
+at the current supporting devices.
+
+"Inclination raw reading about axis x, y or z (may be
+Arbitrarily assigned). Data converted by application of offset
+and scale to degrees."
+
+>=20
+> ...
+>=20
+> >         SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Y, 0x2, Y),
+> >         SCA3300_ACCEL_CHANNEL(SCA3300_ACC_Z, 0x3, Z),
+> >         SCA3300_TEMP_CHANNEL(SCA3300_TEMP, 0x05),
+> > -       IIO_CHAN_SOFT_TIMESTAMP(4) =20
+>=20
+> > +       IIO_CHAN_SOFT_TIMESTAMP(SCA3300_TIMESTAMP) =20
+>=20
+> + Comma (while at it)?
+>=20
+> ...
+>=20
+> > -       IIO_CHAN_SOFT_TIMESTAMP(4),
+> > +       SCA3300_INCLI_CHANNEL(SCA3300_INCLI_X, 0x09, X),
+> > +       SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Y, 0x0A, Y),
+> > +       SCA3300_INCLI_CHANNEL(SCA3300_INCLI_Z, 0x0B, Z),
+> > +       IIO_CHAN_SOFT_TIMESTAMP(SCA3300_TIMESTAMP) =20
+>=20
+> Ditto.
+>=20
+> > +static const int sca3300_incli_scale[CHIP_CNT][OP_MOD_CNT][2] =3D {
+> > +       [CHIP_SCA3300] =3D {{0, 0}, {0, 0}, {0, 0}, {0, 0}}, =20
+>=20
+> > +       [CHIP_SCL3300] =3D {{0, 5495}, {0, 5495}, {0, 5495}, {0, 5495}}=
+ =20
+>=20
+> + Comma.
+>=20
+> > +}; =20
+>=20
+> ...
+>=20
+> >         struct {
+> > -               s16 channels[4];
+> > +               s16 channels[SCA3300_TIMESTAMP-1]; =20
+>=20
+> Missed spaces around the arithmetic operator.
+>=20
+> >                 s64 ts __aligned(sizeof(s64));
+> >         } scan;
+> >         const struct sca3300_chip_info *chip_info;
+> >         u8 txbuf[4] ____cacheline_aligned;
+> >         u8 rxbuf[4]; =20
+>=20
+> > - =20
+>=20
+> Stray change.
+>=20
+> >  }; =20
+>=20
+> ...
+>=20
+> > +               /*Inclination scale info tied to accel scale.*/
+> > +               /*not allowed to set separately.      */ =20
+>=20
+> Please, follow the proper style for multi-line comments, including
+> necessary spaces, periods, starting and ending lines.
+>=20
+> ...
+>=20
+> > +       case IIO_CHAN_INFO_ENABLE:
+> > +               if (data->chip_info->chip_type =3D=3D CHIP_SCL3300) { =
+=20
+>=20
+> > +                       if (chan->type =3D=3D IIO_INCLI) { =20
+>=20
+> See below.
+>=20
+> > +                               if (val !=3D 0) =20
+>=20
+>    if (val)
+>=20
+> > +                                       reg_val =3D 0x1F;
+> > +                               else
+> > +                                       reg_val =3D 0x00;
+> > +                               return sca3300_write_reg(data, SCA3300_=
+REG_ANG_CTRL, reg_val);
+> > +                       }
+> > +               } =20
+>=20
+> ...
+>=20
+> > -               if (chan->type =3D=3D IIO_ACCEL) {
+> > +
+> > +               if (chan->type =3D=3D IIO_INCLI) { =20
+>=20
+> > +               } else if (chan->type =3D=3D IIO_ACCEL) { =20
+>=20
+> I would recommend using switch-case for channel type as well.
+>=20
+> ...
+>=20
+> > +       case IIO_CHAN_INFO_ENABLE:
+> > +               if (chan->type =3D=3D IIO_INCLI) { =20
+>=20
+> > +                       ret =3D sca3300_read_reg(data, SCA3300_REG_ANG_=
+CTRL, &reg_val); =20
+>=20
+> How is ret supposed to be used?
+>=20
+> > +                       *val =3D reg_val;
+> > +                       return IIO_VAL_INT;
+> > +               }
+> > +               return -EINVAL; =20
+>=20
 
