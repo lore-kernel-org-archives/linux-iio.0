@@ -2,171 +2,127 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4650FC4332F
-	for <linux-iio@archiver.kernel.org>; Sun, 30 Jan 2022 14:58:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33767C433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 30 Jan 2022 14:59:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355299AbiA3O65 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 30 Jan 2022 09:58:57 -0500
-Received: from ams.source.kernel.org ([145.40.68.75]:58328 "EHLO
-        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345912AbiA3O6y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Jan 2022 09:58:54 -0500
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D2107B8296F;
-        Sun, 30 Jan 2022 14:58:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B6C61C340E4;
-        Sun, 30 Jan 2022 14:58:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643554730;
-        bh=GL1zKW+fnVss13mOmdWWVRmOagcQ6XFxtwi7aOMdkXw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iqwJ3iNFmreR4JSoSb4n27mVOKwAewuQXXOFGNk4buR2bUqeaXL0Pnz8qH7UMdbOL
-         YVTNx/bXBnSh3ddVHi9MjxOyx4o56pVqJkaF5orz2suVUp6L7z7MNGvI9jwWDluvQM
-         abfTwVqaEnksmOuCzx9B/LQOMLDwXIF0sgsiGg1/L/TgqCl5f0hfPSayS9WYnP1rNE
-         Wf4xIlKEeKSB4bzDrcS6HvjQXQPUtiudZiKxLkmdfDy181KMyWBXUosw397yqxSx0e
-         AcVsnpixAiVrsts7NdGblMAN8BclBYHagOWoUo+t4wO+G3vfpXR3yhnk9TmfX070XJ
-         oaa3r6iUZCoWg==
-Date:   Sun, 30 Jan 2022 15:05:10 +0000
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Niklas Schnelle <schnelle@linux.ibm.com>
-Cc:     Geert Uytterhoeven <geert@linux-m68k.org>,
-        Arnd Bergmann <arnd@kernel.org>,
-        Bjorn Helgaas <bhelgaas@google.com>,
-        John Garry <john.garry@huawei.com>,
-        Nick Hu <nickhu@andestech.com>,
-        Greentime Hu <green.hu@gmail.com>,
-        Vincent Chen <deanbo422@gmail.com>,
-        Paul Walmsley <paul.walmsley@sifive.com>,
-        Palmer Dabbelt <palmer@dabbelt.com>,
-        Albert Ou <aou@eecs.berkeley.edu>, Guo Ren <guoren@kernel.org>,
+        id S1355344AbiA3O7X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 30 Jan 2022 09:59:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33864 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355335AbiA3O7H (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Jan 2022 09:59:07 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 32EC9C061714;
+        Sun, 30 Jan 2022 06:59:07 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id h25so8385438qtm.1;
+        Sun, 30 Jan 2022 06:59:07 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=f+X5yk2roOzmJwzypwQmhOu/mrO4cbF9p7VZTWulkAE=;
+        b=hZn6WRv/zhcXNyjrVUeS9BrgiFa0HgEmEqOPc+zdMag+uwiwEspKvAyWYGgdmCwm7Q
+         YcEtHdH0z0co22/8b/5aWo1NB36LXNTkPlsgUEqMIu6iKmDTUnUZXEzpamnVkR200w+o
+         Gr4VZZJoSr2A9X0i27MLz3kOh/wzYWqc6Jr3031OzAVEU1zlyoi4V5DyBE5/MF0umGpe
+         ELIgVNC4YEiZT19GgDXozTQvgxVjiansUUkFtz8CyUqClyM0mLlUmI5xxLvZzb4j8ARo
+         1Yx8Mc9VRMc3h4MhqEKijxlU2iTfLbxwK2ZIFYz/72gVFREGTqCSpvwT1gvkTxqF8rhI
+         19Ng==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=f+X5yk2roOzmJwzypwQmhOu/mrO4cbF9p7VZTWulkAE=;
+        b=Be8s0TJ8b+FTAgotiqWZQ1RXkfYeFE1Nng9Ty//7N8kRGak0s64j5iYB3WttWhnlVU
+         rziEC2109lel5cd3fMAr0Tr96xcpE3MKckEkT4e7OJl9K+yzxtiTwVDcWaTuMBiH858u
+         gkoDix3T2/W7BNfl44UFm64YL6nszbyglB8Uyb8BN45zg0lLUjTKLHJJDCqgnTZ3MSH5
+         BHg9YklK+zGYMGbFs5dtOY4XlcFFIE0dX0Y31Nxt/06I7dT9Z9NG/IfGxvD0hS3S3Ovd
+         vK/r48rUI3e12z6UfkKWFuGJ/ImHJP/4mtn3Eadl1Fdodt7W3LCB7prp9M83BUUmhPbf
+         Yq6A==
+X-Gm-Message-State: AOAM531eGEqMHTUVNzzjiPZg9PMyfS42+yre+8j4oECd91Tol3GWlfEy
+        G4bFG80TKu/jbkWFwUXeyktq0j+wSYI=
+X-Google-Smtp-Source: ABdhPJysO5uJaDMgv+i05X60uWQx4c7I2DJErsRJZonIgGdivOF7DOzdYrpDgddVrms4fR9tronRlQ==
+X-Received: by 2002:a05:622a:447:: with SMTP id o7mr1446288qtx.537.1643554746267;
+        Sun, 30 Jan 2022 06:59:06 -0800 (PST)
+Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
+        by smtp.gmail.com with ESMTPSA id az38sm3436312qkb.124.2022.01.30.06.59.05
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 30 Jan 2022 06:59:05 -0800 (PST)
+Date:   Sun, 30 Jan 2022 09:59:03 -0500
+From:   Liam Beguin <liambeguin@gmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Peter Rosin <peda@axentia.se>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux-Arch <linux-arch@vger.kernel.org>,
-        linux-pci <linux-pci@vger.kernel.org>,
-        linux-riscv <linux-riscv@lists.infradead.org>,
-        linux-csky@vger.kernel.org, linux-iio@vger.kernel.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Subject: Re: [RFC 12/32] iio: adc: Kconfig: add HAS_IOPORT dependencies
-Message-ID: <20220130150510.66ea7cd4@jic23-huawei>
-In-Reply-To: <20211228170031.12dac755@jic23-huawei>
-References: <20211227164317.4146918-1-schnelle@linux.ibm.com>
-        <20211227164317.4146918-13-schnelle@linux.ibm.com>
-        <CAMuHMdXDL6XXfohzJFTTV6tR=gg=bcCQq935eKUbNaNLHp9xiw@mail.gmail.com>
-        <b21410ee32857b4913e4ba4595f9e8da299c501f.camel@linux.ibm.com>
-        <20211228170031.12dac755@jic23-huawei>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>
+Subject: Re: [PATCH v12 00/16] iio: afe: add temperature rescaling support
+Message-ID: <Yfant1/USRnKsCaJ@shaak>
+References: <20220108205319.2046348-1-liambeguin@gmail.com>
+ <CAHp75VdyujSuTCr_+oFP9t=tardioG69k7uNkBSRAmPvqiyT7w@mail.gmail.com>
+ <20220130143933.7711025a@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220130143933.7711025a@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 28 Dec 2021 17:01:25 +0000
-Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+Hi Jonathan,
 
-> On Tue, 28 Dec 2021 13:50:20 +0100
-> Niklas Schnelle <schnelle@linux.ibm.com> wrote:
+On Sun, Jan 30, 2022 at 02:39:33PM +0000, Jonathan Cameron wrote:
+> On Sun, 9 Jan 2022 15:10:36 +0200
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 > 
-> > On Tue, 2021-12-28 at 11:32 +0100, Geert Uytterhoeven wrote:  
-> > > Hi Niklas,
-> > > 
-> > > On Mon, Dec 27, 2021 at 5:53 PM Niklas Schnelle <schnelle@linux.ibm.com> wrote:    
-> > > > In a future patch HAS_IOPORT=n will result in inb()/outb() and friends
-> > > > not being declared. We thus need to add HAS_IOPORT as dependency for
-> > > > those drivers using them.
-> > > > 
-> > > > Co-developed-by: Arnd Bergmann <arnd@kernel.org>
-> > > > Signed-off-by: Arnd Bergmann <arnd@kernel.org>
-> > > > Signed-off-by: Niklas Schnelle <schnelle@linux.ibm.com>    
-> 
-> As a side note, whilst it doesn't always happen and I regularly forget
-> to fix it up whilst applying, it's really helpful to make sure the driver
-> name is somewhere in the patch title.
-> 
-> e.g. iio: adc: ad7606: add HAS_IOPORT dependencies.
-> 
-> > > 
-> > > Thanks for your patch!
-> > >     
-> > > > --- a/drivers/iio/adc/Kconfig
-> > > > +++ b/drivers/iio/adc/Kconfig
-> > > > @@ -119,7 +119,7 @@ config AD7606
-> > > > 
-> > > >  config AD7606_IFACE_PARALLEL
-> > > >         tristate "Analog Devices AD7606 ADC driver with parallel interface support"
-> > > > -       depends on HAS_IOMEM
-> > > > +       depends on HAS_IOPORT    
-> > > 
-> > > While this driver uses ins[bw](), this seems unrelated to legacy
-> > > I/O space, as the driver maps a MMIO region.  Probably different
-> > > accessors should be used instead.    
+> > On Sat, Jan 8, 2022 at 10:53 PM Liam Beguin <liambeguin@gmail.com> wrote:
+> > >
+> > > Jonathan, Peter, Andy,
+> > >
+> > > I left out IIO_VAL_INT overflows for now, so that I can focus on getting
+> > > the rest of these changes pulled in, but I don't mind adding a patch for
+> > > that later on.
+> > >
+> > > This series focuses on adding temperature rescaling support to the IIO
+> > > Analog Front End (AFE) driver.
+> > >
+> > > The first few patches address minor bugs in IIO inkernel functions, and
+> > > prepare the AFE driver for the additional features.
+> > >
+> > > The main changes to the AFE driver include an initial Kunit test suite,
+> > > support for IIO_VAL_INT_PLUS_{NANO,MICRO} scales, and support for RTDs
+> > > and temperature transducer sensors.
+> > >
+> > > My apologies Andy for misunderstanding your left-shift comments, I don't
+> > > know where my head was at... Thanks for your patience!  
 > > 
-> > You're right on first glance it looks like a misuse of the ins[bw]()
-> > accessors. I do wonder how that even works, if PCI_IOBASE is 0 it would
-> > result in readsw()/readsb() with presumably the correct address but no
-> > idea how this interacts witth x86's special I/O instructions.
-> >   
-> > > 
-> > > Note that this driver has no in-tree users. Same for the SPI variant,
-> > > but at least that one has modern json-schema DT bindings ;-)    
+> > For the patches 1-5
+> > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 > > 
-> > Can't find any mention in the MAINTAINERS file either.  
+> > Jonathan, perhaps you may apply them, so Liam will have less burden in
+> > the near future.
+> > 
+> done, Patches 1-5 applied to the togreg branch of iio.git and pushed out
+> as testing for 0-day to see if it can find anything we missed.
 > 
-> It falls under the Analog devices catch all.
-> We don't list them all individually because there are a lot of them and
-> it would just be noise in many case.
-> 
-> Added Michael to CC. You already have Lars.
-> 
-> ANALOG DEVICES INC IIO DRIVERS
-> M:	Lars-Peter Clausen <lars@metafoo.de>
-> M:	Michael Hennerich <Michael.Hennerich@analog.com>
-> S:	Supported
-> W:	http://wiki.analog.com/
-> W:	http://ez.analog.com/community/linux-device-drivers
-> F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-ad9523
-> F:	Documentation/ABI/testing/sysfs-bus-iio-frequency-adf4350
-> F:	Documentation/devicetree/bindings/iio/*/adi,*
-> F:	Documentation/devicetree/bindings/iio/dac/adi,ad5758.yaml
-> F:	drivers/iio/*/ad*
-> F:	drivers/iio/adc/ltc249*
-> F:	drivers/iio/amplifiers/hmc425a.c
-> F:	drivers/staging/iio/*/ad*
-> X:	drivers/iio/*/adjd*
-> 
-> https://wiki.analog.com/resources/tools-software/linux-drivers/iio-adc/ad7606
-> includes some details.
-> 
-> I'll leave it to the Lars or Michael to confirm what is going on here.
+> I've marked the fixes for stable, but am taking these the slow way
+> (via next merge window) so as to keep things simple for applying the
+> rest of the series later this cycle.
 
-Can someone (probably at Analog Devices) take a look at this?
+Thanks for taking these in.
 
-Thanks,
+> I got a bit lost in the discussion but seems there are some minor
+> requests for changes so I guess I'll see a v13 of patches 6-12.
 
-Jonathan
+I'm rebasing what's left on top of your to-greg branch, and will send
+out v13 today.
 
+Cheers,
+Liam
+
+> Thanks,
 > 
 > Jonathan
 > 
-> >   
-> > >     
-> > > >         select AD7606
-> > > >         help
-> > > >           Say yes here to build parallel interface support for Analog Devices:    
-> > > 
-> > > Gr{oetje,eeting}s,
-> > > 
-> > >                         Geert
-> > > 
-> > > --
-> > > Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-> > > 
-> > > In personal conversations with technical people, I call myself a hacker. But
-> > > when I'm talking to journalists I just say "programmer" or something like that.
-> > >                                 -- Linus Torvalds    
-> >   
 > 
-
