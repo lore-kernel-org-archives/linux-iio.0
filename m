@@ -2,44 +2,41 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E408BC433FE
-	for <linux-iio@archiver.kernel.org>; Sun, 30 Jan 2022 19:25:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66A25C433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 30 Jan 2022 19:25:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355863AbiA3TZk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 30 Jan 2022 14:25:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35334 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355830AbiA3TZj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Jan 2022 14:25:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B4E72C061714
-        for <linux-iio@vger.kernel.org>; Sun, 30 Jan 2022 11:25:39 -0800 (PST)
+        id S1355881AbiA3TZo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 30 Jan 2022 14:25:44 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:35762 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1355869AbiA3TZn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Jan 2022 14:25:43 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 51D91612FA
-        for <linux-iio@vger.kernel.org>; Sun, 30 Jan 2022 19:25:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CC44BC340F0;
-        Sun, 30 Jan 2022 19:25:36 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id AEB4A612EC
+        for <linux-iio@vger.kernel.org>; Sun, 30 Jan 2022 19:25:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 855A9C340EB;
+        Sun, 30 Jan 2022 19:25:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643570738;
-        bh=Y/g/2m5Cn6oOac6URakBQDgP7bRkWL2SmqjtoPYrTQc=;
+        s=k20201202; t=1643570743;
+        bh=6EDm6IJMdRbzGeW+hstHVokDqL96T67GjhUf8JziKZ8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VglIxQt9+qwb99/HjuCmt0r+CgyyqZKTAm7WyB/1enfh1ScTIL6QubxVHlDP0aQbx
-         I6bvPmTrTDnsIS4nq3y9CKKJltxnTijz/NmbFYErOZidZYmhPZTJJW4/spfMR/4dus
-         rqvGlWMP/6mB9rZQbgLEUMlvxiZPAxZjIlKaxscGK+yW/Rq8IC+KkWdcYB/T+LJSQo
-         xDXKG3cVxb+4qKBRSg+FFkpZQNSBfERhp6JZUweV4Xi2fntnIhhz2ttBji4b/X9P49
-         7y5taVlqozCE7SgQ9Iy89gOHuIHhFP7PTXoY9YCovTpCyX9RHqyHWyL8P6f8adsanN
-         dnQpp2wPHDvlg==
+        b=dGOtUTTEy2DdfP86nNADp4SEpCad8eqtMcDZ2+93fGSJqsDCIKoibD6KJn1nUBJ01
+         XznDk+bLeNsXIUzSRf3e3d3xDQb7BR/+H+cN36FwdFE7tR4ZdcqCFhRORT7fWt0ORE
+         ErYjbybfeXZ79YEyEfq2NzQSBkZKAnM5uMrp6tuo4fjbUFemIrBPMPc1I3FjlT9TzG
+         i+cSicpnWtTQDQI+zkK1n4wIF8COblEzQhsUzB08dhvjU1szXwROINLMuaTvR4UQQ9
+         FWB9+4Sw+tqp+cy3FUpPHrQZJol8HD5SyaWkhMToiGAqj65m6VTOv9kafj24gEseUI
+         0awcAbHKcCFvA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Paul Cercueil <paul@crapouillou.net>,
         Arnd Bergmann <arnd@arndb.de>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 02/50] iio:accel:da280: Switch from CONFIG_PM_SLEEP guards to pm_sleep_ptr() etc
-Date:   Sun, 30 Jan 2022 19:30:59 +0000
-Message-Id: <20220130193147.279148-3-jic23@kernel.org>
+Subject: [PATCH v3 04/50] iio:accel:dmard10: Switch from CONFIG_PM guards to pm_sleep_ptr() etc
+Date:   Sun, 30 Jan 2022 19:31:01 +0000
+Message-Id: <20220130193147.279148-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220130193147.279148-1-jic23@kernel.org>
 References: <20220130193147.279148-1-jic23@kernel.org>
@@ -60,41 +57,42 @@ copied into new drivers.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/accel/da280.c | 6 ++----
- 1 file changed, 2 insertions(+), 4 deletions(-)
+ drivers/iio/accel/dmard10.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/da280.c b/drivers/iio/accel/da280.c
-index 9633bdae5fd4..04e9c5678964 100644
---- a/drivers/iio/accel/da280.c
-+++ b/drivers/iio/accel/da280.c
-@@ -153,7 +153,6 @@ static int da280_probe(struct i2c_client *client,
+diff --git a/drivers/iio/accel/dmard10.c b/drivers/iio/accel/dmard10.c
+index f9f173eec202..8ac62ec0a04a 100644
+--- a/drivers/iio/accel/dmard10.c
++++ b/drivers/iio/accel/dmard10.c
+@@ -218,7 +218,6 @@ static int dmard10_probe(struct i2c_client *client,
  	return devm_iio_device_register(&client->dev, indio_dev);
  }
  
 -#ifdef CONFIG_PM_SLEEP
- static int da280_suspend(struct device *dev)
+ static int dmard10_suspend(struct device *dev)
  {
- 	return da280_enable(to_i2c_client(dev), false);
-@@ -163,9 +162,8 @@ static int da280_resume(struct device *dev)
+ 	return dmard10_shutdown(to_i2c_client(dev));
+@@ -228,9 +227,9 @@ static int dmard10_resume(struct device *dev)
  {
- 	return da280_enable(to_i2c_client(dev), true);
+ 	return dmard10_reset(to_i2c_client(dev));
  }
 -#endif
  
--static SIMPLE_DEV_PM_OPS(da280_pm_ops, da280_suspend, da280_resume);
-+static DEFINE_SIMPLE_DEV_PM_OPS(da280_pm_ops, da280_suspend, da280_resume);
+-static SIMPLE_DEV_PM_OPS(dmard10_pm_ops, dmard10_suspend, dmard10_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(dmard10_pm_ops, dmard10_suspend,
++				dmard10_resume);
  
- static const struct acpi_device_id da280_acpi_match[] = {
- 	{"MIRAACC", da280},
-@@ -184,7 +182,7 @@ static struct i2c_driver da280_driver = {
+ static const struct i2c_device_id dmard10_i2c_id[] = {
+ 	{"dmard10", 0},
+@@ -241,7 +240,7 @@ MODULE_DEVICE_TABLE(i2c, dmard10_i2c_id);
+ static struct i2c_driver dmard10_driver = {
  	.driver = {
- 		.name = "da280",
- 		.acpi_match_table = ACPI_PTR(da280_acpi_match),
--		.pm = &da280_pm_ops,
-+		.pm = pm_sleep_ptr(&da280_pm_ops),
+ 		.name = "dmard10",
+-		.pm = &dmard10_pm_ops,
++		.pm = pm_sleep_ptr(&dmard10_pm_ops),
  	},
- 	.probe		= da280_probe,
- 	.id_table	= da280_i2c_id,
+ 	.probe		= dmard10_probe,
+ 	.id_table	= dmard10_i2c_id,
 -- 
 2.35.1
 
