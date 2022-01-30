@@ -2,41 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0798BC433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 30 Jan 2022 19:26:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B47E0C433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 30 Jan 2022 19:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355922AbiA3T00 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 30 Jan 2022 14:26:26 -0500
-Received: from dfw.source.kernel.org ([139.178.84.217]:36128 "EHLO
+        id S1355923AbiA3T02 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 30 Jan 2022 14:26:28 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:36170 "EHLO
         dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355927AbiA3T0W (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Jan 2022 14:26:22 -0500
+        with ESMTP id S1355914AbiA3T00 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Jan 2022 14:26:26 -0500
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C6BC8612E3
-        for <linux-iio@vger.kernel.org>; Sun, 30 Jan 2022 19:26:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9BEEAC340EB;
-        Sun, 30 Jan 2022 19:26:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 836AD612EC
+        for <linux-iio@vger.kernel.org>; Sun, 30 Jan 2022 19:26:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E64CDC340F1;
+        Sun, 30 Jan 2022 19:26:23 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1643570781;
-        bh=5uZX+UsXZmfnr1qKL9UlL0XW9SZiYM8jPvMyZBvvvXI=;
+        s=k20201202; t=1643570785;
+        bh=41fhS7M+Gr5kp7lJvIMl+3f7aA4WpR8w6qGSUi5dX6M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=VqaGhDOV1KRq9fHG1aNbtyAbDo4IY3LQjnyObZnXlAQRPnyChsEKpNrYEbxxM77lP
-         3CusITx/B24pd5v8/38z/nEk758s0eVo9GAdS0g6Yo1q2gikVNZjqgAaPrQ2u3fU4l
-         YtPmno/AL97/PrRegGsgr/eYAs/uucLVjpzDqNtlIxDAM1fZHk6UFZe9pcQzyjoPsb
-         PDQ/4KzsNcIm+UGTsPFKThY9PMfgy1AZvNw1AxNJDL7ypDw07A0MzTsrB7RdI1ugW9
-         ieE/tsJREuJFcK9zMIeJOPcUugMtdLQmZ7BVcR93Sll/UsTytEVgcgdcO9Ew62L6Yo
-         KPWqGXy032Lew==
+        b=BVv3G0uNG+UPW58I4m+piU0jbmptRuR8Pq7J2W7gakCx4j+T4EYrln/kiVRDyTa2z
+         TbpJYmejQqW3RtBSCKejNPyc9BH2UBaqDldpEDmFu1EMdxqeSk98Vps/75yoRS1m+i
+         JwMslNZF4v5YxXGIL1dGP28/Ysa8Hd76etQ2TsY+ayGQfSkBx7DXly7lqIA62wfsEM
+         nJ/0lurBqv6InUmcSA+2/Sy6J4J6iMjgcuu6ROYnmRpzWg0nxDEaKRua9Fb7uAoaTZ
+         vJLa6b5k4SjdiwAfs0o6gJDftnnTRig2Xs1zA4vxJ9HEWEw5LiIaSZ5eVoHdQ45z56
+         5H+g8M/w5cPgQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Paul Cercueil <paul@crapouillou.net>,
         Arnd Bergmann <arnd@arndb.de>,
         "Rafael J . Wysocki" <rafael@kernel.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 22/50] iio:light:jsa1212: Switch from CONFIG_PM_SLEEP guards to pm_sleep_ptr() etc
-Date:   Sun, 30 Jan 2022 19:31:19 +0000
-Message-Id: <20220130193147.279148-23-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Icenowy Zheng <icenowy@aosc.io>, Luca Weiss <luca@z3ntu.xyz>,
+        Martijn Braam <martijn@brixit.nl>
+Subject: [PATCH v3 24/50] iio:light:stk3310: Switch from CONFIG_PM_SLEEP guards to pm_sleep_ptr() etc
+Date:   Sun, 30 Jan 2022 19:31:21 +0000
+Message-Id: <20220130193147.279148-25-jic23@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220130193147.279148-1-jic23@kernel.org>
 References: <20220130193147.279148-1-jic23@kernel.org>
@@ -56,46 +58,49 @@ Removing instances of this approach from IIO also stops them being
 copied into new drivers.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Icenowy Zheng <icenowy@aosc.io>
+Cc: Luca Weiss <luca@z3ntu.xyz>
+Cc: Martijn Braam <martijn@brixit.nl>
 ---
- drivers/iio/light/jsa1212.c | 11 +++--------
+ drivers/iio/light/stk3310.c | 11 +++--------
  1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
-index 724a0ec9f35c..a55194263d23 100644
---- a/drivers/iio/light/jsa1212.c
-+++ b/drivers/iio/light/jsa1212.c
-@@ -383,7 +383,6 @@ static int jsa1212_remove(struct i2c_client *client)
- 	return jsa1212_power_off(data);
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index fc63856ed54d..1d02dfbc29d1 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -632,7 +632,6 @@ static int stk3310_remove(struct i2c_client *client)
+ 	return stk3310_set_state(iio_priv(indio_dev), STK3310_STATE_STANDBY);
  }
  
 -#ifdef CONFIG_PM_SLEEP
- static int jsa1212_suspend(struct device *dev)
+ static int stk3310_suspend(struct device *dev)
  {
- 	struct jsa1212_data *data;
-@@ -421,12 +420,8 @@ static int jsa1212_resume(struct device *dev)
- 	return ret;
+ 	struct stk3310_data *data;
+@@ -656,12 +655,8 @@ static int stk3310_resume(struct device *dev)
+ 	return stk3310_set_state(data, state);
  }
  
--static SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend, jsa1212_resume);
+-static SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend, stk3310_resume);
 -
--#define JSA1212_PM_OPS (&jsa1212_pm_ops)
+-#define STK3310_PM_OPS (&stk3310_pm_ops)
 -#else
--#define JSA1212_PM_OPS NULL
+-#define STK3310_PM_OPS NULL
 -#endif
-+static DEFINE_SIMPLE_DEV_PM_OPS(jsa1212_pm_ops, jsa1212_suspend,
-+				jsa1212_resume);
++static DEFINE_SIMPLE_DEV_PM_OPS(stk3310_pm_ops, stk3310_suspend,
++				stk3310_resume);
  
- static const struct acpi_device_id jsa1212_acpi_match[] = {
- 	{"JSA1212", 0},
-@@ -443,7 +438,7 @@ MODULE_DEVICE_TABLE(i2c, jsa1212_id);
- static struct i2c_driver jsa1212_driver = {
+ static const struct i2c_device_id stk3310_i2c_id[] = {
+ 	{"STK3310", 0},
+@@ -692,7 +687,7 @@ static struct i2c_driver stk3310_driver = {
  	.driver = {
- 		.name	= JSA1212_DRIVER_NAME,
--		.pm	= JSA1212_PM_OPS,
-+		.pm	= pm_sleep_ptr(&jsa1212_pm_ops),
- 		.acpi_match_table = ACPI_PTR(jsa1212_acpi_match),
+ 		.name = "stk3310",
+ 		.of_match_table = stk3310_of_match,
+-		.pm = STK3310_PM_OPS,
++		.pm = pm_sleep_ptr(&stk3310_pm_ops),
+ 		.acpi_match_table = ACPI_PTR(stk3310_acpi_id),
  	},
- 	.probe		= jsa1212_probe,
+ 	.probe =            stk3310_probe,
 -- 
 2.35.1
 
