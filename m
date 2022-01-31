@@ -2,137 +2,112 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EA45C433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 31 Jan 2022 13:17:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D762C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Jan 2022 13:54:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347959AbiAaNRZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 Jan 2022 08:17:25 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48442 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235024AbiAaNRZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jan 2022 08:17:25 -0500
-Received: from mail-yb1-xb2b.google.com (mail-yb1-xb2b.google.com [IPv6:2607:f8b0:4864:20::b2b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BADCC061714
-        for <linux-iio@vger.kernel.org>; Mon, 31 Jan 2022 05:17:25 -0800 (PST)
-Received: by mail-yb1-xb2b.google.com with SMTP id 23so40267504ybf.7
-        for <linux-iio@vger.kernel.org>; Mon, 31 Jan 2022 05:17:25 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=melexis.com; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=nfAaDdGjxPBBDUetpJ+oUxbsUd9gTe75eH5K8hXVhYc=;
-        b=CiZpdvwDcR+8vgDqkc7zhLpVFr3TEna++KHNY0IOyIysw/yUmmXJY3s1PmIi8aCfbF
-         KIN3nFLoHsBxb1swOBt6BEkjVsXbzT+Wjkqev85o7TGMGIaTOhpRcLIjw6kgFb29w/iY
-         7oaJ6TuWZIYf5M3lnZHOs6le/fVCOoC6CNVLvctaipPd9mie16Jz6dj3z3zMSgy59erU
-         cG/ATChFTpk+dtfKncUFMIjL+aJSlorfv4sIBcgjX4jtz4UKuExfXAMQ2z2pnVlNcR8w
-         vrBpK9lWFr+Q4KM2/AjRvCIakVyjr4TsHD/bLQ1L0xEEHZ/anaLwbHRxAhfD3ij1nikr
-         CTpQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=nfAaDdGjxPBBDUetpJ+oUxbsUd9gTe75eH5K8hXVhYc=;
-        b=h5h6quyiWzQCeUQWLn7A7WtQtV9neNG/UqG7z/6iVpDM2vzs5I9MHAPTm55fficJSR
-         9wJ5mwZ7HF3YZg8GNbfwdVnpl2Xzaxr1Dluofrdi0wfpnXRG2SHNZ/pe8fu+l19by97R
-         IHFzSXwmcUPbFnlA8k0enC5nyoZEURrVP1TgnLO556TQ89nAeGqI5TySqh/iuixJfhDx
-         iPeoSRoqwVDFBlVN0tYb/4EX4aod0gTHIjs6cRSEcQRP6OMlRxAaX0d4fTKOvtVSYGWV
-         wOzhBHbc4LVChsAx6jMfaCLho3vJcBfRqmCozpH48A0FSy4Onnb1WSbuV/Whri1njLxw
-         CbEA==
-X-Gm-Message-State: AOAM532nJLxoIv2nWEWN+sp9HQThFvty81Lsu/CNA1Fbb4XngxIYfWhx
-        hd0vEKcV4RVHSvXyKjVEWG3+08KyvrKflM5kG6WGcA==
-X-Google-Smtp-Source: ABdhPJxvo4Pm3dgZOKWDtC15Eejg3tOuHSz3ANeH8lcLoxA+9xjm390Bi03MVwMersS8WbWGgCnNAffXRAVoqYQc1jE=
-X-Received: by 2002:a25:3c8:: with SMTP id 191mr31465508ybd.204.1643635044376;
- Mon, 31 Jan 2022 05:17:24 -0800 (PST)
-MIME-Version: 1.0
-References: <20220130193147.279148-1-jic23@kernel.org> <20220130193147.279148-43-jic23@kernel.org>
-In-Reply-To: <20220130193147.279148-43-jic23@kernel.org>
-From:   Crt Mori <cmo@melexis.com>
-Date:   Mon, 31 Jan 2022 14:16:47 +0100
-Message-ID: <CAKv63uuacQkz1eBxc191Q87qEe_-GLwpRYYNRKJXxCsDObBucA@mail.gmail.com>
-Subject: Re: [PATCH v3 42/50] iio:temperature:mlx90614: Switch from CONFIG_PM*
- guards to pm_ptr() etc
+        id S232774AbiAaNyE convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Jan 2022 08:54:04 -0500
+Received: from aposti.net ([89.234.176.197]:33582 "EHLO aposti.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1346094AbiAaNyE (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 31 Jan 2022 08:54:04 -0500
+Date:   Mon, 31 Jan 2022 13:53:52 +0000
+From:   Paul Cercueil <paul@crapouillou.net>
+Subject: Re: [PATCH 02/16] iio:adc:ad7091r: Move exports into IIO_AD7091R
+ namespace.
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
+Cc:     linux-iio@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Gwendal Grignou <gwendal@chromium.org>, lars@metafoo.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+Message-Id: <SLUK6R.LXAL8TY0VY432@crapouillou.net>
+In-Reply-To: <20220130205701.334592-3-jic23@kernel.org>
+References: <20220130205701.334592-1-jic23@kernel.org>
+        <20220130205701.334592-3-jic23@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1; format=flowed
+Content-Transfer-Encoding: 8BIT
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Reviewed-by: Crt Mori <cmo@melexis.com>
+Hi Jonathan,
 
-I don't have setup ready for a quick test of this, but it is
-consistent with other changes.
-
-Best regards,
-Crt
-
-
-On Sun, 30 Jan 2022 at 20:27, Jonathan Cameron <jic23@kernel.org> wrote:
->
+Le dim., janv. 30 2022 at 20:56:47 +0000, Jonathan Cameron 
+<jic23@kernel.org> a écrit :
 > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> Letting the compiler remove these functions when the kernel is built
-> without one or  more of CONFIG_PM/CONFIG_PM_SLEEP support is simpler and
-> less error prone than the use of #ifdef based config guards.
->
-> Removing instances of this approach from IIO also stops them being
-> copied into new drivers.
->
+> 
+> In order to avoid unnecessary pollution of the global symbol namespace
+> move the core/library functions into a specific namespace and import
+> that into the various specific device drivers that use them.
+> 
+> For more information see https://lwn.net/Articles/760045/
+> 
+> An alternative here would be to conclude that we are unlikely to see
+> support for the other ad7091r parts in the near future and just merge
+> the two modules into one supporting just the i2c -5 variant.
+
+Unlikely in the near future, yes. I wouldn't totally close the door but 
+it's not in our short-term plans.
+
+If you think it's better to merge the two modules into one in the 
+meantime - fine with me.
+
 > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Crt Mori <cmo@melexis.com>
+> Cc: Paul Cercueil <paul@crapouillou.net>
+
+Otherwise:
+
+Reviewed-by: Paul Cercueil <paul@crapouillou.net>
+
+Cheers,
+-Paul
+
 > ---
->  drivers/iio/temperature/mlx90614.c | 12 ++++--------
->  1 file changed, 4 insertions(+), 8 deletions(-)
->
-> diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
-> index afcb10ea7c44..c253a5315988 100644
-> --- a/drivers/iio/temperature/mlx90614.c
-> +++ b/drivers/iio/temperature/mlx90614.c
-> @@ -600,7 +600,6 @@ static const struct of_device_id mlx90614_of_match[] = {
->  };
->  MODULE_DEVICE_TABLE(of, mlx90614_of_match);
->
-> -#ifdef CONFIG_PM_SLEEP
->  static int mlx90614_pm_suspend(struct device *dev)
->  {
->         struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> @@ -630,9 +629,7 @@ static int mlx90614_pm_resume(struct device *dev)
->
->         return 0;
+>  drivers/iio/adc/ad7091r-base.c | 4 ++--
+>  drivers/iio/adc/ad7091r5.c     | 1 +
+>  2 files changed, 3 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ad7091r-base.c 
+> b/drivers/iio/adc/ad7091r-base.c
+> index 63b4d6ea4566..8e252cde735b 100644
+> --- a/drivers/iio/adc/ad7091r-base.c
+> +++ b/drivers/iio/adc/ad7091r-base.c
+> @@ -260,7 +260,7 @@ int ad7091r_probe(struct device *dev, const char 
+> *name,
+> 
+>  	return devm_iio_device_register(dev, iio_dev);
 >  }
-> -#endif
->
-> -#ifdef CONFIG_PM
->  static int mlx90614_pm_runtime_suspend(struct device *dev)
+> -EXPORT_SYMBOL_GPL(ad7091r_probe);
+> +EXPORT_SYMBOL_NS_GPL(ad7091r_probe, IIO_AD7091R);
+> 
+>  static bool ad7091r_writeable_reg(struct device *dev, unsigned int 
+> reg)
 >  {
->         struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-> @@ -648,19 +645,18 @@ static int mlx90614_pm_runtime_resume(struct device *dev)
->
->         return mlx90614_wakeup(data);
->  }
-> -#endif
->
->  static const struct dev_pm_ops mlx90614_pm_ops = {
-> -       SET_SYSTEM_SLEEP_PM_OPS(mlx90614_pm_suspend, mlx90614_pm_resume)
-> -       SET_RUNTIME_PM_OPS(mlx90614_pm_runtime_suspend,
-> -                          mlx90614_pm_runtime_resume, NULL)
-> +       SYSTEM_SLEEP_PM_OPS(mlx90614_pm_suspend, mlx90614_pm_resume)
-> +       RUNTIME_PM_OPS(mlx90614_pm_runtime_suspend,
-> +                      mlx90614_pm_runtime_resume, NULL)
+> @@ -290,7 +290,7 @@ const struct regmap_config ad7091r_regmap_config 
+> = {
+>  	.writeable_reg = ad7091r_writeable_reg,
+>  	.volatile_reg = ad7091r_volatile_reg,
 >  };
->
->  static struct i2c_driver mlx90614_driver = {
->         .driver = {
->                 .name   = "mlx90614",
->                 .of_match_table = mlx90614_of_match,
-> -               .pm     = &mlx90614_pm_ops,
-> +               .pm     = pm_ptr(&mlx90614_pm_ops),
->         },
->         .probe = mlx90614_probe,
->         .remove = mlx90614_remove,
+> -EXPORT_SYMBOL_GPL(ad7091r_regmap_config);
+> +EXPORT_SYMBOL_NS_GPL(ad7091r_regmap_config, IIO_AD7091R);
+> 
+>  MODULE_AUTHOR("Beniamin Bia <beniamin.bia@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices AD7091Rx multi-channel 
+> converters");
+> diff --git a/drivers/iio/adc/ad7091r5.c b/drivers/iio/adc/ad7091r5.c
+> index 9665679c3ea6..47f5763023a4 100644
+> --- a/drivers/iio/adc/ad7091r5.c
+> +++ b/drivers/iio/adc/ad7091r5.c
+> @@ -111,3 +111,4 @@ module_i2c_driver(ad7091r5_driver);
+>  MODULE_AUTHOR("Beniamin Bia <beniamin.bia@analog.com>");
+>  MODULE_DESCRIPTION("Analog Devices AD7091R5 multi-channel ADC 
+> driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(IIO_AD7091R);
 > --
 > 2.35.1
->
+> 
+
+
