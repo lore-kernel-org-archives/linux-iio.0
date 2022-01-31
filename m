@@ -2,189 +2,119 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9812CC433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 31 Jan 2022 15:25:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6F79C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Jan 2022 22:01:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242631AbiAaPZ1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 Jan 2022 10:25:27 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49594 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241253AbiAaPZ1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jan 2022 10:25:27 -0500
-Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A946CC061714;
-        Mon, 31 Jan 2022 07:25:26 -0800 (PST)
-Received: by mail-ej1-x62f.google.com with SMTP id s5so43952856ejx.2;
-        Mon, 31 Jan 2022 07:25:26 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=/ZpTwQbsdQIcLvs0GlHH3Sy9+qB+TTqkyu/4auTBwhQ=;
-        b=f0fdBDvc/U0tP++/HdZQemlXc5Mq7TuJC6L5B16+S8XxtkWozVEXPG60N5l4KvLj/A
-         vWEeGNcz+WrKjT5UHPfxOOaSSxW8KrvSCivTUJX6WQheF15Y2UrEMD0EHp9jgo6CqfAj
-         BALXi09sH1qvWNanWt8WNt9PeyUoCxs1cbcgrdZslIhiDAzhla9MMgzEabvEu9qODgC1
-         wikwe56XB4jEuEcVsXOnOlXHvkhdspnj4SA7zimG+Sf7XFxEX9lZTl5NQa3oLNNyQpG+
-         k7ZoBEL2/xrsijdkCLUrzMNCspI8CGUT1InHQ2zouEv1aAZ4LyZkuIRj43H0SfyxaFSo
-         4UDA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=/ZpTwQbsdQIcLvs0GlHH3Sy9+qB+TTqkyu/4auTBwhQ=;
-        b=JnsnpGSQLn3P3E6hE4fFw4rWWM7YxsNn3aUAweMTPqUg5X13tMqfiVneT+nFUWQPi9
-         xXnBH0QpYlBRIyWe4oQdlGlbpFwsxyrylncM72VvLTLhWm1z53RgnXTALfypOo8iqNvi
-         KSbuu0BP/APCF06QEWujGzSPuJimFGKQytmTrcV0wmtP7gmrAAHfN75loRMJs2E7a76M
-         0tXJXbseFEG0T+KI8CK0GjqaWhIfJWG0YyFzyOMF3tLvsYze4rk7I3M3p2th1xy9B8/F
-         bN2ZkCGryBXw4f82YDQFcYjJSXLyN7lHe0nRzmVY4evL8XlmJLvqtJv+UdZ6Pdu8Qfzl
-         6TvQ==
-X-Gm-Message-State: AOAM533LMQgnZeOaUnserf9JpCVljBoJK1NBCGfztuSn8j3DX2Uf2Mra
-        04HlF2+2+KkoWVePTp/xzTh4KR6HNhyzAhBp3hU=
-X-Google-Smtp-Source: ABdhPJz2/6sFMRc13j6S/0wictvBM+DewEiYKr5lNQLfSjtAj/yXj0gmr0pBEwXlu51A+QFCE7VGXQwXTLeWjM6cHHU=
-X-Received: by 2002:a17:906:c14d:: with SMTP id dp13mr17906272ejc.132.1643642724327;
- Mon, 31 Jan 2022 07:25:24 -0800 (PST)
+        id S229910AbiAaWBN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Jan 2022 17:01:13 -0500
+Received: from first.geanix.com ([116.203.34.67]:37722 "EHLO first.geanix.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S229710AbiAaWBM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 31 Jan 2022 17:01:12 -0500
+Received: from skn-laptop.hadsten (_gateway [172.25.0.1])
+        by first.geanix.com (Postfix) with ESMTPSA id CBDDB126AF4;
+        Mon, 31 Jan 2022 22:01:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=geanix.com; s=first;
+        t=1643666467; bh=5bUEg2lZMkj8cs0P5gvDLxG26wY7RiU4FDG8Te9ym9A=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To;
+        b=amgwsQw52yCzyBaV+0gY1ll4gnlVkEtOYB4mvJpKGri6gEB8bqwUxPcLcxXrk1vgM
+         rB5PtRWZl13RFWLzzIzCqOsOVYKCSpTiRflDGmaoQ2FiY1FenzL9dZJX1mOkReBmcB
+         VUPeDAGx28T7+IGtZQFSyveRp+keoNN/Nch8hc3K+yRJh3HgQkURb/NWpS/52+X4tO
+         55ww647nOF2JTbpLVj9h6AWCKbXJj8YgYEalmwWtLukECHP+GCkNhNvMPBQLMflLtE
+         u0lE9yT5JR2P0/e4exTUuik8gSWAneuHfP/6/vazEYDqqINCDTFktk2TL2dEmF7HfJ
+         iO39UfURLouow==
+Date:   Mon, 31 Jan 2022 23:01:05 +0100
+From:   Sean Nyekjaer <sean@geanix.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH v2 11/13] iio:accel:fxl8962af: Move exports into
+ IIO_FXL8962AF namespace
+Message-ID: <20220131220105.l4dodcx2e53anvah@skn-laptop.hadsten>
+References: <20220116180535.2367780-1-jic23@kernel.org>
+ <20220116180535.2367780-12-jic23@kernel.org>
 MIME-Version: 1.0
-References: <20220130161101.1067691-1-liambeguin@gmail.com>
- <20220130161101.1067691-7-liambeguin@gmail.com> <5da96dc7-696b-1bc0-a111-f6108ecfa54c@axentia.se>
-In-Reply-To: <5da96dc7-696b-1bc0-a111-f6108ecfa54c@axentia.se>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 31 Jan 2022 17:23:47 +0200
-Message-ID: <CAHp75VcDMfnkRvh5Rmxqc_R0ML5Eq4GCFL_QAkess7OLAQkg7w@mail.gmail.com>
-Subject: Re: [PATCH v13 06/11] iio: afe: rescale: make use of units.h
-To:     Peter Rosin <peda@axentia.se>
-Cc:     Liam Beguin <liambeguin@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <20220116180535.2367780-12-jic23@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jan 31, 2022 at 4:50 PM Peter Rosin <peda@axentia.se> wrote:
-> On 2022-01-30 17:10, Liam Beguin wrote:
+On Sun, Jan 16, 2022 at 06:05:33PM +0000, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> 
+> To avoid unnecessary pollution of the global symbol namespace move the
+> driver core exports into their own namespace and import that into the two
+> bus modules.
+> 
+> For more info see https://lwn.net/Articles/760045/
+> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Sean Nyekjaer <sean@geanix.com>
 
-...
+Looks good :)
 
-> > -             tmp = div_s64_rem(tmp, 1000000000LL, &rem);
-> > +             tmp = div_s64_rem(tmp, GIGA, &rem);
->
-> It is NOT easy for me to say which of GIGA/NANO is most fitting.
+Reviewed-by: Sean Nyekjaer <sean@geanix.com>
 
-What do you mean? The idea behind is the use of the macro depending on
-the actual power of 10 in use (taking into account the sign of the
-exponent part).
-
-> There are a couple of considerations:
->
-> A) 1000000000 is just a big value (GIGA fits). Something big is
->    needed to not lose too much precision.
-
-Does it have a physical meaning?
-
-> B) 1000000000 is what the IIO core uses to print fractional-log
->    values with nano precision (NANO fits). This is not really
->    relevant in this context.
-
-Same question.
-
-> C) 1000000000 makes the int-plus-nano and fractional-log cases
->    align (NANO fits). This last consideration is introduced with
->    patch 4/11.
->
-> There is simply no correct define to use.
-
-Huh?!
-I believe the answer to the A and B -- yes, which means there are the
-correct and incorrect variants to use.
-
-> And whichever define is
-> chosen makes the other interpretation less obvious. Which is not
-> desirable, obscures things and make both GIGA and NANO bad
-> options.
-
-The (main) idea of the macros is to avoid mistyping 0s in the numbers
-and miscalculations. Besides that it also provides the same type for
-the constants.
-
-> So, I stepped back to the description provided by Andy in the
-> comments of v11:
->
-> On 2021-12-22 19:59, Andy Shevchenko wrote:
-> | You should get the proper power after the operation.
-> | Write a formula (mathematically speaking) and check each of them for this.
-> |
-> | 10^-5/10^-9 == 1*10^4 (Used NANO)
-> | 10^-5/10^9 == 1/10^-14 (Used GIGA)
-> |
-> | See the difference?
->
-> No, I don't really see the difference, that just makes me totally
-> confused.
-
-Sounds like we have a chat here between physicists and computer
-science folks :-)
-
-Let's try again, does the value in the tmp variable above have a
-_physical_ meaning? (I believe so, because all IIO subsystem is about
-physical values)
-
-> Dividing by 10^-9 or multiplying by 10^9 is as we all
-> know exactly the same, and the kernel cannot deal directly with
-> 10^-9 so both will look the same in code (multiplying by 10^9).
-
-Yes, and using proper macro makes much cleaner the mathematical and
-physical point of view to the values.
-
-> So,
-> you must be referring to the "real formula" behind the code. But
-> in that case, if the "real formula" behind the (then equivalent)
-> code had instead been
->
->         10^-5*10^9 == 1*10^4 (Used GIGA)
->         10^-5*10^-9 == 1/10^-14 (Used NANO)
->
-> the outcome is the opposite. NANO turns GIGA and vice versa.
-
-Again, one needs to think carefully about the meaning.
-That's the point. If we do not understand the proper values and their
-scales, perhaps that is the issue we should solve first?
-
-> Since you can express the same thing differently in math too, it
-> all crumbles for me. Because of this duality, it will be a matter
-> of taste if GIGA or NANO fits best in any given instance. Sometimes
-> (perhaps commonly) it will be decidedly easy to pick one of them,
-> but in other cases (see above) we will end up with a conflict.
->
-> What to do then? Or, what am I missing?
-
-Physical meaning of the values, certainly.
-
-> My taste says NANO in this case, since A) is just some big number
-> and not really about units and B) is as stated not really relevant.
-> Which makes C) win the argument for me.
-
-...
-
-> >               *val2 = rem / (int)tmp;
-> >               if (rem2)
-> > -                     *val2 += div_s64((s64)rem2 * 1000000000LL, tmp);
-> > +                     *val2 += div_s64((s64)rem2 * GIGA, tmp);
->
-> Here, 1000000000 matches the above use. If we go with NANO above,
-> we should go with NANO here as well.
-
-Why? (Maybe you are right, maybe not)
-
-...
-
-> SI-defines that are a bit confusing to me.
-
-Yeah, people hate mathematics at scholls, at university, in life...
-
--- 
-With Best Regards,
-Andy Shevchenko
+> ---
+>  drivers/iio/accel/fxls8962af-core.c | 6 +++---
+>  drivers/iio/accel/fxls8962af-i2c.c  | 1 +
+>  drivers/iio/accel/fxls8962af-spi.c  | 1 +
+>  3 files changed, 5 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
+> index 32989d91b982..8e763dbf096b 100644
+> --- a/drivers/iio/accel/fxls8962af-core.c
+> +++ b/drivers/iio/accel/fxls8962af-core.c
+> @@ -178,7 +178,7 @@ const struct regmap_config fxls8962af_regmap_conf = {
+>  	.val_bits = 8,
+>  	.max_register = FXLS8962AF_MAX_REG,
+>  };
+> -EXPORT_SYMBOL_GPL(fxls8962af_regmap_conf);
+> +EXPORT_SYMBOL_NS_GPL(fxls8962af_regmap_conf, IIO_FXLS8962AF);
+>  
+>  enum {
+>  	fxls8962af_idx_x,
+> @@ -1232,7 +1232,7 @@ int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq)
+>  
+>  	return devm_iio_device_register(dev, indio_dev);
+>  }
+> -EXPORT_SYMBOL_GPL(fxls8962af_core_probe);
+> +EXPORT_SYMBOL_NS_GPL(fxls8962af_core_probe, IIO_FXLS8962AF);
+>  
+>  static int __maybe_unused fxls8962af_runtime_suspend(struct device *dev)
+>  {
+> @@ -1298,7 +1298,7 @@ const struct dev_pm_ops fxls8962af_pm_ops = {
+>  	SET_RUNTIME_PM_OPS(fxls8962af_runtime_suspend,
+>  			   fxls8962af_runtime_resume, NULL)
+>  };
+> -EXPORT_SYMBOL_GPL(fxls8962af_pm_ops);
+> +EXPORT_SYMBOL_NS_GPL(fxls8962af_pm_ops, IIO_FXLS8962AF);
+>  
+>  MODULE_AUTHOR("Sean Nyekjaer <sean@geanix.com>");
+>  MODULE_DESCRIPTION("NXP FXLS8962AF/FXLS8964AF accelerometer driver");
+> diff --git a/drivers/iio/accel/fxls8962af-i2c.c b/drivers/iio/accel/fxls8962af-i2c.c
+> index cfb004b20455..7e0ecd3bf0d9 100644
+> --- a/drivers/iio/accel/fxls8962af-i2c.c
+> +++ b/drivers/iio/accel/fxls8962af-i2c.c
+> @@ -55,3 +55,4 @@ module_i2c_driver(fxls8962af_driver);
+>  MODULE_AUTHOR("Sean Nyekjaer <sean@geanix.com>");
+>  MODULE_DESCRIPTION("NXP FXLS8962AF/FXLS8964AF accelerometer i2c driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(IIO_FXLS8962AF);
+> diff --git a/drivers/iio/accel/fxls8962af-spi.c b/drivers/iio/accel/fxls8962af-spi.c
+> index 57108d3d480b..0357d54d47cc 100644
+> --- a/drivers/iio/accel/fxls8962af-spi.c
+> +++ b/drivers/iio/accel/fxls8962af-spi.c
+> @@ -55,3 +55,4 @@ module_spi_driver(fxls8962af_driver);
+>  MODULE_AUTHOR("Sean Nyekjaer <sean@geanix.com>");
+>  MODULE_DESCRIPTION("NXP FXLS8962AF/FXLS8964AF accelerometer spi driver");
+>  MODULE_LICENSE("GPL v2");
+> +MODULE_IMPORT_NS(IIO_FXLS8962AF);
+> -- 
+> 2.34.1
+> 
