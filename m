@@ -2,88 +2,73 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 265DDC433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 31 Jan 2022 10:57:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 547BCC4332F
+	for <linux-iio@archiver.kernel.org>; Mon, 31 Jan 2022 11:11:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239785AbiAaK5z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 31 Jan 2022 05:57:55 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42440 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240087AbiAaK5w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jan 2022 05:57:52 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B75E7C061714
-        for <linux-iio@vger.kernel.org>; Mon, 31 Jan 2022 02:57:48 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id jx6so42151405ejb.0
-        for <linux-iio@vger.kernel.org>; Mon, 31 Jan 2022 02:57:48 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=g6BLKQForHMY5t2MCaKeUXYwLUgft3GORVcOYZPl0zM=;
-        b=FyBXw1xbKyK2Ko0lP0kOm3gFZjcadBYPhbKyHOfo0fOS3uBEf1Rl8OX7UL/DZLKkas
-         1At5CJyE0J2RrZUNA7DLhMw5rkE9p0zBcGd4ky4dkDMW0C4nCIdaBkqgNuU6/m0u/CuR
-         4t4MzVuCata52SHFDjN59wCk5r7e7U+L5uoVKf8HTtKxJr6BuVhtdIz8TPbhZB40xJwW
-         lLbRztmjaZ8CI6Dwl5Q8OTdy3bbbql7b6CBxhDKJTq2/+4YEOm4kBFakG79NmtkKVpxy
-         dFwdOR9zffSXX7skEOOm51RTEliNDlBvQw31dlsnCRz4UckZ6VKtxlHCzA2JGe3Z+xdH
-         NZkw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=g6BLKQForHMY5t2MCaKeUXYwLUgft3GORVcOYZPl0zM=;
-        b=gtlSN9wHgR34XimNetwwh0xHzWef9a43jGH6bBK060C7c8FXR82h+iPdKVNCVAnZk4
-         buK0HWbNsSMMM0GRm9UDpeRsVsIMw4ceFZ/fz4TJjxIYXXbNODzbx/rV6/szD8BvJFkA
-         IxWxWwfjSmctdnLY8tJm2RN74T6BYQcvxp0Qm3v79QkccLY5Hom1Yej4D9qHs/Ng+2Vp
-         0v8zbRra4oIJ/1rLJj9DhQBbQjPJEoVrP0+etUBAQSHJKcpW9IsHDOvyKOQBDPowng4A
-         VC0/fKNqt5D/K2T0RsIWbp/FbfawZ5k6lm9IUSRqQkrjH9QCsBG+TKOvi9cgzq76BY1S
-         fyCA==
-X-Gm-Message-State: AOAM532xzsYkRsJTL+AZaYkfFhDDBv0kxLl3X5SP+HzPnxgrac6N9Tzb
-        pH1ttV87dljZImkB5Ny4txaG9qdnbkhGJCS2SJ0=
-X-Google-Smtp-Source: ABdhPJzZxn7PURiEf0DfZGFAY6t/yXOnBLPi6ziQmmnL0KpHdY9Tz0Ee8gvraGrwV+xFt6fhQmdnlq0zuoVyKRFFmqE=
-X-Received: by 2002:a17:907:a40a:: with SMTP id sg10mr17148779ejc.44.1643626667166;
- Mon, 31 Jan 2022 02:57:47 -0800 (PST)
+        id S1359312AbiAaLLI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 31 Jan 2022 06:11:08 -0500
+Received: from ams.source.kernel.org ([145.40.68.75]:57144 "EHLO
+        ams.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1376798AbiAaLJH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Jan 2022 06:09:07 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5B3A1B82A6E
+        for <linux-iio@vger.kernel.org>; Mon, 31 Jan 2022 11:09:06 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 22DAEC340EF;
+        Mon, 31 Jan 2022 11:09:03 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1643627345;
+        bh=W7x9HinFb82teZoeIRE/GNMIU4Gq7YA31vQbdmQqGW0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=HTsaKsVNs9ZhniohywN5p8HujlHcjOYyB2ZUz73kD/c66bA7rrHi/a0tm0ikkr3Yq
+         tbTMMGTAJhX248guH39Jxi1AXUxNYUuwAwJsnFTa5GeuXkbzTEtVDBAAYlx4znTcET
+         JSMSHdxifcYOCplIvXThwAEGMMXk2++36orZ/E6OUAMc52QH8rYAPGwEJvGH6zsNnY
+         qh+XQiMUdvw1P56EgGr5B2LNHZVzzhfxtvzRmpma947lwZBZvhEBS+WX5PflwxVuYr
+         r7Xby4A08kkdQW6vd5pp1SZLp7mHM3vs3tyFAiPb4w9X/OjqvK/dNy1fb7bM8pVMok
+         yebvvgFNaTF9g==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     jic23@kernel.org
+Cc:     lorenzo.bianconi@redhat.com, linux-iio@vger.kernel.org,
+        mario.tesi@st.com
+Subject: [PATCH] iio: imu: st_lsm6dsx: wait for settling time in st_lsm6dsx_read_oneshot
+Date:   Mon, 31 Jan 2022 12:08:54 +0100
+Message-Id: <6c10e1de14a42eca2d283a9df242b426e371543e.1643627150.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-References: <20220130205701.334592-1-jic23@kernel.org>
-In-Reply-To: <20220130205701.334592-1-jic23@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 31 Jan 2022 12:56:11 +0200
-Message-ID: <CAHp75VeDbrPuQeyraFYR=P_Ft2K7-BMMdMDVi=sGEVznF6iTpQ@mail.gmail.com>
-Subject: Re: [PATCH 00/16] 2nd set of IIO export namespaces
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Himanshu Jha <himanshujha199640@gmail.com>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Tomasz Duszynski <tduszyns@gmail.com>,
-        Song Bao Hua <song.bao.hua@hisilicon.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Renato Lui Geh <renatogeh@gmail.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Jan 30, 2022 at 10:50 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> Whilst I'm still looking for additional review on the first set,
-> I'll take the quiet as meaning no one objects and send out a second
-> set.  Note that I don't have anyone cc'd on some of these because
-> I couldn't immediately figure out who was still active and familiar
-> with the drivers.  As these should be simple to review, please take
-> a look at as many as you have time for!
+We need to wait for sensor settling time (~ 3/ODR) before reading data
+in st_lsm6dsx_read_oneshot routine in order to avoid corrupted samples.
 
-I created a script [1] for myself with some heuristics which showed to
-work quite well for me.
+Reported-by: Mario Tesi <mario.tesi@st.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
 
-[1]: https://github.com/andy-shev/home-bin-tools/blob/master/ge2maintainer.sh
-
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index 727b4b6ac696..93f0c6bce502 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -1374,8 +1374,12 @@ static int st_lsm6dsx_read_oneshot(struct st_lsm6dsx_sensor *sensor,
+ 	if (err < 0)
+ 		return err;
+ 
++	/*
++	 * we need to wait for sensor settling time before
++	 * reading data in order to avoid corrupted samples
++	 */
+ 	delay = 1000000000 / sensor->odr;
+-	usleep_range(delay, 2 * delay);
++	usleep_range(3 * delay, 4 * delay);
+ 
+ 	err = st_lsm6dsx_read_locked(hw, addr, &data, sizeof(data));
+ 	if (err < 0)
 -- 
-With Best Regards,
-Andy Shevchenko
+2.34.1
+
