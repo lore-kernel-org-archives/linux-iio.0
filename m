@@ -2,42 +2,54 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C049C433EF
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Feb 2022 08:17:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33C33C433EF
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Feb 2022 09:34:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239168AbiBBIRB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Feb 2022 03:17:01 -0500
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:56267 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235227AbiBBIRB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Feb 2022 03:17:01 -0500
+        id S240112AbiBBJeE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Feb 2022 04:34:04 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58954 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S233545AbiBBJeD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Feb 2022 04:34:03 -0500
+X-Greylist: delayed 5064 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 02 Feb 2022 01:34:03 PST
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63B53C061714
+        for <linux-iio@vger.kernel.org>; Wed,  2 Feb 2022 01:34:03 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 6393CC0007;
-        Wed,  2 Feb 2022 08:16:59 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 0B0362000C;
+        Wed,  2 Feb 2022 09:34:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1643789819;
+        t=1643794442;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=171quQntck/f0EJOEAvbuJglDt8hXUlPvxraF0lIYtM=;
-        b=DnMa9+jFrHa+VNRiC3jtlHqynnahHwb4Az9ZKi1nSOiBYI1YaE9vEQxNbyNygw0W71S22e
-        tSD9LtuVD3rv39cW1x/wdIpmVGqY+mo+puc3g6V/PFeejeu+/NY0p65FYRNss5hRvgsiaQ
-        6WLHpnbOu0zKXX/Tqh7GbBVAcpqavV7FPBqjhxCTYueFk3MWH286K0gK47rP83KQnGDz/u
-        6h1LRY8lfWSoHE/FVS+NtUrBFoyqABVHfqbJ3xJx7FeCLXreTYYvzVIdnjk8y+pfqXActj
-        HeH9abDhwWlXOnhGCUj5fkqnl5Yp2VQf/U/LYETQbSi3POQ0uRXQBj0CeaScvw==
-Date:   Wed, 2 Feb 2022 09:16:58 +0100
+        bh=6iU+Q8PhD/7GHQ721Mg92Mo1BCVLDLKwHWjg6zvejtc=;
+        b=YIMoaSlpJShfRgdxuBCZA/WVLbG0MO4iqXK1lju0mJtt6zBIjT1WMsuOw2L97OcdhWzWcE
+        I+0xUGLDYq7eNA8IpRZz3ihcvfitTf13RV/ZRDv/yctpycAWFqyhPLIEKa8vu0YWfVgnpX
+        M3uSFmvpE1f4tGAlodItYPi2rMJSYSuJYPmeScI1slQ52Is7oOK5fmswWhLChcmgjCLEXz
+        zdhM21X+JRaeuIwQMA2SvflMZaC9bgGnrd/5yfhDncxiXNB+UPJWMkD7x5At6VjMM23Ocp
+        63hmY6nMTNxb44ZDc/mTU9aKyZM/7csci/OOE8M3vTcRiAj/6QhCK7duCK1Fzw==
+Date:   Wed, 2 Feb 2022 10:33:59 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>
-Subject: Re: [PATCH 07/10] iio: core: Hide write accesses to
- iio_dev->currentmode
-Message-ID: <20220202091658.51edfeac@xps13>
-In-Reply-To: <20220115165616.48e34e52@jic23-huawei>
+To:     Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Olivier MOYSAN <olivier.moysan@foss.st.com>
+Subject: Re: [PATCH 04/10] iio: adc: stm32-dfsdm: Avoid dereferencing
+ ->currentmode
+Message-ID: <20220202103359.3d4c5fb7@xps13>
+In-Reply-To: <ff1ddd2b-acbb-3154-5712-87c1d9a7f8b7@foss.st.com>
 References: <20211215151344.163036-1-miquel.raynal@bootlin.com>
-        <20211215151344.163036-8-miquel.raynal@bootlin.com>
-        <20220115165616.48e34e52@jic23-huawei>
+        <20211215151344.163036-5-miquel.raynal@bootlin.com>
+        <CA+U=DspvsLxYyhrvNfEBGPKuJ1a6-L=WjnQE-hvjMVp2g-9nxQ@mail.gmail.com>
+        <20211216092235.56e69441@xps13>
+        <20220115160619.746a9246@jic23-huawei>
+        <20220128160443.44016830@xps13>
+        <ff1ddd2b-acbb-3154-5712-87c1d9a7f8b7@foss.st.com>
 Organization: Bootlin
 X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
@@ -47,133 +59,117 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Hi Fabrice,
 
-jic23@kernel.org wrote on Sat, 15 Jan 2022 16:56:16 +0000:
+fabrice.gasnier@foss.st.com wrote on Tue, 1 Feb 2022 09:41:03 +0100:
 
-> On Wed, 15 Dec 2021 16:13:41 +0100
-> Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->=20
-> > In order to later move this variable within the opaque structure and now
-> > that there is a read-only helper for it, let's create a write helper.
+> On 1/28/22 4:04 PM, Miquel Raynal wrote:
+> > Hi Jonathan,
 > >=20
-> > The idea behind these changes is to limit the temptation of using =20
-> > ->currentmode directly, and this will soon be fully addressed by making=
-   =20
-> > the modification to this variable impossible from a device driver by
-> > moving it to the opaque structure. But for now, let's just do a
-> > transparent change and use a new helper when ->currentmode needs to be
-> > accessed for modifications.
-> >=20
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com> =20
+> > jic23@kernel.org wrote on Sat, 15 Jan 2022 16:06:19 +0000:
+> >  =20
+> >> On Thu, 16 Dec 2021 09:22:35 +0100
+> >> Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+> >> =20
+> >>> Hi Alexandru,
+> >>>
+> >>> ardeleanalex@gmail.com wrote on Thu, 16 Dec 2021 08:47:02 +0200:
+> >>>    =20
+> >>>> On Wed, Dec 15, 2021 at 10:03 PM Miquel Raynal
+> >>>> <miquel.raynal@bootlin.com> wrote:     =20
+> >>>>>
+> >>>>> This is an internal variable of the core, let's use the
+> >>>>> iio_buffer_enabled() helper which is exported for the following pur=
+pose:
+> >>>>> telling if the current mode is a buffered mode, which is precisely =
+what
+> >>>>> this driver looks for.
+> >>>>>
+> >>>>> Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> >>>>> ---
+> >>>>>  drivers/iio/adc/stm32-dfsdm-adc.c | 5 ++---
+> >>>>>  1 file changed, 2 insertions(+), 3 deletions(-)
+> >>>>>
+> >>>>> diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/st=
+m32-dfsdm-adc.c
+> >>>>> index 1cfefb3b5e56..a3b8827d3bbf 100644
+> >>>>> --- a/drivers/iio/adc/stm32-dfsdm-adc.c
+> >>>>> +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+> >>>>> @@ -466,8 +466,7 @@ static int stm32_dfsdm_channels_configure(struc=
+t iio_dev *indio_dev,
+> >>>>>          * In continuous mode, use fast mode configuration,
+> >>>>>          * if it provides a better resolution.
+> >>>>>          */
+> >>>>> -       if (adc->nconv =3D=3D 1 && !trig &&
+> >>>>> -           (indio_dev->currentmode & INDIO_BUFFER_SOFTWARE)) {
+> >>>>> +       if (adc->nconv =3D=3D 1 && !trig && iio_buffer_enabled(indi=
+o_dev)) {       =20
+> >>>>
+> >>>> This may become tricky if other modes get added later.
+> >>>> STM does a relatively good job in updating and re-using their drivers
+> >>>> (even if some of them do look quirky sometimes).   =20
+> >>
+> >> Their hardware is crazy/complicated so tends to push the limits!
+> >> =20
+> >>>>
+> >>>> So, the question here would be: is "iio_buffer_enabled(indio_dev)"
+> >>>> going to be valid [in this place] once INDIO_BUFFER_TRIGGERED or
+> >>>> INDIO_BUFFER_HARDWARE get added?     =20
+> >>>
+> >>> I would argue, is this a real problem? Today iio_buffer_enabled() seem
+> >>> to handle well what this driver is expecting. If tomorrow someone adds
+> >>> another mode, that is his/her responsibility to state "okay, this
+> >>> section is not common to all buffer styles *anymore*, so we need to do
+> >>> a more fine grained check against ->currentmodes than
+> >>> iio_buffer_enabled() does". In that case using the ->currentmodes
+> >>> getter would be the right way to go, but only at that particular
+> >>> moment, not today.   =20
+> >>
+> >> It should be isolated to this driver, so I think it is fine to use
+> >> the broader check today, but I'll leave this to the st folks as
+> >> it's their driver and I don't feel that strongly about it. =20
 >=20
-> You can probably guess from my comments on the previous but I'd prefer th=
-at
-> we don't do this. We don't need an accessor to do the set so let's skip
-> doing so.
+> Hi Miquel, Alexandru, Jonathan, all,
 >=20
-> Given next patch makes the write from drivers impossible anyway we don't
-> need to do this step.
+> First, sorry for the delay.
+>=20
+> Indeed, I don't expect any functional changes here by using
+> iio_buffer_enabled(indio_dev).
+> So it should be fine to use it. You're right, the driver looks for
+> buffer mode in both places where this gets used.
+>=20
+> Just an additional statement is: the driver also checks for no trigger,
+> and single channel in both places (to select desired mode in the dfsdm).
+> As I see, only INDIO_BUFFER_SOFTWARE is expected then.
 
-I personally prefer hiding accesses behind helpers, especially when
-there is a move happening, but that's only a personal preference, I'll
-drop this helper entirely and limit the use of the getter to
-out-of-the-core callers.
+Ok, thanks for the validation, do not hesitate to drop a Reviewed-by to
+the next version of this series if you agree with the changes made here.
 
-> One more thing inline... No need to export the symbol currently (that
-> might change if any of the other core modules ever use it but it's not
-> needed at this time.
+> For my own understanding (I'm just asking), why not using the
+> currentmodes getter routine ?
+>=20
+> I've had a look at the whole series [1], It seems used elsewhere. I may
+> miss something... It would be 100% equivalent to current code to use:
+> iio_get_internal_mode(indio_dev) & INDIO_BUFFER_SOFTWARE ?
+>=20
+> This would be safe in case new modes gets introduced later ?
+> (another note: unless these new modes gets set by default in the 'modes'
+> field, this should have no impact here as well anyway ?)
 
-Yeah that is perfectly right, I didn't notice it when writing the patch.
+I would argue that this is more a conceptual change. IMHO:
+- currentmode is a variable that should have been kept internal
+- checking against its value directly is kind of a hack and should be
+  avoided when possible because we want the core to have full freedom
+  over the way it manages these flags
+- if you want to verify if buffers are enabled, then the core offers
+  you a dedicated helper that does exactly this, and will do it better
+  than if hardcoded by individual writers, generally
 
->=20
-> > ---
-> >  drivers/iio/industrialio-buffer.c |  6 +++---
-> >  drivers/iio/industrialio-core.c   | 11 +++++++++++
-> >  include/linux/iio/iio.h           |  1 +
-> >  3 files changed, 15 insertions(+), 3 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrial=
-io-buffer.c
-> > index f4dbab7c44fa..190f9cc5fb2c 100644
-> > --- a/drivers/iio/industrialio-buffer.c
-> > +++ b/drivers/iio/industrialio-buffer.c
-> > @@ -1065,7 +1065,7 @@ static int iio_enable_buffers(struct iio_dev *ind=
-io_dev,
-> >  	indio_dev->active_scan_mask =3D config->scan_mask;
-> >  	indio_dev->scan_timestamp =3D config->scan_timestamp;
-> >  	indio_dev->scan_bytes =3D config->scan_bytes;
-> > -	indio_dev->currentmode =3D config->mode;
-> > +	iio_set_internal_mode(indio_dev, config->mode);
-> > =20
-> >  	iio_update_demux(indio_dev);
-> > =20
-> > @@ -1132,7 +1132,7 @@ static int iio_enable_buffers(struct iio_dev *ind=
-io_dev,
-> >  	if (indio_dev->setup_ops->postdisable)
-> >  		indio_dev->setup_ops->postdisable(indio_dev);
-> >  err_undo_config:
-> > -	indio_dev->currentmode =3D INDIO_DIRECT_MODE;
-> > +	iio_set_internal_mode(indio_dev, INDIO_DIRECT_MODE);
-> >  	indio_dev->active_scan_mask =3D NULL;
-> > =20
-> >  	return ret;
-> > @@ -1181,7 +1181,7 @@ static int iio_disable_buffers(struct iio_dev *in=
-dio_dev)
-> > =20
-> >  	iio_free_scan_mask(indio_dev, indio_dev->active_scan_mask);
-> >  	indio_dev->active_scan_mask =3D NULL;
-> > -	indio_dev->currentmode =3D INDIO_DIRECT_MODE;
-> > +	iio_set_internal_mode(indio_dev, INDIO_DIRECT_MODE);
-> > =20
-> >  	return ret;
-> >  }
-> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio=
--core.c
-> > index a1d6e30d034a..5c7e0c9e1f59 100644
-> > --- a/drivers/iio/industrialio-core.c
-> > +++ b/drivers/iio/industrialio-core.c
-> > @@ -2068,6 +2068,17 @@ int iio_get_internal_mode(struct iio_dev *indio_=
-dev)
-> >  }
-> >  EXPORT_SYMBOL_GPL(iio_get_internal_mode);
-> > =20
-> > +/**
-> > + * iio_set_internal_mode() - helper function providing write-only acce=
-ss to the
-> > + *			     internal @currentmode variable
-> > + * @indio_dev:		IIO device structure for device
-> > + **/
-> > +void iio_set_internal_mode(struct iio_dev *indio_dev, int mode)
-> > +{
-> > +	indio_dev->currentmode =3D mode;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iio_set_internal_mode); =20
->=20
-> If we did do this, you don't need to export it as industrialio_buffer and=
- industriaio_core
-> are both built into the same module.
->=20
-> > +
-> >  subsys_initcall(iio_init);
-> >  module_exit(iio_exit);
-> > =20
-> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > index dcab17f44552..27551d251904 100644
-> > --- a/include/linux/iio/iio.h
-> > +++ b/include/linux/iio/iio.h
-> > @@ -679,6 +679,7 @@ struct iio_trigger *devm_iio_trigger_alloc(struct d=
-evice *parent,
-> >  					   const char *fmt, ...);
-> > =20
-> >  int iio_get_internal_mode(struct iio_dev *indio_dev);
-> > +void iio_set_internal_mode(struct iio_dev *indio_dev, int mode);
-> > =20
-> >  /**
-> >   * iio_buffer_enabled() - helper function to test if the buffer is ena=
-bled =20
->=20
+And it's not "used elsewhere" anymore thanks to this series :) only two
+drivers _really_ need to check the actual current mode to do specific
+actions, but that's all.
 
+I hope it clarifies a bit.
 
 Thanks,
 Miqu=C3=A8l
