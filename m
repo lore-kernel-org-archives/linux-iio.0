@@ -2,58 +2,153 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8319AC433F5
-	for <linux-iio@archiver.kernel.org>; Wed,  2 Feb 2022 11:02:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 61BD5C433F5
+	for <linux-iio@archiver.kernel.org>; Wed,  2 Feb 2022 12:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232174AbiBBLCR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Feb 2022 06:02:17 -0500
-Received: from mail.profitfirm24.com.pl ([212.237.10.110]:59450 "EHLO
-        mail.profitfirm24.com.pl" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343665AbiBBLCP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Feb 2022 06:02:15 -0500
-Received: by mail.profitfirm24.com.pl (Postfix, from userid 1001)
-        id 6178AAA7B0; Tue,  1 Feb 2022 09:17:41 +0000 (GMT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=profitfirm24.com.pl;
-        s=mail; t=1643707290;
-        bh=M1ZVeu3q6Upppe+FUx/3rgI7MKJXh389NZDbgCK1SX4=;
-        h=Date:From:To:Subject:From;
-        b=EqGNCW+9jgMqN5sdb6v7ookMQSY6gwULhmx75luT24HirDulUbAAK2FIvo4cXQ934
-         D2F7R0bI1AjKLSUBrRr1XdTRITynXt4LMu4dWt5wVP0SYhhssvrjrEeOLGKpEJ88fP
-         6H/GuItjr+8l057cYsIuvEJE3gtXXaIdptHSBiH9jnZZm1yQmKbAuaje76gTt0349n
-         4/mm7tQKei5wKPTTvsVn6rImFb5fvbIDML2uN5uz3yFjkvuTLrkOXfynXfhcMytgmP
-         G6b0p5XmfxP4IHgnR7gP5n3XFH5gP9PVbqQxn4ggS4zbddPhGet0C51xamh3kLTnPX
-         PYaF/yDRl69Vw==
-Received: by profitfirm24.com.pl for <linux-iio@vger.kernel.org>; Tue,  1 Feb 2022 09:17:20 GMT
-Message-ID: <20220201074652-0.1.b.2za3.0.l8uo932e4l@profitfirm24.com.pl>
-Date:   Tue,  1 Feb 2022 09:17:20 GMT
-From:   =?UTF-8?Q? "Arkadiusz_Soko=C5=82owski" ?= 
-        <arkadiusz.sokolowski@profitfirm24.com.pl>
-To:     <linux-iio@vger.kernel.org>
-Subject: Koszty instalacji fotowoltaicznej
-X-Mailer: mail.profitfirm24.com.pl
+        id S231841AbiBBMct (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Feb 2022 07:32:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43120 "EHLO
+        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S229706AbiBBMcs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Feb 2022 07:32:48 -0500
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 354CBC061714
+        for <linux-iio@vger.kernel.org>; Wed,  2 Feb 2022 04:32:48 -0800 (PST)
+Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nFEoU-0003vW-PT; Wed, 02 Feb 2022 13:32:42 +0100
+Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1nFEoT-00BkQb-8K; Wed, 02 Feb 2022 13:32:41 +0100
+Date:   Wed, 2 Feb 2022 13:32:41 +0100
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc:     David Jander <david@protonic.nl>,
+        Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        David Lechner <david@lechnology.com>,
+        linux-iio@vger.kernel.org,
+        Robin van der Gracht <robin@protonic.nl>,
+        linux-kernel@vger.kernel.org,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v1] counter: interrupt-cnt: add counter_push_event()
+Message-ID: <Yfp56WznEMh7rp2O@pengutronix.de>
+References: <YZ3XAeYyfGblfaOi@shinobu>
+ <20211124072720.GA30281@pengutronix.de>
+ <YZ7tv79LQwLL7h3T@shinobu>
+ <f73650b6-5a08-9ea9-9ecb-c47665ef07b0@lechnology.com>
+ <20211207081602.45b1423c@erd992>
+ <20211208135902.7j3aawytt3jlqgwr@pengutronix.de>
+ <20211208171035.6ad117af@erd992>
+ <Ybmr2kCLScuGZ41h@shinobu>
+ <20211215100853.11f9262d@erd992>
+ <YcaZEKbzRbX982YW@shinobu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <YcaZEKbzRbX982YW@shinobu>
+X-Sent-From: Pengutronix Hildesheim
+X-URL:  http://www.pengutronix.de/
+X-IRC:  #ptxdist @freenode
+X-Accept-Language: de,en
+X-Accept-Content-Type: text/plain
+X-Uptime: 13:23:00 up 97 days, 18:50, 94 users,  load average: 3.46, 7.94,
+ 12.13
+X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,
+Hi William,
 
-stworzyli=C5=9Bmy specjaln=C4=85 ofert=C4=99 dla firm, na kompleksow=C4=85=
- obs=C5=82ug=C4=99 inwestycji w fotowoltaik=C4=99. =20
+On Sat, Dec 25, 2021 at 01:07:44PM +0900, William Breathitt Gray wrote:
+... 
+> So the counter_push_event() function interacts with two spinlocks:
+> events_list_lock and events_in_lock. The events_list_lock spinlock is
+> necessary because userspace can modify the events_list list via the
+> counter_enable_events() and counter_disable_events() functions. The
+> events_in_lock spinlock is necessary because userspace can modify the
+> events kfifo via the counter_events_queue_size_write() function.
+> 
+> A lockless solution for this might be possible if the driver maintains
+> its own circular buffer as you suggest. The driver's IRQ handler can
+> write to this circular buffer without calling the counter_push_event()
+> function, and then flush the buffer to the Counter character device via
+> a userspace write to a "flush_events" sysfs attribute or similar; this
+> eliminates the need for the events_in_lock spinlock. The state of the
+> events_list list can be captured in the driver's events_configure()
+> callback and stored locally in the driver for reference, thus
+> eliminating the need for the events_list_lock; interrupts can be
+> disabled before the driver's local copy of events_list is modified.
+> 
+> With only one reader and one writer operating on the driver's buffer,
+> you can use the normal kfifo_in and kfifo_out calls for lockless
+> operations. Perhaps that is a way forward for this problem.
 
-Specjalizujemy si=C4=99 w zakresie doboru, monta=C5=BCu i serwisie instal=
-acji fotowoltaicznych, dysponujemy najnowocze=C5=9Bniejszymi rozwi=C4=85z=
-ania, kt=C3=B3re zapewni=C4=85 Pa=C5=84stwu oczekiwane rezultaty.
+As proof of concept, I implemented the double buffered version with the
+sysfs flush_events interface. Currently it feels kind of wired, I use
+poll and wait until it timeouts to run the sysfs_flush_counter() to
+trigger new data.
 
-Mo=C5=BCemy przygotowa=C4=87 dla Pa=C5=84stwa wst=C4=99pn=C4=85 kalkulacj=
-=C4=99 i przeanalizowa=C4=87 efekty mo=C5=BCliwe do osi=C4=85gni=C4=99cia=
-=2E
+Here is example:
+int main(void)
+{
+	ret = sysfs_enable_counter();
+	...
 
-Czy s=C4=85 Pa=C5=84stwo otwarci na wst=C4=99pn=C4=85 rozmow=C4=99 w tym =
-temacie?
+	fd = open("/dev/counter0", O_RDWR);
+	...
 
+	ret = ioctl(fd, COUNTER_ADD_WATCH_IOCTL, watches);
+	...
 
-Pozdrawiam
-Arkadiusz Soko=C5=82owski
+	ret = ioctl(fd, COUNTER_ENABLE_EVENTS_IOCTL);
+	...
+
+	for (;;) {
+		struct pollfd fds[] = {
+			{
+				.fd = fd,
+				.events = POLLIN,
+			},
+		};
+		ssize_t i;
+
+		/* wait for 10 sec */
+		ret = poll(fds, ARRAY_SIZE(fds), DEFAULT_TIMEOUT_MS);
+		if (ret == -EINTR)
+			continue;
+		else if (ret < 0)
+			return -errno;
+		else if (ret == 0) {
+			sysfs_flush_counter(); <---- request to flush queued events from the driver
+			continue;
+		}
+
+		ret = read(fd, event_data, sizeof(event_data));
+		...
+
+		for (i = 0; i < ret / (ssize_t)sizeof(event_data[0]); i++)
+			/* process event */
+			....
+		}
+	}
+
+	return ret;
+}
+
+If it is still the only way to go, I'll send kernel patches.
+
+Regards,
+Oleksij
+-- 
+Pengutronix e.K.                           |                             |
+Steuerwalder Str. 21                       | http://www.pengutronix.de/  |
+31137 Hildesheim, Germany                  | Phone: +49-5121-206917-0    |
+Amtsgericht Hildesheim, HRA 2686           | Fax:   +49-5121-206917-5555 |
