@@ -2,23 +2,23 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 148A1C433EF
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Feb 2022 14:05:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89DCDC433EF
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Feb 2022 14:06:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233537AbiBCOFW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 3 Feb 2022 09:05:22 -0500
-Received: from metis.ext.pengutronix.de ([85.220.165.71]:53817 "EHLO
+        id S1350969AbiBCOGN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 3 Feb 2022 09:06:13 -0500
+Received: from metis.ext.pengutronix.de ([85.220.165.71]:47135 "EHLO
         metis.ext.pengutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229747AbiBCOFV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Feb 2022 09:05:21 -0500
+        with ESMTP id S236563AbiBCOGN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Feb 2022 09:06:13 -0500
 Received: from dude.hi.pengutronix.de ([2001:67c:670:100:1d::7])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ore@pengutronix.de>)
-        id 1nFcZ8-0002cQ-AM; Thu, 03 Feb 2022 14:54:26 +0100
+        id 1nFcc5-00033r-0z; Thu, 03 Feb 2022 14:57:29 +0100
 Received: from ore by dude.hi.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ore@pengutronix.de>)
-        id 1nFcZ1-009S1X-Nr; Thu, 03 Feb 2022 14:54:19 +0100
+        id 1nFcc4-009xpK-Go; Thu, 03 Feb 2022 14:57:28 +0100
 From:   Oleksij Rempel <o.rempel@pengutronix.de>
 To:     William Breathitt Gray <vilhelm.gray@gmail.com>
 Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
@@ -27,10 +27,12 @@ Cc:     Oleksij Rempel <o.rempel@pengutronix.de>,
         David Jander <david@protonic.nl>,
         Robin van der Gracht <robin@protonic.nl>,
         linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH v1] counter: fix NULL pointer dereference on counter_comp_u8_store()
-Date:   Thu,  3 Feb 2022 14:54:18 +0100
-Message-Id: <20220203135418.2252624-1-o.rempel@pengutronix.de>
+Subject: [PATCH v2 1/2] counter: add new COUNTER_EVENT_CHANGE_OF_STATE
+Date:   Thu,  3 Feb 2022 14:57:26 +0100
+Message-Id: <20220203135727.2374052-2-o.rempel@pengutronix.de>
 X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220203135727.2374052-1-o.rempel@pengutronix.de>
+References: <20220203135727.2374052-1-o.rempel@pengutronix.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2001:67c:670:100:1d::7
@@ -41,37 +43,27 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Current kernel will report NULL pointer dereference with following
-back trace:
-  interrupt_cnt_enable_write from counter_comp_u8_store+0xc0/0xf4
-  counter_comp_u8_store from dev_attr_store+0x24/0x30
-  dev_attr_store from sysfs_kf_write+0x48/0x54
-  sysfs_kf_write from kernfs_fop_write_iter+0x128/0x1c8
-  kernfs_fop_write_iter from vfs_write+0x124/0x1b4
-  vfs_write from ksys_write+0x88/0xe0
-  ksys_write from sys_write+0x18/0x1c
-  sys_write from ret_fast_syscall+0x0/0x1c
-
-Add missing dev_set_drvdata() to fix it.
+Add new counter event to notify user space about every new counter
+pulse.
 
 Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
 ---
- drivers/counter/counter-core.c | 2 ++
+ include/uapi/linux/counter.h | 2 ++
  1 file changed, 2 insertions(+)
 
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index 7e0957eea094..1de16d5e9fbc 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -98,6 +98,8 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
- 	counter = &ch->counter;
- 	dev = &counter->dev;
+diff --git a/include/uapi/linux/counter.h b/include/uapi/linux/counter.h
+index d0aa95aeff7b..96c5ffd368ad 100644
+--- a/include/uapi/linux/counter.h
++++ b/include/uapi/linux/counter.h
+@@ -61,6 +61,8 @@ enum counter_event_type {
+ 	COUNTER_EVENT_THRESHOLD,
+ 	/* Index signal detected */
+ 	COUNTER_EVENT_INDEX,
++	/* State of counter is changed */
++	COUNTER_EVENT_CHANGE_OF_STATE,
+ };
  
-+	dev_set_drvdata(dev, counter);
-+
- 	/* Acquire unique ID */
- 	err = ida_alloc(&counter_ida, GFP_KERNEL);
- 	if (err < 0)
+ /**
 -- 
 2.30.2
 
