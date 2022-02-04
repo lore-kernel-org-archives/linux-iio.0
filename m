@@ -2,90 +2,65 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCF1CC433EF
-	for <linux-iio@archiver.kernel.org>; Fri,  4 Feb 2022 10:00:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F005FC433EF
+	for <linux-iio@archiver.kernel.org>; Fri,  4 Feb 2022 22:38:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358064AbiBDKAh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 4 Feb 2022 05:00:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42064 "EHLO
-        lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358094AbiBDKAd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 4 Feb 2022 05:00:33 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D5D6C061714
-        for <linux-iio@vger.kernel.org>; Fri,  4 Feb 2022 02:00:32 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nFvOI-00046u-LK; Fri, 04 Feb 2022 11:00:30 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nFvOH-00ESEP-B6; Fri, 04 Feb 2022 11:00:28 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nFvOF-006bvj-IA; Fri, 04 Feb 2022 11:00:27 +0100
-Date:   Fri, 4 Feb 2022 11:00:27 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     jic23@kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] counter: Set counter device name
-Message-ID: <20220204100027.2gmvmkxyrheb5oqu@pengutronix.de>
-References: <20220204084551.16397-1-vilhelm.gray@gmail.com>
+        id S1345127AbiBDWiz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 4 Feb 2022 17:38:55 -0500
+Received: from mail-oi1-f179.google.com ([209.85.167.179]:36756 "EHLO
+        mail-oi1-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S236523AbiBDWiz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 4 Feb 2022 17:38:55 -0500
+Received: by mail-oi1-f179.google.com with SMTP id s185so10223014oie.3;
+        Fri, 04 Feb 2022 14:38:55 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=v38Kfg/wf9t6mUoqPaOFlIjuWloQG1bbjKXeADCLqYU=;
+        b=DjdqQ6MY4PVwbkQBCI8BarnQMeczP576lSL3Rj5WUuAihyb6/Ifh35mVwXM7yX7Mg+
+         EJ1/f9S+3SfhJ/8kCEbvf66wcdTE4Ygk6Mcxz0AIiKlclyWPWY1Nv29sqsU6+/AuZduQ
+         qgYJSyQDwRFmgp9sZFu/MO9SpoIe8caaj0hZq0l1CQ7kVryhcXSemYSfngml8Trr1VXY
+         XtIKuJevOs/P3NzOESK/+sUFyjlAjZhZPQjST0gpO9LAxdpuOFo/IjIcH+uHywNq4Cqy
+         wC2/ADAMqxXnYd+FkMrbqfrMqIgaTb1tCCBzcrm7KadvjBnEwVA+Qz7bx23+8/mshaY1
+         JdiQ==
+X-Gm-Message-State: AOAM532SaF7zUgqCBEal/l2rHrtEEGBpbrKLswnYExxLz3rgglVsdVUV
+        AV5xEysH8eIGZlsQ0lddGg==
+X-Google-Smtp-Source: ABdhPJyTrqs4CLu0auGGEAWVcE1rpCQ9ftRnQzFJS9Ype3oGGmsjbsjoLQ7hzZHWJCTfKDaIHZOw5Q==
+X-Received: by 2002:a05:6808:209e:: with SMTP id s30mr596076oiw.13.1644014334871;
+        Fri, 04 Feb 2022 14:38:54 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id x17sm1197653oop.1.2022.02.04.14.38.53
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 04 Feb 2022 14:38:54 -0800 (PST)
+Received: (nullmailer pid 3312730 invoked by uid 1000);
+        Fri, 04 Feb 2022 22:38:53 -0000
+Date:   Fri, 4 Feb 2022 16:38:53 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        jic23@kernel.org, robh+dt@kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 2/4] dt-bindings:iio:frequency: add admv1014 binding
+Message-ID: <Yf2q/cZMebdudNny@robh.at.kernel.org>
+References: <20220131100102.15372-1-antoniu.miclaus@analog.com>
+ <20220131100102.15372-2-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="heuvhq2g5hrqecuj"
+Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220204084551.16397-1-vilhelm.gray@gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+In-Reply-To: <20220131100102.15372-2-antoniu.miclaus@analog.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Mon, 31 Jan 2022 12:01:00 +0200, Antoniu Miclaus wrote:
+> Add device tree bindings for the ADMV1014 Upconverter.
+> 
+> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+> ---
+> no changes in v5.
+>  .../bindings/iio/frequency/adi,admv1014.yaml  | 137 ++++++++++++++++++
+>  1 file changed, 137 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
+> 
 
---heuvhq2g5hrqecuj
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Fri, Feb 04, 2022 at 05:45:51PM +0900, William Breathitt Gray wrote:
-> Naming the counter device provides a convenient way to identify it in
-> devres_log events and similar situations. This patch names the counter
-> device by combining the prefix "counter" with the counter device's
-> unique ID.
->=20
-> Cc: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-
-LGTM
-
-Acked-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---heuvhq2g5hrqecuj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmH8+TcACgkQwfwUeK3K
-7AneYAf+OX54ufM7pcEPoCY+/Dpy4FpwTabuoAwFMSffDg742+lPEuCtmE8G1X6F
-am7RV4JbYKv4RuP9QtbXMLNBCU5GyiWeuN7kov5YaQGNxdKIfGVpXgeGiEwQ0W4c
-Hc/2toqbG6JcD4pIaUAHnovg+O9laHCzNuBfckA+lHAQR0SuDuuBw//efb4Dkmvk
-zIfTnWmLRm1EHuR8PS+ieCU9rt5JEnXsUYbwHqkn05CxwIxR8HI9XV0iSpTrH5M8
-J/lNjl5m8mQl8oYnH9IitqWCjuwgcqavgRoRtJ5+DLjuo3VUqVAgQXH6hC+F7B4B
-rHk5t+f3MUd/e29EbN7qRRNGEGwsnA==
-=XWbg
------END PGP SIGNATURE-----
-
---heuvhq2g5hrqecuj--
+Reviewed-by: Rob Herring <robh@kernel.org>
