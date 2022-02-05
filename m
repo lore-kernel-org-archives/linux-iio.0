@@ -2,75 +2,161 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2AE4C433F5
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Feb 2022 18:31:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A69AC433FE
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Feb 2022 18:38:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358509AbiBESbV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Feb 2022 13:31:21 -0500
-Received: from mga03.intel.com ([134.134.136.65]:43165 "EHLO mga03.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S239809AbiBESbU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Feb 2022 13:31:20 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644085880; x=1675621880;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=FiAMsmUEnLLcZZu5SK9dJ0vGx8Wbqfrul5XkUxgza2w=;
-  b=WuDjkrSlopyHEfmxqcFLplM+5HVH+oKCEbzKSbfQN35FxI2pYKoKqFsu
-   f/IDqm3lPUVe92v9A/FyQ5Hw+NmH5TiLALIXMYuTwkTGlw/6uf4ceCZC9
-   raHQNHDrQXu0Q8i/WFe31NaTQObTY282PrIdTyTjBbGnIhknzxPd+LuH/
-   vjVdocR3Ro+8PwGytE29BBuhcrp+xpzClG8DYuifcxAE3VlOljGV2gpsD
-   FKsr1NFbQ1Hlwz2z2EhPc/uvYGj1yyF13OM/awFj74jgPECiuo8qxc7Qx
-   lY6rDrHb7G4HL19rLZmXMRr3d3Nu86wgyt19RVxoDmBn7Mew1FV1JIbH0
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10248"; a="248478721"
-X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
-   d="scan'208";a="248478721"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 10:31:20 -0800
-X-IronPort-AV: E=Sophos;i="5.88,346,1635231600"; 
-   d="scan'208";a="498791829"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 05 Feb 2022 10:31:19 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nGPpD-001LRt-4G;
-        Sat, 05 Feb 2022 20:30:19 +0200
-Date:   Sat, 5 Feb 2022 20:30:18 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        id S243513AbiBESia (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Feb 2022 13:38:30 -0500
+Received: from dfw.source.kernel.org ([139.178.84.217]:33724 "EHLO
+        dfw.source.kernel.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S237920AbiBESi3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Feb 2022 13:38:29 -0500
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4781C611B7;
+        Sat,  5 Feb 2022 18:38:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C75B4C340E8;
+        Sat,  5 Feb 2022 18:38:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644086308;
+        bh=iP+ebl79YtPxWlE8t3km8ogN6bHYNRnvY1B53rcByUo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Rg4/aqlrJDfttNlktkIvLnL1i7XteEUtwNIoNYrQlmZcdHuTo7C6r2ZyXvDMwC0Pv
+         wmoGeGQ2IoUvpwFUMgbOHvB8dMQaEZIksS0cE2w4D1GNT0x5D3qsyclSkf8KuNK447
+         6D+l8kHFfEu3TICsyXQCKk0lQ1FzEsNgqwNgMBlAVhWrLiWmKc1XW6NvYA08BJ2O5n
+         W1I1aq9Ug0fopaqGDyQKxrMSVBgE3OqqCixIRsNG3UKeKnUL1z7DmMXsEZeCyjzf/R
+         UD6ZEwgCjXvZ8WnGDRh8jc4qWifYGz/0JuzleNQqdW8FLtBJLIHm1f90yqYGuVFuvT
+         ozynoyEqkTLmg==
+Date:   Sat, 5 Feb 2022 18:44:59 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@intel.com>
+Cc:     Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Rosin <peda@axentia.se>
-Subject: Re: [PATCH v2 1/1] iio: multiplexer: Make use of device properties
-Message-ID: <Yf7COufm4GG7VkJu@smile.fi.intel.com>
-References: <20220202204427.57506-1-andriy.shevchenko@linux.intel.com>
- <20220205173854.14a7aca0@jic23-huawei>
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH v3 1/3] iio: dac: add support for ltc2688
+Message-ID: <20220205184459.7aa8e5d5@jic23-huawei>
+In-Reply-To: <Yf60A1UkbBtQ68qv@smile.fi.intel.com>
+References: <20220121142501.151-1-nuno.sa@analog.com>
+        <20220121142501.151-2-nuno.sa@analog.com>
+        <Yf60A1UkbBtQ68qv@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220205173854.14a7aca0@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Feb 05, 2022 at 05:38:54PM +0000, Jonathan Cameron wrote:
-> On Wed,  2 Feb 2022 22:44:27 +0200
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Sat, 5 Feb 2022 19:29:39 +0200
+Andy Shevchenko <andriy.shevchenko@intel.com> wrote:
+
+A few comments from me, mostly because I couldn't resist jumping in ;)
+Note this is only some of the things Andy raised....
+
+Jonathan
+
 > 
-> > Convert the module to be property provider agnostic and allow
-> > it to be used on non-OF platforms.
-> > 
-> > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Looks good to me, but as it's complex I'd like Peter + anyone else interested
-> to have a bit more time to take a look before I apply this one.
+> > +	if (private == LTC2688_INPUT_B_AVAIL)
+> > +		return sysfs_emit(buf, "[%u %u %u]\n", ltc2688_raw_range[0],
+> > +				  ltc2688_raw_range[1],
+> > +				  ltc2688_raw_range[2] / 4);  
+> 
+> Is it standard form "[A B C]" for ranges in IIO? I haven't looked into the code
+> deeply (and datasheet at all) to understand meaning. To me range is usually out
+> of two numbers.
 
-Sure, I would love to see more eyes and hear comments!
+https://elixir.bootlin.com/linux/latest/source/Documentation/ABI/testing/sysfs-bus-iio#L105
+Yes, [Min Step Max]
 
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> > +	if (private == LTC2688_DITHER_OFF)
+> > +		return sysfs_emit(buf, "0\n");  
+> 
+> > +	ret = ltc2688_dac_code_read(st, chan->channel, private, &val);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return sysfs_emit(buf, "%u\n", val);  
+> 
+> These three types of output for one sysfs node? Seems it's not align with the
+> idea behind sysfs. It maybe that I missed something.
+
+Different sysfs nodes.  Though it's a fair question on whether this would be
+better done as a bunch of separate callbacks, rather than one with a lookup
+on the private parameter.
+
+
+> 
+> > +static int ltc2688_tgp_clk_setup(struct ltc2688_state *st,
+> > +				 struct ltc2688_chan *chan,
+> > +				 struct device_node *np, int tgp)
+> > +{
+> > +	unsigned long rate;
+> > +	struct clk *clk;
+> > +	int ret, f;
+> > +
+> > +	clk = devm_get_clk_from_child(&st->spi->dev, np, NULL);
+> > +	if (IS_ERR(clk))  
+> 
+> Make it optional for non-OF, can be done as easy as
+> 
+> 	if (IS_ERR(clk)) {
+> 		if (PTR_ERR(clk) == -ENOENT)
+> 			clk = NULL;
+> 		else
+> 			return dev_err_probe(...);
+> 	}
+
+Interesting.  We should probably look at where else this
+is appropriate.
+
+> 
+> > +		return dev_err_probe(&st->spi->dev, PTR_ERR(clk),
+> > +				     "failed to get tgp clk.\n");
+> > +
+> > +	ret = clk_prepare_enable(clk);
+> > +	if (ret)
+> > +		return dev_err_probe(&st->spi->dev, ret,
+> > +				     "failed to enable tgp clk.\n");
+> > +
+> > +	ret = devm_add_action_or_reset(&st->spi->dev, ltc2688_clk_disable, clk);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	if (chan->toggle_chan)
+> > +		return 0;
+> > +
+> > +	/* calculate available dither frequencies */
+> > +	rate = clk_get_rate(clk);
+> > +	for (f = 0; f < ARRAY_SIZE(chan->dither_frequency); f++)
+> > +		chan->dither_frequency[f] = DIV_ROUND_CLOSEST(rate, ltc2688_period[f]);
+> > +
+> > +	return 0;
+> > +}  
+> 
+> ...
+> 
+> > +static int ltc2688_channel_config(struct ltc2688_state *st)
+> > +{
+> > +	struct device *dev = &st->spi->dev;
+> > +	struct device_node *child;
+> > +	u32 reg, clk_input, val, tmp[2];
+> > +	int ret, span;
+> > +
+> > +	for_each_available_child_of_node(dev->of_node, child) {  
+> 
+> device_for_each_child_node()
+
+This is the old issue with missing
+device_for_each_available_child_node()
+though can just add a check on whether it's available inside the loop.
+> 
+> > +		struct ltc2688_chan *chan;
+> > +
+
+...
 
 
