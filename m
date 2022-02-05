@@ -2,45 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A42DC433EF
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Feb 2022 17:20:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 25533C433F5
+	for <linux-iio@archiver.kernel.org>; Sat,  5 Feb 2022 17:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241281AbiBERUQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Feb 2022 12:20:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51718 "EHLO
+        id S233957AbiBERYr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 5 Feb 2022 12:24:47 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52730 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232086AbiBERUQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Feb 2022 12:20:16 -0500
+        with ESMTP id S1376612AbiBERYr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Feb 2022 12:24:47 -0500
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A6CDCC061348;
-        Sat,  5 Feb 2022 09:20:15 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 595F7C061348;
+        Sat,  5 Feb 2022 09:24:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 42DDF6112D;
-        Sat,  5 Feb 2022 17:20:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 62B58C340E8;
-        Sat,  5 Feb 2022 17:20:13 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id B977D61143;
+        Sat,  5 Feb 2022 17:24:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 03E90C340E8;
+        Sat,  5 Feb 2022 17:24:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644081614;
-        bh=FPD+9Wbhuke+aGXCPGHLH+kq2cHplX8py2gleXSQSjA=;
+        s=k20201202; t=1644081885;
+        bh=6w/99GRGMgWgYWe4X+KfojXSRYWk/PfNkbE0hES5fiM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=G7CDB6dnMB0nVt5El2VZiXXb0U3xtZdoDjbCBT3oGOhYADQBwWwh/Pp/MMGzLOwHD
-         YnHNiZcSASJruzgdHlKySYpTswq0+qpbMOwN4wffEqAnLPvuWDHS/LVtG2yeUmbOHO
-         Oq6glVKlSfVWW/5arieUTojBDx2zZBOggQoUl5Aa9+JajlshI+W1cNpDPYAf1GNa8/
-         FdufzL7LuTZUn23ACbtivECv9VnSzCDTmsxmEt3706T5CFs19J5jNC1LhLWp1q420I
-         6c3gLMWYOHBxSLBzMzfm5/EZZDjPCt3LSSHoE/IUHaLrkDB+0+W9E0Juvh6Nce2ytw
-         tFt73o32ZtNqQ==
-Date:   Sat, 5 Feb 2022 17:26:46 +0000
+        b=vEptM6qr2UhahzEMsHKHAI5fI/NvwY4hHTg5yr6Nwen7w0VGgwmS1F7ntE3krzCWJ
+         EJX4oTvBObppZGwzwEMahBSyBLY/gPloCdWW1EqguPmwMkRTyW7kIbvHbRVvdRu6BV
+         N9BARRQfKKvVPUQhd5/6xrZZGCxDqq2DhaPHDqC81mx1/d2Ua7yLXBepVOMyIhjQuS
+         i3iRMYcPArqq+B68TBnTyFopBk9cNNvfh9q5JcEKcK3DeT/l0cV83F26XBGpR2Yobw
+         RLPKjpYEiQx8Kk/UGGB2pTJBU+8Z/CY34M/R+Mv7+CVx5e3sMcWkitA58bohHPT6sK
+         d8ay07M1QlJ7Q==
+Date:   Sat, 5 Feb 2022 17:31:14 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: humidity: dht11: Switch from of headers to
- mod_devicetable.h
-Message-ID: <20220205172646.0d8f9ac3@jic23-huawei>
-In-Reply-To: <20220202203420.56654-1-andriy.shevchenko@linux.intel.com>
-References: <20220202203420.56654-1-andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Subject: Re: [PATCH v2 1/1] iio: trigger: stm32-timer: Make use of device
+ properties
+Message-ID: <20220205173114.5a60fc47@jic23-huawei>
+In-Reply-To: <20220202204112.57095-1-andriy.shevchenko@linux.intel.com>
+References: <20220202204112.57095-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -49,32 +55,67 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed,  2 Feb 2022 22:34:20 +0200
+On Wed,  2 Feb 2022 22:41:12 +0200
 Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> There is nothing directly using of specific interfaces in this driver,
-> so lets not include the headers.
+> Convert the module to be property provider agnostic and allow
+> it to be used on non-OF platforms.
 > 
 > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied.
+Looks fine to me.  The stm32 drivers are well maintained so I'll
+leave this one on list a little longer for feedback.
+
++Cc: Fabrice
+
 > ---
->  drivers/iio/humidity/dht11.c | 3 +--
->  1 file changed, 1 insertion(+), 2 deletions(-)
+> v2: dropped depends on OF
+>  drivers/iio/trigger/Kconfig               |  2 +-
+>  drivers/iio/trigger/stm32-timer-trigger.c | 11 ++++++-----
+>  2 files changed, 7 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
-> index 9a7819817488..c97e25448772 100644
-> --- a/drivers/iio/humidity/dht11.c
-> +++ b/drivers/iio/humidity/dht11.c
-> @@ -11,10 +11,9 @@
->  #include <linux/kernel.h>
->  #include <linux/printk.h>
->  #include <linux/slab.h>
-> -#include <linux/of.h>
-> -#include <linux/of_device.h>
->  #include <linux/sysfs.h>
->  #include <linux/io.h>
+> diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
+> index 8cef2f7452e8..7ecb69725b1d 100644
+> --- a/drivers/iio/trigger/Kconfig
+> +++ b/drivers/iio/trigger/Kconfig
+> @@ -38,7 +38,7 @@ config IIO_STM32_LPTIMER_TRIGGER
+>  
+>  config IIO_STM32_TIMER_TRIGGER
+>  	tristate "STM32 Timer Trigger"
+> -	depends on (ARCH_STM32 && OF && MFD_STM32_TIMERS) || COMPILE_TEST
+> +	depends on (ARCH_STM32 && MFD_STM32_TIMERS) || COMPILE_TEST
+>  	help
+>  	  Select this option to enable STM32 Timer Trigger
+>  
+> diff --git a/drivers/iio/trigger/stm32-timer-trigger.c b/drivers/iio/trigger/stm32-timer-trigger.c
+> index 4f9461e1412c..5049d9ecfc1a 100644
+> --- a/drivers/iio/trigger/stm32-timer-trigger.c
+> +++ b/drivers/iio/trigger/stm32-timer-trigger.c
+> @@ -11,9 +11,10 @@
+>  #include <linux/iio/timer/stm32-timer-trigger.h>
+>  #include <linux/iio/trigger.h>
+>  #include <linux/mfd/stm32-timers.h>
 > +#include <linux/mod_devicetable.h>
 >  #include <linux/module.h>
 >  #include <linux/platform_device.h>
->  #include <linux/wait.h>
+> -#include <linux/of_device.h>
+> +#include <linux/property.h>
+>  
+>  #define MAX_TRIGGERS 7
+>  #define MAX_VALIDS 5
+> @@ -771,11 +772,11 @@ static int stm32_timer_trigger_probe(struct platform_device *pdev)
+>  	unsigned int index;
+>  	int ret;
+>  
+> -	if (of_property_read_u32(dev->of_node, "reg", &index))
+> -		return -EINVAL;
+> +	ret = device_property_read_u32(dev, "reg", &index);
+> +	if (ret)
+> +		return ret;
+>  
+> -	cfg = (const struct stm32_timer_trigger_cfg *)
+> -		of_match_device(dev->driver->of_match_table, dev)->data;
+> +	cfg = device_get_match_data(dev);
+>  
+>  	if (index >= ARRAY_SIZE(triggers_table) ||
+>  	    index >= cfg->num_valids_table)
 
