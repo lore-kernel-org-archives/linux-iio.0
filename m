@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 002ABC433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Feb 2022 18:57:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E08AC433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  6 Feb 2022 18:57:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229883AbiBFS5Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 6 Feb 2022 13:57:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60876 "EHLO
+        id S233900AbiBFS5X (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 6 Feb 2022 13:57:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233900AbiBFS5P (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Feb 2022 13:57:15 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 56955C043184
-        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 10:57:15 -0800 (PST)
+        with ESMTP id S234840AbiBFS5W (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Feb 2022 13:57:22 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ED7F3C043185
+        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 10:57:21 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id E5AB261227
-        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 18:57:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 53F31C340EF;
-        Sun,  6 Feb 2022 18:57:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 71A4C611DF
+        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 18:57:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id EE879C340F0;
+        Sun,  6 Feb 2022 18:57:17 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644173834;
-        bh=vgSWeYVc4DC4rLXfqIwIgrjRBcHsKUTOcLqdSvqtB8E=;
+        s=k20201202; t=1644173840;
+        bh=ejcLV4jVVw5WMCYWTUfSLqUdo0SqfOfBY2MMf+PHf3Y=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ha5J01lZHr65WdbI7oMFAoOPFgQKAGv/woQMcfwAY3kQyMnySLDBhrAoMc3jv2q7j
-         9bj2mYQsLIOAnp2kPo8ebB8dNFoIbmAJOxKbunfWe22k4HzOM+aKz4HYgW2Fr+47gO
-         KuI1z9fFXK56zEQa7kwMbCMl3+2Dc1tEVZyH1oNjjZYwB/ZPmwMq0NXfT65OlI8FhB
-         SfBpbvlevp+CMWvDJMd9yuzc3yH0CzCwWoGb+tvuIAl3fYrotfWXHt+uGqSxlvq4Jq
-         4TOlOBTPaMtnVT0NQx648iI8EfOIfBVd2QFaojLdrRaNVMmW2CjsSV2/EVvjYuR/I4
-         tFIeEswjeiHrw==
+        b=DkeqaueqrGlX1Tm79gWb/co9Jy6dUygVVUqH//lcIvtPEBZhvQTjOrSYzetrIbNfU
+         oZE/hwi3Lc0W7xI76BFXE/p1AYJApFiX2YJt0QkwtgBiEgznF0Um1D5YGslmpBLV6h
+         It9YGR5D6egYP65GM0EsNfdcy2KIKn7nf2oD7s3qGi47a+Fc+0u3ARDThAqSS6X0fZ
+         KarygGLu59Um0EQgUBPV2KKOEbrjF5f/Z6IqbcguQXXNeNNHcOrbl6gZe8nHWH+2pa
+         INxVyt9d82w+78dwVJeeC42A8b1Yc0MZ/HClj0uedFxRMsXtyp8xOvOrQfE5N5S1kB
+         W095xddZx1bcA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org,
         Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 Cc:     Hennerich@vger.kernel.org, Michael <Michael.Hennerich@analog.com>,
         Nuno Sa <Nuno.Sa@analog.com>, lars@metafoo.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 01/20] staging:iio:adc:ad7280a: Fix handing of device address bit reversing.
-Date:   Sun,  6 Feb 2022 19:03:09 +0000
-Message-Id: <20220206190328.333093-2-jic23@kernel.org>
+Subject: [PATCH v3 03/20] staging:iio:adc:ad7280a: rename _read() to _read_reg()
+Date:   Sun,  6 Feb 2022 19:03:11 +0000
+Message-Id: <20220206190328.333093-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220206190328.333093-1-jic23@kernel.org>
 References: <20220206190328.333093-1-jic23@kernel.org>
@@ -51,36 +51,42 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The bit reversal was wrong for bits 1 and 3 of the 5 bits.
-Result is driver failure to probe if you have more than 2 daisy-chained
-devices.  Discovered via QEMU based device emulation.
-
-Fixes tag is for when this moved from a macro to a function, but it
-was broken before that.
+This avoids possible confusion with read back of the channel conversions.
+These two types of reads are of difference sizes with resulting differences
+in the data layout of the response from the hardware.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Fixes: 065a7c0b1fec ("Staging: iio: adc: ad7280a.c: Fixed Macro argument reuse")
 Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 ---
- drivers/staging/iio/adc/ad7280a.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/adc/ad7280a.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index fef0055b8990..20183b2ea127 100644
+index 0f64b2fbfa7a..f1382666d2aa 100644
 --- a/drivers/staging/iio/adc/ad7280a.c
 +++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -107,9 +107,9 @@
- static unsigned int ad7280a_devaddr(unsigned int addr)
- {
- 	return ((addr & 0x1) << 4) |
--	       ((addr & 0x2) << 3) |
-+	       ((addr & 0x2) << 2) |
- 	       (addr & 0x4) |
--	       ((addr & 0x8) >> 3) |
-+	       ((addr & 0x8) >> 2) |
- 	       ((addr & 0x10) >> 4);
+@@ -224,8 +224,8 @@ static int ad7280_write(struct ad7280_state *st, unsigned int devaddr,
+ 	return spi_write(st->spi, &st->buf[0], 4);
  }
  
+-static int ad7280_read(struct ad7280_state *st, unsigned int devaddr,
+-		       unsigned int addr)
++static int ad7280_read_reg(struct ad7280_state *st, unsigned int devaddr,
++			   unsigned int addr)
+ {
+ 	int ret;
+ 	unsigned int tmp;
+@@ -476,8 +476,8 @@ static ssize_t ad7280_show_balance_timer(struct device *dev,
+ 	unsigned int msecs;
+ 
+ 	mutex_lock(&st->lock);
+-	ret = ad7280_read(st, this_attr->address >> 8,
+-			  this_attr->address & 0xFF);
++	ret = ad7280_read_reg(st, this_attr->address >> 8,
++			      this_attr->address & 0xFF);
+ 	mutex_unlock(&st->lock);
+ 
+ 	if (ret < 0)
 -- 
 2.35.1
 
