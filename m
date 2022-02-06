@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4F057C433F5
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Feb 2022 18:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3F1D1C433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  6 Feb 2022 18:57:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231277AbiBFS5k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 6 Feb 2022 13:57:40 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32876 "EHLO
+        id S242266AbiBFS5t (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 6 Feb 2022 13:57:49 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242266AbiBFS5j (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Feb 2022 13:57:39 -0500
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 57553C043184
-        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 10:57:39 -0800 (PST)
+        with ESMTP id S244837AbiBFS5q (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Feb 2022 13:57:46 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2CC6C0401C0
+        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 10:57:45 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id DCE81611DF
-        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 18:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 32A4CC340F0;
-        Sun,  6 Feb 2022 18:57:35 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id AFB3FB80E66
+        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 18:57:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 80FA7C340F0;
+        Sun,  6 Feb 2022 18:57:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644173858;
-        bh=ucd1A9f7bU/wcYNlB8pv/IHlzmDDFO7I3YH4onpMHpU=;
+        s=k20201202; t=1644173863;
+        bh=j4K18/dNuLQEFTpn74M+mWho4KEmR0J54ZLSWv8m1BQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hFoob4ENH1De2gbPv4cZZboxTr8IMsn7ZhMnq1VYqtaHBbMFaFCRbY/fppn+UW9X2
-         NHnhnm0uS6AGQWctHr1PmRGAHg5B6bVUsxLOZoa76oPbZ940VEvLHCPmGixBgGn61M
-         0lYAeNMAUyPqkwpIYREIxVgwsGyj48fy+ut7XUgkm2UZb3dW9+SXQckyVz7Q7nHQ4X
-         3IZFayIfDkAHFFU44KxiT1A/WVIfpaVURW1D4l4m4NlIQG6A+ViB7mO7P04gpEMeaK
-         UfvV4LkaAsvzJjn43FeP70vR/DG9C5/50aaTs6OcKasF299WkoTQXb8ktXPhvmL7f9
-         yA2+lRoau+V+w==
+        b=ROqtP017VpvDIvpig+KgRbJoGlqCUIR+ssQLyPRCs2V8Jzrb48KJSCwYPq05/p1Z9
+         WiT0SYWlVDREL1DVbJ1WrpJOyjSPkFPpBFHJNxdNrovazj25KWbvNIEkzT2gGwZpBj
+         G8+T/wyjCJ3E4a3B2gI8WqUJ/hNHWZCBnzgOrPD8LjITRFsHk3v35jhgPLUfxzf4DR
+         M0ZpgSlKcsU39Cwf1qTg3HQOYGFQ5W3TvRr6SUBf8WZzHbPAR0gtMl6KxzjylUk0Mj
+         odHheAbUtZKkh/K87VOXtXOPIYTyT37wqan6zWqmo6Yl0zpfH9WYqZqkVYKSehELgi
+         QaEwHG6RWKJnA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org,
         Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 Cc:     Hennerich@vger.kernel.org, Michael <Michael.Hennerich@analog.com>,
         Nuno Sa <Nuno.Sa@analog.com>, lars@metafoo.de,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v3 09/20] staging:iio:adc:ad7280a: Trivial comment formatting cleanup
-Date:   Sun,  6 Feb 2022 19:03:17 +0000
-Message-Id: <20220206190328.333093-10-jic23@kernel.org>
+Subject: [PATCH v3 11/20] staging:iio:adc:ad7280a: Cleanup includes
+Date:   Sun,  6 Feb 2022 19:03:19 +0000
+Message-Id: <20220206190328.333093-12-jic23@kernel.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220206190328.333093-1-jic23@kernel.org>
 References: <20220206190328.333093-1-jic23@kernel.org>
@@ -51,66 +51,51 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-IIO uses the
-/*
- * stuff
- * more stuff
- */
-
-multi-line style, so use that here as well.
+Drop used includes, add a few missing ones and reorder.
+The include-what-you-use tool output was considered in making this
+change.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 ---
- drivers/staging/iio/adc/ad7280a.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/staging/iio/adc/ad7280a.c | 16 +++++++++-------
+ 1 file changed, 9 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index c1ac46a8112e..e32526fbed5a 100644
+index 2ba9379ce0a7..d408974c848c 100644
 --- a/drivers/staging/iio/adc/ad7280a.c
 +++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -139,9 +139,10 @@ static unsigned int ad7280a_devaddr(unsigned int addr)
- 	       ((addr & 0x10) >> 4);
- }
- 
--/* During a read a valid write is mandatory.
-- * So writing to the highest available address (Address 0x1F)
-- * and setting the address all parts bit to 0 is recommended
-+/*
-+ * During a read a valid write is mandatory.
-+ * So writing to the highest available address (Address 0x1F) and setting the
-+ * address all parts bit to 0 is recommended.
-  * So the TXVAL is AD7280A_DEVADDR_ALL + CRC
-  */
- #define AD7280A_READ_TXVAL	0xF800030A
-@@ -180,7 +181,7 @@ static unsigned char ad7280_calc_crc8(unsigned char *crc_tab, unsigned int val)
- 	crc = crc_tab[val >> 16 & 0xFF];
- 	crc = crc_tab[crc ^ (val >> 8 & 0xFF)];
- 
--	return  crc ^ (val & 0xFF);
-+	return crc ^ (val & 0xFF);
- }
- 
- static int ad7280_check_crc(struct ad7280_state *st, unsigned int val)
-@@ -193,12 +194,12 @@ static int ad7280_check_crc(struct ad7280_state *st, unsigned int val)
- 	return 0;
- }
- 
--/* After initiating a conversion sequence we need to wait until the
-- * conversion is done. The delay is typically in the range of 15..30 us
-- * however depending an the number of devices in the daisy chain and the
-- * number of averages taken, conversion delays and acquisition time options
-- * it may take up to 250us, in this case we better sleep instead of busy
-- * wait.
-+/*
-+ * After initiating a conversion sequence we need to wait until the conversion
-+ * is done. The delay is typically in the range of 15..30us however depending on
-+ * the number of devices in the daisy chain, the number of averages taken,
-+ * conversion delays and acquisition time options it may take up to 250us, in
-+ * this case we better sleep instead of busy wait.
+@@ -5,21 +5,23 @@
+  * Copyright 2011 Analog Devices Inc.
   */
  
- static void ad7280_delay(struct ad7280_state *st)
++#include <linux/bitfield.h>
++#include <linux/bits.h>
+ #include <linux/crc8.h>
++#include <linux/delay.h>
+ #include <linux/device.h>
++#include <linux/err.h>
++#include <linux/interrupt.h>
+ #include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mod_devicetable.h>
++#include <linux/mutex.h>
+ #include <linux/slab.h>
+ #include <linux/sysfs.h>
+ #include <linux/spi/spi.h>
+-#include <linux/bitfield.h>
+-#include <linux/err.h>
+-#include <linux/delay.h>
+-#include <linux/interrupt.h>
+-#include <linux/module.h>
+ 
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+ #include <linux/iio/events.h>
++#include <linux/iio/iio.h>
+ 
+ #include "ad7280a.h"
+ 
 -- 
 2.35.1
 
