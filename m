@@ -2,151 +2,261 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 87122C433F5
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Feb 2022 18:02:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ABCB0C433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  6 Feb 2022 18:07:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234384AbiBFSCe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 6 Feb 2022 13:02:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44536 "EHLO
+        id S1345432AbiBFSH3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 6 Feb 2022 13:07:29 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45988 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230490AbiBFSCc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Feb 2022 13:02:32 -0500
-Received: from mail-ot1-x331.google.com (mail-ot1-x331.google.com [IPv6:2607:f8b0:4864:20::331])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C586C06173B
-        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 10:02:31 -0800 (PST)
-Received: by mail-ot1-x331.google.com with SMTP id l12-20020a0568302b0c00b005a4856ff4ceso9438009otv.13
-        for <linux-iio@vger.kernel.org>; Sun, 06 Feb 2022 10:02:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=crPGINHId+keQOABh5fg5/iKw2F6keQL4AY1/ITIHd4=;
-        b=Q+JitQuwxAaueCOfGdQYfQTzJcrBbnBPhsh8QokzaU1nsWrMW6X0PAfQL732cE+pN5
-         aVGP3ZvTN0OUVT2tiEAo7S6N85pKVa13mCb7JZh8kfUQKG+qOqBpo2Nl9arj3XUsJ6I9
-         GPy5HqTQje43E6I/L+Al62bu+ixkCJCOuNk2tvhzMyVT9adCydz9oPkuRm64+6zzbkWF
-         YJa+vLc9vwr3Bj4DB8mvPo3MN0X/JfnMoBx//3fuN+UcL5FViVuoE5Pa8FAmtFpXyOeP
-         orweE8an7AncvygvH0nucKz9M5XXFPalFyy2BJQtIXe2DXReZi1JG9g0hMaILPFgnVCA
-         faGA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=crPGINHId+keQOABh5fg5/iKw2F6keQL4AY1/ITIHd4=;
-        b=UNBdFVREkkmaYCMhRPKzO3k3Hawjc5ZTtz2G3ovSbX1N+FA3EMO3LrTC7ypdBf70a2
-         D3biA4TbRP7NzNfjSLC3O/yEWrKva13KCmhlfZdt6xVb7ZPSIVwE6NoKn5RjfstnZLki
-         4izhiUHdM8StI9kPpHYhaKMFABT9DX8sSgC8l8WMiWqA0paeiUiBnwrrMSpaPH/0UnM5
-         zu1qHSL1gGsAKqr4Dipk2u/gmBVHf1jZtF/13wlg6YANpJMGl8d/FnXok/lFdbJ0KE6Y
-         qM5OgQnQTIYQJfoIOd4hdT5cRmklhpB0bCdhB/vyiEfytHhhE8c9FCUVZfWXuLsRzFDc
-         KCRQ==
-X-Gm-Message-State: AOAM533yhXJE/U9oiyUN40Pi96d4QdTmAD2SzG7MPfEXD5nfdPPtjSfb
-        H2jQabMQ9R/bHz7uALpNhratkpFjhAk=
-X-Google-Smtp-Source: ABdhPJzvG1qFeE/AK7FazKsuFxJzBz40g5U1tmE5rx+45mFVHyP9E+CW6Xa0brIFKtSFCNabOWYoXA==
-X-Received: by 2002:a9d:d72:: with SMTP id 105mr3012938oti.340.1644170550773;
-        Sun, 06 Feb 2022 10:02:30 -0800 (PST)
-Received: from marsc.168.1.7 ([2804:30c:b7a:7b00:70e:e3d5:be94:991])
-        by smtp.gmail.com with ESMTPSA id bc36sm3091827oob.45.2022.02.06.10.02.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 10:02:29 -0800 (PST)
-Date:   Sun, 6 Feb 2022 15:02:26 -0300
-From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
+        with ESMTP id S230490AbiBFSH3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Feb 2022 13:07:29 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBFFDC06173B
+        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 10:07:27 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id A63F2B80E29
+        for <linux-iio@vger.kernel.org>; Sun,  6 Feb 2022 18:07:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D5B34C340E9;
+        Sun,  6 Feb 2022 18:07:23 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644170845;
+        bh=qJwqX7WE5FCJ+SglaaTAMDtDUBmbc+83f92x7aT1UXg=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=Dzsrx2w+ulkN4GMPg32TzppNfhTxwMYjPpXPM85sqOsCojKUJGIOjamUyYOTomYZY
+         g+BLN2/rcfR42KIwNweg2q1HQNHYf6rSoetzeJw3udr3LmJwxRe+xphTmPiIqgftkx
+         9+na27fDSnHw6J/xqzoUiMBHQkwqT10TlmcxJZqmE2auFHSkmjZ3s3ffk3EVLubOeZ
+         d9wIA9IrjraJPckAHL5jaaWT494Or0Wn0xqtxw2sl48afWvqDvhXILkYwbqNbNWJ5c
+         X6TTRvjgN3+MZp8MSUftvc6UYNy1Xm9zbBwlhjRoUU8miq7WgiKNfLZkaaFBlU3hum
+         h/9H9i5XHEqgQ==
+Date:   Sun, 6 Feb 2022 18:13:57 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 Cc:     linux-iio@vger.kernel.org, Nuno Sa <Nuno.Sa@analog.com>,
-        lars@metafoo.de, Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v2 05/17] staging:iio:adc:ad7280a: Use bitfield ops to
- managed fields in transfers.
-Message-ID: <YgANMrabk3L5W4kE@marsc.168.1.7>
+        lars@metafoo.de, Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Rob Herring <robh@kernel.org>
+Subject: Re: [PATCH v2 15/17] dt-bindings:iio:adc:ad7280a: Add binding
+Message-ID: <20220206181357.62b871a4@jic23-huawei>
+In-Reply-To: <Yf8y+U0BVK/WOTl/@marsc.168.1.7>
 References: <20211205202710.2847005-1-jic23@kernel.org>
- <20211205202710.2847005-6-jic23@kernel.org>
- <YbjQeDekwU1wTdrF@marsc.168.1.7>
- <20220206171454.7be8dd34@jic23-huawei>
+        <20211205202710.2847005-16-jic23@kernel.org>
+        <Yb5QFJmFoc8EM5Zd@marsc.168.1.7>
+        <20220130202914.53a02f26@jic23-huawei>
+        <Yf8y+U0BVK/WOTl/@marsc.168.1.7>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220206171454.7be8dd34@jic23-huawei>
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 02/06, Jonathan Cameron wrote:
-> On Tue, 14 Dec 2021 14:12:24 -0300
-> Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
-> 
-> > Minor bit inline.
-> > 
-> > On 12/05, Jonathan Cameron wrote:
-> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> > > 
-> > > The write and two types of read transfer are sufficiently complex that
-> > > they benefit from the clarity of using FIELD_PREP() and FIELD_GET()
-> > > 
-> > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>  
-> > Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-> 
-> Those hunks you highlighted in patch 2 now in this patch and I've added a note
-> to the description to say a similar arguement applies to the event_handler()
-> 
-> Reply to your comment inline. I didn't understand this one.
-> > 
-> > > ---
-> > >  drivers/staging/iio/adc/ad7280a.c | 46 ++++++++++++++++++++++++-------
-> > >  1 file changed, 36 insertions(+), 10 deletions(-)
-> > > 
-> > > diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> > > index 1f7ea5fb1e20..158a792c0bf8 100644
-> > > --- a/drivers/staging/iio/adc/ad7280a.c
-> > > +++ b/drivers/staging/iio/adc/ad7280a.c
-> > > @@ -95,6 +95,23 @@
-> > >  #define   AD7280A_READ_ADDR_MSK				GENMASK(7, 2)
-> > >  #define AD7280A_CNVST_CTRL_REG			0x1D /* D7 to D0, Read/write */
-> > >  
-> > > +/* Transfer fields */
-> > > +#define AD7280A_TRANS_WRITE_DEVADDR_MSK		GENMASK(31, 27)
-> > > +#define AD7280A_TRANS_WRITE_ADDR_MSK		GENMASK(26, 21)
-> > > +#define AD7280A_TRANS_WRITE_VAL_MSK		GENMASK(20, 13)
-> > > +#define AD7280A_TRANS_WRITE_ALL_MSK		BIT(12)
-> > > +#define AD7280A_TRANS_WRITE_CRC_MSK		GENMASK(10, 3)
-> > > +#define AD7280A_TRANS_WRITE_RES_PATTERN		0x2
-> > > +
-> > > +/* Layouts differ for channel vs other registers */
-> > > +#define AD7280A_TRANS_READ_DEVADDR_MSK		GENMASK(31, 27)
-> > > +#define AD7280A_TRANS_READ_CONV_CHANADDR_MSK	GENMASK(26, 23)
-> > > +#define AD7280A_TRANS_READ_CONV_DATA_MSK	GENMASK(22, 11)
-> > > +#define AD7280A_TRANS_READ_REG_REGADDR_MSK	GENMASK(26, 21)
-> > > +#define AD7280A_TRANS_READ_REG_DATA_MSK		GENMASK(20, 13)
-> > > +#define AD7280A_TRANS_READ_WRITE_ACK_MSK	BIT(10)
-> > > +#define AD7280A_TRANS_READ_CRC_MSK		GENMASK(9, 2)
-> > > +
-> > >  /* Magic value used to indicate this special case */
-> > >  #define AD7280A_ALL_CELLS				(0xAD << 16)
-> > >  
-> > > @@ -216,10 +233,16 @@ static int __ad7280_read32(struct ad7280_state *st, unsigned int *val)
-> > >  static int ad7280_write(struct ad7280_state *st, unsigned int devaddr,
-> > >  			unsigned int addr, bool all, unsigned int val)
-> > >  {
-> > > -	unsigned int reg = devaddr << 27 | addr << 21 |
-> > > -			(val & 0xFF) << 13 | all << 12;
-> > > +	unsigned int reg = FIELD_PREP(AD7280A_TRANS_WRITE_DEVADDR_MSK, devaddr) |
-> > > +		FIELD_PREP(AD7280A_TRANS_WRITE_ADDR_MSK, addr) |
-> > > +		FIELD_PREP(AD7280A_TRANS_WRITE_VAL_MSK, val) |
-> > > +		FIELD_PREP(AD7280A_TRANS_WRITE_ALL_MSK, all);  
-> > Does reg get initialized to 0? If not, we should take care of the reserved bit D11
-> > 
-> You have lost me here.  We are writing the whole register and this first
-> assignment of reg uses = not |= so any bits not set explicitly will be zero.
-> We could do a FIELD_PREP(BIT(11), 0) with an appropriate name for the BIT(11) define
-> but that would be a bit odd.
-> 
-Oh yeah, I was just so paranoid about setting bit D11 to the point of forgetting
-all reg bits would be initialized to zero, even without the direct assignment.
-Setting bit D11 explicitly was a silly idea, forget about it.
+On Sat, 5 Feb 2022 23:31:21 -0300
+Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
 
-> > > +
-> > > +	reg |= FIELD_PREP(AD7280A_TRANS_WRITE_CRC_MSK,
-> > > +			ad7280_calc_crc8(st->crc_tab, reg >> 11));
-> > > +	/* Reserved b010 pattern not included crc calc */
-> > > +	reg |= AD7280A_TRANS_WRITE_RES_PATTERN;
-> > >  
-> > > -	reg |= ad7280_calc_crc8(st->crc_tab, reg >> 11) << 3 | 0x2;
-> > >  	st->tx = cpu_to_be32(reg);
-> > >  
-> > >  	return spi_write(st->spi, &st->tx, sizeof(st->tx));
+> On 01/30, Jonathan Cameron wrote:
+> > On Sat, 18 Dec 2021 18:18:12 -0300
+> > Marcelo Schmitt <marcelo.schmitt1@gmail.com> wrote:
+> >  =20
+> > > Think it would be more intuitive to use the number of active channels=
+ as enum
+> > > elements for adi,temp-alert-last-chan and adi,voltage-alert-last-chan=
+. =20
+> >=20
+> > Just to check I understand correctly, you mean active number of channels
+> > across all devices, or just in the last device? =20
+>=20
+> I was thinking about the number of channels enabled for alert detection o=
+nly in
+> the last device.
+> For voltage inputs, we would have 6, 5, or 4 channels enabled. So the pos=
+sible
+> values for adi,voltage-alert-last-chan would be [4, 5, 6], default: 6.
+> For temperature inputs, things get a bit hairy.
+> * We may have all 6 AUX enabled.
+> * We may have 3 AUX enabled if D15:D14 =3D 01 in the control register. If=
+ so, we still may:
+>   + disable AUX5, or
+>   + disable AUX5 and AUX3
+> So the possibilities for adi,temp-alert-last-chan would be 1, 2, 3, or 6 =
+AUX
+> channels enabled for alert detection.
+
+Glad I just dropped support for that ;)
+
+For the voltage one I'm going to leave it as adi,voltage-alert-last-chan
+because I'm not sure what naming would work if we changed it to number supp=
+orted
+because it feels like adi,voltage-alert-last-num-chan is weird and I don't =
+want
+complexity of adi,voltage-alert-num-chans as that would have to include the
+channels on previous devices and if we ever support the 1,3,5 mode the two =
+will couple
+in a horrible fashion.
+
+=46rom a lazy point of view, if I don't touch this I can avoid bothering Rob =
+again
+as I feel like I can drop the temperature one without removing his RB, but
+would have to ask him to take another look if we change the way the other o=
+ne works.
+
+So all in all, lets go with good enough for this one rather than looping ar=
+ound
+trying to find perfect.
+
+Thanks,
+
+Jonathan
+
+>=20
+> >=20
+> > If all devices it would get tricky to handle because if set to a value
+> > before the last device I'm not sure how we'd handle it.
+> >=20
+> > Or do you mean just index in that device form 1, so when we disable
+> > VIN5 we still have VIN0,1,2,3,4 so 5 devices? =20
+>=20
+> You mean the index of the last channel (of the last device) enabled to ge=
+nerate alerts?
+> For voltage inputs, I guess that would end up almost the same as for the =
+number
+> of active channels. For temperature inputs, AUX6, AUX5, AUX3, or AUX1 wou=
+ld be
+> the last channels enabled to generate alerts in each of the above cases.
+> Taking just the indexes: 1, 3, 5, 6.
+> This seems harder to explain, though.
+>=20
+> >=20
+> > The AUX version as per earlier patch is a real pain to describe. If
+> > we do support it we'll probably just have to fall back to strings
+> > or similar which isn't nice.
+> >=20
+> > Jonathan
+> >  =20
+> > > This, though, is just my personal opinion so=20
+> > > Reviewed-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+> > >=20
+> > > On 12/05, Jonathan Cameron wrote: =20
+> > > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > >=20
+> > > > Add a binding for this Lithium Ion Battery monitoring chip/chain of=
+ chips
+> > > > as it is now clean and ready to move out of staging.
+> > > >=20
+> > > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > > Reviewed-by: Rob Herring <robh@kernel.org>
+> > > > ---
+> > > >  .../bindings/iio/adc/adi,ad7280a.yaml         | 87 +++++++++++++++=
+++++
+> > > >  1 file changed, 87 insertions(+)
+> > > >=20
+> > > > diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad7280a.=
+yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad7280a.yaml
+> > > > new file mode 100644
+> > > > index 000000000000..77b8f67fe446
+> > > > --- /dev/null
+> > > > +++ b/Documentation/devicetree/bindings/iio/adc/adi,ad7280a.yaml
+> > > > @@ -0,0 +1,87 @@
+> > > > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> > > > +%YAML 1.2
+> > > > +---
+> > > > +$id: http://devicetree.org/schemas/iio/adc/adi,ad7280a.yaml#
+> > > > +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> > > > +
+> > > > +title: Analog Devices AD7280a Lithium Ion Battery Monitoring System
+> > > > +
+> > > > +maintainers:
+> > > > +  - Michael Hennerich <michael.hennerich@analog.com>
+> > > > +  - Jonathan Cameron <jic23@kernel.org>
+> > > > +
+> > > > +description: |
+> > > > +  Bindings for the Analog Devices AD7280a Battery Monitoring Syste=
+m.
+> > > > +  Used in devices such as hybrid electric cars, battery backup and=
+ power tools.
+> > > > +  Multiple chips can be daisy chained and accessed via a single SP=
+I interface.
+> > > > +  Data sheet found here:
+> > > > +    https://www.analog.com/media/en/technical-documentation/data-s=
+heets/AD7280A.pdf
+> > > > +
+> > > > +properties:
+> > > > +  compatible:
+> > > > +    const: adi,ad7280a
+> > > > +
+> > > > +  reg:
+> > > > +    maxItems: 1
+> > > > +
+> > > > +  interrupts:
+> > > > +    description: IRQ line for the ADC
+> > > > +    maxItems: 1
+> > > > +
+> > > > +  spi-max-frequency: true
+> > > > +
+> > > > +  adi,temp-alert-last-chan:
+> > > > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > > > +    description:
+> > > > +      Allows limiting of scope of which channels are considered fo=
+r temperature
+> > > > +      alerts, typically because not all are wired to anything. Onl=
+y applies to
+> > > > +      last device in the daisy chain.
+> > > > +    default: 5
+> > > > +    enum: [3, 4, 5]
+> > > > +
+> > > > +  adi,voltage-alert-last-chan:
+> > > > +    $ref: /schemas/types.yaml#/definitions/uint32
+> > > > +    description:
+> > > > +      Allows limiting of scope of which channels are considered fo=
+r voltage
+> > > > +      alerts, typically because not all are wired to anything. Onl=
+y applies to
+> > > > +      last device in the daisy chain.
+> > > > +    default: 5
+> > > > +    enum: [3, 4, 5]
+> > > > +
+> > > > +  adi,acquisition-time-ns:
+> > > > +    description:
+> > > > +      Additional time may be needed to charge the sampling capacit=
+ors depending
+> > > > +      on external writing.
+> > > > +    default: 400
+> > > > +    enum: [400, 800, 1200, 1600]
+> > > > +
+> > > > +  adi,thermistor-termination:
+> > > > +    type: boolean
+> > > > +    description:
+> > > > +      Enable the thermistor termination function.
+> > > > +
+> > > > +required:
+> > > > +  - compatible
+> > > > +  - reg
+> > > > +
+> > > > +additionalProperties: false
+> > > > +
+> > > > +examples:
+> > > > +  - |
+> > > > +    spi {
+> > > > +      #address-cells =3D <1>;
+> > > > +      #size-cells =3D <0>;
+> > > > +
+> > > > +      adc@0 {
+> > > > +        compatible =3D "adi,ad7280a";
+> > > > +        reg =3D <0>;
+> > > > +        spi-max-frequency =3D <700000>;
+> > > > +        interrupt-parent =3D <&gpio>;
+> > > > +        interrupts =3D <25 2>;
+> > > > +        adi,thermistor-termination;
+> > > > +        adi,acquisition-time-ns =3D <800>;
+> > > > +        adi,voltage-alert-last-chan =3D <5>;
+> > > > +        adi,temp-alert-last-chan =3D <5>;
+> > > > +      };
+> > > > +    };
+> > > > +...
+> > > > --=20
+> > > > 2.34.1
+> > > >    =20
+> >  =20
+
