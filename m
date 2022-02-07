@@ -2,43 +2,42 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10573C4167E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 20BCDC46467
 	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358842AbiBGO5L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:57:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47120 "EHLO
+        id S1359139AbiBGO5M (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:57:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47090 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240672AbiBGOiu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:50 -0500
+        with ESMTP id S237135AbiBGOiq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:46 -0500
 Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 13F20C0401C6
-        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:48 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6FEEC0401C3
+        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:45 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 06D3110000E;
-        Mon,  7 Feb 2022 14:38:44 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 8C39C100006;
+        Mon,  7 Feb 2022 14:38:41 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644244726;
+        t=1644244722;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=Ry6myupu84aZtV75/bByECo3fbRZ0TuCh6kABlxb/PY=;
-        b=bmiVsAz3MWX8KQ7mYH+touwwaRBKjFtuGOGj4jWPHUvwisXJLMJs3/GcDz6TmZ4pmfSPad
-        GeNG3n+4QNpK7RLoAu2tuYXcK8nRd4vSpYvG8t+dPVJV+CI+T5zgolVhcvFRbpJWjl+cfp
-        rStdnF+Fe8A4DbCGBYL9fb7tmBvbTQtAYvpTkfTfpDuQ8iR0Eq9UqfftE8x17dHwHM5kaX
-        7jTt51kPABsXb9lv+n1TsHDOcjwsEj09HaNW28elq7MLjEEq4BMcyIJ4FUrUnU0R+a4GKl
-        BJ7WpGk5UmUKfG4KSragaJ167bX5xUGz1bDO085L+QxAVlVv3w1g/2TfmaEL7Q==
+        bh=pmLCmMWpjGtflzXx1HNHByt2kN8tM4HeD013Yp4bZDE=;
+        b=iQKptoJj28P2JRm0qwys18WTgs+ULVaolvJ2J5+wlhqvxY/nBTkKq46cFW+NWVcMP8rvhg
+        P3xHJEArUya1GgvVjqd1OuGzuUoE/GF6FmKxayuiJdb+44d8PVzbmh3bJM8VpI9Y4KDM89
+        VAE9Or3JHrYP5ikr61yvjkNkIghh/FiynJF3M/arnfLhVuC60CiJjY/PxSmskXNFzJHBSB
+        IxIj80igPnbv7mHbEvVnpzb7vaBi5El98CV/4O2tJjQ/nvtc26kIBpMNPiNZ5QesQ5HpAy
+        0ZjFVr1J5c5/3DdeffCT5KDkHjQbTQk427AnCgvs9cDFhg4mzrnuz52e1P0m6w==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH v3 04/13] iio: st_sensors: Return as early as possible from the _write_raw() callbacks
-Date:   Mon,  7 Feb 2022 15:38:31 +0100
-Message-Id: <20220207143840.707510-5-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH v3 01/13] iio: core: Enhance the kernel doc of modes and currentmodes iio_dev entries
+Date:   Mon,  7 Feb 2022 15:38:28 +0100
+Message-Id: <20220207143840.707510-2-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220207143840.707510-1-miquel.raynal@bootlin.com>
 References: <20220207143840.707510-1-miquel.raynal@bootlin.com>
@@ -49,95 +48,38 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-As there is no cleanup to do, let's return as early as possible in the
-various ST sensor drivers _write_raw() callback functions.
+Let's provide more details about these two variables because their
+understanding may not be straightforward for someone not used to the IIO
+subsystem internal logic. The different modes will soon be also be more
+documented for the same reason.
 
-There is no functional change.
-
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/accel/st_accel_core.c       | 5 +----
- drivers/iio/gyro/st_gyro_core.c         | 7 ++-----
- drivers/iio/magnetometer/st_magn_core.c | 7 ++-----
- 3 files changed, 5 insertions(+), 14 deletions(-)
+ include/linux/iio/iio.h | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
-index 31ea19d0ba71..ae0e6414e8f4 100644
---- a/drivers/iio/accel/st_accel_core.c
-+++ b/drivers/iio/accel/st_accel_core.c
-@@ -1133,8 +1133,7 @@ static int st_accel_write_raw(struct iio_dev *indio_dev,
- 		int gain;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index faf00f2c0be6..f191b80466cd 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -488,8 +488,15 @@ struct iio_buffer_setup_ops {
  
- 		gain = val * 1000000 + val2;
--		err = st_sensors_set_fullscale_by_gain(indio_dev, gain);
--		break;
-+		return st_sensors_set_fullscale_by_gain(indio_dev, gain);
- 	}
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		if (val2)
-@@ -1146,8 +1145,6 @@ static int st_accel_write_raw(struct iio_dev *indio_dev,
- 	default:
- 		return -EINVAL;
- 	}
--
--	return err;
- }
- 
- static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index 201050b76fe5..f574ee7aca95 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -410,8 +410,7 @@ static int st_gyro_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SCALE:
--		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
--		break;
-+		return st_sensors_set_fullscale_by_gain(indio_dev, val2);
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		if (val2)
- 			return -EINVAL;
-@@ -420,10 +419,8 @@ static int st_gyro_write_raw(struct iio_dev *indio_dev,
- 		mutex_unlock(&indio_dev->mlock);
- 		return err;
- 	default:
--		err = -EINVAL;
-+		return -EINVAL;
- 	}
--
--	return err;
- }
- 
- static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
-diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
-index 0806a1e65ce4..34a0503bc571 100644
---- a/drivers/iio/magnetometer/st_magn_core.c
-+++ b/drivers/iio/magnetometer/st_magn_core.c
-@@ -544,8 +544,7 @@ static int st_magn_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_SCALE:
--		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
--		break;
-+		return st_sensors_set_fullscale_by_gain(indio_dev, val2);
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		if (val2)
- 			return -EINVAL;
-@@ -554,10 +553,8 @@ static int st_magn_write_raw(struct iio_dev *indio_dev,
- 		mutex_unlock(&indio_dev->mlock);
- 		return err;
- 	default:
--		err = -EINVAL;
-+		return -EINVAL;
- 	}
--
--	return err;
- }
- 
- static ST_SENSORS_DEV_ATTR_SAMP_FREQ_AVAIL();
+ /**
+  * struct iio_dev - industrial I/O device
+- * @modes:		[DRIVER] operating modes supported by device
+- * @currentmode:	[INTERN] current operating mode
++ * @modes:		[DRIVER] bitmask listing all the operating modes
++ *			supported by the IIO device. This list should be
++ *			initialized before registering the IIO device. It can
++ *			also be filed up by the IIO core, as a result of
++ *			enabling particular features in the driver
++ *			(see iio_triggered_event_setup()).
++ * @currentmode:	[INTERN] operating mode currently in use, may be
++ *			eventually checked by device drivers but should be
++ *			considered read-only as this is a core internal bit
+  * @dev:		[DRIVER] device structure, should be assigned a parent
+  *			and owner
+  * @buffer:		[DRIVER] any buffer present
 -- 
 2.27.0
 
