@@ -2,167 +2,163 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E84BC3526E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB11C35272
 	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1359447AbiBGO5M (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:57:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
+        id S1376406AbiBGO5N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:57:13 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1382636AbiBGOfS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:35:18 -0500
-Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBE9C0401C1
-        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:35:17 -0800 (PST)
+        with ESMTP id S238842AbiBGOir (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:47 -0500
+Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2D8C0401C4
+        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:44 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id BED996000D;
-        Mon,  7 Feb 2022 14:35:15 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id A1CDD100008;
+        Mon,  7 Feb 2022 14:38:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644244516;
+        t=1644244721;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=dLf2au0TqgtM3Ygq+ySleMDOJq/AtdiLKPkOQplgmAw=;
-        b=aomU2cjJxSrqUnrzQWepNfgnBRItuUSbd9UWGzC8vWarwoc7Dfc/TPyrv5hVmji2WXyoks
-        Dcu9t96HpKiShHDR6F8+7fOCRE9/EelkzZj6YIWoTxt+ccZmLQf4jkkvhrAWRe5m4EHHSG
-        tEc07lYAYVD2dycfZvCf/iGQdVT0UeESVgLhcyC4J+NuC9skvYoiV82GtqlIpIx14Hqfl3
-        m/mRkUPxHxkwv/Ib+8ljFQx4TUbSPDAGvsFfr8hkWcCQEp0JC5yVlxPyAm8RaKgcAyb4GW
-        1ZIqmo1Yria4Vqu+fpnByMBllpPnaJw6SEpGy08VYhEVB6TAviUam95RnxcB6g==
-Date:   Mon, 7 Feb 2022 15:35:14 +0100
+         content-transfer-encoding:content-transfer-encoding;
+        bh=U0zgSzmYes8QcLizg/5kutKNyWPeOBNd6SlI4oG+JVs=;
+        b=jMspNHn9jWqJOEsmrayomu6bnXxpHU8wxG0sPYXK4ioVViEXXyeBz9lU4xNBIsMixHADuq
+        gdlLZad69pN79aFLqdWnFSQ69PQhRG7gOfYqkAWfd3XOpRoB+dGAOYs/g3T0+YBgfJ3oOI
+        IHhM8JqsDbxM9uamU7SIsEwEjFOtrUwzNS0LFPWnop7KjOoafP3MydQDqItUcysDpbE9iq
+        bnRuC2zVlDbT3XC8pm2b8yQSw9k1mMOQPUu3k7xOb6Mz0+hTO8I8YzF9lauwaCSnSU6osE
+        nU66Nc89aN0sBOjH4B0oKXVGagg+v72qxZNosVjGVKhTWmfOat4fT+btGx4dHA==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Denis Ciocca <denis.ciocca@st.com>
-Subject: Re: [PATCH v2 07/12] iio: st_sensors: Use
- iio_device_claim/release_direct_mode() when relevant
-Message-ID: <20220207153514.74c861cb@xps13>
-In-Reply-To: <20220206155520.6cca376b@jic23-huawei>
-References: <20220202140208.391394-1-miquel.raynal@bootlin.com>
-        <20220202140208.391394-8-miquel.raynal@bootlin.com>
-        <20220206155520.6cca376b@jic23-huawei>
-Organization: Bootlin
-X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
+        Miquel Raynal <miquel.raynal@bootlin.com>
+Subject: [PATCH v3 00/13] Miscellaneous IIO core enhancements
+Date:   Mon,  7 Feb 2022 15:38:27 +0100
+Message-Id: <20220207143840.707510-1-miquel.raynal@bootlin.com>
+X-Mailer: git-send-email 2.27.0
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Hello,
 
-jic23@kernel.org wrote on Sun, 6 Feb 2022 15:55:20 +0000:
+As part of a previous discussion with Jonathan (I know, it was three
+months ago, sorry for the delay :-$), it appeared necessary to do a
+little bit of cleanup in the IIO core and at least provide a little bit
+more documentation for developers diving into the IIO subsystem for the
+first time. My first move was to write a blog post trying to explain
+(from my point of view but with the review of Jonathan) what is
+necessary to understand when writing and IIO kernel driver:
+https://bootlin.com/blog/the-backbone-of-a-linux-industrial-i-o-driver/
 
-> On Wed,  2 Feb 2022 15:02:03 +0100
-> Miquel Raynal <miquel.raynal@bootlin.com> wrote:
->=20
-> > The st_sensors_core driver hardcodes the content of the
-> > iio_device_claim_direct_mode() and iio_device_release_direct_mode()
-> > helpers. Let's get rid of this handcrafted implementation and use the
-> > proper core helpers instead. Additionally, this lowers the tab level
-> > (which is always good) and prevents the use of the ->currentmode
-> > variable which is not supposed to be used like this anyway.
-> >=20
-> > Cc: Denis Ciocca <denis.ciocca@st.com>
-> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-> > ---
-> >  .../iio/common/st_sensors/st_sensors_core.c   | 32 +++++++++----------
-> >  1 file changed, 15 insertions(+), 17 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/=
-iio/common/st_sensors/st_sensors_core.c
-> > index d0419234a747..e61622e3bc85 100644
-> > --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> > +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> > @@ -559,28 +559,26 @@ int st_sensors_read_info_raw(struct iio_dev *indi=
-o_dev,
-> >  	int err;
-> >  	struct st_sensor_data *sdata =3D iio_priv(indio_dev);
-> > =20
-> > -	mutex_lock(&indio_dev->mlock);
-> > -	if (indio_dev->currentmode =3D=3D INDIO_BUFFER_TRIGGERED) {
-> > -		err =3D -EBUSY;
-> > +	err =3D iio_device_claim_direct_mode(indio_dev);
-> > +	if (err)
-> > +		return err;
-> > +
-> > +	err =3D st_sensors_set_enable(indio_dev, true);
-> > +	if (err < 0)
-> >  		goto out;
-> > -	} else {
-> > -		err =3D st_sensors_set_enable(indio_dev, true);
-> > -		if (err < 0)
-> > -			goto out;
-> > =20
-> > -		mutex_lock(&sdata->odr_lock);
-> > -		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
-> > -		err =3D st_sensors_read_axis_data(indio_dev, ch, val);
-> > -		mutex_unlock(&sdata->odr_lock);
-> > -		if (err < 0)
-> > -			goto out;
-> > +	mutex_lock(&sdata->odr_lock); =20
->=20
-> This is problematic I think as the lock taken around getting sdata->odr
-> in set_sensors_set_enable() but then dropped briefly before being
-> reacquired here.  If someone sneaks a write in that window, it
-> looks like we might sleep for the wrong amount of time because sdata->odr
-> has changed.  I think you need to hold the lock across the whole
-> enable/read/disable cycle (disable probably not necessary but it
-> would be more obviously correct if we did hold it across that as well).
->=20
+Here is now the second halve of this work, with few things that I tried
+to address.
 
-Yeah, I do agree this is a risk and I actually bet that the mlock mutex
-taken with iio_device_claim_direct_mode() was more than enough, but
-you're right that this this is maybe just a consequence of the
-current implementation and not actually enforced by the API, and for
-this reason we might want to enforce the serialization with our own
-lock.
+* The currentmode indio_dev entry was misused by several device drivers,
+  I tried to understand which ones were wrong (there are two still
+  accessing this variable left, I decided not to touch them because I
+  think it is legitimate) and I tried to find an alternative.
 
-I've extended the coverage of the lock to fix that.
+* Then, I tried to make new accesses to this variable harder in order to
+  avoid future mistakes, by creating a helper to read it from outside the
+  core and moving it to the opaque structure.
 
-> Clearly this actually got introduced in the earlier patch but diff
-> wasn't showing a wide enough bit of code so I missed it.
->=20
-> Note it is fairly common to use iio_device_claim_direct_mode() to
-> prevent data rate changes whilst doing buffered capture as that tends
-> to make the data messy and can lead to skipped samples etc.  Doing
-> that would have the side effect of closing the race.
-> It is a bit undocumented though in the sense that I don't think
-> we have ever stated that iio_device_claim_direct_mode() will block
-> against another iio_device_claim_direct_mode() so accesses are
-> serialized.  So better to have the local lock enforce the
-> necessary serialization.  Whilst I doubt we will change the
-> implementation of iio_device_claim_direct_mode() any time
-> soon you never know.
->=20
-> Thanks,
->=20
-> Jonathan
->=20
->=20
-> > +	msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
-> > +	err =3D st_sensors_read_axis_data(indio_dev, ch, val);
-> > +	mutex_unlock(&sdata->odr_lock);
-> > +	if (err < 0)
-> > +		goto out;
-> > =20
-> > -		*val =3D *val >> ch->scan_type.shift;
-> > +	*val =3D *val >> ch->scan_type.shift;
-> > =20
-> > -		err =3D st_sensors_set_enable(indio_dev, false);
-> > -	}
-> > +	err =3D st_sensors_set_enable(indio_dev, false);
-> >  out:
-> > -	mutex_unlock(&indio_dev->mlock);
-> > +	iio_device_release_direct_mode(indio_dev);
-> > =20
-> >  	return err;
-> >  } =20
->=20
+* I continued with the IIO modes which are completely
+  undocumented. Following a few exchanges with Jonathan, I tried to take
+  most of this discussion and put it into a kernel doc header.
 
+* When doing the above task, I realized that there was a particular case
+  handled for kfifo buffers which I tried to simplify, but if this is a
+  mistake, I'll just drop the patch.
 
-Thanks,
-Miqu=C3=A8l
+Hope this will help!
+
+Cheers,
+Miquèl
+
+Changes in v3:
+* Added a patch to cleanup the _write_raw() callbacks in the st_sensor
+  drivers. Returned as early as possible.
+* Updated the description of INDIO_DIRECT_MODE and INDIO_BUFFER_SOFTWARE
+  as discussed.
+* Added the R-by from Fabrice.
+* Extended the coverage of the odr lock in order to avoid relying on the
+  iio_device_claim_direct_mode() helper implementation for that.
+
+Changes in v2:
+* Added Alexandru Reviewed-by when relevant.
+* Indicated that "modes" is a bitmask as suggested.
+* Added a mention in the "modes" kdoc about the function that could
+  alter its content in the core.
+* Added more driver maintainers in Cc.
+* Avoided deleting the INDIO_BUFFER_TRIGGERED mode from kfifos.
+* Dropped entirely the currentmode setter helper.
+* Avoided using the currentmode getter from places where we have access
+  to the opaque structure (ie. from the core itself).
+* Added a patch to move the iio_buffer_enabled() definition in the core
+  as it cannot be inlined anymore.
+* Dropped completely the use of the mlock lock form the st-sensor
+  drivers by inserting an additional local lock when this was
+  needed. Hopefully I didn't fail that, this will need testing.
+* Reworded the modes kdoc as advised by Jonathan.
+
+Miquel Raynal (13):
+  iio: core: Enhance the kernel doc of modes and currentmodes iio_dev
+    entries
+  iio: magnetometer: rm3100: Stop abusing the ->currentmode
+  iio: adc: stm32-dfsdm: Avoid dereferencing ->currentmode
+  iio: st_sensors: Return as early as possible from the _write_raw()
+    callbacks
+  iio: st_sensors: Drop the protection on _avail functions
+  iio: st_sensors: Add a local lock for protecting odr
+  iio: st_sensors: Stop abusing mlock to ensure internal coherency
+  iio: st_sensors: Use iio_device_claim/release_direct_mode() when
+    relevant
+  iio: Un-inline iio_buffer_enabled()
+  iio: core: Hide read accesses to iio_dev->currentmode
+  iio: core: Move the currentmode entry to the opaque structure
+  iio: core: Simplify the registration of kfifo buffers
+  iio: core: Clarify the modes
+
+ drivers/iio/accel/bmc150-accel-core.c         |  4 +-
+ drivers/iio/accel/fxls8962af-core.c           |  1 -
+ drivers/iio/accel/sca3000.c                   |  1 -
+ drivers/iio/accel/ssp_accel_sensor.c          |  1 -
+ drivers/iio/accel/st_accel_core.c             | 13 +---
+ drivers/iio/adc/at91-sama5d2_adc.c            |  4 +-
+ drivers/iio/adc/ina2xx-adc.c                  |  1 -
+ drivers/iio/adc/stm32-dfsdm-adc.c             |  5 +-
+ drivers/iio/adc/ti_am335x_adc.c               |  4 +-
+ drivers/iio/buffer/kfifo_buf.c                | 10 +--
+ .../cros_ec_sensors/cros_ec_sensors_core.c    |  3 +-
+ drivers/iio/common/scmi_sensors/scmi_iio.c    |  1 -
+ .../iio/common/st_sensors/st_sensors_core.c   | 50 +++++++------
+ drivers/iio/gyro/ssp_gyro_sensor.c            |  1 -
+ drivers/iio/gyro/st_gyro_core.c               | 15 ++--
+ drivers/iio/health/max30100.c                 |  1 -
+ drivers/iio/health/max30102.c                 |  1 -
+ .../iio/imu/inv_icm42600/inv_icm42600_accel.c |  1 -
+ .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  |  1 -
+ .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    |  1 -
+ drivers/iio/industrialio-buffer.c             | 12 ++--
+ drivers/iio/industrialio-core.c               | 27 +++++++
+ drivers/iio/industrialio-trigger.c            |  2 +-
+ drivers/iio/light/apds9960.c                  |  1 -
+ drivers/iio/magnetometer/rm3100-core.c        | 15 +---
+ drivers/iio/magnetometer/st_magn_core.c       | 15 ++--
+ drivers/iio/pressure/st_pressure_core.c       |  8 +--
+ .../staging/iio/impedance-analyzer/ad5933.c   |  1 -
+ include/linux/iio/common/st_sensors.h         |  3 +
+ include/linux/iio/iio-opaque.h                |  4 ++
+ include/linux/iio/iio.h                       | 70 +++++++++++++++----
+ include/linux/iio/kfifo_buf.h                 |  5 +-
+ 32 files changed, 151 insertions(+), 131 deletions(-)
+
+-- 
+2.27.0
+
