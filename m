@@ -2,97 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B4B2C433FE
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 10:56:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D84C9C433F5
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 10:59:53 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238077AbiBGK4E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S244918AbiBGK4E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 7 Feb 2022 05:56:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37866 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40770 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245176AbiBGKtY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 05:49:24 -0500
-X-Greylist: delayed 62 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 02:49:21 PST
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A301FC0401C1;
-        Mon,  7 Feb 2022 02:49:21 -0800 (PST)
+        with ESMTP id S236464AbiBGKyI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 05:54:08 -0500
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C9962C043181
+        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 02:54:06 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644230961; x=1675766961;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=UGOdXzZC/n1cq7HB8SFnKvHfDjwQEONn26NuIhCCEQw=;
-  b=Ly33X9Lhb9zEFZNQ7SMZFCD/o/EgNU2n+0Z/0wGNmnocg1w2bepd5DZN
-   KutpYY6LZFDiyD3cJS8gjj1wtAdYsihBOOV1oPs9z71knwmT204RXo1vf
-   xUBtfqC1rAKpk5GSnLJc9sT+YHy0Vk9TAbQ/gFxqNDGphQoJAMlYi0icj
-   jFs/LLED/a0ZrKKOwl2uMNofI6s/Hq8Qs2Svjqj7AGf8Au77sj4q4HkA2
-   7vdGBwF9PlmkhkgCSYDi+p3CT63X9trezjFxmkyJwIXh9XhBpe3rMEnlA
-   8Sd9p/ELN5QYZCNbJitz1JCWAib5W+o/utBBOOOG6f2O79JXO+tjS09jg
-   g==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273209904"
+  t=1644231247; x=1675767247;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=kWDoJfiVMEWlhxGnvqCWkU+/STOJWI6BKalo40xEaL0=;
+  b=SGrwcnPnLueJh7iuS59+tM63UK70UiNXNG7yg/t726JZ4+/pyBOmadz4
+   +RI/Egqrq9zmclXqHh5KQjN1MPv7Ns6/EHkQqgiZYrQLsvg6nsJ9dGMl4
+   dTOx6p5mCmi40xBQTVPC4UxGSVaP4qfqijk1G5wz9KMbGN70lV2ObBe8R
+   3pPV/hGpz5pYzgawscBKFc+VBjIN64R2yVO9v9vuEOq1wwNNqECQ1l9Bp
+   Z1yeoRdEnAKwXc4IiNBz1mwtv5bDFqZ+6VMb4S9CYM8QiYhIikNhjPO7L
+   vMJJppfDGAQC2+59lRFECvKuxZyOUy5aT2xPNV70VBshCwjaIVs1KsZkb
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="229339650"
 X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="273209904"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 02:48:19 -0800
-X-ExtLoop1: 1
+   d="scan'208";a="229339650"
+Received: from orsmga008.jf.intel.com ([10.7.209.65])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 02:53:56 -0800
 X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="621508215"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 07 Feb 2022 02:48:17 -0800
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 61E7D509; Mon,  7 Feb 2022 12:48:32 +0200 (EET)
+   d="scan'208";a="540047201"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 02:53:54 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nH1df-001rwM-At;
+        Mon, 07 Feb 2022 12:52:55 +0200
+Date:   Mon, 7 Feb 2022 12:52:55 +0200
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code defined constants in messages
-Date:   Mon,  7 Feb 2022 12:48:28 +0200
-Message-Id: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.34.1
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: Re: [PATCH v3 1/3] iio: dac: add support for ltc2688
+Message-ID: <YgD6B2OsPgVwbVvT@smile.fi.intel.com>
+References: <20220121142501.151-1-nuno.sa@analog.com>
+ <20220121142501.151-2-nuno.sa@analog.com>
+ <Yf60A1UkbBtQ68qv@smile.fi.intel.com>
+ <20220205184459.7aa8e5d5@jic23-huawei>
+ <Yf7G91IuwAw0trgz@smile.fi.intel.com>
+ <Yf7IxJKmAtgqT2rB@smile.fi.intel.com>
+ <20220206151624.58589a05@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220206151624.58589a05@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In a couple of messages the constants, which have their definitions,
-are hard coded into the message text. Unhardcode them.
+On Sun, Feb 06, 2022 at 03:16:24PM +0000, Jonathan Cameron wrote:
+> On Sat, 5 Feb 2022 20:58:12 +0200
+> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+> > On Sat, Feb 05, 2022 at 08:50:31PM +0200, Andy Shevchenko wrote:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
----
-v2: added Rb tag (Nuno)
- drivers/iio/temperature/ltc2983.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+...
 
-diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-index 301c3f13fb26..d272c303c1b0 100644
---- a/drivers/iio/temperature/ltc2983.c
-+++ b/drivers/iio/temperature/ltc2983.c
-@@ -409,8 +409,8 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
- 	new_custom->size = n_entries * n_size;
- 	/* check Steinhart size */
- 	if (is_steinhart && new_custom->size != LTC2983_CUSTOM_STEINHART_SIZE) {
--		dev_err(dev, "Steinhart sensors size(%zu) must be 24",
--							new_custom->size);
-+		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
-+			LTC2983_CUSTOM_STEINHART_SIZE);
- 		return ERR_PTR(-EINVAL);
- 	}
- 	/* Check space on the table. */
-@@ -1299,8 +1299,8 @@ static int ltc2983_parse_dt(struct ltc2983_data *st)
- 		if (sensor.chan < LTC2983_MIN_CHANNELS_NR ||
- 		    sensor.chan > LTC2983_MAX_CHANNELS_NR) {
- 			ret = -EINVAL;
--			dev_err(dev,
--				"chan:%d must be from 1 to 20\n", sensor.chan);
-+			dev_err(dev, "chan:%d must be from %d to %d\n", sensor.chan,
-+				LTC2983_MIN_CHANNELS_NR, LTC2983_MAX_CHANNELS_NR);
- 			goto put_child;
- 		} else if (channel_avail_mask & BIT(sensor.chan)) {
- 			ret = -EINVAL;
+> > https://lore.kernel.org/lkml/20211205190101.26de4a57@jic23-huawei/T/#u
+> > 
+> > So, the fwnode has a correct implementation, and we may use it here.
+> > 
+> I wasn't totally sure of the conclusion of that discussion.
+> a) Fine to just use device_for_each_child_node() for this case and not worry
+> about it.
+
+Yes. As he mentioned the device_for_each_child_node() is implemented correctly
+from day 1.
+
+> b) Worth adding device_for_each_available_child_node() with the same
+> implementation
+
+I believe it's an opposite prospective, i.e. drop
+of_for_each_available_child_node() and use the of_for_each_child_node()
+everywhere.
+
+> c) (possibly workaround / avoid the issue) Use device_for_each_child_node()
+> but also check validity (hopefully compiler would remove the check)
+> in order to act as documentation.
+
+Makes no sense because implementation does it already.
+
+> I'm fine with any of the above.
+
 -- 
-2.34.1
+With Best Regards,
+Andy Shevchenko
+
 
