@@ -2,42 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EAADC433FE
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:56:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0AA39C433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:57:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235341AbiBGO4e (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:56:34 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47184 "EHLO
+        id S236679AbiBGO46 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:56:58 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344024AbiBGOi5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:57 -0500
+        with ESMTP id S237317AbiBGOiq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:46 -0500
 Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A05EC0401C8
-        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:54 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6F78C0401C2
+        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:44 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 771E3100011;
-        Mon,  7 Feb 2022 14:38:50 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 6D58010000A;
+        Mon,  7 Feb 2022 14:38:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644244731;
+        t=1644244723;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=MQJziaSz3ESkGbbljr98GLBOtxwo4x1WqWerH7zsyMI=;
-        b=ZiNC861J27Qm6aR3u+EuviLQHmv2hpdk0TIciaRbHd0BEuy7SPsN+JNLvVVBomDMnI51dq
-        urWqTHMeul2/RgaJYYujba/YpmmkL4RQYVlS+aAMA/1PNmcOZDNFIcDVMDgdv7iRzAIoZ2
-        fsk0TOTss5dRYULkoHuNlB5gqT9jeEwJNc6GD/EG+3+jm2VBm3CpjYX6kfo0Hlz2DztN+F
-        75tmm06Am0kkHJa/WdQ1QDK7IQahXJbA+rRBnyPnTc5hIhGm5G4KDw/kjn0w8T1MDPCSIl
-        UEOm0dPZrKz/uvpxqljlTEre2TQpUAXJ39AQXv+wEE4l5rsu4Refve0rnJBVXQ==
+        bh=TawdqjX7BEkznrUMkUPTanTqZyIkwauouY0To3CdU2s=;
+        b=IRk3yVLSOWB7iFl68cInmVeAgHQZWL+aGqe5pyYjG7cDkzere+vQZ8J0S/ywGLlXyQB0IW
+        BF5cNvDPL481uIprrXrrB5UdpciA/78kPW3JD3FTJOHJ/8m1K2GRzPER3KqAAZ1HtpwgFh
+        4e3BS/HFigL2IrFSuZrK103ed1aQfivVsI1Gtis6C9sahlhllM9DU7KdwrwgRl2aVRA83+
+        HUPJHR3j25Mem+SIF1eP72W5fYWS/usv5JH8TXTdBHTnST2lVjao59RPEGxeGOA9nLNPIK
+        wuGRjO7NSZRsqF1Act42lO7sRVkdDVJ0UQ74VvRNwpbahGUjeXZ7lhmwaCMZXw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v3 09/13] iio: Un-inline iio_buffer_enabled()
-Date:   Mon,  7 Feb 2022 15:38:36 +0100
-Message-Id: <20220207143840.707510-10-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Song Qiang <songqiang1304521@gmail.com>
+Subject: [PATCH v3 02/13] iio: magnetometer: rm3100: Stop abusing the ->currentmode
+Date:   Mon,  7 Feb 2022 15:38:29 +0100
+Message-Id: <20220207143840.707510-3-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220207143840.707510-1-miquel.raynal@bootlin.com>
 References: <20220207143840.707510-1-miquel.raynal@bootlin.com>
@@ -48,76 +49,61 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-As we are going to hide the currentmode inside the opaque structure,
-this helper would soon need to call a non-inline function which would
-simply drop the benefit of having the helper defined inline in a header.
+This is an internal variable for the core, here it is set to a "default"
+value by the driver in order to later be able to perform checks against
+it. None of this is needed because this check actually cares about the
+buffers being enabled or not. So it is an unproper side-channel access
+to the information "are the buffers enabled?", returned officially by
+the iio_buffer_enabled() helper. Use this helper instead.
 
-One alternative is to move this helper in the core as there is no more
-interest in defining it inline in a header. We will pay the minor cost
-either way.
-
-Let's do like the iio_device_id() helper which also refers to the opaque
-structure and gets defined in the core.
-
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Cc: Song Qiang <songqiang1304521@gmail.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- drivers/iio/industrialio-core.c | 12 ++++++++++++
- include/linux/iio/iio.h         | 11 +----------
- 2 files changed, 13 insertions(+), 10 deletions(-)
+ drivers/iio/magnetometer/rm3100-core.c | 15 +++------------
+ 1 file changed, 3 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 409c278a4c2c..64381d0a3d01 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -184,6 +184,18 @@ int iio_device_id(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/magnetometer/rm3100-core.c b/drivers/iio/magnetometer/rm3100-core.c
+index 13914273c999..be0057f82218 100644
+--- a/drivers/iio/magnetometer/rm3100-core.c
++++ b/drivers/iio/magnetometer/rm3100-core.c
+@@ -141,18 +141,10 @@ static irqreturn_t rm3100_irq_handler(int irq, void *d)
+ 	struct iio_dev *indio_dev = d;
+ 	struct rm3100_data *data = iio_priv(indio_dev);
+ 
+-	switch (indio_dev->currentmode) {
+-	case INDIO_DIRECT_MODE:
++	if (!iio_buffer_enabled(indio_dev))
+ 		complete(&data->measuring_done);
+-		break;
+-	case INDIO_BUFFER_TRIGGERED:
++	else
+ 		iio_trigger_poll(data->drdy_trig);
+-		break;
+-	default:
+-		dev_err(indio_dev->dev.parent,
+-			"device mode out of control, current mode: %d",
+-			indio_dev->currentmode);
+-	}
+ 
+ 	return IRQ_WAKE_THREAD;
  }
- EXPORT_SYMBOL_GPL(iio_device_id);
+@@ -377,7 +369,7 @@ static int rm3100_set_samp_freq(struct iio_dev *indio_dev, int val, int val2)
+ 			goto unlock_return;
+ 	}
  
-+/**
-+ * iio_buffer_enabled() - helper function to test if the buffer is enabled
-+ * @indio_dev:		IIO device structure for device
-+ */
-+bool iio_buffer_enabled(struct iio_dev *indio_dev)
-+{
-+	return indio_dev->currentmode
-+		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE |
-+		   INDIO_BUFFER_SOFTWARE);
-+}
-+EXPORT_SYMBOL_GPL(iio_buffer_enabled);
-+
- /**
-  * iio_sysfs_match_string_with_gaps - matches given string in an array with gaps
-  * @array: array of strings
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index f191b80466cd..faabb852128a 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -550,6 +550,7 @@ struct iio_dev {
- };
+-	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
++	if (iio_buffer_enabled(indio_dev)) {
+ 		/* Writing TMRC registers requires CMM reset. */
+ 		ret = regmap_write(regmap, RM3100_REG_CMM, 0);
+ 		if (ret < 0)
+@@ -553,7 +545,6 @@ int rm3100_common_probe(struct device *dev, struct regmap *regmap, int irq)
+ 	indio_dev->channels = rm3100_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(rm3100_channels);
+ 	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
+-	indio_dev->currentmode = INDIO_DIRECT_MODE;
  
- int iio_device_id(struct iio_dev *indio_dev);
-+bool iio_buffer_enabled(struct iio_dev *indio_dev);
- 
- const struct iio_chan_spec
- *iio_find_channel_from_si(struct iio_dev *indio_dev, int si);
-@@ -679,16 +680,6 @@ struct iio_dev *devm_iio_device_alloc(struct device *parent, int sizeof_priv);
- __printf(2, 3)
- struct iio_trigger *devm_iio_trigger_alloc(struct device *parent,
- 					   const char *fmt, ...);
--/**
-- * iio_buffer_enabled() - helper function to test if the buffer is enabled
-- * @indio_dev:		IIO device structure for device
-- **/
--static inline bool iio_buffer_enabled(struct iio_dev *indio_dev)
--{
--	return indio_dev->currentmode
--		& (INDIO_BUFFER_TRIGGERED | INDIO_BUFFER_HARDWARE |
--		   INDIO_BUFFER_SOFTWARE);
--}
- 
- /**
-  * iio_get_debugfs_dentry() - helper function to get the debugfs_dentry
+ 	if (!irq)
+ 		data->use_interrupt = false;
 -- 
 2.27.0
 
