@@ -2,153 +2,83 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D643FC4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E5498C41535
 	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358775AbiBGO5G (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:57:06 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47178 "EHLO
+        id S1359075AbiBGO5L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:57:11 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343996AbiBGOi5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:57 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CF7C0401C7
-        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:53 -0800 (PST)
+        with ESMTP id S1386976AbiBGOcD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:32:03 -0500
+Received: from relay7-d.mail.gandi.net (relay7-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A221C0401C1
+        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:32:00 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 5734A100008;
-        Mon,  7 Feb 2022 14:38:51 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 324FD20004;
+        Mon,  7 Feb 2022 14:31:58 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644244732;
+        t=1644244319;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=W0mqKMVbNyVGieN5RcjNyDrMxC5upQJnBV58qIvJzSA=;
-        b=pH7hUMMg/olz75H1aeecgbttcbvpGBrWDc899tvJxDHz99IOyZiJkt1XHT3Y/QPIfziZxj
-        /jPWyQx4Bi0NnkxPl/H3lUefJK3ACLpRWb7ASeN2UJKiWCh3LFHFF8oDqby+yAWzNdpo8m
-        6jhD5+eOIMethdcDN/gUqEdoIy9MD0JUGIAZVr7jLRNIN0cy05Kg/XEOZopazUgD/hLOO/
-        UoIg8tVC/zZ/9u5dSIr4g8xZABfPl3tiXIiGRIhXYrqtCQnoB/noQMqJEljnQIaUSuz/i0
-        kM+DRbaDg968oVYXG5w3VcZFiOkjbFxvnuvi1KQcP5/x/Ic7ErvBc79TUI6Cpw==
+        bh=O/vlI8Ck/EbdFMfroKcsbkSEtVV0+3aQIntQIptdPS8=;
+        b=fIVgWGgZhRWHxNbh0Zzf8hk0e6GxRrjJuFRp3J8SSXoAV3oEbl6cRaVwoUwFDf3mp2Hr2S
+        RMi2gJ3Q+5bc9W4sjrp7VjKIeisPeR3SW9GBnZe4Mqufeqm3EQW5DV9UGkN3KToBQ6NwHo
+        XP5Sy+kutQLHtxEl58o6UFLoShFsfS/jsmhUg/UEL9mYc/teWW74W8DXypEXHF+q7ZAnGq
+        y6ATi74OviUf1/kv2R9IFmTH9m8TaCqrBJASoZB5fwaIXEcZkEbdnMU6d/Xc+99Vaf3wRe
+        qPWPNDuMwYVpdH869LdtyihDCrBoDG/215yxlkXLPlJsyFdpylysE//yX8N0FQ==
+Date:   Mon, 7 Feb 2022 15:31:56 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>
-Subject: [PATCH v3 10/13] iio: core: Hide read accesses to iio_dev->currentmode
-Date:   Mon,  7 Feb 2022 15:38:37 +0100
-Message-Id: <20220207143840.707510-11-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220207143840.707510-1-miquel.raynal@bootlin.com>
-References: <20220207143840.707510-1-miquel.raynal@bootlin.com>
+        Denis Ciocca <denis.ciocca@st.com>
+Subject: Re: [PATCH v2 06/12] iio: st_sensors: Stop abusing mlock to ensure
+ internal coherency
+Message-ID: <20220207153156.38b36fe8@xps13>
+In-Reply-To: <20220206154533.3153e610@jic23-huawei>
+References: <20220202140208.391394-1-miquel.raynal@bootlin.com>
+        <20220202140208.391394-7-miquel.raynal@bootlin.com>
+        <20220206154533.3153e610@jic23-huawei>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-In order to later move this variable within the opaque structure, let's
-create a helper for accessing it in read-only mode. This helper will be
-exposed to device drivers and kept accessible for the few that could need
-it. The write access to this variable however should be fully reserved to
-the core so in a second step we will hide this variable into the opaque
-structure.
+Hi Jonathan,
 
-Cc: Eugen Hristev <eugen.hristev@microchip.com>
-Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
-Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
-Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- drivers/iio/accel/bmc150-accel-core.c |  4 ++--
- drivers/iio/adc/at91-sama5d2_adc.c    |  4 ++--
- drivers/iio/industrialio-core.c       | 11 +++++++++++
- include/linux/iio/iio.h               |  1 +
- 4 files changed, 16 insertions(+), 4 deletions(-)
+jic23@kernel.org wrote on Sun, 6 Feb 2022 15:45:33 +0000:
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index e6081dd0a880..0ecded6d87df 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -1525,7 +1525,7 @@ static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
- 	int ret = 0;
- 
--	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
-+	if (iio_device_get_current_mode(indio_dev) == INDIO_BUFFER_TRIGGERED)
- 		return 0;
- 
- 	mutex_lock(&data->mutex);
-@@ -1557,7 +1557,7 @@ static int bmc150_accel_buffer_predisable(struct iio_dev *indio_dev)
- {
- 	struct bmc150_accel_data *data = iio_priv(indio_dev);
- 
--	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
-+	if (iio_device_get_current_mode(indio_dev) == INDIO_BUFFER_TRIGGERED)
- 		return 0;
- 
- 	mutex_lock(&data->mutex);
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 854b1f81d807..b764823ce57e 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -1117,7 +1117,7 @@ static int at91_adc_buffer_prepare(struct iio_dev *indio_dev)
- 		return at91_adc_configure_touch(st, true);
- 
- 	/* if we are not in triggered mode, we cannot enable the buffer. */
--	if (!(indio_dev->currentmode & INDIO_ALL_TRIGGERED_MODES))
-+	if (!(iio_device_get_current_mode(indio_dev) & INDIO_ALL_TRIGGERED_MODES))
- 		return -EINVAL;
- 
- 	/* we continue with the triggered buffer */
-@@ -1159,7 +1159,7 @@ static int at91_adc_buffer_postdisable(struct iio_dev *indio_dev)
- 		return at91_adc_configure_touch(st, false);
- 
- 	/* if we are not in triggered mode, nothing to do here */
--	if (!(indio_dev->currentmode & INDIO_ALL_TRIGGERED_MODES))
-+	if (!(iio_device_get_current_mode(indio_dev) & INDIO_ALL_TRIGGERED_MODES))
- 		return -EINVAL;
- 
- 	/*
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 64381d0a3d01..f8fcfe12dfa2 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -2071,6 +2071,17 @@ void iio_device_release_direct_mode(struct iio_dev *indio_dev)
- }
- EXPORT_SYMBOL_GPL(iio_device_release_direct_mode);
- 
-+/**
-+ * iio_device_get_current_mode() - helper function providing read-only access to
-+ *				   the @currentmode variable
-+ * @indio_dev:			   IIO device structure for device
-+ */
-+int iio_device_get_current_mode(struct iio_dev *indio_dev)
-+{
-+	return indio_dev->currentmode;
-+}
-+EXPORT_SYMBOL_GPL(iio_device_get_current_mode);
-+
- subsys_initcall(iio_init);
- module_exit(iio_exit);
- 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index faabb852128a..31098ffa7dc9 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -550,6 +550,7 @@ struct iio_dev {
- };
- 
- int iio_device_id(struct iio_dev *indio_dev);
-+int iio_device_get_current_mode(struct iio_dev *indio_dev);
- bool iio_buffer_enabled(struct iio_dev *indio_dev);
- 
- const struct iio_chan_spec
--- 
-2.27.0
+> On Wed,  2 Feb 2022 15:02:02 +0100
+> Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>=20
+> > An odr_lock has been introduced to protect local accesses to the odr
+> > internal cache and ensure the cached value always reflected the actual
+> > value. Using the mlock() for this purpose is no longer needed, so let's
+> > drop these extra mutex_lock/unlock() calls.
+> >=20
+> > Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> > Cc: Denis Ciocca <denis.ciocca@st.com>
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com> =20
+>=20
+> Obviously a different issue but all the write_raw() functions should
+> use the pattern used in st_pressure_core.c and do early
+> returns seeing as there doesn't seem to be any cleanup to do.
 
+I honestly hesitated when dropping the mlocks there. I've done it in
+v3, so that we don't hurt our eyes on this anymore :)
+
+>=20
+> We can tidy that up in a follow up patch as I'm sure there are other
+> areas in these drivers where direct returns would be nicer than
+> what is there currently!
+
+Thanks,
+Miqu=C3=A8l
