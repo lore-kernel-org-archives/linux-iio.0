@@ -2,44 +2,64 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5BB11C35272
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:59:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E372BC433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 15:49:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376406AbiBGO5N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:57:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47096 "EHLO
+        id S231932AbiBGPsy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 10:48:54 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238842AbiBGOir (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:47 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2D8C0401C4
-        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:44 -0800 (PST)
-Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id A1CDD100008;
-        Mon,  7 Feb 2022 14:38:40 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644244721;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=U0zgSzmYes8QcLizg/5kutKNyWPeOBNd6SlI4oG+JVs=;
-        b=jMspNHn9jWqJOEsmrayomu6bnXxpHU8wxG0sPYXK4ioVViEXXyeBz9lU4xNBIsMixHADuq
-        gdlLZad69pN79aFLqdWnFSQ69PQhRG7gOfYqkAWfd3XOpRoB+dGAOYs/g3T0+YBgfJ3oOI
-        IHhM8JqsDbxM9uamU7SIsEwEjFOtrUwzNS0LFPWnop7KjOoafP3MydQDqItUcysDpbE9iq
-        bnRuC2zVlDbT3XC8pm2b8yQSw9k1mMOQPUu3k7xOb6Mz0+hTO8I8YzF9lauwaCSnSU6osE
-        nU66Nc89aN0sBOjH4B0oKXVGagg+v72qxZNosVjGVKhTWmfOat4fT+btGx4dHA==
-From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v3 00/13] Miscellaneous IIO core enhancements
-Date:   Mon,  7 Feb 2022 15:38:27 +0100
-Message-Id: <20220207143840.707510-1-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
+        with ESMTP id S232788AbiBGPmF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 10:42:05 -0500
+Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5E4B8C0401C1;
+        Mon,  7 Feb 2022 07:42:05 -0800 (PST)
+Received: by mail-pl1-x62b.google.com with SMTP id u12so4303318plq.10;
+        Mon, 07 Feb 2022 07:42:05 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:content-language:to:cc:from
+         :subject:content-transfer-encoding;
+        bh=7ig8by8e56o4EYLYkc6fPLQYZasp8vJLPsQ0K6bAyGQ=;
+        b=dwar9GQFDfzTw7a7hJjbwZ13AurkkntTpTzLErO1MMQf0Knh5xkPjBG9ESOaqZd/1f
+         ILXS2mBNHSJw+csRz6rxrq49Ts0FCwor+bewDf6rFT5FqzCiT+jXvHV+OxGNVWxTJYOQ
+         TsAQEzujBbeKQXN7xvF3y5Wty1O8mDqYcFX30aCwIuL4/aOcVvC2GXH63FREG2LPgF+i
+         LbCpeDQnuccpGUHRDOGWksr+6M7ftkvtN/Z9Tyq69ZV6uFR6mrngcXNUVl4sTT56pN7R
+         zQ87waDSxWJfYQDo6zYrSDCPtEONsl6/BTrJf8sNMCSPIUZbcU7Sh+uxgTtOeKSt/V+D
+         vV9w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent
+         :content-language:to:cc:from:subject:content-transfer-encoding;
+        bh=7ig8by8e56o4EYLYkc6fPLQYZasp8vJLPsQ0K6bAyGQ=;
+        b=d6+ooYttikNGFh+gmJiA9isgJzuG4kxjjrmboecrzuLN/X6qrtI1vQ8leug6hShCHX
+         AUFT+OqEg8KmubC/8VdXf96dNH1DRhGE4wZHom2czPXSgmHFOjlkIkSHfxQGc3IakFY+
+         1GkNdTmwIzRRVlV5nNPakuVbZgoXk3wCplVpy/3u7u3qPyx2r+28ydFedQwwhQD883XC
+         wus4TM/kuMs+FGJgjmvZWxDH0ONmqhRcUK9oCpQWbkHQEZAKc1ZRidLCzrSMq/R3+GAk
+         TWdFtRvljZotrlFWXbTRkUe59+0JjMYXoG0i/q/vNMhcHxY/dvOhesvffahA/PUS41i2
+         cWkQ==
+X-Gm-Message-State: AOAM533Rq4JndCaQGtqfcJ+fA8ilnhCN0NpDrpAy/gU4ORp23TRRBxHY
+        1acfLpY0wpWtf0q5WbvdNfE=
+X-Google-Smtp-Source: ABdhPJx337OIo+YSoTn/w0nURrlCWi4puuCf3DsAZ40orZvwh4CqnAzGSj1Fbw1jU4VlcSjvBzE9Ew==
+X-Received: by 2002:a17:90a:5407:: with SMTP id z7mr165714pjh.7.1644248524937;
+        Mon, 07 Feb 2022 07:42:04 -0800 (PST)
+Received: from [10.59.0.6] ([85.203.23.80])
+        by smtp.gmail.com with ESMTPSA id a37sm8711111pga.3.2022.02.07.07.41.56
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 07 Feb 2022 07:42:04 -0800 (PST)
+Message-ID: <f04b6000-f128-f928-0e3e-e3acc206d2d1@gmail.com>
+Date:   Mon, 7 Feb 2022 23:41:49 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.1
+Content-Language: en-US
+To:     jic23@kernel.org, lars@metafoo.de, valek@2n.cz,
+        gwendal@chromium.org
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From:   Jia-Ju Bai <baijiaju1990@gmail.com>
+Subject: [BUG] iio: light: opt3001: possible deadlock in opt3001_read_raw()
+ and opt3001_irq()
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -47,118 +67,31 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 Hello,
 
-As part of a previous discussion with Jonathan (I know, it was three
-months ago, sorry for the delay :-$), it appeared necessary to do a
-little bit of cleanup in the IIO core and at least provide a little bit
-more documentation for developers diving into the IIO subsystem for the
-first time. My first move was to write a blog post trying to explain
-(from my point of view but with the review of Jonathan) what is
-necessary to understand when writing and IIO kernel driver:
-https://bootlin.com/blog/the-backbone-of-a-linux-industrial-i-o-driver/
+My static analysis tool reports a possible deadlock in the opt3001 
+driver in Linux 5.16:
 
-Here is now the second halve of this work, with few things that I tried
-to address.
+opt3001_read_raw()
+   mutex_lock(&opt->lock); --> Line 399 (Lock A)
+   opt3001_get_lux()
+     wait_event_timeout(opt->result_ready_queue, ...) --> Line 276 (Wait X)
+   mutex_lock(&opt->lock); --> Line 412 (Unlock A)
 
-* The currentmode indio_dev entry was misused by several device drivers,
-  I tried to understand which ones were wrong (there are two still
-  accessing this variable left, I decided not to touch them because I
-  think it is legitimate) and I tried to find an alternative.
+opt3001_irq()
+   mutex_lock(&opt->lock); --> Line 693 (Lock A)
+   mutex_unlock(&opt->lock); --> Line 730 (Unlock A)
+   wake_up(&opt->result_ready_queue); --> Line 733 (Wake X)
 
-* Then, I tried to make new accesses to this variable harder in order to
-  avoid future mistakes, by creating a helper to read it from outside the
-  core and moving it to the opaque structure.
+When opt3001_read_raw() is executed, "Wait X" is performed by holding 
+"Lock A". If opt3001_irq() is executed at this time, "Wake X" cannot be 
+performed to wake up "Wait X" in opt3001_read_raw(), because "Lock A" 
+has been already hold by opt3001_read_raw(), causing a possible deadlock.
+I find that "Wait X" is performed with a timeout, to relieve the 
+possible deadlock; but I think this timeout can cause inefficient execution.
 
-* I continued with the IIO modes which are completely
-  undocumented. Following a few exchanges with Jonathan, I tried to take
-  most of this discussion and put it into a kernel doc header.
+I am not quite sure whether this possible problem is real and how to fix 
+it if it is real.
+Any feedback would be appreciated, thanks :)
 
-* When doing the above task, I realized that there was a particular case
-  handled for kfifo buffers which I tried to simplify, but if this is a
-  mistake, I'll just drop the patch.
 
-Hope this will help!
-
-Cheers,
-Miquèl
-
-Changes in v3:
-* Added a patch to cleanup the _write_raw() callbacks in the st_sensor
-  drivers. Returned as early as possible.
-* Updated the description of INDIO_DIRECT_MODE and INDIO_BUFFER_SOFTWARE
-  as discussed.
-* Added the R-by from Fabrice.
-* Extended the coverage of the odr lock in order to avoid relying on the
-  iio_device_claim_direct_mode() helper implementation for that.
-
-Changes in v2:
-* Added Alexandru Reviewed-by when relevant.
-* Indicated that "modes" is a bitmask as suggested.
-* Added a mention in the "modes" kdoc about the function that could
-  alter its content in the core.
-* Added more driver maintainers in Cc.
-* Avoided deleting the INDIO_BUFFER_TRIGGERED mode from kfifos.
-* Dropped entirely the currentmode setter helper.
-* Avoided using the currentmode getter from places where we have access
-  to the opaque structure (ie. from the core itself).
-* Added a patch to move the iio_buffer_enabled() definition in the core
-  as it cannot be inlined anymore.
-* Dropped completely the use of the mlock lock form the st-sensor
-  drivers by inserting an additional local lock when this was
-  needed. Hopefully I didn't fail that, this will need testing.
-* Reworded the modes kdoc as advised by Jonathan.
-
-Miquel Raynal (13):
-  iio: core: Enhance the kernel doc of modes and currentmodes iio_dev
-    entries
-  iio: magnetometer: rm3100: Stop abusing the ->currentmode
-  iio: adc: stm32-dfsdm: Avoid dereferencing ->currentmode
-  iio: st_sensors: Return as early as possible from the _write_raw()
-    callbacks
-  iio: st_sensors: Drop the protection on _avail functions
-  iio: st_sensors: Add a local lock for protecting odr
-  iio: st_sensors: Stop abusing mlock to ensure internal coherency
-  iio: st_sensors: Use iio_device_claim/release_direct_mode() when
-    relevant
-  iio: Un-inline iio_buffer_enabled()
-  iio: core: Hide read accesses to iio_dev->currentmode
-  iio: core: Move the currentmode entry to the opaque structure
-  iio: core: Simplify the registration of kfifo buffers
-  iio: core: Clarify the modes
-
- drivers/iio/accel/bmc150-accel-core.c         |  4 +-
- drivers/iio/accel/fxls8962af-core.c           |  1 -
- drivers/iio/accel/sca3000.c                   |  1 -
- drivers/iio/accel/ssp_accel_sensor.c          |  1 -
- drivers/iio/accel/st_accel_core.c             | 13 +---
- drivers/iio/adc/at91-sama5d2_adc.c            |  4 +-
- drivers/iio/adc/ina2xx-adc.c                  |  1 -
- drivers/iio/adc/stm32-dfsdm-adc.c             |  5 +-
- drivers/iio/adc/ti_am335x_adc.c               |  4 +-
- drivers/iio/buffer/kfifo_buf.c                | 10 +--
- .../cros_ec_sensors/cros_ec_sensors_core.c    |  3 +-
- drivers/iio/common/scmi_sensors/scmi_iio.c    |  1 -
- .../iio/common/st_sensors/st_sensors_core.c   | 50 +++++++------
- drivers/iio/gyro/ssp_gyro_sensor.c            |  1 -
- drivers/iio/gyro/st_gyro_core.c               | 15 ++--
- drivers/iio/health/max30100.c                 |  1 -
- drivers/iio/health/max30102.c                 |  1 -
- .../iio/imu/inv_icm42600/inv_icm42600_accel.c |  1 -
- .../iio/imu/inv_icm42600/inv_icm42600_gyro.c  |  1 -
- .../iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c    |  1 -
- drivers/iio/industrialio-buffer.c             | 12 ++--
- drivers/iio/industrialio-core.c               | 27 +++++++
- drivers/iio/industrialio-trigger.c            |  2 +-
- drivers/iio/light/apds9960.c                  |  1 -
- drivers/iio/magnetometer/rm3100-core.c        | 15 +---
- drivers/iio/magnetometer/st_magn_core.c       | 15 ++--
- drivers/iio/pressure/st_pressure_core.c       |  8 +--
- .../staging/iio/impedance-analyzer/ad5933.c   |  1 -
- include/linux/iio/common/st_sensors.h         |  3 +
- include/linux/iio/iio-opaque.h                |  4 ++
- include/linux/iio/iio.h                       | 70 +++++++++++++++----
- include/linux/iio/kfifo_buf.h                 |  5 +-
- 32 files changed, 151 insertions(+), 131 deletions(-)
-
--- 
-2.27.0
-
+Best wishes,
+Jia-Ju Bai
