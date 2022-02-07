@@ -2,42 +2,46 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B799BC43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D643FC4167B
 	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1358832AbiBGO5L (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:57:11 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47204 "EHLO
+        id S1358775AbiBGO5G (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:57:06 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47178 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344092AbiBGOi6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:58 -0500
+        with ESMTP id S1343996AbiBGOi5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:57 -0500
 Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1A0DEC0401C1
-        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:57 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06CF7C0401C7
+        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:53 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 078C9100012;
-        Mon,  7 Feb 2022 14:38:55 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id 5734A100008;
+        Mon,  7 Feb 2022 14:38:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644244736;
+        t=1644244732;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=aSOQShDhR77i8FV60LpMsHtaWZFYbgwab+YMxePrRLs=;
-        b=BhKJLemCCjxetYlhS6YqQy9eDnJ+eojpTLyj36o3zKGILi5GCHuD43eEE4UDYjM8zqXMNc
-        +DYP5ajcMEhfmCubCCTERsOOGHCihR17bpLUKUdx37ll80qjmD5xDumFgNAsF/1u+MDQb7
-        J+SNBYNESKwO5fhQ+Ysiz43SWBuFJ6KoT6lgd8j5qMLHskC2jF1OkB6i9ZWWhn3q8BpWl7
-        2pifhnWT7tRQbsyr6si6BoKG9KVqkx7jZif18tJzkjclXTxl3Dw1bpdF0f+YA4s7WPhPtK
-        Ztf+beDpD0XVMtEyo/ILBNHZDUXFdrmTk8EI3z07MxToKilusrWSrz+KvZvkFQ==
+        bh=W0mqKMVbNyVGieN5RcjNyDrMxC5upQJnBV58qIvJzSA=;
+        b=pH7hUMMg/olz75H1aeecgbttcbvpGBrWDc899tvJxDHz99IOyZiJkt1XHT3Y/QPIfziZxj
+        /jPWyQx4Bi0NnkxPl/H3lUefJK3ACLpRWb7ASeN2UJKiWCh3LFHFF8oDqby+yAWzNdpo8m
+        6jhD5+eOIMethdcDN/gUqEdoIy9MD0JUGIAZVr7jLRNIN0cy05Kg/XEOZopazUgD/hLOO/
+        UoIg8tVC/zZ/9u5dSIr4g8xZABfPl3tiXIiGRIhXYrqtCQnoB/noQMqJEljnQIaUSuz/i0
+        kM+DRbaDg968oVYXG5w3VcZFiOkjbFxvnuvi1KQcP5/x/Ic7ErvBc79TUI6Cpw==
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
 To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
 Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Subject: [PATCH v3 13/13] iio: core: Clarify the modes
-Date:   Mon,  7 Feb 2022 15:38:40 +0100
-Message-Id: <20220207143840.707510-14-miquel.raynal@bootlin.com>
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Nicolas Ferre <nicolas.ferre@microchip.com>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>
+Subject: [PATCH v3 10/13] iio: core: Hide read accesses to iio_dev->currentmode
+Date:   Mon,  7 Feb 2022 15:38:37 +0100
+Message-Id: <20220207143840.707510-11-miquel.raynal@bootlin.com>
 X-Mailer: git-send-email 2.27.0
 In-Reply-To: <20220207143840.707510-1-miquel.raynal@bootlin.com>
 References: <20220207143840.707510-1-miquel.raynal@bootlin.com>
@@ -48,82 +52,103 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-As part of a previous discussion with Jonathan Cameron [1], it appeared
-necessary to clarify the meaning of each mode so that new developers
-could understand better what they should use or not use and when.
+In order to later move this variable within the opaque structure, let's
+create a helper for accessing it in read-only mode. This helper will be
+exposed to device drivers and kept accessible for the few that could need
+it. The write access to this variable however should be fully reserved to
+the core so in a second step we will hide this variable into the opaque
+structure.
 
-The idea of renaming these modes as been let aside because naming is a
-big deal and requires a lot of thinking. So for now let's focus on
-correctly explaining what each mode implies.
-
-[1] https://lore.kernel.org/linux-iio/20210930165510.2295e6c4@jic23-huawei/
-
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Cc: Eugen Hristev <eugen.hristev@microchip.com>
+Cc: Nicolas Ferre <nicolas.ferre@microchip.com>
+Cc: Alexandre Belloni <alexandre.belloni@bootlin.com>
+Cc: Ludovic Desroches <ludovic.desroches@microchip.com>
 Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
 ---
- include/linux/iio/iio.h | 49 ++++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 48 insertions(+), 1 deletion(-)
+ drivers/iio/accel/bmc150-accel-core.c |  4 ++--
+ drivers/iio/adc/at91-sama5d2_adc.c    |  4 ++--
+ drivers/iio/industrialio-core.c       | 11 +++++++++++
+ include/linux/iio/iio.h               |  1 +
+ 4 files changed, 16 insertions(+), 4 deletions(-)
 
+diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+index e6081dd0a880..0ecded6d87df 100644
+--- a/drivers/iio/accel/bmc150-accel-core.c
++++ b/drivers/iio/accel/bmc150-accel-core.c
+@@ -1525,7 +1525,7 @@ static int bmc150_accel_buffer_postenable(struct iio_dev *indio_dev)
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+ 	int ret = 0;
+ 
+-	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
++	if (iio_device_get_current_mode(indio_dev) == INDIO_BUFFER_TRIGGERED)
+ 		return 0;
+ 
+ 	mutex_lock(&data->mutex);
+@@ -1557,7 +1557,7 @@ static int bmc150_accel_buffer_predisable(struct iio_dev *indio_dev)
+ {
+ 	struct bmc150_accel_data *data = iio_priv(indio_dev);
+ 
+-	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
++	if (iio_device_get_current_mode(indio_dev) == INDIO_BUFFER_TRIGGERED)
+ 		return 0;
+ 
+ 	mutex_lock(&data->mutex);
+diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
+index 854b1f81d807..b764823ce57e 100644
+--- a/drivers/iio/adc/at91-sama5d2_adc.c
++++ b/drivers/iio/adc/at91-sama5d2_adc.c
+@@ -1117,7 +1117,7 @@ static int at91_adc_buffer_prepare(struct iio_dev *indio_dev)
+ 		return at91_adc_configure_touch(st, true);
+ 
+ 	/* if we are not in triggered mode, we cannot enable the buffer. */
+-	if (!(indio_dev->currentmode & INDIO_ALL_TRIGGERED_MODES))
++	if (!(iio_device_get_current_mode(indio_dev) & INDIO_ALL_TRIGGERED_MODES))
+ 		return -EINVAL;
+ 
+ 	/* we continue with the triggered buffer */
+@@ -1159,7 +1159,7 @@ static int at91_adc_buffer_postdisable(struct iio_dev *indio_dev)
+ 		return at91_adc_configure_touch(st, false);
+ 
+ 	/* if we are not in triggered mode, nothing to do here */
+-	if (!(indio_dev->currentmode & INDIO_ALL_TRIGGERED_MODES))
++	if (!(iio_device_get_current_mode(indio_dev) & INDIO_ALL_TRIGGERED_MODES))
+ 		return -EINVAL;
+ 
+ 	/*
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index 64381d0a3d01..f8fcfe12dfa2 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -2071,6 +2071,17 @@ void iio_device_release_direct_mode(struct iio_dev *indio_dev)
+ }
+ EXPORT_SYMBOL_GPL(iio_device_release_direct_mode);
+ 
++/**
++ * iio_device_get_current_mode() - helper function providing read-only access to
++ *				   the @currentmode variable
++ * @indio_dev:			   IIO device structure for device
++ */
++int iio_device_get_current_mode(struct iio_dev *indio_dev)
++{
++	return indio_dev->currentmode;
++}
++EXPORT_SYMBOL_GPL(iio_device_get_current_mode);
++
+ subsys_initcall(iio_init);
+ module_exit(iio_exit);
+ 
 diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 85cb924debd9..e383b0d96035 100644
+index faabb852128a..31098ffa7dc9 100644
 --- a/include/linux/iio/iio.h
 +++ b/include/linux/iio/iio.h
-@@ -315,7 +315,54 @@ static inline bool iio_channel_has_available(const struct iio_chan_spec *chan,
- s64 iio_get_time_ns(const struct iio_dev *indio_dev);
- unsigned int iio_get_time_res(const struct iio_dev *indio_dev);
+@@ -550,6 +550,7 @@ struct iio_dev {
+ };
  
--/* Device operating modes */
-+/**
-+ * Device operating modes
-+ * @INDIO_DIRECT_MODE: There is an access to either:
-+ * a) The last single value available for devices that do not provide
-+ *    on-demand reads.
-+ * b) A new value after performing an on-demand read otherwise.
-+ * On most devices, this is a single-shot read. On some devices with data
-+ * streams without an 'on-demand' function, this might also be the 'last value'
-+ * feature. Above all, this mode internally means that we are not in any of the
-+ * other modes, and sysfs reads should work.
-+ * Device drivers should inform the core if they support this mode.
-+ * @INDIO_BUFFER_TRIGGERED: Common mode when dealing with kfifo buffers.
-+ * It indicates that an explicit trigger is required. This requests the core to
-+ * attach a poll function when enabling the buffer, which is indicated by the
-+ * _TRIGGERED suffix.
-+ * The core will ensure this mode is set when registering a triggered buffer
-+ * with iio_triggered_buffer_setup().
-+ * @INDIO_BUFFER_SOFTWARE: Another kfifo buffer mode, but not event triggered.
-+ * No poll function can be attached because there is no triggered infrastructure
-+ * we can use to cause capture. There is a kfifo that the driver will fill, but
-+ * not "only one scan at a time". Typically, hardware will have a buffer that
-+ * can hold multiple scans. Software may read one or more scans at a single time
-+ * and push the available data to a Kfifo. This means the core will not attach
-+ * any poll function when enabling the buffer.
-+ * The core will ensure this mode is set when registering a simple kfifo buffer
-+ * with devm_iio_kfifo_buffer_setup().
-+ * @INDIO_BUFFER_HARDWARE: For specific hardware, if unsure do not use this mode.
-+ * Same as above but this time the buffer is not a kfifo where we have direct
-+ * access to the data. Instead, the consumer driver must access the data through
-+ * non software visible channels (or DMA when there is no demux possible in
-+ * software)
-+ * The core will ensure this mode is set when registering a dmaengine buffer
-+ * with devm_iio_dmaengine_buffer_setup().
-+ * @INDIO_EVENT_TRIGGERED: Very unusual mode.
-+ * Triggers usually refer to an external event which will start data capture.
-+ * Here it is kind of the opposite as, a particular state of the data might
-+ * produce an event which can be considered as an event. We don't necessarily
-+ * have access to the data itself, but to the event produced. For example, this
-+ * can be a threshold detector. The internal path of this mode is very close to
-+ * the INDIO_BUFFER_TRIGGERED mode.
-+ * The core will ensure this mode is set when registering a triggered event.
-+ * @INDIO_HARDWARE_TRIGGERED: Very unusual mode.
-+ * Here, triggers can result in data capture and can be routed to multiple
-+ * hardware components, which make them close to regular triggers in the way
-+ * they must be managed by the core, but without the entire interrupts/poll
-+ * functions burden. Interrupts are irrelevant as the data flow is hardware
-+ * mediated and distributed.
-+ */
- #define INDIO_DIRECT_MODE		0x01
- #define INDIO_BUFFER_TRIGGERED		0x02
- #define INDIO_BUFFER_SOFTWARE		0x04
+ int iio_device_id(struct iio_dev *indio_dev);
++int iio_device_get_current_mode(struct iio_dev *indio_dev);
+ bool iio_buffer_enabled(struct iio_dev *indio_dev);
+ 
+ const struct iio_chan_spec
 -- 
 2.27.0
 
