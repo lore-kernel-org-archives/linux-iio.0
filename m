@@ -2,18 +2,19 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 873BFC4332F
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 13:29:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CA976C433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 13:31:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344313AbiBGN2o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 08:28:44 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47506 "EHLO
+        id S1381034AbiBGN2q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 08:28:46 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39232 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385353AbiBGNKi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 08:10:38 -0500
+        with ESMTP id S1386354AbiBGNBt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 08:01:49 -0500
+X-Greylist: delayed 124 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 05:01:48 PST
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC435C0401C1;
-        Mon,  7 Feb 2022 05:10:24 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD585C043188;
+        Mon,  7 Feb 2022 05:01:48 -0800 (PST)
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -25,9 +26,9 @@ Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 05/12] iio: core: Add new DMABUF interface infrastructure
-Date:   Mon,  7 Feb 2022 12:59:26 +0000
-Message-Id: <20220207125933.81634-6-paul@crapouillou.net>
+Subject: [PATCH v2 11/12] iio: buffer-dmaengine: Add support for cyclic buffers
+Date:   Mon,  7 Feb 2022 13:01:39 +0000
+Message-Id: <20220207130140.81891-1-paul@crapouillou.net>
 In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
 References: <20220207125933.81634-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -36,233 +37,75 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add the necessary infrastructure to the IIO core to support a new
-optional DMABUF based interface.
-
-The advantage of this new DMABUF based interface vs. the read()
-interface, is that it avoids an extra copy of the data between the
-kernel and userspace. This is particularly userful for high-speed
-devices which produce several megabytes or even gigabytes of data per
-second.
-
-The data in this new DMABUF interface is managed at the granularity of
-DMABUF objects. Reducing the granularity from byte level to block level
-is done to reduce the userspace-kernelspace synchronization overhead
-since performing syscalls for each byte at a few Mbps is just not
-feasible.
-
-This of course leads to a slightly increased latency. For this reason an
-application can choose the size of the DMABUFs as well as how many it
-allocates. E.g. two DMABUFs would be a traditional double buffering
-scheme. But using a higher number might be necessary to avoid
-underflow/overflow situations in the presence of scheduling latencies.
-
-As part of the interface, 2 new IOCTLs have been added:
-
-IIO_BUFFER_DMABUF_ALLOC_IOCTL(struct iio_dmabuf_alloc_req *):
- Each call will allocate a new DMABUF object. The return value (if not
- a negative errno value as error) will be the file descriptor of the new
- DMABUF.
-
-IIO_BUFFER_DMABUF_ENQUEUE_IOCTL(struct iio_dmabuf *):
- Place the DMABUF object into the queue pending for hardware process.
-
-These two IOCTLs have to be performed on the IIO buffer's file
-descriptor, obtained using the IIO_BUFFER_GET_FD_IOCTL() ioctl.
-
-To access the data stored in a block by userspace the block must be
-mapped to the process's memory. This is done by calling mmap() on the
-DMABUF's file descriptor.
-
-Before accessing the data through the map, you must use the
-DMA_BUF_IOCTL_SYNC(struct dma_buf_sync *) ioctl, with the
-DMA_BUF_SYNC_START flag, to make sure that the data is available.
-This call may block until the hardware is done with this block. Once
-you are done reading or writing the data, you must use this ioctl again
-with the DMA_BUF_SYNC_END flag, before enqueueing the DMABUF to the
-kernel's queue.
-
-If you need to know when the hardware is done with a DMABUF, you can
-poll its file descriptor for the EPOLLOUT event.
-
-Finally, to destroy a DMABUF object, simply call close() on its file
-descriptor.
-
-A typical workflow for the new interface is:
-
-  for block in blocks:
-    DMABUF_ALLOC block
-    mmap block
-
-  enable buffer
-
-  while !done
-    for block in blocks:
-      DMABUF_ENQUEUE block
-
-      DMABUF_SYNC_START block
-      process data
-      DMABUF_SYNC_END block
-
-  disable buffer
-
-  for block in blocks:
-    close block
-
-v2: Only allow the new IOCTLs on the buffer FD created with
-    IIO_BUFFER_GET_FD_IOCTL().
+Handle the IIO_BUFFER_DMABUF_CYCLIC flag to support cyclic buffers.
 
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
 ---
- drivers/iio/industrialio-buffer.c | 55 +++++++++++++++++++++++++++++++
- include/linux/iio/buffer_impl.h   |  8 +++++
- include/uapi/linux/iio/buffer.h   | 29 ++++++++++++++++
- 3 files changed, 92 insertions(+)
+ drivers/iio/buffer/industrialio-buffer-dma.c      |  1 +
+ .../iio/buffer/industrialio-buffer-dmaengine.c    | 15 ++++++++++++---
+ include/linux/iio/buffer-dma.h                    |  3 +++
+ 3 files changed, 16 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index 94eb9f6cf128..72f333a519bc 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -17,6 +17,7 @@
- #include <linux/fs.h>
- #include <linux/cdev.h>
- #include <linux/slab.h>
-+#include <linux/mm.h>
- #include <linux/poll.h>
- #include <linux/sched/signal.h>
+diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
+index b9c3b01c5ea0..6185af2f33f0 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dma.c
++++ b/drivers/iio/buffer/industrialio-buffer-dma.c
+@@ -901,6 +901,7 @@ int iio_dma_buffer_enqueue_dmabuf(struct iio_buffer *buffer,
+ 	}
  
-@@ -1520,11 +1521,65 @@ static int iio_buffer_chrdev_release(struct inode *inode, struct file *filep)
- 	return 0;
- }
+ 	dma_block->bytes_used = iio_dmabuf->bytes_used ?: dma_block->size;
++	dma_block->cyclic = iio_dmabuf->flags & IIO_BUFFER_DMABUF_CYCLIC;
  
-+static int iio_buffer_enqueue_dmabuf(struct iio_buffer *buffer,
-+				     struct iio_dmabuf __user *user_buf)
-+{
-+	struct iio_dmabuf dmabuf;
-+
-+	if (!buffer->access->enqueue_dmabuf)
-+		return -EPERM;
-+
-+	if (copy_from_user(&dmabuf, user_buf, sizeof(dmabuf)))
-+		return -EFAULT;
-+
-+	if (dmabuf.flags & ~IIO_BUFFER_DMABUF_SUPPORTED_FLAGS)
-+		return -EINVAL;
-+
-+	return buffer->access->enqueue_dmabuf(buffer, &dmabuf);
-+}
-+
-+static int iio_buffer_alloc_dmabuf(struct iio_buffer *buffer,
-+				   struct iio_dmabuf_alloc_req __user *user_req)
-+{
-+	struct iio_dmabuf_alloc_req req;
-+
-+	if (!buffer->access->alloc_dmabuf)
-+		return -EPERM;
-+
-+	if (copy_from_user(&req, user_req, sizeof(req)))
-+		return -EFAULT;
-+
-+	if (req.resv)
-+		return -EINVAL;
-+
-+	return buffer->access->alloc_dmabuf(buffer, &req);
-+}
-+
-+static long iio_buffer_chrdev_ioctl(struct file *filp,
-+				    unsigned int cmd, unsigned long arg)
-+{
-+	struct iio_dev_buffer_pair *ib = filp->private_data;
-+	struct iio_buffer *buffer = ib->buffer;
-+	void __user *_arg = (void __user *)arg;
-+
-+	switch (cmd) {
-+	case IIO_BUFFER_DMABUF_ALLOC_IOCTL:
-+		return iio_buffer_alloc_dmabuf(buffer, _arg);
-+	case IIO_BUFFER_DMABUF_ENQUEUE_IOCTL:
-+		/* TODO: support non-blocking enqueue operation */
-+		return iio_buffer_enqueue_dmabuf(buffer, _arg);
-+	default:
-+		return IIO_IOCTL_UNHANDLED;
+ 	switch (dma_block->state) {
+ 	case IIO_BLOCK_STATE_QUEUED:
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index 57a8b2e4ba3c..952e2160a11e 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -81,9 +81,18 @@ static int iio_dmaengine_buffer_submit_block(struct iio_dma_buffer_queue *queue,
+ 	if (!block->bytes_used || block->bytes_used > max_size)
+ 		return -EINVAL;
+ 
+-	desc = dmaengine_prep_slave_single(dmaengine_buffer->chan,
+-		block->phys_addr, block->bytes_used, dma_dir,
+-		DMA_PREP_INTERRUPT);
++	if (block->cyclic) {
++		desc = dmaengine_prep_dma_cyclic(dmaengine_buffer->chan,
++						 block->phys_addr,
++						 block->size,
++						 block->bytes_used,
++						 dma_dir, 0);
++	} else {
++		desc = dmaengine_prep_slave_single(dmaengine_buffer->chan,
++						   block->phys_addr,
++						   block->bytes_used, dma_dir,
++						   DMA_PREP_INTERRUPT);
 +	}
-+}
+ 	if (!desc)
+ 		return -ENOMEM;
+ 
+diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
+index 5bd687132355..3a5d9169e573 100644
+--- a/include/linux/iio/buffer-dma.h
++++ b/include/linux/iio/buffer-dma.h
+@@ -40,6 +40,7 @@ enum iio_block_state {
+  * @phys_addr: Physical address of the blocks memory
+  * @queue: Parent DMA buffer queue
+  * @state: Current state of the block
++ * @cyclic: True if this is a cyclic buffer
+  * @fileio: True if this buffer is used for fileio mode
+  * @dmabuf: Underlying DMABUF object
+  */
+@@ -63,6 +64,8 @@ struct iio_dma_buffer_block {
+ 	 */
+ 	enum iio_block_state state;
+ 
++	bool cyclic;
 +
- static const struct file_operations iio_buffer_chrdev_fileops = {
- 	.owner = THIS_MODULE,
- 	.llseek = noop_llseek,
- 	.read = iio_buffer_read,
- 	.write = iio_buffer_write,
-+	.unlocked_ioctl = iio_buffer_chrdev_ioctl,
-+	.compat_ioctl = compat_ptr_ioctl,
- 	.poll = iio_buffer_poll,
- 	.release = iio_buffer_chrdev_release,
+ 	bool fileio;
+ 	struct dma_buf *dmabuf;
  };
-diff --git a/include/linux/iio/buffer_impl.h b/include/linux/iio/buffer_impl.h
-index e2ca8ea23e19..728541bc2c63 100644
---- a/include/linux/iio/buffer_impl.h
-+++ b/include/linux/iio/buffer_impl.h
-@@ -39,6 +39,9 @@ struct iio_buffer;
-  *                      device stops sampling. Calles are balanced with @enable.
-  * @release:		called when the last reference to the buffer is dropped,
-  *			should free all resources allocated by the buffer.
-+ * @alloc_dmabuf:	called from userspace via ioctl to allocate one DMABUF.
-+ * @enqueue_dmabuf:	called from userspace via ioctl to queue this DMABUF
-+ *			object to this buffer. Requires a valid DMABUF fd.
-  * @modes:		Supported operating modes by this buffer type
-  * @flags:		A bitmask combination of INDIO_BUFFER_FLAG_*
-  *
-@@ -68,6 +71,11 @@ struct iio_buffer_access_funcs {
- 
- 	void (*release)(struct iio_buffer *buffer);
- 
-+	int (*alloc_dmabuf)(struct iio_buffer *buffer,
-+			    struct iio_dmabuf_alloc_req *req);
-+	int (*enqueue_dmabuf)(struct iio_buffer *buffer,
-+			      struct iio_dmabuf *block);
-+
- 	unsigned int modes;
- 	unsigned int flags;
- };
-diff --git a/include/uapi/linux/iio/buffer.h b/include/uapi/linux/iio/buffer.h
-index 13939032b3f6..e4621b926262 100644
---- a/include/uapi/linux/iio/buffer.h
-+++ b/include/uapi/linux/iio/buffer.h
-@@ -5,6 +5,35 @@
- #ifndef _UAPI_IIO_BUFFER_H_
- #define _UAPI_IIO_BUFFER_H_
- 
-+#include <linux/types.h>
-+
-+#define IIO_BUFFER_DMABUF_SUPPORTED_FLAGS	0x00000000
-+
-+/**
-+ * struct iio_dmabuf_alloc_req - Descriptor for allocating IIO DMABUFs
-+ * @size:	the size of a single DMABUF
-+ * @resv:	reserved
-+ */
-+struct iio_dmabuf_alloc_req {
-+	__u64 size;
-+	__u64 resv;
-+};
-+
-+/**
-+ * struct iio_dmabuf - Descriptor for a single IIO DMABUF object
-+ * @fd:		file descriptor of the DMABUF object
-+ * @flags:	one or more IIO_BUFFER_DMABUF_* flags
-+ * @bytes_used:	number of bytes used in this DMABUF for the data transfer.
-+ *		If zero, the full buffer is used.
-+ */
-+struct iio_dmabuf {
-+	__u32 fd;
-+	__u32 flags;
-+	__u64 bytes_used;
-+};
-+
- #define IIO_BUFFER_GET_FD_IOCTL			_IOWR('i', 0x91, int)
-+#define IIO_BUFFER_DMABUF_ALLOC_IOCTL		_IOW('i', 0x92, struct iio_dmabuf_alloc_req)
-+#define IIO_BUFFER_DMABUF_ENQUEUE_IOCTL		_IOW('i', 0x93, struct iio_dmabuf)
- 
- #endif /* _UAPI_IIO_BUFFER_H_ */
 -- 
 2.34.1
 
