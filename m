@@ -2,84 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50014C433F5
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 17:00:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 05A7FC4332F
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 17:30:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241321AbiBGQ7n (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 11:59:43 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48942 "EHLO
+        id S233074AbiBGR3g (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 12:29:36 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44526 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390846AbiBGQpz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 11:45:55 -0500
-X-Greylist: delayed 463 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 08:45:42 PST
-Received: from relay5.hostedemail.com (relay5.hostedemail.com [64.99.140.38])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 97186C03FED9
-        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 08:45:42 -0800 (PST)
-Received: from omf01.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay12.hostedemail.com (Postfix) with ESMTP id 08EB3120242;
-        Mon,  7 Feb 2022 16:37:57 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id CA6F36000C;
-        Mon,  7 Feb 2022 16:37:41 +0000 (UTC)
-Message-ID: <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
-Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
- defined constants in messages
-From:   Joe Perches <joe@perches.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Nuno =?ISO-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        with ESMTP id S237603AbiBGRW1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 12:22:27 -0500
+Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F04EBC0401D5;
+        Mon,  7 Feb 2022 09:22:26 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644254547; x=1675790547;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=9Cowf7J9LryTk5PzMkLkhfkff1e0+oXlLWDASRWsqFs=;
+  b=VSEEQJbvPYneVjTIzM5cWHXF6w85fHpjLTEm3S10ZyqGjfKhS3RPNlQo
+   ByCluDmG+AzplMMxV2W+fxQlaXk8rms0+5b5io4lQAV8K1z12TKl9M6yf
+   aIHyuW+Zd7KAdyiLapuu5m/YIkGqn1pKX0FT3qNTXo9hyTp5LpZSGyXXL
+   STpF3Tg5m7lMWQq3EK78+TherR7xBhH9jSz40bRHfr/rNBwWIuZHUrMM1
+   blBe4XPV8Sk5IcLn3AopAxkzikFBNH0WWv0pkj4gF+5uQMbIzD+NjGb5G
+   wPSz5XLHPHN3rGJ+qyJcOjMYdgD/NXureKNw0YCsES3f94snduwAjpUUC
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="309509447"
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="309509447"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 09:22:26 -0800
+X-IronPort-AV: E=Sophos;i="5.88,350,1635231600"; 
+   d="scan'208";a="484492252"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 09:22:24 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nH7hd-001ybo-I0;
+        Mon, 07 Feb 2022 19:21:25 +0200
+Date:   Mon, 7 Feb 2022 19:21:25 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Joe Perches <joe@perches.com>
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
-Date:   Mon, 07 Feb 2022 08:37:55 -0800
-In-Reply-To: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
+ defined constants in messages
+Message-ID: <YgFVFceYQtWq4Hww@smile.fi.intel.com>
 References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+ <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Rspamd-Queue-Id: CA6F36000C
-X-Stat-Signature: kteytq1t4m7ks8uegmowbi3jhcaufp7z
-X-Rspamd-Server: rspamout07
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX18PmfyryuwvxUexaIDlJ1cTu6itrewLoEA=
-X-HE-Tag: 1644251861-121208
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:
-> In a couple of messages the constants, which have their definitions,
-> are hard coded into the message text. Unhardcode them.
+On Mon, Feb 07, 2022 at 08:37:55AM -0800, Joe Perches wrote:
+> On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:
+> > In a couple of messages the constants, which have their definitions,
+> > are hard coded into the message text. Unhardcode them.
+> 
+> Found by inspection or tool?
 
-Found by inspection or tool?
+Does it matter? No, a side effect of the following patch.
 
-> diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-[]
-> @@ -409,8 +409,8 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
->  	new_custom->size = n_entries * n_size;
->  	/* check Steinhart size */
->  	if (is_steinhart && new_custom->size != LTC2983_CUSTOM_STEINHART_SIZE) {
-> -		dev_err(dev, "Steinhart sensors size(%zu) must be 24",
-> -							new_custom->size);
-> +		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
-> +			LTC2983_CUSTOM_STEINHART_SIZE);
+...
 
-probably better using "%u" and not "%d"
+> > +		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
+> > +			LTC2983_CUSTOM_STEINHART_SIZE);
+> 
+> probably better using "%u" and not "%d"
+> 
+> and better with a \n termination too.
 
-and better with a \n termination too.
+I think it would be a separate change if we wish so. Let Jonathan to tell what
+to do here.
 
->  		return ERR_PTR(-EINVAL);
->  	}
->  	/* Check space on the table. */
-> @@ -1299,8 +1299,8 @@ static int ltc2983_parse_dt(struct ltc2983_data *st)
->  		if (sensor.chan < LTC2983_MIN_CHANNELS_NR ||
->  		    sensor.chan > LTC2983_MAX_CHANNELS_NR) {
->  			ret = -EINVAL;
-> -			dev_err(dev,
-> -				"chan:%d must be from 1 to 20\n", sensor.chan);
-> +			dev_err(dev, "chan:%d must be from %d to %d\n", sensor.chan,
-> +				LTC2983_MIN_CHANNELS_NR, LTC2983_MAX_CHANNELS_NR);
->  			goto put_child;
->  		} else if (channel_avail_mask & BIT(sensor.chan)) {
->  			ret = -EINVAL;
+-- 
+With Best Regards,
+Andy Shevchenko
 
 
