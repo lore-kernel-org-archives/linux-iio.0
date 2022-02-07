@@ -2,161 +2,84 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 70000C433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 96B34C4321E
 	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:59:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344620AbiBGO5C (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:57:02 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47146 "EHLO
+        id S1345216AbiBGO5F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:57:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46184 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243779AbiBGOiw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:38:52 -0500
-Received: from relay11.mail.gandi.net (relay11.mail.gandi.net [IPv6:2001:4b98:dc4:8::231])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7A835C0401C3
-        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:38:51 -0800 (PST)
+        with ESMTP id S1382670AbiBGOgB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:36:01 -0500
+Received: from relay6-d.mail.gandi.net (relay6-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::226])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F56BC0401C1
+        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:36:00 -0800 (PST)
 Received: (Authenticated sender: miquel.raynal@bootlin.com)
-        by mail.gandi.net (Postfix) with ESMTPSA id 3AD4B100003;
-        Mon,  7 Feb 2022 14:38:46 +0000 (UTC)
+        by mail.gandi.net (Postfix) with ESMTPSA id D4F32C0007;
+        Mon,  7 Feb 2022 14:35:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
-        t=1644244728;
+        t=1644244558;
         h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
          to:to:cc:cc:mime-version:mime-version:content-type:content-type:
          content-transfer-encoding:content-transfer-encoding:
          in-reply-to:in-reply-to:references:references;
-        bh=D2L9sYqgzV4OcJCaeHyREjZc/sH2+iqdEfNzi+Hyc/4=;
-        b=RKVMlMZI16xwTZjLBjz/F5iMkEW6aiX8J3aMHzd/s7Oywu0uJ36I8xpqM1t1KnXY2sYvHA
-        u7KluXVM0/LiDo1MrgUWHNuwtbribm03sauac0cdx1uhoF57eTbRhXM1V44hdTT6TTE1Gf
-        wOKazGhzypzJYx8emP2p2h9vc8TL87USSZhwoLzA0cGLvGj9eqQQZuiLIz4JihM2ziKDSh
-        oqHqprP7aJSRFjLN4k8nysFWz497OGiSeYO/rEcwqIplBmstwNH0GxLiS1o2jCFX6vNR4I
-        d6Fai/9R478Qhg30HYXkQZ18BQT8fQueuelRfZ6e+hTmgE/LrmtZwUUtVVlJUQ==
+        bh=wdJ8v/RiIFQ8MW/ujahemwb+FPf/ViPCnmM/gE9hyHI=;
+        b=GvLzWSVgPwnsHvYA78ikt34+q+YzwX+UvZdwYsAwk6PrrEwACgMytc4bdzsGp4aOjMksIl
+        Az5m/B3Een33O0YiYfhQ6PvVf6yaypLyPemiK4V0YIxsoqO0zd/2B1qcUj1B2l8ydRDkBw
+        kpVmLmxURAIX8z8uCvIZn9RsSyev5uTvKNRYoVrWBzT/W67OsS2Xaql3lmVXl9vnJ+rfD+
+        JLmtBDIHOrxiGRs1nHBY5VDhcNYJc4dInNkRrcnOD0BEMNYLmCpRg8N1GCKifXfr+hKirb
+        QzFAXuVBzIrRBKIctL6xifEEucwSyktnPWCytpXs//Ej/kFWT70sMwAXBc5kKQ==
+Date:   Mon, 7 Feb 2022 15:35:56 +0100
 From:   Miquel Raynal <miquel.raynal@bootlin.com>
-To:     linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Cc:     Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Denis Ciocca <denis.ciocca@st.com>
-Subject: [PATCH v3 06/13] iio: st_sensors: Add a local lock for protecting odr
-Date:   Mon,  7 Feb 2022 15:38:33 +0100
-Message-Id: <20220207143840.707510-7-miquel.raynal@bootlin.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220207143840.707510-1-miquel.raynal@bootlin.com>
-References: <20220207143840.707510-1-miquel.raynal@bootlin.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>
+Subject: Re: [PATCH v2 12/12] iio: core: Clarify the modes
+Message-ID: <20220207153556.453ccb9c@xps13>
+In-Reply-To: <20220206160937.7d77b94a@jic23-huawei>
+References: <20220202140208.391394-1-miquel.raynal@bootlin.com>
+        <20220202140208.391394-13-miquel.raynal@bootlin.com>
+        <20220206160937.7d77b94a@jic23-huawei>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Right now the (framework) mlock lock is (ab)used for multiple purposes:
-1- protecting concurrent accesses over the odr local cache
-2- avoid changing samplig frequency whilst buffer is running
+Hi Jonathan,
 
-Let's start by handling situation #1 with a local lock.
+jic23@kernel.org wrote on Sun, 6 Feb 2022 16:09:37 +0000:
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
----
- .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
- include/linux/iio/common/st_sensors.h         |  3 +++
- 2 files changed, 21 insertions(+), 6 deletions(-)
+> On Wed,  2 Feb 2022 15:02:08 +0100
+> Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>=20
+> > As part of a previous discussion with Jonathan Cameron [1], it appeared
+> > necessary to clarify the meaning of each mode so that new developers
+> > could understand better what they should use or not use and when.
+> >=20
+> > The idea of renaming these modes as been let aside because naming is a
+> > big deal and requires a lot of thinking. So for now let's focus on
+> > correctly explaining what each mode implies.
+> >=20
+> > [1] https://lore.kernel.org/linux-iio/20210930165510.2295e6c4@jic23-hua=
+wei/
+> >=20
+> > Suggested-by: Jonathan Cameron <jic23@kernel.org>
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com> =20
+> Very nice.  One random comment on another area where our docs could do wi=
+th
+> improvements and one trivial suggested clarification for this patch.
+>=20
+> Thanks for your hard work tidying this up!
+>=20
+> I've looked over all the other patches in the series and where I haven't
+> commented they look good to me.
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 6c027150a5a4..665584e8bea4 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -71,16 +71,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
- 
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- {
--	int err;
-+	int err = 0;
- 	struct st_sensor_odr_avl odr_out = {0, 0};
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
-+	mutex_lock(&sdata->odr_lock);
-+
- 	if (!sdata->sensor_settings->odr.mask)
--		return 0;
-+		goto unlock_mutex;
- 
- 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
- 	if (err < 0)
--		goto st_sensors_match_odr_error;
-+		goto unlock_mutex;
- 
- 	if ((sdata->sensor_settings->odr.addr ==
- 					sdata->sensor_settings->pw.addr) &&
-@@ -103,7 +105,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- 	if (err >= 0)
- 		sdata->odr = odr_out.hz;
- 
--st_sensors_match_odr_error:
-+unlock_mutex:
-+	mutex_unlock(&sdata->odr_lock);
-+
- 	return err;
- }
- EXPORT_SYMBOL(st_sensors_set_odr);
-@@ -361,6 +365,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 	struct st_sensors_platform_data *of_pdata;
- 	int err = 0;
- 
-+	mutex_init(&sdata->odr_lock);
-+
- 	/* If OF/DT pdata exists, it will take precedence of anything else */
- 	of_pdata = st_sensors_dev_probe(indio_dev->dev.parent, pdata);
- 	if (IS_ERR(of_pdata))
-@@ -554,18 +560,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
- 		err = -EBUSY;
- 		goto out;
- 	} else {
-+		mutex_lock(&sdata->odr_lock);
- 		err = st_sensors_set_enable(indio_dev, true);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
- 		err = st_sensors_read_axis_data(indio_dev, ch, val);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		*val = *val >> ch->scan_type.shift;
- 
- 		err = st_sensors_set_enable(indio_dev, false);
-+		mutex_unlock(&sdata->odr_lock);
- 	}
- out:
- 	mutex_unlock(&indio_dev->mlock);
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 22f67845cdd3..db4a1b260348 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -237,6 +237,7 @@ struct st_sensor_settings {
-  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
-  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
-  * @buffer_data: Data used by buffer part.
-+ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
-  */
- struct st_sensor_data {
- 	struct iio_trigger *trig;
-@@ -261,6 +262,8 @@ struct st_sensor_data {
- 	s64 hw_timestamp;
- 
- 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
-+
-+	struct mutex odr_lock;
- };
- 
- #ifdef CONFIG_IIO_BUFFER
--- 
-2.27.0
+Inline comments addressed, thanks for all the feedback!
 
+Thanks,
+Miqu=C3=A8l
