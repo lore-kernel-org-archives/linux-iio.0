@@ -2,87 +2,224 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 38E27C433FE
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:28:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2167BC433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:28:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348645AbiBGO1p (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:27:45 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53068 "EHLO
+        id S1344895AbiBGO1o (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:27:44 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34412 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1390703AbiBGN7q (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 08:59:46 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5DE8C0401C1;
-        Mon,  7 Feb 2022 05:59:45 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id r29so7007928wrr.13;
-        Mon, 07 Feb 2022 05:59:45 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mcWbPuUD9zG5TmO7Q6+xyivnOj6cc3M0HEAfvxU+7N0=;
-        b=itcITwBvp8aqCL8K9Inahp3hlAut70WgrUe2y7ZIrA9VKxPz5YUyvnE3a6pyDhe7A5
-         9vh8ylalPe4+CfW7VnQE6FYt0nWmKLEUUimUbA5rYZRjK6R/yR/rnCzDMvMwOGqwR/Zi
-         hZMn8ocr5DmpXhxBGcPQUF59bHnfxyRNzw9w21vKyd8f6n3YNIgvLlDsCdVZB41xbJNh
-         rOJIDTfuOSzYS4lLL/sIW6fSo6jCT0OF5a+UjFIc0coPFk15bf2HDT8tVKRWAPjCj7yU
-         YgAlaJkL6dDuWNxsVtQu0zHa2myy9fMZ2AJufcculCPCgrzfcE7r/xpAKnBJUON6DL2u
-         CeEA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=mcWbPuUD9zG5TmO7Q6+xyivnOj6cc3M0HEAfvxU+7N0=;
-        b=j3Gl14xoooPcjP0mo/aGRjYZL25QLYbD8byGfeFDpuxkgVYIOxjTyV1EpWTsHp97x3
-         9BG808HY0RBpvkxum89K7bU4RcCqKN9ay+VFYVQ9Hh7M7BryB2a1DApk4pR5hBB9OOdX
-         ioGI0nLq+kcxC1UgDfVzdduWUmI+vK+lzSQuR4+CNU+QFuLAtOp/CF2YWEFUDjw1FfX5
-         LmbreM0KP1wZSVFa8gZ52vLlgvjaJeCJP3jDCNgtajD6qL0UumEO7PfunoNbN4y3TeVH
-         D3iujowfkeqao+weeGKMWzUlWXX7fRQ8CPDmelrNC4y5ZllZxMbb64ibm5TOGJa2O4h7
-         1/+A==
-X-Gm-Message-State: AOAM533WlbpllNtbtjjP7s2C9OjNbhHQkAMrWVyQy0y9XUaqRwwV/4bZ
-        t7vsNoT4FMNpVxyXuWUq7Yfodq/3WGA=
-X-Google-Smtp-Source: ABdhPJwoYphSKekOyNfRZroxq98own7clIJ9kHg2JAwpfGVrwxrfnBnu7pYQNCeL7DH24pgwwfvC9g==
-X-Received: by 2002:adf:f312:: with SMTP id i18mr9978656wro.441.1644242384384;
-        Mon, 07 Feb 2022 05:59:44 -0800 (PST)
-Received: from localhost (cpc154979-craw9-2-0-cust193.16-3.cable.virginm.net. [80.193.200.194])
-        by smtp.gmail.com with ESMTPSA id x7sm9910183wrt.77.2022.02.07.05.59.43
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 05:59:43 -0800 (PST)
-From:   Colin Ian King <colin.i.king@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: adc: cpcap-adc: remove redundant assignment to variable cal_data_diff
-Date:   Mon,  7 Feb 2022 13:59:43 +0000
-Message-Id: <20220207135943.340629-1-colin.i.king@gmail.com>
-X-Mailer: git-send-email 2.34.1
+        with ESMTP id S1386976AbiBGORq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:17:46 -0500
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F66CC0401C0;
+        Mon,  7 Feb 2022 06:17:44 -0800 (PST)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21748DBi020115;
+        Mon, 7 Feb 2022 08:15:34 -0500
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e2v4ks630-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 07 Feb 2022 08:15:34 -0500
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 217DFX0i062630
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 7 Feb 2022 08:15:33 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 7 Feb 2022 08:15:32 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 7 Feb 2022 08:15:32 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 7 Feb 2022 08:15:32 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 217DFMUU004584;
+        Mon, 7 Feb 2022 08:15:28 -0500
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v6 2/4] dt-bindings:iio:frequency: add admv1014 binding
+Date:   Mon, 7 Feb 2022 15:05:47 +0200
+Message-ID: <20220207130549.98415-2-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220207130549.98415-1-antoniu.miclaus@analog.com>
+References: <20220207130549.98415-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: YQjtC2iJo7OA3q28QYjmb7Bpp-XPfpwU
+X-Proofpoint-ORIG-GUID: YQjtC2iJo7OA3q28QYjmb7Bpp-XPfpwU
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 bulkscore=0
+ phishscore=0 malwarescore=0 mlxlogscore=999 impostorscore=0 spamscore=0
+ clxscore=1015 adultscore=0 suspectscore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2201110000 definitions=main-2202070086
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The variable cal_data_diff is being assigned a value that is never read,
-it is being re-assigned later on with a new value in both paths of an
-if statement. The assignment is redundant, so remove it.
+Add device tree bindings for the ADMV1014 Upconverter.
 
-Signed-off-by: Colin Ian King <colin.i.king@gmail.com>
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
 ---
- drivers/iio/adc/cpcap-adc.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+no changes in v6.
+ .../bindings/iio/frequency/adi,admv1014.yaml  | 137 ++++++++++++++++++
+ 1 file changed, 137 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
 
-diff --git a/drivers/iio/adc/cpcap-adc.c b/drivers/iio/adc/cpcap-adc.c
-index 40e59f4c95bc..b6c4ef70484e 100644
---- a/drivers/iio/adc/cpcap-adc.c
-+++ b/drivers/iio/adc/cpcap-adc.c
-@@ -474,7 +474,7 @@ static int cpcap_adc_calibrate_one(struct cpcap_adc *ddata,
- 	for (i = 0; i < CPCAP_ADC_MAX_RETRIES; i++) {
- 		calibration_data[0]  = 0;
- 		calibration_data[1]  = 0;
--		cal_data_diff = 0;
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml b/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
+new file mode 100644
+index 000000000000..fe352c01dd94
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/frequency/adi,admv1014.yaml
+@@ -0,0 +1,137 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/frequency/adi,admv1014.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
- 		cpcap_adc_setup_calibrate(ddata, channel);
- 		error = regmap_read(ddata->reg, calibration_register,
- 				    &calibration_data[0]);
++title: ADMV1014 Microwave Downconverter
++
++maintainers:
++  - Antoniu Miclaus <antoniu.miclaus@analog.com>
++
++description: |
++   Wideband, microwave downconverter optimized for point to point microwave
++   radio designs operating in the 24 GHz to 44 GHz frequency range.
++
++   https://www.analog.com/en/products/admv1014.html
++
++properties:
++  compatible:
++    enum:
++      - adi,admv1014
++
++  reg:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 1000000
++
++  clocks:
++    minItems: 1
++
++  clock-names:
++    items:
++      - const: lo_in
++    description:
++      External clock that provides the Local Oscilator input.
++
++  vcm-supply:
++    description:
++      Common-mode voltage regulator.
++
++  vcc-if-bb-supply:
++    description:
++      BB and IF supply voltage regulator.
++
++  vcc-vga-supply:
++    description:
++      RF Amplifier supply voltage regulator.
++
++  vcc-vva-supply:
++    description:
++      VVA Control Circuit supply voltage regulator.
++
++  vcc-lna-3p3-supply:
++    description:
++      Low Noise Amplifier 3.3V supply voltage regulator.
++
++  vcc-lna-1p5-supply:
++    description:
++      Low Noise Amplifier 1.5V supply voltage regulator.
++
++  vcc-bg-supply:
++    description:
++      Band Gap Circuit supply voltage regulator.
++
++  vcc-quad-supply:
++    description:
++      Quadruple supply voltage regulator.
++
++  vcc-mixer-supply:
++    description:
++      Mixer supply voltage regulator.
++
++  adi,input-mode:
++    description:
++      Select the input mode.
++      iq - in-phase quadrature (I/Q) input
++      if - complex intermediate frequency (IF) input
++    enum: [iq, if]
++
++  adi,detector-enable:
++    description:
++      Digital Rx Detector Enable. The Square Law Detector output is
++      available at output pin VDET.
++    type: boolean
++
++  adi,p1db-compensation-enable:
++    description:
++      Turn on bits to optimize P1dB.
++    type: boolean
++
++  adi,quad-se-mode:
++    description:
++      Switch the LO path from differential to single-ended operation.
++      se-neg - Single-Ended Mode, Negative Side Disabled.
++      se-pos - Single-Ended Mode, Positive Side Disabled.
++      diff - Differential Mode.
++    enum: [se-neg, se-pos, diff]
++
++  '#clock-cells':
++    const: 0
++
++required:
++  - compatible
++  - reg
++  - clocks
++  - clock-names
++  - vcm-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    spi {
++      #address-cells = <1>;
++      #size-cells = <0>;
++      admv1014@0{
++        compatible = "adi,admv1014";
++        reg = <0>;
++        spi-max-frequency = <1000000>;
++        clocks = <&admv1014_lo>;
++        clock-names = "lo_in";
++        vcm-supply = <&vcm>;
++        vcc-if-bb-supply = <&vcc_if_bb>;
++        vcc-vga-supply = <&vcc_vga>;
++        vcc-vva-supply = <&vcc_vva>;
++        vcc-lna-3p3-supply = <&vcc_lna_3p3>;
++        vcc-lna-1p5-supply = <&vcc_lna_1p5>;
++        vcc-bg-supply = <&vcc_bg>;
++        vcc-quad-supply = <&vcc_quad>;
++        vcc-mixer-supply = <&vcc_mixer>;
++        adi,quad-se-mode = "diff";
++        adi,detector-enable;
++        adi,p1db-compensation-enable;
++      };
++    };
++...
 -- 
-2.34.1
+2.35.1
 
