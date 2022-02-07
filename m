@@ -2,123 +2,167 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4D2ACC4707A
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E84BC3526E
 	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 14:59:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1376872AbiBGO5N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 09:57:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56026 "EHLO
+        id S1359447AbiBGO5M (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 09:57:12 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45992 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1442467AbiBGOvD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:51:03 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC84BC0401C1;
-        Mon,  7 Feb 2022 06:51:02 -0800 (PST)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 217Cm044006544;
-        Mon, 7 Feb 2022 08:15:35 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e1ky9n088-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 07 Feb 2022 08:15:35 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 217DFYUX062636
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 7 Feb 2022 08:15:34 -0500
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX8.ad.analog.com (10.64.17.5) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 7 Feb 2022 08:15:33 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Mon, 7 Feb 2022 08:15:33 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 7 Feb 2022 08:15:33 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 217DFMUV004584;
-        Mon, 7 Feb 2022 08:15:29 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v6 3/4] Documentation:ABI:testing:admv1014: add ABI docs
-Date:   Mon, 7 Feb 2022 15:05:48 +0200
-Message-ID: <20220207130549.98415-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220207130549.98415-1-antoniu.miclaus@analog.com>
-References: <20220207130549.98415-1-antoniu.miclaus@analog.com>
+        with ESMTP id S1382636AbiBGOfS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 09:35:18 -0500
+Received: from relay3-d.mail.gandi.net (relay3-d.mail.gandi.net [IPv6:2001:4b98:dc4:8::223])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCBE9C0401C1
+        for <linux-iio@vger.kernel.org>; Mon,  7 Feb 2022 06:35:17 -0800 (PST)
+Received: (Authenticated sender: miquel.raynal@bootlin.com)
+        by mail.gandi.net (Postfix) with ESMTPSA id BED996000D;
+        Mon,  7 Feb 2022 14:35:15 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=bootlin.com; s=gm1;
+        t=1644244516;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=dLf2au0TqgtM3Ygq+ySleMDOJq/AtdiLKPkOQplgmAw=;
+        b=aomU2cjJxSrqUnrzQWepNfgnBRItuUSbd9UWGzC8vWarwoc7Dfc/TPyrv5hVmji2WXyoks
+        Dcu9t96HpKiShHDR6F8+7fOCRE9/EelkzZj6YIWoTxt+ccZmLQf4jkkvhrAWRe5m4EHHSG
+        tEc07lYAYVD2dycfZvCf/iGQdVT0UeESVgLhcyC4J+NuC9skvYoiV82GtqlIpIx14Hqfl3
+        m/mRkUPxHxkwv/Ib+8ljFQx4TUbSPDAGvsFfr8hkWcCQEp0JC5yVlxPyAm8RaKgcAyb4GW
+        1ZIqmo1Yria4Vqu+fpnByMBllpPnaJw6SEpGy08VYhEVB6TAviUam95RnxcB6g==
+Date:   Mon, 7 Feb 2022 15:35:14 +0100
+From:   Miquel Raynal <miquel.raynal@bootlin.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Thomas Petazzoni <thomas.petazzoni@bootlin.com>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Denis Ciocca <denis.ciocca@st.com>
+Subject: Re: [PATCH v2 07/12] iio: st_sensors: Use
+ iio_device_claim/release_direct_mode() when relevant
+Message-ID: <20220207153514.74c861cb@xps13>
+In-Reply-To: <20220206155520.6cca376b@jic23-huawei>
+References: <20220202140208.391394-1-miquel.raynal@bootlin.com>
+        <20220202140208.391394-8-miquel.raynal@bootlin.com>
+        <20220206155520.6cca376b@jic23-huawei>
+Organization: Bootlin
+X-Mailer: Claws Mail 3.17.7 (GTK+ 2.24.32; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-ORIG-GUID: cmZiIwa0rYwwF_CC0nG1EoM5H1SuwDpr
-X-Proofpoint-GUID: cmZiIwa0rYwwF_CC0nG1EoM5H1SuwDpr
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-07_05,2022-02-07_02,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 clxscore=1015
- mlxscore=0 lowpriorityscore=0 suspectscore=0 impostorscore=0
- malwarescore=0 phishscore=0 bulkscore=0 priorityscore=1501 mlxlogscore=999
- spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202070086
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add documentation for the use of the Digital Attenuator gain.
+Hi Jonathan,
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-no changes in v6.
- Documentation/ABI/testing/sysfs-bus-iio       |  1 +
- .../testing/sysfs-bus-iio-frequency-admv1014  | 23 +++++++++++++++++++
- 2 files changed, 24 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+jic23@kernel.org wrote on Sun, 6 Feb 2022 15:55:20 +0000:
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index c551301b33f1..2b5770017a84 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -476,6 +476,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_i_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_q_calibscale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibscale
- What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibscale
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
-new file mode 100644
-index 000000000000..395010a0ef8b
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
-@@ -0,0 +1,23 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_coarse
-+KernelVersion: 5.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the digital attenuator gain (IF_I) with coarse steps.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_coarse
-+KernelVersion: 5.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the digital attenuator gain (IF_Q) with coarse steps.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_fine
-+KernelVersion: 5.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the digital attenuator gain (IF_I) with fine steps.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_fine
-+KernelVersion: 5.18
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Read/write value for the digital attenuator gain (IF_Q) with fine steps.
--- 
-2.35.1
+> On Wed,  2 Feb 2022 15:02:03 +0100
+> Miquel Raynal <miquel.raynal@bootlin.com> wrote:
+>=20
+> > The st_sensors_core driver hardcodes the content of the
+> > iio_device_claim_direct_mode() and iio_device_release_direct_mode()
+> > helpers. Let's get rid of this handcrafted implementation and use the
+> > proper core helpers instead. Additionally, this lowers the tab level
+> > (which is always good) and prevents the use of the ->currentmode
+> > variable which is not supposed to be used like this anyway.
+> >=20
+> > Cc: Denis Ciocca <denis.ciocca@st.com>
+> > Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
+> > ---
+> >  .../iio/common/st_sensors/st_sensors_core.c   | 32 +++++++++----------
+> >  1 file changed, 15 insertions(+), 17 deletions(-)
+> >=20
+> > diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/=
+iio/common/st_sensors/st_sensors_core.c
+> > index d0419234a747..e61622e3bc85 100644
+> > --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> > +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> > @@ -559,28 +559,26 @@ int st_sensors_read_info_raw(struct iio_dev *indi=
+o_dev,
+> >  	int err;
+> >  	struct st_sensor_data *sdata =3D iio_priv(indio_dev);
+> > =20
+> > -	mutex_lock(&indio_dev->mlock);
+> > -	if (indio_dev->currentmode =3D=3D INDIO_BUFFER_TRIGGERED) {
+> > -		err =3D -EBUSY;
+> > +	err =3D iio_device_claim_direct_mode(indio_dev);
+> > +	if (err)
+> > +		return err;
+> > +
+> > +	err =3D st_sensors_set_enable(indio_dev, true);
+> > +	if (err < 0)
+> >  		goto out;
+> > -	} else {
+> > -		err =3D st_sensors_set_enable(indio_dev, true);
+> > -		if (err < 0)
+> > -			goto out;
+> > =20
+> > -		mutex_lock(&sdata->odr_lock);
+> > -		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
+> > -		err =3D st_sensors_read_axis_data(indio_dev, ch, val);
+> > -		mutex_unlock(&sdata->odr_lock);
+> > -		if (err < 0)
+> > -			goto out;
+> > +	mutex_lock(&sdata->odr_lock); =20
+>=20
+> This is problematic I think as the lock taken around getting sdata->odr
+> in set_sensors_set_enable() but then dropped briefly before being
+> reacquired here.  If someone sneaks a write in that window, it
+> looks like we might sleep for the wrong amount of time because sdata->odr
+> has changed.  I think you need to hold the lock across the whole
+> enable/read/disable cycle (disable probably not necessary but it
+> would be more obviously correct if we did hold it across that as well).
+>=20
 
+Yeah, I do agree this is a risk and I actually bet that the mlock mutex
+taken with iio_device_claim_direct_mode() was more than enough, but
+you're right that this this is maybe just a consequence of the
+current implementation and not actually enforced by the API, and for
+this reason we might want to enforce the serialization with our own
+lock.
+
+I've extended the coverage of the lock to fix that.
+
+> Clearly this actually got introduced in the earlier patch but diff
+> wasn't showing a wide enough bit of code so I missed it.
+>=20
+> Note it is fairly common to use iio_device_claim_direct_mode() to
+> prevent data rate changes whilst doing buffered capture as that tends
+> to make the data messy and can lead to skipped samples etc.  Doing
+> that would have the side effect of closing the race.
+> It is a bit undocumented though in the sense that I don't think
+> we have ever stated that iio_device_claim_direct_mode() will block
+> against another iio_device_claim_direct_mode() so accesses are
+> serialized.  So better to have the local lock enforce the
+> necessary serialization.  Whilst I doubt we will change the
+> implementation of iio_device_claim_direct_mode() any time
+> soon you never know.
+>=20
+> Thanks,
+>=20
+> Jonathan
+>=20
+>=20
+> > +	msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
+> > +	err =3D st_sensors_read_axis_data(indio_dev, ch, val);
+> > +	mutex_unlock(&sdata->odr_lock);
+> > +	if (err < 0)
+> > +		goto out;
+> > =20
+> > -		*val =3D *val >> ch->scan_type.shift;
+> > +	*val =3D *val >> ch->scan_type.shift;
+> > =20
+> > -		err =3D st_sensors_set_enable(indio_dev, false);
+> > -	}
+> > +	err =3D st_sensors_set_enable(indio_dev, false);
+> >  out:
+> > -	mutex_unlock(&indio_dev->mlock);
+> > +	iio_device_release_direct_mode(indio_dev);
+> > =20
+> >  	return err;
+> >  } =20
+>=20
+
+
+Thanks,
+Miqu=C3=A8l
