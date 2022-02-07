@@ -2,177 +2,86 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 82E19C433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  6 Feb 2022 21:13:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BF2ABC4332F
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 06:14:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239622AbiBFVNw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 6 Feb 2022 16:13:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42334 "EHLO
+        id S244546AbiBGGNU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 01:13:20 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238716AbiBFVNa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Feb 2022 16:13:30 -0500
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 252A3C06173B;
-        Sun,  6 Feb 2022 13:13:29 -0800 (PST)
-Received: by mail-ed1-x52c.google.com with SMTP id cz16so7553632edb.8;
-        Sun, 06 Feb 2022 13:13:29 -0800 (PST)
+        with ESMTP id S1351164AbiBGEET (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Feb 2022 23:04:19 -0500
+Received: from mail-pj1-x1034.google.com (mail-pj1-x1034.google.com [IPv6:2607:f8b0:4864:20::1034])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DD35FC061A73;
+        Sun,  6 Feb 2022 20:04:16 -0800 (PST)
+Received: by mail-pj1-x1034.google.com with SMTP id y15-20020a17090a474f00b001b88562650aso2649260pjg.0;
+        Sun, 06 Feb 2022 20:04:16 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=F1jiObY9AX7zYZGsvn4/79pWPB3gpHKb3YMbVYWWLxk=;
-        b=SfU1Zbk5rIiC4ntznX9BfRKfccnau24SZ1mlpN1msNP/HLIT6unYfvkcV7x51YtoMX
-         bj2vvZNwE4jp230llHV5V4sM/rgo5KknumU2AGyVmewohthcv1KBDn93nTyr4Xxo3/gz
-         tv6QqfFl1082T/ST3hCjJMLK6FL7K/IimtGkiMRUwsMT1/fZTmved9n/6ektkRCEBbdB
-         e5xKmBmmb4Rb/6QiL4qxagAECtJMJlHGFUPr+ZvZ+FyCHIcZMI8/mHf6Eep+wWs2RXaD
-         dTOYLHcKacrNjuScb1N6wN6uNWTl0EBzFtYXS1KMoDaql6h1fmghITzEkz7ceebIu8SN
-         SUqw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references;
+        bh=71JHL6a4At1Gw4scubZ3vrvM30dBBl26C7Z0Kh+8KMw=;
+        b=JgFvVSUyrc4s8+/yhgvq08dBEX8opQSZcU9y2Mp7yf6Z/xm3vWQUCT6COW3M9Ut7yf
+         eD2NmndEzaevqynoXBcEkz8DX8UibIbYhyTsvf/2kXrdsk8LUIs2Qt2JY04Sjv8ChNPo
+         7/gERHbDBmBB0me6M1+RsdCliP0RDzI3jVv5BG+GUim2MA2SYxsmSywLaOXYQMGs6g5A
+         l4Wf5skkTGgjxPTf7cDqfoeZcptVBcGbXYWHjcQbM0MMhvI6/Yj8XyTyJTA3i2FWd/Zx
+         9xlgDArbJmte3dFxh1N0yriNbjkuYnTesHGjucmT0B0vFnhneooHqbvsv7xWB+3dVffo
+         XfLw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=F1jiObY9AX7zYZGsvn4/79pWPB3gpHKb3YMbVYWWLxk=;
-        b=4S0nSmNI9El4NIx3KaVz4BxBvPIzugmLzpOYE4yqDpX9xyiq/CjqQUwd6Iznt+4LQK
-         kb0isEsoGQheRC39JZYNq7ME0p0PAt/QPEMcAZUrSHosMtdg0Rssl+WErIEjXKdvahkK
-         +LhKh+JL4dU4tuCGDNsHtlWq73aGgWHzEaCv21pxdAXY1lg6KylL4S3sdbVb4iZwHOF1
-         3U5H1PcrzNg9WKPs266cfVDNTX07dv286WcC2p4w2RXkaawsMQFbm6XTFgBd9vDhLFmZ
-         3mA/ghy1CapoTtCiYLxTBPWfGnH7eMywcLzitU2MYb7r7JgBxLJyOuG5F7kSndahc5Wa
-         M5Dw==
-X-Gm-Message-State: AOAM533LYW40ZNTg00rA8uMmRJKx3BqfAPh4zwZR7MhGJXvn5euMlW8D
-        FigZJEgB1kZWezVJuCtkyVA=
-X-Google-Smtp-Source: ABdhPJzyXl+vsHy59BL+U2RffUhWd7LuAPilJ6sShOlZEgAQ2YPDH6rpBVySRvliNXoJr8Sy7fP3aA==
-X-Received: by 2002:a05:6402:d0d:: with SMTP id eb13mr10514246edb.83.1644182007720;
-        Sun, 06 Feb 2022 13:13:27 -0800 (PST)
-Received: from demon-pc.localdomain ([79.119.107.253])
-        by smtp.gmail.com with ESMTPSA id a4sm1248598edr.33.2022.02.06.13.13.26
+         :references;
+        bh=71JHL6a4At1Gw4scubZ3vrvM30dBBl26C7Z0Kh+8KMw=;
+        b=Y+6Fvo89DSW7IKooRUBQHqSSNek6vm1NfGUyF9h0ADPD2umTwEN7IjtPRXJSCwdQ31
+         6qZpjxHvwssD8HdMMxEeJMpyj6+I1OEzpSy1OqB7kNFyYW3u0AuaNGL9J8Z2gPb6OCet
+         M/DIGFajxp/wjyfcJyKE+53KEKXJXR5lxHOf5DRNvq6UnjULLMuEILq1mHwwEjg/D4Kk
+         n4Qs7tith4MKTw6/vIpzBZiwC5recxe4CVoggMllob+Bt5aBrjxVjWnkFTNNewIYjkXy
+         vX2vmO3pkkPCVTkLSczT4qUyxTHeuF4gVFl0GeE8rnbRW0nSmJeLUIx8L9SCisf224F3
+         4SUw==
+X-Gm-Message-State: AOAM530rsHcTLqrvuiqIHUlZXs3i9hVOVUtKkBNOUMukhM9J2xUkObia
+        NyD49RDp1s2MKOA8UiMDzlw=
+X-Google-Smtp-Source: ABdhPJxPoeIwrDwtcRhCXvGWQe9wTN5VSQbOvd7Pn8oneXzD/hzjsb5YCBsAmNp9nRu0KG+MVGA5Bg==
+X-Received: by 2002:a17:902:ced1:: with SMTP id d17mr8366803plg.42.1644206656389;
+        Sun, 06 Feb 2022 20:04:16 -0800 (PST)
+Received: from localhost.localdomain ([27.7.146.135])
+        by smtp.gmail.com with ESMTPSA id j18sm10601234pfj.13.2022.02.06.20.04.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 06 Feb 2022 13:13:27 -0800 (PST)
-From:   Cosmin Tanislav <demonsingur@gmail.com>
-X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Cc:     cosmin.tanislav@analog.com, demonsingur@gmail.com,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v4 4/5] dt-bindings: iio: accel: add ADXL367
-Date:   Sun,  6 Feb 2022 23:13:06 +0200
-Message-Id: <20220206211307.1564647-5-cosmin.tanislav@analog.com>
-X-Mailer: git-send-email 2.35.0
-In-Reply-To: <20220206211307.1564647-1-cosmin.tanislav@analog.com>
-References: <20220206211307.1564647-1-cosmin.tanislav@analog.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-To:     unlisted-recipients:; (no To-header on input)
+        Sun, 06 Feb 2022 20:04:16 -0800 (PST)
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     jic23@kernel.org, lars@metafoo.de, andy.shevchenko@gmail.com,
+        sst@poczta.fm, robh+dt@kernel.org
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] dt-bindings: iio: potentiometer: Add Maxim DS3502 in trivial-devices
+Date:   Mon,  7 Feb 2022 09:34:07 +0530
+Message-Id: <20220207040408.4273-2-jagathjog1996@gmail.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220207040408.4273-1-jagathjog1996@gmail.com>
+References: <20220207040408.4273-1-jagathjog1996@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
+Maxim DS3502 is a 7 bit nonvolatile digital potentiometer.
+Add DS3502 binding into trivial-devices.yaml
 
-The ADXL367 does not alias input signals to achieve ultralow power
-consumption, it samples the full bandwidth of the sensor at all
-data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-with a resolution of 0.25mg/LSB on the +-2 g range.
-
-In addition to its ultralow power consumption, the ADXL367
-has many features to enable true system level power reduction.
-It includes a deep multimode output FIFO, a built-in micropower
-temperature sensor, and an internal ADC for synchronous conversion
-of an additional analog input.
-
-Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
 ---
- .../bindings/iio/accel/adi,adxl367.yaml       | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+ Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-new file mode 100644
-index 000000000000..d259e796c1d6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/adi,adxl367.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices ADXL367 3-Axis Digital Accelerometer
-+
-+maintainers:
-+  - Cosmin Tanislav <cosmin.tanislav@analog.com>
-+
-+description: |
-+  The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
-+
-+  The ADXL367 does not alias input signals by to achieve ultralow power
-+  consumption, it samples the full bandwidth of the sensor at all
-+  data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-+  with a resolution of 0.25mg/LSB on the +-2 g range.
-+
-+  In addition to its ultralow power consumption, the ADXL367
-+  has many features to enable true system level power reduction.
-+  It includes a deep multimode output FIFO, a built-in micropower
-+  temperature sensor, and an internal ADC for synchronous conversion
-+  of an additional analog input.
-+    https://www.analog.com/en/products/adxl367.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adxl367
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+  vdd-supply: true
-+  vddio-supply: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      accelerometer@53 {
-+        compatible = "adi,adxl367";
-+        reg = <0x53>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+      };
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      accelerometer@0 {
-+        compatible = "adi,adxl367";
-+        reg = <0>;
-+        spi-max-frequency = <1000000>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+      };
-+    };
+diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+index 091792ba993e..b6187603317a 100644
+--- a/Documentation/devicetree/bindings/trivial-devices.yaml
++++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+@@ -157,6 +157,8 @@ properties:
+           - maxim,ds1803-050
+             # 100 kOhm digital potentiometer with I2C interface
+           - maxim,ds1803-100
++            # 10 kOhm digital potentiometer with I2C interface
++          - maxim,ds3502
+             # Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
+           - maxim,max1237
+             # Temperature Sensor, I2C interface
 -- 
-2.35.0
+2.17.1
 
