@@ -2,117 +2,87 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1856FC4332F
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 20:47:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54D21C433F5
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 20:47:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233271AbiBGUrw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 15:47:52 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53350 "EHLO
+        id S233445AbiBGUrx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 15:47:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54598 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239826AbiBGUcl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 15:32:41 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 42420C0401DA;
-        Mon,  7 Feb 2022 12:32:40 -0800 (PST)
+        with ESMTP id S242599AbiBGUhu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 15:37:50 -0500
+X-Greylist: delayed 201 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 07 Feb 2022 12:37:50 PST
+Received: from sin.source.kernel.org (sin.source.kernel.org [145.40.73.55])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DC46C0401DA;
+        Mon,  7 Feb 2022 12:37:49 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 075F8B816F3;
-        Mon,  7 Feb 2022 20:32:39 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DC8BCC004E1;
-        Mon,  7 Feb 2022 20:32:35 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 69338CE10EF;
+        Mon,  7 Feb 2022 20:37:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6687EC004E1;
+        Mon,  7 Feb 2022 20:37:44 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1644265957;
-        bh=qA17gMhLSyJTGkg5IG50iMqfuUUw7uCTxGT40buJCL4=;
+        s=k20201202; t=1644266266;
+        bh=IgAuBdjgFLxpzyuTFtxQnKiQ28etrzscehcAocUU+Tg=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=KK+IljrjgG5EfwFp52wkU7rrpkEVMmErHv0ovxwMWKJBsekOrkdiXT/F5dglBKU2i
-         s3Ycx7lGx3IutqVVivrp3g303jjVDYr1rJ6yLN3kTV/4A6HLsYxM1Nk59zIZYvxpAL
-         ByygAUgvH2cG/SXBVs/+pRtMbJ5Ku3nHFEPo6BSb6vS9rQFRQpo6jYRlBwI294KcR1
-         jp2WNrRr/vWfkVaeruLBKTC+eArD+rSJHVlRRCqWaQH1b3t99EitB9f24ESgEOnzyb
-         9l1oBAETt8kgRlmNnqQG7hv+/K+5P7YQAGJKbqvEG96XRjbZfmLaGyiak3nvH2eMEI
-         i/UP9AJapKKqQ==
-Date:   Mon, 7 Feb 2022 20:39:10 +0000
+        b=VqlmucnKui7TMn1XduYKgDyTgILjXVAJy1KHKfLJ3+Isf3ztsu8BxIsj8spr9joY5
+         0S6wIuiB3dVtnWWkcLRgDugXPq894VXMvElJNoUEGidLjkcMYPk+wjOmxqoLmsSTpP
+         cvKdmGieZhs5hgOUF+jEd0PMbx6PnV05KXmZXVHgvD+pP9eDcM/pRdQWlRtj9NyLGi
+         gS0L8IoD0n1sapSUvOQQ0PUpSmg/joajcuyYNuSruCbaV0PEaWANBu65hYOtBqBEgx
+         BYsISPk9Z9VK/+AqpI8Rzj58SKIycjO136cX526qV/TX6sKbYxXDNKaxNmvZB2fn5N
+         /x7kAF2g8GK+A==
+Date:   Mon, 7 Feb 2022 20:44:21 +0000
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Jia-Ju Bai <baijiaju1990@gmail.com>
-Cc:     lars@metafoo.de, valek@2n.cz, gwendal@chromium.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [BUG] iio: light: opt3001: possible deadlock in
- opt3001_read_raw() and opt3001_irq()
-Message-ID: <20220207203910.76ba3f2e@jic23-huawei>
-In-Reply-To: <f04b6000-f128-f928-0e3e-e3acc206d2d1@gmail.com>
-References: <f04b6000-f128-f928-0e3e-e3acc206d2d1@gmail.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Joe Perches <joe@perches.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
+ defined constants in messages
+Message-ID: <20220207204421.7f905aa5@jic23-huawei>
+In-Reply-To: <YgFVFceYQtWq4Hww@smile.fi.intel.com>
+References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
+        <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
+        <YgFVFceYQtWq4Hww@smile.fi.intel.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 7 Feb 2022 23:41:49 +0800
-Jia-Ju Bai <baijiaju1990@gmail.com> wrote:
+On Mon, 7 Feb 2022 19:21:25 +0200
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-> Hello,
->=20
-> My static analysis tool reports a possible deadlock in the opt3001=20
-> driver in Linux 5.16:
->=20
-> opt3001_read_raw()
->  =C2=A0 mutex_lock(&opt->lock); --> Line 399 (Lock A)
->  =C2=A0 opt3001_get_lux()
->  =C2=A0=C2=A0=C2=A0 wait_event_timeout(opt->result_ready_queue, ...) --> =
-Line 276 (Wait X)
->  =C2=A0 mutex_lock(&opt->lock); --> Line 412 (Unlock A)
->=20
-> opt3001_irq()
->  =C2=A0 mutex_lock(&opt->lock); --> Line 693 (Lock A)
->  =C2=A0 mutex_unlock(&opt->lock); --> Line 730 (Unlock A)
->  =C2=A0 wake_up(&opt->result_ready_queue); --> Line 733 (Wake X)
->=20
-> When opt3001_read_raw() is executed, "Wait X" is performed by holding=20
-> "Lock A". If opt3001_irq() is executed at this time, "Wake X" cannot be=20
-> performed to wake up "Wait X" in opt3001_read_raw(), because "Lock A"=20
-> has been already hold by opt3001_read_raw(), causing a possible deadlock.
-> I find that "Wait X" is performed with a timeout, to relieve the=20
-> possible deadlock; but I think this timeout can cause inefficient executi=
-on.
-Hi Jia-Ju Bai,
-
-There is a quirk in here thatyou haven't mentioned.  The "magic"
-opt->ok_to_ignore_lock.
-
-So there are two cases:
-1) No irq in use.  In that case the opt3001_irq() will never run and we
-   just sleep + check a status flag. That's the best we can do without
-   an interrupt.
-2) irq in use, the ok_to_ignore_lock =3D true statement occurs and
-   in the opt3001_irq() the locks are never taken hence no deadlock.
-
-It is a very odd bit of code though so I'd be surprised if a static
-analyser hadn't highlighted it as a possible deadlock!
-
-Now, I'm not immediately sure why the driver is done like this as opposed
-to a more complete wait_for_completion() in read_raw(), complete() in the i=
-rq
-handler and do the actual read of the data back in read_raw().
-It's probably related to the other interrupt sources that we need to
-differentiate from in the interrupt handler.
-
-The lock definition is missing an documentation of exactly what it's scope
-is which definitely doesn't help us understand this unusual structure.
+> On Mon, Feb 07, 2022 at 08:37:55AM -0800, Joe Perches wrote:
+> > On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:  
+> > > In a couple of messages the constants, which have their definitions,
+> > > are hard coded into the message text. Unhardcode them.  
+> > 
+> > Found by inspection or tool?  
+> 
+> Does it matter? No, a side effect of the following patch.
+> 
+> ...
+> 
+> > > +		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
+> > > +			LTC2983_CUSTOM_STEINHART_SIZE);  
+> > 
+> > probably better using "%u" and not "%d"
+> > 
+> > and better with a \n termination too.  
+> 
+> I think it would be a separate change if we wish so. Let Jonathan to tell what
+> to do here.
+> 
+Either way is fine by me.  I tend to be a little flexible of trivial fixes
+in patches that are as simple as this one.
 
 Thanks,
 
 Jonathan
 
-
->=20
-> I am not quite sure whether this possible problem is real and how to fix=
-=20
-> it if it is real.
-> Any feedback would be appreciated, thanks :)
->=20
->=20
-> Best wishes,
-> Jia-Ju Bai
 
