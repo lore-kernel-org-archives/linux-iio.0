@@ -2,221 +2,231 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4DDB7C41535
-	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 11:49:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2D19AC433F5
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 13:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244117AbiBGLoj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 06:44:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48812 "EHLO
+        id S241139AbiBGN2F (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 08:28:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43690 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240661AbiBGLKN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 06:10:13 -0500
-Received: from mga01.intel.com (mga01.intel.com [192.55.52.88])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E45A6C043188;
-        Mon,  7 Feb 2022 03:10:12 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644232212; x=1675768212;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:content-transfer-encoding:in-reply-to;
-  bh=lBgDgsJPVQgblniIqZ1h6mpgjVw09LdoD4WkuVyF3jw=;
-  b=Fya8BTdOOSd/SQvuzigCY+si7EudWt4g09Rzj8fZWU/9tSd8xA+g3GOu
-   EyDeDxah40xfTbHE/PLh+tkVjK8m3LdANyXQl4C4eP1SLpPwCapmfnnvf
-   BSA8oYYUcfRKbBJIyOFA8H9SRN7wRpTfDiV/dZlnYLBNyzTpVEnIHlj/U
-   NLMxoP1KuFIOibmm+49eaqjtA5X4bDMyS4HQDqvzowiBUefJ7zIxf+8qG
-   nkSW8riVnP0flxNxNsrh5AQnyi+wX481HQSe79E3Y4D94iBU1OmXhxIiH
-   Oe83JL8l/Doab/xtZgGo5k5yPfA3Rc4bKuCSaXBRyMoUI01neEeJcBWNY
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10250"; a="273212523"
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="273212523"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga101.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:10:12 -0800
-X-IronPort-AV: E=Sophos;i="5.88,349,1635231600"; 
-   d="scan'208";a="481551385"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga003-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 Feb 2022 03:10:10 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@intel.com>)
-        id 1nH1tP-001sGz-B9;
-        Mon, 07 Feb 2022 13:09:11 +0200
-Date:   Mon, 7 Feb 2022 13:09:11 +0200
-From:   Andy Shevchenko <andriy.shevchenko@intel.com>
-To:     "Sa, Nuno" <Nuno.Sa@analog.com>
-Cc:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S1448187AbiBGNFl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 08:05:41 -0500
+Received: from aposti.net (aposti.net [89.234.176.197])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E22FC0401C0;
+        Mon,  7 Feb 2022 05:05:40 -0800 (PST)
+From:   Paul Cercueil <paul@crapouillou.net>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        "Hennerich, Michael" <Michael.Hennerich@analog.com>
-Subject: Re: [PATCH v3 1/3] iio: dac: add support for ltc2688
-Message-ID: <YgD91zg4L1S5KH5k@smile.fi.intel.com>
-References: <20220121142501.151-1-nuno.sa@analog.com>
- <20220121142501.151-2-nuno.sa@analog.com>
- <Yf60A1UkbBtQ68qv@smile.fi.intel.com>
- <PH0PR03MB678628C341A1972BC31F5BBA992B9@PH0PR03MB6786.namprd03.prod.outlook.com>
+        =?UTF-8?q?Christian=20K=C3=B6nig?= <christian.koenig@amd.com>,
+        Sumit Semwal <sumit.semwal@linaro.org>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
+        linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 01/12] iio: buffer-dma: Get rid of outgoing queue
+Date:   Mon,  7 Feb 2022 12:59:22 +0000
+Message-Id: <20220207125933.81634-2-paul@crapouillou.net>
+In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
+References: <20220207125933.81634-1-paul@crapouillou.net>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
 Content-Transfer-Encoding: 8bit
-In-Reply-To: <PH0PR03MB678628C341A1972BC31F5BBA992B9@PH0PR03MB6786.namprd03.prod.outlook.com>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Feb 06, 2022 at 01:19:59PM +0000, Sa, Nuno wrote:
-> > From: Andy Shevchenko <andriy.shevchenko@intel.com>
-> > Sent: Saturday, February 5, 2022 6:30 PM
-> > On Fri, Jan 21, 2022 at 03:24:59PM +0100, Nuno Sá wrote:
+The buffer-dma code was using two queues, incoming and outgoing, to
+manage the state of the blocks in use.
 
-...
+While this totally works, it adds some complexity to the code,
+especially since the code only manages 2 blocks. It is much easier to
+just check each block's state manually, and keep a counter for the next
+block to dequeue.
 
-> > > +#include <linux/of.h>
-> > 
-> > property.h please/
-> 
-> That probably means property and of both included. See below in the
-> clock_get comments...
+Since the new DMABUF based API wouldn't use the outgoing queue anyway,
+getting rid of it now makes the upcoming changes simpler.
 
-Why? OF won't be used at all.
+With this change, the IIO_BLOCK_STATE_DEQUEUED is now useless, and can
+be removed.
 
-...
+v2: - Only remove the outgoing queue, and keep the incoming queue, as we
+      want the buffer to start streaming data as soon as it is enabled.
+    - Remove IIO_BLOCK_STATE_DEQUEUED, since it is now functionally the
+      same as IIO_BLOCK_STATE_DONE.
 
-> > > +	memcpy(st->tx_data, reg, reg_size);
-> > > +
-> > > +	ret = spi_sync_transfer(st->spi, xfers, ARRAY_SIZE(xfers));
-> > > +	if (ret)
-> > > +		return ret;
-> > > +
-> > > +	memcpy(val, &st->rx_data[1], val_size);
-> > > +
-> > > +	return 0;
-> > > +}
-> > 
-> > First of all, yuo have fixed len in transfer sizes, so what the purpose of
-> > the reg_size / val_size?
-> 
-> Well, reg_size is 1 byte and val_size is 2 as defined in the regmap_bus
-> struct. And that is what it must be used for the transfer to work. I 
-> could also hardcode 1 and 2 but I preferred to use the parameters. I guess
-> you can argue (and probably this is why you are complaining about this)
-> for me to use reg_size + val_size in the transfer length for consistency.
-> That's fair but I do not think this is __that__ bad...
+Signed-off-by: Paul Cercueil <paul@crapouillou.net>
+---
+ drivers/iio/buffer/industrialio-buffer-dma.c | 44 ++++++++++----------
+ include/linux/iio/buffer-dma.h               |  7 ++--
+ 2 files changed, 26 insertions(+), 25 deletions(-)
 
-It's not bad, but I think that division between register and value is a good
-thing to have.
-
-> Can make that change though.
-
-Would be nice!
-
-...
-
-> > Second, why do you need this specific function instead of regmap bulk
-> > ops against be24/le24?
-> 
-> Not sure I'm following this one... If you mean why am I using a custom 
-> regmap_bus implementation, that was already explained in the RFC patch.
-> And IIRC, you were the one already asking 😉.
-
-Hmm... It was some time I have looked there. Any message ID to share, so
-I can find it quickly?
-
-...
-
-> > > +	ret = kstrtou16(buf, 10, &val);
-> > 
-> > In other function you have long, here u16. I would expect that the
-> > types are of
-> > the same class, e.g. if here you have u16, then there something like
-> > s32 / s64.
-> > Or here something like unsigned short.
-> > 
-> > A bit of elaboration why u16 is chosen here?
-> 
-> Well, I never really saw any enforcement here to be honest (rather than using
-> stdint types...). So I pretty much just use these in unsigned types because
-> I'm lazy and u16 is faster to type than unsigned short... In this case, unless Jonathan
-> really asks for it, I prefer not to go all over the driver and change this...
-
-This is about consistency. It may work as is, but it feels not good when for
-int (or unsigned int) one uses fixed-width types. Also it's non-written advice
-to use fixed-width variables when it's about programming registers or so, for
-the rest, use POD types.
-
-...
-
-> > > +static int ltc2688_tgp_clk_setup(struct ltc2688_state *st,
-> > > +				 struct ltc2688_chan *chan,
-> > > +				 struct device_node *np, int tgp)
-> > > +{
-> > > +	unsigned long rate;
-> > > +	struct clk *clk;
-> > > +	int ret, f;
-> > > +
-> > > +	clk = devm_get_clk_from_child(&st->spi->dev, np, NULL);
-> > > +	if (IS_ERR(clk))
-> > 
-> > Make it optional for non-OF, can be done as easy as
-> > 
-> > 	if (IS_ERR(clk)) {
-> > 		if (PTR_ERR(clk) == -ENOENT)
-> > 			clk = NULL;
-> > 		else
-> > 			return dev_err_probe(...);
-> > 	}
-> > 
-> > > +		return dev_err_probe(&st->spi->dev, PTR_ERR(clk),
-> > > +				     "failed to get tgp clk.\n");
-> 
-> Well, I might be missing the point but I think this is not so straight....
-> We will only get here if the property " adi,toggle-dither-input" is given
-> in which case having the associated clocks is __mandatory__.
-
-Ah, okay, would be a limitation for non-OF platforms.
-
-> Hence,
-> once we are here, this can never be optional. That said, we need
-> device_node 
-
-That's fine, since CCF is OF-centric API.
-
-> and hence of.h
-
-Why? This header doesn't bring anything you will use here.
-
-> to be included and this was the main reason
-> why I changed from property.h to of.h (once I started to use
-> 'devm_get_clk_from_child()'. I don’t really think that using both of and
-> property is a good idea and I raised this in the previous version of this series
-> and no one made it clear that using both of and property would be acceptable
-> so I kept my move to of in the current version.
-
-It's a good idea for sensors to be able to use them outside of OF platforms.
-CCF is PITA, but at least with the conversion to device property API, this
-become the only one (and it has a few possible workarounds).
-
-> > > +	ret = clk_prepare_enable(clk);
-> > > +	if (ret)
-> > > +		return dev_err_probe(&st->spi->dev, ret,
-> > > +				     "failed to enable tgp clk.\n");
-
-...
-
-> > > +			clear_bit(IIO_CHAN_INFO_RAW,
-> > > +				  &st-
-> > >iio_chan[reg].info_mask_separate);
-> > 
-> > Do you need atomic operation here?
-> 
-> Not really, but I still prefer to use 'clear_bit()' rather than doing it
-> by hand... Is there another utility for this?
-
-__clear_bit().
-
+diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
+index d348af8b9705..1fc91467d1aa 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dma.c
++++ b/drivers/iio/buffer/industrialio-buffer-dma.c
+@@ -179,7 +179,7 @@ static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
+ 	}
+ 
+ 	block->size = size;
+-	block->state = IIO_BLOCK_STATE_DEQUEUED;
++	block->state = IIO_BLOCK_STATE_DONE;
+ 	block->queue = queue;
+ 	INIT_LIST_HEAD(&block->head);
+ 	kref_init(&block->kref);
+@@ -191,16 +191,8 @@ static struct iio_dma_buffer_block *iio_dma_buffer_alloc_block(
+ 
+ static void _iio_dma_buffer_block_done(struct iio_dma_buffer_block *block)
+ {
+-	struct iio_dma_buffer_queue *queue = block->queue;
+-
+-	/*
+-	 * The buffer has already been freed by the application, just drop the
+-	 * reference.
+-	 */
+-	if (block->state != IIO_BLOCK_STATE_DEAD) {
++	if (block->state != IIO_BLOCK_STATE_DEAD)
+ 		block->state = IIO_BLOCK_STATE_DONE;
+-		list_add_tail(&block->head, &queue->outgoing);
+-	}
+ }
+ 
+ /**
+@@ -261,7 +253,6 @@ static bool iio_dma_block_reusable(struct iio_dma_buffer_block *block)
+ 	 * not support abort and has not given back the block yet.
+ 	 */
+ 	switch (block->state) {
+-	case IIO_BLOCK_STATE_DEQUEUED:
+ 	case IIO_BLOCK_STATE_QUEUED:
+ 	case IIO_BLOCK_STATE_DONE:
+ 		return true;
+@@ -317,7 +308,6 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
+ 	 * dead. This means we can reset the lists without having to fear
+ 	 * corrution.
+ 	 */
+-	INIT_LIST_HEAD(&queue->outgoing);
+ 	spin_unlock_irq(&queue->list_lock);
+ 
+ 	INIT_LIST_HEAD(&queue->incoming);
+@@ -456,14 +446,20 @@ static struct iio_dma_buffer_block *iio_dma_buffer_dequeue(
+ 	struct iio_dma_buffer_queue *queue)
+ {
+ 	struct iio_dma_buffer_block *block;
++	unsigned int idx;
+ 
+ 	spin_lock_irq(&queue->list_lock);
+-	block = list_first_entry_or_null(&queue->outgoing, struct
+-		iio_dma_buffer_block, head);
+-	if (block != NULL) {
+-		list_del(&block->head);
+-		block->state = IIO_BLOCK_STATE_DEQUEUED;
++
++	idx = queue->fileio.next_dequeue;
++	block = queue->fileio.blocks[idx];
++
++	if (block->state == IIO_BLOCK_STATE_DONE) {
++		idx = (idx + 1) % ARRAY_SIZE(queue->fileio.blocks);
++		queue->fileio.next_dequeue = idx;
++	} else {
++		block = NULL;
+ 	}
++
+ 	spin_unlock_irq(&queue->list_lock);
+ 
+ 	return block;
+@@ -539,6 +535,7 @@ size_t iio_dma_buffer_data_available(struct iio_buffer *buf)
+ 	struct iio_dma_buffer_queue *queue = iio_buffer_to_queue(buf);
+ 	struct iio_dma_buffer_block *block;
+ 	size_t data_available = 0;
++	unsigned int i;
+ 
+ 	/*
+ 	 * For counting the available bytes we'll use the size of the block not
+@@ -552,8 +549,15 @@ size_t iio_dma_buffer_data_available(struct iio_buffer *buf)
+ 		data_available += queue->fileio.active_block->size;
+ 
+ 	spin_lock_irq(&queue->list_lock);
+-	list_for_each_entry(block, &queue->outgoing, head)
+-		data_available += block->size;
++
++	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
++		block = queue->fileio.blocks[i];
++
++		if (block != queue->fileio.active_block
++		    && block->state == IIO_BLOCK_STATE_DONE)
++			data_available += block->size;
++	}
++
+ 	spin_unlock_irq(&queue->list_lock);
+ 	mutex_unlock(&queue->lock);
+ 
+@@ -617,7 +621,6 @@ int iio_dma_buffer_init(struct iio_dma_buffer_queue *queue,
+ 	queue->ops = ops;
+ 
+ 	INIT_LIST_HEAD(&queue->incoming);
+-	INIT_LIST_HEAD(&queue->outgoing);
+ 
+ 	mutex_init(&queue->lock);
+ 	spin_lock_init(&queue->list_lock);
+@@ -645,7 +648,6 @@ void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue)
+ 			continue;
+ 		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
+ 	}
+-	INIT_LIST_HEAD(&queue->outgoing);
+ 	spin_unlock_irq(&queue->list_lock);
+ 
+ 	INIT_LIST_HEAD(&queue->incoming);
+diff --git a/include/linux/iio/buffer-dma.h b/include/linux/iio/buffer-dma.h
+index 6564bdcdac66..18d3702fa95d 100644
+--- a/include/linux/iio/buffer-dma.h
++++ b/include/linux/iio/buffer-dma.h
+@@ -19,14 +19,12 @@ struct device;
+ 
+ /**
+  * enum iio_block_state - State of a struct iio_dma_buffer_block
+- * @IIO_BLOCK_STATE_DEQUEUED: Block is not queued
+  * @IIO_BLOCK_STATE_QUEUED: Block is on the incoming queue
+  * @IIO_BLOCK_STATE_ACTIVE: Block is currently being processed by the DMA
+  * @IIO_BLOCK_STATE_DONE: Block is on the outgoing queue
+  * @IIO_BLOCK_STATE_DEAD: Block has been marked as to be freed
+  */
+ enum iio_block_state {
+-	IIO_BLOCK_STATE_DEQUEUED,
+ 	IIO_BLOCK_STATE_QUEUED,
+ 	IIO_BLOCK_STATE_ACTIVE,
+ 	IIO_BLOCK_STATE_DONE,
+@@ -73,12 +71,15 @@ struct iio_dma_buffer_block {
+  * @active_block: Block being used in read()
+  * @pos: Read offset in the active block
+  * @block_size: Size of each block
++ * @next_dequeue: index of next block that will be dequeued
+  */
+ struct iio_dma_buffer_queue_fileio {
+ 	struct iio_dma_buffer_block *blocks[2];
+ 	struct iio_dma_buffer_block *active_block;
+ 	size_t pos;
+ 	size_t block_size;
++
++	unsigned int next_dequeue;
+ };
+ 
+ /**
+@@ -93,7 +94,6 @@ struct iio_dma_buffer_queue_fileio {
+  *   list and typically also a list of active blocks in the part that handles
+  *   the DMA controller
+  * @incoming: List of buffers on the incoming queue
+- * @outgoing: List of buffers on the outgoing queue
+  * @active: Whether the buffer is currently active
+  * @fileio: FileIO state
+  */
+@@ -105,7 +105,6 @@ struct iio_dma_buffer_queue {
+ 	struct mutex lock;
+ 	spinlock_t list_lock;
+ 	struct list_head incoming;
+-	struct list_head outgoing;
+ 
+ 	bool active;
+ 
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
