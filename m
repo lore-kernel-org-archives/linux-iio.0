@@ -2,18 +2,18 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EA74C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 601B6C4332F
 	for <linux-iio@archiver.kernel.org>; Mon,  7 Feb 2022 13:28:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1380562AbiBGN2h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S245661AbiBGN2h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 7 Feb 2022 08:28:37 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49436 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48016 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1448531AbiBGNLs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 08:11:48 -0500
+        with ESMTP id S1448347AbiBGNKt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 08:10:49 -0500
 Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 914C2C043188;
-        Mon,  7 Feb 2022 05:11:47 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DB632C0401C4;
+        Mon,  7 Feb 2022 05:10:42 -0800 (PST)
 From:   Paul Cercueil <paul@crapouillou.net>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -24,12 +24,10 @@ Cc:     Michael Hennerich <Michael.Hennerich@analog.com>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
         dri-devel@lists.freedesktop.org, linaro-mm-sig@lists.linaro.org,
         linux-doc@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org,
-        Alexandru Ardelean <alexandru.ardelean@analog.com>,
-        Paul Cercueil <paul@crapouillou.net>
-Subject: [PATCH v2 06/12] iio: buffer-dma: split iio_dma_buffer_fileio_free() function
-Date:   Mon,  7 Feb 2022 12:59:27 +0000
-Message-Id: <20220207125933.81634-7-paul@crapouillou.net>
+        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
+Subject: [PATCH v2 09/12] iio: buffer-dmaengine: Support new DMABUF based userspace API
+Date:   Mon,  7 Feb 2022 12:59:30 +0000
+Message-Id: <20220207125933.81634-10-paul@crapouillou.net>
 In-Reply-To: <20220207125933.81634-1-paul@crapouillou.net>
 References: <20220207125933.81634-1-paul@crapouillou.net>
 MIME-Version: 1.0
@@ -38,83 +36,28 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Ardelean <alexandru.ardelean@analog.com>
+Use the functions provided by the buffer-dma core to implement the
+DMABUF userspace API in the buffer-dmaengine IIO buffer implementation.
 
-A part of the logic in the iio_dma_buffer_exit() is required for the change
-to add mmap support to IIO buffers.
-This change splits the logic into a separate function, which will be
-re-used later.
-
-Signed-off-by: Alexandru Ardelean <alexandru.ardelean@analog.com>
-Cc: Alexandru Ardelean <ardeleanalex@gmail.com>
 Signed-off-by: Paul Cercueil <paul@crapouillou.net>
 ---
- drivers/iio/buffer/industrialio-buffer-dma.c | 43 +++++++++++---------
- 1 file changed, 24 insertions(+), 19 deletions(-)
+ drivers/iio/buffer/industrialio-buffer-dmaengine.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iio/buffer/industrialio-buffer-dma.c b/drivers/iio/buffer/industrialio-buffer-dma.c
-index a9f1b673374f..15ea7bc3ac08 100644
---- a/drivers/iio/buffer/industrialio-buffer-dma.c
-+++ b/drivers/iio/buffer/industrialio-buffer-dma.c
-@@ -374,6 +374,29 @@ int iio_dma_buffer_request_update(struct iio_buffer *buffer)
- }
- EXPORT_SYMBOL_GPL(iio_dma_buffer_request_update);
+diff --git a/drivers/iio/buffer/industrialio-buffer-dmaengine.c b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+index 5cde8fd81c7f..57a8b2e4ba3c 100644
+--- a/drivers/iio/buffer/industrialio-buffer-dmaengine.c
++++ b/drivers/iio/buffer/industrialio-buffer-dmaengine.c
+@@ -133,6 +133,9 @@ static const struct iio_buffer_access_funcs iio_dmaengine_buffer_ops = {
+ 	.space_available = iio_dma_buffer_space_available,
+ 	.release = iio_dmaengine_buffer_release,
  
-+static void iio_dma_buffer_fileio_free(struct iio_dma_buffer_queue *queue)
-+{
-+	unsigned int i;
++	.alloc_dmabuf = iio_dma_buffer_alloc_dmabuf,
++	.enqueue_dmabuf = iio_dma_buffer_enqueue_dmabuf,
 +
-+	spin_lock_irq(&queue->list_lock);
-+	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
-+		if (!queue->fileio.blocks[i])
-+			continue;
-+		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
-+	}
-+	spin_unlock_irq(&queue->list_lock);
-+
-+	INIT_LIST_HEAD(&queue->incoming);
-+
-+	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
-+		if (!queue->fileio.blocks[i])
-+			continue;
-+		iio_buffer_block_put(queue->fileio.blocks[i]);
-+		queue->fileio.blocks[i] = NULL;
-+	}
-+	queue->fileio.active_block = NULL;
-+}
-+
- static void iio_dma_buffer_submit_block(struct iio_dma_buffer_queue *queue,
- 	struct iio_dma_buffer_block *block)
- {
-@@ -694,27 +717,9 @@ EXPORT_SYMBOL_GPL(iio_dma_buffer_init);
-  */
- void iio_dma_buffer_exit(struct iio_dma_buffer_queue *queue)
- {
--	unsigned int i;
--
- 	mutex_lock(&queue->lock);
- 
--	spin_lock_irq(&queue->list_lock);
--	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
--		if (!queue->fileio.blocks[i])
--			continue;
--		queue->fileio.blocks[i]->state = IIO_BLOCK_STATE_DEAD;
--	}
--	spin_unlock_irq(&queue->list_lock);
--
--	INIT_LIST_HEAD(&queue->incoming);
--
--	for (i = 0; i < ARRAY_SIZE(queue->fileio.blocks); i++) {
--		if (!queue->fileio.blocks[i])
--			continue;
--		iio_buffer_block_put(queue->fileio.blocks[i]);
--		queue->fileio.blocks[i] = NULL;
--	}
--	queue->fileio.active_block = NULL;
-+	iio_dma_buffer_fileio_free(queue);
- 	queue->ops = NULL;
- 
- 	mutex_unlock(&queue->lock);
+ 	.modes = INDIO_BUFFER_HARDWARE,
+ 	.flags = INDIO_BUFFER_FLAG_FIXED_WATERMARK,
+ };
 -- 
 2.34.1
 
