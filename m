@@ -2,59 +2,59 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22E7FC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52972C433F5
 	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 02:09:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345218AbiBHCJE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:09:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47868 "EHLO
+        id S1344354AbiBHCJD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 21:09:03 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47836 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345437AbiBHCE7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 21:04:59 -0500
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E077AC06109E;
-        Mon,  7 Feb 2022 18:04:58 -0800 (PST)
-Received: by mail-qt1-x82d.google.com with SMTP id x5so13633284qtw.10;
-        Mon, 07 Feb 2022 18:04:58 -0800 (PST)
+        with ESMTP id S1345427AbiBHCEz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 21:04:55 -0500
+Received: from mail-qv1-xf2b.google.com (mail-qv1-xf2b.google.com [IPv6:2607:f8b0:4864:20::f2b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E350C061355;
+        Mon,  7 Feb 2022 18:04:55 -0800 (PST)
+Received: by mail-qv1-xf2b.google.com with SMTP id fh9so5094920qvb.1;
+        Mon, 07 Feb 2022 18:04:55 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+/j16zcgnN6WpuyOPSvlatKoD7ekS+Km1Th0TXg5a/E=;
-        b=As7m3Lnv/cF03z1hzr/9OwxCxWdLV+Cyd21OXrIFkIe3MQPCNXpMFJu//HM6v8mAYM
-         x5pwlX/60Ttpny4OythyWXrTchhSfxcUgH4M0rBlav6Tw1pTT7xZ3MXel/5CbRnefeqr
-         S0kgSzyyvJy0Je5sGuEUYODeAWyIi9xFcpd9AdGImlO2ffTrDKBUo2DJSWALxpR+Yfh1
-         cubMEuBAsQQkaV46Z+va0NpHmMHVbU3bjxy41nqxhToiab6eCVXVyO046plpCwcD1TBq
-         IIzlXPWhjXW3KnGQ9U4vE8PvdSDsUZb+zacxvsSBBsQkOob5A0h2W9W/avgc6Z7ucnvv
-         qnFA==
+        bh=gfQlEQsSnQDvJT0U+aR8JRv9vIvvKerjJkrDdnIFoP8=;
+        b=QzW4ymMZQnCBbuu0Tw+hjSiFb7qSatxqWI/xGKc2eMR2FDa6Ev97oVE+K2cG5+51Kh
+         NmPVqvPVI5O0vuV6F8BHVEgBomu+Sqeb1xCBWUlBKnnbC3EB0ISx15K7yZZLbOah6mgd
+         HegNRMfy+o46wJzSNCLctsAsyK9Asz1IthF4dh8bQNkGiWSlPIBeykkmNu4lPIyPM1OY
+         gm3JTAFEBMtd7JpLkwo/Jc+s4F4Incfyy6yjVFrixU1xr8oHLKk/XshKs6xHTf0sPTuH
+         LW/w2NNisXy+3TOjgPJBjtea6rcoc91WfuNz7pWFrJFs5OK+7FO4ZMeClBkztPNQjhAe
+         pPig==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+/j16zcgnN6WpuyOPSvlatKoD7ekS+Km1Th0TXg5a/E=;
-        b=F5r4tBsLYQhexzTMcoXuFLtg/VJ1xAXXl/QCxr7mdWP0Jy5mwxzcOxFEArs7k6AyEx
-         HCUG9XMr1NrY/YkoKRWliG2cr5XxlBaAO4IMYNe8nocqQuJJFlG7Nq4ImWkXrK0pi7QW
-         TydlZDocTcLcDBOLng+59xV7iwxCqmI/ZCeWepYhOzBb9aT0z/I47+gGnyM063k8N/0L
-         OQAbsu8E5gsN5KHmwa3ACPNVPwz9QUmbqc+cq21ObzR5d8R573GKB0TTuDgkhEP8HuTe
-         eBzf7AAdZIHpJJG9G6CDj/YBLMahkZ8Z1BPArIrMisGcWV8WuuyTeMDD7n6OcehhWvDf
-         sK7Q==
-X-Gm-Message-State: AOAM530ggrmIAcL5V0r2cbZdtsAJJfJ4AyidF049VMzU3au6mjq3CUcE
-        C2FCjlY/X5HB7x0k4ke6ScA=
-X-Google-Smtp-Source: ABdhPJwu93/HyQKJUVyx6eH9bgt3HMQ7aRf95SHpBCtAva0YLKpZa6oHGXSfBIRnaukAneJVuZ9VOg==
-X-Received: by 2002:ac8:66da:: with SMTP id m26mr1668384qtp.536.1644285898091;
-        Mon, 07 Feb 2022 18:04:58 -0800 (PST)
+        bh=gfQlEQsSnQDvJT0U+aR8JRv9vIvvKerjJkrDdnIFoP8=;
+        b=0bMQlLxfFcIUrCbUyneMEm+Xh+CJN6aacWzK8m41oDVzuRZ5k/Ao2ojzDfgfk4KYsB
+         Peti6LBUcZARcJaqmQ4cSsXHDj0WBngyHFXKcNOeMim3e+ZvQYEh1QFgCYzAmfA8NnXM
+         Z91DMsTl9uIGHQOEw9S419PjiZZUy8vSxOyzkV+HkeVzS/bjH3xLm68u6wSMDTYjhWYE
+         Q8lCFbkAjBLao4B1aGvVkV/jt02PS0N1pgCReJgxoSf6fOVlqqQ33uP7JnaeQIOZ5aru
+         qKcmSlna09GVbtLB3h3i9/w3AKEyVdLdfPdLB3UM+cdBKOqThaLF2niFJZqR/BWn+M+e
+         NgyA==
+X-Gm-Message-State: AOAM530WfMB+HHeexGLpLWK4tQRbGBQ9PTw47JYSKI5QKGDtB2hFCqDY
+        2BATghhoN2OTfTiFzSOHIPA=
+X-Google-Smtp-Source: ABdhPJwsd2Uc1PKmKFKCYXv+8bDineGyZkaiOERnrr9QfmgiSPgIfjZ13I0FcDMHsnNEe94QAVV2dQ==
+X-Received: by 2002:a05:6214:1c47:: with SMTP id if7mr1634191qvb.129.1644285894438;
+        Mon, 07 Feb 2022 18:04:54 -0800 (PST)
 Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.57
+        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 18:04:57 -0800 (PST)
+        Mon, 07 Feb 2022 18:04:54 -0800 (PST)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         andy.shevchenko@gmail.com, lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v14 09/11] iio: afe: rescale: add temperature transducers
-Date:   Mon,  7 Feb 2022 21:04:39 -0500
-Message-Id: <20220208020441.3081162-10-liambeguin@gmail.com>
+Subject: [PATCH v14 06/11] iio: afe: rescale: make use of units.h
+Date:   Mon,  7 Feb 2022 21:04:36 -0500
+Message-Id: <20220208020441.3081162-7-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
 In-Reply-To: <20220208020441.3081162-1-liambeguin@gmail.com>
 References: <20220208020441.3081162-1-liambeguin@gmail.com>
@@ -64,80 +64,67 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-A temperature transducer is a device that converts a thermal quantity
-into any other physical quantity. This patch adds support for
-temperature to voltage (like the LTC2997) and temperature to current
-(like the AD590) linear transducers.
-In both cases these are assumed to be connected to a voltage ADC.
+Make use of well-defined SI metric prefixes to improve code readability.
 
 Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/afe/iio-rescale.c | 32 ++++++++++++++++++++++++++++++++
- 1 file changed, 32 insertions(+)
+ drivers/iio/afe/iio-rescale.c | 19 ++++++++++++-------
+ 1 file changed, 12 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index beadf9fc0ee0..45297530b878 100644
+index 67273de46843..4601f84a83c2 100644
 --- a/drivers/iio/afe/iio-rescale.c
 +++ b/drivers/iio/afe/iio-rescale.c
-@@ -441,11 +441,37 @@ static int rescale_temp_sense_rtd_props(struct device *dev,
+@@ -51,11 +51,16 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 		}
+ 		fallthrough;
+ 	case IIO_VAL_FRACTIONAL_LOG2:
+-		tmp = (s64)*val * 1000000000LL;
++		/*
++		 * GIGA is used here as an arbitrarily large multiplier to avoid
++		 * precision loss in the division. It doesn't have any physical
++		 * meaning attached to it.
++		 */
++		tmp = (s64)*val * GIGA;
+ 		tmp = div_s64(tmp, rescale->denominator);
+ 		tmp *= rescale->numerator;
+ 
+-		tmp = div_s64_rem(tmp, 1000000000LL, &rem);
++		tmp = div_s64_rem(tmp, GIGA, &rem);
+ 		*val = tmp;
+ 
+ 		if (!rem)
+@@ -71,7 +76,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 
+ 		*val2 = rem / (int)tmp;
+ 		if (rem2)
+-			*val2 += div_s64((s64)rem2 * 1000000000LL, tmp);
++			*val2 += div_s64((s64)rem2 * GIGA, tmp);
+ 
+ 		return IIO_VAL_INT_PLUS_NANO;
+ 	case IIO_VAL_INT_PLUS_NANO:
+@@ -332,8 +337,8 @@ static int rescale_current_sense_amplifier_props(struct device *dev,
+ 	 * gain_div / (gain_mult * sense), while trying to keep the
+ 	 * numerator/denominator from overflowing.
+ 	 */
+-	factor = gcd(sense, 1000000);
+-	rescale->numerator = 1000000 / factor;
++	factor = gcd(sense, MEGA);
++	rescale->numerator = MEGA / factor;
+ 	rescale->denominator = sense / factor;
+ 
+ 	factor = gcd(rescale->numerator, gain_mult);
+@@ -361,8 +366,8 @@ static int rescale_current_sense_shunt_props(struct device *dev,
+ 		return ret;
+ 	}
+ 
+-	factor = gcd(shunt, 1000000);
+-	rescale->numerator = 1000000 / factor;
++	factor = gcd(shunt, MEGA);
++	rescale->numerator = MEGA / factor;
+ 	rescale->denominator = shunt / factor;
+ 
  	return 0;
- }
- 
-+static int rescale_temp_transducer_props(struct device *dev,
-+					 struct rescale *rescale)
-+{
-+	s32 offset = 0;
-+	s32 sense = 1;
-+	s32 alpha;
-+	int ret;
-+
-+	device_property_read_u32(dev, "sense-offset-millicelsius", &offset);
-+	device_property_read_u32(dev, "sense-resistor-ohms", &sense);
-+	ret = device_property_read_u32(dev, "alpha-ppm-per-celsius", &alpha);
-+	if (ret) {
-+		dev_err(dev, "failed to read alpha-ppm-per-celsius: %d\n", ret);
-+		return ret;
-+	}
-+
-+	rescale->numerator = MEGA;
-+	rescale->denominator = alpha * sense;
-+
-+	rescale->offset = div_s64((s64)offset * rescale->denominator,
-+				  rescale->numerator);
-+
-+	return 0;
-+}
-+
- enum rescale_variant {
- 	CURRENT_SENSE_AMPLIFIER,
- 	CURRENT_SENSE_SHUNT,
- 	VOLTAGE_DIVIDER,
- 	TEMP_SENSE_RTD,
-+	TEMP_TRANSDUCER,
- };
- 
- static const struct rescale_cfg rescale_cfg[] = {
-@@ -465,6 +491,10 @@ static const struct rescale_cfg rescale_cfg[] = {
- 		.type = IIO_TEMP,
- 		.props = rescale_temp_sense_rtd_props,
- 	},
-+	[TEMP_TRANSDUCER] = {
-+		.type = IIO_TEMP,
-+		.props = rescale_temp_transducer_props,
-+	},
- };
- 
- static const struct of_device_id rescale_match[] = {
-@@ -476,6 +506,8 @@ static const struct of_device_id rescale_match[] = {
- 	  .data = &rescale_cfg[VOLTAGE_DIVIDER], },
- 	{ .compatible = "temperature-sense-rtd",
- 	  .data = &rescale_cfg[TEMP_SENSE_RTD], },
-+	{ .compatible = "temperature-transducer",
-+	  .data = &rescale_cfg[TEMP_TRANSDUCER], },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, rescale_match);
 -- 
 2.35.1.4.g5d01301f2b86
 
