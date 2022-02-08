@@ -2,202 +2,220 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8ABCFC4707E
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 01:48:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AA986C4332F
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 02:09:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243238AbiBHBsE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 20:48:04 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34728 "EHLO
+        id S237518AbiBHCJA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Feb 2022 21:09:00 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47812 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344883AbiBHBm1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 20:42:27 -0500
-Received: from mail-pf1-x42e.google.com (mail-pf1-x42e.google.com [IPv6:2607:f8b0:4864:20::42e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CE64C061A73;
-        Mon,  7 Feb 2022 17:42:25 -0800 (PST)
-Received: by mail-pf1-x42e.google.com with SMTP id g8so6299030pfq.9;
-        Mon, 07 Feb 2022 17:42:25 -0800 (PST)
+        with ESMTP id S1345421AbiBHCEw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 21:04:52 -0500
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F75C061355;
+        Mon,  7 Feb 2022 18:04:51 -0800 (PST)
+Received: by mail-qt1-x836.google.com with SMTP id p14so13705606qtx.0;
+        Mon, 07 Feb 2022 18:04:51 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ERgffSEEPMLOF4G7ZYojvcW38QDY6fucM35wyOznqkc=;
-        b=K/Ew1OAJMRm0RkQoio72L75verKVe0mAGhqnut8B94/tnHyzTlON8O9FmqZODYWXrM
-         F7ncbAMwYF1FfB0kRTROHnTt1yhnmnpNknHY1xzds9BujqRfHhBhVWg2QFsd+bOKkfP+
-         v3mYVJA5QZuW5Ka6+fEr14Alf7luEKUMG6zXov4NB00gU9++bqRn/hKCnLzRMonOxsl+
-         iF0HepvNE0ND/hHDUpkm8RqkhepeSnHCLkigmDExeAWE14vidYkca4n1C5UPswi1xHvj
-         zZ3pW1Gso7mLzV9nKBDnXAVBb5Sa4ziPbJO4cea+sabcCh2fOOrySTInoaFItHqxjO1p
-         9Plg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=N4vn2QrbP+FP78/S6RhE3MtkGHax4gBMpmADGrGNkNY=;
+        b=acBuVRXE779T3/xBPjTPkCk+f9KQB3pRwtzbHl+qz6/1SLjoHq0C0LHuxnC/RLR7Qx
+         KqlDsKuRic7rsBH1rG31gG5vhE0Pah3azz0SCcl6ZhVHXAjFZ3ABHVaOW5Id2oPy+A52
+         DrFw8wUZfQN//+SDpj32lR27MRVDSmg587llaKyAFQWeiNRx/bGIONHcsDI9KgqwAwen
+         +s9zQHpImpDhL6QI8jzs5wlZpTxPQxygaWKzhNEXkvUOAMbA39E1IZ4Px9BV5FOir0yW
+         0V+j8tCQyT0hNgXqpmTPGzMqSVwtiNGFFaFvX/j/Uei28qPiPYYBsofo9QBJwqc/w9hQ
+         DLmw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ERgffSEEPMLOF4G7ZYojvcW38QDY6fucM35wyOznqkc=;
-        b=NgdVYbnTbA86tgG+hKOyRRTgFDlInuxSwOiOMygXipID9qzV7Tmd1ZnD38rW6GwfE3
-         DWj6woy9vgOnEx2EJ8F4J9lWQKwEtMgtuZI0ntC1ZXHOgkHCHr7WoxeR8rVprMkLhkjY
-         ax22IyfMmUeUjSb2Avac2LDnW0Hipiei4122anOylYpZeo8qb1xpQAzZs5QkWRvu+9Jr
-         elcArbS0ETGc3IWvGv42mSPdmgYbGNYePIZIFXY6s27ZVRvij2YHrEChLNnyJNTzIoJB
-         RA76jpH3ABEetj5pYcEIyr1CZ/Np3Ls6VozIlXojXqVxqiRGeN7V0RSKgFoMx55mgRaL
-         wUfg==
-X-Gm-Message-State: AOAM531s/WzhciyR/eupRpOe82ODy34ArxpFcuHZLmBJmQm2l2BG6hgG
-        nGXlHvggqU4ormNZBr5gLqjCfO9VyQY=
-X-Google-Smtp-Source: ABdhPJzBMUGlrinPYhS7qO91vdKuoMmKA6EhpqQRC/TwKj+cCfAyp2TrpLsIw6K7g/m3ifpWX1USpg==
-X-Received: by 2002:a05:6a00:158c:: with SMTP id u12mr2152508pfk.18.1644284544759;
-        Mon, 07 Feb 2022 17:42:24 -0800 (PST)
-Received: from shinobu (113x37x72x24.ap113.ftth.ucom.ne.jp. [113.37.72.24])
-        by smtp.gmail.com with ESMTPSA id d20sm13411388pfu.9.2022.02.07.17.42.21
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=N4vn2QrbP+FP78/S6RhE3MtkGHax4gBMpmADGrGNkNY=;
+        b=EAx/aCu4MISpNQzOmMy9Id6bfezDClVGfHNiXlxhOctuetFvaXACeg9F4imCEH7FqW
+         D5+qGDiORQGyZt8ZuWzXF1Io3TkkX9ExmxWS1q5eQrdERGrIZv+qMeSN3lT7IdGOSzyD
+         pIJcUE2BxZgw5bnBJ7+Ts4WOLMtkM67K8B6Q9u+MVKSQ4mfuR6iR79mCYCJvmrRNk4VZ
+         y7wQ22SDuRu+OHnjWwpnuSMAWCNImAHu+4cwXRiqLQawOSc5dJkp09eNh/KTKRWwgMI7
+         7XfiSERodkd3X/Fes4f1TwwpRes879HIIbSRyGg1xUKLojiEJUeS9pjGLZGln1hl8WMu
+         kjqg==
+X-Gm-Message-State: AOAM53315KGEXqJCB5/ADI6kD96VdwZyJUb50keZQOZxaKBWc0dg48Sq
+        pEYwZSI2LTrzIn/oy1NCi0fRg7k9xWE=
+X-Google-Smtp-Source: ABdhPJxNFjGHNthpn1jVUoBgcHJ4OkygqwvfSTdaDIW81SEkwd4XlEizv5xirVo3Fm2ks4Ok+i1QXQ==
+X-Received: by 2002:ac8:58c2:: with SMTP id u2mr1649758qta.509.1644285891180;
+        Mon, 07 Feb 2022 18:04:51 -0800 (PST)
+Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
+        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.50
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 17:42:24 -0800 (PST)
-Date:   Tue, 8 Feb 2022 10:42:18 +0900
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     linux-iio@vger.kernel.org,
-        Robin van der Gracht <robin@protonic.nl>,
-        linux-kernel@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        David Jander <david@protonic.nl>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH] counter: Stop using dev_get_drvdata() to get the counter
- device
-Message-ID: <YgHKekl9rJ2jH5j4@shinobu>
-References: <YfzPcyusGwAOkys6@shinobu>
- <20220204082556.370348-1-u.kleine-koenig@pengutronix.de>
+        Mon, 07 Feb 2022 18:04:50 -0800 (PST)
+From:   Liam Beguin <liambeguin@gmail.com>
+To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
+        andy.shevchenko@gmail.com, lars@metafoo.de
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org
+Subject: [PATCH v14 03/11] iio: afe: rescale: add offset support
+Date:   Mon,  7 Feb 2022 21:04:33 -0500
+Message-Id: <20220208020441.3081162-4-liambeguin@gmail.com>
+X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
+In-Reply-To: <20220208020441.3081162-1-liambeguin@gmail.com>
+References: <20220208020441.3081162-1-liambeguin@gmail.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="3c1sPSk/V9KyhHkf"
-Content-Disposition: inline
-In-Reply-To: <20220204082556.370348-1-u.kleine-koenig@pengutronix.de>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+This is a preparatory change required for the addition of temperature
+sensing front ends.
 
---3c1sPSk/V9KyhHkf
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/iio/afe/iio-rescale.c   | 81 +++++++++++++++++++++++++++++++++
+ include/linux/iio/afe/rescale.h |  4 ++
+ 2 files changed, 85 insertions(+)
 
-On Fri, Feb 04, 2022 at 09:25:56AM +0100, Uwe Kleine-K=C3=B6nig wrote:
-> dev_get_drvdata() returns NULL since commit b56346ddbd82 ("counter: Use
-> container_of instead of drvdata to track counter_device") which wrongly
-> claimed there were no users of drvdata. Convert to container_of() to
-> fix a null pointer dereference.
->=20
-> Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Fixes: b56346ddbd82 ("counter: Use container_of instead of drvdata to tra=
-ck counter_device")
-> Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de>
+diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+index f833eb38f8bb..63035b4bce5e 100644
+--- a/drivers/iio/afe/iio-rescale.c
++++ b/drivers/iio/afe/iio-rescale.c
+@@ -3,6 +3,7 @@
+  * IIO rescale driver
+  *
+  * Copyright (C) 2018 Axentia Technologies AB
++ * Copyright (C) 2022 Liam Beguin <liambeguin@gmail.com>
+  *
+  * Author: Peter Rosin <peda@axentia.se>
+  */
+@@ -82,11 +83,46 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 	}
+ }
+ 
++int rescale_process_offset(struct rescale *rescale, int scale_type,
++			   int scale, int scale2, int schan_off,
++			   int *val, int *val2)
++{
++	s64 tmp, tmp2;
++
++	switch (scale_type) {
++	case IIO_VAL_FRACTIONAL:
++		tmp = (s64)rescale->offset * scale2;
++		*val = div_s64(tmp, scale) + schan_off;
++		return IIO_VAL_INT;
++	case IIO_VAL_INT:
++		*val = div_s64(rescale->offset, scale) + schan_off;
++		return IIO_VAL_INT;
++	case IIO_VAL_FRACTIONAL_LOG2:
++		tmp = (s64)rescale->offset * (1 << scale2);
++		*val = div_s64(tmp, scale) + schan_off;
++		return IIO_VAL_INT;
++	case IIO_VAL_INT_PLUS_NANO:
++		tmp = (s64)rescale->offset * GIGA;
++		tmp2 = ((s64)scale * GIGA) + scale2;
++		*val = div64_s64(tmp, tmp2) + schan_off;
++		return IIO_VAL_INT;
++	case IIO_VAL_INT_PLUS_MICRO:
++		tmp = (s64)rescale->offset * MEGA;
++		tmp2 = ((s64)scale * MEGA) + scale2;
++		*val = div64_s64(tmp, tmp2) + schan_off;
++		return IIO_VAL_INT;
++	default:
++		return -EOPNOTSUPP;
++	}
++}
++
+ static int rescale_read_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *chan,
+ 			    int *val, int *val2, long mask)
+ {
+ 	struct rescale *rescale = iio_priv(indio_dev);
++	int scale, scale2;
++	int schan_off = 0;
+ 	int ret;
+ 
+ 	switch (mask) {
+@@ -113,6 +149,47 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+ 			ret = iio_read_channel_scale(rescale->source, val, val2);
+ 		}
+ 		return rescale_process_scale(rescale, ret, val, val2);
++	case IIO_CHAN_INFO_OFFSET:
++		/*
++		 * Processed channels are scaled 1-to-1 and source offset is
++		 * already taken into account.
++		 *
++		 * In other cases, real world measurement are expressed as:
++		 *
++		 *	schan_scale * (raw + schan_offset)
++		 *
++		 * Given that the rescaler parameters are applied recursively:
++		 *
++		 *	rescaler_scale * (schan_scale * (raw + schan_offset) +
++		 *		rescaler_offset)
++		 *
++		 * Or,
++		 *
++		 *	(rescaler_scale * schan_scale) * (raw +
++		 *		(schan_offset +	rescaler_offset / schan_scale)
++		 *
++		 * Thus, reusing the original expression the parameters exposed
++		 * to userspace are:
++		 *
++		 *	scale = schan_scale * rescaler_scale
++		 *	offset = schan_offset + rescaler_offset / schan_scale
++		 */
++		if (rescale->chan_processed) {
++			*val = rescale->offset;
++			return IIO_VAL_INT;
++		}
++
++		if (iio_channel_has_info(rescale->source->channel,
++					 IIO_CHAN_INFO_OFFSET)) {
++			ret = iio_read_channel_offset(rescale->source,
++						      &schan_off, NULL);
++			if (ret != IIO_VAL_INT)
++				return ret < 0 ? ret : -EOPNOTSUPP;
++		}
++
++		ret = iio_read_channel_scale(rescale->source, &scale, &scale2);
++		return rescale_process_offset(rescale, ret, scale, scale2,
++					      schan_off, val, val2);
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -189,6 +266,9 @@ static int rescale_configure_channel(struct device *dev,
+ 	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 		BIT(IIO_CHAN_INFO_SCALE);
+ 
++	if (rescale->offset)
++		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
++
+ 	/*
+ 	 * Using .read_avail() is fringe to begin with and makes no sense
+ 	 * whatsoever for processed channels, so we make sure that this cannot
+@@ -353,6 +433,7 @@ static int rescale_probe(struct platform_device *pdev)
+ 	rescale->cfg = of_device_get_match_data(dev);
+ 	rescale->numerator = 1;
+ 	rescale->denominator = 1;
++	rescale->offset = 0;
+ 
+ 	ret = rescale->cfg->props(dev, rescale);
+ 	if (ret)
+diff --git a/include/linux/iio/afe/rescale.h b/include/linux/iio/afe/rescale.h
+index 8a2eb34af327..6eecb435488f 100644
+--- a/include/linux/iio/afe/rescale.h
++++ b/include/linux/iio/afe/rescale.h
+@@ -25,8 +25,12 @@ struct rescale {
+ 	bool chan_processed;
+ 	s32 numerator;
+ 	s32 denominator;
++	s32 offset;
+ };
+ 
+ int rescale_process_scale(struct rescale *rescale, int scale_type,
+ 			  int *val, int *val2);
++int rescale_process_offset(struct rescale *rescale, int scale_type,
++			   int scale, int scale2, int schan_off,
++			   int *val, int *val2);
+ #endif /* __IIO_RESCALE_H__ */
+-- 
+2.35.1.4.g5d01301f2b86
 
-I'll pick this up and apply it to my tree.
-
-Thanks,
-
-William Breathitt Gray
-
-> ---
->  drivers/counter/counter-sysfs.c | 17 +++++++++++------
->  1 file changed, 11 insertions(+), 6 deletions(-)
->=20
-> diff --git a/drivers/counter/counter-sysfs.c b/drivers/counter/counter-sy=
-sfs.c
-> index 7cc4d1d523ea..04eac41dad33 100644
-> --- a/drivers/counter/counter-sysfs.c
-> +++ b/drivers/counter/counter-sysfs.c
-> @@ -19,6 +19,11 @@
-> =20
->  #include "counter-sysfs.h"
-> =20
-> +static inline struct counter_device *counter_from_dev(struct device *dev)
-> +{
-> +	return container_of(dev, struct counter_device, dev);
-> +}
-> +
->  /**
->   * struct counter_attribute - Counter sysfs attribute
->   * @dev_attr:	device attribute for sysfs
-> @@ -90,7 +95,7 @@ static ssize_t counter_comp_u8_show(struct device *dev,
->  				    struct device_attribute *attr, char *buf)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	int err;
->  	u8 data =3D 0;
-> =20
-> @@ -122,7 +127,7 @@ static ssize_t counter_comp_u8_store(struct device *d=
-ev,
->  				     const char *buf, size_t len)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	int err;
->  	bool bool_data =3D 0;
->  	u8 data =3D 0;
-> @@ -158,7 +163,7 @@ static ssize_t counter_comp_u32_show(struct device *d=
-ev,
->  				     struct device_attribute *attr, char *buf)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	const struct counter_available *const avail =3D a->comp.priv;
->  	int err;
->  	u32 data =3D 0;
-> @@ -221,7 +226,7 @@ static ssize_t counter_comp_u32_store(struct device *=
-dev,
->  				      const char *buf, size_t len)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	struct counter_count *const count =3D a->parent;
->  	struct counter_synapse *const synapse =3D a->comp.priv;
->  	const struct counter_available *const avail =3D a->comp.priv;
-> @@ -281,7 +286,7 @@ static ssize_t counter_comp_u64_show(struct device *d=
-ev,
->  				     struct device_attribute *attr, char *buf)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	int err;
->  	u64 data =3D 0;
-> =20
-> @@ -309,7 +314,7 @@ static ssize_t counter_comp_u64_store(struct device *=
-dev,
->  				      const char *buf, size_t len)
->  {
->  	const struct counter_attribute *const a =3D to_counter_attribute(attr);
-> -	struct counter_device *const counter =3D dev_get_drvdata(dev);
-> +	struct counter_device *const counter =3D counter_from_dev(dev);
->  	int err;
->  	u64 data =3D 0;
-> =20
->=20
-> base-commit: e783362eb54cd99b2cac8b3a9aeac942e6f6ac07
-> --=20
-> 2.34.1
->=20
-
---3c1sPSk/V9KyhHkf
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEEk5I4PDJ2w1cDf/bghvpINdm7VJIFAmIBynoACgkQhvpINdm7
-VJLqTBAA3J43JaLbnlYQQ3Mn19/LJiIcHZtxbbHnK8eoOuTLJdALEfHllZD95xe1
-liOz7WRh9fSKcMNna392DMKGLUrofvoi+RIxFNePDCpQfEPj9+1W2veb9SL+4kz9
-v3wI/3o1iFKn+U2ZUXh3egGyCoOLtDa0r4a6Jr7IRNBe2whvnWJrLwaP9DYuH28D
-SnkLNYENIjarUmlr61ybKRAYQjVUTM2okKLMIRaNsA6A24UdzmvgSV4Wu7SD8Jm/
-G52W6ceQy9JK9k7NHGmSD1AJTHf9fkhrYXkmawJrbrOdJgn77Wckr6HjS2j/wQmF
-Czg59/n8fgDB3V/agHolLKkk9G9naO46HbXUOVOnePVCpvh8NGz9GwuDDg+EjsaG
-netNzXiqSZb7qeGhDDr/d1fO52GfZrsX4jOJWjbhHLNlogDwhCnNSEBT2GbzguEA
-Wxr+r52WXoQ9fE/AW2ScC8eFEreZy1PFfXPAzFwGeIAllhJArPkQE3oIkGOdgaB6
-vCDFrTB7NL9mW09Uc7jR+1aQ7MrOEw82ymiXgAeRsqd9ActLYmvjMs1C8MsuJDcl
-aMkgqrJcGnrAUfvu8jJYvfKHsYuuJhvEFpmHMl17aWFVPYDoTfGFWfFb/7JKE/8o
-xLjJjr/ulxr4S5p5AQ6HxmgQQsRiptAtWdc4TDcAu8ZNiG3Vv6E=
-=wD26
------END PGP SIGNATURE-----
-
---3c1sPSk/V9KyhHkf--
