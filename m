@@ -2,184 +2,239 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBEB6C4167E
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 13:16:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6AFE1C43219
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 13:40:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350309AbiBHNQO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Feb 2022 08:16:14 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59840 "EHLO
+        id S244550AbiBHNkB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:40:01 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1359441AbiBHMno (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Feb 2022 07:43:44 -0500
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D46FCC03FEC0
-        for <linux-iio@vger.kernel.org>; Tue,  8 Feb 2022 04:43:43 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1644324222;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=WHSdaGV7D6BVO7kqtGhJJi7bUe22481XQCQAgrnr4ag=;
-        b=L712hIFjxlPda5Hto6GInGPUzDtr4J0jVii6QBXw88UWriniZk7czrfpZh53lrEZDIcrQS
-        /Ria9IbwDjDDBjH6FQ5YkWIRH8+TeGxNkr+seBQdB/D+GfGvcwPWidCFvypbpvA6X/WAAv
-        gw5F04/Xsy2LYgPMxwWqmSuxvIIxR98=
-Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
- [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-611-I39ZHvcBO3CNWiCt0s7w-A-1; Tue, 08 Feb 2022 07:43:39 -0500
-X-MC-Unique: I39ZHvcBO3CNWiCt0s7w-A-1
-Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
-        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        with ESMTP id S1358766AbiBHNkA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Feb 2022 08:40:00 -0500
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 250A6C03FED7;
+        Tue,  8 Feb 2022 05:39:59 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id A152D83DD20;
-        Tue,  8 Feb 2022 12:43:38 +0000 (UTC)
-Received: from shalem.redhat.com (unknown [10.39.193.228])
-        by smtp.corp.redhat.com (Postfix) with ESMTP id 220D4F6C7;
-        Tue,  8 Feb 2022 12:43:36 +0000 (UTC)
-From:   Hans de Goede <hdegoede@redhat.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Hans de Goede <hdegoede@redhat.com>,
+        by ams.source.kernel.org (Postfix) with ESMTPS id B73B3B81AFA;
+        Tue,  8 Feb 2022 13:39:57 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67BA8C340E9;
+        Tue,  8 Feb 2022 13:39:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1644327596;
+        bh=arWyuKrgF6+HTy5MGGr9g1ZYG3YqGe+bpPoKBhwDtjY=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=iRcMxm2NinrxP0/dQodYfHh7RziJJ6SzP7mzdIkPqhMs3k5TCjS1XddxBIZiBLRWe
+         fwsdHqkyllv+f+u1X7HW1pRH236O9WBWXThRFXUZ3DGcllJJyj+jpn8NGzuMduVmt2
+         VH9+3pdfzFM+wiZ3119U215A3SNS6eM4zENnhzdV2JsEUAIyTv0hA+0xyYGATs+knD
+         eiR0PPJyCdHewwzmyv7KEe+xE2Y45P468g1Y7LTuTiliKkMrJXkeMtFJ3bAd55MtPd
+         phoE2FDW40WGRPJHyNd45b9VSjxZK9ZOanjsJLzazKAr+DS4Zf4rcVtyQzybCN9V04
+         WOeQ8tXUTVsFw==
+Date:   Tue, 8 Feb 2022 13:39:22 +0000
+From:   Mark Brown <broonie@kernel.org>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Marek =?iso-8859-1?Q?Beh=FAn?= <kabel@kernel.org>,
+        Peter Huewe <peterhuewe@gmx.de>,
+        Jarkko Sakkinen <jarkko@kernel.org>,
+        Jason Gunthorpe <jgg@ziepe.ca>,
+        Michael Turquette <mturquette@baylibre.com>,
+        Stephen Boyd <sboyd@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Sam Ravnborg <sam@ravnborg.org>,
+        David Airlie <airlied@linux.ie>,
+        Daniel Vetter <daniel@ffwll.ch>,
+        Markuss Broks <markuss.broks@gmail.com>,
+        Emma Anholt <emma@anholt.net>,
+        David Lechner <david@lechnology.com>,
+        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
+        Noralf =?iso-8859-1?Q?Tr=F8nnes?= <noralf@tronnes.org>,
+        Jean Delvare <jdelvare@suse.com>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Rui Miguel Silva <rmfrfs@gmail.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
+        Antti Palosaari <crope@iki.fi>,
+        Lee Jones <lee.jones@linaro.org>,
+        Support Opensource <support.opensource@diasemi.com>,
+        Charles Keepax <ckeepax@opensource.cirrus.com>,
+        Richard Fitzgerald <rf@opensource.cirrus.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eric Piel <eric.piel@tremplin-utc.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Richard Weinberger <richard@nod.at>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Wolfgang Grandegger <wg@grandegger.com>,
+        Marc Kleine-Budde <mkl@pengutronix.de>,
+        "David S. Miller" <davem@davemloft.net>,
+        Jakub Kicinski <kuba@kernel.org>,
+        Manivannan Sadhasivam <mani@kernel.org>,
+        Thomas Kopp <thomas.kopp@microchip.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Andrew Lunn <andrew@lunn.ch>,
+        Vivien Didelot <vivien.didelot@gmail.com>,
+        Vladimir Oltean <olteanv@gmail.com>,
+        Woojung Huh <woojung.huh@microchip.com>,
+        UNGLinuxDriver@microchip.com,
+        =?utf-8?Q?=C5=81ukasz?= Stelmach <l.stelmach@samsung.com>,
+        Alexander Aring <alex.aring@gmail.com>,
+        Stefan Schmidt <stefan@datenfreihafen.org>,
+        Harry Morris <h.morris@cascoda.com>,
+        Varka Bhadram <varkabhadram@gmail.com>,
+        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
+        Heiner Kallweit <hkallweit1@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Christian Lamparter <chunkeey@googlemail.com>,
+        Kalle Valo <kvalo@kernel.org>,
+        Ajay Singh <ajay.kathat@microchip.com>,
+        Claudiu Beznea <claudiu.beznea@microchip.com>,
+        Solomon Peachy <pizza@shaftnet.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Mark Greer <mgreer@animalcreek.com>,
+        Benson Leung <bleung@chromium.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Mark Gross <markgross@kernel.org>,
+        Alessandro Zummo <a.zummo@towertech.it>,
+        Alexandre Belloni <alexandre.belloni@bootlin.com>,
+        =?iso-8859-1?B?Suly9G1l?= Pouiller <jerome.pouiller@silabs.com>,
+        Jiri Slaby <jirislaby@kernel.org>,
+        Felipe Balbi <balbi@kernel.org>,
+        Daniel Thompson <daniel.thompson@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>,
+        Helge Deller <deller@gmx.de>,
+        James Schulman <james.schulman@cirrus.com>,
+        David Rhodes <david.rhodes@cirrus.com>,
+        Lucas Tanure <tanureal@opensource.cirrus.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Daniel Mack <daniel@zonque.org>,
+        Thomas Zimmermann <tzimmermann@suse.de>,
+        Maxime Ripard <mripard@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Stephan Gerhold <stephan@gerhold.net>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Mike Looijmans <mike.looijmans@topic.nl>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Cai Huoqing <caihuoqing@baidu.com>,
+        Minghao Chi <chi.minghao@zte.com.cn>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        Ronald =?iso-8859-1?Q?Tschal=E4r?= <ronald@innovation.ch>,
+        Marco Felsch <m.felsch@pengutronix.de>,
+        Jonathan =?iso-8859-1?Q?Neusch=E4fer?= <j.neuschaefer@gmx.net>,
+        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
+        Jon Hunter <jonathanh@nvidia.com>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        Heiko Schocher <hs@denx.de>,
+        Fabio Estevam <festevam@gmail.com>,
+        Colin Ian King <colin.king@intel.com>,
         Dan Carpenter <dan.carpenter@oracle.com>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH v3 1/2] iio: mma8452: Fix probe failing when an i2c_device_id is used
-Date:   Tue,  8 Feb 2022 13:43:35 +0100
-Message-Id: <20220208124336.511884-1-hdegoede@redhat.com>
+        Tudor Ambarus <tudor.ambarus@microchip.com>,
+        Matt Kline <matt@bitbashing.io>,
+        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
+        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
+        Stefan =?iso-8859-1?Q?M=E4tje?= <stefan.maetje@esd.eu>,
+        Frieder Schrempf <frieder.schrempf@kontron.de>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        Nanyong Sun <sunnanyong@huawei.com>,
+        Yang Shen <shenyang39@huawei.com>,
+        dingsenjie <dingsenjie@yulong.com>,
+        Aditya Srivastava <yashsri421@gmail.com>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Michael Walle <michael@walle.cc>,
+        Yang Li <yang.lee@linux.alibaba.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        wengjianfeng <wengjianfeng@yulong.com>,
+        Sidong Yang <realwakka@gmail.com>,
+        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
+        Zhang Qilong <zhangqilong3@huawei.com>,
+        Will Deacon <will@kernel.org>,
+        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
+        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
+        Jiri Prchal <jiri.prchal@aksignal.cz>,
+        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
+        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
+        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
+        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
+        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
+        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
+        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
+        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
+        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
+        kernel@pengutronix.de
+Subject: Re: [PATCH 5/5] spi: make remove callback a void function
+Message-ID: <YgJyiiLqLu44MWF1@sirena.org.uk>
+References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
+ <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="ef2aNFzDYnZC/zcG"
+Content-Disposition: inline
+In-Reply-To: <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
+X-Cookie: You will forget that you ever knew me.
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The mma8452_driver declares both of_match_table and i2c_driver.id_table
-match-tables, but its probe() function only checked for of matches.
 
-Add support for i2c_device_id matches. This fixes the driver not loading
-on some x86 tablets (e.g. the Nextbook Ares 8) where the i2c_client is
-instantiated by platform code using an i2c_device_id.
+--ef2aNFzDYnZC/zcG
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Fixes: c3cdd6e48e35 ("iio: mma8452: refactor for seperating chip specific data")
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
-Changes in v3:
-- Store name in struct mma_chip_info and use that to set indio_dev->name
-- Switch to using device_get_match_data() for (potentially) adding ACPI
-  enumeration support in the future
+On Sun, Jan 23, 2022 at 06:52:01PM +0100, Uwe Kleine-K=F6nig wrote:
+> The value returned by an spi driver's remove function is mostly ignored.
+> (Only an error message is printed if the value is non-zero that the
+> error is ignored.)
+>=20
+> So change the prototype of the remove function to return no value. This
+> way driver authors are not tempted to assume that passing an error to
+> the upper layer is a good idea. All drivers are adapted accordingly.
+> There is no intended change of behaviour, all callbacks were prepared to
+> return 0 before.
 
-Changes in v2:
-- Fix the following smatch warning:
-  drivers/iio/accel/mma8452.c:1595 mma8452_probe() error: we previously assumed 'id' could be null (see line 1536)
-  Reported-by: kernel test robot <lkp@intel.com>
-  Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/iio/accel/mma8452.c | 27 +++++++++++++++++----------
- 1 file changed, 17 insertions(+), 10 deletions(-)
+I was going to apply this but it needs rebasing against current code
+unfortunately.
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 64b82b4503ad..0528717d9f44 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -176,6 +176,7 @@ static const struct mma8452_event_regs trans_ev_regs = {
-  * @enabled_events:		event flags enabled and handled by this driver
-  */
- struct mma_chip_info {
-+	const char *name;
- 	u8 chip_id;
- 	const struct iio_chan_spec *channels;
- 	int num_channels;
-@@ -1301,6 +1302,7 @@ enum {
- 
- static const struct mma_chip_info mma_chip_info_table[] = {
- 	[mma8451] = {
-+		.name = "mma8451",
- 		.chip_id = MMA8451_DEVICE_ID,
- 		.channels = mma8451_channels,
- 		.num_channels = ARRAY_SIZE(mma8451_channels),
-@@ -1325,6 +1327,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8452] = {
-+		.name = "mma8452",
- 		.chip_id = MMA8452_DEVICE_ID,
- 		.channels = mma8452_channels,
- 		.num_channels = ARRAY_SIZE(mma8452_channels),
-@@ -1341,6 +1344,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8453] = {
-+		.name = "mma8453",
- 		.chip_id = MMA8453_DEVICE_ID,
- 		.channels = mma8453_channels,
- 		.num_channels = ARRAY_SIZE(mma8453_channels),
-@@ -1357,6 +1361,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 					MMA8452_INT_FF_MT,
- 	},
- 	[mma8652] = {
-+		.name = "mma8652",
- 		.chip_id = MMA8652_DEVICE_ID,
- 		.channels = mma8652_channels,
- 		.num_channels = ARRAY_SIZE(mma8652_channels),
-@@ -1366,6 +1371,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 		.enabled_events = MMA8452_INT_FF_MT,
- 	},
- 	[mma8653] = {
-+		.name = "mma8653",
- 		.chip_id = MMA8653_DEVICE_ID,
- 		.channels = mma8653_channels,
- 		.num_channels = ARRAY_SIZE(mma8653_channels),
-@@ -1380,6 +1386,7 @@ static const struct mma_chip_info mma_chip_info_table[] = {
- 		.enabled_events = MMA8452_INT_FF_MT,
- 	},
- 	[fxls8471] = {
-+		.name = "fxls8471",
- 		.chip_id = FXLS8471_DEVICE_ID,
- 		.channels = mma8451_channels,
- 		.num_channels = ARRAY_SIZE(mma8451_channels),
-@@ -1522,13 +1529,6 @@ static int mma8452_probe(struct i2c_client *client,
- 	struct mma8452_data *data;
- 	struct iio_dev *indio_dev;
- 	int ret;
--	const struct of_device_id *match;
--
--	match = of_match_device(mma8452_dt_ids, &client->dev);
--	if (!match) {
--		dev_err(&client->dev, "unknown device model\n");
--		return -ENODEV;
--	}
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -1537,7 +1537,14 @@ static int mma8452_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	data->client = client;
- 	mutex_init(&data->lock);
--	data->chip_info = match->data;
-+
-+	data->chip_info = device_get_match_data(&client->dev);
-+	if (!data->chip_info && id) {
-+		data->chip_info = &mma_chip_info_table[id->driver_data];
-+	} else {
-+		dev_err(&client->dev, "unknown device model\n");
-+		return -ENODEV;
-+	}
- 
- 	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
- 	if (IS_ERR(data->vdd_reg))
-@@ -1581,11 +1588,11 @@ static int mma8452_probe(struct i2c_client *client,
- 	}
- 
- 	dev_info(&client->dev, "registering %s accelerometer; ID 0x%x\n",
--		 match->compatible, data->chip_info->chip_id);
-+		 data->chip_info->name, data->chip_info->chip_id);
- 
- 	i2c_set_clientdata(client, indio_dev);
- 	indio_dev->info = &mma8452_info;
--	indio_dev->name = id->name;
-+	indio_dev->name = data->chip_info->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->channels = data->chip_info->channels;
- 	indio_dev->num_channels = data->chip_info->num_channels;
--- 
-2.33.1
+--ef2aNFzDYnZC/zcG
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAmICcokACgkQJNaLcl1U
+h9DmcQf+LJZ969n1sCqmHKwy4lQ2Pxdy53x61CG2xi4rHMBDaahnhIqh6OONUbd+
+C69P1GRsp8evXqnMb8d4TH1pFPvi3X7mWWwRFhXalhZsYYw/b3jmnQNO7zN81ayi
+80hp04WF+UE2A+FJhiN9n9i47vM4FEBcuKxNp9AZNSxwiTfVHUoHAF3UddqF0oAo
+hThmCBaRZYCQ9dCX1glz8vfrfXVIqRVx30esuamogMGtZbM5bSDoPizzdk83trN4
+pfd594g2DUBkpQBHZvadCjp92MBULn5nNnlF5Ob5PAmP1T0NUVsTu7Ra/ZJTnUNb
+GfkUNfSvLNah+a6BUd3Jp6LazHu9Ew==
+=bpX2
+-----END PGP SIGNATURE-----
+
+--ef2aNFzDYnZC/zcG--
