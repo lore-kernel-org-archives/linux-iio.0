@@ -2,59 +2,59 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA986C4332F
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 02:09:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17BE8C43219
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 02:09:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237518AbiBHCJA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S230489AbiBHCJA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 7 Feb 2022 21:09:00 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47812 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345421AbiBHCEw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 21:04:52 -0500
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3F75C061355;
-        Mon,  7 Feb 2022 18:04:51 -0800 (PST)
-Received: by mail-qt1-x836.google.com with SMTP id p14so13705606qtx.0;
-        Mon, 07 Feb 2022 18:04:51 -0800 (PST)
+        with ESMTP id S1345414AbiBHCEu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 21:04:50 -0500
+Received: from mail-qt1-x833.google.com (mail-qt1-x833.google.com [IPv6:2607:f8b0:4864:20::833])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E32D9C061A73;
+        Mon,  7 Feb 2022 18:04:49 -0800 (PST)
+Received: by mail-qt1-x833.google.com with SMTP id l14so1357579qtp.7;
+        Mon, 07 Feb 2022 18:04:49 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=N4vn2QrbP+FP78/S6RhE3MtkGHax4gBMpmADGrGNkNY=;
-        b=acBuVRXE779T3/xBPjTPkCk+f9KQB3pRwtzbHl+qz6/1SLjoHq0C0LHuxnC/RLR7Qx
-         KqlDsKuRic7rsBH1rG31gG5vhE0Pah3azz0SCcl6ZhVHXAjFZ3ABHVaOW5Id2oPy+A52
-         DrFw8wUZfQN//+SDpj32lR27MRVDSmg587llaKyAFQWeiNRx/bGIONHcsDI9KgqwAwen
-         +s9zQHpImpDhL6QI8jzs5wlZpTxPQxygaWKzhNEXkvUOAMbA39E1IZ4Px9BV5FOir0yW
-         0V+j8tCQyT0hNgXqpmTPGzMqSVwtiNGFFaFvX/j/Uei28qPiPYYBsofo9QBJwqc/w9hQ
-         DLmw==
+        bh=SMTOaLQ7dmVrFU4YApnbu06iYLDeLwergecv++KC6K8=;
+        b=mkDTU733eZDe3IQJBWlpy6D5azVFgSki1MdO1iVCNFFMhN8SGvlP5ph63WRire/zic
+         xU2WRYGO8jQaBRGMniWFW1b0gQIM7Pzqws9PWBiiyO3BSjy27WHBA3USSLxteKiwjUi1
+         DwcIDArU+phX9TjUmrPEvtEuoldrBlO/Xxy+YasqXqJMrmiJjd7KFRVLnwkN4YuLLaEx
+         28AsKPMv2QECBGXCoYV9cpwumTdFNiBEMliUCiTcNhv2ws2FHG+lIuVGmkvXDsLkDDcQ
+         /dnRZ5ieirGi317Rdd0hw75UsTdEtO96k+ZjEAxSRbihxYqXGNO07rv2A4nQrwV0ioPk
+         eSIw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=N4vn2QrbP+FP78/S6RhE3MtkGHax4gBMpmADGrGNkNY=;
-        b=EAx/aCu4MISpNQzOmMy9Id6bfezDClVGfHNiXlxhOctuetFvaXACeg9F4imCEH7FqW
-         D5+qGDiORQGyZt8ZuWzXF1Io3TkkX9ExmxWS1q5eQrdERGrIZv+qMeSN3lT7IdGOSzyD
-         pIJcUE2BxZgw5bnBJ7+Ts4WOLMtkM67K8B6Q9u+MVKSQ4mfuR6iR79mCYCJvmrRNk4VZ
-         y7wQ22SDuRu+OHnjWwpnuSMAWCNImAHu+4cwXRiqLQawOSc5dJkp09eNh/KTKRWwgMI7
-         7XfiSERodkd3X/Fes4f1TwwpRes879HIIbSRyGg1xUKLojiEJUeS9pjGLZGln1hl8WMu
-         kjqg==
-X-Gm-Message-State: AOAM53315KGEXqJCB5/ADI6kD96VdwZyJUb50keZQOZxaKBWc0dg48Sq
-        pEYwZSI2LTrzIn/oy1NCi0fRg7k9xWE=
-X-Google-Smtp-Source: ABdhPJxNFjGHNthpn1jVUoBgcHJ4OkygqwvfSTdaDIW81SEkwd4XlEizv5xirVo3Fm2ks4Ok+i1QXQ==
-X-Received: by 2002:ac8:58c2:: with SMTP id u2mr1649758qta.509.1644285891180;
-        Mon, 07 Feb 2022 18:04:51 -0800 (PST)
+        bh=SMTOaLQ7dmVrFU4YApnbu06iYLDeLwergecv++KC6K8=;
+        b=hkjcyMaA6mXaQjjVouq2WFutdrr4xngW2NNyyYpwN9KJgM5WCzVjyu3IskvuK2AwG6
+         y4nxUiOVI8PQ22dsVaKlXYqcpIhqpd5tqN6xbbTLjFK0RVnib47jdA4rg/XpTWgxAEji
+         Gk1pNqrwXqLiXo1AsOVqOJVOob6qoiFFyECB2SnWqKZ/pwk+7pYBfEaZuZ2iLTLQMl9f
+         83yJklFWrszzVfbspLLJYR4vurrSuNCJkwRBT2gJFoUS8EuYtg7YIafU7+AICTi8xKwC
+         3yL0WydrAj96aW/HUIYCl2V7j4j8hws0XCxTrq7kXf7WWCMLkHuObmgVnjOin+JKQXv/
+         U2mg==
+X-Gm-Message-State: AOAM533waDDVF8kG4G86r2Q4e/h73+zdB89ANjByC4DLZu/8hVv8CYEN
+        575ob1mpWkK8+v8rtIvEdZ0=
+X-Google-Smtp-Source: ABdhPJxnnIed2IhUMFZZ8n+WceRSE84hbhrwKQtJWRv+FezkpmCuNWX7Uzr+mjHX974OE5wBh0IaZQ==
+X-Received: by 2002:a05:622a:4d:: with SMTP id y13mr1682304qtw.629.1644285889048;
+        Mon, 07 Feb 2022 18:04:49 -0800 (PST)
 Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.50
+        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 18:04:50 -0800 (PST)
+        Mon, 07 Feb 2022 18:04:48 -0800 (PST)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         andy.shevchenko@gmail.com, lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v14 03/11] iio: afe: rescale: add offset support
-Date:   Mon,  7 Feb 2022 21:04:33 -0500
-Message-Id: <20220208020441.3081162-4-liambeguin@gmail.com>
+Subject: [PATCH v14 01/11] iio: afe: rescale: expose scale processing function
+Date:   Mon,  7 Feb 2022 21:04:31 -0500
+Message-Id: <20220208020441.3081162-2-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
 In-Reply-To: <20220208020441.3081162-1-liambeguin@gmail.com>
 References: <20220208020441.3081162-1-liambeguin@gmail.com>
@@ -64,158 +64,148 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This is a preparatory change required for the addition of temperature
-sensing front ends.
+In preparation for the addition of kunit tests, expose the logic
+responsible for combining channel scales.
 
 Signed-off-by: Liam Beguin <liambeguin@gmail.com>
 Reviewed-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/afe/iio-rescale.c   | 81 +++++++++++++++++++++++++++++++++
- include/linux/iio/afe/rescale.h |  4 ++
- 2 files changed, 85 insertions(+)
+ drivers/iio/afe/iio-rescale.c   | 65 ++++++++++++++-------------------
+ include/linux/iio/afe/rescale.h | 32 ++++++++++++++++
+ 2 files changed, 60 insertions(+), 37 deletions(-)
+ create mode 100644 include/linux/iio/afe/rescale.h
 
 diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index f833eb38f8bb..63035b4bce5e 100644
+index 69710c481376..65832dd09249 100644
 --- a/drivers/iio/afe/iio-rescale.c
 +++ b/drivers/iio/afe/iio-rescale.c
-@@ -3,6 +3,7 @@
-  * IIO rescale driver
-  *
-  * Copyright (C) 2018 Axentia Technologies AB
-+ * Copyright (C) 2022 Liam Beguin <liambeguin@gmail.com>
-  *
-  * Author: Peter Rosin <peda@axentia.se>
-  */
-@@ -82,11 +83,46 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 	}
- }
+@@ -15,32 +15,43 @@
+ #include <linux/platform_device.h>
+ #include <linux/property.h>
  
-+int rescale_process_offset(struct rescale *rescale, int scale_type,
-+			   int scale, int scale2, int schan_off,
-+			   int *val, int *val2)
++#include <linux/iio/afe/rescale.h>
+ #include <linux/iio/consumer.h>
+ #include <linux/iio/iio.h>
+ 
+-struct rescale;
+-
+-struct rescale_cfg {
+-	enum iio_chan_type type;
+-	int (*props)(struct device *dev, struct rescale *rescale);
+-};
++int rescale_process_scale(struct rescale *rescale, int scale_type,
++			  int *val, int *val2)
 +{
-+	s64 tmp, tmp2;
-+
++	s64 tmp;
+ 
+-struct rescale {
+-	const struct rescale_cfg *cfg;
+-	struct iio_channel *source;
+-	struct iio_chan_spec chan;
+-	struct iio_chan_spec_ext_info *ext_info;
+-	bool chan_processed;
+-	s32 numerator;
+-	s32 denominator;
+-};
 +	switch (scale_type) {
 +	case IIO_VAL_FRACTIONAL:
-+		tmp = (s64)rescale->offset * scale2;
-+		*val = div_s64(tmp, scale) + schan_off;
-+		return IIO_VAL_INT;
++		*val *= rescale->numerator;
++		*val2 *= rescale->denominator;
++		return scale_type;
 +	case IIO_VAL_INT:
-+		*val = div_s64(rescale->offset, scale) + schan_off;
-+		return IIO_VAL_INT;
++		*val *= rescale->numerator;
++		if (rescale->denominator == 1)
++			return scale_type;
++		*val2 = rescale->denominator;
++		return IIO_VAL_FRACTIONAL;
 +	case IIO_VAL_FRACTIONAL_LOG2:
-+		tmp = (s64)rescale->offset * (1 << scale2);
-+		*val = div_s64(tmp, scale) + schan_off;
-+		return IIO_VAL_INT;
-+	case IIO_VAL_INT_PLUS_NANO:
-+		tmp = (s64)rescale->offset * GIGA;
-+		tmp2 = ((s64)scale * GIGA) + scale2;
-+		*val = div64_s64(tmp, tmp2) + schan_off;
-+		return IIO_VAL_INT;
-+	case IIO_VAL_INT_PLUS_MICRO:
-+		tmp = (s64)rescale->offset * MEGA;
-+		tmp2 = ((s64)scale * MEGA) + scale2;
-+		*val = div64_s64(tmp, tmp2) + schan_off;
-+		return IIO_VAL_INT;
++		tmp = (s64)*val * 1000000000LL;
++		tmp = div_s64(tmp, rescale->denominator);
++		tmp *= rescale->numerator;
++		tmp = div_s64(tmp, 1000000000LL);
++		*val = tmp;
++		return scale_type;
 +	default:
 +		return -EOPNOTSUPP;
 +	}
 +}
-+
+ 
  static int rescale_read_raw(struct iio_dev *indio_dev,
  			    struct iio_chan_spec const *chan,
  			    int *val, int *val2, long mask)
  {
  	struct rescale *rescale = iio_priv(indio_dev);
-+	int scale, scale2;
-+	int schan_off = 0;
+-	s64 tmp;
  	int ret;
  
  	switch (mask) {
-@@ -113,6 +149,47 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+@@ -66,27 +77,7 @@ static int rescale_read_raw(struct iio_dev *indio_dev,
+ 		} else {
  			ret = iio_read_channel_scale(rescale->source, val, val2);
  		}
- 		return rescale_process_scale(rescale, ret, val, val2);
-+	case IIO_CHAN_INFO_OFFSET:
-+		/*
-+		 * Processed channels are scaled 1-to-1 and source offset is
-+		 * already taken into account.
-+		 *
-+		 * In other cases, real world measurement are expressed as:
-+		 *
-+		 *	schan_scale * (raw + schan_offset)
-+		 *
-+		 * Given that the rescaler parameters are applied recursively:
-+		 *
-+		 *	rescaler_scale * (schan_scale * (raw + schan_offset) +
-+		 *		rescaler_offset)
-+		 *
-+		 * Or,
-+		 *
-+		 *	(rescaler_scale * schan_scale) * (raw +
-+		 *		(schan_offset +	rescaler_offset / schan_scale)
-+		 *
-+		 * Thus, reusing the original expression the parameters exposed
-+		 * to userspace are:
-+		 *
-+		 *	scale = schan_scale * rescaler_scale
-+		 *	offset = schan_offset + rescaler_offset / schan_scale
-+		 */
-+		if (rescale->chan_processed) {
-+			*val = rescale->offset;
-+			return IIO_VAL_INT;
-+		}
-+
-+		if (iio_channel_has_info(rescale->source->channel,
-+					 IIO_CHAN_INFO_OFFSET)) {
-+			ret = iio_read_channel_offset(rescale->source,
-+						      &schan_off, NULL);
-+			if (ret != IIO_VAL_INT)
-+				return ret < 0 ? ret : -EOPNOTSUPP;
-+		}
-+
-+		ret = iio_read_channel_scale(rescale->source, &scale, &scale2);
-+		return rescale_process_offset(rescale, ret, scale, scale2,
-+					      schan_off, val, val2);
+-		switch (ret) {
+-		case IIO_VAL_FRACTIONAL:
+-			*val *= rescale->numerator;
+-			*val2 *= rescale->denominator;
+-			return ret;
+-		case IIO_VAL_INT:
+-			*val *= rescale->numerator;
+-			if (rescale->denominator == 1)
+-				return ret;
+-			*val2 = rescale->denominator;
+-			return IIO_VAL_FRACTIONAL;
+-		case IIO_VAL_FRACTIONAL_LOG2:
+-			tmp = (s64)*val * 1000000000LL;
+-			tmp = div_s64(tmp, rescale->denominator);
+-			tmp *= rescale->numerator;
+-			tmp = div_s64(tmp, 1000000000LL);
+-			*val = tmp;
+-			return ret;
+-		default:
+-			return -EOPNOTSUPP;
+-		}
++		return rescale_process_scale(rescale, ret, val, val2);
  	default:
  		return -EINVAL;
  	}
-@@ -189,6 +266,9 @@ static int rescale_configure_channel(struct device *dev,
- 	chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 		BIT(IIO_CHAN_INFO_SCALE);
- 
-+	if (rescale->offset)
-+		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_OFFSET);
-+
- 	/*
- 	 * Using .read_avail() is fringe to begin with and makes no sense
- 	 * whatsoever for processed channels, so we make sure that this cannot
-@@ -353,6 +433,7 @@ static int rescale_probe(struct platform_device *pdev)
- 	rescale->cfg = of_device_get_match_data(dev);
- 	rescale->numerator = 1;
- 	rescale->denominator = 1;
-+	rescale->offset = 0;
- 
- 	ret = rescale->cfg->props(dev, rescale);
- 	if (ret)
 diff --git a/include/linux/iio/afe/rescale.h b/include/linux/iio/afe/rescale.h
-index 8a2eb34af327..6eecb435488f 100644
---- a/include/linux/iio/afe/rescale.h
+new file mode 100644
+index 000000000000..8a2eb34af327
+--- /dev/null
 +++ b/include/linux/iio/afe/rescale.h
-@@ -25,8 +25,12 @@ struct rescale {
- 	bool chan_processed;
- 	s32 numerator;
- 	s32 denominator;
-+	s32 offset;
- };
- 
- int rescale_process_scale(struct rescale *rescale, int scale_type,
- 			  int *val, int *val2);
-+int rescale_process_offset(struct rescale *rescale, int scale_type,
-+			   int scale, int scale2, int schan_off,
-+			   int *val, int *val2);
- #endif /* __IIO_RESCALE_H__ */
+@@ -0,0 +1,32 @@
++/* SPDX-License-Identifier: GPL-2.0-only */
++/*
++ * Copyright (C) 2018 Axentia Technologies AB
++ */
++
++#ifndef __IIO_RESCALE_H__
++#define __IIO_RESCALE_H__
++
++#include <linux/types.h>
++#include <linux/iio/iio.h>
++
++struct device;
++struct rescale;
++
++struct rescale_cfg {
++	enum iio_chan_type type;
++	int (*props)(struct device *dev, struct rescale *rescale);
++};
++
++struct rescale {
++	const struct rescale_cfg *cfg;
++	struct iio_channel *source;
++	struct iio_chan_spec chan;
++	struct iio_chan_spec_ext_info *ext_info;
++	bool chan_processed;
++	s32 numerator;
++	s32 denominator;
++};
++
++int rescale_process_scale(struct rescale *rescale, int scale_type,
++			  int *val, int *val2);
++#endif /* __IIO_RESCALE_H__ */
 -- 
 2.35.1.4.g5d01301f2b86
 
