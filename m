@@ -2,187 +2,130 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 861A9C4167D
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 02:40:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 653DDC4167D
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Feb 2022 13:16:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345399AbiBHCJH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 7 Feb 2022 21:09:07 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47882 "EHLO
+        id S1350369AbiBHNQQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Feb 2022 08:16:16 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345440AbiBHCFB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Feb 2022 21:05:01 -0500
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A676C061355;
-        Mon,  7 Feb 2022 18:05:00 -0800 (PST)
-Received: by mail-qv1-xf30.google.com with SMTP id g3so8328815qvb.8;
-        Mon, 07 Feb 2022 18:05:00 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QJ4snz0cur4JK5tD6GVF0n87Yz4vTpK9iTHizeDj3iE=;
-        b=L0wRbH7Uwc/sRu0vXoICLt5omtZ5lBc+QgBAEuGEXNU5O6E+dxsM7IwvfPXhw3/2dJ
-         xT6VG28FHURrt/VwUaZcu6DBJkVITDd1JzLtzwrwFYWB6bvtsoCEdDkxoc0/LAAnsTpO
-         2OQSES+lb8qwJ6f/BY6S4V0PcjtGd/01jOhKyifadF0LeJmsXBojPEbpGxY3cx9qh7fV
-         kdjmgDCxse1pkQy+sOgX9Jb1xPEKrdYNDodCIY+3NFv0NarlsNzG8NjOQZPPU9rc+AwB
-         AD+McFFt+wXce0r1Oh5lV7O5RR0NMZqLdErpDk0evS7Xbz/uWXk1uJLHZ8GuhDN5luJ4
-         oVPA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QJ4snz0cur4JK5tD6GVF0n87Yz4vTpK9iTHizeDj3iE=;
-        b=B7M9Y84Opp7yDUTXqc8F2ApQ8N119Ee8or/N9lR3Me2ibwenk5/eMl1SOh9LUcwJhG
-         8qc3/Bfkhha6RjR+gM3UOsHv6HZVbsDo7VXJZ2aeFdeZn9zYlQvPVh+7cahat5w6J08O
-         DIwQyYn2+HSdqJIMfgyR6Znpvr0IYDjokkAb4vnKVaWS5LVf3ivwoaAjjU1z0U6iADst
-         jvjrqroapRbY7CbONTWvWRIO3fUTBSQaZ+ZrleoCFIdtnf72HDbztn7QBuZuoV61mmCk
-         zS/9joZi53Wlcju1QCaOyfRX0WwPfXhWG7OZAFojMHuF+V8CoQ3NlZyOHTjFEWzyk966
-         eXGg==
-X-Gm-Message-State: AOAM533QboUwoZq2hqcidMVBecGCCSPMkCbbb65flpZU7IWIBxicMZ11
-        jVmXQEfpU0vd0EgrKQuBNq0=
-X-Google-Smtp-Source: ABdhPJyThlm/sDXXRznW7Ix7lmYnOUWfGj++ZzQMOFLCmprbbPy92fDJE1ReHLw9Fw4XHHghnVsDAg==
-X-Received: by 2002:a05:6214:29e5:: with SMTP id jv5mr1709294qvb.64.1644285899487;
-        Mon, 07 Feb 2022 18:04:59 -0800 (PST)
-Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id u9sm1416055qko.130.2022.02.07.18.04.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 07 Feb 2022 18:04:58 -0800 (PST)
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
-        andy.shevchenko@gmail.com, lars@metafoo.de
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v14 10/11] dt-bindings: iio: afe: add bindings for temperature-sense-rtd
-Date:   Mon,  7 Feb 2022 21:04:40 -0500
-Message-Id: <20220208020441.3081162-11-liambeguin@gmail.com>
-X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
-In-Reply-To: <20220208020441.3081162-1-liambeguin@gmail.com>
-References: <20220208020441.3081162-1-liambeguin@gmail.com>
+        with ESMTP id S1359446AbiBHMnp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Feb 2022 07:43:45 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 3FE1FC03FECA
+        for <linux-iio@vger.kernel.org>; Tue,  8 Feb 2022 04:43:45 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644324224;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=quo3BzHVQjsh1xOU/QiF0frha66U0VSidDHwGe8aSow=;
+        b=FDZU6FZ+n98j6097bXDRHpeVo5y+IzcIrlmLjA9kOor93IvFyergpeSry0iXge2btp6yLu
+        61L44f8acu0Lk+WMygJfQlA6QGWmGUH0QOBoZbX6zLsb4safbYZiFCiC7G6TkWntyalBck
+        HGwveoTEsWnPDrBx4Ta1P799+Y/JTC0=
+Received: from mimecast-mx01.redhat.com (mimecast-mx01.redhat.com
+ [209.132.183.4]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-444--27T70DoMDKQ82TUwNcYig-1; Tue, 08 Feb 2022 07:43:41 -0500
+X-MC-Unique: -27T70DoMDKQ82TUwNcYig-1
+Received: from smtp.corp.redhat.com (int-mx08.intmail.prod.int.phx2.redhat.com [10.5.11.23])
+        (using TLSv1.2 with cipher AECDH-AES256-SHA (256/256 bits))
+        (No client certificate requested)
+        by mimecast-mx01.redhat.com (Postfix) with ESMTPS id 0BF1E1966320;
+        Tue,  8 Feb 2022 12:43:40 +0000 (UTC)
+Received: from shalem.redhat.com (unknown [10.39.193.228])
+        by smtp.corp.redhat.com (Postfix) with ESMTP id E7DA8F6C7;
+        Tue,  8 Feb 2022 12:43:38 +0000 (UTC)
+From:   Hans de Goede <hdegoede@redhat.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Hans de Goede <hdegoede@redhat.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>,
+        linux-iio@vger.kernel.org
+Subject: [PATCH v3 2/2] iio: mma8452: Add support for the "mount-matrix" device property
+Date:   Tue,  8 Feb 2022 13:43:36 +0100
+Message-Id: <20220208124336.511884-2-hdegoede@redhat.com>
+In-Reply-To: <20220208124336.511884-1-hdegoede@redhat.com>
+References: <20220208124336.511884-1-hdegoede@redhat.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Scanned-By: MIMEDefang 2.84 on 10.5.11.23
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-An ADC is often used to measure other quantities indirectly. This
-binding describe one case, the measurement of a temperature through the
-voltage across an RTD resistor such as a PT1000.
+Add support for the standard "mount-matrix" device property to
+the mma8452 driver.
 
-Signed-off-by: Liam Beguin <liambeguin@gmail.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
-Reviewed-by: Peter Rosin <peda@axentia.se>
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 ---
- .../iio/afe/temperature-sense-rtd.yaml        | 101 ++++++++++++++++++
- 1 file changed, 101 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
+Note this applies on top of the following recent patch from me:
+"iio: mma8452: Fix probe failing when an i2c_device_id is used"
+---
+ drivers/iio/accel/mma8452.c | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml b/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
-new file mode 100644
-index 000000000000..336ce96371db
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
-@@ -0,0 +1,101 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/afe/temperature-sense-rtd.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 0528717d9f44..590d9431e1bd 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -104,6 +104,7 @@
+ struct mma8452_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
++	struct iio_mount_matrix orientation;
+ 	u8 ctrl_reg1;
+ 	u8 data_cfg;
+ 	const struct mma_chip_info *chip_info;
+@@ -1190,6 +1191,20 @@ static const struct attribute_group mma8452_event_attribute_group = {
+ 	.attrs = mma8452_event_attributes,
+ };
+ 
++static const struct iio_mount_matrix *
++mma8452_get_mount_matrix(const struct iio_dev *indio_dev,
++			   const struct iio_chan_spec *chan)
++{
++	struct mma8452_data *data = iio_priv(indio_dev);
 +
-+title: Temperature Sense RTD
++	return &data->orientation;
++}
 +
-+maintainers:
-+  - Liam Beguin <liambeguin@gmail.com>
++static const struct iio_chan_spec_ext_info mma8452_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, mma8452_get_mount_matrix),
++	{ }
++};
 +
-+description: |
-+  RTDs (Resistance Temperature Detectors) are a kind of temperature sensors
-+  used to get a linear voltage to temperature reading within a give range
-+  (usually 0 to 100 degrees Celsius).
+ #define MMA8452_FREEFALL_CHANNEL(modifier) { \
+ 	.type = IIO_ACCEL, \
+ 	.modified = 1, \
+@@ -1228,6 +1243,7 @@ static const struct attribute_group mma8452_event_attribute_group = {
+ 	}, \
+ 	.event_spec = mma8452_transient_event, \
+ 	.num_event_specs = ARRAY_SIZE(mma8452_transient_event), \
++	.ext_info = mma8452_ext_info, \
+ }
+ 
+ #define MMA8652_CHANNEL(axis, idx, bits) { \
+@@ -1249,6 +1265,7 @@ static const struct attribute_group mma8452_event_attribute_group = {
+ 	}, \
+ 	.event_spec = mma8452_motion_event, \
+ 	.num_event_specs = ARRAY_SIZE(mma8452_motion_event), \
++	.ext_info = mma8452_ext_info, \
+ }
+ 
+ static const struct iio_chan_spec mma8451_channels[] = {
+@@ -1546,6 +1563,10 @@ static int mma8452_probe(struct i2c_client *client,
+ 		return -ENODEV;
+ 	}
+ 
++	ret = iio_read_mount_matrix(&client->dev, &data->orientation);
++	if (ret)
++		return ret;
 +
-+  When an io-channel measures the output voltage across an RTD such as a
-+  PT1000, the interesting measurement is almost always the corresponding
-+  temperature, not the voltage output. This binding describes such a circuit.
-+
-+  The general transfer function here is (using SI units)
-+
-+    V = R(T) * iexc
-+    R(T) = r0 * (1 + alpha * T)
-+    T = 1 / (alpha * r0 * iexc) * (V - r0 * iexc)
-+
-+  The following circuit matches what's in the examples section.
-+
-+           5V0
-+          -----
-+            |
-+        +---+----+
-+        |  R 5k  |
-+        +---+----+
-+            |
-+            V 1mA
-+            |
-+            +---- Vout
-+            |
-+        +---+----+
-+        | PT1000 |
-+        +---+----+
-+            |
-+          -----
-+           GND
-+
-+properties:
-+  compatible:
-+    const: temperature-sense-rtd
-+
-+  io-channels:
-+    maxItems: 1
-+    description: |
-+      Channel node of a voltage io-channel.
-+
-+  '#io-channel-cells':
-+    const: 0
-+
-+  excitation-current-microamp:
-+    description: The current fed through the RTD sensor.
-+
-+  alpha-ppm-per-celsius:
-+    description: |
-+      alpha can also be expressed in micro-ohms per ohm Celsius. It's a linear
-+      approximation of the resistance versus temperature relationship
-+      between 0 and 100 degrees Celsius.
-+
-+      alpha = (R_100 - R_0) / (100 * R_0)
-+
-+      Where, R_100 is the resistance of the sensor at 100 degrees Celsius, and
-+      R_0 (or r-naught-ohms) is the resistance of the sensor at 0 degrees
-+      Celsius.
-+
-+      Pure platinum has an alpha of 3925. Industry standards such as IEC60751
-+      and ASTM E-1137 specify an alpha of 3850.
-+
-+  r-naught-ohms:
-+    description: |
-+      Resistance of the sensor at 0 degrees Celsius.
-+      Common values are 100 for PT100, 500 for PT500, and 1000 for PT1000
-+
-+additionalProperties: false
-+required:
-+  - compatible
-+  - io-channels
-+  - excitation-current-microamp
-+  - alpha-ppm-per-celsius
-+  - r-naught-ohms
-+
-+examples:
-+  - |
-+    pt1000_1: temperature-sensor0 {
-+        compatible = "temperature-sense-rtd";
-+        #io-channel-cells = <0>;
-+        io-channels = <&temp_adc1 0>;
-+
-+        excitation-current-microamp = <1000>; /* i = U/R = 5 / 5000 */
-+        alpha-ppm-per-celsius = <3908>;
-+        r-naught-ohms = <1000>;
-+    };
-+...
+ 	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
+ 	if (IS_ERR(data->vdd_reg))
+ 		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_reg),
 -- 
-2.35.1.4.g5d01301f2b86
+2.33.1
 
