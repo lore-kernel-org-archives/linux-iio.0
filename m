@@ -2,97 +2,70 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B1BDC433FE
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Feb 2022 16:38:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 01AA4C433F5
+	for <linux-iio@archiver.kernel.org>; Wed,  9 Feb 2022 20:12:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237279AbiBIQiV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Feb 2022 11:38:21 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46854 "EHLO
+        id S229547AbiBIUMi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Feb 2022 15:12:38 -0500
+Received: from gmail-smtp-in.l.google.com ([23.128.96.19]:53662 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237225AbiBIQiU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Feb 2022 11:38:20 -0500
-Received: from mail-qv1-xf2d.google.com (mail-qv1-xf2d.google.com [IPv6:2607:f8b0:4864:20::f2d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72223C05CB86;
-        Wed,  9 Feb 2022 08:38:23 -0800 (PST)
-Received: by mail-qv1-xf2d.google.com with SMTP id o5so2252614qvm.3;
-        Wed, 09 Feb 2022 08:38:23 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=UiDGjAXge98sndCi//gMspGlqK9CQ0rnW1ogp58x2ps=;
-        b=L1pMsspBH0+fY9TcP+mb/z6ZEcA+7PIKwqG39N0YxdzIsvrcZseths0aZYOKQFkr1j
-         jRB3Q0GUDIUV8DiSZQNeqJG4ddEkddGBW8z/0McwrDwhIqDgih8Gv7pOH5QWVQkI/Jjm
-         CowY5ksaFVghP+u2nt2CtBZJRmGjIpfJaUXGIBIl0UAuQUq0yfP6mzGu1TiTelKE3bzq
-         bH3XZPxUWq4eCF05CCdPKgykTteAsqWlJRmgHAnTCtqRGVUQNdYrzOn+6Wrv5QTZaelt
-         Vc2eucNmiowalOng2Ixxh7MXuCBAj7aMOa1sVTzcZSQepMxxKrwjKCACrqLsnYj0jrGT
-         evrw==
+        with ESMTP id S229471AbiBIUMi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Feb 2022 15:12:38 -0500
+Received: from mail-oo1-f45.google.com (mail-oo1-f45.google.com [209.85.161.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 274C5E01C685;
+        Wed,  9 Feb 2022 12:12:34 -0800 (PST)
+Received: by mail-oo1-f45.google.com with SMTP id i10-20020a4aab0a000000b002fccf890d5fso3802342oon.5;
+        Wed, 09 Feb 2022 12:12:34 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=UiDGjAXge98sndCi//gMspGlqK9CQ0rnW1ogp58x2ps=;
-        b=d1Jis4MmOux1y50DfYLB42PPoAN2LFEmxZG6RsG15sniOMk13Arbt6rRwWDHiPpOkk
-         RO1MuIPZxCxum6IoQ+47GkIX6gI6bBt1NNgUHlpjkZakClhJg41jfV/WvELf+zSmZmdm
-         wQIKr7t/6UAAQZO4PuuXmTWheLmNDay7vrumg6WBuiiqkBACUMtnn1r6RtjykkBG1sTb
-         nPcRPFBTccbP/wF1oyxa6Bj8JOpukoZbcKEjkMkAATyctB4vfwMiPR8paGYDN4Rkiztk
-         gnLo0ioq2Tr5o7Q1xmJwOj4dpoc/FIspc4APNZ1M95XELaqIXCSrmfTazcy3OB0K+ApR
-         9lwg==
-X-Gm-Message-State: AOAM533fWDAh9PBwu4/Z24Fw7ZWxv7pjItFrQiUCqS1VtAMdH+8/kxLR
-        dj+SmM2imgxiVKJkFv1hyh8=
-X-Google-Smtp-Source: ABdhPJwsX0Xi32lBOFhWLJxQrAM1pKPkOdKAQbS+/Ckq/iDNb9C1DsvDa69Nkuq5BlJyRv4A6h3azA==
-X-Received: by 2002:a05:6214:5298:: with SMTP id kj24mr2126321qvb.67.1644424702660;
-        Wed, 09 Feb 2022 08:38:22 -0800 (PST)
-Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id w5sm8623401qko.34.2022.02.09.08.38.21
+        bh=W/UQplenPqJG5Ahv1wLvwfdyAf2KshN531HhWEMo0Os=;
+        b=SLobkWvgzIbcXN1cR4gbIueKPnCcpQx8t/DiAO4bz0lbsJ3XGJN1b7Lo2B6Wqa5Ls6
+         HBmtYkxF5mWfKBHe1ksyFb8CBryAD3LJqCTDKumPW/SzLYqr643+Lvxtd5pcUdf/kDi1
+         s+rPN669/Ns2nzmvHgU85RYbWx290HaqMyD4Bajh7tV0J3t/7sUU7hz1na7cO4FARhYG
+         a0RqvEwYa87fMmLA9xA/d95W2nh0fp0Bvn0VhMXsVqUgqftNvUweW0sWlTYtT1gAFZOE
+         Y+Hf1sLceKhr1pio05ZUqCumZYP6wV6JtGK2kSs6vJTSd6VWdOpDQDx4PxLkmkGMe4gH
+         0/og==
+X-Gm-Message-State: AOAM533vyXRoeRzsyiUisOvr8OL6zeKz/Ikd9Ffd5e3+7A2l9bUrqcCg
+        uNFllbzy3ukHl2k808xSZg==
+X-Google-Smtp-Source: ABdhPJyJnWKtKnilwNEZkRI00kcGwsaPrryq0cnq/wxVeIG0VHXas0PCuWn9oxYzmsPBPWQlVRgNFQ==
+X-Received: by 2002:a05:6870:d385:: with SMTP id k5mr1323114oag.174.1644437553443;
+        Wed, 09 Feb 2022 12:12:33 -0800 (PST)
+Received: from robh.at.kernel.org (66-90-148-213.dyn.grandenetworks.net. [66.90.148.213])
+        by smtp.gmail.com with ESMTPSA id w9sm7109862ool.31.2022.02.09.12.12.31
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Feb 2022 08:38:21 -0800 (PST)
-Date:   Wed, 9 Feb 2022 11:38:20 -0500
-From:   Liam Beguin <liambeguin@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>
-Subject: Re: [PATCH v14 09/11] iio: afe: rescale: add temperature transducers
-Message-ID: <YgPt/Hut4T4C86fX@shaak>
-References: <20220208020441.3081162-1-liambeguin@gmail.com>
- <20220208020441.3081162-10-liambeguin@gmail.com>
- <CAHp75Vf+FkofvC3_jvNadGed+eH7mQvVYXTOiWKCzwinJ3-2-w@mail.gmail.com>
+        Wed, 09 Feb 2022 12:12:32 -0800 (PST)
+Received: (nullmailer pid 817305 invoked by uid 1000);
+        Wed, 09 Feb 2022 20:12:31 -0000
+Date:   Wed, 9 Feb 2022 14:12:31 -0600
+From:   Rob Herring <robh@kernel.org>
+To:     Robert Hancock <robert.hancock@calian.com>
+Cc:     devicetree@vger.kernel.org, lars@metafoo.de,
+        anand.ashok.dumbre@xilinx.com, manish.narani@xilinx.com,
+        robh+dt@kernel.org, michal.simek@xilinx.com, jic23@kernel.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] dt-bindings: iio: adc: zynqmp_ams: Add clock entry
+Message-ID: <YgQgL4+WsPyzh3nG@robh.at.kernel.org>
+References: <20220127173450.3684318-1-robert.hancock@calian.com>
+ <20220127173450.3684318-2-robert.hancock@calian.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <CAHp75Vf+FkofvC3_jvNadGed+eH7mQvVYXTOiWKCzwinJ3-2-w@mail.gmail.com>
+In-Reply-To: <20220127173450.3684318-2-robert.hancock@calian.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
-
-On Tue, Feb 08, 2022 at 03:46:27PM +0200, Andy Shevchenko wrote:
-> On Tue, Feb 8, 2022 at 4:04 AM Liam Beguin <liambeguin@gmail.com> wrote:
-> >
-> > A temperature transducer is a device that converts a thermal quantity
-> > into any other physical quantity. This patch adds support for
-> > temperature to voltage (like the LTC2997) and temperature to current
-> > (like the AD590) linear transducers.
-> > In both cases these are assumed to be connected to a voltage ADC.
+On Thu, 27 Jan 2022 11:34:47 -0600, Robert Hancock wrote:
+> The AMS driver DT binding was missing the clock entry, which is actually
+> mandatory according to the driver implementation. Add this in.
 > 
-> ...
+> Fixes: 39dd2d1e251d ("dt-bindings: iio: adc: Add Xilinx AMS binding documentation")
+> Signed-off-by: Robert Hancock <robert.hancock@calian.com>
+> ---
+>  .../devicetree/bindings/iio/adc/xlnx,zynqmp-ams.yaml      | 8 ++++++++
+>  1 file changed, 8 insertions(+)
 > 
-> > +       rescale->offset = div_s64((s64)offset * rescale->denominator,
-> > +                                 rescale->numerator);
-> 
-> Wonder if we can use mult_frac() here. Would it require 64-bit division?
 
-Same here, I'd rather keep it as is, especially if you plan on adding
-helpers later on for struct u32_fract.
-
-Cheers,
-Liam
-
-> -- 
-> With Best Regards,
-> Andy Shevchenko
+Reviewed-by: Rob Herring <robh@kernel.org>
