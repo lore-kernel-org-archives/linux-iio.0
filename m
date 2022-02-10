@@ -2,59 +2,98 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B456AC433FE
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Feb 2022 08:56:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 287BDC433F5
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Feb 2022 13:55:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238098AbiBJI4w (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Feb 2022 03:56:52 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54682 "EHLO
+        id S234000AbiBJNzJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:55:09 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51792 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238094AbiBJI4w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Feb 2022 03:56:52 -0500
-X-Greylist: delayed 374 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Thu, 10 Feb 2022 00:56:53 PST
-Received: from mail.trixen.pl (mail.trixen.pl [192.71.213.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E86951091
-        for <linux-iio@vger.kernel.org>; Thu, 10 Feb 2022 00:56:53 -0800 (PST)
-Received: by mail.trixen.pl (Postfix, from userid 1001)
-        id 901CE40AF0; Thu, 10 Feb 2022 09:50:35 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=trixen.pl; s=mail;
-        t=1644483038; bh=J50dbWEn9x62xyxY1PWPtYxMwNMcDFoILqXfzM3his0=;
-        h=Date:From:To:Subject:From;
-        b=avHqFOVPEsNBVmkFRHi3uguh+iQKDnJ/TdjpfN+Ekq28QD8vxI5JWzFMI3W9rjrHw
-         KXqV3rP4o9++Y04oYAyUcKVe77cu6Fk60e8gmkB8TQ3iRNXm6GywOhPnGkrAHeYXRn
-         6UB8SsLjpPLzqsF6B/8ix5/wR6gf0OfIzY6FeLGjlw3te9hrjJm+FNLBY44cqecvbd
-         uHpgyIgrP1sQsC7YjQynSm2rdukNqN9DJaoDledLy/84cOYIHkcy3KzK8Xv2KU7N2B
-         rHD4Ixex3T02ewXgnpzjaCcmjWizXNwdmpVUZnLpZ8P3XsgWYNpITgkY65ro3Av0W5
-         0wZKyNVBCerAA==
-Received: by mail.trixen.pl for <linux-iio@vger.kernel.org>; Thu, 10 Feb 2022 08:50:34 GMT
-Message-ID: <20220210084500-0.1.t.1u1a.0.fz311useop@trixen.pl>
-Date:   Thu, 10 Feb 2022 08:50:34 GMT
-From:   =?UTF-8?Q? "Rados=C5=82aw_Grabowski" ?= 
-        <radoslaw.grabowski@trixen.pl>
-To:     <linux-iio@vger.kernel.org>
-Subject: Monitorowanie samochodu
-X-Mailer: mail.trixen.pl
+        with ESMTP id S238274AbiBJNzI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Feb 2022 08:55:08 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 196EBBB5;
+        Thu, 10 Feb 2022 05:55:10 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644501310; x=1676037310;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wubRhfgyfc41wjVMWexQ/+k7dIFqa/nCB9F7aZN9v/Y=;
+  b=EekYeh8wqG5EhFD2HoJYgUiG2glaMjW+qgBFthvDfs0nrRc10PJyMxc8
+   zqId+UrmTXFW6y38XjdAoWIWt6p7poOs9d0vdiQ1NZn4kPdhCSdwDqfMX
+   Z9u/avoCPt2PQmOeaJa49ZvfSFIDKURmlq4AxzMmYssGhL9msU54cxK9i
+   DGihsZ3S0JyYiSicPh5K1VPBKCmVL4emi0w0qC5pkI0liwgZnC1yq0Cxd
+   QOn3X9gYtt5+/2RRwT+rLPiEPWiDxGq+OoyJ5bOLpmAGGxatm2ELc3z2V
+   I/MkXnRScydUy3XNI7I6gzoC0kc6UbTwEHtv8kTnhUpVhE6VjSBc6DbCz
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="247077619"
+X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
+   d="scan'208";a="247077619"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 05:55:09 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
+   d="scan'208";a="629691138"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga002.fm.intel.com with ESMTP; 10 Feb 2022 05:55:08 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 1E95F366; Thu, 10 Feb 2022 15:55:23 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v3 1/3] iio: temperature: ltc2983: Don't hard code defined constants in messages
+Date:   Thu, 10 Feb 2022 15:55:20 +0200
+Message-Id: <20220210135522.26562-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,
+In a couple of messages the constants, which have their definitions,
+are hard coded into the message text. Unhardcode them.
 
-Chcia=C5=82bym przedstawi=C4=87 rozwi=C4=85zanie, kt=C3=B3re poprzez wyko=
-rzystanie GPS monitoruje samochody w czasie rzeczywistym.=20
+While at it, add a trailing \n where it's currently missing.
 
-Dzi=C4=99ki temu mog=C4=85 Pa=C5=84stwo odczytywa=C4=87 wszelkie warto=C5=
-=9Bci dotycz=C4=85ce np. zu=C5=BCycia paliwa czy obrot=C3=B3w silnika.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Reviewed-by: Nuno Sá <nuno.sa@analog.com>
+---
+v3: added \n, used %u (Joe)
+ drivers/iio/temperature/ltc2983.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-System automatycznie generuje rozbudowane raporty i pozwala dokonywa=C4=87=
- istotnych analiz.
+diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+index 301c3f13fb26..94d6dd4db47a 100644
+--- a/drivers/iio/temperature/ltc2983.c
++++ b/drivers/iio/temperature/ltc2983.c
+@@ -409,8 +409,8 @@ static struct ltc2983_custom_sensor *__ltc2983_custom_sensor_new(
+ 	new_custom->size = n_entries * n_size;
+ 	/* check Steinhart size */
+ 	if (is_steinhart && new_custom->size != LTC2983_CUSTOM_STEINHART_SIZE) {
+-		dev_err(dev, "Steinhart sensors size(%zu) must be 24",
+-							new_custom->size);
++		dev_err(dev, "Steinhart sensors size(%zu) must be %u\n", new_custom->size,
++			LTC2983_CUSTOM_STEINHART_SIZE);
+ 		return ERR_PTR(-EINVAL);
+ 	}
+ 	/* Check space on the table. */
+@@ -1299,8 +1299,8 @@ static int ltc2983_parse_dt(struct ltc2983_data *st)
+ 		if (sensor.chan < LTC2983_MIN_CHANNELS_NR ||
+ 		    sensor.chan > LTC2983_MAX_CHANNELS_NR) {
+ 			ret = -EINVAL;
+-			dev_err(dev,
+-				"chan:%d must be from 1 to 20\n", sensor.chan);
++			dev_err(dev, "chan:%d must be from %u to %u\n", sensor.chan,
++				LTC2983_MIN_CHANNELS_NR, LTC2983_MAX_CHANNELS_NR);
+ 			goto put_child;
+ 		} else if (channel_avail_mask & BIT(sensor.chan)) {
+ 			ret = -EINVAL;
+-- 
+2.34.1
 
-Je=C5=BCeli interesuje Pa=C5=84stwa zwi=C4=99kszenie wydajno=C5=9Bci prac=
-y i kontrola wszelkich parametr=C3=B3w floty - prosz=C4=99 o kontakt.
-
-
-Pozdrawiam,
-Rados=C5=82aw Grabowski
