@@ -2,99 +2,133 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C1AAC433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Feb 2022 13:55:42 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 68A2EC433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Feb 2022 13:57:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242288AbiBJNzj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Feb 2022 08:55:39 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52366 "EHLO
+        id S242517AbiBJN5M (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Feb 2022 08:57:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53170 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242477AbiBJNzi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Feb 2022 08:55:38 -0500
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9405FD73;
-        Thu, 10 Feb 2022 05:55:37 -0800 (PST)
+        with ESMTP id S242513AbiBJN5M (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Feb 2022 08:57:12 -0500
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 31061BF5;
+        Thu, 10 Feb 2022 05:57:13 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1644501337; x=1676037337;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=ay0A3kx32MJfbLcM+1m+RIYTgc6yue+5l1DCkhN+RZI=;
-  b=OkBvhrv96X0VwdktPXcb9GyfjCVRQfdbThoMmqyRPDKtRy8/5vd3mUPi
-   esiHAqL8qF95Z6QP4jLkQSEmmPDLHQ58jOgrmn/kfAo0EJ1ucR4Snm0aV
-   m/QKjbNDHWk07nJCiHo6Xj4IgzkUEZKvUB0VW90xzfz7NN4to4yhcPoht
-   JGjOTNX7pJjBhAfllRpLAC2YvggisMSaFDj+JdfpPcwYyHT47+zVaTCv3
-   ukgiB6kWdZnaO0axU/CrqN+ra3M63nrpHNubXFrf1pHovXaMRATWybG+Q
-   jtqefbAMO48rL990FEGmWs3032NiNYBa5KZoSbGhALDvs2eenZFLRsJX1
-   Q==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="230138803"
+  t=1644501433; x=1676037433;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=OFP1NltEDOTkFZpR5z2865Gx8le09uqHZgXyYOTV2S4=;
+  b=captqA7NfiTaSUeYOqjU1bXEluI1uDcuFnafc+vB35D23AwoMhX0yPUe
+   h2m0V9l/wI2tNMNpv5ejunl+Ow/brKzpcnNJC04EeQXl1eVSNJ4tEnpjY
+   /+L6QPu1ZN/p2aZ5jOB9N2wePeoceYVJB3Mwml+yNFzL/q+/fBaWLJOkL
+   lj2NzA3yCLkjcE9TqLuudAHgQ4q1+FFtvMDz9YiTsRbdDfeZ2WT7GnGls
+   WVNFACV/5+3hEbosvkbHPSLjIUECYN15LiJ7pHpLMZVEwfGEtse3pKl0Z
+   p5woW2/XbAcR9wvtWa880wU8u+OPtOC0CQk0pO2hkHJgRlmShaNrvFbgL
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10253"; a="233054007"
 X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="230138803"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 05:55:37 -0800
+   d="scan'208";a="233054007"
+Received: from fmsmga005.fm.intel.com ([10.253.24.32])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 05:57:12 -0800
+X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,358,1635231600"; 
-   d="scan'208";a="485691556"
-Received: from smile.fi.intel.com ([10.237.72.61])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Feb 2022 05:55:35 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nI9u9-0030X4-OH;
-        Thu, 10 Feb 2022 15:54:37 +0200
-Date:   Thu, 10 Feb 2022 15:54:37 +0200
+   d="scan'208";a="773875261"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga005.fm.intel.com with ESMTP; 10 Feb 2022 05:57:10 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 20FC9366; Thu, 10 Feb 2022 15:57:25 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Joe Perches <joe@perches.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v2 1/3] iio: temperature: ltc2983: Don't hard code
- defined constants in messages
-Message-ID: <YgUZHW6MHqo468X+@smile.fi.intel.com>
-References: <20220207104830.83882-1-andriy.shevchenko@linux.intel.com>
- <fdb3056dcaf9dd113049adebbc3fcd74de2b3028.camel@perches.com>
- <YgFVFceYQtWq4Hww@smile.fi.intel.com>
- <20220207204421.7f905aa5@jic23-huawei>
+Subject: [PATCH v1 1/1] iio: ssp_sensors: Make use of device properties
+Date:   Thu, 10 Feb 2022 15:57:24 +0200
+Message-Id: <20220210135724.26660-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220207204421.7f905aa5@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Feb 07, 2022 at 08:44:21PM +0000, Jonathan Cameron wrote:
-> On Mon, 7 Feb 2022 19:21:25 +0200
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> 
-> > On Mon, Feb 07, 2022 at 08:37:55AM -0800, Joe Perches wrote:
-> > > On Mon, 2022-02-07 at 12:48 +0200, Andy Shevchenko wrote:  
-> > > > In a couple of messages the constants, which have their definitions,
-> > > > are hard coded into the message text. Unhardcode them.  
-> > > 
-> > > Found by inspection or tool?  
-> > 
-> > Does it matter? No, a side effect of the following patch.
-> > 
-> > ...
-> > 
-> > > > +		dev_err(dev, "Steinhart sensors size(%zu) must be %d", new_custom->size,
-> > > > +			LTC2983_CUSTOM_STEINHART_SIZE);  
-> > > 
-> > > probably better using "%u" and not "%d"
-> > > 
-> > > and better with a \n termination too.  
-> > 
-> > I think it would be a separate change if we wish so. Let Jonathan to tell what
-> > to do here.
-> > 
-> Either way is fine by me.  I tend to be a little flexible of trivial fixes
-> in patches that are as simple as this one.
+Convert the module to be property provider agnostic and allow
+it to be used on non-OF platforms.
 
-v3 has been just sent.
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+ drivers/iio/common/ssp_sensors/ssp_dev.c | 22 +++++-----------------
+ 1 file changed, 5 insertions(+), 17 deletions(-)
 
+diff --git a/drivers/iio/common/ssp_sensors/ssp_dev.c b/drivers/iio/common/ssp_sensors/ssp_dev.c
+index eafaf4529df5..c1abd20ff808 100644
+--- a/drivers/iio/common/ssp_sensors/ssp_dev.c
++++ b/drivers/iio/common/ssp_sensors/ssp_dev.c
+@@ -7,9 +7,10 @@
+ #include <linux/interrupt.h>
+ #include <linux/io.h>
+ #include <linux/mfd/core.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+-#include <linux/of.h>
+-#include <linux/of_platform.h>
++#include <linux/property.h>
++
+ #include "ssp.h"
+ 
+ #define SSP_WDT_TIME			10000
+@@ -425,7 +426,6 @@ int ssp_queue_ssp_refresh_task(struct ssp_data *data, unsigned int delay)
+ 				  msecs_to_jiffies(delay));
+ }
+ 
+-#ifdef CONFIG_OF
+ static const struct of_device_id ssp_of_match[] = {
+ 	{
+ 		.compatible	= "samsung,sensorhub-rinato",
+@@ -441,8 +441,6 @@ MODULE_DEVICE_TABLE(of, ssp_of_match);
+ static struct ssp_data *ssp_parse_dt(struct device *dev)
+ {
+ 	struct ssp_data *data;
+-	struct device_node *node = dev->of_node;
+-	const struct of_device_id *match;
+ 
+ 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
+ 	if (!data)
+@@ -461,22 +459,12 @@ static struct ssp_data *ssp_parse_dt(struct device *dev)
+ 	if (IS_ERR(data->mcu_reset_gpiod))
+ 		return NULL;
+ 
+-	match = of_match_node(ssp_of_match, node);
+-	if (!match)
+-		return NULL;
+-
+-	data->sensorhub_info = match->data;
++	data->sensorhub_info = device_get_match_data(dev);
+ 
+ 	dev_set_drvdata(dev, data);
+ 
+ 	return data;
+ }
+-#else
+-static struct ssp_data *ssp_parse_dt(struct device *pdev)
+-{
+-	return NULL;
+-}
+-#endif
+ 
+ /**
+  * ssp_register_consumer() - registers iio consumer in ssp framework
+@@ -670,7 +658,7 @@ static struct spi_driver ssp_driver = {
+ 	.remove = ssp_remove,
+ 	.driver = {
+ 		.pm = &ssp_pm_ops,
+-		.of_match_table = of_match_ptr(ssp_of_match),
++		.of_match_table = ssp_of_match,
+ 		.name = "sensorhub"
+ 	},
+ };
 -- 
-With Best Regards,
-Andy Shevchenko
-
+2.34.1
 
