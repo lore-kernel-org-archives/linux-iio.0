@@ -2,93 +2,159 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88D49C433F5
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Feb 2022 01:12:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1FAE1C433F5
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Feb 2022 08:46:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241756AbiBKBMg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Feb 2022 20:12:36 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:51250 "EHLO
+        id S1348119AbiBKIqM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Feb 2022 03:46:12 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:37434 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346697AbiBKBMf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Feb 2022 20:12:35 -0500
-Received: from mail-yb1-xb36.google.com (mail-yb1-xb36.google.com [IPv6:2607:f8b0:4864:20::b36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 117FEB4C
-        for <linux-iio@vger.kernel.org>; Thu, 10 Feb 2022 17:12:34 -0800 (PST)
-Received: by mail-yb1-xb36.google.com with SMTP id e140so1314064ybh.9
-        for <linux-iio@vger.kernel.org>; Thu, 10 Feb 2022 17:12:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=J88C2+WacsqQSdxnsSChBU06Pgsig7erWKYvY0xtMso=;
-        b=QHe3h5C++nnBcVkD45g4Pk1ynGu3W3SJ97i5ZH3x4r1tUeNQQlMja+CGKROy16PxKc
-         fdDI0yzEvBSXSqvDei8yp7P7zLtLPcFYilm3hNeQTKmnmhHKp2/w88Q9WEtDRV5naorw
-         xyAzgm3S94EIyAsksmd1nMe095UTYk4/Jk7S5uuYK55ipxFIzWxa1KjebhMupTBS3GUT
-         S6HLtkDD5SrQF2M6zBsDSgw8t25XpvKpORymN5to3FtlVf6GkQGFly1R/piHWkFNTnqI
-         Jpb3dQQjaNmiR4wVeyYOS3KkIyx+lXedGoR0lGMfsZ8A4AwpAjSACJG1Sdk+Uiv7gK71
-         Mo2Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=J88C2+WacsqQSdxnsSChBU06Pgsig7erWKYvY0xtMso=;
-        b=PXfraIjoUAc/VjhZA52cmqJy0YHWom5NXnT4zpQuHLI+0Nv5vKs0oqhdp5AoXGOCEM
-         KyuSw7eWi9J8xfPCHJuJ3B7RhR/Mql0tX/YL++dxV6AVyEtJwFGkQ+cFMurw3cZ82y0K
-         rpATwTgyiwzanlh00qn/C7QarHv/eRelu5aU+gj+X031PbW0Ce5ugIfgfMXgVMUCtOin
-         JxevCQRg4fg/s2iV1w2FRK8HFvj9cy0+vD3hVNET+HMpxMEJhTDxxiBFibAodLlddUBh
-         y32dhHbWyDMMLls5D8BT8VfUIGLzwCHknVH8mfaPpdjUodM+5CsweIHKR4d1w1QYjOwL
-         bhyw==
-X-Gm-Message-State: AOAM531HN01+EhFWsNeH/jDvGKoasEp1lGeeGBVWMpvJv2oPWO/3ylcy
-        ioxAX7Im/rwc92VgEvN2EMwynQLLFakWOL/VODiGpw==
-X-Google-Smtp-Source: ABdhPJxXg8TaVRUvy+OG5/nJN2rIs7DJiRE9bRuV3337tBIjtctQEIhSEBVYZeZkAyqVVQ8HY/6QFcSBbM08YwfOxbY=
-X-Received: by 2002:a81:4402:: with SMTP id r2mr10280479ywa.126.1644541953328;
- Thu, 10 Feb 2022 17:12:33 -0800 (PST)
+        with ESMTP id S1348134AbiBKIqL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Feb 2022 03:46:11 -0500
+Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3F947F12;
+        Fri, 11 Feb 2022 00:46:09 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644569169; x=1676105169;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=ZO41/6QTQ7lECjmvh5tmSvjvvAY7ky6Pq6DyoOUjdL0=;
+  b=jXBImRKRyrR8tMlG+3NYnmuz3JQK5j9s5zllfdlKSwBT9ZzIHd7DlWKh
+   wnZPp7niEscdV+oPtmpwkx1Y56MQo5bqVh4OJBBswBogEjJ54quY7TOXp
+   C6tfbY+y4YFR0RPt5uLwLIMwF0fxj9jyXAEfuVOwV5R5FO3lEDRG2Xbu5
+   qHg2Nderj//yuZcZwwv+aF8i7eLCk8zF3QTYpyBDNklLbyrZU1cD91JMl
+   MpeXlkXtTwIWQek/UZJs200lfhRVDT7ZhR4WyTBg9ygJENSQ3oIxpNNOe
+   nBJKjuvvJvXRGm8OL4rDVed/EWuERpLfwfO9Y0w492XSH3fB6jMagychV
+   A==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10254"; a="249637606"
+X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
+   d="scan'208";a="249637606"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:46:08 -0800
+X-IronPort-AV: E=Sophos;i="5.88,360,1635231600"; 
+   d="scan'208";a="586267118"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga008-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 11 Feb 2022 00:46:02 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nIRY8-003NBk-86;
+        Fri, 11 Feb 2022 10:45:04 +0200
+Date:   Fri, 11 Feb 2022 10:45:04 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Yury Norov <yury.norov@gmail.com>
+Cc:     Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Andrew Morton <akpm@linux-foundation.org>,
+        =?utf-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Peter Zijlstra <peterz@infradead.org>,
+        David Laight <David.Laight@aculab.com>,
+        Joe Perches <joe@perches.com>, Dennis Zhou <dennis@kernel.org>,
+        Emil Renner Berthing <kernel@esmil.dk>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        Alexey Klimov <aklimov@redhat.com>,
+        linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Ardelean <alexandru.ardelean@analog.com>,
+        Nathan Chancellor <nathan@kernel.org>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 04/49] iio: fix opencoded for_each_set_bit()
+Message-ID: <YgYiELMVJn52EZxY@smile.fi.intel.com>
+References: <20220210224933.379149-1-yury.norov@gmail.com>
+ <20220210224933.379149-5-yury.norov@gmail.com>
 MIME-Version: 1.0
-References: <20220204192552.428433-1-massimo.toscanelli@leica-geosystems.com>
- <20220207090443.3710425-1-massimo.toscanelli@leica-geosystems.com> <20220207135858.00000745@Huawei.com>
-In-Reply-To: <20220207135858.00000745@Huawei.com>
-From:   Linus Walleij <linus.walleij@linaro.org>
-Date:   Fri, 11 Feb 2022 02:12:22 +0100
-Message-ID: <CACRpkdarYo06heRhhi0o5bKbMnVveQ+2j+oKHokxCNftCzq_cg@mail.gmail.com>
-Subject: Re: [PATCH RESEND 0/2] Solve data access delay of ST sensors
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     Massimo Toscanelli <massimo.toscanelli@leica-geosystems.com>,
-        linux-kernel@vger.kernel.org, jic23@kernel.org, lars@metafoo.de,
-        caihuoqing@baidu.com, aardelean@deviqon.com,
-        andy.shevchenko@gmail.com, hdegoede@redhat.com,
-        Qing-wu.Li@leica-geosystems.com.cn, stephan@gerhold.net,
-        linux-iio@vger.kernel.org, bsp-development.geo@leica-geosystems.com
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220210224933.379149-5-yury.norov@gmail.com>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Feb 7, 2022 at 2:59 PM Jonathan Cameron
-<Jonathan.Cameron@huawei.com> wrote:
-> On Mon,  7 Feb 2022 09:04:41 +0000
-> Massimo Toscanelli <massimo.toscanelli@leica-geosystems.com> wrote:
+On Thu, Feb 10, 2022 at 02:48:48PM -0800, Yury Norov wrote:
+> iio_simple_dummy_trigger_h() is mostly an opencoded for_each_set_bit().
+> Using for_each_set_bit() make code much cleaner, and more effective.
 
-> The standard approach to avoiding rapid power up and power down cycles
-> is to use runtime_pm with autosuspend and a period set at a period
-> of perhaps 1 second.  Would that work for you?  You'll pay the costs
-> of power up only on the first read after a period of not reading.
->
-> Exposing the control to userspace for this sort of thing is normally
-> a bad idea because userspace generally has no idea if it should use it
-> as there is no clean way of telling userspace the costs of not using
-> it (as those will be device specific).
->
-> If you have a usecase that requires regular reading you should also
-> think about whether using the buffered interface is more appropriate.
-> IIRC that will keep these devices powered up continuously whilst
-> the buffer is enabled and will provide a lower overhead way of
-> reading data than sysfs reads.
+I would wait for some testing, but from code perspective looks good.
+Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 
-I see that I have repeted similar comments.
+> Signed-off-by: Yury Norov <yury.norov@gmail.com>
+> ---
+>  drivers/iio/dummy/iio_simple_dummy_buffer.c | 48 ++++++++-------------
+>  1 file changed, 19 insertions(+), 29 deletions(-)
+> 
+> diff --git a/drivers/iio/dummy/iio_simple_dummy_buffer.c b/drivers/iio/dummy/iio_simple_dummy_buffer.c
+> index d81c2b2dad82..3bc1b7529e2a 100644
+> --- a/drivers/iio/dummy/iio_simple_dummy_buffer.c
+> +++ b/drivers/iio/dummy/iio_simple_dummy_buffer.c
+> @@ -45,41 +45,31 @@ static irqreturn_t iio_simple_dummy_trigger_h(int irq, void *p)
+>  {
+>  	struct iio_poll_func *pf = p;
+>  	struct iio_dev *indio_dev = pf->indio_dev;
+> +	int i = 0, j;
+>  	u16 *data;
+>  
+>  	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+>  	if (!data)
+>  		goto done;
+>  
+> -	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength)) {
+> -		/*
+> -		 * Three common options here:
+> -		 * hardware scans: certain combinations of channels make
+> -		 *   up a fast read.  The capture will consist of all of them.
+> -		 *   Hence we just call the grab data function and fill the
+> -		 *   buffer without processing.
+> -		 * software scans: can be considered to be random access
+> -		 *   so efficient reading is just a case of minimal bus
+> -		 *   transactions.
+> -		 * software culled hardware scans:
+> -		 *   occasionally a driver may process the nearest hardware
+> -		 *   scan to avoid storing elements that are not desired. This
+> -		 *   is the fiddliest option by far.
+> -		 * Here let's pretend we have random access. And the values are
+> -		 * in the constant table fakedata.
+> -		 */
+> -		int i, j;
+> -
+> -		for (i = 0, j = 0;
+> -		     i < bitmap_weight(indio_dev->active_scan_mask,
+> -				       indio_dev->masklength);
+> -		     i++, j++) {
+> -			j = find_next_bit(indio_dev->active_scan_mask,
+> -					  indio_dev->masklength, j);
+> -			/* random access read from the 'device' */
+> -			data[i] = fakedata[j];
+> -		}
+> -	}
+> +	/*
+> +	 * Three common options here:
+> +	 * hardware scans: certain combinations of channels make
+> +	 *   up a fast read.  The capture will consist of all of them.
+> +	 *   Hence we just call the grab data function and fill the
+> +	 *   buffer without processing.
+> +	 * software scans: can be considered to be random access
+> +	 *   so efficient reading is just a case of minimal bus
+> +	 *   transactions.
+> +	 * software culled hardware scans:
+> +	 *   occasionally a driver may process the nearest hardware
+> +	 *   scan to avoid storing elements that are not desired. This
+> +	 *   is the fiddliest option by far.
+> +	 * Here let's pretend we have random access. And the values are
+> +	 * in the constant table fakedata.
+> +	 */
+> +	for_each_set_bit(j, indio_dev->active_scan_mask, indio_dev->masklength)
+> +		data[i++] = fakedata[j];
+>  
+>  	iio_push_to_buffers_with_timestamp(indio_dev, data,
+>  					   iio_get_time_ns(indio_dev));
+> -- 
+> 2.32.0
+> 
 
-Sorry for the hammering.
+-- 
+With Best Regards,
+Andy Shevchenko
 
-I agree with Jonathan's stance here.
 
-Yours,
-Linus Walleij
