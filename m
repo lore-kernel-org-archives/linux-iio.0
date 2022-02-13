@@ -2,59 +2,59 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C5941C433EF
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Feb 2022 02:58:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3EE6C433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Feb 2022 02:58:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233166AbiBMC6C (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 12 Feb 2022 21:58:02 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46440 "EHLO
+        id S233139AbiBMC6H (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 12 Feb 2022 21:58:07 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46678 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233051AbiBMC5y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Feb 2022 21:57:54 -0500
-Received: from mail-qt1-x834.google.com (mail-qt1-x834.google.com [IPv6:2607:f8b0:4864:20::834])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91B3460077;
-        Sat, 12 Feb 2022 18:57:49 -0800 (PST)
-Received: by mail-qt1-x834.google.com with SMTP id s1so12539035qtw.9;
-        Sat, 12 Feb 2022 18:57:49 -0800 (PST)
+        with ESMTP id S233158AbiBMC6C (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Feb 2022 21:58:02 -0500
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3E61A60A85;
+        Sat, 12 Feb 2022 18:57:54 -0800 (PST)
+Received: by mail-qt1-x830.google.com with SMTP id y8so12556146qtn.8;
+        Sat, 12 Feb 2022 18:57:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=+bue5/qYkq1jRa6IPWu4PMPydpu6fVwowylJcvYqJHI=;
-        b=OlFgLVFlYAdAYd3R74hutAqlvhcSyWzi0hfYrzfZFD9HzmToDlcMqLqnr9SGdnWoO7
-         v1xfhyr46y4sLed0Z1GbwFSAF3AUCsLsI7iQz++xZ+DQ//8VlOJj49qn3vEsamD2Zu/l
-         urvEWm8gaW6PsF4yRkMjkHz/1O7SdH8V845iEOBwgC3ZcConUDzsVr2avas6iVLv7z6v
-         3codfnVvwEh/EPAtLiFnGi4udbxltZSZFZ3e3RkX6E00mVwXbczxC5pFkTz+UaFyVJkJ
-         xSDvPbCx4HAOuOPI06HvYknI2Lot5YItpuLlipIVBsrOWJj5JXjNyKQ6mGXnw3FXM5Q4
-         A8Pg==
+        bh=d2LN3zUyRyqP9/9t5yNh3Y930skR3pEag7TQgwhm6Iw=;
+        b=ZUz4uSa3DBQiK/dvEeGdgINAhPEaGSYVrSWbQ/Z82VzrfGItsnfWGO5O/DUP5gIKRN
+         Z0Jm7bRazuODeTmf4+PMV6alGXdP11aPaCk2Ouo04FYdqm9GX3mniycZ3Iu/bo/8i9Gp
+         v5GTZlGTXRmR3Ta40nWnRpae0D3X3Ed9+gSUH+ouFW618wSOUh+igYrBDh9j7Qs+lneN
+         F3fJ8ily3RiKYkABj7DZB+iuSLr4kmbh3CsiBNCAnkwDmv0oNM4jwKbeiRqyz1dn5ucm
+         K1xl2eLqO15UGRQonDBodRmj9cRUEYraxeldm9brkQ5P6GqHFZ/5S14EED+ph9Oq/vGq
+         g2UA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=+bue5/qYkq1jRa6IPWu4PMPydpu6fVwowylJcvYqJHI=;
-        b=0rROxEqp0H7uMSa4Td/ghJhgtGNJbjgH5F8MlHOqT1cegG2stEJz+JP7ilJ9y/sElb
-         Ai6iZ7WorA2D+a1ZzwCYE4b6EcmJkaUGmhTpdP4fgKf5RVlij2XYG/fd7734XhCr5zPr
-         MWYIyo+xuvQERPeNOKoI/x0WrOLwF3nBxr2X1B8+Z5wucPcpNdOLeB5jYQJlNmdIQTiQ
-         anuWp+GfqjySKo8bh0P9M/Sl+Qe0wumeXhz41Kd4bBQicUvu4+c2uMgBY6fPI1HvhWC7
-         iC58R11+m9By03qybnlo4yaHmwZ4AukVV+IbKwF2atwGfUADkhCyFiQF25Au0Yt+w6f1
-         f7gQ==
-X-Gm-Message-State: AOAM531R2enq7YRL04FRf2XO3gA3k4HX+5a/5V+0z1Wmjsj7X2nFjzP9
-        jtT1ypQugy+l19IbQWQRbsvRRFXrz+g=
-X-Google-Smtp-Source: ABdhPJxyP0Kt3bGoL8IuCyvnEDfGOjYBh38k1BhbjpFbUr9DNzUDdM+/O5l6mGiNn1/2ozQYTPt3sQ==
-X-Received: by 2002:a05:622a:1ba7:: with SMTP id bp39mr5829613qtb.626.1644721068762;
-        Sat, 12 Feb 2022 18:57:48 -0800 (PST)
+        bh=d2LN3zUyRyqP9/9t5yNh3Y930skR3pEag7TQgwhm6Iw=;
+        b=a6OcaETvdmADE65xzwwCNSZOMDL0iUsf5K4Go5V9LC2MsGRViDw9dS8E4xKO3jR4pL
+         177C8QYOPuAtKs85ILKab5nbN3r+BBnj9Hr1CwvCJMlkkala0dBuB74u/ZT2ztU+dSir
+         J5UgpyA2WO5oP9N2Fj26B/21JHb0okOv1D5bb1q5gApi8jDaJAwgBi6QcaYGGXJE9rj1
+         352+DH0bAF7dpWLsnRGLHbA966r6HLbTT+swHsMMUfaYfPPwPiW7pyiM1DNBGXUYW4Gf
+         SbUT4KjWTPc7gz566o0lioCtUQgu40xDl+3KFayyfqupAX3U1PGDU2PfQ3BND+gkefNy
+         B4ZA==
+X-Gm-Message-State: AOAM533EMZPe9ONk102GKSeTv9kV2HahW9q1BZaQsN/feJsnm0jK8VKv
+        EjD9KaTkuVUQWpeLBd1tWCg6fkzA8fw=
+X-Google-Smtp-Source: ABdhPJwSYZoqkdp3JcVSX562dahG9a3fley7kPvah6OZ4kWvWCkbooQhvLc7MTrXQqdSN7Pk8uapJA==
+X-Received: by 2002:ac8:74cc:: with SMTP id j12mr5686415qtr.374.1644721073064;
+        Sat, 12 Feb 2022 18:57:53 -0800 (PST)
 Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id y15sm14551106qkp.22.2022.02.12.18.57.47
+        by smtp.gmail.com with ESMTPSA id y15sm14551106qkp.22.2022.02.12.18.57.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 18:57:48 -0800 (PST)
+        Sat, 12 Feb 2022 18:57:52 -0800 (PST)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         andy.shevchenko@gmail.com, lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v15 04/10] iio: afe: rescale: fix accuracy for small fractional scales
-Date:   Sat, 12 Feb 2022 21:57:33 -0500
-Message-Id: <20220213025739.2561834-5-liambeguin@gmail.com>
+Subject: [PATCH v15 08/10] iio: afe: rescale: add temperature transducers
+Date:   Sat, 12 Feb 2022 21:57:37 -0500
+Message-Id: <20220213025739.2561834-9-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
 In-Reply-To: <20220213025739.2561834-1-liambeguin@gmail.com>
 References: <20220213025739.2561834-1-liambeguin@gmail.com>
@@ -64,56 +64,80 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The approximation caused by integer divisions can be costly on smaller
-scale values since the decimal part is significant compared to the
-integer part. Switch to an IIO_VAL_INT_PLUS_NANO scale type in such
-cases to maintain accuracy.
+A temperature transducer is a device that converts a thermal quantity
+into any other physical quantity. This patch adds support for
+temperature to voltage (like the LTC2997) and temperature to current
+(like the AD590) linear transducers.
+In both cases these are assumed to be connected to a voltage ADC.
 
 Signed-off-by: Liam Beguin <liambeguin@gmail.com>
 Reviewed-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/afe/iio-rescale.c | 20 +++++++++++++++++---
- 1 file changed, 17 insertions(+), 3 deletions(-)
+ drivers/iio/afe/iio-rescale.c | 32 ++++++++++++++++++++++++++++++++
+ 1 file changed, 32 insertions(+)
 
 diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index 8eaf766e28cc..5d78f0cf47d2 100644
+index e31a93435536..7e511293d6d1 100644
 --- a/drivers/iio/afe/iio-rescale.c
 +++ b/drivers/iio/afe/iio-rescale.c
-@@ -24,7 +24,7 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 			  int *val, int *val2)
- {
- 	s64 tmp;
--	s32 rem;
-+	s32 rem, rem2;
- 	u32 mult;
- 	u32 neg;
+@@ -435,11 +435,37 @@ static int rescale_temp_sense_rtd_props(struct device *dev,
+ 	return 0;
+ }
  
-@@ -43,9 +43,23 @@ int rescale_process_scale(struct rescale *rescale, int scale_type,
- 		tmp = (s64)*val * 1000000000LL;
- 		tmp = div_s64(tmp, rescale->denominator);
- 		tmp *= rescale->numerator;
--		tmp = div_s64(tmp, 1000000000LL);
++static int rescale_temp_transducer_props(struct device *dev,
++					 struct rescale *rescale)
++{
++	s32 offset = 0;
++	s32 sense = 1;
++	s32 alpha;
++	int ret;
 +
-+		tmp = div_s64_rem(tmp, 1000000000LL, &rem);
- 		*val = tmp;
--		return scale_type;
++	device_property_read_u32(dev, "sense-offset-millicelsius", &offset);
++	device_property_read_u32(dev, "sense-resistor-ohms", &sense);
++	ret = device_property_read_u32(dev, "alpha-ppm-per-celsius", &alpha);
++	if (ret) {
++		dev_err(dev, "failed to read alpha-ppm-per-celsius: %d\n", ret);
++		return ret;
++	}
 +
-+		if (!rem)
-+			return scale_type;
++	rescale->numerator = 1000000;
++	rescale->denominator = alpha * sense;
 +
-+		tmp = 1 << *val2;
++	rescale->offset = div_s64((s64)offset * rescale->denominator,
++				  rescale->numerator);
 +
-+		rem2 = *val % (int)tmp;
-+		*val = *val / (int)tmp;
++	return 0;
++}
 +
-+		*val2 = rem / (int)tmp;
-+		if (rem2)
-+			*val2 += div_s64((s64)rem2 * 1000000000LL, tmp);
-+
-+		return IIO_VAL_INT_PLUS_NANO;
- 	case IIO_VAL_INT_PLUS_NANO:
- 	case IIO_VAL_INT_PLUS_MICRO:
- 		mult = scale_type == IIO_VAL_INT_PLUS_NANO ? 1000000000L : 1000000L;
+ enum rescale_variant {
+ 	CURRENT_SENSE_AMPLIFIER,
+ 	CURRENT_SENSE_SHUNT,
+ 	VOLTAGE_DIVIDER,
+ 	TEMP_SENSE_RTD,
++	TEMP_TRANSDUCER,
+ };
+ 
+ static const struct rescale_cfg rescale_cfg[] = {
+@@ -459,6 +485,10 @@ static const struct rescale_cfg rescale_cfg[] = {
+ 		.type = IIO_TEMP,
+ 		.props = rescale_temp_sense_rtd_props,
+ 	},
++	[TEMP_TRANSDUCER] = {
++		.type = IIO_TEMP,
++		.props = rescale_temp_transducer_props,
++	},
+ };
+ 
+ static const struct of_device_id rescale_match[] = {
+@@ -470,6 +500,8 @@ static const struct of_device_id rescale_match[] = {
+ 	  .data = &rescale_cfg[VOLTAGE_DIVIDER], },
+ 	{ .compatible = "temperature-sense-rtd",
+ 	  .data = &rescale_cfg[TEMP_SENSE_RTD], },
++	{ .compatible = "temperature-transducer",
++	  .data = &rescale_cfg[TEMP_TRANSDUCER], },
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, rescale_match);
 -- 
 2.35.1.4.g5d01301f2b86
 
