@@ -2,59 +2,59 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 50158C43219
-	for <linux-iio@archiver.kernel.org>; Sun, 13 Feb 2022 02:58:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FCFAC4167B
+	for <linux-iio@archiver.kernel.org>; Sun, 13 Feb 2022 02:58:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233149AbiBMC6E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S233194AbiBMC6E (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sat, 12 Feb 2022 21:58:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46700 "EHLO
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:46702 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233132AbiBMC6C (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Feb 2022 21:58:02 -0500
-Received: from mail-qt1-x82b.google.com (mail-qt1-x82b.google.com [IPv6:2607:f8b0:4864:20::82b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA9E8606E8;
-        Sat, 12 Feb 2022 18:57:52 -0800 (PST)
-Received: by mail-qt1-x82b.google.com with SMTP id r9so1396839qta.1;
-        Sat, 12 Feb 2022 18:57:52 -0800 (PST)
+        with ESMTP id S233190AbiBMC6D (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Feb 2022 21:58:03 -0500
+Received: from mail-qk1-x734.google.com (mail-qk1-x734.google.com [IPv6:2607:f8b0:4864:20::734])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0419460A8A;
+        Sat, 12 Feb 2022 18:57:55 -0800 (PST)
+Received: by mail-qk1-x734.google.com with SMTP id de39so2081823qkb.13;
+        Sat, 12 Feb 2022 18:57:54 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=c2beK8Xo7ZUA6pwRUqGcFRI5SxTB6l8oXZqr26ObJoM=;
-        b=ldiF86Xq0Wu7iIPYZCMAovUvu+QjlvhE/Cj4J1nLDTbJB+U47EHmIXtJEYAeMNddlu
-         0jhdoobRVdoo29yXKqWma+mmCT176Q6xcxZSv6+ExlMGwlFy96mOyE/bRTxdVdN+5RLo
-         m41BzXcSfTqJiUyPg8eF4CjzfCbKdTq25R2VxD2ROaRh+I4guWhmB2oYhpmNs9ZbJ1uI
-         JXCLn5FKhl5pEMAmHaQ0pWX2VtvDH6wEAbibaDzOlaDofPZrhNuFqYI4gf72BXoU4AqW
-         XcmdgfwG83/Uqv5ccsvpYqCI/3F4ykFCEDrTChoPuAQO2qLx47m5zD+2W/0t9ddyRADX
-         Jn6g==
+        bh=QJ4snz0cur4JK5tD6GVF0n87Yz4vTpK9iTHizeDj3iE=;
+        b=lbKvlU++Cq7nnOV+kVFGRozFMarRJ2iWkaGWPDqPDswsVVpLrspBYNTte4XljdqxG3
+         hyRwTKuF281EXu6BKNJFUglFL0iKVuNcT6YLdDcvndAgQ306iIFnRBeUgPlaHDeYe3IU
+         gX1rk5QByxDTrUhFhcHeThTRTYgtMDmxdoP/Q2j0CKsXgZD7QRMqNPP1MBvJkqxY88ve
+         XewXKYztkINm457uMhtufBDfD/5LdKt3UgcfF5VIgLO9k5UcgsDfqqinleJWwz0+9ID8
+         eebnGY7dX0PDKl6E5trozXtin3rle+qJCy6r+f6PdI9eHlhhZJtmxxk7mC6Lg/rZVhdn
+         XMnQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=c2beK8Xo7ZUA6pwRUqGcFRI5SxTB6l8oXZqr26ObJoM=;
-        b=58oRt1HIvfpU3j74rmZRFmUzpUQUIMsg85EtzdFaCm61LmaPfbhXUam8mMcd1dJkkT
-         sJ+AKvpDZUElZtnDQ2z4XbHPvmC9WxxMWkeBqvT41GCoNlH2/Pl6ipkZQov3OUB4Wuor
-         f0JNJevG99K+FQLiVnhUXqwnS6BYg0mEudm2w8cE9Ho1GoaING4rGtF/S4dGHe0N/LCU
-         Nxq9Xw5Iktm+3CUyu+7dKccChgmJZLWk/QwsjyfWMkGu3Vpk5UFa8Ag4xcPfwM8/via/
-         5UE8eZyi9rdgoSQyZIeNrd7A0yiYfGTIA/EguNxVouANifHQ6Jm8Hce0KtfoDeWfyyBE
-         oSZg==
-X-Gm-Message-State: AOAM530LgRiiJgPqaAv5i7QEqNQvsKFSKOCpfjrxYa7UVIOGsf/+w87h
-        TVhZ8DqFuqQ/AtL2s3pvkqM=
-X-Google-Smtp-Source: ABdhPJwZFS85eS5W4PJxrhrFFSWdT9xvHMuosYnx58YpgcOSYmrdpWeKuCxcQOPpx6QtitfJaOHVGw==
-X-Received: by 2002:ac8:5b8a:: with SMTP id a10mr5604208qta.469.1644721072056;
-        Sat, 12 Feb 2022 18:57:52 -0800 (PST)
+        bh=QJ4snz0cur4JK5tD6GVF0n87Yz4vTpK9iTHizeDj3iE=;
+        b=3cAYwmY9sYw81+u0efMLAXgqgRyltlYbtgOzK/IY0pPXZDawmfo5EGvQuJKznYW7fY
+         eE86VZVYBITd8iqi/+PTad8omssTmcXu3iGzTizd5Ol4U7ANzyyyTTjAEaffIN9Z37Fv
+         LuG4vLsygcQfjSxP4eQAuJtY4fXVG+6Y0zsRRjv2tLAkIUlr9k5divSa92vqyFexRO7B
+         PAyZqMPLDJpgocgS6Tv313BTqp1Ho6f3Np63l0JSc/y8Xl/thWB2dTKr22Ct3OXRpHZO
+         3Sen8zdkxSDIGoWi62hcCL4wOFU/6ACPHZ1nBPXYgumDLBUdcqAe8IC0xw3DZq8tpNoG
+         QFQA==
+X-Gm-Message-State: AOAM5337LUmVjXgkYQvsL6AttHGcdHafDyxLEN9cfDOsnC/+0I1/H0Xq
+        /ldlufn+a2Rvw4PdtDqminQ=
+X-Google-Smtp-Source: ABdhPJy3YJp21eaSkvum9GHIhiIybHHgJTRN8AUGcCQ5Kr4O7rPrMYEZWcdNLnWKdqCn9lsbtS+vTw==
+X-Received: by 2002:a37:6c06:: with SMTP id h6mr4109949qkc.627.1644721074166;
+        Sat, 12 Feb 2022 18:57:54 -0800 (PST)
 Received: from shaak.. (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
-        by smtp.gmail.com with ESMTPSA id y15sm14551106qkp.22.2022.02.12.18.57.50
+        by smtp.gmail.com with ESMTPSA id y15sm14551106qkp.22.2022.02.12.18.57.53
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 12 Feb 2022 18:57:51 -0800 (PST)
+        Sat, 12 Feb 2022 18:57:53 -0800 (PST)
 From:   Liam Beguin <liambeguin@gmail.com>
 To:     liambeguin@gmail.com, peda@axentia.se, jic23@kernel.org,
         andy.shevchenko@gmail.com, lars@metafoo.de
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, robh+dt@kernel.org
-Subject: [PATCH v15 07/10] iio: afe: rescale: add RTD temperature sensor support
-Date:   Sat, 12 Feb 2022 21:57:36 -0500
-Message-Id: <20220213025739.2561834-8-liambeguin@gmail.com>
+Subject: [PATCH v15 09/10] dt-bindings: iio: afe: add bindings for temperature-sense-rtd
+Date:   Sat, 12 Feb 2022 21:57:38 -0500
+Message-Id: <20220213025739.2561834-10-liambeguin@gmail.com>
 X-Mailer: git-send-email 2.35.1.4.g5d01301f2b86
 In-Reply-To: <20220213025739.2561834-1-liambeguin@gmail.com>
 References: <20220213025739.2561834-1-liambeguin@gmail.com>
@@ -64,94 +64,125 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-An RTD (Resistance Temperature Detector) is a kind of temperature
-sensor used to get a linear voltage to temperature reading within a
-give range (usually 0 to 100 degrees Celsius). Common types of RTDs
-include PT100, PT500, and PT1000.
+An ADC is often used to measure other quantities indirectly. This
+binding describe one case, the measurement of a temperature through the
+voltage across an RTD resistor such as a PT1000.
 
 Signed-off-by: Liam Beguin <liambeguin@gmail.com>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/afe/iio-rescale.c | 48 +++++++++++++++++++++++++++++++++++
- 1 file changed, 48 insertions(+)
+ .../iio/afe/temperature-sense-rtd.yaml        | 101 ++++++++++++++++++
+ 1 file changed, 101 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
 
-diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
-index 46947c68d3a9..e31a93435536 100644
---- a/drivers/iio/afe/iio-rescale.c
-+++ b/drivers/iio/afe/iio-rescale.c
-@@ -394,10 +394,52 @@ static int rescale_voltage_divider_props(struct device *dev,
- 	return 0;
- }
- 
-+static int rescale_temp_sense_rtd_props(struct device *dev,
-+					struct rescale *rescale)
-+{
-+	u32 factor;
-+	u32 alpha;
-+	u32 iexc;
-+	u32 tmp;
-+	int ret;
-+	u32 r0;
+diff --git a/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml b/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
+new file mode 100644
+index 000000000000..336ce96371db
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/afe/temperature-sense-rtd.yaml
+@@ -0,0 +1,101 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/afe/temperature-sense-rtd.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+	ret = device_property_read_u32(dev, "excitation-current-microamp",
-+				       &iexc);
-+	if (ret) {
-+		dev_err(dev, "failed to read excitation-current-microamp: %d\n",
-+			ret);
-+		return ret;
-+	}
++title: Temperature Sense RTD
 +
-+	ret = device_property_read_u32(dev, "alpha-ppm-per-celsius", &alpha);
-+	if (ret) {
-+		dev_err(dev, "failed to read alpha-ppm-per-celsius: %d\n",
-+			ret);
-+		return ret;
-+	}
++maintainers:
++  - Liam Beguin <liambeguin@gmail.com>
 +
-+	ret = device_property_read_u32(dev, "r-naught-ohms", &r0);
-+	if (ret) {
-+		dev_err(dev, "failed to read r-naught-ohms: %d\n", ret);
-+		return ret;
-+	}
++description: |
++  RTDs (Resistance Temperature Detectors) are a kind of temperature sensors
++  used to get a linear voltage to temperature reading within a give range
++  (usually 0 to 100 degrees Celsius).
 +
-+	tmp = r0 * iexc * alpha / 1000000;
-+	factor = gcd(tmp, 1000000);
-+	rescale->numerator = 1000000 / factor;
-+	rescale->denominator = tmp / factor;
++  When an io-channel measures the output voltage across an RTD such as a
++  PT1000, the interesting measurement is almost always the corresponding
++  temperature, not the voltage output. This binding describes such a circuit.
 +
-+	rescale->offset = -1 * ((r0 * iexc) / 1000);
++  The general transfer function here is (using SI units)
 +
-+	return 0;
-+}
++    V = R(T) * iexc
++    R(T) = r0 * (1 + alpha * T)
++    T = 1 / (alpha * r0 * iexc) * (V - r0 * iexc)
 +
- enum rescale_variant {
- 	CURRENT_SENSE_AMPLIFIER,
- 	CURRENT_SENSE_SHUNT,
- 	VOLTAGE_DIVIDER,
-+	TEMP_SENSE_RTD,
- };
- 
- static const struct rescale_cfg rescale_cfg[] = {
-@@ -413,6 +455,10 @@ static const struct rescale_cfg rescale_cfg[] = {
- 		.type = IIO_VOLTAGE,
- 		.props = rescale_voltage_divider_props,
- 	},
-+	[TEMP_SENSE_RTD] = {
-+		.type = IIO_TEMP,
-+		.props = rescale_temp_sense_rtd_props,
-+	},
- };
- 
- static const struct of_device_id rescale_match[] = {
-@@ -422,6 +468,8 @@ static const struct of_device_id rescale_match[] = {
- 	  .data = &rescale_cfg[CURRENT_SENSE_SHUNT], },
- 	{ .compatible = "voltage-divider",
- 	  .data = &rescale_cfg[VOLTAGE_DIVIDER], },
-+	{ .compatible = "temperature-sense-rtd",
-+	  .data = &rescale_cfg[TEMP_SENSE_RTD], },
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(of, rescale_match);
++  The following circuit matches what's in the examples section.
++
++           5V0
++          -----
++            |
++        +---+----+
++        |  R 5k  |
++        +---+----+
++            |
++            V 1mA
++            |
++            +---- Vout
++            |
++        +---+----+
++        | PT1000 |
++        +---+----+
++            |
++          -----
++           GND
++
++properties:
++  compatible:
++    const: temperature-sense-rtd
++
++  io-channels:
++    maxItems: 1
++    description: |
++      Channel node of a voltage io-channel.
++
++  '#io-channel-cells':
++    const: 0
++
++  excitation-current-microamp:
++    description: The current fed through the RTD sensor.
++
++  alpha-ppm-per-celsius:
++    description: |
++      alpha can also be expressed in micro-ohms per ohm Celsius. It's a linear
++      approximation of the resistance versus temperature relationship
++      between 0 and 100 degrees Celsius.
++
++      alpha = (R_100 - R_0) / (100 * R_0)
++
++      Where, R_100 is the resistance of the sensor at 100 degrees Celsius, and
++      R_0 (or r-naught-ohms) is the resistance of the sensor at 0 degrees
++      Celsius.
++
++      Pure platinum has an alpha of 3925. Industry standards such as IEC60751
++      and ASTM E-1137 specify an alpha of 3850.
++
++  r-naught-ohms:
++    description: |
++      Resistance of the sensor at 0 degrees Celsius.
++      Common values are 100 for PT100, 500 for PT500, and 1000 for PT1000
++
++additionalProperties: false
++required:
++  - compatible
++  - io-channels
++  - excitation-current-microamp
++  - alpha-ppm-per-celsius
++  - r-naught-ohms
++
++examples:
++  - |
++    pt1000_1: temperature-sensor0 {
++        compatible = "temperature-sense-rtd";
++        #io-channel-cells = <0>;
++        io-channels = <&temp_adc1 0>;
++
++        excitation-current-microamp = <1000>; /* i = U/R = 5 / 5000 */
++        alpha-ppm-per-celsius = <3908>;
++        r-naught-ohms = <1000>;
++    };
++...
 -- 
 2.35.1.4.g5d01301f2b86
 
