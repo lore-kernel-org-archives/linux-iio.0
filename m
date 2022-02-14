@@ -2,94 +2,163 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4BE37C4321E
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 09:52:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 513B2C433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 10:52:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245591AbiBNJw0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Feb 2022 04:52:26 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:34404 "EHLO
+        id S1349360AbiBNKwh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Feb 2022 05:52:37 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344176AbiBNJve (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 04:51:34 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8966177AB7;
-        Mon, 14 Feb 2022 01:42:36 -0800 (PST)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21E48Tt4002850;
-        Mon, 14 Feb 2022 04:42:35 -0500
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e7fsvgx15-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 04:42:34 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21E9gXP2061731
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Feb 2022 04:42:33 -0500
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 14 Feb
- 2022 04:42:32 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 14 Feb 2022 04:42:32 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21E9gM3X009467;
-        Mon, 14 Feb 2022 04:42:29 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v3 3/3] MAINTAINERS: add maintainer for ADA4250 driver
-Date:   Mon, 14 Feb 2022 11:41:15 +0200
-Message-ID: <20220214094115.48548-3-antoniu.miclaus@analog.com>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220214094115.48548-1-antoniu.miclaus@analog.com>
-References: <20220214094115.48548-1-antoniu.miclaus@analog.com>
+        with ESMTP id S1349391AbiBNKvz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 05:51:55 -0500
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B93469CD8;
+        Mon, 14 Feb 2022 02:16:33 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1644833793; x=1676369793;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:content-transfer-encoding:in-reply-to;
+  bh=iMfir8Hys8PoRkg7XbbXRj39pNMes8hLErnltaIltH8=;
+  b=H0pRtYXVokRBX+RGOdsauOP2aIBK1vtMoRGVk+VDUjA0gjIToKp08alR
+   Tm18cVC3x44oAcrbuiqx/MzOE8OK4CduA2tcM/A1XkQRsBI7PovauGPJd
+   0kz34pErXmws8kirxEiFlrcm3UmngipUs6aMo6zPHQmDtF9jNxNgty5Eu
+   x+fAcade60DLDG7Rwc6dU+y5s++sSBiaXXsF0yEQzBwK49KC3bxrLe4wT
+   TpB1A+VMBkcYrK8YoNp/BJt8twTNALUNIl+xHo6DUgdP8dwR9lZ7s8WuF
+   dPG9EmE0KsElsnrAyZkL2fICumUH0C3VBRwIxaCvdCGRHPC478tlmkk2s
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10257"; a="230023834"
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="230023834"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 02:16:32 -0800
+X-IronPort-AV: E=Sophos;i="5.88,367,1635231600"; 
+   d="scan'208";a="603187011"
+Received: from smile.fi.intel.com ([10.237.72.61])
+  by fmsmga004-auth.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Feb 2022 02:16:17 -0800
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nJYLy-004PC8-6n;
+        Mon, 14 Feb 2022 12:13:06 +0200
+Date:   Mon, 14 Feb 2022 12:13:01 +0200
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "Rafael J. Wysocki" <rafael@kernel.org>,
+        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        Vignesh Raghavendra <vigneshr@ti.com>,
+        Jiri Slaby <jirislaby@kernel.org>, linux-iio@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        linux-phy@lists.infradead.org,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
+        linux-gpio@vger.kernel.org,
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Guenter Roeck <groeck@chromium.org>, linux-spi@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>,
+        openipmi-developer@lists.sourceforge.net,
+        Peter Korsgaard <peter@korsgaard.com>,
+        Florian Fainelli <f.fainelli@gmail.com>,
+        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
+        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
+        Richard Weinberger <richard@nod.at>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Daniel Lezcano <daniel.lezcano@linaro.org>,
+        Kishon Vijay Abraham I <kishon@ti.com>,
+        bcm-kernel-feedback-list@broadcom.com,
+        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Jaroslav Kysela <perex@perex.cz>,
+        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
+        Zha Qipeng <qipeng.zha@intel.com>,
+        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
+        John Garry <john.garry@huawei.com>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Mark Gross <markgross@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Alex Williamson <alex.williamson@redhat.com>,
+        Mark Brown <broonie@kernel.org>,
+        linux-mediatek@lists.infradead.org,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Takashi Iwai <tiwai@suse.com>,
+        Benson Leung <bleung@chromium.org>,
+        linux-arm-kernel@lists.infradead.org,
+        Mun Yew Tham <mun.yew.tham@intel.com>,
+        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
+        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
+        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
+        Joakim Zhang <qiangqing.zhang@nxp.com>,
+        Oleksij Rempel <linux@rempel-privat.de>,
+        linux-renesas-soc@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
+        Pengutronix Kernel Team <kernel@pengutronix.de>,
+        Niklas =?iso-8859-1?Q?S=F6derlund?= 
+        <niklas.soderlund@ragnatech.se>,
+        Brian Norris <computersforpeace@gmail.com>,
+        "David S. Miller" <davem@davemloft.net>
+Subject: Re: [PATCH v2 1/2] platform: make platform_get_irq_optional()
+ optional
+Message-ID: <YgorLXUr8aT+1ttv@smile.fi.intel.com>
+References: <20220212201631.12648-1-s.shtylyov@omp.ru>
+ <20220212201631.12648-2-s.shtylyov@omp.ru>
+ <20220214071351.pcvstrzkwqyrg536@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: roVMIGsN-wS3IZLMbA5rnFtHpJpN-Zd5
-X-Proofpoint-ORIG-GUID: roVMIGsN-wS3IZLMbA5rnFtHpJpN-Zd5
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_02,2022-02-14_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
- lowpriorityscore=0 clxscore=1015 phishscore=0 adultscore=0 mlxlogscore=809
- suspectscore=0 priorityscore=1501 spamscore=0 bulkscore=0 malwarescore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
- definitions=main-2202140058
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220214071351.pcvstrzkwqyrg536@pengutronix.de>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add myself as maintainer for the ADA4250 driver.
+On Mon, Feb 14, 2022 at 08:13:51AM +0100, Uwe Kleine-König wrote:
+> On Sat, Feb 12, 2022 at 11:16:30PM +0300, Sergey Shtylyov wrote:
+> > This patch is based on the former Andy Shevchenko's patch:
+> > 
+> > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
+> > 
+> > Currently platform_get_irq_optional() returns an error code even if IRQ
+> > resource simply has not been found.  It prevents the callers from being
+> > error code agnostic in their error handling:
+> > 
+> > 	ret = platform_get_irq_optional(...);
+> > 	if (ret < 0 && ret != -ENXIO)
+> > 		return ret; // respect deferred probe
+> > 	if (ret > 0)
+> > 		...we get an IRQ...
+> > 
+> > All other *_optional() APIs seem to return 0 or NULL in case an optional
+> > resource is not available.  Let's follow this good example, so that the
+> > callers would look like:
+> > 
+> > 	ret = platform_get_irq_optional(...);
+> > 	if (ret < 0)
+> > 		return ret;
+> > 	if (ret > 0)
+> > 		...we get an IRQ...
+> > 
+> > Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
+> > Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+> 
+> While this patch is better than v1, I still don't like it for the
+> reasons discussed for v1. (i.e. 0 isn't usable as a dummy value which I
+> consider the real advantage for the other _get_optional() functions.)
 
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- MAINTAINERS | 8 ++++++++
- 1 file changed, 8 insertions(+)
+I think you haven't reacted anyhow to my point that you mixing apples and
+bananas together when comparing this 0 to the others _optional APIs.
 
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fb18ce7168aa..0410054a7bf5 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -1075,6 +1075,14 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- F:	drivers/media/i2c/ad9389b*
- 
-+ANALOG DEVICES INC ADA4250 DRIVER
-+M:	Antoniu Miclaus <antoniu.miclaus@analog.com>
-+L:	linux-iio@vger.kernel.org
-+S:	Supported
-+W:	https://ez.analog.com/linux-software-drivers
-+F:	Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-+F:	drivers/iio/amplifiers/ada4250.c
-+
- ANALOG DEVICES INC ADGS1408 DRIVER
- M:	Mircea Caprioru <mircea.caprioru@analog.com>
- S:	Supported
+> Apart from that, I think the subject is badly chosen. With "Make
+> somefunc() optional" I would expect that you introduce a Kconfig symbol
+> that results in the function not being available when disabled.
+
+
 -- 
-2.35.1
+With Best Regards,
+Andy Shevchenko
+
 
