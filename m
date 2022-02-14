@@ -2,941 +2,180 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 98E02C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 07:34:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2072DC433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 07:38:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241384AbiBNHfD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Feb 2022 02:35:03 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53236 "EHLO
+        id S237630AbiBNHi2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Feb 2022 02:38:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230379AbiBNHfB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 02:35:01 -0500
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76EA5593A2;
-        Sun, 13 Feb 2022 23:34:53 -0800 (PST)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21DLvXvw013993;
-        Mon, 14 Feb 2022 02:34:44 -0500
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e67maxbpj-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 14 Feb 2022 02:34:44 -0500
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 21E7YhIL035729
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Mon, 14 Feb 2022 02:34:43 -0500
-Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 14 Feb
- 2022 02:34:41 -0500
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Mon, 14 Feb 2022 02:34:41 -0500
-Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21E7YVw2025742;
-        Mon, 14 Feb 2022 02:34:33 -0500
-From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH v7 1/4] iio:frequency:admv1014: add support for ADMV1014
-Date:   Mon, 14 Feb 2022 09:34:15 +0200
-Message-ID: <20220214073418.4528-1-antoniu.miclaus@analog.com>
+        with ESMTP id S229529AbiBNHi1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 02:38:27 -0500
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 05B384F9C3;
+        Sun, 13 Feb 2022 23:38:20 -0800 (PST)
+Received: by mail-ed1-x52f.google.com with SMTP id m17so762261edc.13;
+        Sun, 13 Feb 2022 23:38:19 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EdaUECiSD7pVSM2fISl5Rxs94dyG5TC8L23UXY/6iuk=;
+        b=FW1QEdoI2l08fSqbzMfyYrTOD5P7Zn40j6mFjrN3mDrhL/tweuyDDnUzFOS5bAplGl
+         WkA8zC/rIowjWX7m9TMhu28zcAMLhVI1wtf175DJM6XSDyHe6F6bNFGK+PCXy3H0Go89
+         h8RxWVJuvUgNZv4PCR/As3boSRLUnm0KpswCG7zhE7ArR+TRbUA362y1gtgxCWPTwIo2
+         ioURwCFn/Yo+JLGfak2tVgTJu3IpJiuHRTs7xtYPcVMffM0/VkO3TkauoLrKpWx8q6Hp
+         wIgJxX4VU0NbXRI5048MDkKGKlxu4eULPcvIzAV24MeOk0iIHU8ut9Tzcup8T9gvC/xB
+         0gIQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=EdaUECiSD7pVSM2fISl5Rxs94dyG5TC8L23UXY/6iuk=;
+        b=zWWvbfjJaBDhcgbNOrPpjvofPCtXJtY0ljOUCcHyjfWLfRC3gVl9Seg3T/0unJunuw
+         bSp3RbMMHA7CAfyQbMAnOG1RY7nfl35sbAPGPFs6AYosuEeXXb9yqvoDnlB0xnfzdkYg
+         KMsj1aK0SH0ebX5QI6VqbZfJHQsaufUFxmrOUE7gsrXAL4it9ELw+QUKxrP6lJ06xbn4
+         ABCcLdBh1y9tW6furJ9iPBNn9B6ZpCpWPhueaItw1ksR3WPT5PAksJ0BsNwFEXuk1Jfu
+         wZtzmUi7cf9c8zYIAC6ESFFN4kWpWNZPXk5DO45rVDOSsEbE06nLTFxfQ4fvL+k9mRle
+         fhgA==
+X-Gm-Message-State: AOAM5339bFJJzrJ4uBbw0CW49Rsh3LUZcOKjmQcJmz4HMZI160JxVjI0
+        Ay/WzEHhUBbxRZLGTEztX9I=
+X-Google-Smtp-Source: ABdhPJzRzdeYdjn7aOOaEw2NAcaw56khJMr0cTT7yUEM5aaiaFQntV83Pz5+01WCXSfq06IBT+MKIg==
+X-Received: by 2002:aa7:c892:: with SMTP id p18mr5922206eds.454.1644824298539;
+        Sun, 13 Feb 2022 23:38:18 -0800 (PST)
+Received: from demon-pc.localdomain ([188.24.58.131])
+        by smtp.gmail.com with ESMTPSA id 9sm2480065ejd.184.2022.02.13.23.38.17
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 13 Feb 2022 23:38:18 -0800 (PST)
+From:   Cosmin Tanislav <demonsingur@gmail.com>
+X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Cc:     cosmin.tanislav@analog.com, demonsingur@gmail.com,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 0/5] Add ADXL367 driver
+Date:   Mon, 14 Feb 2022 09:38:05 +0200
+Message-Id: <20220214073810.781016-1-cosmin.tanislav@analog.com>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: Ir1YBmeIAZ4A2ZLQkv6Vdk0u-dmaFXGE
-X-Proofpoint-ORIG-GUID: Ir1YBmeIAZ4A2ZLQkv6Vdk0u-dmaFXGE
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
- definitions=2022-02-14_01,2022-02-11_01,2021-12-02_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=999 adultscore=0
- priorityscore=1501 mlxscore=0 suspectscore=0 spamscore=0 phishscore=0
- clxscore=1015 lowpriorityscore=0 bulkscore=0 impostorscore=0
- malwarescore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202140046
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADMV1014 is a silicon germanium (SiGe), wideband,
-microwave downconverter optimized for point to point microwave
-radio designs operating in the 24 GHz to 44 GHz frequency range.
 
-Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/ADMV1014.pdf
-Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
-no changes in v7.
- drivers/iio/frequency/Kconfig    |  10 +
- drivers/iio/frequency/Makefile   |   1 +
- drivers/iio/frequency/admv1014.c | 824 +++++++++++++++++++++++++++++++
- 3 files changed, 835 insertions(+)
- create mode 100644 drivers/iio/frequency/admv1014.c
+The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
 
-diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
-index 2c9e0559e8a4..493221f42077 100644
---- a/drivers/iio/frequency/Kconfig
-+++ b/drivers/iio/frequency/Kconfig
-@@ -50,6 +50,16 @@ config ADF4371
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called adf4371.
- 
-+config ADMV1014
-+	tristate "Analog Devices ADMV1014 Microwave Downconverter"
-+	depends on SPI && COMMON_CLK && 64BIT
-+	help
-+	  Say yes here to build support for Analog Devices ADMV1014
-+	  24 GHz to 44 GHz, Wideband, Microwave Downconverter.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called admv1014.
-+
- config ADRF6780
-         tristate "Analog Devices ADRF6780 Microwave Upconverter"
-         depends on SPI
-diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
-index ae3136c79202..5f0348e5eb53 100644
---- a/drivers/iio/frequency/Makefile
-+++ b/drivers/iio/frequency/Makefile
-@@ -7,4 +7,5 @@
- obj-$(CONFIG_AD9523) += ad9523.o
- obj-$(CONFIG_ADF4350) += adf4350.o
- obj-$(CONFIG_ADF4371) += adf4371.o
-+obj-$(CONFIG_ADMV1014) += admv1014.o
- obj-$(CONFIG_ADRF6780) += adrf6780.o
-diff --git a/drivers/iio/frequency/admv1014.c b/drivers/iio/frequency/admv1014.c
-new file mode 100644
-index 000000000000..59a6b1f3b7cb
---- /dev/null
-+++ b/drivers/iio/frequency/admv1014.c
-@@ -0,0 +1,824 @@
-+// SPDX-License-Identifier: GPL-2.0-only
-+/*
-+ * ADMV1014 driver
-+ *
-+ * Copyright 2022 Analog Devices Inc.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/bits.h>
-+#include <linux/clk.h>
-+#include <linux/clkdev.h>
-+#include <linux/clk-provider.h>
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/module.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/notifier.h>
-+#include <linux/property.h>
-+#include <linux/regulator/consumer.h>
-+#include <linux/spi/spi.h>
-+#include <linux/units.h>
-+
-+#include <asm/unaligned.h>
-+
-+/* ADMV1014 Register Map */
-+#define ADMV1014_REG_SPI_CONTROL		0x00
-+#define ADMV1014_REG_ALARM			0x01
-+#define ADMV1014_REG_ALARM_MASKS		0x02
-+#define ADMV1014_REG_ENABLE			0x03
-+#define ADMV1014_REG_QUAD			0x04
-+#define ADMV1014_REG_LO_AMP_PHASE_ADJUST1	0x05
-+#define ADMV1014_REG_MIXER			0x07
-+#define ADMV1014_REG_IF_AMP			0x08
-+#define ADMV1014_REG_IF_AMP_BB_AMP		0x09
-+#define ADMV1014_REG_BB_AMP_AGC			0x0A
-+#define ADMV1014_REG_VVA_TEMP_COMP		0x0B
-+
-+/* ADMV1014_REG_SPI_CONTROL Map */
-+#define ADMV1014_PARITY_EN_MSK			BIT(15)
-+#define ADMV1014_SPI_SOFT_RESET_MSK		BIT(14)
-+#define ADMV1014_CHIP_ID_MSK			GENMASK(11, 4)
-+#define ADMV1014_CHIP_ID			0x9
-+#define ADMV1014_REVISION_ID_MSK		GENMASK(3, 0)
-+
-+/* ADMV1014_REG_ALARM Map */
-+#define ADMV1014_PARITY_ERROR_MSK		BIT(15)
-+#define ADMV1014_TOO_FEW_ERRORS_MSK		BIT(14)
-+#define ADMV1014_TOO_MANY_ERRORS_MSK		BIT(13)
-+#define ADMV1014_ADDRESS_RANGE_ERROR_MSK	BIT(12)
-+
-+/* ADMV1014_REG_ENABLE Map */
-+#define ADMV1014_IBIAS_PD_MSK			BIT(14)
-+#define ADMV1014_P1DB_COMPENSATION_MSK		GENMASK(13, 12)
-+#define ADMV1014_IF_AMP_PD_MSK			BIT(11)
-+#define ADMV1014_QUAD_BG_PD_MSK			BIT(9)
-+#define ADMV1014_BB_AMP_PD_MSK			BIT(8)
-+#define ADMV1014_QUAD_IBIAS_PD_MSK		BIT(7)
-+#define ADMV1014_DET_EN_MSK			BIT(6)
-+#define ADMV1014_BG_PD_MSK			BIT(5)
-+
-+/* ADMV1014_REG_QUAD Map */
-+#define ADMV1014_QUAD_SE_MODE_MSK		GENMASK(9, 6)
-+#define ADMV1014_QUAD_FILTERS_MSK		GENMASK(3, 0)
-+
-+/* ADMV1014_REG_LO_AMP_PHASE_ADJUST1 Map */
-+#define ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK	GENMASK(15, 9)
-+#define ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK	GENMASK(8, 2)
-+
-+/* ADMV1014_REG_MIXER Map */
-+#define ADMV1014_MIXER_VGATE_MSK		GENMASK(15, 9)
-+#define ADMV1014_DET_PROG_MSK			GENMASK(6, 0)
-+
-+/* ADMV1014_REG_IF_AMP Map */
-+#define ADMV1014_IF_AMP_COARSE_GAIN_I_MSK	GENMASK(11, 8)
-+#define ADMV1014_IF_AMP_FINE_GAIN_Q_MSK		GENMASK(7, 4)
-+#define ADMV1014_IF_AMP_FINE_GAIN_I_MSK		GENMASK(3, 0)
-+
-+/* ADMV1014_REG_IF_AMP_BB_AMP Map */
-+#define ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK	GENMASK(15, 12)
-+#define ADMV1014_BB_AMP_OFFSET_Q_MSK		GENMASK(9, 5)
-+#define ADMV1014_BB_AMP_OFFSET_I_MSK		GENMASK(4, 0)
-+
-+/* ADMV1014_REG_BB_AMP_AGC Map */
-+#define ADMV1014_BB_AMP_REF_GEN_MSK		GENMASK(6, 3)
-+#define ADMV1014_BB_AMP_GAIN_CTRL_MSK		GENMASK(2, 1)
-+#define ADMV1014_BB_SWITCH_HIGH_LOW_CM_MSK	BIT(0)
-+
-+/* ADMV1014_REG_VVA_TEMP_COMP Map */
-+#define ADMV1014_VVA_TEMP_COMP_MSK		GENMASK(15, 0)
-+
-+/* ADMV1014 Miscellaneous Defines */
-+#define ADMV1014_READ				BIT(7)
-+#define ADMV1014_REG_ADDR_READ_MSK		GENMASK(6, 1)
-+#define ADMV1014_REG_ADDR_WRITE_MSK		GENMASK(22, 17)
-+#define ADMV1014_REG_DATA_MSK			GENMASK(16, 1)
-+#define ADMV1014_NUM_REGULATORS			9
-+
-+enum {
-+	ADMV1014_IQ_MODE,
-+	ADMV1014_IF_MODE,
-+};
-+
-+enum {
-+	ADMV1014_SE_MODE_POS = 6,
-+	ADMV1014_SE_MODE_NEG = 9,
-+	ADMV1014_SE_MODE_DIFF = 12,
-+};
-+
-+enum {
-+	ADMV1014_CALIBSCALE_COARSE,
-+	ADMV1014_CALIBSCALE_FINE,
-+};
-+
-+static const int detector_table[] = {0, 1, 2, 4, 8, 16, 32, 64};
-+
-+static const char * const input_mode_names[] = { "iq", "if" };
-+
-+static const char * const quad_se_mode_names[] = { "se-pos", "se-neg", "diff" };
-+
-+struct admv1014_state {
-+	struct spi_device		*spi;
-+	struct clk			*clkin;
-+	struct notifier_block		nb;
-+	/* Protect against concurrent accesses to the device and to data*/
-+	struct mutex			lock;
-+	struct regulator_bulk_data	regulators[ADMV1014_NUM_REGULATORS];
-+	unsigned int			input_mode;
-+	unsigned int			quad_se_mode;
-+	unsigned int			p1db_comp;
-+	bool				det_en;
-+	u8				data[3] ____cacheline_aligned;
-+};
-+
-+static const int mixer_vgate_table[] = {106, 107, 108, 110, 111, 112, 113, 114,
-+					117, 118, 119, 120, 122, 123, 44, 45};
-+
-+static int __admv1014_spi_read(struct admv1014_state *st, unsigned int reg,
-+			       unsigned int *val)
-+{
-+	struct spi_transfer t = {};
-+	int ret;
-+
-+	st->data[0] = ADMV1014_READ | FIELD_PREP(ADMV1014_REG_ADDR_READ_MSK, reg);
-+	st->data[1] = 0;
-+	st->data[2] = 0;
-+
-+	t.rx_buf = &st->data[0];
-+	t.tx_buf = &st->data[0];
-+	t.len = sizeof(st->data);
-+
-+	ret = spi_sync_transfer(st->spi, &t, 1);
-+	if (ret)
-+		return ret;
-+
-+	*val = FIELD_GET(ADMV1014_REG_DATA_MSK, get_unaligned_be24(&st->data[0]));
-+
-+	return ret;
-+}
-+
-+static int admv1014_spi_read(struct admv1014_state *st, unsigned int reg,
-+			     unsigned int *val)
-+{
-+	int ret;
-+
-+	mutex_lock(&st->lock);
-+	ret = __admv1014_spi_read(st, reg, val);
-+	mutex_unlock(&st->lock);
-+
-+	return ret;
-+}
-+
-+static int __admv1014_spi_write(struct admv1014_state *st,
-+				unsigned int reg,
-+				unsigned int val)
-+{
-+	put_unaligned_be24(FIELD_PREP(ADMV1014_REG_DATA_MSK, val) |
-+			   FIELD_PREP(ADMV1014_REG_ADDR_WRITE_MSK, reg), &st->data[0]);
-+
-+	return spi_write(st->spi, &st->data[0], 3);
-+}
-+
-+static int admv1014_spi_write(struct admv1014_state *st, unsigned int reg,
-+			      unsigned int val)
-+{
-+	int ret;
-+
-+	mutex_lock(&st->lock);
-+	ret = __admv1014_spi_write(st, reg, val);
-+	mutex_unlock(&st->lock);
-+
-+	return ret;
-+}
-+
-+static int __admv1014_spi_update_bits(struct admv1014_state *st, unsigned int reg,
-+				      unsigned int mask, unsigned int val)
-+{
-+	unsigned int data, temp;
-+	int ret;
-+
-+	ret = __admv1014_spi_read(st, reg, &data);
-+	if (ret)
-+		return ret;
-+
-+	temp = (data & ~mask) | (val & mask);
-+
-+	return __admv1014_spi_write(st, reg, temp);
-+}
-+
-+static int admv1014_spi_update_bits(struct admv1014_state *st, unsigned int reg,
-+				    unsigned int mask, unsigned int val)
-+{
-+	int ret;
-+
-+	mutex_lock(&st->lock);
-+	ret = __admv1014_spi_update_bits(st, reg, mask, val);
-+	mutex_unlock(&st->lock);
-+
-+	return ret;
-+}
-+
-+static int admv1014_update_quad_filters(struct admv1014_state *st)
-+{
-+	unsigned int filt_raw;
-+	u64 rate = clk_get_rate(st->clkin);
-+
-+	if (rate >= (5400 * HZ_PER_MHZ) && rate <= (7000 * HZ_PER_MHZ))
-+		filt_raw = 15;
-+	else if (rate > (7000 * HZ_PER_MHZ) && rate <= (8000 * HZ_PER_MHZ))
-+		filt_raw = 10;
-+	else if (rate > (8000 * HZ_PER_MHZ) && rate <= (9200 * HZ_PER_MHZ))
-+		filt_raw = 5;
-+	else
-+		filt_raw = 0;
-+
-+	return __admv1014_spi_update_bits(st, ADMV1014_REG_QUAD,
-+					ADMV1014_QUAD_FILTERS_MSK,
-+					FIELD_PREP(ADMV1014_QUAD_FILTERS_MSK, filt_raw));
-+}
-+
-+static int admv1014_update_vcm_settings(struct admv1014_state *st)
-+{
-+	unsigned int i, vcm_mv, vcm_comp, bb_sw_hl_cm;
-+	int ret;
-+
-+	vcm_mv = regulator_get_voltage(st->regulators[0].consumer) / 1000;
-+	for (i = 0; i < ARRAY_SIZE(mixer_vgate_table); i++) {
-+		vcm_comp = 1050 + mult_frac(i, 450, 8);
-+		if (vcm_mv != vcm_comp)
-+			continue;
-+
-+		ret = __admv1014_spi_update_bits(st, ADMV1014_REG_MIXER,
-+						 ADMV1014_MIXER_VGATE_MSK,
-+						 FIELD_PREP(ADMV1014_MIXER_VGATE_MSK,
-+							    mixer_vgate_table[i]));
-+		if (ret)
-+			return ret;
-+
-+		bb_sw_hl_cm = ~(i / 8);
-+		bb_sw_hl_cm = FIELD_PREP(ADMV1014_BB_SWITCH_HIGH_LOW_CM_MSK, bb_sw_hl_cm);
-+
-+		return __admv1014_spi_update_bits(st, ADMV1014_REG_BB_AMP_AGC,
-+						  ADMV1014_BB_AMP_REF_GEN_MSK |
-+						  ADMV1014_BB_SWITCH_HIGH_LOW_CM_MSK,
-+						  FIELD_PREP(ADMV1014_BB_AMP_REF_GEN_MSK, i) |
-+						  bb_sw_hl_cm);
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static int admv1014_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long info)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+	unsigned int data;
-+	int ret;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_OFFSET:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP_BB_AMP, &data);
-+		if (ret)
-+			return ret;
-+
-+		if (chan->channel2 == IIO_MOD_I)
-+			*val = FIELD_GET(ADMV1014_BB_AMP_OFFSET_I_MSK, data);
-+		else
-+			*val = FIELD_GET(ADMV1014_BB_AMP_OFFSET_Q_MSK, data);
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_PHASE:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_LO_AMP_PHASE_ADJUST1, &data);
-+		if (ret)
-+			return ret;
-+
-+		if (chan->channel2 == IIO_MOD_I)
-+			*val = FIELD_GET(ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK, data);
-+		else
-+			*val = FIELD_GET(ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK, data);
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_MIXER, &data);
-+		if (ret)
-+			return ret;
-+
-+		*val = FIELD_GET(ADMV1014_DET_PROG_MSK, data);
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_BB_AMP_AGC, &data);
-+		if (ret)
-+			return ret;
-+
-+		*val = FIELD_GET(ADMV1014_BB_AMP_GAIN_CTRL_MSK, data);
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int admv1014_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      int val, int val2, long info)
-+{
-+	int data;
-+	unsigned int msk;
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (chan->channel2 == IIO_MOD_I) {
-+			msk = ADMV1014_BB_AMP_OFFSET_I_MSK;
-+			data = FIELD_PREP(ADMV1014_BB_AMP_OFFSET_I_MSK, val);
-+		} else {
-+			msk = ADMV1014_BB_AMP_OFFSET_Q_MSK;
-+			data = FIELD_PREP(ADMV1014_BB_AMP_OFFSET_Q_MSK, val);
-+		}
-+
-+		return admv1014_spi_update_bits(st, ADMV1014_REG_IF_AMP_BB_AMP, msk, data);
-+	case IIO_CHAN_INFO_PHASE:
-+		if (chan->channel2 == IIO_MOD_I) {
-+			msk = ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK;
-+			data = FIELD_PREP(ADMV1014_LOAMP_PH_ADJ_I_FINE_MSK, val);
-+		} else {
-+			msk = ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK;
-+			data = FIELD_PREP(ADMV1014_LOAMP_PH_ADJ_Q_FINE_MSK, val);
-+		}
-+
-+		return admv1014_spi_update_bits(st, ADMV1014_REG_LO_AMP_PHASE_ADJUST1, msk, data);
-+	case IIO_CHAN_INFO_SCALE:
-+		return admv1014_spi_update_bits(st, ADMV1014_REG_MIXER,
-+						ADMV1014_DET_PROG_MSK,
-+						FIELD_PREP(ADMV1014_DET_PROG_MSK, val));
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		return admv1014_spi_update_bits(st, ADMV1014_REG_BB_AMP_AGC,
-+						ADMV1014_BB_AMP_GAIN_CTRL_MSK,
-+						FIELD_PREP(ADMV1014_BB_AMP_GAIN_CTRL_MSK, val));
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static ssize_t admv1014_read(struct iio_dev *indio_dev,
-+			     uintptr_t private,
-+			     const struct iio_chan_spec *chan,
-+			     char *buf)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+	unsigned int data;
-+	int ret;
-+
-+	switch (private) {
-+	case ADMV1014_CALIBSCALE_COARSE:
-+		if (chan->channel2 == IIO_MOD_I) {
-+			ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP, &data);
-+			if (ret)
-+				return ret;
-+
-+			data = FIELD_GET(ADMV1014_IF_AMP_COARSE_GAIN_I_MSK, data);
-+		} else {
-+			ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP_BB_AMP, &data);
-+			if (ret)
-+				return ret;
-+
-+			data = FIELD_GET(ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK, data);
-+		}
-+		break;
-+	case ADMV1014_CALIBSCALE_FINE:
-+		ret = admv1014_spi_read(st, ADMV1014_REG_IF_AMP, &data);
-+		if (ret)
-+			return ret;
-+
-+		if (chan->channel2 == IIO_MOD_I)
-+			data = FIELD_GET(ADMV1014_IF_AMP_FINE_GAIN_I_MSK, data);
-+		else
-+			data = FIELD_GET(ADMV1014_IF_AMP_FINE_GAIN_Q_MSK, data);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return sysfs_emit(buf, "%u\n", data);
-+}
-+
-+static ssize_t admv1014_write(struct iio_dev *indio_dev,
-+			      uintptr_t private,
-+			      const struct iio_chan_spec *chan,
-+			      const char *buf, size_t len)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+	unsigned int data, addr, msk;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 10, &data);
-+	if (ret)
-+		return ret;
-+
-+	switch (private) {
-+	case ADMV1014_CALIBSCALE_COARSE:
-+		if (chan->channel2 == IIO_MOD_I) {
-+			addr = ADMV1014_REG_IF_AMP;
-+			msk = ADMV1014_IF_AMP_COARSE_GAIN_I_MSK;
-+			data = FIELD_PREP(ADMV1014_IF_AMP_COARSE_GAIN_I_MSK, data);
-+		} else {
-+			addr = ADMV1014_REG_IF_AMP_BB_AMP;
-+			msk = ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK;
-+			data = FIELD_PREP(ADMV1014_IF_AMP_COARSE_GAIN_Q_MSK, data);
-+		}
-+		break;
-+	case ADMV1014_CALIBSCALE_FINE:
-+		addr = ADMV1014_REG_IF_AMP;
-+
-+		if (chan->channel2 == IIO_MOD_I) {
-+			msk = ADMV1014_IF_AMP_FINE_GAIN_I_MSK;
-+			data = FIELD_PREP(ADMV1014_IF_AMP_FINE_GAIN_I_MSK, data);
-+		} else {
-+			msk = ADMV1014_IF_AMP_FINE_GAIN_Q_MSK;
-+			data = FIELD_PREP(ADMV1014_IF_AMP_FINE_GAIN_Q_MSK, data);
-+		}
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	ret = admv1014_spi_update_bits(st, addr, msk, data);
-+
-+	return ret ? ret : len;
-+}
-+
-+static int admv1014_read_avail(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       const int **vals, int *type, int *length,
-+			       long info)
-+{
-+	switch (info) {
-+	case IIO_CHAN_INFO_SCALE:
-+		*vals = detector_table;
-+		*type = IIO_VAL_INT;
-+		*length = ARRAY_SIZE(detector_table);
-+
-+		return IIO_AVAIL_LIST;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static int admv1014_reg_access(struct iio_dev *indio_dev,
-+			       unsigned int reg,
-+			       unsigned int write_val,
-+			       unsigned int *read_val)
-+{
-+	struct admv1014_state *st = iio_priv(indio_dev);
-+
-+	if (read_val)
-+		return admv1014_spi_read(st, reg, read_val);
-+	else
-+		return admv1014_spi_write(st, reg, write_val);
-+}
-+
-+static const struct iio_info admv1014_info = {
-+	.read_raw = admv1014_read_raw,
-+	.write_raw = admv1014_write_raw,
-+	.read_avail = &admv1014_read_avail,
-+	.debugfs_reg_access = &admv1014_reg_access,
-+};
-+
-+static const char * const admv1014_reg_name[] = {
-+	 "vcm", "vcc-if-bb", "vcc-vga", "vcc-vva", "vcc-lna-3p3",
-+	 "vcc-lna-1p5", "vcc-bg", "vcc-quad", "vcc-mixer"
-+};
-+
-+static int admv1014_freq_change(struct notifier_block *nb, unsigned long action, void *data)
-+{
-+	struct admv1014_state *st = container_of(nb, struct admv1014_state, nb);
-+	int ret;
-+
-+	if (action == POST_RATE_CHANGE) {
-+		mutex_lock(&st->lock);
-+		ret = notifier_from_errno(admv1014_update_quad_filters(st));
-+		mutex_unlock(&st->lock);
-+		return ret;
-+	}
-+
-+	return NOTIFY_OK;
-+}
-+
-+#define _ADMV1014_EXT_INFO(_name, _shared, _ident) { \
-+		.name = _name, \
-+		.read = admv1014_read, \
-+		.write = admv1014_write, \
-+		.private = _ident, \
-+		.shared = _shared, \
-+}
-+
-+static const struct iio_chan_spec_ext_info admv1014_ext_info[] = {
-+	_ADMV1014_EXT_INFO("calibscale_coarse", IIO_SEPARATE, ADMV1014_CALIBSCALE_COARSE),
-+	_ADMV1014_EXT_INFO("calibscale_fine", IIO_SEPARATE, ADMV1014_CALIBSCALE_FINE),
-+	{ }
-+};
-+
-+#define ADMV1014_CHAN_IQ(_channel, rf_comp) {				\
-+	.type = IIO_ALTVOLTAGE,						\
-+	.modified = 1,							\
-+	.output = 0,							\
-+	.indexed = 1,							\
-+	.channel2 = IIO_MOD_##rf_comp,					\
-+	.channel = _channel,						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_PHASE) |		\
-+		BIT(IIO_CHAN_INFO_OFFSET),				\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBSCALE),	\
-+	}
-+
-+#define ADMV1014_CHAN_IF(_channel, rf_comp) {				\
-+	.type = IIO_ALTVOLTAGE,						\
-+	.modified = 1,							\
-+	.output = 0,							\
-+	.indexed = 1,							\
-+	.channel2 = IIO_MOD_##rf_comp,					\
-+	.channel = _channel,						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_PHASE) |		\
-+		BIT(IIO_CHAN_INFO_OFFSET),				\
-+	}
-+
-+#define ADMV1014_CHAN_POWER(_channel) {					\
-+	.type = IIO_POWER,						\
-+	.output = 0,							\
-+	.indexed = 1,							\
-+	.channel = _channel,						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),			\
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SCALE),	\
-+	}
-+
-+#define ADMV1014_CHAN_CALIBSCALE(_channel, rf_comp, _admv1014_ext_info) {	\
-+	.type = IIO_ALTVOLTAGE,							\
-+	.modified = 1,								\
-+	.output = 0,								\
-+	.indexed = 1,								\
-+	.channel2 = IIO_MOD_##rf_comp,						\
-+	.channel = _channel,							\
-+	.ext_info = _admv1014_ext_info,						\
-+	}
-+
-+static const struct iio_chan_spec admv1014_channels_iq[] = {
-+	ADMV1014_CHAN_IQ(0, I),
-+	ADMV1014_CHAN_IQ(0, Q),
-+	ADMV1014_CHAN_POWER(0),
-+};
-+
-+static const struct iio_chan_spec admv1014_channels_if[] = {
-+	ADMV1014_CHAN_IF(0, I),
-+	ADMV1014_CHAN_IF(0, Q),
-+	ADMV1014_CHAN_CALIBSCALE(0, I, admv1014_ext_info),
-+	ADMV1014_CHAN_CALIBSCALE(0, Q, admv1014_ext_info),
-+	ADMV1014_CHAN_POWER(0),
-+};
-+
-+static void admv1014_clk_disable(void *data)
-+{
-+	clk_disable_unprepare(data);
-+}
-+
-+static void admv1014_reg_disable(void *data)
-+{
-+	regulator_bulk_disable(ADMV1014_NUM_REGULATORS, data);
-+}
-+
-+static void admv1014_powerdown(void *data)
-+{
-+	unsigned int enable_reg, enable_reg_msk;
-+
-+	/* Disable all components in the Enable Register */
-+	enable_reg_msk = ADMV1014_IBIAS_PD_MSK |
-+			ADMV1014_IF_AMP_PD_MSK |
-+			ADMV1014_QUAD_BG_PD_MSK |
-+			ADMV1014_BB_AMP_PD_MSK |
-+			ADMV1014_QUAD_IBIAS_PD_MSK |
-+			ADMV1014_BG_PD_MSK;
-+
-+	enable_reg = FIELD_PREP(ADMV1014_IBIAS_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_IF_AMP_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_QUAD_BG_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_BB_AMP_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_QUAD_IBIAS_PD_MSK, 1) |
-+			FIELD_PREP(ADMV1014_BG_PD_MSK, 1);
-+
-+	admv1014_spi_update_bits(data, ADMV1014_REG_ENABLE,
-+				 enable_reg_msk, enable_reg);
-+}
-+
-+static int admv1014_init(struct admv1014_state *st)
-+{
-+	unsigned int chip_id, enable_reg, enable_reg_msk;
-+	struct spi_device *spi = st->spi;
-+	int ret;
-+
-+	ret = regulator_bulk_enable(ADMV1014_NUM_REGULATORS, st->regulators);
-+	if (ret) {
-+		dev_err(&spi->dev, "Failed to enable regulators");
-+		return ret;
-+	}
-+
-+	ret = devm_add_action_or_reset(&spi->dev, admv1014_reg_disable, st->regulators);
-+	if (ret)
-+		return ret;
-+
-+	ret = clk_prepare_enable(st->clkin);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(&spi->dev, admv1014_clk_disable, st->clkin);
-+	if (ret)
-+		return ret;
-+
-+	st->nb.notifier_call = admv1014_freq_change;
-+	ret = devm_clk_notifier_register(&spi->dev, st->clkin, &st->nb);
-+	if (ret)
-+		return ret;
-+
-+	ret = devm_add_action_or_reset(&spi->dev, admv1014_powerdown, st);
-+	if (ret)
-+		return ret;
-+
-+	/* Perform a software reset */
-+	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
-+					 ADMV1014_SPI_SOFT_RESET_MSK,
-+					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 1));
-+	if (ret) {
-+		dev_err(&spi->dev, "ADMV1014 SPI software reset failed.\n");
-+		return ret;
-+	}
-+
-+	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_SPI_CONTROL,
-+					 ADMV1014_SPI_SOFT_RESET_MSK,
-+					 FIELD_PREP(ADMV1014_SPI_SOFT_RESET_MSK, 0));
-+	if (ret) {
-+		dev_err(&spi->dev, "ADMV1014 SPI software reset disable failed.\n");
-+		return ret;
-+	}
-+
-+	ret = __admv1014_spi_write(st, ADMV1014_REG_VVA_TEMP_COMP, 0x727C);
-+	if (ret) {
-+		dev_err(&spi->dev, "Writing default Temperature Compensation value failed.\n");
-+		return ret;
-+	}
-+
-+	ret = __admv1014_spi_read(st, ADMV1014_REG_SPI_CONTROL, &chip_id);
-+	if (ret)
-+		return ret;
-+
-+	chip_id = (chip_id & ADMV1014_CHIP_ID_MSK) >> 4;
-+	if (chip_id != ADMV1014_CHIP_ID) {
-+		dev_err(&spi->dev, "Invalid Chip ID.\n");
-+		ret = -EINVAL;
-+		return ret;
-+	}
-+
-+	ret = __admv1014_spi_update_bits(st, ADMV1014_REG_QUAD,
-+					 ADMV1014_QUAD_SE_MODE_MSK,
-+					 FIELD_PREP(ADMV1014_QUAD_SE_MODE_MSK,
-+						    st->quad_se_mode));
-+	if (ret) {
-+		dev_err(&spi->dev, "Writing Quad SE Mode failed.\n");
-+		return ret;
-+	}
-+
-+	ret = admv1014_update_quad_filters(st);
-+	if (ret) {
-+		dev_err(&spi->dev, "Update Quad Filters failed.\n");
-+		return ret;
-+	}
-+
-+	ret = admv1014_update_vcm_settings(st);
-+	if (ret) {
-+		dev_err(&spi->dev, "Update VCM Settings failed.\n");
-+		return ret;
-+	}
-+
-+	enable_reg_msk = ADMV1014_P1DB_COMPENSATION_MSK |
-+			 ADMV1014_IF_AMP_PD_MSK |
-+			 ADMV1014_BB_AMP_PD_MSK |
-+			 ADMV1014_DET_EN_MSK;
-+
-+	enable_reg = FIELD_PREP(ADMV1014_P1DB_COMPENSATION_MSK, st->p1db_comp ? 3 : 0) |
-+		     FIELD_PREP(ADMV1014_IF_AMP_PD_MSK, !(st->input_mode)) |
-+		     FIELD_PREP(ADMV1014_BB_AMP_PD_MSK, st->input_mode) |
-+		     FIELD_PREP(ADMV1014_DET_EN_MSK, st->det_en);
-+
-+	return __admv1014_spi_update_bits(st, ADMV1014_REG_ENABLE, enable_reg_msk, enable_reg);
-+}
-+
-+static int admv1014_properties_parse(struct admv1014_state *st)
-+{
-+	const char *str;
-+	unsigned int i;
-+	struct spi_device *spi = st->spi;
-+	int ret;
-+
-+	st->det_en = device_property_read_bool(&spi->dev, "adi,detector-enable");
-+
-+	st->p1db_comp = device_property_read_bool(&spi->dev, "adi,p1db-compensation-enable");
-+
-+	ret = device_property_read_string(&spi->dev, "adi,input-mode", &str);
-+	if (ret) {
-+		st->input_mode = ADMV1014_IQ_MODE;
-+	} else {
-+		ret = match_string(input_mode_names, ARRAY_SIZE(input_mode_names), str);
-+		if (ret < 0)
-+			return ret;
-+
-+		st->input_mode = ret;
-+	}
-+
-+	ret = device_property_read_string(&spi->dev, "adi,quad-se-mode", &str);
-+	if (ret) {
-+		st->quad_se_mode = ADMV1014_SE_MODE_POS;
-+	} else {
-+		ret = match_string(quad_se_mode_names, ARRAY_SIZE(quad_se_mode_names), str);
-+		if (ret < 0)
-+			return ret;
-+
-+		st->quad_se_mode = ADMV1014_SE_MODE_POS + (ret * 3);
-+	}
-+
-+	for (i = 0; i < ADMV1014_NUM_REGULATORS; ++i)
-+		st->regulators[i].supply = admv1014_reg_name[i];
-+
-+	ret = devm_regulator_bulk_get(&st->spi->dev, ADMV1014_NUM_REGULATORS,
-+				      st->regulators);
-+	if (ret) {
-+		dev_err(&spi->dev, "Failed to request regulators");
-+		return ret;
-+	}
-+
-+	st->clkin = devm_clk_get(&spi->dev, "lo_in");
-+	if (IS_ERR(st->clkin))
-+		return dev_err_probe(&spi->dev, PTR_ERR(st->clkin),
-+				     "failed to get the LO input clock\n");
-+
-+	return 0;
-+}
-+
-+static int admv1014_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct admv1014_state *st;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+
-+	ret = admv1014_properties_parse(st);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->info = &admv1014_info;
-+	indio_dev->name = "admv1014";
-+
-+	if (st->input_mode == ADMV1014_IQ_MODE) {
-+		indio_dev->channels = admv1014_channels_iq;
-+		indio_dev->num_channels = ARRAY_SIZE(admv1014_channels_iq);
-+	} else {
-+		indio_dev->channels = admv1014_channels_if;
-+		indio_dev->num_channels = ARRAY_SIZE(admv1014_channels_if);
-+	}
-+
-+	st->spi = spi;
-+
-+	mutex_init(&st->lock);
-+
-+	ret = admv1014_init(st);
-+	if (ret)
-+		return ret;
-+
-+	return devm_iio_device_register(&spi->dev, indio_dev);
-+}
-+
-+static const struct spi_device_id admv1014_id[] = {
-+	{ "admv1014", 0 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, admv1014_id);
-+
-+static const struct of_device_id admv1014_of_match[] = {
-+	{ .compatible = "adi,admv1014" },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, admv1014_of_match);
-+
-+static struct spi_driver admv1014_driver = {
-+	.driver = {
-+		.name = "admv1014",
-+		.of_match_table = admv1014_of_match,
-+	},
-+	.probe = admv1014_probe,
-+	.id_table = admv1014_id,
-+};
-+module_spi_driver(admv1014_driver);
-+
-+MODULE_AUTHOR("Antoniu Miclaus <antoniu.miclaus@analog.com");
-+MODULE_DESCRIPTION("Analog Devices ADMV1014");
-+MODULE_LICENSE("GPL v2");
+The ADXL367 does not alias input signals to achieve ultralow power
+consumption, it samples the full bandwidth of the sensor at all
+data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
+with a resolution of 0.25mg/LSB on the +-2 g range.
+
+In addition to its ultralow power consumption, the ADXL367
+has many features to enable true system level power reduction.
+It includes a deep multimode output FIFO, a built-in micropower
+temperature sensor, and an internal ADC for synchronous conversion
+of an additional analog input.
+
+V1 -> V2
+ * add support for vdd and vddio supplies
+ * lock fifo_watermark retrieval
+ * fix indentation of sysfs_emit for fifo_mode
+ * dt-bindings: add spi-max-frequency: true
+ * dt-bindings: remove cs-gpios property
+ * dt-bindings: remove status property
+ * dt-bindings: add support for vdd
+
+V2 -> V3
+ * MAINTAINERS: use wildcard for adxl367
+ * dt-bindings: adxl367@addr -> accelerometer@addr
+ * put asm include after linux includes
+ * drop registers accessed implicitly
+ * fifo_full -> fifo_watermark
+ * print expected device id
+ * remove INDIO_BUFFER_HARDWARE
+ * inline ADXL367_EVENT macro
+ * inline ADXL367_14BIT_SCAN_INFO
+ * inline regulator enum
+ * remove of.h in spi driver
+ * cast const void * to const u8 * in spi read
+ * switch to trigger-less buffer
+ * increase reset time as advised by hardware team
+ * let iio framework validate available channel masks
+ * enable adc or temp channel automatically on single read
+ * wait for 100ms after enabling adc or temp for output
+   to settle on single read (waiting on hardware team input)
+ * enable adc or temp channel automatically on buffered read
+ * claim direct mode when setting range
+ * claim direct mode when setting odr
+ * claim direct mode when setting event config
+ * sort status masks in descending bit order
+ * hardcode indio_dev name
+ * add some comments regarding spi message layout
+ * use bulk_write for activity and inactivity threshold
+ * use bulk_write for inactivity time
+ * use bool as return type of fifo format finding function
+ * remove shift from channels scan type
+
+V3 -> V4
+ * add a patch that introduces mag_referenced event type
+ * add a patch that documents mag_referenced event type
+ * add a patch that adds a note to the buffer/enable documentation
+   regarding configuration of other attributes during buffer capture
+ * remove unused adxl367_time_scale_tbl
+ * add static attribute to adxl367_write_raw_get_fmt
+ * return IRQ_HANDLED when FIFO read fails and print error message
+ * scale temperature value by 1000 to reach milli degrees C
+ * merge dev_to_iio_dev into useplace when indio_dev is not needed
+ * merge preenable into postenable and postdisable into predisable
+ * fix default inactivity threshold
+ * export probe symbol to namespace
+ * IIO_EV_TYPE_THRESH -> IIO_EV_TYPE_MAG_REFERENCED
+ * reset device and then verify dev id for 10ms
+ * share events by type so that they show up with iio_accel prefix in the
+   events subdirectory
+ * use a separate mask for extracting data
+   I previously removed the shift fron scan_type since the FIFO data does
+   not contain a shift but that broke single channel reads. Add it back
+   just for single channel reads.
+
+V4 -> V5
+ * linux/module.h -> linux/mod_devicetable.h
+ * extract fifo_formats into separate array to allow arbitrary scan mask
+   order
+ * reorder channel_masks and fifo_formats
+ * prepend IIO_ to ADXL367 namespace
+ * use adxl367_fifo_formats array size to iterate over channel_masks table
+
+Cosmin Tanislav (5):
+  iio: introduce mag_referenced
+  iio: ABI: document mag_referenced
+  iio: ABI: add note about configuring other attributes during buffer
+    capture
+  dt-bindings: iio: accel: add ADXL367
+  iio: accel: add ADXL367 driver
+
+ Documentation/ABI/testing/sysfs-bus-iio       |   30 +
+ .../bindings/iio/accel/adi,adxl367.yaml       |   79 +
+ MAINTAINERS                                   |    8 +
+ drivers/iio/accel/Kconfig                     |   27 +
+ drivers/iio/accel/Makefile                    |    3 +
+ drivers/iio/accel/adxl367.c                   | 1588 +++++++++++++++++
+ drivers/iio/accel/adxl367.h                   |   23 +
+ drivers/iio/accel/adxl367_i2c.c               |   90 +
+ drivers/iio/accel/adxl367_spi.c               |  164 ++
+ drivers/iio/industrialio-event.c              |    1 +
+ include/uapi/linux/iio/types.h                |    1 +
+ tools/iio/iio_event_monitor.c                 |    1 +
+ 12 files changed, 2015 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+ create mode 100644 drivers/iio/accel/adxl367.c
+ create mode 100644 drivers/iio/accel/adxl367.h
+ create mode 100644 drivers/iio/accel/adxl367_i2c.c
+ create mode 100644 drivers/iio/accel/adxl367_spi.c
+
 -- 
 2.35.1
 
