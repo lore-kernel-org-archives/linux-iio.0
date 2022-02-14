@@ -2,62 +2,61 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1234BC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3BA08C4332F
 	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 07:38:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241438AbiBNHif (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S241432AbiBNHif (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 14 Feb 2022 02:38:35 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55726 "EHLO
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:55666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232225AbiBNHie (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 02:38:34 -0500
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EACF85A0AE;
-        Sun, 13 Feb 2022 23:38:26 -0800 (PST)
-Received: by mail-ej1-x631.google.com with SMTP id hw13so7059026ejc.9;
-        Sun, 13 Feb 2022 23:38:26 -0800 (PST)
+        with ESMTP id S229529AbiBNHia (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 02:38:30 -0500
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 239264F47F;
+        Sun, 13 Feb 2022 23:38:23 -0800 (PST)
+Received: by mail-ej1-x634.google.com with SMTP id a8so35538447ejc.8;
+        Sun, 13 Feb 2022 23:38:23 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=f8SXCNeboPV5p4WZMz4UAaCSfT79i5ySX42XkzZvpOo=;
-        b=pwvSmwB22CdJbJGvcAxNV3UWj1yoL5L4cGkij5LLzQGZLX96vcA1NviuiGOansGty+
-         Q49YPUsAsiewd1FaAqZ9FRjPbZZXKm1kmiqJ4eFUb3GnkGg3cwnneKWXzXPQuLm5RRX3
-         txcZ4pdS/EzrcWlVA5yGH+sursPyNtUmiS4AolHftAjDUdAzNWkm95jFTaOcEVAhhkNN
-         1VdwzFmXmU7yeQnJfKVZ5FDKNXU6YE5HjNqiCKv+yqRIj6FEgnxixV3TkJmZI4KSfckC
-         vR2PAx8luXNwIa/RAXOlsytOz0pbCA9HCaWmBUC2pDGcUUzyNSAqkzlglBVLbu8wIQ4b
-         GzJw==
+        bh=AVMu6NN3biChFR5UuxImcxGSWWGJG/KG7InEx8tN/zM=;
+        b=IPJ5L/Gd4eaUTATgSsFFcNgdogHy+3PeWddDTcM6RMYnTojO8nmAYe7DljsIrAzQi7
+         i6Xq60F/Pxt9k7ZOk+UNVayYR5d+XRZEWfTHX4xqxF3NJeSWi2Ba3sXXw1T2vMJ7P/k2
+         0q2yOtYrF0KsL7CqQ1tilLcKdjZIOlRwwrbAdhBQlaBN67Jsh/4AXatn4i/PS4Q8JaFZ
+         Xk3o5MhHB45kSupMfzS4bbVM4XeZWBRsDr4HHvKhy1mvgFGUlCXpGbj9MqsOOg7mNmyh
+         HqHuq3rMqOhyQH6KQejnupSrrDv7sThFB11ck/fYmCvMTihbse0366OMsDRigwHyLm1L
+         hK4A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=f8SXCNeboPV5p4WZMz4UAaCSfT79i5ySX42XkzZvpOo=;
-        b=78okRE0lB3LLCtBI7Y/Mxp7T2hNjcQOMSf9iSLPcUojNWG4YoL4xpq0UsN1n0k5bqC
-         eWpYaxEc+hxlP0jq/Hv5vprQQnlaa9Z7U/OVboC0efmzDcvv9yVyGPFCUWy6n5ZhVdMj
-         t50kHs9EKaFqHeRUjm99eXCZEJ5LlR/qCwG5L6ouiSZDHYJ3uZUJJJh4DoaQ3IKRu030
-         MvSI/qO/N3m4A2sqKmAGQiPVQpZGV25eegA9oV3zWAmvlg1GFxE9/Q6ra52fHt+fGLzL
-         Kq20RnzwqLirpqM5J72pfiehcuc0pYZSdviOs1vwieTRR07EOAJJmEy1B1yJLtxiQ8zp
-         Qg+w==
-X-Gm-Message-State: AOAM531PKOqjQIiBAIeDT3x6hz6fBZBX+A6oqrWDnN8zLfi3uqlgT32S
-        j4NOukSKWXpvdcfhuLBevQ5bVUcu/fc=
-X-Google-Smtp-Source: ABdhPJwb5psvYWCWsRU49QrD70LolMa5euOTE61k2CJmu2I5n6y8HiRBrRK00UvDfeshWnkadhUy2Q==
-X-Received: by 2002:a17:907:a409:: with SMTP id sg9mr10158763ejc.219.1644824305470;
-        Sun, 13 Feb 2022 23:38:25 -0800 (PST)
+        bh=AVMu6NN3biChFR5UuxImcxGSWWGJG/KG7InEx8tN/zM=;
+        b=NrhgAzS/DQ9i9Op8MsYy93b2x4qVyGVfvI4wlpRtl35B9dirrCUJjbOiVZ525TfPS2
+         4n8zVAXU5ufgkC0a3TWgX1K29fNFSEcW8+nlzxrz56OCW5V+4RT+5ZhInVcxpEMXzX34
+         RjstpmJhYH8NgPWiqfwFE1R+4tXMjHINKK0+9HgadoGry82xKYmBgmT9CdUfsRge8o6s
+         GMndHts+ODkHV+S1oAtI0FXO5XBmdMsFciDAsus1+O84pxKKRR/47ZtjFmwHeZ5siq2y
+         NmDkny7ZpWgk3sPOBV6XRbXEjoGHyYo5bIG+mgj6N+mO72suMcxjkSNxQ4hxvq+BSxeJ
+         JV9A==
+X-Gm-Message-State: AOAM533HfKq3ustlt7jyAABbc9XzrbQSHLpwG3WHoZfi53Q0vFqJ0dsA
+        GOg97vPZY2jbq2/l2l6Dcdg=
+X-Google-Smtp-Source: ABdhPJyLQdlZaKqPwB9HMGZNonoU8F290JfXnTh8DZkkz1YHIEXvNVVeuSBR8STeaI9T4YvrnHaKgw==
+X-Received: by 2002:a17:907:970f:: with SMTP id jg15mr10393921ejc.705.1644824301740;
+        Sun, 13 Feb 2022 23:38:21 -0800 (PST)
 Received: from demon-pc.localdomain ([188.24.58.131])
-        by smtp.gmail.com with ESMTPSA id 9sm2480065ejd.184.2022.02.13.23.38.24
+        by smtp.gmail.com with ESMTPSA id 9sm2480065ejd.184.2022.02.13.23.38.20
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 13 Feb 2022 23:38:25 -0800 (PST)
+        Sun, 13 Feb 2022 23:38:21 -0800 (PST)
 From:   Cosmin Tanislav <demonsingur@gmail.com>
 X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
 Cc:     cosmin.tanislav@analog.com, demonsingur@gmail.com,
         Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Rob Herring <robh@kernel.org>
-Subject: [PATCH v5 4/5] dt-bindings: iio: accel: add ADXL367
-Date:   Mon, 14 Feb 2022 09:38:09 +0200
-Message-Id: <20220214073810.781016-5-cosmin.tanislav@analog.com>
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v5 1/5] iio: introduce mag_referenced
+Date:   Mon, 14 Feb 2022 09:38:06 +0200
+Message-Id: <20220214073810.781016-2-cosmin.tanislav@analog.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220214073810.781016-1-cosmin.tanislav@analog.com>
 References: <20220214073810.781016-1-cosmin.tanislav@analog.com>
@@ -68,111 +67,62 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
+Some accelerometers that support activity and inactivity
+events also support a referenced mode, in which the
+gravitational acceleration is taken as a point of
+reference before comparing the acceleration to the
+specified activity and inactivity magnitude.
 
-The ADXL367 does not alias input signals to achieve ultralow power
-consumption, it samples the full bandwidth of the sensor at all
-data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-with a resolution of 0.25mg/LSB on the +-2 g range.
+For example, in the case of the ADXL367, for activity
+detection, the formula is:
 
-In addition to its ultralow power consumption, the ADXL367
-has many features to enable true system level power reduction.
-It includes a deep multimode output FIFO, a built-in micropower
-temperature sensor, and an internal ADC for synchronous conversion
-of an additional analog input.
+abs(acceleration - reference) > magnitude
+
+Add a new event type that makes this behavior clear.
 
 Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/iio/accel/adi,adxl367.yaml       | 79 +++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+ drivers/iio/industrialio-event.c | 1 +
+ include/uapi/linux/iio/types.h   | 1 +
+ tools/iio/iio_event_monitor.c    | 1 +
+ 3 files changed, 3 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-new file mode 100644
-index 000000000000..d259e796c1d6
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
-@@ -0,0 +1,79 @@
-+# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/accel/adi,adxl367.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
-+
-+title: Analog Devices ADXL367 3-Axis Digital Accelerometer
-+
-+maintainers:
-+  - Cosmin Tanislav <cosmin.tanislav@analog.com>
-+
-+description: |
-+  The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
-+
-+  The ADXL367 does not alias input signals by to achieve ultralow power
-+  consumption, it samples the full bandwidth of the sensor at all
-+  data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
-+  with a resolution of 0.25mg/LSB on the +-2 g range.
-+
-+  In addition to its ultralow power consumption, the ADXL367
-+  has many features to enable true system level power reduction.
-+  It includes a deep multimode output FIFO, a built-in micropower
-+  temperature sensor, and an internal ADC for synchronous conversion
-+  of an additional analog input.
-+    https://www.analog.com/en/products/adxl367.html
-+
-+properties:
-+  compatible:
-+    enum:
-+      - adi,adxl367
-+
-+  reg:
-+    maxItems: 1
-+
-+  interrupts:
-+    maxItems: 1
-+
-+  spi-max-frequency: true
-+
-+  vdd-supply: true
-+  vddio-supply: true
-+
-+required:
-+  - compatible
-+  - reg
-+  - interrupts
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    i2c {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      accelerometer@53 {
-+        compatible = "adi,adxl367";
-+        reg = <0x53>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+      };
-+    };
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+
-+    spi {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      accelerometer@0 {
-+        compatible = "adi,adxl367";
-+        reg = <0>;
-+        spi-max-frequency = <1000000>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <25 IRQ_TYPE_EDGE_RISING>;
-+      };
-+    };
+diff --git a/drivers/iio/industrialio-event.c b/drivers/iio/industrialio-event.c
+index d0732eac0f0a..ce8b102ce52f 100644
+--- a/drivers/iio/industrialio-event.c
++++ b/drivers/iio/industrialio-event.c
+@@ -230,6 +230,7 @@ static const char * const iio_ev_type_text[] = {
+ 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
+ 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
+ 	[IIO_EV_TYPE_CHANGE] = "change",
++	[IIO_EV_TYPE_MAG_REFERENCED] = "mag_referenced",
+ };
+ 
+ static const char * const iio_ev_dir_text[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 48c13147c0a8..472cead10d8d 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -104,6 +104,7 @@ enum iio_event_type {
+ 	IIO_EV_TYPE_THRESH_ADAPTIVE,
+ 	IIO_EV_TYPE_MAG_ADAPTIVE,
+ 	IIO_EV_TYPE_CHANGE,
++	IIO_EV_TYPE_MAG_REFERENCED,
+ };
+ 
+ enum iio_event_direction {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index b94a16ba5c6c..2f4581658859 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -68,6 +68,7 @@ static const char * const iio_ev_type_text[] = {
+ 	[IIO_EV_TYPE_THRESH_ADAPTIVE] = "thresh_adaptive",
+ 	[IIO_EV_TYPE_MAG_ADAPTIVE] = "mag_adaptive",
+ 	[IIO_EV_TYPE_CHANGE] = "change",
++	[IIO_EV_TYPE_MAG_REFERENCED] = "mag_referenced",
+ };
+ 
+ static const char * const iio_ev_dir_text[] = {
 -- 
 2.35.1
 
