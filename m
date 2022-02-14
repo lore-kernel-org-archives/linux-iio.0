@@ -2,179 +2,147 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 122D0C4332F
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 11:24:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3EEE0C41535
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 11:24:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350912AbiBNLYt convert rfc822-to-8bit (ORCPT
-        <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Feb 2022 06:24:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52632 "EHLO
+        id S1351183AbiBNLYx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Feb 2022 06:24:53 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50450 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351226AbiBNLX7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 06:23:59 -0500
-Received: from mail-qv1-f50.google.com (mail-qv1-f50.google.com [209.85.219.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6AAC7E0AA;
-        Mon, 14 Feb 2022 02:59:32 -0800 (PST)
-Received: by mail-qv1-f50.google.com with SMTP id a19so14432712qvm.4;
-        Mon, 14 Feb 2022 02:59:32 -0800 (PST)
+        with ESMTP id S1350656AbiBNLYB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 06:24:01 -0500
+Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 6CB6C6A000
+        for <linux-iio@vger.kernel.org>; Mon, 14 Feb 2022 03:00:00 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
+        s=mimecast20190719; t=1644836399;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding:
+         in-reply-to:in-reply-to:references:references;
+        bh=X2JNdyz94e3YQM9h6YpZU/fd0cyjhyn+wzFBEAaPWYc=;
+        b=Rwzgi5y+o3KUidj3RKhzSR9l5l6fxZI/yN19v2aBo8B5BoGyTI7LJ86HGoY2BGesuwA+gs
+        oo+P5nq8QfF/lT6q8ee0ISh88u7TuLgoM+ssu0b4aG+0fpF0aglqWzMCh1j1tD+K8qVxk6
+        3eAPspCaXFMDLIBW6xw00aLFeu2M63c=
+Received: from mail-ej1-f71.google.com (mail-ej1-f71.google.com
+ [209.85.218.71]) by relay.mimecast.com with ESMTP with STARTTLS
+ (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ us-mta-397-zJbXHF5tMw-d-aRl62jHMg-1; Mon, 14 Feb 2022 05:59:54 -0500
+X-MC-Unique: zJbXHF5tMw-d-aRl62jHMg-1
+Received: by mail-ej1-f71.google.com with SMTP id v2-20020a170906292200b006a94a27f903so5698484ejd.8
+        for <linux-iio@vger.kernel.org>; Mon, 14 Feb 2022 02:59:54 -0800 (PST)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=3zUaM8opKL0LG20PPLjLO0sGhx6OMEFs8RjHjfjsiY4=;
-        b=tzYW5L5xOK2xjgIhwKD7wo4utCRQktTYnmyF5KtC7nyd4QwxINuVYG0oZDuj2UWxgT
-         v/aCYx8fYJ460CRM8cqFGhvZWVTV32Txdva7EilCtR5KuJUaUdqVVS7A7bSNU3h32VJ+
-         2pJ2Y3tGDfNi2ZOUy2aWpZT0nVb7NeQpDeHk76U1HFWgRfZgnwSl3z8nfQ4JYELBC7w+
-         anK5B90Xh4HPCL5PMFl7xyPXyFTTOvibl637EXBhEt2cmJo4/fZJ0Y71K7/l41QRDnHU
-         eA/djqj4anfQA78O8QEI0s/RYo5qs13hiZUR71hMLnibfSqINLjWfOOnZb42aq7YUf4q
-         CRrQ==
-X-Gm-Message-State: AOAM531hvoqH7tmhpaGYLCsoe+Zw1pr4CRNoNkqjMA02M0yksh9tEj9K
-        nnVGq0KJ/mQRARxLUWcaA+SwQIlmvrkhXw==
-X-Google-Smtp-Source: ABdhPJwrRq7LQh4v5o0CPVNGHtwumDUPKtYShp4qDGuprC6H2gTwWZ7lqh2fqI8sviBIFGzuhsrVZw==
-X-Received: by 2002:a1f:9092:: with SMTP id s140mr849683vkd.38.1644829287597;
-        Mon, 14 Feb 2022 01:01:27 -0800 (PST)
-Received: from mail-vk1-f171.google.com (mail-vk1-f171.google.com. [209.85.221.171])
-        by smtp.gmail.com with ESMTPSA id o2sm1719696vke.47.2022.02.14.01.01.26
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=X2JNdyz94e3YQM9h6YpZU/fd0cyjhyn+wzFBEAaPWYc=;
+        b=puwUDf8xQWP5YA5IQ8PfyigjNZwBq9rmoXg71Kw20wY4G0ikKD0TdzGXMzQgcz0R6H
+         Q+lOxxdAwqaU+jCUqywblhIf6rNLg9wE3s7zjV1udfg79a6vupwiIzqg4wSRLtKd5p1r
+         WPhnOTNYXD8sq/hZvm4xaowemwBkHa/i/+ImewPlIGMGtj2cGZZJNGX+3aZka9yffRRg
+         3VwydyBqqubEfCgP0qrL2IDU/e9wlfTpHOxBI/mvdr91z8ZPq+6Sd1T1E1XwODm77dBH
+         pFDY4kwvsS/9s3B3+MvAshHD0nPN/nKP3vdgJa02DQ2yog61Osp0Ce9kAkRlqYBiT/Fp
+         76Yg==
+X-Gm-Message-State: AOAM532f1yhbfioIYer36MopVxy5w6nEmvNZFLSKsxxYDOTpzgWmdj6G
+        X+mImQI7S2t2OaX2Vb7JXbg2uMhdZOmOa2AeRelJjeS6QUTweg72ZzikD6GubuLWwhRomza2nZK
+        p7Ja7OnHoacqdcpIspGaI
+X-Received: by 2002:a05:6402:27cc:: with SMTP id c12mr14794303ede.87.1644836393550;
+        Mon, 14 Feb 2022 02:59:53 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzTpxqshyIDFqSwNT5JDFvembS6IjVX6Gb8+F+uV2sbfhVDJLaLRLipdt2EtKA2RnIZKo4O4g==
+X-Received: by 2002:a05:6402:27cc:: with SMTP id c12mr14794282ede.87.1644836393348;
+        Mon, 14 Feb 2022 02:59:53 -0800 (PST)
+Received: from [10.40.98.142] ([78.108.130.194])
+        by smtp.gmail.com with ESMTPSA id v23sm10713028ejy.177.2022.02.14.02.59.52
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 14 Feb 2022 01:01:27 -0800 (PST)
-Received: by mail-vk1-f171.google.com with SMTP id bj24so2718190vkb.8;
-        Mon, 14 Feb 2022 01:01:26 -0800 (PST)
-X-Received: by 2002:a1f:7307:: with SMTP id o7mr818150vkc.0.1644829286141;
- Mon, 14 Feb 2022 01:01:26 -0800 (PST)
+        Mon, 14 Feb 2022 02:59:52 -0800 (PST)
+Message-ID: <b4482ee4-2e8e-e8e4-b1f8-29fb37973780@redhat.com>
+Date:   Mon, 14 Feb 2022 11:59:52 +0100
 MIME-Version: 1.0
-References: <20220212201631.12648-1-s.shtylyov@omp.ru> <20220212201631.12648-2-s.shtylyov@omp.ru>
- <20220214071351.pcvstrzkwqyrg536@pengutronix.de>
-In-Reply-To: <20220214071351.pcvstrzkwqyrg536@pengutronix.de>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Mon, 14 Feb 2022 10:01:14 +0100
-X-Gmail-Original-Message-ID: <CAMuHMdWi8gno_FBbc=AwsdRtDJik8_bANjQrrRtUOOBRjFN=KA@mail.gmail.com>
-Message-ID: <CAMuHMdWi8gno_FBbc=AwsdRtDJik8_bANjQrrRtUOOBRjFN=KA@mail.gmail.com>
-Subject: Re: [PATCH v2 1/2] platform: make platform_get_irq_optional() optional
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Sergey Shtylyov <s.shtylyov@omp.ru>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-phy@lists.infradead.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Guenter Roeck <groeck@chromium.org>, linux-spi@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        John Garry <john.garry@huawei.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        linux-renesas-soc@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        =?UTF-8?Q?Niklas_S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: 8BIT
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.4.0
+Subject: Re: [PATCH] iio: mma8452: Fix 'mma8452_dt_ids' defined but not used
+ compiler warning
+Content-Language: en-US
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, kernel test robot <lkp@intel.com>
+References: <20220214091850.44139-1-hdegoede@redhat.com>
+ <20220214105456.00002177@Huawei.com>
+From:   Hans de Goede <hdegoede@redhat.com>
+In-Reply-To: <20220214105456.00002177@Huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Uwe,
+Hi,
 
-On Mon, Feb 14, 2022 at 8:29 AM Uwe Kleine-König
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Sat, Feb 12, 2022 at 11:16:30PM +0300, Sergey Shtylyov wrote:
-> > This patch is based on the former Andy Shevchenko's patch:
-> >
-> > https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@linux.intel.com/
-> >
-> > Currently platform_get_irq_optional() returns an error code even if IRQ
-> > resource simply has not been found.  It prevents the callers from being
-> > error code agnostic in their error handling:
-> >
-> >       ret = platform_get_irq_optional(...);
-> >       if (ret < 0 && ret != -ENXIO)
-> >               return ret; // respect deferred probe
-> >       if (ret > 0)
-> >               ...we get an IRQ...
-> >
-> > All other *_optional() APIs seem to return 0 or NULL in case an optional
-> > resource is not available.  Let's follow this good example, so that the
-> > callers would look like:
-> >
-> >       ret = platform_get_irq_optional(...);
-> >       if (ret < 0)
-> >               return ret;
-> >       if (ret > 0)
-> >               ...we get an IRQ...
-> >
-> > Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> > Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
->
-> While this patch is better than v1, I still don't like it for the
-> reasons discussed for v1. (i.e. 0 isn't usable as a dummy value which I
-> consider the real advantage for the other _get_optional() functions.)
+On 2/14/22 11:54, Jonathan Cameron wrote:
+> On Mon, 14 Feb 2022 10:18:50 +0100
+> Hans de Goede <hdegoede@redhat.com> wrote:
+> 
+>> Commit 90adc57bd55a ("iio: mma8452: Fix probe failing when an
+>> i2c_device_id is used") introduces a new: "'mma8452_dt_ids' defined
+>> but not used" compiler warning.
+>>
+>> This is caused by the switch from of_match_device() (which takes a
+>> pointer to this) to device_get_match_data(), combined with the use of
+>> of_match_ptr() when setting of_match_table.
+>>
+>> We actually want mma8452_dt_ids to get optmized away when CONFIG_OF is
+>> not set, so mark it as __maybe_unused to silence the warning.
+>>
+>> Fixes: 90adc57bd55a ("iio: mma8452: Fix probe failing when an i2c_device_id is used")
+>> Reported-by: kernel test robot <lkp@intel.com>
+>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> 
+> For this I'd rather drop the of_match_ptr() protection.
 
-IMHO the real advantage is the simplified error handling, which is the
-area where most of the current bugs are. So I applaud the core change.
+Ok, that is fine with me.
 
-Also IMHO, the dummy value handling is a red herring.  Contrary to
-optional clocks and resets, a missing optional interrupt does not
-always mean there is nothing to do: in case of polling, something
-else must definitely be done.  So even if request_irq() would accept
-a dummy interrupt zero and just do nothing, it would give the false
-impression that that is all there is to do, while an actual check
-for zero with polling code handling may still need to be present,
-thus leading to more not less bugs.
+> We will need to do that anyway shortly as part of converting this
+> to fully device properties and allowing ACPI PRP0001 which uses
+> the of_match_table from ACPI.
+> 
+> We can now easily make that transition as (via Andy)
+> https://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git/commit/?h=i2c/alert-for-acpi&id=ca0acb511c21738b32386ce0f85c284b351d919e
+> 
+> Anyhow, I can just fix it up on the original patch once I'm on the
+> right computer.
 
-> Apart from that, I think the subject is badly chosen. With "Make
-> somefunc() optional" I would expect that you introduce a Kconfig symbol
-> that results in the function not being available when disabled.
+Great thank you.
 
-Agreed.
+> I might also post patches to get rid
+> of the of dependency completely if no one else gets there
+> before me.
 
-Gr{oetje,eeting}s,
+Regards,
 
-                        Geert
+Hans
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+>> ---
+>> Note the 90adc57bd55a hash is from the jic23/iio.git testing branch, not
+>> sure of it is stable. It is probably best to just squash this into the
+>> original commit.
+>> ---
+>>  drivers/iio/accel/mma8452.c | 2 +-
+>>  1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+>> index 590d9431e1bd..1324bd515377 100644
+>> --- a/drivers/iio/accel/mma8452.c
+>> +++ b/drivers/iio/accel/mma8452.c
+>> @@ -1529,7 +1529,7 @@ static int mma8452_reset(struct i2c_client *client)
+>>  	return -ETIMEDOUT;
+>>  }
+>>  
+>> -static const struct of_device_id mma8452_dt_ids[] = {
+>> +static const struct of_device_id __maybe_unused mma8452_dt_ids[] = {
+>>  	{ .compatible = "fsl,mma8451", .data = &mma_chip_info_table[mma8451] },
+>>  	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
+>>  	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },
+> 
+
