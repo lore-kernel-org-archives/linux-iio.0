@@ -2,169 +2,123 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B98DFC433FE
-	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 07:15:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 54E9FC433F5
+	for <linux-iio@archiver.kernel.org>; Mon, 14 Feb 2022 07:34:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232498AbiBNHPt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 14 Feb 2022 02:15:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35278 "EHLO
+        id S241364AbiBNHe7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 14 Feb 2022 02:34:59 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53210 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241200AbiBNHPk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 02:15:40 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFFE15938D
-        for <linux-iio@vger.kernel.org>; Sun, 13 Feb 2022 23:15:32 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJVZ0-0006l6-Nq; Mon, 14 Feb 2022 08:14:22 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJVYf-00GV12-4n; Mon, 14 Feb 2022 08:14:00 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nJVYd-002oWn-E1; Mon, 14 Feb 2022 08:13:59 +0100
-Date:   Mon, 14 Feb 2022 08:13:51 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Sergey Shtylyov <s.shtylyov@omp.ru>
-Cc:     Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        "Rafael J. Wysocki" <rafael@kernel.org>,
-        linux-kernel@vger.kernel.org, Andrew Lunn <andrew@lunn.ch>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Jiri Slaby <jirislaby@kernel.org>, linux-iio@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Amit Kucheria <amitk@kernel.org>, alsa-devel@alsa-project.org,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        linux-phy@lists.infradead.org,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-mtd@lists.infradead.org, linux-i2c@vger.kernel.org,
-        linux-gpio@vger.kernel.org,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Guenter Roeck <groeck@chromium.org>, linux-spi@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        openipmi-developer@lists.sourceforge.net,
-        Peter Korsgaard <peter@korsgaard.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Matthias Schiffer <matthias.schiffer@ew.tq-group.com>,
-        kvm@vger.kernel.org, Kamal Dasu <kdasu.kdev@gmail.com>,
-        Richard Weinberger <richard@nod.at>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Daniel Lezcano <daniel.lezcano@linaro.org>,
-        Kishon Vijay Abraham I <kishon@ti.com>,
-        bcm-kernel-feedback-list@broadcom.com,
-        linux-serial@vger.kernel.org, Jakub Kicinski <kuba@kernel.org>,
-        Zhang Rui <rui.zhang@intel.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        platform-driver-x86@vger.kernel.org, linux-pwm@vger.kernel.org,
-        Zha Qipeng <qipeng.zha@intel.com>,
-        Corey Minyard <minyard@acm.org>, linux-pm@vger.kernel.org,
-        John Garry <john.garry@huawei.com>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Mark Gross <markgross@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Alex Williamson <alex.williamson@redhat.com>,
-        Mark Brown <broonie@kernel.org>,
-        linux-mediatek@lists.infradead.org,
-        Matthias Brugger <matthias.bgg@gmail.com>,
-        Takashi Iwai <tiwai@suse.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Benson Leung <bleung@chromium.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Mun Yew Tham <mun.yew.tham@intel.com>,
-        Eric Auger <eric.auger@redhat.com>, netdev@vger.kernel.org,
-        Yoshihiro Shimoda <yoshihiro.shimoda.uh@renesas.com>,
-        Cornelia Huck <cohuck@redhat.com>, linux-mmc@vger.kernel.org,
-        Joakim Zhang <qiangqing.zhang@nxp.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        linux-renesas-soc@vger.kernel.org, Vinod Koul <vkoul@kernel.org>,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        Niklas =?utf-8?Q?S=C3=B6derlund?= <niklas.soderlund@ragnatech.se>,
-        Brian Norris <computersforpeace@gmail.com>,
-        "David S. Miller" <davem@davemloft.net>
-Subject: Re: [PATCH v2 1/2] platform: make platform_get_irq_optional()
- optional
-Message-ID: <20220214071351.pcvstrzkwqyrg536@pengutronix.de>
-References: <20220212201631.12648-1-s.shtylyov@omp.ru>
- <20220212201631.12648-2-s.shtylyov@omp.ru>
+        with ESMTP id S230379AbiBNHe7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Feb 2022 02:34:59 -0500
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 33C44593BE;
+        Sun, 13 Feb 2022 23:34:52 -0800 (PST)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21E48WJN002872;
+        Mon, 14 Feb 2022 02:34:44 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e7fsvgjef-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 14 Feb 2022 02:34:44 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21E7Yh3I052381
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 14 Feb 2022 02:34:43 -0500
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 14 Feb 2022 02:34:41 -0500
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Mon, 14 Feb 2022 02:34:41 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 14 Feb 2022 02:34:41 -0500
+Received: from amiclaus-VirtualBox.ad.analog.com (AMICLAUS-L02.ad.analog.com [10.48.65.131])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21E7YVw4025742;
+        Mon, 14 Feb 2022 02:34:38 -0500
+From:   Antoniu Miclaus <antoniu.miclaus@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     Antoniu Miclaus <antoniu.miclaus@analog.com>
+Subject: [PATCH v7 3/4] Documentation:ABI:testing:admv1014: add ABI docs
+Date:   Mon, 14 Feb 2022 09:34:17 +0200
+Message-ID: <20220214073418.4528-3-antoniu.miclaus@analog.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220214073418.4528-1-antoniu.miclaus@analog.com>
+References: <20220214073418.4528-1-antoniu.miclaus@analog.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="r3c6abkz2rpak4yl"
-Content-Disposition: inline
-In-Reply-To: <20220212201631.12648-2-s.shtylyov@omp.ru>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: SoWI6Lp49GRIy0ZGte9SOqlyKfcp2_1_
+X-Proofpoint-ORIG-GUID: SoWI6Lp49GRIy0ZGte9SOqlyKfcp2_1_
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
+ definitions=2022-02-14_01,2022-02-11_01,2021-12-02_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 mlxscore=0
+ lowpriorityscore=0 clxscore=1015 phishscore=0 adultscore=0 mlxlogscore=999
+ suspectscore=0 priorityscore=1501 spamscore=0 bulkscore=0 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2201110000
+ definitions=main-2202140046
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add documentation for the use of the Digital Attenuator gain.
 
---r3c6abkz2rpak4yl
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
+---
+no changes in v7.
+ Documentation/ABI/testing/sysfs-bus-iio       |  1 +
+ .../testing/sysfs-bus-iio-frequency-admv1014  | 23 +++++++++++++++++++
+ 2 files changed, 24 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
 
-On Sat, Feb 12, 2022 at 11:16:30PM +0300, Sergey Shtylyov wrote:
-> This patch is based on the former Andy Shevchenko's patch:
->=20
-> https://lore.kernel.org/lkml/20210331144526.19439-1-andriy.shevchenko@lin=
-ux.intel.com/
->=20
-> Currently platform_get_irq_optional() returns an error code even if IRQ
-> resource simply has not been found.  It prevents the callers from being
-> error code agnostic in their error handling:
->=20
-> 	ret =3D platform_get_irq_optional(...);
-> 	if (ret < 0 && ret !=3D -ENXIO)
-> 		return ret; // respect deferred probe
-> 	if (ret > 0)
-> 		...we get an IRQ...
->=20
-> All other *_optional() APIs seem to return 0 or NULL in case an optional
-> resource is not available.  Let's follow this good example, so that the
-> callers would look like:
->=20
-> 	ret =3D platform_get_irq_optional(...);
-> 	if (ret < 0)
-> 		return ret;
-> 	if (ret > 0)
-> 		...we get an IRQ...
->=20
-> Reported-by: Matthias Schiffer <matthias.schiffer@ew.tq-group.com>
-> Signed-off-by: Sergey Shtylyov <s.shtylyov@omp.ru>
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index c551301b33f1..2b5770017a84 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -476,6 +476,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_i_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltageY_q_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_i_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_q_calibscale
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_voltage_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_x_calibscale
+ What:		/sys/bus/iio/devices/iio:deviceX/in_accel_y_calibscale
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014 b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+new file mode 100644
+index 000000000000..395010a0ef8b
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-frequency-admv1014
+@@ -0,0 +1,23 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_coarse
++KernelVersion: 5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write value for the digital attenuator gain (IF_I) with coarse steps.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_coarse
++KernelVersion: 5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write value for the digital attenuator gain (IF_Q) with coarse steps.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_i_calibscale_fine
++KernelVersion: 5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write value for the digital attenuator gain (IF_I) with fine steps.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_altvoltage0_q_calibscale_fine
++KernelVersion: 5.18
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read/write value for the digital attenuator gain (IF_Q) with fine steps.
+-- 
+2.35.1
 
-While this patch is better than v1, I still don't like it for the
-reasons discussed for v1. (i.e. 0 isn't usable as a dummy value which I
-consider the real advantage for the other _get_optional() functions.)
-
-Apart from that, I think the subject is badly chosen. With "Make
-somefunc() optional" I would expect that you introduce a Kconfig symbol
-that results in the function not being available when disabled.
-
-Best regards
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---r3c6abkz2rpak4yl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIKASwACgkQwfwUeK3K
-7Ak1DAf/fgLBIz9p8Vx2hzG+I8aYoNMAmPLmUfMeIR1DWaBc26HTbyTBn6pFRiPZ
-rztM2uc+royoY44/mp4H89WkPzZ0/v3AlRkdqI8UBny0ZKRbNtMfzL6f7wyVik5C
-rxqc7EgXLRk2/0IxTohA6bwj7Vczei9NwYndm+QrxDHjmY5Dq95rdvxv9+8iaa9y
-gLQ2x91x4bybaKnKVe36f5JfLeMhS9kLuCx82Wi1yqPK4UQQ6R/+QEE0zGS8QNHP
-vMasmLHge9XqVx/c0SuPcLVZ/uRatkzzuqf1rY75peyQp4YpDDdkhkTws4kcVC22
-lVFz9FjvbtVS4nxvPxNwZAnvq9sPaQ==
-=UfDO
------END PGP SIGNATURE-----
-
---r3c6abkz2rpak4yl--
