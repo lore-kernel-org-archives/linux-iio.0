@@ -2,90 +2,131 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 15CA6C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Feb 2022 15:39:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 34D1CC43219
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Feb 2022 16:55:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240338AbiBOPkF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Feb 2022 10:40:05 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:43702 "EHLO
+        id S241951AbiBOQz0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Feb 2022 11:55:26 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:42944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240481AbiBOPj6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Feb 2022 10:39:58 -0500
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7E9C5BF514;
-        Tue, 15 Feb 2022 07:33:19 -0800 (PST)
-Received: by mail-ed1-x536.google.com with SMTP id b14so58257ede.9;
-        Tue, 15 Feb 2022 07:33:19 -0800 (PST)
+        with ESMTP id S241972AbiBOQzZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Feb 2022 11:55:25 -0500
+Received: from mail-wm1-x335.google.com (mail-wm1-x335.google.com [IPv6:2a00:1450:4864:20::335])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 43B8A119F10
+        for <linux-iio@vger.kernel.org>; Tue, 15 Feb 2022 08:55:15 -0800 (PST)
+Received: by mail-wm1-x335.google.com with SMTP id k127-20020a1ca185000000b0037bc4be8713so1915052wme.3
+        for <linux-iio@vger.kernel.org>; Tue, 15 Feb 2022 08:55:15 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=ZsGLRegII5LzYpB5pLn2eLB4RyUDQ3r2yhRyz4Zymro=;
-        b=jfNjEi8CbnksxEcuUDLclL+6IjLUbKE123nwv+rvok1mLpVJRp+r0E8Ej2fX+oxXzJ
-         yB6diuj6l+jftbmTJI3LMAqckJpGuNV3FYEU//5xKnrF7aGH+RCSYf6xm8J2rUM46da8
-         S1TYcD2dVyS6I1xuZthtUfuuUz74usvZo4Mlx90aHYEa0H2JWImI+lEpvFzDGiGjR/SD
-         c9AlqopcUGDQ/H+L2xY8+IpJJq8u7j2b7j7M27GfJ3RrXQm6AvgTVSOQSvdlaRkU3VLz
-         n6tY8IdGWw7jK62SI6SmJlzzFlil+bwvgHyvqF/7tRMEH9p3sX4F3yQ5mDrGJwxnMfwH
-         SATg==
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=Swi01zs1Aek9C9Aenj93GPF/NdOk2jeLKINKBsWtsPE=;
+        b=vKwxljKk6S8XX1j0GMsWuJ/i/SKLoRTmsaTrBDP2QeBbHF03+/AGil3AfJSHxkWuTc
+         nHIPtyEOr6+kyphQ1EPT6+XjwS9kIBJeQblspJiNgH8ijy8JxVs4IQ0uYhnAaXIae2KT
+         E4wNON7INsWidjwaPb2olfzziTsy/Uqw88xcUykirmtEj9M9QmPPg9p1ARwbHIFqlR3Z
+         Clwtjr9R8d9SYDGVPVMhy3uN59/0/r2vV9ewIe1m0W96BJD1YL/7dgr5hQB4FrRlkdzM
+         A32h395Xtju8KCpSiYcvYTqw5aL8REM8ydWuWmI+OG9zQMBUV1gxMxmrpzx+guqJ/Q5M
+         HMXw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=ZsGLRegII5LzYpB5pLn2eLB4RyUDQ3r2yhRyz4Zymro=;
-        b=MVh3E/AuoJpSYgw/8NcvcutEOakpnjxEHyOxan+mDFsp27PzOKZGDtbWCIlfQQ+uhi
-         QQTLBdF8hvatxHdVdkJEBAZdPH3w4EH6yL0O5EGKZoHEp7FAkVJT6eyZyxcIBLUcECNC
-         YKmFquF+U6d/h8PUvcfo/wmdmuZ7BrMXTzm6juIyF4BKwvhGaqWNFnduiXD6fD0KtAXt
-         LOLXR5vqo5NL6hll03yp4+7otuP3dIPOEZO3gmWhYoFNZ2GD8SSEprVIkxzxDMFPIh4W
-         VfOyhyiNWZoMcQOXIpIW4LNmejmntPQpSuZzMK9z09DR+4+pzSCaGuNj0fcHkjxWDOOl
-         RqMA==
-X-Gm-Message-State: AOAM530jA++WYvi2GFSnatKNHps1zCW1OYjFIuerQsGYwZReLPBdEDy2
-        HMh/mMulVm06d6MC+QwNK5XTJH6PG5A9YL9Vq+lzvVVjTlo=
-X-Google-Smtp-Source: ABdhPJx0iQBEjNIc0Q8xmP1W7X7hBCZCJz9B4zqeyE+5FeHf3/ETNGTJUXd0iuv8b/zzGZWu/aRpf1HbvXA8SSNqgaQ=
-X-Received: by 2002:aa7:c395:: with SMTP id k21mr4518413edq.436.1644939196400;
- Tue, 15 Feb 2022 07:33:16 -0800 (PST)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=Swi01zs1Aek9C9Aenj93GPF/NdOk2jeLKINKBsWtsPE=;
+        b=0H281u/MrSJsjT+B9bvJM/T3Dl2LQ5xaCP44qydzYav/9CDaBHKHz6qmxQRED0GDR5
+         UcA8f//+bbrndBWezavg8vhWR0cfEPdLmtzmX8s+SZyFthYUZTqpVN9NAhJsQbQjMHG7
+         tCWEi+yhJag6SGkBjg7oyOonv/AzSz8uqkeKSqBCbDsiu4mpST1+XpUTlLp5nUIoMTGv
+         AeUP/uSlNh5BDzmZiZBsWZsq34HJ9BQiiQ7dIuGx4T+73e/39qOJ+vdiO7dCCG/4dv3z
+         gNyGLPaN/jG59mH5xfMd+T2d6McvTp+g8sCKqootXNMtJ4SgRi7u7ifZ3fr5ByQVdGDF
+         Jg+Q==
+X-Gm-Message-State: AOAM533oYZituR1ucmqSoEPVJVgQJq/A8NvITzchNTERunVrKf3bwXGc
+        6OGIHkIiCLvFtcG6DyXHmLzsuA==
+X-Google-Smtp-Source: ABdhPJzPn72jb6qRBRw7JdWF65eN1GK0XwwDwaYELn2FLXBAmo9JV4T28Y232vAJE1AOsqLBBMHJjQ==
+X-Received: by 2002:a05:600c:5c1:: with SMTP id p1mr3843147wmd.151.1644944113856;
+        Tue, 15 Feb 2022 08:55:13 -0800 (PST)
+Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id f14sm15373652wmq.3.2022.02.15.08.55.12
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 15 Feb 2022 08:55:13 -0800 (PST)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
+        john.stultz@linaro.org
+Subject: [PATCH v5 1/9] spmi: add a helper to look up an SPMI device from a device node
+Date:   Tue, 15 Feb 2022 16:54:48 +0000
+Message-Id: <20220215165456.1205583-2-caleb.connolly@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220215165456.1205583-1-caleb.connolly@linaro.org>
+References: <20220215165456.1205583-1-caleb.connolly@linaro.org>
 MIME-Version: 1.0
-References: <20220215042011.2266897-1-kai.heng.feng@canonical.com>
- <CAHp75VfBQPgrbuxazuoyDbFtGZR=rU5wqPhSXhkoiA_2HR1EHA@mail.gmail.com> <CAAd53p6tjWtKSqDDG_hjbFGKeR7-L3uYwgOTRNHfwAhmE8nV+g@mail.gmail.com>
-In-Reply-To: <CAAd53p6tjWtKSqDDG_hjbFGKeR7-L3uYwgOTRNHfwAhmE8nV+g@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 15 Feb 2022 17:31:48 +0200
-Message-ID: <CAHp75Vdsd1sfDfvc=mutGGR8d4G9Q2b1t_m+Z=cDVkLhmzPU3Q@mail.gmail.com>
-Subject: Re: [PATCH v3] iio: accel: adxl345: Add ACPI HID table
-To:     Kai-Heng Feng <kai.heng.feng@canonical.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Feb 15, 2022 at 1:30 PM Kai-Heng Feng
-<kai.heng.feng@canonical.com> wrote:
-> On Tue, Feb 15, 2022 at 4:28 PM Andy Shevchenko
-> <andy.shevchenko@gmail.com> wrote:
-> > On Tue, Feb 15, 2022 at 6:20 AM Kai-Heng Feng
-> > <kai.heng.feng@canonical.com> wrote:
+The helper function spmi_device_from_of() takes a device node and
+returns the SPMI device associated with it.
+This is like of_find_device_by_node but for SPMI devices.
 
-...
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ drivers/spmi/spmi.c  | 16 ++++++++++++++++
+ include/linux/spmi.h |  2 ++
+ 2 files changed, 18 insertions(+)
 
-> > > +       { "ADS0345:00", ADXL345 },
-> >
-> > This is wrong. First of all, on the left side you put the device
-> > instance name (which must not be in the ID tables, since the device
-> > instance name is "ID + instance number"). Second, the motivation of
-> > this is not clear, if the device is enumerated by ACPI, why do you
-> > care about board code?
->
-> I was uncertain on this at first, but later I saw some drivers use
-> this form (*:00) too, so I just followed through.
-
-Those "drivers" are actually so called board files, i.o.w. hard coded
-pieces of what firmware(s) missed. That's why they are using device
-instance name(s) instead of the device IDs.
-
+diff --git a/drivers/spmi/spmi.c b/drivers/spmi/spmi.c
+index b37ead9e2fad..d2e425e1d4c9 100644
+--- a/drivers/spmi/spmi.c
++++ b/drivers/spmi/spmi.c
+@@ -386,6 +386,22 @@ static struct bus_type spmi_bus_type = {
+ 	.uevent		= spmi_drv_uevent,
+ };
+ 
++/**
++ * spmi_device_from_of() - get the associated SPMI device from a device node
++ *
++ * @np:		device node
++ *
++ * Returns the struct spmi_device associated with a device node or NULL.
++ */
++inline struct spmi_device *spmi_device_from_of(struct device_node *np)
++{
++	struct device *dev = bus_find_device_by_of_node(&spmi_bus_type, np);
++
++	if (dev)
++		return to_spmi_device(dev);
++	return NULL;
++}
++
+ /**
+  * spmi_controller_alloc() - Allocate a new SPMI device
+  * @ctrl:	associated controller
+diff --git a/include/linux/spmi.h b/include/linux/spmi.h
+index 729bcbf9f5ad..6ee476bc1cd6 100644
+--- a/include/linux/spmi.h
++++ b/include/linux/spmi.h
+@@ -7,6 +7,7 @@
+ #include <linux/types.h>
+ #include <linux/device.h>
+ #include <linux/mod_devicetable.h>
++#include <linux/of.h>
+ 
+ /* Maximum slave identifier */
+ #define SPMI_MAX_SLAVE_ID		16
+@@ -164,6 +165,7 @@ static inline void spmi_driver_unregister(struct spmi_driver *sdrv)
+ 	module_driver(__spmi_driver, spmi_driver_register, \
+ 			spmi_driver_unregister)
+ 
++inline struct spmi_device *spmi_device_from_of(struct device_node *np);
+ int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf);
+ int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
+ 			   size_t len);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
