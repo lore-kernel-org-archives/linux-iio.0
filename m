@@ -2,75 +2,132 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE58C4332F
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Feb 2022 22:56:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15C10C433F5
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Feb 2022 13:49:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244685AbiBOW4t (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Feb 2022 17:56:49 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33624 "EHLO
+        id S234724AbiBPNt6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Feb 2022 08:49:58 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49948 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244682AbiBOW4r (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Feb 2022 17:56:47 -0500
-Received: from mail-il1-f173.google.com (mail-il1-f173.google.com [209.85.166.173])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6F642B91D0;
-        Tue, 15 Feb 2022 14:56:37 -0800 (PST)
-Received: by mail-il1-f173.google.com with SMTP id n5so140367ilk.12;
-        Tue, 15 Feb 2022 14:56:37 -0800 (PST)
+        with ESMTP id S234383AbiBPNt6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Feb 2022 08:49:58 -0500
+Received: from mail-ej1-x62f.google.com (mail-ej1-x62f.google.com [IPv6:2a00:1450:4864:20::62f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2DE4B2A0D5A
+        for <linux-iio@vger.kernel.org>; Wed, 16 Feb 2022 05:49:44 -0800 (PST)
+Received: by mail-ej1-x62f.google.com with SMTP id p15so4732358ejc.7
+        for <linux-iio@vger.kernel.org>; Wed, 16 Feb 2022 05:49:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=46n4LaD4ZyMBoEv7QyqZkVx2QkFYWM4XtM2ZRYBTQAc=;
+        b=R2xg/A4umSYaqwB+IDnWON6cWpWUJdRbV5ECKt1Aw2xZSJNRpz+f1i98qPkwQx02mX
+         1EcbcikQeujSLIP9G/9cLZnZgt1epqSl/ajz7zLrYprOFU0bPVTAmO9isPVDYwu6ELep
+         TYr0JOCzdCd0HuLsGS39GRC2WpbwhDxr5NQlc9RmV7/QL4mMW1gc+2T087/bEtuNF1cL
+         nlSBiCjKqhzu4BeGd5YapegnT0LD1x1qpJgzkVESgkZJ90FqpUaB4ZTv0yldN+aKEHZ+
+         lxC0mJGEb+12elginW9NAa7ylB1AEJvIHwbNEtokxOGoKxZ96zOOIFtVaU1NejXIOE2C
+         vYlQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=JeNpWnsdEBSIAdgZ4rc+NttAZNtgh6UEy35+0pZJ0PU=;
-        b=NrNpCcJuvt+CFR9+N5GwoSE4wYDFH2IY6ShgRXdTA0+FG7PogHxTSKG0mOvply+aV6
-         3sscyrPcj2ufroN2h0p4bNts1EwMlgr9YUqtPcItgJT274tdhF7VXN+ZD9vkXdwYgXnU
-         oGOJSJF5rJbYdjeyT4wOJMmn3L+i4IX12N2waKt8fqS86YemGiHLVGwUwp4hDzoMCvlc
-         VwWE4R7YOvSH9PPTlAZ5Qw6oLc9AQT9xW2S5z+fIkklf+NCATR7fqEU5LKcdlgGYBz+r
-         vPw1CTE49rn2xx4R9UUq0RDRfjX52QSh4TaND5NMf4klf+xCiUjHKJH0QGWyJ7mbdzoF
-         gNtg==
-X-Gm-Message-State: AOAM531Z9KzAIiXDTKrd/fYSGpcy40iEkq0vuByu5GGCMNe5XVCbu2br
-        M25tBQML1VFP2zM0jeHKMQ==
-X-Google-Smtp-Source: ABdhPJznftkYIpt01opf8UkdBTHjoIG3wyj6NjXO8VkO1mlt3KReXJUUXOr75f1kf6TzdSSAHpT92Q==
-X-Received: by 2002:a92:bf08:0:b0:2be:fc43:14c4 with SMTP id z8-20020a92bf08000000b002befc4314c4mr8776ilh.80.1644965796667;
-        Tue, 15 Feb 2022 14:56:36 -0800 (PST)
-Received: from robh.at.kernel.org ([64.188.179.250])
-        by smtp.gmail.com with ESMTPSA id q2sm17616920ilt.33.2022.02.15.14.56.35
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=46n4LaD4ZyMBoEv7QyqZkVx2QkFYWM4XtM2ZRYBTQAc=;
+        b=53VnxJtDuBygCItiLspcdIMLbVBI2odHrvwjpnaJ0fw5QbmNyYOS7tbD55Pn+A53xD
+         dU9wySUWFLNGEm2gx95FX8Rgbc1GEvfmeeVjkU45cndZPSU6CNXs3NfVXNgSV/fAZVAm
+         Jn9Vsb8FRYfE3+J1I3p+LYBCvN/8PvJibhmOVhmr+Fnam6xEGE9fWoNn3M/De8XVshp2
+         EA5BcV6dBj3wZH4efJECTofLAtGLcWyroDdkWRH1w0yAYX4uR+E+o8KvDUEmxnvbKQ1E
+         bJnGHPIkjQFUs1rJQxkn1BG0zUS6U7RNZMIWV8tsuCF7txRnQ/pduWRz3+LLF/4BITeI
+         sbNQ==
+X-Gm-Message-State: AOAM531Cxo4VaSXiYJ1IvnzT6xq0z9amKbF/8l/eCyGUFhkwDf+Q6R0c
+        DDfhL3U+Gx+xKnl1CFflPt0fPA==
+X-Google-Smtp-Source: ABdhPJwRu3yFYlwaq6c6uxX1murbAtN9dkyfAI+Nvy6JioXYxnORUo5QLsTP9WtxS2AzlGhk2RxgZA==
+X-Received: by 2002:a17:907:766a:b0:6cf:bb20:70c with SMTP id kk10-20020a170907766a00b006cfbb20070cmr2346786ejc.94.1645019382745;
+        Wed, 16 Feb 2022 05:49:42 -0800 (PST)
+Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id o20sm1711996edc.84.2022.02.16.05.49.41
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Feb 2022 14:56:36 -0800 (PST)
-Received: (nullmailer pid 4072247 invoked by uid 1000);
-        Tue, 15 Feb 2022 22:56:33 -0000
-Date:   Tue, 15 Feb 2022 16:56:33 -0600
-From:   Rob Herring <robh@kernel.org>
-To:     Jagath Jog J <jagathjog1996@gmail.com>
-Cc:     sst@poczta.fm, linux-iio@vger.kernel.org, lars@metafoo.de,
-        jic23@kernel.org, robh+dt@kernel.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, andy.shevchenko@gmail.com
-Subject: Re: [PATCH v2 4/4] dt-bindings: iio: potentiometer: Add Maxim DS3502
- in trivial-devices
-Message-ID: <YgwvoUTOmTi8/NsS@robh.at.kernel.org>
-References: <20220214033620.4059-1-jagathjog1996@gmail.com>
- <20220214033620.4059-5-jagathjog1996@gmail.com>
+        Wed, 16 Feb 2022 05:49:42 -0800 (PST)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
+        john.stultz@linaro.org
+Subject: [PATCH v7 1/9] spmi: add a helper to look up an SPMI device from a device node
+Date:   Wed, 16 Feb 2022 13:49:12 +0000
+Message-Id: <20220216134920.239989-2-caleb.connolly@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220216134920.239989-1-caleb.connolly@linaro.org>
+References: <20220216134920.239989-1-caleb.connolly@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220214033620.4059-5-jagathjog1996@gmail.com>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 14 Feb 2022 09:06:20 +0530, Jagath Jog J wrote:
-> Maxim DS3502 is a 7 bit nonvolatile digital potentiometer.
-> Add DS3502 binding into trivial-devices.yaml
-> 
-> Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-> ---
->  Documentation/devicetree/bindings/trivial-devices.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+The helper function spmi_device_from_of() takes a device node and
+returns the SPMI device associated with it.
+This is like of_find_device_by_node but for SPMI devices.
 
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ drivers/spmi/spmi.c  | 17 +++++++++++++++++
+ include/linux/spmi.h |  2 ++
+ 2 files changed, 19 insertions(+)
 
-Please add Acked-by/Reviewed-by tags when posting new versions. However,
-there's no need to repost patches *only* to add the tags. The upstream
-maintainer will do that for acks received on the version they apply.
-
-If a tag was not added on purpose, please state why and what changed.
+diff --git a/drivers/spmi/spmi.c b/drivers/spmi/spmi.c
+index b37ead9e2fad..de550b777451 100644
+--- a/drivers/spmi/spmi.c
++++ b/drivers/spmi/spmi.c
+@@ -386,6 +386,23 @@ static struct bus_type spmi_bus_type = {
+ 	.uevent		= spmi_drv_uevent,
+ };
+ 
++/**
++ * spmi_device_from_of() - get the associated SPMI device from a device node
++ *
++ * @np:		device node
++ *
++ * Returns the struct spmi_device associated with a device node or NULL.
++ */
++inline struct spmi_device *spmi_device_from_of(struct device_node *np)
++{
++	struct device *dev = bus_find_device_by_of_node(&spmi_bus_type, np);
++
++	if (dev)
++		return to_spmi_device(dev);
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(spmi_device_from_of);
++
+ /**
+  * spmi_controller_alloc() - Allocate a new SPMI device
+  * @ctrl:	associated controller
+diff --git a/include/linux/spmi.h b/include/linux/spmi.h
+index 729bcbf9f5ad..6ee476bc1cd6 100644
+--- a/include/linux/spmi.h
++++ b/include/linux/spmi.h
+@@ -7,6 +7,7 @@
+ #include <linux/types.h>
+ #include <linux/device.h>
+ #include <linux/mod_devicetable.h>
++#include <linux/of.h>
+ 
+ /* Maximum slave identifier */
+ #define SPMI_MAX_SLAVE_ID		16
+@@ -164,6 +165,7 @@ static inline void spmi_driver_unregister(struct spmi_driver *sdrv)
+ 	module_driver(__spmi_driver, spmi_driver_register, \
+ 			spmi_driver_unregister)
+ 
++inline struct spmi_device *spmi_device_from_of(struct device_node *np);
+ int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf);
+ int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
+ 			   size_t len);
+-- 
+2.35.1
 
