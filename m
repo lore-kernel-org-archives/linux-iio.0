@@ -2,309 +2,488 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C0570C4321E
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Feb 2022 12:38:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BBB9C433F5
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Feb 2022 12:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235289AbiBRMik (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Feb 2022 07:38:40 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:54596 "EHLO
+        id S232114AbiBRMlF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Feb 2022 07:41:05 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:33128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234830AbiBRMij (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Feb 2022 07:38:39 -0500
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E49441738F2;
-        Fri, 18 Feb 2022 04:38:21 -0800 (PST)
+        with ESMTP id S231348AbiBRMlD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Feb 2022 07:41:03 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1F77B299263
+        for <linux-iio@vger.kernel.org>; Fri, 18 Feb 2022 04:40:46 -0800 (PST)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6D27EB8261C;
-        Fri, 18 Feb 2022 12:38:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 38114C340E9;
-        Fri, 18 Feb 2022 12:37:52 +0000 (UTC)
-Message-ID: <c70113dc-d017-b5bc-1466-02530f4707e2@xs4all.nl>
-Date:   Fri, 18 Feb 2022 13:37:50 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A244C61F8E
+        for <linux-iio@vger.kernel.org>; Fri, 18 Feb 2022 12:40:45 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 41E4FC340E9;
+        Fri, 18 Feb 2022 12:40:43 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645188045;
+        bh=447Z2uPdSgP72gfhdNG1g+g7LR9jArs6W2l5yeJlDsQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=rnQ2dO6aIaSrjuzsl0op3TaWsug5wuj4K1RyZJHOrh0zGPbwyytwWyo/kTDe5hQnJ
+         VH1d3FcRlfGXHs71N7qoSuSrXmRktIHqtZ1aBviLcgoikv3d8OQpdq/RgYI2o3tu2X
+         Yn2JI1ql1zcShLCgPeZrYbO/wugN6/xjxS8T6ByhBZOHaMyQTJgd1hs/n3sGtOgpn9
+         RTOU+M8MmTfTg6hvTd3c+80uw+5PAULm1aRvmbW99fbCSRaoQCuOuStBt23F7SadTh
+         bSPMlSLU+kaM04K+Jdw8k+Z9YfAxE59DLtJxw3IrbR9B/4hcSjfpk2iZ1/9MtWJlUa
+         bVVdNZe3SjzbQ==
+Date:   Fri, 18 Feb 2022 12:47:33 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     linux-iio@vger.kernel.org, Benson Leung <bleung@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Guenter Roeck <groeck@chromium.org>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 0/7] cros_ec_sensors: Drop unused IIO header includes
+Message-ID: <20220218124733.3604f9a5@jic23-huawei>
+In-Reply-To: <20211003121711.279736-1-jic23@kernel.org>
+References: <20211003121711.279736-1-jic23@kernel.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.1
-Subject: Re: [PATCH 5/5] spi: make remove callback a void function
-Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Mark Brown <broonie@kernel.org>
-Cc:     =?UTF-8?Q?Marek_Beh=c3=ban?= <kabel@kernel.org>,
-        Peter Huewe <peterhuewe@gmx.de>,
-        Jarkko Sakkinen <jarkko@kernel.org>,
-        Jason Gunthorpe <jgg@ziepe.ca>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Stephen Boyd <sboyd@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Sam Ravnborg <sam@ravnborg.org>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Emma Anholt <emma@anholt.net>,
-        David Lechner <david@lechnology.com>,
-        Kamlesh Gurudasani <kamlesh.gurudasani@gmail.com>,
-        =?UTF-8?Q?Noralf_Tr=c3=b8nnes?= <noralf@tronnes.org>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Rui Miguel Silva <rmfrfs@gmail.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Yasunari Takiguchi <Yasunari.Takiguchi@sony.com>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Charles-Antoine Couret <charles-antoine.couret@nexvision.fr>,
-        Antti Palosaari <crope@iki.fi>,
-        Lee Jones <lee.jones@linaro.org>,
-        Support Opensource <support.opensource@diasemi.com>,
-        Charles Keepax <ckeepax@opensource.cirrus.com>,
-        Richard Fitzgerald <rf@opensource.cirrus.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eric Piel <eric.piel@tremplin-utc.net>,
-        Ulf Hansson <ulf.hansson@linaro.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Richard Weinberger <richard@nod.at>,
-        Vignesh Raghavendra <vigneshr@ti.com>,
-        Wolfgang Grandegger <wg@grandegger.com>,
-        Marc Kleine-Budde <mkl@pengutronix.de>,
-        "David S. Miller" <davem@davemloft.net>,
-        Jakub Kicinski <kuba@kernel.org>,
-        Manivannan Sadhasivam <mani@kernel.org>,
-        Thomas Kopp <thomas.kopp@microchip.com>,
-        Florian Fainelli <f.fainelli@gmail.com>,
-        Andrew Lunn <andrew@lunn.ch>,
-        Vivien Didelot <vivien.didelot@gmail.com>,
-        Vladimir Oltean <olteanv@gmail.com>,
-        Woojung Huh <woojung.huh@microchip.com>,
-        UNGLinuxDriver@microchip.com,
-        =?UTF-8?Q?=c5=81ukasz_Stelmach?= <l.stelmach@samsung.com>,
-        Alexander Aring <alex.aring@gmail.com>,
-        Stefan Schmidt <stefan@datenfreihafen.org>,
-        Harry Morris <h.morris@cascoda.com>,
-        Varka Bhadram <varkabhadram@gmail.com>,
-        Xue Liu <liuxuenetmail@gmail.com>, Alan Ott <alan@signal11.us>,
-        Heiner Kallweit <hkallweit1@gmail.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Christian Lamparter <chunkeey@googlemail.com>,
-        Kalle Valo <kvalo@kernel.org>,
-        Ajay Singh <ajay.kathat@microchip.com>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Solomon Peachy <pizza@shaftnet.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
-        Mark Greer <mgreer@animalcreek.com>,
-        Benson Leung <bleung@chromium.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Mark Gross <markgross@kernel.org>,
-        Alessandro Zummo <a.zummo@towertech.it>,
-        Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        =?UTF-8?B?SsOpcsO0bWUgUG91aWxsZXI=?= <jerome.pouiller@silabs.com>,
-        Jiri Slaby <jirislaby@kernel.org>,
-        Felipe Balbi <balbi@kernel.org>,
-        Daniel Thompson <daniel.thompson@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Helge Deller <deller@gmx.de>,
-        James Schulman <james.schulman@cirrus.com>,
-        David Rhodes <david.rhodes@cirrus.com>,
-        Lucas Tanure <tanureal@opensource.cirrus.com>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Daniel Mack <daniel@zonque.org>,
-        Thomas Zimmermann <tzimmermann@suse.de>,
-        Maxime Ripard <mripard@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Stephan Gerhold <stephan@gerhold.net>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Mike Looijmans <mike.looijmans@topic.nl>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        =?UTF-8?Q?Ronald_Tschal=c3=a4r?= <ronald@innovation.ch>,
-        Marco Felsch <m.felsch@pengutronix.de>,
-        =?UTF-8?Q?Jonathan_Neusch=c3=a4fer?= <j.neuschaefer@gmx.net>,
-        Emmanuel Gil Peyrot <linkmauve@linkmauve.fr>,
-        Jon Hunter <jonathanh@nvidia.com>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Heiko Schocher <hs@denx.de>,
-        Fabio Estevam <festevam@gmail.com>,
-        Colin Ian King <colin.king@intel.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>,
-        Tudor Ambarus <tudor.ambarus@microchip.com>,
-        Matt Kline <matt@bitbashing.io>,
-        Torin Cooper-Bennun <torin@maxiluxsystems.com>,
-        Vincent Mailhol <mailhol.vincent@wanadoo.fr>,
-        =?UTF-8?Q?Stefan_M=c3=a4tje?= <stefan.maetje@esd.eu>,
-        Frieder Schrempf <frieder.schrempf@kontron.de>,
-        Wei Yongjun <weiyongjun1@huawei.com>,
-        Randy Dunlap <rdunlap@infradead.org>,
-        Nanyong Sun <sunnanyong@huawei.com>,
-        Yang Shen <shenyang39@huawei.com>,
-        dingsenjie <dingsenjie@yulong.com>,
-        Aditya Srivastava <yashsri421@gmail.com>,
-        Stefan Wahren <stefan.wahren@i2se.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Michael Walle <michael@walle.cc>,
-        Yang Li <yang.lee@linux.alibaba.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        wengjianfeng <wengjianfeng@yulong.com>,
-        Sidong Yang <realwakka@gmail.com>,
-        Paulo Miguel Almeida <paulo.miguel.almeida.rodenas@gmail.com>,
-        Zhang Qilong <zhangqilong3@huawei.com>,
-        Will Deacon <will@kernel.org>,
-        Mark Tomlinson <mark.tomlinson@alliedtelesis.co.nz>,
-        Davidlohr Bueso <dbueso@suse.de>, Claudius Heine <ch@denx.de>,
-        Jiri Prchal <jiri.prchal@aksignal.cz>,
-        linux-kernel@vger.kernel.org, linux-integrity@vger.kernel.org,
-        linux-clk@vger.kernel.org, linux-gpio@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-leds@vger.kernel.org, linux-media@vger.kernel.org,
-        patches@opensource.cirrus.com, alsa-devel@alsa-project.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-mmc@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-can@vger.kernel.org,
-        netdev@vger.kernel.org, linux-wpan@vger.kernel.org,
-        linux-wireless@vger.kernel.org, libertas-dev@lists.infradead.org,
-        platform-driver-x86@vger.kernel.org, linux-rtc@vger.kernel.org,
-        linux-spi@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        linux-staging@lists.linux.dev, linux-serial@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-omap@vger.kernel.org,
-        kernel@pengutronix.de
-References: <20220123175201.34839-1-u.kleine-koenig@pengutronix.de>
- <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
-From:   Hans Verkuil <hverkuil@xs4all.nl>
-In-Reply-To: <20220123175201.34839-6-u.kleine-koenig@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 23/01/2022 18:52, Uwe Kleine-König wrote:
-> The value returned by an spi driver's remove function is mostly ignored.
-> (Only an error message is printed if the value is non-zero that the
-> error is ignored.)
+On Sun,  3 Oct 2021 13:17:04 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
+
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> So change the prototype of the remove function to return no value. This
-> way driver authors are not tempted to assume that passing an error to
-> the upper layer is a good idea. All drivers are adapted accordingly.
-> There is no intended change of behaviour, all callbacks were prepared to
-> return 0 before.
+> The include-what-you-use tool allows for automated detection of
+> unused headers + those that are used directly in a file but not included.
 > 
-> Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-> ---
->  drivers/bus/moxtet.c                                  |  4 +---
->  drivers/char/tpm/st33zp24/spi.c                       |  4 +---
->  drivers/char/tpm/tpm_tis_spi_main.c                   |  3 +--
->  drivers/clk/clk-lmk04832.c                            |  4 +---
->  drivers/gpio/gpio-74x164.c                            |  4 +---
->  drivers/gpio/gpio-max3191x.c                          |  4 +---
->  drivers/gpio/gpio-max7301.c                           |  4 +---
->  drivers/gpio/gpio-mc33880.c                           |  4 +---
->  drivers/gpio/gpio-pisosr.c                            |  4 +---
->  drivers/gpu/drm/panel/panel-abt-y030xx067a.c          |  4 +---
->  drivers/gpu/drm/panel/panel-ilitek-ili9322.c          |  4 +---
->  drivers/gpu/drm/panel/panel-ilitek-ili9341.c          |  3 +--
->  drivers/gpu/drm/panel/panel-innolux-ej030na.c         |  4 +---
->  drivers/gpu/drm/panel/panel-lg-lb035q02.c             |  4 +---
->  drivers/gpu/drm/panel/panel-lg-lg4573.c               |  4 +---
->  drivers/gpu/drm/panel/panel-nec-nl8048hl11.c          |  4 +---
->  drivers/gpu/drm/panel/panel-novatek-nt39016.c         |  4 +---
->  drivers/gpu/drm/panel/panel-samsung-db7430.c          |  3 +--
->  drivers/gpu/drm/panel/panel-samsung-ld9040.c          |  4 +---
->  drivers/gpu/drm/panel/panel-samsung-s6d27a1.c         |  3 +--
->  drivers/gpu/drm/panel/panel-samsung-s6e63m0-spi.c     |  3 +--
->  drivers/gpu/drm/panel/panel-sitronix-st7789v.c        |  4 +---
->  drivers/gpu/drm/panel/panel-sony-acx565akm.c          |  4 +---
->  drivers/gpu/drm/panel/panel-tpo-td028ttec1.c          |  4 +---
->  drivers/gpu/drm/panel/panel-tpo-td043mtea1.c          |  4 +---
->  drivers/gpu/drm/panel/panel-tpo-tpg110.c              |  3 +--
->  drivers/gpu/drm/panel/panel-widechips-ws2401.c        |  3 +--
->  drivers/gpu/drm/tiny/hx8357d.c                        |  4 +---
->  drivers/gpu/drm/tiny/ili9163.c                        |  4 +---
->  drivers/gpu/drm/tiny/ili9225.c                        |  4 +---
->  drivers/gpu/drm/tiny/ili9341.c                        |  4 +---
->  drivers/gpu/drm/tiny/ili9486.c                        |  4 +---
->  drivers/gpu/drm/tiny/mi0283qt.c                       |  4 +---
->  drivers/gpu/drm/tiny/repaper.c                        |  4 +---
->  drivers/gpu/drm/tiny/st7586.c                         |  4 +---
->  drivers/gpu/drm/tiny/st7735r.c                        |  4 +---
->  drivers/hwmon/adcxx.c                                 |  4 +---
->  drivers/hwmon/adt7310.c                               |  3 +--
->  drivers/hwmon/max1111.c                               |  3 +--
->  drivers/hwmon/max31722.c                              |  4 +---
->  drivers/iio/accel/bma400_spi.c                        |  4 +---
->  drivers/iio/accel/bmc150-accel-spi.c                  |  4 +---
->  drivers/iio/accel/bmi088-accel-spi.c                  |  4 +---
->  drivers/iio/accel/kxsd9-spi.c                         |  4 +---
->  drivers/iio/accel/mma7455_spi.c                       |  4 +---
->  drivers/iio/accel/sca3000.c                           |  4 +---
->  drivers/iio/adc/ad7266.c                              |  4 +---
->  drivers/iio/adc/ltc2496.c                             |  4 +---
->  drivers/iio/adc/mcp320x.c                             |  4 +---
->  drivers/iio/adc/mcp3911.c                             |  4 +---
->  drivers/iio/adc/ti-adc12138.c                         |  4 +---
->  drivers/iio/adc/ti-ads7950.c                          |  4 +---
->  drivers/iio/adc/ti-ads8688.c                          |  4 +---
->  drivers/iio/adc/ti-tlc4541.c                          |  4 +---
->  drivers/iio/amplifiers/ad8366.c                       |  4 +---
->  drivers/iio/common/ssp_sensors/ssp_dev.c              |  4 +---
->  drivers/iio/dac/ad5360.c                              |  4 +---
->  drivers/iio/dac/ad5380.c                              |  4 +---
->  drivers/iio/dac/ad5446.c                              |  4 +---
->  drivers/iio/dac/ad5449.c                              |  4 +---
->  drivers/iio/dac/ad5504.c                              |  4 +---
->  drivers/iio/dac/ad5592r.c                             |  4 +---
->  drivers/iio/dac/ad5624r_spi.c                         |  4 +---
->  drivers/iio/dac/ad5686-spi.c                          |  4 +---
->  drivers/iio/dac/ad5761.c                              |  4 +---
->  drivers/iio/dac/ad5764.c                              |  4 +---
->  drivers/iio/dac/ad5791.c                              |  4 +---
->  drivers/iio/dac/ad8801.c                              |  4 +---
->  drivers/iio/dac/ltc1660.c                             |  4 +---
->  drivers/iio/dac/ltc2632.c                             |  4 +---
->  drivers/iio/dac/mcp4922.c                             |  4 +---
->  drivers/iio/dac/ti-dac082s085.c                       |  4 +---
->  drivers/iio/dac/ti-dac7311.c                          |  3 +--
->  drivers/iio/frequency/adf4350.c                       |  4 +---
->  drivers/iio/gyro/bmg160_spi.c                         |  4 +---
->  drivers/iio/gyro/fxas21002c_spi.c                     |  4 +---
->  drivers/iio/health/afe4403.c                          |  4 +---
->  drivers/iio/magnetometer/bmc150_magn_spi.c            |  4 +---
->  drivers/iio/magnetometer/hmc5843_spi.c                |  4 +---
->  drivers/iio/potentiometer/max5487.c                   |  4 +---
->  drivers/iio/pressure/ms5611_spi.c                     |  4 +---
->  drivers/iio/pressure/zpa2326_spi.c                    |  4 +---
->  drivers/input/keyboard/applespi.c                     |  4 +---
->  drivers/input/misc/adxl34x-spi.c                      |  4 +---
->  drivers/input/touchscreen/ads7846.c                   |  4 +---
->  drivers/input/touchscreen/cyttsp4_spi.c               |  4 +---
->  drivers/input/touchscreen/tsc2005.c                   |  4 +---
->  drivers/leds/leds-cr0014114.c                         |  4 +---
->  drivers/leds/leds-dac124s085.c                        |  4 +---
->  drivers/leds/leds-el15203000.c                        |  4 +---
->  drivers/leds/leds-spi-byte.c                          |  4 +---
->  drivers/media/spi/cxd2880-spi.c                       |  4 +---
->  drivers/media/spi/gs1662.c                            |  4 +---
->  drivers/media/tuners/msi001.c                         |  3 +--
+> There are cases where the exact includes are debatable or perhaps the
+> tool indicates a place where we should look to split up a large header.
 
-A bit late, but for drivers/media:
+Hi All,
 
-Acked-by: Hans Verkuil <hverkuil-cisco@xs4all.nl>
+I still have this series outstanding in patchwork.  Might need a rebase
+by now, but in meantime if anyone cros_ec related could take a look
+that would be great.  Note this series is just dropping unused headers
+so should be uncontroversial!
 
-Thanks!
+Thanks,
 
-	Hans
+Jonathan
+
+> 
+> However, a simply step for IIO drivers at least is to reduce the inclusion
+> of headers that do not need to be included in specific drivers.
+> These typcially are unneeded because:
+> a) They provide the definitions for an optional feature that the driver
+>    does not use.
+> b) The driver is using library like functionality that simplifies
+>    a common case such as the iio-triggered-buffer approach and does
+>    not therefore need access to the low level primatives.
+> 
+> Over time we have restructured many IIO drivers and often ended up
+> with headers that were once needed no longer being used.
+> 
+> If reviewers would prefer that I also tidy up some of the other includes
+> I'm happy to do that.  Note that manual inspection is absolutely
+> required when using this tool as it is not 'kernel aware'.
+> 
+> Patch 1 is the perhaps the most controversial, but I would like to
+> avoid drivers outside of IIO itself including IIO headers where that
+> is possible and in this particularly case the include is not necessary.
+> 
+> For reference, the relevant include-what-you-use reports for these files is:
+> 
+> drivers/platform/chrome/cros_ec_sensorhub_ring.c should add these lines:
+> #include <stddef.h>                                 // for NULL, size_t
+> #include <stdint.h>                                 // for uint16_t, int16_t
+> #include "asm-generic/errno-base.h"                 // for ENOMEM, EINVAL
+> #include "asm-generic/int-ll64.h"                   // for s64, u16, u8, s16
+> #include "asm/string_64.h"                          // for memcpy
+> #include "linux/bitops.h"                           // for for_each_set_bit
+> #include "linux/compiler_types.h"                   // for inline
+> #include "linux/dev_printk.h"                       // for dev_warn, dev_dbg
+> #include "linux/export.h"                           // for EXPORT_SYMBOL_GPL
+> #include "linux/gfp.h"                              // for GFP_KERNEL
+> #include "linux/ktime.h"                            // for ktime_t
+> #include "linux/math.h"                             // for abs
+> #include "linux/math64.h"                           // for div_s64, div64_s64
+> #include "linux/mutex.h"                            // for mutex_unlock, mut...
+> #include "linux/notifier.h"                         // for blocking_notifier...
+> #include "linux/stddef.h"                           // for false, true
+> #include "linux/types.h"                            // for bool
+> #include "vdso/bits.h"                              // for BIT
+> struct iio_dev;
+> 
+> drivers/platform/chrome/cros_ec_sensorhub_ring.c should remove these lines:
+> - #include <linux/delay.h>  // lines 8-8
+> - #include <linux/iio/iio.h>  // lines 10-10
+> - #include <linux/module.h>  // lines 12-12
+> - #include <linux/platform_device.h>  // lines 16-16
+> - #include <linux/slab.h>  // lines 18-18
+> 
+> The full include-list for drivers/platform/chrome/cros_ec_sensorhub_ring.c:
+> #include <linux/device.h>                           // for devm_kcalloc, dev...
+> #include <linux/kernel.h>                           // for container_of
+> #include <linux/platform_data/cros_ec_commands.h>   // for ec_response_motio...
+> #include <linux/platform_data/cros_ec_proto.h>      // for cros_ec_cmd_xfer_...
+> #include <linux/platform_data/cros_ec_sensorhub.h>  // for cros_ec_sensorhub
+> #include <linux/sort.h>                             // for sort
+> #include <stddef.h>                                 // for NULL, size_t
+> #include <stdint.h>                                 // for uint16_t, int16_t
+> #include "asm-generic/errno-base.h"                 // for ENOMEM, EINVAL
+> #include "asm-generic/int-ll64.h"                   // for s64, u16, u8, s16
+> #include "asm/string_64.h"                          // for memcpy
+> #include "cros_ec_trace.h"                          // for trace_cros_ec_sen...
+> #include "linux/bitops.h"                           // for for_each_set_bit
+> #include "linux/compiler_types.h"                   // for inline
+> #include "linux/dev_printk.h"                       // for dev_warn, dev_dbg
+> #include "linux/export.h"                           // for EXPORT_SYMBOL_GPL
+> #include "linux/gfp.h"                              // for GFP_KERNEL
+> #include "linux/ktime.h"                            // for ktime_t
+> #include "linux/math.h"                             // for abs
+> #include "linux/math64.h"                           // for div_s64, div64_s64
+> #include "linux/mutex.h"                            // for mutex_unlock, mut...
+> #include "linux/notifier.h"                         // for blocking_notifier...
+> #include "linux/stddef.h"                           // for false, true
+> #include "linux/types.h"                            // for bool
+> #include "vdso/bits.h"                              // for BIT
+> struct iio_dev;
+> 
+> drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c should add these lines:
+> #include <linux/bitops.h>                           // for fls
+> #include <stddef.h>                                 // for NULL, size_t
+> #include <stdint.h>                                 // for uintptr_t, int16_t
+> #include <sys/types.h>                              // for ssize_t
+> #include "asm-generic/errno-base.h"                 // for EINVAL, EIO, ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for u16, s16, u32, u8
+> #include "asm/page_types.h"                         // for PAGE_SIZE
+> #include "asm/string_64.h"                          // for memcpy, memset
+> #include "linux/bitops.h"                           // for for_each_set_bit
+> #include "linux/byteorder/generic.h"                // for le16_to_cpu
+> #include "linux/compiler_attributes.h"              // for __maybe_unused
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/export.h"                           // for EXPORT_SYMBOL_GPL
+> #include "linux/gfp.h"                              // for GFP_KERNEL
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_SAM...
+> #include "linux/irqreturn.h"                        // for IRQ_HANDLED, irqr...
+> #include "linux/kstrtox.h"                          // for strtobool
+> #include "linux/limits.h"                           // for U16_MAX
+> #include "linux/minmax.h"                           // for max, min
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/pm.h"                               // for SIMPLE_DEV_PM_OPS
+> #include "linux/time.h"                             // for CLOCK_BOOTTIME
+> #include "linux/types.h"                            // for bool, __le16
+> 
+> drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c should remove these lines:
+> - #include <linux/iio/trigger.h>  // lines 15-15
+> - #include <linux/slab.h>  // lines 20-20
+> 
+> The full include-list for drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c:
+> #include <linux/bitops.h>                           // for fls
+> #include <linux/delay.h>                            // for msleep
+> #include <linux/device.h>                           // for dev_get_drvdata
+> #include <linux/iio/buffer.h>                       // for iio_push_to_buffe...
+> #include <linux/iio/common/cros_ec_sensors_core.h>  // for cros_ec_sensors_c...
+> #include <linux/iio/iio.h>                          // for iio_priv, iio_dev
+> #include <linux/iio/kfifo_buf.h>                    // for devm_iio_kfifo_bu...
+> #include <linux/iio/sysfs.h>                        // for iio_dev_attr, IIO...
+> #include <linux/iio/trigger_consumer.h>             // for iio_trigger_notif...
+> #include <linux/iio/triggered_buffer.h>             // for devm_iio_triggere...
+> #include <linux/kernel.h>                           // for snprintf, sprintf
+> #include <linux/module.h>                           // for MODULE_DESCRIPTION
+> #include <linux/platform_data/cros_ec_commands.h>   // for ec_params_motion_...
+> #include <linux/platform_data/cros_ec_proto.h>      // for cros_ec_device
+> #include <linux/platform_data/cros_ec_sensorhub.h>  // for cros_ec_sensorhub...
+> #include <linux/platform_device.h>                  // for platform_get_drvdata
+> #include <stddef.h>                                 // for NULL, size_t
+> #include <stdint.h>                                 // for uintptr_t, int16_t
+> #include <sys/types.h>                              // for ssize_t
+> #include "asm-generic/errno-base.h"                 // for EINVAL, EIO, ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for u16, s16, u32, u8
+> #include "asm/page_types.h"                         // for PAGE_SIZE
+> #include "asm/string_64.h"                          // for memcpy, memset
+> #include "linux/bitops.h"                           // for for_each_set_bit
+> #include "linux/byteorder/generic.h"                // for le16_to_cpu
+> #include "linux/compiler_attributes.h"              // for __maybe_unused
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/export.h"                           // for EXPORT_SYMBOL_GPL
+> #include "linux/gfp.h"                              // for GFP_KERNEL
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_SAM...
+> #include "linux/irqreturn.h"                        // for IRQ_HANDLED, irqr...
+> #include "linux/kstrtox.h"                          // for strtobool
+> #include "linux/limits.h"                           // for U16_MAX
+> #include "linux/minmax.h"                           // for max, min
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/pm.h"                               // for SIMPLE_DEV_PM_OPS
+> #include "linux/time.h"                             // for CLOCK_BOOTTIME
+> #include "linux/types.h"                            // for bool, __le16
+> 
+> drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c should add these lines:
+> #include <stddef.h>                                 // for NULL
+> #include <stdint.h>                                 // for int16_t, uint16_t
+> #include "asm-generic/errno-base.h"                 // for EINVAL, ENOMEM
+> #include "asm-generic/errno.h"                      // for EOPNOTSUPP, EPROTO
+> #include "asm-generic/int-ll64.h"                   // for s16, s64
+> #include "linux/dev_printk.h"                       // for dev_err
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_CAL...
+> #include "linux/math64.h"                           // for div_s64
+> #include "linux/mod_devicetable.h"                  // for platform_device_id
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for true
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c should remove these lines:
+> - #include <linux/device.h>  // lines 11-11
+> - #include <linux/iio/buffer.h>  // lines 12-12
+> - #include <linux/iio/kfifo_buf.h>  // lines 15-15
+> - #include <linux/iio/trigger_consumer.h>  // lines 16-16
+> - #include <linux/iio/triggered_buffer.h>  // lines 17-17
+> - #include <linux/kernel.h>  // lines 18-18
+> - #include <linux/slab.h>  // lines 23-23
+> 
+> The full include-list for drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c:
+> #include <linux/iio/common/cros_ec_sensors_core.h>  // for cros_ec_sensors_c...
+> #include <linux/iio/iio.h>                          // for iio_chan_spec
+> #include <linux/module.h>                           // for MODULE_DESCRIPTION
+> #include <linux/platform_data/cros_ec_commands.h>   // for ec_params_motion_...
+> #include <linux/platform_data/cros_ec_proto.h>      // for cros_ec_device
+> #include <linux/platform_device.h>                  // for platform_device
+> #include <stddef.h>                                 // for NULL
+> #include <stdint.h>                                 // for int16_t, uint16_t
+> #include "asm-generic/errno-base.h"                 // for EINVAL, ENOMEM
+> #include "asm-generic/errno.h"                      // for EOPNOTSUPP, EPROTO
+> #include "asm-generic/int-ll64.h"                   // for s16, s64
+> #include "linux/dev_printk.h"                       // for dev_err
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_CAL...
+> #include "linux/math64.h"                           // for div_s64
+> #include "linux/mod_devicetable.h"                  // for platform_device_id
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for true
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c should add these lines:
+> #include <stddef.h>                                 // for NULL
+> #include "asm-generic/errno-base.h"                 // for ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for s16
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/iio/types.h"                        // for IIO_ANGL, IIO_CHA...
+> #include "linux/mod_devicetable.h"                  // for platform_device_id
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for false
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c should remove these lines:
+> - #include <linux/delay.h>  // lines 13-13
+> - #include <linux/device.h>  // lines 14-14
+> - #include <linux/iio/buffer.h>  // lines 15-15
+> - #include <linux/iio/kfifo_buf.h>  // lines 18-18
+> - #include <linux/iio/trigger.h>  // lines 19-19
+> - #include <linux/iio/trigger_consumer.h>  // lines 21-21
+> - #include <linux/slab.h>  // lines 26-26
+> 
+> The full include-list for drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c:
+> #include <linux/iio/common/cros_ec_sensors_core.h>  // for cros_ec_sensors_c...
+> #include <linux/iio/iio.h>                          // for iio_priv, iio_dev
+> #include <linux/iio/triggered_buffer.h>             // for devm_iio_triggere...
+> #include <linux/kernel.h>                           // for ARRAY_SIZE
+> #include <linux/module.h>                           // for MODULE_DESCRIPTION
+> #include <linux/platform_data/cros_ec_commands.h>   // for ec_response_motio...
+> #include <linux/platform_device.h>                  // for module_platform_d...
+> #include <stddef.h>                                 // for NULL
+> #include "asm-generic/errno-base.h"                 // for ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for s16
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/iio/types.h"                        // for IIO_ANGL, IIO_CHA...
+> #include "linux/mod_devicetable.h"                  // for platform_device_id
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for false
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/accel/cros_ec_accel_legacy.c should add these lines:
+> #include <asm/bug.h>                                // for WARN_ON
+> #include <stddef.h>                                 // for NULL
+> #include <stdint.h>                                 // for int16_t
+> #include "asm-generic/errno-base.h"                 // for EINVAL, ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for s8, s16, u8
+> #include "linux/bitops.h"                           // for for_each_set_bit
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_SAM...
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for true
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/accel/cros_ec_accel_legacy.c should remove these lines:
+> - #include <linux/delay.h>  // lines 12-12
+> - #include <linux/device.h>  // lines 13-13
+> - #include <linux/iio/buffer.h>  // lines 14-14
+> - #include <linux/iio/kfifo_buf.h>  // lines 17-17
+> - #include <linux/iio/trigger_consumer.h>  // lines 18-18
+> - #include <linux/iio/triggered_buffer.h>  // lines 19-19
+> - #include <linux/slab.h>  // lines 22-22
+> 
+> The full include-list for drivers/iio/accel/cros_ec_accel_legacy.c:
+> #include <asm/bug.h>                                // for WARN_ON
+> #include <linux/iio/common/cros_ec_sensors_core.h>  // for CROS_EC_SENSOR_X
+> #include <linux/iio/iio.h>                          // for iio_priv, iio_dev
+> #include <linux/kernel.h>                           // for ARRAY_SIZE
+> #include <linux/module.h>                           // for MODULE_ALIAS, MOD...
+> #include <linux/platform_data/cros_ec_commands.h>   // for ec_params_motion_...
+> #include <linux/platform_data/cros_ec_proto.h>      // for cros_ec_device
+> #include <linux/platform_device.h>                  // for platform_device
+> #include <stddef.h>                                 // for NULL
+> #include <stdint.h>                                 // for int16_t
+> #include "asm-generic/errno-base.h"                 // for EINVAL, ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for s8, s16, u8
+> #include "linux/bitops.h"                           // for for_each_set_bit
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_SAM...
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for true
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/proximity/cros_ec_mkbp_proximity.c should add these lines:
+> #include <stddef.h>                                // for NULL, size_t
+> #include "asm-generic/errno-base.h"                // for EINVAL, ENOMEM
+> #include "asm-generic/errno.h"                     // for EPROTO
+> #include "asm-generic/int-ll64.h"                  // for u32, s64, u64, u8
+> #include "asm-generic/unaligned.h"                 // for get_unaligned_le32
+> #include "linux/compiler_attributes.h"             // for __maybe_unused
+> #include "linux/dev_printk.h"                      // for dev_warn
+> #include "linux/device.h"                          // for dev_get_drvdata
+> #include "linux/device/driver.h"                   // for device_driver
+> #include "linux/iio/types.h"                       // for IIO_PROXIMITY, IIO...
+> #include "linux/ktime.h"                           // for ktime_to_ns
+> #include "linux/mod_devicetable.h"                 // for of_device_id
+> #include "linux/pm.h"                              // for SIMPLE_DEV_PM_OPS
+> #include "linux/time.h"                            // for CLOCK_BOOTTIME
+> #include "vdso/bits.h"                             // for BIT
+> 
+> drivers/iio/proximity/cros_ec_mkbp_proximity.c should remove these lines:
+> - #include <asm/unaligned.h>  // lines 24-24
+> - #include <linux/iio/sysfs.h>  // lines 22-22
+> - #include <linux/of.h>  // lines 12-12
+> - #include <linux/slab.h>  // lines 14-14
+> 
+> The full include-list for drivers/iio/proximity/cros_ec_mkbp_proximity.c:
+> #include <linux/iio/events.h>                      // for IIO_UNMOD_EVENT_CODE
+> #include <linux/iio/iio.h>                         // for iio_priv, iio_dev
+> #include <linux/kernel.h>                          // for ARRAY_SIZE, contai...
+> #include <linux/module.h>                          // for MODULE_DESCRIPTION
+> #include <linux/mutex.h>                           // for mutex_lock, mutex_...
+> #include <linux/notifier.h>                        // for blocking_notifier_...
+> #include <linux/platform_data/cros_ec_commands.h>  // for ec_params_mkbp_info
+> #include <linux/platform_data/cros_ec_proto.h>     // for cros_ec_device
+> #include <linux/platform_device.h>                 // for platform_get_drvdata
+> #include <linux/types.h>                           // for bool
+> #include <stddef.h>                                // for NULL, size_t
+> #include "asm-generic/errno-base.h"                // for EINVAL, ENOMEM
+> #include "asm-generic/errno.h"                     // for EPROTO
+> #include "asm-generic/int-ll64.h"                  // for u32, s64, u64, u8
+> #include "asm-generic/unaligned.h"                 // for get_unaligned_le32
+> #include "linux/compiler_attributes.h"             // for __maybe_unused
+> #include "linux/dev_printk.h"                      // for dev_warn
+> #include "linux/device.h"                          // for dev_get_drvdata
+> #include "linux/device/driver.h"                   // for device_driver
+> #include "linux/iio/types.h"                       // for IIO_PROXIMITY, IIO...
+> #include "linux/ktime.h"                           // for ktime_to_ns
+> #include "linux/mod_devicetable.h"                 // for of_device_id
+> #include "linux/pm.h"                              // for SIMPLE_DEV_PM_OPS
+> #include "linux/time.h"                            // for CLOCK_BOOTTIME
+> #include "vdso/bits.h"                             // for BIT
+> 
+> drivers/iio/pressure/cros_ec_baro.c should add these lines:
+> #include "asm-generic/errno-base.h"                 // for EINVAL, ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for s16, u16
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_SCALE
+> #include "linux/mod_devicetable.h"                  // for platform_device_id
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for true
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/pressure/cros_ec_baro.c should remove these lines:
+> - #include <linux/iio/buffer.h>  // lines 9-9
+> - #include <linux/iio/kfifo_buf.h>  // lines 12-12
+> - #include <linux/iio/trigger.h>  // lines 13-13
+> - #include <linux/iio/trigger_consumer.h>  // lines 15-15
+> - #include <linux/iio/triggered_buffer.h>  // lines 14-14
+> - #include <linux/kernel.h>  // lines 16-16
+> - #include <linux/slab.h>  // lines 18-18
+> 
+> The full include-list for drivers/iio/pressure/cros_ec_baro.c:
+> #include <linux/device.h>                           // for dev_get_drvdata
+> #include <linux/iio/common/cros_ec_sensors_core.h>  // for cros_ec_sensors_c...
+> #include <linux/iio/iio.h>                          // for iio_chan_spec
+> #include <linux/module.h>                           // for MODULE_DESCRIPTION
+> #include <linux/platform_data/cros_ec_commands.h>   // for ec_params_motion_...
+> #include <linux/platform_data/cros_ec_proto.h>      // for cros_ec_dev
+> #include <linux/platform_device.h>                  // for module_platform_d...
+> #include "asm-generic/errno-base.h"                 // for EINVAL, ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for s16, u16
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_SCALE
+> #include "linux/mod_devicetable.h"                  // for platform_device_id
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for true
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/light/cros_ec_light_prox.c should add these lines:
+> #include <stdint.h>                                 // for int16_t
+> #include "asm-generic/errno-base.h"                 // for EINVAL, ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for s16, s64, u16
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_CAL...
+> #include "linux/mod_devicetable.h"                  // for platform_device_id
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for true
+> #include "vdso/bits.h"                              // for BIT
+> 
+> drivers/iio/light/cros_ec_light_prox.c should remove these lines:
+> - #include <linux/device.h>  // lines 8-8
+> - #include <linux/iio/buffer.h>  // lines 9-9
+> - #include <linux/iio/kfifo_buf.h>  // lines 12-12
+> - #include <linux/iio/trigger.h>  // lines 13-13
+> - #include <linux/iio/trigger_consumer.h>  // lines 15-15
+> - #include <linux/iio/triggered_buffer.h>  // lines 14-14
+> - #include <linux/kernel.h>  // lines 16-16
+> - #include <linux/platform_data/cros_ec_proto.h>  // lines 19-19
+> - #include <linux/slab.h>  // lines 21-21
+> 
+> The full include-list for drivers/iio/light/cros_ec_light_prox.c:
+> #include <linux/iio/common/cros_ec_sensors_core.h>  // for cros_ec_sensors_c...
+> #include <linux/iio/iio.h>                          // for iio_chan_spec
+> #include <linux/module.h>                           // for MODULE_DESCRIPTION
+> #include <linux/platform_data/cros_ec_commands.h>   // for ec_params_motion_...
+> #include <linux/platform_device.h>                  // for module_platform_d...
+> #include <stdint.h>                                 // for int16_t
+> #include "asm-generic/errno-base.h"                 // for EINVAL, ENOMEM
+> #include "asm-generic/int-ll64.h"                   // for s16, s64, u16
+> #include "linux/dev_printk.h"                       // for dev_warn
+> #include "linux/iio/types.h"                        // for IIO_CHAN_INFO_CAL...
+> #include "linux/mod_devicetable.h"                  // for platform_device_id
+> #include "linux/mutex.h"                            // for mutex_lock, mutex...
+> #include "linux/stddef.h"                           // for true
+> #include "vdso/bits.h"                              // for BIT
+> 
+> Jonathan Cameron (7):
+>   platform/chrome: cros_ec_sensorhub_ring - avoid including iio.h
+>   iio: cros_ec_sensors: Remove excessive IIO includes
+>   iio: accel: cros_ec_accel_legacy: Drop unused IIO includes
+>   iio: cros_ec_lid_angle: Drop unused IIO includes.
+>   iio: light: cros_ec_light_prox: Drop unused IIO includes.
+>   iio: pressure: cros_ec_baro: Drop unused IIO headers.
+>   iio: prox: cros_ec_mkbp: Drop unused IIO headers.
+> 
+>  drivers/iio/accel/cros_ec_accel_legacy.c                  | 3 ---
+>  drivers/iio/common/cros_ec_sensors/cros_ec_lid_angle.c    | 4 ----
+>  drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c      | 4 ----
+>  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 1 -
+>  drivers/iio/light/cros_ec_light_prox.c                    | 5 -----
+>  drivers/iio/pressure/cros_ec_baro.c                       | 5 -----
+>  drivers/iio/proximity/cros_ec_mkbp_proximity.c            | 1 -
+>  drivers/platform/chrome/cros_ec_sensorhub_ring.c          | 3 ++-
+>  8 files changed, 2 insertions(+), 24 deletions(-)
+> 
+
