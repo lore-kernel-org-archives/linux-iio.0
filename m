@@ -2,100 +2,130 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1500C433EF
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Feb 2022 10:07:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C74EC433F5
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Feb 2022 11:30:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233790AbiBRKIG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Feb 2022 05:08:06 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:53032 "EHLO
+        id S234408AbiBRLa2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Feb 2022 06:30:28 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:49028 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231401AbiBRKIF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Feb 2022 05:08:05 -0500
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 480941B7BF
-        for <linux-iio@vger.kernel.org>; Fri, 18 Feb 2022 02:07:48 -0800 (PST)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nL0Az-0001P2-DN; Fri, 18 Feb 2022 11:07:45 +0100
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nL0Az-00HNUK-Bs; Fri, 18 Feb 2022 11:07:44 +0100
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nL0Ax-003y6p-LU; Fri, 18 Feb 2022 11:07:43 +0100
-Date:   Fri, 18 Feb 2022 11:07:43 +0100
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
-        Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Subject: Re: [PATCH] counter: Stop using dev_get_drvdata() to get the counter
- device
-Message-ID: <20220218100743.ipzhzcv2cvaw3a2f@pengutronix.de>
-References: <20220218092031.167689-1-vilhelm.gray@gmail.com>
+        with ESMTP id S234507AbiBRLa1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Feb 2022 06:30:27 -0500
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A2042AF92C
+        for <linux-iio@vger.kernel.org>; Fri, 18 Feb 2022 03:30:11 -0800 (PST)
+Received: from fraeml745-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K0Tx53HfNz67jRt;
+        Fri, 18 Feb 2022 19:29:13 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml745-chm.china.huawei.com (10.206.15.226) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2308.21; Fri, 18 Feb 2022 12:30:09 +0100
+Received: from localhost (10.122.247.231) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Fri, 18 Feb
+ 2022 11:30:08 +0000
+Date:   Fri, 18 Feb 2022 11:30:07 +0000
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Hans de Goede <hdegoede@redhat.com>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        <linux-iio@vger.kernel.org>, kernel test robot <lkp@intel.com>
+Subject: Re: [PATCH] iio: mma8452: Fix 'mma8452_dt_ids' defined but not used
+ compiler warning
+Message-ID: <20220218113007.00004feb@huawei.com>
+In-Reply-To: <b4482ee4-2e8e-e8e4-b1f8-29fb37973780@redhat.com>
+References: <20220214091850.44139-1-hdegoede@redhat.com>
+        <20220214105456.00002177@Huawei.com>
+        <b4482ee4-2e8e-e8e4-b1f8-29fb37973780@redhat.com>
+Organization: Huawei Technologies R&D (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; x86_64-w64-mingw32)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mfyftfv6zovvw7xo"
-Content-Disposition: inline
-In-Reply-To: <20220218092031.167689-1-vilhelm.gray@gmail.com>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.122.247.231]
+X-ClientProxiedBy: lhreml722-chm.china.huawei.com (10.201.108.73) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Mon, 14 Feb 2022 11:59:52 +0100
+Hans de Goede <hdegoede@redhat.com> wrote:
 
---mfyftfv6zovvw7xo
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Hi,
+> 
+> On 2/14/22 11:54, Jonathan Cameron wrote:
+> > On Mon, 14 Feb 2022 10:18:50 +0100
+> > Hans de Goede <hdegoede@redhat.com> wrote:
+> >   
+> >> Commit 90adc57bd55a ("iio: mma8452: Fix probe failing when an
+> >> i2c_device_id is used") introduces a new: "'mma8452_dt_ids' defined
+> >> but not used" compiler warning.
+> >>
+> >> This is caused by the switch from of_match_device() (which takes a
+> >> pointer to this) to device_get_match_data(), combined with the use of
+> >> of_match_ptr() when setting of_match_table.
+> >>
+> >> We actually want mma8452_dt_ids to get optmized away when CONFIG_OF is
+> >> not set, so mark it as __maybe_unused to silence the warning.
+> >>
+> >> Fixes: 90adc57bd55a ("iio: mma8452: Fix probe failing when an i2c_device_id is used")
+> >> Reported-by: kernel test robot <lkp@intel.com>
+> >> Signed-off-by: Hans de Goede <hdegoede@redhat.com>  
+> > 
+> > For this I'd rather drop the of_match_ptr() protection.  
+> 
+> Ok, that is fine with me.
+> 
+> > We will need to do that anyway shortly as part of converting this
+> > to fully device properties and allowing ACPI PRP0001 which uses
+> > the of_match_table from ACPI.
+> > 
+> > We can now easily make that transition as (via Andy)
+> > https://git.kernel.org/pub/scm/linux/kernel/git/wsa/linux.git/commit/?h=i2c/alert-for-acpi&id=ca0acb511c21738b32386ce0f85c284b351d919e
+> > 
+> > Anyhow, I can just fix it up on the original patch once I'm on the
+> > right computer.  
+> 
+> Great thank you.
+Done.
 
-Hello,
+Thanks,
 
-On Fri, Feb 18, 2022 at 06:20:31PM +0900, William Breathitt Gray wrote:
-> From: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
->=20
-> dev_get_drvdata() returns NULL since commit b56346ddbd82 ("counter: Use
-> container_of instead of drvdata to track counter_device") which wrongly
-> claimed there were no users of drvdata. Convert to container_of() to
-> fix a null pointer dereference.
->=20
-> Reported-by: Oleksij Rempel <o.rempel@pengutronix.de>
-> Fixes: b56346ddbd82 ("counter: Use container_of instead of drvdata to tra=
-ck counter_device")
-> Signed-off-by: Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de>
-> Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> ---
+Jonathan
+> 
+> > I might also post patches to get rid
+> > of the of dependency completely if no one else gets there
+> > before me.  
+> 
+> Regards,
+> 
+> Hans
+> 
+> 
+> >> ---
+> >> Note the 90adc57bd55a hash is from the jic23/iio.git testing branch, not
+> >> sure of it is stable. It is probably best to just squash this into the
+> >> original commit.
+> >> ---
+> >>  drivers/iio/accel/mma8452.c | 2 +-
+> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+> >>
+> >> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> >> index 590d9431e1bd..1324bd515377 100644
+> >> --- a/drivers/iio/accel/mma8452.c
+> >> +++ b/drivers/iio/accel/mma8452.c
+> >> @@ -1529,7 +1529,7 @@ static int mma8452_reset(struct i2c_client *client)
+> >>  	return -ETIMEDOUT;
+> >>  }
+> >>  
+> >> -static const struct of_device_id mma8452_dt_ids[] = {
+> >> +static const struct of_device_id __maybe_unused mma8452_dt_ids[] = {
+> >>  	{ .compatible = "fsl,mma8451", .data = &mma_chip_info_table[mma8451] },
+> >>  	{ .compatible = "fsl,mma8452", .data = &mma_chip_info_table[mma8452] },
+> >>  	{ .compatible = "fsl,mma8453", .data = &mma_chip_info_table[mma8453] },  
+> >   
+> 
 
-William didn't tell explicitly, so in case there are doubts: This patch
-is targeted for v5.17.
-
-Thanks
-Uwe
-
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
-
---mfyftfv6zovvw7xo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmIPb+wACgkQwfwUeK3K
-7AkdEgf/bmf5sYB0eYSvBmbPJag0UY/r0kQXIHhBUQxrKmVZ6HKUEj0EmQDrsNss
-E5pcv0h+x49+GKnDY29ime4SejdL71Wnd2By8wijWb+crPqwDNB9x9zv85iTuH8V
-4e16mffTWVWOUaPWIol0CoZ+7HgEfQ+e5B5nfKOyVaHu2OdaaU4WraepzLyEqJAp
-cYnmklHyOsbq1P9Tt5Jh+S1ibnI9envv0B0zzkqwhLkaio351yf3PwzcpuihZMqs
-ZQDo51j6y3VEilNmakixkqgPVIs6P1IeBUX2p48GsMQqqbuovdgaY3GCseRylTOu
-+qThaDTrnp0ktNLNXqLASlyxp1T2OA==
-=1E4O
------END PGP SIGNATURE-----
-
---mfyftfv6zovvw7xo--
