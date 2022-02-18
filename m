@@ -2,146 +2,54 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90DD0C433EF
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Feb 2022 14:48:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55535C433EF
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Feb 2022 14:58:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232995AbiBROsb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Feb 2022 09:48:31 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:52286 "EHLO
+        id S236706AbiBRO7K (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Feb 2022 09:59:10 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:50414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229453AbiBROsa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Feb 2022 09:48:30 -0500
+        with ESMTP id S236503AbiBRO6v (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Feb 2022 09:58:51 -0500
 Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4673C21E0F;
-        Fri, 18 Feb 2022 06:48:13 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5BE26FD17;
+        Fri, 18 Feb 2022 06:57:06 -0800 (PST)
 Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21IEPuMa031135;
-        Fri, 18 Feb 2022 09:48:05 -0500
-Received: from nam11-bn8-obe.outbound.protection.outlook.com (mail-bn8nam11lp2176.outbound.protection.outlook.com [104.47.58.176])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e9fu17b04-1
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 21IEPuNA031135;
+        Fri, 18 Feb 2022 09:57:01 -0500
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3e9fu17bwu-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Feb 2022 09:48:05 -0500
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=TflB7ZUomaxZylcRt5RVa6u0CjRP7qLZR2w1fM0bVDssdCHewxsZnCUQABIMXe5OhRV7nMAPWNnD1MLpRENM+kiQ/RY+hck9uYsLK+/LIPRNlw8NWxU2ILMfZw9lWNFzSGfwEccyzCWbPQAnr+iaBejV+LlayPIMyHokOubwGPt/1IA+EvV6tyvEowzinu8uqLun4ED8hFfIPBI4JQ+D+nRaKwKULm3hUZ6i8DtTNf2xw7RHJxrnlxvgeVRkYo+K3l6T4kvusD3N9Bz/yCnlWSXUV9XIEG/+fSGrLQqvy+qJorgTtSyIXsUwmP5xRBHtI8/9068P1ybQFuZjgJymkg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=vAYoSbikfOgwr1jaQ6MUSgJxrzxb7Xo00pZGy4gcCdU=;
- b=G79axK7RiA8QSDIFu7/p3QXD8bZhdeX3p/WfsUSxZlqGwbtIPEihtLe/AQM3maAqT4ZDLl8rpJCJpXz0t2uuMmwLQLQ5v1bt71VAtMbmnA6lemNdZrJWmtBbXMI1B2im88zQtEZy4+kM1eUjAVJ7/fCKwjMhIkEA7lw9qiVo+5447tK2qNHq5pfE8Ntq6PlqVtAdsqbXAW6dS4YU3hieRTswRTvxLTBP1f69xwwT5w5I73Yjt3Hu5SwIGiS0UIGkGU2lX/W9AEDO4S6UDCr8C3SweUC7MHjAlLq3U507BbWO33SBeW+9L/NQB1AaoUnBE1RFyUGkGgwWrgSnW48zbA==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
- dkim=pass header.d=analog.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=vAYoSbikfOgwr1jaQ6MUSgJxrzxb7Xo00pZGy4gcCdU=;
- b=IDkXTAWPt30Zwx1lMrrhz7NQs8nHHU+HcTspicm5MYNkBbwp6hvhtmoVYT0Z1ek+jidAm4uYZjc/F1xVi+RMOKhJMmjsGK/FlBKjagFdUSsV9iPhVEyBA6uAZ3Pi+8BYTjLYc/VfvlSmIZf04OuBEiKZIqTYeDP4qE2xZIKQH0E=
-Received: from DM6PR03MB3866.namprd03.prod.outlook.com (2603:10b6:5:44::10) by
- DM5PR03MB3145.namprd03.prod.outlook.com (2603:10b6:4:44::23) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.4995.14; Fri, 18 Feb 2022 14:48:01 +0000
-Received: from DM6PR03MB3866.namprd03.prod.outlook.com
- ([fe80::9d71:f960:65fc:68ee]) by DM6PR03MB3866.namprd03.prod.outlook.com
- ([fe80::9d71:f960:65fc:68ee%3]) with mapi id 15.20.4975.017; Fri, 18 Feb 2022
- 14:48:01 +0000
-From:   "Pop, Cristian" <Cristian.Pop@analog.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>
-Subject: RE: [PATCH v4 1/2] dt:bindings:iio:frequency: Add ADMV4420 doc
-Thread-Topic: [PATCH v4 1/2] dt:bindings:iio:frequency: Add ADMV4420 doc
-Thread-Index: AQHYJKuGBC8orEy7d0+Yjvi6QunEM6yZNd2AgAAglCA=
-Date:   Fri, 18 Feb 2022 14:48:01 +0000
-Message-ID: <DM6PR03MB386657B1B6A6D21D5026A257E7379@DM6PR03MB3866.namprd03.prod.outlook.com>
-References: <20220218095048.86826-1-cristian.pop@analog.com>
- <20220218120355.4b7c33e1@jic23-huawei>
-In-Reply-To: <20220218120355.4b7c33e1@jic23-huawei>
-Accept-Language: ro-RO, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-dg-ref: =?us-ascii?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcY3BvcDJcYXBw?=
- =?us-ascii?Q?ZGF0YVxyb2FtaW5nXDA5ZDg0OWI2LTMyZDMtNGE0MC04NWVlLTZiODRiYTI5?=
- =?us-ascii?Q?ZTM1Ylxtc2dzXG1zZy0zYTFhNGQwMy05MGM5LTExZWMtOWE4ZS00MTU2NDUw?=
- =?us-ascii?Q?MDAwMzBcYW1lLXRlc3RcM2ExYTRkMDUtOTBjOS0xMWVjLTlhOGUtNDE1NjQ1?=
- =?us-ascii?Q?MDAwMDMwYm9keS50eHQiIHN6PSIzNjg4IiB0PSIxMzI4OTY2OTA0ODk1NDAz?=
- =?us-ascii?Q?MTciIGg9InQ2T0tqRlBiVFAzTG94ZGtXekhZWkFxblU4UT0iIGlkPSIiIGJs?=
- =?us-ascii?Q?PSIwIiBibz0iMSIgY2k9ImNBQUFBRVJIVTFSU1JVRk5DZ1VBQUVvQ0FBRGRQ?=
- =?us-ascii?Q?blQ4MVNUWUFYU2s4ZVA2K01RRWRLVHg0L3I0eEFRREFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFIQUFBQURhQVFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFF?=
- =?us-ascii?Q?QUFRQUJBQUFBVklFdm9RQUFBQUFBQUFBQUFBQUFBSjRBQUFCaEFHUUFhUUJm?=
- =?us-ascii?Q?QUhNQVpRQmpBSFVBY2dCbEFGOEFjQUJ5QUc4QWFnQmxBR01BZEFCekFGOEFa?=
- =?us-ascii?Q?Z0JoQUd3QWN3QmxBRjhBWmdCdkFITUFhUUIwQUdrQWRnQmxBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUVB?=
- =?us-ascii?Q?QUFBQUFBQUFBZ0FBQUFBQW5nQUFBR0VBWkFCcEFGOEFjd0JsQUdNQWRRQnlB?=
- =?us-ascii?Q?R1VBWHdCd0FISUFid0JxQUdVQVl3QjBBSE1BWHdCMEFHa0FaUUJ5QURFQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFRQUFBQUFBQUFBQ0FBQUFB?=
- =?us-ascii?Q?QUNlQUFBQVlRQmtBR2tBWHdCekFHVUFZd0IxQUhJQVpRQmZBSEFBY2dCdkFH?=
- =?us-ascii?Q?b0FaUUJqQUhRQWN3QmZBSFFBYVFCbEFISUFNZ0FBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
- =?us-ascii?Q?QUFBQUFBQUFBQUFBQUFCQUFBQUFBQUFBQUlBQUFBQUFBPT0iLz48L21ldGE+?=
-x-dg-rorf: true
-x-ms-publictraffictype: Email
-x-ms-office365-filtering-correlation-id: b32d477e-60b1-42a6-b037-08d9f2eda957
-x-ms-traffictypediagnostic: DM5PR03MB3145:EE_
-x-microsoft-antispam-prvs: <DM5PR03MB3145F879BB16A21C447B481CE7379@DM5PR03MB3145.namprd03.prod.outlook.com>
-x-ms-oob-tlc-oobclassifiers: OLM:5516;
-x-ms-exchange-senderadcheck: 1
-x-ms-exchange-antispam-relay: 0
-x-microsoft-antispam: BCL:0;
-x-microsoft-antispam-message-info: xNuycXhNc/XB0fCzpmHkgk27yHBiHibemQIq9Knh48koYYNo6mOMwC2d3tKkHVoJMnFpoLQOzdA4kjfy7U1OlxPOPLbCeXsc+Gmvqiyz0X4US0in54HapiqlZjoxMObZ+bPByENUITLME28fs55ggy+QqB3e1VcBBFWuBPLrV20XQJjIcghrNapF5ekGFzuxoJ0rcHr8axZyBI6+ns7Szus1naBicyY2h6j1Gt/A3W89ZOvJQWorjo/zO3FjBNoZ0xPa4RjeJqnm/Lw1/2fxCR4vafdQO9xdsgAfsiusPER9tCQBUsmHpTDZ81aJJ3FSYmlLFK/Cyykit3EBgCNHoQOuCRquRfp75kUa5woc1492riiOP4m9zSWZrO2iePCYH3bpRvQZguQabXLwzInfMIVwi5Hjaxqsh5wsRrw12606XmEpjVK+WqshpOQISG9BDv+tPehS+X9Hxy9EoaTZblxrElcOxUHjWQc1Hi0WmgzU2Tox+UeM3xIZrTdRqF1ET1kd7sZVhSL3cQNLQy4gARoNdE3STjmtLxSC5A/3N0PUcVvLrUyjl6qHxk8MHAWV05o7JBvQ7W1V18g3Qk21huSWYTWnm1l95DbNEowaK04kTwv+f6qHAlMVR2OWbuxI8PNYfEghCTjExoPKpji/talex0HRtkFflYOxUQkRo7doy6vX4ChoBs4IA30w2A9s2gfdR+LAcv+5whaVgEjgLyShho0XO7i5JPSIfQh6BbPDs/241/HHoXJF+PimVlhjNiIxS/ey3hGUulUm0d9wnuk3rClYV1VW3licjTq9WRb/ZzTrgLo6vBNupZZaxEQm4rpw+RmP2LinbdrOMqjDlw==
-x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:DM6PR03MB3866.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(66556008)(4326008)(9686003)(64756008)(66446008)(71200400001)(8676002)(83380400001)(66476007)(122000001)(8936002)(508600001)(316002)(86362001)(66946007)(19627235002)(53546011)(52536014)(26005)(38070700005)(55016003)(5660300002)(6506007)(7696005)(54906003)(186003)(33656002)(38100700002)(2906002)(6916009)(76116006);DIR:OUT;SFP:1101;
-x-ms-exchange-antispam-messagedata-chunkcount: 1
-x-ms-exchange-antispam-messagedata-0: =?us-ascii?Q?3oKpv6/GcQfbUUxHwf1C5h0I0YodKZU/MvX/7q/9MwB2yLIQd3RSp20AQhMp?=
- =?us-ascii?Q?9yX8Ns4YVWlcIx+4XW29+gVCiL08s3VnKOsGBvOHqn10PqOIDEB5SxZGocm4?=
- =?us-ascii?Q?b2cw8gVa7mgkreF7toqw1FUHrA8fsv9I5gmVe8Z8MFZIWUNXrX6sgrytnxHa?=
- =?us-ascii?Q?FftMOudTozzCmL5R/2pCiJNavmPEr1B1SJE7EWvlrqoqwUjqWbb7uF6uNa1W?=
- =?us-ascii?Q?4U2KAEJJ5OkVbCYY0sFXWhpiXRZrxkbKw6KgWNr171BY9scpggeLwdlSUDh3?=
- =?us-ascii?Q?Zi5pCBZqICG9LEAfg3t+oI1Ibu5ty+3T/pNCEsSHpv0VPJMraHZXgrdgJ7mu?=
- =?us-ascii?Q?rcVwIxPDbJemVTOiccbRSqEO4RMrqA1bMwJXmxoc4oHhzqIDhWepMPwzyc+w?=
- =?us-ascii?Q?Npn76krzLcxklMaZObZG0gGUzSW9wJN4c2AOHkNVCx01OLPLyH3ego+9tCip?=
- =?us-ascii?Q?EMcrt9iOYtn02R6Qqgn/++/EJzgYEQsrPjVQwf0zb2T0/3zUg2O4IdQAd8KR?=
- =?us-ascii?Q?o7juE4cMayMDVaOfppUi4U86/MFHCz93EhBMUx96h9WN4HeEhCy+B8EjY4Ps?=
- =?us-ascii?Q?LCODmawC3ETz0hVOFYrptMSy9/67bvtjVm2fLTYY0IoqRinHvbAqTtDflhgt?=
- =?us-ascii?Q?72qzg5s8F6Pwkqpzo02yphR0TjOi8gB5XceGdwA8P9VpJO7/RWUfALVEfX3p?=
- =?us-ascii?Q?JoIreMQLEveCjsCjjdIjsn/pzXOHCK8jT1TgV5TWwQZs741Vpc4RbhW260Qs?=
- =?us-ascii?Q?jU8XnZlpDU7GPIilnhF2sOy0oaSOhwDX6hAJF3Z3ZG7eJ6aKEQnHCiASLk1F?=
- =?us-ascii?Q?DMA2E64v0orAAViAbXvI+az0LMBpbp2Djb+E3+kRJn2pDpJTCsfWZa6Lj3z8?=
- =?us-ascii?Q?ZYnc4YT1oaMSMmMp8KxTFDE2w1lSc2jEDH5igCmmhHFoHzazf0KnoBppkl50?=
- =?us-ascii?Q?Vr7lGp3ZhpfmwCFRGjDPPrk037A8nKbGHWLGFnXWGOkQd0E7NFEkjTxx0rxZ?=
- =?us-ascii?Q?gzC53QK/KKeCpq+/e8EQndpRAaaK2llYa4c8ZskwJN4gefL3ZNKPgBNKv+4I?=
- =?us-ascii?Q?SWv8Odp04soR79HC9dkmktlJK+QaDlubKQzX1Wc41PNoaEgQU2O4Pfyf96Ok?=
- =?us-ascii?Q?NYY4In/9e5v9uEEbw2ukC67G5LAor69dZvFf0N+pnwqNjes4df+S4Y0CAG08?=
- =?us-ascii?Q?24ZtOe/Cb0iP+zrJzohdC22FUHLmFHHK2EFEoLYAywgdxMcEoHciPcFqQUdP?=
- =?us-ascii?Q?Pp4JfYotL7XH+CmzuQ+XXQwEuW/vi33cI4zNKB1tVVuPXvHkM5kYVEfj7T7K?=
- =?us-ascii?Q?jgHCsEmneZ1RnWLyPJuzsQq5yiCctEEOUU9WDeGUgkQE00b04nYeikqZme4H?=
- =?us-ascii?Q?s1wJWtO/IPbuTrVpIYGi4W404dkd1693GIsdAzDYxTFg+lHqr6f96d89IWFq?=
- =?us-ascii?Q?LW617lluStA4RZfkQ/EAcuDkLGCOGkkFKNteTU9wwTWeyxvBCjaSq9da21Bp?=
- =?us-ascii?Q?6B+JlIHm8gD5Qy/J7LBytNFFSWeZxXn4KmvKxZkcFA0sVQ76MSKLNfG0hHQe?=
- =?us-ascii?Q?9q7byEh9Ie7ZdsC8D1uB4gxpM2TMwTbjOSWcIsavUm02CXt18IXoj/3Cytus?=
- =?us-ascii?Q?9A=3D=3D?=
-Content-Type: text/plain; charset="us-ascii"
-Content-Transfer-Encoding: quoted-printable
+        Fri, 18 Feb 2022 09:57:01 -0500
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 21IEuxja029578
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Fri, 18 Feb 2022 09:56:59 -0500
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 18 Feb
+ 2022 09:56:58 -0500
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Fri, 18 Feb 2022 09:56:58 -0500
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 21IEuneP031805;
+        Fri, 18 Feb 2022 09:56:55 -0500
+From:   Cristian Pop <cristian.pop@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, <devicetree@vger.kernel.org>,
+        <robh+dt@kernel.org>, Cristian Pop <cristian.pop@analog.com>
+Subject: [PATCH v5 2/2] iio: frequency: admv4420.c: Add support for ADMV4420
+Date:   Fri, 18 Feb 2022 17:07:38 +0200
+Message-ID: <20220218150738.94735-2-cristian.pop@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220218150738.94735-1-cristian.pop@analog.com>
+References: <20220218150738.94735-1-cristian.pop@analog.com>
 MIME-Version: 1.0
-X-OriginatorOrg: analog.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-AuthSource: DM6PR03MB3866.namprd03.prod.outlook.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: b32d477e-60b1-42a6-b037-08d9f2eda957
-X-MS-Exchange-CrossTenant-originalarrivaltime: 18 Feb 2022 14:48:01.0965
- (UTC)
-X-MS-Exchange-CrossTenant-fromentityheader: Hosted
-X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
-X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
-X-MS-Exchange-CrossTenant-userprincipalname: 4v2/ompzwVYD1yWU7vU8InnNnLL2VQI64oYO/XJib6j6JDQedXDl74jy9mWqxZGX36ohSMQM+CGZLSogwcjXOg==
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DM5PR03MB3145
-X-Proofpoint-ORIG-GUID: mp3We9ZzLZ0zJJ4j--1PV2yCpQC9MnqL
-X-Proofpoint-GUID: mp3We9ZzLZ0zJJ4j--1PV2yCpQC9MnqL
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: LOgCH9QJbDpq60KCM_TtMfX0LcE85SEv
+X-Proofpoint-GUID: LOgCH9QJbDpq60KCM_TtMfX0LcE85SEv
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.816,Hydra:6.0.425,FMLib:17.11.62.513
  definitions=2022-02-18_05,2022-02-18_01,2021-12-02_01
@@ -149,128 +57,461 @@ X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultsc
  malwarescore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0 phishscore=0
  priorityscore=1501 clxscore=1015 spamscore=0 mlxlogscore=999
  suspectscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2201110000 definitions=main-2202180095
+ engine=8.12.0-2201110000 definitions=main-2202180096
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add support for K Band Downconverter with Integrated
+Fractional-N PLL and VCO.
+More info:
+https://www.analog.com/en/products/admv4420.html
 
+Signed-off-by: Cristian Pop <cristian.pop@analog.com>
+---
+ drivers/iio/frequency/Kconfig    |  10 +
+ drivers/iio/frequency/Makefile   |   1 +
+ drivers/iio/frequency/admv4420.c | 400 +++++++++++++++++++++++++++++++
+ 3 files changed, 411 insertions(+)
+ create mode 100644 drivers/iio/frequency/admv4420.c
 
-> -----Original Message-----
-> From: Jonathan Cameron <jic23@kernel.org>
-> Sent: Friday, February 18, 2022 2:04 PM
-> To: Pop, Cristian <Cristian.Pop@analog.com>
-> Cc: linux-iio@vger.kernel.org; linux-kernel@vger.kernel.org;
-> devicetree@vger.kernel.org; robh+dt@kernel.org
-> Subject: Re: [PATCH v4 1/2] dt:bindings:iio:frequency: Add ADMV4420 doc
->=20
-> [External]
->=20
-> On Fri, 18 Feb 2022 11:50:47 +0200
-> Cristian Pop <cristian.pop@analog.com> wrote:
->=20
-> > Add device tree bindings for the ADMV4420 K band downconverter.
-> >
-> > Signed-off-by: Cristian Pop <cristian.pop@analog.com>
-> > ---
->=20
-> Change log?  Also, looks like this crossed with a question from Rob on v3=
-.
->=20
-In v3 there was a small change only, which I forgot to mention:
- - Add '$ref: /schemas/types.yaml#/definitions/uint32', for 'adi,lo-freq-kh=
-z'
-Robs question on v3: '-khz is not a documented unit suffix. Does neither hz=
- nor mhz not give enough resolution and range?'
-The 32bit values in case we use ' -hz' property suffix, wont accommodate 17=
-.5GHz for example.
-For '-mhz' suffix, resolution is not good enough.=20
-I propose adding reference type '$ref: /schemas/types.yaml#/definitions/uin=
-t32' for '-khz' suffix.
-
-> Thanks,
->=20
-> Jonathan
->=20
->=20
-> >  .../bindings/iio/frequency/adi,admv4420.yaml  | 55
-> > +++++++++++++++++++
-> >  1 file changed, 55 insertions(+)
-> >  create mode 100644
-> > Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-> >
-> > diff --git
-> > a/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-> > b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yaml
-> > new file mode 100644
-> > index 000000000000..35a3fb3fd339
-> > --- /dev/null
-> > +++
-> b/Documentation/devicetree/bindings/iio/frequency/adi,admv4420.yam
-> > +++ l
-> > @@ -0,0 +1,55 @@
-> > +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause) %YAML 1.2
-> > +---
-> > +$id:
-> >
-> +https://urldefense.com/v3/__http://devicetree.org/schemas/iio/frequen
-> > +cy/adi,admv4420.yaml*__;Iw!!A3Ni8CS0y2Y!p1wBxz-
-> QqJYCDNk3gYSMGaJoHbPGC
-> > +RWOE04vh6kN2kHC84mPrBdIq_Pf1CgD3Z8knw$
-> > +$schema:
-> > +https://urldefense.com/v3/__http://devicetree.org/meta-
-> schemas/core.y
-> > +aml*__;Iw!!A3Ni8CS0y2Y!p1wBxz-
-> QqJYCDNk3gYSMGaJoHbPGCRWOE04vh6kN2kHC84
-> > +mPrBdIq_Pf1CiGygmUGw$
-> > +
-> > +title: ADMV4420 K Band Downconverter
-> > +
-> > +maintainers:
-> > +  - Cristian Pop <cristian.pop@analog.com>
-> > +
-> > +description:
-> > +  The ADMV4420 is a highly integrated, double balanced, active
-> > +  mixer with an integrated fractional-N synthesizer, ideally suited
-> > +  for next generation K band satellite communications
-> > +
-> > +properties:
-> > +  compatible:
-> > +    enum:
-> > +      - adi,admv4420
-> > +
-> > +  reg:
-> > +    maxItems: 1
-> > +
-> > +  spi-max-frequency:
-> > +    maximum: 1000000
-> > +
-> > +  adi,lo-freq-khz:
-> > +    description: LO Frequency
-> > +    $ref: /schemas/types.yaml#/definitions/uint32
-> > +
-> > +  adi,ref-ext-single-ended-en:
-> > +    description: External reference selected.
-> > +    type: boolean
-> > +
-> > +required:
-> > +  - compatible
-> > +  - reg
-> > +
-> > +additionalProperties: false
-> > +
-> > +examples:
-> > +  - |
-> > +    spi {
-> > +      #address-cells =3D <1>;
-> > +      #size-cells =3D <0>;
-> > +      admv4420@0 {
-> > +        compatible =3D "adi,admv4420";
-> > +        reg =3D <0>;
-> > +        spi-max-frequency =3D <1000000>;
-> > +        adi,lo-freq-khz =3D <16750000>;
-> > +        adi,ref-ext-single-ended-en;
-> > +      };
-> > +    };
-> > +...
+diff --git a/drivers/iio/frequency/Kconfig b/drivers/iio/frequency/Kconfig
+index b44036f843af..d905214a0be6 100644
+--- a/drivers/iio/frequency/Kconfig
++++ b/drivers/iio/frequency/Kconfig
+@@ -60,6 +60,16 @@ config ADMV1013
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called admv1013.
+ 
++config ADMV4420
++       tristate "Analog Devices ADMV4420 K Band Downconverter"
++       depends on SPI
++       help
++         Say yes here to build support for Analog Devices K Band
++         Downconverter with integrated Fractional-N PLL and VCO.
++
++         To compile this driver as a module, choose M here: the
++         module will be called admv4420.
++
+ config ADRF6780
+         tristate "Analog Devices ADRF6780 Microwave Upconverter"
+         depends on SPI
+diff --git a/drivers/iio/frequency/Makefile b/drivers/iio/frequency/Makefile
+index ae6899856c99..782e5baa1630 100644
+--- a/drivers/iio/frequency/Makefile
++++ b/drivers/iio/frequency/Makefile
+@@ -8,4 +8,5 @@ obj-$(CONFIG_AD9523) += ad9523.o
+ obj-$(CONFIG_ADF4350) += adf4350.o
+ obj-$(CONFIG_ADF4371) += adf4371.o
+ obj-$(CONFIG_ADMV1013) += admv1013.o
++obj-$(CONFIG_ADMV4420) += admv4420.o
+ obj-$(CONFIG_ADRF6780) += adrf6780.o
+diff --git a/drivers/iio/frequency/admv4420.c b/drivers/iio/frequency/admv4420.c
+new file mode 100644
+index 000000000000..b4579505372e
+--- /dev/null
++++ b/drivers/iio/frequency/admv4420.c
+@@ -0,0 +1,400 @@
++// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
++/*
++ * ADMV4420
++ *
++ * Copyright 2021 Analog Devices Inc.
++ */
++
++#include <linux/bitfield.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++#include <linux/spi/spi.h>
++#include <linux/units.h>
++
++#include <asm/unaligned.h>
++
++/* ADMV4420 Register Map */
++#define ADMV4420_SPI_CONFIG_1			0x00
++#define ADMV4420_SPI_CONFIG_2			0x01
++#define ADMV4420_CHIPTYPE			0x03
++#define ADMV4420_PRODUCT_ID_L			0x04
++#define ADMV4420_PRODUCT_ID_H			0x05
++#define ADMV4420_SCRATCHPAD			0x0A
++#define ADMV4420_SPI_REV			0x0B
++#define ADMV4420_ENABLES			0x103
++#define ADMV4420_SDO_LEVEL			0x108
++#define ADMV4420_INT_L				0x200
++#define ADMV4420_INT_H				0x201
++#define ADMV4420_FRAC_L				0x202
++#define ADMV4420_FRAC_M				0x203
++#define ADMV4420_FRAC_H				0x204
++#define ADMV4420_MOD_L				0x208
++#define ADMV4420_MOD_M				0x209
++#define ADMV4420_MOD_H				0x20A
++#define ADMV4420_R_DIV_L			0x20C
++#define ADMV4420_R_DIV_H			0x20D
++#define ADMV4420_REFERENCE			0x20E
++#define ADMV4420_VCO_DATA_READBACK1		0x211
++#define ADMV4420_VCO_DATA_READBACK2		0x212
++#define ADMV4420_PLL_MUX_SEL			0x213
++#define ADMV4420_LOCK_DETECT			0x214
++#define ADMV4420_BAND_SELECT			0x215
++#define ADMV4420_VCO_ALC_TIMEOUT		0x216
++#define ADMV4420_VCO_MANUAL			0x217
++#define ADMV4420_ALC				0x219
++#define ADMV4420_VCO_TIMEOUT1			0x21C
++#define ADMV4420_VCO_TIMEOUT2			0x21D
++#define ADMV4420_VCO_BAND_DIV			0x21E
++#define ADMV4420_VCO_READBACK_SEL		0x21F
++#define ADMV4420_AUTOCAL			0x226
++#define ADMV4420_CP_STATE			0x22C
++#define ADMV4420_CP_BLEED_EN			0x22D
++#define ADMV4420_CP_CURRENT			0x22E
++#define ADMV4420_CP_BLEED			0x22F
++
++#define ADMV4420_SPI_CONFIG_1_SDOACTIVE		(BIT(4) | BIT(3))
++#define ADMV4420_SPI_CONFIG_1_ENDIAN		(BIT(5) | BIT(2))
++#define ADMV4420_SPI_CONFIG_1_SOFTRESET		(BIT(7) | BIT(1))
++
++#define ADMV4420_REFERENCE_DIVIDE_BY_2_MASK	BIT(0)
++#define ADMV4420_REFERENCE_MODE_MASK		BIT(1)
++#define ADMV4420_REFERENCE_IN_MODE(x)		FIELD_PREP(ADMV4420_REFERENCE_MODE_MASK, x)
++#define ADMV4420_REFERENCE_DOUBLER_MASK		BIT(2)
++#define ADMV4420_REFERENCE_DOUBLER(x)		FIELD_PREP(ADMV4420_REFERENCE_DOUBLER_MASK, x)
++
++#define ADMV4420_REF_DIVIDER_MAX_VAL		GENMASK(9, 0)
++#define ADMV4420_N_COUNTER_INT_MAX		GENMASK(15, 0)
++#define ADMV4420_N_COUNTER_FRAC_MAX		GENMASK(23, 0)
++#define ADMV4420_N_COUNTER_MOD_MAX		GENMASK(23, 0)
++
++#define ENABLE_PLL				BIT(6)
++#define ENABLE_LO				BIT(5)
++#define ENABLE_VCO				BIT(3)
++#define ENABLE_IFAMP				BIT(2)
++#define ENABLE_MIXER				BIT(1)
++#define ENABLE_LNA				BIT(0)
++
++#define ADMV4420_SCRATCH_PAD_VAL_1              0xAD
++#define ADMV4420_SCRATCH_PAD_VAL_2              0xEA
++
++#define ADMV4420_REF_FREQ_HZ                    50000000
++#define MAX_N_COUNTER                           655360UL
++#define MAX_R_DIVIDER                           1024
++#define ADMV4420_DEFAULT_LO_FREQ_HZ		16750000000ULL
++
++enum admv4420_mux_sel {
++	ADMV4420_LOW = 0,
++	ADMV4420_LOCK_DTCT = 1,
++	ADMV4420_R_COUNTER_PER_2 = 4,
++	ADMV4420_N_CONUTER_PER_2 = 5,
++	ADMV4420_HIGH = 8,
++};
++
++struct admv4420_reference_block {
++	bool doubler_en;
++	bool divide_by_2_en;
++	bool ref_single_ended;
++	u32 divider;
++};
++
++struct admv4420_n_counter {
++	u32 int_val;
++	u32 frac_val;
++	u32 mod_val;
++	u32 n_counter;
++};
++
++struct admv4420_state {
++	struct spi_device		*spi;
++	struct regmap			*regmap;
++	u64				vco_freq_hz;
++	u64				lo_freq_hz;
++	struct admv4420_reference_block ref_block;
++	struct admv4420_n_counter	n_counter;
++	enum admv4420_mux_sel		mux_sel;
++	struct mutex			lock;
++	u8				transf_buf[4] ____cacheline_aligned;
++};
++
++static const struct regmap_config admv4420_regmap_config = {
++	.reg_bits = 16,
++	.val_bits = 8,
++	.read_flag_mask = BIT(7),
++};
++
++static int admv4420_reg_access(struct iio_dev *indio_dev,
++			       u32 reg, u32 writeval,
++			       u32 *readval)
++{
++	struct admv4420_state *st = iio_priv(indio_dev);
++
++	if (readval)
++		return regmap_read(st->regmap, reg, readval);
++	else
++		return regmap_write(st->regmap, reg, writeval);
++}
++
++static int admv4420_set_n_counter(struct admv4420_state *st, u32 int_val,
++				  u32 frac_val, u32 mod_val)
++{
++	int ret;
++
++	put_unaligned_le32(frac_val, st->transf_buf);
++	ret = regmap_bulk_write(st->regmap, ADMV4420_FRAC_L, st->transf_buf, 3);
++	if (ret)
++		return ret;
++
++	put_unaligned_le32(mod_val, st->transf_buf);
++	ret = regmap_bulk_write(st->regmap, ADMV4420_MOD_L, st->transf_buf, 3);
++	if (ret)
++		return ret;
++
++	put_unaligned_le32(int_val, st->transf_buf);
++	return regmap_bulk_write(st->regmap, ADMV4420_INT_L, st->transf_buf, 2);
++}
++
++static int admv4420_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long info)
++{
++	struct admv4420_state *st = iio_priv(indio_dev);
++
++	switch (info) {
++	case IIO_CHAN_INFO_FREQUENCY:
++
++		*val = div_u64_rem(st->lo_freq_hz, MICRO, val2);
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info admv4420_info = {
++	.read_raw = admv4420_read_raw,
++	.debugfs_reg_access = &admv4420_reg_access,
++};
++
++static const struct iio_chan_spec admv4420_channels[] = {
++	{
++		.type = IIO_ALTVOLTAGE,
++		.output = 0,
++		.indexed = 1,
++		.channel = 0,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_FREQUENCY),
++	},
++};
++
++static void admv4420_fw_parse(struct admv4420_state *st)
++{
++	struct fwnode_handle *fwnode = dev_fwnode(&st->spi->dev);
++	u32 tmp;
++	int ret;
++
++	ret = fwnode_property_read_u32(fwnode, "adi,lo-freq-khz", &tmp);
++	if (!ret)
++		st->lo_freq_hz = (u64)tmp * KILO;
++
++	st->ref_block.ref_single_ended = fwnode_property_read_bool(fwnode,
++								   "adi,ref-ext-single-ended-en");
++}
++
++static inline uint64_t admv4420_calc_pfd_vco(struct admv4420_state *st)
++{
++	return div_u64(st->vco_freq_hz * 10, st->n_counter.n_counter);
++}
++
++static inline uint32_t admv4420_calc_pfd_ref(struct admv4420_state *st)
++{
++	uint32_t tmp;
++	u8 doubler, divide_by_2;
++
++	doubler = st->ref_block.doubler_en ? 2 : 1;
++	divide_by_2 = st->ref_block.divide_by_2_en ? 2 : 1;
++	tmp = ADMV4420_REF_FREQ_HZ * doubler;
++
++	return (tmp / (st->ref_block.divider * divide_by_2));
++}
++
++static int admv4420_calc_parameters(struct admv4420_state *st)
++{
++	u64 pfd_ref, pfd_vco;
++	bool sol_found = false;
++
++	st->ref_block.doubler_en = false;
++	st->ref_block.divide_by_2_en = false;
++	st->vco_freq_hz = div_u64(st->lo_freq_hz, 2);
++
++	for (st->ref_block.divider = 1; st->ref_block.divider < MAX_R_DIVIDER;
++	    st->ref_block.divider++) {
++		pfd_ref = admv4420_calc_pfd_ref(st);
++		for (st->n_counter.n_counter = 1; st->n_counter.n_counter < MAX_N_COUNTER;
++		    st->n_counter.n_counter++) {
++			pfd_vco = admv4420_calc_pfd_vco(st);
++			if (pfd_ref == pfd_vco) {
++				sol_found = true;
++				break;
++			}
++		}
++
++		if (sol_found)
++			break;
++
++		st->n_counter.n_counter = 1;
++	}
++	if (!sol_found)
++		return -1;
++
++	st->n_counter.int_val = div_u64_rem(st->n_counter.n_counter, 10, &st->n_counter.frac_val);
++	st->n_counter.mod_val = 10;
++
++	return 0;
++}
++
++static int admv4420_setup(struct iio_dev *indio_dev)
++{
++	struct admv4420_state *st = iio_priv(indio_dev);
++	struct device *dev = indio_dev->dev.parent;
++	u32 val;
++	int ret;
++
++	ret = regmap_write(st->regmap, ADMV4420_SPI_CONFIG_1,
++			   ADMV4420_SPI_CONFIG_1_SOFTRESET);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(st->regmap, ADMV4420_SPI_CONFIG_1,
++			   ADMV4420_SPI_CONFIG_1_SDOACTIVE |
++			   ADMV4420_SPI_CONFIG_1_ENDIAN);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(st->regmap,
++			   ADMV4420_SCRATCHPAD,
++			   ADMV4420_SCRATCH_PAD_VAL_1);
++	if (ret)
++		return ret;
++
++	ret = regmap_read(st->regmap, ADMV4420_SCRATCHPAD, &val);
++	if (ret)
++		return ret;
++
++	if (val != ADMV4420_SCRATCH_PAD_VAL_1) {
++		dev_err(dev, "Failed ADMV4420 to read/write scratchpad %x ", val);
++		return -EIO;
++	}
++
++	ret = regmap_write(st->regmap,
++			   ADMV4420_SCRATCHPAD,
++			   ADMV4420_SCRATCH_PAD_VAL_2);
++	if (ret)
++		return ret;
++
++	ret = regmap_read(st->regmap, ADMV4420_SCRATCHPAD, &val);
++	if (ret)
++		return ret;
++
++	if (val != ADMV4420_SCRATCH_PAD_VAL_2) {
++		dev_err(dev, "Failed to read/write scratchpad %x ", val);
++		return -EIO;
++	}
++
++	st->mux_sel = ADMV4420_LOCK_DTCT;
++	st->lo_freq_hz = ADMV4420_DEFAULT_LO_FREQ_HZ;
++
++	admv4420_fw_parse(st);
++
++	ret = admv4420_calc_parameters(st);
++	if (ret) {
++		dev_err(dev, "Failed calc parameters for %lld ", st->vco_freq_hz);
++		return ret;
++	}
++
++	ret = regmap_write(st->regmap, ADMV4420_R_DIV_L,
++			   FIELD_GET(0xFF, st->ref_block.divider));
++	if (ret)
++		return ret;
++
++	ret = regmap_write(st->regmap, ADMV4420_R_DIV_H,
++			   FIELD_GET(0xFF00, st->ref_block.divider));
++	if (ret)
++		return ret;
++
++	ret = regmap_write(st->regmap, ADMV4420_REFERENCE,
++			   st->ref_block.divide_by_2_en |
++			   ADMV4420_REFERENCE_IN_MODE(st->ref_block.ref_single_ended) |
++			   ADMV4420_REFERENCE_DOUBLER(st->ref_block.doubler_en));
++	if (ret)
++		return ret;
++
++	ret = admv4420_set_n_counter(st, st->n_counter.int_val,
++				     st->n_counter.frac_val,
++				     st->n_counter.mod_val);
++	if (ret)
++		return ret;
++
++	ret = regmap_write(st->regmap, ADMV4420_PLL_MUX_SEL, st->mux_sel);
++	if (ret)
++		return ret;
++
++	return regmap_write(st->regmap, ADMV4420_ENABLES,
++			    ENABLE_PLL | ENABLE_LO | ENABLE_VCO |
++			    ENABLE_IFAMP | ENABLE_MIXER | ENABLE_LNA);
++}
++
++static int admv4420_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct admv4420_state *st;
++	struct regmap *regmap;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	regmap = devm_regmap_init_spi(spi, &admv4420_regmap_config);
++	if (IS_ERR(regmap))
++		return dev_err_probe(&spi->dev, PTR_ERR(regmap),
++				     "Failed to initializing spi regmap\n");
++
++	st = iio_priv(indio_dev);
++	st->spi = spi;
++	st->regmap = regmap;
++
++	indio_dev->name = "admv4420";
++	indio_dev->info = &admv4420_info;
++	indio_dev->channels = admv4420_channels;
++	indio_dev->num_channels = ARRAY_SIZE(admv4420_channels);
++
++	ret = admv4420_setup(indio_dev);
++	if (ret) {
++		dev_err(&spi->dev, "Setup ADMV4420 failed (%d)\n", ret);
++		return ret;
++	}
++
++	return devm_iio_device_register(&spi->dev, indio_dev);
++}
++
++static const struct of_device_id admv4420_of_match[] = {
++	{ .compatible = "adi,admv4420" },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(of, admv4420_of_match);
++
++static struct spi_driver admv4420_driver = {
++	.driver = {
++		.name = "admv4420",
++		.of_match_table = admv4420_of_match,
++	},
++	.probe = admv4420_probe,
++};
++
++module_spi_driver(admv4420_driver);
++
++MODULE_AUTHOR("Cristian Pop <cristian.pop@analog.com>");
++MODULE_DESCRIPTION("Analog Devices ADMV44200 K Band Downconverter");
++MODULE_LICENSE("Dual BSD/GPL");
+-- 
+2.17.1
 
