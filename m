@@ -2,151 +2,175 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F504C433FE
-	for <linux-iio@archiver.kernel.org>; Sun, 20 Feb 2022 11:42:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8DFADC433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 20 Feb 2022 11:57:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237244AbiBTLmy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 20 Feb 2022 06:42:54 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:48756 "EHLO
+        id S240359AbiBTL5i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 20 Feb 2022 06:57:38 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45386 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237152AbiBTLmy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Feb 2022 06:42:54 -0500
-Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E2C152AD1
-        for <linux-iio@vger.kernel.org>; Sun, 20 Feb 2022 03:42:32 -0800 (PST)
-Received: from mail-wr1-f70.google.com (mail-wr1-f70.google.com [209.85.221.70])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        with ESMTP id S237539AbiBTL5h (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Feb 2022 06:57:37 -0500
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBFF2DD4;
+        Sun, 20 Feb 2022 03:57:15 -0800 (PST)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 334153F1A1
-        for <linux-iio@vger.kernel.org>; Sun, 20 Feb 2022 11:42:31 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
-        s=20210705; t=1645357351;
-        bh=o2BZTZUqbj/n7i9reyFZoNn64d0OySHScMS04/ePEFY=;
-        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
-         In-Reply-To:Content-Type;
-        b=ShBnhGtgeR7uApu//0XzctU1DeMxqF7/BMv/kpESjk5JGIFNBKu7JEaAiA95I2476
-         vmtzgcz7Ld2Zzq38VP3ssnFyougyposteil7PAz5YH/Z4wqzpGUU8oUN9lDgU1hb/I
-         HOlHmURbNzOkDvvTmxaYDADwRVMYKEAal4YHWcRCMmZfLSHW2mzxp2Zqnwk1YwFZZO
-         Exrw4mCX84LH09rQpXiesS5fqht44DJBxZIGororhcgYE3VBsAxcQUHgZOKb5gca8L
-         xuht/g45bY+g+RxECCV5NScEq9NgcJDPqFuL+mUabS7wficVD8JyiTDIgFv38/fHxW
-         641dTN+I4qENA==
-Received: by mail-wr1-f70.google.com with SMTP id p18-20020adfba92000000b001e8f7697cc7so3783634wrg.20
-        for <linux-iio@vger.kernel.org>; Sun, 20 Feb 2022 03:42:31 -0800 (PST)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=o2BZTZUqbj/n7i9reyFZoNn64d0OySHScMS04/ePEFY=;
-        b=b0s9Q0uBx+gNnqG6KYQYQVaoz8qL3mJtCD/cSBjAq8Jq7LbUHTvO7yVU+sORDmvNDy
-         Re0+Y9Db2yEYWF8iFCqbtVCfQ7jh91DpUJVuRaXsPPx20ts+k94wQQnMww9caPQgmk4P
-         1+tbpLD+ANjuA24S86PLGuwrNiDMHt8FC66fVFm8/jNumojG6yTqc/jdmCxTaOXzUALi
-         IpwbeJd0D2CeWWsQ5IOLwemQpuniD547kWbxV7226PYwX35HMBQUm+DosYVgyuYWjgxy
-         zPhkeCME75YJTje36KnEYLo/DNj4SVDOcCThQIYT0IWpVI40BA3WmK5JYik5YmoxzYsA
-         prLQ==
-X-Gm-Message-State: AOAM53384pD4R16paC1crfTTESUB5x1B8i91yzpb/Cjtd3YRWcdiO7FE
-        9rW7ZDXLqNSLPC9E4vQAveSKnWdBg5kpGAIEoSLw1D+kYjKNhUH3aKWRmdAd5oRkYEsgD6OYxqg
-        dkvTySbp3z2wYtmDF0ZAo3pnpc1ddFfIH6d6ndw==
-X-Received: by 2002:adf:c38e:0:b0:1e4:a236:14bf with SMTP id p14-20020adfc38e000000b001e4a23614bfmr12033882wrf.427.1645357350859;
-        Sun, 20 Feb 2022 03:42:30 -0800 (PST)
-X-Google-Smtp-Source: ABdhPJwfsYo4GwUA1+Km9MI4HVMy2sCPrjyWlwi5jX5paio6IB4iiHrEaJoo204gv97MNCIvOELM6g==
-X-Received: by 2002:adf:c38e:0:b0:1e4:a236:14bf with SMTP id p14-20020adfc38e000000b001e4a23614bfmr12033870wrf.427.1645357350618;
-        Sun, 20 Feb 2022 03:42:30 -0800 (PST)
-Received: from [192.168.0.117] (xdsl-188-155-181-108.adslplus.ch. [188.155.181.108])
-        by smtp.gmail.com with ESMTPSA id z17sm4585962wmf.11.2022.02.20.03.42.29
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Feb 2022 03:42:30 -0800 (PST)
-Message-ID: <836e3c76-0d4a-6592-5a9f-c664fb056d23@canonical.com>
-Date:   Sun, 20 Feb 2022 12:42:29 +0100
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3A4276116C;
+        Sun, 20 Feb 2022 11:57:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 46655C340E8;
+        Sun, 20 Feb 2022 11:57:12 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1645358234;
+        bh=q/QZ+77EAZGS4K6gv46acDRSLF/0acLiMNlTnPSfmOo=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=IF12N46lgFOz1wG31rlO/0+lZT5Z0/qHI6hmiU36007UG9IokrwC6X2DS/Oq6hTLa
+         xbdkHIEsQ0wIxFv+nH3VCKtoRi9fx0Nr+gwA9GQVLcFQMH1dspavZNb0JS5POHe7Ly
+         U4tBB5gx+aKM0e0OyZ1p2ifu1oat0O8Kl2hjEbDCUtkAmCnRDu5iVB1nXw1bABcJWj
+         ysZlesMqS/2e59wOPkMUJsr0QAUWLTU09EMVE4+O1hZgjEH2dhKMIwKyFFByarGFC+
+         u+Db66tOFVdigxvylkRcFPS2WXbi4ZEZbCq5XRVx2hsb+rZJuXQD5oafMUy6SRc3lW
+         iHuOwtNqNkstQ==
+Date:   Sun, 20 Feb 2022 12:04:03 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     cosmin.tanislav@analog.com, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v5 0/5] Add ADXL367 driver
+Message-ID: <20220220120336.193d17b0@jic23-huawei>
+In-Reply-To: <20220214073810.781016-1-cosmin.tanislav@analog.com>
+References: <20220214073810.781016-1-cosmin.tanislav@analog.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.31; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v3 2/3] dt-bindings:iio:amplifiers: add ada4250 doc
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Antoniu Miclaus <antoniu.miclaus@analog.com>, robh+dt@kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220214094115.48548-1-antoniu.miclaus@analog.com>
- <20220214094115.48548-2-antoniu.miclaus@analog.com>
- <69cc2a64-c273-f2f6-b25b-73fc2248bb18@canonical.com>
- <20220220114816.50a57225@jic23-huawei>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
-In-Reply-To: <20220220114816.50a57225@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 20/02/2022 12:48, Jonathan Cameron wrote:
-> On Sun, 20 Feb 2022 11:53:55 +0100
-> Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
-> 
->> On 14/02/2022 10:41, Antoniu Miclaus wrote:
->>> Add device tree bindings for the ADA4250 driver.  
->>
->> Please put the bindings patch as first in the series.
->>
->>>
->>> Signed-off-by: Antoniu Miclaus <antoniu.miclaus@analog.com>
->>> ---
->>>  .../bindings/iio/amplifiers/adi,ada4250.yaml  | 48 +++++++++++++++++++
->>>  1 file changed, 48 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
->>> new file mode 100644
->>> index 000000000000..22283ab48903
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
->>> @@ -0,0 +1,48 @@
->>> +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
->>> +%YAML 1.2
->>> +---
->>> +$id: http://devicetree.org/schemas/iio/amplifiers/adi,ada4250.yaml#
->>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
->>> +
->>> +title: ADA4250 Programmable Gain Instrumentation Amplifier
->>> +
->>> +maintainers:
->>> +  - Antoniu Miclaus <antoniu.miclaus@analog.com>
->>> +
->>> +description: |
->>> +  Precision Low Power, 110kHz, 26uA, Programmable Gain Instrumentation Amplifier.
->>> +
->>> +properties:
->>> +  compatible:
->>> +    enum:
->>> +      - adi,ada4250
->>> +
->>> +  reg:
->>> +    maxItems: 1
->>> +
->>> +  avdd-supply: true  
->>
->> Needs a description, not a true.
-> 
-> For a generic supply where all we really have is a name, I'm not sure
-> a description adds anything.  Of course, if there is more info that can be provided
-> a description is great to have.
+On Mon, 14 Feb 2022 09:38:05 +0200
+Cosmin Tanislav <demonsingur@gmail.com> wrote:
 
-Hm, OK, if the description would be "AVDD supply", then indeed does not
-make much sense.
+> The ADXL367 is an ultralow power, 3-axis MEMS accelerometer.
+> 
+> The ADXL367 does not alias input signals to achieve ultralow power
+> consumption, it samples the full bandwidth of the sensor at all
+> data rates. Measurement ranges of +-2g, +-4g, and +-8g are available,
+> with a resolution of 0.25mg/LSB on the +-2 g range.
+> 
+> In addition to its ultralow power consumption, the ADXL367
+> has many features to enable true system level power reduction.
+> It includes a deep multimode output FIFO, a built-in micropower
+> temperature sensor, and an internal ADC for synchronous conversion
+> of an additional analog input.
+
+Looks good to me.
+
+Series applied to the togreg branch of iio.git and pushed out as testing
+to let the autobuilders see if they can find anything we missed.
+
+Thanks,
+
+Jonathan
 
 > 
->>
->> As Jonathan said, you should allow spi-max-frequency (so
->> spi-max-frequency: true).
->>
->> No io-channel-cells?
+> V1 -> V2
+>  * add support for vdd and vddio supplies
+>  * lock fifo_watermark retrieval
+>  * fix indentation of sysfs_emit for fifo_mode
+>  * dt-bindings: add spi-max-frequency: true
+>  * dt-bindings: remove cs-gpios property
+>  * dt-bindings: remove status property
+>  * dt-bindings: add support for vdd
 > 
-> I'm not sure you'd have a consumer of this type of device, so
-> it may not make sense...
+> V2 -> V3
+>  * MAINTAINERS: use wildcard for adxl367
+>  * dt-bindings: adxl367@addr -> accelerometer@addr
+>  * put asm include after linux includes
+>  * drop registers accessed implicitly
+>  * fifo_full -> fifo_watermark
+>  * print expected device id
+>  * remove INDIO_BUFFER_HARDWARE
+>  * inline ADXL367_EVENT macro
+>  * inline ADXL367_14BIT_SCAN_INFO
+>  * inline regulator enum
+>  * remove of.h in spi driver
+>  * cast const void * to const u8 * in spi read
+>  * switch to trigger-less buffer
+>  * increase reset time as advised by hardware team
+>  * let iio framework validate available channel masks
+>  * enable adc or temp channel automatically on single read
+>  * wait for 100ms after enabling adc or temp for output
+>    to settle on single read (waiting on hardware team input)
+>  * enable adc or temp channel automatically on buffered read
+>  * claim direct mode when setting range
+>  * claim direct mode when setting odr
+>  * claim direct mode when setting event config
+>  * sort status masks in descending bit order
+>  * hardcode indio_dev name
+>  * add some comments regarding spi message layout
+>  * use bulk_write for activity and inactivity threshold
+>  * use bulk_write for inactivity time
+>  * use bool as return type of fifo format finding function
+>  * remove shift from channels scan type
+> 
+> V3 -> V4
+>  * add a patch that introduces mag_referenced event type
+>  * add a patch that documents mag_referenced event type
+>  * add a patch that adds a note to the buffer/enable documentation
+>    regarding configuration of other attributes during buffer capture
+>  * remove unused adxl367_time_scale_tbl
+>  * add static attribute to adxl367_write_raw_get_fmt
+>  * return IRQ_HANDLED when FIFO read fails and print error message
+>  * scale temperature value by 1000 to reach milli degrees C
+>  * merge dev_to_iio_dev into useplace when indio_dev is not needed
+>  * merge preenable into postenable and postdisable into predisable
+>  * fix default inactivity threshold
+>  * export probe symbol to namespace
+>  * IIO_EV_TYPE_THRESH -> IIO_EV_TYPE_MAG_REFERENCED
+>  * reset device and then verify dev id for 10ms
+>  * share events by type so that they show up with iio_accel prefix in the
+>    events subdirectory
+>  * use a separate mask for extracting data
+>    I previously removed the shift fron scan_type since the FIFO data does
+>    not contain a shift but that broke single channel reads. Add it back
+>    just for single channel reads.
+> 
+> V4 -> V5
+>  * linux/module.h -> linux/mod_devicetable.h
+>  * extract fifo_formats into separate array to allow arbitrary scan mask
+>    order
+>  * reorder channel_masks and fifo_formats
+>  * prepend IIO_ to ADXL367 namespace
+>  * use adxl367_fifo_formats array size to iterate over channel_masks table
+> 
+> Cosmin Tanislav (5):
+>   iio: introduce mag_referenced
+>   iio: ABI: document mag_referenced
+>   iio: ABI: add note about configuring other attributes during buffer
+>     capture
+>   dt-bindings: iio: accel: add ADXL367
+>   iio: accel: add ADXL367 driver
+> 
+>  Documentation/ABI/testing/sysfs-bus-iio       |   30 +
+>  .../bindings/iio/accel/adi,adxl367.yaml       |   79 +
+>  MAINTAINERS                                   |    8 +
+>  drivers/iio/accel/Kconfig                     |   27 +
+>  drivers/iio/accel/Makefile                    |    3 +
+>  drivers/iio/accel/adxl367.c                   | 1588 +++++++++++++++++
+>  drivers/iio/accel/adxl367.h                   |   23 +
+>  drivers/iio/accel/adxl367_i2c.c               |   90 +
+>  drivers/iio/accel/adxl367_spi.c               |  164 ++
+>  drivers/iio/industrialio-event.c              |    1 +
+>  include/uapi/linux/iio/types.h                |    1 +
+>  tools/iio/iio_event_monitor.c                 |    1 +
+>  12 files changed, 2015 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/adi,adxl367.yaml
+>  create mode 100644 drivers/iio/accel/adxl367.c
+>  create mode 100644 drivers/iio/accel/adxl367.h
+>  create mode 100644 drivers/iio/accel/adxl367_i2c.c
+>  create mode 100644 drivers/iio/accel/adxl367_spi.c
+> 
 
-OK.
-
-
-Best regards,
-Krzysztof
