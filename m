@@ -2,43 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 99CC5C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFB93C43219
 	for <linux-iio@archiver.kernel.org>; Mon, 21 Feb 2022 23:32:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237047AbiBUXdE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S237039AbiBUXdE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 21 Feb 2022 18:33:04 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45208 "EHLO
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:45206 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237021AbiBUXdC (ORCPT
+        with ESMTP id S236997AbiBUXdC (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Feb 2022 18:33:02 -0500
 Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D39F525583;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E72125582;
         Mon, 21 Feb 2022 15:32:34 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1645486354; x=1677022354;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=J9T0Ru/E/pDZCa82wTTPnm1pIG14c3Q6XR+ip3LKuxo=;
-  b=kCroSEi6n+cv3ptBLg33miTywlknXQjxXVq/0yG80KVdB6yNqFpQZJrc
-   0YMGpKJRg8jijOMrcqoavht84/1EX2Cca3XisuhuKvkXKya0E8Q/RzKj/
-   zfqWdQ0Xe0PhKHSxDie+ng7eeLSqnYclXq5L3SU3ZVjRhiguDWly/yVWD
-   /1mngq93/5g39L4ExgXYZHvQVphlplvlYFinbF6QMQhLjsCbSlzkhym7z
-   4ZnT4rN/7LXCIRW9F8GvtYEBIbNa7t3XF+EzoeOo1U19/znzTgLk70UqX
-   UihW4HEpTncTvkQvboNmv3e0izVSc+Uwt70G7vqwRPl6ERKkZg0UvHrP6
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=wFraGabFhN4wKBeOKdJ+VgSXtoJa/BMVGLZwHRhGg/o=;
+  b=gOmTaSGlULycdn2y0Y+nKy8fb8kzJrntc2zSY9zLYC7vJ4otc4uyg43V
+   5K3hG1zvFEaR+vEPHgh6khBpWoeQEHU5hP/SVirEDTbxvYBChZ5fSXKnR
+   /A+a3ZnnI9jt0U5mpPvx/2kU6P7GYpgENhO9DOFgQxsC8N9q+V5HNV40v
+   nIxmrlG62C78wb93foN1yq8Ni2Igcm4i5DEu3Ghrx81MFOYLVikazfdoo
+   0EX1r4PsSAJMrt3qU98a7S/Gh2wo7N6OKdGgs/y/9kA6JZw0sAnbI68+s
+   5/7NkjYOd1KE9NORWuFMSne1DDDn+b7MyqOGTiySqYpe1L72QMJLBrBUt
    w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251347128"
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="251347124"
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="251347128"
-Received: from fmsmga003.fm.intel.com ([10.253.24.29])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:32:32 -0800
+   d="scan'208";a="251347124"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 21 Feb 2022 15:32:29 -0800
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.88,386,1635231600"; 
-   d="scan'208";a="627497023"
+   d="scan'208";a="573233108"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by FMSMGA003.fm.intel.com with ESMTP; 21 Feb 2022 15:32:30 -0800
+  by orsmga001.jf.intel.com with ESMTP; 21 Feb 2022 15:32:27 -0800
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id E6982763; Tue, 22 Feb 2022 01:32:43 +0200 (EET)
+        id AC83112C; Tue, 22 Feb 2022 01:32:43 +0200 (EET)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -46,67 +46,123 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Kai-Heng Feng <kai.heng.feng@canonical.com>
-Subject: [PATCH v1 7/8] iio: accel: adxl345: Drop comma in terminator entries
-Date:   Tue, 22 Feb 2022 01:32:34 +0200
-Message-Id: <20220221233235.86893-7-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/8] iio: accel: adxl345: Convert to use dev_err_probe()
+Date:   Tue, 22 Feb 2022 01:32:28 +0200
+Message-Id: <20220221233235.86893-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220221233235.86893-1-andriy.shevchenko@linux.intel.com>
-References: <20220221233235.86893-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Terminator entries are by definition should terminate the array.
-Dropping comma make this enforced at compile time.
+It's fine to call dev_err_probe() in ->probe() when error code is known.
+Convert the driver to use dev_err_probe().
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/accel/adxl345_core.c | 2 +-
- drivers/iio/accel/adxl345_i2c.c  | 2 +-
- drivers/iio/accel/adxl345_spi.c  | 2 +-
- 3 files changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/accel/adxl345_core.c | 26 +++++++++-----------------
+ drivers/iio/accel/adxl345_i2c.c  |  7 ++-----
+ drivers/iio/accel/adxl345_spi.c  | 14 ++++----------
+ 3 files changed, 15 insertions(+), 32 deletions(-)
 
 diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_core.c
-index 4e4562fc35c9..370bfec1275a 100644
+index ef2240e356e0..078e1029e49d 100644
 --- a/drivers/iio/accel/adxl345_core.c
 +++ b/drivers/iio/accel/adxl345_core.c
-@@ -195,7 +195,7 @@ static IIO_CONST_ATTR_SAMP_FREQ_AVAIL(
+@@ -222,16 +222,12 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+ 	int ret;
  
- static struct attribute *adxl345_attrs[] = {
- 	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
--	NULL,
-+	NULL
- };
+ 	ret = regmap_read(regmap, ADXL345_REG_DEVID, &regval);
+-	if (ret < 0) {
+-		dev_err(dev, "Error reading device ID: %d\n", ret);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Error reading device ID\n");
  
- static const struct attribute_group adxl345_attrs_group = {
+-	if (regval != ADXL345_DEVID) {
+-		dev_err(dev, "Invalid device ID: %x, expected %x\n",
+-			regval, ADXL345_DEVID);
+-		return -ENODEV;
+-	}
++	if (regval != ADXL345_DEVID)
++		return dev_err_probe(dev, -ENODEV, "Invalid device ID: %x, expected %x\n",
++				     regval, ADXL345_DEVID);
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -245,10 +241,8 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+ 
+ 	ret = regmap_write(data->regmap, ADXL345_REG_DATA_FORMAT,
+ 			   data->data_range);
+-	if (ret < 0) {
+-		dev_err(dev, "Failed to set data range: %d\n", ret);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Failed to set data range\n");
+ 
+ 	indio_dev->name = name;
+ 	indio_dev->info = &adxl345_info;
+@@ -259,10 +253,8 @@ int adxl345_core_probe(struct device *dev, struct regmap *regmap,
+ 	/* Enable measurement mode */
+ 	ret = regmap_write(data->regmap, ADXL345_REG_POWER_CTL,
+ 			   ADXL345_POWER_CTL_MEASURE);
+-	if (ret < 0) {
+-		dev_err(dev, "Failed to enable measurement mode: %d\n", ret);
+-		return ret;
+-	}
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Failed to enable measurement mode\n");
+ 
+ 	ret = devm_add_action_or_reset(dev, adxl345_powerdown, data->regmap);
+ 	if (ret < 0)
 diff --git a/drivers/iio/accel/adxl345_i2c.c b/drivers/iio/accel/adxl345_i2c.c
-index 3216345e87bf..2b5e64c467ec 100644
+index 7bc8324c4f07..d6dd715bf404 100644
 --- a/drivers/iio/accel/adxl345_i2c.c
 +++ b/drivers/iio/accel/adxl345_i2c.c
-@@ -42,7 +42,7 @@ MODULE_DEVICE_TABLE(i2c, adxl345_i2c_id);
- static const struct of_device_id adxl345_of_match[] = {
- 	{ .compatible = "adi,adxl345", ADXL345 },
- 	{ .compatible = "adi,adxl375", ADXL375 },
--	{ },
-+	{ }
- };
+@@ -28,11 +28,8 @@ static int adxl345_i2c_probe(struct i2c_client *client,
+ 		return -ENODEV;
  
- MODULE_DEVICE_TABLE(of, adxl345_of_match);
+ 	regmap = devm_regmap_init_i2c(client, &adxl345_i2c_regmap_config);
+-	if (IS_ERR(regmap)) {
+-		dev_err(&client->dev, "Error initializing i2c regmap: %ld\n",
+-			PTR_ERR(regmap));
+-		return PTR_ERR(regmap);
+-	}
++	if (IS_ERR(regmap))
++		return dev_err_probe(&spi->dev, PTR_ERR(regmap), "Error initializing regmap\n");
+ 
+ 	return adxl345_core_probe(&client->dev, regmap, id->driver_data,
+ 				  id->name);
 diff --git a/drivers/iio/accel/adxl345_spi.c b/drivers/iio/accel/adxl345_spi.c
-index 784e41965f00..4bc4c842357d 100644
+index c752562c5d3b..6984b13f32e8 100644
 --- a/drivers/iio/accel/adxl345_spi.c
 +++ b/drivers/iio/accel/adxl345_spi.c
-@@ -46,7 +46,7 @@ MODULE_DEVICE_TABLE(spi, adxl345_spi_id);
- static const struct of_device_id adxl345_of_match[] = {
- 	{ .compatible = "adi,adxl345", ADXL345 },
- 	{ .compatible = "adi,adxl375", ADXL375 },
--	{ },
-+	{ }
- };
+@@ -26,18 +26,12 @@ static int adxl345_spi_probe(struct spi_device *spi)
+ 	struct regmap *regmap;
  
- MODULE_DEVICE_TABLE(of, adxl345_of_match);
+ 	/* Bail out if max_speed_hz exceeds 5 MHz */
+-	if (spi->max_speed_hz > ADXL345_MAX_SPI_FREQ_HZ) {
+-		dev_err(&spi->dev, "SPI CLK, %d Hz exceeds 5 MHz\n",
+-			spi->max_speed_hz);
+-		return -EINVAL;
+-	}
++	if (spi->max_speed_hz > ADXL345_MAX_SPI_FREQ_HZ)
++		return dev_err_probe(&spi->dev, -EINVAL, "SPI CLK, %d Hz exceeds 5 MHz\n", spi->max_speed_hz);
+ 
+ 	regmap = devm_regmap_init_spi(spi, &adxl345_spi_regmap_config);
+-	if (IS_ERR(regmap)) {
+-		dev_err(&spi->dev, "Error initializing spi regmap: %ld\n",
+-			PTR_ERR(regmap));
+-		return PTR_ERR(regmap);
+-	}
++	if (IS_ERR(regmap))
++		return dev_err_probe(&spi->dev, PTR_ERR(regmap), "Error initializing regmap\n");
+ 
+ 	return adxl345_core_probe(&spi->dev, regmap, id->driver_data, id->name);
+ }
 -- 
 2.34.1
 
