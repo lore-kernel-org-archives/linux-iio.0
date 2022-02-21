@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2065C4321E
-	for <linux-iio@archiver.kernel.org>; Mon, 21 Feb 2022 22:08:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B8AA1C4332F
+	for <linux-iio@archiver.kernel.org>; Mon, 21 Feb 2022 22:08:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235177AbiBUWI1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 21 Feb 2022 17:08:27 -0500
-Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35362 "EHLO
+        id S235182AbiBUWIa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 21 Feb 2022 17:08:30 -0500
+Received: from mxb-00190b01.gslb.pphosted.com ([23.128.96.19]:35420 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235173AbiBUWI0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Feb 2022 17:08:26 -0500
-Received: from mail-wr1-x436.google.com (mail-wr1-x436.google.com [IPv6:2a00:1450:4864:20::436])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CF6A22BDD
-        for <linux-iio@vger.kernel.org>; Mon, 21 Feb 2022 14:08:02 -0800 (PST)
-Received: by mail-wr1-x436.google.com with SMTP id u1so29336295wrg.11
-        for <linux-iio@vger.kernel.org>; Mon, 21 Feb 2022 14:08:02 -0800 (PST)
+        with ESMTP id S235191AbiBUWI3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Feb 2022 17:08:29 -0500
+Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3FE22BDD
+        for <linux-iio@vger.kernel.org>; Mon, 21 Feb 2022 14:08:04 -0800 (PST)
+Received: by mail-wr1-x42f.google.com with SMTP id o24so29377752wro.3
+        for <linux-iio@vger.kernel.org>; Mon, 21 Feb 2022 14:08:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=BXhDDcjJdPDbZfpGFJmQRsA5lMP0BnPrEwgZzVXptZc=;
-        b=OTNmxNVLOaQ+GZKIwdNHVkFnAwjww6BZWFKx5LbvBdxtXUj+Y+BmBDPxUT6dj/V9PC
-         Z0jjWh/52KsT9FdiNXVfeUY5y6XB18IfIvhNDjihl8x2XjLxu25tlKH7h0ug7Yb99aNF
-         Up00b0G3Nzb0ga9pp0+o0nKhRU+DgUmbcznu71gH7RGlJwiTqKCy2EJYjz4jxbsxYL4s
-         iac8056KIYm1wJvrbOXqNgPHxBu8iaKDpS7E/HF4+msJiBq0awetxxExLdC+IvlvTm+I
-         SmQ5A92dUTp8Cnn3zHlhccFjgUN1g4BvNTLFe/TEsdUERSDCrvDkIvm4EX0T6LVpiy5L
-         ym0Q==
+        bh=zozG4Oy5Pt0vWjsRDZ91928+qvWs4STBKU9M4pGg1h4=;
+        b=q/RFWKpEMo4qOlDj2TrTaK3CqFw+/dYPX/SKR9vqhsLXehYTh+plZUaqPaFmOZ3pIH
+         QJhVTeWzPnIqlVuir/olF4EgjrZ1uoaOc/u7GDssBR/uGI58rQy3sKZtbaynZ/lp8pSX
+         LbmJ8fw9vkM3Ug2ZxBVymq8PvjSuRhKkRaOGGLdslmz11cZkkhHnotu8pgZo/o3QoxwP
+         yl3tCjcnBJ1jZhBHiYTZqTilpxqzo0VhHFAMsvd/aBcQsxaHgcod7h+kfbOUseU7zHZV
+         bRjjNNzrAIPcJKalHrVFkb/cmjJLqKeCGhmEN70jT5ABooQ3UaZmM+kBNc9/Kug+GAgr
+         vmOQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=BXhDDcjJdPDbZfpGFJmQRsA5lMP0BnPrEwgZzVXptZc=;
-        b=4ITN3URbTspkpVmOwIkpxx7lp0PXa1CYG+ImfPBjfRE1hzQ7wGMz5AimAiujIqd7B9
-         NCFm0wTDT4V6RmO4TchTQBm6tZzntWtUvcbrUX379mXR+qGWUGJE623+oNWXKuTigdYC
-         hupYqAp3JXzyyIPnZecMHoDKU5m1hIDXs7Oh4/K/dXFJt2Qx3mSjZ7o+Gr1dX8/CCslj
-         y7IChY4ZRIEhBpi1OIb+PxttfnNW8hbvOYfukkGKl8903afy8YwV4UFaG1UAse65YClL
-         m6OdDE0NJepvpBryN3kiqR31b/aDzVUNMRxB+YSXHTqsd4RTgc5OTmsCwB3+YIkc15Kx
-         i83A==
-X-Gm-Message-State: AOAM530t4cVIljIfO8bpNpk87Byp+bnCdXDDn03M+qcmRifgkxsVu5sz
-        sxc3sQYINm3IRLnexX+1XqnRtA==
-X-Google-Smtp-Source: ABdhPJxKPGbD/d2f978lTkfrNdnCGiaLOTYPGMXwtCm7AxG+jXYJifwW054/N8QZ4K4NAXDTlZSE3Q==
-X-Received: by 2002:adf:d844:0:b0:1e4:bd02:b34d with SMTP id k4-20020adfd844000000b001e4bd02b34dmr16421411wrl.591.1645481281285;
-        Mon, 21 Feb 2022 14:08:01 -0800 (PST)
+        bh=zozG4Oy5Pt0vWjsRDZ91928+qvWs4STBKU9M4pGg1h4=;
+        b=tDsPdTYxQGZMjnfvUxX+I1rY+umpYRrnvL/VcvvTCw2+peh5n8SKbD5iBGhdFfj8wZ
+         yem7RcZIUrzeaslu6eLkSDgZjdgXYZIHoK7/UhuHiCA+vCDEmfjpextTeew5vl12LkIl
+         dkA6OK+aAS2Ak479fTfRQvPm+ADlwLJspdIqdJwzHz2+MICJCN0voKoo9wYHJapOOb0z
+         ix5Z2iuREneY8Aif5o33zPryuKUetg8U8iKQ2hcpv0+Erjw5ZyPBCyltgv8n7pkfSExx
+         Zjyeui/t3uZZWwkzanQ/mG9KRKg0VSZsLcT5P6zgQrJ219hoV9G56ik13c4d9g26VGmD
+         XTHA==
+X-Gm-Message-State: AOAM532UuZjfQIFnRE1u0hwDa3g2Y1UV9IV4ZgKV6NzbP3QzDq8zP0ZY
+        ei9j6jDrh5m2xF1fBOv2asCfyw==
+X-Google-Smtp-Source: ABdhPJyK9n9XH2SxUzlXtF5IRK1v3XwLYrAJR4CGhkKl0Wyq/KVtq75s3wsRJlS8JkJI0A6f1+132Q==
+X-Received: by 2002:a05:6000:15c4:b0:1ea:7fec:3d84 with SMTP id y4-20020a05600015c400b001ea7fec3d84mr1383906wry.33.1645481283488;
+        Mon, 21 Feb 2022 14:08:03 -0800 (PST)
 Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id w8sm51626093wre.83.2022.02.21.14.08.00
+        by smtp.gmail.com with ESMTPSA id w8sm51626093wre.83.2022.02.21.14.08.02
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 21 Feb 2022 14:08:00 -0800 (PST)
+        Mon, 21 Feb 2022 14:08:02 -0800 (PST)
 From:   Caleb Connolly <caleb.connolly@linaro.org>
 To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -57,10 +57,10 @@ To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
 Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
-        john.stultz@linaro.org, Rob Herring <robh@kernel.org>
-Subject: [PATCH v8 4/9] dt-bindings: iio: adc: document qcom-spmi-rradc
-Date:   Mon, 21 Feb 2022 22:07:38 +0000
-Message-Id: <20220221220743.541704-5-caleb.connolly@linaro.org>
+        john.stultz@linaro.org
+Subject: [PATCH v8 6/9] arm64: dts: qcom: pmi8998: add rradc node
+Date:   Mon, 21 Feb 2022 22:07:40 +0000
+Message-Id: <20220221220743.541704-7-caleb.connolly@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220221220743.541704-1-caleb.connolly@linaro.org>
 References: <20220221220743.541704-1-caleb.connolly@linaro.org>
@@ -70,76 +70,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add dt-binding docs for the Qualcomm SPMI RRADC found in PMICs like
-PMI8998 and PMI8994
+Add a DT node for the Round Robin ADC found in the PMI8998 PMIC.
 
 Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-Reviewed-by: Rob Herring <robh@kernel.org>
 ---
- .../bindings/iio/adc/qcom,spmi-rradc.yaml     | 54 +++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
+ arch/arm64/boot/dts/qcom/pmi8998.dtsi | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
-new file mode 100644
-index 000000000000..11d47c46a48d
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
-@@ -0,0 +1,54 @@
-+# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
-+%YAML 1.2
-+---
-+$id: http://devicetree.org/schemas/iio/adc/qcom,spmi-rradc.yaml#
-+$schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/arch/arm64/boot/dts/qcom/pmi8998.dtsi b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+index 0fef5f113f05..da10668c361d 100644
+--- a/arch/arm64/boot/dts/qcom/pmi8998.dtsi
++++ b/arch/arm64/boot/dts/qcom/pmi8998.dtsi
+@@ -18,6 +18,14 @@ pmi8998_gpio: gpios@c000 {
+ 			interrupt-controller;
+ 			#interrupt-cells = <2>;
+ 		};
 +
-+title: Qualcomm's SPMI PMIC Round Robin ADC
++		pmi8998_rradc: rradc@4500 {
++			compatible = "qcom,pmi8998-rradc";
++			reg = <0x4500>;
++			#io-channel-cells = <1>;
 +
-+maintainers:
-+  - Caleb Connolly <caleb.connolly@linaro.org>
-+
-+description: |
-+  The Qualcomm SPMI Round Robin ADC (RRADC) provides interface to clients to read the
-+  voltage, current and temperature for supported peripherals such as the battery thermistor
-+  die temperature, charger temperature, USB and DC input voltage / current and battery ID
-+  resistor.
-+
-+properties:
-+  compatible:
-+    enum:
-+      - qcom,pmi8998-rradc
-+      - qcom,pm660-rradc
-+
-+  reg:
-+    description: rradc base address and length in the SPMI PMIC register map
-+    maxItems: 1
-+
-+  qcom,batt-id-delay-ms:
-+    description:
-+      Sets the hardware settling time for the battery ID resistor.
-+    enum: [0, 1, 4, 12, 20, 40, 60, 80]
-+
-+  "#io-channel-cells":
-+    const: 1
-+
-+required:
-+  - compatible
-+  - reg
-+
-+additionalProperties: false
-+
-+examples:
-+  - |
-+    pmic {
-+      #address-cells = <1>;
-+      #size-cells = <0>;
-+
-+      pmic_rradc: adc@4500 {
-+          compatible = "qcom,pmi8998-rradc";
-+          reg = <0x4500>;
-+          #io-channel-cells  = <1>;
-+      };
-+    };
-+...
++			status = "disabled";
++		};
+ 	};
+ 
+ 	pmi8998_lsid1: pmic@3 {
 -- 
 2.35.1
 
