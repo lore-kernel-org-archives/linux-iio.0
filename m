@@ -2,105 +2,130 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A617C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Feb 2022 07:58:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A273EC433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Feb 2022 08:59:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229779AbiBVH6j (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Feb 2022 02:58:39 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38710 "EHLO
+        id S230029AbiBVJAW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Feb 2022 04:00:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41960 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229437AbiBVH6j (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Feb 2022 02:58:39 -0500
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 21 Feb 2022 23:58:13 PST
-Received: from hel-mailgw-01.vaisala.com (hel-mailgw-01.vaisala.com [193.143.230.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D0DB61405F6;
-        Mon, 21 Feb 2022 23:58:13 -0800 (PST)
-Received: from HEL-SMTP.corp.vaisala.com (HEL-SMTP.corp.vaisala.com [172.24.1.225])
-        by hel-mailgw-01.vaisala.com (Postfix) with ESMTP id 82D566082A42;
-        Tue, 22 Feb 2022 09:42:15 +0200 (EET)
-Received: from [172.24.254.98] ([172.24.254.98]) by HEL-SMTP.corp.vaisala.com over TLS secured channel with Microsoft SMTPSVC(8.5.9600.16384);
-         Tue, 22 Feb 2022 09:42:19 +0200
-Message-ID: <4f0c786f-e29c-4838-59e3-236a908e4431@vaisala.com>
-Date:   Tue, 22 Feb 2022 09:42:12 +0200
+        with ESMTP id S229944AbiBVJAV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Feb 2022 04:00:21 -0500
+Received: from mga05.intel.com (mga05.intel.com [192.55.52.43])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A876B13D569;
+        Tue, 22 Feb 2022 00:59:56 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1645520396; x=1677056396;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=/CoOJYrIQXjl83nUCkZjGK7NC6sCc0jBYnDOtkCGkic=;
+  b=fPYPeQjWczrGB+Yh9mR8PKa6V/WUH9N7/UZpOyWGevSARhvvDvWyJn5K
+   8zBmk/1k/dw5qYgC3wxCXzISJtliyFoLHniqbG88Xdk8+5YZZhgYRP5Nz
+   4AwTre8KOLMnrURTfluurrc9I9a+RABLN5fEDgXH5Ks3Xn9GOBOIaFvW8
+   IN5+TJayf++Xqhy66WzHCbm0iZujprEOU+8XDdpZtC/T+3Xu7MSOKy2qd
+   2g9LOVvH7TG3H664cz1qf/4Hw6oTvHLSo1S49BI6axgkzksuKms8mOiAo
+   dI03tTTFNfa43h8lQaoq9fd+TGFgxY9iUchG6Bfw5BlDxwugZWG7WTicx
+   Q==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10265"; a="338076726"
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="338076726"
+Received: from fmsmga008.fm.intel.com ([10.253.24.58])
+  by fmsmga105.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 22 Feb 2022 00:59:56 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.88,387,1635231600"; 
+   d="scan'208";a="591229128"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by fmsmga008.fm.intel.com with ESMTP; 22 Feb 2022 00:59:54 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id C88B340D; Tue, 22 Feb 2022 11:00:10 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Kai-Heng Feng <kai.heng.feng@canonical.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Subject: [PATCH v2 5/8] iio: accel: adxl345: Add ACPI HID table
+Date:   Tue, 22 Feb 2022 11:00:06 +0200
+Message-Id: <20220222090009.2060-5-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220222090009.2060-1-andriy.shevchenko@linux.intel.com>
+References: <20220222090009.2060-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [RFC PATCH] iio: core: provide a default value `label` property
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <20220216135604.3435769-1-nandor.han@vaisala.com>
- <20220220131809.1bc184e0@jic23-huawei>
-From:   Nandor Han <nandor.han@vaisala.com>
-In-Reply-To: <20220220131809.1bc184e0@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-OriginalArrivalTime: 22 Feb 2022 07:42:19.0874 (UTC) FILETIME=[B8B81C20:01D827BF]
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 2/20/22 15:18, Jonathan Cameron wrote:
-> On Wed, 16 Feb 2022 15:56:04 +0200
-> Nandor Han <nandor.han@vaisala.com> wrote:
-> 
+From: Kai-Heng Feng <kai.heng.feng@canonical.com>
 
-Thanks for reviewing the patch and provide feed back.
+x86 boards may use ACPI HID "ADS0345" for adxl345 device.
 
->> The label property is used to correctly identify the same IIO device
->> over reboots. The implementation requires that a value will be provided
->> through device-tree. This sometime could requires many changes to
->> device-trees when multiple devices want to use the label property.
->> In order to prevent this, we could use the device-tree node
->> name as default value. The device-tree node name is unique and
->> also reflects the device which makes it a good choice as default value.
->> This change is backward compatible since doesn't affect the users that
->> do configure a label using the device-tree or the ones that are not
->> using the labels at all.
->>
->> Use the device-tree node name as a default value for `label` property,
->> in case there isn't one configured through device-tree.
-> 
-> Interesting idea.  However a few concerns come to mind.
-> 1) If we start having a default for this, then it will get used as ABI
->     and if a label is applied later to the DT then we will end up breaking
->     userspace scripts.
+Analog replied:
+"ADS034X is not a valid PNP ID. ADS0345 would be.
+I'm not aware that this ID is already taken.
+Feel free to submit a mainline Linux input mailing list patch."
 
-When a label is explicitly configured means that the userspace expects 
-to have that value available. Therefore, I don't see this as ABI change, 
-given that this affects the property label content and not for example 
-the property name.
+So add an ACPI match table for that accordingly.
 
-> 2) If we do this it should be firmware agnostics (we need to fix
->     the existing code to be such as well).
+Since ACPI device may not match to any I2C ID, use the name and type
+directly from ACPI ID table in absence of I2C ID.
 
-Not sure I understand this. If you could explain a bit more I would 
-really appriciate.
+Suggested-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Kai-Heng Feng <kai.heng.feng@canonical.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v2: no changes
+ drivers/iio/accel/adxl345_i2c.c | 7 +++++++
+ drivers/iio/accel/adxl345_spi.c | 7 +++++++
+ 2 files changed, 14 insertions(+)
 
-> 3) Is the node name always unique (think multiple accelerometers on
->     different i2c masters)?
-> 3) I'm fairly sure this information is readily available anyway.
->     either via the of_node link for the iio\:deviceX
->     So why not have your usespace use that instead of label?
->     I'm not a fan of duplicating information that is readily available
->     anyway - be it as name and reg in the of_node directory.
-> 
+diff --git a/drivers/iio/accel/adxl345_i2c.c b/drivers/iio/accel/adxl345_i2c.c
+index 861d8477d799..11ecff0e0405 100644
+--- a/drivers/iio/accel/adxl345_i2c.c
++++ b/drivers/iio/accel/adxl345_i2c.c
+@@ -47,10 +47,17 @@ static const struct of_device_id adxl345_of_match[] = {
+ 
+ MODULE_DEVICE_TABLE(of, adxl345_of_match);
+ 
++static const struct acpi_device_id adxl345_acpi_match[] = {
++	{ "ADS0345", ADXL345 },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, adxl345_acpi_match);
++
+ static struct i2c_driver adxl345_i2c_driver = {
+ 	.driver = {
+ 		.name	= "adxl345_i2c",
+ 		.of_match_table = adxl345_of_match,
++		.acpi_match_table = adxl345_acpi_match,
+ 	},
+ 	.probe_new	= adxl345_i2c_probe,
+ 	.id_table	= adxl345_i2c_id,
+diff --git a/drivers/iio/accel/adxl345_spi.c b/drivers/iio/accel/adxl345_spi.c
+index ee4c50c8a95b..850ac616d65e 100644
+--- a/drivers/iio/accel/adxl345_spi.c
++++ b/drivers/iio/accel/adxl345_spi.c
+@@ -52,10 +52,17 @@ static const struct of_device_id adxl345_of_match[] = {
+ 
+ MODULE_DEVICE_TABLE(of, adxl345_of_match);
+ 
++static const struct acpi_device_id adxl345_acpi_match[] = {
++	{ "ADS0345", ADXL345 },
++	{ }
++};
++MODULE_DEVICE_TABLE(acpi, adxl345_acpi_match);
++
+ static struct spi_driver adxl345_spi_driver = {
+ 	.driver = {
+ 		.name	= "adxl345_spi",
+ 		.of_match_table = adxl345_of_match,
++		.acpi_match_table = adxl345_acpi_match,
+ 	},
+ 	.probe		= adxl345_spi_probe,
+ 	.id_table	= adxl345_spi_id,
+-- 
+2.34.1
 
-The node name supposed to be unique AFAIK and you're right it is 
-available already in the userspace.
-My point with this patch is to provide a default value for the label 
-content and I'm open to suggestions related to content. The of_node name 
-was something that I thought that is unique and easy to use, but if 
-somebody has better suggestions I'm really open to these.
-
-> Thanks,
-> 
-> Jonathan
-> 
-
-<snip>
-
-
-Thanks again and regards,
-    Nandor
