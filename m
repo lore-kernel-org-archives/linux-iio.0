@@ -2,155 +2,120 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED2E9C433F5
-	for <linux-iio@archiver.kernel.org>; Thu,  3 Mar 2022 02:30:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DE836C433EF
+	for <linux-iio@archiver.kernel.org>; Thu,  3 Mar 2022 04:01:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231731AbiCCCbQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 2 Mar 2022 21:31:16 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        id S229635AbiCCECF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 2 Mar 2022 23:02:05 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231700AbiCCCbQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Mar 2022 21:31:16 -0500
-Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D64846666;
-        Wed,  2 Mar 2022 18:30:31 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646274631; x=1677810631;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=53qEpt+GyHLf4k/a7W4+7EOByfhH4Bt+FR6ZxJQZXFw=;
-  b=VWDnTMmbgekfBXUS8uEY3TJJeBU6O9s/TpZ/p9cKHEpusrSqmrP2SX78
-   TuV23y1HrAFuaLmUby7R1ephM03357mGBMEvKZcIgpwaOqx6wk6OfXDpE
-   mQ1a9N2TiiALlzr5gJhb47cvP5oBs5ULPkCkgpVhRGeaCKKojyygj86Dv
-   1KNes7zU7Q8mCbf1PiUVJJi/KjipaEoaVxTtSqxfoOME4ATEuMSZl90we
-   G556QUCrXsQSWhrWR2NIE7wxMizX6uWGadYZkQ1dAZ1PRw7+VJxjKpL/R
-   AwC7KAkXj1BanhbV6JX9dHrW+6KHvcYZGCtUmp7Ide5j6RY2KhGwbyYe9
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10274"; a="251132928"
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="251132928"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 18:30:31 -0800
-X-IronPort-AV: E=Sophos;i="5.90,150,1643702400"; 
-   d="scan'208";a="551532065"
-Received: from rli9-dbox.sh.intel.com (HELO rli9-dbox) ([10.239.159.142])
-  by orsmga008-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 02 Mar 2022 18:30:26 -0800
-Date:   Thu, 3 Mar 2022 10:28:04 +0800
-From:   Philip Li <philip.li@intel.com>
-To:     Caleb Connolly <caleb.connolly@linaro.org>
-Cc:     Dan Carpenter <dan.carpenter@oracle.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S229648AbiCCECD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 2 Mar 2022 23:02:03 -0500
+Received: from mail-wr1-x429.google.com (mail-wr1-x429.google.com [IPv6:2a00:1450:4864:20::429])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD68C15D3A0
+        for <linux-iio@vger.kernel.org>; Wed,  2 Mar 2022 20:01:13 -0800 (PST)
+Received: by mail-wr1-x429.google.com with SMTP id j17so5847382wrc.0
+        for <linux-iio@vger.kernel.org>; Wed, 02 Mar 2022 20:01:13 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=78gNKgWiy0CQ87WA98rgoolaf4MxcOEltw1vanlXH7U=;
+        b=CdH1Uh1DdfoZv0vBwhq4SpTqi17GiFS+aWxcR6aOA5t/wJvD0dT01haxj0xzX8wJOQ
+         Sz/JNyC/v9HK6Fux7mols8l8VY6FfLc7hjMI+LVcA56MPIJEthzfTT1n3rsu/gdk2tbd
+         /YV6Q8lTqerj7JMtWXI9rI+e9zcIa+ebIY5YZ1Z5CnFd4CsaLHI2NvP9k/TiEST2X72f
+         kt69pq6wqi0NmlzPGAL1k1vBkYorjmZOWn3WH/nlcfsmWDNXYr4ac+RfB/RMRpkCyHZO
+         b34zoMdrE4FynVUnjp0xQkeB2P1CtPUW9ksgcs48QemRH49KHH/j61B2iQ2mQcoRkQoi
+         GvdQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=78gNKgWiy0CQ87WA98rgoolaf4MxcOEltw1vanlXH7U=;
+        b=BfL1QQvhya0gICwaA/+VUx0wI8BRb7w3EItObmZSCoW5/IrG5A/r3c8WdusgKpGL5K
+         GUh+wXQxXPN8GFhYs+mJJrtV2np6Vq7rl4m2ZEmBn4Vx7hy++pVSM2Y2z82eG9p+lm8B
+         V5CmpO+CPjPKyQxqkTvaPxoofOF6lEIZy+znqhPHK4GMFTBp5ls/YFrWWcJB1iWSXPXQ
+         g+2uuK2NHWq2q0ITpJ7iEDfbHnnijKMQKSlbOTl9KMDX0GoC5zdRPFOHY/sHsTkpyr6q
+         TaVKxHNa0O193w3u/R6H/KRJC0NtApI9bt5csc1UqxmH5B/Ln5eRk6+n4LI4qWpIwnS6
+         Ku0A==
+X-Gm-Message-State: AOAM530MzMJJV+XLpvPC1/26E86biYG2sAsy763mti+CGmFfxXgBU6vP
+        fsM8Kdgvih3fX4ozT2lWMIVGKg==
+X-Google-Smtp-Source: ABdhPJxoEuv47gn1t6cXSg2MKUIwNTZywdi4TZAf2Oo/LmaWRE1956EmhaBeYt/W+5bUb65+zGp0rg==
+X-Received: by 2002:a5d:5887:0:b0:1d7:36e4:e40f with SMTP id n7-20020a5d5887000000b001d736e4e40fmr25801628wrf.298.1646280072313;
+        Wed, 02 Mar 2022 20:01:12 -0800 (PST)
+Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
+        by smtp.gmail.com with ESMTPSA id r16-20020a5d4e50000000b001f0075f4ca1sm702615wrt.105.2022.03.02.20.01.11
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 02 Mar 2022 20:01:11 -0800 (PST)
+From:   Caleb Connolly <caleb.connolly@linaro.org>
+To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
         Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        sumit.semwal@linaro.org, amit.pundir@linaro.org,
-        john.stultz@linaro.org, kernel test robot <lkp@intel.com>
-Subject: Re: [PATCH v8 2/9] mfd: qcom-spmi-pmic: expose the PMIC revid
- information to clients
-Message-ID: <YiAntGyMdJnEjzsT@rli9-dbox>
-References: <20220221220743.541704-1-caleb.connolly@linaro.org>
- <20220221220743.541704-3-caleb.connolly@linaro.org>
- <Yhft4zNcbD3ojN6i@builder.lan>
- <YhiYY/sXMvQ4VCZd@google.com>
- <20220225090452.GP3943@kadam>
- <YhigDPC6r7dTJUXd@google.com>
- <20220225094024.GQ3943@kadam>
- <da96bd50-e346-a20c-de53-561c996e826c@linaro.org>
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
+        john.stultz@linaro.org
+Subject: [PATCH v9 3/9] mfd: qcom-spmi-pmic: read fab id on supported PMICs
+Date:   Thu,  3 Mar 2022 04:00:29 +0000
+Message-Id: <20220303040035.1454103-4-caleb.connolly@linaro.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220303040035.1454103-1-caleb.connolly@linaro.org>
+References: <20220303040035.1454103-1-caleb.connolly@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <da96bd50-e346-a20c-de53-561c996e826c@linaro.org>
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Mar 03, 2022 at 02:20:58AM +0000, Caleb Connolly wrote:
-> 
-> 
-> On 25/02/2022 09:40, Dan Carpenter wrote:
-> > On Fri, Feb 25, 2022 at 09:23:24AM +0000, Lee Jones wrote:
-> > > On Fri, 25 Feb 2022, Dan Carpenter wrote:
-> > > 
-> > > > On Fri, Feb 25, 2022 at 08:50:43AM +0000, Lee Jones wrote:
-> > > > > On Thu, 24 Feb 2022, Bjorn Andersson wrote:
-> > > > > 
-> > > > > > On Mon 21 Feb 16:07 CST 2022, Caleb Connolly wrote:
-> > > > > > 
-> > > > > > > Some PMIC functions such as the RRADC need to be aware of the PMIC
-> > > > > > > chip revision information to implement errata or otherwise adjust
-> > > > > > > behaviour, export the PMIC information to enable this.
-> > > > > > > 
-> > > > > > > This is specifically required to enable the RRADC to adjust
-> > > > > > > coefficients based on which chip fab the PMIC was produced in,
-> > > > > > > this can vary per unique device and therefore has to be read at
-> > > > > > > runtime.
-> > > > > > > 
-> > > > > > > [bugs in previous revision]
-> > > > > > > Reported-by: kernel test robot <lkp@intel.com>
-> > > > > > > Reported-by: Dan Carpenter <dan.carpenter@oracle.com>
-> > > > > > 
-> > > > > > This says is that "kernel test robot" and Dan reported that something
-> > > > > > needed to be fixed and this patch is the fix for this.
-> > > > > > 
-> > > > > > So even though their emails asks for you to give them credit like this
-> > > > > > you can't do it for new patches.
-> > > > > 
-> > > > > Right, or else you'd have to give credit to anyone who provided you
-> > > > > with a review.  This could potentially grow to quite a long list.
-> > > > > 
-> > > > 
-> > > > I always feel like people who find crashing bugs should get credit but
-> > > > no credit for complaining about style.  It's like we reward people for
-> > > > reporting bugs after it gets merged but not before.
-> > > > 
-> > > > We've had this debate before and people don't agree with me or they say
-> > > > that it's fine to just include the Reported-by kbuild tags and let
-> > > > people figure out from the context that probably kbuild didn't tell
-> > > > people to write a new driver.
-> > > 
-> > > Reviews will often consist of both style and logic recommendations.
-> > > If not spotted and remedied, the latter of which would likely result
-> > > in undesired behaviour a.k.a. bugs.  So at what point, or what type of
-> > > bug would warrant a tag?
-> > > 
-> > 
-> > If it's a crash or memory leak.  Style comments and fixing typos are
-> > their own reward.  Basically it's the same rule as Fixes tags.  We
-> > shouldn't use Fixes tags for typos.
-> 
-> Hi Dan,
-> 
-> How (if at all) would you like me to reference the bug reported by LKP
-> in my next revision of this patch? It doesn't seem like a fixed conclusion
-> was reached here.
+The PMI8998 and PM660 expose the fab_id, this is needed by drivers like
+the RRADC to calibrate ADC values.
 
-Hi Caleb, this is Philip who maintains the LKP (0-day ci). You can ignore
-the Reported-by tag freely.
+Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+---
+ drivers/mfd/qcom-spmi-pmic.c      | 7 +++++++
+ include/soc/qcom/qcom-spmi-pmic.h | 1 +
+ 2 files changed, 8 insertions(+)
 
-This is confusing sometimes for this Reported-by tag, even we mention to
-add it "as appropriately" to allow judgement from author for author's own
-situation. Some author uses the style like "Reported-by: xxx # compiling bug fix"
-but not all. We will look for how to improve this.
+diff --git a/drivers/mfd/qcom-spmi-pmic.c b/drivers/mfd/qcom-spmi-pmic.c
+index bfe1304aee1b..b12a07da6183 100644
+--- a/drivers/mfd/qcom-spmi-pmic.c
++++ b/drivers/mfd/qcom-spmi-pmic.c
+@@ -19,6 +19,7 @@
+ #define PMIC_REV4		0x103
+ #define PMIC_TYPE		0x104
+ #define PMIC_SUBTYPE		0x105
++#define PMIC_FAB_ID		0x1f2
+ 
+ #define PMIC_TYPE_VALUE		0x51
+ 
+@@ -175,6 +176,12 @@ static int pmic_spmi_load_revid(struct regmap *map, struct device *dev,
+ 	if (ret < 0)
+ 		return ret;
+ 
++	if (pmic->subtype == PMI8998_SUBTYPE || pmic->subtype == PM660_SUBTYPE) {
++		ret = regmap_read(map, PMIC_FAB_ID, &pmic->fab_id);
++		if (ret < 0)
++			return ret;
++	}
++
+ 	/*
+ 	 * In early versions of PM8941 and PM8226, the major revision number
+ 	 * started incrementing from 0 (eg 0 = v1.0, 1 = v2.0).
+diff --git a/include/soc/qcom/qcom-spmi-pmic.h b/include/soc/qcom/qcom-spmi-pmic.h
+index 5400e6509fe8..ff839b230e62 100644
+--- a/include/soc/qcom/qcom-spmi-pmic.h
++++ b/include/soc/qcom/qcom-spmi-pmic.h
+@@ -50,6 +50,7 @@ struct qcom_spmi_pmic {
+ 	unsigned int major;
+ 	unsigned int minor;
+ 	unsigned int rev2;
++	unsigned int fab_id;
+ 	const char *name;
+ };
+ 
+-- 
+2.35.1
 
-There's one discussion recently at https://lore.kernel.org/lkml/YfPzNNvK8Sy8YmGW@casper.infradead.org/T/
-which also encourages to add Reported-by for new features or upstreamed code.
-
-Thanks
-
-> 
-> It seems like Reported-by doesn't really represent things well, perhaps we
-> could try for "Bugchecked-by" or something like that?
-> > 
-> > regards,
-> > dan carpenter
-> > 
-> 
-> -- 
-> Kind Regards,
-> Caleb (they/them)
-> 
