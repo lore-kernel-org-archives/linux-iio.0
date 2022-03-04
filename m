@@ -2,139 +2,140 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 176A7C433FE
-	for <linux-iio@archiver.kernel.org>; Fri,  4 Mar 2022 15:15:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4681C433F5
+	for <linux-iio@archiver.kernel.org>; Fri,  4 Mar 2022 18:02:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240159AbiCDPQX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 4 Mar 2022 10:16:23 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51294 "EHLO
+        id S241270AbiCDSDc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 4 Mar 2022 13:03:32 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33068 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235356AbiCDPQW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 4 Mar 2022 10:16:22 -0500
-Received: from mail-vk1-xa29.google.com (mail-vk1-xa29.google.com [IPv6:2607:f8b0:4864:20::a29])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF1631C3D1D
-        for <linux-iio@vger.kernel.org>; Fri,  4 Mar 2022 07:15:34 -0800 (PST)
-Received: by mail-vk1-xa29.google.com with SMTP id t69so2094674vkc.5
-        for <linux-iio@vger.kernel.org>; Fri, 04 Mar 2022 07:15:34 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:subject:message-id:mime-version:content-disposition;
-        bh=OZxDF/kMvJsP4MaNdbgNx1aepcIHBOd79TgMIYQ76DE=;
-        b=Vxg9aRwkExWF6qWZx+igm+n3OJWIAJ6Ggl2dTHTEoXqzdMnmUHmonR7/fPkrTQ1FqS
-         CL9NveHehC1yFyneqxxe1T+8vjQ0SmYJQUFNX+1wAkq+y+I3he1emk1Ezp0B22mjDmSz
-         LYlRlnQRiQZghKJrw3Wl+SPdnBBYLXkTIsCsoNMnkEuEo4jOvUGbLJJ64IuxeViBB++E
-         rtW0TmNUlriC7bHJiVzv0klGQIleIq/hLVE9aq2nPBYU+YLnMacmkCbYn/AMqv5S5H7x
-         Ti0BdxJyY07ddsELbBdoi6Hxr+Qyj7/DCtFtnL3GQZjD0rQ6x+rIHFVz9yNDRhvIk3ps
-         FIxw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
-         :content-disposition;
-        bh=OZxDF/kMvJsP4MaNdbgNx1aepcIHBOd79TgMIYQ76DE=;
-        b=DVppBIaoBE3dNKbUgkhH5UR7pJ+kFCyJiLVIWpUKgLX5ZwGkJoND7EGh6cnXMZ/tWZ
-         IGhKPhhDW6n+vRdsBPFTlDXoonA1rOZw+vWKAkTyN+ecGu+ET02idLn2WZWdD5XCiiED
-         lsgEnngpWXs8KnVHfAujJgNjKa9dmeVzW2N0ypJF8R+HXgdRAHGVIzxepCnnFpvJLtef
-         7QvtMQr/mqhZDqs+2N5r9ccFG6Dsq7ZHqgDMFTnq+ninvZYxe0BZUzguU8DVazO121Ex
-         ZURUl7IRtQkTP6da3XJ14nEuFEtym530gSC1W6EYp+zRt/yaoAkB+Ss2L0Yz0/vaBajG
-         vdSw==
-X-Gm-Message-State: AOAM531Pbz4HNyMSvqC3ADOQIU/YOnwUCDp6j2a/iz+RgaWF1SydcLFp
-        Xa21l66qsqITCacIEVKLxd5uJbuHi/Vgbb61
-X-Google-Smtp-Source: ABdhPJwboZkEWv4OZIdcsywhYL+bgtN4GZltIzRlcbYCDgSLxDjpdOsdpycjU78h+odsBQ0GHQowXA==
-X-Received: by 2002:a05:6122:1687:b0:32d:a9a1:5abf with SMTP id 7-20020a056122168700b0032da9a15abfmr17444943vkl.30.1646406933788;
-        Fri, 04 Mar 2022 07:15:33 -0800 (PST)
-Received: from ishi (072-189-064-222.res.spectrum.com. [72.189.64.222])
-        by smtp.gmail.com with ESMTPSA id e21-20020ab031d5000000b0033ffa5785cfsm882296uan.16.2022.03.04.07.15.32
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 04 Mar 2022 07:15:33 -0800 (PST)
-Date:   Fri, 4 Mar 2022 10:15:31 -0500
-From:   William Breathitt Gray <vilhelm.gray@gmail.com>
-To:     gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-Subject: [PULL] Counter updates, cleanups, and features for 5.18
-Message-ID: <YiItE3YONnTILC9Q@ishi>
+        with ESMTP id S241460AbiCDSDc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 4 Mar 2022 13:03:32 -0500
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A40EAE0C4;
+        Fri,  4 Mar 2022 10:02:44 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646416964; x=1677952964;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=rVFnKmMZZ9DWqLHjmCaZvL7C3v2+5Lw0Q+OH0POJSNI=;
+  b=PdrTIfNWWXX9UCPzpSbJs38IT2UEDOnfI+H19siNHq9U/qNx5p60QGJI
+   KjdiguL2M+f/4rzlwvLZNScIk8TdD17vUIJqds1lIX9ypw5dDRp5dtaf8
+   2zm3xvu6xRwdeQ9yLPC5TxX/G/2YJ/Jdo7WdmNjHMpkGWsSA7V/KhEDik
+   leNIVtretg6gajr5i0DPtghnQwPUU0k5Fdz560xxGuqL5m2LjSoT+zB16
+   0xa14yWFLAGkaA2Se/4s3fgXA1OvokPek36Pu+4i0UguV+56hF4/fo2xt
+   Aa25lUT9BdtHuM37P72zwZHjbSfr1LrF9ViTPcn8krlzpX29OsBrFnNGx
+   w==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10276"; a="251603591"
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="251603591"
+Received: from orsmga007.jf.intel.com ([10.7.209.58])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 04 Mar 2022 10:02:44 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,155,1643702400"; 
+   d="scan'208";a="536355542"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga007.jf.intel.com with ESMTP; 04 Mar 2022 10:02:42 -0800
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 580AA9B; Fri,  4 Mar 2022 20:03:00 +0200 (EET)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v4 2/3] iio: temperature: ltc2983: Use single error path to put OF node
+Date:   Fri,  4 Mar 2022 20:02:56 +0200
+Message-Id: <20220304180257.80298-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220304180257.80298-1-andriy.shevchenko@linux.intel.com>
+References: <20220304180257.80298-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="j/5n4095wgT8gmF3"
-Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+There are several, possibly copied'n'pasted, places in the functions,
+where OF node is put and error returned directly, while the common
+exit point exists. Unify all these cases to use a single error path.
 
---j/5n4095wgT8gmF3
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+---
+v4: no changes
+v3: no changes
+ drivers/iio/temperature/ltc2983.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
-The following changes since commit 7e57714cd0ad2d5bb90e50b5096a0e671dec1ef3:
+diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
+index 94d6dd4db47a..636bbc9011b9 100644
+--- a/drivers/iio/temperature/ltc2983.c
++++ b/drivers/iio/temperature/ltc2983.c
+@@ -653,8 +653,6 @@ static struct ltc2983_sensor *ltc2983_thermocouple_new(
+ 
+ 	phandle = of_parse_phandle(child, "adi,cold-junction-handle", 0);
+ 	if (phandle) {
+-		int ret;
+-
+ 		ret = of_property_read_u32(phandle, "reg",
+ 					   &thermo->cold_junction_chan);
+ 		if (ret) {
+@@ -663,8 +661,7 @@ static struct ltc2983_sensor *ltc2983_thermocouple_new(
+ 			 * the error right away.
+ 			 */
+ 			dev_err(&st->spi->dev, "Property reg must be given\n");
+-			of_node_put(phandle);
+-			return ERR_PTR(-EINVAL);
++			goto fail;
+ 		}
+ 	}
+ 
+@@ -676,8 +673,8 @@ static struct ltc2983_sensor *ltc2983_thermocouple_new(
+ 							     propname, false,
+ 							     16384, true);
+ 		if (IS_ERR(thermo->custom)) {
+-			of_node_put(phandle);
+-			return ERR_CAST(thermo->custom);
++			ret = PTR_ERR(thermo->custom);
++			goto fail;
+ 		}
+ 	}
+ 
+@@ -687,6 +684,10 @@ static struct ltc2983_sensor *ltc2983_thermocouple_new(
+ 
+ 	of_node_put(phandle);
+ 	return &thermo->sensor;
++
++fail:
++	of_node_put(phandle);
++	return ERR_PTR(ret);
+ }
+ 
+ static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+@@ -803,8 +804,8 @@ static struct ltc2983_sensor *ltc2983_rtd_new(const struct device_node *child,
+ 							  "adi,custom-rtd",
+ 							  false, 2048, false);
+ 		if (IS_ERR(rtd->custom)) {
+-			of_node_put(phandle);
+-			return ERR_CAST(rtd->custom);
++			ret = PTR_ERR(rtd->custom);
++			goto fail;
+ 		}
+ 	}
+ 
+@@ -926,8 +927,8 @@ static struct ltc2983_sensor *ltc2983_thermistor_new(
+ 								 steinhart,
+ 								 64, false);
+ 		if (IS_ERR(thermistor->custom)) {
+-			of_node_put(phandle);
+-			return ERR_CAST(thermistor->custom);
++			ret = PTR_ERR(thermistor->custom);
++			goto fail;
+ 		}
+ 	}
+ 	/* set common parameters */
+-- 
+2.34.1
 
-  Linux 5.17-rc6 (2022-02-27 14:36:33 -0800)
-
-are available in the Git repository at:
-
-  https://gitlab.com/vilhelmgray/counter.git tags/counter-for-5.18a
-
-for you to fetch changes up to b98d1a3ed4b0b324b261b23defd1bdddddba4d44:
-
-  counter: add defaults to switch-statements (2022-03-04 09:30:38 -0500)
-
-----------------------------------------------------------------
-First set of new Counter updates, cleanups, and features for 5.18
-
-Only a few changes this cycle, but we do see the addition of a new
-COUNTER_EVENT_CHANGE_OF_STATE event type that allows userspace to watch
-counter pulses.
-
-Features
-* Add new COUNTER_EVENT_CHANGE_OF_STATE. This adds new counter event to
-  notify user space about every new counter pulse. The interrupt-cnt
-  driver is the first to use this new feature.
-
-Cleanups
-- Add Counter subsystem git tree to MAINTAINERS file.
-- Set counter device name. This provides a convenient way to identify
-  the counter device in devres_log events and similar situations.
-- Add defaults to switch-statements. This pacifies warning messages from
-  Clang static analysis reports.
-
-Driver Updates
-* 104-quad-8
-  - Add COMPILE_TEST depends
-* interrupt-cnt
-  - Add counter_push_event()
-
-----------------------------------------------------------------
-Oleksij Rempel (2):
-      counter: add new COUNTER_EVENT_CHANGE_OF_STATE
-      counter: interrupt-cnt: add counter_push_event()
-
-Tom Rix (1):
-      counter: add defaults to switch-statements
-
-William Breathitt Gray (3):
-      counter: 104-quad-8: Add COMPILE_TEST depends
-      counter: Set counter device name
-      MAINTAINERS: Add Counter subsystem git tree
-
- MAINTAINERS                      |  1 +
- drivers/counter/Kconfig          |  2 +-
- drivers/counter/counter-chrdev.c |  4 ++++
- drivers/counter/counter-core.c   | 12 +++++++++++-
- drivers/counter/interrupt-cnt.c  |  7 +++++--
- include/uapi/linux/counter.h     |  2 ++
- 6 files changed, 24 insertions(+), 4 deletions(-)
-
---j/5n4095wgT8gmF3
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQEzBAEBCAAdFiEESdocE8T8CMGLP5oTJYqFfHOePQsFAmIiLP0ACgkQJYqFfHOe
-PQshAQgAiqrVtXAj4ln/IAHAWUMZqy/TkL+FkDQDL5ONnw0mNMohqH2rGNlrcosw
-aYImK7AEQyI9M4SHtfxenIH7SqTBUgo35pIzwcNNwBQV+aGxSWUn3NaFie23D4kI
-AEixkkFqHSWbSwCBlEQCTrTyclON32MYAKIsjcjMaMhKRdDOXpOp1NoxBjRL0To2
-i3kdxnQ02jmdkkJrJKHlmo2/uO5lECmP9Vc0POST5gTkqIUumEnBFyp8n2hSbMIW
-VdVkc2X7OzSCF8KVuVxoDZt6TWUB7Mp1KW/On3ENMC61GPm80wTHrPE0VGDLlqA9
-4dgrSXrpTc/icQYSt8f6I6fQrSTjTw==
-=cbop
------END PGP SIGNATURE-----
-
---j/5n4095wgT8gmF3--
