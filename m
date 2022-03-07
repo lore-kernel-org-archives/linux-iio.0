@@ -2,108 +2,83 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 66CCFC433F5
-	for <linux-iio@archiver.kernel.org>; Sat,  5 Mar 2022 16:04:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 649AEC433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  7 Mar 2022 08:56:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231975AbiCEQFf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 5 Mar 2022 11:05:35 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55092 "EHLO
+        id S230162AbiCGI5C (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 7 Mar 2022 03:57:02 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbiCEQFe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Mar 2022 11:05:34 -0500
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C62369C1;
-        Sat,  5 Mar 2022 08:04:44 -0800 (PST)
-Received: from fraeml742-chm.china.huawei.com (unknown [172.18.147.200])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4K9qJY32ffz67WtW;
-        Sun,  6 Mar 2022 00:03:25 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml742-chm.china.huawei.com (10.206.15.223) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2308.21; Sat, 5 Mar 2022 17:04:42 +0100
-Received: from localhost (10.47.66.18) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2308.21; Sat, 5 Mar
- 2022 16:04:42 +0000
-Date:   Sat, 5 Mar 2022 16:04:39 +0000
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     <cgel.zte@gmail.com>
-CC:     <jic23@kernel.org>, <lars@metafoo.de>,
-        <tangbin@cmss.chinamobile.com>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>,
-        Minghao Chi <chi.minghao@zte.com.cn>,
-        Zeal Robot <zealci@zte.com.cn>
-Subject: Re: [PATCH] iio:adc:twl6030: Use of_device_get_match_data()
-Message-ID: <20220305160439.00000184@Huawei.com>
-In-Reply-To: <20220304015932.2061712-1-chi.minghao@zte.com.cn>
-References: <20220304015932.2061712-1-chi.minghao@zte.com.cn>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        with ESMTP id S231222AbiCGI5B (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Mar 2022 03:57:01 -0500
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BC462019D;
+        Mon,  7 Mar 2022 00:56:06 -0800 (PST)
+Received: by mail-wr1-x432.google.com with SMTP id u1so21996118wrg.11;
+        Mon, 07 Mar 2022 00:56:06 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=JAuL6YepBIXFjvPpdz3/zKExoKESbH/f50M7nxlrs1I=;
+        b=nGao1OzYTY4jN+ZzN5oA5UmzE02b79yw/mCAIi5DnpU+5BC56C1OhsISLwcJ2FGV2X
+         qFtfLM0IW/j+SMgI5cE6PFXVOKstMwjxmHov02cKZcsRbqeZEC0kmqp6Ra896qQr/CYg
+         p6SLvoIumq63ElpdFWzCHXap6ABNysbFWJy1hhgTIVK2LIK3QJbFiKBOoHgDxnA/uBMM
+         6zY1GA3KlafZax0xHREzDs5N4SMZCRepsKC2dDZaladCiJalofs90/aAp+WBvAiFcM/D
+         u0ndNfHUlgtt67M4VK+r/OAl7yxGptV2hSsZG1UL3NfACqGC19Xu6nMVC3ZLWx3uxBeg
+         WBmg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=JAuL6YepBIXFjvPpdz3/zKExoKESbH/f50M7nxlrs1I=;
+        b=1tw8FCvzi4K/YhDLbxkq/GC8wNqHXno8DhlmYmsbrtGb6OmTUUqYOH60bTu2Aqg5sN
+         EwOnMIAyY5dq3pLLZ/Eyu7YC8GyxaWfn53T/BzAdOjUbNpMrWig+BAV2xKq5v/evi7fo
+         wbMJD36OczJ2Smtwku1JHDIBEFCCXSE6zc7U/ThoOBBs9eftSHoLw0cdZFMcIgEUJToH
+         3zmSoLKW804UQ9IZRbqERVpSiLqWduEsqWUoN2Fa2Rluo9gwrbS7wAAfZTd7qNmSuZnx
+         nkInQV9RHUPxY3DwiZcuxG+HwIKaucDXgy/IJpXq4IugIc8/PhKKjdtkM68nqOYGS5u8
+         dGfg==
+X-Gm-Message-State: AOAM530ICkEEmIFD9U6apNk/fj695imLBeLxH8nQbM4qcaP87X7q0tpP
+        7tJtJnIw1tvDTqoDTz/l2YKw5utvC6dcpDVo
+X-Google-Smtp-Source: ABdhPJzPdzD3vG9myUxu4TceAdws6H8czXcxAxloDB5YBr/EYyckRyrzZIUUvQtTHFjqsl21N5t8EA==
+X-Received: by 2002:a5d:452a:0:b0:1f0:48ce:97e0 with SMTP id j10-20020a5d452a000000b001f048ce97e0mr7375807wra.225.1646643364638;
+        Mon, 07 Mar 2022 00:56:04 -0800 (PST)
+Received: from tp440p.steeds.sam ([41.215.158.40])
+        by smtp.gmail.com with ESMTPSA id j20-20020a5d6e54000000b001f0642807cfsm15052968wrz.117.2022.03.07.00.56.00
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 07 Mar 2022 00:56:03 -0800 (PST)
+Date:   Mon, 7 Mar 2022 10:55:56 +0200
+From:   Sicelo <absicsz@gmail.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Denis Ciocca <denis.ciocca@st.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Subject: Re: [PATCH v2 0/3] Support LIS302DL in st_accel
+Message-ID: <YiXInAKKwWRsWh40@tp440p.steeds.sam>
+References: <20220301225432.60844-1-absicsz@gmail.com>
+ <20220305155955.000075eb@Huawei.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.47.66.18]
-X-ClientProxiedBy: lhreml721-chm.china.huawei.com (10.201.108.72) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220305155955.000075eb@Huawei.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri,  4 Mar 2022 01:59:32 +0000
-cgel.zte@gmail.com wrote:
-
-> From: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
+On Sat, Mar 05, 2022 at 03:59:55PM +0000, Jonathan Cameron wrote:
+> Other the the issues Andy raised around the tag and also
+> adding SPI support this looks good to me. 
 > 
-> Use of_device_get_match_data() to simplify the code.
+> We are very late in this cycle, so it is now material for 5.19.
+> Plenty of time to make those final little tidy ups and get this
+> queued early in the next cycle.
 > 
-> v1->v2:
->   iio:adc:->iio:adc:twl6030:
-Hi,
 
-For IIO please put the change log below the ---
-A few areas of the kernel do this differently but we are consistent
-in using link tags (generated when I apply the patch) to give
-access to change logs rather than having them stored for ever
-in the main git log.
+Thank you so much. I will prepare next version of patches soon.
 
-> 
-> Reported-by: Zeal Robot <zealci@zte.com.cn>
-> Signed-off-by: Minghao Chi (CGEL ZTE) <chi.minghao@zte.com.cn>
-
-You haven't addressed my request in reply to previous posting
-to use device_get_match_data() and switch to the generic
-properties interfaces.  I'd rather see that done in one step
-then going via this cleanup.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/adc/twl6030-gpadc.c | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/twl6030-gpadc.c b/drivers/iio/adc/twl6030-gpadc.c
-> index afdb59e0b526..6a022e583658 100644
-> --- a/drivers/iio/adc/twl6030-gpadc.c
-> +++ b/drivers/iio/adc/twl6030-gpadc.c
-> @@ -867,16 +867,11 @@ static int twl6030_gpadc_probe(struct platform_device *pdev)
->  	struct device *dev = &pdev->dev;
->  	struct twl6030_gpadc_data *gpadc;
->  	const struct twl6030_gpadc_platform_data *pdata;
-> -	const struct of_device_id *match;
->  	struct iio_dev *indio_dev;
->  	int irq;
->  	int ret;
->  
-> -	match = of_match_device(of_twl6030_match_tbl, dev);
-> -	if (!match)
-> -		return -EINVAL;
-> -
-> -	pdata = match->data;
-> +	pdata = of_device_get_match_data(dev);
->  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*gpadc));
->  	if (!indio_dev)
-
+Sincerely
+Sicelo
