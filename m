@@ -2,83 +2,130 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 47A80C433F5
-	for <linux-iio@archiver.kernel.org>; Tue,  8 Mar 2022 12:53:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2ED61C433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  8 Mar 2022 20:46:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232900AbiCHMyK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 8 Mar 2022 07:54:10 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57824 "EHLO
+        id S243429AbiCHUrk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 8 Mar 2022 15:47:40 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230080AbiCHMyJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Mar 2022 07:54:09 -0500
-Received: from mo4-p01-ob.smtp.rzone.de (mo4-p01-ob.smtp.rzone.de [85.215.255.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8EEF930F55;
-        Tue,  8 Mar 2022 04:53:11 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; t=1646743985;
-    s=strato-dkim-0002; d=goldelico.com;
-    h=Message-Id:Date:Subject:Cc:To:From:Cc:Date:From:Subject:Sender;
-    bh=ZOvjYMQJYuSAVm7O4zUbUg4wy9kHYFszMrdfygxpWys=;
-    b=O8RdOKrMTmwe9zOW6kqefvinD0r7fr3s6gvUeGqRv2GX4fhgZ9U5SeOF0FIGOI79j1
-    ly/I034R7Yt7Wv91wG0PKBtH20V5vxOACjIq6Mb9hgjDue/1U4B08EjnPyB36rHN8ktZ
-    FL9R+oCO5UkVp4Nfpjew8pWk/h3U+U3XdXyBf5XKjggaZsxacxhaQ8eZs0AUzhoUZcmK
-    bgYxLt9RO8k2HOU8FZrSKOncZ7wfIwBaU8svYtdhBueHCT87yw+cTbEQXdw4jLM8gX0V
-    7fI5rG57+41O5ubL/kAV7E8+rPVpXEzGbpU5JC+LdavnRvN1XV3mgBMXRYbZlQim3Pdv
-    KiZg==
-Authentication-Results: strato.com;
-    dkim=none
-X-RZG-AUTH: ":JGIXVUS7cutRB/49FwqZ7WcJeFKiMhflhwDubTJ9o1OAA2UMf2MwPVbpc9Y="
-X-RZG-CLASS-ID: mo00
-Received: from iMac.fritz.box
-    by smtp.strato.de (RZmta 47.40.1 DYNA|AUTH)
-    with ESMTPSA id n729cey28Cr4SGq
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256 bits))
-        (Client did not present a certificate);
-    Tue, 8 Mar 2022 13:53:04 +0100 (CET)
-From:   "H. Nikolaus Schaller" <hns@goldelico.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Colin Ian King <colin.king@intel.com>,
-        Sergiu Cuciurean <sergiu.cuciurean@analog.com>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, letux-kernel@openphoenux.org,
-        kernel@pyra-handheld.com, linux-omap@vger.kernel.org
-Subject: [PATCH] iio: palmas: shut up warning about calibration mismatch (due to noise)
-Date:   Tue,  8 Mar 2022 13:53:03 +0100
-Message-Id: <1cee45bfc3fa2ab59dcc17242fb52468035360a1.1646743982.git.hns@goldelico.com>
-X-Mailer: git-send-email 2.33.0
+        with ESMTP id S232840AbiCHUrj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Mar 2022 15:47:39 -0500
+Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09223517D8;
+        Tue,  8 Mar 2022 12:46:41 -0800 (PST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1646772402; x=1678308402;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Mq2TE7/iNaJLGgHDnK6IXV3Bcg5SS7VRlNtznKGbfqE=;
+  b=FtAj/jIvACct9BU1N/VGAl3huQpTq7nAo1c9LKKidrqMThPMuCy2QJW1
+   fPONFmeboixR7frSHzb4Tjdm6hPomwH6Jq6cVCviqecBAFMz/xyOQXen5
+   AA9BLtOccIJzpoIkyYuDgwjE9Fv+cuZaFNzfUWBA6JIeKdrAo6oEmz7MU
+   EslaJpS/u9qVddM55tVMc1X3KQqW4b4xrnS2IYwtqtOVG6OsN/5yA61xD
+   dZtTKdiHAYCT3XeyolrjczZSXk5WcEBZcbYpWdnAw+mQOHNCzZGleiGM/
+   mTNxvJgQ4T738oi64YUwDrmWf/1jennzsX704IxzlsHT6z/KnF6s/bEfE
+   g==;
+X-IronPort-AV: E=McAfee;i="6200,9189,10280"; a="242253937"
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="242253937"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 08 Mar 2022 12:46:41 -0800
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.90,165,1643702400"; 
+   d="scan'208";a="578140362"
+Received: from lkp-server02.sh.intel.com (HELO 89b41b6ae01c) ([10.239.97.151])
+  by orsmga001.jf.intel.com with ESMTP; 08 Mar 2022 12:46:38 -0800
+Received: from kbuild by 89b41b6ae01c with local (Exim 4.92)
+        (envelope-from <lkp@intel.com>)
+        id 1nRgj7-0001wW-DM; Tue, 08 Mar 2022 20:46:37 +0000
+Date:   Wed, 9 Mar 2022 04:46:24 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Caleb Connolly <caleb.connolly@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, sumit.semwal@linaro.org,
+        amit.pundir@linaro.org, john.stultz@linaro.org
+Subject: Re: [PATCH v10 2/9] mfd: qcom-spmi-pmic: expose the PMIC revid
+ information to clients
+Message-ID: <202203090452.rXtdakYR-lkp@intel.com>
+References: <20220305021247.1020122-3-caleb.connolly@linaro.org>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220305021247.1020122-3-caleb.connolly@linaro.org>
+User-Agent: Mutt/1.10.1 (2018-07-13)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Although technically checking for ADC values below 0 is correct,
-because they are outside of the calibration values, there is usually
-noise which spuriously fills the console log with error messages if
-calculated input voltage gets close to 0V.
+Hi Caleb,
 
-Ignore small negative calculated values, but clamp them to 0.
+Thank you for the patch! Perhaps something to improve:
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+[auto build test WARNING on robh/for-next]
+[also build test WARNING on jic23-iio/togreg lee-mfd/for-mfd-next linus/master v5.17-rc7 next-20220308]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/0day-ci/linux/commits/Caleb-Connolly/iio-adc-introduce-Qualcomm-SPMI-Round-Robin-ADC/20220307-134408
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: openrisc-randconfig-s032-20220307 (https://download.01.org/0day-ci/archive/20220309/202203090452.rXtdakYR-lkp@intel.com/config)
+compiler: or1k-linux-gcc (GCC) 11.2.0
+reproduce:
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # apt-get install sparse
+        # sparse version: v0.6.4-dirty
+        # https://github.com/0day-ci/linux/commit/9b8935738dc1a30c2fdcacd300b6608a99da65a2
+        git remote add linux-review https://github.com/0day-ci/linux
+        git fetch --no-tags linux-review Caleb-Connolly/iio-adc-introduce-Qualcomm-SPMI-Round-Robin-ADC/20220307-134408
+        git checkout 9b8935738dc1a30c2fdcacd300b6608a99da65a2
+        # save the config file to linux build tree
+        mkdir build_dir
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.2.0 make.cross C=1 CF='-fdiagnostic-prefix -D__CHECK_ENDIAN__' O=build_dir ARCH=openrisc SHELL=/bin/bash drivers/mfd/
+
+If you fix the issue, kindly add following tag as appropriate
+Reported-by: kernel test robot <lkp@intel.com>
+
+
+sparse warnings: (new ones prefixed by >>)
+   drivers/mfd/qcom-spmi-pmic.c: note: in included file:
+>> include/linux/spmi.h:168:47: sparse: sparse: marked inline, but without a definition
+
+vim +168 include/linux/spmi.h
+
+5a86bf343976b9c Kenneth Heitke 2014-02-12  163  
+5a86bf343976b9c Kenneth Heitke 2014-02-12  164  #define module_spmi_driver(__spmi_driver) \
+5a86bf343976b9c Kenneth Heitke 2014-02-12  165  	module_driver(__spmi_driver, spmi_driver_register, \
+5a86bf343976b9c Kenneth Heitke 2014-02-12  166  			spmi_driver_unregister)
+5a86bf343976b9c Kenneth Heitke 2014-02-12  167  
+e02739c92c567a4 Caleb Connolly 2022-03-05 @168  inline struct spmi_device *spmi_device_from_of(struct device_node *np);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  169  int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  170  int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
+5a86bf343976b9c Kenneth Heitke 2014-02-12  171  			   size_t len);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  172  int spmi_ext_register_readl(struct spmi_device *sdev, u16 addr, u8 *buf,
+5a86bf343976b9c Kenneth Heitke 2014-02-12  173  			    size_t len);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  174  int spmi_register_write(struct spmi_device *sdev, u8 addr, u8 data);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  175  int spmi_register_zero_write(struct spmi_device *sdev, u8 data);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  176  int spmi_ext_register_write(struct spmi_device *sdev, u8 addr,
+5a86bf343976b9c Kenneth Heitke 2014-02-12  177  			    const u8 *buf, size_t len);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  178  int spmi_ext_register_writel(struct spmi_device *sdev, u16 addr,
+5a86bf343976b9c Kenneth Heitke 2014-02-12  179  			     const u8 *buf, size_t len);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  180  int spmi_command_reset(struct spmi_device *sdev);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  181  int spmi_command_sleep(struct spmi_device *sdev);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  182  int spmi_command_wakeup(struct spmi_device *sdev);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  183  int spmi_command_shutdown(struct spmi_device *sdev);
+5a86bf343976b9c Kenneth Heitke 2014-02-12  184  
+
 ---
- drivers/iio/adc/palmas_gpadc.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/adc/palmas_gpadc.c b/drivers/iio/adc/palmas_gpadc.c
-index f9c8385c72d3..bcfa6a7f6cb2 100644
---- a/drivers/iio/adc/palmas_gpadc.c
-+++ b/drivers/iio/adc/palmas_gpadc.c
-@@ -376,7 +376,8 @@ static int palmas_gpadc_get_calibrated_code(struct palmas_gpadc *adc,
- 					adc->adc_info[adc_chan].gain_error;
- 
- 	if (val < 0) {
--		dev_err(adc->dev, "Mismatch with calibration\n");
-+		if (val < -10)
-+			dev_err(adc->dev, "Mismatch with calibration var = %d\n", val);
- 		return 0;
- 	}
- 
--- 
-2.33.0
-
+0-DAY CI Kernel Test Service, Intel Corporation
+https://lists.01.org/hyperkitty/list/kbuild-all@lists.01.org
