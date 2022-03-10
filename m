@@ -2,102 +2,115 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FC90C48BE8
-	for <linux-iio@archiver.kernel.org>; Thu, 10 Mar 2022 14:33:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16660C433F5
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Mar 2022 16:34:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244311AbiCJOeb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 10 Mar 2022 09:34:31 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49558 "EHLO
+        id S237846AbiCJQfe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 10 Mar 2022 11:35:34 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245760AbiCJOax (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Mar 2022 09:30:53 -0500
-Received: from mga06.intel.com (mga06.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A8D1184B6C
-        for <linux-iio@vger.kernel.org>; Thu, 10 Mar 2022 06:26:51 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1646922411; x=1678458411;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=DPgWreFPcZnQbWMDPy9UQBwMVcg0pe/u4Yyqvs5fXWA=;
-  b=fKQz85RYyNw41T6HPyd4kjjo0FKUKRw64vsO+nw1gSdtxccA6UoQsuCz
-   Swzawiu09Utqz7HLOHFSTQd918gMr5QCVF81LK7Eq64PqbqqhYxbdgC5F
-   PnNdMXR5sQwrNEyLCw/zyDEzTnXdIGijZvnQnD+JEcDvzV1rvs1tvbzkF
-   ESU48E5VCiCXDWAjSHc+1VBtAo7jQqFxUXqqHXvhdgk/ioMv37wQqEl9z
-   GFPKaUAxx0BndcYtFCTlukBge69Xe2o/fC6Wf97iTl4XAs+F///qGGJA2
-   ilg45sRJwjanbBSpAt+Ck24qxAs1Vg/nHzoQhzAz32v7u0odHdH7BnEw5
-   w==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10281"; a="315979332"
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="315979332"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:26:27 -0800
-X-IronPort-AV: E=Sophos;i="5.90,170,1643702400"; 
-   d="scan'208";a="510911251"
-Received: from smile.fi.intel.com ([10.237.72.59])
-  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 10 Mar 2022 06:26:26 -0800
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nSJjb-00Ejtv-Hk;
-        Thu, 10 Mar 2022 16:25:43 +0200
-Date:   Thu, 10 Mar 2022 16:25:43 +0200
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 4/6] iio: adc: ti-ads1015: Deduplicate channel macros
-Message-ID: <YioKZ6EZvYHOOFMe@smile.fi.intel.com>
-References: <20220310003402.490478-1-marex@denx.de>
- <20220310003402.490478-4-marex@denx.de>
+        with ESMTP id S241780AbiCJQfd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Mar 2022 11:35:33 -0500
+Received: from smtp-relay-internal-0.canonical.com (smtp-relay-internal-0.canonical.com [185.125.188.122])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6DD3192E19
+        for <linux-iio@vger.kernel.org>; Thu, 10 Mar 2022 08:34:29 -0800 (PST)
+Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com [209.85.218.70])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by smtp-relay-internal-0.canonical.com (Postfix) with ESMTPS id 29DA83F1A8
+        for <linux-iio@vger.kernel.org>; Thu, 10 Mar 2022 16:34:28 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=canonical.com;
+        s=20210705; t=1646930068;
+        bh=1IwQ3+lE7F8QVvZKi9jUnPx1UJCjiECTmDvjI4+NsWA=;
+        h=Message-ID:Date:MIME-Version:Subject:To:Cc:References:From:
+         In-Reply-To:Content-Type;
+        b=EoDlnHlMeJPBxhARpqd3glfMj1E+Ll5Ymf4BfD+dUm02LghdFtWpPDFpuVCPk33wW
+         PtGGEcf4kdrilpgnDH2UvsXRPzJzSQ0Gyii+HoYtI5FKpVX+gLu6CdYi5VkpGYF5Fq
+         gdt+vCTg5BFakMf4NZoKF/0BXAqb5+86J+aTONAbbD2yGU6XAcLyT2FXSIpsi99k+8
+         f2VEiQdr0TuwCf0LyTcTl/83NWBbk7zZKfcjy9B7b7mXiXYmYVptCtxW3w4sKmh4z3
+         ooJI856hjHy9WA1Vj7YSSG71X8XzBArUwCVJVpoU932l2PPYyXFe9X8tCWjbIIukgk
+         M0TbiAa8toLJw==
+Received: by mail-ej1-f70.google.com with SMTP id hx13-20020a170906846d00b006db02e1a307so3419681ejc.2
+        for <linux-iio@vger.kernel.org>; Thu, 10 Mar 2022 08:34:28 -0800 (PST)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=1IwQ3+lE7F8QVvZKi9jUnPx1UJCjiECTmDvjI4+NsWA=;
+        b=SXH48YNY5Qj27mmFlnXZWl96X/HNbvrU8Iej2Fr1Ly11ecWCzdASPebzTZp8K1OhOb
+         NOW/c8ItI1pKTYNl/FOrj0A7aODeD8N7NrEa9Jia7nl2QhEllAbe2iexoo5y6UMkNrN1
+         x1lXBnDoDAlaN4mg7+jJOmqPnp7UuBtm0O/f3/rltYLYDncZhj8yrTmyM4WltTFslb9V
+         YXZnXPh70ZRcasi7vamo8MMxi83zC3jpgWz3QfWLCiw0iP9LDIn7tGZoWx+MbaR1xI1B
+         PQZPBZgmKZVcjyawn2YFozubm5P981zMgkux7rHODXg9olFzr/Wlvf/jJYYGlEqXo2i1
+         prWA==
+X-Gm-Message-State: AOAM532P27omXnMTpeN9TpkUhRpVaainZrsMaBaWGnqJ3Og8oaZmJFg3
+        le4fPsuFwPPsvuY6mhFwfVN10XmZngA0T2BNdB/uWxqt/SWssiJBBewulqrtBqoW22AGBHh0R2r
+        2J3kCL3zdEosMsgePxDHDAZp/Ss/fvnSCdaXceA==
+X-Received: by 2002:a17:906:6a0f:b0:6d7:1021:2bd2 with SMTP id qw15-20020a1709066a0f00b006d710212bd2mr5217113ejc.395.1646930066498;
+        Thu, 10 Mar 2022 08:34:26 -0800 (PST)
+X-Google-Smtp-Source: ABdhPJzxFwgzpVc4iC6I9K9t8C4ipBY8edEC5UW6dfXT0OzGHM6OusG2akfMPUQfFEnuCmR2cgXM8w==
+X-Received: by 2002:a17:906:6a0f:b0:6d7:1021:2bd2 with SMTP id qw15-20020a1709066a0f00b006d710212bd2mr5217086ejc.395.1646930066244;
+        Thu, 10 Mar 2022 08:34:26 -0800 (PST)
+Received: from [192.168.0.147] (xdsl-188-155-174-239.adslplus.ch. [188.155.174.239])
+        by smtp.gmail.com with ESMTPSA id o21-20020a170906289500b006d144662b24sm1938981ejd.152.2022.03.10.08.34.25
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 10 Mar 2022 08:34:25 -0800 (PST)
+Message-ID: <707f995e-9b09-ea23-5fc7-74239792dcbd@canonical.com>
+Date:   Thu, 10 Mar 2022 17:34:25 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220310003402.490478-4-marex@denx.de>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+Subject: Re: [PATCH 1/2] dt-bindings: iio: imu: mpu6050: Document
+ invensense,icm20608d
+Content-Language: en-US
+To:     michael.srba@seznam.cz, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220310133938.2495-1-michael.srba@seznam.cz>
+ <20220310133938.2495-2-michael.srba@seznam.cz>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+In-Reply-To: <20220310133938.2495-2-michael.srba@seznam.cz>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Mar 10, 2022 at 01:34:00AM +0100, Marek Vasut wrote:
-> These macros differ only in the number of valid bits of each ADC sample
-> and the shift of those bits, i.e. ADS1015 is 12bit ADC shifted by 4 left,
-> ADS1115 is 16bit ADC shifted by 0. No functional change.
+On 10/03/2022 14:39, michael.srba@seznam.cz wrote:
+> From: Michael Srba <Michael.Srba@seznam.cz>
+> 
+> ICM-20608-D differs from the other ICM-20608 variants by having
+> a DMP (Digital Motion Processor) core tacked on.
+> Despite having a different WHOAMI register, this variant is
+> completely interchangeable with the other ICM-20608 variants
+> by simply pretending the DMP core doesn't exist.
 
-> Signed-off-by: Marek Vasut <marex@denx.de>
+I wonder now why not using generic invensense,icm20608 compatible as
+fallback? Why only having one specific compatible?
 
-...
-
-> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@nxp.com>
-> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-
-You may consider using --cc parameter in `git send-email` to avoid this noise
-in the commit messages.
-
-...
-
-> -		.realbits = 12,					\
-> +		.realbits = (_realbits),			\
->  		.storagebits = 16,				\
-
-This seems inconsistent a bit. What if the next chip wants to have more than
-16 bits in realbits?
-
-...
-
-> -		.realbits = 16,					\
-> +		.realbits = (_realbits),			\
->  		.storagebits = 16,				\
-
-Ditto.
-
-I see two options:
-1) add static assert to make sure realbits <= storagebits;
-2) make it also configurable.
-
--- 
-With Best Regards,
-Andy Shevchenko
+> 
+> Signed-off-by: Michael Srba <Michael.Srba@seznam.cz>
+> ---
+>  .../devicetree/bindings/iio/imu/invensense,mpu6050.yaml          | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/imu/invensense,mpu6050.yaml b/Documentation/devicetree/bindings/iio/imu/invensense,mpu6050.yaml
+> index d69595a524c1..6784cc140323 100644
+> --- a/Documentation/devicetree/bindings/iio/imu/invensense,mpu6050.yaml
+> +++ b/Documentation/devicetree/bindings/iio/imu/invensense,mpu6050.yaml
+> @@ -17,6 +17,7 @@ properties:
+>      enum:
+>        - invensense,iam20680
+>        - invensense,icm20608
+> +      - invensense,icm20608d
+>        - invensense,icm20609
+>        - invensense,icm20689
+>        - invensense,icm20602
 
 
+Best regards,
+Krzysztof
