@@ -2,96 +2,93 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE1B9C3525B
-	for <linux-iio@archiver.kernel.org>; Wed,  9 Mar 2022 21:00:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C0DF4C433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 10 Mar 2022 00:34:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238307AbiCIVBl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 9 Mar 2022 16:01:41 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60614 "EHLO
+        id S234544AbiCJAfW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 9 Mar 2022 19:35:22 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38646 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238316AbiCIVBi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2022 16:01:38 -0500
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 184247DA93
-        for <linux-iio@vger.kernel.org>; Wed,  9 Mar 2022 13:00:39 -0800 (PST)
-Received: by mail-ej1-x62a.google.com with SMTP id d10so7758203eje.10
-        for <linux-iio@vger.kernel.org>; Wed, 09 Mar 2022 13:00:39 -0800 (PST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=o/d166yo9TtkM4+c7x0I89HNNMPO2K1Na/pBqagV1Y0=;
-        b=qq/alwNNEOVFrUkFrnbvhhj6JjcAGn+KalJRtjNkPy7zoGW21n7eLJGiUOPcwKDGAR
-         hf+okHmtPDUJjYwBUcNDRwM5ylPMUruzDdenUUUJz/+gi01HlVTdyOuvmftGlN7OC5d5
-         +ckIpv9kIg1L2d3U75wQUwD+5I3AaJ01pjLo3r3MAsyAjTB9ONz3EKqA4c4gjGEi59Yp
-         hMyxXDaR3yX+hAdgtiWqKdHGnaKdBGufVKm4DkdVAMZUfNcSO2OmRWnUqiYEA43NY5ME
-         6wSvHDkEo42TaspFtvBWFUb3n4/GRpgf0Coc3hljlziXbsUFaYKhT/DpeRKR/D8uv3+e
-         jD1w==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=o/d166yo9TtkM4+c7x0I89HNNMPO2K1Na/pBqagV1Y0=;
-        b=pMC/9QvLO7qRYouauRfU6sEGhd13Z4WmOAcAERhYDjlXcuIEyaL+bwvDlorsjmZACe
-         dbJtkuZyAaHd48GfOvjoHOzcK9ZY4HSuh+5c6ElHghvGcwsb1W1CqqF4FhfV3YDVYmAQ
-         hk2Sw4De7Jc4QJJnOYtXJpm0cQNwVJJInQLwsi9MNx8rf1aYUYqZWRYT7NVcebklfoV8
-         RbjsotFkNWY64BUe7qCnfg8h5fns16FOvEspn9XsS9S0Uh7StB/1AeG/tK5XEZmaYquk
-         zTymZ3V3nSbLv29Asid752NBomhI9zBgm8Pc6q4E67h4qYljkR9sSRt7QrPJaeE/Q7r9
-         Rvcw==
-X-Gm-Message-State: AOAM531Qyyw+p+tqyGILVbtYLdFoZbE/koO5hj75HtorcKdxchmfywfi
-        sFzTnrU7lUfrAuYsudcpCrqEYnjK2GVpjQ==
-X-Google-Smtp-Source: ABdhPJwYHJpGiqlIkuUsFqY3leNZUODSYBdhCNdHcYApRekfpWzRrOVIGHPwYniRQjzt8BtWiBA4sg==
-X-Received: by 2002:a17:906:3144:b0:6ce:de5d:5e3b with SMTP id e4-20020a170906314400b006cede5d5e3bmr1514568eje.689.1646859637575;
-        Wed, 09 Mar 2022 13:00:37 -0800 (PST)
-Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id l26-20020a1709061c5a00b006da815e14e2sm1114743ejg.37.2022.03.09.13.00.36
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 09 Mar 2022 13:00:37 -0800 (PST)
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
-        john.stultz@linaro.org
-Subject: [PATCH v11 8/9] arm64: dts: qcom: sdm845-db845c: enable rradc
-Date:   Wed,  9 Mar 2022 21:00:13 +0000
-Message-Id: <20220309210014.352267-9-caleb.connolly@linaro.org>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220309210014.352267-1-caleb.connolly@linaro.org>
-References: <20220309210014.352267-1-caleb.connolly@linaro.org>
+        with ESMTP id S232941AbiCJAfV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Mar 2022 19:35:21 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 168FC6D3AB;
+        Wed,  9 Mar 2022 16:34:22 -0800 (PST)
+Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 4A9F8839B0;
+        Thu, 10 Mar 2022 01:34:19 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1646872460;
+        bh=rxXM6fRiMKH0DIBMhPwOHgYLt0QPS1MCveP5wJWaHrY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=xIU7mS8AME02Jsa+tWrC4oyOoDf95XKwM8Suc/e28BOihoMnplj1ed3oc6s32E8rS
+         g4DUynBn3dDbyVDJ/NXL1YGdyyPe8VYuTkWWpi6qwQIAwmhFeHX0z9FdBxjqPB/tUh
+         /dUZPx/Q7wpeKa2p68D8cVWpnOj3cP7DLmgQ0sBmdeA7gMg+nuwoOirxVI8OA+jyOm
+         J3OSSyvI7mQLi9d/TNw++dNf4h5LxbdIVoveQe2ORVwDDynb0wkvFUg1SquBROSCyv
+         E2Q7so/QbLmUAWVrNwFwQ8VxPSMnJ7Q/1lq82YetROmuhfsqhpM2brSYvHbv+qwxgP
+         lPl1gSmXXKQPw==
+From:   Marek Vasut <marex@denx.de>
+To:     linux-iio@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH 1/6] dt-bindings: iio: adc: ti,ads1015: Add missing ADS1115 compatible string
+Date:   Thu, 10 Mar 2022 01:33:57 +0100
+Message-Id: <20220310003402.490478-1-marex@denx.de>
+X-Mailer: git-send-email 2.34.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Enable the Round Robin ADC for the db845c.
+Add missing ti,ads1115 compatible string. This compatible string is
+supported by the Linux kernel driver and the ads1015 is a 12bit ADC
+while ads1115 is 16bit ADC. Add the missing compatible string.
 
-Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@nxp.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
 ---
- arch/arm64/boot/dts/qcom/sdm845-db845c.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-index 13f80a0b6faa..1c452b458121 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-+++ b/arch/arm64/boot/dts/qcom/sdm845-db845c.dts
-@@ -595,6 +595,10 @@ resin {
- 	};
- };
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+index 2c2d01bbc296d..c31c80989cc9a 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/iio/adc/ti,ads1015.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
-+&pmi8998_rradc {
-+	status = "okay";
-+};
-+
- /* QUAT I2S Uses 4 I2S SD Lines for audio on LT9611 HDMI Bridge */
- &q6afedai {
- 	qi2s@22 {
+-title: TI ADS1015 4 channel I2C analog to digital converter
++title: TI ADS1015/ADS1115 4 channel I2C analog to digital converter
+ 
+ maintainers:
+   - Daniel Baluta <daniel.baluta@nxp.com>
+@@ -15,7 +15,9 @@ description: |
+ 
+ properties:
+   compatible:
+-    const: ti,ads1015
++    enum:
++      - ti,ads1015
++      - ti,ads1115
+ 
+   reg:
+     maxItems: 1
 -- 
-2.35.1
+2.34.1
 
