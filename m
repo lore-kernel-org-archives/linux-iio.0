@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 306B9C4321E
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 16:28:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 59E34C43219
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 16:28:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350315AbiCKQ3N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1350322AbiCKQ3N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 11 Mar 2022 11:29:13 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38372 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37596 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350557AbiCKQ14 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 11:27:56 -0500
+        with ESMTP id S1350514AbiCKQ1x (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 11:27:53 -0500
 Received: from smtp2.axis.com (smtp2.axis.com [195.60.68.18])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 823C91D529C;
-        Fri, 11 Mar 2022 08:26:16 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CB0D81D4532;
+        Fri, 11 Mar 2022 08:26:04 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1647015977;
-  x=1678551977;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1647015966;
+  x=1678551966;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=2fctezGvjdiZGRh6wrKTd5SnqfgQb4vo1grBqwFZpAI=;
-  b=iFesEgyjAepWdHK4B12tyAObVFUQq4lTL4E6Z7nyzkO7YsHLINHcp45I
-   Nt1ZWM9PtbYvB8d7QvMeKdJBd0ZFjA2fXVyPsBBlFSSHkcu8KFN1gggT3
-   vcC2X4NDiu1gLJzWfv3FVwABfJAi5s72HF4KvOLH4HOSHMs9V86H5C4cg
-   q9p0RXI6o+LEywCy+os/HsPDbmU8pveddBS38+4qZlZWebwJzLyyLtAjG
-   zps+oiUl57w3yqASJzSBhigFT2tflkTPw1+PTjECgwikR5Of5G8O2DPm9
-   OPy+weL5DAAPPcA2g5zJRdCwPzy2P+xRScRJnoYcwrw95OwFxszOdsIst
-   g==;
+  bh=kuBlWK4REIfqzuNarkm/sea0x7/j6Le+nchS0vdPNlo=;
+  b=orbgFEnckVQCzg7ZOiG5YAy5K1K3Qxqsk1nTZMPibUXCBlXEgSJ7Cf2g
+   GcI3+Kz+Np825tz64NLNFz7pu2i+0eep+AFeCzPWl3b8h0dKitk+t6Q6d
+   5NdZfC+9O+AQicIQx6S7Xmc7jOCFSdvAt+ZhiS6D/khbKZcckBS243Ejb
+   3Ym2AM3iHmiE3UmNRFanOAj1+lgUap60crkmE+/Ix1w4ykMX4Uu+ZQQ0L
+   KUmJUVkaSsQ2JIv5Yw01h+Z29FlqPXpQXaZcr84bVWVhzfMsmugJCEqxZ
+   HR5IcyOsag8Wut0JjQZMTa5U9n3+7ESOOY2guu44zu0mDYO5T7li0HiXH
+   Q==;
 From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
 To:     <linux-kernel@vger.kernel.org>
 CC:     <kernel@axis.com>,
@@ -38,9 +38,9 @@ CC:     <kernel@axis.com>,
         <broonie@kernel.org>, <a.zummo@towertech.it>,
         <alexandre.belloni@bootlin.com>, <linux-rtc@vger.kernel.org>,
         <corbet@lwn.net>, <linux-doc@vger.kernel.org>
-Subject: [RFC v1 08/10] iio: light: vcnl4000: add roadtest
-Date:   Fri, 11 Mar 2022 17:24:43 +0100
-Message-ID: <20220311162445.346685-9-vincent.whitchurch@axis.com>
+Subject: [RFC v1 06/10] roadtest: add documentation
+Date:   Fri, 11 Mar 2022 17:24:41 +0100
+Message-ID: <20220311162445.346685-7-vincent.whitchurch@axis.com>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220311162445.346685-1-vincent.whitchurch@axis.com>
 References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
@@ -51,812 +51,703 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add roadtests for the vcnl4000 driver, testing several of the driver's
-features including buffer and event handling.  Since it's the first IIO
-roadtest testing the non-sysfs parts, some support code for using the
-IIO ABI is included.
-
-The different variants supported by the driver are in separate tests and
-models since no two variants have fully identical register interfaces.
-This duplicates some of the test code, but it:
-
- - Avoids the tests duplicating the same multi-variant logic as the
-   driver, reducing the risk for both the test and the driver being
-   wrong.
-
- - Allows each variant's test and model to be individually understood
-   and modified looking at only one specific datasheet, making it easier
-   to extend tests and implement new features in the driver.
-
-During development of these tests, two oddities were noticed in the
-driver's handling of VCNL4040, but the tests simply assume that the
-current driver knows what it's doing (although we may want to fix the
-first point later):
-
- - The driver reads an invalid/undefined register on the VCNL4040 when
-   attempting to distinguish between that one and VCNL4200.
-
- - The driver uses a lux/step unit which differs from the datasheet (but
-   which is specified in an application note).
+Add documentation for the roadtest device driver testing framework.
+This includes a "how to write your first test" tutorial.
 
 Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
 ---
- .../roadtest/roadtest/tests/iio/iio.py        | 112 +++++++
- .../roadtest/roadtest/tests/iio/light/config  |   1 +
- .../roadtest/tests/iio/light/test_vcnl4000.py | 132 ++++++++
- .../roadtest/tests/iio/light/test_vcnl4010.py | 282 ++++++++++++++++++
- .../roadtest/tests/iio/light/test_vcnl4040.py | 104 +++++++
- .../roadtest/tests/iio/light/test_vcnl4200.py |  96 ++++++
- 6 files changed, 727 insertions(+)
- create mode 100644 tools/testing/roadtest/roadtest/tests/iio/iio.py
- create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4000.py
- create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4010.py
- create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4040.py
- create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4200.py
+ Documentation/dev-tools/index.rst    |   1 +
+ Documentation/dev-tools/roadtest.rst | 669 +++++++++++++++++++++++++++
+ 2 files changed, 670 insertions(+)
+ create mode 100644 Documentation/dev-tools/roadtest.rst
 
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/iio.py b/tools/testing/roadtest/roadtest/tests/iio/iio.py
+diff --git a/Documentation/dev-tools/index.rst b/Documentation/dev-tools/index.rst
+index 4621eac290f4..44fea7c50dad 100644
+--- a/Documentation/dev-tools/index.rst
++++ b/Documentation/dev-tools/index.rst
+@@ -33,6 +33,7 @@ Documentation/dev-tools/testing-overview.rst
+    kselftest
+    kunit/index
+    ktap
++   roadtest
+ 
+ 
+ .. only::  subproject and html
+diff --git a/Documentation/dev-tools/roadtest.rst b/Documentation/dev-tools/roadtest.rst
 new file mode 100644
-index 000000000000..ea57b28ea9d3
+index 000000000000..114bf822e376
 --- /dev/null
-+++ b/tools/testing/roadtest/roadtest/tests/iio/iio.py
-@@ -0,0 +1,112 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Copyright Axis Communications AB
++++ b/Documentation/dev-tools/roadtest.rst
+@@ -0,0 +1,669 @@
++========
++Roadtest
++========
 +
-+import contextlib
-+import enum
-+import fcntl
-+import struct
-+from dataclasses import dataclass, field
-+from typing import Any
++Roadtest is a device-driver testing framework.  It tests drivers under User
++Mode Linux using models of the hardware.  The tests cases and hardware models
++are written in Python, the former using the built-in unittest framework.
 +
-+IIO_GET_EVENT_FD_IOCTL = 0x80046990
-+IIO_BUFFER_GET_FD_IOCTL = 0xC0046991
++Roadtest is meant to be used for relatively simple drivers, such as the ones
++part of the IIO, regulator or RTC subsystems.
 +
++Drivers are tested via their userspace interfaces and interact with hardware
++models which allow tests to inject values into registers and assert that
++drivers control the hardware in the right way and react as expected to stimuli.
 +
-+class IIOChanType(enum.IntEnum):
-+    IIO_VOLTAGE = 0
-+    IIO_CURRENT = 1
-+    IIO_POWER = 2
-+    IIO_ACCEL = 3
-+    IIO_ANGL_VEL = 4
-+    IIO_MAGN = 5
-+    IIO_LIGHT = 6
-+    IIO_INTENSITY = 7
-+    IIO_PROXIMITY = 8
-+    IIO_TEMP = 9
-+    IIO_INCLI = 10
-+    IIO_ROT = 11
-+    IIO_ANGL = 12
-+    IIO_TIMESTAMP = 13
-+    IIO_CAPACITANCE = 14
-+    IIO_ALTVOLTAGE = 15
-+    IIO_CCT = 16
-+    IIO_PRESSURE = 17
-+    IIO_HUMIDITYRELATIVE = 18
-+    IIO_ACTIVITY = 19
-+    IIO_STEPS = 20
-+    IIO_ENERGY = 21
-+    IIO_DISTANCE = 22
-+    IIO_VELOCITY = 23
-+    IIO_CONCENTRATION = 24
-+    IIO_RESISTANCE = 25
-+    IIO_PH = 26
-+    IIO_UVINDEX = 27
-+    IIO_ELECTRICALCONDUCTIVITY = 28
-+    IIO_COUNT = 29
-+    IIO_INDEX = 30
-+    IIO_GRAVITY = 31
-+    IIO_POSITIONRELATIVE = 32
-+    IIO_PHASE = 33
-+    IIO_MASSCONCENTRATION = 34
++Installing the requirements
++===========================
 +
++Addition to the normal requirements for building kernels, *running* roadtest
++requires Python 3.9 or later, including the development libraries:
 +
-+@dataclass
-+class IIOEvent:
-+    id: int
-+    timestamp: int
-+    type: IIOChanType = field(init=False)
++.. code-block:: shell
 +
-+    def __post_init__(self) -> None:
-+        self.type = IIOChanType((self.id >> 32) & 0xFF)
++  apt-get -y install python3.9 libpython3.9-dev device-tree-compiler
 +
++There is also support for running the tests in a Docker container without
++having to install any packages.
 +
-+class IIOEventMonitor(contextlib.AbstractContextManager):
-+    def __init__(self, devname: str) -> None:
-+        self.devname = devname
++Running roadtest
++================
 +
-+    def __enter__(self) -> "IIOEventMonitor":
-+        self.file = open(self.devname, "rb")
++To run the tests, run the following command from the base of a kernel source
++tree:
 +
-+        s = struct.Struct("L")
-+        buf = bytearray(s.size)
-+        fcntl.ioctl(self.file.fileno(), IIO_GET_EVENT_FD_IOCTL, buf)
-+        eventfd = s.unpack(buf)[0]
-+        self.eventf = open(eventfd, "rb")
++.. code-block:: shell
 +
-+        return self
++  $ make -C tools/testing/roadtest
 +
-+    def read(self) -> IIOEvent:
-+        s = struct.Struct("Qq")
-+        buf = self.eventf.read(s.size)
-+        return IIOEvent(*s.unpack(buf))
++Or, if you prefer to use the Docker container:
 +
-+    def __exit__(self, *_: Any) -> None:
-+        self.eventf.close()
-+        self.file.close()
++.. code-block:: shell
 +
++  $ make -C tools/testing/roadtest DOCKER=1
 +
-+class IIOBuffer(contextlib.AbstractContextManager):
-+    def __init__(self, devname: str, bufidx: int) -> None:
-+        self.devname = devname
-+        self.bufidx = bufidx
++Either of these commands will build a kernel and run all roadtests.
 +
-+    def __enter__(self) -> "IIOBuffer":
-+        self.file = open(self.devname, "rb")
++.. note::
 +
-+        s = struct.Struct("L")
-+        buf = bytearray(s.size)
-+        s.pack_into(buf, 0, self.bufidx)
-+        fcntl.ioctl(self.file.fileno(), IIO_BUFFER_GET_FD_IOCTL, buf)
-+        eventfd = s.unpack(buf)[0]
-+        self.eventf = open(eventfd, "rb")
++  Roadtest builds the kernel out-of-tree.  The kernel build system may instruct
++  you to clean your tree if you have previously performed an in-tree build.  You
++  can pass the usual ``-jNN`` options to parallelize the build.  The tests
++  themselves are currently always run sequentially.
 +
-+        return self
++Writing roadtests
++=================
 +
-+    def read(self, spec: str) -> tuple:
-+        s = struct.Struct(spec)
-+        buf = self.eventf.read(s.size)
-+        return s.unpack(buf)
++Tutorial: Writing your first roadtest
++-------------------------------------
 +
-+    def __exit__(self, *_: Any) -> None:
-+        self.eventf.close()
-+        self.file.close()
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/light/config b/tools/testing/roadtest/roadtest/tests/iio/light/config
-index b9753f2d0728..3bd4125cbb6b 100644
---- a/tools/testing/roadtest/roadtest/tests/iio/light/config
-+++ b/tools/testing/roadtest/roadtest/tests/iio/light/config
-@@ -1 +1,2 @@
- CONFIG_OPT3001=m
-+CONFIG_VCNL4000=m
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4000.py b/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4000.py
-new file mode 100644
-index 000000000000..16a5bed18b7e
---- /dev/null
-+++ b/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4000.py
-@@ -0,0 +1,132 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Copyright Axis Communications AB
++You may find it simplest to have a look at the existing tests and base your new
++tests on them, but if you prefer, this section provides a tutorial which will
++guide you to write a new basic test from scratch.
 +
-+import errno
-+import logging
-+from typing import Any, Final
++Even if you're not too keen on following the tutorial hands-on, you're
++encouraged to skim through it since there are useful debugging tips and notes
++on roadtest's internals which could be useful to know before diving in and
++writing tests.
 +
-+from roadtest.backend.i2c import SMBusModel
-+from roadtest.core.devicetree import DtFragment, DtVar
-+from roadtest.core.hardware import Hardware
-+from roadtest.core.modules import insmod, rmmod
-+from roadtest.core.suite import UMLTestCase
-+from roadtest.core.sysfs import I2CDriver, read_float, read_int, read_str
++A quick note on the terminology before we begin: we'll refer to the framework
++itself as "roadtest" or just "the framework", and we'll call a driver test
++which uses this framework a "roadtest" or just a "test".
 +
-+logger = logging.getLogger(__name__)
++Goal for the test
++~~~~~~~~~~~~~~~~~
 +
-+REG_COMMAND: Final = 0x80
-+REG_PRODUCT_ID_REVISION: Final = 0x81
-+REG_IR_LED_CURRENT: Final = 0x83
-+REG_ALS_PARAM: Final = 0x84
-+REG_ALS_RESULT_HIGH: Final = 0x85
-+REG_ALS_RESULT_LOW: Final = 0x86
-+REG_PROX_RESULT_HIGH: Final = 0x87
-+REG_PROX_RESULT_LOW: Final = 0x88
-+REG_PROX_SIGNAL_FREQ: Final = 0x89
++In this tutorial, we'll add a basic test for one of the features of the
++VCNL4000 light sensor driver which is a part of the IIO subsystem
++(``drivers/iio/light/vcnl4000.c``).
 +
-+REG_COMMAND_ALS_DATA_RDY: Final = 1 << 6
-+REG_COMMAND_PROX_DATA_RDY: Final = 1 << 5
++This driver supports a bunch of related proximity and ambient light sensor
++chips which communicate using the I2C protocol; we'll be testing the VCNL4000
++variant.  The datasheet for the chip is, at the time of writing, available
++`here <https://cdn-shop.adafruit.com/datasheets/vcnl4000.pdf>`_.
 +
++The test will check that the driver correctly reads and reports the illuminance
++values from the hardware to userspace via the IIO framework.
 +
-+class VCNL4000(SMBusModel):
-+    def __init__(self, **kwargs: Any) -> None:
-+        super().__init__(regbytes=1, **kwargs)
-+        self.regs = {
-+            REG_COMMAND: 0b_1000_0000,
-+            REG_PRODUCT_ID_REVISION: 0x11,
-+            # Register "without function in current version"
-+            0x82: 0x00,
-+            REG_IR_LED_CURRENT: 0x00,
-+            REG_ALS_PARAM: 0x00,
-+            REG_ALS_RESULT_HIGH: 0x00,
-+            REG_ALS_RESULT_LOW: 0x00,
-+            REG_PROX_RESULT_HIGH: 0x00,
-+            REG_PROX_RESULT_LOW: 0x00,
-+            REG_PROX_RESULT_LOW: 0x00,
-+        }
++Test file placement
++~~~~~~~~~~~~~~~~~~~
 +
-+    def reg_read(self, addr: int) -> int:
-+        val = self.regs[addr]
++Roadtests are placed under ``tools/testing/roadtest/roadtest/tests``.  (In case
++you're wondering, the second ``roadtest`` is to create a Python package, so
++that imports of ``roadtest`` work without having to mess with module search
++paths.)
 +
-+        if addr in (REG_ALS_RESULT_HIGH, REG_ALS_RESULT_LOW):
-+            self.regs[REG_COMMAND] &= ~REG_COMMAND_ALS_DATA_RDY
-+        if addr in (REG_PROX_RESULT_HIGH, REG_PROX_RESULT_LOW):
-+            self.regs[REG_COMMAND] &= ~REG_COMMAND_PROX_DATA_RDY
++Tests are organized by subsystem.  Normally we'd put our IIO light sensor tests
++under ``iio/light/`` (below the ``tests`` directory), but since there is
++already a VCNL4000 test there, we'll create a new subsystem directory called
++``tutorial`` and put our test there in a new file called ``test_tutorial.py``.
 +
-+        return val
++We'll also need to create an empty ``__init__.py`` in that directory to allow
++Python to recognize it as a package.
 +
-+    def reg_write(self, addr: int, val: int) -> None:
-+        assert addr in self.regs
++All the commands in this tutorial should be executed from the
++``tools/testing/roadtest`` directory inside the kernel source tree.  (To reduce
++noise, we won't show the current working directory before the ``$`` in future
++command line examples.)
 +
-+        if addr == REG_COMMAND:
-+            rw = 0b_0001_1000
-+            val = (self.regs[addr] & ~rw) | (val & rw)
++.. code-block:: shell
 +
-+        self.regs[addr] = val
++  tools/testing/roadtest$ mkdir -p roadtest/tests/tutorial/
++  tools/testing/roadtest$ touch roadtest/tests/tutorial/__init__.py
 +
-+    def inject(self, addr: int, val: int, mask: int = ~0) -> None:
-+        old = self.regs[addr] & ~mask
-+        new = old | (val & mask)
-+        self.regs[addr] = new
++Building the module
++~~~~~~~~~~~~~~~~~~~
 +
++First, we'll need to ensure that our driver is built.  To do that, we'll add
++the appropriate config option to built our driver as a module.  The lines
++should be written to a new file called ``config`` in the ``tutorial``
++directory.  Roadtest will gather all ``config`` files placed anywhere under
++``tests`` and build a kernel with the combined config.
 +
-+class TestVCNL4000(UMLTestCase):
++.. code-block:: shell
++
++   $ echo CONFIG_VCNL4000=m >> roadtest/tests/tutorial/config
++
++.. note::
++
++  This driver will actually be built even if you don't add this config, since
++  it's already present in the ``roadtest/tests/iio/light/config`` used by the
++  existing VCNL4000 test.  Roadtest uses a single build for all tests.
++
++Loading the module from the test
++~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++We've set up our module to be built, so we can now start working on the test
++case iself.  We'll start with the following few lines of code.  Tests are
++written Python's built-in `unittest
++<https://docs.python.org/3/library/unittest.html>`_ module.  This tutorial will
++assume familiariy with that framework; see the Python documentation for more
++information.
++
++Test classes should subclass ``roadtest.core.suite.UMLTestCase`` instead of
++``unittest.TestCase``.  This informs the roadtest core code that the test
++should be run inside UML.
++
++.. note::
++
++  There are several "real" unit tests for the framework itself; these subclass
++  ``unittest.TestCase`` directly and are run on the host system.  You'll see
++  these run in the beginning when you run roadtest.
++
++All this test currently does is insert our driver's module, do nothing, and
++then remove our driver's kernel module.  (The ``roadtest.core.modules.Module``
++class implements a ``ContextManager`` which automatically cleans up using the
++``with`` statement.)
++
++.. code-block:: python
++
++  from roadtest.core.suite import UMLTestCase
++  from roadtest.core.modules import Module
++
++  class TestTutorial(UMLTestCase):
++    def test_illuminance(self) -> None:
++      with Module("vcnl4000"):
++        pass
++
++You can now build the kernel and run roadtest with:
++
++.. code-block:: shell
++
++  $ make
++
++.. note::
++
++  Make sure you have all the dependencies described at the beginning of the
++  document installed.  You can also use a Docker container, append ``DOCKER=1``
++  to all the ``make`` commands in this tutorial if you want to do that.
++
++You should see your new test run and pass in the output of the above command:
++
++.. code-block::
++
++  ...
++  test_illuminance (tests.tutorial.test_tutorial.TestTutorial) ... ok
++  ...
++
++Shortening feedback loops
++~~~~~~~~~~~~~~~~~~~~~~~~~
++
++While just running ``make`` runs your new test, it also runs all the *other*
++tests too, and what's more, it calls in to the kernel build system every time,
++and that can be relatively slow even if there's nothing to be rebuilt.
++
++When you're only working on writing tests, and not modifying the driver or the
++kernel source, you can avoid calling into Kbuild by passing ``KBUILD=0`` to the
++``make`` invocation.  For example:
++
++.. code-block:: shell
++
++  $ make KBUILD=0
++
++To only run specific tests, you can use the ``--filter`` option to roadtest's
++main script (implemented in ``roadtest.cmd.main``) which takes a wildcard
++pattern.  Only tests whoses names match the pattern are run.
++
++Options to the main script are passed via the ``OPTS`` variable.  So the
++following would both skip the kernel build and only run your test:
++
++.. code-block:: shell
++
++  $ make KBUILD=0 OPTS="--filter tutorial"
++
++.. tip::
++
++  Roadtest builds the kernel inside a directory called ``.roadtest`` in your
++  kernel source tree.  Logs from UML are saved as
++  ``.roadtest/roadtest-work/uml.txt`` and logs from roadtest's backend (more on
++  that later) are at ``.roadtest/roadtest-work/backend.txt``.  It's sometimes
++  useful to keep a terminal open running ``tail -f`` on these files while
++  developing roadtests.
++
++Adding a device
++~~~~~~~~~~~~~~~
++
++Our basic test only loads and unloads the module, so the next step is to
++actually get our driver to probe and bind to a device.  On many systems,
++devices are instantiated based on the hardware descriptions in devicetree, and
++this is the case on roadtest's UML-based system too.  See
++:ref:`Documentation/driver-api/driver-model/binding.rst <binding>` and
++:ref:`Documentation/devicetree/usage-model.rst <usage-model>` for more
++information.
++
++When working on real harwdare, the hardware design specifies at what address
++and on which I2C bus the hardware sensor chip is connected.  Roadtest provides
++a virtual I2C bus and the test can chose to place devices at any valid address
++on this bus.
++
++In this tutorial, we'll use a hard coded device address of ``0x42`` and set the
++``run_separately`` flag on the test, asking roadtest to run our test in a
++separate UML instance so that we know that no other test has tried to put a
++device at that I2C address.
++
++.. note::
++
++  Normally, roadtests use what the framework refers to as *relocatable
++  devicetree fragments* (unrelated to the fragments used in devicetree
++  overlays).  These do not use fixed addreses for specific devices, but instead
++  allow the framework to freely assign addresses.  This allows several
++  different, independent tests can be run using one devicetree and one UML
++  instance (to save on startup time costs), without having to coordinate
++  selection of device addesses.
++
++  When writing "real" roadtests (after you're done with this tutorial), you too
++  should use relocatable fragments.  See the existing tests for examples.
++
++The framework's devicetree module (``roadtest.core.devicetree``) includes a
++base tree that provides an I2C controller node (appropriately named ``i2c``)
++for the virtual I2C, so we will add our new device under that node.
++
++Unlike on a default Linux system, just adding the node to the devicetree won't
++get our I2C driver to automatically bind to the driver when we load the module.
++This is because roadtest's ``init.sh`` (a script which runs inside UML after
++the kernel boots up) turns off automatic probing on the I2C bus, in order to
++give the test cases full control of when things get probed.
++
++So we'll have ask the ``test_illuminance()`` method to get the ``vcnl4000``
++driver (that's the name of the I2C driver which the module registers, and
++that's not necessarily the same as the name of the module) to explicitly bind
++to our chosen ``0x42`` I2C device using some of the helper classes in the
++framework:
++
++.. code-block:: python
++
++  from roadtest.core.devicetree import DtFragment
++  from roadtest.core.devices import I2CDriver
++
++  class TestTutorial(UMLTestCase):
++    run_separately = True
 +    dts = DtFragment(
-+        src="""
-+&i2c {
-+    light-sensor@$addr$ {
-+        compatible = "vishay,vcnl4000";
-+        reg = <0x$addr$>;
-+    };
-+};
-+        """,
-+        variables={
-+            "addr": DtVar.I2C_ADDR,
-+        },
++      src="""
++  &i2c {
++      light-sensor@42 {
++          compatible = "vishay,vcnl4000";
++          reg = <0x42>;
++      };
++  };
++      """,
 +    )
-+
-+    @classmethod
-+    def setUpClass(cls) -> None:
-+        insmod("vcnl4000")
-+
-+    @classmethod
-+    def tearDownClass(cls) -> None:
-+        rmmod("vcnl4000")
-+
-+    def setUp(self) -> None:
-+        self.driver = I2CDriver("vcnl4000")
-+        self.hw = Hardware("i2c")
-+        self.hw.load_model(VCNL4000)
-+
-+    def tearDown(self) -> None:
-+        self.hw.close()
-+
-+    def test_lux(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            scale = read_float(dev.path / "iio:device0/in_illuminance_scale")
-+            self.assertEqual(scale, 0.25)
-+
-+            data = [
-+                (0x00, 0x00),
-+                (0x12, 0x34),
-+                (0xFF, 0xFF),
-+            ]
-+            luxfile = dev.path / "iio:device0/in_illuminance_raw"
-+            for high, low in data:
-+                self.hw.inject(REG_ALS_RESULT_HIGH, high)
-+                self.hw.inject(REG_ALS_RESULT_LOW, low)
-+                self.hw.inject(
-+                    REG_COMMAND,
-+                    val=REG_COMMAND_ALS_DATA_RDY,
-+                    mask=REG_COMMAND_ALS_DATA_RDY,
-+                )
-+
-+                self.assertEqual(read_int(luxfile), high << 8 | low)
-+
-+    def test_lux_timeout(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            # self.hw.set_never_ready(True)
-+            with self.assertRaises(OSError) as cm:
-+                luxfile = dev.path / "iio:device0/in_illuminance_raw"
-+                read_str(luxfile)
-+            self.assertEqual(cm.exception.errno, errno.EIO)
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4010.py b/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4010.py
-new file mode 100644
-index 000000000000..929db970405f
---- /dev/null
-+++ b/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4010.py
-@@ -0,0 +1,282 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Copyright Axis Communications AB
-+
-+import errno
-+import logging
-+from pathlib import Path
-+from typing import Any, Final, Optional
-+
-+from roadtest.backend.i2c import SMBusModel
-+from roadtest.core.devicetree import DtFragment, DtVar
-+from roadtest.core.hardware import Hardware
-+from roadtest.core.modules import insmod, rmmod
-+from roadtest.core.suite import UMLTestCase
-+from roadtest.core.sysfs import (
-+    I2CDriver,
-+    read_float,
-+    read_int,
-+    read_str,
-+    write_int,
-+    write_str,
-+)
-+from roadtest.tests.iio import iio
-+
-+logger = logging.getLogger(__name__)
-+
-+REG_COMMAND: Final = 0x80
-+REG_PRODUCT_ID_REVISION: Final = 0x81
-+REG_PROXIMITY_RATE: Final = 0x82
-+REG_IR_LED_CURRENT: Final = 0x83
-+REG_ALS_PARAM: Final = 0x84
-+REG_ALS_RESULT_HIGH: Final = 0x85
-+REG_ALS_RESULT_LOW: Final = 0x86
-+REG_PROX_RESULT_HIGH: Final = 0x87
-+REG_PROX_RESULT_LOW: Final = 0x88
-+REG_INTERRUPT_CONTROL: Final = 0x89
-+REG_LOW_THRESHOLD_HIGH: Final = 0x8A
-+REG_LOW_THRESHOLD_LOW: Final = 0x8B
-+REG_HIGH_THRESHOLD_HIGH: Final = 0x8C
-+REG_HIGH_THRESHOLD_LOW: Final = 0x8D
-+REG_INTERRUPT_STATUS: Final = 0x8E
-+
-+REG_COMMAND_ALS_DATA_RDY: Final = 1 << 6
-+REG_COMMAND_PROX_DATA_RDY: Final = 1 << 5
-+
-+
-+class VCNL4010(SMBusModel):
-+    def __init__(self, int: Optional[int] = None, **kwargs: Any) -> None:
-+        super().__init__(regbytes=1, **kwargs)
-+        self.int = int
-+        self._set_int(False)
-+        self.regs = {
-+            REG_COMMAND: 0b_1000_0000,
-+            REG_PRODUCT_ID_REVISION: 0x21,
-+            REG_PROXIMITY_RATE: 0x00,
-+            REG_IR_LED_CURRENT: 0x00,
-+            REG_ALS_PARAM: 0x00,
-+            REG_ALS_RESULT_HIGH: 0x00,
-+            REG_ALS_RESULT_LOW: 0x00,
-+            REG_PROX_RESULT_HIGH: 0x00,
-+            REG_PROX_RESULT_LOW: 0x00,
-+            REG_INTERRUPT_CONTROL: 0x00,
-+            REG_LOW_THRESHOLD_HIGH: 0x00,
-+            REG_LOW_THRESHOLD_LOW: 0x00,
-+            REG_HIGH_THRESHOLD_HIGH: 0x00,
-+            REG_HIGH_THRESHOLD_LOW: 0x00,
-+            REG_INTERRUPT_STATUS: 0x00,
-+        }
-+
-+    def _set_int(self, active: int) -> None:
-+        # Active-low
-+        self.backend.gpio.set(self.int, not active)
-+
-+    def _update_irq(self) -> None:
-+        selftimed_en = self.regs[REG_COMMAND] & (1 << 0)
-+        prox_en = self.regs[REG_COMMAND] & (1 << 1)
-+        prox_data_rdy = self.regs[REG_COMMAND] & REG_COMMAND_PROX_DATA_RDY
-+        int_prox_ready_en = self.regs[REG_INTERRUPT_CONTROL] & (1 << 3)
-+
-+        logger.debug(
-+            f"{selftimed_en=:x} {prox_en=:x} {prox_data_rdy=:x} {int_prox_ready_en=:x}"
-+        )
-+
-+        if selftimed_en and prox_en and prox_data_rdy and int_prox_ready_en:
-+            self.regs[REG_INTERRUPT_STATUS] |= 1 << 3
-+
-+        low_threshold = (
-+            self.regs[REG_LOW_THRESHOLD_HIGH] << 8 | self.regs[REG_LOW_THRESHOLD_LOW]
-+        )
-+        high_threshold = (
-+            self.regs[REG_HIGH_THRESHOLD_HIGH] << 8 | self.regs[REG_HIGH_THRESHOLD_LOW]
-+        )
-+        proximity = (
-+            self.regs[REG_PROX_RESULT_HIGH] << 8 | self.regs[REG_PROX_RESULT_LOW]
-+        )
-+        int_thres_en = self.regs[REG_INTERRUPT_CONTROL] & (1 << 1)
-+
-+        logger.debug(
-+            f"{low_threshold=:x} {high_threshold=:x} {proximity=:x} {int_thres_en=:x}"
-+        )
-+
-+        if int_thres_en:
-+            if proximity < low_threshold:
-+                logger.debug("LOW")
-+                self.regs[REG_INTERRUPT_STATUS] |= 1 << 1
-+            if proximity > high_threshold:
-+                logger.debug("HIGH")
-+                self.regs[REG_INTERRUPT_STATUS] |= 1 << 0
-+
-+        self._set_int(self.regs[REG_INTERRUPT_STATUS])
-+
-+    def reg_read(self, addr: int) -> int:
-+        val = self.regs[addr]
-+
-+        if addr in (REG_ALS_RESULT_HIGH, REG_ALS_RESULT_LOW):
-+            self.regs[REG_COMMAND] &= ~REG_COMMAND_ALS_DATA_RDY
-+        if addr in (REG_PROX_RESULT_HIGH, REG_PROX_RESULT_LOW):
-+            self.regs[REG_COMMAND] &= ~REG_COMMAND_PROX_DATA_RDY
-+
-+        return val
-+
-+    def reg_write(self, addr: int, val: int) -> None:
-+        assert addr in self.regs
-+
-+        if addr == REG_COMMAND:
-+            rw = 0b_0001_1111
-+            val = (self.regs[addr] & ~rw) | (val & rw)
-+        elif addr == REG_INTERRUPT_STATUS:
-+            val = self.regs[addr] & ~(val & 0xF)
-+
-+        self.regs[addr] = val
-+        self._update_irq()
-+
-+    def inject(self, addr: int, val: int, mask: int = ~0) -> None:
-+        old = self.regs[addr] & ~mask
-+        new = old | (val & mask)
-+        self.regs[addr] = new
-+        self._update_irq()
-+
-+    def set_bit(self, addr: int, val: int) -> None:
-+        self.inject(addr, val, val)
-+
-+
-+class TestVCNL4010(UMLTestCase):
-+    dts = DtFragment(
-+        src="""
-+#include <dt-bindings/interrupt-controller/irq.h>
-+
-+&i2c {
-+    light-sensor@$addr$ {
-+        compatible = "vishay,vcnl4020";
-+        reg = <0x$addr$>;
-+        interrupt-parent = <&gpio>;
-+        interrupts = <$gpio$ IRQ_TYPE_EDGE_FALLING>;
-+    };
-+};
-+        """,
-+        variables={
-+            "addr": DtVar.I2C_ADDR,
-+            "gpio": DtVar.GPIO_PIN,
-+        },
-+    )
-+
-+    @classmethod
-+    def setUpClass(cls) -> None:
-+        insmod("vcnl4000")
-+
-+    @classmethod
-+    def tearDownClass(cls) -> None:
-+        rmmod("vcnl4000")
-+
-+    def setUp(self) -> None:
-+        self.driver = I2CDriver("vcnl4000")
-+        self.hw = Hardware("i2c")
-+        self.hw.load_model(VCNL4010, int=self.dts["gpio"])
-+
-+    def tearDown(self) -> None:
-+        self.hw.close()
-+
-+    def test_lux(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+
-+            scale = read_float(dev.path / "iio:device0/in_illuminance_scale")
-+            self.assertEqual(scale, 0.25)
-+
-+            data = [
-+                (0x00, 0x00),
-+                (0x12, 0x34),
-+                (0xFF, 0xFF),
-+            ]
-+            luxfile = dev.path / "iio:device0/in_illuminance_raw"
-+            for high, low in data:
-+                self.hw.inject(REG_ALS_RESULT_HIGH, high)
-+                self.hw.inject(REG_ALS_RESULT_LOW, low)
-+                self.hw.set_bit(REG_COMMAND, REG_COMMAND_ALS_DATA_RDY)
-+
-+                self.assertEqual(read_int(luxfile), high << 8 | low)
-+
-+    def test_lux_timeout(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            with self.assertRaises(OSError) as cm:
-+                luxfile = dev.path / "iio:device0/in_illuminance_raw"
-+                read_str(luxfile)
-+            self.assertEqual(cm.exception.errno, errno.EIO)
-+
-+    def test_proximity_thresh_rising(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            high_thresh = (
-+                dev.path / "iio:device0/events/in_proximity_thresh_rising_value"
-+            )
-+            write_int(high_thresh, 0x1234)
-+
-+            mock = self.hw.update_mock()
-+            mock.assert_last_reg_write(self, REG_HIGH_THRESHOLD_HIGH, 0x12)
-+            mock.assert_last_reg_write(self, REG_HIGH_THRESHOLD_LOW, 0x34)
-+            mock.reset_mock()
-+
-+            self.assertEqual(read_int(high_thresh), 0x1234)
-+
-+            with iio.IIOEventMonitor("/dev/iio:device0") as mon:
-+                en = dev.path / "iio:device0/events/in_proximity_thresh_either_en"
-+                write_int(en, 1)
-+
-+                self.hw.inject(REG_PROX_RESULT_HIGH, 0x12)
-+                self.hw.inject(REG_PROX_RESULT_LOW, 0x35)
-+                self.hw.set_bit(REG_COMMAND, REG_COMMAND_PROX_DATA_RDY)
-+                self.hw.kick()
-+
-+                self.assertEqual(read_int(en), 1)
-+
-+                event = mon.read()
-+                self.assertEqual(event.type, iio.IIOChanType.IIO_PROXIMITY)
-+
-+    def test_proximity_thresh_falling(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            high_thresh = (
-+                dev.path / "iio:device0/events/in_proximity_thresh_falling_value"
-+            )
-+            write_int(high_thresh, 0x0ABC)
-+
-+            mock = self.hw.update_mock()
-+            mock.assert_last_reg_write(self, REG_LOW_THRESHOLD_HIGH, 0x0A)
-+            mock.assert_last_reg_write(self, REG_LOW_THRESHOLD_LOW, 0xBC)
-+            mock.reset_mock()
-+
-+            self.assertEqual(read_int(high_thresh), 0x0ABC)
-+
-+            with iio.IIOEventMonitor("/dev/iio:device0") as mon:
-+                write_int(
-+                    dev.path / "iio:device0/events/in_proximity_thresh_either_en", 1
-+                )
-+
-+                event = mon.read()
-+                self.assertEqual(event.type, iio.IIOChanType.IIO_PROXIMITY)
-+
-+    def test_proximity_triggered(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            data = [
-+                (0x00, 0x00, 0),
-+                (0x00, 0x01, 1),
-+                (0xF0, 0x02, 0xF002),
-+                (0xFF, 0xFF, 0xFFFF),
-+            ]
-+
-+            trigger = read_str(Path("/sys/bus/iio/devices/trigger0/name"))
-+
-+            write_int(dev.path / "iio:device0/buffer0/in_proximity_en", 1)
-+            write_str(dev.path / "iio:device0/trigger/current_trigger", trigger)
-+
-+            with iio.IIOBuffer("/dev/iio:device0", bufidx=0) as buffer:
-+                write_int(dev.path / "iio:device0/buffer0/length", 128)
-+                write_int(dev.path / "iio:device0/buffer0/enable", 1)
-+
-+                for low, high, expected in data:
-+                    self.hw.inject(REG_PROX_RESULT_HIGH, low)
-+                    self.hw.inject(REG_PROX_RESULT_LOW, high)
-+                    self.hw.set_bit(REG_COMMAND, REG_COMMAND_PROX_DATA_RDY)
-+                    self.hw.kick()
-+
-+                    scanline = buffer.read("H")
-+
-+                    val = scanline[0]
-+                    self.assertEqual(val, expected)
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4040.py b/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4040.py
-new file mode 100644
-index 000000000000..f2aa2cb9f3d5
---- /dev/null
-+++ b/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4040.py
-@@ -0,0 +1,104 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Copyright Axis Communications AB
-+
-+import logging
-+from typing import Any
-+
-+from roadtest.backend.i2c import SMBusModel
-+from roadtest.core.devicetree import DtFragment, DtVar
-+from roadtest.core.hardware import Hardware
-+from roadtest.core.modules import insmod, rmmod
-+from roadtest.core.suite import UMLTestCase
-+from roadtest.core.sysfs import I2CDriver, read_float, read_int
-+
-+logger = logging.getLogger(__name__)
-+
-+
-+class VCNL4040(SMBusModel):
-+    def __init__(self, **kwargs: Any) -> None:
-+        super().__init__(regbytes=2, byteorder="little", **kwargs)
-+        self.regs = {
-+            0x00: 0x0101,
-+            0x01: 0x0000,
-+            0x02: 0x0000,
-+            0x03: 0x0001,
-+            0x04: 0x0000,
-+            0x05: 0x0000,
-+            0x06: 0x0000,
-+            0x07: 0x0000,
-+            0x08: 0x0000,
-+            0x09: 0x0000,
-+            0x0A: 0x0000,
-+            0x0A: 0x0000,
-+            0x0B: 0x0000,
-+            0x0C: 0x0186,
-+            # The driver reads this register which is undefined for
-+            # VCNL4040.  Perhaps the driver should be fixed instead
-+            # of having this here?
-+            0x0E: 0x0000,
-+        }
-+
-+    def reg_read(self, addr: int) -> int:
-+        return self.regs[addr]
-+
-+    def reg_write(self, addr: int, val: int) -> None:
-+        assert addr in self.regs
-+        self.regs[addr] = val
-+
-+
-+class TestVCNL4040(UMLTestCase):
-+    dts = DtFragment(
-+        src="""
-+&i2c {
-+    light-sensor@$addr$ {
-+        compatible = "vishay,vcnl4040";
-+        reg = <0x$addr$>;
-+    };
-+};
-+        """,
-+        variables={
-+            "addr": DtVar.I2C_ADDR,
-+        },
-+    )
-+
-+    @classmethod
-+    def setUpClass(cls) -> None:
-+        insmod("vcnl4000")
-+
-+    @classmethod
-+    def tearDownClass(cls) -> None:
-+        rmmod("vcnl4000")
-+
-+    def setUp(self) -> None:
-+        self.driver = I2CDriver("vcnl4000")
-+        self.hw = Hardware("i2c")
-+        self.hw.load_model(VCNL4040)
-+
-+    def tearDown(self) -> None:
-+        self.hw.close()
-+
-+    def test_illuminance_scale(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            scalefile = dev.path / "iio:device0/in_illuminance_scale"
-+            # The datasheet says 0.10 lux/step, but the driver follows
-+            # the application note "Designing the VCNL4040 Into an
-+            # Application" which claims a different value.
-+            self.assertEqual(read_float(scalefile), 0.12)
 +
 +    def test_illuminance(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            luxfile = dev.path / "iio:device0/in_illuminance_raw"
++      with (
++        Module("vcnl4000"),
++        I2CDriver("vcnl4000").bind(0x42) as dev,
++      ):
++        pass
 +
-+            data = [0x0000, 0x1234, 0xFFFF]
-+            for regval in data:
-+                self.hw.reg_write(0x09, regval)
-+                self.assertEqual(read_int(luxfile), regval)
++You can run this test using the same ``make`` command you used previously.
++This time, rather than an "ok", you should see roadtest complain about an error
++during your test:
 +
-+    def test_proximity(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            rawfile = dev.path / "iio:device0/in_proximity_raw"
++.. code-block::
 +
-+            data = [0x0000, 0x1234, 0xFFFF]
-+            for regval in data:
-+                self.hw.reg_write(0x08, regval)
-+                self.assertEqual(read_int(rawfile), regval)
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4200.py b/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4200.py
-new file mode 100644
-index 000000000000..d1cf819e563e
---- /dev/null
-+++ b/tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4200.py
-@@ -0,0 +1,96 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Copyright Axis Communications AB
++  ======================================================================
++  ERROR: test_illuminance (tests.tutorial.test_tutorial.TestTutorial)
++  ----------------------------------------------------------------------
++  Backend log:
++    Traceback (most recent call last):
++      File ".../roadtest/backend/i2c.py", line 35, in write
++        raise Exception("No I2C model loaded")
++    Exception: No I2C model loaded
++    Traceback (most recent call last):
++      File ".../roadtest/backend/i2c.py", line 29, in read
++        raise Exception("No I2C model loaded")
++    Exception: No I2C model loaded
 +
-+import logging
-+from typing import Any
++  UML log:
++    [ 1220.410000][   T19] vcnl4000: probe of 0-0042 failed with error -5
 +
-+from roadtest.backend.i2c import SMBusModel
-+from roadtest.core.devicetree import DtFragment, DtVar
-+from roadtest.core.hardware import Hardware
-+from roadtest.core.modules import insmod, rmmod
-+from roadtest.core.suite import UMLTestCase
-+from roadtest.core.sysfs import I2CDriver, read_float, read_int
++  Traceback (most recent call last):
++    File ".../roadtest/tests/tutorial/test_tutorial.py", line 21, in test_illuminance
++      with (
++    File "/usr/lib/python3.9/contextlib.py", line 119, in __enter__
++      return next(self.gen)
++    File ".../roadtest/core/devices.py", line 32, in bind
++      f.write(dev.id.encode())
++  OSError: [Errno 5] Input/output error
 +
-+logger = logging.getLogger(__name__)
++To understand and fix this error, we'll have to learn a bit about how roadtest
++works under the hood.
 +
++Adding a hardware model
++~~~~~~~~~~~~~~~~~~~~~~~
 +
-+class VCNL4200(SMBusModel):
-+    def __init__(self, **kwargs: Any) -> None:
-+        super().__init__(regbytes=2, byteorder="little", **kwargs)
-+        self.regs = {
-+            0x00: 0x0101,
-+            0x01: 0x0000,
-+            0x02: 0x0000,
-+            0x03: 0x0001,
-+            0x04: 0x0000,
-+            0x05: 0x0000,
-+            0x06: 0x0000,
-+            0x07: 0x0000,
-+            0x08: 0x0000,
-+            0x09: 0x0000,
-+            0x0A: 0x0000,
-+            0x0D: 0x0000,
-+            0x0E: 0x1058,
-+        }
++Roadtest's *backend* is what allows the hardware to modelled for the sake of
++driver testing.  The backend runs outside of UML and communication between the
++drivers and the models goes via ``virtio-uml``, a shared-memory based
++communication protocol.  At its lowest level, the backend is written in C and
++implements virtio devices for ``virtio-i2c`` and ``virtio-gpio``, both of which
++have respective virtio drivers which run inside UML and provide the virtual I2C
++bus (and GPIO controller) whose nodes are available in the devicetree.
 +
-+    def reg_read(self, addr: int) -> int:
-+        return self.regs[addr]
++The C backend embeds a Python interpreter which runs a Python module which
++implements the I2C bus model.  It's that Python module which is complaining now
++that it does not have any I2C device model to handle the I2C transactions that
++it received from UML.  This is quite understandable since we haven't
++implemented one yet!
 +
-+    def reg_write(self, addr: int, val: int) -> None:
-+        assert addr in self.regs
-+        self.regs[addr] = val
++.. note::
 +
++  In the error message above, you'll also notice an error ``printk()`` from the
++  driver (as part of the *UML log*, which includes kernel console messages), as
++  well as the exception stacktrace from the test case itself.  The ``-EIO``
++  seen inside UML is a result of the roadtest backend failing the I2C
++  transaction due to the exception.
 +
-+class TestVCNL4200(UMLTestCase):
-+    dts = DtFragment(
-+        src="""
-+&i2c {
-+    light-sensor@$addr$ {
-+        compatible = "vishay,vcnl4200";
-+        reg = <0x$addr$>;
-+    };
-+};
-+        """,
-+        variables={
-+            "addr": DtVar.I2C_ADDR,
-+        },
-+    )
++Models are placed in the same source file as the test cases.  The model and
++the test cases will however run in two different Python interpreters on two
++different systems (the test case inside UML, and the model inside the backend
++on your host).
 +
-+    @classmethod
-+    def setUpClass(cls) -> None:
-+        insmod("vcnl4000")
++For I2C, the interface our model needs to implement is specified by the
++Abstract Base Class ``roadtest.backend.i2c.I2CModel`` (which can be found,
++following Python's standard naming conventions, in the file
++``roadtest/backend/i2c.py``).  You can see that it expects the model to
++implement ``read()`` and ``write()`` functions which transmit and receive the
++raw bytes of the I2C transaction.
 +
-+    @classmethod
-+    def tearDownClass(cls) -> None:
-+        rmmod("vcnl4000")
++Our VCNL4000 device uses the SMBus protocol which is a subset of the I2C
++protocol, so we can use a higher-level class to base our implementation off,
++``roadtest.backend.i2c.SMBusModel``.  This one takes care of doing segmentation
++of the I2C requests, and expects subclasses to implement ``reg_read()`` and
++``reg_write()`` methods which will handle the register access for the device.
 +
-+    def setUp(self) -> None:
-+        self.driver = I2CDriver("vcnl4000")
-+        self.hw = Hardware("i2c")
-+        self.hw.load_model(VCNL4200)
++For our initial model, we'll just going to just make our ``reg_read()`` and
++``reg_write()`` methods read and store the register values in a dictionary.
++We'll need some initial values for the registers, and for these we use the
++values which are specified in the VCNL4000's datasheet.  We won't bother with
++creating constants for the register addresses and we'll just specify them in
++hex:
 +
-+    def tearDown(self) -> None:
-+        self.hw.close()
++.. code-block:: python
 +
-+    def test_illuminance_scale(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            scalefile = dev.path / "iio:device0/in_illuminance_scale"
-+            self.assertEqual(read_float(scalefile), 0.024)
++  from typing import Any
++  from roadtest.backend.i2c import SMBusModel
++
++  class VCNL4000(SMBusModel):
++      def __init__(self, **kwargs: Any) -> None:
++          super().__init__(regbytes=1, **kwargs)
++          self.regs = {
++              0x80: 0b_1000_0000,
++              0x81: 0x11,
++              0x82: 0x00,
++              0x83: 0x00,
++              0x84: 0x00,
++              0x85: 0x00,
++              0x86: 0x00,
++              0x87: 0x00,
++              0x88: 0x00,
++              0x89: 0x00,
++          }
++
++      def reg_read(self, addr: int) -> int:
++          val = self.regs[addr]
++          return val
++
++      def reg_write(self, addr: int, val: int) -> None:
++          assert addr in self.regs
++          self.regs[addr] = val
++
++Then we need to modify the test function to ask the backend to load this model:
++
++.. code-block:: python
++  :emphasize-lines: 1,6
++
++  from roadtest.core.hardware import Hardware
++
++  def test_illuminance(self) -> None:
++    with (
++      Module("vcnl4000"),
++      Hardware("i2c").load_model(VCNL4000),
++      I2CDriver("vcnl4000").bind(0x42),
++    ):
++      pass
++
++Now run the test again.  You should see the test pass, meaning that the driver
++successfully talked to and recognized your hardware model.  (You can look at
++the UML and backend logs mentioned earlier to confirm this.)
++
++.. tip::
++
++  You can add arbitrary command line arguments to UML using the
++  ``--uml-append`` option.  For example, while developing tests for I2C
++  drivers, it could be helpful to turn on the appropriate trace events and
++  arrange for them to be printed to the console (which you can then access via
++  the previously mentioned ``uml.txt``.):
++
++  .. code-block::
++
++    OPTS="--filter tutorial --uml-append tp_printk trace_event=i2c:*"
++
++Exploring the target
++~~~~~~~~~~~~~~~~~~~~
++
++Now that we've gotten the driver to probe to our new device, we want to get the
++test to read the illuminance value from the driver.  However, which file should
++the test read the value from?  IIO exposes the illuminance value in a sysfs
++file, but where do we find this file?
++
++If you have real hardware with a VCNL4000 chip and already running the vcnl4000
++driver, or are already very familiar with the IIO framework, you likely already
++know what sysfs files to read, but in our case, we can open up a shell on UML
++to manually explore the system and find the relevant sysfs files before
++implementing the rest of the test case.
++
++Roadtest's ``--shell`` option makes UML start a shell instead of exiting after
++the tests are run.  However, since our test case cleans up after itself (as
++it should) using context managers, neither the module nor the model would
++remain loaded after the test exists, which would make manual exploration
++difficult.
++
++To remedy this, we can combine ``--shell`` with temporary code in our test to
++_exit(2) after setting up everything:
++
++.. code-block:: python
++  :emphasize-lines: 5,7
++
++  def test_illuminance(self) -> None:
++    with (
++      Module("vcnl4000"),
++      Hardware("i2c").load_model(VCNL4000),
++      I2CDriver("vcnl4000").bind(0x42) as dev,
++    ):
++      print(dev.path)
++      import os; os._exit(1)
++
++.. note::
++
++  The communication between the test cases and the models uses a simple text
++  based protocol where the test cases write Python expressions to a file which
++  the backend reads and evaluates, so it is possible to load a model using only
++  shell commands, but this is undocumented.  See the source code if you need to
++  do this.
++
++We'll also need to ask UML to open up a terminal emulator (``con=xterm``) or start a telnet server
++and wait for a connection (``con=port:9000``).  See
++:ref:`Documentation/virt/uml/user_mode_linux_hotwo_v2.rst
++<user_mode_linux_hotwo_v2>` for more information about the required packages.
++These options can be passed to UML using ``--uml-append``.  So the final
++``OPTS`` argument is something like the following (you can combine this with
++the tracing options):
++
++.. code-block::
++
++  OPTS="--shell --uml-append con=xterm"
++
++.. tip::
++
++  ``con=xterm doesn``'t work in the Docker container, so use the telnet option
++  if you're running roadtest inside Docker.  ``screen -L //telnet localhost
++  9000`` or similar can be used to connect to UML.
++
++  When running *without* using Docker, the telnet option tends to leave UML's
++  ``port-helper`` running in the background, so you may have to ``kill(1)`` it
++  yourself after each run.
++
++Using the shell, you should be able to find the illuminance file under the
++device's sysfs path:
++
++.. code-block::
++
++  root@(none):/sys/bus/i2c/devices/0-0042# ls -1 iio\:device0/in*
++  iio:device0/in_illuminance_raw
++  iio:device0/in_illuminance_scale
++  iio:device0/in_proximity_nearlevel
++  iio:device0/in_proximity_raw
++
++You can also attempt to read the ``in_illuminance_raw`` file; you should see
++that it fails with something like this (with the trace events enabled):
++
++.. code-block::
++
++  root@(none):/sys/bus/i2c/devices/0-0042# cat iio:device0/in_illuminance_raw
++  [  151.270000][   T34] i2c_write: i2c-0 #0 a=042 f=0000 l=2 [80-10]
++  [  151.270000][   T34] i2c_result: i2c-0 n=1 ret=1
++  ...
++  [  152.030000][   T34] i2c_write: i2c-0 #0 a=042 f=0000 l=1 [80]
++  [  152.030000][   T34] i2c_read: i2c-0 #1 a=042 f=0001 l=1
++  [  152.030000][   T34] i2c_reply: i2c-0 #1 a=042 f=0001 l=1 [10]
++  [  152.030000][   T34] i2c_result: i2c-0 n=2 ret=2
++  [  152.070000][   T34] vcnl4000 0-0042: vcnl4000_measure() failed, data not ready
++
++Controlling register values
++~~~~~~~~~~~~~~~~~~~~~~~~~~~
++
++Our next challenge is to get the ``in_illuminance_raw`` file to be read
++successfully.  From the I2C trace events above, or from looking at the
++``backend.txt`` (below), we can see that the driver repeatedly reads a
++particular register.
++
++.. code-block::
++
++  INFO - roadtest.core.control: START<roadtest.tests.tutorial.test_tutorial.TestTutorial.test_illuminance>
++  DEBUG - roadtest.core.control: backend.i2c.load_model(*('roadtest.tests.tutorial.test_tutorial', 'VCNL4000'), **{})
++  DEBUG - roadtest.backend.i2c: SMBus read addr=0x81 val=0x11
++  DEBUG - roadtest.backend.i2c: SMBus write addr=0x80 val=0x10
++  DEBUG - roadtest.backend.i2c: SMBus read addr=0x80 val=0x10
++  DEBUG - roadtest.backend.i2c: SMBus read addr=0x80 val=0x10
++  ...
++
++To understand this register, we need to take a look at the chip's datasheet and
++compare it with the driver code.  By doing so, we can see the driver is waiting
++for the hardware to signal that the data is ready by polling for a particular
++bit to be set.
++
++One simple way to set the data ready bit, which we'll use for the purpose of
++this tutorial, is to simply ensure that the model always returns reads to the
++0x80 register with that bit set.
++
++.. note::
++
++  This method wouldn't allow a test to be written to test the timeout handling,
++  but we won't bother with that in this tutorial.  You can explore the exising
++  roadtests for alternative solutions, such as setting the data ready bit
++  whenever the test injects new data and clearing it when the driver reads the
++  data.
++
++.. code-block:: python
++  :emphasize-lines: 4,5
++
++  def reg_read(self, addr: int) -> int:
++    val = self.regs[addr]
++
++    if addr == 0x80:
++      val |= 1 << 6
++
++    return val
++
++This should get the bit set and make the read succeed (you can check this using
++the shell), but we'd also like to return different values from the data
++registers rather the reset values we hardcoded in ``__init__``.  One way to do
++this is to have the test inject the values into the ALS result registers by
++having it call the ``reg_write()`` method of the model.  It can do this via the
++``Hardware`` object.
++
++.. note::
++
++  The test can call methods on the model but it can't receive return values
++  from these methods, nor can it set attributes on the model.  The model and
++  the test run on different systems and communication between them is
++  asynchronous.
++
++We'll combine this with a read of the sysfs file we identified and throw in an
++assertion to check that the value which the driver reports to userspace via
++that file matches the value which we inject into the hardware's result
++registers:
++
++.. code-block:: python
++   :emphasize-lines: 6,8,9-13
++
++    from roadtest.core.sysfs import read_int
 +
 +    def test_illuminance(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            luxfile = dev.path / "iio:device0/in_illuminance_raw"
++        with (
++            Module("vcnl4000"),
++            Hardware("i2c").load_model(VCNL4000) as hw,
++            I2CDriver("vcnl4000").bind(0x42) as dev,
++        ):
++            hw.reg_write(0x85, 0x12)
++            hw.reg_write(0x86, 0x34)
++            self.assertEqual(
++                read_int(dev.path / "iio:device0/in_illuminance_raw", 0x1234)
++            )
 +
-+            data = [0x0000, 0x1234, 0xFFFF]
-+            for regval in data:
-+                self.hw.reg_write(0x09, regval)
-+                self.assertEqual(read_int(luxfile), regval)
++And that's it for this tutorial.  We've written a simple end-to-end test for
++one aspect of this driver with the help of a minimal model of the hardware.
 +
-+    def test_proximity(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            rawfile = dev.path / "iio:device0/in_proximity_raw"
++Verifying drivers' interactions with the hardware
++-------------------------------------------------
 +
-+            data = [0x0000, 0x1234, 0xFFFF]
-+            for regval in data:
-+                self.hw.reg_write(0x08, regval)
-+                self.assertEqual(read_int(rawfile), regval)
++The tutorial covered injection of values into hardware registers and how to
++check that the driver interprets the value exposed by the hardware correctly,
++but another important aspect of testing device drivers is to verify that the
++driver actually *controls* the hardware in the expected way.
++
++For example, if you are testing a regulator driver, you want to test that
++driver actually writes the correct voltage register in the hardware with the
++correct value when the driver is asked to set a voltage using the kernel's
++regulator API.
++
++To support this, roadtest integrates with Python's built-in `unittest.mock
++<https://docs.python.org/3/library/unittest.mock.html>`_ library.  The
++``update_mock()`` method on the ``Hardware`` objects results in a ``HwMock`` (a
++subclass of ``unittest.mock``'s ``MagicMock``) object which, in the case of
++``SMBusModel``, provides access to a log of all register writes and their
++values.
++
++The object can be then used to check which registers the hardware has written
++with which values, and to assert that the expect actions have been taken.
++
++See ``roadtest/tests/regulator/test_tps62864.py`` for an example of this.
++
++GPIOs
++-----
++
++The framework includes support for hardware models to trigger interrupts by
++controlling GPIOs.  See ``roadtest/tests/rtc/test_pcf8563.py`` for an example.
++
++Support has not been implemented yet for asserting that drivers control GPIOs
++correctly.  See the comment in ``gpio_handle_cmdq()`` in ``src/backend.c``.
++
++Coding guidelines
++-----------------
++
++Run ``make fmt`` to automatically format your Python code to follow the coding
++style.  Run ``make check`` and ensure that your code passes static checkers and
++style checks.  Typing hints are mandatory.
++
++These two commands require that you have installed the packages listed in
++``requirements.txt``, for example with something like the following patch and
++then ensuring that ``~/.local/bin`` is in your ``$PATH``.
++
++.. code-block:: shell
++
++  $ pip3 install --user -r requirements.txt
++
++Alternatively, you can also run these commands in the Docker container (by
++appending ``DOCKER=1`` to the ``make`` commands) which has all the correct
++tools installed.
 -- 
 2.34.1
 
