@@ -2,47 +2,47 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C181C43219
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF9F3C433F5
 	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 18:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235272AbiCKSv0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Mar 2022 13:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
+        id S1350991AbiCKSv1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Mar 2022 13:51:27 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49236 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350937AbiCKSvY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 13:51:24 -0500
-Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B961C60C6;
-        Fri, 11 Mar 2022 10:50:18 -0800 (PST)
+        with ESMTP id S1350987AbiCKSvZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 13:51:25 -0500
+Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE46C1C60C3
+        for <linux-iio@vger.kernel.org>; Fri, 11 Mar 2022 10:50:21 -0800 (PST)
 Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id B1E44839E8;
-        Fri, 11 Mar 2022 19:50:15 +0100 (CET)
+        by phobos.denx.de (Postfix) with ESMTPSA id 4760783AF6;
+        Fri, 11 Mar 2022 19:50:18 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1647024616;
-        bh=kHtJrHHI6FCuXQtmrlkdhET9MwbI4rAZyUkWU9uZpTY=;
-        h=From:To:Cc:Subject:Date:From;
-        b=BghRDi/FUjZjzgD+yW4dS9+4++1rERRS1u75X4ppr6BF5bAtLn9NSoSIl9I3j+0kx
-         fa9p/eCZhmM9f41FUAMrAje86PXewinXkiuY4IbTT3A4iaxYInTyofl/C5MrcPRE2T
-         TZmehMZQywPMoTMZ5Q2lOXvHMx6rO/Mb1Lv/3mnR1aGDt4//SyQn2yPlLGJV6+zrPz
-         dSazIUExWRsDo6w/fraa1GygsMBzQ+ZtCgyhN1Jnt4UtSiVURn5T6IAJyyIWYnoDZv
-         G603KKZaG2roK1r2PrkjuFt8lPzciG3xpDDBolh+ZQZ8Q+TQ6KIvnr6ColtfN3ijXl
-         6q8oZkOPiyxTQ==
+        s=phobos-20191101; t=1647024618;
+        bh=tZtcZ0DQCOu00cF7T6aUMEMo5pdypmLaTC47jTWxD6Q=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=iRAfoSpjTZz0AVGTdcgs62RJCVp7SBlDKICkiOllszCXs2lE/KdwN+jxqfAQ+B+bE
+         WN4uBIec+Dordh2qdqZzKVCL83HflBoC6jCzyogWsp6FkQy7J2Jl/Y2UtHikhrDCrT
+         yCTsx0j2CD+Lm5hJe9YPacHCrZ8DOuNCvUcin+TWbM6/yXdGIIPw6/7us0xxyUUzLL
+         U1B0vb5Ut2LSTP9qV8gksvbC8bJRcRWqS1BeDGHiGEMjujydqBe3HvHUM1uVcvfaSt
+         7wGADQbvvJ/bCDl5U6ZGbV7zmdzXb0LNsOqQzuIKCXH2jcmm0sAAJ+ZyR9sDrgJrNA
+         sqkShvEtYKGpQ==
 From:   Marek Vasut <marex@denx.de>
 To:     linux-iio@vger.kernel.org
 Cc:     Marek Vasut <marex@denx.de>,
-        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Daniel Baluta <daniel.baluta@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH v2 1/7] dt-bindings: iio: adc: ti,ads1015: Add missing ADS1115 compatible string
-Date:   Fri, 11 Mar 2022 19:49:18 +0100
-Message-Id: <20220311184925.99270-1-marex@denx.de>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v2 6/7] iio: adc: ti-ads1015: Add TLA2024 support
+Date:   Fri, 11 Mar 2022 19:49:23 +0100
+Message-Id: <20220311184925.99270-6-marex@denx.de>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220311184925.99270-1-marex@denx.de>
+References: <20220311184925.99270-1-marex@denx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
@@ -51,48 +51,142 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add missing ti,ads1115 compatible string. This compatible string is
-supported by the Linux kernel driver and the ads1015 is a 12bit ADC
-while ads1115 is 16bit ADC. Add the missing compatible string.
+Add support for TI TLA2024 ADC. This chip is compatible with ADS1015
+except it has no comparator in it, hence the comparator configuration
+bits are missing in Configuration Register and the Hi_Thresh/Lo_Thresh
+registers are missing as well and so is event support.
 
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Marek Vasut <marex@denx.de>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Daniel Baluta <daniel.baluta@nxp.com>
 Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: devicetree@vger.kernel.org
 ---
-V2: Add AB from Krzysztof
+V2: No change
 ---
- Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ti-ads1015.c | 53 ++++++++++++++++++++++++++++++++++--
+ 1 file changed, 51 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-index 2c2d01bbc296d..c31c80989cc9a 100644
---- a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-@@ -4,7 +4,7 @@
- $id: http://devicetree.org/schemas/iio/adc/ti,ads1015.yaml#
- $schema: http://devicetree.org/meta-schemas/core.yaml#
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 7d0c0552f425c..dd36fe0a45cba 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -80,6 +80,7 @@ enum chip_ids {
+ 	ADSXXXX = 0,
+ 	ADS1015,
+ 	ADS1115,
++	TLA2024,
+ };
  
--title: TI ADS1015 4 channel I2C analog to digital converter
-+title: TI ADS1015/ADS1115 4 channel I2C analog to digital converter
+ enum ads1015_channels {
+@@ -247,6 +248,22 @@ static const struct regmap_config ads1015_regmap_config = {
+ 	.wr_table = &ads1015_writeable_table,
+ };
  
- maintainers:
-   - Daniel Baluta <daniel.baluta@nxp.com>
-@@ -15,7 +15,9 @@ description: |
++static const struct regmap_range tla2024_writeable_ranges[] = {
++	regmap_reg_range(ADS1015_CFG_REG, ADS1015_CFG_REG),
++};
++
++static const struct regmap_access_table tla2024_writeable_table = {
++	.yes_ranges = tla2024_writeable_ranges,
++	.n_yes_ranges = ARRAY_SIZE(tla2024_writeable_ranges),
++};
++
++static const struct regmap_config tla2024_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 16,
++	.max_register = ADS1015_CFG_REG,
++	.wr_table = &tla2024_writeable_table,
++};
++
+ static const struct iio_chan_spec ads1015_channels[] = {
+ 	ADS1015_V_DIFF_CHAN(0, 1, ADS1015_AIN0_AIN1, 12, 4,
+ 			    ads1015_events, ARRAY_SIZE(ads1015_events)),
+@@ -287,6 +304,19 @@ static const struct iio_chan_spec ads1115_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
+ };
  
- properties:
-   compatible:
--    const: ti,ads1015
-+    enum:
-+      - ti,ads1015
-+      - ti,ads1115
++static const struct iio_chan_spec tla2024_channels[] = {
++	ADS1015_V_DIFF_CHAN(0, 1, ADS1015_AIN0_AIN1, 12, 4, NULL, 0),
++	ADS1015_V_DIFF_CHAN(0, 3, ADS1015_AIN0_AIN3, 12, 4, NULL, 0),
++	ADS1015_V_DIFF_CHAN(1, 3, ADS1015_AIN1_AIN3, 12, 4, NULL, 0),
++	ADS1015_V_DIFF_CHAN(2, 3, ADS1015_AIN2_AIN3, 12, 4, NULL, 0),
++	ADS1015_V_CHAN(0, ADS1015_AIN0, 12, 4, NULL, 0),
++	ADS1015_V_CHAN(1, ADS1015_AIN1, 12, 4, NULL, 0),
++	ADS1015_V_CHAN(2, ADS1015_AIN2, 12, 4, NULL, 0),
++	ADS1015_V_CHAN(3, ADS1015_AIN3, 12, 4, NULL, 0),
++	IIO_CHAN_SOFT_TIMESTAMP(ADS1015_TIMESTAMP),
++};
++
++
+ #ifdef CONFIG_PM
+ static int ads1015_set_power_state(struct ads1015_data *data, bool on)
+ {
+@@ -823,6 +853,12 @@ static const struct iio_info ads1115_info = {
+ 	.attrs          = &ads1115_attribute_group,
+ };
  
-   reg:
-     maxItems: 1
++static const struct iio_info tla2024_info = {
++	.read_raw	= ads1015_read_raw,
++	.write_raw	= ads1015_write_raw,
++	.attrs          = &ads1115_attribute_group,
++};
++
+ static int ads1015_client_get_channels_config(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+@@ -937,6 +973,12 @@ static int ads1015_probe(struct i2c_client *client,
+ 		indio_dev->info = &ads1115_info;
+ 		data->data_rate = (unsigned int *) &ads1115_data_rate;
+ 		break;
++	case TLA2024:
++		indio_dev->channels = tla2024_channels;
++		indio_dev->num_channels = ARRAY_SIZE(tla2024_channels);
++		indio_dev->info = &tla2024_info;
++		data->data_rate = (unsigned int *) &ads1015_data_rate;
++		break;
+ 	default:
+ 		dev_err(&client->dev, "Unknown chip %d\n", chip);
+ 		return -EINVAL;
+@@ -957,7 +999,9 @@ static int ads1015_probe(struct i2c_client *client,
+ 	/* we need to keep this ABI the same as used by hwmon ADS1015 driver */
+ 	ads1015_get_channels_config(client);
+ 
+-	data->regmap = devm_regmap_init_i2c(client, &ads1015_regmap_config);
++	data->regmap = devm_regmap_init_i2c(client, (chip == TLA2024) ?
++					    &tla2024_regmap_config :
++					    &ads1015_regmap_config);
+ 	if (IS_ERR(data->regmap)) {
+ 		dev_err(&client->dev, "Failed to allocate register map\n");
+ 		return PTR_ERR(data->regmap);
+@@ -971,7 +1015,7 @@ static int ads1015_probe(struct i2c_client *client,
+ 		return ret;
+ 	}
+ 
+-	if (client->irq) {
++	if (client->irq && chip != TLA2024) {
+ 		unsigned long irq_trig =
+ 			irqd_get_trigger_type(irq_get_irq_data(client->irq));
+ 		unsigned int cfg_comp_mask = ADS1015_CFG_COMP_QUE_MASK |
+@@ -1073,6 +1117,7 @@ static const struct dev_pm_ops ads1015_pm_ops = {
+ static const struct i2c_device_id ads1015_id[] = {
+ 	{"ads1015", ADS1015},
+ 	{"ads1115", ADS1115},
++	{"tla2024", TLA2024},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, ads1015_id);
+@@ -1086,6 +1131,10 @@ static const struct of_device_id ads1015_of_match[] = {
+ 		.compatible = "ti,ads1115",
+ 		.data = (void *)ADS1115
+ 	},
++	{
++		.compatible = "ti,tla2024",
++		.data = (void *)TLA2024
++	},
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, ads1015_of_match);
 -- 
 2.34.1
 
