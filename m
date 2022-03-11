@@ -2,108 +2,195 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 151AAC433EF
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 11:33:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 024B8C433EF
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 16:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233084AbiCKLe6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Mar 2022 06:34:58 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57952 "EHLO
+        id S1350157AbiCKQTx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Mar 2022 11:19:53 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50278 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230224AbiCKLe5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 06:34:57 -0500
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 366CBBBE3A
-        for <linux-iio@vger.kernel.org>; Fri, 11 Mar 2022 03:33:53 -0800 (PST)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 6B0BA83282;
-        Fri, 11 Mar 2022 12:33:50 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1646998430;
-        bh=uIGqzCRE2RJ9/x1/Nw+c1d0yjrXrbZwVyXY8llXFRx8=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=JCngCBNmLf9BN70eWH0If6Ose5BPfYX3FKZe0YAs0MzD0HaEu8ZMZoJFpaF054zyO
-         0SQtHkIz4gDGmm9mwpr2Ebv9fT2lraSd8WEZa4UfOPwGv/BBNM7+5wReJkd81Ck4Ca
-         NfpSt/twBSVwAaWQ6EUi5GzR/4T0ZRnYCHlQKcQZruaLoKgJFMIf4XSFzoO0hP/9Eo
-         jzEZwLvlQ6U9uaV1nl5yTML426/Zi3soZwBD6ERKVBNNVn3oVTuMmh5oVSbF3Mt7Cj
-         gFcNt33bm5tbdjuHmthfFLi84+fIqSd7tKfaNv02pNVZuQspT2ysbwOHbzTd0YMjcy
-         AGnCY/5luH5tQ==
-Message-ID: <1504edf0-5773-781a-1a4f-056f57dfbf15@denx.de>
-Date:   Fri, 11 Mar 2022 12:33:49 +0100
+        with ESMTP id S240035AbiCKQTw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 11:19:52 -0500
+Received: from mxd1.seznam.cz (mxd1.seznam.cz [IPv6:2a02:598:a::78:210])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9E01D1CD7E6;
+        Fri, 11 Mar 2022 08:18:45 -0800 (PST)
+Received: from email.seznam.cz
+        by email-smtpc21b.ko.seznam.cz (email-smtpc21b.ko.seznam.cz [10.53.18.27])
+        id 732ddcdc282388b572841082;
+        Fri, 11 Mar 2022 17:18:22 +0100 (CET)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=beta;
+        t=1647015502; bh=+SW7gvP/Lj8jgIjjy9F4j1gSQrTfgZOYTRmKc2+iewE=;
+        h=Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding:X-szn-frgn:
+         X-szn-frgc;
+        b=AA8YgM41U/reS56yOeHlVqGucN3innKpwQtCIqMEr18w4SE27EE+oybUpVgw5Wkbp
+         nst9MqQGirDAtGJQwRLnSqz8fH9Oaw/iN8E0pDECpwJH4M6biz4ZpwhDxVbME5py+u
+         qEiKnU40B4HnA2Q2+VMLyPFna+VcdOx9eXnvOe2s=
+Received: from localhost.localdomain (ip-111-27.static.ccinternet.cz [147.161.27.111])
+        by email-relay29.ko.seznam.cz (Seznam SMTPD 1.3.136) with ESMTP;
+        Fri, 11 Mar 2022 17:18:17 +0100 (CET)  
+From:   michael.srba@seznam.cz
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>
+Cc:     Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        Michael Srba <Michael.Srba@seznam.cz>,
+        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Subject: [PATCH v2 2/2] iio: imu: inv_mpu6050: Add support for ICM-20608-D
+Date:   Fri, 11 Mar 2022 17:16:00 +0100
+Message-Id: <20220311161600.1469-3-michael.srba@seznam.cz>
+X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220311161600.1469-1-michael.srba@seznam.cz>
+References: <20220311161600.1469-1-michael.srba@seznam.cz>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.6.1
-Subject: Re: [PATCH 4/6] iio: adc: ti-ads1015: Deduplicate channel macros
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <20220310003402.490478-1-marex@denx.de>
- <20220310003402.490478-4-marex@denx.de> <YioKZ6EZvYHOOFMe@smile.fi.intel.com>
- <082e1654-74b7-aed2-4915-f8dd304540d6@denx.de>
- <CAHp75VfDv5CE0cDSBDeMeWj4ub1JV9o-jPpqhLvwnmmN+=WJ0Q@mail.gmail.com>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <CAHp75VfDv5CE0cDSBDeMeWj4ub1JV9o-jPpqhLvwnmmN+=WJ0Q@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Transfer-Encoding: 8bit
+X-szn-frgn: <277e48de-6894-46fe-a3ab-fdc9f1a88712>
+X-szn-frgc: <0>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 3/11/22 12:29, Andy Shevchenko wrote:
-> On Fri, Mar 11, 2022 at 1:55 AM Marek Vasut <marex@denx.de> wrote:
->> On 3/10/22 15:25, Andy Shevchenko wrote:
->>> On Thu, Mar 10, 2022 at 01:34:00AM +0100, Marek Vasut wrote:
-> 
-> ...
-> 
->>>> Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
->>>> Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
->>>> Cc: Daniel Baluta <daniel.baluta@nxp.com>
->>>> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->>>
->>> You may consider using --cc parameter in `git send-email` to avoid this noise
->>> in the commit messages.
->>
->> This is deliberate so I can keep track of who to CC on which patch.
-> 
-> You may add the Link tag to lore (which `b4` tool can do
-> automatically), so you can always access the email from the archives
-> and track this down. No need to have this in each of the commit
-> messages.
+From: Michael Srba <Michael.Srba@seznam.cz>
 
-This is used by git-send-email to put the right people on Cc, not by Lore.
+The difference between the ICM-20608-D and the other ICM-20608
+variants is the addition of a DMP (Digital Motion Processor) core.
+This difference is deemed substantial enough to change the WHOAMI
+register value.
+Since this driver doesn't currently acknowledge the exisence of
+something like a DMP core, simply copy ICM-20608 except for the
+aforementioned WHOAMI register.
 
-> ...
-> 
->>>> -            .realbits = 12,                                 \
->>>> +            .realbits = (_realbits),                        \
->>>>               .storagebits = 16,                              \
->>>
->>> This seems inconsistent a bit. What if the next chip wants to have more than
->>> 16 bits in realbits?
->>
->> When such a chip exists, this can be parametrized as well.
-> 
-> Yes, My point is that it's error prone.
+Signed-off-by: Michael Srba <Michael.Srba@seznam.cz>
+Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+---
+changes:
+ - v2: none
+---
+ drivers/iio/imu/inv_mpu6050/Kconfig        | 4 ++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 9 +++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  | 6 ++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 2 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  | 5 +++++
+ 5 files changed, 24 insertions(+), 2 deletions(-)
 
-Won't IIO core warn if realbits > storagebits ?
+diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
+index 9c625517173a..3636b1bc90f1 100644
+--- a/drivers/iio/imu/inv_mpu6050/Kconfig
++++ b/drivers/iio/imu/inv_mpu6050/Kconfig
+@@ -16,7 +16,7 @@ config INV_MPU6050_I2C
+ 	select REGMAP_I2C
+ 	help
+ 	  This driver supports the Invensense MPU6050/9150,
+-	  MPU6500/6515/6880/9250/9255, ICM20608/20609/20689, ICM20602/ICM20690
++	  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20602/ICM20690
+ 	  and IAM20680 motion tracking devices over I2C.
+ 	  This driver can be built as a module. The module will be called
+ 	  inv-mpu6050-i2c.
+@@ -28,7 +28,7 @@ config INV_MPU6050_SPI
+ 	select REGMAP_SPI
+ 	help
+ 	  This driver supports the Invensense MPU6000,
+-	  MPU6500/6515/6880/9250/9255, ICM20608/20609/20689, ICM20602/ICM20690
++	  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20602/ICM20690
+ 	  and IAM20680 motion tracking devices over SPI.
+ 	  This driver can be built as a module. The module will be called
+ 	  inv-mpu6050-spi.
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 597768c29a72..86fbbe904050 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -217,6 +217,15 @@ static const struct inv_mpu6050_hw hw_info[] = {
+ 		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
+ 		.startup_time = {INV_MPU6500_GYRO_STARTUP_TIME, INV_MPU6500_ACCEL_STARTUP_TIME},
+ 	},
++	{
++		.whoami = INV_ICM20608D_WHOAMI_VALUE,
++		.name = "ICM20608D",
++		.reg = &reg_set_6500,
++		.config = &chip_config_6500,
++		.fifo_size = 512,
++		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
++		.startup_time = {INV_MPU6500_GYRO_STARTUP_TIME, INV_MPU6500_ACCEL_STARTUP_TIME},
++	},
+ 	{
+ 		.whoami = INV_ICM20609_WHOAMI_VALUE,
+ 		.name = "ICM20609",
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index fe03707ec2d3..ed52b27409ac 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -29,6 +29,7 @@ static bool inv_mpu_i2c_aux_bus(struct device *dev)
+ 
+ 	switch (st->chip_type) {
+ 	case INV_ICM20608:
++	case INV_ICM20608D:
+ 	case INV_ICM20609:
+ 	case INV_ICM20689:
+ 	case INV_ICM20602:
+@@ -182,6 +183,7 @@ static const struct i2c_device_id inv_mpu_id[] = {
+ 	{"mpu9250", INV_MPU9250},
+ 	{"mpu9255", INV_MPU9255},
+ 	{"icm20608", INV_ICM20608},
++	{"icm20608d", INV_ICM20608D},
+ 	{"icm20609", INV_ICM20609},
+ 	{"icm20689", INV_ICM20689},
+ 	{"icm20602", INV_ICM20602},
+@@ -225,6 +227,10 @@ static const struct of_device_id inv_of_match[] = {
+ 		.compatible = "invensense,icm20608",
+ 		.data = (void *)INV_ICM20608
+ 	},
++	{
++		.compatible = "invensense,icm20608d",
++		.data = (void *)INV_ICM20608D
++	},
+ 	{
+ 		.compatible = "invensense,icm20609",
+ 		.data = (void *)INV_ICM20609
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index c6aa36ee966a..8e14f20b1314 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -76,6 +76,7 @@ enum inv_devices {
+ 	INV_MPU9250,
+ 	INV_MPU9255,
+ 	INV_ICM20608,
++	INV_ICM20608D,
+ 	INV_ICM20609,
+ 	INV_ICM20689,
+ 	INV_ICM20602,
+@@ -394,6 +395,7 @@ struct inv_mpu6050_state {
+ #define INV_MPU9255_WHOAMI_VALUE		0x73
+ #define INV_MPU6515_WHOAMI_VALUE		0x74
+ #define INV_ICM20608_WHOAMI_VALUE		0xAF
++#define INV_ICM20608D_WHOAMI_VALUE		0xAE
+ #define INV_ICM20609_WHOAMI_VALUE		0xA6
+ #define INV_ICM20689_WHOAMI_VALUE		0x98
+ #define INV_ICM20602_WHOAMI_VALUE		0x12
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+index 6800356b25fb..ce8ab6db2bf2 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+@@ -74,6 +74,7 @@ static const struct spi_device_id inv_mpu_id[] = {
+ 	{"mpu9250", INV_MPU9250},
+ 	{"mpu9255", INV_MPU9255},
+ 	{"icm20608", INV_ICM20608},
++	{"icm20608d", INV_ICM20608D},
+ 	{"icm20609", INV_ICM20609},
+ 	{"icm20689", INV_ICM20689},
+ 	{"icm20602", INV_ICM20602},
+@@ -113,6 +114,10 @@ static const struct of_device_id inv_of_match[] = {
+ 		.compatible = "invensense,icm20608",
+ 		.data = (void *)INV_ICM20608
+ 	},
++	{
++		.compatible = "invensense,icm20608d",
++		.data = (void *)INV_ICM20608D
++	},
+ 	{
+ 		.compatible = "invensense,icm20609",
+ 		.data = (void *)INV_ICM20609
+-- 
+2.34.1
 
-> ...
-> 
->>> I see two options:
->>> 1) add static assert to make sure realbits <= storagebits;
->>
->> Does static_assert work in array of structures (I don't think it does) ?
-> 
-> You can check, but IIRC some of the macros have it. Don't remember the
-> details, though.
-
-I already checked before replying, hence my question, as I didn't find a 
-way to make it work.
