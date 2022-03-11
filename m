@@ -2,60 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E76ADC4321E
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 16:47:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 432A7C433EF
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 16:47:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350468AbiCKQsM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 11 Mar 2022 11:48:12 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
+        id S1350519AbiCKQsX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 11 Mar 2022 11:48:23 -0500
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58368 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350617AbiCKQsK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 11:48:10 -0500
+        with ESMTP id S1350563AbiCKQsV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 11:48:21 -0500
 Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65AE31D21D9;
-        Fri, 11 Mar 2022 08:47:06 -0800 (PST)
-Received: by mail-pj1-x102c.google.com with SMTP id lj8-20020a17090b344800b001bfaa46bca3so8452609pjb.2;
-        Fri, 11 Mar 2022 08:47:06 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C82811D3064;
+        Fri, 11 Mar 2022 08:47:14 -0800 (PST)
+Received: by mail-pj1-x102c.google.com with SMTP id kx6-20020a17090b228600b001bf859159bfso11577789pjb.1;
+        Fri, 11 Mar 2022 08:47:14 -0800 (PST)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0vVP9sYA5tITAceIWxDOVhyL5lqUtF1pEMYNU2eAg2Q=;
-        b=pJQv/WQriaskvuD/38+wey8Yyy7lFiQJsmRXhliFyj1QLD/XBzI5k2uSvxkVaFbGxi
-         LosrkgyzqWD90vLdmz1b/bDaRAt+MUeqfuMtMdkGsKz2zcD/+Lo9XUPDOBl2IUc7uUqL
-         jpCU3HUKP7BWlQzFWXK/MywdNVUePtKUxP7KOlIWvukaEtKCFFNzKjd7Uh23X3QIFtya
-         RebKDaKyegwCNfMb012pQrr1dNguuFQjdfcjhELggsBmNn/vmZ+VwBj+kyY+BT+o5sKz
-         38IK9d/ZVMmOWYgKncnTfHuXFerw05NezIEOv5ZdBhrLf1k4NBm7cf0v0Sh1OL9aygI8
-         wdgw==
+        bh=SQSz1eMw8TQ9rQfCaHjzrl9QXxNcm9tRAV14mBAQhK4=;
+        b=FIdbCdcn3irCmXMp/JkjPGj4Yb+mS4vgWxYtze9R/vOlwUwCM3Z52m7vPncuxA2R10
+         irBaykx6W83UbQZBeShL/Ms4VTWRr0TATBfft7Yc5vTDBfBxPMva1TFLh2Es6f3gufV6
+         k3/pD1ABFXDYOCQy1BnvUOhYi1C4S3/HtDwc4CRiDO1a4wiI24mLf9HwHQyjsFHzoBCE
+         5MKeMcCZD0cJ0dgMolufl+HC3lxwl6toKL5N0HpepLAtK/bYq2zjd1hWOfA2eczUL79T
+         VtUBcT4ebo2PulUhNEfNVvJ6r3i/UNl3XeMw4SN8GmyaLnsgGlaG7ZtS6OlqdifNPTJN
+         xNEw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0vVP9sYA5tITAceIWxDOVhyL5lqUtF1pEMYNU2eAg2Q=;
-        b=2WRBFlzu+NPD43el8qWbOnVkCtJnzf2SuHAygpXcTMkkKoVjfg4xg6OeXjnmVb1hjU
-         LO+cFdTPEjDgYNgZT/eWb5GWQ6diBTVMtgwU/vL6nQhcvgoHyA+3mIXauvzHpiSSDwdm
-         rI7vKM54Cvq9gqVRbJwgUsncddw9jMCKSRhlUNIk14OM2FrneBEDex+T5co3sENEpCPG
-         vpSCOfKMy8S06tQ72rRBGmKbVy+ZkakFPLsgajgh/7U3mTp/oKo5WXIp9GqY1pBqDsSd
-         dDD6T5Yxznqzw1s4MuNxHTf1ee/brDgACTHYXt8ko9GPHdvrmYb8jqZAVqU1JV0U+WLO
-         kGfw==
-X-Gm-Message-State: AOAM5327mrq4abxObGShIURJXX8ISUMx8B0bhiD4LONUwRIYeuZYb4QE
-        hrgvy4zF8phpn29Alwp/Od4=
-X-Google-Smtp-Source: ABdhPJxhPx5aa/Ahd6Nd1PGOfpvVfSvZrZkPiRsR99wvKabCSozJetMRuYIKRnrEVi9auRe5ghdy0g==
-X-Received: by 2002:a17:90a:bb0d:b0:1bd:3baf:c8b4 with SMTP id u13-20020a17090abb0d00b001bd3bafc8b4mr11800693pjr.15.1647017225844;
-        Fri, 11 Mar 2022 08:47:05 -0800 (PST)
+        bh=SQSz1eMw8TQ9rQfCaHjzrl9QXxNcm9tRAV14mBAQhK4=;
+        b=0txi/1sOxlC0V1OrRKYScDF7nHCA4qao2tmzttExbks0nTEHW0w505a8Ku2DqysdB8
+         6U9opC/VTHt4SFjeCqGwx0/P7b/x6qieq8+xvPIiWXodUz+sHqFI8ZSh5Vjm4su4qgsf
+         q1FKdB9vwe4pSKUPXHRZo531coro3w/3QT9p9PnVnapyj6RJM7Kz2erJTxJ3CnEysZaj
+         83y8wfgmZsmrUVtOoGWWHvEGDkxufDxc9oz4gIBYLl/R4x0af7OgXQw9OE/4bEV+lQ5l
+         vRZQ5xH/GJycoMuFRhRfWrOI6+Z4vOhzqY0WO+m55c7ghSwiB7bis8DBusOfvT12GJpf
+         Iq9Q==
+X-Gm-Message-State: AOAM5303zrSpwMAiX7VlzuNcEnoWhDFtkkEiE7w3XqyJm9rJQJKrtzfZ
+        NHs2emyoRtvcdD2hA+0dKsU=
+X-Google-Smtp-Source: ABdhPJzH2al+WOxtzl9QJWHLyLiteESq8j6wHU5c+VLwW1i9Y69jsSAJEAcNVaVZdEu/Y8RHcu52gQ==
+X-Received: by 2002:a17:903:244b:b0:151:d869:3b1f with SMTP id l11-20020a170903244b00b00151d8693b1fmr11453798pls.155.1647017234357;
+        Fri, 11 Mar 2022 08:47:14 -0800 (PST)
 Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004f72acd4dadsm11107869pfx.81.2022.03.11.08.47.02
+        by smtp.gmail.com with ESMTPSA id a38-20020a056a001d2600b004f72acd4dadsm11107869pfx.81.2022.03.11.08.47.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 11 Mar 2022 08:47:05 -0800 (PST)
+        Fri, 11 Mar 2022 08:47:13 -0800 (PST)
 From:   Cixi Geng <gengcixi@gmail.com>
 To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
         orsonzhai@gmail.com, baolin.wang7@gmail.com, zhang.lyra@gmail.com,
         lgirdwood@gmail.com, broonie@kernel.org
 Cc:     yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH V2 3/7] iio: adc: sc27xx: structure adjuststment and optimization
-Date:   Sat, 12 Mar 2022 00:46:24 +0800
-Message-Id: <20220311164628.378849-4-gengcixi@gmail.com>
+Subject: [PATCH V2 5/7] iio: adc: sc27xx: add support for PMIC sc2730
+Date:   Sat, 12 Mar 2022 00:46:26 +0800
+Message-Id: <20220311164628.378849-6-gengcixi@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220311164628.378849-1-gengcixi@gmail.com>
 References: <20220311164628.378849-1-gengcixi@gmail.com>
@@ -67,233 +67,171 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Cixi Geng <cixi.geng1@unisoc.com>
 
-Introduce one variant device data structure to be compatible
-with SC2731 PMIC since it has different scale and ratio calculation
-and so on.
+sc2730 is the product of sc27xx series.
 
 Signed-off-by: Yuming Zhu <yuming.zhu1@unisoc.com>
 Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
 ---
- drivers/iio/adc/sc27xx_adc.c | 95 ++++++++++++++++++++++++++++++------
- 1 file changed, 80 insertions(+), 15 deletions(-)
+ drivers/iio/adc/sc27xx_adc.c | 108 ++++++++++++++++++++++++++++++++++-
+ 1 file changed, 107 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-index aee076c8e2b1..68629fbcfec5 100644
+index 2603ce313b07..b89637c051ac 100644
 --- a/drivers/iio/adc/sc27xx_adc.c
 +++ b/drivers/iio/adc/sc27xx_adc.c
-@@ -12,9 +12,9 @@
+@@ -13,9 +13,11 @@
  #include <linux/slab.h>
  
  /* PMIC global registers definition */
--#define SC27XX_MODULE_EN		0xc08
-+#define SC2731_MODULE_EN		0xc08
++#define SC2730_MODULE_EN		0x1808
+ #define SC2731_MODULE_EN		0xc08
  #define SC27XX_MODULE_ADC_EN		BIT(5)
--#define SC27XX_ARM_CLK_EN		0xc10
-+#define SC2731_ARM_CLK_EN		0xc10
+ #define SC2721_ARM_CLK_EN		0xc0c
++#define SC2730_ARM_CLK_EN		0x180c
+ #define SC2731_ARM_CLK_EN		0xc10
  #define SC27XX_CLK_ADC_EN		BIT(5)
  #define SC27XX_CLK_ADC_CLK_EN		BIT(6)
- 
-@@ -78,6 +78,23 @@ struct sc27xx_adc_data {
- 	int channel_scale[SC27XX_ADC_CHANNEL_MAX];
- 	u32 base;
- 	int irq;
-+	const struct sc27xx_adc_variant_data *var_data;
-+};
-+
-+/*
-+ * Since different PMICs of SC27xx series can have different
-+ * address and ratio, we should save ratio config and base
-+ * in the device data structure.
-+ */
-+struct sc27xx_adc_variant_data {
-+	u32 module_en;
-+	u32 clk_en;
-+	u32 scale_shift;
-+	u32 scale_mask;
-+	const struct sc27xx_adc_linear_graph *bscale_cal;
-+	const struct sc27xx_adc_linear_graph *sscale_cal;
-+	void (*init_scale)(struct sc27xx_adc_data *data);
-+	int (*get_ratio)(int channel, int scale);
- };
- 
- struct sc27xx_adc_linear_graph {
-@@ -103,6 +120,17 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
- 	100, 341,
- };
- 
-+/* Add these for sc2731 pmic, and the [big|small]_scale_graph_calib for common's */
-+static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
-+	4200, 850,
-+	3600, 728,
-+};
-+
-+static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
-+	1000, 838,
-+	100, 84,
-+};
-+
- static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
- 	4200, 856,
- 	3600, 733,
-@@ -130,11 +158,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
- 	size_t len;
- 
- 	if (big_scale) {
--		calib_graph = &big_scale_graph_calib;
-+		calib_graph = data->var_data->bscale_cal;
- 		graph = &big_scale_graph;
- 		cell_name = "big_scale_calib";
- 	} else {
--		calib_graph = &small_scale_graph_calib;
-+		calib_graph = data->var_data->sscale_cal;
- 		graph = &small_scale_graph;
- 		cell_name = "small_scale_calib";
- 	}
-@@ -160,7 +188,7 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
- 	return 0;
- }
- 
--static int sc27xx_adc_get_ratio(int channel, int scale)
-+static int sc2731_adc_get_ratio(int channel, int scale)
- {
- 	switch (channel) {
- 	case 1:
-@@ -185,6 +213,21 @@ static int sc27xx_adc_get_ratio(int channel, int scale)
+@@ -293,6 +295,80 @@ static int sc2721_adc_get_ratio(int channel, int scale)
  	return SC27XX_VOLT_RATIO(1, 1);
  }
  
-+/*
-+ * According to the datasheet set specific value on some channel.
-+ */
-+static void sc2731_adc_scale_init(struct sc27xx_adc_data *data)
++static int sc2730_adc_get_ratio(int channel, int scale)
++{
++	switch (channel) {
++	case 14:
++		switch (scale) {
++		case 0:
++			return SC27XX_VOLT_RATIO(68, 900);
++		case 1:
++			return SC27XX_VOLT_RATIO(68, 1760);
++		case 2:
++			return SC27XX_VOLT_RATIO(68, 2327);
++		case 3:
++			return SC27XX_VOLT_RATIO(68, 3654);
++		default:
++			return SC27XX_VOLT_RATIO(1, 1);
++		}
++	case 15:
++		switch (scale) {
++		case 0:
++			return SC27XX_VOLT_RATIO(1, 3);
++		case 1:
++			return SC27XX_VOLT_RATIO(1000, 5865);
++		case 2:
++			return SC27XX_VOLT_RATIO(500, 3879);
++		case 3:
++			return SC27XX_VOLT_RATIO(500, 6090);
++		default:
++			return SC27XX_VOLT_RATIO(1, 1);
++		}
++	case 16:
++		switch (scale) {
++		case 0:
++			return SC27XX_VOLT_RATIO(48, 100);
++		case 1:
++			return SC27XX_VOLT_RATIO(480, 1955);
++		case 2:
++			return SC27XX_VOLT_RATIO(480, 2586);
++		case 3:
++			return SC27XX_VOLT_RATIO(48, 406);
++		default:
++			return SC27XX_VOLT_RATIO(1, 1);
++		}
++	case 21:
++	case 22:
++	case 23:
++		switch (scale) {
++		case 0:
++			return SC27XX_VOLT_RATIO(3, 8);
++		case 1:
++			return SC27XX_VOLT_RATIO(375, 1955);
++		case 2:
++			return SC27XX_VOLT_RATIO(375, 2586);
++		case 3:
++			return SC27XX_VOLT_RATIO(300, 3248);
++		default:
++			return SC27XX_VOLT_RATIO(1, 1);
++		}
++	default:
++		switch (scale) {
++		case 0:
++			return SC27XX_VOLT_RATIO(1, 1);
++		case 1:
++			return SC27XX_VOLT_RATIO(1000, 1955);
++		case 2:
++			return SC27XX_VOLT_RATIO(1000, 2586);
++		case 3:
++			return SC27XX_VOLT_RATIO(1000, 4060);
++		default:
++			return SC27XX_VOLT_RATIO(1, 1);
++		}
++	}
++	return SC27XX_VOLT_RATIO(1, 1);
++}
++
+ static int sc2731_adc_get_ratio(int channel, int scale)
+ {
+ 	switch (channel) {
+@@ -349,6 +425,22 @@ static void sc2720_adc_scale_init(struct sc27xx_adc_data *data)
+ 	}
+ }
+ 
++static void sc2730_adc_scale_init(struct sc27xx_adc_data *data)
 +{
 +	int i;
 +
 +	for (i = 0; i < SC27XX_ADC_CHANNEL_MAX; i++) {
-+		if (i == 5)
++		if (i == 5 || i == 10 || i == 19 || i == 30 || i == 31)
++			data->channel_scale[i] = 3;
++		else if (i == 7 || i == 9)
++			data->channel_scale[i] = 2;
++		else if (i == 13)
 +			data->channel_scale[i] = 1;
 +		else
 +			data->channel_scale[i] = 0;
 +	}
 +}
 +
- static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
- 			   int scale, int *val)
+ static void sc2731_adc_scale_init(struct sc27xx_adc_data *data)
  {
-@@ -208,10 +251,11 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
- 		goto disable_adc;
+ 	int i;
+@@ -449,7 +541,8 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
+ 						    SC27XX_ADC_REFVOL_VDD28,
+ 						    SC27XX_ADC_REFVOL_VDD28);
+ 			if (ret_volref) {
+-				dev_err(data->dev, "failed to set the volref 2.8V, ret_volref = 0x%x\n,ret_volref");
++				dev_err(data->dev, "failed to set the volref 2.8V, ret_volref = 0x%x\n",
++					ret_volref);
+ 				ret = ret || ret_volref;
+ 			}
+ 		}
+@@ -695,6 +788,18 @@ static const struct sc27xx_adc_variant_data sc2731_data = {
+ 	.get_ratio = sc2731_adc_get_ratio,
+ };
  
- 	/* Configure the channel id and scale */
--	tmp = (scale << SC27XX_ADC_SCALE_SHIFT) & SC27XX_ADC_SCALE_MASK;
-+	tmp = (scale << data->var_data->scale_shift) & data->var_data->scale_mask;
- 	tmp |= channel & SC27XX_ADC_CHN_ID_MASK;
- 	ret = regmap_update_bits(data->regmap, data->base + SC27XX_ADC_CH_CFG,
--				 SC27XX_ADC_CHN_ID_MASK | SC27XX_ADC_SCALE_MASK,
-+				 SC27XX_ADC_CHN_ID_MASK |
-+				 data->var_data->scale_mask,
- 				 tmp);
- 	if (ret)
- 		goto disable_adc;
-@@ -262,8 +306,9 @@ static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
- 				  int channel, int scale,
- 				  u32 *div_numerator, u32 *div_denominator)
- {
--	u32 ratio = sc27xx_adc_get_ratio(channel, scale);
-+	u32 ratio;
- 
-+	ratio = data->var_data->get_ratio(channel, scale);
- 	*div_numerator = ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
- 	*div_denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
- }
-@@ -432,13 +477,13 @@ static int sc27xx_adc_enable(struct sc27xx_adc_data *data)
- {
- 	int ret;
- 
--	ret = regmap_update_bits(data->regmap, SC27XX_MODULE_EN,
-+	ret = regmap_update_bits(data->regmap, data->var_data->module_en,
- 				 SC27XX_MODULE_ADC_EN, SC27XX_MODULE_ADC_EN);
- 	if (ret)
- 		return ret;
- 
- 	/* Enable ADC work clock and controller clock */
--	ret = regmap_update_bits(data->regmap, SC27XX_ARM_CLK_EN,
-+	ret = regmap_update_bits(data->regmap, data->var_data->clk_en,
- 				 SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN,
- 				 SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN);
- 	if (ret)
-@@ -456,10 +501,10 @@ static int sc27xx_adc_enable(struct sc27xx_adc_data *data)
- 	return 0;
- 
- disable_clk:
--	regmap_update_bits(data->regmap, SC27XX_ARM_CLK_EN,
-+	regmap_update_bits(data->regmap, data->var_data->clk_en,
- 			   SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN, 0);
- disable_adc:
--	regmap_update_bits(data->regmap, SC27XX_MODULE_EN,
-+	regmap_update_bits(data->regmap, data->var_data->module_en,
- 			   SC27XX_MODULE_ADC_EN, 0);
- 
- 	return ret;
-@@ -470,21 +515,39 @@ static void sc27xx_adc_disable(void *_data)
- 	struct sc27xx_adc_data *data = _data;
- 
- 	/* Disable ADC work clock and controller clock */
--	regmap_update_bits(data->regmap, SC27XX_ARM_CLK_EN,
-+	regmap_update_bits(data->regmap, data->var_data->clk_en,
- 			   SC27XX_CLK_ADC_EN | SC27XX_CLK_ADC_CLK_EN, 0);
- 
--	regmap_update_bits(data->regmap, SC27XX_MODULE_EN,
-+	regmap_update_bits(data->regmap, data->var_data->module_en,
- 			   SC27XX_MODULE_ADC_EN, 0);
- }
- 
-+static const struct sc27xx_adc_variant_data sc2731_data = {
-+	.module_en = SC2731_MODULE_EN,
-+	.clk_en = SC2731_ARM_CLK_EN,
++static const struct sc27xx_adc_variant_data sc2730_data = {
++	.pmic_type = SC27XX_ADC,
++	.module_en = SC2730_MODULE_EN,
++	.clk_en = SC2730_ARM_CLK_EN,
 +	.scale_shift = SC27XX_ADC_SCALE_SHIFT,
 +	.scale_mask = SC27XX_ADC_SCALE_MASK,
-+	.bscale_cal = &sc2731_big_scale_graph_calib,
-+	.sscale_cal = &sc2731_small_scale_graph_calib,
-+	.init_scale = sc2731_adc_scale_init,
-+	.get_ratio = sc2731_adc_get_ratio,
++	.bscale_cal = &big_scale_graph_calib,
++	.sscale_cal = &small_scale_graph_calib,
++	.init_scale = sc2730_adc_scale_init,
++	.get_ratio = sc2730_adc_get_ratio,
 +};
 +
- static int sc27xx_adc_probe(struct platform_device *pdev)
- {
- 	struct device *dev = &pdev->dev;
- 	struct device_node *np = dev->of_node;
- 	struct sc27xx_adc_data *sc27xx_data;
-+	const struct sc27xx_adc_variant_data *pdata;
- 	struct iio_dev *indio_dev;
- 	int ret;
- 
-+	pdata = of_device_get_match_data(dev);
-+	if (!pdata) {
-+		dev_err(dev, "No matching driver data found\n");
-+		return -EINVAL;
-+	}
-+
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*sc27xx_data));
- 	if (!indio_dev)
- 		return -ENOMEM;
-@@ -520,6 +583,8 @@ static int sc27xx_adc_probe(struct platform_device *pdev)
- 	}
- 
- 	sc27xx_data->dev = dev;
-+	sc27xx_data->var_data = pdata;
-+	sc27xx_data->var_data->init_scale(sc27xx_data);
- 
- 	ret = sc27xx_adc_enable(sc27xx_data);
- 	if (ret) {
-@@ -546,7 +611,7 @@ static int sc27xx_adc_probe(struct platform_device *pdev)
- }
+ static const struct sc27xx_adc_variant_data sc2721_data = {
+ 	.pmic_type = SC2721_ADC,
+ 	.module_en = SC2731_MODULE_EN,
+@@ -809,6 +914,7 @@ static int sc27xx_adc_probe(struct platform_device *pdev)
  
  static const struct of_device_id sc27xx_adc_of_match[] = {
--	{ .compatible = "sprd,sc2731-adc", },
-+	{ .compatible = "sprd,sc2731-adc", .data = &sc2731_data},
+ 	{ .compatible = "sprd,sc2731-adc", .data = &sc2731_data},
++	{ .compatible = "sprd,sc2730-adc", .data = &sc2730_data},
+ 	{ .compatible = "sprd,sc2721-adc", .data = &sc2721_data},
+ 	{ .compatible = "sprd,sc2720-adc", .data = &sc2720_data},
  	{ }
- };
- MODULE_DEVICE_TABLE(of, sc27xx_adc_of_match);
 -- 
 2.25.1
 
