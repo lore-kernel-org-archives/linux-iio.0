@@ -2,47 +2,47 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B902FC433EF
-	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 18:50:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C181C43219
+	for <linux-iio@archiver.kernel.org>; Fri, 11 Mar 2022 18:50:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350980AbiCKSv0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S235272AbiCKSv0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 11 Mar 2022 13:51:26 -0500
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49064 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235272AbiCKSvY (ORCPT
+        with ESMTP id S1350937AbiCKSvY (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Mar 2022 13:51:24 -0500
 Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EE3AE1C60C3
-        for <linux-iio@vger.kernel.org>; Fri, 11 Mar 2022 10:50:18 -0800 (PST)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15B961C60C6;
+        Fri, 11 Mar 2022 10:50:18 -0800 (PST)
 Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id F06FE83AEF;
-        Fri, 11 Mar 2022 19:50:16 +0100 (CET)
+        by phobos.denx.de (Postfix) with ESMTPSA id B1E44839E8;
+        Fri, 11 Mar 2022 19:50:15 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1647024617;
-        bh=e41vBkvGz/w3nBzxGpPGA28Qsckykk+oa34NpiJlipU=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=E89xtUD8SicrJd9q9RactB7J8CVuXhaRnszdSonmWLYRIAXdTnRRGHoxq+s97Iz1k
-         1wT/XyoFs3OjnRaw/4McIc+qgIe5xCZErJ13pQl0dTXn+Fm6TPliiebkkCa/eO7LFy
-         mwf14lpTUugQHMDvX/Tt4GltMZnkbTDZqiPSnsQVQZorTScavTgombUZcdhFlRtDub
-         xb6/mS3PatJ8y4CRSb9wXO5JtfTyOuhXSwXvYwrvF7s43JiDoEkdGSbNSYSuhxKwEw
-         tV18DzX9us6cELw49gma26iXV7QT+GfQYOBKdM6mSYiKAwB8OwYudYs5wC5L0qPGZA
-         ElN98CB3gzsoA==
+        s=phobos-20191101; t=1647024616;
+        bh=kHtJrHHI6FCuXQtmrlkdhET9MwbI4rAZyUkWU9uZpTY=;
+        h=From:To:Cc:Subject:Date:From;
+        b=BghRDi/FUjZjzgD+yW4dS9+4++1rERRS1u75X4ppr6BF5bAtLn9NSoSIl9I3j+0kx
+         fa9p/eCZhmM9f41FUAMrAje86PXewinXkiuY4IbTT3A4iaxYInTyofl/C5MrcPRE2T
+         TZmehMZQywPMoTMZ5Q2lOXvHMx6rO/Mb1Lv/3mnR1aGDt4//SyQn2yPlLGJV6+zrPz
+         dSazIUExWRsDo6w/fraa1GygsMBzQ+ZtCgyhN1Jnt4UtSiVURn5T6IAJyyIWYnoDZv
+         G603KKZaG2roK1r2PrkjuFt8lPzciG3xpDDBolh+ZQZ8Q+TQ6KIvnr6ColtfN3ijXl
+         6q8oZkOPiyxTQ==
 From:   Marek Vasut <marex@denx.de>
 To:     linux-iio@vger.kernel.org
 Cc:     Marek Vasut <marex@denx.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
         Daniel Baluta <daniel.baluta@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 3/7] iio: adc: ti-ads1015: Switch to static const writeable ranges table
-Date:   Fri, 11 Mar 2022 19:49:20 +0100
-Message-Id: <20220311184925.99270-3-marex@denx.de>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v2 1/7] dt-bindings: iio: adc: ti,ads1015: Add missing ADS1115 compatible string
+Date:   Fri, 11 Mar 2022 19:49:18 +0100
+Message-Id: <20220311184925.99270-1-marex@denx.de>
 X-Mailer: git-send-email 2.34.1
-In-Reply-To: <20220311184925.99270-1-marex@denx.de>
-References: <20220311184925.99270-1-marex@denx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
@@ -51,58 +51,48 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Switch the driver from code implementing test whether a regmap register
-is writeable to static const tables describing the test. No functional
-change.
+Add missing ti,ads1115 compatible string. This compatible string is
+supported by the Linux kernel driver and the ads1015 is a 12bit ADC
+while ads1115 is 16bit ADC. Add the missing compatible string.
 
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Marek Vasut <marex@denx.de>
 Cc: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Cc: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Daniel Baluta <daniel.baluta@nxp.com>
 Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
 ---
-V2: No change
+V2: Add AB from Krzysztof
 ---
- drivers/iio/adc/ti-ads1015.c | 21 +++++++++------------
- 1 file changed, 9 insertions(+), 12 deletions(-)
+ Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 068efbce17103..85932b9dc166a 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -273,23 +273,20 @@ static void ads1015_event_channel_disable(struct ads1015_data *data, int chan)
- 	data->event_channel = ADS1015_CHANNELS;
- }
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+index 2c2d01bbc296d..c31c80989cc9a 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/iio/adc/ti,ads1015.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
  
--static bool ads1015_is_writeable_reg(struct device *dev, unsigned int reg)
--{
--	switch (reg) {
--	case ADS1015_CFG_REG:
--	case ADS1015_LO_THRESH_REG:
--	case ADS1015_HI_THRESH_REG:
--		return true;
--	default:
--		return false;
--	}
--}
-+static const struct regmap_range ads1015_writeable_ranges[] = {
-+	regmap_reg_range(ADS1015_CFG_REG, ADS1015_HI_THRESH_REG),
-+};
-+
-+static const struct regmap_access_table ads1015_writeable_table = {
-+	.yes_ranges = ads1015_writeable_ranges,
-+	.n_yes_ranges = ARRAY_SIZE(ads1015_writeable_ranges),
-+};
+-title: TI ADS1015 4 channel I2C analog to digital converter
++title: TI ADS1015/ADS1115 4 channel I2C analog to digital converter
  
- static const struct regmap_config ads1015_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 16,
- 	.max_register = ADS1015_HI_THRESH_REG,
--	.writeable_reg = ads1015_is_writeable_reg,
-+	.wr_table = &ads1015_writeable_table,
- };
+ maintainers:
+   - Daniel Baluta <daniel.baluta@nxp.com>
+@@ -15,7 +15,9 @@ description: |
  
- static const struct iio_chan_spec ads1015_channels[] = {
+ properties:
+   compatible:
+-    const: ti,ads1015
++    enum:
++      - ti,ads1015
++      - ti,ads1115
+ 
+   reg:
+     maxItems: 1
 -- 
 2.34.1
 
