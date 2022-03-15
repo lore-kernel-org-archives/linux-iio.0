@@ -2,120 +2,106 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0D54C433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Mar 2022 19:39:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 656BBC433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Mar 2022 19:39:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351411AbiCOTkV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Mar 2022 15:40:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41596 "EHLO
+        id S1351418AbiCOTkX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Mar 2022 15:40:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351407AbiCOTkU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2022 15:40:20 -0400
-Received: from mail-qv1-xf30.google.com (mail-qv1-xf30.google.com [IPv6:2607:f8b0:4864:20::f30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ECEC727FF6;
-        Tue, 15 Mar 2022 12:39:07 -0700 (PDT)
-Received: by mail-qv1-xf30.google.com with SMTP id 13so299447qvq.8;
-        Tue, 15 Mar 2022 12:39:07 -0700 (PDT)
+        with ESMTP id S1351419AbiCOTkW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2022 15:40:22 -0400
+Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06F4729C8A;
+        Tue, 15 Mar 2022 12:39:10 -0700 (PDT)
+Received: by mail-qt1-x830.google.com with SMTP id v14so136274qta.2;
+        Tue, 15 Mar 2022 12:39:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=6n/GEXN5lDYLZ4JxfAxl/V57o/OOb9d29VzaUpcLpQA=;
-        b=AechcBsRHkC9FhFZuNbA/sO4Tuy863lBtYizhPTaLsA7vMEys8NaWH7RHaAH3i3YnX
-         z3YhRd53z1vErumO0rFGcBwk78KLYV7YtNI6nMwaVnmYrFcrtswMV0nYhLIPNqOPChDi
-         6Xv2tf2Xav5AECI4FcXDALrtvTN9/Npk6HtPTHJcuXvzQ9/6bN2Gjs2rBOCBIq4KjPl0
-         YxgZ7JjtvcM+yAz/Bbb1O4LzrIicf5iaXsx7pA6h4ibw/5LmXcrYPEy1WHVU90xFI0Nt
-         vxnkIaX8vDe+JW7zE5bKqTvWYHAhjWFFx6HgY8mIUTGGxmScIWjVW4YbvOCUQDjvGPTx
-         lzpw==
+        bh=jFCbz7FlNevBgSrjKRG8KK3STwFo/kY9uOkLzfQEECQ=;
+        b=oW4TE3zBivfIf/rWyWV8dLljW5PGeKY76PqSqjJiNAM3CajLiZ5vEx8pWh+NFpmtEl
+         gMZHNxC8UOpIJiwQvQh3cseTr0O39uVt0swketNuRfVskzmMJRhOHtl/qIUUF26+FpM3
+         zmEcIS1+/Rriyec863ewEAW0XBrYWsaj1LJ1geXR15Mf/0EN87/v7Fs8lt76dLsfXBbR
+         rxq4ujQllBp1qJGCeChXsW8RQcxankSFkOdjXU5G7Tv4THEFOX01ix7WmiebHasyq5dI
+         XStWD98s+AdqrtXJc9KnSU7LfVlgWiA8QPwXY8ShotK5sq/x1CDMlpfZjp3d6JOtB3HG
+         r0fQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=6n/GEXN5lDYLZ4JxfAxl/V57o/OOb9d29VzaUpcLpQA=;
-        b=KGi/sVyk/C9jiJhIN7guqfk7Dgv21Z3Nh50gu+/MrCsNdXTdU8RXVmmNVnemxe51j/
-         1v/7FMk5qKapeVzQVGaATA9e3P8fF7bPh6vGN8/f51FjCzoh6cag0HA4YrNYhXVAvyNs
-         e8lVe66IiW9sZy/488x78y1HR1DN5Un/wpZtM86udWBXj/SN4gMA1b/9UFkb+Mn+XncX
-         QBVngN9xrt1ehsaip4Pr/wjBqz9+rZV1LQKsyquUuvuQvcfhf7Jn3OMqUHoR8fRHdwqP
-         4gxTso+5O6LfkYxVK3RmeiJ8De8NL4xi3wG8dBnbQhshzGS1px6vaCV8MAz25QAEsQYg
-         47gg==
-X-Gm-Message-State: AOAM532//Pfn5SR0ZYh9iEaVgCnLWcist+c9/Q5GxNDLCGYrq3KSWfsR
-        dizdBF9ZyhU5JCEsYDGQucQ=
-X-Google-Smtp-Source: ABdhPJw7whkPdA/y1cLsh5cBY3dhhlYpNL/ZKq60sS4Ygc2RxvxnjPZp9tBKybKPBT9qXoeIjIHCtA==
-X-Received: by 2002:ad4:594c:0:b0:435:6a5e:ebeb with SMTP id eo12-20020ad4594c000000b004356a5eebebmr22645843qvb.96.1647373146965;
-        Tue, 15 Mar 2022 12:39:06 -0700 (PDT)
+        bh=jFCbz7FlNevBgSrjKRG8KK3STwFo/kY9uOkLzfQEECQ=;
+        b=C0BKRYPCssrvdFfIjgusOMc9wfxldgBuBo54aY6XveGPNjE9sb89aYloc2ZW7z6aSj
+         z6oAIO6+03JPCUFXqTZh4G4Gsd39f+WwiioEL2tFGVI02yOLMjdtm3RcmOvK6oVOp1Yu
+         61P3gma5SDJB2x3ogTMeEbE79Er3j98atINNLy5XPSRBsQaanoJxh5vJ+wvGUw5V56iL
+         dTkOJzQny4xhjvCjXtuKC/C8lyXn7fZUjA8JlrbppVbcDD0y2KPODCNOyyUuOExFtXT4
+         /7jmDJXjjxElajtRi6A8w+jz5eacViTHq0UzeKfQ4ge3jVg8pJ+r9hU4sm3Sd4Tx89zD
+         whUw==
+X-Gm-Message-State: AOAM532eDQ5QK+NHmG6rymrhDGDJaJaw+7Jbfv0/8kLyxOqkWNTmzRYO
+        jFpZ8Xb2CxpLSmp0+jh8t6w=
+X-Google-Smtp-Source: ABdhPJytPJG7ZHJs6/c0xg+icxv/Chr0DUw2L6C5hu9ZQVP/ms5bX/yUfn6s6oNE+y+ptKiKv+fi0Q==
+X-Received: by 2002:a05:622a:588:b0:2de:9242:8788 with SMTP id c8-20020a05622a058800b002de92428788mr24208093qtb.76.1647373149187;
+        Tue, 15 Mar 2022 12:39:09 -0700 (PDT)
 Received: from ishi.. (072-189-064-222.res.spectrum.com. [72.189.64.222])
-        by smtp.gmail.com with ESMTPSA id o4-20020a05620a22c400b0067e02a697e0sm1440798qki.33.2022.03.15.12.39.05
+        by smtp.gmail.com with ESMTPSA id o4-20020a05620a22c400b0067e02a697e0sm1440798qki.33.2022.03.15.12.39.08
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 12:39:06 -0700 (PDT)
+        Tue, 15 Mar 2022 12:39:08 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: [RESEND PATCH 2/6] counter: Set counter device name
-Date:   Tue, 15 Mar 2022 15:38:53 -0400
-Message-Id: <87cc8eb4c84f49f89290577dc9231b2e4d7d3e8c.1647373009.git.vilhelm.gray@gmail.com>
+        Oleksij Rempel <o.rempel@pengutronix.de>,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [RESEND PATCH 4/6] counter: interrupt-cnt: add counter_push_event()
+Date:   Tue, 15 Mar 2022 15:38:55 -0400
+Message-Id: <9da3460113b5092e8658e12f23578567aab7cc5f.1647373009.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1647373009.git.vilhelm.gray@gmail.com>
 References: <cover.1647373009.git.vilhelm.gray@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Naming the counter device provides a convenient way to identify it in
-devres_log events and similar situations. This patch names the counter
-device by combining the prefix "counter" with the counter device's
-unique ID.
+From: Oleksij Rempel <o.rempel@pengutronix.de>
 
-Acked-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
-Link: https://lore.kernel.org/r/20220204084551.16397-1-vilhelm.gray@gmail.com
+Add counter_push_event() to notify user space about new pulses
+
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+Link: https://lore.kernel.org/r/20220203135727.2374052-3-o.rempel@pengutronix.de
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/counter/counter-core.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
+ drivers/counter/interrupt-cnt.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/counter/counter-core.c b/drivers/counter/counter-core.c
-index 869894b74741..938651f9e9e0 100644
---- a/drivers/counter/counter-core.c
-+++ b/drivers/counter/counter-core.c
-@@ -22,6 +22,8 @@
- #include "counter-chrdev.h"
- #include "counter-sysfs.h"
+diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
+index 9e99702470c2..3b13f56bbb11 100644
+--- a/drivers/counter/interrupt-cnt.c
++++ b/drivers/counter/interrupt-cnt.c
+@@ -26,10 +26,13 @@ struct interrupt_cnt_priv {
  
-+#define COUNTER_NAME	"counter"
+ static irqreturn_t interrupt_cnt_isr(int irq, void *dev_id)
+ {
+-	struct interrupt_cnt_priv *priv = dev_id;
++	struct counter_device *counter = dev_id;
++	struct interrupt_cnt_priv *priv = counter_priv(counter);
+ 
+ 	atomic_inc(&priv->count);
+ 
++	counter_push_event(counter, COUNTER_EVENT_CHANGE_OF_STATE, 0);
 +
- /* Provides a unique ID for each counter device */
- static DEFINE_IDA(counter_ida);
+ 	return IRQ_HANDLED;
+ }
  
-@@ -113,8 +115,15 @@ struct counter_device *counter_alloc(size_t sizeof_priv)
- 
- 	device_initialize(dev);
- 
-+	err = dev_set_name(dev, COUNTER_NAME "%d", dev->id);
-+	if (err)
-+		goto err_dev_set_name;
-+
- 	return counter;
- 
-+err_dev_set_name:
-+
-+	counter_chrdev_remove(counter);
- err_chrdev_add:
- 
- 	ida_free(&counter_ida, dev->id);
-@@ -247,7 +256,8 @@ static int __init counter_init(void)
- 	if (err < 0)
- 		return err;
- 
--	err = alloc_chrdev_region(&counter_devt, 0, COUNTER_DEV_MAX, "counter");
-+	err = alloc_chrdev_region(&counter_devt, 0, COUNTER_DEV_MAX,
-+				  COUNTER_NAME);
- 	if (err < 0)
- 		goto err_unregister_bus;
+@@ -209,7 +212,7 @@ static int interrupt_cnt_probe(struct platform_device *pdev)
+ 	irq_set_status_flags(priv->irq, IRQ_NOAUTOEN);
+ 	ret = devm_request_irq(dev, priv->irq, interrupt_cnt_isr,
+ 			       IRQF_TRIGGER_RISING | IRQF_NO_THREAD,
+-			       dev_name(dev), priv);
++			       dev_name(dev), counter);
+ 	if (ret)
+ 		return ret;
  
 -- 
 2.35.1
