@@ -2,84 +2,97 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E1339C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 15 Mar 2022 17:30:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B5C6BC43217
+	for <linux-iio@archiver.kernel.org>; Tue, 15 Mar 2022 17:31:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350612AbiCORcK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Mar 2022 13:32:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34570 "EHLO
+        id S1350602AbiCORcL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Mar 2022 13:32:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350597AbiCORcG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2022 13:32:06 -0400
-Received: from mail-pl1-x62b.google.com (mail-pl1-x62b.google.com [IPv6:2607:f8b0:4864:20::62b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA9BC58807
-        for <linux-iio@vger.kernel.org>; Tue, 15 Mar 2022 10:30:53 -0700 (PDT)
-Received: by mail-pl1-x62b.google.com with SMTP id t22so5550473plo.0
-        for <linux-iio@vger.kernel.org>; Tue, 15 Mar 2022 10:30:53 -0700 (PDT)
+        with ESMTP id S1350609AbiCORcK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2022 13:32:10 -0400
+Received: from mail-pf1-x430.google.com (mail-pf1-x430.google.com [IPv6:2607:f8b0:4864:20::430])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8535058828
+        for <linux-iio@vger.kernel.org>; Tue, 15 Mar 2022 10:30:56 -0700 (PDT)
+Received: by mail-pf1-x430.google.com with SMTP id t5so103787pfg.4
+        for <linux-iio@vger.kernel.org>; Tue, 15 Mar 2022 10:30:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e41VkECulosXHxpBrBKKLRxi/TtDKsUMJRhikN2D88Q=;
-        b=gygMhPJD5ZO91/klazHb/8EEeJviSJaW6BS5aXYb6SkcG+Jns2X/Qzfyj+sMfaG5nN
-         4hoIuWb0EFO5UFO1lMgsxsQqnitheJTxpI+GNeWaxJyqFpZxac5UCEUg/RfhH4i9e06W
-         3I3Ntl047LMu9W7r3LWx8PRM1pywKVPpD1IuU=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=cjA9Pgga5rZGnibyV/ALGefunM9pdMNpp5H2Le+/evg=;
+        b=nzMkvdSoPNssbbwgCiHAgltbHEnNoiAwMVZ1WqT5YJMPAwCHrIHq0+546eoqi7npuu
+         /DaLVsHXksxVy6lSXd++2zZkifdbB+7l3OV0jklWZ4bPk/xtD7VDRw/zAUIsEmN/FhWw
+         Vqnaf0XirhqSs2tM6aMzpMiLXhVXZ+MSB66m0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=e41VkECulosXHxpBrBKKLRxi/TtDKsUMJRhikN2D88Q=;
-        b=BzmrjF7KqukY18xJifCGBfvEZeiLYR3FqY0w/GhSUk3lM+naNSnWja9Qo6GI+4DAsg
-         WRPOJtYlwuutPqm1/LLdpo6WDliNGPbLMHGhcWZyXuzl7MjLA+GA4c53LbYVFRcB5ql8
-         kkwnaHn1c8vLJMYetuS8y9YvKJv/EiuIbF2nmumkS32XWr8K1e4+IWO8LawLjanX7Ptf
-         JDRHWTosEYJK11cpRSkSRgWLdS48QfI6QcSJ2S2zB5kmY1ehM9w6b7CwYPI0/9rgJENb
-         1/HfmCnXL5zYF2scgqh/I2TGAg83gz4F+6vOuzexUNNgKhMXk3TJQNjY/xKFXG239ZxB
-         IpTA==
-X-Gm-Message-State: AOAM531iUhefJexmBCUZxzh5LVR4bAj6366HahSDe/HiUE3kPaF0VE6G
-        lrahoSWRQBru/TY9gRF+BnseRq24lz0DRg==
-X-Google-Smtp-Source: ABdhPJxSg8n8BI+iYFpFwXS9103V+QGFdMFntfi9kC7LTpt5YGXiM5zPdmVNw5zD8FjpT8Rks5zVXQ==
-X-Received: by 2002:a17:902:6a86:b0:151:f1c5:2fa3 with SMTP id n6-20020a1709026a8600b00151f1c52fa3mr28830883plk.77.1647365453118;
-        Tue, 15 Mar 2022 10:30:53 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=cjA9Pgga5rZGnibyV/ALGefunM9pdMNpp5H2Le+/evg=;
+        b=ajJFdK9c4FnpU5eCflNeh4Cd1jUz/pWUEpN23qMOkqvp5yH6xgKokJbZNHzoLeGuIL
+         ZvTYPr39dqezHabfO1pdAqLt7wZtY1Br9OUTvFfIoYFbXnu57ElXUWeCCXR/WhJIQqWp
+         QCwxpXEg9LHftGfR+2Phc615XZnOyzrIHjnI9C5Rse8gVT5jtX0UI2ejwxtjMOvh/crk
+         YcQBAPxjUrYiTdN/bGg9R9JIm2Rgm6/Uzz74Pxe51Eb5WgrBQCGfl/LaTMKe7JW1LVOk
+         9guQ0FUi57fa7MVJXCaZLId5Qk8eVULPY9+Ns7zbTpEEbJczh8iFy8xIcCPr48OV02CA
+         s5VQ==
+X-Gm-Message-State: AOAM531BhnNhk34YZgkKnWhMOzIYzJKAjddq7w1gHVsPvbDpyIwp0uPZ
+        idwDNEFex+JPvPrIrM7wlAeJEg==
+X-Google-Smtp-Source: ABdhPJxWL+x/DHqioBc8iFNOJD6NIK6WVukCWKd3SIwuoI07F4yAGcF395iEb0T6QigzZCl3vmJwiA==
+X-Received: by 2002:a65:554e:0:b0:34d:f721:7fef with SMTP id t14-20020a65554e000000b0034df7217fefmr25317508pgr.476.1647365455988;
+        Tue, 15 Mar 2022 10:30:55 -0700 (PDT)
 Received: from localhost ([2620:15c:202:201:53f9:5c35:428f:83a1])
-        by smtp.gmail.com with UTF8SMTPSA id g18-20020a62e312000000b004f6fe0f4cf2sm24029263pfh.102.2022.03.15.10.30.52
+        by smtp.gmail.com with UTF8SMTPSA id l1-20020a17090aec0100b001bfa1bafeadsm3782902pjy.53.2022.03.15.10.30.55
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 15 Mar 2022 10:30:52 -0700 (PDT)
+        Tue, 15 Mar 2022 10:30:55 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     jic23@kernel.org, robh+dt@kernel.org, swboyd@chromium.org
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 0/7] Add settings for precharge and internal resistor
-Date:   Tue, 15 Mar 2022 10:30:35 -0700
-Message-Id: <20220315173042.1325858-1-gwendal@chromium.org>
+Subject: [PATCH 2/7] dt-bindings: iio: sx9324: Add precharge resistor setting
+Date:   Tue, 15 Mar 2022 10:30:37 -0700
+Message-Id: <20220315173042.1325858-3-gwendal@chromium.org>
 X-Mailer: git-send-email 2.35.1.723.g4982287a31-goog
+In-Reply-To: <20220315173042.1325858-1-gwendal@chromium.org>
+References: <20220315173042.1325858-1-gwendal@chromium.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-For Semtech sensors SX9324 and SX9360, allow confugration of the
-pre-charge resistor (9324/9360) and internal resistor (9324).
+Allow configure the resistance used during precharge.
 
-Fix a register name spelling mistake first.
-The 9360 changes are independant from the 9324 changes, but they are
-very similar.
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+---
+ .../bindings/iio/proximity/semtech,sx9324.yaml           | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Gwendal Grignou (7):
-  iio: sx9324: Fix register field spelling
-  dt-bindings: iio: sx9324: Add precharge resistor setting
-  iio: sx9324: Add precharge internal resistance setting
-  dt-bindings: iio: sx9324: Add internal compensation resistor setting
-  iio: sx9324: Add Setting for internal compensation resistor
-  dt-bindings: iio: sx9360: Add precharge resistor setting
-  iio: sx9360: Add pre-charge resistor setting
-
- .../iio/proximity/semtech,sx9324.yaml         | 20 +++++++++
- .../iio/proximity/semtech,sx9360.yaml         |  9 ++++
- drivers/iio/proximity/sx9324.c                | 42 ++++++++++++++++---
- drivers/iio/proximity/sx9360.c                | 12 +++++-
- 4 files changed, 77 insertions(+), 6 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+index b8a6ee16854ff..cd8ed50f2882a 100644
+--- a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
++++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+@@ -126,6 +126,14 @@ properties:
+       UINT_MAX (4294967295) represents infinite. Other values
+       represent 1-1/N.
+ 
++  semtech,input-precharge-resistor:
++    $ref: /schemas/types.yaml#/definitions/uint32
++    default: 4
++    description:
++      Pre-charge input resistance in kOhm.
++    minimum: 0
++    maximum: 30
++
+ required:
+   - compatible
+   - reg
+@@ -157,5 +165,6 @@ examples:
+         semtech,ph01-proxraw-strength = <2>;
+         semtech,ph23-proxraw-strength = <2>;
+         semtech,avg-pos-strength = <64>;
++        semtech,input-precharge-resistor = <2>;
+       };
+     };
 -- 
 2.35.1.723.g4982287a31-goog
 
