@@ -2,59 +2,58 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9C694C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D2650C433F5
 	for <linux-iio@archiver.kernel.org>; Tue, 15 Mar 2022 19:39:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351425AbiCOTkX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 15 Mar 2022 15:40:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41646 "EHLO
+        id S1351430AbiCOTkZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 15 Mar 2022 15:40:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351414AbiCOTkV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2022 15:40:21 -0400
-Received: from mail-qv1-xf31.google.com (mail-qv1-xf31.google.com [IPv6:2607:f8b0:4864:20::f31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 07516289BC;
-        Tue, 15 Mar 2022 12:39:09 -0700 (PDT)
-Received: by mail-qv1-xf31.google.com with SMTP id 13so299490qvq.8;
-        Tue, 15 Mar 2022 12:39:08 -0700 (PDT)
+        with ESMTP id S1351422AbiCOTkX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Mar 2022 15:40:23 -0400
+Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3AAA2A254;
+        Tue, 15 Mar 2022 12:39:10 -0700 (PDT)
+Received: by mail-qt1-x82e.google.com with SMTP id s11so131419qtc.3;
+        Tue, 15 Mar 2022 12:39:10 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=2R5wH7aZWLbq7NU5C7S2zfPJjL0MgrTHEo9aJHUkpcs=;
-        b=YP7xzPGpoR3yYsKXNbyMstcMwSpyG4B7mE6pdO47Xfl8t7snvSVN9KfHhMAAWnXocB
-         cFZbRaH4YDmVRBHMtsDoG75yQfun3oFcj8CeMqJ8weq1v2IzuyDt4/iV/ygtUhoJ/ZYL
-         Uw84z/r8xgLOA4XIIq3M0K84C86uLEYcQvBc6POH9LsqHfq5p4fxxwoG2PpwrrwT6mcj
-         zEJ5Ibt12Cxc0KccNsyGxRDIkmb8cyY06jYGL0XhBxDSPylPNKGadh/q5wOSOYQ2fkdC
-         HpR4ECQi5Yyt2EaetRbhvWL+1wizjiBs9eQWuK1xEtgNNaW3BDHSo1jdHsvMBEa2ioEE
-         BrcQ==
+        bh=y2zVgXnlF97kfQZU4hBwzTBXD9p1KQnPsEAJ23W9Aok=;
+        b=nk8cRuI60pQJMdDFYScVdGyJhYGw3hyQEwlLkjLcK1rqyLbjSb41CodrEz7M91a/86
+         viGjTEkHnjKF3djf7ieqbT/3sEhDFJm0139+x41ruH3IyyBYoOdl5knGUHiD4pt/F6mz
+         bMREAkcW209ChB+fwye7FistKPobJkOmBSWYK0/nJWuyz/fs0YTnJtdX7eGc2JIZAGaH
+         cw2XJ/8JZu4A+M72bW9ufmC9TCTl2AugQOVMO7N258yynpuoHXFIAVxjXTyG2d2V+92g
+         a4B27660vAIWA9EkPWnLrYr4skqhp1ReM0kyo3r0LnA/+XBG93odDRxpWTghGoFyrf+f
+         4r2A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=2R5wH7aZWLbq7NU5C7S2zfPJjL0MgrTHEo9aJHUkpcs=;
-        b=HRJInyi1mSK2gf6IZcVFZvqOHAQ1x32/rZsDws+j5KrEQKlmSF5vDc3ok8eir/+L4g
-         XGWfwguYfmUkkOPFf0AxFTdKOUsnV34YeXVdc99SvR3VfJtEh/ntMuyGFIzNLA8LUiUB
-         3akuOmWV+dxcARaQ3aZyKPiMpEXUbw7ehW/Owv6F4W+6oSkoF1mESwNCASXZGNzrLIYx
-         JgquHfs3IUjOHmdyzuZls8xRPxMfh6/sKFY3xI/QfZegY0j25fnfhyG5HemIeRbCdjNq
-         IMsHB+PNIQWVx438vBJAxVHldxUsPb1bX/L+KH8TcqnZ9p45M5/Pm/xfqt7DA5bSB3xc
-         trrQ==
-X-Gm-Message-State: AOAM5307JJlmAOBEiYyzZmGs9P4K3C2CkrpS24DcS8nnBTOYFMjupU1J
-        BmrEZ4j5ykNfxvnbJd2TIwc=
-X-Google-Smtp-Source: ABdhPJxZptkq4Q7hj6GPgtj6YgLyWYFQk1gsN6Ggq2WaLBy0Kip0IE6VKtsIUwAI4HJpkf4o7QwQdw==
-X-Received: by 2002:a05:6214:5297:b0:435:aa83:d639 with SMTP id kj23-20020a056214529700b00435aa83d639mr22908168qvb.107.1647373148181;
-        Tue, 15 Mar 2022 12:39:08 -0700 (PDT)
+        bh=y2zVgXnlF97kfQZU4hBwzTBXD9p1KQnPsEAJ23W9Aok=;
+        b=y/tO2pN5L2PqcPB0LJEmk9KTZ9am99HpNL21he1mny1Gpm0cFKYWdeWf3hbeeQOGfV
+         iR8vVYu1dZYeLZ2qgz0Mxn3sPm20IeDiHHW5hVE+k5tGr1UzPbZfVeJWXs6g3QJTlNMX
+         l5+K0TImi/txVBAe8hWioshlITJ/+cAleupBrkG9I4Qc+tq6HUAadakNX40N8k52fkfL
+         N5spKXo6ffRRXEvFAGz5YrQgYk7KjFKdyYnK6OE1nE9kp0viQe0AZsSp3WFi4IpOplT/
+         7YyLTrgAhkPVtacRfh6LDP3jDm5gVEn1NlBwookV7jDqqvPUMTY27XGdzSNvcE1DSCae
+         y+Gg==
+X-Gm-Message-State: AOAM532qf1D4wSa9Wfp8p1Jp+N30JzyP9ClyHIGuy05iRI6eXrmLzICR
+        eSd3HHXSJOZBWdnQYPpi3No=
+X-Google-Smtp-Source: ABdhPJzRFXiGL4qJknqCgskM7Cd5tXnRJZPk8pOuyRG9nhU+lbPKvIIjh2AYUnUMMdZvOJv7jT7svQ==
+X-Received: by 2002:a05:622a:189e:b0:2e1:dcd4:d01c with SMTP id v30-20020a05622a189e00b002e1dcd4d01cmr5781103qtc.1.1647373150034;
+        Tue, 15 Mar 2022 12:39:10 -0700 (PDT)
 Received: from ishi.. (072-189-064-222.res.spectrum.com. [72.189.64.222])
-        by smtp.gmail.com with ESMTPSA id o4-20020a05620a22c400b0067e02a697e0sm1440798qki.33.2022.03.15.12.39.07
+        by smtp.gmail.com with ESMTPSA id o4-20020a05620a22c400b0067e02a697e0sm1440798qki.33.2022.03.15.12.39.09
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 15 Mar 2022 12:39:07 -0700 (PDT)
+        Tue, 15 Mar 2022 12:39:09 -0700 (PDT)
 From:   William Breathitt Gray <vilhelm.gray@gmail.com>
 To:     gregkh@linuxfoundation.org
 Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Oleksij Rempel <o.rempel@pengutronix.de>,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [RESEND PATCH 3/6] counter: add new COUNTER_EVENT_CHANGE_OF_STATE
-Date:   Tue, 15 Mar 2022 15:38:54 -0400
-Message-Id: <486a5de67414470449efb84d06a2f2214f4bb31d.1647373009.git.vilhelm.gray@gmail.com>
+Subject: [RESEND PATCH 5/6] MAINTAINERS: Add Counter subsystem git tree
+Date:   Tue, 15 Mar 2022 15:38:56 -0400
+Message-Id: <41db1ea7bd9384da99fb332019ddc03067fe5311.1647373009.git.vilhelm.gray@gmail.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <cover.1647373009.git.vilhelm.gray@gmail.com>
 References: <cover.1647373009.git.vilhelm.gray@gmail.com>
@@ -64,31 +63,25 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Oleksij Rempel <o.rempel@pengutronix.de>
+The Counter subsystem tree is now separate from the IIO tree.
 
-Add new counter event to notify user space about every new counter
-pulse.
-
-Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
-Link: https://lore.kernel.org/r/20220203135727.2374052-2-o.rempel@pengutronix.de
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- include/uapi/linux/counter.h | 2 ++
- 1 file changed, 2 insertions(+)
+ MAINTAINERS | 1 +
+ 1 file changed, 1 insertion(+)
 
-diff --git a/include/uapi/linux/counter.h b/include/uapi/linux/counter.h
-index d0aa95aeff7b..96c5ffd368ad 100644
---- a/include/uapi/linux/counter.h
-+++ b/include/uapi/linux/counter.h
-@@ -61,6 +61,8 @@ enum counter_event_type {
- 	COUNTER_EVENT_THRESHOLD,
- 	/* Index signal detected */
- 	COUNTER_EVENT_INDEX,
-+	/* State of counter is changed */
-+	COUNTER_EVENT_CHANGE_OF_STATE,
- };
- 
- /**
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1ba1e4af2cbc..f4875a9faa2d 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -4951,6 +4951,7 @@ COUNTER SUBSYSTEM
+ M:	William Breathitt Gray <vilhelm.gray@gmail.com>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
++T:	git git@gitlab.com:vilhelmgray/counter.git
+ F:	Documentation/ABI/testing/sysfs-bus-counter
+ F:	Documentation/driver-api/generic-counter.rst
+ F:	drivers/counter/
 -- 
 2.35.1
 
