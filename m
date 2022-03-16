@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B961C433FE
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Mar 2022 14:24:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7789DC433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 16 Mar 2022 14:24:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1346730AbiCPOZe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Mar 2022 10:25:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35276 "EHLO
+        id S1356785AbiCPOZh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 16 Mar 2022 10:25:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34580 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358060AbiCPOZM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2022 10:25:12 -0400
-Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81FC82A275
-        for <linux-iio@vger.kernel.org>; Wed, 16 Mar 2022 07:23:54 -0700 (PDT)
-Received: by mail-ed1-x52f.google.com with SMTP id h13so2935607ede.5
-        for <linux-iio@vger.kernel.org>; Wed, 16 Mar 2022 07:23:54 -0700 (PDT)
+        with ESMTP id S1357984AbiCPOZE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2022 10:25:04 -0400
+Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9C03829CA1
+        for <linux-iio@vger.kernel.org>; Wed, 16 Mar 2022 07:23:46 -0700 (PDT)
+Received: by mail-ej1-x634.google.com with SMTP id yy13so4573072ejb.2
+        for <linux-iio@vger.kernel.org>; Wed, 16 Mar 2022 07:23:46 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qImSYxU2i/y/qV71r8EFW+LTWk9ZfhM4KeM2jcTcklQ=;
-        b=GXFNqIuos+txxk0QXeY8P02dg/9CyuyGfVWDdKoN7b0/0NaOdZxVlsascctqtK3aRE
-         +28CY7TP4fS/ozuj9pGo3G0M5qa9m6pvyQ6NxNe+SoME/oUJtiRmXgrcofIJ3lpgEmM+
-         BmJ3TTdiZYsQWJcsACChy1nhsf+W60W46Cj8tO0UmmIvLXym+2VYaG9cohVA8CIaw+tt
-         cRq2KKyHRvOmrSDa2bzL2gizUf5FdudTS6ZtqeZieDvP3U8JX1P2RkZdnjcq6FibRg/Q
-         W9luw3UE8xm+BVwD/fBJf/hGDBwiikrJGaK3nxfV4sZcizpmfhkx2sKqm0DwYAbgmx3T
-         8R6g==
+        bh=9odFb1lebTlJ8kEafI46I2InRLxGgcRnodujuq66jtI=;
+        b=NVg49xISeaIdHsW12WmT8fphYo14PkoLtsQ9FsPIm2MoO0UuFMYusKGT7EpL9GBdzz
+         M1scxjk9dbQgzj28eYHQofRN1MOq3IRpWH1z56Uvs8K4Omndx/6isp8aLzlbMJYUhsIB
+         5bRNg7jIXzz0jjpbyTmu+FE0duPfzpsJkGrjdDaltU20akkXpO2MypIp/Iq/Dr3GYk1x
+         57qvCKaFXbdG3OfXZHvZlFlQRd8P5eMAb5p4OD69isKFTPyTqrDndOSDAzeSdw/xa2ea
+         /adScgIlpgXcOgvqFUeQcJCGPWnOE5lRGmTxLrkQcxDapE9KFnop4VRyxWXdDhXINh//
+         GTdw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qImSYxU2i/y/qV71r8EFW+LTWk9ZfhM4KeM2jcTcklQ=;
-        b=LR6Na7Pa+AdWRQ2lzuOnUrk8gAwN9dkmx2YJNtt0z+kqCQG8uWSk9CAw4B2P8gZjnW
-         /YzgMYC+7PDp14iMm2ATv9BSEfs9iwC33sRRagy+Qsc2fNzkGd+aLHdZaRYW3Nvgs6qH
-         dHhaMhSFsw5J01AQ7KLXTuYmcea40EQyOJYf+CvKHaa+9/wEK4Nfs+RJGl2TrR9nOnTJ
-         t15ZdNJUJX5wXPtDdg6UfYJp20BnZlEjz4pXIWYQP2Su36gq3C2Ouq92pCI2hewtWFLk
-         n/BbUdlk7+x5YCj0zwNewHw2TibSwAoYtz4PMsGnJmkuBec/IJWukjzz9dAyGRR6Hnsj
-         DZfw==
-X-Gm-Message-State: AOAM533464Z2lnxOh/pBYdWYNvnQy2S7hkIgslhTYNResg3YlQTBrIIY
-        hCMXyQB4aLLAlHShf+ZSWZQblA==
-X-Google-Smtp-Source: ABdhPJx5YQdD5YnGHwHeH4FbsHTZz4/fimLI5/wDSD3AcK8TrIn+h98tAegowWtwgC4YoaCZtQ8+nA==
-X-Received: by 2002:aa7:cc02:0:b0:411:487e:36fe with SMTP id q2-20020aa7cc02000000b00411487e36femr29998197edt.338.1647440633082;
-        Wed, 16 Mar 2022 07:23:53 -0700 (PDT)
+        bh=9odFb1lebTlJ8kEafI46I2InRLxGgcRnodujuq66jtI=;
+        b=DCGmzbEfAs5B+n0F8M5yxAZN6M1U0z+mRha1nt4Rfl3oOPQv6tIEkGn5ORtXFQlzec
+         dhGT5JMl/X/Qc9znQIaRlY2JZsU9axuKMROOf2toPZ7ectkPwagoafdE7oOqkQcDikOF
+         qbhZ4C66YvBFOy75duKiJYwSJXlk4ofUFZ/VbsXPQOr3KncjsPwuEdetwKa1XYB3sop5
+         2sR8Y2EbKUl463vkPcJlxZhMxtncHXfCaqhiz3NYno30OwPv9vahL70yyJHAi7b7C3Nu
+         ZWHjy9etbw49wNjbdDLv9ZkiuehfDyfcD8dU/gThoeT5hH+Xa79857UdMAA1+s9qk7Yf
+         yS/w==
+X-Gm-Message-State: AOAM532WMOjlvzVOP5dzKu1Zi4PTqoggE36FZFzOYl2q27hxU+DA+5lH
+        Uom1aQR5yBFjBVIvuH6xPTbYOg==
+X-Google-Smtp-Source: ABdhPJzMoa1ifsf3IMCU4pbqugVNEvxHpQaGKa8RrWA0RHicbMkgAvd6+lbqZBk4h9An4EW0l/bN0Q==
+X-Received: by 2002:a17:907:94ca:b0:6da:e637:fa42 with SMTP id dn10-20020a17090794ca00b006dae637fa42mr158407ejc.347.1647440625205;
+        Wed, 16 Mar 2022 07:23:45 -0700 (PDT)
 Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006b2511ea97dsm952263ejc.42.2022.03.16.07.23.52
+        by smtp.gmail.com with ESMTPSA id kw3-20020a170907770300b006b2511ea97dsm952263ejc.42.2022.03.16.07.23.44
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 16 Mar 2022 07:23:52 -0700 (PDT)
+        Wed, 16 Mar 2022 07:23:44 -0700 (PDT)
 From:   Caleb Connolly <caleb.connolly@linaro.org>
 To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -58,9 +58,9 @@ To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
         devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
 Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
         john.stultz@linaro.org
-Subject: [PATCH v12 7/9] arm64: dts: qcom: sdm845-oneplus: enable rradc
-Date:   Wed, 16 Mar 2022 14:23:11 +0000
-Message-Id: <20220316142313.92371-8-caleb.connolly@linaro.org>
+Subject: [PATCH v12 1/9] spmi: add a helper to look up an SPMI device from a device node
+Date:   Wed, 16 Mar 2022 14:23:05 +0000
+Message-Id: <20220316142313.92371-2-caleb.connolly@linaro.org>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220316142313.92371-1-caleb.connolly@linaro.org>
 References: <20220316142313.92371-1-caleb.connolly@linaro.org>
@@ -70,28 +70,58 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Enable the RRADC for the OnePlus 6.
+The helper function spmi_device_from_of() takes a device node and
+returns the SPMI device associated with it.
+This is like of_find_device_by_node but for SPMI devices.
 
 Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
 ---
- arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+ drivers/spmi/spmi.c  | 17 +++++++++++++++++
+ include/linux/spmi.h |  3 +++
+ 2 files changed, 20 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-index 7f42e5315ecb..e8287cf02511 100644
---- a/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-+++ b/arch/arm64/boot/dts/qcom/sdm845-oneplus-common.dtsi
-@@ -450,6 +450,10 @@ pinconf {
- 	};
+diff --git a/drivers/spmi/spmi.c b/drivers/spmi/spmi.c
+index b37ead9e2fad..a456ce5141e1 100644
+--- a/drivers/spmi/spmi.c
++++ b/drivers/spmi/spmi.c
+@@ -386,6 +386,23 @@ static struct bus_type spmi_bus_type = {
+ 	.uevent		= spmi_drv_uevent,
  };
  
-+&pmi8998_rradc {
-+	status = "okay";
-+};
++/**
++ * spmi_device_from_of() - get the associated SPMI device from a device node
++ *
++ * @np:		device node
++ *
++ * Returns the struct spmi_device associated with a device node or NULL.
++ */
++struct spmi_device *spmi_device_from_of(struct device_node *np)
++{
++	struct device *dev = bus_find_device_by_of_node(&spmi_bus_type, np);
 +
- &qupv3_id_1 {
- 	status = "okay";
- };
++	if (dev)
++		return to_spmi_device(dev);
++	return NULL;
++}
++EXPORT_SYMBOL_GPL(spmi_device_from_of);
++
+ /**
+  * spmi_controller_alloc() - Allocate a new SPMI device
+  * @ctrl:	associated controller
+diff --git a/include/linux/spmi.h b/include/linux/spmi.h
+index 729bcbf9f5ad..eac1956a8727 100644
+--- a/include/linux/spmi.h
++++ b/include/linux/spmi.h
+@@ -164,6 +164,9 @@ static inline void spmi_driver_unregister(struct spmi_driver *sdrv)
+ 	module_driver(__spmi_driver, spmi_driver_register, \
+ 			spmi_driver_unregister)
+ 
++struct device_node;
++
++struct spmi_device *spmi_device_from_of(struct device_node *np);
+ int spmi_register_read(struct spmi_device *sdev, u8 addr, u8 *buf);
+ int spmi_ext_register_read(struct spmi_device *sdev, u8 addr, u8 *buf,
+ 			   size_t len);
 -- 
 2.35.1
 
