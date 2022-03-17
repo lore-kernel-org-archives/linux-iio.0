@@ -2,69 +2,78 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E77A2C433F5
-	for <linux-iio@archiver.kernel.org>; Wed, 16 Mar 2022 21:39:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6EFE0C4167B
+	for <linux-iio@archiver.kernel.org>; Thu, 17 Mar 2022 06:19:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1351964AbiCPVkU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 16 Mar 2022 17:40:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37592 "EHLO
+        id S229609AbiCQGUj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 17 Mar 2022 02:20:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1358257AbiCPVkP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Mar 2022 17:40:15 -0400
-Received: from mail-io1-xd30.google.com (mail-io1-xd30.google.com [IPv6:2607:f8b0:4864:20::d30])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B41D53819B
-        for <linux-iio@vger.kernel.org>; Wed, 16 Mar 2022 14:38:59 -0700 (PDT)
-Received: by mail-io1-xd30.google.com with SMTP id k25so3919482iok.8
-        for <linux-iio@vger.kernel.org>; Wed, 16 Mar 2022 14:38:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=0ni6qEV23bpfC9gZ85rViHqPr1Fe02W50huWIxyNEUM=;
-        b=YDoHhjkzfqfaghn9OIA7SaV0d87Xf0IXGRdp5t0bNzOvxtgPauU4faPlIhH0d+HjBY
-         qjATOau7I2cTNJjphGROqb3gQ4m4ZF2vXvPZRRoAKX1Ufzs9lt80l571VZE34FI8o1WF
-         /dl4B6dB5zSAGy60rVz9BmVZ+JqUZHX+QmzNA=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=0ni6qEV23bpfC9gZ85rViHqPr1Fe02W50huWIxyNEUM=;
-        b=k3O+TmN9BhHofe4UgrY7p/f7xNjT6qlLrILZ9PKMeHbDg5pJKS0gbikQNkZ4JKtuRl
-         Jj2x8uzjkRgsznhha5DPFnvAQkjTKPtRYYtoOtpiLl4XmIHVnVZYktKlU+SCoOlA67Ap
-         60RdbUkBqxH3SE6YNWrKNQXpVSY7wktQna2IoPhmwlG4FIvVLECPsoqPfMUH3BUm1qQt
-         aJznyPwr8Z4yzQ4Rmm1ynGC9G/fkLiajsEfv09rcal89rTcY/NfGzCNXUS/XYBlUSP2N
-         GctzdX0GbQP+7/y0GhSMdlzNK4Ba7Juz/RiaonBUkmcoJtYcEgHbrJPGDqjZx72qhibr
-         o5fw==
-X-Gm-Message-State: AOAM532gQMQLFomAUOhiIHfnpH7GXwQc1wloHg2DJKjTQCVTIP918AWA
-        bUAv17zdFxCoC7U670c6JHXZMZY+fx2QpVCYe356Vw==
-X-Google-Smtp-Source: ABdhPJyDNC+rz9Gv3wfYl4tEz5JX5mPK5as58m8jtyXLL2S5aD32zTRUm4SgHmvgoX+uYCux/ML3AEi6m7CLCXhVYGQ=
-X-Received: by 2002:a6b:6f0c:0:b0:648:ea2d:41fe with SMTP id
- k12-20020a6b6f0c000000b00648ea2d41femr847996ioc.63.1647466739121; Wed, 16 Mar
- 2022 14:38:59 -0700 (PDT)
+        with ESMTP id S229641AbiCQGUL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 17 Mar 2022 02:20:11 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 77345111777;
+        Wed, 16 Mar 2022 23:09:39 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:To:Subject:MIME-Version:Date:Message-ID:Sender:
+        Reply-To:Cc:Content-ID:Content-Description;
+        bh=WKhGOsAACM1OV4BTcw0P1QEvmLUUvdDHRLBA83a5pII=; b=JuUbDD8Uhr3l+iB1i38NPYF/B+
+        A70rbezTyjtL7z/0OQscS4GGQ1WJ1TgLcjw4wmybUo6Rhqj5Ix+pfDHhB2J2iJX2J0+xOXl0DcWGE
+        ZSl8DuBGM/w+rWKsegxl9JNBLRwkwM214dynQ3+C287kWKj8CjDiGOYtk3BCIiDb0Sgu4z4CLXV9O
+        Z0RZKVWQG7eMrupLCFdrImhrp/kSQdP1eqV4AWmim+soaVxGObgrSPngtAB7GxPJYBKtrgRdeq5mU
+        ZVu2urOAiXpVWxdGBa5neqp0N3vgu+z/FkOQfWBgqEtGxeLsx3eKiS8hxK0aQzwegWAXd6TP8YMtO
+        XpNhE20Q==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1nUhgf-001mDS-2Z; Thu, 17 Mar 2022 04:24:33 +0000
+Message-ID: <16509fb6-e40c-e31b-2c80-264c44b0beb9@infradead.org>
+Date:   Wed, 16 Mar 2022 21:24:27 -0700
 MIME-Version: 1.0
-References: <20220315173042.1325858-1-gwendal@chromium.org>
- <20220315173042.1325858-2-gwendal@chromium.org> <CAE-0n51+Vyco+drQzF79bE06_UTKHHc3J5Q1wMvxEntqEBpyug@mail.gmail.com>
-In-Reply-To: <CAE-0n51+Vyco+drQzF79bE06_UTKHHc3J5Q1wMvxEntqEBpyug@mail.gmail.com>
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Wed, 16 Mar 2022 14:38:48 -0700
-Message-ID: <CAPUE2uuRG-aQ1_bHxJts+5bsGeZDrFXqCOfoFXPTdCyfv7CwKA@mail.gmail.com>
-Subject: Re: [PATCH 1/7] iio: sx9324: Fix register field spelling
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     jic23@kernel.org, robh+dt@kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.7.0
+Subject: Re: mmotm 2022-03-16-17-42 uploaded (drivers/iio/afe/iio-rescale.o)
+Content-Language: en-US
+To:     Andrew Morton <akpm@linux-foundation.org>, broonie@kernel.org,
+        mhocko@suse.cz, sfr@canb.auug.org.au, linux-next@vger.kernel.org,
+        linux-fsdevel@vger.kernel.org, linux-mm@kvack.org,
+        linux-kernel@vger.kernel.org, mm-commits@vger.kernel.org,
+        Peter Rosin <peda@axentia.se>, linux-iio@vger.kernel.org
+References: <20220317004304.95F89C340E9@smtp.kernel.org>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220317004304.95F89C340E9@smtp.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, Mar 15, 2022 at 11:19 AM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> Quoting Gwendal Grignou (2022-03-15 10:30:36)
-> > Field for PROX_CTRL4 should contain PROX_CTRL4.
-> >
-> > Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
->
-> Any Fixes tag? It's a typo though so not really a big deal.
-Fixes: 4c18a890dff8d ("iio:proximity:sx9324: Add SX9324 support")
->
-> Reviewed-by: Stephen Boyd <swboyd@chromium.org>
+
+
+On 3/16/22 17:43, Andrew Morton wrote:
+> The mm-of-the-moment snapshot 2022-03-16-17-42 has been uploaded to
+> 
+>    https://www.ozlabs.org/~akpm/mmotm/
+> 
+> mmotm-readme.txt says
+> 
+> README for mm-of-the-moment:
+> 
+> https://www.ozlabs.org/~akpm/mmotm/
+> 
+> This is a snapshot of my -mm patch queue.  Uploaded at random hopefully
+> more than once a week.
+> 
+> You will need quilt to apply these patches to the latest Linus release (5.x
+> or 5.x-rcY).  The series file is in broken-out.tar.gz and is duplicated in
+> https://ozlabs.org/~akpm/mmotm/series
+
+
+on x86_64:
+
+ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
+
+
+
+-- 
+~Randy
