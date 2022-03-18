@@ -2,378 +2,163 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 32D4BC433FE
-	for <linux-iio@archiver.kernel.org>; Fri, 18 Mar 2022 16:19:27 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2CE55C43217
+	for <linux-iio@archiver.kernel.org>; Fri, 18 Mar 2022 20:09:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238859AbiCRQUm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 18 Mar 2022 12:20:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34890 "EHLO
+        id S240101AbiCRUKu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 18 Mar 2022 16:10:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238867AbiCRQTv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Mar 2022 12:19:51 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8AE9A16F06A;
-        Fri, 18 Mar 2022 09:18:03 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22IE1IR1013812;
-        Fri, 18 Mar 2022 12:17:50 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3evfqqmx5y-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Fri, 18 Mar 2022 12:17:49 -0400
-Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 22IGHmiF009332
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Fri, 18 Mar 2022 12:17:48 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX8.ad.analog.com
- (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Fri, 18 Mar
- 2022 12:17:47 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Fri, 18 Mar 2022 12:17:47 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22IGHWUj024583;
-        Fri, 18 Mar 2022 12:17:41 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v2 4/8] iio: adc: ad_sigma_delta: Add sequencer support
-Date:   Fri, 18 Mar 2022 18:27:18 +0200
-Message-ID: <20220318162722.51215-5-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220318162722.51215-1-alexandru.tachici@analog.com>
-References: <20220318162722.51215-1-alexandru.tachici@analog.com>
+        with ESMTP id S229792AbiCRUKt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Mar 2022 16:10:49 -0400
+Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9FBB523D76C;
+        Fri, 18 Mar 2022 13:09:28 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
+        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
+        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
+        Resent-Cc:Resent-Message-ID; bh=O6uGUdoW6Lxm5JY3J83NMEK8xoTghOZASOlRneAdaZw=;
+        t=1647634168; x=1648843768; b=bQEwG1o/Vm4jlHUDF+ToofOnblLQp81bKySVJxlmbEbsTGn
+        4gvHkbTR8d8B3MxOztQno0siDPdV5gVSqAWK19RmH5esSBx41VpshuQQbAes/L7fDsZlG1FvbE+yW
+        km60nvngaxquE56d8CoLT9Pz71P0SHxF7cXiH4ITdhHSWhsZSluCGW/IxL43NADxXMySUK7FKMBCM
+        ZSiZ5bR3aU9bPSnXeY0LgBzU2MZoKNjydhmBzZEJnWDyXfp+xRxlh13U0E6fFejC/ZBY37KCpiV3f
+        exQi9IIl6VfLm+FroqGiypZHdOmoKjTfJbasmlV02WZMhDWilEIZixke0stAAqSA==;
+Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
+        (Exim 4.95)
+        (envelope-from <johannes@sipsolutions.net>)
+        id 1nVIuF-00F0HF-AC;
+        Fri, 18 Mar 2022 21:09:03 +0100
+Message-ID: <1e61b0f21794e67fb4e87dc41fab90829d3c7cd6.camel@sipsolutions.net>
+Subject: Re: [RFC v1 07/10] iio: light: opt3001: add roadtest
+From:   Johannes Berg <johannes@sipsolutions.net>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
+        Brendan Higgins <brendanhiggins@google.com>
+Cc:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        kernel <kernel@axis.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
+        "shuah@kernel.org" <shuah@kernel.org>,
+        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
+        "broonie@kernel.org" <broonie@kernel.org>,
+        "a.zummo@towertech.it" <a.zummo@towertech.it>,
+        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
+        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
+        "corbet@lwn.net" <corbet@lwn.net>,
+        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Date:   Fri, 18 Mar 2022 21:09:02 +0100
+In-Reply-To: <20220318154927.GA32172@axis.com>
+References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
+         <20220311162445.346685-8-vincent.whitchurch@axis.com>
+         <CAFd5g47O2PbqaUZRoioRROtywTm=6t7cVgHqO7qc0ZGewQk16A@mail.gmail.com>
+         <20220318154927.GA32172@axis.com>
+Content-Type: text/plain; charset="UTF-8"
+User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 3tK2mfU2pzOv8geleyCMPjU2JrEZieEP
-X-Proofpoint-ORIG-GUID: 3tK2mfU2pzOv8geleyCMPjU2JrEZieEP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-18_11,2022-03-15_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
- suspectscore=0 adultscore=0 clxscore=1011 impostorscore=0 bulkscore=0
- mlxlogscore=999 priorityscore=1501 spamscore=0 lowpriorityscore=0
- phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203180088
+Content-Transfer-Encoding: 7bit
+X-malware-bazaar: not-scanned
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+On Fri, 2022-03-18 at 16:49 +0100, Vincent Whitchurch wrote:
+> 
+> It should be possible, but upstream QEMU doesn't have everything that we
+> need so some work is needed there.  Also, of course work is need to
+> provide user space for running the tests and communicating between the
+> virtual machine and the backend:
+> 
+> - We need user space, so build scripts would need to be provided to
+>   cross-compile busybox and Python (and whatever libraries it needs) for
+>   the target architecture.
 
-Some sigma-delta chips support sampling of multiple
-channels in continuous mode.
+You could possibly use some nix recipes for all of this, but that's a
+fairly arcane thing (we use it, but ...)
 
-When the operating with more than one channel enabled,
-the channel sequencer cycles through the enabled channels
-in sequential order, from first channel to the last one.
-If a channel is disabled, it is skipped by the sequencer.
+> - We also use UML's hostfs feature to make things transparent to the
+>   user and to avoid having to set up things like networking for
+>   communication between the host and the backend.  I think QEMU's 9pfs
+>   support can be used as a rootfs too but it's not something I've
+>   personally tested.
 
-If more than one channel is used in continuous mode,
-instruct the device to append the status to the SPI transfer
-(1 extra byte) every time we receive a sample.
-All sigma-delta chips possessing a sampling sequencer have
-this ability. Inside the status register there will be
-the number of the converted channel. In this way, even
-if the CPU won't keep up with the sampling rate, it won't
-send to userspace wrong channel samples.
+That works just fine, yes. We used to do exactly this in the wireless
+test suite before we switched to UML, but the switch to UML was due to
+the "time-travel" feature.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- drivers/iio/adc/ad_sigma_delta.c       | 134 +++++++++++++++++++++++--
- include/linux/iio/adc/ad_sigma_delta.h |  33 ++++++
- 2 files changed, 157 insertions(+), 10 deletions(-)
+https://w1.fi/cgit/hostap/tree/tests/hwsim/vm
 
-diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
-index ebcd52526cac..5d1932ad2a22 100644
---- a/drivers/iio/adc/ad_sigma_delta.c
-+++ b/drivers/iio/adc/ad_sigma_delta.c
-@@ -342,15 +342,47 @@ EXPORT_SYMBOL_NS_GPL(ad_sigma_delta_single_conversion, IIO_AD_SIGMA_DELTA);
- static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
-+	unsigned int i, slot, samples_buf_size;
- 	unsigned int channel;
-+	uint8_t *samples_buf;
- 	int ret;
- 
--	channel = find_first_bit(indio_dev->active_scan_mask,
--				 indio_dev->masklength);
--	ret = ad_sigma_delta_set_channel(sigma_delta,
--		indio_dev->channels[channel].address);
--	if (ret)
--		return ret;
-+	if (sigma_delta->num_slots == 1) {
-+		channel = find_first_bit(indio_dev->active_scan_mask,
-+					 indio_dev->masklength);
-+		ret = ad_sigma_delta_set_channel(sigma_delta,
-+						 indio_dev->channels[channel].address);
-+		if (ret)
-+			return ret;
-+		slot = 1;
-+	} else {
-+		/*
-+		 * At this point update_scan_mode already enabled the required channels.
-+		 * For sigma-delta sequencer drivers with multiple slots, an update_scan_mode
-+		 * implementation is mandatory.
-+		 */
-+		slot = 0;
-+		for_each_set_bit(i, indio_dev->active_scan_mask, indio_dev->masklength) {
-+			sigma_delta->slots[slot] = indio_dev->channels[i].address;
-+			slot++;
-+		}
-+	}
-+
-+	sigma_delta->active_slots = slot;
-+	sigma_delta->current_slot = 0;
-+
-+	if (sigma_delta->active_slots > 1) {
-+		ret = ad_sigma_delta_append_status(sigma_delta, true);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	samples_buf_size = slot * indio_dev->channels[0].scan_type.storagebits + sizeof(int64_t);
-+	samples_buf = krealloc(sigma_delta->samples_buf, samples_buf_size, GFP_KERNEL);
-+	if (!samples_buf)
-+		return -ENOMEM;
-+
-+	sigma_delta->samples_buf = samples_buf;
- 
- 	spi_bus_lock(sigma_delta->spi->master);
- 	sigma_delta->bus_locked = true;
-@@ -386,6 +418,10 @@ static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
- 	sigma_delta->keep_cs_asserted = false;
- 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
- 
-+	if (sigma_delta->status_appended)
-+		ad_sigma_delta_append_status(sigma_delta, false);
-+
-+	ad_sigma_delta_disable_all(sigma_delta);
- 	sigma_delta->bus_locked = false;
- 	return spi_bus_unlock(sigma_delta->spi->master);
- }
-@@ -396,6 +432,10 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
- 	uint8_t *data = sigma_delta->rx_buf;
-+	unsigned int transfer_size;
-+	unsigned int sample_size;
-+	unsigned int sample_pos;
-+	unsigned int status_pos;
- 	unsigned int reg_size;
- 	unsigned int data_reg;
- 
-@@ -408,21 +448,63 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
- 	else
- 		data_reg = AD_SD_REG_DATA;
- 
-+	/* Status word will be appended to the sample during transfer */
-+	if (sigma_delta->status_appended)
-+		transfer_size = reg_size + 1;
-+	else
-+		transfer_size = reg_size;
-+
- 	switch (reg_size) {
- 	case 4:
- 	case 2:
- 	case 1:
--		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[0]);
-+		status_pos = reg_size;
-+		ad_sd_read_reg_raw(sigma_delta, data_reg, transfer_size, &data[0]);
- 		break;
- 	case 3:
-+		status_pos = reg_size + 1;
- 		/* We store 24 bit samples in a 32 bit word. Keep the upper
- 		 * byte set to zero. */
--		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[1]);
-+		ad_sd_read_reg_raw(sigma_delta, data_reg, transfer_size, &data[1]);
- 		break;
- 	}
- 
--	iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
-+	/*
-+	 * For devices sampling only one channel at
-+	 * once, there is no need for sample number tracking.
-+	 */
-+	if (sigma_delta->active_slots == 1) {
-+		iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
-+		goto irq_handled;
-+	}
-+
-+	if (sigma_delta->status_appended) {
-+		u8 converted_channel;
- 
-+		converted_channel = data[status_pos] & sigma_delta->info->status_ch_mask;
-+		if (converted_channel != sigma_delta->slots[sigma_delta->current_slot]) {
-+			/*
-+			 * Desync occurred during continuous sampling of multiple channels.
-+			 * Drop this incomplete sample and start from first channel again.
-+			 */
-+
-+			sigma_delta->current_slot = 0;
-+			goto irq_handled;
-+		}
-+	}
-+
-+	sample_size = indio_dev->channels[0].scan_type.storagebits / 8;
-+	sample_pos = sample_size * sigma_delta->current_slot;
-+	memcpy(&sigma_delta->samples_buf[sample_pos], data, sample_size);
-+	sigma_delta->current_slot++;
-+
-+	if (sigma_delta->current_slot == sigma_delta->active_slots) {
-+		sigma_delta->current_slot = 0;
-+		iio_push_to_buffers_with_timestamp(indio_dev, sigma_delta->samples_buf,
-+						   pf->timestamp);
-+	}
-+
-+irq_handled:
- 	iio_trigger_notify_done(indio_dev->trig);
- 	sigma_delta->irq_dis = false;
- 	enable_irq(sigma_delta->spi->irq);
-@@ -430,10 +512,17 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
- 	return IRQ_HANDLED;
- }
- 
-+static bool ad_sd_validate_scan_mask(struct iio_dev *indio_dev, const unsigned long *mask)
-+{
-+	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
-+
-+	return bitmap_weight(mask, indio_dev->masklength) <= sigma_delta->num_slots;
-+}
-+
- static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
- 	.postenable = &ad_sd_buffer_postenable,
- 	.postdisable = &ad_sd_buffer_postdisable,
--	.validate_scan_mask = &iio_validate_scan_mask_onehot,
-+	.validate_scan_mask = &ad_sd_validate_scan_mask,
- };
- 
- static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private)
-@@ -513,8 +602,14 @@ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_de
-  */
- int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indio_dev)
- {
-+	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
- 	int ret;
- 
-+	sigma_delta->slots = devm_kcalloc(dev, sigma_delta->num_slots,
-+					  sizeof(*sigma_delta->slots), GFP_KERNEL);
-+	if (!sigma_delta->slots)
-+		return -ENOMEM;
-+
- 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
- 					      &iio_pollfunc_store_time,
- 					      &ad_sd_trigger_handler,
-@@ -541,6 +636,25 @@ int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
- {
- 	sigma_delta->spi = spi;
- 	sigma_delta->info = info;
-+
-+	/* If the field is unset in ad_sigma_delta_info, asume there can only be 1 slot. */
-+	if (!info->num_slots)
-+		sigma_delta->num_slots = 1;
-+	else
-+		sigma_delta->num_slots = info->num_slots;
-+
-+	if (sigma_delta->num_slots > 1) {
-+		if (!indio_dev->info->update_scan_mode) {
-+			dev_err(&spi->dev, "iio_dev lacks update_scan_mode().\n");
-+			return -EINVAL;
-+		}
-+
-+		if (!info->disable_all) {
-+			dev_err(&spi->dev, "ad_sigma_delta_info lacks disable_all().\n");
-+			return -EINVAL;
-+		}
-+	}
-+
- 	iio_device_set_drvdata(indio_dev, sigma_delta);
- 
- 	return 0;
-diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
-index c525fd51652f..b921ceb8adfd 100644
---- a/include/linux/iio/adc/ad_sigma_delta.h
-+++ b/include/linux/iio/adc/ad_sigma_delta.h
-@@ -32,26 +32,34 @@ struct iio_dev;
- /**
-  * struct ad_sigma_delta_info - Sigma Delta driver specific callbacks and options
-  * @set_channel: Will be called to select the current channel, may be NULL.
-+ * @append_status: Will be called to enable status append at the end of the sample, may be NULL.
-  * @set_mode: Will be called to select the current mode, may be NULL.
-+ * @disable_all: Will be called to disable all channels, may be NULL.
-  * @postprocess_sample: Is called for each sampled data word, can be used to
-  *		modify or drop the sample data, it, may be NULL.
-  * @has_registers: true if the device has writable and readable registers, false
-  *		if there is just one read-only sample data shift register.
-  * @addr_shift: Shift of the register address in the communications register.
-  * @read_mask: Mask for the communications register having the read bit set.
-+ * @status_ch_mask: Mask for the channel number stored in status register.
-  * @data_reg: Address of the data register, if 0 the default address of 0x3 will
-  *   be used.
-  * @irq_flags: flags for the interrupt used by the triggered buffer
-+ * @num_slots: Number of sequencer slots
-  */
- struct ad_sigma_delta_info {
- 	int (*set_channel)(struct ad_sigma_delta *, unsigned int channel);
-+	int (*append_status)(struct ad_sigma_delta *, bool append);
-+	int (*disable_all)(struct ad_sigma_delta *);
- 	int (*set_mode)(struct ad_sigma_delta *, enum ad_sigma_delta_mode mode);
- 	int (*postprocess_sample)(struct ad_sigma_delta *, unsigned int raw_sample);
- 	bool has_registers;
- 	unsigned int addr_shift;
- 	unsigned int read_mask;
-+	unsigned int status_ch_mask;
- 	unsigned int data_reg;
- 	unsigned long irq_flags;
-+	unsigned int num_slots;
- };
- 
- /**
-@@ -76,6 +84,13 @@ struct ad_sigma_delta {
- 	uint8_t			comm;
- 
- 	const struct ad_sigma_delta_info *info;
-+	unsigned int		active_slots;
-+	unsigned int		current_slot;
-+	unsigned int		num_slots;
-+	bool			status_appended;
-+	/* map slots to channels in order to know what to expect from devices */
-+	unsigned int		*slots;
-+	uint8_t			*samples_buf;
- 
- 	/*
- 	 * DMA (thus cache coherency maintenance) requires the
-@@ -97,6 +112,24 @@ static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
- 	return 0;
- }
- 
-+static inline int ad_sigma_delta_append_status(struct ad_sigma_delta *sd, bool append)
-+{
-+	if (sd->info->append_status) {
-+		sd->status_appended = append;
-+		return sd->info->append_status(sd, append);
-+	}
-+
-+	return 0;
-+}
-+
-+static inline int ad_sigma_delta_disable_all(struct ad_sigma_delta *sd)
-+{
-+	if (sd->info->disable_all)
-+		return sd->info->disable_all(sd);
-+
-+	return 0;
-+}
-+
- static inline int ad_sigma_delta_set_mode(struct ad_sigma_delta *sd,
- 	unsigned int mode)
- {
--- 
-2.25.1
+has support for both UML and qemu/kvm.
 
+> - We use virtio-i2c and virtio-gpio and use virtio-uml which uses the
+>   vhost-user API to communicate from UML to the backend.  The latest
+>   version of QEMU has support for vhost-user-i2c, but vhost-user-gpio
+>   doesn't seem to have been merged yet, so work is needed on the QEMU
+>   side.  This will also be true for other buses in the future, if they
+>   are implemented with new virtio devices.
+> 
+> - For MMIO, UML has virtio-mmio which allows implementing any PCIe
+>   device (and by extension any platform device) outside of UML, but last
+>   I checked, upstream QEMU did not have something similar.
+
+I think you have this a bit fuzzy.
+
+The virtio_uml[.c] you speak of is the "bus" driver for virtio in UML.
+Obviously, qemu has support for virtio, so you don't need those bits.
+
+Now, virtio_uml is actually the virtio (bus) driver inside the kernel,
+like you'd have virtio-mmio/virtio-pci in qemu. However, virtio_uml
+doesn't implement the devices in the hypervisor, where most qemu devices
+are implemented, but uses vhost-user to run the device implementation in
+a separate userspace. [1]
+
+Now we're talking about vhost-user to talk to the device, and qemu
+supports this as well, in fact the vhost-user spec is part of qemu:
+https://git.qemu.org/?p=qemu.git;a=blob;f=docs/system/devices/vhost-user.rst;h=86128114fa3788a73679f0af38e141021087c828;hb=1d60bb4b14601e38ed17384277aa4c30c57925d3
+https://www.qemu.org/docs/master/interop/vhost-user.html
+
+The docs on how to use it are here:
+https://www.qemu.org/docs/master/system/devices/vhost-user.html
+
+So once you have a device implementation (regardless of whether it's for
+use with any of the virtio-i2c, arch/um/drivers/virt-pci.c, virtio-gpio,
+virtio-net, ... drivers) you can actually connect it to virtual machines
+running as UML or in qemu.
+
+(Actually, that's not strictly true today since it's
+arch/um/drivers/virt-pci.c and I didn't get a proper device ID assigned
+etc since it was for experimentation, I guess if we make this more
+commonly used then we should move it to drivers/pci/controller/virtio-
+pci.c and actually specify it in the OASIS virtio spec., at the very
+least it'd have to be possible to compile this and lib/logic_iomem.c on
+x86, but that's possible. Anyway I think PCI(e) is probably low on your
+list of things ...)
+
+>  - Also, some paths in this driver needs a modification to be tested
+>    under roadtest.  It uses wait_event_timeout() with a fixed value, but
+>    we cannot guarantee that this constraint is met in the test
+>    environment since it depends on things like CPU load on the host.
+> 
+>    (Also, we use UML's "time travel" feature which essentially
+>    fast-forwards through idle time, so the constraint can never be met
+>    in practice.)
+
+Wohoo! This makes me very happy, finally somebody else who uses it :-)
+
+
+
+[1] As an aside, you might be interested in usfstl (which you can find
+at https://github.com/linux-test-project/usfstl) which is one way you
+could implement the device side - though the focus here is on making a
+device implementation easy while under "time-travel" mode.
+
+If you ever want to use time-travel with multiple machines or actually
+with virtio devices, it also contains the necessary controller program
+to glue the entire simulation together. We use this very successfully to
+test the (real but compiled for x86) wifi firmware for iwlwifi together
+with the real driver actually seeing a PCIe device in UML, under time-
+travel :)
+
+johannes
