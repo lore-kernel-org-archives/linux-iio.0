@@ -2,85 +2,77 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8CB52C433EF
-	for <linux-iio@archiver.kernel.org>; Sat, 19 Mar 2022 18:06:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7A302C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 19 Mar 2022 18:10:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237719AbiCSSIF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 19 Mar 2022 14:08:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43800 "EHLO
+        id S240544AbiCSSLv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 19 Mar 2022 14:11:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55576 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231363AbiCSSIF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Mar 2022 14:08:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0373EF3F
-        for <linux-iio@vger.kernel.org>; Sat, 19 Mar 2022 11:06:44 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF842B80DA1
-        for <linux-iio@vger.kernel.org>; Sat, 19 Mar 2022 18:06:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 19E89C340EC;
-        Sat, 19 Mar 2022 18:06:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1647713201;
-        bh=t5X705RZJNG4LDvIwhJ7GU2OeF7RCyf+qUaePcvOYso=;
-        h=From:To:Cc:Subject:Date:From;
-        b=cf8cSqWGTSdRULd2kMn+yk+ig3YfFtwlStMImjNuV78YM7TIseMgsky+1+UC379TH
-         iD4Q/fLt1HkcNYOOph0WoSm9EphNzAzsQ+cKgvwh+syqgxJZi9xUUU4L02LIY3LNAE
-         E44aUh0v/zlRU7SP3uwkOuWF8rXh4ueD4A11ORF3VFy+7tfs/DFIdNyP9PU4hjlJMt
-         Du3im5NWHChPmxXdd6Z77qeq4ruoheSgvLmSoXsARXt8kSejVhEhABDXlt2Gh0eBvo
-         /W9Z7tgOOXIkJJMTz+VWS2+O9xRnjUf9kU18xNM5FQBDAFwiTEyxgRm4dVoOhs6vmE
-         QuGkjcEw0O05A==
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>
-Subject: [PATCH] iio: freq: admv1014: Fix warning about dubious x & !y and improve readability
-Date:   Sat, 19 Mar 2022 18:14:01 +0000
-Message-Id: <20220319181401.136810-1-jic23@kernel.org>
-X-Mailer: git-send-email 2.35.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+        with ESMTP id S231363AbiCSSLu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Mar 2022 14:11:50 -0400
+Received: from mail-pg1-x52c.google.com (mail-pg1-x52c.google.com [IPv6:2607:f8b0:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 505EA8FE5F;
+        Sat, 19 Mar 2022 11:10:29 -0700 (PDT)
+Received: by mail-pg1-x52c.google.com with SMTP id s72so4678566pgc.5;
+        Sat, 19 Mar 2022 11:10:29 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id;
+        bh=LtEYFIhXvvOvbebGSgHoPGrz8Zle3hfcrZFN/0LxkpU=;
+        b=a2/ipdQsDvhPI0UOcDkGgwuuCpw4QIJ5bRBz40eCL6hK/YbShxPAVUtP4LScDf9IMf
+         86nKDx//mXWzY6LVURNDkQQ5Kew0nF590eaFPt3ndUOP7UZWDBrsL9+IGH2B9ewGqAWM
+         kgZ2MN9uXpf8Zyrax+pqJzC0wmwxB1Mz5HpOjkJm2FH/6MvA+30dNcoKB0RS9VkJCb7X
+         30K6Stp6++6/phd5YGDYcXTwKjUxYRJMxxfF9YaF/x4w418T8hYxAMoqHGiipvmG1AKx
+         jsPawUq3YvF9rIQcVg9ok8c7n+Ab7S4nBTPogZYemf78qEM0I25wDuImuNJcJFXBYHXE
+         1qRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id;
+        bh=LtEYFIhXvvOvbebGSgHoPGrz8Zle3hfcrZFN/0LxkpU=;
+        b=LjvKlnXya+SvgVwzx1iV2WRGA5om0Gxh+IyMErP9+7ijb8UCSk3/VTY+Hoe8ohAFRQ
+         5fzXaQtJwrusHvBruC9tQUqp21e39HdblL9gYJYiFnWFAMUlukHik2w56eBNTQ08ovy4
+         ChDLrbUZ5z/hAQsz399/5OpDzSaZ8WnYtoufDc8BABhslHEBTm88SiJd2jMHUph7OWlD
+         76W6Izn48GtWg/PudEsKxmtMBgCNqUGcZyUVKQyZhD9R29w/QAQc2XMFXSgNnxNKDfc4
+         L6Bshx/C96nIjZN81RpDNGr+i15A/UyMe+D1jVpbirmqTWwsItOAquYIhkSQEruG2xob
+         KtLA==
+X-Gm-Message-State: AOAM53029E5SVbOXIrgiw9YJIpHYbeDnqiXpcdB3UXPc+uPvvGeOD294
+        dTXD1iEegKimo8c5O0YB+Q8=
+X-Google-Smtp-Source: ABdhPJzL+VvGk+vdzMYdGs8VJnd7U/7/3SXXPNH6iUlgZv2OrGz4wVE+uv/xlrBteZ1dqZsdh+yOkQ==
+X-Received: by 2002:a63:6a41:0:b0:37c:53a1:b5b6 with SMTP id f62-20020a636a41000000b0037c53a1b5b6mr12312954pgc.245.1647713428798;
+        Sat, 19 Mar 2022 11:10:28 -0700 (PDT)
+Received: from localhost.localdomain ([115.99.145.231])
+        by smtp.gmail.com with ESMTPSA id nu4-20020a17090b1b0400b001bf497a9324sm16413981pjb.31.2022.03.19.11.10.26
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 19 Mar 2022 11:10:28 -0700 (PDT)
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     dan@dlrobertson.com, jic23@kernel.org, andy.shevchenko@gmail.com
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v1 0/5] iio: accel: bma400: Add support for buffer and step
+Date:   Sat, 19 Mar 2022 23:40:18 +0530
+Message-Id: <20220319181023.8090-1-jagathjog1996@gmail.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+This patch series adds trigger buffer support with data ready interrupt,
+separate channel for step counter and an event for step change interrupt.
 
-The warning comes from __BF_FIELD_CHECK()
-specifically
+Jagath Jog J (5):
+  iio: accel: bma400: conversion to device-managed function
+  iio: accel: bma400: changing scale min and max macro values
+  iio: accel: bma400: Add triggered buffer support
+  iio: accel: bma400: Add separate channel for step counter
+  iio: accel: bma400: Add step change event
 
-BUILD_BUG_ON_MSG(__builtin_constant_p(_val) ?		\
-		 ~((_mask) >> __bf_shf(_mask)) & (_val) : 0, \
-		 _pfx "value too large for the field"); \
+ drivers/iio/accel/Kconfig       |   2 +
+ drivers/iio/accel/bma400.h      |  19 +-
+ drivers/iio/accel/bma400_core.c | 315 +++++++++++++++++++++++++++++---
+ drivers/iio/accel/bma400_i2c.c  |  10 +-
+ drivers/iio/accel/bma400_spi.c  |  10 +-
+ 5 files changed, 304 insertions(+), 52 deletions(-)
 
-The code was using !(enum value) which is not particularly easy to follow
-so replace that with explicit matching and use of ? 0 : 1; or ? 1 : 0;
-to improve readability.
-
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>
----
- drivers/iio/frequency/admv1014.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
-
-diff --git a/drivers/iio/frequency/admv1014.c b/drivers/iio/frequency/admv1014.c
-index a7994f8e6b9b..802835efbec7 100644
---- a/drivers/iio/frequency/admv1014.c
-+++ b/drivers/iio/frequency/admv1014.c
-@@ -700,8 +700,10 @@ static int admv1014_init(struct admv1014_state *st)
- 			 ADMV1014_DET_EN_MSK;
- 
- 	enable_reg = FIELD_PREP(ADMV1014_P1DB_COMPENSATION_MSK, st->p1db_comp ? 3 : 0) |
--		     FIELD_PREP(ADMV1014_IF_AMP_PD_MSK, !(st->input_mode)) |
--		     FIELD_PREP(ADMV1014_BB_AMP_PD_MSK, st->input_mode) |
-+		     FIELD_PREP(ADMV1014_IF_AMP_PD_MSK,
-+				(st->input_mode == ADMV1014_IQ_MODE) ? 0 : 1) |
-+		     FIELD_PREP(ADMV1014_BB_AMP_PD_MSK,
-+				(st->input_mode == ADMV1014_IQ_MODE) ? 1 : 0) |
- 		     FIELD_PREP(ADMV1014_DET_EN_MSK, st->det_en);
- 
- 	return __admv1014_spi_update_bits(st, ADMV1014_REG_ENABLE, enable_reg_msk, enable_reg);
 -- 
-2.35.1
+2.17.1
 
