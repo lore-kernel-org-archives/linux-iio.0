@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 42DEDC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 75E75C433FE
 	for <linux-iio@archiver.kernel.org>; Sun, 20 Mar 2022 18:14:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1343492AbiCTSQU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S243449AbiCTSQU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 20 Mar 2022 14:16:20 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39066 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243449AbiCTSQT (ORCPT
+        with ESMTP id S229713AbiCTSQT (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2022 14:16:19 -0400
 Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA46527ED;
-        Sun, 20 Mar 2022 11:14:56 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AD766527EC;
+        Sun, 20 Mar 2022 11:14:55 -0700 (PDT)
 Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
         (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
         (No client certificate requested)
         (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 509BE83981;
-        Sun, 20 Mar 2022 19:14:54 +0100 (CET)
+        by phobos.denx.de (Postfix) with ESMTPSA id 8312983960;
+        Sun, 20 Mar 2022 19:14:53 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
         s=phobos-20191101; t=1647800094;
-        bh=vQC8DjsLxyanULdVnzgiQaFgD31jN8XEC90+XsmkSDg=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MuQbSdop4KqMSoqwfxRiWEvs1lAqTgubKyhkJdp7HrzHRTT1B8CCq7D6kV5fzCkh/
-         PEhNz07Xx4Xx9udLHBRRlaD3vTZ4ueiDbZfJbtbqREGqjA4olP6e4zQIui+cE5GhqC
-         unZumrOR6TpaqerIZ5XnO2XaYPzuBzoNFFKrCaogNH3UxL/wz6vAOja1lQ2ipuzdlC
-         aaX7eLh89Z+jYukTnABZXiX/NTADcQHohQOrc/w5eu2+SpXf8KMcUSZmXVznzkPewd
-         u210HysanogbGRtxNacvMzyqA2dqUCWh6xHZZ9jTjNOKbYlMCBdOBbRKGumlT6dey5
-         M2aJvcuVti1Qg==
+        bh=G4COxeg0A4f/wUZ1lR4Tm4OAuUi9rJEM3Pr2WJAXfTA=;
+        h=From:To:Cc:Subject:Date:From;
+        b=y8O7C24ulbtz4Caf3yQarcftZaDBCsS0YBi/SwtRlKkbq053Qg5WqvkdHnucWtKnP
+         koZPOTrQutaFyNzEj8mPEHPZfHoWPv2UqO2pvXxzo08rrQVeT1CTt9SHeY0h2/Lxe9
+         NSo+6xpDy/4krELQ1QccfvpVjTFHBBfTv00mk54jH3G+U1dTTdHZgNHcEtrz2FqJll
+         mTus65qD1hTpTOUbl9JAN8kiCPE+MAAbXlb48vtw/poQy4QnWniexAcjp/9i9BG3Nv
+         /OdSlUDZIFrMqvPuHTU+qr6xyHx2nS5ZCkoA1VBkQ87KYb2UuOzupJQPCRmz47aZpC
+         ZNz4X8+wxdxAg==
 From:   Marek Vasut <marex@denx.de>
 To:     linux-iio@vger.kernel.org
 Cc:     Marek Vasut <marex@denx.de>,
@@ -39,12 +39,10 @@ Cc:     Marek Vasut <marex@denx.de>,
         Daniel Baluta <daniel.baluta@nxp.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
-Subject: [PATCH v3 02/10] dt-bindings: iio: adc: ti,ads1015: Add TLA2024 compatible string
-Date:   Sun, 20 Mar 2022 19:14:20 +0100
-Message-Id: <20220320181428.168109-2-marex@denx.de>
+Subject: [PATCH v3 01/10] dt-bindings: iio: adc: ti,ads1015: Add missing ADS1115 compatible string
+Date:   Sun, 20 Mar 2022 19:14:19 +0100
+Message-Id: <20220320181428.168109-1-marex@denx.de>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220320181428.168109-1-marex@denx.de>
-References: <20220320181428.168109-1-marex@denx.de>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
@@ -53,8 +51,9 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add ti,tla2024 compatible string. This device is compatible with
-ADS1015 except it has no on-chip comparator.
+Add missing ti,ads1115 compatible string. This compatible string is
+supported by the Linux kernel driver and the ads1015 is a 12bit ADC
+while ads1115 is 16bit ADC. Add the missing compatible string.
 
 Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
 Signed-off-by: Marek Vasut <marex@denx.de>
@@ -68,18 +67,30 @@ Cc: devicetree@vger.kernel.org
 V2: Add AB from Krzysztof
 V3: No change
 ---
- Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 1 +
- 1 file changed, 1 insertion(+)
+ Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
 diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-index c31c80989cc9a..a3b79438a13a5 100644
+index 2c2d01bbc296d..c31c80989cc9a 100644
 --- a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
 +++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
-@@ -18,6 +18,7 @@ properties:
-     enum:
-       - ti,ads1015
-       - ti,ads1115
-+      - ti,tla2024
+@@ -4,7 +4,7 @@
+ $id: http://devicetree.org/schemas/iio/adc/ti,ads1015.yaml#
+ $schema: http://devicetree.org/meta-schemas/core.yaml#
+ 
+-title: TI ADS1015 4 channel I2C analog to digital converter
++title: TI ADS1015/ADS1115 4 channel I2C analog to digital converter
+ 
+ maintainers:
+   - Daniel Baluta <daniel.baluta@nxp.com>
+@@ -15,7 +15,9 @@ description: |
+ 
+ properties:
+   compatible:
+-    const: ti,ads1015
++    enum:
++      - ti,ads1015
++      - ti,ads1115
  
    reg:
      maxItems: 1
