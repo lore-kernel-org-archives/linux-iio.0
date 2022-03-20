@@ -2,99 +2,126 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A16FFC433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 20 Mar 2022 14:51:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B9720C43217
+	for <linux-iio@archiver.kernel.org>; Sun, 20 Mar 2022 15:05:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245290AbiCTOwW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 20 Mar 2022 10:52:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58856 "EHLO
+        id S245315AbiCTPG3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 20 Mar 2022 11:06:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43958 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238877AbiCTOwV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2022 10:52:21 -0400
-Received: from mail-ej1-f44.google.com (mail-ej1-f44.google.com [209.85.218.44])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B857CDCE2C;
-        Sun, 20 Mar 2022 07:50:58 -0700 (PDT)
-Received: by mail-ej1-f44.google.com with SMTP id r13so25424866ejd.5;
-        Sun, 20 Mar 2022 07:50:58 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=6b3xZk36oovOgJRDq9Ftmq5jhE/QMgxCZr7fWROPj7U=;
-        b=MX3G2+dChoNZ37xzw12gCOARoM8Ztg0cy4Eh1QyX2MRY5i0daHCxbyZj+1BXIYE7aL
-         OjO/pE9FF/AMCO3LjZP56o04HitsXx8R8lVVff3w8w3ValZV2S/MiK2cR2Nwccyai0xG
-         3YScpL9Q1ejJtsHccz6Fanpq2yzHPdaK6L5Ke3XkpHs+qdCx7/2Dx/4E48Y7VwnZza7C
-         0Hek+QhnWxaBf4/LO9e/9k4mwcAAYoz10/6+L0rIcKdsOS24UvvDIQdXR8Ov0xXsWEST
-         GoLaGgL4UeHn/UrpytZtBHV/3FxCOAReEZo30LYhaO8uaAchF+vfROWAsoHTstn+b7be
-         aSnw==
-X-Gm-Message-State: AOAM532y32Gkbkr/tJZPXb9bc//TQWgAFFo8W7T1rvvDIISJbJnnUKgz
-        KFn6T8dwBSvCZTe+BP84XtU=
-X-Google-Smtp-Source: ABdhPJw0NndMeCaWdvMKhqk0lKOwChrfpfT5Oett1TIH2B7OM+fMfVwnk70MftDmct5E9Rbd5vNOlw==
-X-Received: by 2002:a17:906:7943:b0:6df:e5b3:6553 with SMTP id l3-20020a170906794300b006dfe5b36553mr5093371ejo.398.1647787857194;
-        Sun, 20 Mar 2022 07:50:57 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id bo14-20020a170906d04e00b006ce98d9c3e3sm5854434ejb.194.2022.03.20.07.50.56
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 20 Mar 2022 07:50:56 -0700 (PDT)
-Message-ID: <6e4f64dc-bb3d-0e05-0380-7e6f3b1a823c@kernel.org>
-Date:   Sun, 20 Mar 2022 15:50:55 +0100
+        with ESMTP id S245312AbiCTPGY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Mar 2022 11:06:24 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEEC513E3C;
+        Sun, 20 Mar 2022 08:05:01 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DCF9161138;
+        Sun, 20 Mar 2022 15:05:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9E7BFC340E9;
+        Sun, 20 Mar 2022 15:04:57 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1647788700;
+        bh=owHPsnbfCStY5+TEuj2uO+SHgNq78C6bh6WcvxZRbJA=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NifzXPJvq7pKpt0we2xlabCu0P9H7ASTqXR7t5C6AVE5tZ5hVl7ywp/RRuTd5DIf1
+         el6JNhe4WN8F/1jDtIqY/0x51DXj3VwXdqiCtg7ofpgthYsz/b6ME7BJMCjBbOgHjo
+         espspZXbe8+5S/pfHj4JQGUlHa6dX3O/Xis7vp36llYoUNeShgkJaf+8MTu+ZwIs7c
+         /lTadSLkJa0zYu4uEDzmt0o+T16TYO6d9A7fuoHgd5Bx2geGmRrY4SBGiT8Mih+N/6
+         jcMigBYtDzonr8jrmG1xQeW3bGx4rMMZAK00FAIvqQwJ6Q4u6KPS7DyjhOFmuesrYY
+         V7sHcr3zHqatQ==
+Date:   Sun, 20 Mar 2022 15:12:23 +0000
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Cc:     Michael Srba <Michael.Srba@seznam.cz>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] dt-bindings: iio: imu: mpu6050: Document
+ invensense,icm20608d
+Message-ID: <20220320151223.3a9b13bd@jic23-huawei>
+In-Reply-To: <145bddd6-0a7e-95f4-5282-b1900f020d88@canonical.com>
+References: <20220310133938.2495-1-michael.srba@seznam.cz>
+        <20220310133938.2495-2-michael.srba@seznam.cz>
+        <707f995e-9b09-ea23-5fc7-74239792dcbd@canonical.com>
+        <2af7be38-7784-96af-aa3f-84b87d983b38@seznam.cz>
+        <145bddd6-0a7e-95f4-5282-b1900f020d88@canonical.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH V2 1/7] dt-bindings:iio:adc: add sprd,ump9620-adc
- dtbindings
-Content-Language: en-US
-To:     Cixi Geng <gengcixi@gmail.com>, jic23@kernel.org, lars@metafoo.de,
-        robh+dt@kernel.org, orsonzhai@gmail.com, baolin.wang7@gmail.com,
-        zhang.lyra@gmail.com, lgirdwood@gmail.com, broonie@kernel.org
-Cc:     yuming.zhu1@unisoc.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <20220311164628.378849-1-gengcixi@gmail.com>
- <20220311164628.378849-2-gengcixi@gmail.com>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220311164628.378849-2-gengcixi@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 11/03/2022 17:46, Cixi Geng wrote:
-> From: Cixi Geng <cixi.geng1@unisoc.com>
-> 
-> sprd,ump9620-adc is one variant of sc27xx series, add ump9620 in
-> dtbindings.
-> 
-> Signed-off-by: Chunyan Zhang <zhang.lyra@gmail.com>
-> Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
-> ---
->  .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 30 +++++++++++++++++--
->  1 file changed, 27 insertions(+), 3 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-> index caa3ee0b4b8c..331b08fb1761 100644
-> --- a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-> +++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-> @@ -20,6 +20,7 @@ properties:
->        - sprd,sc2723-adc
->        - sprd,sc2730-adc
->        - sprd,sc2731-adc
-> +      - sprd,ump9620-adc
->  
->    reg:
->      maxItems: 1
-> @@ -37,9 +38,32 @@ properties:
->      maxItems: 2
->  
->    nvmem-cell-names:
-> -    items:
-> -      - const: big_scale_calib
-> -      - const: small_scale_calib
+On Thu, 10 Mar 2022 22:24:03 +0100
+Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com> wrote:
 
-Please test your changes with dt_binding_check and dtbs_check. Your
-change looks not complete - you have still nvmem-cells = 2.
+> On 10/03/2022 19:56, Michael Srba wrote:
+> > Hi,
+> > the thing is, the only reason the different compatible is needed at all
+> > is that the chip presents a different WHOAMI, and the invensense,icm20608
+> > compatible seems to imply the non-D WHOAMI value.  
+> 
+> But this is a driver implementation issue, not related to bindings.
+> Bindings describe the hardware.
 
+Indeed, but the key thing here is the WHOAMI register is hardware.
 
-Best regards,
-Krzysztof
+> 
+> > I'm not sure how the driver would react to both compatibles being present,
+> > and looking at the driver code, it seems that icm20608d is not the only
+> > fully icm20608-compatible (to the extent of features supported by
+> > the driver, and excluding the WHOAMI value) invensense IC, yet none
+> > of these other ICs add the invensense,icm20608 compatible, so I guess I
+> > don't see a good reason to do something different.  
+> 
+> Probably my question should be asked earlier, when these other
+> compatibles were added in such way.
+> 
+> Skipping the DMP core, the new device is fully backwards compatible with
+> icm20608.
+
+No. It is 'nearly' compatible...  The different WHOAMI value (used
+to check the chip is the one we expect) makes it incompatible.  Now we
+could change the driver to allow for that bit of incompatibility and
+some other drivers do (often warning when the whoami is wrong but continuing
+anyway). 
+
+> Therefore extending the compatible makes sense. This is not
+> only correct from devicetree point of view, but also is friendly towards
+> out of tree users of bindings.
+> 
+> The Linux driver behavior about whoami register does not matter here.
+> Not mentioning that it would be easy for driver to accept multiple
+> values of whoami.
+
+I disagree entirely. Any driver that makes use of the whoami will not
+be compatible with this new part.  It's a driver design choice on whether
+to make use of that, but it's a perfectly valid one to refuse to probe
+if it doesn't detect that the device is the one it expects.
++ There is code out there today doing this so inherently it is not
+compatible.
+
+So no, a fall back compatible is not suitable here because it simply
+is not compatible.
+
+Now, if intent was to provide a backwards compatible path from this
+more advanced part then the behaviour of every register defined for
+the simpler part, must be identical on the more advanced part.
+Extra functionality could only make use of fields in registers marked
+reserved, or of new registers that didn't exist on the simpler device.
+
+There are other ways of handling backwards compatibility but they all
+require statements in the simpler device spec about how you can tell
+for future more complicated devices that they are compatible with this
+spec. E.g. Feature registers, version registers etc.
+
+Jonathan
+> 
+> 
+> Best regards,
+> Krzysztof
+
