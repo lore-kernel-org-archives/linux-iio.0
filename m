@@ -2,92 +2,143 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B88A6C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 11:17:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DEFBEC433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 15:41:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231655AbiCVLTP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Mar 2022 07:19:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57698 "EHLO
+        id S238699AbiCVPm3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Mar 2022 11:42:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47834 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234061AbiCVLTP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 07:19:15 -0400
-Received: from phobos.denx.de (phobos.denx.de [IPv6:2a01:238:438b:c500:173d:9f52:ddab:ee01])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2060A811A7
-        for <linux-iio@vger.kernel.org>; Tue, 22 Mar 2022 04:17:47 -0700 (PDT)
-Received: from [127.0.0.1] (p578adb1c.dip0.t-ipconnect.de [87.138.219.28])
-        (using TLSv1.3 with cipher TLS_AES_128_GCM_SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: marex@denx.de)
-        by phobos.denx.de (Postfix) with ESMTPSA id 92C118141D;
-        Tue, 22 Mar 2022 12:17:45 +0100 (CET)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
-        s=phobos-20191101; t=1647947866;
-        bh=5nTm9NPsIP9gVgMzrj4eCwrnAPmXxBxrWKcwqVOZtAQ=;
-        h=Date:Subject:To:Cc:References:From:In-Reply-To:From;
-        b=o9zN6P2dXS038nRNezfiaK1MGzDb2yQZM8CX38MyBAMjvoyJo3zEcg4nBEPLl8P0g
-         PY5eeibWENoU8kCjavpwpM9tyox/8rvG1bGdFfNN7IZpbBG3lglMiF+kiKVNflPeJY
-         qGuwPW/444RaXgAPk9U/GQHLovmtDS7Ze4iO2cm92hqsqamYFWCuyVLgNTJNoM+eOs
-         VAymMx1TpfagHkhn5CXhIRrR4ORq7JCkpPWLdC+oeoFZcLQBR8rkMl7Gprmdb9bqTI
-         aQP+BMNZwMXjKjYj8sCz68SmyJQy+gyDNQGnkbGSmLnat+UGUqknc7523d7uor2GHI
-         uX+snGozqJPNg==
-Message-ID: <0dd8aca8-b2e7-5e62-d2bb-969dbc907593@denx.de>
-Date:   Tue, 22 Mar 2022 12:17:45 +0100
+        with ESMTP id S238698AbiCVPm0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 11:42:26 -0400
+Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 81A638C7C2;
+        Tue, 22 Mar 2022 08:40:55 -0700 (PDT)
+Received: by mail-pj1-x102b.google.com with SMTP id jx9so2100360pjb.5;
+        Tue, 22 Mar 2022 08:40:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to:user-agent;
+        bh=UeqnEbJtsjk38FgKKJvvntXTXF5S5w1SgNTftwLe55I=;
+        b=LqMPZ32/mNBrsEGWAuuBqOcOWjEwRjwdv6OukQumYHYqDTGJWfL44Ze/DJzeaQGGDU
+         ZmwzF2QAN/8aD9BUepQdhQALlIoW5IOZGXOgCbJfrBmWdg4vmTLF/fB+cc4CR/GHGHpN
+         MPkX8YVNx93pPBbTmryACB2U7UeyR2LwtuFwjNZDrlEcvD+sVpbEoectmN2bMOO0aQjY
+         jGPj6SDRFcyu11CIFh5BU018KTKDDPcZ4Ynsf/EDAlOB1+gErnLQi/UuxUu8wEgrYOGO
+         v9cOtGFj62dvDpxgWLuLOBx4DmDQ1HbL7B+UGzvpwM2LOPo52YXdvb7cNc3bQVWZVkdk
+         zHrQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to:user-agent;
+        bh=UeqnEbJtsjk38FgKKJvvntXTXF5S5w1SgNTftwLe55I=;
+        b=LwnTECXiupqavnREtqzeZqfAvLczxJrK8CMUctHOcNmlsWod8sPpqWfn9umhshgyK9
+         nofYcRy9cS9GeR7i3n6+WNGZH/P/TAZQGwyBlQK8oF1qwARLUIOKcYFKxchNpS6xcbIM
+         ZP0+7stcAoWdw4/S2bUg9DdHB3Yt+T2gfXew38mnXxGnAh1N/6E7TYtEno7g2lp/OvTz
+         4+gMaVlC0TdQ77sY6Ud8vMmnnSmlD4Rx8zzmrr0U4hrV7L7Acn/X4Ghb137sZ7JeZoDV
+         4ni68cSZU2WftqdxXCJrXvBDpOAlyPvoJokvynTh7wi+uZGNO43DmoQUYXvSvT4AFIF4
+         QH3w==
+X-Gm-Message-State: AOAM533xWXbF9rFtg7de81JiJpr8BNYHji50LTUppH/oPcg8tE9MscP1
+        pxXmhBIjudPox2REwDiqTytnkF0C2mUsyK57
+X-Google-Smtp-Source: ABdhPJxnVeDiW9j5igEfONbmgwW2E/cXPuxXfw1GcXeDZO5bdExIeNTPWy5GGIHL0/Jy7Cq5o0XNGw==
+X-Received: by 2002:a17:90b:4785:b0:1c6:ad62:dda3 with SMTP id hz5-20020a17090b478500b001c6ad62dda3mr5756285pjb.232.1647963654718;
+        Tue, 22 Mar 2022 08:40:54 -0700 (PDT)
+Received: from jagath-PC ([115.99.184.169])
+        by smtp.gmail.com with ESMTPSA id v23-20020a17090a521700b001bbfc181c93sm3174317pjh.19.2022.03.22.08.40.51
+        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
+        Tue, 22 Mar 2022 08:40:54 -0700 (PDT)
+Date:   Tue, 22 Mar 2022 21:10:49 +0530
+From:   Jagath Jog J <jagathjog1996@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Dan Robertson <dan@dlrobertson.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 3/5] iio: accel: bma400: Add triggered buffer support
+Message-ID: <20220322154047.GA3677@jagath-PC>
+References: <20220319181023.8090-1-jagathjog1996@gmail.com>
+ <20220319181023.8090-4-jagathjog1996@gmail.com>
+ <CAHp75VdB5q+Y2R46OO-kCKCkPY58YzyLNjN3PjJiQhTOgV4n2w@mail.gmail.com>
+ <20220321222117.GD10058@jagath-PC>
+ <CAHp75Vdp12bm+CHWun36b36Sui73zh0_wtY5YhEqVdNy4rUxVA@mail.gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] iio: core: WARN in case sample bits do not fit storage
- bits
-Content-Language: en-US
-To:     =?UTF-8?Q?Nuno_S=c3=a1?= <noname.nuno@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, Daniel Baluta <daniel.baluta@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-References: <20220320181542.168147-1-marex@denx.de>
- <YjhWIN6GsuhPskrs@smile.fi.intel.com>
- <8b6f00be-c520-45c3-4497-d0fc310ff52f@denx.de>
- <Yjijg7m+TnaMs519@smile.fi.intel.com>
- <30a13541-0ffb-a537-e943-3751b7fd316b@denx.de>
- <bd7f7b9853cbea30740af14d29a46f1a9f93a2a7.camel@gmail.com>
- <YjmbstSwzbu5ZdBg@smile.fi.intel.com>
- <220fa73c-5d61-a564-79a3-eabff366964c@denx.de>
- <5be8958b14e252fcad9090ce911caa170e654186.camel@gmail.com>
-From:   Marek Vasut <marex@denx.de>
-In-Reply-To: <5be8958b14e252fcad9090ce911caa170e654186.camel@gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
-X-Virus-Status: Clean
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+In-Reply-To: <CAHp75Vdp12bm+CHWun36b36Sui73zh0_wtY5YhEqVdNy4rUxVA@mail.gmail.com>
+User-Agent: Mutt/1.9.4 (2018-02-28)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 3/22/22 11:10, Nuno Sá wrote:
+Hello Andy,
 
-Hi,
-
-[...]
-
->>>> Arghh, completely forgot about this... Andy is right, maybe there
->>>> are
->>>> other cases (in which case, it would be nice to share :D), but
->>>> this one
->>>> is definitely one of them:
->>>>
->>>> https://elixir.bootlin.com/linux/latest/source/kernel/panic.c#L579
->>>>
->>>> You can have a cmdline parameter to panic on _WARN() and some
->>>> systems
->>>> may have it.
->>>
->>> Yes, I meant panic on warning.
->>>
->>> And I can't imagine that this driver can be system critical to the
->>> extent
->>> that we have to crash the system.
->>
->> Is there something which does trigger a backtrace, but without
->> panic()ing the system ?
+On Tue, Mar 22, 2022 at 10:54:53AM +0200, Andy Shevchenko wrote:
+> On Tue, Mar 22, 2022 at 12:21 AM Jagath Jog J <jagathjog1996@gmail.com> wrote:
+> > On Mon, Mar 21, 2022 at 10:39:22AM +0200, Andy Shevchenko wrote:
+> > > On Sat, Mar 19, 2022 at 8:10 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
 > 
-> Nothing I'm aware... Other than directly call 'dump_stack()'
+> First of all, you left many uncommented comments. I assume you agree
+> with my comments and are going to address them. If it's not the case,
+> please elaborate.
 
-All right, dev_err() it is then. I sent V2.
+Yes Andy, I agree with your comments and I will address them in the next v2 series.
+
+> 
+> ...
+> 
+> > > > +out:
+> >
+> > Just to skip the below "if()" if error occurs in previous regmap read,
+> > I used this label.
+> >        if (status & BMA400_INT_DRDY_MSK)
+> >              iio_trigger_poll_chained(data->trig);
+> >
+> > I will remove the label in next patch
+> 
+> Just return directly.
+> 
+> ...
+> 
+> > > A useless label. Moreover this raises a question: why is it okay to
+> > > always mark IRQ as handled?
+> > >
+> > > > +       return IRQ_HANDLED;
+> >
+> > Since I was not using top-half of the interrupt so I marked IRQ as handled
+> > even for error case in the handler.
+> 
+> Yes, but why? Isn't it an erroneous state? Does it mean spurious
+> interrupt? Does it mean interrupt is unserviced?
+
+Sorry, even for erroneous state I was returning IRQ_HANDLED.
+As shown below, now for erroneous state and spurious interrupt I will return
+IRQ_NONE and for valid interrupt IRQ_HANDLED will be returned.
+
+Is below method is correct?
+
+static irqreturn_t bma400_interrupt(int irq, void *private)
+{
+       struct iio_dev *indio_dev = private;
+       struct bma400_data *data = iio_priv(indio_dev);
+       int ret;
+       __le16 status;
+
+       mutex_lock(&data->mutex);
+       ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG, &status,
+                              sizeof(status));
+       mutex_unlock(&data->mutex);
+       if (ret)
+               return IRQ_NONE;
+
+       if (le16_to_cpu(status) & BMA400_INT_DRDY_MSK) {
+               iio_trigger_poll_chained(data->trig);
+	       return IRQ_HANDLED;
+	}
+
+        return IRQ_NONE;
+}
+
+> 
+> -- 
+> With Best Regards,
+> Andy Shevchenko
