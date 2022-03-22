@@ -2,145 +2,185 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 48124C433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 10:41:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13246C4321E
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 10:41:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233222AbiCVKmn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S233236AbiCVKmn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Tue, 22 Mar 2022 06:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37482 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233131AbiCVKmj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 06:42:39 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E773181196;
-        Tue, 22 Mar 2022 03:41:08 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22M9gi83009968;
-        Tue, 22 Mar 2022 06:41:06 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ewc34vsvu-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 22 Mar 2022 06:41:06 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 22MAf5XS031550
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Tue, 22 Mar 2022 06:41:05 -0400
-Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 22 Mar 2022 06:41:04 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Tue, 22 Mar 2022 06:41:04 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Tue, 22 Mar 2022 06:41:04 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22MAelCF008328;
-        Tue, 22 Mar 2022 06:40:58 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     <jic23@kernel.org>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Subject: [PATCH v3 6/6] iio: adc: ad7192: add sequencer support
-Date:   Tue, 22 Mar 2022 12:50:29 +0200
-Message-ID: <20220322105029.86389-7-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220322105029.86389-1-alexandru.tachici@analog.com>
-References: <20220322105029.86389-1-alexandru.tachici@analog.com>
+        with ESMTP id S233241AbiCVKmm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 06:42:42 -0400
+Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BAF81192;
+        Tue, 22 Mar 2022 03:41:15 -0700 (PDT)
+Received: by mail-ej1-f49.google.com with SMTP id r22so15193942ejs.11;
+        Tue, 22 Mar 2022 03:41:15 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
+         :subject:content-language:to:cc:references:in-reply-to
+         :content-transfer-encoding;
+        bh=qKsgBbH9sIwu8qSu/STqDYAzfDFmWwxMdPPPch9rKoo=;
+        b=YJtqJfb9YWQKxKRWY8XpJuB/us8RJ7zzZTuLakfyl0P2IbrYDeDEsQr31SS8uP0ivE
+         DL51QkNZ2sLoDG6j/6m3ylZ3fenvGcJpyEmlAJOAcuU9N9gfgrNqJrpR1sIpWyUPT7w+
+         4IJY7PUzPalcfj2PiD7O6IxFfD9PBq+zSgBe2QR6imcZYAzCbJzi7u6aG+gLGT/15jRE
+         /LIYJW+q+sBhbTjORvK7ySjbDwBm2Xpia3+3CyFXYTWu9GPxVrjplIf36M55ZHDmJNcE
+         iLCiATfy3O5GGGzjzb1FOnY+J2U7nyXz58TsVogsBO8sh/aoj93EB9Tgln8LFrQZUNVz
+         mDwQ==
+X-Gm-Message-State: AOAM533YalrMs+AEB+Zge3+nOfa9vPbu+pX82JEjtrQFEP0T9TF68gJ2
+        8EceFXVyy1eYHN3xreK++jY=
+X-Google-Smtp-Source: ABdhPJx3hmEoX2a/mq4nDJpm2NjVc9WqDd8OqoSNBqpEvjrjLfVZlO4te+uPT64JeyhAok2gWezbNw==
+X-Received: by 2002:a17:907:7e8c:b0:6dc:b357:2f4 with SMTP id qb12-20020a1709077e8c00b006dcb35702f4mr25039728ejc.434.1647945673640;
+        Tue, 22 Mar 2022 03:41:13 -0700 (PDT)
+Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
+        by smtp.googlemail.com with ESMTPSA id n6-20020aa7c786000000b00410d2403ccfsm9404307eds.21.2022.03.22.03.41.12
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 22 Mar 2022 03:41:12 -0700 (PDT)
+Message-ID: <5709ab75-2c9e-d7d3-eaf7-4619583bb6c6@kernel.org>
+Date:   Tue, 22 Mar 2022 11:41:11 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: 3OYt1sdGeXDmq8zafdqaed3aptLYxB4R
-X-Proofpoint-ORIG-GUID: 3OYt1sdGeXDmq8zafdqaed3aptLYxB4R
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
- definitions=2022-03-22_03,2022-03-22_01,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
- clxscore=1015 mlxlogscore=999 malwarescore=0 impostorscore=0
- lowpriorityscore=0 suspectscore=0 priorityscore=1501 mlxscore=0
- spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2203220062
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.5.0
+From:   Krzysztof Kozlowski <krzk@kernel.org>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: imu: mpu6050: Document
+ invensense,icm20608d
+Content-Language: en-US
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Michael Srba <Michael.Srba@seznam.cz>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+References: <20220310133938.2495-1-michael.srba@seznam.cz>
+ <20220310133938.2495-2-michael.srba@seznam.cz>
+ <707f995e-9b09-ea23-5fc7-74239792dcbd@canonical.com>
+ <2af7be38-7784-96af-aa3f-84b87d983b38@seznam.cz>
+ <145bddd6-0a7e-95f4-5282-b1900f020d88@canonical.com>
+ <20220320151223.3a9b13bd@jic23-huawei>
+ <ca80bd79-338c-98a4-2f4d-4dcfc52ed538@kernel.org>
+ <20220321150411.00002206@Huawei.com>
+ <47d67c82-788e-2ced-54cc-4959c67922fc@kernel.org>
+ <20220321174202.00007895@Huawei.com>
+ <f8ba569f-d230-92a8-6a56-fbcaf620af36@seznam.cz>
+ <20220322101916.0000759f@Huawei.com>
+In-Reply-To: <20220322101916.0000759f@Huawei.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+On 22/03/2022 11:19, Jonathan Cameron wrote:
+>>> Obviously it wouldn't work anyway with an old kernel, but
+>>> without the fallback compatible at least there would be no error message
+>>> saying that the device is not the icm20608 we expected to see.  
+>> I'm not sure if that's really an issue?
+>> The old kernel is clearly not handling the compatible "correctly",
+>> since the compatible says that the interface is a superset of
+>> the icm20608 interface, and that using the icm20608
+>> interface will work.
+>> If the driver makes the incorrect assumption that
+>> the WHOAMI being different means the interface cannot
+>> be icm20608 compatible, then that seems like an issue
+>> with the driver?
+>> And I believe the single reason for why catering to
+>> a broken driver would ever be considered is if not doing
+>> so would result in breaking the devicetree ABI promise,
+>> which doesn't seem to happen here.
+> 
+> I'll be honest I no longer care that much either way.
+> 
+> If someone would point me to clear documentation of that
+> DT ABI promise 
 
-Add sequencer support for AD7192.
+Documentation/devicetree/bindings/ABI.rst
 
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
----
- drivers/iio/adc/ad7192.c | 42 +++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 41 insertions(+), 1 deletion(-)
+> and how it describes things as being compatible
+> that would be great and provide me with a clear statement
+> to point others to in the future.
 
-diff --git a/drivers/iio/adc/ad7192.c b/drivers/iio/adc/ad7192.c
-index 4c004af4749f..ba3c82f33d74 100644
---- a/drivers/iio/adc/ad7192.c
-+++ b/drivers/iio/adc/ad7192.c
-@@ -58,7 +58,8 @@
- /* Mode Register Bit Designations (AD7192_REG_MODE) */
- #define AD7192_MODE_SEL(x)	(((x) & 0x7) << 21) /* Operation Mode Select */
- #define AD7192_MODE_SEL_MASK	(0x7 << 21) /* Operation Mode Select Mask */
--#define AD7192_MODE_DAT_STA	BIT(20) /* Status Register transmission */
-+#define AD7192_MODE_STA(x)	(((x) & 0x1) << 20) /* Status Register transmission */
-+#define AD7192_MODE_STA_MASK	BIT(20) /* Status Register transmission Mask */
- #define AD7192_MODE_CLKSRC(x)	(((x) & 0x3) << 18) /* Clock Source Select */
- #define AD7192_MODE_SINC3	BIT(15) /* SINC3 Filter Select */
- #define AD7192_MODE_ACX		BIT(14) /* AC excitation enable(AD7195 only)*/
-@@ -288,12 +289,51 @@ static int ad7192_set_mode(struct ad_sigma_delta *sd,
- 	return ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
- }
- 
-+static int ad7192_append_status(struct ad_sigma_delta *sd, bool append)
-+{
-+	struct ad7192_state *st = ad_sigma_delta_to_ad7192(sd);
-+	unsigned int mode = st->mode;
-+	int ret;
-+
-+	mode &= ~AD7192_MODE_STA_MASK;
-+	mode |= AD7192_MODE_STA(append);
-+
-+	ret = ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, mode);
-+	if (ret < 0)
-+		return ret;
-+
-+	st->mode = mode;
-+
-+	return 0;
-+}
-+
-+static int ad7192_disable_all(struct ad_sigma_delta *sd)
-+{
-+	struct ad7192_state *st = ad_sigma_delta_to_ad7192(sd);
-+	u32 conf = st->conf;
-+	int ret;
-+
-+	conf &= ~AD7192_CONF_CHAN_MASK;
-+
-+	ret = ad_sd_write_reg(&st->sd, AD7192_REG_CONF, 3, conf);
-+	if (ret < 0)
-+		return ret;
-+
-+	st->conf = conf;
-+
-+	return 0;
-+}
-+
- static const struct ad_sigma_delta_info ad7192_sigma_delta_info = {
- 	.set_channel = ad7192_set_channel,
-+	.append_status = ad7192_append_status,
-+	.disable_all = ad7192_disable_all,
- 	.set_mode = ad7192_set_mode,
- 	.has_registers = true,
- 	.addr_shift = 3,
- 	.read_mask = BIT(6),
-+	.status_ch_mask = GENMASK(3, 0),
-+	.num_slots = 4,
- 	.irq_flags = IRQF_TRIGGER_FALLING,
- };
- 
--- 
-2.25.1
+It's very concise, so let me decipher the first paragraph. It is safe to
+add new compatibles to the chain (so exactly like here "icm20608d,
+icm20608") because the system can bind:
+1. against new compatible bringing all new features,
+2. old compatible, working with "old" or limited set of features.
 
+What I was explaining you in mails before, which you responded to with:
+"Whilst I don't personally agree with the definition of "compatible"
+and think you are making false distinctions between hardware and
+software..."
+we do not talk here about software, as in device driver. We talk about
+bindings which describe the hardware, therefore the compatible should be
+rather understood in the hardware model, not driver model.
+
+The compatible field does not mean that one driver is compatible with
+this or other hardware. It means that devices have a compatible
+programming model or interface.
+
+Now driver should be implemented in that way. If driver handles
+"icm20608" compatible, it should nicely handle only icm20608 features,
+regardless whether device is icm20608 or icm20608d.
+
+Now let's imagine, that icm20608d is slightly different than icm20608 in
+the basic feature set. Than it's not compatible and should deserve
+another separate binding entry, regardless how driver handles it.
+
+Keep in mind what Rob said - driver implementation can changed, but
+device compatibility in bindings should stay the same. Specially that
+bindings are used in other operating systems (*BSD) and software pieces
+(u-boot).
+
+> Perhaps I've just been missing that documentation or it
+> needs writing.
+> 
+> I think that having to ignore a WHOAMI value that
+> is unknown to the driver because there might be a future part
+> which is compatible is a very bad way to support
+> devices in a reliable fashion and going to lead to annoyed
+> users and bug reports.
+
+I see your point. It's a safer choice than just accepting any device.
+However it's a designer/programmers fault to provide a DTB with a
+matching compatible for a non-compatible device. Not driver programmer
+fault. Usually you do not have to protect the driver from it.
+
+> This is different to electing to
+> using a shared compatible when two parts are introduced at
+> the same time and we are doing detection in the driver of
+> which variant we have.
+> 
+> I mentioned earlier that we have this type of defensive coding
+> precisely because we have had false assessments about
+> compatibility in the past. This manufacturer does not in
+> general document compatibility across parts. I have no idea if
+> they do for this particular part as there doesn't seem to be
+> a public datasheet.
+
+Kind of continuing my previous thought also here - it's not a problem of
+driver developer, but DTB developer. If the devices are not compatible
+(thus driver will not work correctly), the person using that compatible
+in DTB made mistake. Bug reports should be sent to that person, not to
+driver developer, not to you.
+
+> It didn't work before, now it won't work and will complain about it
+> which may lead to some bug reports that won't be resolved but
+> I'll adopt the majority opinion which seems to be that we
+> don't care about that.
+
+Yes, we don't care but the DTB/DTS person should. :)
+
+>  I'd also be happy to see us reduce
+> the problem scope here by having a 'fix' for that rejection
+> of unknown IDs that we can push back to stable kernels.
+> Relaxing it to a warning should be sufficient, though we probably
+> want to screen out whatever comes back from the bus if there
+> is no device present at all as the WHOAMI check is also
+> providing that protection.
+
+A dev_warn() with a disclaimer might be actually better approach. Unless
+it might be a safety-critical device.
+
+Best regards,
+Krzysztof
