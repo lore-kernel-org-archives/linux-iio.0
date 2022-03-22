@@ -2,192 +2,127 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 83053C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 10:38:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 784F9C433FE
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 10:41:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231570AbiCVKj2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:39:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52350 "EHLO
+        id S232261AbiCVKmd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:42:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37328 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233103AbiCVKj0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 06:39:26 -0400
-Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 72D4919294;
-        Tue, 22 Mar 2022 03:37:59 -0700 (PDT)
-Received: by mail-vs1-xe2e.google.com with SMTP id y4so18538614vsd.11;
-        Tue, 22 Mar 2022 03:37:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:reply-to:from:date:message-id
-         :subject:to:cc;
-        bh=A8Uwl5R9FFhyS86G5PyV/+OCLLYlqbgHEjOZGBcExKg=;
-        b=THgrE5uqHYUftr0rIVpMCDI3nJyG9ASl9fqWURbpF4ljru1ObqwKEASBFjIfwRL4jb
-         ibo83ukpDUhcM1wXLObYxw/DKH0YggtwvueERPXiluejhpnLgz/zlWFI1e/ZBgLlInlQ
-         BSA7Uj6kfM1zfd0mjnQ2v5YVwJJp2kFrMC4Fo437YxZlbJ0fU/ea4onz/Se7kkBLcAFu
-         9eLGReIr1uzNJk8Cyu4zVMxhfHAFaZN1Y5JGxBNpa/h3yQb61cpilkvBVrFM9CIoU4J/
-         QU8jutKgLFC6jXxR4pixEpyWFfEkDJ4y9f8yyqMIhtZoDxg/ddRIzRIfosIz6Nvhobun
-         PTig==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:reply-to
-         :from:date:message-id:subject:to:cc;
-        bh=A8Uwl5R9FFhyS86G5PyV/+OCLLYlqbgHEjOZGBcExKg=;
-        b=zzHl0IBrrMphWQfWNB5IGTlp7drWpKo3/lXWE9/Nvy7xIN68JDrH/aVaqXQVG3XsMU
-         2l/45FAqGVPuyprFyaQA3hKOjsCnwKSMiGM8a7L2fjNqiUFh1xl7MyZbR4rH8v4zVB1m
-         mK7NdxiSqkSd5k5r/hcMogY9eExMTvJnxLP06xo42qCMcRu04cNwiOv5pkQ7ZCYOC3tc
-         kWIz+z+CzQzD38O5d/1qcs/2h/r13dJqIgXAT2dfto9HGPu5er1qLfYsMjYpZ0njHBGb
-         q3TMv7TpjimbwBzUG8/2SyWezXqwm89v3XkNcEpfEf2UUpHEnWmjcH0j+lNvfP7gcBBt
-         9c2g==
-X-Gm-Message-State: AOAM530ddrLTU4VDjffYb9/vTx+w05vJzL29on1+4W/srNk2/SrfU9j/
-        hd7tWtd+JosUFCw6NnzeJ2qQc0OkT6VM00tGJSwVbQ/0I/d0Fw==
-X-Google-Smtp-Source: ABdhPJzZDF9Lie8DORask+I9MnvoyLtQOR+yWRQ+SP4r5kBdT53viKN/6zUUyRt7PCs0/J8jU9dPUkET5am1U6aOqxU=
-X-Received: by 2002:a05:6102:284a:b0:31e:c455:5dee with SMTP id
- az10-20020a056102284a00b0031ec4555deemr8594948vsb.27.1647945478537; Tue, 22
- Mar 2022 03:37:58 -0700 (PDT)
+        with ESMTP id S233131AbiCVKmb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 06:42:31 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90CAC8118E;
+        Tue, 22 Mar 2022 03:41:04 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22M7Yd7G008885;
+        Tue, 22 Mar 2022 06:40:57 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ew9165je5-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Mar 2022 06:40:57 -0400
+Received: from ASHBMBX8.ad.analog.com (ASHBMBX8.ad.analog.com [10.64.17.5])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 22MAeuq9036322
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 22 Mar 2022 06:40:56 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 22 Mar
+ 2022 06:40:55 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 22 Mar 2022 06:40:55 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22MAelC9008328;
+        Tue, 22 Mar 2022 06:40:50 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>,
+        Alexandru Tachici <alexandru.tachici@analog.com>
+Subject: [PATCH v3 0/6] iio: adc: ad_sigma_delta: Add sequencer support
+Date:   Tue, 22 Mar 2022 12:50:23 +0200
+Message-ID: <20220322105029.86389-1-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-References: <20220217162710.33615-1-andrea.merello@gmail.com>
- <20220217162710.33615-12-andrea.merello@gmail.com> <CAHp75VcbkZV0ek6C-YKb3iuZKyQGp7U48j-hQ+UqXFuGEYgZ4Q@mail.gmail.com>
-In-Reply-To: <CAHp75VcbkZV0ek6C-YKb3iuZKyQGp7U48j-hQ+UqXFuGEYgZ4Q@mail.gmail.com>
-Reply-To: andrea.merello@gmail.com
-From:   Andrea Merello <andrea.merello@gmail.com>
-Date:   Tue, 22 Mar 2022 11:37:47 +0100
-Message-ID: <CAN8YU5Pc6nto5pYgorrM4RHcn-EQXfyV+=V6ig4boG7cqBTznA@mail.gmail.com>
-Subject: Re: [v3 11/13] iio: imu: add BNO055 serdev driver
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jacopo Mondi <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: ZcWShtxLslYC5WeAeL1DESe4-8tlT_Ey
+X-Proofpoint-ORIG-GUID: ZcWShtxLslYC5WeAeL1DESe4-8tlT_Ey
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-22_03,2022-03-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 lowpriorityscore=0
+ phishscore=0 mlxlogscore=999 suspectscore=0 malwarescore=0 clxscore=1015
+ impostorscore=0 bulkscore=0 priorityscore=1501 adultscore=0 spamscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2203220062
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Some inline comments, OK for the rest.
+From: Alexandru Tachici <alexandru.tachici@analog.com>
 
-Il giorno lun 21 feb 2022 alle ore 21:28 Andy Shevchenko
-<andy.shevchenko@gmail.com> ha scritto:
->
-> On Thu, Feb 17, 2022 at 5:27 PM Andrea Merello <andrea.merello@gmail.com> wrote:
-> >
-> > This path adds a serdev driver for communicating to a BNO055 IMU via
-> > serial bus, and it enables the BNO055 core driver to work in this
-> > scenario.
+Some sigma-delta chips support sampling of multiple
+channels in continuous mode.
 
-[...]
+When the operating with more than one channel enabled,
+the channel sequencer cycles through the enabled channels
+in sequential order, from first channel to the last one.
+If a channel is disabled, it is skipped by the sequencer.
 
-> > +       /**
-> > +        * enum cmd_status - represent the status of a command sent to the HW.
-> > +        * @STATUS_OK:   The command executed successfully.
-> > +        * @STATUS_FAIL: The command failed: HW responded with an error.
-> > +        * @STATUS_CRIT: The command failed: the serial communication failed.
-> > +        */
-> > +       enum {
-> > +               STATUS_OK = 0,
-> > +               STATUS_FAIL = 1,
-> > +               STATUS_CRIT = -1
->
-> + Comma and sort them by value?
-> For the second part is an additional question, why negative?
+If more than one channel is used in continuous mode,
+instruct the device to append the status to the SPI transfer
+(1 extra byte) every time we receive a sample.
+All sigma-delta chips possessing a sampling sequencer have
+this ability. Inside the status register there will be
+the number of the converted channel. In this way, even
+if the CPU won't keep up with the sampling rate, it won't
+send to userspace wrong channel samples.
 
-For STATUS_CRIT, being a (bad) error, a negative value seemed
-appropriate to me. STATUS_OK is zero as usual, but maybe STATUS_FAIL
-should be negative also? It is some legal protocol status (unlike the
-STATUS_CRIT mess), in this sense I may consider it not an error, but
-still our command failed (because the IMU politely didn't accept it),
-so it's an error in this sense...
+1. Removed the 1 byte .shift from channel spec in AD7124,
+it confuses userspace apps (no need to shift right).
 
-I may just let all of them implicit if you prefer.
+2. Add update_scan_mode to AD7124, it is required in order
+to enable/disable multiple channels at once
 
-[...]
+3. Add update_scan_mode to AD7192, it is required in order
+to enable/disable multiple channels at once
 
-> > +       while (1) {
-> > +               ret = bno055_sl_send_chunk(priv, hdr + i * 2, 2);
-> > +               if (ret)
-> > +                       goto fail;
-> > +
-> > +               if (i++ == 1)
-> > +                       break;
-> > +               usleep_range(2000, 3000);
-> > +       }
->
-> The infinite loops are hard to read and understand.
-> Can you convert it to the regular while or for one?
->
-> Also, this looks like a repetition of something (however it seems that
-> it's two sequencial packets to send).
+4. Add sequencer support for sigma_delta library.
 
-Maybe it's worth to unroll then?
+5. Add sigma_delta_info values and callbacks for sequencer
+support in AD7124.
 
-> ...
->
-> > +       const int retry_max = 5;
-> > +       int retry = retry_max;
->
-> > +       while (retry--) {
->
-> Instead simply use
->
-> unsigned int retries = 5;
->
-> do {
->   ...
-> } while (--retries);
->
-> which is much better to understand.
+6. Add sigma_delta_info values and callbacks for sequencer
+support in AD7192.
 
-OK, but still have the const var for the max (see below)
+Alexandru Tachici (5):
+  iio: adc: ad7124: Remove shift from scan_type
+  iio: adc: ad7124: Add update_scan_mode
+  iio: adc: ad7192: Add update_scan_mode
+  iio: adc: ad7124: add sequencer support
+  iio: adc: ad7192: add sequencer support
 
-> ...
->
-> > +               if (retry != (retry_max - 1))
-> > +                       dev_dbg(&priv->serdev->dev, "cmd retry: %d",
-> > +                               retry_max - retry);
->
-> This is an invariant to the loop.
+Lars-Peter Clausen (1):
+  iio: adc: ad_sigma_delta: Add sequencer support
 
-why? This triggers at all retries, not at the first attempt i.e. it
-prints only if this doesn't succeed at the first time. Indeed what
-seems wrong to me is that you need -1 also in the dev_dbg() argument
-to produce correct text.
+Changelog V2 -> V3:
+  - ad_sd_buffer_postenable(), aligned (slot * storagebits) to 8 bytes
+  - devm_krealloc instead of krealloc for samples_buf in ad_sd_buffer_postenable()
+  - in ad_sigma_delta_append_status, check return value before setting .status_appended
+  - iio: adc: ad_sigma_delta: Add sequencer support: added explanations on
+  desynchronization checking and recovery
+  - in ad7124_append_status() modify st->adc_control after write has taken place without errors
+  - in ad7124_update_scan_mode() take cfg mutex only once instead of every time a
+  set_channel happens
+  - in ad7192_disable_all() modify st->conf after write taken place without errors
+  - in ad7192_append_status() modify st->mode after write taken place without errors
 
-[...]
+ drivers/iio/adc/ad7124.c               |  86 ++++++++++++++-
+ drivers/iio/adc/ad7192.c               |  64 ++++++++++-
+ drivers/iio/adc/ad_sigma_delta.c       | 143 +++++++++++++++++++++++--
+ include/linux/iio/adc/ad_sigma_delta.h |  38 +++++++
+ 4 files changed, 315 insertions(+), 16 deletions(-)
 
->
-> > +       reg_addr = ((u8 *)reg)[0];
->
-> This looks ugly.
-> Can't you supply the data struct pointer instead of void pointer?
-
-I confirm that it's ugly :)
-
-Not sure about what you exactly meant, sorry; what I can do is to
-introduce a local and split this ugly loc, as done in
-bno055_sl_write_reg(). Is this what you are suggesting?
-
-> ...
->
-> > +       if (serdev_device_set_baudrate(serdev, 115200) != 115200) {
->
-> Is it limitation / requirement by the hardware? Otherwise it should
-> come from DT / ACPI.
-
- It's a requirement. Not sure it's really by the HW; possibly it's
-statically set in device firmware.
-
-> ...
->
-> > +       ret = serdev_device_set_parity(serdev, SERDEV_PARITY_NONE);
->
-> Ditto.
-
-Ditto :)
-
-[...]
+--
+2.25.1
