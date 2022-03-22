@@ -2,55 +2,55 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BC23C4332F
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CC4DFC43217
 	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 06:25:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237180AbiCVG1P (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Mar 2022 02:27:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42530 "EHLO
+        id S237186AbiCVG1Q (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Mar 2022 02:27:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39874 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237221AbiCVG0t (ORCPT
+        with ESMTP id S237251AbiCVG0t (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 02:26:49 -0400
-Received: from mail-pl1-x636.google.com (mail-pl1-x636.google.com [IPv6:2607:f8b0:4864:20::636])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58BCA3B29C
-        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2022 23:25:16 -0700 (PDT)
-Received: by mail-pl1-x636.google.com with SMTP id w8so14615639pll.10
-        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2022 23:25:16 -0700 (PDT)
+Received: from mail-pl1-x631.google.com (mail-pl1-x631.google.com [IPv6:2607:f8b0:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A685A2A273
+        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2022 23:25:18 -0700 (PDT)
+Received: by mail-pl1-x631.google.com with SMTP id n15so14652759plh.2
+        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2022 23:25:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DoxMhq+bC/cTSPLUvKT6PG4EeSJOwiuaNwjOtxm2JDw=;
-        b=h4m/5pCBipNoMzaqO+2K6vD+wlf35d28atsfAgGm1b1DSBrGBDsIL7ZcJlFcB76fVr
-         8+JY0JJGBIVGsPhb6UYHFwPZE0Yium1BmYuPRfC0CgOu1ACMHSVgXbbd5L6bM7q0KVnP
-         detw4g3d6FNwj96rv2rhycQjxhCC9cl6pHx3U=
+        bh=hikheyI0Nl+ipWdnweJSWsnrclofhtF+n/fKkrLyMFM=;
+        b=TiV4uSre9LReQAaZ+o4zK4NCDqoZW5AC2CT8gkv5kcowRPQEHh7aKIgcH4ieFGaGq/
+         gom/Q6cZtLtMsReWwqW50lLGTQ6OMfNVyeiQLsvqcI4H0VfarxNnxYAr3n6iSaDm2Dxt
+         pEB9Mxm/CM+cqPDdJwuy3X71ULNP/N+K6izJg=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DoxMhq+bC/cTSPLUvKT6PG4EeSJOwiuaNwjOtxm2JDw=;
-        b=8Q2vaoF93cpOMVTRIKjnWQ1FKkFT6PsSIhIhtoMIPcC1eC9TWEUgnOIGgH92fXOsIW
-         rnoCg90wjxYPpApe2S9M5Tr1aWhN/yWGHO8WpNN7G5N0vWW7etX5oXa8OkiEMBSFAsOM
-         sVM9XSgr7Jr3U4Z6vDmSKEaXW0V44wN3luR62aCSSPKsqjsTA7ekHZTbANyBUb+BxIpU
-         UlTCNy4a3iPl4l+RSI70spP3kG1StBkJIM/n5+HtlU6uYmEzTFzq3GajObm7w0zy/tr5
-         oYvCJ90/9PH1TEX5iy0hRg1PT0FFNTjZkIYiu49ohbB1jczD9HCNYBVi+4VmIlTiJRHF
-         TYYg==
-X-Gm-Message-State: AOAM533SajsOjqqTG0kuF95fQ7oGWEML0PWGhCx+FE6T5TLOn4Gj0cZN
-        3Lkj5IdweSvi3Kki94wR+YadOQ==
-X-Google-Smtp-Source: ABdhPJyv4KqbGWWuHAIJWsw3DOAKs2f64SL8EMpeP1dI4mYX9Bv/6VEof5aAX0Dfwhf6NQkyQoUQcQ==
-X-Received: by 2002:a17:90b:4c8e:b0:1c6:d1ed:f6b2 with SMTP id my14-20020a17090b4c8e00b001c6d1edf6b2mr3154838pjb.166.1647930315838;
-        Mon, 21 Mar 2022 23:25:15 -0700 (PDT)
+        bh=hikheyI0Nl+ipWdnweJSWsnrclofhtF+n/fKkrLyMFM=;
+        b=qptjoiTTpoXJM9pzxPP6bl5ae2gmWlzz7COsIdLKO63Y0CuddabS9aEVVcB5VPUH9n
+         ZSOdXQ7NkuItcjCP1HQfkkQgs7HZcAw14jK58xP1IofWrNmAvWfzdYC/FOnD16lMtF2W
+         vTG8mMt4mnIWH40Q5cfcrIGa8ITpTSGNfD3Uz8HL8wBTM0yKQCwUNqmwFlP91G7qOXT/
+         k4pvin/219C+2m2BmoFcctJyswAql+VrkYApFRwX4YNf9xodg2OlDuWsWbV+LnTXm4EO
+         vS8TOuPUf/dlyaVP6GN077Bw7aOmpiA0Gd3NWJETiDGx3tIUQowzyK4J60ILhgY8esCG
+         gpqw==
+X-Gm-Message-State: AOAM532MxtHLM8UjjFelmUIThx0lJbLDH5VMozt404t9fxC+o2tROnpD
+        APQ/eW79EEchKjK6mzljWwIppw==
+X-Google-Smtp-Source: ABdhPJyK8P6TrbFnJDLZ0h/km0s1P+Qjz2PJ6CEy3m8HmmLxwFjE5QXjHV8mETAYZD1l9Zk/FDLHqQ==
+X-Received: by 2002:a17:903:41cf:b0:154:25bf:7d0f with SMTP id u15-20020a17090341cf00b0015425bf7d0fmr16150921ple.41.1647930318211;
+        Mon, 21 Mar 2022 23:25:18 -0700 (PDT)
 Received: from localhost ([2620:15c:202:201:c016:a147:e7e:6836])
-        by smtp.gmail.com with UTF8SMTPSA id h6-20020a636c06000000b00363a2533b17sm16292929pgc.8.2022.03.21.23.25.15
+        by smtp.gmail.com with UTF8SMTPSA id g5-20020a056a001a0500b004def10341e5sm22139411pfv.22.2022.03.21.23.25.17
         (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 23:25:15 -0700 (PDT)
+        Mon, 21 Mar 2022 23:25:17 -0700 (PDT)
 From:   Gwendal Grignou <gwendal@chromium.org>
 To:     jic23@kernel.org, robh+dt@kernel.org, swboyd@chromium.org
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2 6/8] iio: sx9324: Add Setting for internal compensation resistor
-Date:   Mon, 21 Mar 2022 23:25:02 -0700
-Message-Id: <20220322062504.1019504-7-gwendal@chromium.org>
+Subject: [PATCH v2 8/8] iio: sx9360: Add pre-charge resistor setting
+Date:   Mon, 21 Mar 2022 23:25:04 -0700
+Message-Id: <20220322062504.1019504-9-gwendal@chromium.org>
 X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
 In-Reply-To: <20220322062504.1019504-1-gwendal@chromium.org>
 References: <20220322062504.1019504-1-gwendal@chromium.org>
@@ -60,72 +60,54 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Based on device tree setting, set the internal compensation resistor.
+Add ability to set the precharge internal resistance from the device
+tree.
 
 Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 ---
 Changes since v1:
-- No changes.
+- Suffix field with kOhms unit.
 
- drivers/iio/proximity/sx9324.c | 24 +++++++++++++++++++++++-
- 1 file changed, 23 insertions(+), 1 deletion(-)
+ drivers/iio/proximity/sx9360.c | 12 +++++++++++-
+ 1 file changed, 11 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
-index 95de5d9f8eacb..31179e1925624 100644
---- a/drivers/iio/proximity/sx9324.c
-+++ b/drivers/iio/proximity/sx9324.c
-@@ -52,6 +52,11 @@
- #define SX9324_REG_CLK_SPRD		0x15
+diff --git a/drivers/iio/proximity/sx9360.c b/drivers/iio/proximity/sx9360.c
+index 3ebb30c8a4f61..a70d2ad808f1a 100644
+--- a/drivers/iio/proximity/sx9360.c
++++ b/drivers/iio/proximity/sx9360.c
+@@ -51,6 +51,8 @@
+ #define SX9360_REG_GNRL_REG_2_FREQ(_r)  (SX9360_FOSC_HZ / ((_r) * 8192))
  
- #define SX9324_REG_AFE_CTRL0		0x20
-+#define SX9324_REG_AFE_CTRL0_RINT_MASK GENMASK(7, 6)
-+#define SX9324_REG_AFE_CTRL0_RINT_LOWEST	0x00
-+#define SX9324_REG_AFE_CTRL0_RINT_LOW		0x40
-+#define SX9324_REG_AFE_CTRL0_RINT_HIGH		0x80
-+#define SX9324_REG_AFE_CTRL0_RINT_HIGHEST	0xc0
- #define SX9324_REG_AFE_CTRL1		0x21
- #define SX9324_REG_AFE_CTRL2		0x22
- #define SX9324_REG_AFE_CTRL3		0x23
-@@ -769,7 +774,7 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
- 	 */
- 	{ SX9324_REG_GNRL_CTRL1, SX9324_REG_GNRL_CTRL1_PAUSECTRL },
+ #define SX9360_REG_AFE_CTRL1		0x21
++#define SX9360_REG_AFE_CTRL1_RESFILTIN_MASK GENMASK(3, 0)
++#define SX9360_REG_AFE_CTRL1_RESFILTIN_0OHMS 0
+ #define SX9360_REG_AFE_PARAM0_PHR	0x22
+ #define SX9360_REG_AFE_PARAM1_PHR	0x23
+ #define SX9360_REG_AFE_PARAM0_PHM	0x24
+@@ -671,7 +673,7 @@ static const struct sx_common_reg_default sx9360_default_regs[] = {
+ 	{ SX9360_REG_GNRL_CTRL1, 0x00 },
+ 	{ SX9360_REG_GNRL_CTRL2, SX9360_REG_GNRL_CTRL2_PERIOD_102MS },
  
--	{ SX9324_REG_AFE_CTRL0, 0x00 },
-+	{ SX9324_REG_AFE_CTRL0, SX9324_REG_AFE_CTRL0_RINT_LOWEST },
- 	{ SX9324_REG_AFE_CTRL3, 0x00 },
- 	{ SX9324_REG_AFE_CTRL4, SX9324_REG_AFE_CTRL4_FREQ_83_33HZ |
- 		SX9324_REG_AFE_CTRL4_RES_100 },
-@@ -855,6 +860,7 @@ sx9324_get_default_reg(struct device *dev, int idx,
- 	char prop[] = SX9324_PROXRAW_DEF;
- 	u32 start = 0, raw = 0, pos = 0;
- 	int ret, count, ph, pin;
-+	const char *res;
+-	{ SX9360_REG_AFE_CTRL1, 0x00 },
++	{ SX9360_REG_AFE_CTRL1, SX9360_REG_AFE_CTRL1_RESFILTIN_0OHMS },
+ 	{ SX9360_REG_AFE_PARAM0_PHR, SX9360_REG_AFE_PARAM0_RSVD |
+ 		SX9360_REG_AFE_PARAM0_RESOLUTION_128 },
+ 	{ SX9360_REG_AFE_PARAM1_PHR, SX9360_REG_AFE_PARAM1_AGAIN_PHM_6PF |
+@@ -722,6 +724,14 @@ sx9360_get_default_reg(struct device *dev, int idx,
  
- 	memcpy(reg_def, &sx9324_default_regs[idx], sizeof(*reg_def));
+ 	memcpy(reg_def, &sx9360_default_regs[idx], sizeof(*reg_def));
  	switch (reg_def->reg) {
-@@ -875,6 +881,22 @@ sx9324_get_default_reg(struct device *dev, int idx,
- 			       SX9324_REG_AFE_PH0_PIN_MASK(pin);
- 		reg_def->def = raw;
- 		break;
-+	case SX9324_REG_AFE_CTRL0:
-+		ret = device_property_read_string(dev,
-+				"semtech,int-comp-resistor", &res);
-+		if (ret)
-+			break;
-+		reg_def->def &= ~SX9324_REG_AFE_CTRL0_RINT_MASK;
-+		if (!strcmp(res, "lowest"))
-+			reg_def->def |= SX9324_REG_AFE_CTRL0_RINT_LOWEST;
-+		else if (!strcmp(res, "low"))
-+			reg_def->def |= SX9324_REG_AFE_CTRL0_RINT_LOW;
-+		else if (!strcmp(res, "high"))
-+			reg_def->def |= SX9324_REG_AFE_CTRL0_RINT_HIGH;
-+		else if (!strcmp(res, "highest"))
-+			reg_def->def |= SX9324_REG_AFE_CTRL0_RINT_HIGHEST;
-+
++	case SX9360_REG_AFE_CTRL1:
++		ret = device_property_read_u32(dev,
++				"semtech,input-precharge-resistor-kohms",
++				&raw);
++		reg_def->def &= ~SX9360_REG_AFE_CTRL1_RESFILTIN_MASK;
++		reg_def->def |= FIELD_PREP(SX9360_REG_AFE_CTRL1_RESFILTIN_MASK,
++					   raw / 2);
 +		break;
- 	case SX9324_REG_AFE_CTRL4:
- 	case SX9324_REG_AFE_CTRL7:
- 		if (reg_def->reg == SX9324_REG_AFE_CTRL4)
+ 	case SX9360_REG_AFE_PARAM0_PHR:
+ 	case SX9360_REG_AFE_PARAM0_PHM:
+ 		ret = device_property_read_u32(dev, "semtech,resolution", &raw);
 -- 
 2.35.1.894.gb6a874cedc-goog
 
