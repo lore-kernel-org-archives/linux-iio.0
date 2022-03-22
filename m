@@ -2,185 +2,408 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 13246C4321E
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 10:41:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2BECCC43217
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 10:42:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233236AbiCVKmn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Mar 2022 06:42:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37500 "EHLO
+        id S231140AbiCVKnw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Mar 2022 06:43:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233241AbiCVKmm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 06:42:42 -0400
-Received: from mail-ej1-f49.google.com (mail-ej1-f49.google.com [209.85.218.49])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41BAF81192;
-        Tue, 22 Mar 2022 03:41:15 -0700 (PDT)
-Received: by mail-ej1-f49.google.com with SMTP id r22so15193942ejs.11;
-        Tue, 22 Mar 2022 03:41:15 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:from
-         :subject:content-language:to:cc:references:in-reply-to
-         :content-transfer-encoding;
-        bh=qKsgBbH9sIwu8qSu/STqDYAzfDFmWwxMdPPPch9rKoo=;
-        b=YJtqJfb9YWQKxKRWY8XpJuB/us8RJ7zzZTuLakfyl0P2IbrYDeDEsQr31SS8uP0ivE
-         DL51QkNZ2sLoDG6j/6m3ylZ3fenvGcJpyEmlAJOAcuU9N9gfgrNqJrpR1sIpWyUPT7w+
-         4IJY7PUzPalcfj2PiD7O6IxFfD9PBq+zSgBe2QR6imcZYAzCbJzi7u6aG+gLGT/15jRE
-         /LIYJW+q+sBhbTjORvK7ySjbDwBm2Xpia3+3CyFXYTWu9GPxVrjplIf36M55ZHDmJNcE
-         iLCiATfy3O5GGGzjzb1FOnY+J2U7nyXz58TsVogsBO8sh/aoj93EB9Tgln8LFrQZUNVz
-         mDwQ==
-X-Gm-Message-State: AOAM533YalrMs+AEB+Zge3+nOfa9vPbu+pX82JEjtrQFEP0T9TF68gJ2
-        8EceFXVyy1eYHN3xreK++jY=
-X-Google-Smtp-Source: ABdhPJx3hmEoX2a/mq4nDJpm2NjVc9WqDd8OqoSNBqpEvjrjLfVZlO4te+uPT64JeyhAok2gWezbNw==
-X-Received: by 2002:a17:907:7e8c:b0:6dc:b357:2f4 with SMTP id qb12-20020a1709077e8c00b006dcb35702f4mr25039728ejc.434.1647945673640;
-        Tue, 22 Mar 2022 03:41:13 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id n6-20020aa7c786000000b00410d2403ccfsm9404307eds.21.2022.03.22.03.41.12
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 22 Mar 2022 03:41:12 -0700 (PDT)
-Message-ID: <5709ab75-2c9e-d7d3-eaf7-4619583bb6c6@kernel.org>
-Date:   Tue, 22 Mar 2022 11:41:11 +0100
+        with ESMTP id S233285AbiCVKms (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 06:42:48 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 21AFA81187;
+        Tue, 22 Mar 2022 03:41:19 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22M9EI2x009928;
+        Tue, 22 Mar 2022 06:41:05 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3ewc34vsvn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 22 Mar 2022 06:41:04 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 22MAf3Fh031547
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 22 Mar 2022 06:41:03 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 22 Mar
+ 2022 06:41:02 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 22 Mar 2022 06:41:02 -0400
+Received: from localhost.localdomain ([10.48.65.12])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 22MAelCD008328;
+        Tue, 22 Mar 2022 06:40:56 -0400
+From:   <alexandru.tachici@analog.com>
+To:     <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Alexandru Tachici <alexandru.tachici@analog.com>
+Subject: [PATCH v3 4/6] iio: adc: ad_sigma_delta: Add sequencer support
+Date:   Tue, 22 Mar 2022 12:50:27 +0200
+Message-ID: <20220322105029.86389-5-alexandru.tachici@analog.com>
+X-Mailer: git-send-email 2.17.1
+In-Reply-To: <20220322105029.86389-1-alexandru.tachici@analog.com>
+References: <20220322105029.86389-1-alexandru.tachici@analog.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: imu: mpu6050: Document
- invensense,icm20608d
-Content-Language: en-US
-To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        Michael Srba <Michael.Srba@seznam.cz>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-References: <20220310133938.2495-1-michael.srba@seznam.cz>
- <20220310133938.2495-2-michael.srba@seznam.cz>
- <707f995e-9b09-ea23-5fc7-74239792dcbd@canonical.com>
- <2af7be38-7784-96af-aa3f-84b87d983b38@seznam.cz>
- <145bddd6-0a7e-95f4-5282-b1900f020d88@canonical.com>
- <20220320151223.3a9b13bd@jic23-huawei>
- <ca80bd79-338c-98a4-2f4d-4dcfc52ed538@kernel.org>
- <20220321150411.00002206@Huawei.com>
- <47d67c82-788e-2ced-54cc-4959c67922fc@kernel.org>
- <20220321174202.00007895@Huawei.com>
- <f8ba569f-d230-92a8-6a56-fbcaf620af36@seznam.cz>
- <20220322101916.0000759f@Huawei.com>
-In-Reply-To: <20220322101916.0000759f@Huawei.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: cyDJgPn_Rk0La0maFEEqH51Rm-P0yVrF
+X-Proofpoint-ORIG-GUID: cyDJgPn_Rk0La0maFEEqH51Rm-P0yVrF
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-22_03,2022-03-22_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0 bulkscore=0
+ clxscore=1015 mlxlogscore=999 malwarescore=0 impostorscore=0
+ lowpriorityscore=0 suspectscore=0 priorityscore=1501 mlxscore=0
+ spamscore=0 adultscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203220062
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 22/03/2022 11:19, Jonathan Cameron wrote:
->>> Obviously it wouldn't work anyway with an old kernel, but
->>> without the fallback compatible at least there would be no error message
->>> saying that the device is not the icm20608 we expected to see.  
->> I'm not sure if that's really an issue?
->> The old kernel is clearly not handling the compatible "correctly",
->> since the compatible says that the interface is a superset of
->> the icm20608 interface, and that using the icm20608
->> interface will work.
->> If the driver makes the incorrect assumption that
->> the WHOAMI being different means the interface cannot
->> be icm20608 compatible, then that seems like an issue
->> with the driver?
->> And I believe the single reason for why catering to
->> a broken driver would ever be considered is if not doing
->> so would result in breaking the devicetree ABI promise,
->> which doesn't seem to happen here.
-> 
-> I'll be honest I no longer care that much either way.
-> 
-> If someone would point me to clear documentation of that
-> DT ABI promise 
+From: Lars-Peter Clausen <lars@metafoo.de>
 
-Documentation/devicetree/bindings/ABI.rst
+Some sigma-delta chips support sampling of multiple
+channels in continuous mode.
 
-> and how it describes things as being compatible
-> that would be great and provide me with a clear statement
-> to point others to in the future.
+When the operating with more than one channel enabled,
+the channel sequencer cycles through the enabled channels
+in sequential order, from first channel to the last one.
+If a channel is disabled, it is skipped by the sequencer.
 
-It's very concise, so let me decipher the first paragraph. It is safe to
-add new compatibles to the chain (so exactly like here "icm20608d,
-icm20608") because the system can bind:
-1. against new compatible bringing all new features,
-2. old compatible, working with "old" or limited set of features.
+If more than one channel is used in continuous mode,
+instruct the device to append the status to the SPI transfer
+(1 extra byte) every time we receive a sample.
+All sigma-delta chips possessing a sampling sequencer have
+this ability. Inside the status register there will be
+the number of the converted channel. In this way, even
+if the CPU won't keep up with the sampling rate, it won't
+send to userspace wrong channel samples.
 
-What I was explaining you in mails before, which you responded to with:
-"Whilst I don't personally agree with the definition of "compatible"
-and think you are making false distinctions between hardware and
-software..."
-we do not talk here about software, as in device driver. We talk about
-bindings which describe the hardware, therefore the compatible should be
-rather understood in the hardware model, not driver model.
+When multiple channels are enabled in continuous mode,
+the device needs to perform a measurement on all slots
+before we can push to userspace the sample.
 
-The compatible field does not mean that one driver is compatible with
-this or other hardware. It means that devices have a compatible
-programming model or interface.
+If, during sequencing and data reading, a channel measurement
+is lost, a desync occurred. In this case, ad_sigma_delta drops
+the incomplete sample and waits for the device to send the
+measurement on the first active slot.
 
-Now driver should be implemented in that way. If driver handles
-"icm20608" compatible, it should nicely handle only icm20608 features,
-regardless whether device is icm20608 or icm20608d.
+Co-developed-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/ad_sigma_delta.c       | 143 +++++++++++++++++++++++--
+ include/linux/iio/adc/ad_sigma_delta.h |  38 +++++++
+ 2 files changed, 171 insertions(+), 10 deletions(-)
 
-Now let's imagine, that icm20608d is slightly different than icm20608 in
-the basic feature set. Than it's not compatible and should deserve
-another separate binding entry, regardless how driver handles it.
+diff --git a/drivers/iio/adc/ad_sigma_delta.c b/drivers/iio/adc/ad_sigma_delta.c
+index ebcd52526cac..261a9a6b45e1 100644
+--- a/drivers/iio/adc/ad_sigma_delta.c
++++ b/drivers/iio/adc/ad_sigma_delta.c
+@@ -6,6 +6,7 @@
+  *  Author: Lars-Peter Clausen <lars@metafoo.de>
+  */
+ 
++#include <linux/align.h>
+ #include <linux/interrupt.h>
+ #include <linux/device.h>
+ #include <linux/kernel.h>
+@@ -342,15 +343,49 @@ EXPORT_SYMBOL_NS_GPL(ad_sigma_delta_single_conversion, IIO_AD_SIGMA_DELTA);
+ static int ad_sd_buffer_postenable(struct iio_dev *indio_dev)
+ {
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++	unsigned int i, slot, samples_buf_size;
+ 	unsigned int channel;
++	uint8_t *samples_buf;
+ 	int ret;
+ 
+-	channel = find_first_bit(indio_dev->active_scan_mask,
+-				 indio_dev->masklength);
+-	ret = ad_sigma_delta_set_channel(sigma_delta,
+-		indio_dev->channels[channel].address);
+-	if (ret)
+-		return ret;
++	if (sigma_delta->num_slots == 1) {
++		channel = find_first_bit(indio_dev->active_scan_mask,
++					 indio_dev->masklength);
++		ret = ad_sigma_delta_set_channel(sigma_delta,
++						 indio_dev->channels[channel].address);
++		if (ret)
++			return ret;
++		slot = 1;
++	} else {
++		/*
++		 * At this point update_scan_mode already enabled the required channels.
++		 * For sigma-delta sequencer drivers with multiple slots, an update_scan_mode
++		 * implementation is mandatory.
++		 */
++		slot = 0;
++		for_each_set_bit(i, indio_dev->active_scan_mask, indio_dev->masklength) {
++			sigma_delta->slots[slot] = indio_dev->channels[i].address;
++			slot++;
++		}
++	}
++
++	sigma_delta->active_slots = slot;
++	sigma_delta->current_slot = 0;
++
++	if (sigma_delta->active_slots > 1) {
++		ret = ad_sigma_delta_append_status(sigma_delta, true);
++		if (ret)
++			return ret;
++	}
++
++	samples_buf_size = ALIGN(slot * indio_dev->channels[0].scan_type.storagebits, 8);
++	samples_buf_size += sizeof(int64_t);
++	samples_buf = devm_krealloc(&sigma_delta->spi->dev, sigma_delta->samples_buf,
++				    samples_buf_size, GFP_KERNEL);
++	if (!samples_buf)
++		return -ENOMEM;
++
++	sigma_delta->samples_buf = samples_buf;
+ 
+ 	spi_bus_lock(sigma_delta->spi->master);
+ 	sigma_delta->bus_locked = true;
+@@ -386,6 +421,10 @@ static int ad_sd_buffer_postdisable(struct iio_dev *indio_dev)
+ 	sigma_delta->keep_cs_asserted = false;
+ 	ad_sigma_delta_set_mode(sigma_delta, AD_SD_MODE_IDLE);
+ 
++	if (sigma_delta->status_appended)
++		ad_sigma_delta_append_status(sigma_delta, false);
++
++	ad_sigma_delta_disable_all(sigma_delta);
+ 	sigma_delta->bus_locked = false;
+ 	return spi_bus_unlock(sigma_delta->spi->master);
+ }
+@@ -396,6 +435,10 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	struct iio_dev *indio_dev = pf->indio_dev;
+ 	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+ 	uint8_t *data = sigma_delta->rx_buf;
++	unsigned int transfer_size;
++	unsigned int sample_size;
++	unsigned int sample_pos;
++	unsigned int status_pos;
+ 	unsigned int reg_size;
+ 	unsigned int data_reg;
+ 
+@@ -408,21 +451,69 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	else
+ 		data_reg = AD_SD_REG_DATA;
+ 
++	/* Status word will be appended to the sample during transfer */
++	if (sigma_delta->status_appended)
++		transfer_size = reg_size + 1;
++	else
++		transfer_size = reg_size;
++
+ 	switch (reg_size) {
+ 	case 4:
+ 	case 2:
+ 	case 1:
+-		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[0]);
++		status_pos = reg_size;
++		ad_sd_read_reg_raw(sigma_delta, data_reg, transfer_size, &data[0]);
+ 		break;
+ 	case 3:
++		/*
++		 * Data array after transfer will look like (if status is appended):
++		 * data[] = { [0][sample][sample][sample][status] }
++		 * Keeping the first byte 0 shifts the status postion by 1 byte to the right.
++		 */
++		status_pos = reg_size + 1;
++
+ 		/* We store 24 bit samples in a 32 bit word. Keep the upper
+ 		 * byte set to zero. */
+-		ad_sd_read_reg_raw(sigma_delta, data_reg, reg_size, &data[1]);
++		ad_sd_read_reg_raw(sigma_delta, data_reg, transfer_size, &data[1]);
+ 		break;
+ 	}
+ 
+-	iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
++	/*
++	 * For devices sampling only one channel at
++	 * once, there is no need for sample number tracking.
++	 */
++	if (sigma_delta->active_slots == 1) {
++		iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
++		goto irq_handled;
++	}
++
++	if (sigma_delta->status_appended) {
++		u8 converted_channel;
++
++		converted_channel = data[status_pos] & sigma_delta->info->status_ch_mask;
++		if (converted_channel != sigma_delta->slots[sigma_delta->current_slot]) {
++			/*
++			 * Desync occurred during continuous sampling of multiple channels.
++			 * Drop this incomplete sample and start from first channel again.
++			 */
++
++			sigma_delta->current_slot = 0;
++			goto irq_handled;
++		}
++	}
++
++	sample_size = indio_dev->channels[0].scan_type.storagebits / 8;
++	sample_pos = sample_size * sigma_delta->current_slot;
++	memcpy(&sigma_delta->samples_buf[sample_pos], data, sample_size);
++	sigma_delta->current_slot++;
+ 
++	if (sigma_delta->current_slot == sigma_delta->active_slots) {
++		sigma_delta->current_slot = 0;
++		iio_push_to_buffers_with_timestamp(indio_dev, sigma_delta->samples_buf,
++						   pf->timestamp);
++	}
++
++irq_handled:
+ 	iio_trigger_notify_done(indio_dev->trig);
+ 	sigma_delta->irq_dis = false;
+ 	enable_irq(sigma_delta->spi->irq);
+@@ -430,10 +521,17 @@ static irqreturn_t ad_sd_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
+ }
+ 
++static bool ad_sd_validate_scan_mask(struct iio_dev *indio_dev, const unsigned long *mask)
++{
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
++
++	return bitmap_weight(mask, indio_dev->masklength) <= sigma_delta->num_slots;
++}
++
+ static const struct iio_buffer_setup_ops ad_sd_buffer_setup_ops = {
+ 	.postenable = &ad_sd_buffer_postenable,
+ 	.postdisable = &ad_sd_buffer_postdisable,
+-	.validate_scan_mask = &iio_validate_scan_mask_onehot,
++	.validate_scan_mask = &ad_sd_validate_scan_mask,
+ };
+ 
+ static irqreturn_t ad_sd_data_rdy_trig_poll(int irq, void *private)
+@@ -513,8 +611,14 @@ static int devm_ad_sd_probe_trigger(struct device *dev, struct iio_dev *indio_de
+  */
+ int devm_ad_sd_setup_buffer_and_trigger(struct device *dev, struct iio_dev *indio_dev)
+ {
++	struct ad_sigma_delta *sigma_delta = iio_device_get_drvdata(indio_dev);
+ 	int ret;
+ 
++	sigma_delta->slots = devm_kcalloc(dev, sigma_delta->num_slots,
++					  sizeof(*sigma_delta->slots), GFP_KERNEL);
++	if (!sigma_delta->slots)
++		return -ENOMEM;
++
+ 	ret = devm_iio_triggered_buffer_setup(dev, indio_dev,
+ 					      &iio_pollfunc_store_time,
+ 					      &ad_sd_trigger_handler,
+@@ -541,6 +645,25 @@ int ad_sd_init(struct ad_sigma_delta *sigma_delta, struct iio_dev *indio_dev,
+ {
+ 	sigma_delta->spi = spi;
+ 	sigma_delta->info = info;
++
++	/* If the field is unset in ad_sigma_delta_info, asume there can only be 1 slot. */
++	if (!info->num_slots)
++		sigma_delta->num_slots = 1;
++	else
++		sigma_delta->num_slots = info->num_slots;
++
++	if (sigma_delta->num_slots > 1) {
++		if (!indio_dev->info->update_scan_mode) {
++			dev_err(&spi->dev, "iio_dev lacks update_scan_mode().\n");
++			return -EINVAL;
++		}
++
++		if (!info->disable_all) {
++			dev_err(&spi->dev, "ad_sigma_delta_info lacks disable_all().\n");
++			return -EINVAL;
++		}
++	}
++
+ 	iio_device_set_drvdata(indio_dev, sigma_delta);
+ 
+ 	return 0;
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index c525fd51652f..7852f6c9a714 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -32,26 +32,34 @@ struct iio_dev;
+ /**
+  * struct ad_sigma_delta_info - Sigma Delta driver specific callbacks and options
+  * @set_channel: Will be called to select the current channel, may be NULL.
++ * @append_status: Will be called to enable status append at the end of the sample, may be NULL.
+  * @set_mode: Will be called to select the current mode, may be NULL.
++ * @disable_all: Will be called to disable all channels, may be NULL.
+  * @postprocess_sample: Is called for each sampled data word, can be used to
+  *		modify or drop the sample data, it, may be NULL.
+  * @has_registers: true if the device has writable and readable registers, false
+  *		if there is just one read-only sample data shift register.
+  * @addr_shift: Shift of the register address in the communications register.
+  * @read_mask: Mask for the communications register having the read bit set.
++ * @status_ch_mask: Mask for the channel number stored in status register.
+  * @data_reg: Address of the data register, if 0 the default address of 0x3 will
+  *   be used.
+  * @irq_flags: flags for the interrupt used by the triggered buffer
++ * @num_slots: Number of sequencer slots
+  */
+ struct ad_sigma_delta_info {
+ 	int (*set_channel)(struct ad_sigma_delta *, unsigned int channel);
++	int (*append_status)(struct ad_sigma_delta *, bool append);
+ 	int (*set_mode)(struct ad_sigma_delta *, enum ad_sigma_delta_mode mode);
++	int (*disable_all)(struct ad_sigma_delta *);
+ 	int (*postprocess_sample)(struct ad_sigma_delta *, unsigned int raw_sample);
+ 	bool has_registers;
+ 	unsigned int addr_shift;
+ 	unsigned int read_mask;
++	unsigned int status_ch_mask;
+ 	unsigned int data_reg;
+ 	unsigned long irq_flags;
++	unsigned int num_slots;
+ };
+ 
+ /**
+@@ -76,6 +84,13 @@ struct ad_sigma_delta {
+ 	uint8_t			comm;
+ 
+ 	const struct ad_sigma_delta_info *info;
++	unsigned int		active_slots;
++	unsigned int		current_slot;
++	unsigned int		num_slots;
++	bool			status_appended;
++	/* map slots to channels in order to know what to expect from devices */
++	unsigned int		*slots;
++	uint8_t			*samples_buf;
+ 
+ 	/*
+ 	 * DMA (thus cache coherency maintenance) requires the
+@@ -97,6 +112,29 @@ static inline int ad_sigma_delta_set_channel(struct ad_sigma_delta *sd,
+ 	return 0;
+ }
+ 
++static inline int ad_sigma_delta_append_status(struct ad_sigma_delta *sd, bool append)
++{
++	int ret;
++
++	if (sd->info->append_status) {
++		ret = sd->info->append_status(sd, append);
++		if (ret < 0)
++			return ret;
++
++		sd->status_appended = append;
++	}
++
++	return 0;
++}
++
++static inline int ad_sigma_delta_disable_all(struct ad_sigma_delta *sd)
++{
++	if (sd->info->disable_all)
++		return sd->info->disable_all(sd);
++
++	return 0;
++}
++
+ static inline int ad_sigma_delta_set_mode(struct ad_sigma_delta *sd,
+ 	unsigned int mode)
+ {
+-- 
+2.25.1
 
-Keep in mind what Rob said - driver implementation can changed, but
-device compatibility in bindings should stay the same. Specially that
-bindings are used in other operating systems (*BSD) and software pieces
-(u-boot).
-
-> Perhaps I've just been missing that documentation or it
-> needs writing.
-> 
-> I think that having to ignore a WHOAMI value that
-> is unknown to the driver because there might be a future part
-> which is compatible is a very bad way to support
-> devices in a reliable fashion and going to lead to annoyed
-> users and bug reports.
-
-I see your point. It's a safer choice than just accepting any device.
-However it's a designer/programmers fault to provide a DTB with a
-matching compatible for a non-compatible device. Not driver programmer
-fault. Usually you do not have to protect the driver from it.
-
-> This is different to electing to
-> using a shared compatible when two parts are introduced at
-> the same time and we are doing detection in the driver of
-> which variant we have.
-> 
-> I mentioned earlier that we have this type of defensive coding
-> precisely because we have had false assessments about
-> compatibility in the past. This manufacturer does not in
-> general document compatibility across parts. I have no idea if
-> they do for this particular part as there doesn't seem to be
-> a public datasheet.
-
-Kind of continuing my previous thought also here - it's not a problem of
-driver developer, but DTB developer. If the devices are not compatible
-(thus driver will not work correctly), the person using that compatible
-in DTB made mistake. Bug reports should be sent to that person, not to
-driver developer, not to you.
-
-> It didn't work before, now it won't work and will complain about it
-> which may lead to some bug reports that won't be resolved but
-> I'll adopt the majority opinion which seems to be that we
-> don't care about that.
-
-Yes, we don't care but the DTB/DTS person should. :)
-
->  I'd also be happy to see us reduce
-> the problem scope here by having a 'fix' for that rejection
-> of unknown IDs that we can push back to stable kernels.
-> Relaxing it to a warning should be sufficient, though we probably
-> want to screen out whatever comes back from the bus if there
-> is no device present at all as the WHOAMI check is also
-> providing that protection.
-
-A dev_warn() with a disclaimer might be actually better approach. Unless
-it might be a safety-critical device.
-
-Best regards,
-Krzysztof
