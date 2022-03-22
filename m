@@ -2,100 +2,72 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B5B8C4321E
-	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 06:25:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id F3B68C433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 22 Mar 2022 06:50:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237073AbiCVG1R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 22 Mar 2022 02:27:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38920 "EHLO
+        id S237100AbiCVGwM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 22 Mar 2022 02:52:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237253AbiCVG0t (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 02:26:49 -0400
-Received: from mail-pj1-x102f.google.com (mail-pj1-x102f.google.com [IPv6:2607:f8b0:4864:20::102f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7569E33E11
-        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2022 23:25:17 -0700 (PDT)
-Received: by mail-pj1-x102f.google.com with SMTP id jx9so996736pjb.5
-        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2022 23:25:17 -0700 (PDT)
+        with ESMTP id S237063AbiCVGwL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Mar 2022 02:52:11 -0400
+Received: from mail-ot1-x334.google.com (mail-ot1-x334.google.com [IPv6:2607:f8b0:4864:20::334])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5903913D17
+        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2022 23:50:43 -0700 (PDT)
+Received: by mail-ot1-x334.google.com with SMTP id x8-20020a9d6288000000b005b22c373759so11946015otk.8
+        for <linux-iio@vger.kernel.org>; Mon, 21 Mar 2022 23:50:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=30RcZys3m+mnl1wP4Li2+2cSCnquqYOBajAz0JIjDJs=;
-        b=V3aUEaQA32XUGTV33Mandcv3Lgfa4gFsNJTEvaf+bqRWidZOP6Jnjaa/oTUkMfgTAE
-         BwaQtd8esfQvUJhfr1lds+siUo+tD/Pr5yFGLfrjteMEhxVhj+5cfiK4Ee/V1V/UGvZ7
-         iUL4kyaidVBtyeB+3tvRbdyQ4wKge6UR5jalE=
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=4dUdFBYGFHqdvIymHkW7uWgJF3CbepMSQD8M94HghbI=;
+        b=Bof3EO7aw8OA5pwZ5yxVnP++vbPHCQ1bdfbCS5RmQRKgTvkOHuLAtn3kQMPM7dFEAw
+         oU+zD1O71Vnye2indO40KaojnXRAukYViQsVWZn0fGdDWnwEpF7API/QJ+sQdrs87osK
+         bGB4DiF25bkduxrnKXZiMG9q3dZsXlPeWIU5o=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=30RcZys3m+mnl1wP4Li2+2cSCnquqYOBajAz0JIjDJs=;
-        b=OpbXDPE4qQNRfzDRufgsC7ubTIQxLWrjG0YpYyfOu3RDk1vMsujHs8jvy1AVHyHYK2
-         cjz2R8NUfnjiLLnfR8+mdNhOaUNY3LCZy784Ly0Mz27oMBJCzgmFpSij4VPy8ao3+2aF
-         nlCC7KnFgJ4x/fcrowfOlhsVW6+OL21dn1NuzamNX3FJeNPZ5UOG0apTs7lYWClGv715
-         iYLsRVSQb47/IwZVtzD/slSALaN85orzUg4F+4EtN1k8bdCBn6nipKAs/7amMkppje3T
-         J+/gZSrsSjt42lQMaDlUTZuaqzylYsJyS0Iw7HfWnbYDofFE0z0DJYzGFenWhGCO2k81
-         /EkQ==
-X-Gm-Message-State: AOAM531t5fm7nXHvCEAgOEoaYspvqsSluWNfYJoSg6TfSqF2O6FNlLN5
-        ubQaTJzob5PsZcJR/rJspEmCLQ==
-X-Google-Smtp-Source: ABdhPJyLtfBqUQpoVZNoqWX48X/ynHku0Q/mpdlADxhZE9maHPd7pzNzlEz8Vp+sXtbfa1/CJYhJYA==
-X-Received: by 2002:a17:902:b113:b0:153:2251:c1b0 with SMTP id q19-20020a170902b11300b001532251c1b0mr16128580plr.44.1647930316996;
-        Mon, 21 Mar 2022 23:25:16 -0700 (PDT)
-Received: from localhost ([2620:15c:202:201:c016:a147:e7e:6836])
-        by smtp.gmail.com with UTF8SMTPSA id y2-20020a056a00190200b004fa865d1fd3sm9903049pfi.86.2022.03.21.23.25.16
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Mon, 21 Mar 2022 23:25:16 -0700 (PDT)
-From:   Gwendal Grignou <gwendal@chromium.org>
-To:     jic23@kernel.org, robh+dt@kernel.org, swboyd@chromium.org
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2 7/8] dt-bindings: iio: sx9360: Add precharge resistor setting
-Date:   Mon, 21 Mar 2022 23:25:03 -0700
-Message-Id: <20220322062504.1019504-8-gwendal@chromium.org>
-X-Mailer: git-send-email 2.35.1.894.gb6a874cedc-goog
-In-Reply-To: <20220322062504.1019504-1-gwendal@chromium.org>
-References: <20220322062504.1019504-1-gwendal@chromium.org>
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=4dUdFBYGFHqdvIymHkW7uWgJF3CbepMSQD8M94HghbI=;
+        b=ii+PZcLhxzFbxfWBSaqECjbctTo6XqbCtmXMw/g9EswjDra3aAyb85eYtqZ01zlLTu
+         iYMjB2yk/TyrbySNpElmp5zkbROVyRTlMfGNCqQg0q+MnHvcLVODihwtJnF5rrxwpUmB
+         6UV3m/a1yb1DfXjxseyfE3GvtZL9mhlGTetfpJp5WwKaYjXTtffHXXvL+qlsnZAGSU6S
+         13E+FT4o3NUNYUD4/pZ29J5on2zOjKpsM7tKXvQIELa5EaoVTh0/R+W3vMpHxZLWiZ35
+         xYZcpumBu+4r/dPt1riw7fdM0zS1oQRvrL+3fq3z50tBhSjiL2wY2xNGHxT5OHmqk3o7
+         E7Vg==
+X-Gm-Message-State: AOAM532AMpRyGIpbB8QPxsccrLbsmmqYy5t0DUUmhwvSxq6AZjDeKfQF
+        o5ZM0HBIJIOb67MJdOdGCPLGN0T1+IT01HSMNgpZjw==
+X-Google-Smtp-Source: ABdhPJy+33iIcLPWvfYNbGLs+Fm01g7tBW+Guhoo6T8iHpmzNhPV1FTBYUb8XV3ozRiO5xv03OfRd1FikjljDwHyhqM=
+X-Received: by 2002:a05:6830:61b:b0:5cc:e44:7dc3 with SMTP id
+ w27-20020a056830061b00b005cc0e447dc3mr4838467oti.159.1647931842453; Mon, 21
+ Mar 2022 23:50:42 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Tue, 22 Mar 2022 07:50:42 +0100
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+In-Reply-To: <20220322062504.1019504-2-gwendal@chromium.org>
+References: <20220322062504.1019504-1-gwendal@chromium.org> <20220322062504.1019504-2-gwendal@chromium.org>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Tue, 22 Mar 2022 07:50:42 +0100
+Message-ID: <CAE-0n510fc3AUYXSS376C90T87FHpuTRZOt79roEjbnToCG4RQ@mail.gmail.com>
+Subject: Re: [PATCH v2 1/8] iio: sx9324: Fix default precharge internal
+ resistance register
+To:     Gwendal Grignou <gwendal@chromium.org>, jic23@kernel.org,
+        robh+dt@kernel.org
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        stable@vger.kernel.org
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Allow configure the resistance used during precharge.
+Quoting Gwendal Grignou (2022-03-21 23:24:57)
+> Fix the default value for the register that set the resistance:
+> it has to be 0x10.
+>
+> Fixes: 4c18a890dff8d ("iio:proximity:sx9324: Add SX9324 support")
+> Cc: stable@vger.kernel.org
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> ---
 
-Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
----
-Changes since v1:
-- no changes.
-
- .../bindings/iio/proximity/semtech,sx9360.yaml           | 9 +++++++++
- 1 file changed, 9 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml
-index 63e1a1fd00d4c..1225f64f14174 100644
---- a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml
-+++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9360.yaml
-@@ -61,6 +61,14 @@ properties:
-       UINT_MAX (4294967295) represents infinite. Other values
-       represent 1-1/N.
- 
-+  semtech,input-precharge-resistor-kohms:
-+    $ref: /schemas/types.yaml#/definitions/uint32
-+    default: 0
-+    description:
-+      Pre-charge input resistance in kOhm.
-+    minimum: 0
-+    maximum: 30
-+
- required:
-   - compatible
-   - reg
-@@ -85,5 +93,6 @@ examples:
-         semtech,resolution = <256>;
-         semtech,proxraw-strength = <2>;
-         semtech,avg-pos-strength = <64>;
-+        semtech,input-precharge-resistor-kohms = <4>;
-       };
-     };
--- 
-2.35.1.894.gb6a874cedc-goog
-
+Reviewed-by: Stephen Boyd <swboyd@chromium.org>
