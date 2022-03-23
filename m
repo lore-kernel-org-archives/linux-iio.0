@@ -2,32 +2,33 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B94DC433F5
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0272AC433FE
 	for <linux-iio@archiver.kernel.org>; Wed, 23 Mar 2022 12:18:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239549AbiCWMUS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 23 Mar 2022 08:20:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35100 "EHLO
+        id S234921AbiCWMUT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 23 Mar 2022 08:20:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35112 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234921AbiCWMUS (ORCPT
+        with ESMTP id S239152AbiCWMUS (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Mar 2022 08:20:18 -0400
 Received: from mxd2.seznam.cz (mxd2.seznam.cz [IPv6:2a02:598:2::210])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02F5852E5B;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0309852E63;
         Wed, 23 Mar 2022 05:18:47 -0700 (PDT)
 Received: from email.seznam.cz
-        by email-smtpc18b.ng.seznam.cz (email-smtpc18b.ng.seznam.cz [10.23.18.21])
-        id 6bd30b6430dd5f0d6a7ac73a;
-        Wed, 23 Mar 2022 13:18:15 +0100 (CET)
+        by email-smtpc25b.ng.seznam.cz (email-smtpc25b.ng.seznam.cz [10.23.18.35])
+        id 02835ba5598d0fcc032a97fb;
+        Wed, 23 Mar 2022 13:18:16 +0100 (CET)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=seznam.cz; s=beta;
-        t=1648037895; bh=cH5I5+ua42ikxVOB3r4IcFB04l7PFTclKG4TJdoGnkI=;
-        h=Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:MIME-Version:
-         Content-Transfer-Encoding:X-szn-frgn:X-szn-frgc;
-        b=NJcvXkENICfXbfpKn4ynDv3Qmyj7AejNpVrFuMCKZC8krcsIGNte+gPtd+DuR0EXi
-         /TAePfNqXNKrhitDw8/pvH4NfDaAqL+MWAQXvMISJaMgJexB8jLx5f+O9KIXkjM/eq
-         wgDBogkP/nFqAcGNFwqLS2ARZY4f6bMcaKQaxcio=
+        t=1648037896; bh=awM1rDsehR2wyeRn1zZaXShGQo6kRf4IVmYDQWGJWVw=;
+        h=Received:From:To:Cc:Subject:Date:Message-Id:X-Mailer:In-Reply-To:
+         References:MIME-Version:Content-Transfer-Encoding:X-szn-frgn:
+         X-szn-frgc;
+        b=JSuW+rbSKIFoAAn5MVQNrWUIciggqKnXPG+Cpe6X1b+LNR2YybqIYMBwP7a0sneav
+         3dJyzCXb6dZ0ny61gHRS3E0fLzWfpI0bueQHWy/VG5InvdZb/K/17QvvukkeyC1Yy3
+         UQs/UnuJpWuxtnCVEMbBPihOiW9FDQZqY7QxbRYQ=
 Received: from localhost.localdomain (ip-111-27.static.ccinternet.cz [147.161.27.111])
         by email-relay19.ng.seznam.cz (Seznam SMTPD 1.3.136) with ESMTP;
-        Wed, 23 Mar 2022 13:18:11 +0100 (CET)  
+        Wed, 23 Mar 2022 13:18:12 +0100 (CET)  
 From:   michael.srba@seznam.cz
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -35,14 +36,17 @@ To:     Jonathan Cameron <jic23@kernel.org>,
 Cc:     Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Michael Srba <Michael.Srba@seznam.cz>
-Subject: [PATCH v2 0/2] iio: imu: inv_mpu6050: Add support for ICM-20608-D
-Date:   Wed, 23 Mar 2022 13:15:48 +0100
-Message-Id: <20220323121550.16096-1-michael.srba@seznam.cz>
+        Michael Srba <Michael.Srba@seznam.cz>,
+        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Subject: [PATCH v3 2/2] iio: imu: inv_mpu6050: Add support for ICM-20608-D
+Date:   Wed, 23 Mar 2022 13:15:50 +0100
+Message-Id: <20220323121550.16096-3-michael.srba@seznam.cz>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220323121550.16096-1-michael.srba@seznam.cz>
+References: <20220323121550.16096-1-michael.srba@seznam.cz>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-szn-frgn: <54464e53-3b75-4f93-8539-b1341e89bca4>
+X-szn-frgn: <2703369f-32ce-446c-8977-19a4fd619181>
 X-szn-frgc: <0>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
@@ -50,33 +54,144 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Michael Srba <Michael.Srba@seznam.cz>
 
-This series copies the invensense icm20608 support in the inv_mpu6050
-driver for icm20608d, which is for all intents and purposes identical,
-except for the inclusion of a DMP (Digital Motion Processor), which
-is deemed significant enough to change the WHOAMI value, thereby making
-the driver fail if the invensense,icm20608 compatible is specified.
+The difference between the ICM-20608-D and the other ICM-20608
+variants is the addition of a DMP (Digital Motion Processor) core.
+This difference is deemed substantial enough to change the WHOAMI
+register value.
+Since this driver doesn't currently acknowledge the exisence of
+something like a DMP core, simply copy ICM-20608 except for the
+aforementioned WHOAMI register.
 
-Since the driver doesn't currently acknowledge that there is such thing
-as a DMP core, all that is needed is to copy the icm20608 support and
-change the WHOAMI value.
+Signed-off-by: Michael Srba <Michael.Srba@seznam.cz>
+Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+---
+changes:
+ - v2: none
+ - v3: none
+---
+ drivers/iio/imu/inv_mpu6050/Kconfig        | 4 ++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 9 +++++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  | 6 ++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 2 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  | 5 +++++
+ 5 files changed, 24 insertions(+), 2 deletions(-)
 
-changelog:
- -v2: require specifying "invensense,icm20608" as a fallback compatible
-      in the binding, as suggested
- -v3: fix indentation issue with the binding
-
-Michael Srba (2):
-  dt-bindings: iio: imu: mpu6050: Document invensense,icm20608d
-  iio: imu: inv_mpu6050: Add support for ICM-20608-D
-
- .../bindings/iio/imu/invensense,mpu6050.yaml  | 34 +++++++++++--------
- drivers/iio/imu/inv_mpu6050/Kconfig           |  4 +--
- drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    |  9 +++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     |  6 ++++
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h     |  2 ++
- drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  5 +++
- 6 files changed, 43 insertions(+), 17 deletions(-)
-
+diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
+index 9c625517173a..3636b1bc90f1 100644
+--- a/drivers/iio/imu/inv_mpu6050/Kconfig
++++ b/drivers/iio/imu/inv_mpu6050/Kconfig
+@@ -16,7 +16,7 @@ config INV_MPU6050_I2C
+ 	select REGMAP_I2C
+ 	help
+ 	  This driver supports the Invensense MPU6050/9150,
+-	  MPU6500/6515/6880/9250/9255, ICM20608/20609/20689, ICM20602/ICM20690
++	  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20602/ICM20690
+ 	  and IAM20680 motion tracking devices over I2C.
+ 	  This driver can be built as a module. The module will be called
+ 	  inv-mpu6050-i2c.
+@@ -28,7 +28,7 @@ config INV_MPU6050_SPI
+ 	select REGMAP_SPI
+ 	help
+ 	  This driver supports the Invensense MPU6000,
+-	  MPU6500/6515/6880/9250/9255, ICM20608/20609/20689, ICM20602/ICM20690
++	  MPU6500/6515/6880/9250/9255, ICM20608(D)/20609/20689, ICM20602/ICM20690
+ 	  and IAM20680 motion tracking devices over SPI.
+ 	  This driver can be built as a module. The module will be called
+ 	  inv-mpu6050-spi.
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+index 597768c29a72..86fbbe904050 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+@@ -217,6 +217,15 @@ static const struct inv_mpu6050_hw hw_info[] = {
+ 		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
+ 		.startup_time = {INV_MPU6500_GYRO_STARTUP_TIME, INV_MPU6500_ACCEL_STARTUP_TIME},
+ 	},
++	{
++		.whoami = INV_ICM20608D_WHOAMI_VALUE,
++		.name = "ICM20608D",
++		.reg = &reg_set_6500,
++		.config = &chip_config_6500,
++		.fifo_size = 512,
++		.temp = {INV_ICM20608_TEMP_OFFSET, INV_ICM20608_TEMP_SCALE},
++		.startup_time = {INV_MPU6500_GYRO_STARTUP_TIME, INV_MPU6500_ACCEL_STARTUP_TIME},
++	},
+ 	{
+ 		.whoami = INV_ICM20609_WHOAMI_VALUE,
+ 		.name = "ICM20609",
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index fe03707ec2d3..ed52b27409ac 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -29,6 +29,7 @@ static bool inv_mpu_i2c_aux_bus(struct device *dev)
+ 
+ 	switch (st->chip_type) {
+ 	case INV_ICM20608:
++	case INV_ICM20608D:
+ 	case INV_ICM20609:
+ 	case INV_ICM20689:
+ 	case INV_ICM20602:
+@@ -182,6 +183,7 @@ static const struct i2c_device_id inv_mpu_id[] = {
+ 	{"mpu9250", INV_MPU9250},
+ 	{"mpu9255", INV_MPU9255},
+ 	{"icm20608", INV_ICM20608},
++	{"icm20608d", INV_ICM20608D},
+ 	{"icm20609", INV_ICM20609},
+ 	{"icm20689", INV_ICM20689},
+ 	{"icm20602", INV_ICM20602},
+@@ -225,6 +227,10 @@ static const struct of_device_id inv_of_match[] = {
+ 		.compatible = "invensense,icm20608",
+ 		.data = (void *)INV_ICM20608
+ 	},
++	{
++		.compatible = "invensense,icm20608d",
++		.data = (void *)INV_ICM20608D
++	},
+ 	{
+ 		.compatible = "invensense,icm20609",
+ 		.data = (void *)INV_ICM20609
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+index c6aa36ee966a..8e14f20b1314 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
+@@ -76,6 +76,7 @@ enum inv_devices {
+ 	INV_MPU9250,
+ 	INV_MPU9255,
+ 	INV_ICM20608,
++	INV_ICM20608D,
+ 	INV_ICM20609,
+ 	INV_ICM20689,
+ 	INV_ICM20602,
+@@ -394,6 +395,7 @@ struct inv_mpu6050_state {
+ #define INV_MPU9255_WHOAMI_VALUE		0x73
+ #define INV_MPU6515_WHOAMI_VALUE		0x74
+ #define INV_ICM20608_WHOAMI_VALUE		0xAF
++#define INV_ICM20608D_WHOAMI_VALUE		0xAE
+ #define INV_ICM20609_WHOAMI_VALUE		0xA6
+ #define INV_ICM20689_WHOAMI_VALUE		0x98
+ #define INV_ICM20602_WHOAMI_VALUE		0x12
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+index 6800356b25fb..ce8ab6db2bf2 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
+@@ -74,6 +74,7 @@ static const struct spi_device_id inv_mpu_id[] = {
+ 	{"mpu9250", INV_MPU9250},
+ 	{"mpu9255", INV_MPU9255},
+ 	{"icm20608", INV_ICM20608},
++	{"icm20608d", INV_ICM20608D},
+ 	{"icm20609", INV_ICM20609},
+ 	{"icm20689", INV_ICM20689},
+ 	{"icm20602", INV_ICM20602},
+@@ -113,6 +114,10 @@ static const struct of_device_id inv_of_match[] = {
+ 		.compatible = "invensense,icm20608",
+ 		.data = (void *)INV_ICM20608
+ 	},
++	{
++		.compatible = "invensense,icm20608d",
++		.data = (void *)INV_ICM20608D
++	},
+ 	{
+ 		.compatible = "invensense,icm20609",
+ 		.data = (void *)INV_ICM20609
 -- 
 2.35.1
 
