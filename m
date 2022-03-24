@@ -2,85 +2,85 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07B47C433F5
-	for <linux-iio@archiver.kernel.org>; Wed, 23 Mar 2022 16:36:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3021EC433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 24 Mar 2022 05:58:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245507AbiCWQiG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 23 Mar 2022 12:38:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38712 "EHLO
+        id S1347733AbiCXGA1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 24 Mar 2022 02:00:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44862 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239165AbiCWQhr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Mar 2022 12:37:47 -0400
-Received: from mail-ed1-f50.google.com (mail-ed1-f50.google.com [209.85.208.50])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFBB57A98C;
-        Wed, 23 Mar 2022 09:36:17 -0700 (PDT)
-Received: by mail-ed1-f50.google.com with SMTP id t1so2524379edc.3;
-        Wed, 23 Mar 2022 09:36:17 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=xID/y6FVW34VZrnvCf0b9HExW6zMhF2WBK1VWecEDPg=;
-        b=w0+URP/NpRTVuwxl77Qr9I1OZgMlF1MyeKnVHinI1L+kCHCaJ9J4tvFxXn3IN3Qoj4
-         oQWGhpQAHTJO8TOO+D7o4CHU50feAlqx912PsKAtDz+0I3+wc8mKwlywwkJPrSW8FkJX
-         lx9ItOYJZKa0PHyD4PcOk0Tm3yuusVWEAhMD0qRQxefmFdPNy2fbaBEMyNMdqrVTOxlH
-         ykbKPE3mgIg+rpgdVVymXSLp/AdMddjkFjqsKfn2nKZOK3wvLyBYELBHhGo35iZ4vxJM
-         X2lKDUL0Pq7ATs46kPhrHTq18pak8qUVOHCzDV+JoJrq1ekfsbKsF504gFXgaxIaszJU
-         ZHVw==
-X-Gm-Message-State: AOAM530bzso8sbAiv01vXpCeoSDAgbe9tZsnGBCGl8gGBM514XyWeuSk
-        mK23wY41wtB1xRSo/bGhqVU=
-X-Google-Smtp-Source: ABdhPJzJZKppkCgdf9Ls3orQM6PkVRgexV03RFrCKXVAejBsgpE0V7ijjVuq3fJFMNQ3F6dmcebOxQ==
-X-Received: by 2002:a05:6402:2747:b0:419:4817:ba22 with SMTP id z7-20020a056402274700b004194817ba22mr1128020edd.253.1648053376177;
-        Wed, 23 Mar 2022 09:36:16 -0700 (PDT)
-Received: from [192.168.0.17] (78-11-189-27.static.ip.netia.com.pl. [78.11.189.27])
-        by smtp.googlemail.com with ESMTPSA id z22-20020a17090655d600b006d229436793sm122598ejp.223.2022.03.23.09.36.14
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 23 Mar 2022 09:36:15 -0700 (PDT)
-Message-ID: <6c263c20-0731-3ef0-692e-76126ed0466f@kernel.org>
-Date:   Wed, 23 Mar 2022 17:36:14 +0100
+        with ESMTP id S1347381AbiCXGA0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2022 02:00:26 -0400
+Received: from out2.migadu.com (out2.migadu.com [IPv6:2001:41d0:2:aacc::])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1BA7893994
+        for <linux-iio@vger.kernel.org>; Wed, 23 Mar 2022 22:58:54 -0700 (PDT)
+X-Report-Abuse: Please report any abuse attempt to abuse@migadu.com and include these headers.
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=linux.dev; s=key1;
+        t=1648101532;
+        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
+         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
+         content-transfer-encoding:content-transfer-encoding;
+        bh=YZqkT1MmV6Rav9KzvVaFuvIq9sWkxOzSdiWPktkaH5Q=;
+        b=MNjeJfRCwqFQtv2IYPj6hxCUHhYFd+7PgnTWc6pceKuVFlFtp0SHUAMXDpK+Zm5FFLgrn9
+        A4UtBBBYQxBddSOqI98C94eDuVGxWEmsZHUd38B/inbRPVi5eZAJftwrBvtrVnwEmoctyw
+        73xxUh8COKDZq6PwqMx6BAUfVmw8TiY=
+From:   Jackie Liu <liu.yun@linux.dev>
+To:     Jonathan.Cameron@huawei.com
+Cc:     andy.shevchenko@gmail.com, linux-iio@vger.kernel.org
+Subject: [PATCH] iio: adc: da9150-gpadc: fix build on mips CONFIG_MIKROTIK_RB532=y
+Date:   Thu, 24 Mar 2022 13:58:21 +0800
+Message-Id: <20220324055821.3184872-1-liu.yun@linux.dev>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.5.0
-Subject: Re: [PATCH v13 4/9] dt-bindings: iio: adc: document qcom-spmi-rradc
-Content-Language: en-US
-To:     Caleb Connolly <caleb.connolly@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Cc:     sumit.semwal@linaro.org, amit.pundir@linaro.org,
-        john.stultz@linaro.org
-References: <20220323162820.110806-1-caleb@connolly.tech>
- <20220323162820.110806-5-caleb@connolly.tech>
-From:   Krzysztof Kozlowski <krzk@kernel.org>
-In-Reply-To: <20220323162820.110806-5-caleb@connolly.tech>
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-Migadu-Flow: FLOW_OUT
+X-Migadu-Auth-User: linux.dev
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 23/03/2022 17:28, Caleb Connolly wrote:
-> From: Caleb Connolly <caleb.connolly@linaro.org>
-> 
-> Add dt-binding docs for the Qualcomm SPMI RRADC found in PMICs like
-> PMI8998 and PMI8994
-> 
-> Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-> ---
->  .../bindings/iio/adc/qcom,spmi-rradc.yaml     | 51 +++++++++++++++++++
->  1 file changed, 51 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,spmi-rradc.yaml
-> 
+From: Jackie Liu <liuyun01@kylinos.cn>
 
+kernel robot report build fail by randconfig:
 
-Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+[...]
+drivers/iio/adc/da9150-gpadc.c:254:13: error: ‘DA9150_GPADC_CHAN_0x08’ undeclared here (not in a function); did you mean ‘DA9150_GPADC_CHAN_TBAT’?
+  254 |  .channel = DA9150_GPADC_CHAN_##_id,   \
+      |             ^~~~~~~~~~~~~~~~~~
+drivers/iio/adc/da9150-gpadc.c:273:2: note: in expansion of macro ‘DA9150_GPADC_CHANNEL’
+  273 |  DA9150_GPADC_CHANNEL(_id, _hw_id, _type,   \
+      |  ^~~~~~~~~~~~~~~~~~~~
+drivers/iio/adc/da9150-gpadc.c:281:2: note: in expansion of macro ‘DA9150_GPADC_CHANNEL_PROCESSED’
+  281 |  DA9150_GPADC_CHANNEL_PROCESSED(GPIOD, GPIOD_6V, IIO_VOLTAGE, NULL),
+      |  ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+make[4]: *** [../scripts/Makefile.build:288: drivers/iio/adc/da9150-gpadc.o] Error 1
+make[3]: *** [../scripts/Makefile.build:550: drivers/iio/adc] Error 2
+make[3]: *** Waiting for unfinished jobs....
+[...]
 
+Reported-by: k2ci <kernel-bot@kylinos.cn>
+Signed-off-by: Jackie Liu <liuyun01@kylinos.cn>
+---
+ drivers/iio/adc/da9150-gpadc.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/iio/adc/da9150-gpadc.c b/drivers/iio/adc/da9150-gpadc.c
+index 8f0d3fb63b67..ed32061aee51 100644
+--- a/drivers/iio/adc/da9150-gpadc.c
++++ b/drivers/iio/adc/da9150-gpadc.c
+@@ -273,6 +273,12 @@ static const struct iio_info da9150_gpadc_info = {
+ 	DA9150_GPADC_CHANNEL(_id, _hw_id, _type,			\
+ 			     BIT(IIO_CHAN_INFO_PROCESSED), _ext_name)
+ 
++/*
++ * Workaround for arch/mips/include/asm/mach-rc32434/rb.h
++ *   #define GPIOD 0x08
++ */
++#undef GPIOD
++
+ /* Supported channels */
+ static const struct iio_chan_spec da9150_gpadc_channels[] = {
+ 	DA9150_GPADC_CHANNEL_PROCESSED(GPIOA, GPIOA_6V, IIO_VOLTAGE, NULL),
+-- 
+2.25.1
+
