@@ -2,79 +2,156 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A678C433F5
-	for <linux-iio@archiver.kernel.org>; Thu, 24 Mar 2022 13:00:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 651FEC433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 24 Mar 2022 22:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350364AbiCXNCC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 24 Mar 2022 09:02:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54834 "EHLO
+        id S1353854AbiCXWbE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 24 Mar 2022 18:31:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350354AbiCXNCA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2022 09:02:00 -0400
-Received: from sipsolutions.net (s3.sipsolutions.net [IPv6:2a01:4f8:191:4433::2])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EB93F90CEA;
-        Thu, 24 Mar 2022 06:00:27 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=sipsolutions.net; s=mail; h=Content-Transfer-Encoding:MIME-Version:
-        Content-Type:References:In-Reply-To:Date:Cc:To:From:Subject:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description:Resent-Date:Resent-From:Resent-To:
-        Resent-Cc:Resent-Message-ID; bh=YG01IvqBzypFttWyr61/58YsVshIZUGldKDL1nfzsRk=;
-        t=1648126828; x=1649336428; b=DuhBj2JSpSD9rd/13a4sA3PxCrlZTitxsNZPmMuyP8GHczM
-        HbnJCN1qUqUa/FXw5hTf/MxZd61rL2ugJ2M6X0bAE/+6Hm0VAHZjkfU5Azw7cz17seJQpaVIADgJK
-        Lj6tC5YMLATzMVB78XYdl8kELZMHpxcVP2ZuWEcKV+95raCTwe49e+LyNCfmEEkNVHUPVby8Cvd8q
-        vb27xv6T4J/WgwpGCjJFdJAU4gvbHCfqjds+SfvP+QvkWLJngVELiktioaWiVTYuzpQDyRKtqa22q
-        RXR8SN9AaqL1Z2wz69tTzFBD+0Y5Iv2HC8Q70YUgfLqBVU4HB9X/GiaOE4+2QPcw==;
-Received: by sipsolutions.net with esmtpsa (TLS1.3:ECDHE_SECP256R1__RSA_PSS_RSAE_SHA256__AES_256_GCM:256)
-        (Exim 4.95)
-        (envelope-from <johannes@sipsolutions.net>)
-        id 1nXN4V-00HWDe-B6;
-        Thu, 24 Mar 2022 14:00:11 +0100
-Message-ID: <7f405d8d09a83954aa3411eff8b71ee687c7ec33.camel@sipsolutions.net>
-Subject: Re: [RFC v1 01/10] roadtest: import libvhost-user from QEMU
-From:   Johannes Berg <johannes@sipsolutions.net>
-To:     Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        linux-kernel@vger.kernel.org
-Cc:     kernel@axis.com, devicetree@vger.kernel.org,
-        linux-um@lists.infradead.org, shuah@kernel.org,
-        brendanhiggins@google.com, linux-kselftest@vger.kernel.org,
-        jic23@kernel.org, linux-iio@vger.kernel.org, lgirdwood@gmail.com,
-        broonie@kernel.org, a.zummo@towertech.it,
-        alexandre.belloni@bootlin.com, linux-rtc@vger.kernel.org,
-        corbet@lwn.net, linux-doc@vger.kernel.org
-Date:   Thu, 24 Mar 2022 14:00:10 +0100
-In-Reply-To: <20220311162445.346685-2-vincent.whitchurch@axis.com>
-References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
-         <20220311162445.346685-2-vincent.whitchurch@axis.com>
-Content-Type: text/plain; charset="UTF-8"
-User-Agent: Evolution 3.42.4 (3.42.4-1.fc35) 
+        with ESMTP id S1353166AbiCXWbD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Mar 2022 18:31:03 -0400
+Received: from mail-pf1-x42a.google.com (mail-pf1-x42a.google.com [IPv6:2607:f8b0:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F2B7D5523C
+        for <linux-iio@vger.kernel.org>; Thu, 24 Mar 2022 15:29:30 -0700 (PDT)
+Received: by mail-pf1-x42a.google.com with SMTP id t2so5024189pfj.10
+        for <linux-iio@vger.kernel.org>; Thu, 24 Mar 2022 15:29:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QZfJuqEqjtuhgufAokgjq3Hu5bdQ5OI0v07gbdQ+pcA=;
+        b=dGsFyZaDwBZLwstBdZL4i8VbFpk3YsInDuwrU14tpkYzUE04Sqh2Kuxs9bZyxdPxFU
+         NXnn9NwgXbLdFWbPDtgk5gCjiOLG6ZpDzEj/GopS35pKQnFkEn2ujqBgvo2nTfEoUjZP
+         8koJ7Mi058j4eV54vVkhwDzZ/L6GrDWuVP+p0=
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=QZfJuqEqjtuhgufAokgjq3Hu5bdQ5OI0v07gbdQ+pcA=;
+        b=yn9G0scD1+vHvnKknKkMYRi6mviN0uJYtelAKX4FT3BeEUkBhNBE01emZi5rkA/i7T
+         lbeWr9Q5ADpjd8fjvcjyAw2w1OfWhJ7OSiROoLOTVd/aeYXDOn1sU7C8UHPRzlbXxt24
+         2TOSJd5Wxt8U/KiliMy1/ZWSh4IXPzD94uwfihjR5NoDN9nTrKzmc5mZgcoXP4oimNQq
+         mRSPhq/BCWv/GWXLcqwOqj2ogd4LdJOCQ7/l8k9dlp3gDGPo4gdSJ/pry93cCNJk7xpO
+         l/P/0q7T4xKPLEX5uX73qc+97IgfXgrdRg5CwhDSAKa0iyhgrBATS7l4mJBeP9bTtSnQ
+         3pjQ==
+X-Gm-Message-State: AOAM533uqevDUJB7KiMt+ohRLo+FBH4ynuOnaIH505VtKBFTPctEGZQF
+        EC87Zu59zfhMfD1+u9ChNhWdHQ==
+X-Google-Smtp-Source: ABdhPJwUxUKuQiIkAbsA4XQIwgBLxZ5hvb4xxSWNFsQ6XcIPQ4wDPANIYdUcunDGus+rTknwsrqDQQ==
+X-Received: by 2002:aa7:88d2:0:b0:4f7:78d4:de98 with SMTP id k18-20020aa788d2000000b004f778d4de98mr6850253pff.25.1648160970348;
+        Thu, 24 Mar 2022 15:29:30 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:8832:9ce1:9692:fe4])
+        by smtp.gmail.com with ESMTPSA id g15-20020a056a000b8f00b004fa9dbf27desm4801124pfj.55.2022.03.24.15.29.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 24 Mar 2022 15:29:29 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH v2] iio:proximity:sx9324: Fix hardware gain read/write
+Date:   Thu, 24 Mar 2022 15:29:28 -0700
+Message-Id: <20220324222928.874522-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.35.1.1021.g381101b075-goog
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-malware-bazaar: not-scanned
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 2022-03-11 at 17:24 +0100, Vincent Whitchurch wrote:
-> Import the libvhost-user from QEMU for use in the implementation of the
-> virtio devices in the roadtest backend.
-> 
+There are four possible gain values according to 'sx9324_gain_vals[]':
 
-So hm, I wonder if this is the sensible thing to do?
+	1, 2, 4, and 8
 
-Not that I mind importing qemu code, but:
+The values are off by one when writing and reading the register. The
+bits should be set according to this equation:
 
- 1) the implementation is rather complex in some places, and has support
-    for a LOT of virtio/vhost-user features that are really not needed
-    in these cases, for performance etc. It's also close to 4k LOC.
+	ilog2(<gain>) + 1
 
- 2) the implementation doesn't support time-travel mode which might come
-    in handy
+so that a gain of 8 is 0x3 in the register field and a gain of 4 is 0x2
+in the register field, etc. Note that a gain of 0 is reserved per the
+datasheet. The default gain (SX9324_REG_PROX_CTRL0_GAIN_1) is also
+wrong. It should be 0x1 << 3, i.e. 0x8, not 0x80 which is setting the
+reserved bit 7.
 
-We have another implementation that might be simpler:
-https://github.com/linux-test-project/usfstl/blob/main/src/vhost.c
+Fix this all up to properly handle the hardware gain and return errors
+for invalid settings.
 
-but it probably has dependencies on other things in this library, but
-vhost.c itself is only ~1k LOC. (But I need to update it, I'm sure we
-have some unpublished bugfixes etc. in this code)
+Fixes: 4c18a890dff8 ("iio:proximity:sx9324: Add SX9324 support")
+Cc: Gwendal Grignou <gwendal@chromium.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
 
-johannes
+Changes from v1 (https://lore.kernel.org/r/)20220318204808.3404542-1-swboyd@chromium.org:
+ * Reject invalid settings
+ * Fix default value
+ * More commit text details
+
+ drivers/iio/proximity/sx9324.c | 26 +++++++++++++++++++++-----
+ 1 file changed, 21 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+index 0d9bbbb50cb4..6e90917e3e36 100644
+--- a/drivers/iio/proximity/sx9324.c
++++ b/drivers/iio/proximity/sx9324.c
+@@ -76,7 +76,10 @@
+ 
+ #define SX9324_REG_PROX_CTRL0		0x30
+ #define SX9324_REG_PROX_CTRL0_GAIN_MASK	GENMASK(5, 3)
+-#define SX9324_REG_PROX_CTRL0_GAIN_1		0x80
++#define SX9324_REG_PROX_CTRL0_GAIN_SHIFT	3
++#define SX9324_REG_PROX_CTRL0_GAIN_RSVD		0x0
++#define SX9324_REG_PROX_CTRL0_GAIN_1		0x1
++#define SX9324_REG_PROX_CTRL0_GAIN_8		0x4
+ #define SX9324_REG_PROX_CTRL0_RAWFILT_MASK	GENMASK(2, 0)
+ #define SX9324_REG_PROX_CTRL0_RAWFILT_1P50	0x01
+ #define SX9324_REG_PROX_CTRL1		0x31
+@@ -379,7 +382,14 @@ static int sx9324_read_gain(struct sx_common_data *data,
+ 	if (ret)
+ 		return ret;
+ 
+-	*val = 1 << FIELD_GET(SX9324_REG_PROX_CTRL0_GAIN_MASK, regval);
++	regval = FIELD_GET(SX9324_REG_PROX_CTRL0_GAIN_MASK, regval);
++	if (regval)
++		regval--;
++	else if (regval == SX9324_REG_PROX_CTRL0_GAIN_RSVD ||
++		 regval > SX9324_REG_PROX_CTRL0_GAIN_8)
++		return -EINVAL;
++
++	*val = 1 << regval;
+ 
+ 	return IIO_VAL_INT;
+ }
+@@ -725,8 +735,12 @@ static int sx9324_write_gain(struct sx_common_data *data,
+ 	unsigned int gain, reg;
+ 	int ret;
+ 
+-	gain = ilog2(val);
+ 	reg = SX9324_REG_PROX_CTRL0 + chan->channel / 2;
++
++	gain = ilog2(val) + 1;
++	if (val <= 0 || gain > SX9324_REG_PROX_CTRL0_GAIN_8)
++		return -EINVAL;
++
+ 	gain = FIELD_PREP(SX9324_REG_PROX_CTRL0_GAIN_MASK, gain);
+ 
+ 	mutex_lock(&data->mutex);
+@@ -784,9 +798,11 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
+ 	{ SX9324_REG_AFE_CTRL8, SX9324_REG_AFE_CTRL8_RESFILTN_4KOHM },
+ 	{ SX9324_REG_AFE_CTRL9, SX9324_REG_AFE_CTRL9_AGAIN_1 },
+ 
+-	{ SX9324_REG_PROX_CTRL0, SX9324_REG_PROX_CTRL0_GAIN_1 |
++	{ SX9324_REG_PROX_CTRL0,
++		SX9324_REG_PROX_CTRL0_GAIN_1 << SX9324_REG_PROX_CTRL0_GAIN_SHIFT |
+ 		SX9324_REG_PROX_CTRL0_RAWFILT_1P50 },
+-	{ SX9324_REG_PROX_CTRL1, SX9324_REG_PROX_CTRL0_GAIN_1 |
++	{ SX9324_REG_PROX_CTRL1,
++		SX9324_REG_PROX_CTRL0_GAIN_1 << SX9324_REG_PROX_CTRL0_GAIN_SHIFT |
+ 		SX9324_REG_PROX_CTRL0_RAWFILT_1P50 },
+ 	{ SX9324_REG_PROX_CTRL2, SX9324_REG_PROX_CTRL2_AVGNEG_THRESH_16K },
+ 	{ SX9324_REG_PROX_CTRL3, SX9324_REG_PROX_CTRL3_AVGDEB_2SAMPLES |
+
+base-commit: a8ee3b32f5da6c77a5ccc0e42c2250d61ba54fe0
+-- 
+https://chromeos.dev
+
