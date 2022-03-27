@@ -2,49 +2,49 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03C0FC433EF
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Mar 2022 15:46:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E0778C433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Mar 2022 15:51:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231623AbiC0Prp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Mar 2022 11:47:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56734 "EHLO
+        id S234251AbiC0PxL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Mar 2022 11:53:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235790AbiC0Pro (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2022 11:47:44 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 047F935A82;
-        Sun, 27 Mar 2022 08:46:05 -0700 (PDT)
+        with ESMTP id S233371AbiC0PxJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2022 11:53:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0DE9F340F4;
+        Sun, 27 Mar 2022 08:51:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 810E861046;
-        Sun, 27 Mar 2022 15:46:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id C118CC340EC;
-        Sun, 27 Mar 2022 15:46:02 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BDAEB80BD9;
+        Sun, 27 Mar 2022 15:51:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A1BFDC340EC;
+        Sun, 27 Mar 2022 15:51:25 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648395964;
-        bh=B3ZPOyUYGQj+6qCSUleqjBCQQNBjm+6YkuHdgpSuAyw=;
+        s=k20201202; t=1648396288;
+        bh=OjkdjRp81xHZb5YHZdSNAxcT92Dh4jPEwUjVesw5coA=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=YL+McNUSywygkfaI557mBMAfRb0GJiv3JZRwJRHIGuweV+5a+4Xv2ENzQQjRXdPB4
-         CVSCQTU2esJ/zb8h2OJPHCY5fznjz6FRlpHKxUHVRjCGefXw8XlzBOTvmfAYtuyiHQ
-         iywuzIBa82tJN68p7zn4YWzBkiVvGxMWVQbQU9+V+sRH+1Km0wczyty5P+zSNFG7Wz
-         25piB0hpv07m3uxR8JC8S1k24aeRLCjZ0mv547FcGfIUp28gK5D1Jv+HkRYs1/OHXh
-         ZP0O6B2FO3KRVVVfvmlzMTezLF+EpUCnaPJtefdoW1zuV76ZXKi0qzrOU6TvIKV46J
-         JZnL5Q3Y2jsoA==
-Date:   Sun, 27 Mar 2022 16:53:36 +0100
+        b=Ncbdammuav85O6dVRzecFAvOufxZ5uLUvFdS5OxUG/HuMHbNVfAXuFin/3rO+9UTH
+         W/jEulTTsuAP2q9dmlkaBHaOT29FNsjoR/26uXeycRWohwdLSbjRDCwBlGybh8YzoN
+         JyY7X8jah40vKpv+TtvVFr5RAAyGbn4f2ebhXkjtHDlNs80TF6LFvluZtzji15djr6
+         y1V3dSRI7SXBiCqWKSeyN06rQC/dytx3ESl7tRbo9QACDMv8jO+c2kxBgFOsGR/t41
+         w+QmeMXZWXb/mQjW7sjB1OzUZZRBxhg32AOhUw5nd74BS5Ae1ldqRwObSjHsXYt+5Q
+         t6m1Cf32It3FQ==
+Date:   Sun, 27 Mar 2022 16:59:01 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Tong Zhang <ztong0001@gmail.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+To:     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
         Sean Nyekjaer <sean@geanix.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3] iio:imu:bmi160: disable regulator in error path
-Message-ID: <20220327165336.799db3ac@jic23-huawei>
-In-Reply-To: <20220327154005.806049-1-ztong0001@gmail.com>
-References: <20220318070900.2499370-1-ztong0001@gmail.com>
-        <20220327154005.806049-1-ztong0001@gmail.com>
+        Jose Cazarin <joseespiriki@gmail.com>,
+        Wolfram Sang <wsa@kernel.org>, linux-i2c@vger.kernel.org
+Subject: Re: [PATCH v2] iio: dac: dac5571: Fix chip id detection for OF
+ devices
+Message-ID: <20220327165901.7556df2c@jic23-huawei>
+In-Reply-To: <YkB2p+GAP55qMja8@pendragon.ideasonboard.com>
+References: <20220324234340.32402-1-laurent.pinchart@ideasonboard.com>
+        <20220327153438.1d4128e5@jic23-huawei>
+        <YkB2p+GAP55qMja8@pendragon.ideasonboard.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -53,90 +53,127 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 27 Mar 2022 08:40:05 -0700
-Tong Zhang <ztong0001@gmail.com> wrote:
+On Sun, 27 Mar 2022 17:37:27 +0300
+Laurent Pinchart <laurent.pinchart@ideasonboard.com> wrote:
 
-> Regulator should be disabled in error path as mentioned in _regulator_put().
-> Also disable accel if gyro cannot be enabled.
+> Hi Jonathan,
 > 
-> [   16.233604] WARNING: CPU: 0 PID: 2177 at drivers/regulator/core.c:2257 _regulator_put
-> [   16.240453] Call Trace:
-> [   16.240572]  <TASK>
-> [   16.240676]  regulator_put+0x26/0x40
-> [   16.240853]  regulator_bulk_free+0x26/0x50
-> [   16.241050]  release_nodes+0x3f/0x70
-> [   16.241225]  devres_release_group+0x147/0x1c0
-> [   16.241441]  ? bmi160_core_probe+0x175/0x3a0 [bmi160_core]
+> On Sun, Mar 27, 2022 at 03:34:38PM +0100, Jonathan Cameron wrote:
+> > On Fri, 25 Mar 2022 01:43:40 +0200 Laurent Pinchart wrote:
+> >   
+> > > From: Jose Cazarin <joseespiriki@gmail.com>
+> > > 
+> > > When matching an OF device, the match mechanism tries all components of
+> > > the compatible property. This can result with a device matched with a
+> > > compatible string that isn't the first in the compatible list. For
+> > > instance, with a compatible property set to
+> > > 
+> > >     compatible = "ti,dac081c081", "ti,dac5571";
+> > > 
+> > > the driver will match the second compatible string, as the first one
+> > > isn't listed in the of_device_id table. The device will however be named
+> > > "dac081c081" by the I2C core.
+> > > 
+> > > This causes an issue when identifying the chip. The probe function
+> > > receives a i2c_device_id that comes from the module's I2C device ID
+> > > table. There is no entry in that table for "dac081c081", which results
+> > > in a NULL pointer passed to the probe function.
+> > > 
+> > > To fix this, add chip_id information in the data field of the OF device
+> > > ID table, and retrieve it with of_device_get_match_data() for OF
+> > > devices.  
+> > 
+> > You forgot to update the patch description for the change to device_get_match_data()
+> > 
+> > One other thing inline.  
 > 
-> Fixes: 5dea3fb066f0 ("iio: imu: bmi160: added regulator support")
-> Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-oops. Raced with you ;)
+> Thank you for the comments. I agree with both. Would you like me to send
+> a v3, or is this something you'd be happy fixing when applying the patch
+> to your tree ?
 
-Anyhow, I added the tag, so no problem.
+I've applied it how with those changes.  However, it's on my fixes-togreg branch
+and I don't plan to push that out until after rc1 when I can rebase it on something
+'stable'.
+
+Thanks,
 
 Jonathan
 
-> ---
-> v2: also disable accel when gyro fail to enable
-> v3: add tag
->  drivers/iio/imu/bmi160/bmi160_core.c | 20 ++++++++++++++------
->  1 file changed, 14 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index 824b5124a5f5..01336105792e 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -730,7 +730,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
->  
->  	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
->  	if (ret)
-> -		return ret;
-> +		goto disable_regulator;
->  
->  	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
->  
-> @@ -741,29 +741,37 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
->  	if (use_spi) {
->  		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
->  		if (ret)
-> -			return ret;
-> +			goto disable_regulator;
->  	}
->  
->  	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
->  	if (ret) {
->  		dev_err(dev, "Error reading chip id\n");
-> -		return ret;
-> +		goto disable_regulator;
->  	}
->  	if (val != BMI160_CHIP_ID_VAL) {
->  		dev_err(dev, "Wrong chip id, got %x expected %x\n",
->  			val, BMI160_CHIP_ID_VAL);
-> -		return -ENODEV;
-> +		ret = -ENODEV;
-> +		goto disable_regulator;
->  	}
->  
->  	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
->  	if (ret)
-> -		return ret;
-> +		goto disable_regulator;
->  
->  	ret = bmi160_set_mode(data, BMI160_GYRO, true);
->  	if (ret)
-> -		return ret;
-> +		goto disable_accel;
->  
->  	return 0;
-> +
-> +disable_accel:
-> +	bmi160_set_mode(data, BMI160_ACCEL, false);
-> +
-> +disable_regulator:
-> +	regulator_bulk_disable(ARRAY_SIZE(data->supplies), data->supplies);
-> +	return ret;
->  }
->  
->  static int bmi160_data_rdy_trigger_set_state(struct iio_trigger *trig,
+> > > Signed-off-by: Jose Cazarin <joseespiriki@gmail.com>
+> > > Reviewed-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > > Signed-off-by: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+> > > ---
+> > > Changes since v1:
+> > > 
+> > > - Use device_get_match_data()
+> > > ---
+> > >  drivers/iio/dac/ti-dac5571.c | 28 ++++++++++++++++++----------
+> > >  1 file changed, 18 insertions(+), 10 deletions(-)
+> > > 
+> > > diff --git a/drivers/iio/dac/ti-dac5571.c b/drivers/iio/dac/ti-dac5571.c
+> > > index 4a3b8d875518..4f50e31dffb0 100644
+> > > --- a/drivers/iio/dac/ti-dac5571.c
+> > > +++ b/drivers/iio/dac/ti-dac5571.c
+> > > @@ -19,6 +19,7 @@
+> > >  #include <linux/i2c.h>
+> > >  #include <linux/module.h>
+> > >  #include <linux/mod_devicetable.h>
+> > > +#include <linux/property.h>
+> > >  #include <linux/regulator/consumer.h>
+> > >  
+> > >  enum chip_id {
+> > > @@ -311,6 +312,7 @@ static int dac5571_probe(struct i2c_client *client,
+> > >  	const struct dac5571_spec *spec;
+> > >  	struct dac5571_data *data;
+> > >  	struct iio_dev *indio_dev;
+> > > +	enum chip_id chip_id;
+> > >  	int ret, i;
+> > >  
+> > >  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> > > @@ -326,7 +328,13 @@ static int dac5571_probe(struct i2c_client *client,
+> > >  	indio_dev->modes = INDIO_DIRECT_MODE;
+> > >  	indio_dev->channels = dac5571_channels;
+> > >  
+> > > -	spec = &dac5571_spec[id->driver_data];
+> > > +	if (dev->of_node)  
+> > 
+> > 	if (dev_fwnode(dev))
+> >   
+> > > +		chip_id = (uintptr_t)device_get_match_data(dev);
+> > > +	else
+> > > +		chip_id = id->driver_data;
+> > > +
+> > > +	spec = &dac5571_spec[chip_id];
+> > > +
+> > >  	indio_dev->num_channels = spec->num_channels;
+> > >  	data->spec = spec;
+> > >  
+> > > @@ -385,15 +393,15 @@ static int dac5571_remove(struct i2c_client *i2c)
+> > >  }
+> > >  
+> > >  static const struct of_device_id dac5571_of_id[] = {
+> > > -	{.compatible = "ti,dac5571"},
+> > > -	{.compatible = "ti,dac6571"},
+> > > -	{.compatible = "ti,dac7571"},
+> > > -	{.compatible = "ti,dac5574"},
+> > > -	{.compatible = "ti,dac6574"},
+> > > -	{.compatible = "ti,dac7574"},
+> > > -	{.compatible = "ti,dac5573"},
+> > > -	{.compatible = "ti,dac6573"},
+> > > -	{.compatible = "ti,dac7573"},
+> > > +	{.compatible = "ti,dac5571", .data = (void *)single_8bit},
+> > > +	{.compatible = "ti,dac6571", .data = (void *)single_10bit},
+> > > +	{.compatible = "ti,dac7571", .data = (void *)single_12bit},
+> > > +	{.compatible = "ti,dac5574", .data = (void *)quad_8bit},
+> > > +	{.compatible = "ti,dac6574", .data = (void *)quad_10bit},
+> > > +	{.compatible = "ti,dac7574", .data = (void *)quad_12bit},
+> > > +	{.compatible = "ti,dac5573", .data = (void *)quad_8bit},
+> > > +	{.compatible = "ti,dac6573", .data = (void *)quad_10bit},
+> > > +	{.compatible = "ti,dac7573", .data = (void *)quad_12bit},
+> > >  	{}
+> > >  };
+> > >  MODULE_DEVICE_TABLE(of, dac5571_of_id);  
+> >   
+> 
 
