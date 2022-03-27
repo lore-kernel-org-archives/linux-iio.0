@@ -2,46 +2,50 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B3979C433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Mar 2022 15:11:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EFA3EC433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Mar 2022 15:40:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232365AbiC0PMp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Mar 2022 11:12:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57562 "EHLO
+        id S233863AbiC0Plq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Mar 2022 11:41:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38524 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231449AbiC0PMo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2022 11:12:44 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53ECF4A3EF
-        for <linux-iio@vger.kernel.org>; Sun, 27 Mar 2022 08:11:04 -0700 (PDT)
+        with ESMTP id S232094AbiC0Plp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2022 11:41:45 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 686BB2FFF7;
+        Sun, 27 Mar 2022 08:40:06 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 06323B80BAA
-        for <linux-iio@vger.kernel.org>; Sun, 27 Mar 2022 15:11:03 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 29344C340EC;
-        Sun, 27 Mar 2022 15:10:59 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 9826ECE0ED0;
+        Sun, 27 Mar 2022 15:40:04 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE3FFC340EC;
+        Sun, 27 Mar 2022 15:40:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648393861;
-        bh=IsvuCYaEfO3pBZbFHKvqpVVL5StKzbsl6oKb4IOeQOI=;
+        s=k20201202; t=1648395602;
+        bh=5UJUIysu5G+FC3sQcWa7rO+707a6q3tbUEAraheZZmY=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Ary4rcFvvKqZz4zjTE9NMnq9LF9oz5YptiLcjovavkV+lkHQerSwCrQm8gW5U3y06
-         Khtr6fDB348GnAWZNb3MRSQ5/kw31smoqpXOJ3GFL08MaAUA65TPNQKUjgRBHP3WtK
-         Ob8RWKbvcerI+t3Ck5JrKqjTFLlqpjPZFCNX4YMy9IbQet8GfR/4DM3rkGabrQpgcS
-         qhHF8EFGxiiVTWxwVhEncH1veqlv61uNuXhOzrP42RzoqqNQ+Wk2rBNVdRH7ya6XDN
-         8Fe6rjRqgH95K9Y7/hbf1RjGYiYs0LpJHd9ZPKJJ7TGEosa3dGZ8A83Ho+iZ3+JKC3
-         OhoUKCxkOqjNw==
-Date:   Sun, 27 Mar 2022 16:18:35 +0100
+        b=ZaEcuvQLDZg4Pn6TSqrqPxuPYSP9+X9i6vgs6r5VwzoG9/nIExmakROQ0zdmVxpy7
+         WGX5TAfkCYUjyrnPHxo7o9B6JeAx4wXUxxvl7I1oUrwA3I+ll78LyKeP9uqGECR9/2
+         BaVuNU4K6/5crBzMJKLqI89V44TKQIiObLDUxMY4pXLp/aCx1d/1vV7o+KKxLwiKkL
+         FzpcDh+3uesTJSnCtbA8Xxt1VNRicQzR30ckq4VHo7FZTkcNJLTV3Hiyrjkowrm9r1
+         jkm7CB8i+53Qc8T3f7PF++RMFh3kPXoViOP/t7ZFn2719yQDyA+cP98C21HOSg1n3p
+         78WigHtMmlooA==
+Date:   Sun, 27 Mar 2022 16:47:34 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Marek Vasut <marex@denx.de>
-Cc:     linux-iio@vger.kernel.org, Andy Shevchenko <andy@kernel.org>,
-        Daniel Baluta <daniel.baluta@nxp.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH v4 10/10] iio: adc: ti-ads1015: Switch to read_avail
-Message-ID: <20220327161835.5c661300@jic23-huawei>
-In-Reply-To: <20220322220210.207454-10-marex@denx.de>
-References: <20220322220210.207454-1-marex@denx.de>
-        <20220322220210.207454-10-marex@denx.de>
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: Re: [PATCH] iio:proximity:sx9324: Fix hardware gain read/write
+Message-ID: <20220327164734.4b678562@jic23-huawei>
+In-Reply-To: <CAE-0n51=ewQnTctWsmvawb_p3CrE0JgJFwLy+FR6rUPkWmTgHw@mail.gmail.com>
+References: <20220318204808.3404542-1-swboyd@chromium.org>
+        <20220319152641.49d8b3e1@jic23-huawei>
+        <CAE-0n52jDZz0qKhfg8OWVDmDg5+xXo-qSL3jNka82QHwA2-xsw@mail.gmail.com>
+        <20220322203844.0000466f@Huawei.com>
+        <CAE-0n51=ewQnTctWsmvawb_p3CrE0JgJFwLy+FR6rUPkWmTgHw@mail.gmail.com>
 X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -50,249 +54,46 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 22 Mar 2022 23:02:10 +0100
-Marek Vasut <marex@denx.de> wrote:
+On Tue, 22 Mar 2022 17:57:26 -0400
+Stephen Boyd <swboyd@chromium.org> wrote:
 
-> Replace sysfs attributes with read_avail() callback. This also permits
-> removal of ads1115_info, since the scale attribute tables are now part
-> of chip data.
+> Quoting Jonathan Cameron (2022-03-22 13:38:44)
+> > On Mon, 21 Mar 2022 19:36:33 +0100
+> > Stephen Boyd <swboyd@chromium.org> wrote:  
+> > > Quoting Jonathan Cameron (2022-03-19 08:26:41)  
+> > > > On Fri, 18 Mar 2022 13:48:08 -0700
+> > > > Stephen Boyd <swboyd@chromium.org> wrote:  
+> > > > >
+> > > > > diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+> > > > > index 0d9bbbb50cb4..a3c8e02f5a56 100644
+> > > > > --- a/drivers/iio/proximity/sx9324.c
+> > > > > +++ b/drivers/iio/proximity/sx9324.c
+> > > > > @@ -379,7 +379,10 @@ static int sx9324_read_gain(struct sx_common_data *data,
+> > > > >       if (ret)
+> > > > >               return ret;
+> > > > >
+> > > > > -     *val = 1 << FIELD_GET(SX9324_REG_PROX_CTRL0_GAIN_MASK, regval);
+> > > > > +     regval = FIELD_GET(SX9324_REG_PROX_CTRL0_GAIN_MASK, regval);
+> > > > > +     if (regval)  
+> > > >
+> > > > If 0 is reserved then I'd return and error code here to indicate
+> > > > we don't know what the gain is rather than carrying on regardless.
+> > > > Or is this going to cause problems as it will be an ABI change (error
+> > > > return possible when it wasn't really before)?
+> > > >  
+> > >
+> > > That sounds OK to me. The driver is only being introduced now so we can
+> > > still fix it to reject a gain of 0. Unless 0 should mean "off", i.e.
+> > > hardware gain of 1?  
+> > No.  I don't think we want to add that sort of fiddly definition.
+> > So error is the way to go - I'd forgotten we only just introduced this
+> > so no ABI breakage risk.
+> >  
 > 
-> Signed-off-by: Marek Vasut <marex@denx.de>
-> Cc: Andy Shevchenko <andy@kernel.org>
-> Cc: Daniel Baluta <daniel.baluta@nxp.com>
-> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Ok got it. Does the write_gain function also need to reject values
+> greater than 8 and less than or equal to 0?
 
-Sorry, I didn't catch your question on v3 about why I was advocating
-signed.
-
-You are passing pointers to those arrays as signed in the
-read_avail.
-
-Obviously you can 'get away with it' because the values are small
-positive numbers and hence in 2's complement the data representation
-will be the same.  Not pretty though so my inclination would
-be to keep them signed everywhere.
-
-If you are fine with that change I can change it whilst applying if
-nothing else comes up in review.
-
-Given there are some (admittedly trivial) dt binding additions,
-I'll leave this on list until Rob has had a chance to take
-a look at them.  Also, Andy might want to take another glance
-or give a tag given his previous interest in this series.
-
-Thanks,
+Ah. Yes, it should indeed as the value is coming from userspace
+so we shouldn't trust it to be sensible.
 
 Jonathan
-
-
-> ---
-> V3: New patch
-> V4: - Reformat ads1x15 scale ranges pairwise
->     - Turn the scale ranges into unsigned int
-> ---
->  drivers/iio/adc/ti-ads1015.c | 112 +++++++++++++++++++++--------------
->  1 file changed, 67 insertions(+), 45 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-> index 18a94a09854e9..5bb085c392d7a 100644
-> --- a/drivers/iio/adc/ti-ads1015.c
-> +++ b/drivers/iio/adc/ti-ads1015.c
-> @@ -81,6 +81,9 @@ struct ads1015_chip_data {
->  	int				num_channels;
->  	const struct iio_info		*info;
->  	const unsigned int		*data_rate;
-> +	const unsigned int		data_rate_len;
-> +	const unsigned int		*scale;
-> +	const unsigned int		scale_len;
->  	bool				has_comparator;
->  };
->  
-> @@ -108,10 +111,28 @@ static const unsigned int ads1115_data_rate[] = {
->   * Translation from PGA bits to full-scale positive and negative input voltage
->   * range in mV
->   */
-> -static int ads1015_fullscale_range[] = {
-> +static const unsigned int ads1015_fullscale_range[] = {
->  	6144, 4096, 2048, 1024, 512, 256, 256, 256
->  };
->  
-> +static const unsigned int ads1015_scale[] = {	/* 12bit ADC */
-> +	256, 11,
-> +	512, 11,
-> +	1024, 11,
-> +	2048, 11,
-> +	4096, 11,
-> +	6144, 11
-> +};
-> +
-> +static const unsigned int ads1115_scale[] = {	/* 16bit ADC */
-> +	256, 15,
-> +	512, 15,
-> +	1024, 15,
-> +	2048, 15,
-> +	4096, 15,
-> +	6144, 15
-> +};
-> +
->  /*
->   * Translation from COMP_QUE field value to the number of successive readings
->   * exceed the threshold values before an interrupt is generated
-> @@ -166,6 +187,9 @@ static const struct iio_event_spec ads1015_events[] = {
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
->  				BIT(IIO_CHAN_INFO_SCALE) |	\
->  				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-> +	.info_mask_shared_by_all_available =			\
-> +				BIT(IIO_CHAN_INFO_SCALE) |	\
-> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
->  	.scan_index = _addr,					\
->  	.scan_type = {						\
->  		.sign = 's',					\
-> @@ -189,6 +213,9 @@ static const struct iio_event_spec ads1015_events[] = {
->  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
->  				BIT(IIO_CHAN_INFO_SCALE) |	\
->  				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
-> +	.info_mask_shared_by_all_available =			\
-> +				BIT(IIO_CHAN_INFO_SCALE) |	\
-> +				BIT(IIO_CHAN_INFO_SAMP_FREQ),	\
->  	.scan_index = _addr,					\
->  	.scan_type = {						\
->  		.sign = 's',					\
-> @@ -470,7 +497,7 @@ static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
->  {
->  	int i;
->  
-> -	for (i = 0; i < ARRAY_SIZE(ads1015_data_rate); i++) {
-> +	for (i = 0; i < data->chip->data_rate_len; i++) {
->  		if (data->chip->data_rate[i] == rate) {
->  			data->channel_data[chan].data_rate = i;
->  			return 0;
-> @@ -480,6 +507,32 @@ static int ads1015_set_data_rate(struct ads1015_data *data, int chan, int rate)
->  	return -EINVAL;
->  }
->  
-> +static int ads1015_read_avail(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      const int **vals, int *type, int *length,
-> +			      long mask)
-> +{
-> +	struct ads1015_data *data = iio_priv(indio_dev);
-> +
-> +	if (chan->type != IIO_VOLTAGE)
-> +		return -EINVAL;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*type = IIO_VAL_FRACTIONAL_LOG2;
-> +		*vals =  data->chip->scale;
-> +		*length = data->chip->scale_len;
-> +		return IIO_AVAIL_LIST;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*type = IIO_VAL_INT;
-> +		*vals = data->chip->data_rate;
-> +		*length = data->chip->data_rate_len;
-> +		return IIO_AVAIL_LIST;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
->  static int ads1015_read_raw(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan, int *val,
->  			    int *val2, long mask)
-> @@ -828,60 +881,20 @@ static const struct iio_buffer_setup_ops ads1015_buffer_setup_ops = {
->  	.validate_scan_mask = &iio_validate_scan_mask_onehot,
->  };
->  
-> -static IIO_CONST_ATTR_NAMED(ads1015_scale_available, scale_available,
-> -	"3 2 1 0.5 0.25 0.125");
-> -static IIO_CONST_ATTR_NAMED(ads1115_scale_available, scale_available,
-> -	"0.1875 0.125 0.0625 0.03125 0.015625 0.007813");
-> -
-> -static IIO_CONST_ATTR_NAMED(ads1015_sampling_frequency_available,
-> -	sampling_frequency_available, "128 250 490 920 1600 2400 3300");
-> -static IIO_CONST_ATTR_NAMED(ads1115_sampling_frequency_available,
-> -	sampling_frequency_available, "8 16 32 64 128 250 475 860");
-> -
-> -static struct attribute *ads1015_attributes[] = {
-> -	&iio_const_attr_ads1015_scale_available.dev_attr.attr,
-> -	&iio_const_attr_ads1015_sampling_frequency_available.dev_attr.attr,
-> -	NULL,
-> -};
-> -
-> -static const struct attribute_group ads1015_attribute_group = {
-> -	.attrs = ads1015_attributes,
-> -};
-> -
-> -static struct attribute *ads1115_attributes[] = {
-> -	&iio_const_attr_ads1115_scale_available.dev_attr.attr,
-> -	&iio_const_attr_ads1115_sampling_frequency_available.dev_attr.attr,
-> -	NULL,
-> -};
-> -
-> -static const struct attribute_group ads1115_attribute_group = {
-> -	.attrs = ads1115_attributes,
-> -};
-> -
->  static const struct iio_info ads1015_info = {
-> +	.read_avail	= ads1015_read_avail,
->  	.read_raw	= ads1015_read_raw,
->  	.write_raw	= ads1015_write_raw,
->  	.read_event_value = ads1015_read_event,
->  	.write_event_value = ads1015_write_event,
->  	.read_event_config = ads1015_read_event_config,
->  	.write_event_config = ads1015_write_event_config,
-> -	.attrs          = &ads1015_attribute_group,
-> -};
-> -
-> -static const struct iio_info ads1115_info = {
-> -	.read_raw	= ads1015_read_raw,
-> -	.write_raw	= ads1015_write_raw,
-> -	.read_event_value = ads1015_read_event,
-> -	.write_event_value = ads1015_write_event,
-> -	.read_event_config = ads1015_read_event_config,
-> -	.write_event_config = ads1015_write_event_config,
-> -	.attrs          = &ads1115_attribute_group,
->  };
->  
->  static const struct iio_info tla2024_info = {
-> +	.read_avail	= ads1015_read_avail,
->  	.read_raw	= ads1015_read_raw,
->  	.write_raw	= ads1015_write_raw,
-> -	.attrs          = &ads1015_attribute_group,
->  };
->  
->  static int ads1015_client_get_channels_config(struct i2c_client *client)
-> @@ -1128,14 +1141,20 @@ static const struct ads1015_chip_data ads1015_data = {
->  	.num_channels	= ARRAY_SIZE(ads1015_channels),
->  	.info		= &ads1015_info,
->  	.data_rate	= ads1015_data_rate,
-> +	.data_rate_len	= ARRAY_SIZE(ads1015_data_rate),
-> +	.scale		= ads1015_scale,
-> +	.scale_len	= ARRAY_SIZE(ads1015_scale),
->  	.has_comparator	= true,
->  };
->  
->  static const struct ads1015_chip_data ads1115_data = {
->  	.channels	= ads1115_channels,
->  	.num_channels	= ARRAY_SIZE(ads1115_channels),
-> -	.info		= &ads1115_info,
-> +	.info		= &ads1015_info,
->  	.data_rate	= ads1115_data_rate,
-> +	.data_rate_len	= ARRAY_SIZE(ads1115_data_rate),
-> +	.scale		= ads1115_scale,
-> +	.scale_len	= ARRAY_SIZE(ads1115_scale),
->  	.has_comparator	= true,
->  };
->  
-> @@ -1144,6 +1163,9 @@ static const struct ads1015_chip_data tla2024_data = {
->  	.num_channels	= ARRAY_SIZE(tla2024_channels),
->  	.info		= &tla2024_info,
->  	.data_rate	= ads1015_data_rate,
-> +	.data_rate_len	= ARRAY_SIZE(ads1015_data_rate),
-> +	.scale		= ads1015_scale,
-> +	.scale_len	= ARRAY_SIZE(ads1015_scale),
->  	.has_comparator	= false,
->  };
->  
-
