@@ -2,149 +2,91 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 130E8C433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Mar 2022 15:40:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 641ACC433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Mar 2022 15:44:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235871AbiC0PmL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Mar 2022 11:42:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40262 "EHLO
+        id S232094AbiC0Ppk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Mar 2022 11:45:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47856 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232094AbiC0PmJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2022 11:42:09 -0400
-Received: from mail-pj1-x1030.google.com (mail-pj1-x1030.google.com [IPv6:2607:f8b0:4864:20::1030])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 01F92340C9;
-        Sun, 27 Mar 2022 08:40:31 -0700 (PDT)
-Received: by mail-pj1-x1030.google.com with SMTP id o68-20020a17090a0a4a00b001c686a48263so10130525pjo.1;
-        Sun, 27 Mar 2022 08:40:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references:mime-version
-         :content-transfer-encoding;
-        bh=kreZfOtcisOTnml8W90tAIXoUjRu/s5AG1dtKzhwH84=;
-        b=fWXHJ6At+IMlrusJiEsKH2IDCPezbhS3cXGdZJ3wn1pe5b73ZbnMYDbBr72Ca20A6n
-         gASapkrcj4KGZd5hCqlgWMQGEXyiyZj2K1pv+qm7bH9bGvPG3Ob2dmiTaANY3SP0dhAs
-         90QfVq09RXfVYNfj2D3SI1T+prenczoZBdYgmy9jVe23k6sB/7ndxMsuxOSRKeDVZfNL
-         44/p5L9t35GdG0FoMUJSyUrpqtHugpnIoafAtj2K28DtFE29G6e98RexMUjR2MoTn7tt
-         g4KZ+C6hkWzSKjSvk+r61pkP96FObwE0UhZY+oWlmz+l+XVi+m6mEKJhBkhKd1LWlHHA
-         xcpg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kreZfOtcisOTnml8W90tAIXoUjRu/s5AG1dtKzhwH84=;
-        b=kYebGLUWUeBK9/tTInrOP4/lKx5cnEsF9gM/D3KYLy6ZHdaLlskYZEd3tne6fxCePZ
-         CbcMKGuDvaj4WojumQcBNUxAwu52Z7fp2HA9OY6m4LC2QCWbIbyIa1NNqTJ11CtAImt7
-         D9KoA+a9p53mO/GEhGprYFxLM5BveymrSpmVqErF4Wy5qM13Hyjmva560sPMXb0PFtX7
-         ZQUi3bkDcK4AXggxcQLg7MvUyoSmKh0cftmLeNYiCzlmB+T/BtmXJ0VYlM7m8UCn4tqh
-         qiFjj+iMgbSIi0Na0HCrr4XfOxlSWrX3bE0K+jtZVSdqk2AzTEUgd/XE5VXUtBRelWQY
-         d1HQ==
-X-Gm-Message-State: AOAM531DYTuqrOLJefyj5Zm1HUvHqPsln/+O2MH31GYDUW39CPVtXtHq
-        LMHmOvYQ3MKDbdRoXKqVnYE=
-X-Google-Smtp-Source: ABdhPJzPDAM7vgFyjcWLVVVz+TIZCH4/oqTss580KSxoKXccxa3B/WC/PLFd3YtqY64z+IliQbYV/Q==
-X-Received: by 2002:a17:902:9008:b0:14f:b1f9:5271 with SMTP id a8-20020a170902900800b0014fb1f95271mr21502345plp.86.1648395630347;
-        Sun, 27 Mar 2022 08:40:30 -0700 (PDT)
-Received: from tong-desktop.local ([2600:1700:3ec7:421f:a2f1:f139:4101:142a])
-        by smtp.googlemail.com with ESMTPSA id o65-20020a17090a0a4700b001bef5cffea7sm13331959pjo.0.2022.03.27.08.40.29
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 27 Mar 2022 08:40:29 -0700 (PDT)
-From:   Tong Zhang <ztong0001@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S231623AbiC0Ppj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2022 11:45:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C01133587E;
+        Sun, 27 Mar 2022 08:44:00 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6473061045;
+        Sun, 27 Mar 2022 15:44:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35C9BC340EC;
+        Sun, 27 Mar 2022 15:43:56 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648395839;
+        bh=1b5ZrLzlxq7Xxei9lvUlEtImFI2R3O8POV3NpenbAjk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=MFIeqPi2aso8KXW9KzZq/pmgRCdIFJXZ5nNRlvFmpw93noaNHyceqMiv4AJUdYt2j
+         RpJuPEmwDc0J0u6yZakyh/8QU+mMjzRtphF21D2gmPDjjEBTWa91nmhLrQe7UF+LJW
+         vydt4m2EVU+uTpx9ZopQHhMCMspUqlhgxHRiMkJCKJwrp3KNrMQ4510+7B+ddP1I48
+         buOYD8cYGJiC55a2F0RuTv6+KOXnkLzu+nDuC7wgD/ac+8Ch25HLGWxZjOgkDHhunf
+         g2yv9HdaMx+9VjlVKrlG6f5V2XxGlSRUS9UxJBva7P2X7hkphNdt27CaXoIyqadXif
+         9sBwDhfo0MUlw==
+Date:   Sun, 27 Mar 2022 16:51:30 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Tong Zhang <ztong0001@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Tong Zhang <ztong0001@gmail.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Sean Nyekjaer <sean@geanix.com>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Jonathan Albrieux <jonathan.albrieux@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iio:imu:bmi160: disable regulator in error path
-Date:   Sun, 27 Mar 2022 08:40:05 -0700
-Message-Id: <20220327154005.806049-1-ztong0001@gmail.com>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220318070900.2499370-1-ztong0001@gmail.com>
-References: <20220318070900.2499370-1-ztong0001@gmail.com>
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio:imu:bmi160: disable regulator in error path
+Message-ID: <20220327165130.51e3c9d2@jic23-huawei>
+In-Reply-To: <CAHp75VfzWpabLsCDDuifpEDgN+pCnU-agi47iO0exYV29k6nSA@mail.gmail.com>
+References: <20220319162006.13c60c1f@jic23-huawei>
+        <20220319193459.2628876-1-ztong0001@gmail.com>
+        <CAHp75Vfk+CQZoz+s5PuSTBb0Nb4KLB+yoNiTCJQ4NktxV1nycQ@mail.gmail.com>
+        <CAA5qM4DE7Qehn2G3bOJfJ7wNfOBA01tzAFOuGZa_O4=6Ocb61g@mail.gmail.com>
+        <CAHp75VfzWpabLsCDDuifpEDgN+pCnU-agi47iO0exYV29k6nSA@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Regulator should be disabled in error path as mentioned in _regulator_put().
-Also disable accel if gyro cannot be enabled.
+On Mon, 21 Mar 2022 18:22:10 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-[   16.233604] WARNING: CPU: 0 PID: 2177 at drivers/regulator/core.c:2257 _regulator_put
-[   16.240453] Call Trace:
-[   16.240572]  <TASK>
-[   16.240676]  regulator_put+0x26/0x40
-[   16.240853]  regulator_bulk_free+0x26/0x50
-[   16.241050]  release_nodes+0x3f/0x70
-[   16.241225]  devres_release_group+0x147/0x1c0
-[   16.241441]  ? bmi160_core_probe+0x175/0x3a0 [bmi160_core]
+> On Mon, Mar 21, 2022 at 5:53 PM Tong Zhang <ztong0001@gmail.com> wrote:
+> > On Mon, Mar 21, 2022 at 1:28 AM Andy Shevchenko
+> > <andy.shevchenko@gmail.com> wrote:  
+> > > On Sun, Mar 20, 2022 at 8:44 AM Tong Zhang <ztong0001@gmail.com> wrote:  
+> 
+> ...
+> 
+> > > Haven't I given you a tag?  
+> 
+> > Hi Any, Thank you for reviewing the patch. I appreciate it.
+> > I thought I would need another tag since this patch is a v2.  
+> 
+> It depends on the nature of the changes you made. As far as I read the
+> code the changes you made are in addition to what I have tagged and I
+> see nothing that prevents you from keeping the tag.
+> 
+> > Sorry for this back and forth. Have a great one.  
+> 
+> NP.
+> 
 
-Fixes: 5dea3fb066f0 ("iio: imu: bmi160: added regulator support")
-Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Signed-off-by: Tong Zhang <ztong0001@gmail.com>
----
-v2: also disable accel when gyro fail to enable
-v3: add tag
- drivers/iio/imu/bmi160/bmi160_core.c | 20 ++++++++++++++------
- 1 file changed, 14 insertions(+), 6 deletions(-)
+Applied to the fixes-togreg branch of iio.git but I won't push
+it out until I've rebased that on rc1 once available.
 
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index 824b5124a5f5..01336105792e 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -730,7 +730,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
- 
- 	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
- 	if (ret)
--		return ret;
-+		goto disable_regulator;
- 
- 	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
- 
-@@ -741,29 +741,37 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
- 	if (use_spi) {
- 		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
- 		if (ret)
--			return ret;
-+			goto disable_regulator;
- 	}
- 
- 	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
- 	if (ret) {
- 		dev_err(dev, "Error reading chip id\n");
--		return ret;
-+		goto disable_regulator;
- 	}
- 	if (val != BMI160_CHIP_ID_VAL) {
- 		dev_err(dev, "Wrong chip id, got %x expected %x\n",
- 			val, BMI160_CHIP_ID_VAL);
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto disable_regulator;
- 	}
- 
- 	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
- 	if (ret)
--		return ret;
-+		goto disable_regulator;
- 
- 	ret = bmi160_set_mode(data, BMI160_GYRO, true);
- 	if (ret)
--		return ret;
-+		goto disable_accel;
- 
- 	return 0;
-+
-+disable_accel:
-+	bmi160_set_mode(data, BMI160_ACCEL, false);
-+
-+disable_regulator:
-+	regulator_bulk_disable(ARRAY_SIZE(data->supplies), data->supplies);
-+	return ret;
- }
- 
- static int bmi160_data_rdy_trigger_set_state(struct iio_trigger *trig,
--- 
-2.25.1
+Thanks,
+
+Jonathan
 
