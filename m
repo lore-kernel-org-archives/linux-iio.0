@@ -2,159 +2,199 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F8B4C433EF
-	for <linux-iio@archiver.kernel.org>; Sun, 27 Mar 2022 15:58:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4809DC433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 27 Mar 2022 16:03:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231913AbiC0QA1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 27 Mar 2022 12:00:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33706 "EHLO
+        id S234214AbiC0QFO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 27 Mar 2022 12:05:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46308 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233632AbiC0QA1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2022 12:00:27 -0400
-Received: from mail-yw1-x112c.google.com (mail-yw1-x112c.google.com [IPv6:2607:f8b0:4864:20::112c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A8913B3F9;
-        Sun, 27 Mar 2022 08:58:48 -0700 (PDT)
-Received: by mail-yw1-x112c.google.com with SMTP id 00721157ae682-2e5757b57caso125671917b3.4;
-        Sun, 27 Mar 2022 08:58:48 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=yiDYEA/EuZ+ylmTzvXJZbTs7+i6Gl3H4EBEZ/YkodTM=;
-        b=ec71uLssCGrn6hKc+khmHDKyHdSeIsdcn1G7EC20neYwK+kXNcaT+ZSWNz/796NPZ8
-         606j4km0dFBmVv6Y6jd8VXmo8uKEUbnCfcRVcBE4TPBuYkHuAePW1erpYzf312JLtnad
-         v7EVt+F+GVVYknpClMQze45V38I7dZMXqwiNZ4IJA4XyBtLS9VcecrvqoLD8jvCr98tN
-         UNReUNJuufEeSk/kJS6GA+TyiEKpAhIjl2vDFzn4DSePDHFuTLGReZFxTlSQ1BkcdiTa
-         W4TeMCdx6Bf0tE5vRE6OxqHKzZYvT58L76kLVpYsGoHdcw/5g0D0cyNf24Jg53T3T99R
-         i4iw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=yiDYEA/EuZ+ylmTzvXJZbTs7+i6Gl3H4EBEZ/YkodTM=;
-        b=ywBJftaVyROByUPqQWEGQ/a6aLZKNiAWTexVbfncNZ8pzOTn40nlGOKjgL3OgxVZZG
-         QIBGxr8m+j/WVm8TkKx4jm93fIKCVgTaisapDbwwOaOkAhkoekDyV890O10AFySNzEBL
-         GZhAw8s5A5E/73vnrijcXTt7hLP/yNQNQlt2Q9hj6ynIqM6wPcTrmyDecjucM5NHTDIA
-         +RIX9r58tR6IAF800o5m54ybdCHk92yNGEA+xuW+5kxshFbWVh9VrQh3c9QlLIz5UDwC
-         /xL14yQiTy77obhmnWPf8pZWUXwoO+2EEtc1Y+Ua2QWfpqT3BUH/ExhCbBHEHNJm6LLf
-         UuCQ==
-X-Gm-Message-State: AOAM530dFev257GMpA5t/HclGA2WU4vonrpcAte0E/25PaQ3C+7kgGXU
-        yoxdbjZ9SO2UxNB7w7gasLlpeTxe3LKaCPwz1BM=
-X-Google-Smtp-Source: ABdhPJzZE/1EQn+FgKqPkuKSnTMKiiX7gg6lyFOpthCBpTFayS0d/FcsFaMSkQk3SkJDZqUZQXzP2KtXzBjXY9ryK7M=
-X-Received: by 2002:a81:1697:0:b0:2e9:d8ed:278 with SMTP id
- 145-20020a811697000000b002e9d8ed0278mr9912709yww.452.1648396727404; Sun, 27
- Mar 2022 08:58:47 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220318070900.2499370-1-ztong0001@gmail.com> <20220327154005.806049-1-ztong0001@gmail.com>
- <20220327165336.799db3ac@jic23-huawei>
-In-Reply-To: <20220327165336.799db3ac@jic23-huawei>
-From:   Tong Zhang <ztong0001@gmail.com>
-Date:   Sun, 27 Mar 2022 08:58:36 -0700
-Message-ID: <CAA5qM4AGvTrcGu=RRi-fDrAC8aE2FN-Y+79-24LV0MerEN-5CQ@mail.gmail.com>
-Subject: Re: [PATCH v3] iio:imu:bmi160: disable regulator in error path
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Jonathan Albrieux <jonathan.albrieux@gmail.com>,
+        with ESMTP id S235603AbiC0QFN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Mar 2022 12:05:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0F4BBE0B9
+        for <linux-iio@vger.kernel.org>; Sun, 27 Mar 2022 09:03:33 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 13B2D6106C
+        for <linux-iio@vger.kernel.org>; Sun, 27 Mar 2022 16:03:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BC531C340EC;
+        Sun, 27 Mar 2022 16:03:30 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648397012;
+        bh=HVO0AklOw87ya2p82O6e/QG5Qk+oaFLWHj2PHbpF+Xk=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iwR03V3cpbOx4Rk5M2r6BNQ7I//w5bY3ryKgC/hwlejmvTIBFz2ogP2erIpeweBPx
+         jxm62hFg10Da6iXv3igB266G/tqtvnfMmDbxN8j0fxSbPcIxirfFpSnLhqmeSWfdln
+         /iaoGGxTi2DbENi9xQidPGBz8NTodwMqkvJso8eO1H4b983nDKfzDAZa8bCJHDsVbg
+         0BN3PjBjJ4Q7noNW3eKoMb5v1eE9TJKXfgfl/GeRwIIVcVdjtSGuTi6v5C3ikCd89Z
+         gEpbDkZO1whksJsBr6MEk0PGNepsSyw/nEb5rWgiTKJ3vwr/Xi6Vuj8eS85wv+v42j
+         tubGzG/7rReww==
+Date:   Sun, 27 Mar 2022 17:11:04 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andrea Merello <andrea.merello@gmail.com>
+Cc:     Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio <linux-iio@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Andrea Merello <andrea.merello@iit.it>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Subject: Re: [v3 07/13] iio: imu: add Bosch Sensortec BNO055 core driver
+Message-ID: <20220327171104.051fcbd2@jic23-huawei>
+In-Reply-To: <CAN8YU5OCEBTF37hb6ozaguJ0=svPyv+fmGGsLhoBCPZA5Odgdw@mail.gmail.com>
+References: <20220217162710.33615-1-andrea.merello@gmail.com>
+        <20220217162710.33615-8-andrea.merello@gmail.com>
+        <ba1b2d78-bf4a-ec6d-88b8-76bbf2ff5e3e@pmeerw.net>
+        <20220219174141.4937297a@jic23-huawei>
+        <CAN8YU5OCEBTF37hb6ozaguJ0=svPyv+fmGGsLhoBCPZA5Odgdw@mail.gmail.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Mar 27, 2022 at 8:46 AM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Sun, 27 Mar 2022 08:40:05 -0700
-> Tong Zhang <ztong0001@gmail.com> wrote:
->
-> > Regulator should be disabled in error path as mentioned in _regulator_put().
-> > Also disable accel if gyro cannot be enabled.
-> >
-> > [   16.233604] WARNING: CPU: 0 PID: 2177 at drivers/regulator/core.c:2257 _regulator_put
-> > [   16.240453] Call Trace:
-> > [   16.240572]  <TASK>
-> > [   16.240676]  regulator_put+0x26/0x40
-> > [   16.240853]  regulator_bulk_free+0x26/0x50
-> > [   16.241050]  release_nodes+0x3f/0x70
-> > [   16.241225]  devres_release_group+0x147/0x1c0
-> > [   16.241441]  ? bmi160_core_probe+0x175/0x3a0 [bmi160_core]
-> >
-> > Fixes: 5dea3fb066f0 ("iio: imu: bmi160: added regulator support")
-> > Reviewed-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Signed-off-by: Tong Zhang <ztong0001@gmail.com>
-> oops. Raced with you ;)
->
-> Anyhow, I added the tag, so no problem.
->
-> Jonathan
+On Tue, 22 Mar 2022 11:27:14 +0100
+Andrea Merello <andrea.merello@gmail.com> wrote:
 
-No problem. Have a nice weekend!:-)
-- Tong
+> Il giorno sab 19 feb 2022 alle ore 18:34 Jonathan Cameron
+> <jic23@kernel.org> ha scritto:
+> >
+> > On Thu, 17 Feb 2022 22:58:14 +0100 (CET)
+> > Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
+> >  
+> > > On Thu, 17 Feb 2022, Andrea Merello wrote:
+> > >
+> > > nice work, minor comments below  
+> >
+> > I'll review on top of Peter to save on duplication.
+> >
+> > Mostly really minor stuff.  
 
->
-> > ---
-> > v2: also disable accel when gyro fail to enable
-> > v3: add tag
-> >  drivers/iio/imu/bmi160/bmi160_core.c | 20 ++++++++++++++------
-> >  1 file changed, 14 insertions(+), 6 deletions(-)
++CC Greg for binary attribute questions.
+
+> 
+> :)
+> 
+> As usual, comments inline; OK for all the rest.
+> 
+> > Given this has crossed with the introduction of namespaces to quite
+> > a few IIO drivers (I have another series to do on that once I get
+> > caught up with reviews) I'd prefer it if you would move this into
+> > a symbol namespace (EXPORT_SYMBOL_NS_GPL() and appropriate namespace
+> > statements in the two bus modules.
 > >
-> > diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> > index 824b5124a5f5..01336105792e 100644
-> > --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> > +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> > @@ -730,7 +730,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
+> > Save it being done as a follow up series.  If you prefer not to then
+> > that's fine too as it'll be a trivial follow up patch.  
+> 
+> I'll include it in V4 directly.
+> 
+> [...]
+> 
+> > > > +   case IIO_CHAN_INFO_SCALE:
+> > > > +           /* Table 3-31: 1 quaternion = 2^14 LSB */
+> > > > +           if (size < 2)
+> > > > +                   return -EINVAL;
+> > > > +           vals[0] = 1;
+> > > > +           vals[1] = 1 << 14;
+> > > > +           return IIO_VAL_FRACTIONAL_LOG2;  
 > >
-> >       ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
-> >       if (ret)
-> > -             return ret;
-> > +             goto disable_regulator;
+> > This doesn't look right.  Not vals[1] = 14 given FRACTIONAL_LOG2?  
+> 
+> Hum.. maybe just IIO_VAL_FRACTIONAL ?
+
+That works as well, though I'd argue FRACTIONAL_LOG2 is the
+better option as it makes it clear the divisor is a power of 2
+and the precision might potentially be better as a result (I've not
+checked!)
+
+> 
+> > > > +   default:
+> > > > +           return -EINVAL;
+> > > > +   }
+> > > > +}
+> > > > +  
+> 
+> [...]
+> 
+> > > > +static IIO_DEVICE_ATTR_RO(sys_calibration_auto_status, 0);
+> > > > +static IIO_DEVICE_ATTR_RO(in_accel_calibration_auto_status, 0);
+> > > > +static IIO_DEVICE_ATTR_RO(in_gyro_calibration_auto_status, 0);
+> > > > +static IIO_DEVICE_ATTR_RO(in_magn_calibration_auto_status, 0);
+> > > > +static IIO_DEVICE_ATTR_RO(calibration_data, 0);  
 > >
-> >       usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
+> > This is documented as providing binary data but it's not using
+> > a binary attribute and that rather surprised me.
 > >
-> > @@ -741,29 +741,37 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
-> >       if (use_spi) {
-> >               ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
-> >               if (ret)
-> > -                     return ret;
-> > +                     goto disable_regulator;
-> >       }
+> > Off the top of my head I can't recall why it matters though, so please
+> > take a look at whether a bin_attribute makes more sense for this.  
+> 
+> As far as I can see, it seems that a non-binary attributes only
+> support to be read at once while the binary attributes read()
+> operation supports random access i.e. it has the file position
+> parameter.
+> 
+> The calibration data is "dynamic", it's read from the HW every time,
+> and I'm not sure it makes any sense to read it in several chunks (what
+> if we read a chunk and the calibration data is updated by the HW
+> before reading the second chunk?). So, despide the fitting "binary"
+> name I'm tempted to stick with regular attribute. However I'm not sure
+> this is the only difference related to binary attributes.
+
++Cc Greg.  Valid choice to use a normal attribute for this?
+
+> 
+> > > > +
+> > > > +static IIO_DEVICE_ATTR_RO(serial_number, 0);
+> > > > +
+> > > > +static struct attribute *bno055_attrs[] = {
+> > > > +   &iio_dev_attr_in_accel_range_raw_available.dev_attr.attr,  
 > >
-> >       ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
-> >       if (ret) {
-> >               dev_err(dev, "Error reading chip id\n");
-> > -             return ret;
-> > +             goto disable_regulator;
-> >       }
-> >       if (val != BMI160_CHIP_ID_VAL) {
-> >               dev_err(dev, "Wrong chip id, got %x expected %x\n",
-> >                       val, BMI160_CHIP_ID_VAL);
-> > -             return -ENODEV;
-> > +             ret = -ENODEV;
-> > +             goto disable_regulator;
-> >       }
+> > discussed in ABI documentation review.
+> > I think these should be range_input to avoid implication they are
+> > in _raw units (i.e. need _scale to be applied)  
+> 
+> They are raw indeed; they need scale to be applied, then they become m/s^2.
+> 
+> I'll fix the doc to clarify this.
+
+Ah. Ok.
+
+> 
+> [...]
+> 
+> > > > +
+> > > > +   priv->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+> > > > +   if (IS_ERR(priv->reset_gpio))
+> > > > +           return dev_err_probe(dev, PTR_ERR(priv->reset_gpio), "Failed to get reset GPIO");
+> > > > +
+> > > > +   priv->clk = devm_clk_get_optional(dev, "clk");
+> > > > +   if (IS_ERR(priv->clk))
+> > > > +           return dev_err_probe(dev, PTR_ERR(priv->clk), "Failed to get CLK");
+> > > > +
+> > > > +   ret = clk_prepare_enable(priv->clk);
+> > > > +   if (ret)
+> > > > +           return ret;
+> > > > +
+> > > > +   ret = devm_add_action_or_reset(dev, bno055_clk_disable, priv->clk);
+> > > > +   if (ret)
+> > > > +           return ret;
+> > > > +
+> > > > +   if (priv->reset_gpio) {
+> > > > +           usleep_range(5000, 10000);
+> > > > +           gpiod_set_value_cansleep(priv->reset_gpio, 1);
+> > > > +           usleep_range(650000, 750000);  
 > >
-> >       ret = bmi160_set_mode(data, BMI160_ACCEL, true);
-> >       if (ret)
-> > -             return ret;
-> > +             goto disable_regulator;
-> >
-> >       ret = bmi160_set_mode(data, BMI160_GYRO, true);
-> >       if (ret)
-> > -             return ret;
-> > +             goto disable_accel;
-> >
-> >       return 0;
-> > +
-> > +disable_accel:
-> > +     bmi160_set_mode(data, BMI160_ACCEL, false);
-> > +
-> > +disable_regulator:
-> > +     regulator_bulk_disable(ARRAY_SIZE(data->supplies), data->supplies);
-> > +     return ret;
-> >  }
-> >
-> >  static int bmi160_data_rdy_trigger_set_state(struct iio_trigger *trig,
->
+> > Not a toggle on the reset?  I'd expect it to be set and then unset after
+> > a pulse.  
+> 
+> Isn't the above devm_gpiod_get_optional() call that also initialize
+> the initial GPIO value (then just wait and flip here) ?
+
+good point.  Missed that.
+
+Jonathan
+
+> 
+> [...]
+
