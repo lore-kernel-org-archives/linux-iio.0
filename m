@@ -2,141 +2,87 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D1DE8C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 28 Mar 2022 19:17:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8171C433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 28 Mar 2022 19:49:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240250AbiC1TTi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 28 Mar 2022 15:19:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46454 "EHLO
+        id S1344124AbiC1TvZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 28 Mar 2022 15:51:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41982 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234167AbiC1TTi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2022 15:19:38 -0400
-Received: from mail.thepaulodoom.com (www.thepaulodoom.com [45.77.108.202])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 1A88766C9A;
-        Mon, 28 Mar 2022 12:17:55 -0700 (PDT)
-Received: from hp-amd-paul (c-98-240-189-147.hsd1.mn.comcast.net [98.240.189.147])
-        by vultr.guest (OpenSMTPD) with ESMTPSA id 19d4373f (TLSv1.3:AEAD-AES256-GCM-SHA384:256:NO);
-        Mon, 28 Mar 2022 19:17:53 +0000 (UTC)
-Date:   Mon, 28 Mar 2022 14:17:51 -0500
-From:   Paul Lemmermann <thepaulodoom@thepaulodoom.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] IIO: accel: fixed coding style issues
-Message-ID: <YkIJ3/nkVNMy/qv8@hp-amd-paul>
-References: <YkHOpCT2Gad1YaxN@hp-amd-paul>
- <20220328180623.1380d23e@jic23-huawei>
+        with ESMTP id S1345649AbiC1TuC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Mar 2022 15:50:02 -0400
+Received: from phobos.denx.de (phobos.denx.de [85.214.62.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A205DB13;
+        Mon, 28 Mar 2022 12:47:45 -0700 (PDT)
+Received: from tr.lan (ip-89-176-112-137.net.upcbroadband.cz [89.176.112.137])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        (Authenticated sender: marex@denx.de)
+        by phobos.denx.de (Postfix) with ESMTPSA id 84FAD83F7E;
+        Mon, 28 Mar 2022 21:47:42 +0200 (CEST)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=denx.de;
+        s=phobos-20191101; t=1648496862;
+        bh=Cjl9mSicvUiED0u0YTBFHqN+vdDBzVXFMydlI4w/oTI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=JZV8+nHqD4JMDUBF/Yv2Rh/vXeYOeZmiYm7aWhEuw9/qZzvB8v1dX0hl9W4eAnMb5
+         zuOH6UUXNXlQso7UvOzcs7vbr782EkbDTMa6wgrk1JSy66HFy+gCCciTw0lySmhAN3
+         nNtmlhT4yAoGylbqfmaOxvJtJ4eV0JevQ8DDIRG0nuhqfqa5WRdhfm+jpx2SxMHCYH
+         RJnDdcliCnZdctL1pnl5ffiRPfEzA/+uCwPLbGX0wtAr8hJqU0HETBZEoJq7n0QL+Z
+         iLQNxaoZay75xZVjRAzvMdKQGdXibS6efmxKOv0ffD7Wmf1di7VscDlhTDudFCdHcs
+         mOzO7B3uWkg2g==
+From:   Marek Vasut <marex@denx.de>
+To:     linux-iio@vger.kernel.org
+Cc:     Marek Vasut <marex@denx.de>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>,
+        Andy Shevchenko <andy@kernel.org>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH v5 02/10] dt-bindings: iio: adc: ti,ads1015: Add TLA2024 compatible string
+Date:   Mon, 28 Mar 2022 21:47:17 +0200
+Message-Id: <20220328194725.149150-2-marex@denx.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220328194725.149150-1-marex@denx.de>
+References: <20220328194725.149150-1-marex@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220328180623.1380d23e@jic23-huawei>
+Content-Transfer-Encoding: 8bit
+X-Virus-Scanned: clamav-milter 0.103.5 at phobos.denx.de
+X-Virus-Status: Clean
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Mar 28, 2022 at 06:06:23PM +0100, Jonathan Cameron wrote:
-> On Mon, 28 Mar 2022 10:05:08 -0500
-> Paul Lemmermann <thepaulodoom@thepaulodoom.com> wrote:
-> 
-> > Fixed case statement issues and spacing issues.
-> > 
-> > Signed-off-by: Paul Lemmermann <thepaulodoom@thepaulodoom.com>
-> Hi Paul,
-> 
-> Thanks for the patch.
-> 
-> These are drivers written / maintained by different authors, so one
-> patch per driver preferred.  Particularly handy as people might not
-> agree with all of them so separate patches would allow me to pick
-> and choose which ones to pick up.
-> 
-> Comments inline.
-> 
-> Please state how you identified the changes btw.  Script?
+Add ti,tla2024 compatible string. This device is compatible with
+ADS1015 except it has no on-chip comparator.
 
-I used the checkpatch.pl script to identify these changes.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@canonical.com>
+Signed-off-by: Marek Vasut <marex@denx.de>
+Cc: Andy Shevchenko <andy@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@nxp.com>
+Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Rob Herring <robh+dt@kernel.org>
+Cc: devicetree@vger.kernel.org
+---
+V2: Add AB from Krzysztof
+V3: No change
+V4: No change
+V5: No change
+---
+ Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-> 
-> Jonathan
-> 
-> > ---
-> >  drivers/iio/accel/bmc150-accel-core.c | 15 +++++++++++----
-> >  drivers/iio/accel/dmard09.c           |  2 +-
-> >  drivers/iio/accel/kxsd9-spi.c         |  4 ++--
-> >  3 files changed, 14 insertions(+), 7 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-> > index d11f66801..f7dd7ec2c 100644
-> > --- a/drivers/iio/accel/bmc150-accel-core.c
-> > +++ b/drivers/iio/accel/bmc150-accel-core.c
-> > @@ -432,10 +432,17 @@ static bool bmc150_apply_bosc0200_acpi_orientation(struct device *dev,
-> >  
-> >  		for (j = 0; j < 3; j++) {
-> >  			switch (val[j]) {
-> > -			case -1: str = "-1"; break;
-> > -			case 0:  str = "0";  break;
-> > -			case 1:  str = "1";  break;
-> > -			default: goto unknown_format;
-> > +			case -1:
-> > +				str = "-1";
-> > +				break;
-> > +			case 0:
-> > +				str = "0";
-> > +				break;
-> > +			case 1:
-> > +				str = "1";
-> > +				break;
-> > +			default:
-> > +				goto unknown_format;
-> 
-> I'm not seeing any clear advantage to this change.
->
-The reason for this change is that most, if not all, case statements in
-the kernel are multiple lines. Also, in the kernel docs (https://docs.kernel.org/process/coding-style.html)
-it says, to not put multiple statements on one line.
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+index c31c80989cc9a..a3b79438a13a5 100644
+--- a/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/ti,ads1015.yaml
+@@ -18,6 +18,7 @@ properties:
+     enum:
+       - ti,ads1015
+       - ti,ads1115
++      - ti,tla2024
+ 
+   reg:
+     maxItems: 1
+-- 
+2.35.1
 
-Thanks,
-Paul
-> 
-> >  			}
-> >  			orientation->rotation[i * 3 + j] = str;
-> >  		}
-> > diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
-> > index e6e28c964..87bc38d4d 100644
-> > --- a/drivers/iio/accel/dmard09.c
-> > +++ b/drivers/iio/accel/dmard09.c
-> > @@ -24,7 +24,7 @@
-> >  #define DMARD09_AXIS_Y 1
-> >  #define DMARD09_AXIS_Z 2
-> >  #define DMARD09_AXIS_X_OFFSET ((DMARD09_AXIS_X + 1) * 2)
-> > -#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1 )* 2)
-> > +#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y + 1) * 2)
-> 
-> This is one is good.
-> 
-> >  #define DMARD09_AXIS_Z_OFFSET ((DMARD09_AXIS_Z + 1) * 2)
-> >  
-> >  struct dmard09_data {
-> > diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
-> > index 57c451cfb..989f53fb0 100644
-> > --- a/drivers/iio/accel/kxsd9-spi.c
-> > +++ b/drivers/iio/accel/kxsd9-spi.c
-> > @@ -44,8 +44,8 @@ static const struct spi_device_id kxsd9_spi_id[] = {
-> >  MODULE_DEVICE_TABLE(spi, kxsd9_spi_id);
-> >  
-> >  static const struct of_device_id kxsd9_of_match[] = {
-> > -        { .compatible = "kionix,kxsd9" },
-> > -        { },
-> > +	{ .compatible = "kionix,kxsd9" },
-> 
-> Also good to clean up.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> 
-> > +	{ },
-> >  };
-> >  MODULE_DEVICE_TABLE(of, kxsd9_of_match);
-> >  
-> 
