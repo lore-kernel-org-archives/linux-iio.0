@@ -2,755 +2,230 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E609C4332F
-	for <linux-iio@archiver.kernel.org>; Wed, 30 Mar 2022 21:52:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5DAB4C433F5
+	for <linux-iio@archiver.kernel.org>; Thu, 31 Mar 2022 06:45:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233534AbiC3VyJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 30 Mar 2022 17:54:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34946 "EHLO
+        id S230328AbiCaGq4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 31 Mar 2022 02:46:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233510AbiC3VyI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Mar 2022 17:54:08 -0400
-Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 306C93D4A7;
-        Wed, 30 Mar 2022 14:52:20 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1648677140; x=1680213140;
-  h=date:from:to:cc:subject:message-id:mime-version:
-   content-transfer-encoding;
-  bh=7k0R/2EQmJTAYLn5m9zACKBOGu2xxQRfpt+8DHcjdKY=;
-  b=EGWR2tVk9P+MVOBqAv4tEDAUa8NrHgUCMLnMZ71JFOM8y3x8cOslM2jI
-   NcXEgHMGpAPgtiWKyDcW6V/py54ksLy367hu3RsrBQYAAAieUZZJvqL9F
-   0ARt+sO4KOOWKphzQPGLuGydhsc2dfegrkPVyJ+AF4i6euc4gJVqy7tXB
-   bBJw7BdVCpfSB1jRHro0tDtBbLeQ1sWs4jS6VsiSY4VXjTTUKGcb8Sulu
-   en9BMkbytInWVgAsC9fx7CALhstDqoLrZdh14fTSKk9Z4FaNaXYyYLgkH
-   bu6Zn01jq4/1wx5UqKv1NFAk1intb2W1GCwRzIyn1OnuK+o47wXdFcVJX
-   A==;
-X-IronPort-AV: E=McAfee;i="6200,9189,10302"; a="240248431"
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="240248431"
-Received: from orsmga002.jf.intel.com ([10.7.209.21])
-  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 Mar 2022 14:52:19 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.90,223,1643702400"; 
-   d="scan'208";a="519955139"
-Received: from lkp-server02.sh.intel.com (HELO 56431612eabd) ([10.239.97.151])
-  by orsmga002.jf.intel.com with ESMTP; 30 Mar 2022 14:52:15 -0700
-Received: from kbuild by 56431612eabd with local (Exim 4.95)
-        (envelope-from <lkp@intel.com>)
-        id 1nZgEg-0000Xe-Pz;
-        Wed, 30 Mar 2022 21:52:14 +0000
-Date:   Thu, 31 Mar 2022 05:51:43 +0800
-From:   kernel test robot <lkp@intel.com>
-To:     Andrew Morton <akpm@linux-foundation.org>
-Cc:     uclinux-h8-devel@lists.sourceforge.jp, netdev@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-serial@vger.kernel.org, linux-scsi@vger.kernel.org,
-        linux-mtd@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-cifs@vger.kernel.org, linux-arm-msm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
-        amd-gfx@lists.freedesktop.org,
-        Linux Memory Management List <linux-mm@kvack.org>
-Subject: [linux-next:master] BUILD REGRESSION
- a67ba3cf9551f8c92d5ec9d7eae1aadbb9127b57
-Message-ID: <6244d0ef.Rqr5nUuakgqn5aWu%lkp@intel.com>
-User-Agent: Heirloom mailx 12.5 6/20/10
+        with ESMTP id S230284AbiCaGqz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 31 Mar 2022 02:46:55 -0400
+Received: from mx0b-00128a01.pphosted.com (mx0b-00128a01.pphosted.com [148.163.139.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C83DBB0A5B
+        for <linux-iio@vger.kernel.org>; Wed, 30 Mar 2022 23:45:08 -0700 (PDT)
+Received: from pps.filterd (m0167091.ppops.net [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 22V43aW1004361;
+        Thu, 31 Mar 2022 02:44:50 -0400
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3f1vkb23wn-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 31 Mar 2022 02:44:49 -0400
+Received: from m0167091.ppops.net (m0167091.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 22V6V5eV011891;
+        Thu, 31 Mar 2022 02:44:49 -0400
+Received: from nam10-dm6-obe.outbound.protection.outlook.com (mail-dm6nam10lp2100.outbound.protection.outlook.com [104.47.58.100])
+        by mx0b-00128a01.pphosted.com (PPS) with ESMTPS id 3f1vkb23wg-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 31 Mar 2022 02:44:49 -0400
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=VR5wko3NaNN7emDSKIJNGLVHv5j5dyD2zQmh2HxKbqStIt4Re8c1oRj2JJVcO79FdY3g9H2VwNFpqQVowar5JOdIpVrBsn2PizB65P3j2UPY2tRA6X9AsU8RM596e4HLqT7sxkZfDAJPhYkQu9fXw/3pfW/07p7VIy8/A5MyN3b1MvchaiFIaDtNBvtgiNvVBBmWSdm3+4ImDhqxQ5F3CnqbFekpQrEcj97if2SOViQ9sMGwYWc8Zx3MnsEQ/Pg2JAZCZL95x0Un7WyPvDcz6FTL4nrCCDhfc5cB0zubkczZKEEWGOxLR9hkgtIQT8LEUlLFzerugYg1Z3AuFq/SYA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=l1fZj9PC0L8Prnb1x4/V+bvAnVAVjn1m7eG3x8pCDEY=;
+ b=K/hCyIsCmJ7PCw4JUt33+qHPvwU8ZL93u6gzJehDD9t2BJAfj860GYioMBHlErutINbN1kSuCuqY3FELLvtYtxTrDn83oBqZ+RRWkZGzmHsiYmuJlWvdQ8k6+nVbM0/9ckKPDmxgrnV6hx2oo8JsVyzTJfcWxfHg4zwQk2z8oHNqvU3KkAuH1mnnlfFPMyr99jpI14ZrPS+1D4mHHM9wP4PpYOS6rvohcCVA+1n3mSb3jMd9+zTV7I4IOb8znA7XaWo4Mt8hMlxkZHt2sEAhKmusyzB7lba6YHSGqbXX3XYB++neGbT9v6nxpEOJHB/MAc6MGSQnrOMhLPAS+vzWpQ==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=analog.com; dmarc=pass action=none header.from=analog.com;
+ dkim=pass header.d=analog.com; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=analog.onmicrosoft.com; s=selector2-analog-onmicrosoft-com;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=l1fZj9PC0L8Prnb1x4/V+bvAnVAVjn1m7eG3x8pCDEY=;
+ b=1Xe5qtR0EsB7HWZY+Z6akRizaM21N+0pFudAZNf2gOdj7iJfWqpzimz32OaYG7yak7tfw9qUMuezhCxK9gj4JdJB+9SFj8GxIgYQU0Ue3WaO2nJLP3vk46UcWwtD8eRgwU3exXo4IPMbkszdN94TZrMWHR+JgcUY3NA7qmno0tI=
+Received: from PH0PR03MB6786.namprd03.prod.outlook.com (2603:10b6:510:122::7)
+ by BN9PR03MB6058.namprd03.prod.outlook.com (2603:10b6:408:137::15) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5123.21; Thu, 31 Mar
+ 2022 06:44:47 +0000
+Received: from PH0PR03MB6786.namprd03.prod.outlook.com
+ ([fe80::a566:1d77:f902:df97]) by PH0PR03MB6786.namprd03.prod.outlook.com
+ ([fe80::a566:1d77:f902:df97%2]) with mapi id 15.20.5102.022; Thu, 31 Mar 2022
+ 06:44:46 +0000
+From:   "Sa, Nuno" <Nuno.Sa@analog.com>
+To:     Marek Vasut <marex@denx.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC:     Andy Shevchenko <andy@kernel.org>,
+        Daniel Baluta <daniel.baluta@nxp.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: RE: [PATCH v3] iio: core: Print error in case sample bits do not fit
+ storage bits
+Thread-Topic: [PATCH v3] iio: core: Print error in case sample bits do not fit
+ storage bits
+Thread-Index: AQHYQt2T9kwfASMfx0yfkshF41qOFazZD7NQ
+Date:   Thu, 31 Mar 2022 06:44:46 +0000
+Message-ID: <PH0PR03MB67865DC54EB9B033045B185A99E19@PH0PR03MB6786.namprd03.prod.outlook.com>
+References: <20220328195307.154422-1-marex@denx.de>
+In-Reply-To: <20220328195307.154422-1-marex@denx.de>
+Accept-Language: en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-dg-ref: =?iso-8859-1?Q?PG1ldGE+PGF0IG5tPSJib2R5LnR4dCIgcD0iYzpcdXNlcnNcbnNhXGFwcG?=
+ =?iso-8859-1?Q?RhdGFccm9hbWluZ1wwOWQ4NDliNi0zMmQzLTRhNDAtODVlZS02Yjg0YmEy?=
+ =?iso-8859-1?Q?OWUzNWJcbXNnc1xtc2ctMGMwOTkyNjctYjBiZS0xMWVjLThiZDMtZTRiOT?=
+ =?iso-8859-1?Q?dhN2NjNzEwXGFtZS10ZXN0XDBjMDk5MjY5LWIwYmUtMTFlYy04YmQzLWU0?=
+ =?iso-8859-1?Q?Yjk3YTdjYzcxMGJvZHkudHh0IiBzej0iMjIwNSIgdD0iMTMyOTMxODI2OD?=
+ =?iso-8859-1?Q?Q0MDUzMjc4IiBoPSJNNkFHK29CVkxDTW04a0o0QTdmSk9OODdwUnc9IiBp?=
+ =?iso-8859-1?Q?ZD0iIiBibD0iMCIgYm89IjEiIGNpPSJjQUFBQUVSSFUxUlNSVUZOQ2dVQU?=
+ =?iso-8859-1?Q?FFb0NBQUFlTDJMT3lrVFlBY2lQU2RvbVgyZWl5STlKMmlaZlo2SURBQUFB?=
+ =?iso-8859-1?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBSEFBQUFEYUFRQUFBQUFBQUFBQUFBQU?=
+ =?iso-8859-1?Q?FBQUFBQUFBQUFBRUFBUUFCQUFBQVZJRXZvUUFBQUFBQUFBQUFBQUFBQUo0?=
+ =?iso-8859-1?Q?QUFBQmhBR1FBYVFCZkFITUFaUUJqQUhVQWNnQmxBRjhBY0FCeUFHOEFhZ0?=
+ =?iso-8859-1?Q?JsQUdNQWRBQnpBRjhBWmdCaEFHd0Fjd0JsQUY4QVpnQnZBSE1BYVFCMEFH?=
+ =?iso-8859-1?Q?a0FkZ0JsQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
+ =?iso-8859-1?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?iso-8859-1?Q?QUFBQUFBQUFBQUFBQUFBQUFFQUFBQUFBQUFBQWdBQUFBQUFuZ0FBQUdFQV?=
+ =?iso-8859-1?Q?pBQnBBRjhBY3dCbEFHTUFkUUJ5QUdVQVh3QndBSElBYndCcUFHVUFZd0Iw?=
+ =?iso-8859-1?Q?QUhNQVh3QjBBR2tBWlFCeUFERUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
+ =?iso-8859-1?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?iso-8859-1?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
+ =?iso-8859-1?Q?FBQUFBQUFBQUFBUUFBQUFBQUFBQUNBQUFBQUFDZUFBQUFZUUJrQUdrQVh3?=
+ =?iso-8859-1?Q?QnpBR1VBWXdCMUFISUFaUUJmQUhBQWNnQnZBR29BWlFCakFIUUFjd0JmQU?=
+ =?iso-8859-1?Q?hRQWFRQmxBSElBTWdBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?iso-8859-1?Q?QUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQU?=
+ =?iso-8859-1?Q?FBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFBQUFB?=
+ =?iso-8859-1?Q?QUFBQkFBQUFBQUFBQUFJQUFBQUFBQT09Ii8+PC9tZXRhPg=3D=3D?=
+x-dg-rorf: true
+x-ms-publictraffictype: Email
+x-ms-office365-filtering-correlation-id: 19ba2892-15e0-483d-b6ae-08da12e1f221
+x-ms-traffictypediagnostic: BN9PR03MB6058:EE_
+x-microsoft-antispam-prvs: <BN9PR03MB60583C2930B539D3A5A55D8299E19@BN9PR03MB6058.namprd03.prod.outlook.com>
+x-ms-exchange-senderadcheck: 1
+x-ms-exchange-antispam-relay: 0
+x-microsoft-antispam: BCL:0;
+x-microsoft-antispam-message-info: VU5aaTNGPBmgvRYuFO1em2N3wOQsxvc3uIRSayRV0EbByQUg0HgEjqDuS2Bz4UBL3xZ9G8LCdgxzM5SOWpp9ugphlOR5QMXhWjzJb5Qp/xxtj4QBXlCg7VNAy9aWMs1KDezC0WYPbyf9Dyrh3HzfoOdbufMdkcGJtlbMk9P+tIiOGatQRgeFk6G1PZo+pMfZMl/j9q9SaMfcyBmZLHJO3v59Rg0StZacF9PSi/x6DUsVg19mFHmORK74W4AYVHpCDr78kjZuTXZgN/N+50djIL+LjAzn9r6Bd/8aahLO2YGbqmGN5WpoR9Ratlcn6Kqzvr+AlZR6eXFXhfiil9hrdGEKigc+k6sYgnxCHpD9ig4+PHmo4ESz5LN2kEWIQC+aa9lwAVufuP6tQCR9mu+eaHaJ24ROscFJSSjRgtK0PvpHvVviy+CeO+5s9b2JXh2N0DNpI0PCQ7PqeqJD9zBmpX57UJwCSHywMLTX8Yq/bBLcD31SjRQnE5Tn1Fz6zap9rI770Rd9C15QcS6nABFQXKx+ffi6yURQmKGaux2P8sEOBvsjYOPHUZ8vAOVrAm9lDWaaprZlR2d3wShtqwcPGgkqfuZWgU5/rRxwSsD5f4uruwrlg0NeV/hBNTCFz3QTBGNok93L0dxTHgvRlYgDQEh8Nj03kCHRFcJEGgCTG06zolmOjKJZdPYMRFRl52ZAvcFXxIgLbv8M1EKYy6fKog==
+x-forefront-antispam-report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:PH0PR03MB6786.namprd03.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(4636009)(366004)(38100700002)(55016003)(38070700005)(508600001)(66476007)(76116006)(66946007)(8676002)(66446008)(64756008)(26005)(186003)(52536014)(9686003)(66556008)(4326008)(33656002)(2906002)(54906003)(83380400001)(5660300002)(110136005)(53546011)(86362001)(122000001)(71200400001)(8936002)(7696005)(316002)(6506007);DIR:OUT;SFP:1101;
+x-ms-exchange-antispam-messagedata-chunkcount: 1
+x-ms-exchange-antispam-messagedata-0: =?iso-8859-1?Q?c5t5T59I9Q0c7WmvKvPQ9Tdh5hjCF5gc6SaEcdi8+J2wBXU1RG/0dSzXLy?=
+ =?iso-8859-1?Q?256QUCUbATvtujoLvWp/RtooL2jAY5vD0/dKgWcqbCAAgA8JFylRz+zP5m?=
+ =?iso-8859-1?Q?QZ7vZBDWObQKXTrE3NoWHdeYw0GJSY+qQFZus9iA3HftttWqZcNy+w1DMU?=
+ =?iso-8859-1?Q?JbfjSCt6FzwPlt61SLNI9TCg7/d5Z6Rc6O1D9aVGRaQsd7uECq/v6U3TPb?=
+ =?iso-8859-1?Q?z1Da6FfcsV/Fi7159ZsCK1tX6md5bv0mbg6R0HVzX9NAjIyYNEG4lGl1uC?=
+ =?iso-8859-1?Q?b2Md5bmBTr+0s/mV3yNgYsbFzmM2GcivWSbfVD3RqlsTryf/ic+nbS3gbJ?=
+ =?iso-8859-1?Q?70X6tmrJiTO2V938mpQGMantN9OYYgrYeZDXXqhoNX2cebCshqHMk2LzaO?=
+ =?iso-8859-1?Q?kljD0DZz+5y63SpOk4cDIxJS9oCpUBFWfcPq5GP1CsTs1S1fjYpEys0oVY?=
+ =?iso-8859-1?Q?cBdosTMvtwMPM/gvG9vqHhkkPPyoMQZyUKJOTMPAfysgSy/CrKZ464J9Wc?=
+ =?iso-8859-1?Q?o7/RlIEborts6dmEgO4Hyah+35xYmwPGsaRSJ9dvAhX+eebWzZY0KK47F7?=
+ =?iso-8859-1?Q?8cWQ7ThvLuIXvxNL3mrLEaSNGySlZ8jNO645GAEasaeTWvc2aPvVgdbwmS?=
+ =?iso-8859-1?Q?5qrSikN/xmS7W0mjDKVVZMoHzguJYjezlqNc5JU6dtJLyyzLfLB+Su20WN?=
+ =?iso-8859-1?Q?EAk5/DS53yKdZ+hERHyO3MXMacIIosHkqT38hcB8ork9Kb+dHta6YkQ8Ry?=
+ =?iso-8859-1?Q?j7eGUayuJ7cTKeX2kS3FRRGgY5L8yxX1A83qjrURK65FI11K5s28ffo9Ds?=
+ =?iso-8859-1?Q?ttbqdDFo7xylgCxzFtG0acM00Yvmr3dGJu9e3PTWXLag8rlOMcbSOChSYM?=
+ =?iso-8859-1?Q?S1+02rPKIHOdktWj6IRHSAS2x0TJIEpWyyC7/8wH9tY/U3ZPgTRA4O/plW?=
+ =?iso-8859-1?Q?8DPHyHGC/cUaUklWqcMJSVN3DQYRmcqQD5JtvhkWEHpzU53rRqme4mjiVm?=
+ =?iso-8859-1?Q?bd+woolPC8gyPePSYhSoTiuk+Ri0GOL6mZM5R39UrzpGyADVGSFV8SLTg9?=
+ =?iso-8859-1?Q?4Zbo17jiz8QumpGYdVsU+L/cr6jFWYRtYXY9Rfi1gt1mN42dv2k5zg8jO/?=
+ =?iso-8859-1?Q?UWIPQhC8uQ7ClbP1N0YewEbHXfnuMQyPor12IUSinBiTBSPVdk5SAKsEbP?=
+ =?iso-8859-1?Q?FRURyuI4GN5bGutCaywt5++p6IzXyi3TQa3xpzbI/cJPxzqWJ4Fg5ZlfoO?=
+ =?iso-8859-1?Q?QLkmdMylve77XnhUm7AsK2bJJvGeipY4a+aNoKxft8a7fQTPcb6yP84O1r?=
+ =?iso-8859-1?Q?+wZEd/3/CsQrlitULz6ZM9lAMuCB/zM2gStFmZrYCE4oy9UzkMjfR2lK0z?=
+ =?iso-8859-1?Q?I6wkcetzOUKDPM3SuRhHsgpfs/nzr3GsgM2rqmfPRrJo68hdvYon7UqNBe?=
+ =?iso-8859-1?Q?wOwz3CHJbGN06H0mJNnsh5lUE49aPY4lfz/Mv/Z7Dcio+jz1Z9eE6aO4S8?=
+ =?iso-8859-1?Q?tdhy+LWzfCGs8UUsQI4frLtoMOY7DoWROD8kymdWSFkIc/SaJgM9pop6NY?=
+ =?iso-8859-1?Q?NF49N+vsdycW+llkthyonQdks8cvYm9B1BTt+nCpdbpcmipaVdpJPdxARU?=
+ =?iso-8859-1?Q?dfbqnL9K9/HsJlqVj3JQJd7dStCHpa/fT361IfSlN+CSDaIR49moJQZpck?=
+ =?iso-8859-1?Q?PWEtRzfTYom2/OKQ7/RGR38JzvcTXwvC7tFF1pF04J18w4ZSFOvXdd7byH?=
+ =?iso-8859-1?Q?SYR7R4K8zp3+DL0/+0bgL6xbjnBnNHFVZQeM3gF8DhsM/Q62ERfXqLTKbk?=
+ =?iso-8859-1?Q?hw3CPAT0SQ=3D=3D?=
+Content-Type: text/plain; charset="iso-8859-1"
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Transfer-Encoding: 7bit
+X-OriginatorOrg: analog.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-AuthSource: PH0PR03MB6786.namprd03.prod.outlook.com
+X-MS-Exchange-CrossTenant-Network-Message-Id: 19ba2892-15e0-483d-b6ae-08da12e1f221
+X-MS-Exchange-CrossTenant-originalarrivaltime: 31 Mar 2022 06:44:46.4958
+ (UTC)
+X-MS-Exchange-CrossTenant-fromentityheader: Hosted
+X-MS-Exchange-CrossTenant-id: eaa689b4-8f87-40e0-9c6f-7228de4d754a
+X-MS-Exchange-CrossTenant-mailboxtype: HOSTED
+X-MS-Exchange-CrossTenant-userprincipalname: t+YiolKYVgxNCaFlWpzWW5tMUbFdwbl2vOGL+LVXY++aFl02Hem0gRdbhBXgxNZkHVAzF2OdExhlx96/bOnoLQ==
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: BN9PR03MB6058
+X-Proofpoint-ORIG-GUID: XvuqsGUCxvDW5sptsMVFE5jTCm2KYmTx
+X-Proofpoint-GUID: Tvh0I0Tm4V3X1B0FMoPdrDXNJ-eCVu4N
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-03-31_02,2022-03-30_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1011
+ priorityscore=1501 adultscore=0 phishscore=0 impostorscore=0 bulkscore=0
+ mlxlogscore=999 suspectscore=0 malwarescore=0 lowpriorityscore=0
+ mlxscore=0 spamscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2203310038
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-tree/branch: https://git.kernel.org/pub/scm/linux/kernel/git/next/linux-next.git master
-branch HEAD: a67ba3cf9551f8c92d5ec9d7eae1aadbb9127b57  Add linux-next specific files for 20220330
+> From: Marek Vasut <marex@denx.de>
+> Sent: Monday, March 28, 2022 9:53 PM
+> To: linux-iio@vger.kernel.org
+> Cc: Marek Vasut <marex@denx.de>; Andy Shevchenko
+> <andy@kernel.org>; Daniel Baluta <daniel.baluta@nxp.com>;
+> Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Subject: [PATCH v3] iio: core: Print error in case sample bits do not fit
+> storage bits
+>=20
+> [External]
+>=20
+> Add runtime check to verify whether storagebits are at least as big
+> as shifted realbits. This should help spot broken drivers which may
+> set realbits + shift above storagebits.
+>=20
+> Signed-off-by: Marek Vasut <marex@denx.de>
+> Cc: Andy Shevchenko <andy@kernel.org>
+> Cc: Daniel Baluta <daniel.baluta@nxp.com>
+> Cc: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> ---
+> V2: Use dev_err() instead as WARN_ON() may panic() the kernel on
+> existing machines
+> V3: Abort probe and return -EINVAL in case this condition is triggered
+> ---
 
-Error/Warning reports:
+Reviewed-by: Nuno S=E1 <nuno.sa@analog.com>
 
-https://lore.kernel.org/llvm/202203030117.MEHb12Te-lkp@intel.com
-https://lore.kernel.org/llvm/202203241958.Uw9bWfMD-lkp@intel.com
+>  drivers/iio/industrialio-buffer.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
+>=20
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio=
+-
+> buffer.c
+> index b078eb2f3c9de..75a1c57b49102 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -1629,6 +1629,19 @@ static int
+> __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
+>  			if (channels[i].scan_index < 0)
+>  				continue;
+>=20
+> +			/* Verify that sample bits fit into storage */
+> +			if (channels[i].scan_type.storagebits <
+> +			    channels[i].scan_type.realbits +
+> +			    channels[i].scan_type.shift) {
+> +				dev_err(&indio_dev->dev,
+> +					"Channel %d storagebits (%d) <
+> shifted realbits (%d + %d)\n",
+> +					i,
+> channels[i].scan_type.storagebits,
+> +					channels[i].scan_type.realbits,
+> +					channels[i].scan_type.shift);
+> +				ret =3D -EINVAL;
+> +				goto error_cleanup_dynamic;
+> +			}
+> +
+>  			ret =3D iio_buffer_add_channel_sysfs(indio_dev,
+> buffer,
+>  							 &channels[i]);
+>  			if (ret < 0)
+> --
+> 2.35.1
 
-Error/Warning: (recently discovered and may have been fixed)
-
-/kbuild/src/includecheck/kernel/sched/sched.h: linux/static_key.h is included more than once.
-drivers/bus/mhi/host/main.c:792:13: warning: parameter 'event_quota' set but not used
-drivers/bus/mhi/host/main.c:792:13: warning: parameter 'event_quota' set but not used [-Wunused-but-set-parameter]
-drivers/leds/leds-pca955x.c:149:19: warning: unused function 'pca95xx_num_led_regs'
-kernel/sched/core.c:9214:5: warning: no previous prototype for 'sched_cpu_activate' [-Wmissing-prototypes]
-
-Unverified Error/Warning (likely false positive, please contact us if interested):
-
-arch/arm/kernel/unwind.c:483:17: warning: Assigned value is garbage or undefined [clang-analyzer-core.uninitialized.Assign]
-arch/s390/include/asm/spinlock.h:81:3: error: unexpected token in '.rept' directive
-arch/s390/include/asm/spinlock.h:81:3: error: unknown directive
-arch/s390/include/asm/spinlock.h:81:3: error: unmatched '.endr' directive
-arch/s390/lib/spinlock.c:78:3: error: unexpected token in '.rept' directive
-arch/s390/lib/spinlock.c:78:3: error: unknown directive
-arch/s390/lib/spinlock.c:78:3: error: unmatched '.endr' directive
-drivers/bus/mhi/host/main.c:1585:4: warning: Attempt to free released memory [clang-analyzer-unix.Malloc]
-drivers/clk/imx/clk-pll14xx.c:166:2: warning: Value stored to 'pll_div_ctl1' is never read [clang-analyzer-deadcode.DeadStores]
-drivers/counter/104-quad-8.c:150:9: sparse:    unsigned char
-drivers/counter/104-quad-8.c:150:9: sparse:    void
-drivers/counter/104-quad-8.c:150:9: sparse: sparse: incompatible types in conditional expression (different base types):
-drivers/dma/qcom/hidma.c:759: undefined reference to `devm_ioremap_resource'
-drivers/gpu/drm/amd/amdgpu/../display/dc/dcn31/dcn31_hubp.c:57:6: warning: no previous prototype for 'hubp31_program_extended_blank' [-Wmissing-prototypes]
-drivers/gpu/drm/amd/amdgpu/../display/dc/dml/calcs/dce_calcs.c:77:13: warning: stack frame size (4704) exceeds limit (1024) in 'calculate_bandwidth' [-Wframe-larger-than]
-drivers/hid/hid-core.c:1665:30: warning: Although the value stored to 'field' is used in the enclosing expression, the value is never actually read from 'field' [clang-analyzer-deadcode.DeadStores]
-drivers/leds/trigger/ledtrig-tty.c:33:9: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
-drivers/md/dm-log-userspace-base.c:150:15: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
-drivers/media/platform/st/stm32/dma2d/dma2d-hw.c:109:1: internal compiler error: in extract_insn, at recog.c:2770
-drivers/mtd/nand/ecc-mxic.c:523:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
-drivers/mtd/nand/ecc-mxic.c:595:6: warning: Branch condition evaluates to a garbage value [clang-analyzer-core.uninitialized.Branch]
-drivers/net/vxlan/vxlan_core.c:440:34: sparse: sparse: incorrect type in argument 2 (different base types)
-drivers/pci/vgaarb.c:213:17: warning: Value stored to 'dev' during its initialization is never read [clang-analyzer-deadcode.DeadStores]
-drivers/pcmcia/cistpl.c:103: undefined reference to `ioremap'
-drivers/pcmcia/cistpl.c:72: undefined reference to `iounmap'
-drivers/scsi/lpfc/lpfc_els.c:7983:38: sparse:    left side has type unsigned int
-drivers/scsi/lpfc/lpfc_els.c:7983:38: sparse:    right side has type restricted __be32
-drivers/scsi/lpfc/lpfc_els.c:7983:38: sparse: sparse: invalid assignment: |=
-drivers/scsi/lpfc/lpfc_els.c:8504:33: sparse: sparse: incorrect type in assignment (different base types)
-drivers/tty/ipwireless/hardware.c:368:2: warning: Call to function 'sprintf' is insecure as it does not provide bounding of the memory buffer or security checks introduced in the C11 standard. Replace with analogous functions that support length arguments or provides boundary checks such as 'sprintf_s' in case of C11 [clang-analyzer-security.insecureAPI.DeprecatedOrUnsafeBufferHandling]
-drivers/tty/serial/sunplus-uart.c:501:26: sparse: sparse: symbol 'sunplus_console_ports' was not declared. Should it be static?
-include/linux/mtd/cfi.h:62:2: sparse: sparse: No CONFIG_MTD_CFI_Ix selected. No NOR chip support can work.
-kernel/sched/core.c:5268:20: warning: no previous prototype for function 'task_sched_runtime'
-kernel/sched/core.c:5268:20: warning: no previous prototype for function 'task_sched_runtime' [-Wmissing-prototypes]
-kernel/sched/core.c:8979:6: warning: no previous prototype for 'idle_task_exit' [-Wmissing-prototypes]
-kernel/sched/core.c:8979:6: warning: no previous prototype for function 'idle_task_exit' [-Wmissing-prototypes]
-kernel/sched/core.c:9214:5: warning: no previous prototype for function 'sched_cpu_activate' [-Wmissing-prototypes]
-kernel/sched/core.c:9259:5: warning: no previous prototype for 'sched_cpu_deactivate' [-Wmissing-prototypes]
-kernel/sched/core.c:9259:5: warning: no previous prototype for function 'sched_cpu_deactivate' [-Wmissing-prototypes]
-kernel/sched/core.c:9334:5: warning: no previous prototype for 'sched_cpu_starting' [-Wmissing-prototypes]
-kernel/sched/core.c:9334:5: warning: no previous prototype for function 'sched_cpu_starting' [-Wmissing-prototypes]
-kernel/sched/core.c:9355:5: warning: no previous prototype for 'sched_cpu_wait_empty' [-Wmissing-prototypes]
-kernel/sched/core.c:9355:5: warning: no previous prototype for function 'sched_cpu_wait_empty' [-Wmissing-prototypes]
-kernel/sched/core.c:9397:5: warning: no previous prototype for 'sched_cpu_dying' [-Wmissing-prototypes]
-kernel/sched/core.c:9397:5: warning: no previous prototype for function 'sched_cpu_dying' [-Wmissing-prototypes]
-kernel/sched/core.c:9420:13: warning: no previous prototype for function 'sched_init_smp' [-Wmissing-prototypes]
-kernel/sched/core.c:9453:13: warning: no previous prototype for function 'sched_init_smp'
-kernel/sched/core.c:9453:13: warning: no previous prototype for function 'sched_init_smp' [-Wmissing-prototypes]
-kernel/sched/core.c:9481:13: warning: no previous prototype for function 'sched_init'
-kernel/sched/core.c:9481:13: warning: no previous prototype for function 'sched_init' [-Wmissing-prototypes]
-kernel/sched/fair.c:10665:6: warning: no previous prototype for 'nohz_balance_enter_idle' [-Wmissing-prototypes]
-kernel/sched/fair.c:10665:6: warning: no previous prototype for function 'nohz_balance_enter_idle' [-Wmissing-prototypes]
-kernel/sched/loadavg.c:245:6: warning: no previous prototype for 'calc_load_nohz_start' [-Wmissing-prototypes]
-kernel/sched/loadavg.c:245:6: warning: no previous prototype for function 'calc_load_nohz_start'
-kernel/sched/loadavg.c:245:6: warning: no previous prototype for function 'calc_load_nohz_start' [-Wmissing-prototypes]
-kernel/sched/loadavg.c:258:6: warning: no previous prototype for 'calc_load_nohz_remote' [-Wmissing-prototypes]
-kernel/sched/loadavg.c:258:6: warning: no previous prototype for function 'calc_load_nohz_remote'
-kernel/sched/loadavg.c:258:6: warning: no previous prototype for function 'calc_load_nohz_remote' [-Wmissing-prototypes]
-kernel/sched/loadavg.c:263:6: warning: no previous prototype for 'calc_load_nohz_stop' [-Wmissing-prototypes]
-kernel/sched/loadavg.c:263:6: warning: no previous prototype for function 'calc_load_nohz_stop'
-kernel/sched/loadavg.c:263:6: warning: no previous prototype for function 'calc_load_nohz_stop' [-Wmissing-prototypes]
-lib/vsprintf.c:2781:5: warning: Null pointer passed as 1st argument to memory copy function [clang-analyzer-unix.cstring.NullArg]
-lib/vsprintf.c:2801:12: warning: Dereference of null pointer (loaded from variable 'str') [clang-analyzer-core.NullDereference]
-s390-linux-ld: drivers/dma/qcom/hidma.c:766: undefined reference to `devm_ioremap_resource'
-s390-linux-ld: drivers/pcmcia/cistpl.c:110: undefined reference to `iounmap'
-s390-linux-ld: drivers/pcmcia/cistpl.c:118: undefined reference to `ioremap'
-{standard input}:1989: Error: unknown pseudo-op: `.sec'
-
-Error/Warning ids grouped by kconfigs:
-
-gcc_recent_errors
-|-- alpha-allmodconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- alpha-allyesconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arc-allmodconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arc-allyesconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arc-axs101_defconfig
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arc-defconfig
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|-- arc-randconfig-r033-20220329
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arc-randconfig-r043-20220330
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm-allmodconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm-allyesconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm-cm_x300_defconfig
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm-defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm-randconfig-c002-20220327
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm-randconfig-c002-20220329
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm-realview_defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|-- arm64-allmodconfig
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm64-allyesconfig
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- arm64-defconfig
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- csky-allmodconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- csky-allyesconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- csky-defconfig
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- csky-randconfig-p001-20220327
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- csky-randconfig-p002-20220329
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- csky-randconfig-r003-20220330
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- h8300-allmodconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-media-platform-st-stm32-dma2d-dma2d-hw.c:internal-compiler-error:in-extract_insn-at-recog.c
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- h8300-allyesconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-media-platform-st-stm32-dma2d-dma2d-hw.c:internal-compiler-error:in-extract_insn-at-recog.c
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-allmodconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn31-dcn31_hubp.c:warning:no-previous-prototype-for-hubp31_program_extended_blank
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:left-side-has-type-unsigned-int
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:right-side-has-type-restricted-__be32
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-int-usertype-linkFailureCnt-got-restricted-__be32-usertype
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:invalid-assignment:
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-allyesconfig
-|   |-- drivers-gpu-drm-amd-amdgpu-..-display-dc-dcn31-dcn31_hubp.c:warning:no-previous-prototype-for-hubp31_program_extended_blank
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:left-side-has-type-unsigned-int
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:right-side-has-type-restricted-__be32
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-int-usertype-linkFailureCnt-got-restricted-__be32-usertype
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:invalid-assignment:
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-debian-10.3
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-debian-10.3-kselftests
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-randconfig-a012
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-randconfig-a014
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- i386-randconfig-a016
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- i386-randconfig-c001
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-randconfig-s001-20220328
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- i386-randconfig-s002-20220328
-|   |-- include-linux-mtd-cfi.h:sparse:sparse:No-CONFIG_MTD_CFI_Ix-selected.-No-NOR-chip-support-can-work.
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- ia64-allmodconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-scsi-hisi_sas-hisi_sas_v3_hw.c:sparse:sparse:restricted-__le32-degrades-to-integer
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- ia64-allyesconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-scsi-hisi_sas-hisi_sas_v3_hw.c:sparse:sparse:restricted-__le32-degrades-to-integer
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- ia64-buildonly-randconfig-r003-20220330
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- ia64-defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- ia64-gensparse_defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- m68k-allmodconfig
-|   |-- drivers-counter-quad-.c:sparse:sparse:incompatible-types-in-conditional-expression-(different-base-types):
-|   |-- drivers-counter-quad-.c:sparse:unsigned-char
-|   |-- drivers-counter-quad-.c:sparse:void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   `-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|-- m68k-allyesconfig
-|   |-- drivers-counter-quad-.c:sparse:sparse:incompatible-types-in-conditional-expression-(different-base-types):
-|   |-- drivers-counter-quad-.c:sparse:unsigned-char
-|   |-- drivers-counter-quad-.c:sparse:void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   `-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|-- microblaze-randconfig-r005-20220330
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- mips-allmodconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- mips-allyesconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- mips-buildonly-randconfig-r004-20220330
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- nios2-allmodconfig
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- nios2-allyesconfig
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- nios2-defconfig
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- nios2-randconfig-m031-20220330
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- nios2-randconfig-s032-20220330
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   `-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|-- openrisc-randconfig-c024-20220330
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- parisc-allmodconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- parisc-allyesconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- parisc-defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- parisc-generic-32bit_defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- parisc64-defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- powerpc-allmodconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:left-side-has-type-unsigned-int
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:right-side-has-type-restricted-__be32
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-int-usertype-linkFailureCnt-got-restricted-__be32-usertype
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:invalid-assignment:
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- powerpc-allyesconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:left-side-has-type-unsigned-int
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:right-side-has-type-restricted-__be32
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-int-usertype-linkFailureCnt-got-restricted-__be32-usertype
-|   |-- drivers-scsi-lpfc-lpfc_els.c:sparse:sparse:invalid-assignment:
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- powerpc-buildonly-randconfig-r002-20220330
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|-- powerpc-sequoia_defconfig
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- powerpc64-randconfig-p002-20220327
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|-- riscv-allmodconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- riscv-allyesconfig
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-argument-(different-address-spaces)-expected-void-const-volatile-noderef-__iomem-addr-got-void
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-icr_base-got-void-noderef-__iomem
-|   |-- drivers-irqchip-irq-renesas-h8s.c:sparse:sparse:incorrect-type-in-assignment-(different-address-spaces)-expected-void-static-toplevel-ipr_base-got-void-noderef-__iomem
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expected-unsigned-int-usertype-b-got-restricted-__be32-usertype-vni
-|   |-- drivers-tty-serial-sunplus-uart.c:sparse:sparse:symbol-sunplus_console_ports-was-not-declared.-Should-it-be-static
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-PersistentFid-got-restricted-__le64-usertype
-|   |-- fs-ksmbd-oplock.c:sparse:sparse:incorrect-type-in-assignment-(different-base-types)-expected-unsigned-long-long-usertype-VolatileFid-got-restricted-__le64-usertype
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- riscv-defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- riscv-nommu_k210_defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|-- riscv-nommu_virt_defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   `-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|-- riscv-randconfig-r042-20220330
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- riscv-rv32_defconfig
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-idle_task_exit
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_activate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_deactivate
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_dying
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_starting
-|   |-- kernel-sched-core.c:warning:no-previous-prototype-for-sched_cpu_wait_empty
-|   |-- kernel-sched-fair.c:warning:no-previous-prototype-for-nohz_balance_enter_idle
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_remote
-|   |-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_start
-|   `-- kernel-sched-loadavg.c:warning:no-previous-prototype-for-calc_load_nohz_stop
-|-- s390-allmodconfig
-|   |-- drivers-net-vxlan-vxlan_core.c:sparse:sparse:incorrect-type-in-argument-(different-base-types)-expec
