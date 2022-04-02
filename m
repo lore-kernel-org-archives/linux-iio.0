@@ -2,93 +2,65 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 92085C433F5
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Apr 2022 20:55:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 97FD8C433F5
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Apr 2022 10:09:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352690AbiDAU44 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Apr 2022 16:56:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38598 "EHLO
+        id S238300AbiDBKLt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Apr 2022 06:11:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352689AbiDAU4z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Apr 2022 16:56:55 -0400
-Received: from mail-io1-xd31.google.com (mail-io1-xd31.google.com [IPv6:2607:f8b0:4864:20::d31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D7B051C4B27
-        for <linux-iio@vger.kernel.org>; Fri,  1 Apr 2022 13:55:03 -0700 (PDT)
-Received: by mail-io1-xd31.google.com with SMTP id 9so4610763iou.5
-        for <linux-iio@vger.kernel.org>; Fri, 01 Apr 2022 13:55:03 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zxdKMcfYeDJl9VEeQV5qTQKbRI36bdOnubpQqFT5Dsc=;
-        b=VwlCrhVv95bdY6Xvn636FGICBwdC53ZsHE0X8eiAXzNCA8X1yA8mnM+bXTgrnVvm39
-         0q3bKePS4uw2NnrV31eBbKglSewWfiWfCo6Ph7+LtBdZcTR2LnDxPxVb2aw2Lo2XS0/C
-         RP5s/2T/GI8uCQhVeBHSOCU4dDCmri/fKKHtU=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zxdKMcfYeDJl9VEeQV5qTQKbRI36bdOnubpQqFT5Dsc=;
-        b=PoNKcoYGUntkDrqBE0s8c3sEPo589Bm1LWw/u9C6dwlLt6UPVsbvsgV7cAPqU3H4Cs
-         o23rJLaZ9w5ymhHWnr7aoV/TTsTLTm5Z6T+z+vPibI/XViOCULMqG3a95lS43LCJobaR
-         H/mag+26x44z/oF0ZDknp1SAY2upjRvQ7LDvknEu5O0iCkfGtNZSgPO5DNYDg/LxKVas
-         pr5F+NHIAMIR7SqBThF4fotxqztY9N0SEBH3TfNpm/g4hTeOgzhgxv1rBKmfF6gvDGq1
-         uNpqzuqI/nRmvnT3ZNRtMbu9ysRYPojDw2Dn2OOOAfiVZa3nd/RfV6UwZtEEUkA4DdIf
-         F3NQ==
-X-Gm-Message-State: AOAM532beBRMW4DlK8ygOzOo0Z03D9yH1z37gOMCMu55dIPwU0+JZPTf
-        wgC2pJz2o4piT+tAvtnDF+UoMjiUOjIZro0QtPLo4wIWqmaBkQ==
-X-Google-Smtp-Source: ABdhPJxmivihRzSeIJe8SsSHZgn0rvB4pN75ADkEmltV9+C+9ga7+Ptqw3/wvSK7dEe0fAODnxEhRVHBoaTGNDj619M=
-X-Received: by 2002:a05:6602:3281:b0:648:d45d:22e with SMTP id
- d1-20020a056602328100b00648d45d022emr657622ioz.7.1648846503250; Fri, 01 Apr
- 2022 13:55:03 -0700 (PDT)
+        with ESMTP id S236495AbiDBKLs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Apr 2022 06:11:48 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16038527D3;
+        Sat,  2 Apr 2022 03:09:57 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D0C77B80689;
+        Sat,  2 Apr 2022 10:09:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E929C340EC;
+        Sat,  2 Apr 2022 10:09:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648894194;
+        bh=CXMartoYjubWeMV3E1H9s8ARDUAdYfTP7uWl0ij+SGg=;
+        h=From:To:Cc:Subject:Date:From;
+        b=kipW2BQRZ41shGiNObLooDWizusP+q192QYflwQiKGgepT+y66dJq2r/cvV5Fm+MY
+         mIO4zSduiXSIWDiKpZCVGRZUOojJuIjdsQEeoTuy4AtG1EGfm5vb7HUyQgyoaCubJc
+         6pjoZBDeDA9jbnHjtAgh1/GCbv3JHc4Pqd3HZXJcmNcjO9mBFyHZ28PCLmejzKvQUH
+         wGmNshvSNYysY7LVTSg/LzOYY4e6AsmOF1kxJEsBdbtvnD/qwfudxVoxk0TgWg3uCU
+         QIkGdm1mMnLiONN3zjYYssPBj2S6vsgTlo92+tkf4WIwubzV0LctaeK8HU6GxeuHxU
+         zJkWQU8lovR7Q==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, robh@kernel.org
+Subject: [PATCH 0/2] add support for ASM330LHHX
+Date:   Sat,  2 Apr 2022 12:09:28 +0200
+Message-Id: <cover.1648893892.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-References: <20220331210425.3908278-1-swboyd@chromium.org>
-In-Reply-To: <20220331210425.3908278-1-swboyd@chromium.org>
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Fri, 1 Apr 2022 13:54:51 -0700
-Message-ID: <CAPUE2uvpBaE+YLkg6RXq4CCEFBr5ZFhjS1dXkbse9nyH8C=2Jg@mail.gmail.com>
-Subject: Re: [PATCH] iio:proximity:sx_common: Fix device property parsing on
- DT systems
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Mar 31, 2022 at 2:04 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> After commit 7a3605bef878 ("iio: sx9310: Support ACPI property") we
-> started using the 'indio_dev->dev' to extract device properties for
-> various register settings in sx9310_get_default_reg(). This broke DT
-> based systems because dev_fwnode() used in the device_property*() APIs
-> can't find an 'of_node'. That's because the 'indio_dev->dev.of_node'
-> pointer isn't set until iio_device_register() is called. Set the pointer
-> earlier, next to where the ACPI companion is set, so that the device
-> property APIs work on DT systems.
->
-> Cc: Gwendal Grignou <gwendal@chromium.org>
-> Fixes: 7a3605bef878 ("iio: sx9310: Support ACPI property")
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
-> ---
->  drivers/iio/proximity/sx_common.c | 1 +
->  1 file changed, 1 insertion(+)
->
-> diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
-> index a7c07316a0a9..8ad814d96b7e 100644
-> --- a/drivers/iio/proximity/sx_common.c
-> +++ b/drivers/iio/proximity/sx_common.c
-> @@ -521,6 +521,7 @@ int sx_common_probe(struct i2c_client *client,
->                 return dev_err_probe(dev, ret, "error reading WHOAMI\n");
->
->         ACPI_COMPANION_SET(&indio_dev->dev, ACPI_COMPANION(dev));
-> +       indio_dev->dev.of_node = client->dev.of_node;
->         indio_dev->modes = INDIO_DIRECT_MODE;
->
->         indio_dev->channels =  data->chip_info->iio_channels;
-> --
-> https://chromeos.dev
->
+Add support for ASM330LHHX IMU mems sensor
+https://www.st.com/resource/en/datasheet/asm330lhhx.pdf
+
+Lorenzo Bianconi (2):
+  iio: imu: st_lsm6dsx: add support to ASM330LHHX
+  dt-bindings: iio: imu: st_lsm6dsx: add asm330lhhx device bindings
+
+ Documentation/devicetree/bindings/iio/imu/st,lsm6dsx.yaml | 1 +
+ drivers/iio/imu/st_lsm6dsx/Kconfig                        | 6 +++---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h                   | 2 ++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c            | 3 ++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c              | 6 +++++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c               | 5 +++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c               | 5 +++++
+ 7 files changed, 23 insertions(+), 5 deletions(-)
+
+-- 
+2.35.1
+
