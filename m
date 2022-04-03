@@ -2,248 +2,114 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 31489C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Apr 2022 11:15:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 306A8C43217
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Apr 2022 13:18:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356493AbiDCLRD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Apr 2022 07:17:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
+        id S1358853AbiDCNU1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Apr 2022 09:20:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46922 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356871AbiDCLRD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2022 07:17:03 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72AA2ED76;
-        Sun,  3 Apr 2022 04:15:09 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 5793E61035;
-        Sun,  3 Apr 2022 11:15:09 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD61C340F0;
-        Sun,  3 Apr 2022 11:15:08 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1648984508;
-        bh=u/JUR2HcE09owMn/zh6CuDg+VeXjsm74g9DSzWR3tjU=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=e5v/VM4rKaUHSK9Q0PnHjPfsKIiWTfpQuqRcbb30JanPPGnfROxHfjC9NwmV6Kw2X
-         Ny4/NSIZj5AXX/CqxkhBAMbyIYV+ScMTbELc/iTLCLIRg37fyUyffOKzvJLCDJXaHt
-         RQCf3wHCCyaCDzIx5Tvzja4LeR2KPxde8J6t4U7NpZJ8Us0fJYWOtsLdnniJZrwmH1
-         bDGSpVCvbrm0jHIfMBuP3Gd3TEO0NVQ+doxW27RCnkzPx0vsixlHy1xLTzrzmKYM3u
-         0yU5/+u6Q8hVD0g35vKABlTlauzuKET28ixVDQRu9lu4xXMlinD+vZZ+0KkX6wUZtK
-         bac557IDtmAFg==
-Date:   Sun, 3 Apr 2022 13:15:04 +0200
-From:   Lorenzo Bianconi <lorenzo@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@redhat.com, robh@kernel.org
-Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: add support to ASM330LHHX
-Message-ID: <YkmBuDOSrHzh3pFc@lore-desk>
-References: <cover.1648893892.git.lorenzo@kernel.org>
- <05cd9e612bf7304542aa1adf12025ae396b87cf2.1648893892.git.lorenzo@kernel.org>
- <20220402172240.2465e7f5@jic23-huawei>
+        with ESMTP id S1358868AbiDCNUU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2022 09:20:20 -0400
+Received: from alexa-out.qualcomm.com (alexa-out.qualcomm.com [129.46.98.28])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC29A286E1;
+        Sun,  3 Apr 2022 06:18:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=quicinc.com; i=@quicinc.com; q=dns/txt; s=qcdkim;
+  t=1648991905; x=1680527905;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version;
+  bh=02jKCSFUrWcNdgliBGzyvoi3mQqWkLT055iJwDV45LQ=;
+  b=cOACwBukWzlAGu5YrnVOdE4H2Ky/SWHGQcHpQcVEbfy9Og5PLFNPVFW3
+   qBprWr9pfO4bRtuyO/LlumzdGe31mrJplyGnKavwoLTXV1Lc+ng4QVkSd
+   FEIGKejPWLLfAkru/o6MYjq1JXNSK3yZBLQEW9aUgstnyd4uxAnedGMQN
+   0=;
+Received: from ironmsg08-lv.qualcomm.com ([10.47.202.152])
+  by alexa-out.qualcomm.com with ESMTP; 03 Apr 2022 06:18:24 -0700
+X-QCInternal: smtphost
+Received: from nasanex01c.na.qualcomm.com ([10.47.97.222])
+  by ironmsg08-lv.qualcomm.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Apr 2022 06:18:23 -0700
+Received: from nalasex01a.na.qualcomm.com (10.47.209.196) by
+ nasanex01c.na.qualcomm.com (10.47.97.222) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 3 Apr 2022 06:18:23 -0700
+Received: from jprakash-linux.qualcomm.com (10.80.80.8) by
+ nalasex01a.na.qualcomm.com (10.47.209.196) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.22; Sun, 3 Apr 2022 06:18:18 -0700
+From:   Jishnu Prakash <quic_jprakash@quicinc.com>
+To:     <agross@kernel.org>, <bjorn.andersson@linaro.org>,
+        <devicetree@vger.kernel.org>, <mka@chromium.org>,
+        <dmitry.baryshkov@linaro.org>, <robh+dt@kernel.org>,
+        <linus.walleij@linaro.org>, <quic_aghayal@quicinc.com>,
+        <daniel.lezcano@linaro.org>, <rui.zhang@intel.com>,
+        <quic_subbaram@quicinc.com>, <jic23@kernel.org>,
+        <amitk@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Jishnu Prakash <quic_jprakash@quicinc.com>,
+        <linux-arm-msm@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+CC:     <linux-arm-msm-owner@vger.kernel.org>, <linux-pm@vger.kernel.org>
+Subject: [RESEND PATCH V5 2/4] iio: adc: qcom-vadc-common: add reverse scaling for PMIC5 Gen2 ADC_TM
+Date:   Sun, 3 Apr 2022 18:47:47 +0530
+Message-ID: <1648991869-20899-3-git-send-email-quic_jprakash@quicinc.com>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <1648991869-20899-1-git-send-email-quic_jprakash@quicinc.com>
+References: <1648991869-20899-1-git-send-email-quic_jprakash@quicinc.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="F5Fav6UVPwVhK7sH"
-Content-Disposition: inline
-In-Reply-To: <20220402172240.2465e7f5@jic23-huawei>
+Content-Type: text/plain
+X-Originating-IP: [10.80.80.8]
+X-ClientProxiedBy: nasanex01b.na.qualcomm.com (10.46.141.250) To
+ nalasex01a.na.qualcomm.com (10.47.209.196)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add reverse scaling function for PMIC5 Gen2 ADC_TM, to convert
+temperature to raw ADC code, for setting thresholds for
+thermistor channels.
 
---F5Fav6UVPwVhK7sH
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Jishnu Prakash <quic_jprakash@quicinc.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/iio/adc/qcom-vadc-common.c       | 11 +++++++++++
+ include/linux/iio/adc/qcom-vadc-common.h |  2 ++
+ 2 files changed, 13 insertions(+)
 
-> On Sat,  2 Apr 2022 12:09:29 +0200
-> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
->=20
-> > Add support to STM  ASM330LHHX (acc + gyro) Mems sensor
-> > https://www.st.com/resource/en/datasheet/asm330lhhx.pdf
-> Use a Datasheet tag as below.
-> Perhaps mention it's an automotive rated sensor and that
-> it's compatible otherwise with xxx existing part.
+diff --git a/drivers/iio/adc/qcom-vadc-common.c b/drivers/iio/adc/qcom-vadc-common.c
+index 1472389..194d7c3 100644
+--- a/drivers/iio/adc/qcom-vadc-common.c
++++ b/drivers/iio/adc/qcom-vadc-common.c
+@@ -677,6 +677,17 @@ u16 qcom_adc_tm5_temp_volt_scale(unsigned int prescale_ratio,
+ }
+ EXPORT_SYMBOL(qcom_adc_tm5_temp_volt_scale);
+ 
++u16 qcom_adc_tm5_gen2_temp_res_scale(int temp)
++{
++	int64_t resistance;
++
++	resistance = qcom_vadc_map_temp_voltage(adcmap7_100k,
++		ARRAY_SIZE(adcmap7_100k), temp);
++
++	return div64_s64(resistance * RATIO_MAX_ADC7, resistance + R_PU_100K);
++}
++EXPORT_SYMBOL(qcom_adc_tm5_gen2_temp_res_scale);
++
+ int qcom_adc5_hw_scale(enum vadc_scale_fn_type scaletype,
+ 		    unsigned int prescale_ratio,
+ 		    const struct adc5_data *data,
+diff --git a/include/linux/iio/adc/qcom-vadc-common.h b/include/linux/iio/adc/qcom-vadc-common.h
+index 33f60f4..598a5d2 100644
+--- a/include/linux/iio/adc/qcom-vadc-common.h
++++ b/include/linux/iio/adc/qcom-vadc-common.h
+@@ -161,6 +161,8 @@ int qcom_adc5_hw_scale(enum vadc_scale_fn_type scaletype,
+ u16 qcom_adc_tm5_temp_volt_scale(unsigned int prescale_ratio,
+ 				 u32 full_scale_code_volt, int temp);
+ 
++u16 qcom_adc_tm5_gen2_temp_res_scale(int temp);
++
+ int qcom_adc5_prescaling_from_dt(u32 num, u32 den);
+ 
+ int qcom_adc5_hw_settle_time_from_dt(u32 value, const unsigned int *hw_settle);
+-- 
+2.7.4
 
-ack, will do
-
->=20
-> Quick glance at the datasheet suggests this part has a sensor hub...
-> Should it be in a the block with parameters for that as you
-> currently have it in the one for no sensorhub I think.
->=20
-> Or is it using an incompatible sensor hub interface?
-
-asm330lhhx supports sensor hub with the same configuration of LSM6DSR or
-LSM6DSO.
-
-Regards,
-Lorenzo
-
->=20
-> >=20
-> Datasheet: https://www.st.com/resource/en/datasheet/asm330lhhx.pdf
-> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
-> > ---
-> >  drivers/iio/imu/st_lsm6dsx/Kconfig             | 6 +++---
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 2 ++
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 3 ++-
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 6 +++++-
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c    | 5 +++++
-> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c    | 5 +++++
-> >  6 files changed, 22 insertions(+), 5 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_ls=
-m6dsx/Kconfig
-> > index 85860217aaf3..fefd0b939100 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/Kconfig
-> > +++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
-> > @@ -11,9 +11,9 @@ config IIO_ST_LSM6DSX
-> >  	help
-> >  	  Say yes here to build support for STMicroelectronics LSM6DSx imu
-> >  	  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
-> > -	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, lsm6dsr, lsm6ds3tr-c,
-> > -	  ism330dhcx, lsm6dsrx, lsm6ds0, lsm6dsop, the accelerometer/gyroscope
-> > -	  of lsm9ds1 and lsm6dst.
-> > +	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, asm330lhhx, lsm6dsr,
-> > +	  lsm6ds3tr-c, ism330dhcx, lsm6dsrx, lsm6ds0, lsm6dsop,
-> > +	  the accelerometer/gyroscope of lsm9ds1 and lsm6dst.
-> > =20
-> >  	  To compile this driver as a module, choose M here: the module
-> >  	  will be called st_lsm6dsx.
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/=
-st_lsm6dsx/st_lsm6dsx.h
-> > index 6ac4eac36458..a86dd29a4738 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-> > @@ -31,6 +31,7 @@
-> >  #define ST_LSM6DSRX_DEV_NAME	"lsm6dsrx"
-> >  #define ST_LSM6DST_DEV_NAME	"lsm6dst"
-> >  #define ST_LSM6DSOP_DEV_NAME	"lsm6dsop"
-> > +#define ST_ASM330LHHX_DEV_NAME	"asm330lhhx"
-> > =20
-> >  enum st_lsm6dsx_hw_id {
-> >  	ST_LSM6DS3_ID,
-> > @@ -49,6 +50,7 @@ enum st_lsm6dsx_hw_id {
-> >  	ST_LSM6DSRX_ID,
-> >  	ST_LSM6DST_ID,
-> >  	ST_LSM6DSOP_ID,
-> > +	ST_ASM330LHHX_ID,
-> >  	ST_LSM6DSX_MAX_ID,
-> >  };
-> > =20
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/i=
-io/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > index 16730a780964..38bb5f645ebd 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-> > @@ -14,7 +14,8 @@
-> >   * (e.g. Gx, Gy, Gz, Ax, Ay, Az), then data are repeated depending on =
-the
-> >   * value of the decimation factor and ODR set for each FIFO data set.
-> >   *
-> > - * LSM6DSO/LSM6DSOX/ASM330LHH/LSM6DSR/LSM6DSRX/ISM330DHCX/LSM6DST/LSM6=
-DSOP:
-> > + * LSM6DSO/LSM6DSOX/ASM330LHH/ASM330LHHX/LSM6DSR/LSM6DSRX/ISM330DHCX/
-> > + * LSM6DST/LSM6DSOP:
-> >   * The FIFO buffer can be configured to store data from gyroscope and
-> >   * accelerometer. Each sample is queued with a tag (1B) indicating data
-> >   * source (gyroscope, accelerometer, hw timer).
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio=
-/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > index b1d8d5a66f01..910397716833 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> > @@ -26,7 +26,7 @@
-> >   *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/=
-+-2000
-> >   *   - FIFO size: 4KB
-> >   *
-> > - * - LSM6DSO/LSM6DSOX/ASM330LHH/LSM6DSR/ISM330DHCX/LSM6DST/LSM6DSOP:
-> > + * - LSM6DSO/LSM6DSOX/ASM330LHH/ASM330LHHX/LSM6DSR/ISM330DHCX/LSM6DST/=
-LSM6DSOP:
-> >   *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, =
-208, 416,
-> >   *     833
-> >   *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
-> > @@ -786,6 +786,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx=
-_sensor_settings[] =3D {
-> >  				.hw_id =3D ST_LSM6DST_ID,
-> >  				.name =3D ST_LSM6DST_DEV_NAME,
-> >  				.wai =3D 0x6d,
-> > +			}, {
-> > +				.hw_id =3D ST_ASM330LHHX_ID,
-> > +				.name =3D ST_ASM330LHHX_DEV_NAME,
-> > +				.wai =3D 0x6b,
->=20
-> Probably nicer to put it next to he other 0x6b entries.
->=20
-> >  			},
-> >  		},
-> >  		.channels =3D {
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/=
-imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> > index 8b4fc2c15622..715fbdc8190e 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-> > @@ -101,6 +101,10 @@ static const struct of_device_id st_lsm6dsx_i2c_of=
-_match[] =3D {
-> >  		.compatible =3D "st,lsm6dsop",
-> >  		.data =3D (void *)ST_LSM6DSOP_ID,
-> >  	},
-> > +	{
-> > +		.compatible =3D "st,asm330lhhx",
-> > +		.data =3D (void *)ST_ASM330LHHX_ID,
-> > +	},
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
-> > @@ -122,6 +126,7 @@ static const struct i2c_device_id st_lsm6dsx_i2c_id=
-_table[] =3D {
-> >  	{ ST_LSM6DSRX_DEV_NAME, ST_LSM6DSRX_ID },
-> >  	{ ST_LSM6DST_DEV_NAME, ST_LSM6DST_ID },
-> >  	{ ST_LSM6DSOP_DEV_NAME, ST_LSM6DSOP_ID },
-> > +	{ ST_ASM330LHHX_DEV_NAME, ST_ASM330LHHX_ID },
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
-> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/=
-imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> > index e80110b6b280..f5767cf76c1d 100644
-> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-> > @@ -101,6 +101,10 @@ static const struct of_device_id st_lsm6dsx_spi_of=
-_match[] =3D {
-> >  		.compatible =3D "st,lsm6dsop",
-> >  		.data =3D (void *)ST_LSM6DSOP_ID,
-> >  	},
-> > +	{
-> > +		.compatible =3D "st,asm330lhhx",
-> > +		.data =3D (void *)ST_ASM330LHHX_ID,
-> > +	},
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(of, st_lsm6dsx_spi_of_match);
-> > @@ -122,6 +126,7 @@ static const struct spi_device_id st_lsm6dsx_spi_id=
-_table[] =3D {
-> >  	{ ST_LSM6DSRX_DEV_NAME, ST_LSM6DSRX_ID },
-> >  	{ ST_LSM6DST_DEV_NAME, ST_LSM6DST_ID },
-> >  	{ ST_LSM6DSOP_DEV_NAME, ST_LSM6DSOP_ID },
-> > +	{ ST_ASM330LHHX_DEV_NAME, ST_ASM330LHHX_ID },
-> >  	{},
-> >  };
-> >  MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
->=20
-
---F5Fav6UVPwVhK7sH
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYkmBuAAKCRA6cBh0uS2t
-rNCLAPwOlL1TO/TLEa2oHtEiWmQXBf/FzpcQla7MJhAV0L/h6wEAmQ0i/b69G1Ut
-XutngZL+C0E6/4tFJT6f07eWp8k/AwQ=
-=RV1J
------END PGP SIGNATURE-----
-
---F5Fav6UVPwVhK7sH--
