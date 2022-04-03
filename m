@@ -2,276 +2,248 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BA7B3C433F5
-	for <linux-iio@archiver.kernel.org>; Sun,  3 Apr 2022 07:48:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 31489C433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  3 Apr 2022 11:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355457AbiDCHuW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Apr 2022 03:50:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56892 "EHLO
+        id S1356493AbiDCLRD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Apr 2022 07:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239368AbiDCHuU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2022 03:50:20 -0400
-Received: from mail-pj1-x1036.google.com (mail-pj1-x1036.google.com [IPv6:2607:f8b0:4864:20::1036])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D66DE82;
-        Sun,  3 Apr 2022 00:48:24 -0700 (PDT)
-Received: by mail-pj1-x1036.google.com with SMTP id a16-20020a17090a6d9000b001c7d6c1bb13so6216505pjk.4;
-        Sun, 03 Apr 2022 00:48:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=7ykERee7OgSh1nFhBzsy5cq2aVIaRqvjq9HpBUba5u0=;
-        b=kFY7Z97F9caWxtCZ9foOx8rrG3Ojxu0OOb0/X3kyr+RpweTyXJoPetEMo/Ojb7pGXN
-         Axx1/Z/Zw8BVLEymHX3ThDjMmqnjAMXDiJcNK3+rNzROzaMjCi66Yby5L79/OkmNwbbN
-         L2igND6/B3JkqNyQ6AAat7fY3sGVHo1LPbGY/zpXZHvjG7QBBGk29r5/47i/pEZGxYOb
-         Tz/Pc+hzhsP9oivEzPOrq/S1fsR66p5fKrnJnjHA7PhnGgUxN+qoTyVUyRR9bwXrgpfs
-         D602w+uYoBKz0MKciAp1S3czHkNf/ZWmcEbIapQtXUNFW+pdR7d8dpeH+ZAh7hnXBpmg
-         1Egg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=7ykERee7OgSh1nFhBzsy5cq2aVIaRqvjq9HpBUba5u0=;
-        b=FeUtI15sdP7dXb8WHqRIoeLrMaUjzah/v9vtKfewSVeIyxa07wyCs/j176VJApzFvi
-         XVxpc888vaiCs8XkojDDeWeyUcuetJrJwgKOOy+EHSAEp4mdb+Xq81zrxa418RCvIZJU
-         vIPPKNGNWfkoeUjVC3wY9wWSMXoHwEh5WyZ8LgrsAGfRPhsUc+Db2O4MDHYAyp/uqsLG
-         pa3DkNIAu6DtR8iLF0kon73/inAZunNI3j59JmwiLlp/MdOSY0mhOU/J/ZAzzRqGePzj
-         8WG4n4EgTBpsp5NESxwSL8+IxZR0KQrintWgpEC4WuK0RY0L6stdARfYElUXQUlnNjWm
-         6+vA==
-X-Gm-Message-State: AOAM530ogMuW8dqQsfSvljDUc9lokDoVbgQIVDighdESUcCrq/yggBVN
-        Jt+DA5sEYJs0cc/5u1dHcEo=
-X-Google-Smtp-Source: ABdhPJztaG+X1kktHViNe9OXKc9wf944R11upCrAfU3p6f98USawmPP7u7+XAuO3Oaxz81kwkeh5tQ==
-X-Received: by 2002:a17:902:d88a:b0:156:1609:1e62 with SMTP id b10-20020a170902d88a00b0015616091e62mr32035572plz.143.1648972104227;
-        Sun, 03 Apr 2022 00:48:24 -0700 (PDT)
-Received: from jagath-PC ([115.99.128.226])
-        by smtp.gmail.com with ESMTPSA id f19-20020a056a00229300b004fb157f136asm8314281pfe.153.2022.04.03.00.48.22
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Sun, 03 Apr 2022 00:48:23 -0700 (PDT)
-Date:   Sun, 3 Apr 2022 13:18:20 +0530
-From:   Jagath Jog J <jagathjog1996@gmail.com>
+        with ESMTP id S1356871AbiDCLRD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Apr 2022 07:17:03 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C72AA2ED76;
+        Sun,  3 Apr 2022 04:15:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 5793E61035;
+        Sun,  3 Apr 2022 11:15:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3DD61C340F0;
+        Sun,  3 Apr 2022 11:15:08 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1648984508;
+        bh=u/JUR2HcE09owMn/zh6CuDg+VeXjsm74g9DSzWR3tjU=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=e5v/VM4rKaUHSK9Q0PnHjPfsKIiWTfpQuqRcbb30JanPPGnfROxHfjC9NwmV6Kw2X
+         Ny4/NSIZj5AXX/CqxkhBAMbyIYV+ScMTbELc/iTLCLIRg37fyUyffOKzvJLCDJXaHt
+         RQCf3wHCCyaCDzIx5Tvzja4LeR2KPxde8J6t4U7NpZJ8Us0fJYWOtsLdnniJZrwmH1
+         bDGSpVCvbrm0jHIfMBuP3Gd3TEO0NVQ+doxW27RCnkzPx0vsixlHy1xLTzrzmKYM3u
+         0yU5/+u6Q8hVD0g35vKABlTlauzuKET28ixVDQRu9lu4xXMlinD+vZZ+0KkX6wUZtK
+         bac557IDtmAFg==
+Date:   Sun, 3 Apr 2022 13:15:04 +0200
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
 To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     dan@dlrobertson.com, andy.shevchenko@gmail.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2 5/5] iio: accel: bma400: Add step change event
-Message-ID: <20220403074818.GA7583@jagath-PC>
-References: <20220326194146.15549-1-jagathjog1996@gmail.com>
- <20220326194146.15549-6-jagathjog1996@gmail.com>
- <20220327175036.4b026481@jic23-huawei>
- <20220328203710.GA8027@jagath-PC>
- <20220402173707.426cb005@jic23-huawei>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, robh@kernel.org
+Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: add support to ASM330LHHX
+Message-ID: <YkmBuDOSrHzh3pFc@lore-desk>
+References: <cover.1648893892.git.lorenzo@kernel.org>
+ <05cd9e612bf7304542aa1adf12025ae396b87cf2.1648893892.git.lorenzo@kernel.org>
+ <20220402172240.2465e7f5@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="F5Fav6UVPwVhK7sH"
 Content-Disposition: inline
-In-Reply-To: <20220402173707.426cb005@jic23-huawei>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+In-Reply-To: <20220402172240.2465e7f5@jic23-huawei>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Apr 02, 2022 at 05:37:07PM +0100, Jonathan Cameron wrote:
-> On Tue, 29 Mar 2022 02:07:11 +0530
-> Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> 
-> > Hi Jonathan,
-> > 
-> > On Sun, Mar 27, 2022 at 05:50:36PM +0100, Jonathan Cameron wrote:
-> > > On Sun, 27 Mar 2022 01:11:46 +0530
-> > > Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> > >   
-> > > > Added support for event when there is a detection of step change.
-> > > > INT1 pin is used to interrupt and event is pushed to userspace.
-> > > > 
-> > > > Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>  
-> > > 
-> > > These last two patches look fine to me.  Simply having the
-> > > event enable the channel makes things simpler.  
-> > 
-> > Means do I need to drop the step _INFO_ENABLE and handle the
-> > enabling and disabling of step channel through the event enable and
-> > disable?
-> 
-> No.  I was trying to say I like the solution you have now.
 
-Thanks, I will keep the solution same.
-Currently I am testing the BMA400 activity events like STILL, WALKING,
-RUNNING and also BMA400 acceleration threshold events, soon I will send the
-next v3 patch series by including these events.
+--F5Fav6UVPwVhK7sH
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> 
-> > 
-> > > I briefly wondered if we need to care about sequences like
-> > > 
-> > > 1) Enable event
-> > > 2) Enable channel (already enabled, but perhaps this indicates separate intent)
-> > > 3) Disable event.
-> > > 4) Is the channel still enabled?
-> > > 
-> > > or the simpler case of whether we should disable the channel if the event is
-> > > disabled and it wasn't otherwise turned on.
-> > > 
-> > > However, I can't see a sensible way to do so. Hence I think what you have
-> > > gone with is the best we can do.
-> > > 
-> > > Thanks,
-> > > 
-> > > Jonathan  
-> > 
-> > Thanks for reviewing the patch series. I will also address all the comments
-> > from Andy in the next patch v3.
-> > 
-> > Thank you
-> > Jagath
-> > >   
-> > > > ---
-> > > >  drivers/iio/accel/bma400.h      |  2 +
-> > > >  drivers/iio/accel/bma400_core.c | 73 +++++++++++++++++++++++++++++++++
-> > > >  2 files changed, 75 insertions(+)
-> > > > 
-> > > > diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-> > > > index c9b856b37021..c4ec0cf6dc00 100644
-> > > > --- a/drivers/iio/accel/bma400.h
-> > > > +++ b/drivers/iio/accel/bma400.h
-> > > > @@ -39,6 +39,7 @@
-> > > >  #define BMA400_INT_STAT0_REG        0x0e
-> > > >  #define BMA400_INT_STAT1_REG        0x0f
-> > > >  #define BMA400_INT_STAT2_REG        0x10
-> > > > +#define BMA400_INT12_MAP_REG	    0x23
-> > > >  
-> > > >  /* Temperature register */
-> > > >  #define BMA400_TEMP_DATA_REG        0x11
-> > > > @@ -54,6 +55,7 @@
-> > > >  #define BMA400_STEP_CNT3_REG        0x17
-> > > >  #define BMA400_STEP_STAT_REG        0x18
-> > > >  #define BMA400_STEP_INT_MSK	    BIT(0)
-> > > > +#define BMA400_STEP_STAT_MASK	    GENMASK(9, 8)
-> > > >  
-> > > >  /*
-> > > >   * Read-write configuration registers
-> > > > diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-> > > > index ec2f9c380bda..aaa104a2698b 100644
-> > > > --- a/drivers/iio/accel/bma400_core.c
-> > > > +++ b/drivers/iio/accel/bma400_core.c
-> > > > @@ -24,6 +24,7 @@
-> > > >  #include <linux/iio/iio.h>
-> > > >  #include <linux/iio/sysfs.h>
-> > > >  #include <linux/iio/buffer.h>
-> > > > +#include <linux/iio/events.h>
-> > > >  #include <linux/iio/trigger.h>
-> > > >  #include <linux/iio/trigger_consumer.h>
-> > > >  #include <linux/iio/triggered_buffer.h>
-> > > > @@ -70,6 +71,7 @@ struct bma400_data {
-> > > >  	int scale;
-> > > >  	struct iio_trigger *trig;
-> > > >  	int steps_enabled;
-> > > > +	bool step_event_en;
-> > > >  	/* Correct time stamp alignment */
-> > > >  	struct {
-> > > >  		__le16 buff[3];
-> > > > @@ -167,6 +169,12 @@ static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
-> > > >  	{ }
-> > > >  };
-> > > >  
-> > > > +static const struct iio_event_spec bma400_step_detect_event = {
-> > > > +	.type = IIO_EV_TYPE_CHANGE,
-> > > > +	.dir = IIO_EV_DIR_NONE,
-> > > > +	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> > > > +};
-> > > > +
-> > > >  #define BMA400_ACC_CHANNEL(_index, _axis) { \
-> > > >  	.type = IIO_ACCEL, \
-> > > >  	.modified = 1, \
-> > > > @@ -209,6 +217,8 @@ static const struct iio_chan_spec bma400_channels[] = {
-> > > >  		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-> > > >  				      BIT(IIO_CHAN_INFO_ENABLE),
-> > > >  		.scan_index = -1, /* No buffer support */
-> > > > +		.event_spec = &bma400_step_detect_event,
-> > > > +		.num_event_specs = 1,
-> > > >  	},
-> > > >  	IIO_CHAN_SOFT_TIMESTAMP(4),
-> > > >  };
-> > > > @@ -878,6 +888,58 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
-> > > >  	}
-> > > >  }
-> > > >  
-> > > > +static int bma400_read_event_config(struct iio_dev *indio_dev,
-> > > > +				    const struct iio_chan_spec *chan,
-> > > > +				    enum iio_event_type type,
-> > > > +				    enum iio_event_direction dir)
-> > > > +{
-> > > > +	struct bma400_data *data = iio_priv(indio_dev);
-> > > > +
-> > > > +	switch (type) {
-> > > > +	case IIO_EV_TYPE_CHANGE:
-> > > > +		return data->step_event_en;
-> > > > +	default:
-> > > > +		return -EINVAL;
-> > > > +	}
-> > > > +}
-> > > > +
-> > > > +static int bma400_write_event_config(struct iio_dev *indio_dev,
-> > > > +				     const struct iio_chan_spec *chan,
-> > > > +				     enum iio_event_type type,
-> > > > +				     enum iio_event_direction dir, int state)
-> > > > +{
-> > > > +	int ret;
-> > > > +	struct bma400_data *data = iio_priv(indio_dev);
-> > > > +
-> > > > +	switch (type) {
-> > > > +	case IIO_EV_TYPE_CHANGE:
-> > > > +		mutex_lock(&data->mutex);
-> > > > +		if (!data->steps_enabled) {
-> > > > +			ret = regmap_update_bits(data->regmap,
-> > > > +						 BMA400_INT_CONFIG1_REG,
-> > > > +						 BMA400_STEP_INT_MSK,
-> > > > +						 FIELD_PREP(BMA400_STEP_INT_MSK,
-> > > > +							    1));
-> > > > +			if (ret)
-> > > > +				return ret;
-> > > > +			data->steps_enabled = 1;
-> > > > +		}
-> > > > +
-> > > > +		ret = regmap_update_bits(data->regmap,
-> > > > +					 BMA400_INT12_MAP_REG,
-> > > > +					 BMA400_STEP_INT_MSK,
-> > > > +					 FIELD_PREP(BMA400_STEP_INT_MSK,
-> > > > +						    state));
-> > > > +		mutex_unlock(&data->mutex);
-> > > > +		if (ret)
-> > > > +			return ret;
-> > > > +		data->step_event_en = state;
-> > > > +		return 0;
-> > > > +	default:
-> > > > +		return -EINVAL;
-> > > > +	}
-> > > > +}
-> > > > +
-> > > >  static int bma400_data_rdy_trigger_set_state(struct iio_trigger *trig,
-> > > >  					     bool state)
-> > > >  {
-> > > > @@ -910,6 +972,8 @@ static const struct iio_info bma400_info = {
-> > > >  	.read_avail        = bma400_read_avail,
-> > > >  	.write_raw         = bma400_write_raw,
-> > > >  	.write_raw_get_fmt = bma400_write_raw_get_fmt,
-> > > > +	.read_event_config = bma400_read_event_config,
-> > > > +	.write_event_config = bma400_write_event_config,
-> > > >  };
-> > > >  
-> > > >  static const struct iio_trigger_ops bma400_trigger_ops = {
-> > > > @@ -965,6 +1029,15 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
-> > > >  		ret = IRQ_HANDLED;
-> > > >  	}
-> > > >  
-> > > > +	if (FIELD_GET(BMA400_STEP_STAT_MASK, le16_to_cpu(status))) {
-> > > > +		iio_push_event(indio_dev,
-> > > > +			       IIO_EVENT_CODE(IIO_STEPS, 0, IIO_NO_MOD,
-> > > > +					      IIO_EV_DIR_NONE,
-> > > > +					      IIO_EV_TYPE_CHANGE, 0, 0, 0),
-> > > > +			       iio_get_time_ns(indio_dev));
-> > > > +		ret = IRQ_HANDLED;
-> > > > +	}
-> > > > +
-> > > >  	return ret;
-> > > >  }
-> > > >    
-> > >   
-> 
+> On Sat,  2 Apr 2022 12:09:29 +0200
+> Lorenzo Bianconi <lorenzo@kernel.org> wrote:
+>=20
+> > Add support to STM  ASM330LHHX (acc + gyro) Mems sensor
+> > https://www.st.com/resource/en/datasheet/asm330lhhx.pdf
+> Use a Datasheet tag as below.
+> Perhaps mention it's an automotive rated sensor and that
+> it's compatible otherwise with xxx existing part.
+
+ack, will do
+
+>=20
+> Quick glance at the datasheet suggests this part has a sensor hub...
+> Should it be in a the block with parameters for that as you
+> currently have it in the one for no sensorhub I think.
+>=20
+> Or is it using an incompatible sensor hub interface?
+
+asm330lhhx supports sensor hub with the same configuration of LSM6DSR or
+LSM6DSO.
+
+Regards,
+Lorenzo
+
+>=20
+> >=20
+> Datasheet: https://www.st.com/resource/en/datasheet/asm330lhhx.pdf
+> > Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+> > ---
+> >  drivers/iio/imu/st_lsm6dsx/Kconfig             | 6 +++---
+> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 2 ++
+> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 3 ++-
+> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 6 +++++-
+> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c    | 5 +++++
+> >  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c    | 5 +++++
+> >  6 files changed, 22 insertions(+), 5 deletions(-)
+> >=20
+> > diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_ls=
+m6dsx/Kconfig
+> > index 85860217aaf3..fefd0b939100 100644
+> > --- a/drivers/iio/imu/st_lsm6dsx/Kconfig
+> > +++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
+> > @@ -11,9 +11,9 @@ config IIO_ST_LSM6DSX
+> >  	help
+> >  	  Say yes here to build support for STMicroelectronics LSM6DSx imu
+> >  	  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
+> > -	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, lsm6dsr, lsm6ds3tr-c,
+> > -	  ism330dhcx, lsm6dsrx, lsm6ds0, lsm6dsop, the accelerometer/gyroscope
+> > -	  of lsm9ds1 and lsm6dst.
+> > +	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, asm330lhhx, lsm6dsr,
+> > +	  lsm6ds3tr-c, ism330dhcx, lsm6dsrx, lsm6ds0, lsm6dsop,
+> > +	  the accelerometer/gyroscope of lsm9ds1 and lsm6dst.
+> > =20
+> >  	  To compile this driver as a module, choose M here: the module
+> >  	  will be called st_lsm6dsx.
+> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/=
+st_lsm6dsx/st_lsm6dsx.h
+> > index 6ac4eac36458..a86dd29a4738 100644
+> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+> > @@ -31,6 +31,7 @@
+> >  #define ST_LSM6DSRX_DEV_NAME	"lsm6dsrx"
+> >  #define ST_LSM6DST_DEV_NAME	"lsm6dst"
+> >  #define ST_LSM6DSOP_DEV_NAME	"lsm6dsop"
+> > +#define ST_ASM330LHHX_DEV_NAME	"asm330lhhx"
+> > =20
+> >  enum st_lsm6dsx_hw_id {
+> >  	ST_LSM6DS3_ID,
+> > @@ -49,6 +50,7 @@ enum st_lsm6dsx_hw_id {
+> >  	ST_LSM6DSRX_ID,
+> >  	ST_LSM6DST_ID,
+> >  	ST_LSM6DSOP_ID,
+> > +	ST_ASM330LHHX_ID,
+> >  	ST_LSM6DSX_MAX_ID,
+> >  };
+> > =20
+> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/i=
+io/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > index 16730a780964..38bb5f645ebd 100644
+> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+> > @@ -14,7 +14,8 @@
+> >   * (e.g. Gx, Gy, Gz, Ax, Ay, Az), then data are repeated depending on =
+the
+> >   * value of the decimation factor and ODR set for each FIFO data set.
+> >   *
+> > - * LSM6DSO/LSM6DSOX/ASM330LHH/LSM6DSR/LSM6DSRX/ISM330DHCX/LSM6DST/LSM6=
+DSOP:
+> > + * LSM6DSO/LSM6DSOX/ASM330LHH/ASM330LHHX/LSM6DSR/LSM6DSRX/ISM330DHCX/
+> > + * LSM6DST/LSM6DSOP:
+> >   * The FIFO buffer can be configured to store data from gyroscope and
+> >   * accelerometer. Each sample is queued with a tag (1B) indicating data
+> >   * source (gyroscope, accelerometer, hw timer).
+> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio=
+/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> > index b1d8d5a66f01..910397716833 100644
+> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+> > @@ -26,7 +26,7 @@
+> >   *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/=
++-2000
+> >   *   - FIFO size: 4KB
+> >   *
+> > - * - LSM6DSO/LSM6DSOX/ASM330LHH/LSM6DSR/ISM330DHCX/LSM6DST/LSM6DSOP:
+> > + * - LSM6DSO/LSM6DSOX/ASM330LHH/ASM330LHHX/LSM6DSR/ISM330DHCX/LSM6DST/=
+LSM6DSOP:
+> >   *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, =
+208, 416,
+> >   *     833
+> >   *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
+> > @@ -786,6 +786,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx=
+_sensor_settings[] =3D {
+> >  				.hw_id =3D ST_LSM6DST_ID,
+> >  				.name =3D ST_LSM6DST_DEV_NAME,
+> >  				.wai =3D 0x6d,
+> > +			}, {
+> > +				.hw_id =3D ST_ASM330LHHX_ID,
+> > +				.name =3D ST_ASM330LHHX_DEV_NAME,
+> > +				.wai =3D 0x6b,
+>=20
+> Probably nicer to put it next to he other 0x6b entries.
+>=20
+> >  			},
+> >  		},
+> >  		.channels =3D {
+> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/=
+imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> > index 8b4fc2c15622..715fbdc8190e 100644
+> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+> > @@ -101,6 +101,10 @@ static const struct of_device_id st_lsm6dsx_i2c_of=
+_match[] =3D {
+> >  		.compatible =3D "st,lsm6dsop",
+> >  		.data =3D (void *)ST_LSM6DSOP_ID,
+> >  	},
+> > +	{
+> > +		.compatible =3D "st,asm330lhhx",
+> > +		.data =3D (void *)ST_ASM330LHHX_ID,
+> > +	},
+> >  	{},
+> >  };
+> >  MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
+> > @@ -122,6 +126,7 @@ static const struct i2c_device_id st_lsm6dsx_i2c_id=
+_table[] =3D {
+> >  	{ ST_LSM6DSRX_DEV_NAME, ST_LSM6DSRX_ID },
+> >  	{ ST_LSM6DST_DEV_NAME, ST_LSM6DST_ID },
+> >  	{ ST_LSM6DSOP_DEV_NAME, ST_LSM6DSOP_ID },
+> > +	{ ST_ASM330LHHX_DEV_NAME, ST_ASM330LHHX_ID },
+> >  	{},
+> >  };
+> >  MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
+> > diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/=
+imu/st_lsm6dsx/st_lsm6dsx_spi.c
+> > index e80110b6b280..f5767cf76c1d 100644
+> > --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+> > +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+> > @@ -101,6 +101,10 @@ static const struct of_device_id st_lsm6dsx_spi_of=
+_match[] =3D {
+> >  		.compatible =3D "st,lsm6dsop",
+> >  		.data =3D (void *)ST_LSM6DSOP_ID,
+> >  	},
+> > +	{
+> > +		.compatible =3D "st,asm330lhhx",
+> > +		.data =3D (void *)ST_ASM330LHHX_ID,
+> > +	},
+> >  	{},
+> >  };
+> >  MODULE_DEVICE_TABLE(of, st_lsm6dsx_spi_of_match);
+> > @@ -122,6 +126,7 @@ static const struct spi_device_id st_lsm6dsx_spi_id=
+_table[] =3D {
+> >  	{ ST_LSM6DSRX_DEV_NAME, ST_LSM6DSRX_ID },
+> >  	{ ST_LSM6DST_DEV_NAME, ST_LSM6DST_ID },
+> >  	{ ST_LSM6DSOP_DEV_NAME, ST_LSM6DSOP_ID },
+> > +	{ ST_ASM330LHHX_DEV_NAME, ST_ASM330LHHX_ID },
+> >  	{},
+> >  };
+> >  MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
+>=20
+
+--F5Fav6UVPwVhK7sH
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iHUEABYKAB0WIQTquNwa3Txd3rGGn7Y6cBh0uS2trAUCYkmBuAAKCRA6cBh0uS2t
+rNCLAPwOlL1TO/TLEa2oHtEiWmQXBf/FzpcQla7MJhAV0L/h6wEAmQ0i/b69G1Ut
+XutngZL+C0E6/4tFJT6f07eWp8k/AwQ=
+=RV1J
+-----END PGP SIGNATURE-----
+
+--F5Fav6UVPwVhK7sH--
