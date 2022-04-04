@@ -2,67 +2,83 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44137C433EF
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Apr 2022 08:18:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B615AC4332F
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Apr 2022 08:49:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236635AbiDDIUi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 4 Apr 2022 04:20:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45090 "EHLO
+        id S241733AbiDDIvj convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 4 Apr 2022 04:51:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56698 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234565AbiDDIUi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Apr 2022 04:20:38 -0400
-X-Greylist: delayed 490 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Mon, 04 Apr 2022 01:18:42 PDT
-Received: from mail.coredeal.pl (mail.coredeal.pl [51.75.73.133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8956B193C3
-        for <linux-iio@vger.kernel.org>; Mon,  4 Apr 2022 01:18:41 -0700 (PDT)
-Received: by mail.coredeal.pl (Postfix, from userid 1002)
-        id 3CC08A24CE; Mon,  4 Apr 2022 08:10:30 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=coredeal.pl; s=mail;
-        t=1649059830; bh=9KGuIG62LgzC9aYmjKxzocuYLRCVghXg6v9Q1q2LHec=;
-        h=Date:From:To:Subject:From;
-        b=YFA97fBR6GuU3kprKBXLl+Q0Ku6ppcMhcKdtthse2DPHCYzIqH0Mmq5EG4WcWLXHF
-         VkjXvBj8UMnU7Oy5z5PjJRTyAPiLVXVZWMXqrVQ+7g5/wYRsMjg6SRJHKIxuilNjeu
-         RaM/C1up0gb9YVjfaZRDN2/zTVm4UdQ39K+JX+LdtuwiAKDot2u43AKd9feYeH25NL
-         kD+W5U3RXDDfWt4g2RzJSzFutgUfoBZU6aDBb/EYpIu4bFVY9HSCUxwpYQUKzJlHUQ
-         uF1P9VVoTElo9ndJ90Js912aTo94ms09E8nXPFMgSoi7T4ZenGZdHSiiYe402ptHg7
-         WgQkAPW3eh6RQ==
-Received: by mail.coredeal.pl for <linux-iio@vger.kernel.org>; Mon,  4 Apr 2022 08:10:30 GMT
-Message-ID: <20220404064500-0.1.2c.c8ho.0.e2i14r8di7@coredeal.pl>
-Date:   Mon,  4 Apr 2022 08:10:30 GMT
-From:   "Krzysztof Maj" <krzysztof.maj@coredeal.pl>
-To:     <linux-iio@vger.kernel.org>
-Subject: Biznesowy angielski
-X-Mailer: mail.coredeal.pl
+        with ESMTP id S241353AbiDDIvj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Apr 2022 04:51:39 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0473A1EEDA;
+        Mon,  4 Apr 2022 01:49:43 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.16.1.2/8.16.1.2) with ESMTP id 2347taGt002597;
+        Mon, 4 Apr 2022 04:49:31 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3f6gb6usdw-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 04 Apr 2022 04:49:31 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 2348nU68054365
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 4 Apr 2022 04:49:30 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 4 Apr 2022
+ 04:49:29 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 4 Apr 2022 04:49:28 -0400
+Received: from nsa.ad.analog.com ([10.44.3.67])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 2348nIU5027819;
+        Mon, 4 Apr 2022 04:49:20 -0400
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+CC:     Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>
+Subject: [PATCH 0/2] ad3552r change maintainer and update MAINTAINERS
+Date:   Mon, 4 Apr 2022 10:49:58 +0200
+Message-ID: <20220404085000.249423-1-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8BIT
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: gU78I2rYTIFzOBxAHvrhQpodSt2sjTR2
+X-Proofpoint-ORIG-GUID: gU78I2rYTIFzOBxAHvrhQpodSt2sjTR2
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.850,Hydra:6.0.425,FMLib:17.11.64.514
+ definitions=2022-04-04_03,2022-03-31_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 mlxlogscore=633
+ suspectscore=0 phishscore=0 spamscore=0 clxscore=1015 bulkscore=0
+ impostorscore=0 mlxscore=0 malwarescore=0 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204040048
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,=20
+After the bug report in [1], it came to my attention that the maintainer
+for this driver is outdated as Mihail Chindris moved from ADI. As such,
+change the maintainer to myself. On top of this, I then realized there
+was no entry for this driver in MAINTAINERS so add one.
 
-czy rozwa=C5=BCali Pa=C5=84stwo rozw=C3=B3j kwalifikacji j=C4=99zykowych =
-swoich pracownik=C3=B3w?
+[1]: https://lore.kernel.org/all/20220106103553.GA26440@kili/
 
-Opracowali=C5=9Bmy kursy j=C4=99zykowe dla r=C3=B3=C5=BCnych bran=C5=BC, =
-w kt=C3=B3rych koncentrujemy si=C4=99 na podniesieniu poziomu s=C5=82owni=
-ctwa i jako=C5=9Bci komunikacji wykorzystuj=C4=85c autorsk=C4=85 metod=C4=
-=99, stworzon=C4=85 specjalnie dla wymagaj=C4=85cego biznesu.=20
+Nuno Sá (2):
+  dt-bindings: iio: dac: change ad3552r maintainer
+  MAINTAINERS: add ad3552r
 
-Niestandardowy kurs on-line, dopasowany do profilu firmy i obszar=C3=B3w =
-=C5=9Bwiadczonych us=C5=82ug, w szybkim czasie przyniesie efekty, kt=C3=B3=
-re zwi=C4=99ksz=C4=85 komfort i jako=C5=9B=C4=87 pracy, rozwijaj=C4=85c m=
-o=C5=BCliwo=C5=9Bci biznesowe.=20
+ .../devicetree/bindings/iio/dac/adi,ad3552r.yaml          | 2 +-
+ MAINTAINERS                                               | 8 ++++++++
+ 2 files changed, 9 insertions(+), 1 deletion(-)
 
-Zdalne szkolenie j=C4=99zykowe to m.in. zaj=C4=99cia z native speakerami,=
- kt=C3=B3re w szybkim czasie naucz=C4=85 pracownik=C3=B3w rozmawia=C4=87 =
-za pomoc=C4=85 jasnego i zwi=C4=99z=C5=82ego j=C4=99zyka Business English=
-=2E
+-- 
+2.35.1
 
-Czy m=C3=B3g=C5=82bym przedstawi=C4=87 wi=C4=99cej szczeg=C3=B3=C5=82=C3=B3=
-w i opowiedzie=C4=87 jak dzia=C5=82amy?=20
-
-
-Pozdrawiam
-Krzysztof Maj
