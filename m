@@ -2,101 +2,188 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C8E5C4167B
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6A297C4167D
 	for <linux-iio@archiver.kernel.org>; Mon,  4 Apr 2022 21:18:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355480AbiDDVUG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 4 Apr 2022 17:20:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49004 "EHLO
+        id S1379610AbiDDVUK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 4 Apr 2022 17:20:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1380584AbiDDUh6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Apr 2022 16:37:58 -0400
-Received: from mail-ot1-x32f.google.com (mail-ot1-x32f.google.com [IPv6:2607:f8b0:4864:20::32f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4A03D26AC8
-        for <linux-iio@vger.kernel.org>; Mon,  4 Apr 2022 13:36:00 -0700 (PDT)
-Received: by mail-ot1-x32f.google.com with SMTP id e25-20020a0568301e5900b005b236d5d74fso8086907otj.0
-        for <linux-iio@vger.kernel.org>; Mon, 04 Apr 2022 13:36:00 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=kg/HA+QVDj4BE3Pqgs7Z5r8nQIoSf5HmU9Y6IMHvcQ4=;
-        b=UVy/2H9XcZxhjUlG0pYTnPvMihiwPuXQOj7n67eXl88rrzpXlhojBgVlnVFlDpSu4L
-         CrXdTnuAdKochmYTpKdEYeBgTUI5N0by54eD0eZz37TSdHUNjKnsLDZK2XXj6SPQtxZ1
-         fJu3eDe/uIOk1oFujxuRIgdsO2/npaXmdg/KE=
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=kg/HA+QVDj4BE3Pqgs7Z5r8nQIoSf5HmU9Y6IMHvcQ4=;
-        b=7FKEH3zHKTU1t8MxVd5dQ/m/eo0AIaFq2ohXXNlOkR4UQxfzVSpoubjEVPvytduHyx
-         HQRm/I7UTM9OCSNFk3rvNh0neu/f2bnOlUhhknZ0zCApADdCRnMEmlw6Qb26DcBQXG63
-         KK0geJHxuTRQjeFSTlYzarDq6TrqVpfI8MDuiR5r1gXyo34QXps/npAXgKNDcxUsmmJz
-         iIMVfMPXCr4jDx2b+2/XYPARYgl2tB324G1FN3G1ch80mjYD9b69dWy0Oj1jG5I5HWot
-         H16yUgMxQlkNY4iyt75rLYyjMLBzBSPcjgtD4QojwakMV/fZMHSzSGK4nLHWUWCdIe5c
-         2S/Q==
-X-Gm-Message-State: AOAM530O7bFigNF2yl6hrbKOdLbSkZvmw0OGmq/GjjkQFsmvnLU1ClW2
-        okBGXOL9Df17wHNxLC5xYiSazx4QMAR3cix1I5SYPw==
-X-Google-Smtp-Source: ABdhPJx/Lq/nxMT92DUF/KzpDcHBIOBMR/7Ec7G1dTVR2ng1S2RYXmK8ST+N3xxfbiKsvwc+yRZ4cDCJFzXmSyQu4NM=
-X-Received: by 2002:a05:6830:61b:b0:5cc:e44:7dc3 with SMTP id
- w27-20020a056830061b00b005cc0e447dc3mr36332oti.159.1649104559265; Mon, 04 Apr
- 2022 13:35:59 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 4 Apr 2022 15:35:58 -0500
+        with ESMTP id S1380273AbiDDT0v (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 4 Apr 2022 15:26:51 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63AF926AD7;
+        Mon,  4 Apr 2022 12:24:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id F3A5260DBB;
+        Mon,  4 Apr 2022 19:24:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 28B05C2BBE4;
+        Mon,  4 Apr 2022 19:24:52 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1649100294;
+        bh=/qncvPaTxD3O+6RUmEYF/W0p8AmZcbiv9+k7ZgiNpZ8=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=dNlxIioriO7GjhL0bmtXwdI1725K1DLu09vdax6zI4/nLedddEMK8tSiUDYNXybZ3
+         uQ+p+EJGA3SLwD0GwtN12Iy0hdTEcTXnbMDNe4O1+ZsMG55zqyPY80iPACXqGkk4dg
+         gdvSlukx4Dqf429/xFTeMLs0LuwTQDOqVRSZkA/RMGHWqcJGV/oqQ5nMhC/Lq4TvH9
+         gZgt0AQVFX3nmjvp9lXdAp4PYoPtdvlRBZzsm+MmFX1TF03sQ3UrZWWtntB25dXE+C
+         p01cDNi1uzgx3xz9VIjyext8GTRdcjx5kn7QZ2uGotnVlAwhUPcTaIHoAJATD3wpn4
+         qPtK5xViPmjlw==
+From:   Lorenzo Bianconi <lorenzo@kernel.org>
+To:     jic23@kernel.org
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        lorenzo.bianconi@redhat.com, robh@kernel.org
+Subject: [PATCH v2 1/2] iio: imu: st_lsm6dsx: add support to ASM330LHHX
+Date:   Mon,  4 Apr 2022 21:24:43 +0200
+Message-Id: <04e2644772a6761a25c36bb9679979567fdebda3.1649100168.git.lorenzo@kernel.org>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1649100168.git.lorenzo@kernel.org>
+References: <cover.1649100168.git.lorenzo@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20220402175131.75bb95de@jic23-huawei>
-References: <20220324222928.874522-1-swboyd@chromium.org> <20220327155147.52e898b4@jic23-huawei>
- <CAE-0n50T9uqcB9EK-RnGXPGhd6RWdrsE9pA5FJY9yC58xd=05A@mail.gmail.com> <20220402175131.75bb95de@jic23-huawei>
-From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 4 Apr 2022 15:35:58 -0500
-Message-ID: <CAE-0n53iU+Wne7Tvxr_ivwdqLVd3Mg-FNM7xLJ=ztsAF3QEALg@mail.gmail.com>
-Subject: Re: [PATCH v2] iio:proximity:sx9324: Fix hardware gain read/write
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Quoting Jonathan Cameron (2022-04-02 09:51:31)
-> On Tue, 29 Mar 2022 22:25:31 +0200
-> Stephen Boyd <swboyd@chromium.org> wrote:
->
-> > Quoting Jonathan Cameron (2022-03-27 07:51:47)
-> > > On Thu, 24 Mar 2022 15:29:28 -0700
-> > > Stephen Boyd <swboyd@chromium.org> wrote:
-> > >
-> > > > There are four possible gain values according to 'sx9324_gain_vals[]':
-> > > >
-> > > >       1, 2, 4, and 8
-> > > >
-> > > > The values are off by one when writing and reading the register. The
-> > > > bits should be set according to this equation:
-> > > >
-> > > >       ilog2(<gain>) + 1
-> > > >
-> > > > so that a gain of 8 is 0x3 in the register field and a gain of 4 is 0x2
-> > > > in the register field, etc
-> > >
-> > > Example seems wrong...
-> > >
-> > > ilog2(8) + 1 = 3 + 1 = 0x4
-> > > ilog2(4) + 1 = 2 + 1 = 0x3
-> > > ilog2(2) + 1 = 1 + 1 = 0x2
-> > > ilog2(1) + 1 = 0 + 1 = 0x1
-> > >                        0x0 reserved.
-> > >
-> > > or have I misunderstood?
-> >
-> > Nope. I hit the wrong key but your table is correct. Can you fix it when
-> > applying?
->
-> Done and applied to the fixes-togreg branch of iio.git but I haven't pushed
-> it out yet as I want to rebase that tree on rc1 when it comes out.
->
-> After that, please take a quick look check I didn't mess up.
->
+Add support to STM ASM330LHHX (acc + gyro) automotive Mems sensor.
+The ASM330LHHX sensor can use LSM6DSR as fallback device since it
+implements all the ASM330LHHX features currently implemented in
+st_lsm6dsx.
 
-Thanks. Looks good.
+Datasheet: https://www.st.com/resource/en/datasheet/asm330lhhx.pdf
+Signed-off-by: Lorenzo Bianconi <lorenzo@kernel.org>
+---
+ drivers/iio/imu/st_lsm6dsx/Kconfig             | 6 +++---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 2 ++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 3 ++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 6 +++++-
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c    | 5 +++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c    | 5 +++++
+ 6 files changed, 22 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
+index 85860217aaf3..fefd0b939100 100644
+--- a/drivers/iio/imu/st_lsm6dsx/Kconfig
++++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
+@@ -11,9 +11,9 @@ config IIO_ST_LSM6DSX
+ 	help
+ 	  Say yes here to build support for STMicroelectronics LSM6DSx imu
+ 	  sensor. Supported devices: lsm6ds3, lsm6ds3h, lsm6dsl, lsm6dsm,
+-	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, lsm6dsr, lsm6ds3tr-c,
+-	  ism330dhcx, lsm6dsrx, lsm6ds0, lsm6dsop, the accelerometer/gyroscope
+-	  of lsm9ds1 and lsm6dst.
++	  ism330dlc, lsm6dso, lsm6dsox, asm330lhh, asm330lhhx, lsm6dsr,
++	  lsm6ds3tr-c, ism330dhcx, lsm6dsrx, lsm6ds0, lsm6dsop,
++	  the accelerometer/gyroscope of lsm9ds1 and lsm6dst.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called st_lsm6dsx.
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+index 6ac4eac36458..a86dd29a4738 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+@@ -31,6 +31,7 @@
+ #define ST_LSM6DSRX_DEV_NAME	"lsm6dsrx"
+ #define ST_LSM6DST_DEV_NAME	"lsm6dst"
+ #define ST_LSM6DSOP_DEV_NAME	"lsm6dsop"
++#define ST_ASM330LHHX_DEV_NAME	"asm330lhhx"
+ 
+ enum st_lsm6dsx_hw_id {
+ 	ST_LSM6DS3_ID,
+@@ -49,6 +50,7 @@ enum st_lsm6dsx_hw_id {
+ 	ST_LSM6DSRX_ID,
+ 	ST_LSM6DST_ID,
+ 	ST_LSM6DSOP_ID,
++	ST_ASM330LHHX_ID,
+ 	ST_LSM6DSX_MAX_ID,
+ };
+ 
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+index 16730a780964..38bb5f645ebd 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+@@ -14,7 +14,8 @@
+  * (e.g. Gx, Gy, Gz, Ax, Ay, Az), then data are repeated depending on the
+  * value of the decimation factor and ODR set for each FIFO data set.
+  *
+- * LSM6DSO/LSM6DSOX/ASM330LHH/LSM6DSR/LSM6DSRX/ISM330DHCX/LSM6DST/LSM6DSOP:
++ * LSM6DSO/LSM6DSOX/ASM330LHH/ASM330LHHX/LSM6DSR/LSM6DSRX/ISM330DHCX/
++ * LSM6DST/LSM6DSOP:
+  * The FIFO buffer can be configured to store data from gyroscope and
+  * accelerometer. Each sample is queued with a tag (1B) indicating data
+  * source (gyroscope, accelerometer, hw timer).
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index b1d8d5a66f01..910397716833 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -26,7 +26,7 @@
+  *   - Gyroscope supported full-scale [dps]: +-125/+-245/+-500/+-1000/+-2000
+  *   - FIFO size: 4KB
+  *
+- * - LSM6DSO/LSM6DSOX/ASM330LHH/LSM6DSR/ISM330DHCX/LSM6DST/LSM6DSOP:
++ * - LSM6DSO/LSM6DSOX/ASM330LHH/ASM330LHHX/LSM6DSR/ISM330DHCX/LSM6DST/LSM6DSOP:
+  *   - Accelerometer/Gyroscope supported ODR [Hz]: 12.5, 26, 52, 104, 208, 416,
+  *     833
+  *   - Accelerometer supported full-scale [g]: +-2/+-4/+-8/+-16
+@@ -786,6 +786,10 @@ static const struct st_lsm6dsx_settings st_lsm6dsx_sensor_settings[] = {
+ 				.hw_id = ST_LSM6DST_ID,
+ 				.name = ST_LSM6DST_DEV_NAME,
+ 				.wai = 0x6d,
++			}, {
++				.hw_id = ST_ASM330LHHX_ID,
++				.name = ST_ASM330LHHX_DEV_NAME,
++				.wai = 0x6b,
+ 			},
+ 		},
+ 		.channels = {
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+index 8b4fc2c15622..715fbdc8190e 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+@@ -101,6 +101,10 @@ static const struct of_device_id st_lsm6dsx_i2c_of_match[] = {
+ 		.compatible = "st,lsm6dsop",
+ 		.data = (void *)ST_LSM6DSOP_ID,
+ 	},
++	{
++		.compatible = "st,asm330lhhx",
++		.data = (void *)ST_ASM330LHHX_ID,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
+@@ -122,6 +126,7 @@ static const struct i2c_device_id st_lsm6dsx_i2c_id_table[] = {
+ 	{ ST_LSM6DSRX_DEV_NAME, ST_LSM6DSRX_ID },
+ 	{ ST_LSM6DST_DEV_NAME, ST_LSM6DST_ID },
+ 	{ ST_LSM6DSOP_DEV_NAME, ST_LSM6DSOP_ID },
++	{ ST_ASM330LHHX_DEV_NAME, ST_ASM330LHHX_ID },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+index e80110b6b280..f5767cf76c1d 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+@@ -101,6 +101,10 @@ static const struct of_device_id st_lsm6dsx_spi_of_match[] = {
+ 		.compatible = "st,lsm6dsop",
+ 		.data = (void *)ST_LSM6DSOP_ID,
+ 	},
++	{
++		.compatible = "st,asm330lhhx",
++		.data = (void *)ST_ASM330LHHX_ID,
++	},
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(of, st_lsm6dsx_spi_of_match);
+@@ -122,6 +126,7 @@ static const struct spi_device_id st_lsm6dsx_spi_id_table[] = {
+ 	{ ST_LSM6DSRX_DEV_NAME, ST_LSM6DSRX_ID },
+ 	{ ST_LSM6DST_DEV_NAME, ST_LSM6DST_ID },
+ 	{ ST_LSM6DSOP_DEV_NAME, ST_LSM6DSOP_ID },
++	{ ST_ASM330LHHX_DEV_NAME, ST_ASM330LHHX_ID },
+ 	{},
+ };
+ MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
+-- 
+2.35.1
+
