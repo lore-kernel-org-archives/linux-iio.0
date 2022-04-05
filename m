@@ -2,108 +2,151 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2B9BCC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72506C43219
 	for <linux-iio@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231697AbiDEXTn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34574 "EHLO
+        id S233165AbiDEXTy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 5 Apr 2022 19:19:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46320 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1392189AbiDEPft (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Apr 2022 11:35:49 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 518DA12D;
-        Tue,  5 Apr 2022 06:48:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649166488;
-  x=1680702488;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=79rrKpJvSV/IyMMLjk1fyhAdjuzODykc4KbTAF2mUFs=;
-  b=FiOVSqtEplqlpGbV24QKDAr+i8WFGbW038mF84zzzjMGLHloCAF5NPgY
-   spNiGw/JW64vBk2PDKMYeRrzNnvvX9UHBY/B/HepKgx6Ad8lZokZPYdBy
-   7OpaZ9BsvHs1aZCwW+kuNlJhW2Z2+5tJgZDQoPpNYBx3HZTZqRoW8yTb2
-   L/kbhgJPZ67FRSZN5VimMCXaFg5e7MBpW2w5kOfvVuD4jRmwgAUY0TEzv
-   O9FAaZn51Fi/MSdDTB4FNunqqBA9Ty8O7mk1/2xsvz1tde3N99GsfhgrV
-   4GYLxtosbMlYV/YxgZvfwIh/MPM7kvdpyaf1CLkQR25ioPVRlRFcC7BrW
-   w==;
-Date:   Tue, 5 Apr 2022 15:48:05 +0200
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-CC:     "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        kernel <kernel@axis.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-um@lists.infradead.org" <linux-um@lists.infradead.org>,
-        "shuah@kernel.org" <shuah@kernel.org>,
-        "brendanhiggins@google.com" <brendanhiggins@google.com>,
-        "linux-kselftest@vger.kernel.org" <linux-kselftest@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "lgirdwood@gmail.com" <lgirdwood@gmail.com>,
-        "broonie@kernel.org" <broonie@kernel.org>,
-        "a.zummo@towertech.it" <a.zummo@towertech.it>,
-        "alexandre.belloni@bootlin.com" <alexandre.belloni@bootlin.com>,
-        "linux-rtc@vger.kernel.org" <linux-rtc@vger.kernel.org>,
-        "corbet@lwn.net" <corbet@lwn.net>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
-Subject: Re: [RFC v1 08/10] iio: light: vcnl4000: add roadtest
-Message-ID: <20220405134805.GA28574@axis.com>
-References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
- <20220311162445.346685-9-vincent.whitchurch@axis.com>
- <20220320170253.5b946c84@jic23-huawei>
+        with ESMTP id S1573211AbiDESVW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Apr 2022 14:21:22 -0400
+Received: from mail-yw1-f172.google.com (mail-yw1-f172.google.com [209.85.128.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A90D92558F;
+        Tue,  5 Apr 2022 11:19:23 -0700 (PDT)
+Received: by mail-yw1-f172.google.com with SMTP id 00721157ae682-2eb43ad7909so1134637b3.2;
+        Tue, 05 Apr 2022 11:19:23 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=wp5BQRPZX31Tau7Z/BAzOvMpyk9uV0bPZM8M4VsBras=;
+        b=gE0BaAvZ9okEO2GPTdjhpnnNT3Sz+VQw7q3NppHwMa0HdA6WbutUKUDRKSdsrUZoHK
+         tg7bznR2ssbZgEl9skhQTnFHTyWdcCNBL4VAx5zE59AmNpSo99Hk+5ztBpOaWFoi6r/O
+         n12ko5TTY8PhyIuCC+aWvdCEx1lf+wf5+XyZf5lby6F7F/fbPb7Ub/kQR/7LYlHZ8aOr
+         EAEKQ3YeI9qtPalaINQYLOfo5XWtPFSw+66fOwD6WLp6Yz2QnttgQvKOW7bkII6TBpJs
+         vz+AmptSE7Vm+SiuKTy11bV0FfLajEODRmzW0NJypL5Gke9tpSOCNktJIZNaiOxLi//b
+         2qww==
+X-Gm-Message-State: AOAM531OK7vT+NwPwVAa0oKRi7ZmbZTz5yxtubxWwM7J/pB/aIAzCXUa
+        1IpW3mf9tQND99Tl4SfA+LLNPw7CwhMJIjpEzQvbslYc
+X-Google-Smtp-Source: ABdhPJxgCOYicaGfabBQSX1TtzVkx4wjUpVl5764g8J8U/cZkdTPkmlBdt3znmSbx1ACV5tSfliK7lhe83x3Kk2vnAs=
+X-Received: by 2002:a81:bc5:0:b0:2e6:dcfe:bfcb with SMTP id
+ 188-20020a810bc5000000b002e6dcfebfcbmr3974299ywl.19.1649182762847; Tue, 05
+ Apr 2022 11:19:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <20220320170253.5b946c84@jic23-huawei>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+References: <20220401140605.31871-1-Jonathan.Cameron@huawei.com> <20220401140605.31871-2-Jonathan.Cameron@huawei.com>
+In-Reply-To: <20220401140605.31871-2-Jonathan.Cameron@huawei.com>
+From:   "Rafael J. Wysocki" <rafael@kernel.org>
+Date:   Tue, 5 Apr 2022 20:19:11 +0200
+Message-ID: <CAJZ5v0gUECCmFJoVnmR8SK-pBg5v4QrtLgeKT7VTmgdykuZAzA@mail.gmail.com>
+Subject: Re: [PATCH v2 1/3] iio: chemical: scd30: Export dev_pm_ops instead of
+ suspend() and resume()
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     "Rafael J . Wysocki" <rafael@kernel.org>,
+        linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Mar 20, 2022 at 06:02:53PM +0100, Jonathan Cameron wrote:
-> Very interesting bit of work. My current approach for similar testing
-> is to write a qemu model for the hardware, but that currently
-> requires carefully crafted tests. Most of the time I'm only doing
-> that to verify refactoring of existing drivers. 
+On Fri, Apr 1, 2022 at 4:06 PM Jonathan Cameron
+<Jonathan.Cameron@huawei.com> wrote:
+>
+> Whilst here move to the new infrastructure using pm_sleep_ptr()
+> and EXPORT_DEV_PM_OPS() so as to let the compiler remove the unused
+> code if CONFIG_SLEEP is not defined.
+>
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>
+> ---
+>  drivers/iio/chemical/scd30.h        | 5 +----
+>  drivers/iio/chemical/scd30_core.c   | 8 ++++----
+>  drivers/iio/chemical/scd30_i2c.c    | 2 +-
+>  drivers/iio/chemical/scd30_serial.c | 2 +-
+>  4 files changed, 7 insertions(+), 10 deletions(-)
+>
+> diff --git a/drivers/iio/chemical/scd30.h b/drivers/iio/chemical/scd30.h
+> index f60127bfe0f4..1ac9f3f79271 100644
+> --- a/drivers/iio/chemical/scd30.h
+> +++ b/drivers/iio/chemical/scd30.h
+> @@ -68,10 +68,7 @@ struct scd30_state {
+>         scd30_command_t command;
+>  };
+>
+> -int scd30_suspend(struct device *dev);
+> -int scd30_resume(struct device *dev);
+> -
+> -static __maybe_unused SIMPLE_DEV_PM_OPS(scd30_pm_ops, scd30_suspend, scd30_resume);
+> +extern const struct dev_pm_ops scd30_pm_ops;
+>
+>  int scd30_probe(struct device *dev, int irq, const char *name, void *priv, scd30_command_t command);
+>
+> diff --git a/drivers/iio/chemical/scd30_core.c b/drivers/iio/chemical/scd30_core.c
+> index 9fe6bbe9ee04..6c6c11c2772a 100644
+> --- a/drivers/iio/chemical/scd30_core.c
+> +++ b/drivers/iio/chemical/scd30_core.c
+> @@ -517,7 +517,7 @@ static const struct iio_chan_spec scd30_channels[] = {
+>         IIO_CHAN_SOFT_TIMESTAMP(3),
+>  };
+>
+> -int __maybe_unused scd30_suspend(struct device *dev)
+> +static int scd30_suspend(struct device *dev)
+>  {
+>         struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>         struct scd30_state *state  = iio_priv(indio_dev);
+> @@ -529,9 +529,8 @@ int __maybe_unused scd30_suspend(struct device *dev)
+>
+>         return regulator_disable(state->vdd);
+>  }
+> -EXPORT_SYMBOL(scd30_suspend);
+>
+> -int __maybe_unused scd30_resume(struct device *dev)
+> +static int scd30_resume(struct device *dev)
+>  {
+>         struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>         struct scd30_state *state = iio_priv(indio_dev);
+> @@ -543,7 +542,8 @@ int __maybe_unused scd30_resume(struct device *dev)
+>
+>         return scd30_command_write(state, CMD_START_MEAS, state->pressure_comp);
+>  }
+> -EXPORT_SYMBOL(scd30_resume);
+> +
+> +EXPORT_SIMPLE_DEV_PM_OPS(scd30_pm_ops, scd30_suspend, scd30_resume);
+>
+>  static void scd30_stop_meas(void *data)
+>  {
+> diff --git a/drivers/iio/chemical/scd30_i2c.c b/drivers/iio/chemical/scd30_i2c.c
+> index 875892a070ee..7c332e4e8e46 100644
+> --- a/drivers/iio/chemical/scd30_i2c.c
+> +++ b/drivers/iio/chemical/scd30_i2c.c
+> @@ -128,7 +128,7 @@ static struct i2c_driver scd30_i2c_driver = {
+>         .driver = {
+>                 .name = KBUILD_MODNAME,
+>                 .of_match_table = scd30_i2c_of_match,
+> -               .pm = &scd30_pm_ops,
+> +               .pm = pm_sleep_ptr(&scd30_pm_ops),
+>         },
+>         .probe_new = scd30_i2c_probe,
+>  };
+> diff --git a/drivers/iio/chemical/scd30_serial.c b/drivers/iio/chemical/scd30_serial.c
+> index 568b34486c44..8664f3ce6b33 100644
+> --- a/drivers/iio/chemical/scd30_serial.c
+> +++ b/drivers/iio/chemical/scd30_serial.c
+> @@ -252,7 +252,7 @@ static struct serdev_device_driver scd30_serdev_driver = {
+>         .driver = {
+>                 .name = KBUILD_MODNAME,
+>                 .of_match_table = scd30_serdev_of_match,
+> -               .pm = &scd30_pm_ops,
+> +               .pm = pm_sleep_ptr(&scd30_pm_ops),
+>         },
+>         .probe = scd30_serdev_probe,
+>  };
+> --
 
-Thank you for taking a look!
+Applied as 5.19 material along with the [2-3/3].
 
-> One thing that makes me nervous here is the python element though
-> as I've not written significant python in about 20 years.
-> That is going to be a burden for kernel developers and maintainers...
-> Nothing quite like badly written tests to make for a mess in the long run
-> and I suspect my python for example would be very very badly written :)
+Please let me know if you need a non-mutable branch to pull from in
+order to base other work on these commits.
 
-There's a bunch of static checkers to ensure that the code follows some
-basic guidelines, and CI can check that the tests work consistently, and
-also calculate metrics such as test execution time and code coverage, so
-even non-idiomatic Python in the tests wouldn't be entirely broken.
-
-And unlike driver code, if the tests for a particular driver later do
-turn out to be bad (in what way?), we could just throw those particular
-tests out without breaking anybody's system.
-
-> Cut and paste will of course get us a long way...
-
-Isn't some amount of copy/paste followed by modification to be expected
-even if the framework is written in say C (just as there's already
-copy/paste + modification involved when writing drivers)?
-
-As for the core logic of individual driver tests excluding the framework
-bits, I have a hard time imagining what Python syntax looks like to
-someone with no knowledge of Python, so yes, I guess it's going to be
-harder to review.
-
-> I dream of a world where every driver is testable by people with out hardware
-> but I fear it may be a while yet.  Hopefully this will get us a little
-> closer!
-> 
-> I more or less follow what is going on here (good docs btw in the earlier
-> patch definitely helped).
-> 
-> So far I'm thoroughly in favour of road test subject to actually being
-> able to review the tests or getting sufficient support to do so.
-> It's a 'how to scale it' question really...
-
-Would rewriting the framework in C and forcing tests to be written in
-that language mean that maintainers would be able to review tests
-without external support?
+Thanks!
