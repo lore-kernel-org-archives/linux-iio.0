@@ -2,84 +2,64 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1F75C4321E
-	for <linux-iio@archiver.kernel.org>; Tue,  5 Apr 2022 23:42:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E90DBC4321E
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Apr 2022 10:37:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234024AbiDEXUD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 5 Apr 2022 19:20:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60350 "EHLO
+        id S1346853AbiDFKjG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Apr 2022 06:39:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1443917AbiDEPk2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 5 Apr 2022 11:40:28 -0400
-Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF3ED14DFE5;
-        Tue,  5 Apr 2022 07:02:22 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1649167344;
-  x=1680703344;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=Quhq+ANDcyqCuN52eIRgLzLh2IoR3G+Ogb7BY7KkCbE=;
-  b=JfWw2js+sHio6dbd67N4f+BKvGcgXqC+jL6zGIBTKIXzryvcIE7qzxyL
-   fAQhMiRTFUrAJ9Wa9Uqfp6pjIffGUKwtBeQ6kq96gPt0Rcx4I/SQa6+tq
-   /4wesHmr64EULkm16LIV+z66YSSuwmFC/PzXL8EuTqLIbViL5BoPaBUqM
-   MtOqJqtCNazap6UZeRrAMa2IfhYQDY98cmlHqo9nrqZ99WVlsnTUi5tsv
-   ZAz3dFApD9DyI+D9oPjtyKzsvhacBT2JvmJ8EVp/x4TIpKfI2wC/zqp6Y
-   037kX7KxN0Pk+KkpeKGXDQrZUbxYVdVVHYyPgtan+kxbYXgNOylSg7HWN
-   g==;
-Date:   Tue, 5 Apr 2022 16:02:21 +0200
-From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
-To:     Mark Brown <broonie@kernel.org>
-CC:     <linux-kernel@vger.kernel.org>, <kernel@axis.com>,
-        <devicetree@vger.kernel.org>, <linux-um@lists.infradead.org>,
-        <shuah@kernel.org>, <brendanhiggins@google.com>,
-        <linux-kselftest@vger.kernel.org>, <jic23@kernel.org>,
-        <linux-iio@vger.kernel.org>, <lgirdwood@gmail.com>,
-        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
-        <linux-rtc@vger.kernel.org>, <corbet@lwn.net>,
-        <linux-doc@vger.kernel.org>
-Subject: Re: [RFC v1 09/10] regulator: tps62864: add roadtest
-Message-ID: <20220405140221.GC28574@axis.com>
-References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
- <20220311162445.346685-10-vincent.whitchurch@axis.com>
- <YiuPvkQroV/WdFpx@sirena.org.uk>
- <20220317151326.GA7832@axis.com>
- <YjN1ksNGujV611Ka@sirena.org.uk>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Content-Disposition: inline
-In-Reply-To: <YjN1ksNGujV611Ka@sirena.org.uk>
-User-Agent: Mutt/1.10.1 (2018-07-13)
+        with ESMTP id S1357541AbiDFKhx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Apr 2022 06:37:53 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 12AAF4F31A8;
+        Wed,  6 Apr 2022 00:03:33 -0700 (PDT)
+X-IronPort-AV: E=Sophos;i="5.90,239,1643641200"; 
+   d="scan'208";a="116905270"
+Received: from unknown (HELO relmlir5.idc.renesas.com) ([10.200.68.151])
+  by relmlie6.idc.renesas.com with ESMTP; 06 Apr 2022 16:03:33 +0900
+Received: from localhost.localdomain (unknown [10.226.36.204])
+        by relmlir5.idc.renesas.com (Postfix) with ESMTP id 919C0400F934;
+        Wed,  6 Apr 2022 16:03:31 +0900 (JST)
+From:   Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     linux-renesas-soc@vger.kernel.org,
+        Prabhakar <prabhakar.csengg@gmail.com>,
+        Biju Das <biju.das.jz@bp.renesas.com>,
+        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+Subject: [PATCH] iio: adc: Kconfig: Make RZG2L_ADC depend on ARCH_RZG2L
+Date:   Wed,  6 Apr 2022 08:03:15 +0100
+Message-Id: <20220406070315.13862-1-prabhakar.mahadev-lad.rj@bp.renesas.com>
+X-Mailer: git-send-email 2.17.1
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Mar 17, 2022 at 05:53:22PM +0000, Mark Brown wrote:
-> On Thu, Mar 17, 2022 at 04:13:26PM +0100, Vincent Whitchurch wrote:
-> > On Fri, Mar 11, 2022 at 06:06:54PM +0000, Mark Brown wrote:
-> 
-> > > > +    @classmethod
-> > > > +    def setUpClass(cls) -> None:
-> > > > +        insmod("tps6286x-regulator")
-> 
-> > > Shouldn't this get figured out when the device gets created in DT (if it
-> > > doesn't I guess the tests found a bug...)?
-> 
-> > The system isn't set up to load modules automatically.  The reason for
-> > this is to give the test cases full control of when the module is loaded
-> > and unload, since the tests could want to load the module with specific
-> > options.
-> 
-> That seems like the uncommon case which could remove the module if it
-> explicitly needed it.
+ADC block is common on Renesas RZ/G2L and RZ/V2L SoC's, so instead of
+adding dependency for each SoC's add dependency on ARCH_RZG2L. The
+ARCH_RZG2L config option is already selected by ARCH_R9A07G044 and
+ARCH_R9A07G054.
 
-Another reason was to get the tests to test module unloading since I've
-seen a lot of especially new driver writers forget to test that, but I
-realise that for most normal drivers that should be mostly covered by
-the fact that we test device unbinding.
+Signed-off-by: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
+---
+ drivers/iio/adc/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-So I went ahead and implemented this and it seems to work.  As you
-hinted earlier, this also means that the modalias stuff gets tested, and
-as we know that's been broken in the recent past for a bunch of drivers,
-so that's another advantage to automatic module loading, besides the
-boilerplate reduction in the tests.
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 71ab0a06aa82..48ace7412874 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -910,7 +910,7 @@ config ROCKCHIP_SARADC
+ 
+ config RZG2L_ADC
+ 	tristate "Renesas RZ/G2L ADC driver"
+-	depends on ARCH_R9A07G044 || COMPILE_TEST
++	depends on ARCH_RZG2L || COMPILE_TEST
+ 	help
+ 	  Say yes here to build support for the ADC found in Renesas
+ 	  RZ/G2L family.
+-- 
+2.17.1
+
