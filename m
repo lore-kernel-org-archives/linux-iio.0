@@ -2,56 +2,56 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F30EC433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Apr 2022 20:32:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DBBFEC43219
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Apr 2022 20:32:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1349879AbiDKUeN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Apr 2022 16:34:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53888 "EHLO
+        id S1349840AbiDKUeO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Apr 2022 16:34:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54132 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349872AbiDKUeF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Apr 2022 16:34:05 -0400
-Received: from mail-pl1-x634.google.com (mail-pl1-x634.google.com [IPv6:2607:f8b0:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B68EB35DD8;
-        Mon, 11 Apr 2022 13:31:50 -0700 (PDT)
-Received: by mail-pl1-x634.google.com with SMTP id be5so8892116plb.13;
-        Mon, 11 Apr 2022 13:31:50 -0700 (PDT)
+        with ESMTP id S1349885AbiDKUeN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Apr 2022 16:34:13 -0400
+Received: from mail-pj1-x1029.google.com (mail-pj1-x1029.google.com [IPv6:2607:f8b0:4864:20::1029])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4884A36151;
+        Mon, 11 Apr 2022 13:31:55 -0700 (PDT)
+Received: by mail-pj1-x1029.google.com with SMTP id o5-20020a17090ad20500b001ca8a1dc47aso453060pju.1;
+        Mon, 11 Apr 2022 13:31:55 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=835pUviTP5ppYn2Uev225f172MsZVkj8fAJp6g5nVbI=;
-        b=XhPM9Xi4hI3zlMqpp9LPk3LS02QFPR2NAM7wG0m0iEvHU4D6z1teuac9/BCiuEWmLf
-         T5mwJwanfwNd/iTQrKsEpaRy3SC0pZzOK9HdIDm5e+ata02srKGJLo8VN0biA0SUJ0iY
-         V8hxRV93crh3RmX9H0364EpEa7J3BSjmYiMHhUFl3tAKFeDwkC//OBJqkGbY9qJ9zjFp
-         ns7I9Md7bCPTiFHYr7pcG/bvil0cdjsrujzJ62CYM5AKD5QtKX8FR0ZXefbcn4o2/h73
-         XDF6GhiLgJv1fCPIo4k3P12qW3C1YdiafeQ4Vg6vpb+K1Ep2rNcuwmy/FDov5S360Z2H
-         G3EQ==
+        bh=nVy+PdUdt3aYbmKl1De/O0IbA9jK9d4aWpuuU9JRDr0=;
+        b=I0BOtu/NTUxum3tk1mDK4B4v9Tk/DOk/HjsgtA0CG0tELAoHcWuEID0q9kXAvPjvyY
+         RTmxFA1WD68lC7h2hRvB+6kCo2D/Yu1/Z1jRmUIX+aexHC9ofI1nEFToFPMG/oW3LI5q
+         q/D/Df0Z9xfri8lrhUBEnPaHWtK2IeEsn20NRI/zRhSTG3ZyZ+EnUpS5ipMt9aHfB5VU
+         ZAg1mQuMOkAAg4dZTVMaj5qBR+n4/6WFRtmbd8Yc8zQidgWJXeglmvmuI+aMxi6gl1NG
+         zX7zblPGjKEYlNlr4zj8XVsbxTx8n3VS1Ri4cOZbo4QW9/LLRARxYsdd6yUhKpVV257P
+         Tamw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=835pUviTP5ppYn2Uev225f172MsZVkj8fAJp6g5nVbI=;
-        b=hKEQOn2r/tyhHiKn2EuVsNEc5hMM8pOX35RsAKZmshmaQIhPK3IjZcqunkyZkIx2HF
-         bTi2L+O3ZPneG4hB/RBba/aPbYcqKP0yHJTHZk11gugvcv5d2WEFxzPlk8HzShhnYO/J
-         rvwEizrU9voVtcmWdQNji6GfPS5EkzyorQDWYUvPgXeu676+XHBaMAhj5WAixjsmbuhD
-         UrUbZCM6VPU1fjiucOCbnIPC2WQAYK8U9eIKnyqJHqxO3rD8TSOWSVVkEmQJzeGph8iI
-         ETirCrvZjuLeCayWLbiRGJEnzIN6qlHfLGxbtIg3mBJ3YEkKDI+HuBQpmfiwqEr84NHq
-         FDqg==
-X-Gm-Message-State: AOAM533XIf5MLPQQXizp18pc4PVufpalVQP2jJOZhRqDc9HIP9wBrvKq
-        dgVzgYiLu8fcP0ywk1VCl/Q=
-X-Google-Smtp-Source: ABdhPJynU3w14f8aoQPexTNCXrSK2rl3LVDMIRfan7vGLbnzrPwQestibKe5rO5e+naCZPyx6Xrp2Q==
-X-Received: by 2002:a17:902:e889:b0:151:a56d:eb8f with SMTP id w9-20020a170902e88900b00151a56deb8fmr33124044plg.142.1649709110223;
-        Mon, 11 Apr 2022 13:31:50 -0700 (PDT)
+        bh=nVy+PdUdt3aYbmKl1De/O0IbA9jK9d4aWpuuU9JRDr0=;
+        b=F8PxvsWGL/hKIYFnfYVtWRvKesp5OhuzO+CQN9/OZQPWjysWfD/TVWPRPBSzeu758r
+         rhwriQYVyB7iMpalfAe5bGfIwcPWvXSDiKvzBhX51AWcmEI6lSw5Xk1Y/n7s7VpdL+Fs
+         +Qg3a0J+WX8mmvvDMkxqQUEYSJ5P1S+yHpZt29o1dU/BuXBpYZPmq45yt18JZobmpOpp
+         E/aFcP6BZlLo1oFBggOFcTp/44B82AqoWOmStWv1HpqrIYgVnXq0JiJOysECs+3mnkN7
+         sI+ZBJaldjNpxOx5PpkWU5l4e/ZAo4sKD0noGCwiPj3gPSX4/SQWGZ4kygpmAG48jsgf
+         SgOQ==
+X-Gm-Message-State: AOAM530pY2ymPkQ0u5dgfp9a435ene+E6XwoPcazUbwdLV2n4iNtmmym
+        PU1cEDgImGnHoRRSpGJVTP0=
+X-Google-Smtp-Source: ABdhPJyspJIGql9cAc4QJC3lhh50NSLTb/oRc3xE/Arap4dWYLja8tYgSWYEAKrReNGd3RaPGq24oQ==
+X-Received: by 2002:a17:902:ef46:b0:153:81f7:7fc2 with SMTP id e6-20020a170902ef4600b0015381f77fc2mr34343014plx.26.1649709114611;
+        Mon, 11 Apr 2022 13:31:54 -0700 (PDT)
 Received: from localhost.localdomain ([27.7.99.112])
-        by smtp.gmail.com with ESMTPSA id z15-20020a056a001d8f00b004fda37855ddsm34069828pfw.168.2022.04.11.13.31.48
+        by smtp.gmail.com with ESMTPSA id z15-20020a056a001d8f00b004fda37855ddsm34069828pfw.168.2022.04.11.13.31.52
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 13:31:49 -0700 (PDT)
+        Mon, 11 Apr 2022 13:31:54 -0700 (PDT)
 From:   Jagath Jog J <jagathjog1996@gmail.com>
 To:     dan@dlrobertson.com, jic23@kernel.org, andy.shevchenko@gmail.com
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3 5/9] iio: accel: bma400: Add separate channel for step counter
-Date:   Tue, 12 Apr 2022 02:01:29 +0530
-Message-Id: <20220411203133.19929-6-jagathjog1996@gmail.com>
+Subject: [PATCH v3 7/9] iio: accel: bma400: Add activity recognition support
+Date:   Tue, 12 Apr 2022 02:01:31 +0530
+Message-Id: <20220411203133.19929-8-jagathjog1996@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220411203133.19929-1-jagathjog1996@gmail.com>
 References: <20220411203133.19929-1-jagathjog1996@gmail.com>
@@ -59,131 +59,207 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Added channel for step counter which can be enable or disable
-through the sysfs interface.
+Add support for activity recognition like STILL, WALKING, RUNNING
+and these events are pushed to the userspace whenever the STEP
+interrupt occurs.
 
 Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
 ---
- drivers/iio/accel/bma400.h      |  1 +
- drivers/iio/accel/bma400_core.c | 48 ++++++++++++++++++++++++++++++---
- 2 files changed, 45 insertions(+), 4 deletions(-)
+ drivers/iio/accel/bma400_core.c | 104 ++++++++++++++++++++++++++++++++
+ 1 file changed, 104 insertions(+)
 
-diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-index a7482a66b36b..52f9ea95de81 100644
---- a/drivers/iio/accel/bma400.h
-+++ b/drivers/iio/accel/bma400.h
-@@ -53,6 +53,7 @@
- #define BMA400_STEP_CNT1_REG        0x16
- #define BMA400_STEP_CNT3_REG        0x17
- #define BMA400_STEP_STAT_REG        0x18
-+#define BMA400_STEP_INT_MSK	    BIT(0)
- 
- /*
-  * Read-write configuration registers
 diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-index b7b2b67aef31..c8f147163d3c 100644
+index 37f38626a9aa..69d2caa4ed18 100644
 --- a/drivers/iio/accel/bma400_core.c
 +++ b/drivers/iio/accel/bma400_core.c
-@@ -20,6 +20,8 @@
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
+@@ -59,6 +59,12 @@ struct bma400_sample_freq {
+ 	int uhz;
+ };
  
-+#include <asm/unaligned.h>
++enum bma400_activity {
++	BMA400_STILL,
++	BMA400_WALKING,
++	BMA400_RUNNING,
++};
 +
- #include <linux/iio/iio.h>
- #include <linux/iio/buffer.h>
- #include <linux/iio/trigger.h>
-@@ -67,6 +69,7 @@ struct bma400_data {
- 	int oversampling_ratio;
- 	int scale;
+ struct bma400_data {
+ 	struct device *dev;
+ 	struct regmap *regmap;
+@@ -72,6 +78,7 @@ struct bma400_data {
  	struct iio_trigger *trig;
-+	int steps_enabled;
+ 	int steps_enabled;
+ 	bool step_event_en;
++	bool activity_event_en;
  	/* Correct time stamp alignment */
  	struct {
  		__le16 buff[3];
-@@ -201,6 +204,12 @@ static const struct iio_chan_spec bma400_channels[] = {
- 			.endianness = IIO_LE,
- 		},
+@@ -175,6 +182,12 @@ static const struct iio_event_spec bma400_step_detect_event = {
+ 	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+ };
+ 
++static const struct iio_event_spec bma400_activity_event = {
++	.type = IIO_EV_TYPE_CHANGE,
++	.dir = IIO_EV_DIR_NONE,
++	.mask_shared_by_type = BIT(IIO_EV_INFO_ENABLE),
++};
++
+ #define BMA400_ACC_CHANNEL(_index, _axis) { \
+ 	.type = IIO_ACCEL, \
+ 	.modified = 1, \
+@@ -196,6 +209,16 @@ static const struct iio_event_spec bma400_step_detect_event = {
+ 	},				\
+ }
+ 
++#define BMA400_ACTIVITY_CHANNEL(_chan2) {	\
++	.type = IIO_ACTIVITY,			\
++	.modified = 1,				\
++	.channel2 = _chan2,			\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),	\
++	.scan_index = -1, /* No buffer support */		\
++	.event_spec = &bma400_activity_event,			\
++	.num_event_specs = 1,					\
++}
++
+ static const struct iio_chan_spec bma400_channels[] = {
+ 	BMA400_ACC_CHANNEL(0, X),
+ 	BMA400_ACC_CHANNEL(1, Y),
+@@ -220,6 +243,9 @@ static const struct iio_chan_spec bma400_channels[] = {
+ 		.event_spec = &bma400_step_detect_event,
+ 		.num_event_specs = 1,
  	},
-+	{
-+		.type = IIO_STEPS,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
-+				      BIT(IIO_CHAN_INFO_ENABLE),
-+		.scan_index = -1, /* No buffer support */
-+	},
++	BMA400_ACTIVITY_CHANNEL(IIO_MOD_STILL),
++	BMA400_ACTIVITY_CHANNEL(IIO_MOD_WALKING),
++	BMA400_ACTIVITY_CHANNEL(IIO_MOD_RUNNING),
  	IIO_CHAN_SOFT_TIMESTAMP(4),
  };
  
-@@ -705,13 +714,28 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+@@ -626,6 +652,20 @@ static void bma400_power_disable(void *data_ptr)
+ 			 ERR_PTR(ret));
+ }
+ 
++static enum iio_modifier bma400_act_to_mod(enum bma400_activity activity)
++{
++	switch (activity) {
++	case BMA400_STILL:
++		return IIO_MOD_STILL;
++	case BMA400_WALKING:
++		return IIO_MOD_WALKING;
++	case BMA400_RUNNING:
++		return IIO_MOD_RUNNING;
++	default:
++		return IIO_NO_MOD;
++	}
++}
++
+ static int bma400_init(struct bma400_data *data)
  {
+ 	unsigned int val;
+@@ -725,6 +765,7 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
  	struct bma400_data *data = iio_priv(indio_dev);
  	int ret;
-+	u8 steps_raw[3];
+ 	u8 steps_raw[3];
++	unsigned int activity;
  
  	switch (mask) {
  	case IIO_CHAN_INFO_PROCESSED:
--		mutex_lock(&data->mutex);
--		ret = bma400_get_temp_reg(data, val, val2);
--		mutex_unlock(&data->mutex);
--		return ret;
-+		switch (chan->type) {
-+		case IIO_TEMP:
+@@ -743,6 +784,23 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
+ 				return ret;
+ 			*val = get_unaligned_le24(steps_raw);
+ 			return IIO_VAL_INT;
++		case IIO_ACTIVITY:
 +			mutex_lock(&data->mutex);
-+			ret = bma400_get_temp_reg(data, val, val2);
-+			mutex_unlock(&data->mutex);
-+			return ret;
-+		case IIO_STEPS:
-+			mutex_lock(&data->mutex);
-+			ret = regmap_bulk_read(data->regmap, BMA400_STEP_CNT0_REG,
-+					       &steps_raw, sizeof(steps_raw));
++			ret = regmap_read(data->regmap, BMA400_STEP_STAT_REG,
++					  &activity);
 +			mutex_unlock(&data->mutex);
 +			if (ret)
 +				return ret;
-+			*val = get_unaligned_le24(steps_raw);
++			/*
++			 * The device does not support confidence value levels,
++			 * so we will always have 100% for current activity and
++			 * 0% for the others.
++			 */
++			if (chan->channel2 == bma400_act_to_mod(activity))
++				*val = 100;
++			else
++				*val = 0;
 +			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
- 	case IIO_CHAN_INFO_RAW:
- 		mutex_lock(&data->mutex);
- 		ret = bma400_get_accel_reg(data, chan, val);
-@@ -752,6 +776,9 @@ static int bma400_read_raw(struct iio_dev *indio_dev,
- 
- 		*val = data->oversampling_ratio;
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_ENABLE:
-+		*val = data->steps_enabled;
-+		return IIO_VAL_INT;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -898,6 +956,8 @@ static int bma400_read_event_config(struct iio_dev *indio_dev,
+ 	switch (chan->type) {
+ 	case IIO_STEPS:
+ 		return data->step_event_en;
++	case IIO_ACTIVITY:
++		return data->activity_event_en;
  	default:
  		return -EINVAL;
  	}
-@@ -817,6 +844,17 @@ static int bma400_write_raw(struct iio_dev *indio_dev,
- 		ret = bma400_set_accel_oversampling_ratio(data, val);
- 		mutex_unlock(&data->mutex);
- 		return ret;
-+	case IIO_CHAN_INFO_ENABLE:
-+		if (data->steps_enabled == val)
-+			return 0;
+@@ -937,6 +997,32 @@ static int bma400_write_event_config(struct iio_dev *indio_dev,
+ 			return ret;
+ 		data->step_event_en = state;
+ 		return 0;
++	case IIO_ACTIVITY:
++		if (!data->step_event_en) {
++			mutex_lock(&data->mutex);
++			ret = regmap_update_bits(data->regmap,
++						 BMA400_INT_CONFIG1_REG,
++						 BMA400_STEP_INT_MSK,
++						 FIELD_PREP(BMA400_STEP_INT_MSK,
++							    1));
++			if (ret) {
++				mutex_unlock(&data->mutex);
++				return ret;
++			}
++			data->steps_enabled = 1;
 +
-+		mutex_lock(&data->mutex);
-+		ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG1_REG,
-+					 BMA400_STEP_INT_MSK,
-+					 FIELD_PREP(BMA400_STEP_INT_MSK, !!val));
-+		mutex_unlock(&data->mutex);
-+		data->steps_enabled = val;
-+		return ret;
++			ret = regmap_update_bits(data->regmap,
++						 BMA400_INT12_MAP_REG,
++						 BMA400_STEP_INT_MSK,
++						 FIELD_PREP(BMA400_STEP_INT_MSK,
++							    1));
++			mutex_unlock(&data->mutex);
++			if (ret)
++				return ret;
++			data->step_event_en = 1;
++		}
++		data->activity_event_en = state;
++		return 0;
  	default:
  		return -EINVAL;
  	}
-@@ -833,6 +871,8 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT_PLUS_MICRO;
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_ENABLE:
-+		return IIO_VAL_INT;
- 	default:
- 		return -EINVAL;
+@@ -1015,6 +1101,7 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+ 	s64 timestamp = iio_get_time_ns(indio_dev);
+ 	int ret;
+ 	__le16 status;
++	unsigned int act;
+ 
+ 	mutex_lock(&data->mutex);
+ 	ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG, &status,
+@@ -1029,6 +1116,23 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+ 					      IIO_EV_DIR_NONE,
+ 					      IIO_EV_TYPE_CHANGE, 0, 0, 0),
+ 			       timestamp);
++
++		if (data->activity_event_en) {
++			mutex_lock(&data->mutex);
++			ret = regmap_read(data->regmap, BMA400_STEP_STAT_REG,
++					  &act);
++			mutex_unlock(&data->mutex);
++			if (ret)
++				return IRQ_NONE;
++
++			iio_push_event(indio_dev,
++				       IIO_EVENT_CODE(IIO_ACTIVITY, 0,
++						      bma400_act_to_mod(act),
++						      IIO_EV_DIR_NONE,
++						      IIO_EV_TYPE_CHANGE, 0,
++						      0, 0),
++				       timestamp);
++		}
+ 		return IRQ_HANDLED;
  	}
+ 
 -- 
 2.17.1
 
