@@ -2,97 +2,91 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9342AC433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Apr 2022 12:52:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41C7EC433F5
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Apr 2022 13:03:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344406AbiDLMyh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Apr 2022 08:54:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45908 "EHLO
+        id S1355338AbiDLNFz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Apr 2022 09:05:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47782 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355032AbiDLMxr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Apr 2022 08:53:47 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6868B6B53A
-        for <linux-iio@vger.kernel.org>; Tue, 12 Apr 2022 05:23:26 -0700 (PDT)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kd4Zc587Tz688Km;
-        Tue, 12 Apr 2022 20:21:12 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 12 Apr 2022 14:23:23 +0200
-Received: from localhost (10.202.226.41) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 12 Apr
- 2022 13:23:23 +0100
-Date:   Tue, 12 Apr 2022 13:23:22 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Philippe De Muyter <phdm@macq.eu>
-CC:     <lorenzo.bianconi@st.com>, <lorenzo.bianconi83@gmail.com>,
-        <linux-iio@vger.kernel.org>
-Subject: Re: st_lsm6dsx : how to accept different chips without error
- message ?
-Message-ID: <20220412132322.00000a1a@Huawei.com>
-In-Reply-To: <20220412081011.GA32595@frolo.macqel>
-References: <20220412081011.GA32595@frolo.macqel>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        with ESMTP id S1357744AbiDLNFA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Apr 2022 09:05:00 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BCA873B3C0
+        for <linux-iio@vger.kernel.org>; Tue, 12 Apr 2022 05:49:50 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 23CALgYD021572;
+        Tue, 12 Apr 2022 08:49:31 -0400
+Received: from nwd2mta4.analog.com ([137.71.173.58])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3fb861u1a6-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 12 Apr 2022 08:49:31 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 23CCnU47024996
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Tue, 12 Apr 2022 08:49:30 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Tue, 12 Apr
+ 2022 08:49:29 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Tue, 12 Apr 2022 08:49:29 -0400
+Received: from NSA-L01.ad.analog.com ([10.32.224.71])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 23CCnM3m026004;
+        Tue, 12 Apr 2022 08:49:24 -0400
+From:   =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
+To:     <linux-iio@vger.kernel.org>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2] iio: dac: ltc2688: fix voltage scale read
+Date:   Tue, 12 Apr 2022 14:49:16 +0200
+Message-ID: <20220412124916.61-1-nuno.sa@analog.com>
+X-Mailer: git-send-email 2.17.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.41]
-X-ClientProxiedBy: lhreml719-chm.china.huawei.com (10.201.108.70) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: XcmC_Zi3KHdsR4DBlXTp-hl4gx1_RWqE
+X-Proofpoint-ORIG-GUID: XcmC_Zi3KHdsR4DBlXTp-hl4gx1_RWqE
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-04-12_04,2022-04-12_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
+ adultscore=0 phishscore=0 priorityscore=1501 suspectscore=0
+ mlxlogscore=868 impostorscore=0 mlxscore=0 spamscore=0 bulkscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2204120061
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 12 Apr 2022 10:10:11 +0200
-Philippe De Muyter <phdm@macq.eu> wrote:
+Properly set *val2 (and not overwrite *val) to correctly return
+IIO_VAL_FRACTIONAL_LOG2.
 
-> Hello Lorenzo,
-> 
-> we build custom boards with different variations of st_lsm6dsx
-> chips, due to the shortage of components, namely the ISM330DHCX
-> and ISM330DLC at the moment.  Is there currently a way in the
-> driver and device-tree to accept different variations of those
-> IMU sensors without getting the annoying message :
-> 
-> 	st_lsm6dsx_i2c 2-006a: unsupported whoami [6a]
-> 
-> but rather a positive message telling which variation was found ?
+Fixes: 832cb9eeb9312 ("iio: dac: add support for ltc2688")
+Signed-off-by: Nuno Sá <nuno.sa@analog.com>
+---
+v2:
+ * Fixed repeated "not" in commit description and tweaked patch subject
+to match the preferred format.
 
-Feel free to send a patch that allows the driver to identify that
-it can carry on despite missmatched parts.
+ drivers/iio/dac/ltc2688.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-We can however 'muddle on' if we have one driver that happens to
-support both parts (as is true here). It's made more complex by
-the fact this driver covers parts with the same WHOAMI that are
-not compatible and for which there is no known safe way to
-discover functionality.  So we need to be careful...
-My suggestion is we add a field to the _sensor_settings entries for
-'minimal parts' to say "if matching without any other info, use
-this one if the whoami matches".  For those we pick the least
-featured part with a given whoami and hope we don't end up with
-an even less featured part in the future.
-
-So on failure to match the whoami normally rerun but looking for
-that 'minimal flag' and a whoami match.
-
-Then print out some nice message about the fact that we can only
-support minimal functionality because of unknown subvariant with
-a given whoami value.
-
-What fun.  Alternatively have your boot loader / firmware adjust the dt
-based on what is present ;)
-
-Jonathan
-
-
-> 
-> Best regards
-> 
-> Phlippe
-> 
+diff --git a/drivers/iio/dac/ltc2688.c b/drivers/iio/dac/ltc2688.c
+index d249fa28202c..937b0d25a11c 100644
+--- a/drivers/iio/dac/ltc2688.c
++++ b/drivers/iio/dac/ltc2688.c
+@@ -298,7 +298,7 @@ static int ltc2688_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 
+-		*val = 16;
++		*val2 = 16;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		ret = regmap_read(st->regmap,
+-- 
+2.35.1
 
