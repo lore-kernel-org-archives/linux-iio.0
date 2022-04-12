@@ -2,128 +2,50 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1AABEC433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 12 Apr 2022 07:20:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A1C79C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Apr 2022 10:03:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239685AbiDLHV7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 12 Apr 2022 03:21:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57146 "EHLO
+        id S1352658AbiDLKGF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Apr 2022 06:06:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36806 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351710AbiDLHMv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Apr 2022 03:12:51 -0400
-Received: from mail-pg1-x530.google.com (mail-pg1-x530.google.com [IPv6:2607:f8b0:4864:20::530])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F171E15FE7;
-        Mon, 11 Apr 2022 23:51:55 -0700 (PDT)
-Received: by mail-pg1-x530.google.com with SMTP id q19so16335177pgm.6;
-        Mon, 11 Apr 2022 23:51:55 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:subject:date:message-id:in-reply-to:references;
-        bh=RBbYU01e+AFbhWY3ZuGeFMRIuU/CVxN8Q/n9EQ09lHU=;
-        b=a8AKCKRLwEJ+ICpyl0Ua49RR5GoUvlGs65zLny8zLr9rq8FPqaowjaciyPlu0e0Ra5
-         K38C9SACTeDtneV0qgjKDJBJUEWchIR3VIhC9SpjB3IXVvUnsnuVOkKl9UFn60wHF9N4
-         JMw0aiBOyEdWx9p+NYgkcgqLhB7jNVb8eS1V2+vluyREM6O2fqdKfAdlLOt1xz7uWDTN
-         dws3dSdt0MyP5UQhVa68Spk7WNjnYcPTgH+KtTzNkjZwyCBJHqy2nDP9oqdP1YDoavPZ
-         MA6Qx75v3pkISAyQJgVWK+UJjDfbAk4jHEqdT5BM1mpcOuzxHlGUkGZ32J3dlFvJxCxN
-         SZcw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:subject:date:message-id:in-reply-to
-         :references;
-        bh=RBbYU01e+AFbhWY3ZuGeFMRIuU/CVxN8Q/n9EQ09lHU=;
-        b=YIqAbpAtf2hwWBiPWfpIWDryoprTp9g9xkBpfgTwBCV852cqazVIAl5tRtX8UWO2TG
-         0ftFffsEWSKSEr8qBvY2gWdUy00ERydWBlM3Sku5flgw9bJgLwNcPRa9hB5YLgHcXGvo
-         awaO13NC+pSoxHtGMxBoqs4Af0B3hpL7E9gpxClnIEkpmgHqy/UTZw8pwjPltgN8hXeH
-         YHWx8U2H3Lpx9KDFqAbXUpGHeG7MdCY84jKQjBm6OW0271UqGHrcI3mesU77wLgyNGPg
-         kGuzIMl2QrhgffkvUJ3ESbY7HipbEvyF6/mpjd4DMnCes9h27bGtx/GrvGITmEiFzESA
-         u2mA==
-X-Gm-Message-State: AOAM530gMkwAUxPgeaGu/7k5zsLvldYKNrycSvr9R9LPilV3tt1w4FZr
-        P24L3X/TTEQ7jDAUDBDJXk8=
-X-Google-Smtp-Source: ABdhPJxPK9vIH5rkg+Zivi5zxRj7BATlOjv/oQFrgbrSqTgZiffo9i573UyyUxob/kW5MlB279CmGA==
-X-Received: by 2002:a05:6a00:1488:b0:4fa:ac61:8b11 with SMTP id v8-20020a056a00148800b004faac618b11mr37315301pfu.58.1649746315502;
-        Mon, 11 Apr 2022 23:51:55 -0700 (PDT)
-Received: from localhost.localdomain ([159.226.95.43])
-        by smtp.googlemail.com with ESMTPSA id ng17-20020a17090b1a9100b001c9f79927bfsm1654577pjb.25.2022.04.11.23.51.52
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Apr 2022 23:51:55 -0700 (PDT)
-From:   Miaoqian Lin <linmq006@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        Miaoqian Lin <linmq006@gmail.com>,
-        Kees Cook <keescook@chromium.org>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        linux-iio@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v3] iio: adc: stmpe-adc: Fix wait_for_completion_timeout return value check
-Date:   Tue, 12 Apr 2022 06:51:45 +0000
-Message-Id: <20220412065150.14486-1-linmq006@gmail.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <PH0PR03MB6786157EDA63137DF0071D1F99ED9@PH0PR03MB6786.namprd03.prod.outlook.com>
-References: <PH0PR03MB6786157EDA63137DF0071D1F99ED9@PH0PR03MB6786.namprd03.prod.outlook.com>
+        with ESMTP id S1387674AbiDLJIy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Apr 2022 05:08:54 -0400
+X-Greylist: delayed 550 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 12 Apr 2022 01:19:26 PDT
+Received: from frolo.macqel.be (smtp2.macqel.be [109.135.2.61])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 7FB8F1570B
+        for <linux-iio@vger.kernel.org>; Tue, 12 Apr 2022 01:19:21 -0700 (PDT)
+Received: by frolo.macqel.be (Postfix, from userid 1000)
+        id 4B60EDF00A8; Tue, 12 Apr 2022 10:10:11 +0200 (CEST)
+Date:   Tue, 12 Apr 2022 10:10:11 +0200
+From:   Philippe De Muyter <phdm@macq.eu>
+To:     lorenzo.bianconi@st.com, lorenzo.bianconi83@gmail.com
+Cc:     linux-iio@vger.kernel.org
+Subject: st_lsm6dsx : how to accept different chips without error message ?
+Message-ID: <20220412081011.GA32595@frolo.macqel>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+User-Agent: Mutt/1.5.16 (2007-06-09)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-wait_for_completion_timeout() returns unsigned long not long.
-it returns 0 if timed out, and positive if completed.
-The check for <= 0 is ambiguous and should be == 0 here
-indicating timeout which is the only error case
+Hello Lorenzo,
 
-Fixes: e813dde6f833 ("iio: stmpe-adc: Use wait_for_completion_timeout")
-Signed-off-by: Miaoqian Lin <linmq006@gmail.com>
----
-changes in v2:
-- Fix same issue in stmpe_read_temp.
----
-changes in v3:
-- update the patch subject.
----
- drivers/iio/adc/stmpe-adc.c | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+we build custom boards with different variations of st_lsm6dsx
+chips, due to the shortage of components, namely the ISM330DHCX
+and ISM330DLC at the moment.  Is there currently a way in the
+driver and device-tree to accept different variations of those
+IMU sensors without getting the annoying message :
 
-diff --git a/drivers/iio/adc/stmpe-adc.c b/drivers/iio/adc/stmpe-adc.c
-index d2d405388499..83e0ac4467ca 100644
---- a/drivers/iio/adc/stmpe-adc.c
-+++ b/drivers/iio/adc/stmpe-adc.c
-@@ -61,7 +61,7 @@ struct stmpe_adc {
- static int stmpe_read_voltage(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
- {
--	long ret;
-+	unsigned long ret;
- 
- 	mutex_lock(&info->lock);
- 
-@@ -79,7 +79,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		stmpe_reg_write(info->stmpe, STMPE_REG_ADC_INT_STA,
- 				STMPE_ADC_CH(info->channel));
- 		mutex_unlock(&info->lock);
-@@ -96,7 +96,7 @@ static int stmpe_read_voltage(struct stmpe_adc *info,
- static int stmpe_read_temp(struct stmpe_adc *info,
- 		struct iio_chan_spec const *chan, int *val)
- {
--	long ret;
-+	unsigned long ret;
- 
- 	mutex_lock(&info->lock);
- 
-@@ -114,7 +114,7 @@ static int stmpe_read_temp(struct stmpe_adc *info,
- 
- 	ret = wait_for_completion_timeout(&info->completion, STMPE_ADC_TIMEOUT);
- 
--	if (ret <= 0) {
-+	if (ret == 0) {
- 		mutex_unlock(&info->lock);
- 		return -ETIMEDOUT;
- 	}
+	st_lsm6dsx_i2c 2-006a: unsupported whoami [6a]
+
+but rather a positive message telling which variation was found ?
+
+Best regards
+
+Phlippe
+
 -- 
-2.17.1
-
+Philippe De Muyter +32 2 6101532 Macq SA rue de l'Aeronef 2 B-1140 Bruxelles
