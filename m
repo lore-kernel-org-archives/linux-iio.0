@@ -2,43 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 81849C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Apr 2022 13:16:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 049A7C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Apr 2022 13:18:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243869AbiDNNTT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:19:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37906 "EHLO
+        id S243858AbiDNNUf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38674 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243862AbiDNNSr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2022 09:18:47 -0400
-Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9720C9398C;
-        Thu, 14 Apr 2022 06:16:04 -0700 (PDT)
+        with ESMTP id S243934AbiDNNTS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2022 09:19:18 -0400
+Received: from mga12.intel.com (mga12.intel.com [192.55.52.136])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 820D392D31;
+        Thu, 14 Apr 2022 06:16:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649942164; x=1681478164;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=B+o87umAiGrvPlkkuSVZClpfPRHBEaTV6O93i92xP1Y=;
-  b=b35o0HTrS7t0zEp0nGnfiAj2KP5A/nzVZWXgiEUO9wcLrynWEa20dfrq
-   nioZay5/RSHIf2Q64YW1vGvwqid2vmmXcpa6Cba5BNiiF21bNIYrfpuQY
-   6Js8aK7rNsyXibL3zJsJLmLYVowIO11B4AdEuAYUv7LZ6wShKHOx2IHL9
-   CgG/y0A09TGOVCDR8414KPnBvPg7gevzcXp8weQ2krccevZ6UFSY0hYdf
-   QGLF5nsTxTw6R4Ni58/A2WFseh1oqVCfMZOBKV3IqB2hY2HC5e4o3rcwl
-   4acnCaeYWPCd/Oi7kMkljLfLfuQJU7dgDWMzjlypkCXoJyPTYMIxTNjvf
-   w==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="244811571"
+  t=1649942193; x=1681478193;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=xX/cmUcjGxXpG7rPxofxKQoxBKiUs0vSg8GaifSgBio=;
+  b=RZQv5rD+7g1Xz9CvUJO8Z5mBan8rtjPnYbjVgYKhFcGx3zcXRtqKytyt
+   zIP998aMPY7UJT93i17klniMYr+BMMLB85KFk0sIkBSo9eIa2EEXtXjsP
+   3CAS95ZqMgp2ykpqtez2g1+T4Wc9Ih5up98nV/snCJnzkigzkwqdi4zzF
+   JaUX+zrWwQcZQOENz7Ry5sH8SC4Q0lu6hbHtfzziiTzNwVTSrMzClaqX6
+   1gvRs8xuruK3n8NeS5NEjjo2eCieNMqvLZvFilXx16TsNRjzx5ooSCqQ1
+   0ktw5PQnA5QnTUKOyottbmFk2iPVnxs4+ygJKsTB0fKikTSrPJscpCI2r
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="242859747"
 X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="244811571"
-Received: from fmsmga002.fm.intel.com ([10.253.24.26])
-  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:16:03 -0700
+   d="scan'208";a="242859747"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga106.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:16:03 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="656005392"
+   d="scan'208";a="591187970"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga002.fm.intel.com with ESMTP; 14 Apr 2022 06:16:01 -0700
+  by orsmga001.jf.intel.com with ESMTP; 14 Apr 2022 06:16:01 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 5AE43144; Thu, 14 Apr 2022 16:16:01 +0300 (EEST)
+        id 750AD2AE; Thu, 14 Apr 2022 16:16:01 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
@@ -46,10 +46,12 @@ Cc:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
         =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH v2 1/3] iio: imu: adis16480: Make use of device properties
-Date:   Thu, 14 Apr 2022 16:15:57 +0300
-Message-Id: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v2 3/3] iio: imu: adis16480: Improve getting the optional clocks
+Date:   Thu, 14 Apr 2022 16:15:59 +0300
+Message-Id: <20220414131559.24694-3-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
+References: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -57,117 +59,75 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Convert the module to be property provider agnostic and allow
-it to be used on non-OF platforms.
+The extended clocks are optional and may not be present for some
+configurations supported by this driver. Nevertheless, in case
+the clock is provided but some error happens during its getting,
+that error handling should be done properly.
+
+Use devm_clk_get_optional() API and report possible errors using
+dev_err_probe() to handle properly -EPROBE_DEFER error.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 ---
-v2: added tag (Nuno)
- drivers/iio/imu/adis16480.c | 27 ++++++++++++++-------------
- 1 file changed, 14 insertions(+), 13 deletions(-)
+v2: added tag (Nuno), massaged commit message (Nuno)
+ drivers/iio/imu/adis16480.c | 26 ++++++++++----------------
+ 1 file changed, 10 insertions(+), 16 deletions(-)
 
 diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-index 44bbe3d19907..68eed088cca6 100644
+index 287914016f28..fe520194a837 100644
 --- a/drivers/iio/imu/adis16480.c
 +++ b/drivers/iio/imu/adis16480.c
-@@ -7,14 +7,16 @@
- 
- #include <linux/clk.h>
- #include <linux/bitfield.h>
--#include <linux/of_irq.h>
- #include <linux/interrupt.h>
-+#include <linux/irq.h>
- #include <linux/math.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
- #include <linux/spi/spi.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/lcm.h>
-+#include <linux/property.h>
- #include <linux/swab.h>
- #include <linux/crc32.h>
- 
-@@ -1239,9 +1241,10 @@ static int adis16480_enable_irq(struct adis *adis, bool enable)
- 	return __adis_write_reg_16(adis, ADIS16480_REG_FNCTIO_CTRL, val);
- }
- 
--static int adis16480_config_irq_pin(struct device_node *of_node,
--				    struct adis16480 *st)
-+static int adis16480_config_irq_pin(struct adis16480 *st)
+@@ -1362,31 +1362,25 @@ static int adis16480_get_ext_clocks(struct adis16480 *st)
  {
-+	struct device *dev = &st->adis.spi->dev;
-+	struct fwnode_handle *fwnode = dev_fwnode(dev);
- 	struct irq_data *desc;
- 	enum adis16480_int_pin pin;
- 	unsigned int irq_type;
-@@ -1267,7 +1270,7 @@ static int adis16480_config_irq_pin(struct device_node *of_node,
- 	 */
- 	pin = ADIS16480_PIN_DIO1;
- 	for (i = 0; i < ARRAY_SIZE(adis16480_int_pin_names); i++) {
--		irq = of_irq_get_byname(of_node, adis16480_int_pin_names[i]);
-+		irq = fwnode_irq_get_byname(fwnode, adis16480_int_pin_names[i]);
- 		if (irq > 0) {
- 			pin = i;
- 			break;
-@@ -1295,15 +1298,15 @@ static int adis16480_config_irq_pin(struct device_node *of_node,
- 	return adis_write_reg_16(&st->adis, ADIS16480_REG_FNCTIO_CTRL, val);
- }
+ 	struct device *dev = &st->adis.spi->dev;
  
--static int adis16480_of_get_ext_clk_pin(struct adis16480 *st,
--					struct device_node *of_node)
-+static int adis16480_fw_get_ext_clk_pin(struct adis16480 *st)
- {
-+	struct device *dev = &st->adis.spi->dev;
- 	const char *ext_clk_pin;
- 	enum adis16480_int_pin pin;
- 	int i;
- 
- 	pin = ADIS16480_PIN_DIO2;
--	if (of_property_read_string(of_node, "adi,ext-clk-pin", &ext_clk_pin))
-+	if (device_property_read_string(dev, "adi,ext-clk-pin", &ext_clk_pin))
- 		goto clk_input_not_found;
- 
- 	for (i = 0; i < ARRAY_SIZE(adis16480_int_pin_names); i++) {
-@@ -1317,9 +1320,7 @@ static int adis16480_of_get_ext_clk_pin(struct adis16480 *st,
- 	return pin;
- }
- 
--static int adis16480_ext_clk_config(struct adis16480 *st,
--				    struct device_node *of_node,
--				    bool enable)
-+static int adis16480_ext_clk_config(struct adis16480 *st, bool enable)
- {
- 	unsigned int mode, mask;
- 	enum adis16480_int_pin pin;
-@@ -1330,7 +1331,7 @@ static int adis16480_ext_clk_config(struct adis16480 *st,
- 	if (ret)
- 		return ret;
- 
--	pin = adis16480_of_get_ext_clk_pin(st, of_node);
-+	pin = adis16480_fw_get_ext_clk_pin(st);
- 	/*
- 	 * Each DIOx pin supports only one function at a time. When a single pin
- 	 * has two assignments, the enable bit for a lower priority function
-@@ -1438,7 +1439,7 @@ static int adis16480_probe(struct spi_device *spi)
- 			return ret;
+-	st->clk_mode = ADIS16480_CLK_INT;
+-	st->ext_clk = devm_clk_get(dev, "sync");
+-	if (!IS_ERR_OR_NULL(st->ext_clk)) {
++	st->ext_clk = devm_clk_get_optional(dev, "sync");
++	if (IS_ERR(st->ext_clk))
++		return dev_err_probe(dev, PTR_ERR(st->ext_clk), "failed to get ext clk\n");
++	if (st->ext_clk) {
+ 		st->clk_mode = ADIS16480_CLK_SYNC;
+ 		return 0;
  	}
  
--	ret = adis16480_config_irq_pin(spi->dev.of_node, st);
-+	ret = adis16480_config_irq_pin(st);
+-	if (PTR_ERR(st->ext_clk) != -ENOENT) {
+-		dev_err(dev, "failed to get ext clk\n");
+-		return PTR_ERR(st->ext_clk);
+-	}
+-
+ 	if (st->chip_info->has_pps_clk_mode) {
+-		st->ext_clk = devm_clk_get(dev, "pps");
+-		if (!IS_ERR_OR_NULL(st->ext_clk)) {
++		st->ext_clk = devm_clk_get_optional(dev, "pps");
++		if (IS_ERR(st->ext_clk))
++			return dev_err_probe(dev, PTR_ERR(st->ext_clk), "failed to get ext clk\n");
++		if (st->ext_clk) {
+ 			st->clk_mode = ADIS16480_CLK_PPS;
+ 			return 0;
+ 		}
+-
+-		if (PTR_ERR(st->ext_clk) != -ENOENT) {
+-			dev_err(dev, "failed to get ext clk\n");
+-			return PTR_ERR(st->ext_clk);
+-		}
+ 	}
+ 
++	st->clk_mode = ADIS16480_CLK_INT;
+ 	return 0;
+ }
+ 
+@@ -1447,7 +1441,7 @@ static int adis16480_probe(struct spi_device *spi)
  	if (ret)
  		return ret;
  
-@@ -1447,7 +1448,7 @@ static int adis16480_probe(struct spi_device *spi)
- 		return ret;
- 
- 	if (!IS_ERR_OR_NULL(st->ext_clk)) {
--		ret = adis16480_ext_clk_config(st, spi->dev.of_node, true);
-+		ret = adis16480_ext_clk_config(st, true);
+-	if (!IS_ERR_OR_NULL(st->ext_clk)) {
++	if (st->ext_clk) {
+ 		ret = adis16480_ext_clk_config(st, true);
  		if (ret)
  			return ret;
- 
 -- 
 2.35.1
 
