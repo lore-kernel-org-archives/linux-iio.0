@@ -2,279 +2,74 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 62659C433FE
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Apr 2022 13:33:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3235C46467
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Apr 2022 14:35:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239092AbiDNNfn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:35:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49970 "EHLO
+        id S237023AbiDNOgi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Apr 2022 10:36:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245346AbiDNN2w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2022 09:28:52 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E94239BACC;
-        Thu, 14 Apr 2022 06:22:29 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id mm4-20020a17090b358400b001cb93d8b137so9298944pjb.2;
-        Thu, 14 Apr 2022 06:22:29 -0700 (PDT)
+        with ESMTP id S1346624AbiDNN5q (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2022 09:57:46 -0400
+Received: from mail-ej1-x62c.google.com (mail-ej1-x62c.google.com [IPv6:2a00:1450:4864:20::62c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4F6402657F;
+        Thu, 14 Apr 2022 06:47:50 -0700 (PDT)
+Received: by mail-ej1-x62c.google.com with SMTP id lc2so10108650ejb.12;
+        Thu, 14 Apr 2022 06:47:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to:user-agent;
-        bh=iG0+fzJA3WfbtsbeAXJRn3UF7d+JM9mLiaa4XhIRYeQ=;
-        b=nMBgd09CE7b5rTckWpLklvzI5V3JTVPhgkT8CcThKiiEliAJhR7K7nJxePO/wmrbSK
-         qurcoT2FL16z98UiL0l2apGMiLJ+46C/LOC+yr+5N9YOOXpIK93wASr8DjGt/MeSVCFV
-         7loVjKar43XQlaMstd0tEJTUxxpKtkIHuPng33ETlGlev4TefuT4B6RPBpKTHY6rvlfd
-         6nQdAYxD3x/8ZvEdq74hlhnCcC0kGmxFRe/9nN5/ICdoqYWP/nmXEtYzGxNeQGzH+b8G
-         csLTldLprtLtZ6NEQNMgpX0vd9e0UGSu+vf5urR6JZTqREiprEOlY41xXmPL/nrCHRAM
-         LLxw==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=R9hYB17biMvNqrX89B5MdlYJL0E69SsfsfXeh7dFOiA=;
+        b=FYXH//pkag+vPVt/fhiJZaiDlY3kGR88wCFPSmrTgqb5ZNtAdDLHDD3Y/gF5WauOYG
+         KEzUHL7hY9V5KaWZOwCXfsKpjazg1rcwbrWb4fTLz+L72C8iMnQXb+mclvHFbknOOLoN
+         /oCAOJD8U0YQ4ecNyBm/Dx6KGBcDF12GK8UgGTaPnRGBrXc4oGI4Orfn7mosBnj/ApJO
+         UGlDI98IJzCBFma+xiBUwav3kKgDlTNc+U4ZCF1dIPr/p3A1bj4YOw8zVvyBW8p8UAc+
+         bFFQDTgQfQ1kWC+i2LDoBBEfIiv8k+XCpH7qbnBmWGt5a/40cb63hX9PZDdoRkk46hKv
+         Vj1g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to:user-agent;
-        bh=iG0+fzJA3WfbtsbeAXJRn3UF7d+JM9mLiaa4XhIRYeQ=;
-        b=W5HR8GI957ciLR8K0FUKZShP+0tqjqsM3Co6VpJAcyHXTrBTr7/Qi4N2uqIob+O6l+
-         L2WnovGPhCFOCzcLnzSi1yu5LWu7jYPUVjcQIu8rfyUkvKyqxAxkRUe47E9ulaIPgcsO
-         r+APytAro4Pa8e10C5eCaW38pbEMbCBy1CNqgNvrFGYjt2Mh+nUBRbF9ErSFpHeO7BlG
-         QKPvY3VGnjhOkhBKJSHr4nnzdSVSWRiLFxRNkZzS5dlaXgnpJK4yxucohyHmeAEJAPwu
-         L75iKEqwtDflwIqiuV92tuaE2b5Qe8YXOoAqM+bw/Ko9aDmTAZXqvdoj4NArpx22MsIa
-         broQ==
-X-Gm-Message-State: AOAM530NpI9Vakf1u8XflL7oZNtQzbyWVK0qFnJeKRqKcbLVyd4o5I0L
-        7RivtWBfk1me2ILkhfzr/JU=
-X-Google-Smtp-Source: ABdhPJyAQBZUGFm0lZEIn8UwJD25eH1DbMwB/a8BKyw1vd6GZwDGGWGDsxBcQU7m6nLL7AsyktkpuQ==
-X-Received: by 2002:a17:90a:7:b0:1c7:c286:abc2 with SMTP id 7-20020a17090a000700b001c7c286abc2mr3756658pja.65.1649942549138;
-        Thu, 14 Apr 2022 06:22:29 -0700 (PDT)
-Received: from jagath-PC ([115.99.143.29])
-        by smtp.gmail.com with ESMTPSA id r32-20020a17090a43a300b001cdbda883ccsm2326255pjg.38.2022.04.14.06.22.26
-        (version=TLS1_2 cipher=ECDHE-ECDSA-CHACHA20-POLY1305 bits=256/256);
-        Thu, 14 Apr 2022 06:22:28 -0700 (PDT)
-Date:   Thu, 14 Apr 2022 18:52:24 +0530
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Dan Robertson <dan@dlrobertson.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=R9hYB17biMvNqrX89B5MdlYJL0E69SsfsfXeh7dFOiA=;
+        b=QXRwWF1ZXSlw9bVE7GS2EVNiO+MrCydzVSRUZgic4eFZwJ8NdFEflaYjbfCQTIAnjp
+         hcYr9MFwYXmVK2qor+DMnVnyUkmLOVmJdlhYPvWuwRZNHDlXBHCt4gZhdJmRfdBx9enJ
+         d+aCORxe/Vc1JG6cnxEQWYCrqD3zZiUo6e3NBquoi2cy3Fiq3uWErto0dqrsC+GlZwnp
+         z8ixk1Zj3Q/donkSgCCLf+jVLWJCLAv7wpQeaeK4JkK0H9RFSqSueFVsyPT8vES7A8qD
+         zLP6UFYfBsa/hnyLY0w3PhaIfIb/ufRUUaCBUtY9sSMTmGheA2LXwYuwE9vIHMFBMX/q
+         23CQ==
+X-Gm-Message-State: AOAM531xdpvl7HZJ+ZJzorgRh/UxYqFtB+ebsoBqkimlMt9iSgaoMCFt
+        V0XmH/IzOuyz/BdsOPdxR1jvankqnItUviZFuQogDvbHfRCbvg==
+X-Google-Smtp-Source: ABdhPJzH4bczk+yp+HYwqIc2+zd8sOLX6Q+Bgy0HhVY4Jv5RyQnR9MAwOtrB48Qb7K5VsnR4UsRCEOw6UtYXI6oiJ6I=
+X-Received: by 2002:a17:906:3799:b0:6ec:d25:3afe with SMTP id
+ n25-20020a170906379900b006ec0d253afemr1060600ejc.44.1649944068719; Thu, 14
+ Apr 2022 06:47:48 -0700 (PDT)
+MIME-Version: 1.0
+References: <1649933135-14236-1-git-send-email-baihaowen@meizu.com>
+In-Reply-To: <1649933135-14236-1-git-send-email-baihaowen@meizu.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Thu, 14 Apr 2022 16:47:12 +0300
+Message-ID: <CAHp75VfbZhMvs7dHwadvNs6maPsBVOY3Mk5wkKSwZ1RANQQHDA@mail.gmail.com>
+Subject: Re: [PATCH] iio: gp2ap020a00f: Fix signedness bug
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio <linux-iio@vger.kernel.org>,
         Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v3 4/9] iio: accel: bma400: Add triggered buffer support
-Message-ID: <20220414132223.GA3742@jagath-PC>
-References: <20220411203133.19929-1-jagathjog1996@gmail.com>
- <20220411203133.19929-5-jagathjog1996@gmail.com>
- <CAHp75VfHa9afhSdyi8dj5GpzrYE=hLacayu58+PHjXhMxTo9eg@mail.gmail.com>
- <20220412193013.GA25279@jagath-PC>
- <CAHp75Vc9MO2GxX81JQfzGRjM=nWLaQ-Uy9bV-dR1GMj1oQwjSQ@mail.gmail.com>
- <CAHp75Vef21YmiKAvz-Kt-C=jb+mMCJeV_fwPAza9UwCuKy6omQ@mail.gmail.com>
- <20220413142345.GA3283@jagath-PC>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Content-Disposition: inline
-In-Reply-To: <20220413142345.GA3283@jagath-PC>
-User-Agent: Mutt/1.9.4 (2018-02-28)
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
+On Thu, Apr 14, 2022 at 2:19 PM Haowen Bai <baihaowen@meizu.com> wrote:
+>
+> function gp2ap020a00f_get_thresh_reg() is unsigned but returning -EINVAL
+> errcode, and thresh_reg_l is unsigned but receiving -EINVAL errcode. so
+> we have to change u8 -> s8.
 
-On Wed, Apr 13, 2022 at 07:53:46PM +0530, Jagath Jog J wrote:
-> On Wed, Apr 13, 2022 at 12:24:54AM +0300, Andy Shevchenko wrote:
-> > On Wednesday, April 13, 2022, Andy Shevchenko <andy.shevchenko@gmail.com>
-> > wrote:
-> > 
-> > >
-> > >
-> > > On Tuesday, April 12, 2022, Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> > >
-> > >> Hello Andy,
-> > >>
-> > >> On Tue, Apr 12, 2022 at 12:12:21PM +0300, Andy Shevchenko wrote:
-> > >> > On Mon, Apr 11, 2022 at 11:31 PM Jagath Jog J <jagathjog1996@gmail.com>
-> > >> wrote:
-> > >> > >
-> > >> > > Added trigger buffer support to read continuous acceleration
-> > >> > > data from device with data ready interrupt which is mapped
-> > >> > > to INT1 pin.
-> > >> >
-> > >> > Can you explain the locking schema in this driver?
-> > >> >
-> > >> > > +       /* Configure INT1 pin to open drain */
-> > >> > > +       ret = regmap_write(data->regmap, BMA400_INT_IO_CTRL_REG,
-> > >> 0x06);
-> > >> > > +       if (ret)
-> > >> > > +               return ret;
-> > >> >
-> > >> > No locking (or regmap only locking).
-> > >>
-> > >> This is bma400_init() function which will run when probe runs so there is
-> > >> no
-> > >> locking in this bma400_init().
-> > >>
-> > >> >
-> > >> > ...
-> > >> >
-> > >> > > +static int bma400_data_rdy_trigger_set_state(struct iio_trigger
-> > >> *trig,
-> > >> > > +                                            bool state)
-> > >> > > +{
-> > >> > > +       struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-> > >> > > +       struct bma400_data *data = iio_priv(indio_dev);
-> > >> > > +       int ret;
-> > >> > > +
-> > >> > > +       ret = regmap_update_bits(data->regmap,
-> > >> BMA400_INT_CONFIG0_REG,
-> > >> > > +                                BMA400_INT_DRDY_MSK,
-> > >> > > +                                FIELD_PREP(BMA400_INT_DRDY_MSK,
-> > >> state));
-> > >> > > +       if (ret)
-> > >> > > +               return ret;
-> > >> > > +
-> > >> > > +       return regmap_update_bits(data->regmap, BMA400_INT1_MAP_REG,
-> > >> > > +                                 BMA400_INT_DRDY_MSK,
-> > >> > > +                                 FIELD_PREP(BMA400_INT_DRDY_MSK,
-> > >> state));
-> > >> > > +}
-> > >> >
-> > >> > Ditto.
-> > >>
-> > >> Sorry, I missed this.
-> > >> I will add lock and unlocking in the next patch.
-> > >>
-> > >> >
-> > >> > ...
-> > >> >
-> > >> > > +       mutex_lock(&data->mutex);
-> > >> > > +
-> > >> > > +       /* bulk read six registers, with the base being the LSB
-> > >> register */
-> > >> > > +       ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
-> > >> > > +                              &data->buffer.buff,
-> > >> sizeof(data->buffer.buff));
-> > >> > > +       mutex_unlock(&data->mutex);
-> > >> > > +       if (ret)
-> > >> > > +               return IRQ_NONE;
-> > >> >
-> > >> > But here only above with locking...
-> > >> >
-> > >> > > +       ret = regmap_read(data->regmap, BMA400_TEMP_DATA_REG, &temp);
-> > >> > > +       if (ret)
-> > >> > > +               return IRQ_NONE;
-> > >> >
-> > >> > ...followed by no locking.
-> > >>
-> > >> Okay I will add lock in the next patch.
-> > >>
-> > >> >
-> > >> > ...
-> > >> >
-> > >> > > +       mutex_lock(&data->mutex);
-> > >> > > +       ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG,
-> > >> &status,
-> > >> > > +                              sizeof(status));
-> > >> > > +       mutex_unlock(&data->mutex);
-> > >> > > +       if (ret)
-> > >> > > +               return IRQ_NONE;
-> > >> >
-> > >> > And again with locking.
-> > >> >
-> > >> > ...
-> > >> >
-> > >> > So,
-> > >> > 1) Does regmap is configured with locking? What for?
-> > >> > 2) What's the role of data->mutex?
-> > >>
-> > >> 1.
-> > >> NO,
-> > >
-> > >
-> > > Are you sure?
-> > >
-> > >
-> > >>  regmap is not configured with locking.
-> > >> In the remap_config structure variable below these members are not defined
-> > >> in the driver.
-> > >>
-> > >> struct regmap_config {
-> > >>         regmap_lock lock;
-> > >>         regmap_unlock unlock;
-> > >>         void *lock_arg;
-> > >>
-> > >>
-> > > It means that default may be used.
-> > >
-> > >
-> > >> 2.
-> > >> data->mutex is used to protect the register read, write access from the
-> > >> device.
-> > >>
-> > >> Is the regmap functions handle locking and unlocking internally if these
-> > >> below
-> > >> struct members are not defined?
-> > >
-> > >
-> > > Yes. Look at this: https://elixir.bootlin.com/linux/latest/C/ident/
-> > > disable_locking
-> 
-> Please your advise will be very helpful for this.
-> 
-> I'm going through the same documentation. In this driver, disable_locking is
-> not initialized.
-> 
-> The functions which are called in the bma400_init() are not protected by mutex
-> for regmap since bma400_init() will run when the probe runs.
-> 
-> The functions which are called by read_raw() and write_raw() are protected by
-> mutex for regmap access.
-> 
-> There are some members in the device's private data structure and they are being
-> accessed in multiple places in the driver.
-> 
-> struct bma400_data {
-> enum bma400_power_mode power_mode;                                      
-> struct bma400_sample_freq sample_freq;                                  
-> int oversampling_ratio;
-> int scale;
-> .....
-> 
-> I think mutex is used to protect these above struct members since they are
-> critical resource, but in the struct bma400_data comment for mutex 
-> is "data register lock".
+s8 is not enough to hold an (arbitrary) error code. To be on the safe
+side you need to use int.
 
-Sorry, I got my mistake about mutex lock and unlocking and I will correct those
-in the next patch series.
-
-Thank you
-Jagath
-> 
-> 
-> > >
-> > >
-> > >>
-> > >> regmap_lock lock;
-> > >> regmap_unlock unlock;
-> > >> void *lock_arg;
-> > >>
-> > >>
-> > >> >
-> > >> > --
-> > >> > With Best Regards,
-> > >> > Andy Shevchenko
-> > >>
-> > >
-> > >>
-> > 
-> > You may read the kernel documentation what those fields mean:
-> >  https://elixir.bootlin.com/linux/latest/source/include/linux/regmap.h#L278
-> > 
-> > 
-> > 
-> > > --
-> > > With Best Regards,
-> > > Andy Shevchenko
-> > >
-> > >
-> > >
-> > 
-> > -- 
-> > With Best Regards,
-> > Andy Shevchenko
-> 
-> Thank you,
-> Jagath
+-- 
+With Best Regards,
+Andy Shevchenko
