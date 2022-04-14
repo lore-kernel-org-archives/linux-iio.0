@@ -2,256 +2,273 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1DC97C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Apr 2022 13:19:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFFFCC433F5
+	for <linux-iio@archiver.kernel.org>; Thu, 14 Apr 2022 13:21:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244067AbiDNNVW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Apr 2022 09:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39098 "EHLO
+        id S244080AbiDNNXt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 14 Apr 2022 09:23:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37818 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243911AbiDNNUa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2022 09:20:30 -0400
-Received: from mga09.intel.com (mga09.intel.com [134.134.136.24])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5289939F6;
-        Thu, 14 Apr 2022 06:16:54 -0700 (PDT)
+        with ESMTP id S244229AbiDNNWk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Apr 2022 09:22:40 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F0F92D33;
+        Thu, 14 Apr 2022 06:18:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1649942214; x=1681478214;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=a5xxVrauMG7GiU+CPaSKxNdeCLomDOlQOvoQNUJDI6o=;
-  b=B3O+FAqo2bAuoXQQxavELMU1vmw/KSv7G3h0ZC3gi9q1I5I/0ro+6qjf
-   jNXEgk8duCeN+r6ppjRPxkrPhRpAsLMKB9yR31xUro4uEBe6oqDUyIqKL
-   /AD3gd9UrO9UQVjZ3p8z2WsQmrCxdsAikSVamcFbELWHyFt1Of09PUdh4
-   2MufxMM9GgWiRyZMCvWhQAwLTWCwt65Qdmzm+4qgRzpYq4O7VlEYzqkyA
-   ICDeo4coa0Sk5sjmoCNJoDVnarSfDQS6QMeBC8kX9NgeDFPP/lGsuxd25
-   MIgsjCejIUXBrpXlUYmQsEu8mSflJku7hybt6H0vjhDUqDVyuTtusbbnJ
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="262370252"
+  t=1649942289; x=1681478289;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=NMZ03U0eg6eBQhOA9m78Pt/d+FZJvd2t8GerBvBRu4c=;
+  b=KiyqWrO5+g01GBkMpftI1Hk8ZyjV3BiAXCFbnHXr09R25bCfB7PUdXYe
+   JOLnSr2BwmYe05KNZ+T+U6Hbu/2BuD/DSxh508/++mrs2a9ICA79fSg23
+   PkOtpYgalWZi4R1VCI5N/uFe4AbYyD6Btgn/h6SpRZy0VjHPbvnQwOgCC
+   mrGrPUHzZjWI4vdRmuL4ySmHnfGS/tR8P3ajZ6FbyJBX3z7zla3Z3m47+
+   OeNBObbmc9+52u1h48ufp+g4CxTKmRgULR+EgEFc5nArsbPx9m/l9uRhL
+   nztiuolg4h4RhWBQXyD5PYwkHMoqOk6p5HVGPH4fjBsoizs4loEYUn4/t
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10316"; a="260522554"
 X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="262370252"
-Received: from orsmga008.jf.intel.com ([10.7.209.65])
-  by orsmga102.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:16:03 -0700
+   d="scan'208";a="260522554"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 14 Apr 2022 06:18:08 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.90,259,1643702400"; 
-   d="scan'208";a="573793473"
+   d="scan'208";a="591188379"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga008.jf.intel.com with ESMTP; 14 Apr 2022 06:16:01 -0700
+  by orsmga001.jf.intel.com with ESMTP; 14 Apr 2022 06:18:07 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 625BA12C; Thu, 14 Apr 2022 16:16:01 +0300 (EEST)
+        id 2D62B144; Thu, 14 Apr 2022 16:18:07 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>
-Subject: [PATCH v2 2/3] iio: imu: adis16480: Use temporary variable for struct device
-Date:   Thu, 14 Apr 2022 16:15:58 +0300
-Message-Id: <20220414131559.24694-2-andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 1/1] iio: imu: bmi160: Make use of device properties
+Date:   Thu, 14 Apr 2022 16:18:04 +0300
+Message-Id: <20220414131804.25227-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
-References: <20220414131559.24694-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use temporary variable for struct device to make code neater.
+Convert the module to be property provider agnostic and allow
+it to be used on non-OF platforms.
+
+While at it, reuse temporary device pointer in the same function.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Reviewed-by: Nuno Sá <nuno.sa@analog.com>
 ---
-v2: added tag (Nuno)
- drivers/iio/imu/adis16480.c | 46 ++++++++++++++++++-------------------
- 1 file changed, 23 insertions(+), 23 deletions(-)
+v2: fixed subject to use proper part number in it
+ drivers/iio/imu/bmi160/bmi160_core.c | 27 ++++++---------------------
+ drivers/iio/imu/bmi160/bmi160_i2c.c  | 13 ++++++-------
+ drivers/iio/imu/bmi160/bmi160_spi.c  | 18 +++++++++++-------
+ 3 files changed, 23 insertions(+), 35 deletions(-)
 
-diff --git a/drivers/iio/imu/adis16480.c b/drivers/iio/imu/adis16480.c
-index 68eed088cca6..287914016f28 100644
---- a/drivers/iio/imu/adis16480.c
-+++ b/drivers/iio/imu/adis16480.c
-@@ -1121,6 +1121,7 @@ static irqreturn_t adis16480_trigger_handler(int irq, void *p)
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct adis16480 *st = iio_priv(indio_dev);
- 	struct adis *adis = &st->adis;
-+	struct device *dev = &adis->spi->dev;
- 	int ret, bit, offset, i = 0;
- 	__be16 *buffer;
- 	u32 crc;
-@@ -1132,7 +1133,7 @@ static irqreturn_t adis16480_trigger_handler(int irq, void *p)
- 		adis->tx[1] = 0;
- 		ret = spi_write(adis->spi, adis->tx, 2);
- 		if (ret) {
--			dev_err(&adis->spi->dev, "Failed to change device page: %d\n", ret);
-+			dev_err(dev, "Failed to change device page: %d\n", ret);
- 			adis_dev_unlock(adis);
- 			goto irq_done;
- 		}
-@@ -1142,7 +1143,7 @@ static irqreturn_t adis16480_trigger_handler(int irq, void *p)
+diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+index 01336105792e..e7aec56ea136 100644
+--- a/drivers/iio/imu/bmi160/bmi160_core.c
++++ b/drivers/iio/imu/bmi160/bmi160_core.c
+@@ -11,10 +11,9 @@
+  */
+ #include <linux/module.h>
+ #include <linux/regmap.h>
+-#include <linux/acpi.h>
+ #include <linux/delay.h>
+ #include <linux/irq.h>
+-#include <linux/of_irq.h>
++#include <linux/property.h>
+ #include <linux/regulator/consumer.h>
  
- 	ret = spi_sync(adis->spi, &adis->msg);
- 	if (ret) {
--		dev_err(&adis->spi->dev, "Failed to read data: %d\n", ret);
-+		dev_err(dev, "Failed to read data: %d\n", ret);
- 		adis_dev_unlock(adis);
- 		goto irq_done;
- 	}
-@@ -1170,14 +1171,14 @@ static irqreturn_t adis16480_trigger_handler(int irq, void *p)
- 	}
+ #include <linux/iio/iio.h>
+@@ -525,17 +524,6 @@ static const struct iio_info bmi160_info = {
+ 	.attrs = &bmi160_attrs_group,
+ };
  
- 	if (offset == 4) {
--		dev_err(&adis->spi->dev, "Invalid burst data\n");
-+		dev_err(dev, "Invalid burst data\n");
- 		goto irq_done;
- 	}
+-static const char *bmi160_match_acpi_device(struct device *dev)
+-{
+-	const struct acpi_device_id *id;
+-
+-	id = acpi_match_device(dev->driver->acpi_match_table, dev);
+-	if (!id)
+-		return NULL;
+-
+-	return dev_name(dev);
+-}
+-
+ static int bmi160_write_conf_reg(struct regmap *regmap, unsigned int reg,
+ 				 unsigned int mask, unsigned int bits,
+ 				 unsigned int write_usleep)
+@@ -647,18 +635,18 @@ int bmi160_enable_irq(struct regmap *regmap, bool enable)
+ }
+ EXPORT_SYMBOL(bmi160_enable_irq);
  
- 	crc = be16_to_cpu(buffer[offset + 16]) << 16 | be16_to_cpu(buffer[offset + 15]);
- 	valid = adis16480_validate_crc((u16 *)&buffer[offset], 15, crc);
- 	if (!valid) {
--		dev_err(&adis->spi->dev, "Invalid crc\n");
-+		dev_err(dev, "Invalid crc\n");
- 		goto irq_done;
- 	}
- 
-@@ -1216,12 +1217,12 @@ static const struct iio_info adis16480_info = {
- static int adis16480_stop_device(struct iio_dev *indio_dev)
+-static int bmi160_get_irq(struct device_node *of_node, enum bmi160_int_pin *pin)
++static int bmi160_get_irq(struct fwnode_handle *fwnode, enum bmi160_int_pin *pin)
  {
- 	struct adis16480 *st = iio_priv(indio_dev);
-+	struct device *dev = &st->adis.spi->dev;
- 	int ret;
+ 	int irq;
  
- 	ret = adis_write_reg_16(&st->adis, ADIS16480_REG_SLP_CNT, BIT(9));
+ 	/* Use INT1 if possible, otherwise fall back to INT2. */
+-	irq = of_irq_get_byname(of_node, "INT1");
++	irq = fwnode_irq_get_byname(fwnode, "INT1");
+ 	if (irq > 0) {
+ 		*pin = BMI160_PIN_INT1;
+ 		return irq;
+ 	}
+ 
+-	irq = of_irq_get_byname(of_node, "INT2");
++	irq = fwnode_irq_get_byname(fwnode, "INT2");
+ 	if (irq > 0)
+ 		*pin = BMI160_PIN_INT2;
+ 
+@@ -688,7 +676,7 @@ static int bmi160_config_device_irq(struct iio_dev *indio_dev, int irq_type,
+ 		return -EINVAL;
+ 	}
+ 
+-	open_drain = of_property_read_bool(dev->of_node, "drive-open-drain");
++	open_drain = device_property_read_bool(dev, "drive-open-drain");
+ 
+ 	return bmi160_config_pin(data->regmap, pin, open_drain, irq_mask,
+ 				 BMI160_NORMAL_WRITE_USLEEP);
+@@ -872,9 +860,6 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
  	if (ret)
--		dev_err(&indio_dev->dev,
--			"Could not power down device: %d\n", ret);
-+		dev_err(dev, "Could not power down device: %d\n", ret);
+ 		return ret;
  
- 	return ret;
- }
-@@ -1253,7 +1254,7 @@ static int adis16480_config_irq_pin(struct adis16480 *st)
+-	if (!name && ACPI_HANDLE(dev))
+-		name = bmi160_match_acpi_device(dev);
+-
+ 	indio_dev->channels = bmi160_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(bmi160_channels);
+ 	indio_dev->name = name;
+@@ -887,7 +872,7 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+ 	if (ret)
+ 		return ret;
  
- 	desc = irq_get_irq_data(st->adis.spi->irq);
- 	if (!desc) {
--		dev_err(&st->adis.spi->dev, "Could not find IRQ %d\n", irq);
-+		dev_err(dev, "Could not find IRQ %d\n", irq);
- 		return -EINVAL;
- 	}
+-	irq = bmi160_get_irq(dev->of_node, &int_pin);
++	irq = bmi160_get_irq(dev_fwnode(dev), &int_pin);
+ 	if (irq > 0) {
+ 		ret = bmi160_setup_irq(indio_dev, irq, int_pin);
+ 		if (ret)
+diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
+index 26398614eddf..02f149d37b17 100644
+--- a/drivers/iio/imu/bmi160/bmi160_i2c.c
++++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+@@ -8,10 +8,9 @@
+  *      - 0x68 if SDO is pulled to GND
+  *      - 0x69 if SDO is pulled to VDDIO
+  */
+-#include <linux/acpi.h>
+ #include <linux/i2c.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+-#include <linux/of.h>
+ #include <linux/regmap.h>
  
-@@ -1290,8 +1291,7 @@ static int adis16480_config_irq_pin(struct adis16480 *st)
- 	} else if (irq_type == IRQ_TYPE_EDGE_FALLING) {
- 		val |= ADIS16480_DRDY_POL(0);
- 	} else {
--		dev_err(&st->adis.spi->dev,
--			"Invalid interrupt type 0x%x specified\n", irq_type);
-+		dev_err(dev, "Invalid interrupt type 0x%x specified\n", irq_type);
- 		return -EINVAL;
- 	}
- 	/* Write the data ready configuration to the FNCTIO_CTRL register */
-@@ -1315,13 +1315,13 @@ static int adis16480_fw_get_ext_clk_pin(struct adis16480 *st)
- 	}
- 
- clk_input_not_found:
--	dev_info(&st->adis.spi->dev,
--		"clk input line not specified, using DIO2\n");
-+	dev_info(dev, "clk input line not specified, using DIO2\n");
- 	return pin;
- }
- 
- static int adis16480_ext_clk_config(struct adis16480 *st, bool enable)
+ #include "bmi160.h"
+@@ -20,7 +19,7 @@ static int bmi160_i2c_probe(struct i2c_client *client,
+ 			    const struct i2c_device_id *id)
  {
-+	struct device *dev = &st->adis.spi->dev;
- 	unsigned int mode, mask;
- 	enum adis16480_int_pin pin;
- 	uint16_t val;
-@@ -1338,9 +1338,7 @@ static int adis16480_ext_clk_config(struct adis16480 *st, bool enable)
- 	 * automatically resets to zero (disabling the lower priority function).
- 	 */
- 	if (pin == ADIS16480_DRDY_SEL(val))
--		dev_warn(&st->adis.spi->dev,
--			"DIO%x pin supports only one function at a time\n",
--			pin + 1);
-+		dev_warn(dev, "DIO%x pin supports only one function at a time\n", pin + 1);
+ 	struct regmap *regmap;
+-	const char *name = NULL;
++	const char *name;
  
- 	mode = ADIS16480_SYNC_EN(enable) | ADIS16480_SYNC_SEL(pin);
- 	mask = ADIS16480_SYNC_EN_MSK | ADIS16480_SYNC_SEL_MSK;
-@@ -1362,27 +1360,29 @@ static int adis16480_ext_clk_config(struct adis16480 *st, bool enable)
+ 	regmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);
+ 	if (IS_ERR(regmap)) {
+@@ -31,6 +30,8 @@ static int bmi160_i2c_probe(struct i2c_client *client,
  
- static int adis16480_get_ext_clocks(struct adis16480 *st)
+ 	if (id)
+ 		name = id->name;
++	else
++		name = dev_name(&client->dev);
+ 
+ 	return bmi160_core_probe(&client->dev, regmap, name, false);
+ }
+@@ -47,19 +48,17 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
+ 
+-#ifdef CONFIG_OF
+ static const struct of_device_id bmi160_of_match[] = {
+ 	{ .compatible = "bosch,bmi160" },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, bmi160_of_match);
+-#endif
+ 
+ static struct i2c_driver bmi160_i2c_driver = {
+ 	.driver = {
+ 		.name			= "bmi160_i2c",
+-		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
+-		.of_match_table		= of_match_ptr(bmi160_of_match),
++		.acpi_match_table	= bmi160_acpi_match,
++		.of_match_table		= bmi160_of_match,
+ 	},
+ 	.probe		= bmi160_i2c_probe,
+ 	.id_table	= bmi160_i2c_id,
+diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
+index 61389b41c6d9..24f7d75c7903 100644
+--- a/drivers/iio/imu/bmi160/bmi160_spi.c
++++ b/drivers/iio/imu/bmi160/bmi160_spi.c
+@@ -5,9 +5,8 @@
+  * Copyright (c) 2016, Intel Corporation.
+  *
+  */
+-#include <linux/acpi.h>
++#include <linux/mod_devicetable.h>
+ #include <linux/module.h>
+-#include <linux/of.h>
+ #include <linux/regmap.h>
+ #include <linux/spi/spi.h>
+ 
+@@ -17,6 +16,7 @@ static int bmi160_spi_probe(struct spi_device *spi)
  {
-+	struct device *dev = &st->adis.spi->dev;
-+
- 	st->clk_mode = ADIS16480_CLK_INT;
--	st->ext_clk = devm_clk_get(&st->adis.spi->dev, "sync");
-+	st->ext_clk = devm_clk_get(dev, "sync");
- 	if (!IS_ERR_OR_NULL(st->ext_clk)) {
- 		st->clk_mode = ADIS16480_CLK_SYNC;
- 		return 0;
- 	}
- 
- 	if (PTR_ERR(st->ext_clk) != -ENOENT) {
--		dev_err(&st->adis.spi->dev, "failed to get ext clk\n");
-+		dev_err(dev, "failed to get ext clk\n");
- 		return PTR_ERR(st->ext_clk);
- 	}
- 
- 	if (st->chip_info->has_pps_clk_mode) {
--		st->ext_clk = devm_clk_get(&st->adis.spi->dev, "pps");
-+		st->ext_clk = devm_clk_get(dev, "pps");
- 		if (!IS_ERR_OR_NULL(st->ext_clk)) {
- 			st->clk_mode = ADIS16480_CLK_PPS;
- 			return 0;
- 		}
- 
- 		if (PTR_ERR(st->ext_clk) != -ENOENT) {
--			dev_err(&st->adis.spi->dev, "failed to get ext clk\n");
-+			dev_err(dev, "failed to get ext clk\n");
- 			return PTR_ERR(st->ext_clk);
- 		}
- 	}
-@@ -1405,11 +1405,12 @@ static int adis16480_probe(struct spi_device *spi)
+ 	struct regmap *regmap;
  	const struct spi_device_id *id = spi_get_device_id(spi);
- 	const struct adis_data *adis16480_data;
- 	irq_handler_t trigger_handler = NULL;
-+	struct device *dev = &spi->dev;
- 	struct iio_dev *indio_dev;
- 	struct adis16480 *st;
- 	int ret;
++	const char *name;
  
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
- 
-@@ -1433,8 +1434,7 @@ static int adis16480_probe(struct spi_device *spi)
- 		return ret;
- 
- 	if (st->chip_info->has_sleep_cnt) {
--		ret = devm_add_action_or_reset(&spi->dev, adis16480_stop,
--					       indio_dev);
-+		ret = devm_add_action_or_reset(dev, adis16480_stop, indio_dev);
- 		if (ret)
- 			return ret;
+ 	regmap = devm_regmap_init_spi(spi, &bmi160_regmap_config);
+ 	if (IS_ERR(regmap)) {
+@@ -24,7 +24,13 @@ static int bmi160_spi_probe(struct spi_device *spi)
+ 			regmap);
+ 		return PTR_ERR(regmap);
  	}
-@@ -1452,7 +1452,7 @@ static int adis16480_probe(struct spi_device *spi)
- 		if (ret)
- 			return ret;
+-	return bmi160_core_probe(&spi->dev, regmap, id->name, true);
++
++	if (id)
++		name = id->name;
++	else
++		name = dev_name(&spi->dev);
++
++	return bmi160_core_probe(&spi->dev, regmap, name, true);
+ }
  
--		ret = devm_add_action_or_reset(&spi->dev, adis16480_clk_disable, st->ext_clk);
-+		ret = devm_add_action_or_reset(dev, adis16480_clk_disable, st->ext_clk);
- 		if (ret)
- 			return ret;
+ static const struct spi_device_id bmi160_spi_id[] = {
+@@ -39,20 +45,18 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
  
-@@ -1485,7 +1485,7 @@ static int adis16480_probe(struct spi_device *spi)
- 	if (ret)
- 		return ret;
+-#ifdef CONFIG_OF
+ static const struct of_device_id bmi160_of_match[] = {
+ 	{ .compatible = "bosch,bmi160" },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, bmi160_of_match);
+-#endif
  
--	ret = devm_iio_device_register(&spi->dev, indio_dev);
-+	ret = devm_iio_device_register(dev, indio_dev);
- 	if (ret)
- 		return ret;
- 
+ static struct spi_driver bmi160_spi_driver = {
+ 	.probe		= bmi160_spi_probe,
+ 	.id_table	= bmi160_spi_id,
+ 	.driver = {
+-		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
+-		.of_match_table		= of_match_ptr(bmi160_of_match),
++		.acpi_match_table	= bmi160_acpi_match,
++		.of_match_table		= bmi160_of_match,
+ 		.name			= "bmi160_spi",
+ 	},
+ };
 -- 
 2.35.1
 
