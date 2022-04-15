@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 743E8C433EF
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Apr 2022 13:00:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DCEE5C4332F
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Apr 2022 13:00:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353921AbiDONDG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 15 Apr 2022 09:03:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40398 "EHLO
+        id S1353927AbiDONDH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 15 Apr 2022 09:03:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40882 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353889AbiDONC6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2022 09:02:58 -0400
-Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D8306366AD;
-        Fri, 15 Apr 2022 06:00:30 -0700 (PDT)
-Received: by mail-ej1-x62d.google.com with SMTP id i27so15248878ejd.9;
-        Fri, 15 Apr 2022 06:00:30 -0700 (PDT)
+        with ESMTP id S1353916AbiDONDE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2022 09:03:04 -0400
+Received: from mail-ed1-x52b.google.com (mail-ed1-x52b.google.com [IPv6:2a00:1450:4864:20::52b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 88C66393D1;
+        Fri, 15 Apr 2022 06:00:34 -0700 (PDT)
+Received: by mail-ed1-x52b.google.com with SMTP id z12so9872535edl.2;
+        Fri, 15 Apr 2022 06:00:34 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=z/IsAmy95v6Y5F9dwTI7MsiIUeU/tADUMkgMK1n/xpc=;
-        b=g9eDZZav229dBXLB8mdTF3wixBvTe6ubEoSSfM9sjz8nr8RG+H5D32KRu7AswaxmeZ
-         2kIbZjDi/Gp8epxuYrlzlVyaL7h5b4/ROGqIt1S0QbICkxuYz2c39jos8X3Fx5l9rKi8
-         sjsfDkUk8ndfEE6rn310pgnKMgT2tC5+2IRYPtl3TE1h0rbG6GW2RyQaG6ljEt9aJCZO
-         XFVoCEm1yHn4VUF8KV3L+r+HV7lPwmHgHmlImzIzXrL7xyPuqjwTLoD8mbQNI9WCoLwH
-         zsBCReZ0TA3zQ3zpSKqdgvcUFk5WTVHm9U7VOTRDKuum8McGC/JPm8yG7E08zygYvvG7
-         /mNw==
+        bh=rtsnvqbbeV5TO2kjb923S9kE2789W8TuX2/aYcoLqHQ=;
+        b=bjShH9vrpELZOz2s40Cx9YvVW34GLxS8ve+f68W4+cTXVVErpafgJM/ZuKH0tRaQla
+         OnRrktH7An4idN04nogHWT95nk7A2SJ/kld00KwN04oCHuKkrJP4MHSDK1VHXsTRVtaL
+         DSg6BtIv4CLXhlXNwE4xvc4dqB1wW1aInPxXoEX6SUhoVadEUh/7HJix1SRJXBxYsjHU
+         OVfAppHaSJsrGReEc59uBITrJRwVm2IlD1K1NMpN8pXniG/JEezCsTTb/xXbnEDB18qm
+         3GreFICGWn7jRubVRJsOpNNzRNmEBFbAduXMGzSwZ9T3hxfo9dV2mo1kIwohY83F7WeT
+         vLwQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=z/IsAmy95v6Y5F9dwTI7MsiIUeU/tADUMkgMK1n/xpc=;
-        b=Vadw0sQ0+vjd/55xg138byWMkVaEw0B6gsa72YNd3T+g2XSbwr1iFrvuFbEXS7Pq02
-         oXrwfyGI4qoALe+F+5UJ2SckUeGzeBRfVTE/yJvxIPWVZ3M247E8qhKGVbhFzykMyJ3U
-         nEumLcK8NFbxmC69d9ig3wDylp91OOCa1bN+RbIrFO/aySS4U7Tq+R0p/zxYH2QyHtzv
-         7lmQxhMnE54UBpdjbcm5wpC+1l7PWk1VqcYRE6phDQMmO3wGKiBNWRM3+DtMSWTb/0qI
-         bIaoOOt8fMyiD/+kOEq4QkBXJ9LXu+kWAtMPZmfApGgHtltqonJp0gWQ30T1gN+CsS10
-         xkmQ==
-X-Gm-Message-State: AOAM533J9AumT50ess2yokX7p++L7ShzOlP1fdBgvIEBG6E3zARIrEzk
-        wR5JETWhTWPesJ2XcrB2pZHm64xZDW608A==
-X-Google-Smtp-Source: ABdhPJys0ZQ9HFR166sB4kpgHYi3ZnGFUJe8zxstjc/R3tP/qrh3GSgfOuRzBiWg8MQBvrDVtDjlkw==
-X-Received: by 2002:a17:907:2d0f:b0:6e8:b710:a68 with SMTP id gs15-20020a1709072d0f00b006e8b7100a68mr5991523ejc.510.1650027629440;
-        Fri, 15 Apr 2022 06:00:29 -0700 (PDT)
+        bh=rtsnvqbbeV5TO2kjb923S9kE2789W8TuX2/aYcoLqHQ=;
+        b=CREXZ3EJ8IpW9Y8ZxOINJzc2ispVBUOwdYhmLsCAQGvDvhVGwEk/vlqmda0BLKWhkn
+         0731eILYn8hzKE3l6KGKSKDzNATOSl27wNmb12JnpdpW5jYps3TSXCV75dmgEb5vDV4T
+         t78FZ2CuYLZ4yqkOvSOspGjO701vjqZN/DvGN3GNwhSPbCyoDo53kNMw3quUNXbNJs0P
+         mwL6UqkHNPvE8Of2PLD0EQS4oUSpbB6lphlCOIz60ILiGAXKcLEjsuzgjFpFrcrxKTUO
+         EeqorbfJC3SgktzY6k7pvA9P+7G0G7djiFd+ZRdcrBC/LZzTlSvZ3upmF/Og918pl6aQ
+         r0dQ==
+X-Gm-Message-State: AOAM532l1+3kNuE2f2+PfVMB6iRRTC5ANUIq6CLfLTjYFaEFT1S1fc9G
+        IV2G67Qi/NUDB0wcxHpgGX8=
+X-Google-Smtp-Source: ABdhPJxxq1Uv3qn35IDNwgcPgMK60LbQlUaTtmFpTK+eruHFS3FrREoUCy3NEdHDH66FdeEbvC34Cw==
+X-Received: by 2002:a05:6402:5210:b0:41f:90a3:18a9 with SMTP id s16-20020a056402521000b0041f90a318a9mr8205684edd.194.1650027633034;
+        Fri, 15 Apr 2022 06:00:33 -0700 (PDT)
 Received: from poker.lan (static.2-229-210-222.ip198.fastwebnet.it. [2.229.210.222])
-        by smtp.gmail.com with ESMTPSA id i26-20020a50d75a000000b0041e84bb406fsm2704715edj.0.2022.04.15.06.00.28
+        by smtp.gmail.com with ESMTPSA id i26-20020a50d75a000000b0041e84bb406fsm2704715edj.0.2022.04.15.06.00.32
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 15 Apr 2022 06:00:29 -0700 (PDT)
+        Fri, 15 Apr 2022 06:00:32 -0700 (PDT)
 From:   Andrea Merello <andrea.merello@gmail.com>
 To:     jic23@kernel.org, mchehab+huawei@kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -54,9 +54,9 @@ To:     jic23@kernel.org, mchehab+huawei@kernel.org,
 Cc:     lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
         matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
         jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
-Subject: [v4 06/14] iio: event_monitor: add pitch, yaw and roll modifiers
-Date:   Fri, 15 Apr 2022 14:59:57 +0200
-Message-Id: <20220415130005.85879-7-andrea.merello@gmail.com>
+Subject: [v4 09/14] iio: document bno055 private sysfs attributes
+Date:   Fri, 15 Apr 2022 15:00:00 +0200
+Message-Id: <20220415130005.85879-10-andrea.merello@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220415130005.85879-1-andrea.merello@gmail.com>
 References: <20220415130005.85879-1-andrea.merello@gmail.com>
@@ -68,25 +68,102 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Andrea Merello <andrea.merello@iit.it>
 
+This patch adds ABI documentation for bno055 driver private sysfs
+attributes.
+
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 ---
- tools/iio/iio_event_monitor.c | 3 +++
- 1 file changed, 3 insertions(+)
+ .../ABI/testing/sysfs-bus-iio-bno055          | 81 +++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-bno055
 
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index 1fee44abb836..ee3f78c47655 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -125,6 +125,9 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LINEAR_X] = "linear_x",
- 	[IIO_MOD_LINEAR_Y] = "linear_y",
- 	[IIO_MOD_LINEAR_Z] = "linear_z",
-+	[IIO_MOD_PITCH] = "pitch",
-+	[IIO_MOD_YAW] = "yaw",
-+	[IIO_MOD_ROLL] = "roll",
- };
- 
- static bool event_is_known(struct iio_event_data *event)
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-bno055 b/Documentation/ABI/testing/sysfs-bus-iio-bno055
+new file mode 100644
+index 000000000000..22a5c6dc90dc
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-bno055
+@@ -0,0 +1,81 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_raw_range
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled) range for acceleration readings. Unit after
++		application of scale is m/s^2. Note that this doesn't affects
++		the scale (which should be used when changing the maximum and
++		minimum readable value affects also the reading scaling factor).
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_raw_range
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Range for angular velocity readings in radians per second. Note
++		that this does not affects the scale (which should be used when
++		changing the maximum and minimum readable value affects also the
++		reading scaling factor).
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_raw_range_available
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		List of allowed values for in_accel_raw_range attribute
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_raw_range_available
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		List of allowed values for in_anglvel_raw_range attribute
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_calibration_fast_enable
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Can be 1 or 0. Enables/disables the "Fast Magnetometer
++		Calibration" HW function.
++
++What:		/sys/bus/iio/devices/iio:deviceX/fusion_enable
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Can be 1 or 0. Enables/disables the "sensor fusion" (a.k.a.
++		NDOF) HW function.
++
++What:		/sys/bus/iio/devices/iio:deviceX/calibration_data
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the binary calibration data blob for the IMU sensors.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_calibration_auto_status
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the autocalibration status for the accelerometer sensor.
++		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
++		the number, the better the calibration status.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_calibration_auto_status
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the autocalibration status for the gyroscope sensor.
++		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
++		the number, the better the calibration status.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_calibration_auto_status
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the autocalibration status for the magnetometer sensor.
++		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
++		the number, the better the calibration status.
++
++What:		/sys/bus/iio/devices/iio:deviceX/sys_calibration_auto_status
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the status for the IMU overall autocalibration.
++		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
++		the number, the better the calibration status.
 -- 
 2.17.1
 
