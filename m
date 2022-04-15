@@ -2,112 +2,119 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC0F3C433EF
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Apr 2022 17:39:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 651D0C433EF
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Apr 2022 17:44:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236852AbiDORmD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 15 Apr 2022 13:42:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53522 "EHLO
+        id S245250AbiDORqk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 15 Apr 2022 13:46:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35346 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236561AbiDORmC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2022 13:42:02 -0400
-Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 117751A3AB
-        for <linux-iio@vger.kernel.org>; Fri, 15 Apr 2022 10:39:31 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=ZdklwSBhCAghbfD2ef7/3NzxE6oGHM6+8f7OcSAKHjY=; b=Sep+oYv380ExNo3zK6Aw0pJk13
-        ANSootrJ77YRak0NdHgZMF44uT1VVHQasMjqvLIjngBguARvSb3Q7X1bESAATawKfTuogeXPS20Em
-        4vriunaMdaVLvzQsNMROwk9dGAMGuli0wOWBUideMDGO3e9IbKIb9ox9Ol18qKvQKy/ifRXcky3OF
-        rsO5DbJ+lDM6bcTguUyD2t0GUQCZ0MK+MsbdxfRHjnBOSPPAkXd5ORy1TeMcgkrosxZNhaax70TJ/
-        a+rp6ZrC0De7JTUi+V3jGGh65qFApWuMCthnfrxHXTPIn/SzRYTyNQu30V4qxZBrEbkq5qnTWQhBr
-        1+A5gvyA==;
-Received: from sslproxy01.your-server.de ([78.46.139.224])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1nfPuq-0000hZ-Kj; Fri, 15 Apr 2022 19:39:28 +0200
-Received: from [2001:a61:2a5d:d701:9e5c:8eff:fe01:8578]
-        by sslproxy01.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1nfPuq-0004Wo-Fv; Fri, 15 Apr 2022 19:39:28 +0200
-Message-ID: <9dcc005b-20b4-6884-1096-6d81fedaddaf@metafoo.de>
-Date:   Fri, 15 Apr 2022 19:39:28 +0200
+        with ESMTP id S245230AbiDORqk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2022 13:46:40 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C832B7C4E;
+        Fri, 15 Apr 2022 10:44:10 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2ED3CB82E49;
+        Fri, 15 Apr 2022 17:44:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A38C4C385A4;
+        Fri, 15 Apr 2022 17:44:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1650044648;
+        bh=lrCSsYksbzncOviQk3dUVWiQ8mHKA/HxHFi/7Dt223o=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZpGtAMnFkcHPD8rEc9Bd+vacb2sQFH6p4ACXrTMQMf/DdPfkuat6OcYILEzuRnHFS
+         FDNwew7gMUoKeWkCSB92cVOwpnFekM8GcSt49FQzqDrAn/oLV3SJwS49HJo5pJeWD3
+         ud3x6vxR0LeLpAIucCD/7PyzI1flPk886i9KQpWSDUds2b9orWXfoOdNrQBHVAVehD
+         R8QqCShFgTRnqLbZfsErDDpCDiEUiARkk5UNsmAWCVyj70w2HPX+neRLoqtEI0txFx
+         f5ORQMwpjLlfHL57gLbCW378L00nYJZIcHBMyVfhjpA36jUu2eyb6apDgJrYPtxsQH
+         Uq/4OvcUIbGvQ==
+Date:   Fri, 15 Apr 2022 18:52:05 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Haowen Bai <baihaowen@meizu.com>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH V2] iio: gp2ap020a00f: Fix signedness bug
+Message-ID: <20220415185205.26a3d352@jic23-huawei>
+In-Reply-To: <1649985637-18854-1-git-send-email-baihaowen@meizu.com>
+References: <CAHp75VfbZhMvs7dHwadvNs6maPsBVOY3Mk5wkKSwZ1RANQQHDA@mail.gmail.com>
+        <1649985637-18854-1-git-send-email-baihaowen@meizu.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: iio: imu new driver
-Content-Language: en-US
-To:     Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>,
-        Fawzi Khaber <Fawzi.Khaber@tdk.com>,
-        "jic23@kernel.org" <jic23@kernel.org>
-Cc:     linux-iio <linux-iio@vger.kernel.org>
-References: <FRYP281MB020540A2361C4DCDB9F315A694EF9@FRYP281MB0205.DEUP281.PROD.OUTLOOK.COM>
- <89c89115-334b-27ae-413c-73b3006d3ffa@metafoo.de>
- <FR3P281MB175790BCD24EC802E3B22EC8CEEF9@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-In-Reply-To: <FR3P281MB175790BCD24EC802E3B22EC8CEEF9@FR3P281MB1757.DEUP281.PROD.OUTLOOK.COM>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.5/26513/Fri Apr 15 10:22:35 2022)
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 4/14/22 15:03, Jean-Baptiste Maneyrol wrote:
-> Hello,
->
-> accel and gyro are synchronized and are outputting data inside the same hardware FIFO, as inv_icm42600 is doing. The issue is that the sensors have different frequencies, using a header for signaling data availability, thus demultiplexing from userspace is not possible in a standard way.
->
-> Solution found for inv_icm42600 was to use 2 devices with each one a buffer. FIFO is read, data demultiplexed, and sent in each device. Now that we can have 2 buffers for 1 device, is it simpler to use this solution rather than 2 devices?
->
-> Thanks for your advice,
-> JB
+On Fri, 15 Apr 2022 09:20:37 +0800
+Haowen Bai <baihaowen@meizu.com> wrote:
 
+> function gp2ap020a00f_get_thresh_reg() is unsigned but returning -EINVAL 
+> errcode, and thresh_reg_l is unsigned but receiving -EINVAL errcode. so 
+> we have to change u8 -> int.
+> 
+> Signed-off-by: Haowen Bai <baihaowen@meizu.com>
 Hi,
 
-So the data rates are synchronized, but different, i.e. integer ratios?
+The return value is not checked in *read_event_val(), so if we actually got
+-EINVAL (in reality we can't because the switch in *_get_thresh_reg*) always
+matches) then we'd use it to index an array (after performing some maths on
+the value).  So please also add a check that the return value is not
+negative in read_event_val()
 
-I think this might be a good use case to give the multi-buffer support a 
-bit of real world testing.
-
-- Lars
+Same is true or write_event_val.
 
 
->
->
-> From: Lars-Peter Clausen <lars@metafoo.de>
-> Sent: Thursday, April 14, 2022 13:19
-> To: Fawzi Khaber <Fawzi.Khaber@tdk.com>; jic23@kernel.org <jic23@kernel.org>
-> Cc: Jean-Baptiste Maneyrol <Jean-Baptiste.Maneyrol@tdk.com>; linux-iio <linux-iio@vger.kernel.org>
-> Subject: Re: iio: imu new driver
->   
-> [CAUTION] This is EXTERNAL email. Do not click any links or open attachments unless you recognize the sender and know the content is safe.
->
-> ======================================================================
-> On 4/14/22 12:35, Fawzi Khaber wrote:
->> Hello Jonathan,
->> We are currently implementing a new driver for an invensense chip similar to
->> iio/imu/inv_icm42600. The chip has 2 sensors a gyroscope and an
->> accelerometer, and we are wandering if it was better the have two
->> IIO devices, one for each sensor, or just one IIO device with two buffers.
-> Are these two completely independent sensors that only sit in the same
-> package or do they share a common clock and the data acquisition can be
-> synchronized?
->
-> If it is the latter the best might be to have a single device with a
-> single buffer.
->
-> Typical algorithms that process IMU data, like odometry, want to process
-> the accelerator and gyroscope data jointly. If the data gets
-> artificially separated into two buffers it first has to be re-aligned,
-> which might be tricky to do.
->
-> - Lars
+Note that the bug here is probably the fact we return -EINVAL in the
+first place. We could just stop doing that but it would be non obvious
+when looking at the code that we couldn't get a failure to match in
+the switch statement - so fixing as you have done (plus the extra
+check I'm requesting) is probably the neatest solution.
 
+Thanks,
+
+Jonathan
+
+
+> ---
+> V1->V2: s8 is not enough to hold an (arbitrary) error code. To be on the safe
+> side we need to use int
+> 
+>  drivers/iio/light/gp2ap020a00f.c | 6 +++---
+>  1 file changed, 3 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/light/gp2ap020a00f.c b/drivers/iio/light/gp2ap020a00f.c
+> index b820041159f7..b0e62d3c6fa0 100644
+> --- a/drivers/iio/light/gp2ap020a00f.c
+> +++ b/drivers/iio/light/gp2ap020a00f.c
+> @@ -994,7 +994,7 @@ static irqreturn_t gp2ap020a00f_trigger_handler(int irq, void *data)
+>  	return IRQ_HANDLED;
+>  }
+>  
+> -static u8 gp2ap020a00f_get_thresh_reg(const struct iio_chan_spec *chan,
+> +static int gp2ap020a00f_get_thresh_reg(const struct iio_chan_spec *chan,
+>  					     enum iio_event_direction event_dir)
+>  {
+>  	switch (chan->type) {
+> @@ -1025,7 +1025,7 @@ static int gp2ap020a00f_write_event_val(struct iio_dev *indio_dev,
+>  	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+>  	bool event_en = false;
+>  	u8 thresh_val_id;
+> -	u8 thresh_reg_l;
+> +	int thresh_reg_l;
+>  	int err = 0;
+>  
+>  	mutex_lock(&data->lock);
+> @@ -1082,7 +1082,7 @@ static int gp2ap020a00f_read_event_val(struct iio_dev *indio_dev,
+>  				       int *val, int *val2)
+>  {
+>  	struct gp2ap020a00f_data *data = iio_priv(indio_dev);
+> -	u8 thresh_reg_l;
+> +	int thresh_reg_l;
+>  	int err = IIO_VAL_INT;
+>  
+>  	mutex_lock(&data->lock);
 
