@@ -2,80 +2,80 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7940C433F5
-	for <linux-iio@archiver.kernel.org>; Fri, 15 Apr 2022 18:14:28 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51A17C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 16 Apr 2022 08:38:27 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344336AbiDOSQ4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 15 Apr 2022 14:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60426 "EHLO
+        id S230367AbiDPIk4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 16 Apr 2022 04:40:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39062 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229847AbiDOSQz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Apr 2022 14:16:55 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53EC1D57;
-        Fri, 15 Apr 2022 11:14:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E93C0B82E28;
-        Fri, 15 Apr 2022 18:14:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 43AB4C385A4;
-        Fri, 15 Apr 2022 18:14:18 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650046459;
-        bh=cB+yg/yJGCaj03HnQCrHcoKwKc81l2WYRXJIj+kyRDc=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Fc6TYDhBNLkEH2xVgfNS1g/IktwiVFPRInG9IbYE0jAF9DZKuxq8qm5NLTyaOwrrj
-         tKyIhHg6w9R5qOpbjsjr/8aoUyMT+RKKdWYjBMPtapdJiR8MLUW8ZkGcPx9qA7uA6c
-         1q4O3ClUXmEeJfMFz2/Xsks7ZQsEm/tuCtczr4ZxfCy25rOa2qxGpEap1eKslvV1a5
-         lvMmqLv8k2QCkNVK01/rAvNt0LGM5v+CxoDGA9ABJ1hWlg+xrrkYgpKY9xY7120I83
-         ArQXqlvQgnQQap1PynzrzNs4WVZ2fDMQ5WXF8Pv0TeUJDbNzzEY77CHndoYdm9o/Oc
-         lrWlvaOxBTPWw==
-Date:   Fri, 15 Apr 2022 19:22:17 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: dac: vf610: Drop dependency on OF
-Message-ID: <20220415192217.1fb469e4@jic23-huawei>
-In-Reply-To: <20220413191611.46204-1-andriy.shevchenko@linux.intel.com>
-References: <20220413191611.46204-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S229671AbiDPIkz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 16 Apr 2022 04:40:55 -0400
+Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5592090CCC;
+        Sat, 16 Apr 2022 01:38:24 -0700 (PDT)
+Received: by mail-ed1-x532.google.com with SMTP id u18so12301022eda.3;
+        Sat, 16 Apr 2022 01:38:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=X1J3BIIZR6KeiQOhB2J1CTx8VgkOpEsswq3W09NSWH8=;
+        b=HB5itmbak+pVvvZ4x6vjn+fdml+2lGAieLL25o47IzXAVgU+K/xkLTurgzalYWKktq
+         koHqKYgnEnvjEKhtM0+7OsU0cg3saJPuE7xT8LaIILw/VWeOc7nWUm0UwlkSuG16glW1
+         jAGp5lYVySBpRD4y3Wk6BXMKWPFJAxQ4Pzq/iRV1DH1NHesd7Mc1AhFysTOtQt2grBxW
+         xT2DY203qwJF3Fn1nS9xrAa8eMC1bq2eJa/PZ8uSW+mezwBL96lmkYdcRjdKUBfZBmBl
+         xRQvyiE+3gwuAAn0N0brGbWglEfAE+N2pjxbfu7T7dSPQrI8V8d/q7wbKUEob9beYUSy
+         pOPQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=X1J3BIIZR6KeiQOhB2J1CTx8VgkOpEsswq3W09NSWH8=;
+        b=BgB26M3NF/YgRxlEKRBlUSFVmJXT7lezRSHkJH9ydtEj5exRCvoOt2GiJtT82r+fF3
+         gqu6dv5PIWpuX7T+vbws/mYvqG5d2SoQPOomiwlET8UJEi4DSJBAAxJBAlynntnhZGy9
+         sZw3GyLFzUYhHBqS3gcbHeGQut7b8qaOON4xbw7HFVbXnM/XZpgn9VtoZL5elEQMzpuc
+         DAoUm8VRpEJ7jESUOP6mMYbQQE2rKd8zM+9TamZjA866wnwqqLDLqmfXOyIG7TpQp3rJ
+         k83Z/A0r3ufMHy7LKsnbTp59AMwmf+2/aQNA9WIHUhLFM+yaip/HsR/7/p+1NSO4y2XH
+         f9qA==
+X-Gm-Message-State: AOAM531yPQIaGw4mbP9U5RUffpbDiO0oNLNup9EJO7vwcAXVUTFzH46L
+        QOBlORBdn5KlaXVm7DNBzOQ5R3p21UZiJ5KVzoc=
+X-Google-Smtp-Source: ABdhPJykggy9VhjNsTpBwcYb4YKYCF+BxZO3hY1bLUz/y48a0JaFAwpe7AUPGt39irfrfzzHJw8DIQlVQkBxpLtltUs=
+X-Received: by 2002:a50:e696:0:b0:419:998d:5feb with SMTP id
+ z22-20020a50e696000000b00419998d5febmr2961701edm.122.1650098302900; Sat, 16
+ Apr 2022 01:38:22 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220415130005.85879-1-andrea.merello@gmail.com> <20220415130005.85879-4-andrea.merello@gmail.com>
+In-Reply-To: <20220415130005.85879-4-andrea.merello@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sat, 16 Apr 2022 11:37:47 +0300
+Message-ID: <CAHp75VdmN41k7AwcmutR5NBMrJymOGief3Q8GqnRECJ3jQ8b7w@mail.gmail.com>
+Subject: Re: [v4 03/14] iio: event_monitor: add linear acceleration modifiers
+To:     Andrea Merello <andrea.merello@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        jmondi <jacopo@jmondi.org>,
+        Andrea Merello <andrea.merello@iit.it>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 13 Apr 2022 22:16:11 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Fri, Apr 15, 2022 at 4:00 PM Andrea Merello <andrea.merello@gmail.com> wrote:
+>
+> From: Andrea Merello <andrea.merello@iit.it>
 
-> Nothing in this driver depends on OF firmware so drop the dependency
-> and update the headers to remove the false impression such a dependency
-> exists.
-What headers? I'll amend the description to drop that bit.
+Missed commit message.
 
-Applied
+> Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 
-Jonathan
-
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> ---
->  drivers/iio/dac/Kconfig | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index 7ab3b0839e55..015d307a9c6d 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -441,7 +441,6 @@ config TI_DAC7612
->  
->  config VF610_DAC
->  	tristate "Vybrid vf610 DAC driver"
-> -	depends on OF
->  	depends on HAS_IOMEM
->  	help
->  	  Say yes here to support Vybrid board digital-to-analog converter.
-
+-- 
+With Best Regards,
+Andy Shevchenko
