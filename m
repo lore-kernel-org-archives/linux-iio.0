@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A136AC433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Apr 2022 19:21:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B53DEC433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Apr 2022 19:21:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244753AbiDRTYR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S244967AbiDRTYR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 18 Apr 2022 15:24:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44742 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44758 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347675AbiDRTYQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2022 15:24:16 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09F8332EFB
-        for <linux-iio@vger.kernel.org>; Mon, 18 Apr 2022 12:21:36 -0700 (PDT)
+        with ESMTP id S1347675AbiDRTYR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2022 15:24:17 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BB23035A80
+        for <linux-iio@vger.kernel.org>; Mon, 18 Apr 2022 12:21:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A5F7FB8105F
-        for <linux-iio@vger.kernel.org>; Mon, 18 Apr 2022 19:21:34 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 257A5C385AA;
-        Mon, 18 Apr 2022 19:21:31 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4A90760E16
+        for <linux-iio@vger.kernel.org>; Mon, 18 Apr 2022 19:21:37 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7A123C385A7;
+        Mon, 18 Apr 2022 19:21:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650309693;
-        bh=okgAGAVfOgUl0WQ4R6oaY0E01YBenpl9Y5vuhP4A9P4=;
+        s=k20201202; t=1650309696;
+        bh=EjO9q3akkN+aIPxTyZeloHCvdZ06XlTfElMKLOn/fIQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Wa2EYEijRWd/dKccx9LpB3H6dHjxHZu5WRw4YwNuvXj3+nnbaveMLlFbvKDppL75N
-         DxtRCsPyRPCPWxBbEyxX+X2d/yc7bvi66Rnt1bOvJ3nz9Zdn/U//h870V0+vR9gV2a
-         8AGD3kO+GKmjSe4LtXg2m1I6vzoKLVL9k4W5RGiEKsZUTmU/zdv858FOlrSs6fY3jU
-         Eat24clzBAjjjetGT8azkQ+pKP53f/MuQSE9YkSLvEi8PzPlEXBE5Wh2hS75XvWise
-         yP3zsPdVgWEXOXLqigC5lHA+cIg5oSIJuhtkFYQJQQHs2u7/F7HizQjVQq0zQAMhPr
-         xuyeLPNuLOLvA==
+        b=rDSPCJBqJJ6S25Lz6fpIgJzetAgIo2cXwU50xBU8tHSP+0brPLOqe98Ol19TTCchC
+         qboEAD5VvkqooYB6cYumno3IazqD/ewQ4AVZaJA0C/5v0BON+FdNxjOXCRvBVErG7v
+         II4CpHEhLsuDZKZfuFdBIW7eBgASQTkMdVcD2ir0M/UjX2/ef+Pdq0/PBSYoPnoeRG
+         3DIcDLwpVDHB3gQjK+K8Q6m/BAIThV3CbpWTOQAwIkIabp/9FhEI9Hy37T1aQLNL7p
+         hJ7z2S9k/hoqjgzVnoGfTjlBfsW9q+AoGUdBgHVWBACwhYaRWrwmZ1UdlOT3Gh1WDy
+         nz1rbgWa/ZNeg==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Michael Hennerich <michael.hennerich@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 12/17] staging: iio: cdc: ad7746: Switch from _offset to _inputoffset for differential channels.
-Date:   Mon, 18 Apr 2022 20:29:02 +0100
-Message-Id: <20220418192907.763933-13-jic23@kernel.org>
+Subject: [PATCH 14/17] staging: iio: ad7746: White space cleanup
+Date:   Mon, 18 Apr 2022 20:29:04 +0100
+Message-Id: <20220418192907.763933-15-jic23@kernel.org>
 X-Mailer: git-send-email 2.35.3
 In-Reply-To: <20220418192907.763933-1-jic23@kernel.org>
 References: <20220418192907.763933-1-jic23@kernel.org>
@@ -51,68 +51,79 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-As this offset is applied equally to both lines of the differential
-pair, _ofset should not be used. Use the new ABI _inputoffset instead
-to avoid userspace software applying this value when calculating
-real value = (_raw + _offset) * _scale
-
-Also add a comment to explain why an offset of 0x800000 is applied
-within the driver rather than exposed to userspace.
+Tidy up some trivial whitespace issues.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/staging/iio/cdc/ad7746.c | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ drivers/staging/iio/cdc/ad7746.c | 17 +++++++----------
+ 1 file changed, 7 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index 0dc5630d0655..46cdddab495f 100644
+index 6fe3221c8ace..058f1b74122e 100644
 --- a/drivers/staging/iio/cdc/ad7746.c
 +++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -205,7 +205,7 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.channel = 0,
- 		.channel2 = 2,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_INPUTOFFSET),
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
- 		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.address = CIN1_DIFF,
-@@ -227,7 +227,7 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.channel = 1,
- 		.channel2 = 3,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_INPUTOFFSET),
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
- 		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.address = CIN2_DIFF,
-@@ -504,6 +504,7 @@ static int ad7746_write_raw(struct iio_dev *indio_dev,
+@@ -19,9 +19,7 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
  
- 		return 0;
- 	case IIO_CHAN_INFO_OFFSET:
-+	case IIO_CHAN_INFO_INPUTOFFSET:
- 		if (val < 0 || val > 43008000) /* 21pF */
- 			return -EINVAL;
+-/*
+- * AD7746 Register Definition
+- */
++/* AD7746 Register Definition */
  
-@@ -579,6 +580,10 @@ static int ad7746_read_channel(struct iio_dev *indio_dev,
+ #define AD7746_REG_STATUS		0
+ #define AD7746_REG_CAP_DATA_HIGH	1
+@@ -242,12 +240,12 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 
+ /* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
+ static const unsigned char ad7746_vt_filter_rate_table[][2] = {
+-	{50, 20 + 1}, {31, 32 + 1}, {16, 62 + 1}, {8, 122 + 1},
++	{ 50, 20 + 1 }, { 31, 32 + 1 }, { 16, 62 + 1 }, { 8, 122 + 1 },
+ };
+ 
+ static const unsigned char ad7746_cap_filter_rate_table[][2] = {
+-	{91, 11 + 1}, {84, 12 + 1}, {50, 20 + 1}, {26, 38 + 1},
+-	{16, 62 + 1}, {13, 77 + 1}, {11, 92 + 1}, {9, 110 + 1},
++	{ 91, 11 + 1 }, { 84, 12 + 1 }, { 50, 20 + 1 }, { 26, 38 + 1 },
++	{ 16, 62 + 1 }, { 13, 77 + 1 }, { 11, 92 + 1 }, { 9, 110 + 1 },
+ };
+ 
+ static int ad7746_set_capdac(struct ad7746_chip_info *chip, int channel)
+@@ -730,6 +728,7 @@ static int ad7746_probe(struct i2c_client *client,
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
++
+ 	chip = iio_priv(indio_dev);
+ 	mutex_init(&chip->lock);
+ 
+@@ -780,8 +779,8 @@ static int ad7746_probe(struct i2c_client *client,
+ 		}
+ 	}
+ 
+-	ret = i2c_smbus_write_byte_data(chip->client,
+-					AD7746_REG_EXC_SETUP, regval);
++	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_EXC_SETUP,
++					regval);
  	if (ret < 0)
  		return ret;
  
-+	/*
-+	 * Offset applied internally becaue the _offset userspace interface is
-+	 * needed for the CAP DACs which apply a controllable offset.
-+	 */
- 	*val = get_unaligned_be24(data) - 0x800000;
+@@ -794,7 +793,6 @@ static const struct i2c_device_id ad7746_id[] = {
+ 	{ "ad7747", 7747 },
+ 	{}
+ };
+-
+ MODULE_DEVICE_TABLE(i2c, ad7746_id);
  
- 	return 0;
-@@ -635,6 +640,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ static const struct of_device_id ad7746_of_match[] = {
+@@ -803,7 +801,6 @@ static const struct of_device_id ad7746_of_match[] = {
+ 	{ .compatible = "adi,ad7747" },
+ 	{ },
+ };
+-
+ MODULE_DEVICE_TABLE(of, ad7746_of_match);
  
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
-+	case IIO_CHAN_INFO_INPUTOFFSET:
- 		*val = FIELD_GET(AD7746_CAPDAC_DACP_MASK,
- 				 chip->capdac[chan->channel][chan->differential]) * 338646;
- 
+ static struct i2c_driver ad7746_driver = {
 -- 
 2.35.3
 
