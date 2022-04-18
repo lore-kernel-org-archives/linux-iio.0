@@ -2,1745 +2,358 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22D86C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Apr 2022 19:21:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 375ADC433FE
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Apr 2022 19:36:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347661AbiDRTY1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Apr 2022 15:24:27 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44854 "EHLO
+        id S236542AbiDRTjR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Apr 2022 15:39:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59222 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347657AbiDRTYZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2022 15:24:25 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B76D35862
-        for <linux-iio@vger.kernel.org>; Mon, 18 Apr 2022 12:21:44 -0700 (PDT)
+        with ESMTP id S236253AbiDRTjQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Apr 2022 15:39:16 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0207D2253E;
+        Mon, 18 Apr 2022 12:36:36 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6FAECB81060
-        for <linux-iio@vger.kernel.org>; Mon, 18 Apr 2022 19:21:42 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0593AC385A7;
-        Mon, 18 Apr 2022 19:21:38 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8014660F4C;
+        Mon, 18 Apr 2022 19:36:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6ABB6C385A1;
+        Mon, 18 Apr 2022 19:36:30 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1650309701;
-        bh=Oygu+vHBT5KuH960iBNCErMwun2y1B7SP6EHngh8Zmk=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Enu7UL7PZPBp5KVy3PLZGiYCwrUE9gYBRXkM8B5x2RqCNW7Yhah1ZU78qwxqxTqMg
-         /2FT68nBZUe0HB0tjlPoePztt4+I9kJd/cl+Mhnf6wHH1Y4KpFi1gjCiFaV+1WsVos
-         brEFCcGlIRW3MuTapi9H53nPyWMaNNc1MBcFImRDCy+Zi7jPXQCExMhMr2zXboF3kI
-         xXc7XL3EviyYhKVQbwyAQz2dTiWfMsrI7sRKOfUEyIFVKmCI6DmYEkeUHcjV6dCb0w
-         fKGIu2RBonPCcF6ehvEmzaEbOgx9wbljlMcbuZqDHxi39/UCFoIi089NveQaPcbAKt
-         0ClfqFJfgJNIg==
+        s=k20201202; t=1650310594;
+        bh=opzS18o5uGo1m62aHvckfPRKloulevt82wvVatdoqkI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=bTS++/LBgUArGQcmlnk2ZSEarRQ2VYdY2emsKfwjGxkfFW/wj2X50clQiGWNFcFEH
+         nFWhe4kcTK12gAW2xPWT5Gb3EplV60ofv9+50uTL5rUzZZ//YMWhvwTULbYiJLGQc1
+         Jnxkp2nGj7sBGfKdeobNN07tvq6u65YFBE8YzC1Pn2QfcwhpqVmdGNAgCk1919vaQ6
+         2Eiqs9ednFsSjZZp5furQH9dZ7DSPfAPcC7PvvAshzmsHQkN90zs7T0X2ZgoUmkqHQ
+         V4iRWqBTc11BaQYxEw43rg79iFGCBIIn6ymKvmp5gGFKw3M8tOxR4t4a12RwWNOBpd
+         NMRV8fTipKIng==
+Date:   Mon, 18 Apr 2022 20:44:30 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org
-Cc:     Michael Hennerich <michael.hennerich@analog.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Vincent Whitchurch <vincent.whitchurch@axis.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 16/17] iio: cdc: ad7746: Move driver out of staging.
-Date:   Mon, 18 Apr 2022 20:29:06 +0100
-Message-Id: <20220418192907.763933-17-jic23@kernel.org>
-X-Mailer: git-send-email 2.35.3
-In-Reply-To: <20220418192907.763933-1-jic23@kernel.org>
-References: <20220418192907.763933-1-jic23@kernel.org>
+To:     Vincent Whitchurch <vincent.whitchurch@axis.com>
+Cc:     <linux-kernel@vger.kernel.org>, <kernel@axis.com>,
+        <devicetree@vger.kernel.org>, <linux-um@lists.infradead.org>,
+        <shuah@kernel.org>, <brendanhiggins@google.com>,
+        <linux-kselftest@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+        <lgirdwood@gmail.com>, <broonie@kernel.org>,
+        <a.zummo@towertech.it>, <alexandre.belloni@bootlin.com>,
+        <linux-rtc@vger.kernel.org>, <corbet@lwn.net>,
+        <linux-doc@vger.kernel.org>
+Subject: Re: [RFC v1 00/10] roadtest: a driver testing framework
+Message-ID: <20220418204430.2e6f2553@jic23-huawei>
+In-Reply-To: <20220311162445.346685-1-vincent.whitchurch@axis.com>
+References: <20220311162445.346685-1-vincent.whitchurch@axis.com>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Fri, 11 Mar 2022 17:24:35 +0100
+Vincent Whitchurch <vincent.whitchurch@axis.com> wrote:
 
-All known major issues with this driver resolved so time to move
-it out of staging.
+> This patchset proposes roadtest, a device-driver testing framework.  Drivers
+> are tested under User Mode Linux (UML) and interact with mocked/modelled
+> hardware.  The tests and hardware models are written in Python, the former
+> using Python's built-in unittest framework.
+> 
+> Drivers are tested via their userspace interfaces.  The hardware models allow
+> tests to inject values into registers and assert that drivers control the
+> hardware in the right way and react as expected to stimuli.
+> 
+> Roadtest is meant to be used for relatively simple drivers, such as the ones
+> part of the IIO, regulator and RTC subsystems.
 
-Note this cleanup work was done using the roadtest framework.
-https://lore.kernel.org/all/20220311162445.346685-1-vincent.whitchurch@axis.com/
+Hi All,
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- drivers/iio/cdc/Kconfig          |  10 +
- drivers/iio/cdc/Makefile         |   1 +
- drivers/iio/cdc/ad7746.c         | 818 +++++++++++++++++++++++++++++++
- drivers/staging/iio/cdc/ad7746.c | 818 -------------------------------
- 4 files changed, 829 insertions(+), 818 deletions(-)
+Just wanted to very briefly report back on my experience of using this framework.
 
-diff --git a/drivers/iio/cdc/Kconfig b/drivers/iio/cdc/Kconfig
-index 5e3319a3ff48..e0a5ce66a984 100644
---- a/drivers/iio/cdc/Kconfig
-+++ b/drivers/iio/cdc/Kconfig
-@@ -14,4 +14,14 @@ config AD7150
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ad7150.
- 
-+config AD7746
-+	tristate "Analog Devices AD7745, AD7746 AD7747 capacitive sensor driver"
-+	depends on I2C
-+	help
-+	  Say yes here to build support for Analog Devices capacitive sensors.
-+	  (AD7745, AD7746, AD7747) Provides direct access via sysfs.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ad7746.
-+
- endmenu
-diff --git a/drivers/iio/cdc/Makefile b/drivers/iio/cdc/Makefile
-index ee490637b032..41db756d8020 100644
---- a/drivers/iio/cdc/Makefile
-+++ b/drivers/iio/cdc/Makefile
-@@ -4,3 +4,4 @@
- #
- 
- obj-$(CONFIG_AD7150) += ad7150.o
-+obj-$(CONFIG_AD7746) += ad7746.o
-diff --git a/drivers/iio/cdc/ad7746.c b/drivers/iio/cdc/ad7746.c
-new file mode 100644
-index 000000000000..058f1b74122e
---- /dev/null
-+++ b/drivers/iio/cdc/ad7746.c
-@@ -0,0 +1,818 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
-+ *
-+ * Copyright 2011 Analog Devices Inc.
-+ */
-+
-+#include <linux/bitfield.h>
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/i2c.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/stat.h>
-+#include <linux/sysfs.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+/* AD7746 Register Definition */
-+
-+#define AD7746_REG_STATUS		0
-+#define AD7746_REG_CAP_DATA_HIGH	1
-+#define AD7746_REG_VT_DATA_HIGH		4
-+#define AD7746_REG_CAP_SETUP		7
-+#define AD7746_REG_VT_SETUP		8
-+#define AD7746_REG_EXC_SETUP		9
-+#define AD7746_REG_CFG			10
-+#define AD7746_REG_CAPDACA		11
-+#define AD7746_REG_CAPDACB		12
-+#define AD7746_REG_CAP_OFFH		13
-+#define AD7746_REG_CAP_GAINH		15
-+#define AD7746_REG_VOLT_GAINH		17
-+
-+/* Status Register Bit Designations (AD7746_REG_STATUS) */
-+#define AD7746_STATUS_EXCERR		BIT(3)
-+#define AD7746_STATUS_RDY		BIT(2)
-+#define AD7746_STATUS_RDYVT		BIT(1)
-+#define AD7746_STATUS_RDYCAP		BIT(0)
-+
-+/* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
-+#define AD7746_CAPSETUP_CAPEN		BIT(7)
-+#define AD7746_CAPSETUP_CIN2		BIT(6) /* AD7746 only */
-+#define AD7746_CAPSETUP_CAPDIFF		BIT(5)
-+#define AD7746_CAPSETUP_CACHOP		BIT(0)
-+
-+/* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
-+#define AD7746_VTSETUP_VTEN		BIT(7)
-+#define AD7746_VTSETUP_VTMD_MASK	GENMASK(6, 5)
-+#define AD7746_VTSETUP_VTMD_INT_TEMP	0
-+#define AD7746_VTSETUP_VTMD_EXT_TEMP	1
-+#define AD7746_VTSETUP_VTMD_VDD_MON	2
-+#define AD7746_VTSETUP_VTMD_EXT_VIN	3
-+#define AD7746_VTSETUP_EXTREF		BIT(4)
-+#define AD7746_VTSETUP_VTSHORT		BIT(1)
-+#define AD7746_VTSETUP_VTCHOP		BIT(0)
-+
-+/* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
-+#define AD7746_EXCSETUP_CLKCTRL		BIT(7)
-+#define AD7746_EXCSETUP_EXCON		BIT(6)
-+#define AD7746_EXCSETUP_EXCB		BIT(5)
-+#define AD7746_EXCSETUP_NEXCB		BIT(4)
-+#define AD7746_EXCSETUP_EXCA		BIT(3)
-+#define AD7746_EXCSETUP_NEXCA		BIT(2)
-+#define AD7746_EXCSETUP_EXCLVL_MASK	GENMASK(1, 0)
-+
-+/* Config Register Bit Designations (AD7746_REG_CFG) */
-+#define AD7746_CONF_VTFS_MASK		GENMASK(7, 6)
-+#define AD7746_CONF_CAPFS_MASK		GENMASK(5, 3)
-+#define AD7746_CONF_MODE_MASK		GENMASK(2, 0)
-+#define AD7746_CONF_MODE_IDLE		0
-+#define AD7746_CONF_MODE_CONT_CONV	1
-+#define AD7746_CONF_MODE_SINGLE_CONV	2
-+#define AD7746_CONF_MODE_PWRDN		3
-+#define AD7746_CONF_MODE_OFFS_CAL	5
-+#define AD7746_CONF_MODE_GAIN_CAL	6
-+
-+/* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
-+#define AD7746_CAPDAC_DACEN		BIT(7)
-+#define AD7746_CAPDAC_DACP_MASK		0x7F
-+
-+struct ad7746_chip_info {
-+	struct i2c_client *client;
-+	struct mutex lock; /* protect sensor state */
-+	/*
-+	 * Capacitive channel digital filter setup;
-+	 * conversion time/update rate setup per channel
-+	 */
-+	u8	config;
-+	u8	cap_setup;
-+	u8	vt_setup;
-+	u8	capdac[2][2];
-+	s8	capdac_set;
-+};
-+
-+enum ad7746_chan {
-+	VIN,
-+	VIN_VDD,
-+	TEMP_INT,
-+	TEMP_EXT,
-+	CIN1,
-+	CIN1_DIFF,
-+	CIN2,
-+	CIN2_DIFF,
-+};
-+
-+struct ad7746_chan_info {
-+	u8 addr;
-+	union {
-+		u8 vtmd;
-+		struct { /* CAP SETUP fields */
-+			unsigned int cin2 : 1;
-+			unsigned int capdiff : 1;
-+		};
-+	};
-+};
-+
-+static const struct ad7746_chan_info ad7746_chan_info[] = {
-+	[VIN] = {
-+		.addr = AD7746_REG_VT_DATA_HIGH,
-+		.vtmd = AD7746_VTSETUP_VTMD_EXT_VIN,
-+	},
-+	[VIN_VDD] = {
-+		.addr = AD7746_REG_VT_DATA_HIGH,
-+		.vtmd = AD7746_VTSETUP_VTMD_VDD_MON,
-+	},
-+	[TEMP_INT] = {
-+		.addr = AD7746_REG_VT_DATA_HIGH,
-+		.vtmd = AD7746_VTSETUP_VTMD_INT_TEMP,
-+	},
-+	[TEMP_EXT] = {
-+		.addr = AD7746_REG_VT_DATA_HIGH,
-+		.vtmd = AD7746_VTSETUP_VTMD_EXT_TEMP,
-+	},
-+	[CIN1] = {
-+		.addr = AD7746_REG_CAP_DATA_HIGH,
-+	},
-+	[CIN1_DIFF] = {
-+		.addr =  AD7746_REG_CAP_DATA_HIGH,
-+		.capdiff = 1,
-+	},
-+	[CIN2] = {
-+		.addr = AD7746_REG_CAP_DATA_HIGH,
-+		.cin2 = 1,
-+	},
-+	[CIN2_DIFF] = {
-+		.addr = AD7746_REG_CAP_DATA_HIGH,
-+		.cin2 = 1,
-+		.capdiff = 1,
-+	},
-+};
-+
-+static const struct iio_chan_spec ad7746_channels[] = {
-+	[VIN] = {
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.address = VIN,
-+	},
-+	[VIN_VDD] = {
-+		.type = IIO_VOLTAGE,
-+		.indexed = 1,
-+		.channel = 1,
-+		.extend_name = "supply",
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.address = VIN_VDD,
-+	},
-+	[TEMP_INT] = {
-+		.type = IIO_TEMP,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+		.address = TEMP_INT,
-+	},
-+	[TEMP_EXT] = {
-+		.type = IIO_TEMP,
-+		.indexed = 1,
-+		.channel = 1,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-+		.address = TEMP_EXT,
-+	},
-+	[CIN1] = {
-+		.type = IIO_CAPACITANCE,
-+		.indexed = 1,
-+		.channel = 0,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.address = CIN1,
-+	},
-+	[CIN1_DIFF] = {
-+		.type = IIO_CAPACITANCE,
-+		.differential = 1,
-+		.indexed = 1,
-+		.channel = 0,
-+		.channel2 = 2,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_INPUTOFFSET),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.address = CIN1_DIFF,
-+	},
-+	[CIN2] = {
-+		.type = IIO_CAPACITANCE,
-+		.indexed = 1,
-+		.channel = 1,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.address = CIN2,
-+	},
-+	[CIN2_DIFF] = {
-+		.type = IIO_CAPACITANCE,
-+		.differential = 1,
-+		.indexed = 1,
-+		.channel = 1,
-+		.channel2 = 3,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_INPUTOFFSET),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
-+		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.address = CIN2_DIFF,
-+	}
-+};
-+
-+/* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
-+static const unsigned char ad7746_vt_filter_rate_table[][2] = {
-+	{ 50, 20 + 1 }, { 31, 32 + 1 }, { 16, 62 + 1 }, { 8, 122 + 1 },
-+};
-+
-+static const unsigned char ad7746_cap_filter_rate_table[][2] = {
-+	{ 91, 11 + 1 }, { 84, 12 + 1 }, { 50, 20 + 1 }, { 26, 38 + 1 },
-+	{ 16, 62 + 1 }, { 13, 77 + 1 }, { 11, 92 + 1 }, { 9, 110 + 1 },
-+};
-+
-+static int ad7746_set_capdac(struct ad7746_chip_info *chip, int channel)
-+{
-+	int ret = i2c_smbus_write_byte_data(chip->client,
-+					    AD7746_REG_CAPDACA,
-+					    chip->capdac[channel][0]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return i2c_smbus_write_byte_data(chip->client,
-+					  AD7746_REG_CAPDACB,
-+					  chip->capdac[channel][1]);
-+}
-+
-+static int ad7746_select_channel(struct iio_dev *indio_dev,
-+				 struct iio_chan_spec const *chan)
-+{
-+	struct ad7746_chip_info *chip = iio_priv(indio_dev);
-+	u8 vt_setup, cap_setup;
-+	int ret, delay, idx;
-+
-+	switch (chan->type) {
-+	case IIO_CAPACITANCE:
-+		cap_setup = FIELD_PREP(AD7746_CAPSETUP_CIN2,
-+				       ad7746_chan_info[chan->address].cin2) |
-+			FIELD_PREP(AD7746_CAPSETUP_CAPDIFF,
-+				   ad7746_chan_info[chan->address].capdiff) |
-+			FIELD_PREP(AD7746_CAPSETUP_CAPEN, 1);
-+		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
-+		idx = FIELD_GET(AD7746_CONF_CAPFS_MASK, chip->config);
-+		delay = ad7746_cap_filter_rate_table[idx][1];
-+
-+		ret = ad7746_set_capdac(chip, chan->channel);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (chip->capdac_set != chan->channel)
-+			chip->capdac_set = chan->channel;
-+		break;
-+	case IIO_VOLTAGE:
-+	case IIO_TEMP:
-+		vt_setup = FIELD_PREP(AD7746_VTSETUP_VTMD_MASK,
-+				      ad7746_chan_info[chan->address].vtmd) |
-+			FIELD_PREP(AD7746_VTSETUP_VTEN, 1);
-+		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
-+		idx = FIELD_GET(AD7746_CONF_VTFS_MASK, chip->config);
-+		delay = ad7746_cap_filter_rate_table[idx][1];
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	if (chip->cap_setup != cap_setup) {
-+		ret = i2c_smbus_write_byte_data(chip->client,
-+						AD7746_REG_CAP_SETUP,
-+						cap_setup);
-+		if (ret < 0)
-+			return ret;
-+
-+		chip->cap_setup = cap_setup;
-+	}
-+
-+	if (chip->vt_setup != vt_setup) {
-+		ret = i2c_smbus_write_byte_data(chip->client,
-+						AD7746_REG_VT_SETUP,
-+						vt_setup);
-+		if (ret < 0)
-+			return ret;
-+
-+		chip->vt_setup = vt_setup;
-+	}
-+
-+	return delay;
-+}
-+
-+static inline ssize_t ad7746_start_calib(struct device *dev,
-+					 struct device_attribute *attr,
-+					 const char *buf,
-+					 size_t len,
-+					 u8 regval)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct ad7746_chip_info *chip = iio_priv(indio_dev);
-+	int ret, timeout = 10;
-+	bool doit;
-+
-+	ret = strtobool(buf, &doit);
-+	if (ret < 0)
-+		return ret;
-+
-+	if (!doit)
-+		return 0;
-+
-+	mutex_lock(&chip->lock);
-+	regval |= chip->config;
-+	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG, regval);
-+	if (ret < 0)
-+		goto unlock;
-+
-+	do {
-+		msleep(20);
-+		ret = i2c_smbus_read_byte_data(chip->client, AD7746_REG_CFG);
-+		if (ret < 0)
-+			goto unlock;
-+
-+	} while ((ret == regval) && timeout--);
-+
-+	mutex_unlock(&chip->lock);
-+
-+	return len;
-+
-+unlock:
-+	mutex_unlock(&chip->lock);
-+	return ret;
-+}
-+
-+static ssize_t ad7746_start_offset_calib(struct device *dev,
-+					 struct device_attribute *attr,
-+					 const char *buf,
-+					 size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	int ret = ad7746_select_channel(indio_dev,
-+			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ad7746_start_calib(dev, attr, buf, len,
-+				  FIELD_PREP(AD7746_CONF_MODE_MASK,
-+					     AD7746_CONF_MODE_OFFS_CAL));
-+}
-+
-+static ssize_t ad7746_start_gain_calib(struct device *dev,
-+				       struct device_attribute *attr,
-+				       const char *buf,
-+				       size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	int ret = ad7746_select_channel(indio_dev,
-+			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
-+	if (ret < 0)
-+		return ret;
-+
-+	return ad7746_start_calib(dev, attr, buf, len,
-+				  FIELD_PREP(AD7746_CONF_MODE_MASK,
-+					     AD7746_CONF_MODE_GAIN_CAL));
-+}
-+
-+static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
-+		       0200, NULL, ad7746_start_offset_calib, CIN1);
-+static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
-+		       0200, NULL, ad7746_start_offset_calib, CIN2);
-+static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
-+		       0200, NULL, ad7746_start_gain_calib, CIN1);
-+static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
-+		       0200, NULL, ad7746_start_gain_calib, CIN2);
-+static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
-+		       0200, NULL, ad7746_start_gain_calib, VIN);
-+
-+static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
-+					      int val)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(ad7746_cap_filter_rate_table); i++)
-+		if (val >= ad7746_cap_filter_rate_table[i][0])
-+			break;
-+
-+	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
-+		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
-+
-+	chip->config &= ~AD7746_CONF_CAPFS_MASK;
-+	chip->config |= FIELD_PREP(AD7746_CONF_CAPFS_MASK, i);
-+
-+	return 0;
-+}
-+
-+static int ad7746_store_vt_filter_rate_setup(struct ad7746_chip_info *chip,
-+					     int val)
-+{
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(ad7746_vt_filter_rate_table); i++)
-+		if (val >= ad7746_vt_filter_rate_table[i][0])
-+			break;
-+
-+	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
-+		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
-+
-+	chip->config &= ~AD7746_CONF_VTFS_MASK;
-+	chip->config |= FIELD_PREP(AD7746_CONF_VTFS_MASK, i);
-+
-+	return 0;
-+}
-+
-+static struct attribute *ad7746_attributes[] = {
-+	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
-+	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
-+	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
-+	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
-+	&iio_dev_attr_in_voltage0_calibscale_calibration.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group ad7746_attribute_group = {
-+	.attrs = ad7746_attributes,
-+};
-+
-+static int ad7746_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val,
-+			    int val2,
-+			    long mask)
-+{
-+	struct ad7746_chip_info *chip = iio_priv(indio_dev);
-+	int ret, reg;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		if (val != 1)
-+			return -EINVAL;
-+
-+		val = (val2 * 1024) / 15625;
-+
-+		switch (chan->type) {
-+		case IIO_CAPACITANCE:
-+			reg = AD7746_REG_CAP_GAINH;
-+			break;
-+		case IIO_VOLTAGE:
-+			reg = AD7746_REG_VOLT_GAINH;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		mutex_lock(&chip->lock);
-+		ret = i2c_smbus_write_word_swapped(chip->client, reg, val);
-+		mutex_unlock(&chip->lock);
-+		if (ret < 0)
-+			return ret;
-+
-+		return 0;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		if (val < 0 || val > 0xFFFF)
-+			return -EINVAL;
-+
-+		mutex_lock(&chip->lock);
-+		ret = i2c_smbus_write_word_swapped(chip->client,
-+						   AD7746_REG_CAP_OFFH, val);
-+		mutex_unlock(&chip->lock);
-+		if (ret < 0)
-+			return ret;
-+
-+		return 0;
-+	case IIO_CHAN_INFO_OFFSET:
-+	case IIO_CHAN_INFO_INPUTOFFSET:
-+		if (val < 0 || val > 43008000) /* 21pF */
-+			return -EINVAL;
-+
-+		/*
-+		 * CAPDAC Scale = 21pF_typ / 127
-+		 * CIN Scale = 8.192pF / 2^24
-+		 * Offset Scale = CAPDAC Scale / CIN Scale = 338646
-+		 */
-+
-+		val /= 338646;
-+		mutex_lock(&chip->lock);
-+		chip->capdac[chan->channel][chan->differential] = val > 0 ?
-+			FIELD_PREP(AD7746_CAPDAC_DACP_MASK, val) | AD7746_CAPDAC_DACEN : 0;
-+
-+		ret = ad7746_set_capdac(chip, chan->channel);
-+		if (ret < 0) {
-+			mutex_unlock(&chip->lock);
-+			return ret;
-+		}
-+
-+		chip->capdac_set = chan->channel;
-+		mutex_unlock(&chip->lock);
-+
-+		return 0;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (val2)
-+			return -EINVAL;
-+
-+		switch (chan->type) {
-+		case IIO_CAPACITANCE:
-+			mutex_lock(&chip->lock);
-+			ret = ad7746_store_cap_filter_rate_setup(chip, val);
-+			mutex_unlock(&chip->lock);
-+			return ret;
-+		case IIO_VOLTAGE:
-+			mutex_lock(&chip->lock);
-+			ret = ad7746_store_vt_filter_rate_setup(chip, val);
-+			mutex_unlock(&chip->lock);
-+			return ret;
-+		default:
-+			return -EINVAL;
-+		}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const int ad7746_v_samp_freq[] = { 50, 31, 16, 8, };
-+static const int ad7746_cap_samp_freq[] = { 91, 84, 50, 26, 16, 13, 11, 9, };
-+
-+static int ad7746_read_avail(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan, const int **vals,
-+			     int *type, int *length, long mask)
-+{
-+	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
-+		return -EINVAL;
-+
-+	switch (chan->type) {
-+	case IIO_VOLTAGE:
-+		*vals = ad7746_v_samp_freq;
-+		*length = ARRAY_SIZE(ad7746_v_samp_freq);
-+		break;
-+	case IIO_CAPACITANCE:
-+		*vals = ad7746_cap_samp_freq;
-+		*length = ARRAY_SIZE(ad7746_cap_samp_freq);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+	*type = IIO_VAL_INT;
-+	return IIO_AVAIL_LIST;
-+}
-+
-+static int ad7746_read_channel(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int *val)
-+{
-+	struct ad7746_chip_info *chip = iio_priv(indio_dev);
-+	int ret, delay;
-+	u8 data[3];
-+	u8 regval;
-+
-+	ret = ad7746_select_channel(indio_dev, chan);
-+	if (ret < 0)
-+		return ret;
-+	delay = ret;
-+
-+	regval = chip->config | FIELD_PREP(AD7746_CONF_MODE_MASK,
-+					   AD7746_CONF_MODE_SINGLE_CONV);
-+	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG, regval);
-+	if (ret < 0)
-+		return ret;
-+
-+	msleep(delay);
-+	/* Now read the actual register */
-+	ret = i2c_smbus_read_i2c_block_data(chip->client,
-+					    ad7746_chan_info[chan->address].addr,
-+					    3, data);
-+	if (ret < 0)
-+		return ret;
-+
-+	/*
-+	 * Offset applied internally becaue the _offset userspace interface is
-+	 * needed for the CAP DACs which apply a controllable offset.
-+	 */
-+	*val = get_unaligned_be24(data) - 0x800000;
-+
-+	return 0;
-+}
-+
-+static int ad7746_read_raw(struct iio_dev *indio_dev,
-+			   struct iio_chan_spec const *chan,
-+			   int *val, int *val2,
-+			   long mask)
-+{
-+	struct ad7746_chip_info *chip = iio_priv(indio_dev);
-+	int ret, idx;
-+	u8 reg;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&chip->lock);
-+		ret = ad7746_read_channel(indio_dev, chan, val);
-+		mutex_unlock(&chip->lock);
-+		if (ret < 0)
-+			return ret;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		switch (chan->type) {
-+		case IIO_CAPACITANCE:
-+			reg = AD7746_REG_CAP_GAINH;
-+			break;
-+		case IIO_VOLTAGE:
-+			reg = AD7746_REG_VOLT_GAINH;
-+			break;
-+		default:
-+			return -EINVAL;
-+		}
-+
-+		mutex_lock(&chip->lock);
-+		ret = i2c_smbus_read_word_swapped(chip->client, reg);
-+		mutex_unlock(&chip->lock);
-+		if (ret < 0)
-+			return ret;
-+		/* 1 + gain_val / 2^16 */
-+		*val = 1;
-+		*val2 = (15625 * ret) / 1024;
-+
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		mutex_lock(&chip->lock);
-+		ret = i2c_smbus_read_word_swapped(chip->client,
-+						  AD7746_REG_CAP_OFFH);
-+		mutex_unlock(&chip->lock);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_OFFSET:
-+	case IIO_CHAN_INFO_INPUTOFFSET:
-+		*val = FIELD_GET(AD7746_CAPDAC_DACP_MASK,
-+				 chip->capdac[chan->channel][chan->differential]) * 338646;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->type) {
-+		case IIO_CAPACITANCE:
-+			/* 8.192pf / 2^24 */
-+			*val =  0;
-+			*val2 = 488;
-+			return IIO_VAL_INT_PLUS_NANO;
-+		case IIO_VOLTAGE:
-+			/* 1170mV / 2^23 */
-+			*val = 1170;
-+			if (chan->channel == 1)
-+				*val *= 6;
-+			*val2 = 23;
-+			return IIO_VAL_FRACTIONAL_LOG2;
-+		case IIO_TEMP:
-+			*val = 125;
-+			*val2 = 8;
-+			return IIO_VAL_FRACTIONAL_LOG2;
-+		default:
-+			return -EINVAL;
-+		}
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		switch (chan->type) {
-+		case IIO_CAPACITANCE:
-+			idx = FIELD_GET(AD7746_CONF_CAPFS_MASK, chip->config);
-+			*val = ad7746_cap_filter_rate_table[idx][0];
-+			return IIO_VAL_INT;
-+		case IIO_VOLTAGE:
-+			idx = FIELD_GET(AD7746_CONF_VTFS_MASK, chip->config);
-+			*val = ad7746_vt_filter_rate_table[idx][0];
-+			return IIO_VAL_INT;
-+		default:
-+			return -EINVAL;
-+		}
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info ad7746_info = {
-+	.attrs = &ad7746_attribute_group,
-+	.read_raw = ad7746_read_raw,
-+	.read_avail = ad7746_read_avail,
-+	.write_raw = ad7746_write_raw,
-+};
-+
-+static int ad7746_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	struct device *dev = &client->dev;
-+	struct ad7746_chip_info *chip;
-+	struct iio_dev *indio_dev;
-+	unsigned char regval = 0;
-+	unsigned int vdd_permille;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	chip = iio_priv(indio_dev);
-+	mutex_init(&chip->lock);
-+
-+	chip->client = client;
-+	chip->capdac_set = -1;
-+
-+	indio_dev->name = id->name;
-+	indio_dev->info = &ad7746_info;
-+	indio_dev->channels = ad7746_channels;
-+	if (id->driver_data == 7746)
-+		indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
-+	else
-+		indio_dev->num_channels =  ARRAY_SIZE(ad7746_channels) - 2;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	if (device_property_read_bool(dev, "adi,exca-output-en")) {
-+		if (device_property_read_bool(dev, "adi,exca-output-invert"))
-+			regval |= AD7746_EXCSETUP_NEXCA;
-+		else
-+			regval |= AD7746_EXCSETUP_EXCA;
-+	}
-+
-+	if (device_property_read_bool(dev, "adi,excb-output-en")) {
-+		if (device_property_read_bool(dev, "adi,excb-output-invert"))
-+			regval |= AD7746_EXCSETUP_NEXCB;
-+		else
-+			regval |= AD7746_EXCSETUP_EXCB;
-+	}
-+
-+	ret = device_property_read_u32(dev, "adi,excitation-vdd-permille",
-+				       &vdd_permille);
-+	if (!ret) {
-+		switch (vdd_permille) {
-+		case 125:
-+			regval |= FIELD_PREP(AD7746_EXCSETUP_EXCLVL_MASK, 0);
-+			break;
-+		case 250:
-+			regval |= FIELD_PREP(AD7746_EXCSETUP_EXCLVL_MASK, 1);
-+			break;
-+		case 375:
-+			regval |= FIELD_PREP(AD7746_EXCSETUP_EXCLVL_MASK, 2);
-+			break;
-+		case 500:
-+			regval |= FIELD_PREP(AD7746_EXCSETUP_EXCLVL_MASK, 3);
-+			break;
-+		default:
-+			break;
-+		}
-+	}
-+
-+	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_EXC_SETUP,
-+					regval);
-+	if (ret < 0)
-+		return ret;
-+
-+	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-+}
-+
-+static const struct i2c_device_id ad7746_id[] = {
-+	{ "ad7745", 7745 },
-+	{ "ad7746", 7746 },
-+	{ "ad7747", 7747 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(i2c, ad7746_id);
-+
-+static const struct of_device_id ad7746_of_match[] = {
-+	{ .compatible = "adi,ad7745" },
-+	{ .compatible = "adi,ad7746" },
-+	{ .compatible = "adi,ad7747" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, ad7746_of_match);
-+
-+static struct i2c_driver ad7746_driver = {
-+	.driver = {
-+		.name = KBUILD_MODNAME,
-+		.of_match_table = ad7746_of_match,
-+	},
-+	.probe = ad7746_probe,
-+	.id_table = ad7746_id,
-+};
-+module_i2c_driver(ad7746_driver);
-+
-+MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
-+MODULE_DESCRIPTION("Analog Devices AD7746/5/7 capacitive sensor driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-deleted file mode 100644
-index 058f1b74122e..000000000000
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ /dev/null
-@@ -1,818 +0,0 @@
--// SPDX-License-Identifier: GPL-2.0
--/*
-- * AD7746 capacitive sensor driver supporting AD7745, AD7746 and AD7747
-- *
-- * Copyright 2011 Analog Devices Inc.
-- */
--
--#include <linux/bitfield.h>
--#include <linux/delay.h>
--#include <linux/device.h>
--#include <linux/i2c.h>
--#include <linux/interrupt.h>
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/slab.h>
--#include <linux/stat.h>
--#include <linux/sysfs.h>
--
--#include <linux/iio/iio.h>
--#include <linux/iio/sysfs.h>
--
--/* AD7746 Register Definition */
--
--#define AD7746_REG_STATUS		0
--#define AD7746_REG_CAP_DATA_HIGH	1
--#define AD7746_REG_VT_DATA_HIGH		4
--#define AD7746_REG_CAP_SETUP		7
--#define AD7746_REG_VT_SETUP		8
--#define AD7746_REG_EXC_SETUP		9
--#define AD7746_REG_CFG			10
--#define AD7746_REG_CAPDACA		11
--#define AD7746_REG_CAPDACB		12
--#define AD7746_REG_CAP_OFFH		13
--#define AD7746_REG_CAP_GAINH		15
--#define AD7746_REG_VOLT_GAINH		17
--
--/* Status Register Bit Designations (AD7746_REG_STATUS) */
--#define AD7746_STATUS_EXCERR		BIT(3)
--#define AD7746_STATUS_RDY		BIT(2)
--#define AD7746_STATUS_RDYVT		BIT(1)
--#define AD7746_STATUS_RDYCAP		BIT(0)
--
--/* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
--#define AD7746_CAPSETUP_CAPEN		BIT(7)
--#define AD7746_CAPSETUP_CIN2		BIT(6) /* AD7746 only */
--#define AD7746_CAPSETUP_CAPDIFF		BIT(5)
--#define AD7746_CAPSETUP_CACHOP		BIT(0)
--
--/* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
--#define AD7746_VTSETUP_VTEN		BIT(7)
--#define AD7746_VTSETUP_VTMD_MASK	GENMASK(6, 5)
--#define AD7746_VTSETUP_VTMD_INT_TEMP	0
--#define AD7746_VTSETUP_VTMD_EXT_TEMP	1
--#define AD7746_VTSETUP_VTMD_VDD_MON	2
--#define AD7746_VTSETUP_VTMD_EXT_VIN	3
--#define AD7746_VTSETUP_EXTREF		BIT(4)
--#define AD7746_VTSETUP_VTSHORT		BIT(1)
--#define AD7746_VTSETUP_VTCHOP		BIT(0)
--
--/* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
--#define AD7746_EXCSETUP_CLKCTRL		BIT(7)
--#define AD7746_EXCSETUP_EXCON		BIT(6)
--#define AD7746_EXCSETUP_EXCB		BIT(5)
--#define AD7746_EXCSETUP_NEXCB		BIT(4)
--#define AD7746_EXCSETUP_EXCA		BIT(3)
--#define AD7746_EXCSETUP_NEXCA		BIT(2)
--#define AD7746_EXCSETUP_EXCLVL_MASK	GENMASK(1, 0)
--
--/* Config Register Bit Designations (AD7746_REG_CFG) */
--#define AD7746_CONF_VTFS_MASK		GENMASK(7, 6)
--#define AD7746_CONF_CAPFS_MASK		GENMASK(5, 3)
--#define AD7746_CONF_MODE_MASK		GENMASK(2, 0)
--#define AD7746_CONF_MODE_IDLE		0
--#define AD7746_CONF_MODE_CONT_CONV	1
--#define AD7746_CONF_MODE_SINGLE_CONV	2
--#define AD7746_CONF_MODE_PWRDN		3
--#define AD7746_CONF_MODE_OFFS_CAL	5
--#define AD7746_CONF_MODE_GAIN_CAL	6
--
--/* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
--#define AD7746_CAPDAC_DACEN		BIT(7)
--#define AD7746_CAPDAC_DACP_MASK		0x7F
--
--struct ad7746_chip_info {
--	struct i2c_client *client;
--	struct mutex lock; /* protect sensor state */
--	/*
--	 * Capacitive channel digital filter setup;
--	 * conversion time/update rate setup per channel
--	 */
--	u8	config;
--	u8	cap_setup;
--	u8	vt_setup;
--	u8	capdac[2][2];
--	s8	capdac_set;
--};
--
--enum ad7746_chan {
--	VIN,
--	VIN_VDD,
--	TEMP_INT,
--	TEMP_EXT,
--	CIN1,
--	CIN1_DIFF,
--	CIN2,
--	CIN2_DIFF,
--};
--
--struct ad7746_chan_info {
--	u8 addr;
--	union {
--		u8 vtmd;
--		struct { /* CAP SETUP fields */
--			unsigned int cin2 : 1;
--			unsigned int capdiff : 1;
--		};
--	};
--};
--
--static const struct ad7746_chan_info ad7746_chan_info[] = {
--	[VIN] = {
--		.addr = AD7746_REG_VT_DATA_HIGH,
--		.vtmd = AD7746_VTSETUP_VTMD_EXT_VIN,
--	},
--	[VIN_VDD] = {
--		.addr = AD7746_REG_VT_DATA_HIGH,
--		.vtmd = AD7746_VTSETUP_VTMD_VDD_MON,
--	},
--	[TEMP_INT] = {
--		.addr = AD7746_REG_VT_DATA_HIGH,
--		.vtmd = AD7746_VTSETUP_VTMD_INT_TEMP,
--	},
--	[TEMP_EXT] = {
--		.addr = AD7746_REG_VT_DATA_HIGH,
--		.vtmd = AD7746_VTSETUP_VTMD_EXT_TEMP,
--	},
--	[CIN1] = {
--		.addr = AD7746_REG_CAP_DATA_HIGH,
--	},
--	[CIN1_DIFF] = {
--		.addr =  AD7746_REG_CAP_DATA_HIGH,
--		.capdiff = 1,
--	},
--	[CIN2] = {
--		.addr = AD7746_REG_CAP_DATA_HIGH,
--		.cin2 = 1,
--	},
--	[CIN2_DIFF] = {
--		.addr = AD7746_REG_CAP_DATA_HIGH,
--		.cin2 = 1,
--		.capdiff = 1,
--	},
--};
--
--static const struct iio_chan_spec ad7746_channels[] = {
--	[VIN] = {
--		.type = IIO_VOLTAGE,
--		.indexed = 1,
--		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.address = VIN,
--	},
--	[VIN_VDD] = {
--		.type = IIO_VOLTAGE,
--		.indexed = 1,
--		.channel = 1,
--		.extend_name = "supply",
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.address = VIN_VDD,
--	},
--	[TEMP_INT] = {
--		.type = IIO_TEMP,
--		.indexed = 1,
--		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
--		.address = TEMP_INT,
--	},
--	[TEMP_EXT] = {
--		.type = IIO_TEMP,
--		.indexed = 1,
--		.channel = 1,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
--		.address = TEMP_EXT,
--	},
--	[CIN1] = {
--		.type = IIO_CAPACITANCE,
--		.indexed = 1,
--		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
--		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.address = CIN1,
--	},
--	[CIN1_DIFF] = {
--		.type = IIO_CAPACITANCE,
--		.differential = 1,
--		.indexed = 1,
--		.channel = 0,
--		.channel2 = 2,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_INPUTOFFSET),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
--		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.address = CIN1_DIFF,
--	},
--	[CIN2] = {
--		.type = IIO_CAPACITANCE,
--		.indexed = 1,
--		.channel = 1,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_OFFSET),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
--		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.address = CIN2,
--	},
--	[CIN2_DIFF] = {
--		.type = IIO_CAPACITANCE,
--		.differential = 1,
--		.indexed = 1,
--		.channel = 1,
--		.channel2 = 3,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--		BIT(IIO_CHAN_INFO_CALIBSCALE) | BIT(IIO_CHAN_INFO_INPUTOFFSET),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_CALIBBIAS) |
--		BIT(IIO_CHAN_INFO_SCALE) | BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ),
--		.address = CIN2_DIFF,
--	}
--};
--
--/* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
--static const unsigned char ad7746_vt_filter_rate_table[][2] = {
--	{ 50, 20 + 1 }, { 31, 32 + 1 }, { 16, 62 + 1 }, { 8, 122 + 1 },
--};
--
--static const unsigned char ad7746_cap_filter_rate_table[][2] = {
--	{ 91, 11 + 1 }, { 84, 12 + 1 }, { 50, 20 + 1 }, { 26, 38 + 1 },
--	{ 16, 62 + 1 }, { 13, 77 + 1 }, { 11, 92 + 1 }, { 9, 110 + 1 },
--};
--
--static int ad7746_set_capdac(struct ad7746_chip_info *chip, int channel)
--{
--	int ret = i2c_smbus_write_byte_data(chip->client,
--					    AD7746_REG_CAPDACA,
--					    chip->capdac[channel][0]);
--	if (ret < 0)
--		return ret;
--
--	return i2c_smbus_write_byte_data(chip->client,
--					  AD7746_REG_CAPDACB,
--					  chip->capdac[channel][1]);
--}
--
--static int ad7746_select_channel(struct iio_dev *indio_dev,
--				 struct iio_chan_spec const *chan)
--{
--	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	u8 vt_setup, cap_setup;
--	int ret, delay, idx;
--
--	switch (chan->type) {
--	case IIO_CAPACITANCE:
--		cap_setup = FIELD_PREP(AD7746_CAPSETUP_CIN2,
--				       ad7746_chan_info[chan->address].cin2) |
--			FIELD_PREP(AD7746_CAPSETUP_CAPDIFF,
--				   ad7746_chan_info[chan->address].capdiff) |
--			FIELD_PREP(AD7746_CAPSETUP_CAPEN, 1);
--		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
--		idx = FIELD_GET(AD7746_CONF_CAPFS_MASK, chip->config);
--		delay = ad7746_cap_filter_rate_table[idx][1];
--
--		ret = ad7746_set_capdac(chip, chan->channel);
--		if (ret < 0)
--			return ret;
--
--		if (chip->capdac_set != chan->channel)
--			chip->capdac_set = chan->channel;
--		break;
--	case IIO_VOLTAGE:
--	case IIO_TEMP:
--		vt_setup = FIELD_PREP(AD7746_VTSETUP_VTMD_MASK,
--				      ad7746_chan_info[chan->address].vtmd) |
--			FIELD_PREP(AD7746_VTSETUP_VTEN, 1);
--		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
--		idx = FIELD_GET(AD7746_CONF_VTFS_MASK, chip->config);
--		delay = ad7746_cap_filter_rate_table[idx][1];
--		break;
--	default:
--		return -EINVAL;
--	}
--
--	if (chip->cap_setup != cap_setup) {
--		ret = i2c_smbus_write_byte_data(chip->client,
--						AD7746_REG_CAP_SETUP,
--						cap_setup);
--		if (ret < 0)
--			return ret;
--
--		chip->cap_setup = cap_setup;
--	}
--
--	if (chip->vt_setup != vt_setup) {
--		ret = i2c_smbus_write_byte_data(chip->client,
--						AD7746_REG_VT_SETUP,
--						vt_setup);
--		if (ret < 0)
--			return ret;
--
--		chip->vt_setup = vt_setup;
--	}
--
--	return delay;
--}
--
--static inline ssize_t ad7746_start_calib(struct device *dev,
--					 struct device_attribute *attr,
--					 const char *buf,
--					 size_t len,
--					 u8 regval)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	int ret, timeout = 10;
--	bool doit;
--
--	ret = strtobool(buf, &doit);
--	if (ret < 0)
--		return ret;
--
--	if (!doit)
--		return 0;
--
--	mutex_lock(&chip->lock);
--	regval |= chip->config;
--	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG, regval);
--	if (ret < 0)
--		goto unlock;
--
--	do {
--		msleep(20);
--		ret = i2c_smbus_read_byte_data(chip->client, AD7746_REG_CFG);
--		if (ret < 0)
--			goto unlock;
--
--	} while ((ret == regval) && timeout--);
--
--	mutex_unlock(&chip->lock);
--
--	return len;
--
--unlock:
--	mutex_unlock(&chip->lock);
--	return ret;
--}
--
--static ssize_t ad7746_start_offset_calib(struct device *dev,
--					 struct device_attribute *attr,
--					 const char *buf,
--					 size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	int ret = ad7746_select_channel(indio_dev,
--			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
--	if (ret < 0)
--		return ret;
--
--	return ad7746_start_calib(dev, attr, buf, len,
--				  FIELD_PREP(AD7746_CONF_MODE_MASK,
--					     AD7746_CONF_MODE_OFFS_CAL));
--}
--
--static ssize_t ad7746_start_gain_calib(struct device *dev,
--				       struct device_attribute *attr,
--				       const char *buf,
--				       size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	int ret = ad7746_select_channel(indio_dev,
--			      &ad7746_channels[to_iio_dev_attr(attr)->address]);
--	if (ret < 0)
--		return ret;
--
--	return ad7746_start_calib(dev, attr, buf, len,
--				  FIELD_PREP(AD7746_CONF_MODE_MASK,
--					     AD7746_CONF_MODE_GAIN_CAL));
--}
--
--static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
--		       0200, NULL, ad7746_start_offset_calib, CIN1);
--static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
--		       0200, NULL, ad7746_start_offset_calib, CIN2);
--static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
--		       0200, NULL, ad7746_start_gain_calib, CIN1);
--static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
--		       0200, NULL, ad7746_start_gain_calib, CIN2);
--static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
--		       0200, NULL, ad7746_start_gain_calib, VIN);
--
--static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
--					      int val)
--{
--	int i;
--
--	for (i = 0; i < ARRAY_SIZE(ad7746_cap_filter_rate_table); i++)
--		if (val >= ad7746_cap_filter_rate_table[i][0])
--			break;
--
--	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
--		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
--
--	chip->config &= ~AD7746_CONF_CAPFS_MASK;
--	chip->config |= FIELD_PREP(AD7746_CONF_CAPFS_MASK, i);
--
--	return 0;
--}
--
--static int ad7746_store_vt_filter_rate_setup(struct ad7746_chip_info *chip,
--					     int val)
--{
--	int i;
--
--	for (i = 0; i < ARRAY_SIZE(ad7746_vt_filter_rate_table); i++)
--		if (val >= ad7746_vt_filter_rate_table[i][0])
--			break;
--
--	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
--		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
--
--	chip->config &= ~AD7746_CONF_VTFS_MASK;
--	chip->config |= FIELD_PREP(AD7746_CONF_VTFS_MASK, i);
--
--	return 0;
--}
--
--static struct attribute *ad7746_attributes[] = {
--	&iio_dev_attr_in_capacitance0_calibbias_calibration.dev_attr.attr,
--	&iio_dev_attr_in_capacitance0_calibscale_calibration.dev_attr.attr,
--	&iio_dev_attr_in_capacitance1_calibscale_calibration.dev_attr.attr,
--	&iio_dev_attr_in_capacitance1_calibbias_calibration.dev_attr.attr,
--	&iio_dev_attr_in_voltage0_calibscale_calibration.dev_attr.attr,
--	NULL,
--};
--
--static const struct attribute_group ad7746_attribute_group = {
--	.attrs = ad7746_attributes,
--};
--
--static int ad7746_write_raw(struct iio_dev *indio_dev,
--			    struct iio_chan_spec const *chan,
--			    int val,
--			    int val2,
--			    long mask)
--{
--	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	int ret, reg;
--
--	switch (mask) {
--	case IIO_CHAN_INFO_CALIBSCALE:
--		if (val != 1)
--			return -EINVAL;
--
--		val = (val2 * 1024) / 15625;
--
--		switch (chan->type) {
--		case IIO_CAPACITANCE:
--			reg = AD7746_REG_CAP_GAINH;
--			break;
--		case IIO_VOLTAGE:
--			reg = AD7746_REG_VOLT_GAINH;
--			break;
--		default:
--			return -EINVAL;
--		}
--
--		mutex_lock(&chip->lock);
--		ret = i2c_smbus_write_word_swapped(chip->client, reg, val);
--		mutex_unlock(&chip->lock);
--		if (ret < 0)
--			return ret;
--
--		return 0;
--	case IIO_CHAN_INFO_CALIBBIAS:
--		if (val < 0 || val > 0xFFFF)
--			return -EINVAL;
--
--		mutex_lock(&chip->lock);
--		ret = i2c_smbus_write_word_swapped(chip->client,
--						   AD7746_REG_CAP_OFFH, val);
--		mutex_unlock(&chip->lock);
--		if (ret < 0)
--			return ret;
--
--		return 0;
--	case IIO_CHAN_INFO_OFFSET:
--	case IIO_CHAN_INFO_INPUTOFFSET:
--		if (val < 0 || val > 43008000) /* 21pF */
--			return -EINVAL;
--
--		/*
--		 * CAPDAC Scale = 21pF_typ / 127
--		 * CIN Scale = 8.192pF / 2^24
--		 * Offset Scale = CAPDAC Scale / CIN Scale = 338646
--		 */
--
--		val /= 338646;
--		mutex_lock(&chip->lock);
--		chip->capdac[chan->channel][chan->differential] = val > 0 ?
--			FIELD_PREP(AD7746_CAPDAC_DACP_MASK, val) | AD7746_CAPDAC_DACEN : 0;
--
--		ret = ad7746_set_capdac(chip, chan->channel);
--		if (ret < 0) {
--			mutex_unlock(&chip->lock);
--			return ret;
--		}
--
--		chip->capdac_set = chan->channel;
--		mutex_unlock(&chip->lock);
--
--		return 0;
--	case IIO_CHAN_INFO_SAMP_FREQ:
--		if (val2)
--			return -EINVAL;
--
--		switch (chan->type) {
--		case IIO_CAPACITANCE:
--			mutex_lock(&chip->lock);
--			ret = ad7746_store_cap_filter_rate_setup(chip, val);
--			mutex_unlock(&chip->lock);
--			return ret;
--		case IIO_VOLTAGE:
--			mutex_lock(&chip->lock);
--			ret = ad7746_store_vt_filter_rate_setup(chip, val);
--			mutex_unlock(&chip->lock);
--			return ret;
--		default:
--			return -EINVAL;
--		}
--	default:
--		return -EINVAL;
--	}
--}
--
--static const int ad7746_v_samp_freq[] = { 50, 31, 16, 8, };
--static const int ad7746_cap_samp_freq[] = { 91, 84, 50, 26, 16, 13, 11, 9, };
--
--static int ad7746_read_avail(struct iio_dev *indio_dev,
--			     struct iio_chan_spec const *chan, const int **vals,
--			     int *type, int *length, long mask)
--{
--	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
--		return -EINVAL;
--
--	switch (chan->type) {
--	case IIO_VOLTAGE:
--		*vals = ad7746_v_samp_freq;
--		*length = ARRAY_SIZE(ad7746_v_samp_freq);
--		break;
--	case IIO_CAPACITANCE:
--		*vals = ad7746_cap_samp_freq;
--		*length = ARRAY_SIZE(ad7746_cap_samp_freq);
--		break;
--	default:
--		return -EINVAL;
--	}
--	*type = IIO_VAL_INT;
--	return IIO_AVAIL_LIST;
--}
--
--static int ad7746_read_channel(struct iio_dev *indio_dev,
--			       struct iio_chan_spec const *chan,
--			       int *val)
--{
--	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	int ret, delay;
--	u8 data[3];
--	u8 regval;
--
--	ret = ad7746_select_channel(indio_dev, chan);
--	if (ret < 0)
--		return ret;
--	delay = ret;
--
--	regval = chip->config | FIELD_PREP(AD7746_CONF_MODE_MASK,
--					   AD7746_CONF_MODE_SINGLE_CONV);
--	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_CFG, regval);
--	if (ret < 0)
--		return ret;
--
--	msleep(delay);
--	/* Now read the actual register */
--	ret = i2c_smbus_read_i2c_block_data(chip->client,
--					    ad7746_chan_info[chan->address].addr,
--					    3, data);
--	if (ret < 0)
--		return ret;
--
--	/*
--	 * Offset applied internally becaue the _offset userspace interface is
--	 * needed for the CAP DACs which apply a controllable offset.
--	 */
--	*val = get_unaligned_be24(data) - 0x800000;
--
--	return 0;
--}
--
--static int ad7746_read_raw(struct iio_dev *indio_dev,
--			   struct iio_chan_spec const *chan,
--			   int *val, int *val2,
--			   long mask)
--{
--	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	int ret, idx;
--	u8 reg;
--
--	switch (mask) {
--	case IIO_CHAN_INFO_RAW:
--		mutex_lock(&chip->lock);
--		ret = ad7746_read_channel(indio_dev, chan, val);
--		mutex_unlock(&chip->lock);
--		if (ret < 0)
--			return ret;
--
--		return IIO_VAL_INT;
--	case IIO_CHAN_INFO_CALIBSCALE:
--		switch (chan->type) {
--		case IIO_CAPACITANCE:
--			reg = AD7746_REG_CAP_GAINH;
--			break;
--		case IIO_VOLTAGE:
--			reg = AD7746_REG_VOLT_GAINH;
--			break;
--		default:
--			return -EINVAL;
--		}
--
--		mutex_lock(&chip->lock);
--		ret = i2c_smbus_read_word_swapped(chip->client, reg);
--		mutex_unlock(&chip->lock);
--		if (ret < 0)
--			return ret;
--		/* 1 + gain_val / 2^16 */
--		*val = 1;
--		*val2 = (15625 * ret) / 1024;
--
--		return IIO_VAL_INT_PLUS_MICRO;
--	case IIO_CHAN_INFO_CALIBBIAS:
--		mutex_lock(&chip->lock);
--		ret = i2c_smbus_read_word_swapped(chip->client,
--						  AD7746_REG_CAP_OFFH);
--		mutex_unlock(&chip->lock);
--		if (ret < 0)
--			return ret;
--		*val = ret;
--
--		return IIO_VAL_INT;
--	case IIO_CHAN_INFO_OFFSET:
--	case IIO_CHAN_INFO_INPUTOFFSET:
--		*val = FIELD_GET(AD7746_CAPDAC_DACP_MASK,
--				 chip->capdac[chan->channel][chan->differential]) * 338646;
--
--		return IIO_VAL_INT;
--	case IIO_CHAN_INFO_SCALE:
--		switch (chan->type) {
--		case IIO_CAPACITANCE:
--			/* 8.192pf / 2^24 */
--			*val =  0;
--			*val2 = 488;
--			return IIO_VAL_INT_PLUS_NANO;
--		case IIO_VOLTAGE:
--			/* 1170mV / 2^23 */
--			*val = 1170;
--			if (chan->channel == 1)
--				*val *= 6;
--			*val2 = 23;
--			return IIO_VAL_FRACTIONAL_LOG2;
--		case IIO_TEMP:
--			*val = 125;
--			*val2 = 8;
--			return IIO_VAL_FRACTIONAL_LOG2;
--		default:
--			return -EINVAL;
--		}
--	case IIO_CHAN_INFO_SAMP_FREQ:
--		switch (chan->type) {
--		case IIO_CAPACITANCE:
--			idx = FIELD_GET(AD7746_CONF_CAPFS_MASK, chip->config);
--			*val = ad7746_cap_filter_rate_table[idx][0];
--			return IIO_VAL_INT;
--		case IIO_VOLTAGE:
--			idx = FIELD_GET(AD7746_CONF_VTFS_MASK, chip->config);
--			*val = ad7746_vt_filter_rate_table[idx][0];
--			return IIO_VAL_INT;
--		default:
--			return -EINVAL;
--		}
--	default:
--		return -EINVAL;
--	}
--}
--
--static const struct iio_info ad7746_info = {
--	.attrs = &ad7746_attribute_group,
--	.read_raw = ad7746_read_raw,
--	.read_avail = ad7746_read_avail,
--	.write_raw = ad7746_write_raw,
--};
--
--static int ad7746_probe(struct i2c_client *client,
--			const struct i2c_device_id *id)
--{
--	struct device *dev = &client->dev;
--	struct ad7746_chip_info *chip;
--	struct iio_dev *indio_dev;
--	unsigned char regval = 0;
--	unsigned int vdd_permille;
--	int ret;
--
--	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
--	if (!indio_dev)
--		return -ENOMEM;
--
--	chip = iio_priv(indio_dev);
--	mutex_init(&chip->lock);
--
--	chip->client = client;
--	chip->capdac_set = -1;
--
--	indio_dev->name = id->name;
--	indio_dev->info = &ad7746_info;
--	indio_dev->channels = ad7746_channels;
--	if (id->driver_data == 7746)
--		indio_dev->num_channels = ARRAY_SIZE(ad7746_channels);
--	else
--		indio_dev->num_channels =  ARRAY_SIZE(ad7746_channels) - 2;
--	indio_dev->modes = INDIO_DIRECT_MODE;
--
--	if (device_property_read_bool(dev, "adi,exca-output-en")) {
--		if (device_property_read_bool(dev, "adi,exca-output-invert"))
--			regval |= AD7746_EXCSETUP_NEXCA;
--		else
--			regval |= AD7746_EXCSETUP_EXCA;
--	}
--
--	if (device_property_read_bool(dev, "adi,excb-output-en")) {
--		if (device_property_read_bool(dev, "adi,excb-output-invert"))
--			regval |= AD7746_EXCSETUP_NEXCB;
--		else
--			regval |= AD7746_EXCSETUP_EXCB;
--	}
--
--	ret = device_property_read_u32(dev, "adi,excitation-vdd-permille",
--				       &vdd_permille);
--	if (!ret) {
--		switch (vdd_permille) {
--		case 125:
--			regval |= FIELD_PREP(AD7746_EXCSETUP_EXCLVL_MASK, 0);
--			break;
--		case 250:
--			regval |= FIELD_PREP(AD7746_EXCSETUP_EXCLVL_MASK, 1);
--			break;
--		case 375:
--			regval |= FIELD_PREP(AD7746_EXCSETUP_EXCLVL_MASK, 2);
--			break;
--		case 500:
--			regval |= FIELD_PREP(AD7746_EXCSETUP_EXCLVL_MASK, 3);
--			break;
--		default:
--			break;
--		}
--	}
--
--	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_EXC_SETUP,
--					regval);
--	if (ret < 0)
--		return ret;
--
--	return devm_iio_device_register(indio_dev->dev.parent, indio_dev);
--}
--
--static const struct i2c_device_id ad7746_id[] = {
--	{ "ad7745", 7745 },
--	{ "ad7746", 7746 },
--	{ "ad7747", 7747 },
--	{}
--};
--MODULE_DEVICE_TABLE(i2c, ad7746_id);
--
--static const struct of_device_id ad7746_of_match[] = {
--	{ .compatible = "adi,ad7745" },
--	{ .compatible = "adi,ad7746" },
--	{ .compatible = "adi,ad7747" },
--	{ },
--};
--MODULE_DEVICE_TABLE(of, ad7746_of_match);
--
--static struct i2c_driver ad7746_driver = {
--	.driver = {
--		.name = KBUILD_MODNAME,
--		.of_match_table = ad7746_of_match,
--	},
--	.probe = ad7746_probe,
--	.id_table = ad7746_id,
--};
--module_i2c_driver(ad7746_driver);
--
--MODULE_AUTHOR("Michael Hennerich <michael.hennerich@analog.com>");
--MODULE_DESCRIPTION("Analog Devices AD7746/5/7 capacitive sensor driver");
--MODULE_LICENSE("GPL v2");
--- 
-2.35.3
+Given I wanted a suitable job to try out it's usefulness when doing refactoring
+/development, I decided to tidy up one of the remaining IIO drivers in staging
+and see how things went in developing tests to hit the particular code I was
+modifying.  At some point I might extend this to a more comprehensive test suite
+for that driver, but for now it does basic channel reading and a few other things
++ verifies some of the register state changes seen on the hardware side of things.
+
+Whilst my python could be said to be decidedly rusty (last time I recall writing
+some was for an intern project 20 years back), it was fairly easy to get something
+working using the docs in this series and the fine engineering tool of cut and paste.
+
+Road test worked very well.
+
+Was it easier than my existing hacked up QEMU board emulation that lets me
+instantiate minimal emulation pretty quickly?
+
+Pretty similar on balance but big advantage here is I'm not having to ask people
+to go fetch a tree and build QEMU just to sanity check the driver changes.
+Also note I'm doing a lot of QEMU work for the day job at the moment, so it's not
+really a fair comparison if the question is what would most kernel driver
+developers find useful.
+
+So for now I'll probably mix and match depending on the complexity of the device
+I'm emulating, but roadtest is definitely a good addition to the toolkit.
+
+Note this is putting aside all the advantages of having tests in tree and the
+much lighter amount of infrastructure needed to run those over QEMU CI.
+
+If anyone is curious patch set with tests and the staging graduation of
+the AD7746 CDC driver.
+
+https://lore.kernel.org/all/20220418192907.763933-18-jic23@kernel.org/
+
+Great work Vincent. I'm looking forward to using this more.
+
+Thanks,
+
+Jonathan
+
+> 
+> Questions and answers:
+> 
+> = Why do we need this?
+> 
+> There are a large amount of these kind of drivers in the kernel.  Most of the
+> hardware is not available in current CI systems so most drivers can only, at
+> best, be build-tested there.  Even basic soundness such as a driver
+> successfully probing and binding to the devices it tries to be support cannot
+> be tested.  Drivers cannot be easily regression-tested to ensure that bugs
+> fixed once do not get reintroduced.
+> 
+> Many drivers support multiple related hardware variants, and far from all patch
+> submitters have access to all the variants which the driver that they are
+> patching supports, so there is no way for them to easily verify that they
+> haven't broken something basic on a variant which they do not own.
+> 
+> Furthermore, hardware can be used in many different configurations with drivers
+> supporting many different devicetree properties, so even just having access to
+> all the variants would be insufficient.
+> 
+> On top of that, some of the chips measure environmental conditions such as
+> temperature, so testing extreme cases may not be simple even if one has access
+> to the hardware.
+> 
+> All this makes development, modification, maintenance, and reviewing of these
+> drivers harder than it necessarily needs to be.  Roadtest hopes to make some of
+> these things slightly easier by providing a framework to create hardware
+> models/mocks and to write testcases which exercise drivers using these models.
+> 
+> = Do you have some specific examples of the kind of code this could be used to
+>   test?
+> 
+> Here is an example of a patch which can easily be regression-tested using
+> roadtest (in fact, this series includes such a regression test) but is much
+> harder to do so automatically with real hardware since it requires specific
+> environmental conditions:
+> 
+>  iio: light: opt3001: Fixed timeout error when 0 lux
+>  https://lore.kernel.org/lkml/20210920125351.6569-1-valek@2n.cz/
+> 
+> Here is another example.  This driver has code which correctly parses a
+> documented devicetree property (amstaos,proximity-diodes) but which then fails
+> to actually communicate this setting to the hardware in any way.  Such code can
+> be easily tested with roadtest since the framework integrates devicetree
+> support and provides functions to assert that drivers writes expected registers
+> with expected values:
+> 
+>  drivers/iio/light/tsl2772.c tsl2772_read_prox_diodes()
+> 
+> (Both the above examples happen to be from the same subsystem but that should
+> in no way be taken to imply that such issues are unique to that subsystem or
+> that that subsystem has more of them.)
+> 
+> = How does this relate to kselftests?
+> 
+> Tests in kselftests also test kernel code using the userspace interfaces, but
+> that's about what's common between the frameworks.  kselftests has other goals
+> and does not provide any kind of mechanism for hardware mocking.
+> 
+> = How does this relate to kunit?
+> 
+> Kunit is for unit testing of functions in kernel code, and is not meant for
+> testing kernel code via userspace interfaces.  It could in theory be used to
+> test some of the simple drivers too, but that would require (1) a large amount
+> of mocking code in various kernel frameworks, and, more importantly, (2)
+> refactoring of the drivers to be tested.
+> 
+> This can be contrasted with roadtest which works with mostly unmodified drivers
+> and which mocks the hardware at the lowest level without having to change
+> kernel frameworks.
+> 
+> = How do I use it?
+> 
+> See Documentation/dev-tools/roadtest.rst added by the documentation patch for
+> more information about running and writing tests using this framework.
+> 
+> = What's included in the patchset?
+> 
+> The current framework allows developing tests for hardware which uses the I2C
+> bus.  Hardware models can also control GPIOs and use them to trigger
+> interrupts.
+> 
+> This series includes tests for some IIO, regulator and RTC drivers.  The
+> regulator and RTC tests depend on a few driver patches which are either in
+> review or in linux-next.  These are noted in the commit messages.
+> 
+> The entire patch set, including the required dependencies, is also available in
+> a git tree:
+> 
+>  https://github.com/vwax/linux/commits/roadtest/rfc-v1
+> 
+> Cc: linux-kernel@vger.kernel.org
+> Cc: devicetree@vger.kernel.org
+> Cc: linux-um@lists.infradead.org
+> 
+> Cc: shuah@kernel.org
+> Cc: brendanhiggins@google.com
+> Cc: linux-kselftest@vger.kernel.org
+> 
+> Cc: jic23@kernel.org
+> Cc: linux-iio@vger.kernel.org
+> 
+> Cc: lgirdwood@gmail.com
+> Cc: broonie@kernel.org
+> 
+> Cc: a.zummo@towertech.it
+> Cc: alexandre.belloni@bootlin.com
+> Cc: linux-rtc@vger.kernel.org
+> 
+> Cc: corbet@lwn.net
+> Cc: linux-doc@vger.kernel.org
+> 
+> Vincent Whitchurch (10):
+>   roadtest: import libvhost-user from QEMU
+>   roadtest: add C backend
+>   roadtest: add framework
+>   roadtest: add base config
+>   roadtest: add build files
+>   roadtest: add documentation
+>   iio: light: opt3001: add roadtest
+>   iio: light: vcnl4000: add roadtest
+>   regulator: tps62864: add roadtest
+>   rtc: pcf8563: add roadtest
+> 
+>  Documentation/dev-tools/index.rst             |    1 +
+>  Documentation/dev-tools/roadtest.rst          |  669 ++++
+>  tools/testing/roadtest/.gitignore             |    2 +
+>  tools/testing/roadtest/Dockerfile             |   25 +
+>  tools/testing/roadtest/Makefile               |   84 +
+>  tools/testing/roadtest/init.sh                |   19 +
+>  tools/testing/roadtest/pyproject.toml         |   10 +
+>  tools/testing/roadtest/requirements.txt       |    4 +
+>  tools/testing/roadtest/roadtest/__init__.py   |    2 +
+>  .../roadtest/roadtest/backend/__init__.py     |    0
+>  .../roadtest/roadtest/backend/backend.py      |   32 +
+>  .../testing/roadtest/roadtest/backend/gpio.py |  111 +
+>  .../testing/roadtest/roadtest/backend/i2c.py  |  123 +
+>  .../testing/roadtest/roadtest/backend/main.py |   13 +
+>  .../testing/roadtest/roadtest/backend/mock.py |   20 +
+>  .../roadtest/roadtest/backend/test_gpio.py    |   98 +
+>  .../roadtest/roadtest/backend/test_i2c.py     |   84 +
+>  .../testing/roadtest/roadtest/cmd/__init__.py |    0
+>  tools/testing/roadtest/roadtest/cmd/main.py   |  146 +
+>  tools/testing/roadtest/roadtest/cmd/remote.py |   48 +
+>  .../roadtest/roadtest/core/__init__.py        |    0
+>  .../testing/roadtest/roadtest/core/control.py |   52 +
+>  .../roadtest/roadtest/core/devicetree.py      |  155 +
+>  .../roadtest/roadtest/core/hardware.py        |   94 +
+>  tools/testing/roadtest/roadtest/core/log.py   |   42 +
+>  .../testing/roadtest/roadtest/core/modules.py |   38 +
+>  .../testing/roadtest/roadtest/core/opslog.py  |   35 +
+>  tools/testing/roadtest/roadtest/core/proxy.py |   48 +
+>  tools/testing/roadtest/roadtest/core/suite.py |  286 ++
+>  tools/testing/roadtest/roadtest/core/sysfs.py |   77 +
+>  .../roadtest/roadtest/core/test_control.py    |   35 +
+>  .../roadtest/roadtest/core/test_devicetree.py |   31 +
+>  .../roadtest/roadtest/core/test_hardware.py   |   41 +
+>  .../roadtest/roadtest/core/test_log.py        |   54 +
+>  .../roadtest/roadtest/core/test_opslog.py     |   27 +
+>  .../roadtest/roadtest/tests/__init__.py       |    0
+>  .../roadtest/roadtest/tests/base/config       |   84 +
+>  .../roadtest/roadtest/tests/iio/__init__.py   |    0
+>  .../roadtest/roadtest/tests/iio/config        |    1 +
+>  .../roadtest/roadtest/tests/iio/iio.py        |  112 +
+>  .../roadtest/tests/iio/light/__init__.py      |    0
+>  .../roadtest/roadtest/tests/iio/light/config  |    2 +
+>  .../roadtest/tests/iio/light/test_opt3001.py  |   95 +
+>  .../roadtest/tests/iio/light/test_vcnl4000.py |  132 +
+>  .../roadtest/tests/iio/light/test_vcnl4010.py |  282 ++
+>  .../roadtest/tests/iio/light/test_vcnl4040.py |  104 +
+>  .../roadtest/tests/iio/light/test_vcnl4200.py |   96 +
+>  .../roadtest/tests/regulator/__init__.py      |    0
+>  .../roadtest/roadtest/tests/regulator/config  |    4 +
+>  .../roadtest/tests/regulator/test_tps62864.py |  187 ++
+>  .../roadtest/roadtest/tests/rtc/__init__.py   |    0
+>  .../roadtest/roadtest/tests/rtc/config        |    1 +
+>  .../roadtest/roadtest/tests/rtc/rtc.py        |   73 +
+>  .../roadtest/tests/rtc/test_pcf8563.py        |  348 ++
+>  tools/testing/roadtest/src/.gitignore         |    1 +
+>  tools/testing/roadtest/src/backend.c          |  884 +++++
+>  .../src/libvhost-user/include/atomic.h        |  310 ++
+>  .../src/libvhost-user/libvhost-user.c         | 2885 +++++++++++++++++
+>  .../src/libvhost-user/libvhost-user.h         |  691 ++++
+>  59 files changed, 8798 insertions(+)
+>  create mode 100644 Documentation/dev-tools/roadtest.rst
+>  create mode 100644 tools/testing/roadtest/.gitignore
+>  create mode 100644 tools/testing/roadtest/Dockerfile
+>  create mode 100644 tools/testing/roadtest/Makefile
+>  create mode 100755 tools/testing/roadtest/init.sh
+>  create mode 100644 tools/testing/roadtest/pyproject.toml
+>  create mode 100644 tools/testing/roadtest/requirements.txt
+>  create mode 100644 tools/testing/roadtest/roadtest/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/backend/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/backend/backend.py
+>  create mode 100644 tools/testing/roadtest/roadtest/backend/gpio.py
+>  create mode 100644 tools/testing/roadtest/roadtest/backend/i2c.py
+>  create mode 100644 tools/testing/roadtest/roadtest/backend/main.py
+>  create mode 100644 tools/testing/roadtest/roadtest/backend/mock.py
+>  create mode 100644 tools/testing/roadtest/roadtest/backend/test_gpio.py
+>  create mode 100644 tools/testing/roadtest/roadtest/backend/test_i2c.py
+>  create mode 100644 tools/testing/roadtest/roadtest/cmd/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/cmd/main.py
+>  create mode 100644 tools/testing/roadtest/roadtest/cmd/remote.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/control.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/devicetree.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/hardware.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/log.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/modules.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/opslog.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/proxy.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/suite.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/sysfs.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/test_control.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/test_devicetree.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/test_hardware.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/test_log.py
+>  create mode 100644 tools/testing/roadtest/roadtest/core/test_opslog.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/base/config
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/config
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/iio.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/config
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_opt3001.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4000.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4010.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4040.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/iio/light/test_vcnl4200.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/regulator/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/regulator/config
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/regulator/test_tps62864.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/rtc/__init__.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/rtc/config
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/rtc/rtc.py
+>  create mode 100644 tools/testing/roadtest/roadtest/tests/rtc/test_pcf8563.py
+>  create mode 100644 tools/testing/roadtest/src/.gitignore
+>  create mode 100644 tools/testing/roadtest/src/backend.c
+>  create mode 100644 tools/testing/roadtest/src/libvhost-user/include/atomic.h
+>  create mode 100644 tools/testing/roadtest/src/libvhost-user/libvhost-user.c
+>  create mode 100644 tools/testing/roadtest/src/libvhost-user/libvhost-user.h
+> 
 
