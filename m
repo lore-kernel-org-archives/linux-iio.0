@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 960CFC433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 19 Apr 2022 14:25:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 673D2C4167E
+	for <linux-iio@archiver.kernel.org>; Tue, 19 Apr 2022 14:25:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236294AbiDSO2g (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Apr 2022 10:28:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43528 "EHLO
+        id S1348678AbiDSO2h (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Apr 2022 10:28:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43980 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1353461AbiDSO2C (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2022 10:28:02 -0400
-Received: from mail-pg1-x52e.google.com (mail-pg1-x52e.google.com [IPv6:2607:f8b0:4864:20::52e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B0575A1A6;
-        Tue, 19 Apr 2022 07:25:19 -0700 (PDT)
-Received: by mail-pg1-x52e.google.com with SMTP id q12so24004693pgj.13;
-        Tue, 19 Apr 2022 07:25:19 -0700 (PDT)
+        with ESMTP id S1353484AbiDSO2K (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2022 10:28:10 -0400
+Received: from mail-pg1-x535.google.com (mail-pg1-x535.google.com [IPv6:2607:f8b0:4864:20::535])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 51924634F;
+        Tue, 19 Apr 2022 07:25:27 -0700 (PDT)
+Received: by mail-pg1-x535.google.com with SMTP id r83so3856810pgr.2;
+        Tue, 19 Apr 2022 07:25:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=7BT9llr4g/+oDP3xKYg2jTAN9BitQ9N2nDaLRe4C9L8=;
-        b=l0s1/fgYGGMkUDpubImf9KtVthkStloJXQpzF5HwjXY0rva98rf3OF/6VXv2HkPsFj
-         ian/TOBXVkkRpEj9mMMF+2fg8nNIv+7b56pwHHT4tUmRt8x/YEoUpE532f5cHjtMCbfv
-         Dp04EsHqbHRH7DeDK8cqeGGGT0tzIohpjEmtjspkXjPrSu1lCxtXRctAy1YYSGTS0dj+
-         4zTYOhrUqexuJ65J4cJiIamY1lEmhAhyALrXc+tmDLjze5OBgkhOBnTDUnLobSJVGEDd
-         5Lo07ewYnKjHw5aJgIIhWXuCggGuL7QPGDEHw7lCSZ1Uzw0Ksste3HgQATHFHaGMrbtX
-         Il0w==
+        bh=V2XIqcdWZLZ6QhkysIjeGWslZHtJcz+vplIUafCxugM=;
+        b=MOi01fvFRljtspIqhYSGTrwOQU5LYW1s9xhOzeaVXfaf1foOgWoRwJay0GxqikA7jM
+         E8FOi3KIwPxjlzaR27LnpNtlHshJzHZmjPr3l9cS7BhM9YGeHcH7asuyzHE/kRM2d96S
+         +peh6M7lJWCXeBTvNf0XSUaF3HpOrGP8T16Sp7puadYdsFa9s0xLmabFEfFcVzFwP9MO
+         p2F93mtCadhI6LsSZ2DmxgZEhCcyZsymmiB8mvnRffnuqQta4FmAuoYKVicIMiv70ogb
+         SqU1AdPFFKA+u/HUxkTwSG4f2SR2IWjl3ap+ujgmD9bX1xpzeeltL88KfFfNzuxiVr3u
+         sd+w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=7BT9llr4g/+oDP3xKYg2jTAN9BitQ9N2nDaLRe4C9L8=;
-        b=OvgZyKPnPsvSzWfR7wuzhUTzIhHoaieLgcRkufQcmYMflUxN4SXEKQI+OPpMlooCU0
-         dIKOW29tfxsPg2tMZ8GvupKtRRJ3Hqwx0YMNhfWX4F/Da7+h4LThaIwBuhyDXbdFUIOG
-         FhLO6twvD8e4pCiUYI/qiW3i5KIhyX3CUgTrlY5Ulk2iI12G3dt95W/wmQqXir9FWgVI
-         I/rO21Paa9HGYH2i68+GxHF7xpjZbiK15hJFQPD9soPMmCa/ZJzY6HixSPX5oyn9JP0u
-         b4nbvZDP++ZBEzRkWHxlb3RpvSPrP5w1JEqZ7kphYXsJtuz52QQCFwJXHUnwh6fX4F5N
-         0kkA==
-X-Gm-Message-State: AOAM531f+C/CDjs6HMQ2MfavwyrTQSo8tzGIJjwfge02IGhYzb5Xih8f
-        UVB+2ebTRz2GmHYIgL+jl9g=
-X-Google-Smtp-Source: ABdhPJydiHl3BqNtdyLwusS44ht++WhRYH+DcOAaqrNiELtQN5avq7CPRxgWc4m7Y+0K8ytnIDf/Rw==
-X-Received: by 2002:a63:4a48:0:b0:3a9:21ea:458d with SMTP id j8-20020a634a48000000b003a921ea458dmr11226733pgl.557.1650378319230;
-        Tue, 19 Apr 2022 07:25:19 -0700 (PDT)
+        bh=V2XIqcdWZLZ6QhkysIjeGWslZHtJcz+vplIUafCxugM=;
+        b=T1yk7R7QAXXtLF6yrgsLXv8xIVPuXv1nYJuOM6oNJ8bpVz30aWiio7ml0tFub0d0Ct
+         S+0fCwIV7POW0VVKyShly0Z5pz5lZof/QBtah49PPJl75YSvxuE8yNWTkhVEm2bqXM63
+         OXyYvRcmvgnFfNUTGVVItqk8k5nGqy3tRNeYyil+uUlD6a3WzUHRItCOuJt0gVngxpXd
+         9iFUTwyhA/d8U5OPAF7hkagJ1ePTxZkWOw+Zal/1xfRXKhuy2zWq4xddtk0D/fK6linD
+         z5gPxYu5N4y7pQg97lnKwUOoojTQ0nQjyGsAnVg8Dtt56owUk6y2f4UQ7fcpV7BhDrSd
+         YaXQ==
+X-Gm-Message-State: AOAM532Gpu6dAIf0LgXYdV6i9epAwLjeSZT7KfGJazBZu7zFuZCVcKo+
+        I4JA7obO2yZuySuJYdlbCME=
+X-Google-Smtp-Source: ABdhPJzCKW3Xm3lgZE1UbJffYaPAT0Ljgn4RLlo2BuUgIUp5R6Hg+vwnMnsZu5sAsC5rd48FKzWCSg==
+X-Received: by 2002:a05:6a00:1a01:b0:505:b3e5:b5fc with SMTP id g1-20020a056a001a0100b00505b3e5b5fcmr17948583pfv.53.1650378326610;
+        Tue, 19 Apr 2022 07:25:26 -0700 (PDT)
 Received: from tj10039pcu.spreadtrum.com ([117.18.48.102])
-        by smtp.gmail.com with ESMTPSA id e15-20020a63ae4f000000b003995a4ce0aasm16681939pgp.22.2022.04.19.07.25.15
+        by smtp.gmail.com with ESMTPSA id e15-20020a63ae4f000000b003995a4ce0aasm16681939pgp.22.2022.04.19.07.25.23
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 19 Apr 2022 07:25:18 -0700 (PDT)
+        Tue, 19 Apr 2022 07:25:26 -0700 (PDT)
 From:   Cixi Geng <gengcixi@gmail.com>
 To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, orsonzhai@gmail.com,
@@ -54,9 +54,9 @@ To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
         yuming.zhu1@unisoc.com
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH V4 1/7] dt-bindings:iio:adc: add sprd,ump9620-adc dt-binding
-Date:   Tue, 19 Apr 2022 22:24:52 +0800
-Message-Id: <20220419142458.884933-2-gengcixi@gmail.com>
+Subject: [PATCH V4 3/7] iio: adc: Fine tune the scale calibration values
+Date:   Tue, 19 Apr 2022 22:24:54 +0800
+Message-Id: <20220419142458.884933-4-gengcixi@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220419142458.884933-1-gengcixi@gmail.com>
 References: <20220419142458.884933-1-gengcixi@gmail.com>
@@ -68,97 +68,59 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Cixi Geng <cixi.geng1@unisoc.com>
 
-sprd,ump9620-adc is one variant of sc27xx series, add ump9620
-description and sample in dt-bindings.
+Small adjustment the scale calibration value for the sc2731,
+use new name sc2731_[big|small]_scale_graph_calib, and remove
+the origin [big|small]_scale_graph_calib struct for unused.
+
+Fixes: 8ba0dbfd07a35 (iio: adc: sc27xx: Add ADC scale calibration)
 
 Signed-off-by: Cixi Geng <cixi.geng1@unisoc.com>
 ---
- .../bindings/iio/adc/sprd,sc2720-adc.yaml     | 59 +++++++++++++++++--
- 1 file changed, 53 insertions(+), 6 deletions(-)
+ drivers/iio/adc/sc27xx_adc.c | 19 +++++++++++--------
+ 1 file changed, 11 insertions(+), 8 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-index caa3ee0b4b8c..c9fe45c1c0d8 100644
---- a/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/sprd,sc2720-adc.yaml
-@@ -20,6 +20,7 @@ properties:
-       - sprd,sc2723-adc
-       - sprd,sc2730-adc
-       - sprd,sc2731-adc
-+      - sprd,ump9620-adc
+diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
+index aee076c8e2b1..24211d2a71b1 100644
+--- a/drivers/iio/adc/sc27xx_adc.c
++++ b/drivers/iio/adc/sc27xx_adc.c
+@@ -103,14 +103,17 @@ static struct sc27xx_adc_linear_graph small_scale_graph = {
+ 	100, 341,
+ };
  
-   reg:
-     maxItems: 1
-@@ -33,13 +34,38 @@ properties:
-   hwlocks:
-     maxItems: 1
+-static const struct sc27xx_adc_linear_graph big_scale_graph_calib = {
+-	4200, 856,
+-	3600, 733,
++/*
++ * Add the sc2731_[big|small]_scale_graph_calib for sc2731 pmic.
++ */
++static const struct sc27xx_adc_linear_graph sc2731_big_scale_graph_calib = {
++	4200, 850,
++	3600, 728,
+ };
  
--  nvmem-cells:
--    maxItems: 2
-+  nvmem-cells: true
+-static const struct sc27xx_adc_linear_graph small_scale_graph_calib = {
+-	1000, 833,
+-	100, 80,
++static const struct sc27xx_adc_linear_graph sc2731_small_scale_graph_calib = {
++	1000, 838,
++	100, 84,
+ };
  
--  nvmem-cell-names:
--    items:
--      - const: big_scale_calib
--      - const: small_scale_calib
-+  nvmem-cell-names: true
-+
-+if:
-+  not:
-+    properties:
-+      compatible:
-+        contains:
-+          enum:
-+            - sprd,ump9620-adc
-+then:
-+  properties:
-+    nvmem-cells:
-+      maxItems: 2
-+    nvmem-cell-names:
-+      items:
-+        - const: big_scale_calib
-+        - const: small_scale_calib
-+
-+else:
-+  properties:
-+    nvmem-cells:
-+      maxItems: 6
-+    nvmem-cell-names:
-+      items:
-+        - const: big_scale_calib1
-+        - const: big_scale_calib2
-+        - const: small_scale_calib1
-+        - const: small_scale_calib2
-+        - const: vbat_det_cal1
-+        - const: vbat_det_cal2
+ static int sc27xx_adc_get_calib_data(u32 calib_data, int calib_adc)
+@@ -130,11 +133,11 @@ static int sc27xx_adc_scale_calibration(struct sc27xx_adc_data *data,
+ 	size_t len;
  
- required:
-   - compatible
-@@ -69,4 +95,25 @@ examples:
-             nvmem-cell-names = "big_scale_calib", "small_scale_calib";
-         };
-     };
-+
-+  - |
-+    #include <dt-bindings/interrupt-controller/irq.h>
-+    pmic {
-+        #address-cells = <1>;
-+        #size-cells = <0>;
-+        adc@504 {
-+            compatible = "sprd,ump9620-adc";
-+            reg = <0x504>;
-+            interrupt-parent = <&ump9620_pmic>;
-+            interrupts = <0 IRQ_TYPE_LEVEL_HIGH>;
-+            #io-channel-cells = <1>;
-+            hwlocks = <&hwlock 4>;
-+            nvmem-cells = <&adc_bcal1>, <&adc_bcal2>,
-+                          <&adc_scal1>, <&adc_scal2>,
-+                          <&vbat_det_cal1>, <&vbat_det_cal2>;
-+            nvmem-cell-names = "big_scale_calib1", "big_scale_calib2",
-+                               "small_scale_calib1", "small_scale_calib2",
-+                               "vbat_det_cal1", "vbat_det_cal2";
-+        };
-+    };
- ...
+ 	if (big_scale) {
+-		calib_graph = &big_scale_graph_calib;
++		calib_graph = &sc2731_big_scale_graph_calib;
+ 		graph = &big_scale_graph;
+ 		cell_name = "big_scale_calib";
+ 	} else {
+-		calib_graph = &small_scale_graph_calib;
++		calib_graph = &sc2731_small_scale_graph_calib;
+ 		graph = &small_scale_graph;
+ 		cell_name = "small_scale_calib";
+ 	}
 -- 
 2.25.1
 
