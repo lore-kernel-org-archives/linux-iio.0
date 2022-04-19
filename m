@@ -2,35 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44AABC433FE
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1F226C4332F
 	for <linux-iio@archiver.kernel.org>; Tue, 19 Apr 2022 16:05:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354332AbiDSQHn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 19 Apr 2022 12:07:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38854 "EHLO
+        id S1354279AbiDSQHm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 19 Apr 2022 12:07:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38860 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354299AbiDSQHV (ORCPT
+        with ESMTP id S1354283AbiDSQHV (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 19 Apr 2022 12:07:21 -0400
-X-Greylist: delayed 1075 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 19 Apr 2022 09:04:35 PDT
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 851EF2E9F5;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 61157326DB;
         Tue, 19 Apr 2022 09:04:35 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 704D55FD04;
-        Tue, 19 Apr 2022 18:46:36 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id 045645FD07;
+        Tue, 19 Apr 2022 18:46:54 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1650383196;
-        bh=OZC35u/pX5KL6JzsDSXXgbOvjAIdQRhngTiwGq4otJA=;
+        s=mail; t=1650383214;
+        bh=ueswjV/XHoMLOcUb0AgzqxhPxdZ9Fy3DQLChOJKaPrs=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=mI1fcKORKqlL/V2KexK8BSH9A9PhCKTq+k8OJ6/RrFDNv/Fyy/5UZO54A77hceCt9
-         XbTzly0H5EfuKFW/A3zNW+GrFJRCRR9HUWgK7g8HgoFL1SO0Cu2vwsYe2zJtbGwAh8
-         bMvqCLR8Iby16EBoDRF8t59UaETiFj5un0OmEmyjPV1c4Qv+ArmFOZ3m5rwVxjYihD
-         ZrFAMR65+KjOZPnHQRzJsncslc2qwHU/v8G+5QhW+f2EzpQPHpd3g40hoBRZqNsrIw
-         X805QdAdOK+aq+IghldW9kGGrbUj9m95fo8nt7wekUIHQHTNLHAuzi6x2L5yYb21uI
-         zUo4eJww0oMIQ==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        b=c232lX1i9ZwtOvn4+xiTwaAgxMlCkkIhPWeH7ctgh5Ibeel+kFPcn6dtNwIqVephm
+         wrQ1ZzsyCnI4bjy5tnFnMBUyhiS7VmA1yBLbuFGd1cVxQMm9czZYSYFKqbAHj919u4
+         x0XjYE0cjPIasvsoASnki5WAaa5vR51TivfLh9ryADrGYZbH4byT1iYUPWsJMzkEBA
+         GDYWaliV2/4rjYZdSYAYnYiwV5Glzoe6NK4XXEk69fMitJ2pqR9ZAG1rxqRxeMPBvl
+         GiasCipotYl3OJPtOQu47FKtUVUuvQYef4Tb1Ow/Si45UeVeRcmPdSmr1ioDX4sKuF
+         wlJ6YxM+PEu7g==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 19 Apr 2022 18:46:35 +0300 (MSK)
+        Tue, 19 Apr 2022 18:46:53 +0300 (MSK)
 From:   Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>
 To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
@@ -44,13 +43,13 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Rokosov Dmitry Dmitrievich <DDRokosov@sberdevices.ru>
-Subject: [PATCH v1 1/3] dt-bindings: vendor-prefixes: add MEMSensing
- Microsystems Co., Ltd.
-Thread-Topic: [PATCH v1 1/3] dt-bindings: vendor-prefixes: add MEMSensing
- Microsystems Co., Ltd.
-Thread-Index: AQHYVASMsRh3FoyxH0G3KQJPx6YT3g==
-Date:   Tue, 19 Apr 2022 15:45:51 +0000
-Message-ID: <20220419154555.24191-2-ddrokosov@sberdevices.ru>
+Subject: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema for
+ msa311 accel driver
+Thread-Topic: [PATCH v1 3/3] dt-bindings: iio: accel: add dt-binding schema
+ for msa311 accel driver
+Thread-Index: AQHYVASQQZC393Ji1keuDd+e+35bUg==
+Date:   Tue, 19 Apr 2022 15:45:58 +0000
+Message-ID: <20220419154555.24191-4-ddrokosov@sberdevices.ru>
 References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
 In-Reply-To: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
 Accept-Language: ru-RU, en-US
@@ -72,31 +71,102 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-MEMSensing Microsystems (Suzhou, China) Co., Ltd. operates as a micro
-electromechanical system technology company which produces micro
-electromechanical system microphones and sensors.
-MEMSensing Microsystems (Suzhou, China) Co., Ltd. applies its products
-in consumer electronics, industrial control, medical electronics
-and automotive, and other fields.
+Introduce devicetree binding json-schema for MSA311 tri-axial,
+low-g accelerometer driver.
 
 Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 ---
- Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
- 1 file changed, 2 insertions(+)
+ .../bindings/iio/accel/memsensing,msa311.yaml      | 64 ++++++++++++++++++=
+++++
+ MAINTAINERS                                        |  1 +
+ 2 files changed, 65 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/memsensing,=
+msa311.yaml
 
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Docum=
-entation/devicetree/bindings/vendor-prefixes.yaml
-index 294093d..d8f29ad 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
-@@ -737,6 +737,8 @@ patternProperties:
-     description: Mellanox Technologies
-   "^memsic,.*":
-     description: MEMSIC Inc.
-+  "^memsensing,.*":
-+    description: MEMSensing Microsystems Co., Ltd.
-   "^menlo,.*":
-     description: Menlo Systems GmbH
-   "^mentor,.*":
+diff --git a/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.=
+yaml b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+new file mode 100644
+index 00000000..3e4660f
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+@@ -0,0 +1,64 @@
++# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
++
++%YAML 1.2
++---
++$id: "http://devicetree.org/schemas/iio/accel/memsensing,msa311.yaml#"
++$schema: "http://devicetree.org/meta-schemas/core.yaml#"
++
++title: MEMSensing digital 3-Axis accelerometer
++
++maintainers:
++  - Dmitry Rokosov <ddrokosov@sberdevices.ru>
++
++description: |
++  MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
++  sensitivity consumer applications. It has dynamical user selectable full
++  scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurement=
+s
++  with output data rates from 1Hz to 1000Hz.
++  Datasheet can be found at following URL
++  https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
++
++properties:
++  compatible:
++    const: memsensing,msa311
++
++  "#address-cells":
++    const: 1
++
++  "#size-cells":
++    const: 0
++
++  reg:
++    maxItems: 1
++    description: I2C registers address
++
++  interrupts:
++    maxItems: 1
++    description: optional I2C int pin can be freely mapped to specific fun=
+c
++
++  interrupt-names:
++    const: irq
++
++required:
++  - compatible
++  - reg
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    #include <dt-bindings/interrupt-controller/irq.h>
++    i2c0 {
++        #address-cells =3D <1>;
++        #size-cells =3D <0>;
++
++        msa311: msa311@62 {
++            compatible =3D "memsensing,msa311";
++            reg =3D <0x62>;
++            interrupt-parent =3D <&gpio_intc>;
++            interrupts =3D <29 IRQ_TYPE_LEVEL_HIGH>;
++            interrupt-names =3D "irq";
++            status =3D "okay";
++        };
++    };
+diff --git a/MAINTAINERS b/MAINTAINERS
+index c75be17..4227914 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12482,6 +12482,7 @@ MEMSENSING MICROSYSTEMS MSA311 ACCELEROMETER DRIVER
+ M:	Dmitry Rokosov <ddrokosov@sberdevices.ru>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
++F:	Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+ F:	drivers/iio/accel/msa311.c
+=20
+ MEN A21 WATCHDOG DRIVER
 --=20
 2.9.5
