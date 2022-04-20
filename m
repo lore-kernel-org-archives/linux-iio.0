@@ -2,31 +2,31 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D6755C433FE
-	for <linux-iio@archiver.kernel.org>; Wed, 20 Apr 2022 11:26:34 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 52399C43219
+	for <linux-iio@archiver.kernel.org>; Wed, 20 Apr 2022 11:26:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357796AbiDTL3R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 20 Apr 2022 07:29:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35562 "EHLO
+        id S1378072AbiDTL3T (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 20 Apr 2022 07:29:19 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243801AbiDTL3R (ORCPT
+        with ESMTP id S1357405AbiDTL3R (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 20 Apr 2022 07:29:17 -0400
 Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [IPv6:2a00:1098:0:82:1000:25:2eeb:e3e3])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 550385F5E;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AA89362E5;
         Wed, 20 Apr 2022 04:26:31 -0700 (PDT)
 Received: from [127.0.0.1] (localhost [127.0.0.1])
         (Authenticated sender: aferraris)
-        with ESMTPSA id EF9941F4375C
+        with ESMTPSA id EB2CD1F4375F
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
-        s=mail; t=1650453989;
-        bh=rX1tVK7ElPPUIHgX3PTzATWhJeReOOFh/dlM7zKsaWc=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Adw6DJNbRcKHqoz0H3Lu9eOX3fdVCGVjjHt3kQE0hRV0VjBG2JeTAsxe0cTPyfoN/
-         OXdvNv35FZIxave1Ur61fp7YzsWmaPfLxE+H4QwQjdlxzXZc/Bc+4Q5iw9RvimBW0q
-         ZvCaRQPDE8MDuaKlpZVqpsX8u9w8v+XpLzoJjMz5KT/+aRDrHMwQZCYXHOTZNng8Qb
-         9ULogIQpQzBI7vfGIcNrKtIeZwDmEmzJ2LwudB7ruPZziwzCnlqADvUe6Sfy1wvWW3
-         SFBzK6DEDQeGyxlG/8lJOZO3hoX3IvuRxDdQDKH5T2JCo/d46cwEC1eek7VzjCN6+w
-         sywogCirFVrKA==
+        s=mail; t=1650453990;
+        bh=xnwSIcU9NhkZbooNPSsKPj3qxRSEyE8mP14pNaznZBI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=E1plTEtJN9kJX2jnaqG9mZqBIKfGYgL4u5Vvw7jN0ftB55Rm7tEhfpWRhkOw0jLcQ
+         TDbWuhoqNOnV4t+rnmgv+yIjvpzFCNtqyo7b2D+Ser0/FJWrssPVAkUhTVTWyIT0yq
+         hGkcIs7LZ0MNck7dC2PvV3lFVeAQBvA87MnLUTq8bJEpATUgci4o6xW18P7FbYLTlZ
+         CQqq1H5DvC39+L8poWpZlvf8z45RfruVBoqWjqJPc3+BS8S95OBmX+TEelNpnhqBNr
+         0bwfMIj0ThAKBmxgtWM75FRzTOeazKT/7DT2MIhYE2AfYa6Eaqlcj0dAHTPNuGdmRC
+         gTvG2H/6kGLUQ==
 From:   Arnaud Ferraris <arnaud.ferraris@collabora.com>
 To:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -34,36 +34,87 @@ To:     Jonathan Cameron <jic23@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, kernel@collabora.com
-Subject: [PATCH v2 0/2] iio: stk3310: Export near level property for proximity sensor
-Date:   Wed, 20 Apr 2022 13:25:38 +0200
-Message-Id: <20220420112540.91907-1-arnaud.ferraris@collabora.com>
+Subject: [PATCH v2 2/2] iio: stk3310: Export near level property for proximity sensor
+Date:   Wed, 20 Apr 2022 13:25:40 +0200
+Message-Id: <20220420112540.91907-3-arnaud.ferraris@collabora.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220420112540.91907-1-arnaud.ferraris@collabora.com>
+References: <20220420112540.91907-1-arnaud.ferraris@collabora.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Userspace tools like iio-sensor-proxy need to be instructed the value from
-which they should consider an object is "near". This threshold can be
-exported through the sysfs ABI based on the "proximity-near-level"
-device-tree property.
+This makes the value from which an object should be considered "near"
+available to userspace. This hardware-dependent value should be set
+in the device-tree.
 
-This patchset implements this property for the stk3310 driver and adds the
-necessary bits to export its value to userspace. It is based on similar
-changes applied to the vcnl4000 and ltr501 drivers.
-
+Signed-off-by: Arnaud Ferraris <arnaud.ferraris@collabora.com>
+---
 Changes in v2:
-  - drop zero-assignment as the variable won't be modified if DT property
-    is missing
+  - drop zero-assignment as the variable won't be set if DT property is
+    missing
 
-Arnaud Ferraris (2):
-  dt-bindings: iio: light: stk33xx: Add proximity-near-level
-  iio: stk3310: Export near level property for proximity sensor
+ drivers/iio/light/stk3310.c | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
- .../bindings/iio/light/stk33xx.yaml           |  6 +++++
- drivers/iio/light/stk3310.c                   | 25 +++++++++++++++++++
- 2 files changed, 31 insertions(+)
-
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index 1d02dfbc29d1..b578b46276cc 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -106,6 +106,7 @@ struct stk3310_data {
+ 	struct mutex lock;
+ 	bool als_enabled;
+ 	bool ps_enabled;
++	uint32_t ps_near_level;
+ 	u64 timestamp;
+ 	struct regmap *regmap;
+ 	struct regmap_field *reg_state;
+@@ -135,6 +136,25 @@ static const struct iio_event_spec stk3310_events[] = {
+ 	},
+ };
+ 
++static ssize_t stk3310_read_near_level(struct iio_dev *indio_dev,
++				       uintptr_t priv,
++				       const struct iio_chan_spec *chan,
++				       char *buf)
++{
++	struct stk3310_data *data = iio_priv(indio_dev);
++
++	return sprintf(buf, "%u\n", data->ps_near_level);
++}
++
++static const struct iio_chan_spec_ext_info stk3310_ext_info[] = {
++	{
++		.name = "nearlevel",
++		.shared = IIO_SEPARATE,
++		.read = stk3310_read_near_level,
++	},
++	{ /* sentinel */ }
++};
++
+ static const struct iio_chan_spec stk3310_channels[] = {
+ 	{
+ 		.type = IIO_LIGHT,
+@@ -151,6 +171,7 @@ static const struct iio_chan_spec stk3310_channels[] = {
+ 			BIT(IIO_CHAN_INFO_INT_TIME),
+ 		.event_spec = stk3310_events,
+ 		.num_event_specs = ARRAY_SIZE(stk3310_events),
++		.ext_info = stk3310_ext_info,
+ 	}
+ };
+ 
+@@ -581,6 +602,10 @@ static int stk3310_probe(struct i2c_client *client,
+ 	data = iio_priv(indio_dev);
+ 	data->client = client;
+ 	i2c_set_clientdata(client, indio_dev);
++
++	device_property_read_u32(&client->dev, "proximity-near-level",
++				 &data->ps_near_level);
++
+ 	mutex_init(&data->lock);
+ 
+ 	ret = stk3310_regmap_init(data);
 -- 
 2.35.1
