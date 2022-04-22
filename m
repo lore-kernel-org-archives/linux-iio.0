@@ -2,124 +2,203 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6232EC4332F
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Apr 2022 14:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 50C13C433EF
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Apr 2022 07:13:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1388979AbiDUOLA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Apr 2022 10:11:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46742 "EHLO
+        id S1444602AbiDVHQG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Apr 2022 03:16:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1388941AbiDUOK5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Apr 2022 10:10:57 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF0213AA67
-        for <linux-iio@vger.kernel.org>; Thu, 21 Apr 2022 07:08:06 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id w1so8918026lfa.4
-        for <linux-iio@vger.kernel.org>; Thu, 21 Apr 2022 07:08:06 -0700 (PDT)
+        with ESMTP id S1382656AbiDVHQF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Apr 2022 03:16:05 -0400
+Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4D3D650E34
+        for <linux-iio@vger.kernel.org>; Fri, 22 Apr 2022 00:13:12 -0700 (PDT)
+Received: by mail-qt1-x82d.google.com with SMTP id x24so4935562qtq.11
+        for <linux-iio@vger.kernel.org>; Fri, 22 Apr 2022 00:13:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=zZKj1C/7IWF1iYJGVivOJHvLTfKPwwnbxFO7kqmcYXc=;
-        b=VVH2HU+P5/bdjm7H3wzAdQ7BcWbgJCF7v1P82ysb8AVZD3iccsTHzkFCl8Y/gMyyBl
-         qPbuNS8l4NofUrpKlHZ8maQ+cDnVSeKdOdR57Eujj79fMAkNWAmnuY3kE0AC86rXN3uj
-         eTSAqUDNMsVZoAtc1ZBbeRlRtzOT+2rF/wZlnYOzxRmj/AIQgvBrba3TaAG6t90YVqI/
-         P+rI4f1hCrPlbWZP2vjCOsIxACq1zH/0UT1K8dXDNPHGBGqFC1w1DuiP1icoaXrBNjyS
-         ERYqfURAbUs0JEAKRxF8EMGd5dNnQJcLngybujXSNP9rgYZ4jIudsK8WAbSPXmjjKaWx
-         y9FQ==
+        d=gmail.com; s=20210112;
+        h=message-id:subject:from:to:cc:date:in-reply-to:references
+         :content-transfer-encoding:user-agent:mime-version;
+        bh=0fmhi7nPReMevSqI0LI0Lo+X5D/NpCa5X0e1vGX4pqE=;
+        b=SbXSdkYb33nbdK37XXnqacmP2NnWS6f+RYYAkNixdKEpNI4s7hTkBGzU04iVF7G0ie
+         wfwVhLBV7vsvGBudc3mTaVgXWskfH3KUrunK2/W8+9TepWlC6Z3wwulZOqQ4eKVd6zw8
+         rol7aL+GQXKRWwPpoDtx2vObMaZ1ruPv4R4FCGUyVAXVQ6XOOR1HXHh0BytSEW2LZT/W
+         IaGvOkTdAuMU6B3eeGYrfiGJA3YY7LeqjvesrXrmh9FRxv++Qj+C6xWytq34eoSziB/r
+         uARc9lCOXym7kdgB5jSsyh4zGNTyuRZYn8XiJMbdoTbLvwWBMIuB3v0kXbbOPwCYcThy
+         ipIQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=zZKj1C/7IWF1iYJGVivOJHvLTfKPwwnbxFO7kqmcYXc=;
-        b=PFL8s+XdO0GU8x0roHMjmv7c9NNuNjipGGu5sMICd5+QYOI2q8LY8s+oaTHJyfO9+X
-         k9+wEpfRNSR4Lt4H8G7Vu9/x/Q7pJv5M9L7HoBlcy+/4RGx274TJjxw+Sidto/+VzccH
-         mAs0ygtyLbz2iBtJa3KGkem7Z/AnJxjez1CDsLBVQLVjtVggLoYEK6FHuWw4hM2YXK4X
-         e8oChCW2KzURjH4Cd9JlaOEDOkvd5+joall2hgw/PW5bjBH1WjmcsB+p2KoAWefU3zCW
-         6X7fzSCF0XQ5VvwfDJjDS/7zqsg0sx/xhWj/lsXKgQHXYyi0fAx2Bwj3G3RxOQ3IVgZe
-         BNiQ==
-X-Gm-Message-State: AOAM530ceEGQiPYiwABoQ+SxWG6SDPTfmeP5/TqNs9MAcvPQj2IFj85F
-        5FWgDAuYD/7MqvoAZ2K6CcF8aGxyLBrSX0a20xO5qw==
-X-Google-Smtp-Source: ABdhPJw98b2hHI0MkVoCHhTocWu+CF6auK8Paa8Q5ZmRRVEYZylYEkvr/IJyDyAPKTDyS3ZiOItIHGQjaDcjfjEeFHA=
-X-Received: by 2002:a05:6512:c12:b0:471:a932:cfe1 with SMTP id
- z18-20020a0565120c1200b00471a932cfe1mr9020055lfu.358.1650550085053; Thu, 21
- Apr 2022 07:08:05 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220409034849.3717231-1-zheyuma97@gmail.com> <20220410165425.6c2f60e7@jic23-huawei>
- <CACRpkdaFgB55HHR8a3vyVbZphu5fpguutBYemyVvGz=tcn6j+A@mail.gmail.com>
-In-Reply-To: <CACRpkdaFgB55HHR8a3vyVbZphu5fpguutBYemyVvGz=tcn6j+A@mail.gmail.com>
-From:   Ulf Hansson <ulf.hansson@linaro.org>
-Date:   Thu, 21 Apr 2022 16:07:28 +0200
-Message-ID: <CAPDyKFr50QirUvkUy+b665=2prMkGz=EXtbyc+Bty1woT=qO3w@mail.gmail.com>
-Subject: Re: [PATCH] iio: magnetometer: ak8974: Fix the error handling of ak8974_probe()
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Zheyu Ma <zheyuma97@gmail.com>, lars@metafoo.de,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+        h=x-gm-message-state:message-id:subject:from:to:cc:date:in-reply-to
+         :references:content-transfer-encoding:user-agent:mime-version;
+        bh=0fmhi7nPReMevSqI0LI0Lo+X5D/NpCa5X0e1vGX4pqE=;
+        b=eX5n+3E6Pg/Ozwc4CGqROVkTbzwrTkmCbIIJY0rnagL2koiZchAAmuJX+hFlaM/HBr
+         X/1+/JUxTwAxj9oFu0dMlFH3H436eW9ngsVf+TNlLH9m7sFjFeGLFdXUf0uSm22q6TmA
+         VYvL+iaEWSjo1lMXNQVn8umzcCiRtbSnW8amdZux8ti0cpIkeDPrc4lo1kaWH8ACo2aY
+         Nrv2gfkfMd7YUtUGI+qt02TXhs8YAxLWoGp24G4cS1wmpn5e4QgNIoHq3kW4BMQ7V6B+
+         skI6MeJroI2uGzQUYivIcHjpfL2uYWSuZH8nJRPLLgXcXHPsBdoRpxFe1U+9vBXxWzAG
+         A03g==
+X-Gm-Message-State: AOAM533ZvOnzg3lbfDO34qgZEVNy40KJ1qPiQA49mTaeOSvC5CPCKgdW
+        GgSoSWB/IUlGgUdkt+mSzso=
+X-Google-Smtp-Source: ABdhPJwKgACLl/U540BaLpZIqgu+qqpp1UuvGieD3/V3Oqso1P/I87DMbNleXyKK9+x4gnpbfgEafw==
+X-Received: by 2002:ac8:5f8d:0:b0:2f3:3f9a:d5bb with SMTP id j13-20020ac85f8d000000b002f33f9ad5bbmr2209517qta.314.1650611591354;
+        Fri, 22 Apr 2022 00:13:11 -0700 (PDT)
+Received: from ?IPv6:2003:f6:ef01:8200:22bd:4059:2626:d604? (p200300f6ef01820022bd40592626d604.dip0.t-ipconnect.de. [2003:f6:ef01:8200:22bd:4059:2626:d604])
+        by smtp.gmail.com with ESMTPSA id j1-20020ac85c41000000b002f24ed4fc04sm871933qtj.83.2022.04.22.00.13.09
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 22 Apr 2022 00:13:10 -0700 (PDT)
+Message-ID: <9cac1481126c7af052d62905d0414d71c2a052b3.camel@gmail.com>
+Subject: Re: IIO: Ensuring DMA safe buffers.
+From:   Nuno =?ISO-8859-1?Q?S=E1?= <noname.nuno@gmail.com>
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Cc:     linux-iio@vger.kernel.org, lars@metafoo.de, catalin.marinas@arm.com
+Date:   Fri, 22 Apr 2022 09:13:54 +0200
+In-Reply-To: <09b77aaad1f02f07c471fbc25069449aefa4a3b4.camel@gmail.com>
+References: <20220419121241.00002e42@Huawei.com>
+         <bcb20a4bc1b877506596341aebfea28b628694b2.camel@gmail.com>
+         <20220421100528.00006326@Huawei.com>
+         <09b77aaad1f02f07c471fbc25069449aefa4a3b4.camel@gmail.com>
 Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+User-Agent: Evolution 3.44.0 
+MIME-Version: 1.0
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 21 Apr 2022 at 01:14, Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Sun, Apr 10, 2022 at 5:46 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Sat,  9 Apr 2022 11:48:48 +0800
-> > Zheyu Ma <zheyuma97@gmail.com> wrote:
-> >
-> > > When the driver fail at devm_regmap_init_i2c(), we will get the
-> > > following splat:
-> > >
-> > > [  106.797388] WARNING: CPU: 4 PID: 413 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-> > > [  106.802183] RIP: 0010:_regulator_put+0x3ec/0x4e0
-> > > [  106.811237] Call Trace:
-> > > [  106.811515]  <TASK>
-> > > [  106.811695]  regulator_bulk_free+0x82/0xe0
-> > > [  106.812032]  devres_release_group+0x319/0x3d0
-> > > [  106.812425]  i2c_device_probe+0x766/0x940
-> > >
-> > > Fix this by disabling the regulators at the error path.
-> > >
-> > > Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
-> > + CC Linus W as it's his driver.
-> >
-> > Fix looks correct to me, though the handling of runtime pm in here is
-> > probably more complex than it needs to be (and hence this odd error
-> > handling for this one place in the probe).
->
-> At the time I discussed how to do runtime pm with Ulf Hansson a lot
-> and I think it was the state of the art at that time. It might have
-> changed since.
+On Thu, 2022-04-21 at 12:35 +0200, Nuno S=C3=A1 wrote:
+> On Thu, 2022-04-21 at 10:05 +0100, Jonathan Cameron wrote:
+> > On Wed, 20 Apr 2022 14:30:36 +0200
+> > Nuno S=C3=A1 <noname.nuno@gmail.com> wrote:
+> >=20
+> > > On Tue, 2022-04-19 at 12:12 +0100, Jonathan Cameron wrote:
+> > > > Hi All,
+> > > >=20
+> > > > For a long time IIO has been making assumption that
+> > > > ____cacheline_aligned
+> > > > was sufficient to ensure buffers were in their own cacheline
+> > > > and
+> > > > hence
+> > > > DMA safe.=C2=A0 We generally needed this for all SPI device drivers
+> > > > as
+> > > > many
+> > > > SPI ABI calls can pass the buffer directly through to be used
+> > > > for
+> > > > DMA.
+> > > > Not that regmap doesn't currently do this but it might in
+> > > > future
+> > > > (and
+> > > > did
+> > > > in the past).=C2=A0 I can't remember the history of this well enoug=
+h
+> > > > to
+> > > > know
+> > > > why we did it that way. I don't remember the pain of debugging
+> > > > random
+> > > > corruption caused by getting it wrong however...
+> > > >=20
+> > > > However it turns out via
+> > > > https://lore.kernel.org/all/20220405135758.774016-1-catalin.marinas=
+@arm.com/
+> > > > =C2=A0
+> > > > "[PATCH 00/10] mm, arm64: Reduce ARCH_KMALLOC_MINALIGN below
+> > > > the
+> > > > cache line size"
+> > > > discussion that there are platforms where this isn't true and
+> > > > need
+> > > > 128 byte alignment despite a ____cacheline_size aligning to 64
+> > > > bytes
+> > > > on
+> > > > all ARM64 platforms.
+> > > > =C2=A0=20
+> > >=20
+> > > Oh boy... Here it goes my 5 cents on this
+> >=20
+> > :)
+> >=20
+> > >=20
+> > > > (I should probably have known that as the platform I support in
+> > > > my
+> > > > day
+> > > > job has 128 byte cachelines in L3 - however it's DMA coherent
+> > > > so
+> > > > that's not a problem).
+> > > >=20
+> > > > The above series also highlights that we can do much better
+> > > > anyway on
+> > > > some platforms
+> > > > using the new ARCH_DMA_MINALIGN (currently it's only defined
+> > > > for
+> > > > some
+> > > > archs but
+> > > > after that patch everyone gets it).=C2=A0 We should be safe to use
+> > > > that
+> > > > everywhere
+> > > > we currently force ___cachline_aligned and waste a little less
+> > > > space
+> > > > on padding
+> > > > which is always nice ;)
+> > > > =C2=A0=20
+> > >=20
+> > > The above series actually made me go an try to have some more
+> > > understanding on kmalloc. I might be completely wrong but AFAIU,
+> > > for
+> > > our typical case, this won't matter much. Typically we have
+> > > something
+> > > like:
+> > >=20
+> > > struct something {
+> > > =C2=A0=C2=A0=C2=A0 //typically we do have more parameters
+> > > =C2=A0=C2=A0=C2=A0 int val;
+> > > =C2=A0=C2=A0=C2=A0 u8 buffer[8] ____cacheline_aligned;
+> > > };
+> > >=20
+> > > I thing the idea is to replace this by the compile time
+> > > annotation
+> > > ARCH_DMA_MINALIGN which is 128 (for arm64). That means that
+> > > kmalloc(sizeof(struct something)) will put us already in the
+> > > kmalloc-
+> > > 256 cache (right?) and then we will just get 256 aligned objects
+> > > as
+> > > this is a power of 2. The point is that as we normally do the
+> > > compile
+> > > time annotation we should still have the padding bytes as given
+> > > by
+> > > sizeof().
+> > >=20
+> > > If I understood things correctly, the above series is way more
+> > > beneficial for smaller kmalloc calls (without annotation) that
+> > > won't
+> > > need the 128 align constrain or for structures with zero length
+> > > arrays
+> > > (annotated with ARCH_DMA_MINALIGN) where kmalloc() calls end up
+> > > in
+> > > the
+> > > kmalloc-192 cache.
+> > >=20
+> > > Does the above make any sense?
+> > If we keep the padding between iio_dev and iio_priv at
+> > ARCH_DMA_MINALIGN
+> > then we should be fine because we get
+> >=20
+>=20
+> Sure... I was just thinking in a way of saving some space. But
+> ARCH_DMA_MINALIGN is probably the safest way to go if we want to make
+> sure things are right. For the record I was not even thinking in
+> KMALLOC_MINALIGN but using something like cache_line_size() to get
+> the
+> __real__ size. Even though I think KMALLOC_MINALIGN would work even
+> though our cache line might be 128. That will be already the case for
 
-It still looks good to me. One could switch the order of the calls to
-pm_runtime_disable() and pm_runtime_put_noidle(), but it's not a big
-thing.
+Well, this is total nonsense from me... KMALLOC_MINALIGN will fail
+miserably if our cache line is bigger than it. For arm64 that would be
+on KMALLOC_MINALIGN=3D=3D64 and cache line=3D=3D128. That said, aligning
+iio_priv() to a cache line would be safe and we could save some space
+in case the line is < ARCH_DMA_MINALIGN (which typically is).
 
-Whether it looks complicated or not, that's a different story. :-)
+Anyways, as Jonathan pointed out we typically just have one IIO object
+per driver so the hassle is probably not worth it.
 
-Note that some drivers are always being built with CONFIG_PM being
-set, which allows some simplifications. Although, I don't think that's
-the case here, right?
+- Nuno S=C3=A1
 
->
-> > > ---
-> > >  drivers/iio/magnetometer/ak8974.c | 1 +
-> > >  1 file changed, 1 insertion(+)
-> > >
-> > > diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
-> > > index e54feacfb980..84bbf7ccc887 100644
-> > > --- a/drivers/iio/magnetometer/ak8974.c
-> > > +++ b/drivers/iio/magnetometer/ak8974.c
-> > > @@ -862,6 +862,7 @@ static int ak8974_probe(struct i2c_client *i2c,
-> > >               dev_err(&i2c->dev, "failed to allocate register map\n");
-> > >               pm_runtime_put_noidle(&i2c->dev);
-> > >               pm_runtime_disable(&i2c->dev);
-> > > +             regulator_bulk_disable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
->
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
->
-> Yours,
-> Linus Walleij
 
-Kind regards
-Uffe
