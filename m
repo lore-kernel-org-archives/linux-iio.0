@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E859C433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Apr 2022 13:11:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 127E2C433FE
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Apr 2022 13:11:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350697AbiDZNOe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:14:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42670 "EHLO
+        id S1350745AbiDZNOf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 Apr 2022 09:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350694AbiDZNOW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Apr 2022 09:14:22 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5EC8D606F6;
-        Tue, 26 Apr 2022 06:11:14 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id x18so25462917wrc.0;
-        Tue, 26 Apr 2022 06:11:14 -0700 (PDT)
+        with ESMTP id S1350717AbiDZNOc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Apr 2022 09:14:32 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3171A606F3;
+        Tue, 26 Apr 2022 06:11:16 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id u3so25431852wrg.3;
+        Tue, 26 Apr 2022 06:11:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Ksg7Lipg/QDZpzLTDNfH1njMSA1a7RkRZdUpeV0/xjQ=;
-        b=S3qLop8ldQW7N+ApJM0MTHHTcVuvMZ0ybG3snWKfUh2zvuZmOjPA70dDnATGwiJPus
-         0qAcoH7kPsI92kkYYgLq6qLrUi+QtP9E3WCVcciChVxQMASGAKebmgfrzGTB1Q/yGxQW
-         CpSh3Olyiy10zIItpXUlabT9o8TE84sFytm6YntjPmH1Ytio7TPVKjTIJFXqJz13NV76
-         DACL5g+4QNSBLThV+mth40P9B7tjjNDjMPGd61/vgzVZ1ZMZ0nC+TyNqcOGYGTYaRaZk
-         Z7yKJdZ89SP1c6JAJ8eKFlhDLIzNCxb4zz8QkNE4fl4nW+v26BkCButyvsRzHvFu3qNT
-         FDlg==
+        bh=oeT1FvLOa8JEDQeobwvTwbj2GX9Dxb+xKllSoYkKFP0=;
+        b=HQgPxqwYMJMHhDFF7wulVElHGuAdUOtvSREJBMZb9pOJPag9E6FRflMwHcM77eNN1O
+         A2Hqw3Jrvxw1DjYrWELKPZJlmi7nm3xdqHe38ZXtYR6Cg5WqsjLjeGvQ2cGytaupVIka
+         uhl1nYFdY0ZouE/Uvxxl7L/LZ1oKNr4wF/macgg1i7QUdyhJDKW+LCaD9pjX+KJPDE1c
+         ZxjTARXytdkXHd54uvAjCf8kCbwA/WRQgjgQYI8oZR3BXfN1uV9NjyFJIkLPMoZ2GVOh
+         zXdDoDUB5x3tLjka3+PeLKYDrBqSnCILrx4SUb0rZPOEOVlybhxuP3mw24BZZNAlMvqY
+         oa7g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Ksg7Lipg/QDZpzLTDNfH1njMSA1a7RkRZdUpeV0/xjQ=;
-        b=5EUW2Jq4m3WoszGFFcoU1LLHJ3ciiXi5JiHDyQwncu84fz64MnhyGx3Shq8jayFGbq
-         EkJNik5klv3I34TBgD8c4mC2UAhc0+rCxJq+q1Z+xtKoksxmvWeB3st/Tb6SG5CdNVhw
-         D0w+dy3aYj6zvzyxUmgWikdWMvU9Oi3SPC5kcBwbl+c9KfGXU50E6ScMwmL5e1iFO9ZX
-         OAvpFQFibosQkh7tr8+dUdhc6B0tNW91gXvt2n3sbOidRPhz2HtMOFTZCZBo70HwNISS
-         c6uyViOYciw87JW3z+gTTC/tzowDSlTyF87L106pyWUdGN583g6CJIacVvVfyd15Kimb
-         AJ9w==
-X-Gm-Message-State: AOAM533gDxnMC121WljitWtFa+SjtvKP4CTG3mNNKyxIPeNrBvEauY0F
-        50Kr6N3g+p8IkL+DWfhN+xU=
-X-Google-Smtp-Source: ABdhPJxE//6qs3icy5uLxJhZykhA4BcQpQNnM8mbYWLTnGUQ2Hkt6oE4Otq9NYjnX1zGnGdmeC8uiA==
-X-Received: by 2002:a5d:4581:0:b0:20a:bb95:bd0f with SMTP id p1-20020a5d4581000000b0020abb95bd0fmr18628358wrq.502.1650978672858;
-        Tue, 26 Apr 2022 06:11:12 -0700 (PDT)
+        bh=oeT1FvLOa8JEDQeobwvTwbj2GX9Dxb+xKllSoYkKFP0=;
+        b=vTNdTWe0Y7RAJZqbPmKIi4FL5uJbXXHQixye6zHZAURS8sbQR52bKUXOxDdimV43tq
+         MWSiqa6LrX/u23VS9PyS6uB7g3oYasmX8yiwFvToOS7TSuOQZrZ0hL5TBCsze2w46erS
+         nLSeyMIGgDySg3ebPFvTly+jNlaWSrnZ6QsBPmxJQwJy9BVulnGETVG2iskfHZ5hNOfa
+         gH0VGl6DwWSHO7lyBXS1uuZtzFvJ0hTvVBecbEnvuEz8rRqM1vjsoVgIpCFwbdBoIYyz
+         ULCrPpIqrMiHgb/rtHzU8JI1haDJ+GSS65KfKiKXGE/DlVTO/nx2BpV6e7y3n6W+mOH2
+         +uNQ==
+X-Gm-Message-State: AOAM532X8EUuN8It3GIyhQHBTgETYQ8WsnMNbMs2kyrydE/wEf+5Mt7l
+        CnG4OVugjp4SEGsPqX8pEx2c1inpcEuAgCtA0iA=
+X-Google-Smtp-Source: ABdhPJwFY8Qid46Jvyj+d7MJyQJ8hm3Nxj2yZ3crTgtSo3Lo38HW2oFa3qTsNnIFxwDCkkP/Epl5gw==
+X-Received: by 2002:a05:6000:718:b0:20a:e310:664f with SMTP id bs24-20020a056000071800b0020ae310664fmr3659312wrb.22.1650978674782;
+        Tue, 26 Apr 2022 06:11:14 -0700 (PDT)
 Received: from poker.lan (static.2-229-210-222.ip198.fastwebnet.it. [2.229.210.222])
-        by smtp.gmail.com with ESMTPSA id h9-20020a05600c350900b00393f01c8f00sm3262910wmq.47.2022.04.26.06.11.11
+        by smtp.gmail.com with ESMTPSA id h9-20020a05600c350900b00393f01c8f00sm3262910wmq.47.2022.04.26.06.11.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 06:11:12 -0700 (PDT)
+        Tue, 26 Apr 2022 06:11:14 -0700 (PDT)
 From:   Andrea Merello <andrea.merello@gmail.com>
 To:     jic23@kernel.org, mchehab+huawei@kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -54,9 +54,9 @@ To:     jic23@kernel.org, mchehab+huawei@kernel.org,
 Cc:     lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
         matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
         jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
-Subject: [v5 05/14] iio: document pitch, yaw, roll modifiers
-Date:   Tue, 26 Apr 2022 15:10:53 +0200
-Message-Id: <20220426131102.23966-6-andrea.merello@gmail.com>
+Subject: [v5 07/14] iio: add support for binary attributes
+Date:   Tue, 26 Apr 2022 15:10:55 +0200
+Message-Id: <20220426131102.23966-8-andrea.merello@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220426131102.23966-1-andrea.merello@gmail.com>
 References: <20220426131102.23966-1-andrea.merello@gmail.com>
@@ -68,37 +68,48 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Andrea Merello <andrea.merello@iit.it>
 
-Introduce ABI documentation for new modifiers used for reporting rotations
-expressed as euler angles (i.e. yaw, pitch, roll).
+When a IIO device is registered, the IIO core creates an attribute group on
+its own, where it puts the channel attributes, and where it copies the
+attributes in indio_dev->info->attrs.
 
-It looks like we have some unit inconsistency along various IIO modifiers:
-it seems that incli is in deg, angl is in radians and rot isn't documented,
-but at least the adis16209 driver has rot in deg.
+Unfortunately it doesn't take care of binary attributes (i.e. it only
+consider indio_dev->info->attrs->attrs, and it ignores
+indio_dev->info->attrs->bin_attrs).
 
-Here we use deg (so angl is the only one using radians).
+Fix this by making the IIO layer take care also of the binary attributes.
+
+Note that while it is necessary to copy the non-binary attributes because
+the IIO layer needs more room to add the channels attribute, it should be
+enough to assign the bin_attrs pointer to the binary attributes pointed by
+indio_dev->info->attrs->bin_attrs.
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 9 +++++++++
- 1 file changed, 9 insertions(+)
+ drivers/iio/industrialio-core.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index aadddd43bf22..2a6954ea1c71 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -2039,3 +2039,12 @@ Description:
- 		Available range for the forced calibration value, expressed as:
- 
- 		- a range specified as "[min step max]"
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_yaw_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_pitch_raw
-+What:		/sys/bus/iio/devices/iio:deviceX/in_rot_roll_raw
-+KernelVersion:	5.19
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw (unscaled) euler angles readings. Units after
-+		application of scale are deg.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index aa5f98d3b334..aef30f0b9465 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1567,7 +1567,7 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+ 		ret = -ENOMEM;
+ 		goto error_clear_attrs;
+ 	}
+-	/* Copy across original attributes */
++	/* Copy across original attributes, and point to original binary attributes */
+ 	if (indio_dev->info->attrs) {
+ 		memcpy(iio_dev_opaque->chan_attr_group.attrs,
+ 		       indio_dev->info->attrs->attrs,
+@@ -1575,6 +1575,8 @@ static int iio_device_register_sysfs(struct iio_dev *indio_dev)
+ 		       *attrcount_orig);
+ 		iio_dev_opaque->chan_attr_group.is_visible =
+ 			indio_dev->info->attrs->is_visible;
++		iio_dev_opaque->chan_attr_group.bin_attrs =
++			indio_dev->info->attrs->bin_attrs;
+ 	}
+ 	attrn = attrcount_orig;
+ 	/* Add all elements from the list. */
 -- 
 2.17.1
 
