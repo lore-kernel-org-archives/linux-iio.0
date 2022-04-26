@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 604B0C43217
-	for <linux-iio@archiver.kernel.org>; Tue, 26 Apr 2022 13:11:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 36DF9C43219
+	for <linux-iio@archiver.kernel.org>; Tue, 26 Apr 2022 13:11:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350756AbiDZNOl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 26 Apr 2022 09:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42850 "EHLO
+        id S1350752AbiDZNOj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 26 Apr 2022 09:14:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43152 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350708AbiDZNOZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Apr 2022 09:14:25 -0400
-Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 445E2606FD;
-        Tue, 26 Apr 2022 06:11:15 -0700 (PDT)
-Received: by mail-wr1-x434.google.com with SMTP id s21so10713865wrb.8;
-        Tue, 26 Apr 2022 06:11:15 -0700 (PDT)
+        with ESMTP id S1350722AbiDZNOc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 26 Apr 2022 09:14:32 -0400
+Received: from mail-wr1-x42d.google.com (mail-wr1-x42d.google.com [IPv6:2a00:1450:4864:20::42d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 76AC6606C8;
+        Tue, 26 Apr 2022 06:11:19 -0700 (PDT)
+Received: by mail-wr1-x42d.google.com with SMTP id q23so12527713wra.1;
+        Tue, 26 Apr 2022 06:11:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=ijpwGqsXgBPBiVhSs+YP8TRmDX5KTxyG7N6/z3tSNi4=;
-        b=lETHOxN1TKX8nqXi01vTXSkjRusVehwmj5mQzQxd9G/x17TVh+KiEX28nFRW29XN/a
-         +8KCx5ESsiazXEN63iCxfpQxRwTqKTA5fpkEsAggsH/oIdcitS694ChZWgcPo4xgEZ8U
-         kEUB+o3wpJxtSfuiIhC4bAmZLcATWwk58ySBfADZH1aB62KrJd7pvVIPOIxHNquo8SJK
-         rjxUF5BQ9BOBxW9B12Liq/QR8YQ8QefbDIdqLsjc7JSUecVGvioqAZCoMRbjp3MXcqd6
-         xq4x+IoIJsXjNBziY0d2sYdWSEDOwe3y/HOZdEV/WPSAxk2/JHVxm6m7WWcJiILoOGz7
-         1f9A==
+        bh=9BnF53lWXq+Kioy1WHRA6GamlF6438787W3udo1iOFU=;
+        b=JilcEUE1wgZLXWf8Yn3HiwwoAj0pXjtSrzPDdPxIRmOKN6ZBzQGxE2NyRRSwq49YXx
+         QZZsnyZc9ybd0ypQXxONwcCQ81cuV2J5IDHvjakJ6oZd92McSoBKSOBw57va77z+bSD6
+         h2yPQwRtTccr/4Ht5i1zuNgledGXNxGdqc8cpqwWEYIF+5Kbbc2edB50R3AiVBCLjwTu
+         o+wpD7d2qApO9kURTK2TpjDuScmUrKvL/Yu1PuFrltHBGvDybdlSSOruTj2Fs1IaqkiB
+         1S2iyOepxnz+0hyX3siuIWRSiSTLkC5NB37YuXW2UHsTy5D4NG9Z3xSswmawkOob+mNW
+         i/Tw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=ijpwGqsXgBPBiVhSs+YP8TRmDX5KTxyG7N6/z3tSNi4=;
-        b=uYubSBjoDeUUgHDPAMGtnHrcwesbp6tuZk7TuC/3FoD8r1vyr6FT7p1RNFeSnmfOrG
-         NAVfark6QbfgfQ+gyDDJRgQb+9/rEuOlYfE15PiMytd+9uTYcdrXsjRxtCu7UjBrMuAl
-         XPcj3+xmvMevNiHoZfh7zpNgJB+mgJJrx9eYYMkU5SNyVukgrpcCZpdXyZj2S9J2ka5d
-         KSjS2qiPd5ugJcqx7fF8/z5uOh0FATBYnSFegxDBOyzg4hmnMlQoHz/x6BLADZtd1AQI
-         FwNE/OEAYKrnzYvKkPrmpVneOvDY/Rw+daVjCZDwgsJ88Fq7jWJfhL+kb/zS2a51Mc+b
-         QQTw==
-X-Gm-Message-State: AOAM530A1rlAALByAF+EpQwifY0RMt86sPb2uWWFMV28xJIC+q8ieZUB
-        3lwPT2Blpy0bQMMO4pA8ZP4=
-X-Google-Smtp-Source: ABdhPJzpn+67vgdP0A4C/ajFpADSwxzFD3/hRjCOsfgDi1ayAx6Tve0NeO706EkxfEzCPciBidEj7A==
-X-Received: by 2002:a5d:64e3:0:b0:20a:87e9:7daa with SMTP id g3-20020a5d64e3000000b0020a87e97daamr18667024wri.345.1650978673857;
-        Tue, 26 Apr 2022 06:11:13 -0700 (PDT)
+        bh=9BnF53lWXq+Kioy1WHRA6GamlF6438787W3udo1iOFU=;
+        b=k00+oBh3GiNcd6A2Mwl996hoOoCneTBDITEDmIVyPTCdx/qg+9LT08V4K9fKdKna8M
+         TkxG9ermPhIq70sK8TToo8riHgd9Dc7jkg2CxqVKZqVNZgMLvjy4HiPjbXOHyh9MM7n5
+         SGzHLS0aLbYr5a+7kbVkS2jXP883C5bJ6TShDc/BwjCrhEIS3JExpTAkJnWrYLmGcc2g
+         RxOJ2FsbJYneEhatUtNRzkWFMpgz+/0XcXq2PaWdhYGyZ5wo9eKMOIITHaflftVT8ySw
+         3NdfawUacakiGKj0zFQdJvbt3FERS++ozCDcNQGeajE9q3SWR/nrGg9mNELXZsPiLWbr
+         Tulw==
+X-Gm-Message-State: AOAM5322zjSy3tahq6ND26Rr79S4nOwzLVGZExh6Rva705W5m+oI/FLK
+        Hjq19WXIpq1Ac20zM9mIjSUaEQ3zTzNDb+VcUNo=
+X-Google-Smtp-Source: ABdhPJznLVsaJbLER81NSCZq/7VKIgeji7kKy+jdHakN4G6/Bz4tyR3hnXyT13UO14OcT5iba305jg==
+X-Received: by 2002:a05:6000:381:b0:20a:8690:9ac6 with SMTP id u1-20020a056000038100b0020a86909ac6mr18205670wrf.209.1650978678054;
+        Tue, 26 Apr 2022 06:11:18 -0700 (PDT)
 Received: from poker.lan (static.2-229-210-222.ip198.fastwebnet.it. [2.229.210.222])
-        by smtp.gmail.com with ESMTPSA id h9-20020a05600c350900b00393f01c8f00sm3262910wmq.47.2022.04.26.06.11.13
+        by smtp.gmail.com with ESMTPSA id h9-20020a05600c350900b00393f01c8f00sm3262910wmq.47.2022.04.26.06.11.16
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 26 Apr 2022 06:11:13 -0700 (PDT)
+        Tue, 26 Apr 2022 06:11:17 -0700 (PDT)
 From:   Andrea Merello <andrea.merello@gmail.com>
 To:     jic23@kernel.org, mchehab+huawei@kernel.org,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -54,9 +54,9 @@ To:     jic23@kernel.org, mchehab+huawei@kernel.org,
 Cc:     lars@metafoo.de, robh+dt@kernel.org, andy.shevchenko@gmail.com,
         matt.ranostay@konsulko.com, ardeleanalex@gmail.com,
         jacopo@jmondi.org, Andrea Merello <andrea.merello@iit.it>
-Subject: [v5 06/14] iio: event_monitor: add pitch, yaw and roll modifiers
-Date:   Tue, 26 Apr 2022 15:10:54 +0200
-Message-Id: <20220426131102.23966-7-andrea.merello@gmail.com>
+Subject: [v5 10/14] iio: document "serialnumber" sysfs attribute
+Date:   Tue, 26 Apr 2022 15:10:58 +0200
+Message-Id: <20220426131102.23966-11-andrea.merello@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220426131102.23966-1-andrea.merello@gmail.com>
 References: <20220426131102.23966-1-andrea.merello@gmail.com>
@@ -68,28 +68,29 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Andrea Merello <andrea.merello@iit.it>
 
-Following the introduction of pitch, yaw and roll IIO modifiers, update the
-event_monitor tool accordingly.
+Add ABI documentation for the new "serialnumber" sysfs attribute. The
+first user is the bno055 IIO driver.
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 ---
- tools/iio/iio_event_monitor.c | 3 +++
- 1 file changed, 3 insertions(+)
+ Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index 1fee44abb836..ee3f78c47655 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -125,6 +125,9 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LINEAR_X] = "linear_x",
- 	[IIO_MOD_LINEAR_Y] = "linear_y",
- 	[IIO_MOD_LINEAR_Z] = "linear_z",
-+	[IIO_MOD_PITCH] = "pitch",
-+	[IIO_MOD_YAW] = "yaw",
-+	[IIO_MOD_ROLL] = "roll",
- };
- 
- static bool event_is_known(struct iio_event_data *event)
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 2a6954ea1c71..eadf0326a56e 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -2048,3 +2048,10 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw (unscaled) euler angles readings. Units after
+ 		application of scale are deg.
++
++What:		/sys/bus/iio/devices/iio:deviceX/serialnumber
++KernelVersion:	5.19
++Contact:	linux-iio@vger.kernel.org
++Description:
++		An example format is 16-bytes, 2-digits-per-byte, HEX-string
++		representing the sensor unique ID number.
 -- 
 2.17.1
 
