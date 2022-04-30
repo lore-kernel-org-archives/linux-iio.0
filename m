@@ -2,46 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D2805C433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 30 Apr 2022 08:16:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4877BC4332F
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Apr 2022 08:16:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231488AbiD3ITn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 30 Apr 2022 04:19:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58318 "EHLO
+        id S235921AbiD3ITo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Apr 2022 04:19:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58316 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235921AbiD3ITn (ORCPT
+        with ESMTP id S235143AbiD3ITn (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Apr 2022 04:19:43 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C854F69CD1
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D782C69CD2
         for <linux-iio@vger.kernel.org>; Sat, 30 Apr 2022 01:16:21 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1nkiH0-0001IK-45; Sat, 30 Apr 2022 10:16:14 +0200
+        id 1nkiH0-0001IS-LA; Sat, 30 Apr 2022 10:16:14 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1nkiH0-0066Xz-Gc; Sat, 30 Apr 2022 10:16:13 +0200
+        id 1nkiH1-0066YJ-BK; Sat, 30 Apr 2022 10:16:13 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1nkiGy-006aye-Bu; Sat, 30 Apr 2022 10:16:12 +0200
+        id 1nkiGz-006ayv-8A; Sat, 30 Apr 2022 10:16:13 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH 1/9] iio:accel:mc3230: Remove duplicated error reporting in .remove()
-Date:   Sat, 30 Apr 2022 10:15:59 +0200
-Message-Id: <20220430081607.15078-2-u.kleine-koenig@pengutronix.de>
+        Paul Cercueil <paul@crapouillou.net>, linux-iio@vger.kernel.org
+Subject: [PATCH 6/9] iio:light:jsa1212: Remove duplicated error reporting in .remove()
+Date:   Sat, 30 Apr 2022 10:16:04 +0200
+Message-Id: <20220430081607.15078-7-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220430081607.15078-1-u.kleine-koenig@pengutronix.de>
 References: <20220430081607.15078-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1195; h=from:subject; bh=LJoCLmxjL4bK/cGKmO7RRF+EN+0cBPKoNge1ip1xHJc=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBibPAkxD5Hi/0nuR6hBZwLN48uys859V7M4EXKOi3h DK2YXZ6JATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYmzwJAAKCRDB/BR4rcrsCQ5NB/ 93n9cy6Gb5pq69L70Yr2esmU8m336amr3Qw69TLEdUJg+xeod4KRe52PXaOb8k4uNsN59MP7DQEbmI jgGVH2S+bEqcU1wiJ01L7aLPLgUug+6fKtbQl1KMbtlCYSVUIMtS2WvhE82/Zp4PViWzxAMb2Ko9O1 67t0EHIzGvzVquFD8jDB5Ni2r+/zFdanGB1NpO/3vBsCMXYUXaqL9g1RDKjw1mPhcHTIQmQXhRRWRR uYPoTwKuHItGrbsx5YIkHpjAlilcXD8bkpDvaZlcK9aUdcwiUPNdGNXFyRlPxuVDQLjx85P05FmdTY cPCPLDT88kYooUy/Qml1azGqEUvBTY
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1121; h=from:subject; bh=HIuLBqPE2iMXhOww4himHujsKZ+wU0j6R0Y5bQS/8AY=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBibPA0eLU9Cn5miYwAGqDxAx43XDB7d/VQuGF1AomE 6TQYJKmJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYmzwNAAKCRDB/BR4rcrsCa7vB/ 4ugCTCV9PDk8h8D5pi0gG9FkOT151/W6/TixzNiJ8XQhimHxdBqr/wXOSBSSecvKPqGETVeDlz1i5C Z4+dgVeFWAWpeIyJqFSJ/T1kUcHC2jCluPdF504IYxmC9ahgzOIBfMblVHOC/rcq4VBxo60UhPoK7N 0l+h1E3TSIMfegY5kpWDNjqJcHwJJq+O3r5I5tNbTJovl/99Gmc4PznemZAsTSNi+Lvmoqd4fDquXD 5XmwfJLbiTewdh6og+8mT8DkmG4Ll05JCwO8LRS74OGguAusaRgYpJS2pBPR1QNHfLkVzKiyi8FtbD Y5VGdYMQqfF9FC5HMu5ODZjNbgONW0
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -57,7 +55,7 @@ message being emitted by the i2c core, but otherwise it doesn't make a
 difference. The device goes away anyhow and the devm cleanups are
 called.
 
-As mc3230_set_opcon() already emits an error message on failure and the
+As jsa1212_power_off() already emits an error message on failure and the
 additional error message by the i2c core doesn't add any useful
 information, change the return value to zero to suppress this message.
 
@@ -65,24 +63,24 @@ This patch is a preparation for making i2c remove callbacks return void.
 
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/accel/mc3230.c | 4 +++-
+ drivers/iio/light/jsa1212.c | 4 +++-
  1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/mc3230.c b/drivers/iio/accel/mc3230.c
-index 679e69cd7657..c15d16e7f1da 100644
---- a/drivers/iio/accel/mc3230.c
-+++ b/drivers/iio/accel/mc3230.c
-@@ -157,7 +157,9 @@ static int mc3230_remove(struct i2c_client *client)
+diff --git a/drivers/iio/light/jsa1212.c b/drivers/iio/light/jsa1212.c
+index a55194263d23..5387c12231cf 100644
+--- a/drivers/iio/light/jsa1212.c
++++ b/drivers/iio/light/jsa1212.c
+@@ -380,7 +380,9 @@ static int jsa1212_remove(struct i2c_client *client)
  
  	iio_device_unregister(indio_dev);
  
--	return mc3230_set_opcon(iio_priv(indio_dev), MC3230_MODE_OPCON_STANDBY);
-+	mc3230_set_opcon(iio_priv(indio_dev), MC3230_MODE_OPCON_STANDBY);
+-	return jsa1212_power_off(data);
++	jsa1212_power_off(data);
 +
 +	return 0;
  }
  
- static int mc3230_suspend(struct device *dev)
+ static int jsa1212_suspend(struct device *dev)
 -- 
 2.35.1
 
