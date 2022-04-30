@@ -2,125 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 80AA4C4332F
-	for <linux-iio@archiver.kernel.org>; Fri, 29 Apr 2022 22:11:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C8EE2C433EF
+	for <linux-iio@archiver.kernel.org>; Sat, 30 Apr 2022 08:16:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1381400AbiD2WOl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 29 Apr 2022 18:14:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58710 "EHLO
+        id S236188AbiD3ITn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 30 Apr 2022 04:19:43 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381359AbiD2WOX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Apr 2022 18:14:23 -0400
-Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAEAFDCA93
-        for <linux-iio@vger.kernel.org>; Fri, 29 Apr 2022 15:10:59 -0700 (PDT)
-Received: by mail-wr1-x435.google.com with SMTP id v12so12390932wrv.10
-        for <linux-iio@vger.kernel.org>; Fri, 29 Apr 2022 15:10:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Mr/Ab2xAPHfL1M2ZSg869cFwm/CVFez2aeVteALSWZ4=;
-        b=lvbIQwPUQzPzrQEb1MfPdomxW8Ge/hYg65LhqO0RfR0Sf4K/vEXl6IB/bXasUkbnSJ
-         cDcf1Dw2wNF/+SiD598cuGC2xYf8LF2gCQG9BTtogpPI3/hpu1rht4flU+BRqeklemVv
-         jg13oQCGesfHPeT4sL8kFYr8eKPEgL2lYsA2Bp8mDBOrk5cD2HfglDSbiiJfz2E+HqiM
-         ege4OmN+an4wpiLpFQXZoQ0Jaufn6ck4Pu5PfFlwMeRBr2Iga8JfKAGFcr89iI9C3B1e
-         X9AsxW/SleHlBa+qk8wzN4KBTxCdF7ZB4ui7S56vzjWK+FwwImRbJR6wW3eKLZMmzW4a
-         MsFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Mr/Ab2xAPHfL1M2ZSg869cFwm/CVFez2aeVteALSWZ4=;
-        b=bSsEGnbTB4C9YC+kMCFH1qDWKf80Vm3gXXyfuov4iwJXYUaqAmZC1Af72bEzGVhPZ9
-         QkSZR2kzxLka03w4qJVM1mTg+FvM5KIYsZiI/l48Aka9UtILyx+O9tDfkPYOnBLRinIQ
-         OE6tBxpe441uR2RtdbBjZZOpVw7ihc9DEdXwqWaxFGMPqxkMg9XQ4ZuUupn9R7LAuYIX
-         QDSSPNJkwOgb46vxNLrO4q71hScpGR2NQqKCgox6mVMQNRYv40wVeFBOE/xW+2uQLQPx
-         FYJFnft5loXtLUDZCI7Y43+kbYsoZQ/dNfR0aOHS8ZmEgGCNPtHj6/1BPm0IN1g/hp1H
-         GFAA==
-X-Gm-Message-State: AOAM531CVEzLvgwo/J6yGpZO8rss4b8tXz3ykKsKOJ9vxuLU4FpxEIZB
-        eHZ1jFonWArISbqCfZ0cyy6Tcw==
-X-Google-Smtp-Source: ABdhPJw+RexDrVvpiyrXClauBLGo1wmOJdOppaLqzwDd3YlKhBJK7+z3y8qZJb4bSOoPvv7UK6wdhQ==
-X-Received: by 2002:a5d:6da5:0:b0:20a:8805:6988 with SMTP id u5-20020a5d6da5000000b0020a88056988mr780933wrs.317.1651270258290;
-        Fri, 29 Apr 2022 15:10:58 -0700 (PDT)
-Received: from localhost.localdomain (cpc78119-cwma10-2-0-cust590.7-3.cable.virginm.net. [81.96.50.79])
-        by smtp.gmail.com with ESMTPSA id q7-20020a1cf307000000b003942a244ebfsm291985wmq.4.2022.04.29.15.10.57
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 29 Apr 2022 15:10:57 -0700 (PDT)
-From:   Caleb Connolly <caleb.connolly@linaro.org>
-To:     caleb.connolly@linaro.org, Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Stephen Boyd <sboyd@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-msm@vger.kernel.org
-Cc:     Jami Kettunen <jami.kettunen@somainline.org>,
-        Sumit Semwal <sumit.semwal@linaro.org>,
-        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Subject: [PATCH v14 03/10] mfd: qcom-spmi-pmic: read fab id on supported PMICs
-Date:   Fri, 29 Apr 2022 23:08:58 +0100
-Message-Id: <20220429220904.137297-4-caleb.connolly@linaro.org>
-X-Mailer: git-send-email 2.36.0
-In-Reply-To: <20220429220904.137297-1-caleb.connolly@linaro.org>
-References: <20220429220904.137297-1-caleb.connolly@linaro.org>
+        with ESMTP id S234834AbiD3ITm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 30 Apr 2022 04:19:42 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3FED569CCD
+        for <linux-iio@vger.kernel.org>; Sat, 30 Apr 2022 01:16:21 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nkiH1-0001Io-Aq; Sat, 30 Apr 2022 10:16:15 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nkiH2-0066YU-2i; Sat, 30 Apr 2022 10:16:14 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nkiGz-006az3-JO; Sat, 30 Apr 2022 10:16:13 +0200
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Paul Cercueil <paul@crapouillou.net>, linux-iio@vger.kernel.org
+Subject: [PATCH 8/9] iio:light:stk3310: Remove duplicated error reporting in .remove()
+Date:   Sat, 30 Apr 2022 10:16:06 +0200
+Message-Id: <20220430081607.15078-9-u.kleine-koenig@pengutronix.de>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220430081607.15078-1-u.kleine-koenig@pengutronix.de>
+References: <20220430081607.15078-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1325; h=from:subject; bh=jeBOu6GxzNpAZs1ilUmEmXXaU0A76NBDF02smFwACRA=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBibPA75A9akx37Wc+zB3SKp1lYFAp8xs5vXqMygzlk pWTXHbOJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYmzwOwAKCRDB/BR4rcrsCfGZB/ wI60WGRkvHSINnWlN32hfNPkEVo7V6ZIE3JP6Xrd+Cq4MSrdWTYTrYXl1KvO8VEMtdHZHgz9YGfgMd l2WKvPAZ0usnGJvTPMGVfy9cI8drffQZbRAkhbg9c8zWEl3z7voRiDFpqUROGvT21EtpI16iJxw1F4 S3PZ3BYnW58OYbnotlv8gcSNilgAdWNRqM71Ehg+m1aAOkqRUn1j0z6iYIN6iN6pOhUs2i3InS/cJi iI6EszISVMccRbd89GJGTMM+hV+jRu/UqghrwKCD23H/7yRMGKiP2gyRKGlLXphVaYRZtaj8rR6wlI /Ur/YGozurSDvhm+92r+C7EevQ6eDI
+X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The PMI8998 and PM660 expose the fab_id, this is needed by drivers like
-the RRADC to calibrate ADC values.
+Returning an error value in an i2c remove callback results in an error
+message being emitted by the i2c core, but otherwise it doesn't make a
+difference. The device goes away anyhow and the devm cleanups are
+called.
 
-Signed-off-by: Caleb Connolly <caleb.connolly@linaro.org>
-Reviewed-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
-Tested-by: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+As stk3310_set_state() already emits an error message on failure and the
+additional error message by the i2c core doesn't add any useful
+information, change the return value to zero to suppress this message.
+
+This patch is a preparation for making i2c remove callbacks return void.
+
+Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/mfd/qcom-spmi-pmic.c      | 7 +++++++
- include/soc/qcom/qcom-spmi-pmic.h | 1 +
- 2 files changed, 8 insertions(+)
+ drivers/iio/light/stk3310.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/mfd/qcom-spmi-pmic.c b/drivers/mfd/qcom-spmi-pmic.c
-index 5403306b1863..4e8b34554814 100644
---- a/drivers/mfd/qcom-spmi-pmic.c
-+++ b/drivers/mfd/qcom-spmi-pmic.c
-@@ -19,6 +19,7 @@
- #define PMIC_REV4		0x103
- #define PMIC_TYPE		0x104
- #define PMIC_SUBTYPE		0x105
-+#define PMIC_FAB_ID		0x1f2
+diff --git a/drivers/iio/light/stk3310.c b/drivers/iio/light/stk3310.c
+index 1d02dfbc29d1..95a98af08b8a 100644
+--- a/drivers/iio/light/stk3310.c
++++ b/drivers/iio/light/stk3310.c
+@@ -627,9 +627,12 @@ static int stk3310_probe(struct i2c_client *client,
+ static int stk3310_remove(struct i2c_client *client)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	int ret;
  
- #define PMIC_TYPE_VALUE		0x51
- 
-@@ -157,6 +158,12 @@ static int pmic_spmi_load_revid(struct regmap *map, struct device *dev,
- 	if (ret < 0)
- 		return ret;
- 
-+	if (pmic->subtype == PMI8998_SUBTYPE || pmic->subtype == PM660_SUBTYPE) {
-+		ret = regmap_read(map, PMIC_FAB_ID, &pmic->fab_id);
-+		if (ret < 0)
-+			return ret;
-+	}
+ 	iio_device_unregister(indio_dev);
+-	return stk3310_set_state(iio_priv(indio_dev), STK3310_STATE_STANDBY);
++	stk3310_set_state(iio_priv(indio_dev), STK3310_STATE_STANDBY);
 +
- 	/*
- 	 * In early versions of PM8941 and PM8226, the major revision number
- 	 * started incrementing from 0 (eg 0 = v1.0, 1 = v2.0).
-diff --git a/include/soc/qcom/qcom-spmi-pmic.h b/include/soc/qcom/qcom-spmi-pmic.h
-index 440e94235bfc..a2c9ac22c230 100644
---- a/include/soc/qcom/qcom-spmi-pmic.h
-+++ b/include/soc/qcom/qcom-spmi-pmic.h
-@@ -52,6 +52,7 @@ struct qcom_spmi_pmic {
- 	unsigned int major;
- 	unsigned int minor;
- 	unsigned int rev2;
-+	unsigned int fab_id;
- 	const char *name;
- };
++	return 0;
+ }
  
+ static int stk3310_suspend(struct device *dev)
 -- 
-2.36.0
+2.35.1
 
