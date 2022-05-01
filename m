@@ -2,94 +2,96 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 22CADC433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  1 May 2022 09:02:32 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4684EC433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  1 May 2022 10:35:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344287AbiEAJFy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 1 May 2022 05:05:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40362 "EHLO
+        id S1344414AbiEAKiX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 1 May 2022 06:38:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56654 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344229AbiEAJFx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2022 05:05:53 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67BB2692BD
-        for <linux-iio@vger.kernel.org>; Sun,  1 May 2022 02:02:27 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id g23so13549006edy.13
-        for <linux-iio@vger.kernel.org>; Sun, 01 May 2022 02:02:27 -0700 (PDT)
+        with ESMTP id S1344563AbiEAKiV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 1 May 2022 06:38:21 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C19FEDF1C
+        for <linux-iio@vger.kernel.org>; Sun,  1 May 2022 03:34:52 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id l7so23100431ejn.2
+        for <linux-iio@vger.kernel.org>; Sun, 01 May 2022 03:34:52 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=KIDtXcj8TQd+YafrZ5yRz2cziBcsJX8ezqsE7UZYplg=;
-        b=Hl8XeMnkXALtptw2FYW6rCflZvdLx9kR6W36RBZo3y2ltZklJltkuJYuUgDOlvWGjF
-         qHXM7HaADhfeSvj2TLDobwv35ESMjX8oubQSEgruy+sTy6CAG4DVQh41+jWMq4/GuhKJ
-         blaJU4Pb33kH6MoQdZObraeGG1Qr+vhe+/OUd+fRR6KuyFUu+O1RBGkJ7Wf5mZM3fGjL
-         C2dWnWPf3Ny2g9Hlf4o5Mm6+LCQm5ROFEZZ3qrjsftDe1wgWdyhTdu1TCzlRwyxQLuyO
-         VPJXwjiyHwgkGPFr2IOZNUlthWf4xHIkog0Lla1RddF4U3X4x3vKAqIenUJDTfW6PKnF
-         fHXg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=w2ns7ipBZOIfI9eYR5XNbFPvQdAnHfmlBHB+KUxSjlA=;
+        b=XKrhM7A9/fGhlDKnSBy713skq8Jb6hNY5w3j5RcEu+Kq6biOP3KN1blmkItGAqYLEn
+         GvmtgSP0m5j3IVPJE/gOLXtQPds0HXF1OLznJUy8rwuLaVc/dwZQZyUi0DPYzV9YVdr/
+         OoeOkquJP0RSTwFUvTCcNj+EZ7N8KhpiZvuWlhUm0Zm3ujPOj3pm7wgrQryJgr16cxV/
+         csIlDioGBoRPm7CP1sAiaWVMOybenEYO7YXUbHPbj0OwZzcSnld6dNF9btfO2zM/EU/R
+         dnyj1pbbN5T2WyL3xZ+RGUSZD7G8vXOi5PyEsjgdyA7+IZxvesXiyVg+FXHbw7egT7wz
+         xI1w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=KIDtXcj8TQd+YafrZ5yRz2cziBcsJX8ezqsE7UZYplg=;
-        b=iKxodCC2URZwsJ5VJQSmYwQyIf3W9f+wbaSYZ8igmFAQ4FMI/dP0u67EkN0h/ZysOA
-         kkeJE0fHkVj+RI6kQccgLfOdi63o/4JCCiXRwU7504TJBPgl7Rgk7ZuSdcDUlWmhaKRU
-         VoKv1eFViD+uCR/lGsBu9sHDOHYOerPjL8kuYQZfO2dy3wcx1DmCfR4FP93tVGd3P8C1
-         q8C3aqWuZ4slEKo1wVZpCUC7q2eOs6BUSJyC0DTyF/+OTf0OSCXFcLFQYBde8kTnWdho
-         BVx2nnsqfQ1cMJZ3JMjTG2WQkWb9N5w9XTdNTcwibUP7dhFMDtV/HHRqXwsFQZxsSdVq
-         MzgA==
-X-Gm-Message-State: AOAM532Wj5pC+osigixEsvE6F/yeiD/AwBELb+TRHmlW4nRh0XZT97dB
-        C/crlnjXmx8HrD6QGM3RQ95cJA==
-X-Google-Smtp-Source: ABdhPJxAUIyEAfeKsEf35taG1v1IEHsRVRKPqV/8YY0DtpTrjBDoO4oRUZXowVKrwooJsoLjelomAg==
-X-Received: by 2002:aa7:d708:0:b0:427:b5ee:b8f2 with SMTP id t8-20020aa7d708000000b00427b5eeb8f2mr2905698edq.404.1651395746065;
-        Sun, 01 May 2022 02:02:26 -0700 (PDT)
-Received: from [192.168.0.182] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id dq10-20020a170907734a00b006f3ef214deasm2410067ejc.80.2022.05.01.02.02.24
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 01 May 2022 02:02:25 -0700 (PDT)
-Message-ID: <a2df5f24-f8e0-0c7d-3d2e-579444d27187@linaro.org>
-Date:   Sun, 1 May 2022 11:02:24 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.7.0
-Subject: Re: [PATCH] dt-bindings: iio: adc: Document Renesas RZ/G2UL ADC
-Content-Language: en-US
-To:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
-Cc:     Prabhakar Mahadev Lad <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-renesas-soc@vger.kernel.org" 
-        <linux-renesas-soc@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-References: <20220501081001.21563-1-biju.das.jz@bp.renesas.com>
- <9ddec6b5-5c64-883e-5894-9a51e82cdc3d@linaro.org>
- <OS0PR01MB59228D766976EA8063D8F0B086FE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=w2ns7ipBZOIfI9eYR5XNbFPvQdAnHfmlBHB+KUxSjlA=;
+        b=lRon4nY9BCyH0nHDUs0WN7zuFKqGYz9hphrRkqypBaT9oTZOlZd6iehK+d+TMHYeko
+         jqwc3fvvDPuHyfGPDOgwPwZvOd7jJVLf83jjkL3T8pZsZ1ITGVd/gcZ0hkOgzlmVQ06C
+         we0Z6PthVgxAsPDWvQ2uhjJXyF3UYP9xffdLw+we8zaTBDcp8+ZJQsRO8eqd6lgaQhJc
+         ju8sy+j8TArRBSpGXct8LkF6Qh0p1dJMuJQSYOUfzoq63U3Bi4T5WfHC7tUouek0bvgE
+         eEThGuD3jVBwpB+UzdAO82r6PVWbQXWukRfaAytjP12JEraGbIWdvEsczdoV78lx1MZR
+         MjEw==
+X-Gm-Message-State: AOAM530Gclw8JJmKYz+rknyN+zgl8LZeU92eeZeeVMiSB6Wa2XZaGMCg
+        BuJyECVx3S9ViMlaXKbmr1No9Q==
+X-Google-Smtp-Source: ABdhPJwZhJl6e4trr4YOaYl/CYYLw9KiekLiz8lTQZvRTpDBo+Hw3P6ZJeQaLMTFJfS8pK/1BqiRiA==
+X-Received: by 2002:a17:907:a413:b0:6f3:a9e5:d076 with SMTP id sg19-20020a170907a41300b006f3a9e5d076mr6891556ejc.183.1651401291330;
+        Sun, 01 May 2022 03:34:51 -0700 (PDT)
+Received: from localhost.localdomain (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id rb48-20020a170907693000b006f3ef214e11sm2492945ejc.119.2022.05.01.03.34.50
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 01 May 2022 03:34:50 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <OS0PR01MB59228D766976EA8063D8F0B086FE9@OS0PR01MB5922.jpnprd01.prod.outlook.com>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        linux-iio@vger.kernel.org,
+        linux-stm32@st-md-mailman.stormreply.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 2/2] iio: ti-ads8688: use of_device_id for OF matching
+Date:   Sun,  1 May 2022 12:34:47 +0200
+Message-Id: <20220501103447.111392-2-krzysztof.kozlowski@linaro.org>
+X-Mailer: git-send-email 2.32.0
+In-Reply-To: <20220501103447.111392-1-krzysztof.kozlowski@linaro.org>
+References: <20220501103447.111392-1-krzysztof.kozlowski@linaro.org>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 01/05/2022 10:40, Biju Das wrote:
->>> +    oneOf:
->>> +      - items:
->>> +          - const: renesas,renesas,r9a07g043-adc   # RZ/G2UL
->>
->> It's not a list, so no items.
-> 
-> Ok you mean. Get rid of Items and Just use - const: renesas,renesas,r9a07g043-adc   # RZ/G2UL
+The of_device_id was added to allow module autoloading, but it should be
+also used to allow driver matching via Devicetree.
 
-Yes.
+This also fixes W=1 warning:
+  drivers/iio/adc/ti-ads8688.c:501:34: error: ‘ads8688_of_match’ defined but not used [-Werror=unused-const-variable=]
 
+Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+---
+ drivers/iio/adc/ti-ads8688.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-Best regards,
-Krzysztof
+diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
+index 22c2583eedd0..708cca0a63be 100644
+--- a/drivers/iio/adc/ti-ads8688.c
++++ b/drivers/iio/adc/ti-ads8688.c
+@@ -508,6 +508,7 @@ MODULE_DEVICE_TABLE(of, ads8688_of_match);
+ static struct spi_driver ads8688_driver = {
+ 	.driver = {
+ 		.name	= "ads8688",
++		.of_match_table = ads8688_of_match,
+ 	},
+ 	.probe		= ads8688_probe,
+ 	.remove		= ads8688_remove,
+-- 
+2.32.0
+
