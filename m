@@ -2,115 +2,116 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE25EC433F5
-	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 01:08:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81E4DC433F5
+	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 01:19:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229636AbiECBMP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 May 2022 21:12:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53170 "EHLO
+        id S229507AbiECBX2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 May 2022 21:23:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43826 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiECBMN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2022 21:12:13 -0400
-Received: from mail-io1-f47.google.com (mail-io1-f47.google.com [209.85.166.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C6903388E
-        for <linux-iio@vger.kernel.org>; Mon,  2 May 2022 18:08:34 -0700 (PDT)
-Received: by mail-io1-f47.google.com with SMTP id g21so17629806iom.13
-        for <linux-iio@vger.kernel.org>; Mon, 02 May 2022 18:08:34 -0700 (PDT)
+        with ESMTP id S229459AbiECBX1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2022 21:23:27 -0400
+Received: from mail-oa1-x33.google.com (mail-oa1-x33.google.com [IPv6:2001:4860:4864:20::33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C70AC2E9DE
+        for <linux-iio@vger.kernel.org>; Mon,  2 May 2022 18:19:56 -0700 (PDT)
+Received: by mail-oa1-x33.google.com with SMTP id 586e51a60fabf-e2fa360f6dso15964722fac.2
+        for <linux-iio@vger.kernel.org>; Mon, 02 May 2022 18:19:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=9J01ulpJYuD85Ua2b4Z3CSKv7anNmbjAMoLL+x9ZEpM=;
-        b=NClZTO1lrag4qnroLMDkkbP3isGuZ96PhtjlMZj1F0gnm+ax+Xj8U85biRRxbeFUy4
-         7Z39bmQ2sP99StT//gfXtj6MyuFynilZ67Oy2Rcy/kmmSvIlLx/hnwdjd7B3x4zlomA2
-         b6kgxvm8ub5U1185hSRCTnkl4b+ME1h+jNO00=
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=nv/pSU+ZnWDELhz2wWC2INCxu/xtfe1TYKUv0ZzQucw=;
+        b=SkVXXA94ffty5Mj2aWgSITnefdw4+ZrE8qSiePjbp7oHo9p4AVtJpl/Gk/HSyBfLe3
+         3U6/cE8XNuzDetJ7BhMOVn7t4JgeZQOaEREfYgRLl8L2X8QuSwLDpCSqVLiv+fEWpIoq
+         CrbYGst4DY2aRwIJIPspUfF6mvcmaba+HBuqQ=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=9J01ulpJYuD85Ua2b4Z3CSKv7anNmbjAMoLL+x9ZEpM=;
-        b=a6CAu84aG5QaySQuGHtpm6azhZRSYmFug1vI/jovRyIdQYhcsgpdPdtFWmqweR2Rbm
-         MYXu3v3Iq3SWw2lqkmNJR3dtjph9qn+Wo4oUqUorw1MJX6hzzJnXbCJUyP4IMMSdx4S+
-         0x/eAyZEFnYJb5O8GRgs4FdYOiH1II7FNXX6dNhw9v0OaJDgqR71YA9trARYhXBHbVqa
-         xknLBStiImpAxtmMXzya6WPX9ZDmLkNOugy5BX4gPIYqmVKgFOdgTvt3KxkMBbh46vTO
-         tRTmSoQPQXiX4IaZzJkqyrvCBJDBS532Zq1ly2Krvpn4xoqpzw4kAo51QcMYfATnJFaj
-         Hgog==
-X-Gm-Message-State: AOAM533gMB/ldYIFwD0yHRP0lx8Au6Dcg9rE+GFz0x3dQN9nqiYez0yz
-        xuo+BmJJ/6PqqyPzAB1EUdb+7alRCZm40CE8IpR3ADVAdFWvEw==
-X-Google-Smtp-Source: ABdhPJwRFgrMh1pooiPeQoY3V/x6VQ9V4gTsYXNEYYLcxTsk9rJSzar3B8D3rxcceDM7NfH0Ukgctl/xhPy5vBiLNuw=
-X-Received: by 2002:a5d:9316:0:b0:657:a364:ceb with SMTP id
- l22-20020a5d9316000000b00657a3640cebmr5054846ion.63.1651539057290; Mon, 02
- May 2022 17:50:57 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220503004156.3559940-1-swboyd@chromium.org> <20220503004156.3559940-3-swboyd@chromium.org>
-In-Reply-To: <20220503004156.3559940-3-swboyd@chromium.org>
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Mon, 2 May 2022 17:50:46 -0700
-Message-ID: <CAPUE2uvQ0cg0HJ5GrCtUR0v2+BKtSD044NEjB-eGJXS8fExBcQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: sx9324: Add setting for CS idle mode
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
-        patches@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=nv/pSU+ZnWDELhz2wWC2INCxu/xtfe1TYKUv0ZzQucw=;
+        b=1obpXPW0lWcy/+2nNL0MtlL5B4E9QwQHcB9wczSag2X9oJ+nOUA1rzLs6FQHKwMxp0
+         erKaSFHPTJnVZ/tkXHW0SrOx/YDEaEMhg5pv/23hDjoKowLJNFiOexdpQOpuWYyQfSII
+         IB77MBaT0HK1MkyEm1jqtHSUuJUinimrN3HUddkrQhAzq1sA9MW5yKoVd42m72Vr3w5/
+         2pdXLxWlHXIXfozUARTr+q+3HXAOzEQJJ0psDr/pBcV0dlru1QXUA9KdNkwEFPKJCd3w
+         a34UG+6yNBGOTn9J2pPdM8Msu1wRdtgNAxMplpI3I67QyBWPReeP6oJltREjdMRJv24z
+         MGug==
+X-Gm-Message-State: AOAM532RqcHtv8i4p2T5or7LMMDbWihhFNZAaqn5jK4N0CE/IaJe9qhy
+        UmkLmdH37Ey4v8S6TNmODFCeYHqZvTHh1A==
+X-Google-Smtp-Source: ABdhPJz/hTWbt/I+UklgPRM/+6nN30JLRNTr2NxDCJCIBWJO3cx3gUrIinxBCPZLQnJkMWkFxuaaFQ==
+X-Received: by 2002:a17:90a:ab81:b0:1ca:8a76:cdda with SMTP id n1-20020a17090aab8100b001ca8a76cddamr2016709pjq.26.1651538520161;
+        Mon, 02 May 2022 17:42:00 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:15e:c760:9a04:7fbe])
+        by smtp.gmail.com with ESMTPSA id i10-20020aa78b4a000000b0050dc7628177sm5258794pfd.81.2022.05.02.17.41.59
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 17:41:59 -0700 (PDT)
+From:   Stephen Boyd <swboyd@chromium.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH 2/2] iio: sx9324: Add setting for CS idle mode
+Date:   Mon,  2 May 2022 17:41:56 -0700
+Message-Id: <20220503004156.3559940-3-swboyd@chromium.org>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+In-Reply-To: <20220503004156.3559940-1-swboyd@chromium.org>
+References: <20220503004156.3559940-1-swboyd@chromium.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
+Based on device tree setting, set the CS idle mode.
 
-On Mon, May 2, 2022 at 5:42 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> Based on device tree setting, set the CS idle mode.
->
-> Cc: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> ---
->  drivers/iio/proximity/sx9324.c | 16 ++++++++++++++++
->  1 file changed, 16 insertions(+)
->
-> diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
-> index 7f367f63e362..79683f0d4e9a 100644
-> --- a/drivers/iio/proximity/sx9324.c
-> +++ b/drivers/iio/proximity/sx9324.c
-> @@ -57,6 +57,11 @@
->         GENMASK(SX9324_REG_AFE_CTRL0_RINT_SHIFT + 1, \
->                 SX9324_REG_AFE_CTRL0_RINT_SHIFT)
->  #define SX9324_REG_AFE_CTRL0_RINT_LOWEST       0x00
-> +#define SX9324_REG_AFE_CTRL0_CSIDLE_SHIFT      4
-> +#define SX9324_REG_AFE_CTRL0_CSIDLE_MASK \
-> +       GENMASK(SX9324_REG_AFE_CTRL0_CSIDLE_SHIFT + 1, \
-> +               SX9324_REG_AFE_CTRL0_CSIDLE_SHIFT)
-> +#define SX9324_REG_AFE_CTRL0_RINT_LOWEST       0x00
->  #define SX9324_REG_AFE_CTRL1           0x21
->  #define SX9324_REG_AFE_CTRL2           0x22
->  #define SX9324_REG_AFE_CTRL3           0x23
-> @@ -872,6 +877,8 @@ sx9324_get_default_reg(struct device *dev, int idx,
->  {
->         static const char * const sx9324_rints[] = { "lowest", "low", "high",
->                 "highest" };
-> +       static const char * const sx9324_csidle[] = { "hz", "hz", "gnd",
-> +               "vdd" };
->  #define SX9324_PIN_DEF "semtech,ph0-pin"
->  #define SX9324_RESOLUTION_DEF "semtech,ph01-resolution"
->  #define SX9324_PROXRAW_DEF "semtech,ph01-proxraw-strength"
-> @@ -901,6 +908,15 @@ sx9324_get_default_reg(struct device *dev, int idx,
->                 reg_def->def = raw;
->                 break;
->         case SX9324_REG_AFE_CTRL0:
-> +               ret = device_property_read_string(dev,
-> +                               "semtech,cs-idle-sleep", &res);
-> +               if (!ret)
-> +                       ret = match_string(sx9324_csidle, ARRAY_SIZE(sx9324_csidle), res);
-> +               if (ret >= 0) {
-> +                       reg_def->def &= ~SX9324_REG_AFE_CTRL0_CSIDLE_MASK;
-> +                       reg_def->def |= ret << SX9324_REG_AFE_CTRL0_CSIDLE_SHIFT;
-> +               }
-> +
->                 ret = device_property_read_string(dev,
->                                 "semtech,int-comp-resistor", &res);
->                 if (ret)
-> --
-> https://chromeos.dev
->
+Cc: Gwendal Grignou <gwendal@chromium.org>
+Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+---
+ drivers/iio/proximity/sx9324.c | 16 ++++++++++++++++
+ 1 file changed, 16 insertions(+)
+
+diff --git a/drivers/iio/proximity/sx9324.c b/drivers/iio/proximity/sx9324.c
+index 7f367f63e362..79683f0d4e9a 100644
+--- a/drivers/iio/proximity/sx9324.c
++++ b/drivers/iio/proximity/sx9324.c
+@@ -57,6 +57,11 @@
+ 	GENMASK(SX9324_REG_AFE_CTRL0_RINT_SHIFT + 1, \
+ 		SX9324_REG_AFE_CTRL0_RINT_SHIFT)
+ #define SX9324_REG_AFE_CTRL0_RINT_LOWEST	0x00
++#define SX9324_REG_AFE_CTRL0_CSIDLE_SHIFT	4
++#define SX9324_REG_AFE_CTRL0_CSIDLE_MASK \
++	GENMASK(SX9324_REG_AFE_CTRL0_CSIDLE_SHIFT + 1, \
++		SX9324_REG_AFE_CTRL0_CSIDLE_SHIFT)
++#define SX9324_REG_AFE_CTRL0_RINT_LOWEST	0x00
+ #define SX9324_REG_AFE_CTRL1		0x21
+ #define SX9324_REG_AFE_CTRL2		0x22
+ #define SX9324_REG_AFE_CTRL3		0x23
+@@ -872,6 +877,8 @@ sx9324_get_default_reg(struct device *dev, int idx,
+ {
+ 	static const char * const sx9324_rints[] = { "lowest", "low", "high",
+ 		"highest" };
++	static const char * const sx9324_csidle[] = { "hz", "hz", "gnd",
++		"vdd" };
+ #define SX9324_PIN_DEF "semtech,ph0-pin"
+ #define SX9324_RESOLUTION_DEF "semtech,ph01-resolution"
+ #define SX9324_PROXRAW_DEF "semtech,ph01-proxraw-strength"
+@@ -901,6 +908,15 @@ sx9324_get_default_reg(struct device *dev, int idx,
+ 		reg_def->def = raw;
+ 		break;
+ 	case SX9324_REG_AFE_CTRL0:
++		ret = device_property_read_string(dev,
++				"semtech,cs-idle-sleep", &res);
++		if (!ret)
++			ret = match_string(sx9324_csidle, ARRAY_SIZE(sx9324_csidle), res);
++		if (ret >= 0) {
++			reg_def->def &= ~SX9324_REG_AFE_CTRL0_CSIDLE_MASK;
++			reg_def->def |= ret << SX9324_REG_AFE_CTRL0_CSIDLE_SHIFT;
++		}
++
+ 		ret = device_property_read_string(dev,
+ 				"semtech,int-comp-resistor", &res);
+ 		if (ret)
+-- 
+https://chromeos.dev
+
