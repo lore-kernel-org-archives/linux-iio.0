@@ -2,53 +2,57 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E02C433EF
-	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 00:53:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2311FC433F5
+	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 01:00:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229553AbiECA52 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 May 2022 20:57:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
+        id S229881AbiECBDe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 May 2022 21:03:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229447AbiECA51 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2022 20:57:27 -0400
-Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B577746644
-        for <linux-iio@vger.kernel.org>; Mon,  2 May 2022 17:53:55 -0700 (PDT)
-Received: by mail-io1-xd34.google.com with SMTP id h85so6357063iof.12
-        for <linux-iio@vger.kernel.org>; Mon, 02 May 2022 17:53:55 -0700 (PDT)
+        with ESMTP id S229780AbiECBDd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2022 21:03:33 -0400
+Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63643ED02
+        for <linux-iio@vger.kernel.org>; Mon,  2 May 2022 17:59:53 -0700 (PDT)
+Received: by mail-ot1-x32c.google.com with SMTP id m6-20020a05683023a600b0060612720715so3569239ots.10
+        for <linux-iio@vger.kernel.org>; Mon, 02 May 2022 17:59:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=bNXNgphksGo4k32JcFbuZKqXbM115Hb6FPq1B94vQeM=;
-        b=Rezn3JQ6zF/Pi8M9aA1wO0xhxWizrPKMRDsqUGbYAZg8yqFRWcJaRypJtv5uRCgFXY
-         4u0tvKxQjQ0mcYDb6Pln0swgyB2V5ucmZbpaxNutSb8utdI7qglXN/vdRtWK4U83G2nr
-         g6sOuiwjhlNvebxssQuFwKNY5T1P6wRvS3uIE=
+        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
+         :subject:to:cc;
+        bh=PqPv3sukjDPfWFVVv2QmzL0BRFz4buvp3OmCyU+0818=;
+        b=RAtI906hs/kp540GhWQ0A94Gkyla/8HnZVa1xTJKQ7MsrVFNPtwGGP8COs35R2rDzz
+         WfMC+zIhqWmbvdC8q0RYd2/TUl/cYQ3WXAKtwqH9hzVha7UYJ9EE7y6rAZSK3ykOEX/n
+         KxQKyP5GPlyNsVzOsEqacG/f4paG5MVhovcM0=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=bNXNgphksGo4k32JcFbuZKqXbM115Hb6FPq1B94vQeM=;
-        b=ygUozCcTkHClGHs2i352KiFHf9FGHSoMPrQEZT9GujfN8vQ9ts6rbmzPROmuF7XbBy
-         Vv6680oqSK8qpV3MlmU8/LTDOmR2/aCGqjykGKZZNk3bFZ9gwC6PJPLUgZScgnR+nkT5
-         ZYEPgA+Y8Mfxe4/5F7Nd1xHuT1hnLTKn/4Q3PS+iD1K/hl7+xscxKOf/l4lJS3/vevrs
-         SNXUs7gzRoogbp8CUpbYnIvnl4OxpHJWJBkNiQRM4KEXK3QliqlxxaVYCpT44gGknJv/
-         D6y9bUN4XC/C2g10rgW4mWeclLgiJPA6Usq2JrGFI4EkWNeGViNBA/EpN5neZ34bx/ER
-         ks9A==
-X-Gm-Message-State: AOAM5313i9h8yD7c8pgziBO3gNYRmwOT1QtMsLl9aCCqBhl0Ist0afxd
-        /Fewbyre56ZCZWT1dYpcyWtOggZOgZnytVkpKvlMsQ==
-X-Google-Smtp-Source: ABdhPJw3w4b9qZ7bxbY+0GUCILNFuzlVGSUn99TvdEm0g+1Qi7nOeOfG/n86dBAPua1rUpWz+FsC7/BlTV82HpJFeCo=
-X-Received: by 2002:a05:6638:4905:b0:32b:5bc3:4e3 with SMTP id
- cx5-20020a056638490500b0032b5bc304e3mr4528580jab.37.1651539014154; Mon, 02
- May 2022 17:50:14 -0700 (PDT)
+        h=x-gm-message-state:mime-version:in-reply-to:references:from
+         :user-agent:date:message-id:subject:to:cc;
+        bh=PqPv3sukjDPfWFVVv2QmzL0BRFz4buvp3OmCyU+0818=;
+        b=Ap4pPHhYrxCLXeRALAwkT6bhjD5lficTHIyDyntWb9fqXy1voONS9aCYxQbzO1TEbi
+         8xnysAqS/nKrs5kAKOQDPb+VewIWzjsX/7KC8QZtT9PNQmbAP5jl2kFA06+ZWoNAmBRB
+         qInQTdrwbNdToNJjUaFTtjjOEeMf0RWjxZ6mv0dcMmMqf95fSNJGZIjCSdkXLTj8zYyx
+         PrH61zLGSlOuHPpoH818llUuUgDkLROo8pKvC4XBVGN2+D3fPrI0N84TQJAo6nSoeaU+
+         MNXGBqMYKmh0Neujf6GQ0aSytpITHFVuxGZkNESK1M6W+ype5IHcbKSiq27JaiSJei8s
+         PBkA==
+X-Gm-Message-State: AOAM5307sIKzbTJ6SOsJdmujlHmY/AvcBN82ngij5vcwJBDDYUFtdsg/
+        6tni47MeBShUksbHTEILe5Q364j1ihHqyp5f1qTMmRC96w4=
+X-Google-Smtp-Source: ABdhPJwXC5LAmqwYvlZ/jur0av0/iVWc1WDfRVb3EUDIbC0lUKd0OVNWqhmTPQVo95mtyDwJY6OcGX5l/l1kozM+bo4=
+X-Received: by 2002:a9d:20a1:0:b0:5e8:d2b6:f63f with SMTP id
+ x30-20020a9d20a1000000b005e8d2b6f63fmr4960898ota.159.1651539297094; Mon, 02
+ May 2022 17:54:57 -0700 (PDT)
+Received: from 753933720722 named unknown by gmailapi.google.com with
+ HTTPREST; Mon, 2 May 2022 17:54:56 -0700
 MIME-Version: 1.0
+In-Reply-To: <CAPUE2usLO-sJLP64ZgBrzYBwuZf2tSvKvr9GxcVEiQk7d==OiQ@mail.gmail.com>
 References: <20220503004156.3559940-1-swboyd@chromium.org> <20220503004156.3559940-2-swboyd@chromium.org>
-In-Reply-To: <20220503004156.3559940-2-swboyd@chromium.org>
-From:   Gwendal Grignou <gwendal@chromium.org>
-Date:   Mon, 2 May 2022 17:50:02 -0700
-Message-ID: <CAPUE2usLO-sJLP64ZgBrzYBwuZf2tSvKvr9GxcVEiQk7d==OiQ@mail.gmail.com>
+ <CAPUE2usLO-sJLP64ZgBrzYBwuZf2tSvKvr9GxcVEiQk7d==OiQ@mail.gmail.com>
+From:   Stephen Boyd <swboyd@chromium.org>
+User-Agent: alot/0.10
+Date:   Mon, 2 May 2022 17:54:56 -0700
+Message-ID: <CAE-0n50neMUBqPbmne-AUT-K2KJZCV4GxQHQoShxveFj9kon6w@mail.gmail.com>
 Subject: Re: [PATCH 1/2] dt-bindings: iio: sx9324: Add CS idle/sleep mode
-To:     Stephen Boyd <swboyd@chromium.org>
+To:     Gwendal Grignou <gwendal@chromium.org>
 Cc:     Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
         patches@lists.linux.dev, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
@@ -58,41 +62,9 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
+Quoting Gwendal Grignou (2022-05-02 17:50:02)
+> Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
+>
+> Nit: you may want to add an example.
 
-Nit: you may want to add an example.
-
-On Mon, May 2, 2022 at 5:41 PM Stephen Boyd <swboyd@chromium.org> wrote:
->
-> We need to configure the sleep and idle mode of the CS pins for this
-> device. Add a DT property to do this so pins are in a proper state
-> during sleep (either hi-z, grounded, or pulled up to vdd).
->
-> Cc: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
-> ---
->  .../devicetree/bindings/iio/proximity/semtech,sx9324.yaml | 8 ++++++++
->  1 file changed, 8 insertions(+)
->
-> diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> index d265eb5258c8..6cec3481c8b2 100644
-> --- a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> @@ -126,6 +126,14 @@ properties:
->        UINT_MAX (4294967295) represents infinite. Other values
->        represent 1-1/N.
->
-> +  semtech,cs-idle-sleep:
-> +    description:
-> +      State of CS pins during sleep mode and idle time.
-> +    enum:
-> +      - hz
-> +      - gnd
-> +      - vdd
-> +
->    semtech,int-comp-resistor:
->      description:
->        Internal resistor setting for compensation.
-> --
-> https://chromeos.dev
->
+Good point. I can add to the example and resend. I'll do it tomorrow.
