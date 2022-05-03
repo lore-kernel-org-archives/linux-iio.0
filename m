@@ -2,91 +2,91 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CDA38C433F5
-	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 14:30:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 51489C4332F
+	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 14:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237077AbiECOds (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 3 May 2022 10:33:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59782 "EHLO
+        id S237292AbiECOsH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 3 May 2022 10:48:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41784 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237079AbiECOdr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 May 2022 10:33:47 -0400
-X-Greylist: delayed 429 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 03 May 2022 07:30:13 PDT
-Received: from mx-out1.startmail.com (mx-out1.startmail.com [145.131.90.139])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D48C61107
-        for <linux-iio@vger.kernel.org>; Tue,  3 May 2022 07:30:13 -0700 (PDT)
-Message-ID: <8f16b39c-b20c-fc68-aa16-2df9c3b65c6e@startmail.com>
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=startmail.com;
-        s=2020-07; t=1651587783;
-        bh=MIydjD9KEhWv1uqyMSAgNp/QDkROZvwgXFiugvhd4R8=;
-        h=Message-ID:Date:MIME-Version:Subject:To:References:From:
-         In-Reply-To:Content-Type:Content-Transfer-Encoding:From:Subject:To:
-         Date:Sender:Content-Type:Content-Transfer-Encoding:
-         Content-Disposition:Mime-Version:Reply-To:In-Reply-To:References:
-         Message-Id:Autocrypt;
-        b=kNd48eLSE89lIJyGXl00qTuBcPHQpw1UO+HkGT4ailV/9Lbkc0Um9aU8oJ8zpf4hc
-         SKEiwUULAk4ebnmfRKLIM55PkjYWvPF7KTqG3/9GRLExZKaHvfpfRE8XxqB9LowgYy
-         PK0NU+keioa7fP8C2aUgRjBfFg0MDkyQDsvROEVzriASjmdSIMAdey6yIdZ6+ywMDq
-         VCBfTps4cuGP4wraJ3rfG9MYC0LaBdRikuojDiynXKb9O5aOQmA6xuiEPVaiQPbllT
-         iZiVituFkAMbRfMhdEV7opuaVFFaF1x+wGx9I5Kslei9bJUS63ySyr8gC5q+c744uT
-         rpyVuUIBf0TDQ==
-Date:   Tue, 3 May 2022 17:23:02 +0300
+        with ESMTP id S233112AbiECOsH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 May 2022 10:48:07 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B341A39145;
+        Tue,  3 May 2022 07:44:34 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: shreeya)
+        with ESMTPSA id 947631F44133
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1651589073;
+        bh=75NegSEi4JVsJ/gNG3N8gRZQnLpfASm6YuDM+8dxgto=;
+        h=From:To:Cc:Subject:Date:From;
+        b=Fuf/2dowe32OR3RhkINdSzl/L24mNTcqsoRgd1sTgms+Uyp0hCVq0RO5/g0v7KjGT
+         IjkH7H7GlA54f9t8ayNHX7MGUwvTOZJX66ZO7m1Ceehiv/yxFpEKFAzA++3MwF6VTQ
+         Qa8La7FDijykYK98NIM6tEg9g2K9qNFGCbCs5vigQtV6iUjOxHk5XUOGrjB+bVKJZh
+         shAMN1TTFmz4QFqUGkCiaARCbEDg3NvYpDXzaPSbvyoUzePc0gGgGqysXnz83fllX2
+         qfpGL6T5nSacHpLUA0fSzWSVT2H6Qm5mcrQjB/B94FIqDwJM7p9LaPeBAgX/Q7OkdC
+         m5GVwVHQ1dByA==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        Zhigang.Shi@liteon.com, krzk@kernel.org, krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com,
+        Shreeya Patel <shreeya.patel@collabora.com>
+Subject: [PATCH v3 0/3] Add LTRF216A Driver
+Date:   Tue,  3 May 2022 20:13:51 +0530
+Message-Id: <20220503144354.75438-1-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Subject: Re: [PATCH 26/92] iio: adc: max1241: Fix alignment for DMA safety
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <20220503085935.1533814-1-jic23@kernel.org>
- <20220503085935.1533814-27-jic23@kernel.org>
-From:   Alexandru Lazar <alazar@startmail.com>
-In-Reply-To: <20220503085935.1533814-27-jic23@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+This patchset adds support for ltrf216a Ambient Light Sensor
+and documents the DT bindings for the same.
 
 
-On 5/3/2022 11:58 AM, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-> on platforms with 128 byte cachelines above L1.  Switch to the updated
-> IIO_ALIGN definition.
-> 
-> Fixes: 8a80a71d9020 ("iio: adc: Add MAX1241 driver")
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Alexandru Lazar <alazar@startmail.com>
-> ---
->   drivers/iio/adc/max1241.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/max1241.c b/drivers/iio/adc/max1241.c
-> index a5afd84af58b..e3dbcc2e4e77 100644
-> --- a/drivers/iio/adc/max1241.c
-> +++ b/drivers/iio/adc/max1241.c
-> @@ -26,7 +26,7 @@ struct max1241 {
->   	struct regulator *vref;
->   	struct gpio_desc *shutdown;
->   
-> -	__be16 data ____cacheline_aligned;
-> +	__be16 data __aligned(IIO_ALIGN);
->   };
->   
->   static const struct iio_chan_spec max1241_channels[] = {
+Changes in v3
+  - Use u16 instead of u8 for int_time_fac
+  - Reorder headers in ltrf216a.c file
+  - Remove int_time_mapping table and use int_time_available
+  - Fix indentation in the bindings file.
 
-Looks good, I think we can call this
+Changes in v2
+  - Add support for 25ms and 50ms integration time.
+  - Rename some of the macros as per names given in datasheet
+  - Add a comment for the mutex lock
+  - Use read_avail callback instead of attributes and set the
+    appropriate _available bit.
+  - Use FIELD_PREP() at appropriate places.
+  - Add a constant lookup table for integration time and reg val
+  - Use BIT() macro for magic numbers.
+  - Improve error handling at few places.
+  - Use get_unaligned_le24() and div_u64()
+  - Use probe_new() callback and devm functions
+  - Return errors in probe using dev_err_probe()
+  - Use DEFINE_SIMPLE_DEV_PM_OPS()
+  - Correct the formula for lux to use 0.45 instead of 0.8
+  - Add interrupt and power supply property in DT bindings
+  - Add vendor prefix name as per the alphabetical order.
 
-Acked-by: Alexandru Lazar <alazar@startmail.com>
 
-Thanks!
+Shreeya Patel (3):
+  dt-bindings: vendor-prefixes: Add 'ltr' as deprecated vendor prefix
+  dt-bindings: Document ltrf216a light sensor bindings
+  iio: light: Add support for ltrf216a sensor
 
-In addition to that, I also think the changes in max1118 and max1027 are 
-OK but I can't test either of them so take this with a grain of salt.
+ .../bindings/iio/light/liteon,ltrf216a.yaml   |  51 +++
+ .../devicetree/bindings/vendor-prefixes.yaml  |   3 +
+ drivers/iio/light/Kconfig                     |  10 +
+ drivers/iio/light/Makefile                    |   1 +
+ drivers/iio/light/ltrf216a.c                  | 343 ++++++++++++++++++
+ 5 files changed, 408 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/liteon,ltrf216a.yaml
+ create mode 100644 drivers/iio/light/ltrf216a.c
 
-All the best,
-Alex
+-- 
+2.30.2
 
-(P.S. Fingers crossed that Thunderbird doesn't screw this up, I'm 
-nowhere near my development machine for the next two weeks :-( . 
-Apologies if it does!)
