@@ -2,131 +2,97 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6579C4332F
-	for <linux-iio@archiver.kernel.org>; Mon,  2 May 2022 17:04:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 04E02C433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 00:53:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386416AbiEBRHg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 May 2022 13:07:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46676 "EHLO
+        id S229553AbiECA52 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 May 2022 20:57:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43380 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352051AbiEBRHf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2022 13:07:35 -0400
-Received: from mail-oi1-f169.google.com (mail-oi1-f169.google.com [209.85.167.169])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BFBB2654;
-        Mon,  2 May 2022 10:04:05 -0700 (PDT)
-Received: by mail-oi1-f169.google.com with SMTP id m25so1883963oih.2;
-        Mon, 02 May 2022 10:04:05 -0700 (PDT)
+        with ESMTP id S229447AbiECA51 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2022 20:57:27 -0400
+Received: from mail-io1-xd34.google.com (mail-io1-xd34.google.com [IPv6:2607:f8b0:4864:20::d34])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B577746644
+        for <linux-iio@vger.kernel.org>; Mon,  2 May 2022 17:53:55 -0700 (PDT)
+Received: by mail-io1-xd34.google.com with SMTP id h85so6357063iof.12
+        for <linux-iio@vger.kernel.org>; Mon, 02 May 2022 17:53:55 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=chromium.org; s=google;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=bNXNgphksGo4k32JcFbuZKqXbM115Hb6FPq1B94vQeM=;
+        b=Rezn3JQ6zF/Pi8M9aA1wO0xhxWizrPKMRDsqUGbYAZg8yqFRWcJaRypJtv5uRCgFXY
+         4u0tvKxQjQ0mcYDb6Pln0swgyB2V5ucmZbpaxNutSb8utdI7qglXN/vdRtWK4U83G2nr
+         g6sOuiwjhlNvebxssQuFwKNY5T1P6wRvS3uIE=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RyfKQzlGnJ7L77OWzUvhlKYmJuTKqGy4tAr4aSelX70=;
-        b=2RJZKOykACz5yd1R7zHldasf+0uDb/zy4u/AwcxfB97B/sv7bGKbRo2mDO4YyUirYF
-         ddbsqigf817AQ0G/+4s5qyaSjfyoeRr79sl9Mg8b5YcwV55RxiWQNR3PNLtIQaOWAJN7
-         a7EzFA6wj1qAcmQjL8437Im/lEcyAK1jgyDRLMKZ7AKICPjfQ1E9M7MHg+/NBrpByB59
-         jriMwpjbX7RPAnoqTL1AL+XeTkU+QVs7bYz4RUXIAJMfdrJFOavkwstDmFfZ01jactbi
-         rTK3+yxYv/AMvUud3Z4Xrt0gtAAc9lBnZ+4vGMWi+IMlmnI1vVzePFwRctCEhoWQU9J2
-         aEgA==
-X-Gm-Message-State: AOAM530qc/5jCwSLdy8g9l0WM5dT/UtIZX2nysehjiwoznuXjn2cxrZC
-        Q/+FF5L5xTJZZjancv8uURtOXflEJg==
-X-Google-Smtp-Source: ABdhPJwsCVRyhmjElfIJbu5IkPnmejWA+Bqc6NzMmf7NBIR1FWGQ1HhayD7q08/7M2fTop7B86o/YA==
-X-Received: by 2002:a05:6808:d50:b0:322:fb1d:319d with SMTP id w16-20020a0568080d5000b00322fb1d319dmr60252oik.174.1651511044301;
-        Mon, 02 May 2022 10:04:04 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id w5-20020a9d3605000000b005b2353c5f4fsm3056541otb.0.2022.05.02.10.04.03
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 02 May 2022 10:04:03 -0700 (PDT)
-Received: (nullmailer pid 1338080 invoked by uid 1000);
-        Mon, 02 May 2022 17:04:03 -0000
-Date:   Mon, 2 May 2022 12:04:03 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-Subject: Re: [PATCH v2] dt-bindings: iio: adc: Document Renesas RZ/G2UL ADC
-Message-ID: <YnAPA9flIrt6qtfB@robh.at.kernel.org>
-References: <20220501111952.45872-1-biju.das.jz@bp.renesas.com>
- <20220501191705.19860b69@jic23-huawei>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=bNXNgphksGo4k32JcFbuZKqXbM115Hb6FPq1B94vQeM=;
+        b=ygUozCcTkHClGHs2i352KiFHf9FGHSoMPrQEZT9GujfN8vQ9ts6rbmzPROmuF7XbBy
+         Vv6680oqSK8qpV3MlmU8/LTDOmR2/aCGqjykGKZZNk3bFZ9gwC6PJPLUgZScgnR+nkT5
+         ZYEPgA+Y8Mfxe4/5F7Nd1xHuT1hnLTKn/4Q3PS+iD1K/hl7+xscxKOf/l4lJS3/vevrs
+         SNXUs7gzRoogbp8CUpbYnIvnl4OxpHJWJBkNiQRM4KEXK3QliqlxxaVYCpT44gGknJv/
+         D6y9bUN4XC/C2g10rgW4mWeclLgiJPA6Usq2JrGFI4EkWNeGViNBA/EpN5neZ34bx/ER
+         ks9A==
+X-Gm-Message-State: AOAM5313i9h8yD7c8pgziBO3gNYRmwOT1QtMsLl9aCCqBhl0Ist0afxd
+        /Fewbyre56ZCZWT1dYpcyWtOggZOgZnytVkpKvlMsQ==
+X-Google-Smtp-Source: ABdhPJw3w4b9qZ7bxbY+0GUCILNFuzlVGSUn99TvdEm0g+1Qi7nOeOfG/n86dBAPua1rUpWz+FsC7/BlTV82HpJFeCo=
+X-Received: by 2002:a05:6638:4905:b0:32b:5bc3:4e3 with SMTP id
+ cx5-20020a056638490500b0032b5bc304e3mr4528580jab.37.1651539014154; Mon, 02
+ May 2022 17:50:14 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220501191705.19860b69@jic23-huawei>
+References: <20220503004156.3559940-1-swboyd@chromium.org> <20220503004156.3559940-2-swboyd@chromium.org>
+In-Reply-To: <20220503004156.3559940-2-swboyd@chromium.org>
+From:   Gwendal Grignou <gwendal@chromium.org>
+Date:   Mon, 2 May 2022 17:50:02 -0700
+Message-ID: <CAPUE2usLO-sJLP64ZgBrzYBwuZf2tSvKvr9GxcVEiQk7d==OiQ@mail.gmail.com>
+Subject: Re: [PATCH 1/2] dt-bindings: iio: sx9324: Add CS idle/sleep mode
+To:     Stephen Boyd <swboyd@chromium.org>
+Cc:     Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
+        patches@lists.linux.dev, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzk+dt@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, May 01, 2022 at 07:17:05PM +0100, Jonathan Cameron wrote:
-> On Sun,  1 May 2022 12:19:52 +0100
-> Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> 
-> > ADC found on RZ/G2UL SoC is almost identical to RZ/G2L SoC, but RZ/G2UL
-> > has 2 analog input channels compared to 8 channels on RZ/G2L. Therefore,
-> > added a new compatible to handle this difference.
-> > 
-> > Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> > ---
-> > v1->v2:
-> >  * Removed Items and used const for RZ/G2UL compatible
-> >  * Add allOf:if:then restricting available channels per SoC variant.
-> > ---
-> >  .../bindings/iio/adc/renesas,rzg2l-adc.yaml   | 34 ++++++++++++++-----
-> >  1 file changed, 25 insertions(+), 9 deletions(-)
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml b/Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
-> > index d66c24cae1e1..d76c5ba3d625 100644
-> > --- a/Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
-> > +++ b/Documentation/devicetree/bindings/iio/adc/renesas,rzg2l-adc.yaml
-> > @@ -17,11 +17,13 @@ description: |
-> >  
-> >  properties:
-> >    compatible:
-> > -    items:
-> > -      - enum:
-> > -          - renesas,r9a07g044-adc   # RZ/G2L
-> > -          - renesas,r9a07g054-adc   # RZ/V2L
-> > -      - const: renesas,rzg2l-adc
-> > +    oneOf:
-> > +      - const: renesas,renesas,r9a07g043-adc  # RZ/G2UL
-> > +      - items:
-> > +          - enum:
-> > +              - renesas,r9a07g044-adc   # RZ/G2L
-> > +              - renesas,r9a07g054-adc   # RZ/V2L
-> > +          - const: renesas,rzg2l-adc
-> >  
-> >    reg:
-> >      maxItems: 1
-> > @@ -76,10 +78,24 @@ patternProperties:
-> >      properties:
-> >        reg:
-> >          description: |
-> > -          The channel number. It can have up to 8 channels numbered from 0 to 7.
-> > -        items:
-> > -          - minimum: 0
-> > -            maximum: 7
-> > +          The channel number. It can have up to 8 channels numbered from 0 to 7
-> > +          for RZ/{G2L,V2L} SoCs or 2 channels numbered from 0 to 1 for RZ/G2UL
-> > +          SoC.
-> > +      allOf:
-> > +        if:
->            - if:
->                properties:
-> etc
-> 
-> Otherwise I think you can only have one in your allOf: which rather
-> removes the point of having one.
-> 
-> I was surprised this passed the checks, so added another if to verify my
-> reasoning...
+Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
 
-It didn't apply, so checks didn't run. But it should fail not for the 
-reason you correctly identified, but because 'allOf' is a DT property 
-here not json-schema vocabulary. 
+Nit: you may want to add an example.
 
-Rob
+On Mon, May 2, 2022 at 5:41 PM Stephen Boyd <swboyd@chromium.org> wrote:
+>
+> We need to configure the sleep and idle mode of the CS pins for this
+> device. Add a DT property to do this so pins are in a proper state
+> during sleep (either hi-z, grounded, or pulled up to vdd).
+>
+> Cc: Gwendal Grignou <gwendal@chromium.org>
+> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+> ---
+>  .../devicetree/bindings/iio/proximity/semtech,sx9324.yaml | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+>
+> diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> index d265eb5258c8..6cec3481c8b2 100644
+> --- a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
+> @@ -126,6 +126,14 @@ properties:
+>        UINT_MAX (4294967295) represents infinite. Other values
+>        represent 1-1/N.
+>
+> +  semtech,cs-idle-sleep:
+> +    description:
+> +      State of CS pins during sleep mode and idle time.
+> +    enum:
+> +      - hz
+> +      - gnd
+> +      - vdd
+> +
+>    semtech,int-comp-resistor:
+>      description:
+>        Internal resistor setting for compensation.
+> --
+> https://chromeos.dev
+>
