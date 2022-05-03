@@ -2,69 +2,89 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2311FC433F5
-	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 01:00:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5543BC433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 01:06:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229881AbiECBDe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 2 May 2022 21:03:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42238 "EHLO
+        id S229531AbiECBJg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 2 May 2022 21:09:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229780AbiECBDd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2022 21:03:33 -0400
-Received: from mail-ot1-x32c.google.com (mail-ot1-x32c.google.com [IPv6:2607:f8b0:4864:20::32c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B63643ED02
-        for <linux-iio@vger.kernel.org>; Mon,  2 May 2022 17:59:53 -0700 (PDT)
-Received: by mail-ot1-x32c.google.com with SMTP id m6-20020a05683023a600b0060612720715so3569239ots.10
-        for <linux-iio@vger.kernel.org>; Mon, 02 May 2022 17:59:53 -0700 (PDT)
+        with ESMTP id S229496AbiECBJg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 May 2022 21:09:36 -0400
+Received: from mail-pg1-f175.google.com (mail-pg1-f175.google.com [209.85.215.175])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 59D8B45073
+        for <linux-iio@vger.kernel.org>; Mon,  2 May 2022 18:05:57 -0700 (PDT)
+Received: by mail-pg1-f175.google.com with SMTP id 202so2647947pgc.9
+        for <linux-iio@vger.kernel.org>; Mon, 02 May 2022 18:05:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=chromium.org; s=google;
-        h=mime-version:in-reply-to:references:from:user-agent:date:message-id
-         :subject:to:cc;
-        bh=PqPv3sukjDPfWFVVv2QmzL0BRFz4buvp3OmCyU+0818=;
-        b=RAtI906hs/kp540GhWQ0A94Gkyla/8HnZVa1xTJKQ7MsrVFNPtwGGP8COs35R2rDzz
-         WfMC+zIhqWmbvdC8q0RYd2/TUl/cYQ3WXAKtwqH9hzVha7UYJ9EE7y6rAZSK3ykOEX/n
-         KxQKyP5GPlyNsVzOsEqacG/f4paG5MVhovcM0=
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=khN4bSzgSmeJrIrtbbdzuHfsBE5dtKb/D17YqTGzfL8=;
+        b=XCO8kH0F5C04LPnTIDtteEB5GrIymqMB+WvOR2GPxPFQ9xKWdXuAju9Fd8Lteah3LV
+         f4YfbhntC1qJBBlU9kdX42V0YIP5/HGfJ2LUXkT71UWH2KPOJ+367UujuCuMBbsjcgtv
+         +nDQnnE36Rcv9LCYU9FRCyil9/jnvSBcMW9jY=
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:in-reply-to:references:from
-         :user-agent:date:message-id:subject:to:cc;
-        bh=PqPv3sukjDPfWFVVv2QmzL0BRFz4buvp3OmCyU+0818=;
-        b=Ap4pPHhYrxCLXeRALAwkT6bhjD5lficTHIyDyntWb9fqXy1voONS9aCYxQbzO1TEbi
-         8xnysAqS/nKrs5kAKOQDPb+VewIWzjsX/7KC8QZtT9PNQmbAP5jl2kFA06+ZWoNAmBRB
-         qInQTdrwbNdToNJjUaFTtjjOEeMf0RWjxZ6mv0dcMmMqf95fSNJGZIjCSdkXLTj8zYyx
-         PrH61zLGSlOuHPpoH818llUuUgDkLROo8pKvC4XBVGN2+D3fPrI0N84TQJAo6nSoeaU+
-         MNXGBqMYKmh0Neujf6GQ0aSytpITHFVuxGZkNESK1M6W+ype5IHcbKSiq27JaiSJei8s
-         PBkA==
-X-Gm-Message-State: AOAM5307sIKzbTJ6SOsJdmujlHmY/AvcBN82ngij5vcwJBDDYUFtdsg/
-        6tni47MeBShUksbHTEILe5Q364j1ihHqyp5f1qTMmRC96w4=
-X-Google-Smtp-Source: ABdhPJwXC5LAmqwYvlZ/jur0av0/iVWc1WDfRVb3EUDIbC0lUKd0OVNWqhmTPQVo95mtyDwJY6OcGX5l/l1kozM+bo4=
-X-Received: by 2002:a9d:20a1:0:b0:5e8:d2b6:f63f with SMTP id
- x30-20020a9d20a1000000b005e8d2b6f63fmr4960898ota.159.1651539297094; Mon, 02
- May 2022 17:54:57 -0700 (PDT)
-Received: from 753933720722 named unknown by gmailapi.google.com with
- HTTPREST; Mon, 2 May 2022 17:54:56 -0700
-MIME-Version: 1.0
-In-Reply-To: <CAPUE2usLO-sJLP64ZgBrzYBwuZf2tSvKvr9GxcVEiQk7d==OiQ@mail.gmail.com>
-References: <20220503004156.3559940-1-swboyd@chromium.org> <20220503004156.3559940-2-swboyd@chromium.org>
- <CAPUE2usLO-sJLP64ZgBrzYBwuZf2tSvKvr9GxcVEiQk7d==OiQ@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=khN4bSzgSmeJrIrtbbdzuHfsBE5dtKb/D17YqTGzfL8=;
+        b=CRJHIqsz8E3Q4wPJv7PDyrF40DckgS33yNx21lPorr8V9jS+qcN6QZHekDDVIRL4r7
+         8B3KW/4ixGXwpQhv+jlCeOU0Jbp8H/5iezBCDAJat9PUEAZoyAk6YiEuH0M8ucw+Y2e8
+         T+ofrWsQl5iqDZYUOYhu1cf+ZrY0Cd0qSvmGVuuvkKbqllo966hakt+u9XqocrXO1Vhv
+         ePAU/3bzr8AWSEJi9fcYXl0nUaqEIL+BWeAA5K8h2XOFjWDT1Kwl6YzY477nDInEokSK
+         8uidYAx4i8XqBRZfES0tX+rmE2JdpjuI1ORYtxLLeVvW5JE/vRlglTVnIBRxPp6/OdSW
+         UjKw==
+X-Gm-Message-State: AOAM532885lrXiuhXzXTyFPTV0LUpNlQikRzgXokO6GQ0iXHZKxvzWDa
+        sXsEJAv3ZGRfH7W6t5HiLejyiFOyq3wV0w==
+X-Google-Smtp-Source: ABdhPJzAgd+FaWOrobdXhjw9IxyYdko+Q1do11+CtCUhF7Ks1+/BdcIulft8Pi2z2X4LZbdJBn53uw==
+X-Received: by 2002:a65:6aa3:0:b0:3ab:23fb:adae with SMTP id x3-20020a656aa3000000b003ab23fbadaemr11772254pgu.278.1651538518337;
+        Mon, 02 May 2022 17:41:58 -0700 (PDT)
+Received: from smtp.gmail.com ([2620:15c:202:201:15e:c760:9a04:7fbe])
+        by smtp.gmail.com with ESMTPSA id i10-20020aa78b4a000000b0050dc7628177sm5258794pfd.81.2022.05.02.17.41.57
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 02 May 2022 17:41:57 -0700 (PDT)
 From:   Stephen Boyd <swboyd@chromium.org>
-User-Agent: alot/0.10
-Date:   Mon, 2 May 2022 17:54:56 -0700
-Message-ID: <CAE-0n50neMUBqPbmne-AUT-K2KJZCV4GxQHQoShxveFj9kon6w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: sx9324: Add CS idle/sleep mode
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
-        patches@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-kernel@vger.kernel.org, patches@lists.linux.dev,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzk+dt@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Subject: [PATCH 0/2] iio: sx9324: Support CS idle mode
+Date:   Mon,  2 May 2022 17:41:54 -0700
+Message-Id: <20220503004156.3559940-1-swboyd@chromium.org>
+X-Mailer: git-send-email 2.36.0.464.gb9c8b46e94-goog
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Quoting Gwendal Grignou (2022-05-02 17:50:02)
-> Reviewed-by: Gwendal Grignou <gwendal@chromium.org>
->
-> Nit: you may want to add an example.
+I need one more property to set another regsiter field for 
+how to configure the CS pins during idle and sleep modes. This is based
+on the latest patch series from Gwendal[1]
 
-Good point. I can add to the example and resend. I'll do it tomorrow.
+Stephen Boyd (2):
+  dt-bindings: iio: sx9324: Add CS idle/sleep mode
+  iio: sx9324: Add setting for CS idle mode
+
+ .../bindings/iio/proximity/semtech,sx9324.yaml   |  8 ++++++++
+ drivers/iio/proximity/sx9324.c                   | 16 ++++++++++++++++
+ 2 files changed, 24 insertions(+)
+
+[1] https://lore.kernel.org/all/20220429220144.1476049-1-gwendal@chromium.org/
+
+base-commit: d79478a79cfa393cde46bccb05d52fc7d875d2e2
+prerequisite-patch-id: 05986765e921df4c9725d10a3f51e68b0b5cc211
+prerequisite-patch-id: 5e47b28af046dce1eb7d7ca492c466df0f30e07c
+prerequisite-patch-id: adb59d1a14b74ddfe02c442da8bcca04765e7d15
+prerequisite-patch-id: ec6069ee00463db27826962537ff880e69522f70
+prerequisite-patch-id: e40f2a3048da2ff28bb426b85e41d277f29f18ef
+prerequisite-patch-id: 82077662b97c09014c5b291fe5a42938a29ddbcd
+prerequisite-patch-id: d02f0ec3be1fa9cdbf02a22c700982008d0550bd
+prerequisite-patch-id: a02a8faefc5b7b68b99c0cc326973948c9356b60
+prerequisite-patch-id: 522c808e4b8bf99b8404c01d495526a685e5b97a
+-- 
+https://chromeos.dev
+
