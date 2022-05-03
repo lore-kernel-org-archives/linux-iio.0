@@ -2,96 +2,185 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1502EC433F5
-	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 14:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4A380C433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  3 May 2022 14:27:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235673AbiECOWW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 3 May 2022 10:22:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47112 "EHLO
+        id S234501AbiECObP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 3 May 2022 10:31:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58092 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236956AbiECOWS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 May 2022 10:22:18 -0400
-Received: from mail-ot1-f47.google.com (mail-ot1-f47.google.com [209.85.210.47])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34C8125E9E;
-        Tue,  3 May 2022 07:18:46 -0700 (PDT)
-Received: by mail-ot1-f47.google.com with SMTP id h10-20020a056830400a00b00605e92cc450so9769965ots.11;
-        Tue, 03 May 2022 07:18:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=/aMt+iUL1CVqIgS6yg9mheyNXMFTAG1uctDwp9jLpck=;
-        b=Q0QTK4WNQAPlrFIeLia3/2cJGbVsHF1aLl2dgwpWT07gqFsVqL1hNNI3hnYTcumels
-         TAUhHWzTB44wZvCLZKWEV7Qp0LBwqqQTQKJuSgGdJwNuIzOb6R71qe0vA6HSLCWIuR/M
-         Y9scMmgqTytpq3pf+AMIyi5aPkRfXKWV7quV+YojAt+l6O67ZR9K1ALPlOAT9yjWFzEj
-         yB0aOjrph+SUpmVmIdxqivp7zjkYcXGIJdkMdZ/422mrkfeX2u4RjkzUJZslaNtJdpO0
-         EKEAnCF38+Qij8aGFGGcGxLpYfQpBzTzXI6XxmfzghhdzaJQV55RezlbfxuFubQmmc6s
-         mz0A==
-X-Gm-Message-State: AOAM533qinW4iQyuTYiNkPEV7CU8LW73KeGC2iV+N3ujCwCW/D+1MhD4
-        lEh684E0J0FPP68tWAqePczVE+vOIw==
-X-Google-Smtp-Source: ABdhPJy2p5eNvTSK+e4lPTi3BIf7IcquwGcze73MguD+vpeB8vzEjETxR5Ny0gGxkZHOQEReDlENHw==
-X-Received: by 2002:a9d:5913:0:b0:5cd:a050:8f55 with SMTP id t19-20020a9d5913000000b005cda0508f55mr5967584oth.44.1651587525443;
-        Tue, 03 May 2022 07:18:45 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id l24-20020a056820031800b0035eb4e5a6b0sm4984867ooe.6.2022.05.03.07.18.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 03 May 2022 07:18:44 -0700 (PDT)
-Received: (nullmailer pid 3575356 invoked by uid 1000);
-        Tue, 03 May 2022 14:18:44 -0000
-Date:   Tue, 3 May 2022 09:18:44 -0500
-From:   Rob Herring <robh@kernel.org>
-To:     Stephen Boyd <swboyd@chromium.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
-        patches@lists.linux.dev, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>,
-        Krzysztof Kozlowski <krzk+dt@kernel.org>
-Subject: Re: [PATCH 1/2] dt-bindings: iio: sx9324: Add CS idle/sleep mode
-Message-ID: <YnE5xMS13oSuR5rx@robh.at.kernel.org>
-References: <20220503004156.3559940-1-swboyd@chromium.org>
- <20220503004156.3559940-2-swboyd@chromium.org>
+        with ESMTP id S237036AbiECObO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 May 2022 10:31:14 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 04A7C31906
+        for <linux-iio@vger.kernel.org>; Tue,  3 May 2022 07:27:40 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nltV5-0004OO-1c; Tue, 03 May 2022 16:27:39 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nltUt-000874-Fx; Tue, 03 May 2022 16:27:26 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1nltUr-007K7y-8v; Tue, 03 May 2022 16:27:25 +0200
+Date:   Tue, 3 May 2022 16:27:25 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Akinobu Mita <akinobu.mita@gmail.com>,
+        Alexandru Lazar <alazar@startmail.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Cristian Pop <cristian.pop@analog.com>,
+        David Lechner <david@lechnology.com>,
+        Ivan Mikhaylov <i.mikhaylov@yadro.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        =?utf-8?Q?M=C3=A5rten?= Lindahl <martenli@axis.com>,
+        Matt Ranostay <mranostay@gmail.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Michael Welling <mwelling@ieee.org>,
+        Mugilraj Dhavachelvan <dmugil2000@gmail.com>,
+        Navin Sankar Velliangiri <navin@linumiz.com>,
+        Nuno =?utf-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Phil Reid <preid@electromag.com.au>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Robert Jones <rjones@gateworks.com>,
+        Rui Miguel Silva <rui.silva@linaro.org>,
+        Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        Tomislav Denis <tomislav.denis@avl.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 01/92] iio: core: Fix IIO_ALIGN as it was not
+ sufficiently large on some platforms.
+Message-ID: <20220503142725.h6pcf2socuxgteix@pengutronix.de>
+References: <20220503085935.1533814-1-jic23@kernel.org>
+ <20220503085935.1533814-2-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="2yuard5pl57sjjxr"
 Content-Disposition: inline
-In-Reply-To: <20220503004156.3559940-2-swboyd@chromium.org>
+In-Reply-To: <20220503085935.1533814-2-jic23@kernel.org>
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, May 02, 2022 at 05:41:55PM -0700, Stephen Boyd wrote:
-> We need to configure the sleep and idle mode of the CS pins for this
-> device. Add a DT property to do this so pins are in a proper state
-> during sleep (either hi-z, grounded, or pulled up to vdd).
-> 
-> Cc: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Stephen Boyd <swboyd@chromium.org>
+
+--2yuard5pl57sjjxr
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
+
+On Tue, May 03, 2022 at 09:58:04AM +0100, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>=20
+> Discussion of the series:
+> https://lore.kernel.org/all/20220405135758.774016-1-catalin.marinas@arm.c=
+om/
+> mm, arm64: Reduce ARCH_KMALLOC_MINALIGN brought to my attention that
+> our current IIO usage of L1CACHE_ALIGN is insufficient as their are Arm
+> platforms out their with non coherent DMA and larger cache lines at
+> at higher levels of their cache hierarchy.
+>=20
+> Note this patch will greatly reduce the padding on some architectures
+> that have smaller requirements for DMA safe buffers.
+>=20
+> The history of changing values of ARCH_KMALLOC_MINALIGN via
+> ARCH_DMA_MINALIGN on arm64 is rather complex. I'm not tagging this
+> as fixing a particular patch from that route as it's not clear what to ta=
+g.
+>=20
+> Most recently a change to bring them back inline was reverted because
+> of some Qualcomm Kryo cores with an L2 cache with 128-byte lines
+> sitting above the point of coherency.
+>=20
+> c1132702c71f Revert "arm64: cache: Lower ARCH_DMA_MINALIGN to 64 (L1_CACH=
+E_BYTES)"
+> That reverts:
+> 65688d2a05de arm64: cache: Lower ARCH_DMA_MINALIGN to 64 (L1_CACHE_BYTES)=
+ which
+> refers to the change originally being motivated by Thunder x1 performance
+> rather than correctness.
+>=20
+> Fixes: 6f7c8ee585e9d ("staging:iio: Add ability to allocate private data =
+space to iio_allocate_device")
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > ---
->  .../devicetree/bindings/iio/proximity/semtech,sx9324.yaml | 8 ++++++++
->  1 file changed, 8 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> index d265eb5258c8..6cec3481c8b2 100644
-> --- a/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> +++ b/Documentation/devicetree/bindings/iio/proximity/semtech,sx9324.yaml
-> @@ -126,6 +126,14 @@ properties:
->        UINT_MAX (4294967295) represents infinite. Other values
->        represent 1-1/N.
->  
-> +  semtech,cs-idle-sleep:
-> +    description:
-> +      State of CS pins during sleep mode and idle time.
-> +    enum:
-> +      - hz
+>  include/linux/iio/iio.h | 10 ++++++++--
+>  1 file changed, 8 insertions(+), 2 deletions(-)
+>=20
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index faf00f2c0be6..30937f8f9424 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -9,6 +9,7 @@
+> =20
+>  #include <linux/device.h>
+>  #include <linux/cdev.h>
+> +#include <linux/slab.h>
+>  #include <linux/iio/types.h>
+>  #include <linux/of.h>
+>  /* IIO TODO LIST */
+> @@ -657,8 +658,13 @@ static inline void *iio_device_get_drvdata(const str=
+uct iio_dev *indio_dev)
+>  	return dev_get_drvdata(&indio_dev->dev);
+>  }
+> =20
+> -/* Can we make this smaller? */
+> -#define IIO_ALIGN L1_CACHE_BYTES
+> +/*
+> + * Used to ensure the iio_priv() structure is aligned to allow that stru=
+cture
+> + * to in turn include IIO_ALIGN'd elements such as buffers which must no=
+t share
+> + * cachelines with the rest of the structure, thus making them safe for =
+use with
+> + * non-coherent DMA.
+> + */
+> +#define IIO_ALIGN ARCH_KMALLOC_MINALIGN
 
-I was trying to figure out how Hertz was a pin state. 'hiz' or 'hi-z' 
-instead?
+Given the purpose of IIO_ALIGN is to define the alignment for DMA'able
+memory, I wonder why it's called "IIO_ALIGN" and not for example
+"DMA_MINALIGN".
 
-> +      - gnd
-> +      - vdd
-> +
->    semtech,int-comp-resistor:
->      description:
->        Internal resistor setting for compensation.
-> -- 
-> https://chromeos.dev
-> 
-> 
+There is nothing iio specific about this value, is there? Then
+consequently it doesn't need to be defined in an iio header, but
+somewhere generic. Or even one step further: Why isn't there a macro
+__align_for_dma that can be used directly to annotate the relevant
+member in a struct?
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--2yuard5pl57sjjxr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJxO8oACgkQwfwUeK3K
+7Anbugf/cMOyWz2WCpx5diLQTbOq9AJo7HqgNxU3lZvflhkhD2yfEWyp9C6POX8d
+JSkB58wDV4dGFXyl5lS7vMbRQtSFnAUavix884L+icuwPidQtDMpKmHuNtJpy4Ya
+wUho79CKEc3CEgTb2hcuDXgI2JVTaX7aLIJdvVCuBG+k1F67dFHWFrvoI5umWnOE
+sTpSgJ1GJ2fGGkVbXQmKKXyp4NSI8f/3WGcMTbgVP5LSHf0SY9sw0/qNOp73KUF+
+AMM4Xq2eivHLWISJDwzeztXUNnLKJ/VLHIAXHb9lotHtDn+JrFTLUuJGe8KnVLxb
+XvyCTZR4YL5nHMow734+QAlKr+N0tQ==
+=gmJw
+-----END PGP SIGNATURE-----
+
+--2yuard5pl57sjjxr--
