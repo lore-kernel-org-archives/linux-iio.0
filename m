@@ -2,56 +2,56 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4327CC433EF
-	for <linux-iio@archiver.kernel.org>; Thu,  5 May 2022 13:30:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E590CC433F5
+	for <linux-iio@archiver.kernel.org>; Thu,  5 May 2022 13:30:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1377608AbiEENeR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 5 May 2022 09:34:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45678 "EHLO
+        id S1379585AbiEENeW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 5 May 2022 09:34:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1379573AbiEENeQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 May 2022 09:34:16 -0400
-Received: from mail-pj1-x102e.google.com (mail-pj1-x102e.google.com [IPv6:2607:f8b0:4864:20::102e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4372F6392;
-        Thu,  5 May 2022 06:30:36 -0700 (PDT)
-Received: by mail-pj1-x102e.google.com with SMTP id t11-20020a17090ad50b00b001d95bf21996so8039087pju.2;
-        Thu, 05 May 2022 06:30:36 -0700 (PDT)
+        with ESMTP id S1379606AbiEENeU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 May 2022 09:34:20 -0400
+Received: from mail-pj1-x1032.google.com (mail-pj1-x1032.google.com [IPv6:2607:f8b0:4864:20::1032])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE25256FA3;
+        Thu,  5 May 2022 06:30:40 -0700 (PDT)
+Received: by mail-pj1-x1032.google.com with SMTP id cx11-20020a17090afd8b00b001d9fe5965b3so8023084pjb.3;
+        Thu, 05 May 2022 06:30:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references;
-        bh=VOsDpCo1BwfCUO6tmqAjxhxSfGAbsJAAJ2gXy2+hPIs=;
-        b=HUPUEyV9iFr9RyUXBCA9Z/NjUJeYNzCGRKplEpUfVjgBPBr0x32DF7Fbt1MxRazB82
-         oCvInmN9DhJb6JU73TgtkgwBPZQII/R/5dyMFEJoOY2NZ7TZeeGu7mCG3iTpurYsn0OT
-         lqF5O4YlZhhI62l+yHiOp6S+oXM/lXypPC0uYI03N5iyVoCudvxZL9B6vZRakLRM6IqC
-         kXRCUUG3oBwNa285KVuGYvINXUBKzFBsF1TLYifsImInic6jtn89C29y2YCDjtIxciN9
-         MS/E1cOLgHrIUtUhhJWKeuVgqOMGLcDHOZn0JQq9niX7L6z9iu/ys50z97nAtX/YTs8I
-         3ULw==
+        bh=CB2rfd2EilPcnlni3o0odhm3eEkQ0tXTMQ0Te1eD2zg=;
+        b=dLdj14wEcu4x/F10bBlWfvLmo/KMgqk+O3dLQnSUjl403SQPQoVpo4RrlcG4sIXlVz
+         6K+NF+LuuZhkUVfnQIcvlZCP3hvKv+kLt7CroGnjRQU2e//OVDMYGYMBbf4SqzvlIw7M
+         lnzc2ZiqcfEYCo8Len5fRLV4hzc+8f/I0cOYPucl9+sBbH+YRz7bZw9BF8GOB4oLxhAS
+         rUnvDuMwafBJtD5nSNvAyf51phWnIaQaF/B2WgoP9F7BSfZ5tthYihxhrIJPRiwWKNk9
+         DkOxW+lVHMbwNpC/RAbLiV9+f6CVU1l06AEtovqqtPgB4rDoDJ6FMnGDQkCaN40KvDET
+         g+GQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references;
-        bh=VOsDpCo1BwfCUO6tmqAjxhxSfGAbsJAAJ2gXy2+hPIs=;
-        b=qZK8tQBriL08ejY0RgUFmjEamfJxqtMDmTzjt8yZYL7UMWoLTcPGrQWG4Lt5bByxNc
-         xwtD93ZMikOW/O7X20tIkS8sq8JQmbly6UGVlcYnnmp2cZK+9WLjPusV32bTCq5+PyBI
-         4jfODsqLyDh9u7e9gpbwruze4Momrq+ivYy8zCLilBL2q9cZoRXBW1iMrOjlZ9sBfNJU
-         ujY/kX0k8tLWi7n4WoDFGs/b5xOiMY5Qvd653sP2GS/JxSzjwXbJSbuqfpbThv4txDC/
-         blkxuqNLzqyg4V4NRDAJTtsp45OCQRpXbadK1VhbPMfb3VnHDEwn3z7BGsuZy6pW+8ve
-         oxAg==
-X-Gm-Message-State: AOAM533XtfPysr30XCCQMSEIe4sBNs1n1mTbXnQSxUZerv5Dvz3dADjM
-        Q7FHswsnutVOQ3k1A/Z4Qag=
-X-Google-Smtp-Source: ABdhPJzsqk10QRPm5AlrWKJ9hOXOkI7bJCcDcRFtXRrl9yE3hly3n8R/UTl2sSPz2EExmV3V/OU4lw==
-X-Received: by 2002:a17:902:d487:b0:15e:a0a4:69e3 with SMTP id c7-20020a170902d48700b0015ea0a469e3mr22172382plg.155.1651757435621;
-        Thu, 05 May 2022 06:30:35 -0700 (PDT)
+        bh=CB2rfd2EilPcnlni3o0odhm3eEkQ0tXTMQ0Te1eD2zg=;
+        b=WWflGN1tnn7qLAKU114b/38Q8+XNgoEyUftiOJlZWyRCE9dTw9T2mp8dsjTUR37e9l
+         OEYcCS8mjbqw5Skjo7z7wPn+AlI7zJvZHuPh2+fRbffJYXi2bTi9kYHs7fqv8RtWD7Ma
+         Qe8lM0wsbPla/RtU2bMbOw/7N8WnO5CKT91U98S1DLBkTRGconGaLrpXXfLBsf92z59A
+         OTpKxHeiyxqHGCOrIEdWii4YpSeSBBYoiICmljb20+k67m6arA265QckuqtWw1clF8YA
+         wumCDrdcRGZGjssKUAcG/c7pHTAvXmiMUWP63KaHGuROOmNNA+sxiDSbdgI5/vaxELni
+         chxw==
+X-Gm-Message-State: AOAM532g46rMt1Bs8DmeBAPCWEFPPHNsaHFdVquKqStJDuz9iV9snxTh
+        i+eCvxRPwpjS95owEKwfyTU=
+X-Google-Smtp-Source: ABdhPJwXM21cQ241FYJlZ9WYPY6dIUckLfnLrshuo2JkBS30Z0BkhEdhP8w55X5xkivXoAMcg4Zowg==
+X-Received: by 2002:a17:903:2310:b0:15e:a944:aa52 with SMTP id d16-20020a170903231000b0015ea944aa52mr19724023plh.49.1651757440276;
+        Thu, 05 May 2022 06:30:40 -0700 (PDT)
 Received: from localhost.localdomain ([115.99.184.228])
-        by smtp.gmail.com with ESMTPSA id c64-20020a624e43000000b0050dc7628135sm1420120pfb.15.2022.05.05.06.30.33
+        by smtp.gmail.com with ESMTPSA id c64-20020a624e43000000b0050dc7628135sm1420120pfb.15.2022.05.05.06.30.38
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 05 May 2022 06:30:34 -0700 (PDT)
+        Thu, 05 May 2022 06:30:39 -0700 (PDT)
 From:   Jagath Jog J <jagathjog1996@gmail.com>
 To:     dan@dlrobertson.com, jic23@kernel.org, andy.shevchenko@gmail.com
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v5 04/10] iio: accel: bma400: Add triggered buffer support
-Date:   Thu,  5 May 2022 19:00:15 +0530
-Message-Id: <20220505133021.22362-5-jagathjog1996@gmail.com>
+Subject: [PATCH v5 06/10] iio: accel: bma400: Add step change event
+Date:   Thu,  5 May 2022 19:00:17 +0530
+Message-Id: <20220505133021.22362-7-jagathjog1996@gmail.com>
 X-Mailer: git-send-email 2.17.1
 In-Reply-To: <20220505133021.22362-1-jagathjog1996@gmail.com>
 References: <20220505133021.22362-1-jagathjog1996@gmail.com>
@@ -59,347 +59,177 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Added trigger buffer support to read continuous acceleration
-and temperature data from device with data ready interrupt which
-is mapped to INT1 pin.
+Added support for event when there is a detection of step change.
+INT1 pin is used to interrupt and event is pushed to userspace.
 
 Signed-off-by: Jagath Jog J <jagathjog1996@gmail.com>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/accel/Kconfig       |   2 +
- drivers/iio/accel/bma400.h      |  10 +-
- drivers/iio/accel/bma400_core.c | 177 +++++++++++++++++++++++++++++++-
- drivers/iio/accel/bma400_i2c.c  |   2 +-
- drivers/iio/accel/bma400_spi.c  |   2 +-
- 5 files changed, 185 insertions(+), 8 deletions(-)
+ drivers/iio/accel/bma400.h      |  2 +
+ drivers/iio/accel/bma400_core.c | 76 +++++++++++++++++++++++++++++++++
+ 2 files changed, 78 insertions(+)
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index eac3f02662ae..958097814232 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -204,6 +204,8 @@ config BMA220
- config BMA400
- 	tristate "Bosch BMA400 3-Axis Accelerometer Driver"
- 	select REGMAP
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
- 	select BMA400_I2C if I2C
- 	select BMA400_SPI if SPI
- 	help
 diff --git a/drivers/iio/accel/bma400.h b/drivers/iio/accel/bma400.h
-index 1c8c47a9a317..907e1a6c0a38 100644
+index 32c08f8b0b98..0faa40fdbbf8 100644
 --- a/drivers/iio/accel/bma400.h
 +++ b/drivers/iio/accel/bma400.h
-@@ -62,6 +62,13 @@
- #define BMA400_ACC_CONFIG2_REG      0x1b
- #define BMA400_CMD_REG              0x7e
+@@ -39,6 +39,7 @@
+ #define BMA400_INT_STAT0_REG        0x0e
+ #define BMA400_INT_STAT1_REG        0x0f
+ #define BMA400_INT_STAT2_REG        0x10
++#define BMA400_INT12_MAP_REG        0x23
  
-+/* Interrupt registers */
-+#define BMA400_INT_CONFIG0_REG	    0x1f
-+#define BMA400_INT_CONFIG1_REG	    0x20
-+#define BMA400_INT1_MAP_REG	    0x21
-+#define BMA400_INT_IO_CTRL_REG	    0x24
-+#define BMA400_INT_DRDY_MSK	    BIT(7)
-+
- /* Chip ID of BMA 400 devices found in the chip ID register. */
- #define BMA400_ID_REG_VAL           0x90
+ /* Temperature register */
+ #define BMA400_TEMP_DATA_REG        0x11
+@@ -55,6 +56,7 @@
+ #define BMA400_STEP_STAT_REG        0x18
+ #define BMA400_STEP_INT_MSK         BIT(0)
+ #define BMA400_STEP_RAW_LEN         0x03
++#define BMA400_STEP_STAT_MASK       GENMASK(9, 8)
  
-@@ -111,6 +118,7 @@
- 
- extern const struct regmap_config bma400_regmap_config;
- 
--int bma400_probe(struct device *dev, struct regmap *regmap, const char *name);
-+int bma400_probe(struct device *dev, struct regmap *regmap, int irq,
-+		 const char *name);
- 
- #endif
+ /*
+  * Read-write configuration registers
 diff --git a/drivers/iio/accel/bma400_core.c b/drivers/iio/accel/bma400_core.c
-index 07674d89d978..67e102c097bc 100644
+index fdb7e8bd7b27..50932fc1c854 100644
 --- a/drivers/iio/accel/bma400_core.c
 +++ b/drivers/iio/accel/bma400_core.c
-@@ -11,6 +11,7 @@
-  *  - Create channel for sensor time
-  */
- 
-+#include <linux/bitfield.h>
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/kernel.h>
-@@ -20,6 +21,10 @@
- #include <linux/regulator/consumer.h>
+@@ -25,6 +25,7 @@
  
  #include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
- 
- #include "bma400.h"
- 
-@@ -46,6 +51,13 @@ enum bma400_power_mode {
- 	POWER_MODE_INVALID = 0x03,
- };
- 
-+enum bma400_scan {
-+	BMA400_ACCL_X,
-+	BMA400_ACCL_Y,
-+	BMA400_ACCL_Z,
-+	BMA400_TEMP,
-+};
-+
- struct bma400_sample_freq {
- 	int hz;
- 	int uhz;
-@@ -61,6 +73,14 @@ struct bma400_data {
- 	struct bma400_sample_freq sample_freq;
- 	int oversampling_ratio;
+ #include <linux/iio/buffer.h>
++#include <linux/iio/events.h>
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
+@@ -78,6 +79,7 @@ struct bma400_data {
  	int scale;
-+	struct iio_trigger *trig;
-+	/* Correct time stamp alignment */
-+	struct {
-+		__le16 buff[3];
-+		u8 temperature;
-+		s64 ts __aligned(8);
-+	} buffer __aligned(IIO_ALIGN);
-+	__le16 status;
- };
- 
- static bool bma400_is_writable_reg(struct device *dev, unsigned int reg)
-@@ -152,7 +172,7 @@ static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
+ 	struct iio_trigger *trig;
+ 	int steps_enabled;
++	bool step_event_en;
+ 	/* Correct time stamp alignment */
+ 	struct {
+ 		__le16 buff[3];
+@@ -176,6 +178,12 @@ static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
  	{ }
  };
  
--#define BMA400_ACC_CHANNEL(_axis) { \
-+#define BMA400_ACC_CHANNEL(_index, _axis) { \
++static const struct iio_event_spec bma400_step_detect_event = {
++	.type = IIO_EV_TYPE_CHANGE,
++	.dir = IIO_EV_DIR_NONE,
++	.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++};
++
+ #define BMA400_ACC_CHANNEL(_index, _axis) { \
  	.type = IIO_ACCEL, \
  	.modified = 1, \
- 	.channel2 = IIO_MOD_##_axis, \
-@@ -164,17 +184,32 @@ static const struct iio_chan_spec_ext_info bma400_ext_info[] = {
- 		BIT(IIO_CHAN_INFO_SCALE) | \
- 		BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
- 	.ext_info = bma400_ext_info, \
-+	.scan_index = _index,	\
-+	.scan_type = {		\
-+		.sign = 's',	\
-+		.realbits = 12,		\
-+		.storagebits = 16,	\
-+		.endianness = IIO_LE,	\
-+	},				\
- }
- 
- static const struct iio_chan_spec bma400_channels[] = {
--	BMA400_ACC_CHANNEL(X),
--	BMA400_ACC_CHANNEL(Y),
--	BMA400_ACC_CHANNEL(Z),
-+	BMA400_ACC_CHANNEL(0, X),
-+	BMA400_ACC_CHANNEL(1, Y),
-+	BMA400_ACC_CHANNEL(2, Z),
- 	{
- 		.type = IIO_TEMP,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.scan_index = 3,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 8,
-+			.storagebits = 8,
-+			.endianness = IIO_LE,
-+		},
+@@ -218,6 +226,8 @@ static const struct iio_chan_spec bma400_channels[] = {
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |
+ 				      BIT(IIO_CHAN_INFO_ENABLE),
+ 		.scan_index = -1, /* No buffer support */
++		.event_spec = &bma400_step_detect_event,
++		.num_event_specs = 1,
  	},
-+	IIO_CHAN_SOFT_TIMESTAMP(4),
+ 	IIO_CHAN_SOFT_TIMESTAMP(4),
  };
- 
- static int bma400_get_temp_reg(struct bma400_data *data, int *val, int *val2)
-@@ -659,6 +694,10 @@ static int bma400_init(struct bma400_data *data)
- 	if (ret)
- 		return ret;
- 
-+	/* Configure INT1 pin to open drain */
-+	ret = regmap_write(data->regmap, BMA400_INT_IO_CTRL_REG, 0x06);
-+	if (ret)
-+		return ret;
- 	/*
- 	 * Once the interrupt engine is supported we might use the
- 	 * data_src_reg, but for now ensure this is set to the
-@@ -807,6 +846,31 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
+@@ -907,6 +917,58 @@ static int bma400_write_raw_get_fmt(struct iio_dev *indio_dev,
  	}
  }
  
-+static int bma400_data_rdy_trigger_set_state(struct iio_trigger *trig,
-+					     bool state)
++static int bma400_read_event_config(struct iio_dev *indio_dev,
++				    const struct iio_chan_spec *chan,
++				    enum iio_event_type type,
++				    enum iio_event_direction dir)
 +{
-+	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
 +	struct bma400_data *data = iio_priv(indio_dev);
++
++	switch (chan->type) {
++	case IIO_STEPS:
++		return data->step_event_en;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int bma400_steps_event_enable(struct bma400_data *data, int state)
++{
 +	int ret;
 +
-+	ret = regmap_update_bits(data->regmap, BMA400_INT_CONFIG0_REG,
-+				 BMA400_INT_DRDY_MSK,
-+				 FIELD_PREP(BMA400_INT_DRDY_MSK, state));
++	ret = bma400_enable_steps(data, 1);
 +	if (ret)
 +		return ret;
 +
-+	return regmap_update_bits(data->regmap, BMA400_INT1_MAP_REG,
-+				  BMA400_INT_DRDY_MSK,
-+				  FIELD_PREP(BMA400_INT_DRDY_MSK, state));
++	ret = regmap_update_bits(data->regmap, BMA400_INT12_MAP_REG,
++				 BMA400_STEP_INT_MSK,
++				 FIELD_PREP(BMA400_STEP_INT_MSK,
++					    state));
++	if (ret)
++		return ret;
++	data->step_event_en = state;
++	return 0;
 +}
 +
-+static const unsigned long bma400_avail_scan_masks[] = {
-+	BIT(BMA400_ACCL_X) | BIT(BMA400_ACCL_Y) | BIT(BMA400_ACCL_Z),
-+	BIT(BMA400_ACCL_X) | BIT(BMA400_ACCL_Y) | BIT(BMA400_ACCL_Z)
-+	| BIT(BMA400_TEMP),
-+	0
-+};
++static int bma400_write_event_config(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan,
++				     enum iio_event_type type,
++				     enum iio_event_direction dir, int state)
++{
++	struct bma400_data *data = iio_priv(indio_dev);
++	int ret;
 +
- static const struct iio_info bma400_info = {
- 	.read_raw          = bma400_read_raw,
++	switch (chan->type) {
++	case IIO_STEPS:
++		mutex_lock(&data->mutex);
++		ret = bma400_steps_event_enable(data, state);
++		mutex_unlock(&data->mutex);
++		return ret;
++	default:
++		return -EINVAL;
++	}
++}
++
+ static int bma400_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 					     bool state)
+ {
+@@ -937,6 +999,8 @@ static const struct iio_info bma400_info = {
  	.read_avail        = bma400_read_avail,
-@@ -814,7 +878,78 @@ static const struct iio_info bma400_info = {
+ 	.write_raw         = bma400_write_raw,
  	.write_raw_get_fmt = bma400_write_raw_get_fmt,
++	.read_event_config = bma400_read_event_config,
++	.write_event_config = bma400_write_event_config,
  };
  
--int bma400_probe(struct device *dev, struct regmap *regmap, const char *name)
-+static const struct iio_trigger_ops bma400_trigger_ops = {
-+	.set_trigger_state = &bma400_data_rdy_trigger_set_state,
-+	.validate_device = &iio_trigger_validate_own_device,
-+};
-+
-+static irqreturn_t bma400_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct bma400_data *data = iio_priv(indio_dev);
-+	int ret, temp;
-+
-+	/* Lock to protect the data->buffer */
-+	mutex_lock(&data->mutex);
-+
-+	/* bulk read six registers, with the base being the LSB register */
-+	ret = regmap_bulk_read(data->regmap, BMA400_X_AXIS_LSB_REG,
-+			       &data->buffer.buff, sizeof(data->buffer.buff));
-+	if (ret)
-+		goto unlock_err;
-+
-+	if (test_bit(BMA400_TEMP, indio_dev->active_scan_mask)) {
-+		ret = regmap_read(data->regmap, BMA400_TEMP_DATA_REG, &temp);
-+		if (ret)
-+			goto unlock_err;
-+
-+		data->buffer.temperature = temp;
+ static const struct iio_trigger_ops bma400_trigger_ops = {
+@@ -984,6 +1048,7 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+ {
+ 	struct iio_dev *indio_dev = private;
+ 	struct bma400_data *data = iio_priv(indio_dev);
++	s64 timestamp = iio_get_time_ns(indio_dev);
+ 	int ret;
+ 
+ 	/* Lock to protect the data->status */
+@@ -998,12 +1063,23 @@ static irqreturn_t bma400_interrupt(int irq, void *private)
+ 	if (ret || !data->status)
+ 		goto unlock_err;
+ 
++	if (FIELD_GET(BMA400_STEP_STAT_MASK, le16_to_cpu(data->status))) {
++		iio_push_event(indio_dev,
++			       IIO_MOD_EVENT_CODE(IIO_STEPS, 0, IIO_NO_MOD,
++						  IIO_EV_TYPE_CHANGE,
++						  IIO_EV_DIR_NONE),
++			       timestamp);
 +	}
 +
-+	iio_push_to_buffers_with_timestamp(indio_dev, &data->buffer,
-+					   iio_get_time_ns(indio_dev));
-+
+ 	if (FIELD_GET(BMA400_INT_DRDY_MSK, le16_to_cpu(data->status))) {
+ 		mutex_unlock(&data->mutex);
+ 		iio_trigger_poll_chained(data->trig);
+ 		return IRQ_HANDLED;
+ 	}
+ 
 +	mutex_unlock(&data->mutex);
-+	iio_trigger_notify_done(indio_dev->trig);
 +	return IRQ_HANDLED;
 +
-+unlock_err:
-+	mutex_unlock(&data->mutex);
-+	return IRQ_NONE;
-+}
-+
-+static irqreturn_t bma400_interrupt(int irq, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct bma400_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	/* Lock to protect the data->status */
-+	mutex_lock(&data->mutex);
-+	ret = regmap_bulk_read(data->regmap, BMA400_INT_STAT0_REG,
-+			       &data->status,
-+			       sizeof(data->status));
-+	/*
-+	 * if none of the bit is set in the status register then it is
-+	 * spurious interrupt.
-+	 */
-+	if (ret || !data->status)
-+		goto unlock_err;
-+
-+	if (FIELD_GET(BMA400_INT_DRDY_MSK, le16_to_cpu(data->status))) {
-+		mutex_unlock(&data->mutex);
-+		iio_trigger_poll_chained(data->trig);
-+		return IRQ_HANDLED;
-+	}
-+
-+unlock_err:
-+	mutex_unlock(&data->mutex);
-+	return IRQ_NONE;
-+}
-+
-+int bma400_probe(struct device *dev, struct regmap *regmap, int irq,
-+		 const char *name)
- {
- 	struct iio_dev *indio_dev;
- 	struct bma400_data *data;
-@@ -841,8 +976,40 @@ int bma400_probe(struct device *dev, struct regmap *regmap, const char *name)
- 	indio_dev->info = &bma400_info;
- 	indio_dev->channels = bma400_channels;
- 	indio_dev->num_channels = ARRAY_SIZE(bma400_channels);
-+	indio_dev->available_scan_masks = bma400_avail_scan_masks;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
-+	if (irq > 0) {
-+		data->trig = devm_iio_trigger_alloc(dev, "%s-dev%d",
-+						    indio_dev->name,
-+						    iio_device_id(indio_dev));
-+		if (!data->trig)
-+			return -ENOMEM;
-+
-+		data->trig->ops = &bma400_trigger_ops;
-+		iio_trigger_set_drvdata(data->trig, indio_dev);
-+
-+		ret = devm_iio_trigger_register(data->dev, data->trig);
-+		if (ret)
-+			return dev_err_probe(data->dev, ret,
-+					     "iio trigger register fail\n");
-+
-+		indio_dev->trig = iio_trigger_get(data->trig);
-+		ret = devm_request_threaded_irq(dev, irq, NULL,
-+						&bma400_interrupt,
-+						IRQF_TRIGGER_RISING | IRQF_ONESHOT,
-+						indio_dev->name, indio_dev);
-+		if (ret)
-+			return dev_err_probe(data->dev, ret,
-+					     "request irq %d failed\n", irq);
-+	}
-+
-+	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-+					      &bma400_trigger_handler, NULL);
-+	if (ret)
-+		return dev_err_probe(data->dev, ret,
-+				     "iio triggered buffer setup failed\n");
-+
- 	return devm_iio_device_register(dev, indio_dev);
- }
- EXPORT_SYMBOL_NS(bma400_probe, IIO_BMA400);
-diff --git a/drivers/iio/accel/bma400_i2c.c b/drivers/iio/accel/bma400_i2c.c
-index 4f6e01a3b3a1..1ba2a982ea73 100644
---- a/drivers/iio/accel/bma400_i2c.c
-+++ b/drivers/iio/accel/bma400_i2c.c
-@@ -24,7 +24,7 @@ static int bma400_i2c_probe(struct i2c_client *client,
- 		return PTR_ERR(regmap);
- 	}
- 
--	return bma400_probe(&client->dev, regmap, id->name);
-+	return bma400_probe(&client->dev, regmap, client->irq, id->name);
- }
- 
- static const struct i2c_device_id bma400_i2c_ids[] = {
-diff --git a/drivers/iio/accel/bma400_spi.c b/drivers/iio/accel/bma400_spi.c
-index 28e240400a3f..ec13c044b304 100644
---- a/drivers/iio/accel/bma400_spi.c
-+++ b/drivers/iio/accel/bma400_spi.c
-@@ -84,7 +84,7 @@ static int bma400_spi_probe(struct spi_device *spi)
- 	if (ret)
- 		dev_err(&spi->dev, "Failed to read chip id register\n");
- 
--	return bma400_probe(&spi->dev, regmap, id->name);
-+	return bma400_probe(&spi->dev, regmap, spi->irq, id->name);
- }
- 
- static const struct spi_device_id bma400_spi_ids[] = {
+ unlock_err:
+ 	mutex_unlock(&data->mutex);
+ 	return IRQ_NONE;
 -- 
 2.17.1
 
