@@ -2,50 +2,48 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CBB6C433FE
-	for <linux-iio@archiver.kernel.org>; Sat,  7 May 2022 16:27:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B6F3C433EF
+	for <linux-iio@archiver.kernel.org>; Sat,  7 May 2022 16:39:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240809AbiEGQbN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 7 May 2022 12:31:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37878 "EHLO
+        id S242889AbiEGQnK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 7 May 2022 12:43:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44736 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240025AbiEGQbM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 May 2022 12:31:12 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D64EC31222;
-        Sat,  7 May 2022 09:27:24 -0700 (PDT)
+        with ESMTP id S241566AbiEGQnJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 May 2022 12:43:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E7CCFDFB2;
+        Sat,  7 May 2022 09:39:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F88961277;
-        Sat,  7 May 2022 16:27:24 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1F3E2C385A6;
-        Sat,  7 May 2022 16:27:21 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9C1C2B80AE4;
+        Sat,  7 May 2022 16:39:20 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E7670C385A5;
+        Sat,  7 May 2022 16:39:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1651940843;
-        bh=3rr8bPT1a3oSQb1SQ5wfvUm81Gi7wyQPTmJOEcdlh2A=;
+        s=k20201202; t=1651941559;
+        bh=FJdOwT69X41GLePtbzqNFP3tJgjdvaLGZc3c8OeOsuE=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=dqm5PdfERD+8qcwDSg/e8RFozVMjEnfGErAOdc6LJrU22OqtG3qYIdJig/qdNMkxM
-         6KTnVBi7SyqV0XbQR8/qWp1OxotQ4YxBXyCFKUSVsdArXze2M6P5deYbpEyawuaIKq
-         /IL9tGVPxpQzRsgJq1sZUni/mXUoMcZZZQpQTl0YjD+SkUc3w41LeEn0YroQmGo31U
-         3ztBgNuHz7CsIUeg9iDRIyJLdPMOZjrgUT21T4XE57FepY/Tj/cNMGfWSvDgvi98wQ
-         zW453DBNKHr7+/iQl/V7RPAv8WxZ0YOshOMsEDoX4Nz9hhCJLN/GgIUBQ0vZTUkKux
-         q6Pd7LVcjG+gQ==
-Date:   Sat, 7 May 2022 17:35:51 +0100
+        b=kmkA2u3hRqXbr4cJjFfCqMV1zYOd/Ll83YNcSA1pMSa9qQuhXnHldLmUrznXgN91H
+         /pc5ZtMqgSB0N9gM+KXeKWmj5xwVhlN7G+BARXg8cV9PHR9t3SFwuuyqEsCwC8k3wT
+         gHZcl7X56815UqVonYA1YSilK5bWDNP7B036DrPxh55GATVHNRmF5XJAniFIljTwpN
+         DPrCqvD0jV8TPo+BjxUXI5keQmnfg7VaZMXKJhEVhqgEGN6yhiuhN/LlnGrXjBjnRc
+         r/fHkMSEehgG2x1Mtxzt8aTZEhJUhLvTGHoJK7D7MolGfiWzaWH1Sad9YNNsR0Okx5
+         diU1oOIRRXsnQ==
+Date:   Sat, 7 May 2022 17:47:45 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Cosmin Tanislav <demonsingur@gmail.com>
-Cc:     Rob Herring <robh+dt@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>
-Subject: Re: [PATCH v3 2/2] iio: adc: ad4130: add AD4130 driver
-Message-ID: <20220507173551.1bc45a82@jic23-huawei>
-In-Reply-To: <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
-References: <20220419150828.191933-1-cosmin.tanislav@analog.com>
-        <20220419150828.191933-3-cosmin.tanislav@analog.com>
-        <20220501170807.1e728524@jic23-huawei>
-        <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
+To:     Shreeya Patel <shreeya.patel@collabora.com>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, Zhigang.Shi@liteon.com,
+        krzk@kernel.org, krisman@collabora.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel@collabora.com, alvaro.soliverez@collabora.com
+Subject: Re: [PATCH v3 3/3] iio: light: Add support for ltrf216a sensor
+Message-ID: <20220507174745.70666eeb@jic23-huawei>
+In-Reply-To: <8916313f-0974-0d2d-091b-17e5765c0304@collabora.com>
+References: <20220503144354.75438-1-shreeya.patel@collabora.com>
+        <20220503144354.75438-4-shreeya.patel@collabora.com>
+        <8916313f-0974-0d2d-091b-17e5765c0304@collabora.com>
 X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -54,171 +52,84 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Tue, 3 May 2022 22:37:49 +0530
+Shreeya Patel <shreeya.patel@collabora.com> wrote:
 
-> >   
-> >> +static int ad4130_set_fifo_watermark(struct iio_dev *indio_dev, unsigned int val)
-> >> +{
-> >> +	struct ad4130_state *st = iio_priv(indio_dev);
-> >> +	unsigned int eff;
-> >> +	int ret;
-> >> +
-> >> +	if (val > AD4130_FIFO_SIZE)
-> >> +		return -EINVAL;
-> >> +
-> >> +	/*
-> >> +	 * Always set watermark to a multiple of the number of enabled channels
-> >> +	 * to avoid making the FIFO unaligned.
-> >> +	 */
-> >> +	eff = rounddown(val, st->num_enabled_channels);
-> >> +
-> >> +	mutex_lock(&st->lock);
-> >> +
-> >> +	ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
-> >> +				 AD4130_WATERMARK_MASK,
-> >> +				 FIELD_PREP(AD4130_WATERMARK_MASK,
-> >> +					    ad4130_watermark_reg_val(eff)));
-> >> +	if (ret)
-> >> +		goto out;
-> >> +
-> >> +	st->effective_watermark = eff;
-> >> +	st->watermark = val;  
-> > 
-> > Hmm this is a potential inconsistency in the IIO ABI.
-> > ABI docs describes watermark as being number of 'scan elements' which is
-> > not the clearest text we could have gone with...
-> > 
-> > Now I may well have made a mistake in the following as it's rather a long time
-> > since I last looked at the core handling for this...
-> > 
-> > The core treats it as number datum (which is same as a scan) when using
-> > it for the main watermark attribute and also when using watermarks with the
-> > kfifo (the IIO fifo is made up of objects each of which is a scan. So kfifo_len()
-> > returns the number of scans.
-> >   
-> > Looking very quickly at a few other drivers
-> > adxl367 seems to use number of samples.
-> > adxl372 is using number of scans.
-> > bmc150 hardware seems to work on basis of frame count which I 'think' is probably scans.
-> > fxls8962 uses 'samples count' which is not clearly defined in the datasheet but there
-> > is an example showing that it's scans (I think)...
-> > lsm6dsx - some of the fifos used with this are based on tagged data so the connection to
-> > what hits the front end buffers is non obvious.
-> > 
-> > So, not great for consistency :(
-> > 
-> > Going forwards i think we should standardize the hardware fifo watermark on what is being
-> > used for the software watermark which I believe is number of scans.
-> > Not necessary much we can do about old drivers though due to risk of breaking ABI...
-> > We should make the documentation clearer though.
-> >   
+> Hi Jonathan,
 > 
-> I was confused too, but this seemed more logical to me at the time, and
-> since you didn't say anything regarding it on ADXL367, I did it the same
-> way here. I guess we can't go back and change it now on ADXL367, I'm
-> sorry for this. I'll fix it.
 
-I missed it.  Review is never perfect (mine definitely aren't!)
-
-Thinking more on the adxl367. We still have a window to  fix that as
-the driver isn't yet in a release kernel.  Would you mind spinning a
-patch to fix that one?  Even if we miss the rc cycle (it's a bit tight
-timing wise) we can sneak it in as an early fix in stable without
-significant risk of breaking anyone's userspace.
-
-There might be other drivers that have that interpretation we can't
-fix but if we can reduce the scope of the problem by changing the adxl367
-that would be great.
-
-We should also definitely improve the docs and perhaps add a note to say
-that due to need to maintain ABI, a few drivers use scans * number of channels
-rather than scans.
+Hi Shreeya,
 
 > 
-> >> +
-> >> +out:
-> >> +	mutex_unlock(&st->lock);
-> >> +
-> >> +	return ret;
-> >> +}
-> >> +  
-> > 
-> > 
-> > ...
-> >   
-> >> +
-> >> +static int ad4130_parse_fw_channel(struct iio_dev *indio_dev,
-> >> +				   struct fwnode_handle *child)
-> >> +{
-> >> +	struct ad4130_state *st = iio_priv(indio_dev);
-> >> +	unsigned int index = indio_dev->num_channels++;
-> >> +	struct device *dev = &st->spi->dev;
-> >> +	struct ad4130_chan_info *chan_info;
-> >> +	struct iio_chan_spec *chan;
-> >> +	u32 pins[2];
-> >> +	int ret;
-> >> +
-> >> +	if (index >= AD4130_MAX_CHANNELS)
-> >> +		return dev_err_probe(dev, -EINVAL, "Too many channels\n");
-> >> +
-> >> +	chan = &st->chans[index];
-> >> +	chan_info = &st->chans_info[index];
-> >> +
-> >> +	*chan = ad4130_channel_template;
-> >> +	chan->scan_type.realbits = st->chip_info->resolution;
-> >> +	chan->scan_type.storagebits = st->chip_info->resolution;
-> >> +	chan->scan_index = index;
-> >> +
-> >> +	chan_info->slot = AD4130_INVALID_SLOT;
-> >> +	chan_info->setup.fs = AD4130_FS_MIN;
-> >> +	chan_info->initialized = true;
-> >> +
-> >> +	ret = fwnode_property_read_u32_array(child, "diff-channels", pins,
-> >> +					     ARRAY_SIZE(pins));
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	ret = ad4130_validate_diff_channels(st, pins, ARRAY_SIZE(pins));
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	chan->channel = pins[0];
-> >> +	chan->channel2 = pins[1];
-> >> +
-> >> +	ret = ad4130_parse_fw_setup(st, child, &chan_info->setup);
-> >> +	if (ret)
-> >> +		return ret;
-> >> +
-> >> +	fwnode_property_read_u32(child, "adi,excitation-pin-0",
-> >> +				 &chan_info->iout0);
-> >> +	if (chan_info->setup.iout0_val != AD4130_IOUT_OFF) {  
-> > 
-> > It would be slightly better to set an explicit default value here as the fact it
-> > is 0 is hidden by the enum. e.g.
-> > 	chan_info->iout0 = AD4130_IOUT_OFF;
-> > 	fwnode_property_read_u32(child, "adi,excitation-pin-0",
-> > 			 	 &chan_info->iout0);
-> > 	if (chan_info->....
-> > That would save reviewers wondering what the default is and having to go
-> > check the enum (and I'm lazy :)  
+> Just one comment inline related to your previous review.
 > 
-> I understand the idea, but the default value for iout0 is not
-> AD4130_IOUT_OFF. iout0 is the pin that iout0_val current is
-> applied to, and AD4130_IOUT_OFF is a value for iout0_val.
-> Look at ad4130_parse_fw_setup.
-> 
-> For iout0, I guess I could do
-> #define AD4130_AIN0	0x0
-> ...
-> chan_info->iout0 = AD4130_AIN0;
+> On 03/05/22 20:13, Shreeya Patel wrote:
+> > From: Zhigang Shi <Zhigang.Shi@liteon.com>
+> >
+> > Add initial support for ltrf216a ambient light sensor.
+> >
+> > Datasheet: gitlab.steamos.cloud/shreeya/iio/-/blob/main/LTRF216A.pdf
+> > Co-developed-by: Shreeya Patel <shreeya.patel@collabora.com>
+> > Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+> > Signed-off-by: Zhigang Shi <Zhigang.Shi@liteon.com>
+> > ---
+> >
 
-Oops.  I got confused.  Code is fine as it is.  Adding the define isn't going to make
-it much clearer.
- 
+...
+
+> > +struct ltrf216a_data {
+> > +	struct i2c_client *client;
+> > +	u32 int_time;
+> > +	u16 int_time_fac;
+> > +	u8 als_gain_fac;
+> > +	struct mutex mutex; /* Protect read and write operations */  
 > 
-> >> +		}
-> >> +	}
-> >> +
-> >> +	return ret;
-> >> +}
-> >> +
+> I wasn't really sure about your comment related to the lock description 
+> here.
+> I see we are using these locks in read_raw and write_raw functions only and
+> hence I've added the above comment.
+A lock should always ensure consistency of data (either in software or in
+hardware registers) so that we don't end up with odd results due to race
+conditions between multiple writers / readers.
+
+The comment for a lock should call out what 'data' is being protected.
+
+In this particular case I'm not sure what that is. 
+
+Take the *_get_lux() call in read_raw()
+
+That performs a pair of calls to _read_data(). The _read_data() calls
+just check for valid data and then read the channels.  The i2c accesses will
+be protected by the underlying bus locks and I can't otherwise see anything
+in those calls that needs protecting with locks (all the data is local).
+
+Finally we have some maths done with data->als_gain_fac and data->int_time_fac
+
+als_gain_fac is currently a constant in the driver (it's set only in probe I think).
+
+int_time_fac is more interesting.
+That is set alongside a register write in _set_int_time().
+
+So I 'think' the entire purpose of the lock is to ensure that the
+value of integration time doesn't not change whilst a reading is progress
+(so we can do the right maths).
+
+Hence the comment should be something along the lines of
+
+/*
+ * Ensure cached value of integration time is consistent with hardware setting
+ * and remains constant during a measurement of Lux.
+ */
+
+This extra detail makes it easy to tell where the lock must be taken which
+is very useful for anyone modifying the driver in the future.
+
+If they expand the scope of the lock, then they should also update the
+documentation to match.
+  
+> 
+> 
+> 
+> Thanks,
+> Shreeya Patel
 
