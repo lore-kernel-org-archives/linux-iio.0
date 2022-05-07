@@ -2,130 +2,164 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 912C8C433EF
-	for <linux-iio@archiver.kernel.org>; Sat,  7 May 2022 16:40:54 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 27000C433FE
+	for <linux-iio@archiver.kernel.org>; Sat,  7 May 2022 16:49:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236929AbiEGQoj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 7 May 2022 12:44:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46568 "EHLO
+        id S1446651AbiEGQxI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 7 May 2022 12:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49774 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348250AbiEGQoj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 May 2022 12:44:39 -0400
-Received: from mail-oa1-x35.google.com (mail-oa1-x35.google.com [IPv6:2001:4860:4864:20::35])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCD03369E1
-        for <linux-iio@vger.kernel.org>; Sat,  7 May 2022 09:40:51 -0700 (PDT)
-Received: by mail-oa1-x35.google.com with SMTP id 586e51a60fabf-edf3b6b0f2so9918759fac.9
-        for <linux-iio@vger.kernel.org>; Sat, 07 May 2022 09:40:51 -0700 (PDT)
+        with ESMTP id S242555AbiEGQxH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 May 2022 12:53:07 -0400
+Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94B48205FB;
+        Sat,  7 May 2022 09:49:19 -0700 (PDT)
+Received: by mail-ej1-x635.google.com with SMTP id ks9so13184951ejb.2;
+        Sat, 07 May 2022 09:49:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=ecQuwZsS0gxUPHpMTjQNxjCMtikWo/Xt5OrjJ7prn8Y=;
-        b=d/ZtouxzAcVYg1et6bp/rRfsm6mN3GbIt6IWEqD4egNukRI1QT+emaU3q0MqszUDfB
-         RYn5fI0PEVKKAdRs2qL2rSwRtzR/tGLFU9lKr6YnCMWMWKKx/VdkECh9XJszSdezNt6z
-         ndMWhctllzMYdvfOnCHs4eupHoYCqbVbHz8eJFFl8Rrxn7wEu/RsTGMrok5LLjT3pBmi
-         CEHNzY4GAiYvYgpgfdFfQPtMJJZRl69rw1MryLzMPVtYlVfvhef0347gKKAQEfLLOnmc
-         DrQANtrq3nhlytidOSi/ZcIrF4vifb0r1M6TJqupgcgffpU0Xn66ACZ3ZZaaCVdyxtiF
-         I+DQ==
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=SAg5g+MiD3SG38RHNPJNJCdug7OG18gamo1tHYzZ8K0=;
+        b=i280AkyD/k7YYL+1wJ2wfg36XhNIeBxwb63mwCGKrwGWwPnYi7vvPpdABCp9jAgfO5
+         /7t99u/THmPeXURNtVM3XaR9gF/t3ozQuEvp67qY5PAwN6+o5t5RgWfY3MEX/Ytu8kNH
+         lNZH4Bs/lZgMj0wR7FeOZjvBGMhX/qMiJyoL+xD0ERceWe4elZe9d2G0aePPQiANX5TC
+         Ods2Uu/GvRNv6E44FWoCxjhjqbqwLvtcEYz1bCKOQM2mYUaLLhBBsUHLoNfY0uBdicqF
+         L6KSqAVeRM8LYRlZNW2P/amybZD2RxqKY9NBQATl9PS3o2ME4KoTzdyoWDi3IFM8piPP
+         htLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=ecQuwZsS0gxUPHpMTjQNxjCMtikWo/Xt5OrjJ7prn8Y=;
-        b=G4TOOLxR1JhHE5qbopye74TvDc6ZxvNPOoWVuQOlmFOZSdfTlXB+PQDxJfTCL6f7A/
-         xFSYVYznw0+Gqk+tRWhqHIwzBrvIj/UoCcctxnlA8k8bMg/LxDS+DNbjBMamJFeXTiWr
-         8VbMEIzel9PZ/o5qMb2fs1T4+9Narz3Ypbdp3LThgdkXqWDIBdn35Nta3QuyJ9g4NRVD
-         fM9T5gy9yQJAJjVq5WGpDPfroCMtHx7agL9svgLne+R72rUCtUukQ8qxP+TDGt3XJ2/O
-         0VvtcgwpOb9TWsHkZxtsVsH3pNHh1xrfAVn63fmcROFeKwS+EBQCdlKiSwtWyj0KmeP2
-         ma9g==
-X-Gm-Message-State: AOAM530iNEzJtv9Qw0TFWHPb0s2qohygdHw5e4sDTzHFIfzjfIFKjwxo
-        eZS3HpfTL4Yhn0hwJe8EO+M=
-X-Google-Smtp-Source: ABdhPJx7wHW/LmqCQTJAh8AhLo6WhulbRycX0s+ubJVUAfdsUatd9hMGlAzMpjROoEVZv4EXHcnzUg==
-X-Received: by 2002:a05:6870:51c9:b0:dd:ab37:c358 with SMTP id b9-20020a05687051c900b000ddab37c358mr3480176oaj.173.1651941651119;
-        Sat, 07 May 2022 09:40:51 -0700 (PDT)
-Received: from localhost ([2804:30c:948:9000:5c5a:dce4:e33d:b8d4])
-        by smtp.gmail.com with ESMTPSA id s63-20020aca4542000000b00325cda1ffa6sm2796517oia.37.2022.05.07.09.40.50
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 07 May 2022 09:40:50 -0700 (PDT)
-Date:   Sat, 7 May 2022 13:40:48 -0300
-From:   Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, Akinobu Mita <akinobu.mita@gmail.com>,
-        Alexandru Lazar <alazar@startmail.com>,
-        Alexandru Tachici <alexandru.tachici@analog.com>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
-        Cosmin Tanislav <cosmin.tanislav@analog.com>,
-        Cristian Pop <cristian.pop@analog.com>,
-        David Lechner <david@lechnology.com>,
-        Ivan Mikhaylov <i.mikhaylov@yadro.com>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        =?iso-8859-1?Q?M=E5rten?= Lindahl <martenli@axis.com>,
-        Matt Ranostay <mranostay@gmail.com>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Michael Welling <mwelling@ieee.org>,
-        Mugilraj Dhavachelvan <dmugil2000@gmail.com>,
-        Navin Sankar Velliangiri <navin@linumiz.com>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Phil Reid <preid@electromag.com.au>,
-        Puranjay Mohan <puranjay12@gmail.com>,
-        Ricardo Ribalda <ribalda@kernel.org>,
-        Robert Jones <rjones@gateworks.com>,
-        Rui Miguel Silva <rui.silva@linaro.org>,
-        Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-        Tomas Melin <tomas.melin@vaisala.com>,
-        Tomislav Denis <tomislav.denis@avl.com>,
-        Uwe =?iso-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: Re: [PATCH 11/92] iio: adc: ad7292: Fix alignment for DMA safety
-Message-ID: <YnahEHTjZkZGzZzI@marsc.168.1.7>
-References: <20220503085935.1533814-1-jic23@kernel.org>
- <20220503085935.1533814-12-jic23@kernel.org>
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=SAg5g+MiD3SG38RHNPJNJCdug7OG18gamo1tHYzZ8K0=;
+        b=TFNg+vsiMMQHU63iixVUnw5FVttJLyl/jM4tFBnfxvqBwGqExpmQ1TNwAxgHw3V2d/
+         y2jsiZT4UxE9vd/tKyrGWuhDIIAeb01R6cJBQZLek6fooqz1VLtEnCp7+L9+nyDwjfvL
+         7vAYVL1tWxuIbKrh2Tc08SGly2mEUVmDUsnSGbz5n4ymSqEzUnrMdYwIC1n0sX8D+PXd
+         mT9y+MyNiCNMqwFCQukpVvkeoDAZ05jZOwjjaAaMFwUE3GVa8kc5Ma7MLS0hs/gwZLKs
+         bG+COlBICQaj0MkWeXq87nzDVuje3B6WR67CzB1JleqZA/HcmND7yrm03g0GTIGs90A5
+         r0XA==
+X-Gm-Message-State: AOAM530VxfFynbMuCNiz68KaXykXDdXVSGylGpO3rMmE2MTw+EZS6Ozx
+        IGYHI3y/HCAZq00jq5ODGZ38I5tB5+E=
+X-Google-Smtp-Source: ABdhPJyY7NZz5O1Ou2jPQWoXPiPcoJ8tzBFNQMEhwsFaVLYA9qvu2eCeb8hFet3EJ9fenZxzjJJJDw==
+X-Received: by 2002:a17:906:c114:b0:6f5:db6f:71a1 with SMTP id do20-20020a170906c11400b006f5db6f71a1mr5467780ejc.338.1651942158054;
+        Sat, 07 May 2022 09:49:18 -0700 (PDT)
+Received: from [192.168.0.182] ([188.26.79.139])
+        by smtp.gmail.com with ESMTPSA id lh25-20020a170906f8d900b006f3ef214e04sm3149047ejb.106.2022.05.07.09.49.16
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 07 May 2022 09:49:17 -0700 (PDT)
+Message-ID: <39cb9ade-14af-c53b-bd42-06a9b965b57f@gmail.com>
+Date:   Sat, 7 May 2022 19:49:17 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220503085935.1533814-12-jic23@kernel.org>
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 2/2] iio: adc: ad4130: add AD4130 driver
+Content-Language: en-US
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+References: <20220419150828.191933-1-cosmin.tanislav@analog.com>
+ <20220419150828.191933-3-cosmin.tanislav@analog.com>
+ <20220501170807.1e728524@jic23-huawei>
+ <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
+ <20220507173551.1bc45a82@jic23-huawei>
+From:   Cosmin Tanislav <demonsingur@gmail.com>
+In-Reply-To: <20220507173551.1bc45a82@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 05/03, Jonathan Cameron wrote:
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> 
-> ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-> on platforms with 128 byte cachelines above L1.  Switch to the updated
-> IIO_ALIGN definition.
-> 
-> Fixes: 506d2e317a0a ("iio: adc: Add driver support for AD7292")
-> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-> Cc: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 
-Acked-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
 
-Thanks,
-Marcelo
+On 5/7/22 19:35, Jonathan Cameron wrote:
+> 
+>>>    
+>>>> +static int ad4130_set_fifo_watermark(struct iio_dev *indio_dev, unsigned int val)
+>>>> +{
+>>>> +	struct ad4130_state *st = iio_priv(indio_dev);
+>>>> +	unsigned int eff;
+>>>> +	int ret;
+>>>> +
+>>>> +	if (val > AD4130_FIFO_SIZE)
+>>>> +		return -EINVAL;
+>>>> +
+>>>> +	/*
+>>>> +	 * Always set watermark to a multiple of the number of enabled channels
+>>>> +	 * to avoid making the FIFO unaligned.
+>>>> +	 */
+>>>> +	eff = rounddown(val, st->num_enabled_channels);
+>>>> +
+>>>> +	mutex_lock(&st->lock);
+>>>> +
+>>>> +	ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
+>>>> +				 AD4130_WATERMARK_MASK,
+>>>> +				 FIELD_PREP(AD4130_WATERMARK_MASK,
+>>>> +					    ad4130_watermark_reg_val(eff)));
+>>>> +	if (ret)
+>>>> +		goto out;
+>>>> +
+>>>> +	st->effective_watermark = eff;
+>>>> +	st->watermark = val;
+>>>
+>>> Hmm this is a potential inconsistency in the IIO ABI.
+>>> ABI docs describes watermark as being number of 'scan elements' which is
+>>> not the clearest text we could have gone with...
+>>>
+>>> Now I may well have made a mistake in the following as it's rather a long time
+>>> since I last looked at the core handling for this...
+>>>
+>>> The core treats it as number datum (which is same as a scan) when using
+>>> it for the main watermark attribute and also when using watermarks with the
+>>> kfifo (the IIO fifo is made up of objects each of which is a scan. So kfifo_len()
+>>> returns the number of scans.
+>>>    
+>>> Looking very quickly at a few other drivers
+>>> adxl367 seems to use number of samples.
+>>> adxl372 is using number of scans.
+>>> bmc150 hardware seems to work on basis of frame count which I 'think' is probably scans.
+>>> fxls8962 uses 'samples count' which is not clearly defined in the datasheet but there
+>>> is an example showing that it's scans (I think)...
+>>> lsm6dsx - some of the fifos used with this are based on tagged data so the connection to
+>>> what hits the front end buffers is non obvious.
+>>>
+>>> So, not great for consistency :(
+>>>
+>>> Going forwards i think we should standardize the hardware fifo watermark on what is being
+>>> used for the software watermark which I believe is number of scans.
+>>> Not necessary much we can do about old drivers though due to risk of breaking ABI...
+>>> We should make the documentation clearer though.
+>>>    
+>>
+>> I was confused too, but this seemed more logical to me at the time, and
+>> since you didn't say anything regarding it on ADXL367, I did it the same
+>> way here. I guess we can't go back and change it now on ADXL367, I'm
+>> sorry for this. I'll fix it.
+> 
+> I missed it.  Review is never perfect (mine definitely aren't!)
+> 
+> Thinking more on the adxl367. We still have a window to  fix that as
+> the driver isn't yet in a release kernel.  Would you mind spinning a
+> patch to fix that one?  Even if we miss the rc cycle (it's a bit tight
+> timing wise) we can sneak it in as an early fix in stable without
+> significant risk of breaking anyone's userspace.
+> 
 
-> ---
->  drivers/iio/adc/ad7292.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+I hope Monday is not too late to do it?
+I can also try to do the changes tomorrow but I don't have the hardware
+anymore so I won't be able to test until I get it back, which is only
+next week.
+
+> There might be other drivers that have that interpretation we can't
+> fix but if we can reduce the scope of the problem by changing the adxl367
+> that would be great.
 > 
-> diff --git a/drivers/iio/adc/ad7292.c b/drivers/iio/adc/ad7292.c
-> index 3271a31afde1..08985fc5c200 100644
-> --- a/drivers/iio/adc/ad7292.c
-> +++ b/drivers/iio/adc/ad7292.c
-> @@ -80,7 +80,7 @@ struct ad7292_state {
->  	struct regulator *reg;
->  	unsigned short vref_mv;
->  
-> -	__be16 d16 ____cacheline_aligned;
-> +	__be16 d16 __aligned(IIO_ALIGN);
->  	u8 d8[2];
->  };
->  
-> -- 
-> 2.36.0
-> 
+> We should also definitely improve the docs and perhaps add a note to say
+> that due to need to maintain ABI, a few drivers use scans * number of channels
+> rather than scans.
+
+I guess I could also do that at the same time.
