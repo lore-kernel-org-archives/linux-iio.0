@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E7178C433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0D74FC433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229842AbiEHTRa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:17:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
+        id S231228AbiEHTRb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:17:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235929AbiEHRyI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:54:08 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5BADFC5
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:50:17 -0700 (PDT)
+        with ESMTP id S244522AbiEHSBN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:01:13 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B160558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:57:22 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 553F66128D
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:50:17 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6957EC385AC;
-        Sun,  8 May 2022 17:50:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1E1E761299
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:57:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F757C385AF;
+        Sun,  8 May 2022 17:57:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032216;
-        bh=D92cGZabpHdxAvsCXtQMv3PS6YcTUwisbHSewNLG3e4=;
+        s=k20201202; t=1652032641;
+        bh=BnNeJsHa1S7SzzsjSdtM0KQjTXJW+iso/wmzwC9hgSE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ML6Fw/jMpVwHPElCz3IcOgi2xpVOc8xaWKqzDsgaOkP91YT7/al/SxZJFYjqyVqjZ
-         4mtkzAKiFA4VC7aaqJAv3MlcbhkSjsuAEQkyv0AfBRla1KcmYUsfZA/WcZWA3jannP
-         GiV1cCbFKyIDKn/4B6pYK7/kONd7H3LdcPwYfSaM5zWzWKjvPwE5MA5VM1rnvU85ZT
-         DIGlouYtbb+7NTncb/ylqCCnEwVJ8jq77L/tQeDMfWME+3AkTdzaUfN+lKQO7EpoQv
-         5MiLaarxrRRqzvt4vvLs73pi7B/opSCe/5pAhq33xKPEFVRc62DEtilNjkkG032TBj
-         Edz2Izf79xA2w==
+        b=nCMCSZykxyNPZj/vCw2vv17YBmwMTanQmPZgsSnoa1J2MMtInM5L4buPuaJ4WEhfb
+         nnIS0CXNR4aXoljlPNzN2rS0SSnWgKBQV+UhIr7j8UVZxoPxF0bMGF9CWAah4Jtx6h
+         poBnXScDXm8P+Ts90oz0AzAFyP6nQyZg7lcafatnJA9Za5xik1p3K3hqa0hFAM5JCq
+         A7Kc0ef6Y5OckzsF1T0XlN0TTqEvbIZlg0vj3ddVcDxLu8nwJpVCFjc69N0NjU7L08
+         XCjpUDN4wwmPGafVLH9+ZnawVTZbDFLS4Ytg5DQeP3bYOmM5cSQopJNjbJyJFd6P0o
+         ClbFrUMjI4YvA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 09/92] iio: adc: ad7266: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:55:49 +0100
-Message-Id: <20220508175712.647246-10-jic23@kernel.org>
+Subject: [PATCH v2 66/92] iio: frequency: adf4350: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:46 +0100
+Message-Id: <20220508175712.647246-67-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,38 +84,33 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Update the comment to reflect that DMA safety 'may' require separate
-cachelines.
+Updated help text to 'may' require buffers to be in their own cacheline.
 
-Fixes: 54e018da3141 ("iio:ad7266: Mark transfer buffer as __be16")
+Fixes: e31166f0fd48 ("iio: frequency: New driver for Analog Devices ADF4350/ADF4351 Wideband Synthesizers")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ad7266.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/frequency/adf4350.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index c17d9b5fbaf6..53c83e04dde5 100644
---- a/drivers/iio/adc/ad7266.c
-+++ b/drivers/iio/adc/ad7266.c
-@@ -37,7 +37,7 @@ struct ad7266_state {
- 	struct gpio_desc	*gpios[3];
- 
+diff --git a/drivers/iio/frequency/adf4350.c b/drivers/iio/frequency/adf4350.c
+index be1218d86291..85e289700c3c 100644
+--- a/drivers/iio/frequency/adf4350.c
++++ b/drivers/iio/frequency/adf4350.c
+@@ -56,10 +56,10 @@ struct adf4350_state {
+ 	 */
+ 	struct mutex			lock;
  	/*
 -	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 * The buffer needs to be large enough to hold two samples (4 bytes) and
- 	 * the naturally aligned timestamp (8 bytes).
-@@ -45,7 +45,7 @@ struct ad7266_state {
- 	struct {
- 		__be16 sample[2];
- 		s64 timestamp;
--	} data ____cacheline_aligned;
-+	} data __aligned(IIO_DMA_MINALIGN);
+-	 * transfer buffers to live in their own cache lines.
++	 * DMA (thus cache coherency maintenance) may require that
++	 * transfer buffers live in their own cache lines.
+ 	 */
+-	__be32				val ____cacheline_aligned;
++	__be32				val __aligned(IIO_DMA_MINALIGN);
  };
  
- static int ad7266_wakeup(struct ad7266_state *st)
+ static struct adf4350_platform_data default_pdata = {
 -- 
 2.36.0
 
