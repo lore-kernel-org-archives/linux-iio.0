@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B89A7C3527C
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EB5C35280
 	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:17:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231701AbiEHTTL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S231718AbiEHTTL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Sun, 8 May 2022 15:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38482 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39566 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239131AbiEHRyy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:54:54 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 301BDDFEA
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:51:03 -0700 (PDT)
+        with ESMTP id S239563AbiEHR65 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:58:57 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138B0DFEA
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:55:07 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id D8B98B80E5A
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:51:01 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B4A7C385AC;
-        Sun,  8 May 2022 17:50:53 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id CC52AB80E4E
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:55:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4410C385AF;
+        Sun,  8 May 2022 17:54:57 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032260;
-        bh=7poQt62uyyjesDBCqWDoCRnX0ieZPq/3A0F835iY2pQ=;
+        s=k20201202; t=1652032504;
+        bh=jT6gQtXpkZSPYV6zXkCkUvpzQXQ53iDqRPb6s9aOVYE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=TwF2qfGuTe9lTlNFCGom9Se6OiEAZcsmgccsWavmE9GYqHflqIZ6sc5fu9PLKtKC6
-         I6uPDkf0T4I2s6Fh/iiYp3A+TqNed+MIua5pOiu4C2s/6Pq1PwGarZ2JzZ9Cw4LTfh
-         hMuOh4IobpA632vH78KfSEygU33iCNiE+MapU9L6FKCJLrT/w8PEzGSoSXFf4Rr3t/
-         sgRCgmF1DY78v3S36an101rZM7jF9l98wZBNAx5aKBBpOzn/TgaieoH8ap6Z5nOzte
-         IPQx9iPND/gJ76V5RWe9rWahEodKfMIvj9wrxuR61Ut+H9oEiTMWqt7l8uP5UVRhKb
-         kKxW2LfVX0rdw==
+        b=YlbDUTVTLOtU0uGUlxNMELhqgZgy1K8zkxS7xteXdtZOyKwKHjvT6JFi+4TGUuFHi
+         VOdCxPBGO+wVJXTtKwcF6iIqi7cQKjFGfVuNb1nmnK4QTe/CtukPY/yIlZwoKkLsf0
+         ZMvhE6uedq6BInfkycAAgs5TUBQqpaUMw3Eg3C4Mw3Ab9lCx5lKdlzkWNwTPkFzGYi
+         Pb0j8GsJui0OaGdI1vmV21+WwIyzLF0sPA3+nkha4gSriVxB56ZKgk/fc+c419xFV/
+         jfjxwQCI09z0hOdxwsyKBzSsQ8KmTMoAn4mUJq30bEMU7doXHmHhLN7U1sUMaRdzbY
+         j+S0TvsfQo0og==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 15/92] iio: adc: ad7766: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:55:55 +0100
-Message-Id: <20220508175712.647246-16-jic23@kernel.org>
+Subject: [PATCH v2 48/92] iio: dac: ad5592r: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:28 +0100
+Message-Id: <20220508175712.647246-49-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,37 +84,36 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Update the comment to reflect the fact DMA safety 'may' require
-separate cachelines.
-
-Fixes: aa16c6bd0e09 ("iio:adc: Add support for AD7766/AD7767")
+Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Paul Cercueil <paul@crapouillou.net>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ad7766.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ drivers/iio/dac/ad5592r-base.h | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-index 51ee9482e0df..3079a0872947 100644
---- a/drivers/iio/adc/ad7766.c
-+++ b/drivers/iio/adc/ad7766.c
-@@ -45,13 +45,12 @@ struct ad7766 {
- 	struct spi_message msg;
+diff --git a/drivers/iio/dac/ad5592r-base.h b/drivers/iio/dac/ad5592r-base.h
+index 2a22ef691996..cc7be426cbc8 100644
+--- a/drivers/iio/dac/ad5592r-base.h
++++ b/drivers/iio/dac/ad5592r-base.h
+@@ -14,6 +14,8 @@
+ #include <linux/mutex.h>
+ #include <linux/gpio/driver.h>
  
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 * Make the buffer large enough for one 24 bit sample and one 64 bit
- 	 * aligned 64 bit timestamp.
- 	 */
--	unsigned char data[ALIGN(3, sizeof(s64)) + sizeof(s64)]
--			____cacheline_aligned;
-+	unsigned char data[ALIGN(3, sizeof(s64)) + sizeof(s64)]	__aligned(IIO_DMA_MINALIGN);
++#include <linux/iio/iio.h>
++
+ struct device;
+ struct ad5592r_state;
+ 
+@@ -65,7 +67,7 @@ struct ad5592r_state {
+ 	u8 gpio_in;
+ 	u8 gpio_val;
+ 
+-	__be16 spi_msg ____cacheline_aligned;
++	__be16 spi_msg __aligned(IIO_DMA_MINALIGN);
+ 	__be16 spi_msg_nop;
  };
  
- /*
 -- 
 2.36.0
 
