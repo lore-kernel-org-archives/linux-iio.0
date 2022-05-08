@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4989CC433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ADBDFC433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229627AbiEHTQS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:16:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39324 "EHLO
+        id S229577AbiEHTQY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:16:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38116 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239325AbiEHR6F (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:58:05 -0400
+        with ESMTP id S239070AbiEHRyD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:54:03 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7B1DFEA
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:54:14 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE081DFC5
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:50:12 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4B8FCB80E3F
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:54:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 72E1DC385B0;
-        Sun,  8 May 2022 17:54:05 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3E1B8B80E47
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:50:11 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47E59C385AF;
+        Sun,  8 May 2022 17:50:03 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032452;
-        bh=YG8ElcZYYzf2lr8dSw4skiMHwmriC+VUDlp/tzJOd3M=;
+        s=k20201202; t=1652032210;
+        bh=W/FF31gNZ5Tv5ZWIeG5E7J6iLZPdpT3qwKCzK8BYiPE=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=eXCV5n3C9FK3utczlDP6r/X1R2AhM9mH99osJJFabsENlVPljlEP4GBh8PGhXky8H
-         +2LXMYwV6Epd6Do7j/+CMEpLd81lKR2D9BqHg3PiTHih+dWOD6z0EyUBRGtCxjwrA2
-         BqI0MUKIASLOMEs2EZZnUiyIwbkn8lnYTpzJw9sbxxbYpW4Rdz58qznukljOJZZgGB
-         3VFLIf1s/0ueTucGBDJ5FN9/pwnrfTkSfGgaNhqaJCcQAHpZ15XqvgxAq50veV7sRc
-         qXNwGET5+1hiy+EUK11Fi3F6ZWovV9FvPjzdgSeXj62fSPUNndQ0jBWWJe6DfQ0EJV
-         fm+t4ZDL0U2Dw==
+        b=XQC2MADXi9VnRU3I6G84ctb7Ls8cbmw4WedzleP/60zaZc6RQf8DngfNAxj6SD0xJ
+         QPnjqpzTXAYT+gt1Cqrh8rZl6mmmURGxlBJNDvZXl9mW2bebI9fbxL2Q/65X9LtbGz
+         Bxr3tE8z2edpFenI5IJqLMjEzHx8OhrJ5Pa1OHZ4K287g0cjm8CBMmhGpSGbu7s9Ed
+         SVCRKa6fLdUu4E0+BedPY3WHOMbSo6j4OW3JuVkXIregY8D9h5uOwbnuSndoDDgW0M
+         BLF+H2Kgs8HMq7krkpzg1cmiedMQXOUxyHWy8KsKFjQ4alozxPyJbtrKiKMPuYLweW
+         MEqYe7iab9A6A==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 41/92] iio: amplifiers: ad8366: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:21 +0100
-Message-Id: <20220508175712.647246-42-jic23@kernel.org>
+Subject: [PATCH v2 08/92] iio: accel: sca3300: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:55:48 +0100
+Message-Id: <20220508175712.647246-9-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -80,36 +80,30 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+____cacheline_aligned is insufficient guarantee for non-coherent DMA.
+Switch to the updated IIO_DMA_MINALIGN definition.
 
-Update the comment to include 'may'.
-
-Fixes: e71d42e03c60 ("iio: amplifiers: New driver for AD8366 Dual-Digital Variable Gain Amplifier")
+Fixes: 9cc9806e22178 ("iio: accel: Add driver for Murata SCA3300 accelerometer")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Reviewed-by: Tomas Melin <tomas.melin@vaisala.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/amplifiers/ad8366.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/accel/sca3300.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/amplifiers/ad8366.c b/drivers/iio/amplifiers/ad8366.c
-index 1134ae12e531..f2c2ea79a07f 100644
---- a/drivers/iio/amplifiers/ad8366.c
-+++ b/drivers/iio/amplifiers/ad8366.c
-@@ -45,10 +45,10 @@ struct ad8366_state {
- 	enum ad8366_type	type;
- 	struct ad8366_info	*info;
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
--	unsigned char		data[2] ____cacheline_aligned;
-+	unsigned char		data[2] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
+index f7ef8ecfd34a..39e0c24364ae 100644
+--- a/drivers/iio/accel/sca3300.c
++++ b/drivers/iio/accel/sca3300.c
+@@ -115,7 +115,7 @@ struct sca3300_data {
+ 		s16 channels[4];
+ 		s64 ts __aligned(sizeof(s64));
+ 	} scan;
+-	u8 txbuf[4] ____cacheline_aligned;
++	u8 txbuf[4] __aligned(IIO_DMA_MINALIGN);
+ 	u8 rxbuf[4];
  };
  
- static struct ad8366_info ad8366_infos[] = {
 -- 
 2.36.0
 
