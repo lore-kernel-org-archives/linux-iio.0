@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B9CE8C433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B232C433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231171AbiEHTRN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41354 "EHLO
+        id S231193AbiEHTRP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:17:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41010 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240172AbiEHSEU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:04:20 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 040F6558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 11:00:29 -0700 (PDT)
+        with ESMTP id S238992AbiEHSDS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:03:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 78BAF5F55
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:59:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B9B37B80E5B
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 18:00:27 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6A916C385B0;
-        Sun,  8 May 2022 18:00:19 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 091E76128D
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:59:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FEEDC385AC;
+        Sun,  8 May 2022 17:59:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032826;
-        bh=LN8zEZvhTlvWiHKaWmD9tw8c9oiVxwzQXUiHqdA4mr4=;
+        s=k20201202; t=1652032766;
+        bh=LYa598G5U5prwGW1bM4RI8pvwMVs1JaDWX3xf8pincM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=GQYaBstBRTZaD0eVFiJNWqXZ1kW9ThbgYRmN5Jp/y+fZGLtbVTCD3mg1PpqhPnvTL
-         S/NuxNs5Fpt8cr5DNqYxRoIA7+0qeJXTKcjrco0+ZzELURcnLa0W6WXKCmzobb6ft3
-         6SFGSXKIwIRyLyRX8TSzLB1Qmiz9QVex0NuWYL8xtfmfNyPJQ1krN1P3d/efZGu8xM
-         65xPArK9ugkEdevHu6PRVZks2Q6+inqhnO6EiPIUkniliBNo7m4yVZ0kMFroOZsKLy
-         sC8zKjUsY7FmVU5WCWHXUelgvirMFSDelyhbz3fw7hGavg5yFif7/L5j1+yi7Q6a35
-         09Vem45fKTzOQ==
+        b=OOSCkx49PB620Pe+EXcK90xr+9T0RCOGrCDl4l+FG3ROQ4qQBKc273ox5kvlHGj7o
+         fcBXGSuqp3Q5AmOI8bh+6U6VIlGiYkesGq+iGm7s+80R83L1z9BCUzqTVTdXIAjoyo
+         4U4OwbnxwE2HbeYOBFIZS78ER/HxL2XB79MT+p7qxl9FW8vUdouiQQcfQ+EOXeEcq0
+         5nOuSnj/B/AYlVjj8buwS31lrky0o6+Fc5IkMI7o70EQMEJFbf9bNYE0YP4aGW+0Hy
+         zENCq+FnwBxYXgVWqTn/nclSO9a2XRfiOXU65CtcL7XgXVV4km+vml9+/9JoGTeHBy
+         t9yfQx6wGPnKA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 90/92] iio: temp: ltc2983: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:57:10 +0100
-Message-Id: <20220508175712.647246-91-jic23@kernel.org>
+Subject: [PATCH v2 82/92] iio: potentiometer: max5481: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:57:02 +0100
+Message-Id: <20220508175712.647246-83-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,31 +84,26 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: f110f3188e56 ("iio: temperature: Add support for LTC2983")
+Fixes: df1fd2de118e ("iio: max5481: Add support for Maxim digital potentiometers")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/temperature/ltc2983.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/potentiometer/max5481.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/temperature/ltc2983.c b/drivers/iio/temperature/ltc2983.c
-index 301c3f13fb26..1b8252d86889 100644
---- a/drivers/iio/temperature/ltc2983.c
-+++ b/drivers/iio/temperature/ltc2983.c
-@@ -200,11 +200,11 @@ struct ltc2983_data {
- 	u8 num_channels;
- 	u8 iio_channels;
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 * Holds the converted temperature
- 	 */
--	__be32 temp ____cacheline_aligned;
-+	__be32 temp __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/potentiometer/max5481.c b/drivers/iio/potentiometer/max5481.c
+index 098d144a8fdd..b40e5ac218d7 100644
+--- a/drivers/iio/potentiometer/max5481.c
++++ b/drivers/iio/potentiometer/max5481.c
+@@ -44,7 +44,7 @@ static const struct max5481_cfg max5481_cfg[] = {
+ struct max5481_data {
+ 	struct spi_device *spi;
+ 	const struct max5481_cfg *cfg;
+-	u8 msg[3] ____cacheline_aligned;
++	u8 msg[3] __aligned(IIO_DMA_MINALIGN);
  };
  
- struct ltc2983_sensor {
+ #define MAX5481_CHANNEL {					\
 -- 
 2.36.0
 
