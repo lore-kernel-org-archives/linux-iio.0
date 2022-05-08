@@ -2,87 +2,120 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 686F6C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A004BC433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231160AbiEHTQE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:16:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39196 "EHLO
+        id S230370AbiEHTQP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:16:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239231AbiEHR5g (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:57:36 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC9F3DFEA;
-        Sun,  8 May 2022 10:53:45 -0700 (PDT)
+        with ESMTP id S237039AbiEHRzB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:55:01 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CA3DFEA
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:51:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6846461295;
-        Sun,  8 May 2022 17:53:45 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA49C385A4;
-        Sun,  8 May 2022 17:53:43 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 2864DB80E5A
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:51:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id E65A1C385A4;
+        Sun,  8 May 2022 17:51:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032424;
-        bh=yJPX175r8pvytkUmcDbH5hMaqjBtCATCSaDdEMwa2IQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=hp79yaL4qI6PvDBH7yU5WthuS86G4hkqP2zY+E/O5qqGE2V6ebZh69X/9c2wOStuv
-         BGAquKs2hyhD6hRePX54dTHilMTBC4+qdZkDIo7iaLRe/Oe11v8+H5SG8aUI4Tz++W
-         YvaXLzEgVWj94qMpV/EIzgMlkhxeAq/VGpRVlkpB2nN9iQ2I3QbxJDxfBIQUwNmOpC
-         8pws1hrUyxUO3m+urjcuCTaTTZsHkf+d1IJaUUxUZpiyE8mpmSYmK7Cz7nJ889hV2U
-         tYJ/jtzZeJ2mUrIoEnk6otfTk3mJXVwKP2nPJgl9dBqPgK9SdWYFD1OcLIi9ynYKAl
-         j1V74AsHiE6EA==
-Date:   Sun, 8 May 2022 19:02:12 +0100
+        s=k20201202; t=1652032268;
+        bh=aYUApAW9UG1otpbKpwStO/tN3Prbq6km4kcSJbj3qSU=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=vIifg9yoJi5L/4Q/y9+dRmRUYj4KuegDDK2zUqoXpfNChCfFocv4bKa8D/6h0pwfP
+         zV8cpJ6FMz/lVLZBOK/EVSRZ6WbGJG6Cx3JojBQTUMivOBVXdMzc8HtLWBlTlszAmJ
+         aal+bJkbuYglVQTAyGby0DEjbGkTX9Rk+RS/6xsef8ZGLCzvJW/Eki4IrWe8Jzd1+N
+         SyvlF8IGiVZ41ZBtcHMyk5ZHWD1kEBlLgiueTeWG+HrFK6vjE4Db6xZO4+88aNUU8Q
+         sFN9tZRQTp0emRC7Xvh3xyEt/Vxj4EVjGLgz7x65pyb/QtfcKWJCww/D4Z9F8KjtaI
+         kygoB5qUH8Fjg==
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lorenzo Bianconi <lorenzo@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 1/1] iio: imu: st_lsm6dsx: Switch from of headers to
- mod_devicetable.h
-Message-ID: <20220508190212.3fc02a3f@jic23-huawei>
-In-Reply-To: <20220507173440.29053-1-andriy.shevchenko@linux.intel.com>
-References: <20220507173440.29053-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+To:     linux-iio@vger.kernel.org
+Cc:     Alexandru Lazar <alazar@startmail.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        David Lechner <david@lechnology.com>,
+        Ivan Mikhaylov <i.mikhaylov@yadro.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Marcelo Schmitt <marcelo.schmitt1@gmail.com>,
+        =?UTF-8?q?M=C3=A5rten=20Lindahl?= <martenli@axis.com>,
+        Matt Ranostay <mranostay@gmail.com>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Michael Welling <mwelling@ieee.org>,
+        Mugilraj Dhavachelvan <dmugil2000@gmail.com>,
+        Navin Sankar Velliangiri <navin@linumiz.com>,
+        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Phil Reid <preid@electromag.com.au>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Robert Jones <rjones@gateworks.com>,
+        Rui Miguel Silva <rui.silva@linaro.org>,
+        Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        Tomislav Denis <tomislav.denis@avl.com>,
+        =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v2 16/92] iio: adc: ad7768-1: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:55:56 +0100
+Message-Id: <20220508175712.647246-17-jic23@kernel.org>
+X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
+References: <20220508175712.647246-1-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat,  7 May 2022 20:34:40 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-> There is nothing directly using of specific interfaces in this driver,
-> so lets not include the headers.
-> 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for all the normal boring reasons.
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-Thanks,
+Update the comment to reflect that separate cachelines 'may' be
+required.
 
-Jonathan
+Fixes: a5f8c7da3dbe ("iio: adc: Add AD7768-1 ADC basic support")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/iio/adc/ad7768-1.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-> index 8d4201b86e87..35556cd04284 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-> @@ -6,11 +6,11 @@
->   */
->  
->  #include <linux/kernel.h>
-> +#include <linux/mod_devicetable.h>
->  #include <linux/module.h>
->  #include <linux/i3c/device.h>
->  #include <linux/i3c/master.h>
->  #include <linux/slab.h>
-> -#include <linux/of.h>
->  #include <linux/regmap.h>
->  
->  #include "st_lsm6dsx.h"
+diff --git a/drivers/iio/adc/ad7768-1.c b/drivers/iio/adc/ad7768-1.c
+index aa42ba759fa1..60f394da4640 100644
+--- a/drivers/iio/adc/ad7768-1.c
++++ b/drivers/iio/adc/ad7768-1.c
+@@ -163,7 +163,7 @@ struct ad7768_state {
+ 	struct gpio_desc *gpio_sync_in;
+ 	const char *labels[ARRAY_SIZE(ad7768_channels)];
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+ 	union {
+@@ -173,7 +173,7 @@ struct ad7768_state {
+ 		} scan;
+ 		__be32 d32;
+ 		u8 d8[2];
+-	} data ____cacheline_aligned;
++	} data __aligned(IIO_DMA_MINALIGN);
+ };
+ 
+ static int ad7768_spi_reg_read(struct ad7768_state *st, unsigned int addr,
+-- 
+2.36.0
 
