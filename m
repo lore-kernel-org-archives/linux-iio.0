@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28465C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:11:59 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 32940C433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230261AbiEHTPr (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:15:47 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41242 "EHLO
+        id S229605AbiEHTPs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:15:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41174 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1343885AbiEHSEF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:04:05 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8F362558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 11:00:14 -0700 (PDT)
+        with ESMTP id S1343565AbiEHSDv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:03:51 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0102B558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 11:00:00 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 4831AB80E45
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 18:00:13 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E5371C385B0;
-        Sun,  8 May 2022 18:00:05 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id 64680CE114E
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:59:59 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 888F8C385B0;
+        Sun,  8 May 2022 17:59:50 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032811;
-        bh=61x6yxNv2piEtZyr+g663GYYBRTQLXhhTOrvtmh6oMM=;
+        s=k20201202; t=1652032797;
+        bh=3gXi9xDUm0BF9V/MR4Pm4CfJ1ut2/OWotlClKddHWZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i1piLbo2uf8116hMKsKWCXEGfWNzpqSBWIx1HAVaCvPNgQFL6JNxDIZj7KtEaALZk
-         oQbM/4P8B2EkCVDlZHpCiodROUMfosPZA7QU/dsaWUGjfDRlCV3jqfBjdE2iQXALYk
-         zRUgg/bPASE6J9n0kSOPheU2V+7Cc2i4cI5vyyIHbGeKPfLZK+i/jpvjNs/rPZxRuU
-         51wP8JZKGGT5ut2YpKlpKcDRcn3EB7YrruuhMgrPlu8UAqlqZgo53//y4qJxALIG3P
-         yMQD2MT1xUabXjcrZGzf5lxlA+6D0DtF7GU6oeZfiEv/cUb3Ps1nbjlzWzBCqBXzm2
-         FcEZ2N92OqdPw==
+        b=Gvft/P/CXAtNXZBO1/i8qyQI5IK9D3qqFcCOOFyc6XSgTzn//8ouKIQLQmvP2nmUs
+         Gq4HyX3ID5IffsWudDmaEX+i2Hqyj3F3wO0VdIWPqD966LSPYu6fu4knMgLV6hXvpB
+         Qp5q5ZBteLchw0uURYofGNi5NIo/on1BCQRUlbQXKMm9GIGAxi4kAo/V/VVNXzipjm
+         qWIZ1JpM7NAR/kVALFHHuwfPSegm82yk5afeA1djGsNZ6f8Cpcp9fJ7orZa2c31JKu
+         8KRb6XCWiBH23HPVyeyQsog2rkjWIlyRYjXv4/EhqR3hDDpQsOMVsbbBP5US87zT6y
+         lvSLlAfdd1YvQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 88/92] iio: resolver: ad2s1200: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:57:08 +0100
-Message-Id: <20220508175712.647246-89-jic23@kernel.org>
+Subject: [PATCH v2 86/92] iio: proximity: as3935: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:57:06 +0100
+Message-Id: <20220508175712.647246-87-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,29 +84,27 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes tag is probably not where the issue was first introduced, but
-is likely to be as far as anyone considers backporting this fix.
-
-Fixes: 0bd3d338f61b ("staging: iio: ad2s1200: Improve readability with be16_to_cpup")
+Fixes: 24ddb0e4bba4 ("iio: Add AS3935 lightning sensor support")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Matt Ranostay <mranostay@gmail.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/resolver/ad2s1200.c | 2 +-
+ drivers/iio/proximity/as3935.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/resolver/ad2s1200.c b/drivers/iio/resolver/ad2s1200.c
-index 9746bd935628..9d95241bdf8f 100644
---- a/drivers/iio/resolver/ad2s1200.c
-+++ b/drivers/iio/resolver/ad2s1200.c
-@@ -41,7 +41,7 @@ struct ad2s1200_state {
- 	struct spi_device *sdev;
- 	struct gpio_desc *sample;
- 	struct gpio_desc *rdvel;
--	__be16 rx ____cacheline_aligned;
-+	__be16 rx __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/proximity/as3935.c b/drivers/iio/proximity/as3935.c
+index 67891ce2bd09..ebc95cf8f5f4 100644
+--- a/drivers/iio/proximity/as3935.c
++++ b/drivers/iio/proximity/as3935.c
+@@ -65,7 +65,7 @@ struct as3935_state {
+ 		u8 chan;
+ 		s64 timestamp __aligned(8);
+ 	} scan;
+-	u8 buf[2] ____cacheline_aligned;
++	u8 buf[2] __aligned(IIO_DMA_MINALIGN);
  };
  
- static int ad2s1200_read_raw(struct iio_dev *indio_dev,
+ static const struct iio_chan_spec as3935_channels[] = {
 -- 
 2.36.0
 
