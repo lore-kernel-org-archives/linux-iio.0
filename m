@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF3C5C433F5
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 41AFCC433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:11:21 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234937AbiEHTO6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:14:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37850 "EHLO
+        id S232704AbiEHTO7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:14:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39946 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238451AbiEHRxI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:53:08 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6C72ADFC5
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:49:16 -0700 (PDT)
+        with ESMTP id S239811AbiEHR7n (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:59:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A415B2679
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:55:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id EB517B80E3D
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:49:14 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7544BC385AC;
-        Sun,  8 May 2022 17:49:06 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5D8CBB80D48
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:55:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 0EE63C385AC;
+        Sun,  8 May 2022 17:55:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032153;
-        bh=RR9JeGed9idCZiVfC2qQbkAvUVAV6fna4rW1SmLydm8=;
-        h=From:To:Cc:Subject:Date:From;
-        b=Fphnqzzzx5h0ToRj1CjNBunhgdJNbRQPwxy89q9AIsS0RKO6jEe8JGImAoImby23+
-         IXrpAYTf/TBeg7XBn7eteq4/wYL2fUj04pbH96Z2Yj1okXXGTDfDusZbC/9bTTHyIf
-         IYJi9HozvuVUXqVRUm3OcjHWg3X7UI5JEeET39Lo8nBn5B3MVCenSeBiTiKsbmQ16l
-         nAlX+nBz5znxPPJRD6qX48qeBlOywldEFnQnq7PGfbRdd6rUJzA/dD1u3QEeEJUH6S
-         KNDVdJ84Y7GCht8vLN/bsdeBRTZQrQtLsOSK1fPJlRRNJyFFdfDDwCfMOGby56EEwm
-         jt9E39TIGXaRQ==
+        s=k20201202; t=1652032550;
+        bh=iiMwTJrkmjEv7aSqY+eFjyuAcG+EdiCPt03rpOq3lWI=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=feXo0W8Q4Gdsyqfr0gmZ4TEfCBsqEZ4HEwFjSVbTlLcfkHsCRGTO7f0vwAbLGuB0V
+         f+KjLrwMjEXwoC9KK0zZo6dVY+1rj1R9W4L0e7uQ6fjWvE/udBioX2B/srySWaWV3c
+         y5MMGNQ1OWWAwqWKkYeDcZTS2qhMzyCduXMOiw0voGyDmse8nfhgj0nBUHRoVNxdA7
+         oOlSQGrfnqoKkuLNiw5vrSy/BZFLogqcBAC2mboSGqt5WGlDcvRWv1/G4OLeGB1T/1
+         eFC/Kzly1louYK9SBE27NsfNnVqUarDaHNxXWVGq9TBZItiV/4+qKcPgfxyVT8amPB
+         nucpdxDNOL2Iw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -64,12 +64,13 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         Tomislav Denis <tomislav.denis@avl.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        catalin.marinas@arm.com
-Subject: [PATCH v2 00/92] IIO: Fix alignment of buffers for DMA
-Date:   Sun,  8 May 2022 18:55:40 +0100
-Message-Id: <20220508175712.647246-1-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v2 54/92] iio: dac: ad5770r: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:34 +0100
+Message-Id: <20220508175712.647246-55-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
+In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
+References: <20220508175712.647246-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 8bit
@@ -79,249 +80,31 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Changes since v1:
-- Rename IIO_ALIGN to more specific IIO_DMA_MINALIGN
-- Fix a few patch descriptions (wrong drive names and such like)
-- Fixed a bunch of typos in the intro text in this email (I clearly
-  forgot to spell check that!)
-- Stopped removing 'to' in some comment updates. The English is fine either
-  way and this reduces the patch set size.
-- Pick up tags (thanks all!)
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-A few bits of feedback I haven't acted on:
-- Use of a general kernel define with a generic name. ARCH_DMA_MINALIGN
-  isn't yet available on all architectures, so the use of IIO_DMA_MINALIGN
-  provides a good path to fix this now in a fashion that can be easily
-  back ported.
-- Adding a define for __aligned(IIO_DMA_MINALIGN). I think that
-  such a define would obscure what was going a little. I couldn't think
-  of a reason we'd want to add anything else across all these locations
-  (which is the other reason we might want such a define).
-- Dropping some unnecessary marking of second buffers. I left these alone
-  because explaining why they aren't needed would require additional
-  commentary and is a separate cleanup that can wait for another time.#
+Fixes: cbbb819837f6 ("iio: dac: ad5770r: Add AD5770R support")
+Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Alexandru Tachici <alexandru.tachici@analog.com>
+Acked-by: Nuno Sá <nuno.sa@analog.com>
+---
+ drivers/iio/dac/ad5770r.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Many years ago, IIO started using ____cacheline_aligned to ensure
-that buffers that might be used for DMA were not sharing a cacheline
-with other data that might lead to DMA safety issues.
-
-As it turns out, that was fine at the time, but not based on the
-correct alignment requirement (though I believe it was a conservative
-choice at the time).  Note that on many architectures this was introducing
-unnecessary padding.  We should have been using ARCH_KMALLOC_MINALIGN
-as other subsystems such as crypto have done for a long time.
-
-Patch 1 description contains more information but in short, there are
-ARM64 SoCs out their that have a larger cacheline size for caches beyond
-L1. In many cases they maintain coherency for all DMA devices attached
-and so this isn't a problem, but there are exceptions that do not.
-
-So, this is a rather large patch set and just covers those drivers
-that are in the last kernel release and in drivers/iio.
-
-Many of these drivers are somewhat old so I haven't specifically
-cc'd anyone so will be relying on those kind enough to sanity check
-patches on drivers that are beyond their own.
-
-Given there is ongoing discussion around reducing the alignment
-requirements where possible, I've adopted the existing IIO_ALIGN
-define throughout.  That way we have a single point to update if
-that becomes relevant in future.
-
-Cc: catalin.marinas@arm.com
-
-Jonathan Cameron (92):
-  iio: core: Fix IIO_ALIGN and rename as it was not sufficiently large
-  iio: accel: adxl313: Fix alignment for DMA safety
-  iio: accel: adxl355: Fix alignment for DMA safety
-  iio: accel: adxl367: Fix alignment for DMA safety
-  iio: accel: bma220: Fix alignment for DMA safety
-  iio: accel: bmi088: Fix alignment for DMA safety
-  iio: accel: sca3000: Fix alignment for DMA safety
-  iio: accel: sca3300: Fix alignment for DMA safety
-  iio: adc: ad7266: Fix alignment for DMA safety
-  iio: adc: ad7280a: Fix alignment for DMA safety
-  iio: adc: ad7292: Fix alignment for DMA safety
-  iio: adc: ad7298: Fix alignment for DMA safety
-  iio: adc: ad7476: Fix alignment for DMA safety
-  iio: adc: ad7606: Fix alignment for DMA safety
-  iio: adc: ad7766: Fix alignment for DMA safety
-  iio: adc: ad7768-1: Fix alignment for DMA safety
-  iio: adc: ad7887: Fix alignment for DMA safety
-  iio: adc: ad7923: Fix alignment for DMA safety
-  iio: adc: ad7949: Fix alignment for DMA safety
-  iio: adc: hi8435: Fix alignment for DMA safety
-  iio: adc: ltc2496: Fix alignment for DMA safety
-  iio: adc: ltc2497: Fix alignment for DMA safety
-  iio: adc: max1027: Fix alignment for DMA safety
-  iio: adc: max11100: Fix alignment for DMA safety
-  iio: adc: max1118: Fix alignment for DMA safety
-  iio: adc: max1241: Fix alignment for DMA safety
-  iio: adc: mcp320x: Fix alignment for DMA safety
-  iio: adc: ti-adc0832: Fix alignment for DMA safety
-  iio: adc: ti-adc084s021: Fix alignment for DMA safety
-  iio: adc: ti-adc108s102: Fix alignment for DMA safety
-  iio: adc: ti-adc12138: Fix alignment for DMA safety
-  iio: adc: ti-adc128s052: Fix alignment for DMA safety
-  iio: adc: ti-adc161s626: Fix alignment for DMA safety
-  iio: adc: ti-ads124s08: Fix alignment for DMA safety
-  iio: adc: ti-ads131e08: Fix alignment for DMA safety
-  iio: adc: ti-ads7950: Fix alignment for DMA safety
-  iio: adc: ti-ads8344: Fix alignment for DMA safety
-  iio: adc: ti-ads8688: Fix alignment for DMA safety
-  iio: adc: ti-tlc4541: Fix alignment for DMA safety
-  iio: addac: ad74413r: Fix alignment for DMA safety
-  iio: amplifiers: ad8366: Fix alignment for DMA safety
-  iio: common: ssp: Fix alignment for DMA safety
-  iio: dac: ad5064: Fix alignment for DMA safety
-  iio: dac: ad5360: Fix alignment for DMA safety
-  iio: dac: ad5421: Fix alignment for DMA safety
-  iio: dac: ad5449: Fix alignment for DMA safety
-  iio: dac: ad5504: Fix alignment for DMA safety
-  iio: dac: ad5592r: Fix alignment for DMA safety
-  iio: dac: ad5686: Fix alignment for DMA safety
-  iio: dac: ad5755: Fix alignment for DMA safety
-  iio: dac: ad5761: Fix alignment for DMA safety
-  iio: dac: ad5764: Fix alignment for DMA safety
-  iio: dac: ad5766: Fix alignment for DMA safety
-  iio: dac: ad5770r: Fix alignment for DMA safety
-  iio: dac: ad5791: Fix alignment for DMA saftey
-  iio: dac: ad7293: Fix alignment for DMA safety
-  iio: dac: ad7303: Fix alignment for DMA safety
-  iio: dac: ad8801: Fix alignment for DMA safety
-  iio: dac: ltc2688: Fix alignment for DMA safety
-  iio: dac: mcp4922: Fix alignment for DMA safety
-  iio: dac: ti-dac082s085: Fix alignment for DMA safety
-  iio: dac: ti-dac5571: Fix alignment for DMA safety
-  iio: dac: ti-dac7311: Fix alignment for DMA safety
-  iio: dac: ti-dac7612: Fix alignment for DMA safety
-  iio: frequency: ad9523: Fix alignment for DMA safety
-  iio: frequency: adf4350: Fix alignment for DMA safety
-  iio: frequency: adf4371: Fix alignment for DMA safety
-  iio: frequency: admv1013: Fix alignment for DMA safety
-  iio: frequency: admv1014: Fix alignment for DMA safety
-  iio: frequency: admv4420: Fix alignment for DMA safety
-  iio: frequency: adrf6780: Fix alignment for DMA safety
-  iio: gyro: adis16080: Fix alignment for DMA safety
-  iio: gyro: adis16130: Fix alignment for DMA safety
-  iio: gyro: adxrs450: Fix alignment for DMA safety
-  iio: gyro: fxas210002c: Fix alignment for DMA safety
-  iio: imu: fxos8700: Fix alignment for DMA safety
-  iio: imu: inv_icm42600: Fix alignment for DMA safety
-  iio: imu: inv_icm42600: Fix alignment for DMA safety in buffer code.
-  iio: imu: mpu6050: Fix alignment for DMA safety
-  iio: potentiometer: ad5110: Fix alignment for DMA safety
-  iio: potentiometer: ad5272: Fix alignment for DMA safety
-  iio: potentiometer: max5481: Fix alignment for DMA safety
-  iio: potentiometer: mcp41010: Fix alignment for DMA safety
-  iio: potentiometer: mcp4131: Fix alignment for DMA safety
-  iio: pressure: dlhl60d: Drop unnecessary alignment forcing.
-  iio: proximity: as3935: Fix alignment for DMA safety
-  iio: proximity: vcnl3020: Drop unnecessary alignment requirement for
-    i2c device
-  iio: resolver: ad2s1200: Fix alignment for DMA safety
-  iio: resolver: ad2s90: Fix alignment for DMA safety
-  iio: temp: ltc2983: Fix alignment for DMA safety
-  iio: temp: max31865: Fix alignment for DMA safety
-  iio: temp: maxim_thermocouple: Fix alignment for DMA safety
-
- drivers/iio/accel/adxl313_core.c                   |  2 +-
- drivers/iio/accel/adxl355_core.c                   |  2 +-
- drivers/iio/accel/adxl367.c                        |  2 +-
- drivers/iio/accel/adxl367_spi.c                    |  8 +++++---
- drivers/iio/accel/bma220_spi.c                     |  2 +-
- drivers/iio/accel/bmi088-accel-core.c              |  2 +-
- drivers/iio/accel/sca3000.c                        |  4 ++--
- drivers/iio/accel/sca3300.c                        |  2 +-
- drivers/iio/adc/ad7266.c                           |  4 ++--
- drivers/iio/adc/ad7280a.c                          |  2 +-
- drivers/iio/adc/ad7292.c                           |  2 +-
- drivers/iio/adc/ad7298.c                           |  2 +-
- drivers/iio/adc/ad7476.c                           |  5 ++---
- drivers/iio/adc/ad7606.h                           |  4 ++--
- drivers/iio/adc/ad7766.c                           |  5 ++---
- drivers/iio/adc/ad7768-1.c                         |  4 ++--
- drivers/iio/adc/ad7887.c                           |  5 ++---
- drivers/iio/adc/ad7923.c                           |  4 ++--
- drivers/iio/adc/ad7949.c                           |  2 +-
- drivers/iio/adc/adi-axi-adc.c                      |  7 ++++---
- drivers/iio/adc/hi8435.c                           |  2 +-
- drivers/iio/adc/ltc2496.c                          |  4 ++--
- drivers/iio/adc/ltc2497.c                          |  4 ++--
- drivers/iio/adc/max1027.c                          |  2 +-
- drivers/iio/adc/max11100.c                         |  4 ++--
- drivers/iio/adc/max1118.c                          |  2 +-
- drivers/iio/adc/max1241.c                          |  2 +-
- drivers/iio/adc/mcp320x.c                          |  2 +-
- drivers/iio/adc/ti-adc0832.c                       |  2 +-
- drivers/iio/adc/ti-adc084s021.c                    |  4 ++--
- drivers/iio/adc/ti-adc108s102.c                    |  4 ++--
- drivers/iio/adc/ti-adc12138.c                      |  2 +-
- drivers/iio/adc/ti-adc128s052.c                    |  2 +-
- drivers/iio/adc/ti-adc161s626.c                    |  2 +-
- drivers/iio/adc/ti-ads124s08.c                     |  2 +-
- drivers/iio/adc/ti-ads131e08.c                     |  2 +-
- drivers/iio/adc/ti-ads7950.c                       |  4 ++--
- drivers/iio/adc/ti-ads8344.c                       |  2 +-
- drivers/iio/adc/ti-ads8688.c                       |  2 +-
- drivers/iio/adc/ti-tlc4541.c                       |  4 ++--
- drivers/iio/addac/ad74413r.c                       |  4 ++--
- drivers/iio/amplifiers/ad8366.c                    |  4 ++--
- drivers/iio/common/ssp_sensors/ssp.h               |  3 +--
- drivers/iio/dac/ad5064.c                           |  4 ++--
- drivers/iio/dac/ad5360.c                           |  4 ++--
- drivers/iio/dac/ad5421.c                           |  4 ++--
- drivers/iio/dac/ad5449.c                           |  4 ++--
- drivers/iio/dac/ad5504.c                           |  2 +-
- drivers/iio/dac/ad5592r-base.h                     |  4 +++-
- drivers/iio/dac/ad5686.h                           |  6 ++++--
- drivers/iio/dac/ad5755.c                           |  4 ++--
- drivers/iio/dac/ad5761.c                           |  4 ++--
- drivers/iio/dac/ad5764.c                           |  4 ++--
- drivers/iio/dac/ad5766.c                           |  2 +-
- drivers/iio/dac/ad5770r.c                          |  2 +-
- drivers/iio/dac/ad5791.c                           |  2 +-
- drivers/iio/dac/ad7293.c                           |  2 +-
- drivers/iio/dac/ad7303.c                           |  4 ++--
- drivers/iio/dac/ad8801.c                           |  2 +-
- drivers/iio/dac/ltc2688.c                          |  4 ++--
- drivers/iio/dac/mcp4922.c                          |  2 +-
- drivers/iio/dac/ti-dac082s085.c                    |  2 +-
- drivers/iio/dac/ti-dac5571.c                       |  2 +-
- drivers/iio/dac/ti-dac7311.c                       |  2 +-
- drivers/iio/dac/ti-dac7612.c                       |  4 ++--
- drivers/iio/frequency/ad9523.c                     |  6 +++---
- drivers/iio/frequency/adf4350.c                    |  6 +++---
- drivers/iio/frequency/adf4371.c                    |  2 +-
- drivers/iio/frequency/admv1013.c                   |  2 +-
- drivers/iio/frequency/admv1014.c                   |  2 +-
- drivers/iio/frequency/admv4420.c                   |  2 +-
- drivers/iio/frequency/adrf6780.c                   |  2 +-
- drivers/iio/gyro/adis16080.c                       |  2 +-
- drivers/iio/gyro/adis16130.c                       |  2 +-
- drivers/iio/gyro/adxrs450.c                        |  2 +-
- drivers/iio/gyro/fxas21002c_core.c                 |  6 +++---
- drivers/iio/imu/fxos8700_core.c                    |  2 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600.h        |  2 +-
- drivers/iio/imu/inv_icm42600/inv_icm42600_buffer.h |  2 +-
- drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  2 +-
- drivers/iio/industrialio-core.c                    |  4 ++--
- drivers/iio/potentiometer/ad5110.c                 |  4 ++--
- drivers/iio/potentiometer/ad5272.c                 |  2 +-
- drivers/iio/potentiometer/max5481.c                |  2 +-
- drivers/iio/potentiometer/mcp41010.c               |  2 +-
- drivers/iio/potentiometer/mcp4131.c                |  2 +-
- drivers/iio/pressure/dlhl60d.c                     |  2 +-
- drivers/iio/proximity/as3935.c                     |  2 +-
- drivers/iio/proximity/vcnl3020.c                   |  4 ++--
- drivers/iio/resolver/ad2s1200.c                    |  2 +-
- drivers/iio/resolver/ad2s90.c                      |  2 +-
- drivers/iio/temperature/ltc2983.c                  |  4 ++--
- drivers/iio/temperature/max31865.c                 |  2 +-
- drivers/iio/temperature/maxim_thermocouple.c       |  2 +-
- include/linux/iio/iio.h                            | 10 ++++++++--
- 95 files changed, 151 insertions(+), 142 deletions(-)
-
+diff --git a/drivers/iio/dac/ad5770r.c b/drivers/iio/dac/ad5770r.c
+index 7e2fd32e993a..f66d67402e43 100644
+--- a/drivers/iio/dac/ad5770r.c
++++ b/drivers/iio/dac/ad5770r.c
+@@ -140,7 +140,7 @@ struct ad5770r_state {
+ 	bool				ch_pwr_down[AD5770R_MAX_CHANNELS];
+ 	bool				internal_ref;
+ 	bool				external_res;
+-	u8				transf_buf[2] ____cacheline_aligned;
++	u8				transf_buf[2] __aligned(IIO_DMA_MINALIGN);
+ };
+ 
+ static const struct regmap_config ad5770r_spi_regmap_config = {
 -- 
 2.36.0
 
