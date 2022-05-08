@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7E8FC433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 13E93C433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229663AbiEHTQ3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:16:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37938 "EHLO
+        id S229558AbiEHTQd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:16:33 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234220AbiEHRx2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:53:28 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 55231DFC5
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:49:37 -0700 (PDT)
+        with ESMTP id S236672AbiEHSAn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:00:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C9B3558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:56:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id F2510B80E48
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:49:35 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2F0B2C385A4;
-        Sun,  8 May 2022 17:49:28 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 04B2761290
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:56:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2E864C385AF;
+        Sun,  8 May 2022 17:56:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032174;
-        bh=vpIAjkNgFsDrmPglA7+07NoWOmCWCnW0y0xA0RJfggU=;
+        s=k20201202; t=1652032611;
+        bh=gq68eaUg1qm6JiXvMR1huO7uG88B8yjRF+TzaXVUxfA=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mftjfnBlzYrhubB3EyUwj+SzNdFdHdJomxB/M/xvlAWSHnFcRlN1tDy7DnUj9D3Tj
-         vdKAIHFamcpGfFuwLRN6cSOcPF7Vl2OL47LCDQJZWzAUuDcgqZsLwhQgba4VahC/JS
-         FkpILnUQDjuhCeL+Zkyu/2j59okc2r2sOfUno2ivZ/KjfF5YG8uNxIiGSy6uEaLcRI
-         8hI99I6CM2ePGEMuVo4SlOkyWu2z5gMLdtzLPzq2eFYdMcj63h4y1+XexEF7bJXsbh
-         +nqTkZRMiuIxL8QwF3eNqq0VpCLxI4XSeXwvh8+ReyFuyv7MBplYzUp4QQjgcfz31r
-         Yf4oYnNKunlxA==
+        b=ldJupQALJYIkMerJNUOna9Xl3aQeQdKa6SwTc5ir+9/Gj/mN28KjlMtg4nlkoi5Z7
+         +IkBYV8SchlPV+11LE9ZDwpcwywGRk6zKsX0MnmoWnoP4HSinIvA1FG6fUxTeTChPV
+         bH+HezXjO7LgkzMABc0+Jw8sPdqlqc/qgrmxbGh3PwH/wC8Bji/m/oup068ESzy0Bu
+         NtKhIbTEkF5dQ5LPO058QgrV7AbfHGclfhiLhC9Aa3KElg613mO2efgcLAqDlJsEW7
+         m84VgDoKae74f9/QVzrL9Hty8Y7ZrBeRmchE0jdd12tw7194EXoqbwM29vnfCm3AZg
+         SYc+p7SzF7f3g==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 03/92] iio: accel: adxl355: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:55:43 +0100
-Message-Id: <20220508175712.647246-4-jic23@kernel.org>
+Subject: [PATCH v2 62/92] iio: dac: ti-dac5571: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:42 +0100
+Message-Id: <20220508175712.647246-63-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -80,30 +80,31 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
- ____cacheline_aligned is insufficient guarantee for non-coherent DMA.
-Switch to the updated IIO_DMA_MINALIGN definition.
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
-Fixes: 327a0eaf19d53 ("iio: accel: adxl355: Add triggered buffer support")
+Fixes: df38a4a72a3b ("iio: dac: add TI DAC5571 family support")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Puranjay Mohan <puranjay12@gmail.com>
+Cc: Sean Nyekjaer <sean.nyekjaer@prevas.dk>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/accel/adxl355_core.c | 2 +-
+ drivers/iio/dac/ti-dac5571.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/adxl355_core.c b/drivers/iio/accel/adxl355_core.c
-index e9c10c8c32f0..2dfe780d6144 100644
---- a/drivers/iio/accel/adxl355_core.c
-+++ b/drivers/iio/accel/adxl355_core.c
-@@ -177,7 +177,7 @@ struct adxl355_data {
- 			u8 buf[14];
- 			s64 ts;
- 		} buffer;
--	} ____cacheline_aligned;
-+	} __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/dac/ti-dac5571.c b/drivers/iio/dac/ti-dac5571.c
+index 0b775f943db3..ba68ea1e3455 100644
+--- a/drivers/iio/dac/ti-dac5571.c
++++ b/drivers/iio/dac/ti-dac5571.c
+@@ -52,7 +52,7 @@ struct dac5571_data {
+ 	struct dac5571_spec const *spec;
+ 	int (*dac5571_cmd)(struct dac5571_data *data, int channel, u16 val);
+ 	int (*dac5571_pwrdwn)(struct dac5571_data *data, int channel, u8 pwrdwn);
+-	u8 buf[3] ____cacheline_aligned;
++	u8 buf[3] __aligned(IIO_DMA_MINALIGN);
  };
  
- static int adxl355_set_op_mode(struct adxl355_data *data,
+ #define DAC5571_POWERDOWN(mode)		((mode) + 1)
 -- 
 2.36.0
 
