@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FD93C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8168C433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230218AbiEHTQt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:16:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39386 "EHLO
+        id S230267AbiEHTQx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:16:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37884 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239443AbiEHR6U (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:58:20 -0400
+        with ESMTP id S239020AbiEHRxP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:53:15 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B884BDFEA
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:54:29 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6CF9DFC5
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:49:23 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 73DC8B80E3F
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:54:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3456FC385AC;
-        Sun,  8 May 2022 17:54:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9FE7EB80E3D
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:49:22 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21FB7C385A4;
+        Sun,  8 May 2022 17:49:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032467;
-        bh=yb7PNrF3/V2CXO10Fydyl7aki75teK+3kHkpMqAV0d8=;
+        s=k20201202; t=1652032161;
+        bh=y6gFQ9PnCZtZ9MTi3H6R5+HUma80eEm383aXmVIpIZw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UmJPi81SLLd2evmNm8dLq2POeqVMxDmtMWewAIGFZN1oxX7LgjwNBCx7coE4Goge2
-         qvPvK14aBWzyAC9ZuPFfv4Dpe9p/paMGfjff20emIjrjN3gFJyQq7GB+O5t53wYDVy
-         r/v8u4OOrNRO/IevtkoEVMRc60/Mdj+8UP5Nx0Y8/4Stdvfn9JmYnuNhpI+uOxhnya
-         5K1CnT1uu4xzBU4O6+6re09iUkH2+Pu/uVhSiR/T5d/ZqnsWMwQ2cUa5aZT1ew/04r
-         +Chogl9gQJgFhJ7eYrHgZXh9W9xHR4+hJ+532U3P/86MLAlWqlzR6h2ctGm4zBsHH3
-         s87zsuOUDbZjQ==
+        b=nkz4n2fOfQFmb3ypskupUhDKhKSqM3mME8X4/TQuzIz5vrLzgl4lKQOmcRhM0+JrZ
+         itJIUWZToUvGKweRHCluLW00Db8YybrAFyteoWubmfy6ujQD0uKDtiISdSBAslS8H6
+         NlxT4Ji2xm4fcHP6Wdjzd6I6iMPHEfbNPZgTdKYKrdI8kdvPM2dG/8sml2no57BtF1
+         Kh0q/ca6Tbu/i9F//N8CRZEPz2bMewZMLmoRQYGJDbRfneNmnJhERBj2ng57nHlopl
+         DwaIbaHv/VA4sqGBHqTTCAR2Wf+JPZEqaXHEntaKXufmZGTeqsDh8Po+yEOS0vaG+T
+         N4noRYuDGWO6w==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 43/92] iio: dac: ad5064: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:23 +0100
-Message-Id: <20220508175712.647246-44-jic23@kernel.org>
+Subject: [PATCH v2 01/92] iio: core: Fix IIO_ALIGN and rename as it was not sufficiently large
+Date:   Sun,  8 May 2022 18:55:41 +0100
+Message-Id: <20220508175712.647246-2-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -80,40 +80,119 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+Discussion of the series:
+https://lore.kernel.org/all/20220405135758.774016-1-catalin.marinas@arm.com/
+mm, arm64: Reduce ARCH_KMALLOC_MINALIGN brought to my attention that
+our current IIO usage of L1CACHE_ALIGN is insufficient as their are Arm
+platforms out their with non coherent DMA and larger cache lines at
+at higher levels of their cache hierarchy.
 
-Update the comment to include 'may'.
+Rename the define to make it's purpose more explicit. It will be used
+much more widely going forwards (to replace incorrect ____cacheline_aligned
+markings.
 
-Fixes: 6a17a0768f77 ("iio:dac:ad5064: Add support for the ad5629r and ad5669r")
+Note this patch will greatly reduce the padding on some architectures
+that have smaller requirements for DMA safe buffers.
+
+The history of changing values of ARCH_KMALLOC_MINALIGN via
+ARCH_DMA_MINALIGN on arm64 is rather complex. I'm not tagging this
+as fixing a particular patch from that route as it's not clear what to tag.
+
+Most recently a change to bring them back inline was reverted because
+of some Qualcomm Kryo cores with an L2 cache with 128-byte lines
+sitting above the point of coherency.
+
+c1132702c71f Revert "arm64: cache: Lower ARCH_DMA_MINALIGN to 64 (L1_CACHE_BYTES)"
+That reverts:
+65688d2a05de arm64: cache: Lower ARCH_DMA_MINALIGN to 64 (L1_CACHE_BYTES) which
+refers to the change originally being motivated by Thunder x1 performance
+rather than correctness.
+
+Fixes: 6f7c8ee585e9d ("staging:iio: Add ability to allocate private data space to iio_allocate_device")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ad5064.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/adc/adi-axi-adc.c   |  7 ++++---
+ drivers/iio/industrialio-core.c |  4 ++--
+ include/linux/iio/iio.h         | 10 ++++++++--
+ 3 files changed, 14 insertions(+), 7 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5064.c b/drivers/iio/dac/ad5064.c
-index 27ee2c63c5d4..e3b1add34f46 100644
---- a/drivers/iio/dac/ad5064.c
-+++ b/drivers/iio/dac/ad5064.c
-@@ -115,13 +115,13 @@ struct ad5064_state {
- 	struct mutex lock;
+diff --git a/drivers/iio/adc/adi-axi-adc.c b/drivers/iio/adc/adi-axi-adc.c
+index a73e3c2d212f..099be9d47223 100644
+--- a/drivers/iio/adc/adi-axi-adc.c
++++ b/drivers/iio/adc/adi-axi-adc.c
+@@ -84,7 +84,8 @@ void *adi_axi_adc_conv_priv(struct adi_axi_adc_conv *conv)
+ {
+ 	struct adi_axi_adc_client *cl = conv_to_client(conv);
  
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
- 	union {
- 		u8 i2c[3];
- 		__be32 spi;
--	} data ____cacheline_aligned;
-+	} data __aligned(IIO_DMA_MINALIGN);
- };
+-	return (char *)cl + ALIGN(sizeof(struct adi_axi_adc_client), IIO_ALIGN);
++	return (char *)cl + ALIGN(sizeof(struct adi_axi_adc_client),
++				  IIO_DMA_MINALIGN);
+ }
+ EXPORT_SYMBOL_GPL(adi_axi_adc_conv_priv);
  
- enum ad5064_type {
+@@ -169,9 +170,9 @@ static struct adi_axi_adc_conv *adi_axi_adc_conv_register(struct device *dev,
+ 	struct adi_axi_adc_client *cl;
+ 	size_t alloc_size;
+ 
+-	alloc_size = ALIGN(sizeof(struct adi_axi_adc_client), IIO_ALIGN);
++	alloc_size = ALIGN(sizeof(struct adi_axi_adc_client), IIO_DMA_MINALIGN);
+ 	if (sizeof_priv)
+-		alloc_size += ALIGN(sizeof_priv, IIO_ALIGN);
++		alloc_size += ALIGN(sizeof_priv, IIO_DMA_MINALIGN);
+ 
+ 	cl = kzalloc(alloc_size, GFP_KERNEL);
+ 	if (!cl)
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index e1ed44dec2ab..b4218f3b1ac2 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -1640,7 +1640,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ 
+ 	alloc_size = sizeof(struct iio_dev_opaque);
+ 	if (sizeof_priv) {
+-		alloc_size = ALIGN(alloc_size, IIO_ALIGN);
++		alloc_size = ALIGN(alloc_size, IIO_DMA_MINALIGN);
+ 		alloc_size += sizeof_priv;
+ 	}
+ 
+@@ -1650,7 +1650,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
+ 
+ 	indio_dev = &iio_dev_opaque->indio_dev;
+ 	indio_dev->priv = (char *)iio_dev_opaque +
+-		ALIGN(sizeof(struct iio_dev_opaque), IIO_ALIGN);
++		ALIGN(sizeof(struct iio_dev_opaque), IIO_DMA_MINALIGN);
+ 
+ 	indio_dev->dev.parent = parent;
+ 	indio_dev->dev.type = &iio_device_type;
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index faf00f2c0be6..c4ce02293f1f 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -9,6 +9,7 @@
+ 
+ #include <linux/device.h>
+ #include <linux/cdev.h>
++#include <linux/slab.h>
+ #include <linux/iio/types.h>
+ #include <linux/of.h>
+ /* IIO TODO LIST */
+@@ -657,8 +658,13 @@ static inline void *iio_device_get_drvdata(const struct iio_dev *indio_dev)
+ 	return dev_get_drvdata(&indio_dev->dev);
+ }
+ 
+-/* Can we make this smaller? */
+-#define IIO_ALIGN L1_CACHE_BYTES
++/*
++ * Used to ensure the iio_priv() structure is aligned to allow that structure
++ * to in turn include IIO_DMA_MINALIGN'd elements such as buffers which
++ * must not share  cachelines with the rest of the structure, thus making
++ * them safe for use with non-coherent DMA.
++ */
++#define IIO_DMA_MINALIGN ARCH_KMALLOC_MINALIGN
+ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv);
+ 
+ /* The information at the returned address is guaranteed to be cacheline aligned */
 -- 
 2.36.0
 
