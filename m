@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CBAA0C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:11:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B51AC433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:11:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbiEHTPd (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:15:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38864 "EHLO
+        id S231435AbiEHTPk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:15:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239168AbiEHR4T (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:56:19 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08AC0DFEA
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:52:29 -0700 (PDT)
+        with ESMTP id S236431AbiEHR4n (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:56:43 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A572EDFEA
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:52:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 9BC0A61208
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:52:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1E572C385AC;
-        Sun,  8 May 2022 17:52:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 5FAAFB80E3F
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:52:51 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 99467C385AF;
+        Sun,  8 May 2022 17:52:42 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032348;
-        bh=vmpKJfX1beoMHIkeaEmhca/2IzwQEo0m4xDzyLly+B0=;
+        s=k20201202; t=1652032370;
+        bh=T5pwX6o44Wr8PyyefbNocyJqyKPsQ4Y7W4rONivg8x0=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=gaMXekKzRcibhsL0i6tw134OEmSfRi0Sia6tUkqSairC9H7ZQxBTCpFwxhFw3ANNh
-         SQ8mgx/mmYjQkk8hCLRvT3Mew7zIb/iKda2WEhUG/m/3buj1aQN1KSutnT5pVceNbo
-         JRZnHP2uaKFZp7iwGHopEjAZQarhF0MphNVn261zJyEaW2AbbRsd1FCBew7wF0+rd+
-         gz0Id321JwdnxUkTN5UUQiUbjfD+7WXStKo1RxjhpA5m1o6CPB2gWpdDMqqu+V8OCR
-         krCiFgne0Bmd8FNYS08WW56GRzr17MIvL/mWAtRuU7HPTSCSnX4GpYHZL1NvMwb29j
-         BlT+i9JMsfqog==
+        b=aJ4AQUpSDPFl1p52Cbs5gxxHoNvJjGToE4JR9qHakol363o3jpM2jeyHjbUSktK7+
+         90VPW1FIh2uRP6Lt920sMVVdPLB+MG5IE+QWOiLU3yT1OdObkZYGm6p5uXpCcLd7rX
+         jDmAPnO08mfTSTRwjp5ENEJ1T4glzixSDnfsFBuyeScfZp9KOViJsWjPpAjY8WJQMw
+         vc0kiOJa4Dy7QkA/3lBZDrZXnqL0ZcanJIJCwEjfb8Ua6a5DvACXzSV5VDYcD103s6
+         3Es1OClmPZTD78ahbBljvbREyjJPsZKfLL30gk/E9NO69FlQ9pno07lOZX9gBZRtwG
+         43gO+hcBtO7EA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 27/92] iio: adc: mcp320x: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:07 +0100
-Message-Id: <20220508175712.647246-28-jic23@kernel.org>
+Subject: [PATCH v2 30/92] iio: adc: ti-adc108s102: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:10 +0100
+Message-Id: <20220508175712.647246-31-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,30 +84,36 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Worth noting the fixes tag refers to the same issue being observed
-on a platform that probably had only 64 byte cachelines.
+Dual fixes tags as two cases that were introduced in different patches.
+One of those patches is a fix however and likely to have been backported
+to stable kernels.
 
-Fixes: 0e81bc99a082 ("iio: mcp320x: Fix occasional incorrect readings")
+Note the second alignment marking is likely to be unnecessary, but is
+left for now to keep this fix simple.
+
+Fixes: 3691e5a69449 ("iio: adc: add driver for the ti-adc084s021 chip")
+Fixes: cbe5c6977604 ("iio: adc: ti-adc108s102: Fix alignment of buffer pushed to iio buffers.")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Michael Welling <mwelling@ieee.org>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/adc/mcp320x.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ti-adc108s102.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
-index b4c69acb33e3..f3b81798b3c9 100644
---- a/drivers/iio/adc/mcp320x.c
-+++ b/drivers/iio/adc/mcp320x.c
-@@ -92,7 +92,7 @@ struct mcp320x {
- 	struct mutex lock;
- 	const struct mcp320x_chip_info *chip_info;
- 
--	u8 tx_buf ____cacheline_aligned;
-+	u8 tx_buf __aligned(IIO_DMA_MINALIGN);
- 	u8 rx_buf[4];
+diff --git a/drivers/iio/adc/ti-adc108s102.c b/drivers/iio/adc/ti-adc108s102.c
+index c8e48881c37f..c82a161630e1 100644
+--- a/drivers/iio/adc/ti-adc108s102.c
++++ b/drivers/iio/adc/ti-adc108s102.c
+@@ -77,8 +77,8 @@ struct adc108s102_state {
+ 	 *  tx_buf: 8 channel read commands, plus 1 dummy command
+ 	 *  rx_buf: 1 dummy response, 8 channel responses
+ 	 */
+-	__be16				rx_buf[9] ____cacheline_aligned;
+-	__be16				tx_buf[9] ____cacheline_aligned;
++	__be16				rx_buf[9] __aligned(IIO_DMA_MINALIGN);
++	__be16				tx_buf[9] __aligned(IIO_DMA_MINALIGN);
  };
  
+ #define ADC108S102_V_CHAN(index)					\
 -- 
 2.36.0
 
