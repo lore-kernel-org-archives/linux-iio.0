@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 17983C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6FFDEC433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:07 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230236AbiEHTPu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:15:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40324 "EHLO
+        id S231557AbiEHTPy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:15:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39602 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243591AbiEHSAv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:00:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54AC8558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:57:01 -0700 (PDT)
+        with ESMTP id S239631AbiEHR7G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:59:06 -0400
+Received: from sin.source.kernel.org (sin.source.kernel.org [IPv6:2604:1380:40e1:4800::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B65A8DFEA
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:55:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 01132B80D48
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:57:00 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B8DC385B0;
-        Sun,  8 May 2022 17:56:51 +0000 (UTC)
+        by sin.source.kernel.org (Postfix) with ESMTPS id F31CECE112B
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:55:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 10411C385B0;
+        Sun,  8 May 2022 17:55:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032618;
-        bh=JXmoqVboH+j7rmKCPT2n2zCLljhehBcygzmD81MQ3ZU=;
+        s=k20201202; t=1652032512;
+        bh=WFzVeMHAz7T9rgOcQQ+DSnUMRd/zvMRhnYjceXpRPEs=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=UcWv6ieN9eQx47ZWQoMkLaAwGlLCS8t7/VyAuO6L7JTCU6HUgMYCbbq8i2OajORpr
-         j10RJqFeQujRQL/TetcMBAJwuLlJnOR7upYBZ3S7qRBQH2NbkU0/rcpZpt5cNzkUWp
-         sfjUiaXa43ho4b8Xil6k/9nWYVbKA6eMYUT4m7Oarsi0s3bxzhqqR3dqnzyk8//YfB
-         wbiFnvjn8QhxPtCaPv0CUf8Av58i9z/7W+uW10GrIduAslyeUaAX6P6xVtCId+AJvr
-         RusTDg3SZ4Bl43FI1EJqDtRTLxwz57QC8fLHa5gQCcHLQnZICDpWVg4ieUkXVg9BYy
-         bqA8+wW7WSgvg==
+        b=V16YSAgw+vlSbsLD3sNCoIHOCjm51/+IQVqGnPv4hxlwCcQZpwEEPhwdVAEo44Xg6
+         PrwstRviLoI9ZJMu5B2juoLqn/7z0agAsflK5ClOda6yNekt7zGFbphbz9dVzHeV8a
+         7JU1KWDvB3gw8XpFK6FuS0O1FaLWnZmrY1P/ZxhD6wMuodULB829gYGYCBkWyJKBaq
+         cylUdrOa9vd0pfPXq3ru3wUGQONOoErLERTKksgVKqseKhQ8i2V8PY4Pn/JgP1/Yy7
+         E7tvdfufhGjFV+zl/Gy7mH9TPeT3IUFRr/9E808AdprMWmyV83y0ThIcvu6FEE+UIE
+         vnr4Kl3eVTzeg==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 63/92] iio: dac: ti-dac7311: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:43 +0100
-Message-Id: <20220508175712.647246-64-jic23@kernel.org>
+Subject: [PATCH v2 49/92] iio: dac: ad5686: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:29 +0100
+Message-Id: <20220508175712.647246-50-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,27 +84,46 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 7a02ef7907d8 ("iio:dac:ti-dac7311 Add driver for Texas Instrument DAC7311")
+Update the comment to include 'may'.
+
+Fixes: 0357e488b825 ("iio:dac:ad5686: Refactor the driver")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ti-dac7311.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dac/ad5686.h | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/dac/ti-dac7311.c b/drivers/iio/dac/ti-dac7311.c
-index e10d17e60ed3..dd0a7b77838d 100644
---- a/drivers/iio/dac/ti-dac7311.c
-+++ b/drivers/iio/dac/ti-dac7311.c
-@@ -52,7 +52,7 @@ struct ti_dac_chip {
- 	bool powerdown;
- 	u8 powerdown_mode;
- 	u8 resolution;
--	u8 buf[2] ____cacheline_aligned;
-+	u8 buf[2] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/dac/ad5686.h b/drivers/iio/dac/ad5686.h
+index cd5fff9e9d53..b7ade3a6b9b6 100644
+--- a/drivers/iio/dac/ad5686.h
++++ b/drivers/iio/dac/ad5686.h
+@@ -13,6 +13,8 @@
+ #include <linux/mutex.h>
+ #include <linux/kernel.h>
+ 
++#include <linux/iio/iio.h>
++
+ #define AD5310_CMD(x)				((x) << 12)
+ 
+ #define AD5683_DATA(x)				((x) << 4)
+@@ -137,7 +139,7 @@ struct ad5686_state {
+ 	struct mutex			lock;
+ 
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+ 
+@@ -145,7 +147,7 @@ struct ad5686_state {
+ 		__be32 d32;
+ 		__be16 d16;
+ 		u8 d8[4];
+-	} data[3] ____cacheline_aligned;
++	} data[3] __aligned(IIO_DMA_MINALIGN);
  };
  
- static u8 ti_dac_get_power(struct ti_dac_chip *ti_dac, bool powerdown)
+ 
 -- 
 2.36.0
 
