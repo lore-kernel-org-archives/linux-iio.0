@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 57B09C4332F
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:11:21 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AF508C433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235949AbiEHTPC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:15:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40724 "EHLO
+        id S237220AbiEHTPG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:15:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38932 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236468AbiEHSCR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:02:17 -0400
+        with ESMTP id S238527AbiEHR4f (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:56:35 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94584558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:58:26 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B3F29DFEA
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:52:44 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 49F8EB80BA8
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:58:25 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6EA2EC385B0;
-        Sun,  8 May 2022 17:58:16 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 68598B80E3F
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:52:43 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 453BAC385A4;
+        Sun,  8 May 2022 17:52:35 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032704;
-        bh=W9XDT+V3KiRP5mhazcu8AxHkS57sih/DWnzHi9JKOcs=;
+        s=k20201202; t=1652032362;
+        bh=fNzmzD6E7MgMUkFG6wsEsOcnhIbPOGw0dwtI54dqPbw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ridokq6KibJWAA60OTolUnPjx8tlleeCQlkqN7CuTHSBmbuZkQ8Qx03hcNCWENvm7
-         gpINqmcZBvJmV6Ze2BSHFqhV9CkVWkjFb5Z84rIllpUrPe2JOGJdMmwqCGMWGYzb/d
-         qCpNOrbdu81uA6jwWpjvquRcfp1DamcwMvVhu8MQpwRNhB2yqMYoVEnk3YMgtz+rL0
-         sWfbB8J2Rp8NzHMwxHs8uBItJQs4l2H2h6XKuJbIxtqC1DhWFnVO7+KFliG1d0+dGl
-         w8W7EEuQwwL0JjBRPkEuQLtWcvu8xweuBX/i7Z4IuvBL2hJc1/7Z58urmz/5B5bbpU
-         lrmr5TTIfFyAw==
+        b=m21GDBzLprRl+HKkxSNxSa7WAfNQZKM/Vk5iaJ3uj3xpBXZBzkSM+w/95z7SO8Xli
+         gXdenkkTu3aso//DpB4y5tiJoVdXmITi++f6/5Dc8snQTz8/ecJeiDn3NbDV7KjOE8
+         bfcJqxDbPN2YXljomIM7iYFBRTcu94riO3FNfgBS05lC01oqo/X/YLEKaiCKHpZ5Bs
+         iqsPVYTnASZy23cv61d1f8LcEjlCss2dUi5FoBoJMUoZpT2sHY9PMGBuTjUBTMAXCD
+         InLnhMHDvWQErvcc8BJ2m+yRR5gycRIsSCLvfSL7MKC08BvnfCTNYuXhA6KXK4ZK+C
+         KeCnnx9QlG0+g==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 74/92] iio: gyro: adxrs450: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:54 +0100
-Message-Id: <20220508175712.647246-75-jic23@kernel.org>
+Subject: [PATCH v2 29/92] iio: adc: ti-adc084s021: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:09 +0100
+Message-Id: <20220508175712.647246-30-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,29 +84,33 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes tag is inaccurate but unlikely anyone will be interested in
-backporting beyond that point.
+Update the comment to include 'may'.
 
-Fixes: 53ac8500ba9b ("staging:iio:adxrs450: Move header file contents to main file")
+Fixes: 3691e5a69449 ("iio: adc: add driver for the ti-adc084s021 chip")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Mårten Lindahl <martenli@axis.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/gyro/adxrs450.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/adc/ti-adc084s021.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/gyro/adxrs450.c b/drivers/iio/gyro/adxrs450.c
-index 04f350025215..f84438e0c42c 100644
---- a/drivers/iio/gyro/adxrs450.c
-+++ b/drivers/iio/gyro/adxrs450.c
-@@ -73,7 +73,7 @@ enum {
- struct adxrs450_state {
- 	struct spi_device	*us;
- 	struct mutex		buf_lock;
--	__be32			tx ____cacheline_aligned;
-+	__be32			tx __aligned(IIO_DMA_MINALIGN);
- 	__be32			rx;
- 
+diff --git a/drivers/iio/adc/ti-adc084s021.c b/drivers/iio/adc/ti-adc084s021.c
+index c9b5d9aec3dc..1f6e53832e06 100644
+--- a/drivers/iio/adc/ti-adc084s021.c
++++ b/drivers/iio/adc/ti-adc084s021.c
+@@ -32,10 +32,10 @@ struct adc084s021 {
+ 		s64 ts __aligned(8);
+ 	} scan;
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache line.
+ 	 */
+-	u16 tx_buf[4] ____cacheline_aligned;
++	u16 tx_buf[4] __aligned(IIO_DMA_MINALIGN);
+ 	__be16 rx_buf[5]; /* First 16-bits are trash */
  };
+ 
 -- 
 2.36.0
 
