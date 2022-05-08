@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3712EC433F5
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 935A4C433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229973AbiEHTRF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:17:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39532 "EHLO
+        id S230484AbiEHTRG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:17:06 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40384 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239556AbiEHR6u (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:58:50 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EA692DFEA
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:54:59 -0700 (PDT)
+        with ESMTP id S244144AbiEHSBF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:01:05 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B316E558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:57:14 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 97DBBB80E48
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:54:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3561FC385B0;
-        Sun,  8 May 2022 17:54:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 4F6066128E
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:57:14 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C891BC385B0;
+        Sun,  8 May 2022 17:57:06 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032497;
-        bh=+Th+jGMDOnj9ieK/qrRye2hrvVfMQqGikmDvhR1wtas=;
+        s=k20201202; t=1652032633;
+        bh=rMvAwjFCDrTL76/ErwDYUWdtFLiUmu7PtbCE6mWRZ8g=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=emacmYpk+tUj6Q+OzrnFFdicLyoW5FIEqeBwTxR/bbz1jAmFIllU5m8gVTC0GLvEl
-         ELzldafyAMkSkzz6+XKYhWRG3yEU4JEYT0/Xce/62+k8MdCmE1Od9eWPBqxxBvYyQ1
-         rxxhs2iVJr+gN21SGRLdvIK3ULsn+glOUquVs+twNvfjDYoIT/NnbHffHlNZuGUm58
-         Fbbjfth3gMB/ju4PBsZofMh9GElJ3DJNV6hEiBqSYhFXvi7xfXpAVK413cEh4vceB4
-         hjgQyEsVPBmNgSDnOD1/zplijP923oOhFK7+weheG6HaDgBgdvQry1gfW4FETjniO9
-         ueGtxo7XQXvBg==
+        b=n/T5nR2fWvfH+Ijs7z7Ar4LKlxCcMAfs7OIXmUWcTSZiPF/KGVmAkIsla7SzVilNy
+         seml0mu71FONqXt5cjRliOqk/7PMU3pyc8BdHeir8sKT1R0uF6eM38FT4+Jf8aF3/I
+         XvE3h0KHZePbfiApCssY1OSSE3M8MaPaMAILQwcrP1TIyQdCGQVJpBP0hTGUUr5wFQ
+         O1sZe125jiTrzOvigxbm0Xu8y27Zp5ZCHwfYYzGSrPI2wUuNQEg+q1m1ezeQDmEIpG
+         VfS+fDDNsi3T/fO+VgnRlG80ZJg1mz/ZCEfAgQ3k1zizWhR2UMt+jKrN4h8aeyMD9m
+         Zls5n1aU0H7nA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 47/92] iio: dac: ad5504: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:27 +0100
-Message-Id: <20220508175712.647246-48-jic23@kernel.org>
+Subject: [PATCH v2 65/92] iio: frequency: ad9523: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:45 +0100
+Message-Id: <20220508175712.647246-66-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,27 +84,36 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 0dbe59c7a788 ("iio:ad5504: Do not store transfer buffers on the stack")
+Updated help text to 'may' require buffers to be in their own cacheline.
+
+Fixes: cd1678f96329 ("iio: frequency: New driver for AD9523 SPI Low Jitter Clock Generator")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ad5504.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/frequency/ad9523.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/dac/ad5504.c b/drivers/iio/dac/ad5504.c
-index 8507573aa13e..e472c9564edf 100644
---- a/drivers/iio/dac/ad5504.c
-+++ b/drivers/iio/dac/ad5504.c
-@@ -54,7 +54,7 @@ struct ad5504_state {
- 	unsigned			pwr_down_mask;
- 	unsigned			pwr_down_mode;
+diff --git a/drivers/iio/frequency/ad9523.c b/drivers/iio/frequency/ad9523.c
+index a0f92c336fc4..31c97f9f2c1b 100644
+--- a/drivers/iio/frequency/ad9523.c
++++ b/drivers/iio/frequency/ad9523.c
+@@ -287,13 +287,13 @@ struct ad9523_state {
+ 	struct mutex		lock;
  
--	__be16				data[2] ____cacheline_aligned;
-+	__be16				data[2] __aligned(IIO_DMA_MINALIGN);
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
+-	 * transfer buffers to live in their own cache lines.
++	 * DMA (thus cache coherency maintenance) may require that
++	 * transfer buffers live in their own cache lines.
+ 	 */
+ 	union {
+ 		__be32 d32;
+ 		u8 d8[4];
+-	} data[2] ____cacheline_aligned;
++	} data[2] __aligned(IIO_DMA_MINALIGN);
  };
  
- /*
+ static int ad9523_read(struct iio_dev *indio_dev, unsigned int addr)
 -- 
 2.36.0
 
