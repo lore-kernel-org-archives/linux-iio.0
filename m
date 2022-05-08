@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E8EB5C35280
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03B74C4707E
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231718AbiEHTTL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:19:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39566 "EHLO
+        id S231738AbiEHTTN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:19:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41052 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239563AbiEHR65 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:58:57 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 138B0DFEA
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:55:07 -0700 (PDT)
+        with ESMTP id S243412AbiEHSD0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:03:26 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D059558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:59:35 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id CC52AB80E4E
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:55:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4410C385AF;
-        Sun,  8 May 2022 17:54:57 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 095346128D
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:59:35 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 020ADC385AF;
+        Sun,  8 May 2022 17:59:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032504;
-        bh=jT6gQtXpkZSPYV6zXkCkUvpzQXQ53iDqRPb6s9aOVYE=;
+        s=k20201202; t=1652032774;
+        bh=O6PsoMXFGTlJVbv/rjjs12zVq13UrwD+1Q7rX1fAjv8=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=YlbDUTVTLOtU0uGUlxNMELhqgZgy1K8zkxS7xteXdtZOyKwKHjvT6JFi+4TGUuFHi
-         VOdCxPBGO+wVJXTtKwcF6iIqi7cQKjFGfVuNb1nmnK4QTe/CtukPY/yIlZwoKkLsf0
-         ZMvhE6uedq6BInfkycAAgs5TUBQqpaUMw3Eg3C4Mw3Ab9lCx5lKdlzkWNwTPkFzGYi
-         Pb0j8GsJui0OaGdI1vmV21+WwIyzLF0sPA3+nkha4gSriVxB56ZKgk/fc+c419xFV/
-         jfjxwQCI09z0hOdxwsyKBzSsQ8KmTMoAn4mUJq30bEMU7doXHmHhLN7U1sUMaRdzbY
-         j+S0TvsfQo0og==
+        b=sxQWAdj9c0CmMdYwSbWxBUiIUdjdFCB/wWMnI+VnWLeMixPcJAH35fOy2SPmscyAm
+         q2R8qjH1Gs9nlzZtSNc+tPBmSsVFzTLZJqrDqpT9pAiRgP4d46bfEdvKSZjmRN5hmh
+         y2uu5qSXThGEr/ajvo+0R1Ze+dkiaysJ25uZw2kDzhr5Gvi4hDns5PI3KrHQKniseV
+         8WulihnrkANF3hHZmR5YDGBhpG4eaw16ppg9I2C8Op2ZR8ORgwy4BPsrmtn9U4fVvp
+         feUv4Ni0FQMU8PLghXmBRCLrZ2UxdX77v23zFZfxAJ3KkLNzgVCjsrXmOh7lZxviVB
+         ck3kTyQp5RmXQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 48/92] iio: dac: ad5592r: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:28 +0100
-Message-Id: <20220508175712.647246-49-jic23@kernel.org>
+Subject: [PATCH v2 83/92] iio: potentiometer: mcp41010: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:57:03 +0100
+Message-Id: <20220508175712.647246-84-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,36 +84,26 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 56ca9db862bf ("iio: dac: Add support for the AD5592R/AD5593R ADCs/DACs")
+Fixes: 092cb71a604e ("iio: potentiometer: Add driver for Microchip MCP41xxx/42xxx")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Paul Cercueil <paul@crapouillou.net>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ad5592r-base.h | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/iio/potentiometer/mcp41010.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5592r-base.h b/drivers/iio/dac/ad5592r-base.h
-index 2a22ef691996..cc7be426cbc8 100644
---- a/drivers/iio/dac/ad5592r-base.h
-+++ b/drivers/iio/dac/ad5592r-base.h
-@@ -14,6 +14,8 @@
- #include <linux/mutex.h>
- #include <linux/gpio/driver.h>
- 
-+#include <linux/iio/iio.h>
-+
- struct device;
- struct ad5592r_state;
- 
-@@ -65,7 +67,7 @@ struct ad5592r_state {
- 	u8 gpio_in;
- 	u8 gpio_val;
- 
--	__be16 spi_msg ____cacheline_aligned;
-+	__be16 spi_msg __aligned(IIO_DMA_MINALIGN);
- 	__be16 spi_msg_nop;
+diff --git a/drivers/iio/potentiometer/mcp41010.c b/drivers/iio/potentiometer/mcp41010.c
+index 30a4594d4e11..2b73c7540209 100644
+--- a/drivers/iio/potentiometer/mcp41010.c
++++ b/drivers/iio/potentiometer/mcp41010.c
+@@ -60,7 +60,7 @@ struct mcp41010_data {
+ 	const struct mcp41010_cfg *cfg;
+ 	struct mutex lock; /* Protect write sequences */
+ 	unsigned int value[MCP41010_MAX_WIPERS]; /* Cache wiper values */
+-	u8 buf[2] ____cacheline_aligned;
++	u8 buf[2] __aligned(IIO_DMA_MINALIGN);
  };
  
+ #define MCP41010_CHANNEL(ch) {					\
 -- 
 2.36.0
 
