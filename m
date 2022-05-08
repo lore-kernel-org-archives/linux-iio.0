@@ -2,84 +2,210 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 013E8C433F5
-	for <linux-iio@archiver.kernel.org>; Sat,  7 May 2022 17:34:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 47F99C433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 16:09:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386616AbiEGRic (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 7 May 2022 13:38:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56416 "EHLO
+        id S235281AbiEHQNa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 12:13:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233409AbiEGRib (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 May 2022 13:38:31 -0400
-Received: from mga03.intel.com (mga03.intel.com [134.134.136.65])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A61BD205F8;
-        Sat,  7 May 2022 10:34:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1651944884; x=1683480884;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=X0ItBNJz50nkKAhRztUipXfBqiaaq+mP7b+UDMO9LAo=;
-  b=HklHAe+KlzqqLLiVNZVCmUv4DcjcdlbLab8k9le5F2zqHTv+C8QFYe8K
-   yEc+b7TLcX5SciW4R6ZAtpPRn+g5vncXmLBGFgNILmWK8VN8lWLqOw2L3
-   niCn3BWiL3HrB8LY6djveWmBm79s8VwLxGuJu9t7T1bgABSpRRnoVy1xM
-   Hkv/8ONL25v/vRgmmY4f+3mVNM3UM6Dz/N6jtdIkttbJCZG9gDam8C3PD
-   lV0qZ9YIa9/qaCUlpobkBzICm/Fsrd0vNwALEUby+ZFZAvoWmIYvSejxR
-   rynTUEzazNDZIFrr8MuSmfMbkQr5C7SKqJXVpv1HJefDKYhJSn8YGl2a7
-   A==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10340"; a="268631047"
-X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
-   d="scan'208";a="268631047"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by orsmga103.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 07 May 2022 10:34:44 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,207,1647327600"; 
-   d="scan'208";a="518537172"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 07 May 2022 10:34:42 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 0C58F155; Sat,  7 May 2022 20:34:43 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Lorenzo Bianconi <lorenzo@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 1/1] iio: imu: st_lsm6dsx: Switch from of headers to mod_devicetable.h
-Date:   Sat,  7 May 2022 20:34:40 +0300
-Message-Id: <20220507173440.29053-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S235257AbiEHQN0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 12:13:26 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BD340B1F4
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 09:09:35 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 7B398B80DBF
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 16:09:34 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 260B9C385AC;
+        Sun,  8 May 2022 16:09:25 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652026173;
+        bh=Js+8DCLS00gXFqd38kaQTrqqANtkG5NhwwhkY1zryIY=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=mbO0p0bvSdOPW53s8GNwOkt93l/XKlus5vnZfj/EQy0tM/ALQQ2W2x+ykj3iedv/j
+         zQALCgas/BjZRQbz4PoRTUnfujD3dGpHtK+J1CoLeTZFH4lXO0O4O/4azNkJs8BuIG
+         K9xVeddHavVJhh6gdmVd8+BBmm96IZQdNX9Sg2A0I/4V6q51xUG68fZwU1VC7Hmpc2
+         Uw5fkMkqBe6yFRy4vUpisZXeOoB0Mhph12MvkWc6m63fX3LJV2jZ/KoIjCY4oX4BLC
+         moA94sGs7QV3CGl490BcQvcfwKJCM9BeivjSMnHp1Rg0rMDY6YBXHuZULDUDWiEyrB
+         YbYs8BqJ9SCzQ==
+Date:   Sun, 8 May 2022 17:17:55 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Cc:     Uwe =?UTF-8?B?S2xlaW5lLUvDtm5pZw==?= 
+        <u.kleine-koenig@pengutronix.de>, <linux-iio@vger.kernel.org>,
+        "Akinobu Mita" <akinobu.mita@gmail.com>,
+        Alexandru Lazar <alazar@startmail.com>,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Charles-Antoine Couret <charles-antoine.couret@essensium.com>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>,
+        Cristian Pop <cristian.pop@analog.com>,
+        "David Lechner" <david@lechnology.com>,
+        Ivan Mikhaylov <i.mikhaylov@yadro.com>,
+        Jacopo Mondi <jacopo+renesas@jmondi.org>,
+        Jean-Baptiste Maneyrol <jmaneyrol@invensense.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Marcelo Schmitt" <marcelo.schmitt1@gmail.com>,
+        =?UTF-8?B?TcOlcnRlbg==?= Lindahl <martenli@axis.com>,
+        Matt Ranostay <mranostay@gmail.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Michael Welling <mwelling@ieee.org>,
+        "Mugilraj Dhavachelvan" <dmugil2000@gmail.com>,
+        Navin Sankar Velliangiri <navin@linumiz.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        "Paul Cercueil" <paul@crapouillou.net>,
+        Phil Reid <preid@electromag.com.au>,
+        Puranjay Mohan <puranjay12@gmail.com>,
+        Ricardo Ribalda <ribalda@kernel.org>,
+        Robert Jones <rjones@gateworks.com>,
+        Rui Miguel Silva <rui.silva@linaro.org>,
+        Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
+        Tomas Melin <tomas.melin@vaisala.com>,
+        Tomislav Denis <tomislav.denis@avl.com>
+Subject: Re: [PATCH 01/92] iio: core: Fix IIO_ALIGN as it was not
+ sufficiently large on some platforms.
+Message-ID: <20220508171755.0545b3c6@jic23-huawei>
+In-Reply-To: <20220503172421.0000615c@Huawei.com>
+References: <20220503085935.1533814-1-jic23@kernel.org>
+        <20220503085935.1533814-2-jic23@kernel.org>
+        <20220503142725.h6pcf2socuxgteix@pengutronix.de>
+        <20220503172421.0000615c@Huawei.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-There is nothing directly using of specific interfaces in this driver,
-so lets not include the headers.
+On Tue, 3 May 2022 17:24:21 +0100
+Jonathan Cameron <Jonathan.Cameron@Huawei.com> wrote:
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Tue, 3 May 2022 16:27:25 +0200
+> Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
+>=20
+> > On Tue, May 03, 2022 at 09:58:04AM +0100, Jonathan Cameron wrote: =20
+> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > >=20
+> > > Discussion of the series:
+> > > https://lore.kernel.org/all/20220405135758.774016-1-catalin.marinas@a=
+rm.com/
+> > > mm, arm64: Reduce ARCH_KMALLOC_MINALIGN brought to my attention that
+> > > our current IIO usage of L1CACHE_ALIGN is insufficient as their are A=
+rm
+> > > platforms out their with non coherent DMA and larger cache lines at
+> > > at higher levels of their cache hierarchy.
+> > >=20
+> > > Note this patch will greatly reduce the padding on some architectures
+> > > that have smaller requirements for DMA safe buffers.
+> > >=20
+> > > The history of changing values of ARCH_KMALLOC_MINALIGN via
+> > > ARCH_DMA_MINALIGN on arm64 is rather complex. I'm not tagging this
+> > > as fixing a particular patch from that route as it's not clear what t=
+o tag.
+> > >=20
+> > > Most recently a change to bring them back inline was reverted because
+> > > of some Qualcomm Kryo cores with an L2 cache with 128-byte lines
+> > > sitting above the point of coherency.
+> > >=20
+> > > c1132702c71f Revert "arm64: cache: Lower ARCH_DMA_MINALIGN to 64 (L1_=
+CACHE_BYTES)"
+> > > That reverts:
+> > > 65688d2a05de arm64: cache: Lower ARCH_DMA_MINALIGN to 64 (L1_CACHE_BY=
+TES) which
+> > > refers to the change originally being motivated by Thunder x1 perform=
+ance
+> > > rather than correctness.
+> > >=20
+> > > Fixes: 6f7c8ee585e9d ("staging:iio: Add ability to allocate private d=
+ata space to iio_allocate_device")
+> > > Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > > ---
+> > >  include/linux/iio/iio.h | 10 ++++++++--
+> > >  1 file changed, 8 insertions(+), 2 deletions(-)
+> > >=20
+> > > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> > > index faf00f2c0be6..30937f8f9424 100644
+> > > --- a/include/linux/iio/iio.h
+> > > +++ b/include/linux/iio/iio.h
+> > > @@ -9,6 +9,7 @@
+> > > =20
+> > >  #include <linux/device.h>
+> > >  #include <linux/cdev.h>
+> > > +#include <linux/slab.h>
+> > >  #include <linux/iio/types.h>
+> > >  #include <linux/of.h>
+> > >  /* IIO TODO LIST */
+> > > @@ -657,8 +658,13 @@ static inline void *iio_device_get_drvdata(const=
+ struct iio_dev *indio_dev)
+> > >  	return dev_get_drvdata(&indio_dev->dev);
+> > >  }
+> > > =20
+> > > -/* Can we make this smaller? */
+> > > -#define IIO_ALIGN L1_CACHE_BYTES
+> > > +/*
+> > > + * Used to ensure the iio_priv() structure is aligned to allow that =
+structure
+> > > + * to in turn include IIO_ALIGN'd elements such as buffers which mus=
+t not share
+> > > + * cachelines with the rest of the structure, thus making them safe =
+for use with
+> > > + * non-coherent DMA.
+> > > + */
+> > > +#define IIO_ALIGN ARCH_KMALLOC_MINALIGN   =20
+> >=20
+> > Given the purpose of IIO_ALIGN is to define the alignment for DMA'able
+> > memory, I wonder why it's called "IIO_ALIGN" and not for example
+> > "DMA_MINALIGN". =20
+>=20
+> Much like crypto I want a single place that provides the IIO requirements
+> for this.  Could rename it IIO_DMA_MINALIGN I guess.=20
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-index 8d4201b86e87..35556cd04284 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i3c.c
-@@ -6,11 +6,11 @@
-  */
- 
- #include <linux/kernel.h>
-+#include <linux/mod_devicetable.h>
- #include <linux/module.h>
- #include <linux/i3c/device.h>
- #include <linux/i3c/master.h>
- #include <linux/slab.h>
--#include <linux/of.h>
- #include <linux/regmap.h>
- 
- #include "st_lsm6dsx.h"
--- 
-2.35.1
+I've switched to this naming for v2.
+
+> The reason behind
+> that is to allow for a switch on mass if a new approach is accepted
+> along the lines of what Catalin proposed.  The discussions around
+> CRYPTO made it clear that there are sometimes additional requirements
+> from a subsystem beyond simply that of DMA (IIO has a similar issue
+> to crypto that mean it's not simple to shift the alignment requirements
+> at runtime because the compiler is getting told things are aligned to
+> a higher degree than the allocations).
+>=20
+> https://lore.kernel.org/all/20220405135758.774016-8-catalin.marinas@arm.c=
+om/
+> and below that point.
+>=20
+> >=20
+> > There is nothing iio specific about this value, is there? Then
+> > consequently it doesn't need to be defined in an iio header, but
+> > somewhere generic. Or even one step further: Why isn't there a macro
+> > __align_for_dma that can be used directly to annotate the relevant
+> > member in a struct? =20
+>=20
+> There is, but it's not currently available on all architectures.
+>=20
+> ARCH_DMA_MINALIGN
+>=20
+> Catalin's series proposed making it generally available:
+> https://lore.kernel.org/all/20220405135758.774016-2-catalin.marinas@arm.c=
+om/
+>=20
+> but suggestion for now was to go with ARCH_KMALLOC_MINALIGN
+>=20
+> https://lore.kernel.org/linux-iio/Yl6jB5DOUy+Yqyzl@arm.com/
+>=20
+> Thanks,
+>=20
+> Jonathan
+>=20
+>=20
+> >=20
+> > Best regards
+> > Uwe
+> >  =20
+>=20
 
