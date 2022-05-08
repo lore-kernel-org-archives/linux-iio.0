@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 05AA1C43219
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B864C433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230025AbiEHTRR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:17:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40752 "EHLO
+        id S230153AbiEHTRW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:17:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40358 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236568AbiEHSCX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:02:23 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B452558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:58:33 -0700 (PDT)
+        with ESMTP id S243846AbiEHSBA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:01:00 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1AEC3558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:57:09 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BB6CE6128E
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:58:32 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B3DC2C385B1;
-        Sun,  8 May 2022 17:58:24 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id BD6A5B80E5C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:57:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3B741C385A4;
+        Sun,  8 May 2022 17:56:59 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032712;
-        bh=ak6fsUHPMssR2g30KENBvEYoqPfbhTEYKRu+emGIIQ4=;
+        s=k20201202; t=1652032626;
+        bh=VHRObeUHPp1UUaxwuHPxSEdTgJq9apOm2YfVEOXR94o=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Cm5sRv/V4ut4KkJs19lNCdSkFM08B2XJAvqRt5+hek+fm2m/NoHzeaBgfX3YqngR1
-         A/BpeADB3+a1YDueM/zys8eEbAwYU+cyUXCdmE6EGMtabeC2f4LOtpYNuuHo/HULai
-         grstDbt/uasab2mY4yLR25/ekxsvRYATGM+2NwvP9Qh7Z4+3SeT3e4r2lMyJUZV/ob
-         1M1EfMTje/b7uXVPco33ZnAfBoWTVC3wuuAnq0mY75J+Hnnm3Qf5W6pvKM6qMhx6tM
-         5PaBlvg/5bhkeYcw4gHzf6XA8UCGb5smi0eJBBQ+XSQY9RYVFRcJecnYHBA3XGlbpz
-         0Ja/TMRYNPQTw==
+        b=cwKfZnZGV9+oWWxSBMTWvQp5Q8bSU+Q6BSF1qQP97gBIICPDoR+m6ap3FElaqAzdF
+         Uvs6YTLpnjh59wzzxdL3hBT16rTYlflGN331DMhh6rOTMAKDIQF6F9kdMkpLIiR0Hp
+         b8CD1LGLOZxlp2su1rAzDY0r9P//eIEnsfUZI6be/7N+RmJQik5FuTKmCWkzdvaFrE
+         oBY/mUdomlPkqiADlQlMBOGLKlt5f0Ik3mD34XgR8L/U0n619a9Bym+1wHa83eO+Z5
+         VXwiFdfQDZWauKq1CCSuljlKFg3/PK9SQOc06wShyPQ2JSt7jBVBByL/l3KenNfXb4
+         X0aARiORV66qQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 75/92] iio: gyro: fxas210002c: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:55 +0100
-Message-Id: <20220508175712.647246-76-jic23@kernel.org>
+Subject: [PATCH v2 64/92] iio: dac: ti-dac7612: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:44 +0100
+Message-Id: <20220508175712.647246-65-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,34 +84,33 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Updated the comment to 'may' require.
+Updated help text to 'may' require buffers to be in their own cacheline.
 
-Fixes: a0701b6263ae ("iio: gyro: add core driver for fxas21002c")
+Fixes: 977724d20584 ("iio:dac:ti-dac7612: Add driver for Texas Instruments DAC7612")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Rui Miguel Silva <rui.silva@linaro.org>
+Cc: Ricardo Ribalda <ribalda@kernel.org>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/gyro/fxas21002c_core.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+ drivers/iio/dac/ti-dac7612.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/gyro/fxas21002c_core.c b/drivers/iio/gyro/fxas21002c_core.c
-index 410e5e9f2672..7a459a823f6e 100644
---- a/drivers/iio/gyro/fxas21002c_core.c
-+++ b/drivers/iio/gyro/fxas21002c_core.c
-@@ -150,10 +150,10 @@ struct fxas21002c_data {
- 	struct regulator *vddio;
+diff --git a/drivers/iio/dac/ti-dac7612.c b/drivers/iio/dac/ti-dac7612.c
+index 4c0f4b5e9ff4..8195815de26f 100644
+--- a/drivers/iio/dac/ti-dac7612.c
++++ b/drivers/iio/dac/ti-dac7612.c
+@@ -31,10 +31,10 @@ struct dac7612 {
+ 	struct mutex lock;
  
  	/*
 -	 * DMA (thus cache coherency maintenance) requires the
--	 * transfer buffers to live in their own cache lines.
 +	 * DMA (thus cache coherency maintenance) may require the
-+	 * transfer buffers live in their own cache lines.
+ 	 * transfer buffers to live in their own cache lines.
  	 */
--	s16 buffer[8] ____cacheline_aligned;
-+	s16 buffer[8] __aligned(IIO_DMA_MINALIGN);
+-	uint8_t data[2] ____cacheline_aligned;
++	uint8_t data[2] __aligned(IIO_DMA_MINALIGN);
  };
  
- enum fxas21002c_channel_index {
+ static int dac7612_cmd_single(struct dac7612 *priv, int channel, u16 val)
 -- 
 2.36.0
 
