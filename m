@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BF09C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:47 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3817DC433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229762AbiEHTQf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:16:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40980 "EHLO
+        id S229931AbiEHTQg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:16:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241273AbiEHSDL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:03:11 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C470558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:59:21 -0700 (PDT)
+        with ESMTP id S238415AbiEHSBa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:01:30 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C9B558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:57:39 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0DE43B80E75
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:59:20 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 21359C385B0;
-        Sun,  8 May 2022 17:59:10 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3C59AB80E5B
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:57:38 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A03B5C385AC;
+        Sun,  8 May 2022 17:57:29 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032758;
-        bh=x/WE7UAUU2zfnPjJH5irvBf3GICl0zcPzuuUTNNUyZQ=;
+        s=k20201202; t=1652032657;
+        bh=7iRa7DlR8BuUF1Ju/bTBkSh/h/5eQvliSA2jekfA8Qo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=qyeAeNeq4hnhB226t9DvGKlypq+GSOTcIgImxHQruRV6eLnp4dml1Y16xsU4Y5N9x
-         5ldiGzdJ5BweJq60I3grip7YpTtctx6/R7HRTSJgwJ1569hXo7uEcE5KnicZQL3uw6
-         lmv+dbRHcCFMxF7+cLr1v9cxcmNEQA31DFuGo4bKfmWX+pzpgyzGRwyc/i0X0na4/6
-         s+3au7rbqmXVf+4w/VA20ZNdqrD34rx/4JAmyXAgMpxlXZk6FqdKJ0myp0juv/9A2n
-         ywYnQ/ezs+x3DDZ2bE7FLGw/jbT4Av3w003n+4+oJe7g0k8T3xr3hosHuQTOUmbYKb
-         6+LCGpQHea6Rg==
+        b=bVn+8Kn636lowbnAFZGCdRNOd6lI7QItpVXFEb8s0E3bXuhUJOqSxr9lBmxhRq9Jq
+         EGVEdGr75C9/XFk9fOCV85MvY/IZevyCjCs5p4sIWA+ZBlkKa0JVgQFwfR9L4jCsYi
+         EhhyhJ4wkgwVhEKFpV7V1ah9U9TkO+BasvVcCJnEgrFLOiW6lHCxnyP76A8iPVTQms
+         GXVLO44N3+fy99khOtJwKajx+ZalUyiAqYpVe3hX8gkrjaLEREaiuROtPpFENFM6Bt
+         5ITxkdKon2ZSstwg1Yv0FsY157Yyk3jeObK6y2VW73Bw6RXfTz9C/uDyebPYJcyjfs
+         ks0Vxo9VQWk0Q==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 81/92] iio: potentiometer: ad5272: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:57:01 +0100
-Message-Id: <20220508175712.647246-82-jic23@kernel.org>
+Subject: [PATCH v2 68/92] iio: frequency: admv1013: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:48 +0100
+Message-Id: <20220508175712.647246-69-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,27 +84,27 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 79e8a32d2aa9 ("iio: ad5272: Add support for Analog Devices digital potentiometers")
+Fixes: da35a7b526d9 ("iio: frequency: admv1013: add support for ADMV1013")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Reviewed-by: Phil Reid <preid@electromag.com.au>
+Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/potentiometer/ad5272.c | 2 +-
+ drivers/iio/frequency/admv1013.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/potentiometer/ad5272.c b/drivers/iio/potentiometer/ad5272.c
-index d8cbd170262f..ed5fc0b50fe9 100644
---- a/drivers/iio/potentiometer/ad5272.c
-+++ b/drivers/iio/potentiometer/ad5272.c
-@@ -50,7 +50,7 @@ struct ad5272_data {
- 	struct i2c_client       *client;
- 	struct mutex            lock;
- 	const struct ad5272_cfg *cfg;
--	u8                      buf[2] ____cacheline_aligned;
-+	u8                      buf[2] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/frequency/admv1013.c b/drivers/iio/frequency/admv1013.c
+index b0e1f6571afb..ed8167271358 100644
+--- a/drivers/iio/frequency/admv1013.c
++++ b/drivers/iio/frequency/admv1013.c
+@@ -100,7 +100,7 @@ struct admv1013_state {
+ 	unsigned int		input_mode;
+ 	unsigned int		quad_se_mode;
+ 	bool			det_en;
+-	u8			data[3] ____cacheline_aligned;
++	u8			data[3] __aligned(IIO_DMA_MINALIGN);
  };
  
- static const struct iio_chan_spec ad5272_channel = {
+ static int __admv1013_spi_read(struct admv1013_state *st, unsigned int reg,
 -- 
 2.36.0
 
