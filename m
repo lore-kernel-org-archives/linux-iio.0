@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8D76C43217
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99279C4332F
 	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:14:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231338AbiEHTSN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:18:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40938 "EHLO
+        id S230409AbiEHTSL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:18:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38680 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240452AbiEHSDC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:03:02 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 90F16558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:59:11 -0700 (PDT)
+        with ESMTP id S239151AbiEHRzg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:55:36 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B5DCDFEA
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:51:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 2CCEE6127D
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:59:11 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 433B0C385AF;
-        Sun,  8 May 2022 17:59:04 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id D5EB1B80E4C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:51:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C92D4C385AC;
+        Sun,  8 May 2022 17:51:37 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032750;
-        bh=qSVIey7FP6OO/Us9CtnGekorBhyKk+2KagLr0xWITV4=;
+        s=k20201202; t=1652032303;
+        bh=taLDxoEB4F4ZsWa9mp5PRcmjWX17eBSRu/TTd8cz2sM=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lNsdvhc5R83Gy3u4Z7OwOfLH2HtxMlvdSe8QMElSjW6GwFrf4ubBmHl/GM1WOeTkk
-         c6++CfiUxRgYwMU2D9mTAGXc50NBKVG2wI5UFfUoDMSfjn78EQOPvnUVrTe07J0DSE
-         GM/IckvRtcYyOYtSknf5jIeMC9TIsnbGw2175MRIHb1pqdG1WwNE5LKSV1/n9f7hgI
-         IWDNDNhZTNxQAZarSiJiG7D9U+lFiKMSfpCsx6+iOljicZycY4wYlax6HA17sPOj+X
-         sujKAmvMuf4J8niJbit4In0pTHPOkkhF/KHAWnKutibIAFw5+YGAjCHVsmwA1fTy/v
-         0/AYIa4wIxb9w==
+        b=Dt1Z5/8/H+Jie8Qv/VqeOcPIDkR/ONkdhL+7pgLk/ZcHPd1Hzmn0tYDPN1N6FnZQ5
+         9NXBDhtOFNWTTIgjcklJH0aIj5d2XV1hpCbr9kdGj6/aHztsaIp3mZFWMV7OWAQyQK
+         Q9j+TXNKepjeHCR+871F/otZyFoHtRgXLh0qn1MIBO8bwQhQNatwwB5Wf3GkKU8hF2
+         Rlqn17ePLVsKQzpTJIu3O25Hc6cl0QFh+ZGzeygHPFKi6859ej3WX0QeE1YWgIhqVz
+         rpdRXMeoQFIbu3qmWiJLecqUFUkTcNkshkoXEz16SigsDh/OTkCqXYJx/nrC2Mt9Ni
+         JEqtbqdOOkGeA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 80/92] iio: potentiometer: ad5110: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:57:00 +0100
-Message-Id: <20220508175712.647246-81-jic23@kernel.org>
+Subject: [PATCH v2 21/92] iio: adc: ltc2496: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:01 +0100
+Message-Id: <20220508175712.647246-22-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,31 +84,33 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: d03a74bfacce ("iio: potentiometer: Add driver support for AD5110")
+Update the comment to include 'may'.
+
+Fixes: e4c5c4dfaa88 ("iio: adc: new driver to support Linear technology's ltc2496")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Mugilraj Dhavachelvan <dmugil2000@gmail.com>
+Cc: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/potentiometer/ad5110.c | 4 ++--
+ drivers/iio/adc/ltc2496.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/potentiometer/ad5110.c b/drivers/iio/potentiometer/ad5110.c
-index d4eeedae56e5..8fbcce482989 100644
---- a/drivers/iio/potentiometer/ad5110.c
-+++ b/drivers/iio/potentiometer/ad5110.c
-@@ -63,10 +63,10 @@ struct ad5110_data {
- 	struct mutex            lock;
- 	const struct ad5110_cfg	*cfg;
+diff --git a/drivers/iio/adc/ltc2496.c b/drivers/iio/adc/ltc2496.c
+index 5a55f79f2574..dfb3bb5997e5 100644
+--- a/drivers/iio/adc/ltc2496.c
++++ b/drivers/iio/adc/ltc2496.c
+@@ -24,10 +24,10 @@ struct ltc2496_driverdata {
+ 	struct spi_device *spi;
+ 
  	/*
 -	 * DMA (thus cache coherency maintenance) requires the
 +	 * DMA (thus cache coherency maintenance) may require the
  	 * transfer buffers to live in their own cache lines.
  	 */
--	u8			buf[2] ____cacheline_aligned;
-+	u8			buf[2] __aligned(IIO_DMA_MINALIGN);
+-	unsigned char rxbuf[3] ____cacheline_aligned;
++	unsigned char rxbuf[3] __aligned(IIO_DMA_MINALIGN);
+ 	unsigned char txbuf[3];
  };
  
- static const struct iio_chan_spec ad5110_channels[] = {
 -- 
 2.36.0
 
