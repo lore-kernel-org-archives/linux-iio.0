@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9F742C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 675B3C433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230288AbiEHTRX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:17:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39864 "EHLO
+        id S230189AbiEHTRY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:17:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40652 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239711AbiEHR72 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:59:28 -0400
+        with ESMTP id S236179AbiEHSCB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:02:01 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 52715E1A
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:55:37 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D95A9558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:58:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 111DBB80E5B
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:55:36 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 462FEC385A4;
-        Sun,  8 May 2022 17:55:27 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 90891B80E5B
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:58:09 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id F1CECC385AC;
+        Sun,  8 May 2022 17:58:00 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032534;
-        bh=hrlaa3H6u6AgZ7HiEv371d2WzE46MhhvxLLRqthTxFE=;
+        s=k20201202; t=1652032688;
+        bh=yChHrX483G+LQADaFJb57opYJaEYN58hgazLk8SkFqk=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=f0lpDoUc6wMxFhaxGPZEdHRuziDnMYHlnBMavBaHY0UyhOO7QZFySoV79Nv5hMBl+
-         XFI/thoEm47gsdHm7ZFBqx+hs/MCYJO7XwYEYwQHkWpFtm6Q7JcFS/9dOvqlJc6z4B
-         +XXgW9DN4pE06GiD6IrUlZwjeENePPa1aYwGqKAXvOXjLZSvY4EUqPF4JOGxkOKuy2
-         fq2xnKeI3I4y7dPaWLf2SA6Ml97DPrbqeLduIiW0ww3qLhFiF6vVmXzae+EH8LSCeD
-         s/P3Vg990XdNs7Rn653fOyUoi6vPgeJ32nZQMWEp9hA3ZKngfhKJ4+5HOGvh1nCb7e
-         /eQEngIlnwsbQ==
+        b=pWS3lf5TEstOnIKphH/F7CsYUCYxDN6r3uIQPgjhuzoqPeUOccbueHdTr874zuNBP
+         KbH9mxoqa4f/TtGFJ2apVKwqAqAhd/CePYROMHKCSAFlA9zwwABiP6s+0wv+HLvvGX
+         BCyx4wVG/V89gFIf+nzTV38QnVA6B0wDE5Bc64n+Nlnnym7dMiyKRRY29/BF56u8mG
+         fjGyTKWkCrsRa/StQaHF3DOtKSiY+0I2cbW30kmyfy7FohEnbKiJHCBjtrbAnEjKbH
+         lbIF60fr45w2x8aFmiS/5wdvZZlyiPjv4x9OrGW+ugzr1sKwjnfsBTYs/y1UqZ7c05
+         ubcosFJAnigcw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 52/92] iio: dac: ad5764: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:32 +0100
-Message-Id: <20220508175712.647246-53-jic23@kernel.org>
+Subject: [PATCH v2 72/92] iio: gyro: adis16080: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:52 +0100
+Message-Id: <20220508175712.647246-73-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,35 +84,29 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Update the comment to include 'may'.
+Fixes tag is inaccurate but unlikely anyone will backport this
+beyond that point so I haven't chased the history futher than 2013.
 
-Fixes: 68b14d7ea956 ("staging:iio:dac: Add AD5764 driver")
+Fixes: 3c80372dae17 ("staging:iio:adis16080: be16 cleanups")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ad5764.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/gyro/adis16080.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5764.c b/drivers/iio/dac/ad5764.c
-index d235a8047ba0..26c049d5b73a 100644
---- a/drivers/iio/dac/ad5764.c
-+++ b/drivers/iio/dac/ad5764.c
-@@ -56,13 +56,13 @@ struct ad5764_state {
+diff --git a/drivers/iio/gyro/adis16080.c b/drivers/iio/gyro/adis16080.c
+index acef59d822b1..14b3abf6dce9 100644
+--- a/drivers/iio/gyro/adis16080.c
++++ b/drivers/iio/gyro/adis16080.c
+@@ -45,7 +45,7 @@ struct adis16080_state {
+ 	const struct adis16080_chip_info *info;
  	struct mutex			lock;
  
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
- 	union {
- 		__be32 d32;
- 		u8 d8[4];
--	} data[2] ____cacheline_aligned;
-+	} data[2] __aligned(IIO_DMA_MINALIGN);
+-	__be16 buf ____cacheline_aligned;
++	__be16 buf __aligned(IIO_DMA_MINALIGN);
  };
  
- enum ad5764_type {
+ static int adis16080_read_sample(struct iio_dev *indio_dev,
 -- 
 2.36.0
 
