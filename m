@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D72A6C433F5
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 17983C433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229603AbiEHTPt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:15:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40172 "EHLO
+        id S230236AbiEHTPu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:15:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40324 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240579AbiEHSAU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:00:20 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2D781558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:56:29 -0700 (PDT)
+        with ESMTP id S243591AbiEHSAv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:00:51 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 54AC8558C
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:57:01 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id BD35F61283
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:56:28 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 24B86C385B0;
-        Sun,  8 May 2022 17:56:20 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 01132B80D48
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:57:00 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D4B8DC385B0;
+        Sun,  8 May 2022 17:56:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032588;
-        bh=bhkzZLkd74lwiwhM1WdHhQOQXAjpo0JfxFUSearHju0=;
+        s=k20201202; t=1652032618;
+        bh=JXmoqVboH+j7rmKCPT2n2zCLljhehBcygzmD81MQ3ZU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=RQcKdlGn0IuwAdEiCOYcUNPop1uZ8XjtIhbLEO1Qar1bq4hHs3NFdK/Cw2VMvKBLB
-         QaSoqLaSwVviXptPl5LcGJzhL8nlXhomLTK0AaIP/cDc7V0KF+HMDAkt5saJftCAAF
-         rlb/e40a5DOw6SsR2fl2JZ9jxBEVA9Vr0utLRVTtYOm/JsLXPStINinhuSnhaWXV0q
-         P0HOu99/mpW6HmL4Teu3ZLL1Z9+79EgHhGtVTY9mOsbKX7fOVVw/hfL07r4cQhewYK
-         50D0/iaIhaLfJpqqIwWdAvkSqNBDNSdT+i/oPzptwiuQ5ft5P2kZ6VgiPU7dvs3dAc
-         eejzHkv5a0uWg==
+        b=UcWv6ieN9eQx47ZWQoMkLaAwGlLCS8t7/VyAuO6L7JTCU6HUgMYCbbq8i2OajORpr
+         j10RJqFeQujRQL/TetcMBAJwuLlJnOR7upYBZ3S7qRBQH2NbkU0/rcpZpt5cNzkUWp
+         sfjUiaXa43ho4b8Xil6k/9nWYVbKA6eMYUT4m7Oarsi0s3bxzhqqR3dqnzyk8//YfB
+         wbiFnvjn8QhxPtCaPv0CUf8Av58i9z/7W+uW10GrIduAslyeUaAX6P6xVtCId+AJvr
+         RusTDg3SZ4Bl43FI1EJqDtRTLxwz57QC8fLHa5gQCcHLQnZICDpWVg4ieUkXVg9BYy
+         bqA8+wW7WSgvg==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 59/92] iio: dac: ltc2688: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:39 +0100
-Message-Id: <20220508175712.647246-60-jic23@kernel.org>
+Subject: [PATCH v2 63/92] iio: dac: ti-dac7311: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:43 +0100
+Message-Id: <20220508175712.647246-64-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,32 +84,27 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Update the comment to include 'may'.
-
-Fixes: 832cb9eeb931 ("iio: dac: add support for ltc2688")
+Fixes: 7a02ef7907d8 ("iio:dac:ti-dac7311 Add driver for Texas Instrument DAC7311")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc: Charles-Antoine Couret <charles-antoine.couret@essensium.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ltc2688.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/dac/ti-dac7311.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ltc2688.c b/drivers/iio/dac/ltc2688.c
-index 2f9c384885f4..04ec38b1cad1 100644
---- a/drivers/iio/dac/ltc2688.c
-+++ b/drivers/iio/dac/ltc2688.c
-@@ -91,10 +91,10 @@ struct ltc2688_state {
- 	struct mutex lock;
- 	int vref;
- 	/*
--	 * DMA (thus cache coherency maintenance) requires the
-+	 * DMA (thus cache coherency maintenance) may require the
- 	 * transfer buffers to live in their own cache lines.
- 	 */
--	u8 tx_data[6] ____cacheline_aligned;
-+	u8 tx_data[6] __aligned(IIO_DMA_MINALIGN);
- 	u8 rx_data[3];
+diff --git a/drivers/iio/dac/ti-dac7311.c b/drivers/iio/dac/ti-dac7311.c
+index e10d17e60ed3..dd0a7b77838d 100644
+--- a/drivers/iio/dac/ti-dac7311.c
++++ b/drivers/iio/dac/ti-dac7311.c
+@@ -52,7 +52,7 @@ struct ti_dac_chip {
+ 	bool powerdown;
+ 	u8 powerdown_mode;
+ 	u8 resolution;
+-	u8 buf[2] ____cacheline_aligned;
++	u8 buf[2] __aligned(IIO_DMA_MINALIGN);
  };
  
+ static u8 ti_dac_get_power(struct ti_dac_chip *ti_dac, bool powerdown)
 -- 
 2.36.0
 
