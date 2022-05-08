@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DAE1FC433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 79486C433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230108AbiEHTQB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:16:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41130 "EHLO
+        id S230326AbiEHTQE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:16:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39630 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245601AbiEHSDl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:03:41 -0400
+        with ESMTP id S239646AbiEHR7K (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:59:10 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C98C5FBC
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:59:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4C7C2DFEA
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:55:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 94F896129B
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:59:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D15A5C385A4;
-        Sun,  8 May 2022 17:59:42 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id DB5B061262
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:55:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9D5CAC385A4;
+        Sun,  8 May 2022 17:55:12 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032790;
-        bh=Ro/0sJtpPddUt4j3C+sOPGiH3GXgP/ZIqTow1LTGIbM=;
+        s=k20201202; t=1652032519;
+        bh=AFeUWEYptvp/5kw73MiNRmgJbOtr+jkx61d4Xyf3fAI=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=JySX9uaeSj6qUpT3a+jOSlHLCJSmBHW3NrpOUCt80JAWBakNknRr2GZkxj7N6cvtw
-         xG86P9utrVtI04Z2v2svJ82ZURyfkWsU6Jr8UwVNYLQshrx9szHNnMI4VIvjfXayeo
-         2BIAliNGq9w4mCH6tbyOia0LuSbGtK9gEOoAD7YY6OVorGdNmY8lVzaVjj1hwWRFwj
-         8MCgU2o2TJxUWLHX5ibqV7w0Q50lMrw5d+EBhHwao2BLe4PfLgpXbBd/sSazgII6tC
-         +d+ei4NVrLjBXEWR88nQFt+exU3Efebpk8suq5nMTyK+VTEGxSJ7SKuxdFHAcyInLE
-         R3O7WqR3trRgQ==
+        b=g4Q1HjZi/uqb0hrIwkszdVYbLMy91RMg8rjZZcpoWSSXDWTCrj3NWuyyjoeuuM6A9
+         8ZkgTMTopkz9yRzfdqkvwyY7wguv/g922Nh5Ty0MhWklymI6bkCiVjgP0BeCzfVbvO
+         vBmwDDLGxivK74UXU34U/8OvDAV5gq21txwoj2UdQrBQyhgg9xJAHLo83wd2qJk1Y9
+         gQ6O4h35SX3AJEgRdXgFWv9TlVNvBw+aq+7g0pA8hJBN0ZlhdgbT23/5x/5rk0LYxx
+         2TWWvM3HEqzewPOTgRRHag2Zj2aFBmALV3PjudjM91a++ZzWxcPwHVFXiUfA3erSEC
+         gNJqoVjtiTF+w==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 85/92] iio: pressure: dlhl60d: Drop unnecessary alignment forcing.
-Date:   Sun,  8 May 2022 18:57:05 +0100
-Message-Id: <20220508175712.647246-86-jic23@kernel.org>
+Subject: [PATCH v2 50/92] iio: dac: ad5755: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:30 +0100
+Message-Id: <20220508175712.647246-51-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -80,29 +80,40 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-I2C doesn't use the buffers directly for DMA so there is no need
-to enforce alignment.
+____cacheline_aligned is an insufficient guarantee for non-coherent DMA
+on platforms with 128 byte cachelines above L1.  Switch to the updated
+IIO_DMA_MINALIGN definition.
 
+Update the comment to include 'may'.
+
+Fixes: c499d029d805 ("iio:dac: Add ad5755 driver")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Tomislav Denis <tomislav.denis@avl.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/pressure/dlhl60d.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dac/ad5755.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/pressure/dlhl60d.c b/drivers/iio/pressure/dlhl60d.c
-index ade73267d5eb..5f6bb3603a8b 100644
---- a/drivers/iio/pressure/dlhl60d.c
-+++ b/drivers/iio/pressure/dlhl60d.c
-@@ -47,7 +47,7 @@ struct dlh_state {
- 	struct dlh_info info;
- 	bool use_interrupt;
- 	struct completion completion;
--	u8 rx_buf[DLH_NUM_READ_BYTES] ____cacheline_aligned;
-+	u8 rx_buf[DLH_NUM_READ_BYTES];
+diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
+index 7a62e6e1d5f1..bbb345323b69 100644
+--- a/drivers/iio/dac/ad5755.c
++++ b/drivers/iio/dac/ad5755.c
+@@ -189,14 +189,14 @@ struct ad5755_state {
+ 	struct mutex			lock;
+ 
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+ 
+ 	union {
+ 		__be32 d32;
+ 		u8 d8[4];
+-	} data[2] ____cacheline_aligned;
++	} data[2] __aligned(IIO_DMA_MINALIGN);
  };
  
- static struct dlh_info dlh_info_tbl[] = {
+ enum ad5755_type {
 -- 
 2.36.0
 
