@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3817DC433FE
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CCFEC433F5
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:12:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229931AbiEHTQg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:16:36 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40516 "EHLO
+        id S230104AbiEHTQh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:16:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238415AbiEHSBa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:01:30 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89C9B558C
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:57:39 -0700 (PDT)
+        with ESMTP id S239674AbiEHR7S (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:59:18 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D32A1DFEA
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:55:27 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 3C59AB80E5B
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:57:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id A03B5C385AC;
-        Sun,  8 May 2022 17:57:29 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6494061208
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:55:27 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B00E4C385B0;
+        Sun,  8 May 2022 17:55:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032657;
-        bh=7iRa7DlR8BuUF1Ju/bTBkSh/h/5eQvliSA2jekfA8Qo=;
+        s=k20201202; t=1652032526;
+        bh=Byjha6YyS0sbRmczzE1TWrg0lsdpAWMegvqSzACUkXQ=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bVn+8Kn636lowbnAFZGCdRNOd6lI7QItpVXFEb8s0E3bXuhUJOqSxr9lBmxhRq9Jq
-         EGVEdGr75C9/XFk9fOCV85MvY/IZevyCjCs5p4sIWA+ZBlkKa0JVgQFwfR9L4jCsYi
-         EhhyhJ4wkgwVhEKFpV7V1ah9U9TkO+BasvVcCJnEgrFLOiW6lHCxnyP76A8iPVTQms
-         GXVLO44N3+fy99khOtJwKajx+ZalUyiAqYpVe3hX8gkrjaLEREaiuROtPpFENFM6Bt
-         5ITxkdKon2ZSstwg1Yv0FsY157Yyk3jeObK6y2VW73Bw6RXfTz9C/uDyebPYJcyjfs
-         ks0Vxo9VQWk0Q==
+        b=RgN7oHHBJc3E+wd6zlKUJVBzy6EkP3H24k1klqZTv8Kevty04o1FjLhLv9FefBYiE
+         P6TSGl+faFaDQJZ8ofebzJ/mBZ1IZgZwPQbmpN8LlhA4mj7sVWSrTPWx8YgdnPjOrC
+         2PcNWfHsMQf0tAznHtZ/R9Uh8Q0iJbWMKWato74zZe1Sp+sMiyXVNfQOHjWxudxMnZ
+         VhrVJ9nBZWkO+ckp0Cmpvqeg8EIHgqof1xE92+/xMA0IFlwKkzAK+0nGWayv81w5Id
+         gW65mF1PVv96mSxuwAaCEe1bnyn4V+MLq/xlNSLP2Nqh77iBpY57UnbUG1dnD17B2j
+         P35Xto936k7Yw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 68/92] iio: frequency: admv1013: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:48 +0100
-Message-Id: <20220508175712.647246-69-jic23@kernel.org>
+Subject: [PATCH v2 51/92] iio: dac: ad5761: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:31 +0100
+Message-Id: <20220508175712.647246-52-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,27 +84,35 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: da35a7b526d9 ("iio: frequency: admv1013: add support for ADMV1013")
+Update the comment to include 'may'.
+
+Fixes: 131497acd88a ("iio: add ad5761 DAC driver")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Antoniu Miclaus <antoniu.miclaus@analog.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/frequency/admv1013.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/dac/ad5761.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/frequency/admv1013.c b/drivers/iio/frequency/admv1013.c
-index b0e1f6571afb..ed8167271358 100644
---- a/drivers/iio/frequency/admv1013.c
-+++ b/drivers/iio/frequency/admv1013.c
-@@ -100,7 +100,7 @@ struct admv1013_state {
- 	unsigned int		input_mode;
- 	unsigned int		quad_se_mode;
- 	bool			det_en;
--	u8			data[3] ____cacheline_aligned;
-+	u8			data[3] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/dac/ad5761.c b/drivers/iio/dac/ad5761.c
+index 4cb8471db81e..6aa1a068adb0 100644
+--- a/drivers/iio/dac/ad5761.c
++++ b/drivers/iio/dac/ad5761.c
+@@ -70,13 +70,13 @@ struct ad5761_state {
+ 	enum ad5761_voltage_range range;
+ 
+ 	/*
+-	 * DMA (thus cache coherency maintenance) requires the
++	 * DMA (thus cache coherency maintenance) may require the
+ 	 * transfer buffers to live in their own cache lines.
+ 	 */
+ 	union {
+ 		__be32 d32;
+ 		u8 d8[4];
+-	} data[3] ____cacheline_aligned;
++	} data[3] __aligned(IIO_DMA_MINALIGN);
  };
  
- static int __admv1013_spi_read(struct admv1013_state *st, unsigned int reg,
+ static const struct ad5761_range_params ad5761_range_params[] = {
 -- 
 2.36.0
 
