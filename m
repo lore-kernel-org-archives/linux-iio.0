@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CA6A3C4707A
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:17:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A783C35294
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:17:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231723AbiEHTTM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:19:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39982 "EHLO
+        id S231745AbiEHTTO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:19:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37904 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiEHR7u (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:59:50 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 119A45F55
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:55:59 -0700 (PDT)
+        with ESMTP id S239024AbiEHRxT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:53:19 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92EADFC5
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:49:28 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A148F61141
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:55:58 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B1CDC385B0;
-        Sun,  8 May 2022 17:55:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 57DB361286
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:49:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C11EAC385B0;
+        Sun,  8 May 2022 17:49:21 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032558;
-        bh=kMOzDsTaEoi8Pc2EdiEgGJ26gCLaJIs6ABbA1R1++YE=;
+        s=k20201202; t=1652032167;
+        bh=MNILr/698CqUCCRc19KzpGOrNpQIZh1XAlt7SwwDDAw=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=K2zGden/elfm3qKZ+bxXXi5/Lk+FE6llYNdY+b2/IFbXrz06M5znscWNBkX9mVcqQ
-         zoSuHGisBRLXRWGbZPargRrTxlGMcKDAR0XVKAVJkB7LnUtg3Mh1g0ZdL7nmEANXLZ
-         6TiJIuNC1SHzJajtzZSlTOZvFfS3InbWWvTffXbxVcF/dR6140ssUynEnIB96Y6/hN
-         HswkNj8psU0ssHQMdm2gdVDdBrL2zXXoHaMgspiqhDoIgzrX0gGa9e+jtTCsWK915K
-         9c5pr3C7SxTNEhBpoPMn+mdfJzEcjEazBMTBFgpCvU5n0NLFqEtRf9+umoLElTjnds
-         ico1uqATSg37w==
+        b=Dk10G8T0QFHamnIbXyX1A+cXVtr4xv16ZsxCiY8RvI98P554VN6UGK5j/8haLJzpl
+         A+Fd2N6ClHjqVAE447vK4PcLusOxZ9zec4OlKwgPNrbqbnl8IhnOXO2yFzMnGMRG1N
+         MSwve/m534wC6blrGxi7/S5BCMRsmDx29vIYQD3r75nGKCC8DDq4GuADNGVqH9Q8mg
+         FKK/5xD15jM/Li4M2MAGt+6rrRC8DYtA8xGB5CGZcTQABgg0sTPfJhyUmdWBJ870UP
+         60KW8oUJee4tJ2EybiajvGq/s216xvoqgHkNi0aNArPEpTindyMTN5mewhHczLgnuu
+         lubPSLU73OYlA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 55/92] iio: dac: ad5791: Fix alignment for DMA saftey
-Date:   Sun,  8 May 2022 18:56:35 +0100
-Message-Id: <20220508175712.647246-56-jic23@kernel.org>
+Subject: [PATCH v2 02/92] iio: accel: adxl313: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:55:42 +0100
+Message-Id: <20220508175712.647246-3-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -80,30 +80,29 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-____cacheline_aligned is an insufficient guarantee for non-coherent DMA
-on platforms with 128 byte cachelines above L1.  Switch to the updated
-IIO_DMA_MINALIGN definition.
+____cacheline_aligned is insufficient guarantee for non-coherent DMA.
+Switch to the updated IIO_DMA_MINALIGN definition.
 
-Fixes: 791bb52a0cd2 ("iio:ad5791: Do not store transfer buffers on the stack")
+Fixes: 636d44633039 ("iio: accel: Add driver support for ADXL313")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/dac/ad5791.c | 2 +-
+ drivers/iio/accel/adxl313_core.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/dac/ad5791.c b/drivers/iio/dac/ad5791.c
-index 2b14914b4050..ee7e89774d9d 100644
---- a/drivers/iio/dac/ad5791.c
-+++ b/drivers/iio/dac/ad5791.c
-@@ -95,7 +95,7 @@ struct ad5791_state {
- 	union {
- 		__be32 d32;
- 		u8 d8[4];
--	} data[3] ____cacheline_aligned;
-+	} data[3] __aligned(IIO_DMA_MINALIGN);
+diff --git a/drivers/iio/accel/adxl313_core.c b/drivers/iio/accel/adxl313_core.c
+index 9e4193e64765..afeef779e1d0 100644
+--- a/drivers/iio/accel/adxl313_core.c
++++ b/drivers/iio/accel/adxl313_core.c
+@@ -46,7 +46,7 @@ EXPORT_SYMBOL_NS_GPL(adxl313_writable_regs_table, IIO_ADXL313);
+ struct adxl313_data {
+ 	struct regmap	*regmap;
+ 	struct mutex	lock; /* lock to protect transf_buf */
+-	__le16		transf_buf ____cacheline_aligned;
++	__le16		transf_buf __aligned(IIO_DMA_MINALIGN);
  };
  
- enum ad5791_supported_device_ids {
+ static const int adxl313_odr_freqs[][2] = {
 -- 
 2.36.0
 
