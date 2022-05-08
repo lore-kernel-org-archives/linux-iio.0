@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id EE14EC433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E7178C433FE
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230235AbiEHTR2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:17:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38700 "EHLO
+        id S229842AbiEHTRa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:17:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38136 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239152AbiEHRzm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:55:42 -0400
+        with ESMTP id S235929AbiEHRyI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:54:08 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3085DFEA
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:51:51 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA5BADFC5
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:50:17 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6F7506128D
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:51:51 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D95BEC385A4;
-        Sun,  8 May 2022 17:51:43 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 553F66128D
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:50:17 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6957EC385AC;
+        Sun,  8 May 2022 17:50:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032310;
-        bh=tWlXGj1wuhbxQvtR1Mb7vOtavNiKGCcLYoI2RtlXrhU=;
+        s=k20201202; t=1652032216;
+        bh=D92cGZabpHdxAvsCXtQMv3PS6YcTUwisbHSewNLG3e4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=lWsXC1Bg2jTULojIgdP/Fqn4UcwEYF6cIWpSuX6uuxWPRMWiJDiP99Fdm8QVHMzct
-         eLrKr3tF2msU3g9bnKHlIlVLxKxKdKgMTklnYlkAzgN4+YjpPcMx3tmqk/fYEGWf/k
-         jgktb4tRjdB2LgjN8I3YhXZy1lQ17SFwXPsTjCY10V/Jrsbu9SjzHplPsNshacIv2v
-         AmreqsMJ+g/xxAXiDrI0bSLlCtARW6Il5KLdfdHP+hRjZGg9bX9v4+oRftyOr6pmMy
-         g1sp460sFiOLWuXBc5EaE5A04ZtPeDGJod9WhM32ylogDjaZjSisfGt6cTuaEVutsm
-         NF4St5bkjXM7Q==
+        b=ML6Fw/jMpVwHPElCz3IcOgi2xpVOc8xaWKqzDsgaOkP91YT7/al/SxZJFYjqyVqjZ
+         4mtkzAKiFA4VC7aaqJAv3MlcbhkSjsuAEQkyv0AfBRla1KcmYUsfZA/WcZWA3jannP
+         GiV1cCbFKyIDKn/4B6pYK7/kONd7H3LdcPwYfSaM5zWzWKjvPwE5MA5VM1rnvU85ZT
+         DIGlouYtbb+7NTncb/ylqCCnEwVJ8jq77L/tQeDMfWME+3AkTdzaUfN+lKQO7EpoQv
+         5MiLaarxrRRqzvt4vvLs73pi7B/opSCe/5pAhq33xKPEFVRc62DEtilNjkkG032TBj
+         Edz2Izf79xA2w==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -65,9 +65,9 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 22/92] iio: adc: ltc2497: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:56:02 +0100
-Message-Id: <20220508175712.647246-23-jic23@kernel.org>
+Subject: [PATCH v2 09/92] iio: adc: ad7266: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:55:49 +0100
+Message-Id: <20220508175712.647246-10-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -84,33 +84,38 @@ ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Update the comment to include 'may'.
+Update the comment to reflect that DMA safety 'may' require separate
+cachelines.
 
-Fixes: bc82222fcca1 ("iio:adc: Driver for Linear Technology LTC2497 ADC")
+Fixes: 54e018da3141 ("iio:ad7266: Mark transfer buffer as __be16")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Michael Hennerich <michael.hennerich@analog.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ltc2497.c | 4 ++--
+ drivers/iio/adc/ad7266.c | 4 ++--
  1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/adc/ltc2497.c b/drivers/iio/adc/ltc2497.c
-index 1adddf5a88a9..f7c786f37ceb 100644
---- a/drivers/iio/adc/ltc2497.c
-+++ b/drivers/iio/adc/ltc2497.c
-@@ -20,10 +20,10 @@ struct ltc2497_driverdata {
- 	struct ltc2497core_driverdata common_ddata;
- 	struct i2c_client *client;
+diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
+index c17d9b5fbaf6..53c83e04dde5 100644
+--- a/drivers/iio/adc/ad7266.c
++++ b/drivers/iio/adc/ad7266.c
+@@ -37,7 +37,7 @@ struct ad7266_state {
+ 	struct gpio_desc	*gpios[3];
+ 
  	/*
 -	 * DMA (thus cache coherency maintenance) requires the
 +	 * DMA (thus cache coherency maintenance) may require the
  	 * transfer buffers to live in their own cache lines.
- 	 */
--	__be32 buf ____cacheline_aligned;
-+	__be32 buf __aligned(IIO_DMA_MINALIGN);
+ 	 * The buffer needs to be large enough to hold two samples (4 bytes) and
+ 	 * the naturally aligned timestamp (8 bytes).
+@@ -45,7 +45,7 @@ struct ad7266_state {
+ 	struct {
+ 		__be16 sample[2];
+ 		s64 timestamp;
+-	} data ____cacheline_aligned;
++	} data __aligned(IIO_DMA_MINALIGN);
  };
  
- static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
+ static int ad7266_wakeup(struct ad7266_state *st)
 -- 
 2.36.0
 
