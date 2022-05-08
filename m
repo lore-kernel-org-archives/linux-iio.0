@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CD2A4C433EF
-	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 476E5C433EF
+	for <linux-iio@archiver.kernel.org>; Sun,  8 May 2022 19:13:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230355AbiEHTQ4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 8 May 2022 15:16:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38344 "EHLO
+        id S229499AbiEHTRD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 8 May 2022 15:17:03 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40828 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239101AbiEHRyY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 13:54:24 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 277F52DC3
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:50:33 -0700 (PDT)
+        with ESMTP id S238708AbiEHSCj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 May 2022 14:02:39 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9B875F55
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 10:58:48 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id B84A8B80E5B
-        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:50:31 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id DA553C385B0;
-        Sun,  8 May 2022 17:50:24 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 55E696128E
+        for <linux-iio@vger.kernel.org>; Sun,  8 May 2022 17:58:48 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4C9F8C385AF;
+        Sun,  8 May 2022 17:58:40 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652032230;
-        bh=2HVFKTmhz6gwZvJxBJ/IQGIhqeTXfcKyjspXKOhOF6U=;
+        s=k20201202; t=1652032727;
+        bh=ouRN372AGHx0ze9+TePTGrvhFbv/Nt2dtvGDuhsfR/M=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LF+PIxJoz18B2B0UkK5ba3e0bXkMJgk7AZFnUpYzNKq5iNuwz4B/9hfxS6eU8bfxg
-         BbB3Z1hdpV1llDgdmVyfwhPCTHlSwzduA5tuklVFdfxhKM+OOhIkUBnsF+526bpqz0
-         wO6aNy9Ba7C7NA1e6AGep51VxaSL17+6KebhypJU6E8fSFU2Hod9rKYJ0DQTC1tdXq
-         J1TR0JSpcvCmQZI5LiEgn3PpgxJnfo+eryHsk2y+r2VDegE1+zhbg1MOUbcNTc6Nic
-         nSdi2Qemrap/bBF3m7z6BzcSSbGnmPqrnmp3PFFqbwLHmZZy7N238NK5HKNrPnXQP1
-         lmZ6SV+JqzSsQ==
+        b=Y6KRkxpG8Kj/G75EZf9qwMwdNBQfzxfQovgzplzoH73adxaYofeM1SzTpnkeMp27S
+         8qbl4pSMHGRArSxqeyi6C756Uzi7Vn853QtCuaJL/w/LF+jiJvTLpFLd986yhoQTAo
+         Xo1burE2SAQ4XgiJvgrFUX6Yd6O2CMahbKd/GKMz7TMb6sG6fCfvpuOrZXzOAHXEMF
+         HfiOthWXNFNLfByEIaCBCrE7I8XAPIa/g8g8InvkZ3ZwG8B3/pZFotmq5H7XFLm7YJ
+         tlFKdgdL3i1mCB9EqiyCTaKqypqpiLgOJnzhtAq9O1RVN9UysFtHbbUGsrAgyHLutZ
+         iC6xykpvZ7N1w==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Alexandru Lazar <alazar@startmail.com>,
@@ -64,10 +64,11 @@ Cc:     Alexandru Lazar <alazar@startmail.com>,
         Tomislav Denis <tomislav.denis@avl.com>,
         =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 11/92] iio: adc: ad7292: Fix alignment for DMA safety
-Date:   Sun,  8 May 2022 18:55:51 +0100
-Message-Id: <20220508175712.647246-12-jic23@kernel.org>
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
+Subject: [PATCH v2 77/92] iio: imu: inv_icm42600: Fix alignment for DMA safety
+Date:   Sun,  8 May 2022 18:56:57 +0100
+Message-Id: <20220508175712.647246-78-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.0
 In-Reply-To: <20220508175712.647246-1-jic23@kernel.org>
 References: <20220508175712.647246-1-jic23@kernel.org>
@@ -80,32 +81,34 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
+Partial fix for this driver as a second instance was introduced in
+a later patch.
+
 ____cacheline_aligned is an insufficient guarantee for non-coherent DMA
 on platforms with 128 byte cachelines above L1.  Switch to the updated
 IIO_DMA_MINALIGN definition.
 
-Fixes: 506d2e317a0a ("iio: adc: Add driver support for AD7292")
+Fixes: a095fadb443b ("iio: imu: inv_icm42600: add gyroscope IIO device")
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
-Acked-by: Marcelo Schmitt <marcelo.schmitt1@gmail.com>
+Acked-by: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 Acked-by: Nuno Sá <nuno.sa@analog.com>
 ---
- drivers/iio/adc/ad7292.c | 2 +-
+ drivers/iio/imu/inv_icm42600/inv_icm42600.h | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/ad7292.c b/drivers/iio/adc/ad7292.c
-index 3271a31afde1..92c68d467c50 100644
---- a/drivers/iio/adc/ad7292.c
-+++ b/drivers/iio/adc/ad7292.c
-@@ -80,7 +80,7 @@ struct ad7292_state {
- 	struct regulator *reg;
- 	unsigned short vref_mv;
- 
--	__be16 d16 ____cacheline_aligned;
-+	__be16 d16 __aligned(IIO_DMA_MINALIGN);
- 	u8 d8[2];
- };
- 
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600.h b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+index c0f5059b13b3..62fedac54e65 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600.h
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600.h
+@@ -140,7 +140,7 @@ struct inv_icm42600_state {
+ 	struct inv_icm42600_suspended suspended;
+ 	struct iio_dev *indio_gyro;
+ 	struct iio_dev *indio_accel;
+-	uint8_t buffer[2] ____cacheline_aligned;
++	uint8_t buffer[2] __aligned(IIO_DMA_MINALIGN);
+ 	struct inv_icm42600_fifo fifo;
+ 	struct {
+ 		int64_t gyro;
 -- 
 2.36.0
 
