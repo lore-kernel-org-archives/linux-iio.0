@@ -2,117 +2,92 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1E49FC433F5
-	for <linux-iio@archiver.kernel.org>; Mon,  9 May 2022 07:12:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 132C1C433F5
+	for <linux-iio@archiver.kernel.org>; Mon,  9 May 2022 07:47:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234567AbiEIHJD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 9 May 2022 03:09:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41846 "EHLO
+        id S231831AbiEIHsj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 9 May 2022 03:48:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35066 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234963AbiEIGxx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 9 May 2022 02:53:53 -0400
-Received: from EUR02-VE1-obe.outbound.protection.outlook.com (mail-eopbgr20117.outbound.protection.outlook.com [40.107.2.117])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E09219CEE3;
-        Sun,  8 May 2022 23:49:59 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=LXhaIVYyg7tB8aaWIIQUNdWI+C8tog7n4OlX7sTBD2zHh8A/gFnJRJ2XFN0AQIbHGJG+3tqv8twrB3bx3uGZQ909VD6fvVjmZjfIqoagBIzQgvgLOjGU6Nieq5hLUNnTPAZtQov4BrOASMXEopvxk5DjT+40vhS1JR6QJIFHj1PyjfNhKxJQmC+y83iOlQtyxz2NCr4di6UKoZ4AYs0F9tadijnlg8OX/Ui7sez7l6AqPHb7TE1/sq32K/gj58DmZ3j4M5+2c5v2cMHdRxXiHLcI57AH8MVbm5lWWxD3dWtGOkcnZJHpE5f/7VhL2zydZYQTc11KOjvkC31pg2mLeA==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=agyhtMiz6pGgVSs+DDIfCYIezH5jZ4VfydVtEofOyfY=;
- b=nNmtXxPvc0SIA+iOI2bZnKuR6Hr2zR6oWqO9SBjsb0+nvqi8dfnVxs7oSjXOb2Yfk+dQ3fV9FL4hjoYPKCcbdylVRE62guwO57bxs0Kdd3eb3RJH5XjaVDLBBeK35KrL+CdgreIF1otxwBLk4nqg41f/GvbCis5uxO4dmwvue/IOAJ9jVMZhKE4Xgrf7XTjF5uaOEeu2u4/r6ifbh+BO8yg9cyV2+nKui8LmGIlNpbERh5DRdmlmDnzQPyKgfTPIM95ex6CpBMkB++5WQXXUHAx7USPy3+JvULjtbJTKsQ5cEdo8/M/2I6+0986iVuaCBY2jBzwzgnYFsSlY7gJADQ==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
+        with ESMTP id S235148AbiEIH2G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 9 May 2022 03:28:06 -0400
+Received: from mail-pj1-x102c.google.com (mail-pj1-x102c.google.com [IPv6:2607:f8b0:4864:20::102c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 857EE6584;
+        Mon,  9 May 2022 00:24:13 -0700 (PDT)
+Received: by mail-pj1-x102c.google.com with SMTP id w17-20020a17090a529100b001db302efed6so12035990pjh.4;
+        Mon, 09 May 2022 00:24:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=agyhtMiz6pGgVSs+DDIfCYIezH5jZ4VfydVtEofOyfY=;
- b=wUbOa58dV2gq5aoCuoH5zTzOjrwp9PP4dZtV4iXWi9LxFstqurJpUeILFMhw9Azn3Xgzs2ZE5RIWsDsX6hwS+hTw66p1jmfahSLwXwwxxYlLHZvs93uD2yOiP9yg2BIBUrDchdDwTo5KCaqA5mwT1rFDSrJJ5yhgyBupWTUMtCw=
-Received: from BE0P281CA0018.DEUP281.PROD.OUTLOOK.COM (2603:10a6:b10:a::28) by
- DB7PR06MB5052.eurprd06.prod.outlook.com (2603:10a6:10:6d::10) with Microsoft
- SMTP Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.22; Mon, 9 May 2022 06:49:32 +0000
-Received: from HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:b10:a:cafe::a3) by BE0P281CA0018.outlook.office365.com
- (2603:10a6:b10:a::28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5250.13 via Frontend
- Transport; Mon, 9 May 2022 06:49:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com;
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
- HE1EUR02FT040.mail.protection.outlook.com (10.152.11.92) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.15 via Frontend Transport; Mon, 9 May 2022 06:49:31 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
-        tomas.melin@vaisala.com, andy.shevchenko@gmail.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Qing-wu.Li@leica-geosystems.com.cn
-Cc:     linux-iio@vger.kernel.org, kernel test robot <lkp@intel.com>
-Subject: [PATCH V4 0/5] iio: accel: sca3300: add compatible for scl3300 
-Date:   Mon,  9 May 2022 06:49:23 +0000
-Message-Id: <20220509064928.2352796-1-Qing-wu.Li@leica-geosystems.com.cn>
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BSyObxIXmaw5ibvcX0FawVvjRmdC4oHfcmD/+YAXJH8=;
+        b=Cpa3JylI61TL4omhJYr4HUdHy4dDjr8Gu9DzBby4WY6Qwp1YGihoaKtdZonC4jJ+xQ
+         NyCevRCfU+9kzHgJQUj9ZzF3eMK/PUhJqexYYsUVaDs95IjfH3vdz5P3ZISXQbudzrkQ
+         4h/zefHj59q8Ca89DIW0MSvWljTznxdn/qLjYprJ9ggdhMn2S2wvIMGps45awZYUxLND
+         vzmt6TswM7QA0pHWtWI07TycCAQyfZ19TUl3OoA6d9bNnsy1CGfgxKoLFupuiBJv3yj+
+         6eNKd9Nk9nQ3+r8EKZmF9IQjQuv4B//RBirT8B8Cl3ZH6P3GQfV2rScGc66WAlHewviG
+         /rRw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=BSyObxIXmaw5ibvcX0FawVvjRmdC4oHfcmD/+YAXJH8=;
+        b=Gh2S8nxNlbZ0dCiIivkeBYzp0y6jya75dJtjmUe+189fIR1O0bOeMzvaDEldkpW/Xh
+         j7jBE1OaWkVIizkeuw0gHZ7eUenV7GuYCYaTAWsLpXZfyItL4OFWMN21mxxHUNtnTH3w
+         C0z/OI88SNTOfmkwXm06axzrFtFpQqpnWL3fXs63Z5vPsjl8I/Qj8eSbSRGgYkXUvyD2
+         BG24v27I+WG/TlsWD7myo9OmbBtX+KFa3lKIO2JmMkVPvcsCkcNEH14RupuW4aaFPleX
+         dDfHRHnaCSDtp+FcW+Ih0NNLStykuRPRNiciYU14WhqBScyW7RT9ihI4aIOmC+hnsmqz
+         kiTg==
+X-Gm-Message-State: AOAM5309vmeou63ohpWJCMYqt9FKrTeFQ3gN/BM+hQh0KKPtVb6rNKXj
+        BC8bWvTdyqm2Os/mefqh3og=
+X-Google-Smtp-Source: ABdhPJyrhPWwqX3SrKDowpboDc+L15KMZOBt6laplo58tJSNrThENeqHmKIoYExOwv9DHN6Z809jJA==
+X-Received: by 2002:a17:90a:7acb:b0:1d9:85a5:e1e3 with SMTP id b11-20020a17090a7acb00b001d985a5e1e3mr24612187pjl.172.1652081049760;
+        Mon, 09 May 2022 00:24:09 -0700 (PDT)
+Received: from localhost.localdomain ([193.203.214.57])
+        by smtp.gmail.com with ESMTPSA id a1-20020aa78e81000000b0050dc7628137sm8181659pfr.17.2022.05.09.00.24.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 09 May 2022 00:24:09 -0700 (PDT)
+From:   cgel.zte@gmail.com
+X-Google-Original-From: lv.ruyi@zte.com.cn
+To:     jic23@kernel.org, lars@metafoo.de
+Cc:     anand.ashok.dumbre@xilinx.com, michal.simek@xilinx.com,
+        manish.narani@xilinx.com, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Lv Ruyi <lv.ruyi@zte.com.cn>, Zeal Robot <zealci@zte.com.cn>
+Subject: [PATCH] iio: adc: fix return error variable
+Date:   Mon,  9 May 2022 07:24:05 +0000
+Message-Id: <20220509072405.1118019-1-lv.ruyi@zte.com.cn>
 X-Mailer: git-send-email 2.25.1
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 851b3df4-414e-4f43-22fb-08da3188122a
-X-MS-TrafficTypeDiagnostic: DB7PR06MB5052:EE_
-X-Microsoft-Antispam-PRVS: <DB7PR06MB505285BC7762F7C462813FF4D7C69@DB7PR06MB5052.eurprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: Bcu9koBrN+3rUXzAWfX/PUZ4ejOui9BKi4st2RLDz3vP2itplYxJCh4Dx11lpz4l/eFtuAKOeaZdJ8y2SThIwFF/w1kkyElDlmd6C7MK5RQqiZiAnacPeyaHPybk+gnROF6HtTL992ejmKlB9cpSNHMRYPQStaY2K4EoTQkyFqEkFbRUfmmUGUWRbUyVeAmF7N05UBWTgG9zK5w5v5+/mG2AmYd01Yr9nvh2jW7Btnq5KWnhG6WWLiOaJp0WLqfV0P936oauXx8RkSdNF6q5SdbIdm+EvvJotNpQ2NSdtrXiXw4hHu8689eRyqQ5B3KPKDNYUQ4r5qDVBhtVKXLYt6NlN6B0K2efXnwqnvHgCpCOG2X4MThv/0XrGZpPELK05coNhHqPSC5UjCKscHgu1ZN1GfP0a6UF2vZY7BQdv2KhbLOGPgPgV+m2mbDk+z6PDzNINB1p/cCVhcFZo29P0LWI0iQZT4YP/wdHi50183mgZNwrKrYZ5oFhgDptGfIpNIBH93wbYoBb5D3PweMMaj4VR2aYEoc7JHCUYa1Y1Y0L/86kRBWjW+Sd8uGVpheoha+gA77fruhM31dSHdn5ANP6LP8XGokH+7ScunGxNMb0szozzTxlI3y11OBDBf6pqO6JN8PzxbVzjvvycLsGR2A+HWooAiFxcnFNjwAycK1tl/TjG5f6ij6sqT1AVMlr
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(2906002)(118246002)(508600001)(6486002)(5660300002)(4744005)(186003)(36756003)(36860700001)(336012)(82310400005)(40460700003)(47076005)(83380400001)(316002)(8936002)(70586007)(36736006)(4326008)(70206006)(2616005)(86362001)(1076003)(8676002)(81166007)(26005)(4743002)(6666004)(956004)(6512007)(356005)(6506007);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 09 May 2022 06:49:31.1411
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 851b3df4-414e-4f43-22fb-08da3188122a
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: HE1EUR02FT040.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: DB7PR06MB5052
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The current driver support sca3300 only.
-Modified for support SCL3300 as well.
-Verified with SCL3300 on IMX8MM.
+From: Lv Ruyi <lv.ruyi@zte.com.cn>
 
-SCL3300 is a three-axis accelerometer sensor with angle output.
-The change adds the support of scl3300 and inclination data output.
+Return irq instead of ret which always equals to zero here.
 
-Change in V4:
-Remove Reviewed-by tags, that were not explicitly given.
-Fix all the review comments from V3.
-Sort variables logically instead of length in the struct
-sca3300_chip_info declaration and assignment.
-Fixed the warning "unused variable scl3300_scan_masks".
-Reported-by: kernel test robot <lkp@intel.com>.
+Fixes: d5c70627a794 ("iio: adc: Add Xilinx AMS driver")
+Reported-by: Zeal Robot <zealci@zte.com.cn>
+Signed-off-by: Lv Ruyi <lv.ruyi@zte.com.cn>
+---
+ drivers/iio/adc/xilinx-ams.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-LI Qingwu (5):
-  dt-bindings: iio: accel: sca3300: Document murata,scl3300
-  iio: accel: sca3300: add define for temp channel for reuse.
-  iio: accel: sca3300: modified to support multi chips
-  iio: accel: sca3300: Add support for SCL3300
-  iio: accel: sca3300: Add inclination channels
-
- .../bindings/iio/accel/murata,sca3300.yaml    |   1 +
- drivers/iio/accel/sca3300.c                   | 307 +++++++++++++++---
- 2 files changed, 255 insertions(+), 53 deletions(-)
-
+diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
+index a55396c1f8b2..a7687706012d 100644
+--- a/drivers/iio/adc/xilinx-ams.c
++++ b/drivers/iio/adc/xilinx-ams.c
+@@ -1409,7 +1409,7 @@ static int ams_probe(struct platform_device *pdev)
+ 
+ 	irq = platform_get_irq(pdev, 0);
+ 	if (irq < 0)
+-		return ret;
++		return irq;
+ 
+ 	ret = devm_request_irq(&pdev->dev, irq, &ams_irq, 0, "ams-irq",
+ 			       indio_dev);
 -- 
 2.25.1
 
