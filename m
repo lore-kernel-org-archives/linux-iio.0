@@ -2,25 +2,25 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A7C24C4321E
-	for <linux-iio@archiver.kernel.org>; Tue, 10 May 2022 14:53:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1C883C4167D
+	for <linux-iio@archiver.kernel.org>; Tue, 10 May 2022 14:53:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345273AbiEJO5Z (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 10 May 2022 10:57:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54438 "EHLO
+        id S1345304AbiEJO50 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 10 May 2022 10:57:26 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345563AbiEJO4m (ORCPT
+        with ESMTP id S1345562AbiEJO4m (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 10 May 2022 10:56:42 -0400
-Received: from EUR03-VE1-obe.outbound.protection.outlook.com (mail-eopbgr50131.outbound.protection.outlook.com [40.107.5.131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B5AAD24EA1D;
-        Tue, 10 May 2022 07:17:59 -0700 (PDT)
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70105.outbound.protection.outlook.com [40.107.7.105])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D65F324F0EC;
+        Tue, 10 May 2022 07:18:01 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=BJv7MgTsQPsDgjgZKF/ZLwpJ3P/mdDgP6E5FRXotI8ESDA8G1rT8WfJ9J3vvgiN8yL0SgC2hNHO2CD1un4SV24YbL9dNpHK0KrGziWlgQg8s9oG3NEHN6RSrzR4WJOfPncemJUo/8Mfoh1YJ5nxJKVA0Mdjjurt6eOVj0pSzEF0pI6a3cnHlJ9NRdvul/PvEhfsCDHY7+dQqv9hgANyARA5Uj66QmUPGhxW1/xAA+gpVz+Bex9IM7v5m8vN3taJyyFF21v8nRKz8s+XTiwqE7lxY3jpO9oMXWxzaPQ/ZkMrUxsE6LabRoJ+JsgUZlgcjxNaixPW1Dc6bjxNv5pw80A==
+ b=a5eMHorbsDu17GTg7nznZsu9tDGY0DI5EQPldpZ+oPAgo42ikg65fyCux6/LIrFRRwqmQkQPh6pnmdIXyYEhU4fNmhJCsDCvNXaSkMr3JaNLeU9QM9uikfeuOPjwGTJEh5h1hyyR+UaMqzFnIQ4mW+DPZ2lclKlKj+AI1VDBTzEGJWmo3NlPRiRlN8Nl5HNR0B2P4dvGmCRe0xxKW6ojrDcFHh0rHgUm2r44v2igkyEOSiG85Yx8okWKxFkMRVJeVVBCSX5EdggGmfkWHWWsCV6gYmQtxUBxwrCpVONXKBv8p9x1Puon6by6mrR6+ClfmuPZWVT8wZFq0MpXQpWLNg==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=AdlnJKotzwLcTK+w90fDGpieY/qimhwVO2XrhgD2/cA=;
- b=SBaakzde4JXhMNj4SGXnOLG++hUXPxy9JKiOXdVhnmQMEXK0ZT1ozbM9fW+PcumO1iOXcDtSjjBCrbNcIri3yaRRZHGOyPJHtmUGoF3CfJ+Km0QgFibZ3i2yI+/zFjQYOYsAwOHGcwCfzNCYzSIniL2KI6A51kVMoCqnC89bR5TD05MoNJAs97BRlP+E58MB0Vo3/vMkKstT0DvbvMpBQYKKviGByfO2BFqUKCnGYEm/xhZ2lgqPzS9SrF6M1h9sQy/Y8ae2MA6UeBUhEEuZEtY0iRtEl0NUrrBFSzDb74bPORpZRdfDErXrGOjBDspfF5UDtzK7XB90vnMs1ru7Tg==
+ bh=L3cMHB+LzBVsn+w7tvL/rA+OnSjsKpw6mWub0Ro73ck=;
+ b=RijBpcToZ4MVjtRYbruIzDB/oheFAaO6lg2CXBQIc3uk+sMPC6t/Kxcjs/7VkVgL/93rWI7hsI8whquYkcUjK1l2qNmRs/VoalQcASTEJDcR92Rn7mzzEwekB3OKLjav9mIUo5N9u3Q6oV3pGRPFIkrGoPrUC8CqYkToJG+84U+73ZWZrZJR1rt26Anarb82VLzKdYf4gHRi4Kkd9ejpOLfhwTj1vDf62s8Jn8lvQ62kZdOtw6Fb4Zi+DTTRHc1Otuf0iMXpFzUt0DhUpCQkMkVtLDHYBbv+DmUXZNY55wLt0h8L2qXVF2IdkZ8iiit0Ij7b3FlRse1ZPDCi9QhztQ==
 ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
  193.8.40.94) smtp.rcpttodomain=kernel.org
  smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
@@ -29,18 +29,18 @@ ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
  d=leica-geosystems.com.cn; s=selector1;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=AdlnJKotzwLcTK+w90fDGpieY/qimhwVO2XrhgD2/cA=;
- b=hXhOtBT9UbhAq8lZGY41q9e11krBS+ItTKLW1x16zjOyv07QRAufWCDxno23lVBeNLbwAHkKJI8lTbPXG/d5xzfr1jZl+9yD4uR/UyHfvUzOfz3V7HNcPJBD0708raS1rMNTtWECNHmQuRtmEytYbBwYmO6utcf3mvpk3J/w7kM=
-Received: from AS9PR06CA0341.eurprd06.prod.outlook.com (2603:10a6:20b:466::14)
- by AM0PR06MB6337.eurprd06.prod.outlook.com (2603:10a6:208:174::14) with
+ bh=L3cMHB+LzBVsn+w7tvL/rA+OnSjsKpw6mWub0Ro73ck=;
+ b=oKWoYlzvWHNPJOnE7bOZ0nHs7kQkFY/Y2TsRNLIEbZ4qfENsL8XCP9ij3xElk75jo/oiKefrO0GpSPMC94XipO7vNV9dEj+fxRP1VQqsfiW2/lxLmdeO8Ovhp0krSBO+zEQ8V+gGifcYVxTZVIfx9N+J84C5l0vTlTZdn0QPvFE=
+Received: from AS9PR06CA0338.eurprd06.prod.outlook.com (2603:10a6:20b:466::32)
+ by AM6PR06MB5955.eurprd06.prod.outlook.com (2603:10a6:20b:34::20) with
  Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.21; Tue, 10 May
- 2022 14:17:57 +0000
+ 2022 14:17:58 +0000
 Received: from VE1EUR02FT083.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:466:cafe::7) by AS9PR06CA0341.outlook.office365.com
- (2603:10a6:20b:466::14) with Microsoft SMTP Server (version=TLS1_2,
+ (2603:10a6:20b:466:cafe::c) by AS9PR06CA0338.outlook.office365.com
+ (2603:10a6:20b:466::32) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.20 via Frontend
- Transport; Tue, 10 May 2022 14:17:57 +0000
+ Transport; Tue, 10 May 2022 14:17:58 +0000
 X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
  smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
  header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
@@ -50,16 +50,16 @@ Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
 Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
  VE1EUR02FT083.mail.protection.outlook.com (10.152.13.186) with Microsoft SMTP
  Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 14:17:56 +0000
+ 15.20.5227.15 via Frontend Transport; Tue, 10 May 2022 14:17:58 +0000
 From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 To:     jic23@kernel.org, lars@metafoo.de, mchehab+huawei@kernel.org,
         ardeleanalex@gmail.com, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, Qing-wu.Li@leica-geosystems.com.cn,
         robh+dt@kernel.org, mike.looijmans@topic.nl,
         devicetree@vger.kernel.org
-Subject: [PATCH V2 1/6] iio: accel: bmi088: Modified the scale calculate
-Date:   Tue, 10 May 2022 14:17:48 +0000
-Message-Id: <20220510141753.3878390-2-Qing-wu.Li@leica-geosystems.com.cn>
+Subject: [PATCH V2 3/6] iio: accel: bmi088: modified the device name
+Date:   Tue, 10 May 2022 14:17:50 +0000
+Message-Id: <20220510141753.3878390-4-Qing-wu.Li@leica-geosystems.com.cn>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220510141753.3878390-1-Qing-wu.Li@leica-geosystems.com.cn>
 References: <20220510141753.3878390-1-Qing-wu.Li@leica-geosystems.com.cn>
@@ -68,88 +68,106 @@ Content-Transfer-Encoding: 8bit
 X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
 Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 1c10b9ae-9c40-45d0-e3dc-08da328fe183
-X-MS-TrafficTypeDiagnostic: AM0PR06MB6337:EE_
-X-Microsoft-Antispam-PRVS: <AM0PR06MB6337FACB102CEBD01D24CDE9D7C99@AM0PR06MB6337.eurprd06.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 99fbe679-65cd-4b65-26d0-08da328fe24c
+X-MS-TrafficTypeDiagnostic: AM6PR06MB5955:EE_
+X-Microsoft-Antispam-PRVS: <AM6PR06MB59553F1A34FD8C2AF8EBADAED7C99@AM6PR06MB5955.eurprd06.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: txXvBx4SlAMRMOnoQ5VEG1yAGBqfK5HGglmIl0axVAUaZpTSqbop6aEDDAgsgyCXFnk9gXdbTz1cjW6DlF77q88rW0HuVraL5Q+m+SX7rQHpmQDcNesdSNJjekMraNFRELBHilL//Rt4SrtweLRzA332SHFhEFBlv0eHu2oT1xtFV+6yKc82XrKke71VQ+tkfIBvNDLHievwTpMYUbwZ4/0bWa39dpCju+WxqWT/pEhPxwLqTSTh0XU+hSOM9qyWvdBELWtnE/9SwNTdToH99LjtDtxRNcXc9ko3TiBaC/1TEX+W1HjqmrVfnynJGhq73rJAVTPlZi8EOHIgKAtQfM7xMA3pUZYGjlK6I3u/ILW4xI2NAXkXuk+d0BrHvLu92H3vYQo6udIHzn0HDSNn17JCwwCvysM7u46TU7UQX/exfgCAVxNLJKm8otfqS+iUg0Qd7zcKWvZvyCs80GTnbC1B2s6TYop7ImkSTFJXXUaayCoRwlX0I66wlN7eItOonjrV7WQHigMzJy6uyt/vF59brWh4w15zsBXFmRy1DjVsSgPgJa8wHJgra+qujGuCOFI5HzK3dBf6XjbubkZPzrzbgTRSFDxpsyMNwhIhISZp9jOi7pIB61Zy4ygs5ftSqQCt52R0GnZhbOvyta/836JbYccQVekgq+kLXi2QL7fj6e0a48NZPpKdakaf4SGsbTBf7GJCs1iHR1RNX3fsWA==
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(40470700004)(36840700001)(26005)(81166007)(8676002)(86362001)(6512007)(36860700001)(956004)(2616005)(6506007)(118246002)(6666004)(2906002)(356005)(6486002)(921005)(83380400001)(316002)(1076003)(8936002)(508600001)(40460700003)(5660300002)(36736006)(186003)(36756003)(82310400005)(70206006)(70586007)(47076005)(336012);DIR:OUT;SFP:1102;
+X-Microsoft-Antispam-Message-Info: WnNV4LEoPfSR/C2bLGyDb1CiIo+rHjicDRqDIWWxHfWAWETapVys5LH85PVdTvFlyi9Nc5Ns/F9Z2TH7kMMMI6TC6xtcD//DGaMU+XoB4wE3cM4G4y/4sVlSreq7ghB9St6OfUjxtpTyiJ8hTXB/HIVmo0FAIeXLW9O9qEsbad0nihhfx5HOT3GGjhIRRgDkuwIKFdjESnEPLUioo4ak9VtL5ymuUL+3l0b7ljeqBVOi82OLceczU7UNH5dB7U15OqsWZIviSeKOQ4PwdWhboYXggCIU+tvKvZBrn5Yw1skU3pfEKA1Iengm8CzPh3GNm5atpm8vX6fqr4EoMe5Q/EG4lC8yTbBznTm8Uv04Apwty+DIFn9dGXdUMQ9e/lM2raKZq1G5xu+5r90jlEqiaL6Nt3Ru1cVA/wQepWnt9Lz3jS5lJ7z58SHCm0i3EpBqw6o5P9SkvZv3CwCD/dq4Jr08XtyQ2xLt1V3REsIU2aVe3p3K3B4uKy+B/VlREGEFSmI/5XBnlgYxmki706fWFjA+OSB7vJSuGHbS+ZUSV0lniRaHy7YYT9zB/0557n+ULrrd7KIWlRH/yyBTBE3XJVl+PUYmrCxfyIPbZ2koE/hSCatslnmyIhQr0mELxMz9nXrWtfd4p15mvZLEPBFLH5BHzDZIOIKmeh0/B5tECAVnmxL1jq+65Lyc8MIjprBKBQ7dzYPbMY1HdyhA2X1csA==
+X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(356005)(82310400005)(921005)(81166007)(118246002)(83380400001)(36756003)(2616005)(8936002)(70586007)(70206006)(36736006)(8676002)(26005)(47076005)(40460700003)(6486002)(956004)(6512007)(36860700001)(336012)(508600001)(316002)(2906002)(5660300002)(186003)(6666004)(1076003)(6506007)(86362001);DIR:OUT;SFP:1102;
 X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 14:17:56.9232
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 10 May 2022 14:17:58.2356
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 1c10b9ae-9c40-45d0-e3dc-08da328fe183
+X-MS-Exchange-CrossTenant-Network-Message-Id: 99fbe679-65cd-4b65-26d0-08da328fe24c
 X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
 X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
 X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT083.eop-EUR02.prod.protection.outlook.com
 X-MS-Exchange-CrossTenant-AuthAs: Anonymous
 X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM0PR06MB6337
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR06MB5955
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The units after application of scale are 100*m/s^2,
-The scale calculation is only for the device
-with the range of 3, 6, 12, and 24g,
-but some other chips have a range of 2, 4, 6, and 8g.
-
-Modified the formula to a scale list.
-The scales in the list are calculated by 1/sensitivity*9.8.
-The new units after the application of scale are m/s^2.
+It is possible to have multiple sensors connected on the same platform,
+To support multiple sensors, the commit makes it possible to obtain the
+device name by reading the chip ID instead of the device-tree name.
+To be compatible with previous versions, renam bmi088a to bmi088-accel.
 
 Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 ---
- drivers/iio/accel/bmi088-accel-core.c | 12 +++++++-----
- 1 file changed, 7 insertions(+), 5 deletions(-)
+ drivers/iio/accel/bmi088-accel-core.c | 6 +++---
+ drivers/iio/accel/bmi088-accel-spi.c  | 4 +---
+ drivers/iio/accel/bmi088-accel.h      | 2 +-
+ 3 files changed, 5 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
-index a06dae5c971d..9300313b63cb 100644
+index 8fee1d02e773..de2385e4dad5 100644
 --- a/drivers/iio/accel/bmi088-accel-core.c
 +++ b/drivers/iio/accel/bmi088-accel-core.c
-@@ -119,6 +119,7 @@ struct bmi088_accel_chip_info {
- 	u8 chip_id;
- 	const struct iio_chan_spec *channels;
- 	int num_channels;
-+	const int scale_table[4][2];
- };
+@@ -459,7 +459,7 @@ static const struct iio_chan_spec bmi088_accel_channels[] = {
  
- struct bmi088_accel_data {
-@@ -280,6 +281,7 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
- 	struct bmi088_accel_data *data = iio_priv(indio_dev);
- 	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
-+	int reg;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -330,13 +332,12 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
- 				return ret;
- 
- 			ret = regmap_read(data->regmap,
--					  BMI088_ACCEL_REG_ACC_RANGE, val);
-+					  BMI088_ACCEL_REG_ACC_RANGE, &reg);
- 			if (ret)
- 				goto out_read_raw_pm_put;
--
--			*val2 = 15 - (*val & 0x3);
--			*val = 3 * 980;
--			ret = IIO_VAL_FRACTIONAL_LOG2;
-+			*val = data->chip_info->scale_table[reg&0x03][0];
-+			*val2 = data->chip_info->scale_table[reg&0x03][1];
-+			ret = IIO_VAL_INT_PLUS_MICRO;
- 
- 			goto out_read_raw_pm_put;
- 		default:
-@@ -432,6 +433,7 @@ static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
+ static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
+ 	[0] = {
+-		.name = "bmi088a",
++		.name = "bmi088-accel",
  		.chip_id = 0x1E,
  		.channels = bmi088_accel_channels,
  		.num_channels = ARRAY_SIZE(bmi088_accel_channels),
-+		.scale_table = {{0, 897}, {0, 1795}, {0, 3590}, {0, 7179}},
- 	},
- };
+@@ -524,7 +524,7 @@ static int bmi088_accel_chip_init(struct bmi088_accel_data *data)
+ }
  
+ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
+-	int irq, const char *name, bool block_supported)
++	int irq, bool block_supported)
+ {
+ 	struct bmi088_accel_data *data;
+ 	struct iio_dev *indio_dev;
+@@ -545,7 +545,7 @@ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap,
+ 
+ 	indio_dev->channels = data->chip_info->channels;
+ 	indio_dev->num_channels = data->chip_info->num_channels;
+-	indio_dev->name = name ? name : data->chip_info->name;
++	indio_dev->name = data->chip_info->name;
+ 	indio_dev->available_scan_masks = bmi088_accel_scan_masks;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->info = &bmi088_accel_info;
+diff --git a/drivers/iio/accel/bmi088-accel-spi.c b/drivers/iio/accel/bmi088-accel-spi.c
+index dd1e3f6cf211..0fed0081e1fd 100644
+--- a/drivers/iio/accel/bmi088-accel-spi.c
++++ b/drivers/iio/accel/bmi088-accel-spi.c
+@@ -42,7 +42,6 @@ static struct regmap_bus bmi088_regmap_bus = {
+ static int bmi088_accel_probe(struct spi_device *spi)
+ {
+ 	struct regmap *regmap;
+-	const struct spi_device_id *id = spi_get_device_id(spi);
+ 
+ 	regmap = devm_regmap_init(&spi->dev, &bmi088_regmap_bus,
+ 			spi, &bmi088_regmap_conf);
+@@ -52,8 +51,7 @@ static int bmi088_accel_probe(struct spi_device *spi)
+ 		return PTR_ERR(regmap);
+ 	}
+ 
+-	return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq, id->name,
+-				       true);
++	return bmi088_accel_core_probe(&spi->dev, regmap, spi->irq, true);
+ }
+ 
+ static int bmi088_accel_remove(struct spi_device *spi)
+diff --git a/drivers/iio/accel/bmi088-accel.h b/drivers/iio/accel/bmi088-accel.h
+index 5c25f16b672c..c32afe9606a8 100644
+--- a/drivers/iio/accel/bmi088-accel.h
++++ b/drivers/iio/accel/bmi088-accel.h
+@@ -12,7 +12,7 @@ extern const struct regmap_config bmi088_regmap_conf;
+ extern const struct dev_pm_ops bmi088_accel_pm_ops;
+ 
+ int bmi088_accel_core_probe(struct device *dev, struct regmap *regmap, int irq,
+-			    const char *name, bool block_supported);
++			    bool block_supported);
+ int bmi088_accel_core_remove(struct device *dev);
+ 
+ #endif /* BMI088_ACCEL_H */
 -- 
 2.25.1
 
