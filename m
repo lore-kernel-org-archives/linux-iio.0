@@ -2,92 +2,89 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12DAEC433F5
-	for <linux-iio@archiver.kernel.org>; Wed, 11 May 2022 09:08:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE9FCC433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 11 May 2022 09:42:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229885AbiEKJIw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 May 2022 05:08:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44318 "EHLO
+        id S229819AbiEKJml (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 May 2022 05:42:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229972AbiEKJIv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 May 2022 05:08:51 -0400
-Received: from mail-qk1-f182.google.com (mail-qk1-f182.google.com [209.85.222.182])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B26AA2CC88;
-        Wed, 11 May 2022 02:08:50 -0700 (PDT)
-Received: by mail-qk1-f182.google.com with SMTP id m1so1800844qkn.10;
-        Wed, 11 May 2022 02:08:50 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=HhYQv27JmheN+IIAmT/S+0BaIl0u3hjG9Yztl7Q3bYI=;
-        b=TZuPmOW70TUB+sleb5ZQWdRJQPFjoLL1L76Pr20kFnVei9sysu9k2O/m96cm+ckz2q
-         DupDFQRI2E1ZRtMrQgIWmpuTasgbcYgfothSwi8dTqF/9ASeXV5zB183uVm7KymqEgUX
-         bBDbEEWsgn+JUsF+smryPSN0D0It+/3Z4eGwtu3FJkz8+Ljk+vm3ICWho44fXPvfZ2a7
-         P3oTbV7uMEEyM8aV7aZ3LDBFYcqhzpvQjVb0QRbo8DUggq/Vv9jdlMNKzR019gUCaqqW
-         php8NQQcuIrhQxiI/0o269ppFwoW2JKGd2E5HsMf3l/RoKjqKmPmV5u57jisqzXiqtHj
-         5RXQ==
-X-Gm-Message-State: AOAM530GwRAIZsdYyHPWabd/N2gPjpB63x3CeBw1Gc6bwL1/2z09c5/W
-        LJQDYQ47bOdgt8sbFp6mrpgSFClpH3Idog==
-X-Google-Smtp-Source: ABdhPJxg1WI5OjXgKAjZqUrH7ZuN7HnyAf6ZevH92l8Hj5iZ3vCB+TFgdvEUzMVOaRMav2ryCEgAsQ==
-X-Received: by 2002:a05:620a:4449:b0:6a0:3f3c:c29d with SMTP id w9-20020a05620a444900b006a03f3cc29dmr18117946qkp.25.1652260129575;
-        Wed, 11 May 2022 02:08:49 -0700 (PDT)
-Received: from mail-yb1-f178.google.com (mail-yb1-f178.google.com. [209.85.219.178])
-        by smtp.gmail.com with ESMTPSA id v3-20020ac85783000000b002f39b99f6b8sm873292qta.82.2022.05.11.02.08.48
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 11 May 2022 02:08:48 -0700 (PDT)
-Received: by mail-yb1-f178.google.com with SMTP id w187so2780962ybe.2;
-        Wed, 11 May 2022 02:08:48 -0700 (PDT)
-X-Received: by 2002:a05:6902:905:b0:64a:2089:f487 with SMTP id
- bu5-20020a056902090500b0064a2089f487mr22009190ybb.202.1652260128075; Wed, 11
- May 2022 02:08:48 -0700 (PDT)
+        with ESMTP id S233551AbiEKJmM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 May 2022 05:42:12 -0400
+Received: from bhuna.collabora.co.uk (bhuna.collabora.co.uk [46.235.227.227])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9A56205EE;
+        Wed, 11 May 2022 02:41:19 -0700 (PDT)
+Received: from [127.0.0.1] (localhost [127.0.0.1])
+        (Authenticated sender: shreeya)
+        with ESMTPSA id B695A1F4406C
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=collabora.com;
+        s=mail; t=1652262078;
+        bh=UNeNPgpw1R6Fw0IfN3Kfn3Etg70pun757On7XIN528E=;
+        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
+        b=GTvQde7cLXTWQvjGfBvf2uqJRH3QaSF8ue5Ct5KFK/d6gOnYCp8X6DhpfYR4cWje6
+         gDWaLWjdAniSw1NLNn4aJTLyCxlheLJlgNFBETvCJEYuddhsz6UcHlIqcbCrieBruG
+         /g1bqQIcreeoDGk8aeM36q2B4nzVfQWP1TiwHHGOJMdMxa3eXc+ogGsriIJa6FMNjl
+         EDicNGlBSAgc3YnY52pe0tQJaSulVm1M8xPWM1fHA3nr4TuMWjpjnpy6Op1s3qC5V/
+         yWy6+7EJ/Cn3267/5aKjjPByB//tMppBxF6F6mrCvLqbRd0MedZ+93vMtHCott6e35
+         2sUdg7K6hkSBg==
+From:   Shreeya Patel <shreeya.patel@collabora.com>
+To:     jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        Zhigang.Shi@liteon.com, krisman@collabora.com
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel@collabora.com,
+        alvaro.soliverez@collabora.com,
+        Shreeya Patel <shreeya.patel@collabora.com>,
+        Krzysztof Kozlowski <krzk@kernel.org>
+Subject: [PATCH v4 1/3] dt-bindings: vendor-prefixes: Add 'ltr' as deprecated vendor prefix
+Date:   Wed, 11 May 2022 15:10:22 +0530
+Message-Id: <20220511094024.175994-2-shreeya.patel@collabora.com>
+X-Mailer: git-send-email 2.30.2
+In-Reply-To: <20220511094024.175994-1-shreeya.patel@collabora.com>
+References: <20220511094024.175994-1-shreeya.patel@collabora.com>
 MIME-Version: 1.0
-References: <20220511082325.36185-1-biju.das.jz@bp.renesas.com> <20220511082325.36185-2-biju.das.jz@bp.renesas.com>
-In-Reply-To: <20220511082325.36185-2-biju.das.jz@bp.renesas.com>
-From:   Geert Uytterhoeven <geert@linux-m68k.org>
-Date:   Wed, 11 May 2022 11:08:36 +0200
-X-Gmail-Original-Message-ID: <CAMuHMdXpfV-u6Yk+J_fhh1pYd4+uPdJRhv2C4Zr7ajaQdzzDxQ@mail.gmail.com>
-Message-ID: <CAMuHMdXpfV-u6Yk+J_fhh1pYd4+uPdJRhv2C4Zr7ajaQdzzDxQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/2] dt-bindings: iio: adc: Document Renesas RZ/G2UL ADC
-To:     Biju Das <biju.das.jz@bp.renesas.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org,
-        Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
-        <devicetree@vger.kernel.org>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Chris Paterson <Chris.Paterson2@renesas.com>,
-        Biju Das <biju.das@bp.renesas.com>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, May 11, 2022 at 10:23 AM Biju Das <biju.das.jz@bp.renesas.com> wrote:
-> Document Renesas RZ/G2UL ADC bindings. RZ/G2UL ADC is almost identical
-> to RZ/G2L, but it has 2 analog input channels compared to 8 channels
-> on the RZ/G2L.
->
-> Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
-> ---
-> v3->v4:
->  * Removed unnecessary SoC specific reg description as it is
->    equivalent to the logic used in reg.
->  * Removed Items from reg.
+'liteon' is the correct vendor prefix for devices released by
+LITE-ON Technology Corp. But one of the released device which uses
+ltr216a light sensor exposes the vendor prefix name as 'ltr' through
+ACPI.
 
-Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+Hence, add 'ltr' as a deprecated vendor prefix which would suppress the
+following warning in case the compatible string used in ltrf216a driver
+is "ltr,ltrf216a"
 
-Gr{oetje,eeting}s,
+WARNING: DT compatible string vendor "ltr" appears un-documented --
+check ./Documentation/devicetree/bindings/vendor-prefixes.yaml
+364: FILE: drivers/iio/light/ltrf216a.c:313:
++    { .compatible = "ltr,ltrf216a" },
 
-                        Geert
+Reviewed-by: Krzysztof Kozlowski <krzk@kernel.org>
+Signed-off-by: Shreeya Patel <shreeya.patel@collabora.com>
+---
 
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+Changes in v2
+  - Add vendor prefix name as per the alphabetical order.
 
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
+ Documentation/devicetree/bindings/vendor-prefixes.yaml | 3 +++
+ 1 file changed, 3 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.yaml b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+index 01430973ecec..02f94fba03b6 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.yaml
++++ b/Documentation/devicetree/bindings/vendor-prefixes.yaml
+@@ -716,6 +716,9 @@ patternProperties:
+     description: Loongson Technology Corporation Limited
+   "^lsi,.*":
+     description: LSI Corp. (LSI Logic)
++  "^ltr,.*":
++    description: LITE-ON Technology Corp.
++    deprecated: true
+   "^lwn,.*":
+     description: Liebherr-Werk Nenzing GmbH
+   "^lxa,.*":
+-- 
+2.30.2
+
