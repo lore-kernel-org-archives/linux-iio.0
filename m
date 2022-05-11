@@ -2,68 +2,75 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B1A5FC433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 11 May 2022 07:05:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id EB84AC433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 11 May 2022 07:05:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242684AbiEKHFW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 May 2022 03:05:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53798 "EHLO
+        id S238680AbiEKHFZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 May 2022 03:05:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54078 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242739AbiEKHFM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 May 2022 03:05:12 -0400
-Received: from relmlie5.idc.renesas.com (relmlor1.renesas.com [210.160.252.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id C112F13C4D6;
-        Wed, 11 May 2022 00:04:52 -0700 (PDT)
+        with ESMTP id S242783AbiEKHFP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 May 2022 03:05:15 -0400
+Received: from relmlie6.idc.renesas.com (relmlor2.renesas.com [210.160.252.172])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 5FB4B13D149;
+        Wed, 11 May 2022 00:05:00 -0700 (PDT)
 X-IronPort-AV: E=Sophos;i="5.91,216,1647270000"; 
-   d="scan'208";a="119339111"
+   d="scan'208";a="120617761"
 Received: from unknown (HELO relmlir6.idc.renesas.com) ([10.200.68.152])
-  by relmlie5.idc.renesas.com with ESMTP; 11 May 2022 16:04:51 +0900
+  by relmlie6.idc.renesas.com with ESMTP; 11 May 2022 16:04:59 +0900
 Received: from localhost.localdomain (unknown [10.226.92.143])
-        by relmlir6.idc.renesas.com (Postfix) with ESMTP id B3B5942049BF;
-        Wed, 11 May 2022 16:04:47 +0900 (JST)
+        by relmlir6.idc.renesas.com (Postfix) with ESMTP id B612942049B2;
+        Wed, 11 May 2022 16:04:56 +0900 (JST)
 From:   Biju Das <biju.das.jz@bp.renesas.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+To:     Jonathan Cameron <jic23@kernel.org>
 Cc:     Biju Das <biju.das.jz@bp.renesas.com>,
         Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org,
         Geert Uytterhoeven <geert+renesas@glider.be>,
         Chris Paterson <Chris.Paterson2@renesas.com>,
         Biju Das <biju.das@bp.renesas.com>
-Subject: [PATCH v3 0/2] Add RZ/G2UL ADC support
-Date:   Wed, 11 May 2022 08:04:41 +0100
-Message-Id: <20220511070443.30231-1-biju.das.jz@bp.renesas.com>
+Subject: [PATCH v3 2/2] iio: adc: rzg2l_adc: Remove unnecessary channel check from rzg2l_adc_read_label()
+Date:   Wed, 11 May 2022 08:04:43 +0100
+Message-Id: <20220511070443.30231-3-biju.das.jz@bp.renesas.com>
 X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220511070443.30231-1-biju.das.jz@bp.renesas.com>
+References: <20220511070443.30231-1-biju.das.jz@bp.renesas.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch series document ADC found on RZ/G2UL SoC and also removes
-unnecessary channel check from rzg2l_adc_read_label().
+Remove unnecessary channel check from rzg2l_adc_read_label(), as the
+channel error handling is already done in probe(). Therefore no need to
+validate at runtime.
 
+Signed-off-by: Biju Das <biju.das.jz@bp.renesas.com>
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
+---
 v2->v3:
- * Added generic description for reg.
- * Improved schema validation by restricting both channel and reg to [0-1].
  * Added Rb tag from Geert.
+v2:
+ * New patch
+---
+ drivers/iio/adc/rzg2l_adc.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-v1->v2:
- * Started using generic compatible for RZ/G2UL and added SoC specific validation
-   for number of supported channels.
-
-Biju Das (2):
-  dt-bindings: iio: adc: Document Renesas RZ/G2UL ADC
-  iio: adc: rzg2l_adc: Remove unnecessary channel check from
-    rzg2l_adc_read_label()
-
- .../bindings/iio/adc/renesas,rzg2l-adc.yaml   | 36 ++++++++++++++++---
- drivers/iio/adc/rzg2l_adc.c                   |  3 --
- 2 files changed, 32 insertions(+), 7 deletions(-)
-
+diff --git a/drivers/iio/adc/rzg2l_adc.c b/drivers/iio/adc/rzg2l_adc.c
+index 7585144b9715..bee5f9861acb 100644
+--- a/drivers/iio/adc/rzg2l_adc.c
++++ b/drivers/iio/adc/rzg2l_adc.c
+@@ -260,9 +260,6 @@ static int rzg2l_adc_read_label(struct iio_dev *iio_dev,
+ 				const struct iio_chan_spec *chan,
+ 				char *label)
+ {
+-	if (chan->channel >= RZG2L_ADC_MAX_CHANNELS)
+-		return -EINVAL;
+-
+ 	return sysfs_emit(label, "%s\n", rzg2l_adc_channel_name[chan->channel]);
+ }
+ 
 -- 
 2.25.1
 
