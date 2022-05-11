@@ -2,140 +2,151 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D99B3C4321E
-	for <linux-iio@archiver.kernel.org>; Wed, 11 May 2022 21:48:29 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 480C0C433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 11 May 2022 22:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348418AbiEKVs0 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 11 May 2022 17:48:26 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55560 "EHLO
+        id S241861AbiEKWIo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 11 May 2022 18:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42394 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348382AbiEKVsU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 May 2022 17:48:20 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 71AD6515B0;
-        Wed, 11 May 2022 14:48:10 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id d15so5854697lfk.5;
-        Wed, 11 May 2022 14:48:10 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=qjFTO1D1EZDKKiJccbHJv6i5BuHy5bt8K51ddMuen78=;
-        b=gXg11SMVbS7MdGdULt0/Q2dwr+lb6VgC7aQA1IJ7Lz0N+iATdF4knANd0/t3M28n5m
-         27Rk+OdfyoNSV56ollhWuGjeOcp86A0fl8L0MUVaILWc9NSyrFA38ssX11IURCZmbHFK
-         gSYxLBNLZoDj7L3UKIB2NSCCytNtSVkU1wcGKFnbrSs/H+2x/QjdGAsSijB/4TRQQCfR
-         DzsYUSa1hLUgh6q8HxRHyDhNa8WQKW8kS26s7BCf8tEB09kBxnumEZtN9S7mJMudlVXJ
-         kOE/KmcVR14QrlgDbPAjfX1ow3cK67Q1Rn32FUg5EFywEmIHU9Pit656mZ+aTxVkcPX0
-         8rmQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=qjFTO1D1EZDKKiJccbHJv6i5BuHy5bt8K51ddMuen78=;
-        b=5jPBqL/LyiRojauO/1raxB3kxc6gR7dLpKXCMQFr5+sYF2xGJVYYwWdRqxOjfMIZsG
-         5T/QuojPEoOp/QrFivxiTIKb6SBN352cB6dGr32HyaUj1TLHMUikIKepfipNCn2Pb3OH
-         rrie40YDB8OkiG2QwoGT47ZEhPXCtJgfhW7G0ndbfN6im6oENuN0h/JNqUo29sAjAidR
-         0PAUu5KXyelJ+6xMyoLlWZkF3+3D+l/SdBoTLWYVSpVrpViXUDIS4bEjCPdWgUohf33m
-         DNVM2Xk5WhJsI4dRjzhu/KIVp/asw4uwLfjWnApbe4cPqJ9fll/h+Oza/wwcu1QFQpzg
-         dBnQ==
-X-Gm-Message-State: AOAM531PJA+5ls2dRzbEc72M2GT7EQYxR1yUFNnha+vAshDyK/6EkBhC
-        ASsmRkg4R57I/bYiVgI9i+ZyToM/bFRrIQ==
-X-Google-Smtp-Source: ABdhPJyYNFiN9PteQqRh87oyzawDjvUiMWjw4JDEft2h/aD+ItAVOoshpTcGYPYGo7KqG2JM6BlLZQ==
-X-Received: by 2002:a05:6512:12c3:b0:473:c7e2:b46b with SMTP id p3-20020a05651212c300b00473c7e2b46bmr21650100lfg.382.1652305688674;
-        Wed, 11 May 2022 14:48:08 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id 7-20020ac25687000000b0047255d211afsm458891lfr.222.2022.05.11.14.48.06
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 11 May 2022 14:48:08 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v2 5/5] arm64: dts: qcom: msm8998-xperia: Introduce ToF sensor support
-Date:   Thu, 12 May 2022 00:47:17 +0300
-Message-Id: <20220511214718.50879-6-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220511214718.50879-1-markuss.broks@gmail.com>
-References: <20220511214718.50879-1-markuss.broks@gmail.com>
+        with ESMTP id S239751AbiEKWIm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 May 2022 18:08:42 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E3CC11ECBBB;
+        Wed, 11 May 2022 15:08:41 -0700 (PDT)
+Received: from pps.filterd (m0098393.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24BLqgEe012777;
+        Wed, 11 May 2022 22:08:27 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=RebwC26p5Wfow7qyFro4avBymjb+i3xQnZigePH8kn0=;
+ b=mzL9P13o/eawGUP9AlBIyxU0bjkg278oQ4j9i2XlDF/gTkpjmTI0Rq/Xas4wn6RyzsNG
+ Y9fAqzngoMnYz9GugFgSvpcusir8FkCYNMi6eb9K+69PZzrKmrxOj4CmJJd5DKugoMcJ
+ ULZ4s7MItOP9U/DwHFyAD9uL04/owJfPEF2OvTyUjVgFAU00SQXAi9rTkPTd+cDgnW/W
+ OdGDTq5zhd5Aq5aotaNtKK2RpcxO+E3Rmi9DhUKpE+gsItDUwUhGEwUMBrDaNysBpQoQ
+ ClU+RVhqbT3rgXcrufAJEf4TwQ7CnVqfZcg16fa24Z1g73PcDu0dcCLHQTxL1wSgrQ7t 9w== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g0nes09bk-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 22:08:26 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24BM3EEc017328;
+        Wed, 11 May 2022 22:08:25 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma02wdc.us.ibm.com with ESMTP id 3fwgd9y6kj-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 11 May 2022 22:08:25 +0000
+Received: from b03ledav004.gho.boulder.ibm.com (b03ledav004.gho.boulder.ibm.com [9.17.130.235])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24BM8PQ433882590
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 11 May 2022 22:08:25 GMT
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id F1C1B7805E;
+        Wed, 11 May 2022 22:08:24 +0000 (GMT)
+Received: from b03ledav004.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 939CB7805F;
+        Wed, 11 May 2022 22:08:24 +0000 (GMT)
+Received: from [9.211.61.211] (unknown [9.211.61.211])
+        by b03ledav004.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Wed, 11 May 2022 22:08:24 +0000 (GMT)
+Message-ID: <7b4f2991-1dce-77d2-53c2-c4c358cbfe77@linux.ibm.com>
+Date:   Wed, 11 May 2022 17:08:24 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH 1/2] dt-bindings: iio: humidity: Add si7020 bindings
+Content-Language: en-US
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        jic23@kernel.org, lars@metafoo.de, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, dbarksdale@uplogix.com,
+        miltonm@us.ibm.com
+References: <20220511190835.51046-1-eajames@linux.ibm.com>
+ <20220511190835.51046-2-eajames@linux.ibm.com>
+From:   Eddie James <eajames@linux.ibm.com>
+In-Reply-To: <20220511190835.51046-2-eajames@linux.ibm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: sksZU_YEqcaKthbltK_OC-5v7vLil0VO
+X-Proofpoint-ORIG-GUID: sksZU_YEqcaKthbltK_OC-5v7vLil0VO
+Content-Transfer-Encoding: 7bit
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-11_07,2022-05-11_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxlogscore=972 bulkscore=0
+ suspectscore=0 impostorscore=0 spamscore=0 mlxscore=0 lowpriorityscore=0
+ phishscore=0 adultscore=0 priorityscore=1501 clxscore=1015 malwarescore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2202240000
+ definitions=main-2205110098
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds device tree support for the VL53L0X ToF sensor
-found on all Yoshino devices.
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
+On 5/11/22 14:08, Eddie James wrote:
+> Document the si7020 bindings with a new "silabs,skip-reset" property.
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-index 47488a1aecae..a95fa29aa18b 100644
---- a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-@@ -245,6 +245,24 @@ &blsp2_uart1 {
- 	status = "okay";
- };
- 
-+&blsp2_i2c2 {
-+	status = "okay";
-+
-+	proximity@29 {
-+		compatible = "st,vl53l0x";
-+		reg = <0x29>;
-+
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <22 IRQ_TYPE_EDGE_FALLING>;
-+
-+		reset-gpios = <&tlmm 27 GPIO_ACTIVE_LOW>;
-+		vdd-supply = <&cam_vio_vreg>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&tof_int &tof_reset>;
-+	};
-+};
-+
- &ibb {
- 	regulator-min-microamp = <800000>;
- 	regulator-max-microamp = <800000>;
-@@ -621,6 +639,21 @@ hall_sensor0_default: acc-cover-open {
- 		input-enable;
- 	};
- 
-+	tof_int: tof-int {
-+		pins = "gpio22";
-+		function = "gpio";
-+		bias-pull-up;
-+		drive-strength = <2>;
-+		input-enable;
-+	};
-+
-+	tof_reset: tof-reset {
-+		pins = "gpio27";
-+		function = "gpio";
-+		bias-disable;
-+		drive-strength = <2>;
-+	};
-+
- 	ts_int_n: ts-int-n {
- 		pins = "gpio125";
- 		function = "gpio";
--- 
-2.36.1
 
+I missed the entry in trivial-devices.txt. I can push a v2 or a separate 
+patch for that.
+
+Eddie
+
+
+>
+> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+> ---
+>   .../bindings/iio/humidity/silabs,si7020.yaml  | 42 +++++++++++++++++++
+>   1 file changed, 42 insertions(+)
+>   create mode 100644 Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
+>
+> diff --git a/Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml b/Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
+> new file mode 100644
+> index 000000000000..ab53bb8d9606
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
+> @@ -0,0 +1,42 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/humidity/silabs,si7020.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: SI7020 humidity + temperature sensor
+> +
+> +maintainers:
+> +  - David Barksdale <dbarksdale@uplogix.com>
+> +
+> +description: |
+> +   The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
+> +   are i2c devices which have an identical programming interface for
+> +   measuring relative humidity and temperature.
+> +
+> +properties:
+> +  compatible:
+> +    const: silabs,si7020
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  siliabs,skip-reset:
+> +    $ref: /schemas/types.yaml#/definitions/flag
+> +    description:
+> +      Disables resetting of the device during probe
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    si7021-a20@40 {
+> +        silabs,skip-reset;
+> +        compatible = "silabs,si7020";
+> +        reg = <0x40>;
+> +    };
+> +...
