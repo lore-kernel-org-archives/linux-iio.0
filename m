@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 07E8AC433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 12 May 2022 11:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58639C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 12 May 2022 11:08:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353034AbiELLId (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 May 2022 07:08:33 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59816 "EHLO
+        id S1353012AbiELLIb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 May 2022 07:08:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60002 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352979AbiELLIa (ORCPT
+        with ESMTP id S1352975AbiELLIa (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2022 07:08:30 -0400
-Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C30145D199;
-        Thu, 12 May 2022 04:08:21 -0700 (PDT)
-Received: by mail-lf1-x132.google.com with SMTP id d15so8413609lfk.5;
-        Thu, 12 May 2022 04:08:21 -0700 (PDT)
+Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F795AA66;
+        Thu, 12 May 2022 04:08:16 -0700 (PDT)
+Received: by mail-lf1-x12e.google.com with SMTP id d15so8413239lfk.5;
+        Thu, 12 May 2022 04:08:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qjFTO1D1EZDKKiJccbHJv6i5BuHy5bt8K51ddMuen78=;
-        b=h9FmGSg4bI11T8kP5bLEDH1qqYkFrt3qTZmcdAjTGFQYt9wQXbDKgOqXfC+JYpujXu
-         FvdC96vgRZ1QQoyFPFGTqC5H7q5SEqo/pxrG35EEu7sw1THgssiDtIfZddVWlppwATMF
-         DQEcV7Ttr4YPAcbRZ5hP+XQc3FGqFBe6NMMZIDdYjkxfj/p7nriaquFmDWv2jZtJpE4o
-         GLokkOOzk241QdGAVo2xcwKTQmkWPpLL7IzNrzLdWUMJPyE3HkIsduyM9x2hUfak6k2t
-         GFpyRdam+7vpsdR41RAjGuTgycZ+SJJBSwxeO+luDitt0YnUk+GGn4sZhPnX5FdWHt/B
-         wORw==
+        bh=Rn+hZ1SORWL9uzL+yqm22z/NAwpZAv/juhns1YUGhh8=;
+        b=ajU/1KslDh5E/JvduAifp/STGz5uzWKx00qJ8v53ttzKhbo9OG3iAW8XCQ+nAxTqzd
+         ObDea9lIRsmxwKOXsIMP66Yn6U+ir+TM4Sw9TWaHTHVkfxN4BC5L0PI6JPVUKV1Z6oKf
+         a/fIv2yTNeSqMgk8CNEBbkqEag6f2sa4BV5zj5LT9gQ+mzqJcz1p597Op10gRczAymH6
+         7bA3+DYGB8baVyqOGzlnSTNSmmHa9aex1za0ujck3B1c5QkN5C3c8K7kJKwEbOta4KAt
+         Abxlk3XfUP5hAusIpx3qweO7sZcvk8jQI/6RscwjcXixXBqEMX1YQ1BiARkaC51R9IcK
+         lZhA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qjFTO1D1EZDKKiJccbHJv6i5BuHy5bt8K51ddMuen78=;
-        b=EN01Dir/xyhAvpyvCYtXjza1Pz+sX6AWShnVNPryberhQCEgo7eBC6j0SBNa8cwIWF
-         UTewxjsPGJ9gJBiLPbRuRp+oVxmM2qcR35F/aA3qsLnYliMZ2OYILfQ+FkIQxuouu54E
-         eaPqsKX/9QLRgqzWl5akU2lMOiYhZkzwAW3cmIKfbkxlGW8mb7oG67KPEBStuBUaR/Cx
-         j+3+w1Jmk8XV0ZUWAzml6Yi8pQZYoaW7eqCQpyDK3W1cnn8Ke0yU9O0bsvGfZ8a5osoO
-         9edDiIFOnsTZud/leJ1GcKG+eLZYatqyQwH4DyhNE+kZ4kGZujed/KynkgiZD5tKqJqS
-         3jvg==
-X-Gm-Message-State: AOAM531TVkfVbnQ5wyR9xtghk9ueN/4Nc2XoVY5CNr4IWEaZhpSQrYNJ
-        r9+PBcXtdxuTpicolpiC9j72QbgewD0dUg==
-X-Google-Smtp-Source: ABdhPJzV29F8YQmt876AcPMunxt7RvQwAWEqhPI/M867EYQL1xSd6Z1fcha4gXmGoRf9vbMonoSd1Q==
-X-Received: by 2002:a05:6512:3a84:b0:473:de2d:ae1 with SMTP id q4-20020a0565123a8400b00473de2d0ae1mr23442455lfu.371.1652353700039;
-        Thu, 12 May 2022 04:08:20 -0700 (PDT)
+        bh=Rn+hZ1SORWL9uzL+yqm22z/NAwpZAv/juhns1YUGhh8=;
+        b=pxVqao5/5kNTe2oa7d2Z/2lQMytftfMZ2ZNM8x48Lep40OwkrSOlKRqNZ2jVFKpUrr
+         YqoMHPwYjHQduGoJFvpRRsr8mb9FcUSyQveM+g0AOiBFOXmOWtkZA4ZvWcqdKK+L+cMH
+         oolwuKAgrL+SxCkW+OAmY9QrOrkPO52DiE0vtmXCiBSUreQ496XBMnXaFLAKem6MwN1I
+         9bAbkt6NxUam0Po2Ut78j93D3C0zeKseu4PQcFcFDU46+Fhm/A3n7W+JnPPIB+l8A4u3
+         2xU+/RgQEMAJUUWxU9r3Kbyaqz7qd+YcD06jfovJRoKAiHrZAkMqTCybYehqgq+C89Iu
+         mkuQ==
+X-Gm-Message-State: AOAM532nEYgIZqF9LuM6KyMOJj9ZdzFpsY8EYo0AAFkxyKvawI8pBlv9
+        oi7Hzfei9UPq3cBrGH1gHn05j/MKBiexqA==
+X-Google-Smtp-Source: ABdhPJzenfz08JbIBgzG3TB5G7pZLDp9lLFOqPJZCCjMTNdZga3+bPCbT4u8p3xtmKlv/5XCyKf+/Q==
+X-Received: by 2002:a05:6512:3d1d:b0:472:625d:b21e with SMTP id d29-20020a0565123d1d00b00472625db21emr23991992lfv.366.1652353695101;
+        Thu, 12 May 2022 04:08:15 -0700 (PDT)
 Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id i25-20020a056512007900b004725b99d2fdsm734883lfo.164.2022.05.12.04.08.18
+        by smtp.gmail.com with ESMTPSA id i25-20020a056512007900b004725b99d2fdsm734883lfo.164.2022.05.12.04.08.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 04:08:19 -0700 (PDT)
+        Thu, 12 May 2022 04:08:14 -0700 (PDT)
 From:   Markuss Broks <markuss.broks@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -65,9 +65,9 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v3 5/5] arm64: dts: qcom: msm8998-xperia: Introduce ToF sensor support
-Date:   Thu, 12 May 2022 14:07:57 +0300
-Message-Id: <20220512110757.5297-6-markuss.broks@gmail.com>
+Subject: [PATCH v3 3/5] proximity: vl53l0x: Handle the VDD regulator
+Date:   Thu, 12 May 2022 14:07:55 +0300
+Message-Id: <20220512110757.5297-4-markuss.broks@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220512110757.5297-1-markuss.broks@gmail.com>
 References: <20220512110757.5297-1-markuss.broks@gmail.com>
@@ -77,65 +77,79 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch adds device tree support for the VL53L0X ToF sensor
-found on all Yoshino devices.
+Handle the regulator supplying the VDD pin of VL53L0X.
 
 Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
 ---
- .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi | 33 +++++++++++++++++++
- 1 file changed, 33 insertions(+)
+ drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
+ 1 file changed, 37 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-index 47488a1aecae..a95fa29aa18b 100644
---- a/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-+++ b/arch/arm64/boot/dts/qcom/msm8998-sony-xperia-yoshino.dtsi
-@@ -245,6 +245,24 @@ &blsp2_uart1 {
- 	status = "okay";
+diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+index 12a3e2eff464..d8523e3981e8 100644
+--- a/drivers/iio/proximity/vl53l0x-i2c.c
++++ b/drivers/iio/proximity/vl53l0x-i2c.c
+@@ -43,6 +43,7 @@
+ struct vl53l0x_data {
+ 	struct i2c_client *client;
+ 	struct completion completion;
++	struct regulator *vdd_supply;
  };
  
-+&blsp2_i2c2 {
-+	status = "okay";
-+
-+	proximity@29 {
-+		compatible = "st,vl53l0x";
-+		reg = <0x29>;
-+
-+		interrupt-parent = <&tlmm>;
-+		interrupts = <22 IRQ_TYPE_EDGE_FALLING>;
-+
-+		reset-gpios = <&tlmm 27 GPIO_ACTIVE_LOW>;
-+		vdd-supply = <&cam_vio_vreg>;
-+
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&tof_int &tof_reset>;
-+	};
-+};
-+
- &ibb {
- 	regulator-min-microamp = <800000>;
- 	regulator-max-microamp = <800000>;
-@@ -621,6 +639,21 @@ hall_sensor0_default: acc-cover-open {
- 		input-enable;
- 	};
+ static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
+@@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info = {
+ 	.read_raw = vl53l0x_read_raw,
+ };
  
-+	tof_int: tof-int {
-+		pins = "gpio22";
-+		function = "gpio";
-+		bias-pull-up;
-+		drive-strength = <2>;
-+		input-enable;
-+	};
++static void vl53l0x_power_off(void *_data)
++{
++	struct vl53l0x_data *data = _data;
 +
-+	tof_reset: tof-reset {
-+		pins = "gpio27";
-+		function = "gpio";
-+		bias-disable;
-+		drive-strength = <2>;
-+	};
++	regulator_disable(data->vdd_supply);
++}
 +
- 	ts_int_n: ts-int-n {
- 		pins = "gpio125";
- 		function = "gpio";
++static int vl53l0x_power_on(struct vl53l0x_data *data)
++{
++	int ret;
++
++	ret = regulator_enable(data->vdd_supply);
++	if (ret)
++		return ret;
++
++	usleep_range(3200, 5000);
++
++	return 0;
++}
++
+ static int vl53l0x_probe(struct i2c_client *client)
+ {
+ 	struct vl53l0x_data *data;
+ 	struct iio_dev *indio_dev;
++	int error;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
+ 				     I2C_FUNC_SMBUS_BYTE_DATA))
+ 		return -EOPNOTSUPP;
+ 
++	data->vdd_supply = devm_regulator_get_optional(&client->dev, "vdd");
++	if (IS_ERR(data->vdd_supply))
++		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
++				     "Unable to get VDD regulator\n");
++
++	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off, data);
++	if (error)
++		return dev_err_probe(&client->dev, error,
++				     "Failed to install poweroff action\n");
++
++	error = vl53l0x_power_on(data);
++	if (error)
++		return dev_err_probe(&client->dev, error,
++				     "Failed to power on the chip\n");
++
+ 	indio_dev->name = "vl53l0x";
+ 	indio_dev->info = &vl53l0x_info;
+ 	indio_dev->channels = vl53l0x_channels;
 -- 
 2.36.1
 
