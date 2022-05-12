@@ -2,152 +2,175 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6033AC433FE
-	for <linux-iio@archiver.kernel.org>; Thu, 12 May 2022 16:55:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B9D4C433F5
+	for <linux-iio@archiver.kernel.org>; Thu, 12 May 2022 17:09:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1356735AbiELQza (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 May 2022 12:55:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35122 "EHLO
+        id S1356863AbiELRJa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 May 2022 13:09:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57410 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1356716AbiELQz3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2022 12:55:29 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F22156E8D9;
-        Thu, 12 May 2022 09:55:27 -0700 (PDT)
-Received: from fraeml743-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4Kzd985FVsz67lbv;
-        Fri, 13 May 2022 00:51:56 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml743-chm.china.huawei.com (10.206.15.224) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Thu, 12 May 2022 18:55:25 +0200
-Received: from localhost (10.81.210.133) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
- 2022 17:55:24 +0100
-Date:   Thu, 12 May 2022 17:55:22 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     Markuss Broks <markuss.broks@gmail.com>
-CC:     <linux-kernel@vger.kernel.org>,
-        <~postmarketos/upstreaming@lists.sr.ht>,
-        <phone-devel@vger.kernel.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Krzysztof Kozlowski" <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        "Liam Girdwood" <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-msm@vger.kernel.org>
-Subject: Re: [PATCH v3 3/5] proximity: vl53l0x: Handle the VDD regulator
-Message-ID: <20220512175522.000013cb@Huawei.com>
-In-Reply-To: <20220512110757.5297-4-markuss.broks@gmail.com>
-References: <20220512110757.5297-1-markuss.broks@gmail.com>
-        <20220512110757.5297-4-markuss.broks@gmail.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
-MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
+        with ESMTP id S238286AbiELRJY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2022 13:09:24 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 363D2269EF6;
+        Thu, 12 May 2022 10:09:23 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24CGqWDG004183;
+        Thu, 12 May 2022 17:09:00 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ subject : to : cc : references : from : in-reply-to : content-type :
+ content-transfer-encoding : mime-version; s=pp1;
+ bh=ePKra5FZpkKBNQOtZOHRk5h8AEU0vcuB/nXrxlxQZMI=;
+ b=W7pXY+mF9c157K7UF/UpoCPupzyRkgWNvmeFE44FXujyi1+OlQGcAMuXLLNlO9uKJeRT
+ QTaSAWdLFqky2fE8FFj+Q7veFXCkCGoZrHmtGw6hNG8aLJdrQlYAxmX4k73+OhuW26Mj
+ dVlSIp9YhXKVkiSVPewOgvviMO3sStmMHW2oy00ZpVXqoLzh7szxFWsX+s2N/dF/xRAb
+ ECMEtTJ+pGE0mcJFpbYlZP7zieApdtjkCu5kyafS2ywU+7ectrNW4zRhmrJre/4NiK6z
+ ASK7E8SpSsAhuFm8dS9RD2c/pLiJlS8iILZdIgwVXt52X6fAoYwZENraV3zDefdEgUJj 6w== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g15tgrubh-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 17:09:00 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24CGmU3I030362;
+        Thu, 12 May 2022 17:08:59 GMT
+Received: from b01cxnp23034.gho.pok.ibm.com (b01cxnp23034.gho.pok.ibm.com [9.57.198.29])
+        by ppma03dal.us.ibm.com with ESMTP id 3fwgdadsp2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 12 May 2022 17:08:59 +0000
+Received: from b01ledav001.gho.pok.ibm.com (b01ledav001.gho.pok.ibm.com [9.57.199.106])
+        by b01cxnp23034.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24CH8wrX27460066
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 12 May 2022 17:08:58 GMT
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id CC80628060;
+        Thu, 12 May 2022 17:08:58 +0000 (GMT)
+Received: from b01ledav001.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E3C052805E;
+        Thu, 12 May 2022 17:08:57 +0000 (GMT)
+Received: from [9.211.56.168] (unknown [9.211.56.168])
+        by b01ledav001.gho.pok.ibm.com (Postfix) with ESMTP;
+        Thu, 12 May 2022 17:08:57 +0000 (GMT)
+Message-ID: <306c28b7-7318-9b8d-f512-d6e78bd05e51@linux.ibm.com>
+Date:   Thu, 12 May 2022 12:08:57 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v2 1/2] dt-bindings: iio: humidity: Add si7020 bindings
+Content-Language: en-US
+To:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        robh+dt@kernel.org, lars@metafoo.de, jic23@kernel.org,
+        miltonm@us.ibm.com, David Barksdale <dbarksdale@uplogix.com>
+References: <20220512162020.33450-1-eajames@linux.ibm.com>
+ <20220512162020.33450-2-eajames@linux.ibm.com>
+ <20220512175125.00001a5a@Huawei.com>
+From:   Eddie James <eajames@linux.ibm.com>
+In-Reply-To: <20220512175125.00001a5a@Huawei.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: U9Osxt7RygooQvY3l0MSKtC5k4iFU75u
+X-Proofpoint-ORIG-GUID: U9Osxt7RygooQvY3l0MSKtC5k4iFU75u
 Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.81.210.133]
-X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+X-Proofpoint-UnRewURL: 0 URL was un-rewritten
+MIME-Version: 1.0
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.858,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-12_14,2022-05-12_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ impostorscore=0 malwarescore=0 clxscore=1011 bulkscore=0 adultscore=0
+ spamscore=0 suspectscore=0 mlxscore=0 lowpriorityscore=0 mlxlogscore=999
+ phishscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205120079
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 12 May 2022 14:07:55 +0300
-Markuss Broks <markuss.broks@gmail.com> wrote:
 
-> Handle the regulator supplying the VDD pin of VL53L0X.
-> 
-> Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
-Hi Markuss,
+On 5/12/22 11:51, Jonathan Cameron wrote:
+> On Thu, 12 May 2022 11:20:19 -0500
+> Eddie James <eajames@linux.ibm.com> wrote:
+>
+>> Document the si7020 bindings with a new "silabs,skip-reset" property.
+>>
+>> Signed-off-by: Eddie James <eajames@linux.ibm.com>
+>> ---
+>>   .../bindings/iio/humidity/silabs,si7020.yaml  | 47 +++++++++++++++++++
+>>   .../devicetree/bindings/trivial-devices.yaml  |  2 -
+>>   2 files changed, 47 insertions(+), 2 deletions(-)
+>>   create mode 100644 Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml b/Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
+>> new file mode 100644
+>> index 000000000000..9bee010f8d56
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
+>> @@ -0,0 +1,47 @@
+>> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+>> +%YAML 1.2
+>> +---
+>> +$id: http://devicetree.org/schemas/iio/humidity/silabs,si7020.yaml#
+>> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+>> +
+>> +title: SI7020 humidity + temperature sensor
+>> +
+>> +maintainers:
+>> +  - David Barksdale <dbarksdale@uplogix.com>
+> At least cc David if you are going to commit him to maintaining this binding :)
+> +CC David at that address.
 
-One ordering question inline.
 
-> ---
->  drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
->  1 file changed, 37 insertions(+)
-> 
-> diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-> index 12a3e2eff464..d8523e3981e8 100644
-> --- a/drivers/iio/proximity/vl53l0x-i2c.c
-> +++ b/drivers/iio/proximity/vl53l0x-i2c.c
-> @@ -43,6 +43,7 @@
->  struct vl53l0x_data {
->  	struct i2c_client *client;
->  	struct completion completion;
-> +	struct regulator *vdd_supply;
->  };
->  
->  static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
-> @@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info = {
->  	.read_raw = vl53l0x_read_raw,
->  };
->  
-> +static void vl53l0x_power_off(void *_data)
-> +{
-> +	struct vl53l0x_data *data = _data;
-> +
-> +	regulator_disable(data->vdd_supply);
-> +}
-> +
-> +static int vl53l0x_power_on(struct vl53l0x_data *data)
-> +{
-> +	int ret;
-> +
-> +	ret = regulator_enable(data->vdd_supply);
-> +	if (ret)
-> +		return ret;
-> +
-> +	usleep_range(3200, 5000);
-> +
-> +	return 0;
-> +}
-> +
->  static int vl53l0x_probe(struct i2c_client *client)
->  {
->  	struct vl53l0x_data *data;
->  	struct iio_dev *indio_dev;
-> +	int error;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
->  				     I2C_FUNC_SMBUS_BYTE_DATA))
->  		return -EOPNOTSUPP;
->  
-> +	data->vdd_supply = devm_regulator_get_optional(&client->dev, "vdd");
-> +	if (IS_ERR(data->vdd_supply))
-> +		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
-> +				     "Unable to get VDD regulator\n");
-> +
-> +	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off, data);
+Yes, my mail to him for v1 was undeliverable... I guess I should put 
+myself instead.
 
-I don't follow why you have this before the power_on.  We haven't enabled the
-regulator yet so shouldn't be turning it off if we get an error whilst trying
-to enable it.  The or_reset part is to ensure that even if this call
-fails to register a devm action it will still call the callback thus allowing
-you safely do this after turning the power on.
 
-> +	if (error)
-> +		return dev_err_probe(&client->dev, error,
-> +				     "Failed to install poweroff action\n");
-> +
-> +	error = vl53l0x_power_on(data);
-> +	if (error)
-> +		return dev_err_probe(&client->dev, error,
-> +				     "Failed to power on the chip\n");
-> +
->  	indio_dev->name = "vl53l0x";
->  	indio_dev->info = &vl53l0x_info;
->  	indio_dev->channels = vl53l0x_channels;
-
+>
+>> +
+>> +description: |
+>> +   The Silicon Labs Si7013/20/21 Relative Humidity and Temperature Sensors
+>> +   are i2c devices which have an identical programming interface for
+>> +   measuring relative humidity and temperature.
+>> +
+>> +properties:
+>> +  compatible:
+>> +    const: silabs,si7020
+>> +
+>> +  reg:
+>> +    maxItems: 1
+>> +
+>> +  siliabs,skip-reset:
+>> +    $ref: /schemas/types.yaml#/definitions/flag
+>> +    description:
+>> +      Disables resetting of the device during probe
+>> +
+>> +required:
+>> +  - compatible
+>> +  - reg
+>> +
+>> +additionalProperties: false
+>> +
+>> +examples:
+>> +  - |
+>> +    i2c0 {
+>> +      #address-cells = <1>;
+>> +      #size-cells = <0>;
+>> +
+>> +      si7021-a20@40 {
+>> +        silabs,skip-reset;
+>> +        compatible = "silabs,si7020";
+>> +        reg = <0x40>;
+>> +      };
+>> +    };
+>> +...
+>> diff --git a/Documentation/devicetree/bindings/trivial-devices.yaml b/Documentation/devicetree/bindings/trivial-devices.yaml
+>> index e5295faef52f..47a00b478867 100644
+>> --- a/Documentation/devicetree/bindings/trivial-devices.yaml
+>> +++ b/Documentation/devicetree/bindings/trivial-devices.yaml
+>> @@ -317,8 +317,6 @@ properties:
+>>             - sensortek,stk8ba50
+>>               # SGX Sensortech VZ89X Sensors
+>>             - sgx,vz89x
+>> -            # Relative Humidity and Temperature Sensors
+>> -          - silabs,si7020
+>>               # Skyworks SKY81452: Six-Channel White LED Driver with Touch Panel Bias Supply
+>>             - skyworks,sky81452
+>>               # Socionext SynQuacer TPM MMIO module
