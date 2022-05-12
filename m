@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 60ED0C43217
-	for <linux-iio@archiver.kernel.org>; Thu, 12 May 2022 11:08:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AFAFEC4332F
+	for <linux-iio@archiver.kernel.org>; Thu, 12 May 2022 11:08:18 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1352941AbiELLIO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 May 2022 07:08:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58656 "EHLO
+        id S1352951AbiELLIR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 May 2022 07:08:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58778 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240084AbiELLIN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2022 07:08:13 -0400
-Received: from mail-lj1-x232.google.com (mail-lj1-x232.google.com [IPv6:2a00:1450:4864:20::232])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91BF3580CB;
-        Thu, 12 May 2022 04:08:10 -0700 (PDT)
-Received: by mail-lj1-x232.google.com with SMTP id t25so6030560ljd.6;
-        Thu, 12 May 2022 04:08:10 -0700 (PDT)
+        with ESMTP id S1352949AbiELLIQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2022 07:08:16 -0400
+Received: from mail-lf1-x12d.google.com (mail-lf1-x12d.google.com [IPv6:2a00:1450:4864:20::12d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 91A125A149;
+        Thu, 12 May 2022 04:08:14 -0700 (PDT)
+Received: by mail-lf1-x12d.google.com with SMTP id j4so8385883lfh.8;
+        Thu, 12 May 2022 04:08:14 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dBBHl0CC2zkFhkTGpkjRFnXUjhNmvvs7bjai/yQgBzI=;
-        b=YFbbrvWobPli7+ZpBvGVl4ObJiJOD73o01734aD9JYzT0Pvm4RiULDDuD3uMASjewG
-         cSaMk8i8WGQYkZB4SMHoOajCR7rJsaThoHtyu+RPp4EVGv/8/Hdp7Mg13EG2blUPH6c/
-         ohc2v2q4EWOvANPY1lRf4o9E16LIZuHgG+9XC2labNqX+iZU9UbGlHlyI00PeetmjU78
-         Mb0Cud+we7CiQLD/IPy7I4UyJl+zt+iElyUrmsJcvsFYX0rXQ01ZB7nwzSF4NbIRcaW7
-         7gSNtva5lX5SOV9Nd32mQz7QAml71gQtOCJv7rQvi5ag9MVjz8i+BKRCKxiKvKhlS0BR
-         TrDw==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=rHLHpItlazo+UaJMdlnAGs/zpbzJsdOOF257QRYRuhY=;
+        b=mPqiMrXeK4HnnnYLILMVdVz6G+KLueUOtuBBRc8khXWG+VWTgokg2wmRpxEonf7fXj
+         RaAO5LkIr3zSkwWZm/1NRClO29iKUaBiuPX8VqQ/nKB1rdDo3UZyBT/KUVL8OJ6SqeAO
+         ctR3fT9GnBPiISnLEjEklkrOMXPGX0NgfgGC/15I18HyE0Tz6cVeeeCNRZOu+h9sqzTu
+         8Nhh6Fxt8WkugIdGBr8x9EtlC6jfjRLvA9ZDYED+jMHVDnRmG3onW98keh4xWx4VAsva
+         YtlonFN5CfNNg0rnjzkZ4NWZ2wT/SBtaMLmBuGxABitF1imb1IzgTEfSV5iXh+y8/v5w
+         FTzg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=dBBHl0CC2zkFhkTGpkjRFnXUjhNmvvs7bjai/yQgBzI=;
-        b=a5k8Q5+lKTf2F5z+six26pFkJF63+2ryHuL5lxLhU8X/56ZiLmUrPC/qqKAmFG5Qyt
-         GVYwwKUnjOBigUDEizBBZbYG/cyDXNv/91BxEs8VNwGEqS+lTMqQHlM/yMIW2UYxB5R5
-         3F/rgnD47efHIY7G1VjSFISMipjYvcv1HmFLlilHLjVPhWax9Z/+ZJAyThoveatDg9TK
-         wc3IAppf/4gh6CAghDfww52L0Meb7dbIRgyhD0FBhXdeGHT1mmGnOP2BSIbFvrxevpmb
-         M3QrqBQpV4l3b9n2KRAbme+HmXCxNq8GQsS6QB195UN9yk9RuqogEvp1TP1AF+r7rJnR
-         YoMQ==
-X-Gm-Message-State: AOAM532lvS7IWL7+vzQATzGAD8vW7m+43NghW+wtz3KSFIMyq0rn0XhP
-        8CwJ2xNqiA4wx3VSM6CkKTnqAMr81wKqVA==
-X-Google-Smtp-Source: ABdhPJwlYkC1xm2URAbVR3Mh4H7Sa69hMp6XIWvNUDRFcpN2z4ld6Iq203X7uw25R+808nPph3qxFg==
-X-Received: by 2002:a2e:9645:0:b0:24f:2e6f:f931 with SMTP id z5-20020a2e9645000000b0024f2e6ff931mr20360672ljh.466.1652353687988;
-        Thu, 12 May 2022 04:08:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=rHLHpItlazo+UaJMdlnAGs/zpbzJsdOOF257QRYRuhY=;
+        b=kWf3Dn+C6+sFXx6PmzPdclABJ01TEupCWmVzB+qc2SaGL0bf4iYvS9+VfLPfjbHRUS
+         N5vrQ9Kl7YJwyxD72/xMhDSwX3oclw3ETcPH8P51q2ukAErWm4F9Myj76VaJN/DZJvxZ
+         XTSYxgGLiOvb3z+x9LQSePfY5XYJ6WUyv60L3UeroCub9jnxrltO4bu+9/ytBJsywMbH
+         zLLMJJ+oHW2kMSyueaYV97+3fCF5uFe1lVnpzWrNkg5f68L05pRQaiabNI+2qh1BEpPM
+         r0x//pRNEy3BmG5nVG2TTIfnipyGgqJaZWJ+u8hQUyFoBcZIDNRmxHFD5QU+buRncPhF
+         TGFQ==
+X-Gm-Message-State: AOAM531gD9s7gj53GzfXNUqEhYHXLO4xrG8/IEHtnKbXmv5NthaoTIcy
+        KwWGuVAg4P8vz052BPWRSOtZaWZu2BkOEw==
+X-Google-Smtp-Source: ABdhPJxHj4PJYumxcThltMWUtADbZwvzyluCMLfWyn7BXJRkEDqHJ2KLchQwfXmhmSkcO4+2tSOK4A==
+X-Received: by 2002:a05:6512:33a7:b0:473:ea35:e1d6 with SMTP id i7-20020a05651233a700b00473ea35e1d6mr24496586lfg.369.1652353692831;
+        Thu, 12 May 2022 04:08:12 -0700 (PDT)
 Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id i25-20020a056512007900b004725b99d2fdsm734883lfo.164.2022.05.12.04.08.05
+        by smtp.gmail.com with ESMTPSA id i25-20020a056512007900b004725b99d2fdsm734883lfo.164.2022.05.12.04.08.11
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 04:08:07 -0700 (PDT)
+        Thu, 12 May 2022 04:08:12 -0700 (PDT)
 From:   Markuss Broks <markuss.broks@gmail.com>
 To:     linux-kernel@vger.kernel.org
 Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
@@ -65,52 +65,57 @@ Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v3 0/5] Add support for ToF sensor on Yoshino platform
-Date:   Thu, 12 May 2022 14:07:52 +0300
-Message-Id: <20220512110757.5297-1-markuss.broks@gmail.com>
+Subject: [PATCH v3 2/5] proximity: vl53l0x: Prefer pre-initialized interrupt flags
+Date:   Thu, 12 May 2022 14:07:54 +0300
+Message-Id: <20220512110757.5297-3-markuss.broks@gmail.com>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220512110757.5297-1-markuss.broks@gmail.com>
+References: <20220512110757.5297-1-markuss.broks@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series adds support for the ToF proximity sensor installed on
-Yoshino devices. As part of this series, support handling the reset
-GPIO and VDD supply by the VL53L0X driver. Also stop hardcoding the
-interrupt type, since on Yoshino devices it seems that edge triggering
-doesn't work properly.
+On some boards interrupt type might be different than falling edge,
+like hardcoded in driver. Leave interrupt flags as they were pre-configured
+from the device-tree. If they're not provided, default to falling edge
+interrupts.
 
-Tested on Sony Xperia XZ1 (poplar).
+Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
+---
+ drivers/iio/proximity/vl53l0x-i2c.c | 7 ++++++-
+ 1 file changed, 6 insertions(+), 1 deletion(-)
 
-Cc: Konrad Dybcio <konrad.dybcio@somainline.org>
-Cc: Marijn Suijten <marijn.suijten@somainline.org>
-Cc: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
-
-v2:
-- Fix a nasty issue: turns out grouping the pinctrl makes it not apply,
-which was the main cause of edge interrupts not working correctly and
-having to use level interrupts, which caused a large amount of false
-detections.
-- handle the irq type more gracefully: if it's not provided, default
-to falling edge, but if it's provided, then use the provided one.
-v3:
-- add irq.h header (forgot to commit)
-- reword commit message (already initialized -> pre-initialized)
-
-Markuss Broks (5):
-  dt-bindings: proximity: vl53l0x: Document optional supply and GPIO
-    properties
-  proximity: vl53l0x: Get interrupt type from DT
-  proximity: vl53l0x: Handle the VDD regulator
-  proximity: vl53l0x: Handle the reset GPIO
-  arm64: dts: qcom: msm8998-xperia: Introduce ToF sensor support
-
- .../bindings/iio/proximity/st,vl53l0x.yaml    |  5 ++
- .../dts/qcom/msm8998-sony-xperia-yoshino.dtsi | 34 +++++++++++++
- drivers/iio/proximity/vl53l0x-i2c.c           | 50 ++++++++++++++++++-
- 3 files changed, 88 insertions(+), 1 deletion(-)
-
+diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+index 661a79ea200d..12a3e2eff464 100644
+--- a/drivers/iio/proximity/vl53l0x-i2c.c
++++ b/drivers/iio/proximity/vl53l0x-i2c.c
+@@ -16,6 +16,7 @@
+ 
+ #include <linux/delay.h>
+ #include <linux/i2c.h>
++#include <linux/irq.h>
+ #include <linux/interrupt.h>
+ #include <linux/module.h>
+ 
+@@ -57,11 +58,15 @@ static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
+ static int vl53l0x_configure_irq(struct i2c_client *client,
+ 				 struct iio_dev *indio_dev)
+ {
++	int irq_flags = irq_get_trigger_type(client->irq);
+ 	struct vl53l0x_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
++	if (!irq_flags)
++		irq_flags = IRQF_TRIGGER_FALLING;
++
+ 	ret = devm_request_irq(&client->dev, client->irq, vl53l0x_handle_irq,
+-			IRQF_TRIGGER_FALLING, indio_dev->name, indio_dev);
++			irq_flags, indio_dev->name, indio_dev);
+ 	if (ret) {
+ 		dev_err(&client->dev, "devm_request_irq error: %d\n", ret);
+ 		return ret;
 -- 
-2.35.1
+2.36.1
 
