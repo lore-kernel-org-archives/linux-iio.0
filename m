@@ -2,154 +2,101 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 58639C433FE
-	for <linux-iio@archiver.kernel.org>; Thu, 12 May 2022 11:08:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9789DC433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 12 May 2022 13:02:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1353012AbiELLIb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 12 May 2022 07:08:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60002 "EHLO
+        id S241788AbiELNCm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 12 May 2022 09:02:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57366 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352975AbiELLIa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2022 07:08:30 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23F795AA66;
-        Thu, 12 May 2022 04:08:16 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id d15so8413239lfk.5;
-        Thu, 12 May 2022 04:08:16 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=Rn+hZ1SORWL9uzL+yqm22z/NAwpZAv/juhns1YUGhh8=;
-        b=ajU/1KslDh5E/JvduAifp/STGz5uzWKx00qJ8v53ttzKhbo9OG3iAW8XCQ+nAxTqzd
-         ObDea9lIRsmxwKOXsIMP66Yn6U+ir+TM4Sw9TWaHTHVkfxN4BC5L0PI6JPVUKV1Z6oKf
-         a/fIv2yTNeSqMgk8CNEBbkqEag6f2sa4BV5zj5LT9gQ+mzqJcz1p597Op10gRczAymH6
-         7bA3+DYGB8baVyqOGzlnSTNSmmHa9aex1za0ujck3B1c5QkN5C3c8K7kJKwEbOta4KAt
-         Abxlk3XfUP5hAusIpx3qweO7sZcvk8jQI/6RscwjcXixXBqEMX1YQ1BiARkaC51R9IcK
-         lZhA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=Rn+hZ1SORWL9uzL+yqm22z/NAwpZAv/juhns1YUGhh8=;
-        b=pxVqao5/5kNTe2oa7d2Z/2lQMytftfMZ2ZNM8x48Lep40OwkrSOlKRqNZ2jVFKpUrr
-         YqoMHPwYjHQduGoJFvpRRsr8mb9FcUSyQveM+g0AOiBFOXmOWtkZA4ZvWcqdKK+L+cMH
-         oolwuKAgrL+SxCkW+OAmY9QrOrkPO52DiE0vtmXCiBSUreQ496XBMnXaFLAKem6MwN1I
-         9bAbkt6NxUam0Po2Ut78j93D3C0zeKseu4PQcFcFDU46+Fhm/A3n7W+JnPPIB+l8A4u3
-         2xU+/RgQEMAJUUWxU9r3Kbyaqz7qd+YcD06jfovJRoKAiHrZAkMqTCybYehqgq+C89Iu
-         mkuQ==
-X-Gm-Message-State: AOAM532nEYgIZqF9LuM6KyMOJj9ZdzFpsY8EYo0AAFkxyKvawI8pBlv9
-        oi7Hzfei9UPq3cBrGH1gHn05j/MKBiexqA==
-X-Google-Smtp-Source: ABdhPJzenfz08JbIBgzG3TB5G7pZLDp9lLFOqPJZCCjMTNdZga3+bPCbT4u8p3xtmKlv/5XCyKf+/Q==
-X-Received: by 2002:a05:6512:3d1d:b0:472:625d:b21e with SMTP id d29-20020a0565123d1d00b00472625db21emr23991992lfv.366.1652353695101;
-        Thu, 12 May 2022 04:08:15 -0700 (PDT)
-Received: from nergzd-desktop.localdomain ([194.39.226.133])
-        by smtp.gmail.com with ESMTPSA id i25-20020a056512007900b004725b99d2fdsm734883lfo.164.2022.05.12.04.08.13
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 12 May 2022 04:08:14 -0700 (PDT)
-From:   Markuss Broks <markuss.broks@gmail.com>
-To:     linux-kernel@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Markuss Broks <markuss.broks@gmail.com>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        Marijn Suijten <marijn.suijten@somainline.org>,
-        AngeloGioacchino Del Regno 
-        <angelogioacchino.delregno@somainline.org>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+        with ESMTP id S1354055AbiELNCk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 12 May 2022 09:02:40 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 435C362A1F;
+        Thu, 12 May 2022 06:02:39 -0700 (PDT)
+Received: from fraeml713-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4KzX0W64fQz67nWs;
+        Thu, 12 May 2022 20:59:07 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml713-chm.china.huawei.com (10.206.15.32) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Thu, 12 May 2022 15:02:36 +0200
+Received: from localhost (10.81.210.133) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Thu, 12 May
+ 2022 14:02:35 +0100
+Date:   Thu, 12 May 2022 14:02:32 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Peter Rosin <peda@axentia.se>
+CC:     Jonathan Cameron <jic23@kernel.org>,
+        <linux-kernel@vger.kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-msm@vger.kernel.org
-Subject: [PATCH v3 3/5] proximity: vl53l0x: Handle the VDD regulator
-Date:   Thu, 12 May 2022 14:07:55 +0300
-Message-Id: <20220512110757.5297-4-markuss.broks@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220512110757.5297-1-markuss.broks@gmail.com>
-References: <20220512110757.5297-1-markuss.broks@gmail.com>
+        Sean Nyekjaer <sean@geanix.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: Re: [PATCH v2 0/2] Add support for texas dac121c081 to the dac5571
+ driver
+Message-ID: <20220512140232.000078c1@Huawei.com>
+In-Reply-To: <06546c40-639a-01e4-ed99-4895edfe8211@axentia.se>
+References: <42db911c-5eba-0511-3e8c-8011a2a5b44a@axentia.se>
+        <20220428204439.4ec2b4ae@jic23-huawei>
+        <20220501190349.54aa48a3@jic23-huawei>
+        <06546c40-639a-01e4-ed99-4895edfe8211@axentia.se>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.81.210.133]
+X-ClientProxiedBy: lhreml720-chm.china.huawei.com (10.201.108.71) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Handle the regulator supplying the VDD pin of VL53L0X.
+On Thu, 12 May 2022 10:59:48 +0200
+Peter Rosin <peda@axentia.se> wrote:
 
-Signed-off-by: Markuss Broks <markuss.broks@gmail.com>
----
- drivers/iio/proximity/vl53l0x-i2c.c | 37 +++++++++++++++++++++++++++++
- 1 file changed, 37 insertions(+)
+> HI!
+> 
+> 2022-05-01 at 20:03, Jonathan Cameron wrote:
+> > On Thu, 28 Apr 2022 20:44:39 +0100
+> > Jonathan Cameron <jic23@kernel.org> wrote:
+> >   
+> >> On Mon, 25 Apr 2022 22:46:30 +0200
+> >> Peter Rosin <peda@axentia.se> wrote:
+> >>  
+> >>> Hi!
+> >>>
+> >>> The new chip works much like the other chips supported by the driver, so
+> >>> this is just adding another compatible to the list.
+> >>>
+> >>> Chenages since v1:
+> >>> - Guenter Roeck noticed elsewhere that my mail setup was botched and
+> >>>   that my patches were clobbered. Hopefully fixed. *blush*
+> >>> - added tags from Sean Nyekjaer and Rob Herring    
+> >>
+> >> Applied.  Thanks  
+> > 
+> > Backed out temporarily because they have crossed with a fix (that I'd
+> > forgotten about) and were requiring a non trivial merge in linux-next.
+> > 
+> > https://patchwork.kernel.org/project/linux-iio/patch/20220324234340.32402-1-laurent.pinchart@ideasonboard.com/
+> > 
+> > Hopefully that will get resolved in my upstream fairly soon and I can
+> > fix this one up whilst applying it myself.  
+> 
+> Looks like it might be time to bring this one in from the cold?
 
-diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-index 12a3e2eff464..d8523e3981e8 100644
---- a/drivers/iio/proximity/vl53l0x-i2c.c
-+++ b/drivers/iio/proximity/vl53l0x-i2c.c
-@@ -43,6 +43,7 @@
- struct vl53l0x_data {
- 	struct i2c_client *client;
- 	struct completion completion;
-+	struct regulator *vdd_supply;
- };
- 
- static irqreturn_t vl53l0x_handle_irq(int irq, void *priv)
-@@ -192,10 +193,31 @@ static const struct iio_info vl53l0x_info = {
- 	.read_raw = vl53l0x_read_raw,
- };
- 
-+static void vl53l0x_power_off(void *_data)
-+{
-+	struct vl53l0x_data *data = _data;
-+
-+	regulator_disable(data->vdd_supply);
-+}
-+
-+static int vl53l0x_power_on(struct vl53l0x_data *data)
-+{
-+	int ret;
-+
-+	ret = regulator_enable(data->vdd_supply);
-+	if (ret)
-+		return ret;
-+
-+	usleep_range(3200, 5000);
-+
-+	return 0;
-+}
-+
- static int vl53l0x_probe(struct i2c_client *client)
- {
- 	struct vl53l0x_data *data;
- 	struct iio_dev *indio_dev;
-+	int error;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
-@@ -210,6 +232,21 @@ static int vl53l0x_probe(struct i2c_client *client)
- 				     I2C_FUNC_SMBUS_BYTE_DATA))
- 		return -EOPNOTSUPP;
- 
-+	data->vdd_supply = devm_regulator_get_optional(&client->dev, "vdd");
-+	if (IS_ERR(data->vdd_supply))
-+		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
-+				     "Unable to get VDD regulator\n");
-+
-+	error = devm_add_action_or_reset(&client->dev, vl53l0x_power_off, data);
-+	if (error)
-+		return dev_err_probe(&client->dev, error,
-+				     "Failed to install poweroff action\n");
-+
-+	error = vl53l0x_power_on(data);
-+	if (error)
-+		return dev_err_probe(&client->dev, error,
-+				     "Failed to power on the chip\n");
-+
- 	indio_dev->name = "vl53l0x";
- 	indio_dev->info = &vl53l0x_info;
- 	indio_dev->channels = vl53l0x_channels;
--- 
-2.36.1
+Nearly.  I have a pull request out to Greg. Once he's taken that
+I'll fastforward the togreg branch to include the fix and
+can then apply this.
+
+Jonathan
+
+> 
+> Cheers,
+> Peter
 
