@@ -2,137 +2,113 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D023EC433F5
-	for <linux-iio@archiver.kernel.org>; Fri, 13 May 2022 14:44:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E7E3C433EF
+	for <linux-iio@archiver.kernel.org>; Fri, 13 May 2022 16:45:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345159AbiEMOo3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 13 May 2022 10:44:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49872 "EHLO
+        id S1382072AbiEMQpl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 13 May 2022 12:45:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38944 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1381840AbiEMOlX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 13 May 2022 10:41:23 -0400
-Received: from mail-pj1-x102b.google.com (mail-pj1-x102b.google.com [IPv6:2607:f8b0:4864:20::102b])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EBD5D1BA8C2;
-        Fri, 13 May 2022 07:35:24 -0700 (PDT)
-Received: by mail-pj1-x102b.google.com with SMTP id j10-20020a17090a94ca00b001dd2131159aso11036984pjw.0;
-        Fri, 13 May 2022 07:35:24 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vHHqtzMVlHfYcU1U8QOow9ihTtqg81EMmNGRPSLtClk=;
-        b=lW6JuU4F569aT6xpHtRRuo1Ok8OC6O0nynwFQ5TpDqx6lJdEp9Wdgdd2Gp/eBGWRsO
-         imyenh+44frXfEyCijqT6ex41NKNLbZZap2Q8gUDQjtbohmWDLq6bHQoC7VCyvKANla3
-         7XrmMSjt3gWXtNymStECijYnFx9G7CAVSXX33glrwodUmg+CgfigMfe9/gEOF90K931p
-         nx4U34qK5lkljSzPiGvJXoO9GinypmYSHpHQCdJgYd5+SU6yIhumiC6yM1Q6ZdX9Qdtq
-         jkGmzOmpc76CjQHlrUnYEY9ef2Xe3qs0JenN2+tNKRZVVCutZZPTMoI27zrK6MfUpRzN
-         nD5g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=vHHqtzMVlHfYcU1U8QOow9ihTtqg81EMmNGRPSLtClk=;
-        b=A+w2M9s2NkWxuhENB+81QZvWUm1FL3owzzFLPsYY3VkC+O+N+JLM7MfKCa3saG9ba3
-         +YpHuT8Q0pYOpftm1UAhyq1oGWqX3Ydp6/0LnNfLDG7nWpn2Ff2IBaA7HtJDZw2pgoYw
-         armpya9JZS+yeX7Bk5D1BGJAEt7kGkro+wL73T7YhfT1VmUrxiNHpe1PGlV5PoLo1BK9
-         lAcPfR0sSKwOWpx93PIWP9VdbWRbPSMTmHYhwXl+kmzeicUC54AM6wLkUAorNR3kZTK0
-         8ApC4aU7+unU/rFmM2MK2vFN/Vmidl9X85Qf/OTJt2ev26UK2ZOYSO+xdIPxAEAcJOHe
-         Ni5Q==
-X-Gm-Message-State: AOAM532rsXedAnzCIXZqb3sCDsjSZ5ntY32BTGGJ0hHe3lI3PlAG3XsA
-        F2PJ2Iece5IzdCdyhRk/HADvUUEJGnEfK74=
-X-Google-Smtp-Source: ABdhPJw0pa5BbXPxdkcjwG5RAVOFLGCOc0pYpfw6NHdEcO6smejYUeuNW6BphUGd2i9TLXpDo7EmvA==
-X-Received: by 2002:a17:902:da90:b0:15e:adc2:191d with SMTP id j16-20020a170902da9000b0015eadc2191dmr4985750plx.134.1652452524252;
-        Fri, 13 May 2022 07:35:24 -0700 (PDT)
-Received: from localhost.localdomain ([144.202.91.207])
-        by smtp.gmail.com with ESMTPSA id b13-20020a170902e94d00b0015e8d4eb208sm1923696pll.82.2022.05.13.07.35.22
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 13 May 2022 07:35:23 -0700 (PDT)
-From:   Zheyu Ma <zheyuma97@gmail.com>
-To:     jic23@kernel.org, lars@metafoo.de
-Cc:     andriy.shevchenko@linux.intel.com, sean@geanix.com,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Zheyu Ma <zheyuma97@gmail.com>
-Subject: [PATCH] iio: imu: bmi160: Fix the error handling at bmi160_chip_init()
-Date:   Fri, 13 May 2022 22:35:13 +0800
-Message-Id: <20220513143513.2284425-1-zheyuma97@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1359461AbiEMQpi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 13 May 2022 12:45:38 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 19419B870;
+        Fri, 13 May 2022 09:45:37 -0700 (PDT)
+Received: from fraeml715-chm.china.huawei.com (unknown [172.18.147.226])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4L0Dsj1Zgjz67LLT;
+        Sat, 14 May 2022 00:40:41 +0800 (CST)
+Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
+ fraeml715-chm.china.huawei.com (10.206.15.34) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
+ 15.1.2375.24; Fri, 13 May 2022 18:45:34 +0200
+Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
+ (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2375.24; Fri, 13 May
+ 2022 17:45:33 +0100
+Date:   Fri, 13 May 2022 17:45:31 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
+To:     Eddie James <eajames@linux.ibm.com>
+CC:     <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <robh+dt@kernel.org>,
+        <lars@metafoo.de>, <jic23@kernel.org>, <miltonm@us.ibm.com>,
+        Peter Rosin <peda@axentia.se>, <linux-i2c@vger.kernel.org>
+Subject: Re: [PATCH v2 0/2] iio: humidity: si7020: Check device property for
+ skipping reset in probe
+Message-ID: <20220513174531.00007b9b@Huawei.com>
+In-Reply-To: <4fd44316-689e-1b72-d483-2c617d2a455d@linux.ibm.com>
+References: <20220512162020.33450-1-eajames@linux.ibm.com>
+        <20220512174859.000042b6@Huawei.com>
+        <4fd44316-689e-1b72-d483-2c617d2a455d@linux.ibm.com>
+Organization: Huawei Technologies Research and Development (UK) Ltd.
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="US-ASCII"
+Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhreml708-chm.china.huawei.com (10.201.108.57) To
+ lhreml710-chm.china.huawei.com (10.201.108.61)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When the driver fails in bmi160_chip_init(), it should disable the
-regulator.
+On Thu, 12 May 2022 12:08:07 -0500
+Eddie James <eajames@linux.ibm.com> wrote:
 
-The following log shows it:
+> On 5/12/22 11:48, Jonathan Cameron wrote:
+> > On Thu, 12 May 2022 11:20:18 -0500
+> > Eddie James <eajames@linux.ibm.com> wrote:
+> >  
+> >> I2C commands issued after the SI7020 is starting up or after reset
+> >> can potentially upset the startup sequence. Therefore, the host
+> >> needs to wait for the startup sequence to finish before issuing
+> >> further i2c commands. This is impractical in cases where the SI7020
+> >> is on a shared bus or behind a mux, which may switch channels at
+> >> any time (generating I2C traffic). Therefore, check for a device
+> >> property that indicates that the driver should skip resetting the
+> >> device when probing.  
+> > Why not lock the bus?  It's not ideal, but then not resetting and hence
+> > potentially ending up in an unknown state isn't great either.  
+> 
+> 
+> Agreed, but locking the bus doesn't work in the case where the chip is 
+> behind a mux. The mux core driver deselects the mux immediately after 
+> the transfer to reset the si7020, causing some i2c traffic, breaking the 
+> si7020. So it would also be a requirement to configure the mux to idle 
+> as-is... That's why I went with the optional skipping of the reset. 
+> Maybe I should add the bus lock too?
+> 
 
-[   18.709662] WARNING: CPU: 0 PID: 294 at drivers/regulator/core.c:2257 _regulator_put+0x3ec/0x4e0
-[   18.712069] RIP: 0010:_regulator_put+0x3ec/0x4e0
-[   18.716395] Call Trace:
-[   18.716522]  <TASK>
-[   18.716636]  regulator_bulk_free+0x82/0xe0
-[   18.717077]  i2c_device_probe+0x6f0/0x800
++Cc Peter and linux-i2c for advice as we should resolve any potential
+issue with the mux side of things rather than hiding it in the driver
+(if possible!)
 
-Fixes: 5dea3fb066f0 ("iio: imu: bmi160: added regulator support")
-Signed-off-by: Zheyu Ma <zheyuma97@gmail.com>
----
- drivers/iio/imu/bmi160/bmi160_core.c | 17 +++++++++++------
- 1 file changed, 11 insertions(+), 6 deletions(-)
+Jonathan
 
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index 824b5124a5f5..33abfc2bbd7c 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -730,7 +730,7 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
- 
- 	ret = regmap_write(data->regmap, BMI160_REG_CMD, BMI160_CMD_SOFTRESET);
- 	if (ret)
--		return ret;
-+		goto err_regulator_disable;
- 
- 	usleep_range(BMI160_SOFTRESET_USLEEP, BMI160_SOFTRESET_USLEEP + 1);
- 
-@@ -741,29 +741,34 @@ static int bmi160_chip_init(struct bmi160_data *data, bool use_spi)
- 	if (use_spi) {
- 		ret = regmap_read(data->regmap, BMI160_REG_DUMMY, &val);
- 		if (ret)
--			return ret;
-+			goto err_regulator_disable;
- 	}
- 
- 	ret = regmap_read(data->regmap, BMI160_REG_CHIP_ID, &val);
- 	if (ret) {
- 		dev_err(dev, "Error reading chip id\n");
--		return ret;
-+		goto err_regulator_disable;
- 	}
- 	if (val != BMI160_CHIP_ID_VAL) {
- 		dev_err(dev, "Wrong chip id, got %x expected %x\n",
- 			val, BMI160_CHIP_ID_VAL);
--		return -ENODEV;
-+		ret = -ENODEV;
-+		goto err_regulator_disable;
- 	}
- 
- 	ret = bmi160_set_mode(data, BMI160_ACCEL, true);
- 	if (ret)
--		return ret;
-+		goto err_regulator_disable;
- 
- 	ret = bmi160_set_mode(data, BMI160_GYRO, true);
- 	if (ret)
--		return ret;
-+		goto err_regulator_disable;
- 
- 	return 0;
-+
-+err_regulator_disable:
-+	regulator_bulk_disable(ARRAY_SIZE(data->supplies), data->supplies);
-+	return ret;
- }
- 
- static int bmi160_data_rdy_trigger_set_state(struct iio_trigger *trig,
--- 
-2.25.1
+
+
+
+> 
+> Thanks,
+> 
+> Eddie
+> 
+> 
+> >
+> > Jonathan
+> >  
+> >> Changes since v1:
+> >>   - Fix dt binding document
+> >>
+> >> Eddie James (2):
+> >>    dt-bindings: iio: humidity: Add si7020 bindings
+> >>    iio: humidity: si7020: Check device property for skipping reset in probe
+> >>
+> >>   .../bindings/iio/humidity/silabs,si7020.yaml  | 47 +++++++++++++++++++
+> >>   .../devicetree/bindings/trivial-devices.yaml  |  2 -
+> >>   drivers/iio/humidity/si7020.c                 | 14 +++---
+> >>   3 files changed, 55 insertions(+), 8 deletions(-)
+> >>   create mode 100644 Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
+> >>  
 
