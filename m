@@ -2,118 +2,161 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A1D7FC433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 14 May 2022 13:33:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 44934C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 14 May 2022 13:34:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232048AbiENNdL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 14 May 2022 09:33:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46580 "EHLO
+        id S232464AbiENNer (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 14 May 2022 09:34:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232616AbiENNdJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 May 2022 09:33:09 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F4FC22536
-        for <linux-iio@vger.kernel.org>; Sat, 14 May 2022 06:33:08 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nprtA-0004sK-5m; Sat, 14 May 2022 15:32:56 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nprtA-002HtA-E4; Sat, 14 May 2022 15:32:55 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nprt8-009fvX-C0; Sat, 14 May 2022 15:32:54 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH] iio:magnetometer:mbc150: Make bmc150_magn_remove() return void
-Date:   Sat, 14 May 2022 15:32:50 +0200
-Message-Id: <20220514133250.307955-1-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S231148AbiENNeq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 May 2022 09:34:46 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6AE352252B;
+        Sat, 14 May 2022 06:34:45 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 210BEB808D0;
+        Sat, 14 May 2022 13:34:44 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7BD64C340EE;
+        Sat, 14 May 2022 13:34:40 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652535282;
+        bh=8HKS/AUN61t9V7UtQZ0kytJopRCt3BpmfFpmL+h0F6w=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=lxifP/BroIHqur0UKt/TVKixLWgRF6n3SdO8ckLc7JpXgEICZYE0bq3Rf1GlWG6Uy
+         goJMvXQnILQA70uNFa47gPau/cuAaNSHgaD23vcZmidcldiLjEZSX/JW2jO+VnXfVm
+         FkL84Jx2sxGoD6ZNFBo/wfUoRUzDltcKZPOLAzjbmA4ygFyJ2LLjFVxSCwCcLTUhHo
+         d76eSmJB4Q9Q5xyG2EoHBV4M50JmMpa+KvByQfUiY7y6ql2zTwkeiNpU76Ndk82fcl
+         D3YZ4gcgtdHtDGRPLj5gstd4BLXU6ue34G0km7FnD8XTN6Ck5nTSeTd6zqaabYq6Ny
+         DgE7Hm2OOLavQ==
+Date:   Sat, 14 May 2022 14:43:18 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Peter Rosin <peda@axentia.se>, devicetree@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        Eddie James <eajames@linux.ibm.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        robh+dt@kernel.org, lars@metafoo.de, miltonm@us.ibm.com,
+        linux-i2c@vger.kernel.org
+Subject: Re: [PATCH v2 0/2] iio: humidity: si7020: Check device property for
+ skipping reset in probe
+Message-ID: <20220514144318.309be1ec@jic23-huawei>
+In-Reply-To: <b2761479-50fe-0dce-62a2-3beff5cdef9d@axentia.se>
+References: <20220512162020.33450-1-eajames@linux.ibm.com>
+        <20220512174859.000042b6@Huawei.com>
+        <4fd44316-689e-1b72-d483-2c617d2a455d@linux.ibm.com>
+        <20220513174531.00007b9b@Huawei.com>
+        <b2761479-50fe-0dce-62a2-3beff5cdef9d@axentia.se>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=2562; h=from:subject; bh=t+OPSaDrfq/MLParFt7NgHrHvSyexuQsQjU/VbXXOgI=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBif699jaSHq3JLvVGelRpFylgv/DxB3DHb7bcKs0Xl GPVC4K+JATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYn+vfQAKCRDB/BR4rcrsCWQLB/ 9LNpA7TS9mWVhBKgRZQb62+OcmhQfpF9Gu13Xn3QT2pi1i6WbGHEIRWg5+ygwR7zjTYyLkd0gGc1qr sKr1IakD55WtnpdMgjsgqJK4WtxM01JAUWVWOnvkSngNWFLKJ4rk441prSYP3GikkzJ2bv+6A/Xc6g 5QXnOxl1o2foZJsnpkSqqI3DLOhd7EGhQpelGST/K2iKupK/awb8+9yfuqIZUCLsd9EIEAfK3W4XLp cPHw7ZSKDYBpODeMjRrGkYjZafsVZovGXyI+fNfuWFFX+q0Mx4KWLVdfY0O/whk5gcaD0etw8tLnRQ RN+Bn89rgxIcf3eXjQnSN7hYJvSrRl
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-bmc150_magn_remove() always returns zero. Make it return no value which
-makes it easier to see in the callers that there is no error to handle.
+On Sat, 14 May 2022 00:48:51 +0200
+Peter Rosin <peda@axentia.se> wrote:
 
-Also the return value of i2c driver remove callbacks is ignored anyway.
-This prepares making i2c remove callbacks return void, too.
+> Hi!
+> 
+> 2022-05-13 at 18:45, Jonathan Cameron wrote:
+> > On Thu, 12 May 2022 12:08:07 -0500
+> > Eddie James <eajames@linux.ibm.com> wrote:
+> >   
+> >> On 5/12/22 11:48, Jonathan Cameron wrote:  
+> >>> On Thu, 12 May 2022 11:20:18 -0500
+> >>> Eddie James <eajames@linux.ibm.com> wrote:
+> >>>    
+> >>>> I2C commands issued after the SI7020 is starting up or after reset
+> >>>> can potentially upset the startup sequence. Therefore, the host
+> >>>> needs to wait for the startup sequence to finish before issuing
+> >>>> further i2c commands. This is impractical in cases where the SI7020
+> >>>> is on a shared bus or behind a mux, which may switch channels at
+> >>>> any time (generating I2C traffic). Therefore, check for a device
+> >>>> property that indicates that the driver should skip resetting the
+> >>>> device when probing.    
+> >>> Why not lock the bus?  It's not ideal, but then not resetting and hence
+> >>> potentially ending up in an unknown state isn't great either.    
+> >>
+> >>
+> >> Agreed, but locking the bus doesn't work in the case where the chip is 
+> >> behind a mux. The mux core driver deselects the mux immediately after 
+> >> the transfer to reset the si7020, causing some i2c traffic, breaking the 
+> >> si7020. So it would also be a requirement to configure the mux to idle 
+> >> as-is... That's why I went with the optional skipping of the reset. 
+> >> Maybe I should add the bus lock too?
+> >>  
+> > 
+> > +Cc Peter and linux-i2c for advice as we should resolve any potential
+> > issue with the mux side of things rather than hiding it in the driver
+> > (if possible!)  
+> 
+> IIUC, the chip in question cannot handle *any* action on the I2C bus
+> for 15ms (or so) after a "soft reset", or something bad<tm> happens
+> (or at least may happen).
+> 
+> If that's the case, then providing a means of skipping the reset is
+> insufficient. If you don't lock the bus, you would need to *always*
+> skip the reset, because you don't know for certain if something else
+> does I2C xfers.
+> 
+> So, in order to make the soft reset not be totally dangerous even in
+> a normal non-muxed environment, the bus must be locked for the 15ms.
+> 
+> However, Eddie is correct in that the I2C mux code may indeed do its
+> muxing xfer right after the soft reset command. There is currently
+> no way to avoid that muxing xfer. However, it should be noted that
+> there are ways to mux an I2C bus without using xfers on the bus
+> itself, so it's not problematic for *all* mux variants.
+> 
+> It can be debated if the problem should be worked around with extra
+> dt properties like this, or if a capability should be added to delay
+> a trailing muxing xfer.
+> 
+> I bet there are other broken chips that have drivers that do in fact
+> lock the bus to give the chip a break, but then it all stumbles
+> because of the unexpected noise if there's a (wrong kind of) mux in
+> the mix.
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/iio/magnetometer/bmc150_magn.c     | 3 +--
- drivers/iio/magnetometer/bmc150_magn.h     | 2 +-
- drivers/iio/magnetometer/bmc150_magn_i2c.c | 4 +++-
- 3 files changed, 5 insertions(+), 4 deletions(-)
+Ok, so for now I think we need the bus lock for the reset + either
+a work around similar to this series, or additions to the i2c mux code
+to stop it doing a muxing xfer if the bus is locked?
 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.c b/drivers/iio/magnetometer/bmc150_magn.c
-index 64e8b04e654b..06d5a1ef1fbd 100644
---- a/drivers/iio/magnetometer/bmc150_magn.c
-+++ b/drivers/iio/magnetometer/bmc150_magn.c
-@@ -985,7 +985,7 @@ int bmc150_magn_probe(struct device *dev, struct regmap *regmap,
- }
- EXPORT_SYMBOL_NS(bmc150_magn_probe, IIO_BMC150_MAGN);
- 
--int bmc150_magn_remove(struct device *dev)
-+void bmc150_magn_remove(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct bmc150_magn_data *data = iio_priv(indio_dev);
-@@ -1008,7 +1008,6 @@ int bmc150_magn_remove(struct device *dev)
- 	mutex_unlock(&data->mutex);
- 
- 	regulator_bulk_disable(ARRAY_SIZE(data->regulators), data->regulators);
--	return 0;
- }
- EXPORT_SYMBOL_NS(bmc150_magn_remove, IIO_BMC150_MAGN);
- 
-diff --git a/drivers/iio/magnetometer/bmc150_magn.h b/drivers/iio/magnetometer/bmc150_magn.h
-index 3b69232afd2c..98c086d10c13 100644
---- a/drivers/iio/magnetometer/bmc150_magn.h
-+++ b/drivers/iio/magnetometer/bmc150_magn.h
-@@ -7,6 +7,6 @@ extern const struct dev_pm_ops bmc150_magn_pm_ops;
- 
- int bmc150_magn_probe(struct device *dev, struct regmap *regmap, int irq,
- 		      const char *name);
--int bmc150_magn_remove(struct device *dev);
-+void bmc150_magn_remove(struct device *dev);
- 
- #endif /* _BMC150_MAGN_H_ */
-diff --git a/drivers/iio/magnetometer/bmc150_magn_i2c.c b/drivers/iio/magnetometer/bmc150_magn_i2c.c
-index e39b89661ad1..65c004411d0f 100644
---- a/drivers/iio/magnetometer/bmc150_magn_i2c.c
-+++ b/drivers/iio/magnetometer/bmc150_magn_i2c.c
-@@ -36,7 +36,9 @@ static int bmc150_magn_i2c_probe(struct i2c_client *client,
- 
- static int bmc150_magn_i2c_remove(struct i2c_client *client)
- {
--	return bmc150_magn_remove(&client->dev);
-+	bmc150_magn_remove(&client->dev);
-+
-+	return 0;
- }
- 
- static const struct acpi_device_id bmc150_magn_acpi_match[] = {
+Jonathan
 
-base-commit: 3123109284176b1532874591f7c81f3837bbdc17
--- 
-2.35.1
+> 
+> Cheers,
+> Peter
+> 
+> > 
+> > Jonathan
+> > 
+> > 
+> > 
+> >   
+> >>
+> >> Thanks,
+> >>
+> >> Eddie
+> >>
+> >>  
+> >>>
+> >>> Jonathan
+> >>>    
+> >>>> Changes since v1:
+> >>>>   - Fix dt binding document
+> >>>>
+> >>>> Eddie James (2):
+> >>>>    dt-bindings: iio: humidity: Add si7020 bindings
+> >>>>    iio: humidity: si7020: Check device property for skipping reset in probe
+> >>>>
+> >>>>   .../bindings/iio/humidity/silabs,si7020.yaml  | 47 +++++++++++++++++++
+> >>>>   .../devicetree/bindings/trivial-devices.yaml  |  2 -
+> >>>>   drivers/iio/humidity/si7020.c                 | 14 +++---
+> >>>>   3 files changed, 55 insertions(+), 8 deletions(-)
+> >>>>   create mode 100644 Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
+> >>>>    
+> >   
 
