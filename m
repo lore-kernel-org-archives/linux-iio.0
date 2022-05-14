@@ -2,92 +2,176 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D4EC433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 14 May 2022 16:48:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9B535C433EF
+	for <linux-iio@archiver.kernel.org>; Sat, 14 May 2022 18:20:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234514AbiENQsu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 14 May 2022 12:48:50 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44514 "EHLO
+        id S234628AbiENSUf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 14 May 2022 14:20:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234525AbiENQsn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 May 2022 12:48:43 -0400
-X-Greylist: delayed 600 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 14 May 2022 09:48:25 PDT
-Received: from relay.hostedemail.com (smtprelay0012.hostedemail.com [216.40.44.12])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7727B369E0
-        for <linux-iio@vger.kernel.org>; Sat, 14 May 2022 09:48:25 -0700 (PDT)
-Received: from omf01.hostedemail.com (a10.router.float.18 [10.200.18.1])
-        by unirelay02.hostedemail.com (Postfix) with ESMTP id 77BC532002;
-        Sat, 14 May 2022 16:31:27 +0000 (UTC)
-Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf01.hostedemail.com (Postfix) with ESMTPA id 4395560009;
-        Sat, 14 May 2022 16:31:24 +0000 (UTC)
-Message-ID: <58a70b4a91a184eef26f9823636bf81c573b2c3b.camel@perches.com>
-Subject: Re: [PATCH 05/22] iio: replace bitmap_weight with
- bitmap_weitght_{eq,le} where appropriate
-From:   Joe Perches <joe@perches.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Yury Norov <yury.norov@gmail.com>
-Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        David Laight <David.Laight@ACULAB.COM>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Julia Lawall <Julia.Lawall@inria.fr>,
-        =?UTF-8?Q?Micha=C5=82_Miros=C5=82aw?= <mirq-linux@rere.qmqm.pl>,
-        Nicholas Piggin <npiggin@gmail.com>,
-        Nicolas Palix <nicolas.palix@imag.fr>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
-        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
-        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio@vger.kernel.org
-Date:   Sat, 14 May 2022 09:31:23 -0700
-In-Reply-To: <20220514165309.7445c767@jic23-huawei>
-References: <20220510154750.212913-1-yury.norov@gmail.com>
-         <20220510154750.212913-6-yury.norov@gmail.com>
-         <20220514165309.7445c767@jic23-huawei>
-Content-Type: text/plain; charset="ISO-8859-1"
-User-Agent: Evolution 3.40.4-1ubuntu2 
+        with ESMTP id S230459AbiENSUd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 May 2022 14:20:33 -0400
+Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1CB7338197;
+        Sat, 14 May 2022 11:20:32 -0700 (PDT)
+Received: by mail-ej1-x629.google.com with SMTP id i19so21694289eja.11;
+        Sat, 14 May 2022 11:20:32 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pUYpeImbAqOBUb0UBcRbQZgfeNt+9zMkDd+UbinLleA=;
+        b=TmlrIscHfjet5fM7ny4Eh6Xbh+mWdtBBO7ss6zTRY1omVxhzjs04O8WPMU5hxry2Lj
+         4wLQNRkn5tWDQ6U2bMnFTlG9Yciuby5/x43us+M437SrnYenHrxv0o7IQ66KL/XSK8x7
+         P38gYkW8mK/6nmU3IluX9s1pPZKYDNP76WJGe0xgJk0DEtDOIxV8MbPXSEuAv+TmH8KZ
+         aaVaD3txz5gQkcDAxO+mwfBTU+gj12bfJh6FSZzR7ABn94OZJSxxVjBUlBRyisgs5jiE
+         MOQb3g/tYywGZbsm9IrvoL1Igo1dG+c0ZCcQARsbgCy90SHfpCenBOBAyQ9UaRJ9n9NS
+         U2aw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=pUYpeImbAqOBUb0UBcRbQZgfeNt+9zMkDd+UbinLleA=;
+        b=DMuxZg8Zmpolcq0BWChysPfxHGvZrjX0xhy6EJzLvcW7xGwkMN24walxDQqMn6voKU
+         zcprHbcQ7hSFD0TQt/jEpR/wxnZjp+lplMaEChz8VQDfsNMHwDSKSk7ygqyNQvmmwtFn
+         012fqzOxvEfGgU/7/OmRCPAuN+0sokPGdDcndZkDDL0TiclGlvX88YxNcXZBYI15OeI8
+         NTEkkhQJtWpwx5XIdhloYeHwwpV+qyRikJXgSVHYaFZKdb4RIJijSB66+UWegYXlQoyx
+         jMmb2spdlZG4BK4khd9kFc37dD2jT5XEyxe2RFe3DW12XO5RuBO379t06q+SYnuBY206
+         hScw==
+X-Gm-Message-State: AOAM532I+6RFq3p7WlcGp0VjR8pr8uSQ9cMNMnnssC/wFPAN4dUfQq8O
+        bSNevr+gWpnvNH4o91vlDNs=
+X-Google-Smtp-Source: ABdhPJz//1N2TaHTmvRE+BqJmQ7ek/bMQ69s5SkVHYV2UoKUWLD6Ru7aV5G+UnzvM+K9lKwg9DL7Dw==
+X-Received: by 2002:a17:906:b48:b0:6f5:132c:1a17 with SMTP id v8-20020a1709060b4800b006f5132c1a17mr9127666ejg.748.1652552430577;
+        Sat, 14 May 2022 11:20:30 -0700 (PDT)
+Received: from demon-pc.localdomain ([188.24.86.218])
+        by smtp.gmail.com with ESMTPSA id jz25-20020a17090775f900b006fa6a51459asm1925898ejc.96.2022.05.14.11.20.29
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sat, 14 May 2022 11:20:30 -0700 (PDT)
+From:   Cosmin Tanislav <demonsingur@gmail.com>
+X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: [PATCH] iio: accel: adxl367: do not update FIFO watermark on scan mode update
+Date:   Sat, 14 May 2022 21:20:10 +0300
+Message-Id: <20220514182010.152784-1-cosmin.tanislav@analog.com>
+X-Mailer: git-send-email 2.35.3
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7bit
-X-Stat-Signature: zyycxee6xd4h5bntsfrd6nbdzt79pp8t
-X-Rspamd-Server: rspamout04
-X-Rspamd-Queue-Id: 4395560009
-X-Session-Marker: 6A6F6540706572636865732E636F6D
-X-Session-ID: U2FsdGVkX1+ZFvGeH+fXzF/xfnsLphuIT8PlcpdCOCo=
-X-HE-Tag: 1652545884-847318
+Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, 2022-05-14 at 16:53 +0100, Jonathan Cameron wrote:
-> On Tue, 10 May 2022 08:47:33 -0700
-> Yury Norov <yury.norov@gmail.com> wrote:
-> 
-> > bitmap_weight_{eq,le} is better than bitmap_weight because it
-> > may return earlier.
-> > 
-> > CC: Jonathan Cameron <jic23@kernel.org>
-> > CC: Lars-Peter Clausen <lars@metafoo.de>
-> > CC: Michael Hennerich <Michael.Hennerich@analog.com>
-> > CC: linux-iio@vger.kernel.org
-> > CC: linux-kernel@vger.kernel.org
-> > Signed-off-by: Yury Norov <yury.norov@gmail.com>
-> without being cc'd on the cover letter, there is no obvious way for
-> me to know this is reliant in some series to be found in next.
-> 
-> Please call out the exact dependency and whilst it's a long list,
-> it is good to cc all people cc'd on individual patches also
-> on the cover letter so they have that background information.
+Currently, the driver updates the FIFO watermark inside both
+update_scan_mode() and hwfifo_set_watermark(). Inside the IIO core,
+hwfifo_set_watermark() is called immediately after update_scan_mode(),
+making the first call to set_fifo_samples() redundant.
 
-When doing a treewide change like this, vger would commonly
-reject the message because of too many recipients.
+Remove the first call to set_fifo_samples(), and merge the
+set_fifo_samples() function into the set_fifo_watermark()
+function. Also, since fifo_set_size is always set inside of
+update_scan_mode(), and it cannot be set to 0, remove the
+zero check from set_fifo_samples().
 
-> 
-> Change seems fine, but I've no idea when/if to pick it up because of
-> that lack of information.
+Signed-off-by: Cosmin Tanislav <cosmin.tanislav@analog.com>
+---
+ drivers/iio/accel/adxl367.c | 46 ++++++++-----------------------------
+ 1 file changed, 9 insertions(+), 37 deletions(-)
 
-You could try using lore with the in-reply-to message header id
-
-https://lore.kernel.org/lkml/20220510154750.212913-6-yury.norov@gmail.com/
-
-that gives you the entire thread.
+diff --git a/drivers/iio/accel/adxl367.c b/drivers/iio/accel/adxl367.c
+index 0289ed8cf2c6..72a8c3fb27b9 100644
+--- a/drivers/iio/accel/adxl367.c
++++ b/drivers/iio/accel/adxl367.c
+@@ -447,21 +447,17 @@ static int adxl367_set_fifo_format(struct adxl367_state *st,
+ 					     fifo_format));
+ }
+ 
+-static int adxl367_set_fifo_samples(struct adxl367_state *st,
+-				    unsigned int fifo_watermark,
+-				    unsigned int fifo_set_size)
++static int adxl367_set_fifo_watermark(struct adxl367_state *st,
++				      unsigned int fifo_watermark)
+ {
+-	unsigned int fifo_samples = fifo_watermark * fifo_set_size;
++	unsigned int fifo_samples = fifo_watermark * st->fifo_set_size;
+ 	unsigned int fifo_samples_h, fifo_samples_l;
+ 	int ret;
+ 
+ 	if (fifo_samples > ADXL367_FIFO_MAX_WATERMARK)
+ 		fifo_samples = ADXL367_FIFO_MAX_WATERMARK;
+ 
+-	if (fifo_set_size == 0)
+-		return 0;
+-
+-	fifo_samples /= fifo_set_size;
++	fifo_samples /= st->fifo_set_size;
+ 
+ 	fifo_samples_h = FIELD_PREP(ADXL367_SAMPLES_H_MASK,
+ 				    FIELD_GET(ADXL367_SAMPLES_VAL_H_MASK,
+@@ -475,30 +471,8 @@ static int adxl367_set_fifo_samples(struct adxl367_state *st,
+ 	if (ret)
+ 		return ret;
+ 
+-	return regmap_update_bits(st->regmap, ADXL367_REG_FIFO_SAMPLES,
+-				  ADXL367_SAMPLES_L_MASK, fifo_samples_l);
+-}
+-
+-static int adxl367_set_fifo_set_size(struct adxl367_state *st,
+-				     unsigned int fifo_set_size)
+-{
+-	int ret;
+-
+-	ret = adxl367_set_fifo_samples(st, st->fifo_watermark, fifo_set_size);
+-	if (ret)
+-		return ret;
+-
+-	st->fifo_set_size = fifo_set_size;
+-
+-	return 0;
+-}
+-
+-static int adxl367_set_fifo_watermark(struct adxl367_state *st,
+-				      unsigned int fifo_watermark)
+-{
+-	int ret;
+-
+-	ret = adxl367_set_fifo_samples(st, fifo_watermark, st->fifo_set_size);
++	ret = regmap_update_bits(st->regmap, ADXL367_REG_FIFO_SAMPLES,
++				 ADXL367_SAMPLES_L_MASK, fifo_samples_l);
+ 	if (ret)
+ 		return ret;
+ 
+@@ -1276,14 +1250,11 @@ static int adxl367_update_scan_mode(struct iio_dev *indio_dev,
+ {
+ 	struct adxl367_state *st  = iio_priv(indio_dev);
+ 	enum adxl367_fifo_format fifo_format;
+-	unsigned int fifo_set_size;
+ 	int ret;
+ 
+ 	if (!adxl367_find_mask_fifo_format(active_scan_mask, &fifo_format))
+ 		return -EINVAL;
+ 
+-	fifo_set_size = bitmap_weight(active_scan_mask, indio_dev->masklength);
+-
+ 	mutex_lock(&st->lock);
+ 
+ 	ret = adxl367_set_measure_en(st, false);
+@@ -1294,11 +1265,12 @@ static int adxl367_update_scan_mode(struct iio_dev *indio_dev,
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = adxl367_set_fifo_set_size(st, fifo_set_size);
++	ret = adxl367_set_measure_en(st, true);
+ 	if (ret)
+ 		goto out;
+ 
+-	ret = adxl367_set_measure_en(st, true);
++	st->fifo_set_size = bitmap_weight(active_scan_mask,
++					  indio_dev->masklength);
+ 
+ out:
+ 	mutex_unlock(&st->lock);
+-- 
+2.35.3
 
