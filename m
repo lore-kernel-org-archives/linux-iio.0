@@ -2,103 +2,202 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A998C433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 14 May 2022 13:32:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED9A2C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 14 May 2022 13:32:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232492AbiENNcE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 14 May 2022 09:32:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44190 "EHLO
+        id S232501AbiENNc3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 14 May 2022 09:32:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45044 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232476AbiENNcB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 May 2022 09:32:01 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5DF10167ED;
-        Sat, 14 May 2022 06:31:59 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 136D9B80759;
-        Sat, 14 May 2022 13:31:57 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2A530C340EE;
-        Sat, 14 May 2022 13:31:52 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1652535115;
-        bh=TExNkCJIyi7sDz+kd0um9+TpmBxdCc8saAXZNsfA+Jo=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=NTYaemDyM2EcpaBTJbdwga+I34SCsAkZ43SzvYi2A/h9HXiFUqi6fQWUc+afC8sKD
-         aDeorUuiE2Wy4pfaEM9+KVfnH/dIglvw+dHdI0mexse6ssIC/jUkC1stFGoWvjhhrl
-         fh8CwBLQTA2FTj59soeJcdLvtfcoWNSxBMbtrUlVNW+1M7Rjt0vIzrmADN7pkizh9+
-         GvGssv6P5m/QIGjO9itQlWhUQ5pBos1CZsxtZWQq6BgjJ2I049t5YAS2ExJn5mUB0C
-         5HBvTQZVHQQ3L0xLIh2HCtH9kE0UGz1/HwoiHCJszvi5tmsFRwsvaxjzMBUR/BEAO0
-         OC0wsubNWhVWA==
-Date:   Sat, 14 May 2022 14:40:30 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        robh+dt@kernel.org, lars@metafoo.de, miltonm@us.ibm.com
-Subject: Re: [PATCH v2 0/2] iio: humidity: si7020: Check device property for
- skipping reset in probe
-Message-ID: <20220514144030.7a57da70@jic23-huawei>
-In-Reply-To: <c2f7b09d-e046-409e-b65e-153157f84b03@linux.ibm.com>
-References: <20220512162020.33450-1-eajames@linux.ibm.com>
-        <20220512174859.000042b6@Huawei.com>
-        <c2f7b09d-e046-409e-b65e-153157f84b03@linux.ibm.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
+        with ESMTP id S232550AbiENNc3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 May 2022 09:32:29 -0400
+Received: from mail-ed1-x52a.google.com (mail-ed1-x52a.google.com [IPv6:2a00:1450:4864:20::52a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7EFAE222A1;
+        Sat, 14 May 2022 06:32:27 -0700 (PDT)
+Received: by mail-ed1-x52a.google.com with SMTP id y21so13055924edo.2;
+        Sat, 14 May 2022 06:32:27 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=cfFP3xfa8xoziXYuGDbSCKt0RTxwr0nsgNiwx+imKA0=;
+        b=YmK8Gm6dvg1hmXX0XRB5bV3MWQEQ0DGYM8C0ACNy6JqfvrhAmaxNZclAZSR03TCEJA
+         bP9YhnwETeCNkvsjGdw16hEfOQrmev9eSS8S+83BLzNJKwHjER0u0o2aoWcSHSk6kHr3
+         /rRDO1j4+DcBVKO80WxHzpdVhec7f2MeMiqJcYJhJ5CW2MgTLWFhcx3er/2hpc+OHfOn
+         0PHoUIedtnsHHfUkY0Vg+tOmKMtpdM+cWhowgZT0+KSSsr8Nra37zPecaRPqt61ILc0x
+         HVx7do/kxXO57Ut/BBcQjHl5JTqs8s06cV1eL+iXnIdRO4+efisxpGfNmRN/X9IxWU8J
+         Xp2g==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=cfFP3xfa8xoziXYuGDbSCKt0RTxwr0nsgNiwx+imKA0=;
+        b=JG9YuAkEUQyOgg8PanslDowIR7UrKWIOGlBtc01qKgChoRT7A2gO+sfWAawsbwmmUN
+         9al0Vf/idQwMzzjD94HUNQSuZtYTF1nGqoZFKiazFrkoHK3tQOl23vuIMIDJ9HLosFim
+         1STZukT6FI88cjaqV4+AWb+EqSxuvS1EA5t5Nk4TgiTwNLhw/FTbcdmlTZJgBswTENgZ
+         g4G1LsMuEkyCIJLzqd+IbazkKEI35/5qxVVwrLegmy3R9CHHnN5G/KGqx40MbWMoZALC
+         /xy1FYwTxc+pgoKkExt9JDsyMSsKyhIZqReJThqJdep99CKttSxFFwqS4qtX0iuihAxM
+         Xn9A==
+X-Gm-Message-State: AOAM530mJPCgtcDCaHdsBqezutC2f0XXA9T0hpW5nMsv0UXHmAC5GjFc
+        Lz7TVJ0zO+oOpqL1WnoX52wWD76/10A=
+X-Google-Smtp-Source: ABdhPJwSQdGzkpM8IMpJVsaMDIQhBaKThUul2amjq4BK1Mfs1gbXpG1WnhlimcyGx1iB12/mAgxprQ==
+X-Received: by 2002:aa7:cd10:0:b0:428:659e:a4c8 with SMTP id b16-20020aa7cd10000000b00428659ea4c8mr3902005edw.190.1652535145876;
+        Sat, 14 May 2022 06:32:25 -0700 (PDT)
+Received: from [192.168.0.182] ([188.24.86.218])
+        by smtp.gmail.com with ESMTPSA id s15-20020a50ab0f000000b0042617ba637fsm2286822edc.9.2022.05.14.06.32.24
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Sat, 14 May 2022 06:32:25 -0700 (PDT)
+Message-ID: <f5af3894-c76e-04b6-830a-2687427991b6@gmail.com>
+Date:   Sat, 14 May 2022 16:32:25 +0300
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.8.0
+Subject: Re: [PATCH v3 2/2] iio: adc: ad4130: add AD4130 driver
+Content-Language: en-US
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+References: <20220419150828.191933-1-cosmin.tanislav@analog.com>
+ <20220419150828.191933-3-cosmin.tanislav@analog.com>
+ <20220501170807.1e728524@jic23-huawei>
+ <5d932a4a-790e-ca95-c5de-c2267e1f365c@gmail.com>
+ <20220507173551.1bc45a82@jic23-huawei>
+ <39cb9ade-14af-c53b-bd42-06a9b965b57f@gmail.com>
+ <20220507180210.4c48a85f@jic23-huawei>
+From:   Cosmin Tanislav <demonsingur@gmail.com>
+In-Reply-To: <20220507180210.4c48a85f@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, 12 May 2022 14:11:06 -0500
-Eddie James <eajames@linux.ibm.com> wrote:
 
-> On 5/12/22 11:48, Jonathan Cameron wrote:
-> > On Thu, 12 May 2022 11:20:18 -0500
-> > Eddie James <eajames@linux.ibm.com> wrote:
-> >  
-> >> I2C commands issued after the SI7020 is starting up or after reset
-> >> can potentially upset the startup sequence. Therefore, the host
-> >> needs to wait for the startup sequence to finish before issuing
-> >> further i2c commands. This is impractical in cases where the SI7020
-> >> is on a shared bus or behind a mux, which may switch channels at
-> >> any time (generating I2C traffic). Therefore, check for a device
-> >> property that indicates that the driver should skip resetting the
-> >> device when probing.  
-> > Why not lock the bus?  It's not ideal, but then not resetting and hence
-> > potentially ending up in an unknown state isn't great either.  
+
+On 5/7/22 20:04, Jonathan Cameron wrote:
+> On Sat, 7 May 2022 19:49:17 +0300
+> Cosmin Tanislav <demonsingur@gmail.com> wrote:
+> 
+>> On 5/7/22 19:35, Jonathan Cameron wrote:
+>>>    
+>>>>>       
+>>>>>> +static int ad4130_set_fifo_watermark(struct iio_dev *indio_dev, unsigned int val)
+>>>>>> +{
+>>>>>> +	struct ad4130_state *st = iio_priv(indio_dev);
+>>>>>> +	unsigned int eff;
+>>>>>> +	int ret;
+>>>>>> +
+>>>>>> +	if (val > AD4130_FIFO_SIZE)
+>>>>>> +		return -EINVAL;
+>>>>>> +
+>>>>>> +	/*
+>>>>>> +	 * Always set watermark to a multiple of the number of enabled channels
+>>>>>> +	 * to avoid making the FIFO unaligned.
+>>>>>> +	 */
+>>>>>> +	eff = rounddown(val, st->num_enabled_channels);
+>>>>>> +
+>>>>>> +	mutex_lock(&st->lock);
+>>>>>> +
+>>>>>> +	ret = regmap_update_bits(st->regmap, AD4130_REG_FIFO_CONTROL,
+>>>>>> +				 AD4130_WATERMARK_MASK,
+>>>>>> +				 FIELD_PREP(AD4130_WATERMARK_MASK,
+>>>>>> +					    ad4130_watermark_reg_val(eff)));
+>>>>>> +	if (ret)
+>>>>>> +		goto out;
+>>>>>> +
+>>>>>> +	st->effective_watermark = eff;
+>>>>>> +	st->watermark = val;
+>>>>>
+>>>>> Hmm this is a potential inconsistency in the IIO ABI.
+>>>>> ABI docs describes watermark as being number of 'scan elements' which is
+>>>>> not the clearest text we could have gone with...
+>>>>>
+>>>>> Now I may well have made a mistake in the following as it's rather a long time
+>>>>> since I last looked at the core handling for this...
+>>>>>
+>>>>> The core treats it as number datum (which is same as a scan) when using
+>>>>> it for the main watermark attribute and also when using watermarks with the
+>>>>> kfifo (the IIO fifo is made up of objects each of which is a scan. So kfifo_len()
+>>>>> returns the number of scans.
+>>>>>     
+>>>>> Looking very quickly at a few other drivers
+>>>>> adxl367 seems to use number of samples.
+>>>>> adxl372 is using number of scans.
+>>>>> bmc150 hardware seems to work on basis of frame count which I 'think' is probably scans.
+>>>>> fxls8962 uses 'samples count' which is not clearly defined in the datasheet but there
+>>>>> is an example showing that it's scans (I think)...
+>>>>> lsm6dsx - some of the fifos used with this are based on tagged data so the connection to
+>>>>> what hits the front end buffers is non obvious.
+>>>>>
+>>>>> So, not great for consistency :(
+>>>>>
+>>>>> Going forwards i think we should standardize the hardware fifo watermark on what is being
+>>>>> used for the software watermark which I believe is number of scans.
+>>>>> Not necessary much we can do about old drivers though due to risk of breaking ABI...
+>>>>> We should make the documentation clearer though.
+>>>>>       
+>>>>
+>>>> I was confused too, but this seemed more logical to me at the time, and
+>>>> since you didn't say anything regarding it on ADXL367, I did it the same
+>>>> way here. I guess we can't go back and change it now on ADXL367, I'm
+>>>> sorry for this. I'll fix it.
+>>>
+>>> I missed it.  Review is never perfect (mine definitely aren't!)
+>>>
+>>> Thinking more on the adxl367. We still have a window to  fix that as
+>>> the driver isn't yet in a release kernel.  Would you mind spinning a
+>>> patch to fix that one?  Even if we miss the rc cycle (it's a bit tight
+>>> timing wise) we can sneak it in as an early fix in stable without
+>>> significant risk of breaking anyone's userspace.
+>>>    
+>>
+>> I hope Monday is not too late to do it?
+> 
+> Any time next week should be fine.  If it ends up later that's fine as well.
+> We have at least a few weeks until the 5.18 release and then if we were to land
+> this during the first few weeks of the next cycle that would be fine as well.
+> No one should be insane enough to not pick up at least the first few stable
+> releases of a new kernel!
+> 
+>> I can also try to do the changes tomorrow but I don't have the hardware
+>> anymore so I won't be able to test until I get it back, which is only
+>> next week.
+>>
+>>> There might be other drivers that have that interpretation we can't
+>>> fix but if we can reduce the scope of the problem by changing the adxl367
+>>> that would be great.
+>>>
+>>> We should also definitely improve the docs and perhaps add a note to say
+>>> that due to need to maintain ABI, a few drivers use scans * number of channels
+>>> rather than scans.
+>>
+>> I guess I could also do that at the same time.
+> 
+> Perfect :)
+> 
+> Thanks for sorting this out.
+> 
+> Jonathan
 > 
 > 
-> Also, I should mention that in our case we can rely on the power on 
-> reset, so the device should be in a known state.
 
-Until someone unbinds and rebinds the driver...
-It's very hard to have any guarantees once users are involved :)
+I've just had another good look at ADXL367. It seems that I'm quick at
+forgetting stuff about the code I write.
 
-Jonathan
+In adxl367_set_fifo_samples(), fifo_watermark is multiplied by
+fifo_set_size, then, if it is larger than the maximum watermark,
+it is capped at the maximum watermark, and then, it is divided
+by fifo_set_size again.
 
+In the end, fifo_watermark actually seems to mean number of scans
+in that driver too.
 
-> 
-> Eddie
-> 
-> 
-> >
-> > Jonathan
-> >  
-> >> Changes since v1:
-> >>   - Fix dt binding document
-> >>
-> >> Eddie James (2):
-> >>    dt-bindings: iio: humidity: Add si7020 bindings
-> >>    iio: humidity: si7020: Check device property for skipping reset in probe
-> >>
-> >>   .../bindings/iio/humidity/silabs,si7020.yaml  | 47 +++++++++++++++++++
-> >>   .../devicetree/bindings/trivial-devices.yaml  |  2 -
-> >>   drivers/iio/humidity/si7020.c                 | 14 +++---
-> >>   3 files changed, 55 insertions(+), 8 deletions(-)
-> >>   create mode 100644 Documentation/devicetree/bindings/iio/humidity/silabs,si7020.yaml
-> >>  
+So this was a huge confusion. The different thing about AD4130 is that
+the register actually means number of samples, and not number of scans,
+so that's where that confussion stemmed from.
 
+Sorry for wasting your time on this.
