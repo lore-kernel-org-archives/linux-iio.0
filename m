@@ -2,198 +2,263 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ACEAEC433F5
-	for <linux-iio@archiver.kernel.org>; Sat, 14 May 2022 13:42:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 35A5AC433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 14 May 2022 14:01:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229965AbiENNmS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 14 May 2022 09:42:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34144 "EHLO
+        id S229947AbiENOBg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 14 May 2022 10:01:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60338 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230024AbiENNmR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 May 2022 09:42:17 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0BA631CFC3
-        for <linux-iio@vger.kernel.org>; Sat, 14 May 2022 06:42:16 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nps26-0005vU-3O; Sat, 14 May 2022 15:42:10 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nps20-002Hu8-C1; Sat, 14 May 2022 15:42:03 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nps1y-009fx1-7P; Sat, 14 May 2022 15:42:02 +0200
-Date:   Sat, 14 May 2022 15:41:59 +0200
-From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-iio@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        Jiri Valek - 2N <valek@2n.cz>,
-        Colin Ian King <colin.king@intel.com>,
-        Brian Masney <masneyb@onstation.org>
-Subject: Re: [PATCH 0/9] iio: Remove duplicated error reporting in .remove()
-Message-ID: <20220514134159.snmis45rx6qotppe@pengutronix.de>
-References: <20220430081607.15078-1-u.kleine-koenig@pengutronix.de>
- <20220501184149.10b40610@jic23-huawei>
- <20220501185123.3ba0367b@jic23-huawei>
- <20220507153855.6174601e@jic23-huawei>
- <20220513072424.kudt3whbgpt3ryih@pengutronix.de>
- <20220514143151.52f514a0@jic23-huawei>
+        with ESMTP id S230525AbiENOBc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 May 2022 10:01:32 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EBD262F0;
+        Sat, 14 May 2022 07:01:30 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9D9A960F0B;
+        Sat, 14 May 2022 14:01:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BBF1DC34115;
+        Sat, 14 May 2022 14:01:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652536888;
+        bh=IjsexA4QKvKiPnu9VPIN+xBIIykcF8S/oKoPdCTOtAQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sTkGtUXt+E6IHCibIDVmnOG9XEawnYpMLshN1jntf+wWSbROPd4B8zEQ7ohtDzODb
+         1F1rTgq6+2XRckCzITs/LFHpMFCb19FzJdu9ZHBYl4QDYY8qjVAMm2l7CAtP876c08
+         Co2k5OyMK3Jr5luaUCs99MOxejU1bY0qHIFWa0barJpPPR6WhoPBIf0qAJ5lt7vLt1
+         kH0J8uVpJ/5olht2BAOc4768/4FXZ38TEeWwHYph3nZVTAXzfCaQ3m/V3T3h3xjDrd
+         Z5cPKH761JUAmbX76JTCRRk4zieyKSdLfm2BPtWsgV5OxrEqm7IYQSwYnyB5Ua2LpR
+         gRDdGqs/CCKdA==
+Date:   Sat, 14 May 2022 15:10:03 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     lars@metafoo.de, robh+dt@kernel.org, tomas.melin@vaisala.com,
+        andy.shevchenko@gmail.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH V6 3/5] iio: accel: sca3300: modified to support multi
+ chips
+Message-ID: <20220514151003.42fa5044@jic23-huawei>
+In-Reply-To: <20220513124135.1295822-4-Qing-wu.Li@leica-geosystems.com.cn>
+References: <20220513124135.1295822-1-Qing-wu.Li@leica-geosystems.com.cn>
+        <20220513124135.1295822-4-Qing-wu.Li@leica-geosystems.com.cn>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="tga7digetcmvt7co"
-Content-Disposition: inline
-In-Reply-To: <20220514143151.52f514a0@jic23-huawei>
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Fri, 13 May 2022 12:41:33 +0000
+LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn> wrote:
 
---tga7digetcmvt7co
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Prepare the way for multiple chips and additional channels:
+> - Modify the driver to read the device ID and load the corresponding
+>   sensor information from the table to support multiple chips
+> - Add prepares for the addition of extra channels
+> - Prepare for handling the operation modes for multiple chips
+> 
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+A few requests for additional comments inline where the handling
+is 'unusual' enough to be non obvious to figure out.
 
-Hello Jonathan,
+Thanks,
 
-On Sat, May 14, 2022 at 02:31:51PM +0100, Jonathan Cameron wrote:
-> On Fri, 13 May 2022 09:24:24 +0200
-> Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote:
-> > On Sat, May 07, 2022 at 03:38:55PM +0100, Jonathan Cameron wrote:
-> > > On Sun, 1 May 2022 18:51:23 +0100
-> > > Jonathan Cameron <jic23@kernel.org> wrote:
-> > >  =20
-> > > > On Sun, 1 May 2022 18:41:49 +0100
-> > > > Jonathan Cameron <jic23@kernel.org> wrote:
-> > > >  =20
-> > > > > On Sat, 30 Apr 2022 10:15:58 +0200
-> > > > > Uwe Kleine-K=F6nig <u.kleine-koenig@pengutronix.de> wrote:
-> > > > >    =20
-> > > > > > Hello,
-> > > > > >=20
-> > > > > > this series adapts several i2c drivers that emit two error mess=
-ages if
-> > > > > > something in their remove function fails. The relevant issue is=
- that the
-> > > > > > i2c core emits an error message if the remove callback returns a
-> > > > > > non-zero value but the drivers already emit a (better) message.=
- So
-> > > > > > these patches change the drivers to return 0 even after an erro=
-r. Note
-> > > > > > there is no further error handling in the i2c core, if a remove=
- callback
-> > > > > > returns an error code, the device is removed anyhow, so the onl=
-y effect
-> > > > > > of making the return value zero is that the error message is su=
-ppressed.
-> > > > > >=20
-> > > > > > The motivation for this series is to eventually change the prot=
-otype of
-> > > > > > the i2c remove callback to return void. As a preparation all re=
-move
-> > > > > > functions should return 0 such that changing the prototype does=
-n't
-> > > > > > change behaviour of individual drivers.     =20
-> > > > >=20
-> > > > > I think I'd rather have seen these called out as simply moving to=
-wards
-> > > > > this second change as it feels wrong to deliberately not report a=
-n error
-> > > > > so as to avoid repeated error messages!
-> > > > >=20
-> > > > > Meh, I don't care that strongly and you call out the real reason =
-in each
-> > > > > patch.   =20
-> > > >=20
-> > > > Series looks fine to me, but I'll leave the on list for a few days =
-to let
-> > > > others have time to take a look.
-> > > >=20
-> > > > Worth noting that some of these are crying out for use
-> > > > of devm_add_action_or_reset() and getting rid of the remove functio=
-ns
-> > > > entirely now you've dropped the oddity of them returning non 0.
-> > > >=20
-> > > > Low hanging fruit for any newbies who want to do it, or maybe I will
-> > > > if I get bored :) =20
-> > >=20
-> > > Series applied to the togreg branch of iio.git and pushed out as test=
-ing for
-> > > 0-day to see if it can find anything we missed. =20
-> >=20
-> > They are in testing
-> > (https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=
-=3Dtesting)
-> > but not in togreg
-> > (https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git/log/?h=
-=3Dtogreg).
-> >=20
-> > Not sure if that is how it's supposed to be? Only togreg seems to be in
-> > next.
-> Yup. That's intentional because I don't rebase the togreg branch unless
-> something goes wrong when it hits next.  The intent being it's a stable
-> base to build upon.  Normally there is a delay of up to a week to let
-> 0-day take a look at testing and for me to happen to get time sat at
-> the right computer, but sometimes it's longer :(
->=20
-> Right now I'm waiting on a pull request being picked up by Greg KH,
-> after which I'll fast forward the togreg branch as I have some patches
-> waiting to be queued up that are dependent on things that have reached
-> char-misc-next via other paths.
+Jonathan
 
-Not sure I understood that correctly. Do you let Greg pull the togreg
-branch? If you instead let him pull tags, you don't have to wait in such
-a situation to apply new patches to a for-next branch. (Or just don't
-use "togreg" for both, sending PRs to Greg and put patches into next.)
+> ---
+>  drivers/iio/accel/sca3300.c | 186 ++++++++++++++++++++++++++++--------
+>  1 file changed, 145 insertions(+), 41 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/sca3300.c b/drivers/iio/accel/sca3300.c
+> index ff16d2cc8c70..bc6e0213e4aa 100644
+> --- a/drivers/iio/accel/sca3300.c
+> +++ b/drivers/iio/accel/sca3300.c
+> @@ -93,15 +93,35 @@ static const struct iio_chan_spec sca3300_channels[] = {
+>  	IIO_CHAN_SOFT_TIMESTAMP(4),
+>  };
+>  
+> -static const int sca3300_lp_freq[] = {70, 70, 70, 10};
+> -static const int sca3300_accel_scale[][2] = {{0, 370}, {0, 741}, {0, 185}, {0, 185}};
+> +static const int sca3300_lp_freq[] = {70, 10};
+> +static const int sca3300_lp_freq_map[] = {0, 0, 0, 1};
+>  
+> +static const int sca3300_accel_scale[][2] = {{0, 370}, {0, 741}, {0, 185}};
+> +static const int sca3300_accel_scale_map[] = {0, 1, 2, 2};
+> +
+> +static const int sca3300_avail_modes_map[] = {0, 1, 2, 3};
+>  static const unsigned long sca3300_scan_masks[] = {
+>  	BIT(SCA3300_ACC_X) | BIT(SCA3300_ACC_Y) | BIT(SCA3300_ACC_Z) |
+>  	BIT(SCA3300_TEMP),
+>  	0
+>  };
+>  
+> +struct sca3300_chip_info {
+> +	const char *name;
+> +	const unsigned long *scan_masks;
+> +	const struct iio_chan_spec *channels;
+> +	u8 num_channels;
+> +	u8 num_accel_scales;
+> +	const int (*accel_scale)[2];
+> +	const int *accel_scale_map;
+> +	u8 num_freqs;
+> +	const int *freq_table;
+> +	const int *freq_map;
+> +	const int *avail_modes_table;
+> +	u8 num_avail_modes;
+> +	u8 chip_id;
+> +};
+> +
+>  /**
+>   * struct sca3300_data - device data
+>   * @spi: SPI device structure
+> @@ -117,10 +137,29 @@ struct sca3300_data {
+>  		s16 channels[4];
+>  		s64 ts __aligned(sizeof(s64));
+>  	} scan;
+> +	const struct sca3300_chip_info *chip;
 
-> Unfortunately I'm doubtful about whether I can squeeze in a second
-> pull request this cycle, so they may get queued up for next cycle.
-> A bit of bad timing :(
+Needs documentation as struct sca3300_data has kernel doc.
+Also, move this above scan.  That way all the buffers used
+for various purposes will remain together.
 
-It's not a big problem for me. There is still much to do (also a bit in
-drivers/iio) before I tackle the final bits of my quest and actually
-change struct i2c_driver (and so depend on these patches having hit
-mainline). The only downside for you is, that you might have to endure
-me asking again for the state of these patches ;-)
+>  	u8 txbuf[4] ____cacheline_aligned;
+>  	u8 rxbuf[4];
+>  };
+>  
+> +static const struct sca3300_chip_info sca3300_chip_tbl[] = {
+> +	{
+> +		.name = "sca3300",
+> +		.scan_masks = sca3300_scan_masks,
+> +		.channels = sca3300_channels,
+> +		.num_channels = ARRAY_SIZE(sca3300_channels),
+> +		.num_accel_scales = ARRAY_SIZE(sca3300_accel_scale)*2,
+> +		.accel_scale = sca3300_accel_scale,
+> +		.accel_scale_map = sca3300_accel_scale_map,
+> +		.num_freqs = ARRAY_SIZE(sca3300_lp_freq),
+> +		.freq_table = sca3300_lp_freq,
+> +		.freq_map = sca3300_lp_freq_map,
+> +		.avail_modes_table = sca3300_avail_modes_map,
+> +		.num_avail_modes = 4,
+> +		.chip_id = SCA3300_WHOAMI_ID,
+> +	},
+> +};
+> +
+>  DECLARE_CRC8_TABLE(sca3300_crc_table);
+>  
+>  static int sca3300_transfer(struct sca3300_data *sca_data, int *val)
+> @@ -227,36 +266,80 @@ static int sca3300_write_reg(struct sca3300_data *sca_data, u8 reg, int val)
+>  	return sca3300_error_handler(sca_data);
+>  }
+>  
+> +static int sca3300_set_op_mode(struct sca3300_data *sca_data, int index)
+> +{
+> +	if ((index < 0) || (index >= sca_data->chip->num_avail_modes))
+> +		return -EINVAL;
+> +
+> +	return sca3300_write_reg(sca_data, SCA3300_REG_MODE,
+> +				 sca_data->chip->avail_modes_table[index]);
+> +}
+> +
+> +static int sca3300_get_op_mode(struct sca3300_data *sca_data, int *index)
+> +{
+> +	int reg_val;
+> +	int ret;
+> +	int i;
+> +
+> +	ret = sca3300_read_reg(sca_data, SCA3300_REG_MODE, &reg_val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	reg_val &= GENMASK(1, 0);
+> +	for (i = 0; i < sca_data->chip->num_avail_modes; i++) {
+> +		if (sca_data->chip->avail_modes_table[i] == reg_val)
+> +			break;
+> +	}
+> +	if (i == sca_data->chip->num_avail_modes)
+> +		return -EINVAL;
+> +
+> +	*index = i;
+> +	return 0;
+> +}
+> +
+> +static int sca3300_set_frequency(struct sca3300_data *data, int val)
+> +{
+> +	const struct sca3300_chip_info *chip = data->chip;
+> +	unsigned int index;
+> +	unsigned int i;
+> +
+> +	if (sca3300_get_op_mode(data, &index))
+> +		return -EINVAL;
+> +
+> +	for (i = 0; i < chip->num_avail_modes; i++) {
+> +		if ((val == chip->freq_table[chip->freq_map[i]]) &&
 
-Thanks for your feedback. Compared to pinging repeatedly and getting no
-maintainer reply, knowing about your problems is much appreciated.
+The conditions being checked here are far from obvious, so I think this would benefit
+from an explanatory comment.
 
-Best regards and have a nice week-end,
-Uwe
+Something along the lines of,
+"Find a mode in which the requested sampling frequency is available
+ and the scaling currently set is retained".
 
---=20
-Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
-Industrial Linux Solutions                 | https://www.pengutronix.de/ |
 
---tga7digetcmvt7co
-Content-Type: application/pgp-signature; name="signature.asc"
 
------BEGIN PGP SIGNATURE-----
+> +		    (chip->accel_scale[chip->accel_scale_map[index]] ==
+> +		     chip->accel_scale[chip->accel_scale_map[i]]))
+> +			break;
+> +	}
+> +	if (i == chip->num_avail_modes)
+> +		return -EINVAL;
+> +
+> +	return sca3300_set_op_mode(data, i);
+> +}
+> +
+>  static int sca3300_write_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int val, int val2, long mask)
+>  {
+>  	struct sca3300_data *data = iio_priv(indio_dev);
+> -	int reg_val;
+> -	int ret;
+> +	int index;
+>  	int i;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_SCALE:
+> -		if (val)
+> +		if (chan->type != IIO_ACCEL)
+>  			return -EINVAL;
+> -
+> -		for (i = 0; i < ARRAY_SIZE(sca3300_accel_scale); i++) {
+> -			if (val2 == sca3300_accel_scale[i][1])
+> -				return sca3300_write_reg(data, SCA3300_REG_MODE, i);
+> +		for (i = 0; i < data->chip->num_avail_modes; i++) {
+> +			index = data->chip->accel_scale_map[i];
 
-iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmJ/saQACgkQwfwUeK3K
-7AngyQf/RtE+tzerDDaV3mUrXDZiterhrIxztrfIlYv55zdtTgIaBMGN0DAmTNIg
-WdcEvcpYuwA4Lnt9fNXKEKXBREJBl6zBL7lCYkOouTLbwr+RFzGVPAJo1Sgq3a0I
-V1cAy8OIh5WvEI6ZF/dJ8iLhmGRa/T9zM3jYa7WEHLuj7X6Bp/ShgfS5l0o/7Jcr
-zkml7WeQTJ/bUuU7IUvT1pLsCA/RPwZGRufDLQrCpyogRgyT7fAhgrVGxScb+C+K
-Fz47NMlCgzteDh6GrGB2gNQmptnHRGRO67jYvH7u5N52FSap2MW2vyUC3FIq4cB2
-wQDHDytqlhFRIOJKCtPowukNUqMyUA==
-=1r7G
------END PGP SIGNATURE-----
+Also a comment here that we are letting scale take priority over
+sampling frequency. That makes sense given we can only ever end up increasing
+the sampling frequency which is unlikely to be a problem.
 
---tga7digetcmvt7co--
+> +			if ((val  == data->chip->accel_scale[index][0]) &&
+> +			    (val2 == data->chip->accel_scale[index][1])) {
+> +				return sca3300_set_op_mode(data, i);
+> +			}
+>  		}
+>  		return -EINVAL;
+> -
+>  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> -		ret = sca3300_read_reg(data, SCA3300_REG_MODE, &reg_val);
+> -		if (ret)
+> -			return ret;
+> -		/* freq. change is possible only for mode 3 and 4 */
+> -		if (reg_val == 2 && val == sca3300_lp_freq[3])
+> -			return sca3300_write_reg(data, SCA3300_REG_MODE, 3);
+> -		if (reg_val == 3 && val == sca3300_lp_freq[2])
+> -			return sca3300_write_reg(data, SCA3300_REG_MODE, 2);
+> -		return -EINVAL;
+> +		return sca3300_set_frequency(data, val);
+>  	default:
+>  		return -EINVAL;
+>  	}
