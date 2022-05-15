@@ -2,98 +2,125 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1CEE8C433F5
-	for <linux-iio@archiver.kernel.org>; Sun, 15 May 2022 16:00:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 919BEC433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 15 May 2022 16:32:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237612AbiEOQAO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 15 May 2022 12:00:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58658 "EHLO
+        id S237736AbiEOQcM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 15 May 2022 12:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51100 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237621AbiEOQAO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 May 2022 12:00:14 -0400
-Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 673A215FE7
-        for <linux-iio@vger.kernel.org>; Sun, 15 May 2022 09:00:11 -0700 (PDT)
-Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
-        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nqGf2-0001DV-Qy; Sun, 15 May 2022 18:00:00 +0200
-Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
-        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nqGez-002V3N-Nf; Sun, 15 May 2022 17:59:56 +0200
-Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
-        (envelope-from <ukl@pengutronix.de>)
-        id 1nqGex-009uGJ-J9; Sun, 15 May 2022 17:59:55 +0200
-From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        =?utf-8?q?Nuno_S=C3=A1?= <nuno.sa@analog.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        linux-iio@vger.kernel.org, kernel@pengutronix.de
-Subject: [PATCH 7/8] iio:light:vcnl4000: Improve error reporting for problems during .remove()
-Date:   Sun, 15 May 2022 17:59:28 +0200
-Message-Id: <20220515155929.338656-8-u.kleine-koenig@pengutronix.de>
-X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220515155929.338656-1-u.kleine-koenig@pengutronix.de>
-References: <20220515155929.338656-1-u.kleine-koenig@pengutronix.de>
+        with ESMTP id S237732AbiEOQcK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 May 2022 12:32:10 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 381361C106;
+        Sun, 15 May 2022 09:32:07 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 33AEEB80D23;
+        Sun, 15 May 2022 16:32:05 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C3CBFC385B8;
+        Sun, 15 May 2022 16:31:59 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1652632323;
+        bh=4vBXeGOXH388BuK75d5Tbp+8kwGEur5G8fxJzz0bKYM=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=LZSZIAHpVmgathYw/TYcyOBMQIG8PO1S0uy4FplHjtoYiEcAfiAybb/29DMLDxz9C
+         wElDUYIbi72GszJ8cInKUChRyQgzb8x77SFu5QEFRxJBzqlHU1MCnmEwmRX5hpEuue
+         VMTQ+DBTn4td8XmSIs7Ux8ZQbRAOdFC3oP88h2cV7CdJW2m5duoORNhpOzpiYJbCDh
+         dIDjx7v3tZBFdA/bgsNna5pkq2OpCLU0a+d6EJ5PoCuomjUuxqx8/OaKrtRfAhJqwb
+         zWrCQuvR9G10e/H+5DPZLucT6glBf4oakcupfKJR1usj2lwxI0qhm6hu0Vddj0UbjM
+         jElHC+TaZVT5w==
+Date:   Sun, 15 May 2022 17:40:37 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Joe Perches <joe@perches.com>
+Cc:     Yury Norov <yury.norov@gmail.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        David Laight <David.Laight@ACULAB.COM>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Julia Lawall <Julia.Lawall@inria.fr>,
+        =?UTF-8?B?TWljaGHFgiBNaXJvc8WCYXc=?= <mirq-linux@rere.qmqm.pl>,
+        Nicholas Piggin <npiggin@gmail.com>,
+        Nicolas Palix <nicolas.palix@imag.fr>,
+        Peter Zijlstra <peterz@infradead.org>,
+        Rasmus Villemoes <linux@rasmusvillemoes.dk>,
+        Matti Vaittinen <Matti.Vaittinen@fi.rohmeurope.com>,
+        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH 05/22] iio: replace bitmap_weight with
+ bitmap_weitght_{eq,le} where appropriate
+Message-ID: <20220515174037.614c6c6e@jic23-huawei>
+In-Reply-To: <58a70b4a91a184eef26f9823636bf81c573b2c3b.camel@perches.com>
+References: <20220510154750.212913-1-yury.norov@gmail.com>
+        <20220510154750.212913-6-yury.norov@gmail.com>
+        <20220514165309.7445c767@jic23-huawei>
+        <58a70b4a91a184eef26f9823636bf81c573b2c3b.camel@perches.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.33; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1508; h=from:subject; bh=LYLLH8JHqpkhqapmKf7rt6zhz2W7TsS502lsRZkueuo=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBigSNWoMG644npi0Op5gIN2hULvPgPg7ozXF0tmkYm qG2G83qJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYoEjVgAKCRDB/BR4rcrsCdBxCA Cc7Rks0scPlOox7Kje4FCCwnp0NXaiurl4lfOYcojj8CqyLX7kWRTVPROFAMe8FlAaAdaizBemY6xl H8PSzXKAqJM+qRfbCuEg/IEzzocWNX+19mdwI93ZMpqcZqhYtvI1+HqeKbHWM93Z2YGqMutXX5ElTc HXolAYYaWPxgIh2K1GHt3IoAxd8/cpuJdL0AcybLQon1P7Zx0pcV266Q5M+u1dmLRV8GxQSqDRL3gL dAZ38gIABXOV27lQHlgg8xP0gHzSU+l5VCnHJ8tjduyav7oKirlgUUGh6JKD4jQapto1wzqVLHMM7T 0GvGJg0gTVGmnQJatJZ5bN1tXbaU6q
-X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
-Content-Transfer-Encoding: 8bit
-X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
-X-SA-Exim-Mail-From: ukl@pengutronix.de
-X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
-X-PTX-Original-Recipient: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Returning an error value in an i2c remove callback results in a generic
-error message being emitted by the i2c core, but otherwise it doesn't
-make a difference. The device goes away anyhow and the devm cleanups are
-called.
+On Sat, 14 May 2022 09:31:23 -0700
+Joe Perches <joe@perches.com> wrote:
 
-So instead of triggering the generic i2c error message, emit a more
-helpful message if a problem occurs and return 0 to suppress the generic
-message.
+> On Sat, 2022-05-14 at 16:53 +0100, Jonathan Cameron wrote:
+> > On Tue, 10 May 2022 08:47:33 -0700
+> > Yury Norov <yury.norov@gmail.com> wrote:
+> >   
+> > > bitmap_weight_{eq,le} is better than bitmap_weight because it
+> > > may return earlier.
+> > > 
+> > > CC: Jonathan Cameron <jic23@kernel.org>
+> > > CC: Lars-Peter Clausen <lars@metafoo.de>
+> > > CC: Michael Hennerich <Michael.Hennerich@analog.com>
+> > > CC: linux-iio@vger.kernel.org
+> > > CC: linux-kernel@vger.kernel.org
+> > > Signed-off-by: Yury Norov <yury.norov@gmail.com>  
+> > without being cc'd on the cover letter, there is no obvious way for
+> > me to know this is reliant in some series to be found in next.
+> > 
+> > Please call out the exact dependency and whilst it's a long list,
+> > it is good to cc all people cc'd on individual patches also
+> > on the cover letter so they have that background information.  
+> 
+> When doing a treewide change like this, vger would commonly
+> reject the message because of too many recipients.
 
-This patch is a preparation for making i2c remove callbacks return void.
+Hmm. I took a look via lore before sending this moan and didn't think
+this actually had that large a list of CCs but maybe my counting wasn't
+great (lots of overlaps between different patches).
 
-Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
----
- drivers/iio/light/vcnl4000.c | 8 +++++++-
- 1 file changed, 7 insertions(+), 1 deletion(-)
+The series is also not a tree wide change.
+It's a set of changes related only by the fact they are using
+a call to the same set of functions and the series is based
+on next (which is usually a bad idea as a tree to base anything on).
+Arguably there are two different sets of functions at that (the bitmap
+ones and the cpumask ones)
 
-diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index e02e92bc2928..947a41b86173 100644
---- a/drivers/iio/light/vcnl4000.c
-+++ b/drivers/iio/light/vcnl4000.c
-@@ -1115,13 +1115,19 @@ static int vcnl4000_remove(struct i2c_client *client)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(client);
- 	struct vcnl4000_data *data = iio_priv(indio_dev);
-+	int ret;
- 
- 	pm_runtime_dont_use_autosuspend(&client->dev);
- 	pm_runtime_disable(&client->dev);
- 	iio_device_unregister(indio_dev);
- 	pm_runtime_set_suspended(&client->dev);
- 
--	return data->chip_spec->set_power_state(data, false);
-+	ret = data->chip_spec->set_power_state(data, false);
-+	if (ret)
-+		dev_warn(&client->dev, "Failed to power down (%pe)\n",
-+			 ERR_PTR(ret));
-+
-+	return 0;
- }
- 
- static int __maybe_unused vcnl4000_runtime_suspend(struct device *dev)
--- 
-2.35.1
+This is a good set of changes, but taking it slowly and sending these
+out as a number of different series after rc1 would have made
+much more sense to me.  That way visibility would have been good
+and they could have been applied through the various individual trees.
+
+If there is a reason to want to take this via a common tree then
+that information needs to be conveyed to all the subsystem maintainers.
+
+Jonathan
+
+
+> 
+> > 
+> > Change seems fine, but I've no idea when/if to pick it up because of
+> > that lack of information.  
+> 
+> You could try using lore with the in-reply-to message header id
+> 
+> https://lore.kernel.org/lkml/20220510154750.212913-6-yury.norov@gmail.com/
+> 
+> that gives you the entire thread.
+> 
 
