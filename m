@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 161C4C433F5
-	for <linux-iio@archiver.kernel.org>; Mon, 16 May 2022 21:04:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8A5E1C433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 16 May 2022 21:04:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348480AbiEPVEs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 16 May 2022 17:04:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53282 "EHLO
+        id S1346547AbiEPVE4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 16 May 2022 17:04:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53292 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1349085AbiEPVEd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 May 2022 17:04:33 -0400
-Received: from mail-qt1-x82e.google.com (mail-qt1-x82e.google.com [IPv6:2607:f8b0:4864:20::82e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8A405C766;
-        Mon, 16 May 2022 13:40:09 -0700 (PDT)
-Received: by mail-qt1-x82e.google.com with SMTP id u3so2741715qta.8;
-        Mon, 16 May 2022 13:40:09 -0700 (PDT)
+        with ESMTP id S1348999AbiEPVE0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 May 2022 17:04:26 -0400
+Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3AA565BE4D;
+        Mon, 16 May 2022 13:40:01 -0700 (PDT)
+Received: by mail-qt1-x836.google.com with SMTP id hh4so12958863qtb.10;
+        Mon, 16 May 2022 13:40:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hKBcyX3Ppfu6XQjIjRejfr2DzYtK4WWEcAa5qty3cHg=;
-        b=oukrXqAAZdBan6tdF/K2D/kCxUwWgPeZLEnHGfR+Ln2zBB1SI+qLLEfyNCPPXVMh22
-         qjUN8mwA7XKNfDNOaSMbYwhl8TJQOibuS9mVrzonAfGAO/iqdUCpyVD7K6RYYt6Ck+09
-         5I0enB+WW4r5ELpXeKMMneOKTFZK9+adctc1HrJ/lqyJ0JqYaBrrnZfsP4R8kybDxWNY
-         cY+mKVgXNFoEggevYW+sqUyma+gTEVo8vb7W7f/KFatUHvASyI950xDNhsrgxw5WnpKh
-         2pNj5+4jAfv5YMPMByRTCn6tNxzFhWmWAonNqG+6rB5jM/Qr5rcj4nZzcbgnRhsSq9x6
-         tnxw==
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qRyYZy7MUY9Z/ZyS1jq+AuFFP7q0GxQUZ1g6iG97tyM=;
+        b=jRAPfAxvk37A+4zg3JePp6ctoOo27aHfPQzvPO/cLLDVov8JMSdbL5Goe5mzQ1GHVI
+         e1KgC/HsHj91CoO2A327UT8DcApUlzJIiPG5K38EJXtL5Vs+JLfh4mAoXfQQ/873B7EG
+         AIrLk+0G9EcwbbiYW2BGLPLYVFzo1g70p+B64FCCRYzTi6CCMkyQzG4rFAtzMZskHrUa
+         g238LZVFMqIHDDcFq8qJOGTvvMVmCyVIsDi3iLIy6iqzK0x4ZHwVnxSDwBlPpA6Uh9JR
+         ZrcCXwJZoMI0V4RLN5EVsFxxHRyuf5sTNC13xv4Btbgo37b+APRDSSp/tmoo+p5j77jI
+         XjLA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hKBcyX3Ppfu6XQjIjRejfr2DzYtK4WWEcAa5qty3cHg=;
-        b=xrEV1G3My8xR/PpbNq6g1RiYbflL9NHySwQmRtUCVTXEq0C44pl6xDFzvQ9Btrjas/
-         vTBOmfwSK1Ejr28HZgdl+5C1qoJX+Kk+t2bqECX7M3vYvsjLWHlXZIX5wjvkYXqlmRH2
-         R1jxDkfzlydGDEqB+iI3STsO+jVFRUgw3rVOqWzu8PX1gyMEV9nk6zgc6YJ5px5WxXyi
-         sSgxGp4RxzY2LCUHbVpuzh6nwOToXBk5xLJKYzwYeuKMvBu8ew5CZknT6aYUlQpnawjU
-         c24jslWxFmU9yCeQGrgmeJHMkWul2SS5aE1W4D6lXRgF93VtZOLIg/eyuiAHUp2XiKUF
-         jVuw==
-X-Gm-Message-State: AOAM531De2ZZ1mSdncqY4isVzBiKmAE+apIFkJBnmhegIuoFHXke7Rt+
-        3PGdmCX8EjJwk2CMHmI8/I7FLfxtvTfcWQ==
-X-Google-Smtp-Source: ABdhPJyYvbcv8J+a4WY5fmCWaSGt/mt3uew74uDkCuyrQ24GIBr26QFwVCeQkFKfAyRihFdydtDalw==
-X-Received: by 2002:ac8:5f06:0:b0:2f3:cbe5:1e1d with SMTP id x6-20020ac85f06000000b002f3cbe51e1dmr16773074qta.389.1652733607848;
-        Mon, 16 May 2022 13:40:07 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=qRyYZy7MUY9Z/ZyS1jq+AuFFP7q0GxQUZ1g6iG97tyM=;
+        b=dauOcV08lfg+FmpNJVDRRO8fSs+d84+shxfrDnp4ivITeRiV8UCqPcSJxFtAEg7Jeb
+         auX5gyubBlHAUEol/ZGEPt0VBpajoBBDJS/kZg4PmKFe8bjgIvanl/6kX++cGqZ5saOB
+         gzGjJX1FSL/9oJ4ILeNVf1pzZl9O3n52p/qEi9QPy1qfJLPnShH+31Mwo5khhAgsb15m
+         qxrj/qD6GCkagXcz8V7ICEnE3Ver0tNv36bGaqaRdZ77FhcL9VhS0IzGK9ULcSEs8PL4
+         Wz0MqytTKvy59hku2KdkHZQ5iNQ0svKO+poE6NbajJr1ZBnGC5DxJh/MiByy46mTCJQP
+         ys5w==
+X-Gm-Message-State: AOAM530TKNeJaPaP3d9xGRTzPywbINb51XmygLXLGNMdR1bH/3r9x4Cg
+        L/TRUfr9E6Ag/NB5jdMnBw7A9RmVXqd9FA==
+X-Google-Smtp-Source: ABdhPJzxCGqOh+bB58fssYdqVlJzJSN0fs2Z5kI37E/iSL/1fO8Hyo71gRgar0YDeHHlg4FAjH1MeA==
+X-Received: by 2002:a05:622a:19a2:b0:2f3:cb4d:d4d9 with SMTP id u34-20020a05622a19a200b002f3cb4dd4d9mr16554824qtc.245.1652733599224;
+        Mon, 16 May 2022 13:39:59 -0700 (PDT)
 Received: from grrm.lan (bras-base-mtrlpq4809w-grc-17-70-53-205-21.dsl.bell.ca. [70.53.205.21])
-        by smtp.gmail.com with ESMTPSA id k67-20020a378846000000b006a00fabde68sm6364016qkd.10.2022.05.16.13.40.06
+        by smtp.gmail.com with ESMTPSA id k67-20020a378846000000b006a00fabde68sm6364016qkd.10.2022.05.16.13.39.58
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 16 May 2022 13:40:07 -0700 (PDT)
+        Mon, 16 May 2022 13:39:58 -0700 (PDT)
 From:   Yannick Brosseau <yannick.brosseau@gmail.com>
 To:     jic23@kernel.org, lars@metafoo.de, mcoquelin.stm32@gmail.com,
         alexandre.torgue@foss.st.com, fabrice.gasnier@foss.st.com,
@@ -55,66 +55,32 @@ Cc:     paul@crapouillou.net, linux-iio@vger.kernel.org,
         linux-stm32@st-md-mailman.stormreply.com,
         linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
         Yannick Brosseau <yannick.brosseau@gmail.com>
-Subject: [PATCH v2 2/2] iio: adc: stm32: Fix IRQs on STM32F4 by removing custom spurious IRQs message
-Date:   Mon, 16 May 2022 16:39:39 -0400
-Message-Id: <20220516203939.3498673-3-yannick.brosseau@gmail.com>
+Subject: [PATCH v2 0/2] iio: adc: stm32: Fix ADC IRQ handling on STM32F4
+Date:   Mon, 16 May 2022 16:39:37 -0400
+Message-Id: <20220516203939.3498673-1-yannick.brosseau@gmail.com>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220516203939.3498673-1-yannick.brosseau@gmail.com>
-References: <20220516203939.3498673-1-yannick.brosseau@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The check for spurious IRQs introduced in 695e2f5c289bb assumed that the bits
-in the control and status registers are aligned. This is true for the H7 and MP1
-version, but not the F4. The interrupt was then never handled on the F4.
+Changes to the STM32 ADC irq handling broke the STM32F4 platforms
+These two patches bring it back to a working state.
 
-Instead of increasing the complexity of the comparison and check each bit specifically,
-we remove this check completely and rely on the generic handler for spurious IRQs.
+Changes:
+ * Removed spurious IRQs detection
+ * Updated comments and commit messages
 
-Fixes: 695e2f5c289b ("iio: adc: stm32-adc: fix a regression when using dma and irq")
-Signed-off-by: Yannick Brosseau <yannick.brosseau@gmail.com>
----
- drivers/iio/adc/stm32-adc.c | 10 ----------
- 1 file changed, 10 deletions(-)
+Yannick Brosseau (2):
+  iio: adc: stm32: Fix ADCs iteration in irq handler
+  iio: adc: stm32: Fix IRQs on STM32F4 by removing custom spurious IRQs
+    message
 
-diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
-index a68ecbda6480..8c5f05f593ab 100644
---- a/drivers/iio/adc/stm32-adc.c
-+++ b/drivers/iio/adc/stm32-adc.c
-@@ -1407,7 +1407,6 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
- 	struct stm32_adc *adc = iio_priv(indio_dev);
- 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
- 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
--	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
- 
- 	/* Check ovr status right now, as ovr mask should be already disabled */
- 	if (status & regs->isr_ovr.mask) {
-@@ -1422,11 +1421,6 @@ static irqreturn_t stm32_adc_threaded_isr(int irq, void *data)
- 		return IRQ_HANDLED;
- 	}
- 
--	if (!(status & mask))
--		dev_err_ratelimited(&indio_dev->dev,
--				    "Unexpected IRQ: IER=0x%08x, ISR=0x%08x\n",
--				    mask, status);
--
- 	return IRQ_NONE;
- }
- 
-@@ -1436,10 +1430,6 @@ static irqreturn_t stm32_adc_isr(int irq, void *data)
- 	struct stm32_adc *adc = iio_priv(indio_dev);
- 	const struct stm32_adc_regspec *regs = adc->cfg->regs;
- 	u32 status = stm32_adc_readl(adc, regs->isr_eoc.reg);
--	u32 mask = stm32_adc_readl(adc, regs->ier_eoc.reg);
--
--	if (!(status & mask))
--		return IRQ_WAKE_THREAD;
- 
- 	if (status & regs->isr_ovr.mask) {
- 		/*
+ drivers/iio/adc/stm32-adc-core.c |  7 ++++++-
+ drivers/iio/adc/stm32-adc.c      | 10 ----------
+ 2 files changed, 6 insertions(+), 11 deletions(-)
+
 -- 
 2.36.1
 
