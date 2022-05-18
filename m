@@ -2,165 +2,198 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9EB45C433F5
-	for <linux-iio@archiver.kernel.org>; Wed, 18 May 2022 15:05:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9DFDEC433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 18 May 2022 15:29:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239061AbiERPFV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 May 2022 11:05:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59192 "EHLO
+        id S239282AbiERP3N (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 18 May 2022 11:29:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60196 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239171AbiERPFT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2022 11:05:19 -0400
-Received: from EUR04-DB3-obe.outbound.protection.outlook.com (mail-eopbgr60124.outbound.protection.outlook.com [40.107.6.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C407A1DF659;
-        Wed, 18 May 2022 08:05:17 -0700 (PDT)
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=U1eUJozGcFzeVi9XV+cJgYqSbrLF2Q6uB7W4QBorhaE1tP1L4tjFVtwiEpnjRaf+eUfz3CKO1dW8Aqf66xs7jAkwZZMbmcjXYl8N3I5dMvLC2m2vH62ORDi0bb/6E7KKRdaL3qsbtjyCVfX5frpaN03PCvtEdUQM8wjMM8yAIKZl8X325gPy9XX41ljNxMlrdrVorjQ2bhhcytBig/SafaHJ38MlJOFiaALYNRoIdqZDxr7Qw1B6GfAjMA6iEcOWmXVSwko7asuDUz6VswjyaTHtM7kk3GMs+p3sFXeUViDemiWibG3g7W35t+eOcb6Uc1hHa6Bre8wZKoeoBpg7XQ==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=Pge+B86GgAWoO5oMnHYETK/lg/AE/VuzUzmyMbW4Pdo=;
- b=OiuW2qbdKmu9OmevGnmwoakZjVpPSVEwsPhv1c9c+cc49xOgOVA3oUSRUt/ueheC2k1o+yLN+ijS0YTwTAjK2QD4sHK8m45y6Gh4QJLXMscC3LU1x1gBgJHk6oo9vBUkwx6+4hoE1VCUIsGxkIHj8d2w0593lmhyQgTfiqLP9sdImzIFpokCbNtn8Or7tTpNf+/tl7RAKTPvjlgeeKyaNjFqoh5A1GDVRVN6M8URs2l7FViF2Urn7vxOP5JEZpC90oH0wCtQzwKfP6mVw5p/ZexTsamSQdQUIqK1XprZah1uxHt8GM3n8fRgWkwC0SPCTiD09EQuCyuaQ4jbTSfChw==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=Pge+B86GgAWoO5oMnHYETK/lg/AE/VuzUzmyMbW4Pdo=;
- b=f673qDPE9sRZfRBsjWqeOuC0y46pqEBUC9O9+daKeh/5RiCY1mc9jMs6YSiaBQtOwTy3j/cGqMN2vUs6kwbNuobJEd3LWhxwkCF84pLRWfALRlz/WjI1YY3WJAyVzO5Cr5MC67lbXW0o2fjm2d7YYPqI8ISO9ZfMHEFaRav8Sm4=
-Received: from AS8PR05CA0003.eurprd05.prod.outlook.com (2603:10a6:20b:311::8)
- by HE1PR06MB3996.eurprd06.prod.outlook.com (2603:10a6:7:a3::27) with
- Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5227.23; Wed, 18 May
- 2022 15:04:29 +0000
-Received: from AM5EUR02FT028.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:311:cafe::39) by AS8PR05CA0003.outlook.office365.com
- (2603:10a6:20b:311::8) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.15 via Frontend
- Transport; Wed, 18 May 2022 15:04:29 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com;
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
- AM5EUR02FT028.mail.protection.outlook.com (10.152.8.115) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5250.13 via Frontend Transport; Wed, 18 May 2022 15:04:29 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, mchehab+huawei@kernel.org,
-        ardeleanalex@gmail.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Qing-wu.Li@leica-geosystems.com.cn,
-        robh+dt@kernel.org, mike.looijmans@topic.nl,
-        devicetree@vger.kernel.org, thomas.haemmerle@leica-geosystems.com
-Subject: [PATCH V3 1/6] iio: accel: bmi088: Modified the scale calculate
-Date:   Wed, 18 May 2022 15:04:20 +0000
-Message-Id: <20220518150425.927988-2-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220518150425.927988-1-Qing-wu.Li@leica-geosystems.com.cn>
-References: <20220518150425.927988-1-Qing-wu.Li@leica-geosystems.com.cn>
+        with ESMTP id S229496AbiERP3M (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2022 11:29:12 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBAA71B434D;
+        Wed, 18 May 2022 08:29:11 -0700 (PDT)
+Received: from pps.filterd (m0098394.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IEkaBF003744;
+        Wed, 18 May 2022 15:28:46 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=message-id : date :
+ mime-version : subject : to : cc : references : from : in-reply-to :
+ content-type : content-transfer-encoding; s=pp1;
+ bh=XigF0c1XIn0zOqzJy9+wjaCAz2NNx/WGj+88bUxBk3s=;
+ b=e31joTDg2P04/oTRJxv/M5EzXdzjy9eTU5BchsfgNUET4/+duoSkaQX1RsfnAJx5aQTA
+ R+qfIfEjgRr7GwW81sDqd2OiMVvfZfo2zrgP5e3Ox8+p1pHVrDNpSaxjIsj4aFXKWm5N
+ QeJ+Ygl1vz/VFjoILRXFXCNQJsZlVnheIVz1So4MuDIXGYqTFf9cml1DmsEws5K/2j2q
+ qb0LWpzeKYaHwIrU1jaVe4BNFsYcNSXC7vxZR05rq4xdr69GlZUfp288vnge1ZiCNoIp
+ Wtj5+/S6UENlQ7P31wQaeig21a/PxJe+8UrzwLNdCxPoysJ572PFvTnx0gurUd6ZdTGa uA== 
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g52v1939j-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 15:28:46 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IFJsxn032267;
+        Wed, 18 May 2022 15:28:45 GMT
+Received: from b01cxnp23032.gho.pok.ibm.com (b01cxnp23032.gho.pok.ibm.com [9.57.198.27])
+        by ppma03dal.us.ibm.com with ESMTP id 3g242ammws-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 18 May 2022 15:28:45 +0000
+Received: from b01ledav005.gho.pok.ibm.com (b01ledav005.gho.pok.ibm.com [9.57.199.110])
+        by b01cxnp23032.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IFSiMn16384412
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Wed, 18 May 2022 15:28:44 GMT
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 38457AE068;
+        Wed, 18 May 2022 15:28:44 +0000 (GMT)
+Received: from b01ledav005.gho.pok.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3DF8CAE064;
+        Wed, 18 May 2022 15:28:43 +0000 (GMT)
+Received: from [9.163.6.139] (unknown [9.163.6.139])
+        by b01ledav005.gho.pok.ibm.com (Postfix) with ESMTP;
+        Wed, 18 May 2022 15:28:43 +0000 (GMT)
+Message-ID: <bbeaa4b6-1412-dfac-a6ef-dbcd9f1e3f5c@linux.ibm.com>
+Date:   Wed, 18 May 2022 10:28:42 -0500
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
-X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 9a359563-cfff-4f38-647f-08da38dfb515
-X-MS-TrafficTypeDiagnostic: HE1PR06MB3996:EE_
-X-Microsoft-Antispam-PRVS: <HE1PR06MB399611DFE6F2044BEA432AE9D7D19@HE1PR06MB3996.eurprd06.prod.outlook.com>
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: XxIODZHPXRlQOCkg4Pw3fVW2XW+WiGjS51uLa0y9B9w+Fggk8EHyYmtoIKwhhMKHa/3N7hc7AoWdzuv0mipBZN1MxQfpnHG+6jWqTin2/ovPN3sEfDh9jZAbN1Ak91TLa4nc+prs7kVbdLthVoKcVSbl1AJCjC0H9Dk6q7m/zzy8xDXJeKH69LUZzuLgdXxOyBGTCE43DINn1IjV+zXwmX88bSv3IOhnrxnEX7tGXs6ge3CyyccERMAMKsW7s6XEk57PxAP9RG3jgtpqQo5FVfchrRSe4seatl7s0SBLtzjLCElkNs1lrCov3mt5NBy8hJQ/qs7XjKM3ouiULo33EeLb4+lFjZdziXDvecGEIuZ226N2vtb7GBptFp/oGX0s/lO2fwc6/Fn/t5KU3nGP2I7mRI2tvkO5FzRd5eY9UMdEjpshySf8z7OlKTy1UBZNq8DVTFFsAZfrLQu7OIjy64joW0RQR0GRzuek0EGt0W4oHqbm1VeSC7en0WYyntqCjqDsVVpOd+UikOPlEOsV+6ArlJnxx1hG7L1hlNoTbPDHNIODi5Oxn711IrzHJno37T/+P4ChATRGN1BEd2AYMOxEJjV8VdLVi0snwHcVPLHfwbMXFrvM6VSGbc8O03t8Z22ptr8L92wni5I5Y4wU4KRjAM1H1vYb6ymZgx7svfuTvdlqSlSk0rYgNc42FzT/GnuQ5WSWLBvT+RovnptofA==
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(40470700004)(46966006)(356005)(26005)(921005)(508600001)(1076003)(6512007)(2906002)(2616005)(956004)(186003)(36736006)(316002)(47076005)(86362001)(5660300002)(336012)(40460700003)(83380400001)(81166007)(82310400005)(6506007)(70586007)(70206006)(36756003)(8676002)(36860700001)(6486002)(118246002)(6666004)(8936002);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 18 May 2022 15:04:29.0630
- (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 9a359563-cfff-4f38-647f-08da38dfb515
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: AM5EUR02FT028.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: HE1PR06MB3996
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.0
+Subject: Re: [PATCH v2 0/2] iio: humidity: si7020: Check device property for
+ skipping reset in probe
+Content-Language: en-US
+To:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        devicetree@vger.kernel.org
+Cc:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
+        lars@metafoo.de, miltonm@us.ibm.com, linux-i2c@vger.kernel.org
+References: <20220512162020.33450-1-eajames@linux.ibm.com>
+ <20220512174859.000042b6@Huawei.com>
+ <4fd44316-689e-1b72-d483-2c617d2a455d@linux.ibm.com>
+ <20220513174531.00007b9b@Huawei.com>
+ <b2761479-50fe-0dce-62a2-3beff5cdef9d@axentia.se>
+ <20220514144318.309be1ec@jic23-huawei>
+ <0569bb70-e2dc-de85-268d-30ee7c9491fb@axentia.se>
+From:   Eddie James <eajames@linux.ibm.com>
+In-Reply-To: <0569bb70-e2dc-de85-268d-30ee7c9491fb@axentia.se>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: 0OUP7aMAEDo8lO89jTJcQU-rsYsSvMhB
+X-Proofpoint-GUID: 0OUP7aMAEDo8lO89jTJcQU-rsYsSvMhB
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-18_05,2022-05-17_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 impostorscore=0
+ bulkscore=0 malwarescore=0 suspectscore=0 spamscore=0 phishscore=0
+ mlxscore=0 clxscore=1011 mlxlogscore=999 priorityscore=1501
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2202240000 definitions=main-2205180089
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The units after application of scale are 100*m/s^2,
-The scale calculation is only for the device
-with the range of 3, 6, 12, and 24g,
-but some other chips have a range of 2, 4, 6, and 8g.
 
-Modified the formula to a scale list.
-The scales in the list are calculated by 1/sensitivity*9.8.
-The new units after the application of scale are m/s^2.
+On 5/14/22 10:02, Peter Rosin wrote:
+> 2022-05-14 at 15:43, Jonathan Cameron wrote:
+>> On Sat, 14 May 2022 00:48:51 +0200
+>> Peter Rosin <peda@axentia.se> wrote:
+>>
+>>> Hi!
+>>>
+>>> 2022-05-13 at 18:45, Jonathan Cameron wrote:
+>>>> On Thu, 12 May 2022 12:08:07 -0500
+>>>> Eddie James <eajames@linux.ibm.com> wrote:
+>>>>    
+>>>>> On 5/12/22 11:48, Jonathan Cameron wrote:
+>>>>>> On Thu, 12 May 2022 11:20:18 -0500
+>>>>>> Eddie James <eajames@linux.ibm.com> wrote:
+>>>>>>     
+>>>>>>> I2C commands issued after the SI7020 is starting up or after reset
+>>>>>>> can potentially upset the startup sequence. Therefore, the host
+>>>>>>> needs to wait for the startup sequence to finish before issuing
+>>>>>>> further i2c commands. This is impractical in cases where the SI7020
+>>>>>>> is on a shared bus or behind a mux, which may switch channels at
+>>>>>>> any time (generating I2C traffic). Therefore, check for a device
+>>>>>>> property that indicates that the driver should skip resetting the
+>>>>>>> device when probing.
+>>>>>> Why not lock the bus?  It's not ideal, but then not resetting and hence
+>>>>>> potentially ending up in an unknown state isn't great either.
+>>>>>
+>>>>> Agreed, but locking the bus doesn't work in the case where the chip is
+>>>>> behind a mux. The mux core driver deselects the mux immediately after
+>>>>> the transfer to reset the si7020, causing some i2c traffic, breaking the
+>>>>> si7020. So it would also be a requirement to configure the mux to idle
+>>>>> as-is... That's why I went with the optional skipping of the reset.
+>>>>> Maybe I should add the bus lock too?
+>>>>>   
+>>>> +Cc Peter and linux-i2c for advice as we should resolve any potential
+>>>> issue with the mux side of things rather than hiding it in the driver
+>>>> (if possible!)
+>>> IIUC, the chip in question cannot handle *any* action on the I2C bus
+>>> for 15ms (or so) after a "soft reset", or something bad<tm> happens
+>>> (or at least may happen).
+>>>
+>>> If that's the case, then providing a means of skipping the reset is
+>>> insufficient. If you don't lock the bus, you would need to *always*
+>>> skip the reset, because you don't know for certain if something else
+>>> does I2C xfers.
+>>>
+>>> So, in order to make the soft reset not be totally dangerous even in
+>>> a normal non-muxed environment, the bus must be locked for the 15ms.
+>>>
+>>> However, Eddie is correct in that the I2C mux code may indeed do its
+>>> muxing xfer right after the soft reset command. There is currently
+>>> no way to avoid that muxing xfer. However, it should be noted that
+>>> there are ways to mux an I2C bus without using xfers on the bus
+>>> itself, so it's not problematic for *all* mux variants.
+>>>
+>>> It can be debated if the problem should be worked around with extra
+>>> dt properties like this, or if a capability should be added to delay
+>>> a trailing muxing xfer.
+>>>
+>>> I bet there are other broken chips that have drivers that do in fact
+>>> lock the bus to give the chip a break, but then it all stumbles
+>>> because of the unexpected noise if there's a (wrong kind of) mux in
+>>> the mix.
+>> Ok, so for now I think we need the bus lock for the reset + either
+>> a work around similar to this series, or additions to the i2c mux code
+>> to stop it doing a muxing xfer if the bus is locked?
+> I think there might be cases where it might be valid to restore the mux
+> directly after an xfer even if the mux is externally locked prior to the
+> muxed xfer. But I'm not sure? In any case, it will be a bit convoluted
+> for the mux code to remember that it might need to restore the mux
+> later. And it will get even hairier when multiple levels of muxing is
+> considered...
+>
+> Maybe some kind of hook/callback that could be installed temporarily on
+> the I2C adapter that is called right after the "real" xfer, where the
+> driver could then make the needed mdelay call?
+>
+> I.e.
+> 1. lock the bus
+> 2. install this new hook/callback
+> 3. do an unlocked xfer, get notified and call mdelay
+> 5. uninstall the hook/callback
+> 6. unlock the bus
+>
+> The hook/callback could be uninstalled automatically on unlock, then
+> you would not need to handle multiple notifications. But then again,
+> there is probably some existing framework that should be used that
+> handles all than neatly and efficiently.
 
-Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
-Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
----
- drivers/iio/accel/bmi088-accel-core.c | 14 ++++++++++----
- 1 file changed, 10 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
-index a06dae5c971d..21bddee869af 100644
---- a/drivers/iio/accel/bmi088-accel-core.c
-+++ b/drivers/iio/accel/bmi088-accel-core.c
-@@ -73,6 +73,8 @@
- #define BMI088_ACCEL_FIFO_MODE_FIFO			0x40
- #define BMI088_ACCEL_FIFO_MODE_STREAM			0x80
- 
-+#define BMIO088_ACCEL_ACC_RANGE_MSK			GENMASK(1, 0)
-+
- enum bmi088_accel_axis {
- 	AXIS_X,
- 	AXIS_Y,
-@@ -119,6 +121,7 @@ struct bmi088_accel_chip_info {
- 	u8 chip_id;
- 	const struct iio_chan_spec *channels;
- 	int num_channels;
-+	const int scale_table[4][2];
- };
- 
- struct bmi088_accel_data {
-@@ -280,6 +283,7 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
- 	struct bmi088_accel_data *data = iio_priv(indio_dev);
- 	struct device *dev = regmap_get_device(data->regmap);
- 	int ret;
-+	int reg;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -330,13 +334,14 @@ static int bmi088_accel_read_raw(struct iio_dev *indio_dev,
- 				return ret;
- 
- 			ret = regmap_read(data->regmap,
--					  BMI088_ACCEL_REG_ACC_RANGE, val);
-+					  BMI088_ACCEL_REG_ACC_RANGE, &reg);
- 			if (ret)
- 				goto out_read_raw_pm_put;
- 
--			*val2 = 15 - (*val & 0x3);
--			*val = 3 * 980;
--			ret = IIO_VAL_FRACTIONAL_LOG2;
-+			reg = FIELD_GET(BMIO088_ACCEL_ACC_RANGE_MSK, reg);
-+			*val  = data->chip_info->scale_table[reg][0];
-+			*val2 = data->chip_info->scale_table[reg][1];
-+			ret = IIO_VAL_INT_PLUS_MICRO;
- 
- 			goto out_read_raw_pm_put;
- 		default:
-@@ -432,6 +437,7 @@ static const struct bmi088_accel_chip_info bmi088_accel_chip_info_tbl[] = {
- 		.chip_id = 0x1E,
- 		.channels = bmi088_accel_channels,
- 		.num_channels = ARRAY_SIZE(bmi088_accel_channels),
-+		.scale_table = {{0, 897}, {0, 1795}, {0, 3590}, {0, 7179}},
- 	},
- };
- 
--- 
-2.25.1
+Hm, interesting. Sounds a bit complicated, though very flexible. For a 
+less flexible, but less complex, approch, we could add a i2c_msg flag 
+that says to do a delay in the core? And then si7020 could just submit a 
+couple of raw messages rather than smbus... What do you think?
 
+
+Thanks,
+
+Eddie
+
+
+
+>
+> Me waves hand a bit...
+>
+> Cheers,
+> Peter
