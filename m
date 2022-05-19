@@ -2,130 +2,127 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B1C6C433FE
-	for <linux-iio@archiver.kernel.org>; Wed, 18 May 2022 20:41:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 55009C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 19 May 2022 05:51:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242724AbiERUls (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 18 May 2022 16:41:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33246 "EHLO
+        id S234216AbiESFvQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 19 May 2022 01:51:16 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35998 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242730AbiERUlq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 May 2022 16:41:46 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 465316EC40;
-        Wed, 18 May 2022 13:41:43 -0700 (PDT)
-Received: from pps.filterd (m0098416.ppops.net [127.0.0.1])
-        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24IKDiOW017312;
-        Wed, 18 May 2022 20:41:27 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=nvXa8af2siriVChrnEyvk2247HQGR9mvpKnd8nb1hxo=;
- b=rRq2hMeKB7kjfMHkKWXgNQz7oEgaYj5AFVa9s2q0Bno/4cyu5DI+dKgXYONBPYEhOpu2
- iWgZKjukXAlL2vgqVMi1U4wYsWJ56ZqOZyA2aKB9nfGcZVuv+qq8X2PX1MY/mr8zhcZA
- 0XtRXSFQDruMw5FhSF+S669tHA5XhwTsJe8sQ0PkSt3uFW5o1+gZJId0fKhmYPZcNdmc
- wxpcPnyNONmNJCFjL6FLEgPhDGfWalhr3JyXddE/AI9v1L171eeJI0finBeKGwgpSK8d
- igL76ei/HaUkA4xbcvihKxpk1OrJWz2iKf/MsJ66mawSreKvhhLY6mP/V6Wiqr2naj9l og== 
-Received: from ppma04wdc.us.ibm.com (1a.90.2fa9.ip4.static.sl-reverse.com [169.47.144.26])
-        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3g57n8gk88-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 20:41:27 +0000
-Received: from pps.filterd (ppma04wdc.us.ibm.com [127.0.0.1])
-        by ppma04wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24IKcgbq006781;
-        Wed, 18 May 2022 20:41:27 GMT
-Received: from b03cxnp07027.gho.boulder.ibm.com (b03cxnp07027.gho.boulder.ibm.com [9.17.130.14])
-        by ppma04wdc.us.ibm.com with ESMTP id 3g4wp5bq81-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 18 May 2022 20:41:27 +0000
-Received: from b03ledav006.gho.boulder.ibm.com (b03ledav006.gho.boulder.ibm.com [9.17.130.237])
-        by b03cxnp07027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24IKfQVg15991110
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Wed, 18 May 2022 20:41:26 GMT
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 071E1C6055;
-        Wed, 18 May 2022 20:41:26 +0000 (GMT)
-Received: from b03ledav006.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 96F1EC6059;
-        Wed, 18 May 2022 20:41:25 +0000 (GMT)
-Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.163.6.139])
-        by b03ledav006.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Wed, 18 May 2022 20:41:25 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-i2c@vger.kernel.org
-Cc:     linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        jic23@kernel.org, lars@metafoo.de, wsa@kernel.org,
-        milton@us.ibm.com, peda@axentia.se,
-        Eddie James <eajames@linux.ibm.com>
-Subject: [RFC 2/2] iio: humidity: si7020: Use core transfer callback to sleep after reset
-Date:   Wed, 18 May 2022 15:41:19 -0500
-Message-Id: <20220518204119.38943-3-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.27.0
-In-Reply-To: <20220518204119.38943-1-eajames@linux.ibm.com>
-References: <20220518204119.38943-1-eajames@linux.ibm.com>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: hFpAPwzKJH4bwj4G3KwS1VeByDcTB9vV
-X-Proofpoint-GUID: hFpAPwzKJH4bwj4G3KwS1VeByDcTB9vV
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-18_06,2022-05-17_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 clxscore=1015 malwarescore=0
- mlxlogscore=999 spamscore=0 phishscore=0 mlxscore=0 adultscore=0
- suspectscore=0 bulkscore=0 impostorscore=0 lowpriorityscore=0
- priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
- engine=8.12.0-2202240000 definitions=main-2205180119
+        with ESMTP id S229815AbiESFvP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 May 2022 01:51:15 -0400
+X-Greylist: delayed 83263 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 18 May 2022 22:51:10 PDT
+Received: from zg8tmtyylji0my4xnjqunzqa.icoremail.net (zg8tmtyylji0my4xnjqunzqa.icoremail.net [162.243.164.74])
+        by lindbergh.monkeyblade.net (Postfix) with SMTP id 373195DA1A;
+        Wed, 18 May 2022 22:51:09 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=pku.edu.cn; s=dkim; h=Received:From:To:Cc:Subject:Date:
+        Message-Id:In-Reply-To:References; bh=pYmFxl5EX9FT7BHXjR4DHU5ZJg
+        yGAjXjcQaIbNKJXKE=; b=MCWf5bvh5uU6WiiccZj3Ar5RGbHE3eCBM/nHVmkPqC
+        2GaaKDPmNkMN9zWQhhU55rhg/OJ6YtaZbj5YJAbtD32HeX5slwP6WBKqWjZSnkHk
+        wgkMm+uUUPmm99L+8u59/g+uMhGwMsPHSzUgilmKF+ok/IXeJQyM+eYdGzcKhV1U
+        w=
+Received: from localhost (unknown [10.129.21.144])
+        by front02 (Coremail) with SMTP id 54FpogCnKXbC2oViDtOTBg--.16956S2;
+        Thu, 19 May 2022 13:50:58 +0800 (CST)
+From:   Yongzhi Liu <lyz_cs@pku.edu.cn>
+To:     agross@kernel.org, bjorn.andersson@linaro.org, jic23@kernel.org,
+        lars@metafoo.de
+Cc:     linux-arm-msm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, fuyq@stu.pku.edu.cn,
+        Yongzhi Liu <lyz_cs@pku.edu.cn>
+Subject: [PATCH v2] iio: vadc: Fix potential dereference of NULL pointer
+Date:   Wed, 18 May 2022 22:50:55 -0700
+Message-Id: <1652939455-123139-1-git-send-email-lyz_cs@pku.edu.cn>
+X-Mailer: git-send-email 2.7.4
+In-Reply-To: <YoUtezVzsPB8MAEO@google.com>
+References: <YoUtezVzsPB8MAEO@google.com>
+X-CM-TRANSID: 54FpogCnKXbC2oViDtOTBg--.16956S2
+X-Coremail-Antispam: 1UD129KBjvJXoW7urWfuFyktr18KrWxGryfJFb_yoW8CF43pa
+        yktayrKry2ka1fJ3WftFWDXryaqw42q3yUGFWxJ3W3Ar43trnYyw1aqw1FkFn7uFWxC3ya
+        yr4YyFnYgr4Dur7anT9S1TB71UUUUUUqnTZGkaVYY2UrUUUUjbIjqfuFe4nvWSU5nxnvy2
+        9KBjDU0xBIdaVrnRJUUUkK1xkIjI8I6I8E6xAIw20EY4v20xvaj40_Wr0E3s1l1IIY67AE
+        w4v_Jr0_Jr4l8cAvFVAK0II2c7xJM28CjxkF64kEwVA0rcxSw2x7M28EF7xvwVC0I7IYx2
+        IY67AKxVWDJVCq3wA2z4x0Y4vE2Ix0cI8IcVCY1x0267AKxVW8Jr0_Cr1UM28EF7xvwVC2
+        z280aVAFwI0_GcCE3s1l84ACjcxK6I8E87Iv6xkF7I0E14v26rxl6s0DM2AIxVAIcxkEcV
+        Aq07x20xvEncxIr21l5I8CrVACY4xI64kE6c02F40Ex7xfMcIj6xIIjxv20xvE14v26r1j
+        6r18McIj6I8E87Iv67AKxVWUJVW8JwAm72CE4IkC6x0Yz7v_Jr0_Gr1lF7xvr2IYc2Ij64
+        vIr41lF7I21c0EjII2zVCS5cI20VAGYxC7MxkIecxEwVCm-wCF04k20xvY0x0EwIxGrwCF
+        04k20xvE74AGY7Cv6cx26w4UJr1UMxC20s026xCaFVCjc4AY6r1j6r4UMI8I3I0E5I8CrV
+        AFwI0_Jr0_Jr4lx2IqxVCjr7xvwVAFwI0_JrI_JrWlx4CE17CEb7AF67AKxVWUtVW8ZwCI
+        c40Y0x0EwIxGrwCI42IY6xIIjxv20xvE14v26r1j6r1xMIIF0xvE2Ix0cI8IcVCY1x0267
+        AKxVWUJVW8JwCI42IY6xAIw20EY4v20xvaj40_Jr0_JF4lIxAIcVC2z280aVAFwI0_Jr0_
+        Gr1lIxAIcVC2z280aVCY1x0267AKxVW8JVW8JrUvcSsGvfC2KfnxnUUI43ZEXa7VUbXdbU
+        UUUUU==
+X-CM-SenderInfo: irzqijirqukmo6sn3hxhgxhubq/1tbiAwELBlPy7vJhCwABsZ
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-While the SI7020 is starting up after power on or reset, any I2C commands
-on the bus can potentially upset the startup sequence. Therefore, the host
-needs to wait for the startup sequence to finish before issuing further
-i2c commands. This is impractical in cases where the SI7020 is on a shared
-bus or behind a mux, which may switch channels at any time (potentially
-generating I2C traffic). To resolve this, use the new transfer callback
-on the adapter to sleep the required interval.
+The return value of vadc_get_channel() needs to be checked
+to avoid use of NULL pointer. Fix this by adding the null
+pointer check on prop.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
+Fixes: 0917de94c ("iio: vadc: Qualcomm SPMI PMIC voltage ADC driver")
+
+Signed-off-by: Yongzhi Liu <lyz_cs@pku.edu.cn>
 ---
- drivers/iio/humidity/si7020.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ drivers/iio/adc/qcom-spmi-vadc.c | 23 ++++++++++++++++++++++-
+ 1 file changed, 22 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/humidity/si7020.c b/drivers/iio/humidity/si7020.c
-index ab6537f136ba..f19e88818bd6 100644
---- a/drivers/iio/humidity/si7020.c
-+++ b/drivers/iio/humidity/si7020.c
-@@ -103,6 +103,13 @@ static const struct iio_info si7020_info = {
- 	.read_raw = si7020_read_raw,
- };
+diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+index 34202ba..9fa61fb 100644
+--- a/drivers/iio/adc/qcom-spmi-vadc.c
++++ b/drivers/iio/adc/qcom-spmi-vadc.c
+@@ -358,14 +358,25 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+ 	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
  
-+static void si7020_xfer_callback(void *data, int xfer_rc)
-+{
-+	/* Wait the maximum power-up time after software reset. */
-+	if (!xfer_rc)
-+		msleep(15);
-+}
-+
- static int si7020_probe(struct i2c_client *client,
- 			const struct i2c_device_id *id)
- {
-@@ -115,12 +122,13 @@ static int si7020_probe(struct i2c_client *client,
- 				     I2C_FUNC_SMBUS_READ_WORD_DATA))
- 		return -EOPNOTSUPP;
+ 	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
++	if (!prop) {
++		dev_err(vadc->dev, "Please define 1.25V channel\n");
++		ret = -ENODEV;
++		goto err;
++	}
+ 	ret = vadc_do_conversion(vadc, prop, &read_1);
+ 	if (ret)
+ 		goto err;
  
-+	i2c_lock_bus(client->adapter, I2C_LOCK_ROOT_ADAPTER);
-+	i2c_adapter_xfer_callback(client->adapter, si7020_xfer_callback, NULL);
- 	/* Reset device, loads default settings. */
- 	ret = i2c_smbus_write_byte(client, SI7020CMD_RESET);
-+	i2c_unlock_bus(client->adapter, I2C_LOCK_ROOT_ADAPTER);
- 	if (ret < 0)
- 		return ret;
--	/* Wait the maximum power-up time after software reset. */
--	msleep(15);
+ 	/* Try with buffered 625mV channel first */
+ 	prop = vadc_get_channel(vadc, VADC_SPARE1);
+-	if (!prop)
++	if (!prop) {
+ 		prop = vadc_get_channel(vadc, VADC_REF_625MV);
++		if (!prop) {
++			dev_err(vadc->dev, "Please define 0.625V channel\n");
++			ret = -ENODEV;
++			goto err;
++		}
++	}
  
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (!indio_dev)
+ 	ret = vadc_do_conversion(vadc, prop, &read_2);
+ 	if (ret)
+@@ -381,11 +392,21 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+ 
+ 	/* Ratiometric calibration */
+ 	prop = vadc_get_channel(vadc, VADC_VDD_VADC);
++	if (!prop) {
++		dev_err(vadc->dev, "Please define VDD channel\n");
++		ret = -ENODEV;
++		goto err;
++	}
+ 	ret = vadc_do_conversion(vadc, prop, &read_1);
+ 	if (ret)
+ 		goto err;
+ 
+ 	prop = vadc_get_channel(vadc, VADC_GND_REF);
++	if (!prop) {
++		dev_err(vadc->dev, "Please define GND channel\n");
++		ret = -ENODEV;
++		goto err;
++	}
+ 	ret = vadc_do_conversion(vadc, prop, &read_2);
+ 	if (ret)
+ 		goto err;
 -- 
-2.27.0
+2.7.4
 
