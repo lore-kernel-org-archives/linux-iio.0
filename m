@@ -2,114 +2,311 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4CA9DC433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 24 May 2022 19:54:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id ED344C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 24 May 2022 20:17:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241201AbiEXTye (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 May 2022 15:54:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43924 "EHLO
+        id S236376AbiEXURw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 May 2022 16:17:52 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55752 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241642AbiEXTyV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2022 15:54:21 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0A1697CB20;
-        Tue, 24 May 2022 12:54:10 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id gi33so28978082ejc.3;
-        Tue, 24 May 2022 12:54:09 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=BM1TcEJ1rSjvHQ3DiiP4bMrjTXo3on1VRj5jI+ImT0c=;
-        b=nCBYghWbLbxT1ChNXklDtLZuce4dbmnHu4mmcoCKiXKulovNPkWF6cvFuz0npHmOHu
-         P6JoUKY3m46hiYVPUUpFXvyC1HWTxuErhziuokLysk//JdpZXUIUb/7k/9iZmc/LcsuC
-         c7SqApT0As3pqSCB7nsqDZz6GkKfZkhjLhDl3BkPVzNi4bQIm6W5CxuvjwubJNfzTEQo
-         /bfv0V4go7FpoYIn8m8aPPgrleSvI6HKX6bzvUZW0n3mbzUg7DpBnhLWqDwOiL/UkSJL
-         j7QC6rUolyr1AtXktjGgJOWNpci+LVv15/7ukGgCbSQdQHYC7v6S8Why7cbLYEydPykh
-         LHbw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=BM1TcEJ1rSjvHQ3DiiP4bMrjTXo3on1VRj5jI+ImT0c=;
-        b=jLdXFMDk0nVKV7Uf5SLVo8MQrWZXF5UfosU1L+oulPclhb5zpiPj6GARUGCgQYqvNg
-         Hega44erT2qhlWdm5+oKsn2q7oDAawF6tOpG1c9Ygu/1ETKetNqSrXrh0cjR1EtLM/ow
-         jVFrCciyAa7p5sL6ehei8VOnL2iC1qX4GNB4PCUETAicARJCkYAjrNQgB9yEFORFWlG0
-         bnvRWE2mJr573FHGfFz5lWhIWf25K95NXW7Nkmi6pJUe7CjtE6hhrMhhN6/x9K42YK6j
-         qalGwPdvBH5tUDKCGbFAx8TUX9tjd4Ywkn200EAxIEPuUNYyqvOZVgfFWgq9xueLdq0X
-         3ugQ==
-X-Gm-Message-State: AOAM533sI8VZjkqouKHdywNyp+AdXxGSVx76dRDBv08kWvp1pzMumDtE
-        FDLFAaPhYjr93i8w8x76NSB1J9Yv/1o5qPEiYK8=
-X-Google-Smtp-Source: ABdhPJzaOr1HrCCGCXVK5emjnaADAxldeFs8V//J5maGXkNHQVLCXsf5Lv3+INcjE2Vx4JJ8UDsszGRT5egoZfefRS8=
-X-Received: by 2002:a17:906:c115:b0:6ff:6e5:b4b1 with SMTP id
- do21-20020a170906c11500b006ff06e5b4b1mr3780602ejc.497.1653422048613; Tue, 24
- May 2022 12:54:08 -0700 (PDT)
+        with ESMTP id S235880AbiEXURv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2022 16:17:51 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA88E22B1D;
+        Tue, 24 May 2022 13:17:50 -0700 (PDT)
+Received: from pps.filterd (m0098404.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24OJq0Hg028351;
+        Tue, 24 May 2022 20:17:37 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=SeJ64ex+8mlCmScFezbVIsrxG7SvqcCr/Utg5n0dsmA=;
+ b=WCqaf7aYmjS1W88GzadcLNcGIasYWRwmjXcvsQ7YQPpRZ4txhhKgb6qrW6YmTiTEHAeJ
+ bBXjXqWA52RSBYoV8lebckOq6oCAqCBfhf7jyyihovaMrulXSsvYRPQwQf+99bShFjFe
+ xobMr+rWcR9wSv1E4ASFcXnE2RE8h7Qu+kllfZ8+r1Jok1DL+jNA8/Uvls0FW9xsePWL
+ aaMVkg/1EKXwP+52W9eF6Fn0VWwQDV22ZtzeAZQcmWA6YpeDA1wKlgcRJbQHWTSxefzb
+ 446Nq+OprR7Zqulfkgb62V7E5BPmU8zjdkinkASdGcJeglHVAVBdS6zh0E7IBsHjDxrS 0A== 
+Received: from ppma02dal.us.ibm.com (a.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.10])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3g95w78h7k-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 20:17:37 +0000
+Received: from pps.filterd (ppma02dal.us.ibm.com [127.0.0.1])
+        by ppma02dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24OKAv8e027204;
+        Tue, 24 May 2022 20:17:36 GMT
+Received: from b03cxnp07029.gho.boulder.ibm.com (b03cxnp07029.gho.boulder.ibm.com [9.17.130.16])
+        by ppma02dal.us.ibm.com with ESMTP id 3g93v818ht-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Tue, 24 May 2022 20:17:36 +0000
+Received: from b03ledav001.gho.boulder.ibm.com (b03ledav001.gho.boulder.ibm.com [9.17.130.232])
+        by b03cxnp07029.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24OKHZ9I22675878
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Tue, 24 May 2022 20:17:35 GMT
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 3A9456E052;
+        Tue, 24 May 2022 20:17:35 +0000 (GMT)
+Received: from b03ledav001.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id E04346E053;
+        Tue, 24 May 2022 20:17:34 +0000 (GMT)
+Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.82.60])
+        by b03ledav001.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Tue, 24 May 2022 20:17:34 +0000 (GMT)
+From:   Eddie James <eajames@linux.ibm.com>
+To:     linux-iio@vger.kernel.org
+Cc:     linux-kernel@vger.kernel.org, lars@metafoo.de, jic23@kernel.org,
+        joel@jms.id.au, Eddie James <eajames@linux.ibm.com>
+Subject: [PATCH v3 1/2] iio: pressure: dps310: Refactor startup procedure
+Date:   Tue, 24 May 2022 15:17:28 -0500
+Message-Id: <20220524201729.39503-2-eajames@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220524201729.39503-1-eajames@linux.ibm.com>
+References: <20220524201729.39503-1-eajames@linux.ibm.com>
 MIME-Version: 1.0
-References: <20220524181150.9240-1-ddrokosov@sberdevices.ru> <20220524181150.9240-2-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220524181150.9240-2-ddrokosov@sberdevices.ru>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 24 May 2022 21:53:32 +0200
-Message-ID: <CAHp75Vdyk0228iPX+-D12DcogS0mDBNzUmjAaO=VGT6brH0eyQ@mail.gmail.com>
-Subject: Re: [PATCH v2 1/5] iio:accel:bma180: rearrange iio trigger get and register
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
-        "srinivas.pandruvada@linux.intel.com" 
-        <srinivas.pandruvada@linux.intel.com>,
-        "teodora.baluta@intel.com" <teodora.baluta@intel.com>,
-        "narcisaanamaria12@gmail.com" <narcisaanamaria12@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: e1v1bWpQRIUktyE_DsLnxVds0ILQEQB5
+X-Proofpoint-ORIG-GUID: e1v1bWpQRIUktyE_DsLnxVds0ILQEQB5
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-24_10,2022-05-23_01,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 bulkscore=0 phishscore=0
+ priorityscore=1501 impostorscore=0 malwarescore=0 adultscore=0 spamscore=0
+ mlxlogscore=999 clxscore=1015 suspectscore=0 mlxscore=0 lowpriorityscore=0
+ classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
+ definitions=main-2205240100
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, May 24, 2022 at 8:14 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
->
-> IIO trigger interface function iio_trigger_get() should be called after
-> iio_trigger_register() (or its devm analogue) strictly, because of
-> iio_trigger_get() acquires module refcnt based on the trigger->owner
-> pointer, which is initialized inside iio_trigger_register() to
-> THIS_MODULE.
-> If this call order is wrong, the next iio_trigger_put() (from sysfs
-> callback or "delete module" path) will dereference "default" module
-> refcnt, which is incorrect behaviour.
+Move the startup procedure into a function, and correct a missing
+check on the return code for writing the PRS_CFG register.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+---
+ drivers/iio/pressure/dps310.c | 192 ++++++++++++++++++----------------
+ 1 file changed, 103 insertions(+), 89 deletions(-)
 
-> Fixes: 0668a4e4d297 ("iio: accel: bma180: Fix indio_dev->trig assignment")
-> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> ---
->  drivers/iio/accel/bma180.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
->
-> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index d8a454c266d5..5d0bd0fc3018 100644
-> --- a/drivers/iio/accel/bma180.c
-> +++ b/drivers/iio/accel/bma180.c
-> @@ -1006,11 +1006,12 @@ static int bma180_probe(struct i2c_client *client,
->
->                 data->trig->ops = &bma180_trigger_ops;
->                 iio_trigger_set_drvdata(data->trig, indio_dev);
-> -               indio_dev->trig = iio_trigger_get(data->trig);
->
->                 ret = iio_trigger_register(data->trig);
->                 if (ret)
->                         goto err_trigger_free;
-> +
-> +               indio_dev->trig = iio_trigger_get(data->trig);
->         }
->
->         ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> --
-> 2.36.0
-
-
-
+diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+index 36fb7ae0d0a9..f79b274bb38d 100644
+--- a/drivers/iio/pressure/dps310.c
++++ b/drivers/iio/pressure/dps310.c
+@@ -159,6 +159,106 @@ static int dps310_get_coefs(struct dps310_data *data)
+ 	return 0;
+ }
+ 
++/*
++ * Some verions of chip will read temperatures in the ~60C range when
++ * its actually ~20C. This is the manufacturer recommended workaround
++ * to correct the issue. The registers used below are undocumented.
++ */
++static int dps310_temp_workaround(struct dps310_data *data)
++{
++	int rc;
++	int reg;
++
++	rc = regmap_read(data->regmap, 0x32, &reg);
++	if (rc < 0)
++		return rc;
++
++	/*
++	 * If bit 1 is set then the device is okay, and the workaround does not
++	 * need to be applied
++	 */
++	if (reg & BIT(1))
++		return 0;
++
++	rc = regmap_write(data->regmap, 0x0e, 0xA5);
++	if (rc < 0)
++		return rc;
++
++	rc = regmap_write(data->regmap, 0x0f, 0x96);
++	if (rc < 0)
++		return rc;
++
++	rc = regmap_write(data->regmap, 0x62, 0x02);
++	if (rc < 0)
++		return rc;
++
++	rc = regmap_write(data->regmap, 0x0e, 0x00);
++	if (rc < 0)
++		return rc;
++
++	return regmap_write(data->regmap, 0x0f, 0x00);
++}
++
++static int dps310_startup(struct dps310_data *data)
++{
++	int rc;
++	int ready;
++
++	/*
++	 * Set up pressure sensor in single sample, one measurement per second
++	 * mode
++	 */
++	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
++	if (rc < 0)
++		return rc;
++
++	/*
++	 * Set up external (MEMS) temperature sensor in single sample, one
++	 * measurement per second mode
++	 */
++	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
++	if (rc < 0)
++		return rc;
++
++	/* Temp and pressure shifts are disabled when PRC <= 8 */
++	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
++			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
++	if (rc < 0)
++		return rc;
++
++	/* MEAS_CFG doesn't update correctly unless first written with 0 */
++	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
++			       DPS310_MEAS_CTRL_BITS, 0);
++	if (rc < 0)
++		return rc;
++
++	/* Turn on temperature and pressure measurement in the background */
++	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
++			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
++			       DPS310_TEMP_EN | DPS310_BACKGROUND);
++	if (rc < 0)
++		return rc;
++
++	/*
++	 * Calibration coefficients required for reporting temperature.
++	 * They are available 40ms after the device has started
++	 */
++	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
++				      ready & DPS310_COEF_RDY, 10000, 40000);
++	if (rc < 0)
++		return rc;
++
++	rc = dps310_get_coefs(data);
++	if (rc < 0)
++		return rc;
++
++	rc = dps310_temp_workaround(data);
++	if (rc < 0)
++		return rc;
++
++	return 0;
++}
++
+ static int dps310_get_pres_precision(struct dps310_data *data)
+ {
+ 	int rc;
+@@ -677,52 +777,12 @@ static const struct iio_info dps310_info = {
+ 	.write_raw = dps310_write_raw,
+ };
+ 
+-/*
+- * Some verions of chip will read temperatures in the ~60C range when
+- * its actually ~20C. This is the manufacturer recommended workaround
+- * to correct the issue. The registers used below are undocumented.
+- */
+-static int dps310_temp_workaround(struct dps310_data *data)
+-{
+-	int rc;
+-	int reg;
+-
+-	rc = regmap_read(data->regmap, 0x32, &reg);
+-	if (rc < 0)
+-		return rc;
+-
+-	/*
+-	 * If bit 1 is set then the device is okay, and the workaround does not
+-	 * need to be applied
+-	 */
+-	if (reg & BIT(1))
+-		return 0;
+-
+-	rc = regmap_write(data->regmap, 0x0e, 0xA5);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = regmap_write(data->regmap, 0x0f, 0x96);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = regmap_write(data->regmap, 0x62, 0x02);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = regmap_write(data->regmap, 0x0e, 0x00);
+-	if (rc < 0)
+-		return rc;
+-
+-	return regmap_write(data->regmap, 0x0f, 0x00);
+-}
+-
+ static int dps310_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+ 	struct dps310_data *data;
+ 	struct iio_dev *iio;
+-	int rc, ready;
++	int rc;
+ 
+ 	iio = devm_iio_device_alloc(&client->dev,  sizeof(*data));
+ 	if (!iio)
+@@ -747,54 +807,8 @@ static int dps310_probe(struct i2c_client *client,
+ 	if (rc)
+ 		return rc;
+ 
+-	/*
+-	 * Set up pressure sensor in single sample, one measurement per second
+-	 * mode
+-	 */
+-	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
+-
+-	/*
+-	 * Set up external (MEMS) temperature sensor in single sample, one
+-	 * measurement per second mode
+-	 */
+-	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* Temp and pressure shifts are disabled when PRC <= 8 */
+-	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
+-			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* MEAS_CFG doesn't update correctly unless first written with 0 */
+-	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
+-			       DPS310_MEAS_CTRL_BITS, 0);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* Turn on temperature and pressure measurement in the background */
+-	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
+-			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
+-			       DPS310_TEMP_EN | DPS310_BACKGROUND);
+-	if (rc < 0)
+-		return rc;
+-
+-	/*
+-	 * Calibration coefficients required for reporting temperature.
+-	 * They are available 40ms after the device has started
+-	 */
+-	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
+-				      ready & DPS310_COEF_RDY, 10000, 40000);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = dps310_get_coefs(data);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = dps310_temp_workaround(data);
+-	if (rc < 0)
++	rc = dps310_startup(data);
++	if (rc)
+ 		return rc;
+ 
+ 	rc = devm_iio_device_register(&client->dev, iio);
 -- 
-With Best Regards,
-Andy Shevchenko
+2.27.0
+
