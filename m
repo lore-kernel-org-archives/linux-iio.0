@@ -2,100 +2,116 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A069C43217
-	for <linux-iio@archiver.kernel.org>; Tue, 24 May 2022 18:15:05 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9BAC433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 24 May 2022 19:50:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240273AbiEXSPE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 May 2022 14:15:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
+        id S239067AbiEXTuM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 May 2022 15:50:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33134 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240219AbiEXSPB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2022 14:15:01 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FE46C54F;
-        Tue, 24 May 2022 11:15:00 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 644AB5FD0C;
-        Tue, 24 May 2022 21:14:56 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1653416096;
-        bh=k+4IFSFfBohrz26BOucBMVTZbZM85y1aZdQ3FK9koGs=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=ow8ZtzgKRarwjVUwlxZzJEjn7w8XqFa9mWwohNZYhGpB4WHTaEIADOLW+cd6y5quJ
-         vNQUIjWHaM1Ygcyg9xqPZcNhgPwNGMcxpAj3PEumDoZNQvxOlFumWslh/xCGRBax16
-         J+hoHpDAfNssOLFrAWFc17nWOLmKeNaI18m4G0gsn5lkzU8BazW7azlRUMQEbPKgVn
-         FGnishSUqkgj41mZPeI0te0nuJ94vQ8urtqRZdyQYhj0e8tfCEAw0EQoRS+zgg2X5A
-         80c9cA/7u7T8PfnWUGqLVPECPdbmG0Wn3P7J0dkEWgOIlAoe2LvzNfxrvkhsS0SgRa
-         L1DxDn7JVedjA==
-Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 24 May 2022 21:14:45 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        with ESMTP id S241023AbiEXTuL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2022 15:50:11 -0400
+Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BD397938B;
+        Tue, 24 May 2022 12:50:10 -0700 (PDT)
+Received: by mail-ej1-x632.google.com with SMTP id gh17so24429039ejc.6;
+        Tue, 24 May 2022 12:50:10 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=erB0Nr5QGniVYc8uYtdY4lO+Lcl9pYRcvVJYReAay80=;
+        b=lMBJHbbyBsIj8e63LUfiCs6dUnnwhiG63we4MDpCGcc/na4051pveWL3zaRszvrDX8
+         /u83PfoxBDPtiZBKtQp/ygsnscfrWseaOmBbscKCdH1NO3jMlVmxVAx9y3j8wQx8aOkS
+         XQMiFyEXY1RBbAGBE5biElMmN2PSg/NcPVVTAiE3a7i8GuxCI6wT+QG0cdP78ancRQUR
+         UtvW5+njcWdAi0UOXQ22kO8IKvlseBE5jYQ52D1PyLhw8D3nmCimdHQ6Kv0qqmab1A5b
+         swHjheN4Gmahr8ZJXPfDGj7DBvLzjMAWIv7ZOln0jt85pOONK0Owl2UXHF/0921ia38W
+         6QWg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=erB0Nr5QGniVYc8uYtdY4lO+Lcl9pYRcvVJYReAay80=;
+        b=2XiFIZ6rURcn5E2LTr+oOJbT1U4r7EdcW8zzLLhZFogGlp5COa7w79rcgtStcxwJu1
+         b+ij3yQGsCkM10S6gIaAuCI4bnsnjBmhsg2zHmVGOUsp53vwTs9hRHoL7YvNSGJzQ7PQ
+         gesqNbD+KySbI4i8yggJD/0emWx7NUZJbtESk6xUoD8UJ4qqSwJyOSi3BgHcXgPN/AaM
+         nZeAXb5Me/aepaxVUnDtQYJLiGxKNBerhSYONUqwKZUbgaJeRZiiUmMSR0x5RnK7fT7k
+         J8X9R3KMn3W+qoVCCxkGraSAEfrzTAtXyGRpQW0e7bnVlrQ5jR9I9u8xYSVKBdihSAJA
+         gOwA==
+X-Gm-Message-State: AOAM532BfUQi2wXI5vq/IVWLXt1hIppJpC6655PeuLlEzYveoxGDR0ff
+        HMuEd3lYNFKgpZFY183hjxJiylgJW7ojjrOPaEE=
+X-Google-Smtp-Source: ABdhPJzoOBDC9ZZ6MN5xbxf6IOZczh/u5HsjN5yM8numN6ez95D+fZKkGNCBIF537kp89E94WjhXgL0qNiC3XspLIMQ=
+X-Received: by 2002:a17:907:6e1a:b0:6fe:f357:3837 with SMTP id
+ sd26-20020a1709076e1a00b006fef3573837mr8928209ejc.44.1653421808782; Tue, 24
+ May 2022 12:50:08 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220524181150.9240-1-ddrokosov@sberdevices.ru> <20220524181150.9240-3-ddrokosov@sberdevices.ru>
+In-Reply-To: <20220524181150.9240-3-ddrokosov@sberdevices.ru>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 24 May 2022 21:49:32 +0200
+Message-ID: <CAHp75VcYtTkLe7iAXH3snKuV29xaDHsj1GOrxztT1g-DOu3RoA@mail.gmail.com>
+Subject: Re: [PATCH v2 2/5] iio:accel:kxcjk-1013: rearrange iio trigger get
+ and register
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "jic23@kernel.org" <jic23@kernel.org>,
         "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
         "lorenzo.bianconi83@gmail.com" <lorenzo.bianconi83@gmail.com>,
         "srinivas.pandruvada@linux.intel.com" 
         <srinivas.pandruvada@linux.intel.com>,
         "teodora.baluta@intel.com" <teodora.baluta@intel.com>,
-        "narcisaanamaria12@gmail.com" <narcisaanamaria12@gmail.com>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "narcisaanamaria12@gmail.com" <narcisaanamaria12@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v2 0/5] iio: treewide: rearrange iio trig get/register
-Thread-Topic: [PATCH v2 0/5] iio: treewide: rearrange iio trig get/register
-Thread-Index: AQHYb5ohywOA3ErtcUWaOWHlaX8a+Q==
-Date:   Tue, 24 May 2022 18:14:37 +0000
-Message-ID: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="iso-8859-1"
-Content-Transfer-Encoding: quoted-printable
-MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/24 14:34:00 #19560786
-X-KSMG-AntiVirus-Status: Clean, skipped
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The following patchset resolves problems with iio_trigger_get() and
-iio_trigger_register() call order in the different IIO drivers.
+On Tue, May 24, 2022 at 8:14 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+>
+> IIO trigger interface function iio_trigger_get() should be called after
+> iio_trigger_register() (or its devm analogue) strictly, because of
+> iio_trigger_get() acquires module refcnt based on the trigger->owner
+> pointer, which is initialized inside iio_trigger_register() to
+> THIS_MODULE.
+> If this call order is wrong, the next iio_trigger_put() (from sysfs
+> callback or "delete module" path) will dereference "default" module
+> refcnt, which is incorrect behaviour.
 
-IIO trigger interface function iio_trigger_get() should be called after
-iio_trigger_register() (or its devm analogue) strictly, because of
-iio_trigger_get() acquires module refcnt based on the trigger->owner
-pointer, which is initialized inside iio_trigger_register() to
-THIS_MODULE.
-If this call order is wrong, the next iio_trigger_put() (from sysfs
-callback or "delete module" path) will dereference "default" module
-refcnt, which is incorrect behaviour.
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-Changes v1->v2:
-    - provide tag Fixes: for all patches
+> Fixes: c1288b833881 ("iio: accel: kxcjk-1013: Increment ref counter for indio_dev->trig")
+> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> ---
+>  drivers/iio/accel/kxcjk-1013.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+>
+> diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.c
+> index ac74cdcd2bc8..748b35c2f0c3 100644
+> --- a/drivers/iio/accel/kxcjk-1013.c
+> +++ b/drivers/iio/accel/kxcjk-1013.c
+> @@ -1554,12 +1554,12 @@ static int kxcjk1013_probe(struct i2c_client *client,
+>
+>                 data->dready_trig->ops = &kxcjk1013_trigger_ops;
+>                 iio_trigger_set_drvdata(data->dready_trig, indio_dev);
+> -               indio_dev->trig = data->dready_trig;
+> -               iio_trigger_get(indio_dev->trig);
+>                 ret = iio_trigger_register(data->dready_trig);
+>                 if (ret)
+>                         goto err_poweroff;
+>
+> +               indio_dev->trig = iio_trigger_get(data->dready_trig);
+> +
+>                 data->motion_trig->ops = &kxcjk1013_trigger_ops;
+>                 iio_trigger_set_drvdata(data->motion_trig, indio_dev);
+>                 ret = iio_trigger_register(data->motion_trig);
+> --
+> 2.36.0
 
-Dmitry Rokosov (5):
-  iio:accel:bma180: rearrange iio trigger get and register
-  iio:accel:kxcjk-1013: rearrange iio trigger get and register
-  iio:accel:mxc4005: rearrange iio trigger get and register
-  iio:chemical:ccs811: rearrange iio trigger get and register
-  iio:humidity:hts221: rearrange iio trigger get and register
 
- drivers/iio/accel/bma180.c           | 3 ++-
- drivers/iio/accel/kxcjk-1013.c       | 4 ++--
- drivers/iio/accel/mxc4005.c          | 4 ++--
- drivers/iio/chemical/ccs811.c        | 4 ++--
- drivers/iio/humidity/hts221_buffer.c | 5 ++++-
- 5 files changed, 12 insertions(+), 8 deletions(-)
 
---=20
-2.36.0
+-- 
+With Best Regards,
+Andy Shevchenko
