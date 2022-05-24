@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6FB0C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 24 May 2022 18:15:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A069C43217
+	for <linux-iio@archiver.kernel.org>; Tue, 24 May 2022 18:15:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238069AbiEXSPD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 May 2022 14:15:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33988 "EHLO
+        id S240273AbiEXSPE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 May 2022 14:15:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34110 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238134AbiEXSO7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2022 14:14:59 -0400
+        with ESMTP id S240219AbiEXSPB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2022 14:15:01 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1ABD69492;
-        Tue, 24 May 2022 11:14:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26FE46C54F;
+        Tue, 24 May 2022 11:15:00 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id B4F6F5FD06;
-        Tue, 24 May 2022 21:14:50 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id 644AB5FD0C;
+        Tue, 24 May 2022 21:14:56 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1653416090;
-        bh=dOaYOkvqn36umqt+frOJLwfCvkCb/3auOlWf4DaSnGk=;
+        s=mail; t=1653416096;
+        bh=k+4IFSFfBohrz26BOucBMVTZbZM85y1aZdQ3FK9koGs=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=TJ6W+NhWhQfrjBpmyk5quLYuZbI/MHs9p78KWbj+PHiP8P5oXmSyUeXXKXtaULqp2
-         /XNJ2SzZ50eF7tdnSaZP0Q5pdDwHOoD2h+50Yi+7VWiUBnEr7IwAftyCwVPktdHclU
-         VCeYTBxwENr9wV4TYvl4NE7r3Q5qXcw/md65VOjOJtS1dJsyU/SnNY0QKZ/qWEnUjj
-         iGtgF43WCSi3KNP8ry5AOwAZlCUORsduHsNqWRILij+alKtjhHdqyEWaYxAN44y+Jr
-         Aez0KcA/n/avUD5NZQM2QnNLKLzu4OWQVgdJGPlIfEB/XHCvq7lw1nOU4QUIcIyWPm
-         kTekoO9hkMwnw==
+        b=ow8ZtzgKRarwjVUwlxZzJEjn7w8XqFa9mWwohNZYhGpB4WHTaEIADOLW+cd6y5quJ
+         vNQUIjWHaM1Ygcyg9xqPZcNhgPwNGMcxpAj3PEumDoZNQvxOlFumWslh/xCGRBax16
+         J+hoHpDAfNssOLFrAWFc17nWOLmKeNaI18m4G0gsn5lkzU8BazW7azlRUMQEbPKgVn
+         FGnishSUqkgj41mZPeI0te0nuJ94vQ8urtqRZdyQYhj0e8tfCEAw0EQoRS+zgg2X5A
+         80c9cA/7u7T8PfnWUGqLVPECPdbmG0Wn3P7J0dkEWgOIlAoe2LvzNfxrvkhsS0SgRa
+         L1DxDn7JVedjA==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 24 May 2022 21:14:50 +0300 (MSK)
+        Tue, 24 May 2022 21:14:45 +0300 (MSK)
 From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
 To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "jic23@kernel.org" <jic23@kernel.org>,
@@ -44,15 +44,11 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v2 2/5] iio:accel:kxcjk-1013: rearrange iio trigger get and
- register
-Thread-Topic: [PATCH v2 2/5] iio:accel:kxcjk-1013: rearrange iio trigger get
- and register
-Thread-Index: AQHYb5ojCEqLwP6/VUC+gHh54b7quA==
-Date:   Tue, 24 May 2022 18:14:42 +0000
-Message-ID: <20220524181150.9240-3-ddrokosov@sberdevices.ru>
-References: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
+Subject: [PATCH v2 0/5] iio: treewide: rearrange iio trig get/register
+Thread-Topic: [PATCH v2 0/5] iio: treewide: rearrange iio trig get/register
+Thread-Index: AQHYb5ohywOA3ErtcUWaOWHlaX8a+Q==
+Date:   Tue, 24 May 2022 18:14:37 +0000
+Message-ID: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
 Accept-Language: ru-RU, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -72,6 +68,9 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+The following patchset resolves problems with iio_trigger_get() and
+iio_trigger_register() call order in the different IIO drivers.
+
 IIO trigger interface function iio_trigger_get() should be called after
 iio_trigger_register() (or its devm analogue) strictly, because of
 iio_trigger_get() acquires module refcnt based on the trigger->owner
@@ -81,33 +80,22 @@ If this call order is wrong, the next iio_trigger_put() (from sysfs
 callback or "delete module" path) will dereference "default" module
 refcnt, which is incorrect behaviour.
 
-Fixes: c1288b833881 ("iio: accel: kxcjk-1013: Increment ref counter for ind=
-io_dev->trig")
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
----
- drivers/iio/accel/kxcjk-1013.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Changes v1->v2:
+    - provide tag Fixes: for all patches
 
-diff --git a/drivers/iio/accel/kxcjk-1013.c b/drivers/iio/accel/kxcjk-1013.=
-c
-index ac74cdcd2bc8..748b35c2f0c3 100644
---- a/drivers/iio/accel/kxcjk-1013.c
-+++ b/drivers/iio/accel/kxcjk-1013.c
-@@ -1554,12 +1554,12 @@ static int kxcjk1013_probe(struct i2c_client *clien=
-t,
-=20
- 		data->dready_trig->ops =3D &kxcjk1013_trigger_ops;
- 		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
--		indio_dev->trig =3D data->dready_trig;
--		iio_trigger_get(indio_dev->trig);
- 		ret =3D iio_trigger_register(data->dready_trig);
- 		if (ret)
- 			goto err_poweroff;
-=20
-+		indio_dev->trig =3D iio_trigger_get(data->dready_trig);
-+
- 		data->motion_trig->ops =3D &kxcjk1013_trigger_ops;
- 		iio_trigger_set_drvdata(data->motion_trig, indio_dev);
- 		ret =3D iio_trigger_register(data->motion_trig);
+Dmitry Rokosov (5):
+  iio:accel:bma180: rearrange iio trigger get and register
+  iio:accel:kxcjk-1013: rearrange iio trigger get and register
+  iio:accel:mxc4005: rearrange iio trigger get and register
+  iio:chemical:ccs811: rearrange iio trigger get and register
+  iio:humidity:hts221: rearrange iio trigger get and register
+
+ drivers/iio/accel/bma180.c           | 3 ++-
+ drivers/iio/accel/kxcjk-1013.c       | 4 ++--
+ drivers/iio/accel/mxc4005.c          | 4 ++--
+ drivers/iio/chemical/ccs811.c        | 4 ++--
+ drivers/iio/humidity/hts221_buffer.c | 5 ++++-
+ 5 files changed, 12 insertions(+), 8 deletions(-)
+
 --=20
 2.36.0
