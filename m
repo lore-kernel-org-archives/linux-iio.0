@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 44456C433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 24 May 2022 18:15:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 021C0C43219
+	for <linux-iio@archiver.kernel.org>; Tue, 24 May 2022 18:15:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240205AbiEXSPB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 24 May 2022 14:15:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33990 "EHLO
+        id S239066AbiEXSPC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 24 May 2022 14:15:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34064 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233757AbiEXSO7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2022 14:14:59 -0400
+        with ESMTP id S239019AbiEXSPA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 May 2022 14:15:00 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CA6F569702;
-        Tue, 24 May 2022 11:14:53 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 03AB46CA9D;
+        Tue, 24 May 2022 11:14:58 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id A6E6B5FD08;
-        Tue, 24 May 2022 21:14:51 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id 5416F5FD0B;
+        Tue, 24 May 2022 21:14:56 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1653416091;
-        bh=wD7xCf5kPvxtcNl5Q5TxVB7RgfbUWeGyNLGzYEBaNHI=;
+        s=mail; t=1653416096;
+        bh=K2muH5vO9MfAzTUQW005aRcgGyOuYwng/xoy88E0u9c=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=CTOUnzjn/ACJVkoRa975ESziYQa1zuKoHYBFncmfreyqQv8h4KbmjZz6tO2KLA81h
-         8pO5BrB7YJkROPMl7IDWMwWHfspkqPe2Z4mmDuVVXsQYd7zQsUKiV94ybmI+yemrkD
-         B055bpRtvmx5/Aosl2NIP8lDkKtgs3LBBI3RRQQpuVHnGCNrmE1Pu1M/POEUvYSaIX
-         NDD4kzZDwmyTtgUFHsBV0sIKVUkweDHKmtSxHxPxuofI4gLVKalQo6DkQifQG7IQUj
-         4z8nqM5tleaJeKUrXgVhZdR+ozXjmtECKlnuo6tHyFyEcmJa/2UDOyWbOwAoDrWWCr
-         VJzn1WQv6gSfg==
+        b=SEMwLohE6S/82nvvmh9ZWmGDOGokf9qQ98M3em72FmHhv531KUcJI4s/XJ4HPlNnG
+         fzNzosGG6HFy0DUm43Y5JhznIeRf3E8swCLE01Rv1nLSx7fzPOu2WGAu5OA7Fu2/l0
+         +Z1SO+dXQxi/ApFIZ5rHa0I1J2Huduqz7PPRGfDedJoDhOBP8Z+K9PNWew0kVon1VJ
+         GKx3UDWSQKRmZInEwkvtLgodHeJQXgoAcJnh31JwtO7ovFoiuEds5L1fry547s2g9T
+         D1dpLE3ITIXIrybk8G1rO4wOjtkSszaTNLoSAOlEc56Ua1xU9LJK12SL242B4h4PJ5
+         KdKT2zmDe/LbQ==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Tue, 24 May 2022 21:14:51 +0300 (MSK)
+        Tue, 24 May 2022 21:14:46 +0300 (MSK)
 From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
 To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
         "jic23@kernel.org" <jic23@kernel.org>,
@@ -44,13 +44,13 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v2 3/5] iio:accel:mxc4005: rearrange iio trigger get and
+Subject: [PATCH v2 1/5] iio:accel:bma180: rearrange iio trigger get and
  register
-Thread-Topic: [PATCH v2 3/5] iio:accel:mxc4005: rearrange iio trigger get and
+Thread-Topic: [PATCH v2 1/5] iio:accel:bma180: rearrange iio trigger get and
  register
-Thread-Index: AQHYb5okhfALIwJfFkukmT/Sx6kzbg==
-Date:   Tue, 24 May 2022 18:14:43 +0000
-Message-ID: <20220524181150.9240-4-ddrokosov@sberdevices.ru>
+Thread-Index: AQHYb5oiMClU4oOenUKT2ho77cNDVQ==
+Date:   Tue, 24 May 2022 18:14:39 +0000
+Message-ID: <20220524181150.9240-2-ddrokosov@sberdevices.ru>
 References: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
 In-Reply-To: <20220524181150.9240-1-ddrokosov@sberdevices.ru>
 Accept-Language: ru-RU, en-US
@@ -81,33 +81,29 @@ If this call order is wrong, the next iio_trigger_put() (from sysfs
 callback or "delete module" path) will dereference "default" module
 refcnt, which is incorrect behaviour.
 
-Fixes: 47196620c82f ("iio: mxc4005: add data ready trigger for mxc4005")
+Fixes: 0668a4e4d297 ("iio: accel: bma180: Fix indio_dev->trig assignment")
 Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
 ---
- drivers/iio/accel/mxc4005.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/accel/bma180.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/accel/mxc4005.c b/drivers/iio/accel/mxc4005.c
-index b3afbf064915..df600d2917c0 100644
---- a/drivers/iio/accel/mxc4005.c
-+++ b/drivers/iio/accel/mxc4005.c
-@@ -456,8 +456,6 @@ static int mxc4005_probe(struct i2c_client *client,
+diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
+index d8a454c266d5..5d0bd0fc3018 100644
+--- a/drivers/iio/accel/bma180.c
++++ b/drivers/iio/accel/bma180.c
+@@ -1006,11 +1006,12 @@ static int bma180_probe(struct i2c_client *client,
 =20
- 		data->dready_trig->ops =3D &mxc4005_trigger_ops;
- 		iio_trigger_set_drvdata(data->dready_trig, indio_dev);
--		indio_dev->trig =3D data->dready_trig;
--		iio_trigger_get(indio_dev->trig);
- 		ret =3D devm_iio_trigger_register(&client->dev,
- 						data->dready_trig);
- 		if (ret) {
-@@ -465,6 +463,8 @@ static int mxc4005_probe(struct i2c_client *client,
- 				"failed to register trigger\n");
- 			return ret;
- 		}
+ 		data->trig->ops =3D &bma180_trigger_ops;
+ 		iio_trigger_set_drvdata(data->trig, indio_dev);
+-		indio_dev->trig =3D iio_trigger_get(data->trig);
+=20
+ 		ret =3D iio_trigger_register(data->trig);
+ 		if (ret)
+ 			goto err_trigger_free;
 +
-+		indio_dev->trig =3D iio_trigger_get(data->dready_trig);
++		indio_dev->trig =3D iio_trigger_get(data->trig);
  	}
 =20
- 	return devm_iio_device_register(&client->dev, indio_dev);
+ 	ret =3D iio_triggered_buffer_setup(indio_dev, NULL,
 --=20
 2.36.0
