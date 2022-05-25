@@ -2,107 +2,133 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 194A1C433F5
-	for <linux-iio@archiver.kernel.org>; Wed, 25 May 2022 16:35:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6F209C433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 25 May 2022 17:53:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237322AbiEYQfe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 May 2022 12:35:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46582 "EHLO
+        id S1343592AbiEYRxt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 May 2022 13:53:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241078AbiEYQfd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2022 12:35:33 -0400
-Received: from mail-ej1-x635.google.com (mail-ej1-x635.google.com [IPv6:2a00:1450:4864:20::635])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7C4A637A35;
-        Wed, 25 May 2022 09:35:32 -0700 (PDT)
-Received: by mail-ej1-x635.google.com with SMTP id rs12so31033146ejb.13;
-        Wed, 25 May 2022 09:35:32 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=8CSaLCMHU9sgoW8Hv8FFo1g5ngLtMXqOmuV80kMnlXc=;
-        b=HTFNx4OJRGTFhDTPcjrOXX23geTvBk+k789ME/QYQN8pz0Y1A9KH3UfhClU8O0Bewz
-         socUuY2mg6e7g3ctcbEHZXSeHLAoB9iV2R34B+EJNvw5+8P+o3GHfQqD3gX2dhXj8TGI
-         u95dHLM8+RcZRi4v7I9wire/pLMdjtHjd5jXGWKsalaiOTU2JmhD69s5c4vCGbpDGH9/
-         CA2Kex7i/ungkqJy7i7sjgMzCYlhrDX1BbENBCvInRaaLHygnUheMYJABHmwSVhnJWah
-         cOpRbD+g/KKdkcCSNNUxhHf8UP8S/6tz20YEuS25ifa/lKLqR58U5eaQliXdG4JZZRVe
-         caFw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=8CSaLCMHU9sgoW8Hv8FFo1g5ngLtMXqOmuV80kMnlXc=;
-        b=sr4pBGOENQD/aG69q8nuwk/OUgauHr6H2xGg/JG01pdt1NwqmLn/wi3O6i2l+iBUG6
-         RojOuoS1Aa6kpUlvGQ7Tvvu3kH+w8Dc79UAYWRGo1lz5ITnB3P1OWa4goi7xIeJRqmL5
-         QbtkKcakPZabj2BZhOKM5spr5VJXF4dsXg1FV4TgZCwhRE6f6bZGJD+y1ZlRNXHr7RpS
-         Mc6W91Z4INu7+1GdFxkkqifVW4hZCkFvj6bjU3Vuj2bd4waGlE3VYZOLleGm0aKnb1PI
-         cmjT3tEPdoEfKWvD2NJ4gTxULT4vQaKK+VRvWJBDdApW9xQOqFxq8acTxYV2bmlW76HW
-         HIew==
-X-Gm-Message-State: AOAM530ZBsbzyxg799lJ2HT86KJjf0cI5CNmhu73Xx5rlJ3J7jcoGZHd
-        BxSI5kkbH6iJople7yVHNheILWW3ukRmHMAzToU=
-X-Google-Smtp-Source: ABdhPJz2oFhmLbXI7q4YttO3d+hj4nHWqo0xTlRmZ81PvoipASKXCjDuKaobeLkcabb+hC8IYgphCG96+ZG6A6C6xCc=
-X-Received: by 2002:a17:907:2ce3:b0:6ff:1447:d3a4 with SMTP id
- hz3-20020a1709072ce300b006ff1447d3a4mr3221141ejc.497.1653496530907; Wed, 25
- May 2022 09:35:30 -0700 (PDT)
+        with ESMTP id S1343596AbiEYRxt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2022 13:53:49 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B9922DFB4;
+        Wed, 25 May 2022 10:53:32 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id F0B8E5FD08;
+        Wed, 25 May 2022 20:53:28 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1653501209;
+        bh=En3Np2u2djTMEVwwxBwoJJkxFH8AqiHFqQ265Nknr8o=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=EOeeYFyNtIC1PrWeiDG9ODbItxIuP0Rc4ssRlCd8eIecElXctQ7jHLBbqkSEgThD3
+         +xWvClg/WXHssF2/hWx1/ECjrAEdixt9xrpXjpxb3gwiw13jj+a3bimC08KKpbmrNs
+         ACgELy2KcYz/VHuArMMa/pTIOEQ+2R38fnPYpBdltRJu23Dsht1zl3froF5O/SyAgH
+         NvabuYIeibhaFCub4VRlTDS1cQizZU/XjX2NIxOCVo4Ap/xR1r/XG16g6ZHfPXj8rt
+         e/hMhVNHIOcQ4x9JQezltS8kH5IqQmw4Zx1eu7eRNbFWrBycqrmjnjZp3vgkwME9Tt
+         Mo4bgBNmWyTVQ==
+Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Wed, 25 May 2022 20:53:26 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Jonathan Cameron <jic23@kernel.org>
+CC:     Jonathan Cameron <Jonathan.Cameron@Huawei.com>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Topic: [PATCH v1 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
+ driver
+Thread-Index: AQHYVASOybrxT0DjfUWoYWuGUlWOX6z4bouAgAnb/gCAIkALgIAGKs0AgAUw8QA=
+Date:   Wed, 25 May 2022 17:53:11 +0000
+Message-ID: <20220525175322.36umsxjwioyfcsac@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220419154555.24191-1-ddrokosov@sberdevices.ru>
+ <20220419154555.24191-3-ddrokosov@sberdevices.ru>
+ <20220420115023.00006a25@Huawei.com>
+ <20220426172406.s4h6g7nrpytaq263@CAB-WSD-L081021.sigma.sbrf.ru>
+ <20220518122515.aby5lbb4xusr6pdt@CAB-WSD-L081021.sigma.sbrf.ru>
+ <20220522113654.0e3c0023@jic23-huawei>
+In-Reply-To: <20220522113654.0e3c0023@jic23-huawei>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <0CF6C5E8D08B4941B4A2F1C04D4EB0B2@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-References: <20220524201729.39503-1-eajames@linux.ibm.com> <20220524201729.39503-2-eajames@linux.ibm.com>
-In-Reply-To: <20220524201729.39503-2-eajames@linux.ibm.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Wed, 25 May 2022 18:34:55 +0200
-Message-ID: <CAHp75VdmDWgCMDZMywhF0nSsR7HjYZj56jPtXw=43epBkniroA@mail.gmail.com>
-Subject: Re: [PATCH v3 1/2] iio: pressure: dps310: Refactor startup procedure
-To:     Eddie James <eajames@linux.ibm.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Joel Stanley <joel@jms.id.au>
-Content-Type: text/plain; charset="UTF-8"
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/25 08:39:00 #19569940
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, May 24, 2022 at 10:35 PM Eddie James <eajames@linux.ibm.com> wrote:
->
-> Move the startup procedure into a function, and correct a missing
-> check on the return code for writing the PRS_CFG register.
+On Sun, May 22, 2022 at 11:36:54AM +0100, Jonathan Cameron wrote:
+> > Syscall delete_module() tries to stop module first and after calls
+> > driver exit() function (which executes devm_* handlers inside, includin=
+g IIO
+> > trigger unregister). It means we have the chicken or the egg dilemma he=
+re.
+> > Module can't be unloaded until module refcnt is not zero and we can't
+> > execute IIO trigger unregister (decrease module refcnt) only when modul=
+e
+> > refcnt is zero.
+> > I suppose the possible solution to such a problem is a different semant=
+ic
+> > for internal triggers (inside driver itself) and external drivers (like
+> > hwtimer trigger). What do you think?
+>=20
+> Potentially though it's going to be tricky as a driver doesn't generally
+> have any way to know they are internal and we need to be careful not to
+> underflow the reference counts.  We could hid a flag somewhere and
+> add an iio_trigger_get_same_owner() or something that sets that flag allo=
+wing
+> us to decide not to drop the reference count it if is automatically unass=
+ociated.
+> In the path where you get:
+> 1) iio_trigger_get_same_owner() on probe
+> 2) sysfs write changes to another trigger.
+> 3) sysfs write back to original trigger
+> it is reasonable to assume the need to clear the trigger
+> before driver removal is possible, whereas clearing the trigger associati=
+on
+> if only step 1 happened is no intuitive.
 
-...
+I will try to prepare the rfc patch if you don't mind. I propose to
+continue further discussion there.
 
-> +/*
-> + * Some verions of chip will read temperatures in the ~60C range when
+>=20
+> >=20
+> > The second one issue is located in the different IIO drivers. Some modu=
+les
+> > call iio_trigger_get() before iio_trigger_register(), trig->owner is no=
+t
+> > initialized to the right value (THIS_MODULE) and we don't acquire refcn=
+t
+> > for proper driver object.
+>=20
+> Ah. Good point. I guess we missed that when we were moving over to
+> automated setting of the module.
+>=20
 
-versions
-of the chip(s)
+Already submitted v2 patchset here:
+https://lore.kernel.org/linux-iio/20220524181150.9240-1-ddrokosov@sberdevic=
+es.ru/
 
-> + * its actually ~20C. This is the manufacturer recommended workaround
-
-it's
-
-> + * to correct the issue. The registers used below are undocumented.
-> + */
-
-Yes, they are in the original code, but you may just fix while at it.
-
-...
-
-> +       rc = dps310_temp_workaround(data);
-> +       if (rc < 0)
-
-These ' < 0' parts are cargo cult, I believe.
-That's why this makes code longer and confusing by "what is the
-meaning of the positive values here?"
-
-> +               return rc;
-> +
-> +       return 0;
-
-That said,
-
-  return dps310_temp_workaround(data);
-
-should suffice.
-
--- 
-With Best Regards,
-Andy Shevchenko
+--=20
+Thank you,
+Dmitry=
