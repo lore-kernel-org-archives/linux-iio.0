@@ -2,124 +2,192 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CCADAC433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 25 May 2022 13:09:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A3634C433FE
+	for <linux-iio@archiver.kernel.org>; Wed, 25 May 2022 14:08:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244305AbiEYNJN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 May 2022 09:09:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46218 "EHLO
+        id S241670AbiEYOIZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 May 2022 10:08:25 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36220 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S244094AbiEYNJB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2022 09:09:01 -0400
-Received: from EUR01-VE1-obe.outbound.protection.outlook.com (mail-eopbgr140094.outbound.protection.outlook.com [40.107.14.94])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 582DFA500D;
-        Wed, 25 May 2022 06:08:55 -0700 (PDT)
+        with ESMTP id S236246AbiEYOIY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2022 10:08:24 -0400
+Received: from EUR03-AM5-obe.outbound.protection.outlook.com (mail-eopbgr30124.outbound.protection.outlook.com [40.107.3.124])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 806EF9D042;
+        Wed, 25 May 2022 07:08:21 -0700 (PDT)
 ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=cvUpT6/XjIczMNx7tmGSRaE4Sn2naEDwn6sc9gDNV5MFmbgnAX1ZpGD2zDHkY62tlco/oGtvoIw2IIYwnm9aD9ZIlka2uRC4yKMA4nijKXUaH94b0PjLkiIZUZhKgkMvGE2V9bNUfwtJ1f8f/iRp/GvGAfWZGTasl6X70OC1ymJDHceMpQcttZTeTNuOW0hEj2lB8do8Cn7yJTEc5LiXpmu+vhAkQbg5Uq7K2vlgHQvNEnqN/otrB1AR0+SPVlT7ROsdVoYQ0NP1Msq7BjfSrPQ3UKWdcigN6HoEyvAVV1eX0Gc96pyquRxWEGmmWVQsrO+KuuxJWXPrug0ngj96eg==
+ b=RvSssAukiIiRqXXR4M1E2cXt84EnZLyyDJCT6Gzec6PwKyYtHzFKbc1JzyXyosES1Nr4xCCNMxu/6P2/YzJ106GVwnkNsWLLMYHI2xaCShUCj7Hp1KN6km8DyE7B8LqyHRVGDGwbCpnLUYPXBGVke/a1w/l0JSH3aHl1qXvfPXLVBTBodu9jf77r6hEKZiBtDGBGNC3F8DMwh8Z8f80kTZuslj+fF1o1LW5sUP1cNsI20f1dQIEm6Jlx0Fgc/3uYNxpUSITDoyw2VOX4wgNWqJjnmtyVzEy4EnjX1ZmhHgkoZTnfrN1enQ+wzQPAyImmqr4v1T8KHeeNQBugHAgTQw==
 ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
  s=arcselector9901;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=2LWZCIYKiuK0oM7NaMAAplLRAxeCQg2bbuhU/fu43/E=;
- b=G0Wmcl89pQIU0Qi8zZcTwxiyYfEMJIoGQzRvNLCGb1fPNFXHn8ANaQAE3JldKumd0tZyBwen9PifSnEuZ698HjgezpGgIZs/L2Kngyzel4MVL6VN5QuvnGI3JmMbJmKxU6H44evFepa6qeE+o8c69IpcquAfBPsETwEmRkWBj9vK9MAxPUiCmAVoxpUfevg8EW1Io8fNgHGrPA2vFjCnXzyucfoJFYKSPb3zQife6kHwA345MovtdPGCqkhCXVNjTm0ouogia9UggPa2lESrBMmp15UxtNoYWDfOrzVybHT8tv2HHUWqqD3mQ9Tdawhz0UdxJGceqCQTju7ejedftg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
- 193.8.40.94) smtp.rcpttodomain=kernel.org
- smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
- pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
- not signed); arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=leica-geosystems.com.cn; s=selector1;
+ bh=uRrA0RRscVfrHFL28KoDMYONkAT3ex4UALGsSmm+WeQ=;
+ b=IX92qCICGIUFtm52N2VJ6WSgUiE0x2pi8hopNNrQFDpT1ocWdLBmZxRS/Ilml1MU9fOrYojsYN5vHgf3R/xU3N7f81kXf4kSQo1+37Sr6JDy4Kjjj803cltZcGT6dcl+3lYgh7FSYt/VsiWpzmwAhJuplOgZQqxqfNoTVYDT+44VXIMDS5qtXJUFbRtarki1uRO3nqe3TCaag3xi0LZA8ykeNoFhAh1ybrhEy5ZCqaS1yp3cq/Ezq0ghoqOY89fDkVOuwxOZ+k12R3w7rA1Cxjf95A8JSOdxE5RD8Z8yvemlptK65cbuOFuX9gkHpizszL1w9ZCKlWSa3eQmy5AKFA==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
+ smtp.mailfrom=axentia.se; dmarc=pass action=none header.from=axentia.se;
+ dkim=pass header.d=axentia.se; arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=axentia.se;
+ s=selector2;
  h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=2LWZCIYKiuK0oM7NaMAAplLRAxeCQg2bbuhU/fu43/E=;
- b=EHjy2pyJI/U2azM61sKm9Wwa+e23vS1BjlEfjmQBGIfAZUYu/1p5cPDXLbEs3Oy4pSDrkC5d/HMqPd4uSNquISF6046UsaRX7BJN+GpzGIqxBLOfmDIRAVWUizBG2JXanUKaqKaJucs9GUvpChphCvi0Oz44SBKhrR3Hr5sFzUc=
-Received: from AS9PR07CA0018.eurprd07.prod.outlook.com (2603:10a6:20b:46c::24)
- by AM6PR06MB5157.eurprd06.prod.outlook.com (2603:10a6:20b:64::33) with
+ bh=uRrA0RRscVfrHFL28KoDMYONkAT3ex4UALGsSmm+WeQ=;
+ b=JHkKChpbxDNq4wdH+9Hi8jV9AfH9JKjDcUnwgxocTan0VpgUjVrZzTClQK5fLWJ0C1MRGTFiAURcLTvabPf6wpfMI/5HaEbNPOUhYIlTR5UIXsht3hhuMG+MeHNLz5vlFH8MyFo0XjVXUQfn/9DAHeFqMTtQh1uQ7p3O5nMiZNI=
+Authentication-Results: dkim=none (message not signed)
+ header.d=none;dmarc=none action=none header.from=axentia.se;
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com (2603:10a6:208:ed::15)
+ by PAXPR02MB7390.eurprd02.prod.outlook.com (2603:10a6:102:1c9::13) with
  Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5273.18; Wed, 25 May
- 2022 13:08:31 +0000
-Received: from HE1EUR02FT051.eop-EUR02.prod.protection.outlook.com
- (2603:10a6:20b:46c:cafe::86) by AS9PR07CA0018.outlook.office365.com
- (2603:10a6:20b:46c::24) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
- Transport; Wed, 25 May 2022 13:08:31 +0000
-X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
- smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
- header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
-Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
- designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
- client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com; pr=C
-Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
- HE1EUR02FT051.mail.protection.outlook.com (10.152.11.7) with Microsoft SMTP
- Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.20.5293.13 via Frontend Transport; Wed, 25 May 2022 13:08:30 +0000
-From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
-To:     jic23@kernel.org, lars@metafoo.de, mchehab+huawei@kernel.org,
-        ardeleanalex@gmail.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Qing-wu.Li@leica-geosystems.com.cn,
-        robh+dt@kernel.org, mike.looijmans@topic.nl,
-        devicetree@vger.kernel.org
-Cc:     thomas.haemmerle@leica-geosystems.com
-Subject: [PATCH V4 0/6] iio: accel: bmi088: support BMI085 BMI090L
-Date:   Wed, 25 May 2022 13:08:22 +0000
-Message-Id: <20220525130828.2394919-1-Qing-wu.Li@leica-geosystems.com.cn>
-X-Mailer: git-send-email 2.25.1
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Wed, 25 May
+ 2022 14:08:18 +0000
+Received: from AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::dcef:9022:d307:3e8a]) by AM0PR02MB4436.eurprd02.prod.outlook.com
+ ([fe80::dcef:9022:d307:3e8a%4]) with mapi id 15.20.5273.023; Wed, 25 May 2022
+ 14:08:18 +0000
+Message-ID: <d89caadf-0940-7a72-a245-31acec95d673@axentia.se>
+Date:   Wed, 25 May 2022 16:08:16 +0200
+User-Agent: Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH] iio: afe: rescale: Fix logic bug
+Content-Language: en-US
+To:     Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Beguin <liambeguin@gmail.com>, stable@vger.kernel.org
+References: <20220524075448.140238-1-linus.walleij@linaro.org>
+From:   Peter Rosin <peda@axentia.se>
+In-Reply-To: <20220524075448.140238-1-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-ClientProxiedBy: GV3P280CA0102.SWEP280.PROD.OUTLOOK.COM
+ (2603:10a6:150:8::27) To AM0PR02MB4436.eurprd02.prod.outlook.com
+ (2603:10a6:208:ed::15)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-EOPAttributedMessage: 0
 X-MS-PublicTrafficType: Email
-Content-Type: text/plain
-X-MS-Office365-Filtering-Correlation-Id: 3258c16c-2e04-4e37-263e-08da3e4faa62
-X-MS-TrafficTypeDiagnostic: AM6PR06MB5157:EE_
-X-Microsoft-Antispam-PRVS: <AM6PR06MB51579B5C589D06F1124375D6D7D69@AM6PR06MB5157.eurprd06.prod.outlook.com>
+X-MS-Office365-Filtering-Correlation-Id: 9c77852e-41e7-415e-800b-08da3e5804e1
+X-MS-TrafficTypeDiagnostic: PAXPR02MB7390:EE_
+X-Microsoft-Antispam-PRVS: <PAXPR02MB73901579FA53D2531EB37254BCD69@PAXPR02MB7390.eurprd02.prod.outlook.com>
 X-MS-Exchange-SenderADCheck: 1
 X-MS-Exchange-AntiSpam-Relay: 0
 X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 7RmR+UEg/6m46vVqu93LMA+e6XExMHY4xBqh7oJfCERYMF1d7jS9GByWiKj29TOYgvgBHNfPKRKXg/5CPChhCqg9G5L/bU9oxO1drraKzD8gyB+RHTSOUh+zOFaEO2VbyZXnMCZZbFtWmRKDCA6FN/ordvrsj+snlrQ1nfj80g4wieGsyji6hyzF3XjmTOBrBo3+tyPpik6gZQ0EuOQrtHzegFK6/yK4U/TnaNzt/USWRxCCOiCKkG4rRUrjGtdsLAQHh4HW/FU0TalCfSgrbujZr+rYG1oWSrWgi2ncs0IXyPH8/fzTXkjzATmyTTcXq/P+r0xPs7Bh9OwzoyIemMmPOcIN+5Q9mgtmkTnYdjUpeX00UNMb+bPj7pcTYHEVcJOp194BhQrG67GqCpwAs6ARQo1sUylJtckEkOl1C24RSeFBK+/gw4jC7kfKIhhw8f4iYoyMiWyXVcmeK2xhZvmn7SGHYPUvlRkDesyF4F8nEOMlzQcokfmcN/SHCQ58vPifrgGyUyw+TAvj+lkeW1IHLAhy/TCFG3tHfDJPYZEPwfD38iXNWWGlt7gLSaQNfHVCvtbwwtOIeX0q7uFrGB9ZUd0rziWC+7bGGL87FwMy1dC2CI1pk63guQI22xCksfAZP37hwLvHnJqnmXBfQSTzameg7P75RL49s3vKLS+Kf2GLUX46xV9bttH880+9wicJNMYygjNWz3SGkDpTAg==
-X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(46966006)(36840700001)(40470700004)(4326008)(82310400005)(81166007)(36860700001)(70586007)(47076005)(336012)(70206006)(40460700003)(316002)(36736006)(5660300002)(8676002)(107886003)(6512007)(956004)(2616005)(6506007)(8936002)(36756003)(118246002)(356005)(508600001)(1076003)(921005)(186003)(6666004)(86362001)(83380400001)(26005)(2906002)(6486002);DIR:OUT;SFP:1102;
-X-OriginatorOrg: leica-geosystems.com.cn
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2022 13:08:30.3087
+X-Microsoft-Antispam-Message-Info: 6rxgq/pjHU/dMIDSYAgD1dxse6LERh/htgodAZpqh315ALnLEGK/HxM3vCnviFpwhYKLS2Pr6hcTmbHpxG/e2cIoKM1i4XWLeSWyI+wA/PjAlYoFKVMNu5JDh4if16Ud3Bg8Q2ut1pK5rPT3k4llM9U0Is28im/nJD7SIVckJiwokmlHTagy8rr5eTkyzrPrr/X2T/w/SykPFEzYJ7bgLyX8cfBUDY/2jnRBMLbaH2kcRqydfn+YOClm4UXDd3YDtUUVs7SktI6ntTCN67Biamf3R25r+z7RVkIfpm4y2OS5uyj/H/WJtRfgAGEf4HCfpl/ZNlU2ShzdJfQBLyfgAZ+LY9m2aMW++y8BX7+HXrg04Z/oZ1XDZJ6RI7Ep56WpQsnPc0oz5NAMRf/fDHr+slDx26hZEykCPJWhJVyqPcsnkz0V5cGZo+NVHqpiM4KAfQIlCThVoaMhqC3w5y31IS0Mu7MlotB4lQA0spf6bDHF0Tl9rp4rrTxW/UsKUnubMJbn8nBSLlVm3ZuIT4MQnLYOVeS5aablcKgM5QXdW+Pbjix6QHgxyjpK3bi3pEkcZgTrSiX/5X40FrsTEaP+vLwuEvz+Fgidet4BAfdSHlJYx7bYuJ6sc8ksAawz+f5zSIS2TYLlO3OBr3/Lwzx/Tf9RhS11ka269//zGVRaCvFpmAyj20AZwLQNrdgWHsZXh5YAmh5tG1xwtNQP3aTFHjl05vRfWjoSpoTMvfWC66Y=
+X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:AM0PR02MB4436.eurprd02.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230001)(396003)(136003)(366004)(376002)(346002)(39840400004)(31696002)(36756003)(6486002)(2906002)(316002)(8936002)(31686004)(86362001)(6506007)(4326008)(66556008)(8676002)(66946007)(508600001)(6512007)(26005)(66476007)(110136005)(41300700001)(54906003)(2616005)(38100700002)(83380400001)(186003)(5660300002)(45980500001)(43740500002);DIR:OUT;SFP:1102;
+X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
+X-MS-Exchange-AntiSpam-MessageData-0: =?utf-8?B?SHN4d3g4SXp6cEcrM3B5NEgzY01yZjc0T21nNFl1SDE3My8rVTQyMGZnRTRy?=
+ =?utf-8?B?QmVoL2tPdzZnMlFqaFhhbUFQRUV6Q3VSODhMb285eTYyWnFmUFZ0bkZIOExz?=
+ =?utf-8?B?Y001WHp0UGJ0Q0NSekl4cit0U1RtNVRWVnlSV1VJU3p1eVh1WGV6bEVpQkRF?=
+ =?utf-8?B?cmd2WDhtV25OZElLeVREeXhHUVBVWStLWm1IYVZ4WnkvandxZGorL2RCTTVS?=
+ =?utf-8?B?QlRvYzk4a0QrMzdNK3RWRUoyVXpYdEljMGsxQUFCbHFabkxjQ0tWcDhrRk5h?=
+ =?utf-8?B?ZHFSSzJZMHA0azVhZnQrdjl2eDJrOGNQTi96RldBdk9SYkN2c05YcDBIZzFE?=
+ =?utf-8?B?V3RHVWpvZEhoMHZEMDlHOGpaNG5YdWVjUS9Hd2FqdWdQd2xlYlV2ZVVna01j?=
+ =?utf-8?B?ZHpaaFhsZmhuSkZKOXl4TUtQRWRWUVdFMXJTalRJbFNJUnFuYzJqYldXZFRP?=
+ =?utf-8?B?bXU1ZVh5eVcrajdHVDRXenEwL1hBZHhxUDl0MmlJRmlPeG9NZVlZVDNYUVJr?=
+ =?utf-8?B?ejZxeUdpR2JCMDVVUmlNL2FDOXhBUC9nR3A4ZVNTSTJQUSs5dXpwcEpRbFVJ?=
+ =?utf-8?B?RU1MU1IvQjFDVDZlNk9TTFBJZ0R1a1lRdU5QUldCYlZUMEdPV1dFcnU0eVJm?=
+ =?utf-8?B?czFiZ2c4ejlMeGxiQ3U0YjZSRVNEcDhNTEQvRnByY0h6NWp3M2dNS0d1aVJ0?=
+ =?utf-8?B?L1BxQ0xiV0FTVzlPOHlZcUpYM2RESEs4MUlLbUo1ZWRhbkRYVXhLUDNjZXds?=
+ =?utf-8?B?QUdwbkVVb1R2SkFUNVQvMHppZ0hmNFU2ZHZLSTNGMG5vQzNuaCthTUVhNmJl?=
+ =?utf-8?B?aGlabG0wNUVac0dENlF6ODM5K28rc2FsT0Q0TktDMWxWWEp4Ty90MENVYmpM?=
+ =?utf-8?B?TWVOaUJUMWxPVUZLQlZqSE1Vb0pZQUZDenR1WmpHNkh6dzdsZjJKQzhydXR0?=
+ =?utf-8?B?SGI1RllyS2k0SjcyS3d6enZ4SUo5MEZ5VU9nQUMwbmtjanJETEtPVEdoWVI2?=
+ =?utf-8?B?dHh0T1o4ckdBS3RvVWNRZzBFdUMwVHhBcWM5RkE5dWFvcjlHNGl3S2J6TXd5?=
+ =?utf-8?B?VFBncE9jYmJXTjZSUmsrZU1oRk9lQkpBOUx2TWZWQWtBUUpKbUlQcEVCbUlv?=
+ =?utf-8?B?V3RGMUwxbXlTMGx5SWo0cjhuN3Jkb3dkQVdSdFlNMkhINSswZm1RKzhkVGRi?=
+ =?utf-8?B?TWVmbTVZaGp6QTBZbDdWYUlSTENGQnQ5a3p0K3kvekRXTk81dldSSkFFRnFh?=
+ =?utf-8?B?ZEM2S2k2RW5mTEZuVUt2Zm5RK2FZQ2YxQUdWZHdqY1B1cnZOeCsxaHRYMmFh?=
+ =?utf-8?B?WHhUaWUyYlkrNGhzYVZSMURwSzFLRjYrTkF1NXoxWUMwclJpNkFENkVnLzdT?=
+ =?utf-8?B?T1B4NmpzdGxsV0F1R09GQjJvTmlSRHdwNExETEFaZTYvSFYxYlJSem1HUW5E?=
+ =?utf-8?B?a2gyazZQczMwUUdDRXBVQSsxalkzWTZ5Njg2NGx5ZVl0WGo2WmRGSHQ3YVVx?=
+ =?utf-8?B?cU1STUlFQXlNaThwUEJtckJiRTVyWUt4OEVnV3ZMcys4eDJ5WllVMG5PR1FW?=
+ =?utf-8?B?U083MTVkYW9MYmozaUo5WVNad1YwTHdndXBiT3FlVTBnbzIwUVl6RjJEWHV3?=
+ =?utf-8?B?N1hoblFheXM2aDcvQ3FUbUxETzdHTGRtanJqUzdCSDhGV0pXZzVtRUE3WmNG?=
+ =?utf-8?B?bGJ5TUt1NGtzTEo1c3E4NURUWUk0RTRGWE5FNVdWb0txQmhZTnBHZkNZdUY0?=
+ =?utf-8?B?cms2UVJURTFNeExNTWU0M2s5Qit0ampVQWpsWk4yUTR2OFZYMGJmY05RVlZw?=
+ =?utf-8?B?QzZYbHY0SnRETGgvejhFZ1dZRzRQTlBBL2NURmpxR3hXbW1VY09WMnB4cjVM?=
+ =?utf-8?B?bDJ3ZnA3QzF3NS8xM3ZaSGNsNHZXK2tUL1lqcnkwZkU0UjU3aFVyUGMxNjhv?=
+ =?utf-8?B?ajkxdDMrREZzY2tLbUpnUVVOaXovUlVnUUtOWHRkdlMxVUZsaEtLanpMRWFk?=
+ =?utf-8?B?VHBJdVArT0FHajFROTVieXk0MC9tR1ZYazlxY3M1RklyWDlFNmNFcXY1V0Fo?=
+ =?utf-8?B?ZTUveUtSaEwrOGI3dGR1TDhWam96V0dBUkdXa0pJbko2MTlKNXJiS1VvNjI0?=
+ =?utf-8?B?STF0MXV5VmhCRDNlOXJNUzA4MVgyTkc5engycVdXTi9pUnJMM1BQVXFSQW1o?=
+ =?utf-8?B?RjZWWndrWHp2Wjd4SDQ3NUpvdXFyZmJ0Sk5DR3RoamorRk1iRXdNbURqRjI1?=
+ =?utf-8?B?ODIrYllqTzZwYk80RStXMm83VlVhZm1Bbll6UEdnNlJhRmFEUW02NS9QQ1N6?=
+ =?utf-8?B?bTZHVUtoajNPM2FoY0NjQ2xWcW4xY0FUQ254UUxZcVFEaVFTMkQzQT09?=
+X-OriginatorOrg: axentia.se
+X-MS-Exchange-CrossTenant-Network-Message-Id: 9c77852e-41e7-415e-800b-08da3e5804e1
+X-MS-Exchange-CrossTenant-AuthSource: AM0PR02MB4436.eurprd02.prod.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Internal
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 25 May 2022 14:08:18.7996
  (UTC)
-X-MS-Exchange-CrossTenant-Network-Message-Id: 3258c16c-2e04-4e37-263e-08da3e4faa62
-X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
-X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
-X-MS-Exchange-CrossTenant-AuthSource: HE1EUR02FT051.eop-EUR02.prod.protection.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Anonymous
-X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM6PR06MB5157
+X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
+X-MS-Exchange-CrossTenant-Id: 4ee68585-03e1-4785-942a-df9c1871a234
+X-MS-Exchange-CrossTenant-MailboxType: HOSTED
+X-MS-Exchange-CrossTenant-UserPrincipalName: Hh3McwXpvkwkQiCw2D3eSCePxHqhTVgtYRJp3fMlA+SioJkx8lxM2wN186KlFGvk
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: PAXPR02MB7390
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Modified the units after application of scale from 100*m/s^2 to m/s^2,
-since the units in the ABI documents are m/s^2.
-Add supports for the BMI085 accelerometer.
-Add supports for the BMI090L accelerometer.
-Make it possible to config scales.
+Hi!
 
-Change in v4: 
-- Rebase to the latest version to fix the conflict issue.
-- Modify the bm088 and bmi090 scale list,
-  from {0, 897}, {0, 1795}, {0, 3590}, {0, 7179}
-    to {0, 897}, {0, 1794}, {0, 3589}, {0, 7178}
-  since old one are caculated as 1/sensitivity*9.8, the new one are
-  caculated as 9.8/32768*pow(2,reg41+1)*1.5, the values should be same,
-  but due to the decimal digits issue, there are 0.000001 differece,
-  takethe new scales, since they are more accurate.
+2022-05-24 at 09:54, Linus Walleij wrote:
+> When introducing support for processed channels I needed
+> to invert the expression:
+> 
+>   if (!iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+>       !iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
+>         dev_err(dev, "source channel does not support raw/scale\n");
+> 
+> To the inverse, meaning detect when we can usse raw+scale
 
+Nit: use
 
-LI Qingwu (6):
-  iio: accel: bmi088: Modified the scale calculate
-  iio: accel: bmi088: Make it possible to config scales
-  iio: accel: bmi088: modified the device name
-  iio: accel: bmi088: Add support for bmi085 accel
-  iio: accel: bmi088: Add support for bmi090l accel
-  dt-bindings: iio: accel: Add bmi085 and bmi090l bindings
+> rather than when we can not. This was the result:
+> 
+>   if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+>       iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
+>        dev_info(dev, "using raw+scale source channel\n");
+> 
+> Ooops. Spot the error. Yep old George Boole came up and bit me.
+> That should be an &&.
 
- .../bindings/iio/accel/bosch,bmi088.yaml      |  2 +
- drivers/iio/accel/bmi088-accel-core.c         | 96 +++++++++++++++----
- drivers/iio/accel/bmi088-accel-spi.c          | 17 +++-
- drivers/iio/accel/bmi088-accel.h              |  9 +-
- 4 files changed, 100 insertions(+), 24 deletions(-)
+Good catch!
 
--- 
-2.25.1
+> The current code "mostly works" because we have not run into
+> systems supporting only raw but not scale or only scale but not
+> raw, and I doubt there are few using the rescaler on anything
+> such, but let's fix the logic.
 
+Scaling something that provides raw but not scale *could* have
+been implemented by assuming an upstream scale of 1, but it is
+not. Instead you get an error in that case and thus no scale at
+all. While that is perhaps not wrong, it is also a pretty
+useless situation.
+
+Scaling something as if there are raw values when that something
+only provides scale but not raw also seems pretty useless.
+
+So, you have my
+
+Acked-by: Peter Rosin <peda@axentia.se>
+
+Cheers,
+Peter
+
+> 
+> Cc: Liam Beguin <liambeguin@gmail.com>
+> Cc: stable@vger.kernel.org
+> Fixes: 53ebee949980 ("iio: afe: iio-rescale: Support processed channels")
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  drivers/iio/afe/iio-rescale.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+> index 7e511293d6d1..dc426e1484f0 100644
+> --- a/drivers/iio/afe/iio-rescale.c
+> +++ b/drivers/iio/afe/iio-rescale.c
+> @@ -278,7 +278,7 @@ static int rescale_configure_channel(struct device *dev,
+>  	chan->ext_info = rescale->ext_info;
+>  	chan->type = rescale->cfg->type;
+>  
+> -	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+> +	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) &&
+>  	    iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE)) {
+>  		dev_info(dev, "using raw+scale source channel\n");
+>  	} else if (iio_channel_has_info(schan, IIO_CHAN_INFO_PROCESSED)) {
