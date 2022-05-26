@@ -2,159 +2,302 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 28D97C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 26 May 2022 20:04:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 00D54C433FE
+	for <linux-iio@archiver.kernel.org>; Thu, 26 May 2022 20:54:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244590AbiEZUEv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 26 May 2022 16:04:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48822 "EHLO
+        id S233007AbiEZUx7 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 26 May 2022 16:53:59 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241620AbiEZUEu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 May 2022 16:04:50 -0400
-Received: from casper.infradead.org (casper.infradead.org [IPv6:2001:8b0:10b:1236::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 38B6372209;
-        Thu, 26 May 2022 13:04:49 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-        d=infradead.org; s=casper.20170209; h=Content-Transfer-Encoding:Content-Type:
-        In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender
-        :Reply-To:Content-ID:Content-Description;
-        bh=S9y6ecfItCHTZPLBWd79nswqv8BapgWNHqq54ASXQBM=; b=QeKozE9pLJjOGGflthiUPaJOya
-        6YTba/dwspp8MnH0ZXYR8HQ2U5/GlCom4CBSacka4YggyCFcx3RTaznZR/qX2oEVK1iAY7yNcYLcI
-        b55N9QKovEI9OREje0zE1kiVBA8SDTdJIWZXhCvNRXt/8r/CWiCOXBYSE1QIcelik89xYD7QKoKNU
-        DKXmOuHox6EHdFImyNFgCDEDFXAPp0zfxbXBO9YsudK1fzgExuCq/NBDk2NZEwIS1pK01lt2mkPsu
-        JWn5eixJRcEkF2XSfoMi+EdPR6AdWHYVpeGHxxsRM+n4epdcW0FHUeaezCKa81dsnKF1V2/GAaF6l
-        EqICNI2w==;
-Received: from [2601:1c0:6280:3f0::aa0b]
-        by casper.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1nuJiw-001W4J-54; Thu, 26 May 2022 20:04:46 +0000
-Message-ID: <3b7ec693-f4a5-e1aa-3e07-b22a4008d4c9@infradead.org>
-Date:   Thu, 26 May 2022 13:04:41 -0700
+        with ESMTP id S230123AbiEZUx7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 May 2022 16:53:59 -0400
+Received: from mx0a-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAAED67D1E;
+        Thu, 26 May 2022 13:53:57 -0700 (PDT)
+Received: from pps.filterd (m0098414.ppops.net [127.0.0.1])
+        by mx0b-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24QKLimd002637;
+        Thu, 26 May 2022 20:53:38 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=tZWBd9uDfN7eBp6FxFNCshQrwCuBJZvA8XVxAG6t838=;
+ b=OlGUJveswGJ39ODh6Q0/oRjpVhSVRb5TooVJshOz4xtpcGe+2Acy2lU5CLB/lVmPM8ct
+ 17uDixqUZOdsTDR0TU8zTbiQduofgaEPKBAvZi6wJM++iqpKcXOQqrA4Iyk/UofIFJBO
+ I/aA58T4z25WNdP1aG0H/UCXs6s5ogPh/h53ohVC6WAnArZuPj4yo8qpFfS9r+UF9cyb
+ HcbNGgkvl/7FOuJB8ykK+GWZzeGqWbwfVCeeu/8TEsjqgrqaw1Fpcnl/4awjQ+oCTG70
+ /cOg3iu7cWLtGHhB0OPddm6VqbZfN3afetqyNv+4A0FxcyseBeI1R+6vUPW59skjscRa 1Q== 
+Received: from ppma02wdc.us.ibm.com (aa.5b.37a9.ip4.static.sl-reverse.com [169.55.91.170])
+        by mx0b-001b2d01.pphosted.com (PPS) with ESMTPS id 3gaggvggu0-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 26 May 2022 20:53:37 +0000
+Received: from pps.filterd (ppma02wdc.us.ibm.com [127.0.0.1])
+        by ppma02wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 24QKr2Lm027947;
+        Thu, 26 May 2022 20:53:37 GMT
+Received: from b03cxnp07028.gho.boulder.ibm.com (b03cxnp07028.gho.boulder.ibm.com [9.17.130.15])
+        by ppma02wdc.us.ibm.com with ESMTP id 3gagpkr2bq-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Thu, 26 May 2022 20:53:37 +0000
+Received: from b03ledav003.gho.boulder.ibm.com (b03ledav003.gho.boulder.ibm.com [9.17.130.234])
+        by b03cxnp07028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 24QKra7U20119952
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Thu, 26 May 2022 20:53:36 GMT
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 06D896A054;
+        Thu, 26 May 2022 20:53:36 +0000 (GMT)
+Received: from b03ledav003.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 813776A051;
+        Thu, 26 May 2022 20:53:35 +0000 (GMT)
+Received: from v0005c16.aus.stglabs.ibm.com (unknown [9.211.46.254])
+        by b03ledav003.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Thu, 26 May 2022 20:53:35 +0000 (GMT)
+From:   Eddie James <eajames@linux.ibm.com>
+To:     linux-i2c@vger.kernel.org
+Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        wsa@kernel.org, peda@axentia.se, jic23@kernel.org, lars@metafoo.de,
+        eajames@linux.ibm.com, miltonm@us.ibm.com, joel@jms.id.au
+Subject: [PATCH 1/2] i2c: core: Add mux root adapter operations
+Date:   Thu, 26 May 2022 15:53:33 -0500
+Message-Id: <20220526205334.64114-2-eajames@linux.ibm.com>
+X-Mailer: git-send-email 2.27.0
+In-Reply-To: <20220526205334.64114-1-eajames@linux.ibm.com>
+References: <20220526205334.64114-1-eajames@linux.ibm.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.9.0
-Subject: Re: kbuild problem: ERROR: modpost: missing MODULE_LICENSE() in
- drivers/iio/afe/iio-rescale.o
-Content-Language: en-US
-To:     Liam Beguin <liambeguin@gmail.com>
-Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
-        Masahiro Yamada <masahiroy@kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org, Peter Rosin <peda@axentia.se>,
-        "open list:KERNEL SELFTEST FRAMEWORK" 
-        <linux-kselftest@vger.kernel.org>,
-        KUnit Development <kunit-dev@googlegroups.com>
-References: <18500f18-9cd5-a81c-4a55-14e999ed4496@infradead.org>
- <3ae306e0-c6c7-ed12-cacd-62b1c26dba3c@infradead.org>
- <6671de03-c09c-bfaf-e06c-e45af70d4354@infradead.org>
- <6601a387-de9a-a0d0-11b5-01e0cfa75657@infradead.org>
- <7a97bac3-6ade-8e1b-cf0c-4a05c83163a3@infradead.org> <Yo+lHSmeIsx144cv@shaak>
-From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <Yo+lHSmeIsx144cv@shaak>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-ORIG-GUID: Sz_QaotiDhXEVzWw2UM8W9OEnTnaS82F
+X-Proofpoint-GUID: Sz_QaotiDhXEVzWw2UM8W9OEnTnaS82F
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
+ definitions=2022-05-26_10,2022-05-25_02,2022-02-23_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 mlxscore=0 malwarescore=0
+ bulkscore=0 spamscore=0 impostorscore=0 priorityscore=1501 adultscore=0
+ mlxlogscore=999 phishscore=0 clxscore=1015 suspectscore=0
+ lowpriorityscore=0 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2204290000 definitions=main-2205260095
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Some I2C clients need the ability to control the root I2C bus even if the
+endpoint device is behind a mux. For example, a driver for a chip that
+can't handle any I2C traffic on the bus while coming out of reset
+(including an I2C-driven mux switching channels) may need to lock the root
+bus with the mux selection fixed for the entire time the device is in
+reset.
+For this purpose, add a new structure containing two function pointers to
+the adapter structure. These functions pointers should be defined for
+every adapter. The lock_select operation, for a mux adapter, locks the
+parent adpaters up to the root and selects the adapter's channel. The
+unlock_deselect operation deselects the mux channel and unlocks all the
+adapters. For a non-mux adapter, the operations lock and unlock the
+adapters up to the root. This scheme should work with multiple levels of
+muxes and regular adapters in between.
 
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+---
+ drivers/i2c/i2c-core-base.c | 38 ++++++++++++++++++++++++++++
+ drivers/i2c/i2c-mux.c       | 50 +++++++++++++++++++++++++++++++++++++
+ include/linux/i2c.h         | 42 +++++++++++++++++++++++++++++++
+ 3 files changed, 130 insertions(+)
 
-On 5/26/22 09:04, Liam Beguin wrote:
-> Hi Randy,
-> 
-> On Thu, May 26, 2022 at 08:36:34AM -0700, Randy Dunlap wrote:
->> Liam:
->>
->> Any comment on this?
->> Otherwise I'll just send a formal patch like this (below).
-> 
-> Apologies for not answering earlier.
-> 
-> I wanted to look more into Masahiro's comment and try to fix the
-> Makefile, but that can be done after.
-> 
-> IMO your patch improves the current Kconfig, so I'd recommend sending
-> the patch. If it can wait a bit, I can look at the Makefile over the
-> weekend.
-> 
-
-Liam,
-
-I'll wait until next week to see if you come up with anything.
-
-Thanks.
-
-> 
->>
->> Thanks.
->>
->> On 5/20/22 20:51, Randy Dunlap wrote:
->>> Ok, one more.
->>> [also adding Liam here]
->>>
->>> On 5/20/22 20:17, Randy Dunlap wrote:
->>>>
->>>>
->>>> On 5/20/22 20:08, Randy Dunlap wrote:
->>>>>
->>>>>
->>>>> On 5/20/22 19:40, Randy Dunlap wrote:
->>>>>> Hi,
->>>>>>
->>>>>> In March I reported that a randconfig build complained:
->>>>>>
->>>>>> ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
->>>>>>
->>>>>> (https://lore.kernel.org/all/16509fb6-e40c-e31b-2c80-264c44b0beb9@infradead.org/)
->>>>>>
->>>>>> I am still seeing this problem so I tried to dig into it a bit.
->>>>>> However, I don't see why get_next_modinfo() and friends don't find the
->>>>>> MODULE_LICENSE() since it is in the iio-rescale.o file.
->>>>>>
->>>>>> (BTW, I see this build error on many different $ARCH [around 15 tested]
->>>>>> and with 2 different versions of GCC.)
->>>>>>
->>>>>> Q1: Is modpost checking both vmlinux and iio-rescale.o for modinfo license
->>>>>> strings?
->>>>>>
->>>>>> It looks like it is, because it appears (?) that modpost is looking at
->>>>>> drivers/iio/test/iio-test-rescale.o (<<<<< a kunit test, which is builtin
->>>>>> in my .config) and at drivers/iio/afe/iio-rescale.o (which is built as a
->>>>>> loadable module).
->>>>>>
->>>>>> Is this confusing modpost?
->>>>>> I renamed drivers/iio/afe/iio-rescale.c to afe-rescale.c and changed its
->>>>>> Makefile entry accordingly and the MODULE_LICENSE error goes away.
->>>>>
->>>>> Oh well. This rename causes drivers/iio/test/iio-test-rescale.c to have
->>>>> build errors, so that's not a solution, just some info...
->>>>
->>>> and that was due to not updating drivers/iio/test/Makefile.
->>>> When that is done, the missing MODULE_LICENSE() is back in afe-rescale.o.
->>>>
->>>>>
->>>>>> Is this a modpost error or is kunit messing things up?
->>>>>>
->>>>>> thanks for looking.
->>>
->>> Does this look OK? It allows afe/iio-rescale.o to build XOR
->>> test/iio-rescale.o (not both of them).
->>>
->>> --- a/drivers/iio/test/Kconfig
->>> +++ b/drivers/iio/test/Kconfig
->>> @@ -6,7 +6,7 @@
->>>  # Keep in alphabetical order
->>>  config IIO_RESCALE_KUNIT_TEST
->>>         bool "Test IIO rescale conversion functions"
->>> -       depends on KUNIT=y && !IIO_RESCALE
->>> +       depends on KUNIT=y && IIO_RESCALE=n
->>>         default KUNIT_ALL_TESTS
->>>         help
->>>           If you want to run tests on the iio-rescale code say Y here.
->>>
->>>
->>
->> -- 
->> ~Randy
-
+diff --git a/drivers/i2c/i2c-core-base.c b/drivers/i2c/i2c-core-base.c
+index d43db2c3876e..e2c365348e1f 100644
+--- a/drivers/i2c/i2c-core-base.c
++++ b/drivers/i2c/i2c-core-base.c
+@@ -1357,6 +1357,41 @@ static const struct i2c_lock_operations i2c_adapter_lock_ops = {
+ 	.unlock_bus =  i2c_adapter_unlock_bus,
+ };
+ 
++/*
++ * For a non-mux adapter, the lock_select operation locks the chain of
++ * adapters upwards, returning the root. If there's a mux above this adapter
++ * somehow, it should also get locked and the desired channel selected.
++ */
++static struct i2c_adapter *i2c_adapter_lock_select(struct i2c_adapter *adapter)
++{
++	struct i2c_adapter *ret = adapter;
++	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
++
++	if (parent) {
++		ret = parent->mux_root_ops->lock_select(parent);
++		if (IS_ERR(ret))
++			return ret;
++	}
++
++	adapter->lock_ops->lock_bus(adapter, I2C_LOCK_ROOT_ADAPTER);
++	return ret;
++}
++
++static void i2c_adapter_unlock_deselect(struct i2c_adapter *adapter)
++{
++	struct i2c_adapter *parent = i2c_parent_is_i2c_adapter(adapter);
++
++	adapter->lock_ops->unlock_bus(adapter, I2C_LOCK_ROOT_ADAPTER);
++
++	if (parent)
++		parent->mux_root_ops->unlock_deselect(parent);
++}
++
++static const struct i2c_mux_root_operations i2c_adapter_mux_root_ops = {
++	.lock_select = i2c_adapter_lock_select,
++	.unlock_deselect = i2c_adapter_unlock_deselect,
++};
++
+ static void i2c_host_notify_irq_teardown(struct i2c_adapter *adap)
+ {
+ 	struct irq_domain *domain = adap->host_notify_domain;
+@@ -1452,6 +1487,9 @@ static int i2c_register_adapter(struct i2c_adapter *adap)
+ 	if (!adap->lock_ops)
+ 		adap->lock_ops = &i2c_adapter_lock_ops;
+ 
++	if (!adap->mux_root_ops)
++		adap->mux_root_ops = &i2c_adapter_mux_root_ops;
++
+ 	adap->locked_flags = 0;
+ 	rt_mutex_init(&adap->bus_lock);
+ 	rt_mutex_init(&adap->mux_lock);
+diff --git a/drivers/i2c/i2c-mux.c b/drivers/i2c/i2c-mux.c
+index 774507b54b57..c7db770e4198 100644
+--- a/drivers/i2c/i2c-mux.c
++++ b/drivers/i2c/i2c-mux.c
+@@ -210,6 +210,49 @@ static void i2c_parent_unlock_bus(struct i2c_adapter *adapter,
+ 	rt_mutex_unlock(&parent->mux_lock);
+ }
+ 
++/*
++ * For a mux adapter, the lock_select operation first locks just like the
++ * lock_bus operation. Then it selects the channel for this adapter and
++ * returns the root adapter. If there is another mux above this one, calling
++ * the parent lock_select should ensure that the channel is correctly
++ * selected.
++ */
++static struct i2c_adapter *i2c_mux_lock_select(struct i2c_adapter *adapter)
++{
++	int ret;
++	struct i2c_mux_priv *priv = adapter->algo_data;
++	struct i2c_mux_core *muxc = priv->muxc;
++	struct i2c_adapter *parent = muxc->parent;
++
++	rt_mutex_lock_nested(&parent->mux_lock, i2c_adapter_depth(adapter));
++
++	adapter = parent->mux_root_ops->lock_select(parent);
++	if (IS_ERR(adapter))
++		return adapter;
++
++	ret = muxc->select(muxc, priv->chan_id);
++	if (ret < 0) {
++		parent->mux_root_ops->unlock_deselect(parent);
++		rt_mutex_unlock(&parent->mux_lock);
++		return ERR_PTR(ret);
++	}
++
++	return adapter;
++}
++
++static void i2c_mux_unlock_deselect(struct i2c_adapter *adapter)
++{
++	struct i2c_mux_priv *priv = adapter->algo_data;
++	struct i2c_mux_core *muxc = priv->muxc;
++	struct i2c_adapter *parent = muxc->parent;
++
++	if (muxc->deselect)
++		muxc->deselect(muxc, priv->chan_id);
++
++	parent->mux_root_ops->unlock_deselect(parent);
++	rt_mutex_unlock(&parent->mux_lock);
++}
++
+ struct i2c_adapter *i2c_root_adapter(struct device *dev)
+ {
+ 	struct device *i2c;
+@@ -279,6 +322,11 @@ static const struct i2c_lock_operations i2c_parent_lock_ops = {
+ 	.unlock_bus =  i2c_parent_unlock_bus,
+ };
+ 
++static const struct i2c_mux_root_operations i2c_mux_root_ops = {
++	.lock_select = i2c_mux_lock_select,
++	.unlock_deselect = i2c_mux_unlock_deselect,
++};
++
+ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
+ 			u32 force_nr, u32 chan_id,
+ 			unsigned int class)
+@@ -339,6 +387,8 @@ int i2c_mux_add_adapter(struct i2c_mux_core *muxc,
+ 	else
+ 		priv->adap.lock_ops = &i2c_parent_lock_ops;
+ 
++	priv->adap.mux_root_ops = &i2c_mux_root_ops;
++
+ 	/* Sanity check on class */
+ 	if (i2c_mux_parent_classes(parent) & class)
+ 		dev_err(&parent->dev,
+diff --git a/include/linux/i2c.h b/include/linux/i2c.h
+index fbda5ada2afc..a3596f61b417 100644
+--- a/include/linux/i2c.h
++++ b/include/linux/i2c.h
+@@ -583,6 +583,26 @@ struct i2c_lock_operations {
+ 	void (*unlock_bus)(struct i2c_adapter *adapter, unsigned int flags);
+ };
+ 
++/**
++ * struct i2c_mux_root_operations - represent operations to lock and select
++ * the adapter's mux channel (if a mux is present)
++ * @lock_select: Get exclusive access to the root I2C bus adapter with the
++ *   correct mux channel selected for the adapter
++ * @unlock_deslect: Release exclusive access to the root I2C bus adapter and
++ *   deselect the mux channel for the adapter
++ *
++ * Some I2C clients need the ability to control the root I2C bus even if the
++ * endpoint device is behind a mux. For example, a driver for a chip that
++ * can't handle any I2C traffic on the bus while coming out of reset (including
++ * an I2C-driven mux switching channels) may need to lock the root bus with
++ * the mux selection fixed for the entire time the device is in reset.
++ * These operations are for such a purpose.
++ */
++struct i2c_mux_root_operations {
++	struct i2c_adapter *(*lock_select)(struct i2c_adapter *adapter);
++	void (*unlock_deselect)(struct i2c_adapter *adapter);
++};
++
+ /**
+  * struct i2c_timings - I2C timing information
+  * @bus_freq_hz: the bus frequency in Hz
+@@ -725,6 +745,7 @@ struct i2c_adapter {
+ 
+ 	/* data fields that are valid for all devices	*/
+ 	const struct i2c_lock_operations *lock_ops;
++	const struct i2c_mux_root_operations *mux_root_ops;
+ 	struct rt_mutex bus_lock;
+ 	struct rt_mutex mux_lock;
+ 
+@@ -817,6 +838,27 @@ i2c_unlock_bus(struct i2c_adapter *adapter, unsigned int flags)
+ 	adapter->lock_ops->unlock_bus(adapter, flags);
+ }
+ 
++/**
++ * i2c_lock_select_bus - Get exclusive access to the root I2C bus with the
++ *   target's mux channel (if a mux is present) selected.
++ * @adapter: Target I2C bus
++ *
++ * Return the root I2C bus if mux selection succeeds, an ERR_PTR otherwise
++ */
++static inline struct i2c_adapter *i2c_lock_select_bus(struct i2c_adapter *adapter)
++{
++	return adapter->mux_root_ops->lock_select(adapter);
++}
++
++/**
++ * i2c_unlock_deslect_bus - Release exclusive access to the root I2C bus
++ * @adapter: Target I2C bus
++ */
++static inline void i2c_unlock_deselect_bus(struct i2c_adapter *adapter)
++{
++	adapter->mux_root_ops->unlock_deselect(adapter);
++}
++
+ /**
+  * i2c_mark_adapter_suspended - Report suspended state of the adapter to the core
+  * @adap: Adapter to mark as suspended
 -- 
-~Randy
+2.27.0
+
