@@ -2,154 +2,120 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9527FC433FE
-	for <linux-iio@archiver.kernel.org>; Wed, 25 May 2022 18:33:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6DF3CC433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 26 May 2022 01:29:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237680AbiEYSdH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 25 May 2022 14:33:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47044 "EHLO
+        id S245286AbiEZB3c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 25 May 2022 21:29:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236476AbiEYSdG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2022 14:33:06 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F3332B0D36;
-        Wed, 25 May 2022 11:33:03 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id C98E15FD08;
-        Wed, 25 May 2022 21:33:01 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1653503581;
-        bh=tvWh1ibvCJsyGIVQLT1gENhgJ+AQlRqgCyy8xsbnb1A=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=SOhR+T1n5P/4AtlMfTu4x8p53WqEqh0DVuYZm9g4Or4kj/XLp/s9t5kf26XvGsdt6
-         vd4/Z08nMNdUcmZF/2/SsgE4csUNpSWq4GCVZHH0gVSna+fmfdibBb29y4FTexVwJB
-         1y2SP17MYLee2aTNYtXX3SmHjnLLALCBv9EiDl/Wk9dkK85EUSlkD0ev+VH91NF2Oq
-         +qAK5FC3RJOQWgpt8SOLXINPiHC6aFwtPQ3ekf3J1SODB+dozKfRqDTHWKLC7mCmqO
-         BRlpUfaFX2Wn9ZE59Yh0i+xObyjSw8uB0Mc7gYp2oopgGFkZV+aMhr41EsBJcRVlqS
-         eSGqBEg1cHLWQ==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Wed, 25 May 2022 21:33:01 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>
-CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v2 3/3] dt-bindings: iio: accel: add dt-binding schema for
- msa311 accel driver
-Thread-Topic: [PATCH v2 3/3] dt-bindings: iio: accel: add dt-binding schema
- for msa311 accel driver
-Thread-Index: AQHYcGNsHieJqKs6FU67Uad334M2Aq0vuKGA
-Date:   Wed, 25 May 2022 18:32:45 +0000
-Message-ID: <20220525183255.lc7hmmcfj47yrxc3@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220525181532.6805-1-ddrokosov@sberdevices.ru>
- <20220525181532.6805-4-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220525181532.6805-4-ddrokosov@sberdevices.ru>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <7F17E0A41BA3844FBDBE49EB9ACAC5FF@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S239482AbiEZB3b (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 May 2022 21:29:31 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484D29D067;
+        Wed, 25 May 2022 18:29:30 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id l82so579552qke.3;
+        Wed, 25 May 2022 18:29:30 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=FbPPFb9rMCeh0SoOtVc42/2NbWJSabE6UzVds4NMhYU=;
+        b=BOm/N6srzaQmptKq/40CH7xw/zMPM3qJmifHv3VbiyX3876cqB65IMMlrVc731N0eQ
+         xwh5P0N5dcpp5fs7qe5WaCU4lbT0u9hQOml0wOy0SAPZMqPhE74G0fpTAwIwkHoztc0m
+         ZASw18+4dlHKbcnCd0u2faA9Hsfu6rYRUT3Nz3s3slNhU5EUv0yarmPubQJv2INiMToa
+         hCDaCpUUm/nYLnU8wzkxCpUtLvLtaNfxcJUsrMEWto2ofPksKE6cAr6+YNwLTy9Cdfl0
+         Hxofy+sMIIn3ON9R40XfdY0/lqjqiVGmYWdu6Mm7zVyix0mZNnQTjnqckRIx6CX/y8SO
+         hetQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=FbPPFb9rMCeh0SoOtVc42/2NbWJSabE6UzVds4NMhYU=;
+        b=Zs4lIJmN3lYv1gGNvC8K1QroBWjcR7ZEtLdZweChEhaChAusNA95e+1CJbfVfbO7xF
+         bbfpI0GsWPORaZBaVl4XvSW3KyV2dJ9e6Wg71gAKzACRPUqvED94AlzJKR2DcG4X38xD
+         xB62lrleCI7n8CoVKJHHaLGkC/aR1IIC9RnMDlW2osApNSja8WSsxz5XY4yueTi1BX40
+         wfoH4sWtL1ta0g8tenu0E0Xl5Vcggp0vThQCzrUhqdGN8HcIGW2dVtLZViggt/e3lKla
+         tLIjRvCrYlKeUm/l9b4v+AQRMvxgDRemvP1vZZOeM8fhHSW9TAIi9LhmahcVaUUNPDu0
+         /YGw==
+X-Gm-Message-State: AOAM531IyXNGoXqmm7k/LrDGl1/tjVBWL55fxv8NZ7gKGqfyFVjOs0E6
+        WUxz2budu152Celrx2jsf8FTrOvVJC0b4A==
+X-Google-Smtp-Source: ABdhPJwwpkcFO1ws/01FEXL4wTG6JIOaiT4NySHsersgMAFgDxqE0FBwsoKTX5BTb87QDwxZTo9jYg==
+X-Received: by 2002:a37:7cb:0:b0:6a3:51fa:9ec2 with SMTP id 194-20020a3707cb000000b006a351fa9ec2mr18026701qkh.735.1653528569354;
+        Wed, 25 May 2022 18:29:29 -0700 (PDT)
+Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
+        by smtp.gmail.com with ESMTPSA id o7-20020a37a507000000b0069fc13ce225sm367478qke.86.2022.05.25.18.29.28
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Wed, 25 May 2022 18:29:28 -0700 (PDT)
+Date:   Wed, 25 May 2022 21:29:27 -0400
+From:   Liam Beguin <liambeguin@gmail.com>
+To:     Linus Walleij <linus.walleij@linaro.org>
+Cc:     Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        stable@vger.kernel.org
+Subject: Re: [PATCH] iio: afe: rescale: Fix logic bug
+Message-ID: <Yo7X9w6i3uiNZqpW@shaak>
+References: <20220524075448.140238-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/05/25 08:39:00 #19569940
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220524075448.140238-1-linus.walleij@linaro.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello Jonathan and Rob,
+On Tue, May 24, 2022 at 09:54:48AM +0200, Linus Walleij wrote:
+> When introducing support for processed channels I needed
+> to invert the expression:
+> 
+>   if (!iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+>       !iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
+>         dev_err(dev, "source channel does not support raw/scale\n");
+> 
+> To the inverse, meaning detect when we can usse raw+scale
+> rather than when we can not. This was the result:
+> 
+>   if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+>       iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE))
+>        dev_info(dev, "using raw+scale source channel\n");
+> 
+> Ooops. Spot the error. Yep old George Boole came up and bit me.
+> That should be an &&.
+> 
+> The current code "mostly works" because we have not run into
+> systems supporting only raw but not scale or only scale but not
+> raw, and I doubt there are few using the rescaler on anything
+> such, but let's fix the logic.
 
-I didn't change two places which you mentioned in the v1 review, please
-find my comments below.
+Maybe `iio: afe: rescale: Fix boolean logic bug` if you're resending,
+otherwise,
 
-On Wed, May 25, 2022 at 06:15:33PM +0000, Dmitry Rokosov wrote:
+Reviewed-by: Liam Beguin <liambeguin@gmail.com>
 
-> +  interrupt-names:
-> +    const: irq
-I stay interrupt-names node here, because otherwise dt_binding_check
-command shows such a warning:
+Thanks,
+Liam
 
-=3D=3D=3D=3D
-  CHECK   Documentation/devicetree/bindings/iio/accel/memsensing,msa311.exa=
-mple.dt.yaml
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.ya=
-ml: accelerometer@62: 'interrupt-names' does not match any of the regexes: =
-'pinctrl-[0-9]+'
-=3D=3D=3D=3D
-
-I can't delete this node from the example as well, because it's required fo=
-r
-msa311 dts i2c irq declaration.
-
-Please help me to resolve this problem properly if possible. If we can
-ignore such warning I'll delete interrupt-names in the next patchset's
-version.
-
-> +examples:
-> +  - |
-> +    #include <dt-bindings/interrupt-controller/irq.h>
-> +    i2c {
-> +        #address-cells =3D <1>;
-> +        #size-cells =3D <0>;
-> +
-Properties #address-cells and #size-cells are still located in the
-schema example, because otherwise dt_binding_check raises the below=20
-warnings if we delete these properties:
-
-=3D=3D=3D=3D=3D
-  DTC     Documentation/devicetree/bindings/iio/accel/memsensing,msa311.exa=
-mple.dt.yaml
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:2=
-7.17-30: Warning (reg_format): /example-0/i2c/accelerometer@62:reg: propert=
-y has invalid length (4 bytes) (#address-cells =3D=3D 2, #size-cells =3D=3D=
- 1)
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.ya=
-ml: Warning (pci_device_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.ya=
-ml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.ya=
-ml: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:2=
-4.13-32.11: Warning (i2c_bus_bridge): /example-0/i2c: incorrect #address-ce=
-lls for I2C bus
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:2=
-4.13-32.11: Warning (i2c_bus_bridge): /example-0/i2c: incorrect #size-cells=
- for I2C bus
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.ya=
-ml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.ya=
-ml: Warning (i2c_bus_reg): Failed prerequisite 'i2c_bus_bridge'
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.ya=
-ml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:2=
-5.30-31.15: Warning (avoid_default_addr_size): /example-0/i2c/accelerometer=
-@62: Relying on default #address-cells value
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:2=
-5.30-31.15: Warning (avoid_default_addr_size): /example-0/i2c/accelerometer=
-@62: Relying on default #size-cells value
-Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.ya=
-ml: Warning (unique_unit_address_if_enabled): Failed prerequisite 'avoid_de=
-fault_addr_size'
-=3D=3D=3D=3D=3D
-
-What is best way to resolve such issues without providing #address-cells
-and #size-cells values?
-
---=20
-Thank you,
-Dmitry=
+> Cc: Liam Beguin <liambeguin@gmail.com>
+> Cc: stable@vger.kernel.org
+> Fixes: 53ebee949980 ("iio: afe: iio-rescale: Support processed channels")
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  drivers/iio/afe/iio-rescale.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/afe/iio-rescale.c b/drivers/iio/afe/iio-rescale.c
+> index 7e511293d6d1..dc426e1484f0 100644
+> --- a/drivers/iio/afe/iio-rescale.c
+> +++ b/drivers/iio/afe/iio-rescale.c
+> @@ -278,7 +278,7 @@ static int rescale_configure_channel(struct device *dev,
+>  	chan->ext_info = rescale->ext_info;
+>  	chan->type = rescale->cfg->type;
+>  
+> -	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) ||
+> +	if (iio_channel_has_info(schan, IIO_CHAN_INFO_RAW) &&
+>  	    iio_channel_has_info(schan, IIO_CHAN_INFO_SCALE)) {
+>  		dev_info(dev, "using raw+scale source channel\n");
+>  	} else if (iio_channel_has_info(schan, IIO_CHAN_INFO_PROCESSED)) {
+> -- 
+> 2.35.3
+> 
