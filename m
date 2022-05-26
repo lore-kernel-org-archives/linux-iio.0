@@ -2,92 +2,171 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E2994C433FE
-	for <linux-iio@archiver.kernel.org>; Thu, 26 May 2022 13:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D3B47C433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 26 May 2022 13:34:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229612AbiEZNaa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 26 May 2022 09:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33822 "EHLO
+        id S245067AbiEZNeK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 26 May 2022 09:34:10 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35106 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347549AbiEZNaX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 May 2022 09:30:23 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7CBC7D80B4
-        for <linux-iio@vger.kernel.org>; Thu, 26 May 2022 06:30:22 -0700 (PDT)
-Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 24QC4tVe032665;
-        Thu, 26 May 2022 09:30:14 -0400
-Received: from nwd2mta4.analog.com ([137.71.173.58])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3g93vdnpc9-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Thu, 26 May 2022 09:30:13 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta4.analog.com (8.14.7/8.14.7) with ESMTP id 24QDUCmQ043047
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 26 May 2022 09:30:12 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 26 May 2022 09:30:11 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Thu, 26 May 2022 09:30:11 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Thu, 26 May 2022 09:30:11 -0400
-Received: from localhost.localdomain ([10.48.65.12])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 24QDTvG6027216;
-        Thu, 26 May 2022 09:30:05 -0400
-From:   <alexandru.tachici@analog.com>
-To:     <linux-iio@vger.kernel.org>
-CC:     <Michael.Hennerich@analog.com>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <jic23@kernel.org>,
-        Alexandru Tachici <alexandru.tachici@analog.com>
-Subject: [PATCH 2/5] dt-bindings: iio: adc: AD9467: update maintainers
-Date:   Thu, 26 May 2022 16:45:59 +0300
-Message-ID: <20220526134603.75216-3-alexandru.tachici@analog.com>
-X-Mailer: git-send-email 2.17.1
-In-Reply-To: <20220526134603.75216-1-alexandru.tachici@analog.com>
-References: <20220526134603.75216-1-alexandru.tachici@analog.com>
+        with ESMTP id S230476AbiEZNeJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 May 2022 09:34:09 -0400
+Received: from EUR04-HE1-obe.outbound.protection.outlook.com (mail-eopbgr70097.outbound.protection.outlook.com [40.107.7.97])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CE793D80B5;
+        Thu, 26 May 2022 06:34:07 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
+ b=bSIpk2PyX8RPXmMRl0P3p/iCeqeDmE7TG5Euckc/t9xCmXHJNWXyyplfweEhADD4UyWvS8AbrNb+hbIMEz3oIk+XOJcOgWcqlcD7EoHWjOtJdZyqEkY3iHeNI1Gi/gk0Zcp/TfYrFfCXjDU39K+ggViqzygGO4CswjH3zxVJf6LpXDqRnZ24F8aYilC/4TFHAdTQHKUOwVCuK2N4otQYGDBln80moLH+Yk9KRPXSFxYP45daRcgQmrrlvsk/FUa+rryoS0b5jBwU1u5dZXxvadgsU/Io5tFnbEtitGKF375sPhCacUrm33Tdg8TlJa1+jOuA3kLWmObqxwRkiS0mzQ==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
+ s=arcselector9901;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
+ bh=7j0k4hXL2RmH1aeoxuba3AmDLc28SHD03SYQXpnIzg4=;
+ b=hmlyHGd3xL1rYsUUGQqiltxkx/feBzgSNUowWvxhkr2tbDtbbqq/PmWzpBDHhekNmWQSXz/pA4S06pBPMk7IRvfKdQEpoaeeBZNlXYRzHTCsXJj51MKlk1LcM0jSfhf+AoNjyS4YHH52Dzpq3QAjjNCtUP92bFe5B6or1FvE6vVfb0gTljiNev34i0XQ7z+GCgRqkC8brjBenXAftQIZ3MkUQCfAhLno9HLlVDsssXwBoyShsmozaYAVctNfmSRqm1MDYSARQix7dzpnPBLFgEVnXYDDGrYSkBm9VJXdBFWWWQz/FolEB36vNztEzJk1pvg/0kfpAQ9+gc3Fg0LKmw==
+ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass (sender ip is
+ 193.8.40.94) smtp.rcpttodomain=kernel.org
+ smtp.mailfrom=leica-geosystems.com.cn; dmarc=pass (p=quarantine sp=quarantine
+ pct=100) action=none header.from=leica-geosystems.com.cn; dkim=none (message
+ not signed); arc=none
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+ d=leica-geosystems.com.cn; s=selector1;
+ h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
+ bh=7j0k4hXL2RmH1aeoxuba3AmDLc28SHD03SYQXpnIzg4=;
+ b=ZwPV73VxKYFti8/6CyrthPXhOXLXaII6s279omcYYQ4CGXb1pixf64KWSzSO2hPYoEjGQ+pWDGTeQbgklJPVsJjjkn7fnTuAtpptuoyFtJ5HciRhnb2HGe8EVUPJFiHaSG8XMQ5gpvu7JVC9UU8Wx4/FAZbBadBrUuoxhtgC5U8=
+Received: from AS9PR06CA0006.eurprd06.prod.outlook.com (2603:10a6:20b:462::25)
+ by AM8PR06MB7156.eurprd06.prod.outlook.com (2603:10a6:20b:1d9::18) with
+ Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13; Thu, 26 May
+ 2022 13:34:04 +0000
+Received: from VE1EUR02FT025.eop-EUR02.prod.protection.outlook.com
+ (2603:10a6:20b:462:cafe::e8) by AS9PR06CA0006.outlook.office365.com
+ (2603:10a6:20b:462::25) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5293.13 via Frontend
+ Transport; Thu, 26 May 2022 13:34:04 +0000
+X-MS-Exchange-Authentication-Results: spf=pass (sender IP is 193.8.40.94)
+ smtp.mailfrom=leica-geosystems.com.cn; dkim=none (message not signed)
+ header.d=none;dmarc=pass action=none header.from=leica-geosystems.com.cn;
+Received-SPF: Pass (protection.outlook.com: domain of leica-geosystems.com.cn
+ designates 193.8.40.94 as permitted sender) receiver=protection.outlook.com;
+ client-ip=193.8.40.94; helo=aherlnxbspsrv01.lgs-net.com; pr=C
+Received: from aherlnxbspsrv01.lgs-net.com (193.8.40.94) by
+ VE1EUR02FT025.mail.protection.outlook.com (10.152.12.109) with Microsoft SMTP
+ Server (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.20.5293.13 via Frontend Transport; Thu, 26 May 2022 13:34:04 +0000
+From:   LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+To:     jic23@kernel.org, lars@metafoo.de, mchehab+huawei@kernel.org,
+        ardeleanalex@gmail.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Qing-wu.Li@leica-geosystems.com.cn,
+        robh+dt@kernel.org, mike.looijmans@topic.nl,
+        devicetree@vger.kernel.org
+Cc:     thomas.haemmerle@leica-geosystems.com
+Subject: [PATCH V5 2/6] iio: accel: bmi088: Make it possible to config scales
+Date:   Thu, 26 May 2022 13:33:55 +0000
+Message-Id: <20220526133359.2261928-3-Qing-wu.Li@leica-geosystems.com.cn>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
+References: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
 MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
+X-EOPAttributedMessage: 0
+X-MS-PublicTrafficType: Email
 Content-Type: text/plain
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: DAHJZhf_6uTz_Av8yBoZynf7-ZkGH7BP
-X-Proofpoint-ORIG-GUID: DAHJZhf_6uTz_Av8yBoZynf7-ZkGH7BP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.874,Hydra:6.0.486,FMLib:17.11.64.514
- definitions=2022-05-26_07,2022-05-25_02,2022-02-23_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 impostorscore=0 phishscore=0
- spamscore=0 malwarescore=0 adultscore=0 priorityscore=1501 mlxlogscore=724
- mlxscore=0 suspectscore=0 lowpriorityscore=0 bulkscore=0 clxscore=1015
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2204290000
- definitions=main-2205260066
+X-MS-Office365-Filtering-Correlation-Id: ef797fc2-70eb-42ff-a78a-08da3f1c6700
+X-MS-TrafficTypeDiagnostic: AM8PR06MB7156:EE_
+X-Microsoft-Antispam-PRVS: <AM8PR06MB715649B3D3ACDE452237CBBDD7D99@AM8PR06MB7156.eurprd06.prod.outlook.com>
+X-MS-Exchange-SenderADCheck: 1
+X-MS-Exchange-AntiSpam-Relay: 0
+X-Microsoft-Antispam: BCL:0;
+X-Microsoft-Antispam-Message-Info: iXD38aBr97Uji3+GXKfirOy/Fb4AFUXtcq57UAhMsqPM7iKXaEtFCTIwgRJ6IKe8kKgu2ZBm34VL4m4kSzCiuyVMuUXT/DUm/vFVT1W9FMG71WXT7gqN8aF9bnRJPRIXEsCSXmYAL9VMxb2+ofDtUPTeOjrD3GkxSLNd8nvVrrkEFcdqqhL6xwv5IB5kDhzDZJlO0ocBC7TdRNtdghVAyfT9HvAVMbe/MaMGsLHCiz0fGeRSTj6A+/0WT73UYu7xfsiSgyjZBf+tEJ0nhxTvcvXH64CD3e4VflMPJJNJodPqvuCJtYaMQ0Qjgu9l0qQVaFvCkY1akHxA6Pfr/3DtYbmTzJDEfP/Tfbdc+5f+oQu3XCE7FO2FdPiZv1bQrt9ophprlJ1WzdsJbT6R86keTNEEtfiEeRKeYP5ibfE2K1u4x5rfhUSaZpxw20PAkFuEi4mzD3TCscAuuwVNSI4ZYiDqj4ZeUlergZY69X6BC6cUhwis0eqKteB7MV9a6kIzU3iyNKMRVmbpVfT9n0FX9VQcVMJ5BjeYiv7zC6tKYYBM7i9gShQlOPKhTC+pKZdWs7fJ6fXTgLHdBsicMg9lnqsnDcgyG/8CONIGa2Y6Rfadp93sg1dlsfT6WyOHzbE49vqZk2hiFy8XUOJjlHCtBNXio7f7lvdeRI6x+mv7+wJ62tYTEhQ5S0GUnEdyqO4q
+X-Forefront-Antispam-Report: CIP:193.8.40.94;CTRY:CH;LANG:en;SCL:1;SRV:;IPV:CAL;SFV:NSPM;H:aherlnxbspsrv01.lgs-net.com;PTR:ahersrvdom50.leica-geosystems.com;CAT:NONE;SFS:(13230001)(4636009)(36840700001)(46966006)(40470700004)(356005)(921005)(2616005)(36860700001)(956004)(5660300002)(47076005)(107886003)(336012)(83380400001)(186003)(82310400005)(1076003)(2906002)(81166007)(6506007)(8936002)(316002)(86362001)(40460700003)(36736006)(36756003)(6486002)(508600001)(26005)(6512007)(118246002)(70206006)(70586007)(8676002)(6666004)(4326008);DIR:OUT;SFP:1102;
+X-OriginatorOrg: leica-geosystems.com.cn
+X-MS-Exchange-CrossTenant-OriginalArrivalTime: 26 May 2022 13:34:04.3576
+ (UTC)
+X-MS-Exchange-CrossTenant-Network-Message-Id: ef797fc2-70eb-42ff-a78a-08da3f1c6700
+X-MS-Exchange-CrossTenant-Id: 1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a
+X-MS-Exchange-CrossTenant-OriginalAttributedTenantConnectingIp: TenantId=1b16ab3e-b8f6-4fe3-9f3e-2db7fe549f6a;Ip=[193.8.40.94];Helo=[aherlnxbspsrv01.lgs-net.com]
+X-MS-Exchange-CrossTenant-AuthSource: VE1EUR02FT025.eop-EUR02.prod.protection.outlook.com
+X-MS-Exchange-CrossTenant-AuthAs: Anonymous
+X-MS-Exchange-CrossTenant-FromEntityHeader: HybridOnPrem
+X-MS-Exchange-Transport-CrossTenantHeadersStamped: AM8PR06MB7156
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Alexandru Tachici <alexandru.tachici@analog.com>
+The sensor can set the scales by writing the range register 0x41,
+The current driver has no interface to configure it.
+The commit adds the interface for config the scales.
 
-Update bindings maintainerns section.
-
-Signed-off-by: Alexandru Tachici <alexandru.tachici@analog.com>
+Reviewed-by: Alexandru Ardelean <ardeleanalex@gmail.com>
+Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
 ---
- Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/iio/accel/bmi088-accel-core.c | 33 ++++++++++++++++++++++++++-
+ 1 file changed, 32 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
-index b5aed40d8a50..2d72ff6bcbc0 100644
---- a/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/adi,ad9467.yaml
-@@ -8,7 +8,6 @@ title: Analog Devices AD9467 and similar High-Speed ADCs
+diff --git a/drivers/iio/accel/bmi088-accel-core.c b/drivers/iio/accel/bmi088-accel-core.c
+index fd812802b71d..73c1e2aecd7e 100644
+--- a/drivers/iio/accel/bmi088-accel-core.c
++++ b/drivers/iio/accel/bmi088-accel-core.c
+@@ -240,6 +240,21 @@ static int bmi088_accel_set_sample_freq(struct bmi088_accel_data *data, int val)
+ 				  BMI088_ACCEL_MODE_ODR_MASK, regval);
+ }
  
- maintainers:
-   - Michael Hennerich <michael.hennerich@analog.com>
--  - Alexandru Ardelean <alexandru.ardelean@analog.com>
++static int bmi088_accel_set_scale(struct bmi088_accel_data *data, int val, int val2)
++{
++	unsigned int i;
++
++	for (i = 0; i < 4; i++)
++		if (val  == data->chip_info->scale_table[i][0] &&
++		    val2 == data->chip_info->scale_table[i][1])
++			break;
++
++	if (i == 4)
++		return -EINVAL;
++
++	return regmap_write(data->regmap, BMI088_ACCEL_REG_ACC_RANGE, i);
++}
++
+ static int bmi088_accel_get_temp(struct bmi088_accel_data *data, int *val)
+ {
+ 	int ret;
+@@ -373,7 +388,13 @@ static int bmi088_accel_read_avail(struct iio_dev *indio_dev,
+ 			     const int **vals, int *type, int *length,
+ 			     long mask)
+ {
++	struct bmi088_accel_data *data = iio_priv(indio_dev);
+ 	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		*vals = (const int *)data->chip_info->scale_table;
++		*length = 8;
++		*type = IIO_VAL_INT_PLUS_MICRO;
++		return IIO_AVAIL_LIST;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		*type = IIO_VAL_INT_PLUS_MICRO;
+ 		*vals = bmi088_sample_freqs;
+@@ -393,6 +414,15 @@ static int bmi088_accel_write_raw(struct iio_dev *indio_dev,
+ 	int ret;
  
- description: |
-   The AD9467 and the parts similar with it, are high-speed analog-to-digital
+ 	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		ret = pm_runtime_resume_and_get(dev);
++		if (ret)
++			return ret;
++
++		ret = bmi088_accel_set_scale(data, val, val2);
++		pm_runtime_mark_last_busy(dev);
++		pm_runtime_put_autosuspend(dev);
++		return ret;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		ret = pm_runtime_resume_and_get(dev);
+ 		if (ret)
+@@ -414,7 +444,8 @@ static int bmi088_accel_write_raw(struct iio_dev *indio_dev,
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
+ 	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) | \
+ 				BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+-	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
++	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_SAMP_FREQ) | \
++				BIT(IIO_CHAN_INFO_SCALE), \
+ 	.scan_index = AXIS_##_axis, \
+ }
+ 
 -- 
 2.25.1
 
