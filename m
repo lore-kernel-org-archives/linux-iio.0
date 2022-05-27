@@ -2,119 +2,163 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 162EAC43217
-	for <linux-iio@archiver.kernel.org>; Fri, 27 May 2022 09:01:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 72BCCC433F5
+	for <linux-iio@archiver.kernel.org>; Fri, 27 May 2022 16:08:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350397AbiE0JBb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 27 May 2022 05:01:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52152 "EHLO
+        id S1353800AbiE0QIo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 27 May 2022 12:08:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51012 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350539AbiE0JAF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 May 2022 05:00:05 -0400
-Received: from szxga01-in.huawei.com (szxga01-in.huawei.com [45.249.212.187])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6D3E9F06;
-        Fri, 27 May 2022 01:56:12 -0700 (PDT)
-Received: from dggpemm500021.china.huawei.com (unknown [172.30.72.54])
-        by szxga01-in.huawei.com (SkyGuard) with ESMTP id 4L8dsT26d5zbbs5;
-        Fri, 27 May 2022 16:54:37 +0800 (CST)
-Received: from dggpemm500018.china.huawei.com (7.185.36.111) by
- dggpemm500021.china.huawei.com (7.185.36.109) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:56:10 +0800
-Received: from localhost.localdomain (10.175.112.125) by
- dggpemm500018.china.huawei.com (7.185.36.111) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Fri, 27 May 2022 16:56:10 +0800
-From:   keliu <liuke94@huawei.com>
-To:     <jic23@kernel.org>, <lars@metafoo.de>, <linux-iio@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
-CC:     keliu <liuke94@huawei.com>
-Subject: [PATCH] iio:  Directly use ida_alloc()/free()
-Date:   Fri, 27 May 2022 09:17:39 +0000
-Message-ID: <20220527091739.2949426-1-liuke94@huawei.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S1349472AbiE0QIn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 May 2022 12:08:43 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 37AE61498D5
+        for <linux-iio@vger.kernel.org>; Fri, 27 May 2022 09:08:42 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C7A1161DCF
+        for <linux-iio@vger.kernel.org>; Fri, 27 May 2022 16:08:41 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPS id 357BEC385A9
+        for <linux-iio@vger.kernel.org>; Fri, 27 May 2022 16:08:41 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1653667721;
+        bh=Y2k/TCidYGU6zQQI0BlAf5ErlaM3biAWh5vxyPivEdM=;
+        h=From:To:Subject:Date:From;
+        b=q1Ygp1uRqIK9Zr+ALmKKGS72H++ogkASC93jBPZqyuZB6FSAIPyQmQzf4MdrqUIRx
+         5iWrOEKQfpj5tmp2SutiEMQadGYWXMH3nDG6ob1d6b4uT7tO4IYYWOGpcHoxnIsA5K
+         VbJ96Y9521WPTzvEiGQEl1wZhn0kINgB4igB7M4D18CCf3/WesUukC8HBoFS7Tw+5T
+         nv1c0FNUuHgpym4wAPE3I7jufU9kqzl3uEOPP881DOhI4jl3Hl12frt5t5Zj1kpCJc
+         uQ/QFGwbjAt2sGrMXj+OZd2HCtuY/OxFZlqpSNcR1z65iDekyfqz/KM9IvmTeR7pGG
+         38Jjk1Ux9mw6A==
+Received: by aws-us-west-2-korg-bugzilla-1.web.codeaurora.org (Postfix, from userid 48)
+        id 14B2CC05FD5; Fri, 27 May 2022 16:08:41 +0000 (UTC)
+From:   bugzilla-daemon@kernel.org
+To:     linux-iio@vger.kernel.org
+Subject: [Bug 216037] New: Second MXC6655 accelerometer is not detected on
+ transformer Aquarius NS483 laptop
+Date:   Fri, 27 May 2022 16:08:40 +0000
+X-Bugzilla-Reason: None
+X-Bugzilla-Type: new
+X-Bugzilla-Watch-Reason: AssignedTo drivers_iio@kernel-bugs.kernel.org
+X-Bugzilla-Product: Drivers
+X-Bugzilla-Component: IIO
+X-Bugzilla-Version: 2.5
+X-Bugzilla-Keywords: 
+X-Bugzilla-Severity: normal
+X-Bugzilla-Who: nickel@altlinux.org
+X-Bugzilla-Status: NEW
+X-Bugzilla-Resolution: 
+X-Bugzilla-Priority: P1
+X-Bugzilla-Assigned-To: drivers_iio@kernel-bugs.kernel.org
+X-Bugzilla-Flags: 
+X-Bugzilla-Changed-Fields: bug_id short_desc product version
+ cf_kernel_version rep_platform op_sys cf_tree bug_status bug_severity
+ priority component assigned_to reporter cf_regression
+Message-ID: <bug-216037-217253@https.bugzilla.kernel.org/>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
+X-Bugzilla-URL: https://bugzilla.kernel.org/
+Auto-Submitted: auto-generated
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-Originating-IP: [10.175.112.125]
-X-ClientProxiedBy: dggems702-chm.china.huawei.com (10.3.19.179) To
- dggpemm500018.china.huawei.com (7.185.36.111)
-X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Use ida_alloc()/ida_free() instead of deprecated
-ida_simple_get()/ida_simple_remove() .
+https://bugzilla.kernel.org/show_bug.cgi?id=3D216037
 
-Signed-off-by: keliu <liuke94@huawei.com>
----
- drivers/iio/industrialio-core.c    | 6 +++---
- drivers/iio/industrialio-trigger.c | 6 +++---
- 2 files changed, 6 insertions(+), 6 deletions(-)
+            Bug ID: 216037
+           Summary: Second MXC6655 accelerometer is not detected on
+                    transformer Aquarius NS483 laptop
+           Product: Drivers
+           Version: 2.5
+    Kernel Version: 5.17.11
+          Hardware: All
+                OS: Linux
+              Tree: Mainline
+            Status: NEW
+          Severity: normal
+          Priority: P1
+         Component: IIO
+          Assignee: drivers_iio@kernel-bugs.kernel.org
+          Reporter: nickel@altlinux.org
+        Regression: No
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index e1ed44dec2ab..41daa10cd63d 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1618,7 +1618,7 @@ static void iio_dev_release(struct device *device)
- 
- 	iio_device_detach_buffers(indio_dev);
- 
--	ida_simple_remove(&iio_ida, iio_dev_opaque->id);
-+	ida_free(&iio_ida, iio_dev_opaque->id);
- 	kfree(iio_dev_opaque);
- }
- 
-@@ -1660,7 +1660,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
- 	mutex_init(&iio_dev_opaque->info_exist_lock);
- 	INIT_LIST_HEAD(&iio_dev_opaque->channel_attr_list);
- 
--	iio_dev_opaque->id = ida_simple_get(&iio_ida, 0, 0, GFP_KERNEL);
-+	iio_dev_opaque->id = ida_alloc(&iio_ida, GFP_KERNEL);
- 	if (iio_dev_opaque->id < 0) {
- 		/* cannot use a dev_err as the name isn't available */
- 		pr_err("failed to get device id\n");
-@@ -1669,7 +1669,7 @@ struct iio_dev *iio_device_alloc(struct device *parent, int sizeof_priv)
- 	}
- 
- 	if (dev_set_name(&indio_dev->dev, "iio:device%d", iio_dev_opaque->id)) {
--		ida_simple_remove(&iio_ida, iio_dev_opaque->id);
-+		ida_free(&iio_ida, iio_dev_opaque->id);
- 		kfree(iio_dev_opaque);
- 		return NULL;
- 	}
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index f504ed351b3e..6eb9b721676e 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -71,7 +71,7 @@ int __iio_trigger_register(struct iio_trigger *trig_info,
- 
- 	trig_info->owner = this_mod;
- 
--	trig_info->id = ida_simple_get(&iio_trigger_ida, 0, 0, GFP_KERNEL);
-+	trig_info->id = ida_alloc(&iio_trigger_ida, GFP_KERNEL);
- 	if (trig_info->id < 0)
- 		return trig_info->id;
- 
-@@ -98,7 +98,7 @@ int __iio_trigger_register(struct iio_trigger *trig_info,
- 	mutex_unlock(&iio_trigger_list_lock);
- 	device_del(&trig_info->dev);
- error_unregister_id:
--	ida_simple_remove(&iio_trigger_ida, trig_info->id);
-+	ida_free(&iio_trigger_ida, trig_info->id);
- 	return ret;
- }
- EXPORT_SYMBOL(__iio_trigger_register);
-@@ -109,7 +109,7 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
- 	list_del(&trig_info->list);
- 	mutex_unlock(&iio_trigger_list_lock);
- 
--	ida_simple_remove(&iio_trigger_ida, trig_info->id);
-+	ida_free(&iio_trigger_ida, trig_info->id);
- 	/* Possible issue in here */
- 	device_del(&trig_info->dev);
- }
--- 
-2.25.1
+A couple of accelerometers are used to detect the hinge angle in convertible
+laptops(one for display, one for base/keyboard).
 
+A discussion on the topic is available at [1]
+
+But in my case while DSDT describes two I2C devices (if I interpret it righ=
+t):
+
+>Device (ACMG)
+>        {
+>            Name (_ADR, Zero)  // _ADR: Address
+>            Name (_HID, "MXC6655")  // _HID: Hardware ID
+>            Name (_CID, "MXC6655")  // _CID: Compatible ID
+>            Name (_DDN, "Accelerometer with Angle Calculation")  // _DDN: =
+DOS
+>            Device Name
+>            Name (_UID, One)  // _UID: Unique ID
+>            Method (_CRS, 0, NotSerialized)  // _CRS: Current Resource
+>            Settings
+>            {
+>                Name (RBUF, ResourceTemplate ()
+>                {
+>                    I2cSerialBusV2 (0x0015, ControllerInitiated, 0x00061A8=
+0,
+>                        AddressingMode7Bit, "\\_SB.PC00.I2C1",
+>                        0x00, ResourceConsumer, , Exclusive,
+>                        )
+>                    I2cSerialBusV2 (0x0015, ControllerInitiated, 0x00061A8=
+0,
+>                        AddressingMode7Bit, "\\_SB.PC00.I2C2",
+>                        0x00, ResourceConsumer, , Exclusive,
+>                        )
+>                })
+>                Return (RBUF) /* \_SB_.PC00.I2C1.ACMG._CRS.RBUF */
+>            }
+
+only one of them is detected (display side one, up and running, by the way):
+
+> P: /devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-16/i2c-MXC6655:00
+> L: 0
+> E:
+> DEVPATH=3D/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-16/i2c-MX=
+C6655:00
+> E: SUBSYSTEM=3Di2c
+> E: DRIVER=3Dmxc4005
+> E: MODALIAS=3Dacpi:MXC6655:MXC6655:
+>
+> P:
+> /devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-16/i2c-MXC6655:00/i=
+io:device0
+> N: iio:device0
+> L: 0
+> E:
+> DEVPATH=3D/devices/pci0000:00/0000:00:15.1/i2c_designware.1/i2c-16/i2c-MX=
+C6655:00/iio:device0
+> E: SUBSYSTEM=3Diio
+> E: DEVNAME=3D/dev/iio:device0
+> E: DEVTYPE=3Diio_device
+> E: MAJOR=3D238
+> E: MINOR=3D0
+> E: USEC_INITIALIZED=3D4954716
+> E: IIO_SENSOR_PROXY_TYPE=3Diio-poll-accel iio-buffer-accel
+> E: SYSTEMD_WANTS=3Diio-sensor-proxy.service
+> E: TAGS=3D:systemd:
+> E: CURRENT_TAGS=3D:systemd:
+
+There should be 2 I2C devices with DRIVER=3Dmxc4005, shouldn't they?
+
+Attaching detailed logs also.
+
+[1] https://gitlab.freedesktop.org/hadess/iio-sensor-proxy/-/merge_requests=
+/338
+
+--=20
+You may reply to this email to add a comment.
+
+You are receiving this mail because:
+You are watching the assignee of the bug.=
