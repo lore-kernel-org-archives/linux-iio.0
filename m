@@ -2,43 +2,55 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93BA2C433EF
-	for <linux-iio@archiver.kernel.org>; Sat, 28 May 2022 17:25:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 66658C433F5
+	for <linux-iio@archiver.kernel.org>; Sat, 28 May 2022 17:34:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239080AbiE1RZQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 28 May 2022 13:25:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53320 "EHLO
+        id S239193AbiE1Res (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 28 May 2022 13:34:48 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231777AbiE1RZP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 May 2022 13:25:15 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 34B8111A32;
-        Sat, 28 May 2022 10:25:14 -0700 (PDT)
+        with ESMTP id S231777AbiE1Rer (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 May 2022 13:34:47 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 02DC7312;
+        Sat, 28 May 2022 10:34:46 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E3998B807ED;
-        Sat, 28 May 2022 17:25:12 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id B7C3BC34100;
-        Sat, 28 May 2022 17:25:10 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 8E4E160F68;
+        Sat, 28 May 2022 17:34:46 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5889EC34100;
+        Sat, 28 May 2022 17:34:43 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1653758711;
-        bh=GdCxg+Hoqs4A5uVj70itM0dbHtrrCFfc1B7A5Kv46nA=;
+        s=k20201202; t=1653759286;
+        bh=yeRDBl3fGRJ9paZDzF8sBkWNRLREA17JNf2uoZPoAxQ=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=FB63uImwGdFeA5/Z9TrQifFVx/+xCf8Ko2Rs/y5W1IGoJgSyHuusfcef+E3g5pzy0
-         Km4W1kx70qfQf5Pcq85PNL1yqX+IoErx9DlI6pXZhgBS4CUkEm5Pr+ewB7aF7BDcJ6
-         oF+VyBFJdXZEu/JQiZguzZt6E3DTAlA5QLOKTo6J1jlB1qzFlNbrvuqFJLUCAJWIZk
-         FDN6Pf+SOodovwP2l9MG9/ltlvjKAR21XFLRERbzwHpepBiU94sx2rSdFlbtVe5bOD
-         +TvKE9R46jwb9jmG6LvZw7mikGNzOrZjLYwC51QtBSLmAX9n+/tKgjN8Ol0EkwM9d+
-         8bmRuMnT0/PqQ==
-Date:   Sat, 28 May 2022 18:34:05 +0100
+        b=tGY92kiHIY5uu81GQg6aYbmwqKmgip2QGDziFjy9V3v9/0XQ8GAzn+d4B9pCXL2fP
+         FE68JZqPJB0r6USanjHvDqmKaAICBmCUmUOEWqSh9YmCIqdSeDXavmGgN/6Mq8PNkw
+         QmipkaFFyLUqBT4EE3qHQI1/sne+y1IgaSUT/6bmjugB/rE5/XUnSiCuZlZzM+dqb8
+         snNWSqPzVIcQo/dQHR51GfMQWpC0uqdKYhKo13BlXxTOtFhzPiXFqaN6PTK2PwJ3Mj
+         +qP7HYMFUt+ldBzbqQFMkQ+NiF92Ys3zRD1BPWuowHO9B6SjGhzpPT0vE5HyfJm8OS
+         5y0a7T4Us611g==
+Date:   Sat, 28 May 2022 18:43:37 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Joe Simmons-Talbott <joetalbott@gmail.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: Prefer octal over symbolic permissions.
-Message-ID: <20220528183405.22b55033@jic23-huawei>
-In-Reply-To: <20220527185651.465204-1-joetalbott@gmail.com>
-References: <20220527185651.465204-1-joetalbott@gmail.com>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2 3/3] dt-bindings: iio: accel: add dt-binding schema
+ for msa311 accel driver
+Message-ID: <20220528184337.0855c8cc@jic23-huawei>
+In-Reply-To: <20220525183255.lc7hmmcfj47yrxc3@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220525181532.6805-1-ddrokosov@sberdevices.ru>
+        <20220525181532.6805-4-ddrokosov@sberdevices.ru>
+        <20220525183255.lc7hmmcfj47yrxc3@CAB-WSD-L081021.sigma.sbrf.ru>
 X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -47,139 +59,88 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, 27 May 2022 14:56:52 -0400
-Joe Simmons-Talbott <joetalbott@gmail.com> wrote:
+On Wed, 25 May 2022 18:32:45 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-> As reported by checkpatch.pl use ocatl permissions rather than symbolic
-> permissions.
+> Hello Jonathan and Rob,
 > 
-> Signed-off-by: Joe Simmons-Talbott <joetalbott@gmail.com>
+> I didn't change two places which you mentioned in the v1 review, please
+> find my comments below.
+> 
+> On Wed, May 25, 2022 at 06:15:33PM +0000, Dmitry Rokosov wrote:
+> 
+> > +  interrupt-names:
+> > +    const: irq  
+> I stay interrupt-names node here, because otherwise dt_binding_check
+> command shows such a warning:
+> 
+> ====
+>   CHECK   Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: accelerometer@62: 'interrupt-names' does not match any of the regexes: 'pinctrl-[0-9]+'
+> ====
+> 
+> I can't delete this node from the example as well, because it's required for
+> msa311 dts i2c irq declaration.
 
-Hi Joe,
+Sorry, you've lost me - what breaks if you drop it from the example?
+I'd expect to see no interrupt-names being documented or in the example.
 
-Why the resend?  Given change of description, I'm guessing this is v2
-because of feedback on a similar patch elsewhere. If so, please
-put the version number in the patch log and provide a changelog
-below the ---
+> 
+> Please help me to resolve this problem properly if possible. If we can
+> ignore such warning I'll delete interrupt-names in the next patchset's
+> version.
 
-Hmm. I guess I don't really mind cleaning this up though it is
-some churn in core code which is usually something we try to avoid
-for fairly trivial style reasons.
+We can't ignore the warning, so this comes down to what am I missing with
+the need for it in the example...
 
-One request inline (though I suspect it applies in several places,
-I just haven't checked ;)
+> 
+> > +examples:
+> > +  - |
+> > +    #include <dt-bindings/interrupt-controller/irq.h>
+> > +    i2c {
+> > +        #address-cells = <1>;
+> > +        #size-cells = <0>;
+> > +  
+> Properties #address-cells and #size-cells are still located in the
+> schema example, because otherwise dt_binding_check raises the below 
+> warnings if we delete these properties:
 
-Thanks,
+They should be there for the i2c node, (as they are required for an i2c bus master
+node) but you had them documented as being in the msa311 node.  If it's
+not in the
+accelerometer@62 {
+
+}
+
+section of the example documetnation doesn't belong on this file (it will be
+elsewhere). 
+
+The request is to drop the documentation of them (as we are documenting
+the msa311 part of the binding only).  They should indeed still be there
+in the example.
 
 Jonathan
 
-> ---
->  drivers/iio/industrialio-buffer.c  | 12 ++++++------
->  drivers/iio/industrialio-core.c    | 10 +++++-----
->  drivers/iio/industrialio-trigger.c |  4 ++--
->  3 files changed, 13 insertions(+), 13 deletions(-)
+
+
 > 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index b078eb2f3c9d..c27f74a3c0f3 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -1391,17 +1391,17 @@ static ssize_t direction_show(struct device *dev,
->  	}
->  }
->  
-> -static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
-> +static DEVICE_ATTR(length, 0644, iio_buffer_read_length,
->  		   iio_buffer_write_length);
->  static struct device_attribute dev_attr_length_ro = __ATTR(length,
-> -	S_IRUGO, iio_buffer_read_length, NULL);
-> -static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
-> +	0444, iio_buffer_read_length, NULL);
-> +static DEVICE_ATTR(enable, 0644,
->  		   iio_buffer_show_enable, iio_buffer_store_enable);
-> -static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
-> +static DEVICE_ATTR(watermark, 0644,
->  		   iio_buffer_show_watermark, iio_buffer_store_watermark);
->  static struct device_attribute dev_attr_watermark_ro = __ATTR(watermark,
-> -	S_IRUGO, iio_buffer_show_watermark, NULL);
-> -static DEVICE_ATTR(data_available, S_IRUGO,
-> +	0444, iio_buffer_show_watermark, NULL);
-> +static DEVICE_ATTR(data_available, 0444,
->  		iio_dma_show_data_available, NULL);
-
-a side effect of this change a slight shortening of how long the above
-two lines will be if combined into one.  It's now sub 80 chars
-I think, so please make them a single line.  Also check for similar
-cases elsewhere.
-
-
->  static DEVICE_ATTR_RO(direction);
->  
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index e1ed44dec2ab..35de348d686e 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -1114,12 +1114,12 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
->  	dev_attr->attr.name = name;
->  
->  	if (readfunc) {
-> -		dev_attr->attr.mode |= S_IRUGO;
-> +		dev_attr->attr.mode |= 0444;
->  		dev_attr->show = readfunc;
->  	}
->  
->  	if (writefunc) {
-> -		dev_attr->attr.mode |= S_IWUSR;
-> +		dev_attr->attr.mode |= 0200;
->  		dev_attr->store = writefunc;
->  	}
->  
-> @@ -1401,7 +1401,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
->  	return sysfs_emit(buf, "%s\n", indio_dev->name);
->  }
->  
-> -static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
-> +static DEVICE_ATTR(name, 0444, iio_show_dev_name, NULL);
->  
->  static ssize_t iio_show_dev_label(struct device *dev,
->  				 struct device_attribute *attr,
-> @@ -1411,7 +1411,7 @@ static ssize_t iio_show_dev_label(struct device *dev,
->  	return sysfs_emit(buf, "%s\n", indio_dev->label);
->  }
->  
-> -static DEVICE_ATTR(label, S_IRUGO, iio_show_dev_label, NULL);
-> +static DEVICE_ATTR(label, 0444, iio_show_dev_label, NULL);
->  
->  static ssize_t iio_show_timestamp_clock(struct device *dev,
->  					struct device_attribute *attr,
-> @@ -1509,7 +1509,7 @@ int iio_device_register_sysfs_group(struct iio_dev *indio_dev,
->  	return 0;
->  }
->  
-> -static DEVICE_ATTR(current_timestamp_clock, S_IRUGO | S_IWUSR,
-> +static DEVICE_ATTR(current_timestamp_clock, 0644,
->  		   iio_show_timestamp_clock, iio_store_timestamp_clock);
->  
->  static int iio_device_register_sysfs(struct iio_dev *indio_dev)
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index f504ed351b3e..e22a35634f2c 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -54,7 +54,7 @@ static ssize_t iio_trigger_read_name(struct device *dev,
->  	return sysfs_emit(buf, "%s\n", trig->name);
->  }
->  
-> -static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-> +static DEVICE_ATTR(name, 0444, iio_trigger_read_name, NULL);
->  
->  static struct attribute *iio_trig_dev_attrs[] = {
->  	&dev_attr_name.attr,
-> @@ -494,7 +494,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
->  	return ret;
->  }
->  
-> -static DEVICE_ATTR(current_trigger, S_IRUGO | S_IWUSR,
-> +static DEVICE_ATTR(current_trigger, 0644,
->  		   iio_trigger_read_current,
->  		   iio_trigger_write_current);
->  
+> =====
+>   DTC     Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:27.17-30: Warning (reg_format): /example-0/i2c/accelerometer@62:reg: property has invalid length (4 bytes) (#address-cells == 2, #size-cells == 1)
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (pci_device_reg): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (pci_device_bus_num): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (simple_bus_reg): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:24.13-32.11: Warning (i2c_bus_bridge): /example-0/i2c: incorrect #address-cells for I2C bus
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:24.13-32.11: Warning (i2c_bus_bridge): /example-0/i2c: incorrect #size-cells for I2C bus
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (i2c_bus_reg): Failed prerequisite 'i2c_bus_bridge'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (spi_bus_reg): Failed prerequisite 'reg_format'
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:25.30-31.15: Warning (avoid_default_addr_size): /example-0/i2c/accelerometer@62: Relying on default #address-cells value
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dts:25.30-31.15: Warning (avoid_default_addr_size): /example-0/i2c/accelerometer@62: Relying on default #size-cells value
+> Documentation/devicetree/bindings/iio/accel/memsensing,msa311.example.dt.yaml: Warning (unique_unit_address_if_enabled): Failed prerequisite 'avoid_default_addr_size'
+> =====
+> 
+> What is best way to resolve such issues without providing #address-cells
+> and #size-cells values?
+> 
 
