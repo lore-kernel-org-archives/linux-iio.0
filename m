@@ -2,208 +2,216 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D0308C433EF
-	for <linux-iio@archiver.kernel.org>; Sun, 29 May 2022 14:08:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAD64C433F5
+	for <linux-iio@archiver.kernel.org>; Sun, 29 May 2022 21:20:46 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230330AbiE2OIf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 29 May 2022 10:08:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42294 "EHLO
+        id S231827AbiE2VUp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 29 May 2022 17:20:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230281AbiE2OIe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2022 10:08:34 -0400
-Received: from mail-ot1-x332.google.com (mail-ot1-x332.google.com [IPv6:2607:f8b0:4864:20::332])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AF663D1F1;
-        Sun, 29 May 2022 07:08:32 -0700 (PDT)
-Received: by mail-ot1-x332.google.com with SMTP id c15-20020a9d684f000000b0060b097c71ecso6128008oto.10;
-        Sun, 29 May 2022 07:08:32 -0700 (PDT)
+        with ESMTP id S230326AbiE2VUo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 May 2022 17:20:44 -0400
+Received: from mail-qv1-xf36.google.com (mail-qv1-xf36.google.com [IPv6:2607:f8b0:4864:20::f36])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8C7392CDF4;
+        Sun, 29 May 2022 14:20:43 -0700 (PDT)
+Received: by mail-qv1-xf36.google.com with SMTP id l1so8805096qvh.1;
+        Sun, 29 May 2022 14:20:43 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=sYWhm9xB1LTG5O3MGX/4oGQAwJ+vLe8Swt2u52JO6fY=;
-        b=g5p4aiYLtIujwQU6dC5+FS2anDm07L0CRSLU3ywaBNMRV48E5JGkEtQn3mryu5K21o
-         BVKqyH8aRyaFiwNiO9PLAyJgDqZB2rk0eqRRXZuvbjhip2lLjnfUkuEKTfp9RbW6GUwz
-         k2iB3C/z0lYY4rUTRKjXDaOQW3NiskdalGLoH6OvTNKchM9/kq3rZTPkZFqdvNg//gCQ
-         FbT2T96RKftANTuhXKTDbt6svapLq4xpfCEPIR18gLeOkSohZmli6bMuHefJg6+OeUWL
-         w7mha0yKKMY15gSw1R3vDAzcD2wrWmiZXJvMO45qSmVbVhBAFtXHgFZ8X+Crs/0beUIN
-         sVgA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Jx+weakhReTpBiyhpJMmr0fal0LRVyBY1kBAbquoL8I=;
+        b=NR2lcqPICYi6a/ghlAaeu7f+fJNQildSlq6WQjlH0j2zdtMWIgvQDiZgwIG6ykc6Ro
+         tktJh8E9RJM9iIizWnKbuwoIuZCFelc9PwFBPWc2Vg25Z+l7J0F0eUaR1Tw0Yd4kxFJp
+         5n+F/jXm8PP98dxIte+YXGKT5eFyeBhdjnYIFiB6gezIYt7f2GMAZxZ0HRm+hT985zEK
+         wEuMnxLH/f+T+zzlGXUumcv57fcU5frdOND3VctNAyLL6Oanx9aOKpHB43yOTAd91w48
+         gCsE9jwX1ZhlKC5G+f0wuxqVzmPvPOF1HTXYWXk5OEi8VaXv29uhX50Tpt6ocf64QeKc
+         KhUg==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=sYWhm9xB1LTG5O3MGX/4oGQAwJ+vLe8Swt2u52JO6fY=;
-        b=rvlniT+26Lk1HeKrhMmfx/gZ23cqdECSJNpKl551CkyYKHq3ZrHp5S+RhLnEoKrscV
-         I7NtuZJXhZFg2gZPz+x9dPH3zlXQbqVFyC3K/ymT5Xt4tofNzsYpZs8YNWhXIEk7s9Em
-         jm1KkDhltSodrl/WCbqDY0dRjN9uzwubIdfYeQRkp9sjFSFLsUG1tJkGYxubkrh68Lo9
-         Suvq4pFkuHSqr8431LS3WfZEzAfpIIgLvtKyteDEDiVdU2Rlj0iEI0pjJYCK8CRpkzYL
-         rKxZoyxPV0dxeyx3e2BL+2Wj4we+0C8TS4IPE3k6aqyQo9eyM7ItF0Vg7XUl+Lsb/K5T
-         ehUg==
-X-Gm-Message-State: AOAM532uQ4+hJLnlgBRGlSgmdbTCbX+pjzDPeyNRzNhg97vgYxYIO8QL
-        iuKlcwG4T6wZDNA/VYD2Z8IuNedx6PJC/8ng1xgc0D2b
-X-Google-Smtp-Source: ABdhPJyjzze8Wf0gYOmwQEta012XFihGRxjELTJ9dGxX9MO9ig69OQqulOBrVoU0GVNd5zTBdSSp5NA4KLfqEXv9hSc=
-X-Received: by 2002:a9d:c4a:0:b0:60a:e6e7:796 with SMTP id 68-20020a9d0c4a000000b0060ae6e70796mr18010907otr.266.1653833311843;
- Sun, 29 May 2022 07:08:31 -0700 (PDT)
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Jx+weakhReTpBiyhpJMmr0fal0LRVyBY1kBAbquoL8I=;
+        b=mVG8E4bWS2MqwYcgw3572XpSPMQ4fz0VBlrcgJK2oIKmwXXe2h4w3XfjPBaf8BzbhM
+         gs2LocPaVjGa8VXb8rwx4iSlDUh0BHlH4ob1s1uevpTaqgEQu0D7Wt/FigJTyw8PMtK3
+         86P+Amj0Mom0J7Wh1jmR5urRrw2g2siLoTZ70vh0uw3QkLbGb/kyZe+UXo9AYcUG8bS7
+         H4n7k77yeaCEw2b34VFOvUfa81bwci7n+RlVpZQLZbe12GKd/dpI6uviyzu+YWjR4l6u
+         HthO/n06YoDZqtFD5jIt53ciNE5ao58VQ+Kv5ZWZvs3nAhtHV+4bTOqrhzyJ65Czkzdn
+         ZWrQ==
+X-Gm-Message-State: AOAM530SfT2o4BF+aLThanqCX3lmSDjAM5jMs0lg36qljW5VQiLw9utx
+        9+hw2MeqVvkz6AddBcfPgd0=
+X-Google-Smtp-Source: ABdhPJwZJreQ+7Cv5dNnc7fZVvv4kOWOtmfezRij1nv08ZXpS6fqq7AHopyxCMblzo2uex6BwPdh/Q==
+X-Received: by 2002:a05:6214:627:b0:461:f1be:50d9 with SMTP id a7-20020a056214062700b00461f1be50d9mr42790694qvx.40.1653859242613;
+        Sun, 29 May 2022 14:20:42 -0700 (PDT)
+Received: from shaak (modemcable055.92-163-184.mc.videotron.ca. [184.163.92.55])
+        by smtp.gmail.com with ESMTPSA id u126-20020ae9d884000000b006a35ac236c4sm6615470qkf.113.2022.05.29.14.20.41
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Sun, 29 May 2022 14:20:42 -0700 (PDT)
+Date:   Sun, 29 May 2022 17:20:40 -0400
+From:   Liam Beguin <liambeguin@gmail.com>
+To:     Randy Dunlap <rdunlap@infradead.org>
+Cc:     Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>,
+        Masahiro Yamada <masahiroy@kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org, Peter Rosin <peda@axentia.se>,
+        "open list:KERNEL SELFTEST FRAMEWORK" 
+        <linux-kselftest@vger.kernel.org>,
+        KUnit Development <kunit-dev@googlegroups.com>
+Subject: Re: kbuild problem: ERROR: modpost: missing MODULE_LICENSE() in
+ drivers/iio/afe/iio-rescale.o
+Message-ID: <YpPjqC+kVLIBpNlq@shaak>
+References: <18500f18-9cd5-a81c-4a55-14e999ed4496@infradead.org>
+ <3ae306e0-c6c7-ed12-cacd-62b1c26dba3c@infradead.org>
+ <6671de03-c09c-bfaf-e06c-e45af70d4354@infradead.org>
+ <6601a387-de9a-a0d0-11b5-01e0cfa75657@infradead.org>
+ <7a97bac3-6ade-8e1b-cf0c-4a05c83163a3@infradead.org>
+ <Yo+lHSmeIsx144cv@shaak>
+ <3b7ec693-f4a5-e1aa-3e07-b22a4008d4c9@infradead.org>
 MIME-Version: 1.0
-References: <20220527185651.465204-1-joetalbott@gmail.com> <20220528183405.22b55033@jic23-huawei>
-In-Reply-To: <20220528183405.22b55033@jic23-huawei>
-From:   Joe Talbott <joetalbott@gmail.com>
-Date:   Sun, 29 May 2022 10:08:21 -0400
-Message-ID: <CAL7gdfeoRM8APfLL77bbGiWWBa0qOF8g0rza+=7hCdo+jaYNLQ@mail.gmail.com>
-Subject: Re: [PATCH 1/1] iio: Prefer octal over symbolic permissions.
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <3b7ec693-f4a5-e1aa-3e07-b22a4008d4c9@infradead.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, May 28, 2022 at 1:25 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> On Fri, 27 May 2022 14:56:52 -0400
-> Joe Simmons-Talbott <joetalbott@gmail.com> wrote:
->
-> > As reported by checkpatch.pl use ocatl permissions rather than symbolic
-> > permissions.
-> >
-> > Signed-off-by: Joe Simmons-Talbott <joetalbott@gmail.com>
->
-> Hi Joe,
->
-> Why the resend?  Given change of description, I'm guessing this is v2
-> because of feedback on a similar patch elsewhere. If so, please
-> put the version number in the patch log and provide a changelog
-> below the ---
+Hi Randy,
 
+On Thu, May 26, 2022 at 01:04:41PM -0700, Randy Dunlap wrote:
+> 
+> 
+> On 5/26/22 09:04, Liam Beguin wrote:
+> > Hi Randy,
+> > 
+> > On Thu, May 26, 2022 at 08:36:34AM -0700, Randy Dunlap wrote:
+> >> Liam:
+> >>
+> >> Any comment on this?
+> >> Otherwise I'll just send a formal patch like this (below).
+> > 
+> > Apologies for not answering earlier.
+> > 
+> > I wanted to look more into Masahiro's comment and try to fix the
+> > Makefile, but that can be done after.
+> > 
+> > IMO your patch improves the current Kconfig, so I'd recommend sending
+> > the patch. If it can wait a bit, I can look at the Makefile over the
+> > weekend.
+> > 
+> 
+> Liam,
+> 
+> I'll wait until next week to see if you come up with anything.
+> 
 
-I sent the patch again because I neglected to include linux-kernel and
-you in the
-original patch's recipients.  I wasn't sure if I should include the v2
-but will in the future.
-Should I use v3 for my updated patch?
+The following patch fixes the issue while addressing Masahiro's comment.
+I also considered `select IIO_RESCALE`, but I'm not sure what's usually
+preferred.
 
-Thanks,
-Joe
+diff --git a/drivers/iio/test/Kconfig b/drivers/iio/test/Kconfig
+index 56ca0ad7e77a..4c66c3f18c34 100644
+--- a/drivers/iio/test/Kconfig
++++ b/drivers/iio/test/Kconfig
+@@ -6,7 +6,7 @@
+ # Keep in alphabetical order
+ config IIO_RESCALE_KUNIT_TEST
+ 	bool "Test IIO rescale conversion functions"
+-	depends on KUNIT=y && !IIO_RESCALE
++	depends on KUNIT=y && IIO_RESCALE=y
+ 	default KUNIT_ALL_TESTS
+ 	help
+ 	  If you want to run tests on the iio-rescale code say Y here.
+diff --git a/drivers/iio/test/Makefile b/drivers/iio/test/Makefile
+index f15ae0a6394f..880360f8d02c 100644
+--- a/drivers/iio/test/Makefile
++++ b/drivers/iio/test/Makefile
+@@ -4,6 +4,6 @@
+ #
+ 
+ # Keep in alphabetical order
+-obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o ../afe/iio-rescale.o
++obj-$(CONFIG_IIO_RESCALE_KUNIT_TEST) += iio-test-rescale.o
+ obj-$(CONFIG_IIO_TEST_FORMAT) += iio-test-format.o
+ CFLAGS_iio-test-format.o += $(DISABLE_STRUCTLEAK_PLUGIN)
 
->
->
-> Hmm. I guess I don't really mind cleaning this up though it is
-> some churn in core code which is usually something we try to avoid
-> for fairly trivial style reasons.
->
-> One request inline (though I suspect it applies in several places,
-> I just haven't checked ;)
->
-> Thanks,
->
-> Jonathan
->
-> > ---
-> >  drivers/iio/industrialio-buffer.c  | 12 ++++++------
-> >  drivers/iio/industrialio-core.c    | 10 +++++-----
-> >  drivers/iio/industrialio-trigger.c |  4 ++--
-> >  3 files changed, 13 insertions(+), 13 deletions(-)
-> >
-> > diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> > index b078eb2f3c9d..c27f74a3c0f3 100644
-> > --- a/drivers/iio/industrialio-buffer.c
-> > +++ b/drivers/iio/industrialio-buffer.c
-> > @@ -1391,17 +1391,17 @@ static ssize_t direction_show(struct device *dev,
-> >       }
-> >  }
-> >
-> > -static DEVICE_ATTR(length, S_IRUGO | S_IWUSR, iio_buffer_read_length,
-> > +static DEVICE_ATTR(length, 0644, iio_buffer_read_length,
-> >                  iio_buffer_write_length);
-> >  static struct device_attribute dev_attr_length_ro = __ATTR(length,
-> > -     S_IRUGO, iio_buffer_read_length, NULL);
-> > -static DEVICE_ATTR(enable, S_IRUGO | S_IWUSR,
-> > +     0444, iio_buffer_read_length, NULL);
-> > +static DEVICE_ATTR(enable, 0644,
-> >                  iio_buffer_show_enable, iio_buffer_store_enable);
-> > -static DEVICE_ATTR(watermark, S_IRUGO | S_IWUSR,
-> > +static DEVICE_ATTR(watermark, 0644,
-> >                  iio_buffer_show_watermark, iio_buffer_store_watermark);
-> >  static struct device_attribute dev_attr_watermark_ro = __ATTR(watermark,
-> > -     S_IRUGO, iio_buffer_show_watermark, NULL);
-> > -static DEVICE_ATTR(data_available, S_IRUGO,
-> > +     0444, iio_buffer_show_watermark, NULL);
-> > +static DEVICE_ATTR(data_available, 0444,
-> >               iio_dma_show_data_available, NULL);
->
-> a side effect of this change a slight shortening of how long the above
-> two lines will be if combined into one.  It's now sub 80 chars
-> I think, so please make them a single line.  Also check for similar
-> cases elsewhere.
->
->
-> >  static DEVICE_ATTR_RO(direction);
-> >
-> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> > index e1ed44dec2ab..35de348d686e 100644
-> > --- a/drivers/iio/industrialio-core.c
-> > +++ b/drivers/iio/industrialio-core.c
-> > @@ -1114,12 +1114,12 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
-> >       dev_attr->attr.name = name;
-> >
-> >       if (readfunc) {
-> > -             dev_attr->attr.mode |= S_IRUGO;
-> > +             dev_attr->attr.mode |= 0444;
-> >               dev_attr->show = readfunc;
-> >       }
-> >
-> >       if (writefunc) {
-> > -             dev_attr->attr.mode |= S_IWUSR;
-> > +             dev_attr->attr.mode |= 0200;
-> >               dev_attr->store = writefunc;
-> >       }
-> >
-> > @@ -1401,7 +1401,7 @@ static ssize_t iio_show_dev_name(struct device *dev,
-> >       return sysfs_emit(buf, "%s\n", indio_dev->name);
-> >  }
-> >
-> > -static DEVICE_ATTR(name, S_IRUGO, iio_show_dev_name, NULL);
-> > +static DEVICE_ATTR(name, 0444, iio_show_dev_name, NULL);
-> >
-> >  static ssize_t iio_show_dev_label(struct device *dev,
-> >                                struct device_attribute *attr,
-> > @@ -1411,7 +1411,7 @@ static ssize_t iio_show_dev_label(struct device *dev,
-> >       return sysfs_emit(buf, "%s\n", indio_dev->label);
-> >  }
-> >
-> > -static DEVICE_ATTR(label, S_IRUGO, iio_show_dev_label, NULL);
-> > +static DEVICE_ATTR(label, 0444, iio_show_dev_label, NULL);
-> >
-> >  static ssize_t iio_show_timestamp_clock(struct device *dev,
-> >                                       struct device_attribute *attr,
-> > @@ -1509,7 +1509,7 @@ int iio_device_register_sysfs_group(struct iio_dev *indio_dev,
-> >       return 0;
-> >  }
-> >
-> > -static DEVICE_ATTR(current_timestamp_clock, S_IRUGO | S_IWUSR,
-> > +static DEVICE_ATTR(current_timestamp_clock, 0644,
-> >                  iio_show_timestamp_clock, iio_store_timestamp_clock);
-> >
-> >  static int iio_device_register_sysfs(struct iio_dev *indio_dev)
-> > diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> > index f504ed351b3e..e22a35634f2c 100644
-> > --- a/drivers/iio/industrialio-trigger.c
-> > +++ b/drivers/iio/industrialio-trigger.c
-> > @@ -54,7 +54,7 @@ static ssize_t iio_trigger_read_name(struct device *dev,
-> >       return sysfs_emit(buf, "%s\n", trig->name);
-> >  }
-> >
-> > -static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
-> > +static DEVICE_ATTR(name, 0444, iio_trigger_read_name, NULL);
-> >
-> >  static struct attribute *iio_trig_dev_attrs[] = {
-> >       &dev_attr_name.attr,
-> > @@ -494,7 +494,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
-> >       return ret;
-> >  }
-> >
-> > -static DEVICE_ATTR(current_trigger, S_IRUGO | S_IWUSR,
-> > +static DEVICE_ATTR(current_trigger, 0644,
-> >                  iio_trigger_read_current,
-> >                  iio_trigger_write_current);
-> >
->
+I'll send a patch as soon as you confirm this works for you too.
+
+Cheers,
+Liam
+
+> 
+> > 
+> >>
+> >> Thanks.
+> >>
+> >> On 5/20/22 20:51, Randy Dunlap wrote:
+> >>> Ok, one more.
+> >>> [also adding Liam here]
+> >>>
+> >>> On 5/20/22 20:17, Randy Dunlap wrote:
+> >>>>
+> >>>>
+> >>>> On 5/20/22 20:08, Randy Dunlap wrote:
+> >>>>>
+> >>>>>
+> >>>>> On 5/20/22 19:40, Randy Dunlap wrote:
+> >>>>>> Hi,
+> >>>>>>
+> >>>>>> In March I reported that a randconfig build complained:
+> >>>>>>
+> >>>>>> ERROR: modpost: missing MODULE_LICENSE() in drivers/iio/afe/iio-rescale.o
+> >>>>>>
+> >>>>>> (https://lore.kernel.org/all/16509fb6-e40c-e31b-2c80-264c44b0beb9@infradead.org/)
+> >>>>>>
+> >>>>>> I am still seeing this problem so I tried to dig into it a bit.
+> >>>>>> However, I don't see why get_next_modinfo() and friends don't find the
+> >>>>>> MODULE_LICENSE() since it is in the iio-rescale.o file.
+> >>>>>>
+> >>>>>> (BTW, I see this build error on many different $ARCH [around 15 tested]
+> >>>>>> and with 2 different versions of GCC.)
+> >>>>>>
+> >>>>>> Q1: Is modpost checking both vmlinux and iio-rescale.o for modinfo license
+> >>>>>> strings?
+> >>>>>>
+> >>>>>> It looks like it is, because it appears (?) that modpost is looking at
+> >>>>>> drivers/iio/test/iio-test-rescale.o (<<<<< a kunit test, which is builtin
+> >>>>>> in my .config) and at drivers/iio/afe/iio-rescale.o (which is built as a
+> >>>>>> loadable module).
+> >>>>>>
+> >>>>>> Is this confusing modpost?
+> >>>>>> I renamed drivers/iio/afe/iio-rescale.c to afe-rescale.c and changed its
+> >>>>>> Makefile entry accordingly and the MODULE_LICENSE error goes away.
+> >>>>>
+> >>>>> Oh well. This rename causes drivers/iio/test/iio-test-rescale.c to have
+> >>>>> build errors, so that's not a solution, just some info...
+> >>>>
+> >>>> and that was due to not updating drivers/iio/test/Makefile.
+> >>>> When that is done, the missing MODULE_LICENSE() is back in afe-rescale.o.
+> >>>>
+> >>>>>
+> >>>>>> Is this a modpost error or is kunit messing things up?
+> >>>>>>
+> >>>>>> thanks for looking.
+> >>>
+> >>> Does this look OK? It allows afe/iio-rescale.o to build XOR
+> >>> test/iio-rescale.o (not both of them).
+> >>>
+> >>> --- a/drivers/iio/test/Kconfig
+> >>> +++ b/drivers/iio/test/Kconfig
+> >>> @@ -6,7 +6,7 @@
+> >>>  # Keep in alphabetical order
+> >>>  config IIO_RESCALE_KUNIT_TEST
+> >>>         bool "Test IIO rescale conversion functions"
+> >>> -       depends on KUNIT=y && !IIO_RESCALE
+> >>> +       depends on KUNIT=y && IIO_RESCALE=n
+> >>>         default KUNIT_ALL_TESTS
+> >>>         help
+> >>>           If you want to run tests on the iio-rescale code say Y here.
+> >>>
+> >>>
+> >>
+> >> -- 
+> >> ~Randy
+> 
+> -- 
+> ~Randy
