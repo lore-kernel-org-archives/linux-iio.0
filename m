@@ -2,79 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B4382C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 30 May 2022 18:17:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D4BA1C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 31 May 2022 08:23:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234793AbiE3SRK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 30 May 2022 14:17:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49550 "EHLO
+        id S244788AbiEaIXl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 May 2022 04:23:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54378 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232948AbiE3SRK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 May 2022 14:17:10 -0400
-Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D5C733EBA;
-        Mon, 30 May 2022 11:17:07 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1653934628; x=1685470628;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=3ls+BsK4fTG0JDFxVmbLsjxL03ClO9vf+BEQFDq2RKE=;
-  b=hbd/ZttssClxozYDoH5R1KgD59hCQu7QI4QwFF3haml57kcNTfyzZlF1
-   uKnx8FiGSsANB36+E+ngp/UbubVXBuS1YSkAsuqxdVsHb99IU7o+eitNB
-   rQ0Td7N1xXXpyhCppNGGgrmcebAx9LM7Aytr1vS51fKjnrsR8Dx7Y6yHb
-   AmNpacfTfp6dm6Pq0Yk7NdiKP2obsa+Mx9BUwkMGriXFHJcsXAi6QTmc2
-   igI2yGoLvx+GA/Z24vp74G40blhAoBwL13+QOczALK7gr0jxqPvBZAye5
-   GI8IZKHPiRytU0OpMH8/NET6Njxa8Kl3MqrmqvPVEDmjUXW46jdGbc+yk
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10363"; a="335707956"
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="335707956"
-Received: from fmsmga008.fm.intel.com ([10.253.24.58])
-  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 30 May 2022 11:17:07 -0700
-X-ExtLoop1: 1
-X-IronPort-AV: E=Sophos;i="5.91,263,1647327600"; 
-   d="scan'208";a="632704755"
-Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga008.fm.intel.com with ESMTP; 30 May 2022 11:17:05 -0700
-Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id E5BD5147; Mon, 30 May 2022 21:17:07 +0300 (EEST)
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Subject: [PATCH v1 1/1] iio: adc: sd_adc_modulator: Drop dependency on OF
-Date:   Mon, 30 May 2022 21:17:06 +0300
-Message-Id: <20220530181706.3045-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: git-send-email 2.35.1
+        with ESMTP id S243239AbiEaIXg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2022 04:23:36 -0400
+Received: from mail.onlinesuccesses.pl (mail.onlinesuccesses.pl [198.244.150.235])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E1F4722BDB
+        for <linux-iio@vger.kernel.org>; Tue, 31 May 2022 01:23:35 -0700 (PDT)
+Received: by mail.onlinesuccesses.pl (Postfix, from userid 1002)
+        id 6648FAE24D; Tue, 31 May 2022 08:17:16 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=onlinesuccesses.pl;
+        s=mail; t=1653985091;
+        bh=nE8HqilgMh4dy7+Z8ksfg7Bc9rmPeQtYFq3/3YR2ODU=;
+        h=Date:From:To:Subject:From;
+        b=DzFVbzL/kGOJzw74T8JdykPmPHZlOI6iAC2/qiG6EoBmKLGe9+ZtSREPev6bUtiZE
+         Br/gcwxydjcx28WE3u8LH9HHJGYwX0hlwWel0CTOttKPGLfXoUBazDKXOki8IyxFY4
+         QRA1GUsFnf/3yL44QG4yYEGhOwuEyRuskb3CQJ5cj1/pmegjzJim3SaQgJRRg8lYNW
+         X9imNUc0ohehaGBCDDwdb1APrfOkNwiuMOjA+rI9h+wFgewz9vWD+P/wQ1rqpwnHww
+         UG0vvXQu9uZn9cs9udQFjTZWtQn7HV0gC/EVIBAoX7S0WqxZOgHwfq+YJqN4TMQDVe
+         fY5aUhzCnfnwA==
+Received: by mail.onlinesuccesses.pl for <linux-iio@vger.kernel.org>; Tue, 31 May 2022 08:15:36 GMT
+Message-ID: <20220531064501-0.1.4l.1ddec.0.elmhlcomhh@onlinesuccesses.pl>
+Date:   Tue, 31 May 2022 08:15:36 GMT
+From:   "Wiktor Zielonko" <wiktor.zielonko@onlinesuccesses.pl>
+To:     <linux-iio@vger.kernel.org>
+Subject: Ruch z pierwszej pozycji w Google
+X-Mailer: mail.onlinesuccesses.pl
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Nothing in this driver depends on OF so drop the dependency
-to remove the false impression such a dependency exists.
+Dzie=C5=84 dobry,=20
 
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
----
- drivers/iio/adc/Kconfig | 1 -
- 1 file changed, 1 deletion(-)
+jaki=C5=9B czas temu zg=C5=82osi=C5=82a si=C4=99 do nas firma, kt=C3=B3re=
+j strona internetowa nie pozycjonowa=C5=82a si=C4=99 wysoko w wyszukiwarc=
+e Google.=20
 
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index d0122b363ee8..3b6a80786b51 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -940,7 +940,6 @@ config SPEAR_ADC
- 
- config SD_ADC_MODULATOR
- 	tristate "Generic sigma delta modulator"
--	depends on OF
- 	select IIO_BUFFER
- 	select IIO_TRIGGERED_BUFFER
- 	help
--- 
-2.35.1
+Na podstawie wykonanego przez nas audytu SEO zoptymalizowali=C5=9Bmy tre=C5=
+=9Bci na stronie pod k=C4=85tem wcze=C5=9Bniej opracowanych s=C5=82=C3=B3=
+w kluczowych. Nasz wewn=C4=99trzny system codziennie analizuje prawid=C5=82=
+owe dzia=C5=82anie witryny.  Dzi=C4=99ki indywidualnej strategii, firma z=
+dobywa coraz wi=C4=99cej Klient=C3=B3w. =20
 
+Czy chcieliby Pa=C5=84stwo zwi=C4=99kszy=C4=87 liczb=C4=99 os=C3=B3b odwi=
+edzaj=C4=85cych stron=C4=99 internetow=C4=85 firmy? M=C3=B3g=C5=82bym prz=
+edstawi=C4=87 ofert=C4=99?=20
+
+
+Pozdrawiam serdecznie,
+Wiktor Zielonko
