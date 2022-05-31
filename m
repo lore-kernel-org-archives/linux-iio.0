@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 45439C433F5
-	for <linux-iio@archiver.kernel.org>; Tue, 31 May 2022 12:08:12 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 774B6C433FE
+	for <linux-iio@archiver.kernel.org>; Tue, 31 May 2022 12:15:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243412AbiEaMIK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 31 May 2022 08:08:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49892 "EHLO
+        id S1344119AbiEaMPS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 May 2022 08:15:18 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41636 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232790AbiEaMIJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2022 08:08:09 -0400
-Received: from mail-pf1-x444.google.com (mail-pf1-x444.google.com [IPv6:2607:f8b0:4864:20::444])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA11A5E145;
-        Tue, 31 May 2022 05:08:08 -0700 (PDT)
-Received: by mail-pf1-x444.google.com with SMTP id y189so12988155pfy.10;
-        Tue, 31 May 2022 05:08:08 -0700 (PDT)
+        with ESMTP id S1344161AbiEaMPP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2022 08:15:15 -0400
+Received: from mail-pg1-x541.google.com (mail-pg1-x541.google.com [IPv6:2607:f8b0:4864:20::541])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BBED6994C0;
+        Tue, 31 May 2022 05:15:13 -0700 (PDT)
+Received: by mail-pg1-x541.google.com with SMTP id v15so12652643pgk.11;
+        Tue, 31 May 2022 05:15:13 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=JSIsAVF9fVkTehhsFum2qIaOiKUkDyLxbABQD3He3l0=;
-        b=ZU8iCU3NGySHmEgNB8okylg9eQ5lI0KHYoPEDovMwPLNuIfpUzHqoEhjpi9BJKg/bJ
-         zAngyLyMA3z4pYX3LqBh1qxjZoM2W1GkbK9GyITchzsVUnf8ryBlQPvi1C44XzIX93zF
-         MF8cQ1gatUVnjgAkHXhBK6VyQnvtc0BBYTuqsG4HsSquekVgAZPbaex6BWm95I+vCNUd
-         LjS74zu8Z3pWHexb0xu12vsQhyh5emzSf79Rd/weIR9peek38k6X1HEN86n3wboMj/BC
-         rtZjD3EKKyAAkiXsYqF/+/8SgDyKjrFZQA5r8/lBKF90Ek8uP3lISiT8XTKsg6QNKqpe
-         VaFw==
+        bh=NLlQWPmyPhz9LkYQh7iizThmB3DZjfxS2yfzbAOphFg=;
+        b=I4w6+q3mrUIL109pwzpTze5IvWiG+1Sm6Q/7ihB35G4+4nU2YnPrXRziLx+TjwQPKJ
+         27v96U4XlLTj4qvRe1P7BgC7TeHdudGmcMfT8xhVbtoceFoPSsDrFiSspzWjKMLuZBJW
+         NNPufZ9HklQcqk+CRGhV5CV3j//Lsh2GOI3ZrSJSChpHw4LFbutgxJNqUqN6lh3qf+xQ
+         3FMeYyOYJBXw4mgAWgYyBsEGP+9QcO74DD7r3ElXM/gBg5lFBlDhaRkqIxCfG86r2kGS
+         qTg9vzWnm3t4x6/LXNTmuPN2mNUySP8cPOORTBWUclVtUSbi0DxWMAHxDg2PiIXQwtc3
+         IH7w==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=JSIsAVF9fVkTehhsFum2qIaOiKUkDyLxbABQD3He3l0=;
-        b=uiC63rCvqHgvaDCssi7Mwqg8C0u7+DSYU+R0XimZsQCzha452JBLZNOxBFUe7xKRyc
-         dRT4QIU7LCo/x7ZjYW3JQKlP8Q7g4Mc36oLSN1+eiCP6Pu1QZxuFAwC3mFVIs3SaFHjz
-         diw9e48wSZDwHqnBtmHbKlz47/ilMO/sID1eUUwg0U4XWgcopCeBVIGoY1uDLxjQX7ba
-         T0iHIJA7+sgevjxWQRXJS2FDVT/rwru4zNJNj3++GFYBaK4UKWAzhGpUOpKcXCiJow+t
-         m1e0+0rs9XrMlYShANNYOLdTySIyFz2pvvghaB4MXv2OhF1D3135AwFnJeLeGVPZSccI
-         Kw6Q==
-X-Gm-Message-State: AOAM533J6qVnQdmvLdMfF/dmS4wHitK2aDCfGKDr0O7wt1/reFBDC+aa
-        k2mcoJMsi7zSCDZ+saHwg0xjupYPVTM=
-X-Google-Smtp-Source: ABdhPJyDlfCP92PgDUmyh/k1//oY0Or/x4nvlOLY8shtUR/BI5cISxpd1h8vbB3UfX7zOoEnvnEJZw==
-X-Received: by 2002:a05:6a00:1487:b0:518:b952:889b with SMTP id v7-20020a056a00148700b00518b952889bmr39184396pfu.43.1653993080595;
-        Tue, 31 May 2022 03:31:20 -0700 (PDT)
+        bh=NLlQWPmyPhz9LkYQh7iizThmB3DZjfxS2yfzbAOphFg=;
+        b=Gcp6iF55zQAHt+OpeUOq4xwKnxD/IUZUe426fpOuFVp1aT1G/UZMPOyN/eTD17smnk
+         7gnP8MR0fUlON8NpEd+Icu0QLAEjgm22t2e1l4OBNRgne0PlIw8wZd6CpLnwNgxr2NoA
+         vtHRKb+gRkucuC0U5oHleB+TgNtMwUUM/OMkTjGBXcVmZ6kXf1BwXx2mooo7D8+Susi6
+         nGLq1B0c+kbnFee12g3LJT8aW4ByU8nMsSSGgzjlUoqo4BBfM/Puh3hp83O1VtbOF9y6
+         yrPz8JAY6YJ0dqy06nYOAAy6phbtw++mQQ8TSyYkhjtCPzmvlqPJvFHsxGAMaxf2uD1Z
+         K8vg==
+X-Gm-Message-State: AOAM530gQrbGWNk8injCAMOlB462s8jVhhVaavH1iGMWjk1cBu9bsFPu
+        snQDhYgOmysThqOrctNFVcoeZGKhQm8=
+X-Google-Smtp-Source: ABdhPJyD1Fx7LBxTURdowjLzD5c7Yqcp9ob1xo5BIIaa0fHPSwQ8ngkBhpXhhcH/7b+MIEJs3XVqjw==
+X-Received: by 2002:a63:1009:0:b0:3fa:9996:386b with SMTP id f9-20020a631009000000b003fa9996386bmr31594847pgl.441.1653993061902;
+        Tue, 31 May 2022 03:31:01 -0700 (PDT)
 Received: from RD-3580-24288.rt.l (42-72-220-172.emome-ip.hinet.net. [42.72.220.172])
-        by smtp.gmail.com with ESMTPSA id c1-20020a63d501000000b003c14af50631sm10216519pgg.73.2022.05.31.03.31.14
+        by smtp.gmail.com with ESMTPSA id c1-20020a63d501000000b003c14af50631sm10216519pgg.73.2022.05.31.03.30.55
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 03:31:20 -0700 (PDT)
+        Tue, 31 May 2022 03:31:01 -0700 (PDT)
 From:   ChiaEn Wu <peterwu.pub@gmail.com>
 To:     lee.jones@linaro.org, daniel.thompson@linaro.org,
         jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
@@ -62,9 +62,9 @@ Cc:     cy_huang@richtek.com, alice_chen@richtek.com,
         linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
         linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
-Subject: [PATCH 13/14] dt-bindings: backlight: Add Mediatek MT6370 backlight binding documentation
-Date:   Tue, 31 May 2022 18:28:08 +0800
-Message-Id: <20220531102809.11976-14-peterwu.pub@gmail.com>
+Subject: [PATCH 11/14] dt-bindings: leds: mt6370: Add Mediatek mt6370 indicator documentation
+Date:   Tue, 31 May 2022 18:28:06 +0800
+Message-Id: <20220531102809.11976-12-peterwu.pub@gmail.com>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220531102809.11976-1-peterwu.pub@gmail.com>
 References: <20220531102809.11976-1-peterwu.pub@gmail.com>
@@ -76,128 +76,75 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: ChiYuan Huang <cy_huang@richtek.com>
 
-Add mt6370 backlight binding documentation.
+Add Mediatek mt6370 indicator documentation.
 
 Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
 ---
- .../backlight/mediatek,mt6370-backlight.yaml  | 110 ++++++++++++++++++
- 1 file changed, 110 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/leds/backlight/mediatek,mt6370-backlight.yaml
+ .../leds/mediatek,mt6370-indicator.yaml       | 57 +++++++++++++++++++
+ 1 file changed, 57 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
 
-diff --git a/Documentation/devicetree/bindings/leds/backlight/mediatek,mt6370-backlight.yaml b/Documentation/devicetree/bindings/leds/backlight/mediatek,mt6370-backlight.yaml
+diff --git a/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml b/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
 new file mode 100644
-index 000000000000..81d72ed44be4
+index 000000000000..823be3add097
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/leds/backlight/mediatek,mt6370-backlight.yaml
-@@ -0,0 +1,110 @@
++++ b/Documentation/devicetree/bindings/leds/mediatek,mt6370-indicator.yaml
+@@ -0,0 +1,57 @@
 +# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
 +%YAML 1.2
 +---
-+$id: http://devicetree.org/schemas/leds/backlight/mediatek,mt6370-backlight.yaml#
++$id: http://devicetree.org/schemas/leds/mediatek,mt6370-indicator.yaml#
 +$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+title: Mediatek MT6370 Backlight
++title: LED driver for MT6370 PMIC from MediaTek Integrated.
 +
 +maintainers:
-+  - ChiaEn Wu <chiaen_wu@richtek.com>
++  - Alice Chen <alice_chen@richtek.com>
 +
 +description: |
-+  MT6370 is a highly-integrated smart power management IC, which includes a
-+  single cell Li-Ion/Li-Polymer switching battery charger, a USB Type-C &
-+  Power Delivery (PD) controller, dual flash LED current sources, a RGB LED
-+  driver, a backlight WLED driver, a display bias driver and a general LDO for
-+  portable devices.
-+
-+  For the LCD backlight, it can provide 4 channel WLED driving capability.
-+  Each channel driving current is up to 30mA
-+
-+allOf:
-+  - $ref: common.yaml#
++  This module is part of the MT6370 MFD device.
++  see Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
++  Add MT6370 LED driver include 4-channel RGB LED support Register/PWM/Breath Mode
 +
 +properties:
 +  compatible:
-+    const: mediatek,mt6370-backlight
++    const: mediatek,mt6370-indicator
 +
-+  default-brightness:
-+    minimum: 0
-+    maximum: 2048
++  "#address-cells":
++    const: 1
 +
-+  max-brightness:
-+    minimum: 0
-+    maximum: 2048
++  "#size-cells":
++    const: 0
 +
-+  enable-gpios:
-+    description: External backlight 'enable' pin
-+    maxItems: 1
-+
-+  mediatek,bled-pwm-enable:
++patternProperties:
++  "^(multi-)?led@[0-3]$":
 +    description: |
-+      Enable external PWM input for backlight dimming
-+    type: boolean
++      Properties for a single LED.
++    $ref: common.yaml#
++    type: object
 +
-+  mediatek,bled-pwm-hys-enable:
-+    description: |
-+      Enable the backlight input-hysteresis for PWM mode
-+    type: boolean
++    properties:
++      reg:
++        description: |
++          Index of the LED.
++        enum:
++          - 0 # LED output ISINK1
++          - 1 # LED output ISINK2
++          - 2 # LED output ISINK3
++          - 3 # LED output ISINK4
 +
-+  mediatek,bled-pwm-hys-sel:
-+    $ref: /schemas/types.yaml#/definitions/uint8
-+    enum: [0, 1, 2, 3]
-+    description: |
-+      Backlight PWM hysteresis input level selection.
-+      value mapping:
-+        - 0: 1bit
-+        - 1: 2bit
-+        - 2: 4bit
-+        - 3: 6bit
++      mediatek,soft-start:
++        description: |
++          soft start step control, support /0.5ms/1ms/1.5ms/2ms.
++        $ref: /schemas/types.yaml#/definitions/uint32
++        enum: [0, 1, 2, 3]
 +
-+  mediatek,bled-ovp-shutdown:
-+    description: |
-+      Enable the backlight shutdown when OVP level triggered
-+    type: boolean
-+
-+  mediatek,bled-ovp-level-sel:
-+    $ref: /schemas/types.yaml#/definitions/uint8
-+    enum: [0, 1, 2, 3]
-+    description: |
-+      Backlight OVP level selection.
-+      value mapping:
-+        - 0: 17V
-+        - 1: 21V
-+        - 2: 25V
-+        - 3: 29V
-+
-+  mediatek,bled-ocp-shutdown:
-+    description: |
-+      Enable the backlight shutdown when OCP level triggerred.
-+    type: boolean
-+
-+  mediatek,bled-ocp-level-sel:
-+    $ref: /schemas/types.yaml#/definitions/uint8
-+    enum: [0, 1, 2, 3]
-+    description: |
-+      Backlight OC level selection.
-+      value mapping:
-+        - 0: 900mA
-+        - 1: 1200mA
-+        - 2: 1500mA
-+        - 3: 1800mA
-+
-+  mediatek,bled-channel-use:
-+    $ref: /schemas/types.yaml#/definitions/uint8
-+    description: |
-+      Backlight LED channel to be used.
-+      Each bit mapping to:
-+        - 0: CH4
-+        - 1: CH3
-+        - 2: CH2
-+        - 3: CH1
-+    minimum: 1
-+    maximum: 15
++    unevaluatedProperties: false
 +
 +required:
 +  - compatible
-+  - mediatek,bled-channel-use
++  - "#address-cells"
++  - "#size-cells"
 +
 +additionalProperties: false
 -- 
