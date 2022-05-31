@@ -2,428 +2,136 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8419C433FE
-	for <linux-iio@archiver.kernel.org>; Tue, 31 May 2022 13:21:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C56ABC4332F
+	for <linux-iio@archiver.kernel.org>; Tue, 31 May 2022 13:50:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229580AbiEaNVR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 31 May 2022 09:21:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34224 "EHLO
+        id S1344916AbiEaNur (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 May 2022 09:50:47 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42772 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238921AbiEaNVL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2022 09:21:11 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1D6B695A37;
-        Tue, 31 May 2022 06:21:09 -0700 (PDT)
-Received: from fraeml744-chm.china.huawei.com (unknown [172.18.147.226])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4LCCV33F5nz685N7;
-        Tue, 31 May 2022 21:16:43 +0800 (CST)
-Received: from lhreml710-chm.china.huawei.com (10.201.108.61) by
- fraeml744-chm.china.huawei.com (10.206.15.225) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Tue, 31 May 2022 15:21:06 +0200
-Received: from localhost (10.202.226.42) by lhreml710-chm.china.huawei.com
- (10.201.108.61) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 31 May
- 2022 14:21:04 +0100
-Date:   Tue, 31 May 2022 14:21:02 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@Huawei.com>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-CC:     <lee.jones@linaro.org>, <daniel.thompson@linaro.org>,
-        <jingoohan1@gmail.com>, <pavel@ucw.cz>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <matthias.bgg@gmail.com>,
-        <sre@kernel.org>, <chunfeng.yun@mediatek.com>,
-        <gregkh@linuxfoundation.org>, <jic23@kernel.org>,
-        <lars@metafoo.de>, <lgirdwood@gmail.com>, <broonie@kernel.org>,
-        <linux@roeck-us.net>, <heikki.krogerus@linux.intel.com>,
-        <deller@gmx.de>, <cy_huang@richtek.com>, <alice_chen@richtek.com>,
-        <chiaen_wu@richtek.com>, <dri-devel@lists.freedesktop.org>,
-        <linux-leds@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-mediatek@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, <linux-pm@vger.kernel.org>,
-        <linux-usb@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-fbdev@vger.kernel.org>
-Subject: Re: [RESEND 10/14] iio: adc: mt6370: Add Mediatek MT6370 support
-Message-ID: <20220531142102.00007df0@Huawei.com>
-In-Reply-To: <20220531111900.19422-11-peterwu.pub@gmail.com>
-References: <20220531111900.19422-1-peterwu.pub@gmail.com>
-        <20220531111900.19422-11-peterwu.pub@gmail.com>
-Organization: Huawei Technologies Research and Development (UK) Ltd.
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        with ESMTP id S1344899AbiEaNup (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2022 09:50:45 -0400
+Received: from mail-wr1-x435.google.com (mail-wr1-x435.google.com [IPv6:2a00:1450:4864:20::435])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E55FB6D94C
+        for <linux-iio@vger.kernel.org>; Tue, 31 May 2022 06:50:42 -0700 (PDT)
+Received: by mail-wr1-x435.google.com with SMTP id q7so7831467wrg.5
+        for <linux-iio@vger.kernel.org>; Tue, 31 May 2022 06:50:42 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=GdLebb0hcqumk+5oPRll761fGotaeHJ+s+cQnmwt1xo=;
+        b=vvDy6XluCcZHIaiVjMTo9e2czawjGc4AH938vW1pCzEcW7kbxITyawjphD4EV/7vDN
+         evc04Bbu01AxfCOacWkePRVHGvLcgU8FjxYfGe28i3qOevr+sFvsloQ5zQnu1MiWNtp9
+         wBAa00iDuFO00vXE9tuUDKf+8yFB7Otyji9C0BH4UBBYCvCPLHIvMPlNpnE1di8tMbcv
+         Yc3nn94Mngd8+f5An0MCY5JQ+c6oCIWT0W/aF9xDx91B2zFOMxYepU0t+P9d7IR/dHqb
+         dD/UeFvwFgVP7F8Ff+5GEwn+qJd5uucYG3s47GiUoWky06YiKrLkNXu/2bqq0KlPsqHJ
+         X7Pw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=GdLebb0hcqumk+5oPRll761fGotaeHJ+s+cQnmwt1xo=;
+        b=ZPBwcv5HgaWWWqTlSiwgVzu6yP5pEPkDt/DT8eXlTa6gMjUnmeWIZ2z41N9/gru9bG
+         tPu/QpqAi3r498uDoCibjS8GQpf4bQrI1dSOdW9x9qHaxLANIygAlLhViXedz4n6Nk7m
+         yMOXWhT1EU3QL3V3WkRTy2oIO1T9hs0CQefGfIM5sB4KtvCA3tbL0dart5yonAHxiKUT
+         xFXPqGXi0JR90166bqqeOYA5cfDdu0J5yo2WVAA0bz7Oq2TIb6J/bPsKe1hT7YKUjNc8
+         ro+5GXVXZe7v5UHrrDDkll3Ny7gcqs9iViyosZmdP8JX87XoFZ1XlxgGxH35eYkAtfGJ
+         dzDw==
+X-Gm-Message-State: AOAM533wCcma5t0hNG4UNTAP6U/Eoo6NnLZRQPld6RyNurTCw9bf74nY
+        CUzmrgUwd72D4cCuVtYWKYG1ig==
+X-Google-Smtp-Source: ABdhPJzwij5huFbgeVoSJeVbVzYQRkcylviSsOwOJ7GzYS2+JjN4sQ22PXZUOKuNArAQHL/NOyjV9Q==
+X-Received: by 2002:a05:6000:1548:b0:20f:c4e3:637a with SMTP id 8-20020a056000154800b0020fc4e3637amr40373733wry.513.1654005041269;
+        Tue, 31 May 2022 06:50:41 -0700 (PDT)
+Received: from localhost.localdomain ([88.160.162.107])
+        by smtp.gmail.com with ESMTPSA id l11-20020a05600c1d0b00b00394351e35edsm2404806wms.26.2022.05.31.06.50.39
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 31 May 2022 06:50:40 -0700 (PDT)
+From:   Fabien Parent <fparent@baylibre.com>
+To:     robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        vkoul@kernel.org, qii.wang@mediatek.com, matthias.bgg@gmail.com,
+        jic23@kernel.org, chaotian.jing@mediatek.com,
+        ulf.hansson@linaro.org, srinivas.kandagatla@linaro.org,
+        chunfeng.yun@mediatek.com, broonie@kernel.org,
+        wim@linux-watchdog.org, linux@roeck-us.net,
+        Yong Wu <yong.wu@mediatek.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+Cc:     devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dmaengine@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-phy@lists.infradead.org,
+        linux-serial@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-watchdog@vger.kernel.org,
+        Fabien Parent <fparent@baylibre.com>
+Subject: [PATCH 02/17] dt-bindings: memory: add mt8365 SoC binding documentation
+Date:   Tue, 31 May 2022 15:50:11 +0200
+Message-Id: <20220531135026.238475-3-fparent@baylibre.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220531135026.238475-1-fparent@baylibre.com>
+References: <20220531135026.238475-1-fparent@baylibre.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhreml730-chm.china.huawei.com (10.201.108.81) To
- lhreml710-chm.china.huawei.com (10.201.108.61)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 31 May 2022 19:18:56 +0800
-ChiaEn Wu <peterwu.pub@gmail.com> wrote:
+Add MediaTek SMI bindings for MT8365 SoC.
 
-> From: ChiaEn Wu <chiaen_wu@richtek.com>
-> 
-> Add Mediatek MT6370 ADC support.
-> 
-> Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
+Signed-off-by: Fabien Parent <fparent@baylibre.com>
+---
+ .../bindings/memory-controllers/mediatek,smi-common.yaml    | 6 ++++++
+ .../bindings/memory-controllers/mediatek,smi-larb.yaml      | 6 ++++++
+ 2 files changed, 12 insertions(+)
 
-Hi ChiaEn,
-
-A few comments inline.
-
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/adc/Kconfig      |   9 ++
->  drivers/iio/adc/Makefile     |   1 +
->  drivers/iio/adc/mt6370-adc.c | 257 +++++++++++++++++++++++++++++++++++
->  3 files changed, 267 insertions(+)
->  create mode 100644 drivers/iio/adc/mt6370-adc.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 71ab0a06aa82..d7932dd9b773 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -737,6 +737,15 @@ config MEDIATEK_MT6360_ADC
->  	  is used in smartphones and tablets and supports a 11 channel
->  	  general purpose ADC.
->  
-> +config MEDIATEK_MT6370_ADC
-> +	tristate "Mediatek MT6370 ADC driver"
-> +	depends on MFD_MT6370
-> +	help
-> +	  Say Y here to enable MT6370 ADC support.
-> +	  Integrated for System Monitoring includes
-
-The wrapping of this text needs cleaning up.
-
-> +	  is used in smartphones and tablets and supports a 9 channel
-> +	  general purpose ADC.
-> +
->  config MEDIATEK_MT6577_AUXADC
->  	tristate "MediaTek AUXADC driver"
->  	depends on ARCH_MEDIATEK || COMPILE_TEST
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 39d806f6d457..0ce285c7e2d0 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -68,6 +68,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
->  obj-$(CONFIG_MCP3422) += mcp3422.o
->  obj-$(CONFIG_MCP3911) += mcp3911.o
->  obj-$(CONFIG_MEDIATEK_MT6360_ADC) += mt6360-adc.o
-> +obj-$(CONFIG_MEDIATEK_MT6370_ADC) += mt6370-adc.o
->  obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
->  obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
->  obj-$(CONFIG_MESON_SARADC) += meson_saradc.o
-> diff --git a/drivers/iio/adc/mt6370-adc.c b/drivers/iio/adc/mt6370-adc.c
-> new file mode 100644
-> index 000000000000..3320ebca17ad
-> --- /dev/null
-> +++ b/drivers/iio/adc/mt6370-adc.c
-> @@ -0,0 +1,257 @@
-> +// SPDX-License-Identifier: GPL-2.0
-> +
-> +#include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
-> +#include <linux/bits.h>
-> +#include <linux/bitfield.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/irq.h>
-
-Not seeing any interrupt support in here.
-
-
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +
-> +#define MT6370_REG_CHG_CTRL3		0x113 /* AICR */
-> +#define MT6370_REG_CHG_CTRL7		0x117 /* ICHG */
-> +#define MT6370_REG_CHG_ADC		0x121
-> +#define MT6370_REG_ADC_DATA_H		0x14C
-> +
-> +#define MT6370_ADC_START_MASK		BIT(0)
-> +#define MT6370_ADC_IN_SEL_MASK		GENMASK(7, 4)
-> +#define MT6370_AICR_ICHG_MASK		GENMASK(7, 2)
-> +
-> +#define MT6370_ADC_CHAN_SHIFT		4
-
-Prefer using a mask and then FIELD_PREP
-
-> +
-> +#define MT6370_AICR_400MA		0x6
-> +#define MT6370_ICHG_500MA		0x4
-> +#define MT6370_ICHG_900MA		0x8
-> +
-> +#define ADC_CONV_TIME_US		35000
-> +#define ADC_CONV_POLLING_TIME		1000
-> +
-> +struct mt6370_adc_data {
-> +	struct device *dev;
-> +	struct regmap *regmap;
-> +	struct mutex lock;
-
-All locks need documentation.  What is the scope of the lock?
-Looks like it protects device state when doing setup, wait for read, read
-cycles.
-
-> +};
-> +
-> +static int mt6370_adc_read_channel(struct mt6370_adc_data *priv, int chan,
-> +				   unsigned long addr, int *val)
-> +{
-> +	__be16 be_val;
-> +	unsigned int reg_val;
-> +	int ret;
-> +
-> +	mutex_lock(&priv->lock);
-> +
-> +	reg_val = MT6370_ADC_START_MASK | (addr << MT6370_ADC_CHAN_SHIFT);
-
-FIELD_PREP for that shift?
-
-> +	ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, reg_val);
-> +	if (ret)
-> +		goto adc_unlock;
-> +
-> +	msleep(ADC_CONV_TIME_US / 1000);
-> +
-> +	ret = regmap_read_poll_timeout(priv->regmap,
-> +				       MT6370_REG_CHG_ADC, reg_val,
-> +				       !(reg_val & MT6370_ADC_START_MASK),
-> +				       ADC_CONV_POLLING_TIME,
-> +				       ADC_CONV_TIME_US * 3);
-> +	if (ret) {
-> +		if (ret == -ETIMEDOUT)
-> +			dev_err(priv->dev, "Failed to wait adc conversion\n");
-> +		goto adc_unlock;
-> +	}
-> +
-> +	ret = regmap_raw_read(priv->regmap, MT6370_REG_ADC_DATA_H,
-> +			      &be_val, sizeof(be_val));
-> +	if (ret)
-> +		goto adc_unlock;
-> +
-> +	*val = be16_to_cpu(be_val);
-> +	ret = IIO_VAL_INT;
-> +
-> +adc_unlock:
-> +	mutex_unlock(&priv->lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int mt6370_adc_read_scale(struct mt6370_adc_data *priv,
-> +				 int chan, int *val1, int *val2)
-> +{
-> +	unsigned int reg_val;
-> +	int ret;
-> +
-> +	switch (chan) {
-> +	case MT6370_CHAN_VBAT:
-> +	case MT6370_CHAN_VSYS:
-> +	case MT6370_CHAN_CHG_VDDP:
-> +		*val1 = 5000;
-
-This seems very large.  Voltages are in millivolts
-as per Documentation/ABI/testing/sysfs-bus-iio
-and this means each step is 5 volts.
-
-So value in mv is currently 5 * _raw 
-
-
-
-> +		return IIO_VAL_INT;
-> +	case MT6370_CHAN_IBUS:
-> +		ret = regmap_read(priv->regmap, MT6370_REG_CHG_CTRL3, &reg_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		reg_val = FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
-> +		if (reg_val < MT6370_AICR_400MA)
-> +			*val1 = 33500;
-> +		else
-> +			*val1 = 50000;
-> +
-> +		return IIO_VAL_INT;
-> +	case MT6370_CHAN_IBAT:
-> +		ret = regmap_read(priv->regmap, MT6370_REG_CHG_CTRL7, &reg_val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		reg_val = FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
-> +		if (reg_val < MT6370_ICHG_500MA)
-> +			*val1 = 23750;
-> +		else if (reg_val >= MT6370_ICHG_500MA &&
-> +			 reg_val < MT6370_ICHG_900MA)
-> +			*val1 = 26800;
-> +		else
-> +			*val1 = 50000;
-> +
-> +		return IIO_VAL_INT;
-> +	case MT6370_CHAN_VBUSDIV5:
-> +		*val1 = 25000;
-> +		return IIO_VAL_INT;
-> +	case MT6370_CHAN_VBUSDIV2:
-> +		*val1 = 50000;
-> +		return IIO_VAL_INT;
-> +	case MT6370_CHAN_TS_BAT:
-> +		*val1 = 25;
-> +		*val2 = 10000;
-> +		return IIO_VAL_FRACTIONAL;
-> +	case MT6370_CHAN_TEMP_JC:
-> +		*val1 = 2;
-> +		return IIO_VAL_INT;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int mt6370_adc_read_offset(struct mt6370_adc_data *priv,
-> +				  int chan, int *val)
-> +{
-> +	*val = (chan == MT6370_CHAN_TEMP_JC) ? -20 : 0;
-
-Offset default is 0, so for channels where it doesn't apply don't
-provide the offset attribute at all.
-
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int mt6370_adc_read_raw(struct iio_dev *iio_dev,
-> +			       const struct iio_chan_spec *chan,
-> +			       int *val, int *val2, long mask)
-> +{
-> +	struct mt6370_adc_data *priv = iio_priv(iio_dev);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		return mt6370_adc_read_channel(priv, chan->channel,
-> +					       chan->address, val);
-> +	case IIO_CHAN_INFO_SCALE:
-> +		return mt6370_adc_read_scale(priv, chan->channel, val, val2);
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		return mt6370_adc_read_offset(priv, chan->channel, val);
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const char * const mt6370_channel_labels[MT6370_CHAN_MAX] = {
-
-Perhaps define an enum with which to index this and the chan spec
-and hence ensure they end up matching.
- [vbusdiv5] = "vbusdiv5", etc
-
-> +	"vbusdiv5", "vbusdiv2", "vsys", "vbat",
-> +	"ts_bat", "ibus", "ibat", "chg_vddp",
-> +	"temp_jc",
-> +};
-> +
-> +static int mt6370_adc_read_label(struct iio_dev *iio_dev,
-> +				 struct iio_chan_spec const *chan, char *label)
-> +{
-> +	return snprintf(label, PAGE_SIZE, "%s\n",
-> +			mt6370_channel_labels[chan->channel]);
-> +}
-> +
-> +static const struct iio_info mt6370_adc_iio_info = {
-> +	.read_raw = mt6370_adc_read_raw,
-> +	.read_label = mt6370_adc_read_label,
-> +};
-> +
-> +#define MT6370_ADC_CHAN(_idx, _type, _addr) {			\
-> +	.type = _type,						\
-> +	.channel = MT6370_CHAN_##_idx,				\
-> +	.address = _addr,					\
-> +	.scan_index = MT6370_CHAN_##_idx,			\
-> +	.indexed = 1,						\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> +			      BIT(IIO_CHAN_INFO_SCALE) |	\
-> +			      BIT(IIO_CHAN_INFO_OFFSET),	\
-
-See above. Only temp_jc channel should hav an offset.
-
-> +}
-> +
-> +static const struct iio_chan_spec mt6370_adc_channels[] = {
-> +	MT6370_ADC_CHAN(VBUSDIV5, IIO_VOLTAGE, 1),
-> +	MT6370_ADC_CHAN(VBUSDIV2, IIO_VOLTAGE, 2),
-> +	MT6370_ADC_CHAN(VSYS, IIO_VOLTAGE, 3),
-> +	MT6370_ADC_CHAN(VBAT, IIO_VOLTAGE, 4),
-> +	MT6370_ADC_CHAN(TS_BAT, IIO_VOLTAGE, 6),
-> +	MT6370_ADC_CHAN(IBUS, IIO_CURRENT, 8),
-> +	MT6370_ADC_CHAN(IBAT, IIO_CURRENT, 9),
-> +	MT6370_ADC_CHAN(CHG_VDDP, IIO_VOLTAGE, 11),
-> +	MT6370_ADC_CHAN(TEMP_JC, IIO_TEMP, 12),
-> +};
-> +
-> +static int mt6370_adc_probe(struct platform_device *pdev)
-> +{
-> +	int ret;
-> +	struct mt6370_adc_data *priv;
-> +	struct regmap *regmap;
-> +	struct iio_dev *indio_dev;
-> +
-> +	regmap = dev_get_regmap(pdev->dev.parent, NULL);
-> +	if (!regmap) {
-> +		dev_err(&pdev->dev, "Failed to get regmap\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	priv = iio_priv(indio_dev);
-> +	priv->dev = &pdev->dev;
-> +	priv->regmap = regmap;
-> +	mutex_init(&priv->lock);
-> +
-> +	ret = regmap_write(priv->regmap, MT6370_REG_CHG_ADC, 0);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "Failed to reset adc\n");
-> +		return ret;
-> +	}
-> +
-> +	indio_dev->name = dev_name(&pdev->dev);
-
-What does this end up as?  It's used for userspace ABI and should
-correspond to the part number, "mt6370-adc" probably
-appropriate in this case (I think it'll end up as simply "adc.x"
-currently?)  Normally we just hard code this in the driver for
-whatever devices the driver supports.
-
-> +	indio_dev->info = &mt6370_adc_iio_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mt6370_adc_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mt6370_adc_channels);
-> +
-> +	return devm_iio_device_register(&pdev->dev, indio_dev);
-> +}
-> +
-> +static const struct of_device_id mt6370_adc_of_id[] = {
-> +	{ .compatible = "mediatek,mt6370-adc", },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(of, mt6370_adc_of_id);
-> +
-> +static struct platform_driver mt6370_adc_driver = {
-> +	.driver = {
-> +		.name = "mt6370-adc",
-> +		.of_match_table = mt6370_adc_of_id,
-> +	},
-> +	.probe = mt6370_adc_probe,
-> +};
-> +module_platform_driver(mt6370_adc_driver);
-> +
-> +MODULE_AUTHOR("ChiaEn Wu <chiaen_wu@richtek.com>");
-> +MODULE_DESCRIPTION("MT6370 ADC Drvier");
-> +MODULE_LICENSE("GPL v2");
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+index a98b359bf909..e1029ac99ab4 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-common.yaml
+@@ -46,6 +46,11 @@ properties:
+           - const: mediatek,mt7623-smi-common
+           - const: mediatek,mt2701-smi-common
+ 
++      - description: for mt8365
++        items:
++          - const: mediatek,mt8365-smi-common
++          - const: mediatek,mt8186-smi-common
++
+   reg:
+     maxItems: 1
+ 
+@@ -130,6 +135,7 @@ allOf:
+             - mediatek,mt8192-smi-common
+             - mediatek,mt8195-smi-common-vdo
+             - mediatek,mt8195-smi-common-vpp
++            - mediatek,mt8365-smi-common
+ 
+     then:
+       properties:
+diff --git a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+index c886681f62a7..815d87fc64a0 100644
+--- a/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
++++ b/Documentation/devicetree/bindings/memory-controllers/mediatek,smi-larb.yaml
+@@ -32,6 +32,11 @@ properties:
+           - const: mediatek,mt7623-smi-larb
+           - const: mediatek,mt2701-smi-larb
+ 
++      - description: for mt8365
++        items:
++          - const: mediatek,mt8365-smi-larb
++          - const: mediatek,mt8186-smi-larb
++
+   reg:
+     maxItems: 1
+ 
+@@ -78,6 +83,7 @@ allOf:
+             - mediatek,mt8183-smi-larb
+             - mediatek,mt8186-smi-larb
+             - mediatek,mt8195-smi-larb
++            - mediatek,mt8365-smi-larb
+ 
+     then:
+       properties:
+-- 
+2.36.1
 
