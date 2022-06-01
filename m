@@ -2,115 +2,158 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8078DC433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 31 May 2022 22:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E8826C433F5
+	for <linux-iio@archiver.kernel.org>; Wed,  1 Jun 2022 00:44:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348549AbiEaWrK (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 31 May 2022 18:47:10 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49690 "EHLO
+        id S1344253AbiFAAoj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 31 May 2022 20:44:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1348547AbiEaWrE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2022 18:47:04 -0400
-Received: from mail-oa1-f45.google.com (mail-oa1-f45.google.com [209.85.160.45])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCDC5AE66;
-        Tue, 31 May 2022 15:47:02 -0700 (PDT)
-Received: by mail-oa1-f45.google.com with SMTP id 586e51a60fabf-f2bb84f9edso346807fac.10;
-        Tue, 31 May 2022 15:47:02 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=aprzOwmeu9ofv4NArUYUbqpCw1+7K1N79lDMatDRSxY=;
-        b=0Aks7rQphnx2+d+y09s3vRW7UCMY+73AXOo66/dQo4heq+V9fBF/E+EcL0ZSh7ZibI
-         o0dQ7OOJoTse6he4dsRlxxcPhWmkaCV/z4RLJVKGsmpkTmEtXtZt93BcMZVDcuAs9tP8
-         i9UPIiL58Hikj48zlUzvEHY9DIQNFygHAPhIWvbIo1BX/zUXyib0ZGvMe/6Kb6F3yNVT
-         CHkYcBzJWcLBKQS9DEclknBCpopiqm0k92ybRJOPrRLDktp168ugrL7FHid0PEhIzR7C
-         XeUdRVXN8s11XJrcDAr7YNf8YulEM6jdgVwDGqGbtW3efYRo2qauGQ//on/LUBRxAo3I
-         jjQQ==
-X-Gm-Message-State: AOAM5328PUqGs9AijJIpZ+peD0UDDv5Uy2MgWNAHc9MnSsoggTmoI9GN
-        mQUJA480Tfao7IFGjWzjDA==
-X-Google-Smtp-Source: ABdhPJzrxihBjK98eUTkfRJDT5Ew9e/c5AjwMgz/IhfhSleaQEJbbkcrawGZcg5v4oRO3DRzsYRYvw==
-X-Received: by 2002:a05:6870:8985:b0:da:b3f:3253 with SMTP id f5-20020a056870898500b000da0b3f3253mr14896611oaq.259.1654037221882;
-        Tue, 31 May 2022 15:47:01 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id bo44-20020a05680822ac00b0032af1c6bf02sm84725oib.45.2022.05.31.15.47.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 31 May 2022 15:47:01 -0700 (PDT)
-Received: (nullmailer pid 2476562 invoked by uid 1000);
-        Tue, 31 May 2022 22:46:54 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     jic23@kernel.org, gregkh@linuxfoundation.org, sre@kernel.org,
-        jingoohan1@gmail.com, broonie@kernel.org, deller@gmx.de,
-        alice_chen@richtek.com, heikki.krogerus@linux.intel.com,
-        lars@metafoo.de, lee.jones@linaro.org, chunfeng.yun@mediatek.com,
-        linux-pm@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        chiaen_wu@richtek.com, linux-iio@vger.kernel.org,
-        linux@roeck-us.net, daniel.thompson@linaro.org, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, lgirdwood@gmail.com,
-        dri-devel@lists.freedesktop.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org,
-        linux-mediatek@lists.infradead.org, devicetree@vger.kernel.org,
-        pavel@ucw.cz, linux-usb@vger.kernel.org,
-        linux-leds@vger.kernel.org, matthias.bgg@gmail.com,
-        cy_huang@richtek.com
-In-Reply-To: <20220531111900.19422-7-peterwu.pub@gmail.com>
-References: <20220531111900.19422-1-peterwu.pub@gmail.com> <20220531111900.19422-7-peterwu.pub@gmail.com>
-Subject: Re: [RESEND 06/14] dt-bindings: mfd: Add Mediatek MT6370 binding
-Date:   Tue, 31 May 2022 17:46:54 -0500
-Message-Id: <1654037214.477381.2476559.nullmailer@robh.at.kernel.org>
+        with ESMTP id S243000AbiFAAoi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 May 2022 20:44:38 -0400
+Received: from mga11.intel.com (mga11.intel.com [192.55.52.93])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DF5EC8D69D;
+        Tue, 31 May 2022 17:44:37 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654044277; x=1685580277;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=Edfpulig+ThWc0bbiQuZikx3D/q8pZAAGANvXImqB7M=;
+  b=cyIuT93ZHseURS5e5aue8hnMr9BNUPOsBgH8cuDCdmCFtSFPUTUsOdwF
+   DUky9M/fOcubqWuzbBx3Rd4ZF+C0gordV0NQUKAuGTgeoIc/hkt8MMqNM
+   tIQVuLrD9FjDjVMTwwFu3Drty/YycZN8ElA0glJwL4e5CF33zE5y+k7Lu
+   kgNhJI9q1KZMM1Xd6jqnQ5C014hnnpG34eyXxsgZPT3HeWF2Lg/eCdNpD
+   g05Q+f6R7LB9hOuLMcyfCjh6l7iNQdDISIzLwwun9Y86MYDHDK8O6lz6S
+   7AvRFpiXdLJlWiOtIiYi2paYgnT3pHQDCeY/sOgyx5Dy38UGHDE0VcM87
+   A==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10364"; a="272995977"
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="272995977"
+Received: from fmsmga001.fm.intel.com ([10.253.24.23])
+  by fmsmga102.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 31 May 2022 17:44:37 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,266,1647327600"; 
+   d="scan'208";a="720549427"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by fmsmga001.fm.intel.com with ESMTP; 31 May 2022 17:44:35 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nwCTS-0003Ie-Gz;
+        Wed, 01 Jun 2022 00:44:34 +0000
+Date:   Wed, 1 Jun 2022 08:44:16 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org
+Cc:     kbuild-all@lists.01.org, Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH v1 3/3] iio: adc: meson_saradc: Use temporary variable
+ for struct device
+Message-ID: <202206010812.Xy2yMeXw-lkp@intel.com>
+References: <20220531211842.71998-3-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220531211842.71998-3-andriy.shevchenko@linux.intel.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 31 May 2022 19:18:52 +0800, ChiaEn Wu wrote:
-> From: ChiYuan Huang <cy_huang@richtek.com>
-> 
-> Add Mediatek MT6370 binding documentation.
-> 
-> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> ---
->  .../bindings/mfd/mediatek,mt6370.yaml         | 282 ++++++++++++++++++
->  .../dt-bindings/iio/adc/mediatek,mt6370_adc.h |  18 ++
->  include/dt-bindings/mfd/mediatek,mt6370.h     |  83 ++++++
->  3 files changed, 383 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
->  create mode 100644 include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
->  create mode 100644 include/dt-bindings/mfd/mediatek,mt6370.h
-> 
+Hi Andy,
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+I love your patch! Perhaps something to improve:
 
-yamllint warnings/errors:
+[auto build test WARNING on jic23-iio/togreg]
+[also build test WARNING on v5.18 next-20220531]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
 
-dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/power/supply/mediatek,mt6370-charger.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: mt6370@34: charger: False schema does not allow {'compatible': ['mediatek,mt6370-charger'], 'interrupts': [[48], [68], [6]], 'interrupt-names': ['attach_i', 'uvp_d_evt', 'mivr'], 'io-channels': [[1, 5]], 'usb-otg-vbus': {'regulator-compatible': ['mt6370,otg-vbus'], 'regulator-name': ['usb-otg-vbus'], 'regulator-min-microvolt': [[4350000]], 'regulator-max-microvolt': [[5800000]], 'regulator-min-microamp': [[500000]], 'regulator-max-microamp': [[3000000]], 'phandle': [[2]]}}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: mt6370@34: tcpc: False schema does not allow {'compatible': ['mediatek,mt6370-tcpc'], 'interrupts-extended': [[4294967295, 4, 8]], 'connector': {'compatible': ['usb-c-connector'], 'label': ['USB-C'], 'vbus-supply': [[2]], 'data-role': ['dual'], 'power-role': ['dual'], 'try-power-role': ['sink'], 'source-pdos': [[570527844]], 'sink-pdos': [[570527944]], 'op-sink-microwatt': [[10000000]], 'ports': {'#address-cells': [[1]], '#size-cells': [[0]], 'port@0': {'reg': [[0]], 'endpoint': {'remote-endpoint': [[4294967295]]}}, 'port@1': {'reg': [[1]], 'endpoint': {'remote-endpoint': [[4294967295]]}}, 'port@2': {'reg': [[2]], 'endpoint': {'remote-endpoint': [[4294967295]]}}}}}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: mt6370@34: indicator: False schema does not allow {'compatible': ['mediatek,mt6370-indicator'], '#address-cells': [[1]], '#size-cells': [[0]], 'multi-led@0': {'reg': [[0]], 'function': ['indicator'], 'color': [[9]], 'led-max-microamp': [[24000]], '#address-cells': [[1]], '#size-cells': [[0]], 'mediatek,soft-start': [[3]], 'led@0': {'reg': [[0]], 'color': [[1]]}, 'led@1': {'reg': [[1]], 'color': [[2]]}, 'led@2': {'reg': [[2]], 'color': [[3]]}}, 'led@3': {'reg': [[3]], 'function': ['indicator'], 'color': [[0]], 'led-max-microamp': [[6000]]}}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: mt6370@34: flashlight: False schema does not allow {'compatible': ['mediatek,mt6370-flashlight'], '#address-cells': [[1]], '#size-cells': [[0]], 'led@0': {'reg': [[0]], 'led-sources': [[0]], 'function': ['flash'], 'color': [[0]], 'function-enumerator': [[1]], 'led-max-microamp': [[200000]], 'flash-max-microamp': [[500000]], 'flash-max-timeout-us': [[1248000]]}, 'led@1': {'reg': [[1]], 'led-sources': [[1]], 'function': ['flash'], 'color': [[0]], 'function-enumerator': [[2]], 'led-max-microamp': [[200000]], 'flash-max-microamp': [[500000]], 'flash-max-timeout-us': [[1248000]]}}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/mt6370@34/charger: failed to match any schema with compatible: ['mediatek,mt6370-charger']
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/mt6370@34/indicator: failed to match any schema with compatible: ['mediatek,mt6370-indicator']
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/mt6370@34/flashlight: failed to match any schema with compatible: ['mediatek,mt6370-flashlight']
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/mt6370@34/tcpc: failed to match any schema with compatible: ['mediatek,mt6370-tcpc']
+url:    https://github.com/intel-lab-lkp/linux/commits/Andy-Shevchenko/iio-adc-meson_saradc-Convert-to-use-dev_err_probe/20220601-052117
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
+config: m68k-allyesconfig (https://download.01.org/0day-ci/archive/20220601/202206010812.Xy2yMeXw-lkp@intel.com/config)
+compiler: m68k-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/d2d128394df620a157f32fab808d46e5983f73e5
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Andy-Shevchenko/iio-adc-meson_saradc-Convert-to-use-dev_err_probe/20220601-052117
+        git checkout d2d128394df620a157f32fab808d46e5983f73e5
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=m68k SHELL=/bin/bash drivers/iio/
 
-doc reference errors (make refcheckdocs):
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
 
-See https://patchwork.ozlabs.org/patch/
+All warnings (new ones prefixed by >>):
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
+   drivers/iio/adc/meson_saradc.c: In function 'meson_sar_adc_clk_init':
+>> drivers/iio/adc/meson_saradc.c:652:24: warning: 'dev' is used uninitialized [-Wuninitialized]
+     652 |         struct device *dev = dev->parent;
+         |                        ^~~
 
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
 
-pip3 install dtschema --upgrade
+vim +/dev +652 drivers/iio/adc/meson_saradc.c
 
-Please check and re-submit.
+   646	
+   647	static int meson_sar_adc_clk_init(struct iio_dev *indio_dev,
+   648					  void __iomem *base)
+   649	{
+   650		struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+   651		struct device *idev = &indio_dev->dev;
+ > 652		struct device *dev = dev->parent;
+   653		struct clk_init_data init;
+   654		const char *clk_parents[1];
+   655	
+   656		init.name = devm_kasprintf(idev, GFP_KERNEL, "%s#adc_div", dev_name(dev));
+   657		if (!init.name)
+   658			return -ENOMEM;
+   659	
+   660		init.flags = 0;
+   661		init.ops = &clk_divider_ops;
+   662		clk_parents[0] = __clk_get_name(priv->clkin);
+   663		init.parent_names = clk_parents;
+   664		init.num_parents = 1;
+   665	
+   666		priv->clk_div.reg = base + MESON_SAR_ADC_REG3;
+   667		priv->clk_div.shift = MESON_SAR_ADC_REG3_ADC_CLK_DIV_SHIFT;
+   668		priv->clk_div.width = MESON_SAR_ADC_REG3_ADC_CLK_DIV_WIDTH;
+   669		priv->clk_div.hw.init = &init;
+   670		priv->clk_div.flags = 0;
+   671	
+   672		priv->adc_div_clk = devm_clk_register(idev, &priv->clk_div.hw);
+   673		if (WARN_ON(IS_ERR(priv->adc_div_clk)))
+   674			return PTR_ERR(priv->adc_div_clk);
+   675	
+   676		init.name = devm_kasprintf(idev, GFP_KERNEL, "%s#adc_en", dev_name(dev));
+   677		if (!init.name)
+   678			return -ENOMEM;
+   679	
+   680		init.flags = CLK_SET_RATE_PARENT;
+   681		init.ops = &clk_gate_ops;
+   682		clk_parents[0] = __clk_get_name(priv->adc_div_clk);
+   683		init.parent_names = clk_parents;
+   684		init.num_parents = 1;
+   685	
+   686		priv->clk_gate.reg = base + MESON_SAR_ADC_REG3;
+   687		priv->clk_gate.bit_idx = __ffs(MESON_SAR_ADC_REG3_CLK_EN);
+   688		priv->clk_gate.hw.init = &init;
+   689	
+   690		priv->adc_clk = devm_clk_register(idev, &priv->clk_gate.hw);
+   691		if (WARN_ON(IS_ERR(priv->adc_clk)))
+   692			return PTR_ERR(priv->adc_clk);
+   693	
+   694		return 0;
+   695	}
+   696	
 
+-- 
+0-DAY CI Kernel Test Service
+https://01.org/lkp
