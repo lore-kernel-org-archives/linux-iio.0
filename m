@@ -2,81 +2,95 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE9F0C433EF
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Jun 2022 13:50:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A8AB4C433EF
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Jun 2022 13:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234021AbiFBNuX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 Jun 2022 09:50:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52234 "EHLO
+        id S234718AbiFBN5i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 Jun 2022 09:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54388 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235554AbiFBNuV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Jun 2022 09:50:21 -0400
-Received: from mail-oo1-f43.google.com (mail-oo1-f43.google.com [209.85.161.43])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B611D9EB8;
-        Thu,  2 Jun 2022 06:50:17 -0700 (PDT)
-Received: by mail-oo1-f43.google.com with SMTP id f5-20020a4aa685000000b0040e7e819183so916124oom.3;
-        Thu, 02 Jun 2022 06:50:17 -0700 (PDT)
+        with ESMTP id S231286AbiFBN5i (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Jun 2022 09:57:38 -0400
+Received: from mail-ot1-f45.google.com (mail-ot1-f45.google.com [209.85.210.45])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0240378EC8;
+        Thu,  2 Jun 2022 06:57:36 -0700 (PDT)
+Received: by mail-ot1-f45.google.com with SMTP id w19-20020a9d6393000000b0060aeb359ca8so3454013otk.6;
+        Thu, 02 Jun 2022 06:57:35 -0700 (PDT)
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:date:from:to:cc:subject:message-id:references
          :mime-version:content-disposition:in-reply-to;
-        bh=m7Egz3Eq4p4pH7ofqDEwdevk0tSPQ2S3OmzV9Rn7cog=;
-        b=idyLCUZqNwtt41GHHuJA3ehdPbn9+NytnkZgE+mlYnIQvgH0chZOeadDM/9WiShbeU
-         lFSUUwyBHGScRDEjY5N7JU7hDFWKApzERWO1BcwcAxDx9n/Hq2vdRvhuF0W4yvyvhnCx
-         1HINcGhCJf0fKEAJciggjC/tuDxH5g9vhkkl1aBklvl9TUr6vDC0lPkUvFlD6uVPmsSv
-         ltGnfYmDIG4m04eWfL7Qi7AX/LlkXVV06EjhuNpACOEAiHQvCllmiLA7FBfP7qzsz5Wi
-         ciw3myQG6bQyd5UNt11S3i2Q9Abjk/e6Xy9inu5fNwtNSFNWUq2VLhZKYRjoxTm73h+j
-         M58w==
-X-Gm-Message-State: AOAM5312ODdMqUe++aZn5yIlCvlxgeOp+tSojQ6ujkqOAQoftVK9nell
-        cHqF3QYC7R7IUTJYDL7VUg==
-X-Google-Smtp-Source: ABdhPJwJXAd51YLvPJ90VxQRsLC8hBY4/pzwaXaplOTizmH4wxfnS/mGPlNTwMHa0vECJ2olRL5iIQ==
-X-Received: by 2002:a4a:ba81:0:b0:40e:7cd9:afa1 with SMTP id d1-20020a4aba81000000b0040e7cd9afa1mr2078469oop.22.1654177816557;
-        Thu, 02 Jun 2022 06:50:16 -0700 (PDT)
+        bh=DmzaWPni36LTWrL68JDxVCICKAzdgnrKhvK4tMCxkNQ=;
+        b=vf9EoScgVYReHhG/3zdd3PLLsSGg/k5gCYHO0n8TAasx90Q7WpHUxeaEHdZzeKD5rF
+         48VBezWK3HZuXt4ebmOyO4CcQwHIBdnskQ4P4bkDF8xzoEVgnqbm8RKO2txuaFslFqA6
+         apnCVXzR7Iamr93FZIBVTWGpLkYCR2Lah6brnpTx59PWxgTrzMr48r9hnIX7ehdNJldc
+         JmxiMSp6ds9wQXz+fc6EqS2zn158FZoVnBttRSZ/5NLrs59eIrq1lY0lt9sS5kFIzyVh
+         dVno0wtBm8yRAoHN04dEFms0AnfmBbW1aZTtwsn/CE0ThkrVstRqGuw0WJIziyGlrQQl
+         Lg7Q==
+X-Gm-Message-State: AOAM53399417eD4FsRf7T+1id8ZMiL3PNk3X/mTmrqw3E90TQbIgLlKU
+        z3oP/gXVIYd2olKvL8zikQ==
+X-Google-Smtp-Source: ABdhPJzx7xBx/olEPIrFDCkTc/pBdbrFue3iMMVdMAx5aXnHNxj2NxgDJOCNkqa35jOsOnNfktnEcg==
+X-Received: by 2002:a9d:7245:0:b0:60b:8843:3c7f with SMTP id a5-20020a9d7245000000b0060b88433c7fmr1985816otk.363.1654178255246;
+        Thu, 02 Jun 2022 06:57:35 -0700 (PDT)
 Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id t12-20020a056830082c00b0060b39282e7esm2182511ots.35.2022.06.02.06.50.15
+        by smtp.gmail.com with ESMTPSA id k13-20020a54470d000000b0032603df9d24sm2192550oik.47.2022.06.02.06.57.34
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 02 Jun 2022 06:50:16 -0700 (PDT)
-Received: (nullmailer pid 2186777 invoked by uid 1000);
-        Thu, 02 Jun 2022 13:50:15 -0000
-Date:   Thu, 2 Jun 2022 08:50:15 -0500
+        Thu, 02 Jun 2022 06:57:34 -0700 (PDT)
+Received: (nullmailer pid 2200075 invoked by uid 1000);
+        Thu, 02 Jun 2022 13:57:34 -0000
+Date:   Thu, 2 Jun 2022 08:57:34 -0500
 From:   Rob Herring <robh@kernel.org>
-To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Cc:     "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH v2 1/3] dt-bindings: vendor-prefixes: add MEMSensing
- Microsystems Co., Ltd.
-Message-ID: <20220602135015.GA2186715-robh@kernel.org>
-References: <20220525181532.6805-1-ddrokosov@sberdevices.ru>
- <20220525181532.6805-2-ddrokosov@sberdevices.ru>
+To:     LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+Cc:     jic23@kernel.org, lars@metafoo.de, mchehab+huawei@kernel.org,
+        ardeleanalex@gmail.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mike.looijmans@topic.nl,
+        devicetree@vger.kernel.org, thomas.haemmerle@leica-geosystems.com
+Subject: Re: [PATCH V5 6/6] dt-bindings: iio: accel: Add bmi085 and bmi090l
+ bindings
+Message-ID: <20220602135734.GA2198822-robh@kernel.org>
+References: <20220526133359.2261928-1-Qing-wu.Li@leica-geosystems.com.cn>
+ <20220526133359.2261928-7-Qing-wu.Li@leica-geosystems.com.cn>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
-In-Reply-To: <20220525181532.6805-2-ddrokosov@sberdevices.ru>
+In-Reply-To: <20220526133359.2261928-7-Qing-wu.Li@leica-geosystems.com.cn>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 25 May 2022 18:15:30 +0000, Dmitry Rokosov wrote:
-> MEMSensing Microsystems (Suzhou, China) Co., Ltd. operates as a micro
-> electromechanical system technology company which produces micro
-> electromechanical system microphones and sensors.
-> MEMSensing Microsystems (Suzhou, China) Co., Ltd. applies its products
-> in consumer electronics, industrial control, medical electronics
-> and automotive, and other fields.
+On Thu, May 26, 2022 at 01:33:59PM +0000, LI Qingwu wrote:
+> Adds the device-tree bindings for the Bosch
+> BMI085 and BMI090L IMU, the accelerometer part.
 > 
-> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-> ---
->  Documentation/devicetree/bindings/vendor-prefixes.yaml | 2 ++
->  1 file changed, 2 insertions(+)
-> 
+> Datasheet: https://www.bosch-sensortec.com/media/boschsensortec/downloads/datasheets/bst-bmi085-ds001.pdf
+> Datasheet: https://media.digikey.com/pdf/Data%20Sheets/Bosch/BST-BMI090L-DS000-00.pdf
+
+blank line here. These aren't part of the tags.
+
+With that,
 
 Acked-by: Rob Herring <robh@kernel.org>
+
+> Signed-off-by: LI Qingwu <Qing-wu.Li@leica-geosystems.com.cn>
+> ---
+>  Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml b/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
+> index 911a1ae9c83f..272eb48eef5a 100644
+> --- a/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
+> +++ b/Documentation/devicetree/bindings/iio/accel/bosch,bmi088.yaml
+> @@ -17,7 +17,9 @@ description: |
+>  properties:
+>    compatible:
+>      enum:
+> +      - bosch,bmi085-accel
+>        - bosch,bmi088-accel
+> +      - bosch,bmi090l-accel
+>  
+>    reg:
+>      maxItems: 1
+> -- 
+> 2.25.1
+> 
+> 
