@@ -2,60 +2,60 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 33B27CCA47E
-	for <linux-iio@archiver.kernel.org>; Thu,  2 Jun 2022 18:22:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B1EAC433EF
+	for <linux-iio@archiver.kernel.org>; Thu,  2 Jun 2022 19:15:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238216AbiFBSWs (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 2 Jun 2022 14:22:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57026 "EHLO
+        id S238424AbiFBTPL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 2 Jun 2022 15:15:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238173AbiFBSWf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Jun 2022 14:22:35 -0400
+        with ESMTP id S238418AbiFBTPK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Jun 2022 15:15:10 -0400
 Received: from mail-io1-xd36.google.com (mail-io1-xd36.google.com [IPv6:2607:f8b0:4864:20::d36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D9DDB17E19;
-        Thu,  2 Jun 2022 11:22:27 -0700 (PDT)
-Received: by mail-io1-xd36.google.com with SMTP id 2so5590431iou.5;
-        Thu, 02 Jun 2022 11:22:27 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 89FD220F58;
+        Thu,  2 Jun 2022 12:15:08 -0700 (PDT)
+Received: by mail-io1-xd36.google.com with SMTP id i201so122583ioa.6;
+        Thu, 02 Jun 2022 12:15:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
          :cc:content-transfer-encoding;
-        bh=rb78/Si50YHRG3/zeIdBErQ6GzrBGzyMy6c/2Qru9iA=;
-        b=TIwX3QBFC7A8jcA1/ieNV9CVbcphYpQaITGJkvXqeR9RjVRF0E0XsBODPKVouqudI1
-         yot70cL06RMduvm13bd1wse+JGt21OYGX1ZwbrLxqEZQh0mu6KVD3iaqZ8qv9a2YBkco
-         ItLjawD46ESPW3i7QNZXxgrDi3eE85JW400V1a+iwg9wSk7C6O3JggKToM89pIsyQ039
-         ng72vAyGicyCDZuW8AvVBYDp2NdNzOWTvKH7N0iRR2rniHvsAWP8MXOjKVDsd98puJ55
-         KhfXup5QcNrvuCl717Jj+2EHY1H3vtZvLvcXCBS9WbFnt1sT1zQgQPo0O03yN/wLzoh1
-         n/Fw==
+        bh=+JW6e6kAbkN1t97wxNKn9trDaaZcj41ptIda8qj3Wss=;
+        b=Mp3yYAlO9Imkq6jnVsv97Ohy+jxga/lb1MU6H8gTFzB/XiqAYsmgs7+AerjK52IbOX
+         Z5ku3ZZAU1yZx0zQJsUoh5Cmfrkh5hNHSUKsZOvomVQ9lrjHsoSPpfnIX0jzAaabG5s/
+         kFzIklrdpFad1HMH4lSIsFYRm4z5uggz270Jh6qRBeNIgjFO9VqU0j3BuvbbEsMcLSlN
+         q2qK1+2iYRJBbHvyYbnil6/I78AzdEYB5imRqiIR4NgBPnOmyvSnIT2iXsSIukvxkJb3
+         FQoW1mECkuo+5XRlZT61kIS5j+umTbCjmUwXjTKSaxFMHBBSl+6BwUf8yF+RBuQt44O8
+         WkqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
          :message-id:subject:to:cc:content-transfer-encoding;
-        bh=rb78/Si50YHRG3/zeIdBErQ6GzrBGzyMy6c/2Qru9iA=;
-        b=jpj68MMw11xFHEEOnCC1shex+6JA/jHL+v6uMqsZBpYq+jIP1mnvu+YGuVV9TGoKDf
-         rdfIYQgi5rToIgmzR0roJ9mVSiE8deV67oopHbzJbagcaCgZSsr095vbBecyWm2BK32M
-         pQLou05yiavaByQp/ipA589etcFt4R6YhsxVuBME9ZCs3KVEjOz/zrvOcoT31GT9tTXV
-         B+sEhtkGpq0h6Q4D9/IXSEGVY6f2BGQVzY8ihrkJGJeE/lnyeYE/tLlPrl1KAFhQebK+
-         qmj6mLlg0tSgcd7zmsp38IFW3JHxIEzprprgyDbNDiKJ3iBjWEuRzOEu9kGNdaZ+l/e5
-         6Jzw==
-X-Gm-Message-State: AOAM532sDwgzlKtfbYuvgrPTNIkxmj7uXmS+wltgeFSFKnLKIbLRTpUt
-        mpyauU1+6nJpGXioy5ci1mGrFJieb1KZOZ/1PhY=
-X-Google-Smtp-Source: ABdhPJw51uQn0pORopjOrTQMyfowxa8ppaT964Ws3gi+VH3fwPVU+uI88kAqWAWAwXt9H4A6qWF+EC6yIFJQKSG86OU=
-X-Received: by 2002:a02:9f8b:0:b0:32e:7bf1:bd with SMTP id a11-20020a029f8b000000b0032e7bf100bdmr3866136jam.2.1654194147191;
- Thu, 02 Jun 2022 11:22:27 -0700 (PDT)
+        bh=+JW6e6kAbkN1t97wxNKn9trDaaZcj41ptIda8qj3Wss=;
+        b=7r3MKJe3nC0B272jtLJOi0QUxslJBBircwqzESu9Fk9r571Xsj8r9HvtVDX25T7TeO
+         74fn50HFlAAfg7aLLvQ1nMjrXM4K5k8MmY23p50SvY7QSUGwv6WV4b5LgpoEQb/kd3CW
+         Dmr2Swin8ecipn+7cFAMyfh7GHY40PvugzmJ2x6Le397ugiH1WCNkUssxQG+xfjqGwMF
+         ulEjgsT8Veef9wehSwIRoE5Yf1HAa10zOCqzf6KBW0Diwaq/QpMGkEAZCKDRXF0t7Qj7
+         tk/fRe1LebdhnmqwxBjmE6RnDGt9AAnIZFz8jPQGMAu6s80Fd6+wtaAOdr/7D0tnBDRs
+         Zziw==
+X-Gm-Message-State: AOAM5336D/62hzdz00YgO0jrBZkPbjsbwczPtC+s9xn3GKbW9Hh2YEe/
+        eusXH8dAY23ashzvft4GJM5dISsurER1nBGaVy0=
+X-Google-Smtp-Source: ABdhPJy7VatPndTmM5OUVDGmxQ+LUCJY+DzYiarB1n+6ksvOyD1yaNE9MZIu+T8TyIiNppF3Bd3F4stuMBR0VTMVw/s=
+X-Received: by 2002:a05:6602:1355:b0:63d:a9ab:7e30 with SMTP id
+ i21-20020a056602135500b0063da9ab7e30mr3336043iov.119.1654197307956; Thu, 02
+ Jun 2022 12:15:07 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220531111900.19422-1-peterwu.pub@gmail.com> <20220531111900.19422-11-peterwu.pub@gmail.com>
- <20220531142102.00007df0@Huawei.com>
-In-Reply-To: <20220531142102.00007df0@Huawei.com>
+References: <20220531111900.19422-1-peterwu.pub@gmail.com> <20220531111900.19422-15-peterwu.pub@gmail.com>
+ <20220601094623.jnwh2fgsqepy72tc@maple.lan>
+In-Reply-To: <20220601094623.jnwh2fgsqepy72tc@maple.lan>
 From:   ChiaEn Wu <peterwu.pub@gmail.com>
-Date:   Fri, 3 Jun 2022 02:22:16 +0800
-Message-ID: <CABtFH5Lg43EXS7juhXQ2wQFZzkpD7YB8rM6UFT=U9BDOKcbaNw@mail.gmail.com>
-Subject: Re: [RESEND 10/14] iio: adc: mt6370: Add Mediatek MT6370 support
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com,
+Date:   Fri, 3 Jun 2022 03:14:56 +0800
+Message-ID: <CABtFH5+-o=cML_VCSY9frJwEU_TnZt0+myJebi8J7BpP+BOqOw@mail.gmail.com>
+Subject: Re: [RESEND 14/14] video: backlight: mt6370: Add Mediatek MT6370 support
+To:     Daniel Thompson <daniel.thompson@linaro.org>
+Cc:     lee.jones@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
         gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
         lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
         heikki.krogerus@linux.intel.com, deller@gmx.de,
@@ -72,439 +72,415 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+Hi Daniel,
 
-Sorry for sending the same email again. I miss to reply all in the last ema=
-il..
+Thanks for your valuable feedback!
 
-Thanks for your valuable suggestions!
-
-Jonathan Cameron <Jonathan.Cameron@huawei.com> =E6=96=BC 2022=E5=B9=B45=E6=
-=9C=8831=E6=97=A5 =E9=80=B1=E4=BA=8C =E4=B8=8B=E5=8D=889:21=E5=AF=AB=E9=81=
-=93=EF=BC=9A
-
+Daniel Thompson <daniel.thompson@linaro.org> =E6=96=BC 2022=E5=B9=B46=E6=9C=
+=881=E6=97=A5 =E9=80=B1=E4=B8=89 =E4=B8=8B=E5=8D=885:46=E5=AF=AB=E9=81=93=
+=EF=BC=9A
 >
-> On Tue, 31 May 2022 19:18:56 +0800
-> ChiaEn Wu <peterwu.pub@gmail.com> wrote:
->
+> On Tue, May 31, 2022 at 07:19:00PM +0800, ChiaEn Wu wrote:
 > > From: ChiaEn Wu <chiaen_wu@richtek.com>
 > >
-> > Add Mediatek MT6370 ADC support.
+> > Add Mediatek MT6370 Backlight support.
 > >
 > > Signed-off-by: ChiaEn Wu <chiaen_wu@richtek.com>
->
-> Hi ChiaEn,
->
-> A few comments inline.
->
-> Thanks,
->
-> Jonathan
->
 > > ---
-> >  drivers/iio/adc/Kconfig      |   9 ++
-> >  drivers/iio/adc/Makefile     |   1 +
-> >  drivers/iio/adc/mt6370-adc.c | 257 +++++++++++++++++++++++++++++++++++
-> >  3 files changed, 267 insertions(+)
-> >  create mode 100644 drivers/iio/adc/mt6370-adc.c
+> >  drivers/video/backlight/Kconfig            |   8 +
+> >  drivers/video/backlight/Makefile           |   1 +
+> >  drivers/video/backlight/mt6370-backlight.c | 338 +++++++++++++++++++++
+> >  3 files changed, 347 insertions(+)
+> >  create mode 100644 drivers/video/backlight/mt6370-backlight.c
 > >
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index 71ab0a06aa82..d7932dd9b773 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -737,6 +737,15 @@ config MEDIATEK_MT6360_ADC
-> >         is used in smartphones and tablets and supports a 11 channel
-> >         general purpose ADC.
+> > diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/=
+Kconfig
+> > index a003e02e13ce..d9868fbe7488 100644
+> > --- a/drivers/video/backlight/Kconfig
+> > +++ b/drivers/video/backlight/Kconfig
+> > @@ -268,6 +268,14 @@ config BACKLIGHT_MAX8925
+> >         If you have a LCD backlight connected to the WLED output of MAX=
+8925
+> >         WLED output, say Y here to enable this driver.
 > >
-> > +config MEDIATEK_MT6370_ADC
-> > +     tristate "Mediatek MT6370 ADC driver"
+> > +config BACKLIGHT_MT6370
+>
+> Is MT6370 really the best name for this driver? In other words, you
+> don't expect there to be any family resemblance between this backlight
+> and the backlight in the *next* Mediatak PMIC?
+>
+> Moreover,
+
+MT6370, MT6371, MT6372 are very similar, their hardware design and
+features are almost the same and this driver can be compatible with
+them.
+But, MT6374 is not the same serials PMIC as MT6370, but the name is
+very similar. And It has no backlight feature, so I think MT6370 is
+the best name for this driver now.
+
+>
+>
+> > +     tristate "Mediatek MT6370 Backlight Driver"
 > > +     depends on MFD_MT6370
 > > +     help
-> > +       Say Y here to enable MT6370 ADC support.
-> > +       Integrated for System Monitoring includes
+> > +       Say Y here to enable MT6370 Backlight support.
+> > +       It's commonly used to drive the display WLED. There're 4 channe=
+ls
+> > +       inisde, and each channel can provide up to 30mA current.
 >
-> The wrapping of this text needs cleaning up.
+> Nitpicking but this doesn't align well with other help texts in this
+> file.
 >
-> > +       is used in smartphones and tablets and supports a 9 channel
-> > +       general purpose ADC.
+
+OK! I will try to align well in the next patch.
+
+>
 > > +
-> >  config MEDIATEK_MT6577_AUXADC
-> >       tristate "MediaTek AUXADC driver"
-> >       depends on ARCH_MEDIATEK || COMPILE_TEST
-> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> > index 39d806f6d457..0ce285c7e2d0 100644
-> > --- a/drivers/iio/adc/Makefile
-> > +++ b/drivers/iio/adc/Makefile
-> > @@ -68,6 +68,7 @@ obj-$(CONFIG_MCP320X) +=3D mcp320x.o
-> >  obj-$(CONFIG_MCP3422) +=3D mcp3422.o
-> >  obj-$(CONFIG_MCP3911) +=3D mcp3911.o
-> >  obj-$(CONFIG_MEDIATEK_MT6360_ADC) +=3D mt6360-adc.o
-> > +obj-$(CONFIG_MEDIATEK_MT6370_ADC) +=3D mt6370-adc.o
-> >  obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) +=3D mt6577_auxadc.o
-> >  obj-$(CONFIG_MEN_Z188_ADC) +=3D men_z188_adc.o
-> >  obj-$(CONFIG_MESON_SARADC) +=3D meson_saradc.o
-> > diff --git a/drivers/iio/adc/mt6370-adc.c b/drivers/iio/adc/mt6370-adc.=
-c
+> >  config BACKLIGHT_APPLE
+> >       tristate "Apple Backlight Driver"
+> >       depends on X86 && ACPI
+> > diff --git a/drivers/video/backlight/Makefile b/drivers/video/backlight=
+/Makefile
+> > index cae2c83422ae..e815f3f1deff 100644
+> > --- a/drivers/video/backlight/Makefile
+> > +++ b/drivers/video/backlight/Makefile
+> > @@ -44,6 +44,7 @@ obj-$(CONFIG_BACKLIGHT_LP855X)              +=3D lp85=
+5x_bl.o
+> >  obj-$(CONFIG_BACKLIGHT_LP8788)               +=3D lp8788_bl.o
+> >  obj-$(CONFIG_BACKLIGHT_LV5207LP)     +=3D lv5207lp.o
+> >  obj-$(CONFIG_BACKLIGHT_MAX8925)              +=3D max8925_bl.o
+> > +obj-$(CONFIG_BACKLIGHT_MT6370)               +=3D mt6370-backlight.o
+> >  obj-$(CONFIG_BACKLIGHT_OMAP1)                +=3D omap1_bl.o
+> >  obj-$(CONFIG_BACKLIGHT_PANDORA)              +=3D pandora_bl.o
+> >  obj-$(CONFIG_BACKLIGHT_PCF50633)     +=3D pcf50633-backlight.o
+> > diff --git a/drivers/video/backlight/mt6370-backlight.c b/drivers/video=
+/backlight/mt6370-backlight.c
 > > new file mode 100644
-> > index 000000000000..3320ebca17ad
+> > index 000000000000..f8a8d33203ed
 > > --- /dev/null
-> > +++ b/drivers/iio/adc/mt6370-adc.c
-> > @@ -0,0 +1,257 @@
+> > +++ b/drivers/video/backlight/mt6370-backlight.c
+> > @@ -0,0 +1,338 @@
 > > +// SPDX-License-Identifier: GPL-2.0
 > > +
-> > +#include <dt-bindings/iio/adc/mediatek,mt6370_adc.h>
-> > +#include <linux/bits.h>
+> > +#include <linux/backlight.h>
 > > +#include <linux/bitfield.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/irq.h>
->
-> Not seeing any interrupt support in here.
-
-Sorry for that I forgot remove this line, I'll refine it in the next patch.
-
->
->
+> > +#include <linux/bits.h>
+> > +#include <linux/gpio/consumer.h>
+> > +#include <linux/gpio/driver.h>
 > > +#include <linux/kernel.h>
 > > +#include <linux/module.h>
-> > +#include <linux/mutex.h>
+> > +#include <linux/of.h>
 > > +#include <linux/platform_device.h>
 > > +#include <linux/regmap.h>
 > > +
-> > +#define MT6370_REG_CHG_CTRL3         0x113 /* AICR */
-> > +#define MT6370_REG_CHG_CTRL7         0x117 /* ICHG */
-> > +#define MT6370_REG_CHG_ADC           0x121
-> > +#define MT6370_REG_ADC_DATA_H                0x14C
+> > +#define MT6370_REG_DEV_INFO          0x100
+> > +#define MT6370_REG_BL_EN             0x1A0
+> > +#define MT6370_REG_BL_BSTCTRL                0x1A1
+> > +#define MT6370_REG_BL_PWM            0x1A2
+> > +#define MT6370_REG_BL_DIM2           0x1A4
 > > +
-> > +#define MT6370_ADC_START_MASK                BIT(0)
-> > +#define MT6370_ADC_IN_SEL_MASK               GENMASK(7, 4)
-> > +#define MT6370_AICR_ICHG_MASK                GENMASK(7, 2)
+> > +#define MT6370_VENID_MASK            GENMASK(7, 4)
+> > +#define MT6370_BL_EXT_EN_MASK                BIT(7)
+> > +#define MT6370_BL_EN_MASK            BIT(6)
+> > +#define MT6370_BL_CONFIG_MASK                BIT(0)
+> > +#define MT6370_BL_CH_MASK            GENMASK(5, 2)
+> > +#define MT6370_BL_DIM2_MASK          GENMASK(2, 0)
+> > +#define MT6370_BL_DUMMY_6372_MASK    GENMASK(2, 0)
+> > +#define MT6370_BL_DIM2_6372_SHIFT    3
+> > +#define MT6370_BL_PWM_EN_MASK                BIT(7)
+> > +#define MT6370_BL_PWM_HYS_EN_MASK    BIT(2)
+> > +#define MT6370_BL_PWM_HYS_SEL_MASK   GENMASK(1, 0)
+> > +#define MT6370_BL_OVP_EN_MASK                BIT(7)
+> > +#define MT6370_BL_OVP_SEL_MASK               GENMASK(6, 5)
+> > +#define MT6370_BL_OC_EN_MASK         BIT(3)
+> > +#define MT6370_BL_OC_SEL_MASK                GENMASK(2, 1)
 > > +
-> > +#define MT6370_ADC_CHAN_SHIFT                4
+> > +#define MT6370_BL_MAX_BRIGHTNESS     2048
+> > +
+> > +enum {
+> > +     MT6370_VID_COMMON =3D 0,
+> > +     MT6370_VID_6372,
+> > +     MT6370_VID_MAX,
 >
-> Prefer using a mask and then FIELD_PREP
-
-OK, I got it!
-
+> Unused.
 >
+> > +};
 > > +
-> > +#define MT6370_AICR_400MA            0x6
-> > +#define MT6370_ICHG_500MA            0x4
-> > +#define MT6370_ICHG_900MA            0x8
+> > +enum mt6370_prop_type {
+> > +     MT6370_PARSE_TYPE_BOOL =3D 0,
+> > +     MT6370_PARSE_TYPE_U8,
+> > +     MT6370_PARSE_TYPE_MAX,
+>
+> Unused.
+>
+> > +};
 > > +
-> > +#define ADC_CONV_TIME_US             35000
-> > +#define ADC_CONV_POLLING_TIME                1000
-> > +
-> > +struct mt6370_adc_data {
+> > +struct mt6370_priv {
+> > +     int vid_type;
+> > +     struct backlight_device *bl;
 > > +     struct device *dev;
+> > +     struct gpio_desc *enable_gpio;
 > > +     struct regmap *regmap;
-> > +     struct mutex lock;
->
-> All locks need documentation.  What is the scope of the lock?
-> Looks like it protects device state when doing setup, wait for read, read
-> cycles.
-
-This mutex lock is for preventing the different adc channel from being
-read at the same time.
-So, if I just change its name to adc_chan_lock or adc_lock and add the
-comment for this mutex lock, does this change meet your requirement?
-
->
 > > +};
 > > +
-> > +static int mt6370_adc_read_channel(struct mt6370_adc_data *priv, int c=
-han,
-> > +                                unsigned long addr, int *val)
+> > +static int mt6370_bl_update_status(struct backlight_device *bl_dev)
 > > +{
-> > +     __be16 be_val;
-> > +     unsigned int reg_val;
+> > +     struct mt6370_priv *priv =3D bl_get_data(bl_dev);
+> > +     int brightness =3D backlight_get_brightness(bl_dev);
+> > +     unsigned int enable_val;
+> > +     u8 brightness_val[2];
 > > +     int ret;
 > > +
-> > +     mutex_lock(&priv->lock);
+> > +     if (brightness) {
+> > +             brightness_val[0] =3D (brightness - 1) & MT6370_BL_DIM2_M=
+ASK;
+> > +             brightness_val[1] =3D (brightness - 1)
+> > +                                     >> fls(MT6370_BL_DIM2_MASK);
 > > +
-> > +     reg_val =3D MT6370_ADC_START_MASK | (addr << MT6370_ADC_CHAN_SHIF=
-T);
+> > +             if (priv->vid_type =3D=3D MT6370_VID_6372) {
+> > +                     brightness_val[0] <<=3D MT6370_BL_DIM2_6372_SHIFT=
+;
+> > +                     brightness_val[0] |=3D MT6370_BL_DUMMY_6372_MASK;
 >
-> FIELD_PREP for that shift?
+> Comment explaining why we have to set these bits would be useful.
 
-I got it! I'll refine it in the next patch.
-
+I got it, I will add the comment in the next patch.
 
 >
-> > +     ret =3D regmap_write(priv->regmap, MT6370_REG_CHG_ADC, reg_val);
-> > +     if (ret)
-> > +             goto adc_unlock;
+>
+> > +             }
 > > +
-> > +     msleep(ADC_CONV_TIME_US / 1000);
-> > +
-> > +     ret =3D regmap_read_poll_timeout(priv->regmap,
-> > +                                    MT6370_REG_CHG_ADC, reg_val,
-> > +                                    !(reg_val & MT6370_ADC_START_MASK)=
+> > +             ret =3D regmap_raw_write(priv->regmap, MT6370_REG_BL_DIM2=
 ,
-> > +                                    ADC_CONV_POLLING_TIME,
-> > +                                    ADC_CONV_TIME_US * 3);
-> > +     if (ret) {
-> > +             if (ret =3D=3D -ETIMEDOUT)
-> > +                     dev_err(priv->dev, "Failed to wait adc conversion=
-\n");
-> > +             goto adc_unlock;
+> > +                                    brightness_val, sizeof(brightness_=
+val));
+> > +             if (ret)
+> > +                     return ret;
 > > +     }
 > > +
-> > +     ret =3D regmap_raw_read(priv->regmap, MT6370_REG_ADC_DATA_H,
-> > +                           &be_val, sizeof(be_val));
+> > +     if (priv->enable_gpio)
+> > +             gpiod_set_value(priv->enable_gpio, brightness ? 1 : 0);
+> > +
+> > +     enable_val =3D brightness ? MT6370_BL_EN_MASK : 0;
+> > +     return regmap_update_bits(priv->regmap, MT6370_REG_BL_EN,
+> > +                               MT6370_BL_EN_MASK, enable_val);
+> > +}
+> > +
+>
+> <snip>
+>
+> > +#define MT6370_DT_PROP_DECL(_name, _type, _reg, _mask, _max, _inv)   \
+> > +{                                                                    \
+> > +     .name =3D "mediatek,bled-" #_name,                               =
+ \
+>
+> I'd rather have the whole DT property in the macro (because it helps
+> with grepability).
+
+Do you mean the _name parameter must be the full name of the DT
+property and do not use "#" to concat like following example?
+
+// in declare
+            .name =3D _name,
+// in use
+            MT6370_DT_PROP_DECL(mediatek,bled-pwm-enable, ......)
+
+>
+>
+> > +     .type =3D MT6370_PARSE_TYPE_##_type,                             =
+ \
+> > +     .reg =3D _reg,                                                   =
+ \
+> > +     .mask =3D _mask,                                                 =
+ \
+> > +     .max_val =3D _max,                                               =
+ \
+> > +     .invert =3D _inv,                                                =
+ \
+> > +}
+> > +
+> > +static int mt6370_init_backlight_properties(struct mt6370_priv *priv,
+> > +                                         struct backlight_properties *=
+props)
+> > +{
+> > +     struct device *dev =3D priv->dev;
+> > +     u8 prop_val;
+> > +     u32 brightness;
+> > +     unsigned int mask, val;
+> > +     static const struct {
+> > +             char *name;
+> > +             enum mt6370_prop_type type;
+> > +             unsigned int reg;
+> > +             unsigned int mask;
+> > +             u8 max_val;
+> > +             bool invert;
+> > +     } vendor_opt_props[] =3D {
+> > +             MT6370_DT_PROP_DECL(pwm-enable, BOOL, MT6370_REG_BL_PWM,
+> > +                                 MT6370_BL_PWM_EN_MASK, 1, false),
+> > +             MT6370_DT_PROP_DECL(pwm-hys-enable, BOOL, MT6370_REG_BL_P=
+WM,
+> > +                                 MT6370_BL_PWM_HYS_EN_MASK, 1, false),
+> > +             MT6370_DT_PROP_DECL(pwm-hys-sel, U8, MT6370_REG_BL_PWM,
+> > +                                 MT6370_BL_PWM_HYS_SEL_MASK, 3, false)=
+,
+> > +             MT6370_DT_PROP_DECL(ovp-level-sel, U8, MT6370_REG_BL_BSTC=
+TRL,
+> > +                                 MT6370_BL_OVP_SEL_MASK, 3, false),
+> > +             MT6370_DT_PROP_DECL(ovp-shutdown, BOOL, MT6370_REG_BL_BST=
+CTRL,
+> > +                                 MT6370_BL_OVP_EN_MASK, 1, true),
+> > +             MT6370_DT_PROP_DECL(ocp-level-sel, U8, MT6370_REG_BL_BSTC=
+TRL,
+> > +                                 MT6370_BL_OC_SEL_MASK, 3, false),
+> > +             MT6370_DT_PROP_DECL(ocp-shutdown, BOOL, MT6370_REG_BL_BST=
+CTRL,
+> > +                                 MT6370_BL_OC_EN_MASK, 1, true),
+> > +     }, *prop_now;
+> > +     int i, ret;
+> > +
+> > +     /* vendor optional properties */
+> > +     for (i =3D 0; i < ARRAY_SIZE(vendor_opt_props); i++) {
+> > +             prop_now =3D vendor_opt_props + i;
+> > +
+> > +             switch (prop_now->type) {
+> > +             case MT6370_PARSE_TYPE_BOOL:
+> > +                     if (device_property_read_bool(dev, prop_now->name=
+))
+> > +                             val =3D 1;
+> > +                     else
+> > +                             val =3D 0;
+> > +                     break;
+> > +             case MT6370_PARSE_TYPE_U8:
+> > +                     ret =3D device_property_read_u8(dev, prop_now->na=
+me,
+> > +                                                   &prop_val);
+> > +                     /* Property not exist, keep value in default */
+> > +                     if (ret)
+> > +                             continue;
+> > +
+> > +                     val =3D min_t(u8, prop_val, prop_now->max_val);
+> > +                     break;
+> > +             default:
+> > +                     return -EINVAL;
+> > +             }
+> > +
+> > +             if (prop_now->invert)
+> > +                     val =3D prop_now->max_val - val;
+> > +
+> > +             val <<=3D ffs(prop_now->mask) - 1;
+> > +
+> > +             ret =3D regmap_update_bits(priv->regmap, prop_now->reg,
+> > +                                      prop_now->mask, val);
+> > +             if (ret)
+> > +                     return ret;
+> > +     }
+>
+> Is it really worth all this tricky code for 7 properties?
+>
+> The code would be much easier to read and maintain if it were coded
+> directly. For example, the inverted boolean code is hard to read and
+> can be written directly as:
+>
+>
+>         val =3D device_property_read_bool(dev, "mediatek,bled-ovp_shutdow=
+n");
+>         ret =3D regmap_update_bits(priv->regmap, MT6370_REG_BL_BST_CTRL,
+>                                  MT6370_BL_OVP_EN_MASK,
+>                                  MT6370_BL_OVP_EN_MASK * !val);
+>         if (ret)
+>                 return ret;
+>
+> The direct coded approach will probably also pay off if you switch
+> the bindings over to microvolts/microamps since it becomes much more
+> natural to call out to a lookup function to convert it into a register
+> value.
+>
+
+The purpose of my code is trying to avoid the repeat code in this
+function. And for loop can help to decrease the lines of code
+effectively, that's why I use these code to parse the DT properties.
+
+> > +
+> > +     /* common properties */
+> > +     ret =3D device_property_read_u32(dev, "max-brightness", &brightne=
+ss);
 > > +     if (ret)
-> > +             goto adc_unlock;
+> > +             brightness =3D MT6370_BL_MAX_BRIGHTNESS;
 > > +
-> > +     *val =3D be16_to_cpu(be_val);
-> > +     ret =3D IIO_VAL_INT;
+> > +     props->max_brightness =3D min_t(u32, brightness,
+> > +                                   MT6370_BL_MAX_BRIGHTNESS);
 > > +
-> > +adc_unlock:
-> > +     mutex_unlock(&priv->lock);
+> > +     ret =3D device_property_read_u32(dev, "default-brightness", &brig=
+htness);
+> > +     if (ret)
+> > +             brightness =3D props->max_brightness;
 > > +
-> > +     return ret;
-> > +}
+> > +     props->brightness =3D min_t(u32, brightness, props->max_brightnes=
+s);
 > > +
-> > +static int mt6370_adc_read_scale(struct mt6370_adc_data *priv,
-> > +                              int chan, int *val1, int *val2)
-> > +{
-> > +     unsigned int reg_val;
-> > +     int ret;
 > > +
-> > +     switch (chan) {
-> > +     case MT6370_CHAN_VBAT:
-> > +     case MT6370_CHAN_VSYS:
-> > +     case MT6370_CHAN_CHG_VDDP:
-> > +             *val1 =3D 5000;
->
-> This seems very large.  Voltages are in millivolts
-> as per Documentation/ABI/testing/sysfs-bus-iio
-> and this means each step is 5 volts.
->
-> So value in mv is currently 5 * _raw
->
-
-OK, I got it. Also, I will add the ABI file in the next version. Thanks!
-
-
->
->
-> > +             return IIO_VAL_INT;
-> > +     case MT6370_CHAN_IBUS:
-> > +             ret =3D regmap_read(priv->regmap, MT6370_REG_CHG_CTRL3, &=
-reg_val);
-> > +             if (ret)
-> > +                     return ret;
-> > +
-> > +             reg_val =3D FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
-> > +             if (reg_val < MT6370_AICR_400MA)
-> > +                     *val1 =3D 33500;
-> > +             else
-> > +                     *val1 =3D 50000;
-> > +
-> > +             return IIO_VAL_INT;
-> > +     case MT6370_CHAN_IBAT:
-> > +             ret =3D regmap_read(priv->regmap, MT6370_REG_CHG_CTRL7, &=
-reg_val);
-> > +             if (ret)
-> > +                     return ret;
-> > +
-> > +             reg_val =3D FIELD_GET(MT6370_AICR_ICHG_MASK, reg_val);
-> > +             if (reg_val < MT6370_ICHG_500MA)
-> > +                     *val1 =3D 23750;
-> > +             else if (reg_val >=3D MT6370_ICHG_500MA &&
-> > +                      reg_val < MT6370_ICHG_900MA)
-> > +                     *val1 =3D 26800;
-> > +             else
-> > +                     *val1 =3D 50000;
-> > +
-> > +             return IIO_VAL_INT;
-> > +     case MT6370_CHAN_VBUSDIV5:
-> > +             *val1 =3D 25000;
-> > +             return IIO_VAL_INT;
-> > +     case MT6370_CHAN_VBUSDIV2:
-> > +             *val1 =3D 50000;
-> > +             return IIO_VAL_INT;
-> > +     case MT6370_CHAN_TS_BAT:
-> > +             *val1 =3D 25;
-> > +             *val2 =3D 10000;
-> > +             return IIO_VAL_FRACTIONAL;
-> > +     case MT6370_CHAN_TEMP_JC:
-> > +             *val1 =3D 2;
-> > +             return IIO_VAL_INT;
-> > +     }
-> > +
-> > +     return -EINVAL;
-> > +}
-> > +
-> > +static int mt6370_adc_read_offset(struct mt6370_adc_data *priv,
-> > +                               int chan, int *val)
-> > +{
-> > +     *val =3D (chan =3D=3D MT6370_CHAN_TEMP_JC) ? -20 : 0;
->
-> Offset default is 0, so for channels where it doesn't apply don't
-> provide the offset attribute at all.
->
-
-OK!
-
-
-> > +     return IIO_VAL_INT;
-> > +}
-> > +
-> > +static int mt6370_adc_read_raw(struct iio_dev *iio_dev,
-> > +                            const struct iio_chan_spec *chan,
-> > +                            int *val, int *val2, long mask)
-> > +{
-> > +     struct mt6370_adc_data *priv =3D iio_priv(iio_dev);
-> > +
-> > +     switch (mask) {
-> > +     case IIO_CHAN_INFO_RAW:
-> > +             return mt6370_adc_read_channel(priv, chan->channel,
-> > +                                            chan->address, val);
-> > +     case IIO_CHAN_INFO_SCALE:
-> > +             return mt6370_adc_read_scale(priv, chan->channel, val, va=
-l2);
-> > +     case IIO_CHAN_INFO_OFFSET:
-> > +             return mt6370_adc_read_offset(priv, chan->channel, val);
-> > +     }
-> > +
-> > +     return -EINVAL;
-> > +}
-> > +
-> > +static const char * const mt6370_channel_labels[MT6370_CHAN_MAX] =3D {
->
-> Perhaps define an enum with which to index this and the chan spec
-> and hence ensure they end up matching.
->  [vbusdiv5] =3D "vbusdiv5", etc
->
-
-Do you mean that I can refine this const char array to the following array?=
-?
-
-static const char * const mt6370_channel_labels[MT6370_CHAN_MAX] =3D {
-    [MT6370_CHAN_VBUSDIV5] =3D  "vbusdiv5",
-    [MT6370_CHAN_VBUSDIV2] =3D  "vbusdiv2",
-    ...
-    ...
-    [MT6370_CHAN_TEMP_JC] =3D  "temp_jc",
-};
-
-
-
-> > +     "vbusdiv5", "vbusdiv2", "vsys", "vbat",
-> > +     "ts_bat", "ibus", "ibat", "chg_vddp",
-> > +     "temp_jc",
-> > +};
-> > +
-> > +static int mt6370_adc_read_label(struct iio_dev *iio_dev,
-> > +                              struct iio_chan_spec const *chan, char *=
-label)
-> > +{
-> > +     return snprintf(label, PAGE_SIZE, "%s\n",
-> > +                     mt6370_channel_labels[chan->channel]);
-> > +}
-> > +
-> > +static const struct iio_info mt6370_adc_iio_info =3D {
-> > +     .read_raw =3D mt6370_adc_read_raw,
-> > +     .read_label =3D mt6370_adc_read_label,
-> > +};
-> > +
-> > +#define MT6370_ADC_CHAN(_idx, _type, _addr) {                        \
-> > +     .type =3D _type,                                          \
-> > +     .channel =3D MT6370_CHAN_##_idx,                          \
-> > +     .address =3D _addr,                                       \
-> > +     .scan_index =3D MT6370_CHAN_##_idx,                       \
-> > +     .indexed =3D 1,                                           \
-> > +     .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |          \
-> > +                           BIT(IIO_CHAN_INFO_SCALE) |        \
-> > +                           BIT(IIO_CHAN_INFO_OFFSET),        \
->
-> See above. Only temp_jc channel should hav an offset.
->
-OK!
-
-
-> > +}
-> > +
-> > +static const struct iio_chan_spec mt6370_adc_channels[] =3D {
-> > +     MT6370_ADC_CHAN(VBUSDIV5, IIO_VOLTAGE, 1),
-> > +     MT6370_ADC_CHAN(VBUSDIV2, IIO_VOLTAGE, 2),
-> > +     MT6370_ADC_CHAN(VSYS, IIO_VOLTAGE, 3),
-> > +     MT6370_ADC_CHAN(VBAT, IIO_VOLTAGE, 4),
-> > +     MT6370_ADC_CHAN(TS_BAT, IIO_VOLTAGE, 6),
-> > +     MT6370_ADC_CHAN(IBUS, IIO_CURRENT, 8),
-> > +     MT6370_ADC_CHAN(IBAT, IIO_CURRENT, 9),
-> > +     MT6370_ADC_CHAN(CHG_VDDP, IIO_VOLTAGE, 11),
-> > +     MT6370_ADC_CHAN(TEMP_JC, IIO_TEMP, 12),
-> > +};
-> > +
-> > +static int mt6370_adc_probe(struct platform_device *pdev)
-> > +{
-> > +     int ret;
-> > +     struct mt6370_adc_data *priv;
-> > +     struct regmap *regmap;
-> > +     struct iio_dev *indio_dev;
-> > +
-> > +     regmap =3D dev_get_regmap(pdev->dev.parent, NULL);
-> > +     if (!regmap) {
-> > +             dev_err(&pdev->dev, "Failed to get regmap\n");
-> > +             return -ENODEV;
-> > +     }
-> > +
-> > +     indio_dev =3D devm_iio_device_alloc(&pdev->dev, sizeof(*priv));
-> > +     if (!indio_dev)
-> > +             return -ENOMEM;
-> > +
-> > +     priv =3D iio_priv(indio_dev);
-> > +     priv->dev =3D &pdev->dev;
-> > +     priv->regmap =3D regmap;
-> > +     mutex_init(&priv->lock);
-> > +
-> > +     ret =3D regmap_write(priv->regmap, MT6370_REG_CHG_ADC, 0);
+> > +     ret =3D device_property_read_u8(dev, "mediatek,bled-channel-use",
+> > +                                   &prop_val);
 > > +     if (ret) {
-> > +             dev_err(&pdev->dev, "Failed to reset adc\n");
+> > +             dev_err(dev, "mediatek,bled-channel-use DT property missi=
+ng\n");
 > > +             return ret;
 > > +     }
 > > +
-> > +     indio_dev->name =3D dev_name(&pdev->dev);
+> > +     if (!prop_val) {
+> > +             dev_err(dev, "No channel specified\n");
+> > +             return -EINVAL;
+> > +     }
 >
-> What does this end up as?  It's used for userspace ABI and should
-> correspond to the part number, "mt6370-adc" probably
-> appropriate in this case (I think it'll end up as simply "adc.x"
-> currently?)  Normally we just hard code this in the driver for
-> whatever devices the driver supports.
-
-I got it, I will change this name to "mt6370-adc" in the next version! Than=
-ks!
-
+> If we are going to validity check this property then it needs an upper
+> bounds check to (e.g. consider if property is set to 64).
+>
+OK, I will add the validation in the next patch.
 
 >
-> > +     indio_dev->info =3D &mt6370_adc_iio_info;
-> > +     indio_dev->modes =3D INDIO_DIRECT_MODE;
-> > +     indio_dev->channels =3D mt6370_adc_channels;
-> > +     indio_dev->num_channels =3D ARRAY_SIZE(mt6370_adc_channels);
 > > +
-> > +     return devm_iio_device_register(&pdev->dev, indio_dev);
+> > +     mask =3D MT6370_BL_EXT_EN_MASK | MT6370_BL_CH_MASK;
+> > +     val =3D prop_val << (ffs(MT6370_BL_CH_MASK) - 1);
+> > +
+> > +     if (priv->enable_gpio)
+> > +             val |=3D MT6370_BL_EXT_EN_MASK;
+> > +
+> > +     return regmap_update_bits(priv->regmap, MT6370_REG_BL_EN, mask, v=
+al);
 > > +}
 > > +
-> > +static const struct of_device_id mt6370_adc_of_id[] =3D {
-> > +     { .compatible =3D "mediatek,mt6370-adc", },
-> > +     {}
-> > +};
-> > +MODULE_DEVICE_TABLE(of, mt6370_adc_of_id);
-> > +
-> > +static struct platform_driver mt6370_adc_driver =3D {
-> > +     .driver =3D {
-> > +             .name =3D "mt6370-adc",
-> > +             .of_match_table =3D mt6370_adc_of_id,
-> > +     },
-> > +     .probe =3D mt6370_adc_probe,
-> > +};
-> > +module_platform_driver(mt6370_adc_driver);
-> > +
-> > +MODULE_AUTHOR("ChiaEn Wu <chiaen_wu@richtek.com>");
-> > +MODULE_DESCRIPTION("MT6370 ADC Drvier");
-> > +MODULE_LICENSE("GPL v2");
+> > +static int mt6370_check_vendor_info(struct mt6370_priv *priv)
 >
+> A comment explaining what variants this function is intended to
+> supported here would be good here.
+
+Ok, I got it! I'll add the comment in the next patch.
+
+>
+>
+> > +{
+> > +     unsigned int dev_info, vid;
+> > +     int ret;
+> > +
+> > +     ret =3D regmap_read(priv->regmap, MT6370_REG_DEV_INFO, &dev_info)=
+;
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     vid =3D FIELD_GET(MT6370_VENID_MASK, dev_info);
+> > +     if (vid =3D=3D 0x9 || vid =3D=3D 0xb)
+> > +             priv->vid_type =3D MT6370_VID_6372;
+> > +     else
+> > +             priv->vid_type =3D MT6370_VID_COMMON;
+> > +
+> > +     return 0;
+> > +}
+>
+>
+> No furthers comments so I trimmed the rest.
+>
+>
+> Daniel.
 
 Best regards,
 ChiaEn Wu
