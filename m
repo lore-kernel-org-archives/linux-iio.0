@@ -2,89 +2,76 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C35FC433EF
-	for <linux-iio@archiver.kernel.org>; Fri,  3 Jun 2022 16:50:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3A346CCA47C
+	for <linux-iio@archiver.kernel.org>; Fri,  3 Jun 2022 16:51:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344078AbiFCQum (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 Jun 2022 12:50:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53594 "EHLO
+        id S1344104AbiFCQvF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 Jun 2022 12:51:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53934 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231311AbiFCQum (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2022 12:50:42 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B025517FF;
-        Fri,  3 Jun 2022 09:50:40 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
-  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654275040; x=1685811040;
-  h=date:from:to:cc:subject:message-id:references:
-   mime-version:in-reply-to;
-  bh=NzC/yKGfgbXpUiptMc8VzWfAMs4deWz+1hiZ7ehs/Ys=;
-  b=XOgG/vGN9kcSEtYZOjlYXrwoUYQ9sCBKO3c6ccEZ7FWiMOvpEkeErXsA
-   9e8k9iJstw6RNYlKCPkuuNvuL5oSDh45YzFDXBt5Hl8Lpu9tzkmlvgV/X
-   43q/xfN4oIoq0T43AtGwBre7ZXOh+94s5zpHUDqT+QtGjnkJXKDBQdYrM
-   W26gQ+jR0aHZBVlX3VuTwlm/gaCmjsuaKDFZ+f34izK1VahIP83S3Yzxj
-   rh5y7JWOqW4sB1ZYaWjaOkB4X1ceFQNCctR0PosdnmrQpyXyLVh5v5tO1
-   ZCk3CvFRORV0oK/QDfOKOkqpvVsenISSkiJOSd3bVLXt4nyRo9vrUQXTy
-   g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="263951283"
-X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
-   d="scan'208";a="263951283"
-Received: from orsmga006.jf.intel.com ([10.7.209.51])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 09:50:40 -0700
-X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
-   d="scan'208";a="553410112"
-Received: from smile.fi.intel.com ([10.237.72.54])
-  by orsmga006-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 09:50:37 -0700
-Received: from andy by smile.fi.intel.com with local (Exim 4.95)
-        (envelope-from <andriy.shevchenko@linux.intel.com>)
-        id 1nxAVO-000Sbi-9J;
-        Fri, 03 Jun 2022 19:50:34 +0300
-Date:   Fri, 3 Jun 2022 19:50:33 +0300
-From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: Re: [PATCH v3 2/6] iio: adc: meson_saradc: Align messages to be with
- physical device prefix
-Message-ID: <Ypo72X1X3aCtBBGd@smile.fi.intel.com>
-References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
- <20220603100004.70336-2-andriy.shevchenko@linux.intel.com>
- <20220603172117.792ce869@jic23-huawei>
+        with ESMTP id S1344110AbiFCQvE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2022 12:51:04 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 255EB51E6F;
+        Fri,  3 Jun 2022 09:51:03 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id A4BE061A0D;
+        Fri,  3 Jun 2022 16:51:02 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 74E67C385A9;
+        Fri,  3 Jun 2022 16:51:00 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654275062;
+        bh=FISQJyDGqAIiZncrB7QK52qKdvl4ZQMyTlmFRLj8KtI=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=is+T2s2vchI4uYG0K1GLeroJFnuAG3HvcIVuKuw/j+7YnEp5T50ldKdIMC0S01o/N
+         qPol1iNaq+5DbtzRJxnI4k0WSg7zKXaM7Mla0+0uvLHdvY0hEd4AdozsrBdo53deXX
+         1erDhnhiN39uuqtHuwU1H4Xl5Bcy2T7UzUZD0Y1/I0iT+X9Lmq8N/Ey6QVDGfzEyLM
+         9Ba6ZqK2vd6o/iShgxfV1Ds3HVHnE/airgScd7vIbqX/QL7lqj5AJ8j/UcVwwkaxfp
+         TXiqCQ8OTW15od+PKTUlzvEbGnOnizzT/5DZw6zBYrRRDuz8/bsd1qRIjEEiQ7YE6n
+         2ooPBCcqhjwgQ==
+Date:   Fri, 3 Jun 2022 18:00:02 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH v1 1/1] iio: adc: sd_adc_modulator: Drop dependency on
+ OF
+Message-ID: <20220603180002.5135a065@jic23-huawei>
+In-Reply-To: <20220530181706.3045-1-andriy.shevchenko@linux.intel.com>
+References: <20220530181706.3045-1-andriy.shevchenko@linux.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <20220603172117.792ce869@jic23-huawei>
-Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Fri, Jun 03, 2022 at 05:21:17PM +0100, Jonathan Cameron wrote:
-> On Fri,  3 Jun 2022 13:00:00 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Mon, 30 May 2022 21:17:06 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+
+> Nothing in this driver depends on OF so drop the dependency
+> to remove the false impression such a dependency exists.
 > 
-> > Align messages to be printed with the physical device prefix as it's done
-> > everywhere else in this driver.
-
-> Here I'm fine with the use of the parent as can only happen after all
-> the setup is done, so it's obvious the parent will be assigned
-> (some might argue it is obvious in the previous patch, but I had to check
-> as I couldn't remember when we set it :)
+> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Applied
+> ---
+>  drivers/iio/adc/Kconfig | 1 -
+>  1 file changed, 1 deletion(-)
 > 
-> Anyhow, LGTM. 
-
-Thanks!
-
-> > v3: new patch (inspired by previous change)
-
--- 
-With Best Regards,
-Andy Shevchenko
-
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index d0122b363ee8..3b6a80786b51 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -940,7 +940,6 @@ config SPEAR_ADC
+>  
+>  config SD_ADC_MODULATOR
+>  	tristate "Generic sigma delta modulator"
+> -	depends on OF
+>  	select IIO_BUFFER
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
 
