@@ -2,43 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 331B4CCA473
-	for <linux-iio@archiver.kernel.org>; Fri,  3 Jun 2022 10:00:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 89054C43334
+	for <linux-iio@archiver.kernel.org>; Fri,  3 Jun 2022 10:00:15 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243299AbiFCKAM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 3 Jun 2022 06:00:12 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46816 "EHLO
+        id S243304AbiFCKAN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 3 Jun 2022 06:00:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46830 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243286AbiFCKAJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2022 06:00:09 -0400
-Received: from mga02.intel.com (mga02.intel.com [134.134.136.20])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 41F773AA52;
-        Fri,  3 Jun 2022 03:00:09 -0700 (PDT)
+        with ESMTP id S243301AbiFCKAM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2022 06:00:12 -0400
+Received: from mga06.intel.com (mga06b.intel.com [134.134.136.31])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70DDB3AA52;
+        Fri,  3 Jun 2022 03:00:11 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1654250409; x=1685786409;
+  t=1654250411; x=1685786411;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=sJ+n2tYqhmEhzpVzUUn7F7bPvKrA5/Ib2p+26wHyTAo=;
-  b=lYGngQlGoqrz6IOf7XrNmHDxvppSFJKP3e6f2H+LKOlq97QPhomPP4Hc
-   AYHvkdcmWPB4YxgRlwYEohZsIsIG6Uu//fZb/HYkAFPDaiYiGXWbc62aT
-   eWHwsLp2DrFdXUrYpaNe5IhHdLeAlicEpwwYZ98GpD1pcKsy5U6j+dXak
-   f4z83aeEOamO3dU5Fu8nKj1PMC9I1DT9zpEokpgmNcs7X/tufz9gP60yg
-   p7/ZB2U9/dY9TOC3W3qsY4nvmoQhYRxmBPm0yA9TBiYjX7I7E9xGDLvKx
-   XKS8RqOQstgJzZ7QrOwZGe9q4qoX2mFGcDK4ZsCK4c5oGVE0OAGnduWYr
+  bh=T0fsSIU29EuhBbM0LUaUeCq/SxCSD2R+0n5JMdHNevI=;
+  b=iAmzbBd2jcC0zu3LPuI1pUAzyZaHn91E6Zs7ZTDlySOJ5HNywUehlsYl
+   IOGqvoyau0KEXw4bUA3XZqLUIFimqX4/0hDHe+VvlXYERmCBfbOIp6vAP
+   YzN7XizFiTbwYOby5DiB4uHliHrzlm04Kq7njaeIH8M7aCzLOHVYam+FY
+   P9cH8tGsEBGb7lCHDa2c0ftwTcfuV2a6pgUMr27I4zYiiWu0WGz2khSJK
+   dKuSKe0TaBsvUUCnzy6oacM3NP3sOrnCJE9aypwZf8Uwfb5qiE3aUWUIf
+   S4573KqEj4C1BuinltFwHxl8rUD8yqi/vbPDPflNqaQ61MEe7rm4VonfX
    g==;
-X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="263863070"
+X-IronPort-AV: E=McAfee;i="6400,9594,10366"; a="336872180"
 X-IronPort-AV: E=Sophos;i="5.91,274,1647327600"; 
-   d="scan'208";a="263863070"
-Received: from fmsmga006.fm.intel.com ([10.253.24.20])
-  by orsmga101.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 03:00:07 -0700
+   d="scan'208";a="336872180"
+Received: from orsmga001.jf.intel.com ([10.7.209.18])
+  by orsmga104.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 03:00:11 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.91,274,1647327600"; 
-   d="scan'208";a="824667302"
+   d="scan'208";a="613215278"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by fmsmga006.fm.intel.com with ESMTP; 03 Jun 2022 03:00:04 -0700
+  by orsmga001.jf.intel.com with ESMTP; 03 Jun 2022 03:00:08 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 2179DF1; Fri,  3 Jun 2022 13:00:07 +0300 (EEST)
+        id 4ACC5D99; Fri,  3 Jun 2022 13:00:07 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -49,9 +49,9 @@ Cc:     Jonathan Cameron <jic23@kernel.org>,
         Kevin Hilman <khilman@baylibre.com>,
         Jerome Brunet <jbrunet@baylibre.com>,
         Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v3 2/6] iio: adc: meson_saradc: Align messages to be with physical device prefix
-Date:   Fri,  3 Jun 2022 13:00:00 +0300
-Message-Id: <20220603100004.70336-2-andriy.shevchenko@linux.intel.com>
+Subject: [RFC PATCH v3 6/6] iio: adc: meson_saradc: Use regmap_read_poll_timeout() for busy wait
+Date:   Fri,  3 Jun 2022 13:00:04 +0300
+Message-Id: <20220603100004.70336-6-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
 In-Reply-To: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
 References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
@@ -61,46 +61,83 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Align messages to be printed with the physical device prefix as it's done
-everywhere else in this driver.
+Simplify busy wait stages by using regmap_read_poll_timeout().
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
-v3: new patch (inspired by previous change)
- drivers/iio/adc/meson_saradc.c | 7 +++----
- 1 file changed, 3 insertions(+), 4 deletions(-)
+v3: new patch, but RFC, not always the read_poll_timeout() can be used, would
+    be nice to have it tested.
+
+ drivers/iio/adc/meson_saradc.c | 31 +++++++++++++------------------
+ 1 file changed, 13 insertions(+), 18 deletions(-)
 
 diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-index 4fe6b997cd03..658047370db0 100644
+index c100f933c12e..c18be3c519af 100644
 --- a/drivers/iio/adc/meson_saradc.c
 +++ b/drivers/iio/adc/meson_saradc.c
-@@ -345,6 +345,7 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
- 					 int *val)
+@@ -322,22 +322,17 @@ static int meson_sar_adc_calib_val(struct iio_dev *indio_dev, int val)
+ static int meson_sar_adc_wait_busy_clear(struct iio_dev *indio_dev)
  {
  	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
-+	struct device *dev = indio_dev->dev.parent;
- 	int regval, fifo_chan, fifo_val, count;
+-	int regval, timeout = 10000;
++	int val;
  
- 	if (!wait_for_completion_timeout(&priv->done,
-@@ -353,16 +354,14 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
+ 	/*
+ 	 * NOTE: we need a small delay before reading the status, otherwise
+ 	 * the sample engine may not have started internally (which would
+ 	 * seem to us that sampling is already finished).
+ 	 */
+-	do {
+-		udelay(1);
+-		regmap_read(priv->regmap, MESON_SAR_ADC_REG0, &regval);
+-	} while (FIELD_GET(MESON_SAR_ADC_REG0_BUSY_MASK, regval) && timeout--);
+-
+-	if (timeout < 0)
+-		return -ETIMEDOUT;
+-
+-	return 0;
++	udelay(1);
++	return regmap_read_poll_timeout_atomic(priv->regmap, MESON_SAR_ADC_REG0, val,
++					       !FIELD_GET(MESON_SAR_ADC_REG0_BUSY_MASK, val),
++					       1, 10000);
+ }
  
- 	count = meson_sar_adc_get_fifo_count(indio_dev);
- 	if (count != 1) {
--		dev_err(&indio_dev->dev,
--			"ADC FIFO has %d element(s) instead of one\n", count);
-+		dev_err(dev, "ADC FIFO has %d element(s) instead of one\n", count);
- 		return -EINVAL;
+ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
+@@ -489,7 +484,7 @@ static void meson_sar_adc_stop_sample_engine(struct iio_dev *indio_dev)
+ static int meson_sar_adc_lock(struct iio_dev *indio_dev)
+ {
+ 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+-	int val, timeout = 10000;
++	int val, ret;
+ 
+ 	mutex_lock(&indio_dev->mlock);
+ 
+@@ -499,18 +494,18 @@ static int meson_sar_adc_lock(struct iio_dev *indio_dev)
+ 				   MESON_SAR_ADC_DELAY_KERNEL_BUSY,
+ 				   MESON_SAR_ADC_DELAY_KERNEL_BUSY);
+ 
++		udelay(1);
++
+ 		/*
+ 		 * wait until BL30 releases it's lock (so we can use the SAR
+ 		 * ADC)
+ 		 */
+-		do {
+-			udelay(1);
+-			regmap_read(priv->regmap, MESON_SAR_ADC_DELAY, &val);
+-		} while (val & MESON_SAR_ADC_DELAY_BL30_BUSY && timeout--);
+-
+-		if (timeout < 0) {
++		ret = regmap_read_poll_timeout_atomic(priv->regmap, MESON_SAR_ADC_DELAY, val,
++						      !(val & MESON_SAR_ADC_DELAY_BL30_BUSY),
++						      1, 10000);
++		if (ret) {
+ 			mutex_unlock(&indio_dev->mlock);
+-			return -ETIMEDOUT;
++			return ret;
+ 		}
  	}
  
- 	regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, &regval);
- 	fifo_chan = FIELD_GET(MESON_SAR_ADC_FIFO_RD_CHAN_ID_MASK, regval);
- 	if (fifo_chan != chan->address) {
--		dev_err(&indio_dev->dev,
--			"ADC FIFO entry belongs to channel %d instead of %lu\n",
-+		dev_err(dev, "ADC FIFO entry belongs to channel %d instead of %lu\n",
- 			fifo_chan, chan->address);
- 		return -EINVAL;
- 	}
 -- 
 2.35.1
 
