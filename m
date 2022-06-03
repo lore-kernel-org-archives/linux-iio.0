@@ -2,125 +2,94 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2920CC43334
-	for <linux-iio@archiver.kernel.org>; Fri,  3 Jun 2022 16:54:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE4B8C433EF
+	for <linux-iio@archiver.kernel.org>; Fri,  3 Jun 2022 16:54:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344123AbiFCQyx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S1344125AbiFCQyx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 3 Jun 2022 12:54:53 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40630 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40694 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344127AbiFCQyv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2022 12:54:51 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D3A19517FC;
+        with ESMTP id S1344129AbiFCQyw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Jun 2022 12:54:52 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3BA517FA;
         Fri,  3 Jun 2022 09:54:49 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 7EDCBB823A5;
-        Fri,  3 Jun 2022 16:54:48 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 04EDAC385A9;
-        Fri,  3 Jun 2022 16:54:44 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654275287;
-        bh=nJDlaPVv1/V2QMFRZSMeGdjlbru3qoJgFHs4acH/VCI=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=f2bcnq/dtEyqSfGKM9xkhsnsX9DRvo6Ajnnglt+DUCZX/6Ns/LUk8f/rWz8OeSX2p
-         d6PRpAZPCZvw8NeCY77evHvySMWc8ACGZccTLlMfPDrrcx9fTTCwxEwcnsXRwK9JpF
-         gMcRCX+RUn67t5PojSNveufivxFXuNrNBbVq7gIfbUPBpnMOxbCw1E1Z7OPfeTHkHG
-         IrBltCOd0fRZCb2sAz2TtA6cUf6xRzW3e2GSBcYAc7TqYBbopkCB8YP0HwNOHZhF0x
-         T45IjVEmnD1ID5xH4uDJT+Dy+gxX5F2PPmXs3RvO2TatxN8HnPheCl/oigj3sTxCFf
-         1UYIwRiZ/3KPQ==
-Date:   Fri, 3 Jun 2022 18:03:47 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Cixi Geng <cixi.geng1@unisoc.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Orson Zhai <orsonzhai@gmail.com>,
-        Baolin Wang <baolin.wang7@gmail.com>,
-        Chunyan Zhang <zhang.lyra@gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: adc: sc27xx_adc: Re-use generic struct
- u32_fract
-Message-ID: <20220603180347.2b0d0f08@jic23-huawei>
-In-Reply-To: <20220530180910.2533-1-andriy.shevchenko@linux.intel.com>
-References: <20220530180910.2533-1-andriy.shevchenko@linux.intel.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654275289; x=1685811289;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=b+9kqzkRua+/duStmsCCB0EK7KhyEmKZ5kB1ESim+XA=;
+  b=MPVVIhF/SKKM/1B2j/F1gyJ6nZhNlKMMvcOgw1X/sdiaOBnzYGpYjeXR
+   OlL9kay2OTdC/P5xqBZ86fYVgNTTpo9ruXT8PP06kuMSubzfxZDSEdelf
+   aoJgXyHNy2ziap3UidzXzMiTYGVyQOiwnEbiXusGTKHpuB3CpD/DA73Vf
+   C92gwu4/y2fGLx388+JvPORAM6pTP0XPOy6Uhym8Ng7epmfY433Kjjhog
+   n9VYo9s39/xGR+plIho2ff5a8CzjhpNPoVeSMpmi764uhBa45J+jWo/WF
+   TTrRl5+qh6dtjHEOsh7QrwZJZTlcT8lteg1wCc5xoTbjaObarpakZu8di
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10367"; a="256774511"
+X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
+   d="scan'208";a="256774511"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 09:54:49 -0700
+X-IronPort-AV: E=Sophos;i="5.91,275,1647327600"; 
+   d="scan'208";a="563867301"
+Received: from smile.fi.intel.com ([10.237.72.54])
+  by orsmga002-auth.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jun 2022 09:54:46 -0700
+Received: from andy by smile.fi.intel.com with local (Exim 4.95)
+        (envelope-from <andriy.shevchenko@linux.intel.com>)
+        id 1nxAZP-000Sbs-He;
+        Fri, 03 Jun 2022 19:54:43 +0300
+Date:   Fri, 3 Jun 2022 19:54:43 +0300
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH v3 1/6] iio: adc: meson_saradc: Don't attach managed
+ resource to IIO device object
+Message-ID: <Ypo80/NpWLLP43jm@smile.fi.intel.com>
+References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
+ <20220603170612.561edfbf@jic23-huawei>
+ <20220603172307.5d2f3c52@jic23-huawei>
+ <20220603172920.3239bbd6@jic23-huawei>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220603172920.3239bbd6@jic23-huawei>
+Organization: Intel Finland Oy - BIC 0357606-4 - Westendinkatu 7, 02160 Espoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 30 May 2022 21:09:10 +0300
-Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
+On Fri, Jun 03, 2022 at 05:29:20PM +0100, Jonathan Cameron wrote:
+> On Fri, 3 Jun 2022 17:23:07 +0100
+> Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Instead of custom data type re-use generic struct u32_fract.
+...
 
-There isn't a custom data type  - I'll reword this whilst applying
-if there is no reason for a v2.
+> Andy, put a cover letter on these larger series - if nothing else it gives
+> somewhere convenient for people to give tags for the whole series, or 
+> maintainer to say what they are doing with it.
 
-> No changes intended.
+I'll try to remember this. The series was started from only a couple of patches
+and grew to this big, and I forgot to add a cover letter when it seems not
+anymore obvious what has been done.
 
-functional changes
-
+> Anyhow, I'm fine with the series, but will leave it on list for a while
+> longer, particularly to get patch 6 some eyes + testing.
 > 
-> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Given they have been active recently I'd ideally like Cixi Geng
-to take a quick glance at this before I apply it.
+> Currently I plan to drop the fixes tag from this first patch, but I'm prepared
+> to be convinced it's a bug fix rather than a consistency cleanup.
 
-Thanks,
+Fine with me, thanks!
 
-Jonathan
+-- 
+With Best Regards,
+Andy Shevchenko
 
-> ---
->  drivers/iio/adc/sc27xx_adc.c | 15 +++++++--------
->  1 file changed, 7 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/sc27xx_adc.c b/drivers/iio/adc/sc27xx_adc.c
-> index e9ff2d6a8a57..f8421cbba8fa 100644
-> --- a/drivers/iio/adc/sc27xx_adc.c
-> +++ b/drivers/iio/adc/sc27xx_adc.c
-> @@ -579,15 +579,14 @@ static int sc27xx_adc_read(struct sc27xx_adc_data *data, int channel,
->  	return ret;
->  }
->  
-> -static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data,
-> -				  int channel, int scale,
-> -				  u32 *div_numerator, u32 *div_denominator)
-> +static void sc27xx_adc_volt_ratio(struct sc27xx_adc_data *data, int channel, int scale,
-> +				  struct u32_fract *fract)
->  {
->  	u32 ratio;
->  
->  	ratio = data->var_data->get_ratio(channel, scale);
-> -	*div_numerator = ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
-> -	*div_denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
-> +	fract->numerator = ratio >> SC27XX_RATIO_NUMERATOR_OFFSET;
-> +	fract->denominator = ratio & SC27XX_RATIO_DENOMINATOR_MASK;
->  }
->  
->  static int adc_to_volt(struct sc27xx_adc_linear_graph *graph,
-> @@ -615,7 +614,7 @@ static int sc27xx_adc_to_volt(struct sc27xx_adc_linear_graph *graph,
->  static int sc27xx_adc_convert_volt(struct sc27xx_adc_data *data, int channel,
->  				   int scale, int raw_adc)
->  {
-> -	u32 numerator, denominator;
-> +	struct u32_fract fract;
->  	u32 volt;
->  
->  	/*
-> @@ -637,9 +636,9 @@ static int sc27xx_adc_convert_volt(struct sc27xx_adc_data *data, int channel,
->  		break;
->  	}
->  
-> -	sc27xx_adc_volt_ratio(data, channel, scale, &numerator, &denominator);
-> +	sc27xx_adc_volt_ratio(data, channel, scale, &fract);
->  
-> -	return DIV_ROUND_CLOSEST(volt * denominator, numerator);
-> +	return DIV_ROUND_CLOSEST(volt * fract.denominator, fract.numerator);
->  }
->  
->  static int sc27xx_adc_read_processed(struct sc27xx_adc_data *data,
 
