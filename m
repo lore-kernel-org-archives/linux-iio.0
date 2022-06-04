@@ -2,41 +2,42 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D396C43334
-	for <linux-iio@archiver.kernel.org>; Sat,  4 Jun 2022 15:44:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33336CCA47E
+	for <linux-iio@archiver.kernel.org>; Sat,  4 Jun 2022 15:44:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230097AbiFDPoL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 4 Jun 2022 11:44:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33138 "EHLO
+        id S237347AbiFDPoN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 4 Jun 2022 11:44:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33158 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237347AbiFDPoJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Jun 2022 11:44:09 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0C25E19C2E
-        for <linux-iio@vger.kernel.org>; Sat,  4 Jun 2022 08:44:09 -0700 (PDT)
+        with ESMTP id S237666AbiFDPoL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Jun 2022 11:44:11 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63EA219C2E
+        for <linux-iio@vger.kernel.org>; Sat,  4 Jun 2022 08:44:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id BF6B9B80691
-        for <linux-iio@vger.kernel.org>; Sat,  4 Jun 2022 15:44:07 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BA6F6C34119;
-        Sat,  4 Jun 2022 15:44:05 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 01B2560E88
+        for <linux-iio@vger.kernel.org>; Sat,  4 Jun 2022 15:44:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 67DFDC385B8;
+        Sat,  4 Jun 2022 15:44:08 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654357446;
-        bh=Mlcmg6noszWbzEl5UzPqTRwAnDARqJ7495GB0rIUWs0=;
+        s=k20201202; t=1654357449;
+        bh=QYO8Q/ew86rWoh6O5bHABIqCN03yia7WGDNNEcuwkZ4=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=V/0JvZ15lnxchnhfsg0vvVp7+iZGiv7iVjV7VlRT2ZH0RUpS+6yVhKTi3Alf7Mpnh
-         qL3GO0/MPdI+T/1p/XCrCLUnVnOsjknVgQHcfuEBC02N/DSaXZDX6X1spBtVRPui9b
-         FK/1yZh5PxXXUGLHBUZJAY+Oswrhbp6IbHgda/IINYwAqbPOXJrJpw/nOzcs5dx5Kd
-         EIitMQVN4fYvoI1ROyKlyrg99Y2eNPxfSmWZ+i09q4f6YMNMW4sxDEJdZYlsGWfZh4
-         rqVUXj2REunw6V9LP+b1k8joxePLv1DbLRTnhrscynugW4ZpnluVSAzYR2QqG4dSeH
-         3o36Ih2TGnvLA==
+        b=VAEAuGElqUAkFLQ3Y/DNiW1rYcthDSGe6KkO6cqdcvv+CwRNCUHBGDtQ31cFJs7RA
+         FuUx+bgrO81AV5gRVkn9OcAM3gvy4lU0yIIqRISJDNt5TJdmnGJpV2h3oX5GCOEzRz
+         duxi7sfC+ZiTvG4tebdcTBUm7XwAGHeupYVegU82Lg6rQDpo3DaY7r707/+0L06EeZ
+         dEthuKzRTXNT+2U3UQegxmt/VK6IWMDYrMQXJ+18RTFHtZbX9Yt0xtbkFzu0gO0+BW
+         CR4C1045rN6KIinD+q0PYoS/SV6q1F+NBm2TBkNLQFTIEihV0z8ddMq8JZunRe8V4t
+         jOEwPYRXh6WWA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
-Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 1/4] iio: imu: bmi160: Move exported symbols to IIO_BMI160 namespace
-Date:   Sat,  4 Jun 2022 16:53:03 +0100
-Message-Id: <20220604155306.422937-2-jic23@kernel.org>
+Cc:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Tomasz Duszynski <tomasz.duszynski@octakon.com>
+Subject: [PATCH v2 3/4] iio: chemical: sps30: Move symbol exports into IIO_SPS30 namespace
+Date:   Sat,  4 Jun 2022 16:53:05 +0100
+Message-Id: <20220604155306.422937-4-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220604155306.422937-1-jic23@kernel.org>
 References: <20220604155306.422937-1-jic23@kernel.org>
@@ -55,62 +56,45 @@ that into the drivers that make use of the functions.
 For more info: https://lwn.net/Articles/760045/
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Link: https://lore.kernel.org/r/20220220173701.502331-2-jic23@kernel.org
+Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>
+Link: https://lore.kernel.org/r/20220220173701.502331-4-jic23@kernel.org
 ---
- drivers/iio/imu/bmi160/bmi160_core.c | 6 +++---
- drivers/iio/imu/bmi160/bmi160_i2c.c  | 1 +
- drivers/iio/imu/bmi160/bmi160_spi.c  | 1 +
- 3 files changed, 5 insertions(+), 3 deletions(-)
+ drivers/iio/chemical/sps30.c        | 2 +-
+ drivers/iio/chemical/sps30_i2c.c    | 1 +
+ drivers/iio/chemical/sps30_serial.c | 1 +
+ 3 files changed, 3 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index e7aec56ea136..a77f1a8348ff 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -143,7 +143,7 @@ const struct regmap_config bmi160_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
- };
--EXPORT_SYMBOL(bmi160_regmap_config);
-+EXPORT_SYMBOL_NS(bmi160_regmap_config, IIO_BMI160);
- 
- struct bmi160_regs {
- 	u8 data; /* LSB byte register for X-axis */
-@@ -633,7 +633,7 @@ int bmi160_enable_irq(struct regmap *regmap, bool enable)
- 				     BMI160_DRDY_INT_EN, enable_bit,
- 				     BMI160_NORMAL_WRITE_USLEEP);
- }
--EXPORT_SYMBOL(bmi160_enable_irq);
-+EXPORT_SYMBOL_NS(bmi160_enable_irq, IIO_BMI160);
- 
- static int bmi160_get_irq(struct fwnode_handle *fwnode, enum bmi160_int_pin *pin)
- {
-@@ -884,7 +884,7 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
+diff --git a/drivers/iio/chemical/sps30.c b/drivers/iio/chemical/sps30.c
+index abd67559e451..814ce0aad1cc 100644
+--- a/drivers/iio/chemical/sps30.c
++++ b/drivers/iio/chemical/sps30.c
+@@ -372,7 +372,7 @@ int sps30_probe(struct device *dev, const char *name, void *priv, const struct s
  
  	return devm_iio_device_register(dev, indio_dev);
  }
--EXPORT_SYMBOL_GPL(bmi160_core_probe);
-+EXPORT_SYMBOL_NS_GPL(bmi160_core_probe, IIO_BMI160);
+-EXPORT_SYMBOL_GPL(sps30_probe);
++EXPORT_SYMBOL_NS_GPL(sps30_probe, IIO_SPS30);
  
- MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
- MODULE_DESCRIPTION("Bosch BMI160 driver");
-diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
-index 02f149d37b17..d93f4fa2ad55 100644
---- a/drivers/iio/imu/bmi160/bmi160_i2c.c
-+++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
-@@ -68,3 +68,4 @@ module_i2c_driver(bmi160_i2c_driver);
- MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com>");
- MODULE_DESCRIPTION("BMI160 I2C driver");
+ MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
+ MODULE_DESCRIPTION("Sensirion SPS30 particulate matter sensor driver");
+diff --git a/drivers/iio/chemical/sps30_i2c.c b/drivers/iio/chemical/sps30_i2c.c
+index d33560ed7184..2aed483a2fde 100644
+--- a/drivers/iio/chemical/sps30_i2c.c
++++ b/drivers/iio/chemical/sps30_i2c.c
+@@ -256,3 +256,4 @@ module_i2c_driver(sps30_i2c_driver);
+ MODULE_AUTHOR("Tomasz Duszynski <tomasz.duszynski@octakon.com>");
+ MODULE_DESCRIPTION("Sensirion SPS30 particulate matter sensor i2c driver");
  MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(IIO_BMI160);
-diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
-index 24f7d75c7903..8b573ea99af2 100644
---- a/drivers/iio/imu/bmi160/bmi160_spi.c
-+++ b/drivers/iio/imu/bmi160/bmi160_spi.c
-@@ -65,3 +65,4 @@ module_spi_driver(bmi160_spi_driver);
- MODULE_AUTHOR("Daniel Baluta <daniel.baluta@intel.com");
- MODULE_DESCRIPTION("Bosch BMI160 SPI driver");
++MODULE_IMPORT_NS(IIO_SPS30);
+diff --git a/drivers/iio/chemical/sps30_serial.c b/drivers/iio/chemical/sps30_serial.c
+index 3f311d50087c..164f4b3e025c 100644
+--- a/drivers/iio/chemical/sps30_serial.c
++++ b/drivers/iio/chemical/sps30_serial.c
+@@ -429,3 +429,4 @@ module_serdev_device_driver(sps30_serial_driver);
+ MODULE_AUTHOR("Tomasz Duszynski <tomasz.duszynski@octakon.com>");
+ MODULE_DESCRIPTION("Sensirion SPS30 particulate matter sensor serial driver");
  MODULE_LICENSE("GPL v2");
-+MODULE_IMPORT_NS(IIO_BMI160);
++MODULE_IMPORT_NS(IIO_SPS30);
 -- 
 2.36.1
 
