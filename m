@@ -2,261 +2,138 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E3156CCA482
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Jun 2022 14:15:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 485E1CCA482
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Jun 2022 14:29:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239463AbiFFOPj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:15:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54490 "EHLO
+        id S239742AbiFFO32 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:29:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35592 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239465AbiFFOPd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Jun 2022 10:15:33 -0400
-Received: from mail-qk1-x72a.google.com (mail-qk1-x72a.google.com [IPv6:2607:f8b0:4864:20::72a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C3CF22CE28
-        for <linux-iio@vger.kernel.org>; Mon,  6 Jun 2022 07:15:28 -0700 (PDT)
-Received: by mail-qk1-x72a.google.com with SMTP id c144so8434895qkg.11
-        for <linux-iio@vger.kernel.org>; Mon, 06 Jun 2022 07:15:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=kHombqk3VYPwKde0y6W4IYyIm10RdpNnxO/ZPqQ0Sxs=;
-        b=jtwcDJB56TkN8p8A7JM8buPO6gQUo/XgKrVsHo4iM2y+ufJaPxfc4ArTRJI9jbhIXz
-         qI3phv7gG9K76q4/HkPcDEwerfmS5T/+Bk9KMjRH5XDJZ9mNYQxH2WUHEsgX/cFliVu6
-         y3gn9FazsXJ7dUGvt27M0LtpJMQUGQx3Bs/fCuJRhzyTOSsxP5rV4RNIeOvy+LprHxJS
-         wSWcp5s3hKVUajPANqKtkC4HLSU5ILaKLFHe+W4IdVmN5O3rKkBNLI/mi3VCRBvmU+MW
-         SRjGi9yT5AQBQA+w1TMIHmpMw0t4SNjDqMwWXftLVZb/7bNAB/l3QM13+rGArmrTUs1O
-         M89Q==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=kHombqk3VYPwKde0y6W4IYyIm10RdpNnxO/ZPqQ0Sxs=;
-        b=uc0wggprPO19LgLFn3Br7Oer/TNfMY353lOi6kPk466e5RGPvzZlg47TFsD9d/5PuR
-         HEXvyRduSsc/XWC48olhYfmIM32nwbMFVa23+j/OASUYEerAuMYS8MRkn8nUxBnPMAnC
-         I/44Lc+PzU4RnUV8hALMVb6ofgJ3GofZsmh2SCulFiFZlICkT2YMum7qOQvHU9uoTpig
-         oYUvYceH2ndjyKCjWmgRsqaaDvkbacq1SdP45sG4OeyRZdO70qZCIqcFigYWUFF9sk2X
-         welzr+ikzGQWMyINy+KhNjsS2duaycJFoicY/f4GuirJWRokvgnh1QxrXblNHO9s4Ihf
-         iaxg==
-X-Gm-Message-State: AOAM530oLevIv1Ajp3LwA12RQa3D895VywSlsnL0P0EZA7pAtEogufgK
-        v+NT7om6t+kRZLDrXOeq6xzi/Q==
-X-Google-Smtp-Source: ABdhPJzxFp5PvNMb/dA5xI22yRoY4ap7OODLm7toYUJxtZU5yxPmVLHG7YjDJzfEE4uI1G1hHLM1sQ==
-X-Received: by 2002:a05:620a:1532:b0:6a6:9647:8d6d with SMTP id n18-20020a05620a153200b006a696478d6dmr11729144qkk.413.1654524927744;
-        Mon, 06 Jun 2022 07:15:27 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id c15-20020a05620a268f00b006a3af1bd183sm10335086qkp.127.2022.06.06.07.15.26
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 07:15:27 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     jic23@kernel.org
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH 1/2] iio: adc: stx104: Implement and utilize register structures
-Date:   Mon,  6 Jun 2022 10:15:17 -0400
-Message-Id: <a2dca9435f7f1f727c696a1faa0ab9e27927f9f3.1654118389.git.william.gray@linaro.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1654118389.git.william.gray@linaro.org>
-References: <cover.1654118389.git.william.gray@linaro.org>
+        with ESMTP id S239844AbiFFO31 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Jun 2022 10:29:27 -0400
+Received: from mga04.intel.com (mga04.intel.com [192.55.52.120])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EFC5FC7E3D;
+        Mon,  6 Jun 2022 07:29:26 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1654525766; x=1686061766;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=6gFuK9m/CegkpD/g+gX8hVz/ChSurSOe3kM0kYWm6aE=;
+  b=eMC426nikFbLleMpcDTh7f0evVLQFOc0EOD+mur79kxbvG6TELXmV8Aj
+   nKCCefZWHVfjqCAiqyuxa6AoT7ForInPA8yVKBMPw0N5veqmcsRD0MHpG
+   WfnXh0EIX4qO/xF58JQ14SySJcla3/QhtBM00+2CbGX7MYqJ01fHG4pCM
+   OmHgeLZTj9y3aiEgmKrcwqGTCAd27vIFsy+QS7RkB6xTPSlM/eYjbTEvY
+   jIYL5BuSi5oE4+2LfaM97VvzDcnwrsHa0onSb5vU/EInWkCdLieVMka/T
+   D5FyRsO5GakZz4AcB75dugRKVfr3X7rX7Hio/NQkBb6988DLPTnDDPa6P
+   w==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10369"; a="275436363"
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="275436363"
+Received: from orsmga006.jf.intel.com ([10.7.209.51])
+  by fmsmga104.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 06 Jun 2022 07:29:26 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,280,1647327600"; 
+   d="scan'208";a="554471422"
+Received: from lkp-server01.sh.intel.com (HELO 60dabacc1df6) ([10.239.97.150])
+  by orsmga006.jf.intel.com with ESMTP; 06 Jun 2022 07:29:19 -0700
+Received: from kbuild by 60dabacc1df6 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1nyDjK-000Cnd-JV;
+        Mon, 06 Jun 2022 14:29:18 +0000
+Date:   Mon, 6 Jun 2022 22:28:27 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     ChiaEn Wu <peterwu.pub@gmail.com>, lee.jones@linaro.org,
+        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
+        heikki.krogerus@linux.intel.com, deller@gmx.de
+Cc:     kbuild-all@lists.01.org, cy_huang@richtek.com,
+        alice_chen@richtek.com, chiaen_wu@richtek.com,
+        peterwu.pub@gmail.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [RESEND 12/14] leds: mt6370: Add Mediatek MT6370 Indicator
+ support
+Message-ID: <202206062207.q0S8wxpj-lkp@intel.com>
+References: <20220531111900.19422-13-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220531111900.19422-13-peterwu.pub@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Reduce magic numbers and improve code readability by implementing and
-utilizing named register data structures.
+Hi ChiaEn,
 
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- drivers/iio/adc/stx104.c | 70 +++++++++++++++++++++++++++-------------
- 1 file changed, 47 insertions(+), 23 deletions(-)
+Thank you for the patch! Yet something to improve:
 
-diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
-index 7552351bfed9..7656b363e281 100644
---- a/drivers/iio/adc/stx104.c
-+++ b/drivers/iio/adc/stx104.c
-@@ -16,6 +16,7 @@
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/spinlock.h>
-+#include <linux/types.h>
- 
- #define STX104_OUT_CHAN(chan) {				\
- 	.type = IIO_VOLTAGE,				\
-@@ -44,14 +45,36 @@ static unsigned int num_stx104;
- module_param_hw_array(base, uint, ioport, &num_stx104, 0);
- MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
- 
-+/**
-+ * struct stx104_reg - device register structure
-+ * @ad:		ADC Data
-+ * @achan:	ADC Channel
-+ * @dio:	Digital I/O
-+ * @dac:	DAC Channels
-+ * @cir_asr:	Clear Interrupts and ADC Status
-+ * @acr:	ADC Control
-+ * @pccr_fsh:	Pacer Clock Control and FIFO Status MSB
-+ * @acfg:	ADC Configuration
-+ */
-+struct stx104_reg {
-+	u16 ad;
-+	u8 achan;
-+	u8 dio;
-+	u16 dac[2];
-+	u8 cir_asr;
-+	u8 acr;
-+	u8 pccr_fsh;
-+	u8 acfg;
-+};
-+
- /**
-  * struct stx104_iio - IIO device private data structure
-  * @chan_out_states:	channels' output states
-- * @base:		base port address of the IIO device
-+ * @reg:		I/O address offset for the device registers
-  */
- struct stx104_iio {
- 	unsigned int chan_out_states[STX104_NUM_OUT_CHAN];
--	void __iomem *base;
-+	struct stx104_reg __iomem *reg;
- };
- 
- /**
-@@ -64,7 +87,7 @@ struct stx104_iio {
- struct stx104_gpio {
- 	struct gpio_chip chip;
- 	spinlock_t lock;
--	void __iomem *base;
-+	u8 __iomem *base;
- 	unsigned int out_state;
- };
- 
-@@ -72,6 +95,7 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
- 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
- {
- 	struct stx104_iio *const priv = iio_priv(indio_dev);
-+	struct stx104_reg __iomem *const reg = priv->reg;
- 	unsigned int adc_config;
- 	int adbu;
- 	int gain;
-@@ -79,7 +103,7 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_HARDWAREGAIN:
- 		/* get gain configuration */
--		adc_config = ioread8(priv->base + 11);
-+		adc_config = ioread8(&reg->acfg);
- 		gain = adc_config & 0x3;
- 
- 		*val = 1 << gain;
-@@ -91,24 +115,24 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
- 		}
- 
- 		/* select ADC channel */
--		iowrite8(chan->channel | (chan->channel << 4), priv->base + 2);
-+		iowrite8(chan->channel | (chan->channel << 4), &reg->achan);
- 
- 		/* trigger ADC sample capture and wait for completion */
--		iowrite8(0, priv->base);
--		while (ioread8(priv->base + 8) & BIT(7));
-+		iowrite8(0, &reg->ad);
-+		while (ioread8(&reg->cir_asr) & BIT(7));
- 
--		*val = ioread16(priv->base);
-+		*val = ioread16(&reg->ad);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
- 		/* get ADC bipolar/unipolar configuration */
--		adc_config = ioread8(priv->base + 11);
-+		adc_config = ioread8(&reg->acfg);
- 		adbu = !(adc_config & BIT(2));
- 
- 		*val = -32768 * adbu;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		/* get ADC bipolar/unipolar and gain configuration */
--		adc_config = ioread8(priv->base + 11);
-+		adc_config = ioread8(&reg->acfg);
- 		adbu = !(adc_config & BIT(2));
- 		gain = adc_config & 0x3;
- 
-@@ -130,16 +154,16 @@ static int stx104_write_raw(struct iio_dev *indio_dev,
- 		/* Only four gain states (x1, x2, x4, x8) */
- 		switch (val) {
- 		case 1:
--			iowrite8(0, priv->base + 11);
-+			iowrite8(0, &priv->reg->acfg);
- 			break;
- 		case 2:
--			iowrite8(1, priv->base + 11);
-+			iowrite8(1, &priv->reg->acfg);
- 			break;
- 		case 4:
--			iowrite8(2, priv->base + 11);
-+			iowrite8(2, &priv->reg->acfg);
- 			break;
- 		case 8:
--			iowrite8(3, priv->base + 11);
-+			iowrite8(3, &priv->reg->acfg);
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -153,7 +177,7 @@ static int stx104_write_raw(struct iio_dev *indio_dev,
- 				return -EINVAL;
- 
- 			priv->chan_out_states[chan->channel] = val;
--			iowrite16(val, priv->base + 4 + 2 * chan->channel);
-+			iowrite16(val, priv->reg->dac + chan->channel);
- 
- 			return 0;
- 		}
-@@ -307,15 +331,15 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 	}
- 
- 	priv = iio_priv(indio_dev);
--	priv->base = devm_ioport_map(dev, base[id], STX104_EXTENT);
--	if (!priv->base)
-+	priv->reg = devm_ioport_map(dev, base[id], STX104_EXTENT);
-+	if (!priv->reg)
- 		return -ENOMEM;
- 
- 	indio_dev->info = &stx104_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	/* determine if differential inputs */
--	if (ioread8(priv->base + 8) & BIT(5)) {
-+	if (ioread8(&priv->reg->cir_asr) & BIT(5)) {
- 		indio_dev->num_channels = ARRAY_SIZE(stx104_channels_diff);
- 		indio_dev->channels = stx104_channels_diff;
- 	} else {
-@@ -326,14 +350,14 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 	indio_dev->name = dev_name(dev);
- 
- 	/* configure device for software trigger operation */
--	iowrite8(0, priv->base + 9);
-+	iowrite8(0, &priv->reg->acr);
- 
- 	/* initialize gain setting to x1 */
--	iowrite8(0, priv->base + 11);
-+	iowrite8(0, &priv->reg->acfg);
- 
- 	/* initialize DAC output to 0V */
--	iowrite16(0, priv->base + 4);
--	iowrite16(0, priv->base + 6);
-+	iowrite16(0, &priv->reg->dac[0]);
-+	iowrite16(0, &priv->reg->dac[1]);
- 
- 	stx104gpio->chip.label = dev_name(dev);
- 	stx104gpio->chip.parent = dev;
-@@ -348,7 +372,7 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 	stx104gpio->chip.get_multiple = stx104_gpio_get_multiple;
- 	stx104gpio->chip.set = stx104_gpio_set;
- 	stx104gpio->chip.set_multiple = stx104_gpio_set_multiple;
--	stx104gpio->base = priv->base + 3;
-+	stx104gpio->base = &priv->reg->dio;
- 	stx104gpio->out_state = 0x0;
- 
- 	spin_lock_init(&stx104gpio->lock);
+[auto build test ERROR on pavel-leds/for-next]
+[also build test ERROR on lee-mfd/for-mfd-next lee-backlight/for-backlight-next v5.19-rc1 next-20220606]
+[If your patch is applied to the wrong git tree, kindly drop us a note.
+And when submitting patch, we suggest to use '--base' as documented in
+https://git-scm.com/docs/git-format-patch]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/ChiaEn-Wu/Add-Mediatek-MT6370-PMIC-support/20220531-211432
+base:   git://git.kernel.org/pub/scm/linux/kernel/git/pavel/linux-leds.git for-next
+config: nios2-allyesconfig (https://download.01.org/0day-ci/archive/20220606/202206062207.q0S8wxpj-lkp@intel.com/config)
+compiler: nios2-linux-gcc (GCC) 11.3.0
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # https://github.com/intel-lab-lkp/linux/commit/4de9e5ff11aeade155aa744bcaf9efca82b3d4ee
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review ChiaEn-Wu/Add-Mediatek-MT6370-PMIC-support/20220531-211432
+        git checkout 4de9e5ff11aeade155aa744bcaf9efca82b3d4ee
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=gcc-11.3.0 make.cross W=1 O=build_dir ARCH=nios2 SHELL=/bin/bash
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   drivers/leds/leds-mt6370.c: In function 'mt6370_check_vendor_info':
+>> drivers/leds/leds-mt6370.c:873:15: error: implicit declaration of function 'FIELD_GET'; did you mean 'FOLL_GET'? [-Werror=implicit-function-declaration]
+     873 |         vid = FIELD_GET(MT6370_VENID_MASK, devinfo);
+         |               ^~~~~~~~~
+         |               FOLL_GET
+   cc1: some warnings being treated as errors
+
+
+vim +873 drivers/leds/leds-mt6370.c
+
+   863	
+   864	static int mt6370_check_vendor_info(struct mt6370_priv *priv)
+   865	{
+   866		unsigned int devinfo, vid;
+   867		int ret;
+   868	
+   869		ret = regmap_read(priv->regmap, MT6370_REG_DEV_INFO, &devinfo);
+   870		if (ret)
+   871			return ret;
+   872	
+ > 873		vid = FIELD_GET(MT6370_VENID_MASK, devinfo);
+   874		if (vid == 0x9 || vid == 0xb) {
+   875			priv->reg_fields = mt6372_reg_fields;
+   876			priv->ranges = mt6372_led_ranges;
+   877			priv->is_mt6372 = true;
+   878		} else {
+   879			priv->reg_fields = common_reg_fields;
+   880			priv->ranges = common_led_ranges;
+   881		}
+   882	
+   883		return 0;
+   884	}
+   885	
+
 -- 
-2.36.1
-
+0-DAY CI Kernel Test Service
+https://01.org/lkp
