@@ -2,84 +2,152 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B387CCA481
-	for <linux-iio@archiver.kernel.org>; Mon,  6 Jun 2022 14:15:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 15094CCA473
+	for <linux-iio@archiver.kernel.org>; Mon,  6 Jun 2022 14:15:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239464AbiFFOPh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 6 Jun 2022 10:15:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54168 "EHLO
+        id S239452AbiFFOPi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 6 Jun 2022 10:15:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239461AbiFFOP3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Jun 2022 10:15:29 -0400
-Received: from mail-qv1-xf32.google.com (mail-qv1-xf32.google.com [IPv6:2607:f8b0:4864:20::f32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6A4F82CE0A
-        for <linux-iio@vger.kernel.org>; Mon,  6 Jun 2022 07:15:27 -0700 (PDT)
-Received: by mail-qv1-xf32.google.com with SMTP id l1so10298823qvh.1
-        for <linux-iio@vger.kernel.org>; Mon, 06 Jun 2022 07:15:27 -0700 (PDT)
+        with ESMTP id S239412AbiFFOPf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Jun 2022 10:15:35 -0400
+Received: from mail-qt1-x82c.google.com (mail-qt1-x82c.google.com [IPv6:2607:f8b0:4864:20::82c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0E9792CDEA
+        for <linux-iio@vger.kernel.org>; Mon,  6 Jun 2022 07:15:29 -0700 (PDT)
+Received: by mail-qt1-x82c.google.com with SMTP id t21so3396622qtw.11
+        for <linux-iio@vger.kernel.org>; Mon, 06 Jun 2022 07:15:29 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HFPPt/n+GC7L3I3lYwZwtJYqMlp4sB7MAQn4ER7tLHE=;
-        b=bVlDY6ViZmyAGO0CMS1dX7jnHLAN3Sjy0yQropvvm2Lr1B3viNAgrF0zZAEHZgkoSo
-         EaaH4Y2EEipZNwnn640gwn71RrUbD614LSM+y1PZDe1Zkcki0fhSR/xKHsq0Z3+0fCzX
-         WYnrxoNDXwCoYtl6E85JwIrgXh5fh4fk0+TblSwMVRst1DKOz5WIhzu/4ZEgyDroh/kY
-         xcRF5hQX6F84RSfKLY4lxsSRJxi/XXw+kxAbFYIxgbj0lIIfzFATBquKuMrKx+NdnJLj
-         jHsdNTXc6h+kjWScy6zNy3mf//Si+wZxFzFN9xubZEcyXBV1HrzL3iD2OVR23CWW8qf8
-         0+4Q==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=wh/GNYrTUWQwS2LY1J4/sKG7u3eGX16BxrYgrkihQrQ=;
+        b=QlWo3+198cSiHHs+hq+/W8YxainPD4zxjEMFT1ARc2tIYSNGvNt3Czp56VcDcE7xXE
+         Mg9hV9nupxeWMeN8L15uWBA49GKTqKuODxtAKZ8ls1sWXnw8gRfOijNfjGpikRw3zFG3
+         OtO3GEyuWJRJ0OZow3PTL5Icch4gcYIgkS7kagTPOxjkzm/c7tf++I7UrCKi0gxztNHd
+         uxToyHm2I2Olw6nL38SZkEMvRxaaWq9rxJkAQy29RlTRhsk9DKxdQI1YNqLC7tyxm8v2
+         9C3aQ3mf0EJr/U32mY9jmhbAWIEISh09sGC7+4Aso3hgirf3UcNkpZtUfttrrVvDyclv
+         hZCA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=HFPPt/n+GC7L3I3lYwZwtJYqMlp4sB7MAQn4ER7tLHE=;
-        b=tzDYXnl7jo3kt3KPFQRVyOUis67Sgq920q2haFGjDH3G0ImtZy8llFWZIXosaOnJuz
-         DJ/6XbrurvHZij8Cp2GhJOI69o4lR842SZqsG7dzzlb6PgKT2U9+IhCaZXpkCS+g4w8R
-         EKRl+1KCqAkzuoYmGfvq1LJwhSYjOYvUrB3/8t1yzaZlg+0K0s7ZcktRSFOEGiEn8niA
-         Acdjmuk5y8uIcOpxojrvaKk5fykrMAdns700AV6jdKvWZwecVLmmNexaWGlcgIXVOGe2
-         hJr7kHXNjbXNZHNsbSKwcXTgXJhdEb1sQZsHiqYFDnkLyfeh+8rF8dYs3zNd50ilrhOI
-         Xs7A==
-X-Gm-Message-State: AOAM530MGVD9UCPtH6niPpQhMzdL4rGB8F2fibhb6MXAHhmCq7KpXT2R
-        OpQ4eIixikoJxToemtb0cxCPvg==
-X-Google-Smtp-Source: ABdhPJzvOYgaZe9iJDCKBu3RdSOxluQVF2VwpiTpr2nF8YwL/LxLzUTel3SnX3fufJcqp+nCcRWFmg==
-X-Received: by 2002:a05:6214:21eb:b0:464:5c48:4bc8 with SMTP id p11-20020a05621421eb00b004645c484bc8mr17346514qvj.23.1654524926468;
-        Mon, 06 Jun 2022 07:15:26 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=wh/GNYrTUWQwS2LY1J4/sKG7u3eGX16BxrYgrkihQrQ=;
+        b=esvUsS2aHUoL3J+ieAl3BE/JGX8tHxCGdlhmA2gpa1UBEmJLni7aBmtjhp8nbJ3ftu
+         rIXPMcjv5CsO92/I1kpVJvIafm9kk/I3teJZ7M+rdFi9O2SKkvElD/XkyjrDUxjQh6Xg
+         Pm/WYC7sayOyP2BtLGhUjZETywKLVuj8jyzyxlzOAiMNh02MlMpJpt4fG/Kcj/zOtDGm
+         smtK7sOqXKfiXzqj+pPambcSRhQZvEr5fnPFpF6e7E8kAKXRDvE7W8lGA2RhXSK0cpGZ
+         cj4nvFHymFOeK4ujGSpSr6pSHymSZd084u+82if0JvPVpVlO1wHm7E0EySRgi0QTOe+s
+         Iq2w==
+X-Gm-Message-State: AOAM531UpAdYyc/OkBB5Qo0TJTljNwjN/kbaBpg+zI1r8s5EmmPLw817
+        BOl7VZKl8t2JihBAl3WTKY2LkVpkFbR9RQ==
+X-Google-Smtp-Source: ABdhPJxQRDEeEokM9Fo2uYlhzVajgwwVOYqYmd5G8pZo9R7X+FPuurNmOePJdMhP9bv+SVtjr62Ymw==
+X-Received: by 2002:ac8:4e54:0:b0:304:bf64:1356 with SMTP id e20-20020ac84e54000000b00304bf641356mr18126504qtw.547.1654524929070;
+        Mon, 06 Jun 2022 07:15:29 -0700 (PDT)
 Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id c15-20020a05620a268f00b006a3af1bd183sm10335086qkp.127.2022.06.06.07.15.25
+        by smtp.gmail.com with ESMTPSA id c15-20020a05620a268f00b006a3af1bd183sm10335086qkp.127.2022.06.06.07.15.28
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 06 Jun 2022 07:15:25 -0700 (PDT)
+        Mon, 06 Jun 2022 07:15:28 -0700 (PDT)
 From:   William Breathitt Gray <william.gray@linaro.org>
 To:     jic23@kernel.org
 Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org,
         William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH 0/2] iio: Implement and utilize register structures for
-Date:   Mon,  6 Jun 2022 10:15:16 -0400
-Message-Id: <cover.1654118389.git.william.gray@linaro.org>
+Subject: [PATCH 2/2] iio: dac: cio-dac: Implement and utilize register structures
+Date:   Mon,  6 Jun 2022 10:15:18 -0400
+Message-Id: <44aec703753f930cceff448babd1c8e2959eebb0.1654118389.git.william.gray@linaro.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1654118389.git.william.gray@linaro.org>
+References: <cover.1654118389.git.william.gray@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The STX104 and CIO-DAC drivers were updated to use I/O memory accessor
-calls such as ioread8()/iowrite8() in previous patch series [1]. This
-patch series is a continuation of the effort to improve the code
-readability and reduce magic numbers by implementing and utilizing named
-register data structures.
+Reduce magic numbers and improve code readability by implementing and
+utilizing named register data structures.
 
-[1] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ drivers/iio/dac/cio-dac.c | 24 ++++++++++++++++--------
+ 1 file changed, 16 insertions(+), 8 deletions(-)
 
-William Breathitt Gray (2):
-  iio: adc: stx104: Implement and utilize register structures
-  iio: dac: cio-dac: Implement and utilize register structures
-
- drivers/iio/adc/stx104.c  | 70 ++++++++++++++++++++++++++-------------
- drivers/iio/dac/cio-dac.c | 24 +++++++++-----
- 2 files changed, 63 insertions(+), 31 deletions(-)
-
-
-base-commit: 7fa61f7dba74f6c5baf9f02b760924692acdd282
+diff --git a/drivers/iio/dac/cio-dac.c b/drivers/iio/dac/cio-dac.c
+index 8080984dcb03..7860450ceaf3 100644
+--- a/drivers/iio/dac/cio-dac.c
++++ b/drivers/iio/dac/cio-dac.c
+@@ -16,6 +16,7 @@
+ #include <linux/isa.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
++#include <linux/types.h>
+ 
+ #define CIO_DAC_NUM_CHAN 16
+ 
+@@ -34,14 +35,22 @@ static unsigned int num_cio_dac;
+ module_param_hw_array(base, uint, ioport, &num_cio_dac, 0);
+ MODULE_PARM_DESC(base, "Measurement Computing CIO-DAC base addresses");
+ 
++/**
++ * struct cio_dac_reg - device register structure
++ * @da:	D/A data
++ */
++struct cio_dac_reg {
++	u16 da[CIO_DAC_NUM_CHAN];
++};
++
+ /**
+  * struct cio_dac_iio - IIO device private data structure
+  * @chan_out_states:	channels' output states
+- * @base:		base port address of the IIO device
++ * @reg:		I/O address offset for the device registers
+  */
+ struct cio_dac_iio {
+ 	int chan_out_states[CIO_DAC_NUM_CHAN];
+-	void __iomem *base;
++	struct cio_dac_reg __iomem *reg;
+ };
+ 
+ static int cio_dac_read_raw(struct iio_dev *indio_dev,
+@@ -61,7 +70,6 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
+ 	struct iio_chan_spec const *chan, int val, int val2, long mask)
+ {
+ 	struct cio_dac_iio *const priv = iio_priv(indio_dev);
+-	const unsigned int chan_addr_offset = 2 * chan->channel;
+ 
+ 	if (mask != IIO_CHAN_INFO_RAW)
+ 		return -EINVAL;
+@@ -71,7 +79,7 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
+ 		return -EINVAL;
+ 
+ 	priv->chan_out_states[chan->channel] = val;
+-	iowrite16(val, priv->base + chan_addr_offset);
++	iowrite16(val, priv->reg->da + chan->channel);
+ 
+ 	return 0;
+ }
+@@ -106,8 +114,8 @@ static int cio_dac_probe(struct device *dev, unsigned int id)
+ 	}
+ 
+ 	priv = iio_priv(indio_dev);
+-	priv->base = devm_ioport_map(dev, base[id], CIO_DAC_EXTENT);
+-	if (!priv->base)
++	priv->reg = devm_ioport_map(dev, base[id], CIO_DAC_EXTENT);
++	if (!priv->reg)
+ 		return -ENOMEM;
+ 
+ 	indio_dev->info = &cio_dac_info;
+@@ -117,8 +125,8 @@ static int cio_dac_probe(struct device *dev, unsigned int id)
+ 	indio_dev->name = dev_name(dev);
+ 
+ 	/* initialize DAC outputs to 0V */
+-	for (i = 0; i < 32; i += 2)
+-		iowrite16(0, priv->base + i);
++	for (i = 0; i < CIO_DAC_NUM_CHAN; i++)
++		iowrite16(0, priv->reg->da + i);
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
 -- 
 2.36.1
 
