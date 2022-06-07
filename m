@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3AF31CCA47C
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 18:14:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 58039C433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 18:19:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1350085AbiFGSON (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:14:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47660 "EHLO
+        id S235281AbiFGSTH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:19:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44906 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350194AbiFGSMy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 14:12:54 -0400
+        with ESMTP id S1353059AbiFGSSF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 14:18:05 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E60CA63523;
-        Tue,  7 Jun 2022 10:48:52 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4B0C9ED73C;
+        Tue,  7 Jun 2022 10:53:10 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 62F4CB82239;
-        Tue,  7 Jun 2022 17:48:50 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 3E819C385A5;
-        Tue,  7 Jun 2022 17:48:48 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 51C56B82368;
+        Tue,  7 Jun 2022 17:53:03 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 4FB31C385A5;
+        Tue,  7 Jun 2022 17:53:01 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624129;
+        s=k20201202; t=1654624382;
         bh=aT6YvPhoPElGUTTysLZKWXB1UMLXmkhkzGyEYMZj38o=;
         h=From:To:Cc:Subject:Date:From;
-        b=RQnuS2Mezn6+8pIxH0Omo++SR+BKiv+XOxze31IzL+MXKPpx2PzXiQVSdsb7SUFno
-         Qqh/iTirtAxtAmwGcBhEgR+h9TCbI9hngLh078q2/zDRKVPqOOlPTxCa8ESSwQ7Bjh
-         l4Uy9+9Yoh+GZQeD9ZlMKcJO1nc4+zj4pllrvN8WgS0z6qkowWLXfO4ka5QwU2AJ78
-         I4EK/6FBhJ9qAqPDjZpo25QWxvJOADgaIl0K69zDywDUcwYcNosHcN7rboNNbRr81i
-         sVQQKkoogSlS23WNuYmZAWB+kAEwhjC0Mx0iNvJaQf1Z2MtrmWmrGC/gKuigToWh/4
-         ZsYDlx54Rfm1g==
+        b=FrVIQ3RysPJ0OouxDjvfqBbfeTtLjRUTW4fTsxOuxAw9OqnTlYgp6II3JmWxKabwZ
+         tWsGun9pk1/DMatlqxJHf4Kwg3j3uImy++ubvFazRcneb29vxE8jt2NU4Geo1e93hM
+         2z9Js0OT+fP/mrlwxr7ODCJ7OYAzKlL5fw1vHiuelUVqPzJ+exwGAaOcYJCw2mSzYT
+         S+d3lSeL9++4aKYyxrLv/r/z14txhhl9pNCRTSgddcbs2av4XHDh0RKoKWbQSCtYgf
+         rYM2PpadwpCYUR0J/+9HLSnSHAJoThzhrkfVvGC17pww1ve5ZMfMl5NtBQxivHYIiA
+         KQwhx5WTAbJ1w==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
         linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 01/68] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
-Date:   Tue,  7 Jun 2022 13:47:27 -0400
-Message-Id: <20220607174846.477972-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.17 01/60] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
+Date:   Tue,  7 Jun 2022 13:51:58 -0400
+Message-Id: <20220607175259.478835-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 X-stable: review
