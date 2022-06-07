@@ -2,177 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40727C3F2D4
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 10:45:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0CDFCC433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 10:48:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241475AbiFGKpo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Jun 2022 06:45:44 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41612 "EHLO
+        id S241913AbiFGKsP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:48:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41930 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241459AbiFGKpf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 06:45:35 -0400
-Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3C0B61E3E7;
-        Tue,  7 Jun 2022 03:45:28 -0700 (PDT)
-Received: by mail-ej1-x62a.google.com with SMTP id v1so23651420ejg.13;
-        Tue, 07 Jun 2022 03:45:28 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=references:from:to:cc:subject:date:in-reply-to:message-id
-         :mime-version;
-        bh=5iMSi5NreryGR8izdeYc2rW3YzGt+AHDIAmvUOT38HA=;
-        b=mUGaFDf9Gq0PSdRL0ePEpqPTGkc1KrPolQlTAYyeymOzOnlEIgzV3lIifZX+vORBp4
-         aPyi3xOaoTHuTDpvRYxKep8i1RKNnJYRIgY5tBNcScV9B7KDzNgI90XHeDYh39IVbeOm
-         16vSzWm/lkp6CP+owW9BVb6RLwQzLyt8C3F2yEumydUgagXiWzN9PVOyHBdcnrfVOn1O
-         bP7ZQOiYH9lJ5HYmQwV0OEfZ3ofCnzj5ei0Bbgw0TNWlmb6yeFsGHiqK/jvz+JeQ/++R
-         oOKpuNnTlQmbT0RrXb3m6K0MJDn0oDuHvSeYPrPle0WJmKDTGM3bmwvA6DW28RkBRquX
-         lbBg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:references:from:to:cc:subject:date:in-reply-to
-         :message-id:mime-version;
-        bh=5iMSi5NreryGR8izdeYc2rW3YzGt+AHDIAmvUOT38HA=;
-        b=MUO3LlOndnL+/OWB0NnHXS1pW2x9/C30lrB7SXlOen6nTsA3pSuNBXP2xT14se8ZD2
-         loFv00cBfZEqcCOI0E1E8gNPjZzBqlePs+v28e09v6GQedB16RgkKtEh0l8mHWfIcwj6
-         S9Od37U+9rPfXRKiIlAUxfUBCQ2r+qMgl3TgCgSvNtqOc9sUqNPoVnwY7bp8XNOoVk3j
-         YqwoiQHtIggpGJnLfdjRb0BBTu84+qov3MB4jLCxj7yo6aqE6AqpgmROI2CVRiy3wv0o
-         2gjHKQybw0VQ1NMIgm/2aPq/jgV6cJUn2HtLxgVbJ1MHFPYEb2X1D6zyw/AExsiDTLHr
-         CnGg==
-X-Gm-Message-State: AOAM5303tLabLlVHJ4R0GEmgB/tIZFHJMgZ2gpQ6pY4Jt8S2mOuTNr/F
-        eVAvbdROVHIw+E9uPDI3FeQ=
-X-Google-Smtp-Source: ABdhPJyC3axRmTgpQLe92bAYa+ea9uBIxBbgw9QtK8HQMRAK5klP6mYvkHGZslsJ56KeVDZNNFEhww==
-X-Received: by 2002:a17:907:761c:b0:6d6:e553:7bd1 with SMTP id jx28-20020a170907761c00b006d6e5537bd1mr25471613ejc.5.1654598726651;
-        Tue, 07 Jun 2022 03:45:26 -0700 (PDT)
-Received: from localhost (92.40.203.111.threembb.co.uk. [92.40.203.111])
-        by smtp.gmail.com with ESMTPSA id p4-20020a170906784400b00702d8b43df3sm7369536ejm.167.2022.06.07.03.45.25
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 03:45:25 -0700 (PDT)
-References: <20220603135714.12007-1-aidanmacdonald.0x0@gmail.com>
- <20220603135714.12007-6-aidanmacdonald.0x0@gmail.com>
- <20220605225504.GA3678983-robh@kernel.org>
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     Rob Herring <robh@kernel.org>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
-        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
-        rafael@kernel.org, linux-gpio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 05/10] dt-bindings: gpio: Add AXP192 GPIO bindings
-Date:   Tue, 07 Jun 2022 11:34:19 +0100
-In-reply-to: <20220605225504.GA3678983-robh@kernel.org>
-Message-ID: <7w5P7NKqcSgfwmILB1hRmmdtkmw7UXrH@localhost>
+        with ESMTP id S241695AbiFGKr4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 06:47:56 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CADAFED7A9;
+        Tue,  7 Jun 2022 03:46:54 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 6177B61577;
+        Tue,  7 Jun 2022 10:46:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id D994EC34119;
+        Tue,  7 Jun 2022 10:46:48 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1654598813;
+        bh=hlj2Yw+EG0pWKoO3cXlRjHbXss4PXj721LR0qzOjcRQ=;
+        h=From:To:Cc:In-Reply-To:References:Subject:Date:From;
+        b=lLjZE/ozDwyHnNNLv6KyRqV2xvU5uJJz9u7TCauhLkOPhBG38x6MdtEwI+8UIDQGw
+         uwtQiaJiwSNPU3upK6sgPC39kbtNdgB+CJfvt4RS1u1WkKKQpLeo6s5YlC3hEycLWK
+         DZ8Pjgv0h7TbVz5Vt1jDWfcTuWpK/D09EzsT4BVhx4hbG2e1VCKQHVGbNkyCNRk8sg
+         k6i/de3UcYlJTd5vP0lgvg+Z56k+nzRjJukId3zcOJcHo7YFPUDXs4S3klIjdIoaFE
+         QhfEG8FvKM9beX57uQhEHDZQEfg+6mZSxo/qgqEJSsXBAY9yR2jt850+wpSUTN7I+A
+         ZsaWxiF+LqPiw==
+From:   Mark Brown <broonie@kernel.org>
+To:     linux@roeck-us.net, robh+dt@kernel.org, vkoul@kernel.org,
+        matthias.bgg@gmail.com, jic23@kernel.org,
+        srinivas.kandagatla@linaro.org, krzysztof.kozlowski+dt@linaro.org,
+        chunfeng.yun@mediatek.com, fparent@baylibre.com,
+        ulf.hansson@linaro.org, wim@linux-watchdog.org,
+        qii.wang@mediatek.com, chaotian.jing@mediatek.com
+Cc:     linux-watchdog@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-phy@lists.infradead.org,
+        linux-arm-kernel@lists.infradead.org, dmaengine@vger.kernel.org,
+        linux-mmc@vger.kernel.org, linux-spi@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
+        linux-serial@vger.kernel.org, linux-mediatek@lists.infradead.org
+In-Reply-To: <20220531135026.238475-1-fparent@baylibre.com>
+References: <20220531135026.238475-1-fparent@baylibre.com>
+Subject: Re: (subset) [PATCH 00/17] Add support for MT8365 EVK board
+Message-Id: <165459880859.302078.17715085151206065145.b4-ty@kernel.org>
+Date:   Tue, 07 Jun 2022 11:46:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset="utf-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+On Tue, 31 May 2022 15:50:09 +0200, Fabien Parent wrote:
+> This patch series adds support for the MT8365 EVK board.
+> 
+> This series has dependencies on the following series:
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646256
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646091
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646083
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646081
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646076
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646068
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646020
+> https://patchwork.kernel.org/project/linux-mediatek/list/?series=646052
+> https://lore.kernel.org/r/20220504091923.2219-2-rex-bc.chen@mediatek.com
+> https://lore.kernel.org/r/20220512062622.31484-2-chunfeng.yun@mediatek.com
+> https://lore.kernel.org/r/20220512062622.31484-1-chunfeng.yun@mediatek.com
+> https://lore.kernel.org/r/20220524115019.97246-1-angelogioacchino.delregno@collabora.com
+> https://lore.kernel.org/all/20220127015857.9868-1-biao.huang@mediatek.com/
+> 
+> [...]
 
-Rob Herring <robh@kernel.org> writes:
+Applied to
 
-> On Fri, Jun 03, 2022 at 02:57:09PM +0100, Aidan MacDonald wrote:
->> The AXP192 PMIC is different enough from the PMICs supported by
->> the AXP20x GPIO driver to warrant a separate driver. The AXP192
->> driver also supports interrupts and pinconf settings.
->> 
->> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
->> ---
->>  .../bindings/gpio/x-powers,axp192-gpio.yaml   | 59 +++++++++++++++++++
->>  1 file changed, 59 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
->> 
->> diff --git a/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml b/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
->> new file mode 100644
->> index 000000000000..7a985640ade8
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
->> @@ -0,0 +1,59 @@
->> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
->> +%YAML 1.2
->> +---
->> +$id: "http://devicetree.org/schemas/gpio/x-powers,axp192-gpio.yaml#"
->> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
->> +
->> +title: X-Powers AXP192 GPIO Device Tree Bindings
->> +
->> +maintainers:
->> +  - Chen-Yu Tsai <wens@csie.org>
->> +
->> +properties:
->> +  "#gpio-cells":
->> +    const: 2
->> +    description: >
->> +      The first cell is the pin number and the second is the GPIO flags.
->> +
->> +  compatible:
->> +    oneOf:
->> +      - enum:
->
-> No need for 'oneOf' with only 1 entry.
->
+   https://git.kernel.org/pub/scm/linux/kernel/git/broonie/spi.git for-next
 
-Got it.
+Thanks!
 
->> +          - x-powers,axp192-gpio
->> +
->> +  gpio-controller: true
->> +
->> +patternProperties:
->> +  "^.*-pins?$":
->
-> You can omit '^.*'
->
-> Why does 's' need to be optional?
->
+[09/17] dt-bindings: spi: mt65xx: add MT8365 SoC bindings
+        commit: 901fc8e8079e401f3240006cab6629e65579701c
 
-TBH I just copied this from x-powers,axp209-gpio.yaml. A similar pattern
-is used in a few other bindings, eg. allwinner,sun4i-a10-pinctrl.yaml.
-I guess it's to allow the node names to sound more natural when there's
-only one pin.
+All being well this means that it will be integrated into the linux-next
+tree (usually sometime in the next 24 hours) and sent to Linus during
+the next merge window (or sooner if it is a bug fix), however if
+problems are discovered then the patch may be dropped or reverted.
 
-I am going to send a v2 with '-pins?$' but if you would prefer to have
-'-pins$' that's fine. I don't mind either way.
+You may get further e-mails resulting from automated or manual testing
+and review of the tree, please engage with people reporting problems and
+send followup patches addressing any issues that are reported if needed.
 
-Regards,
-Aidan
+If any updates are required or you are submitting further changes they
+should be sent as incremental updates against current git, existing
+patches will not be replaced.
 
->> +    $ref: /schemas/pinctrl/pinmux-node.yaml#
->> +
->> +    properties:
->> +      pins:
->> +        items:
->> +          enum:
->> +            - GPIO0
->> +            - GPIO1
->> +            - GPIO2
->> +            - GPIO3
->> +            - GPIO4
->> +            - N_RSTO
->> +
->> +      function:
->> +        enum:
->> +          - output
->> +          - input
->> +          - ldo
->> +          - pwm
->> +          - adc
->> +          - low_output
->> +          - floating
->> +          - ext_chg_ctl
->> +          - ldo_status
->> +
->> +required:
->> +  - compatible
->> +  - "#gpio-cells"
->> +  - gpio-controller
->> +
->> +additionalProperties: false
->> +
->> +...
->> -- 
->> 2.35.1
->> 
->> 
+Please add any relevant lists and maintainers to the CCs when replying
+to this mail.
 
+Thanks,
+Mark
