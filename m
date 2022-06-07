@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3FD26CCA47E
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81088C43334
 	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 18:23:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348940AbiFGSXD (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:23:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47680 "EHLO
+        id S1344808AbiFGSXI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:23:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42262 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1350961AbiFGSPM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 14:15:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EAB215C880;
-        Tue,  7 Jun 2022 10:49:19 -0700 (PDT)
+        with ESMTP id S1350978AbiFGSSl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 14:18:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A760C5096;
+        Tue,  7 Jun 2022 10:53:30 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 94541B82343;
-        Tue,  7 Jun 2022 17:49:18 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CE484C385A5;
-        Tue,  7 Jun 2022 17:49:15 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id ADC9CB82370;
+        Tue,  7 Jun 2022 17:53:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 30835C3411C;
+        Tue,  7 Jun 2022 17:53:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624157;
-        bh=dWtkSMzKDscygiG+tJ3tu1ikyvw0VFXcLcT5fAOsbOc=;
+        s=k20201202; t=1654624394;
+        bh=2TzWjZBR22TdjW+rGvG702WH61+cTsVrA4YQiC/Wc+E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=LEn1Ki84bYIjnvcaDYJAZU6v0Ro86rBx88p4mTUqS80obkBstkQxew2BVyxVuJ1en
-         GR3y10Il8cn0T0YZqBrKf311HRwzE2km9UGuiSpwzoANmXSua94QZ7seF8E5P3RY0Q
-         ru7vX1nQCXFwo5/fCtqRiq/+ld/gUi6StPYBsFVrRcU87GF9mCTG5y5p21/q3RvwE6
-         NkjGezXp1SS9ej7JVyQoVXvP94dNpDsfwSA9hKNZuyHnKor3H/bRaL/k6uZmDxoKpI
-         ujF1iLpmfrH0vAbhucAGls/eXzA2in0kpwX/ek8rW7B2SHd44A8NrXOXt1T9kAajXg
-         FZU3qnG75XK0A==
+        b=dzgaHsHyegsKg5ffo0P3BiODs8XFch0NCeNJUiykqpG78eeZEwi0vQduvwy40Y/nn
+         WJDj5Dpo4kPvoL8yTIlMo0/Ax6p0pvXDQWarMJwaPc98j0QHgmJLBOJfBE9d75PJPo
+         n7wv6akw34jmTj0eTZPXDQ+DnXUktl1ctQkIqeyJMOZJ8Uj2LghyjLSBygVo9CdoPf
+         DoafcxOxojAe8yPEV5KIqzzWdzNRHbdAD70igzmt67qX0YZIScLYRODUPxBJwm0fcX
+         e353voT1omgQZlkShDF/w0GZT18LB+htSxtJfa4qCL7puYgAAS8eWO+DKTW0rHLUHz
+         5oDub3ztL/zFA==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
@@ -38,14 +38,14 @@ Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
         Denis Ciocca <denis.ciocca@st.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        lars@metafoo.de, andy.shevchenko@gmail.com, aardelean@deviqon.com,
-        cai.huoqing@linux.dev, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.18 03/68] iio: st_sensors: Add a local lock for protecting odr
-Date:   Tue,  7 Jun 2022 13:47:29 -0400
-Message-Id: <20220607174846.477972-3-sashal@kernel.org>
+        lars@metafoo.de, cai.huoqing@linux.dev, aardelean@deviqon.com,
+        andy.shevchenko@gmail.com, linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 5.17 03/60] iio: st_sensors: Add a local lock for protecting odr
+Date:   Tue,  7 Jun 2022 13:52:00 -0400
+Message-Id: <20220607175259.478835-3-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607174846.477972-1-sashal@kernel.org>
-References: <20220607174846.477972-1-sashal@kernel.org>
+In-Reply-To: <20220607175259.478835-1-sashal@kernel.org>
+References: <20220607175259.478835-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -76,7 +76,7 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  2 files changed, 21 insertions(+), 6 deletions(-)
 
 diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index fa9bcdf0d190..b92de90a125c 100644
+index eb452d0c423c..5c7e4e725819 100644
 --- a/drivers/iio/common/st_sensors/st_sensors_core.c
 +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
 @@ -71,16 +71,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
@@ -111,7 +111,7 @@ index fa9bcdf0d190..b92de90a125c 100644
 +
  	return err;
  }
- EXPORT_SYMBOL_NS(st_sensors_set_odr, IIO_ST_SENSORS);
+ EXPORT_SYMBOL(st_sensors_set_odr);
 @@ -361,6 +365,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
  	struct st_sensors_platform_data *of_pdata;
  	int err = 0;
