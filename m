@@ -2,44 +2,44 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 23DCFC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 7F7C1CCA47E
 	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:49 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241604AbiFGSvf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:51:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40290 "EHLO
+        id S1353041AbiFGSvg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:51:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58474 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354507AbiFGSrG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 14:47:06 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CDD1B7A804;
-        Tue,  7 Jun 2022 11:01:38 -0700 (PDT)
+        with ESMTP id S1354179AbiFGSqm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 14:46:42 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 622331238A9;
+        Tue,  7 Jun 2022 11:00:15 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 8D810B82182;
-        Tue,  7 Jun 2022 18:01:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 71116C3411C;
-        Tue,  7 Jun 2022 18:01:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 46E2561804;
+        Tue,  7 Jun 2022 18:00:15 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C4D36C385A5;
+        Tue,  7 Jun 2022 18:00:13 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624896;
-        bh=EZK/LpgtcWkuxU1xfFoepZT73wWITzW3Yx7sqm7t7Ow=;
+        s=k20201202; t=1654624814;
+        bh=ogHTnG+5vM5g7tkfmQn9/Rp7sQo1fghtNC8wa05qGGk=;
         h=From:To:Cc:Subject:Date:From;
-        b=MxHA9wSA87QpFeamJxBG9+7vMfmbmhauYJXIkPQSUwDQUnKcELtwaYPLJ54wukbSj
-         0j/MUFXthfLXCZKqCkjuN5WfDk4awywJ/uv02hTL7+kW5uquSke8t9CAwJrRhZu96E
-         OjFLlifczyGX8DsTuxrAwvxM+d6UEJ1/8XfNE7mvgQs0Yt9MFKYXUjRbtID7/MY5ag
-         LRVZtiY5khT8AdX1SD8oNcQr6TiKnjRCi5i6FDB4EuyzvpUpx4NimgFKpSfLAGaN9U
-         MG469asbP5ZZrNS35RXxjdS7EDlqHM9AibFJAh7E89wBrT9dQr+uuvoT4lBcS8LJjo
-         dVxxyc5UhgsOQ==
+        b=YbpeE+LCW8GBa1paNKO0PeaiUWha5+x9AMaAmhCZnU+LfyZuMu/tYaN5t8clyxP7T
+         855vgHXEmwFli9z4f4lYcH+0/tUt6xUGVEMChTZErksB4BqVDhj0x7DBkzLrOn4gmc
+         al3zC5mFYr1t6m9jO0AmRJd2by6lDwigEtLUJ8XOLp9ijkfzVaSO5UhZAiOCOf84iy
+         Y8qNn65TuTYqpU8sM4H42HqTFeWjqVqMTuUQVbjbrWCVkl8duLrDhlcwZ1GuGiu67D
+         IS4+p2ouqjWUTuTB3ql0EkcKJ82vqLsgbQUZl97G6wGdpHScdt5+GLjdgKRquVkFT4
+         uWISRN/QoSakw==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
 Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
         linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 4.19 01/27] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
-Date:   Tue,  7 Jun 2022 14:01:05 -0400
-Message-Id: <20220607180133.481701-1-sashal@kernel.org>
+Subject: [PATCH AUTOSEL 5.4 01/34] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
+Date:   Tue,  7 Jun 2022 13:59:36 -0400
+Message-Id: <20220607180011.481266-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
 MIME-Version: 1.0
 X-stable: review
@@ -68,10 +68,10 @@ Signed-off-by: Sasha Levin <sashal@kernel.org>
  1 file changed, 12 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
-index 62052479c349..f970b4388dda 100644
+index 6cb02299a215..18cfe1cb7a40 100644
 --- a/drivers/iio/dummy/iio_simple_dummy.c
 +++ b/drivers/iio/dummy/iio_simple_dummy.c
-@@ -571,10 +571,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+@@ -568,10 +568,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
  	struct iio_sw_device *swd;
  
  	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
@@ -85,7 +85,7 @@ index 62052479c349..f970b4388dda 100644
  	/*
  	 * Allocate an IIO device.
  	 *
-@@ -586,7 +585,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+@@ -583,7 +582,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
  	indio_dev = iio_device_alloc(sizeof(*st));
  	if (!indio_dev) {
  		ret = -ENOMEM;
@@ -94,7 +94,7 @@ index 62052479c349..f970b4388dda 100644
  	}
  
  	st = iio_priv(indio_dev);
-@@ -617,6 +616,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+@@ -614,6 +613,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
  	 *    indio_dev->name = spi_get_device_id(spi)->name;
  	 */
  	indio_dev->name = kstrdup(name, GFP_KERNEL);
@@ -105,7 +105,7 @@ index 62052479c349..f970b4388dda 100644
  
  	/* Provide description of available channels */
  	indio_dev->channels = iio_dummy_channels;
-@@ -633,7 +636,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+@@ -630,7 +633,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
  
  	ret = iio_simple_dummy_events_register(indio_dev);
  	if (ret < 0)
@@ -114,7 +114,7 @@ index 62052479c349..f970b4388dda 100644
  
  	ret = iio_simple_dummy_configure_buffer(indio_dev);
  	if (ret < 0)
-@@ -650,11 +653,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+@@ -647,11 +650,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
  	iio_simple_dummy_unconfigure_buffer(indio_dev);
  error_unregister_events:
  	iio_simple_dummy_events_unregister(indio_dev);
