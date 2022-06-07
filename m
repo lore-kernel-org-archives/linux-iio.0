@@ -2,160 +2,108 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B868EC433EF
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 15:53:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5D8E8C433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 16:54:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1344569AbiFGPxb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Jun 2022 11:53:31 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50236 "EHLO
+        id S245454AbiFGQyv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Jun 2022 12:54:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52896 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1344543AbiFGPxH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 11:53:07 -0400
-Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1600724F16;
-        Tue,  7 Jun 2022 08:52:54 -0700 (PDT)
-Received: by mail-ej1-x630.google.com with SMTP id me5so35547277ejb.2;
-        Tue, 07 Jun 2022 08:52:54 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=sfO6Sx6ARHHT4F4vWizG3z7rq9SAuQ0dqpmQH5iYmfk=;
-        b=ZXIucOCpLDog7eaVEeLBZZfs8ZRcpYc4UcUgMmAUC4I7b9IZK1KAU09g+e5xBQYmoV
-         dX9bE/VVKG4eiyDTG+Yc/QdKfnxyc8rtIsc+SUJJA3Twq3IVT7MvEPL4icNsl1ekvyYw
-         K0tJlBVdvmHc8Pv7naj6AVty0XV4TbIB6H2hvwG3Cdf62w8M8TPnnFFXi5qsqggavgWZ
-         5aHbNVGVB6FbCLOY0RVafwPf3ARKy94pPLTqa8qNylvAJbPOSOeE/NcwOF8jvbO4LP1k
-         D5KC94iKckJ4hlmEyoUkjWMSqMWm2ziH0fzg6JeMqJUZW/sT4NUouhnl9diAAM9V0QHi
-         +51g==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=sfO6Sx6ARHHT4F4vWizG3z7rq9SAuQ0dqpmQH5iYmfk=;
-        b=SkVh/DIBCGzyqgAqpUOjnYLJVP5kMh4m9Z6mNvmJoNVUxhA5bR7kRIdJHkktrHgMM8
-         yRJXZKXj8fbE1114iXkyoRchHo9qQ0I8DOFqNGYyJIXdg3NyZe5nUr2w/zTz1Jq7k+5H
-         2uSSq9nhQ+t/ncC0fC1MwKWflTBHGYkZOMXNk+MmUA5MM2zdm/Jd2XKhaH3kmjPVRaEi
-         l6iXLMj+SIO79VQj71u7XvbxCMGFXRFtThwVjPoPgccClNjrMxk6UEmuC88JysDzklUU
-         ScZut1AyBV341chKuLweKz1Z3zlqYcT5weBqqRlCkhmnA8smp7fVv1I09N/MxsymrNUx
-         HuPQ==
-X-Gm-Message-State: AOAM530AkVN7sJyh8hLF04s5M+ePNf5koXuaE6RcY/bPIthpaiDZqoQT
-        VRQL/9ldHu+P3BEEXvghrSk=
-X-Google-Smtp-Source: ABdhPJzS3Eqzx6iXBXaosSFh4oZhOQ7A6RRAlAhs7gjxfyp9TKEV2uv5wJAc76sVs4S+D5oq4dR3Xg==
-X-Received: by 2002:a17:906:94c9:b0:711:e7c8:ba15 with SMTP id d9-20020a17090694c900b00711e7c8ba15mr2194615ejy.414.1654617172464;
-        Tue, 07 Jun 2022 08:52:52 -0700 (PDT)
-Received: from localhost (92.40.203.36.threembb.co.uk. [92.40.203.36])
-        by smtp.gmail.com with ESMTPSA id a14-20020a170906368e00b006fec5cef701sm7820402ejc.197.2022.06.07.08.52.51
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 07 Jun 2022 08:52:51 -0700 (PDT)
-From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-To:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
-        gregkh@linuxfoundation.org, lgirdwood@gmail.com
-Cc:     lars@metafoo.de, rafael@kernel.org, quic_gurus@quicinc.com,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH v2 16/17] power: axp20x_battery: Support battery status without fuel gauge
-Date:   Tue,  7 Jun 2022 16:53:23 +0100
-Message-Id: <20220607155324.118102-17-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220607155324.118102-1-aidanmacdonald.0x0@gmail.com>
-References: <20220607155324.118102-1-aidanmacdonald.0x0@gmail.com>
+        with ESMTP id S237216AbiFGQyu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 12:54:50 -0400
+Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6E3F5BC6D4;
+        Tue,  7 Jun 2022 09:54:46 -0700 (PDT)
+Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
+        by mail.sberdevices.ru (Postfix) with ESMTP id 68A4F5FD02;
+        Tue,  7 Jun 2022 19:54:43 +0300 (MSK)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
+        s=mail; t=1654620883;
+        bh=SxIEs4Kr3MMdE6b27V4AwRdPMYxuMtwrvbNaADakNbo=;
+        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
+        b=D33E9B0XvzoFQnefaFP2y4+CA9e9ESM9bUAYUmsFgyI4fF/laHnHWcgz8vaJzof83
+         BFTykIevQMjyW6AXUaFSO4WRFu69epJNohdN59V3BzA8rOR7mymJambqs5vzAwZhJ1
+         o9/khYKABTJGlTp+kniJRjzDSRtlqT29l4KReKS1h5B8r3Wdfe4BsFUwvXOqMzYv00
+         0tB1CErSgIrtUzFi0oYDdMmyzWF1pDCJfQvSDB3pZKO8S/ZS9iqLb+jkGLaATR1JOh
+         jyruSRIXms3QYsStTeyTpEOq4dQ0i8ao7lPeVabauRxBGseFc0UOX/5jCyF0i8mLe8
+         eHR395I0Xk2/w==
+Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
+        by mail.sberdevices.ru (Postfix) with ESMTP;
+        Tue,  7 Jun 2022 19:54:42 +0300 (MSK)
+From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "noname.nuno@gmail.com" <noname.nuno@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v2] iio: trigger: warn about non-registered iio trigger
+ getting attempt
+Thread-Topic: [PATCH v2] iio: trigger: warn about non-registered iio trigger
+ getting attempt
+Thread-Index: AQHYeZZUxOkpBS1pdUe6H6/GD97X1q1CID8AgAHY1QA=
+Date:   Tue, 7 Jun 2022 16:54:35 +0000
+Message-ID: <20220607165438.d4txhgccxfojlstv@CAB-WSD-L081021.sigma.sbrf.ru>
+References: <20220606111316.19265-1-ddrokosov@sberdevices.ru>
+ <CAHp75VfRF=NyU9TN0FJ=cj0w_C-cKL+foa+WskwpoBP9b+SfDA@mail.gmail.com>
+In-Reply-To: <CAHp75VfRF=NyU9TN0FJ=cj0w_C-cKL+foa+WskwpoBP9b+SfDA@mail.gmail.com>
+Accept-Language: ru-RU, en-US
+Content-Language: en-US
+X-MS-Has-Attach: 
+X-MS-TNEF-Correlator: 
+x-originating-ip: [172.16.1.12]
+Content-Type: text/plain; charset="us-ascii"
+Content-ID: <6436944E7330F2468150E8FB336F7C2F@sberdevices.ru>
+Content-Transfer-Encoding: quoted-printable
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+X-KSMG-Rule-ID: 4
+X-KSMG-Message-Action: clean
+X-KSMG-AntiSpam-Status: not scanned, disabled by settings
+X-KSMG-AntiSpam-Interceptor-Info: not scanned
+X-KSMG-AntiPhishing: not scanned, disabled by settings
+X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/06/07 11:12:00 #19699674
+X-KSMG-AntiVirus-Status: Clean, skipped
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add a "has_fg" flag to indicate that the chip has a fuel gauge.
-Report battery full status on chips with no fuel gauge using the
-battery voltage.
+Hello Andy,
 
-Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
----
- drivers/power/supply/axp20x_battery.c | 34 ++++++++++++++++++++++++++-
- 1 file changed, 33 insertions(+), 1 deletion(-)
+Thank you for the quick reply.
 
-diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 87fb958f2224..e9547e2d7c48 100644
---- a/drivers/power/supply/axp20x_battery.c
-+++ b/drivers/power/supply/axp20x_battery.c
-@@ -62,6 +62,7 @@ struct axp_data {
- 	int	ccc_scale;
- 	int	ccc_offset;
- 	const int *ccc_table;
-+	bool	has_fg;
- 	bool	has_fg_valid;
- 	int	(*get_max_voltage)(struct axp20x_batt_ps *batt, int *val);
- 	int	(*set_max_voltage)(struct axp20x_batt_ps *batt, int val);
-@@ -190,7 +191,7 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 				   union power_supply_propval *val)
- {
- 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
--	int ret = 0, reg, val1;
-+	int ret = 0, reg, val1, val2;
- 
- 	switch (psp) {
- 	case POWER_SUPPLY_PROP_PRESENT:
-@@ -224,6 +225,34 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
- 			return 0;
- 		}
- 
-+		/*
-+		 * If the chip does not have a fuel gauge, we check battery full status
-+		 * using voltage instead.
-+		 */
-+		if (!axp20x_batt->data->has_fg) {
-+			ret = axp20x_batt->data->get_max_voltage(axp20x_batt, &val1);
-+			if (ret)
-+				return ret;
-+
-+			ret = iio_read_channel_processed(axp20x_batt->batt_v, &val2);
-+			if (ret)
-+				return ret;
-+
-+			/* IIO subsystem reports voltage in mV but we need uV */
-+			val2 *= 1000;
-+
-+			/*
-+			 * According to the AXP192 datasheet, charging will restart if
-+			 * the battery voltage drops below V_rch = V_tgt - 0.1 V, so we
-+			 * report the battery is full if its voltage is at least V_rch.
-+			 */
-+			if (val2 >= val1 - 100000)
-+				val->intval = POWER_SUPPLY_STATUS_FULL;
-+			else
-+				val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
-+			break;
-+		}
-+
- 		ret = regmap_read(axp20x_batt->regmap, AXP20X_FG_RES, &val1);
- 		if (ret)
- 			return ret;
-@@ -546,6 +575,7 @@ static const struct power_supply_desc axp20x_batt_ps_desc = {
- static const struct axp_data axp209_data = {
- 	.ccc_scale = 100000,
- 	.ccc_offset = 300000,
-+	.has_fg = true,
- 	.get_max_voltage = axp20x_battery_get_max_voltage,
- 	.set_max_voltage = axp20x_battery_set_max_voltage,
- };
-@@ -553,6 +583,7 @@ static const struct axp_data axp209_data = {
- static const struct axp_data axp221_data = {
- 	.ccc_scale = 150000,
- 	.ccc_offset = 300000,
-+	.has_fg = true,
- 	.has_fg_valid = true,
- 	.get_max_voltage = axp22x_battery_get_max_voltage,
- 	.set_max_voltage = axp22x_battery_set_max_voltage,
-@@ -561,6 +592,7 @@ static const struct axp_data axp221_data = {
- static const struct axp_data axp813_data = {
- 	.ccc_scale = 200000,
- 	.ccc_offset = 200000,
-+	.has_fg = true,
- 	.has_fg_valid = true,
- 	.get_max_voltage = axp813_battery_get_max_voltage,
- 	.set_max_voltage = axp20x_battery_set_max_voltage,
--- 
-2.35.1
+On Mon, Jun 06, 2022 at 02:42:18PM +0200, Andy Shevchenko wrote:
+> On Mon, Jun 6, 2022 at 1:23 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> =
+wrote:
+> >
+> > As a part of patch series about wrong trigger register() and get()
+> > calls order in the some IIO drivers trigger initialization path:
+> >
+> > https://lore.kernel.org/all/20220524181150.9240-1-ddrokosov@sberdevices=
+.ru/
+> >
+> > runtime WARN() is added to alarm IIO driver authors who make such
+> > a mistake.
+> >
+> > When IIO driver allocates a new IIO trigger, it should register it befo=
+re
+>=20
+> an IIO
+>=20
+> > calling the get() operation. In other words, each IIO driver must abide=
+ by
+> > IIO trigger alloc()/register()/get() calls order.
+>=20
+> I believe triggers usually acquired at ->probe() time, means that in
+> case if the following code (however, I believe it will be quite rare)
+> goes into deferred probe cycle the WARN will be repeated. Perhaps
+> WARN_ONCE() ?
 
+You are totally right. I've tested deferred probing using -EPROBE_DEFER
+injection to probe() code path and WARN() was called each time. I'll fix
+it in the v3 as you suggested.
+
+--=20
+Thank you,
+Dmitry=
