@@ -2,50 +2,45 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95C96CCA47C
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 18:51:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B6FAC433EF
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 18:52:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S243268AbiFGSvh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Jun 2022 14:51:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53892 "EHLO
+        id S1353483AbiFGSwH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Jun 2022 14:52:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39936 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354223AbiFGSqr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 14:46:47 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7828214917F;
-        Tue,  7 Jun 2022 11:00:22 -0700 (PDT)
+        with ESMTP id S1353658AbiFGStl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 14:49:41 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B8D1612E80D;
+        Tue,  7 Jun 2022 11:03:21 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id D9A22618BF;
-        Tue,  7 Jun 2022 18:00:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id BCAA2C34119;
-        Tue,  7 Jun 2022 18:00:19 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 3B3D5B82340;
+        Tue,  7 Jun 2022 18:03:21 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1EEE3C385A5;
+        Tue,  7 Jun 2022 18:03:19 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1654624821;
-        bh=E4J8qHqnbKH9RWVVx26+7JoGtwsNVBNGUHnQObsUXp4=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Ak7a50+O3yxMyk7OZYcrCl3vXbqI0Vb9d9VrY0kXTfaURTCTSZnLRkQvekgwtVTdf
-         IBKUyydyDkxaKglGzw+L69dwfYB3hy0b+6VxY+ugF5UaEoXuixSMcVw4j+WrOc0jGE
-         MkHbo2POoW0zWEiE1J26E0hmwuYRAbXkJ7Q1lvySPTh2o5c+LHRwPljSXue4hDMeK/
-         /6Kn6e6NzUoe/dTUsGzJvPdKkZyjulDlXv6y1fjmnAL3HzWVjZnQ7UV4bni5+1KvgP
-         kJDtFXelAZHH1AOXIdvP2f0nAKjb9RQh/lvqqEfbqjPk8T66hx6hx/uXhy33RH8okc
-         oE1Zp+dV0mRYA==
+        s=k20201202; t=1654625000;
+        bh=LauyIngqKhHgUdFrZjftbaUlMZvP3vHjbGSVAmxtyFI=;
+        h=From:To:Cc:Subject:Date:From;
+        b=bb0P10B+x6IYntZyoct7oslc57wwdS17uuecmlTUFtDhH3cYJ71cOyxlXYmLUTVHi
+         EqJnO2jnsDmmYWWaNtVEtmJ7DqqsBKkbzdydcvY4m2g3R7X2IV5Ns2BItLm4NvMmtR
+         xVjwr0i0sPgWEW9lXldBP9Qv+w9rD8GgH/61JUPIijZfwOWqHSx4wy6oPR2HVSHHfG
+         HeE2RqueoNZRVX1d6F4Rfi4iKc5IudlaWPCzgk9gr/v6tDK9gM50FYc/1mlNTBtnCY
+         VewgKTDR17gijWiVqpiuldvYxsEJOtQ4l0MAZIFENSUvAdeOhWd38BUGe2ic2ED7zq
+         9Bx5oc75hdM6g==
 From:   Sasha Levin <sashal@kernel.org>
 To:     linux-kernel@vger.kernel.org, stable@vger.kernel.org
-Cc:     Miquel Raynal <miquel.raynal@bootlin.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Denis Ciocca <denis.ciocca@st.com>,
+Cc:     Xiaoke Wang <xkernel.wang@foxmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Sasha Levin <sashal@kernel.org>, linus.walleij@linaro.org,
-        cai.huoqing@linux.dev, andy.shevchenko@gmail.com,
-        aardelean@deviqon.com, lars@metafoo.de, linux-iio@vger.kernel.org
-Subject: [PATCH AUTOSEL 5.4 02/34] iio: st_sensors: Add a local lock for protecting odr
-Date:   Tue,  7 Jun 2022 13:59:37 -0400
-Message-Id: <20220607180011.481266-2-sashal@kernel.org>
+        Sasha Levin <sashal@kernel.org>, jic23@kernel.org,
+        linux-iio@vger.kernel.org
+Subject: [PATCH AUTOSEL 4.9 01/19] iio: dummy: iio_simple_dummy: check the return value of kstrdup()
+Date:   Tue,  7 Jun 2022 14:02:56 -0400
+Message-Id: <20220607180317.482354-1-sashal@kernel.org>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220607180011.481266-1-sashal@kernel.org>
-References: <20220607180011.481266-1-sashal@kernel.org>
 MIME-Version: 1.0
 X-stable: review
 X-Patchwork-Hint: Ignore
@@ -54,121 +49,86 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Miquel Raynal <miquel.raynal@bootlin.com>
+From: Xiaoke Wang <xkernel.wang@foxmail.com>
 
-[ Upstream commit 474010127e2505fc463236470908e1ff5ddb3578 ]
+[ Upstream commit ba93642188a6fed754bf7447f638bc410e05a929 ]
 
-Right now the (framework) mlock lock is (ab)used for multiple purposes:
-1- protecting concurrent accesses over the odr local cache
-2- avoid changing samplig frequency whilst buffer is running
+kstrdup() is also a memory allocation-related function, it returns NULL
+when some memory errors happen. So it is better to check the return
+value of it so to catch the memory error in time. Besides, there should
+have a kfree() to clear up the allocation if we get a failure later in
+this function to prevent memory leak.
 
-Let's start by handling situation #1 with a local lock.
-
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Signed-off-by: Miquel Raynal <miquel.raynal@bootlin.com>
-Link: https://lore.kernel.org/r/20220207143840.707510-7-miquel.raynal@bootlin.com
+Signed-off-by: Xiaoke Wang <xkernel.wang@foxmail.com>
+Link: https://lore.kernel.org/r/tencent_C920CFCC33B9CC1C63141FE1334A39FF8508@qq.com
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 Signed-off-by: Sasha Levin <sashal@kernel.org>
 ---
- .../iio/common/st_sensors/st_sensors_core.c   | 24 ++++++++++++++-----
- include/linux/iio/common/st_sensors.h         |  3 +++
- 2 files changed, 21 insertions(+), 6 deletions(-)
+ drivers/iio/dummy/iio_simple_dummy.c | 20 ++++++++++++--------
+ 1 file changed, 12 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-index 364683783ae5..c25b0bc89b0c 100644
---- a/drivers/iio/common/st_sensors/st_sensors_core.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-@@ -76,16 +76,18 @@ static int st_sensors_match_odr(struct st_sensor_settings *sensor_settings,
+diff --git a/drivers/iio/dummy/iio_simple_dummy.c b/drivers/iio/dummy/iio_simple_dummy.c
+index ad3410e528b6..7fef76f0b5c7 100644
+--- a/drivers/iio/dummy/iio_simple_dummy.c
++++ b/drivers/iio/dummy/iio_simple_dummy.c
+@@ -572,10 +572,9 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	struct iio_sw_device *swd;
  
- int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- {
--	int err;
-+	int err = 0;
- 	struct st_sensor_odr_avl odr_out = {0, 0};
- 	struct st_sensor_data *sdata = iio_priv(indio_dev);
- 
-+	mutex_lock(&sdata->odr_lock);
+ 	swd = kzalloc(sizeof(*swd), GFP_KERNEL);
+-	if (!swd) {
+-		ret = -ENOMEM;
+-		goto error_kzalloc;
+-	}
++	if (!swd)
++		return ERR_PTR(-ENOMEM);
 +
- 	if (!sdata->sensor_settings->odr.mask)
--		return 0;
-+		goto unlock_mutex;
- 
- 	err = st_sensors_match_odr(sdata->sensor_settings, odr, &odr_out);
- 	if (err < 0)
--		goto st_sensors_match_odr_error;
-+		goto unlock_mutex;
- 
- 	if ((sdata->sensor_settings->odr.addr ==
- 					sdata->sensor_settings->pw.addr) &&
-@@ -108,7 +110,9 @@ int st_sensors_set_odr(struct iio_dev *indio_dev, unsigned int odr)
- 	if (err >= 0)
- 		sdata->odr = odr_out.hz;
- 
--st_sensors_match_odr_error:
-+unlock_mutex:
-+	mutex_unlock(&sdata->odr_lock);
-+
- 	return err;
- }
- EXPORT_SYMBOL(st_sensors_set_odr);
-@@ -384,6 +388,8 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
- 	struct st_sensors_platform_data *of_pdata;
- 	int err = 0;
- 
-+	mutex_init(&sdata->odr_lock);
-+
- 	/* If OF/DT pdata exists, it will take precedence of anything else */
- 	of_pdata = st_sensors_of_probe(indio_dev->dev.parent, pdata);
- 	if (of_pdata)
-@@ -575,18 +581,24 @@ int st_sensors_read_info_raw(struct iio_dev *indio_dev,
- 		err = -EBUSY;
- 		goto out;
- 	} else {
-+		mutex_lock(&sdata->odr_lock);
- 		err = st_sensors_set_enable(indio_dev, true);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		msleep((sdata->sensor_settings->bootime * 1000) / sdata->odr);
- 		err = st_sensors_read_axis_data(indio_dev, ch, val);
--		if (err < 0)
-+		if (err < 0) {
-+			mutex_unlock(&sdata->odr_lock);
- 			goto out;
-+		}
- 
- 		*val = *val >> ch->scan_type.shift;
- 
- 		err = st_sensors_set_enable(indio_dev, false);
-+		mutex_unlock(&sdata->odr_lock);
+ 	/*
+ 	 * Allocate an IIO device.
+ 	 *
+@@ -587,7 +586,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	indio_dev = iio_device_alloc(sizeof(*st));
+ 	if (!indio_dev) {
+ 		ret = -ENOMEM;
+-		goto error_ret;
++		goto error_free_swd;
  	}
- out:
- 	mutex_unlock(&indio_dev->mlock);
-diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
-index 686be532f4cb..7816bf070f83 100644
---- a/include/linux/iio/common/st_sensors.h
-+++ b/include/linux/iio/common/st_sensors.h
-@@ -228,6 +228,7 @@ struct st_sensor_settings {
-  * @hw_irq_trigger: if we're using the hardware interrupt on the sensor.
-  * @hw_timestamp: Latest timestamp from the interrupt handler, when in use.
-  * @buffer_data: Data used by buffer part.
-+ * @odr_lock: Local lock for preventing concurrent ODR accesses/changes
-  */
- struct st_sensor_data {
- 	struct device *dev;
-@@ -253,6 +254,8 @@ struct st_sensor_data {
- 	s64 hw_timestamp;
  
- 	char buffer_data[ST_SENSORS_MAX_BUFFER_SIZE] ____cacheline_aligned;
-+
-+	struct mutex odr_lock;
- };
+ 	st = iio_priv(indio_dev);
+@@ -618,6 +617,10 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	 *    indio_dev->name = spi_get_device_id(spi)->name;
+ 	 */
+ 	indio_dev->name = kstrdup(name, GFP_KERNEL);
++	if (!indio_dev->name) {
++		ret = -ENOMEM;
++		goto error_free_device;
++	}
  
- #ifdef CONFIG_IIO_BUFFER
+ 	/* Provide description of available channels */
+ 	indio_dev->channels = iio_dummy_channels;
+@@ -634,7 +637,7 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 
+ 	ret = iio_simple_dummy_events_register(indio_dev);
+ 	if (ret < 0)
+-		goto error_free_device;
++		goto error_free_name;
+ 
+ 	ret = iio_simple_dummy_configure_buffer(indio_dev);
+ 	if (ret < 0)
+@@ -651,11 +654,12 @@ static struct iio_sw_device *iio_dummy_probe(const char *name)
+ 	iio_simple_dummy_unconfigure_buffer(indio_dev);
+ error_unregister_events:
+ 	iio_simple_dummy_events_unregister(indio_dev);
++error_free_name:
++	kfree(indio_dev->name);
+ error_free_device:
+ 	iio_device_free(indio_dev);
+-error_ret:
++error_free_swd:
+ 	kfree(swd);
+-error_kzalloc:
+ 	return ERR_PTR(ret);
+ }
+ 
 -- 
 2.35.1
 
