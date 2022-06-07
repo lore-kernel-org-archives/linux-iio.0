@@ -2,61 +2,221 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7BB2FC433EF
-	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 08:22:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 19034C43334
+	for <linux-iio@archiver.kernel.org>; Tue,  7 Jun 2022 10:41:48 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232071AbiFGIWX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 7 Jun 2022 04:22:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50550 "EHLO
+        id S241250AbiFGKlp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 7 Jun 2022 06:41:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56402 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232052AbiFGIWW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 04:22:22 -0400
-X-Greylist: delayed 853 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Tue, 07 Jun 2022 01:22:21 PDT
-Received: from mail.forindustry.pl (mail.forindustry.pl [37.187.225.170])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A5076473
-        for <linux-iio@vger.kernel.org>; Tue,  7 Jun 2022 01:22:20 -0700 (PDT)
-Received: by mail.forindustry.pl (Postfix, from userid 1002)
-        id E56A8A49F2; Tue,  7 Jun 2022 08:02:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=forindustry.pl;
-        s=mail; t=1654589022;
-        bh=Vw5jk5D1DE7WK/GNf/MxRQNyAyPYcC0rMJLibxKTj58=;
-        h=Date:From:To:Subject:From;
-        b=gVt+FdfmrvAaGNx392lkIgYE+myI6d5LNz2zABXr+dYZnySisZ0JVvbHN/OInUZe4
-         kTSUamZ7aQO8CXG4dnY4triU2LFK9rw57Uzr9WxDxeqvvuVj8eC6eCZNOvKbAEMvd4
-         glTTAJuWgtPM5xHZsrU3ZhnVxs8ldADen4fX2PNx9Edvnkm0KITuzgM3c8WRaz9ZYk
-         6bQIifpwVUrBwcKDGmc3eT5Xww9+efFztIdWIp1VTaIGpGOJyWQCr/WG655d1bXYPQ
-         IbZWsm3PkUwWEFgF4MTP69oKt5q/w+KkFvKEfABUEoCrZk/4eGc/R9dXyBrLhSSV/j
-         JtiNCQlZ8FiMQ==
-Received: by mail.forindustry.pl for <linux-iio@vger.kernel.org>; Tue,  7 Jun 2022 08:01:07 GMT
-Message-ID: <20220607064500-0.1.3o.ocpy.0.qw3cogca6q@forindustry.pl>
-Date:   Tue,  7 Jun 2022 08:01:07 GMT
-From:   =?UTF-8?Q? "Arkadiusz_Soko=C5=82owski" ?= 
-        <arkadiusz.sokolowski@forindustry.pl>
-To:     <linux-iio@vger.kernel.org>
-Subject: Koszty instalacji fotowoltaicznej
-X-Mailer: mail.forindustry.pl
+        with ESMTP id S241261AbiFGKlo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 7 Jun 2022 06:41:44 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2BA9E5290
+        for <linux-iio@vger.kernel.org>; Tue,  7 Jun 2022 03:41:40 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id z17so4245629wmi.1
+        for <linux-iio@vger.kernel.org>; Tue, 07 Jun 2022 03:41:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=qw8JacEfJNF9P2iNLjQzkAXW/8/vZkXuOjt3GnWBvjw=;
+        b=hyDSvJIfh0LYoaLEeqkmPROm1N2u7R8cMpaut6DZYA8pNoxIG7jthQ5F82HOCMq2rG
+         fYjscsLiZQgKk+uyZcbEemQ19fmtnvUYc1F4ZnC8f0xbYYmnoXgHcdlVqTkkiGAZFBqw
+         9s6rtFDUlnRG2c31zUx4ljO2jYpPUAnFu2CD7zbQdqqR7D+ujyFr+ex7gPKhkrnSR44Y
+         KTeHSqWku7fvSZxcJb7rgNvOQP8DFieQ2czxXmC8Grj3rVCEqXal1Ce2ctYVkpSgaPKD
+         4Q++EwprNd3zbAp7TC5+zWZnPLhJLp5WeJfaaKmzs3WBKvfUaGGXdb6qII//hNYJ6OuU
+         10vg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=qw8JacEfJNF9P2iNLjQzkAXW/8/vZkXuOjt3GnWBvjw=;
+        b=4w/+ZNDJlqM+Drh4x3Fw9n0HgqVjMJYwWneu3d5Dh56inVBjqDjl8p+gVo4SzFZmbs
+         BEqRGVEKc3uYSRkuJZ7ZUeaOjILvg6xqXq+MvPAsPNCMNzkWKe9i6opSYxiwlLemP4YY
+         cIcgq1NDUVxaPuWH+d0255iyE9EbgbG3jiG642js/knd+ylitGL7/79+sx462R+QB0eU
+         kD7mTMZD0JWEqwcBemcu4YEh4xIsaeiN6TidYkUGZK0mrWfimq9Sqoty5mWVSzo1KmV8
+         S7dzhluhm0RCWpL5GoxwK019Rr/HKvK2CO6ZoZtTggnXtVKVnfR0Sxf5fwjK5+0bXGTT
+         8jrQ==
+X-Gm-Message-State: AOAM532XF5g47g9Tklm3fhdh30WPuO9577QCoxDG3TIkYa6e7Qx4H4GJ
+        W0aMKJ+uk94TZsf2J0rz65nhYA==
+X-Google-Smtp-Source: ABdhPJz0rzj4eqfRw2wspCI3jipVGst2fbnr65Qmu05TDb5e0ptD3uTC6nEhOxZyIE8KFnMOZnH58g==
+X-Received: by 2002:a05:600c:3c8f:b0:39b:808c:b5cb with SMTP id bg15-20020a05600c3c8f00b0039b808cb5cbmr28760884wmb.11.1654598498995;
+        Tue, 07 Jun 2022 03:41:38 -0700 (PDT)
+Received: from maple.lan (cpc141216-aztw34-2-0-cust174.18-1.cable.virginm.net. [80.7.220.175])
+        by smtp.gmail.com with ESMTPSA id n22-20020a05600c3b9600b00397342e3830sm27940708wms.0.2022.06.07.03.41.37
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 07 Jun 2022 03:41:38 -0700 (PDT)
+Date:   Tue, 7 Jun 2022 11:41:36 +0100
+From:   Daniel Thompson <daniel.thompson@linaro.org>
+To:     ChiaEn Wu <peterwu.pub@gmail.com>
+Cc:     lee.jones@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        matthias.bgg@gmail.com, sre@kernel.org, chunfeng.yun@mediatek.com,
+        gregkh@linuxfoundation.org, jic23@kernel.org, lars@metafoo.de,
+        lgirdwood@gmail.com, broonie@kernel.org, linux@roeck-us.net,
+        heikki.krogerus@linux.intel.com, deller@gmx.de,
+        ChiYuan Huang <cy_huang@richtek.com>, alice_chen@richtek.com,
+        chiaen_wu@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org
+Subject: Re: [RESEND 14/14] video: backlight: mt6370: Add Mediatek MT6370
+ support
+Message-ID: <20220607104136.cfnpwo6ajqiuafbf@maple.lan>
+References: <20220531111900.19422-1-peterwu.pub@gmail.com>
+ <20220531111900.19422-15-peterwu.pub@gmail.com>
+ <20220601094623.jnwh2fgsqepy72tc@maple.lan>
+ <CABtFH5+-o=cML_VCSY9frJwEU_TnZt0+myJebi8J7BpP+BOqOw@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CABtFH5+-o=cML_VCSY9frJwEU_TnZt0+myJebi8J7BpP+BOqOw@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On Fri, Jun 03, 2022 at 03:14:56AM +0800, ChiaEn Wu wrote:
+> Daniel Thompson <daniel.thompson@linaro.org> 於 2022年6月1日 週三 下午5:46寫道：
+> >
+> > On Tue, May 31, 2022 at 07:19:00PM +0800, ChiaEn Wu wrote:
+> > > +#define MT6370_DT_PROP_DECL(_name, _type, _reg, _mask, _max, _inv)   \
+> > > +{                                                                    \
+> > > +     .name = "mediatek,bled-" #_name,                                \
+> >
+> > I'd rather have the whole DT property in the macro (because it helps
+> > with grepability).
+> 
+> Do you mean the _name parameter must be the full name of the DT
+> property and do not use "#" to concat like following example?
+> 
+> // in declare
+>             .name = _name,
+> // in use
+>             MT6370_DT_PROP_DECL(mediatek,bled-pwm-enable, ......)
 
-stworzyli=C5=9Bmy specjaln=C4=85 ofert=C4=99 dla firm, na kompleksow=C4=85=
- obs=C5=82ug=C4=99 inwestycji w fotowoltaik=C4=99.
+Yes, I would prefer this form, although, as discussed below, I don't really
+like MT6370_DT_PROP_DECL().
 
-Specjalizujemy si=C4=99 w zakresie doboru, monta=C5=BCu i serwisie instal=
-acji fotowoltaicznych, dysponujemy najnowocze=C5=9Bniejszymi rozwi=C4=85z=
-ania, kt=C3=B3re zapewni=C4=85 Pa=C5=84stwu oczekiwane rezultaty.
 
-Mo=C5=BCemy przygotowa=C4=87 dla Pa=C5=84stwa wst=C4=99pn=C4=85 kalkulacj=
-=C4=99 i przeanalizowa=C4=87 efekty mo=C5=BCliwe do osi=C4=85gni=C4=99cia=
-=2E
+> > > +     .type = MT6370_PARSE_TYPE_##_type,                              \
+> > > +     .reg = _reg,                                                    \
+> > > +     .mask = _mask,                                                  \
+> > > +     .max_val = _max,                                                \
+> > > +     .invert = _inv,                                                 \
+> > > +}
+> > > +
+> > > +static int mt6370_init_backlight_properties(struct mt6370_priv *priv,
+> > > +                                         struct backlight_properties *props)
+> > > +{
+> > > +     struct device *dev = priv->dev;
+> > > +     u8 prop_val;
+> > > +     u32 brightness;
+> > > +     unsigned int mask, val;
+> > > +     static const struct {
+> > > +             char *name;
+> > > +             enum mt6370_prop_type type;
+> > > +             unsigned int reg;
+> > > +             unsigned int mask;
+> > > +             u8 max_val;
+> > > +             bool invert;
+> > > +     } vendor_opt_props[] = {
+> > > +             MT6370_DT_PROP_DECL(pwm-enable, BOOL, MT6370_REG_BL_PWM,
+> > > +                                 MT6370_BL_PWM_EN_MASK, 1, false),
+> > > +             MT6370_DT_PROP_DECL(pwm-hys-enable, BOOL, MT6370_REG_BL_PWM,
+> > > +                                 MT6370_BL_PWM_HYS_EN_MASK, 1, false),
+> > > +             MT6370_DT_PROP_DECL(pwm-hys-sel, U8, MT6370_REG_BL_PWM,
+> > > +                                 MT6370_BL_PWM_HYS_SEL_MASK, 3, false),
+> > > +             MT6370_DT_PROP_DECL(ovp-level-sel, U8, MT6370_REG_BL_BSTCTRL,
+> > > +                                 MT6370_BL_OVP_SEL_MASK, 3, false),
+> > > +             MT6370_DT_PROP_DECL(ovp-shutdown, BOOL, MT6370_REG_BL_BSTCTRL,
+> > > +                                 MT6370_BL_OVP_EN_MASK, 1, true),
+> > > +             MT6370_DT_PROP_DECL(ocp-level-sel, U8, MT6370_REG_BL_BSTCTRL,
+> > > +                                 MT6370_BL_OC_SEL_MASK, 3, false),
+> > > +             MT6370_DT_PROP_DECL(ocp-shutdown, BOOL, MT6370_REG_BL_BSTCTRL,
+> > > +                                 MT6370_BL_OC_EN_MASK, 1, true),
+> > > +     }, *prop_now;
+> > > +     int i, ret;
+> > > +
+> > > +     /* vendor optional properties */
+> > > +     for (i = 0; i < ARRAY_SIZE(vendor_opt_props); i++) {
+> > > +             prop_now = vendor_opt_props + i;
+> > > +
+> > > +             switch (prop_now->type) {
+> > > +             case MT6370_PARSE_TYPE_BOOL:
+> > > +                     if (device_property_read_bool(dev, prop_now->name))
+> > > +                             val = 1;
+> > > +                     else
+> > > +                             val = 0;
+> > > +                     break;
+> > > +             case MT6370_PARSE_TYPE_U8:
+> > > +                     ret = device_property_read_u8(dev, prop_now->name,
+> > > +                                                   &prop_val);
+> > > +                     /* Property not exist, keep value in default */
+> > > +                     if (ret)
+> > > +                             continue;
+> > > +
+> > > +                     val = min_t(u8, prop_val, prop_now->max_val);
+> > > +                     break;
+> > > +             default:
+> > > +                     return -EINVAL;
+> > > +             }
+> > > +
+> > > +             if (prop_now->invert)
+> > > +                     val = prop_now->max_val - val;
+> > > +
+> > > +             val <<= ffs(prop_now->mask) - 1;
+> > > +
+> > > +             ret = regmap_update_bits(priv->regmap, prop_now->reg,
+> > > +                                      prop_now->mask, val);
+> > > +             if (ret)
+> > > +                     return ret;
+> > > +     }
+> >
+> > Is it really worth all this tricky code for 7 properties?
+> >
+> > The code would be much easier to read and maintain if it were coded
+> > directly. For example, the inverted boolean code is hard to read and
+> > can be written directly as:
+> >
+> >
+> >         val = device_property_read_bool(dev, "mediatek,bled-ovp_shutdown");
+> >         ret = regmap_update_bits(priv->regmap, MT6370_REG_BL_BST_CTRL,
+> >                                  MT6370_BL_OVP_EN_MASK,
+> >                                  MT6370_BL_OVP_EN_MASK * !val);
+> >         if (ret)
+> >                 return ret;
+> >
+> > The direct coded approach will probably also pay off if you switch
+> > the bindings over to microvolts/microamps since it becomes much more
+> > natural to call out to a lookup function to convert it into a register
+> > value.
+> >
+> 
+> The purpose of my code is trying to avoid the repeat code in this
+> function. And for loop can help to decrease the lines of code
+> effectively, that's why I use these code to parse the DT properties.
 
-Czy s=C4=85 Pa=C5=84stwo otwarci na wst=C4=99pn=C4=85 rozmow=C4=99 w tym =
-temacie?
+I'm not really convinced that is uses fewer lines of code. It
+certainly would if there were a very large number of properties
+but here there is only seven.
 
-Pozdrawiam,
-Arkadiusz Soko=C5=82owski
+However I guess what I'm really complaining about is how hard it is to
+read the for loop. We have to study the macros, keep track six different
+arguments per property and review the complex logic of the for loop
+(which for example handles inverted u8's that don't actually exist).
+
+To be clear, it's not that loops aren't useful for reducing boilerplate
+code. They can be. However trying to handle booleans and integers in the
+*same* loop ends up needlessly hard to read.
+
+Also, I think that if/when you adopt microamps/microvolts then the
+hard-to-read problem will get even worse unless you get loops to do only
+one thing!
+
+
+Daniel.
