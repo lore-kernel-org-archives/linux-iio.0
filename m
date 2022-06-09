@@ -2,42 +2,42 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 12A1AC43334
-	for <linux-iio@archiver.kernel.org>; Thu,  9 Jun 2022 08:31:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81518C433EF
+	for <linux-iio@archiver.kernel.org>; Thu,  9 Jun 2022 08:31:47 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241016AbiFIIbW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 9 Jun 2022 04:31:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55306 "EHLO
+        id S241115AbiFIIbp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 9 Jun 2022 04:31:45 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56382 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241018AbiFIIae (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Jun 2022 04:30:34 -0400
-Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4970518DAC9;
-        Thu,  9 Jun 2022 01:30:24 -0700 (PDT)
+        with ESMTP id S241150AbiFIIal (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Jun 2022 04:30:41 -0400
+Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.153.233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 035FA15A3FF;
+        Thu,  9 Jun 2022 01:30:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1654763424; x=1686299424;
+  t=1654763441; x=1686299441;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=Nr/sHF4a/6eEUoNV9OryJpAze1cR1cqFM3Ai8nAzrTs=;
-  b=eA0mDSOY2qOZl/31s9/mQMyMnt1g4zXMkp+D9hd2ip5PXb+0fu5KXlE8
-   3fYBaw5xXj7pCLCDu+EHiwiGa1Zf3iE/qNLHCdp0v8artFNq6QkJYGD8V
-   x/u+wZiKrKYlnc42dS/cCaUwqtgrD8GBsz74yIy8+oPT/A+FkxBXqWlaN
-   izRMwwhKZk7MAY9JOEkZFHd9jZHcdb+t+DLZbpQoXKTYLJVP3edQmzkoL
-   37myRb4KJvai5aI04tE4KNTVmA0Iezr48jmz7/faTENU33bfmIldX8Dns
-   yiaTov9w3mJjcsAnOGci/ke8TyKkJFmdUZK7ZM0AVrZXm6YPk1CmpkB7D
-   A==;
+  bh=lwNsDeOTZVQub9esWKyv/jU7ahSsIafHFB6O76N6FzU=;
+  b=jVdIDe4mSWlEGggZvxBilRDBxqXWEk6VUeQ22vxB+Whwpl8YpwsyHFF9
+   tAjszon/bgzXav5S9tBm099phgUBzqipeB1fikfoNAl+0pgt+UNzIgxiT
+   nbCokC+/PswAAKQgZLsJ5JGXQwK0lX9V7b2o8T4hx+ZqDTXjv2hDksCTq
+   SjPOTOZboTBvGuPbvalEkXCKTnSeo6uZ4/xsK6nYuOQzUxy0aoHUmRjod
+   CNj7Y1fA4WMMCprH8gwYB8k2mRQwdtERqP3diCdVAqT65JN6uO4zN3p3P
+   NSAeUNuNFSRwJq0+Ct82RmDXZxc0Yv9FHh7SIl8GG8yK4zlP0SK8RUkgj
+   g==;
 X-IronPort-AV: E=Sophos;i="5.91,287,1647327600"; 
-   d="scan'208";a="99259954"
+   d="scan'208";a="167403713"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 01:30:23 -0700
-Received: from chn-vm-ex02.mchp-main.com (10.10.87.72) by
- chn-vm-ex02.mchp-main.com (10.10.87.72) with Microsoft SMTP Server
+  by esa5.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 09 Jun 2022 01:30:40 -0700
+Received: from chn-vm-ex02.mchp-main.com (10.10.85.144) by
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Thu, 9 Jun 2022 01:30:21 -0700
+ 15.1.2375.17; Thu, 9 Jun 2022 01:30:36 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex02.mchp-main.com (10.10.85.144) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 01:30:18 -0700
+ 15.1.2375.17 via Frontend Transport; Thu, 9 Jun 2022 01:30:33 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <eugen.hristev@microchip.com>, <jic23@kernel.org>,
         <lars@metafoo.de>, <nicolas.ferre@microchip.com>,
@@ -47,9 +47,9 @@ CC:     <linux-iio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
         Claudiu Beznea <claudiu.beznea@microchip.com>
-Subject: [PATCH 08/16] iio: adc: at91-sama5d2_adc: move oversampling storage in its function
-Date:   Thu, 9 Jun 2022 11:32:05 +0300
-Message-ID: <20220609083213.1795019-9-claudiu.beznea@microchip.com>
+Subject: [PATCH 12/16] dt-bindings: iio: adc: at91-sama5d2_adc: add id for temperature channel
+Date:   Thu, 9 Jun 2022 11:32:09 +0300
+Message-ID: <20220609083213.1795019-13-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
 References: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
@@ -60,37 +60,25 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Move the storage of oversampling_ratio in at91_adc_config_emr().
-This prepares for the next commits.
+Add ID for temperature channel of AT91 SAMA5D2 ADC.
 
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+ include/dt-bindings/iio/adc/at91-sama5d2_adc.h | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index fbb98e216e70..76367cc948e8 100644
---- a/drivers/iio/adc/at91-sama5d2_adc.c
-+++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -796,6 +796,8 @@ static int at91_adc_config_emr(struct at91_adc_state *st,
+diff --git a/include/dt-bindings/iio/adc/at91-sama5d2_adc.h b/include/dt-bindings/iio/adc/at91-sama5d2_adc.h
+index 70f99dbdbb42..866d36530583 100644
+--- a/include/dt-bindings/iio/adc/at91-sama5d2_adc.h
++++ b/include/dt-bindings/iio/adc/at91-sama5d2_adc.h
+@@ -13,4 +13,7 @@
+ /* pressure channel index */
+ #define AT91_SAMA5D2_ADC_P_CHANNEL		26
  
- 	at91_adc_writel(st, EMR, emr);
- 
-+	st->oversampling_ratio = oversampling_ratio;
++/* SAMA7G5 Temperature sensor channel index. */
++#define AT91_SAMA7G5_ADC_TEMP_CHANNEL		31
 +
- 	return 0;
- }
- 
-@@ -1695,9 +1697,6 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
- 			goto unlock;
- 		/* update ratio */
- 		ret = at91_adc_config_emr(st, val);
--		if (ret)
--			goto unlock;
--		st->oversampling_ratio = val;
- unlock:
- 		mutex_unlock(&st->lock);
- 		return ret;
+ #endif
 -- 
 2.34.1
 
