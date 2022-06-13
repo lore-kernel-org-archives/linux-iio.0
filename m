@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8770EC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D63BCCCA482
 	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 12:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232087AbiFNM2A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S234354AbiFNM2A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Tue, 14 Jun 2022 08:28:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233019AbiFNM16 (ORCPT
+        with ESMTP id S233465AbiFNM16 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 08:27:58 -0400
 Received: from es400ra02.iit.it (mx.iit.it [90.147.26.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDF921269;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CB8B21268;
         Tue, 14 Jun 2022 05:27:50 -0700 (PDT)
-Received: from es400ra02.iit.it (127.0.0.1) id hl1vc40171s9; Mon, 13 Jun 2022 14:05:57 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
+Received: from es400ra02.iit.it (127.0.0.1) id hl1vc40171s9; Mon, 13 Jun 2022 14:05:56 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
         s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
         Message-ID:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding:Content-Type; bh=l8Ahxgl+9kp6R2YaL5zEc
-        e2N/Lu7/gPoBOC+0RYxG7w=; b=HbkqlXgSkqXTuyBFoGd441G7xXfDp8vpml+FZ
-        /h+lVGxnfgphKJ0/CeMP/gYmFDLAzZ5/9rzY2rCQgCMVuZW1dEitNZfZetH9QcB4
-        hdsQ0Xa2ErFGN7TGH0CoK7BRDhjVFfHqV4eGg2mepCbK19Kp1rsEwsBgco4tZOvZ
-        RZrV5E=
+        Content-Transfer-Encoding:Content-Type; bh=lThD6BA32M/3+1gJOlZ6S
+        d+pgka8j0o3qmjB0KTkeU4=; b=iXpKDfQ0yGSdROKy1TR6Cilec80V9RSBKQQJm
+        NBUlJt1y+LoOGsSPL1A1P7EIxu14N18PKsN0GtxCAYiTlVBWWNYZPF2exWYDrK4D
+        VHqSn23GdeQOGo1UTtBZCmMxEMN/zcUSPi1H1D0ABkJaH4gCL15MM6QaYlvvjLuo
+        jyDmMY=
 Received: from mail.iit.it ([10.255.8.186])
         by es400ra02.iit.it ([172.31.0.242]) (SonicWall 10.0.16.7295)
         with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
-        id o202206131205570231027-8; Mon, 13 Jun 2022 14:05:57 +0200
+        id o202206131205550231026-8; Mon, 13 Jun 2022 14:05:55 +0200
 Received: from poker.lan (90.147.26.235) by iitmxwge020.iit.local
  (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.17; Mon, 13 Jun
- 2022 14:05:56 +0200
+ 2022 14:05:55 +0200
 From:   <andrea.merello@iit.it>
 To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -38,10 +38,11 @@ To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
 CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
         <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
         <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: [v6 13/14] iio: imu: add BNO055 I2C driver
-Date:   Mon, 13 Jun 2022 14:05:33 +0200
-Message-ID: <20220613120534.36991-14-andrea.merello@iit.it>
+        Andrea Merello <andrea.merello@iit.it>,
+        Rob Herring <robh@kernel.org>
+Subject: [v6 11/14] dt-bindings: iio/imu: Add Bosch BNO055
+Date:   Mon, 13 Jun 2022 14:05:31 +0200
+Message-ID: <20220613120534.36991-12-andrea.merello@iit.it>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220613120534.36991-1-andrea.merello@iit.it>
 References: <20220613120534.36991-1-andrea.merello@iit.it>
@@ -58,117 +59,88 @@ X-Mlf-Smartnet-Version: 20210917223710
 X-Mlf-Envelope-From: Andrea.Merello@iit.it
 X-Mlf-Version: 10.0.16.7295
 X-Mlf-License: BSV_C_AP_T_R
-X-Mlf-UniqueId: o202206131205570231027
+X-Mlf-UniqueId: o202206131205550231026
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Andrea Merello <andrea.merello@iit.it>
 
-Add an I2C driver for communicating to a BNO055 IMU via I2C bus and enable
-the BNO055 core driver to work in this scenario.
+Introduce new documentation file for the Bosch BNO055 IMU.
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
+Reviewed-by: Rob Herring <robh@kernel.org>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/imu/bno055/Kconfig      | 11 ++++++
- drivers/iio/imu/bno055/Makefile     |  2 +
- drivers/iio/imu/bno055/bno055_i2c.c | 57 +++++++++++++++++++++++++++++
- 3 files changed, 70 insertions(+)
- create mode 100644 drivers/iio/imu/bno055/bno055_i2c.c
+ .../bindings/iio/imu/bosch,bno055.yaml        | 59 +++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml
 
-diff --git a/drivers/iio/imu/bno055/Kconfig b/drivers/iio/imu/bno055/Kconfig
-index d014b68cd43d..ccf9ea7c50f8 100644
---- a/drivers/iio/imu/bno055/Kconfig
-+++ b/drivers/iio/imu/bno055/Kconfig
-@@ -12,3 +12,14 @@ config BOSCH_BNO055_SERIAL
- 
- 	  This driver can also be built as a module. If so, the module will be
- 	  called bno055_sl.
-+
-+config BOSCH_BNO055_I2C
-+	tristate "Bosch BNO055 attached via I2C bus"
-+	depends on I2C
-+	select REGMAP_I2C
-+	select BOSCH_BNO055_IIO
-+	help
-+	  Enable this to support Bosch BNO055 IMUs attached via I2C bus.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called bno055_i2c.
-diff --git a/drivers/iio/imu/bno055/Makefile b/drivers/iio/imu/bno055/Makefile
-index 212307ce9c08..f0be80accb5b 100644
---- a/drivers/iio/imu/bno055/Makefile
-+++ b/drivers/iio/imu/bno055/Makefile
-@@ -6,3 +6,5 @@ bno055_ser-y := bno055_ser_core.o
- # define_trace.h needs to know how to find our header
- CFLAGS_bno055_ser_trace.o := -I$(src)
- bno055_ser-$(CONFIG_TRACING) += bno055_ser_trace.o
-+
-+obj-$(CONFIG_BOSCH_BNO055_I2C) += bno055_i2c.o
-diff --git a/drivers/iio/imu/bno055/bno055_i2c.c b/drivers/iio/imu/bno055/bno055_i2c.c
+diff --git a/Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml b/Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml
 new file mode 100644
-index 000000000000..9bb256fdb0d3
+index 000000000000..e0d06db161a9
 --- /dev/null
-+++ b/drivers/iio/imu/bno055/bno055_i2c.c
-@@ -0,0 +1,57 @@
-+// SPDX-License-Identifier: GPL-2.0
-+/*
-+ * Support for I2C-interfaced Bosch BNO055 IMU.
-+ *
-+ * Copyright (C) 2021-2022 Istituto Italiano di Tecnologia
-+ * Electronic Design Laboratory
-+ * Written by Andrea Merello <andrea.merello@iit.it>
-+ */
++++ b/Documentation/devicetree/bindings/iio/imu/bosch,bno055.yaml
+@@ -0,0 +1,59 @@
++# SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/imu/bosch,bno055.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
 +
-+#include <linux/i2c.h>
-+#include <linux/mod_devicetable.h>
-+#include <linux/module.h>
-+#include <linux/regmap.h>
++title: Bosch BNO055
 +
-+#include "bno055.h"
++maintainers:
++  - Andrea Merello <andrea.merello@iit.it>
 +
-+#define BNO055_I2C_XFER_BURST_BREAK_THRESHOLD 3 /* FIXME */
++description: |
++  Inertial Measurement Unit with Accelerometer, Gyroscope, Magnetometer and
++  internal MCU for sensor fusion
++  https://www.bosch-sensortec.com/products/smart-sensors/bno055/
 +
-+static int bno055_i2c_probe(struct i2c_client *client)
-+{
-+	struct regmap *regmap;
++properties:
++  compatible:
++    enum:
++      - bosch,bno055
 +
-+	regmap = devm_regmap_init_i2c(client, &bno055_regmap_config);
-+	if (IS_ERR(regmap))
-+		return dev_err_probe(&client->dev, PTR_ERR(regmap),
-+				     "Unable to init register map");
++  reg:
++    maxItems: 1
 +
-+	return bno055_probe(&client->dev, regmap,
-+			    BNO055_I2C_XFER_BURST_BREAK_THRESHOLD, true);
-+}
++  reset-gpios:
++    maxItems: 1
 +
-+static const struct i2c_device_id bno055_i2c_id[] = {
-+	{"bno055", 0},
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, bno055_i2c_id);
++  clocks:
++    maxItems: 1
 +
-+static const struct of_device_id __maybe_unused bno055_i2c_of_match[] = {
-+	{ .compatible = "bosch,bno055" },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, bno055_i2c_of_match);
++required:
++  - compatible
 +
-+static struct i2c_driver bno055_driver = {
-+	.driver = {
-+		.name = "bno055-i2c",
-+		.of_match_table = of_match_ptr(bno055_i2c_of_match),
-+	},
-+	.probe_new = bno055_i2c_probe,
-+	.id_table = bno055_i2c_id,
-+};
-+module_i2c_driver(bno055_driver);
++additionalProperties: false
 +
-+MODULE_AUTHOR("Andrea Merello");
-+MODULE_DESCRIPTION("Bosch BNO055 I2C interface");
-+MODULE_IMPORT_NS(IIO_BNO055);
-+MODULE_LICENSE("GPL");
++examples:
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    serial {
++      imu {
++        compatible = "bosch,bno055";
++        reset-gpios = <&gpio0 54 GPIO_ACTIVE_LOW>;
++        clocks = <&imu_clk>;
++      };
++    };
++
++  - |
++    #include <dt-bindings/gpio/gpio.h>
++    i2c {
++      #address-cells = <1>;
++      #size-cells = <0>;
++
++      imu@28 {
++        compatible = "bosch,bno055";
++        reg = <0x28>;
++        reset-gpios = <&gpio0 54 GPIO_ACTIVE_LOW>;
++        clocks = <&imu_clk>;
++      };
++    };
 -- 
 2.17.1
 
