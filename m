@@ -2,95 +2,165 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF0CCC433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 12:05:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEBB1C43334
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 12:27:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1355366AbiFNMFv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:05:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60542 "EHLO
+        id S232730AbiFNM15 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:27:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57866 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241347AbiFNMFs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 08:05:48 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FA7B4927A;
-        Tue, 14 Jun 2022 05:05:47 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 2E54BB81863;
-        Tue, 14 Jun 2022 12:05:46 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 49F45C3411B;
-        Tue, 14 Jun 2022 12:05:39 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655208344;
-        bh=6EaGbSn4r/TeDu88uoSdZfsO2bREhpvtyTSLFRBBdQQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ViSpuB8+mSVxLXaTeNpdJzPIzQppv/MhO+DHwRJwhJDujYPH3xlV2r6xzIH2+nANM
-         lxM+o/YtxX0/jTFV/9OrXQ27QbPFlAkC2/G9qhMlO2eaF0n/K/HOeHkRaubCNaD7hs
-         dPF0wpoF/+UH0qunJs9aZHm8hB+EaF+RtNvhT6YMY2WW/2AIxyclc77Mqthf3oK1Tp
-         Jk61012dq1vEqmnpW6yBwUVCMq2ELSVEwWLcxR3A9yxQKrt+bWzBkBuMhyvF5nhuRU
-         ENQOKzjpBcN/9quZ/bRC78Z7voa7Q6yrPhoxKnoRW1ZPcVwF5VORv3VrA41GYTW4yv
-         Tzd45VXxE0d1Q==
-Date:   Tue, 14 Jun 2022 13:14:53 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     <Claudiu.Beznea@microchip.com>
-Cc:     <Eugen.Hristev@microchip.com>, <lars@metafoo.de>,
-        <Nicolas.Ferre@microchip.com>, <alexandre.belloni@bootlin.com>,
-        <robh+dt@kernel.org>, <krzk+dt@kernel.org>,
-        <ludovic.desroches@atmel.com>, <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH 15/16] iio: adc: at91-sama5d2_adc: add runtime pm
- support
-Message-ID: <20220614131453.7099c043@jic23-huawei>
-In-Reply-To: <68a099ac-7bf6-aca0-4723-af8e48585abc@microchip.com>
-References: <20220609083213.1795019-1-claudiu.beznea@microchip.com>
-        <20220609083213.1795019-16-claudiu.beznea@microchip.com>
-        <20220611174824.2d696a55@jic23-huawei>
-        <68a099ac-7bf6-aca0-4723-af8e48585abc@microchip.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S232087AbiFNM14 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 08:27:56 -0400
+Received: from es400ra02.iit.it (mx.iit.it [90.147.26.161])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DE4421266;
+        Tue, 14 Jun 2022 05:27:50 -0700 (PDT)
+Received: from es400ra02.iit.it (127.0.0.1) id hl1vc40171s9; Mon, 13 Jun 2022 14:05:54 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
+        s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
+        Message-ID:In-Reply-To:References:MIME-Version:
+        Content-Transfer-Encoding:Content-Type; bh=VBTL6Apel5oB8rKCVDhtd
+        2UfB/i7hDekWFdZzJO1MWU=; b=ZUhXFk/r3F7s/uTXUetAfRUbL/zENc8bgS86S
+        J+5hNENkd2KpZUpKKnvoEq6ft363IKhckc4ifTKxKjMqF20CpSxzpUXTrE8Dmld9
+        V6uF3RJMHB+gN1yhxs+2fW3n7nnAH+1RA3GZFtXPPRJwY3qWdFupwYM5yknkook6
+        KpCuT0=
+Received: from mail.iit.it ([10.255.8.186])
+        by es400ra02.iit.it ([172.31.0.242]) (SonicWall 10.0.16.7295)
+        with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
+        id o202206131205540231025-8; Mon, 13 Jun 2022 14:05:54 +0200
+Received: from poker.lan (90.147.26.235) by iitmxwge020.iit.local
+ (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.17; Mon, 13 Jun
+ 2022 14:05:54 +0200
+From:   <andrea.merello@iit.it>
+To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
+        <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
+        <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
+        Andrea Merello <andrea.merello@iit.it>
+Subject: [v6 09/14] iio: document bno055 private sysfs attributes
+Date:   Mon, 13 Jun 2022 14:05:29 +0200
+Message-ID: <20220613120534.36991-10-andrea.merello@iit.it>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220613120534.36991-1-andrea.merello@iit.it>
+References: <20220613120534.36991-1-andrea.merello@iit.it>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [90.147.26.235]
+X-ClientProxiedBy: IITMXWGE021.iit.local (10.255.8.187) To
+ iitmxwge020.iit.local (10.255.8.186)
+X-Mlf-DSE-Version: 6873
+X-Mlf-Rules-Version: s20220519150137; ds20200715013501;
+        di20220610180234; ri20160318003319; fs20220610211824
+X-Mlf-Smartnet-Version: 20210917223710
+X-Mlf-Envelope-From: Andrea.Merello@iit.it
+X-Mlf-Version: 10.0.16.7295
+X-Mlf-License: BSV_C_AP_T_R
+X-Mlf-UniqueId: o202206131205540231025
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-...
+From: Andrea Merello <andrea.merello@iit.it>
 
+Add ABI documentation for bno055 driver private sysfs attributes.
 
-> >> @@ -1268,11 +1309,15 @@ static int at91_adc_buffer_prepare(struct iio_dev *indio_dev)
-> >>       if (!(iio_device_get_current_mode(indio_dev) & INDIO_ALL_TRIGGERED_MODES))
-> >>               return -EINVAL;
-> >>
-> >> +     ret = pm_runtime_resume_and_get(st->dev);  
-> > 
-> > This seems unusual.  I'd normally expect to see runtime pm left on whenever
-> > a buffer is in use, but in this case you seem to let it autosuspend.
-> > 
-> > That 'might' be fine as you might hit it often enough that it stays up whilst
-> > doing DMA but it certainly seems odd and less than efficient.
-> > Or possibly the use of the trigger is enough to keep it up.  
-> 
-> This is here because at91_adc_buffer_prepare() is called though
-> .hwfifo_set_watermark which is called in iio_enable_buffers() before
-> iio_trigger_attach_poll_func() which calls in turn
-> at91_adc_configure_trigger() that turns on the power for the whole duration
-> the buffers are enabled.
-> 
-> It is necessary to have runtime resume here to be able to do proper
-> register settings.
+Signed-off-by: Andrea Merello <andrea.merello@iit.it>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ .../ABI/testing/sysfs-bus-iio-bno055          | 81 +++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-bno055
 
-Runtime pm is reference counted so I'd take the view that either
-* buffer being enabled or
-* trigger being enabled
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-bno055 b/Documentation/ABI/testing/sysfs-bus-iio-bno055
+new file mode 100644
+index 000000000000..8d3d0a79d7e4
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-bno055
+@@ -0,0 +1,81 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_raw_range
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw (unscaled) range for acceleration readings. Unit after
++		application of scale is m/s^2. Note that this doesn't affects
++		the scale (which should be used when changing the maximum and
++		minimum readable value affects also the reading scaling factor).
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_raw_range
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Range for angular velocity readings in radians per second. Note
++		that this does not affects the scale (which should be used when
++		changing the maximum and minimum readable value affects also the
++		reading scaling factor).
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_raw_range_available
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		List of allowed values for in_accel_raw_range attribute
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_raw_range_available
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		List of allowed values for in_anglvel_raw_range attribute
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_calibration_fast_enable
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Can be 1 or 0. Enables/disables the "Fast Magnetometer
++		Calibration" HW function.
++
++What:		/sys/bus/iio/devices/iio:deviceX/fusion_enable
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Can be 1 or 0. Enables/disables the "sensor fusion" (a.k.a.
++		NDOF) HW function.
++
++What:		/sys/bus/iio/devices/iio:deviceX/calibration_data
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the binary calibration data blob for the IMU sensors.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_accel_calibration_auto_status
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the autocalibration status for the accelerometer sensor.
++		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
++		the number, the better the calibration status.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_gyro_calibration_auto_status
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the autocalibration status for the gyroscope sensor.
++		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
++		the number, the better the calibration status.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_magn_calibration_auto_status
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the autocalibration status for the magnetometer sensor.
++		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
++		the number, the better the calibration status.
++
++What:		/sys/bus/iio/devices/iio:deviceX/sys_calibration_auto_status
++KernelVersion:	5.20
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Reports the status for the IMU overall autocalibration.
++		Can be 0 (calibration non even enabled) or 1 to 5 where the greater
++		the number, the better the calibration status.
+-- 
+2.17.1
 
-are reasons to leave the device powered up.  That'll result in
-needing it to be powered down in both buffer and trigger disables
-but that shoudl be fine.
-
-...
-
-Thanks,
-
-Jonathan
