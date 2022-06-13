@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7720FC433EF
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8770EC43334
 	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 12:28:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233884AbiFNM17 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:27:59 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57864 "EHLO
+        id S232087AbiFNM2A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Jun 2022 08:28:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57902 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbiFNM14 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 08:27:56 -0400
+        with ESMTP id S233019AbiFNM16 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 08:27:58 -0400
 Received: from es400ra02.iit.it (mx.iit.it [90.147.26.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7DC5721255;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CDF921269;
         Tue, 14 Jun 2022 05:27:50 -0700 (PDT)
-Received: from es400ra02.iit.it (127.0.0.1) id hl1vc40171s9; Mon, 13 Jun 2022 14:05:51 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
+Received: from es400ra02.iit.it (127.0.0.1) id hl1vc40171s9; Mon, 13 Jun 2022 14:05:57 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
         s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
         Message-ID:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding:Content-Type; bh=K9Fy5fKWro7reHKbWmYSX
-        6nrk2Ev6jsAgQyCS4B798k=; b=AwuORbjUpwxMupWXdoakQvUIYhT6LPu/ZP2td
-        czffxOGgzZ4SfE9ZGtfsezgMvUK9YLxfWi426EP9rmNlbQbRqdgeLOnW0LrXtNg8
-        sXMgoKLewhhSs2C0U5dYucOALAW4vOHOaSW3GR62bS580ebGtSipoa5AOBIeH7sA
-        Xeupp8=
+        Content-Transfer-Encoding:Content-Type; bh=l8Ahxgl+9kp6R2YaL5zEc
+        e2N/Lu7/gPoBOC+0RYxG7w=; b=HbkqlXgSkqXTuyBFoGd441G7xXfDp8vpml+FZ
+        /h+lVGxnfgphKJ0/CeMP/gYmFDLAzZ5/9rzY2rCQgCMVuZW1dEitNZfZetH9QcB4
+        hdsQ0Xa2ErFGN7TGH0CoK7BRDhjVFfHqV4eGg2mepCbK19Kp1rsEwsBgco4tZOvZ
+        RZrV5E=
 Received: from mail.iit.it ([10.255.8.186])
         by es400ra02.iit.it ([172.31.0.242]) (SonicWall 10.0.16.7295)
         with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
-        id o202206131205510231021-8; Mon, 13 Jun 2022 14:05:51 +0200
+        id o202206131205570231027-8; Mon, 13 Jun 2022 14:05:57 +0200
 Received: from poker.lan (90.147.26.235) by iitmxwge020.iit.local
  (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.17; Mon, 13 Jun
- 2022 14:05:50 +0200
+ 2022 14:05:56 +0200
 From:   <andrea.merello@iit.it>
 To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
@@ -39,9 +39,9 @@ CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
         <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
         <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
         Andrea Merello <andrea.merello@iit.it>
-Subject: [v6 03/14] iio: event_monitor: add linear acceleration modifiers
-Date:   Mon, 13 Jun 2022 14:05:23 +0200
-Message-ID: <20220613120534.36991-4-andrea.merello@iit.it>
+Subject: [v6 13/14] iio: imu: add BNO055 I2C driver
+Date:   Mon, 13 Jun 2022 14:05:33 +0200
+Message-ID: <20220613120534.36991-14-andrea.merello@iit.it>
 X-Mailer: git-send-email 2.25.1
 In-Reply-To: <20220613120534.36991-1-andrea.merello@iit.it>
 References: <20220613120534.36991-1-andrea.merello@iit.it>
@@ -58,36 +58,117 @@ X-Mlf-Smartnet-Version: 20210917223710
 X-Mlf-Envelope-From: Andrea.Merello@iit.it
 X-Mlf-Version: 10.0.16.7295
 X-Mlf-License: BSV_C_AP_T_R
-X-Mlf-UniqueId: o202206131205510231021
+X-Mlf-UniqueId: o202206131205570231027
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Andrea Merello <andrea.merello@iit.it>
 
-Following the introduction of IIO linear acceleration modifiers, update the
-event_monitor tool accordingly.
+Add an I2C driver for communicating to a BNO055 IMU via I2C bus and enable
+the BNO055 core driver to work in this scenario.
 
 Signed-off-by: Andrea Merello <andrea.merello@iit.it>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- tools/iio/iio_event_monitor.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/imu/bno055/Kconfig      | 11 ++++++
+ drivers/iio/imu/bno055/Makefile     |  2 +
+ drivers/iio/imu/bno055/bno055_i2c.c | 57 +++++++++++++++++++++++++++++
+ 3 files changed, 70 insertions(+)
+ create mode 100644 drivers/iio/imu/bno055/bno055_i2c.c
 
-diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
-index 2f4581658859..1fee44abb836 100644
---- a/tools/iio/iio_event_monitor.c
-+++ b/tools/iio/iio_event_monitor.c
-@@ -122,6 +122,9 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_PM4] = "pm4",
- 	[IIO_MOD_PM10] = "pm10",
- 	[IIO_MOD_O2] = "o2",
-+	[IIO_MOD_LINEAR_X] = "linear_x",
-+	[IIO_MOD_LINEAR_Y] = "linear_y",
-+	[IIO_MOD_LINEAR_Z] = "linear_z",
- };
+diff --git a/drivers/iio/imu/bno055/Kconfig b/drivers/iio/imu/bno055/Kconfig
+index d014b68cd43d..ccf9ea7c50f8 100644
+--- a/drivers/iio/imu/bno055/Kconfig
++++ b/drivers/iio/imu/bno055/Kconfig
+@@ -12,3 +12,14 @@ config BOSCH_BNO055_SERIAL
  
- static bool event_is_known(struct iio_event_data *event)
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called bno055_sl.
++
++config BOSCH_BNO055_I2C
++	tristate "Bosch BNO055 attached via I2C bus"
++	depends on I2C
++	select REGMAP_I2C
++	select BOSCH_BNO055_IIO
++	help
++	  Enable this to support Bosch BNO055 IMUs attached via I2C bus.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called bno055_i2c.
+diff --git a/drivers/iio/imu/bno055/Makefile b/drivers/iio/imu/bno055/Makefile
+index 212307ce9c08..f0be80accb5b 100644
+--- a/drivers/iio/imu/bno055/Makefile
++++ b/drivers/iio/imu/bno055/Makefile
+@@ -6,3 +6,5 @@ bno055_ser-y := bno055_ser_core.o
+ # define_trace.h needs to know how to find our header
+ CFLAGS_bno055_ser_trace.o := -I$(src)
+ bno055_ser-$(CONFIG_TRACING) += bno055_ser_trace.o
++
++obj-$(CONFIG_BOSCH_BNO055_I2C) += bno055_i2c.o
+diff --git a/drivers/iio/imu/bno055/bno055_i2c.c b/drivers/iio/imu/bno055/bno055_i2c.c
+new file mode 100644
+index 000000000000..9bb256fdb0d3
+--- /dev/null
++++ b/drivers/iio/imu/bno055/bno055_i2c.c
+@@ -0,0 +1,57 @@
++// SPDX-License-Identifier: GPL-2.0
++/*
++ * Support for I2C-interfaced Bosch BNO055 IMU.
++ *
++ * Copyright (C) 2021-2022 Istituto Italiano di Tecnologia
++ * Electronic Design Laboratory
++ * Written by Andrea Merello <andrea.merello@iit.it>
++ */
++
++#include <linux/i2c.h>
++#include <linux/mod_devicetable.h>
++#include <linux/module.h>
++#include <linux/regmap.h>
++
++#include "bno055.h"
++
++#define BNO055_I2C_XFER_BURST_BREAK_THRESHOLD 3 /* FIXME */
++
++static int bno055_i2c_probe(struct i2c_client *client)
++{
++	struct regmap *regmap;
++
++	regmap = devm_regmap_init_i2c(client, &bno055_regmap_config);
++	if (IS_ERR(regmap))
++		return dev_err_probe(&client->dev, PTR_ERR(regmap),
++				     "Unable to init register map");
++
++	return bno055_probe(&client->dev, regmap,
++			    BNO055_I2C_XFER_BURST_BREAK_THRESHOLD, true);
++}
++
++static const struct i2c_device_id bno055_i2c_id[] = {
++	{"bno055", 0},
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, bno055_i2c_id);
++
++static const struct of_device_id __maybe_unused bno055_i2c_of_match[] = {
++	{ .compatible = "bosch,bno055" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, bno055_i2c_of_match);
++
++static struct i2c_driver bno055_driver = {
++	.driver = {
++		.name = "bno055-i2c",
++		.of_match_table = of_match_ptr(bno055_i2c_of_match),
++	},
++	.probe_new = bno055_i2c_probe,
++	.id_table = bno055_i2c_id,
++};
++module_i2c_driver(bno055_driver);
++
++MODULE_AUTHOR("Andrea Merello");
++MODULE_DESCRIPTION("Bosch BNO055 I2C interface");
++MODULE_IMPORT_NS(IIO_BNO055);
++MODULE_LICENSE("GPL");
 -- 
 2.17.1
 
