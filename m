@@ -2,38 +2,37 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5BC7C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Jun 2022 20:55:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B2D1DC43334
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jun 2022 20:55:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345141AbiFMUzf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:55:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40024 "EHLO
+        id S1346091AbiFMUzg (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:55:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35716 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1352256AbiFMUyT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2022 16:54:19 -0400
+        with ESMTP id S1351535AbiFMUxk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2022 16:53:40 -0400
 Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7B61724088;
-        Mon, 13 Jun 2022 13:22:01 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F0161A05D;
+        Mon, 13 Jun 2022 13:17:49 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
         d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
         :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
         Sender:Reply-To:Content-ID:Content-Description;
-        bh=8O3gyMH/DIarLtUQIeptn6LXzo+PYX0mLfSnGbw2a7g=; b=NiCUaEIDQk/r/vKjMnabo0T1aj
-        KK3IXgeBZZBkAGgl4TSxcVArNoBIV/AKyyLi9t5a07UnCfbFSwN2nvXFXzLDYNNMAXXD2fr3a3lXn
-        5qBH/nL9tJX2J7QQ4kM/7UEN+euVSEGc7b6Ex8N+TV4DQW9YU3BeLEFg/YHZyrRBVB4eOurKWVCUV
-        3dbn5FrNEUgwk3XQpLPNxo6eOD7VlDnTDsuYkubKzs3hE1PvMf7ii7WpSMRyCQ1xaKSHGQwOi4VXv
-        BhCrf7pxathZUx6m7wZ/N1DXG7+13m4woNibuhLDnSJXchPFtBME85NedsEqI+ptN5vbrVryuRlDS
-        RIIm5mxw==;
+        bh=fBWi7QPO/F0ytmVW1WCvq92sKKuPA3DpoLxZ9CDOG/k=; b=P1VppJRSb+oHRmLr0pSpjezyww
+        g2/6H9CewlIn9zZRkKrtbcQTPeE8uAqzG/2pPtz8cx+eX9/1EIKU5uu27T/j+zf8PAEq52J1Qf+HD
+        qs9bH+cATvW4OI9AbR09GYH7TZFbFh1xn73nTAADt0Mie3mIhQ2Cqu8IDNfjMzcObV1KmTkvvfNsu
+        Ji3pKltRIyqjnx3TreMEMhYTSRfuvzSI1OAwFOFnGskM+2YHfWASqe+qHrFBhlz6ArtvGEed2gMEH
+        8Yd/bxVP+/1X1BojLJMzjqa/28vDKTpqNsjyo0f9qqR1kUzbpUDJigHN1QWRwVsW+sMXssao+NKH0
+        XvAZL72w==;
 Received: from [2601:1c0:6280:3f0::aa0b]
         by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
-        id 1o0qZK-007fIG-L3; Mon, 13 Jun 2022 20:21:51 +0000
-Message-ID: <424b4f90-138c-d71f-0f1c-12c60e44c1c2@infradead.org>
-Date:   Mon, 13 Jun 2022 13:21:43 -0700
+        id 1o0qVC-007fDz-Il; Mon, 13 Jun 2022 20:17:37 +0000
+Message-ID: <915871e4-b156-ab19-043f-b719e03a5711@infradead.org>
+Date:   Mon, 13 Jun 2022 13:17:25 -0700
 MIME-Version: 1.0
 User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
  Thunderbird/91.9.1
-Subject: Re: [PATCH v2 15/15] video: backlight: mt6370: Add Mediatek MT6370
- support
+Subject: Re: [PATCH v2 11/15] iio: adc: mt6370: Add Mediatek MT6370 support
 Content-Language: en-US
 To:     ChiaEn Wu <peterwu.pub@gmail.com>, jic23@kernel.org,
         lars@metafoo.de, matthias.bgg@gmail.com, lee.jones@linaro.org,
@@ -46,40 +45,37 @@ Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
         szunichen@gmail.com, ChiaEn Wu <chiaen_wu@richtek.com>
 References: <20220613111146.25221-1-peterwu.pub@gmail.com>
- <20220613111146.25221-16-peterwu.pub@gmail.com>
+ <20220613111146.25221-12-peterwu.pub@gmail.com>
 From:   Randy Dunlap <rdunlap@infradead.org>
-In-Reply-To: <20220613111146.25221-16-peterwu.pub@gmail.com>
+In-Reply-To: <20220613111146.25221-12-peterwu.pub@gmail.com>
 Content-Type: text/plain; charset=UTF-8
 Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-
+Hi,
 
 On 6/13/22 04:11, ChiaEn Wu wrote:
-> diff --git a/drivers/video/backlight/Kconfig b/drivers/video/backlight/Kconfig
-> index a003e02e13ce..ec1589ad88bb 100644
-> --- a/drivers/video/backlight/Kconfig
-> +++ b/drivers/video/backlight/Kconfig
-> @@ -268,6 +268,15 @@ config BACKLIGHT_MAX8925
->  	  If you have a LCD backlight connected to the WLED output of MAX8925
->  	  WLED output, say Y here to enable this driver.
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 71ab0a06aa82..09576fb478ad 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -737,6 +737,15 @@ config MEDIATEK_MT6360_ADC
+>  	  is used in smartphones and tablets and supports a 11 channel
+>  	  general purpose ADC.
 >  
-> +config BACKLIGHT_MT6370
-> +	tristate "Mediatek MT6370 Backlight Driver"
+> +config MEDIATEK_MT6370_ADC
+> +	tristate "Mediatek MT6370 ADC driver"
 > +	depends on MFD_MT6370
 > +	help
-> +	  This enables support for Mediatek MT6370 Backlight driver.
-> +	  It's commonly used to drive the display WLED. There're 4 channels
+> +	  Say Y here to enable MT6370 ADC support.
+> +
+> +	  Integrated for System Monitoring includes is used in smartphones
 
-	                                                There are 4 channels
+Please try again on the help text. I can't decode that.
 
-> +	  inisde, and each channel supports up to 30mA of current capability
-
-	  inside,
-
-> +	  with 2048 current steps in exponential or linear mapping curves.
+> +	  and tablets and supports a 9 channel general purpose ADC.
 
 -- 
 ~Randy
