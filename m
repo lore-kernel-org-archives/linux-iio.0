@@ -2,88 +2,108 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 177D0C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Jun 2022 14:46:52 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C69FCCA47B
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jun 2022 15:16:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1386059AbiFMOqk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Jun 2022 10:46:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35652 "EHLO
+        id S244338AbiFMPQi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Jun 2022 11:16:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39638 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1385910AbiFMOoE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2022 10:44:04 -0400
-Received: from mail-ed1-x536.google.com (mail-ed1-x536.google.com [IPv6:2a00:1450:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D51B3B41DC;
-        Mon, 13 Jun 2022 04:51:03 -0700 (PDT)
-Received: by mail-ed1-x536.google.com with SMTP id v25so6754374eda.6;
-        Mon, 13 Jun 2022 04:51:03 -0700 (PDT)
+        with ESMTP id S1387075AbiFMPPh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2022 11:15:37 -0400
+Received: from mx1.tq-group.com (mx1.tq-group.com [93.104.207.81])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4E96E121CE8;
+        Mon, 13 Jun 2022 05:35:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=zgX/PVEPf8nMw9zVAy2wbzfkUCGcHSawa+uHP8BTd9Q=;
-        b=W0U6MAI0+IGC5YwFTD8F834ELZTvP7B5fUkYdbdyuxf0nQu4SdET6AOTpyLBIeqGI4
-         gIS9CHA+sbJFRkAhQC30VY8LVz7DnVV48C508IaDcJXkUp6ai4kCIc8i5K2fZ6sB/nO+
-         hcfYVV54+yUh0QOQs5dFwnoUTelOGVKVrN86EuiOaXj64jRdErGVFRbTPe+icFNxNCsL
-         oyBkAf3dCzi+g/+RiGvtc58+65OH4uIJ2S3OstdxpYJx/PMsxIOEnvF/pl/fA1RmiQ4X
-         TZb2Kf3qdDtosTlCPhRiFkJpb2U4ii4INFWR0pSbFBTqMTW7m+0nLByM3mnZb4lNI94f
-         mDPw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=zgX/PVEPf8nMw9zVAy2wbzfkUCGcHSawa+uHP8BTd9Q=;
-        b=0KtzXGea8ir2QQ0c1uh7Ve7bNSTtE3jzV1Z2Z4N4+LAwUMLqg6dqeIeLjEFtslZtZ2
-         pToj0E2Lp57SjXdMBtRouzs28pQz8BQ8QjC8zbn92K08fgGyHFwRbXdAEsO7baJTiizq
-         8c30AcuhN3c7P6IjY1MDPgBR8NpozYxAFpE41DBJAlSg+fi8k057LkfdyyoHNb90oraN
-         NT4axKBfe8eDJQTtKMCiT/MvvG2lY3egir/4VTsnWhiU1TisDd5egzk2Wo3leBVD1bld
-         XO+CGwCfIfgHC9whgg+wKf3rmgIv+VVGn2xlRc+7qli1Oh11M0WeXAVvqG+KBUxhTwi5
-         r4PQ==
-X-Gm-Message-State: AOAM533MRhmHjZqi/7z9wemTPHvwTaMkz6nQQFX4u/vND+U4+5dcxkjt
-        5php7zIgIKi3hIn4vTZlfiB9Hm1AckE=
-X-Google-Smtp-Source: ABdhPJxeyfxnfKceAb/4rg82X1D+qsKnKPtx3yG4v5B5zF0L2yMkiRBXOD5V0dybGThWRkSMqexNCw==
-X-Received: by 2002:aa7:c34d:0:b0:42d:ce57:5df2 with SMTP id j13-20020aa7c34d000000b0042dce575df2mr64383362edr.315.1655121061007;
-        Mon, 13 Jun 2022 04:51:01 -0700 (PDT)
-Received: from felia.fritz.box (200116b8260df50011e978c0f780de03.dip.versatel-1u1.de. [2001:16b8:260d:f500:11e9:78c0:f780:de03])
-        by smtp.gmail.com with ESMTPSA id 12-20020a170906308c00b006ff0b457cdasm3734771ejv.53.2022.06.13.04.51.00
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 04:51:00 -0700 (PDT)
-From:   Lukas Bulwahn <lukas.bulwahn@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Cc:     kernel-janitors@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lukas Bulwahn <lukas.bulwahn@gmail.com>
-Subject: [PATCH] MAINTAINERS: add include/dt-bindings/iio to IIO SUBSYSTEM AND DRIVERS
-Date:   Mon, 13 Jun 2022 13:50:45 +0200
-Message-Id: <20220613115045.24326-1-lukas.bulwahn@gmail.com>
-X-Mailer: git-send-email 2.17.1
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1655123734; x=1686659734;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=oY0J3ZwlUA5PrPLGwau5PWqQWKKy55Oq1A5fnzIP4e0=;
+  b=dVfAiI37yXhV2yqalzMdpDX/XJf159jYQDa1rghziDs2JNHjX6ZH2YCH
+   0JD4cxjJ0C/7iumvhUN81kdo4fj2gzYrtQXvh/pjiKqbLVRCPX/iQpdfs
+   fjQFC5+LzIT2bSfy4Evn+XoOR+XX638AKXGmsX926twSNRlTem/ZSeGMY
+   CIu/ZuKX6XlHjIhLvq9EdzoOa44JPL8c4pfCHSmxNDzyL+Pc5LH3L2Z3I
+   TtYA13+W8SOT9RIEKYs/I14LWTEl6OYMfQwq05FenrdjIXfdD+6fmHpk/
+   DlIULqj2uUaSChANEomGk6LaHe19e9JZsO07vzPe8cw8k3Z7wFnqoUEdA
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,297,1647298800"; 
+   d="scan'208";a="24418790"
+Received: from unknown (HELO tq-pgp-pr1.tq-net.de) ([192.168.6.15])
+  by mx1-pgp.tq-group.com with ESMTP; 13 Jun 2022 14:35:31 +0200
+Received: from mx1.tq-group.com ([192.168.6.7])
+  by tq-pgp-pr1.tq-net.de (PGP Universal service);
+  Mon, 13 Jun 2022 14:35:31 +0200
+X-PGP-Universal: processed;
+        by tq-pgp-pr1.tq-net.de on Mon, 13 Jun 2022 14:35:31 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+  d=tq-group.com; i=@tq-group.com; q=dns/txt; s=key1;
+  t=1655123731; x=1686659731;
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=oY0J3ZwlUA5PrPLGwau5PWqQWKKy55Oq1A5fnzIP4e0=;
+  b=I10LMRIJydLEjNqG5RVbtLgXbn04Aa54D8tR3rOOPmf3WWViS7Zm3Mve
+   Kfr8tnTJoPcxPrDwj1bjx69HuWjelkt3hdUaShmFQuZqHbF7Dx8zjdiSf
+   bB5NNsxWOVmhznpMrdcTajIByvfquY4roJLwPbAcD7Tq7yg23iybxo6OW
+   EI34tXqr6Q4Y+BmYXmIh0w97c9b3EnoI9Gz01gT/BpawZ51a7hbHzyBFi
+   BErjS0ePuToCcHoa3edcN24TyF0bZNqqOf56UmTdYo5vH3Vlk+apVuCvJ
+   6D1+mxFSpKPrU+JWoqj2/RniIOYwO1YuefbtICVhChSIWASNSMUYjOZ6L
+   A==;
+X-IronPort-AV: E=Sophos;i="5.91,297,1647298800"; 
+   d="scan'208";a="24418789"
+Received: from vtuxmail01.tq-net.de ([10.115.0.20])
+  by mx1.tq-group.com with ESMTP; 13 Jun 2022 14:35:31 +0200
+Received: from steina-w.tq-net.de (unknown [10.123.49.12])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits))
+        (No client certificate requested)
+        by vtuxmail01.tq-net.de (Postfix) with ESMTPSA id 39FA3280074;
+        Mon, 13 Jun 2022 14:35:31 +0200 (CEST)
+From:   Alexander Stein <alexander.stein@ew.tq-group.com>
+To:     Haibo Chen <haibo.chen@nxp.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-imx@nxp.com
+Subject: [PATCH] dt-bindings: iio: adc: Add imx6ul & imx6sx compatibles
+Date:   Mon, 13 Jun 2022 14:35:29 +0200
+Message-Id: <20220613123529.466528-1-alexander.stein@ew.tq-group.com>
+X-Mailer: git-send-email 2.25.1
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Maintainers of the directory Documentation/devicetree/bindings/iio
-are also the maintainers of the corresponding directory
-include/dt-bindings/iio.
+Both are already using the vf610 compatible.
 
-Add the file entry for include/dt-bindings/iio to the appropriate
-section in MAINTAINERS.
-
-Signed-off-by: Lukas Bulwahn <lukas.bulwahn@gmail.com>
+Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
 ---
-Jonathan, Lars-Peter, please pick this MAINTAINERS addition to your section.
+ .../devicetree/bindings/iio/adc/fsl,vf610-adc.yaml       | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
- MAINTAINERS | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 2b8aec742e6e..503b8042784e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -9656,6 +9656,7 @@ F:	Documentation/ABI/testing/sysfs-bus-iio*
- F:	Documentation/devicetree/bindings/iio/
- F:	drivers/iio/
- F:	drivers/staging/iio/
-+F:	include/dt-bindings/iio/
- F:	include/linux/iio/
- F:	tools/iio/
+diff --git a/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml b/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
+index 925f355cc21f..c770ff4998f5 100644
+--- a/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
++++ b/Documentation/devicetree/bindings/iio/adc/fsl,vf610-adc.yaml
+@@ -14,7 +14,14 @@ description:
  
+ properties:
+   compatible:
+-    const: fsl,vf610-adc
++    oneOf:
++      - items:
++          - enum:
++              - fsl,imx6sx-adc
++              - fsl,imx6ul-adc
++          - const: fsl,vf610-adc
++      - items:
++          - const: fsl,vf610-adc
+ 
+   reg:
+     maxItems: 1
 -- 
-2.17.1
+2.25.1
 
