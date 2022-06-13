@@ -2,114 +2,112 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A8209CCA47B
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Jun 2022 17:50:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 16B6AC43334
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jun 2022 18:42:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242284AbiFMRue (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Jun 2022 13:50:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56702 "EHLO
+        id S1344610AbiFMSmR (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Jun 2022 14:42:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46714 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233958AbiFMRuM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2022 13:50:12 -0400
-Received: from mail-io1-f41.google.com (mail-io1-f41.google.com [209.85.166.41])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 728CB3CFE7;
-        Mon, 13 Jun 2022 06:33:27 -0700 (PDT)
-Received: by mail-io1-f41.google.com with SMTP id q11so6047703iod.8;
-        Mon, 13 Jun 2022 06:33:27 -0700 (PDT)
+        with ESMTP id S245721AbiFMSlx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2022 14:41:53 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A2DFAE276C;
+        Mon, 13 Jun 2022 08:23:31 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id v19so7659605edd.4;
+        Mon, 13 Jun 2022 08:23:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=aW2/sB6xvxbzYy1ThczPgmabrwZiZM6tErpwVrnth5s=;
+        b=YBcthnONIYfNq/xPuZwrIxSKuSg3qjLNuXXAJYAD4gj2Znsg3/71FrSiM4GEYlR6Gt
+         hF1puBGJdQtMg2WWn2amed/RzOSW0kIwbp2MAug8QZbt5MARiy3yRI9ZbifXONHwl4V1
+         rFH3CEUn72vVjvq3w9KnK+LeJw1+qqtY0OwDh8xdoyThtJ5l24vIIjBfYfJBASy4LZBC
+         7jGpxohKDjIPacs3rq7LSemfaacW+Vm+54RUQ/YRqi7+xtDh4f/7n0U66DioYg4hoNul
+         hogKuYnXtaZ6JGKEXsAKEdnS5cskci4yxegmNrIvDNfKVVJyR/pIiC5NpFmOzoDXVg3j
+         Bg6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:in-reply-to:references:subject:date
-         :message-id;
-        bh=vdZfN90YQu4hf8Uqw177MbmjixkJ2AAcNrLx6oY9MCU=;
-        b=0vEUpAa5zAKQ89i46hqzZ+3hHeTnn+DY1/X0kJqYTFueZ/FwBOmrWDjFsa9Z9odXwA
-         XIjIzf/6hM5JcDlSSzkHeMObN075lc2pXL6MO4JLhob4Y18jDKdvfTMrMv1IxFRWemqi
-         IekeaKiCXsLUYOKPMWwtBHZjYPlOQvFTiyS51PcrCX7Y2C+stDxntVkUIN7XsOBy43dA
-         u0xReuMw2mjoYysPsGqAcxIds4wIewSkd74UcCePomD/b6c7wQVujeaosljM/+6Uqey0
-         Vz3gXVjv0A4PGzhbEY+B87oYpb5ay9ATjp/elrD4yzI4Z4jFyKQQZLIpI8E7aucJg0pz
-         Ii2w==
-X-Gm-Message-State: AOAM532oZpiFlDl4z/q02iRfmE4Sw1UP9tpECriUzZLcRbTTDmksN14b
-        oYoyJUfpE5+LEyTXxGcKpg==
-X-Google-Smtp-Source: ABdhPJwxl/8h496O951i+ofEnsI3E+yQOwKm/ujxZmtouDcCZ56WJ1Frq7wX9lahXWnDMzS3ZoRpNQ==
-X-Received: by 2002:a6b:bf46:0:b0:669:c998:6b48 with SMTP id p67-20020a6bbf46000000b00669c9986b48mr6141923iof.67.1655127206555;
-        Mon, 13 Jun 2022 06:33:26 -0700 (PDT)
-Received: from robh.at.kernel.org ([64.188.179.251])
-        by smtp.gmail.com with ESMTPSA id l16-20020a056e020e5000b002d1a16ef24dsm3870641ilk.82.2022.06.13.06.33.24
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 06:33:26 -0700 (PDT)
-Received: (nullmailer pid 3564137 invoked by uid 1000);
-        Mon, 13 Jun 2022 13:33:17 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     pavel@ucw.cz, robh+dt@kernel.org, linux-pm@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-kernel@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-mediatek@lists.infradead.org, szunichen@gmail.com,
-        lars@metafoo.de, matthias.bgg@gmail.com,
-        daniel.thompson@linaro.org, lee.jones@linaro.org,
-        ChiYuan Huang <cy_huang@richtek.com>,
-        linux-leds@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        jingoohan1@gmail.com, devicetree@vger.kernel.org, jic23@kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org
-In-Reply-To: <20220613111146.25221-7-peterwu.pub@gmail.com>
-References: <20220613111146.25221-1-peterwu.pub@gmail.com> <20220613111146.25221-7-peterwu.pub@gmail.com>
-Subject: Re: [PATCH v2 06/15] dt-bindings: mfd: Add Mediatek MT6370
-Date:   Mon, 13 Jun 2022 07:33:17 -0600
-Message-Id: <1655127197.567546.3564136.nullmailer@robh.at.kernel.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=aW2/sB6xvxbzYy1ThczPgmabrwZiZM6tErpwVrnth5s=;
+        b=wohCfJSDvkrymzxjoK5GilpFVf3n+VIVKUGQrEU4Ft9JDza4L+zDnJJ2hSaXpY6YTm
+         bZgxlqdxjTczxlEFbwOncawcfP5Kqe7gxI9MKmAO1CGxtQQMF2alZKIpbmOha0SFArnv
+         q9sScagplswRvWbp6S4vqhqUgcypf3I4w4te6Efip8NJqKUuTGK6mZM2ErV14eJKrYRa
+         WQhnrdL3rV79ZUyFWmlmwVtazTT9mV7fdqua0xdhHCbeKmwzdkJlX1VdOVd1/F6HmiWP
+         0tBUb0rYpUbkiMRn1ZGxfWtYXKu9Lcjbhc66cq7ETKuXzSGl1ds5+8nyMmxMlS4y58vn
+         k+5A==
+X-Gm-Message-State: AJIora9wojVDPlMcwVLR4ohI1Y4N/fA4CWvQcfGRkFpSQGJip3HYKyvx
+        cVWqShCafcaDzsXi1iEHfFkny5ITbp4MItQFyCQ=
+X-Google-Smtp-Source: ABdhPJz/m+G2NigP+Ox3pDgna3NGdSqfI+cunjueL7zOj2ivH81ydqPDTW5ihcsMdbxjNagn3ejRpsMGAXuyNTtaSRo=
+X-Received: by 2002:aa7:c396:0:b0:42d:8b86:a8dc with SMTP id
+ k22-20020aa7c396000000b0042d8b86a8dcmr310424edq.54.1655133810087; Mon, 13 Jun
+ 2022 08:23:30 -0700 (PDT)
+MIME-Version: 1.0
+References: <cover.1655081082.git.jahau@rocketmail.com> <b6e100de37921c22ebf0698f8e0e99794053303a.1655081082.git.jahau@rocketmail.com>
+ <CAHp75VfFwSQ6bk=TMLiyA1j-AsafjGdVFbTTHJJ67C8zeYfz8Q@mail.gmail.com>
+In-Reply-To: <CAHp75VfFwSQ6bk=TMLiyA1j-AsafjGdVFbTTHJJ67C8zeYfz8Q@mail.gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 13 Jun 2022 17:22:53 +0200
+Message-ID: <CAHp75Ve3ydACAQnHR0rgPHEU9kSLYj-t6dU96gxDLPWKfnmP0g@mail.gmail.com>
+Subject: Re: [PATCH v2 7/7] iio: magnetometer: yas530: Add YAS537 variant
+To:     Jakob Hauser <jahau@rocketmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        phone-devel@vger.kernel.org,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS
+        <devicetree@vger.kernel.org>, Hans de Goede <hdegoede@redhat.com>, Andy
+        Shevchenko <andy.shevchenko@gmail.com>," 
+        <~postmarketos/upstreaming@lists.sr.ht>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 13 Jun 2022 19:11:37 +0800, ChiaEn Wu wrote:
-> From: ChiYuan Huang <cy_huang@richtek.com>
-> 
-> Add Mediatek MT6370 binding documentation.
-> 
-> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-> ---
->  .../bindings/mfd/mediatek,mt6370.yaml         | 279 ++++++++++++++++++
->  .../dt-bindings/iio/adc/mediatek,mt6370_adc.h |  18 ++
->  2 files changed, 297 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
->  create mode 100644 include/dt-bindings/iio/adc/mediatek,mt6370_adc.h
-> 
+On Mon, Jun 13, 2022 at 5:20 PM Andy Shevchenko
+<andy.shevchenko@gmail.com> wrote:
+> On Mon, Jun 13, 2022 at 3:18 AM Jakob Hauser <jahau@rocketmail.com> wrote=
+:
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Forgot to add that please try to split even more preparatory patches.
+For example, you may convert existing code to stubs / switch-cases /
+etc and in the last patch just add the new case or new function /
+branch.
 
-yamllint warnings/errors:
+...
 
-dtschema/dtc warnings/errors:
-./Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml: Unable to find schema file matching $id: http://devicetree.org/schemas/leds/backlight/mediatek,mt6370-backlight.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: pmic@34: backlight: False schema does not allow {'compatible': ['mediatek,mt6370-backlight'], 'mediatek,bled-channel-use': b'\x0f'}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: pmic@34: charger: False schema does not allow {'compatible': ['mediatek,mt6370-charger'], 'interrupts': [[48], [68], [6]], 'interrupt-names': ['attach_i', 'uvp_d_evt', 'mivr'], 'io-channels': [[1, 5]], 'usb-otg-vbus-regulator': {'regulator-name': ['mt6370-usb-otg-vbus'], 'regulator-min-microvolt': [[4350000]], 'regulator-max-microvolt': [[5800000]], 'regulator-min-microamp': [[500000]], 'regulator-max-microamp': [[3000000]], 'phandle': [[2]]}}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: pmic@34: tcpc: False schema does not allow {'compatible': ['mediatek,mt6370-tcpc'], 'interrupts-extended': [[4294967295, 4, 8]], 'connector': {'compatible': ['usb-c-connector'], 'label': ['USB-C'], 'vbus-supply': [[2]], 'data-role': ['dual'], 'power-role': ['dual'], 'try-power-role': ['sink'], 'source-pdos': [[570527844]], 'sink-pdos': [[570527944]], 'op-sink-microwatt': [[10000000]], 'ports': {'#address-cells': [[1]], '#size-cells': [[0]], 'port@0': {'reg': [[0]], 'endpoint': {'remote-endpoint': [[4294967295]]}}, 'port@1': {'reg': [[1]], 'endpoint': {'remote-endpoint': [[4294967295]]}}, 'port@2': {'reg': [[2]], 'endpoint': {'remote-endpoint': [[4294967295]]}}}}}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: pmic@34: indicator: False schema does not allow {'compatible': ['mediatek,mt6370-indicator'], '#address-cells': [[1]], '#size-cells': [[0]], 'multi-led@0': {'reg': [[0]], 'function': ['indicator'], 'color': [[9]], 'led-max-microamp': [[24000]], '#address-cells': [[1]], '#size-cells': [[0]], 'led@0': {'reg': [[0]], 'color': [[1]]}, 'led@1': {'reg': [[1]], 'color': [[2]]}, 'led@2': {'reg': [[2]], 'color': [[3]]}}, 'led@3': {'reg': [[3]], 'function': ['indicator'], 'color': [[0]], 'led-max-microamp': [[6000]]}}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: pmic@34: flashlight: False schema does not allow {'compatible': ['mediatek,mt6370-flashlight'], '#address-cells': [[1]], '#size-cells': [[0]], 'led@0': {'reg': [[0]], 'led-sources': [[0]], 'function': ['flash'], 'color': [[0]], 'function-enumerator': [[1]], 'led-max-microamp': [[200000]], 'flash-max-microamp': [[500000]], 'flash-max-timeout-us': [[1248000]]}, 'led@1': {'reg': [[1]], 'led-sources': [[1]], 'function': ['flash'], 'color': [[0]], 'function-enumerator': [[2]], 'led-max-microamp': [[200000]], 'flash-max-microamp': [[500000]], 'flash-max-timeout-us': [[1248000]]}}
-	From schema: /builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.yaml
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb: backlight: mediatek,bled-channel-use: b'\x0f' is not of type 'object', 'array', 'boolean', 'null'
-	From schema: /usr/local/lib/python3.10/dist-packages/dtschema/schemas/dt-core.yaml
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/pmic@34/backlight: failed to match any schema with compatible: ['mediatek,mt6370-backlight']
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/pmic@34/charger: failed to match any schema with compatible: ['mediatek,mt6370-charger']
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/pmic@34/indicator: failed to match any schema with compatible: ['mediatek,mt6370-indicator']
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/pmic@34/flashlight: failed to match any schema with compatible: ['mediatek,mt6370-flashlight']
-Documentation/devicetree/bindings/mfd/mediatek,mt6370.example.dtb:0:0: /example-0/i2c/pmic@34/tcpc: failed to match any schema with compatible: ['mediatek,mt6370-tcpc']
+> > +       /*
+> > +        * Raw temperature value t is number of counts. A product descr=
+iption
 
-doc reference errors (make refcheckdocs):
+the number
 
-See https://patchwork.ozlabs.org/patch/
+> > +        * of YAS537 mentions a temperature resulution of 0.05 =C2=B0C/=
+count.
+>
+> resolution
+>
+> > +        * A readout of the t value at ca. 20 =C2=B0C returns approx. 8=
+120 counts.
+> > +        *
+> > +        * 8120 counts x 0.05 =C2=B0C/count corresponds to a range of 4=
+06 =C2=B0C.
+> > +        * 0 counts would be at theoretical -386 =C2=B0C.
+> > +        *
+> > +        * The formula used for YAS530/532 needs to be adapted to this
+> > +        * theoretical starting temperature, again calculating with 1/1=
+0:s
+> > +        * of degrees Celsius and finally multiplying by 100 to get mil=
+li
+> > +        * degrees Celsius.
+> > +        */
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
-
+--=20
+With Best Regards,
+Andy Shevchenko
