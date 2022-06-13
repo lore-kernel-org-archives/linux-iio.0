@@ -2,92 +2,90 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E8C6C43334
-	for <linux-iio@archiver.kernel.org>; Mon, 13 Jun 2022 20:33:37 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 409CACCA481
+	for <linux-iio@archiver.kernel.org>; Mon, 13 Jun 2022 20:54:34 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232846AbiFMUbX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 13 Jun 2022 16:31:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60958 "EHLO
+        id S1348470AbiFMUyc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 13 Jun 2022 16:54:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59606 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1351428AbiFMU3B (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2022 16:29:01 -0400
-Received: from mail-pj1-x102a.google.com (mail-pj1-x102a.google.com [IPv6:2607:f8b0:4864:20::102a])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B7AC31220;
-        Mon, 13 Jun 2022 12:17:12 -0700 (PDT)
-Received: by mail-pj1-x102a.google.com with SMTP id y13-20020a17090a154d00b001eaaa3b9b8dso4025033pja.2;
-        Mon, 13 Jun 2022 12:17:12 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id;
-        bh=lQOC14y4MZzJxPCQl/yXRuGSNmghINjCYKOzFd5gwho=;
-        b=epjxtcjcwG/Snjgc00FI/wsGY9USfAOJiWuZ8JtSXPQbVNpuZdYsO/NTwH0yOessa5
-         LEKAG8TNyliuOSRfzLb6gE0B9V07tvQ2is4QPX8QMJklOim3sw9UE/6mcepl0j/P2Iv6
-         LSUSjqXhyTlIY9ZGS9bs/p7cgwHiGHx9Au3sY+yRNwyGxza5zJXJX6mkSTpCgpaivasv
-         N/i+3JHgPhXeRg/78ilmc7YQCAbIHy+E5DWB2Tl7sUyTSNOFOmN34i45CL36haUQ7il9
-         a35TWQO4WyeVWzlF1Q4kC5hmKHyM4IU2ClxbfSqualVPwxjYTSFhe7ihg/7FlINlgzzL
-         lmSg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id;
-        bh=lQOC14y4MZzJxPCQl/yXRuGSNmghINjCYKOzFd5gwho=;
-        b=SJb1Q1UFnUhzcjnhoRvjxQbNrJH1QfMM19s2PYrRn2Dk6qs6xmI//jHz0VUbXO0cOM
-         nkHaOunGxV0d1FtepGqvmS8o2VAI7K7nIJrNUPoqrRYuk3CWUavFk6J6SGjSN76PMvMF
-         YWzSS/a1Wr/kgWukgsFub2iXR9QIUYfmoBsliedNHGYrXMmxsVZCkErHSgBFCVm/5eko
-         B+wgv9CWfxxHv1oweEMuyGl35YpJgvgtQSLJlYBpH8JUOvb4k9NZ5XvRzwabNC7KESff
-         T36lRVMiLAwAmBfUzslOPz62FRSI0QF7zMxowv/e37cUxLfJqxUEudo5wFW1e0dzLem9
-         wQgQ==
-X-Gm-Message-State: AJIora8FGrn1xagGAmOM7WlkfGlUTsFAq4O0nYg9Hqc8hti4EfO3rjDD
-        8eaa2Tk+uTGTqpG6unuqKrE=
-X-Google-Smtp-Source: AGRyM1tOapWyhSzo/TkqUJjdozKyAxImRRTFlesS7pjKe2JM78uZfMkr7IDAd+ieuZ8q9BKICpMExg==
-X-Received: by 2002:a17:902:e552:b0:163:6a5e:4e0d with SMTP id n18-20020a170902e55200b001636a5e4e0dmr630897plf.66.1655147831940;
-        Mon, 13 Jun 2022 12:17:11 -0700 (PDT)
-Received: from localhost.localdomain ([60.243.255.226])
-        by smtp.gmail.com with ESMTPSA id x15-20020a17090abc8f00b001e310303275sm5567202pjr.54.2022.06.13.12.17.10
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 13 Jun 2022 12:17:11 -0700 (PDT)
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-To:     jic23@kernel.org, andy.shevchenko@gmail.com
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v1 0/2] iio: Add single and double tap events support
-Date:   Tue, 14 Jun 2022 00:47:04 +0530
-Message-Id: <20220613191706.31239-1-jagathjog1996@gmail.com>
-X-Mailer: git-send-email 2.17.1
+        with ESMTP id S241971AbiFMUxF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Jun 2022 16:53:05 -0400
+Received: from desiato.infradead.org (desiato.infradead.org [IPv6:2001:8b0:10b:1:d65d:64ff:fe57:4e05])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C11AE9C;
+        Mon, 13 Jun 2022 13:14:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+        d=infradead.org; s=desiato.20200630; h=Content-Transfer-Encoding:Content-Type
+        :In-Reply-To:From:References:Cc:To:Subject:MIME-Version:Date:Message-ID:
+        Sender:Reply-To:Content-ID:Content-Description;
+        bh=CF9UJrdeWimgjo6b+3sLXnRZ+YKpG34Hd87mZaFsWOQ=; b=c7khjL9wMhgkexLmyAP5JznkUn
+        VxdBdmEKdzpLyXSV9VSwQobUMXr98PHFoytDWiQ3HIhBlu694lInFw+iOU7AnJf/nW+gz5S9kJ11G
+        SCoCRG5b1TjhHYBX4qaK92eN62Kt76eunJAA/aEgAf11AkTBq1iM/rhvPErEdPacMTQVFH70dhvb4
+        vlrHgpxrZYLBjXB9VHFcUeLsq640SfT4uzfotwf+a9hfdMe0MvLN0qnEEzsqT9SLr/PpswCycaTIA
+        r/Ujr7d4yuDkHzfFA9xKaomERUPE1mbxc9qUI9TWS/YLPX3BX+X3TDWnUnQ4BbxeUICwJXWQ9RVC2
+        fe3jX5OQ==;
+Received: from [2601:1c0:6280:3f0::aa0b]
+        by desiato.infradead.org with esmtpsa (Exim 4.94.2 #2 (Red Hat Linux))
+        id 1o0qS4-007f8t-8C; Mon, 13 Jun 2022 20:14:23 +0000
+Message-ID: <4aef2e48-9717-1aca-b716-5f9486bf320e@infradead.org>
+Date:   Mon, 13 Jun 2022 13:14:11 -0700
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.9.1
+Subject: Re: [PATCH v2 08/15] mfd: mt6370: Add Mediatek MT6370 support
+Content-Language: en-US
+To:     ChiaEn Wu <peterwu.pub@gmail.com>, jic23@kernel.org,
+        lars@metafoo.de, matthias.bgg@gmail.com, lee.jones@linaro.org,
+        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com, ChiYuan Huang <cy_huang@richtek.com>
+References: <20220613111146.25221-1-peterwu.pub@gmail.com>
+ <20220613111146.25221-9-peterwu.pub@gmail.com>
+From:   Randy Dunlap <rdunlap@infradead.org>
+In-Reply-To: <20220613111146.25221-9-peterwu.pub@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch series adds new event type for tap called gesture and direction
-is used to differentiate single and double tap. This series adds single
-and double tap support for bma400 accelerometer device driver.
-
-Changes since RFC
-1. Corrected the "quite" typo to "quiet".
-2. Added proper reference and name of the section from datasheet.
-3. Changed the ABI documentation to make it more generic.
-4. Added ABI documentation for double tap quiet period.
-5. Added available list by registering new event attribute for tap
-   threshold values and double tap quiet period values.
-6. Sending both single and double tap events separately.
-8. Removed checking for tap enabled while changing data rate.
-9. Returning invalid with error message if the input data rate is not
-   200Hz while enabling tap interrupts.
-7. Added datasheet reference for interrupt engine overrun.
-
-Jagath Jog J (2):
-  iio: Add new event type gesture and use direction for single and
-    double tap
-  iio: accel: bma400: Add support for single and double tap events
-
- Documentation/ABI/testing/sysfs-bus-iio |  24 +++
- drivers/iio/accel/bma400.h              |  11 ++
- drivers/iio/accel/bma400_core.c         | 210 ++++++++++++++++++++++--
- drivers/iio/industrialio-event.c        |   5 +-
- include/uapi/linux/iio/types.h          |   3 +
- tools/iio/iio_event_monitor.c           |   8 +-
- 6 files changed, 249 insertions(+), 12 deletions(-)
 
 
-base-commit: 9c50b2e70d55e088400b828d441b42254eae94b4
+On 6/13/22 04:11, ChiaEn Wu wrote:
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 3b59456f5545..d9a7524a3e0e 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -937,6 +937,19 @@ config MFD_MT6360
+>  	  PMIC part includes 2-channel BUCKs and 2-channel LDOs
+>  	  LDO part includes 4-channel LDOs
+>  
+> +config MFD_MT6370
+> +	tristate "Mediatek MT6370 SubPMIC"
+> +	select MFD_CORE
+> +	select REGMAP_I2C
+> +	select REGMAP_IRQ
+> +	depends on I2C
+> +	help
+> +	  Say Y here to enable MT6370 SubPMIC functional support.
+> +	  It integrate single cell battery charger with adc monitoring, RGB
+
+	     integrates                                 ADC  (?)
+
+> +	  LEDs, dual channel flashlight, WLED backlight driver, display bias
+> +	  voltage supply, one general purpose LDO, and cc logic
+
+	                                               CC   (?)
+What is CC?
+
+> +	  controller with USBPD commmunication capable.
+
+	                                       capability.
+
 -- 
-2.17.1
-
+~Randy
