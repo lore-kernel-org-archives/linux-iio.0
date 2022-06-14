@@ -2,117 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C5EBC433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 19:18:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3E45BC43334
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 19:42:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1345217AbiFNTSt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Jun 2022 15:18:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60340 "EHLO
+        id S243571AbiFNTmf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Jun 2022 15:42:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49968 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1345438AbiFNTS3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 15:18:29 -0400
-Received: from mail-pg1-x536.google.com (mail-pg1-x536.google.com [IPv6:2607:f8b0:4864:20::536])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AF8129C80;
-        Tue, 14 Jun 2022 12:18:24 -0700 (PDT)
-Received: by mail-pg1-x536.google.com with SMTP id q140so9357540pgq.6;
-        Tue, 14 Jun 2022 12:18:24 -0700 (PDT)
+        with ESMTP id S239084AbiFNTme (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 15:42:34 -0400
+Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1162C1AF11;
+        Tue, 14 Jun 2022 12:42:34 -0700 (PDT)
+Received: by mail-ej1-x62e.google.com with SMTP id m20so19112942ejj.10;
+        Tue, 14 Jun 2022 12:42:33 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=q+NwpM7oTO+xnUjVlqc3L1OHg1oUbX+X1MudKapZCG0=;
-        b=N7w6wGMnSDEBRS4oEaUHnN0mL93zIrrEl64nkWLb8uxxQQHK1zUBWdniPqPyRupaLP
-         kK+dQZ3LDBD6a8rTYRA2mM36EAsuW7inw6DKhY502A2DEG8xtjuCO8BrhWrX/zL5DeRO
-         78MJ+L+YQRk3Dj/6pJcIpYBbLBM+9XpNW3iDVCL32L0lfd0C7KgBTyPDV124EkAT923o
-         3kwJPPj/qxU1IcExAqfMz0j3VxPt71tt6J1G6bgMiLxU8jW+qsevR5VYjt0/jpY/e/Lx
-         exnXHQvOMcb6t1N/OOQDX4AZ4A0aKIh73/FghL/l/SOiumkEIO4dJSPV3SaBSyoNaZnY
-         2Vwg==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=hZ1It0Vji/uE1zL1NVsuKRSwGtzM25+5b2pW/UiacoM=;
+        b=bG2s7f9s4KR5wI0lk+iLuurCztbJKiT/HvGkbacOb38P0PQQdKOnIo3PAn8W3Yt/3I
+         Sx9VnUrA+xqOorczn34EbUQ6GV4b6ET1kNFhoyRUTBxQHbEt5Go/5OmnQAGD5h09eStw
+         BcsKraHMBEv7ya/xq8HsnERloZytbq3s9e8lDDypOUlUEQIh5qFC0Gtp8ZHtxFmaMF0a
+         xlQ0OiKTakNfNbXjPUHdn1+qV0S6bYfy39IsOpMGpyd4hoR9wMpRbR3PoiVUWQ+JiwW0
+         QJkyP05/eloF+vMOWOM2B9ehj9L/NpaTtLMvnTRO5mXBvbBOlGyfkzekSdJ5ukuSmmMI
+         /Ukw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=q+NwpM7oTO+xnUjVlqc3L1OHg1oUbX+X1MudKapZCG0=;
-        b=07vQiGNQi/bcqZxwTjf1+/2EZ75278JtUUB+omC1okUe8GXQpLlHZAg2nNMyCNZRa8
-         KSAAXw3a9Hm1K6Ckm2zpCLmbMgW45czheZal+wpvwMFlQTtCMkH0lsRAL1Os+1z14Mz9
-         ovNoN+keGs95JmPvPGm3FbgTdD2KtEI7Zi6klm92OsPHDNe2x45na5v0GOyL+GqEBpJN
-         D84qGY+JxFWfjgy+FI1X65L2zCEVTkC6ufX8Xg1yw/hCIkUYX958ETPSlXTGsxf760JM
-         3E5u/88DjXY2SWVN5vNXZVbEf91+1CHqYx9owOHQtbIyPnU28Ncx1RiLhXqw3tj0ofoZ
-         hiGw==
-X-Gm-Message-State: AOAM530qdGDsCxovNVyFjlP5qIenWvns73mF9tsknc4ilhrqT4buRtGE
-        oEXQoGrtxJkGwJXRYnMjkF/v3T6CfAuzFtta6pc=
-X-Google-Smtp-Source: ABdhPJxJVP7kLwEvDb6GM3mzsHla130vZdGI8qm5xFlowjEwjFJxMFOGnV9sLinMO36fAmvUPbzOXuK63hp0s6pNnFI=
-X-Received: by 2002:a05:6a02:19b:b0:3fa:3e63:15fb with SMTP id
- bj27-20020a056a02019b00b003fa3e6315fbmr5790839pgb.129.1655234303519; Tue, 14
- Jun 2022 12:18:23 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=hZ1It0Vji/uE1zL1NVsuKRSwGtzM25+5b2pW/UiacoM=;
+        b=DNK6IUk0Kf5sdmSpvhCmHTKocHJk5C1+siVKTqfmPbNc0q1fXbLJj9/P0x5qRmPIWD
+         FGORfhdypx7sko88s0QYj8jd0C5e/OkB+VX/QU7MLm7bxXbr+QX3hknifRj5tnKtANZC
+         VnA4R9y0tK16q2E2d/aWIU1Ka3uQUAcSmZgwfxaaPdxhOoBdAWo6DHyzf+YEQBxhSeGe
+         qUJCtg6c1H7F3XaZ2nTKdwnrIAdGbkzUamQDarm6q1BduX41NlAcNI20jn1o2rdsFlFc
+         hQ8GK89lUN8dQEHFs86EtG+sL+Yg/vUZY58FITsumyALlUfEXNiU151YVvrkgLSnk9Xi
+         TZtg==
+X-Gm-Message-State: AOAM531bj750O0sKgwzyhHRYv+VO49hGkSXPKaTl6OtGQEY5ihKLbuvj
+        tqNFWjU4JflzDt0gRdclgG4=
+X-Google-Smtp-Source: ABdhPJwGLThmOY/gqw8ITxsfPAEBmH65HGNKJE2v/7+lMQIbf6utq9eUYuJEwi9ainPLwysM/wptog==
+X-Received: by 2002:a17:906:3e8e:b0:70f:9a81:8218 with SMTP id a14-20020a1709063e8e00b0070f9a818218mr5689405ejj.525.1655235752571;
+        Tue, 14 Jun 2022 12:42:32 -0700 (PDT)
+Received: from localhost.localdomain (p5b3f7f9c.dip0.t-ipconnect.de. [91.63.127.156])
+        by smtp.gmail.com with ESMTPSA id vw5-20020a170907058500b00712057b037fsm5306699ejb.167.2022.06.14.12.42.31
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 12:42:31 -0700 (PDT)
+From:   Saravanan Sekar <sravanhome@gmail.com>
+To:     sre@kernel.org, lee.jones@linaro.org, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, jic23@kernel.org,
+        lars@metafoo.de, andy.shevchenko@gmail.com
+Cc:     linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, Saravanan Sekar <sravanhome@gmail.com>
+Subject: [PATCH v2 2/6] dt-bindings: mfd: Add mp2733 compatible
+Date:   Tue, 14 Jun 2022 21:42:21 +0200
+Message-Id: <20220614194225.2226447-2-sravanhome@gmail.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220614194225.2226447-1-sravanhome@gmail.com>
+References: <20220614194225.2226447-1-sravanhome@gmail.com>
 MIME-Version: 1.0
-References: <20220613191706.31239-1-jagathjog1996@gmail.com>
- <20220613191706.31239-3-jagathjog1996@gmail.com> <CAHp75VdJ7z+GnEGEe2obd8Df5mJtNGQASf1c7WWXJVQ1Db8U4A@mail.gmail.com>
-In-Reply-To: <CAHp75VdJ7z+GnEGEe2obd8Df5mJtNGQASf1c7WWXJVQ1Db8U4A@mail.gmail.com>
-From:   Jagath Jog J <jagathjog1996@gmail.com>
-Date:   Wed, 15 Jun 2022 00:48:11 +0530
-Message-ID: <CAM+2EuJAyTL=JcESt8fteSy7q09nSShQKF0AMkiwdJOtHe5uPA@mail.gmail.com>
-Subject: Re: [PATCH v1 2/2] iio: accel: bma400: Add support for single and
- double tap events
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Andy,
+Add new compatible for mp2733 mfd driver.
 
-On Tue, Jun 14, 2022 at 2:50 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
->
-> On Mon, Jun 13, 2022 at 9:17 PM Jagath Jog J <jagathjog1996@gmail.com> wrote:
-> >
-> > Add support for single and double tap events based on the tap threshold
-> > value and minimum quiet time value between the taps. The INT1 pin is used
-> > to interrupt and event is pushed to userspace.
->
-> the event
->
-> ...
->
-> >  #include <linux/iio/trigger.h>
-> >  #include <linux/iio/trigger_consumer.h>
-> >  #include <linux/iio/triggered_buffer.h>
-> > +#include <linux/iio/sysfs.h>
->
-> s is before t
+Signed-off-by: Saravanan Sekar <sravanhome@gmail.com>
+---
+ Documentation/devicetree/bindings/mfd/mps,mp2629.yaml | 1 +
+ 1 file changed, 1 insertion(+)
 
-Sure I will arrange this in alphabetical order.
+diff --git a/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+index f91acc42d652..fe13869e2c58 100644
+--- a/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
++++ b/Documentation/devicetree/bindings/mfd/mps,mp2629.yaml
+@@ -19,6 +19,7 @@ description: |
+ properties:
+   compatible:
+     const: mps,mp2629
++    const: mps,mp2733
+ 
+   reg:
+     maxItems: 1
+-- 
+2.25.1
 
->
-> ...
->
-> >         bool step_event_en;
-> >         bool activity_event_en;
-> >         unsigned int generic_event_en;
-> > +       unsigned int tap_event_en;
->
-> Should it be boolean? Or i.o.w. why does it need to be an unsigned int?
-
-tap_event_en is used as a bitmask. Bit 2 and 3 of tap_event_en
-are used to tell the state of the single and double tap events.
-For example bit 2 is used to indicate single tap is enabled or not.
-
-set_mask_bits() and FIELD_GET()  is used to set and retrieve the
-required bit value so I used unsigned int.
-
-
-
->
-> ...
->
-> > +       data->step_event_en = 0;
-> > +       data->activity_event_en = 0;
->
-> These are booleans.
->
-> --
-> With Best Regards,
-> Andy Shevchenko
