@@ -2,101 +2,134 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A605C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 11:21:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1EC9DCCA47A
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 11:38:40 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241585AbiFNLVW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:21:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43832 "EHLO
+        id S241585AbiFNLij (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:38:39 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56362 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbiFNLVV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 07:21:21 -0400
-Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEB624BDD
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jun 2022 04:21:19 -0700 (PDT)
-Received: by mail-ed1-x534.google.com with SMTP id x62so11128639ede.10
-        for <linux-iio@vger.kernel.org>; Tue, 14 Jun 2022 04:21:19 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=fairphone.com; s=fair;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3NQwnkhAN7Cg4g5w7mvM4Ci1RXtQxsQy+sdI93SNNjs=;
-        b=dc45YxVoR4oQKmCwTltJ9m7qQc8SNNDv5pKGkg18kxUQC7Y6x5HXcqboO3DhENrnwE
-         4OTDcMyJGarBed20ejt+cv+WSbxUU4vTmILALlN+uIMInmj/BAZC8222OHqJ9rSbJesb
-         EFVc6+929kc9EIV0mdM1fWjHRI17F686RN27aysfLF9eyI7cPbfuiXikcTfvk4r2vcLx
-         tVTLfLvTiDkccueG/zm8RAJ4s34lNFYhnU3qTvEuMmDGDdvX02NLxjCMGKZg1UcgZulS
-         /TrATixDwemhXtNgohlR01/zb8XSIvDeNzBYcpf7UtdHYHZ2StAYu0x93SFDZkrXGhIz
-         2eJg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=3NQwnkhAN7Cg4g5w7mvM4Ci1RXtQxsQy+sdI93SNNjs=;
-        b=Prwnv02pcOjue/Zh+2OLyJuWYfz01sdCLuksaIy7LVjMDBVE8D1SUdHZXobub93v4x
-         n4mrUA934myZfaGBeCzXfpJuUymW05GeUKTU4jUHyuB0Qd+zZ4BweST3TAkGMOLw0/7B
-         eFU1/Kn/C/1ZS6VjP7D/GgdV5/70MQ/yyt6dEmES4uO0KJAqEcpNE8LJcTpbOTU5KyZF
-         QMpDdmefI4Owz3LZE9bjT82XQN7aua0wWPEoVh2WpPQQtTh2PuPqDybx2Pic3Q4ZtOFP
-         bTAcIszxaLQz/zOMNoby5yf6OFHlzhlDr2dXUwt99lulLCQMmcQobg2T0dHgZ9IDGe+y
-         etNw==
-X-Gm-Message-State: AJIora+cv+YZN2F1KPhATJkxmDLlxI2DzD1DA8fKQLUb0ZghcDljUNrN
-        JRNNAKk9ugbmBBcyhmtEe94at6Y++d6zIQ==
-X-Google-Smtp-Source: ABdhPJy336wbk+SBxaM4ycmxvmA6fFTw+x7ClCI7aTudJZOQKX8wuVPQpr4idZt2tMg3Lk00BAS6Ww==
-X-Received: by 2002:a05:6402:f14:b0:42d:f989:4a21 with SMTP id i20-20020a0564020f1400b0042df9894a21mr5447518eda.168.1655205677875;
-        Tue, 14 Jun 2022 04:21:17 -0700 (PDT)
-Received: from otso.. (144-178-202-138.static.ef-service.nl. [144.178.202.138])
-        by smtp.gmail.com with ESMTPSA id vp5-20020a17090712c500b006f3ef214ddesm4919424ejb.68.2022.06.14.04.21.16
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Tue, 14 Jun 2022 04:21:17 -0700 (PDT)
-From:   Luca Weiss <luca.weiss@fairphone.com>
-To:     linux-iio@vger.kernel.org
-Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
-        Luca Weiss <luca.weiss@fairphone.com>,
-        Song Qiang <songqiang1304521@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] proximity: vl53l0x: Make VDD regulator actually optional
-Date:   Tue, 14 Jun 2022 13:20:50 +0200
-Message-Id: <20220614112049.302278-1-luca.weiss@fairphone.com>
-X-Mailer: git-send-email 2.36.1
+        with ESMTP id S241547AbiFNLi1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 07:38:27 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CAF1841610;
+        Tue, 14 Jun 2022 04:38:26 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 3805A611E8;
+        Tue, 14 Jun 2022 11:38:26 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id DE281C3411E;
+        Tue, 14 Jun 2022 11:38:21 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655206705;
+        bh=dt/7IRihakfa0z3FSC6b8H9fkTidVQtEjvRx/bxxSvU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=NBdiwjjoUG/a0z6QSAhuQ5VH2blwUuiBYDJ+/PBalF5wXzvY5CFYKt2DY0A/GesNa
+         KKz0FfRDorBtNoLNLvyeFQ1i9JmUU3rh5NismpJLJ7peSIbQeZ3/cFxOyP43DGB2Iu
+         qnavlnXX/y7ZrsWM4qgSWJgEplb1xn78yWHqVltC69a1CWNhREf5wVU5imBVLHAzId
+         rFABMWlHhPVKndbMjHHdN1+rGLMwp8V9ZHSJnA8wPLtiHj+m6H8bJYIMarciFZODk1
+         adhF5SBM7gX4QVBR/D3VYdKueJrSItwtMSIVEj+S/tkccVBYMZMlNIt/SlFdprZs7+
+         h62aeEQm8RWVQ==
+Date:   Tue, 14 Jun 2022 12:47:35 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Cosmin Tanislav <demonsingur@gmail.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: Re: [PATCH v4 2/2] iio: adc: ad4130: add AD4130 driver
+Message-ID: <20220614124735.1d712a4a@jic23-huawei>
+In-Reply-To: <37ac71be-78d6-a266-045b-18164d715e57@gmail.com>
+References: <20220608091238.403897-1-cosmin.tanislav@analog.com>
+        <20220608091238.403897-3-cosmin.tanislav@analog.com>
+        <CAHp75Vdvng-fxt-p2bHJiF8i967eh1o_MUgDFN_odhW0sLu69A@mail.gmail.com>
+        <37ac71be-78d6-a266-045b-18164d715e57@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Contrary to what the naming might suggest, devm_regulator_get_optional
-returns -ENODEV in case the regulator is not found which will trigger
-probe error in this driver.
+On Wed, 8 Jun 2022 23:11:51 +0300
+Cosmin Tanislav <demonsingur@gmail.com> wrote:
 
-Use devm_regulator_get instead which will return a dummy regulator that
-we can just use as if it was a proper regulator.
+> On 6/8/22 18:59, Andy Shevchenko wrote:
+> > On Wed, Jun 8, 2022 at 12:19 PM Cosmin Tanislav <demonsingur@gmail.com> wrote:  
+> >>
+> >> AD4130-8 is an ultra-low power, high precision, measurement solution for
+> >> low bandwidth battery operated applications.
+> >>
+> >> The fully integrated AFE (Analog Front-End) includes a multiplexer for up
+> >> to 16 single-ended or 8 differential inputs, PGA (Programmable Gain
+> >> Amplifier), 24-bit Sigma-Delta ADC, on-chip reference and oscillator,
+> >> selectable filter options, smart sequencer, sensor biasing and excitation
+> >> options, diagnostics, and a FIFO buffer.  
+> > 
+> > I believe we may gain a few LoCs by slightly bending the rule of 80.
+> > Also see below.
+> >   
+> 
+> I'll only go over the 80 columns limit if Jonathan agrees to it.
 
-Fixes: d3d6dba56dab ("proximity: vl53l0x: Handle the VDD regulator")
-Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
----
-@Jonathan: As discussed in the other email, maybe you want to
-adjust/remove the "Fixes:" tag. Your call.
 
- drivers/iio/proximity/vl53l0x-i2c.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Where it helps readability I fine with us going past 80.
+I'm not convinced by every case Andy highlights, but many do
+make things easier to read.
 
-diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-index 3b7a33ff601d..c7c4d33d340f 100644
---- a/drivers/iio/proximity/vl53l0x-i2c.c
-+++ b/drivers/iio/proximity/vl53l0x-i2c.c
-@@ -237,7 +237,7 @@ static int vl53l0x_probe(struct i2c_client *client)
- 				     I2C_FUNC_SMBUS_BYTE_DATA))
- 		return -EOPNOTSUPP;
- 
--	data->vdd_supply = devm_regulator_get_optional(&client->dev, "vdd");
-+	data->vdd_supply = devm_regulator_get(&client->dev, "vdd");
- 	if (IS_ERR(data->vdd_supply))
- 		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
- 				     "Unable to get VDD regulator\n");
--- 
-2.36.1
+
+> 
+> >> +       *size = ad4130_reg_size[reg];
+> >> +       if (!*size)
+> >> +               return -EINVAL;  
+> > 
+> > Is this check necessary?
+> >   
+> 
+> Yes. I haven't described all registers in the table, and the registers
+> can be accessed by the user via the debugfs_reg_access() method.
+
+For that one, probably worth a comment as not immediately obvious.
+
+> 
+
+...
+
+> 
+> >> +       switch (ref_sel) {
+> >> +       case AD4130_REF_REFIN1:
+> >> +               ret = regulator_get_voltage(st->regulators[2].consumer);
+> >> +               break;
+> >> +       case AD4130_REF_REFIN2:
+> >> +               ret = regulator_get_voltage(st->regulators[3].consumer);
+> >> +               break;
+> >> +       case AD4130_REF_AVDD_AVSS:
+> >> +               ret = regulator_get_voltage(st->regulators[0].consumer);
+> >> +               break;
+> >> +       case AD4130_REF_REFOUT_AVSS:
+> >> +               ret = st->int_ref_uv;
+> >> +               break;
+> >> +       default:
+> >> +               ret = -EINVAL;
+> >> +               break;
+> >> +       }  
+> >   
+> >> +       if (ret < 0)
+> >> +               return dev_err_probe(dev, ret, "Cannot use reference %u\n",
+> >> +                                    ref_sel);  
+> > 
+> > Can it be moved to the caller where it would cleaner to use, I think?
+> > As a good side effect the all above will be shortened to just return directly.
+> >   
+> 
+> I'm pretty sure I remember Jonathan suggested moving it inside the
+> function.
+
+It's possible, though I don't know what my reasoning would have been...
 
