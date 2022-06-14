@@ -2,107 +2,118 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BFD4ACCA47E
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 12:35:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 81FB4CCA47E
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 15:11:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S245096AbiFNMff (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Jun 2022 08:35:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33466 "EHLO
+        id S1349086AbiFNPLY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Jun 2022 11:11:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41846 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231607AbiFNMfN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 08:35:13 -0400
-Received: from es400ra01.iit.it (mx.iit.it [90.147.26.161])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30FE54D61D;
-        Tue, 14 Jun 2022 05:32:08 -0700 (PDT)
-Received: from es400ra01.iit.it (127.0.0.1) id hl1vse0171sj; Mon, 13 Jun 2022 14:05:52 +0200 (envelope-from <prvs=1163b4114e=Andrea.Merello@iit.it>)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=iit.it;
-        s=mx; i=@iit.it; h=Received:Received:From:To:CC:Subject:Date:
-        Message-ID:In-Reply-To:References:MIME-Version:
-        Content-Transfer-Encoding:Content-Type; bh=Bf0xmPJS8aB83zqCAABX1
-        NExq47EEl/tXWk8HBybetE=; b=M7I38LfELTptShFZ0pkf4MU1QlPvrc06sTNE7
-        A8xQOVLWHDN6hHLMdoO/Dd68h1TM3aCZ/qpKu423oD3NyKx3bmK3eRVvygXBdwmR
-        65zVioeKxhsygxecTo7SoS8mjBtOO6izcnGbo2bU5skOg5FmUlxHO4hBUIKTlmM5
-        ctUc28=
-Received: from mail.iit.it ([10.255.8.186])
-        by es400ra01.iit.it ([172.31.0.241]) (SonicWall 10.0.16.7295)
-        with ESMTPS (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256/256)
-        id o202206131205510155820-11; Mon, 13 Jun 2022 14:05:51 +0200
-Received: from poker.lan (90.147.26.235) by iitmxwge020.iit.local
- (10.255.8.186) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.1.2375.17; Mon, 13 Jun
- 2022 14:05:51 +0200
-From:   <andrea.merello@iit.it>
-To:     <jic23@kernel.org>, <mchehab+huawei@kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-CC:     <lars@metafoo.de>, <robh+dt@kernel.org>,
-        <andy.shevchenko@gmail.com>, <matt.ranostay@konsulko.com>,
-        <ardeleanalex@gmail.com>, <jacopo@jmondi.org>,
-        Andrea Merello <andrea.merello@iit.it>
-Subject: [v6 04/14] iio: add modifers for pitch, yaw, roll
-Date:   Mon, 13 Jun 2022 14:05:24 +0200
-Message-ID: <20220613120534.36991-5-andrea.merello@iit.it>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220613120534.36991-1-andrea.merello@iit.it>
-References: <20220613120534.36991-1-andrea.merello@iit.it>
+        with ESMTP id S241398AbiFNPLX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 11:11:23 -0400
+Received: from mail-ed1-x52e.google.com (mail-ed1-x52e.google.com [IPv6:2a00:1450:4864:20::52e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A5CCF2FE57;
+        Tue, 14 Jun 2022 08:11:22 -0700 (PDT)
+Received: by mail-ed1-x52e.google.com with SMTP id g7so12098739eda.3;
+        Tue, 14 Jun 2022 08:11:22 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=z3hgroj28Zs89uEskySDVuV/EGAjFVx+1yzPc51SYbg=;
+        b=IKXA/fv6Qo7hmQrY4ZMw0Jya/LfD9U/Rml8A+2Rg5Xl9Oebdh8vv3VQlqdirE6wR4q
+         5iHXN2Kh468W4DUmRuCvoAzvVA/SVmj7LAjxt//ZE3hz6BSYCfXtG9mAk9GPjtC0MijI
+         rER9KxJH2eEi4dFVZpKeaiS+/Jk8DCCHsw2pueu7CeGDefUZWv2GIakBY4klpQ+PN+u2
+         J+DZt+vVsPb8TMcMAhh2wBLtzn5yay7tmJJE8sppo4P6eUYlnIjGXAEa4xC1soXHHoFW
+         MLD9q6KDCpohqfml8YtGzQZzLf4lvL0F+TISEBISSqvGTEgqCPEa8BZo2K42OsKw6wV/
+         GG5A==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=z3hgroj28Zs89uEskySDVuV/EGAjFVx+1yzPc51SYbg=;
+        b=d6ioIP3mBF+CXDh0A1XlVDn1QvHjHyQ29kqBnWeeS9gq6diUCUGKouJ46XFZjfufNY
+         eSTkkTaI06z6YkQs2LNX4EKzpu2cjwU4nVckZ/Diz2b6lgYAGEGViAgJ3gdZ5MX6mHyM
+         xh7xjbDUoyibv3Ib0U35SHyAbKC0tbo9lCcVGXpKVAhDx3v4FPJgoyVBFD5DSnBzRuHq
+         RxhtdjMphYo3JEleETc+ygCwbnxiGDLecmGqPBk6jpZ2cM0gtSEOU6KEkrQfG8+Empu9
+         SqcZiuraDCLxLCPQ6kFMnyU72YGpeQYZTYK55/HGaBlsBtjItfM6/E427EC6wtgUHJaw
+         6skQ==
+X-Gm-Message-State: AOAM531e32xbCeC3555kYdE9K8PNr9DqjAkOSpB9M8NVqXER1SjKaoVE
+        IhKDBvV5AwsjlVmpsHg8VJr9iKsXWc/PyC29JD3SZtfNMnsx2Q==
+X-Google-Smtp-Source: AGRyM1sb9mKj5CCuJtLS5MIoTIZSWkJQSZvyEbXLvbtJrNfsKT2UeAuAEQpxurmfRMnuHdHBE7HW2BYeu6OJwZ/qOkc=
+X-Received: by 2002:a05:6402:4390:b0:42e:b7e:e9ac with SMTP id
+ o16-20020a056402439000b0042e0b7ee9acmr6643257edc.97.1655219481180; Tue, 14
+ Jun 2022 08:11:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-Originating-IP: [90.147.26.235]
-X-ClientProxiedBy: IITMXWGE021.iit.local (10.255.8.187) To
- iitmxwge020.iit.local (10.255.8.186)
-X-Mlf-DSE-Version: 6873
-X-Mlf-Rules-Version: s20220519150137; ds20200715013501;
-        di20220610180234; ri20160318003319; fs20220610211824
-X-Mlf-Smartnet-Version: 20210917223710
-X-Mlf-Envelope-From: Andrea.Merello@iit.it
-X-Mlf-Version: 10.0.16.7295
-X-Mlf-License: BSV_C_AP_T_R
-X-Mlf-UniqueId: o202206131205510155820
+References: <20220613120534.36991-1-andrea.merello@iit.it> <20220613120534.36991-9-andrea.merello@iit.it>
+ <CAHp75Vdh8kAH6540xCwzFh5uf=QMVTHC42a8pOgvkpObzjfD+w@mail.gmail.com>
+ <164f663acbba481a8ea8f45f185aaf83@iit.it> <CAHp75VeYK=oCbbBVp01_b5LK_FqAo4F_bic9Me4Y6PpfFnDU6g@mail.gmail.com>
+ <a41936e4063f4c2c9da7c7e1d915bd62@iit.it>
+In-Reply-To: <a41936e4063f4c2c9da7c7e1d915bd62@iit.it>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Tue, 14 Jun 2022 17:10:43 +0200
+Message-ID: <CAHp75Vd_w1WOp9ntbNqxtuuVXi0kMGbX=OZ7cioNxoh2yUa1ag@mail.gmail.com>
+Subject: Re: [v6 08/14] iio: imu: add Bosch Sensortec BNO055 core driver
+To:     Andrea Merello <Andrea.Merello@iit.it>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        jmondi <jacopo@jmondi.org>,
+        "andrea.merello@gmail.com" <andrea.merello@gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Andrea Merello <andrea.merello@iit.it>
+On Tue, Jun 14, 2022 at 2:15 PM Andrea Merello <Andrea.Merello@iit.it> wrot=
+e:
 
-Add modifiers for reporting rotations as euler angles (i.e. yaw, pitch and
-roll).
+...
 
-Signed-off-by: Andrea Merello <andrea.merello@iit.it>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/iio/industrialio-core.c | 3 +++
- include/uapi/linux/iio/types.h  | 3 +++
- 2 files changed, 6 insertions(+)
+> >> >> +       devm_add_action_or_reset(priv->dev, bno055_debugfs_remove, =
+priv->debugfs);
+> >> >
+> >> >Shouldn't we report the potential error here? It's not directly
+> >> >related to debugfs, but something which is not directly related.
+> >>
+> >> The error eventually comes out from something that has nothing to do w=
+ith debugs per se (i.e. the devm stuff), but it will only affect debugfs in=
+deed.
+> >>
+> >> Assuming that we don't want to make the whole driver fail in case debu=
+gfs stuff fails (see last part of the comment above debugfs_create_file() i=
+mplementation), and given that the devm_add_action_or_reset(), should indee=
+d "reset" in case of failure (i.e.  we should be in a clean situation anywa=
+y), I would say it should be OK not to propagate the error and let things g=
+o on.
+> >
+> >As I said, it's not directly related to debugfs. Here is the resource
+> >leak possible or bad things happen if you probe the driver, that fails
+> >to add this call for removal, remove it, and try to insert again, in
+> >such case the debugfs will be stale.
+>
+> Hum, I would say this shouldn't ever happen: AFAICS devm_add_action_or_re=
+set() is a wrapper around devm_add_action() and it's purpose is exactly to =
+add a check for failure; devm_add_action_or_reset() immediately invokes the=
+ action handler in case devm_add_action() fails. IOW in case of failure to =
+add the devm stuff, the debugfs file is removed immediately and it shouldn'=
+t cause any mess with next times probe()s; just the driver will go on witho=
+ut the debugfs file being here.
+>
+> I think this is the point of using devm_add_action_or_reset() instead of =
+dev_add_action()  indeed, or am I missing something?
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 9c0ee7755884..4d95d4df5e91 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -137,6 +137,9 @@ static const char * const iio_modifier_names[] = {
- 	[IIO_MOD_LINEAR_X] = "linear_x",
- 	[IIO_MOD_LINEAR_Y] = "linear_y",
- 	[IIO_MOD_LINEAR_Z] = "linear_z",
-+	[IIO_MOD_PITCH] = "pitch",
-+	[IIO_MOD_YAW] = "yaw",
-+	[IIO_MOD_ROLL] = "roll",
- };
- 
- /* relies on pairs of these shared then separate */
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 0993f6b697fc..4853701ba70d 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -98,6 +98,9 @@ enum iio_modifier {
- 	IIO_MOD_LINEAR_X,
- 	IIO_MOD_LINEAR_Y,
- 	IIO_MOD_LINEAR_Z,
-+	IIO_MOD_PITCH,
-+	IIO_MOD_YAW,
-+	IIO_MOD_ROLL,
- };
- 
- enum iio_event_type {
--- 
-2.17.1
+Reading that code again and I think you are right, so dev_warn() will
+be sufficient to show that we fail. OTOH, what is the point of adding
+a resource for the failed debugfs call?
 
+--=20
+With Best Regards,
+Andy Shevchenko
