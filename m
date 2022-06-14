@@ -2,98 +2,91 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BE755C43334
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 09:28:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0C622C43334
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 10:12:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241587AbiFNJ2O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Jun 2022 05:28:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41204 "EHLO
+        id S231955AbiFNKMh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Jun 2022 06:12:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240797AbiFNJ2L (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 05:28:11 -0400
-Received: from mail-ed1-x532.google.com (mail-ed1-x532.google.com [IPv6:2a00:1450:4864:20::532])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B7AC927CEF;
-        Tue, 14 Jun 2022 02:27:59 -0700 (PDT)
-Received: by mail-ed1-x532.google.com with SMTP id eo8so2513533edb.0;
-        Tue, 14 Jun 2022 02:27:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=NOAq4VksaaTkAqP72HdVciTjPEeSkHTzi3HjDdbvvMI=;
-        b=Mlda03Yxqw6tVWsedmiUjVE7dwb5T7VQngiXsB6ZzjaTerumIr2afuXxJEnmmFSDJr
-         Tl+Dc/Up415HB/hGXLr8OkFjRbCu8UxoRSEs1BA4M0pO3OVa3ev8x3dZh6D+HnuPcuWY
-         nHjDsv60J/IbZ04L2vaZGeN1r0C1ZEizLKuZS7J4V9ccAtdQBlelkre+albAPpj67XAL
-         f9dB1T+2mIZkYzj0EMLDpzS8mfLEP5UVyaHzpeFeqyXCy88U6w16MhhePsS+AsGlswyP
-         +VEsDsSZigH3JDfWJ9uSW7EfnPurDWvhaQiu3aCKSCk4iJqK64yNE12Cx7fPnIGMrsZU
-         /Abw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=NOAq4VksaaTkAqP72HdVciTjPEeSkHTzi3HjDdbvvMI=;
-        b=SDIV7ieksBZDwJ4Aw6H0Yvr9MQwHUmDOlkoeOqvhE7rkfiRGTdL/EAQ1cUeDC0/ZSk
-         87/Xji53bftDp4CyVjW0NwsSpa9Ngm6WCC40/9mtd3GyKD+I1/2PQ2KB8FzBeQY96g+l
-         DGBZhn7wAV3Jz4VkrrcxedWZLwtc+ClijBDdcVG3Ge0KQFoyC52jEuuh9xDIqxqWDl6P
-         tDzhc/k2EysNpYrZLAVz4E9Kc4t4WwyUXkYTO4ujZyeUsGZz/RJfTfTPcCz4T8laoqBI
-         Icg4aDl7T273LyUfbvHYqpE8vxUOkzvald4kILbeDfHHck9azdeURfKcpuRsP0CHKMbu
-         svQQ==
-X-Gm-Message-State: AOAM531m+53L6a6TCRvs/tsv/sXNcoo9KWMQHxOi+SsfbjDVhLOqmW6D
-        EVgtb9cfvQE+lcoyKluhbwO+WhnjeJe9RwbIAdE=
-X-Google-Smtp-Source: AGRyM1vdg1FP29O+B8YHnb8sIyfJscVMzEmdoHlCmMY8djXAVhSI/XJmtiI17UcLO/cYVxBxiqT41qFcVJyV9m7TZRU=
-X-Received: by 2002:a05:6402:11d2:b0:42d:e68a:eae0 with SMTP id
- j18-20020a05640211d200b0042de68aeae0mr4670452edw.111.1655198878304; Tue, 14
- Jun 2022 02:27:58 -0700 (PDT)
+        with ESMTP id S230313AbiFNKMg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 06:12:36 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2717A22BC9;
+        Tue, 14 Jun 2022 03:12:34 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id C3D9860AEA;
+        Tue, 14 Jun 2022 10:12:33 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8C89FC3411B;
+        Tue, 14 Jun 2022 10:12:29 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655201553;
+        bh=OU/NN+viO7AEHR96HAV2XGs7BeFoWc8CIQP0hQgj6vU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=N0h9lZRJmQuixNqG6kalxSCRX53PXSuiPfVYsOlhI8XrzjFCEBMrsy427hsL/bzUa
+         nM/e5pkmu6fOdd7zZJTwHbjipGLTPtj191vmJi/3aFaGrbPAzTwxyKm2iRCLcIU4P5
+         0W1UPsirm5b3jLJLQB5nO2oAe2mFBBx/Uxy+Ut72hOrEDS0zluBfBV10ussQJFdX5k
+         YC3oJC7l13zFtvUvhHcc7y9kQbsx+etzhD9zmWelnUdASAmKnOL5nRgoZOVWi7V8El
+         Oa7P6VbFTmnCbRdpuHJEMoV3JbqmnxOFqlImK18KaWBdDghwG+7RM7Azl4aKS0gGky
+         1GJdoKQuuR7Rw==
+Date:   Tue, 14 Jun 2022 11:21:42 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-amlogic@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: Re: [PATCH v3 1/6] iio: adc: meson_saradc: Don't attach managed
+ resource to IIO device object
+Message-ID: <20220614112142.3eb70a8d@jic23-huawei>
+In-Reply-To: <Ypo80/NpWLLP43jm@smile.fi.intel.com>
+References: <20220603100004.70336-1-andriy.shevchenko@linux.intel.com>
+        <20220603170612.561edfbf@jic23-huawei>
+        <20220603172307.5d2f3c52@jic23-huawei>
+        <20220603172920.3239bbd6@jic23-huawei>
+        <Ypo80/NpWLLP43jm@smile.fi.intel.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220530174326.1381-1-andriy.shevchenko@linux.intel.com>
- <20220603180618.4b643391@jic23-huawei> <CAPUE2usmrREACn+bjRfMyNvF1aeozJq+tHCQY6XT7KMXvp94Bg@mail.gmail.com>
-In-Reply-To: <CAPUE2usmrREACn+bjRfMyNvF1aeozJq+tHCQY6XT7KMXvp94Bg@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 14 Jun 2022 11:27:21 +0200
-Message-ID: <CAHp75VdLMCBhhM4P_asTf7r+OhBHmgJVCg7MADkOYRTf1JvRaA@mail.gmail.com>
-Subject: Re: [PATCH v1 1/1] iio: proximity: sx_common: Allow IIO core to take
- care of firmware node
-To:     Gwendal Grignou <gwendal@chromium.org>
-Cc:     Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Jun 13, 2022 at 11:31 PM Gwendal Grignou <gwendal@chromium.org> wrote:
->
-> The reason we have the code ACPI_COMPANION_SET and dev.of_node set (by
-> commit 74a53a959028e ("iio:proximity:sx_common: Fix device property
-> parsing on DT systems") from Stephen is we are getting device propery
-> in ->get_default_reg(), which is called in sx_common_init_device(),
-> before devm_iio_device_register().
->
-> We have the same code path in other driver, like adc/stm32-adc.c,
-> where indio_dev->dev.of_node is set manually to be able to set the
-> resolution based on device tree properties.
+On Fri, 3 Jun 2022 19:54:43 +0300
+Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
 
-Ah, thanks for this insight! I will rework the patch accordingly (yes,
-there is something to clean up even in this case).
+> On Fri, Jun 03, 2022 at 05:29:20PM +0100, Jonathan Cameron wrote:
+> > On Fri, 3 Jun 2022 17:23:07 +0100
+> > Jonathan Cameron <jic23@kernel.org> wrote:  
+> 
+> ...
+> 
+> > Andy, put a cover letter on these larger series - if nothing else it gives
+> > somewhere convenient for people to give tags for the whole series, or 
+> > maintainer to say what they are doing with it.  
+> 
+> I'll try to remember this. The series was started from only a couple of patches
+> and grew to this big, and I forgot to add a cover letter when it seems not
+> anymore obvious what has been done.
+> 
+> > Anyhow, I'm fine with the series, but will leave it on list for a while
+> > longer, particularly to get patch 6 some eyes + testing.
+> > 
+> > Currently I plan to drop the fixes tag from this first patch, but I'm prepared
+> > to be convinced it's a bug fix rather than a consistency cleanup.  
+> 
+> Fine with me, thanks!
+> 
+Applied to the togreg branch of iio.git and pushed out as testing for all the normal
+reasons.
 
-> On Fri, Jun 3, 2022 at 9:57 AM Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Mon, 30 May 2022 20:43:26 +0300
-> > Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
-> >
-> > > IIO core correctly will take care of firmware node if it's not set in
-> > > the driver. Drop ACPI and OF specifics from the driver and allow IIO
-> > > core to handle this.
-> > >
-> > > Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Looks fine to me.  As such I'll apply it now, but Gwendal, you've
-> > been active with this driver recently so if you have time to sanity check
-> > that would be great.  Once I've caught up with new stuff I plan to check
-> > where we are with your various series on this driver.
+Thanks,
 
--- 
-With Best Regards,
-Andy Shevchenko
+Jonathan
+
