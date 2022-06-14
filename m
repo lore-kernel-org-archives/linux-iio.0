@@ -2,152 +2,101 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6B3AEC43334
-	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 11:17:14 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A605C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 14 Jun 2022 11:21:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239079AbiFNLRN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 14 Jun 2022 07:17:13 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40562 "EHLO
+        id S241585AbiFNLVW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 14 Jun 2022 07:21:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43832 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231887AbiFNLRM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 07:17:12 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D20220F7;
-        Tue, 14 Jun 2022 04:17:11 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 63039B817D7;
-        Tue, 14 Jun 2022 11:17:10 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F08E6C3411F;
-        Tue, 14 Jun 2022 11:17:06 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655205429;
-        bh=OLxdqz8v9c0jsmtShQ9ZLaEVr+VzqF9XJMhBZg7aA0s=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=XUX9WALMpQht+A2WyY/9Y0FRt3yAGu56w8ac6rFSzGJ85yg8dT6J3K6RDGfIB7XYP
-         5HRj8Zqf13Q+sQpnfcdtNH98UD2JYWmX/Jb8tSk0vKQaMzCAs98x6RJzWCrUiIP1WS
-         5UYokwEoFl4RnGKOl/XYv6G1l5hjU+Jv0ozicDBKLOU/1pRJXBsEcIX9pU6VUDZpmS
-         BPOXW6DMtZ4LTYDZLXKIgeikFskqOIjZi7EJJjJzRbhD06VdjY4hs4B/rJWa7cw0B+
-         j0DppMULkWDGui31JWKazA0hSoFKp7OaVzM6kBPz4vSnKrKqJ3BPNQAkaj/+Cm1K9X
-         asz2bWB0wPX9g==
-Date:   Tue, 14 Jun 2022 12:26:18 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     William Breathitt Gray <william.gray@linaro.org>
-Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        with ESMTP id S231887AbiFNLVV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Jun 2022 07:21:21 -0400
+Received: from mail-ed1-x534.google.com (mail-ed1-x534.google.com [IPv6:2a00:1450:4864:20::534])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEB624BDD
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jun 2022 04:21:19 -0700 (PDT)
+Received: by mail-ed1-x534.google.com with SMTP id x62so11128639ede.10
+        for <linux-iio@vger.kernel.org>; Tue, 14 Jun 2022 04:21:19 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=fairphone.com; s=fair;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3NQwnkhAN7Cg4g5w7mvM4Ci1RXtQxsQy+sdI93SNNjs=;
+        b=dc45YxVoR4oQKmCwTltJ9m7qQc8SNNDv5pKGkg18kxUQC7Y6x5HXcqboO3DhENrnwE
+         4OTDcMyJGarBed20ejt+cv+WSbxUU4vTmILALlN+uIMInmj/BAZC8222OHqJ9rSbJesb
+         EFVc6+929kc9EIV0mdM1fWjHRI17F686RN27aysfLF9eyI7cPbfuiXikcTfvk4r2vcLx
+         tVTLfLvTiDkccueG/zm8RAJ4s34lNFYhnU3qTvEuMmDGDdvX02NLxjCMGKZg1UcgZulS
+         /TrATixDwemhXtNgohlR01/zb8XSIvDeNzBYcpf7UtdHYHZ2StAYu0x93SFDZkrXGhIz
+         2eJg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=3NQwnkhAN7Cg4g5w7mvM4Ci1RXtQxsQy+sdI93SNNjs=;
+        b=Prwnv02pcOjue/Zh+2OLyJuWYfz01sdCLuksaIy7LVjMDBVE8D1SUdHZXobub93v4x
+         n4mrUA934myZfaGBeCzXfpJuUymW05GeUKTU4jUHyuB0Qd+zZ4BweST3TAkGMOLw0/7B
+         eFU1/Kn/C/1ZS6VjP7D/GgdV5/70MQ/yyt6dEmES4uO0KJAqEcpNE8LJcTpbOTU5KyZF
+         QMpDdmefI4Owz3LZE9bjT82XQN7aua0wWPEoVh2WpPQQtTh2PuPqDybx2Pic3Q4ZtOFP
+         bTAcIszxaLQz/zOMNoby5yf6OFHlzhlDr2dXUwt99lulLCQMmcQobg2T0dHgZ9IDGe+y
+         etNw==
+X-Gm-Message-State: AJIora+cv+YZN2F1KPhATJkxmDLlxI2DzD1DA8fKQLUb0ZghcDljUNrN
+        JRNNAKk9ugbmBBcyhmtEe94at6Y++d6zIQ==
+X-Google-Smtp-Source: ABdhPJy336wbk+SBxaM4ycmxvmA6fFTw+x7ClCI7aTudJZOQKX8wuVPQpr4idZt2tMg3Lk00BAS6Ww==
+X-Received: by 2002:a05:6402:f14:b0:42d:f989:4a21 with SMTP id i20-20020a0564020f1400b0042df9894a21mr5447518eda.168.1655205677875;
+        Tue, 14 Jun 2022 04:21:17 -0700 (PDT)
+Received: from otso.. (144-178-202-138.static.ef-service.nl. [144.178.202.138])
+        by smtp.gmail.com with ESMTPSA id vp5-20020a17090712c500b006f3ef214ddesm4919424ejb.68.2022.06.14.04.21.16
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 14 Jun 2022 04:21:17 -0700 (PDT)
+From:   Luca Weiss <luca.weiss@fairphone.com>
+To:     linux-iio@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht, phone-devel@vger.kernel.org,
+        Luca Weiss <luca.weiss@fairphone.com>,
+        Song Qiang <songqiang1304521@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Markuss Broks <markuss.broks@gmail.com>,
         linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: dac: cio-dac: Implement and utilize register
- structures
-Message-ID: <20220614122618.68e2e9d1@jic23-huawei>
-In-Reply-To: <44aec703753f930cceff448babd1c8e2959eebb0.1654118389.git.william.gray@linaro.org>
-References: <cover.1654118389.git.william.gray@linaro.org>
-        <44aec703753f930cceff448babd1c8e2959eebb0.1654118389.git.william.gray@linaro.org>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+Subject: [PATCH] proximity: vl53l0x: Make VDD regulator actually optional
+Date:   Tue, 14 Jun 2022 13:20:50 +0200
+Message-Id: <20220614112049.302278-1-luca.weiss@fairphone.com>
+X-Mailer: git-send-email 2.36.1
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  6 Jun 2022 10:15:18 -0400
-William Breathitt Gray <william.gray@linaro.org> wrote:
+Contrary to what the naming might suggest, devm_regulator_get_optional
+returns -ENODEV in case the regulator is not found which will trigger
+probe error in this driver.
 
-> Reduce magic numbers and improve code readability by implementing and
-> utilizing named register data structures.
-> 
-> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+Use devm_regulator_get instead which will return a dummy regulator that
+we can just use as if it was a proper regulator.
 
-I'm unconvinced this one really helps readability seeing
-as you are only indexing a straight forward array.
+Fixes: d3d6dba56dab ("proximity: vl53l0x: Handle the VDD regulator")
+Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
+---
+@Jonathan: As discussed in the other email, maybe you want to
+adjust/remove the "Fixes:" tag. Your call.
 
-Simply using u16 __iomem *
-would provide the main cleanup which is avoiding the indexing
-via * 2.
+ drivers/iio/proximity/vl53l0x-i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-
-
-> ---
->  drivers/iio/dac/cio-dac.c | 24 ++++++++++++++++--------
->  1 file changed, 16 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/iio/dac/cio-dac.c b/drivers/iio/dac/cio-dac.c
-> index 8080984dcb03..7860450ceaf3 100644
-> --- a/drivers/iio/dac/cio-dac.c
-> +++ b/drivers/iio/dac/cio-dac.c
-> @@ -16,6 +16,7 @@
->  #include <linux/isa.h>
->  #include <linux/module.h>
->  #include <linux/moduleparam.h>
-> +#include <linux/types.h>
->  
->  #define CIO_DAC_NUM_CHAN 16
->  
-> @@ -34,14 +35,22 @@ static unsigned int num_cio_dac;
->  module_param_hw_array(base, uint, ioport, &num_cio_dac, 0);
->  MODULE_PARM_DESC(base, "Measurement Computing CIO-DAC base addresses");
->  
-> +/**
-> + * struct cio_dac_reg - device register structure
-> + * @da:	D/A data
-> + */
-> +struct cio_dac_reg {
-> +	u16 da[CIO_DAC_NUM_CHAN];
-> +};
-> +
->  /**
->   * struct cio_dac_iio - IIO device private data structure
->   * @chan_out_states:	channels' output states
-> - * @base:		base port address of the IIO device
-> + * @reg:		I/O address offset for the device registers
->   */
->  struct cio_dac_iio {
->  	int chan_out_states[CIO_DAC_NUM_CHAN];
-> -	void __iomem *base;
-> +	struct cio_dac_reg __iomem *reg;
->  };
->  
->  static int cio_dac_read_raw(struct iio_dev *indio_dev,
-> @@ -61,7 +70,6 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
->  	struct iio_chan_spec const *chan, int val, int val2, long mask)
->  {
->  	struct cio_dac_iio *const priv = iio_priv(indio_dev);
-> -	const unsigned int chan_addr_offset = 2 * chan->channel;
->  
->  	if (mask != IIO_CHAN_INFO_RAW)
->  		return -EINVAL;
-> @@ -71,7 +79,7 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
->  		return -EINVAL;
->  
->  	priv->chan_out_states[chan->channel] = val;
-> -	iowrite16(val, priv->base + chan_addr_offset);
-> +	iowrite16(val, priv->reg->da + chan->channel);
->  
->  	return 0;
->  }
-> @@ -106,8 +114,8 @@ static int cio_dac_probe(struct device *dev, unsigned int id)
->  	}
->  
->  	priv = iio_priv(indio_dev);
-> -	priv->base = devm_ioport_map(dev, base[id], CIO_DAC_EXTENT);
-> -	if (!priv->base)
-> +	priv->reg = devm_ioport_map(dev, base[id], CIO_DAC_EXTENT);
-> +	if (!priv->reg)
->  		return -ENOMEM;
->  
->  	indio_dev->info = &cio_dac_info;
-> @@ -117,8 +125,8 @@ static int cio_dac_probe(struct device *dev, unsigned int id)
->  	indio_dev->name = dev_name(dev);
->  
->  	/* initialize DAC outputs to 0V */
-> -	for (i = 0; i < 32; i += 2)
-> -		iowrite16(0, priv->base + i);
-> +	for (i = 0; i < CIO_DAC_NUM_CHAN; i++)
-> +		iowrite16(0, priv->reg->da + i);
->  
->  	return devm_iio_device_register(dev, indio_dev);
->  }
+diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
+index 3b7a33ff601d..c7c4d33d340f 100644
+--- a/drivers/iio/proximity/vl53l0x-i2c.c
++++ b/drivers/iio/proximity/vl53l0x-i2c.c
+@@ -237,7 +237,7 @@ static int vl53l0x_probe(struct i2c_client *client)
+ 				     I2C_FUNC_SMBUS_BYTE_DATA))
+ 		return -EOPNOTSUPP;
+ 
+-	data->vdd_supply = devm_regulator_get_optional(&client->dev, "vdd");
++	data->vdd_supply = devm_regulator_get(&client->dev, "vdd");
+ 	if (IS_ERR(data->vdd_supply))
+ 		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
+ 				     "Unable to get VDD regulator\n");
+-- 
+2.36.1
 
