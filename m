@@ -2,36 +2,36 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B7E6CC433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jun 2022 21:00:26 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BEEB8C43334
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jun 2022 21:04:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1348008AbiFOVAY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Jun 2022 17:00:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54714 "EHLO
+        id S244719AbiFOVEb (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Jun 2022 17:04:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59018 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1346052AbiFOVAQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jun 2022 17:00:16 -0400
+        with ESMTP id S238600AbiFOVEa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jun 2022 17:04:30 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C91FB5523D;
-        Wed, 15 Jun 2022 14:00:15 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8B241245AB;
+        Wed, 15 Jun 2022 14:04:29 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 6194361356;
-        Wed, 15 Jun 2022 21:00:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id F301BC3411E;
-        Wed, 15 Jun 2022 21:00:12 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 16EA760FB7;
+        Wed, 15 Jun 2022 21:04:29 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 09C3AC3411A;
+        Wed, 15 Jun 2022 21:04:26 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655326814;
-        bh=H/KvdVW+OVA5m+P7Zw9G+q3TtBvXLtLwBl8hRTBS/bA=;
+        s=k20201202; t=1655327068;
+        bh=hE39RVqnoCowXM9bxp3o8FqxXU/Szd80uy6eIhs9g3U=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=QxbPbc8tlWgFeYsXMM2ZnM0naobnJYZtq2duTMSpUT095EP3ijtx5nuKABHZdHqcI
-         riEpWjEsb1HpqDB3zhiD8V01PxXhGT7S4o0M2xb+CH4emrPXxw6MDnM4zazkrybu5/
-         A3ZHL/SpqayY9OCkZQ6EC9+gKzel9dVIVleBqXpAbPfnTn3JRWJsjcDlPutNoZsePz
-         BM1soqK1938U73gjJOE5+Pi3Bx2srKZlll0ot6/NupAUIYbxnU6EQ8wHJwHU5ouyKa
-         nQiuiUBRatc9C7gieka7hSvwHqfHU/0d8ckfQOZMvNc99jIu7/WqHyQtvWs5YAh2yK
-         +R731VOOVpxVA==
-Date:   Wed, 15 Jun 2022 22:09:30 +0100
+        b=Hi/0jpYEB50JqvcJPwlV1hr/a0AxMbaRoO8oAyLvkAYVFWZwGj8GKEnqLtwNOgg34
+         tceFW5ehstCD7gLBadWuuxHEDK06fmltBb91QlM7fivtrllQIKD5EOR18NvbPAYwDC
+         yTzxH6Fq1txJshoyT6nPaoQD0eIT5lnXjnw2Owxa2IYE3VOY6fTuZ5OkCdtmOutP73
+         RVcgJhpzwG4JkADUERjDiSKLl4Y9rTazee2LAkJzXPe6XpijvNW4j4aRodGscBKhJU
+         Iu3ZUANEFM2U2zeVeymNngISg1EEdQxPlVRGxxPAx9sohffmQM8j8lvOUmPTHuFXAP
+         Lme8ot5GRyPAg==
+Date:   Wed, 15 Jun 2022 22:13:44 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     "Sa, Nuno" <Nuno.Sa@analog.com>
 Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -41,10 +41,11 @@ Cc:     Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
         Lars-Peter Clausen <lars@metafoo.de>
 Subject: Re: [PATCH v1 1/1] iio: adc: intel_mrfld_adc: explicitly add proper
  header files
-Message-ID: <20220615220930.710ed42d@jic23-huawei>
-In-Reply-To: <PH0PR03MB6786A019FB9A1BA810DDE2BC99AD9@PH0PR03MB6786.namprd03.prod.outlook.com>
+Message-ID: <20220615221344.308bf5da@jic23-huawei>
+In-Reply-To: <20220615220930.710ed42d@jic23-huawei>
 References: <20220615120803.41350-1-andriy.shevchenko@linux.intel.com>
         <PH0PR03MB6786A019FB9A1BA810DDE2BC99AD9@PH0PR03MB6786.namprd03.prod.outlook.com>
+        <20220615220930.710ed42d@jic23-huawei>
 X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
@@ -53,52 +54,65 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 15 Jun 2022 12:15:48 +0000
-"Sa, Nuno" <Nuno.Sa@analog.com> wrote:
+On Wed, 15 Jun 2022 22:09:30 +0100
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> Hi Andy,
+> On Wed, 15 Jun 2022 12:15:48 +0000
+> "Sa, Nuno" <Nuno.Sa@analog.com> wrote:
 >=20
-> > -----Original Message-----
-> > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> > Sent: Wednesday, June 15, 2022 2:08 PM
-> > To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>;
-> > Alexandru Ardelean <aardelean@deviqon.com>; linux-
-> > iio@vger.kernel.org; linux-kernel@vger.kernel.org
-> > Cc: Jonathan Cameron <jic23@kernel.org>; Lars-Peter Clausen
-> > <lars@metafoo.de>
-> > Subject: [PATCH v1 1/1] iio: adc: intel_mrfld_adc: explicitly add proper
-> > header files
+> > Hi Andy,
+> >  =20
+> > > -----Original Message-----
+> > > From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+> > > Sent: Wednesday, June 15, 2022 2:08 PM
+> > > To: Andy Shevchenko <andriy.shevchenko@linux.intel.com>;
+> > > Alexandru Ardelean <aardelean@deviqon.com>; linux-
+> > > iio@vger.kernel.org; linux-kernel@vger.kernel.org
+> > > Cc: Jonathan Cameron <jic23@kernel.org>; Lars-Peter Clausen
+> > > <lars@metafoo.de>
+> > > Subject: [PATCH v1 1/1] iio: adc: intel_mrfld_adc: explicitly add pro=
+per
+> > > header files
+> > >=20
+> > > [External]
+> > >=20
+> > > Do not trust the fact that iio.h includes of.h which in turn includes
+> > > all the headers we are relying on.
+> > >=20
+> > > The ultimate goal is to actually drop of.h from iio.h.
+> > >=20
+> > > Signed-off-by: Andy Shevchenko
+> > > <andriy.shevchenko@linux.intel.com>
+> > > ---
+> > >=20
+> > > Jonathan, this should be squeezed before we remove of.h in iio.h
+> > > I think Nuno somehow missed this   =20
 > >=20
-> > [External]
+> > Yes, I did (compile) tested this on arm and arm64 as I said in the cove=
+r.
+> > I guess this one won't be enabled on those archs :).
 > >=20
-> > Do not trust the fact that iio.h includes of.h which in turn includes
-> > all the headers we are relying on.
+> > I was planning to send this on v2 (I did noticed the kernel test bot
+> > emails) but yeah, this should actually be included with the other
+> > patches before removing of.h from iio. Thanks!
 > >=20
-> > The ultimate goal is to actually drop of.h from iio.h.
-> >=20
-> > Signed-off-by: Andy Shevchenko
-> > <andriy.shevchenko@linux.intel.com>
-> > ---
-> >=20
-> > Jonathan, this should be squeezed before we remove of.h in iio.h
-> > I think Nuno somehow missed this =20
+> > Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com> =20
 >=20
-> Yes, I did (compile) tested this on arm and arm64 as I said in the cover.
-> I guess this one won't be enabled on those archs :).
->=20
-> I was planning to send this on v2 (I did noticed the kernel test bot
-> emails) but yeah, this should actually be included with the other
-> patches before removing of.h from iio. Thanks!
->=20
-> Reviewed-by: Nuno S=C3=A1 <nuno.sa@analog.com>
-
-Applied.  Oddly didn't show up in my normal x86 build test.
-
-As suggested, slotted in before the of.h removal patch.
+> Applied.  Oddly didn't show up in my normal x86 build test.
+Figured out the chain of necessary dependencies so I'll catch anything
+effecting this in my smoke test build going forwards.
 
 Thanks,
 
 Jonathan
 
+>=20
+> As suggested, slotted in before the of.h removal patch.
+>=20
+> Thanks,
+>=20
+> Jonathan
+>=20
+> >  =20
 >=20
 
