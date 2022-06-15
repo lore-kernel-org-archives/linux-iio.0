@@ -2,111 +2,97 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AA779C43334
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jun 2022 21:06:45 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 93D2DC43334
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jun 2022 21:14:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233389AbiFOVGn (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Jun 2022 17:06:43 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60288 "EHLO
+        id S1349202AbiFOVOf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Jun 2022 17:14:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39890 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S245567AbiFOVGk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jun 2022 17:06:40 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E02DD3EAB2
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jun 2022 14:06:38 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id A2ECEB8216F
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jun 2022 21:06:37 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9B448C3411A;
-        Wed, 15 Jun 2022 21:06:34 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655327196;
-        bh=xO0lWfM9eURwMp5gwbcmZbcdP/e7OM6+H+vDzM7kjqw=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=ATzFiJ4RIQQcNAfO5rS5oITeGAZxIom1R0dBHWKWHHYra1zzersIwSv2F2duuee6f
-         WoGBNJFOCBYeP/+RHS1QEHeKCv79BzHXT9E9oTGJV6iXT5xjITzdlgfUT2GDdBpJih
-         txJXJsrMPalPPGgGSNw0CiPQOx19aKWP9tu9lqNOAr0/T8HpdxFKrUE7eDBAFJSVXS
-         fzFFWCkSoODBdbUW2Xr6cQ+Gwz+clhNI+TCSWMndLi7HyeQyaprue/jXSFSE+KY5cl
-         w6kF2bxc04pnEK84sNzl4jX9FCEb6BQYbFa1vsGIxaOunuAXsg1vw7fOqPNS5widTu
-         wqetNv+QP/o7A==
-Date:   Wed, 15 Jun 2022 22:15:52 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Hans de Goede <hdegoede@redhat.com>
-Cc:     haibo.chen@nxp.com, lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: Re: [PATCH v2] iio: accel: mma8452: ignore the return value of
- reset operation
-Message-ID: <20220615221552.0d8afb3b@jic23-huawei>
-In-Reply-To: <8690f687-8f9d-b03f-226f-3a289e718ed5@redhat.com>
-References: <1655292718-14287-1-git-send-email-haibo.chen@nxp.com>
-        <8690f687-8f9d-b03f-226f-3a289e718ed5@redhat.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S1346733AbiFOVOX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jun 2022 17:14:23 -0400
+Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15BA955346;
+        Wed, 15 Jun 2022 14:14:23 -0700 (PDT)
+Received: by mail-ej1-x633.google.com with SMTP id g25so25635285ejh.9;
+        Wed, 15 Jun 2022 14:14:23 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=lFiJWZyjgj7yLljlIGD+CfiM/7XdC+qPawIPNYD0GPw=;
+        b=FhT4sJzoPFZC/gYPr+fV/OwAoFJCcU91LCb5J+fhV9zZlOOv7biXpxCIe1PUzQTlmO
+         4UNfwQPimmXpFtSunprG/mBRju8bs8vkgE2FFK3VHnDsdM+VDYLeytThIY8FQLJcSkNt
+         ae8FjaQMO7u5YgYDtS4/8kVri7Wgi+MiJaESPRQh6n3I3+5WS9rqDNQuwfdgM97Vt6fb
+         0yGOJirmsbrvABuvSOStTjzaBc+5nKyms06ziSUTBpEI6tVHyKk4Tz//NY8gfBcWMSqq
+         FOHUDzsrW2uBCmF1qlHeYD1sOdDbJWo/McN8jX/qZxn9aCI019kVVUhXoUSoXeHu44Na
+         zk5w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=lFiJWZyjgj7yLljlIGD+CfiM/7XdC+qPawIPNYD0GPw=;
+        b=wQrV42kJU8rrpWGWQaV5scXw4rBG6Cc+vez/7bocObAfsN2aoYkT/qhfgcUKyXdezE
+         w8qg31jQx4mpQ5Tta7DNMO9Wuz0vowkLnBIWVcj34pcJCioFBHTji9VsWwxlLuwbCgWD
+         wzbVWWiapK0miV/7p+ON0WBwEozlDBJOG/e7He2A+72xnUni+AHEpKcTHx63v+cY6Xzg
+         vu/bv6kB+aJC88xwxzuqy6ns/HENYAH0OGH9eHRMQ9Ew5c5HNQCaJf5JRpUmn7jOHX9H
+         Ku8DGKSGeUiEmU8lrjEnkrPy509cpn9OrFiuwdFW0mu8HcyLhE+Kl9EoX6QbLJh1GUSS
+         cZyQ==
+X-Gm-Message-State: AJIora/6kGT9Khe2ATmBzN+QG0wDtGjU5PN9V09kPVX73KmRNCJ7N0XH
+        nrddyNRXQ5BSbhPGBKv8M/ZzqgRGxqS+az37aeY=
+X-Google-Smtp-Source: AGRyM1u9REE1osB08QHKj6YyZqbLsn8iF32qND5beRcZGcbuwGm/p10Bur0itHl5couuX0nOvASp1vpkL8WS+iqthX0=
+X-Received: by 2002:a17:907:9721:b0:70c:65e7:2aa5 with SMTP id
+ jg33-20020a170907972100b0070c65e72aa5mr1639766ejc.132.1655327661439; Wed, 15
+ Jun 2022 14:14:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220613120534.36991-13-andrea.merello@iit.it> <202206160409.GTDk9b3k-lkp@intel.com>
+In-Reply-To: <202206160409.GTDk9b3k-lkp@intel.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Wed, 15 Jun 2022 23:13:42 +0200
+Message-ID: <CAHp75Vd7zF=rC7VYAnqc7cz52HfcLdVWwE6kuifwv3L8JiFBxg@mail.gmail.com>
+Subject: Re: [v6 12/14] iio: imu: add BNO055 serdev driver
+To:     kernel test robot <lkp@intel.com>
+Cc:     Andrea Merello <andrea.merello@iit.it>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>, kbuild-all@lists.01.org,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Matt Ranostay <matt.ranostay@konsulko.com>,
+        Alexandru Ardelean <ardeleanalex@gmail.com>,
+        jmondi <jacopo@jmondi.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Wed, 15 Jun 2022 18:10:47 +0200
-Hans de Goede <hdegoede@redhat.com> wrote:
+On Wed, Jun 15, 2022 at 10:57 PM kernel test robot <lkp@intel.com> wrote:
 
-> Hi,
-> 
-> On 6/15/22 13:31, haibo.chen@nxp.com wrote:
-> > From: Haibo Chen <haibo.chen@nxp.com>
-> > 
-> > On fxls8471, after set the reset bit, the device will reset immediately,
-> > will not give ACK. So ignore the return value of this reset operation,
-> > let the following code logic to check whether the reset operation works.
-> > 
-> > Signed-off-by: Haibo Chen <haibo.chen@nxp.com>  
-> 
-> Thanks, patch looks good to me:
-> 
-> Reviewed-by: Hans de Goede <hdegoede@redhat.com>
-Looks very much like a fix to me, so fixes tag please.
-As it's otherwise good, just sending the tag in reply to this
-message will be fine.
+...
 
-Thanks,
+> >> drivers/iio/imu/bno055/./bno055_ser_trace.h:91:23: warning: format '%d' expects argument of type 'int', but argument 3 has type 'size_t' {aka 'long unsigned int'} [-Wformat=]
 
-Jonathan
+>     80              TP_PROTO(size_t len, const unsigned char *buf),
+>     81              TP_ARGS(len, buf),
+>     82              TP_STRUCT__entry(
+>     83                      __field(size_t, len)
+>     84                      __dynamic_array(unsigned char, buf, len)
+>     85              ),
+>     86              TP_fast_assign(
+>     87                      __entry->len = len;
+>     88                      memcpy(__get_dynamic_array(buf),
+>     89                             buf, __entry->len);
+>     90              ),
+>   > 91              TP_printk("len: %d, data: = %*ph",
 
-> 
-> Regards,
-> 
-> Hans
-> 
-> 
-> 
-> > ---
-> >  drivers/iio/accel/mma8452.c | 10 +++++++---
-> >  1 file changed, 7 insertions(+), 3 deletions(-)
-> > 
-> > diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-> > index e0f0c0abed28..c7d9ca96dbaa 100644
-> > --- a/drivers/iio/accel/mma8452.c
-> > +++ b/drivers/iio/accel/mma8452.c
-> > @@ -1511,10 +1511,14 @@ static int mma8452_reset(struct i2c_client *client)
-> >  	int i;
-> >  	int ret;
-> >  
-> > -	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
-> > +	/*
-> > +	 * Find on fxls8471, after config reset bit, it reset immediately,
-> > +	 * and will not give ACK, so here do not check the return value.
-> > +	 * The following code will read the reset register, and check whether
-> > +	 * this reset works.
-> > +	 */
-> > +	i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG2,
-> >  					MMA8452_CTRL_REG2_RST);
-> > -	if (ret < 0)
-> > -		return ret;
-> >  
-> >  	for (i = 0; i < 10; i++) {
-> >  		usleep_range(100, 200);  
-> 
+Obviously it must be %zu
 
+>     92                        __entry->len, __entry->len, __get_dynamic_array(buf)
+>     93              )
+
+
+-- 
+With Best Regards,
+Andy Shevchenko
