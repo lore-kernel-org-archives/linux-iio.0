@@ -2,73 +2,93 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B91AAC433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 15 Jun 2022 11:45:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 016E2C43334
+	for <linux-iio@archiver.kernel.org>; Wed, 15 Jun 2022 11:47:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236920AbiFOLp6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 15 Jun 2022 07:45:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45874 "EHLO
+        id S239272AbiFOLrv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 15 Jun 2022 07:47:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234129AbiFOLp5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jun 2022 07:45:57 -0400
-Received: from inva021.nxp.com (inva021.nxp.com [92.121.34.21])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4062227CF6
-        for <linux-iio@vger.kernel.org>; Wed, 15 Jun 2022 04:45:57 -0700 (PDT)
-Received: from inva021.nxp.com (localhost [127.0.0.1])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id D9B4D200D42;
-        Wed, 15 Jun 2022 13:45:55 +0200 (CEST)
-Received: from aprdc01srsp001v.ap-rdc01.nxp.com (aprdc01srsp001v.ap-rdc01.nxp.com [165.114.16.16])
-        by inva021.eu-rdc02.nxp.com (Postfix) with ESMTP id A39D7200D40;
-        Wed, 15 Jun 2022 13:45:55 +0200 (CEST)
-Received: from localhost.localdomain (shlinux2.ap.freescale.net [10.192.224.44])
-        by aprdc01srsp001v.ap-rdc01.nxp.com (Postfix) with ESMTP id 7A555180219B;
-        Wed, 15 Jun 2022 19:45:54 +0800 (+08)
-From:   haibo.chen@nxp.com
-To:     jic23@kernel.org, lars@metafoo.de
-Cc:     haibo.chen@nxp.com, hdegoede@redhat.com, linux-iio@vger.kernel.org,
-        linux-imx@nxp.com
-Subject: [PATCH v2] iio: accel: mma8452: ignore the return value of reset operation
-Date:   Wed, 15 Jun 2022 19:31:58 +0800
-Message-Id: <1655292718-14287-1-git-send-email-haibo.chen@nxp.com>
-X-Mailer: git-send-email 2.7.4
-X-Virus-Scanned: ClamAV using ClamSMTP
+        with ESMTP id S234129AbiFOLru (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Jun 2022 07:47:50 -0400
+Received: from mga07.intel.com (mga07.intel.com [134.134.136.100])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A35A12610F;
+        Wed, 15 Jun 2022 04:47:48 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1655293668; x=1686829668;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=ROUuMUroMsslJq/9ZSReRN0oM6mJ1TOrX9bCNwvFXL0=;
+  b=NGl873l7fkf1rKR1gAWEI5pd5uONg39M11Py1NDY0TMYxu7IjL3mnsCS
+   /0p5uPGyVe19NZwhRWdD8h3F9qpCdaH57NYcX9pSwdfatRytfCOoWHEOt
+   Jx2CWkuw8tjy/XrZi+tBVIDRoOBhHdwl8KWv5FH8dpPyiGrPb/3bcxrVh
+   YKhAsqeN/v9l6L4zglNeUyvWmFeHLugqg9Qo2Om4XIy1Uz9e4l8iebOMY
+   RLAuYgdyzfCm696MmGZIA77HFImR11nIEzjtVrdRqeEz6HFqVQTljLZ2Q
+   hF5JhNLrCczyKXRGE0p/6ip611H8A9BN4jxuF9Z4aGboh7dttILflZgBS
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10378"; a="342894651"
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="342894651"
+Received: from orsmga002.jf.intel.com ([10.7.209.21])
+  by orsmga105.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 15 Jun 2022 04:47:48 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.91,302,1647327600"; 
+   d="scan'208";a="571788930"
+Received: from black.fi.intel.com ([10.237.72.28])
+  by orsmga002.jf.intel.com with ESMTP; 15 Jun 2022 04:47:46 -0700
+Received: by black.fi.intel.com (Postfix, from userid 1003)
+        id 4B8FA103; Wed, 15 Jun 2022 14:47:50 +0300 (EEST)
+From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2 2/2] iio: proximity: sx_common: Allow IIO core to take care of firmware node
+Date:   Wed, 15 Jun 2022 14:47:46 +0300
+Message-Id: <20220615114746.2767-2-andriy.shevchenko@linux.intel.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220615114746.2767-1-andriy.shevchenko@linux.intel.com>
+References: <20220615114746.2767-1-andriy.shevchenko@linux.intel.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Haibo Chen <haibo.chen@nxp.com>
+IIO core correctly will take care of firmware node if it's not set in
+the driver. Drop ACPI and OF specifics from the driver and allow IIO
+core to handle this.
 
-On fxls8471, after set the reset bit, the device will reset immediately,
-will not give ACK. So ignore the return value of this reset operation,
-let the following code logic to check whether the reset operation works.
-
-Signed-off-by: Haibo Chen <haibo.chen@nxp.com>
+Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/accel/mma8452.c | 10 +++++++---
- 1 file changed, 7 insertions(+), 3 deletions(-)
+v2: no changes
+ drivers/iio/proximity/sx_common.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index e0f0c0abed28..c7d9ca96dbaa 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1511,10 +1511,14 @@ static int mma8452_reset(struct i2c_client *client)
- 	int i;
- 	int ret;
+diff --git a/drivers/iio/proximity/sx_common.c b/drivers/iio/proximity/sx_common.c
+index 9f2e47385198..d70a6b4f0bf8 100644
+--- a/drivers/iio/proximity/sx_common.c
++++ b/drivers/iio/proximity/sx_common.c
+@@ -5,7 +5,6 @@
+  * Common part of most Semtech SAR sensor.
+  */
  
--	ret = i2c_smbus_write_byte_data(client,	MMA8452_CTRL_REG2,
-+	/*
-+	 * Find on fxls8471, after config reset bit, it reset immediately,
-+	 * and will not give ACK, so here do not check the return value.
-+	 * The following code will read the reset register, and check whether
-+	 * this reset works.
-+	 */
-+	i2c_smbus_write_byte_data(client, MMA8452_CTRL_REG2,
- 					MMA8452_CTRL_REG2_RST);
--	if (ret < 0)
--		return ret;
+-#include <linux/acpi.h>
+ #include <linux/bitops.h>
+ #include <linux/byteorder/generic.h>
+ #include <linux/delay.h>
+@@ -519,8 +518,6 @@ int sx_common_probe(struct i2c_client *client,
+ 	if (ret)
+ 		return dev_err_probe(dev, ret, "error reading WHOAMI\n");
  
- 	for (i = 0; i < 10; i++) {
- 		usleep_range(100, 200);
+-	ACPI_COMPANION_SET(&indio_dev->dev, ACPI_COMPANION(dev));
+-	indio_dev->dev.of_node = client->dev.of_node;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	indio_dev->channels =  data->chip_info->iio_channels;
 -- 
-2.25.1
+2.35.1
 
