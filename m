@@ -2,183 +2,767 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1D395CCA473
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jun 2022 15:46:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5F0CBC43334
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jun 2022 15:49:43 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234726AbiFRPqY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Jun 2022 11:46:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50866 "EHLO
+        id S231744AbiFRPtm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Jun 2022 11:49:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52964 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230133AbiFRPqX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Jun 2022 11:46:23 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6BE49DFD7;
-        Sat, 18 Jun 2022 08:46:22 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1C52BB80122;
-        Sat, 18 Jun 2022 15:46:21 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 88AAAC3411A;
-        Sat, 18 Jun 2022 15:46:14 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655567179;
-        bh=ZGW00kE2X5QeC42ZPdciUlBPY1kZEm9YExB8rVytviM=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=CNxKtQsOJ7okFR8VWDvxsg1POAjID1uJ7gnyCcdIqRIJP+Q3wOxlRxPzYa0gFuBhG
-         auKr9veH/mlCT/MDGpiE8L9q3cIc8BHL7HgothiPlZb6n4EnAf4lVeg28wVwv40TZI
-         WT21g+aMay0vq6jFiARX4FcoJ4/q2X4O1b7VdcqeGldt7znXGokQszfhdXPUgqOmbz
-         ATAzpnTuhd1JEkDM8VQzLph/0HIWj1Bq7JfBc55qj6jxm47pj/EUKtN/IEZZaE3bkR
-         VG1YdW75ntG/4SXRc7jztJpMGhwPlGEnJ+ahGVDIJ12mxwUbP4reQz14LNHIqpdQSV
-         fEDg98ZqOBDhQ==
-Date:   Sat, 18 Jun 2022 16:55:33 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     lars@metafoo.de, matthias.bgg@gmail.com, lee.jones@linaro.org,
-        daniel.thompson@linaro.org, jingoohan1@gmail.com, pavel@ucw.cz,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        dri-devel@lists.freedesktop.org, linux-leds@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-usb@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com, ChiYuan Huang <cy_huang@richtek.com>
-Subject: Re: [PATCH v2 08/15] mfd: mt6370: Add Mediatek MT6370 support
-Message-ID: <20220618165533.5669e288@jic23-huawei>
-In-Reply-To: <20220613111146.25221-9-peterwu.pub@gmail.com>
-References: <20220613111146.25221-1-peterwu.pub@gmail.com>
-        <20220613111146.25221-9-peterwu.pub@gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S230082AbiFRPtl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Jun 2022 11:49:41 -0400
+Received: from mail-vs1-xe2e.google.com (mail-vs1-xe2e.google.com [IPv6:2607:f8b0:4864:20::e2e])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 15D4713D07;
+        Sat, 18 Jun 2022 08:49:40 -0700 (PDT)
+Received: by mail-vs1-xe2e.google.com with SMTP id i186so6687669vsc.9;
+        Sat, 18 Jun 2022 08:49:40 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc:content-transfer-encoding;
+        bh=NSdnzEcptp/21mntYpsOEvf1Dfw1K7c5C0sZst0ATS8=;
+        b=H6dTUzdGfM0SffVcXTrwTJ1iezvnqUKje8O++elpex8gPBcwYBRR6WYlQHn2hVA6YI
+         9nH9coqWNCdyrlTACZ40qtrAJhs78/iqRLhJkEK67zvgm8qohICHgJJvYNL+G5BtpXBk
+         ttXn/ooAyfGjuOy/tFiVrIqeZ418/cAmp1gItUfIJdxWd3It6pH5ob3nipvuM/0jPc49
+         IcWiM+nEn950raWD6KqKNyJxFPlNkf2NkgERjlXYe8pFSNK5Y6hGexv8ml7uCno5ZEUJ
+         y+kzmCeg0xpfMHC/MSojCWoTcfMMrE6SvyMsYfawrnhFDTVomUldDm7hokEZ7C6OE0Kp
+         Ipkw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc:content-transfer-encoding;
+        bh=NSdnzEcptp/21mntYpsOEvf1Dfw1K7c5C0sZst0ATS8=;
+        b=Tl6Gvy/PKJHzeDLk3Kx5okZER6TjGEWXfRi5JGPmOs/l1OqsHkPTJLe7+yFqSDzp+V
+         9ug+GvcCNWoykYfDJ8C6+9G/D/hpGyRZs06lCRlpHILn2+VaMebr7XC8KQ5GZ6zvaWEa
+         Rskk9yAlGOQn/ZdquK+o2dUx6V4BxVUvZGhydqsLCc3GNJ3TOtz0JndCbEDglJLqePfu
+         R3rxF8KUfId72U+wIw3yRtP2g2VNnoTGVdQEZaI5IJM0CxnRoAwLaAyQU6HSoXMH88MO
+         7XufLQJ4mGX6/WzC2QxZdgNuA9f7uI3CBmizXGEXxwNkC5G4FHSaj7y13qNQqi0G2aKz
+         NskQ==
+X-Gm-Message-State: AJIora/5OH01f0mN4oh4iHE63tKHUjrb5hQxHN10HkFP3e4OJlxZOflC
+        yuceELJ6wFNCuGjSQQJ1BMcfXp2rAyfGbeYsDAk=
+X-Google-Smtp-Source: AGRyM1t+E90oe4u2PY4dTenRuM2jbcubexzuu7US93wwQfniiULYt+IukViwMhBDEYFkx6ZHDaB+mcJ1JdGPBWAyFyY=
+X-Received: by 2002:a67:d182:0:b0:337:8e4c:76c7 with SMTP id
+ w2-20020a67d182000000b003378e4c76c7mr6157260vsi.75.1655567378898; Sat, 18 Jun
+ 2022 08:49:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <1655458375-30478-1-git-send-email-u0084500@gmail.com>
+ <1655458375-30478-3-git-send-email-u0084500@gmail.com> <20220617181027.000074a8@Huawei.com>
+In-Reply-To: <20220617181027.000074a8@Huawei.com>
+From:   ChiYuan Huang <u0084500@gmail.com>
+Date:   Sat, 18 Jun 2022 23:49:27 +0800
+Message-ID: <CADiBU3_LSwDcCrVFTHb8sLBEQWmyUpz94k=yQ=QQ+mC73sGx_w@mail.gmail.com>
+Subject: Re: [PATCH 2/2] iio: adc: Add rtq6056 support
+To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        cy_huang <cy_huang@richtek.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        "open list:OPEN FIRMWARE AND FLATTENED DEVICE TREE BINDINGS" 
+        <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 13 Jun 2022 19:11:39 +0800
-ChiaEn Wu <peterwu.pub@gmail.com> wrote:
+Jonathan Cameron <Jonathan.Cameron@huawei.com> =E6=96=BC 2022=E5=B9=B46=E6=
+=9C=8818=E6=97=A5 =E9=80=B1=E5=85=AD =E5=87=8C=E6=99=A81:10=E5=AF=AB=E9=81=
+=93=EF=BC=9A
+>
+> On Fri, 17 Jun 2022 17:32:55 +0800
+> cy_huang <u0084500@gmail.com> wrote:
+>
+> > From: ChiYuan Huang <cy_huang@richtek.com>
+> >
+> > Add Richtek RTQ6056 supporting.
+> >
+> > It can be used for the system to monitor load current and power with 16=
+bit
+> > resolution.
+> >
+> > Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
+>
+> Hi ChiYuan,
+>
+> Comments inline.
+>
+> It would be nice to consider how to take advantage of the fact we know wh=
+ich
+> channels are of interest in buffered mode, and change the operating mode =
+to
+> suite.
+>
+I implement the  buffered mode is for the debugging or continuous
+tracking purpose.
 
-> From: ChiYuan Huang <cy_huang@richtek.com>
-> 
-> Add Mediatek MT6370 MFD support.
-> 
-> Signed-off-by: ChiYuan Huang <cy_huang@richtek.com>
-Hi.
+BUS channel is for input power source voltage
+Shunt channel is for the cross voltage difference for Rshunt.
+Current channel is calculated by Vshunt/Rshunt and the value converted by H=
+W.
+Power channel is calculated by BUS voltage multiple Current channel,
+and also the value converted by HW.
 
-A few trivial things that probably overlap with other reviewer
-comments.
+For the opmode question, this IC already designed for low quiescent.
+If IC's in continuous mode, the typical quiescent current is still around 5=
+50uA.
+'Shutdown' mode only use typical 3.5uA.
 
+Like as you said, I may consider to use pm_runtime plus autosuspend to
+minimize the wait time for the first new sample ready.
 
-> +static int mt6370_check_vendor_info(struct mt6370_info *info)
-> +{
-> +	unsigned int devinfo;
-> +	int ret;
-> +
-> +	ret = regmap_read(info->regmap, MT6370_REG_DEV_INFO, &devinfo);
-> +	if (ret)
-> +		return ret;
-> +
-> +	switch (FIELD_GET(MT6370_VENID_MASK, devinfo)) {
-> +	case 0x8: /* RT5081 */
-> +	case 0xA: /* RT5081A */
-> +	case 0xE: /* MT6370 */
-> +	case 0xF: /* MT6371 */
-> +	case 0x9: /* MT6372P */
-> +	case 0xB: /* MT6372CP */
-> +		break;
-> +	default:
-> +		dev_err(info->dev, "Not invalid value 0x%02x\n", devinfo);
-
-Double negative... You mean "Invalid value" 
-though you probably want to say something more specific such as
-		"Unknown Vendor ID 0x%02x\n")
-
-> +		return -ENODEV;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int mt6370_regmap_read(void *context, const void *reg_buf,
-> +			      size_t reg_size, void *val_buf, size_t val_size)
-> +{
-> +	struct mt6370_info *info = context;
-> +	u8 bank_idx = *(u8 *)reg_buf, bank_addr = *(u8 *)(reg_buf + 1);
-> +	int ret;
-> +
-> +	ret = i2c_smbus_read_i2c_block_data(info->i2c[bank_idx], bank_addr,
-> +					    val_size, val_buf);
-> +	if (ret != val_size)
-> +		return ret;
-If it's positive , that is probably not what regmap expects.
-See handling in here
-https://elixir.bootlin.com/linux/latest/source/drivers/base/regmap/regmap-i2c.c#L222
-
-> +
-> +	return 0;
-> +}
-
-
-> +
-> +static int mt6370_probe(struct i2c_client *i2c)
-> +{
-> +	struct mt6370_info *info;
-> +	struct i2c_client *usbc_i2c;
-> +	int ret;
-> +
-> +	info = devm_kzalloc(&i2c->dev, sizeof(*info), GFP_KERNEL);
-> +	if (!info)
-> +		return -ENOMEM;
-> +
-> +	info->dev = &i2c->dev;
-> +
-> +	usbc_i2c = devm_i2c_new_dummy_device(&i2c->dev, i2c->adapter,
-> +					     MT6370_USBC_I2CADDR);
-> +	if (IS_ERR(usbc_i2c)) {
-> +		ret = PTR_ERR(usbc_i2c);
-> +		dev_err(&i2c->dev, "Failed to register usbc i2c client %d\n", ret);
-Might as well use
-		return dev_err_probe(&i2c->dev, PTR_ERR(usb_i2c),
-				     "Failed to register USBC I2C client\n");
-
-Whilst the defer handling isn't relevant, it is safe to use throughout probe
-and tidier in this case at least.
-
-> +		return ret;
-> +	}
-> +
-> +	/* Assign I2C client for PMU and TypeC */
-> +	info->i2c[MT6370_PMU_I2C] = i2c;
-> +	info->i2c[MT6370_USBC_I2C] = usbc_i2c;
-> +
-> +	info->regmap = devm_regmap_init(&i2c->dev, &mt6370_regmap_bus, info,
-> +					&mt6370_regmap_config);
-> +	if (IS_ERR(info->regmap)) {
-> +		ret = PTR_ERR(info->regmap);
-> +		dev_err(&i2c->dev, "Failed to register regmap (%d)\n", ret);
-
-as above dev_err_probe() will tidy this and following cases up for you.
-
-> +		return ret;
-> +	}
-> +
-> +	ret = mt6370_check_vendor_info(info);
-> +	if (ret) {
-> +		dev_err(&i2c->dev, "Failed to check vendor info (%d)\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	ret = devm_regmap_add_irq_chip(&i2c->dev, info->regmap, i2c->irq,
-> +				       IRQF_ONESHOT, -1, &mt6370_irq_chip,
-> +				       &info->irq_data);
-> +	if (ret) {
-> +		dev_err(&i2c->dev, "Failed to add irq chip (%d)\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	return devm_mfd_add_devices(&i2c->dev, PLATFORM_DEVID_AUTO,
-> +				    mt6370_devices, ARRAY_SIZE(mt6370_devices),
-> +				    NULL, 0,
-> +				    regmap_irq_get_domain(info->irq_data));
-> +}
+> > ---
+> >  .../ABI/testing/sysfs-bus-iio-adc-rtq6056          |  58 +++
+> >  drivers/iio/adc/Kconfig                            |  15 +
+> >  drivers/iio/adc/Makefile                           |   1 +
+> >  drivers/iio/adc/rtq6056-adc.c                      | 548 +++++++++++++=
+++++++++
+> >  4 files changed, 622 insertions(+)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-rtq6056
+> >  create mode 100644 drivers/iio/adc/rtq6056-adc.c
+> >
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-rtq6056 b/Docu=
+mentation/ABI/testing/sysfs-bus-iio-adc-rtq6056
+> > new file mode 100644
+> > index 00000000..0516429
+> > --- /dev/null
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-rtq6056
+> > @@ -0,0 +1,58 @@
+> > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage0_raw
+>
+> Documentation can't be duplicated in mulitple files so these standard
+> attributes should rely only on the main docs.  If we duplicate it breaks
+> building the html docs unfortunately.
+>
+Does it mean there's no need to explain it here and covert this
+voltage to millivolt?
+>
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             Shunt IN +/- sensing range from -82mV to +81.9175mV
+> > +             Calculating with scale (2.5 uV)
+> > +
+> > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage1_raw
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             BUS voltage sensing range from 0V to 36V.
+> > +             Calculating with scale (1.25 mV)
+> > +
+> > +What:                /sys/bus/iio/devices/iio:deviceX/in_power2_raw
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             Power loading that equals to bus voltage multiple loading
+> > +             current.
+> > +             Calculating with scale (25 mWatt)
+> > +
+> > +What:                /sys/bus/iio/devices/iio:deviceX/in_current3_raw
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             Consuming current from bus voltage.
+> > +             Directly report loading current in mA
+> > +
+> > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage0_inte=
+gration_time
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             Shunt voltage conversion time in uS
+> > +
+> > +What:                /sys/bus/iio/devices/iio:deviceX/in_voltage1_inte=
+gration_time
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             BUS voltage conversion time in uS
+>
+> integration time is not normally about conversion time. It's normally for=
+ things
+> like light sensors where they are charging up a capacitor for a fixed tim=
+e period.
+>
+> For ADC channels we tend to use _sampling_frequency (so 1/period). An exa=
+mple of
+> this being per channel is ad7124.
+>
+> That does mean we tend not to provide the overall 'sampling_frequency' on=
+ these
+> devices, but rather let an interested userspace program figure it out - o=
+ften
+> it depends on which channels are enabled.
+>
+Ack in next
+> > +
+> > +What:                /sys/bus/iio/devices/iio:deviceX/in_oversampling_=
+ratio
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             The number of average sample
+> > +
+> > +What:                /sys/bus/iio/devices/iio:deviceX/in_sampling_freq=
+uency
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             Sampling frequency in HZ for power and current report
+> > +
+> > +What:                /sys/bus/iio/devices/iio:deviceX/integration_time=
+_available
+> > +KernelVersion:       5.18.2
+> > +Contact:     cy_huang@richtek.com
+> > +Description:
+> > +             Sample conversion time available for BUS and Shunt, unit =
+in second
+> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> > index 48ace74..0b2d17c 100644
+> > --- a/drivers/iio/adc/Kconfig
+> > +++ b/drivers/iio/adc/Kconfig
+> > @@ -908,6 +908,21 @@ config ROCKCHIP_SARADC
+> >         To compile this driver as a module, choose M here: the
+> >         module will be called rockchip_saradc.
+> >
+> > +config RICHTEK_RTQ6056_ADC
+> > +     tristate "Richtek RTQ6056 Current and Power Monitor ADC"
+> > +     depends on I2C
+> > +     select REGMAP_I2C
+> > +     select IIO_BUFFER
+> > +     select IIO_TRIGGERED_BUFFER
+> > +     help
+> > +       Say yes here to enable RQT6056 ADC support.
+> > +       RTQ6056 is a high accuracy current-sense monitor with I2C and S=
+MBus
+> > +       compatible interface, and the device provides full information =
+for
+> > +       system by reading out the load current and power.
+> > +
+> > +       This driver can also be built as a module. If so, the module wi=
+ll be
+> > +       called rtq6056-adc.
+> > +
+> >  config RZG2L_ADC
+> >       tristate "Renesas RZ/G2L ADC driver"
+> >       depends on ARCH_RZG2L || COMPILE_TEST
+> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> > index 39d806f..e8c6e6e 100644
+> > --- a/drivers/iio/adc/Makefile
+> > +++ b/drivers/iio/adc/Makefile
+> > @@ -84,6 +84,7 @@ obj-$(CONFIG_QCOM_PM8XXX_XOADC) +=3D qcom-pm8xxx-xoad=
+c.o
+> >  obj-$(CONFIG_RCAR_GYRO_ADC) +=3D rcar-gyroadc.o
+> >  obj-$(CONFIG_RN5T618_ADC) +=3D rn5t618-adc.o
+> >  obj-$(CONFIG_ROCKCHIP_SARADC) +=3D rockchip_saradc.o
+> > +obj-$(CONFIG_RICHTEK_RTQ6056_ADC) +=3D rtq6056-adc.o
+>
+> Is the device anything other than ADC?  If not, drop the -adc.
+> The other entries you see here are ADCs that form part of a much
+> larger SoC.
+>
+No, like you said, only ADC. To rename it is OK.
+> >  obj-$(CONFIG_RZG2L_ADC) +=3D rzg2l_adc.o
+> >  obj-$(CONFIG_SC27XX_ADC) +=3D sc27xx_adc.o
+> >  obj-$(CONFIG_SPEAR_ADC) +=3D spear_adc.o
+> > diff --git a/drivers/iio/adc/rtq6056-adc.c b/drivers/iio/adc/rtq6056-ad=
+c.c
+> > new file mode 100644
+> > index 00000000..8374fce
+> > --- /dev/null
+> > +++ b/drivers/iio/adc/rtq6056-adc.c
+> > @@ -0,0 +1,548 @@
+> > +// SPDX-License-Identifier: GPL-2.0+
+> > +
+> > +#include <linux/delay.h>
+> > +#include <linux/i2c.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+>
+> property.h and mod_devicetable.h instead of of.h
+> once you have moved to generic firmware properties.
+>
+Ack  in next.
+> > +#include <linux/regmap.h>
+> > +#include <linux/util_macros.h>
+> > +
+> > +#include <linux/iio/buffer.h>
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/iio/sysfs.h>
+> > +#include <linux/iio/trigger_consumer.h>
+> > +#include <linux/iio/triggered_buffer.h>
+> > +
+> > +#define RTQ6056_REG_CONFIG   0x00
+> > +#define RTQ6056_REG_SHUNTVOLT        0x01
+> > +#define RTQ6056_REG_CALIBRATION      0x05
+> > +#define RTQ6056_REG_MASKENABLE       0x06
+> > +#define RTQ6056_REG_ALERTLIMIT       0x07
+> > +#define RTQ6056_REG_MANUFACTID       0xFE
+> > +#define RTQ6056_REG_DIEID    0xFF
+> > +
+> > +#define RTQ6056_VENDOR_ID    0x1214
+> > +#define RTQ6056_DEFAULT_CONFIG       0x4127
+>
+> This is not defined in terms of the field provided below
+> so it's not obvious what the initial state is.
+>
+To leave a comment about the default state?
+Or use the macro to define the all field?
+> > +#define RTQ6056_DEFAULT_CONVT        1037
+> > +#define RTQ6056_DEFAULT_AVG  1
+> This and the next are real world values. Having them as defines
+> makes the code less readable.
+>
+Will remove it. Thx.
+> > +#define RTQ6056_DEFAULT_RSHUNT       2000
+> > +
+> > +enum {
+> > +     RTQ6056_CH_VSHUNT =3D 0,
+> > +     RTQ6056_CH_VBUS,
+> > +     RTQ6056_CH_POWER,
+> > +     RTQ6056_CH_CURRENT,
+> > +     RTQ6056_MAX_CHANNEL
+> > +};
+> > +
+> > +enum {
+> > +     F_OPMODE =3D 0, F_VSHUNTCT, F_VBUSCT, F_AVG, F_RESET,
+> > +     F_MAX_FIELDS
+> > +};
+> > +
+> > +struct rtq6056_priv {
+> > +     struct device *dev;
+> > +     struct regmap *regmap;
+> > +     struct regmap_field *rm_fields[F_MAX_FIELDS];
+> > +     u32 shunt_resistor_uohm;
+> > +     int vshuntct; /* vshunt conversion time in uS */
+> > +     int vbusct; /* vbus conversion time in uS */
+> > +     int avg_sample;
+> > +};
+> > +
+> > +static const struct reg_field rtq6056_reg_fields[F_MAX_FIELDS] =3D {
+> > +     [F_OPMODE] =3D REG_FIELD(RTQ6056_REG_CONFIG, 0, 2),
+> > +     [F_VSHUNTCT] =3D REG_FIELD(RTQ6056_REG_CONFIG, 3, 5),
+> > +     [F_VBUSCT] =3D REG_FIELD(RTQ6056_REG_CONFIG, 6, 8),
+> > +     [F_AVG] =3D REG_FIELD(RTQ6056_REG_CONFIG, 9, 11),
+> > +     [F_RESET] =3D REG_FIELD(RTQ6056_REG_CONFIG, 15, 15)
+> > +};
+> > +
+> > +static const struct iio_chan_spec rtq6056_channels[RTQ6056_MAX_CHANNEL=
+ + 1] =3D {
+> > +     {
+> > +             .type =3D IIO_VOLTAGE,
+> > +             .indexed =3D 1,
+> > +             .channel =3D RTQ6056_CH_VSHUNT,
+> Where we have a bunch of different types of channel we generally
+> count the channel numbers separately.  Where this is only one of a give
+> type, don't bother making it indexed.
+>
+> Where you need an offset to use for accessing an actual register,
+> the .address field is more appropriate.
+>
+Ack in next.
+> > +             .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> > +                                   BIT(IIO_CHAN_INFO_SCALE) |
+> > +                                   BIT(IIO_CHAN_INFO_INT_TIME),
+> > +             .info_mask_shared_by_dir =3D BIT(IIO_CHAN_INFO_SAMP_FREQ)=
+ |
+> > +                                        BIT(IIO_CHAN_INFO_OVERSAMPLING=
+_RATIO),
+>
+> Why _by_dir as opposed to by_all given there are no output channels regis=
+tered?
+>
+Thanks, I think I need to check all channel attributes again.
+>
+> > +             .scan_index =3D 0,
+> > +             .scan_type =3D {
+> > +                     .sign =3D 's',
+> > +                     .realbits =3D 16,
+> > +                     .storagebits =3D 16,
+> > +                     .endianness =3D IIO_CPU,
+> > +             },
+> > +     },
+> > +     {
+> > +             .type =3D IIO_VOLTAGE,
+> > +             .indexed =3D 1,
+> > +             .channel =3D RTQ6056_CH_VBUS,
+> > +             .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> > +                                   BIT(IIO_CHAN_INFO_SCALE) |
+> > +                                   BIT(IIO_CHAN_INFO_INT_TIME),
+> > +             .info_mask_shared_by_dir =3D BIT(IIO_CHAN_INFO_SAMP_FREQ)=
+ |
+> > +                                        BIT(IIO_CHAN_INFO_OVERSAMPLING=
+_RATIO),
+> > +             .scan_index =3D 1,
+> > +             .scan_type =3D {
+> > +                     .sign =3D 'u',
+> > +                     .realbits =3D 16,
+> > +                     .storagebits =3D 16,
+> > +                     .endianness =3D IIO_CPU,
+> > +             },
+> > +     },
+> > +     {
+> > +             .type =3D IIO_POWER,
+> > +             .indexed =3D 1,
+> > +             .channel =3D RTQ6056_CH_POWER,
+> > +             .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
+> > +                                   BIT(IIO_CHAN_INFO_SCALE),
+> > +             .info_mask_shared_by_dir =3D BIT(IIO_CHAN_INFO_SAMP_FREQ)=
+ |
+> > +                                        BIT(IIO_CHAN_INFO_OVERSAMPLING=
+_RATIO),
+> > +             .scan_index =3D 2,
+> > +             .scan_type =3D {
+> > +                     .sign =3D 'u',
+> > +                     .realbits =3D 16,
+> > +                     .storagebits =3D 16,
+> > +                     .endianness =3D IIO_CPU,
+> > +             },
+> > +     },
+> > +     {
+> > +             .type =3D IIO_CURRENT,
+> > +             .indexed =3D 1,
+> > +             .channel =3D RTQ6056_CH_CURRENT,
+> > +             .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),
+> > +             .info_mask_shared_by_dir =3D BIT(IIO_CHAN_INFO_SAMP_FREQ)=
+ |
+> > +                                        BIT(IIO_CHAN_INFO_OVERSAMPLING=
+_RATIO),
+> > +             .scan_index =3D 3,
+> > +             .scan_type =3D {
+> > +                     .sign =3D 's',
+> > +                     .realbits =3D 16,
+> > +                     .storagebits =3D 16,
+> > +                     .endianness =3D IIO_CPU,
+> > +             },
+> > +     },
+> > +     IIO_CHAN_SOFT_TIMESTAMP(RTQ6056_MAX_CHANNEL)
+> > +};
+> > +
+> > +static int rtq6056_adc_read_channel(struct rtq6056_priv *priv, int cha=
+nnel,
+> > +                                 int *val)
+> > +{
+> > +     unsigned int reg =3D RTQ6056_REG_SHUNTVOLT + channel;
+> > +     unsigned int regval;
+> > +     int ret;
+> > +
+> > +     ret =3D regmap_read(priv->regmap, reg, &regval);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     /* Only power and vbus channel is unsigned */
+> > +     if (channel =3D=3D RTQ6056_CH_VBUS || channel =3D=3D RTQ6056_CH_P=
+OWER)
+> > +             *val =3D regval;
+> > +     else
+> > +             *val =3D (s16)regval;
+>
+> Prefer making it clear this is sign extension with sign_extend32()
+>
+Ack in next.
+> > +
+> > +     return IIO_VAL_INT;
+> > +}
+> > +
+>
+> ...
+>
+> > +
+> > +static int rtq6056_adc_set_average(struct rtq6056_priv *priv, int val)
+> > +{
+> > +     unsigned int selector;
+> > +     int ret;
+> > +
+> > +     if (val > 1024 || val < 1)
+> > +             return -EINVAL;
+> > +
+> > +     selector =3D find_closest(val, rtq6056_avg_sample_list,
+> > +                             ARRAY_SIZE(rtq6056_avg_sample_list));
+> > +
+> > +     ret =3D regmap_field_write(priv->rm_fields[F_AVG], selector);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     priv->avg_sample =3D rtq6056_avg_sample_list[selector];
+>
+> Blank line - see below. Same for other similar cases.
+>
+Ack in next.
+> > +     return 0;
+> > +}
+> > +
+> > +static int rtq6056_adc_get_sample_freq(struct rtq6056_priv *priv, int =
+*val)
+> > +{
+> > +     int sample_time;
+> > +
+> > +     sample_time =3D priv->vshuntct + priv->vbusct;
+> > +     sample_time *=3D priv->avg_sample;
+>
+> > +
+> > +     *val =3D DIV_ROUND_UP(1000000, sample_time);
+> > +     return IIO_VAL_INT;
+> > +}
+> > +
+>
+>
+> > +
+> > +static const char *rtq6056_channel_labels[RTQ6056_MAX_CHANNEL] =3D {
+> > +     [RTQ6056_CH_VSHUNT] =3D "Vshunt(uV)",
+>
+> Units must be the standard ones for the IIO channel types.
+> Hence documenting them here is misleading.
+>
+Can I use the "extend_name' and remove all the 'read_label' and
+channel_label variable?
+And also , the unit will be removed. Thx.
+> > +     [RTQ6056_CH_VBUS] =3D "Vbus(mV)",
+> > +     [RTQ6056_CH_POWER] =3D "Power(mW)",
+> > +     [RTQ6056_CH_CURRENT] =3D "Current(mA)",
+> > +};
+> > +
+> > +static int rtq6056_adc_read_label(struct iio_dev *indio_dev,
+> > +                               struct iio_chan_spec const *chan,
+> > +                               char *label)
+> > +{
+> > +     return snprintf(label, PAGE_SIZE, "%s\n",
+> > +                     rtq6056_channel_labels[chan->channel]);
+> > +}
+> > +
+> > +static int rtq6056_set_shunt_resistor(struct rtq6056_priv *priv,
+> > +                                   int resistor_uohm)
+> > +{
+> > +     unsigned int calib_val;
+> > +     int ret;
+> > +
+> > +     if (resistor_uohm <=3D 0) {
+> > +             dev_err(priv->dev, "Invalid resistor [%d]\n", resistor_uo=
+hm);
+> > +             return -EINVAL;
+> > +     }
+> > +
+> > +     /* calibration =3D 5120000 / (Rshunt (uohm) * current lsb (1mA)) =
+*/
+> > +     calib_val =3D 5120000 / resistor_uohm;
+> > +     ret =3D regmap_write(priv->regmap, RTQ6056_REG_CALIBRATION, calib=
+_val);
+> > +     if (ret)
+> > +             return ret;
+> > +
+> > +     priv->shunt_resistor_uohm =3D resistor_uohm;
+>
+> Blank line before a simple return like this. It slightly helps readabilit=
+y.
+>
+Ack in next.
+> > +     return 0;
+> > +}
+>
+> ...
+>
+> > +static IIO_CONST_ATTR_NAMED(rtq6056_conv_time_available,
+> > +                         integration_time_available,
+> > +                         "0.000139 0.000203 0.000269 0.000525 0.001037=
+ 0.002061 0.004109 0.008205");
+> > +
+> > +static IIO_DEVICE_ATTR(shunt_resistor, 0644,
+> > +                    rtq6056_shunt_resistor_show,
+> > +                    rtq6056_shunt_resistor_store, 0);
+> > +
+> > +static struct attribute *rtq6056_attributes[] =3D {
+> > +     &iio_const_attr_rtq6056_conv_time_available.dev_attr.attr,
+> Whilst I think this particular interface will change anyway, you should
+> use the read_avail callback for available attributes for standard ABI.
+>
+Ack in next.
+> > +     &iio_dev_attr_shunt_resistor.dev_attr.attr,
+> > +     NULL
+> > +};
+> > +
+> > +static const struct attribute_group rtq6056_attribute_group =3D {
+> > +     .attrs =3D rtq6056_attributes,
+> > +};
+> > +
+> > +static const struct iio_info rtq6056_info =3D {
+> > +     .attrs =3D &rtq6056_attribute_group,
+> > +     .read_raw =3D rtq6056_adc_read_raw,
+> > +     .write_raw =3D rtq6056_adc_write_raw,
+> > +     .read_label =3D rtq6056_adc_read_label,
+> > +};
+>
+> ...
+> > +static int rtq6056_probe(struct i2c_client *i2c)
+> > +{
+> > +     struct iio_dev *indio_dev;
+> > +     struct rtq6056_priv *priv;
+> > +     unsigned int vendor_id, shunt_resistor_uohm;
+> > +     int ret;
+> > +
+> > +     if (!i2c_check_functionality(i2c->adapter, I2C_FUNC_SMBUS_WORD_DA=
+TA))
+> > +             return -EOPNOTSUPP;
+> > +
+> > +     indio_dev =3D devm_iio_device_alloc(&i2c->dev, sizeof(*priv));
+> > +     if (!indio_dev)
+> > +             return -ENOMEM;
+> > +
+> > +     priv =3D iio_priv(indio_dev);
+> > +     priv->dev =3D &i2c->dev;
+> > +     priv->vshuntct =3D priv->vbusct =3D RTQ6056_DEFAULT_CONVT;
+> > +     priv->avg_sample =3D RTQ6056_DEFAULT_AVG;
+> > +     i2c_set_clientdata(i2c, priv);
+> > +
+> > +     priv->regmap =3D devm_regmap_init_i2c(i2c, &rtq6056_regmap_config=
+);
+> You make a lot of use of regmap in this function. I would suggest
+> first allocating into a local variable, then using that to set
+> priv->regmap.  The local variable can then be used avoid having
+> priv->regmap everywhere.
+>
+dev_get_regmap(), instead?
+> Similar for dev. once a function has multiple accesses to i2c->dev,
+> things are cleaner if you just have
+>
+> struct device *dev =3D &i2c->dev; and use dev after that.
+>
+Ack in next.
+> > +     if (IS_ERR(priv->regmap))
+> > +             return dev_err_probe(&i2c->dev, PTR_ERR(priv->regmap),
+> > +                                  "Failed to init regmap\n");
+> > +
+> > +     ret =3D regmap_read(priv->regmap, RTQ6056_REG_MANUFACTID, &vendor=
+_id);
+> > +     if (ret)
+> > +             return dev_err_probe(&i2c->dev, ret,
+> > +                                  "Failed to get manufacturer info\n")=
+;
+> > +
+> > +     if (vendor_id !=3D RTQ6056_VENDOR_ID)
+> > +             return dev_err_probe(&i2c->dev, -ENODEV,
+> > +                                  "invalid vendor id 0x%04x\n", vendor=
+_id);
+> > +
+> > +     ret =3D devm_regmap_field_bulk_alloc(&i2c->dev, priv->regmap,
+> > +                                        priv->rm_fields, rtq6056_reg_f=
+ields,
+> > +                                        F_MAX_FIELDS);
+> > +     if (ret)
+> > +             return dev_err_probe(&i2c->dev, ret,
+> > +                                  "Failed to init regmap field\n");
+> > +
+> > +     /* Write the default config value */
+> > +     ret =3D regmap_write(priv->regmap, RTQ6056_REG_CONFIG,
+> > +                        RTQ6056_DEFAULT_CONFIG);
+>
+> This write effectively turns the device on so it would be good
+> to register a devm_add_action_or_reset() callback here to do what
+> you currently have in remove.  That will mean you don't need a separate
+> remove at all and that you will put the device in a low power state
+> if you get an error after this point.
+>
+> At some stage it would be nice to do runtime pm with autosuspend so that
+> we enter a low power state if no one is looking at the readings.
+>
+Ack in next.
+> > +     if (ret)
+> > +             return dev_err_probe(&i2c->dev, ret,
+> > +                                  "Failed to write default config\n");
+> > +
+> > +     ret =3D of_property_read_u32(i2c->dev.of_node,
+>
+> Please use generic firmware properties not device tree specific ones.
+> That lets people use other firmware interfaces such as ACPI using the
+> PRP0001 HID.
+>
+Wil use 'device_property_read_u32', instead.
+> > +                                "richtek,shunt-resistor-uohm",
+> > +                                &shunt_resistor_uohm);
+> > +     if (ret)
+> > +             shunt_resistor_uohm =3D RTQ6056_DEFAULT_RSHUNT;
+> Flip this around
+>
+>         shunt_resistor_uohm =3D 2000;
+>         device_property_read_u32(dev, "rictek,shunt-resistor-uohm",
+>                                  &shunt_resistor_uohm);
+>
+> if the property read fails, it won't change the value stored.
+>
+Ack in next.
+> > +
+> > +     ret =3D rtq6056_set_shunt_resistor(priv, shunt_resistor_uohm);
+> > +     if (ret)
+> > +             dev_err_probe(&i2c->dev, ret,
+> > +                           "Failed to init shunt resistor\n");
+> > +
+> > +     indio_dev->name =3D "rtq6056";
+> > +     indio_dev->modes =3D INDIO_DIRECT_MODE;
+> > +     indio_dev->channels =3D rtq6056_channels;
+> > +     indio_dev->num_channels =3D ARRAY_SIZE(rtq6056_channels);
+> > +     indio_dev->info =3D &rtq6056_info;
+> > +
+> > +     ret =3D devm_iio_triggered_buffer_setup(&i2c->dev, indio_dev, NUL=
+L,
+> > +                                           rtq6056_buffer_trigger_hand=
+ler,
+> > +                                           NULL);
+> > +     if (ret)
+> > +             return dev_err_probe(&i2c->dev, ret,
+> > +                                  "Failed to allocate iio trigger buff=
+er\n");
+> > +
+> > +     return devm_iio_device_register(&i2c->dev, indio_dev);
+> > +}
+> > +
+> > +static int rtq6056_remove(struct i2c_client *i2c)
+> > +{
+> > +     struct rtq6056_priv *priv =3D i2c_get_clientdata(i2c);
+> > +
+> > +     /* Config opmode to 'shutdown' mode to minimize quiescient curren=
+t */
+> > +     return regmap_field_write(priv->rm_fields[F_OPMODE], 0);
+> > +}
+> > +
+> > +static void rtq6056_shutdown(struct i2c_client *i2c)
+> > +{
+> > +     struct rtq6056_priv *priv =3D i2c_get_clientdata(i2c);
+> > +
+> > +     /* Config opmode to 'shutdown' mode to minimize quiescient curren=
+t */
+> > +     regmap_field_write(priv->rm_fields[F_OPMODE], 0);
+>
+> Unusual to provide a shutdown for a device as simple as an ADC.  I'd expe=
+ct
+> the overall system to power down if we hit this and hence also cover
+> the ADC.  If that's not the case, then perhaps add a comment explaining
+> that.
+>
+That's because some application use VBAT as the VDD source.
+Not all applcation use the PMIC buck or ldo as the supply for RTQ6056.
+If use VBAT, then the shutdown quiescent current is important.
+> > +}
+> > +
+> > +static const struct of_device_id rtq6056_device_match[] =3D {
+> > +     { .compatible =3D "richtek,rtq6056", },
+> > +     {}
+> > +};
+> > +MODULE_DEVICE_TABLE(of, rtq6056_device_match);
+> > +
+> > +static struct i2c_driver rtq6056_driver =3D {
+> > +     .driver =3D {
+> > +             .name =3D "rtq6056",
+> > +             .of_match_table =3D rtq6056_device_match,
+> > +     },
+> > +     .probe_new =3D rtq6056_probe,
+> > +     .remove =3D rtq6056_remove,
+> > +     .shutdown =3D rtq6056_shutdown,
+> > +};
+> > +module_i2c_driver(rtq6056_driver);
+> > +
+> > +MODULE_AUTHOR("ChiYuan Huang <cy_huang@richtek.com>");
+> > +MODULE_DESCRIPTION("Richtek RTQ6056 ADC Driver");
+> > +MODULE_LICENSE("GPL v2");
+>
