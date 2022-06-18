@@ -2,51 +2,49 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 599DDC43334
-	for <linux-iio@archiver.kernel.org>; Sat, 18 Jun 2022 16:46:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DF5CDCCA473
+	for <linux-iio@archiver.kernel.org>; Sat, 18 Jun 2022 16:52:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235504AbiFRQqS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 18 Jun 2022 12:46:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54332 "EHLO
+        id S236149AbiFRQwP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 18 Jun 2022 12:52:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57188 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234351AbiFRQqR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Jun 2022 12:46:17 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F4529582;
-        Sat, 18 Jun 2022 09:46:17 -0700 (PDT)
+        with ESMTP id S234351AbiFRQwP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Jun 2022 12:52:15 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9142EDE94;
+        Sat, 18 Jun 2022 09:52:13 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E2F63B80A72;
-        Sat, 18 Jun 2022 16:46:15 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id EC689C3411A;
-        Sat, 18 Jun 2022 16:46:11 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 1A84C60F42;
+        Sat, 18 Jun 2022 16:52:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50619C3411A;
+        Sat, 18 Jun 2022 16:52:10 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655570774;
-        bh=O2RJ2eqglnM+kXxDGHgy56LBtlq6DELn/lrQeHUDxv0=;
+        s=k20201202; t=1655571132;
+        bh=hO3gP+ei2JRu9oPGWa5DA4GlwowtTxu8lIIs+XqI6uM=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=HSHjkS30t9lRlmWfuNd2+3ndOnL233B8tJTKTstwSQEXz/p0ev/9xBUXnDLI3JnAt
-         tgiQg1Ed+OwoUAfebcbycWuP5kw8/8aaLK69+goSvkTnrVIwV8VJrDEXPg1N5xpqQZ
-         jcsfsq5dZ2Ufsfp9u5/rymT5eW8lbLRCPo7pgfvgZhF1H6+KgrKhk3F6iXoEeslOXm
-         YguscccVN2SiiHoj1yTTwGWdUHEborey8nWc14i0FpCT/hrTjgIQWPZsK6T1f32klW
-         vcG3VZIH99wDv4K8jrKYoLlhNoUjs7rOaU2vdATNIbqR0xfJayFbRdqQCyk+sOfJvg
-         B9BMo7SbSFszg==
-Date:   Sat, 18 Jun 2022 17:55:30 +0100
+        b=U25fZxOh4+QM/eudqid+jHEK0ZlV/X7ItQPSWFn/kJc+l0E0fyNfQVLI/4ELmwCh0
+         d/azHCPodB+/vgjAr4pjzd4kfk5vh7dCLQKFlCXTC9Cibgjd2TloAI8iVdZS/HorAE
+         0pgE+8VxTOaXwUdmFwmlVN/DxWQ5axRuA30AJefNXg/GgSpJN2+OvrefJrvb6Bi5A6
+         RtSVyHlkB4wxpaj401eyEwNINvGEOp45fghW1t4parMMDbCWcoj5qBoD5oSsT8IS2y
+         RKB1A2OjrFzZtigbE0+d5vbvFel3wC5sGX+8mIEZyNPztkvI6ZxkPeNnbtrhXTE22q
+         rHS3M2LQE7cJA==
+Date:   Sat, 18 Jun 2022 18:01:29 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Luca Weiss <luca.weiss@fairphone.com>
-Cc:     linux-iio@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
-        phone-devel@vger.kernel.org,
-        Song Qiang <songqiang1304521@gmail.com>,
+To:     Rob Herring <robh@kernel.org>
+Cc:     Alexander Stein <alexander.stein@ew.tq-group.com>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-imx@nxp.com, linux-iio@vger.kernel.org,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Markuss Broks <markuss.broks@gmail.com>,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] proximity: vl53l0x: Make VDD regulator actually
- optional
-Message-ID: <20220618175530.2106129e@jic23-huawei>
-In-Reply-To: <20220614112049.302278-1-luca.weiss@fairphone.com>
-References: <20220614112049.302278-1-luca.weiss@fairphone.com>
+        Haibo Chen <haibo.chen@nxp.com>, devicetree@vger.kernel.org
+Subject: Re: [PATCH] dt-bindings: iio: adc: Add imx6ul & imx6sx compatibles
+Message-ID: <20220618180129.699b8601@jic23-huawei>
+In-Reply-To: <20220617224448.GA2574775-robh@kernel.org>
+References: <20220613123529.466528-1-alexander.stein@ew.tq-group.com>
+        <1655141687.002668.3951189.nullmailer@robh.at.kernel.org>
+        <20220617224448.GA2574775-robh@kernel.org>
 X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -55,38 +53,87 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Tue, 14 Jun 2022 13:20:50 +0200
-Luca Weiss <luca.weiss@fairphone.com> wrote:
+On Fri, 17 Jun 2022 16:44:48 -0600
+Rob Herring <robh@kernel.org> wrote:
 
-> Contrary to what the naming might suggest, devm_regulator_get_optional
-> returns -ENODEV in case the regulator is not found which will trigger
-> probe error in this driver.
+> On Mon, Jun 13, 2022 at 11:34:46AM -0600, Rob Herring wrote:
+> > On Mon, 13 Jun 2022 14:35:29 +0200, Alexander Stein wrote:  
+> > > Both are already using the vf610 compatible.
+> > > 
+> > > Signed-off-by: Alexander Stein <alexander.stein@ew.tq-group.com>
+> > > ---
+> > >  .../devicetree/bindings/iio/adc/fsl,vf610-adc.yaml       | 9 ++++++++-
+> > >  1 file changed, 8 insertions(+), 1 deletion(-)
+> > >   
+> > 
+> > Running 'make dtbs_check' with the schema in this patch gives the
+> > following warnings. Consider if they are expected or the schema is
+> > incorrect. These may not be new warnings.
+> > 
+> > Note that it is not yet a requirement to have 0 warnings for dtbs_check.
+> > This will change in the future.
+> > 
+> > Full log is available here: https://patchwork.ozlabs.org/patch/
+> > 
+> > 
+> > adc@2198000: 'num-channels' does not match any of the regexes: 'pinctrl-[0-9]+'  
 > 
-> Use devm_regulator_get instead which will return a dummy regulator that
-> we can just use as if it was a proper regulator.
-> 
-> Fixes: d3d6dba56dab ("proximity: vl53l0x: Handle the VDD regulator")
-> Signed-off-by: Luca Weiss <luca.weiss@fairphone.com>
-> ---
-> @Jonathan: As discussed in the other email, maybe you want to
-> adjust/remove the "Fixes:" tag. Your call.
-Applied to the togreg branch of iio.git.
+> Looks like you need to add 'num-channels'?
+
+or a lot of wrong dtbs :)
+
+By which I mean ones providing a property that may or may not be actually
+used by any drivers...
+
+Jonathan
+
 
 > 
->  drivers/iio/proximity/vl53l0x-i2c.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/proximity/vl53l0x-i2c.c b/drivers/iio/proximity/vl53l0x-i2c.c
-> index 3b7a33ff601d..c7c4d33d340f 100644
-> --- a/drivers/iio/proximity/vl53l0x-i2c.c
-> +++ b/drivers/iio/proximity/vl53l0x-i2c.c
-> @@ -237,7 +237,7 @@ static int vl53l0x_probe(struct i2c_client *client)
->  				     I2C_FUNC_SMBUS_BYTE_DATA))
->  		return -EOPNOTSUPP;
->  
-> -	data->vdd_supply = devm_regulator_get_optional(&client->dev, "vdd");
-> +	data->vdd_supply = devm_regulator_get(&client->dev, "vdd");
->  	if (IS_ERR(data->vdd_supply))
->  		return dev_err_probe(&client->dev, PTR_ERR(data->vdd_supply),
->  				     "Unable to get VDD regulator\n");
+> > 	arch/arm/boot/dts/imx6ul-14x14-evk.dtb
+> > 	arch/arm/boot/dts/imx6ul-ccimx6ulsbcexpress.dtb
+> > 	arch/arm/boot/dts/imx6ul-ccimx6ulsbcpro.dtb
+> > 	arch/arm/boot/dts/imx6ul-geam.dtb
+> > 	arch/arm/boot/dts/imx6ul-isiot-emmc.dtb
+> > 	arch/arm/boot/dts/imx6ul-isiot-nand.dtb
+> > 	arch/arm/boot/dts/imx6ul-kontron-n6310-s-43.dtb
+> > 	arch/arm/boot/dts/imx6ul-kontron-n6310-s.dtb
+> > 	arch/arm/boot/dts/imx6ull-14x14-evk.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-aster.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-emmc-aster.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-emmc-eval-v3.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-emmc-iris.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-emmc-iris-v2.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-eval-v3.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-iris.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-iris-v2.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-wifi-aster.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-wifi-eval-v3.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-wifi-iris.dtb
+> > 	arch/arm/boot/dts/imx6ull-colibri-wifi-iris-v2.dtb
+> > 	arch/arm/boot/dts/imx6ul-liteboard.dtb
+> > 	arch/arm/boot/dts/imx6ull-jozacp.dtb
+> > 	arch/arm/boot/dts/imx6ull-myir-mys-6ulx-eval.dtb
+> > 	arch/arm/boot/dts/imx6ull-opos6uldev.dtb
+> > 	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-emmc.dtb
+> > 	arch/arm/boot/dts/imx6ull-phytec-segin-ff-rdk-nand.dtb
+> > 	arch/arm/boot/dts/imx6ull-phytec-segin-lc-rdk-nand.dtb
+> > 	arch/arm/boot/dts/imx6ull-phytec-tauri-emmc.dtb
+> > 	arch/arm/boot/dts/imx6ull-phytec-tauri-nand.dtb
+> > 	arch/arm/boot/dts/imx6ull-tqma6ull2l-mba6ulx.dtb
+> > 	arch/arm/boot/dts/imx6ull-tqma6ull2-mba6ulx.dtb
+> > 	arch/arm/boot/dts/imx6ul-opos6uldev.dtb
+> > 	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-emmc.dtb
+> > 	arch/arm/boot/dts/imx6ul-phytec-segin-ff-rdk-nand.dtb
+> > 	arch/arm/boot/dts/imx6ul-pico-dwarf.dtb
+> > 	arch/arm/boot/dts/imx6ul-pico-hobbit.dtb
+> > 	arch/arm/boot/dts/imx6ul-pico-pi.dtb
+> > 	arch/arm/boot/dts/imx6ul-prti6g.dtb
+> > 	arch/arm/boot/dts/imx6ul-tqma6ul1-mba6ulx.dtb
+> > 	arch/arm/boot/dts/imx6ul-tqma6ul2l-mba6ulx.dtb
+> > 	arch/arm/boot/dts/imx6ul-tqma6ul2-mba6ulx.dtb
+> > 	arch/arm/boot/dts/imx6ul-tx6ul-0010.dtb
+> > 	arch/arm/boot/dts/imx6ul-tx6ul-0011.dtb
+> > 	arch/arm/boot/dts/imx6ul-tx6ul-mainboard.dtb
+> > 
+> >   
 
