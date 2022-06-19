@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A2B1EC43334
+	by smtp.lore.kernel.org (Postfix) with ESMTP id B7911C433EF
 	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 18:59:35 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229706AbiFSS7R (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Jun 2022 14:59:17 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58194 "EHLO
+        id S234310AbiFSS73 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Jun 2022 14:59:29 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58146 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235802AbiFSS7H (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 14:59:07 -0400
+        with ESMTP id S236245AbiFSS66 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 14:58:58 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A83FBBC8E
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 11:59:06 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DBEEBBC8E
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 11:58:56 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 643C3B80D8B
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 18:59:05 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 1B322C34114;
-        Sun, 19 Jun 2022 18:59:01 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 011C9B80D6F
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 18:58:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 7735BC34114;
+        Sun, 19 Jun 2022 18:58:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655665144;
-        bh=0fpQwmAGVpJcM/rhQpnG+gf7I0DPfylrY+yfZhsRXSM=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=ojGDsjLKCYKeI1jheLFQwwesDPd2yjedtus+YyRo+7Jgi4MINq804wuxAm2xVMPdp
-         Gi2PrcJd6vX85vEV/lv87yrcAzIqsQUisekYOCSjJyM8eMhadZSK7U3xYsSiSgGePV
-         5OA67DUnPGKLhRC4mUCLX33m6LSWIfw39L74gVaEhq7hnOBTEFhvT0OFz/9zBy/uvA
-         zb2Y+0Rkf274TURMeLgGnvyk13eTXnphPA6L5A478/HZNERJEM0yMGAln5oa280ZWd
-         nuGe8kQdzQZhdPJL+3jXmOUk0N5234gzFveCYrXxpNorw5JORti8hzjNDHYaN2dQhm
-         /RxL7Ekh9l0NA==
+        s=k20201202; t=1655665133;
+        bh=coVIwObqoJM535ijtWd5Wdhp4DRWv5CO0VupRVKbKW0=;
+        h=From:To:Cc:Subject:Date:From;
+        b=dCHx1xnA6D5tK6IBgyhVbZFWXu0J0YXmZ7NwHqYzMvfUOYESuKWT4NJ8+OFO5A81C
+         xTUSwj2gpZwDA8Na8p9w78DTn+vgI2dHJhavI/08BBgdB8RQLhY+wXSPdfitzNVk/4
+         o6FsQM1CyWu2VUl6iN4tzZK8UH2QIiVBM9Gn4ECcE2yiqCuXzZGmdyoF7bXMWJym3E
+         /mirpBh/osueqkQxbDmW/94xx/vhwiotcUZGcaOGZoAiYdD/2KsTKmXm1K5y9KPFo9
+         Zh8b8nYE04oCYIigfKq0t+JzOkFAeu3K9TVA1Kw0/Kc8QMZ30W0kQ08vCF4aAFcSkI
+         ETKhkPPewa8Zg==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
@@ -39,12 +39,10 @@ Cc:     Michael Hennerich <michael.hennerich@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 04/17] staging: iio: cdc: ad7746: Push handling of supply voltage scale to userspace.
-Date:   Sun, 19 Jun 2022 19:58:26 +0100
-Message-Id: <20220619185839.1363503-5-jic23@kernel.org>
+Subject: [PATCH v2 00/17] staging/iio: Clean up AD7746 CDC driver and move from staging.
+Date:   Sun, 19 Jun 2022 19:58:22 +0100
+Message-Id: <20220619185839.1363503-1-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220619185839.1363503-1-jic23@kernel.org>
-References: <20220619185839.1363503-1-jic23@kernel.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
@@ -53,62 +51,99 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The supply voltage is attenuated by 6 before being fed to the ADC.
-Handle this explcitly rather than premultiplying the _raw value by 6.
+Vincent: I'm getting some instability with roadtest after forwards porting to
+current mainline. Tests run 'sometimes'.  Other times I get a crash
+in um_set_signal.  Seems unrelated to the test this series adds.
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- drivers/staging/iio/cdc/ad7746.c | 16 ++++++----------
- 1 file changed, 6 insertions(+), 10 deletions(-)
+Changes since v1: Thanks to Andy and Peter for reviews.
+- Use sizeof(data) for be24 buffer data[3]
+- Make the precision patch fall back to old maths if overflow would
+  have occured.
 
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index 9208fb179240..df12fdb20662 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -114,9 +114,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.type = IIO_VOLTAGE,
- 		.indexed = 1,
- 		.channel = 0,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
--			BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
- 			AD7746_VTSETUP_VTMD_EXT_VIN,
- 	},
-@@ -125,9 +124,8 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 		.indexed = 1,
- 		.channel = 1,
- 		.extend_name = "supply",
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |
--			BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.address = AD7746_REG_VT_DATA_HIGH << 8 |
- 			AD7746_VTSETUP_VTMD_VDD_MON,
- 	},
-@@ -560,10 +558,6 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
- 			 */
- 			*val = (*val * 125) / 256;
- 			break;
--		case IIO_VOLTAGE:
--			if (chan->channel == 1) /* supply_raw*/
--				*val = *val * 6;
--			break;
- 		default:
- 			break;
- 		}
-@@ -618,6 +612,8 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
- 		case IIO_VOLTAGE:
- 			/* 1170mV / 2^23 */
- 			*val = 1170;
-+			if (chan->channel == 1)
-+				*val *= 6;
- 			*val2 = 23;
- 			ret = IIO_VAL_FRACTIONAL_LOG2;
- 			break;
+This started out as an experiment with Vincent Whitchurch's roadtest
+testing framework [1] and that worked well so I carried on cleaning up the
+driver.
+
+Mostly this is standard tidy up, move to new interfaces, then move the driver
+out of staging, but there are a few other things in here.
+
+1) Precision improvement for IIO_VAL_FRACTIONAL_LOG2.
+   The ad7746 is a 24 bit sensor and this highlighted that 9 decimal
+   places wasn't enough to keep the error introduced by
+   _raw * _scale from growing too large over the whole range (I couldn't
+   write a sensible test for it).  So I've proposed increasing the precision
+   of the calculation used to provide the sysfs attributes with this value
+   type and printing a few more decimal places (12), but only if overflow
+   will not occur due to val[0] > ULLONG_MAX / PICO
+2) _inputoffset ABI addition.  This driver had an odd use of _offset for
+   the case of differential channels that applied the offset to both
+   of the differential pair (hence usespace shouldn't not apply it when
+   converting to the base units. That isn't inline with the existing
+   documentation for _offset and it wasn't clear to me that it made sense
+   at all.  To avoid confusion I've added this new ABI (_inputoffset) for t
+3) roadtest file - note this is not a complete test set for the driver and
+   mainly focused on the main channel reads and places I thought I might
+   have broken things whilst working on the driver.
+
+My conclusion on roadtest - Very useful indeed. I'd encourage others to
+consider developing some basic sanity tests for drivers they are working on.
+Hopefully my python code isn't too hideous to understand at least!
+Vincent, it might be worth thinking about some generic code to handle the
+'variants' on correct ABI like I introduce here because I switched from
+a shared by type scale to an individual one per channel for the voltages.
+Both were ABI compliant so that sort of change is fine most of the time
+though we have to be careful with it.
+
+All comments welcome.  Note there may be changes that make more sense
+to do after moving this out of staging as long as there are no ABI changes involved
+etc.  Feel free to highlight those sorts of changes as well as anything more
+significant.
+
+[1] https://lore.kernel.org/all/20220311162445.346685-9-vincent.whitchurch@axis.com/
+
+Jonathan Cameron (17):
+  iio: core: Increase precision of IIO_VAL_FRACTIONAL_LOG2 when possible
+  iio: ABI: Fix wrong format of differential capacitance channel ABI.
+  staging: iio: cdc: ad7746: Use explicit be24 handling.
+  staging: iio: cdc: ad7746: Push handling of supply voltage scale to
+    userspace.
+  staging: iio: cdc: ad7746: Use local buffer for multi byte reads.
+  staging: iio: cdc: ad7746: Factor out ad7746_read_channel()
+  staging: iio: cdc: ad7764: Push locking down into case statements in
+    read/write_raw
+  staging: iio: cdc: ad7746: Break up use of chan->address and use
+    FIELD_PREP etc
+  staging: iio: cdc: ad7746: Drop usused i2c_set_clientdata()
+  staging: iio: cdc: ad7746: Use _raw and _scale for temperature
+    channels.
+  iio: core: Introduce _inputoffset for differential channels
+  staging: iio: cdc: ad7746: Switch from _offset to _inputoffset for
+    differential channels.
+  staging: iio: cdc: ad7746: Use read_avail() rather than opencoding.
+  staging: iio: ad7746: White space cleanup
+  iio: cdc: ad7746: Add device specific ABI documentation.
+  iio: cdc: ad7746: Move driver out of staging.
+  RFC: iio: cdc: ad7746: Add roadtest
+
+ Documentation/ABI/testing/sysfs-bus-iio       |  15 +-
+ .../ABI/testing/sysfs-bus-iio-cdc-ad7746      |  11 +
+ drivers/iio/cdc/Kconfig                       |  10 +
+ drivers/iio/cdc/Makefile                      |   1 +
+ drivers/iio/cdc/ad7746.c                      | 818 ++++++++++++++++++
+ drivers/iio/industrialio-core.c               |  31 +-
+ drivers/staging/iio/cdc/ad7746.c              | 767 ----------------
+ include/linux/iio/types.h                     |   1 +
+ .../roadtest/tests/iio/cdc/__init__.py        |   0
+ .../roadtest/roadtest/tests/iio/cdc/config    |   1 +
+ .../roadtest/tests/iio/cdc/test_ad7746.py     | 323 +++++++
+ 11 files changed, 1202 insertions(+), 776 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-cdc-ad7746
+ create mode 100644 drivers/iio/cdc/ad7746.c
+ delete mode 100644 drivers/staging/iio/cdc/ad7746.c
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/cdc/__init__.py
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/cdc/config
+ create mode 100644 tools/testing/roadtest/roadtest/tests/iio/cdc/test_ad7746.py
+
 -- 
 2.36.1
 
