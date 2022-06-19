@@ -2,99 +2,116 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 329F1C43334
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 10:47:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E80C433EF
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 10:49:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232285AbiFSKrP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Jun 2022 06:47:15 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56738 "EHLO
+        id S231132AbiFSKth (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Jun 2022 06:49:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231177AbiFSKrO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 06:47:14 -0400
-Received: from mail-ej1-x632.google.com (mail-ej1-x632.google.com [IPv6:2a00:1450:4864:20::632])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0231810553;
-        Sun, 19 Jun 2022 03:47:14 -0700 (PDT)
-Received: by mail-ej1-x632.google.com with SMTP id y19so16110997ejq.6;
-        Sun, 19 Jun 2022 03:47:13 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=QumzxwcdQFbr7DumOzZDU4ULnvbRxcCjjd1yvsSCMC8=;
-        b=CgQhvGC9XaFMuG1ZbQZ//ZMXTWvB8Ate2VXW+w2gOQ7cG/HCT0K1Q6XZ0OoWPgz46T
-         Ea/v62UYhLARrPQM7a8nL3RCludaGDrpwchL2uGAN42/a/nZYi0AAjDB0S1Uc7sybDAJ
-         sCdgdV0zRuxkPegZjUmXVoMjaAZppzJribXjuX9fxE/U0dkJGfzFbzMMm7UWw0y1ePrp
-         xG7eTU8lPSdIiDBaRS6eXCdOr1tlIJPiZmQPqWEDfwgIQkpr1xBl+XqL3lkvZSslY9Q7
-         Ki1GqgSSsCqtUM1/eSrCOCZOuqlLfyW8RKWx57xB51n7LrtLra71x82AvIF9EX6jSNzy
-         f/IA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=QumzxwcdQFbr7DumOzZDU4ULnvbRxcCjjd1yvsSCMC8=;
-        b=nLgI/YX7ZENCiDnb3gveuGOnBJ1cN9Lt0AXyM7vnHJIBNhM2qv4AnGgkVVtQ7Q4N+C
-         MHTbW2mVD5xwVtA0oP89VSLNlYAjSvxa7Zv3ASlQvTE0Z9JXIs7o8tKyhDxtMAwooiJY
-         RPlDfbAX3E19O7rtS5nDRY8catiPcK9wFgSKydWqvky9ejDbuBneY400HqZM/RG6eO8/
-         XcgdG16rML7gVtkLvYOXaPizUCZWbMhaxyUdmEaR0jsLGM1n2Dp7OTXCNM3BnVIz2ldV
-         rv3aUrMAb4De+AohGoC8tK/KN9YHnBjIIEeS/NzxiRvm0bZIFiCcyRYIaBUI4YRJYcmm
-         Pp8Q==
-X-Gm-Message-State: AJIora/LVVpSdKEAyUDxij71pLMU/cL2NpnMX29StJIBE/mUdOamQ0Xd
-        c76tPISiT5+EroZAiIc+55E/oGYe6YwaB8upeoc=
-X-Google-Smtp-Source: AGRyM1v5G1MuJuXyOzRmyVXR4oV6123M8wojC41noXFWxC2vdQAXZ9u7b2GPfG49TsaNEueV6IGaXpufmGunJYn7jpU=
-X-Received: by 2002:a17:906:149:b0:711:fca6:bc2f with SMTP id
- 9-20020a170906014900b00711fca6bc2fmr16729199ejh.497.1655635632572; Sun, 19
- Jun 2022 03:47:12 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220618214009.2178567-1-aidanmacdonald.0x0@gmail.com> <20220618214009.2178567-10-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220618214009.2178567-10-aidanmacdonald.0x0@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 19 Jun 2022 12:46:36 +0200
-Message-ID: <CAHp75Vdz3N2Ov2hMLjN7Ux9dDByvFna43q=0+Eh0smvBz5bFhg@mail.gmail.com>
-Subject: Re: [PATCH v3 09/16] regulator: axp20x: Add support for AXP192
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
+        with ESMTP id S235242AbiFSKte (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 06:49:34 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE87F586;
+        Sun, 19 Jun 2022 03:49:31 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 067BAB80BA0;
+        Sun, 19 Jun 2022 10:49:30 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA75C34114;
+        Sun, 19 Jun 2022 10:49:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655635768;
+        bh=ml8xzfS/4s43QQV6uviKGJHvPVeDaTAIYELUeCzvLgQ=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=iYwwMBfyDQm0f6hP6GWsi0fTaNMVBwjaQyAC9ffT5LXRNPh87AyacMSZQ1cviJUKO
+         U0QupP6B7PkLQCztJ8acMXfDBobwVkGOOndhMrK7kp32Xf1wPqBcUSnEVCkuRYYv97
+         4Rrwz2cGasqjZ6qZL4xz6uBAoyCzzxAFysolMk9XFf42tCiOWVbZDMXaeRCSlBsDWi
+         luah1NVLlaRHYDopV8wohsVv2lCuOq0V/kIcoTydfuQi+3kZFqzSfXfnZGiLVYA8o0
+         1QOiSQkwSke8hugpr2S5uK1k0rYasiAVXDFq5w+Q9byK1uEOEgR3Fln6/KWZgNg27U
+         6QDvPFDIK8s5w==
+Date:   Sun, 19 Jun 2022 11:58:46 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jakob Hauser <jahau@rocketmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, quic_gurus@quicinc.com,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Michael Walle <michael@walle.cc>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
         linux-iio <linux-iio@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        devicetree <devicetree@vger.kernel.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+Subject: Re: [PATCH v3 8/8] iio: magnetometer: yas530: Add YAS537 variant
+Message-ID: <20220619115846.7d6a8393@jic23-huawei>
+In-Reply-To: <CAHp75VemByhNAYGuP2h-5HazPZL7k5tyGc1WV2gKEdjX_5Sing@mail.gmail.com>
+References: <cover.1655509425.git.jahau@rocketmail.com>
+        <3bdb392bb75073bdfe10aab1739fee2d6c64f10c.1655509425.git.jahau@rocketmail.com>
+        <20220618162833.218dbe67@jic23-huawei>
+        <CAHp75VemByhNAYGuP2h-5HazPZL7k5tyGc1WV2gKEdjX_5Sing@mail.gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 11:40 PM Aidan MacDonald
-<aidanmacdonald.0x0@gmail.com> wrote:
->
-> Add support for the AXP192 PMIC.
+On Sun, 19 Jun 2022 12:32:56 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-...
+> On Sat, Jun 18, 2022 at 5:19 PM Jonathan Cameron <jic23@kernel.org> wrote:
+> > On Sat, 18 Jun 2022 02:13:16 +0200
+> > Jakob Hauser <jahau@rocketmail.com> wrote:  
+> 
+> ...
+> 
+> > > +             for (i = 0; i < 17; i++) {  
+> >
+> > Reduce indent by doing this as multiple loops.
+> > Though even better if you can use bulk writes.
+> >
+> >                 int j = 0;
+> >                 for (i = 0; i < 12; i++) {
+> >                         ret = regmap_write(yas5xx->map, YAS537_MTC + i,
+> >                                            data[j++])
+> >                         if (ret)
+> >                                 return ret;
+> >                 }
+> >
+> >                 for (i = 0; i < 4; i++) {
+> >                         ret = regmap_write(yas5xx->map, YAS573_OFFSET_X + i,
+> >                                            data[j++]);
+> >                         if (ret)
+> >                                 return ret;
+> >                 }  
+> 
+> I guess you are referring to _noinc variants of regmap bulk operations.
+Hi Andy,
 
-> @@ -401,6 +431,7 @@ static int axp20x_set_ramp_delay(struct regulator_dev *rdev, int ramp)
->                         break;
->
->                 fallthrough;
-> +
->         default:
->                 /* Not supported for this regulator */
->                 return -ENOTSUPP;
+No. These seem to be incrementing the register address, so you don't want the _noinc
+variant as far as I can see.
 
-Stray change?
+> 
+> > > +                     if (i < 12) {
+> > > +                             ret = regmap_write(yas5xx->map,
+> > > +                                                YAS537_MTC + i,
+> > > +                                                data[i]);
+> > > +                             if (ret)
+> > > +                                     return ret;
+> > > +                     } else if (i < 15) {
+> > > +                             ret = regmap_write(yas5xx->map,
+> > > +                                                YAS537_OFFSET_X + i - 12,
+> > > +                                                data[i]);
+> > > +                             if (ret)
+> > > +                                     return ret;
+> > > +                             yas5xx->hard_offsets[i - 12] = data[i];
+> > > +                     } else {
+> > > +                             ret = regmap_write(yas5xx->map,
+> > > +                                                YAS537_HCK + i - 15,
+> > > +                                                data[i]);
+> > > +                             if (ret)
+> > > +                                     return ret;
+> > > +                     }
+> > > +             }  
+> 
 
--- 
-With Best Regards,
-Andy Shevchenko
