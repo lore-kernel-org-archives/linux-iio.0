@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 76D1DC43334
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 18:59:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5500EC43334
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 19:01:19 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232378AbiFSS7s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Jun 2022 14:59:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58560 "EHLO
+        id S236485AbiFSS7c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Jun 2022 14:59:32 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58280 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232762AbiFSS7r (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 14:59:47 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 30E43BC9B
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 11:59:39 -0700 (PDT)
+        with ESMTP id S232378AbiFSS7U (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 14:59:20 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D51ABC8F
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 11:59:20 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 6ED7AB80D8B
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 18:59:38 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 5FA6CC3411D;
-        Sun, 19 Jun 2022 18:59:35 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 9C97661132
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 18:59:19 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 281ADC34114;
+        Sun, 19 Jun 2022 18:59:16 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655665177;
-        bh=AplSmDtcKRzrJ9fC1hOJ49ScgEXhmy6Pf9AXSuT1tlo=;
+        s=k20201202; t=1655665159;
+        bh=tFIzlXGV6WprNuWaExoK7AId3kH9pRITxhjtpD/oQuo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=MuO+ejw9rkRoZ6oJgpabDYBHArHKbWyi7n0+k95nOGdXIkyfae3yv27Ge2+kjvxws
-         zfVf1g4+T+6P3cjKICbprwaCcRKWRPtb4Hlbcs5eBeWBvGQ0zgFHXlgnOrXwW4ZkTf
-         EXjkS7sRBbco2cO0nJA35EQo1Kg4Df/HBMvYahlrK+IAuCLC6WUnMfCqvKcgNFlWny
-         oJAEmFbWx6Dhr8eTuz1ynfQmGUJOPjb5mi9D3rJwuYXiWkzUr+AhTintPOZYWVmDlW
-         lDHexrSKST8fJyCb6xj1fLxdmUuTJYhuL7cB8C+FliHyIRWLTufsC+dXDLmWDwkSUk
-         0aCy06IhluZrA==
+        b=HB4GyPM+yJARzPY6QOmjh7eYQEJAr7LmziBA6S7R0wkmikbAegednV+zVG6INCATE
+         8zchRuiUnSDi3dZXGv5zZbD9Ki7vDBEG4FAygDrZyZGjSBnC2FSC+XEXyuGDXnOglc
+         l74uHujksNDfHrG9hnc7O72KHyRJ7N62nqaKpIUvxwqO6QPHX1/9FCJLztjTDNyc7A
+         aP9GfSmVUqSdhjHmhfEpKk+FlBF437AL7+xFA4WadQwqlzfNwoyrHfPFOT16lkjydh
+         h1OdoGFBFnRTKPRFhSwzKcGgQd4ZPNkHDZrG3kBZRFHRjcDT2oTmYSXZPpky+CqYTu
+         IMIyVUkQlC1iQ==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
@@ -39,9 +39,9 @@ Cc:     Michael Hennerich <michael.hennerich@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 17/17] RFC: iio: cdc: ad7746: Add roadtest
-Date:   Sun, 19 Jun 2022 19:58:39 +0100
-Message-Id: <20220619185839.1363503-18-jic23@kernel.org>
+Subject: [PATCH v2 10/17] staging: iio: cdc: ad7746: Use _raw and _scale for temperature channels.
+Date:   Sun, 19 Jun 2022 19:58:32 +0100
+Message-Id: <20220619185839.1363503-11-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220619185839.1363503-1-jic23@kernel.org>
 References: <20220619185839.1363503-1-jic23@kernel.org>
@@ -53,362 +53,78 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The recent work to cleanup and migrate this driver out of staging
-relied on using roadtest to verify that the various refactoring
-and fixes did not cause any regressions.
-
-Note I am far from an experienced python coder so a large part of
-this exercise was to establish if roadtest was useful / usable
-without that particular skill set.  Conclusion yes it is :)
-
-Apologies for the code!
+Performing the maths to rescale a 24 bit raw reading within the driver
+was resulting in precision losses.  So make that userspace's problem
+by exporting the scale and letting the maths be done in userspace with
+appropriate precision.  Issue identified using roadtester testing
+framework.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- .../roadtest/tests/iio/cdc/__init__.py        |   0
- .../roadtest/roadtest/tests/iio/cdc/config    |   1 +
- .../roadtest/tests/iio/cdc/test_ad7746.py     | 323 ++++++++++++++++++
- 3 files changed, 324 insertions(+)
+ drivers/staging/iio/cdc/ad7746.c | 23 ++++++++---------------
+ 1 file changed, 8 insertions(+), 15 deletions(-)
 
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/cdc/__init__.py b/tools/testing/roadtest/roadtest/tests/iio/cdc/__init__.py
-new file mode 100644
-index 000000000000..e69de29bb2d1
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/cdc/config b/tools/testing/roadtest/roadtest/tests/iio/cdc/config
-new file mode 100644
-index 000000000000..6e9397325918
---- /dev/null
-+++ b/tools/testing/roadtest/roadtest/tests/iio/cdc/config
-@@ -0,0 +1 @@
-+CONFIG_AD7746=m
-diff --git a/tools/testing/roadtest/roadtest/tests/iio/cdc/test_ad7746.py b/tools/testing/roadtest/roadtest/tests/iio/cdc/test_ad7746.py
-new file mode 100644
-index 000000000000..60d75c0f4fe8
---- /dev/null
-+++ b/tools/testing/roadtest/roadtest/tests/iio/cdc/test_ad7746.py
-@@ -0,0 +1,323 @@
-+# SPDX-License-Identifier: GPL-2.0-only
-+# Based on test_vncl4010 Copyright Axis Communications AB
-+# TODO
-+# - Test read temperatures
-+# - Test read capacitance
-+#
-+
-+from typing import Any, Final
-+
-+from roadtest.backend.i2c import SMBusModel
-+from roadtest.core.devicetree import DtFragment, DtVar
-+from roadtest.core.hardware import Hardware
-+from roadtest.core.suite import UMLTestCase
-+from roadtest.core.modules import insmod, rmmod
-+from roadtest.core.sysfs import (
-+    I2CDriver,
-+    read_float,
-+    read_int,
-+    read_str,
-+    write_int,
-+    write_str,
-+)
-+
-+REG_STATUS: Final = 0x00
-+REG_CAP_DATA_H: Final = 0x01
-+REG_CAP_DATA_M: Final = 0x02
-+REG_CAP_DATA_L: Final = 0x03
-+REG_VT_DATA_H: Final = 0x04
-+REG_VT_DATA_M: Final = 0x05
-+REG_VT_DATA_L: Final = 0x06
-+REG_CAP_SETUP: Final = 0x07
-+REG_VT_SETUP: Final = 0x08
-+REG_EXC_SETUP: Final = 0x09
-+REG_CONFIG: Final = 0x0a
-+REG_CAP_DAC_A: Final = 0x0b
-+REG_CAP_DAC_B: Final = 0x0c
-+REG_CAP_OFFSET_H: Final = 0x0d
-+REG_CAP_OFFSET_L: Final = 0x0e
-+REG_CAP_GAIN_H: Final = 0x0f
-+REG_CAP_GAIN_L: Final = 0x10
-+REG_VOLT_GAIN_H: Final = 0x11
-+REG_VOLT_GAIN_L: Final = 0x12
-+
-+class AD7746(SMBusModel):
-+    def __init__(self, **kwargs: Any) -> None:
-+        super().__init__(regbytes=1, **kwargs)
-+        self.regs = {
-+            REG_STATUS: 0x07,
-+            REG_CAP_DATA_H: 0x00,
-+            REG_CAP_DATA_M: 0x00,
-+            REG_CAP_DATA_L: 0x00,
-+            REG_VT_DATA_H: 0x00,
-+            REG_VT_DATA_M: 0x00,
-+            REG_VT_DATA_L: 0x00,
-+            REG_CAP_SETUP: 0x00,
-+            REG_VT_SETUP: 0x00,
-+            REG_EXC_SETUP: 0x03,
-+            REG_CONFIG: 0xa0,
-+            REG_CAP_DAC_A: 0x00,
-+            REG_CAP_DAC_B: 0x00,
-+            REG_CAP_OFFSET_H: 0x80,
-+            REG_CAP_OFFSET_L: 0x00,
-+            REG_CAP_GAIN_H: 0x00,
-+            REG_CAP_GAIN_L: 0x00,
-+            REG_VOLT_GAIN_H: 0x00,
-+            REG_VOLT_GAIN_L: 0x00,
-+        }
-+
-+    def reg_read(self, addr: int) -> int:
-+        val = self.regs[addr]
-+        return val;
-+
-+    def reg_write(self, addr: int, val: int) -> None:
-+        assert addr in self.regs
-+        assert addr not in ( REG_STATUS,
-+                             REG_CAP_DATA_H, REG_CAP_DATA_M, REG_CAP_DATA_L,
-+                             REG_VT_DATA_H, REG_VT_DATA_M, REG_VT_DATA_L )
-+
-+        self.regs[addr] = val
-+
-+    def inject(self, addr: int, val: int, mask : int = ~0) -> None:
-+        old = self.regs[addr] & ~mask
-+        new = old | (val & mask)
-+        self.regs[addr] = new
-+
-+class TestAD7746(UMLTestCase):
-+    dts = DtFragment(
-+        src="""
-+&i2c {
-+    cdc@$addr$ {
-+        compatible = "adi,ad7746";
-+        reg = <0x$addr$>;
-+    };
-+};
-+        """,
-+        variables={
-+            "addr": DtVar.I2C_ADDR,
-+        },
-+    )
-+
-+    @classmethod
-+    def setUpClass(cls) -> None:
-+        insmod("ad7746")
-+
-+    @classmethod
-+    def tearDownClass(cls) -> None:
-+        rmmod("ad7746")
-+
-+    def setUp(self) -> None:
-+        self.driver = I2CDriver("ad7746")
-+        self.hw = Hardware("i2c")
-+        self.hw.load_model(AD7746)
-+
-+    def tearDown(self) -> None:
-+        self.hw.close()
-+
-+    def read_attr(self, dev, type, attr, index, extend_name=None, default_val=0) -> float:
-+        name_start = "iio:device0/in_" + type;
-+        if extend_name is None:
-+            try:
-+                scale = read_float(dev.path / (name_start + str(index) + "_" + attr))
-+            except:
-+                try:
-+                    scale = read_float(dev.path / (name_start + "_" + attr))
-+                except:
-+                    scale = default_val
-+        if extend_name is not None:
-+            try:
-+                scale = read_float(dev.path / (name_start + str(index) + "_" + extend_name + "_" + attr))
-+            except:
-+                try:
-+                    scale = read_float(dev.path / (name_start + str(index) +  "_" + attr))
-+                except:
-+                    try:
-+                        scale = read_float(dev.path / (name_start + "_" + attr))
-+                    except:
-+                        scale = default_val
-+
-+        return scale
-+
-+    def test_scales(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            scale = self.read_attr(dev, "voltage", "scale", 0, default_val=1.0)
-+            self.assertAlmostEqual(scale, 1170 / (1 << 23))
-+            scale = self.read_attr(dev, "voltage", "scale", 1, "supply", default_val=1.0)
-+            self.assertAlmostEqual(scale, 1170 * 6 / ( 1 << 23))
-+            scale = self.read_attr(dev, "capacitance", "scale", 0, default_val=1.0)
-+            self.assertEqual(scale, 0.000000488)
-+
-+    def test_read_avail(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            test = read_str(dev.path / "iio:device0/in_capacitance_sampling_frequency_available")
-+            assert test == "91 84 50 26 16 13 11 9"
-+            test = read_str(dev.path / "iio:device0/in_voltage_sampling_frequency_available")
-+            assert test == "50 31 16 8", test
-+
-+    def test_read_channels(self) -> None:
-+        with self.driver.bind(self.dts["addr"]) as dev:
-+            testscale = 1170.0 / (1 << 23)
-+            # Test endpoints and each of the bytes
-+            testvals = (( 0x0, 0x0, 0x0, (-0x800000) * testscale),
-+                        ( 0x0, 0x40, 0x0, (-0x800000 + 0x004000) * testscale),
-+                        ( 0x80, 0x0, 0x0, (0x0) * testscale),
-+                        ( 0x80, 0x0, 0x1, (0x1) * testscale),
-+                        ( 0xff, 0xff, 0xff, (0x0 + 0x7fffff) * testscale),
-+                        )
-+            scale = self.read_attr(dev, "voltage", "scale", 0, default_val=1.0)
-+            offset = self.read_attr(dev, "voltage", "offset", 0, default_val=0.0)
-+
-+            # Should really be testing that the voltage after application of
-+            # scale and offset is correct, not raw values.
-+            for h, m, l, testval in testvals:
-+                # Sequence matters as we will only write registers if the change.
-+                # Hence always proceed a vt read with a cap read and visa versa
-+                read_int(dev.path / "iio:device0/in_capacitance0_raw")
-+                # value is 24 bit and driver offsets it by -0x800000.
-+                self.hw.inject(REG_VT_DATA_H, h)
-+                self.hw.inject(REG_VT_DATA_M, m)
-+                self.hw.inject(REG_VT_DATA_L, l)
-+                value = read_int(dev.path / "iio:device0/in_voltage0_raw")
-+                self.assertAlmostEqual((value + offset) * scale, testval, 4)
-+                mock = self.hw.update_mock()
-+                mock.assert_last_reg_write(self, REG_VT_SETUP, 0x80 | 0x60)
-+                #verify capacitance read disabled
-+                cap_setup = mock.get_last_reg_write(REG_CAP_SETUP)
-+                assert(not (cap_setup & 0x80))
-+                mock.reset_mock()
-+            testscale = 1170 * 6 / (1 << 23)
-+            # Test endpoints and each of the bytes
-+            testvals = (( 0x0, 0x0, 0x0, (-0x800000) * testscale),
-+                        ( 0x0, 0x40, 0x0, (-0x800000 + 0x004000) * testscale),
-+                        ( 0x80, 0x0, 0x0, (0x0) * testscale),
-+                        ( 0x80, 0x0, 0x1, (0x1) * testscale),
-+                        ( 0xff, 0xff, 0xff, (0x0 + 0x7fffff) * testscale),
-+                        )
-+            scale = self.read_attr(dev, "voltage", "scale", 1, "supply", default_val = 1.0)
-+            for h, m, l, testval in testvals:
-+                read_int(dev.path / "iio:device0/in_capacitance0_raw")
-+                self.hw.inject(REG_VT_DATA_H, h)
-+                self.hw.inject(REG_VT_DATA_M, m)
-+                self.hw.inject(REG_VT_DATA_L, l)
-+                value = read_int(dev.path/ "iio:device0/in_voltage1_supply_raw")
-+                # Supply voltage channel is attenuated by x6
-+                self.assertAlmostEqual((value + offset) * scale, testval, 4)
-+                mock = self.hw.update_mock()
-+                mock.assert_last_reg_write(self, REG_VT_SETUP, 0x80 | 0x40)
-+                #verify capacitance read disabled
-+                cap_setup = mock.get_last_reg_write(REG_CAP_SETUP)
-+                assert(not (cap_setup & 0x80))
-+                mock.reset_mock()
-+
-+            # Only bother testing one of the temperature channels. They are very similar.
-+            testvals = (( 0x0, 0x0, 0x0, (0/2048.0 - 4096) * 1000),
-+                        ( 0x0, 0x40, 0x0, (0x004000/2048.0 - 4096) * 1000),
-+                        ( 0x80, 0x0, 0x0, (0x800000/2048.0 - 4096) * 1000),
-+                        ( 0x80, 0x0, 0x1, (0x800001/2048.0 - 4096) * 1000),
-+                        ( 0xff, 0xff, 0xff, (0xffffff/2048.0 - 4096) * 1000),
-+                        )
-+            scale = self.read_attr(dev, "temp", "scale", 0, default_val = 1.0)
-+            for h, m, l, testval in testvals:
-+                read_int(dev.path / "iio:device0/in_capacitance0_raw")
-+                self.hw.inject(REG_VT_DATA_H, h)
-+                self.hw.inject(REG_VT_DATA_M, m)
-+                self.hw.inject(REG_VT_DATA_L, l)
-+                value = read_int(dev.path/ "iio:device0/in_temp0_raw")
-+                self.assertAlmostEqual(value * scale, testval, 4)
-+                mock = self.hw.update_mock()
-+                mock.assert_last_reg_write(self, REG_VT_SETUP, 0x80 | 0x00)
-+                #verify capacitance read disabled
-+                cap_setup = mock.get_last_reg_write(REG_CAP_SETUP)
-+                assert(not (cap_setup & 0x80))
-+                mock.reset_mock()
-+
-+            testscale = 0.000000488
-+            # Test endpoints and each of the bytes
-+            testvals = (( 0x0, 0x0, 0x0, (-0x800000) * testscale),
-+                        ( 0x0, 0x40, 0x0, (-0x800000 + 0x004000) * testscale),
-+                        ( 0x80, 0x0, 0x0, (0x0) * testscale),
-+                        ( 0x80, 0x0, 0x1, (0x1) * testscale),
-+                        ( 0xff, 0xff, 0xff, (0x0 + 0x7fffff) * testscale),
-+                        )
-+
-+            scale = self.read_attr(dev, "capacitance", "scale", 0, default_val=1.0)
-+            offset = 0.0 #self.read_attr(dev, "capacitance", "offset", 0, default_val=0.0)
-+
-+            # Should really be testing that the voltage after application of
-+            # scale and offset is correct, not raw values.
-+            for h, m, l, testval in testvals:
-+                # Sequence matters as we will only write registers if the change.
-+                # Hence always proceed a vt read with a cap read and visa versa
-+                read_int(dev.path / "iio:device0/in_voltage0_raw")
-+                # value is 24 bit and driver offsets it by -0x800000.
-+                self.hw.inject(REG_CAP_DATA_H, h)
-+                self.hw.inject(REG_CAP_DATA_M, m)
-+                self.hw.inject(REG_CAP_DATA_L, l)
-+                value = read_int(dev.path / "iio:device0/in_capacitance0_raw")
-+                self.assertAlmostEqual((value + offset) * scale, testval, 9)
-+                mock = self.hw.update_mock()
-+                mock.assert_last_reg_write(self, REG_CAP_SETUP, 0x80)
-+                #verify capacitance read disabled
-+                vt_setup = mock.get_last_reg_write(REG_VT_SETUP)
-+                assert(not (vt_setup & 0x80))
-+                mock.reset_mock()
-+
-+            scale = self.read_attr(dev, "capacitance", "scale", 1, default_val=1.0)
-+            offset = 0.0 #self.read_attr(dev, "capacitance", "offset", 0, default_val=0.0)
-+
-+            # Should really be testing that the voltage after application of
-+            # scale and offset is correct, not raw values.
-+            for h, m, l, testval in testvals:
-+                # Sequence matters as we will only write registers if the change.
-+                # Hence always proceed a vt read with a cap read and visa versa
-+                read_int(dev.path / "iio:device0/in_voltage0_raw")
-+                # value is 24 bit and driver offsets it by -0x800000.
-+                self.hw.inject(REG_CAP_DATA_H, h)
-+                self.hw.inject(REG_CAP_DATA_M, m)
-+                self.hw.inject(REG_CAP_DATA_L, l)
-+                value = read_int(dev.path / "iio:device0/in_capacitance1_raw")
-+                self.assertAlmostEqual((value + offset) * scale, testval, 9)
-+                mock = self.hw.update_mock()
-+                mock.assert_last_reg_write(self, REG_CAP_SETUP, 0x80 | 0x40)
-+                #verify capacitance read disabled
-+                vt_setup = mock.get_last_reg_write(REG_VT_SETUP)
-+                assert(not (vt_setup & 0x80))
-+                mock.reset_mock()
-+
-+            # Should really be testing that the voltage after application of
-+            # scale and offset is correct, not raw values.
-+            for h, m, l, testval in testvals:
-+                # Sequence matters as we will only write registers if the change.
-+                # Hence always proceed a vt read with a cap read and visa versa
-+                read_int(dev.path / "iio:device0/in_voltage0_raw")
-+                # value is 24 bit and driver offsets it by -0x800000.
-+                self.hw.inject(REG_CAP_DATA_H, h)
-+                self.hw.inject(REG_CAP_DATA_M, m)
-+                self.hw.inject(REG_CAP_DATA_L, l)
-+                value = read_int(dev.path / "iio:device0/in_capacitance0-capacitance2_raw")
-+                self.assertAlmostEqual((value + offset) * scale, testval, 9)
-+                mock = self.hw.update_mock()
-+                mock.assert_last_reg_write(self, REG_CAP_SETUP, 0x80 | 0x20)
-+                #verify capacitance read disabled
-+                vt_setup = mock.get_last_reg_write(REG_VT_SETUP)
-+                assert(not (vt_setup & 0x80))
-+                mock.reset_mock()
-+
-+            # Should really be testing that the voltage after application of
-+            # scale and offset is correct, not raw values.
-+            for h, m, l, testval in testvals:
-+                # Sequence matters as we will only write registers if the change.
-+                # Hence always proceed a vt read with a cap read and visa versa
-+                read_int(dev.path / "iio:device0/in_voltage0_raw")
-+                # value is 24 bit and driver offsets it by -0x800000.
-+                self.hw.inject(REG_CAP_DATA_H, h)
-+                self.hw.inject(REG_CAP_DATA_M, m)
-+                self.hw.inject(REG_CAP_DATA_L, l)
-+                value = read_int(dev.path / "iio:device0/in_capacitance1-capacitance3_raw")
-+                self.assertAlmostEqual((value + offset) * scale, testval, 9)
-+                mock = self.hw.update_mock()
-+                mock.assert_last_reg_write(self, REG_CAP_SETUP, 0x80 | 0x60)
-+                #verify capacitance read disabled
-+                vt_setup = mock.get_last_reg_write(REG_VT_SETUP)
-+                assert(not (vt_setup & 0x80))
-+                mock.reset_mock()
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 7eaffb90e8c3..3caba37afc63 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -176,14 +176,16 @@ static const struct iio_chan_spec ad7746_channels[] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 0,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = TEMP_INT,
+ 	},
+ 	[TEMP_EXT] = {
+ 		.type = IIO_TEMP,
+ 		.indexed = 1,
+ 		.channel = 1,
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = TEMP_EXT,
+ 	},
+ 	[CIN1] = {
+@@ -579,18 +581,6 @@ static int ad7746_read_channel(struct iio_dev *indio_dev,
+ 
+ 	*val = get_unaligned_be24(data) - 0x800000;
+ 
+-	switch (chan->type) {
+-	case IIO_TEMP:
+-		/*
+-		 * temperature in milli degrees Celsius
+-		 * T = ((*val / 2048) - 4096) * 1000
+-		 */
+-		*val = (*val  * 125) / 256;
+-		break;
+-	default:
+-		break;
+-	}
+-
+ 	return 0;
+ }
+ 
+@@ -605,7 +595,6 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-	case IIO_CHAN_INFO_PROCESSED:
+ 		mutex_lock(&chip->lock);
+ 		ret = ad7746_read_channel(indio_dev, chan, val);
+ 		mutex_unlock(&chip->lock);
+@@ -664,6 +653,10 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 				*val *= 6;
+ 			*val2 = 23;
+ 			return IIO_VAL_FRACTIONAL_LOG2;
++		case IIO_TEMP:
++			*val = 125;
++			*val2 = 8;
++			return IIO_VAL_FRACTIONAL_LOG2;
+ 		default:
+ 			return -EINVAL;
+ 		}
 -- 
 2.36.1
 
