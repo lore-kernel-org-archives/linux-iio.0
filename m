@@ -2,116 +2,134 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 39E80C433EF
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 10:49:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 101A0CCA47E
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 10:52:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231132AbiFSKth (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Jun 2022 06:49:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58692 "EHLO
+        id S235158AbiFSKwF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Jun 2022 06:52:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60296 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiFSKte (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 06:49:34 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9DE87F586;
-        Sun, 19 Jun 2022 03:49:31 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 067BAB80BA0;
-        Sun, 19 Jun 2022 10:49:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id CAA75C34114;
-        Sun, 19 Jun 2022 10:49:26 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655635768;
-        bh=ml8xzfS/4s43QQV6uviKGJHvPVeDaTAIYELUeCzvLgQ=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=iYwwMBfyDQm0f6hP6GWsi0fTaNMVBwjaQyAC9ffT5LXRNPh87AyacMSZQ1cviJUKO
-         U0QupP6B7PkLQCztJ8acMXfDBobwVkGOOndhMrK7kp32Xf1wPqBcUSnEVCkuRYYv97
-         4Rrwz2cGasqjZ6qZL4xz6uBAoyCzzxAFysolMk9XFf42tCiOWVbZDMXaeRCSlBsDWi
-         luah1NVLlaRHYDopV8wohsVv2lCuOq0V/kIcoTydfuQi+3kZFqzSfXfnZGiLVYA8o0
-         1QOiSQkwSke8hugpr2S5uK1k0rYasiAVXDFq5w+Q9byK1uEOEgR3Fln6/KWZgNg27U
-         6QDvPFDIK8s5w==
-Date:   Sun, 19 Jun 2022 11:58:46 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     Jakob Hauser <jahau@rocketmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-Subject: Re: [PATCH v3 8/8] iio: magnetometer: yas530: Add YAS537 variant
-Message-ID: <20220619115846.7d6a8393@jic23-huawei>
-In-Reply-To: <CAHp75VemByhNAYGuP2h-5HazPZL7k5tyGc1WV2gKEdjX_5Sing@mail.gmail.com>
-References: <cover.1655509425.git.jahau@rocketmail.com>
-        <3bdb392bb75073bdfe10aab1739fee2d6c64f10c.1655509425.git.jahau@rocketmail.com>
-        <20220618162833.218dbe67@jic23-huawei>
-        <CAHp75VemByhNAYGuP2h-5HazPZL7k5tyGc1WV2gKEdjX_5Sing@mail.gmail.com>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+        with ESMTP id S232316AbiFSKwE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 06:52:04 -0400
+Received: from mail-ej1-x630.google.com (mail-ej1-x630.google.com [IPv6:2a00:1450:4864:20::630])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C805710575;
+        Sun, 19 Jun 2022 03:52:03 -0700 (PDT)
+Received: by mail-ej1-x630.google.com with SMTP id o7so16153686eja.1;
+        Sun, 19 Jun 2022 03:52:03 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=ebd6qW1bmr9UXQKliJw9JMCXnaRgcpZYnpj8vzueGKs=;
+        b=XDbkHZRn044zzJnQOw/jpQIuTiBqWAsb7n6Bk0FYupham0OnCZ89dhObPmdRWwEWxd
+         FtAmz4TYfqDr36tP/dE2fNcDBqAEij2JVPDLxG8dVkm7gAsqTbM/xzmifxG1KTt8sDuy
+         OINMBX4xqBZPpjnjeTK+iVu/Xg9Bn7UvkUhDdWPDgbh5k/q4EXDTDbM8/l4RWc/ULx/1
+         bqvlfUtAZ1nih/ZmFgjsKe9NjlheTKtnVymRFlejuivzvOBRBhwVzN0yt3kikL8SYaIh
+         Go3c0K5KvKGEz6Bb7xkOqqhdhYBjDxkJHXXNsst8qA5+yt1lImgBMhOnGH05v3H/LpOM
+         9eAw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=ebd6qW1bmr9UXQKliJw9JMCXnaRgcpZYnpj8vzueGKs=;
+        b=wBO9+D9Nd2eYreT/wmzaArnIRWBUY2MicSQy2DCyqY4eQcO3CikH69zmnQ5lnvkvub
+         W+XuS2bWpaYF4uczF7S9/6r0EqNYW4sxJe2Sbv8mCAEkAOQylA0y4ZnNopFFY8B/kXfN
+         fzTCG8WZ8dU1BpjJYohPsNJJy+Vl/dejtwg+8ZnEfOxz7guEz+PSMBjVTw/9wgvT/Cn3
+         oUdJOxHNDU/GmUbVQ8Uio3Wd7jpzzumVZ/OKFD0wcJq8xUiMQ4oPXf5vTqz98yt1g/ji
+         itlpYaSSHcS5CmU+YhV4z2tKvOMFQHcQPmAitaz026X0kS5BqVxDVNSUQRpL+QtaYBch
+         uxgQ==
+X-Gm-Message-State: AJIora8RvL+87faGkr3hgCd7DCZt2hm8EgAR3GkAvC4ILnkIuhgdaA9u
+        Cxqw30wihxo8Vuf5SbP4CRTSBo4jS6BiKSDDs0s=
+X-Google-Smtp-Source: AGRyM1uNsTXG8QbLjgaH2Otr2hEazBEbSS6akba0cYFAJ6VMblAbmj1H7bX0ZGOcPh7DPTHCaO7E0ia/Kz/pISCfI0U=
+X-Received: by 2002:a17:906:434f:b0:711:eb76:c320 with SMTP id
+ z15-20020a170906434f00b00711eb76c320mr16565501ejm.636.1655635922377; Sun, 19
+ Jun 2022 03:52:02 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+References: <20220618214009.2178567-1-aidanmacdonald.0x0@gmail.com> <20220618214009.2178567-11-aidanmacdonald.0x0@gmail.com>
+In-Reply-To: <20220618214009.2178567-11-aidanmacdonald.0x0@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Sun, 19 Jun 2022 12:51:26 +0200
+Message-ID: <CAHp75Vdfc=V8uBBF4m3pDtpjsrhqq06q=5fEBPCOiUmYQdSkGA@mail.gmail.com>
+Subject: Re: [PATCH v3 10/16] iio: adc: axp20x_adc: Minor code cleanups
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+Cc:     Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Rafael J. Wysocki" <rafael@kernel.org>, quic_gurus@quicinc.com,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Michael Walle <michael@walle.cc>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, 19 Jun 2022 12:32:56 +0200
-Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+On Sat, Jun 18, 2022 at 11:40 PM Aidan MacDonald
+<aidanmacdonald.0x0@gmail.com> wrote:
+>
+> The code may be clearer if parameters are not re-purposed to hold
+> temporary results like register values, so introduce local variables
+> as necessary to avoid that. Also, use the common FIELD_PREP macro
 
-> On Sat, Jun 18, 2022 at 5:19 PM Jonathan Cameron <jic23@kernel.org> wrote:
-> > On Sat, 18 Jun 2022 02:13:16 +0200
-> > Jakob Hauser <jahau@rocketmail.com> wrote:  
-> 
-> ...
-> 
-> > > +             for (i = 0; i < 17; i++) {  
-> >
-> > Reduce indent by doing this as multiple loops.
-> > Though even better if you can use bulk writes.
-> >
-> >                 int j = 0;
-> >                 for (i = 0; i < 12; i++) {
-> >                         ret = regmap_write(yas5xx->map, YAS537_MTC + i,
-> >                                            data[j++])
-> >                         if (ret)
-> >                                 return ret;
-> >                 }
-> >
-> >                 for (i = 0; i < 4; i++) {
-> >                         ret = regmap_write(yas5xx->map, YAS573_OFFSET_X + i,
-> >                                            data[j++]);
-> >                         if (ret)
-> >                                 return ret;
-> >                 }  
-> 
-> I guess you are referring to _noinc variants of regmap bulk operations.
-Hi Andy,
+FIELD_PREP()
 
-No. These seem to be incrementing the register address, so you don't want the _noinc
-variant as far as I can see.
+> instead of a hand-rolled version.
 
-> 
-> > > +                     if (i < 12) {
-> > > +                             ret = regmap_write(yas5xx->map,
-> > > +                                                YAS537_MTC + i,
-> > > +                                                data[i]);
-> > > +                             if (ret)
-> > > +                                     return ret;
-> > > +                     } else if (i < 15) {
-> > > +                             ret = regmap_write(yas5xx->map,
-> > > +                                                YAS537_OFFSET_X + i - 12,
-> > > +                                                data[i]);
-> > > +                             if (ret)
-> > > +                                     return ret;
-> > > +                             yas5xx->hard_offsets[i - 12] = data[i];
-> > > +                     } else {
-> > > +                             ret = regmap_write(yas5xx->map,
-> > > +                                                YAS537_HCK + i - 15,
-> > > +                                                data[i]);
-> > > +                             if (ret)
-> > > +                                     return ret;
-> > > +                     }
-> > > +             }  
-> 
+...
 
+>  #include <linux/property.h>
+>  #include <linux/regmap.h>
+>  #include <linux/thermal.h>
+> +#include <linux/bitfield.h>
+
+Keep it sorted?
+
+...
+
+> -       val = val ? 1 : 0;
+> +       regval = val ? 1 : 0;
+>
+
+I think you may drop these two lines (including blank line) and...
+
+>         switch (chan->channel) {
+>         case AXP20X_GPIO0_V:
+> -               reg = AXP20X_GPIO10_IN_RANGE_GPIO0;
+> -               regval = AXP20X_GPIO10_IN_RANGE_GPIO0_VAL(val);
+> +               regmask = AXP20X_GPIO10_IN_RANGE_GPIO0;
+> +               regval = FIELD_PREP(AXP20X_GPIO10_IN_RANGE_GPIO0, regval);
+
+...use !!val as an argument here...
+
+>                 break;
+>
+>         case AXP20X_GPIO1_V:
+> -               reg = AXP20X_GPIO10_IN_RANGE_GPIO1;
+> -               regval = AXP20X_GPIO10_IN_RANGE_GPIO1_VAL(val);
+> +               regmask = AXP20X_GPIO10_IN_RANGE_GPIO1;
+> +               regval = FIELD_PREP(AXP20X_GPIO10_IN_RANGE_GPIO1, regval);
+
+...and here.
+
+>                 break;
+>
+>         default:
+>                 return -EINVAL;
+>         }
+
+-- 
+With Best Regards,
+Andy Shevchenko
