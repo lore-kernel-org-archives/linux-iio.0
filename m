@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D7B7FCCA47A
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 18:59:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2795FCCA481
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 18:59:36 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233789AbiFSS72 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Jun 2022 14:59:28 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58148 "EHLO
+        id S235730AbiFSS7a (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Jun 2022 14:59:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236268AbiFSS66 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 14:58:58 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 50DB7BC91
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 11:58:57 -0700 (PDT)
+        with ESMTP id S236525AbiFSS7J (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 14:59:09 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F21F5BC8E
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 11:59:08 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id B918D61133
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 18:58:56 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 37511C3411D;
-        Sun, 19 Jun 2022 18:58:54 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id B26C4B80D8A
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 18:59:07 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 8B09CC341C5;
+        Sun, 19 Jun 2022 18:59:04 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655665136;
-        bh=pSqXL8PdYNWK6nFsXVudQguFqpg6OcFHYHNso3v8vbQ=;
+        s=k20201202; t=1655665146;
+        bh=3bwFemkWq2haeU1AshbnuknRT3BiXvwc87U0N/EdPpU=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hH8AYXkPDbG4+5LKzPazXLGuj86IB2D96bTnPO/WPCzqbVGaIzWtsCKxcnELrMRnT
-         Nw8Hsa7LR/oGPAC/Wfpg8+bSmWRvs+1tPCxmgazy5+Q0qsYiNcVWentN7DFDOTa76C
-         6AiH4Lr0bzvhMTUVKXoJSr+jNutOYcOmFnoLkaeEQgX+PqV1G/DS1FsD8roMtOPzlE
-         UpyMZio9OWPfdPeDciurIbe05Ocv+S6s3Pe8oXi6XT1SdYMDYbojqzT262fOIQUpLF
-         +6wPvfonnzvO4q/XQDhDC7eG6MQyYgeQUI8fg3Us4DsOmiz2Jjt+YftN4U+rTQURjr
-         p0rnTUqo/yVmw==
+        b=khB/6J7ueL3eLqwYe4xIYKQzuV4bqiduHY2KC2Z1IRutbTqpoSLlCWKt5/1TxVIwO
+         37SuThRY2MUyIySjTdZz4UptXbdmZ2BniT2OyRq7xhwbSWojVyJIm88tqGGucWIdRt
+         s9vFKcmqBdmwHdNv0Tq2hdwOyIh+4FjkaYleED6k40PdT6dU2g7bqyB4c70Bn0Glit
+         D/wpqgGM2hgMGB9MYITW+KHQW/N1/p1FmtMiWxRQD65xsZJsP0KvD8VW74T0K7iDHc
+         wzQIj+s2vCSP7vGAryAafzAU/mTw+oJbQzvAsRtP2iq7/hOyUTtV2byPRmZRBobxpn
+         aVtrJXeGvUBcw==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org,
         Andy Shevchenko <andy.shevchenko@gmail.com>,
@@ -39,9 +39,9 @@ Cc:     Michael Hennerich <michael.hennerich@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 01/17] iio: core: Increase precision of IIO_VAL_FRACTIONAL_LOG2 when possible
-Date:   Sun, 19 Jun 2022 19:58:23 +0100
-Message-Id: <20220619185839.1363503-2-jic23@kernel.org>
+Subject: [PATCH v2 05/17] staging: iio: cdc: ad7746: Use local buffer for multi byte reads.
+Date:   Sun, 19 Jun 2022 19:58:27 +0100
+Message-Id: <20220619185839.1363503-6-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220619185839.1363503-1-jic23@kernel.org>
 References: <20220619185839.1363503-1-jic23@kernel.org>
@@ -53,59 +53,50 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-With some high resolution sensors such as the ad7746 the
-build up of error when multiplying the _raw and _scale
-values together can be significant.  Reduce this affect by
-providing additional resolution in both calculation and
-formatting of result. If overflow would occur with a 1e12
-multiplier, fall back to the 1e9 used before this patch.
+I2C does not require DMA safe buffers so there is no need to ensure
+the buffers are in their own cacheline. Hence simplify things by
+using a local variable instead of embedding the buffer in the chip
+info structure.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
- drivers/iio/industrialio-core.c | 30 ++++++++++++++++++++++--------
- 1 file changed, 22 insertions(+), 8 deletions(-)
+ drivers/staging/iio/cdc/ad7746.c | 6 ++----
+ 1 file changed, 2 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index dc3e1cb9bfbd..6b401f63805f 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -674,14 +674,28 @@ static ssize_t __iio_format_value(char *buf, size_t offset, unsigned int type,
- 		else
- 			return sysfs_emit_at(buf, offset, "%d.%09u", tmp0,
- 					     abs(tmp1));
--	case IIO_VAL_FRACTIONAL_LOG2:
--		tmp2 = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
--		tmp0 = (int)div_s64_rem(tmp2, 1000000000LL, &tmp1);
--		if (tmp0 == 0 && tmp2 < 0)
--			return sysfs_emit_at(buf, offset, "-0.%09u", abs(tmp1));
--		else
--			return sysfs_emit_at(buf, offset, "%d.%09u", tmp0,
--					     abs(tmp1));
-+	case IIO_VAL_FRACTIONAL_LOG2: {
-+		u64 t1, t2, mult;
-+		int integer, precision;
-+		bool neg = vals[0] < 0;
-+
-+		if (vals[0] > ULLONG_MAX / PICO) {
-+			mult = NANO;
-+			precision = 9;
-+		} else {
-+			mult = PICO;
-+			precision = 12;
-+		}
-+		t1 = shift_right((u64)abs(vals[0]) * mult, vals[1]);
-+		integer = (int)div64_u64_rem(t1, mult, &t2);
-+		if (integer == 0 && neg)
-+			return sysfs_emit_at(buf, offset, "-0.%0*llu",
-+					     precision, abs(t2));
-+		if (neg)
-+			integer *= -1;
-+		return sysfs_emit_at(buf, offset, "%d.%0*llu", integer,
-+				     precision, abs(t2));
-+	}
- 	case IIO_VAL_INT_MULTIPLE:
- 	{
- 		int i;
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index df12fdb20662..f909b841c4d6 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -94,8 +94,6 @@ struct ad7746_chip_info {
+ 	u8	vt_setup;
+ 	u8	capdac[2][2];
+ 	s8	capdac_set;
+-
+-	u8 data[3] ____cacheline_aligned;
+ };
+ 
+ enum ad7746_chan {
+@@ -520,6 +518,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+ 	int ret, delay, idx;
+ 	u8 regval, reg;
++	u8 data[3];
+ 
+ 	mutex_lock(&chip->lock);
+ 
+@@ -544,11 +543,10 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 						    chan->address >> 8,
+ 						    sizeof(chip->data),
+ 						    chip->data);
+-
+ 		if (ret < 0)
+ 			goto out;
+ 
+-		*val = get_unaligned_be24(chip->data) - 0x800000;
++		*val = get_unaligned_be24(data) - 0x800000;
+ 
+ 		switch (chan->type) {
+ 		case IIO_TEMP:
 -- 
 2.36.1
 
