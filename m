@@ -2,130 +2,77 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 94A2DCCA481
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 19:01:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AE73DC43334
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 22:59:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230121AbiFSTBT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Jun 2022 15:01:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58352 "EHLO
+        id S232915AbiFSW7A (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Jun 2022 18:59:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59800 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236491AbiFSS7d (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 14:59:33 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4872BBC8E
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 11:59:32 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id E9ABAB80D6F
-        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 18:59:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id ADADFC34114;
-        Sun, 19 Jun 2022 18:59:27 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655665169;
-        bh=VXFhydopQSl3sgAET4zWMBD8bvYfX4DlZXF455MN9CY=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=i6+/v3VGzlY1RSBY+YrNRkvRG6ZXAnIBXhAIGA1aicwNO3Va9wPhsQqop0QlqLJV5
-         NUxRyyzEa4HJKdEV9VGbSm3andQKp5Z+9OQO6w0rlmq99R3OmJDVE2iuMff+dBL3Z3
-         8cr21FBq4c0vPOekWK/JZBWJ0w8HK4c6BseJineF+nuNv65Ag74xlX9oxE+ME6UBQy
-         LUGrEGrZH2gf6xTAPD8+Z3/3M7iHe1gjtlJLBv1DmXqjYYrvhSk9NDuWV0NC+h9W9v
-         dLVq3C6YeZTQ2+61t0Xa0N0TzugS5UJ/DkSTCkJXosuRAgz5FSXGk7EoX/5vj6AF6Y
-         OFpi9rerx9nKw==
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org,
-        Andy Shevchenko <andy.shevchenko@gmail.com>,
-        Peter Rosin <peda@axentia.se>
-Cc:     Michael Hennerich <michael.hennerich@analog.com>,
+        with ESMTP id S231539AbiFSW67 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 18:58:59 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AEBB2DCB
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 15:58:58 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id c13so8314284eds.10
+        for <linux-iio@vger.kernel.org>; Sun, 19 Jun 2022 15:58:58 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=4Tt7vn55TaGPlO3Jmka2oSGa/GCcjJ+9HdZrCafb4VU=;
+        b=M7IvLzL3jZz/Qa5zsbH6qycgnzdeYiui8RFlFHpZFitiFjgLY7j7C5CffSkj6YbNMq
+         eZQzXyBMFy68ApYmCqngatqmhJsWcZryu6X60n+/5USVXZQ1cVMIrLDagvifj+/7yZ4f
+         djjIKfdPiUyxnRUFZV/Y+oQpLafgM3tnRn94Q4gJPCm8I2vuema9+V9EO5uLYFOCvDlb
+         12usmCxvvVw61xXGeOlQRuH/nh3mKBEjCL9qkk2yEdjMB9cCneVPZI199w4reUmqMGJj
+         jfzqht0iCceGQMgYuSipJNDwYIVU89QQpZoDtsCTwMlVFUrBenUussBGfgF6G9as5hUv
+         bx0w==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=4Tt7vn55TaGPlO3Jmka2oSGa/GCcjJ+9HdZrCafb4VU=;
+        b=3nPruhaSt/BD0AoAYMQukkJubXwyo/ON/fU/eSbVq8+DQ68hICvkijwLKDXeJq3FPy
+         hbGxDI9uQdUr6FcHfE64kjCxDSzoKab26w9c5J+HDrpN01hWtrsOBqOsJomfyl4xICG0
+         YjTRbZ5PDplT4IE8r/Y4/FD8Wy0Muj+I96jtUESUDp13+eoeDR6qodTCg6YmzMA8S6DO
+         SVeOgz2mAZgvJiibRrT8j9Q4MWeNLk4Uqox3BfYLCiagjHeud8y1A6GQ1TA8dNMjgCUG
+         9+qz0Ibx501eU1K3vaIbE96s98duh2MOnH/Bkf/Fkmu6EikYxsnPro5sGYR7+PtAjkx9
+         rkgg==
+X-Gm-Message-State: AJIora+CZ+AId4Td7TSTytbnRdNy2MR7nbCHSggnNwaNaIQHo2xb2vDZ
+        4vlfOU0Jh+u6I2ed956w3lsDd+TmGHzmDEsBHRM=
+X-Google-Smtp-Source: AGRyM1vBmYx7d55eNUWk8kmh/vziTS/kAHsGRwqcaeAXmw+HiZBPhxa7r+VDFCeKoDxHWI7j0rldL0gMz9Rn15W8pNQ=
+X-Received: by 2002:a05:6402:f8d:b0:435:6df2:68a with SMTP id
+ eh13-20020a0564020f8d00b004356df2068amr11632530edb.209.1655679537137; Sun, 19
+ Jun 2022 15:58:57 -0700 (PDT)
+MIME-Version: 1.0
+References: <20220619185839.1363503-1-jic23@kernel.org> <20220619185839.1363503-3-jic23@kernel.org>
+In-Reply-To: <20220619185839.1363503-3-jic23@kernel.org>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 20 Jun 2022 00:58:20 +0200
+Message-ID: <CAHp75VeEzASC+0wR31CsidAxGLG6uQAsb5wYWYgeEVeLrPNZMA@mail.gmail.com>
+Subject: Re: [PATCH v2 02/17] iio: ABI: Fix wrong format of differential
+ capacitance channel ABI.
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio <linux-iio@vger.kernel.org>,
+        Peter Rosin <peda@axentia.se>,
+        Michael Hennerich <michael.hennerich@analog.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v2 14/17] staging: iio: ad7746: White space cleanup
-Date:   Sun, 19 Jun 2022 19:58:36 +0100
-Message-Id: <20220619185839.1363503-15-jic23@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220619185839.1363503-1-jic23@kernel.org>
-References: <20220619185839.1363503-1-jic23@kernel.org>
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Sun, Jun 19, 2022 at 8:58 PM Jonathan Cameron <jic23@kernel.org> wrote:
+>
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+>
+> in_ only occurs once in these attributes.
 
-Tidy up some trivial whitespace issues.
+Shouldn't this be a fix independently of the series context?
+If so, adding a Fixes tag?
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
----
- drivers/staging/iio/cdc/ad7746.c | 17 +++++++----------
- 1 file changed, 7 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index 70dfb35d6135..480f2734b5ad 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -19,9 +19,7 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- 
--/*
-- * AD7746 Register Definition
-- */
-+/* AD7746 Register Definition */
- 
- #define AD7746_REG_STATUS		0
- #define AD7746_REG_CAP_DATA_HIGH	1
-@@ -242,12 +240,12 @@ static const struct iio_chan_spec ad7746_channels[] = {
- 
- /* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
- static const unsigned char ad7746_vt_filter_rate_table[][2] = {
--	{50, 20 + 1}, {31, 32 + 1}, {16, 62 + 1}, {8, 122 + 1},
-+	{ 50, 20 + 1 }, { 31, 32 + 1 }, { 16, 62 + 1 }, { 8, 122 + 1 },
- };
- 
- static const unsigned char ad7746_cap_filter_rate_table[][2] = {
--	{91, 11 + 1}, {84, 12 + 1}, {50, 20 + 1}, {26, 38 + 1},
--	{16, 62 + 1}, {13, 77 + 1}, {11, 92 + 1}, {9, 110 + 1},
-+	{ 91, 11 + 1 }, { 84, 12 + 1 }, { 50, 20 + 1 }, { 26, 38 + 1 },
-+	{ 16, 62 + 1 }, { 13, 77 + 1 }, { 11, 92 + 1 }, { 9, 110 + 1 },
- };
- 
- static int ad7746_set_capdac(struct ad7746_chip_info *chip, int channel)
-@@ -730,6 +728,7 @@ static int ad7746_probe(struct i2c_client *client,
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
- 	if (!indio_dev)
- 		return -ENOMEM;
-+
- 	chip = iio_priv(indio_dev);
- 	mutex_init(&chip->lock);
- 
-@@ -780,8 +779,8 @@ static int ad7746_probe(struct i2c_client *client,
- 		}
- 	}
- 
--	ret = i2c_smbus_write_byte_data(chip->client,
--					AD7746_REG_EXC_SETUP, regval);
-+	ret = i2c_smbus_write_byte_data(chip->client, AD7746_REG_EXC_SETUP,
-+					regval);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -794,7 +793,6 @@ static const struct i2c_device_id ad7746_id[] = {
- 	{ "ad7747", 7747 },
- 	{}
- };
--
- MODULE_DEVICE_TABLE(i2c, ad7746_id);
- 
- static const struct of_device_id ad7746_of_match[] = {
-@@ -803,7 +801,6 @@ static const struct of_device_id ad7746_of_match[] = {
- 	{ .compatible = "adi,ad7747" },
- 	{ },
- };
--
- MODULE_DEVICE_TABLE(of, ad7746_of_match);
- 
- static struct i2c_driver ad7746_driver = {
 -- 
-2.36.1
-
+With Best Regards,
+Andy Shevchenko
