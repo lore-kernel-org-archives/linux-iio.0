@@ -2,125 +2,171 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7E0C6C433EF
-	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 11:30:31 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 781ACCCA482
+	for <linux-iio@archiver.kernel.org>; Sun, 19 Jun 2022 11:30:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236370AbiFSLaa (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 19 Jun 2022 07:30:30 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54746 "EHLO
+        id S236499AbiFSLa5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 19 Jun 2022 07:30:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55202 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233282AbiFSLaa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 07:30:30 -0400
-Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6837E6153;
-        Sun, 19 Jun 2022 04:30:29 -0700 (PDT)
-Received: by mail-ed1-x533.google.com with SMTP id b8so11504044edj.11;
-        Sun, 19 Jun 2022 04:30:29 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=dii8VuYLfhheu24I0H2mSS/JbdyBYyJrhuHrjEWNep8=;
-        b=H73WJ5wS/lcH7ESxBi9N6v0fuq/imzTT243AhNEWbotV+kDycqp4amFwqxVGWPgrEM
-         mfVge7TEHyEOTmFtB26nQkyyGsBe3M2dST4La+SYhuIxfRopySqhZB8tLTQdh4fC0oQr
-         ubNBezbWf3L581nUvkDuv/j8WdvmkmkDzW5bR7EaaaJWHA7hrgI/tcQT2hpZ2l1TOcv4
-         Kala75ia0q4xpBopGv1xYG9EwogOpWgZIY/Cdt5KP5wpcTqypPiom/w5jkKcqT0LzIz9
-         SXoHX7rI+eNCdbZVojAgnX4Aq8Ftoy4DG0X0NA8OaRvqDnEdoEVdkiSZF2AWY/ZqjTl/
-         MMug==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=dii8VuYLfhheu24I0H2mSS/JbdyBYyJrhuHrjEWNep8=;
-        b=jdK01oSusDBJYu9b9a7zClMmgZSdm13/MicFwTOpxzW+K8rKeTL8GrrcyQQbdTMISi
-         FuCMw7xZR+/DWdL4aO/8MOOgWXIB+c8W8XDzou/6tHysSjA02tPnP29cRHu/oUnPxL6g
-         jgCnQxb22gDt4BZijziP/dDd4efRlM3a4Us7bv9BAQ3+DLhSI64wE1JSXx6tZpMCcQoE
-         2qSPzrfCHrU2Zu11kyBMc1gpMQ+j76U3ey9iISLa6j1sQCH1luqsCAKLrIY2uQoWA8KC
-         fC/Ma8V90Hg1dBD3gQ2UDimqa2sHxkHamxjnjC/9yUXNYu8N25xCCw3YBPsBWhu0anEt
-         2jMg==
-X-Gm-Message-State: AJIora9dhvpwGbGy+Vuax1xaxLH/DKvXC7lriXB94u/lcJEMyDVHUIBQ
-        5Nlj3aGA6tDrMMDcnTlMff09IjuC/PigmDOTTvc=
-X-Google-Smtp-Source: AGRyM1tmCPFLldxcHibE0j0SJ2ekIyeJvZqio2SLPBqgBP6Z9t1TIuL93zuILFdc1FEXNfnQrLKTO/klpl+Lyo7EkCo=
-X-Received: by 2002:aa7:d29a:0:b0:435:705f:1319 with SMTP id
- w26-20020aa7d29a000000b00435705f1319mr7652411edq.54.1655638227941; Sun, 19
- Jun 2022 04:30:27 -0700 (PDT)
+        with ESMTP id S233282AbiFSLa4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Jun 2022 07:30:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 147E365F6;
+        Sun, 19 Jun 2022 04:30:55 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id C1FE5B80CFE;
+        Sun, 19 Jun 2022 11:30:53 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id B1CA1C3411D;
+        Sun, 19 Jun 2022 11:30:49 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1655638252;
+        bh=M4FK7HUp/K1RW0AhfhWOuHD0fUg2fTC1IQ6P6Bs9+vU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=pMgcolAP5FJaAf+vJwXmXF0k196/rK/GjR9CrIN/CB+pN5INLsLktAnAfWlpTBAUa
+         b6zZNhQYGnIrA8RMzXWDATN71HWHgkR5UuRLOXHEc42pGpv7hnB3QbcIwS19F1Up44
+         FJo36uP+KCzv20hzFhhFIFJOIQCqNdZAQW9IaJyL+JsxVb9BhaZYMSufQEk57AuBxj
+         9rEedyS7s91SGOz+QheEcCo8Bx6VqzoIGFqEGJzim5iXJHiBTMCD9khoEL3q4akAOe
+         L2W416lS55o9cBsi04/IiUy3MOxUiRo1JGfKX2Pdodu6DWVJXFD/obhoc7mYQIUuBT
+         wmWci2YRZS+bg==
+Date:   Sun, 19 Jun 2022 12:40:09 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
+        "shawnguo@kernel.org" <shawnguo@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "andy.shevchenko@gmail.com" <andy.shevchenko@gmail.com>,
+        "stephan@gerhold.net" <stephan@gerhold.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 3/3] dt-bindings: iio: accel: add dt-binding schema
+ for msa311 accel driver
+Message-ID: <20220619124009.65bb16f4@jic23-huawei>
+In-Reply-To: <20220616104211.9257-4-ddrokosov@sberdevices.ru>
+References: <20220616104211.9257-1-ddrokosov@sberdevices.ru>
+        <20220616104211.9257-4-ddrokosov@sberdevices.ru>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-References: <20220618214009.2178567-1-aidanmacdonald.0x0@gmail.com> <20220618214009.2178567-15-aidanmacdonald.0x0@gmail.com>
-In-Reply-To: <20220618214009.2178567-15-aidanmacdonald.0x0@gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sun, 19 Jun 2022 13:29:51 +0200
-Message-ID: <CAHp75Veftw80qGh69CMDTCniwJwN_-_2k_7xBACdAPa8ZJ4MGg@mail.gmail.com>
-Subject: Re: [PATCH v3 14/16] power: axp20x_battery: Add constant charge
- current table
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Rafael J. Wysocki" <rafael@kernel.org>, quic_gurus@quicinc.com,
-        Sebastian Reichel <sebastian.reichel@collabora.com>,
-        Michael Walle <michael@walle.cc>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Jun 18, 2022 at 11:40 PM Aidan MacDonald
-<aidanmacdonald.0x0@gmail.com> wrote:
->
-> Add a table-based lookup method for constant charge current,
-> which is necessary when the setting cannot be represented as
-> a linear range.
->
-> This also replaces the hard-coded 300 mA default ccc setting
-> if the DT-specified value is unsupported; the minimum value
-> for the device is now set exactly instead of relying on the
-> value being rounded down to a supported value.
+On Thu, 16 Jun 2022 10:42:17 +0000
+Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
 
-...
+> Introduce devicetree binding json-schema for MSA311 tri-axial,
+> low-g accelerometer driver.
+> 
+> Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Hi Dmitry,
 
-> +static int axp20x_get_constant_charge_current_sel(struct axp20x_batt_ps *axp_batt,
-> +                                                 int charge_current)
-> +{
-> +       int i;
+A few trivial suggestions to drop description entries that don't
+useful information.
+
+One thing we often end up adding very soon after new bindings are
+introduced is power supplies.  If sensible to do so, it's better
+to introduce them at the start and save on the noise.
+Looks like this one just needs a property entry of
+
+  vdd-supply: true
+
+Obviously you then need to get it in the driver and turn it on
+(+ off via a devm_add_action_or_reset() call) as minimal support.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  .../bindings/iio/accel/memsensing,msa311.yaml | 52 +++++++++++++++++++
+>  MAINTAINERS                                   |  1 +
+>  2 files changed, 53 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+> new file mode 100644
+> index 000000000000..072632708d42
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+> @@ -0,0 +1,52 @@
+> +# SPDX-License-Identifier: GPL-2.0-only OR BSD-2-Clause
 > +
-> +       if (axp_batt->data->ccc_table) {
-> +               for (i = AXP20X_CHRG_CTRL1_TGT_CURR; i >= 0; --i) {
-
-i-- should give the same result.
-
-> +                       if (axp_batt->data->ccc_table[i] <= charge_current)
-> +                               return i;
-> +               }
+> +%YAML 1.2
+> +---
+> +$id: "http://devicetree.org/schemas/iio/accel/memsensing,msa311.yaml#"
+> +$schema: "http://devicetree.org/meta-schemas/core.yaml#"
 > +
-> +               return -EINVAL;
-> +       }
+> +title: MEMSensing digital 3-Axis accelerometer
+> +
+> +maintainers:
+> +  - Dmitry Rokosov <ddrokosov@sberdevices.ru>
+> +
+> +description: |
+> +  MSA311 is a tri-axial, low-g accelerometer with I2C digital output for
+> +  sensitivity consumer applications. It has dynamical user selectable full
+> +  scales range of +-2g/+-4g/+-8g/+-16g and allows acceleration measurements
+> +  with output data rates from 1Hz to 1000Hz.
+> +  Datasheet can be found at following URL
+> +  https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.pdf
+> +
+> +properties:
+> +  compatible:
+> +    const: memsensing,msa311
+> +
+> +  reg:
+> +    maxItems: 1
+> +    description: I2C registers address
 
-> +       i = (charge_current - axp_batt->data->ccc_offset) / axp_batt->data->ccc_scale;
+No need for description. It always means that for i2c devices.
 
 > +
+> +  interrupts:
+> +    maxItems: 1
+> +    description: optional I2C int pin can be freely mapped to specific func
 
-No need to have a blank line here.
+Why I2C int?  Is there anything associating it with i2c specifically?
 
-> +       if (i > AXP20X_CHRG_CTRL1_TGT_CURR || i < 0)
-> +               return -EINVAL;
+I'm not sure the description adds anything useful for this so I'd
+drop it.
+
 > +
-> +       return i;
-> +}
+> +required:
+> +  - compatible
+> +  - reg
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    i2c {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        accelerometer@62 {
+> +            compatible = "memsensing,msa311";
+> +            reg = <0x62>;
+> +            interrupt-parent = <&gpio_intc>;
+> +            interrupts = <29 IRQ_TYPE_EDGE_RISING>;
+> +        };
+> +    };
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 55aeb25c004c..be39e5c214fe 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -12482,6 +12482,7 @@ MEMSENSING MICROSYSTEMS MSA311 ACCELEROMETER DRIVER
+>  M:	Dmitry Rokosov <ddrokosov@sberdevices.ru>
+>  L:	linux-iio@vger.kernel.org
+>  S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/accel/memsensing,msa311.yaml
+>  F:	drivers/iio/accel/msa311.c
+>  
+>  MEN A21 WATCHDOG DRIVER
 
--- 
-With Best Regards,
-Andy Shevchenko
