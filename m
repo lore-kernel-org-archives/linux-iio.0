@@ -2,68 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40137C433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 20 Jun 2022 15:23:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEB1ECCA47C
+	for <linux-iio@archiver.kernel.org>; Mon, 20 Jun 2022 15:48:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244242AbiFTPXB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 20 Jun 2022 11:23:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52636 "EHLO
+        id S233412AbiFTPso (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 20 Jun 2022 11:48:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48050 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232920AbiFTPWn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jun 2022 11:22:43 -0400
-Received: from mail.altsetonline.com (mail.altsetonline.com [51.254.119.51])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5FD7E25F9
-        for <linux-iio@vger.kernel.org>; Mon, 20 Jun 2022 08:17:38 -0700 (PDT)
-Received: by mail.altsetonline.com (Postfix, from userid 1002)
-        id D6D4F231C1; Mon, 20 Jun 2022 15:16:09 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=altsetonline.com;
-        s=mail; t=1655738203;
-        bh=ZWOA/1seUbDdknp7vWPZTi/LTxkJxgWJ33h0PDOotrA=;
-        h=Date:From:To:Subject:From;
-        b=HBIloSMVOxr9gsVCNJuZ/wqhdocN2sD1fkGngnQrFEUKBfkzYRqL6ludOQv/4RW98
-         CpHIbOfu2rz30SpRWmBMKwOGE/xbOrrWRyn9uuvw/oYvtKBbEkPVv8l1yiJR01QI66
-         x90cfr2Vxfw/BznS/Yjr5riWtOLY585uhvSDv+q7CkxOBH0DAj6n6GxIDg2e5P0Wcl
-         GRVczFei/PLz0EKcU1GnwWXVFaqCu+ZPwPQUa3vHK261Y/fyDRA7B1bL5jpZqHgcFr
-         ekCtoEbG6+3nlivTmmcqviCykdub8/N8YT22PL90tM1flfsVz5hSBhh+lJEi4pUYkY
-         Zcu6ZHj4MCaqg==
-Received: by mail.altsetonline.com for <linux-iio@vger.kernel.org>; Mon, 20 Jun 2022 15:15:56 GMT
-Message-ID: <20220620143000-0.1.14.5cda.0.e0tujb8a9p@altsetonline.com>
-Date:   Mon, 20 Jun 2022 15:15:56 GMT
-From:   "Walker Cooney" <walker.cooney@altsetonline.com>
-To:     <linux-iio@vger.kernel.org>
-Subject: SEO analysis 
-X-Mailer: mail.altsetonline.com
+        with ESMTP id S244329AbiFTPsk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Jun 2022 11:48:40 -0400
+Received: from mx07-00178001.pphosted.com (mx07-00178001.pphosted.com [185.132.182.106])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7D6A1FD3A;
+        Mon, 20 Jun 2022 08:48:39 -0700 (PDT)
+Received: from pps.filterd (m0288072.ppops.net [127.0.0.1])
+        by mx07-00178001.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 25KEiC4u002735;
+        Mon, 20 Jun 2022 17:48:14 +0200
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=foss.st.com; h=from : to : cc :
+ subject : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding : content-type; s=selector1;
+ bh=zPr/nDv+NqgCll4/QE6301YdTarimLKEYjm6hZt54cU=;
+ b=3QrMbbUQhJfejLee/ZUMrRps4gsh9KU/5BNqES9+Y1FM8bHXgXX3LfDRplf3l4mjVHon
+ 1DNovKqTAHNFtTJ6gMbtb/ncA5PoiDf4gIWlecpfU63y/qjmQeXt3eXHxNTfSxKG0QsV
+ A4e94mhm5/JFdYG6AuPhPUj1A8acMdkMpMC7b/aqhU8lmDwfqPTuLoenH+3eNR/g+kNI
+ w9qpwgTzjBZSu6IU6L2oJKxuFX0szRfGgrlDFuJgAioXHhGbLh11juTXP+Vj+DCz9JlK
+ u4o6kXi3xeZGTVs3WnqSI4+J+X9VKwGcJApVv1rZ6L2vhD05NrLhdsZZmp+Yc4RdZ8n+ ng== 
+Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
+        by mx07-00178001.pphosted.com (PPS) with ESMTPS id 3gs71tmchc-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 20 Jun 2022 17:48:14 +0200
+Received: from euls16034.sgp.st.com (euls16034.sgp.st.com [10.75.44.20])
+        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 96F42100038;
+        Mon, 20 Jun 2022 17:48:13 +0200 (CEST)
+Received: from Webmail-eu.st.com (shfdag1node1.st.com [10.75.129.69])
+        by euls16034.sgp.st.com (STMicroelectronics) with ESMTP id 90F7722ECEF;
+        Mon, 20 Jun 2022 17:48:13 +0200 (CEST)
+Received: from localhost (10.75.127.119) by SHFDAG1NODE1.st.com (10.75.129.69)
+ with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2308.20; Mon, 20 Jun
+ 2022 17:48:13 +0200
+From:   Olivier Moysan <olivier.moysan@foss.st.com>
+To:     Alexandre Torgue <alexandre.torgue@foss.st.com>,
+        Fabrice Gasnier <fabrice.gasnier@foss.st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Olivier Moysan <olivier.moysan@foss.st.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Wan Jiabing <wanjiabing@vivo.com>
+CC:     <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <linux-stm32@st-md-mailman.stormreply.com>
+Subject: [PATCH 2/2] iio: adc: stm32-adc: disable adc before calibration
+Date:   Mon, 20 Jun 2022 17:47:38 +0200
+Message-ID: <20220620154738.801706-3-olivier.moysan@foss.st.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220620154738.801706-1-olivier.moysan@foss.st.com>
+References: <20220620154738.801706-1-olivier.moysan@foss.st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 8bit
+Content-Type: text/plain
+X-Originating-IP: [10.75.127.119]
+X-ClientProxiedBy: GPXDAG2NODE5.st.com (10.75.127.69) To SHFDAG1NODE1.st.com
+ (10.75.129.69)
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.64.514
+ definitions=2022-06-20_05,2022-06-17_01,2022-02-23_01
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hello,
+The calibration is launched from prepare callback.
+The ADC state when entering this function may be unknown as the
+ADC may have been left enabled by boot stage.
+One prerequisite for ADC calibration is to have ADC in disabled state.
+If the calibration is started when ADC is still enabled, the behavior is
+unpredictable, and the calibration may fail with a timeout error.
 
-would you like to reach more clients?
+Force ADC to disabled state in stm32h7_adc_selfcalib().
+ADC enabling is ensured by stm32h7_adc_enable() call,
+before leaving prepare callback.
 
-As one of the first SEO agencies in Europe, we=E2=80=99ve introduced SEO =
-360 service (SEO, UX, and SEM), which assures a multidimensional approach=
- to optimising company=E2=80=99s visibility online and increasing website=
- traffic.
+Signed-off-by: Olivier Moysan <olivier.moysan@foss.st.com>
+---
+ drivers/iio/adc/stm32-adc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
-We provide a free consultation with our specialist, during which we will =
-conduct a detailed analysis of your website or e-shop, positioning indica=
-tors and check the actions and results achieved by your competitors.
+diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+index 80e333f65ddd..3985fe972892 100644
+--- a/drivers/iio/adc/stm32-adc.c
++++ b/drivers/iio/adc/stm32-adc.c
+@@ -1019,6 +1019,9 @@ static int stm32h7_adc_selfcalib(struct iio_dev *indio_dev)
+ 	if (adc->cal.calibrated)
+ 		return true;
+ 
++	/* ADC must be disabled for calibration */
++	stm32h7_adc_disable(indio_dev);
++
+ 	/*
+ 	 * Select calibration mode:
+ 	 * - Offset calibration for single ended inputs
+-- 
+2.25.1
 
-Our clients gain notable results by using a dedicated strategy, extensive=
- website analytics, technical optimisation, adding new subpages and link =
-building.
-
-With 14 years of experience and the skills of over 350 specialists workin=
-g on 3 continents, you can increase your sales and become an industry lea=
-der.
-
-Please let us know if you want to learn more about our methods and possib=
-le results.
-
-Yours sincerely,
-
-Walker Cooney
