@@ -2,138 +2,131 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 63503C433EF
-	for <linux-iio@archiver.kernel.org>; Tue, 21 Jun 2022 20:21:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 3DA1BCCA473
+	for <linux-iio@archiver.kernel.org>; Tue, 21 Jun 2022 20:21:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1354299AbiFUUVz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 21 Jun 2022 16:21:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57460 "EHLO
+        id S1354303AbiFUUV4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 21 Jun 2022 16:21:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57476 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1354270AbiFUUVy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jun 2022 16:21:54 -0400
+        with ESMTP id S1354270AbiFUUV4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Jun 2022 16:21:56 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 348BF2613C
-        for <linux-iio@vger.kernel.org>; Tue, 21 Jun 2022 13:21:54 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5F5AE1D31D
+        for <linux-iio@vger.kernel.org>; Tue, 21 Jun 2022 13:21:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id C519A6181D
-        for <linux-iio@vger.kernel.org>; Tue, 21 Jun 2022 20:21:53 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 75E86C3411C;
-        Tue, 21 Jun 2022 20:21:45 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id E4D8C6181D
+        for <linux-iio@vger.kernel.org>; Tue, 21 Jun 2022 20:21:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 9F8DAC341C8;
+        Tue, 21 Jun 2022 20:21:52 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1655842913;
-        bh=eyyNvKFjiVDcdums7UNe2lOc28lwGs3At/OB42tTvyw=;
-        h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=mex9QNGTPEv7yZSR6xycGIrTeXtjc14WzDIhuSkx0jmw5+ZCLexgvKY8xD+hIq942
-         D6H8sOshRlwoHaIGZ/HuOhBQU7uf1bGfIPjzIDLO/x0g5Ht4wjgzrd17ytyq2ZAv2s
-         Mi6jplzrx6D13IXlPBgpxDVJtFbmgt0U2EY1sTW93FQQmx2oJ1givQDrcOWz1XafYm
-         T+zkwg54o9u4CUAADHWf7Ye3LIKyB0XkOg/ZrVEYSSnzQ3xTObL4UKuTY2czEttjWy
-         ZJZFdT1lsGrRZGgWBs+3j6ZaVoi+yW98iuNENZyWXHID34EIk4DDCRdO/yGY54/NOu
-         SteKYjpYKa/BA==
+        s=k20201202; t=1655842914;
+        bh=cqInZ8yg+41pRAR7Y1Ef4Sk6DhDP0X1rWqWoxzBWSww=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=sFi9/wNlNYgVo3xXtfDe1i+wvoYdWgu76KNvkheTKje4gsWZDB0uFhc+iXZNObxKr
+         gg2yhu6tt0wnlU7HU8KZDIHg9wu2JO1YwAuH5abuXSkFZE84TkFL/s/IemhDuPEJAl
+         OxhD2XAm3YLF0g14m/6owc5cwOsfAl54IEFrR/l73ox35jALyUaiuC6ahHHyeX4hr3
+         NbTNZMBTWomp1rlxFokxxtG26oLRdiDlm35E/xJlSDVx6a4bxcDRTwaJG8daknYE1s
+         k4ycI4ULsiMQDPFzbWZMBdfD/B7a2oodjPQnXdBLQW9OWKg5nRcit9WEioNXlq/iWm
+         YkGiY8zpGrOPQ==
+Date:   Tue, 21 Jun 2022 21:31:18 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>
-Cc:     Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Brian Masney <masneyb@onstation.org>,
-        David Heidelberg <david@ixit.cz>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Christian Eggers <ceggers@arri.de>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Eugen Hristev <eugen.hristev@microchip.com>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Haibo Chen <haibo.chen@nxp.com>,
-        Hui Liu <hui.liu@mediatek.com>,
-        Joe Sandom <joe.g.sandom@gmail.com>,
-        "Ismail H . Kose" <ihkose@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Ludovic Desroches <ludovic.desroches@microchip.com>,
-        Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Mathieu Othacehe <m.othacehe@gmail.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
-        Parthiban Nallathambi <pn@denx.de>,
-        Philippe Reynes <tremyfr@yahoo.fr>,
-        Philippe Schenker <philippe.schenker@toradex.com>,
-        Rishi Gupta <gupt21@gmail.com>,
-        Roan van Dijk <roan@protonic.nl>,
-        Stephen Boyd <swboyd@chromium.org>,
-        Tomasz Duszynski <tduszyns@gmail.com>,
-        Zhiyong Tao <zhiyong.tao@mediatek.com>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 28/36] iio: light: gp2ap002: Switch to DEFINE_RUNTIME_DEV_PM_OPS and pm_ptr()
-Date:   Tue, 21 Jun 2022 21:27:11 +0100
-Message-Id: <20220621202719.13644-29-jic23@kernel.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220621202719.13644-1-jic23@kernel.org>
-References: <20220621202719.13644-1-jic23@kernel.org>
+To:     Joe Simmons-Talbott <joetalbott@gmail.com>
+Cc:     linux-iio@vger.kernel.org,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Tomasz Duszynski <tomasz.duszynski@octakon.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Dmitry Baryshkov <dmitry.baryshkov@linaro.org>,
+        Siddartha Mohanadoss <smohanad@codeaurora.org>
+Subject: Re: [PATCH v2 0/4] 3rd set of IIO export namespaces.
+Message-ID: <20220621213118.2c3c460c@jic23-huawei>
+In-Reply-To: <YrE88tt9469NSNno@spruce>
+References: <20220604155306.422937-1-jic23@kernel.org>
+        <20220618142054.4571f2f4@jic23-huawei>
+        <YrE88tt9469NSNno@spruce>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+On Mon, 20 Jun 2022 23:37:22 -0400
+Joe Simmons-Talbott <joetalbott@gmail.com> wrote:
 
-Switching to these newer macros allows use of pm_ptr() to remove
-the unused functions and structure if !CONFIG_PM without the need to
-mark anything __maybe_unused.
+> On Sat, Jun 18, 2022 at 02:20:54PM +0100, Jonathan Cameron wrote:
+> > On Sat,  4 Jun 2022 16:53:02 +0100
+> > Jonathan Cameron <jic23@kernel.org> wrote:
+> >  =20
+> > > From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> > >=20
+> > > Changes since v1:
+> > > - Rebase (bit of fuzz in patches 1 and 4) =20
+> >=20
+> > If anyone has time to take a quick look through this lot and sanity
+> > check I haven't done anything stupid it would be much appreciated. =20
+>=20
+> FWIW, 1 through 4 look good to me.
+>=20
+> Reviewed-By: Joe Simmons-Talbott <joetalbott@gmail.com>
+>=20
+Thanks!
 
-Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/light/gp2ap002.c | 14 +++++---------
- 1 file changed, 5 insertions(+), 9 deletions(-)
+Applied to the togreg branch of iio.git and pushed out as testing to
+see if 0-day finds anything we missed.
 
-diff --git a/drivers/iio/light/gp2ap002.c b/drivers/iio/light/gp2ap002.c
-index c6d1d88d3775..e2707416f9a8 100644
---- a/drivers/iio/light/gp2ap002.c
-+++ b/drivers/iio/light/gp2ap002.c
-@@ -635,7 +635,7 @@ static int gp2ap002_remove(struct i2c_client *client)
- 	return 0;
- }
- 
--static int __maybe_unused gp2ap002_runtime_suspend(struct device *dev)
-+static int gp2ap002_runtime_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct gp2ap002 *gp2ap002 = iio_priv(indio_dev);
-@@ -660,7 +660,7 @@ static int __maybe_unused gp2ap002_runtime_suspend(struct device *dev)
- 	return 0;
- }
- 
--static int __maybe_unused gp2ap002_runtime_resume(struct device *dev)
-+static int gp2ap002_runtime_resume(struct device *dev)
- {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct gp2ap002 *gp2ap002 = iio_priv(indio_dev);
-@@ -691,12 +691,8 @@ static int __maybe_unused gp2ap002_runtime_resume(struct device *dev)
- 	return 0;
- }
- 
--static const struct dev_pm_ops gp2ap002_dev_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
--				pm_runtime_force_resume)
--	SET_RUNTIME_PM_OPS(gp2ap002_runtime_suspend,
--			   gp2ap002_runtime_resume, NULL)
--};
-+static DEFINE_RUNTIME_DEV_PM_OPS(gp2ap002_dev_pm_ops, gp2ap002_runtime_suspend,
-+				 gp2ap002_runtime_resume, NULL);
- 
- static const struct i2c_device_id gp2ap002_id_table[] = {
- 	{ "gp2ap002", 0 },
-@@ -715,7 +711,7 @@ static struct i2c_driver gp2ap002_driver = {
- 	.driver = {
- 		.name = "gp2ap002",
- 		.of_match_table = gp2ap002_of_match,
--		.pm = &gp2ap002_dev_pm_ops,
-+		.pm = pm_ptr(&gp2ap002_dev_pm_ops),
- 	},
- 	.probe = gp2ap002_probe,
- 	.remove = gp2ap002_remove,
--- 
-2.36.1
+Thanks,
+
+Jonathan
+
+> Joe
+> >=20
+> > Disadvantage of being the maintainer is there isn't anyone else you
+> > can moan about when no one reviews your patches. Of course I never
+> > moan about other maintainers and I'm sure no one ever moans
+> > about me :)
+> >  =20
+> > >=20
+> > > I sent v1 out in Feb and only got review on one patch (which I've sin=
+ce
+> > > applied - thanks Nuno).
+> > >=20
+> > > Looking for a quick sanity check of these 4 that remain from anyone w=
+ho
+> > > has the time.  Whilst this is mechanical stuff, I've made enough dumb
+> > > mistakes in such patches over the years that I still like to get a se=
+cond
+> > > set of eyes on them if at all possible!=20
+> > >=20
+> > > Cc: Tomasz Duszynski <tomasz.duszynski@octakon.com>
+> > > Cc: Nuno S=C3=A1 <nuno.sa@analog.com>
+> > > Cc: Dmitry Baryshkov <dmitry.baryshkov@linaro.org>
+> > > Cc: Siddartha Mohanadoss <smohanad@codeaurora.org>
+> > >=20
+> > > Jonathan Cameron (4):
+> > >   iio: imu: bmi160: Move exported symbols to IIO_BMI160 namespace
+> > >   iio: pressure: bmp280: Move symbol exports to IIO_BMP280 namespace
+> > >   iio: chemical: sps30: Move symbol exports into IIO_SPS30 namespace
+> > >   iio: adc: qcom-vadc: Move symbol exports to IIO_QCOM_VADC namespace
+> > >=20
+> > >  drivers/iio/adc/qcom-pm8xxx-xoadc.c  |  1 +
+> > >  drivers/iio/adc/qcom-spmi-adc5.c     |  1 +
+> > >  drivers/iio/adc/qcom-spmi-vadc.c     |  1 +
+> > >  drivers/iio/adc/qcom-vadc-common.c   | 16 ++++++++--------
+> > >  drivers/iio/chemical/sps30.c         |  2 +-
+> > >  drivers/iio/chemical/sps30_i2c.c     |  1 +
+> > >  drivers/iio/chemical/sps30_serial.c  |  1 +
+> > >  drivers/iio/imu/bmi160/bmi160_core.c |  6 +++---
+> > >  drivers/iio/imu/bmi160/bmi160_i2c.c  |  1 +
+> > >  drivers/iio/imu/bmi160/bmi160_spi.c  |  1 +
+> > >  drivers/iio/pressure/bmp280-core.c   |  2 +-
+> > >  drivers/iio/pressure/bmp280-i2c.c    |  1 +
+> > >  drivers/iio/pressure/bmp280-regmap.c |  4 ++--
+> > >  drivers/iio/pressure/bmp280-spi.c    |  1 +
+> > >  14 files changed, 24 insertions(+), 15 deletions(-)
+> > >  =20
+> >  =20
 
