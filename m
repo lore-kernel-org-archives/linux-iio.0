@@ -2,174 +2,89 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7194ECCA47D
-	for <linux-iio@archiver.kernel.org>; Wed, 22 Jun 2022 11:14:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 77E63C433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 22 Jun 2022 11:21:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1357126AbiFVLOt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 22 Jun 2022 07:14:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:54546 "EHLO
+        id S1357506AbiFVLVt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 22 Jun 2022 07:21:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57682 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1355022AbiFVLOs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jun 2022 07:14:48 -0400
-Received: from mail-wr1-x42f.google.com (mail-wr1-x42f.google.com [IPv6:2a00:1450:4864:20::42f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 324B730F73
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jun 2022 04:14:46 -0700 (PDT)
-Received: by mail-wr1-x42f.google.com with SMTP id o16so22913603wra.4
-        for <linux-iio@vger.kernel.org>; Wed, 22 Jun 2022 04:14:46 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=PUdU9WfpnqAsGBFkVc2KUHImdcpkKUBXRwogLKDyHSY=;
-        b=z/ocsiUElwq2Ol2fF5l1HRqMMaNGMSC1/+8oQHLpQWLu429YrVBR/tnvq7KNWtwIO1
-         vKJqA7rgUAiiGOKNdlwMjFurZAQLeqniaiGR74ASbDLlSriMOOzxItVhWE0QSvWSDF1z
-         wnPR/hU6q/nU74KNLjXg2X84SJR1U2jxSqWO8a/x7jRbPZXjDqGeLFevtBezqUe56R1a
-         7f0rlv+IRmpyGwRbiZXR3FrVvja2Yq3MOLg0mNs6za1kfz0V4uxdyGWKXZaA8ELytILx
-         BDkiRFg7pp2SBYMObq/aoJYfogEZJWR+YhfycgXRStqMXxha87O37ft3cnQe33+/4mvE
-         LISg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:organization:in-reply-to
-         :content-transfer-encoding;
-        bh=PUdU9WfpnqAsGBFkVc2KUHImdcpkKUBXRwogLKDyHSY=;
-        b=AGERCxXuJ/R3da1ktseIE5h8WrfVhjYRZ06hehv6nU1LJvyxOtRurTVBlQg+DZn1DA
-         3Gz/ca2g2xAdRIZYDzOfm+74iO+wNPiFwFPY4SeFzUX8FMvfkTaON47sjGuoTkkwFXp1
-         WacYG4DkduuuF1kZOFrVVv+okjKKpWqNL/CNW7zlC8h7XIp3I3cFyQOnwrervD3Iqaxo
-         b+QvTrbTgLgpgvLh1HOJXjZ5Z+vJoa7+p49ER2oa4Isz4HxB3mxWc/xizSPhrTmpiIGp
-         aHCyISULXdjRGZiGVPPGLpHXqyk/4vzhf22iyeh08pd+Kjtp5I1nqmMJg9DWZNlo0jgf
-         1yiQ==
-X-Gm-Message-State: AJIora83TJsEnWbI1nDKBUZ8qtd+Ghw/5N+tq/ROcEre7NU2smDjsRrC
-        HEqZtinNQH0Rj6cxNr9SxmdndQ==
-X-Google-Smtp-Source: AGRyM1v8ZhY0hH8c8n7TvnmAfbU48Dyk1bFg4uJSDokafOQgQ79E0o3w+OeeG5ifCToe2pBEDS6Ykw==
-X-Received: by 2002:adf:fe81:0:b0:21a:3574:ec8e with SMTP id l1-20020adffe81000000b0021a3574ec8emr2726909wrr.410.1655896484628;
-        Wed, 22 Jun 2022 04:14:44 -0700 (PDT)
-Received: from ?IPV6:2001:861:44c0:66c0:1a3a:95bd:5b55:a798? ([2001:861:44c0:66c0:1a3a:95bd:5b55:a798])
-        by smtp.gmail.com with ESMTPSA id e16-20020adfdbd0000000b0021b91ec8f6esm7841714wrj.67.2022.06.22.04.14.41
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 22 Jun 2022 04:14:43 -0700 (PDT)
-Message-ID: <d57a6c52-a9e1-5660-cd47-6f9ba2389d86@baylibre.com>
-Date:   Wed, 22 Jun 2022 13:14:40 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.1
-Subject: Re: [PATCH v8 01/16] clk: generalize devm_clk_get() a bit
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>,
-        =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>
-Cc:     Jon Hunter <jonathanh@nvidia.com>, Stephen Boyd <sboyd@kernel.org>,
-        Michael Turquette <mturquette@baylibre.com>,
-        Russell King <linux@armlinux.org.uk>,
-        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
-        Jean Delvare <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>,
-        Lars Povlsen <lars.povlsen@microchip.com>,
-        Steen Hegelund <Steen.Hegelund@microchip.com>,
-        Microchip Linux Driver Support <UNGLinuxDriver@microchip.com>,
-        linux-hwmon@vger.kernel.org,
-        linux-arm Mailing List <linux-arm-kernel@lists.infradead.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Herbert Xu <herbert@gondor.apana.org.au>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Bartosz Golaszewski <brgl@bgdev.pl>,
-        David Airlie <airlied@linux.ie>,
-        Daniel Vetter <daniel@ffwll.ch>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Jerome Brunet <jbrunet@baylibre.com>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Alessandro Zummo <a.zummo@towertech.it>,
+        with ESMTP id S1357528AbiFVLVg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Jun 2022 07:21:36 -0400
+X-Greylist: delayed 614 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Wed, 22 Jun 2022 04:19:52 PDT
+Received: from onstation.org (onstation.org [52.200.56.107])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E89983E5F0
+        for <linux-iio@vger.kernel.org>; Wed, 22 Jun 2022 04:19:52 -0700 (PDT)
+Received: from localhost (c-98-239-145-235.hsd1.wv.comcast.net [98.239.145.235])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange ECDHE (P-256) server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by onstation.org (Postfix) with ESMTPSA id B706741F4AB;
+        Wed, 22 Jun 2022 07:09:36 -0400 (EDT)
+DKIM-Filter: OpenDKIM Filter v2.11.0 onstation.org B706741F4AB
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=onstation.org;
+        s=default; t=1655896176;
+        bh=A46xSNiHgr0OtXPW/tKxAHg6N2G73umDxu2Vfa+xiqs=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=Wm2cX7E2184MUu36bDASEzhCs2zauczHqo9rbc9fJoYb+xm6M0BymNA/mSz26QfKW
+         12rXo3cqw0y20Uv6OE4dH+X0Q4lPp69braq7Nah47LLmVyxGgxPSo3tjDmuDtZKfdN
+         DL+5fecOsN2XYP0mz+OHo95lmg+lr8YiyHQTZ1Ss=
+Date:   Wed, 22 Jun 2022 07:09:36 -0400
+From:   Brian Masney <masneyb@onstation.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Paul Cercueil <paul@crapouillou.net>,
         Alexandre Belloni <alexandre.belloni@bootlin.com>,
-        Wim Van Sebroeck <wim@linux-watchdog.org>,
-        Claudiu Beznea <claudiu.beznea@microchip.com>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        Lee Jones <lee.jones@linaro.org>,
+        David Heidelberg <david@ixit.cz>,
+        Cai Huoqing <cai.huoqing@linux.dev>,
+        Christian Eggers <ceggers@arri.de>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        Eugen Hristev <eugen.hristev@microchip.com>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Haibo Chen <haibo.chen@nxp.com>,
+        Hui Liu <hui.liu@mediatek.com>,
+        Joe Sandom <joe.g.sandom@gmail.com>,
+        "Ismail H . Kose" <ihkose@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Ludovic Desroches <ludovic.desroches@microchip.com>,
         Nicolas Ferre <nicolas.ferre@microchip.com>,
-        Oleksij Rempel <linux@rempel-privat.de>,
-        Shawn Guo <shawnguo@kernel.org>,
-        Fabio Estevam <festevam@gmail.com>,
-        NXP Linux Team <linux-imx@nxp.com>,
-        Mark Brown <broonie@kernel.org>, Vinod Koul <vkoul@kernel.org>,
-        Tomislav Denis <tomislav.denis@avl.com>,
-        Heiko Stuebner <heiko@sntech.de>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Alexandre Torgue <alexandre.torgue@foss.st.com>,
-        dri-devel <dri-devel@lists.freedesktop.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        linux-i2c <linux-i2c@vger.kernel.org>,
-        Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>,
-        linux-clk <linux-clk@vger.kernel.org>,
-        LINUXWATCHDOG <linux-watchdog@vger.kernel.org>,
-        "open list:REAL TIME CLOCK (RTC) SUBSYSTEM" 
-        <linux-rtc@vger.kernel.org>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Mathieu Othacehe <m.othacehe@gmail.com>,
         Michal Simek <michal.simek@xilinx.com>,
-        linux-stm32@st-md-mailman.stormreply.com,
-        Andy Gross <agross@kernel.org>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Keguang Zhang <keguang.zhang@gmail.com>,
-        Patrice Chotard <patrice.chotard@foss.st.com>,
-        linux-pwm@vger.kernel.org, Sascha Hauer <kernel@pengutronix.de>,
-        linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
-        =?UTF-8?Q?Andr=c3=a9_Gustavo_Nakagomi_Lopez?= <andregnl@usp.br>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        "linux-tegra@vger.kernel.org" <linux-tegra@vger.kernel.org>,
-        linux-amlogic <linux-amlogic@lists.infradead.org>,
-        Amireddy Mallikarjuna reddy 
-        <mallikarjunax.reddy@linux.intel.com>,
-        "open list:BROADCOM NVRAM DRIVER" <linux-mips@vger.kernel.org>,
-        linux-spi <linux-spi@vger.kernel.org>,
-        Cai Huoqing <caihuoqing@baidu.com>,
-        linux-crypto <linux-crypto@vger.kernel.org>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        dmaengine <dmaengine@vger.kernel.org>
-References: <20220314141643.22184-1-u.kleine-koenig@pengutronix.de>
- <20220314141643.22184-2-u.kleine-koenig@pengutronix.de>
- <d6b890c8-bfb5-cfa5-c6d8-ee245701c077@nvidia.com>
- <20220621204914.byokkrxiznvod7vq@pengutronix.de>
- <CAHp75VcBEpLo+pYy+RG3O2BbePJbGEQ89jxi-oG1W6=+2hgXrQ@mail.gmail.com>
-From:   Neil Armstrong <narmstrong@baylibre.com>
-Organization: Baylibre
-In-Reply-To: <CAHp75VcBEpLo+pYy+RG3O2BbePJbGEQ89jxi-oG1W6=+2hgXrQ@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8; format=flowed
-Content-Transfer-Encoding: 8bit
+        Miquel Raynal <miquel.raynal@bootlin.com>,
+        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
+        Parthiban Nallathambi <pn@denx.de>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Philippe Schenker <philippe.schenker@toradex.com>,
+        Rishi Gupta <gupt21@gmail.com>,
+        Roan van Dijk <roan@protonic.nl>,
+        Stephen Boyd <swboyd@chromium.org>,
+        Tomasz Duszynski <tduszyns@gmail.com>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: Re: [PATCH 29/36] iio: light: isl29028: Use
+ DEFINE_RUNTIME_DEV_PM_OPS() and pm_ptr()
+Message-ID: <20220622110936.GA11035@onstation.org>
+References: <20220621202719.13644-1-jic23@kernel.org>
+ <20220621202719.13644-30-jic23@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220621202719.13644-30-jic23@kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 22/06/2022 12:36, Andy Shevchenko wrote:
-> On Tue, Jun 21, 2022 at 11:01 PM Uwe Kleine-König
-> <u.kleine-koenig@pengutronix.de> wrote:
->> On Tue, Jun 21, 2022 at 08:57:00PM +0100, Jon Hunter wrote:
+On Tue, Jun 21, 2022 at 09:27:12PM +0100, Jonathan Cameron wrote:
+> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 > 
-> ...
+> Using these new macros allows removal of unused pm_ops structure
+> and functions if !CONFIG_PM without the need to mark the functions
+> __maybe_unused.
 > 
->> (Pro tipp: The commit in next has a Link: footer. If you follow the
->> link, you find the thread that was actually applied (i.e. v9) and where
->> the fix is also contained.)
-> 
-> Even easier, you may take a message-id from the Link and supply to `b4`:
-> 
->    b4 mbox ${message-id}
->    mutt -f ${message-id}.mbx # or whatever MUA that handles mboxes
-> 
-> 
-> Dunno if `b4` has capability to parse Link instead of message-id.
-> 
+> Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+> Cc: Brian Masney <masneyb@onstation.org>
 
-It does:
+Reviewed-by: Brian Masney <masneyb@onstation.org>
 
-
-$ b4 mbox https://lore.kernel.org/r/20220616144915.3988071-1-windhl@126.com
-Looking up https://lore.kernel.org/r/20220616144915.3988071-1-windhl%40126.com
-Grabbing thread from lore.kernel.org/all/20220616144915.3988071-1-windhl%40126.com/t.mbox.gz
-5 messages in the thread
-Saved ./20220616144915.3988071-1-windhl@126.com.mbx
-
-Neil
