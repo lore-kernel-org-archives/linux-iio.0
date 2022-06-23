@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 88AD9CCA486
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CE91ECCA481
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:04 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234488AbiFWRkF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:40:05 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46474 "EHLO
+        id S234458AbiFWRkC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 23 Jun 2022 13:40:02 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234638AbiFWRiB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2022 13:38:01 -0400
-Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2A4BE517F4;
-        Thu, 23 Jun 2022 10:07:20 -0700 (PDT)
-Received: by mail-lj1-x230.google.com with SMTP id s14so17321366ljs.3;
-        Thu, 23 Jun 2022 10:07:20 -0700 (PDT)
+        with ESMTP id S234547AbiFWRht (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2022 13:37:49 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14C292161;
+        Thu, 23 Jun 2022 10:07:08 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id a2so56351lfg.5;
+        Thu, 23 Jun 2022 10:07:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=Buq93uC223YN7gDu+OZOG27+jvtgYZSgy8F1DGxsPvY=;
-        b=h+XVLeEjU4ZDDxHet9bxgDp2Rg3mEyuWA4cLjmZ6bS+2YNZvOrAfSoWnBR3DEtIGdu
-         OR7GmIZqqmzhdSXWOHcPOJC6c67LkBLz6qnbOPBxkDHLKc8EUBXhFybAyxYh2ATiq3vL
-         /tpBNSUCkZJ9nbM3/MEshdvXhKv//ubkd7GEJbcJon0vyUsdUIRJjJksDYoitqrdLBe3
-         OzPPddVOnKwj9QzQhLKmU4v4oujPiS54YhElaGgMmTmTI+Izfe/jYSSvSTAULYWGR9zO
-         6FOMOxF+ZCvlTqyBbRc/KKcLbf6cmL6MydSgsK5LedMxYiT8433y+ExZ69PRzB7dFsat
-         gz4A==
+        bh=QQHq1R8+z5ISpQ71LBkGKEl1o+IhCGseMKIHQK9OFR4=;
+        b=EI9rk/s6el+woaWK1fR4rjizrETaD7hvCzSsV6Hecp7G9Bmav3LwvqrFA8KKgFs4t+
+         nhqYiwIQ5iAN6MWCnR3mrxqxOSz/ekgoETCj5rv9+8TJRD+jeeq/1yloNSW/8kPCuQwS
+         umm2cdav02G4E1/nW0AcYN22Uogk4PqfzsCbCQ2SemOl6nuW4Lu+NY82EEtWTJ7cs6U9
+         PQKmMvb9eZD5O1jW6p/htkrO+XIaiDpYB9q+3/3rOboIqH9rr/uE5nqU4OSdRMjxwHpz
+         g3pBdab/UsbOPEtb1SVn+maV5cq8D+72rFs4WhTCW5Xb0wFtD/RYL0QUCiFI/00sPerl
+         FuZA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=Buq93uC223YN7gDu+OZOG27+jvtgYZSgy8F1DGxsPvY=;
-        b=woa8n6nAvqCQq+obNp+hkVgQXC+vhHVIODOwSiB4Suvj4PFmJA9HwWVzIT9vLnRAO1
-         TJZqNbBxw8KKRWehWCanv79PgUSmIxyhA2O5CgfIEfq6WsEunoVfpTWHWTn15RnC2onu
-         X7uG/2Qsrs4fGzPiqiIdwkdRj7YHqHiDmPCbPd+fV09SJ2ApSzdMpKfkJpAph9dmmyWW
-         ivnXMQLof4HB9i7M+LkVRanEDZS9G2RhllaimOX7nAqgJe8tbZVfsfeMaI6bBKJf2tm9
-         O08k+/JNXhrq9nKkHW+kqxgJpQXXwtoAMaY5qz4qVp+xlhpiIrTuj4efx+EaTySVTy+m
-         GbRQ==
-X-Gm-Message-State: AJIora+NZUt2/jdHlV8vcFkd4cbedrM8wI6uRzOgsARwyc9IuaJl4zX6
-        cC4umE3EwZ++LDvzPtZf2++BeE5jEZ+NQA==
-X-Google-Smtp-Source: AGRyM1uz4+ft3o2Wx7KjcSnvtK4U/kgA0UmYvAX8dk8vkCbHkmGTkJTjjy9DHcgDlpQQ4Xxx00I39g==
-X-Received: by 2002:a2e:a7c7:0:b0:255:8ecd:14b0 with SMTP id x7-20020a2ea7c7000000b002558ecd14b0mr5442305ljp.472.1656004038484;
-        Thu, 23 Jun 2022 10:07:18 -0700 (PDT)
+        bh=QQHq1R8+z5ISpQ71LBkGKEl1o+IhCGseMKIHQK9OFR4=;
+        b=stC7BQAEl/EUhzgTKjywBDd8p23PqAlBvl5Iy5aJvmuCIbUkUYdeWZSfa5yo1hV3Rt
+         islobTw3itTh4HIJA9RXhf8RYgV96eIa0H2cOO6+IR0aUiStrZ3xVFL5RPG2NGkRxr2A
+         EMuvPL4WKExE3nwAyxW7WrxVejLUcc0NCcaz4eVKq/ju04/Xy0oCsexACVLAcq07ITrz
+         P+ZZB3PhX+6Ym1SWA4J3i8nSGDcmrt5mWKarKDOUto85XxXNNNBTtjfQj5kaOlb4Y2N9
+         GL5gHO07pnhWctUkjdksw8ejpyNW+bAJDu/0ry5OyBoXO6zWMJaF346IE5rBz6xuui6M
+         Gu5g==
+X-Gm-Message-State: AJIora8AxYBCdZ3fg8tzj0+oaxD3vW85ElRDqa9amPUWZKS4tgNiC1t7
+        Hl4bqjmEvF+Nx0UASzrD/5GbAovCyAvcZw==
+X-Google-Smtp-Source: AGRyM1txW/yYaILtToFPJXqzZ5Do/Pm+4fxfuBgG9r+hZXk+wXMxTHD/6koYJCDRnSe/pKH5kVOS4A==
+X-Received: by 2002:a05:6512:3151:b0:47f:9d42:8e11 with SMTP id s17-20020a056512315100b0047f9d428e11mr5046731lfi.274.1656004026843;
+        Thu, 23 Jun 2022 10:07:06 -0700 (PDT)
 Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id w27-20020a19491b000000b0047a0bf9540asm3060405lfa.213.2022.06.23.10.07.16
+        by smtp.gmail.com with ESMTPSA id w27-20020a19491b000000b0047a0bf9540asm3060405lfa.213.2022.06.23.10.07.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 10:07:17 -0700 (PDT)
+        Thu, 23 Jun 2022 10:07:05 -0700 (PDT)
 From:   Marcus Folkesson <marcus.folkesson@gmail.com>
 To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Kent Gustavsson <kent@minoris.se>,
@@ -56,9 +56,9 @@ To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 10/10] iio: adc: mcp3911: add support to set PGA
-Date:   Thu, 23 Jun 2022 19:08:44 +0200
-Message-Id: <20220623170844.2189814-10-marcus.folkesson@gmail.com>
+Subject: [PATCH 03/10] iio: adc: mcp3911: add support for buffers
+Date:   Thu, 23 Jun 2022 19:08:37 +0200
+Message-Id: <20220623170844.2189814-3-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
 References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
@@ -68,233 +68,120 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for setting the Programmable Gain Amplifiers by adjust the
-scale value.
+Add support for buffers to make the driver fit for more usecases.
 
 Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 ---
- drivers/iio/adc/mcp3911.c | 135 +++++++++++++++++++++++++++++++-------
- 1 file changed, 110 insertions(+), 25 deletions(-)
+ drivers/iio/adc/mcp3911.c | 58 ++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 57 insertions(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
-index 084f6d1aa6d1..631015ead8e7 100644
+index 3d9e8ed10874..768cb0203f52 100644
 --- a/drivers/iio/adc/mcp3911.c
 +++ b/drivers/iio/adc/mcp3911.c
-@@ -26,6 +26,8 @@
- #define MCP3911_REG_MOD			0x06
- #define MCP3911_REG_PHASE		0x07
- #define MCP3911_REG_GAIN		0x09
-+#define MCP3911_GAIN_MASK(ch)          (0x7 << 3*ch)
-+#define MCP3911_GAIN_VAL(ch, val)      ((val << 3*ch) & MCP3911_GAIN_MASK(ch))
- 
- #define MCP3911_REG_STATUSCOM		0x0a
- #define MCP3911_STATUSCOM_DRHIZ         BIT(12)
-@@ -55,8 +57,10 @@
- #define MCP3911_REG_WRITE(reg, id)	((((reg) << 1) | ((id) << 5) | (0 << 0)) & 0xff)
- 
- #define MCP3911_NUM_CHANNELS		2
-+#define MCP3911_NUM_SCALES		6
- 
- static const int mcp3911_osr_table[] = {32, 64, 128, 256, 512, 1024, 2048, 4096};
-+static u32 mcp3911_scale_table[MCP3911_NUM_SCALES][2];
- 
- struct mcp3911 {
- 	struct spi_device *spi;
-@@ -65,6 +69,7 @@ struct mcp3911 {
+@@ -9,6 +9,10 @@
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/trigger.h>
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/property.h>
+@@ -54,6 +58,10 @@ struct mcp3911 {
+ 	struct regulator *vref;
  	struct clk *clki;
  	u32 dev_addr;
- 	struct iio_trigger *trig;
-+	u32 gain[MCP3911_NUM_CHANNELS];
- 	struct {
- 		u32 channels[2];
- 		s64 ts __aligned(8);
-@@ -113,7 +118,35 @@ static int mcp3911_update(struct mcp3911 *adc, u8 reg, u32 mask,
- 	return mcp3911_write(adc, reg, val, len);
- }
++	struct {
++		u32 channels[2];
++		s64 ts __aligned(8);
++	} scan;
+ };
  
-+static int mcp3911_get_gain(struct mcp3911 *adc, u8 channel, u32 *val)
-+{
-+	int ret = mcp3911_read(adc, MCP3911_REG_GAIN, val, 1);
-+
-+	if (ret)
-+		return ret;
- 
-+	*val >>= channel * 3;
-+	*val &= 0x07;
-+	*val = (1 << *val);
-+
-+	return 0;
-+}
-+
-+static int mcp3911_write_raw_get_fmt(struct iio_dev *indio_dev,
-+					struct iio_chan_spec const *chan,
-+					long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_PHASE:
-+		return IIO_VAL_INT;
-+	default:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	}
-+}
- static int mcp3911_read_avail(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     const int **vals, int *type, int *length,
-@@ -125,6 +158,11 @@ static int mcp3911_read_avail(struct iio_dev *indio_dev,
- 		*vals = mcp3911_osr_table;
- 		*length = ARRAY_SIZE(mcp3911_osr_table);
- 		return IIO_AVAIL_LIST;
-+	case IIO_CHAN_INFO_SCALE:
-+		*type = IIO_VAL_INT_PLUS_NANO;
-+		*vals = (int *)mcp3911_scale_table;
-+		*length = ARRAY_SIZE(mcp3911_scale_table) * 2;
-+		return IIO_AVAIL_LIST;
- 	default:
- 		return -EINVAL;
- 	}
-@@ -180,29 +218,9 @@ static int mcp3911_read_raw(struct iio_dev *indio_dev,
- 		break;
- 
- 	case IIO_CHAN_INFO_SCALE:
--		if (adc->vref) {
--			ret = regulator_get_voltage(adc->vref);
--			if (ret < 0) {
--				dev_err(indio_dev->dev.parent,
--					"failed to get vref voltage: %d\n",
--				       ret);
--				goto out;
--			}
--
--			*val = ret / 1000;
--		} else {
--			*val = MCP3911_INT_VREF_MV;
--		}
--
--		/*
--		 * For 24bit Conversion
--		 * Raw = ((Voltage)/(Vref) * 2^23 * Gain * 1.5
--		 * Voltage = Raw * (Vref)/(2^23 * Gain * 1.5)
--		 */
--
--		/* val2 = (2^23 * 1.5) */
--		*val2 = 12582912;
--		ret = IIO_VAL_FRACTIONAL;
-+		*val = mcp3911_scale_table[ilog2(adc->gain[channel->channel])][0];
-+		*val2 = mcp3911_scale_table[ilog2(adc->gain[channel->channel])][1];
-+		ret = IIO_VAL_INT_PLUS_NANO;
- 		break;
- 	}
- 
-@@ -220,6 +238,19 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&adc->lock);
- 	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		for (int i = 0; i < MCP3911_NUM_SCALES; i++) {
-+			if (val == mcp3911_scale_table[i][0] &&
-+				val2 == mcp3911_scale_table[i][1]) {
-+
-+				adc->gain[channel->channel] = BIT(i);
-+				ret = mcp3911_update(adc, MCP3911_REG_GAIN,
-+						MCP3911_GAIN_MASK(channel->channel),
-+						MCP3911_GAIN_VAL(channel->channel,
-+							i), 1);
-+			}
-+		}
-+		break;
- 	case IIO_CHAN_INFO_OFFSET:
- 		if (val2 != 0) {
- 			ret = -EINVAL;
-@@ -290,6 +321,49 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
-+static int mcp3911_calc_scale_table(struct mcp3911 *adc)
-+{
-+	u32 ref = MCP3911_INT_VREF_MV;
-+	u32 div;
-+	int ret = 0;
-+	int tmp0, tmp1;
-+	s64 tmp2;
-+
-+	if (adc->vref) {
-+		ret = regulator_get_voltage(adc->vref);
-+		if (ret < 0) {
-+			dev_err(&adc->spi->dev,
-+				"failed to get vref voltage: %d\n",
-+			       ret);
-+			goto out;
-+		}
-+
-+		ref = ret / 1000;
-+	}
-+
-+	/*
-+	 * For 24bit Conversion
-+	 * Raw = ((Voltage)/(Vref) * 2^23 * Gain * 1.5
-+	 * Voltage = Raw * (Vref)/(2^23 * Gain * 1.5)
-+	 */
-+
-+	/* ref = Reference voltage
-+	 * div = (2^23 * 1.5 * gain) = 12582912 * gain
-+	 */
-+	for (int i = 0; i < MCP3911_NUM_SCALES; i++) {
-+		div = 12582912 * BIT(i);
-+		tmp2 = div_s64((s64)ref * 1000000000LL, div);
-+		tmp1 = div;
-+		tmp0 = (int)div_s64_rem(tmp2, 1000000000, &tmp1);
-+
-+		mcp3911_scale_table[i][0] = 0;
-+		mcp3911_scale_table[i][1] = tmp1;
-+	}
-+
-+out:
-+	return ret;
-+}
-+
- #define MCP3911_CHAN(idx) {					\
+ static int mcp3911_read(struct mcp3911 *adc, u8 reg, u32 *val, u8 len)
+@@ -187,16 +195,58 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
  		.type = IIO_VOLTAGE,				\
  		.indexed = 1,					\
-@@ -302,8 +376,10 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+ 		.channel = idx,					\
++		.scan_index = idx,				\
  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
  			BIT(IIO_CHAN_INFO_OFFSET) |		\
  			BIT(IIO_CHAN_INFO_SCALE),		\
--		.info_mask_shared_by_type_available =		\
--			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
-+		.info_mask_shared_by_type_available =           \
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)	\
-+		.info_mask_separate_available =			\
-+			BIT(IIO_CHAN_INFO_SCALE),		\
- 		.scan_type = {					\
- 			.sign = 's',				\
- 			.realbits = 24,				\
-@@ -356,6 +432,7 @@ static const struct iio_info mcp3911_info = {
- 	.read_raw = mcp3911_read_raw,
- 	.write_raw = mcp3911_write_raw,
- 	.read_avail = mcp3911_read_avail,
-+	.write_raw_get_fmt = mcp3911_write_raw_get_fmt,
++		.scan_type = {					\
++			.sign = 's',				\
++			.realbits = 24,				\
++			.storagebits = 32,			\
++		},						\
+ }
+ 
+ static const struct iio_chan_spec mcp3911_channels[] = {
+ 	MCP3911_CHAN(0),
+ 	MCP3911_CHAN(1),
++	IIO_CHAN_SOFT_TIMESTAMP(2),
  };
  
- static irqreturn_t mcp3911_interrupt(int irq, void *dev_id)
-@@ -482,6 +559,14 @@ static int mcp3911_probe(struct spi_device *spi)
- 	if (ret)
++static irqreturn_t mcp3911_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct mcp3911 *adc = iio_priv(indio_dev);
++	int scan_index;
++	int i = 0;
++	u32 val;
++
++	mutex_lock(&adc->lock);
++	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
++			indio_dev->masklength) {
++		const struct iio_chan_spec *scan_chan =
++			&indio_dev->channels[scan_index];
++		int ret = mcp3911_read(adc,
++				MCP3911_CHANNEL(scan_chan->channel), &val, 3);
++
++		if (ret < 0) {
++			dev_warn(&adc->spi->dev,
++					"failed to get conversion data\n");
++			goto out;
++		}
++
++		adc->scan.channels[i] = val;
++		i++;
++	}
++	iio_push_to_buffers_with_timestamp(indio_dev, &adc->scan,
++			iio_get_time_ns(indio_dev));
++out:
++	mutex_unlock(&adc->lock);
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
+ static const struct iio_info mcp3911_info = {
+ 	.read_raw = mcp3911_read_raw,
+ 	.write_raw = mcp3911_write_raw,
+@@ -297,7 +347,7 @@ static int mcp3911_probe(struct spi_device *spi)
  		goto clk_disable;
  
-+	ret = mcp3911_calc_scale_table(adc);
+ 	indio_dev->name = spi_get_device_id(spi)->name;
+-	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
+ 	indio_dev->info = &mcp3911_info;
+ 	spi_set_drvdata(spi, indio_dev);
+ 
+@@ -306,6 +356,12 @@ static int mcp3911_probe(struct spi_device *spi)
+ 
+ 	mutex_init(&adc->lock);
+ 
++	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
++			NULL,
++			mcp3911_trigger_handler, NULL);
 +	if (ret)
 +		goto clk_disable;
 +
-+       /* Store gain values to better calculate scale values */
-+	mcp3911_get_gain(adc, 0, &adc->gain[0]);
-+	mcp3911_get_gain(adc, 1, &adc->gain[1]);
-+
- 	dr_hiz = device_property_read_bool(&adc->spi->dev, "microchip,data-ready-hiz");
- 	if (dr_hiz)
- 		ret = mcp3911_update(adc, MCP3911_REG_STATUSCOM, MCP3911_STATUSCOM_DRHIZ,
+ 	ret = devm_iio_device_register(&adc->spi->dev, indio_dev);
+ 	if (ret)
+ 		goto clk_disable;
 -- 
 2.36.1
 
