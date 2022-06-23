@@ -2,186 +2,108 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CE91ECCA481
-	for <linux-iio@archiver.kernel.org>; Thu, 23 Jun 2022 17:40:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 456E4CCA487
+	for <linux-iio@archiver.kernel.org>; Thu, 23 Jun 2022 18:18:44 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234458AbiFWRkC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 23 Jun 2022 13:40:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42686 "EHLO
+        id S236746AbiFWSSm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 23 Jun 2022 14:18:42 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234547AbiFWRht (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2022 13:37:49 -0400
-Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D14C292161;
-        Thu, 23 Jun 2022 10:07:08 -0700 (PDT)
-Received: by mail-lf1-x131.google.com with SMTP id a2so56351lfg.5;
-        Thu, 23 Jun 2022 10:07:08 -0700 (PDT)
+        with ESMTP id S237173AbiFWSR4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Jun 2022 14:17:56 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 16515B3C1C;
+        Thu, 23 Jun 2022 10:24:18 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id i18so111624lfu.8;
+        Thu, 23 Jun 2022 10:24:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=QQHq1R8+z5ISpQ71LBkGKEl1o+IhCGseMKIHQK9OFR4=;
-        b=EI9rk/s6el+woaWK1fR4rjizrETaD7hvCzSsV6Hecp7G9Bmav3LwvqrFA8KKgFs4t+
-         nhqYiwIQ5iAN6MWCnR3mrxqxOSz/ekgoETCj5rv9+8TJRD+jeeq/1yloNSW/8kPCuQwS
-         umm2cdav02G4E1/nW0AcYN22Uogk4PqfzsCbCQ2SemOl6nuW4Lu+NY82EEtWTJ7cs6U9
-         PQKmMvb9eZD5O1jW6p/htkrO+XIaiDpYB9q+3/3rOboIqH9rr/uE5nqU4OSdRMjxwHpz
-         g3pBdab/UsbOPEtb1SVn+maV5cq8D+72rFs4WhTCW5Xb0wFtD/RYL0QUCiFI/00sPerl
-         FuZA==
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=Vd6I47XVnnsBhvyCl3F2FOHX4RVw1fOk5Ka4rUmvOyw=;
+        b=AfKR0c24ywYANVT/yo48pwbD67+tfKAyJ5mxn73xIoJZFyu1YGuFdFJAD3avh68hHf
+         L9mG2F4voRL2y8BD4ffFqMytVW6zDLtNFU1OyahEiYd+0W961n8howXJhbrYRim8pKnS
+         TsJ107hrjN4/VPbCfTiRNIh1nKzxwTM7mftm7IyVU3dmJZRX+tFBzLzlf9OirlkDGLPK
+         XH+DYiAuqGPryc78DuqNHDUckevTjKEC+Izsm+Ck8I6XnB8pTGGnpN1r7gO/SNSeBpzT
+         FHP+6upHqMjsGC9xp79r1Rw2W4gDheEuLSHeVz4CozYrWvlO8KkLmGdGRHECYw0GHHkR
+         BV4g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=QQHq1R8+z5ISpQ71LBkGKEl1o+IhCGseMKIHQK9OFR4=;
-        b=stC7BQAEl/EUhzgTKjywBDd8p23PqAlBvl5Iy5aJvmuCIbUkUYdeWZSfa5yo1hV3Rt
-         islobTw3itTh4HIJA9RXhf8RYgV96eIa0H2cOO6+IR0aUiStrZ3xVFL5RPG2NGkRxr2A
-         EMuvPL4WKExE3nwAyxW7WrxVejLUcc0NCcaz4eVKq/ju04/Xy0oCsexACVLAcq07ITrz
-         P+ZZB3PhX+6Ym1SWA4J3i8nSGDcmrt5mWKarKDOUto85XxXNNNBTtjfQj5kaOlb4Y2N9
-         GL5gHO07pnhWctUkjdksw8ejpyNW+bAJDu/0ry5OyBoXO6zWMJaF346IE5rBz6xuui6M
-         Gu5g==
-X-Gm-Message-State: AJIora8AxYBCdZ3fg8tzj0+oaxD3vW85ElRDqa9amPUWZKS4tgNiC1t7
-        Hl4bqjmEvF+Nx0UASzrD/5GbAovCyAvcZw==
-X-Google-Smtp-Source: AGRyM1txW/yYaILtToFPJXqzZ5Do/Pm+4fxfuBgG9r+hZXk+wXMxTHD/6koYJCDRnSe/pKH5kVOS4A==
-X-Received: by 2002:a05:6512:3151:b0:47f:9d42:8e11 with SMTP id s17-20020a056512315100b0047f9d428e11mr5046731lfi.274.1656004026843;
-        Thu, 23 Jun 2022 10:07:06 -0700 (PDT)
-Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id w27-20020a19491b000000b0047a0bf9540asm3060405lfa.213.2022.06.23.10.07.05
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=Vd6I47XVnnsBhvyCl3F2FOHX4RVw1fOk5Ka4rUmvOyw=;
+        b=CdFQbQ5DcboTglYypdlV+OY8WmZdAi++9mj4vmWWZRC4RByfUVIKAzJECgTlcruPmd
+         9nexaiuqg5oR+tWeiqSG9ErY4dIUbWfCKpsxsjQU049RGLdnF/4akpVJ+J308QMzgZUj
+         YLGmYwxgNA1nJgHt+p2pjlWCcH+ft/F7AhvDlxfHGL/nQtnGBx4Fme8bn+NAOKDjY8KE
+         rS+6oVcXTN5gkp9qGWj8eLyGAx8uyGD3nldK+3YrXFixhzKi+qtBZretZZk/la6saDkP
+         T+IGS3XsAmhPVPPJDzmPUBKRh8N6GVdEKJLItarWK3i8XV9OTBZHx/x3ZJ9SggjpbUXR
+         /cuw==
+X-Gm-Message-State: AJIora/9J/OExdGf7nFPulhkOHO3RsufiOaXvWGdzmRb55Cyvu8PW8+p
+        p5aq+0Tav81hKkbjhYCajnM=
+X-Google-Smtp-Source: AGRyM1uGcwmA4B2BYgcxHcSU64lGKl2lkAP50JWq/nzLH/mLaOoHxPa9gArlBKjn55ukt20bk9e+Wg==
+X-Received: by 2002:a05:6512:2241:b0:479:6426:15af with SMTP id i1-20020a056512224100b00479642615afmr6111281lfu.631.1656005057043;
+        Thu, 23 Jun 2022 10:24:17 -0700 (PDT)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id v6-20020a05651203a600b0047f9cfa914csm677369lfp.18.2022.06.23.10.24.15
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 23 Jun 2022 10:07:05 -0700 (PDT)
+        Thu, 23 Jun 2022 10:24:15 -0700 (PDT)
+Date:   Thu, 23 Jun 2022 19:26:05 +0200
 From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
+To:     Kent Gustavsson <kent@minoris.se>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Rob Herring <robh+dt@kernel.org>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH 03/10] iio: adc: mcp3911: add support for buffers
-Date:   Thu, 23 Jun 2022 19:08:37 +0200
-Message-Id: <20220623170844.2189814-3-marcus.folkesson@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+Subject: Re: [PATCH 10/10] iio: adc: mcp3911: add support to set PGA
+Message-ID: <YrSiLdFzkXtCZIBi@gmail.com>
 References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+ <20220623170844.2189814-10-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="lGrmasrXvQkSs9iU"
+Content-Disposition: inline
+In-Reply-To: <20220623170844.2189814-10-marcus.folkesson@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for buffers to make the driver fit for more usecases.
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
----
- drivers/iio/adc/mcp3911.c | 58 ++++++++++++++++++++++++++++++++++++++-
- 1 file changed, 57 insertions(+), 1 deletion(-)
+--lGrmasrXvQkSs9iU
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
-index 3d9e8ed10874..768cb0203f52 100644
---- a/drivers/iio/adc/mcp3911.c
-+++ b/drivers/iio/adc/mcp3911.c
-@@ -9,6 +9,10 @@
- #include <linux/delay.h>
- #include <linux/err.h>
- #include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/trigger.h>
- #include <linux/module.h>
- #include <linux/mod_devicetable.h>
- #include <linux/property.h>
-@@ -54,6 +58,10 @@ struct mcp3911 {
- 	struct regulator *vref;
- 	struct clk *clki;
- 	u32 dev_addr;
-+	struct {
-+		u32 channels[2];
-+		s64 ts __aligned(8);
-+	} scan;
- };
- 
- static int mcp3911_read(struct mcp3911 *adc, u8 reg, u32 *val, u8 len)
-@@ -187,16 +195,58 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
- 		.type = IIO_VOLTAGE,				\
- 		.indexed = 1,					\
- 		.channel = idx,					\
-+		.scan_index = idx,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
- 			BIT(IIO_CHAN_INFO_OFFSET) |		\
- 			BIT(IIO_CHAN_INFO_SCALE),		\
-+		.scan_type = {					\
-+			.sign = 's',				\
-+			.realbits = 24,				\
-+			.storagebits = 32,			\
-+		},						\
- }
- 
- static const struct iio_chan_spec mcp3911_channels[] = {
- 	MCP3911_CHAN(0),
- 	MCP3911_CHAN(1),
-+	IIO_CHAN_SOFT_TIMESTAMP(2),
- };
- 
-+static irqreturn_t mcp3911_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct mcp3911 *adc = iio_priv(indio_dev);
-+	int scan_index;
-+	int i = 0;
-+	u32 val;
-+
-+	mutex_lock(&adc->lock);
-+	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
-+			indio_dev->masklength) {
-+		const struct iio_chan_spec *scan_chan =
-+			&indio_dev->channels[scan_index];
-+		int ret = mcp3911_read(adc,
-+				MCP3911_CHANNEL(scan_chan->channel), &val, 3);
-+
-+		if (ret < 0) {
-+			dev_warn(&adc->spi->dev,
-+					"failed to get conversion data\n");
-+			goto out;
-+		}
-+
-+		adc->scan.channels[i] = val;
-+		i++;
-+	}
-+	iio_push_to_buffers_with_timestamp(indio_dev, &adc->scan,
-+			iio_get_time_ns(indio_dev));
-+out:
-+	mutex_unlock(&adc->lock);
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static const struct iio_info mcp3911_info = {
- 	.read_raw = mcp3911_read_raw,
- 	.write_raw = mcp3911_write_raw,
-@@ -297,7 +347,7 @@ static int mcp3911_probe(struct spi_device *spi)
- 		goto clk_disable;
- 
- 	indio_dev->name = spi_get_device_id(spi)->name;
--	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
- 	indio_dev->info = &mcp3911_info;
- 	spi_set_drvdata(spi, indio_dev);
- 
-@@ -306,6 +356,12 @@ static int mcp3911_probe(struct spi_device *spi)
- 
- 	mutex_init(&adc->lock);
- 
-+	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
-+			NULL,
-+			mcp3911_trigger_handler, NULL);
-+	if (ret)
-+		goto clk_disable;
-+
- 	ret = devm_iio_device_register(&adc->spi->dev, indio_dev);
- 	if (ret)
- 		goto clk_disable;
--- 
-2.36.1
+On Thu, Jun 23, 2022 at 07:08:44PM +0200, Marcus Folkesson wrote:
+> -		.info_mask_shared_by_type_available =		\
+> -			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+> +		.info_mask_shared_by_type_available =           \
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)	\
 
+This change was not supposed to sneak in. Removed in v2.
+
+/Marcus
+
+
+
+--lGrmasrXvQkSs9iU
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmK0oicACgkQiIBOb1ld
+UjJvmQ/+O1qb9I5+2vmxERYd3bqBZ7uUt0KqGiSxxvQJ8ZkEhN95leqvOtCicSsl
+9zRV1VyQc6z6dB4Hwol4FZ27FKPL3bzNQatSnBIbDqX7nQKGGT0uY2UWwrhcqm/I
+dRgc5WBODVjjpqcZPR/KkWhHBBO+qDhPTRVq6Q2OZIueKNcG26+5XIsNo5Uhw1dB
+p2yj3jfySqp4Q4FIQlcM7wB72/0rc9T4BbvQDRNcdin7UaSl4rWmtfxg7ZPOje1p
+9O6ek1soQKuEDqj18h7N2VD3zuG2FN4DtBNxPERqRF9rqkgiyf4/pvpYl9ontZp1
+zEJujWE0aUodxaN9A8q3RvDRPT2TbmE5OxcBdYvUot9tHX99NNiscZjdV1Wp61Wt
+pbZklmGOiQ0PcwNsakZRRer9+e6JGSm5KpC3ssckadejOVOT32C/v1iErGBuvlru
+vA18SDq3ZvPmO5s/WybjIGnpmqJ/YK9khZSn247/YOiOC8IgcDKWIv8SfItOhJN/
+mQLqmHXDZPH9Mhf7rM/EnvjVUjBDZyBwt0guZMkgMS45iS9eEvSoWyMXgC6fmgtJ
+i4jmRNTXc3IbBibdvuX4xIEjEeLJJjmlQZWL0F/TTAuL1Xxx0FC1WaTcKWYD141S
+eMbTVMPXie6rK8p8pGx5OTv+6fJe6A5BO0uxf6g2CSW+FlVAb5U=
+=DB3I
+-----END PGP SIGNATURE-----
+
+--lGrmasrXvQkSs9iU--
