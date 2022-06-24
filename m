@@ -2,74 +2,126 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6A7CCA473
-	for <linux-iio@archiver.kernel.org>; Fri, 24 Jun 2022 11:45:00 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 554BFC433EF
+	for <linux-iio@archiver.kernel.org>; Fri, 24 Jun 2022 11:59:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231628AbiFXLo6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 24 Jun 2022 07:44:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
+        id S231154AbiFXL75 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 24 Jun 2022 07:59:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48546 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231598AbiFXLo4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jun 2022 07:44:56 -0400
-Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484337B36C;
-        Fri, 24 Jun 2022 04:44:56 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 1671FB82863;
-        Fri, 24 Jun 2022 11:44:55 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47759C34114;
-        Fri, 24 Jun 2022 11:44:53 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
-        s=korg; t=1656071093;
-        bh=SXL5zN2nwEilLgVy+817nWe3mGqIkwJPf3KT5KtK610=;
-        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
-        b=QqleerCUtjShMpTKt40R3Xw5bJcBgWctuyJJpVXDDC8yUC+px+coDFuFGOhsDclBm
-         dg838WtwC4BaQ3bpEalZRbi71buK3vIaBJx8ZVhWnGCY1l7wOcJedOmOBaxgTuvbE9
-         l08jW1kWCHcm0hwgtV4GmlCbpSkA1mpGB+nGFXvo=
-Date:   Fri, 24 Jun 2022 13:33:52 +0200
-From:   Greg KH <gregkh@linuxfoundation.org>
-To:     ChiaEn Wu <peterwu.pub@gmail.com>
-Cc:     lee.jones@linaro.org, daniel.thompson@linaro.org,
-        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
-        sre@kernel.org, chunfeng.yun@mediatek.com, jic23@kernel.org,
-        lars@metafoo.de, lgirdwood@gmail.com, broonie@kernel.org,
-        linux@roeck-us.net, heikki.krogerus@linux.intel.com, deller@gmx.de,
-        chiaen_wu@richtek.com, alice_chen@richtek.com,
-        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
-        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
-        szunichen@gmail.com
-Subject: Re: [PATCH v3 08/14] usb: typec: tcpci_mt6370: Add Mediatek MT6370
- tcpci driver
-Message-ID: <YrWhIMGjUeRkpHkB@kroah.com>
-References: <20220623115631.22209-1-peterwu.pub@gmail.com>
- <20220623115631.22209-9-peterwu.pub@gmail.com>
+        with ESMTP id S230520AbiFXL74 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jun 2022 07:59:56 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC6686F79A;
+        Fri, 24 Jun 2022 04:59:54 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id z13so4010067lfj.13;
+        Fri, 24 Jun 2022 04:59:54 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:in-reply-to;
+        bh=iZCsld/Kwu7GK8ETue9xYaG0XWT7s0wsxnFfMbbKZpw=;
+        b=q5GFNawCB7XD7hhK4bKucbqihbOQVduc4fBNFokKiL9iwTssnAnfwEeAvxMhnNHfhr
+         pdZY42syRC7AUTNrsnZ8pBTpbswErIrN7Wf01LvwxrePY0LDckvuftmQqnMD2C4ZuxX1
+         QiyVKAffeNqGlwuSVBZWzMMMZQAk79546oNQJHPntzPjAXSW2kQGg9E3K6oiqrdHG7WQ
+         sZAe6hyg3epf46+llJNZryZ+XvKvQSS3Mm5fVFQEH3Q6/ZBeYkF3BkiBO9zO5qQp8ak0
+         EXmvHEeiUCAwRBaBfQP7uiJn0925IlAnU8uABCbm7Z85rMYyn5AS2VM1v8OzoThDw2nH
+         88HA==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:in-reply-to;
+        bh=iZCsld/Kwu7GK8ETue9xYaG0XWT7s0wsxnFfMbbKZpw=;
+        b=BOPeL851R3tsIJI2qSIqrklsNgWnH5r4YfSgJPEED331TfE85R8bK3Oq+Nlsbfsdp+
+         UrbGbJyLYUjxA73G6zbCDUd3MXaHcoCrQhel7r9vn8sBPawtZ2m4C5FQZxRbI2yKC87q
+         kLPhxvD5wAGrugiU0cxJIje2evBEZaRVUw3BQZ96ifdXNu+/2rLQAS4R9JGzWJ+68NP0
+         LaBns2WN69/50ysDv72fY/kOwi3M+ouBamQsjk9XXePHssafnd+JhkFods4bwff52sG2
+         zjtiAU2xdVAxGw153uhtxrFrowxjCBobWae2yOrB3msbbS1XPeDVW2Sm5z8M+yCzE3fL
+         SqDA==
+X-Gm-Message-State: AJIora99xA4DSuqccUHdGhA09gJuJQ+vBaWwBgJZROYt3E8l00bc4TWZ
+        3gKoQvgCGYdSEpmFYMaS/nE=
+X-Google-Smtp-Source: AGRyM1sFbNItZpRs+PanpXqkVxryAqQQaTc2hSmSvHlaEy9mIvpaKCYqmgB14os3iTdcKVQkoOsXtQ==
+X-Received: by 2002:a19:9209:0:b0:47d:bb62:9103 with SMTP id u9-20020a199209000000b0047dbb629103mr8845659lfd.314.1656071992959;
+        Fri, 24 Jun 2022 04:59:52 -0700 (PDT)
+Received: from gmail.com (82-209-154-112.cust.bredband2.com. [82.209.154.112])
+        by smtp.gmail.com with ESMTPSA id e20-20020a2ea554000000b00258eac98baasm258521ljn.77.2022.06.24.04.59.51
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Fri, 24 Jun 2022 04:59:52 -0700 (PDT)
+Date:   Fri, 24 Jun 2022 14:01:42 +0200
+From:   Marcus Folkesson <marcus.folkesson@gmail.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH 04/10] iio: adc: mcp3911: add support for interrupts
+Message-ID: <YrWnppnMcsqfFxaw@gmail.com>
+References: <20220623170844.2189814-1-marcus.folkesson@gmail.com>
+ <20220623170844.2189814-4-marcus.folkesson@gmail.com>
+ <CAHp75VcMtz1ax3SEAwM8fCWqV-7ZZW6FWRB9v4W0k0Fi4CJ8-g@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="uHkWNRERGs3Dz+ti"
 Content-Disposition: inline
-In-Reply-To: <20220623115631.22209-9-peterwu.pub@gmail.com>
+In-Reply-To: <CAHp75VcMtz1ax3SEAwM8fCWqV-7ZZW6FWRB9v4W0k0Fi4CJ8-g@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Jun 23, 2022 at 07:56:25PM +0800, ChiaEn Wu wrote:
-> --- /dev/null
-> +++ b/drivers/usb/typec/tcpm/tcpci_mt6370.c
-> @@ -0,0 +1,212 @@
-> +// SPDX-License-Identifier: GPL-2.0+
 
-Are you sure you mean "+" here?
+--uHkWNRERGs3Dz+ti
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-I have to ask, sorry.
 
-And no copyright line?  Your company is ok with that, nice!  :)
+On Thu, Jun 23, 2022 at 09:04:51PM +0200, Andy Shevchenko wrote:
+> Unwanted blank line.
+>=20
 
-thanks,
+Removed
 
-greg k-h
+> > +static int mcp3911_set_trigger_state(struct iio_trigger *trig, bool en=
+able)
+> > +{
+>=20
+> > +       bool dr_hiz;
+>=20
+> As far as I can see you don't need this variable, just call if
+> (device_property_...(...)).
+
+Fixed
+
+>=20
+> Unneeded blank line.
+
+Removed
+
+Thanks,
+Marcus Folkesson
+
+--uHkWNRERGs3Dz+ti
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAEBCAAdFiEEBVGi6LZstU1kwSxliIBOb1ldUjIFAmK1p6AACgkQiIBOb1ld
+UjI4bxAAtxliZ5qiESZfQzSB1pwoRXxWZIKt87PbqOLd1Rrs/8hqyIfy0za/LqYu
+x/NdKAEN9GaTUdSmFnxTPmMV11bIxS/UJwRd8EqiyOk+cp7riJS9u8ICfM/WSEj6
+tn2SL/6pvIXoTrmu0pMHvYiVQVfJYVT4urJ6Xd/RktI/FbPi85lfvn69o7aLvqXA
+vTD+3rkupbuIV22FOxr/V7PIS67d53QhbDhv+F14EqQEgK32HM2zFDDORAXSWwIz
+5cVN7H0Ze+ejE5cIXUxKdwY7gFD5vkgSU4kZ5qGjtn2Vy5V7PmyB2t/bTxhqYoFI
+maJ2nuBHaiqKE7vlQnOCk7VDw5Eloc+1HwH5/P4eZeKdcQ9b1RfDi/zLqrkesYtE
+D874CkONDMXwgNxM1US0QGxQO1vltfnGOqu6k0j4NKIULADtXBoQba1ewj/KAB9n
+VFOQxEuXqJ21RGqdMdxN+1UEn8k+ixbgWPYXovn3JtNYsf/2aO3leB7kNGUmqCr+
+rhkFumra2F8k8G5VZsLeJ+9+8YBrx7V6P2cbXiOHbiKYxnPec2pyzUwRTaf8QvoC
+6QVHPu0xnVyZ8bYatWtNYejPIFKHZsz8wFfE/KyvYA34TX2x7mRlllJIjPMfLlE2
+TKkcGvA/Z5vxnZzUaP3cz3nuCwg4YuOj4O5zfbxnkH9PhxszIHY=
+=5y0I
+-----END PGP SIGNATURE-----
+
+--uHkWNRERGs3Dz+ti--
