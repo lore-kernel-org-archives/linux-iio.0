@@ -2,90 +2,74 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 370CEC43334
-	for <linux-iio@archiver.kernel.org>; Fri, 24 Jun 2022 11:40:55 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 2E6A7CCA473
+	for <linux-iio@archiver.kernel.org>; Fri, 24 Jun 2022 11:45:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230425AbiFXLky (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 24 Jun 2022 07:40:54 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32912 "EHLO
+        id S231628AbiFXLo6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 24 Jun 2022 07:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36688 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229778AbiFXLkx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jun 2022 07:40:53 -0400
-Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C557C77070
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jun 2022 04:40:52 -0700 (PDT)
-Received: by mail-ej1-x631.google.com with SMTP id g26so4135996ejb.5
-        for <linux-iio@vger.kernel.org>; Fri, 24 Jun 2022 04:40:52 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=yy24MqgNoh04Wcf3D2OtiN2cBgfAiEXHDzWGPuJGK9o=;
-        b=lHmUiWiXPi9B6UOOWeyFYwQG8hPeZnA+ltsmMKdFIkgssbt3bc684dUGLED1PcrHNV
-         zMtTDHV/vSMKeBUEQ1Ns1/822af0cGXN8FeH4f2/E6SLnOFUhcney0xFzsZxsz0b0MyN
-         G3jediLVRnPaG1/NpHAFBYX/ln8O/mom1ODWhtlEPyGtEMvv1cKMSDF1SBRG/j7lB+ZQ
-         Qdumnn8pu+Cm6YQ0v0NjDM4F1eLMIplOVmRRp5HR3J5IzQN0w9befAomRwaqKgmLLk6d
-         2UPtKOgwUxDnQxxMsrtMO6e0bE3TX6pISD0q/NU9c0jeMPSMHgUXEwsnC3f43eCzTyQR
-         0Tnw==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=yy24MqgNoh04Wcf3D2OtiN2cBgfAiEXHDzWGPuJGK9o=;
-        b=UqYsFLhTqel4oN7IuUt5xFigXUBkKf7Co4Ng1Is8rfm8eD1bO740T0xGYhOyHH3TnT
-         mT2aJ4PbyAOpCWIRi5Ut4j1Ab6uzAf4hExuxihxiX45l/jAQ0hrgFIClw2weBn9hZjXo
-         DcxcQb7aIOMd2TGwujAz5Ex5VVV5vASy2Ua8/X+S9+K35QWd7q8Hysj51tn1hj8ooW5c
-         oFraGU/u5hLBgkB1Ec/aImy+pehYaoIOr5KLc/iYYVqMS41l3wTzZDd29AGQ9rCW0mK8
-         bIbITn8XBk+MKZFr1cfkxA9aEMdxds3tA9WsvKnNJ8XINnaVWgfi19htN36mIcytCL6M
-         wfrA==
-X-Gm-Message-State: AJIora9+5q+fgahF2O8TRH+9J6NW7ivdSbhYoRSUyTSYjyFlmxzOTfD3
-        zuyPqu2Fwb4M9eoiWFuq2YDnTWScCQkOow==
-X-Google-Smtp-Source: AGRyM1tD0+on2/SUIA73VKnd1ynphMygj9K2ZiDycQZkB6sBMq+S76vrTE6qtDUnJ8sffk6YYFEaAg==
-X-Received: by 2002:a17:907:9722:b0:706:19d0:80b5 with SMTP id jg34-20020a170907972200b0070619d080b5mr12930874ejc.33.1656070851427;
-        Fri, 24 Jun 2022 04:40:51 -0700 (PDT)
-Received: from [192.168.0.235] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id n18-20020a05640204d200b00435a08a3557sm1844443edw.27.2022.06.24.04.40.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 24 Jun 2022 04:40:51 -0700 (PDT)
-Message-ID: <22dc8eba-af71-ff7c-fd74-bf5778655bfc@linaro.org>
-Date:   Fri, 24 Jun 2022 13:40:50 +0200
+        with ESMTP id S231598AbiFXLo4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Jun 2022 07:44:56 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 484337B36C;
+        Fri, 24 Jun 2022 04:44:56 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1671FB82863;
+        Fri, 24 Jun 2022 11:44:55 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 47759C34114;
+        Fri, 24 Jun 2022 11:44:53 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=linuxfoundation.org;
+        s=korg; t=1656071093;
+        bh=SXL5zN2nwEilLgVy+817nWe3mGqIkwJPf3KT5KtK610=;
+        h=Date:From:To:Cc:Subject:References:In-Reply-To:From;
+        b=QqleerCUtjShMpTKt40R3Xw5bJcBgWctuyJJpVXDDC8yUC+px+coDFuFGOhsDclBm
+         dg838WtwC4BaQ3bpEalZRbi71buK3vIaBJx8ZVhWnGCY1l7wOcJedOmOBaxgTuvbE9
+         l08jW1kWCHcm0hwgtV4GmlCbpSkA1mpGB+nGFXvo=
+Date:   Fri, 24 Jun 2022 13:33:52 +0200
+From:   Greg KH <gregkh@linuxfoundation.org>
+To:     ChiaEn Wu <peterwu.pub@gmail.com>
+Cc:     lee.jones@linaro.org, daniel.thompson@linaro.org,
+        jingoohan1@gmail.com, pavel@ucw.cz, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, matthias.bgg@gmail.com,
+        sre@kernel.org, chunfeng.yun@mediatek.com, jic23@kernel.org,
+        lars@metafoo.de, lgirdwood@gmail.com, broonie@kernel.org,
+        linux@roeck-us.net, heikki.krogerus@linux.intel.com, deller@gmx.de,
+        chiaen_wu@richtek.com, alice_chen@richtek.com,
+        cy_huang@richtek.com, dri-devel@lists.freedesktop.org,
+        linux-leds@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-usb@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-fbdev@vger.kernel.org,
+        szunichen@gmail.com
+Subject: Re: [PATCH v3 08/14] usb: typec: tcpci_mt6370: Add Mediatek MT6370
+ tcpci driver
+Message-ID: <YrWhIMGjUeRkpHkB@kroah.com>
+References: <20220623115631.22209-1-peterwu.pub@gmail.com>
+ <20220623115631.22209-9-peterwu.pub@gmail.com>
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 2/2] dt-bindings: iio: dac: mcp4922: expand for mcp4921
- support
-Content-Language: en-US
-To:     Kory Maincent <kory.maincent@bootlin.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Michael Welling <mwelling@ieee.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     thomas.petazzoni@bootlin.com, Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>
-References: <20220624095619.1415614-1-kory.maincent@bootlin.com>
- <20220624095619.1415614-2-kory.maincent@bootlin.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220624095619.1415614-2-kory.maincent@bootlin.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220623115631.22209-9-peterwu.pub@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 24/06/2022 11:56, Kory Maincent wrote:
-> Add device tree bindings for the MCP4921 DAC.
-> 
-> Signed-off-by: Kory Maincent <kory.maincent@bootlin.com>
-> ---
->  Documentation/devicetree/bindings/iio/dac/microchip,mcp4922.yaml | 1 +
->  1 file changed, 1 insertion(+)
-> 
+On Thu, Jun 23, 2022 at 07:56:25PM +0800, ChiaEn Wu wrote:
+> --- /dev/null
+> +++ b/drivers/usb/typec/tcpm/tcpci_mt6370.c
+> @@ -0,0 +1,212 @@
+> +// SPDX-License-Identifier: GPL-2.0+
 
+Are you sure you mean "+" here?
 
-Reviewed-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+I have to ask, sorry.
 
+And no copyright line?  Your company is ok with that, nice!  :)
 
-Best regards,
-Krzysztof
+thanks,
+
+greg k-h
