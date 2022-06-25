@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E0583CCA481
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Jun 2022 10:37:30 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD23CC43334
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Jun 2022 10:37:31 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232501AbiFYKh3 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 25 Jun 2022 06:37:29 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44396 "EHLO
+        id S232517AbiFYKha (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 25 Jun 2022 06:37:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44424 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232450AbiFYKhZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Jun 2022 06:37:25 -0400
-Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8CC4C2A255;
-        Sat, 25 Jun 2022 03:37:24 -0700 (PDT)
-Received: by mail-lj1-x233.google.com with SMTP id b7so5502910ljr.6;
-        Sat, 25 Jun 2022 03:37:24 -0700 (PDT)
+        with ESMTP id S232484AbiFYKh2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Jun 2022 06:37:28 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 18C272A40D;
+        Sat, 25 Jun 2022 03:37:27 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id j21so8601634lfe.1;
+        Sat, 25 Jun 2022 03:37:27 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=dAG25Y0XDP+Vyl6v8IvvJ8qg+yJ22TMKtj4bJENIGag=;
-        b=qyyd1hNVs9W6aOFx1mXF6ugcyEG5nGiKV2mRDOcgdantgIipD4tT0inbu5TU4lg3ga
-         dLRkQVjcDHVMzDhLDqr3wnf0C9TP6swb8tfyXBthJ+wqb57pUbb5qB8kiB8lfdBJAtVi
-         KZXFsgrT0bLFsbGyCn0C1ZQPr4CiaAZqnVuyLzMEbb9eQ/Efn/3a353wEHcd+0ptTmjC
-         KCqAxXJSzSm5sWW8v0tSuT59JcHwaB+wSBNSXUXvndmuSYjAfdol5d0onqn38AKLPzne
-         CqtnkOY8rDzgU5xhepo8XLaGhbqgKP7yViPWpGvnWuLn8+z3mHkb2RSVcXIdVy+mtsRc
-         WYVw==
+        bh=jUsXE3yzxLd+uhE7uMJm8hyFKvelHgMO2H58Uby0WNA=;
+        b=XYpFIAucCcRTIXXYfQ1iJkSLhg89fcAARUZAZ5Zhj4lqBBx91FPOScqks0zNCrnTKN
+         rXO032Qii1VZGH3A6HnqGjTXIalG4JGZNJrGUWeE5rwAuQ9dCB9FGieX6evN/+8Q6HvM
+         PM7ELnVDQTDh0tkaaZ0ZyGzdrBmCnNznBVHImge97IK+775sgeQd61dsMUTkKm80HhfL
+         9t3BIXitPQZmN0GBuiu7kjzIwCEnFj96OCY3NZfHJJsP4PwwfIIZyRgkwK+b1gC5J7+X
+         FqLI21OHnd5YscMfZvhadr/VJVrHzvtrvu5mSm5osIRSJAWgc6ofzabGygKGnXhLG8Ra
+         /7dQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=dAG25Y0XDP+Vyl6v8IvvJ8qg+yJ22TMKtj4bJENIGag=;
-        b=YlId+eyteZRIknu6/pxa8htuxxjNQ2BebwEpJHSOg6Q6tBhqb8GA+J76UMGWXEiDsV
-         3A0r1zq3ZZdjvZfGH8fcIcc2e13xIgRfxKiGAcnotel9yz80N6tNgCoIjSchxZmycXHI
-         JctqpUTUmJb1qnjYpr+mF29Rj1t3TFpUZatFVal7QW4zs4eYPIhztXfZ1SUH18/1880k
-         914R8yVz70JWqWQo9olojpQz7zXt54XrxHZ9L1K+XTBnHwWNmfMSR2ecMrft2kGG6vRf
-         13XhfETU/poNr9h4nSojHjvgoClaXUKbKOGIfQLBsa+dWrZZMdftwaHIYra2JSIPTK/n
-         aJZQ==
-X-Gm-Message-State: AJIora9cCVcqOOEVJqryUQ80XqCdaIigLgKoIWYpZvxUiMO7Mc5ZOlr4
-        MXAOqB5hSh/+wu+YADDZZ/0=
-X-Google-Smtp-Source: AGRyM1uSv2ouCH1ZnIH4pAJZVYt/5kxrZQTwJzqiXE/kpWP7FATFYQIi3QsAfAt558H/pMn/PuiVrw==
-X-Received: by 2002:a05:651c:1695:b0:25a:6e09:cf37 with SMTP id bd21-20020a05651c169500b0025a6e09cf37mr1614809ljb.19.1656153442886;
-        Sat, 25 Jun 2022 03:37:22 -0700 (PDT)
+        bh=jUsXE3yzxLd+uhE7uMJm8hyFKvelHgMO2H58Uby0WNA=;
+        b=Gq3zBcSiiEBTCJ0MuNn5iyWol2J89FE9yRzHxWeEbwKdRl8N4yqWZ8DGumePijLeto
+         Th3Qvq/a3kddah1nwPNedv4Pja0/JF8uGKSYrKQfSozxhAc6EyRkVhBjLDpYOy749S5g
+         anDiA5nYD4ubqlqefDB0LDYgqlo+sqmziV3hvUhUPL+VpXcxWHaXCTX523X1U5h+kDHs
+         evxQRPTvmuGqf0oNyPMtBlB5vdKVl8DufTYT5EODp9I1iP6Wkg5aXuCnZCxUSjCT9bwl
+         c3mNC0AU63iyKQ9itFXiaaNPIXFBkWrT2zLzHqJ7fhEbj8OP14jh3tZ7og2WceKc4pKv
+         t/7g==
+X-Gm-Message-State: AJIora+IZktliEWWLZS6TCKUSHLAqqeircfB5T3hyYJTdFxlJD5eCdHb
+        7ECFnF5CZKiBW7xD41zMLOU0JlGvSaydDfEj
+X-Google-Smtp-Source: AGRyM1vhJNdg6eDWkw+7SlhudVQwj5pj0hzkpbWCKCxHk5XVw7WBTDymvtLTw1QeUoHFsNYVrQhCYw==
+X-Received: by 2002:a19:e05e:0:b0:47f:7821:444d with SMTP id g30-20020a19e05e000000b0047f7821444dmr2198898lfj.515.1656153445436;
+        Sat, 25 Jun 2022 03:37:25 -0700 (PDT)
 Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id z8-20020ac25de8000000b0047ac01fc644sm809115lfq.44.2022.06.25.03.37.20
+        by smtp.gmail.com with ESMTPSA id z8-20020ac25de8000000b0047ac01fc644sm809115lfq.44.2022.06.25.03.37.24
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sat, 25 Jun 2022 03:37:21 -0700 (PDT)
+        Sat, 25 Jun 2022 03:37:24 -0700 (PDT)
 From:   Marcus Folkesson <marcus.folkesson@gmail.com>
 To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Kent Gustavsson <kent@minoris.se>,
@@ -56,9 +56,9 @@ To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v2 04/10] iio: adc: mcp3911: add support for interrupts
-Date:   Sat, 25 Jun 2022 12:38:47 +0200
-Message-Id: <20220625103853.2470346-4-marcus.folkesson@gmail.com>
+Subject: [PATCH v2 06/10] iio: adc: mcp3911: add support for oversampling ratio
+Date:   Sat, 25 Jun 2022 12:38:49 +0200
+Message-Id: <20220625103853.2470346-6-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
 References: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
@@ -68,132 +68,129 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Make it possible to read values upon interrupts.
-Configure Data Ready Signal Output Pin to either HiZ or push-pull and
-use it as interrupt source.
+The chip supports oversampling ratio, so expose it to userspace.
 
 Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 ---
 
 Notes:
     v2:
-        - Removed blank lines (Andy Shevchenko)
-        - Removed dr_hiz variable (Andy Shevchenko)
+        - Make use of osr table
+        - Change formatting and typos
 
- drivers/iio/adc/mcp3911.c | 65 +++++++++++++++++++++++++++++++++++++++
- 1 file changed, 65 insertions(+)
+ drivers/iio/adc/mcp3911.c | 47 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 47 insertions(+)
 
 diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
-index 2a4bf374f140..f4ee0c27c2ab 100644
+index f4ee0c27c2ab..1469c12ebbb2 100644
 --- a/drivers/iio/adc/mcp3911.c
 +++ b/drivers/iio/adc/mcp3911.c
-@@ -26,6 +26,7 @@
- #define MCP3911_REG_GAIN		0x09
+@@ -5,6 +5,8 @@
+  * Copyright (C) 2018 Marcus Folkesson <marcus.folkesson@gmail.com>
+  * Copyright (C) 2018 Kent Gustavsson <kent@minoris.se>
+  */
++#include <linux/bitfield.h>
++#include <linux/bits.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+@@ -35,6 +37,7 @@
+ #define MCP3911_REG_CONFIG		0x0c
+ #define MCP3911_CONFIG_CLKEXT		BIT(1)
+ #define MCP3911_CONFIG_VREFEXT		BIT(2)
++#define MCP3911_CONFIG_OSR		GENMASK(13, 11)
  
- #define MCP3911_REG_STATUSCOM		0x0a
-+#define MCP3911_STATUSCOM_DRHIZ         BIT(12)
- #define MCP3911_STATUSCOM_CH1_24WIDTH	BIT(4)
- #define MCP3911_STATUSCOM_CH0_24WIDTH	BIT(3)
- #define MCP3911_STATUSCOM_EN_OFFCAL	BIT(2)
-@@ -58,6 +59,7 @@ struct mcp3911 {
- 	struct regulator *vref;
- 	struct clk *clki;
- 	u32 dev_addr;
-+	struct iio_trigger *trig;
- 	struct {
- 		u32 channels[2];
- 		s64 ts __aligned(8);
-@@ -252,6 +254,17 @@ static const struct iio_info mcp3911_info = {
- 	.write_raw = mcp3911_write_raw,
- };
+ #define MCP3911_REG_OFFCAL_CH0		0x0e
+ #define MCP3911_REG_GAINCAL_CH0		0x11
+@@ -53,6 +56,8 @@
  
-+static irqreturn_t mcp3911_interrupt(int irq, void *dev_id)
-+{
-+	struct iio_dev *indio_dev = dev_id;
-+	struct mcp3911 *adc = iio_priv(indio_dev);
+ #define MCP3911_NUM_CHANNELS		2
+ 
++static const int mcp3911_osr_table[] = {32, 64, 128, 256, 512, 1024, 2048, 4096};
 +
-+	if (iio_buffer_enabled(indio_dev))
-+		iio_trigger_poll(adc->trig);
-+
-+	return IRQ_HANDLED;
-+};
-+
- static int mcp3911_config(struct mcp3911 *adc)
- {
- 	struct device *dev = &adc->spi->dev;
-@@ -298,6 +311,23 @@ static int mcp3911_config(struct mcp3911 *adc)
- 	return  mcp3911_write(adc, MCP3911_REG_CONFIG, configreg, 2);
+ struct mcp3911 {
+ 	struct spi_device *spi;
+ 	struct mutex lock;
+@@ -108,6 +113,22 @@ static int mcp3911_update(struct mcp3911 *adc, u8 reg, u32 mask,
+ 	return mcp3911_write(adc, reg, val, len);
  }
  
-+static int mcp3911_set_trigger_state(struct iio_trigger *trig, bool enable)
++static int mcp3911_read_avail(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     const int **vals, int *type, int *length,
++			     long info)
 +{
-+	struct mcp3911 *adc = iio_trigger_get_drvdata(trig);
-+
-+	if (enable)
-+		enable_irq(adc->spi->irq);
-+	else
-+		disable_irq(adc->spi->irq);
-+
-+	return 0;
++	switch (info) {
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		*type = IIO_VAL_INT;
++		*vals = mcp3911_osr_table;
++		*length = ARRAY_SIZE(mcp3911_osr_table);
++		return IIO_AVAIL_LIST;
++	default:
++		return -EINVAL;
++	}
 +}
 +
-+static const struct iio_trigger_ops mcp3911_trigger_ops = {
-+	.validate_device = iio_trigger_validate_own_device,
-+	.set_trigger_state = mcp3911_set_trigger_state,
-+};
-+
- static int mcp3911_probe(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev;
-@@ -352,6 +382,15 @@ static int mcp3911_probe(struct spi_device *spi)
- 	if (ret)
- 		goto clk_disable;
+ static int mcp3911_read_raw(struct iio_dev *indio_dev,
+ 			    struct iio_chan_spec const *channel, int *val,
+ 			    int *val2, long mask)
+@@ -134,6 +155,16 @@ static int mcp3911_read_raw(struct iio_dev *indio_dev,
  
-+	if (device_property_read_bool(&adc->spi->dev, "microchip,data-ready-hiz"))
-+		ret = mcp3911_update(adc, MCP3911_REG_STATUSCOM, MCP3911_STATUSCOM_DRHIZ,
-+				0, 2);
-+	else
-+		ret = mcp3911_update(adc, MCP3911_REG_STATUSCOM, MCP3911_STATUSCOM_DRHIZ,
-+				MCP3911_STATUSCOM_DRHIZ, 2);
-+	if (ret < 0)
-+		goto clk_disable;
-+
- 	indio_dev->name = spi_get_device_id(spi)->name;
- 	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_TRIGGERED;
- 	indio_dev->info = &mcp3911_info;
-@@ -362,6 +401,32 @@ static int mcp3911_probe(struct spi_device *spi)
- 
- 	mutex_init(&adc->lock);
- 
-+	if (spi->irq > 0) {
-+		adc->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
-+				indio_dev->name,
-+				iio_device_id(indio_dev));
-+		if (!adc->trig)
-+			goto clk_disable;
-+
-+		adc->trig->ops = &mcp3911_trigger_ops;
-+		iio_trigger_set_drvdata(adc->trig, adc);
-+		ret = devm_iio_trigger_register(&spi->dev, adc->trig);
+ 		ret = IIO_VAL_INT;
+ 		break;
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		ret = mcp3911_read(adc,
++				MCP3911_REG_CONFIG, val, 2);
 +		if (ret)
-+			goto clk_disable;
++			goto out;
 +
-+		/*
-+		 * The device generates interrupts as long as it is powered up.
-+		 * Some platforms might not allow the option to power it down so
-+		 * don't enable the interrupt to avoid extra load on the system
-+		 */
-+		ret = devm_request_irq(&spi->dev, spi->irq,
-+				&mcp3911_interrupt,
-+				IRQF_TRIGGER_FALLING | IRQF_NO_AUTOEN | IRQF_ONESHOT,
-+				indio_dev->name, indio_dev);
-+		if (ret)
-+			goto clk_disable;
-+	}
++		*val = FIELD_GET(MCP3911_CONFIG_OSR, *val);
++		*val = 32 << *val;
++		ret = IIO_VAL_INT;
++		break;
+ 
+ 	case IIO_CHAN_INFO_SCALE:
+ 		if (adc->vref) {
+@@ -186,6 +217,17 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+ 				MCP3911_STATUSCOM_EN_OFFCAL,
+ 				MCP3911_STATUSCOM_EN_OFFCAL, 2);
+ 		break;
 +
- 	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
- 			NULL,
- 			mcp3911_trigger_handler, NULL);
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
++		for (int i = 0; i < sizeof(mcp3911_osr_table); i++) {
++			if (val == mcp3911_osr_table[i]) {
++				val = FIELD_PREP(MCP3911_CONFIG_OSR, i);
++				ret = mcp3911_update(adc, MCP3911_REG_CONFIG, MCP3911_CONFIG_OSR,
++						val, 2);
++				break;
++			}
++		}
++		break;
+ 	}
+ 
+ out:
+@@ -198,9 +240,13 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+ 		.indexed = 1,					\
+ 		.channel = idx,					\
+ 		.scan_index = idx,				\
++		.scan_index = idx,				\
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+ 			BIT(IIO_CHAN_INFO_OFFSET) |		\
+ 			BIT(IIO_CHAN_INFO_SCALE),		\
++		.info_mask_shared_by_type_available =		\
++			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
+ 		.scan_type = {					\
+ 			.sign = 's',				\
+ 			.realbits = 24,				\
+@@ -252,6 +298,7 @@ static irqreturn_t mcp3911_trigger_handler(int irq, void *p)
+ static const struct iio_info mcp3911_info = {
+ 	.read_raw = mcp3911_read_raw,
+ 	.write_raw = mcp3911_write_raw,
++	.read_avail = mcp3911_read_avail,
+ };
+ 
+ static irqreturn_t mcp3911_interrupt(int irq, void *dev_id)
 -- 
 2.36.1
 
