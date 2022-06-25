@@ -2,332 +2,211 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 2F10BC43334
-	for <linux-iio@archiver.kernel.org>; Sat, 25 Jun 2022 12:33:50 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 99A70C43334
+	for <linux-iio@archiver.kernel.org>; Sat, 25 Jun 2022 12:38:12 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232029AbiFYMdt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 25 Jun 2022 08:33:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33962 "EHLO
+        id S232341AbiFYMiL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 25 Jun 2022 08:38:11 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35414 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230401AbiFYMdr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Jun 2022 08:33:47 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.133.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id B035A1F2F2
-        for <linux-iio@vger.kernel.org>; Sat, 25 Jun 2022 05:33:44 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656160423;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=7r45OBtcSvV8alCxjvUuc4IXaLxOYe/Rqvpzaxy4hcc=;
-        b=YkfgNnkrAsZEo6Ksq9GYMhW+OB63bgEtDfGZpCjhry+xjzOrx3mjf3I4zhlqik1m3dRDmV
-        Ha1OgkrTEUkW7S++sUCJvPKYSLsne/8GlElMb+2e+Z1uXkBhSGkqecnhgz4DxW5gSW6j5Z
-        RHrlc77RVXUjjhq7JVH0Rpo36bekzXQ=
-Received: from mail-ej1-f70.google.com (mail-ej1-f70.google.com
- [209.85.218.70]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-624-4HJ0AoK6ODi_xF4tHaKnOQ-1; Sat, 25 Jun 2022 08:33:42 -0400
-X-MC-Unique: 4HJ0AoK6ODi_xF4tHaKnOQ-1
-Received: by mail-ej1-f70.google.com with SMTP id kv9-20020a17090778c900b007262b461ecdso1456360ejc.6
-        for <linux-iio@vger.kernel.org>; Sat, 25 Jun 2022 05:33:41 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=7r45OBtcSvV8alCxjvUuc4IXaLxOYe/Rqvpzaxy4hcc=;
-        b=jForinilijIv2DS78immhXzu93RfTJIJtrbsnehIZTTj116SIW0IB3MJyGCYGBsQo8
-         16ieykz1WSqr2DUrZtQjT/Y2RZkWVAcWoW/hJLQwQfgO9BxSMJwERSs9WZm5fF0JzJYI
-         aKjvnKPRBy5CaARJuNrW4eUzS7ZdHLN7uJAAfrHVbjuovdWJWnfzJorerVH+WQpIZwvR
-         mnW2TSlSewaf44+cuFIngPj2GhYd/cgHmOAibth1R5arO0y0CFKaKiYW2zM5Vb0rzBmb
-         2tyQXaXC4F6JFQgK+c0QiNozNntQ53vTVCYGAHcx2Izvr2IFC/ZNoRCz14HbJXmVRgOu
-         ntng==
-X-Gm-Message-State: AJIora+t8WXy+IhrgRMKOjO+EhMqNWJ71YPvvQ+dpGvHWooTRVck9SNM
-        rKb3RkS6rSrlB3lNjFLEZxwfd2l1vuFfpcxOr3VdfLd3F4bzHmCnFCcqaI+mMaMaG/X6LstjFrz
-        aip1IaGNZaZgLWzPW51fL
-X-Received: by 2002:a05:6402:2402:b0:435:3418:61b5 with SMTP id t2-20020a056402240200b00435341861b5mr4690395eda.82.1656160420500;
-        Sat, 25 Jun 2022 05:33:40 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1tyAeA123QaSPoLE1BBDFcR10xU3ZA9e7WNHr81vpNMgW73gETM60tOpWfcd77CZHv/gB4lcA==
-X-Received: by 2002:a05:6402:2402:b0:435:3418:61b5 with SMTP id t2-20020a056402240200b00435341861b5mr4690376eda.82.1656160420220;
-        Sat, 25 Jun 2022 05:33:40 -0700 (PDT)
-Received: from ?IPV6:2001:1c00:c1e:bf00:d69d:5353:dba5:ee81? (2001-1c00-0c1e-bf00-d69d-5353-dba5-ee81.cable.dynamic.v6.ziggo.nl. [2001:1c00:c1e:bf00:d69d:5353:dba5:ee81])
-        by smtp.gmail.com with ESMTPSA id g6-20020a1709064e4600b007121b22b376sm2532874ejw.105.2022.06.25.05.33.39
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sat, 25 Jun 2022 05:33:39 -0700 (PDT)
-Message-ID: <937c3317-91f7-9236-70a8-39ca4c2f6396@redhat.com>
-Date:   Sat, 25 Jun 2022 14:33:38 +0200
+        with ESMTP id S232433AbiFYMiK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Jun 2022 08:38:10 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3594015FC6;
+        Sat, 25 Jun 2022 05:38:09 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id BB37861203;
+        Sat, 25 Jun 2022 12:38:08 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C5EBAC3411C;
+        Sat, 25 Jun 2022 12:38:05 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656160687;
+        bh=BI0iF/XEbEx3iB4dR5ueuZ7PpNJ4Qxsj8axGKnWS2hc=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=g9IZZU8/xwty1eYersDGG7MGq15JwH1SfVqgKH7oU3EFQI6lY1rPlwoHR7x7KVCMU
+         Yhw64blJw1YsDflzBs4sV8NeiklZVizhxTZoehyauK3+VUJWtKvPlYcNBDMQ42jMdD
+         7OZ0p2u+s13m+6o4F/BXcbNgootSg73RkG9aUpPhUgu1yrCtLheF+7cVZaygL9KTmU
+         /PX5zTpuMVRly5UZ0/TFZa1jF8H7aMR75+5bnw03LDgTBIb4mrqKQLDxhv1VUrxqwr
+         6vakD1hmZI4/i2KlKUInsHldtHiDT/nGk+lb7YFySONGGZtAN4S+Vy69/DY5HPzzPS
+         uXmpJrV5NqgiA==
+Date:   Sat, 25 Jun 2022 13:47:35 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Marcus Folkesson <marcus.folkesson@gmail.com>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 08/10] iio: adc: mcp3911: add support for phase
+Message-ID: <20220625134735.6726544a@jic23-huawei>
+In-Reply-To: <20220625103853.2470346-8-marcus.folkesson@gmail.com>
+References: <20220625103853.2470346-1-marcus.folkesson@gmail.com>
+        <20220625103853.2470346-8-marcus.folkesson@gmail.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.8.0
-Subject: Re: [PATCH] iio/hid: Add mount_matrix
-Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Gwendal Grignou <gwendal@chromium.org>
-Cc:     jikos@kernel.org, srinivas.pandruvada@linux.intel.com,
-        wpsmith@google.com, linux-iio@vger.kernel.org,
-        Bastien Nocera <hadess@hadess.net>
-References: <20220624223341.2625231-1-gwendal@chromium.org>
- <20220625120937.24c51ca4@jic23-huawei>
-From:   Hans de Goede <hdegoede@redhat.com>
-In-Reply-To: <20220625120937.24c51ca4@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+On Sat, 25 Jun 2022 12:38:51 +0200
+Marcus Folkesson <marcus.folkesson@gmail.com> wrote:
 
-Jonathan, thanks for Cc-ing me on this.
-
-On 6/25/22 13:09, Jonathan Cameron wrote:
-> On Fri, 24 Jun 2022 15:33:41 -0700
-> Gwendal Grignou <gwendal@chromium.org> wrote:
+> The MCP3911 incorporates a phase delay generator,
+> which ensures that the two ADCs are converting the
+> inputs with a fixed delay between them.
+> Expose it to userspace.
 > 
->> ISH based sensors do not naturally return data in the W3C 'natural'
->> orientation.
->> They returns all data inverted, to match Microsoft Windows requirement:
->> [https://docs.microsoft.com/en-us/windows/uwp/devices-sensors/sensors#accelerometer]
->> """ If the device has the SimpleOrientation of FaceUp on a table, then
->> the accelerometer would read -1 G on the Z axis. """
+> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+
+Until now I think we've only had the phase modifier for output channels.
+So at minimum need to add documentation for it in
+Documentation/ABI/testing/sysfs-bus-iio
+
+However, the snag is that it's defined in terms of radians.
+The usecase here assumes that the sensor is measuring some sort of
+wave form, but unfortunately we don't know what that is - hence
+the setting is in terms of clock delay.
+
+As such, though the datasheet calls if phase, I think that is
+stretching the meaning too far in the IIO ABI. We probably need
+something new.  
+
+Years ago, for devices that are actually a single ADC and a MUX
+where we pretend in IIO that the channels are sampled synchronously
+we talked about provided the timing delay information to userspace.
+Nothing ever came of it, but that is effectively the same concept
+as you have here.
+
+So, it's a time measurement so units will need to be seconds -
+userspace has no idea of the clk speed of a device. For two channels
+the relationship is straight forward, but I wonder for 3 channel devices
+how we would handle it.  The two different sources of this delay might
+lead to different controls being optimal.
+
+Naming wise, perhaps samplingdelay?
+
+If you have actual ADCs that operate independently then relationship to
+a base reference point will be independent. 
+So for a 3 channel device you'd have
+
+in_voltage0_samplingdelay  0
+in_voltage1_samplingdelay  Phase register 1 code / DMCLK
+in_voltage2_samplingdelay  Phase register 2 code / DMCLK
+
+But for a device that is a mux in front of one actual ADC
+then the timing is likely to be relative to previous channel
+Hence if all turned on...
+
+in_voltage0_samplingdelay  0
+in_voltage1_samplingdelay  Phase register 1 code / DMCLK
+in_voltage2_samplingdelay  Phase register 2 code + Phase register 1 code / DMCLK
+
+If only 0 and 2 enabled.
+
+in_voltage0_samplingdelay  0
+in_voltage2_samplingdelay  Phase register X code
+
+However we can probably just make that problem for the driver. Sometimes
+we'll have to reject or approximate particular combinations of enabled channels
+and requested delays. 
+One corner case that is nasty will be if there is just one controllable delay.
+In that case it would seem natural to have just one attribute, but the delay
+would be cumulative across multiple enabled channels.  For that I think
+we'd just need different ABI.
+
+in_voltage_intersampledelay  maybe?  With two channels the various options
+would all work but we should think ahead...
+
+There is another complexity. These values apply to the buffered data, not
+otherwise. Moving them into bufferX/ would nicely associate them with the
+enabled channels and make it more obvious that there is a coupling there
+
+However, it is more complex to add attributes to the buffers..
+If we think that is the right way to go for ABI it wouldn't be too hard to
+add to the core - but will need a new callback.
+
+So my gut feeling is that this should be
+
+bufferX/in_voltage0_samplingdelay 0
+bufferX/in_voltage1_samplingdelay Phase register 1 code / DMCLK seconds
+but it is a rather nasty layering violation.
+
+That will require us adding a new callback read_scan_el_raw() and appropriate
+enum etc.
+
+Things will get more complex for 3 channel deviceson multibuffer devices or when there are in
+kernel consumers (as those may effect the enabled channels but aren't visible in
+bufferX).  However, I don't see it being that likely we'll get that combination
+of features any time soon (famous last words!)
+
+Gut feeling is that adding this feature (and discussion of ABI) will
+take a while, but it shouldn't block picking up the rest of the series
+in the meantime.
+
+Jonathan
+
+
+> ---
 > 
-> Probably reference the HID Usage Tables 1.3 spec rather than the MS one.
-> https://usb.org/sites/default/files/hut1_3_0.pdf
-> After some waving around of my left and right hand I'm fairly sure that says the same
-> thing as the MS spec. Section 4.4 Vector Usages 
+> Notes:
+>     v2:
+>         - Fix formatting (Andy Schevchenko)
 > 
->> While W3C defines [https://www.w3.org/TR/motion-sensors/#accelerometer-sensor]
->> """The Accelerometer sensor is an inertial-frame sensor, this means that
->> when the device is in free fall, the acceleration is 0 m/s2 in the
->> falling direction, and when a device is laying flat on a table, the
->> acceleration in upwards direction will be equal to the Earth gravity,
->> i.e. g ≡ 9.8 m/s2 as it is measuring the force of the table pushing the
->> device upwards."""
->>
->> Fixes all HID sensors that defines IIO_MOD_[XYZ] attributes.
->>
->> Tested on "HP Spectre x360 Convertible 13" and "Dell XPS 13 9365".
->>
->> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+>  drivers/iio/adc/mcp3911.c | 24 +++++++++++++++++++++++-
+>  1 file changed, 23 insertions(+), 1 deletion(-)
 > 
-> Ah.  Whilst this is a fix, it seems likely to break a whole bunch of existing
-> users that are compensating for the wrong orientation in userspace.  Also, do
-> we know how universal this is?  I have a nasty feeling it'll turn out some
-> HID sensors do it the other way whatever the spec says.  Bastien, are you
-> carrying a local fix for this in your userspace code?
-> 
-> +CC a few people who are likely to know more on just how bad that will be...
-
-Right, so Linux userspace expects an axis system similar to the Android one,
-which is actually the one which seems to be described here.
-
-The axis system expect is that when a tablet is layed flat on the table,
-the x and y axis are as one would expect when drawing a mathematics
-graph on the surface of the tablet.
-
-So X-axis goes from left to right, with left side being lower numbers and
-right side higher numbers.
-
-And Y-axis goes from bottom to top, with the bottom being lower numbers and
-the top higher numbers.
-
-That leaves the Z-axis which comes out of the screen at a 90° angle (to both
-the X and Y axis) and the vector coming out of the screen towards to the user /
-observer of the screen indicates positive numbers where as imagining the same
-axis pointing down through the table on which the tables is lying towards
-the floor represents negative numbers.
-
-This means that the accel values of a tablet resting on a table, expresses
-in units of 1G are: [ 0, 0, -1 ] and I've seen quite a few HID sensors
-with accel reporting on various devices and they all adhere to this
-without applying any accel matrix. Or in other words, HID sensors behave
-as expected by userspace when applying the norm matrix of:
-
-	.rotation = {
-		"1", "0", "0",
-		"0", "1", "0",
-		"0", "0", "1"
-
-And this patch will cause the image to be upside down (no matter what the
-rotation) when using auto-rotation with iio-sensor-proxy.
-
-So big NACK from me for this patch.
-
-I'm not sure what this patch is trying to fix but it looks to me like it
-is a bug in the HID sensors implementation of the specific device.
-
-Again HID-sensors already work fine on tons of existing devices without
-any matrix getting applied.
-
-Merging this patch would break existing userspace on tons of devices!
-
-Regards,
-
-Hans
-
-
-
-
-
-> 
-> One other thing inline.  The mount matrix you've provided isn't a rotation matrix.
-> 
-> I'd forgotten the annoyance of graphics folks using the right handed sensor
-> axis whilst nearly all other uses are left handed. It drove me mad many years
-> ago - every code base that used sensors and rendered the result needed a
-> flip of the z axis - it was never well documented, so half the time
-> the code ended up with many axis flips based on people debugging local
-> orientation problems.  *sigh*
-> 
-> 
->> ---
->>  drivers/iio/accel/hid-sensor-accel-3d.c       |  3 +++
->>  .../hid-sensors/hid-sensor-attributes.c       | 21 +++++++++++++++++++
->>  drivers/iio/gyro/hid-sensor-gyro-3d.c         |  3 +++
->>  drivers/iio/magnetometer/hid-sensor-magn-3d.c |  3 +++
->>  include/linux/hid-sensor-hub.h                |  2 ++
->>  5 files changed, 32 insertions(+)
->>
->> diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
->> index a2def6f9380a3..980bbd7fba502 100644
->> --- a/drivers/iio/accel/hid-sensor-accel-3d.c
->> +++ b/drivers/iio/accel/hid-sensor-accel-3d.c
->> @@ -59,6 +59,7 @@ static const struct iio_chan_spec accel_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->>  		.scan_index = CHANNEL_SCAN_INDEX_X,
->> +		.ext_info = hid_sensor_ext_info,
->>  	}, {
->>  		.type = IIO_ACCEL,
->>  		.modified = 1,
->> @@ -69,6 +70,7 @@ static const struct iio_chan_spec accel_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->>  		.scan_index = CHANNEL_SCAN_INDEX_Y,
->> +		.ext_info = hid_sensor_ext_info,
->>  	}, {
->>  		.type = IIO_ACCEL,
->>  		.modified = 1,
->> @@ -79,6 +81,7 @@ static const struct iio_chan_spec accel_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->>  		.scan_index = CHANNEL_SCAN_INDEX_Z,
->> +		.ext_info = hid_sensor_ext_info,
->>  	},
->>  	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIMESTAMP)
->>  };
->> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
->> index 9b279937a24e0..e367e4b482ef0 100644
->> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
->> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
->> @@ -585,6 +585,27 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
->>  }
->>  EXPORT_SYMBOL_NS(hid_sensor_parse_common_attributes, IIO_HID);
->>  
->> +static const struct iio_mount_matrix hid_sensor_windows_axis = {
->> +	.rotation = {
->> +		"-1", "0", "0",
->> +		"0", "-1", "0",
->> +		"0", "0", "-1"
-> 
-> Unless my memory of rotation matrices serves me wrong, that's not a rotation matrix.
-> (det(R) != 1)
-> 
-> That's a an axis flip from a right handed set of axis to a left handed one.
-> So to fix this up, you would need to invert the raw readings of at least one axis
-> rather than rely on the mount matrix or make the scale negative.
-> 
-> Jonathan
-> 
-> 
->> +	}
->> +};
->> +
->> +static const struct iio_mount_matrix *
->> +hid_sensor_get_mount_matrix(const struct iio_dev *indio_dev,
->> +				const struct iio_chan_spec *chan)
->> +{
->> +	return &hid_sensor_windows_axis;
->> +}
->> +
->> +const struct iio_chan_spec_ext_info hid_sensor_ext_info[] = {
->> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, hid_sensor_get_mount_matrix),
->> +	{ }
->> +};
->> +EXPORT_SYMBOL(hid_sensor_ext_info);
->> +
->>  MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@intel.com>");
->>  MODULE_DESCRIPTION("HID Sensor common attribute processing");
->>  MODULE_LICENSE("GPL");
->> diff --git a/drivers/iio/gyro/hid-sensor-gyro-3d.c b/drivers/iio/gyro/hid-sensor-gyro-3d.c
->> index 8f0ad022c7f1b..b852f5166bb21 100644
->> --- a/drivers/iio/gyro/hid-sensor-gyro-3d.c
->> +++ b/drivers/iio/gyro/hid-sensor-gyro-3d.c
->> @@ -58,6 +58,7 @@ static const struct iio_chan_spec gyro_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->>  		.scan_index = CHANNEL_SCAN_INDEX_X,
->> +		.ext_info = hid_sensor_ext_info,
->>  	}, {
->>  		.type = IIO_ANGL_VEL,
->>  		.modified = 1,
->> @@ -68,6 +69,7 @@ static const struct iio_chan_spec gyro_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->>  		.scan_index = CHANNEL_SCAN_INDEX_Y,
->> +		.ext_info = hid_sensor_ext_info,
->>  	}, {
->>  		.type = IIO_ANGL_VEL,
->>  		.modified = 1,
->> @@ -78,6 +80,7 @@ static const struct iio_chan_spec gyro_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->>  		.scan_index = CHANNEL_SCAN_INDEX_Z,
->> +		.ext_info = hid_sensor_ext_info,
->>  	},
->>  	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIMESTAMP)
->>  };
->> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> index e85a3a8eea908..aefbdb9b0869a 100644
->> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
->> @@ -74,6 +74,7 @@ static const struct iio_chan_spec magn_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SCALE) |
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->> +		.ext_info = hid_sensor_ext_info,
->>  	}, {
->>  		.type = IIO_MAGN,
->>  		.modified = 1,
->> @@ -83,6 +84,7 @@ static const struct iio_chan_spec magn_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SCALE) |
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->> +		.ext_info = hid_sensor_ext_info,
->>  	}, {
->>  		.type = IIO_MAGN,
->>  		.modified = 1,
->> @@ -92,6 +94,7 @@ static const struct iio_chan_spec magn_3d_channels[] = {
->>  		BIT(IIO_CHAN_INFO_SCALE) |
->>  		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->>  		BIT(IIO_CHAN_INFO_HYSTERESIS),
->> +		.ext_info = hid_sensor_ext_info,
->>  	}, {
->>  		.type = IIO_ROT,
->>  		.modified = 1,
->> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
->> index c27329e2a5ad5..ee7d5b430a785 100644
->> --- a/include/linux/hid-sensor-hub.h
->> +++ b/include/linux/hid-sensor-hub.h
->> @@ -236,6 +236,8 @@ struct hid_sensor_common {
->>  	struct work_struct work;
->>  };
->>  
->> +extern const struct iio_chan_spec_ext_info hid_sensor_ext_info[];
->> +
->>  /* Convert from hid unit expo to regular exponent */
->>  static inline int hid_sensor_convert_exponent(int unit_expo)
->>  {
-> 
+> diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+> index ede1ad97ed4d..a0609d7663e1 100644
+> --- a/drivers/iio/adc/mcp3911.c
+> +++ b/drivers/iio/adc/mcp3911.c
+> @@ -155,6 +155,17 @@ static int mcp3911_read_raw(struct iio_dev *indio_dev,
+>  
+>  		ret = IIO_VAL_INT;
+>  		break;
+> +
+> +	case IIO_CHAN_INFO_PHASE:
+> +		ret = mcp3911_read(adc,
+> +				   MCP3911_REG_PHASE, val, 2);
+> +		if (ret)
+> +			goto out;
+> +
+> +		*val = sign_extend32(*val, 12);
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		ret = mcp3911_read(adc,
+>  				MCP3911_REG_CONFIG, val, 2);
+> @@ -225,6 +236,15 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+>  				MCP3911_STATUSCOM_EN_OFFCAL, 2);
+>  		break;
+>  
+> +	case IIO_CHAN_INFO_PHASE:
+> +		if (val2 != 0 || val > 0xfff) {
+> +			ret = -EINVAL;
+> +			goto out;
+> +		}
+> +
+> +		/* Write phase */
+> +		ret = mcp3911_write(adc, MCP3911_REG_PHASE, val, 2);
+> +		break;
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		for (int i = 0; i < sizeof(mcp3911_osr_table); i++) {
+>  			if (val == mcp3911_osr_table[i]) {
+> @@ -248,7 +268,9 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+>  		.channel = idx,					\
+>  		.scan_index = idx,				\
+>  		.scan_index = idx,				\
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO), \
+> +		.info_mask_shared_by_type =			\
+> +			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO)|	\
+> +			BIT(IIO_CHAN_INFO_PHASE),		\
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+>  			BIT(IIO_CHAN_INFO_OFFSET) |		\
+>  			BIT(IIO_CHAN_INFO_SCALE),		\
 
