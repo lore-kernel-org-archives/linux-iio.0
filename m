@@ -2,43 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 1A45CCCA47C
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Jun 2022 16:45:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 327E0CCA482
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Jun 2022 16:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231689AbiFZQpz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 26 Jun 2022 12:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51674 "EHLO
+        id S231642AbiFZQp4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 26 Jun 2022 12:45:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51656 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231652AbiFZQpx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2022 12:45:53 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B716BE01E
-        for <linux-iio@vger.kernel.org>; Sun, 26 Jun 2022 09:45:52 -0700 (PDT)
+        with ESMTP id S231648AbiFZQpw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2022 12:45:52 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B018DFFD
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jun 2022 09:45:51 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 537BA60C4E
-        for <linux-iio@vger.kernel.org>; Sun, 26 Jun 2022 16:45:52 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 6E3B4C385A2;
-        Sun, 26 Jun 2022 16:45:50 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 767FC60C48
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jun 2022 16:45:50 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 95DDCC341C7;
+        Sun, 26 Jun 2022 16:45:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656261951;
-        bh=R8u/rHNKgyxdVEdWnyXjIbILPZqGYc/sVTmiNosoNsk=;
+        s=k20201202; t=1656261949;
+        bh=nHu7Yp7CZ2tHvUgaPSxmi0PTkqnINCmbbl9RTphOu7E=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=hcrgYBYLxZXtOXlD/DyfHNjsM5Dq3Yvtf0SLHBkA8HrP41HMrbbwB3jPg4jiT/fa4
-         2cvsb1QYl6q/dWKHLqs0A+Rih/IT42AYLhd7aUZkl7ohxEYgrp0wKe6D0q6vquVcK+
-         O8DxvJ2/fPGcDFUqy74Qo63vObkFMrCPPNuSEau/BHBH4pU9/jpEBITdWxjtjVppuj
-         r/qTZIrWNardJBQLZ91YSHQTCZoeAum6kSEGHjnHgoDLOh18TLwtIiENhgH3g7Ggqx
-         IJmSFjegdxDPqFJDIxee5aznEj/OStS/c1msukpfIyMksMy7iw9prDlz+iAnp5ZcXD
-         BtIAVUyRrfY4g==
+        b=m0ixtDxVSp59vhMPk9TU11Seh3JL6YQW1hV7wAkni4iE4PLiwX1JPwFdi7hHitYSO
+         JuJfxTbF4OTdIo0AqOADwu9GQJG0LknS23v8BFk2K/RLc0IxLhCSzjOMmNX5gDyQbN
+         DhFHRV2HGJ8EZ5naMi2EpoeKWrLrjXI2/NqSPCs8pBKlxkXa1i/JU9vXnHsqzIhzBT
+         XqZKO1EixAj8Dyxp2UGeCgG2OMCKYYgYZojItb4l14x18R1Iiyk5kw9Ej9+571Zv3z
+         D6u81lIovjFLY2eHPIQL5o9US8S3Q2w4SKxIa/jeZm/TA41cJ99qnNzwNxBhgyVo3r
+         z1ybsx+47zF2A==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Fabrice Gasnier <fabrice.gasnier@foss.st.com>
-Subject: [PATCH 3/4] iio: ABI: stm32-timer-trigger: Fuse unusual ABI into main doc.
-Date:   Sun, 26 Jun 2022 17:55:10 +0100
-Message-Id: <20220626165511.602202-4-jic23@kernel.org>
+        Navin Sankar Velliangiri <navin@linumiz.com>
+Subject: [PATCH 2/4] iio: ABI: max31865: Drop in_filter_notch_centre_frequency as in main docs.
+Date:   Sun, 26 Jun 2022 17:55:09 +0100
+Message-Id: <20220626165511.602202-3-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220626165511.602202-1-jic23@kernel.org>
 References: <20220626165511.602202-1-jic23@kernel.org>
@@ -50,55 +50,28 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-We can't duplicate the description of sampling_frequency. This device
-has some unusual requirements which we solved by giving a
-sampling_frequency of 0 special meaning. As such add a note
-about this unusual usage to the main documentation.
+As this is the last element in the file, also delete the file.
 
-Whilst I don't particularly like this resolution, it is the best
-I could come up with given earlier discussion on this topic.
-
-Link: https://lore.kernel.org/linux-iio/20210315101217.00002c50@Huawei.com/
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Fabrice Gasnier <fabrice.gasnier@foss.st.com>
+Cc: Navin Sankar Velliangiri <navin@linumiz.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio             | 3 +++
- Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 | 8 --------
- 2 files changed, 3 insertions(+), 8 deletions(-)
+ .../ABI/testing/sysfs-bus-iio-temperature-max31865        | 8 --------
+ 1 file changed, 8 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 3e00d7f7ee22..e81ba6f5e1c8 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -107,6 +107,9 @@ Description:
- 		relevant directories.  If it affects all of the above
- 		then it is to be found in the base device directory.
- 
-+		The stm32-timer-trigger has the additional characteristic that
-+		a sampling_frequency of 0 is defined to stop sampling.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
- What:		/sys/bus/iio/devices/iio:deviceX/in_intensity_sampling_frequency_available
- What:		/sys/bus/iio/devices/iio:deviceX/in_proximity_sampling_frequency_available
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-index c4a4497c249a..05074c4a65e2 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-@@ -90,14 +90,6 @@ Description:
- 		Reading returns the current master modes.
- 		Writing set the master mode
- 
--What:		/sys/bus/iio/devices/triggerX/sampling_frequency
--KernelVersion:	4.11
--Contact:	benjamin.gaignard@st.com
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865 b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
+deleted file mode 100644
+index 349089e4f2d6..000000000000
+--- a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
++++ /dev/null
+@@ -1,8 +0,0 @@
+-What:		/sys/bus/iio/devices/iio:deviceX/in_filter_notch_center_frequency
+-KernelVersion:	5.11
+-Contact:	linux-iio@vger.kernel.org
 -Description:
--		Reading returns the current sampling frequency.
--		Writing an value different of 0 set and start sampling.
--		Writing 0 stop sampling.
+-		Notch frequency in Hz for a noise rejection filter. Used i.e for
+-		line noise rejection.
 -
- What:		/sys/bus/iio/devices/iio:deviceX/in_count0_preset
- KernelVersion:	4.12
- Contact:	benjamin.gaignard@st.com
+-		Valid notch filter values are 50 Hz and 60 Hz.
 -- 
 2.36.1
 
