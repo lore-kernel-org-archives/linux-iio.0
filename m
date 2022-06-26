@@ -2,44 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id CAE71CCA480
-	for <linux-iio@archiver.kernel.org>; Sun, 26 Jun 2022 16:45:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9A583CCA481
+	for <linux-iio@archiver.kernel.org>; Sun, 26 Jun 2022 16:45:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231652AbiFZQpz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 26 Jun 2022 12:45:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51652 "EHLO
+        id S231605AbiFZQp5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 26 Jun 2022 12:45:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51700 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231642AbiFZQpw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2022 12:45:52 -0400
+        with ESMTP id S231753AbiFZQp4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Jun 2022 12:45:56 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 65992DFBE
-        for <linux-iio@vger.kernel.org>; Sun, 26 Jun 2022 09:45:50 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DC44DD11A
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jun 2022 09:45:55 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 23CA3B80D39
-        for <linux-iio@vger.kernel.org>; Sun, 26 Jun 2022 16:45:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 56A2DC341CB;
-        Sun, 26 Jun 2022 16:45:46 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 9BF24B80D38
+        for <linux-iio@vger.kernel.org>; Sun, 26 Jun 2022 16:45:54 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 2ED48C385A9;
+        Sun, 26 Jun 2022 16:45:51 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1656261947;
-        bh=QQL2KzFC3RhSW4JT0GruPu+IOICbC8UOR45TlYI79rQ=;
+        s=k20201202; t=1656261953;
+        bh=ZY19fXt0aAtMpIahGd5nNw9Oz6qYoxqQ/fP98SnyAzo=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=Q/tR+q6jodlsKK52Jmxem+7IpS5BRqSKtf3J2fhbl2t9ZM+je1IWYnySgSeN536mD
-         mMHVlVbe3YRWHD9CZdcW9VVqqxKAMlWNxSpf1fpj/iGMThLMRvz/ZrE9dOVdKC0Uqc
-         gHLReJG+pNzYcsLsvXHwmSTZl2/RkLUXbHAsUYRvR1bWeqc3GGdtAX/DPjBOh9SZ87
-         JEzGnSqZAdLyMtEYWjavoiOk6PzW86QizjASTex/xmY8IwUbbRaqote0lFVieWFdwK
-         URZAlbhin3MPk6A6oiChzyUaUaVsMA/Ev+2d+RUts30tjL1Odlt8qzi+NSHEAf3BT+
-         devCnqxkcjoJg==
+        b=tgnJFnr4ovWdk4xLxgAzZMvKN6AcFfESye7BRnEjeMarYjg+TnYAx2kLUsBAnUTLO
+         aWfSs0chyBsyhVh2Nt0Zu6YmK7IOdXDYNMGOqGKKegeULbujSC5h8a1XKin//7wAR7
+         3DByJSDOzb1TEDhjekWBZ3p4IRRxcAb4/FCjTdjZpKzeCRGk/WKyRst98vnVvMKLkr
+         7OeqHK5BhTbCs+N1F2vPNx+AN0t+7HYUn0t2XtOo9Zx1SsD8BXbb1ACOsU3MMpEMK3
+         TBzWNnu0cKCp8GvVIRRLcZyXm3BVaHSk88KEOpufL25ikDI47TPpnBH1MrToCEAMGY
+         NRCmbtN9AoJ+A==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org
 Cc:     Mauro Carvalho Chehab <mchehab@kernel.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Navin Sankar Velliangiri <navin@linumiz.com>,
-        Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>
-Subject: [PATCH 1/4] iio: ABI: temperature: Unify documentation for thermocouple fault detection.
-Date:   Sun, 26 Jun 2022 17:55:08 +0100
-Message-Id: <20220626165511.602202-2-jic23@kernel.org>
+        Gwendal Grignou <gwendal@chromium.org>
+Subject: [PATCH 4/4] iio: ABI: sx9324: Squash some formatting to keep scripting happy.
+Date:   Sun, 26 Jun 2022 17:55:11 +0100
+Message-Id: <20220626165511.602202-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220626165511.602202-1-jic23@kernel.org>
 References: <20220626165511.602202-1-jic23@kernel.org>
@@ -51,104 +50,33 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-The kernel build docs do not support having multiple definitions for
-the same sysfs filename.  Hence generalize the documentation a little
-and pull it out of device specific files and into
-sysfs-bus-iio-thermocouple
+The indenting added in here to give bullet points is nice to read
+but unfortunately our docs building scripts trip up on it.
 
-These may well be more general and need pulling into a more generic
-file in the future, but we can do that when it is needed.
+make htmldocs gives
+../iio/Documentation/ABI/testing/sysfs-bus-iio-sx9324:2: ERROR: Unexpected indentation.
+
+So drop the pretty indenting to avoid that error message.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Navin Sankar Velliangiri <navin@linumiz.com>
-Cc: Paresh Chaudhary <paresh.chaudhary@rockwellcollins.com>
+Cc: Gwendal Grignou <gwendal@chromium.org>
 ---
- .../sysfs-bus-iio-temperature-max31856        | 31 -------------------
- .../sysfs-bus-iio-temperature-max31865        | 12 -------
- .../ABI/testing/sysfs-bus-iio-thermocouple    | 18 +++++++++++
- 3 files changed, 18 insertions(+), 43 deletions(-)
+ Documentation/ABI/testing/sysfs-bus-iio-sx9324 | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31856 b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31856
-deleted file mode 100644
-index e5ef6d8e5da1..000000000000
---- a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31856
-+++ /dev/null
-@@ -1,31 +0,0 @@
--What:		/sys/bus/iio/devices/iio:deviceX/fault_oc
--KernelVersion:	5.1
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Open-circuit fault. The detection of open-circuit faults,
--		such as those caused by broken thermocouple wires.
--		Reading returns either '1' or '0'.
--
--		===  =======================================================
--		'1'  An open circuit such as broken thermocouple wires
--		     has been detected.
--		'0'  No open circuit or broken thermocouple wires are detected
--		===  =======================================================
--
--What:		/sys/bus/iio/devices/iio:deviceX/fault_ovuv
--KernelVersion:	5.1
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Overvoltage or Undervoltage Input Fault. The internal circuitry
--		is protected from excessive voltages applied to the thermocouple
--		cables by integrated MOSFETs at the T+ and T- inputs, and the
--		BIAS output. These MOSFETs turn off when the input voltage is
--		negative or greater than VDD.
--
--		Reading returns either '1' or '0'.
--
--		===  =======================================================
--		'1'  The input voltage is negative or greater than VDD.
--		'0'  The input voltage is positive and less than VDD (normal
--		     state).
--		===  =======================================================
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865 b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
-index 4b072da92218..349089e4f2d6 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-temperature-max31865
-@@ -1,15 +1,3 @@
--What:		/sys/bus/iio/devices/iio:deviceX/fault_ovuv
--KernelVersion:	5.11
--Contact:	linux-iio@vger.kernel.org
--Description:
--		Overvoltage or Undervoltage Input fault. The internal circuitry
--		is protected from excessive voltages applied to the thermocouple
--		cables at FORCE+, FORCE2, RTDIN+ & RTDIN-. This circuitry turn
--		off when the input voltage is negative or greater than VDD.
--
--		Reading returns '1' if input voltage is negative or greater
--		than VDD, otherwise '0'.
--
- What:		/sys/bus/iio/devices/iio:deviceX/in_filter_notch_center_frequency
- KernelVersion:	5.11
- Contact:	linux-iio@vger.kernel.org
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-thermocouple b/Documentation/ABI/testing/sysfs-bus-iio-thermocouple
-new file mode 100644
-index 000000000000..01259df297ca
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-thermocouple
-@@ -0,0 +1,18 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/fault_ovuv
-+KernelVersion:	5.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Overvoltage or Undervoltage Input Fault. The internal circuitry
-+		is protected from excessive voltages applied to the thermocouple
-+		cables. The device can also detect if such a condition occurs.
-+
-+		Reading returns '1' if input voltage is negative or greater
-+		than VDD, otherwise '0'.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/fault_oc
-+KernelVersion:	5.1
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Open-circuit fault. The detection of open-circuit faults,
-+		such as those caused by broken thermocouple wires.
-+		Reading returns '1' if fault, '0' otherwise.
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-sx9324 b/Documentation/ABI/testing/sysfs-bus-iio-sx9324
+index 632e3321f5a3..9c1e8884a738 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-sx9324
++++ b/Documentation/ABI/testing/sysfs-bus-iio-sx9324
+@@ -8,7 +8,7 @@ Description:
+ 		+ not connected (HZ),
+ 		+ grounded (GD),
+ 		+ connected to an antenna where it can act as a base
+-		  (DS - data shield), or measured input (MI).
++		(DS - data shield), or measured input (MI).
+ 
+ 		The sensor rotates measurement across 4 phases
+ 		(PH0, PH1, PH2, PH3), where the inputs are configured
 -- 
 2.36.1
 
