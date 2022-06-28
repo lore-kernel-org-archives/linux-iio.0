@@ -2,42 +2,42 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C39A5CCA47E
-	for <linux-iio@archiver.kernel.org>; Tue, 28 Jun 2022 15:14:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9BBA9C433EF
+	for <linux-iio@archiver.kernel.org>; Tue, 28 Jun 2022 15:14:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S1347985AbiF1POw (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 28 Jun 2022 11:14:52 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48104 "EHLO
+        id S1348076AbiF1PO4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 28 Jun 2022 11:14:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48256 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1347987AbiF1POk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2022 11:14:40 -0400
+        with ESMTP id S1347400AbiF1POu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Jun 2022 11:14:50 -0400
 Received: from esa.microchip.iphmx.com (esa.microchip.iphmx.com [68.232.154.123])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0B7E32E09A;
-        Tue, 28 Jun 2022 08:14:39 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B92312E0A9;
+        Tue, 28 Jun 2022 08:14:40 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=simple/simple;
   d=microchip.com; i=@microchip.com; q=dns/txt; s=mchp;
-  t=1656429278; x=1687965278;
+  t=1656429281; x=1687965281;
   h=from:to:cc:subject:date:message-id:in-reply-to:
    references:mime-version:content-transfer-encoding;
-  bh=kpUWPrjN6tT2xVPogeKtIYvEa5wE+vr2zel4CAvwWsE=;
-  b=qs1Jd4lzYLiG3cLYNlm9RWWVUpvBX3g7nkM6AUQzNIuZjLB8TkzyZmY9
-   bNiMRAiTul8HrwereElKW/FbR/osPUJgfiWVBpFrXoh6yola8BhdYH3w6
-   7yAgrTpwrxnpTPe/Iawnx+RN3EN+ke2eW5N3PDP09BkUvA5CTrGlDiQAl
-   GdeLyajhmY5SJtDzJM7OPZHOW5cltgJCe1DkkVSIxn6zkbwcDU1fHNNbe
-   s5duSjzwC748wO8dGnrvdihADQzP+ut7aO2Wfz0u/VtdhmUfSS57T+D+h
-   cgiHfbrarXwSh3rwmj3oMUA7oDs/sGPpvZYmLAypfynzPbY+pAaSpCmCJ
-   Q==;
+  bh=IgGvk89Bc+42ZUiXvrFHgLkYiCceXITtHh8Rf1Vwam0=;
+  b=QaCFKa5V0LRgGfcLDVlcHN801qop42E1nakRxRx8Sy8S+EMW8alF98Ws
+   GzOCEFDRM5zrb13K95mt3JIhbvU7bgLx8PJ2l9v/KtnFUxzUFjoROadVZ
+   NN/CeklqAdyVxXbBdQyFnsMyA49rQ2wt+ILWeLxKiTH/SIQK/helUesc1
+   gwr/Tq2jD+Jrwm3znnmEavrg7IK8/7D/G2m2dALD0mzcYCD5AdaZ4qtfn
+   LZW8Nc0AM//B9EIK87VrAEDWJnntM9l3J2SjgRejgQTn7s61eiibckTQ9
+   K1VQpXgAkfMWYok7+lttVJAm1z1c0ZdGlfj7Sb2Qu1s1tTQIgUtaFBCac
+   g==;
 X-IronPort-AV: E=Sophos;i="5.92,229,1650956400"; 
-   d="scan'208";a="102111302"
+   d="scan'208";a="162420824"
 Received: from unknown (HELO email.microchip.com) ([170.129.1.10])
-  by esa6.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jun 2022 08:14:38 -0700
+  by esa4.microchip.iphmx.com with ESMTP/TLS/AES256-SHA256; 28 Jun 2022 08:14:19 -0700
 Received: from chn-vm-ex01.mchp-main.com (10.10.85.143) by
- chn-vm-ex04.mchp-main.com (10.10.85.152) with Microsoft SMTP Server
+ chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server
  (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.17; Tue, 28 Jun 2022 08:14:37 -0700
+ 15.1.2375.17; Tue, 28 Jun 2022 08:14:15 -0700
 Received: from localhost.localdomain (10.10.115.15) by
  chn-vm-ex01.mchp-main.com (10.10.85.143) with Microsoft SMTP Server id
- 15.1.2375.17 via Frontend Transport; Tue, 28 Jun 2022 08:14:33 -0700
+ 15.1.2375.17 via Frontend Transport; Tue, 28 Jun 2022 08:14:12 -0700
 From:   Claudiu Beznea <claudiu.beznea@microchip.com>
 To:     <eugen.hristev@microchip.com>, <jic23@kernel.org>,
         <lars@metafoo.de>, <nicolas.ferre@microchip.com>,
@@ -46,9 +46,9 @@ To:     <eugen.hristev@microchip.com>, <jic23@kernel.org>,
 CC:     <linux-iio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
         <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v2 07/19] iio: adc: at91-sama5d2_adc: move the check of oversampling in its function
-Date:   Tue, 28 Jun 2022 18:16:19 +0300
-Message-ID: <20220628151631.3116454-8-claudiu.beznea@microchip.com>
+Subject: [PATCH v2 01/19] iio: adc: at91-sama5d2_adc: fix AT91_SAMA5D2_MR_TRACKTIM_MAX
+Date:   Tue, 28 Jun 2022 18:16:13 +0300
+Message-ID: <20220628151631.3116454-2-claudiu.beznea@microchip.com>
 X-Mailer: git-send-email 2.33.0
 In-Reply-To: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
 References: <20220628151631.3116454-1-claudiu.beznea@microchip.com>
@@ -59,72 +59,29 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Oversampling values are checked anyway in at91_adc_emr_config(). Remove
-the checking of these from at91_adc_write_raw() and return -EINVAL
-instead in at91_adc_emr_config().
+All ADC HW versions handled by this driver (SAMA5D2, SAM9X60, SAMA7G5)
+have MR.TRACKTIM on 4 bits. Fix AT91_SAMA5D2_MR_TRACKTIM_MAX to reflect
+this.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
+Fixes: 27e177190891 ("iio:adc:at91_adc8xx: introduce new atmel adc driver")
 Signed-off-by: Claudiu Beznea <claudiu.beznea@microchip.com>
 ---
- drivers/iio/adc/at91-sama5d2_adc.c | 18 ++++++++++--------
- 1 file changed, 10 insertions(+), 8 deletions(-)
+ drivers/iio/adc/at91-sama5d2_adc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/iio/adc/at91-sama5d2_adc.c b/drivers/iio/adc/at91-sama5d2_adc.c
-index 692707b6e3e3..a0661f097ccb 100644
+index b764823ce57e..32b6f157b803 100644
 --- a/drivers/iio/adc/at91-sama5d2_adc.c
 +++ b/drivers/iio/adc/at91-sama5d2_adc.c
-@@ -728,8 +728,8 @@ static void at91_adc_eoc_ena(struct at91_adc_state *st, unsigned int channel)
- 		at91_adc_writel(st, EOC_IER, BIT(channel));
- }
- 
--static void at91_adc_config_emr(struct at91_adc_state *st,
--				u32 oversampling_ratio)
-+static int at91_adc_config_emr(struct at91_adc_state *st,
-+			       u32 oversampling_ratio)
- {
- 	/* configure the extended mode register */
- 	unsigned int emr = at91_adc_readl(st, EMR);
-@@ -755,9 +755,13 @@ static void at91_adc_config_emr(struct at91_adc_state *st,
- 		emr |= AT91_SAMA5D2_EMR_OSR(AT91_SAMA5D2_EMR_OSR_16SAMPLES,
- 					    osr_mask);
- 		break;
-+	default:
-+		return -EINVAL;
- 	}
- 
- 	at91_adc_writel(st, EMR, emr);
-+
-+	return 0;
- }
- 
- static int at91_adc_adjust_val_osr(struct at91_adc_state *st, int *val)
-@@ -1650,9 +1654,6 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
--		if ((val != AT91_OSR_1SAMPLES) && (val != AT91_OSR_4SAMPLES) &&
--		    (val != AT91_OSR_16SAMPLES))
--			return -EINVAL;
- 		/* if no change, optimize out */
- 		if (val == st->oversampling_ratio)
- 			return 0;
-@@ -1661,12 +1662,13 @@ static int at91_adc_write_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			return ret;
- 		mutex_lock(&st->lock);
--		st->oversampling_ratio = val;
- 		/* update ratio */
--		at91_adc_config_emr(st, val);
-+		ret = at91_adc_config_emr(st, val);
-+		if (!ret)
-+			st->oversampling_ratio = val;
- 		mutex_unlock(&st->lock);
- 		iio_device_release_direct_mode(indio_dev);
--		return 0;
-+		return ret;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		if (val < st->soc_info.min_sample_rate ||
- 		    val > st->soc_info.max_sample_rate)
+@@ -77,7 +77,7 @@ struct at91_adc_reg_layout {
+ #define	AT91_SAMA5D2_MR_ANACH		BIT(23)
+ /* Tracking Time */
+ #define	AT91_SAMA5D2_MR_TRACKTIM(v)	((v) << 24)
+-#define	AT91_SAMA5D2_MR_TRACKTIM_MAX	0xff
++#define	AT91_SAMA5D2_MR_TRACKTIM_MAX	0xf
+ /* Transfer Time */
+ #define	AT91_SAMA5D2_MR_TRANSFER(v)	((v) << 28)
+ #define	AT91_SAMA5D2_MR_TRANSFER_MAX	0x3
 -- 
 2.34.1
 
