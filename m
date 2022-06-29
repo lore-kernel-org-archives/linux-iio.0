@@ -2,138 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D18ACCCA483
-	for <linux-iio@archiver.kernel.org>; Wed, 29 Jun 2022 07:37:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4C1ABC433EF
+	for <linux-iio@archiver.kernel.org>; Wed, 29 Jun 2022 07:44:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232035AbiF2Hhc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 29 Jun 2022 03:37:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:51938 "EHLO
+        id S232327AbiF2HoP (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 29 Jun 2022 03:44:15 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232117AbiF2HhQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2022 03:37:16 -0400
-Received: from us-smtp-delivery-124.mimecast.com (us-smtp-delivery-124.mimecast.com [170.10.129.124])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id D56503630F
-        for <linux-iio@vger.kernel.org>; Wed, 29 Jun 2022 00:37:14 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=redhat.com;
-        s=mimecast20190719; t=1656488233;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=1h0smKgkaQYyMckjg1gEO+92UXCJgyf7f6YfzsCAFg4=;
-        b=A9r6z16eLePDP7bGnj4DQvo7y3G6bSPDfVUon8h8UU1fWVxsHhqlS7X5ho2Kg8bsJ94eAB
-        ZpiagtHmU1cR+Mbl+pQ9uTE8c3wDDfX5ZBou6CQVNZ5jJ68lAXx9uYydmYJ32oQ+BT7P8w
-        R0bVtv950eOUgOiUhg0nh9TLSJUseeI=
-Received: from mail-wr1-f71.google.com (mail-wr1-f71.google.com
- [209.85.221.71]) by relay.mimecast.com with ESMTP with STARTTLS
- (version=TLSv1.2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- us-mta-553-MgulKV_7PmGsSxwhxkeBow-1; Wed, 29 Jun 2022 03:37:12 -0400
-X-MC-Unique: MgulKV_7PmGsSxwhxkeBow-1
-Received: by mail-wr1-f71.google.com with SMTP id w12-20020adf8bcc000000b0021d20a5b24fso729736wra.22
-        for <linux-iio@vger.kernel.org>; Wed, 29 Jun 2022 00:37:12 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=1h0smKgkaQYyMckjg1gEO+92UXCJgyf7f6YfzsCAFg4=;
-        b=CqsWr3uMEO88d1nwhNm3tfKRT+lNvxXZHhtYFNhTy8Bm77LCtyJw0Scom0DCUVEFre
-         IA9VKZWCJQwH1ppGT5sQZ+2L2meOE1OMoQXba8Ef/ksL7hAGg1D0V6HBlirdZLKOGyjS
-         JuHLO7h2ue/Opwvze3ivP6WThmzRlmG6riPSjyA+lIDCYs3erpMN97v/cHkN4TEGHaOf
-         RKNy0vHb0mwOH5EZZjYZ08vGNeJPOFOGVaXit1PhnxoS+LqZpSAeH4xZMyFZiakB0ssL
-         3EjGMAZxzsUpl3RMgZ1lW1rTXFpfIjiRr+LkElN1J0rXxOl49wC/mZRKf/6fyECHrmfz
-         G7Fg==
-X-Gm-Message-State: AJIora8ba/Smy26bxTJMDnNndv8hnjD9ZGPiXYgy1ASNE0OH4jasqcS4
-        lSwbQ/hedMyKrHrUx35hcgAO1wLBaP/H4YwmnJZkV3+x1ZVWvpXFxg/0BbCxHiGSD9cHF0TUSzs
-        AVCBNwQ6t8fNbKtNi+1Xg
-X-Received: by 2002:a05:6000:1448:b0:21b:b7db:c40b with SMTP id v8-20020a056000144800b0021bb7dbc40bmr1650252wrx.279.1656488230976;
-        Wed, 29 Jun 2022 00:37:10 -0700 (PDT)
-X-Google-Smtp-Source: AGRyM1vfq7mqFRSJqFJPQOP6rs25Ch1nA7fBeueZwuaRaLaWENw0ay54yTOP4QHXmGLo1NEA4L9c5g==
-X-Received: by 2002:a05:6000:1448:b0:21b:b7db:c40b with SMTP id v8-20020a056000144800b0021bb7dbc40bmr1650238wrx.279.1656488230741;
-        Wed, 29 Jun 2022 00:37:10 -0700 (PDT)
-Received: from [192.168.1.129] (205.pool92-176-231.dynamic.orange.es. [92.176.231.205])
-        by smtp.gmail.com with ESMTPSA id j10-20020a5d448a000000b0021b8c99860asm15832366wrq.115.2022.06.29.00.37.09
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Wed, 29 Jun 2022 00:37:10 -0700 (PDT)
-Message-ID: <7654a74e-a410-a8a5-c228-d006dbbc200f@redhat.com>
-Date:   Wed, 29 Jun 2022 09:37:08 +0200
+        with ESMTP id S232172AbiF2HoO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Jun 2022 03:44:14 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [145.40.68.75])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 532132B187;
+        Wed, 29 Jun 2022 00:44:14 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 1CC66B821E9;
+        Wed, 29 Jun 2022 07:44:13 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id BB82EC3411E;
+        Wed, 29 Jun 2022 07:44:11 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1656488651;
+        bh=6zi3Qj/QHuMf0hd2Y9nWbXp2LLhPD85M5emH9QGyf8c=;
+        h=In-Reply-To:References:Subject:From:Cc:To:Date:From;
+        b=jLkS4YIMQQ7uv66CPdCX/t1xKG3p83T20c3/VGGPwP/3spJFgino1L9GFUJUTNTgK
+         CF+eq42Xwh3PGtUKvXvZrs8wM09MNHcQOEHBl/Ox3aXcfOnATJFLYd/4BVQVTYHmga
+         eiyPV59JXruJ59xttSGmE72a8M9hfiXEIfL0IoXoSVhNqucxQlvqgupSkU9rG2NflR
+         E6gwz1X81OSFIK8YvFmS5nb9J4WiXJNeAM/3NdytIojvD1SkhqtOPPQfiPCj8CICKM
+         aiCJtv6jsc04s3fCfIYkmXzUpCv6l32BgprQIsiMjnVuxLSeUPdM31d3/nvb+Yu267
+         ns0B5VZVUJfrw==
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH 6/6] i2c: Make remove callback return void
-Content-Language: en-US
-To:     =?UTF-8?Q?Uwe_Kleine-K=c3=b6nig?= <u.kleine-koenig@pengutronix.de>,
-        Jeremy Kerr <jk@codeconstruct.com.au>
-Cc:     linux-fbdev@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, dri-devel@lists.freedesktop.org,
-        platform-driver-x86@vger.kernel.org, linux-mtd@lists.infradead.org,
-        linux-i2c@vger.kernel.org,
-        linux-stm32@st-md-mailman.stormreply.com,
-        linux-rtc@vger.kernel.org, chrome-platform@lists.linux.dev,
-        linux-staging@lists.linux.dev, kasan-dev@googlegroups.com,
-        Broadcom internal kernel review list 
-        <bcm-kernel-feedback-list@broadcom.com>,
-        linux-serial@vger.kernel.org, linux-input@vger.kernel.org,
-        linux-media@vger.kernel.org, linux-pwm@vger.kernel.org,
-        linux-watchdog@vger.kernel.org, linux-pm@vger.kernel.org,
-        acpi4asus-user@lists.sourceforge.net, linux-gpio@vger.kernel.org,
-        linux-mediatek@lists.infradead.org,
-        linux-rpi-kernel@lists.infradead.org,
-        openipmi-developer@lists.sourceforge.net,
-        linux-arm-kernel@lists.infradead.org, linux-hwmon@vger.kernel.org,
-        Support Opensource <support.opensource@diasemi.com>,
-        netdev@vger.kernel.org, Wolfram Sang <wsa@kernel.org>,
-        linux-crypto@vger.kernel.org,
-        Pengutronix Kernel Team <kernel@pengutronix.de>,
-        patches@opensource.cirrus.com, linux-integrity@vger.kernel.org,
-        linuxppc-dev@lists.ozlabs.org
-References: <20220628140313.74984-1-u.kleine-koenig@pengutronix.de>
- <20220628140313.74984-7-u.kleine-koenig@pengutronix.de>
- <60cc6796236f23c028a9ae76dbe00d1917df82a5.camel@codeconstruct.com.au>
- <20220629072304.qazmloqdi5h5kdre@pengutronix.de>
-From:   Javier Martinez Canillas <javierm@redhat.com>
-In-Reply-To: <20220629072304.qazmloqdi5h5kdre@pengutronix.de>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 8bit
+Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <20220625130637.223180f2@jic23-huawei>
+References: <20220625103853.2470346-1-marcus.folkesson@gmail.com> <20220625103853.2470346-4-marcus.folkesson@gmail.com> <20220625125652.2f988964@jic23-huawei> <20220625130637.223180f2@jic23-huawei>
+Subject: Re: [PATCH v2 04/10] iio: adc: mcp3911: add support for interrupts
+From:   Stephen Boyd <sboyd@kernel.org>
+Cc:     Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Marcus Folkesson <marcus.folkesson@gmail.com>
+Date:   Wed, 29 Jun 2022 00:44:09 -0700
+User-Agent: alot/0.10
+Message-Id: <20220629074411.BB82EC3411E@smtp.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 6/29/22 09:23, Uwe Kleine-König wrote:
-> Hello,
-> 
-> [I dropped nearly all individuals from the Cc: list because various
-> bounces reported to be unhappy about the long (logical) line.]
->
+Quoting Jonathan Cameron (2022-06-25 05:06:37)
+> > > @@ -362,6 +401,32 @@ static int mcp3911_probe(struct spi_device *spi)
+> > > =20
+> > >     mutex_init(&adc->lock);
+> > > =20
+> > > +   if (spi->irq > 0) {
+> > > +           adc->trig =3D devm_iio_trigger_alloc(&spi->dev, "%s-dev%d=
+",
+> > > +                           indio_dev->name,
+> > > +                           iio_device_id(indio_dev));
+> > > +           if (!adc->trig)
+> > > +                   goto clk_disable; =20
+> > You definitely want to use devm managed cleanup for these.
+> >=20
+> > There is a patch set that adds these as standard functions, but I haven=
+'t
+> > yet seen it being picked up for this cycle (reviews have been slow comi=
+ng).
+> >=20
+> > https://lore.kernel.org/all/20220520075737.758761-1-u.kleine-koenig@pen=
+gutronix.de/
+>=20
+> Ah, elsewhere in my unread email was a thread that says it's in clk-next =
+so
+> will be in the next merge window.  I haven't confirmed, but looks like St=
+ephen
+> put up an immutable branch so I could pull it into the IIO togreg branch =
+if you
+> want to transition directly to that new code. @Stephen, would you be fine
+> with me pulling your clk-devm-enable branch into IIO (with the fix which
+> got posted earlier in the week presumably also going on that branch when
+> you push out?)
 
-Yes, it also bounced for me when I tried to reply earlier today.
-
-> diff --git a/drivers/gpu/drm/solomon/ssd130x-i2c.c b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-> index 1e0fcec7be47..ddfa0bb5d9c9 100644
-> --- a/drivers/gpu/drm/solomon/ssd130x-i2c.c
-> +++ b/drivers/gpu/drm/solomon/ssd130x-i2c.c
-> @@ -39,13 +39,11 @@ static int ssd130x_i2c_probe(struct i2c_client *client)
->  	return 0;
->  }
->  
-> -static int ssd130x_i2c_remove(struct i2c_client *client)
-> +static void ssd130x_i2c_remove(struct i2c_client *client)
->  {
->  	struct ssd130x_device *ssd130x = i2c_get_clientdata(client);
->  
->  	ssd130x_remove(ssd130x);
-> -
-> -	return 0;
->  }
->  
->  static void ssd130x_i2c_shutdown(struct i2c_client *client)
-
-Reviewed-by: Javier Martinez Canillas <javierm@redhat.com> 
--- 
-Best regards,
-
-Javier Martinez Canillas
-Linux Engineering
-Red Hat
-
+Yes that's fine. Thanks for the heads up.
