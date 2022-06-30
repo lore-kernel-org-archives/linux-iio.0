@@ -2,55 +2,118 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AF844CCA47B
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Jun 2022 07:52:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6D691C433EF
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Jun 2022 07:55:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229720AbiF3Hwj (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:52:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43954 "EHLO
+        id S233206AbiF3Hzt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:55:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48072 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233362AbiF3HwW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2022 03:52:22 -0400
-Received: from mail.olerise.pl (mail.olerise.pl [46.183.184.59])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 300E83DA5A
-        for <linux-iio@vger.kernel.org>; Thu, 30 Jun 2022 00:52:21 -0700 (PDT)
-Received: by mail.olerise.pl (Postfix, from userid 1001)
-        id 8D3DE23C34; Thu, 30 Jun 2022 09:51:30 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=olerise.pl; s=mail;
-        t=1656575519; bh=FDuFY3XQoq0gMX1b2gxgT7Py2p4Sxl0PJZYZ4NVaPho=;
-        h=Date:From:To:Subject:From;
-        b=InpY/mQnTqoKZoRbCeALZjUeKlYBDlnIl8H+DEk/iIKeqw4fbcralIP0WnfcHm9k1
-         c18rY0Zwd13fTyI5gropDnL5N4DrxJAJEUfTQGljMiZxgQYOwxeiuTA7v/PDDYRr5i
-         2sBtyFo7GX7c9h0xhQlM1UCXR9f7eX5O3zLfCcKmpl8zmnvgyaxOgqRX/4UiPZRmqC
-         soA4ZjO48qHx6SkaV3rhhkxq0Jxwt5grvXdnf1K8MqKyYxX+z4hgcushhYWipYYCWo
-         A8PgMHZBqXzvGh/50993RiDaY3FhTtehlcxFWNH1ZPNC6WxZw/nZh77/mCLMeDTxPc
-         MPBfVzo7JgKFw==
-Received: by mail.olerise.pl for <linux-iio@vger.kernel.org>; Thu, 30 Jun 2022 07:51:21 GMT
-Message-ID: <20220630084500-0.1.p.bc5d.0.m4afpnbidi@olerise.pl>
-Date:   Thu, 30 Jun 2022 07:51:21 GMT
-From:   =?UTF-8?Q? "Przemys=C5=82aw_Wr=C3=B3blewski" ?= 
-        <przemyslaw.wroblewski@olerise.pl>
-To:     <linux-iio@vger.kernel.org>
-Subject: Wycena paneli fotowoltaicznych
-X-Mailer: mail.olerise.pl
+        with ESMTP id S231650AbiF3Hzs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2022 03:55:48 -0400
+Received: from mail-wr1-x434.google.com (mail-wr1-x434.google.com [IPv6:2a00:1450:4864:20::434])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5166B3F334
+        for <linux-iio@vger.kernel.org>; Thu, 30 Jun 2022 00:55:46 -0700 (PDT)
+Received: by mail-wr1-x434.google.com with SMTP id v9so10394583wrp.7
+        for <linux-iio@vger.kernel.org>; Thu, 30 Jun 2022 00:55:46 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=date:from:to:cc:subject:message-id:references:mime-version
+         :content-disposition:content-transfer-encoding:in-reply-to;
+        bh=cJpP1OkS6rqgrKq9b3POAwWxBCAPWm4YoIECgKmS3yQ=;
+        b=BbWdRrgZMdJ1PQyfce9NujC+Cv9Kn+TUQxncoG2TTnGy4BeFv0ZlRlRS3m01fdorNR
+         FZseq2tmJLiA0yMcKydgJl6Q92/IT69YiSmFlRAHCvfjH20hwuUf3inAGwYznkg31ZvR
+         YqYpktKRMrtuQntm3KQeOflrQtoyrHFsL6N7RMYzbJcFqR/Y6R+MB/JpYdpGQc68To4R
+         IUX0Y9rcbFNNL8US3uwCwIMxoVJx+T9w61Ohi9KO07ymvquF5mOxWsGzp+lbjvXYB3SP
+         diY8SNgQZ6nzfrTdgfwzvOX/7pDMBdxHfYrFqR2zGpbuSI44NC3c6l0+4jASQef6w6kL
+         X5sw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
+         :mime-version:content-disposition:content-transfer-encoding
+         :in-reply-to;
+        bh=cJpP1OkS6rqgrKq9b3POAwWxBCAPWm4YoIECgKmS3yQ=;
+        b=V7S/du/iDZqefgY9RflkdD3gsgwcJnWWv8cBI3694pRSYEsF8Cvx5R0/ycQOKYK73d
+         V8KYw5WZJNIpzjIx3jpW12cWteAFUm7lWAd8S9nZJ0595XNF5Sk/vI78YjuONKPRpysF
+         Cf2zCOpqBXoE9EPZziBLiP1Kn40jmidWgiepuI17iI4ymVdp7G8TmDaOCtPteyWRLKBQ
+         AaZOXOd4uDlh+plhnaPd584BnvFePOtddD1EtU5VgSksY9aheET09EVFs2AMC7OlgADD
+         EHtnhBtaSKWXT2YojW/z3as/sH0Q4lqnUTVcO8Ge67pBNSaXa6tB+IQYZikl5cvORv6y
+         dWbg==
+X-Gm-Message-State: AJIora9fwkVA0rAs9TaxdG4CeKxx8EOvT6VdBamoRiafsAXvs+z+85xV
+        oh5FunWgOt3evE2OTgOtrWC2Qw==
+X-Google-Smtp-Source: AGRyM1uB8V88VxEz2AKA9EorOVdKaOEl38ZHL2JsuaOgJS62ydwWd+4V518CKzvP1GQDbSXI1x4IYg==
+X-Received: by 2002:a5d:508c:0:b0:21b:8cd2:2210 with SMTP id a12-20020a5d508c000000b0021b8cd22210mr6726289wrt.527.1656575744886;
+        Thu, 30 Jun 2022 00:55:44 -0700 (PDT)
+Received: from google.com (cpc155339-bagu17-2-0-cust87.1-3.cable.virginm.net. [86.27.177.88])
+        by smtp.gmail.com with ESMTPSA id z9-20020adfec89000000b0021b89f8662esm18282326wrn.13.2022.06.30.00.55.43
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 30 Jun 2022 00:55:44 -0700 (PDT)
+Date:   Thu, 30 Jun 2022 08:55:42 +0100
+From:   Lee Jones <lee.jones@linaro.org>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Bartosz Golaszewski <brgl@bgdev.pl>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>, quic_gurus@quicinc.com,
+        Sebastian Reichel <sebastian.reichel@collabora.com>,
+        Michael Walle <michael@walle.cc>,
+        Randy Dunlap <rdunlap@infradead.org>,
+        "open list:GPIO SUBSYSTEM" <linux-gpio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux PM <linux-pm@vger.kernel.org>
+Subject: Re: [PATCH v4 00/15] Add support for AXP192 PMIC
+Message-ID: <Yr1W/m6UV3792GvF@google.com>
+References: <20220629143046.213584-1-aidanmacdonald.0x0@gmail.com>
+ <CAHp75Vc=PWXauEKDNX+vmqv=oO1LDv8-GgU3OFZXjf8yJrG8wA@mail.gmail.com>
+ <CAHp75VeqvCnWtWLF1zySPGkfBT5obosu0h_pZEhz+pOQWzMdWQ@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain; charset=utf-8
+Content-Disposition: inline
+Content-Transfer-Encoding: 8bit
+In-Reply-To: <CAHp75VeqvCnWtWLF1zySPGkfBT5obosu0h_pZEhz+pOQWzMdWQ@mail.gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Dzie=C5=84 dobry,
+On Wed, 29 Jun 2022, Andy Shevchenko wrote:
 
-dostrzegam mo=C5=BCliwo=C5=9B=C4=87 wsp=C3=B3=C5=82pracy z Pa=C5=84stwa f=
-irm=C4=85.
+> On Wed, Jun 29, 2022 at 11:14 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Wed, Jun 29, 2022 at 4:29 PM Aidan MacDonald
+> > <aidanmacdonald.0x0@gmail.com> wrote:
+> > >
+> > > Changes in v4:
+> > >
+> > > * Drop regmap-irq patches and rebase on top of the regmap-irq
+> > >   refactoring series[1], which implements the same functionality.
+> > > * Reorder mfd_cells, putting one-line entries at the bottom.
+> > > * Fix incorrect example in axp192-gpio device tree bindings.
+> > > * Perform adc_en2 flag -> adc_en2_mask conversion in axp20x_adc
+> > >   as a separate patch.
+> > > * Simplify axp192_usb_power_set_current_max().
+> > > * Drop unneeded OF dependency in pin control driver, and document
+> > >   tables used for describing register layouts.
+> > > * Various style fixups suggested by Andy Shevchenko.
+> >
+> >
+> > For patches 6-11
+> > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> 
+> Ditto for patches 13-15.
 
-=C5=9Awiadczymy kompleksow=C4=85 obs=C5=82ug=C4=99 inwestycji w fotowolta=
-ik=C4=99, kt=C3=B3ra obni=C5=BCa koszty energii elektrycznej nawet o 90%.
+Not sure `b4` will pick these up!
 
-Czy s=C4=85 Pa=C5=84stwo zainteresowani weryfikacj=C4=85 wst=C4=99pnych p=
-ropozycji?
-
-
-Pozdrawiam,
-Przemys=C5=82aw Wr=C3=B3blewski
+-- 
+Lee Jones [李琼斯]
+Principal Technical Lead - Developer Services
+Linaro.org │ Open source software for Arm SoCs
+Follow Linaro: Facebook | Twitter | Blog
