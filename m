@@ -2,74 +2,80 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 86CCFCCA47B
-	for <linux-iio@archiver.kernel.org>; Thu, 30 Jun 2022 07:27:04 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 969A5C43334
+	for <linux-iio@archiver.kernel.org>; Thu, 30 Jun 2022 07:52:10 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232106AbiF3H1D (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 30 Jun 2022 03:27:03 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50706 "EHLO
+        id S233277AbiF3HwI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 30 Jun 2022 03:52:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43660 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230135AbiF3H1C (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2022 03:27:02 -0400
-Received: from ssl.serverraum.org (ssl.serverraum.org [176.9.125.105])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10CEB3879C;
-        Thu, 30 Jun 2022 00:27:01 -0700 (PDT)
-Received: from ssl.serverraum.org (web.serverraum.org [172.16.0.2])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by ssl.serverraum.org (Postfix) with ESMTPSA id 73BC52223E;
-        Thu, 30 Jun 2022 09:26:56 +0200 (CEST)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=walle.cc; s=mail2016061301;
-        t=1656574018;
-        h=from:from:reply-to:subject:subject:date:date:message-id:message-id:
-         to:to:cc:cc:mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=zjrfyTV5MhZ/ZdhkEC7JgGAqSs/5JnxfS2vRsmrz01Y=;
-        b=EJK731q8CqsM1mgdMNjEaM2dgFiziXDifqo3WToZDaj4/VuCqHc8NQ6d5qwFH80aM3N59p
-        jvx3lH9jp+d3AC+Rkmk/cmITFnlJN6830y8jsk7n+X6Y+2iH7n71q2SEHMb5wFKQiwSamH
-        8sIQet4ySkEdu3YoS2gQ0l2gXUZY71o=
+        with ESMTP id S233294AbiF3HwG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 30 Jun 2022 03:52:06 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 70F133EA80
+        for <linux-iio@vger.kernel.org>; Thu, 30 Jun 2022 00:52:06 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o6oxy-0005cJ-1S; Thu, 30 Jun 2022 09:51:58 +0200
+Received: from [2a0a:edc0:0:1101:1d::ac] (helo=dude04.red.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o6oxt-003Y3w-NV; Thu, 30 Jun 2022 09:51:57 +0200
+Received: from ore by dude04.red.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ore@pengutronix.de>)
+        id 1o6oxw-00BPTC-Nb; Thu, 30 Jun 2022 09:51:56 +0200
+From:   Oleksij Rempel <o.rempel@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+Cc:     Oleksij Rempel <o.rempel@pengutronix.de>, kernel@pengutronix.de,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH net-next v1 1/1] iio: adc: tsc2046: silent spi_device_id warning
+Date:   Thu, 30 Jun 2022 09:51:55 +0200
+Message-Id: <20220630075155.2718293-1-o.rempel@pengutronix.de>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Content-Transfer-Encoding: 7bit
-Date:   Thu, 30 Jun 2022 09:26:55 +0200
-From:   Michael Walle <michael@walle.cc>
-To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
-Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, wens@csie.org, jic23@kernel.org,
-        lee.jones@linaro.org, sre@kernel.org, broonie@kernel.org,
-        gregkh@linuxfoundation.org, lgirdwood@gmail.com, lars@metafoo.de,
-        rafael@kernel.org, quic_gurus@quicinc.com,
-        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
-        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: Re: [PATCH v3 13/16] pinctrl: Add AXP192 pin control driver
-In-Reply-To: <me4ummrWKIPseIG4ay7yCfrumN8sIdvc@localhost>
-References: <20220618214009.2178567-1-aidanmacdonald.0x0@gmail.com>
- <20220618214009.2178567-14-aidanmacdonald.0x0@gmail.com>
- <cafd8a40ad35dcf8a35350261af6031c@walle.cc>
- <me4ummrWKIPseIG4ay7yCfrumN8sIdvc@localhost>
-User-Agent: Roundcube Webmail/1.4.13
-Message-ID: <01a338e8f94b077df3fe2c4f13d4da28@walle.cc>
-X-Sender: michael@walle.cc
+Content-Transfer-Encoding: 8bit
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ore@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Am 2022-06-27 15:12, schrieb Aidan MacDonald:
+Add spi_device_id to silent following warning:
+ SPI driver tsc2046 has no spi_device_id for ti,tsc2046e-adc
 
->> I *think* what is needed for gpio-regmap to support this is:
->>  - support values and masks for the direction, for now, we
->>    only support single bits.
->>  - support the pinctrl_gpio_direction_{input,output} calls
->> 
->> -michael
-> 
-> That sounds about right, thanks for taking a look.
+Signed-off-by: Oleksij Rempel <o.rempel@pengutronix.de>
+---
+ drivers/iio/adc/ti-tsc2046.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-I thought you were trying to add these to gpio-regmap? Unless
-I'm missing something, that should be easy enough.
+diff --git a/drivers/iio/adc/ti-tsc2046.c b/drivers/iio/adc/ti-tsc2046.c
+index 55b35570ad8b..27dc959aee37 100644
+--- a/drivers/iio/adc/ti-tsc2046.c
++++ b/drivers/iio/adc/ti-tsc2046.c
+@@ -833,11 +833,18 @@ static const struct of_device_id ads7950_of_table[] = {
+ };
+ MODULE_DEVICE_TABLE(of, ads7950_of_table);
+ 
++static const struct spi_device_id tsc2046_adc_spi_ids[] = {
++	{ "tsc2046e-adc" },
++	{ },
++};
++MODULE_DEVICE_TABLE(spi, tsc2046_adc_spi_ids);
++
+ static struct spi_driver tsc2046_adc_driver = {
+ 	.driver = {
+ 		.name = "tsc2046",
+ 		.of_match_table = ads7950_of_table,
+ 	},
++	.id_table = tsc2046_adc_spi_ids,
+ 	.probe = tsc2046_adc_probe,
+ };
+ module_spi_driver(tsc2046_adc_driver);
+-- 
+2.30.2
 
--michael
