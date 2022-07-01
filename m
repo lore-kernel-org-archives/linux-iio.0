@@ -2,93 +2,114 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DA252C43334
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Jul 2022 04:29:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BD7DEC43334
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Jul 2022 06:38:28 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233740AbiGAE35 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Jul 2022 00:29:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
+        id S235213AbiGAGi1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Jul 2022 02:38:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40748 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233830AbiGAE3w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2022 00:29:52 -0400
-Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C2C58FFC;
-        Thu, 30 Jun 2022 21:29:49 -0700 (PDT)
-Received: from fllv0035.itg.ti.com ([10.64.41.0])
-        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOGa015919;
-        Thu, 30 Jun 2022 23:29:24 -0500
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
-        s=ti-com-17Q1; t=1656649764;
-        bh=JYBVx3JdKuz1QT+7Di8b8mVJ2UBqNYpKk5ZP6ZOIYsg=;
-        h=From:To:CC:Subject:Date;
-        b=DXeEQ5mZEfQ0z1qNYPVr/NBDomH6WfGWbTwfaK4iP/UIQ51hhzBdThTdqnQG6L/4c
-         8xOetdNW67Z/lXnsOM2ctqIS6g6Z1Ln4JOVVU6h0AnRl8Y+kJzAU5FLJ58OqlryB5c
-         iN59u4vddiUhBMt3DFkr+6ZgpuGcoh2Y0vycev/g=
-Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
-        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2614TOOB104506
-        (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Thu, 30 Jun 2022 23:29:24 -0500
-Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE104.ent.ti.com
- (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 30
- Jun 2022 23:29:24 -0500
-Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE105.ent.ti.com
- (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
- Frontend Transport; Thu, 30 Jun 2022 23:29:24 -0500
-Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOhm015244;
-        Thu, 30 Jun 2022 23:29:24 -0500
-From:   Nishanth Menon <nm@ti.com>
-To:     Angelo Compagnucci <angelo.compagnucci@gmail.com>,
-        =?UTF-8?q?Nuno=20S=C3=A1?= <nuno.sa@analog.com>,
+        with ESMTP id S234062AbiGAGi0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2022 02:38:26 -0400
+Received: from mail-ej1-x631.google.com (mail-ej1-x631.google.com [IPv6:2a00:1450:4864:20::631])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 85EC91A3BB
+        for <linux-iio@vger.kernel.org>; Thu, 30 Jun 2022 23:38:25 -0700 (PDT)
+Received: by mail-ej1-x631.google.com with SMTP id ay16so2254997ejb.6
+        for <linux-iio@vger.kernel.org>; Thu, 30 Jun 2022 23:38:25 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jSUhQ3rBFKJxU2LCa9Ql4GrsO3TLNvrpxzwTvNvCTBU=;
+        b=KR6dlzrqc5KAGSH9q86OuFL5a+BEdvq6u4BADqzj2u4IsWpTYBto01KpxaRquYf7o0
+         JtiDRx/EyAFV+Cgl87CMVn8WN8HIEmG9LenpcmVVzSOvx+64M2BMif34Ryj1EWc5AOFw
+         fYwxSBePaevTU7jMLWsvxwTKWDcn87aGdBdmm0sxLXhyzBwIBwpzD4KT7gyiC7VxyfNv
+         uHVB9jLUHzbOWpzFgjBqcmsnAnHklk34pQDS0rTbq2/FYY0HRtcx/JVWOP2N114fQYUZ
+         M4+c23OEagK0HqTdKz9FxEcJaQD4psedtmE5SHRxcA0KMZO2obWfzBbCZJRV9wn0TrIc
+         x3zg==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jSUhQ3rBFKJxU2LCa9Ql4GrsO3TLNvrpxzwTvNvCTBU=;
+        b=vTPB8V+pYnDOxVFc5arMblx666NqVML1CGYKsIo3XmExHRJRkzNrl7gWVJj08F+yM0
+         62NYy3t2kHPxzDuHnAIyRWtvPxDmEYZZAHDgVPSdoi7z7Knfo9eHH+tZYRsNb8tRKqiJ
+         6mlnlfWmkT4UIi+PD48v1L98vzNr8zucUAJYHsJONwft8V408TFtmT5Rbxd8nSgR5dt/
+         H1Q/GR0crRx0vYCqEx6zMaRb65n1YKKhDBlrK+v0b7FN4IF8YxBV4w/vDeSco5YoULtn
+         aYeCeYFGEySXTKxlGb7HEjztBaTcXUq2mXiC10qXPF2MwLL3izKB8pjS+1TJ8bvQY03M
+         KrTg==
+X-Gm-Message-State: AJIora9/XifAducEoU6qTwXYAYqfHAUTTgaArPKmEhy+d7WeyaLOKf3C
+        M8UKGvxmN11nfCk+Nka4/v2n6w==
+X-Google-Smtp-Source: AGRyM1u1+fKIC+2Zyq9jouPxdVF4hWeo0y+1sNSQER05/bn7i/qCLb8ToWpi8wtdaJkhU/0g3pvttA==
+X-Received: by 2002:a17:907:7636:b0:72a:9297:37d1 with SMTP id jy22-20020a170907763600b0072a929737d1mr293126ejc.349.1656657504110;
+        Thu, 30 Jun 2022 23:38:24 -0700 (PDT)
+Received: from [192.168.0.190] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
+        by smtp.gmail.com with ESMTPSA id s27-20020a170906355b00b00702d8b37a03sm9951428eja.17.2022.06.30.23.38.22
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Thu, 30 Jun 2022 23:38:23 -0700 (PDT)
+Message-ID: <5dbf57e4-7573-fa63-d8f1-6ecde08a0875@linaro.org>
+Date:   Fri, 1 Jul 2022 08:38:22 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH 1/2] dt-bindings: iio: adc: ti,adc128s052: Add adc08c and
+ adc10c family
+Content-Language: en-US
+To:     Nishanth Menon <nm@ti.com>,
+        Angelo Compagnucci <angelo.compagnucci@gmail.com>,
+        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
         Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         Alexandru Ardelean <ardeleanalex@gmail.com>,
         Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Jonathan Cameron <jic23@kernel.org>
-CC:     Nishanth Menon <nm@ti.com>, Florian Eckert <fe@dev.tdt.de>,
-        <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: [PATCH 0/2] iio: adc: ti-adc128s052: Add support for adc102s021 and family
-Date:   Thu, 30 Jun 2022 23:29:17 -0500
-Message-ID: <20220701042919.18180-1-nm@ti.com>
-X-Mailer: git-send-email 2.31.1
-MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-Content-Type: text/plain
-X-EXCLAIMER-MD-CONFIG: e1e8a2fd-e40a-4ac6-ac9b-f7e9cc9ee180
+Cc:     Florian Eckert <fe@dev.tdt.de>, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+References: <20220701042919.18180-1-nm@ti.com>
+ <20220701042919.18180-2-nm@ti.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220701042919.18180-2-nm@ti.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi,
+On 01/07/2022 06:29, Nishanth Menon wrote:
+> The adcxx4s communicates with a host processor via an SPI/Microwire Bus
+> interface. The device family responds with 12bit data, of which the LSB
+> bits are 0 for the lower resolution devices. I have been able to test
+> adc102s051, hence adding just the missing ones in that family.
+> 
+> Lets reuse the binding to support the family of devices with name
+> ADC<bb><c>S<sss>, where
+> * bb is the resolution in number of bits (8, 10, 12)
+> * c is the number of channels (1, 2, 4, 8)
+> * sss is the maximum conversion speed (021 for 200 kSPS, 051 for 500 kSPS
+>   and 101 for 1 MSPS)
+> 
+> Complete datasheets are available at TI's website here:
+>   https://www.ti.com/lit/gpn/adc<bb><c>s<sss>.pdf
+> 
+> Handling of 8, 10 and 12 bits converters are the same, the
+> unavailable bits are 0 in LSB :)
+> 
+> Inspired-by: drivers/hwmon/adcxx.c
+> 
+> Signed-off-by: Nishanth Menon <nm@ti.com>
+> ---
+> 
+> Checkpatch does complain with Inspired-by: insisting it to be an email
+> address.. but I was really inspired by the hwmon driver.. Don't know
+> what else to say here.. we could probably drop it?
 
-This is probably a continuation of [1] and has a dependency on [2].
+Drop it or convert to just test.
 
-Inspiration for this series is drivers/hwmon/adcxx.c though constrained
-to the family that I had access to test with.
+When passing checkpatch:
 
-As stated in drivers/hwmon/adcxx.c, the family of devices are easier to
-support since they all (no matter the resolution) seem to respond in 12
-bits with the LSBs set to 0 for the reduced resolution devices.
+Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 
-Note: This series does'nt attempt to cleanup the sparse and extended
-build warnings existing in the driver.
-
-Series based on [2] and next-20220630
-
-Nishanth Menon (2):
-  dt-bindings: iio: adc: ti,adc128s052: Add adc08c and adc10c family
-  iio: adc: ti-adc128s052: Add lower resolution devices support
-
- .../bindings/iio/adc/ti,adc128s052.yaml       |  6 +++++
- drivers/iio/adc/ti-adc128s052.c               | 26 +++++++++++++++++++
- 2 files changed, 32 insertions(+)
-
-[1] https://patchwork.kernel.org/project/linux-hwmon/patch/20181115135013.30723-2-fe@dev.tdt.de/
-[2] https://lore.kernel.org/linux-iio/20220630230107.13438-1-nm@ti.com/
--- 
-2.31.1
-
+Best regards,
+Krzysztof
