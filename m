@@ -2,105 +2,295 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 69407C43334
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Jul 2022 08:41:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 33E4AC43334
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Jul 2022 10:05:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233732AbiGAIl4 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Jul 2022 04:41:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
+        id S232586AbiGAKFX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Jul 2022 06:05:23 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:57666 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235687AbiGAIly (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2022 04:41:54 -0400
-Received: from mail-ej1-x633.google.com (mail-ej1-x633.google.com [IPv6:2a00:1450:4864:20::633])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6832571BE2
-        for <linux-iio@vger.kernel.org>; Fri,  1 Jul 2022 01:41:53 -0700 (PDT)
-Received: by mail-ej1-x633.google.com with SMTP id d2so2809512ejy.1
-        for <linux-iio@vger.kernel.org>; Fri, 01 Jul 2022 01:41:53 -0700 (PDT)
+        with ESMTP id S234569AbiGAKFW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2022 06:05:22 -0400
+Received: from mail-yw1-x112a.google.com (mail-yw1-x112a.google.com [IPv6:2607:f8b0:4864:20::112a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA65274DF3;
+        Fri,  1 Jul 2022 03:05:20 -0700 (PDT)
+Received: by mail-yw1-x112a.google.com with SMTP id 00721157ae682-3178acf2a92so18593347b3.6;
+        Fri, 01 Jul 2022 03:05:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=ddu0lEjRZM+RVS9eDD90oxOJEXTWbrEFYGfvVhFfL7E=;
-        b=njvnLpIArvIuZa+IE6ov95N5x2QOOAnD86pVu5+nEArbSa6hXFzfHJkBfFSaESa5wt
-         Lr0hV+E9mGEWx0YXvHcuevqIYzOS+nkjuM9g3Jl+NyntHa6/oFtOyZ/m1zVAH5gqXxAr
-         hXnPn7qrRp2cj+cY/RguNKZtbjR8Tu+RArXM8Nwavla7tmCvoaKbgxoZJMUZPqM+KXQ+
-         nBLg3TRYb5kt4XQHXJhcIaNKDsRO3ITtPutJ2NqCji40rCKY3P8bqEZ2YhoJ/nwxsPVD
-         G+M8dzaDFRpa75HcFfI8FKf4BfMaTqcpj6UtWtZpTZvApmBvkv7R+YDudWw92Ybv/Fed
-         U28Q==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=IG4RkZADBY6X/p/I0C1Oz8DLhhoCsHyH9rRq6lzkcgE=;
+        b=mQXRuXmHdzszpMmpiPQCRUk55Ks8LxF52SbzHLlD/paQj9JIuWs/cJZZd9fKf4WQzr
+         7qjHbvlCEa0pOVqdXoB+kuXolEjpLzD38BQzIVb77XjcRfguaoPYAercq64cfRyTTCLO
+         12oNS0Pr70uzz0DaUo4XciD0cxtvTM7fKoBv7OdVcJWpPOMPIS54zvWsEQ7/hV26nMy/
+         K0vAMIRAn/jOJq7LgNp4gUCbwkPgb1AqfFkMrC4DUfEvQ7Id+wQwnoIAvj7C6FAIozjn
+         J3j9aPTrj1RLobTrFGn4OAtSgs+O9rzG5QMlvCNp3mik8M2C/GV87PVD57UvjrOKep3D
+         8coQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=ddu0lEjRZM+RVS9eDD90oxOJEXTWbrEFYGfvVhFfL7E=;
-        b=mag+V7d/nFTN/wTVa5rq5NF4qlnJlNqkU+pdQqDUYPc4s1MSgpb6OGS+Dr6ZnQ2isx
-         jtLNv19g0/KiOA8J43Pw8JYaj8E1cokNcZf00nzQaCTdO6yl+/DOJ3NVbFrADoou+UUl
-         i94wkl8+Hkl5n1/e6VtwmLjiHRT6XbKzAdcTcGnLV5qHVbHftZHGWXju9tydvybmEgxW
-         Ie7++3cFIWiWA9mNSSUQrvdqdpNYq9/rw5i4NwKldSuzdoPuoLLbZ++XJo/4qH1+EM73
-         RL2H1Vh7rOmLddycaIwpsr5D0yyrd2BBP0J9lcjXRPmB2zWDV24edXnr/FYWNK/ayDvY
-         Nayg==
-X-Gm-Message-State: AJIora+azcwWxFBImFjIln7ZLEF/muWlaH2rx28nOwY7nbP6lNH4u+ST
-        HsJQk0ba29Xgy88On9cPT2vXMA==
-X-Google-Smtp-Source: AGRyM1u/OK3SHOwPIiPwAZIvr8/OFFy1NPoMDnPzAe/TJCMIFH8E5daZ0JO7cak3szua+QGy0RyC4A==
-X-Received: by 2002:a17:907:9812:b0:726:3e5b:d299 with SMTP id ji18-20020a170907981200b007263e5bd299mr13589204ejc.26.1656664911898;
-        Fri, 01 Jul 2022 01:41:51 -0700 (PDT)
-Received: from [192.168.0.190] (xdsl-188-155-176-92.adslplus.ch. [188.155.176.92])
-        by smtp.gmail.com with ESMTPSA id k13-20020a170906a38d00b006fed787478asm10247569ejz.92.2022.07.01.01.41.50
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Fri, 01 Jul 2022 01:41:51 -0700 (PDT)
-Message-ID: <abecf1e0-c911-6b16-1b3a-862b31cc309c@linaro.org>
-Date:   Fri, 1 Jul 2022 10:41:50 +0200
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=IG4RkZADBY6X/p/I0C1Oz8DLhhoCsHyH9rRq6lzkcgE=;
+        b=cLkeHDKs0U4TUVZenmJTkhC/IU5C6AuuHY2TUqI30+TZhmfPUPGXxnhgQ0ADDdj/ec
+         CkNp0bYEk5/9TmHBiyGeJ12dwb23weFRN5M+x0WLQgtTLFT0ZDMeqs0AWuFSU+KPY7FQ
+         q9JkdJwvOORxxDSchwz1pI2oq9X+xupu3DSkuW0ZjzszYhT5o1DBWa4tKIynENdSJSsX
+         M/ggNrGQD2FQzRHB3/Tbkr+QN1uQcQG3XgoiCwUlh0mkeuQ5uYwTYqS1GLVJalHftlKb
+         Ik8WRvJlauQSyeUzkFNNT8iQshTz+0cYM1cwDtQBl8/wN6CqBIs4JHl7C9dmlO+spKCd
+         XwyQ==
+X-Gm-Message-State: AJIora+0VVvjGd7yZiYS+f25BoMdxTYi3AQdqpapl2nEaMSCn+gVbVHM
+        i3dhJs8QEkPuYVjkwtnpiolLnffn0r453KZW4RM=
+X-Google-Smtp-Source: AGRyM1uKxdjdph2e18u+RZ1TqQQO0CbfxKLLE1vHUjdJE4VqH0YvLAvnaDIuvPPjq2R6OqV5wAp8p6rhe/ZIJstmd7U=
+X-Received: by 2002:a81:2386:0:b0:317:6586:8901 with SMTP id
+ j128-20020a812386000000b0031765868901mr15671592ywj.195.1656669920011; Fri, 01
+ Jul 2022 03:05:20 -0700 (PDT)
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v6 1/3] dt-bindings: adc-joystick: add poll-interval-ms
-Content-Language: en-US
-To:     Chris Morgan <macroalpha82@gmail.com>, linux-input@vger.kernel.org
-Cc:     devicetree@vger.kernel.org, contact@artur-rojek.eu,
-        maccraft123mc@gmail.com, heiko@sntech.de,
-        krzysztof.kozlowski+dt@linaro.org, robh+dt@kernel.org,
-        dmitry.torokhov@gmail.com, paul@crapouillou.net, jic23@kernel.org,
-        linux-iio@vger.kernel.org, Chris Morgan <macromorgan@hotmail.com>
-References: <20220629222931.30599-1-macroalpha82@gmail.com>
- <20220629222931.30599-2-macroalpha82@gmail.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220629222931.30599-2-macroalpha82@gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+References: <1656469212-12717-1-git-send-email-u0084500@gmail.com> <1656469212-12717-3-git-send-email-u0084500@gmail.com>
+In-Reply-To: <1656469212-12717-3-git-send-email-u0084500@gmail.com>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Fri, 1 Jul 2022 12:04:42 +0200
+Message-ID: <CAHp75Vd2bxFA5PmjEtgAjJfCf9YZENq_fb9b2VHmMmmHdqGJSw@mail.gmail.com>
+Subject: Re: [PATCH v2 2/2] iio: adc: Add rtq6056 support
+To:     cy_huang <u0084500@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        cy_huang <cy_huang@richtek.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 30/06/2022 00:29, Chris Morgan wrote:
-> New devicetree attribute of "poll-interval-ms".
-> 
-> Add poll-interval support for the adc-joystick documentation. This is
-> an optional value and if not provided the adc-joystick works as it
-> does today (with triggered buffers). If this value is provided, the
-> adc-joystick driver is polled at the specified interval. A new
-> attribute was added instead of using the existing attribute of
-> "poll-interval" to comply with rules detailed in property-units.yaml.
-> 
-> Signed-off-by: Maya Matuszczyk <maccraft123mc@gmail.com>
-> Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
-> ---
->  Documentation/devicetree/bindings/input/adc-joystick.yaml | 5 +++++
->  1 file changed, 5 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/input/adc-joystick.yaml b/Documentation/devicetree/bindings/input/adc-joystick.yaml
-> index 2ee04e03bc22..9a34b928b15b 100644
-> --- a/Documentation/devicetree/bindings/input/adc-joystick.yaml
-> +++ b/Documentation/devicetree/bindings/input/adc-joystick.yaml
-> @@ -18,6 +18,11 @@ properties:
->    compatible:
->      const: adc-joystick
->  
-> +  poll-interval-ms:
-> +    description:
-> +      Poll interval time in milliseconds. If not specified, device will use
-> +      iio buffer.
+On Wed, Jun 29, 2022 at 4:23 AM cy_huang <u0084500@gmail.com> wrote:
 
-Rob's comments from v5 apply.
+> Add Richtek rtq6056 supporting.
+>
+> It can be used for the system to monitor load current and power with 16-bit
+> resolution.
 
-Best regards,
-Krzysztof
+...
+
+> +static int rtq6056_adc_read_channel(struct rtq6056_priv *priv,
+> +                                   struct iio_chan_spec const *ch,
+> +                                   int *val)
+> +{
+> +       struct device *dev = priv->dev;
+> +       unsigned int addr = ch->address;
+> +       unsigned int regval;
+> +       int ret;
+> +
+> +       pm_runtime_get_sync(dev);
+> +
+> +       ret = regmap_read(priv->regmap, addr, &regval);
+> +       if (ret) {
+> +               pm_runtime_put(dev);
+> +               return ret;
+> +       }
+
+You can optimize this to
+
+       pm_runtime_get_sync(dev);
+       ret = regmap_read(priv->regmap, addr, &regval);
+       pm_runtime_mark_last_busy(dev);
+       pm_runtime_put(dev);
+       if (ret)
+           return ret;
+
+> +       /* Power and VBUS is unsigned 16-bit, others are signed 16-bit */
+> +       if (addr == RTQ6056_REG_BUSVOLT || addr == RTQ6056_REG_POWER)
+> +               *val = regval;
+> +       else
+> +               *val = sign_extend32(regval, 16);
+
+> +       pm_runtime_mark_last_busy(dev);
+> +       pm_runtime_put(dev);
+
+...and get rid of these.
+
+> +       return IIO_VAL_INT;
+> +}
+
+...
+
+> +               *val2 = 1000000000;
+
+NANO ?
+
+...
+
+> +               *val2 = 1000;
+
+MILLI ?
+
+> +       *val = DIV_ROUND_UP(1000000, sample_time);
+
+USEC_PER_SEC ?
+
+> +
+> +       return IIO_VAL_INT;
+> +}
+
+...
+
+> +static int rtq6056_adc_read_label(struct iio_dev *indio_dev,
+> +                                 struct iio_chan_spec const *chan,
+> +                                 char *label)
+> +{
+> +       return sysfs_emit(label, "%s\n", rtq6056_channel_labels[chan->channel]);
+> +}
+
+...
+
+> +       /* calibration = 5120000 / (Rshunt (uohm) * current lsb (1mA)) */
+
+uOhm
+
+...
+
+> +static ssize_t shunt_resistor_show(struct device *dev,
+> +                                  struct device_attribute *attr, char *buf)
+> +{
+> +       struct rtq6056_priv *priv = iio_priv(dev_to_iio_dev(dev));
+> +       int vals[2] = { priv->shunt_resistor_uohm, 1000000 };
+
+MICRO ?
+
+> +       return iio_format_value(buf, IIO_VAL_FRACTIONAL, 1, vals);
+> +}
+
+...
+
+> +       ret = rtq6056_set_shunt_resistor(priv, val * 1000000 + val_fract);
+
+MICRO ?
+
+> +       if (ret)
+> +               return ret;
+
+...
+
+> +       struct {
+> +               u16 vals[RTQ6056_MAX_CHANNEL];
+> +               int64_t timestamp;
+> +       } data __aligned(8);
+
+Hmm... alignment of this struct will be at least 4 bytes, but
+shouldn't we rather be sure that the timestamp member is aligned
+properly? Otherwise this seems fragile and dependent on
+RTQ6056_MAX_CHANNEL % 4 == 0.
+
+...
+
+> +       pm_runtime_set_autosuspend_delay(dev, MSEC_PER_SEC);
+> +       pm_runtime_use_autosuspend(dev);
+> +       pm_runtime_set_active(dev);
+> +       pm_runtime_mark_last_busy(dev);
+> +       pm_runtime_enable(dev);
+> +
+> +       /* By default, use 2000 micro-ohm resistor */
+> +       shunt_resistor_uohm = 2000;
+> +       device_property_read_u32(dev, "shunt-resistor-micro-ohms",
+> +                                &shunt_resistor_uohm);
+> +
+> +       ret = rtq6056_set_shunt_resistor(priv, shunt_resistor_uohm);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to init shunt resistor\n");
+> +               goto err_probe;
+
+return dev_err_probe();
+
+(see below how)
+
+> +       }
+> +
+> +       indio_dev->name = "rtq6056";
+> +       indio_dev->modes = INDIO_DIRECT_MODE;
+> +       indio_dev->channels = rtq6056_channels;
+> +       indio_dev->num_channels = ARRAY_SIZE(rtq6056_channels);
+> +       indio_dev->info = &rtq6056_info;
+> +
+> +       ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+> +                                             rtq6056_buffer_trigger_handler,
+> +                                             NULL);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to allocate iio trigger buffer\n");
+
+Ditto.
+
+> +               goto err_probe;
+
+It is a sign of wrong ordering, either do not use devm_ calls after
+non-devm_ or make the latter wrapped into devm_add_action_or_reset().
+See below for additional information.
+
+> +       }
+> +
+> +       ret = devm_iio_device_register(dev, indio_dev);
+> +       if (ret) {
+> +               dev_err(dev, "Failed to allocate iio device\n");
+> +               goto err_probe;
+> +       }
+> +
+> +       return 0;
+> +
+> +err_probe:
+> +       pm_runtime_dont_use_autosuspend(dev);
+> +       pm_runtime_disable(dev);
+> +       pm_runtime_set_suspended(dev);
+> +
+> +       return ret;
+
+...
+
+> +static int rtq6056_remove(struct i2c_client *i2c)
+> +{
+> +       struct device *dev = &i2c->dev;
+
+Another (but usually not good option) is to call devm_..._unregister() here.
+
+> +       pm_runtime_dont_use_autosuspend(dev);
+> +       pm_runtime_disable(dev);
+> +       pm_runtime_set_suspended(dev);
+> +
+> +       return 0;
+> +}
+
+...
+
+> +static const struct dev_pm_ops rtq6056_pm_ops = {
+> +       SET_RUNTIME_PM_OPS(rtq6056_runtime_suspend, rtq6056_runtime_resume, NULL)
+
+RUNTIME_PM_OPS()
+
+> +};
+
+...
+
+> +static const struct of_device_id rtq6056_device_match[] = {
+> +       { .compatible = "richtek,rtq6056", },
+
+In this case the inner comma is not needed.
+
+> +       {}
+> +};
+
+...
+
+> +static struct i2c_driver rtq6056_driver = {
+> +       .driver = {
+> +               .name = "rtq6056",
+> +               .of_match_table = rtq6056_device_match,
+
+> +               .pm = &rtq6056_pm_ops,
+
+pm_ptr()
+
+> +       },
+
+-- 
+With Best Regards,
+Andy Shevchenko
