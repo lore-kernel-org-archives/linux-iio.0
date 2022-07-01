@@ -2,42 +2,42 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 946A7CCA481
-	for <linux-iio@archiver.kernel.org>; Fri,  1 Jul 2022 04:29:49 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DA252C43334
+	for <linux-iio@archiver.kernel.org>; Fri,  1 Jul 2022 04:29:58 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234267AbiGAE3s (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 1 Jul 2022 00:29:48 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35840 "EHLO
+        id S233740AbiGAE35 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 1 Jul 2022 00:29:57 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35900 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233830AbiGAE3r (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2022 00:29:47 -0400
-Received: from fllv0016.ext.ti.com (fllv0016.ext.ti.com [198.47.19.142])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 95DA658FE0;
-        Thu, 30 Jun 2022 21:29:45 -0700 (PDT)
-Received: from lelv0265.itg.ti.com ([10.180.67.224])
-        by fllv0016.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOdI022208;
+        with ESMTP id S233830AbiGAE3w (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 1 Jul 2022 00:29:52 -0400
+Received: from fllv0015.ext.ti.com (fllv0015.ext.ti.com [198.47.19.141])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A0C2C58FFC;
+        Thu, 30 Jun 2022 21:29:49 -0700 (PDT)
+Received: from fllv0035.itg.ti.com ([10.64.41.0])
+        by fllv0015.ext.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOGa015919;
         Thu, 30 Jun 2022 23:29:24 -0500
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ti.com;
         s=ti-com-17Q1; t=1656649764;
-        bh=ZZpTjhFTAu6hQIWqxUkqm1xErTjHOgN3ive3sAMZfRo=;
-        h=From:To:CC:Subject:Date:In-Reply-To:References;
-        b=TOiJ08uHEub6ZBK3naZVJbWyeivMiQELfUMPgDDu+7osyFSPk30ZUJ9JBraUH3VND
-         U80CsUI228LON00wdpjzCxPzdw2uMRSwG/2yE/m1a/leoqGiBUHEFCyYPS8MSDK2OG
-         tNfpXkRI2xRbefiKlRbcMrnjSFA8xAzQdIwN1mZ0=
-Received: from DLEE100.ent.ti.com (dlee100.ent.ti.com [157.170.170.30])
-        by lelv0265.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2614TOEY009657
+        bh=JYBVx3JdKuz1QT+7Di8b8mVJ2UBqNYpKk5ZP6ZOIYsg=;
+        h=From:To:CC:Subject:Date;
+        b=DXeEQ5mZEfQ0z1qNYPVr/NBDomH6WfGWbTwfaK4iP/UIQ51hhzBdThTdqnQG6L/4c
+         8xOetdNW67Z/lXnsOM2ctqIS6g6Z1Ln4JOVVU6h0AnRl8Y+kJzAU5FLJ58OqlryB5c
+         iN59u4vddiUhBMt3DFkr+6ZgpuGcoh2Y0vycev/g=
+Received: from DFLE104.ent.ti.com (dfle104.ent.ti.com [10.64.6.25])
+        by fllv0035.itg.ti.com (8.15.2/8.15.2) with ESMTPS id 2614TOOB104506
         (version=TLSv1.2 cipher=AES256-GCM-SHA384 bits=256 verify=FAIL);
         Thu, 30 Jun 2022 23:29:24 -0500
-Received: from DLEE102.ent.ti.com (157.170.170.32) by DLEE100.ent.ti.com
- (157.170.170.30) with Microsoft SMTP Server (version=TLS1_2,
+Received: from DFLE105.ent.ti.com (10.64.6.26) by DFLE104.ent.ti.com
+ (10.64.6.25) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14; Thu, 30
  Jun 2022 23:29:24 -0500
-Received: from lelv0326.itg.ti.com (10.180.67.84) by DLEE102.ent.ti.com
- (157.170.170.32) with Microsoft SMTP Server (version=TLS1_2,
+Received: from fllv0039.itg.ti.com (10.64.41.19) by DFLE105.ent.ti.com
+ (10.64.6.26) with Microsoft SMTP Server (version=TLS1_2,
  cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2308.14 via
  Frontend Transport; Thu, 30 Jun 2022 23:29:24 -0500
 Received: from localhost (ileax41-snat.itg.ti.com [10.172.224.153])
-        by lelv0326.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOmu001166;
+        by fllv0039.itg.ti.com (8.15.2/8.15.2) with ESMTP id 2614TOhm015244;
         Thu, 30 Jun 2022 23:29:24 -0500
 From:   Nishanth Menon <nm@ti.com>
 To:     Angelo Compagnucci <angelo.compagnucci@gmail.com>,
@@ -51,12 +51,10 @@ To:     Angelo Compagnucci <angelo.compagnucci@gmail.com>,
 CC:     Nishanth Menon <nm@ti.com>, Florian Eckert <fe@dev.tdt.de>,
         <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         <linux-iio@vger.kernel.org>
-Subject: [PATCH 2/2] iio: adc: ti-adc128s052: Add lower resolution devices support
-Date:   Thu, 30 Jun 2022 23:29:19 -0500
-Message-ID: <20220701042919.18180-3-nm@ti.com>
+Subject: [PATCH 0/2] iio: adc: ti-adc128s052: Add support for adc102s021 and family
+Date:   Thu, 30 Jun 2022 23:29:17 -0500
+Message-ID: <20220701042919.18180-1-nm@ti.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220701042919.18180-1-nm@ti.com>
-References: <20220701042919.18180-1-nm@ti.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -65,91 +63,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The adcxx4s communicates with a host processor via an SPI/Microwire Bus
-interface. The device family responds with 12bit data, of which the LSB
-bits are transmitted by the lower resolution devices as 0. We don't need
-to mess with ADC108S102_BITS as a result for the lower resolution
-devices.
+Hi,
 
-I have been able to test adc102s051, hence adding just the missing
-ones in that family.
+This is probably a continuation of [1] and has a dependency on [2].
 
-Lets reuse the driver to support the family of devices with name
-ADC<bb><c>S<sss>, where
-* bb is the resolution in number of bits (8, 10, 12)
-* c is the number of channels (1, 2, 4, 8)
-* sss is the maximum conversion speed (021 for 200 kSPS, 051 for 500 kSPS
-  and 101 for 1 MSPS)
+Inspiration for this series is drivers/hwmon/adcxx.c though constrained
+to the family that I had access to test with.
 
-Complete datasheets are available at TI's website here:
-  https://www.ti.com/lit/gpn/adc<bb><c>s<sss>.pdf
+As stated in drivers/hwmon/adcxx.c, the family of devices are easier to
+support since they all (no matter the resolution) seem to respond in 12
+bits with the LSBs set to 0 for the reduced resolution devices.
 
-Also see: drivers/hwmon/adcxx.c
+Note: This series does'nt attempt to cleanup the sparse and extended
+build warnings existing in the driver.
 
-Signed-off-by: Nishanth Menon <nm@ti.com>
----
+Series based on [2] and next-20220630
 
-This does add on additional sparse warnings around casting .data value
-to const from int for the of_match_table, and a bunch around the .cls
-field for acpi_device_id - maybe someone could suggest a smarter way to
-fix those.
+Nishanth Menon (2):
+  dt-bindings: iio: adc: ti,adc128s052: Add adc08c and adc10c family
+  iio: adc: ti-adc128s052: Add lower resolution devices support
 
-Applies after https://lore.kernel.org/linux-iio/20220630230107.13438-1-nm@ti.com/
+ .../bindings/iio/adc/ti,adc128s052.yaml       |  6 +++++
+ drivers/iio/adc/ti-adc128s052.c               | 26 +++++++++++++++++++
+ 2 files changed, 32 insertions(+)
 
- drivers/iio/adc/ti-adc128s052.c | 26 ++++++++++++++++++++++++++
- 1 file changed, 26 insertions(+)
-
-diff --git a/drivers/iio/adc/ti-adc128s052.c b/drivers/iio/adc/ti-adc128s052.c
-index 21a7764cbb93..0a3aab4df60e 100644
---- a/drivers/iio/adc/ti-adc128s052.c
-+++ b/drivers/iio/adc/ti-adc128s052.c
-@@ -7,6 +7,20 @@
-  * https://www.ti.com/lit/ds/symlink/adc128s052.pdf
-  * https://www.ti.com/lit/ds/symlink/adc122s021.pdf
-  * https://www.ti.com/lit/ds/symlink/adc124s021.pdf
-+ *
-+ * The adcxx4s communicates with a host processor via an SPI/Microwire Bus
-+ * interface. This driver supports the whole family of devices with name
-+ * ADC<bb><c>S<sss>, where
-+ * bb is the resolution in number of bits (8, 10, 12)
-+ * c is the number of channels (1, 2, 4, 8)
-+ * sss is the maximum conversion speed (021 for 200 kSPS, 051 for 500 kSPS
-+ * and 101 for 1 MSPS)
-+ *
-+ * Complete datasheets are available at TI's website here:
-+ *   https://www.ti.com/lit/gpn/adc<bb><c>s<sss>.pdf
-+ *
-+ * Handling of 8, 10 and 12 bits converters are the same, the
-+ * unavailable bits are 0 in LSB :)
-  */
- 
- #include <linux/acpi.h>
-@@ -185,6 +199,12 @@ static const struct of_device_id adc128_of_match[] = {
- 	{ .compatible = "ti,adc122s021", .data = 1},
- 	{ .compatible = "ti,adc122s051", .data = 1},
- 	{ .compatible = "ti,adc122s101", .data = 1},
-+	{ .compatible = "ti,adc102s021", .data = 1},
-+	{ .compatible = "ti,adc102s051", .data = 1},
-+	{ .compatible = "ti,adc102s101", .data = 1},
-+	{ .compatible = "ti,adc082s021", .data = 1},
-+	{ .compatible = "ti,adc082s051", .data = 1},
-+	{ .compatible = "ti,adc082s101", .data = 1},
- 	{ .compatible = "ti,adc124s021", .data = 2},
- 	{ .compatible = "ti,adc124s051", .data = 2},
- 	{ .compatible = "ti,adc124s101", .data = 2},
-@@ -197,6 +217,12 @@ static const struct spi_device_id adc128_id[] = {
- 	{ "adc122s021",	1 },
- 	{ "adc122s051",	1 },
- 	{ "adc122s101",	1 },
-+	{ "adc102s021",	1 },
-+	{ "adc102s051",	1 },
-+	{ "adc102s101",	1 },
-+	{ "adc082s021",	1 },
-+	{ "adc082s051",	1 },
-+	{ "adc082s101",	1 },
- 	{ "adc124s021", 2 },
- 	{ "adc124s051", 2 },
- 	{ "adc124s101", 2 },
+[1] https://patchwork.kernel.org/project/linux-hwmon/patch/20181115135013.30723-2-fe@dev.tdt.de/
+[2] https://lore.kernel.org/linux-iio/20220630230107.13438-1-nm@ti.com/
 -- 
 2.31.1
 
