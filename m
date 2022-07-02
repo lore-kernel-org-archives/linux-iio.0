@@ -2,80 +2,123 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A849FC433EF
-	for <linux-iio@archiver.kernel.org>; Sat,  2 Jul 2022 14:53:02 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C46F9CCA482
+	for <linux-iio@archiver.kernel.org>; Sat,  2 Jul 2022 15:16:52 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232294AbiGBOxC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sat, 2 Jul 2022 10:53:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46646 "EHLO
+        id S231282AbiGBPQu (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sat, 2 Jul 2022 11:16:50 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60032 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231426AbiGBOxB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Jul 2022 10:53:01 -0400
-Received: from www381.your-server.de (www381.your-server.de [78.46.137.84])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B6C75BC0F;
-        Sat,  2 Jul 2022 07:52:59 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=metafoo.de;
-         s=default2002; h=Content-Transfer-Encoding:Content-Type:In-Reply-To:From:
-        References:Cc:To:Subject:MIME-Version:Date:Message-ID:Sender:Reply-To:
-        Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-        Resent-To:Resent-Cc:Resent-Message-ID;
-        bh=tANdXAfV1vCs9Lw2PldJS6DPsvSnCBtLkkhAPN71x+A=; b=m8m09NehjeFLIOuV0/cG163a+V
-        /6mPuZ4P14grF8WYGK6+hJUnoaRJ7CTIwMZkRY9Gk7Uko2YS88S36brz/c+oUDtdSPYqtlOzcR571
-        wk3U29JLTwMdIBVyv7dwkR68LK49O8Y1+8eJIJ3kI8oyaUD19xqEzsrw4JXdB+rmRjRmcKUnqmUhO
-        Jsi6bXci74ZSD0TAr+rdA/B857hJ0h3jpKS7f22+tKxujnnK2BGrn8isPFaChx8dEc/9y+DPO10aQ
-        4SmwCUaPcnQOKvCJ5ZSXeq7+L/veiCi6ifC2BWzLT5acMdNSwWiifk5K/GfSZ1dPcM424mdcsimlW
-        60HWPRRA==;
-Received: from sslproxy06.your-server.de ([78.46.172.3])
-        by www381.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92.3)
-        (envelope-from <lars@metafoo.de>)
-        id 1o7eUT-0002jB-5U; Sat, 02 Jul 2022 16:52:57 +0200
-Received: from [2001:a61:2a49:8301:9e5c:8eff:fe01:8578]
-        by sslproxy06.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-        (Exim 4.92)
-        (envelope-from <lars@metafoo.de>)
-        id 1o7eUS-000BVR-UU; Sat, 02 Jul 2022 16:52:56 +0200
-Message-ID: <cb198913-cf3b-e3f4-bbe9-e864822d9820@metafoo.de>
-Date:   Sat, 2 Jul 2022 16:52:56 +0200
+        with ESMTP id S230079AbiGBPQt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 2 Jul 2022 11:16:49 -0400
+X-Greylist: delayed 295 seconds by postgrey-1.37 at lindbergh.monkeyblade.net; Sat, 02 Jul 2022 08:16:45 PDT
+Received: from new1-smtp.messagingengine.com (new1-smtp.messagingengine.com [66.111.4.221])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0AED7135;
+        Sat,  2 Jul 2022 08:16:44 -0700 (PDT)
+Received: from compute4.internal (compute4.nyi.internal [10.202.2.44])
+        by mailnew.nyi.internal (Postfix) with ESMTP id 2F0D8580988;
+        Sat,  2 Jul 2022 11:16:44 -0400 (EDT)
+Received: from mailfrontend1 ([10.202.2.162])
+  by compute4.internal (MEProxy); Sat, 02 Jul 2022 11:16:44 -0400
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sholland.org; h=
+        cc:cc:content-transfer-encoding:content-type:date:date:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to; s=fm3; t=1656775004; x=
+        1656782204; bh=uUPnY6f7r7pqDwXYoVA2oXIi1TTapVd9m1IxYXZs5xo=; b=U
+        r6E1SUuRrfloJFqWNIXYdMIoyFAJfqHHF28aPNMQT9mPShr+j7fFgg5oYYlr2Y9j
+        xIyvBlShnq0zRdZabRSHys7MsUGbVwdG3OupiYswcWEyy2/VYj8QnYcom0bctwzl
+        Djbgx0viIg8LWPesmOBH77EO87q1pDNpw0l35Wzz62Xlt/E3BlYapsN0lIw2Rlb4
+        jJAH87Dz+StotXKTULaBmqJGxmiFnCCRaaSVOlOSk/k9vfrN5dETWP9EUTc5LQ87
+        Ho69OmSOdn3+VvlVHB6P6zeXfq8SBYx3T43DtFU5e29J+Nd2/r+dwt4BpMyGPzKC
+        UehCLLFiDuEWkd3M5+jhQ==
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=
+        messagingengine.com; h=cc:cc:content-transfer-encoding
+        :content-type:date:date:feedback-id:feedback-id:from:from
+        :in-reply-to:in-reply-to:message-id:mime-version:references
+        :reply-to:sender:subject:subject:to:to:x-me-proxy:x-me-proxy
+        :x-me-sender:x-me-sender:x-sasl-enc; s=fm2; t=1656775004; x=
+        1656782204; bh=uUPnY6f7r7pqDwXYoVA2oXIi1TTapVd9m1IxYXZs5xo=; b=N
+        1vXJEfDwm9J0P8y5LfNurTp/bawlihaCWJZzW0fXs8o8wBum5A9NZWnsJlqbUJrO
+        JM9pMn0sVMWOSioppc3yYUpeWxw5tgQQXwRE3YeGOYvSf1bTnrLKaZzV8Ja+7r8r
+        DrfilsxUirt1SECtFu9C+HYlmXCbOIQeRoIiPkL+vLZh9YWxSzG7oxSJgK/OXNwT
+        mVmvzqN6URIuUxDvXxDD3ITXic8r1eQIuzVxcwSoEix/X9byCGzNh9I7UThb9l5j
+        xyaV3XtroNnWhWDpq2cEyJXY+NBdYxqvoOnqDxx354PmrZ5GPdmELjn/JSiQtt18
+        4wz5Q6pMlDNf1xP45n2Yg==
+X-ME-Sender: <xms:W2HAYphSuLC6K5QLQr7n25UPFNwrbhyTvFP-k6azfrPHeGY-lpZ1dw>
+    <xme:W2HAYuDWxRQUfBcP--iIovbwp58tZGQggrYttqLxmzJmiT0-7f_-im0K-J10iAobm
+    NpgdoeUIsmj8NnuwA>
+X-ME-Received: <xmr:W2HAYpEVKuWjFBb97ixNJ4QJ2iz6xbkAudgbyNjH6zqDVjcYUEUs5Ug4pNn3ZAWbSMQuJvCATemToOzGp3lg_KHYTIMoIuxGYHfQlylWVvxqT1dcxTtUo1uhFg>
+X-ME-Proxy-Cause: gggruggvucftvghtrhhoucdtuddrgedvfedrudehhedgkeehucetufdoteggodetrfdotf
+    fvucfrrhhofhhilhgvmecuhfgrshhtofgrihhlpdfqfgfvpdfurfetoffkrfgpnffqhgen
+    uceurghilhhouhhtmecufedttdenucenucfjughrpefuvfevfhfhkffffgggjggtgfesth
+    ejredttdefjeenucfhrhhomhepufgrmhhuvghlucfjohhllhgrnhguuceoshgrmhhuvghl
+    sehshhholhhlrghnugdrohhrgheqnecuggftrfgrthhtvghrnhepffdtveekvdegkeeuue
+    etgfetffeileevudekuefhheelvdfhiedtheduhfduhefhnecuvehluhhsthgvrhfuihii
+    vgeptdenucfrrghrrghmpehmrghilhhfrhhomhepshgrmhhuvghlsehshhholhhlrghnug
+    drohhrgh
+X-ME-Proxy: <xmx:W2HAYuTg2kbEsdCw0Q-Bs0_Xy4x8Nx4Ridb33pIQZ9U399mN2MQMGA>
+    <xmx:W2HAYmxdsheA9qm1KdOCwmwvXHedUaIbVn8kd1IDGSjuGH9iZ6RgWA>
+    <xmx:W2HAYk5rV59p4s4LA4GNBRqhiLfrj6aqZLKynsNylWFvF5EcMDEsiA>
+    <xmx:XGHAYjyZmPm_5xXGhVJfBUwt9GxAj-VBvmJBsyrVw23uHECcg6H7sA>
+Feedback-ID: i0ad843c9:Fastmail
+Received: by mail.messagingengine.com (Postfix) with ESMTPA; Sat,
+ 2 Jul 2022 11:16:41 -0400 (EDT)
+Subject: Re: [PATCH v4 04/15] dt-bindings: gpio: Add AXP192 GPIO bindings
+To:     Aidan MacDonald <aidanmacdonald.0x0@gmail.com>, wens@csie.org
+Cc:     linus.walleij@linaro.org, brgl@bgdev.pl, robh+dt@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, jic23@kernel.org,
+        sre@kernel.org, lee.jones@linaro.org, lgirdwood@gmail.com,
+        broonie@kernel.org, lars@metafoo.de, quic_gurus@quicinc.com,
+        sebastian.reichel@collabora.com, andy.shevchenko@gmail.com,
+        michael@walle.cc, rdunlap@infradead.org,
+        linux-gpio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-pm@vger.kernel.org
+References: <20220629143046.213584-1-aidanmacdonald.0x0@gmail.com>
+ <20220629143046.213584-5-aidanmacdonald.0x0@gmail.com>
+From:   Samuel Holland <samuel@sholland.org>
+Message-ID: <d024858b-a461-2cbc-48fa-a13cf3be0cb4@sholland.org>
+Date:   Sat, 2 Jul 2022 10:16:41 -0500
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:68.0) Gecko/20100101
+ Thunderbird/68.6.0
 MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.10.0
-Subject: Re: [PATCH v1 1/2] iio: adc: xilinx-xadc: Make use of device
- properties
+In-Reply-To: <20220629143046.213584-5-aidanmacdonald.0x0@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Content-Language: en-US
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-Cc:     linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org,
-        Michal Simek <michal.simek@xilinx.com>
-References: <20220531141118.64540-1-andriy.shevchenko@linux.intel.com>
- <20220603183224.540b3808@jic23-huawei>
-From:   Lars-Peter Clausen <lars@metafoo.de>
-In-Reply-To: <20220603183224.540b3808@jic23-huawei>
-Content-Type: text/plain; charset=UTF-8; format=flowed
 Content-Transfer-Encoding: 7bit
-X-Authenticated-Sender: lars@metafoo.de
-X-Virus-Scanned: Clear (ClamAV 0.103.6/26591/Sat Jul  2 09:24:09 2022)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 6/3/22 19:32, Jonathan Cameron wrote:
-> On Tue, 31 May 2022 17:11:17 +0300
-> Andy Shevchenko <andriy.shevchenko@linux.intel.com> wrote:
->
->> Convert the module to be property provider agnostic and allow
->> it to be used on non-OF platforms.
->>
->> Add mod_devicetable.h include.
->>
->> Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
-> These both seem good to me, but as the driver is fairly actively maintained,
-> I'll let this one sit on the list for a while so others can take a look.
->
-> Whilst it 'seems' unlikely anyone will ever use this driver with other firmware
-> I am keen to reduce the number of of-specific drivers in IIO just to avoid
-> any chance of cut and paste.
-I actually have this device on a PCIe card where I instantiate it using 
-mfd with device properties. But no external channels so there was no 
-need to convert that part to device properties.
+On 6/29/22 9:30 AM, Aidan MacDonald wrote:
+> The AXP192 PMIC is different enough from the PMICs supported by
+> the AXP20x GPIO driver to warrant a separate driver. The AXP192
+> driver also supports interrupts and pinconf settings.
+> 
+> Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
+> ---
+>  .../bindings/gpio/x-powers,axp192-gpio.yaml   | 68 +++++++++++++++++++
+>  1 file changed, 68 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml b/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
+> new file mode 100644
+> index 000000000000..ceb94aa2bc97
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/gpio/x-powers,axp192-gpio.yaml
+> [...]
+> +
+> +required:
+> +  - compatible
+> +  - "#gpio-cells"
+> +  - gpio-controller
+> +  - gpio-ranges
+
+By requiring the gpio-ranges property, you will not be able to convert the
+existing driver, as existing devicetrees do not have it.
+
+If you instead call pinctrl_add_gpio_range() from the driver, you can maintain
+compatibility with the existing binding.
+
+Regards,
+Samuel
