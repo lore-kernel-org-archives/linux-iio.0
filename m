@@ -2,94 +2,236 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 802F6C43334
-	for <linux-iio@archiver.kernel.org>; Mon,  4 Jul 2022 01:21:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id AAEF7C433EF
+	for <linux-iio@archiver.kernel.org>; Mon,  4 Jul 2022 02:01:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229740AbiGDBVk (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 3 Jul 2022 21:21:40 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46906 "EHLO
+        id S229462AbiGDCBy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 3 Jul 2022 22:01:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39712 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229450AbiGDBVk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2022 21:21:40 -0400
-Received: from mail-pf1-x434.google.com (mail-pf1-x434.google.com [IPv6:2607:f8b0:4864:20::434])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6DCF9631E;
-        Sun,  3 Jul 2022 18:21:39 -0700 (PDT)
-Received: by mail-pf1-x434.google.com with SMTP id 128so7596626pfv.12;
-        Sun, 03 Jul 2022 18:21:39 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=message-id:date:mime-version:user-agent:subject:content-language:to
-         :cc:references:from:in-reply-to:content-transfer-encoding;
-        bh=G8Z3RSTP4w/kjFOxzrBKbneGz9gqfhb7U77qQZXOweA=;
-        b=MQVsVVVh1OmUCFttkh5LZ9E5RQTWNXMyhMh1JOIzQP4riL/0Huyr77Uu1hDP10h0Du
-         cGCEWY6o21L/nBSHDsMRK4M+CRVdVNeg1FDPRn0QLLBa53AoGSQpryadGovCZwk5abKE
-         TjRu82RokAUDW2MWeVvYNzejHk2F13xct7cOn2DvbsSBwcpWOmNhU17uSqTLTiA5pFPM
-         v9i5hybSPmVmNsi8GTWoKCsUU7TgnSpFCtkIuZqsI75gjdKy3lldR+ZS7fvqc2e22AZl
-         y/HgxpfV43Etyby6ufg2cPTxjM/zRl64DtR98A43mEFZ76BfKcGDpMnrx8VaQB58+FhJ
-         AhsA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
-         :content-language:to:cc:references:from:in-reply-to
-         :content-transfer-encoding;
-        bh=G8Z3RSTP4w/kjFOxzrBKbneGz9gqfhb7U77qQZXOweA=;
-        b=b9L3z/81dIWr7EzDpYfLs1n40YtS19WxiGBgD8vlIKTCKUSgjGoW86qHZw+JWRbYbM
-         KhNzz3pFecPj9fJAO5WMLTJBpsvp3XPKKQkY8y+zt84IHr9pu2MzvnLWBPW/cXWsexPl
-         9+8HFtkeAVHH7g76e2WP+VUr7jNsTDzoPn0X6U2dSfsO1yKl9k8DEgJxy8BmjGltT3oO
-         mutv2eIC3UXPYo5+5669G0XPlXKxrHb3JzGors0fXQ5GySQTfMlzwnI3i0ZPQYkpdFSF
-         sSHmXR7vFn8tgdar+z3iiwvBjcorVlDKfBDWESG5rvtu6Qz/0vn2GSIKwDNwjZqNVJj5
-         nNaQ==
-X-Gm-Message-State: AJIora9Jv0Rxx9V4i6F5YQR1L37/qoyJ0/Oe//WnAUSrJ7MLxtZ9LXBC
-        o8HJKI4Fm0BEKZEz69LeyXs=
-X-Google-Smtp-Source: AGRyM1vIfvQK3Yun3KvOckM4RqwqR8J3MVZeGBkspU5gZPPI6oohuENz+hUR3jmLX2qNhFKRbRe+0g==
-X-Received: by 2002:a63:100d:0:b0:411:8781:121a with SMTP id f13-20020a63100d000000b004118781121amr21432842pgl.583.1656897698984;
-        Sun, 03 Jul 2022 18:21:38 -0700 (PDT)
-Received: from [192.168.43.80] (subs02-180-214-232-80.three.co.id. [180.214.232.80])
-        by smtp.gmail.com with ESMTPSA id nk3-20020a17090b194300b001ef8407f6d2sm1487933pjb.46.2022.07.03.18.21.34
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Sun, 03 Jul 2022 18:21:38 -0700 (PDT)
-Message-ID: <6648dbad-c3f0-a549-af91-a5e19b55ef48@gmail.com>
-Date:   Mon, 4 Jul 2022 08:21:32 +0700
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.11.0
-Subject: Re: [v6 14/14] docs: iio: add documentation for BNO055 driver
-Content-Language: en-US
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     kernel test robot <lkp@intel.com>,
-        Andrea Merello <andrea.merello@iit.it>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Mauro Carvalho Chehab <mchehab+huawei@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>, kbuild-all@lists.01.org,
+        with ESMTP id S229461AbiGDCBx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2022 22:01:53 -0400
+Received: from mga18.intel.com (mga18.intel.com [134.134.136.126])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 872EC2DCF;
+        Sun,  3 Jul 2022 19:01:52 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
+  d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
+  t=1656900112; x=1688436112;
+  h=date:from:to:cc:subject:message-id:references:
+   mime-version:in-reply-to;
+  bh=/TMS7XNA0yhB+IfbHBEwUp2g2vEsD03w9WFWtyG1M00=;
+  b=iVnOcobtVfLYWQv5SAFq/Gn97hnZMwMHVe/1M4XKmSSGvumOyN+wGGeS
+   QsQiUKBfP0zoyrwPKJvJdI0iQ/srGOqIBYkc+gXn/7QBx5mOx0zafsjd1
+   vhCMKd+VjpGlA+wd6f9stJyZuer58MqDNw0KXw2ehPBZ8f/QMt6DH3KvJ
+   KCynTm5m9U+iDYFwMtDj3QB4jLVdpEnw/AQjmN1BrAF6GO03p6iZTt2Zm
+   xSBMqvkcCkrzpjkJ0MEej/JV8ZPrdEQqZIuuvmhtU+qcvP7qZrtUj51KO
+   VIve7g+sEdvMlqPje18S+BU/nMao+jx0fXUFf3r2U38d2j92LavJBf+OT
+   Q==;
+X-IronPort-AV: E=McAfee;i="6400,9594,10397"; a="266036296"
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="266036296"
+Received: from fmsmga004.fm.intel.com ([10.253.24.48])
+  by orsmga106.jf.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 03 Jul 2022 19:01:52 -0700
+X-ExtLoop1: 1
+X-IronPort-AV: E=Sophos;i="5.92,243,1650956400"; 
+   d="scan'208";a="660031141"
+Received: from lkp-server01.sh.intel.com (HELO 68b931ab7ac1) ([10.239.97.150])
+  by fmsmga004.fm.intel.com with ESMTP; 03 Jul 2022 19:01:49 -0700
+Received: from kbuild by 68b931ab7ac1 with local (Exim 4.95)
+        (envelope-from <lkp@intel.com>)
+        id 1o8BPI-000HKJ-Kv;
+        Mon, 04 Jul 2022 02:01:48 +0000
+Date:   Mon, 4 Jul 2022 10:01:11 +0800
+From:   kernel test robot <lkp@intel.com>
+To:     Angel Iglesias <ang.iglesiasg@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc:     llvm@lists.linux.dev, kbuild-all@lists.01.org,
+        Dan Carpenter <error27@gmail.com>,
+        Angel Iglesias <ang.iglesiasg@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        Alexandru Ardelean <ardeleanalex@gmail.com>,
-        jmondi <jacopo@jmondi.org>
-References: <20220613120534.36991-15-andrea.merello@iit.it>
- <202207031509.DlBrHyaw-lkp@intel.com> <YsGVa8KFmdvGY92e@debian.me>
- <CAHp75VfDYRZMiz4j9KN5+ZJnudT0jfh-o_f7HBk5yc+FHqvXZg@mail.gmail.com>
-From:   Bagas Sanjaya <bagasdotme@gmail.com>
-In-Reply-To: <CAHp75VfDYRZMiz4j9KN5+ZJnudT0jfh-o_f7HBk5yc+FHqvXZg@mail.gmail.com>
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+        Paul Cercueil <paul@crapouillou.net>,
+        Ulf Hansson <ulf.hansson@linaro.org>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 4/5] iio: pressure: bmp280: Add support for BMP380
+ sensor family
+Message-ID: <202207040948.hfArdbs2-lkp@intel.com>
+References: <20220704003219.208409-1-ang.iglesiasg@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+In-Reply-To: <20220704003219.208409-1-ang.iglesiasg@gmail.com>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 7/3/22 21:00, Andy Shevchenko wrote:
-> On Sun, Jul 3, 2022 at 3:11 PM Bagas Sanjaya <bagasdotme@gmail.com> wrote:
->> On Sun, Jul 03, 2022 at 03:58:15PM +0800, kernel test robot wrote:
-> 
-> Please, submit it properly.
-> You may add my Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> 
-> (I deliberately put it on a wrong line so no tools will catch it up
-> with improper commit message)
+Hi Angel,
 
-OK, thanks.
+Thank you for the patch! Yet something to improve:
+
+[auto build test ERROR on 69cb6c6556ad89620547318439d6be8bb1629a5a]
+
+url:    https://github.com/intel-lab-lkp/linux/commits/Angel-Iglesias/Add-support-for-pressure-sensor-Bosch-BMP380/20220704-083456
+base:   69cb6c6556ad89620547318439d6be8bb1629a5a
+config: s390-randconfig-r031-20220703 (https://download.01.org/0day-ci/archive/20220704/202207040948.hfArdbs2-lkp@intel.com/config)
+compiler: clang version 15.0.0 (https://github.com/llvm/llvm-project 134363208b9272a967c911f7b56c255a72a6f0a0)
+reproduce (this is a W=1 build):
+        wget https://raw.githubusercontent.com/intel/lkp-tests/master/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # install s390 cross compiling tool for clang build
+        # apt-get install binutils-s390x-linux-gnu
+        # https://github.com/intel-lab-lkp/linux/commit/3003e6a1c75431265ca5bc938166239ce722c2df
+        git remote add linux-review https://github.com/intel-lab-lkp/linux
+        git fetch --no-tags linux-review Angel-Iglesias/Add-support-for-pressure-sensor-Bosch-BMP380/20220704-083456
+        git checkout 3003e6a1c75431265ca5bc938166239ce722c2df
+        # save the config file
+        mkdir build_dir && cp config build_dir/.config
+        COMPILER_INSTALL_PATH=$HOME/0day COMPILER=clang make.cross W=1 O=build_dir ARCH=s390 SHELL=/bin/bash drivers/iio/pressure/
+
+If you fix the issue, kindly add following tag where applicable
+Reported-by: kernel test robot <lkp@intel.com>
+
+All errors (new ones prefixed by >>):
+
+   In file included from drivers/iio/pressure/bmp280-core.c:23:
+   In file included from include/linux/regmap.h:20:
+   In file included from include/linux/iopoll.h:14:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:464:31: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __raw_readb(PCI_IOBASE + addr);
+                             ~~~~~~~~~~ ^
+   include/asm-generic/io.h:477:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le16_to_cpu((__le16 __force)__raw_readw(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:37:59: note: expanded from macro '__le16_to_cpu'
+   #define __le16_to_cpu(x) __swab16((__force __u16)(__le16)(x))
+                                                             ^
+   include/uapi/linux/swab.h:102:54: note: expanded from macro '__swab16'
+   #define __swab16(x) (__u16)__builtin_bswap16((__u16)(x))
+                                                        ^
+   In file included from drivers/iio/pressure/bmp280-core.c:23:
+   In file included from include/linux/regmap.h:20:
+   In file included from include/linux/iopoll.h:14:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:490:61: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           val = __le32_to_cpu((__le32 __force)__raw_readl(PCI_IOBASE + addr));
+                                                           ~~~~~~~~~~ ^
+   include/uapi/linux/byteorder/big_endian.h:35:59: note: expanded from macro '__le32_to_cpu'
+   #define __le32_to_cpu(x) __swab32((__force __u32)(__le32)(x))
+                                                             ^
+   include/uapi/linux/swab.h:115:54: note: expanded from macro '__swab32'
+   #define __swab32(x) (__u32)__builtin_bswap32((__u32)(x))
+                                                        ^
+   In file included from drivers/iio/pressure/bmp280-core.c:23:
+   In file included from include/linux/regmap.h:20:
+   In file included from include/linux/iopoll.h:14:
+   In file included from include/linux/io.h:13:
+   In file included from arch/s390/include/asm/io.h:75:
+   include/asm-generic/io.h:501:33: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writeb(value, PCI_IOBASE + addr);
+                               ~~~~~~~~~~ ^
+   include/asm-generic/io.h:511:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writew((u16 __force)cpu_to_le16(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:521:59: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           __raw_writel((u32 __force)cpu_to_le32(value), PCI_IOBASE + addr);
+                                                         ~~~~~~~~~~ ^
+   include/asm-generic/io.h:609:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsb(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:617:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsw(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:625:20: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           readsl(PCI_IOBASE + addr, buffer, count);
+                  ~~~~~~~~~~ ^
+   include/asm-generic/io.h:634:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesb(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:643:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesw(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+   include/asm-generic/io.h:652:21: warning: performing pointer arithmetic on a null pointer has undefined behavior [-Wnull-pointer-arithmetic]
+           writesl(PCI_IOBASE + addr, buffer, count);
+                   ~~~~~~~~~~ ^
+>> drivers/iio/pressure/bmp280-core.c:979:5: error: call to undeclared function 'FIELD_PREP'; ISO C99 and later do not support implicit function declarations [-Wimplicit-function-declaration]
+                                   FIELD_PREP(BMP380_MODE_MASK, BMP380_MODE_NORMAL));
+                                   ^
+   12 warnings and 1 error generated.
+
+
+vim +/FIELD_PREP +979 drivers/iio/pressure/bmp280-core.c
+
+   967	
+   968	static int bmp380_chip_config(struct bmp280_data *data)
+   969	{
+   970		u8 osrs;
+   971		unsigned int tmp;
+   972		int ret;
+   973	
+   974		/* configure power control register */
+   975		ret = regmap_write_bits(data->regmap, BMP380_REG_POWER_CONTROL,
+   976					BMP380_CTRL_SENSORS_MASK | BMP380_MODE_MASK,
+   977					BMP380_CTRL_SENSORS_PRESS_EN |
+   978					BMP380_CTRL_SENSORS_TEMP_EN |
+ > 979					FIELD_PREP(BMP380_MODE_MASK, BMP380_MODE_NORMAL));
+   980		if (ret < 0) {
+   981			dev_err(data->dev,
+   982				"failed to write operation control register\n");
+   983			return ret;
+   984		}
+   985	
+   986		/* configure oversampling */
+   987		osrs = FIELD_PREP(BMP380_OSRS_TEMP_MASK, data->oversampling_temp) |
+   988		       FIELD_PREP(BMP380_OSRS_PRESS_MASK, data->oversampling_press);
+   989	
+   990		ret = regmap_write_bits(data->regmap, BMP380_REG_OSR,
+   991					BMP380_OSRS_TEMP_MASK | BMP380_OSRS_PRESS_MASK,
+   992					osrs);
+   993		if (ret < 0) {
+   994			dev_err(data->dev, "failed to write oversampling register\n");
+   995			return ret;
+   996		}
+   997	
+   998		/* configure output data rate */
+   999		ret = regmap_write_bits(data->regmap, BMP380_REG_ODR,
+  1000					BMP380_ODRS_MASK, BMP380_ODRS_50HZ);
+  1001		if (ret < 0) {
+  1002			dev_err(data->dev, "failed to write ODR selection register\n");
+  1003			return ret;
+  1004		}
+  1005	
+  1006		/* set filter data */
+  1007		ret = regmap_update_bits(data->regmap, BMP380_REG_CONFIG,
+  1008					 BMP380_FILTER_MASK,
+  1009					 FIELD_PREP(BMP380_FILTER_MASK, BMP380_FILTER_3X));
+  1010		if (ret < 0) {
+  1011			dev_err(data->dev, "failed to write config register\n");
+  1012			return ret;
+  1013		}
+  1014	
+  1015		/* wait startup_time before verifying config changes */
+  1016		usleep_range(data->start_up_time, data->start_up_time + 100);
+  1017	
+  1018		/* check config error flag */
+  1019		ret = regmap_read(data->regmap, BMP380_REG_ERROR, &tmp);
+  1020		if (ret < 0) {
+  1021			dev_err(data->dev,
+  1022				"failed to read error register\n");
+  1023			return ret;
+  1024		}
+  1025		if (tmp & BMP380_ERR_CONF_MASK) {
+  1026			dev_warn(data->dev,
+  1027				 "sensor flagged configuration as incompatible\n");
+  1028			return -EINVAL;
+  1029		}
+  1030	
+  1031		return 0;
+  1032	}
+  1033	
 
 -- 
-An old man doll... just what I always wanted! - Clara
+0-DAY CI Kernel Test Service
+https://01.org/lkp
