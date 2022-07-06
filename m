@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9FF61C3F2D4
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Jul 2022 10:19:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0DB9BCCA480
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Jul 2022 10:19:41 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231818AbiGFKTO (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:19:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60850 "EHLO
+        id S233314AbiGFKTi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:19:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32814 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232920AbiGFKS5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jul 2022 06:18:57 -0400
-Received: from mail-wr1-x42c.google.com (mail-wr1-x42c.google.com [IPv6:2a00:1450:4864:20::42c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5697B25EB9;
-        Wed,  6 Jul 2022 03:18:43 -0700 (PDT)
-Received: by mail-wr1-x42c.google.com with SMTP id q9so21355449wrd.8;
-        Wed, 06 Jul 2022 03:18:43 -0700 (PDT)
+        with ESMTP id S233235AbiGFKTE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jul 2022 06:19:04 -0400
+Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AE70426AD0;
+        Wed,  6 Jul 2022 03:18:50 -0700 (PDT)
+Received: by mail-wr1-x432.google.com with SMTP id bk26so6293362wrb.11;
+        Wed, 06 Jul 2022 03:18:50 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=qftAKV2cvbL9HD/MJnUS+h9n1s9MA9ZYKpdre9sj+TQ=;
-        b=m8gdODbWR5GTKSDZ77k1jLImaKqOSGbkgamYbVT0e1Kv+EP6L57pyguXkyYwFIltVE
-         ZBUWyledgdGo+lLYKyXcD4hEbWYXbDaCGC3u0xmOLCntm9MF63TGMPuqSyil/w28xBdC
-         +S7inFP9Q64JymiPJLzl6PTT1kcEfPXgmD+hztDTl1HOq5yY8UH9L4kc1YbNhjsUeCza
-         S2HZJ+K5UEP7s1LiwXj70gtR4JYEV//kmrZCrzTixZjJEkn/4kAWOh3NbylmsGyDQ3AR
-         k+yxZVwR1UxPmG2Ouh5Ea0uskpeyR4EjY2BSaxSXFoogOqIWp7D2SZbj6a3HHlHAPes+
-         7C5A==
+        bh=Bu6ftz0Gt9TtFBeI7TV10odeAq94fVVDqNabiJlB7ak=;
+        b=bzgQ5Q+o/bqL/bB5ahPAL/7YK3du1XAO4RfHuhgDTHjyIUH9Ojb+2g1KJW/nOchLCl
+         0VGGBievTaE3k4J/n1WUlkjbLD/9xM+/tUh6NQXGvwCI2woc+NQFn9F3MZZSeSQ9rUq7
+         dFfX/y1AxRZJPvv47mWkvB8D2rYqo06KWfSWoYTXFZCmsB/ZAt3V7hY0rdfReU/NnHl1
+         2Pc98HocugphC4tkKxzdk6VpnLzIHaUibgAnWBtJl+/G3ZdZIuwzC4KT35shnOn7dCuj
+         IC0gdnsLen187Gvx55CCCfZIGDjUEsqQ8I786fa2jRi72UZaRco8OVt9cvIqxYx9qfW3
+         hRiA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=qftAKV2cvbL9HD/MJnUS+h9n1s9MA9ZYKpdre9sj+TQ=;
-        b=fBP2Y5n0XRq/FMV5CeJr1lOrf3i0Y8P/n0sb2usokHBBe9GZESFF112vS9+fWEdpey
-         G3SuoVg/QFud2T220VjYp2OJhy+T+SykWF9+p0U7aL1RBJLLlNn8/Rg05qeaC7elnTp1
-         Rm2xaJhkgid9lcjuqybIabxN+qSuRU/jurFY++mQ+3PkhwIxbp8vXczPWi5lJepw4k++
-         oUTPYQN0Z8xrab0fbRp+b/LJl0zz/JlC9cAdqkKslIaxHUvJkgqte8kiGJxO0yhCIjBK
-         W20cMYwkJsuHI+bOgWypMbEdTria+ZenuZ44KEhs6b6t+ofr9HzRnkfDpeArfoVZRPbO
-         WfnQ==
-X-Gm-Message-State: AJIora/upeBGzh2+HUtnG9i6prg9C7FJXZxt10il4fUSHJ/P/mLOlsVa
-        bhYxqPsuQ9SACyc/ZHrvlVA=
-X-Google-Smtp-Source: AGRyM1u89lLbFMfkl4n+NlGEH0UPWa6o269Q8+ZcfFw1r5zCHwFj2qN3z/VsVZ1CALGZPWWF//xhxA==
-X-Received: by 2002:a05:6000:1acc:b0:21c:439c:7074 with SMTP id i12-20020a0560001acc00b0021c439c7074mr34716540wry.686.1657102721822;
-        Wed, 06 Jul 2022 03:18:41 -0700 (PDT)
+        bh=Bu6ftz0Gt9TtFBeI7TV10odeAq94fVVDqNabiJlB7ak=;
+        b=S1ERP6RbObZXVhJ0YTXJZyAlfzayQZZDE/OzYjbOsjVbmmTTxNHS1c8M1jQwzegdM/
+         Q++b6mBJXWR2B6UR5rdrt/ckiwg6N0PFKm/1u92u4vmE5PLRX1HrrRkXJOVtRdPS5LhQ
+         0GmyAZffjVbdVAb1xQ8Sm/7USSGxf+P0i6H0F0Hc8NX8trWXKhVpUL5ZC46xcoZLue7N
+         lblvSZn/EHOeOgRoGiCob10BDyS8nUhW+XGk5YALVP6HeCVOzrL4MLEKo27iGJrcSAuE
+         WcMk5lR6rX82YmiPO2DaADmFxV7rXADdCG2aqHnqt5fCHzcz1HimEun+B7By+spILCQi
+         fu5w==
+X-Gm-Message-State: AJIora8yW2SYLJk0By962z6kRJmWtaZnKjhgX8yu2z4okiXRZqO/r6Qz
+        YWfrjWC51P9wIYBvznKXqXM=
+X-Google-Smtp-Source: AGRyM1t6PdRKy5dGXyHX7RTGugNCavZGmAGNXggwZsDT2prSIW9gRHDUpcWnmCKi44YPe4xrMpWiGA==
+X-Received: by 2002:a5d:6d84:0:b0:21b:9acb:c478 with SMTP id l4-20020a5d6d84000000b0021b9acbc478mr36423801wrs.491.1657102730163;
+        Wed, 06 Jul 2022 03:18:50 -0700 (PDT)
 Received: from localhost (92.40.202.167.threembb.co.uk. [92.40.202.167])
-        by smtp.gmail.com with ESMTPSA id m9-20020a05600c3b0900b003a04d19dab3sm24372536wms.3.2022.07.06.03.18.40
+        by smtp.gmail.com with ESMTPSA id c16-20020adfe750000000b002103a7c5c91sm35249435wrn.43.2022.07.06.03.18.49
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:18:41 -0700 (PDT)
+        Wed, 06 Jul 2022 03:18:49 -0700 (PDT)
 From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 To:     jic23@kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
@@ -57,10 +57,10 @@ Cc:     lars@metafoo.de, andy.shevchenko@gmail.com,
         samuel@sholland.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
         linux-pm@vger.kernel.org,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH v5 07/13] iio: adc: axp20x_adc: Minor code cleanups
-Date:   Wed,  6 Jul 2022 11:18:56 +0100
-Message-Id: <20220706101902.4984-8-aidanmacdonald.0x0@gmail.com>
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCH v5 12/13] power: axp20x_battery: Support battery status without fuel gauge
+Date:   Wed,  6 Jul 2022 11:19:01 +0100
+Message-Id: <20220706101902.4984-13-aidanmacdonald.0x0@gmail.com>
 In-Reply-To: <20220706101902.4984-1-aidanmacdonald.0x0@gmail.com>
 References: <20220706101902.4984-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
@@ -69,189 +69,97 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The code may be clearer if parameters are not re-purposed to hold
-temporary results like register values, so introduce local variables
-as necessary to avoid that. Regroup macros based on chip type, and
-use the FIELD_PREP() macro instead of a hand-rolled version.
+Add a "has_fg" flag to indicate that the chip has a fuel gauge.
+Report battery full status on chips with no fuel gauge using the
+battery voltage.
 
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Reviewed-by: Chen-Yu Tsai <wens@csie.org>
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 ---
- drivers/iio/adc/axp20x_adc.c | 61 +++++++++++++++++++-----------------
- 1 file changed, 32 insertions(+), 29 deletions(-)
+ drivers/power/supply/axp20x_battery.c | 34 ++++++++++++++++++++++++++-
+ 1 file changed, 33 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/adc/axp20x_adc.c b/drivers/iio/adc/axp20x_adc.c
-index 53bf7d4899d2..ab25e6e1ff65 100644
---- a/drivers/iio/adc/axp20x_adc.c
-+++ b/drivers/iio/adc/axp20x_adc.c
-@@ -5,6 +5,7 @@
-  *	Quentin Schulz <quentin.schulz@free-electrons.com>
-  */
+diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
+index 401779d84d2b..574c1d001556 100644
+--- a/drivers/power/supply/axp20x_battery.c
++++ b/drivers/power/supply/axp20x_battery.c
+@@ -69,6 +69,7 @@ struct axp_data {
+ 	 * must have AXP20X_CHRG_CTRL1_TGT_CURR+1 elements.
+ 	 */
+ 	const int *ccc_table;
++	bool	has_fg;
+ 	bool	has_fg_valid;
+ 	int	(*get_max_voltage)(struct axp20x_batt_ps *batt, int *val);
+ 	int	(*set_max_voltage)(struct axp20x_batt_ps *batt, int val);
+@@ -197,7 +198,7 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 				   union power_supply_propval *val)
+ {
+ 	struct axp20x_batt_ps *axp20x_batt = power_supply_get_drvdata(psy);
+-	int ret = 0, reg, val1;
++	int ret = 0, reg, val1, val2;
  
-+#include <linux/bitfield.h>
- #include <linux/completion.h>
- #include <linux/interrupt.h>
- #include <linux/io.h>
-@@ -22,20 +23,20 @@
- #include <linux/mfd/axp20x.h>
+ 	switch (psp) {
+ 	case POWER_SUPPLY_PROP_PRESENT:
+@@ -231,6 +232,34 @@ static int axp20x_battery_get_prop(struct power_supply *psy,
+ 			return 0;
+ 		}
  
- #define AXP20X_ADC_EN1_MASK			GENMASK(7, 0)
--
- #define AXP20X_ADC_EN2_MASK			(GENMASK(3, 2) | BIT(7))
++		/*
++		 * If the chip does not have a fuel gauge, we check battery full status
++		 * using voltage instead.
++		 */
++		if (!axp20x_batt->data->has_fg) {
++			ret = axp20x_batt->data->get_max_voltage(axp20x_batt, &val1);
++			if (ret)
++				return ret;
 +
- #define AXP22X_ADC_EN1_MASK			(GENMASK(7, 5) | BIT(0))
- 
- #define AXP20X_GPIO10_IN_RANGE_GPIO0		BIT(0)
- #define AXP20X_GPIO10_IN_RANGE_GPIO1		BIT(1)
--#define AXP20X_GPIO10_IN_RANGE_GPIO0_VAL(x)	((x) & BIT(0))
--#define AXP20X_GPIO10_IN_RANGE_GPIO1_VAL(x)	(((x) & BIT(0)) << 1)
- 
- #define AXP20X_ADC_RATE_MASK			GENMASK(7, 6)
--#define AXP813_V_I_ADC_RATE_MASK		GENMASK(5, 4)
--#define AXP813_ADC_RATE_MASK			(AXP20X_ADC_RATE_MASK | AXP813_V_I_ADC_RATE_MASK)
- #define AXP20X_ADC_RATE_HZ(x)			((ilog2((x) / 25) << 6) & AXP20X_ADC_RATE_MASK)
++			ret = iio_read_channel_processed(axp20x_batt->batt_v, &val2);
++			if (ret)
++				return ret;
 +
- #define AXP22X_ADC_RATE_HZ(x)			((ilog2((x) / 100) << 6) & AXP20X_ADC_RATE_MASK)
++			/* IIO subsystem reports voltage in mV but we need uV */
++			val2 *= 1000;
 +
-+#define AXP813_V_I_ADC_RATE_MASK		GENMASK(5, 4)
-+#define AXP813_ADC_RATE_MASK			(AXP20X_ADC_RATE_MASK | AXP813_V_I_ADC_RATE_MASK)
- #define AXP813_TS_GPIO0_ADC_RATE_HZ(x)		AXP20X_ADC_RATE_HZ(x)
- #define AXP813_V_I_ADC_RATE_HZ(x)		((ilog2((x) / 100) << 4) & AXP813_V_I_ADC_RATE_MASK)
- #define AXP813_ADC_RATE_HZ(x)			(AXP20X_ADC_RATE_HZ(x) | AXP813_V_I_ADC_RATE_HZ(x))
-@@ -234,7 +235,7 @@ static int axp20x_adc_raw(struct iio_dev *indio_dev,
- 			  struct iio_chan_spec const *chan, int *val)
- {
- 	struct axp20x_adc_iio *info = iio_priv(indio_dev);
--	int size = 12;
-+	int ret, size;
- 
- 	/*
- 	 * N.B.:  Unlike the Chinese datasheets tell, the charging current is
-@@ -246,10 +247,11 @@ static int axp20x_adc_raw(struct iio_dev *indio_dev,
- 	else
- 		size = 12;
- 
--	*val = axp20x_read_variable_width(info->regmap, chan->address, size);
--	if (*val < 0)
--		return *val;
-+	ret = axp20x_read_variable_width(info->regmap, chan->address, size);
-+	if (ret < 0)
-+		return ret;
- 
-+	*val = ret;
- 	return IIO_VAL_INT;
- }
- 
-@@ -257,11 +259,13 @@ static int axp22x_adc_raw(struct iio_dev *indio_dev,
- 			  struct iio_chan_spec const *chan, int *val)
- {
- 	struct axp20x_adc_iio *info = iio_priv(indio_dev);
-+	int ret;
- 
--	*val = axp20x_read_variable_width(info->regmap, chan->address, 12);
--	if (*val < 0)
--		return *val;
-+	ret = axp20x_read_variable_width(info->regmap, chan->address, 12);
-+	if (ret < 0)
-+		return ret;
- 
-+	*val = ret;
- 	return IIO_VAL_INT;
- }
- 
-@@ -269,11 +273,13 @@ static int axp813_adc_raw(struct iio_dev *indio_dev,
- 			  struct iio_chan_spec const *chan, int *val)
- {
- 	struct axp20x_adc_iio *info = iio_priv(indio_dev);
-+	int ret;
- 
--	*val = axp20x_read_variable_width(info->regmap, chan->address, 12);
--	if (*val < 0)
--		return *val;
-+	ret = axp20x_read_variable_width(info->regmap, chan->address, 12);
-+	if (ret < 0)
-+		return ret;
- 
-+	*val = ret;
- 	return IIO_VAL_INT;
- }
- 
-@@ -443,27 +449,27 @@ static int axp20x_adc_offset_voltage(struct iio_dev *indio_dev, int channel,
- 				     int *val)
- {
- 	struct axp20x_adc_iio *info = iio_priv(indio_dev);
-+	unsigned int regval;
- 	int ret;
- 
--	ret = regmap_read(info->regmap, AXP20X_GPIO10_IN_RANGE, val);
-+	ret = regmap_read(info->regmap, AXP20X_GPIO10_IN_RANGE, &regval);
- 	if (ret < 0)
- 		return ret;
- 
- 	switch (channel) {
- 	case AXP20X_GPIO0_V:
--		*val &= AXP20X_GPIO10_IN_RANGE_GPIO0;
-+		regval = FIELD_GET(AXP20X_GPIO10_IN_RANGE_GPIO0, regval);
- 		break;
- 
- 	case AXP20X_GPIO1_V:
--		*val &= AXP20X_GPIO10_IN_RANGE_GPIO1;
-+		regval = FIELD_GET(AXP20X_GPIO10_IN_RANGE_GPIO1, regval);
- 		break;
- 
- 	default:
- 		return -EINVAL;
- 	}
- 
--	*val = *val ? 700000 : 0;
--
-+	*val = regval ? 700000 : 0;
- 	return IIO_VAL_INT;
- }
- 
-@@ -548,7 +554,7 @@ static int axp20x_write_raw(struct iio_dev *indio_dev,
- 			    long mask)
- {
- 	struct axp20x_adc_iio *info = iio_priv(indio_dev);
--	unsigned int reg, regval;
-+	unsigned int regmask, regval;
- 
- 	/*
- 	 * The AXP20X PMIC allows the user to choose between 0V and 0.7V offsets
-@@ -560,25 +566,22 @@ static int axp20x_write_raw(struct iio_dev *indio_dev,
- 	if (val != 0 && val != 700000)
- 		return -EINVAL;
- 
--	val = val ? 1 : 0;
--
- 	switch (chan->channel) {
- 	case AXP20X_GPIO0_V:
--		reg = AXP20X_GPIO10_IN_RANGE_GPIO0;
--		regval = AXP20X_GPIO10_IN_RANGE_GPIO0_VAL(val);
-+		regmask = AXP20X_GPIO10_IN_RANGE_GPIO0;
-+		regval = FIELD_PREP(AXP20X_GPIO10_IN_RANGE_GPIO0, !!val);
- 		break;
- 
- 	case AXP20X_GPIO1_V:
--		reg = AXP20X_GPIO10_IN_RANGE_GPIO1;
--		regval = AXP20X_GPIO10_IN_RANGE_GPIO1_VAL(val);
-+		regmask = AXP20X_GPIO10_IN_RANGE_GPIO1;
-+		regval = FIELD_PREP(AXP20X_GPIO10_IN_RANGE_GPIO1, !!val);
- 		break;
- 
- 	default:
- 		return -EINVAL;
- 	}
- 
--	return regmap_update_bits(info->regmap, AXP20X_GPIO10_IN_RANGE, reg,
--				  regval);
-+	return regmap_update_bits(info->regmap, AXP20X_GPIO10_IN_RANGE, regmask, regval);
- }
- 
- static const struct iio_info axp20x_adc_iio_info = {
++			/*
++			 * According to the AXP192 datasheet, charging will restart if
++			 * the battery voltage drops below V_rch = V_tgt - 0.1 V, so we
++			 * report the battery is full if its voltage is at least V_rch.
++			 */
++			if (val2 >= val1 - 100000)
++				val->intval = POWER_SUPPLY_STATUS_FULL;
++			else
++				val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
++			break;
++		}
++
+ 		ret = regmap_read(axp20x_batt->regmap, AXP20X_FG_RES, &val1);
+ 		if (ret)
+ 			return ret;
+@@ -552,6 +581,7 @@ static const struct power_supply_desc axp20x_batt_ps_desc = {
+ static const struct axp_data axp209_data = {
+ 	.ccc_scale = 100000,
+ 	.ccc_offset = 300000,
++	.has_fg = true,
+ 	.get_max_voltage = axp20x_battery_get_max_voltage,
+ 	.set_max_voltage = axp20x_battery_set_max_voltage,
+ };
+@@ -559,6 +589,7 @@ static const struct axp_data axp209_data = {
+ static const struct axp_data axp221_data = {
+ 	.ccc_scale = 150000,
+ 	.ccc_offset = 300000,
++	.has_fg = true,
+ 	.has_fg_valid = true,
+ 	.get_max_voltage = axp22x_battery_get_max_voltage,
+ 	.set_max_voltage = axp22x_battery_set_max_voltage,
+@@ -567,6 +598,7 @@ static const struct axp_data axp221_data = {
+ static const struct axp_data axp813_data = {
+ 	.ccc_scale = 200000,
+ 	.ccc_offset = 200000,
++	.has_fg = true,
+ 	.has_fg_valid = true,
+ 	.get_max_voltage = axp813_battery_get_max_voltage,
+ 	.set_max_voltage = axp20x_battery_set_max_voltage,
 -- 
 2.35.1
 
