@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DDF6AC433EF
-	for <linux-iio@archiver.kernel.org>; Wed,  6 Jul 2022 10:19:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DFE44CCA47C
+	for <linux-iio@archiver.kernel.org>; Wed,  6 Jul 2022 10:20:02 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233230AbiGFKTh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 6 Jul 2022 06:19:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60004 "EHLO
+        id S233281AbiGFKUA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 6 Jul 2022 06:20:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60966 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233227AbiGFKTE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jul 2022 06:19:04 -0400
-Received: from mail-wr1-x432.google.com (mail-wr1-x432.google.com [IPv6:2a00:1450:4864:20::432])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D72B226544;
-        Wed,  6 Jul 2022 03:18:48 -0700 (PDT)
-Received: by mail-wr1-x432.google.com with SMTP id b26so21386535wrc.2;
-        Wed, 06 Jul 2022 03:18:48 -0700 (PDT)
+        with ESMTP id S233289AbiGFKTG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 6 Jul 2022 06:19:06 -0400
+Received: from mail-wr1-x42a.google.com (mail-wr1-x42a.google.com [IPv6:2a00:1450:4864:20::42a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B874D2714F;
+        Wed,  6 Jul 2022 03:18:53 -0700 (PDT)
+Received: by mail-wr1-x42a.google.com with SMTP id v14so21368765wra.5;
+        Wed, 06 Jul 2022 03:18:53 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=DFRacK/lHYWgN+1u5LK1kYYmS445KX95i0Rb5jk9kRw=;
-        b=fZadVM0Ryt5U5omkXPSw8O5dTH3N1OegY/Q8QVL/mRQkaDgQUnBzqOPmNNc/zi9aCv
-         qG1JSshsMnEGLErV40hu/g+/YlB4ca52cIpH4XX2fDvTuC/qGFiQnvJyO98oyIoBV/wd
-         mOj6A60gQ10FtvrSZSFuQlLUnhQ1PIwPPZcAR0bH2n1imyyPGlTP3+pPmhCS4xhLlY9a
-         N/pLBpVAFR+PF1x2N43JgPNBP45qs1PUJoXYofdQxXBzq3KINlxwwCssMkb4nedTUgnY
-         tUTDPZgUfdgTmuanWCKvssU89AmWIwNys9hxc89UWRqUcAcE3k7NDN0Hp4mE+1KzCdiJ
-         RxoQ==
+        bh=ZvGwVkTGyDn+vP4Fazz0kJpHMoviO3wS63dcj/8fxfo=;
+        b=ZKCpGxJTFzF/rvSEejnIawseKoqfxUwKeVrwTB0K/cZ2nx8Ce/JEBlUNqYZ/6sMZaV
+         y8aM1r7uUGzM8mxiw542IB7VjSGemOdAF34nToc96Ehd2pa3DtjtQLGevQqMRATa+ta9
+         tN+gp4HKFfzBREN3ko+JQ7XhlC/UdW5a+NRch/vxEF5ZYPZaPXXG9MzskzDD7ixfRJJE
+         G37xZgLxxFOVCatGXobMzXlXC+HA+CzMjBTGArCoTXKUxTVt8WFZuCrmTjMctnIWMtb2
+         Z9XOF0V+a1BXKRfjjwMSYAX1h9LNIpf72HYEvgbGV5iB5Z40We8lfR2f3k3x0bhSOstR
+         JMwA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=DFRacK/lHYWgN+1u5LK1kYYmS445KX95i0Rb5jk9kRw=;
-        b=2JhFLiF3diIMx8E+sctX3V+8gHQeDfQGJ61PTAZdo+2SFZyr2B9Vl33unNX9jVT0tY
-         HmBl1GwIiLuYoEUPl4PuDwzwY2NGsSIq+p3qcxPD6qbOEV+nCN9dd8cIeuHNWf0yJNJ6
-         sa5cjMsJAbsoiOvwNnxNXS/RxY55/M7CmtsFqyw1JJZuvVKuz+ZpFI7MXV9ZrokDaoGD
-         97ubCMutVjijovCjZcDjzxdzGzPEDl58i8WoEWSgwudQMLUlaGAkqiVvUg8PERznX72u
-         KcxahAG4bxY8UyQ1jaBu3vBsTHvq72KkxaVaEpI00W3Dk+Seu/PBaC3hi4vfoZqPp9cH
-         VGEQ==
-X-Gm-Message-State: AJIora8HJUYktXv9Ka0j04xETN9GxKAGrpBIFyTIwDLFEsl3k4zC/Hpb
-        o7+KiThC8///+8+lVnx30wA=
-X-Google-Smtp-Source: AGRyM1sp4ohzZ04YxV24XO0ixUzdGprhwiraUKlLrY7U2hilZkHGbRzGKwxWgYBJy8f2cY7xucxUXg==
-X-Received: by 2002:a5d:6e85:0:b0:21d:65ec:22d with SMTP id k5-20020a5d6e85000000b0021d65ec022dmr17847950wrz.435.1657102728349;
-        Wed, 06 Jul 2022 03:18:48 -0700 (PDT)
+        bh=ZvGwVkTGyDn+vP4Fazz0kJpHMoviO3wS63dcj/8fxfo=;
+        b=FAk/Xnu5N5p67IVOpwEXdgm53Gheju73j5kEyUTBgwuHEIjtRqcXlMuPrttQ0prOOl
+         jI7COOBMi2/EiUKqIKeXSFyTmnFM7J6AFUEpi9RYO3S6eA1b6396DVE/jX5prWCFZjBl
+         BVeLkh9w8o2KolsFxlTz+iP2GtDdLguHeuCGhwlRDfSZreDEuvQWnNqjzd1TCsNPs6/l
+         kzFkjiJH4yqpNWs/jCIsc7y9N1w2k3AgFmZxA41z9jgHj+FVt8A+/VmF7KKAuVZMgZQ6
+         +IdoArdElIzaGXQHtJ5bPITEe7SECO8op/l7aaj3tIXP1CO2MrtZsI9aOyRi6zTRuFPG
+         kyjQ==
+X-Gm-Message-State: AJIora9fHv6HuqUzjHgMegXx0gNJqGKp4j7uOZa/m1QOn/6Zja++8EtL
+        cR3S3g8b6WBqZUyocjNu7/M=
+X-Google-Smtp-Source: AGRyM1vLCj4x+NqNP5HpX/hsCERhQNRayOjvlpg+w1jdkzDlNlP0qjd8PmOdvrbpuk0bd3MwfVqGOw==
+X-Received: by 2002:adf:dc09:0:b0:21b:9ec1:f4ab with SMTP id t9-20020adfdc09000000b0021b9ec1f4abmr37147285wri.558.1657102732173;
+        Wed, 06 Jul 2022 03:18:52 -0700 (PDT)
 Received: from localhost (92.40.202.167.threembb.co.uk. [92.40.202.167])
-        by smtp.gmail.com with ESMTPSA id l2-20020a05600c2cc200b003a18e7a5af2sm18975814wmc.34.2022.07.06.03.18.47
+        by smtp.gmail.com with ESMTPSA id h15-20020a1ccc0f000000b0039749b01ea7sm33702763wmb.32.2022.07.06.03.18.51
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 06 Jul 2022 03:18:47 -0700 (PDT)
+        Wed, 06 Jul 2022 03:18:51 -0700 (PDT)
 From:   Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 To:     jic23@kernel.org, robh+dt@kernel.org,
         krzysztof.kozlowski+dt@linaro.org, wens@csie.org,
@@ -56,10 +56,11 @@ Cc:     lars@metafoo.de, andy.shevchenko@gmail.com,
         linus.walleij@linaro.org, brgl@bgdev.pl, michael@walle.cc,
         samuel@sholland.org, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-pm@vger.kernel.org
-Subject: [PATCH v5 11/13] power: axp20x_battery: Add constant charge current table
-Date:   Wed,  6 Jul 2022 11:19:00 +0100
-Message-Id: <20220706101902.4984-12-aidanmacdonald.0x0@gmail.com>
+        linux-pm@vger.kernel.org,
+        Sebastian Reichel <sebastian.reichel@collabora.com>
+Subject: [PATCH v5 13/13] power: axp20x_battery: Add support for AXP192
+Date:   Wed,  6 Jul 2022 11:19:02 +0100
+Message-Id: <20220706101902.4984-14-aidanmacdonald.0x0@gmail.com>
 In-Reply-To: <20220706101902.4984-1-aidanmacdonald.0x0@gmail.com>
 References: <20220706101902.4984-1-aidanmacdonald.0x0@gmail.com>
 MIME-Version: 1.0
@@ -68,127 +69,112 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add a table-based lookup method for constant charge current,
-which is necessary when the setting cannot be represented as
-a linear range.
+The AXP192 has a battery charger similar to other X-Powers PMICs,
+but unlike the other supported devices, it does not have a fuel
+gauge and can't report battery capacity directly.
 
-This also replaces the hard-coded 300 mA default ccc setting
-if the DT-specified value is unsupported; the minimum value
-for the device is now set exactly instead of relying on the
-value being rounded down to a supported value.
-
+Acked-by: Sebastian Reichel <sebastian.reichel@collabora.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Aidan MacDonald <aidanmacdonald.0x0@gmail.com>
 ---
- drivers/power/supply/axp20x_battery.c | 59 +++++++++++++++++++++------
- 1 file changed, 47 insertions(+), 12 deletions(-)
+ drivers/power/supply/axp20x_battery.c | 49 +++++++++++++++++++++++++--
+ 1 file changed, 46 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/power/supply/axp20x_battery.c b/drivers/power/supply/axp20x_battery.c
-index 9106077c0dbb..401779d84d2b 100644
+index 574c1d001556..1e84d26ce8e3 100644
 --- a/drivers/power/supply/axp20x_battery.c
 +++ b/drivers/power/supply/axp20x_battery.c
-@@ -61,6 +61,14 @@ struct axp20x_batt_ps;
- struct axp_data {
- 	int	ccc_scale;
- 	int	ccc_offset;
-+	/*
-+	 * Lookup table for constant charge current, if provided this is used
-+	 * instead of ccc_scale/ccc_offset.
-+	 *
-+	 * The table is indexed by the field AXP20X_CHRG_CTRL1_TGT_CURR so it
-+	 * must have AXP20X_CHRG_CTRL1_TGT_CURR+1 elements.
-+	 */
-+	const int *ccc_table;
- 	bool	has_fg_valid;
- 	int	(*get_max_voltage)(struct axp20x_batt_ps *batt, int *val);
- 	int	(*set_max_voltage)(struct axp20x_batt_ps *batt, int val);
-@@ -176,7 +184,10 @@ static int axp20x_get_constant_charge_current(struct axp20x_batt_ps *axp,
- 
- 	*val &= AXP20X_CHRG_CTRL1_TGT_CURR;
- 
--	*val = *val * axp->data->ccc_scale + axp->data->ccc_offset;
-+	if (axp->data->ccc_table)
-+		*val = axp->data->ccc_table[*val];
-+	else
-+		*val = *val * axp->data->ccc_scale + axp->data->ccc_offset;
- 
- 	return 0;
- }
-@@ -389,16 +400,35 @@ static int axp20x_battery_set_max_voltage(struct axp20x_batt_ps *axp20x_batt,
- 				  AXP20X_CHRG_CTRL1_TGT_VOLT, val);
+@@ -544,6 +544,19 @@ static int axp20x_battery_set_prop(struct power_supply *psy,
+ 	}
  }
  
-+static int axp20x_get_constant_charge_current_sel(struct axp20x_batt_ps *axp_batt,
-+						  int charge_current)
-+{
-+	int i;
++static enum power_supply_property axp192_battery_props[] = {
++	POWER_SUPPLY_PROP_PRESENT,
++	POWER_SUPPLY_PROP_ONLINE,
++	POWER_SUPPLY_PROP_STATUS,
++	POWER_SUPPLY_PROP_VOLTAGE_NOW,
++	POWER_SUPPLY_PROP_CURRENT_NOW,
++	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT,
++	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
++	POWER_SUPPLY_PROP_HEALTH,
++	POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
++	POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
++};
 +
-+	if (axp_batt->data->ccc_table) {
-+		for (i = AXP20X_CHRG_CTRL1_TGT_CURR; i >= 0; i--) {
-+			if (axp_batt->data->ccc_table[i] <= charge_current)
-+				return i;
-+		}
-+
-+		return -EINVAL;
-+	}
-+
-+	i = (charge_current - axp_batt->data->ccc_offset) / axp_batt->data->ccc_scale;
-+	if (i > AXP20X_CHRG_CTRL1_TGT_CURR || i < 0)
-+		return -EINVAL;
-+
-+	return i;
-+}
-+
- static int axp20x_set_constant_charge_current(struct axp20x_batt_ps *axp_batt,
- 					      int charge_current)
- {
- 	if (charge_current > axp_batt->max_ccc)
- 		return -EINVAL;
+ static enum power_supply_property axp20x_battery_props[] = {
+ 	POWER_SUPPLY_PROP_PRESENT,
+ 	POWER_SUPPLY_PROP_ONLINE,
+@@ -568,6 +581,16 @@ static int axp20x_battery_prop_writeable(struct power_supply *psy,
+ 	       psp == POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX;
+ }
  
--	charge_current = (charge_current - axp_batt->data->ccc_offset) /
--		axp_batt->data->ccc_scale;
--
--	if (charge_current > AXP20X_CHRG_CTRL1_TGT_CURR || charge_current < 0)
-+	charge_current = axp20x_get_constant_charge_current_sel(axp_batt, charge_current);
-+	if (charge_current < 0)
- 		return -EINVAL;
++static const struct power_supply_desc axp192_batt_ps_desc = {
++	.name = "axp192-battery",
++	.type = POWER_SUPPLY_TYPE_BATTERY,
++	.properties = axp192_battery_props,
++	.num_properties = ARRAY_SIZE(axp192_battery_props),
++	.property_is_writeable = axp20x_battery_prop_writeable,
++	.get_property = axp20x_battery_get_prop,
++	.set_property = axp20x_battery_set_prop,
++};
++
+ static const struct power_supply_desc axp20x_batt_ps_desc = {
+ 	.name = "axp20x-battery",
+ 	.type = POWER_SUPPLY_TYPE_BATTERY,
+@@ -578,6 +601,19 @@ static const struct power_supply_desc axp20x_batt_ps_desc = {
+ 	.set_property = axp20x_battery_set_prop,
+ };
  
- 	return regmap_update_bits(axp_batt->regmap, AXP20X_CHRG_CTRL1,
-@@ -410,14 +440,14 @@ static int axp20x_set_max_constant_charge_current(struct axp20x_batt_ps *axp,
- {
- 	bool lower_max = false;
++static const int axp192_ccc_table[AXP20X_CHRG_CTRL1_TGT_CURR+1] = {
++	100000,  190000,  280000,  360000,
++	450000,  550000,  630000,  700000,
++	780000,  880000,  960000,  1000000,
++	1080000, 1160000, 1240000, 1320000,
++};
++
++static const struct axp_data axp192_data = {
++	.ccc_table = axp192_ccc_table,
++	.get_max_voltage = axp20x_battery_get_max_voltage,
++	.set_max_voltage = axp20x_battery_set_max_voltage,
++};
++
+ static const struct axp_data axp209_data = {
+ 	.ccc_scale = 100000,
+ 	.ccc_offset = 300000,
+@@ -606,6 +642,9 @@ static const struct axp_data axp813_data = {
  
--	charge_current = (charge_current - axp->data->ccc_offset) /
--		axp->data->ccc_scale;
--
--	if (charge_current > AXP20X_CHRG_CTRL1_TGT_CURR || charge_current < 0)
-+	charge_current = axp20x_get_constant_charge_current_sel(axp, charge_current);
-+	if (charge_current < 0)
- 		return -EINVAL;
+ static const struct of_device_id axp20x_battery_ps_id[] = {
+ 	{
++		.compatible = "x-powers,axp192-battery-power-supply",
++		.data = (void *)&axp192_data,
++	}, {
+ 		.compatible = "x-powers,axp209-battery-power-supply",
+ 		.data = (void *)&axp209_data,
+ 	}, {
+@@ -623,6 +662,7 @@ static int axp20x_power_probe(struct platform_device *pdev)
+ 	struct axp20x_batt_ps *axp20x_batt;
+ 	struct power_supply_config psy_cfg = {};
+ 	struct power_supply_battery_info *info;
++	const struct power_supply_desc *ps_desc;
+ 	struct device *dev = &pdev->dev;
  
--	charge_current = charge_current * axp->data->ccc_scale +
--		axp->data->ccc_offset;
-+	if (axp->data->ccc_table)
-+		charge_current = axp->data->ccc_table[charge_current];
+ 	if (!of_device_is_available(pdev->dev.of_node))
+@@ -666,9 +706,12 @@ static int axp20x_power_probe(struct platform_device *pdev)
+ 
+ 	axp20x_batt->data = (struct axp_data *)of_device_get_match_data(dev);
+ 
+-	axp20x_batt->batt = devm_power_supply_register(&pdev->dev,
+-						       &axp20x_batt_ps_desc,
+-						       &psy_cfg);
++	if (!axp20x_batt->data->has_fg)
++		ps_desc = &axp192_batt_ps_desc;
 +	else
-+		charge_current = charge_current * axp->data->ccc_scale + axp->data->ccc_offset;
- 
- 	if (charge_current > axp->max_ccc)
- 		dev_warn(axp->dev,
-@@ -629,7 +659,12 @@ static int axp20x_power_probe(struct platform_device *pdev)
- 								   ccc)) {
- 			dev_err(&pdev->dev,
- 				"couldn't set constant charge current from DT: fallback to minimum value\n");
--			ccc = 300000;
++		ps_desc = &axp20x_batt_ps_desc;
 +
-+			if (axp20x_batt->data->ccc_table)
-+				ccc = axp20x_batt->data->ccc_table[0];
-+			else
-+				ccc = axp20x_batt->data->ccc_offset;
-+
- 			axp20x_batt->max_ccc = ccc;
- 			axp20x_set_constant_charge_current(axp20x_batt, ccc);
- 		}
++	axp20x_batt->batt = devm_power_supply_register(&pdev->dev, ps_desc, &psy_cfg);
+ 	if (IS_ERR(axp20x_batt->batt)) {
+ 		dev_err(&pdev->dev, "failed to register power supply: %ld\n",
+ 			PTR_ERR(axp20x_batt->batt));
 -- 
 2.35.1
 
