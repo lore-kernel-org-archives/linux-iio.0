@@ -2,92 +2,129 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0BA97C43334
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Jul 2022 22:30:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C480DCCA482
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Jul 2022 22:30:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236862AbiGGWaX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 7 Jul 2022 18:30:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58432 "EHLO
+        id S236898AbiGGWaY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 7 Jul 2022 18:30:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58480 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236602AbiGGWaV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Jul 2022 18:30:21 -0400
-Received: from mail-qk1-x735.google.com (mail-qk1-x735.google.com [IPv6:2607:f8b0:4864:20::735])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 24A3365D47
-        for <linux-iio@vger.kernel.org>; Thu,  7 Jul 2022 15:30:21 -0700 (PDT)
-Received: by mail-qk1-x735.google.com with SMTP id o26so7412548qkl.6
-        for <linux-iio@vger.kernel.org>; Thu, 07 Jul 2022 15:30:21 -0700 (PDT)
+        with ESMTP id S236976AbiGGWaX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Jul 2022 18:30:23 -0400
+Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 804A765D70
+        for <linux-iio@vger.kernel.org>; Thu,  7 Jul 2022 15:30:22 -0700 (PDT)
+Received: by mail-qk1-x72f.google.com with SMTP id f14so14561557qkm.0
+        for <linux-iio@vger.kernel.org>; Thu, 07 Jul 2022 15:30:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Jw3Qfmu3T45z99OSd3EsU15JM25LaoYd7yNmPKrKK88=;
-        b=FOhnmRXS9NL3bEpaOsXAMBkVjpcC47K+YkIorSegkPqV3955JYCXCak9zQs5A4WKBL
-         MKFvHRj8NOI81W0zQ8iBeej32OqEeHxhKrliYNuYXJErIEe8W4OpZVNwcZVepivnJ8oW
-         tHFJOH5VoDsjhrdxuwxrqTte+9BSf+j1eeyJN8smjaaAek8+9hfTTRHMgsYC/mYr+OYx
-         W64vCy3SWfDiTyJfPzYyDd6E566Ykd3h2Aca/pnbUXWmgArSyGQF+Vq7/dwwJUKcwzYa
-         9jPKN6sCihez2/4c0MToyT6GegTJker5VEg3mFx5l4z4i0rvUQzfgNmd2NiGxGim42Hx
-         F7+g==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=P0huPK9KiXPSzKRvofQEoWP6lAVCb1L8ZpIn1irvpaA=;
+        b=cuxEEJ9uKCVcmMW3kl6SLihJr0SFCrAjwla+Uo7x/U6u4p2J4VifxF77scHlGYxtwe
+         YX8xIFRq2GzFoBdqMlsQF7B+dziAliLavNwWDCwtTb6RzbH907henIcTA/PnmNBUx5y/
+         1dJHPcHhiwhQAEsTi7kArqc+eSYEeuTxJp4Hr4SsDQDapNBIEX6jEH0xnEdtB1mkvIap
+         b++lnisujfJnPTTlMTIZN/QMl/Zgx32wkaWLCGFTq8aRY66PQ9Pqd7HbX9JwzNXssU7j
+         yNQS5ioDNo5UAZ+9yQl8ejQc/ON0rf8WZu97d9ZdEiueUQHr1k8Bk1JxWP7BeAjlo0ix
+         MW3A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=Jw3Qfmu3T45z99OSd3EsU15JM25LaoYd7yNmPKrKK88=;
-        b=P02kycY4S+68tDIPxg9GumeXe5yISgg6SvsT37O3j91fIGDCt1U7OeYYiLURJDA5MT
-         wV/tWJP8IL5yJoBlvJWcqjTpqH1POmpXqOcmicgtpvePyf4PMzLFZoMFTVszE/U92uzR
-         Z1Ycr38C0HKqj8YVUMWkuxlnjfA1W6mR8ZhZpTl8dBSiMGykOyP78CvSKCAbNckuIiRz
-         cO6KM85ysFgWsSsjDndD8GQ7yEccPcRgCmjwbupTjq8p5V4uyOfJTtgmZ0zAypD9KZQT
-         14Xq4Tn9kJ4VebTWVdAsiFkPLF33WD/xvTpwP6e+7A14RLZ8RhYKNH1p4bTJz4UmkKlx
-         zJ2g==
-X-Gm-Message-State: AJIora8B1mnvTqRqM0YGOi/nsrqZvQGPLM/lDYC6LIOmzqoza/sbcQMv
-        MV99S7L15ZqHO7GHmZib/qsffg==
-X-Google-Smtp-Source: AGRyM1vC9fck9sm08lNxiiaZUV/ztwt7EeO4Xjib0s96dqs+u8o5jSybOIYnTBs3S4UVcRrGf5FF/w==
-X-Received: by 2002:a37:ac0f:0:b0:6b4:72de:2432 with SMTP id e15-20020a37ac0f000000b006b472de2432mr166511qkm.699.1657233020300;
-        Thu, 07 Jul 2022 15:30:20 -0700 (PDT)
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=P0huPK9KiXPSzKRvofQEoWP6lAVCb1L8ZpIn1irvpaA=;
+        b=6dZ23lTPk9B9ovqxoYEXjqZipTIn3J4aF2T9xp0HJD7xgnI2T+tF8YKyoQDRrZ9nwF
+         Dj2nOFV07hnZ6lElLJLeqBKInp0IeRCDFOUtB/PauwI5IdVzU7EX5HeFnAzFo9OHSfUk
+         9WM8Da4sLCFCx7yrmWKpzj+En+CKbgZphaYGSkSYvIKHCv5IvN1/jThHZ4CJ45FnYqj6
+         Isq/UXumt03BM6rhncIjV6jpUKyymzCgl0jc6+xYeXt6ncnSIBtoRGwtdZyN0cSxixcx
+         LXt282Wm7QRMua1ijf/v3Wr3vZb1QP6jJXPugvUv3x4oY/XyKoqmQsqOCHJjqjSL6+tR
+         6+2A==
+X-Gm-Message-State: AJIora/k+KyJOs5lYRPqZZwgoKAijDqGgxmvGlmmjWTuyy7J92mFklwP
+        6QlB59+PHV7FbHClf98GwWuqXP3Cs0DP2w==
+X-Google-Smtp-Source: AGRyM1vFVx06LAXB2Ym9DnYEKLlpHi2LYmNjtiQMQgryzVtfSwj0E1SRl7ximirhjWgsXPF1NidtrA==
+X-Received: by 2002:a05:620a:2907:b0:6b1:17a5:a326 with SMTP id m7-20020a05620a290700b006b117a5a326mr180249qkp.373.1657233021636;
+        Thu, 07 Jul 2022 15:30:21 -0700 (PDT)
 Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id e22-20020ac84b56000000b0031e9bd3586esm1527747qts.79.2022.07.07.15.30.19
+        by smtp.gmail.com with ESMTPSA id e22-20020ac84b56000000b0031e9bd3586esm1527747qts.79.2022.07.07.15.30.21
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 15:30:19 -0700 (PDT)
+        Thu, 07 Jul 2022 15:30:21 -0700 (PDT)
 From:   William Breathitt Gray <william.gray@linaro.org>
 To:     jic23@kernel.org
 Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Fred Eckert <Frede@cmslaser.com>
-Subject: [PATCH v2 0/2] iio: Implement and utilize register structures for ISA drivers
-Date:   Thu,  7 Jul 2022 13:21:23 -0400
-Message-Id: <cover.1657213745.git.william.gray@linaro.org>
+        William Breathitt Gray <william.gray@linaro.org>
+Subject: [PATCH v2 2/2] iio: dac: cio-dac: Cleanup indexing for DAC writes
+Date:   Thu,  7 Jul 2022 13:21:25 -0400
+Message-Id: <d9dab6696af7eabb2d46f5cbc7871329f499c1c9.1657213745.git.william.gray@linaro.org>
 X-Mailer: git-send-email 2.36.1
+In-Reply-To: <cover.1657213745.git.william.gray@linaro.org>
+References: <cover.1657213745.git.william.gray@linaro.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Changes in v2:
- - Rename 'ad' member to 'ssr_ad' to indicate access to Software Strobe
-   Register as well; relevant comments updated
- - Dereference DAC channel address via array subscripts in the
-   stx104_write_raw() function in order to match rest of code
- - Replace struct cio_dac_reg with direct u16 pointer to the DAC
-   address; this greatly simplifies the cio-dac patch
+Simplify DAC write code by defining base member as u16 __iomem *; DAC
+registers are 16-bit so this allows us to index each DAC channel
+directly in a loop rather than calculating the offsets by multipling by
+2 each time.
 
-The STX104 and CIO-DAC drivers were updated to use I/O memory accessor
-calls such as ioread8()/iowrite8() in previous patch series [1]. This
-patch series is a continuation of the effort to improve the code
-readability and reduce magic numbers by implementing and utilizing named
-register data structures.
+Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
+---
+ drivers/iio/dac/cio-dac.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-[1] https://lore.kernel.org/all/cover.1652201921.git.william.gray@linaro.org/
-
-William Breathitt Gray (2):
-  iio: adc: stx104: Implement and utilize register structures
-  iio: dac: cio-dac: Cleanup indexing for DAC writes
-
- drivers/iio/adc/stx104.c  | 74 ++++++++++++++++++++++++++-------------
- drivers/iio/dac/cio-dac.c | 10 +++---
- 2 files changed, 55 insertions(+), 29 deletions(-)
-
-
-base-commit: 338222d8e1121bcb78a86fb39982eddcc367a5bc
+diff --git a/drivers/iio/dac/cio-dac.c b/drivers/iio/dac/cio-dac.c
+index 8080984dcb03..791dd999cf29 100644
+--- a/drivers/iio/dac/cio-dac.c
++++ b/drivers/iio/dac/cio-dac.c
+@@ -16,6 +16,7 @@
+ #include <linux/isa.h>
+ #include <linux/module.h>
+ #include <linux/moduleparam.h>
++#include <linux/types.h>
+ 
+ #define CIO_DAC_NUM_CHAN 16
+ 
+@@ -37,11 +38,11 @@ MODULE_PARM_DESC(base, "Measurement Computing CIO-DAC base addresses");
+ /**
+  * struct cio_dac_iio - IIO device private data structure
+  * @chan_out_states:	channels' output states
+- * @base:		base port address of the IIO device
++ * @base:		base memory address of the DAC device
+  */
+ struct cio_dac_iio {
+ 	int chan_out_states[CIO_DAC_NUM_CHAN];
+-	void __iomem *base;
++	u16 __iomem *base;
+ };
+ 
+ static int cio_dac_read_raw(struct iio_dev *indio_dev,
+@@ -61,7 +62,6 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
+ 	struct iio_chan_spec const *chan, int val, int val2, long mask)
+ {
+ 	struct cio_dac_iio *const priv = iio_priv(indio_dev);
+-	const unsigned int chan_addr_offset = 2 * chan->channel;
+ 
+ 	if (mask != IIO_CHAN_INFO_RAW)
+ 		return -EINVAL;
+@@ -71,7 +71,7 @@ static int cio_dac_write_raw(struct iio_dev *indio_dev,
+ 		return -EINVAL;
+ 
+ 	priv->chan_out_states[chan->channel] = val;
+-	iowrite16(val, priv->base + chan_addr_offset);
++	iowrite16(val, priv->base + chan->channel);
+ 
+ 	return 0;
+ }
+@@ -117,7 +117,7 @@ static int cio_dac_probe(struct device *dev, unsigned int id)
+ 	indio_dev->name = dev_name(dev);
+ 
+ 	/* initialize DAC outputs to 0V */
+-	for (i = 0; i < 32; i += 2)
++	for (i = 0; i < CIO_DAC_NUM_CHAN; i++)
+ 		iowrite16(0, priv->base + i);
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
 -- 
 2.36.1
 
