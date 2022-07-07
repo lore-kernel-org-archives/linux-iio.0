@@ -2,178 +2,263 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 073ADC433EF
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Jul 2022 14:57:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69C62C43334
+	for <linux-iio@archiver.kernel.org>; Thu,  7 Jul 2022 15:38:32 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236174AbiGGO46 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 7 Jul 2022 10:56:58 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50688 "EHLO
+        id S235231AbiGGPib (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 7 Jul 2022 11:38:31 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58726 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235767AbiGGO4h (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Jul 2022 10:56:37 -0400
-Received: from mx0a-00069f02.pphosted.com (mx0a-00069f02.pphosted.com [205.220.165.32])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9EA275C966;
-        Thu,  7 Jul 2022 07:55:17 -0700 (PDT)
-Received: from pps.filterd (m0246629.ppops.net [127.0.0.1])
-        by mx0b-00069f02.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 267C9Puq003276;
-        Thu, 7 Jul 2022 14:55:00 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=oracle.com; h=date : from : to : cc
- : subject : message-id : content-type : mime-version; s=corp-2021-07-09;
- bh=pCGKSdp8Ww0GdvzCVCUyNzqHqDZpoIFpdBkx8IxHqpE=;
- b=KQh9c07nUSNEosfn+n8+Nfo92aq2pCvG4AA1BpOGw1N6y9KKbwYLWE4ONopJ02sZi/Pd
- MySTVuZLeQAVjZLWPcfwNK0shCt7sv3NXlR8QTqBe+5WAMBeuFI9+2XLNVj1okimDrz5
- EaDPFnWUHbUxqJGfkFyxjvsWiDorHwU5mCYJQTX1FdeReVAS/cbEV2xwKIbzU5B2VaSx
- oVV8JXTM7Z69oqrnHgZEgZT84iJSi72V6AuQObEUUViJaIcjErDzwLdQ1TSYCpLkihSr
- PpIjy3SrsgdYor3L0HJRVOET5go9Io5aLiPKcJxRVdpCn0dtzwdRdzw9gwVMDJWhQdAb 8A== 
-Received: from phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (phxpaimrmta03.appoci.oracle.com [138.1.37.129])
-        by mx0b-00069f02.pphosted.com (PPS) with ESMTPS id 3h4ubyd6e3-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 07 Jul 2022 14:55:00 +0000
-Received: from pps.filterd (phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com [127.0.0.1])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com (8.16.1.2/8.16.1.2) with SMTP id 267EjuNN000981;
-        Thu, 7 Jul 2022 14:54:59 GMT
-Received: from nam12-bn8-obe.outbound.protection.outlook.com (mail-bn8nam12lp2171.outbound.protection.outlook.com [104.47.55.171])
-        by phxpaimrmta03.imrmtpd1.prodappphxaev1.oraclevcn.com with ESMTP id 3h4udfh5e0-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Thu, 07 Jul 2022 14:54:59 +0000
-ARC-Seal: i=1; a=rsa-sha256; s=arcselector9901; d=microsoft.com; cv=none;
- b=B8dTZ7Q2Lw0McFVwxbla3cjTn2vBSc69sectvEuWRZrhpHx28f/F51a00CJlNcP+u5/fHhk7oEb5CCq2yNpSXIvvGYhHNhWRxbS2jQOcW3qcuj+Uc/QLNt+WB/BtvIX9B3eO0udPqYxkVpNvWBpZCx2J1BgHMfPfhsmpvmMQEUEDgaMpjiNIcpsliwAPIv5TJwoZQFvatX1ok9B4o3D2Ri4QfXRfHuvbQX6yROPM4q50miAqd5IZIxoHcL3Iuh7vV4Z5o3kJlyvXP8Q6EJNBMea8VnupcTuCC3C905YhZfrENlwng3u+4fTirdPa/3Vl69YomgCGSoZTekI40v/5Eg==
-ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=microsoft.com;
- s=arcselector9901;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-AntiSpam-MessageData-ChunkCount:X-MS-Exchange-AntiSpam-MessageData-0:X-MS-Exchange-AntiSpam-MessageData-1;
- bh=pCGKSdp8Ww0GdvzCVCUyNzqHqDZpoIFpdBkx8IxHqpE=;
- b=Nif7R4gYtI9/q+Fd1VTKFgA9tzUG+mKL/yX1FBSDS7I7aXTyCbvy0pcrIkGJMeFxkUpyM9KXHvvf+CXjtcBWMvFPLnIql7n5pkgpTnK9gw3LGGKAxQaczAlSOeXkyuLzneKBWjAtVzSbm8aO0kPNIfNh7ApWXz/g5O10box38zuYrIUkr3UIeOX9290HIiCsAzsrG6U4dWZQhruqv1RoSSc9IFAUWy8SuQiibj54vB0ALyGNrVea9gE4XV5blkFq8u6Q6M67mBqAxlEYnnK2rXxjxDNfTKaSmJBL51evW4bvTUYmAEN9DIEkTDWmlHKY4lLYJyESJV4WLCjk+H68Yg==
-ARC-Authentication-Results: i=1; mx.microsoft.com 1; spf=pass
- smtp.mailfrom=oracle.com; dmarc=pass action=none header.from=oracle.com;
- dkim=pass header.d=oracle.com; arc=none
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
- d=oracle.onmicrosoft.com; s=selector2-oracle-onmicrosoft-com;
- h=From:Date:Subject:Message-ID:Content-Type:MIME-Version:X-MS-Exchange-SenderADCheck;
- bh=pCGKSdp8Ww0GdvzCVCUyNzqHqDZpoIFpdBkx8IxHqpE=;
- b=D2Z88WmMGonCblCWLUAPsHxpFXLGvXPIW93yIlynKhXDDcwsBEQDchwe1fOt+EstsuNYz2cS4xQa5+OxP+H61xAKslXPLYwos90NPtGl1+I29UkKH6QStk5g4XpfCBmNh6G3InMfMN0NJaUbPkAMYXvHtjhCrf2R/xmyuuDOkec=
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28) by IA1PR10MB6100.namprd10.prod.outlook.com
- (2603:10b6:208:3ab::9) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.20.5417.16; Thu, 7 Jul
- 2022 14:54:57 +0000
-Received: from MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b]) by MWHPR1001MB2365.namprd10.prod.outlook.com
- ([fe80::5020:9b82:5917:40b%6]) with mapi id 15.20.5417.016; Thu, 7 Jul 2022
- 14:54:57 +0000
-Date:   Thu, 7 Jul 2022 17:54:45 +0300
-From:   Dan Carpenter <dan.carpenter@oracle.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
-        Miquel Raynal <miquel.raynal@bootlin.com>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Nuno =?iso-8859-1?Q?S=E1?= <nuno.sa@analog.com>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [PATCH] iio: adc: max1027: unlock on error path in
- max1027_read_single_value()
-Message-ID: <YsbztVuAXnau2cIZ@kili>
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-X-Mailer: git-send-email haha only kidding
-X-ClientProxiedBy: ZR0P278CA0043.CHEP278.PROD.OUTLOOK.COM
- (2603:10a6:910:1d::12) To MWHPR1001MB2365.namprd10.prod.outlook.com
- (2603:10b6:301:2d::28)
+        with ESMTP id S235202AbiGGPia (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Jul 2022 11:38:30 -0400
+Received: from dfw.source.kernel.org (dfw.source.kernel.org [IPv6:2604:1380:4641:c500::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3689DF33
+        for <linux-iio@vger.kernel.org>; Thu,  7 Jul 2022 08:38:28 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2A0D06234A
+        for <linux-iio@vger.kernel.org>; Thu,  7 Jul 2022 15:38:28 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 50216C3411E;
+        Thu,  7 Jul 2022 15:38:26 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1657208307;
+        bh=K5aXsxT2z+KpdHQh2SHkwoJHq6gOy+YsgyFwF1XU4gU=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=ZihBTJWh/Kdp9Apiz4oQMlTrLtWyvZVYb+mL0Dok6486zrWwqKEG7YwkmFeRutlIC
+         UTJgycBttXGCOgzQqvETHDKgAt5jz+lQoK2CiBXVbqHT3C3021TqpUBDbh5cRhQ+rR
+         qnZUbXL9DFcViGp5tQK5pPZi/e6Db/jMjWMyU9DW6bLuWSezvUfCqXSjzQeMWF+skR
+         00tdo3rcoBB/yXJnW39xt2HD5gJUv7XeW1wYx9STX06XrLnLl2Fh7mCHmB+ncfvGAL
+         oy2oh3soV7t7lprDEIvQCPdJv+0dLrJ2EP33rjDODKrUij9lPDTeowqlThrQctUOm5
+         k8c9HSYDyRlwA==
+Date:   Thu, 7 Jul 2022 16:48:10 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     Ibrahim Tilki <Ibrahim.Tilki@analog.com>
+Cc:     <andy.shevchenko@gmail.com>, <linux-iio@vger.kernel.org>,
+        <Nuno.Sa@analog.com>, <Nurettin.Bolucu@analog.com>
+Subject: Re: [PATCH v2 3/3] dt-bindings: iio: adc: add adi,max11410.yaml
+Message-ID: <20220707164810.7811fbb0@jic23-huawei>
+In-Reply-To: <20220707083126.181-3-Ibrahim.Tilki@analog.com>
+References: <20220707083126.181-1-Ibrahim.Tilki@analog.com>
+        <20220707083126.181-3-Ibrahim.Tilki@analog.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
-X-MS-PublicTrafficType: Email
-X-MS-Office365-Filtering-Correlation-Id: 6456ff9b-21b1-41ef-b9c9-08da6028a893
-X-MS-TrafficTypeDiagnostic: IA1PR10MB6100:EE_
-X-MS-Exchange-SenderADCheck: 1
-X-MS-Exchange-AntiSpam-Relay: 0
-X-Microsoft-Antispam: BCL:0;
-X-Microsoft-Antispam-Message-Info: 6iVgnIhojM0/21LmRbYO6tGk9o471xfYnvncHWywGqGwYsxA69DIL/ZDXtQpQVgnNCiQLjeNla9TCZGHg5PG+WZ/vFPTmRAj8iyT7gf2R0p0fCvyFvaPvO6Ld66l/0TZLgm/3Pnqaoy/D6zQLaFia378cPiAA2WaR7BToFGO1gb3WMNZ//1ArCUPYOi0CUV/xhxpuQos8hJoIS/lXB95tSOSBI1N3eJGCjYRtUlOh7QCOnupMop7soQihbUQU7My7lSMGQzeaLbBiRistXeb8dm1QJrn8Maw8w5mUIENt91QTppr67sFi3XnmN0IH4/E3u+fz007c8eeX/Mr/KURyMFjbxDcr5+l+e47lpQja6ok0ZV1BQKXrNFpJtV/FeqmV0xb0eSnw04TYldmanDF5/0OiuHlzxeNyKW43snjAIrpTjsZygR4ZrnGzTGdjy+C1RKOFKBnQ8OVJ77sg308ilShPLvtW7VsHJ8Ywu97RQw6lRg24kId4okVVpZenCyKdML8D735YmWEYYcfaJqSfgZyXAkWqsPM9qbpDJlliXDFxSzrIDxTmFFfMpXAP/wsXnRdhcZKA1tTZAd82DHmcNfcja07XwqdGgTuwAXEOn3NBOQU8HoHK91zDKkmJQJkG8WTofcOXTGQH94prkKePkcJWJnW6nKY4aPT4HLw3Ka4rL8Bi0QyBvcsil6sUbRlDnThJS/I41XTgrqF3b3P8ANMqa6mTf6oW3/npxtmfSpX+zcluq6BClihyCoSnC9P3iuvbTkbbOWUt00r+cPRb4mV9ugcRIDt7NaHwQRkka3sbx3RF02iJLu+R0zS+Ucu
-X-Forefront-Antispam-Report: CIP:255.255.255.255;CTRY:;LANG:en;SCL:1;SRV:;IPV:NLI;SFV:NSPM;H:MWHPR1001MB2365.namprd10.prod.outlook.com;PTR:;CAT:NONE;SFS:(13230016)(7916004)(376002)(346002)(39860400002)(136003)(366004)(396003)(4326008)(66946007)(66476007)(8936002)(83380400001)(66556008)(8676002)(6486002)(9686003)(478600001)(44832011)(33716001)(26005)(54906003)(316002)(5660300002)(6512007)(38350700002)(6506007)(2906002)(110136005)(38100700002)(41300700001)(186003)(86362001)(52116002)(6666004);DIR:OUT;SFP:1101;
-X-MS-Exchange-AntiSpam-MessageData-ChunkCount: 1
-X-MS-Exchange-AntiSpam-MessageData-0: =?us-ascii?Q?1oVyG4p74hCYTDYSvX2ARlAj8tsZHoXyXqGttdswFqf/3gHZMAPmNEK86bue?=
- =?us-ascii?Q?LarEKZ0k86j1UAEpH+NbAk1q7Z5KrEkXKFfjDpow5wbSBFi9H0OeN5GajvgT?=
- =?us-ascii?Q?sOK4IpvF08unE4j9PM5mob8J0UgKp+ab8X+H7OHqNlwFC4pLGQ2jfyxJlIjL?=
- =?us-ascii?Q?QMFZ1rapqIhfvxm8zdZk2MEgg4nHZrJwWWVaqZzggxoz+TTtJd02OSLRs6wQ?=
- =?us-ascii?Q?pytOJ/lzM8/u5gGC7JJrmYApdYZEw/W8a7PxnVhg+17gzZL/rFdYukqMs3X2?=
- =?us-ascii?Q?W71kLnud0ouAqVW1eYSHxn6V2cpJOZZ0UZkL7+OV1I5sI/ALpJ4JABXwbNmr?=
- =?us-ascii?Q?uHsqSrc+xTbyKKulJnpPU3bbT/6otQREj2nQWEj4ppc7GaALB5LVswDAye0z?=
- =?us-ascii?Q?UTdA4MvPWC/5VOs1BtefQWv0Edifa4dy1ugal5JITY606QyxtSpB6tRiTRQ/?=
- =?us-ascii?Q?zPWSSKQw+kT/4VJqgeb8BQXldcnAuESHGdgG7IcSqiekOS2MFM9wFZyP213w?=
- =?us-ascii?Q?g6qDUVNj25QqRKGFqabvQ+ZOwqI/90hrXW2u8YHjRqKIQoIGgObm5xwEB7Na?=
- =?us-ascii?Q?lee4qlJftq8Z1ZYVESlpxedk4FX0EkXywdAGg4HHHC1M5Wvfmfqzk/rX2iz6?=
- =?us-ascii?Q?/BfYfiJb1yLF/H/K6tY25/jwjeHgh8Qb3N2ggaMdqqurSzgx9j5HGH7lYHQh?=
- =?us-ascii?Q?lFr9OxufSSfim8QiMVmkVpdbhNAeIzZe1qPQtzAUU/8lSpcIIDltEmkPlSU1?=
- =?us-ascii?Q?V4n9uT+q60fM8NXB76/0LaMKL65BSQQq2POpvZYXL4foiyasdffsY+deCzqA?=
- =?us-ascii?Q?NB8I+MZprzw5rQmb26MHbZzpLvR/5SqXX/GUXoVd/1F1CaKAnIUDrgRij+O2?=
- =?us-ascii?Q?auxqflmK6ZhSazMBLVVAhaICH1L4PMiX7tNypD/Q7voNM0jNyt4n2Jd8ItPk?=
- =?us-ascii?Q?8MJaff4uX1z5Xt5rVfc0jky+Gkr4ojEfMc4yWCHebH+bgAFRuPEPRWD1b6+4?=
- =?us-ascii?Q?ISeFYJFmGo8UGxnD6s3ac6ixNXz1kM2NkfblShXKolouPy3HdDnPrJ5XBr9z?=
- =?us-ascii?Q?UdHjUEzyHnHvjaPEl8aIJtCArA92vNm0epQATx8lsUslrYgIgRaVNk8V6Ao+?=
- =?us-ascii?Q?QDxSCcVdcsflefOpeKgpH2HxyoPaCQDY1tCIaveAlqacTAULQ4RUBwYvPnVm?=
- =?us-ascii?Q?gi4bpA2/73thn5PMMD+Gqe7f8KIcamF2lEm9+dTuEtVk3szP38GBmOxECkpD?=
- =?us-ascii?Q?LHIgs+/VWyzzcJ0fp30zMypQIpA04nJ6ZOwqd92tcsGY0h4RIDI7nXJbOh3Q?=
- =?us-ascii?Q?7CSqIcSJHibQub38VO5r4PIg/87KSYltdvaLORC8OBcCHi65tzkWRBqkuHOe?=
- =?us-ascii?Q?Hhtzt0YlQiu3fk+mWgcdFWpBJrOEvgijskomPe8Tu4uwF2bZSz6eSgJytBUl?=
- =?us-ascii?Q?x+WmkL2JVdR81AlA2hg9XsrZEA1CZlr5N78PqQeMU8xcTaSKt2s9y6Z9xpTp?=
- =?us-ascii?Q?hsjdGbXExOVCFWGN6//K7B/hCsM0J4vUsBRZ4+/192C3RBbn7HdSsENf1MW/?=
- =?us-ascii?Q?U4kXYEFIW/HklVr+OmI3bCPaVx4s0ShRe0DP45cxKRFsxciQyD8e4CaqfUpc?=
- =?us-ascii?Q?/w=3D=3D?=
-X-OriginatorOrg: oracle.com
-X-MS-Exchange-CrossTenant-Network-Message-Id: 6456ff9b-21b1-41ef-b9c9-08da6028a893
-X-MS-Exchange-CrossTenant-AuthSource: MWHPR1001MB2365.namprd10.prod.outlook.com
-X-MS-Exchange-CrossTenant-AuthAs: Internal
-X-MS-Exchange-CrossTenant-OriginalArrivalTime: 07 Jul 2022 14:54:57.2214
- (UTC)
-X-MS-Exchange-CrossTenant-FromEntityHeader: Hosted
-X-MS-Exchange-CrossTenant-Id: 4e2c6054-71cb-48f1-bd6c-3a9705aca71b
-X-MS-Exchange-CrossTenant-MailboxType: HOSTED
-X-MS-Exchange-CrossTenant-UserPrincipalName: rFZfNMTt/ffWcL43tw9tewOqn9M1PNaCjJ611S+cdaengblAdB3waIMGZCzHEqDsnWIKf7WFJom6xU4XGroexv9LYtK7JwUEb73vUqNS9yk=
-X-MS-Exchange-Transport-CrossTenantHeadersStamped: IA1PR10MB6100
-X-Proofpoint-Virus-Version: vendor=fsecure engine=2.50.10434:6.0.517,18.0.883
- definitions=2022-07-07_12:2022-06-28,2022-07-07 signatures=0
-X-Proofpoint-Spam-Details: rule=notspam policy=default score=0 mlxscore=0 suspectscore=0 spamscore=0
- malwarescore=0 mlxlogscore=999 phishscore=0 adultscore=0 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2206140000
- definitions=main-2207070058
-X-Proofpoint-GUID: lR7hnKX9VHgULIAdYfAbJLOLnf60i0SL
-X-Proofpoint-ORIG-GUID: lR7hnKX9VHgULIAdYfAbJLOLnf60i0SL
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-If max1027_wait_eoc() fails then call iio_device_release_direct_mode()
-before returning.
+On Thu, 7 Jul 2022 08:31:26 +0000
+Ibrahim Tilki <Ibrahim.Tilki@analog.com> wrote:
 
-Fixes: a0e831653ef9 ("iio: adc: max1027: Introduce an end of conversion helper")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
----
- drivers/iio/adc/max1027.c | 6 +++---
- 1 file changed, 3 insertions(+), 3 deletions(-)
+> Adding devicetree binding documentation for max11410 adc.
+> 
+> Signed-off-by: Ibrahim Tilki <Ibrahim.Tilki@analog.com>
+> Reviewed-by: Nurettin Bolucu <Nurettin.Bolucu@analog.com>
 
-diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-index b725d012625c..136fcf753837 100644
---- a/drivers/iio/adc/max1027.c
-+++ b/drivers/iio/adc/max1027.c
-@@ -349,8 +349,7 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
- 	if (ret < 0) {
- 		dev_err(&indio_dev->dev,
- 			"Failed to configure conversion register\n");
--		iio_device_release_direct_mode(indio_dev);
--		return ret;
-+		goto release;
- 	}
- 
- 	/*
-@@ -360,11 +359,12 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
- 	 */
- 	ret = max1027_wait_eoc(indio_dev);
- 	if (ret)
--		return ret;
-+		goto release;
- 
- 	/* Read result */
- 	ret = spi_read(st->spi, st->buffer, (chan->type == IIO_TEMP) ? 4 : 2);
- 
-+release:
- 	iio_device_release_direct_mode(indio_dev);
- 
- 	if (ret < 0)
--- 
-2.35.1
+Hi.
+
+A few questions inline. Mostly stuff I couldn't figure out from a quick
+scan through the datasheet.
+
+> ---
+>  .../bindings/iio/adc/adi,max11410.yaml        | 168 ++++++++++++++++++
+>  1 file changed, 168 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml b/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
+> new file mode 100644
+> index 000000000..f28d29fb2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/adi,max11410.yaml
+> @@ -0,0 +1,168 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +# Copyright 2022 Analog Devices Inc.
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/adi,max11410.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Analog Devices MAX11410 ADC device driver
+> +
+> +maintainers:
+> +  - Ibrahim Tilki <ibrahim.tilki@analog.com>
+> +
+> +description: |
+> +  Bindings for the Analog Devices MAX11410 ADC device. Datasheet can be
+> +  found here:
+> +    https://datasheets.maximintegrated.com/en/ds/MAX11410.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - adi,max11410
+> +
+> +  reg:
+> +    description: SPI chip select number for the device
+
+Description not needed as same for all SPI devices.
+
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    description: IRQ line for the ADC
+The description doesn't tell us anything so drop it.
+There is no need to provide description lines for self documenting
+items like this.
+> +    maxItems: 1
+> +
+> +  '#address-cells':
+> +    const: 1
+> +
+> +  '#size-cells':
+> +    const: 0
+> +
+> +  avdd-supply:
+> +    description: avdd supply can be used as reference for conversion.
+
+Mention it's also a necessary power supply.  As mentioned in driver review
+I'd suggest you actually treat this as 'no explicit reference supplied'.
+That simplifies the meaning of the adi,reference below.
+
+> +
+> +  vref0p-supply:
+> +    description: vref0p supply can be used as reference for conversion.
+> +
+> +  vref1p-supply:
+> +    description: vref1p supply can be used as reference for conversion.
+> +
+> +  vref2p-supply:
+> +    description: vref2p supply can be used as reference for conversion.
+> +
+> +  vref0n-supply:
+> +    description: vref0n supply can be used as reference for conversion.
+> +
+> +  vref1n-supply:
+> +    description: vref1n supply can be used as reference for conversion.
+> +
+> +  vref2n-supply:
+> +    description: vref2n supply can be used as reference for conversion.
+> +
+> +  spi-max-frequency:
+> +    maximum: 8000000
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - avdd-supply
+> +
+> +patternProperties:
+> +  "^channel(@[0-9a-f]+)?$":
+> +    $ref: "adc.yaml"
+> +    type: object
+> +    description: Represents the external channels which are connected to the ADC.
+> +
+> +    properties:
+> +      reg:
+> +        description: The channel number in single-ended mode.
+> +        minimum: 0
+> +        maximum: 10
+> +
+> +      adi,reference:
+> +        description: |
+> +          Select the reference source to use when converting on
+> +          the specific channel. Valid values are:
+> +          0: REF0P/REF0N
+
+VREF0P etc to match namign above.
+
+> +          1: REF1P/REF1N
+> +          2: REF2P/REF2N
+> +          3: AVDD/AGND
+> +          4: REF0P/AGND
+> +          5: REF1P/AGND
+> +          6: REF2P/AGND
+
+Is it valid to use REF0P/AGND for a differential channel?  If not
+I would reduce this list to 0-2 only.  If it is valid (so actually
+useful to do so) then we are stuck with this.  That does make me wonder
+if there is a difference between 3 and 7?  If not, just don't list 7
+
+> +          7: AVDD/AGND
+> +          If this field is left empty, AVDD/AGND is selected.
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        enum: [0, 1, 2, 3, 4, 5, 6, 7]
+> +        default: 7
+> +
+> +      adi,input-mode:
+> +        description: |
+> +          Select signal path of input channels. When PGA path is selected,
+> +          hardwaregain property is enabled for channel. Valid values are:
+> +          0: Buffered, low-power, unity-gain path (default)
+> +          1: Bypass path
+> +          2: PGA path
+> +        $ref: /schemas/types.yaml#/definitions/uint32
+> +        enum: [0, 1, 2]
+> +        default: 0
+> +
+> +      diff-channels: true
+> +
+> +      bipolar: true
+> +
+> +      settling-time-us: true
+> +
+> +      adi,buffered-vrefp:
+> +        description: Enable buffered mode for positive reference.
+> +        type: boolean
+> +
+> +      adi,buffered-vrefn:
+> +        description: Enable buffered mode for negative reference.
+> +        type: boolean
+> +
+> +    required:
+> +      - reg
+> +
+> +    additionalProperties: false
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    spi {
+> +      #address-cells = <1>;
+> +      #size-cells = <0>;
+> +
+> +      adc@0 {
+> +        compatible = "adi,max11410";
+> +        reg = <0>;
+> +        spi-max-frequency = <8000000>;
+> +        interrupts = <25 2>;
+> +        interrupt-parent = <&gpio>;
+> +
+> +        avdd-supply = <&adc_avdd>;
+> +
+> +        vref1p-supply = <&adc_vref1p>;
+> +        vref1n-supply = <&adc_vref1n>;
+> +
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +
+> +        channel@0 {
+> +          reg = <0>;
+> +        };
+> +
+> +        channel@1 {
+> +          reg = <1>;
+> +          diff-channels = <2 3>;
+> +          adi,reference = <1>;
+> +          bipolar;
+> +          settling-time-us = <100000>;
+> +        };
+> +
+> +        channel@2 {
+> +          reg = <2>;
+> +          diff-channels = <7 9>;
+> +          adi,reference = <5>;
+> +          adi,input-mode = <2>;
+> +          settling-time-us = <50000>;
+> +        };
+> +      };
+> +    };
 
