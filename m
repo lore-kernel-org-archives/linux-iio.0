@@ -2,265 +2,93 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E6A9C433EF
-	for <linux-iio@archiver.kernel.org>; Thu,  7 Jul 2022 22:30:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8BC6AC43334
+	for <linux-iio@archiver.kernel.org>; Fri,  8 Jul 2022 08:03:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237050AbiGGWaY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 7 Jul 2022 18:30:24 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58476 "EHLO
+        id S236921AbiGHIDF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 8 Jul 2022 04:03:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37572 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S236898AbiGGWaX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 7 Jul 2022 18:30:23 -0400
-Received: from mail-qt1-x836.google.com (mail-qt1-x836.google.com [IPv6:2607:f8b0:4864:20::836])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id EF56565D62
-        for <linux-iio@vger.kernel.org>; Thu,  7 Jul 2022 15:30:21 -0700 (PDT)
-Received: by mail-qt1-x836.google.com with SMTP id bs20so24939487qtb.11
-        for <linux-iio@vger.kernel.org>; Thu, 07 Jul 2022 15:30:21 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=cp4kFfIV9vxNzkxwPVJY1RIkCxRVw29SgQ0nN5WqYjM=;
-        b=jJNz4QmfJij1m5k1Z3WHbkakIK/EEmazjOfG3VCc25VR3Ml74OCYQ4y1ulHaZfPNao
-         7WKFNeHCSYyiKJIZ5DxPBPf6QA/DMC7UBXohxvoKjcQaLewy2umh5vP4CQ07irJqcEVX
-         LOjAzOH87+b+lQZPAs75S8ZoFvszBFrPvoaCqNUhGZ8FCCcQ0J1DzJyqiKDM87rLRYBb
-         Aqy1O0jXjy+Qwzzw0f8S0/3nxvf6ZbgSOls+K2iBPKLYUnwkIQA4PJSlt+hw/viG+P2O
-         x1I3kbfiy3YHiidJqDHDilEvV/livKcnNTx5AfoJEYjWXUUzirTyrkmEF6E7cp7Qp0Wu
-         EKxg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=cp4kFfIV9vxNzkxwPVJY1RIkCxRVw29SgQ0nN5WqYjM=;
-        b=ANRIA70vthQBh3Gw8yMxUzsNQZOXqbcuYhS6rJzxkwCN2auV1Txix915rJhxOtSYah
-         GoO2BSz/QvHryRPRGEMhXEgFjmqusDa+K5aLc29jpmx1ebR2F4fgYNPWLQ5JCaiLE5rL
-         VHm9iQEb2y1OuR0TETvtN+/BRjepYZ4y4JvWtMilkZf56HoSUv8gNq7b8sq8JPexPqWR
-         of/wsqr7LzJ5xaojX8irxlVxMy0AA2kuauGDvU06Bsp3FrYxwQ0VYprv+egPqFK94NFZ
-         M5wUEb0mkEiYTeMrrh5CI6Nt7hM/JCjRYoJ4vohy/KuNZ/ziv0ikQISAdyWMbrIcqpOl
-         pvGA==
-X-Gm-Message-State: AJIora9wriBiKvAb5qGwI7YBJYMYgyWe50Mu4FxJyHdxJnaEW4UULPyR
-        pBChJ35DagTjUvlUOS+kVz2rhw==
-X-Google-Smtp-Source: AGRyM1tD+9XRXBAxNRSxuANjBn7f6MK39Wmp4MU3un44jgsVmGtk/ufdzQsOFPhp8SlWwyk9bYXc0A==
-X-Received: by 2002:a05:6214:21ec:b0:470:3f54:e846 with SMTP id p12-20020a05621421ec00b004703f54e846mr328601qvj.58.1657233020932;
-        Thu, 07 Jul 2022 15:30:20 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id e22-20020ac84b56000000b0031e9bd3586esm1527747qts.79.2022.07.07.15.30.20
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 07 Jul 2022 15:30:20 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     jic23@kernel.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Fred Eckert <Frede@cmslaser.com>
-Subject: [PATCH v2 1/2] iio: adc: stx104: Implement and utilize register structures
-Date:   Thu,  7 Jul 2022 13:21:24 -0400
-Message-Id: <8cb91d5b53e57b066120e42ea07000d6c7ef5543.1657213745.git.william.gray@linaro.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1657213745.git.william.gray@linaro.org>
-References: <cover.1657213745.git.william.gray@linaro.org>
+        with ESMTP id S237068AbiGHIDE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jul 2022 04:03:04 -0400
+Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 205E97E01F
+        for <linux-iio@vger.kernel.org>; Fri,  8 Jul 2022 01:03:03 -0700 (PDT)
+Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
+        by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
+        (Exim 4.92)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o9ix4-00010G-9D; Fri, 08 Jul 2022 10:03:02 +0200
+Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
+        by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o9iwz-00572q-MP; Fri, 08 Jul 2022 10:03:01 +0200
+Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
+        (envelope-from <ukl@pengutronix.de>)
+        id 1o9ix2-003kMf-It; Fri, 08 Jul 2022 10:03:00 +0200
+Date:   Fri, 8 Jul 2022 10:02:57 +0200
+From:   Uwe =?utf-8?Q?Kleine-K=C3=B6nig?= <u.kleine-koenig@pengutronix.de>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        kernel@pengutronix.de, Thorsten Scherer <t.scherer@eckelmann.de>
+Subject: ti-ads7950: selecting the adc input range
+Message-ID: <20220708080257.y6wn7pztylujepyr@pengutronix.de>
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jxnvvyg2lm6hrqwl"
+Content-Disposition: inline
+X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
+X-SA-Exim-Mail-From: ukl@pengutronix.de
+X-SA-Exim-Scanned: No (on metis.ext.pengutronix.de); SAEximRunCond expanded to false
+X-PTX-Original-Recipient: linux-iio@vger.kernel.org
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Reduce magic numbers and improve code readability by implementing and
-utilizing named register data structures.
 
-Tested-by: Fred Eckert <Frede@cmslaser.com>
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- drivers/iio/adc/stx104.c | 74 +++++++++++++++++++++++++++-------------
- 1 file changed, 50 insertions(+), 24 deletions(-)
+--jxnvvyg2lm6hrqwl
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
-index 7552351bfed9..48a91a95e597 100644
---- a/drivers/iio/adc/stx104.c
-+++ b/drivers/iio/adc/stx104.c
-@@ -16,6 +16,7 @@
- #include <linux/module.h>
- #include <linux/moduleparam.h>
- #include <linux/spinlock.h>
-+#include <linux/types.h>
- 
- #define STX104_OUT_CHAN(chan) {				\
- 	.type = IIO_VOLTAGE,				\
-@@ -44,14 +45,36 @@ static unsigned int num_stx104;
- module_param_hw_array(base, uint, ioport, &num_stx104, 0);
- MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
- 
-+/**
-+ * struct stx104_reg - device register structure
-+ * @ssr_ad:	Software Strobe Register and ADC Data
-+ * @achan:	ADC Channel
-+ * @dio:	Digital I/O
-+ * @dac:	DAC Channels
-+ * @cir_asr:	Clear Interrupts and ADC Status
-+ * @acr:	ADC Control
-+ * @pccr_fsh:	Pacer Clock Control and FIFO Status MSB
-+ * @acfg:	ADC Configuration
-+ */
-+struct stx104_reg {
-+	u16 ssr_ad;
-+	u8 achan;
-+	u8 dio;
-+	u16 dac[2];
-+	u8 cir_asr;
-+	u8 acr;
-+	u8 pccr_fsh;
-+	u8 acfg;
-+};
-+
- /**
-  * struct stx104_iio - IIO device private data structure
-  * @chan_out_states:	channels' output states
-- * @base:		base port address of the IIO device
-+ * @reg:		I/O address offset for the device registers
-  */
- struct stx104_iio {
- 	unsigned int chan_out_states[STX104_NUM_OUT_CHAN];
--	void __iomem *base;
-+	struct stx104_reg __iomem *reg;
- };
- 
- /**
-@@ -64,7 +87,7 @@ struct stx104_iio {
- struct stx104_gpio {
- 	struct gpio_chip chip;
- 	spinlock_t lock;
--	void __iomem *base;
-+	u8 __iomem *base;
- 	unsigned int out_state;
- };
- 
-@@ -72,6 +95,7 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
- 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
- {
- 	struct stx104_iio *const priv = iio_priv(indio_dev);
-+	struct stx104_reg __iomem *const reg = priv->reg;
- 	unsigned int adc_config;
- 	int adbu;
- 	int gain;
-@@ -79,7 +103,7 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case IIO_CHAN_INFO_HARDWAREGAIN:
- 		/* get gain configuration */
--		adc_config = ioread8(priv->base + 11);
-+		adc_config = ioread8(&reg->acfg);
- 		gain = adc_config & 0x3;
- 
- 		*val = 1 << gain;
-@@ -91,24 +115,26 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
- 		}
- 
- 		/* select ADC channel */
--		iowrite8(chan->channel | (chan->channel << 4), priv->base + 2);
-+		iowrite8(chan->channel | (chan->channel << 4), &reg->achan);
- 
--		/* trigger ADC sample capture and wait for completion */
--		iowrite8(0, priv->base);
--		while (ioread8(priv->base + 8) & BIT(7));
-+		/* trigger ADC sample capture by writing to the 8-bit
-+		 * Software Strobe Register and wait for completion
-+		 */
-+		iowrite8(0, &reg->ssr_ad);
-+		while (ioread8(&reg->cir_asr) & BIT(7));
- 
--		*val = ioread16(priv->base);
-+		*val = ioread16(&reg->ssr_ad);
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
- 		/* get ADC bipolar/unipolar configuration */
--		adc_config = ioread8(priv->base + 11);
-+		adc_config = ioread8(&reg->acfg);
- 		adbu = !(adc_config & BIT(2));
- 
- 		*val = -32768 * adbu;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		/* get ADC bipolar/unipolar and gain configuration */
--		adc_config = ioread8(priv->base + 11);
-+		adc_config = ioread8(&reg->acfg);
- 		adbu = !(adc_config & BIT(2));
- 		gain = adc_config & 0x3;
- 
-@@ -130,16 +156,16 @@ static int stx104_write_raw(struct iio_dev *indio_dev,
- 		/* Only four gain states (x1, x2, x4, x8) */
- 		switch (val) {
- 		case 1:
--			iowrite8(0, priv->base + 11);
-+			iowrite8(0, &priv->reg->acfg);
- 			break;
- 		case 2:
--			iowrite8(1, priv->base + 11);
-+			iowrite8(1, &priv->reg->acfg);
- 			break;
- 		case 4:
--			iowrite8(2, priv->base + 11);
-+			iowrite8(2, &priv->reg->acfg);
- 			break;
- 		case 8:
--			iowrite8(3, priv->base + 11);
-+			iowrite8(3, &priv->reg->acfg);
- 			break;
- 		default:
- 			return -EINVAL;
-@@ -153,7 +179,7 @@ static int stx104_write_raw(struct iio_dev *indio_dev,
- 				return -EINVAL;
- 
- 			priv->chan_out_states[chan->channel] = val;
--			iowrite16(val, priv->base + 4 + 2 * chan->channel);
-+			iowrite16(val, &priv->reg->dac[chan->channel]);
- 
- 			return 0;
- 		}
-@@ -307,15 +333,15 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 	}
- 
- 	priv = iio_priv(indio_dev);
--	priv->base = devm_ioport_map(dev, base[id], STX104_EXTENT);
--	if (!priv->base)
-+	priv->reg = devm_ioport_map(dev, base[id], STX104_EXTENT);
-+	if (!priv->reg)
- 		return -ENOMEM;
- 
- 	indio_dev->info = &stx104_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
- 	/* determine if differential inputs */
--	if (ioread8(priv->base + 8) & BIT(5)) {
-+	if (ioread8(&priv->reg->cir_asr) & BIT(5)) {
- 		indio_dev->num_channels = ARRAY_SIZE(stx104_channels_diff);
- 		indio_dev->channels = stx104_channels_diff;
- 	} else {
-@@ -326,14 +352,14 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 	indio_dev->name = dev_name(dev);
- 
- 	/* configure device for software trigger operation */
--	iowrite8(0, priv->base + 9);
-+	iowrite8(0, &priv->reg->acr);
- 
- 	/* initialize gain setting to x1 */
--	iowrite8(0, priv->base + 11);
-+	iowrite8(0, &priv->reg->acfg);
- 
- 	/* initialize DAC output to 0V */
--	iowrite16(0, priv->base + 4);
--	iowrite16(0, priv->base + 6);
-+	iowrite16(0, &priv->reg->dac[0]);
-+	iowrite16(0, &priv->reg->dac[1]);
- 
- 	stx104gpio->chip.label = dev_name(dev);
- 	stx104gpio->chip.parent = dev;
-@@ -348,7 +374,7 @@ static int stx104_probe(struct device *dev, unsigned int id)
- 	stx104gpio->chip.get_multiple = stx104_gpio_get_multiple;
- 	stx104gpio->chip.set = stx104_gpio_set;
- 	stx104gpio->chip.set_multiple = stx104_gpio_set_multiple;
--	stx104gpio->base = priv->base + 3;
-+	stx104gpio->base = &priv->reg->dio;
- 	stx104gpio->out_state = 0x0;
- 
- 	spin_lock_init(&stx104gpio->lock);
--- 
-2.36.1
+Hello,
 
+the ADS7950 has a register bit (called TI_ADS7950_CR_RANGE_5V in the
+driver) that selects the input range. Depending on that bit the input
+range is either [0 .. V_{REF}] or [0 .. 2 * V_{REF}].
+
+The driver currently defaults to setting that bit, so the range is the
+big one.
+
+On a machine here however I know the input is in the smaller range and
+I'd like to benefit from the higher resolution of the small range. I
+wonder how to make this tunable. Should that be done using a firmware
+property? ("single-input-range" vs. "double-input-range"? Or input-range
+=3D <1> vs. input-range =3D <2> which better matches the data sheet that
+calls the two modes "Range 1 (0 to V_{REF})" and "Range 2 (0 to
+2xV_{REF})") Or should this be made tunable via sysfs? (E.g. by writing
+to the scale property? Or a separate property?)
+
+Best regards
+Uwe
+
+--=20
+Pengutronix e.K.                           | Uwe Kleine-K=F6nig            |
+Industrial Linux Solutions                 | https://www.pengutronix.de/ |
+
+--jxnvvyg2lm6hrqwl
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCgAdFiEEfnIqFpAYrP8+dKQLwfwUeK3K7AkFAmLH5K4ACgkQwfwUeK3K
+7AlkiQf8CXL8pEUO9pJCd4auXuz/RbQeCs1ng05vS5Z0ZMykuZ1Xu+e8dGPhcJ1v
+3HEPSlc6wURHaFLtbr9UdS90sQr30cNZJaXzoYgncX2utLZcVHJFb3vIhtj5oPIE
+TE5QWU0kvPELbi46V4GmExuP//DBoPWeVXAUa8JdRI6qPMPXynrzvYLCGTX3cLx2
+r2sVwAs/KqfDMQk+PtbhuKSRQLAdp0mcQ+hRCuLo8p9b+NvMGb9hzWiFCuBZqetn
+j645bmLoT3moVSk97nozfIWRkgcWih3rtVnPUyEVGXmhC5ooevyK58PINLVC93m3
+0oR3b7rJM8L3YStwzbvGBYm8tFfaPA==
+=rSEQ
+-----END PGP SIGNATURE-----
+
+--jxnvvyg2lm6hrqwl--
