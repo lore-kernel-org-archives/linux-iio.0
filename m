@@ -2,89 +2,95 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 5A9A3C43334
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Jul 2022 20:11:20 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E306FCCA482
+	for <linux-iio@archiver.kernel.org>; Mon, 11 Jul 2022 20:34:33 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229977AbiGKULT (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:11:19 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35010 "EHLO
+        id S232178AbiGKUea (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 11 Jul 2022 16:34:30 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58618 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229618AbiGKULS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jul 2022 16:11:18 -0400
-Received: from mail-qv1-xf33.google.com (mail-qv1-xf33.google.com [IPv6:2607:f8b0:4864:20::f33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id F05132A72E;
-        Mon, 11 Jul 2022 13:11:17 -0700 (PDT)
-Received: by mail-qv1-xf33.google.com with SMTP id l11so1168182qvu.13;
-        Mon, 11 Jul 2022 13:11:17 -0700 (PDT)
+        with ESMTP id S232191AbiGKUeS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jul 2022 16:34:18 -0400
+Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 903A6422F9;
+        Mon, 11 Jul 2022 13:34:17 -0700 (PDT)
+Received: by mail-ed1-x52c.google.com with SMTP id k30so7676796edk.8;
+        Mon, 11 Jul 2022 13:34:17 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc;
-        bh=y7SHA/z8BOa8wh+UPK+wnNg27Xa7/eY8+Vpvp2gYlkk=;
-        b=XjhGErLQpeUic9yY27h96GD0jf40eQ8ShJnFm1QdMvY+d69KFUrkoNCJic0i/T3uO8
-         lfRPX6akik2lQGF+nhy2QSS+SD+NQ+W3x3qnUXgoOqP/zDNTVVqNJam2K7mHqXwexMet
-         LCBvR6zrambhoEuABXGe6XFxlnfC5tL1PpckYPim499odDVcwrbz8FxLkf5n9SdUeqBB
-         Ohg5dt7v1RQ5PQVi6vK0hvd0wYyP4EsL/t7l6OFqI1vr90UUyvMS1BkdWPgEO/RXTm9Y
-         KxFrg49JUEhEWUdnsgXCFsEGEv+7AwRrfdjYBiCrjWZhM4fvFVRn8WLZoHQXTZ+DrBey
-         q1fQ==
+        h=from:to:cc:subject:date:message-id:in-reply-to:references
+         :mime-version:content-transfer-encoding;
+        bh=8kffmDQRv74NOVeeXFSx1e5OFvyn8uWZD+7MCMw1lKs=;
+        b=INFoDWlRap9cPHlvXq6yIJ5ELMlS7dRyXDIrxHoj9Nf8EjfKoSEhkr0o1BW7v9FCFZ
+         qo+3k6MWB33m1AJLRcJ+9W423PMXg4Us0u3z6PbVQyyHw3pdJJQzP3/k1WudvLMUA0D3
+         AuoaYawAzHXS2YG3xMfG1aR+p9KEmJRgaoz2y9Bgyctb+ddL6P/C+FXOv4k45UYD+sWI
+         8ZTxf+vLej813FljseCi4QBsj3Upy/J8nzqVr40hp1xLn9j/pSA4DnANIBab4jRNIy7a
+         yQ8S1W4TdsqdtbFNeXofUlYv5VumFThvLKmykJ3O0jaDQ/0Am5XOKlf23C9WMxhWZEyl
+         s19g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc;
-        bh=y7SHA/z8BOa8wh+UPK+wnNg27Xa7/eY8+Vpvp2gYlkk=;
-        b=YRh1eWc+ngS8i5uoCVojCOSo1lGOE8t3BGcFTJoJAbHFQ+gyY/KmsXMY+1nlpr6nzM
-         cf3oSqTijvTs0XBQMsj8psgy1ctxtn73X2m6oLdb1DfI+LZWPgeGD4KNxx62Q2zwbhCf
-         OQqXOaK7KSx16bEGEORb/lZuCM24O3+woD2so1orNYhG1fawYYNkwIjTkDHvdGm2EtCh
-         PqJ/fXlf8sxgsU7DT08ZLgTPhuUdNcQ8yRYKDW7Jy8EmAKIsDGY4NgPpu3mrbn5iJ1ZR
-         DmAEAEh7s+cJm5+zJCf0M1+K9duz9lrdvhlROj58ORd45TOLlOXAboE5UWVOzzQZzU8b
-         Pm4g==
-X-Gm-Message-State: AJIora9z277aVLZyu8Fc7rCKFMPQwi53LS64c18wH1wcGymE0mIgg8ff
-        IOKeP0jve0OeTVtqXhLKawptKBV7wgqK7Fsldomm0gF4FGs=
-X-Google-Smtp-Source: AGRyM1uZtS85BzP3kwXmdYKyYAZ/KlQV8Yf28ztSF22Fz9gHtnceKubKIOXnsT90Qr4ubtZ6GmitYC2XvgNtmds0AGE=
-X-Received: by 2002:a0c:8c89:0:b0:470:9ab6:bb27 with SMTP id
- p9-20020a0c8c89000000b004709ab6bb27mr15074994qvb.118.1657570277109; Mon, 11
- Jul 2022 13:11:17 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220704212402.1715182-1-robimarko@gmail.com> <20220704212402.1715182-9-robimarko@gmail.com>
- <CACRpkdaAb14TGF0atvbB8NHygsRGNCKJCf_S2gOzvvTxxDEeRA@mail.gmail.com>
-In-Reply-To: <CACRpkdaAb14TGF0atvbB8NHygsRGNCKJCf_S2gOzvvTxxDEeRA@mail.gmail.com>
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
+         :references:mime-version:content-transfer-encoding;
+        bh=8kffmDQRv74NOVeeXFSx1e5OFvyn8uWZD+7MCMw1lKs=;
+        b=nf451yRUgVzOhWfc64zwLsYOfZqNodji4h/4bdCAA+BdQNquNU9XexmBb43wd+PDD/
+         9Sl2ppcwPmYIVXXVaRRC5BkExhIdUFfHwcpGTVv6oCO0MdoYUtbbZ/8wS5dNKHM53bmZ
+         7NoUiUJwJpdxC2NYzEmWA89RGa3/YW95wwsRE9kLTDMGr3Y50SjtY6lxASXjfQz4spWD
+         6rgZNIJJlf2NRdxUFnRPEX35ezfapUMLVRNKHr6SnQpfAxDif5wuJRZ66s6DkbevCIJ9
+         tH/ZD9msFfDkqQkdzHUEYhiKnYVvserDH1pZKYndKKIFsS3zd4omyA/2pEMI9BVhG6VD
+         QCVw==
+X-Gm-Message-State: AJIora844Zzd7YQNNJTyx6x56lf8u71p0/VzGI0zL7dFDy+7dhSXTW6Y
+        +dFYsS9koR1NdoVzkk19oJ2diMt4rHAQOw==
+X-Google-Smtp-Source: AGRyM1s3h9+ym9TFBCssh9IBPjja+dOT2TvKp6aad2WD8sVVDtpUMlNT9cNpYoH1xUu2KVMSBT9rfA==
+X-Received: by 2002:a05:6402:428a:b0:42e:8f7e:1638 with SMTP id g10-20020a056402428a00b0042e8f7e1638mr27602671edc.228.1657571657179;
+        Mon, 11 Jul 2022 13:34:17 -0700 (PDT)
+Received: from fedora.robimarko.hr (cpe-94-253-165-104.zg.cable.xnet.hr. [94.253.165.104])
+        by smtp.googlemail.com with ESMTPSA id l11-20020a056402124b00b0043a422801f8sm4936264edw.87.2022.07.11.13.34.15
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 11 Jul 2022 13:34:16 -0700 (PDT)
 From:   Robert Marko <robimarko@gmail.com>
-Date:   Mon, 11 Jul 2022 22:11:06 +0200
-Message-ID: <CAOX2RU6xNRipZT7mFa1oCdJkMY_=R73p__zhHFzVuf7APSLEtg@mail.gmail.com>
-Subject: Re: [PATCH v6 09/12] pinctrl: qcom-pmic-gpio: add support for PMP8074
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Andy Gross <agross@kernel.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Konrad Dybcio <konrad.dybcio@somainline.org>,
-        lee.jones@linaro.org, Rob Herring <robh+dt@kernel.org>,
-        krzysztof.kozlowski+dt@linaro.org, lgirdwood@gmail.com,
-        Mark Brown <broonie@kernel.org>, jic23@kernel.org,
-        lars@metafoo.de, linux-arm-msm <linux-arm-msm@vger.kernel.org>,
-        Devicetree List <devicetree@vger.kernel.org>,
-        open list <linux-kernel@vger.kernel.org>,
-        linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset="UTF-8"
+To:     agross@kernel.org, bjorn.andersson@linaro.org,
+        konrad.dybcio@somainline.org, lee.jones@linaro.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linus.walleij@linaro.org, jic23@kernel.org, lars@metafoo.de,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Cc:     Robert Marko <robimarko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v7 5/7] iio: adc: qcom-spmi-adc5: add ADC5_VREF_VADC to rev2 ADC5
+Date:   Mon, 11 Jul 2022 22:34:06 +0200
+Message-Id: <20220711203408.2949888-5-robimarko@gmail.com>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220711203408.2949888-1-robimarko@gmail.com>
+References: <20220711203408.2949888-1-robimarko@gmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 11 Jul 2022 at 13:56, Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Mon, Jul 4, 2022 at 11:24 PM Robert Marko <robimarko@gmail.com> wrote:
->
-> > PMP8074 has 12 GPIO-s with holes on GPIO1 and GPIO12.
-> >
-> > Signed-off-by: Robert Marko <robimarko@gmail.com>
->
-> Since there are no compile-time dependencies I expect to pick
-> the pinctrl-related patches separately to the pinctrl tree on next
-> v7 iteration.
+Add support for ADC5_VREF_VADC channel to rev2 ADC5 channel list.
+This channel measures the VADC reference LDO output.
 
-Great, I will send that out tonight as Mark picked the regulator
-changes.
+Signed-off-by: Robert Marko <robimarko@gmail.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/iio/adc/qcom-spmi-adc5.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Regards,
-Robert
->
-> Yours,
-> Linus Walleij
+diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+index 87438d1e5c0b..7bd3745884f0 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5.c
++++ b/drivers/iio/adc/qcom-spmi-adc5.c
+@@ -589,6 +589,8 @@ static const struct adc5_channels adc5_chans_rev2[ADC5_MAX_CHANNEL] = {
+ 					SCALE_HW_CALIB_DEFAULT)
+ 	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 0,
+ 					SCALE_HW_CALIB_DEFAULT)
++	[ADC5_VREF_VADC]	= ADC5_CHAN_VOLT("vref_vadc", 0,
++					SCALE_HW_CALIB_DEFAULT)
+ 	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 1,
+ 					SCALE_HW_CALIB_DEFAULT)
+ 	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
+-- 
+2.36.1
+
