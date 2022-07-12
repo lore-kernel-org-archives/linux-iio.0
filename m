@@ -2,95 +2,119 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 6CCC7CCA47F
-	for <linux-iio@archiver.kernel.org>; Mon, 11 Jul 2022 20:35:06 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 5C4E7C43334
+	for <linux-iio@archiver.kernel.org>; Tue, 12 Jul 2022 08:00:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232086AbiGKUfE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 11 Jul 2022 16:35:04 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58580 "EHLO
+        id S232129AbiGLIAH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 12 Jul 2022 04:00:07 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:33396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232159AbiGKUeQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jul 2022 16:34:16 -0400
-Received: from mail-ed1-x52c.google.com (mail-ed1-x52c.google.com [IPv6:2a00:1450:4864:20::52c])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9593E564C0;
-        Mon, 11 Jul 2022 13:34:14 -0700 (PDT)
-Received: by mail-ed1-x52c.google.com with SMTP id k30so7676657edk.8;
-        Mon, 11 Jul 2022 13:34:14 -0700 (PDT)
+        with ESMTP id S232417AbiGLH76 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jul 2022 03:59:58 -0400
+Received: from mail-lf1-x132.google.com (mail-lf1-x132.google.com [IPv6:2a00:1450:4864:20::132])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 437439B54B;
+        Tue, 12 Jul 2022 00:59:57 -0700 (PDT)
+Received: by mail-lf1-x132.google.com with SMTP id o7so12584481lfq.9;
+        Tue, 12 Jul 2022 00:59:57 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=IqiavdIdz0WglHiL0//S+IRPa684ukWZUSuGgmCMvLw=;
-        b=RbPfgeXyJ8IJUjU2gjJTYA7IHBKa/nsqtIoP93fgCsWscMMVmNDxmpaULjGjTvCvae
-         gTbJTymQ5RHvGFO5vytE79c5jSut+vihkWHVNVGCZgP3oN5hR3W1r6V6HTqbs9CGi71i
-         yFS51TNASy4SqYBbeHe4hge+6iXHqRT2Uh/ALRQxgSYT7TooACuzA+9F5BgaMyuFVbjO
-         OXg45jB7xl9yqT9oLtiPLb+LD4VIE6T5uHRGSC0ulcNVY4u58ImE28xXBSAUM8wSVHj9
-         Dz+Y1ab9ErP1hHEU/+PPgRyOCzgH1pTYaUF6221BlLnKxFYpGGqZpqaLIffRs6/8feT9
-         vM2A==
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=S+qr/rB1qp3jjME/ZnJzZQtFse2L01G1JMoWBlVLSGU=;
+        b=D9uRYKokFim4JLJO9gvLlORuIh6vcIUQJfDCoZKNyWB35esEUVUh/49prmxrSVqZwV
+         3KQ1TeNXyy/4v9rfTGx1At0tvDe26KiAp4lF+NNjE0yzw2mg2iHXSmNUVLtGn/ZiOTs9
+         ROTw/puBgp1n1TEeFXFQWpIUSiW/kG7hjZjmTHNq7uU8AuMMyDsB5wclUERNySepNxP/
+         +xEhyP0MKwMwQLBTEIjajP4XfENyyWToPSpmEMm19FCMtste/xtaECL+wPeUbUu/sFXt
+         Z3h+62Qa9RN2XgHk2DQ6ceN8TshvjagwtjpSHeauWhdI3v4m9FW6jPd3dqs4vCMo3csa
+         hBFA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=IqiavdIdz0WglHiL0//S+IRPa684ukWZUSuGgmCMvLw=;
-        b=cV76JFqzjeH37mu6cODnQNcxCtZ72X4G1v+IyYnrPcooBbnBlOnpXmCAp/MIaRpc4Y
-         0zgMKnjeVEAnC+Z1O31N/T0lJ2Igt2A7/FBDPvHcAdGgeZkwotisADQdqeE4T0xHmdBE
-         DK1pF5pTeKffkoktyiNw9T46q6eYm8yRynOgbsRz+HXZL9tFXjY6GQ+A8GchJQdawzi2
-         nE4Ie6nHWhxZc/Gjr2N9c9Q4osickQ6PpFzbPRDzQ8AfUI1hKBNJgOZWKQZ7BqBGt+hE
-         Bjs/YbKLeVIbagmYKLmttP2uWoEYXXSyjDwzuGvzCy/Fuwj5Y+0yB0DAkf6gPWKh+JxF
-         ea7w==
-X-Gm-Message-State: AJIora8GOe7eRygLZmWcPXsklyqCRtXag1LK+6QRkLBR77JKTV41d8WO
-        kloHSQwrhDSVaSMYKe0eOBw=
-X-Google-Smtp-Source: AGRyM1s4exHJYG3Lt97GJZk1g8XzSyyonjo0Hrk5gA+G6ozpUANsD860h8VaGEJNWbOwMYOr+DtT1Q==
-X-Received: by 2002:a05:6402:40d6:b0:43a:cc69:1db9 with SMTP id z22-20020a05640240d600b0043acc691db9mr13048073edb.380.1657571653240;
-        Mon, 11 Jul 2022 13:34:13 -0700 (PDT)
-Received: from fedora.robimarko.hr (cpe-94-253-165-104.zg.cable.xnet.hr. [94.253.165.104])
-        by smtp.googlemail.com with ESMTPSA id l11-20020a056402124b00b0043a422801f8sm4936264edw.87.2022.07.11.13.34.12
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 11 Jul 2022 13:34:12 -0700 (PDT)
-From:   Robert Marko <robimarko@gmail.com>
-To:     agross@kernel.org, bjorn.andersson@linaro.org,
-        konrad.dybcio@somainline.org, lee.jones@linaro.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linus.walleij@linaro.org, jic23@kernel.org, lars@metafoo.de,
-        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v7 2/7] mfd: qcom-spmi-pmic: add support for PMP8074
-Date:   Mon, 11 Jul 2022 22:34:03 +0200
-Message-Id: <20220711203408.2949888-2-robimarko@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220711203408.2949888-1-robimarko@gmail.com>
-References: <20220711203408.2949888-1-robimarko@gmail.com>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=S+qr/rB1qp3jjME/ZnJzZQtFse2L01G1JMoWBlVLSGU=;
+        b=RHQ8zf5hpMbq0HALb447qwQkVi36Z3F5eDK0RQJSzszR2A6y698BFR9uMFU3Qreykh
+         nDUjw+aFbdP916cOBqiFP4Rwu35O+KSCQQEIGvIz7WD8T5fhVXIVOmOE91im95EyJQd2
+         WP2twYfuq0MF/ofAbcznCvh1SysaSiXW+/MmC7et1UAIGB+KRLeRwuXTBwAMhScGQCWh
+         p7zJ1WY5BPvITBcYUC2pK8djw+pzXfJPcG79vGZKzaORoH4Fnob+8Zwe08SN8rU7FVIK
+         l3Ayu9VELvEKog5X9b1/pRLt1hIufkmdRqlyXGEA1PcwmoPmugAokm2OM43qn1Voo54L
+         ZbEg==
+X-Gm-Message-State: AJIora+5F42WyGH3/j4TeAbdIcgla3Rnqdy2GaNWWsjkiqM1ErTFVue8
+        fJY/G6PfcsojpamWn7jI9WrXb0wys7aNNYkg4tg=
+X-Google-Smtp-Source: AGRyM1shi6v9DXsk4lwIdb0yjkJzIJOV8Bqm/mWXus8sJ5A9abScTn9/Us6KGjW2cBxKfXtDm7lOkhAKt2bBzLjAPho=
+X-Received: by 2002:a05:6512:324a:b0:486:a915:7b70 with SMTP id
+ c10-20020a056512324a00b00486a9157b70mr12988761lfr.265.1657612795528; Tue, 12
+ Jul 2022 00:59:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220711134312.234268-1-tmaimon77@gmail.com> <20220711134312.234268-3-tmaimon77@gmail.com>
+ <CAHp75VdXsiH9ityqopznRpjxvwOboS_Zbi9iO6nRZ03TuKxTtg@mail.gmail.com> <CAHp75VeCPRVUMHYdNWgPja2eWeStokRDSogW-7ALz10_yEaDMA@mail.gmail.com>
+In-Reply-To: <CAHp75VeCPRVUMHYdNWgPja2eWeStokRDSogW-7ALz10_yEaDMA@mail.gmail.com>
+From:   Tomer Maimon <tmaimon77@gmail.com>
+Date:   Tue, 12 Jul 2022 10:59:44 +0300
+Message-ID: <CAP6Zq1j_-w0n9WTUG99UVTJwsyqY0Zcs294wmA7LuWdiF4KYMA@mail.gmail.com>
+Subject: Re: [PATCH v1 2/2] iio: adc: npcm: Add NPCM8XX support
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Avi Fishman <avifishman70@gmail.com>,
+        Tali Perry <tali.perry1@gmail.com>,
+        Joel Stanley <joel@jms.id.au>,
+        Patrick Venture <venture@google.com>,
+        Nancy Yuen <yuenn@google.com>,
+        Benjamin Fair <benjaminfair@google.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        =?UTF-8?Q?Jonathan_Neusch=C3=A4fer?= <j.neuschaefer@gmx.net>,
+        zhengbin13@huawei.com, OpenBMC Maillist <openbmc@lists.ozlabs.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Add support for PMP8074 PMIC which is a companion PMIC for the Qualcomm
-IPQ8074 SoC-s.
+Hi Andy,
 
-It shares the same subtype identifier as PM8901.
+Thanks for your comments, they will be addressed next version.
 
-Signed-off-by: Robert Marko <robimarko@gmail.com>
-Acked-by: Lee Jones <lee.jones@linaro.org>
----
- drivers/mfd/qcom-spmi-pmic.c | 1 +
- 1 file changed, 1 insertion(+)
+On Mon, 11 Jul 2022 at 17:16, Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+>
+> On Mon, Jul 11, 2022 at 4:14 PM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
+> > On Mon, Jul 11, 2022 at 3:59 PM Tomer Maimon <tmaimon77@gmail.com> wrote:
+>
+> ...
+>
+> > >         struct device *dev = &pdev->dev;
+> > > +       const struct of_device_id *match;
+>
+> > > +       match = of_match_node(npcm_adc_match, pdev->dev.of_node);
+> > > +       if (!match || !match->data) {
+> > > +               dev_err(dev, "Failed getting npcm_adc_data\n");
+> > > +               return -ENODEV;
+> > > +       }
+> > >
+> > > +       info->data = (struct npcm_adc_info *)match->data;
+> >
+> > Instead of above
+> >
+> >   info->data = device_get_match_data(dev);
+> >   if (!info->data)
+>
+>
+> >     return -ENODEV;
+>
+> Or
+>
+>   return dev_err_probe(dev, -EINVAL, "...\n");
+>
+> if you want that message to be issued.
+>
+>
+> --
+> With Best Regards,
+> Andy Shevchenko
 
-diff --git a/drivers/mfd/qcom-spmi-pmic.c b/drivers/mfd/qcom-spmi-pmic.c
-index 00003a868d28..7e2cd79d17eb 100644
---- a/drivers/mfd/qcom-spmi-pmic.c
-+++ b/drivers/mfd/qcom-spmi-pmic.c
-@@ -60,6 +60,7 @@ static const struct of_device_id pmic_spmi_id_table[] = {
- 	{ .compatible = "qcom,pmi8994", .data = N_USIDS(2) },
- 	{ .compatible = "qcom,pmi8998", .data = N_USIDS(2) },
- 	{ .compatible = "qcom,pmk8002", .data = N_USIDS(2) },
-+	{ .compatible = "qcom,pmp8074", .data = N_USIDS(2) },
- 	{ .compatible = "qcom,smb2351", .data = N_USIDS(2) },
- 	{ .compatible = "qcom,spmi-pmic", .data = N_USIDS(1) },
- 	{ }
--- 
-2.36.1
+Best regards,
 
+Tomer
