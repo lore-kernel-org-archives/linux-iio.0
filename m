@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 95281C433EF
-	for <linux-iio@archiver.kernel.org>; Wed, 13 Jul 2022 07:05:35 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 9CD4DC43334
+	for <linux-iio@archiver.kernel.org>; Wed, 13 Jul 2022 07:05:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S234495AbiGMHFe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 13 Jul 2022 03:05:34 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60662 "EHLO
+        id S234546AbiGMHFf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 13 Jul 2022 03:05:35 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60710 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230343AbiGMHF3 (ORCPT
+        with ESMTP id S230509AbiGMHF3 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 13 Jul 2022 03:05:29 -0400
 Received: from maillog.nuvoton.com (maillog.nuvoton.com [202.39.227.15])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTP id 18960E192F;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTP id AAC37E2A03;
         Wed, 13 Jul 2022 00:05:24 -0700 (PDT)
-Received: from NTHCCAS01.nuvoton.com (NTHCCAS01.nuvoton.com [10.1.8.28])
-        by maillog.nuvoton.com (Postfix) with ESMTP id E981E1C804B5;
-        Wed, 13 Jul 2022 15:05:21 +0800 (CST)
-Received: from NTHCML01B.nuvoton.com (10.1.8.178) by NTHCCAS01.nuvoton.com
- (10.1.8.28) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.7; Wed, 13 Jul
- 2022 15:05:21 +0800
-Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCML01B.nuvoton.com
- (10.1.8.178) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.2176.2; Wed, 13 Jul
- 2022 15:05:21 +0800
+Received: from NTHCCAS04.nuvoton.com (NTHCCAS04.nuvoton.com [10.1.8.29])
+        by maillog.nuvoton.com (Postfix) with ESMTP id 6F7471C80D3B;
+        Wed, 13 Jul 2022 15:05:23 +0800 (CST)
+Received: from NTHCCAS03.nuvoton.com (10.1.20.28) by NTHCCAS04.nuvoton.com
+ (10.1.8.29) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id 15.1.2176.2; Wed, 13
+ Jul 2022 15:05:23 +0800
+Received: from NTHCCAS04.nuvoton.com (10.1.8.29) by NTHCCAS03.nuvoton.com
+ (10.1.20.28) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256) id 15.1.1847.3; Wed, 13 Jul
+ 2022 15:05:22 +0800
 Received: from taln60.nuvoton.co.il (10.191.1.180) by NTHCCAS04.nuvoton.com
  (10.1.12.25) with Microsoft SMTP Server id 15.1.2176.2 via Frontend
- Transport; Wed, 13 Jul 2022 15:05:21 +0800
+ Transport; Wed, 13 Jul 2022 15:05:22 +0800
 Received: by taln60.nuvoton.co.il (Postfix, from userid 10070)
-        id A65BE63A23; Wed, 13 Jul 2022 10:05:19 +0300 (IDT)
+        id 7FB8F63A4D; Wed, 13 Jul 2022 10:05:21 +0300 (IDT)
 From:   Tomer Maimon <tmaimon77@gmail.com>
 To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
         <joel@jms.id.au>, <venture@google.com>, <yuenn@google.com>,
@@ -39,10 +39,12 @@ To:     <avifishman70@gmail.com>, <tali.perry1@gmail.com>,
 CC:     <openbmc@lists.ozlabs.org>, <linux-iio@vger.kernel.org>,
         <linux-kernel@vger.kernel.org>, <devicetree@vger.kernel.org>,
         Tomer Maimon <tmaimon77@gmail.com>
-Subject: [PATCH v2 0/2] iio: adc: npcm: add Arbel NPCM8XX support
-Date:   Wed, 13 Jul 2022 10:05:15 +0300
-Message-ID: <20220713070517.172852-1-tmaimon77@gmail.com>
+Subject: [PATCH v2 2/2] iio: adc: npcm: Add NPCM8XX support
+Date:   Wed, 13 Jul 2022 10:05:17 +0300
+Message-ID: <20220713070517.172852-3-tmaimon77@gmail.com>
 X-Mailer: git-send-email 2.33.0
+In-Reply-To: <20220713070517.172852-1-tmaimon77@gmail.com>
+References: <20220713070517.172852-1-tmaimon77@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 7BIT
 Content-Type:   text/plain; charset=US-ASCII
@@ -50,30 +52,111 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch set adds Arbel NPCM8XX Analog-to-Digital Converter (ADC) support 
-to ADC NPCM driver.
+Adding ADC NPCM8XX support to NPCM ADC driver.
+ADC NPCM8XX uses a different resolution and voltage reference.
 
-The NPCM8XX ADC is a 12-bit converter for eight channel inputs.
+As part of adding NPCM8XX support:
+- Add NPCM8XX specific compatible string.
+- Add data to handle architecture-specific ADC parameters.
 
-The NPCM ADC driver tested on NPCM845 evaluation board.
+Signed-off-by: Tomer Maimon <tmaimon77@gmail.com>
+---
+ drivers/iio/adc/npcm_adc.c | 35 ++++++++++++++++++++++++++++-------
+ 1 file changed, 28 insertions(+), 7 deletions(-)
 
-Addressed comments from:
- - Rob Herring : https://www.spinics.net/lists/kernel/msg4433755.html
- - Krzysztof Kozlowski: https://www.spinics.net/lists/kernel/msg4434546.html
- - Andy Shevchenko : https://www.spinics.net/lists/devicetree/msg516844.html
-
-Changes since version 1:
- - Modify dt-binding compatible property.
- - Use device_get_match_data function instead of_match_node function.
-
-Tomer Maimon (2):
-  dt-bindings: iio: adc: npcm: Add npcm845 compatible string
-  iio: adc: npcm: Add NPCM8XX support
-
- .../bindings/iio/adc/nuvoton,npcm750-adc.yaml |  7 ++--
- drivers/iio/adc/npcm_adc.c                    | 35 +++++++++++++++----
- 2 files changed, 33 insertions(+), 9 deletions(-)
-
+diff --git a/drivers/iio/adc/npcm_adc.c b/drivers/iio/adc/npcm_adc.c
+index f7bc0bb7f112..406038b5c0d6 100644
+--- a/drivers/iio/adc/npcm_adc.c
++++ b/drivers/iio/adc/npcm_adc.c
+@@ -16,6 +16,12 @@
+ #include <linux/uaccess.h>
+ #include <linux/reset.h>
+ 
++struct npcm_adc_info {
++	u32 data_mask;
++	u32 internal_vref;
++	u32 res_bits;
++};
++
+ struct npcm_adc {
+ 	bool int_status;
+ 	u32 adc_sample_hz;
+@@ -34,6 +40,7 @@ struct npcm_adc {
+ 	 * has finished.
+ 	 */
+ 	struct mutex lock;
++	struct npcm_adc_info *data;
+ };
+ 
+ /* ADC registers */
+@@ -52,13 +59,21 @@ struct npcm_adc {
+ #define NPCM_ADCCON_CH(x)		((x) << 24)
+ #define NPCM_ADCCON_DIV_SHIFT		1
+ #define NPCM_ADCCON_DIV_MASK		GENMASK(8, 1)
+-#define NPCM_ADC_DATA_MASK(x)		((x) & GENMASK(9, 0))
+ 
+ #define NPCM_ADC_ENABLE		(NPCM_ADCCON_ADC_EN | NPCM_ADCCON_ADC_INT_EN)
+ 
+ /* ADC General Definition */
+-#define NPCM_RESOLUTION_BITS		10
+-#define NPCM_INT_VREF_MV		2000
++static const struct npcm_adc_info npxm7xx_adc_info = {
++	.data_mask = GENMASK(9, 0),
++	.internal_vref = 2048,
++	.res_bits = 10,
++};
++
++static const struct npcm_adc_info npxm8xx_adc_info = {
++	.data_mask = GENMASK(11, 0),
++	.internal_vref = 1229,
++	.res_bits = 12,
++};
+ 
+ #define NPCM_ADC_CHAN(ch) {					\
+ 	.type = IIO_VOLTAGE,					\
+@@ -129,7 +144,8 @@ static int npcm_adc_read(struct npcm_adc *info, int *val, u8 channel)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	*val = NPCM_ADC_DATA_MASK(ioread32(info->regs + NPCM_ADCDATA));
++	*val = ioread32(info->regs + NPCM_ADCDATA);
++	*val &= info->data->data_mask;
+ 
+ 	return 0;
+ }
+@@ -157,9 +173,9 @@ static int npcm_adc_read_raw(struct iio_dev *indio_dev,
+ 			vref_uv = regulator_get_voltage(info->vref);
+ 			*val = vref_uv / 1000;
+ 		} else {
+-			*val = NPCM_INT_VREF_MV;
++			*val = info->data->internal_vref;
+ 		}
+-		*val2 = NPCM_RESOLUTION_BITS;
++		*val2 = info->data->res_bits;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		*val = info->adc_sample_hz;
+@@ -176,7 +192,8 @@ static const struct iio_info npcm_adc_iio_info = {
+ };
+ 
+ static const struct of_device_id npcm_adc_match[] = {
+-	{ .compatible = "nuvoton,npcm750-adc", },
++	{ .compatible = "nuvoton,npcm750-adc", .data = &npxm7xx_adc_info},
++	{ .compatible = "nuvoton,npcm845-adc", .data = &npxm8xx_adc_info},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(of, npcm_adc_match);
+@@ -196,6 +213,10 @@ static int npcm_adc_probe(struct platform_device *pdev)
+ 		return -ENOMEM;
+ 	info = iio_priv(indio_dev);
+ 
++	info->data = (struct npcm_adc_info *)device_get_match_data(dev);
++	if (!info->data)
++		return -EINVAL;
++
+ 	mutex_init(&info->lock);
+ 
+ 	info->dev = &pdev->dev;
 -- 
 2.33.0
 
