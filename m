@@ -2,558 +2,213 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 10AB1CCA47B
-	for <linux-iio@archiver.kernel.org>; Thu, 14 Jul 2022 16:14:23 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0928CCCA47C
+	for <linux-iio@archiver.kernel.org>; Fri, 15 Jul 2022 04:50:08 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238568AbiGNQOV (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 14 Jul 2022 12:14:21 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42932 "EHLO
+        id S229807AbiGOEuE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 15 Jul 2022 00:50:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35022 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238890AbiGNQOQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jul 2022 12:14:16 -0400
-Received: from mail-qt1-x831.google.com (mail-qt1-x831.google.com [IPv6:2607:f8b0:4864:20::831])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 08EE761102
-        for <linux-iio@vger.kernel.org>; Thu, 14 Jul 2022 09:14:14 -0700 (PDT)
-Received: by mail-qt1-x831.google.com with SMTP id i21so1774575qtw.12
-        for <linux-iio@vger.kernel.org>; Thu, 14 Jul 2022 09:14:13 -0700 (PDT)
+        with ESMTP id S229808AbiGOEuD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jul 2022 00:50:03 -0400
+Received: from mail-ed1-x52f.google.com (mail-ed1-x52f.google.com [IPv6:2a00:1450:4864:20::52f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 09D0578583;
+        Thu, 14 Jul 2022 21:50:02 -0700 (PDT)
+Received: by mail-ed1-x52f.google.com with SMTP id e15so4879262edj.2;
+        Thu, 14 Jul 2022 21:50:01 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=K69smE047kc9hjOIVvY0GsHKu9IjTd/ToaQTmAGOUqI=;
-        b=YPlpm1IirtxC6oJE3dvHkp9kCbClQ9U9WA/CJ5YNnyxJjHPKOKvmyVng6OHQHYsfOa
-         smvUsa2zg4MDj4hyqZy1NTjkXjLG5LJJiMWHHaJCiako6xkek4pMrXNIYmFeOEE68YPJ
-         FQJl408sOkmkU2hLhswzN8/CxR2jPxAOlO4g96/ADlqVvLOUBCefKWaIR2scqIM3pLR4
-         XNp/lmsXZ04cOGkBqrACl3LBiJt/q0SIiM0zxelW41CgvRS4tvfNGHgfZpKYM03A/FY8
-         Rh+stJF65txYDRBMysG9cyOkqc79U3IE1STuLiM/PB/ygPPXVNXQEUbjf9MjwbCLHhkM
-         r/1A==
+        d=gmail.com; s=20210112;
+        h=from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HvvexJbqPqq4lL39PXcVlXT7tJUoqQu20StZfAm/qug=;
+        b=TKt2XzmQKO18+T+3BkvCif7POatQPUVTZ9atPOhrn8Exf2EiYWgo7Ky2BVhrabECzu
+         cs3Uc84Bgpo8laJLJMmKBowUx0sDGVOo8a4i+fnNmKX3d+6r9YMLEFxSzPNBucwxIiqG
+         mnodb+M6H6ZEoWMEiDxvSXMJiPqnl3WdfCsJCC2vdQ46hRKw9ghZZoFtnYQZCu9F8xdn
+         7dlaSt1jdYrsRWaFhsqZnDwFuThD00BnLnIDIC/0AV+JsO2oaVGfufrKouItRlyyzyAK
+         NJNXTyeT+8+SorYYIkw9AbWGvD/9ySfAyyJARsGMcAJte3z8z+oOKy8XngtuaQg/KMY2
+         NusA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=K69smE047kc9hjOIVvY0GsHKu9IjTd/ToaQTmAGOUqI=;
-        b=xf/U/2y+4tv3vSczRW34//P/mJ39A3SqZ1eMSqUlPz0uGBA0sZee2CvKxMrVFT1ngn
-         Fvi4Zl9AAx/dFrVkdUWpXBRqtMRmZuxWK9nPAtxdAtxEmW7B6Nd+k+9giEPZ8H9AYmtr
-         XGD1ydniazRejrbRpQaDE95DxBdmxoO/aw9A0PYhjV7dduoqh8IqeuUxpTZCedYiZpE3
-         qGKqcrr1xyW3psIYPFUAYXDm08owUODic5rSGI0iNjrhVYKqSoPizekH2Y+UaalpZL/t
-         NWEqDqOnGYsfH/xZ2hBYjTtEZc/K9mx26sJqA92K7xGXv78wtFobiAMb+bBbPr2v+LRq
-         isGA==
-X-Gm-Message-State: AJIora+XQ8XjX1ZmeLYcXGSXEZOpTzTvU1mGaGImFa2KqVvtudwRBkD5
-        slk0+MpldOvHwcnxAcBeuDWZVg==
-X-Google-Smtp-Source: AGRyM1t6QjI4qV3xKhAsouoq3n3ntOgzODNopZxVyQzaBeyQoRIDs/9Rmjj4vj5MmEXy5Qzgr+cGlQ==
-X-Received: by 2002:a05:622a:494:b0:31e:d6f2:5502 with SMTP id p20-20020a05622a049400b0031ed6f25502mr1332602qtx.129.1657815253001;
-        Thu, 14 Jul 2022 09:14:13 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id cp4-20020a05622a420400b0031eb393aa45sm1690067qtb.40.2022.07.14.09.14.12
+        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
+         :content-transfer-encoding;
+        bh=HvvexJbqPqq4lL39PXcVlXT7tJUoqQu20StZfAm/qug=;
+        b=RWVz6T3VcDSFiZ7e1AKCsa2iWDUXu5GiivIn240PJ9qrks597QY6H1cl3B1XHmc3nJ
+         QetIrkVnvuzqrQQdzVaAxuPznH4aXTtoj2kFOuGKfsfsNclTc/f3K17yPWniXC2gLbpc
+         PKIhfMQtrm4CH3pn0KhSGPV2zXYN4T1zOJSc/MccQcFiteKjNbmSW5/pXlRc40Di/h9Y
+         ZxMwFYMrw2Bf0oYok/BTAFnrC71koKi0PW+zrwmKqd+Paw+UsH/joX999dGcC6W2eSoh
+         fV+wMkcqPtc+pu0Ar8kCARJcNeY2jMI9khaPgC4rNSJMDP/CT4zGq00m14HP3zgzjmTh
+         nHHg==
+X-Gm-Message-State: AJIora8kfxCo8CvVDYSOMPPIyC0gJ4BuLAGP0B56YkAMfS9mtpgsfB6V
+        mw7DhZyLcNN5R/nuipT6OTg=
+X-Google-Smtp-Source: AGRyM1ulo5y5xbd7VoeTcDpGi9j0pd7pBHU4v97fSxp1rBKtdJVRXAsSVMxBoe0RfygaHyUxWh7ymg==
+X-Received: by 2002:a05:6402:1f01:b0:43a:239e:e65a with SMTP id b1-20020a0564021f0100b0043a239ee65amr16369747edb.428.1657860600479;
+        Thu, 14 Jul 2022 21:50:00 -0700 (PDT)
+Received: from demon-pc.localdomain ([79.119.98.153])
+        by smtp.gmail.com with ESMTPSA id cd2-20020a170906b34200b0072a47b18f7csm1541351ejb.42.2022.07.14.21.49.59
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 14 Jul 2022 09:14:12 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     gregkh@linuxfoundation.org
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Fred Eckert <Frede@cmslaser.com>,
-        Syed Nayyar Waris <syednwaris@gmail.com>
-Subject: [PATCH 3/4] counter: 104-quad-8: Implement and utilize register structures
-Date:   Thu, 14 Jul 2022 12:07:14 -0400
-Message-Id: <285fdc7c03892251f50bdbf2c28c19998243a6a3.1657813472.git.william.gray@linaro.org>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <cover.1657813472.git.william.gray@linaro.org>
-References: <cover.1657813472.git.william.gray@linaro.org>
+        Thu, 14 Jul 2022 21:49:59 -0700 (PDT)
+From:   Cosmin Tanislav <demonsingur@gmail.com>
+X-Google-Original-From: Cosmin Tanislav <cosmin.tanislav@analog.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, linux-gpio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        Cosmin Tanislav <cosmin.tanislav@analog.com>
+Subject: [PATCH v8 0/2] AD4130
+Date:   Fri, 15 Jul 2022 07:49:46 +0300
+Message-Id: <20220715044948.434149-1-cosmin.tanislav@analog.com>
+X-Mailer: git-send-email 2.37.0
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
+To:     unlisted-recipients:; (no To-header on input)
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Reduce magic numbers and improve code readability by implementing and
-utilizing named register data structures.
 
-Reviewed-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Tested-by: Fred Eckert <Frede@cmslaser.com>
-Cc: Syed Nayyar Waris <syednwaris@gmail.com>
-Link: https://lore.kernel.org/r/20220707171709.36010-1-william.gray@linaro.org/
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- drivers/counter/104-quad-8.c | 166 ++++++++++++++++++++---------------
- 1 file changed, 93 insertions(+), 73 deletions(-)
+AD4130-8 is an ultra-low power, high precision, measurement solution for
+low bandwidth battery operated applications.
 
-diff --git a/drivers/counter/104-quad-8.c b/drivers/counter/104-quad-8.c
-index 43dde9abfdcf..62c2b7ac4339 100644
---- a/drivers/counter/104-quad-8.c
-+++ b/drivers/counter/104-quad-8.c
-@@ -33,6 +33,36 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
- 
- #define QUAD8_NUM_COUNTERS 8
- 
-+/**
-+ * struct channel_reg - channel register structure
-+ * @data:	Count data
-+ * @control:	Channel flags and control
-+ */
-+struct channel_reg {
-+	u8 data;
-+	u8 control;
-+};
-+
-+/**
-+ * struct quad8_reg - device register structure
-+ * @channel:		quadrature counter data and control
-+ * @interrupt_status:	channel interrupt status
-+ * @channel_oper:	enable/reset counters and interrupt functions
-+ * @index_interrupt:	enable channel interrupts
-+ * @reserved:		reserved for Factory Use
-+ * @index_input_levels:	index signal logical input level
-+ * @cable_status:	differential encoder cable status
-+ */
-+struct quad8_reg {
-+	struct channel_reg channel[QUAD8_NUM_COUNTERS];
-+	u8 interrupt_status;
-+	u8 channel_oper;
-+	u8 index_interrupt;
-+	u8 reserved[3];
-+	u8 index_input_levels;
-+	u8 cable_status;
-+};
-+
- /**
-  * struct quad8 - device private data structure
-  * @lock:		lock to prevent clobbering device states during R/W ops
-@@ -48,7 +78,7 @@ MODULE_PARM_DESC(irq, "ACCES 104-QUAD-8 interrupt line numbers");
-  * @synchronous_mode:	array of index function synchronous mode configurations
-  * @index_polarity:	array of index function polarity configurations
-  * @cable_fault_enable:	differential encoder cable status enable configurations
-- * @base:		base port address of the device
-+ * @reg:		I/O address offset for the device registers
-  */
- struct quad8 {
- 	spinlock_t lock;
-@@ -63,14 +93,9 @@ struct quad8 {
- 	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
- 	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
- 	unsigned int cable_fault_enable;
--	void __iomem *base;
-+	struct quad8_reg __iomem *reg;
- };
- 
--#define QUAD8_REG_INTERRUPT_STATUS 0x10
--#define QUAD8_REG_CHAN_OP 0x11
--#define QUAD8_REG_INDEX_INTERRUPT 0x12
--#define QUAD8_REG_INDEX_INPUT_LEVELS 0x16
--#define QUAD8_DIFF_ENCODER_CABLE_STATUS 0x17
- /* Borrow Toggle flip-flop */
- #define QUAD8_FLAG_BT BIT(0)
- /* Carry Toggle flip-flop */
-@@ -118,8 +143,7 @@ static int quad8_signal_read(struct counter_device *counter,
- 	if (signal->id < 16)
- 		return -EINVAL;
- 
--	state = ioread8(priv->base + QUAD8_REG_INDEX_INPUT_LEVELS) &
--		BIT(signal->id - 16);
-+	state = ioread8(&priv->reg->index_input_levels) & BIT(signal->id - 16);
- 
- 	*level = (state) ? COUNTER_SIGNAL_LEVEL_HIGH : COUNTER_SIGNAL_LEVEL_LOW;
- 
-@@ -130,14 +154,14 @@ static int quad8_count_read(struct counter_device *counter,
- 			    struct counter_count *count, u64 *val)
- {
- 	struct quad8 *const priv = counter_priv(counter);
--	void __iomem *const base_offset = priv->base + 2 * count->id;
-+	struct channel_reg __iomem *const chan = priv->reg->channel + count->id;
- 	unsigned int flags;
- 	unsigned int borrow;
- 	unsigned int carry;
- 	unsigned long irqflags;
- 	int i;
- 
--	flags = ioread8(base_offset + 1);
-+	flags = ioread8(&chan->control);
- 	borrow = flags & QUAD8_FLAG_BT;
- 	carry = !!(flags & QUAD8_FLAG_CT);
- 
-@@ -148,10 +172,10 @@ static int quad8_count_read(struct counter_device *counter,
- 
- 	/* Reset Byte Pointer; transfer Counter to Output Latch */
- 	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_CNTR_OUT,
--		 base_offset + 1);
-+		 &chan->control);
- 
- 	for (i = 0; i < 3; i++)
--		*val |= (unsigned long)ioread8(base_offset) << (8 * i);
-+		*val |= (unsigned long)ioread8(&chan->data) << (8 * i);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -162,7 +186,7 @@ static int quad8_count_write(struct counter_device *counter,
- 			     struct counter_count *count, u64 val)
- {
- 	struct quad8 *const priv = counter_priv(counter);
--	void __iomem *const base_offset = priv->base + 2 * count->id;
-+	struct channel_reg __iomem *const chan = priv->reg->channel + count->id;
- 	unsigned long irqflags;
- 	int i;
- 
-@@ -173,27 +197,27 @@ static int quad8_count_write(struct counter_device *counter,
- 	spin_lock_irqsave(&priv->lock, irqflags);
- 
- 	/* Reset Byte Pointer */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
- 
- 	/* Counter can only be set via Preset Register */
- 	for (i = 0; i < 3; i++)
--		iowrite8(val >> (8 * i), base_offset);
-+		iowrite8(val >> (8 * i), &chan->data);
- 
- 	/* Transfer Preset Register to Counter */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_PRESET_CNTR, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_PRESET_CNTR, &chan->control);
- 
- 	/* Reset Byte Pointer */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
- 
- 	/* Set Preset Register back to original value */
- 	val = priv->preset[count->id];
- 	for (i = 0; i < 3; i++)
--		iowrite8(val >> (8 * i), base_offset);
-+		iowrite8(val >> (8 * i), &chan->data);
- 
- 	/* Reset Borrow, Carry, Compare, and Sign flags */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, &chan->control);
- 	/* Reset Error flag */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, &chan->control);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -246,7 +270,7 @@ static int quad8_function_write(struct counter_device *counter,
- 	unsigned int *const quadrature_mode = priv->quadrature_mode + id;
- 	unsigned int *const scale = priv->quadrature_scale + id;
- 	unsigned int *const synchronous_mode = priv->synchronous_mode + id;
--	void __iomem *const base_offset = priv->base + 2 * id + 1;
-+	u8 __iomem *const control = &priv->reg->channel[id].control;
- 	unsigned long irqflags;
- 	unsigned int mode_cfg;
- 	unsigned int idr_cfg;
-@@ -266,7 +290,7 @@ static int quad8_function_write(struct counter_device *counter,
- 		if (*synchronous_mode) {
- 			*synchronous_mode = 0;
- 			/* Disable synchronous function mode */
--			iowrite8(QUAD8_CTR_IDR | idr_cfg, base_offset);
-+			iowrite8(QUAD8_CTR_IDR | idr_cfg, control);
- 		}
- 	} else {
- 		*quadrature_mode = 1;
-@@ -292,7 +316,7 @@ static int quad8_function_write(struct counter_device *counter,
- 	}
- 
- 	/* Load mode configuration to Counter Mode Register */
--	iowrite8(QUAD8_CTR_CMR | mode_cfg, base_offset);
-+	iowrite8(QUAD8_CTR_CMR | mode_cfg, control);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -305,7 +329,7 @@ static int quad8_direction_read(struct counter_device *counter,
- {
- 	const struct quad8 *const priv = counter_priv(counter);
- 	unsigned int ud_flag;
--	void __iomem *const flag_addr = priv->base + 2 * count->id + 1;
-+	u8 __iomem *const flag_addr = &priv->reg->channel[count->id].control;
- 
- 	/* U/D flag: nonzero = up, zero = down */
- 	ud_flag = ioread8(flag_addr) & QUAD8_FLAG_UD;
-@@ -402,7 +426,6 @@ static int quad8_events_configure(struct counter_device *counter)
- 	struct counter_event_node *event_node;
- 	unsigned int next_irq_trigger;
- 	unsigned long ior_cfg;
--	void __iomem *base_offset;
- 
- 	spin_lock_irqsave(&priv->lock, irqflags);
- 
-@@ -437,14 +460,14 @@ static int quad8_events_configure(struct counter_device *counter)
- 		ior_cfg = priv->ab_enable[event_node->channel] |
- 			  priv->preset_enable[event_node->channel] << 1 |
- 			  priv->irq_trigger[event_node->channel] << 3;
--		base_offset = priv->base + 2 * event_node->channel + 1;
--		iowrite8(QUAD8_CTR_IOR | ior_cfg, base_offset);
-+		iowrite8(QUAD8_CTR_IOR | ior_cfg,
-+			 &priv->reg->channel[event_node->channel].control);
- 
- 		/* Enable IRQ line */
- 		irq_enabled |= BIT(event_node->channel);
- 	}
- 
--	iowrite8(irq_enabled, priv->base + QUAD8_REG_INDEX_INTERRUPT);
-+	iowrite8(irq_enabled, &priv->reg->index_interrupt);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -508,7 +531,7 @@ static int quad8_index_polarity_set(struct counter_device *counter,
- {
- 	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
--	void __iomem *const base_offset = priv->base + 2 * channel_id + 1;
-+	u8 __iomem *const control = &priv->reg->channel[channel_id].control;
- 	unsigned long irqflags;
- 	unsigned int idr_cfg = index_polarity << 1;
- 
-@@ -519,7 +542,7 @@ static int quad8_index_polarity_set(struct counter_device *counter,
- 	priv->index_polarity[channel_id] = index_polarity;
- 
- 	/* Load Index Control configuration to Index Control Register */
--	iowrite8(QUAD8_CTR_IDR | idr_cfg, base_offset);
-+	iowrite8(QUAD8_CTR_IDR | idr_cfg, control);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -549,7 +572,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
- {
- 	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id - 16;
--	void __iomem *const base_offset = priv->base + 2 * channel_id + 1;
-+	u8 __iomem *const control = &priv->reg->channel[channel_id].control;
- 	unsigned long irqflags;
- 	unsigned int idr_cfg = synchronous_mode;
- 
-@@ -566,7 +589,7 @@ static int quad8_synchronous_mode_set(struct counter_device *counter,
- 	priv->synchronous_mode[channel_id] = synchronous_mode;
- 
- 	/* Load Index Control configuration to Index Control Register */
--	iowrite8(QUAD8_CTR_IDR | idr_cfg, base_offset);
-+	iowrite8(QUAD8_CTR_IDR | idr_cfg, control);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -614,7 +637,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
- 	struct quad8 *const priv = counter_priv(counter);
- 	unsigned int count_mode;
- 	unsigned int mode_cfg;
--	void __iomem *const base_offset = priv->base + 2 * count->id + 1;
-+	u8 __iomem *const control = &priv->reg->channel[count->id].control;
- 	unsigned long irqflags;
- 
- 	/* Map Generic Counter count mode to 104-QUAD-8 count mode */
-@@ -648,7 +671,7 @@ static int quad8_count_mode_write(struct counter_device *counter,
- 		mode_cfg |= (priv->quadrature_scale[count->id] + 1) << 3;
- 
- 	/* Load mode configuration to Counter Mode Register */
--	iowrite8(QUAD8_CTR_CMR | mode_cfg, base_offset);
-+	iowrite8(QUAD8_CTR_CMR | mode_cfg, control);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -669,7 +692,7 @@ static int quad8_count_enable_write(struct counter_device *counter,
- 				    struct counter_count *count, u8 enable)
- {
- 	struct quad8 *const priv = counter_priv(counter);
--	void __iomem *const base_offset = priv->base + 2 * count->id;
-+	u8 __iomem *const control = &priv->reg->channel[count->id].control;
- 	unsigned long irqflags;
- 	unsigned int ior_cfg;
- 
-@@ -681,7 +704,7 @@ static int quad8_count_enable_write(struct counter_device *counter,
- 		  priv->irq_trigger[count->id] << 3;
- 
- 	/* Load I/O control configuration */
--	iowrite8(QUAD8_CTR_IOR | ior_cfg, base_offset + 1);
-+	iowrite8(QUAD8_CTR_IOR | ior_cfg, control);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -697,9 +720,9 @@ static int quad8_error_noise_get(struct counter_device *counter,
- 				 struct counter_count *count, u32 *noise_error)
- {
- 	const struct quad8 *const priv = counter_priv(counter);
--	void __iomem *const base_offset = priv->base + 2 * count->id + 1;
-+	u8 __iomem *const flag_addr = &priv->reg->channel[count->id].control;
- 
--	*noise_error = !!(ioread8(base_offset) & QUAD8_FLAG_E);
-+	*noise_error = !!(ioread8(flag_addr) & QUAD8_FLAG_E);
- 
- 	return 0;
- }
-@@ -717,17 +740,17 @@ static int quad8_count_preset_read(struct counter_device *counter,
- static void quad8_preset_register_set(struct quad8 *const priv, const int id,
- 				      const unsigned int preset)
- {
--	void __iomem *const base_offset = priv->base + 2 * id;
-+	struct channel_reg __iomem *const chan = priv->reg->channel + id;
- 	int i;
- 
- 	priv->preset[id] = preset;
- 
- 	/* Reset Byte Pointer */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
- 
- 	/* Set Preset Register */
- 	for (i = 0; i < 3; i++)
--		iowrite8(preset >> (8 * i), base_offset);
-+		iowrite8(preset >> (8 * i), &chan->data);
- }
- 
- static int quad8_count_preset_write(struct counter_device *counter,
-@@ -816,7 +839,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
- 					   u8 preset_enable)
- {
- 	struct quad8 *const priv = counter_priv(counter);
--	void __iomem *const base_offset = priv->base + 2 * count->id + 1;
-+	u8 __iomem *const control = &priv->reg->channel[count->id].control;
- 	unsigned long irqflags;
- 	unsigned int ior_cfg;
- 
-@@ -831,7 +854,7 @@ static int quad8_count_preset_enable_write(struct counter_device *counter,
- 		  priv->irq_trigger[count->id] << 3;
- 
- 	/* Load I/O control configuration to Input / Output Control Register */
--	iowrite8(QUAD8_CTR_IOR | ior_cfg, base_offset);
-+	iowrite8(QUAD8_CTR_IOR | ior_cfg, control);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -858,7 +881,7 @@ static int quad8_signal_cable_fault_read(struct counter_device *counter,
- 	}
- 
- 	/* Logic 0 = cable fault */
--	status = ioread8(priv->base + QUAD8_DIFF_ENCODER_CABLE_STATUS);
-+	status = ioread8(&priv->reg->cable_status);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -899,8 +922,7 @@ static int quad8_signal_cable_fault_enable_write(struct counter_device *counter,
- 	/* Enable is active low in Differential Encoder Cable Status register */
- 	cable_fault_enable = ~priv->cable_fault_enable;
- 
--	iowrite8(cable_fault_enable,
--		 priv->base + QUAD8_DIFF_ENCODER_CABLE_STATUS);
-+	iowrite8(cable_fault_enable, &priv->reg->cable_status);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -924,7 +946,7 @@ static int quad8_signal_fck_prescaler_write(struct counter_device *counter,
- {
- 	struct quad8 *const priv = counter_priv(counter);
- 	const size_t channel_id = signal->id / 2;
--	void __iomem *const base_offset = priv->base + 2 * channel_id;
-+	struct channel_reg __iomem *const chan = priv->reg->channel + channel_id;
- 	unsigned long irqflags;
- 
- 	spin_lock_irqsave(&priv->lock, irqflags);
-@@ -932,12 +954,12 @@ static int quad8_signal_fck_prescaler_write(struct counter_device *counter,
- 	priv->fck_prescaler[channel_id] = prescaler;
- 
- 	/* Reset Byte Pointer */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
- 
- 	/* Set filter clock factor */
--	iowrite8(prescaler, base_offset);
-+	iowrite8(prescaler, &chan->data);
- 	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_PRESET_PSC,
--		 base_offset + 1);
-+		 &chan->control);
- 
- 	spin_unlock_irqrestore(&priv->lock, irqflags);
- 
-@@ -1085,12 +1107,11 @@ static irqreturn_t quad8_irq_handler(int irq, void *private)
- {
- 	struct counter_device *counter = private;
- 	struct quad8 *const priv = counter_priv(counter);
--	void __iomem *const base = priv->base;
- 	unsigned long irq_status;
- 	unsigned long channel;
- 	u8 event;
- 
--	irq_status = ioread8(base + QUAD8_REG_INTERRUPT_STATUS);
-+	irq_status = ioread8(&priv->reg->interrupt_status);
- 	if (!irq_status)
- 		return IRQ_NONE;
- 
-@@ -1119,36 +1140,36 @@ static irqreturn_t quad8_irq_handler(int irq, void *private)
- 	}
- 
- 	/* Clear pending interrupts on device */
--	iowrite8(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, base + QUAD8_REG_CHAN_OP);
-+	iowrite8(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, &priv->reg->channel_oper);
- 
- 	return IRQ_HANDLED;
- }
- 
--static void quad8_init_counter(void __iomem *const base_offset)
-+static void quad8_init_counter(struct channel_reg __iomem *const chan)
- {
- 	unsigned long i;
- 
- 	/* Reset Byte Pointer */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
- 	/* Reset filter clock factor */
--	iowrite8(0, base_offset);
-+	iowrite8(0, &chan->data);
- 	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP | QUAD8_RLD_PRESET_PSC,
--		 base_offset + 1);
-+		 &chan->control);
- 	/* Reset Byte Pointer */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_BP, &chan->control);
- 	/* Reset Preset Register */
- 	for (i = 0; i < 3; i++)
--		iowrite8(0x00, base_offset);
-+		iowrite8(0x00, &chan->data);
- 	/* Reset Borrow, Carry, Compare, and Sign flags */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_FLAGS, &chan->control);
- 	/* Reset Error flag */
--	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, base_offset + 1);
-+	iowrite8(QUAD8_CTR_RLD | QUAD8_RLD_RESET_E, &chan->control);
- 	/* Binary encoding; Normal count; non-quadrature mode */
--	iowrite8(QUAD8_CTR_CMR, base_offset + 1);
-+	iowrite8(QUAD8_CTR_CMR, &chan->control);
- 	/* Disable A and B inputs; preset on index; FLG1 as Carry */
--	iowrite8(QUAD8_CTR_IOR, base_offset + 1);
-+	iowrite8(QUAD8_CTR_IOR, &chan->control);
- 	/* Disable index function; negative index polarity */
--	iowrite8(QUAD8_CTR_IDR, base_offset + 1);
-+	iowrite8(QUAD8_CTR_IDR, &chan->control);
- }
- 
- static int quad8_probe(struct device *dev, unsigned int id)
-@@ -1169,8 +1190,8 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 		return -ENOMEM;
- 	priv = counter_priv(counter);
- 
--	priv->base = devm_ioport_map(dev, base[id], QUAD8_EXTENT);
--	if (!priv->base)
-+	priv->reg = devm_ioport_map(dev, base[id], QUAD8_EXTENT);
-+	if (!priv->reg)
- 		return -ENOMEM;
- 
- 	/* Initialize Counter device and driver data */
-@@ -1185,17 +1206,16 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 	spin_lock_init(&priv->lock);
- 
- 	/* Reset Index/Interrupt Register */
--	iowrite8(0x00, priv->base + QUAD8_REG_INDEX_INTERRUPT);
-+	iowrite8(0x00, &priv->reg->index_interrupt);
- 	/* Reset all counters and disable interrupt function */
--	iowrite8(QUAD8_CHAN_OP_RESET_COUNTERS, priv->base + QUAD8_REG_CHAN_OP);
-+	iowrite8(QUAD8_CHAN_OP_RESET_COUNTERS, &priv->reg->channel_oper);
- 	/* Set initial configuration for all counters */
- 	for (i = 0; i < QUAD8_NUM_COUNTERS; i++)
--		quad8_init_counter(priv->base + 2 * i);
-+		quad8_init_counter(priv->reg->channel + i);
- 	/* Disable Differential Encoder Cable Status for all channels */
--	iowrite8(0xFF, priv->base + QUAD8_DIFF_ENCODER_CABLE_STATUS);
-+	iowrite8(0xFF, &priv->reg->cable_status);
- 	/* Enable all counters and enable interrupt function */
--	iowrite8(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC,
--		 priv->base + QUAD8_REG_CHAN_OP);
-+	iowrite8(QUAD8_CHAN_OP_ENABLE_INTERRUPT_FUNC, &priv->reg->channel_oper);
- 
- 	err = devm_request_irq(&counter->dev, irq[id], quad8_irq_handler,
- 			       IRQF_SHARED, counter->name, counter);
+The fully integrated AFE (Analog Front-End) includes a multiplexer for up
+to 16 single-ended or 8 differential inputs, PGA (Programmable Gain
+Amplifier), 24-bit Sigma-Delta ADC, on-chip reference and oscillator,
+selectable filter options, smart sequencer, sensor biasing and excitation
+options, diagnostics, and a FIFO buffer.
+
+V1 -> V2
+ * add kernel version to ABI file
+ * merge ABI patch into driver patch
+ * make copyright header similar to other drivers
+ * rearrange includes
+ * use units.h defines where possible and add unit sufix to
+   SOFT_RESET_SLEEP define
+ * remove ending comma to last members of enums / lists
+ * remove unused FILTER_MAX define
+ * use BIT macro for PIN_FN_*
+ * rearrange SETUP_SIZE definition
+ * group bools in ad4130_state and ad4130_chan_info
+ * put scale_tbls definition on one line
+ * remove newline before reg size == 0 check
+ * put mask used as value in a variable
+ * remove useless ret = 0 assignment
+ * make buffer attrs oneline
+ * use for_each_set_bit in update_scan_mode
+ * use if else for internal reference voltage error checking
+ * inline reference voltage check
+ * check number of vbias pins
+ * remove .has_int_pin = false
+ * remove avail_len for IIO_AVAIL_RANGE
+ * remove useless enabled_channels check in unlink_slot
+ * remove unused AD4130_RESET_CLK_COUNT define
+ * only call fwnode_handle_put for child in case of error
+ * default adi,reference-select to REFIN1
+ * default adi,int-ref-en to false
+ * of_irq_get_byname -> fwnode_irq_get_byname
+ * P1 -> P2 as interrupt pin options
+ * add missing comma in db3_freq_avail init
+ * cast values to u64 to make math using units.h work
+ * add datasheet reference to IRQ polarity
+ * add comment about disabling channels in predisable
+ * add part number prefix find_table_index
+ * return voltage from get_ref_voltage
+ * add datasheet reference for internal reference voltage selection
+ * add comment explaining AIN and GPIO pin sharing
+ * parse channel setup before parsing excitation pins
+ * only validate excitation pin if value is not off
+ * use FIELD_PREP for bipolar and int_ref_en
+ * put devm_regmap_init call on one line
+ * introduce a slot_info struct to contain setup_info for each slot
+ * enable internal reference automatically if needed
+ * decide mclk sel based on adi,ext-clk-freq and adi,int-clk-out
+ * dt-bindings: use internal reference explicitly
+ * dt-bindings: set type for adi,excitation-pin-0
+ * dt-bindings: set $ref for adi,vbias-pins
+ * dt-bindings: remove minItems from interrupts property
+ * dt-bindings: remove adi,int-ref-en default value
+ * dt-bindings: remove adi,bipolar default value
+ * dt-bindings: inline adi,int-ref-en description
+ * dt-bindings: default adi,reference-select to REFIN1
+ * dt-bindings: clean up description for diff-channels and
+   adi,reference-select
+ * dt-bindings: add more text to interrupt-names description
+ * dt-bindings: turn interrupt-names into a single string
+ * dt-bindings: add maxItems to adi,vbias-pins
+
+V2 -> V3
+ * dt-bindings: add interrupt controller include to example
+ * dt-bindings: remove $ref in diff-channels
+
+V3 -> V4:
+  * handle watermark value as number of datum
+  * DOUT_OR_INT -> INT
+  * AD4130_8_NAME -> AD4130_NAME
+  * return early in case of failure when parsing fw channel
+  * use IIO_DMA_MINALIGN for aligning buffer
+  * add comments for fs_to_freq and freq_to_fs
+  * remove support for other variants because of unavailability of model
+    ids for future chip variants
+  * remove support for db3 frequency because of inaccuracy when calculating
+  * remove ternary where possible
+  * refactor defines
+  * dt-bindings: add unevaluatedProperties: true to channel node
+
+V4 -> V5:
+ * simplify get_ref_voltage function and move print statement to first user
+ * inline statements not going over the 80 cols limit
+ * simplify scale table filling
+ * determine table length inside find table index macro
+ * current_na -> tmp inside ad4130_parse_fw_setup
+ * define full register set
+ * put range register size definitions on one line
+ * nanoamps -> nanoamp
+ * adi,ext-clk-freq -> adi,ext-clk-freq-hz
+ * return directly in ad4130_validate_vbias_pins
+ * place comment regarding irq_trigger at assignment
+ * inversed -> inverted inside irq_trigger comment
+ * do not initialize int_clk_out
+ * return directly in ad4130_validate_diff_channels
+ * add () after reference to update_scan_mode in comment
+ * use BIT() for channel offset
+ * comment nitpicks on slot finding
+ * return -EINVAL out of reg read for invalid sizes
+ * place regmap at start of ad4130_state
+ * place bools at the end of ad4130_setup_info
+ * remove commas after terminators
+ * dt-bindings: only allow one element in reg
+ * dt-bindings: inline reg description
+ * dt-bindings: remove $ref from adi,ext-clk-freq-hz
+
+V5 -> V6:
+ * bump KernelVersion
+ * use IIO_DEVICE_ATTR_RO
+ * nitpick inside mutex comment
+ * use valid_mask for validating gpios
+ * improve DMA comment
+
+V6 -> V7:
+ * remove $ref from -nanoamp properties (to be added to dtschema)
+ * use hexadecimal numbers for channel unit-addresses
+
+V7 -> V8:
+ * pick up Reviewed-By tags
+ * bump KernelVersion
+
+Cosmin Tanislav (2):
+  dt-bindings: iio: adc: add AD4130
+  iio: adc: ad4130: add AD4130 driver
+
+ .../ABI/testing/sysfs-bus-iio-adc-ad4130      |   36 +
+ .../bindings/iio/adc/adi,ad4130.yaml          |  256 +++
+ MAINTAINERS                                   |    8 +
+ drivers/iio/adc/Kconfig                       |   13 +
+ drivers/iio/adc/Makefile                      |    1 +
+ drivers/iio/adc/ad4130.c                      | 2014 +++++++++++++++++
+ 6 files changed, 2328 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-ad4130
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/adi,ad4130.yaml
+ create mode 100644 drivers/iio/adc/ad4130.c
+
 -- 
-2.36.1
+2.37.0
 
