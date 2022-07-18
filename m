@@ -2,106 +2,88 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 93F73C43334
-	for <linux-iio@archiver.kernel.org>; Sun, 17 Jul 2022 20:08:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 91E02C43334
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Jul 2022 01:25:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229680AbiGQUIc (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 17 Jul 2022 16:08:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50590 "EHLO
+        id S233032AbiGRBZi convert rfc822-to-8bit (ORCPT
+        <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 17 Jul 2022 21:25:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59336 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229462AbiGQUIb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Jul 2022 16:08:31 -0400
-Received: from mail-qk1-x72e.google.com (mail-qk1-x72e.google.com [IPv6:2607:f8b0:4864:20::72e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 14EE3B80;
-        Sun, 17 Jul 2022 13:08:30 -0700 (PDT)
-Received: by mail-qk1-x72e.google.com with SMTP id g1so6701346qki.7;
-        Sun, 17 Jul 2022 13:08:30 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=date:from:to:cc:subject:message-id:references:mime-version
-         :content-disposition:in-reply-to;
-        bh=RVbKruXrudOejdVpt6BRSlOurBARv5UgOInWZVYbs+M=;
-        b=Feo/WyzmswpQ6NicQibu7mzR1pIk2iO52Q0OtTlN/e2t2DPJaiQ97wBBqbyVZui+fK
-         vat0qDJkzeNJ7ptOoIzWR8SNk0/ORsETnCA1NJQiJ21HUq3o45sazeC4g/VxC79PTvK6
-         h/lIjmS4ewlbAONVn6hVRd7cTRUMQd71X+yg9b1TBsYGxO8jxB5ZuzMnEkfbLkDgT+zL
-         gHkVe+ZMiXvvMK/DHWtx0qJAJsbifIBb2TA3O6FXQxy2FsvpWdvbwQrLqFc4+Bw8LZF5
-         JXPrnEYhViiCMhRj0gmuk3mDDwLBpz/i/n/cIEXoxpnzu0K12AbRvxh4rYE0+nRjB8TU
-         TwxA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:date:from:to:cc:subject:message-id:references
-         :mime-version:content-disposition:in-reply-to;
-        bh=RVbKruXrudOejdVpt6BRSlOurBARv5UgOInWZVYbs+M=;
-        b=oODmKJ+57WClnbsQKfm9JqVwN5yi1o4aA1ZAD+9nyd/z3Qz0LWElOpPJJOB1SSVyrj
-         bJ+Gw3BotJ2PwjUIz1F/FBPAjK4PiMvAas4/fUJSpsrPhiiEeSNytvgacUzaSj/uYJTW
-         WPMP/4gPH/xlDPPRK1+kci41MlO6Nbd9ZlCfe8tqm4WRBCl7QmW+n90yPKaJvWZZHRRu
-         XsLNIHqxTbcVcic6hkBEDr/S0axlP5BXx+fUxzteuBYh0/1yB/8nfPKuXMPNABM/mfdc
-         YmJqB8Hlsp2IRrhQHNS2vMxUj756m4zCmuVZwelm+wyeQkjpDADu7HMad9k5sQabMVzS
-         4EFw==
-X-Gm-Message-State: AJIora+eAWwWXq2w9e0qLyhTX6f1lMbiukp3VCqh82yWhFnbqsoKTDfk
-        BbER2I70+Ynkbg+H5f8PBx0=
-X-Google-Smtp-Source: AGRyM1u5HaRYUNSIdZ+VQ5cVrKgqByYPdxZQPsJ8u+nGtkiomGD+kBmPGxnwvSZR18sKhemEkOYgSA==
-X-Received: by 2002:a37:d281:0:b0:6af:24c7:a981 with SMTP id f123-20020a37d281000000b006af24c7a981mr15889271qkj.736.1658088509176;
-        Sun, 17 Jul 2022 13:08:29 -0700 (PDT)
-Received: from spruce (c-71-206-142-238.hsd1.va.comcast.net. [71.206.142.238])
-        by smtp.gmail.com with ESMTPSA id g18-20020ac87752000000b0031ee01443b4sm4606923qtu.74.2022.07.17.13.08.28
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 17 Jul 2022 13:08:28 -0700 (PDT)
-Date:   Sun, 17 Jul 2022 16:08:27 -0400
-From:   Joe Simmons-Talbott <joetalbott@gmail.com>
-To:     Joe Perches <joe@perches.com>
+        with ESMTP id S232835AbiGRBZh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 17 Jul 2022 21:25:37 -0400
+Received: from relay4.hostedemail.com (smtprelay0010.hostedemail.com [216.40.44.10])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 45F7812D38
+        for <linux-iio@vger.kernel.org>; Sun, 17 Jul 2022 18:25:35 -0700 (PDT)
+Received: from omf17.hostedemail.com (a10.router.float.18 [10.200.18.1])
+        by unirelay06.hostedemail.com (Postfix) with ESMTP id 6145734AF2;
+        Mon, 18 Jul 2022 01:25:33 +0000 (UTC)
+Received: from [HIDDEN] (Authenticated sender: joe@perches.com) by omf17.hostedemail.com (Postfix) with ESMTPA id 4F9451B;
+        Mon, 18 Jul 2022 01:25:32 +0000 (UTC)
+Message-ID: <75022a03a4d0c8b238dcf1c7b60b5d222b184f34.camel@perches.com>
+Subject: Re: [PATCH] iio: Use parens with sizeof
+From:   Joe Perches <joe@perches.com>
+To:     Joe Simmons-Talbott <joetalbott@gmail.com>
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: Use parens with sizeof
-Message-ID: <YtRsO7cLyDIH47od@spruce>
+Date:   Sun, 17 Jul 2022 18:25:31 -0700
+In-Reply-To: <YtRsO7cLyDIH47od@spruce>
 References: <20220717153438.10800-1-joetalbott@gmail.com>
- <59c0003bfc5b429a8e39151da942fcaf707109a0.camel@perches.com>
+         <59c0003bfc5b429a8e39151da942fcaf707109a0.camel@perches.com>
+         <YtRsO7cLyDIH47od@spruce>
+Content-Type: text/plain; charset="ISO-8859-1"
+Content-Transfer-Encoding: 8BIT
+User-Agent: Evolution 3.44.1-0ubuntu1 
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-In-Reply-To: <59c0003bfc5b429a8e39151da942fcaf707109a0.camel@perches.com>
+X-Stat-Signature: 1gw8a1ssdy3q8eymts5jdr64ozfj9jxw
+X-Rspamd-Server: rspamout01
+X-Rspamd-Queue-Id: 4F9451B
+X-Session-Marker: 6A6F6540706572636865732E636F6D
+X-Session-ID: U2FsdGVkX1/KRbjCFivTyg9MUXbeneQDW+99K+w5z4A=
+X-HE-Tag: 1658107532-148806
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Jul 17, 2022 at 10:08:37AM -0700, Joe Perches wrote:
-> On Sun, 2022-07-17 at 11:34 -0400, Joe Simmons-Talbott wrote:
-> > Prefer 'sizeof(var)' over 'sizeof var' as reported by checkpatch.pl.
+On Sun, 2022-07-17 at 16:08 -0400, Joe Simmons-Talbott wrote:
+> On Sun, Jul 17, 2022 at 10:08:37AM -0700, Joe Perches wrote:
+> > On Sun, 2022-07-17 at 11:34 -0400, Joe Simmons-Talbott wrote:
+> > > Prefer 'sizeof(var)' over 'sizeof var' as reported by checkpatch.pl.
+> > 
+> > unrelated trivia:
+> > 
+> > > diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> > []
+> > > @@ -368,7 +368,7 @@ struct iio_poll_func
+> > >  	va_list vargs;
+> > >  	struct iio_poll_func *pf;
+> > >  
+> > > -	pf = kmalloc(sizeof *pf, GFP_KERNEL);
+> > > +	pf = kmalloc(sizeof(*pf), GFP_KERNEL);
+> > >  	if (pf == NULL)
+> > >  		return NULL;
+> > >  	va_start(vargs, fmt);
+> > > @@ -560,7 +560,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
+> > >  	struct iio_trigger *trig;
+> > >  	int i;
+> > >  
+> > > -	trig = kzalloc(sizeof *trig, GFP_KERNEL);
+> > > +	trig = kzalloc(sizeof(*trig), GFP_KERNEL);
+> > >  	if (!trig)
+> > >  		return NULL;
+> > 
+> > It'd be nice to be consistent with the allocation return test.
+> > 
+> > Please pick one of:
+> > 
+> > 	if (ptr == NULL)
+> > or
+> > 	if (!ptr)		// my preference
+> > 
 > 
-> unrelated trivia:
-> 
-> > diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> []
-> > @@ -368,7 +368,7 @@ struct iio_poll_func
-> >  	va_list vargs;
-> >  	struct iio_poll_func *pf;
-> >  
-> > -	pf = kmalloc(sizeof *pf, GFP_KERNEL);
-> > +	pf = kmalloc(sizeof(*pf), GFP_KERNEL);
-> >  	if (pf == NULL)
-> >  		return NULL;
-> >  	va_start(vargs, fmt);
-> > @@ -560,7 +560,7 @@ struct iio_trigger *viio_trigger_alloc(struct device *parent,
-> >  	struct iio_trigger *trig;
-> >  	int i;
-> >  
-> > -	trig = kzalloc(sizeof *trig, GFP_KERNEL);
-> > +	trig = kzalloc(sizeof(*trig), GFP_KERNEL);
-> >  	if (!trig)
-> >  		return NULL;
-> 
-> It'd be nice to be consistent with the allocation return test.
-> 
-> Please pick one of:
-> 
-> 	if (ptr == NULL)
-> or
-> 	if (!ptr)		// my preference
-> 
+> I'm happy to submit a patch for that.  Do you want me to include a
+> Suggested-by: tag?
 
-I'm happy to submit a patch for that.  Do you want me to include a
-Suggested-by: tag?
+Not really.
 
-Thanks,
-Joe
