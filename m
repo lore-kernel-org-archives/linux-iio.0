@@ -2,94 +2,90 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AD87CC43334
-	for <linux-iio@archiver.kernel.org>; Mon, 18 Jul 2022 18:43:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4EAEBC433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 18 Jul 2022 19:35:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233595AbiGRSnZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 18 Jul 2022 14:43:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42648 "EHLO
+        id S236154AbiGRTfy (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 18 Jul 2022 15:35:54 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56128 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230451AbiGRSnY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2022 14:43:24 -0400
-Received: from mail-oa1-x36.google.com (mail-oa1-x36.google.com [IPv6:2001:4860:4864:20::36])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 67CB62CDFC
-        for <linux-iio@vger.kernel.org>; Mon, 18 Jul 2022 11:43:23 -0700 (PDT)
-Received: by mail-oa1-x36.google.com with SMTP id 586e51a60fabf-10c0d96953fso26143633fac.0
-        for <linux-iio@vger.kernel.org>; Mon, 18 Jul 2022 11:43:23 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QjhSUME5p/Vab80ae1ZkpRhOJpW65Uu7Z0E14xK8RwM=;
-        b=CL8EItN6J7PIcIU43eKXEDZCHUUKzbSx6sIZ4OEARfr+Zpg3DgZvRllqhEkAAL3P6v
-         y8k+Mqdvxzg1fHpFT1P8rwomta3X9nl06I7iJlkHUAnLU36wW3li0fj73ZJhXHDC7xWX
-         MqiPeH2TX6u51/DPffnPDw9agCfaDLwUbCzKyD0n0bMSJkBVJs3gKrOayXK7CPDRbNL3
-         0KCcRp+BouXgmXPS7KIRLzoYgRpChUcZVVP4A80hm5zk099PkKFO220mW9E0b+6OxY5W
-         uOO43CA6sGx73hx2v8xmTP/GlkJl9tmwQc+0euqQm5BzHgGHLbS+C2FkuyyNz8Pd6GCs
-         6hTQ==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:mime-version
-         :content-transfer-encoding;
-        bh=QjhSUME5p/Vab80ae1ZkpRhOJpW65Uu7Z0E14xK8RwM=;
-        b=Siwww/hUn7ldeN+MQeRtyWP8h8r97r5O9GaZ7mi9x2QTQCEtrYMuoq8MFt8KisBcQm
-         H4eet8qmGVWq1tUmO4DGP6mIKUpPq7Vggg9XpIjpOvOMGEtE6aB42XZCWKOOkWA+eIq2
-         jgdn0ORU47bTNSrKST7EUEBBTzTzNZiN3G9nZgWlYRePcxSC37CLsOZX3w/3PCtdP5EI
-         xTogV473j/14bc+puYkU8Ta0NeLg46Mwy2BOsZRE+Iq2YbGjrn0uw9jSs5umKU7oW25B
-         EmaapYsQ+yuVEAGTS43zoOIQckCjKEs7ygzD8uYEdiU6v+vC0LMPg/1HB9kGp019pf9u
-         H4Sw==
-X-Gm-Message-State: AJIora9orMD0G7rDE2XZx5W08WXjtV02oOLjpGbkH3BPkFhjTbwl5+Ll
-        YzXzdeY/L0dw/nIm7sw02Upt5PvzfmY=
-X-Google-Smtp-Source: AGRyM1uM2l1H7UPCtKXX6ijlD3ZZdSVYx4F386z9W+b+cQrG4emRTwR57Rj5dBqcEIALa6e6dwuvgQ==
-X-Received: by 2002:a05:6870:309:b0:10c:8b6f:d0f with SMTP id m9-20020a056870030900b0010c8b6f0d0fmr17297952oaf.221.1658169802427;
-        Mon, 18 Jul 2022 11:43:22 -0700 (PDT)
-Received: from wintermute.localdomain (cpe-76-183-134-35.tx.res.rr.com. [76.183.134.35])
-        by smtp.gmail.com with ESMTPSA id m6-20020aca5806000000b0033a7a2d5e7dsm1045866oib.5.2022.07.18.11.43.21
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 18 Jul 2022 11:43:21 -0700 (PDT)
-From:   Chris Morgan <macroalpha82@gmail.com>
-To:     linux-iio@vger.kernel.org
-Cc:     lars@metafoo.de, jic23@kernel.org, peda@axentia.se,
-        Chris Morgan <macromorgan@hotmail.com>
-Subject: [RFC] iio: multiplexer: Copy scan_type details from parent to child
-Date:   Mon, 18 Jul 2022 13:43:12 -0500
-Message-Id: <20220718184312.11840-1-macroalpha82@gmail.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S236145AbiGRTfq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2022 15:35:46 -0400
+Received: from master.debian.org (master.debian.org [IPv6:2001:41b8:202:deb:216:36ff:fe40:4001])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FEF62AC5D
+        for <linux-iio@vger.kernel.org>; Mon, 18 Jul 2022 12:35:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed; d=debian.org;
+         s=smtpauto.master; h=Content-Transfer-Encoding:Content-Type:MIME-Version:
+        References:In-Reply-To:Message-Id:Date:Subject:Cc:To:From:Reply-To:Content-ID
+        :Content-Description; bh=MERd46pXoxdAbyvpkZTMb9RFV8Sr8RDXilhnlJdQTmw=; b=Hv27
+        e3G5WMd/0DI5UGFMBWaHJn3X97WbAQhu/1e9pCAYU/mA85ZIZ8uAgxJIUEbF86qbcWO72OYSK2kv3
+        V6Q035wddgePxjU4TCH7sSpmjBWmCaEHO++HplG5+Rds5hUQ0gn0HFpFTECB+hQyrkoYPD/rvWGr0
+        Xhqlx+zG5kbdWdxQX2zCZhXB9T/j95Ln/GhQShc++l30uw8q7lh70qPT6/uxnAvWx5PQFRgVH/mkl
+        B0OOGKRBzDr9TzUZswXl3fsJxS3V+hUc8oX7M97Riwn3wVJTYhQehX3UX2HUkHJTsPuKbIIPdjdsY
+        gEEZNKrQJtBImel2lSY/Tvl6x8at7Q==;
+Received: from ukleinek by master.debian.org with local (Exim 4.92)
+        (envelope-from <ukleinek@master.debian.org>)
+        id 1oDWWj-0000Mi-HJ; Mon, 18 Jul 2022 19:35:33 +0000
+From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= <ukleinek@debian.org>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        linux-iio@vger.kernel.org, Yves-Alexis Perez <corsac@debian.org>
+Subject: [PATCH 2/3] iio: humidity: dht11: Emit error messages for probe failures
+Date:   Mon, 18 Jul 2022 21:35:19 +0200
+Message-Id: <20220718193520.177648-2-ukleinek@debian.org>
+X-Mailer: git-send-email 2.36.1
+In-Reply-To: <20220718193520.177648-1-ukleinek@debian.org>
+References: <20220718193520.177648-1-ukleinek@debian.org>
 MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1568; h=from:subject; bh=9DQg2sf2ntMq7FMH0Xg0bGGvMeueWUkFFLpmrMWxG+4=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBi1bXyyFKGSnwJ5lZc1JlugtwuNDfJrA9n3VMXO/Gu QtCK9uGJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYtW18gAKCRDB/BR4rcrsCRCFCA CYt38qXeRvEoBXJp3ArkF9TouHYHtnMnyxiwnGLgfLZz7AXhqhB7pt3W1DWkB6AYcz3zZJuL7SkyDV uh8fdToatAsukoENoDXja4rfuiQU3707hhXnRBR0r7hwXcfoFGGXRLlHyHekW5hz+jfEpVgoi+s9Fo 8S/Lv0V6ubii1N8vMUIYAsfFq4wKyle24NmmiJbKHz4n2rICLFmfZiyYvvrw1HvIdrH7zXpGoedgP3 cnxQgbxpn5HS4R3eFkltuIXs2zXwWiqUrWyxvpy846vF8qZ9f6X21MmUCVrD0Xh9PZUeAypm2vMIcI Z9SyowZsp9hVGgVqtp8r+Y3dPFCmOo
+X-Developer-Key: i=ukleinek@debian.org; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Chris Morgan <macromorgan@hotmail.com>
+There are two exit points in the driver's probe function that fail
+silently. From a user perspective this is unsatisfactory because the
+device is unusable but there is no hint in the kernel log about the
+actual problem which makes it unnecessarily hard to fix the problem.
 
-Copy the scan_type details from the parent iio channel to the child.
-The scan_type is otherwise empty and things like the storagebits are
-zero (which causes a problem for the adc-joystick driver which
-validates the storagebits when used through a mux). I'm submitting this
-as an RFC because I'm not sure if this is the correct way to handle
-this scenario (a driver that checks the storagebits used with the iio
-multiplexer).
+Make use of dev_err_probe() to emit a problem indication which also does
+the right thing if requesting the gpio return -EPROBE_DEFER.
 
-Signed-off-by: Chris Morgan <macromorgan@hotmail.com>
+Signed-off-by: Uwe Kleine-König <ukleinek@debian.org>
 ---
- drivers/iio/multiplexer/iio-mux.c | 3 +++
- 1 file changed, 3 insertions(+)
+ drivers/iio/humidity/dht11.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
-index 93558fddfa9b..1de01ec878c4 100644
---- a/drivers/iio/multiplexer/iio-mux.c
-+++ b/drivers/iio/multiplexer/iio-mux.c
-@@ -322,6 +322,9 @@ static int mux_configure_channel(struct device *dev, struct mux *mux,
- 	if (page)
- 		devm_kfree(dev, page);
+diff --git a/drivers/iio/humidity/dht11.c b/drivers/iio/humidity/dht11.c
+index 891b6bf0b4ca..6182f4d2e9fc 100644
+--- a/drivers/iio/humidity/dht11.c
++++ b/drivers/iio/humidity/dht11.c
+@@ -302,7 +302,8 @@ static int dht11_probe(struct platform_device *pdev)
+ 	dht11->dev = dev;
+ 	dht11->gpiod = devm_gpiod_get(dev, NULL, GPIOD_IN);
+ 	if (IS_ERR(dht11->gpiod))
+-		return PTR_ERR(dht11->gpiod);
++		return dev_err_probe(dev, PTR_ERR(dht11->gpiod),
++				     "Failed to aquire GPIO\n");
  
-+	/* Copy scan type from parent to mux child. */
-+	chan->scan_type = pchan->scan_type;
+ 	dht11->irq = gpiod_to_irq(dht11->gpiod);
+ 	if (dht11->irq < 0) {
+@@ -323,7 +324,11 @@ static int dht11_probe(struct platform_device *pdev)
+ 	iio->channels = dht11_chan_spec;
+ 	iio->num_channels = ARRAY_SIZE(dht11_chan_spec);
+ 
+-	return devm_iio_device_register(dev, iio);
++	ret = devm_iio_device_register(dev, iio);
++	if (ret < 0)
++		return dev_err_probe(dev, ret, "Failed to register iio device\n");
 +
- 	return 0;
++	return 0;
  }
  
+ static struct platform_driver dht11_driver = {
 -- 
-2.25.1
+2.36.1
 
