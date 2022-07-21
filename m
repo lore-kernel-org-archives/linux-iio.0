@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 68B06C433EF
-	for <linux-iio@archiver.kernel.org>; Thu, 21 Jul 2022 15:32:48 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 07F4ACCA489
+	for <linux-iio@archiver.kernel.org>; Thu, 21 Jul 2022 15:33:03 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231805AbiGUPcp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 21 Jul 2022 11:32:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46610 "EHLO
+        id S232266AbiGUPdB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 21 Jul 2022 11:33:01 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46894 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231783AbiGUPcb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jul 2022 11:32:31 -0400
-Received: from mail-lj1-x234.google.com (mail-lj1-x234.google.com [IPv6:2a00:1450:4864:20::234])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2B996820FB
-        for <linux-iio@vger.kernel.org>; Thu, 21 Jul 2022 08:32:15 -0700 (PDT)
-Received: by mail-lj1-x234.google.com with SMTP id p6so2246416ljc.8
-        for <linux-iio@vger.kernel.org>; Thu, 21 Jul 2022 08:32:14 -0700 (PDT)
+        with ESMTP id S231601AbiGUPcl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jul 2022 11:32:41 -0400
+Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 285A087235
+        for <linux-iio@vger.kernel.org>; Thu, 21 Jul 2022 08:32:19 -0700 (PDT)
+Received: by mail-lf1-x130.google.com with SMTP id z22so3358135lfu.7
+        for <linux-iio@vger.kernel.org>; Thu, 21 Jul 2022 08:32:19 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=EQ3a4s4qAEwtcohIu8tm1jnBQEyD7eezvu0seYsojDk=;
-        b=pikqJKQKDc80pZvt5GG9B/77j9Vze0u0SHT/M63SdP85NaV/WJhfiWUx/O1iwBo1Zs
-         51WywlGFpQWGed8kGkk3jy3hRIlYyF6bMoDMzVFESaPihCyv2oGnsZBrm+fYFQQUvEfI
-         8SERir7uPVpgDr1aUxZpdzczhbLYBol8OzA6bkZU1Q4mIQjwb2Wno1DEK6jwYIdYnX3s
-         a7ZnCdCjHAjyZ8H5kdIxU1KB2fF5E+C2gKb1LQV8HYp2F5BTeFLPaSMuW8NDUaoIGUuS
-         eJ0tKfWVX9DsAu/i2o+lGMU/UooKmEoL+XO1TwpEoziUCJ/CUbB4nG9nYzyj0wOLRrVO
-         aDaA==
+        bh=KpbhzspuygFwG8vSA8m7O2wzJD0Js2bLL2ZwSFQUUh8=;
+        b=Wb0rgx/+JD0lUO5OIbB13AO2kBj5vUIgEXqqA/A7qkzZbSkf6H5TybPzAc3jLDRWZz
+         De4WQJnjI8sBvx/GegpfA1NIr8rFGrK6Aly5uAe3MV5JfBncMtME2wikDcSvchswZz2H
+         bGSdBZ3Y/eaVXJx/oekM+nPU6YMkzGlhvS+Y09AUAaM7BodBFWsZtMuaEw5YVtimcJIS
+         12YbKGbYvGnx4Nl49xdzjrX7XOE0OH5uVQJ28w4sEYFoPpSaJbKMOXPTslhG0MHUDNR2
+         RTtCrW1myAJqWrWmhMA5zngFS4b5D3FkPX1I6gujjeNsueoKwdJpWBTxFNTF4BpJE2bo
+         8+mA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=EQ3a4s4qAEwtcohIu8tm1jnBQEyD7eezvu0seYsojDk=;
-        b=yKOe/uhHsRgcrgPEC89dd5SYFsR0aihWUZePYUlyXqNzQbTNNrBIMI+SlFpHrBjMWA
-         d+kpWnZ69pkxMLiQ9pDlbpYTjzURO4VjEGD1zkAuI45/c3nz2jXBqxvYYKRND1254FVn
-         XpQ7Z8mW3UP3yLapqc6QlAliGsAbsEaX5mSFEL/hGU/u7aQAr8xu92WqTBQW598vaLAh
-         p2kC9c2lqG3a3Ws9iXQa3qn48NGVSKgpghwuLielKBEPXuPAE1dX9Y1wclH5JwkkitsU
-         clfyESuga/aJLiBHSXxO9fRCcZhIBnhyQa+uM3NYZHAVnw90flHCtl11A4ywr6bzjUiz
-         ERXA==
-X-Gm-Message-State: AJIora9MUbdTJB+4y0cVjvqFxvjjBGLH1dEnEcdaS1Iu7F1J3J++Ygeq
-        koDvtstfnOdKQgGfTin1piG50Q==
-X-Google-Smtp-Source: AGRyM1tu65CRx5q05gwHKFNcvSCCItevg0NuGLpkWKa4yuq3GQbnJvL5P0DuUjKl3ITIfcyOAD7U5g==
-X-Received: by 2002:a2e:164b:0:b0:25d:eb67:7161 with SMTP id 11-20020a2e164b000000b0025deb677161mr256507ljw.70.1658417531893;
-        Thu, 21 Jul 2022 08:32:11 -0700 (PDT)
+        bh=KpbhzspuygFwG8vSA8m7O2wzJD0Js2bLL2ZwSFQUUh8=;
+        b=JX0UYxBGYf8sQiHXLtzxgDIIXjqv9+zVDIKjbR2u93lrDeqsJ2TozZ+XaAkxgO010+
+         qsLgTI+xbDQDszzttDBOV+hNGbcTVxO6qHN4lo6u67Z9dA8lzKDcDpDJJcWIqG5ajQk0
+         AeR6C0PvvIpuN2U7A749v12uwJ12rWxnyxRKddKCWK/UdIwDvDA3gghKrrnVT/wu6w2J
+         O4Ef3rrU0sF2yY1lCzdfDEmuDpzhANT7yM3HFNTtYU07v9iLDvvE0DRHOjjBW3MutM8d
+         3ZcH+RGRKXsk5r35HWvqWXuXLX6+a029ms1GcpKHCX8ioMus8ssZP2YBIa4/pxkXTqE9
+         8QxQ==
+X-Gm-Message-State: AJIora/yE055AOvimFrvQ8HM3xdKxp6jovlEHsmWiKUkybtMYQa973Xs
+        YhvzyCd8XVSWOY7WD2o8DyCFXA==
+X-Google-Smtp-Source: AGRyM1ubWL7w8E7CRaphPTSvA0k3fiWFSqprLYOLH+JjbjSiG740pSD/ln4Nfs04hmWe6t26JztkWg==
+X-Received: by 2002:a05:6512:2809:b0:489:ff8e:44f2 with SMTP id cf9-20020a056512280900b00489ff8e44f2mr23393295lfb.70.1658417537183;
+        Thu, 21 Jul 2022 08:32:17 -0700 (PDT)
 Received: from krzk-bin.. (89-162-31-138.fiber.signal.no. [89.162.31.138])
-        by smtp.gmail.com with ESMTPSA id a27-20020ac25e7b000000b0048a2995772asm504604lfr.73.2022.07.21.08.32.09
+        by smtp.gmail.com with ESMTPSA id a27-20020ac25e7b000000b0048a2995772asm504604lfr.73.2022.07.21.08.32.14
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 21 Jul 2022 08:32:11 -0700 (PDT)
+        Thu, 21 Jul 2022 08:32:16 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Thierry Reding <thierry.reding@gmail.com>,
         Sam Ravnborg <sam@ravnborg.org>,
@@ -96,9 +96,9 @@ To:     Thierry Reding <thierry.reding@gmail.com>,
         linux-fbdev@vger.kernel.org, netdev@vger.kernel.org,
         linux-spi@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH 2/6] dt-bindings: eeprom: at25: explicitly list SPI CPHA and CPOL
-Date:   Thu, 21 Jul 2022 17:31:51 +0200
-Message-Id: <20220721153155.245336-3-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH 4/6] dt-bindings: misc: explicitly list SPI CPHA and CPOL
+Date:   Thu, 21 Jul 2022 17:31:53 +0200
+Message-Id: <20220721153155.245336-5-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220721153155.245336-1-krzysztof.kozlowski@linaro.org>
 References: <20220721153155.245336-1-krzysztof.kozlowski@linaro.org>
@@ -115,16 +115,16 @@ spi-peripheral-props.yaml schema.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- Documentation/devicetree/bindings/eeprom/at25.yaml | 10 ++++++++--
- 1 file changed, 8 insertions(+), 2 deletions(-)
+ Documentation/devicetree/bindings/misc/olpc,xo1.75-ec.yaml | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/devicetree/bindings/eeprom/at25.yaml b/Documentation/devicetree/bindings/eeprom/at25.yaml
-index fbf99e346966..64666624b6aa 100644
---- a/Documentation/devicetree/bindings/eeprom/at25.yaml
-+++ b/Documentation/devicetree/bindings/eeprom/at25.yaml
-@@ -65,9 +65,15 @@ properties:
-       For 9 bits, the MSB of the address is sent as bit 3 of the instruction
-       byte, before the address byte.
+diff --git a/Documentation/devicetree/bindings/misc/olpc,xo1.75-ec.yaml b/Documentation/devicetree/bindings/misc/olpc,xo1.75-ec.yaml
+index b3c45c046ba5..a198848283d2 100644
+--- a/Documentation/devicetree/bindings/misc/olpc,xo1.75-ec.yaml
++++ b/Documentation/devicetree/bindings/misc/olpc,xo1.75-ec.yaml
+@@ -28,7 +28,10 @@ properties:
+     description: GPIO uspecifier of the CMD pin
+     maxItems: 1
  
 -  spi-cpha: true
 +  spi-cpha:
@@ -132,14 +132,8 @@ index fbf99e346966..64666624b6aa 100644
 +    description:
 +      The device requires shifted clock phase (CPHA) mode.
  
--  spi-cpol: true
-+  spi-cpol:
-+    type: boolean
-+    description:
-+      The device requires inverse clock polarity (CPOL) mode.
- 
-   read-only:
-     description:
+ required:
+   - compatible
 -- 
 2.34.1
 
