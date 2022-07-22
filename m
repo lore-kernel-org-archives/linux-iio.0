@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B58E7C433EF
-	for <linux-iio@archiver.kernel.org>; Fri, 22 Jul 2022 13:04:17 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1BFB6C43334
+	for <linux-iio@archiver.kernel.org>; Fri, 22 Jul 2022 13:04:20 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235297AbiGVNEG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 22 Jul 2022 09:04:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49362 "EHLO
+        id S235275AbiGVNER (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 22 Jul 2022 09:04:17 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:49530 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235242AbiGVNEF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jul 2022 09:04:05 -0400
-Received: from mail-lf1-x133.google.com (mail-lf1-x133.google.com [IPv6:2a00:1450:4864:20::133])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1DD1BAF964;
-        Fri, 22 Jul 2022 06:04:04 -0700 (PDT)
-Received: by mail-lf1-x133.google.com with SMTP id a23so5143641lfm.10;
-        Fri, 22 Jul 2022 06:04:04 -0700 (PDT)
+        with ESMTP id S235357AbiGVNEL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jul 2022 09:04:11 -0400
+Received: from mail-lj1-x230.google.com (mail-lj1-x230.google.com [IPv6:2a00:1450:4864:20::230])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 94247AFB45;
+        Fri, 22 Jul 2022 06:04:08 -0700 (PDT)
+Received: by mail-lj1-x230.google.com with SMTP id j26so5387464lji.1;
+        Fri, 22 Jul 2022 06:04:08 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=LOBKkyxGhqnbdYbdfpuPA+uTBiXYlsIeG7X+Dc9rmpo=;
-        b=OQHk61dP9obbTlyXmSO2X+FMtCLoE6dPTyRRLEcPhk40HEWUbjNeifF65Zcku+so7K
-         jsg+z4/+KKCEpHEZpKJEWC+vQd4FKHHYeD78F2hS8zHPExtr37WFWGjlTZWaypLzBMWS
-         GsIWsyepXS3KN3JWI/3BQglzvjWqUMq0JVPK1ms7zAz9qAmRdVfxdlgU3zddWIythcDa
-         Si5f5dKXjebmrEVnCezJQAq9B+wwtRq/Fs8szalCrVnhhAdGc2ZrtRl3FgTwE3B9Ucxa
-         zRG1iEzOyXxuUcDK0hORy7D0cK36PNl4NhRTIOB+3x+1UoEjy3GAYe/4GOs5NUWtdq/K
-         jW4Q==
+        bh=x/nyurVBH7ue7nYvu0dJP8wwIsDDtOcE5tkxfN9/wqE=;
+        b=B64q7QIIbYL/qDMsOwTzd5v9HYBhBbi6BcoRhUZxe/eHlvCs/dZPokGubRqDLWGMFa
+         dmeeRkTBcCSA5rHDZ8SsFo/wdBzJ797eaiyuXcdCabdeidSE3tP7a7qRvAgHCfbJNzTH
+         oKB1uyzuEZWwCyYphBzo3v3/uvAm8Sh8pc/aFK3zdj0lhOQiyJnvbSezsqDszAUUpkNz
+         /9C3ESH6S9p1vZdFktFWb9G2b0Ucrvcdo+1mNXOjD47r1zZDyGEo4QCNk5cQkrEySjRt
+         8Sx0ZGFx6z1a4uwWupv+RIDMeEoLO23J6Z6tWxii2zYpKM6sZ2+/k1p0XbVG7/8/aTp9
+         MCVA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=LOBKkyxGhqnbdYbdfpuPA+uTBiXYlsIeG7X+Dc9rmpo=;
-        b=H58xRhXxyjaS4+7BI4ftjD/svzceJZNxt3cbk5KfuRNBUfKop6qa24spRgQgH3jtyt
-         KFvFXeKFol/6t/su0CPEOmKgbnlJFU1LwpgB8VvtTQhgE4l89/mIXVPk4Dt2SQzHH31U
-         zl/P34i0eDeJ3dO6y/9r2mHaxV50e36rGdOiR5MFG9aR1hN+rvNBSooeirfyKR1ciAmL
-         DIcHSG/9xgkCeccHTEq8Zn7Bgw+58b5WLuBMoaFN6F34vLsCU+CNkrEEo36lVfgp/LVL
-         b7wQeDA7QwEowr/xdxI4OOhrbrA8yqWFOnDDVddjRVoHIffe351qdskcW/pNjnS4tcM1
-         UWNw==
-X-Gm-Message-State: AJIora8RgxzPoLAHIjZ0kBxGJme7/HBzHVNDqUiPCM9oWNqVeohfc7z6
-        RN8oF4e7TzYD4qgykseQqgo=
-X-Google-Smtp-Source: AGRyM1tjTFWg3W3r/SkCWGS4CibsSM9q5ByXOxNFED0J3QMvDAZuY4YLnzVyCuvO5PKITYkGzS001A==
-X-Received: by 2002:a05:6512:1109:b0:489:e7b4:7cc with SMTP id l9-20020a056512110900b00489e7b407ccmr157051lfg.617.1658495043622;
-        Fri, 22 Jul 2022 06:04:03 -0700 (PDT)
+        bh=x/nyurVBH7ue7nYvu0dJP8wwIsDDtOcE5tkxfN9/wqE=;
+        b=qvtYf02G0YooF6/PLKfnsU74GkddG60B4YQ1rvh1wzZEw68+qTiFCtClq2qF9e9yBs
+         McI/7qgcBtN2NwAkrUEXhI2J1e7BdW4nFwE96D1GxHbWgUlIq7uGTRITAPmwXmXKg3dp
+         VUtq6WlmNPMAdM1+uBgASUhYdgG9kBDVIhjUjFcRLNSIPnWgbwrPpgpG9hZdPz+v9ZKs
+         dlvnEOfrCTjEapw3PcI51x8PkDVUxljzl7QgHAqH9teJOiON7y66+lMQ4riIHOmMdcln
+         ILijsSbinyf1flKzRDKjm9xp4I+buE2KnMe5Kb02ogv4Ahen9QEDHMbDpXEv2UkYOn/s
+         7nyQ==
+X-Gm-Message-State: AJIora/2LvT1lUaHEpfqKexAm1b2IxgcqMcGlhyuArRjmjT0WQs6Suzg
+        OlYxjq2GL5QNMwC8YvzBZ6Y=
+X-Google-Smtp-Source: AGRyM1ucnvYY1/cFheV/5KueYIJLX3zfCMGKQb/vSJLEQXwFcgOBy73H3rSIardVq8rZukT5Y0LJ6Q==
+X-Received: by 2002:a2e:934f:0:b0:250:a7bc:2b8f with SMTP id m15-20020a2e934f000000b00250a7bc2b8fmr165404ljh.512.1658495046816;
+        Fri, 22 Jul 2022 06:04:06 -0700 (PDT)
 Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id s18-20020a056512203200b004786d37229csm1039673lfs.155.2022.07.22.06.04.01
+        by smtp.gmail.com with ESMTPSA id s18-20020a056512203200b004786d37229csm1039673lfs.155.2022.07.22.06.04.05
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Fri, 22 Jul 2022 06:04:03 -0700 (PDT)
+        Fri, 22 Jul 2022 06:04:06 -0700 (PDT)
 From:   Marcus Folkesson <marcus.folkesson@gmail.com>
 To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Kent Gustavsson <kent@minoris.se>,
@@ -57,9 +57,9 @@ To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v4 3/9] iio: adc: mcp3911: use correct formula for AD conversion
-Date:   Fri, 22 Jul 2022 15:07:20 +0200
-Message-Id: <20220722130726.7627-4-marcus.folkesson@gmail.com>
+Subject: [PATCH v4 5/9] iio: adc: mcp3911: add support for buffers
+Date:   Fri, 22 Jul 2022 15:07:22 +0200
+Message-Id: <20220722130726.7627-6-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220722130726.7627-1-marcus.folkesson@gmail.com>
 References: <20220722130726.7627-1-marcus.folkesson@gmail.com>
@@ -69,52 +69,198 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The ADC conversion is actually not rail-to-rail but with a factor 1.5.
-Make use of this factor when calculating actual voltage.
+Add support for buffers to make the driver fit for more usecases.
 
-Fixes: 3a89b289df5d ("iio: adc: add support for mcp3911")
 Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- drivers/iio/adc/mcp3911.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+ drivers/iio/adc/mcp3911.c | 96 ++++++++++++++++++++++++++++++++++++---
+ 1 file changed, 89 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
-index f8875076ae80..890af7dca62d 100644
+index 00dadb1761dc..96c0a2a50c7c 100644
 --- a/drivers/iio/adc/mcp3911.c
 +++ b/drivers/iio/adc/mcp3911.c
-@@ -40,8 +40,8 @@
- #define MCP3911_CHANNEL(x)		(MCP3911_REG_CHANNEL0 + x * 3)
- #define MCP3911_OFFCAL(x)		(MCP3911_REG_OFFCAL_CH0 + x * 6)
+@@ -5,15 +5,22 @@
+  * Copyright (C) 2018 Marcus Folkesson <marcus.folkesson@gmail.com>
+  * Copyright (C) 2018 Kent Gustavsson <kent@minoris.se>
+  */
++#include <linux/bitfield.h>
++#include <linux/bits.h>
+ #include <linux/clk.h>
+ #include <linux/delay.h>
+ #include <linux/err.h>
+ #include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/trigger.h>
+ #include <linux/module.h>
+ #include <linux/mod_devicetable.h>
+ #include <linux/property.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/spi/spi.h>
++#include <asm/unaligned.h>
  
--/* Internal voltage reference in uV */
--#define MCP3911_INT_VREF_UV		1200000
-+/* Internal voltage reference in mV */
-+#define MCP3911_INT_VREF_MV		1200
+ #define MCP3911_REG_CHANNEL0		0x00
+ #define MCP3911_REG_CHANNEL1		0x03
+@@ -22,6 +29,7 @@
+ #define MCP3911_REG_GAIN		0x09
  
- #define MCP3911_REG_READ(reg, id)	((((reg) << 1) | ((id) << 5) | (1 << 0)) & 0xff)
- #define MCP3911_REG_WRITE(reg, id)	((((reg) << 1) | ((id) << 5) | (0 << 0)) & 0xff)
-@@ -139,11 +139,18 @@ static int mcp3911_read_raw(struct iio_dev *indio_dev,
- 
- 			*val = ret / 1000;
- 		} else {
--			*val = MCP3911_INT_VREF_UV;
-+			*val = MCP3911_INT_VREF_MV;
- 		}
- 
--		*val2 = 24;
--		ret = IIO_VAL_FRACTIONAL_LOG2;
-+		/*
-+		 * For 24bit Conversion
-+		 * Raw = ((Voltage)/(Vref) * 2^23 * Gain * 1.5
-+		 * Voltage = Raw * (Vref)/(2^23 * Gain * 1.5)
-+		 */
+ #define MCP3911_REG_STATUSCOM		0x0a
++#define MCP3911_STATUSCOM_READ		GENMASK(7, 6)
+ #define MCP3911_STATUSCOM_CH1_24WIDTH	BIT(4)
+ #define MCP3911_STATUSCOM_CH0_24WIDTH	BIT(3)
+ #define MCP3911_STATUSCOM_EN_OFFCAL	BIT(2)
+@@ -54,6 +62,13 @@ struct mcp3911 {
+ 	struct regulator *vref;
+ 	struct clk *clki;
+ 	u32 dev_addr;
++	struct {
++		u32 channels[MCP3911_NUM_CHANNELS];
++		s64 ts __aligned(8);
++	} scan;
 +
-+		/* val2 = (2^23 * 1.5) */
-+		*val2 = 12582912;
-+		ret = IIO_VAL_FRACTIONAL;
- 		break;
++	u8 tx_buf[MCP3911_NUM_CHANNELS * 3] __aligned(IIO_DMA_MINALIGN);
++	u8 rx_buf[MCP3911_NUM_CHANNELS * 3];
+ };
+ 
+ static int mcp3911_read(struct mcp3911 *adc, u8 reg, u32 *val, u8 len)
+@@ -196,16 +211,63 @@ static int mcp3911_write_raw(struct iio_dev *indio_dev,
+ 		.type = IIO_VOLTAGE,				\
+ 		.indexed = 1,					\
+ 		.channel = idx,					\
++		.scan_index = idx,				\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+ 			BIT(IIO_CHAN_INFO_OFFSET) |		\
+ 			BIT(IIO_CHAN_INFO_SCALE),		\
++		.scan_type = {					\
++			.sign = 's',				\
++			.realbits = 24,				\
++			.storagebits = 32,			\
++			.endianness = IIO_BE,			\
++		},						\
+ }
+ 
+ static const struct iio_chan_spec mcp3911_channels[] = {
+ 	MCP3911_CHAN(0),
+ 	MCP3911_CHAN(1),
++	IIO_CHAN_SOFT_TIMESTAMP(2),
+ };
+ 
++static irqreturn_t mcp3911_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct mcp3911 *adc = iio_priv(indio_dev);
++	struct spi_transfer xfer = {
++		.tx_buf = adc->tx_buf,
++		.rx_buf = adc->rx_buf,
++		.len = sizeof(adc->rx_buf),
++	};
++	int scan_index;
++	int i = 0;
++	int ret;
++
++	mutex_lock(&adc->lock);
++	adc->tx_buf[0] = MCP3911_REG_READ(MCP3911_CHANNEL(0), adc->dev_addr);
++	ret = spi_sync_transfer(adc->spi, &xfer, 1);
++	if (ret < 0) {
++		dev_warn(&adc->spi->dev,
++				"failed to get conversion data\n");
++		goto out;
++	}
++
++	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
++			indio_dev->masklength) {
++		const struct iio_chan_spec *scan_chan = &indio_dev->channels[scan_index];
++
++		adc->scan.channels[i] = get_unaligned_be24(&adc->rx_buf[scan_chan->channel * 3]);
++		i++;
++	}
++	iio_push_to_buffers_with_timestamp(indio_dev, &adc->scan,
++			iio_get_time_ns(indio_dev));
++out:
++	mutex_unlock(&adc->lock);
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
+ static const struct iio_info mcp3911_info = {
+ 	.read_raw = mcp3911_read_raw,
+ 	.write_raw = mcp3911_write_raw,
+@@ -214,7 +276,7 @@ static const struct iio_info mcp3911_info = {
+ static int mcp3911_config(struct mcp3911 *adc)
+ {
+ 	struct device *dev = &adc->spi->dev;
+-	u32 configreg;
++	u32 regval;
+ 	int ret;
+ 
+ 	ret = device_property_read_u32(dev, "microchip,device-addr", &adc->dev_addr);
+@@ -233,29 +295,43 @@ static int mcp3911_config(struct mcp3911 *adc)
  	}
+ 	dev_dbg(&adc->spi->dev, "use device address %i\n", adc->dev_addr);
+ 
+-	ret = mcp3911_read(adc, MCP3911_REG_CONFIG, &configreg, 2);
++	ret = mcp3911_read(adc, MCP3911_REG_CONFIG, &regval, 2);
+ 	if (ret)
+ 		return ret;
+ 
++	regval &= ~MCP3911_CONFIG_VREFEXT;
+ 	if (adc->vref) {
+ 		dev_dbg(&adc->spi->dev, "use external voltage reference\n");
+-		configreg |= MCP3911_CONFIG_VREFEXT;
++		regval |= FIELD_PREP(MCP3911_CONFIG_VREFEXT, 1);
+ 	} else {
+ 		dev_dbg(&adc->spi->dev,
+ 			"use internal voltage reference (1.2V)\n");
+-		configreg &= ~MCP3911_CONFIG_VREFEXT;
++		regval |= FIELD_PREP(MCP3911_CONFIG_VREFEXT, 0);
+ 	}
+ 
++	regval &= ~MCP3911_CONFIG_CLKEXT;
+ 	if (adc->clki) {
+ 		dev_dbg(&adc->spi->dev, "use external clock as clocksource\n");
+-		configreg |= MCP3911_CONFIG_CLKEXT;
++		regval |= FIELD_PREP(MCP3911_CONFIG_CLKEXT, 1);
+ 	} else {
+ 		dev_dbg(&adc->spi->dev,
+ 			"use crystal oscillator as clocksource\n");
+-		configreg &= ~MCP3911_CONFIG_CLKEXT;
++		regval |= FIELD_PREP(MCP3911_CONFIG_CLKEXT, 0);
+ 	}
+ 
+-	return  mcp3911_write(adc, MCP3911_REG_CONFIG, configreg, 2);
++	ret = mcp3911_write(adc, MCP3911_REG_CONFIG, regval, 2);
++	if (ret)
++		return ret;
++
++	ret = mcp3911_read(adc, MCP3911_REG_STATUSCOM, &regval, 2);
++	if (ret)
++		return ret;
++
++	/* Address counter incremented, cycle through register types */
++	regval &= ~MCP3911_STATUSCOM_READ;
++	regval |= FIELD_PREP(MCP3911_STATUSCOM_READ, 0x02);
++
++	return  mcp3911_write(adc, MCP3911_REG_STATUSCOM, regval, 2);
+ }
+ 
+ static void mcp3911_cleanup_clock(void *_adc)
+@@ -343,6 +419,12 @@ static int mcp3911_probe(struct spi_device *spi)
+ 
+ 	mutex_init(&adc->lock);
+ 
++	ret = devm_iio_triggered_buffer_setup(&spi->dev, indio_dev,
++			NULL,
++			mcp3911_trigger_handler, NULL);
++	if (ret)
++		return ret;
++
+ 	return devm_iio_device_register(&adc->spi->dev, indio_dev);
+ }
  
 -- 
 2.36.1
