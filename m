@@ -2,136 +2,93 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id DF8BAC433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Jul 2022 21:29:57 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 40C45C43334
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Jul 2022 21:32:55 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237400AbiGYV34 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Jul 2022 17:29:56 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48120 "EHLO
+        id S237499AbiGYVcx (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Jul 2022 17:32:53 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55154 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237466AbiGYV3N (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2022 17:29:13 -0400
-Received: from mail-wr1-x430.google.com (mail-wr1-x430.google.com [IPv6:2a00:1450:4864:20::430])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3B84024BE6
-        for <linux-iio@vger.kernel.org>; Mon, 25 Jul 2022 14:28:02 -0700 (PDT)
-Received: by mail-wr1-x430.google.com with SMTP id z13so17708201wro.13
-        for <linux-iio@vger.kernel.org>; Mon, 25 Jul 2022 14:28:02 -0700 (PDT)
+        with ESMTP id S237147AbiGYVcg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2022 17:32:36 -0400
+Received: from mail-ej1-x62d.google.com (mail-ej1-x62d.google.com [IPv6:2a00:1450:4864:20::62d])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 10BA9C60;
+        Mon, 25 Jul 2022 14:30:09 -0700 (PDT)
+Received: by mail-ej1-x62d.google.com with SMTP id j22so22892022ejs.2;
+        Mon, 25 Jul 2022 14:30:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linexp-org.20210112.gappssmtp.com; s=20210112;
-        h=from:to:cc:subject:date:message-id:in-reply-to:references
-         :mime-version:content-transfer-encoding;
-        bh=hWFZXwysMvsN10lXDK6sChpf4X2qhnFs4AeSH8mvwTs=;
-        b=V7mOn4CmTbqh6bMglDam17dQJNZ1uZrNkVGQ9enufVzer/0mK6rPnBa9tF2CYQq5cg
-         vaNSspxKpPyqo32kEpyyS60GvsAsJWRR63UZwIyE/ZsQYTKhNDDJeYh/7BukklPce9nj
-         PGeuq+xjSewtJiwagQ+ykjt7JcfqbcEpWEjmtFqX63+C+7ZHBBIApfDFjJUSg08iNFL+
-         WMunOtTVpalGGXY+2NCGXOGoVwtIx7k67mk+Hgz6tL3ONvrQNdPzimxNLZdJ9A0zBcDU
-         c4Tx1rEyKbqKRyH/VNBC6tDn3pUuPvQQkTcLEr0zeOECp+W8KVMi/sFUeokpdyPMEj7Q
-         T+gA==
+        d=gmail.com; s=20210112;
+        h=mime-version:references:in-reply-to:from:date:message-id:subject:to
+         :cc;
+        bh=hG6d5UoxHzM3cTAhPbPewA+gfVWFpNNpNHiESxa2M/I=;
+        b=hUYv/m11ctMGaI38/nWpbh4grCb8qsdJY9IzCA9Spxs8E0xNlb58l4+DdK7Aj7G8I1
+         eLbR1GmTT4h80wt/tm2+3xCMiIa6mbJdfRNHpByY2eMShJavGljyfmh5ZAHW+FG0DOJk
+         hovjz7kgX2g2FTuYAAkU879Q5Vmjzz8zRqG+fbTZ3oi/2t5K4LfrU4fLegN3xsCyRH82
+         JQQBw+UnmUk9lQwIPOssovOWcYEvb6Bf/leWsA+bzsimgnnmmGU55z7Fl6DUzbdVH9AL
+         ubEJEgqrjOPMZ2LHnS+tW7CmAAB+1CXgYvTvbJSvZut4WGg5prJ3f5KO/lkUlV8Owhyg
+         45PQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
-         :references:mime-version:content-transfer-encoding;
-        bh=hWFZXwysMvsN10lXDK6sChpf4X2qhnFs4AeSH8mvwTs=;
-        b=MjcYXMCA4GghnZrW6RqMjHNQNII6XfI9lC5/F9Fm+wsgt4NRBqbB/ipYtqueXkgkJv
-         8PJeEbUxLUajiwQVh7ZMyvIkEHhtrTK6bBs555FLv78qmARExuzPqZG/RoQ84TrLEJr9
-         tgS1Xo9gbEq/ODN6WqKsfWHk2vqqCk0EEJCPKozJm4MTQVpumc7oUJ539iPZ+w08pgLc
-         ZrBAxdZD0hShHAd2tMVNa3lbFHi7W2fvvUFlzX8oAQCeA1/gByaYKHbRMRyKISZWvg/d
-         5GdqdDhU4IcLspBe3sDexCoMn81rmB7F+tsGa2aqs1o1LmSRxgFdV02n+IeCtIlOYsXH
-         30Jg==
-X-Gm-Message-State: AJIora8Ijnzo6SlmxTYH4r9loUu0IlNlwuqmLUMza6ZbLxtHTPKd+YyV
-        2kasdR+i3j5TOuEErPOwhudNjw==
-X-Google-Smtp-Source: AGRyM1sKKjruioCvoZ3EI2JZMo3qqzjeRP7j12dQmi1UnueZHyDTnJl5KV6/Y//5r/xXSnueikdBQg==
-X-Received: by 2002:adf:e193:0:b0:21e:626c:d082 with SMTP id az19-20020adfe193000000b0021e626cd082mr8548154wrb.159.1658784480791;
-        Mon, 25 Jul 2022 14:28:00 -0700 (PDT)
-Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:1780:8e54:dd38:6668])
-        by smtp.gmail.com with ESMTPSA id r17-20020a5d52d1000000b0021d68a504cbsm12668772wrv.94.2022.07.25.14.27.58
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 25 Jul 2022 14:28:00 -0700 (PDT)
-From:   Daniel Lezcano <daniel.lezcano@linexp.org>
-To:     daniel.lezcano@linaro.org, rafael@kernel.org
-Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
-        linux-kernel@vger.kernel.org, khilman@baylibre.com,
-        abailon@baylibre.com, lukasz.luba@arm.com, broonie@kernel.org,
-        damien.lemoal@opensource.wdc.com, heiko@sntech.de,
-        hayashi.kunihiko@socionext.com, mhiramat@kernel.org,
-        talel@amazon.com, thierry.reding@gmail.com, digetx@gmail.com,
-        jonathanh@nvidia.com, anarsoul@gmail.com, tiny.windzz@gmail.com,
-        baolin.wang7@gmail.com, f.fainelli@gmail.com,
-        bjorn.andersson@linaro.org, mcoquelin.stm32@gmail.com,
-        glaroque@baylibre.com, miquel.raynal@bootlin.com,
-        shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
-        matthias.bgg@gmail.com, j-keerthy@ti.com,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Chen-Yu Tsai <wens@csie.org>,
-        Jernej Skrabec <jernej.skrabec@gmail.com>,
-        Samuel Holland <samuel@sholland.org>,
-        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
-        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
-        sunXi SoC support),
-        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support)
-Subject: [PATCH v2 27/32] iio/drivers/sun4i_gpadc: Switch to new of thermal API
-Date:   Mon, 25 Jul 2022 23:26:32 +0200
-Message-Id: <20220725212637.2818207-28-daniel.lezcano@linexp.org>
-X-Mailer: git-send-email 2.25.1
-In-Reply-To: <20220725212637.2818207-1-daniel.lezcano@linexp.org>
-References: <20220725212637.2818207-1-daniel.lezcano@linexp.org>
+        h=x-gm-message-state:mime-version:references:in-reply-to:from:date
+         :message-id:subject:to:cc;
+        bh=hG6d5UoxHzM3cTAhPbPewA+gfVWFpNNpNHiESxa2M/I=;
+        b=btp3z5H8I2oLfdKK/h5+bGHwugSkBl99qTOddJEy0sgctg4XM6gg3CYPDDrd5KmBum
+         /Kh8o7GcR7B8bAGDRS35hhZNk1v6sAByHnj/1CWGhQBefYAeOTXR9BlGMnMVrwioFgC6
+         l5quSK0NAoKt9LfrngXuDDnn7XtOMo6vYsXFe7n38moRNBYfzI9zgq9nqNM3B2Rm6ANa
+         iW/KOEhJBBABZQwl0+KAKPE41kkoXpCKTJsjgO3AFU6VBFyjZfRZgFh+ekEir/g7CD3Y
+         socgimapAZHDTT0EtwEpaOFTo2rj5NqIk2gg0egyWJNP8hYGEt8F6HREkL6azuHfwy/5
+         zsMw==
+X-Gm-Message-State: AJIora9DxFvslLqJhzkzRPLFQVCkRWCcOrCXHXzOMBe431xhRdGV5OB6
+        l7Jw9nVTgcwp7t2oi+fteII4ielDG6M+veF7v40=
+X-Google-Smtp-Source: AGRyM1s0wvsIZHHycPFxyzHmwkc7yXG2GZIJ1xIpDPc8GWj20AW4SBVxC6aj9eUN+kvENQaZZ6DkeVCfCdcAZwg5QH4=
+X-Received: by 2002:a17:907:6297:b0:72f:9aad:fcb with SMTP id
+ nd23-20020a170907629700b0072f9aad0fcbmr11312748ejc.161.1658784607947; Mon, 25
+ Jul 2022 14:30:07 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220725184439.7618-1-ddrokosov@sberdevices.ru> <20220725184439.7618-2-ddrokosov@sberdevices.ru>
+In-Reply-To: <20220725184439.7618-2-ddrokosov@sberdevices.ru>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 25 Jul 2022 23:29:31 +0200
+Message-ID: <CAHp75VcpY1vwHCOaJNb-qw+3gsMyv9mJe+QaWrjiTKOdj1xfYg@mail.gmail.com>
+Subject: Re: [PATCH v1 1/3] units: complement the set of Hz units
+To:     Dmitry Rokosov <DDRokosov@sberdevices.ru>
+Cc:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
+        "andriy.shevchenko@linux.intel.com" 
+        <andriy.shevchenko@linux.intel.com>,
+        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "wsa@kernel.org" <wsa@kernel.org>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
+        "jbhayana@google.com" <jbhayana@google.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        kernel <kernel@sberdevices.ru>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The thermal OF code has a new API allowing to migrate the OF
-initialization to a simpler approach. The ops are no longer device
-tree specific and are the generic ones provided by the core code.
+On Mon, Jul 25, 2022 at 8:44 PM Dmitry Rokosov <DDRokosov@sberdevices.ru> wrote:
+>
+> Currently, Hz units do not have milli, micro and nano Hz coefficients.
+> Some drivers (IIO especially) use their analogues to calculate
+> appropriate Hz values. This patch includes them to units.h definitions,
+> so they can be used from different kernel places.
 
-Convert the ops to the thermal_zone_device_ops format and use the new
-API to register the thermal zone with these generic ops.
+...
 
-Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
----
- drivers/iio/adc/sun4i-gpadc-iio.c | 12 ++++++------
- 1 file changed, 6 insertions(+), 6 deletions(-)
+> +#define NHZ_PER_HZ             1000000000UL
+> +#define UHZ_PER_HZ             1000000UL
+> +#define MHZ_PER_HZ             1000UL
 
-diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
-index 2d393a4dfff6..13d1e937357c 100644
---- a/drivers/iio/adc/sun4i-gpadc-iio.c
-+++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -412,9 +412,9 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
- 	return 0;
- }
- 
--static int sun4i_gpadc_get_temp(void *data, int *temp)
-+static int sun4i_gpadc_get_temp(struct thermal_zone_device *tz, int *temp)
- {
--	struct sun4i_gpadc_iio *info = data;
-+	struct sun4i_gpadc_iio *info = tz->devdata;
- 	int val, scale, offset;
- 
- 	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
-@@ -428,7 +428,7 @@ static int sun4i_gpadc_get_temp(void *data, int *temp)
- 	return 0;
- }
- 
--static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
-+static const struct thermal_zone_device_ops sun4i_ts_tz_ops = {
- 	.get_temp = &sun4i_gpadc_get_temp,
- };
- 
-@@ -637,9 +637,9 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
- 	pm_runtime_enable(&pdev->dev);
- 
- 	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
--		info->tzd = thermal_zone_of_sensor_register(info->sensor_device,
--							    0, info,
--							    &sun4i_ts_tz_ops);
-+		info->tzd = thermal_of_zone_register(info->sensor_device,
-+						     0, info,
-+						     &sun4i_ts_tz_ops);
- 		/*
- 		 * Do not fail driver probing when failing to register in
- 		 * thermal because no thermal DT node is found.
+mHZ perhaps?
+
+>  #define HZ_PER_KHZ             1000UL
+>  #define KHZ_PER_MHZ            1000UL
+>  #define HZ_PER_MHZ             1000000UL
+
+
 -- 
-2.25.1
-
+With Best Regards,
+Andy Shevchenko
