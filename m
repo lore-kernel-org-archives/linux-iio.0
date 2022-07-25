@@ -2,107 +2,98 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id ED6BAC433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Jul 2022 21:25:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 70127C433EF
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Jul 2022 21:28:16 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236864AbiGYVZB (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Jul 2022 17:25:01 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:45818 "EHLO
+        id S236999AbiGYV2O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Jul 2022 17:28:14 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:48876 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229636AbiGYVZA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2022 17:25:00 -0400
-Received: from mail-ej1-x634.google.com (mail-ej1-x634.google.com [IPv6:2a00:1450:4864:20::634])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BAC601D0F8;
-        Mon, 25 Jul 2022 14:24:59 -0700 (PDT)
-Received: by mail-ej1-x634.google.com with SMTP id fy29so22759743ejc.12;
-        Mon, 25 Jul 2022 14:24:59 -0700 (PDT)
+        with ESMTP id S237418AbiGYV1m (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2022 17:27:42 -0400
+Received: from mail-ej1-x62a.google.com (mail-ej1-x62a.google.com [IPv6:2a00:1450:4864:20::62a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E6DBE24BF6
+        for <linux-iio@vger.kernel.org>; Mon, 25 Jul 2022 14:27:23 -0700 (PDT)
+Received: by mail-ej1-x62a.google.com with SMTP id tk8so22840993ejc.7
+        for <linux-iio@vger.kernel.org>; Mon, 25 Jul 2022 14:27:23 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
         h=mime-version:references:in-reply-to:from:date:message-id:subject:to
-         :cc:content-transfer-encoding;
-        bh=YTknDddjpAEn0Nysyw1v1gQmmPikHyQfCRNmNWeBzvs=;
-        b=nww1KyATuXZwCRvSKsbfyJVABtoZEj9O8cQWSz5hxVBZjlB4Af/zyCYm8Xu70CnnJK
-         P5ezSwOgxlEOrgM0d0rqvk3fJjQ4Wh4bXZGRMFGvXJiWrZ238Wq55vMmsbu6ShbwBXC+
-         tTgT6yHxDgMAkHZB2L5FuJ8ZvFXq6f1aeflvOomuR0pvdPkfhmUk1E29818BumXeSG6M
-         rZxFYNuDbIFH31W8LVPel61jnYDI3jEXKgbGgERmB80nzFziWG6nC6QMqtMohZlG3LQ/
-         4lxxDSB7JFH9Hp2/Jr7Qb+lERp4ryWmIriLZVOfnwdp7VrHlblXFP3EZNG4fDrt6H+F3
-         2E+g==
+         :cc;
+        bh=7LHfuBNA8HPcEuiBLLkG5dHMxh+6hUdGe9sNRqIjaOU=;
+        b=bhn8J1eXES1FqXT6JHPlQrdVAud5izbQZ5HjqR3ZPkeRVH/ZLcIiVNNsRvP/0LST33
+         j2B53qycCDL80be4EsPXaAtLbJusySkEFKITOV12rcO4N3QjLTvE9d2qaNqhLx9jGKWR
+         XudEoEkFDZqhQH64UtubpclEPs7/To45yoyfFxB8rZwuSxb7MsopPq34RNk3hNZNPWcQ
+         49TZEx+y4Lg4lc/X8lSJ+mTo38b0s6EzHhPsGhKRWydB6lkSmN+t9fm9LPaCmX6ZyAyT
+         SZeBSJ3otG8RTXVAF6PiihKfijMOfIXDgJiZNnpjzt0LUYuI3KWM4t8HOoYKe5QekGND
+         c/iQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:mime-version:references:in-reply-to:from:date
-         :message-id:subject:to:cc:content-transfer-encoding;
-        bh=YTknDddjpAEn0Nysyw1v1gQmmPikHyQfCRNmNWeBzvs=;
-        b=gNp08DeaOAUs3tkGBq+eJAZwovu7aIYnWp7FkRTjwUooVwHTkVP0wXvP55La1GfFFc
-         h845TwNGPxU/c30nDzgzwSVfp16rJj7+GvvOF+7JiiRwEl+Jq8L6ECYr6vmaWAuxDKxu
-         Y93Q2i6UL0o8lTKvVDmddteP/5BFmwrEr2izY3RcPGo6E5eNhzwKvPEBbUtOpyol7YDU
-         GZVqu8/0iprkD8Opqv+3GZAt6kFvFQUZab0LooBRs81WSrnFig2fdxP5nJL8fr2UPJZj
-         KyzgygwBb8M+p19NnpaleJ0WHh3k0icNeohudSRnQYODC68XXjb6hBsDGp9Sz9KJdVGL
-         PtnA==
-X-Gm-Message-State: AJIora8dUtfGT1evKwSNWX2PJnBfvuyypCGdhyeHmqVpVwQt6E8xsuz/
-        uJZvdS7VhRaBn5yF1EwxcCkf4c5cj2r6afLoZBe/r/pDolY=
-X-Google-Smtp-Source: AGRyM1vtZh/Dmwj8gKEhVI/+HRnKot4lRdR0ZqbxH8HVfChJPdHma+4MO8AljiEO6Md6RFkTl+snUdwuNGI+xUsEFPQ=
-X-Received: by 2002:a17:907:a063:b0:72b:52f7:feea with SMTP id
- ia3-20020a170907a06300b0072b52f7feeamr11692663ejc.740.1658784298276; Mon, 25
- Jul 2022 14:24:58 -0700 (PDT)
+         :message-id:subject:to:cc;
+        bh=7LHfuBNA8HPcEuiBLLkG5dHMxh+6hUdGe9sNRqIjaOU=;
+        b=iGD6t1rd+YuB8EekAOKDuialDdYJgRm2KZDVJJzeMdHgj0FD5PMgp/psLVr6EKghJE
+         L1qN/ABZ/gV4+AwGmK1nw7plEpwVOu86dm42Al/JXCN96M5+/V10BFYumuz3Lro5IJle
+         tbSm3NJy0H40Y0Z8gaQlg/cU85zSREGSrjeyPQrcyN6GhTSA+9EPgeTO1GC6kAnLfX44
+         UfaYPQTvR4KYvzKVVwEozSfGXRqcydliA6gXn/pjdlxRHYYfLCsTDXX22SbIVMk3B7gj
+         uXHUz5FFeNPH3/vt1XPSEXpWAysEx7Faus243cnDigbASJ1BBYNQ9X2oEe4mqco4pwmq
+         zcOw==
+X-Gm-Message-State: AJIora90VOXKYJBdyJ6rFlL3F9oGewy1uNbKmMldsG0aGHuqZ/33GmxB
+        BrL7whoFzx6K9yUe/+7J81qS4jCqgB3zGwKiEdZLgWIIER4=
+X-Google-Smtp-Source: AGRyM1tqh03nRi8zYV1msk2FyLNz7Fv1CaNfdTqEUNf85YEUy8ik2/ptLicfNznAgWfGfkk3UmgXHai7dre4r4h1N34=
+X-Received: by 2002:a17:906:9b09:b0:72b:9612:d373 with SMTP id
+ eo9-20020a1709069b0900b0072b9612d373mr11301733ejc.606.1658784442118; Mon, 25
+ Jul 2022 14:27:22 -0700 (PDT)
 MIME-Version: 1.0
-References: <20220724164316.68393-1-matti.lehtimaki@gmail.com> <20220724164316.68393-2-matti.lehtimaki@gmail.com>
-In-Reply-To: <20220724164316.68393-2-matti.lehtimaki@gmail.com>
+References: <CAKv63uvFgLD8d5a4cc12OQZezHG2kfLuY=7X1obmZp4XYP7ANw@mail.gmail.com>
+In-Reply-To: <CAKv63uvFgLD8d5a4cc12OQZezHG2kfLuY=7X1obmZp4XYP7ANw@mail.gmail.com>
 From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 25 Jul 2022 23:24:21 +0200
-Message-ID: <CAHp75VfO_3xBWyOsS=v3uNKP=iR5KTmDEH6a90mKh0vFM-xOjQ@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: st_sensors: Fix null pointer on defer_probe error
-To:     =?UTF-8?Q?Matti_Lehtim=C3=A4ki?= <matti.lehtimaki@gmail.com>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        ~postmarketos/upstreaming@lists.sr.ht,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Miquel Raynal <miquel.raynal@bootlin.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Cai Huoqing <cai.huoqing@linux.dev>,
-        Alexandru Ardelean <aardelean@deviqon.com>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date:   Mon, 25 Jul 2022 23:26:45 +0200
+Message-ID: <CAHp75VcrFQXW10vkLSB5Yh2D24zPzKR9FtfDU8bsSqDwD7=zjg@mail.gmail.com>
+Subject: Re: Controlling device power management from terminal
+To:     Crt Mori <cmo@melexis.com>
+Cc:     Linux Iio <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Jul 24, 2022 at 7:01 PM Matti Lehtim=C3=A4ki
-<matti.lehtimaki@gmail.com> wrote:
+On Mon, Jul 25, 2022 at 10:48 AM Crt Mori <cmo@melexis.com> wrote:
 >
-> dev_err_probe() calls __device_set_deferred_probe_reason()
-> on -EPROBE_DEFER error. The device pointer to driver core private
-> structure is not yet initialized at this stage for the iio device causing
-> a null pointer error. Use parent device instead.
+> Hi,
+> I am implementing the power saving modes for mlx90632 device driver
+> and while I have implemented routines for SET_RUNTIME_PM_OPS
+> (runtime_pm_suspend and runtime_pm_resume) I am not able to find out
+> how to trigger them from the terminal.
+>
+> It could be that my driver code for power management implementation is
+> incomplete and I need to initialize something more.
+>
+> Maybe it is helpful, but the power submodule of the device contains below files:
+>
+> $ ls -al /sys/bus/iio/devices/iio\:device0/power
+> total 0
+> drwxrwxr-x 2 root gpio    0 Apr  6 14:17 .
+> drwxrwxr-x 3 root gpio    0 Apr  6 14:17 ..
+> -rw-rw-r-- 1 root gpio 4096 Apr  6 14:17 async
+> -rw-rw-r-- 1 root gpio 4096 Apr  6 14:17 autosuspend_delay_ms
+> -rw-rw-r-- 1 root gpio 4096 Apr  6 14:18 control
+> -r--r--r-- 1 root gpio 4096 Apr  6 14:17 runtime_active_kids
+> -r--r--r-- 1 root gpio 4096 Apr  6 14:17 runtime_active_time
+> -r--r--r-- 1 root gpio 4096 Apr  6 14:17 runtime_enabled
+> -r--r--r-- 1 root gpio 4096 Apr  6 14:17 runtime_status
+> -r--r--r-- 1 root gpio 4096 Apr  6 14:17 runtime_suspended_time
+> -r--r--r-- 1 root gpio 4096 Apr  6 14:17 runtime_usage
+>
+> And control is already set to "auto" which according to documentation
+> should allow the PM.
 
-the parent device pointer
+'auto' should enable it. So, whenever the driver thinks it's a time to
+power off/on the device it will call the methods.
 
-...
+You may hack a bit to enable autosuspend (which often is not a good
+idea for IIO sensors) and see it done automatically after some time.
 
->         pdata->vdd =3D devm_regulator_get(parent, "vdd");
->         if (IS_ERR(pdata->vdd))
-> -               return dev_err_probe(&indio_dev->dev, PTR_ERR(pdata->vdd)=
-,
-> +               return dev_err_probe(indio_dev->dev.parent, PTR_ERR(pdata=
-->vdd),
->                                      "unable to get Vdd supply\n");
-
-Why not use the 'parent' variable?
-
-...
-
->         pdata->vdd_io =3D devm_regulator_get(parent, "vddio");
->         if (IS_ERR(pdata->vdd_io))
-> -               return dev_err_probe(&indio_dev->dev, PTR_ERR(pdata->vdd_=
-io),
-> +               return dev_err_probe(indio_dev->dev.parent, PTR_ERR(pdata=
-->vdd_io),
-
-Ditto.
-
->                                      "unable to get Vdd_IO supply\n");
-
-
---=20
+-- 
 With Best Regards,
 Andy Shevchenko
