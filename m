@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A6B4CC433EF
-	for <linux-iio@archiver.kernel.org>; Mon, 25 Jul 2022 18:44:58 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4FA70CCA48A
+	for <linux-iio@archiver.kernel.org>; Mon, 25 Jul 2022 18:44:59 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S233461AbiGYSo5 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 25 Jul 2022 14:44:57 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53270 "EHLO
+        id S229841AbiGYSo6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 25 Jul 2022 14:44:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:53268 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229878AbiGYSo4 (ORCPT
+        with ESMTP id S230348AbiGYSo4 (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2022 14:44:56 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DAE1F1F608;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id DA3951C914;
         Mon, 25 Jul 2022 11:44:53 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 8A5355FD03;
+        by mail.sberdevices.ru (Postfix) with ESMTP id AF5105FD05;
         Mon, 25 Jul 2022 21:44:50 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
         s=mail; t=1658774690;
-        bh=Lj82v0UordpzJx89AzCSsYuvyyMERd4RMs1Xky7GRug=;
+        bh=ifgblJjfbsaU4skWDeNZKH5Eit2GbzhVYvV5tKaGzP0=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=mKE1BEtNxFgQcoadl7cOMseISPiCWTNuWWkfPLLuvP7RtPGHgmhoOQFhjoikDNia3
-         rUxClU0HLU/2tz8ZEv5gj4DQlFDzT4+Wbg30QKs/u1nGGM4RxmHEIJovqyPuzj/s+J
-         TnUM5+AV4ybB2ozNcpI9BC+mtaYZ7GSHWhSGSeQKjzTxLGOejxeUIKOLMkvse4/OTe
-         O7wPydslTzxWDSRIkF2FHYHG+L+3i4/i0UEAM+/M5PBPccvApCfsbuMPkcBDosS4nf
-         4xvmxJcDmqJJHN3gM/wJPRJIT3ieetlu7k5mBy6tEWnLzktDWJv+sw8rRkwXGvhnO0
-         yqbBhJUkdmodQ==
+        b=R1038QC6cdSlvtEXKYOrZeB53VeZwM4Jk+s1YSUXfnj+uyE/Pq5ShXN8ZTYknIANB
+         T7sAEXFb0VCxHpHp6AoS5tFBst3ejoQC/DmeD1TNwNVO3xIL2Wq6+iVTYWIoTfHoFv
+         qj583DzQJexHeOKizcJGClH50hIrZLHp5acqqMeZympaY3/fEiI6e19iiA3VBu4L8V
+         WlP2pYVn1+93dEs0fy6AgHsSkjFR68eU04zevqTXptKCDTBtKJDRrh3t3ZR3fadNPY
+         g4fbJQwPw9jBK6ZrZrKk/uBFzYEIcl53qpzCCb6D0/+G0Y1tZliTMr/xqNj54BZnOs
+         t7dS92K4W8aSA==
 Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 25 Jul 2022 21:44:47 +0300 (MSK)
+        Mon, 25 Jul 2022 21:44:50 +0300 (MSK)
 From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
 To:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
         "andriy.shevchenko@linux.intel.com" 
@@ -45,11 +45,13 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v1 0/3] units: complement the set of Hz units
-Thread-Topic: [PATCH v1 0/3] units: complement the set of Hz units
-Thread-Index: AQHYoFaPgMYOHrecNUuqyBwfZRur4g==
-Date:   Mon, 25 Jul 2022 18:44:24 +0000
-Message-ID: <20220725184439.7618-1-ddrokosov@sberdevices.ru>
+Subject: [PATCH v1 2/3] iio: accel: adxl345: use HZ macro from units.h
+Thread-Topic: [PATCH v1 2/3] iio: accel: adxl345: use HZ macro from units.h
+Thread-Index: AQHYoFaR+WIztEOtDUqH63tAvzLe1Q==
+Date:   Mon, 25 Jul 2022 18:44:27 +0000
+Message-ID: <20220725184439.7618-3-ddrokosov@sberdevices.ru>
+References: <20220725184439.7618-1-ddrokosov@sberdevices.ru>
+In-Reply-To: <20220725184439.7618-1-ddrokosov@sberdevices.ru>
 Accept-Language: ru-RU, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -69,28 +71,34 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-During msa311 accel IIO driver development
+Remove duplicate definition of NHZ_PER_HZ, because it's available in
+the units.h.
 
-https://lore.kernel.org/linux-iio/20220616104211.9257-1-ddrokosov@sberdevic=
-es.ru/
+Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+---
+ drivers/iio/accel/adxl345_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Andy requested to use proper units in the hz->ms calculation. Current
-units.h header doesn't have milli, micro and nano HZ coefficients, so
-some drivers (in the IIO subsystem) implement their own copies for that.
-
-The current patchset resolves such a problem and intoduces general
-MHZ_PER_HZ, UHZ_PER_HZ and NHZ_PER_HZ definitions in the units.h, and
-fixes all drivers which duplicate these units.
-
-Dmitry Rokosov (3):
-  units: complement the set of Hz units
-  iio: accel: adxl345: use HZ macro from units.h
-  iio: common: scmi_sensors: use HZ macro from units.h
-
- drivers/iio/accel/adxl345_core.c           | 2 +-
- drivers/iio/common/scmi_sensors/scmi_iio.c | 2 +-
- include/linux/units.h                      | 3 +++
- 3 files changed, 5 insertions(+), 2 deletions(-)
-
+diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_c=
+ore.c
+index 370bfec1275a..94189133fe8f 100644
+--- a/drivers/iio/accel/adxl345_core.c
++++ b/drivers/iio/accel/adxl345_core.c
+@@ -10,6 +10,7 @@
+ #include <linux/module.h>
+ #include <linux/property.h>
+ #include <linux/regmap.h>
++#include <linux/units.h>
+=20
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -32,7 +33,6 @@
+=20
+ #define ADXL345_BW_RATE			GENMASK(3, 0)
+ #define ADXL345_BASE_RATE_NANO_HZ	97656250LL
+-#define NHZ_PER_HZ			1000000000LL
+=20
+ #define ADXL345_POWER_CTL_MEASURE	BIT(3)
+ #define ADXL345_POWER_CTL_STANDBY	0x00
 --=20
 2.36.0
