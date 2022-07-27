@@ -2,161 +2,136 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C4D72C3F6B0
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Jul 2022 19:03:01 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BA5C5C04A68
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Jul 2022 21:06:05 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230057AbiG0TDA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 Jul 2022 15:03:00 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:43012 "EHLO
+        id S236969AbiG0VGE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 Jul 2022 17:06:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55562 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231623AbiG0TCg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2022 15:02:36 -0400
-Received: from mail-qk1-x72f.google.com (mail-qk1-x72f.google.com [IPv6:2607:f8b0:4864:20::72f])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CCA27624E;
-        Wed, 27 Jul 2022 11:19:27 -0700 (PDT)
-Received: by mail-qk1-x72f.google.com with SMTP id f14so13927391qkm.0;
-        Wed, 27 Jul 2022 11:19:27 -0700 (PDT)
+        with ESMTP id S236924AbiG0VFg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2022 17:05:36 -0400
+Received: from mail-wm1-x32f.google.com (mail-wm1-x32f.google.com [IPv6:2a00:1450:4864:20::32f])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 36A2C6171F
+        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 14:04:21 -0700 (PDT)
+Received: by mail-wm1-x32f.google.com with SMTP id w8-20020a05600c014800b003a32e89bc4eso92673wmm.5
+        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 14:04:21 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
+        d=linexp-org.20210112.gappssmtp.com; s=20210112;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=0nEd7dseFbDtfUvUd6FnM8ULF2DOAHEX1K0BhzerKVg=;
-        b=D1yN8TX647mmlCmQrhoypA516wTafMg9xHgs0sc5gckZ/OyeKa2dIy8PzhYGqZRVYN
-         FML+KzKtitTOZOz49pqDDoFLnbVWqPgc1UY8WSbhfCeeJu2CpPBoRRzBHC1MV6f/Q53u
-         NQvf4sCDSyrKnRZOu7j5jJdxySkA22SpHHJt9NfHdie1AiLEGEcysP6EHH4QGHA0xysD
-         q/an8T80N2ZVC5KnQuJ9usjfE7BDi5fBWXt43KG2GH+WH4/hydkvdJ+TYSlVzFOx4kho
-         qKVpZNkfF+4u2+2wIMirTfbmI4yXJrNV1vkx47eOyj9yH1M7wsP0B0uXl+MBV5oUDINd
-         WtYA==
+        bh=hWFZXwysMvsN10lXDK6sChpf4X2qhnFs4AeSH8mvwTs=;
+        b=fKlk36kNOIXutyiEJaCv7Gy8Y8SXPlCpXEpYT3v5hsMHepohYOURnllehr0xqrdsih
+         078Fcvs34wsDW8L5O5Pd7eWtz38QHUh1HtvR4zooK/5hbc97+Wmqbny72ol7qEj20n3v
+         GJV9ONI+/SmPBwYp1ysGn6xl2li8XJ7rlA9/L3pzQVAH9NdJeieQevx7mwXWpqjgeSoa
+         y3rBAk4q3yoQrnxQHvFy1QFxG2EKnxE9CDr+o4Pfk15EcgVvqz2DQxJyuis6Eot8avz/
+         0qyxFLygD/WvXkzaPZoOgQu6Nur+1H3zTbzuIy0Cw3V0q/rP5rk2p5z1Bc3boCtnkvAC
+         qrHA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=0nEd7dseFbDtfUvUd6FnM8ULF2DOAHEX1K0BhzerKVg=;
-        b=X7V0jUtsMWz930Z3wwi1QV4+EEeAhK7fa5C5D0A8hwrttcFDhuAppoGrub7j1Jay58
-         f7QoDtWi+iMmcEAf08Tecj+tNjLBw7Pe80SPqAltJkt37lQCah/QUWTgiLYtcb4LL/SU
-         lkbJxdXGwQxyGd7o6pmuKSIeXTTWdol8xUqkr0gzuiTLDjAqTEQMF7Tj1zjnjssa2+zH
-         Rae1xTW7Q/e8Qfk0NYHoYFFNTVnfLir8e0D/eDLw+i76tIfiRDlywc70q9AIrB5bRPmr
-         1xgKvIE/v+c0vAgnMNIZrBdd0xQ1hqiCn6+INZPrOKblJghogxuHh8fHPa4a7+TGVADX
-         TkcQ==
-X-Gm-Message-State: AJIora/Jr4EdKXMxuM6J5pmsUoSdlwHVx0TLCVEZuZCpG5xpMxGHBFOk
-        60F7TN2cYEgEWUEPynTriLc=
-X-Google-Smtp-Source: AGRyM1t+MFIyDzilY4q6pSE0QC2uhfUDA5VjKkgVfl595cUBsosWuir5FTpJ+mrEh0rI7kgdCn6YSg==
-X-Received: by 2002:a05:620a:2f8:b0:6b5:e8a2:cf3d with SMTP id a24-20020a05620a02f800b006b5e8a2cf3dmr16676748qko.447.1658945966891;
-        Wed, 27 Jul 2022 11:19:26 -0700 (PDT)
-Received: from spruce.. (c-71-206-142-238.hsd1.va.comcast.net. [71.206.142.238])
-        by smtp.gmail.com with ESMTPSA id bk27-20020a05620a1a1b00b006af1f0af045sm13195972qkb.107.2022.07.27.11.19.26
+        bh=hWFZXwysMvsN10lXDK6sChpf4X2qhnFs4AeSH8mvwTs=;
+        b=fg+rcgcO2XHre+ar6BjT7A4h3gRc7b+6qmB5GyRn00Y5lhRSaiicb5c/JhoWwDCE6d
+         CwD0Fj8MJcIHGLxCuWSQgNghhJOJAVkMK9Xj5vlfS0ZQmLI14O1ERNKm50DbHC9vQvHt
+         s0T9uXS+izT1LxqjP3mltVbkFqtvEwsei4iLtWy9stw/Wr9fYsZULFT2uWCodhq6+rMK
+         zHeaMOw91RYDV/OoUi52FXLCKN0FH6IKgwboKecFyKYe7ELv291223aMUJsIMHjRjy+p
+         iLRBrHjlzp6bYHp8JhgEMmIKysWO6lQOaO95pL3ZMJ2Qx249ChV5NlMPWbImNT7ZZYuW
+         EihA==
+X-Gm-Message-State: AJIora/+PxbK2KXVPkZtMMwLLECgxjN4c0ltRtNKwaBR7BUdamk7X92r
+        7s4D9K00q6P+b3Man8NeEoCHpQ==
+X-Google-Smtp-Source: AGRyM1uvQcL47CIAsOneuLf1vtRWhov+nEkxHt6C1rGUbebVn2iW0PNibO5XgN8bydxhr3hGx4Gw1g==
+X-Received: by 2002:a05:600c:1c26:b0:3a3:2251:c3cb with SMTP id j38-20020a05600c1c2600b003a32251c3cbmr4353158wms.126.1658955854767;
+        Wed, 27 Jul 2022 14:04:14 -0700 (PDT)
+Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:65a8:ebd8:4098:d9d0])
+        by smtp.gmail.com with ESMTPSA id h6-20020a05600c350600b003a38606385esm37908wmq.3.2022.07.27.14.04.12
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 11:19:26 -0700 (PDT)
-From:   Joe Simmons-Talbott <joetalbott@gmail.com>
-To:     Jonathan Cameron <jic23@kernel.org>,
+        Wed, 27 Jul 2022 14:04:14 -0700 (PDT)
+From:   Daniel Lezcano <daniel.lezcano@linexp.org>
+To:     daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, khilman@baylibre.com,
+        abailon@baylibre.com, lukasz.luba@arm.com, broonie@kernel.org,
+        damien.lemoal@opensource.wdc.com, heiko@sntech.de,
+        hayashi.kunihiko@socionext.com, mhiramat@kernel.org,
+        talel@amazon.com, thierry.reding@gmail.com, digetx@gmail.com,
+        jonathanh@nvidia.com, anarsoul@gmail.com, tiny.windzz@gmail.com,
+        baolin.wang7@gmail.com, f.fainelli@gmail.com,
+        bjorn.andersson@linaro.org, mcoquelin.stm32@gmail.com,
+        glaroque@baylibre.com, miquel.raynal@bootlin.com,
+        shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
+        matthias.bgg@gmail.com, j-keerthy@ti.com,
+        Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Cc:     Joe Simmons-Talbott <joetalbott@gmail.com>
-Subject: [PATCH 1/2] iio: Add blank lines after declarations.
-Date:   Wed, 27 Jul 2022 14:18:54 -0400
-Message-Id: <20220727181855.589052-2-joetalbott@gmail.com>
-X-Mailer: git-send-email 2.36.1
-In-Reply-To: <20220727181855.589052-1-joetalbott@gmail.com>
-References: <20220727181855.589052-1-joetalbott@gmail.com>
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
+        sunXi SoC support),
+        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support)
+Subject: [PATCH v3 27/32] iio/drivers/sun4i_gpadc: Switch to new of thermal API
+Date:   Wed, 27 Jul 2022 23:02:48 +0200
+Message-Id: <20220727210253.3794069-28-daniel.lezcano@linexp.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
+References: <20220727210253.3794069-1-daniel.lezcano@linexp.org>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-As reported by checkpatch.pl add blank lines after declarations.
+The thermal OF code has a new API allowing to migrate the OF
+initialization to a simpler approach. The ops are no longer device
+tree specific and are the generic ones provided by the core code.
 
-Signed-off-by: Joe Simmons-Talbott <joetalbott@gmail.com>
+Convert the ops to the thermal_zone_device_ops format and use the new
+API to register the thermal zone with these generic ops.
+
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
 ---
- drivers/iio/industrialio-buffer.c  | 1 +
- drivers/iio/industrialio-core.c    | 7 +++++++
- drivers/iio/industrialio-trigger.c | 1 +
- 3 files changed, 9 insertions(+)
+ drivers/iio/adc/sun4i-gpadc-iio.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-index acc2b6c05d57..47a6e97f8e48 100644
---- a/drivers/iio/industrialio-buffer.c
-+++ b/drivers/iio/industrialio-buffer.c
-@@ -940,6 +940,7 @@ struct iio_demux_table {
- static void iio_buffer_demux_free(struct iio_buffer *buffer)
- {
- 	struct iio_demux_table *p, *q;
-+
- 	list_for_each_entry_safe(p, q, &buffer->demux_list, l) {
- 		list_del(&p->l);
- 		kfree(p);
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 0f4dbda3b9d3..40ebc63b7919 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -236,6 +236,7 @@ static int iio_sysfs_match_string_with_gaps(const char * const *array, size_t n,
- struct dentry *iio_get_debugfs_dentry(struct iio_dev *indio_dev)
- {
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+
- 	return iio_dev_opaque->debugfs_dentry;
- }
- EXPORT_SYMBOL_GPL(iio_get_debugfs_dentry);
-@@ -447,6 +448,7 @@ static const struct file_operations iio_debugfs_reg_fops = {
- static void iio_device_unregister_debugfs(struct iio_dev *indio_dev)
- {
- 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
-+
- 	debugfs_remove_recursive(iio_dev_opaque->debugfs_dentry);
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index 2d393a4dfff6..13d1e937357c 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -412,9 +412,9 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
+ 	return 0;
  }
  
-@@ -1021,6 +1023,7 @@ int __iio_device_attr_init(struct device_attribute *dev_attr,
- 	int ret = 0;
- 	char *name = NULL;
- 	char *full_postfix;
-+
- 	sysfs_attr_init(&dev_attr->attr);
- 
- 	/* Build up postfix of <extend_name>_<modifier>_postfix */
-@@ -1355,6 +1358,7 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 
- 	if (chan->ext_info) {
- 		unsigned int i = 0;
-+
- 		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
- 			ret = __iio_add_chan_devattr(ext_info->name,
- 					chan,
-@@ -1403,6 +1407,7 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
- 			 char *buf)
+-static int sun4i_gpadc_get_temp(void *data, int *temp)
++static int sun4i_gpadc_get_temp(struct thermal_zone_device *tz, int *temp)
  {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+
- 	return sysfs_emit(buf, "%s\n", indio_dev->name);
+-	struct sun4i_gpadc_iio *info = data;
++	struct sun4i_gpadc_iio *info = tz->devdata;
+ 	int val, scale, offset;
+ 
+ 	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
+@@ -428,7 +428,7 @@ static int sun4i_gpadc_get_temp(void *data, int *temp)
+ 	return 0;
  }
  
-@@ -1412,6 +1417,7 @@ static ssize_t label_show(struct device *dev, struct device_attribute *attr,
- 			  char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+
- 	return sysfs_emit(buf, "%s\n", indio_dev->label);
- }
+-static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
++static const struct thermal_zone_device_ops sun4i_ts_tz_ops = {
+ 	.get_temp = &sun4i_gpadc_get_temp,
+ };
  
-@@ -1777,6 +1783,7 @@ static int iio_chrdev_release(struct inode *inode, struct file *filp)
- 	struct iio_dev_opaque *iio_dev_opaque =
- 		container_of(inode->i_cdev, struct iio_dev_opaque, chrdev);
- 	struct iio_dev *indio_dev = &iio_dev_opaque->indio_dev;
-+
- 	kfree(ib);
- 	clear_bit(IIO_BUSY_BIT_POS, &iio_dev_opaque->flags);
- 	iio_device_put(indio_dev);
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index b78814d869b7..6885a186fe27 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -50,6 +50,7 @@ static ssize_t name_show(struct device *dev, struct device_attribute *attr,
- 			 char *buf)
- {
- 	struct iio_trigger *trig = to_iio_trigger(dev);
-+
- 	return sysfs_emit(buf, "%s\n", trig->name);
- }
+@@ -637,9 +637,9 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(&pdev->dev);
  
+ 	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+-		info->tzd = thermal_zone_of_sensor_register(info->sensor_device,
+-							    0, info,
+-							    &sun4i_ts_tz_ops);
++		info->tzd = thermal_of_zone_register(info->sensor_device,
++						     0, info,
++						     &sun4i_ts_tz_ops);
+ 		/*
+ 		 * Do not fail driver probing when failing to register in
+ 		 * thermal because no thermal DT node is found.
 -- 
-2.36.1
+2.25.1
 
