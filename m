@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A4AD7C04A68
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Jul 2022 17:30:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 789C0C19F2D
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Jul 2022 17:30:14 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230309AbiG0RaL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:30:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58604 "EHLO
+        id S234306AbiG0RaN (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:30:13 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58372 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242132AbiG0R1t (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2022 13:27:49 -0400
-Received: from mail-lf1-x130.google.com (mail-lf1-x130.google.com [IPv6:2a00:1450:4864:20::130])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C7A227E82D
-        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 09:47:24 -0700 (PDT)
-Received: by mail-lf1-x130.google.com with SMTP id t22so21550669lfg.1
-        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 09:47:24 -0700 (PDT)
+        with ESMTP id S242306AbiG0R3X (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2022 13:29:23 -0400
+Received: from mail-lf1-x131.google.com (mail-lf1-x131.google.com [IPv6:2a00:1450:4864:20::131])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id CC28A52DE7
+        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 09:47:39 -0700 (PDT)
+Received: by mail-lf1-x131.google.com with SMTP id t22so21551490lfg.1
+        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 09:47:39 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=G58v43xma03waMnam16LPp6PjErsC4YB3W0kFW2yXEw=;
-        b=bkweZ8DUw8CXRKbjPLdIjIMR9jSuhPlbY/WgGBuPuZjvISu/X5g5hsJldTx/S+tux5
-         H1O6H4yiGvwQuw1wPyBDRmR+MHE/HKQu4JZEe78b2PiTONvXPu+p7gBmrVsgbfQx0OLH
-         O0ebEpNNCLP2YOE3Q/zCZzt7+T0hlOie7x9iPFMjO58tEoMfwIBRoFxRzD0Tp0BsoA8b
-         wDINxw4SiKwKwavER2Nl5vmkU5yVOBavA3s63FgBX7zfE0gBoV6tA1qNVfywm6nkWmJg
-         P9EvVQodM6kgg1iGz1M3SEzo8hjH1ZxzrxKM2yn7qczRHbEy6cdzNrnmptoI5dit7JGU
-         DpfA==
+        bh=DTTVWNUuMuaI4chfKvwmUvgtvzhYatcrU+SN3O9eX+s=;
+        b=U002gDRLMVsJcBk1u0QPgZOu1snf9GyRDIF0+hEXGZ3haziNjkH7VmHhe5k2dep76h
+         jGP1rmKNRvmnY0TKJOym7pFkVHO0Kzpg5nM8r6n8X2eRaMlpLLp321HsxcZxZYeR2tKj
+         dkCnVXuPkopn82sXC+6c6aJ3W9/+CnsLa768eW2cazuEiSffHnabzcZaJe/b1gW8rSDz
+         6YitIkc57NAJWyu483kFfVoK2QTJveFGqunRBSo1523GJGyLiiZzC/MHbCcu8HhYGvEw
+         Ab5DHDdwaUDwHCPINisD+tdZt5JiZmV/9vcDZO8x4qnkGSl97nw9JO5myfTyQ1VFH15x
+         OCNA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=G58v43xma03waMnam16LPp6PjErsC4YB3W0kFW2yXEw=;
-        b=g8Gw0vIXTW3vgoDDPQifJ8tLvFpy7O5r30A3Z0YtGF9RkZC+vGK4e2fnTR6leCHxIW
-         emMv6CizQg5/D+U3l7jqYer5ENmZIj7WWSgWdtqZaVLC0INckGXEw4K3EtOjWlFlDD8d
-         cTONFYd/KIpc8B1vIstqnh5AZz+2hCAmK2W0udlHWfjcYJBTYzdbOkz76C9lg+bNeg9L
-         86VtT0omu+NgM9dN7YBTFjW3x+63Lmwf8v3w7MJKqiTyIlrkbqrPZvgSOWhMsVUk2uve
-         1q0MKfajkdQowlkuNl/T+iuhCwvsvCqOlnbWiKKrpKEXadzGERGg13ukVpFoJaETiP3A
-         9+ew==
-X-Gm-Message-State: AJIora/uigWaL5fM1xCQ/MK4YDy4OMB36hpOyZlF6lima2zkKhsPAwY5
-        eYkDcpcHL5W7vmWFqvjfZpih8w==
-X-Google-Smtp-Source: AGRyM1vH0CUVOEcBUq1/Yiy2wWxdiPJq8QJMm8MMUeir/jyTAwdNpR1ErRGBl6KcNmi7ge05zM/W9Q==
-X-Received: by 2002:a05:6512:1393:b0:489:dd15:f04b with SMTP id p19-20020a056512139300b00489dd15f04bmr8180807lfa.284.1658940440119;
-        Wed, 27 Jul 2022 09:47:20 -0700 (PDT)
+        bh=DTTVWNUuMuaI4chfKvwmUvgtvzhYatcrU+SN3O9eX+s=;
+        b=0V6+YtG0Z6ZAoURvo8jE9BjBwLQk9z0xQBNO2Xt1UW3eHVW0meMDk1uzKWObEPoY18
+         A/I/yQUtxjYeGpzK9v1b9PGsdNgzyAsSr0XMALP1xL4LxLmkla3WAvHu8UiMYgcJjXX7
+         CqkBafFGs5S5k6QMBWFi1laJOod0dDzMgFHP9wjG/hGiRlHfpt3D8CUqxP430KqvWCV/
+         Fpfvt2db3inJDvI3mnMvmeCvZXmh7EFicK3GHMvdS8LrXk0TjZmdBqsnIkTJtt771a1+
+         OMXYTZdPinpUEjJ/MQh4O81sNFXGeoy5HtH/VHgNWgoPEX6n8suRUELDETxOVSP9J/3W
+         ARSg==
+X-Gm-Message-State: AJIora8GrtWKy+45ok4bNkLHDNH4XY+zwpxehwgNz2k2KAZa5EQj35oU
+        54m7+OfHyrS80h+aTRKj8U6YMw==
+X-Google-Smtp-Source: AGRyM1vVIiFk5cN8M18OeA3AFnnZUsvMne4m446kxamz2WkV0ZBhabaZIWjFAE7Y/F+ZoYUbqBF+nw==
+X-Received: by 2002:a05:6512:2350:b0:48a:794b:382 with SMTP id p16-20020a056512235000b0048a794b0382mr8070684lfu.185.1658940453508;
+        Wed, 27 Jul 2022 09:47:33 -0700 (PDT)
 Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.16
+        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.30
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:47:19 -0700 (PDT)
+        Wed, 27 Jul 2022 09:47:32 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -100,9 +100,9 @@ To:     Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 06/10] dt-bindings: iio: health: ti,afe4403: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:46:42 +0200
-Message-Id: <20220727164646.387541-7-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 10/10] dt-bindings: iio: temperature: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:46:46 +0200
+Message-Id: <20220727164646.387541-11-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
 References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
@@ -126,33 +126,88 @@ typical place, just before example DTS.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../devicetree/bindings/iio/health/ti,afe4403.yaml       | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+ .../bindings/iio/temperature/maxim,max31855k.yaml           | 4 ++--
+ .../devicetree/bindings/iio/temperature/maxim,max31856.yaml | 6 ++++--
+ .../devicetree/bindings/iio/temperature/maxim,max31865.yaml | 6 ++++--
+ 3 files changed, 10 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-index d861526c5c42..6c5ad426a016 100644
---- a/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-+++ b/Documentation/devicetree/bindings/iio/health/ti,afe4403.yaml
-@@ -25,14 +25,15 @@ properties:
- 
-   reset-gpios: true
+diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim,max31855k.yaml b/Documentation/devicetree/bindings/iio/temperature/maxim,max31855k.yaml
+index 9969bac66aa1..0805ed7e2113 100644
+--- a/Documentation/devicetree/bindings/iio/temperature/maxim,max31855k.yaml
++++ b/Documentation/devicetree/bindings/iio/temperature/maxim,max31855k.yaml
+@@ -32,7 +32,6 @@ properties:
+   reg:
+     maxItems: 1
  
 -  spi-max-frequency: true
--
--additionalProperties: false
--
+   spi-cpha: true
+ 
  required:
-   - compatible
+@@ -40,6 +39,7 @@ required:
    - reg
  
+ allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
+   - if:
+       properties:
+         compatible:
+@@ -53,7 +53,7 @@ allOf:
+       properties:
+         spi-cpha: false
+ 
+-additionalProperties: false
++unevaluatedProperties: false
+ 
+ examples:
+   - |
+diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim,max31856.yaml b/Documentation/devicetree/bindings/iio/temperature/maxim,max31856.yaml
+index 873b34766676..228a94165487 100644
+--- a/Documentation/devicetree/bindings/iio/temperature/maxim,max31856.yaml
++++ b/Documentation/devicetree/bindings/iio/temperature/maxim,max31856.yaml
+@@ -19,7 +19,6 @@ properties:
+   reg:
+     maxItems: 1
+ 
+-  spi-max-frequency: true
+   spi-cpha: true
+ 
+   thermocouple-type:
+@@ -34,7 +33,10 @@ required:
+   - reg
+   - spi-cpha
+ 
+-additionalProperties: false
 +allOf:
 +  - $ref: /schemas/spi/spi-peripheral-props.yaml#
 +
 +unevaluatedProperties: false
-+
+ 
  examples:
    - |
-     #include <dt-bindings/gpio/gpio.h>
+diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim,max31865.yaml b/Documentation/devicetree/bindings/iio/temperature/maxim,max31865.yaml
+index aafb33b16549..a2823ed6867b 100644
+--- a/Documentation/devicetree/bindings/iio/temperature/maxim,max31865.yaml
++++ b/Documentation/devicetree/bindings/iio/temperature/maxim,max31865.yaml
+@@ -25,7 +25,6 @@ properties:
+       enables 3-wire RTD connection. Else 2-wire or 4-wire RTD connection.
+     type: boolean
+ 
+-  spi-max-frequency: true
+   spi-cpha: true
+ 
+ required:
+@@ -33,7 +32,10 @@ required:
+   - reg
+   - spi-cpha
+ 
+-additionalProperties: false
++allOf:
++  - $ref: /schemas/spi/spi-peripheral-props.yaml#
++
++unevaluatedProperties: false
+ 
+ examples:
+   - |
 -- 
 2.34.1
 
