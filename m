@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id AE73DC04A68
-	for <linux-iio@archiver.kernel.org>; Wed, 27 Jul 2022 17:28:33 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C5308C19F2B
+	for <linux-iio@archiver.kernel.org>; Wed, 27 Jul 2022 17:28:57 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242164AbiG0R2c (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 27 Jul 2022 13:28:32 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37478 "EHLO
+        id S242219AbiG0R24 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 27 Jul 2022 13:28:56 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58418 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229531AbiG0R1g (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2022 13:27:36 -0400
-Received: from mail-lj1-x235.google.com (mail-lj1-x235.google.com [IPv6:2a00:1450:4864:20::235])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8A7847F50E
-        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 09:47:16 -0700 (PDT)
-Received: by mail-lj1-x235.google.com with SMTP id r14so20446971ljp.2
-        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 09:47:16 -0700 (PDT)
+        with ESMTP id S238024AbiG0R1k (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2022 13:27:40 -0400
+Received: from mail-lf1-x12a.google.com (mail-lf1-x12a.google.com [IPv6:2a00:1450:4864:20::12a])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E1E27F526
+        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 09:47:18 -0700 (PDT)
+Received: by mail-lf1-x12a.google.com with SMTP id bf9so27843083lfb.13
+        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2022 09:47:18 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=linaro.org; s=google;
         h=from:to:cc:subject:date:message-id:in-reply-to:references
          :mime-version:content-transfer-encoding;
-        bh=mXw/gx1TvWDFNgjG1qr/pqI36Mmqb6KSC/b/lR/QsLU=;
-        b=layrHSzuuv7WZaKIMxqMlq4RK1ZL55arpJ65jtX7RdCUtFejuIaL8Knr9jz9MPtQKa
-         igjYvSZ7O12G4rPWOkL6+xA/t65NoZGrKQFnnZ8lsn6tYFWQFIaBT+PRnfSXjl4vmNPA
-         zRpZP3PKnU0ia3VaEVGFu4o/i1c1z8g6RjQz8SM1A4n329tpp8JeQNmbqX3HpN8bbNc9
-         DzW/KCI3QSS+5TMzXtB9XuXEfHWaomVMtzZSZRnmtlRaKVWIyb+/4Yf5rFrsES3ShMUx
-         Y67Fvc9DW12vdPuz0tv6k2Q43OjsUTwYy6HsU1dMrrFrwwUcgFcGPTZ/U1Eb35abgpDX
-         +P4Q==
+        bh=xZf4OdbV43HHtgf1qVIKge/GbJKtAf7d2TC+uXlE1iw=;
+        b=unFrdwkByedm1Cx4IG8Ku7mviSYROrujqG4UjXQkiG0xYgsmJHR0xO4a+bYbYW/PwS
+         +BpCE5BwASL4enlWpSc5ChcanRPNkec78zKAkoqgkfIfM9juO9yFiudCpM2kK2iiVUUN
+         vcX/bOW82bpl3sEJt8lJ4P7UjpNpPGtSmZmxIhjeBtOY/lI5Pyef+zmEyrN7JnZwOT2v
+         5ornAJUjWzhOFUJ2FsEA+6X3NuHvsDNA0boK2iaiU45J721qkxkd0KE7vpsaUxk9VfAE
+         jbFm7EwWypt894KHqZaTBTjDRfbDhf2/nLsKWfjp3UDMIHwCK+Coy4qvG59UqItR52XE
+         A4RA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
         h=x-gm-message-state:from:to:cc:subject:date:message-id:in-reply-to
          :references:mime-version:content-transfer-encoding;
-        bh=mXw/gx1TvWDFNgjG1qr/pqI36Mmqb6KSC/b/lR/QsLU=;
-        b=y17pvkGo5jD7xC/2LM9dDD/aO0QrmV3j1RlYJrZnfwkThkAHdIrMP5ppqg64M940Go
-         z7N4Fvq6+O7lvSNfIKkxXcoljX4UKBDmf7Tdp4NW7ICEVct6kJyixSoH4f2msk9+RjoB
-         r7a0qnb0wKW0SiqdfwLIrhPlqmkknKC8FnugTENubdD7wrXpvx+G6lkn7ZTEjstsjgB7
-         nkUB3kIGHpQWtlf0LL0UCswgxA2RJlW3rdZHT8YWdINTHt/bP1KKG9UVWiVDNWbZq2Vp
-         97x79uDzntRv4rkmCt6+aIU/JqLze/LMe4oPVG8IpIY3LeSYggsXpwjRlSemKguJdSRT
-         h1ig==
-X-Gm-Message-State: AJIora9jDiIHewuYNxDX2sil9TQVNq/dC6UmHP9nYIsogt6C/7OkWu2G
-        o7wL+NeZ2KI9jiOqsDd0mGENUQ==
-X-Google-Smtp-Source: AGRyM1uCkfI3WTlZUr7WEZGfvAesB7wgSz0zkg+J9RomegxGE4tsQI4qHhyYZ9pnFuMvhJCs3YaR9Q==
-X-Received: by 2002:a2e:844a:0:b0:255:46b9:5e86 with SMTP id u10-20020a2e844a000000b0025546b95e86mr7505870ljh.388.1658940430765;
-        Wed, 27 Jul 2022 09:47:10 -0700 (PDT)
+        bh=xZf4OdbV43HHtgf1qVIKge/GbJKtAf7d2TC+uXlE1iw=;
+        b=S8hhzb4SQjTpxt0QTuE2AAkv2BmyfREHCq+HZp4ZBFE0JsBOMC6KLGVqxXBsLEQHtz
+         dxNnUZ+XV0vHYxhbDgV7dmt6juaDLSKs+8EGFLBcgUvR2s0y8oObJI8QhsrzGLC9VDaV
+         WvD2yZ9ADwRn1IeMQRq4Av5Umtr4Vbn2yHx1VQYkwHARLQ05n4IjxfW+Ec6o3DWGk5Nl
+         QTpyGIv4g2XIP99UH4BYVzzoOSP22nF7pnj6kiZADnrf4X6hf2KJf65+H7rBc7rCbRmb
+         bfF55V0w6rM1Pd9/5z6BRA7QPU/sm1WaLlON+ieHHNis8DuFIeFrZe1c8xNDFBge1JbB
+         bxRw==
+X-Gm-Message-State: AJIora95lPejgmXQOIn0yHC3VB5VqQ8BZRMR2teU/cCrrc1jhIaW6FE5
+        GKieBmh1GL+GUxGvmHYTfnukjw==
+X-Google-Smtp-Source: AGRyM1vk2lUU2rIgm+Qs7fiV5lfej9Y3jJ3qYGukgFmUOo3/tcHiuWVrQUOzvf2yUdGjOtEdYb/yTw==
+X-Received: by 2002:a05:6512:1287:b0:489:e488:950f with SMTP id u7-20020a056512128700b00489e488950fmr8402948lfs.440.1658940436717;
+        Wed, 27 Jul 2022 09:47:16 -0700 (PDT)
 Received: from krzk-bin.lan (78-26-46-173.network.trollfjord.no. [78.26.46.173])
-        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.08
+        by smtp.gmail.com with ESMTPSA id 18-20020ac25f52000000b0048910301774sm3375149lfz.307.2022.07.27.09.47.13
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Wed, 27 Jul 2022 09:47:10 -0700 (PDT)
+        Wed, 27 Jul 2022 09:47:16 -0700 (PDT)
 From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 To:     Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
@@ -100,9 +100,9 @@ To:     Lars-Peter Clausen <lars@metafoo.de>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-fbdev@vger.kernel.org
 Cc:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v2 03/10] dt-bindings: iio: amplifiers: adi,ada4250: use spi-peripheral-props.yaml
-Date:   Wed, 27 Jul 2022 18:46:39 +0200
-Message-Id: <20220727164646.387541-4-krzysztof.kozlowski@linaro.org>
+Subject: [PATCH v2 05/10] dt-bindings: iio: frequency: adf4371: use spi-peripheral-props.yaml
+Date:   Wed, 27 Jul 2022 18:46:41 +0200
+Message-Id: <20220727164646.387541-6-krzysztof.kozlowski@linaro.org>
 X-Mailer: git-send-email 2.34.1
 In-Reply-To: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
 References: <20220727164646.387541-1-krzysztof.kozlowski@linaro.org>
@@ -126,23 +126,24 @@ typical place, just before example DTS.
 
 Signed-off-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
 ---
- .../devicetree/bindings/iio/amplifiers/adi,ada4250.yaml    | 7 ++++---
+ .../devicetree/bindings/iio/frequency/adf4371.yaml         | 7 ++++---
  1 file changed, 4 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-index 5277479be382..c15da155d300 100644
---- a/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-+++ b/Documentation/devicetree/bindings/iio/amplifiers/adi,ada4250.yaml
-@@ -27,14 +27,15 @@ properties:
-       Enable internal buffer to drive the reference pin.
-     type: boolean
+diff --git a/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml b/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
+index 6b3a611e1cf1..0144f74a4768 100644
+--- a/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
++++ b/Documentation/devicetree/bindings/iio/frequency/adf4371.yaml
+@@ -40,15 +40,16 @@ properties:
+       output stage will shut down until the ADF4371/ADF4372 achieves lock as
+       measured by the digital lock detect circuitry.
  
 -  spi-max-frequency: true
 -
  required:
    - compatible
    - reg
-   - avdd-supply
+   - clocks
+   - clock-names
  
 -additionalProperties: false
 +allOf:
