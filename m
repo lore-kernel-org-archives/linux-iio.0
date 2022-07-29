@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A5BB4C19F2C
-	for <linux-iio@archiver.kernel.org>; Fri, 29 Jul 2022 17:23:46 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BAFDDC04A68
+	for <linux-iio@archiver.kernel.org>; Fri, 29 Jul 2022 17:23:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237972AbiG2RXp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S238097AbiG2RXp (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Fri, 29 Jul 2022 13:23:45 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40614 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40600 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237393AbiG2RXn (ORCPT
+        with ESMTP id S229979AbiG2RXn (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 29 Jul 2022 13:23:43 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 58DA988752;
-        Fri, 29 Jul 2022 10:23:41 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 8DD2482106;
+        Fri, 29 Jul 2022 10:23:40 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id A1F405FD08;
-        Fri, 29 Jul 2022 20:23:39 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id 415E45FD02;
+        Fri, 29 Jul 2022 20:23:38 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1659115419;
-        bh=PyxBA2BnLYxW1rMCm26qSJkySETPdFlB7N+MFu9zNgM=;
+        s=mail; t=1659115418;
+        bh=yX14yo464XH8BoP6NdYU3WfzYqSAMbCRrtyabNvLzUQ=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=oe4GcA4kRHmGtk9d0AcBZYjZzhXsM810HW6dLxRsV8aVZLYCW1637TqHT+VXtN7ak
-         DBeoG2ENgldW4TQIPY1VFfzGXqyZ8UVP3m35N7xBkHUzvZbmEDIdVD/SNTFAhXdBqe
-         C34m2GM/eEr9I5ze6fQXsnQmbXtiiWkgbRLa3O4UFnmDbE/Cd/bzTC/he6Y2wZAHPr
-         m/PyqkXuKNF0+M0f5nckJDjpkvV0QUyMX1gAZfnVauHfGgJmpnxOeMjnfk35qRjplq
-         GYF1haejajXZlQiwxlkSc+kExoa5TUrKD78d0YC4omy8JlSQsZcpnGJhtPfxZWg3/E
-         bpVv5F0HM4lmA==
+        b=X822dA8EA3PCCwWO5uvtOfRVYPh3v0ajO0HhMfVyZqnzrUgVVXglW5ZHo3/e58/Za
+         FjAfmcqLQI/sey+PbgI9tJKtA7n59gVxebxktTAm957OqFt/tqhkZAdfPaoY5S0cjN
+         fdO/wCZ5wg4KvihcA6tqWPgg16ePDFzTedQcN2STcK6hMcpFuf++9kZaR7o4vosVLC
+         ss+oXiYdZfbyoY583Wq5qZ8AmjaMl0okQZiSr1f0gxi5SKr6fUj16rE+qoC9JwHuRc
+         MIGZInD5LBUWR5IG05o6aENIMqEYqzNpzb8BCoZxhMGNOyx+ITloQsUz/JRD4GTkzQ
+         TKLZ0bKs2KQoQ==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 29 Jul 2022 20:23:39 +0300 (MSK)
+        Fri, 29 Jul 2022 20:23:36 +0300 (MSK)
 From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
 To:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
         "andriy.shevchenko@linux.intel.com" 
@@ -45,14 +45,11 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v2 3/3] iio: common: scmi_sensors: use HZ macro from units.h
-Thread-Topic: [PATCH v2 3/3] iio: common: scmi_sensors: use HZ macro from
- units.h
-Thread-Index: AQHYo2/ffOY1iq+jkk6eezTkPE4aJA==
-Date:   Fri, 29 Jul 2022 17:23:09 +0000
-Message-ID: <20220729172332.19118-4-ddrokosov@sberdevices.ru>
-References: <20220729172332.19118-1-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220729172332.19118-1-ddrokosov@sberdevices.ru>
+Subject: [PATCH v2 0/3] units: complement the set of Hz units
+Thread-Topic: [PATCH v2 0/3] units: complement the set of Hz units
+Thread-Index: AQHYo2/dJ8g6n21zP0mor5gcCy0AWA==
+Date:   Fri, 29 Jul 2022 17:23:06 +0000
+Message-ID: <20220729172332.19118-1-ddrokosov@sberdevices.ru>
 Accept-Language: ru-RU, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -72,36 +69,32 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove duplicated definition of UHZ_PER_HZ, because it's available in
-the units.h.
+During msa311 accel IIO driver development
 
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
----
+https://lore.kernel.org/linux-iio/20220616104211.9257-1-ddrokosov@sberdevic=
+es.ru/
+
+Andy requested to use proper units in the hz->ms calculation. Current
+units.h header doesn't have milli, micro and nano HZ coefficients, so
+some drivers (in the IIO subsystem) implement their own copies for that.
+
+The current patchset resolves such a problem and intoduces general
+MILLIHZ_PER_HZ, UHZ_PER_HZ and NHZ_PER_HZ definitions in the units.h, and
+fixes all drivers which duplicate these units.
+
+Changes v1->v2:
+    - changed MHZ_PER_HZ to a different name as Andy suggested
+      (suppose MILLIHZ_PER_HZ is good enough)
+
+Dmitry Rokosov (3):
+  units: complement the set of Hz units
+  iio: accel: adxl345: use HZ macro from units.h
+  iio: common: scmi_sensors: use HZ macro from units.h
+
+ drivers/iio/accel/adxl345_core.c           | 2 +-
  drivers/iio/common/scmi_sensors/scmi_iio.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ include/linux/units.h                      | 3 +++
+ 3 files changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c b/drivers/iio/commo=
-n/scmi_sensors/scmi_iio.c
-index 793d628db55f..c6d2cf5504cb 100644
---- a/drivers/iio/common/scmi_sensors/scmi_iio.c
-+++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
-@@ -18,6 +18,7 @@
- #include <linux/scmi_protocol.h>
- #include <linux/time.h>
- #include <linux/types.h>
-+#include <linux/units.h>
-=20
- #define SCMI_IIO_NUM_OF_AXIS 3
-=20
-@@ -130,7 +131,6 @@ static const struct iio_buffer_setup_ops scmi_iio_buffe=
-r_ops =3D {
- static int scmi_iio_set_odr_val(struct iio_dev *iio_dev, int val, int val2=
-)
- {
- 	struct scmi_iio_priv *sensor =3D iio_priv(iio_dev);
--	const unsigned long UHZ_PER_HZ =3D 1000000UL;
- 	u64 sec, mult, uHz, sf;
- 	u32 sensor_config;
- 	char buf[32];
 --=20
 2.36.0
