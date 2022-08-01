@@ -2,140 +2,138 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 90B6AC00144
-	for <linux-iio@archiver.kernel.org>; Mon,  1 Aug 2022 16:30:56 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6AC9C00144
+	for <linux-iio@archiver.kernel.org>; Mon,  1 Aug 2022 21:26:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231195AbiHAQaz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 1 Aug 2022 12:30:55 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52620 "EHLO
+        id S234492AbiHAV02 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 1 Aug 2022 17:26:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50326 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230503AbiHAQaz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Aug 2022 12:30:55 -0400
-Received: from mail-ej1-x629.google.com (mail-ej1-x629.google.com [IPv6:2a00:1450:4864:20::629])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2808A19297;
-        Mon,  1 Aug 2022 09:30:54 -0700 (PDT)
-Received: by mail-ej1-x629.google.com with SMTP id tl27so3499939ejc.1;
-        Mon, 01 Aug 2022 09:30:54 -0700 (PDT)
+        with ESMTP id S234648AbiHAVZa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Aug 2022 17:25:30 -0400
+Received: from mail-wm1-x330.google.com (mail-wm1-x330.google.com [IPv6:2a00:1450:4864:20::330])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 529AD48CB4
+        for <linux-iio@vger.kernel.org>; Mon,  1 Aug 2022 14:24:09 -0700 (PDT)
+Received: by mail-wm1-x330.google.com with SMTP id r128-20020a1c4486000000b003a3a22178beso37365wma.3
+        for <linux-iio@vger.kernel.org>; Mon, 01 Aug 2022 14:24:09 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=pCF8pZfhJZgUAo3G4AwwHQOTwlc2Y3ZcF/WhS1H9H3E=;
-        b=BuhlNN3/eM69jEo4xsOlIMyuFyLgI5epqWF832Y69q6TnSS0Qwce6dkFr/WKtuCAR9
-         ooKxm+s0jebokSpSIizQq2Reum48dm9tu84Ir7qpa+8hZ1F4ZxgQtuRgy9B58R4FYHbf
-         YmTeOvD+l9CxILjjMAmszbz4ikwm6rUKO9JllJFbIX57bXaOudSmudol60KeNiLY4HBj
-         BNPoB2fmhl+CENvpW0gL8C3sruQYFQSq817nSwOgoI8UhX2TcfEv83fe6JsXbBtlKjiO
-         MyqgXFzy10lPHI0Iq26PcYwsPHY9c5/Qb0J2pNSlc/Vzbt+4xZrfimmB/8i2Ur661MlZ
-         9wig==
+        d=linexp-org.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=kR3Ri+u8MrlBR31H9vhYMnYhYm+SNLRNtOs1Gp5xhCw=;
+        b=xh8Gu6CxZR+eHCxOmg5DvWBOkqxPXW8WLgkpaNchDUH5lQyH7yxJcrq5lgw85+W7VH
+         RIbvm50Fu7/2MYWwdSa19QbfmT6UphVTPkuOnjmQGh3SZkccXDK4vW80VyV7h3WRJTSo
+         VQutQv0Y4cr81PHha3zpny1JbqRcIXXcbBXk/sx6YgKgp0aDX2oULlAeBZX0yFw8dkcP
+         xBf3RXZBss3INtEoO4bZQWBYSslKyoxDehwFDEeWsXMgaTemsPEqdW8Xl43of9/Gsxtq
+         AqoL+V/lNNNQEePgCMo/Ux/avVQ1Dah5/+B4qr/uS3PjTQ/cpLcOJ9iqk8CBHCrVLvtt
+         xJ6g==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=pCF8pZfhJZgUAo3G4AwwHQOTwlc2Y3ZcF/WhS1H9H3E=;
-        b=8IZBaXPbqc3HvMuP/eE5lSrtk8zjwGE0wUP8zO+ZX8EPEfcmSVqynZvMr/yaKXnQBl
-         DEDAzuzEO+Vh4B/5YKukOML5/Y+lDZ9L7jRrA8TZMAOy7SGm/2sb2bIB0HgUS9pngWhe
-         JpIPlA15aOQv70L7ChEClKLvePNZ/Yg1JeSku7c1y4On3xrnAKdAvE+0Xb/KTSD6VTrU
-         KLDWa/6qWeMcpSUPvtatDVb4HsjAl7C5WvYcPBSYKCYhIQunl7rC37T1OWfjZfpc2qcN
-         k6RBSKxNzhsOfTg1UpovM83zJSmdXpnJzouT4Nxb5YBVlFCn0RrQj9L2Hq1rUgze3Ryv
-         kC5A==
-X-Gm-Message-State: AJIora/i/eksl2rTbz72pYHUulnfxtmgRwO6FbA59QrDyfRoZz681pr+
-        aq/zNhtgZEh9DIaEAbXctR2nmuDxHlOAu16bjf8=
-X-Google-Smtp-Source: AGRyM1uTUuY1reAj2HR/7630oTEyyDlsnOyudLaV+9Ht+3hMoQCiZXhWFXByMGkbtmanwtHcIX5z6yfg0eRZVC5vwxg=
-X-Received: by 2002:a17:907:2dab:b0:72f:f7:bdd6 with SMTP id
- gt43-20020a1709072dab00b0072f00f7bdd6mr13731128ejc.330.1659371452623; Mon, 01
- Aug 2022 09:30:52 -0700 (PDT)
-MIME-Version: 1.0
-References: <20220728125435.3336618-1-potin.lai.pt@gmail.com>
- <20220728125435.3336618-3-potin.lai.pt@gmail.com> <20220731130959.50826fc4@jic23-huawei>
- <4ea235d1-46c1-87de-760f-dc4775007ae0@gmail.com> <CAHp75VcZqTpmvVV=u4t=fdx=ffzksoWVDFZmq6Lfr6DrFrB2aA@mail.gmail.com>
- <Yuf7UAVrIJCnO40X@heinlein.stwcx.org.github.beta.tailscale.net> <CAHp75Vfe33oJAf1j27B-pTd84kX5JNPd+e16ygLYgZjCs=ZJfQ@mail.gmail.com>
-In-Reply-To: <CAHp75Vfe33oJAf1j27B-pTd84kX5JNPd+e16ygLYgZjCs=ZJfQ@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 1 Aug 2022 18:30:16 +0200
-Message-ID: <CAHp75VfOPgDbTdt1EXJ5+exGXCZeT9VdtcOUDt_g4fn20S2Qwg@mail.gmail.com>
-Subject: Re: [PATCH v5 2/2] iio: humidity: hdc100x: add manufacturer and
- device ID check
-To:     Patrick Williams <patrick@stwcx.xyz>
-Cc:     Potin Lai <potin.lai.pt@gmail.com>,
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=kR3Ri+u8MrlBR31H9vhYMnYhYm+SNLRNtOs1Gp5xhCw=;
+        b=je8yIsN02s9svI8vEIBqysKogRkEvoqx7uklVLKKL/NjEF9/AqhtRcAgVv6fdq7kCj
+         P6KDcqw62RFpIr4DQKnqvn3G98vKF7vH8SDskRlId55o1BzFmYX6sugb32A5Tw2DDUnH
+         KJbHijtp6ygqgByBmxhZIJn/YLZrPqTtYF82Tpm3+p3aXuGXbinbUDijx53FU8dquzKA
+         NBsA5+HWCFLD+mAklmF7Zrmcz9As9i4WuD/Xf0Wpq9AP7NVN9KxIma3n7LRbyqCw0gb3
+         9QUKWBYCGo/GK3mXMI8od0bGAd7wti4THxeLjJZs/YlHTLxC9UEtjQIeXy6KZDwVwBHg
+         gR9w==
+X-Gm-Message-State: AJIora/++Tr/2XynDf7bn/S90G6SbJti8TWmGN4646lbjNAy4Xtz9p26
+        gVJhjUU9MW4DVoa6elUwy/GVyA==
+X-Google-Smtp-Source: AGRyM1uV5KV0eIULjdt945RlfJzhs3wIx8I+n5plQIxUxm/0jmON2cpIRB7uDxXgLbFNdilwVjimiQ==
+X-Received: by 2002:a7b:c8da:0:b0:3a2:ffd2:8059 with SMTP id f26-20020a7bc8da000000b003a2ffd28059mr12277872wml.169.1659389049153;
+        Mon, 01 Aug 2022 14:24:09 -0700 (PDT)
+Received: from mai.box.freepro.com ([2a05:6e02:1041:c10:d00:ceb8:9c09:1302])
+        by smtp.gmail.com with ESMTPSA id c7-20020adffb07000000b0021e501519d3sm12995285wrr.67.2022.08.01.14.24.07
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 01 Aug 2022 14:24:08 -0700 (PDT)
+From:   Daniel Lezcano <daniel.lezcano@linexp.org>
+To:     daniel.lezcano@linaro.org, rafael@kernel.org
+Cc:     rui.zhang@intel.com, linux-pm@vger.kernel.org,
+        linux-kernel@vger.kernel.org, khilman@baylibre.com,
+        abailon@baylibre.com, lukasz.luba@arm.com, broonie@kernel.org,
+        damien.lemoal@opensource.wdc.com, heiko@sntech.de,
+        hayashi.kunihiko@socionext.com, mhiramat@kernel.org,
+        talel@amazon.com, thierry.reding@gmail.com, digetx@gmail.com,
+        jonathanh@nvidia.com, anarsoul@gmail.com, tiny.windzz@gmail.com,
+        baolin.wang7@gmail.com, f.fainelli@gmail.com,
+        bjorn.andersson@linaro.org, mcoquelin.stm32@gmail.com,
+        glaroque@baylibre.com, miquel.raynal@bootlin.com,
+        shawnguo@kernel.org, niklas.soderlund@ragnatech.se,
+        matthias.bgg@gmail.com, j-keerthy@ti.com,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Potin Lai <potin.lai@quantatw.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset="UTF-8"
+        Chen-Yu Tsai <wens@csie.org>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Samuel Holland <samuel@sholland.org>,
+        linux-iio@vger.kernel.org (open list:IIO SUBSYSTEM AND DRIVERS),
+        linux-arm-kernel@lists.infradead.org (moderated list:ARM/Allwinner
+        sunXi SoC support),
+        linux-sunxi@lists.linux.dev (open list:ARM/Allwinner sunXi SoC support)
+Subject: [PATCH v4 27/32] iio/drivers/sun4i_gpadc: Switch to new of thermal API
+Date:   Mon,  1 Aug 2022 23:22:39 +0200
+Message-Id: <20220801212244.1124867-28-daniel.lezcano@linexp.org>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220801212244.1124867-1-daniel.lezcano@linexp.org>
+References: <20220801212244.1124867-1-daniel.lezcano@linexp.org>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Aug 1, 2022 at 6:26 PM Andy Shevchenko
-<andy.shevchenko@gmail.com> wrote:
-> On Mon, Aug 1, 2022 at 6:12 PM Patrick Williams <patrick@stwcx.xyz> wrote:
-> > On Mon, Aug 01, 2022 at 10:22:16AM +0200, Andy Shevchenko wrote:
-> > > On Mon, Aug 1, 2022 at 3:52 AM Potin Lai <potin.lai.pt@gmail.com> wrote:
-> > > > On 7/31/22 20:09, Jonathan Cameron wrote:
-> > > > In our hardware board, we have "ti,hdc1080" as main source, and "silabs,si7020"
-> > > > for 2nd source. This two chip are locate at same bus and same slave address,
-> > > > and we want to use multiple compatibles to support both chips with single device
-> > > > node in device tree.
-> > > >
-> > > > Ex:
-> > > > compatible = "ti,hdc1099", "silabs,si7020";
-> > >
-> > > This is simply broken DT, you must not put incompatible hardware on
-> > > the same compatible string. DT is by definition the description of a
-> > > certain platform. What you showed is a combination of incompatible
-> > > chips in a single DT.
-> >
-> > We were mistaken that this is the appropriate way to specify this
-> > behavior, partially because it works as long as the probe functions
-> > return an error the next matching driver from the compatible will probe.
-> > It does seem that specifying two different compatibles like this would
-> > violate the intention of the DT spec:
-> >
-> >     The property value consists of a concatenated list of null terminated
-> >     strings, from most specific to most general. They allow a device to
-> >     express its compatibility with a family of similar devices, potentially
-> >     allowing a single device driver to match against several devices.
-> >
-> > >
-> > > > In order to support this, I need to add ID checking mechanism into the current
-> > > > hdc100x driver, so the si7020 chip will fail to probe with hdc100x driver
-> > > > (because the ID checking is not failed), then success probe with si7020.
-> > > >
-> > > > Base on you explanation, it looks multiple compatibles is not suitable in this
-> > > > case? Would you mind advise us what would be the better approach for our case?
-> > >
-> > > If I may advise... fix your DT by dropping the wrong compatible item.
-> >
-> > This doesn't really give any helpful advice.
->
-> Sorry to hear this, but it's the best and correct solution to your
-> problem. Believe me, many Linux people will tell you the same.
->
-> > The reality is that these two chips are pin compatible and function
-> > compatible but not driver compatible.  Boards have been manufactured
-> > which are identical except for this chip replaced, due various to chip
-> > shortages.
-> >
-> > Making probe fail so that the next 'compatible' is chosen sounds like it
-> > isn't desired.  I'm pretty sure you can't have two DT entries for the
-> > same i2c address, but with different 'compatible" properties, and even
-> > if we did you'd still need probe to fail on one of them.
-> >
-> > Are there any other suggestions for being able to inform the kernel that
-> > one of two chips might be present?
+The thermal OF code has a new API allowing to migrate the OF
+initialization to a simpler approach. The ops are no longer device
+tree specific and are the generic ones provided by the core code.
 
-Btw, how would it be solved in ACPI is the playing status bits by
-firmware, depending on the run-time detected environment (straps,
-other means). So, you may fix it on bootloader / firmware level by
-patching DTB with status okay / disabled. I believe in DTB is the
-number, which can be easily binary patched.
+Convert the ops to the thermal_zone_device_ops format and use the new
+API to register the thermal zone with these generic ops.
 
-> I guess there is a gap in understanding what DT is. DT is the
-> description of the *platform*. Changing any discrete component on the
-> platform is changing the platform.
+Signed-off-by: Daniel Lezcano <daniel.lezcano@linexp.org>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
+---
+ drivers/iio/adc/sun4i-gpadc-iio.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+index 2d393a4dfff6..13d1e937357c 100644
+--- a/drivers/iio/adc/sun4i-gpadc-iio.c
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -412,9 +412,9 @@ static int sun4i_gpadc_runtime_resume(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int sun4i_gpadc_get_temp(void *data, int *temp)
++static int sun4i_gpadc_get_temp(struct thermal_zone_device *tz, int *temp)
+ {
+-	struct sun4i_gpadc_iio *info = data;
++	struct sun4i_gpadc_iio *info = tz->devdata;
+ 	int val, scale, offset;
+ 
+ 	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
+@@ -428,7 +428,7 @@ static int sun4i_gpadc_get_temp(void *data, int *temp)
+ 	return 0;
+ }
+ 
+-static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
++static const struct thermal_zone_device_ops sun4i_ts_tz_ops = {
+ 	.get_temp = &sun4i_gpadc_get_temp,
+ };
+ 
+@@ -637,9 +637,9 @@ static int sun4i_gpadc_probe(struct platform_device *pdev)
+ 	pm_runtime_enable(&pdev->dev);
+ 
+ 	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+-		info->tzd = thermal_zone_of_sensor_register(info->sensor_device,
+-							    0, info,
+-							    &sun4i_ts_tz_ops);
++		info->tzd = thermal_of_zone_register(info->sensor_device,
++						     0, info,
++						     &sun4i_ts_tz_ops);
+ 		/*
+ 		 * Do not fail driver probing when failing to register in
+ 		 * thermal because no thermal DT node is found.
 -- 
-With Best Regards,
-Andy Shevchenko
+2.25.1
+
