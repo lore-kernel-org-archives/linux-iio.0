@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 40E89C00144
+	by smtp.lore.kernel.org (Postfix) with ESMTP id DB90FC19F2B
 	for <linux-iio@archiver.kernel.org>; Mon,  1 Aug 2022 14:38:26 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232622AbiHAOiZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S232626AbiHAOiZ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 1 Aug 2022 10:38:25 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50394 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50396 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232620AbiHAOiY (ORCPT
+        with ESMTP id S232580AbiHAOiY (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 1 Aug 2022 10:38:24 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C13123336D;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C1B9433435;
         Mon,  1 Aug 2022 07:38:19 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 0C1D65FD19;
-        Mon,  1 Aug 2022 17:38:18 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id E1BC15FD15;
+        Mon,  1 Aug 2022 17:38:16 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1659364698;
-        bh=oibksYrmp8+cmV76Bmyg6glyKiwiaHuhHP5Cf1Ebjxg=;
+        s=mail; t=1659364696;
+        bh=o7OLgDbo1xqFLNJ+G6hOVPrGDC+uPcvGgiUc/M2WLx8=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=GzwXIxQrYrOFwlFnyEkuF61j43Wn4QR/bEeiSVOycdY+Md8kjoLYxvfYmlErhsGEn
-         QByNaI85qFhqYH3HpDYUSvsxO0FA9KOOZiMO9EBfmOkOQ0JfqqisHpJdx0Q98bUnIA
-         vg4+qdKxbssX/m6kHC/CO8VbJKIxoS1a5YhhT8Vph1MiqG5NTW/fJo4mcNIRQ5lO3k
-         aJgcUsRmMQxr9oKbPqe9O5r6dqST60uqrDzvwmCP9++gIHdgfmd4MERwmFFBkNaNfx
-         7AKUZZTkaZdmny8wyhSpayWoHptgATf8aP2fBpoowuyXec1dhRrL5x3KaRlIWu6J7u
-         CJoMP2nmQ21Ig==
+        b=NVw/bqmCbnvrKQnptbzoNJOPXxc6YZ5d1oKKCq9CUY9NL2HzrrXMnUtmWqJbDWdkm
+         5qMRk1tVqfH4jZiIlJgRVkq5bjOefzXV+MsgeUfPd9BMG2IpQFqzvuyun8+zGjU6Jy
+         8GTg4LVgjsnTtZOmQOFDRNwHlX/mrqFD3rxJOanT/TKjM1J37c2gdRO1/Dx+Hc6re9
+         ZstnPdU/jB1c2gWzPGhdxNEQ0pYLd4BXGCNOLzJCUusXV00+Jxl1XPdyGqVZedmkGL
+         YgodkFEPclrgGwgqqVWmSkMgbCdzIeN/leS3RQuWGeNfGHHczLWgV7ZqNyhUNe3ttE
+         jxZaTWEAqssig==
 Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon,  1 Aug 2022 17:38:18 +0300 (MSK)
+        Mon,  1 Aug 2022 17:38:14 +0300 (MSK)
 From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
 To:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
         "andriy.shevchenko@linux.intel.com" 
@@ -45,13 +45,11 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         kernel <kernel@sberdevices.ru>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v3 2/3] iio: accel: adxl345: use HZ macro from units.h
-Thread-Topic: [PATCH v3 2/3] iio: accel: adxl345: use HZ macro from units.h
-Thread-Index: AQHYpbQ4GlLNqvVvrk2lqYyyK67LKQ==
-Date:   Mon, 1 Aug 2022 14:37:26 +0000
-Message-ID: <20220801143811.14817-3-ddrokosov@sberdevices.ru>
-References: <20220801143811.14817-1-ddrokosov@sberdevices.ru>
-In-Reply-To: <20220801143811.14817-1-ddrokosov@sberdevices.ru>
+Subject: [PATCH v3 0/3] units: complement the set of Hz units
+Thread-Topic: [PATCH v3 0/3] units: complement the set of Hz units
+Thread-Index: AQHYpbQ2WkEHos67cUaK7wL1TIYVMw==
+Date:   Mon, 1 Aug 2022 14:37:23 +0000
+Message-ID: <20220801143811.14817-1-ddrokosov@sberdevices.ru>
 Accept-Language: ru-RU, en-US
 Content-Language: en-US
 X-MS-Has-Attach: 
@@ -71,54 +69,38 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Remove duplicated definition of NHZ_PER_HZ, because it's available in
-the units.h as NANOHZ_PER_HZ.
+During msa311 accel IIO driver development
 
-Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
----
- drivers/iio/accel/adxl345_core.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+https://lore.kernel.org/linux-iio/20220616104211.9257-1-ddrokosov@sberdevic=
+es.ru/
 
-diff --git a/drivers/iio/accel/adxl345_core.c b/drivers/iio/accel/adxl345_c=
-ore.c
-index 370bfec1275a..1919e0089c11 100644
---- a/drivers/iio/accel/adxl345_core.c
-+++ b/drivers/iio/accel/adxl345_core.c
-@@ -10,6 +10,7 @@
- #include <linux/module.h>
- #include <linux/property.h>
- #include <linux/regmap.h>
-+#include <linux/units.h>
-=20
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -32,7 +33,6 @@
-=20
- #define ADXL345_BW_RATE			GENMASK(3, 0)
- #define ADXL345_BASE_RATE_NANO_HZ	97656250LL
--#define NHZ_PER_HZ			1000000000LL
-=20
- #define ADXL345_POWER_CTL_MEASURE	BIT(3)
- #define ADXL345_POWER_CTL_STANDBY	0x00
-@@ -139,7 +139,7 @@ static int adxl345_read_raw(struct iio_dev *indio_dev,
-=20
- 		samp_freq_nhz =3D ADXL345_BASE_RATE_NANO_HZ <<
- 				(regval & ADXL345_BW_RATE);
--		*val =3D div_s64_rem(samp_freq_nhz, NHZ_PER_HZ, val2);
-+		*val =3D div_s64_rem(samp_freq_nhz, NANOHZ_PER_HZ, val2);
-=20
- 		return IIO_VAL_INT_PLUS_NANO;
- 	}
-@@ -164,7 +164,8 @@ static int adxl345_write_raw(struct iio_dev *indio_dev,
- 				    ADXL345_REG_OFS_AXIS(chan->address),
- 				    val / 4);
- 	case IIO_CHAN_INFO_SAMP_FREQ:
--		n =3D div_s64(val * NHZ_PER_HZ + val2, ADXL345_BASE_RATE_NANO_HZ);
-+		n =3D div_s64(val * NANOHZ_PER_HZ + val2,
-+			    ADXL345_BASE_RATE_NANO_HZ);
-=20
- 		return regmap_update_bits(data->regmap, ADXL345_REG_BW_RATE,
- 					  ADXL345_BW_RATE,
+Andy requested to use proper units in the hz->ms calculation. Current
+units.h header doesn't have milli, micro and nano HZ coefficients, so
+some drivers (in the IIO subsystem) implement their own copies for that.
+
+The current patchset resolves such a problem and intoduces general
+MILLIHZ_PER_HZ, MICROHZ_PER_HZ and NANOHZ_PER_HZ definitions in the units.h=
+,
+and fixes all drivers which duplicate these units.
+
+Changes:
+* v2->v3:
+    - changed UHZ_PER_HZ to MICROHZ_PER_HZ and NHZ_PER_HZ to
+      NANOHZ_PER_HZ to save name consistency for all new HZ units
+
+* v1->v2:
+    - changed MHZ_PER_HZ to a different name as Andy suggested
+      (suppose MILLIHZ_PER_HZ is good enough)
+
+Dmitry Rokosov (3):
+  units: complement the set of Hz units
+  iio: accel: adxl345: use HZ macro from units.h
+  iio: common: scmi_sensors: use HZ macro from units.h
+
+ drivers/iio/accel/adxl345_core.c           | 7 ++++---
+ drivers/iio/common/scmi_sensors/scmi_iio.c | 8 ++++----
+ include/linux/units.h                      | 3 +++
+ 3 files changed, 11 insertions(+), 7 deletions(-)
+
 --=20
 2.36.0
