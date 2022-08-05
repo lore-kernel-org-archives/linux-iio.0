@@ -2,110 +2,77 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0B9E0C00140
-	for <linux-iio@archiver.kernel.org>; Fri,  5 Aug 2022 14:04:40 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E42F7C00140
+	for <linux-iio@archiver.kernel.org>; Fri,  5 Aug 2022 14:05:06 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232185AbiHEOEi (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 5 Aug 2022 10:04:38 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39090 "EHLO
+        id S240852AbiHEOFF (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 5 Aug 2022 10:05:05 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:39454 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230095AbiHEOEi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 Aug 2022 10:04:38 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B3351F2CE;
-        Fri,  5 Aug 2022 07:04:36 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id DA4E85FD06;
-        Fri,  5 Aug 2022 17:04:34 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1659708274;
-        bh=KBHblqB033On8iyxviJajlqGBNdVHnA7KT9CW2gE/Lw=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=nmsuo8O3gjphxB1Y+GR8qX5k5BykpoyJSqR+ckPCrQ5Cj979RpcfWQwAaD0ZD3Q40
-         XJ3/8drpy5pv699lF8DRllZvu6LPobl3Vfc1k9AHbQSzJqlux8AsCE3xOO8OBvtgPE
-         GftZHWSXtpS4wAx9Bd7/Adj51D3qcr6ASlCCM2DEVhdrCp4ijyTXpTwndVfRaBD4/C
-         vSJk1OZGGMXuW4QcZIjCnN21XQIe+P0SP3CcQd97dKCVr1qFKw1a8eJmnIygxINnnu
-         cG2jlfmiK1e9kjrShzeLrebOSSE4MopfN2I2NhUMGyLNIgdf7NocCiEDmH309UtAPE
-         Tt5nY+m4VEGSA==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri,  5 Aug 2022 17:04:34 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v4 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Topic: [PATCH v4 2/3] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Index: AQHYpzqIoQnaRj7vNkq2cXUUGjAB/62dQgeAgAAYQICAAYHbgIAAA5UAgAFIGQA=
-Date:   Fri, 5 Aug 2022 14:04:06 +0000
-Message-ID: <20220805140430.c773smfzxg5zcj4b@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220803131132.19630-1-ddrokosov@sberdevices.ru>
- <20220803131132.19630-3-ddrokosov@sberdevices.ru>
- <CAHp75VcVuC6yVoB1kycCOfqMa=JfCtbe3WYSK5qndtYcJy3vpg@mail.gmail.com>
- <20220803191621.tzrmndkygfe7nlpx@CAB-WSD-L081021.sigma.sbrf.ru>
- <20220804181723.4bljpxcwkj6cnn2f@CAB-WSD-L081021.sigma.sbrf.ru>
- <CAHp75Vcn6JCDDvugop2Ho1cayLi1CX78O42v3GifvnuSY5fvPA@mail.gmail.com>
-In-Reply-To: <CAHp75Vcn6JCDDvugop2Ho1cayLi1CX78O42v3GifvnuSY5fvPA@mail.gmail.com>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <2569579201B2C14EB99D8D1151005A20@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S240761AbiHEOFE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 5 Aug 2022 10:05:04 -0400
+Received: from relay04.th.seeweb.it (relay04.th.seeweb.it [IPv6:2001:4b7a:2000:18::165])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 303DA59275
+        for <linux-iio@vger.kernel.org>; Fri,  5 Aug 2022 07:05:01 -0700 (PDT)
+Received: from localhost.localdomain (94-209-165-62.cable.dynamic.v4.ziggo.nl [94.209.165.62])
+        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
+         key-exchange X25519 server-signature RSA-PSS (2048 bits) server-digest SHA256)
+        (No client certificate requested)
+        by m-r1.th.seeweb.it (Postfix) with ESMTPSA id 1565F1F684;
+        Fri,  5 Aug 2022 15:57:39 +0200 (CEST)
+From:   Marijn Suijten <marijn.suijten@somainline.org>
+To:     phone-devel@vger.kernel.org
+Cc:     ~postmarketos/upstreaming@lists.sr.ht,
+        AngeloGioacchino Del Regno 
+        <angelogioacchino.delregno@somainline.org>,
+        Konrad Dybcio <konrad.dybcio@somainline.org>,
+        Martin Botka <martin.botka@somainline.org>,
+        Jami Kettunen <jami.kettunen@somainline.org>,
+        Marijn Suijten <marijn.suijten@somainline.org>,
+        Andy Gross <agross@kernel.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-arm-msm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH v2 1/5] arm64: dts: qcom: pm660: Use unique ADC5_VCOIN address in node name
+Date:   Fri,  5 Aug 2022 15:57:25 +0200
+Message-Id: <20220805135729.1037079-2-marijn.suijten@somainline.org>
+X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220805135729.1037079-1-marijn.suijten@somainline.org>
+References: <20220805135729.1037079-1-marijn.suijten@somainline.org>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/05 06:43:00 #20054623
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Thu, Aug 04, 2022 at 08:30:12PM +0200, Andy Shevchenko wrote:
-> > > > > +               dev_err(dev, "cannot %s register %u from debugfs =
-(%d)\n",
-> > > > > +                       readval ? "read" : "write", reg, err);
-> > > >
-> > > > You may consider taking [1] as a precursor here and use str_read_wr=
-ite().
-> > > >
-> > > > [1]: https://lore.kernel.org/linux-i2c/20220703154232.55549-1-andri=
-y.shevchenko@linux.intel.com/
-> > >
-> > > Oh, really... Thank you for suggestion!
-> >
-> > I have taken it closer, and it's really helpful and nice, but looks lik=
-e
-> > it's not merged to linux-next.
-> > Please advise how I can use it in the driver. Should I provide
-> > "Depends-On:" tag as I did for my HZ units patchset?
->=20
-> No, just take that patch into your series.
+The register address in the node name is shadowing vph_pwr@83, whereas
+the ADC5_VCOIN register resolves to 0x85.  Fix this copy-paste
+discrepancy.
 
-Do you mean include your patch to this reply-thread through the
-message-id linking? If my understanding is correct, maybe also it's better =
-to
-include HZ units series to the current series? I mean patch series on
-below link:
+Fixes: 4bf097540506 ("arm64: dts: qcom: pm660: Add VADC and temp alarm nodes")
+Signed-off-by: Marijn Suijten <marijn.suijten@somainline.org>
+Reviewed-by: AngeloGioacchino Del Regno <angelogioacchino.delregno@somainline.org>
+---
+ arch/arm64/boot/dts/qcom/pm660.dtsi | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-https://lore.kernel.org/linux-iio/20220801143811.14817-1-ddrokosov@sberdevi=
-ces.ru/
+diff --git a/arch/arm64/boot/dts/qcom/pm660.dtsi b/arch/arm64/boot/dts/qcom/pm660.dtsi
+index c482663aad56..42f9c51b9c1e 100644
+--- a/arch/arm64/boot/dts/qcom/pm660.dtsi
++++ b/arch/arm64/boot/dts/qcom/pm660.dtsi
+@@ -163,7 +163,7 @@ vadc_vph_pwr: vph_pwr@83 {
+ 				qcom,pre-scaling = <1 3>;
+ 			};
+ 
+-			vcoin: vcoin@83 {
++			vcoin: vcoin@85 {
+ 				reg = <ADC5_VCOIN>;
+ 				qcom,decimation = <1024>;
+ 				qcom,pre-scaling = <1 3>;
+-- 
+2.37.1
 
---=20
-Thank you,
-Dmitry=
