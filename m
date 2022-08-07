@@ -2,35 +2,35 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id C2DA0C25B08
-	for <linux-iio@archiver.kernel.org>; Sun,  7 Aug 2022 19:10:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 43303C19F2A
+	for <linux-iio@archiver.kernel.org>; Sun,  7 Aug 2022 19:10:50 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231332AbiHGTKf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 7 Aug 2022 15:10:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47730 "EHLO
+        id S229468AbiHGTKq (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 7 Aug 2022 15:10:46 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47794 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229468AbiHGTKe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 Aug 2022 15:10:34 -0400
+        with ESMTP id S234789AbiHGTKj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 7 Aug 2022 15:10:39 -0400
 Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 12C26E9;
-        Sun,  7 Aug 2022 12:10:31 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B53DFE9;
+        Sun,  7 Aug 2022 12:10:37 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by ams.source.kernel.org (Postfix) with ESMTPS id 0F15CB80881;
-        Sun,  7 Aug 2022 19:10:30 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id 35E29C433D7;
-        Sun,  7 Aug 2022 19:10:26 +0000 (UTC)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 65538B80B84;
+        Sun,  7 Aug 2022 19:10:36 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id A4028C433D6;
+        Sun,  7 Aug 2022 19:10:32 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1659899428;
-        bh=SWYmC+RXEqVAhfGvwxF8wxf+4TJ1kWJbu7Ijmml8yxM=;
+        s=k20201202; t=1659899435;
+        bh=4u3tuq6QE45CRWWudKG3wLPtrd4o8hv7arsU7yB12/Q=;
         h=From:To:Cc:Subject:Date:In-Reply-To:References:From;
-        b=bpYWoK9vsVsQL2Koai5IUtVNTqCviehdshzBEjVvuz68N4YPBuPmws/FC3rLbnF4H
-         XMdV5XW0tyAolg1eRHpznEAYY5k1GjumyHke0P8PytLbGOv6X/JIAmZsGCn5OH0PND
-         l7RAyKqKZm47018PBIBlXWrUgsbIaBTL4A0YPhlLn9ATNCwKZydMMhzMCwDJhmLWw3
-         sUGZjpOj0k3dVANxOy+pPd9wG3tXQHhABHmEveB1tZU3sJcPDHNd177pZ4YBOkVLNv
-         xO6a28hJed+1twTzfbSbGUoByeozW0pUu1Wbh2NZ6PqRVDtLKv0svKNiBNtBR7WYIB
-         UiEE6FCHNKBkQ==
+        b=QnY+1uKDQiRzZVzAOoV3JTxPJMBcwGmL3e2TZ6CAC3EQMHnCblchn4nrlPQ8Xnw2T
+         HGdMuZYBUUll5Is9/QuDtjqCar8RHFashkEDkOot6BIJrTSjWtNbu8EcMdst9XVCLj
+         qGqAPvBr/RnmNBYsizt7CTXv5DdW4y1Ut+DzJIjHPl3exisASRZnsxgCXMOZdvLvcj
+         cQsiwAsiUkAjWMTzwUKG5J2TXr4yeXdK13P6MHe9wVdRoZ2k1+2vY+KY/d1PuB+e91
+         72SjUWOLk94z0/S9YhfMlwcyyvEOP5YqEbWVMVg+dUqeFot/f4DdyubTPRAT/VGoQB
+         AwVFoTfGechVA==
 From:   Jonathan Cameron <jic23@kernel.org>
 To:     linux-iio@vger.kernel.org,
         "Rafael J . Wysocki" <rafael@kernel.org>, linux-pm@vger.kernel.org
@@ -40,9 +40,9 @@ Cc:     Paul Cercueil <paul@crapouillou.net>,
         Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
         Linus Walleij <linus.walleij@linaro.org>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Subject: [PATCH 2/5] iio: accel: fxls8962af: Use new EXPORT_NS_GPL_DEV_PM_OPS()
-Date:   Sun,  7 Aug 2022 20:20:35 +0100
-Message-Id: <20220807192038.1039771-3-jic23@kernel.org>
+Subject: [PATCH 4/5] iio: imu: inv_icm42600: Move exports to IIO_ICM42600 namespace
+Date:   Sun,  7 Aug 2022 20:20:37 +0100
+Message-Id: <20220807192038.1039771-5-jic23@kernel.org>
 X-Mailer: git-send-email 2.37.1
 In-Reply-To: <20220807192038.1039771-1-jic23@kernel.org>
 References: <20220807192038.1039771-1-jic23@kernel.org>
@@ -54,99 +54,129 @@ X-Mailing-List: linux-iio@vger.kernel.org
 
 From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 
-Using this macro allows the compiler to remove unused
-structures and callbacks if we are not building with
-CONFIG_PM* without needing __maybe_unused markings.
+As these exports are only relevant to core module and users in the
+bus specific modules, move them out of the main kernel namespace.
+
+Includes using EXPORT_NS_GPL_DEV_PM_OPS() and the simplifications that
+brings by allowing the compiler to remove unused struct dev_pm_ops
+and callbacks without needing explicit __maybe_unused markings.
 
 Signed-off-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc: Sean Nyekjaer <sean@geanix.com>
+Cc: Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>
 ---
- drivers/iio/accel/fxls8962af-core.c | 17 +++++++----------
- drivers/iio/accel/fxls8962af-i2c.c  |  2 +-
- drivers/iio/accel/fxls8962af-spi.c  |  2 +-
- 3 files changed, 9 insertions(+), 12 deletions(-)
+ .../iio/imu/inv_icm42600/inv_icm42600_core.c  | 21 ++++++++-----------
+ .../iio/imu/inv_icm42600/inv_icm42600_i2c.c   |  3 ++-
+ .../iio/imu/inv_icm42600/inv_icm42600_spi.c   |  3 ++-
+ 3 files changed, 13 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/accel/fxls8962af-core.c b/drivers/iio/accel/fxls8962af-core.c
-index 8874d6d61725..6c7dde4a1af9 100644
---- a/drivers/iio/accel/fxls8962af-core.c
-+++ b/drivers/iio/accel/fxls8962af-core.c
-@@ -1241,7 +1241,7 @@ int fxls8962af_core_probe(struct device *dev, struct regmap *regmap, int irq)
- }
- EXPORT_SYMBOL_NS_GPL(fxls8962af_core_probe, IIO_FXLS8962AF);
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+index ca85fccc9839..2dce708e6272 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_core.c
+@@ -41,7 +41,7 @@ const struct regmap_config inv_icm42600_regmap_config = {
+ 	.ranges = inv_icm42600_regmap_ranges,
+ 	.num_ranges = ARRAY_SIZE(inv_icm42600_regmap_ranges),
+ };
+-EXPORT_SYMBOL_GPL(inv_icm42600_regmap_config);
++EXPORT_SYMBOL_NS_GPL(inv_icm42600_regmap_config, IIO_ICM42600);
  
--static int __maybe_unused fxls8962af_runtime_suspend(struct device *dev)
-+static int fxls8962af_runtime_suspend(struct device *dev)
+ struct inv_icm42600_hw {
+ 	uint8_t whoami;
+@@ -660,13 +660,13 @@ int inv_icm42600_core_probe(struct regmap *regmap, int chip, int irq,
+ 
+ 	return devm_add_action_or_reset(dev, inv_icm42600_disable_pm, dev);
+ }
+-EXPORT_SYMBOL_GPL(inv_icm42600_core_probe);
++EXPORT_SYMBOL_NS_GPL(inv_icm42600_core_probe, IIO_ICM42600);
+ 
+ /*
+  * Suspend saves sensors state and turns everything off.
+  * Check first if runtime suspend has not already done the job.
+  */
+-static int __maybe_unused inv_icm42600_suspend(struct device *dev)
++static int inv_icm42600_suspend(struct device *dev)
  {
- 	struct fxls8962af_data *data = iio_priv(dev_get_drvdata(dev));
+ 	struct inv_icm42600_state *st = dev_get_drvdata(dev);
  	int ret;
-@@ -1255,14 +1255,14 @@ static int __maybe_unused fxls8962af_runtime_suspend(struct device *dev)
- 	return 0;
- }
- 
--static int __maybe_unused fxls8962af_runtime_resume(struct device *dev)
-+static int fxls8962af_runtime_resume(struct device *dev)
+@@ -706,7 +706,7 @@ static int __maybe_unused inv_icm42600_suspend(struct device *dev)
+  * System resume gets the system back on and restores the sensors state.
+  * Manually put runtime power management in system active state.
+  */
+-static int __maybe_unused inv_icm42600_resume(struct device *dev)
++static int inv_icm42600_resume(struct device *dev)
  {
- 	struct fxls8962af_data *data = iio_priv(dev_get_drvdata(dev));
- 
- 	return fxls8962af_active(data);
+ 	struct inv_icm42600_state *st = dev_get_drvdata(dev);
+ 	int ret;
+@@ -739,7 +739,7 @@ static int __maybe_unused inv_icm42600_resume(struct device *dev)
  }
  
--static int __maybe_unused fxls8962af_suspend(struct device *dev)
-+static int fxls8962af_suspend(struct device *dev)
+ /* Runtime suspend will turn off sensors that are enabled by iio devices. */
+-static int __maybe_unused inv_icm42600_runtime_suspend(struct device *dev)
++static int inv_icm42600_runtime_suspend(struct device *dev)
  {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct fxls8962af_data *data = iio_priv(indio_dev);
-@@ -1283,7 +1283,7 @@ static int __maybe_unused fxls8962af_suspend(struct device *dev)
- 	return 0;
+ 	struct inv_icm42600_state *st = dev_get_drvdata(dev);
+ 	int ret;
+@@ -761,7 +761,7 @@ static int __maybe_unused inv_icm42600_runtime_suspend(struct device *dev)
  }
  
--static int __maybe_unused fxls8962af_resume(struct device *dev)
-+static int fxls8962af_resume(struct device *dev)
+ /* Sensors are enabled by iio devices, no need to turn them back on here. */
+-static int __maybe_unused inv_icm42600_runtime_resume(struct device *dev)
++static int inv_icm42600_runtime_resume(struct device *dev)
  {
- 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct fxls8962af_data *data = iio_priv(indio_dev);
-@@ -1300,12 +1300,9 @@ static int __maybe_unused fxls8962af_resume(struct device *dev)
- 	return 0;
+ 	struct inv_icm42600_state *st = dev_get_drvdata(dev);
+ 	int ret;
+@@ -774,12 +774,9 @@ static int __maybe_unused inv_icm42600_runtime_resume(struct device *dev)
+ 	return ret;
  }
  
--const struct dev_pm_ops fxls8962af_pm_ops = {
--	SET_SYSTEM_SLEEP_PM_OPS(fxls8962af_suspend, fxls8962af_resume)
--	SET_RUNTIME_PM_OPS(fxls8962af_runtime_suspend,
--			   fxls8962af_runtime_resume, NULL)
+-const struct dev_pm_ops inv_icm42600_pm_ops = {
+-	SET_SYSTEM_SLEEP_PM_OPS(inv_icm42600_suspend, inv_icm42600_resume)
+-	SET_RUNTIME_PM_OPS(inv_icm42600_runtime_suspend,
+-			   inv_icm42600_runtime_resume, NULL)
 -};
--EXPORT_SYMBOL_NS_GPL(fxls8962af_pm_ops, IIO_FXLS8962AF);
-+EXPORT_NS_GPL_DEV_PM_OPS(fxls8962af_pm_ops, fxls8962af_suspend, fxls8962af_resume,
-+			 fxls8962af_runtime_suspend, fxls8962af_runtime_resume, NULL,
-+			 IIO_FXLS8962AF);
+-EXPORT_SYMBOL_GPL(inv_icm42600_pm_ops);
++EXPORT_NS_GPL_DEV_PM_OPS(inv_icm42600_pm_ops, inv_icm42600_suspend,
++			 inv_icm42600_resume, inv_icm42600_runtime_suspend,
++			 inv_icm42600_runtime_resume, NULL, IIO_ICM42600);
  
- MODULE_AUTHOR("Sean Nyekjaer <sean@geanix.com>");
- MODULE_DESCRIPTION("NXP FXLS8962AF/FXLS8964AF accelerometer driver");
-diff --git a/drivers/iio/accel/fxls8962af-i2c.c b/drivers/iio/accel/fxls8962af-i2c.c
-index 8fbadfea1620..22640eaebac7 100644
---- a/drivers/iio/accel/fxls8962af-i2c.c
-+++ b/drivers/iio/accel/fxls8962af-i2c.c
-@@ -45,7 +45,7 @@ static struct i2c_driver fxls8962af_driver = {
+ MODULE_AUTHOR("InvenSense, Inc.");
+ MODULE_DESCRIPTION("InvenSense ICM-426xx device driver");
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+index d4a692b838d0..4f96989ddf4a 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_i2c.c
+@@ -93,7 +93,7 @@ static struct i2c_driver inv_icm42600_driver = {
  	.driver = {
- 		   .name = "fxls8962af_i2c",
- 		   .of_match_table = fxls8962af_of_match,
--		   .pm = &fxls8962af_pm_ops,
-+		   .pm = pm_ptr(&fxls8962af_pm_ops),
- 		   },
- 	.probe_new = fxls8962af_probe,
- 	.id_table = fxls8962af_id,
-diff --git a/drivers/iio/accel/fxls8962af-spi.c b/drivers/iio/accel/fxls8962af-spi.c
-index 885b3ab7fcb5..a0d192211839 100644
---- a/drivers/iio/accel/fxls8962af-spi.c
-+++ b/drivers/iio/accel/fxls8962af-spi.c
-@@ -44,7 +44,7 @@ MODULE_DEVICE_TABLE(spi, fxls8962af_spi_id_table);
- static struct spi_driver fxls8962af_driver = {
+ 		.name = "inv-icm42600-i2c",
+ 		.of_match_table = inv_icm42600_of_matches,
+-		.pm = &inv_icm42600_pm_ops,
++		.pm = pm_ptr(&inv_icm42600_pm_ops),
+ 	},
+ 	.probe_new = inv_icm42600_probe,
+ };
+@@ -102,3 +102,4 @@ module_i2c_driver(inv_icm42600_driver);
+ MODULE_AUTHOR("InvenSense, Inc.");
+ MODULE_DESCRIPTION("InvenSense ICM-426xx I2C driver");
+ MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS(IIO_ICM42600);
+diff --git a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+index e6305e5fa975..486b46e53113 100644
+--- a/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
++++ b/drivers/iio/imu/inv_icm42600/inv_icm42600_spi.c
+@@ -89,7 +89,7 @@ static struct spi_driver inv_icm42600_driver = {
  	.driver = {
- 		   .name = "fxls8962af_spi",
--		   .pm = &fxls8962af_pm_ops,
-+		   .pm = pm_ptr(&fxls8962af_pm_ops),
- 		   .of_match_table = fxls8962af_spi_of_match,
- 		   },
- 	.probe = fxls8962af_probe,
+ 		.name = "inv-icm42600-spi",
+ 		.of_match_table = inv_icm42600_of_matches,
+-		.pm = &inv_icm42600_pm_ops,
++		.pm = pm_ptr(&inv_icm42600_pm_ops),
+ 	},
+ 	.probe = inv_icm42600_probe,
+ };
+@@ -98,3 +98,4 @@ module_spi_driver(inv_icm42600_driver);
+ MODULE_AUTHOR("InvenSense, Inc.");
+ MODULE_DESCRIPTION("InvenSense ICM-426xx SPI driver");
+ MODULE_LICENSE("GPL");
++MODULE_IMPORT_NS(IIO_ICM42600);
 -- 
 2.37.1
 
