@@ -2,30 +2,30 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7CF9DC25B0C
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Aug 2022 20:48:09 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id BCD93C00140
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Aug 2022 20:48:11 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S244070AbiHHUsI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S243020AbiHHUsI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 8 Aug 2022 16:48:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32838 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:32850 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S243020AbiHHUsD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Aug 2022 16:48:03 -0400
+        with ESMTP id S244255AbiHHUsE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Aug 2022 16:48:04 -0400
 Received: from metis.ext.pengutronix.de (metis.ext.pengutronix.de [IPv6:2001:67c:670:201:290:27ff:fe1d:cc33])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2D5F63E9
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D2F93AE44
         for <linux-iio@vger.kernel.org>; Mon,  8 Aug 2022 13:48:00 -0700 (PDT)
 Received: from drehscheibe.grey.stw.pengutronix.de ([2a0a:edc0:0:c01:1d::a2])
         by metis.ext.pengutronix.de with esmtps (TLS1.3:ECDHE_RSA_AES_256_GCM_SHA384:256)
         (Exim 4.92)
         (envelope-from <ukl@pengutronix.de>)
-        id 1oL9fE-00046B-8y; Mon, 08 Aug 2022 22:47:52 +0200
+        id 1oL9fE-00046G-90; Mon, 08 Aug 2022 22:47:52 +0200
 Received: from [2a0a:edc0:0:900:1d::77] (helo=ptz.office.stw.pengutronix.de)
         by drehscheibe.grey.stw.pengutronix.de with esmtp (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1oL9f8-002ZZC-DH; Mon, 08 Aug 2022 22:47:48 +0200
+        id 1oL9f9-002ZZW-Ao; Mon, 08 Aug 2022 22:47:49 +0200
 Received: from ukl by ptz.office.stw.pengutronix.de with local (Exim 4.94.2)
         (envelope-from <ukl@pengutronix.de>)
-        id 1oL9f9-00ARBa-Q5; Mon, 08 Aug 2022 22:47:47 +0200
+        id 1oL9fA-00ARBt-Oy; Mon, 08 Aug 2022 22:47:48 +0200
 From:   =?UTF-8?q?Uwe=20Kleine-K=C3=B6nig?= 
         <u.kleine-koenig@pengutronix.de>
 To:     Jonathan Cameron <jic23@kernel.org>
@@ -43,15 +43,15 @@ Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
         Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Nuno Sa <nuno.sa@analog.com>,
         Michal Simek <michal.simek@xilinx.com>
-Subject: [PATCH 08/13] iio: adc: xilinx-ams: Benefit from devm_clk_get_enabled() to simplify
-Date:   Mon,  8 Aug 2022 22:47:35 +0200
-Message-Id: <20220808204740.307667-8-u.kleine-koenig@pengutronix.de>
+Subject: [PATCH 13/13] iio: imu: adis16475: Benefit from devm_clk_get_enabled() to simplify
+Date:   Mon,  8 Aug 2022 22:47:40 +0200
+Message-Id: <20220808204740.307667-13-u.kleine-koenig@pengutronix.de>
 X-Mailer: git-send-email 2.36.1
 In-Reply-To: <20220808204740.307667-1-u.kleine-koenig@pengutronix.de>
 References: <20220808204740.307667-1-u.kleine-koenig@pengutronix.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=UTF-8
-X-Developer-Signature: v=1; a=openpgp-sha256; l=1466; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=kCTsFzuh4WVPh5RbzyDUFC4MhsZm8EL94yZCRKD1Ops=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBi8XZVnio5nuatyyaSCtSppb9kVW6/44c8HE3foEfR aQbRIAyJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYvF2VQAKCRDB/BR4rcrsCfj5B/ 91FC7bZvhybRYPXtWvrbt97H86COCaASuc0Nt/EqONvBpje+YbaOU6jrjGi+HnqAHa6AQl6t4WGcIS C1EFlCbzQCS9kZgH4MWpyIl/eOxMmFdv95FYw4X6DRBQPRykqW7ev3RvKDZpSDlCAnYWeVultqOw5q OIVyIJEQnfhgIonoxPLqUn3AUfpepDca7rXFb5n2d7GXAB9q1bbR7tuM060+xC5t44CMmqHFUR0bPD WP95mwktWBwiSwTYRKyDL2dLT+s+GOXMlGc/99kRq2rdqIrM8fJZD4c8jJ5weNTqSuDauXresn6CHc fZfjpv5yMNuVV+zRJlAin1EDWw2sGZ
+X-Developer-Signature: v=1; a=openpgp-sha256; l=1479; i=u.kleine-koenig@pengutronix.de; h=from:subject; bh=mesiVR7V6YHiAtxlfdRN9GTwpshIJEXhF3uj276VGmE=; b=owEBbQGS/pANAwAKAcH8FHityuwJAcsmYgBi8XZpPFiK8j6zlX9wZroTuk4p5ND1o+eHXhcXHBWB pklEy8aJATMEAAEKAB0WIQR+cioWkBis/z50pAvB/BR4rcrsCQUCYvF2aQAKCRDB/BR4rcrsCdTOB/ 9KT1Os1viGW1RcGwgXzAa0Y7XgQ+yf1bN6ka0ro7zDV3BepKQM2cdmYf1o1PN6Iom+r5Xu0RLcSeOe qcySPGQeDV/Bj8HJZfQgBZtP4TnxxeQI2UvfUogpGljN713yvTWq+xuqnKrs29mke+1aSHilgR6Cy+ DaQQi9m+hvDkbH8TPriP4NyQr6Ut/IZic+2yTkJ6j3e34H4Rphmbh0WIXZNecCh2ocQSqdlOh/r4Iv Em/wT2jHiO349z0T3tApTmSiW33r7KN5eXotNrhY76MIOahMvTxKEPAA6zxckrVHX6UP7OPpIGsws6 yola1w3oKKW4pKkRzO06QEpdScuUz+
 X-Developer-Key: i=u.kleine-koenig@pengutronix.de; a=openpgp; fpr=0D2511F322BFAB1C1580266BE2DCDD9132669BD6
 Content-Transfer-Encoding: 8bit
 X-SA-Exim-Connect-IP: 2a0a:edc0:0:c01:1d::a2
@@ -68,45 +68,46 @@ open codes this new function.
 Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 Signed-off-by: Uwe Kleine-König <u.kleine-koenig@pengutronix.de>
 ---
- drivers/iio/adc/xilinx-ams.c | 15 +--------------
+ drivers/iio/imu/adis16475.c | 15 +--------------
  1 file changed, 1 insertion(+), 14 deletions(-)
 
-diff --git a/drivers/iio/adc/xilinx-ams.c b/drivers/iio/adc/xilinx-ams.c
-index a55396c1f8b2..2cab7f0c0633 100644
---- a/drivers/iio/adc/xilinx-ams.c
-+++ b/drivers/iio/adc/xilinx-ams.c
-@@ -1351,11 +1351,6 @@ static const struct of_device_id ams_of_match_table[] = {
- };
- MODULE_DEVICE_TABLE(of, ams_of_match_table);
+diff --git a/drivers/iio/imu/adis16475.c b/drivers/iio/imu/adis16475.c
+index ff2b0fab840a..aec55f7e1f26 100644
+--- a/drivers/iio/imu/adis16475.c
++++ b/drivers/iio/imu/adis16475.c
+@@ -1120,11 +1120,6 @@ static irqreturn_t adis16475_trigger_handler(int irq, void *p)
+ 	return IRQ_HANDLED;
+ }
  
--static void ams_clk_disable_unprepare(void *data)
+-static void adis16475_disable_clk(void *data)
 -{
--	clk_disable_unprepare(data);
+-	clk_disable_unprepare((struct clk *)data);
 -}
 -
- static int ams_probe(struct platform_device *pdev)
+ static int adis16475_config_sync_mode(struct adis16475 *st)
  {
- 	struct iio_dev *indio_dev;
-@@ -1380,18 +1375,10 @@ static int ams_probe(struct platform_device *pdev)
- 	if (IS_ERR(ams->base))
- 		return PTR_ERR(ams->base);
+ 	int ret;
+@@ -1150,19 +1145,11 @@ static int adis16475_config_sync_mode(struct adis16475 *st)
  
--	ams->clk = devm_clk_get(&pdev->dev, NULL);
-+	ams->clk = devm_clk_get_enabled(&pdev->dev, NULL);
- 	if (IS_ERR(ams->clk))
- 		return PTR_ERR(ams->clk);
+ 	/* All the other modes require external input signal */
+ 	if (sync->sync_mode != ADIS16475_SYNC_OUTPUT) {
+-		struct clk *clk = devm_clk_get(dev, NULL);
++		struct clk *clk = devm_clk_get_enabled(dev, NULL);
  
--	ret = clk_prepare_enable(ams->clk);
--	if (ret < 0)
--		return ret;
+ 		if (IS_ERR(clk))
+ 			return PTR_ERR(clk);
+ 
+-		ret = clk_prepare_enable(clk);
+-		if (ret)
+-			return ret;
 -
--	ret = devm_add_action_or_reset(&pdev->dev, ams_clk_disable_unprepare, ams->clk);
--	if (ret < 0)
--		return ret;
+-		ret = devm_add_action_or_reset(dev, adis16475_disable_clk, clk);
+-		if (ret)
+-			return ret;
 -
- 	ret = devm_delayed_work_autocancel(&pdev->dev, &ams->ams_unmask_work,
- 					   ams_unmask_worker);
- 	if (ret < 0)
+ 		st->clk_freq = clk_get_rate(clk);
+ 		if (st->clk_freq < sync->min_rate ||
+ 		    st->clk_freq > sync->max_rate) {
 -- 
 2.36.1
 
