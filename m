@@ -2,124 +2,164 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 0E27FC3F6B0
-	for <linux-iio@archiver.kernel.org>; Mon,  8 Aug 2022 09:37:18 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B9A1C00140
+	for <linux-iio@archiver.kernel.org>; Mon,  8 Aug 2022 09:40:29 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S236791AbiHHJhQ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 8 Aug 2022 05:37:16 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42200 "EHLO
+        id S242534AbiHHJk2 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 8 Aug 2022 05:40:28 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:44226 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S232190AbiHHJhO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Aug 2022 05:37:14 -0400
-Received: from mail-qk1-x732.google.com (mail-qk1-x732.google.com [IPv6:2607:f8b0:4864:20::732])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4ECEE13CF6;
-        Mon,  8 Aug 2022 02:37:12 -0700 (PDT)
-Received: by mail-qk1-x732.google.com with SMTP id o1so5999457qkg.9;
-        Mon, 08 Aug 2022 02:37:12 -0700 (PDT)
+        with ESMTP id S242576AbiHHJkY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 8 Aug 2022 05:40:24 -0400
+Received: from mail-lj1-x236.google.com (mail-lj1-x236.google.com [IPv6:2a00:1450:4864:20::236])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0D18E10CA
+        for <linux-iio@vger.kernel.org>; Mon,  8 Aug 2022 02:40:20 -0700 (PDT)
+Received: by mail-lj1-x236.google.com with SMTP id x25so9202936ljm.5
+        for <linux-iio@vger.kernel.org>; Mon, 08 Aug 2022 02:40:20 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=v8KZt+LyMWBjFGT+ME/T51TbKuZGV0hwxyxfIm9EW7w=;
-        b=pnVfDWriqZbwKLAQjlRX/nJ/z7kqL9sFDHoPNcqcj7G1pd155sse5G/J5XkZvHnRBl
-         TOm+/6SLxSdhi18HxbB/JKlw59qwdTYT/kh4hl/a+w0Jtb1Pt2hZQDTPQ2T09wsunze8
-         mq8nxLoFP6wtwzLEGrAPSC2kzAJYoeufBR1er7L0/yR3eDLTH+QJWWQ0b7KQVqxRU74F
-         GdXr51RXDLSVTVA3Vl55oWit/U4ncoE6zxS5gqVTtg1fuUTa1q+O8JHfP2cSfgfi20it
-         vL33EgdaDSU6rb+mIVhP+HakOGGnXgaANoAeaMoVmGxlFYcYvjSeqQmxNKYT2tP64uqK
-         2Zxg==
+        d=linaro.org; s=google;
+        h=message-id:date:mime-version:user-agent:subject:content-language:to
+         :cc:references:from:in-reply-to:content-transfer-encoding;
+        bh=jzQCeQzK/z2ziiZ85EHCo+LQwjQf8yM8fO70yS7S3mY=;
+        b=aJ33SGVv3zJ5x6IbLuz/X8sbsCMX05NZMt/w+pQnD/9POpmCMCQzEJPLNyzriq2F/b
+         HPzQQ8udkoR6ThjaeWhKAyxlKRe06XVz83s7q2wdaJ9Y3lA8+G93avNeygiLd3EK4sQJ
+         AucIBWd/3zX1/ORNIitoV0gnbMlW115lMwc//a/yFNWJVis5tSrtysX6hmZZNJ13vk9e
+         IhBJ50USTjo5BXJLgfck9tLWohBAhoDzAICXOok4hd86N3VgX238KHjTeq55yMxgx4nN
+         8yIvH9oDVKKx4m5fxxB6HtdJF6g4qzD42puzuFmOUhVn0/aWi0b0b7W8viOXgFoFktBf
+         1spw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=v8KZt+LyMWBjFGT+ME/T51TbKuZGV0hwxyxfIm9EW7w=;
-        b=Jt5ITcjF/u18a174ywlvIUAV8KGXtreRKoSKmnJ7A4kkhhCCgt+gMcHPI2TBvNYuEA
-         O9AEy/Zqq2M4NfaiQxYStwf3j/dhieMk3hFj3eoMbQuEjLUzuw6iAGCXJuhssh985d4j
-         tL4IA9fGwTBmoH7kxKIZH59LQ18taa22qDxiFIkCD4Uwu69VEcAZPrbFaajzrel+rLug
-         zQN3j4rdun6NMk+vzq4/JYOnZfGbrp5/vXDuf8v07rsM+N36p3E9ub+zogxObz/39Uw9
-         b7t/Ev8avL5PbRuRumn9rUYefidC4kTD5H3vZ3nNTck3YjGc6RLIy6HEdNNTm6rb31nG
-         8EdA==
-X-Gm-Message-State: ACgBeo0N/hbkTwem8yNZ9kXrI9rbhm4pgtv5AciknfXYKdVA8YGhqBu0
-        FRJWNGpvL0ckXCnANl8w51K29Drq0gkejHUm7Bs=
-X-Google-Smtp-Source: AA6agR5yFoEmXZOJwcTBSTXM6YfPfQyZ+9xJthgTthQBfIrohO/QVfSIkjgitceVtirlgRl/MwzAYv82rgUzoUTf5wY=
-X-Received: by 2002:a05:620a:254d:b0:6ab:84b8:25eb with SMTP id
- s13-20020a05620a254d00b006ab84b825ebmr13326042qko.383.1659951431390; Mon, 08
- Aug 2022 02:37:11 -0700 (PDT)
+        h=x-gm-message-state:message-id:date:mime-version:user-agent:subject
+         :content-language:to:cc:references:from:in-reply-to
+         :content-transfer-encoding;
+        bh=jzQCeQzK/z2ziiZ85EHCo+LQwjQf8yM8fO70yS7S3mY=;
+        b=LZruoyHxbeLME/LPc93DAdUzUchba/Ad22pcfoC7dwZ+b9D2S8DSJl8/ZSkPaItTj2
+         RVg5YKTjNO9OEL88L+AV9A8iDaVUSVArAj6rainsSpdMuqnAJF6+6EVDWu54kbMD1yc9
+         00UXHqd+8ida8LzDcDpu+cWiNaj8bEwj5kEJN7J5vt1qusVYlsFdvtKmoSWo+X8+aiqn
+         pIkSJYZisZ7xF4qpkRjQuHcMChPSuUQHZ8uTb43R2Pfrk2r1BWW5G2ZvQUuibGCNzwgt
+         6blOsxSANsli3GmuFez91cJrI2k3Wo2ClJCJUlI9AVDU3IvC+aRKx4cz3GEuhEWqsXOg
+         4evw==
+X-Gm-Message-State: ACgBeo2m7RSWF2oEeBwfNdJULw15/qIf+ViSSMZMLu6qsK5vO6lHg66Q
+        PBaJNwL3klW+86xKnZ6i386f2w==
+X-Google-Smtp-Source: AA6agR7WLbgFwVjA/ymihQczoZK2cQ5claVhqrToENvPaPxybFoFLHUGgAFZVtf8HXX0Mrfd6pqrBg==
+X-Received: by 2002:a2e:87cc:0:b0:25e:4425:54e2 with SMTP id v12-20020a2e87cc000000b0025e442554e2mr5731584ljj.72.1659951619216;
+        Mon, 08 Aug 2022 02:40:19 -0700 (PDT)
+Received: from [192.168.1.39] ([83.146.140.105])
+        by smtp.gmail.com with ESMTPSA id be10-20020a056512250a00b0048af7e58c9dsm1363565lfb.278.2022.08.08.02.40.17
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 08 Aug 2022 02:40:18 -0700 (PDT)
+Message-ID: <eb2f574d-0dd8-e2b2-ee2b-d6f60f14bdc9@linaro.org>
+Date:   Mon, 8 Aug 2022 12:40:16 +0300
 MIME-Version: 1.0
-References: <20220807192038.1039771-1-jic23@kernel.org>
-In-Reply-To: <20220807192038.1039771-1-jic23@kernel.org>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Mon, 8 Aug 2022 11:36:35 +0200
-Message-ID: <CAHp75VeGP5M0dpxBHarDw7-n=d3+csnqedeSEu1bfJCg=SrV8A@mail.gmail.com>
-Subject: Re: [PATCH 0/5] PM: Introduce EXPORT_NS_GPL_DEV_PM_OPS() and use
- cases in IIO.
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     linux-iio <linux-iio@vger.kernel.org>,
-        "Rafael J . Wysocki" <rafael@kernel.org>,
-        Linux PM <linux-pm@vger.kernel.org>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Sean Nyekjaer <sean@geanix.com>,
-        Rui Miguel Silva <rui.silva@linaro.org>,
-        Jean-Baptiste Maneyrol <jean-baptiste.maneyrol@tdk.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Content-Type: text/plain; charset="UTF-8"
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH v5 2/2] iio: humidity: hdc100x: add manufacturer and
+ device ID check
+Content-Language: en-US
+To:     Jonathan Cameron <jic23@kernel.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Patrick Williams <patrick@stwcx.xyz>,
+        Potin Lai <potin.lai.pt@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Potin Lai <potin.lai@quantatw.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        devicetree@vger.kernel.org
+References: <20220728125435.3336618-1-potin.lai.pt@gmail.com>
+ <20220728125435.3336618-3-potin.lai.pt@gmail.com>
+ <20220731130959.50826fc4@jic23-huawei>
+ <4ea235d1-46c1-87de-760f-dc4775007ae0@gmail.com>
+ <CAHp75VcZqTpmvVV=u4t=fdx=ffzksoWVDFZmq6Lfr6DrFrB2aA@mail.gmail.com>
+ <Yuf7UAVrIJCnO40X@heinlein.stwcx.org.github.beta.tailscale.net>
+ <CAHp75Vfe33oJAf1j27B-pTd84kX5JNPd+e16ygLYgZjCs=ZJfQ@mail.gmail.com>
+ <CAHp75VfOPgDbTdt1EXJ5+exGXCZeT9VdtcOUDt_g4fn20S2Qwg@mail.gmail.com>
+ <20220806181252.7633f19d@jic23-huawei>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220806181252.7633f19d@jic23-huawei>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sun, Aug 7, 2022 at 9:13 PM Jonathan Cameron <jic23@kernel.org> wrote:
->
-> From: Jonathan Cameron <Jonathan.Cameron@huawei.com>
->
-> Perhaps the most complex case we can have is a core driver module (usually
-> with accompanying per bus modules) that exports, in a namespace,
-> a struct dev_pm_ops. The driver has different handling for runtime and
-> sleep suspend / resume so (almost) all callbacks are provided.
-> The pm.h helper macro _EXPORT_DEV_PM_OPS() could be used here but the
-> handling of the last two parameters is unusual and very different from
-> the macros intended for driver usage. First parameter needs to be "_gpl"
-> and second needs to be the namespace specified as a string.  Other NS
-> macros take it without quotes.
->
-> As such, this series proposes introducing a suitable macro and then provides
-> a number of IIO driver conversions. Where relevant the exports from the
-> driver are moved into the new namespace.
->
-> If accepted we can either take the whole lot through the PM tree and hope
-> there is nothing much else overlapping with this driver code in this cycle,
-> or ideally we could use an immutable branch and pull this into both the
-> IIO and PM trees.
+On 06/08/2022 20:12, Jonathan Cameron wrote:
+> On Mon, 1 Aug 2022 18:30:16 +0200
+> Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
+> 
+>> On Mon, Aug 1, 2022 at 6:26 PM Andy Shevchenko
+>> <andy.shevchenko@gmail.com> wrote:
+>>> On Mon, Aug 1, 2022 at 6:12 PM Patrick Williams <patrick@stwcx.xyz> wrote:  
+>>>> On Mon, Aug 01, 2022 at 10:22:16AM +0200, Andy Shevchenko wrote:  
+>>>>> On Mon, Aug 1, 2022 at 3:52 AM Potin Lai <potin.lai.pt@gmail.com> wrote:  
+>>>>>> On 7/31/22 20:09, Jonathan Cameron wrote:
+>>>>>> In our hardware board, we have "ti,hdc1080" as main source, and "silabs,si7020"
+>>>>>> for 2nd source. This two chip are locate at same bus and same slave address,
+>>>>>> and we want to use multiple compatibles to support both chips with single device
+>>>>>> node in device tree.
+>>>>>>
+>>>>>> Ex:
+>>>>>> compatible = "ti,hdc1099", "silabs,si7020";  
+>>>>>
+>>>>> This is simply broken DT, you must not put incompatible hardware on
+>>>>> the same compatible string. DT is by definition the description of a
+>>>>> certain platform. What you showed is a combination of incompatible
+>>>>> chips in a single DT.  
+>>>>
+>>>> We were mistaken that this is the appropriate way to specify this
+>>>> behavior, partially because it works as long as the probe functions
+>>>> return an error the next matching driver from the compatible will probe.
+>>>> It does seem that specifying two different compatibles like this would
+>>>> violate the intention of the DT spec:
+>>>>
+>>>>     The property value consists of a concatenated list of null terminated
+>>>>     strings, from most specific to most general. They allow a device to
+>>>>     express its compatibility with a family of similar devices, potentially
+>>>>     allowing a single device driver to match against several devices.
+>>>>  
+>>>>>  
+>>>>>> In order to support this, I need to add ID checking mechanism into the current
+>>>>>> hdc100x driver, so the si7020 chip will fail to probe with hdc100x driver
+>>>>>> (because the ID checking is not failed), then success probe with si7020.
+>>>>>>
+>>>>>> Base on you explanation, it looks multiple compatibles is not suitable in this
+>>>>>> case? Would you mind advise us what would be the better approach for our case?  
+>>>>>
+>>>>> If I may advise... fix your DT by dropping the wrong compatible item.  
+>>>>
+>>>> This doesn't really give any helpful advice.  
+>>>
+>>> Sorry to hear this, but it's the best and correct solution to your
+>>> problem. Believe me, many Linux people will tell you the same.
+>>>  
+>>>> The reality is that these two chips are pin compatible and function
+>>>> compatible but not driver compatible.
 
-Pretty straightforward and looks useful to me, thanks!
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+There is no such thing as driver compatible, in the terms of Devicetree.
+Implementation does not matter. The compatibles and binding should
+reflect the hardware (and its programming model).
 
-> Jonathan Cameron (5):
->   PM: core: Add EXPORT_NS_GPL_DEV_PM_OPS to avoid drivers rolling own.
->   iio: accel: fxls8962af: Use new EXPORT_NS_GPL_DEV_PM_OPS()
->   iio: gyro: fxas210002c: Move exports to IIO_FXAS210002C namespace.
->   iio: imu: inv_icm42600: Move exports to IIO_ICM42600 namespace
->   iio: imu: inv_mpu: Move exports to IIO_MPU6050 namespace
->
->  drivers/iio/accel/fxls8962af-core.c           | 17 +++++++--------
->  drivers/iio/accel/fxls8962af-i2c.c            |  2 +-
->  drivers/iio/accel/fxls8962af-spi.c            |  2 +-
->  drivers/iio/gyro/fxas21002c_core.c            | 21 ++++++++-----------
->  drivers/iio/gyro/fxas21002c_i2c.c             |  3 ++-
->  drivers/iio/gyro/fxas21002c_spi.c             |  3 ++-
->  .../iio/imu/inv_icm42600/inv_icm42600_core.c  | 21 ++++++++-----------
->  .../iio/imu/inv_icm42600/inv_icm42600_i2c.c   |  3 ++-
->  .../iio/imu/inv_icm42600/inv_icm42600_spi.c   |  3 ++-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c    | 18 +++++++---------
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c     |  3 ++-
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c     |  3 ++-
->  include/linux/pm.h                            |  5 +++++
->  13 files changed, 52 insertions(+), 52 deletions(-)
->
-> --
-> 2.37.1
->
+>  Boards have been manufactured
+>>>> which are identical except for this chip replaced, due various to chip
+>>>> shortages.
 
+The question is - whether the programming model (e.g. all I2C registers)
+are similar or exactly the same?
 
--- 
-With Best Regards,
-Andy Shevchenko
+>>>>
+>>>> Making probe fail so that the next 'compatible' is chosen sounds like it
+>>>> isn't desired. 
+
+Yes, it is not desired because any probe failure is indication of test
+failures in automated systems, so you do not develop a system which in
+normal conditions has a failure.
+
+I don't understand why you cannot include in this driver support for
+second device?
+Or if second device is so different, why you want to support different
+hardware with the same device node. This contradicts the very basic of
+Devicetree - description of hardware.
+
+Best regards,
+Krzysztof
