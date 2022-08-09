@@ -2,217 +2,127 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 9E10AC25B06
-	for <linux-iio@archiver.kernel.org>; Tue,  9 Aug 2022 21:13:07 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8B303C25B06
+	for <linux-iio@archiver.kernel.org>; Tue,  9 Aug 2022 23:23:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229517AbiHIVNG (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 9 Aug 2022 17:13:06 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38218 "EHLO
+        id S229623AbiHIXXe (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 9 Aug 2022 19:23:34 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:40538 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229460AbiHIVNF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Aug 2022 17:13:05 -0400
-Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 06631606B5;
-        Tue,  9 Aug 2022 14:13:04 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 279JWIDh018307;
-        Tue, 9 Aug 2022 21:12:51 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=351BzqKDUhe+LZKnnWVDBkrHijm84Tf1yyG2CK0rOAs=;
- b=LwMUMA61fMirJGUN52t8SPHJRv/2mhscH0vK4z9ATa8F43fg3SGZQtow9NY+Um/Nv1ep
- 5msWXbegxMM0qek6mSCF+dJnDmaebpLMNw4SOzf0PZoh4CLe20hiHakAyrQ3/iNN5q48
- FsdJfGfl/dVDPlmN32ZXcLN2sgeFX2Kw0dlp4vLKsnLiP3ETin3juyMLvdmXuuaFQtUC
- x5MPDevxUrM7NcC0z1e7vanurD2e/XlihrnzE0wAr4Gh/YWs84vJbhG+PlOdnz82tZ7c
- 0J2hvnUKEjLZImMpuFpEHX5YLjB6eF6+9upMNchx7Aaqadva4QoM8Bfm4ciXeDDWWfDo 9A== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3huwtyavmf-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Aug 2022 21:12:50 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 279KqEDv023798;
-        Tue, 9 Aug 2022 21:12:50 GMT
-Received: from ppma04dal.us.ibm.com (7a.29.35a9.ip4.static.sl-reverse.com [169.53.41.122])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3huwtyavma-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Aug 2022 21:12:50 +0000
-Received: from pps.filterd (ppma04dal.us.ibm.com [127.0.0.1])
-        by ppma04dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 279L5rhP001224;
-        Tue, 9 Aug 2022 21:12:49 GMT
-Received: from b01cxnp22033.gho.pok.ibm.com (b01cxnp22033.gho.pok.ibm.com [9.57.198.23])
-        by ppma04dal.us.ibm.com with ESMTP id 3huwvw0knr-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Tue, 09 Aug 2022 21:12:49 +0000
-Received: from b01ledav003.gho.pok.ibm.com (b01ledav003.gho.pok.ibm.com [9.57.199.108])
-        by b01cxnp22033.gho.pok.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 279LCmtu1180350
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
-        Tue, 9 Aug 2022 21:12:48 GMT
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 82A3FB2066;
-        Tue,  9 Aug 2022 21:12:48 +0000 (GMT)
-Received: from b01ledav003.gho.pok.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id F39C0B2065;
-        Tue,  9 Aug 2022 21:12:47 +0000 (GMT)
-Received: from slate16.aus.stglabs.ibm.com (unknown [9.160.17.179])
-        by b01ledav003.gho.pok.ibm.com (Postfix) with ESMTP;
-        Tue,  9 Aug 2022 21:12:47 +0000 (GMT)
-From:   Eddie James <eajames@linux.ibm.com>
-To:     linux-iio@vger.kernel.org
-Cc:     jic23@kernel.org, lars@metafoo.de, linux-kernel@vger.kernel.org,
-        andy.shevchenko@gmail.com, joel@jms.id.au, eajames@linux.ibm.com
-Subject: [PATCH v4 2/2] iio: pressure: dps310: Reset chip if MEAS_CFG is corrupt
-Date:   Tue,  9 Aug 2022 16:12:46 -0500
-Message-Id: <20220809211246.251006-3-eajames@linux.ibm.com>
-X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220809211246.251006-1-eajames@linux.ibm.com>
-References: <20220809211246.251006-1-eajames@linux.ibm.com>
+        with ESMTP id S229485AbiHIXXd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 9 Aug 2022 19:23:33 -0400
+Received: from sonic301-22.consmr.mail.ir2.yahoo.com (sonic301-22.consmr.mail.ir2.yahoo.com [77.238.176.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 3304570E48
+        for <linux-iio@vger.kernel.org>; Tue,  9 Aug 2022 16:23:31 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rocketmail.com; s=s2048; t=1660087409; bh=BwdQJDAS+JtBvKGSdnYRmOH7dchyCaO/CNeXt5g+bZY=; h=Date:Subject:To:Cc:References:From:In-Reply-To:From:Subject:Reply-To; b=lAorvlyyw3idGO04rldDyWfsrNj2VVOQS0kCM76reXSpNbFMRO8mUtgD61bDpztMcur0XKIy7peBmC0EbN1wsb0RX//BMCWA0s3YCc2iwX22q3kwvartPiRD7p2EkNZJE19RXO49UEPWLsUAI3iuT5qTlOFDbHyxVAi7w94dG2swmQns4DuVpCNo85UjWadRrNVRMLxiODtRejAs2m1Ln286A8pAK3P78e+rZGKVuMKFq0lhOLsN6QFwkjUrSoyCsx+80apTPARBmK6kOrtrxIUONEm61i4equE1t4cMXV9rHEvRx8PAhazSAAgzDlcWqO51DiyzGKD4jWhOxo4jwQ==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1660087409; bh=3a/40YZ3yQW7TV6RpN9J4V/2tup5GSZ9zyionenBWRy=; h=X-Sonic-MF:Date:Subject:To:From:From:Subject; b=FRtMGtgs/U7QiijvbVyNYMPNq8/M2kgd+a8mx8HOtA7mkV0IcRakheAjbaTlKdYW3O2GihAOBi4NNBiE5ALqRdWa9EfX/ZCQ3S5PhPqE7MNDg0bv2fUToSTUNgNWPORczrHWF71HUclOoSPL6F+Z16IjVl80C8awFr+2kblj4XgMJoTblB97iPjKCilmt5dS+IxTDnNJvkcPMPC1WkzJlIn0xSganvrwd/6TJxXxRI1lC1cLIlOoiBdmd9bBZ8RAHdPVfm0jgH8HTY3/AsOh2idDWIXhHTMLy59XiJja6RGGNGfMBpvtLaN3uK3wre8/L6WWZARXkqwA6ht4w4pSxA==
+X-YMail-OSG: TUlLqUoVM1n62W3LW_8PVEpT3PNhh3yu_OFe9B4rabGAmbkG4u8lVfAk2ARqnbm
+ wxbYGW.ba01i0CLtqu8kRm7y7oAVX5qACzVbWxgYX_.jvEzltJppXhf74qqIrN4o3Psq5c5LwzfJ
+ z4651cMOAs8RGUWS9ul4go8AKlBvgcVXVPWACpCFRkspyaChonUtHehGSEEdzmf9E_.aK6VJDzS3
+ .VN5T0coc1gVLyljmmQmOpwH56XVPcvzhEL_eGzHVPTVWCBEE6UBSQdq73tTbI65Mk9ZYreyOKDI
+ sZS8zeVYpaqDT9_V0b9GYzY8GmJ7W6qQFfYGS80aEryeCcNpnE0NLFEH5_eofQDbgc0O7FQJ6ITc
+ 2O0JXef4q.diUGLEhv1lsVk0xnoVwpJm9IwUN0obmGlD4FXSAiahu9T5k93IMTFre0pEwN.N.5Do
+ tbVYhAv8DFR2gDtUzgg0yxXIXn0m3TGzUdNefpLHuzB6tDHSewzzXdPyrd0mT0OEZ4pU6N3xfLqB
+ wmL7TWrjU4dD9dJgKZSase8AzrEoTNNGbIZgl9nflKX7XPsHiByicSGMEstEdM0SxE.L_YDREVyD
+ mR8JQN4mz02UAnLZC0c1tCgLmxeqcmjV5Ap0de3j9egeCdj2fsx3kfnSCqwOd1D10JMUXSAlWbdZ
+ ASC7qdHXaLTpLDvjxUD7wqsSVVKVeaeP3Rh_5KNod8CGHB0RcRwcy3Tw5gF_zkV4iUI5Ozp1tvs9
+ BwYiiU_i1F2c_fKGDhYMNcUCTj.exn0E3HbSamRKHb2Yp44HFBd_FB8DqZ.K4XWHC7OWXq5CK2cW
+ DB6w5_RGPcOfrwL.dblgUysA8VzM5s763d.tKcyCAjxMLIa4PTOi4yxKa48rfXwN_Jlq1nvWJbhM
+ RuGIP34q2hnaqA2hCnyDH83YCkLJOnPmvPf6aNKwb8msMzU3H5txazYBdRhjwPnyePVlmZCc5BDS
+ Bpejtg42PDFpz6XFy3fsLTQ2fqslfS1gzlhGn6WUrHCZlloCTKvrbCHOJwRLZ8KxHrRAYsieIxmB
+ 3wv16JHJXBZk1mA2NGkr5QLSkUYYpRsYoTuNOCM0yNK3EofMzfsgbWkcFA.K7PONm0JLeHfrypRW
+ UhS6G_ZtlpN6OR20yw8koMhQ1GmGa7C6fswMaqauBuHWdHTndR..ZjDV.m.ffS4LfRTvE7k0fCyy
+ 6J18ltuHt40TIHbvr5yuhRAYUxMFYfMCE.Rspt7BESY9WSruEDLgK9U4odxNbxoLLqfzknnATY7v
+ 0zj9Mr35XPOjzjW94pewdZkIOeFP6CeniPjt8NdDBczLBrr1voJ_8hE5WayrYusJvZRgs34t9f9R
+ aHEsUZLiWmyREW82ed8rkgxtULdu.uVZKTxyk2yhI6hrsr7RSwl1gvV54DpWkfXc6oHHlwXIRPTd
+ WnWzKdihMz5Yqk1PBHAKKE4HF6AJgXm.Fqac.ZVOGgsBnGHD5YC3ajYTt.xcr4j7qoPjVenMCpZj
+ nG46TBsG.se9eMTe8x3_L5lHrwK31lf0wOk82asL.DExTvByISZwVjKp5h55HO_54RZP1oG2Y3sb
+ tv62O_WqEKf9FxVwL7JSqrtozHLS.946q8jzARo3zZpFEKqXd5C6mG8a8GWlgbMpAk3pLFWvvk.M
+ lc36Br9GXOxb_HM5DhHHvYjDJGy20kH82cY91qPgFpm8kPl2yTFMeBUW3vgakAN1W.Nu7xokuIzx
+ BqSrEdylt.LOGWE62G5cavSZxNywR_fz4nke8PtOcpGn43DWm0pWjnlnWq4CAizIhhkIKIXlGn5N
+ R8QKzCWQ9lA2L.ZRuzMt4WhzuStdw6_t90Hw1H2eYt3tHcEoMhKk8ebp..bQnQGYnnJkUSE.V7XK
+ lk9OpcNk2UgM3Ub5sAE_Uw528FxXTtuFfYMBI5d6xEvSNKtFZ9KabcQTv9uZADghhBKTkK_yK7sQ
+ Me5bq3ISPbiIWnYFEJBtb0fx7de0.oTYP5qkgrVwVOosX234i1wUJWLMbrzD2qz5_6CrNrQosO7W
+ kBIVH6ExUXME7FWlo4fQTdtftWOzj7.qfiScTvuaDs9uOZKxDL0wv0jZf0IwxT6P5zfV4C2me7lp
+ kIpErP1A49l6wnDzeuC3oviSCMwPNVq665HiTr6WDQw5gFTmKKE8FLtjbdre240.b2duLgl1juDl
+ mbY0Zr0PGfqqVZ9v.7o7K1CKPyWuKI8taOI5rdl6BRRGqRhJmrccerlMRVZghAlKJ1pzEFniyKyr
+ GYMMwj8hy7Z3RMhDpd4SEt6iPdcLz0QJam3oqf7vZT4vBijr_3ym6VCys_arzPXPeANzrBh4WSnb
+ xcDM-
+X-Sonic-MF: <jahau@rocketmail.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic301.consmr.mail.ir2.yahoo.com with HTTP; Tue, 9 Aug 2022 23:23:29 +0000
+Received: by hermes--canary-production-ir2-f74ffc99c-5fxhh (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 38d44100923a307cc7178f7ca9765083;
+          Tue, 09 Aug 2022 23:23:24 +0000 (UTC)
+Message-ID: <4fea7e1f-06a4-9d1a-892a-ac85cf4de176@rocketmail.com>
+Date:   Wed, 10 Aug 2022 01:23:23 +0200
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
-X-TM-AS-GCONF: 00
-X-Proofpoint-ORIG-GUID: -yynYTX6f6bM2jTepjhcsehB1LjmQf0Q
-X-Proofpoint-GUID: ja_sKYht4ot6FHq7nMIcye2_8i0vD-wP
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-09_05,2022-08-09_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 lowpriorityscore=0
- bulkscore=0 clxscore=1015 phishscore=0 adultscore=0 suspectscore=0
- spamscore=0 impostorscore=0 mlxlogscore=999 malwarescore=0
- priorityscore=1501 mlxscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208090078
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.10.0
+Subject: Re: [PATCH v5 06/14] iio: magnetometer: yas530: Rename functions and
+ registers
+Content-Language: de-DE
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
+References: <cover.1659909060.git.jahau@rocketmail.com>
+ <ca008512c5196a377042cd71254dedad3668bb44.1659909060.git.jahau@rocketmail.com>
+ <CAHp75Ve19nzSem+CCL6w77mkavSCW0LzrDTAWkfQUHJXy=QAoA@mail.gmail.com>
+From:   Jakob Hauser <jahau@rocketmail.com>
+In-Reply-To: <CAHp75Ve19nzSem+CCL6w77mkavSCW0LzrDTAWkfQUHJXy=QAoA@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+X-Mailer: WebService/1.1.20491 mail.backend.jedi.jws.acl:role.jedi.acl.token.atz.jws.hermes.yahoo
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Corruption of the MEAS_CFG register has been observed soon after
-system boot. In order to recover this scenario, check MEAS_CFG if
-measurement isn't ready, and if it's incorrect, reset the DPS310
-and execute the startup procedure.
+Hi Andy,
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
----
- drivers/iio/pressure/dps310.c | 88 +++++++++++++++++++++++++++++------
- 1 file changed, 73 insertions(+), 15 deletions(-)
+On 08.08.22 13:08, Andy Shevchenko wrote:
+> On Mon, Aug 8, 2022 at 1:03 AM Jakob Hauser <jahau@rocketmail.com> wrote:
+>>
+>> This is a preparation for adding YAS537 variant.
+> 
+> the YAS537
 
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index c706a8b423b5..3a1aeeea3cdd 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -393,6 +393,44 @@ static int dps310_get_temp_k(struct dps310_data *data)
- 	return scale_factors[ilog2(rc)];
- }
- 
-+/*
-+ * Called with lock held. Returns a negative value on error, a positive value
-+ * when the device is not ready, and zero when the device is ready.
-+ */
-+static int dps310_check_reset_meas_cfg(struct dps310_data *data, int ready_bit)
-+{
-+	int meas_cfg;
-+	int rc = regmap_read(data->regmap, DPS310_MEAS_CFG, &meas_cfg);
-+
-+	if (rc < 0)
-+		return rc;
-+
-+	/* Device is ready, proceed to measurement */
-+	if (meas_cfg & ready_bit)
-+		return 0;
-+
-+	/* Device is OK, just not ready */
-+	if (meas_cfg & (DPS310_PRS_EN | DPS310_TEMP_EN | DPS310_BACKGROUND))
-+		return 1;
-+
-+	/* DPS310 register state corrupt, better start from scratch */
-+	rc = regmap_write(data->regmap, DPS310_RESET, DPS310_RESET_MAGIC);
-+	if (rc < 0)
-+		return rc;
-+
-+	/* Wait for device chip access: 2.5ms in specification */
-+	usleep_range(2500, 12000);
-+
-+	/* Reinitialize the chip */
-+	rc = dps310_startup(data);
-+	if (rc)
-+		return rc;
-+
-+	dev_info(&data->client->dev,
-+		 "recovered from corrupted MEAS_CFG=%02x\n", meas_cfg);
-+	return 1;
-+}
-+
- static int dps310_read_pres_raw(struct dps310_data *data)
- {
- 	int rc;
-@@ -405,16 +443,26 @@ static int dps310_read_pres_raw(struct dps310_data *data)
- 	if (mutex_lock_interruptible(&data->lock))
- 		return -EINTR;
- 
--	rate = dps310_get_pres_samp_freq(data);
--	timeout = DPS310_POLL_TIMEOUT_US(rate);
--
--	/* Poll for sensor readiness; base the timeout upon the sample rate. */
--	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
--				      ready & DPS310_PRS_RDY,
--				      DPS310_POLL_SLEEP_US(timeout), timeout);
--	if (rc)
-+	rc = dps310_check_reset_meas_cfg(data, DPS310_PRS_RDY);
-+	if (rc < 0)
- 		goto done;
- 
-+	if (rc > 0) {
-+		rate = dps310_get_pres_samp_freq(data);
-+		timeout = DPS310_POLL_TIMEOUT_US(rate);
-+
-+		/*
-+		 * Poll for sensor readiness; base the timeout upon the sample
-+		 * rate.
-+		 */
-+		rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
-+					      ready, ready & DPS310_PRS_RDY,
-+					      DPS310_POLL_SLEEP_US(timeout),
-+					      timeout);
-+		if (rc)
-+			goto done;
-+	}
-+
- 	rc = regmap_bulk_read(data->regmap, DPS310_PRS_BASE, val, sizeof(val));
- 	if (rc < 0)
- 		goto done;
-@@ -454,16 +502,26 @@ static int dps310_read_temp_raw(struct dps310_data *data)
- 	if (mutex_lock_interruptible(&data->lock))
- 		return -EINTR;
- 
--	rate = dps310_get_temp_samp_freq(data);
--	timeout = DPS310_POLL_TIMEOUT_US(rate);
--
--	/* Poll for sensor readiness; base the timeout upon the sample rate. */
--	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
--				      ready & DPS310_TMP_RDY,
--				      DPS310_POLL_SLEEP_US(timeout), timeout);
-+	rc = dps310_check_reset_meas_cfg(data, DPS310_TMP_RDY);
- 	if (rc < 0)
- 		goto done;
- 
-+	if (rc > 0) {
-+		rate = dps310_get_temp_samp_freq(data);
-+		timeout = DPS310_POLL_TIMEOUT_US(rate);
-+
-+		/*
-+		 * Poll for sensor readiness; base the timeout upon the sample
-+		 * rate.
-+		 */
-+		rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
-+					      ready, ready & DPS310_TMP_RDY,
-+					      DPS310_POLL_SLEEP_US(timeout),
-+					      timeout);
-+		if (rc < 0)
-+			goto done;
-+	}
-+
- 	rc = dps310_read_temp_ready(data);
- 
- done:
--- 
-2.31.1
+OK
 
+>> Functions that are used only by YAS530, YAS532 and YAS533 are renamed from
+>> yas5xx to yas530. Same for the registers.
+>>
+>> To avoid part listing in function and registers names, the name of the first
+>> variant is used. Where appropriate, comments were added that these functions
+>> are used by more than one variant.
+>>
+>> Functions that will be used by all variants including YAS537 remain in the
+>> naming scheme yas5xx. Or YAS5XX for registers, respectively.
+> 
+> ..
+> 
+>>  /**
+>> - * yas5xx_get_measure() - Measure a sample of all axis and process
+>> + * yas530_get_measure() - Measure a sample of all axis and process
+>>   * @yas5xx: The device state
+>>   * @to: Temperature out
+>>   * @xo: X axis out
+>>   * @yo: Y axis out
+>>   * @zo: Z axis out
+>>   * @return: 0 on success or error code
+> 
+>> + * Used by YAS530, YAS532 and YAS533
+> 
+> In this case (multi-line comment) the period should be added to the
+> sentence. Ditto for other similar cases.
+
+OK
+
+>>   */
+
+...
+
+Kind regards,
+Jakob
