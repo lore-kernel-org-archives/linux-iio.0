@@ -2,96 +2,105 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4E955C25B0F
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Aug 2022 21:49:43 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E30C4C3F6B0
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Aug 2022 21:55:00 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230445AbiHLVtm (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 Aug 2022 17:49:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35214 "EHLO
+        id S235252AbiHLVzA (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Aug 2022 17:55:00 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38260 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229617AbiHLVtl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2022 17:49:41 -0400
-Received: from mail-qt1-x82d.google.com (mail-qt1-x82d.google.com [IPv6:2607:f8b0:4864:20::82d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1EC8EB0892;
-        Fri, 12 Aug 2022 14:49:41 -0700 (PDT)
-Received: by mail-qt1-x82d.google.com with SMTP id j17so1752827qtp.12;
-        Fri, 12 Aug 2022 14:49:41 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:from:to:cc;
-        bh=nOBGNe0K8Dv1II0YhQ6IBHsguDss5WydwMDeWDaNg9g=;
-        b=D0lGpXLG028uGrzrag9IBU+wZG4q4pLwhgDh5zbUJ+4+VxpjzR9R40iJM2J2m2sL93
-         +5G/WbtroB6SMgDiu2IlIk/73M4kWfel9/IJ2o1poeQ3iuoXVhanu7Gn2kYzPxUnu0xn
-         5yY8bUajlEV6QbDALTsx5x+Kzgfkt9in1vEdD7GFCdlj9PwPVJbCmDMTxtqo0brCaxfU
-         KaEIqedUEDLuLYZU1GQbr5ziVucdhVhzMS0KzfV50l0TwnWi+oL2mTuoqIFmMwFxsidf
-         7SX6CmCucM4cX9W+oCsybgIhHqP6Rfq27uWSzUo75zJUnNRtH93sHntk4iD/v2GorCsh
-         iyiA==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=cc:to:subject:message-id:date:from:in-reply-to:references
-         :mime-version:x-gm-message-state:from:to:cc;
-        bh=nOBGNe0K8Dv1II0YhQ6IBHsguDss5WydwMDeWDaNg9g=;
-        b=qWCKEg3LZjRrYpRzZcgxyQejQ+8hgXtmTU1k8Of5fthWVlfxtFaO03a1kn7pLz8KuI
-         FN6paXYWv0Zs1iETBm5lLXOGvhd6Zyrlj+lNBSJo3iQ+xf5aKLaDEn8JZbEOL42zM70O
-         vSVzUDo2j317/IshPR8Wq47GKERaki0ZjKbhmId5Hl9GWdOySFambdkmnq/UtOOfzdgq
-         RqFGFE+yyHrthgjd0DBSle5NWJssTLwbf1uDlcBLZKHfd+1rLQ0uNAWv8ZDjw2kUvp5e
-         2DpNIQxI0F4i/L7Pi2mG0GLJ88FEIgloxZ3HigkzBmS9Q2RbMC8Nl339gyXMzcx0Tcs9
-         mBNQ==
-X-Gm-Message-State: ACgBeo184r5mwMBu4pHeVZ2DpIEu/nWtn64HOc42+XwQx3KZuvREENIW
-        5Qtuq0/XjcRxepZE1TRWBgb60hSf15fCiPSYtk8=
-X-Google-Smtp-Source: AA6agR4VurPHqlXqGvwOoq7dUetTwkrIGniaguB2pE+60F9SCFGDJ8sgWINfZgkEFDOh71zHNMVqaeo4XTSA91wq8Io=
-X-Received: by 2002:a05:622a:40a:b0:343:77ba:727f with SMTP id
- n10-20020a05622a040a00b0034377ba727fmr3454864qtx.481.1660340980224; Fri, 12
- Aug 2022 14:49:40 -0700 (PDT)
-MIME-Version: 1.0
-References: <cover.1659909060.git.jahau@rocketmail.com> <a7bc9d7a7bb12a76fb217a1709fb09abd2b45892.1659909060.git.jahau@rocketmail.com>
- <CAHp75VegA6zzvQXEi_9-K3832o+j48Af3X8LivYY47Xav+w-xQ@mail.gmail.com>
- <850de937-8fe6-ebce-4e9d-35a617c3ade6@rocketmail.com> <CACRpkdbXNE17cOM2Kd+mUf7JMefZE+NBWxyHt4vkQWEF_3BtjA@mail.gmail.com>
-In-Reply-To: <CACRpkdbXNE17cOM2Kd+mUf7JMefZE+NBWxyHt4vkQWEF_3BtjA@mail.gmail.com>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Sat, 13 Aug 2022 00:49:04 +0300
-Message-ID: <CAHp75VcBN+pR61i1KjjFpjDaZJUvFHHS0eKi__qf8+9omMLaeQ@mail.gmail.com>
-Subject: Re: [PATCH v5 14/14] iio: magnetometer: yas530: Add YAS537 variant
-To:     Linus Walleij <linus.walleij@linaro.org>
-Cc:     Jakob Hauser <jahau@rocketmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+        with ESMTP id S233859AbiHLVyp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2022 17:54:45 -0400
+Received: from sonic301-22.consmr.mail.ir2.yahoo.com (sonic301-22.consmr.mail.ir2.yahoo.com [77.238.176.99])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 7F231B4439
+        for <linux-iio@vger.kernel.org>; Fri, 12 Aug 2022 14:54:43 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=rocketmail.com; s=s2048; t=1660341281; bh=caI5YrEKF79TQRJda739FwKXTDN05RVs3N/XMdhJsGs=; h=From:To:Cc:Subject:Date:In-Reply-To:References:From:Subject:Reply-To; b=r2Fm2xJQnkVGpvH/FjrMzJEJc1H7QKcgCcj0RZmt40/DcFbLI+jibx+usznmZAbKeltHkH0wwM0OUmH9usjoDz1VXeWHBOk5+aN0nA+DmKEbzqfgE9L6oa3zney2bsMcHxmZUeF6bqf6pFFYT6HV0ABR5YPDw+IlI7fcMj0G4DbzQQjdo+BpyR3gmfg9Um1wISP8+ihhHRoOW3EQEA+PFTWz4I7OYil6vl2mIrH27lyw8+8WmiFk1K17QUNJp6VGupLNdoobQqlgdlxlIKlqiXBdkljLUJHGqYmAkIqbNRI/TG3THVMHEuF+w3RX/4KGnBjXYf7hMdMh9Qo5OzNV0Q==
+X-SONIC-DKIM-SIGN: v=1; a=rsa-sha256; c=relaxed/relaxed; d=yahoo.com; s=s2048; t=1660341281; bh=S7M/3Krv3JLZ3bEmLx87WstdU5m7uqTHXZIt/gzEkW8=; h=X-Sonic-MF:From:To:Subject:Date:From:Subject; b=GhRdBoFa2FM+OORdp73Drd0b2PMiX70bgnHaPrFYIoCwRPyXUlbGo1mwOMQVFMCVV80btXwOY13Ojkuk6pODGtF6xo5OLaM9z8UlJl9rW+p6+AAwYMWbj120n+5Kaa5tgV3E521wZwKP3xFUVM+we7KiORAIXyTK+Ef+DbYExddVZSoVaswvD42dZQ9y0S+R3MlLfH2lAgNaXFeL63ud8anzao0fS9oPOD3zQyuAQg9pU98bF0WOqrCQBawPfZ9zTcQD7lp7GFJ7mjN1bD488sATPNL7LBoGMNwQiqATzqCMwfpYaVZNA2wDvq2WS+DpcjvSVQ+YJd7iCtM2j5EQNw==
+X-YMail-OSG: Hr8.rPEVM1kASFQEjhCM2Ih4RibK4e5J9IaDxHsRYsXBLOK83AnSmQsAth136tK
+ jewwh9H8JocPixayvEJzxgyGbHngWoo50yBi02Cc8fJFO__Xl9N1uZku2VVNTjqezCSWQw.Z5Tt5
+ .huzejembKgmNCb20NJPphj7T4nJmRA4IRuP.Venii5VhxlAaWarh2X6mJOhhxW0Qd2.M5VrZHNM
+ e2PFU7h.b.ht7B8U9LXu_eXpaX3aDjoOhsj7Nu5hn7j3WffpVUSKKiz6BEuAawICTZJ5hkjfkeJ7
+ rbagcJeLYu72VmIR_W0o2NnKQY_ZG4Gx4iRhwh3QjADETZIFrrvfMylraoIe7SYPB5J4HMdneOz2
+ sG7ZZLSabOFWgFsuT7DKMOSCWnlepzRT1CwW0R8O4EimNUNFsYhe5vaWVOgl8ZNb52O8D4R05oHN
+ 525fsneOMVZsDGRokaKaz8284ts4tomwIo7U_PC8PIO0wZaz4FUS.uIGC.msXnZ54ow2wkzQaYIt
+ HqOPZ2qQo.OJXrRp3At.PEJRLJCGeg1EIXFw6j5pp.dWPzav3cOM_vSDS36a025ncAWDbSJTiz6c
+ Lvg62eg8KZMkdJzoSvRJE82D.e4SIG7iqg1c.x0hY_f289cF8YUXZ5YubxX91hOw3T9Yjf.ij0kT
+ 4Ai_.Kk5fIi4VPZXhmniDBSUtgm0E3tOVFH9QWy3TEZmfv9ROfFacTsQospvT_zlHXD18Ia1WYL1
+ UIbK63I8e4L6UKiQpmv.mSCMPQ76itdPTMvKcgQEFuixS0VHWQHKSvqJW79mekXNQKiRV1K0zyFP
+ 1LSBioI5_RcKTqAIhX0hk8C0LqpmLsPjRUgrzcHi6sqOE_VWPcE0kpA95X3ng2lSx34GZ.Ujh8b2
+ iv2tfd_YKeVMTGyMrbdjmk8_C5D465iTcQrf65tHzRbu3yYR03nCQvKkkqNT9G_lM9ZuZzHEUg4o
+ Mf78B56A_CxeEoJdZdi4gpNRPyd2eVM8jLr5RWs3ERxkcYXBMPsaHSX6.o0CUwDaJQcQ2RWWzHSU
+ 1oyf5AnlNCd7rrkapMaihA6BDW8R4NB200c_00smTc_NkZKq50.UUZPafGDebiqRanTtFHQzisH3
+ wKR.ppAa1TNiZP7HkTc44xT2ROQ646RwlPGHMC51miqWEaCQZplhBlylhTCDZlNagWjP7aOT6PQc
+ ELfNonmA63Xt.e1yoIXpeRzh1P7TRBf8RiMMhAs88JSUB5Oa_KygESDvvOnAFJ1AWvIVd9PXVXr6
+ 3137ibjTvbqS9w0YCjL4SOFPnuubr.Jg57w6BuAQWFiXHNXl_rTZPr4RcJTNJGDwvEqwXz_4YK7m
+ fD2XD5XTA_0Qh0ozexav7_LZmRGnfxNbEHykB4lw.325RBGknTLlfUBQ7qXqMGb7GSIiDnnR6QIf
+ N5p2kS1Yw6SFTJaxpbXmOxsH2uliC.8LSPtxwh_Y6lVvWdGHJbaIhPFb1LUzRDYpV2iMGp2obc4W
+ ZD8Svf9Qvkn_RMvCzJGdOC5OqxTa_2ErB1Qc7WBVevk1BzOo.WfnupLwxlskbjsuAcpiWjF4eLS8
+ C6yvUV4GGSiYazYwbr4mvigSWdpJJ3SRo2kJgtRIZjeXm7MJf.jX6TQemDqHxVXP033iHBSlc69w
+ kkBotfjrBwXQNEp7OOHsbUUY64o_4ucewQuqmRGvGVzqT5qQaIqzieO0c.PYNb6WDHy3iRMPScGK
+ nmCOb3S1ElFzoQLbZBTdc05VCI_c8zIPLhClXjsp0.wdHwpuDSr.YUNRR8xUDVLpHNYXA8OQmPtv
+ ArQ4NF9FrD06x02D92C7ixhrIWAKwNgf2Cm6oOIcTBlyKtY9EfQwUR0_x5z9g2mInyU30EEwFeYm
+ XZ2ZQr8klHv3p4.HfYB0uCFdmWaIRXJyE65VGu1EMoIbnjM8AzMz9dV0b.gvmyCmcWMNY07GM3Mv
+ xQoGAvFFvutqqckUavUA1ECMTdNr.twQQRgM9dlhqsyYk0j0cUC9AbhUzNUBTRF.fa31ketZNUSN
+ dKyGu3sYh9dj7E.3SBiP_TssAKnS.fu3W8lIhdeIMKHI_N5QoNKfIOk7tvSFK9ZcZuHmf3r8vdKy
+ DafyV_yjmDy5ovlzRXMB00ZsZ88iBKXjLAxfhypaqIUsNKdSJmWfJJiZ6iMrjKpgOJc0T8OFw0g1
+ hXEDifhSKjA0.jqe3js1N81SYBpY4a4usZQq9YPTww05.RdSz3utFEq7ac00Hs_d2hnH0DZj6W9O
+ XHzbDP_WMESy9n9C3x39bDc0cAaY8KRsuZFf7lGdpPCSnJNd5vaMnkQGLSzRIFUf8H0VzlGQZ15o
+ g9DAo3rLacffZUg--
+X-Sonic-MF: <jahau@rocketmail.com>
+Received: from sonic.gate.mail.ne1.yahoo.com by sonic301.consmr.mail.ir2.yahoo.com with HTTP; Fri, 12 Aug 2022 21:54:41 +0000
+Received: by hermes--canary-production-ir2-f74ffc99c-sqjll (Yahoo Inc. Hermes SMTP Server) with ESMTPA ID 4374eb8c565a32f837f1ffd0e5de4e7d;
+          Fri, 12 Aug 2022 21:54:38 +0000 (UTC)
+From:   Jakob Hauser <jahau@rocketmail.com>
+To:     Jonathan Cameron <jic23@kernel.org>
+Cc:     Lars-Peter Clausen <lars@metafoo.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Andy Shevchenko <andy.shevchenko@gmail.com>,
         Hans de Goede <hdegoede@redhat.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht
-Content-Type: text/plain; charset="UTF-8"
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        phone-devel@vger.kernel.org, ~postmarketos/upstreaming@lists.sr.ht,
+        Jakob Hauser <jahau@rocketmail.com>
+Subject: [PATCH v6 01/14] iio: magnetometer: yas530: Change data type of hard_offsets to signed
+Date:   Fri, 12 Aug 2022 23:54:06 +0200
+Message-Id: <40f052bf6491457d0c5c0ed4c3534dc6fa251c3c.1660337264.git.jahau@rocketmail.com>
+X-Mailer: git-send-email 2.35.1
+In-Reply-To: <cover.1660337264.git.jahau@rocketmail.com>
+References: <cover.1660337264.git.jahau@rocketmail.com>
+MIME-Version: 1.0
+Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 12:43 AM Linus Walleij <linus.walleij@linaro.org> wrote:
->
-> On Wed, Aug 10, 2022 at 1:41 AM Jakob Hauser <jahau@rocketmail.com> wrote:
-> > On 08.08.22 13:47, Andy Shevchenko wrote:
->
-> > > P.S. Do you see now how your series and the end result become better?
-> >
-> > The driver improves. Though we kind of get lost in details, I have the
-> > impression we could go on like this forever.
->
-> I think at one point Jonathan mentioned the phenomenon "perfect is the
-> enemy of good", which even has its own Wikipedia article:
-> https://en.wikipedia.org/wiki/Perfect_is_the_enemy_of_good
->
-> When I feel (for some intuitive definition of "feeling") that a patch
-> series to my subsystem is getting over-reviewed, I usually just
-> merge it and tell everyone involved to write and/or request
-> additional patches if they are troubled by the result. It's a fine line,
-> admittedly, it's not like I can define the trigger point.
+The "hard_offsets" are currently unsigned u8 but they should be signed as they
+can get negative. They are signed in function yas5xx_meaure_offsets() and in the
+Yamaha drivers [1][2].
 
-The problem here is that a new round of review was triggered by a
-build bot that can't compile it with a Clang which follows C standard,
-but doesn't have sugar to it. Otherwise series was ready to be merged
-and can be improved later on.
+[1] https://github.com/NovaFusion/android_kernel_samsung_golden/blob/cm-12.1/drivers/sensor/compass/yas.h#L156
+[2] https://github.com/msm8916-mainline/android_kernel_qcom_msm8916/blob/GT-I9195I/drivers/iio/magnetometer/yas_mag_drv-yas532.c#L91
 
+Fixes: de8860b1ed47 ("iio: magnetometer: Add driver for Yamaha YAS530")
+Signed-off-by: Jakob Hauser <jahau@rocketmail.com>
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/iio/magnetometer/yamaha-yas530.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
+index aeaa4da6923b..d1f16729c60e 100644
+--- a/drivers/iio/magnetometer/yamaha-yas530.c
++++ b/drivers/iio/magnetometer/yamaha-yas530.c
+@@ -132,7 +132,7 @@ struct yas5xx {
+ 	unsigned int version;
+ 	char name[16];
+ 	struct yas5xx_calibration calibration;
+-	u8 hard_offsets[3];
++	s8 hard_offsets[3];
+ 	struct iio_mount_matrix orientation;
+ 	struct regmap *map;
+ 	struct regulator_bulk_data regs[2];
 -- 
-With Best Regards,
-Andy Shevchenko
+2.35.1
+
