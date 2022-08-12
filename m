@@ -2,34 +2,34 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 8EDDFC25B0E
-	for <linux-iio@archiver.kernel.org>; Fri, 12 Aug 2022 16:53:08 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 4B7EFC282E7
+	for <linux-iio@archiver.kernel.org>; Fri, 12 Aug 2022 16:53:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S239402AbiHLQxH (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Fri, 12 Aug 2022 12:53:07 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52732 "EHLO
+        id S239410AbiHLQxI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Fri, 12 Aug 2022 12:53:08 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52740 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S239118AbiHLQxF (ORCPT
+        with ESMTP id S239394AbiHLQxF (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2022 12:53:05 -0400
 Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id E8E8AACA05;
-        Fri, 12 Aug 2022 09:52:58 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 6FBE8ACA14;
+        Fri, 12 Aug 2022 09:52:59 -0700 (PDT)
 Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id 839F05FD08;
-        Fri, 12 Aug 2022 19:52:55 +0300 (MSK)
+        by mail.sberdevices.ru (Postfix) with ESMTP id 90E7D5FD0B;
+        Fri, 12 Aug 2022 19:52:57 +0300 (MSK)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660323175;
-        bh=kNxXhkdr74OhUzWIPaRNsxTjWoPYvj2BCzIs18HaIVo=;
+        s=mail; t=1660323177;
+        bh=TzU4kxbiPq2CIG0Dt3uNo8LzBU6MDWGbGwPmFW3Wyc8=;
         h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=DEuwsuKrK0IUE/fmPNRTH7bHheRw7wS1s8L53Sl+UjpBa6xdpAZDmjbGMxb036Bdg
-         6B+OkILYFXRLmIUsWzdAjaZvEaH2ml6PrpeMLzix2uxqipqsHh7rTYiQdJjK2LvQvl
-         /4wicZ3i/UGvJQEPLJ5c1CN268hOkIuHzy9N+vVueef4hFb0oVnyE6Latp82+nXWaC
-         +qzwpgKE4n++0A3IP4zaSbyjv0pefOO0x6Kb8Q8IYRJ6Oniy9lMaXPluDjvZeu0m9/
-         Zq4xhUnuB79fGjCUsGffGWayE9lQC8U/HqgFu9PMAv7yNMFfU99YXvBnG0tNmndf+J
-         37/2h7PcJNwtw==
+        b=BcJNak41TNVgMAEqn48XCEkqBus0EK3Fbhn2XPIifejTrR+50LRULNLAv5L8aT3uf
+         QpG+u/FkatyeRKqxwke+LXGLr82wyNFpYZzfkQKLR9U/J/+e3pUXf/3FugvGYKQ5x1
+         WS6c/zqe8KzjadK/llIu6sRfjvkHFUsX584AvW7Emh2EOJzdDYfRfaWgdPnxdtlFbV
+         g1+OmZGooCxWOHfMX7gaRq4uKougQ17tsMkcA5Tofcz5xx6lFT7qe1DbVhr9SJEWte
+         1jUGrgENNjaltG4WC+/yZHaEo8Px4UeUj9iJ/UzTuvbgXgJgoxAXWJOQ+IHbHkX7fc
+         kweC8vgSAtO+A==
 Received: from S-MS-EXCH01.sberdevices.ru (S-MS-EXCH01.sberdevices.ru [172.16.1.4])
         by mail.sberdevices.ru (Postfix) with ESMTP;
-        Fri, 12 Aug 2022 19:52:55 +0300 (MSK)
+        Fri, 12 Aug 2022 19:52:57 +0300 (MSK)
 From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
 To:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
         "jic23@kernel.org" <jic23@kernel.org>,
@@ -54,11 +54,12 @@ CC:     "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         Dmitry Rokosov <DDRokosov@sberdevices.ru>
-Subject: [PATCH v5 1/7] lib/string_helpers: Add str_read_write() helper
-Thread-Topic: [PATCH v5 1/7] lib/string_helpers: Add str_read_write() helper
-Thread-Index: AQHYrmvlXLMGJM4ctk2gw8SerH637Q==
-Date:   Fri, 12 Aug 2022 16:52:25 +0000
-Message-ID: <20220812165243.22177-2-ddrokosov@sberdevices.ru>
+Subject: [PATCH v5 4/7] iio: common: scmi_sensors: use HZ macro from units.h
+Thread-Topic: [PATCH v5 4/7] iio: common: scmi_sensors: use HZ macro from
+ units.h
+Thread-Index: AQHYrmvn6T4LySVM6EmqFD3kF6Rglw==
+Date:   Fri, 12 Aug 2022 16:52:27 +0000
+Message-ID: <20220812165243.22177-5-ddrokosov@sberdevices.ru>
 References: <20220812165243.22177-1-ddrokosov@sberdevices.ru>
 In-Reply-To: <20220812165243.22177-1-ddrokosov@sberdevices.ru>
 Accept-Language: ru-RU, en-US
@@ -80,30 +81,61 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-From: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
+Remove duplicated definition of UHZ_PER_HZ, because it's available in
+the units.h as MICROHZ_PER_HZ.
 
-Add str_read_write() helper to return 'read' or 'write' string literal.
-
-Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 Signed-off-by: Dmitry Rokosov <ddrokosov@sberdevices.ru>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 ---
- include/linux/string_helpers.h | 5 +++++
- 1 file changed, 5 insertions(+)
+ drivers/iio/common/scmi_sensors/scmi_iio.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-diff --git a/include/linux/string_helpers.h b/include/linux/string_helpers.=
-h
-index 4d72258d42fd..9e22cd78f3b8 100644
---- a/include/linux/string_helpers.h
-+++ b/include/linux/string_helpers.h
-@@ -126,4 +126,9 @@ static inline const char *str_enabled_disabled(bool v)
- 	return v ? "enabled" : "disabled";
- }
+diff --git a/drivers/iio/common/scmi_sensors/scmi_iio.c b/drivers/iio/commo=
+n/scmi_sensors/scmi_iio.c
+index 793d628db55f..54ccf19ab2bb 100644
+--- a/drivers/iio/common/scmi_sensors/scmi_iio.c
++++ b/drivers/iio/common/scmi_sensors/scmi_iio.c
+@@ -18,6 +18,7 @@
+ #include <linux/scmi_protocol.h>
+ #include <linux/time.h>
+ #include <linux/types.h>
++#include <linux/units.h>
 =20
-+static inline const char *str_read_write(bool v)
-+{
-+	return v ? "read" : "write";
-+}
-+
- #endif
+ #define SCMI_IIO_NUM_OF_AXIS 3
+=20
+@@ -130,7 +131,6 @@ static const struct iio_buffer_setup_ops scmi_iio_buffe=
+r_ops =3D {
+ static int scmi_iio_set_odr_val(struct iio_dev *iio_dev, int val, int val2=
+)
+ {
+ 	struct scmi_iio_priv *sensor =3D iio_priv(iio_dev);
+-	const unsigned long UHZ_PER_HZ =3D 1000000UL;
+ 	u64 sec, mult, uHz, sf;
+ 	u32 sensor_config;
+ 	char buf[32];
+@@ -145,7 +145,7 @@ static int scmi_iio_set_odr_val(struct iio_dev *iio_dev=
+, int val, int val2)
+ 		return err;
+ 	}
+=20
+-	uHz =3D val * UHZ_PER_HZ + val2;
++	uHz =3D val * MICROHZ_PER_HZ + val2;
+=20
+ 	/*
+ 	 * The seconds field in the sensor interval in SCMI is 16 bits long
+@@ -156,10 +156,10 @@ static int scmi_iio_set_odr_val(struct iio_dev *iio_d=
+ev, int val, int val2)
+ 	 * count the number of characters
+ 	 */
+ 	sf =3D (u64)uHz * 0xFFFF;
+-	do_div(sf,  UHZ_PER_HZ);
++	do_div(sf,  MICROHZ_PER_HZ);
+ 	mult =3D scnprintf(buf, sizeof(buf), "%llu", sf) - 1;
+=20
+-	sec =3D int_pow(10, mult) * UHZ_PER_HZ;
++	sec =3D int_pow(10, mult) * MICROHZ_PER_HZ;
+ 	do_div(sec, uHz);
+ 	if (sec =3D=3D 0) {
+ 		dev_err(&iio_dev->dev,
 --=20
 2.36.0
