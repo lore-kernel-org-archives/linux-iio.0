@@ -2,44 +2,54 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B0417C25B06
-	for <linux-iio@archiver.kernel.org>; Sun, 14 Aug 2022 14:11:10 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 688B7C25B06
+	for <linux-iio@archiver.kernel.org>; Sun, 14 Aug 2022 14:16:56 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231806AbiHNOLJ (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Sun, 14 Aug 2022 10:11:09 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:60430 "EHLO
+        id S239503AbiHNOQz (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Sun, 14 Aug 2022 10:16:55 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38704 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S231202AbiHNOLJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Aug 2022 10:11:09 -0400
+        with ESMTP id S231268AbiHNOQx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 14 Aug 2022 10:16:53 -0400
 Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 23C432DFD;
-        Sun, 14 Aug 2022 07:11:07 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9CADEDEB0;
+        Sun, 14 Aug 2022 07:16:52 -0700 (PDT)
 Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
         (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
         (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id A586260010;
-        Sun, 14 Aug 2022 14:11:06 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id D37B4C433D6;
-        Sun, 14 Aug 2022 14:11:04 +0000 (UTC)
+        by dfw.source.kernel.org (Postfix) with ESMTPS id 2556A60010;
+        Sun, 14 Aug 2022 14:16:52 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id C820FC433C1;
+        Sun, 14 Aug 2022 14:16:48 +0000 (UTC)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1660486266;
-        bh=9shFH31XM8hIAAKc3p+cdv3PxrsibqT5kKAI+7Qh+eM=;
+        s=k20201202; t=1660486611;
+        bh=uWoAq0ATnsOAbG/v53oGm0JhCatO2L0aeQdPfeB4Xq4=;
         h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=Z60U9uONuwv0QlTtvVbWT7H0C6yGZyCbd14ryoTfYtIbZJQAi+g32Zw2e1i3MHiXT
-         XTKcW32jGXRGr1ha8cb/gf6zUsSrJ/vS4yQ8bTEibPRkMboRf+Ex6VO5+rbMop56xR
-         HOtX2cVUZYUWCnBr7qWtzkJxhgASu94HgiBKWC7+tVxjGqAJ1NYBW+o5uLJhoE+mGM
-         /HnHSUlS3gogs5nJ+7KaSNYk+hL0H1eI06LpSNuc5yPRacuVrNU4iYTBGDRwjPo6V1
-         KFa6xl3wfCtsWcEgaNV3evNbDDidAigwW0yhgOVDoPwTAZPSt5kHkR23bGqCxvvXja
-         HRhoEr13Vf1Nw==
-Date:   Sun, 14 Aug 2022 15:21:35 +0100
+        b=iSkd0AHEsGvTF3NAwh5S7pfgNAE0lLcMvw6t0e2OsTxnEJ+izG/hfM9whbO4dOxvZ
+         tXRvMOQBCwFiUUIh6fNxUpl6VA4F9//fEuWOzW8k/bKb3RpgC1wft1QHsVaC+acxUg
+         KJgP8evn/SXnJsWo0uDsvVjkzMe5MeoWayLRIY8JQFvtWn06dm+APxYLo8u7nHVXuE
+         3c1YRsHcOwRHP1ajdDLpigYcJ5aqVnhCnkWJhdG2aOvV5FItYGRe7r6J2ALDfEaUlh
+         ta+gDC9PbF0NNoRzvapJ5Ox7YTdx0T262PsUzBbG4KntrBzMaejBcvsb2SAE+F6Oz2
+         OvVEKZ1XLRFEA==
+Date:   Sun, 14 Aug 2022 15:27:19 +0100
 From:   Jonathan Cameron <jic23@kernel.org>
-To:     Crt Mori <cmo@melexis.com>
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v3 0/2] iio: temperature: mlx90632: Add supply regulator
-Message-ID: <20220814152135.6ac36cfb@jic23-huawei>
-In-Reply-To: <20220808144804.1558849-1-cmo@melexis.com>
-References: <20220808144804.1558849-1-cmo@melexis.com>
+To:     Andy Shevchenko <andy.shevchenko@gmail.com>
+Cc:     Marcus Folkesson <marcus.folkesson@gmail.com>,
+        Kent Gustavsson <kent@minoris.se>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v5 4/9] iio: adc: mcp3911: use resource-managed version
+ of iio_device_register
+Message-ID: <20220814152719.17597442@jic23-huawei>
+In-Reply-To: <CAHp75VdhdpKasyYrb1tkhL6yjfZwMcbWJYNc9bw8LDr7KLT6jw@mail.gmail.com>
+References: <20220809073648.167821-1-marcus.folkesson@gmail.com>
+        <20220809073648.167821-5-marcus.folkesson@gmail.com>
+        <CAHp75Vc-cd_-+qyd62tcJGdXh917AgZY5VB0ztXR3zwrGoMCRQ@mail.gmail.com>
+        <CAHp75VdhdpKasyYrb1tkhL6yjfZwMcbWJYNc9bw8LDr7KLT6jw@mail.gmail.com>
 X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
 MIME-Version: 1.0
 Content-Type: text/plain; charset=US-ASCII
@@ -48,47 +58,30 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon,  8 Aug 2022 16:48:04 +0200
-Crt Mori <cmo@melexis.com> wrote:
+On Tue, 9 Aug 2022 11:40:55 +0200
+Andy Shevchenko <andy.shevchenko@gmail.com> wrote:
 
-> Add supply regulator to the sensor as initial update before proper power
-> management is presented. This will reduce the diff for the following
-> patches.
+> On Tue, Aug 9, 2022 at 11:39 AM Andy Shevchenko
+> <andy.shevchenko@gmail.com> wrote:
 > 
-Hi Crt,
+> ...
+> 
+> > You may rather switch to devm_clk_get_enabled() and drop this.  
+> 
+> While doing this I would recommend to split the regulator case and clock case.
+> 
+Hi Andy,
 
-Series applied to what will be the togreg branch of iio.git after I've
-rebased on rc1.  Until then pushed out as testing for 0-day to see
-if it can find anything we missed.
+I read this and wasn't quite sure what you meant.  Do you mean splitting
+it into multiple patches?  
 
-btw,  your series are not coming through as threads which makes them (slightly)
-harder to apply.  For whatever reason the reply-to header field on
-the emails isn't set.
+If so I think that is probably taking "one thing one patch" a step too far.
+I wouldn't object it if were presented as separate patches, but I'm not
+sure I'd bother splitting them.
 
-Thanks,
+Definitely good to switch to devm_clk_get_enabled() now that's available.
+There is another go at adding devm_regulator_enable() under review at the
+moment, but we can tidy that up as a follow on patch (along with the 100s of
+other cases in IIO!)
 
 Jonathan
-
-> Changes in v3:
-> 
->  - Style changes of few more arguments in one line
-> 
-> Changes in v2:
-> 
->  - Regulator voltage was removed as per comments from Jonathan Cameron
->    and Lars-Peter Clausen
->  - Style handling for the error reporting of the regulator DT binding
->    was adjusted
->  - NEW: Delay function was created and grouped together with call from
->    the reset command, to ensure consistency and reduce the amount of
->    code.
-> 
-> Crt Mori (2):
->   iio: temperature: mlx90632 Add supply regulator to sensor
->   dt-bindings: iio: mlx90632 Add supply regulator documentation
-> 
->  .../iio/temperature/melexis,mlx90632.yaml     |  4 ++
->  drivers/iio/temperature/mlx90632.c            | 61 +++++++++++++++++--
->  2 files changed, 60 insertions(+), 5 deletions(-)
-> 
-
