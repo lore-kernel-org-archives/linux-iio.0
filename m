@@ -2,85 +2,82 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 355C0C28B2B
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Aug 2022 14:57:41 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0F689C28B2C
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Aug 2022 14:57:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S232571AbiHOO5j (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Aug 2022 10:57:39 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36840 "EHLO
+        id S233700AbiHOO5k (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:57:40 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36810 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241110AbiHOO50 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2022 10:57:26 -0400
+        with ESMTP id S240377AbiHOO5Y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2022 10:57:24 -0400
 Received: from mx0a-001b2d01.pphosted.com (mx0a-001b2d01.pphosted.com [148.163.156.1])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BE7671D0E2;
-        Mon, 15 Aug 2022 07:57:25 -0700 (PDT)
-Received: from pps.filterd (m0098410.ppops.net [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FEOq3K010791;
-        Mon, 15 Aug 2022 14:57:12 GMT
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
- : date : message-id : in-reply-to : references : mime-version :
- content-transfer-encoding; s=pp1;
- bh=OvlQmTVemG8EiyWu0yU7RSGgTkAK6+cyFaZlq4Pif14=;
- b=kp+LstZm9FQh6AKzparnStKWEunea4bKHlByN3UOuKCK3VSfdBsYniWj2hGk+xfRzwxp
- hZun/T9dS3OmJXnth3BSEtwiOoBsoOYkNGoUVvtNubcn7Ae1La75ihi13WvzGpvfK8IO
- iDpeGJ+4BS4szhv9CrVQ7b2BItfBWFZ3JwtQ1XBmuE5P/hLjGR159R7GWa8S+fKHFojq
- +4i/BgfwxA9+x7+AKrIFsa7dBCfTBTUcBb/nEHYzG5aah5OGJ03wDOanl8/3TURil4KS
- HmQ67C44l42gdDXiy8Zn6JjwUHz3L73M2LQgzHU6MpVdvz8XrxbmJovjTUEH4YAIIGW5 WA== 
-Received: from pps.reinject (localhost [127.0.0.1])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyqvtgtkh-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 14:57:11 +0000
-Received: from m0098410.ppops.net (m0098410.ppops.net [127.0.0.1])
-        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27FEv4fA013401;
-        Mon, 15 Aug 2022 14:57:11 GMT
-Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
-        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyqvtgtjn-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 14:57:11 +0000
-Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
-        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27FEoIN7018080;
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id C510B1C114;
+        Mon, 15 Aug 2022 07:57:23 -0700 (PDT)
+Received: from pps.filterd (m0187473.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FEsflu014721;
         Mon, 15 Aug 2022 14:57:10 GMT
-Received: from b03cxnp08025.gho.boulder.ibm.com (b03cxnp08025.gho.boulder.ibm.com [9.17.130.17])
-        by ppma01wdc.us.ibm.com with ESMTP id 3hx3k94jas-1
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : mime-version : content-transfer-encoding; s=pp1;
+ bh=8ZTg0G+Wa4/8+mqlKuuc4tufXoqRTRsIKVo19S0zDC0=;
+ b=P3+NnXyCWwQT1/K4lvaBzOtLYCFi+n+K7f0STa4RjjMc94GQgTHWaA8OCUdcFxvT18Gu
+ o5cdIaYGwREx+OUQuHe/WLDrgcZfdBUsi2TyHT4suyta02Boq3XVuX4frYupeuYzPAOp
+ f8xbTTNc8266SiqFpaVSeImTn9gJSqNhui9gfTvH4m71AedrhXzluH50Llvy1ehj+aIX
+ unKDUI5jHYfFGqW7YMrdL1T7TNYxGnVKdZE8uPYGuVnYqct5gwgiHMlN4HRZOK5Dkezc
+ 2lYquK+gAipaYuwXV9YJ1B1PlI0KcA3sytLETHj16snFmhIniOtPRVvNVOfki0rr74vL 7A== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyratr18c-1
         (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Mon, 15 Aug 2022 14:57:10 +0000
-Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
-        by b03cxnp08025.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27FEv9NQ2294400
-        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Aug 2022 14:57:09 +0000
+Received: from m0187473.ppops.net (m0187473.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27FEsc9T014618;
         Mon, 15 Aug 2022 14:57:09 GMT
+Received: from ppma01wdc.us.ibm.com (fd.55.37a9.ip4.static.sl-reverse.com [169.55.85.253])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hyratr180-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 14:57:09 +0000
+Received: from pps.filterd (ppma01wdc.us.ibm.com [127.0.0.1])
+        by ppma01wdc.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27FEoHIB018077;
+        Mon, 15 Aug 2022 14:57:08 GMT
+Received: from b03cxnp08027.gho.boulder.ibm.com (b03cxnp08027.gho.boulder.ibm.com [9.17.130.19])
+        by ppma01wdc.us.ibm.com with ESMTP id 3hx3k94jan-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 14:57:08 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08027.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27FEv7o923593406
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Aug 2022 14:57:07 GMT
 Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 50A31136051;
-        Mon, 15 Aug 2022 14:57:09 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 4AD0113604F;
+        Mon, 15 Aug 2022 14:57:07 +0000 (GMT)
 Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
-        by IMSVA (Postfix) with ESMTP id 7A91613604F;
-        Mon, 15 Aug 2022 14:57:08 +0000 (GMT)
+        by IMSVA (Postfix) with ESMTP id 683CA136051;
+        Mon, 15 Aug 2022 14:57:06 +0000 (GMT)
 Received: from slate16.aus.stglabs.ibm.com (unknown [9.77.146.160])
         by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
-        Mon, 15 Aug 2022 14:57:08 +0000 (GMT)
+        Mon, 15 Aug 2022 14:57:06 +0000 (GMT)
 From:   Eddie James <eajames@linux.ibm.com>
 To:     jic23@kernel.org
 Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
         linux-kernel@vger.kernel.org, eajames@linux.ibm.com,
         andy.shevchenko@gmail.com, joel@jms.id.au
-Subject: [PATCH v5 2/2] iio: pressure: dps310: Reset chip if MEAS_CFG is corrupt
-Date:   Mon, 15 Aug 2022 09:57:05 -0500
-Message-Id: <20220815145705.203017-3-eajames@linux.ibm.com>
+Subject: [PATCH v5 0/2] iio: pressure: dps310: Reset chip if MEAS_CFG is corrupt
+Date:   Mon, 15 Aug 2022 09:57:03 -0500
+Message-Id: <20220815145705.203017-1-eajames@linux.ibm.com>
 X-Mailer: git-send-email 2.31.1
-In-Reply-To: <20220815145705.203017-1-eajames@linux.ibm.com>
-References: <20220815145705.203017-1-eajames@linux.ibm.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 X-TM-AS-GCONF: 00
-X-Proofpoint-GUID: p2d5rfkBPMceb7wf9FAXzPwN6vNY5AaJ
-X-Proofpoint-ORIG-GUID: c1KLPz-_6lUu6MSaGWcFDSpSpofrcSCq
+X-Proofpoint-ORIG-GUID: 63zzjKSfGn8_H0hPmYbanUxRUB8zKibq
+X-Proofpoint-GUID: TLXgZYmcAp48EC3iOf81oHLjmYrDO9dm
 X-Proofpoint-Virus-Version: vendor=baseguard
  engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
  definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 suspectscore=0 clxscore=1015
- priorityscore=1501 adultscore=0 lowpriorityscore=0 mlxscore=0 spamscore=0
- malwarescore=0 phishscore=0 impostorscore=0 mlxlogscore=999 bulkscore=0
- classifier=spam adjust=0 reason=mlx scancount=1 engine=8.12.0-2207270000
- definitions=main-2208150056
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 adultscore=0 phishscore=0
+ lowpriorityscore=0 suspectscore=0 mlxlogscore=999 clxscore=1015
+ malwarescore=0 spamscore=0 impostorscore=0 bulkscore=0 mlxscore=0
+ priorityscore=1501 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208150056
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
@@ -88,133 +85,32 @@ X-Mailing-List: linux-iio@vger.kernel.org
 Corruption of the MEAS_CFG register has been observed soon after
 system boot. In order to recover this scenario, check MEAS_CFG if
 measurement isn't ready, and if it's incorrect, reset the DPS310
-and execute the startup procedure.
+and execute the startup procedure. Include a patch to move the
+startup procedure into a function.
 
-Signed-off-by: Eddie James <eajames@linux.ibm.com>
-Reviewed-by: Joel Stanley <joel@jms.id.au>
----
- drivers/iio/pressure/dps310.c | 89 +++++++++++++++++++++++++++++------
- 1 file changed, 74 insertions(+), 15 deletions(-)
+Changes since v4:
+ - Just check for rc rather than rc < 0 in some cases
+ - Split declaration and init of rc
 
-diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
-index c706a8b423b5..bbeb2f3bcc8a 100644
---- a/drivers/iio/pressure/dps310.c
-+++ b/drivers/iio/pressure/dps310.c
-@@ -393,6 +393,45 @@ static int dps310_get_temp_k(struct dps310_data *data)
- 	return scale_factors[ilog2(rc)];
- }
- 
-+/*
-+ * Called with lock held. Returns a negative value on error, a positive value
-+ * when the device is not ready, and zero when the device is ready.
-+ */
-+static int dps310_check_reset_meas_cfg(struct dps310_data *data, int ready_bit)
-+{
-+	int rc;
-+	int meas_cfg;
-+
-+	rc = regmap_read(data->regmap, DPS310_MEAS_CFG, &meas_cfg);
-+	if (rc)
-+		return rc;
-+
-+	/* Device is ready, proceed to measurement */
-+	if (meas_cfg & ready_bit)
-+		return 0;
-+
-+	/* Device is OK, just not ready */
-+	if (meas_cfg & (DPS310_PRS_EN | DPS310_TEMP_EN | DPS310_BACKGROUND))
-+		return 1;
-+
-+	/* DPS310 register state corrupt, better start from scratch */
-+	rc = regmap_write(data->regmap, DPS310_RESET, DPS310_RESET_MAGIC);
-+	if (rc)
-+		return rc;
-+
-+	/* Wait for device chip access: 2.5ms in specification */
-+	usleep_range(2500, 12000);
-+
-+	/* Reinitialize the chip */
-+	rc = dps310_startup(data);
-+	if (rc)
-+		return rc;
-+
-+	dev_info(&data->client->dev,
-+		 "recovered from corrupted MEAS_CFG=%02x\n", meas_cfg);
-+	return 1;
-+}
-+
- static int dps310_read_pres_raw(struct dps310_data *data)
- {
- 	int rc;
-@@ -405,16 +444,26 @@ static int dps310_read_pres_raw(struct dps310_data *data)
- 	if (mutex_lock_interruptible(&data->lock))
- 		return -EINTR;
- 
--	rate = dps310_get_pres_samp_freq(data);
--	timeout = DPS310_POLL_TIMEOUT_US(rate);
--
--	/* Poll for sensor readiness; base the timeout upon the sample rate. */
--	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
--				      ready & DPS310_PRS_RDY,
--				      DPS310_POLL_SLEEP_US(timeout), timeout);
--	if (rc)
-+	rc = dps310_check_reset_meas_cfg(data, DPS310_PRS_RDY);
-+	if (rc < 0)
- 		goto done;
- 
-+	if (rc > 0) {
-+		rate = dps310_get_pres_samp_freq(data);
-+		timeout = DPS310_POLL_TIMEOUT_US(rate);
-+
-+		/*
-+		 * Poll for sensor readiness; base the timeout upon the sample
-+		 * rate.
-+		 */
-+		rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
-+					      ready, ready & DPS310_PRS_RDY,
-+					      DPS310_POLL_SLEEP_US(timeout),
-+					      timeout);
-+		if (rc)
-+			goto done;
-+	}
-+
- 	rc = regmap_bulk_read(data->regmap, DPS310_PRS_BASE, val, sizeof(val));
- 	if (rc < 0)
- 		goto done;
-@@ -454,16 +503,26 @@ static int dps310_read_temp_raw(struct dps310_data *data)
- 	if (mutex_lock_interruptible(&data->lock))
- 		return -EINTR;
- 
--	rate = dps310_get_temp_samp_freq(data);
--	timeout = DPS310_POLL_TIMEOUT_US(rate);
--
--	/* Poll for sensor readiness; base the timeout upon the sample rate. */
--	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
--				      ready & DPS310_TMP_RDY,
--				      DPS310_POLL_SLEEP_US(timeout), timeout);
-+	rc = dps310_check_reset_meas_cfg(data, DPS310_TMP_RDY);
- 	if (rc < 0)
- 		goto done;
- 
-+	if (rc > 0) {
-+		rate = dps310_get_temp_samp_freq(data);
-+		timeout = DPS310_POLL_TIMEOUT_US(rate);
-+
-+		/*
-+		 * Poll for sensor readiness; base the timeout upon the sample
-+		 * rate.
-+		 */
-+		rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG,
-+					      ready, ready & DPS310_TMP_RDY,
-+					      DPS310_POLL_SLEEP_US(timeout),
-+					      timeout);
-+		if (rc)
-+			goto done;
-+	}
-+
- 	rc = dps310_read_temp_ready(data);
- 
- done:
+Changes since v3:
+ - Don't check regmap* return codes for < 0
+ - Fix comment spelling
+
+Changes since v2:
+ - Add some comments
+ - Fix the clunky control flow
+
+Changes since v1:
+ - Separate into two patches
+ - Rename 'dps310_verify_meas_cfg' to 'dps310_check_reset_meas_cfg'
+
+Eddie James (2):
+  iio: pressure: dps310: Refactor startup procedure
+  iio: pressure: dps310: Reset chip if MEAS_CFG is corrupt
+
+ drivers/iio/pressure/dps310.c | 277 +++++++++++++++++++++-------------
+ 1 file changed, 173 insertions(+), 104 deletions(-)
+
 -- 
 2.31.1
 
