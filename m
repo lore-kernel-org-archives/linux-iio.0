@@ -2,217 +2,317 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 51426C25B0E
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Aug 2022 14:02:25 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 944B8C00140
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Aug 2022 14:57:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S242598AbiHOOCW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Aug 2022 10:02:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46156 "EHLO
+        id S231998AbiHOO5i (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Aug 2022 10:57:38 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36838 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S242584AbiHOOCU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2022 10:02:20 -0400
-Received: from mail.sberdevices.ru (mail.sberdevices.ru [45.89.227.171])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 133E822B33;
-        Mon, 15 Aug 2022 07:02:15 -0700 (PDT)
-Received: from s-lin-edge02.sberdevices.ru (localhost [127.0.0.1])
-        by mail.sberdevices.ru (Postfix) with ESMTP id AA39A5FD05;
-        Mon, 15 Aug 2022 17:02:12 +0300 (MSK)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=sberdevices.ru;
-        s=mail; t=1660572132;
-        bh=+gk1zIe/2wlOR10+rhMR8vZyUOoo8PbfRZUFI4FuEik=;
-        h=From:To:Subject:Date:Message-ID:Content-Type:MIME-Version;
-        b=beWTLuaEQ+aONnlAW/G59TyPHF26QbQtq1PHhhYI4FDliH3UGPKs9yOyRIlhpwctO
-         DAUDcHOkAVEpjl4EUhBkWB6Gk8eFSBgYBlb2LJx7to8ff6ykVWbJ6SVcPkeUVbwXax
-         9RmU1axM5Jsq47aO/saV2qGRpu3BKLaxtv669qH5vA9praMXrISn0nSnM1t3awGlG0
-         kHrk/1zwedj0t8217KHVqD+cWi7zGOY4xWr8o0mrSUunwVTkQjA5aBBC2gDqM+w4Id
-         abdo8J8T+++caor/mkVjn+DrWWGMIO+cYRpNfsKiwwWBHTxxwk6tmv7IWR4/400fsB
-         dCVC3/bRNK47w==
-Received: from S-MS-EXCH02.sberdevices.ru (S-MS-EXCH02.sberdevices.ru [172.16.1.5])
-        by mail.sberdevices.ru (Postfix) with ESMTP;
-        Mon, 15 Aug 2022 17:02:05 +0300 (MSK)
-From:   Dmitry Rokosov <DDRokosov@sberdevices.ru>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     "akpm@linux-foundation.org" <akpm@linux-foundation.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "andriy.shevchenko@linux.intel.com" 
-        <andriy.shevchenko@linux.intel.com>,
-        "christophe.jaillet@wanadoo.fr" <christophe.jaillet@wanadoo.fr>,
-        "stano.jakubek@gmail.com" <stano.jakubek@gmail.com>,
-        "shawnguo@kernel.org" <shawnguo@kernel.org>,
-        "stephan@gerhold.net" <stephan@gerhold.net>,
-        "daniel.lezcano@linaro.org" <daniel.lezcano@linaro.org>,
-        "wsa@kernel.org" <wsa@kernel.org>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "Michael.Hennerich@analog.com" <Michael.Hennerich@analog.com>,
-        "jbhayana@google.com" <jbhayana@google.com>,
-        "lucas.demarchi@intel.com" <lucas.demarchi@intel.com>,
-        "jani.nikula@intel.com" <jani.nikula@intel.com>,
-        "linus.walleij@linaro.org" <linus.walleij@linaro.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel <kernel@sberdevices.ru>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH v5 6/7] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Topic: [PATCH v5 6/7] iio: add MEMSensing MSA311 3-axis accelerometer
- driver
-Thread-Index: AQHYrmvoIVWL45TwmUSMsw+zEhPYFa2rqEkAgAQnwoA=
-Date:   Mon, 15 Aug 2022 14:01:13 +0000
-Message-ID: <20220815140201.5dpjpk35tdewcpvu@CAB-WSD-L081021.sigma.sbrf.ru>
-References: <20220812165243.22177-1-ddrokosov@sberdevices.ru>
- <20220812165243.22177-7-ddrokosov@sberdevices.ru>
- <CAHp75Ve8VtwGX6YeuGvhUat5UfoLXB4RdkW4vc1kQUk71+_aCA@mail.gmail.com>
-In-Reply-To: <CAHp75Ve8VtwGX6YeuGvhUat5UfoLXB4RdkW4vc1kQUk71+_aCA@mail.gmail.com>
-Accept-Language: ru-RU, en-US
-Content-Language: en-US
-X-MS-Has-Attach: 
-X-MS-TNEF-Correlator: 
-x-originating-ip: [172.16.1.12]
-Content-Type: text/plain; charset="us-ascii"
-Content-ID: <987B2D9B23A0EB4184D532ADE9321F15@sberdevices.ru>
-Content-Transfer-Encoding: quoted-printable
+        with ESMTP id S240844AbiHOO5Z (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2022 10:57:25 -0400
+Received: from mx0b-001b2d01.pphosted.com (mx0b-001b2d01.pphosted.com [148.163.158.5])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26A361C114;
+        Mon, 15 Aug 2022 07:57:25 -0700 (PDT)
+Received: from pps.filterd (m0098421.ppops.net [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27FEirnL016981;
+        Mon, 15 Aug 2022 14:57:11 GMT
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=ibm.com; h=from : to : cc : subject
+ : date : message-id : in-reply-to : references : mime-version :
+ content-transfer-encoding; s=pp1;
+ bh=Pi44s304R2SOHmvrKZ8iQchGZ+1FgIlhBqtA3BA79Oo=;
+ b=MAMNDA8aaCh/Spmxc0UBAmv3bdQMVnTOOecheKAXT0k2lwKDl+enmuR+rZhN7ldXaxE/
+ YTJhLJ3ZXhnnspQK6hZKM2kTfJoTxSFhTR8AwG8bqjlkkWAyibIo8nmxLplZTR1XVmvs
+ aA2b27uKPyaQ3MhT3anVQQ+VlQygD7iE3opYbwlUkMx+OayOyXvOdIIMg11LLs69v+Av
+ vBmSNELf9zr6PaIFWIZDDs6jezAeayudSw1DETmXQji5TMhBCUlUto+VgcrQsMSUr9Ka
+ WkBzNcJC3P+TdDQqKF4ecQjoVlcPbGX2YW7UfJqgJneUBYieppwCXmcTsauuLseLFktD uw== 
+Received: from pps.reinject (localhost [127.0.0.1])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hypfvkmy1-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 14:57:10 +0000
+Received: from m0098421.ppops.net (m0098421.ppops.net [127.0.0.1])
+        by pps.reinject (8.17.1.5/8.17.1.5) with ESMTP id 27FCrILK030463;
+        Mon, 15 Aug 2022 14:57:10 GMT
+Received: from ppma03dal.us.ibm.com (b.bd.3ea9.ip4.static.sl-reverse.com [169.62.189.11])
+        by mx0a-001b2d01.pphosted.com (PPS) with ESMTPS id 3hypfvkmxm-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 14:57:10 +0000
+Received: from pps.filterd (ppma03dal.us.ibm.com [127.0.0.1])
+        by ppma03dal.us.ibm.com (8.16.1.2/8.16.1.2) with SMTP id 27FEpVnh007427;
+        Mon, 15 Aug 2022 14:57:09 GMT
+Received: from b03cxnp08028.gho.boulder.ibm.com (b03cxnp08028.gho.boulder.ibm.com [9.17.130.20])
+        by ppma03dal.us.ibm.com with ESMTP id 3hx3k9qnhv-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 15 Aug 2022 14:57:09 +0000
+Received: from b03ledav002.gho.boulder.ibm.com (b03ledav002.gho.boulder.ibm.com [9.17.130.233])
+        by b03cxnp08028.gho.boulder.ibm.com (8.14.9/8.14.9/NCO v10.0) with ESMTP id 27FEv8e762521770
+        (version=TLSv1/SSLv3 cipher=DHE-RSA-AES256-GCM-SHA384 bits=256 verify=OK);
+        Mon, 15 Aug 2022 14:57:08 GMT
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 4FE9C136051;
+        Mon, 15 Aug 2022 14:57:08 +0000 (GMT)
+Received: from b03ledav002.gho.boulder.ibm.com (unknown [127.0.0.1])
+        by IMSVA (Postfix) with ESMTP id 7586213604F;
+        Mon, 15 Aug 2022 14:57:07 +0000 (GMT)
+Received: from slate16.aus.stglabs.ibm.com (unknown [9.77.146.160])
+        by b03ledav002.gho.boulder.ibm.com (Postfix) with ESMTP;
+        Mon, 15 Aug 2022 14:57:07 +0000 (GMT)
+From:   Eddie James <eajames@linux.ibm.com>
+To:     jic23@kernel.org
+Cc:     lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, eajames@linux.ibm.com,
+        andy.shevchenko@gmail.com, joel@jms.id.au
+Subject: [PATCH v5 1/2] iio: pressure: dps310: Refactor startup procedure
+Date:   Mon, 15 Aug 2022 09:57:04 -0500
+Message-Id: <20220815145705.203017-2-eajames@linux.ibm.com>
+X-Mailer: git-send-email 2.31.1
+In-Reply-To: <20220815145705.203017-1-eajames@linux.ibm.com>
+References: <20220815145705.203017-1-eajames@linux.ibm.com>
 MIME-Version: 1.0
-X-KSMG-Rule-ID: 4
-X-KSMG-Message-Action: clean
-X-KSMG-AntiSpam-Status: not scanned, disabled by settings
-X-KSMG-AntiSpam-Interceptor-Info: not scanned
-X-KSMG-AntiPhishing: not scanned, disabled by settings
-X-KSMG-AntiVirus: Kaspersky Secure Mail Gateway, version 1.1.2.30, bases: 2022/08/15 12:17:00 #20121227
-X-KSMG-AntiVirus-Status: Clean, skipped
+Content-Transfer-Encoding: 8bit
+X-TM-AS-GCONF: 00
+X-Proofpoint-GUID: rcLCctMtS_BH-GoMtExiMdHddrsE8u14
+X-Proofpoint-ORIG-GUID: ZwPhJGBg3K_Z0q3RgpjQpBmXrjWMlqr7
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.883,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-15_08,2022-08-15_01,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 priorityscore=1501
+ malwarescore=0 suspectscore=0 mlxlogscore=999 lowpriorityscore=0
+ impostorscore=0 bulkscore=0 adultscore=0 mlxscore=0 phishscore=0
+ spamscore=0 clxscore=1015 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208150056
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Sat, Aug 13, 2022 at 01:34:40AM +0300, Andy Shevchenko wrote:
+Move the startup procedure into a function, and correct a missing
+check on the return code for writing the PRS_CFG register.
 
-[...]
+Signed-off-by: Eddie James <eajames@linux.ibm.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Reviewed-by: Joel Stanley <joel@jms.id.au>
+---
+ drivers/iio/pressure/dps310.c | 188 ++++++++++++++++++----------------
+ 1 file changed, 99 insertions(+), 89 deletions(-)
 
-> > Spec: https://cdn-shop.adafruit.com/product-files/5309/MSA311-V1.1-ENG.=
-pdf
->=20
-> Can you use Datasheet: tag below (just before your SoB tag)?
+diff --git a/drivers/iio/pressure/dps310.c b/drivers/iio/pressure/dps310.c
+index 36fb7ae0d0a9..c706a8b423b5 100644
+--- a/drivers/iio/pressure/dps310.c
++++ b/drivers/iio/pressure/dps310.c
+@@ -159,6 +159,102 @@ static int dps310_get_coefs(struct dps310_data *data)
+ 	return 0;
+ }
+ 
++/*
++ * Some versions of the chip will read temperatures in the ~60C range when
++ * it's actually ~20C. This is the manufacturer recommended workaround
++ * to correct the issue. The registers used below are undocumented.
++ */
++static int dps310_temp_workaround(struct dps310_data *data)
++{
++	int rc;
++	int reg;
++
++	rc = regmap_read(data->regmap, 0x32, &reg);
++	if (rc)
++		return rc;
++
++	/*
++	 * If bit 1 is set then the device is okay, and the workaround does not
++	 * need to be applied
++	 */
++	if (reg & BIT(1))
++		return 0;
++
++	rc = regmap_write(data->regmap, 0x0e, 0xA5);
++	if (rc)
++		return rc;
++
++	rc = regmap_write(data->regmap, 0x0f, 0x96);
++	if (rc)
++		return rc;
++
++	rc = regmap_write(data->regmap, 0x62, 0x02);
++	if (rc)
++		return rc;
++
++	rc = regmap_write(data->regmap, 0x0e, 0x00);
++	if (rc)
++		return rc;
++
++	return regmap_write(data->regmap, 0x0f, 0x00);
++}
++
++static int dps310_startup(struct dps310_data *data)
++{
++	int rc;
++	int ready;
++
++	/*
++	 * Set up pressure sensor in single sample, one measurement per second
++	 * mode
++	 */
++	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
++	if (rc)
++		return rc;
++
++	/*
++	 * Set up external (MEMS) temperature sensor in single sample, one
++	 * measurement per second mode
++	 */
++	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
++	if (rc)
++		return rc;
++
++	/* Temp and pressure shifts are disabled when PRC <= 8 */
++	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
++			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
++	if (rc)
++		return rc;
++
++	/* MEAS_CFG doesn't update correctly unless first written with 0 */
++	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
++			       DPS310_MEAS_CTRL_BITS, 0);
++	if (rc)
++		return rc;
++
++	/* Turn on temperature and pressure measurement in the background */
++	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
++			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
++			       DPS310_TEMP_EN | DPS310_BACKGROUND);
++	if (rc)
++		return rc;
++
++	/*
++	 * Calibration coefficients required for reporting temperature.
++	 * They are available 40ms after the device has started
++	 */
++	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
++				      ready & DPS310_COEF_RDY, 10000, 40000);
++	if (rc)
++		return rc;
++
++	rc = dps310_get_coefs(data);
++	if (rc)
++		return rc;
++
++	return dps310_temp_workaround(data);
++}
++
+ static int dps310_get_pres_precision(struct dps310_data *data)
+ {
+ 	int rc;
+@@ -677,52 +773,12 @@ static const struct iio_info dps310_info = {
+ 	.write_raw = dps310_write_raw,
+ };
+ 
+-/*
+- * Some verions of chip will read temperatures in the ~60C range when
+- * its actually ~20C. This is the manufacturer recommended workaround
+- * to correct the issue. The registers used below are undocumented.
+- */
+-static int dps310_temp_workaround(struct dps310_data *data)
+-{
+-	int rc;
+-	int reg;
+-
+-	rc = regmap_read(data->regmap, 0x32, &reg);
+-	if (rc < 0)
+-		return rc;
+-
+-	/*
+-	 * If bit 1 is set then the device is okay, and the workaround does not
+-	 * need to be applied
+-	 */
+-	if (reg & BIT(1))
+-		return 0;
+-
+-	rc = regmap_write(data->regmap, 0x0e, 0xA5);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = regmap_write(data->regmap, 0x0f, 0x96);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = regmap_write(data->regmap, 0x62, 0x02);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = regmap_write(data->regmap, 0x0e, 0x00);
+-	if (rc < 0)
+-		return rc;
+-
+-	return regmap_write(data->regmap, 0x0f, 0x00);
+-}
+-
+ static int dps310_probe(struct i2c_client *client,
+ 			const struct i2c_device_id *id)
+ {
+ 	struct dps310_data *data;
+ 	struct iio_dev *iio;
+-	int rc, ready;
++	int rc;
+ 
+ 	iio = devm_iio_device_alloc(&client->dev,  sizeof(*data));
+ 	if (!iio)
+@@ -747,54 +803,8 @@ static int dps310_probe(struct i2c_client *client,
+ 	if (rc)
+ 		return rc;
+ 
+-	/*
+-	 * Set up pressure sensor in single sample, one measurement per second
+-	 * mode
+-	 */
+-	rc = regmap_write(data->regmap, DPS310_PRS_CFG, 0);
+-
+-	/*
+-	 * Set up external (MEMS) temperature sensor in single sample, one
+-	 * measurement per second mode
+-	 */
+-	rc = regmap_write(data->regmap, DPS310_TMP_CFG, DPS310_TMP_EXT);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* Temp and pressure shifts are disabled when PRC <= 8 */
+-	rc = regmap_write_bits(data->regmap, DPS310_CFG_REG,
+-			       DPS310_PRS_SHIFT_EN | DPS310_TMP_SHIFT_EN, 0);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* MEAS_CFG doesn't update correctly unless first written with 0 */
+-	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
+-			       DPS310_MEAS_CTRL_BITS, 0);
+-	if (rc < 0)
+-		return rc;
+-
+-	/* Turn on temperature and pressure measurement in the background */
+-	rc = regmap_write_bits(data->regmap, DPS310_MEAS_CFG,
+-			       DPS310_MEAS_CTRL_BITS, DPS310_PRS_EN |
+-			       DPS310_TEMP_EN | DPS310_BACKGROUND);
+-	if (rc < 0)
+-		return rc;
+-
+-	/*
+-	 * Calibration coefficients required for reporting temperature.
+-	 * They are available 40ms after the device has started
+-	 */
+-	rc = regmap_read_poll_timeout(data->regmap, DPS310_MEAS_CFG, ready,
+-				      ready & DPS310_COEF_RDY, 10000, 40000);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = dps310_get_coefs(data);
+-	if (rc < 0)
+-		return rc;
+-
+-	rc = dps310_temp_workaround(data);
+-	if (rc < 0)
++	rc = dps310_startup(data);
++	if (rc)
+ 		return rc;
+ 
+ 	rc = devm_iio_device_register(&client->dev, iio);
+-- 
+2.31.1
 
-Sure, I can move it on the previous line beforce SoB tag.
-But with Datasheet: tag this line will be over the commit msg line limit.
-If you don't mind I will stay with Spec: tag instead of Datasheet:
-
-[...]
-
-> > +static const struct {
-> > +       int val;
-> > +       int val2;
-> > +} msa311_fs_table[] =3D {
-> > +       {0, 9580}, {0, 19160}, {0, 38320}, {0, 76641}
-> > +};
->=20
-> At least you may deduplicate the type definition for these data structure=
-s, like
->=20
-> struct iio_float {
->   int integer;
->   int fract;
-> };
-
-Agreed. I will make deduplication of this type inside msa311 driver
-only.
-
-[...]
-
-> > +               dev_err(dev,
-> > +                       "cannot set odr %u.%luHz, not available in %s m=
-ode\n",
-> > +                       msa311_odr_table[odr].val,
-> > +                       msa311_odr_table[odr].val2 / MILLIHZ_PER_HZ,
->=20
-> Logically it's MICROHZ_PER_MILLIHZ.
->=20
-
-You are right. But I think it would be better to print the original val2
-value with zero-padding.
-
-[...]
-
-> > +       freq_uhz =3D msa311_odr_table[odr].val * MICROHZ_PER_HZ +
-> > +                  msa311_odr_table[odr].val2;
-> > +       wait_ms =3D (MICROHZ_PER_HZ / freq_uhz) * MSEC_PER_SEC;
->=20
-> On the contrary this seems correct.
-
-Good
-
-> > +       err =3D iio_device_claim_direct_mode(indio_dev);
-> > +       if (err)
-> > +               return err;
-> > +
-> > +       mutex_lock(&msa311->lock);
-> > +       err =3D msa311_get_axis(msa311, chan, &axis);
-> > +       mutex_unlock(&msa311->lock);
-> > +
-> > +       iio_device_release_direct_mode(indio_dev);
-> > +
-> > +       if (err) {
-> > +               dev_err(dev, "cannot get axis %s (%pe)\n",
-> > +                       chan->datasheet_name, ERR_PTR(err));
-> > +               return err;
-> > +       }
-> > +
-> > +       pm_runtime_mark_last_busy(dev);
-> > +       pm_runtime_put_autosuspend(dev);
->=20
-> All error cases above miss the PM restoration. Is it on purpose?
-> Otherwise fix it here and check everywhere else.
-
-Nice catch! This is a bug. I'll fix it in v6
-
-> > +       used =3D scnprintf(msa311->chip_name, sizeof(msa311->chip_name)=
-,
-> > +                        "msa311-%hhx", partid);
->=20
-> > +       msa311->chip_name[used] =3D '\0';
->=20
-> What is this for exactly?
->=20
-
-Ah, you are right, scnprintf() makes null terminating inside.
-
-> > +       /* Disable all interrupts by default */
-> > +       err =3D regmap_write(msa311->regs, MSA311_INT_SET_0_REG, 0);
-> > +       if (err)
-> > +               return dev_err_probe(dev, err,
-> > +                                    "cannot disable set0 interrupts\n"=
-);
-> > +
-> > +       err =3D regmap_write(msa311->regs, MSA311_INT_SET_1_REG, 0);
-> > +       if (err)
-> > +               return dev_err_probe(dev, err,
-> > +                                    "cannot disable set1 interrupts\n"=
-);
->=20
-> Wondering if the above can be combined to bulk write.
->=20
-
-I will try and rework this place if it's workable.
-
-> > +       /* Unmap all INT1 interrupts by default */
-> > +       err =3D regmap_write(msa311->regs, MSA311_INT_MAP_0_REG, 0);
-> > +       if (err)
-> > +               return dev_err_probe(dev, err,
-> > +                                    "failed to unmap map0 interrupts\n=
-");
-> > +
-> > +       err =3D regmap_write(msa311->regs, MSA311_INT_MAP_1_REG, 0);
-> > +       if (err)
-> > +               return dev_err_probe(dev, err,
-> > +                                    "failed to unmap map1 interrupts\n=
-");
->=20
-> Ditto.
-
-The same as above.
-
-[...]
-
---=20
-Thank you,
-Dmitry=
