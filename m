@@ -2,101 +2,127 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 52737C32765
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Aug 2022 06:13:13 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E9A53C282E7
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Aug 2022 07:31:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240434AbiHOGMl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Aug 2022 02:12:41 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42352 "EHLO
+        id S232332AbiHOHbY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Aug 2022 03:31:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:34248 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S240631AbiHOGMD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2022 02:12:03 -0400
-Received: from mail-lf1-x12e.google.com (mail-lf1-x12e.google.com [IPv6:2a00:1450:4864:20::12e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 5A1CF18E0D;
-        Sun, 14 Aug 2022 23:11:58 -0700 (PDT)
-Received: by mail-lf1-x12e.google.com with SMTP id z6so9383724lfu.9;
-        Sun, 14 Aug 2022 23:11:58 -0700 (PDT)
+        with ESMTP id S229775AbiHOHbX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2022 03:31:23 -0400
+Received: from mail-qk1-x729.google.com (mail-qk1-x729.google.com [IPv6:2607:f8b0:4864:20::729])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 26AB417E39
+        for <linux-iio@vger.kernel.org>; Mon, 15 Aug 2022 00:31:22 -0700 (PDT)
+Received: by mail-qk1-x729.google.com with SMTP id b2so5001887qkh.12
+        for <linux-iio@vger.kernel.org>; Mon, 15 Aug 2022 00:31:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:from:to:cc;
-        bh=OrecjO5UyPq+rEVbOsT6C3SV/fMBa8jiavf5wPC9ui4=;
-        b=CN4NG/ff0yiwTJ85OtHtFFTyUnvAlIDlQry/CRIfAEgzlHLdL8jX08NQZcLcgAf8+p
-         s0VqvJ5NxK+CfkaeCa0zMnpRRiY31T5AmgkXYOXkEVtw6oHOzCfio2JO5u85ND9NuA3V
-         kLcMJqv7w3jAhtO5Kn0vd0H3xw4ESiWA4DLJhTP6leBKz4C1ACUVr/tt+xB2God4Tnli
-         PbRqnhSlT1y0ecWf/fcMOZeQg5A39a8+RrP+W1nOzm1bgMUELNXSkKDZUwWF9CoDylEj
-         Qcinwooy3ByY2NGxtOnWlN5tbCJFPmu15dm4AUWczjLrGaGfMROFwFkVd/sOqQtuTGoN
-         bxDg==
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:from:to:cc;
+        bh=P2IAMSUZ0NTZXOzBZiA6e6bQkwOvIkQXl2ZmS04QqOQ=;
+        b=fbyVdBr3LJXOlJ+N0tRKeapkg1B7XWLFiv1GC/u9+as7g2MYSa5mPEJG79BgYC7Xcy
+         VEctOxX1wle6zk/vRCOO62/FFq9+fBZmbff9E5erYumPn5GpVZQ8ldbhbvbjSJ5nKeVP
+         3zZPawmhnI/XJxPsOa1C4IVPyEArUorANA4h9OnOA8uPVXJPBJAyq5oP8nLgI/hW6IfF
+         lXEjX7PhJUtPE73gHMA3g/O2VziqJmSLSLqpiXc3y+8l+bSnCtptlKF8MzV7hNyS2g7Q
+         A3g8ZSmbVZ82ZFWH0Nh02ijY+S/xqebw+wQrdtQMU8MtSX6aXRLoe4ZbWX62v6L4QqSs
+         Z3OQ==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:references:in-reply-to
-         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
-        bh=OrecjO5UyPq+rEVbOsT6C3SV/fMBa8jiavf5wPC9ui4=;
-        b=1C3NFks5UFKxymzuYucc2hs2rH82awvwnY3arqDUqM2vz/q9mOMRniv+wMUO/KR4L5
-         al6wtvyfq8wzqcm62sKHtLU4f2ZSc2HOSUEYeTBF10fbgonP3oQff3fXLXaxGt9MsMFI
-         /Bew7l7nmPXIbpz9cwFiQQ10FMc4wOQC1xHlYolLOr4PdqTyV/9XBpHvAm7ACjwcFiEj
-         aUc91T3Yet9kAMLA4N6aeZwJQ9qp4el6S4Qe/gQHw/3pR5ciT+ftIKDOkRgPH5ZuzSkT
-         0V/cexhdln8fY8Gv8vQiLmoVxv24EsNG3bgSeMmgPoPU7ehxW8r6mKw8i1Nf3smWmXKy
-         FsGQ==
-X-Gm-Message-State: ACgBeo3aUeIAZRUGYuHzZ8gC9oHitsvs969yY8xxHEfFCy9jRyng3TD+
-        lhBSXK69AvvcR+/UcOGFJ00=
-X-Google-Smtp-Source: AA6agR7cPahCSnRXvY4Fgk+s1QGUrqAi981KdUyrh5ZjjmhHYTYqvLxGUSHdE2WMg2YL5panMvPVCQ==
-X-Received: by 2002:a19:7102:0:b0:48b:a287:2d6f with SMTP id m2-20020a197102000000b0048ba2872d6fmr5467138lfc.515.1660543916627;
-        Sun, 14 Aug 2022 23:11:56 -0700 (PDT)
-Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id g17-20020a2eb5d1000000b0025d70efeaaasm1296464ljn.75.2022.08.14.23.11.55
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 23:11:55 -0700 (PDT)
-From:   Marcus Folkesson <marcus.folkesson@gmail.com>
-To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
-        Kent Gustavsson <kent@minoris.se>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Andy Shevchenko <andy.shevchenko@gmail.com>
-Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-Subject: [PATCH v6 7/9] dt-bindings: iio: adc: mcp3911: add microchip,data-ready-hiz entry
-Date:   Mon, 15 Aug 2022 08:16:23 +0200
-Message-Id: <20220815061625.35568-8-marcus.folkesson@gmail.com>
-X-Mailer: git-send-email 2.37.1
-In-Reply-To: <20220815061625.35568-1-marcus.folkesson@gmail.com>
-References: <20220815061625.35568-1-marcus.folkesson@gmail.com>
+        h=content-transfer-encoding:cc:to:subject:message-id:date:from
+         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
+        bh=P2IAMSUZ0NTZXOzBZiA6e6bQkwOvIkQXl2ZmS04QqOQ=;
+        b=SI7y+tMiO2yMd7kghI316iEj7kGtGd43XW3gne3BaPoP98mkv+rsQpn0itzvuoKEPb
+         H3AqO0jgSPMyIQmQ+eOtksFm6a8qP+rpGD5AIbk38zX3SYG922nD6iVJIE3D4DgWSFVd
+         4iGIesefDDSEbkw4JIzMV0W1cXqGF5ZDl4KgrklPDTCKt+hWK5RbGG3zjBGD1MDthAyF
+         UCGbS70tCKFSHDzXIpcXM2zt4vbTHWdCcjTrzdUp0BpFVY/CaYUEQIquwLVUZViMKD8v
+         rKO5d5CxjnQ+5r1yDTCS+ZMVtwmpV+wZbtRAjWTB1g8PpOOJWawLmayroRATMqrU5uBY
+         nY1g==
+X-Gm-Message-State: ACgBeo27M5ZR1238yuEbVWKt8V1i3qNIAF7XsgpEEzRhYHCECoMWaVed
+        JJ6Cb18EVrv9YfXlq/CvVxtmoHLUW6Myk/pcrL0=
+X-Google-Smtp-Source: AA6agR525pEUsueJu8nVUvr9PHVbAEaQSzJcoP2AhyjuDv9YfmTSwPVVXB+bg7cu1KTk4wS62BA9V4jmyL3lJjPHBQk=
+X-Received: by 2002:a05:620a:254d:b0:6ab:84b8:25eb with SMTP id
+ s13-20020a05620a254d00b006ab84b825ebmr10501780qko.383.1660548681260; Mon, 15
+ Aug 2022 00:31:21 -0700 (PDT)
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+References: <20220808204740.307667-1-u.kleine-koenig@pengutronix.de>
+ <20220808204740.307667-6-u.kleine-koenig@pengutronix.de> <20220813173142.76774c97@jic23-huawei>
+ <CAHp75VeUV2+-V=TbQwx4Chr-xWU4AmRq-mG8Z8XTkwQmx4qvhQ@mail.gmail.com> <20220814213058.dgoxpkoxpn6s4ojj@pengutronix.de>
+In-Reply-To: <20220814213058.dgoxpkoxpn6s4ojj@pengutronix.de>
+From:   Andy Shevchenko <andy.shevchenko@gmail.com>
+Date:   Mon, 15 Aug 2022 10:30:45 +0300
+Message-ID: <CAHp75VfD9xoDYyWH3NB9btNW2pBmTH_jBmwjOSUbOQ+Ei_k20w@mail.gmail.com>
+Subject: Re: [PATCH 06/13] iio: adc: rockchip_saradc: Benefit from
+ devm_clk_get_enabled() to simplify
+To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
+        <u.kleine-koenig@pengutronix.de>
+Cc:     Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Heiko Stuebner <heiko@sntech.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
+        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
+        Vladimir Zapolskiy <vz@mleia.com>,
+        Paul Cercueil <paul@crapouillou.net>,
+        Antoniu Miclaus <antoniu.miclaus@analog.com>,
+        Sascha Hauer <kernel@pengutronix.de>,
+        Simon Xue <xxm@rock-chips.com>, Nuno Sa <nuno.sa@analog.com>,
+        Michal Simek <michal.simek@xilinx.com>,
+        David Wu <david.wu@rock-chips.com>
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: quoted-printable
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The Data Ready Output Pin is either hard wired to work as high
-impedance or push-pull. Make it configurable.
+On Mon, Aug 15, 2022 at 12:31 AM Uwe Kleine-K=C3=B6nig
+<u.kleine-koenig@pengutronix.de> wrote:
+>
+> Hello,
+>
+> [dropped Tomislav Denis from Cc: as the address bounces]
+>
+> On Sun, Aug 14, 2022 at 10:01:08PM +0300, Andy Shevchenko wrote:
+> > On Sat, Aug 13, 2022 at 7:21 PM Jonathan Cameron <jic23@kernel.org> wro=
+te:
+> > >
+> > > On Mon,  8 Aug 2022 22:47:33 +0200
+> > > Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
+> > >
+> > > > Make use of devm_clk_get_enabled() to replace some code that effect=
+ively
+> > > > open codes this new function.
+> > > >
+> > > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+> > > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.d=
+e>
+> > >
+> > > This might have side effects as it now enables the clock before calli=
+ng
+> > > the clk_set_rate(). Also changes the clock start up ordering. Neither=
+ is that
+> > > scary a change, but on really fussy hardware they might cause problem=
+s.
+> > >
+> > > Add a few rock-chips people who have sent patches in last few years
+> > > to hopefully take a look or even better run a test.
+> >
+> > I believe you found a bug in the patch. The possible solutions are:
+> > - not take the patch
+> > - disable and re-enable clock around clk_set_rate()
+> >
+> > IIRC clk_set_rate() will spit a WARN if clock is enabled.
+>
+> You mean in general? I think that's wrong. There might be some clks that
+> do that, but I'd consider them strange. If you ask me, calling
+> clk_set_rate() for a *disabled* clk is the strange concept ...
 
-Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
-Acked-by: Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
----
- .../devicetree/bindings/iio/adc/microchip,mcp3911.yaml     | 7 +++++++
- 1 file changed, 7 insertions(+)
+I think it's correct from the logic and electrical perspective. That's
+why the preparation and enablement are separated in CCF. But please
+double check, because I can't remember everything by heart.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-index 95ab285f4eba..6bee332ed58f 100644
---- a/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-+++ b/Documentation/devicetree/bindings/iio/adc/microchip,mcp3911.yaml
-@@ -36,6 +36,13 @@ properties:
-     description: IRQ line of the ADC
-     maxItems: 1
- 
-+  microchip,data-ready-hiz:
-+    description:
-+      Data Ready Pin Inactive State Control
-+      true = The DR pin state is high-impedance
-+      false = The DR pin state is logic high
-+    type: boolean
-+
-   microchip,device-addr:
-     description: Device address when multiple MCP3911 chips are present on the same SPI bus.
-     $ref: /schemas/types.yaml#/definitions/uint32
--- 
-2.37.1
 
+--=20
+With Best Regards,
+Andy Shevchenko
