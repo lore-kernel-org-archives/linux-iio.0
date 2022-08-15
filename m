@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 835D2C00140
-	for <linux-iio@archiver.kernel.org>; Mon, 15 Aug 2022 06:11:53 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id C9CB3C00140
+	for <linux-iio@archiver.kernel.org>; Mon, 15 Aug 2022 06:12:01 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230353AbiHOGLv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 15 Aug 2022 02:11:51 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:41984 "EHLO
+        id S239757AbiHOGL6 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 15 Aug 2022 02:11:58 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42108 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229883AbiHOGLu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2022 02:11:50 -0400
-Received: from mail-lf1-x129.google.com (mail-lf1-x129.google.com [IPv6:2a00:1450:4864:20::129])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2F7B218B12;
-        Sun, 14 Aug 2022 23:11:49 -0700 (PDT)
-Received: by mail-lf1-x129.google.com with SMTP id f20so9381786lfc.10;
-        Sun, 14 Aug 2022 23:11:49 -0700 (PDT)
+        with ESMTP id S229883AbiHOGL4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2022 02:11:56 -0400
+Received: from mail-lf1-x12c.google.com (mail-lf1-x12c.google.com [IPv6:2a00:1450:4864:20::12c])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BF63818E09;
+        Sun, 14 Aug 2022 23:11:51 -0700 (PDT)
+Received: by mail-lf1-x12c.google.com with SMTP id r17so9372198lfm.11;
+        Sun, 14 Aug 2022 23:11:51 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=IPypJTi2oPAJPrH9pG0Plh2bOzEqGN21LURLxGfIVec=;
-        b=RP7iM+fDqMuju9+XPWPVzZ6h2kd3J3e78JglAMrVdjO/vLq/cuD8em5EmgLLw8a9Z+
-         J2oNQtAsFVuUTLfwnVF/2YPpTyKHiuvtsboTCQRCGKHJsY/Ltmum0Z4lr0eartLmI0r4
-         gpdtif06typhwxx7PdUFtntpqMpjVn5/QaVhmtUztfIqEwqJ8RLLz4Ci2YY386SRD4IA
-         7TztQogw7Im1rtD9fkbUBIPBUYFTvxla/32WpPcNiivDWvp0o9Pgu2k3C+SCkAkDBY8u
-         ue/wSiQOyArKjBrSpJ9oKHmBtyZUzT+PLGrG6mTk7Un6XKQMIxMQe32CJ4n5SzX/ExVo
-         4CQw==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=KE7Doo8+PSeMnrmOEri8h44PeWIbSZ8XCkY/na8+SzA=;
+        b=VmBDoQQ9WGgBw/vh9zx81bo1VrynPsT4KZqrCk5M77yMWq0tPdBUHK953G3Eel4vIP
+         k+TN3ydT9hw355/+QhomoIT3aVEUzvKQk16GNxWb53JbhWZBR3iHBL+vu0GlEu/bDcrX
+         6UWWpwN8QWcO6HcRIeIwr82vh90o8xrGW4VjL1BB6drq8TjEJMGGMONFk3Ioi7W9V3Im
+         wYKdXUma3CngzpOS1+ddB/xH0H8rxAiUXqYttJvZEy6DY4cDtYeh3l/pDSUSojDSwVjM
+         z8JHhidA7thK3SvWfr4gS1Lh0LiJeZk9JXUxhLs2+tJQMQbyTUcYxZAU4RsFEGkI6EMy
+         myqA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=IPypJTi2oPAJPrH9pG0Plh2bOzEqGN21LURLxGfIVec=;
-        b=E265usZVb2KlFD0G9Awa9QSMW7VNt9q01jKDlx48UszAdVdX7zgFmcT8FHJx4T4w5Q
-         siOA6C4lTtSjwlBW1jOuzTnyR4+6WwnQUKfMl0Z38OGBLmnoBgak4O2nbEe+v7aj5uUt
-         XR3oZtK6MPZo5mEFQan80ysjjbDsnXSvDZGKtvGaXq8HGoGhF63phvCfts9F72nndNbb
-         ov1zcHEJKjCi0D1nyuJC+fRyiSSOrzc0SKNaXC+NHYBFoRpLKA4O6d1UH0NceJU1OSIE
-         2UYPDVxxsUJG9GP4STb3VykoFHDR8scAEXI8gzSA5R+34FcTlWND9zNlVoRhXXunVJyO
-         c55g==
-X-Gm-Message-State: ACgBeo3hqd5DUhNqQ4P2XuOd3aCcCgSYNrY9Qauzx5qisE2Uq8hxz8Dy
-        /MU+ZC1ZOeo7O7mH+2rFjcY=
-X-Google-Smtp-Source: AA6agR71MRzZu9tuJAu2z4teJ2IaPQlIDv/Hg8CbJfdj9hPQcwpQDJZ7JvVU6Eh98P16slTZeEGyhA==
-X-Received: by 2002:a05:6512:930:b0:48a:a0b9:8dfc with SMTP id f16-20020a056512093000b0048aa0b98dfcmr4660191lft.45.1660543907559;
-        Sun, 14 Aug 2022 23:11:47 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=KE7Doo8+PSeMnrmOEri8h44PeWIbSZ8XCkY/na8+SzA=;
+        b=obTmv7Z8dILtHM4R7tO4XlIdD/E55K1K/IpTfouJA+5TYXoaBb9TFDYFgvyaFuMotD
+         JAMowEyMpEa5hsZ8+qBtfHmgmZW0mxS+Q2G9jtn9EGmpMxwZ1WpCUzCD+CU5ozC55kl9
+         ohboZzU2NwMt7rOUmo6T4loCRh2rTSjusuA+DdrG4tzuGyKd/JZXIqKmZ3/X9WMc8Ir9
+         LqPUSKRCSJI6UWf2C5fAhFKYuYKyX70OquvM71sWA+83sVCxm1k6GlLq/4kG1KhbPZgu
+         3wwtAItRYN6ABpvbUUtG7FsAxleUQZzIAs9UqpSqzcF0l/uSbr2+lMQFfmHELFcFbZX1
+         BmhA==
+X-Gm-Message-State: ACgBeo1etnse0sxYzKh2PM78tnt+Jb7HflncVR7zkkRMm5mJmxItSuNB
+        Ahjf3rV62T+ON6ABFeW1FII=
+X-Google-Smtp-Source: AA6agR6CG2hZmlkRXjNXVTCywbA+MLg4k5oVAR7dgkG5A0gAVZlQajUGkKSwZsVWw4fgG8gCKxm/tA==
+X-Received: by 2002:ac2:4c81:0:b0:48a:e6de:213d with SMTP id d1-20020ac24c81000000b0048ae6de213dmr4903521lfl.366.1660543910105;
+        Sun, 14 Aug 2022 23:11:50 -0700 (PDT)
 Received: from localhost.localdomain (82-209-154-112.cust.bredband2.com. [82.209.154.112])
-        by smtp.gmail.com with ESMTPSA id g17-20020a2eb5d1000000b0025d70efeaaasm1296464ljn.75.2022.08.14.23.11.46
+        by smtp.gmail.com with ESMTPSA id g17-20020a2eb5d1000000b0025d70efeaaasm1296464ljn.75.2022.08.14.23.11.48
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Sun, 14 Aug 2022 23:11:46 -0700 (PDT)
+        Sun, 14 Aug 2022 23:11:49 -0700 (PDT)
 From:   Marcus Folkesson <marcus.folkesson@gmail.com>
 To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Kent Gustavsson <kent@minoris.se>,
@@ -57,57 +57,47 @@ To:     Marcus Folkesson <marcus.folkesson@gmail.com>,
         Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc:     linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org
-Subject: [PATCH v6 0/9] Improve MCP3911 driver
-Date:   Mon, 15 Aug 2022 08:16:16 +0200
-Message-Id: <20220815061625.35568-1-marcus.folkesson@gmail.com>
+Subject: [PATCH v6 2/9] iio: adc: mcp3911: correct "microchip,device-addr" property
+Date:   Mon, 15 Aug 2022 08:16:18 +0200
+Message-Id: <20220815061625.35568-3-marcus.folkesson@gmail.com>
 X-Mailer: git-send-email 2.37.1
+In-Reply-To: <20220815061625.35568-1-marcus.folkesson@gmail.com>
+References: <20220815061625.35568-1-marcus.folkesson@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This patch series intend to fix bugs and improve functionality of the MCP3911 driver.
-The main features added are
-- Support for buffers
-- Interrupt driven readings
-- Support for oversampling ratio
-- Support for set scale values (Gain)
+Go for the right property name that is documented in the bindings.
 
-Among the bug fixes, there are changes in the formula for calculate raw value and a fix for mismatch in the devicetree property.
+Fixes: 3a89b289df5d ("iio: adc: add support for mcp3911")
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+---
+ drivers/iio/adc/mcp3911.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
 
-Another general improvement for the driver is to use managed resources for all allocated resources.
-
-See patch notes for more specific changes.
-
-General changes for the series:
-
-v3:
-- Drop Phase patch
-- Add Fixes tags for those patches that are fixes
-- Move Fixes patches to the beginning of the patchset
-
-v4:
-- Split up devm-cleanup functions 
-- Cosmetic cleanups
-- Add
-	select IIO_BUFFER
-	select IIO_TRIGGERED_BUFFER
-    To Kconfig
-- Add .endianness = IIO_BE
-
-v5:
-- Drop remove function
-- Split tx&rx transfers in mcp3911_trigger_handler()
-- Moved Kconfig changes to right patch
-
-v6:
-- Go for devm_clk_get_enabled()
-- Cosmetic cleanups
-- Clarify the description of microchip,data-ready-hiz
-
-
-Best regards,
-Marcus Folkesson
-
+diff --git a/drivers/iio/adc/mcp3911.c b/drivers/iio/adc/mcp3911.c
+index f581cefb6719..f8875076ae80 100644
+--- a/drivers/iio/adc/mcp3911.c
++++ b/drivers/iio/adc/mcp3911.c
+@@ -210,7 +210,14 @@ static int mcp3911_config(struct mcp3911 *adc)
+ 	u32 configreg;
+ 	int ret;
+ 
+-	device_property_read_u32(dev, "device-addr", &adc->dev_addr);
++	ret = device_property_read_u32(dev, "microchip,device-addr", &adc->dev_addr);
++
++	/*
++	 * Fallback to "device-addr" due to historical mismatch between
++	 * dt-bindings and implementation
++	 */
++	if (ret)
++		device_property_read_u32(dev, "device-addr", &adc->dev_addr);
+ 	if (adc->dev_addr > 3) {
+ 		dev_err(&adc->spi->dev,
+ 			"invalid device address (%i). Must be in range 0-3.\n",
+-- 
+2.37.1
 
