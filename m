@@ -2,107 +2,191 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D9480C19F2C
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Aug 2022 05:58:16 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id D6163C32773
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Aug 2022 07:22:42 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229863AbiHPF6O (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Aug 2022 01:58:14 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59046 "EHLO
+        id S231966AbiHPHWl (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Aug 2022 03:22:41 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50214 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S229673AbiHPF6A (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2022 01:58:00 -0400
-Received: from mail-qt1-x830.google.com (mail-qt1-x830.google.com [IPv6:2607:f8b0:4864:20::830])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 4CF529D664
-        for <linux-iio@vger.kernel.org>; Mon, 15 Aug 2022 16:16:33 -0700 (PDT)
-Received: by mail-qt1-x830.google.com with SMTP id s11so7008100qtx.6
-        for <linux-iio@vger.kernel.org>; Mon, 15 Aug 2022 16:16:33 -0700 (PDT)
+        with ESMTP id S231847AbiHPHW0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2022 03:22:26 -0400
+Received: from mail-lj1-x233.google.com (mail-lj1-x233.google.com [IPv6:2a00:1450:4864:20::233])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2E68E2B70BD;
+        Mon, 15 Aug 2022 21:56:12 -0700 (PDT)
+Received: by mail-lj1-x233.google.com with SMTP id z20so9551441ljq.3;
+        Mon, 15 Aug 2022 21:56:12 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=2NHSu+WR71bWEHouMtYEYWTZ2k/kphqS/Xaa0m4gsqo=;
-        b=RdxioX6rfZpldJqhwhtPJeZPySZfy2kj3BdriChWQwfUY6NXW7Q1VLICRE9Zqweb+r
-         gwrzBdCRX9ofe59/sA+Er7wcZ8SfrC0yQr0qZB22kyXtTztAb7qfOQwR0BTKByvh2Xrk
-         joGRbfm86wLLmTtUU7TYwtAh69+AuDDC0o0eBUeR6TMH8wLqlg1V+dx3+aoGzIgRzlM3
-         4vd6VJyB8xZYordFoEIVcdJqW/Kx15ZctZTc3e9XPPcF4WE29vwD5iiFCcDa4M2e8ZRw
-         6+zq8dzDFJ3sjxrvzA3MdARDyvfTOgJk+l9X0HGfcVt/BOEO685/Yfth3PuOYL0AbJbb
-         Ebiw==
+        d=gmail.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id:from:to:cc;
+        bh=lMyaBQ0fr/YKfcqNoaKSdb+50RM2Rxj1DLsmzLOg6p8=;
+        b=emj3c4qKkUjUv1uibUM0Ft8DTfEO05AQs/3Y741be7NMkNUqfjGZwGCKNZo9C6YjXp
+         T3u8ogp+Q7xyqUvWTbVxqcfKvlVXs+sCdEW176mhvN95YWDcTH1MCuzscHr20UM4t23y
+         efx6c0daYiXNg01uKsfggL1TIi4sG62wT7fq7xNMdYWmSyv0IojrLQ3X+x3JlfiYjCWI
+         ZGleJlTBA7imnc87Mtsd2wKxuRqiB4CfXoOM/VC02Ai37op0ZH3k+3vNM5TFazrPwDbX
+         I3K6wSQIq8cyMpVj2t+/iVXSTMsuGrDBGJEDknJ3KmY9XUsqIPVIorSVNOoEmEoQm85s
+         ld9A==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=2NHSu+WR71bWEHouMtYEYWTZ2k/kphqS/Xaa0m4gsqo=;
-        b=JJv8cScjASxYolZs2632BTzgDVZ5MPKtQV/Dx4/No751YpKf/6KU4XMDbk2Ep2Zgcs
-         XfQeOjuCjRL7NyllvU8YMqyWjInJGjohrC94x6J6BWeBRzHaNO31j6yeDZejiCEMCGhn
-         DIgaBzv9k3Sn4f7olL0406/JPNaRJoopn8YEmJFZvVaZNmER5oa+S67pvFLAMenRLAQC
-         k3uqImg7HuBx1C0kGGGqTAY9MUr0LJ7KX48h2YQl/83yoSWfUZ2vWTxAhhur9tdiTqaj
-         +4AH5Y1CjNhyglb/ui+EhVruc+B7dd5o5lsHC3erpl9op7K03cPgSbpYG0zrr0jxdd0Y
-         LTzA==
-X-Gm-Message-State: ACgBeo00BZ67Cz7zmHKpUQDuO29GPHuTcMPsmN0w8mEWHlf5+mzAkEXv
-        Kf1/iASAzMtdIhCrAdUkH4Ae2A==
-X-Google-Smtp-Source: AA6agR5IQPzo2LnMl+iKR8S7dBMSEVPE5W7Xd5TxJPOPIUXUs6m6Q/yoaSd/tKdtwwHfQLCUx6+Wtw==
-X-Received: by 2002:ac8:7fc5:0:b0:343:681d:c3fb with SMTP id b5-20020ac87fc5000000b00343681dc3fbmr16179373qtk.157.1660605392431;
-        Mon, 15 Aug 2022 16:16:32 -0700 (PDT)
-Received: from fedora.attlocal.net (69-109-179-158.lightspeed.dybhfl.sbcglobal.net. [69.109.179.158])
-        by smtp.gmail.com with ESMTPSA id u11-20020a05620a430b00b006b99b78751csm10441188qko.112.2022.08.15.16.16.31
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 15 Aug 2022 16:16:31 -0700 (PDT)
-From:   William Breathitt Gray <william.gray@linaro.org>
-To:     linux@rempel-privat.de, kernel@pengutronix.de
-Cc:     linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <william.gray@linaro.org>
-Subject: [PATCH] counter: interrupt-cnt: Implement watch_validate callback
-Date:   Mon, 15 Aug 2022 18:50:58 -0400
-Message-Id: <20220815225058.144203-1-william.gray@linaro.org>
-X-Mailer: git-send-email 2.37.2
+        h=content-transfer-encoding:in-reply-to:subject:from:references:cc:to
+         :content-language:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=lMyaBQ0fr/YKfcqNoaKSdb+50RM2Rxj1DLsmzLOg6p8=;
+        b=06RuMdOREB1iZHynztVX70X9jzVEPb5+aCMjJLwDUrBp6brrkz54u0d/NP1XjA1t0r
+         vLTPtDXbYl3lNx4dprlUjMiOz4fmj+mpgH+MixdP8qHqgzKCDBI3e6fCEgcRX2hOc/Ky
+         3FJU9dr/881+QVIaX3facFlua5Prv566fzjbCWTzsz7nuy7/8cqKskEbK1N0RpOsxu8j
+         eRPp2iHplznsh6R8X9qNb6E92hKQRWRa+dmxGf8+oMU2BZHD9Ni+snK3r1Kn8FdyscL5
+         0ikcCRUc3aNZfyg7bF56N//ky0+qbt8M2cT6OCtW7aUQnAR9XCmWZxRSGdh2MSFFJdTC
+         7snw==
+X-Gm-Message-State: ACgBeo2PFMiyiGOQqi6dB1A261Fp8aoAnk9y3qZimBklcpmSZ7lp31Fl
+        0oXLo7Gn4s2PKG/nXPkB6+c=
+X-Google-Smtp-Source: AA6agR5Now0GlaC9p5MWRyZT/Uc6WkRd+5NRB4I7ljhPTH6IshCkE/HR/M28GX+goQncDQyVAAYQYQ==
+X-Received: by 2002:a05:651c:1241:b0:261:9313:9cb9 with SMTP id h1-20020a05651c124100b0026193139cb9mr1021791ljh.213.1660625769185;
+        Mon, 15 Aug 2022 21:56:09 -0700 (PDT)
+Received: from ?IPV6:2001:14ba:16ee:fa00::9? (dc73szyyyyyyyyyyyyyft-3.rev.dnainternet.fi. [2001:14ba:16ee:fa00::9])
+        by smtp.gmail.com with ESMTPSA id w9-20020ac24429000000b0048a7b1530cesm1254427lfl.284.2022.08.15.21.56.07
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Mon, 15 Aug 2022 21:56:08 -0700 (PDT)
+Message-ID: <57c312b3-ca5b-6efb-6356-43b6513a0c88@gmail.com>
+Date:   Tue, 16 Aug 2022 07:56:06 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 8bit
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Content-Language: en-US
+To:     Mark Brown <broonie@kernel.org>,
+        Laurent Pinchart <laurent.pinchart@ideasonboard.com>
+Cc:     Stephen Boyd <sboyd@kernel.org>,
+        Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>,
+        dri-devel@lists.freedesktop.org,
+        Johan Hovold <johan+linaro@kernel.org>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Kevin Hilman <khilman@baylibre.com>,
+        linux-kernel@vger.kernel.org, Daniel Vetter <daniel@ffwll.ch>,
+        linux-amlogic@lists.infradead.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-doc@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Miaoqian Lin <linmq006@gmail.com>,
+        linux-arm-kernel@lists.infradead.org,
+        Alexandru Tachici <alexandru.tachici@analog.com>,
+        Jerome Brunet <jbrunet@baylibre.com>,
+        Andrzej Hajda <andrzej.hajda@intel.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Guenter Roeck <linux@roeck-us.net>,
+        Jonas Karlman <jonas@kwiboo.se>,
+        Lorenzo Bianconi <lorenzo@kernel.org>,
+        Michael Turq uette <mturquette@baylibre.com>,
+        Jernej Skrabec <jernej.skrabec@gmail.com>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+        Jean Delvare <jdelvare@suse.com>,
+        Alexandru Ardelean <aardelean@deviqon.com>,
+        linux-hwmon@vger.kernel.org, linux-clk@vger.kernel.org,
+        =?UTF-8?Q?Nuno_S=c3=a1?= <nuno.sa@analog.com>,
+        Robert Foss <robert.foss@linaro.org>,
+        Aswath Govindraju <a-govindraju@ti.com>,
+        David Airlie <airlied@linux.ie>, linux-iio@vger.kernel.org
+References: <cover.1660292316.git.mazziesaccount@gmail.com>
+ <166057828406.697572.228317501909350108.b4-ty@kernel.org>
+ <YvpsRbguMXn74GhR@pendragon.ideasonboard.com>
+ <Yvp1Qkuh7xfeb/B2@sirena.org.uk>
+ <YvqV9Mq6I3gXQaf2@pendragon.ideasonboard.com>
+ <20220815205857.308B1C433D6@smtp.kernel.org>
+ <Yvq33T+XCduoqv7Z@pendragon.ideasonboard.com>
+ <YvrO+velKdYdGVve@sirena.org.uk>
+From:   Matti Vaittinen <mazziesaccount@gmail.com>
+Subject: Re: (subset) [PATCH v2 0/7] Devm helpers for regulator get and enable
+In-Reply-To: <YvrO+velKdYdGVve@sirena.org.uk>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-The interrupt-cnt counter driver only pushes one type of event on only
-one channel: COUNTER_EVENT_CHANGE_OF_STATE on channel 0. The
-interrupt_cnt_watch_validate() watch_valid callback is implemented to
-ensure watch configurations are valid for this driver.
+Hi dee Ho Mark, Laurent, Stephen, all
 
-Cc: Oleksij Rempel <linux@rempel-privat.de>
-Cc: Pengutronix Kernel Team <kernel@pengutronix.de>
-Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
----
- drivers/counter/interrupt-cnt.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+On 8/16/22 01:55, Mark Brown wrote:
+> On Tue, Aug 16, 2022 at 12:17:17AM +0300, Laurent Pinchart wrote:
+>> On Mon, Aug 15, 2022 at 01:58:55PM -0700, Stephen Boyd wrote:
+> 
+>> You will very quickly see drivers doing this (either directly or
+>> indirectly):
+> 
+>> probe()
+>> {
+>> 	devm_clk_get_enabled();
+>> 	devm_regulator_get_enable();
+>> }
+> 
+>> Without a devres-based get+enable API drivers can get the resources they
+>> need in any order, possibly moving some of those resource acquisition
+>> operations to different functions, and then have a clear block of code
+>> that enables the resources in the right order.
 
-diff --git a/drivers/counter/interrupt-cnt.c b/drivers/counter/interrupt-cnt.c
-index 3b13f56bbb11..05a5d3e2d2b0 100644
---- a/drivers/counter/interrupt-cnt.c
-+++ b/drivers/counter/interrupt-cnt.c
-@@ -139,12 +139,23 @@ static int interrupt_cnt_signal_read(struct counter_device *counter,
- 	return 0;
- }
- 
-+static int interrupt_cnt_watch_validate(struct counter_device *counter,
-+					const struct counter_watch *watch)
-+{
-+	if (watch->channel != 0 ||
-+	    watch->event != COUNTER_EVENT_CHANGE_OF_STATE)
-+		return -EINVAL;
-+
-+	return 0;
-+}
-+
- static const struct counter_ops interrupt_cnt_ops = {
- 	.action_read = interrupt_cnt_action_read,
- 	.count_read = interrupt_cnt_read,
- 	.count_write = interrupt_cnt_write,
- 	.function_read = interrupt_cnt_function_read,
- 	.signal_read  = interrupt_cnt_signal_read,
-+	.watch_validate  = interrupt_cnt_watch_validate,
- };
- 
- static int interrupt_cnt_probe(struct platform_device *pdev)
+I agree. And I think that drivers which do that should stick with it. 
+Still, as you know the devm-unwinding is also done in well defined 
+order. I believe that instead of fighting against the devm we should try 
+educate people to pay attention in the order of unwinding (also when not 
+handled by the devm. Driver writers occasionally break things also w/o 
+devm for example by freeing resources needed by IRQ handlers prior 
+freeing the IRQ.)
 
-base-commit: 568035b01cfb107af8d2e4bd2fb9aea22cf5b868
+If "purging" must not be done in reverse order compared to the 
+aquisition - then one should not use devm. I know people have done 
+errors with devm - OTOH, I've seen devm also fixing bunch of errors.
+
+>> These devres helpers give
+>> a false sense of security to driver authors and they will end up
+>> introducing problems, the same way that devm_kzalloc() makes it
+>> outrageously easy to crash the kernel by disconnecting a device that is
+>> in use.
+
+I think this is going a bit "off-topic" but I'd like to understand what 
+is behind this statement? From device-writer's perspective - I don't 
+know much better alternatives to free up the memory. I don't see how 
+freeing stuff at .remove would be any better? As far as I understand - 
+if someone is using driver's resources after the device has gone and the 
+driver is detached, then there is not much the driver could do to 
+free-up the stuff be it devm or not? This sounds like fundamentally 
+different problem (to me).
+
+> TBH I think the problem you have here is with devm not with this
+> particular function.
+
+I must say I kind of agree with Mark. If we stop for a second to think 
+what would the Laurent's example look like if there were no 
+devm_regulator_get_enable() provided. I bet the poor driver author could 
+have used devm_clk_get_enabled() - and then implemented a .remove for 
+disabling the regulator. That would be even worse, right?
+
+> That's a different conversation, and a totally
+> valid one especially when you start looking at things like implementing
+> userspace APIs which need to cope with hardware going away while still
+> visible to userspace.
+
+This is interesting. It's not easy for me to spot how devm changes 
+things here? If we consider some removable device - then I guess also 
+the .remove() is ran only after HW has already gone? Yes, devm might 
+make the time window when userspace can see hardware that has gone 
+longer but does it bring any new problem there? It seems to me devm can 
+make hitting the spot more likely - but I don't think it brings 
+completely new issues? (Well, I may be wrong here - wouldn't be the 
+first time :])
+
+> It's *probably* more of a subsystem conversation
+> than a driver one though, or at least I think subsystems should try to
+> arrange to make it so.
+
+
 -- 
-2.37.2
+Matti Vaittinen
+Linux kernel developer at ROHM Semiconductors
+Oulu Finland
 
+~~ When things go utterly wrong vim users can always type :help! ~~
+
+Discuss - Estimate - Plan - Report and finally accomplish this:
+void do_work(int time) __attribute__ ((const));
