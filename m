@@ -2,113 +2,107 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 237FDC25B0E
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Aug 2022 13:35:11 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id CEE67C2BB41
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Aug 2022 13:40:39 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S235821AbiHPNfI (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Aug 2022 09:35:08 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58574 "EHLO
+        id S235870AbiHPNkh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Aug 2022 09:40:37 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:46266 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S235812AbiHPNfG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2022 09:35:06 -0400
-Received: from mail-lj1-x22e.google.com (mail-lj1-x22e.google.com [IPv6:2a00:1450:4864:20::22e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9B25B5FF5B
-        for <linux-iio@vger.kernel.org>; Tue, 16 Aug 2022 06:35:02 -0700 (PDT)
-Received: by mail-lj1-x22e.google.com with SMTP id s9so10538481ljs.6
-        for <linux-iio@vger.kernel.org>; Tue, 16 Aug 2022 06:35:02 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=linaro.org; s=google;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :from:to:cc;
-        bh=l6nDADBjMLXXabAdXHL54a9YsxELBvhvNG69Fueawt8=;
-        b=AypiaX9GE9ohiT5OplXec0g1QK9jSNWYVLMfSfzoO1QMdQz4qEepnq7ZP031DF2RWW
-         UT86RkjDnQ+Y4SElJShDf/UTrdmfNJxXcZHhDbRVP81Z7MHqaKya0xRZ6nKb0fHfhNdA
-         rCRu8pIYDGYXeDcbrO3l6HdmgFw4yEjiVembQ+XVvBt+GkrxvqrajEmwlgmaB1WeKj/S
-         KrHvpIL4JhEywXcRxi25qjhSzNxbBLxlq1Yue6CUN3p8H2zWc0XO1PSP2+FvXe7tO4SZ
-         PQbRMbkD1TETYOtDAM7kgmjlekvD9aVRyGVee56X//cfOYNl/9uflZPKgigXfkbTOdWt
-         c4Sg==
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=content-transfer-encoding:in-reply-to:from:references:cc:to
-         :content-language:subject:user-agent:mime-version:date:message-id
-         :x-gm-message-state:from:to:cc;
-        bh=l6nDADBjMLXXabAdXHL54a9YsxELBvhvNG69Fueawt8=;
-        b=7Wa/45sBm2aeTRBpdOx9TtcJSuX+oL/k+jOCsvn0md/ql+0W4Vz0wZq3rJTLA12zt3
-         ixKyNwqmEFUtgpiwW9FIhzskyWsBuirkQ9FimnAlbr0XlWW7iibqkNs803WqnxZ5BZQn
-         CvgDxBwi8UgZHNieSrpEEORpw+jzWoS2eon9FLloyz98WpZnSRRNt2iZa+tBChUf3lna
-         MkxR0fjdpByGDy932JDnuqaIe0nlHX5E/LTTJxVjuoKQPTTzv4AB5/nHdqem4Mfqg6NY
-         y3pCIPDK2utZaS5ir3GrUNfbeIilKW4HwcaVMeZ9/RnB5mv5q4xgwfMlMDeOMxpvFcZg
-         GY6w==
-X-Gm-Message-State: ACgBeo3kMIa9K1xe1KvEdQwKSiDKFA9d4pFl6NPGRxzO9b10dMdlTMQ7
-        XMCNRwzynmIUNub+Ybcre3FWFwfE4PJYqRZh
-X-Google-Smtp-Source: AA6agR5v3ygrD6/3SSaGTzld9LcL/B2gC0AlXy9+Q9CchsMPWhsbA4kz9kvM3fSXJdORJtUDVYmXkA==
-X-Received: by 2002:a2e:9797:0:b0:25e:4cfe:6c3d with SMTP id y23-20020a2e9797000000b0025e4cfe6c3dmr6541106lji.280.1660656901029;
-        Tue, 16 Aug 2022 06:35:01 -0700 (PDT)
-Received: from ?IPV6:2001:14bb:ae:539c:1782:dd68:b0c1:c1a4? (d15l54g8c71znbtrbzt-4.rev.dnainternet.fi. [2001:14bb:ae:539c:1782:dd68:b0c1:c1a4])
-        by smtp.gmail.com with ESMTPSA id z5-20020a056512370500b0048afa1464c0sm1395969lfr.66.2022.08.16.06.34.59
-        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
-        Tue, 16 Aug 2022 06:35:00 -0700 (PDT)
-Message-ID: <a882c594-564c-7e0c-0ede-aa27fcf8c79d@linaro.org>
-Date:   Tue, 16 Aug 2022 16:34:59 +0300
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
- Thunderbird/91.12.0
+        with ESMTP id S235864AbiHPNkf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2022 09:40:35 -0400
+Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B723574DD3;
+        Tue, 16 Aug 2022 06:40:33 -0700 (PDT)
+Received: from fraeml706-chm.china.huawei.com (unknown [172.18.147.206])
+        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4M6XGN4YHBz67Mkv;
+        Tue, 16 Aug 2022 21:35:40 +0800 (CST)
+Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
+ fraeml706-chm.china.huawei.com (10.206.15.55) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256_P256) id
+ 15.1.2375.24; Tue, 16 Aug 2022 15:40:31 +0200
+Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
+ (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Tue, 16 Aug
+ 2022 14:40:31 +0100
+Date:   Tue, 16 Aug 2022 14:40:29 +0100
+From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
+To:     Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+CC:     George Mois <george.mois@analog.com>, <jic23@kernel.org>,
+        <robh+dt@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <lucas.p.stankus@gmail.com>
 Subject: Re: [PATCH 2/2] drivers: iio: accel adxl312 and adxl314 support
-Content-Language: en-US
-To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>
-Cc:     George Mois <george.mois@analog.com>, jic23@kernel.org,
-        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, lucas.p.stankus@gmail.com
+Message-ID: <20220816144029.00006dc3@huawei.com>
+In-Reply-To: <a882c594-564c-7e0c-0ede-aa27fcf8c79d@linaro.org>
 References: <20220816102828.182345-1-george.mois@analog.com>
- <20220816102828.182345-3-george.mois@analog.com>
- <8cf4ea9e-89a4-1ab0-334b-9ecc5b1e6f25@linaro.org>
- <20220816134433.00002900@huawei.com>
-From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
-In-Reply-To: <20220816134433.00002900@huawei.com>
-Content-Type: text/plain; charset=UTF-8
+        <20220816102828.182345-3-george.mois@analog.com>
+        <8cf4ea9e-89a4-1ab0-334b-9ecc5b1e6f25@linaro.org>
+        <20220816134433.00002900@huawei.com>
+        <a882c594-564c-7e0c-0ede-aa27fcf8c79d@linaro.org>
+X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+MIME-Version: 1.0
+Content-Type: text/plain; charset="US-ASCII"
 Content-Transfer-Encoding: 7bit
+X-Originating-IP: [10.202.226.42]
+X-ClientProxiedBy: lhrpeml100002.china.huawei.com (7.191.160.241) To
+ lhrpeml500005.china.huawei.com (7.191.163.240)
+X-CFilter-Loop: Reflected
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On 16/08/2022 15:44, Jonathan Cameron wrote:
->>>  
->>>  MODULE_DEVICE_TABLE(spi, adxl313_spi_id);
->>>  
->>>  static const struct of_device_id adxl313_of_match[] = {
->>> +	{ .compatible = "adi,adxl312" },
->>>  	{ .compatible = "adi,adxl313" },
->>> +	{ .compatible = "adi,adxl314" },  
->>
->> You miss here driver data. I don't remember which driver matching takes
->> precedence (especially in various cases like DT platforms with device
->> instantiated by MFD), but for consistency I think both device id tables
->> should have same driver data.
-> 
-> You can set it up to try device_get_match_data() first then fallback
-> to the adxl313_spi_id[] table but there isn't a nice 'standard' way to
-> do it.
-> 
-> If that isn't done, then IIRC the match is against the compatible with
-> the vendor ID dropped and the table used is the spi_device_id one.
-> Which is just annoyingly complex and relies on the strings matching.
-> 
-> In the ideal world the spi_device_id table would go away but there are
-> still a few users (greybus - I think + remaining board files).
-> So for now something like
-> 
-> a = device_get_match_data(dev);
-> if (!a)
-> 	a = &adxl31x_spi_regmap_config[id->data];
-> 
-> Provides a good way of ensuring the id tables don't need to remain
-> in sync.
-> 
+On Tue, 16 Aug 2022 16:34:59 +0300
+Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org> wrote:
 
-I guess the only minor issue is that first driver data - ADXL312 - is
-equal to 0, so above code would make consider ADXL312 as missing data.
+> On 16/08/2022 15:44, Jonathan Cameron wrote:
+> >>>  
+> >>>  MODULE_DEVICE_TABLE(spi, adxl313_spi_id);
+> >>>  
+> >>>  static const struct of_device_id adxl313_of_match[] = {
+> >>> +	{ .compatible = "adi,adxl312" },
+> >>>  	{ .compatible = "adi,adxl313" },
+> >>> +	{ .compatible = "adi,adxl314" },    
+> >>
+> >> You miss here driver data. I don't remember which driver matching takes
+> >> precedence (especially in various cases like DT platforms with device
+> >> instantiated by MFD), but for consistency I think both device id tables
+> >> should have same driver data.  
+> > 
+> > You can set it up to try device_get_match_data() first then fallback
+> > to the adxl313_spi_id[] table but there isn't a nice 'standard' way to
+> > do it.
+> > 
+> > If that isn't done, then IIRC the match is against the compatible with
+> > the vendor ID dropped and the table used is the spi_device_id one.
+> > Which is just annoyingly complex and relies on the strings matching.
+> > 
+> > In the ideal world the spi_device_id table would go away but there are
+> > still a few users (greybus - I think + remaining board files).
+> > So for now something like
+> > 
+> > a = device_get_match_data(dev);
+> > if (!a)
+> > 	a = &adxl31x_spi_regmap_config[id->data];
+> > 
+> > Provides a good way of ensuring the id tables don't need to remain
+> > in sync.
+> >   
+> 
+> I guess the only minor issue is that first driver data - ADXL312 - is
+> equal to 0, so above code would make consider ADXL312 as missing data.
+Should have given a type to a.
 
-Best regards,
-Krzysztof
+struct adxl31x_chip_info *a;
+
+It would be a pointer not an enum.  Though we might run into some problems
+with that clang issue of whether array lookups are const (I've not really
+gotten my head around that yet). 
+
+Jonathan
+
+
+> 
+> Best regards,
+> Krzysztof
+
