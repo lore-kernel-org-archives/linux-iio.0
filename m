@@ -2,137 +2,212 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id BC3A3C2BB41
-	for <linux-iio@archiver.kernel.org>; Tue, 16 Aug 2022 10:30:44 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 6408CC2BB41
+	for <linux-iio@archiver.kernel.org>; Tue, 16 Aug 2022 10:32:13 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230185AbiHPKam (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Tue, 16 Aug 2022 06:30:42 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:58430 "EHLO
+        id S234639AbiHPKcM (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Tue, 16 Aug 2022 06:32:12 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38446 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234500AbiHPKaQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2022 06:30:16 -0400
-Received: from mail-qt1-x832.google.com (mail-qt1-x832.google.com [IPv6:2607:f8b0:4864:20::832])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2C244B08A2
-        for <linux-iio@vger.kernel.org>; Tue, 16 Aug 2022 01:21:28 -0700 (PDT)
-Received: by mail-qt1-x832.google.com with SMTP id cr9so7589629qtb.13
-        for <linux-iio@vger.kernel.org>; Tue, 16 Aug 2022 01:21:28 -0700 (PDT)
+        with ESMTP id S234700AbiHPKbp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2022 06:31:45 -0400
+Received: from mail-ed1-x533.google.com (mail-ed1-x533.google.com [IPv6:2a00:1450:4864:20::533])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 840B513D8DD
+        for <linux-iio@vger.kernel.org>; Tue, 16 Aug 2022 01:26:56 -0700 (PDT)
+Received: by mail-ed1-x533.google.com with SMTP id b96so12571587edf.0
+        for <linux-iio@vger.kernel.org>; Tue, 16 Aug 2022 01:26:56 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=gmail.com; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:from:to:cc;
-        bh=fYHmP9nI26bndG24CrDj747p91gEFez7K8IdDoPef1k=;
-        b=Qev/MvMbksIPoHOs+NBfQs1ePC3IRBSvrglI3CqFhSD5a7rVU2nwTfwn/m8M/4OklO
-         +YpvWxYiWBHwswool4eZMejmEV8mTw4IboDn3DQKTFO+MNjtWFa/VfRls9xzMxz4Vqb1
-         fXWJbjYnp8xBmTjVK+gFAiu8TkeHssSCCUbaY8Wahngm0z8MOvVbin6GCKSEXOU/L5gP
-         95J7fw9s1yRMIdZCZUC6rebzZgFIA1te9CCzRRhCDEXgKAZMAyeOxLDv/AIGsLjhnkZR
-         90ZAmRqPvX8u7ShO9l5bhuGYF6rYhggC2YAOiWSOxi3rvdHUfGbEj7d/KWGcZyZWGsG2
-         p8Ng==
+        d=baylibre-com.20210112.gappssmtp.com; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=QDEve6J+FvXDoisqTMwo0p9DvKs3kysq/xhm5KZN/F8=;
+        b=x4ZT5feLMaQ/Wgubwh3Hh3K6rOaF0UpMyoMCMsyXRfALVt3fukFYV+LUVN6RHT+xvq
+         m+bvgD40p+GdrNbsmiAFwUnNF45m8BefjVWh5rFYs4sYghVcojRrHKbt6xnsFP4uR9s7
+         zBGNFPk0IRSVVUHqKkQWeXn8hWJeeT3PLXt84DqBo4V9PYzyqmnittq/BuOxY5nP2Zi7
+         XH1vgqDIMD3efS2lg16k2VP8dWtr1pUxTmlR/+CyrnzfSbN+XCHkwMRZqK/OI40x1ud+
+         bssuky03t4h6u280TM3PF9/mO/K+YNuzS75HiT/SGo5SppwUlc3GHmDDrnQOJ7Br5xFx
+         O0Uw==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:cc:to:subject:message-id:date:from
-         :in-reply-to:references:mime-version:x-gm-message-state:from:to:cc;
-        bh=fYHmP9nI26bndG24CrDj747p91gEFez7K8IdDoPef1k=;
-        b=dBgVyXJS7e8MqeYuNe/jtxeg5+TVpw05zBPSGBCFx/ZZTaQlBPHsb0IfLP2GsF6oXg
-         XCBvjLsgRhugrOz2QTfCpSZoEOMJbCG20FMmNwtUwdSjELMhJsuwu1XGm++79BVrBXI1
-         oyTzvh9jUyiFVvbIR0QgOHgdrFzr/G50jmUs6NtpHyZiUanfbftTipzChPdNISe5afN1
-         Kk0ZXajkmlOaPOtXeiwIRbaJVGfxZa2fsBEZi9hskda7yQ2eB9NnXctlUBHaBwsMMrAm
-         HinHzYWF8b0Cu0LJqJYWZMa0dThih8xh2zQUEvzkzAwTPg5Q6v4BcPP/uAtINT6uU8dJ
-         F6gg==
-X-Gm-Message-State: ACgBeo1UsI7mSSZJeQ2xZxlxKUqxOYgXXECSrje5kw15d/hsDRabppaN
-        Zy1yHPn12OB1yXjKRmNB98Bx+kdcD296SVyV/BU=
-X-Google-Smtp-Source: AA6agR5tP7BKjTgTXO0DeCUdO3zSTV2/Rwu1cXq4UoPGpQbctBuF25fl6g+xxqZqeLBopbrgES1cTtM1LLvVGLRHEWI=
-X-Received: by 2002:ac8:5786:0:b0:343:3051:170d with SMTP id
- v6-20020ac85786000000b003433051170dmr17012395qta.429.1660638087213; Tue, 16
- Aug 2022 01:21:27 -0700 (PDT)
+        h=content-transfer-encoding:in-reply-to:from:references:cc:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=QDEve6J+FvXDoisqTMwo0p9DvKs3kysq/xhm5KZN/F8=;
+        b=sHe5QryGK7xl8M56VM1ESuA/oHD4N6H51/wLyHZq4MV/gD3tl7iriWz7vV/wXKMy+4
+         tgM0oyXzf17qCap70ElWmwcLiflTsf6ItT9j8V2/GHo1ny/jODzZkBAc8QmoNGk8rCNA
+         TuRzk6jR5gzF7/esTeP+hBFmfZQV0WtObAUGJRC4UcJDUzC8lA9BDwMpxSUBzj0TQCJy
+         +qokQsta19xn1SZh8lsDlGG7DUJyUbbBdtEn24X0qYnz07lSpVZUh4W8QH8cFzmjrcQe
+         6LOkySQVmMDK4Vulc6OnBRJra20xj7A2+j6T05XRhzbflxiwTiForCgE8O9Q+viO0CH1
+         9XLw==
+X-Gm-Message-State: ACgBeo2azsWZ+X3UAZKcgkpLSAHDiIGv9wFeuD0vswx5yRNnLrn2WhBg
+        qusGIYLIY2hxyCw/SD1gc7uwhQ==
+X-Google-Smtp-Source: AA6agR67zf10EbPitdqUQl3FsEBWXIw/eieDrOVQ5oSnllulorwU6g/JwdIB55zfcvWNvkr+S7Q5pw==
+X-Received: by 2002:a05:6402:448b:b0:43b:5ec6:8863 with SMTP id er11-20020a056402448b00b0043b5ec68863mr17413054edb.377.1660638414930;
+        Tue, 16 Aug 2022 01:26:54 -0700 (PDT)
+Received: from [192.168.1.69] (120.205.87.79.rev.sfr.net. [79.87.205.120])
+        by smtp.gmail.com with ESMTPSA id 5-20020a170906328500b00731219a2797sm4929454ejw.210.2022.08.16.01.26.54
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Tue, 16 Aug 2022 01:26:54 -0700 (PDT)
+Message-ID: <47fdb798-b66e-3d30-dcbe-a3d15dc45619@baylibre.com>
+Date:   Tue, 16 Aug 2022 10:26:53 +0200
 MIME-Version: 1.0
-References: <20220808204740.307667-1-u.kleine-koenig@pengutronix.de>
- <20220808204740.307667-6-u.kleine-koenig@pengutronix.de> <20220813173142.76774c97@jic23-huawei>
- <CAHp75VeUV2+-V=TbQwx4Chr-xWU4AmRq-mG8Z8XTkwQmx4qvhQ@mail.gmail.com>
- <20220814213058.dgoxpkoxpn6s4ojj@pengutronix.de> <CAHp75VfD9xoDYyWH3NB9btNW2pBmTH_jBmwjOSUbOQ+Ei_k20w@mail.gmail.com>
- <20220815074149.jrkeevc3uxoo6ueb@pengutronix.de>
-In-Reply-To: <20220815074149.jrkeevc3uxoo6ueb@pengutronix.de>
-From:   Andy Shevchenko <andy.shevchenko@gmail.com>
-Date:   Tue, 16 Aug 2022 11:20:51 +0300
-Message-ID: <CAHp75VchZKRNtMU1awDczfx=Qq8_JsywXvLtrJJCY_8Y=n1W0g@mail.gmail.com>
-Subject: Re: [PATCH 06/13] iio: adc: rockchip_saradc: Benefit from
- devm_clk_get_enabled() to simplify
-To:     =?UTF-8?Q?Uwe_Kleine=2DK=C3=B6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Cc:     Lars-Peter Clausen <lars@metafoo.de>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        David Wu <david.wu@rock-chips.com>,
-        Anand Ashok Dumbre <anand.ashok.dumbre@xilinx.com>,
-        Vladimir Zapolskiy <vz@mleia.com>,
-        Paul Cercueil <paul@crapouillou.net>,
-        Antoniu Miclaus <antoniu.miclaus@analog.com>,
-        Sascha Hauer <kernel@pengutronix.de>,
-        Jonathan Cameron <Jonathan.Cameron@huawei.com>,
-        Nuno Sa <nuno.sa@analog.com>,
-        Michal Simek <michal.simek@xilinx.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Simon Xue <xxm@rock-chips.com>
-Content-Type: text/plain; charset="UTF-8"
-Content-Transfer-Encoding: quoted-printable
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.1.0
+Subject: Re: [PATCH v4 0/3] ECAP support on TI AM62x SoC
+Content-Language: en-US
+To:     William Breathitt Gray <william.gray@linaro.org>
+Cc:     robh+dt@kernel.org, jic23@kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        mranostay@ti.com
+References: <20220810140724.182389-1-jpanis@baylibre.com>
+ <Yvk4OijjBj+Wa7fT@fedora>
+From:   Julien Panis <jpanis@baylibre.com>
+In-Reply-To: <Yvk4OijjBj+Wa7fT@fedora>
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, Aug 15, 2022 at 10:42 AM Uwe Kleine-K=C3=B6nig
-<u.kleine-koenig@pengutronix.de> wrote:
-> On Mon, Aug 15, 2022 at 10:30:45AM +0300, Andy Shevchenko wrote:
-> > On Mon, Aug 15, 2022 at 12:31 AM Uwe Kleine-K=C3=B6nig
-> > <u.kleine-koenig@pengutronix.de> wrote:
-> > > On Sun, Aug 14, 2022 at 10:01:08PM +0300, Andy Shevchenko wrote:
-> > > > On Sat, Aug 13, 2022 at 7:21 PM Jonathan Cameron <jic23@kernel.org>=
- wrote:
-> > > > > On Mon,  8 Aug 2022 22:47:33 +0200
-> > > > > Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutronix.de> wrote:
-> > > > >
-> > > > > > Make use of devm_clk_get_enabled() to replace some code that ef=
-fectively
-> > > > > > open codes this new function.
-> > > > > >
-> > > > > > Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
-> > > > > > Signed-off-by: Uwe Kleine-K=C3=B6nig <u.kleine-koenig@pengutron=
-ix.de>
-> > > > >
-> > > > > This might have side effects as it now enables the clock before c=
-alling
-> > > > > the clk_set_rate(). Also changes the clock start up ordering. Nei=
-ther is that
-> > > > > scary a change, but on really fussy hardware they might cause pro=
-blems.
-> > > > >
-> > > > > Add a few rock-chips people who have sent patches in last few yea=
-rs
-> > > > > to hopefully take a look or even better run a test.
-> > > >
-> > > > I believe you found a bug in the patch. The possible solutions are:
-> > > > - not take the patch
-> > > > - disable and re-enable clock around clk_set_rate()
-> > > >
-> > > > IIRC clk_set_rate() will spit a WARN if clock is enabled.
-> > >
-> > > You mean in general? I think that's wrong. There might be some clks t=
-hat
-> > > do that, but I'd consider them strange. If you ask me, calling
-> > > clk_set_rate() for a *disabled* clk is the strange concept ...
-> >
-> > I think it's correct from the logic and electrical perspective. That's
-> > why the preparation and enablement are separated in CCF. But please
-> > double check, because I can't remember everything by heart.
+
+
+On 14/08/2022 20:00, William Breathitt Gray wrote:
+> On Wed, Aug 10, 2022 at 04:07:21PM +0200, Julien Panis wrote:
+>> The Enhanced Capture (ECAP) module can be used to timestamp events
+>> detected on signal input pin. It can be used for time measurements
+>> of pulse train signals.
+>>
+>> ECAP module includes 4 timestamp capture registers. For all 4 sequenced
+>> timestamp capture events (1->2->3->4->1->...), edge polarity (falling/rising
+>> edge) can be selected.
+>>
+>> This driver leverages counter subsystem to :
+>> - select edge polarity for all 4 capture events (event mode)
+>> - log timestamps for each capture event
+>> Event polarity, and CAP1/2/3/4 timestamps give all the information
+>> about the input pulse train. Further information can easily be computed :
+>> period and/or duty cycle if frequency is constant, elapsed time between
+>> pulses, etc...
+>>
+>> Modifications since v3:
+>> 	- Migrate driver from IIO to Counter subsystem
+>> 	- Minor modification in yaml ($id) to match Counter subsystem
+>> 	- Add ABI documentation
+>>
+>> Userspace commands :
+>> 	### SIGNAL ###
+>> 	cd /sys/bus/counter/devices/counter0/signal0
+>>
+>> 	# Get available polarities for each capture event
+>> 	cat polarity1_available
+>> 	cat polarity2_available
+>> 	cat polarity3_available
+>> 	cat polarity4_available
+>>
+>> 	# Get polarity for each capture event
+>> 	cat polarity1
+>> 	cat polarity2
+>> 	cat polarity3
+>> 	cat polarity4
+>>
+>> 	# Set polarity for each capture event
+>> 	echo rising > polarity1
+>> 	echo falling > polarity2
+>> 	echo rising > polarity3
+>> 	echo falling > polarity4
+>>
+>> 	### COUNT ###
+>> 	cd /sys/bus/counter/devices/counter0/count0
+>>
+>> 	# Run ECAP
+>> 	echo 1 > enable
+>>
+>> 	# Get current timebase counter value
+>> 	cat count
+>>
+>> 	# Get captured timestamps
+>> 	cat capture1
+>> 	cat capture2
+>> 	cat capture3
+>> 	cat capture4
+>>
+>> 	# Note that counter watches can also be used to get
+>> 	# data from userspace application
+>> 	# -> see tools/counter/counter_example.c
+>>
+>> 	# Stop ECAP
+>> 	echo 0 > enable
+>>
+>> Julien Panis (3):
+>>    dt-binding: counter: add ti,am62-ecap-capture.yaml
+>>    Documentation: ABI: add sysfs-bus-counter-ecap
+>>    counter: capture-tiecap: capture driver support for ECAP
+>>
+>>   .../ABI/testing/sysfs-bus-counter-ecap        |  64 ++
+>>   .../counter/ti,am62-ecap-capture.yaml         |  61 ++
+>>   drivers/counter/Kconfig                       |  14 +
+>>   drivers/counter/Makefile                      |   1 +
+>>   drivers/counter/capture-tiecap.c              | 634 ++++++++++++++++++
+>>   include/uapi/linux/counter.h                  |   2 +
+>>   6 files changed, 776 insertions(+)
+>>   create mode 100644 Documentation/ABI/testing/sysfs-bus-counter-ecap
+>>   create mode 100644 Documentation/devicetree/bindings/counter/ti,am62-ecap-capture.yaml
+>>   create mode 100644 drivers/counter/capture-tiecap.c
+>>
+>> -- 
+>> 2.25.1
+> Something that has become apparent to me is the code repetition in this
+> driver in order to support the capture buffer. Buffers are common
+> components in devices, so it'll be good for us to standardize some of
+> what we're exploring here into an interface that other drivers can also
+> use. We have two ABIs to consider: the driver interface and the sysfs
+> interface.
 >
-> In my book the separation is done because "enabling" has to sleep for
-> some clks (e.g. PLLs) while a sleeping clk_enable() is bad for various
-> use cases and most clks don't sleep for enabling.
+> For the sysfs interface, I think we'll have to expose each element
+> individually (e.g. capture1, capture2, etc.) because sysfs attributes
+> are suppose to expose only a single datum for any given attribute.
+>
+> For the driver side, we might want to introduce a new Counter component
+> type for buffers and respective macros to streamline some of the code
+> for driver authors. For example, a new COUNTER_COMP_BUFFER_U64 enum
+> counter_comp_type constant could be introduced to represent a u64 buffer
+> element; respective struct counter_comp read callbacks could be
+> introduced::
+>
+>      int (*count_buffer_u64_read)(struct counter_device *counter,
+>                                   struct counter_count *count,
+> 				 size_t index, u64 *val);
+>
+> So a driver author can use the "index" parameter to locate the buffer
+> element and pass back its value via the "val" parameter.To define the
+> buffer, maybe helper macros like this could be introduced::
+>
+>      COUNTER_COMP_COUNT_BUFFER_U64("capture", ecap_cnt_cap_read, 4)
+>
+> This would define four u64 buffer elements each named prefixed with
+> "capture" and with their read callbacks set to ecap_cnt_cap_read().
 
-Yeah, but the idea of changing clock rate on the fly may produce
-interesting side-effects on hardware level (with PLL latencies to lock
-the phase and possible glitches). So, changing clock against enabled
-hardware (not in reset / power off state) seems not a good idea.
+Somehow, this "index" parameter would make things much easier for driver 
+author.
+Besides, defining all these similar functions (cap1_read, ..., 
+cap4_read) does not really
+make sense for ECAP driver.
+So, accessing this index parameter through callback and having the 
+possibility to use
+the same function (cap_read) for several attributes would be great for 
+my driver,
+and probably for future ones.
 
---=20
-With Best Regards,
-Andy Shevchenko
+>
+> One problem however is that I'm not sure if the C preprocessor would be
+> able to unroll the COUNTER_COMP_COUNT_BUFFER_U64 to a dynamic number of
+> elements based on a macro parameter (maybe there is a GCC extension).
+>
+> I'm just throwing out ideas, so I'd like to hear some comments and
+> suggestions from others about how we should add buffer support to the
+> Counter subsystem.
+>
+> William Breathitt Gray
+
