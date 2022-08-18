@@ -2,51 +2,51 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id D79BCC28B2B
-	for <linux-iio@archiver.kernel.org>; Thu, 18 Aug 2022 22:18:22 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id E4C0DC32789
+	for <linux-iio@archiver.kernel.org>; Thu, 18 Aug 2022 22:18:25 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S240340AbiHRWSW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 18 Aug 2022 18:18:22 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35794 "EHLO
+        id S241085AbiHRWSY (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 18 Aug 2022 18:18:24 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:35916 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S241085AbiHRWSV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Aug 2022 18:18:21 -0400
-Received: from mail-ej1-x62e.google.com (mail-ej1-x62e.google.com [IPv6:2a00:1450:4864:20::62e])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A8D202CDDE;
-        Thu, 18 Aug 2022 15:18:19 -0700 (PDT)
-Received: by mail-ej1-x62e.google.com with SMTP id j21so335201ejs.0;
-        Thu, 18 Aug 2022 15:18:19 -0700 (PDT)
+        with ESMTP id S244251AbiHRWSX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Aug 2022 18:18:23 -0400
+Received: from mail-ej1-x62b.google.com (mail-ej1-x62b.google.com [IPv6:2a00:1450:4864:20::62b])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 144A23AE54;
+        Thu, 18 Aug 2022 15:18:22 -0700 (PDT)
+Received: by mail-ej1-x62b.google.com with SMTP id qn6so5688253ejc.11;
+        Thu, 18 Aug 2022 15:18:22 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=gmail.com; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:from:to:cc;
-        bh=xnTJw9peaanO9bpfnpkWaFIO93QzJllU7e4KFWjN4UM=;
-        b=jDuEd75sJEshQT8ppy93ER+pccWlVxGnzW2rN5fleCnftQWLBj3USAsf+/MaiyzrZ7
-         yiXvwCzLMrJo7GMpwcYB8oSrAbxlA5BeukuUerdkma7tg64/Fk28uMXIQ0e9AF6NGGzs
-         mvfSyLrqA5gj3ndjQeY2u24qtmPoP2yZHWuIhfHhIPBimLMz8OaVi8CTKH19nzMXHhP9
-         qlxid9IwvMTt0YEnxZrSmrJd/8fa2IVhlJwtVJShrV/LhIX8MNEDqLtB8P1HKdmFoHr0
-         NWIDG05viofNI3A7zKSVsqNeQZ1EGW7/KrFKExFIsHb0FCPMZhT7m6TwxUw4QRHGANVO
-         zyKA==
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:from:to:cc;
+        bh=IBirnUzHVuaTlC2C2j9giTul3u9hLHafcJQxDHnOb7o=;
+        b=ecCLMqcpvH2iM6EvoE+05zw73tKeg89wKnGMTuzzZUUj77aoGbrEF3rQEhD2hb1v1V
+         lo88etmHnDjU6dNip6+9Rx8CShc3HSNXa6ZEVOKArM/eS8Bsi83d583NQ3XbLIsuWK6Q
+         XsLYO2Yp8V4eKuHFe6ScfWrQw7VN73/qW+5JhFFmEKHslHu0ycjh5qUvufs1C0BuC1p2
+         T0M47mkQ7eDE2GTUsJP+PbLcB0sXCIgIT6QxyAdNMwFJ0IiJhIVW7VU7G9PFJyUEk4qi
+         DF7RT+NXZ1WLqYXUTXKiap9shibsqsMTEiW6t3AIuqIsK1G5GcXdIv1h6DVLLnc58Xte
+         ycvA==
 X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
         d=1e100.net; s=20210112;
-        h=content-transfer-encoding:mime-version:message-id:date:subject:cc
-         :to:from:x-gm-message-state:from:to:cc;
-        bh=xnTJw9peaanO9bpfnpkWaFIO93QzJllU7e4KFWjN4UM=;
-        b=4OG6F1hzERHSp5bMIyBCGzih6zPHyjXfrJsYi4r6I5CK3+k35ayFbTwqW9tu5Xy/PM
-         UVPhyVJFtum5eiw0YPj02S4wVc+1/5PtxQ1+1nfvPTEdavgueGYJ1WmS4sBg/Nyi0nA/
-         l5wYryJ9FOhOsxNIxr4/owhR+HjJb5ta/tPYwE3jBHX9SQ9eD412UddNyitstEojHxCY
-         PE+4YA1lXowNQJh899sizUN5AYKGD4Vkg5QT1eDqoTaX+vheaxIPlEc+VLLEAu+s4fc3
-         r+1GllXLeth2C38aXfKxOWCbB4mGt5I3fUGtRvbjdyXTZ83DGLckddZfoaDMfUoh0PC5
-         J7KQ==
-X-Gm-Message-State: ACgBeo0B9bE1xszTvcmHSDHvh49xHbtB0Oi/rbtMO7MkMxyJTX4nL9oz
-        imrMPe40FQgrJQ9HriboTZs=
-X-Google-Smtp-Source: AA6agR5YPBSpZL/TaFItfmYZ9gZ3irXfyw8Ewko/wP+9OKDgHkHJn048gCU8EH3oM2u4hfgfQY5vIg==
-X-Received: by 2002:a17:906:dc89:b0:731:67eb:b60b with SMTP id cs9-20020a170906dc8900b0073167ebb60bmr3016985ejc.614.1660861098296;
-        Thu, 18 Aug 2022 15:18:18 -0700 (PDT)
+        h=content-transfer-encoding:mime-version:references:in-reply-to
+         :message-id:date:subject:cc:to:from:x-gm-message-state:from:to:cc;
+        bh=IBirnUzHVuaTlC2C2j9giTul3u9hLHafcJQxDHnOb7o=;
+        b=zIXFJNKnO4xFP8ahB23vzueH8wSQ1unMVPi2NIbzjNFEwacjZYbbMDCkIo+nQaS7Ia
+         YJNNG4kW8AaC89Wl9uPK9sQtTkTc004L2wFWQNPnfCSxDbcTOZgl0z+EzH3ZfD9kjmWT
+         apvAYOpE4oL5qWtwC7+fyys6n9lX5MVNjqtefuE4NqsIps1beLVc6xRdOpmaw9/Nd0Ln
+         bWuieNfJu4GlnU4zCOvI25LeiukWJUu9RlxUJuyDt1XTmzmHc0CJ2oD2SWt62V9Ik8NH
+         JNYniyT519aBoBlBLvKBLqvyFhiNqp8v+1bqgHAzUxpBgN7XRRw1lTNWVoxhTokxGn3N
+         B5hg==
+X-Gm-Message-State: ACgBeo0XHjqWYmV/nIpcUXami5UHNbll/wtHRjmYM29Qd3iLQ/zu6lZN
+        gdp+UkQZlX+/b3cxnl+IafMkURVT6Cw=
+X-Google-Smtp-Source: AA6agR7WH3Gq9C5mHU0TKGebAMlI+NwpXha2H/FWbKVw2H8SzvoDbBbCQ5asLtYM/SD6nBorATwpxw==
+X-Received: by 2002:a17:906:4bd3:b0:731:3bdf:b95c with SMTP id x19-20020a1709064bd300b007313bdfb95cmr3036137ejv.677.1660861100632;
+        Thu, 18 Aug 2022 15:18:20 -0700 (PDT)
 Received: from fedora.robimarko.hr (cpe-94-253-165-74.zg.cable.xnet.hr. [94.253.165.74])
-        by smtp.googlemail.com with ESMTPSA id t19-20020a1709060c5300b00731747c3107sm1378315ejf.73.2022.08.18.15.18.16
+        by smtp.googlemail.com with ESMTPSA id t19-20020a1709060c5300b00731747c3107sm1378315ejf.73.2022.08.18.15.18.19
         (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Thu, 18 Aug 2022 15:18:17 -0700 (PDT)
+        Thu, 18 Aug 2022 15:18:20 -0700 (PDT)
 From:   Robert Marko <robimarko@gmail.com>
 To:     agross@kernel.org, bjorn.andersson@linaro.org,
         konrad.dybcio@somainline.org, lee@kernel.org, robh+dt@kernel.org,
@@ -54,43 +54,42 @@ To:     agross@kernel.org, bjorn.andersson@linaro.org,
         lars@metafoo.de, sboyd@kernel.org, linux-arm-msm@vger.kernel.org,
         devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
         linux-iio@vger.kernel.org
-Cc:     Robert Marko <robimarko@gmail.com>
-Subject: [PATCH v8 1/5] dt-bindings: mfd: qcom-spmi-pmic: add support for PMP8074
-Date:   Fri, 19 Aug 2022 00:18:11 +0200
-Message-Id: <20220818221815.346233-1-robimarko@gmail.com>
+Cc:     Robert Marko <robimarko@gmail.com>,
+        Jonathan Cameron <Jonathan.Cameron@huawei.com>
+Subject: [PATCH v8 3/5] iio: adc: qcom-spmi-adc5: add ADC5_VREF_VADC to rev2 ADC5
+Date:   Fri, 19 Aug 2022 00:18:13 +0200
+Message-Id: <20220818221815.346233-3-robimarko@gmail.com>
 X-Mailer: git-send-email 2.37.2
+In-Reply-To: <20220818221815.346233-1-robimarko@gmail.com>
+References: <20220818221815.346233-1-robimarko@gmail.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Document compatible for the PMP8074 PMIC.
+Add support for ADC5_VREF_VADC channel to rev2 ADC5 channel list.
+This channel measures the VADC reference LDO output.
 
 Signed-off-by: Robert Marko <robimarko@gmail.com>
+Acked-by: Jonathan Cameron <Jonathan.Cameron@huawei.com>
 ---
-Changes in v8:
-* Add to dtschema now that its available instead
-* Drop ACK as we are dealing with dtschema now
+ drivers/iio/adc/qcom-spmi-adc5.c | 2 ++
+ 1 file changed, 2 insertions(+)
 
-Changes in v7:
-* Fixup commit description
----
- Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml b/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
-index 65cbc6dee545..a05ae172fccc 100644
---- a/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
-+++ b/Documentation/devicetree/bindings/mfd/qcom,spmi-pmic.yaml
-@@ -66,6 +66,7 @@ properties:
-           - qcom,pmi8998
-           - qcom,pmk8350
-           - qcom,pmm8155au
-+          - qcom,pmp8074
-           - qcom,pmr735a
-           - qcom,pmr735b
-           - qcom,pms405
+diff --git a/drivers/iio/adc/qcom-spmi-adc5.c b/drivers/iio/adc/qcom-spmi-adc5.c
+index e96da2ef1964..821fee60a765 100644
+--- a/drivers/iio/adc/qcom-spmi-adc5.c
++++ b/drivers/iio/adc/qcom-spmi-adc5.c
+@@ -597,6 +597,8 @@ static const struct adc5_channels adc5_chans_rev2[ADC5_MAX_CHANNEL] = {
+ 					SCALE_HW_CALIB_DEFAULT)
+ 	[ADC5_1P25VREF]		= ADC5_CHAN_VOLT("vref_1p25", 0,
+ 					SCALE_HW_CALIB_DEFAULT)
++	[ADC5_VREF_VADC]	= ADC5_CHAN_VOLT("vref_vadc", 0,
++					SCALE_HW_CALIB_DEFAULT)
+ 	[ADC5_VPH_PWR]		= ADC5_CHAN_VOLT("vph_pwr", 1,
+ 					SCALE_HW_CALIB_DEFAULT)
+ 	[ADC5_VBAT_SNS]		= ADC5_CHAN_VOLT("vbat_sns", 1,
 -- 
 2.37.2
 
