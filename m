@@ -2,167 +2,89 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id B6291C28D13
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Aug 2022 09:05:36 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03F5DC28D13
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Aug 2022 12:52:45 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231787AbiHVJFf (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Aug 2022 05:05:35 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:47524 "EHLO
+        id S235188AbiHVMwo (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Aug 2022 08:52:44 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56536 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S234143AbiHVJD2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2022 05:03:28 -0400
-Received: from aposti.net (aposti.net [89.234.176.197])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id B2B882184;
-        Mon, 22 Aug 2022 02:03:18 -0700 (PDT)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=crapouillou.net;
-        s=mail; t=1661158992; h=from:from:sender:reply-to:subject:subject:date:date:
-         message-id:message-id:to:to:cc:cc:mime-version:mime-version:
-         content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding:
-         in-reply-to:in-reply-to:references:references;
-        bh=/BpMnlAU7QlyBal9Ml6AXqdPCMk964dk628E6HF4/7I=;
-        b=z5Yz2KFwTThKueUxoAnnOk9yOk04UN7nLhbmXbIlW1warVc0D4xrttnlNAVSk7baD7iFR7
-        0ZSbxN00/MxyG6lohewdN29dLIRtLhxOqdNguvecWRD1jqUU1X4+lOdAhSzi2UuKMjcMz8
-        HCM10Rx9l1Sy//CbEj0YO/PDdxmxv6M=
-Date:   Mon, 22 Aug 2022 11:03:03 +0200
-From:   Paul Cercueil <paul@crapouillou.net>
-Subject: Re: [PATCH 4/4] input: joystick: Fix buffer data parsing
-To:     Jonathan Cameron <jic23@kernel.org>
-Cc:     Artur Rojek <contact@artur-rojek.eu>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        linux-mips@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Message-Id: <3HE0HR.IPKJTTCKEJUA1@crapouillou.net>
-In-Reply-To: <20220819185339.7f488ad8@jic23-huawei>
-References: <20220817105643.95710-1-contact@artur-rojek.eu>
-        <20220817105643.95710-5-contact@artur-rojek.eu>
-        <20220819185339.7f488ad8@jic23-huawei>
+        with ESMTP id S230122AbiHVMwm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2022 08:52:42 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2BB352E6B6;
+        Mon, 22 Aug 2022 05:52:42 -0700 (PDT)
+Received: from pps.filterd (m0167088.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27MCUTKD010968;
+        Mon, 22 Aug 2022 08:52:27 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j2whtdny2-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Mon, 22 Aug 2022 08:52:27 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27MCqQcX035248
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Mon, 22 Aug 2022 08:52:26 -0400
+Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by ASHBMBX9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server (version=TLS1_2,
+ cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id 15.2.986.14; Mon, 22 Aug
+ 2022 08:52:25 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
+ (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Mon, 22 Aug 2022 08:52:25 -0400
+Received: from debian.ad.analog.com ([10.48.65.119])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27MCqBGU003358;
+        Mon, 22 Aug 2022 08:52:14 -0400
+From:   Ciprian Regus <ciprian.regus@analog.com>
+To:     <jic23@kernel.org>, <krzysztof.kozlowski+dt@linaro.org>,
+        <robh+dt@kernel.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     <u.kleine-koenig@pengutronix.de>,
+        Ciprian Regus <ciprian.regus@analog.com>
+Subject: [PATCH 0/3] Add support for LTC2499 ADC
+Date:   Mon, 22 Aug 2022 15:51:03 +0300
+Message-ID: <20220822125106.1106798-1-ciprian.regus@analog.com>
+X-Mailer: git-send-email 2.30.2
 MIME-Version: 1.0
-Content-Type: text/plain; charset=iso-8859-1; format=flowed
-Content-Transfer-Encoding: quoted-printable
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-ORIG-GUID: Vwam74M_iK-WfNgt5XugHWn6rjfabxeD
+X-Proofpoint-GUID: Vwam74M_iK-WfNgt5XugHWn6rjfabxeD
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-22_08,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 spamscore=0 suspectscore=0
+ bulkscore=0 priorityscore=1501 clxscore=1011 malwarescore=0 mlxscore=0
+ phishscore=0 adultscore=0 lowpriorityscore=0 impostorscore=0
+ mlxlogscore=791 classifier=spam adjust=0 reason=mlx scancount=1
+ engine=8.12.0-2207270000 definitions=main-2208220054
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+The LTC2499 is a 16-channel (eight differential), 24-bit,
+ADC with Easy Drive technology and a 2-wire, I2C interface.
 
-Le ven., ao=FBt 19 2022 at 18:53:39 +0100, Jonathan Cameron=20
-<jic23@kernel.org> a =E9crit :
-> On Wed, 17 Aug 2022 12:56:43 +0200
-> Artur Rojek <contact@artur-rojek.eu> wrote:
->=20
->>  Don't try to access buffer data of a channel by its scan index.=20
->> Instead,
->>  use the newly introduced `iio_find_channel_offset_in_buffer` to get=20
->> the
->>  correct data offset.
->>=20
->>  The scan index of a channel does not represent its position in a=20
->> buffer,
->>  as the buffer will contain data for enabled channels only, affecting
->>  data offsets and alignment.
->>=20
->>  Fixes: 2c2b364fddd5 ("Input: joystick - add ADC attached joystick=20
->> driver.")
->>  Reported-by: Chris Morgan <macromorgan@hotmail.com>
->>  Tested-by: Paul Cercueil <paul@crapouillou.net>
->>  Signed-off-by: Artur Rojek <contact@artur-rojek.eu>
->>  ---
->>   drivers/input/joystick/adc-joystick.c | 26=20
->> +++++++++++++++++---------
->>   1 file changed, 17 insertions(+), 9 deletions(-)
->>=20
->>  diff --git a/drivers/input/joystick/adc-joystick.c=20
->> b/drivers/input/joystick/adc-joystick.c
->>  index c0deff5d4282..aed853ebe1d1 100644
->>  --- a/drivers/input/joystick/adc-joystick.c
->>  +++ b/drivers/input/joystick/adc-joystick.c
->>  @@ -6,6 +6,7 @@
->>   #include <linux/ctype.h>
->>   #include <linux/input.h>
->>   #include <linux/iio/iio.h>
->>  +#include <linux/iio/buffer.h>
->>   #include <linux/iio/consumer.h>
->>   #include <linux/module.h>
->>   #include <linux/platform_device.h>
->>  @@ -46,36 +47,43 @@ static void adc_joystick_poll(struct input_dev=20
->> *input)
->>   static int adc_joystick_handle(const void *data, void *private)
->>   {
->>   	struct adc_joystick *joy =3D private;
->>  +	struct iio_buffer *buffer;
->>   	enum iio_endian endianness;
->>  -	int bytes, msb, val, idx, i;
->>  -	const u16 *data_u16;
->>  +	int bytes, msb, val, off;
->>  +	const u8 *chan_data;
->>  +	unsigned int i;
->>   	bool sign;
->>=20
->>   	bytes =3D joy->chans[0].channel->scan_type.storagebits >> 3;
->>=20
->>   	for (i =3D 0; i < joy->num_chans; ++i) {
->>  -		idx =3D joy->chans[i].channel->scan_index;
->>   		endianness =3D joy->chans[i].channel->scan_type.endianness;
->>   		msb =3D joy->chans[i].channel->scan_type.realbits - 1;
->>   		sign =3D tolower(joy->chans[i].channel->scan_type.sign) =3D=3D 's';
->>  +		buffer =3D iio_channel_cb_get_iio_buffer(joy->buffer);
->>  +		off =3D iio_find_channel_offset_in_buffer(joy->chans[i].indio_dev,
->>  +							joy->chans[i].channel,
->>  +							buffer);
->=20
-> With this call replaced with one that instead uses
->=20
-> 		off =3D iio_find_channel_offset_in_buffer(joy->chans, i);
->=20
-> which I'm fairly sure is enough via the info in chans[x]->channel to=20
-> establish this offset.
->=20
-> All is good, though you should probably cache it as doing that maths=20
-> every
-> time seems excessive.
->=20
->=20
->>  +		if (off < 0)
->>  +			return off;
->>  +
->>  +		chan_data =3D (const u8 *)data + off;
->>=20
->>   		switch (bytes) {
->>   		case 1:
->>  -			val =3D ((const u8 *)data)[idx];
->>  +			val =3D *chan_data;
->>   			break;
->>   		case 2:
->>  -			data_u16 =3D (const u16 *)data + idx;
->>  -
->>   			/*
->>   			 * Data is aligned to the sample size by IIO core.
->>   			 * Call `get_unaligned_xe16` to hide type casting.
->>   			 */
->>   			if (endianness =3D=3D IIO_BE)
->>  -				val =3D get_unaligned_be16(data_u16);
->>  +				val =3D get_unaligned_be16(chan_data);
->=20
-> I obviously missed this previously but these are aligned so we don't=20
-> need the
-> unaligned form.
+This adds support for the LTC2499 ADC by extending the LTC2497
+driver.
 
-Yes, the comment above says that it's used to hide type casting.
+Note: This fix is required to be applied first:
+https://patchwork.kernel.org/project/linux-iio/patch/20220815091647.1523532-1-dzagorui@cisco.com
 
-Cheers,
--Paul
+Ciprian Regus (3):
+  dt-bindings: iio: adc: Add docs for LTC2499
+  drivers: iio: adc: LTC2499 support
+  drivers: iio: adc: Rename the LTC249x iio device
 
->>   			else if (endianness =3D=3D IIO_LE)
->>  -				val =3D get_unaligned_le16(data_u16);
->>  +				val =3D get_unaligned_le16(chan_data);
->>   			else /* IIO_CPU */
->>  -				val =3D *data_u16;
->>  +				val =3D *(const u16 *)chan_data;
->>   			break;
->>   		default:
->>   			return -EINVAL;
->=20
+ .../bindings/iio/adc/lltc,ltc2497.yaml        |  6 +++-
+ MAINTAINERS                                   |  1 +
+ drivers/iio/adc/ltc2496.c                     |  9 ++++-
+ drivers/iio/adc/ltc2497-core.c                |  4 +--
+ drivers/iio/adc/ltc2497.c                     | 36 ++++++++++++++++---
+ drivers/iio/adc/ltc2497.h                     | 14 +++++++-
+ 6 files changed, 60 insertions(+), 10 deletions(-)
 
+-- 
+2.30.2
 
