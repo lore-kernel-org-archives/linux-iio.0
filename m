@@ -2,94 +2,76 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FBDC32793
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Aug 2022 19:40:51 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 1B415C32792
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Aug 2022 19:49:22 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238834AbiHVTkt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:40:49 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55766 "EHLO
+        id S236378AbiHVTtU (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:49:20 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:37746 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238905AbiHVTks (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2022 15:40:48 -0400
-Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2F648CAD;
-        Mon, 22 Aug 2022 12:40:46 -0700 (PDT)
-Received: by mail-oi1-f178.google.com with SMTP id o204so5958296oia.12;
-        Mon, 22 Aug 2022 12:40:46 -0700 (PDT)
-X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-        d=1e100.net; s=20210112;
-        h=message-id:date:subject:references:in-reply-to:cc:to:from
-         :x-gm-message-state:from:to:cc;
-        bh=F7N0M14f2U+FDQpQWgJZ3u/jY5t4RVFyRkfLvEHA7mY=;
-        b=B5DeLtZurSKGeHdcsiQJwqteKnPcgR+5tKLtlpJcLVF1pJeJ7Z4mxWiGrtDVr9z1+8
-         +M7X2Vz1etTgea9Rbeu5UTxZndrFZR6TFyDLy+PAQio2uJ4cds2gAXUdOv0cKGIvTcxv
-         puNpOQ42aAaCim6QNKyI3skO+a40q51KGheoY0nmMmG8rOqcWpZ3SBsXzMCIxDQgaPhC
-         L/Vm9nBBj7KSb4ZNEb4XC6eO/IbkgoaFRCpSVQ8P7ZggQ5mb4xotJc8dDO0+962oIVuZ
-         3tUOWX07Lb89ZOxRff34NmH3GQnMkEzzKjmMYK+K5W4b0vgXlEd7YR8yMZFESGnrG9Zc
-         O0aQ==
-X-Gm-Message-State: ACgBeo1XQSjnHrgxhVcjAX17HJx8hMZUHdMxhBVZVdvbl3qoBcBJUJL0
-        dWN31+Imv2iN7n6ZVnHWDQ==
-X-Google-Smtp-Source: AA6agR5XMr5FgVv8vQek4MUAACWDV/kl827jsCrHAB1xrqsqfBvLvnIBX7DvPsTcNbpI/ADfzC+dRw==
-X-Received: by 2002:a05:6808:1b2a:b0:344:b633:50f8 with SMTP id bx42-20020a0568081b2a00b00344b63350f8mr12274922oib.42.1661197246089;
-        Mon, 22 Aug 2022 12:40:46 -0700 (PDT)
-Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
-        by smtp.gmail.com with ESMTPSA id v134-20020acaac8c000000b00344f28a7a4csm2755758oie.22.2022.08.22.12.40.44
-        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
-        Mon, 22 Aug 2022 12:40:45 -0700 (PDT)
-Received: (nullmailer pid 413613 invoked by uid 1000);
-        Mon, 22 Aug 2022 19:40:42 -0000
-From:   Rob Herring <robh@kernel.org>
-To:     Ciprian Regus <ciprian.regus@analog.com>
-Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        jic23@kernel.org, linux-kernel@vger.kernel.org,
-        krzysztof.kozlowski+dt@linaro.org, u.kleine-koenig@pengutronix.de,
-        robh+dt@kernel.org
-In-Reply-To: <20220822125106.1106798-2-ciprian.regus@analog.com>
-References: <20220822125106.1106798-1-ciprian.regus@analog.com> <20220822125106.1106798-2-ciprian.regus@analog.com>
-Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: Add docs for LTC2499
-Date:   Mon, 22 Aug 2022 14:40:42 -0500
-Message-Id: <1661197242.564541.413612.nullmailer@robh.at.kernel.org>
+        with ESMTP id S237151AbiHVTtP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2022 15:49:15 -0400
+Received: from ams.source.kernel.org (ams.source.kernel.org [IPv6:2604:1380:4601:e00::1])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id AFC2D33A3A;
+        Mon, 22 Aug 2022 12:49:11 -0700 (PDT)
+Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
+        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
+        (No client certificate requested)
+        by ams.source.kernel.org (Postfix) with ESMTPS id 37216B812A3;
+        Mon, 22 Aug 2022 19:49:10 +0000 (UTC)
+Received: by smtp.kernel.org (Postfix) with ESMTPSA id 23B9AC433C1;
+        Mon, 22 Aug 2022 19:49:06 +0000 (UTC)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
+        s=k20201202; t=1661197749;
+        bh=RZpX33SQG/uaVlRMoFcxzWwH5bvWTFtzv9I8YsCSbE4=;
+        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
+        b=q+VD/QLyJ92ZHhvqcfdQKu2Qc5w83Eo+uwDBdycXuPumZoT7FaBfATXrjIOkxM2Jp
+         Wx6elk7eJvxUOiOKtqIRE79BMjJpV87lH8afcA7LBTtZZ0xEyPGKfwZzMIUV9fgiPa
+         BUKxprIFsdAcbJEaoLM4j1+jxlHvN4aWvzFK1njZpPgXtxn0xviCP2FLa8uBQlOrSu
+         9yJ/SCu9y37LjhjATOF1YrStPG0XHxtd4cfcE0yX3PeCQjH5DNFM37qN7aFF3JxB8X
+         DfSz/+6d0O3+kKuMYCkcYF2AHupnssukCVbYmhGMCqh4SbA7xfkFjWp0VFyc8vsRRg
+         O07nrRcJnJYPA==
+Date:   Mon, 22 Aug 2022 20:14:40 +0100
+From:   Jonathan Cameron <jic23@kernel.org>
+To:     "Vaittinen, Matti" <Matti.Vaittinen@fi.rohmeurope.com>
+Cc:     Andy Shevchenko <andy.shevchenko@gmail.com>,
+        Matti Vaittinen <mazziesaccount@gmail.com>,
+        Nuno =?UTF-8?B?U8Oh?= <nuno.sa@analog.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-iio <linux-iio@vger.kernel.org>,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v3 07/14] iio: ltc2688: Simplify using
+ devm_regulator_*get_enable()
+Message-ID: <20220822201419.20149725@jic23-huawei>
+In-Reply-To: <9482dea1-fd70-00a7-df4c-640772ea53b4@fi.rohmeurope.com>
+References: <cover.1660934107.git.mazziesaccount@gmail.com>
+        <a29493f594c84b3bd852e462bbd3e591a8575a27.1660934107.git.mazziesaccount@gmail.com>
+        <20220820122120.57dddcab@jic23-huawei>
+        <412c5d22-d59b-9191-80dd-e3ca11360bc4@gmail.com>
+        <CAHp75VdoKtc2QqFcDuJ00KBz6mjg0fnM_WhyVqhCmDVo_3K6kg@mail.gmail.com>
+        <01fec744-f3d4-b633-d3ce-bcd86a153132@gmail.com>
+        <CAHp75Vd3vyAZbWpZT9SmyD=ecGTAdVNWK=fs_n4OSAqGtGj_gg@mail.gmail.com>
+        <103abfae-6c0d-9a2e-2d59-0da4c8be3eb4@gmail.com>
+        <CAHp75VchPCHsBcx7mMoGUjz=s4hmfnO6t7DqtpWfg=aGrbo1Fg@mail.gmail.com>
+        <9482dea1-fd70-00a7-df4c-640772ea53b4@fi.rohmeurope.com>
+X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-On Mon, 22 Aug 2022 15:51:04 +0300, Ciprian Regus wrote:
-> Update the bindings documentation for ltc2497 to include the ltc2499.
-> 
-> Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>
-> ---
->  Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml | 6 +++++-
->  MAINTAINERS                                                 | 1 +
->  2 files changed, 6 insertions(+), 1 deletion(-)
-> 
 
-My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
-on your patch (DT_CHECKER_FLAGS is new in v5.13):
+Interesting to see the different mental models used when reading code.
 
-yamllint warnings/errors:
+Overall I'm fine with either static within function or static outside
+function depending on author preference + for short cases like this
+I'm also fine with them on the stack.
 
-dtschema/dtc warnings/errors:
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml: properties:compatible:enum: 'lltc,ltc2497 lltc,ltc2499' is not of type 'array'
-	from schema $id: http://json-schema.org/draft-07/schema#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml: properties:compatible:enum: 'lltc,ltc2497 lltc,ltc2499' is not of type 'array'
-	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml: properties:compatible:enum: 'lltc,ltc2497 lltc,ltc2499' is not of type 'array'
-	from schema $id: http://devicetree.org/meta-schemas/string-array.yaml#
-/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml: ignoring, error in schema: properties: compatible: enum
-Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.example.dtb:0:0: /example-0/i2c/adc@76: failed to match any schema with compatible: ['lltc,ltc2497']
+Obviously can only speak for what I'll take into IIO!
 
-doc reference errors (make refcheckdocs):
+Jonathan
 
-See https://patchwork.ozlabs.org/patch/
 
-This check can fail if there are any dependencies. The base for a patch
-series is generally the most recent rc1.
-
-If you already ran 'make dt_binding_check' and didn't see the above
-error(s), then make sure 'yamllint' is installed and dt-schema is up to
-date:
-
-pip3 install dtschema --upgrade
-
-Please check and re-submit.
 
