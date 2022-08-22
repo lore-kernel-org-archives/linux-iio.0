@@ -2,77 +2,94 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 3B1E4C32793
-	for <linux-iio@archiver.kernel.org>; Mon, 22 Aug 2022 19:36:03 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 03FBDC32793
+	for <linux-iio@archiver.kernel.org>; Mon, 22 Aug 2022 19:40:51 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S238846AbiHVTgC (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 22 Aug 2022 15:36:02 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:50308 "EHLO
+        id S238834AbiHVTkt (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 22 Aug 2022 15:40:49 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:55766 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S238768AbiHVTgA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2022 15:36:00 -0400
-Received: from dfw.source.kernel.org (dfw.source.kernel.org [139.178.84.217])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 1C9CE1275E;
-        Mon, 22 Aug 2022 12:35:50 -0700 (PDT)
-Received: from smtp.kernel.org (relay.kernel.org [52.25.139.140])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES256-GCM-SHA384 (256/256 bits))
-        (No client certificate requested)
-        by dfw.source.kernel.org (Postfix) with ESMTPS id 868AF6122F;
-        Mon, 22 Aug 2022 19:35:49 +0000 (UTC)
-Received: by smtp.kernel.org (Postfix) with ESMTPSA id E425AC43141;
-        Mon, 22 Aug 2022 19:35:46 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple; d=kernel.org;
-        s=k20201202; t=1661196948;
-        bh=59bb0jYFlSosGYQkwjxBpEccBGa05dy9L2UhBEaYG+I=;
-        h=Date:From:To:Cc:Subject:In-Reply-To:References:From;
-        b=e4u1X1JWq8Fq35+G7oCT0frCJtoXcIPfYBzz2ocV72fIPDu635p+trs2/NJX51Bw+
-         dgo+DWNHq1pD50EiRAdBEzkcKK3vT+9Aacb/Ii2b7sNZQh2VEXp1Stfw/xPvBSP7TE
-         yEUSUZpbiCwhm85IZbW8DzLkomsacdzLFaXZh2aCVKqStx6LceK2JZBqZEkdt09Oru
-         Jn59ZTfbqB/+T6ZGRuwTfYcwfJcS6gnjL37YLHkn3qHx4o6q7ptzcqvSp2vy9foITX
-         lmbGxorMtEcb0WFe+XxpFFX+6N9/xgRjbImvwZc5tNJQVc9dwnZy0o667r1FWMrLcm
-         IoN/gGcnWyy6Q==
-Date:   Mon, 22 Aug 2022 20:01:20 +0100
-From:   Jonathan Cameron <jic23@kernel.org>
-To:     Paul Cercueil <paul@crapouillou.net>
-Cc:     Artur Rojek <contact@artur-rojek.eu>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Chris Morgan <macromorgan@hotmail.com>,
-        linux-mips@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH 4/4] input: joystick: Fix buffer data parsing
-Message-ID: <20220822200120.543ff801@jic23-huawei>
-In-Reply-To: <3HE0HR.IPKJTTCKEJUA1@crapouillou.net>
-References: <20220817105643.95710-1-contact@artur-rojek.eu>
-        <20220817105643.95710-5-contact@artur-rojek.eu>
-        <20220819185339.7f488ad8@jic23-huawei>
-        <3HE0HR.IPKJTTCKEJUA1@crapouillou.net>
-X-Mailer: Claws Mail 4.1.0 (GTK 3.24.34; x86_64-pc-linux-gnu)
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+        with ESMTP id S238905AbiHVTks (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2022 15:40:48 -0400
+Received: from mail-oi1-f178.google.com (mail-oi1-f178.google.com [209.85.167.178])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BC2F648CAD;
+        Mon, 22 Aug 2022 12:40:46 -0700 (PDT)
+Received: by mail-oi1-f178.google.com with SMTP id o204so5958296oia.12;
+        Mon, 22 Aug 2022 12:40:46 -0700 (PDT)
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=message-id:date:subject:references:in-reply-to:cc:to:from
+         :x-gm-message-state:from:to:cc;
+        bh=F7N0M14f2U+FDQpQWgJZ3u/jY5t4RVFyRkfLvEHA7mY=;
+        b=B5DeLtZurSKGeHdcsiQJwqteKnPcgR+5tKLtlpJcLVF1pJeJ7Z4mxWiGrtDVr9z1+8
+         +M7X2Vz1etTgea9Rbeu5UTxZndrFZR6TFyDLy+PAQio2uJ4cds2gAXUdOv0cKGIvTcxv
+         puNpOQ42aAaCim6QNKyI3skO+a40q51KGheoY0nmMmG8rOqcWpZ3SBsXzMCIxDQgaPhC
+         L/Vm9nBBj7KSb4ZNEb4XC6eO/IbkgoaFRCpSVQ8P7ZggQ5mb4xotJc8dDO0+962oIVuZ
+         3tUOWX07Lb89ZOxRff34NmH3GQnMkEzzKjmMYK+K5W4b0vgXlEd7YR8yMZFESGnrG9Zc
+         O0aQ==
+X-Gm-Message-State: ACgBeo1XQSjnHrgxhVcjAX17HJx8hMZUHdMxhBVZVdvbl3qoBcBJUJL0
+        dWN31+Imv2iN7n6ZVnHWDQ==
+X-Google-Smtp-Source: AA6agR5XMr5FgVv8vQek4MUAACWDV/kl827jsCrHAB1xrqsqfBvLvnIBX7DvPsTcNbpI/ADfzC+dRw==
+X-Received: by 2002:a05:6808:1b2a:b0:344:b633:50f8 with SMTP id bx42-20020a0568081b2a00b00344b63350f8mr12274922oib.42.1661197246089;
+        Mon, 22 Aug 2022 12:40:46 -0700 (PDT)
+Received: from robh.at.kernel.org (66-90-144-107.dyn.grandenetworks.net. [66.90.144.107])
+        by smtp.gmail.com with ESMTPSA id v134-20020acaac8c000000b00344f28a7a4csm2755758oie.22.2022.08.22.12.40.44
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Mon, 22 Aug 2022 12:40:45 -0700 (PDT)
+Received: (nullmailer pid 413613 invoked by uid 1000);
+        Mon, 22 Aug 2022 19:40:42 -0000
+From:   Rob Herring <robh@kernel.org>
+To:     Ciprian Regus <ciprian.regus@analog.com>
+Cc:     devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        jic23@kernel.org, linux-kernel@vger.kernel.org,
+        krzysztof.kozlowski+dt@linaro.org, u.kleine-koenig@pengutronix.de,
+        robh+dt@kernel.org
+In-Reply-To: <20220822125106.1106798-2-ciprian.regus@analog.com>
+References: <20220822125106.1106798-1-ciprian.regus@analog.com> <20220822125106.1106798-2-ciprian.regus@analog.com>
+Subject: Re: [PATCH 1/3] dt-bindings: iio: adc: Add docs for LTC2499
+Date:   Mon, 22 Aug 2022 14:40:42 -0500
+Message-Id: <1661197242.564541.413612.nullmailer@robh.at.kernel.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-> >>   		case 2:
-> >>  -			data_u16 = (const u16 *)data + idx;
-> >>  -
-> >>   			/*
-> >>   			 * Data is aligned to the sample size by IIO core.
-> >>   			 * Call `get_unaligned_xe16` to hide type casting.
-> >>   			 */
-> >>   			if (endianness == IIO_BE)
-> >>  -				val = get_unaligned_be16(data_u16);
-> >>  +				val = get_unaligned_be16(chan_data);  
-> > 
-> > I obviously missed this previously but these are aligned so we don't 
-> > need the
-> > unaligned form.  
+On Mon, 22 Aug 2022 15:51:04 +0300, Ciprian Regus wrote:
+> Update the bindings documentation for ltc2497 to include the ltc2499.
 > 
-> Yes, the comment above says that it's used to hide type casting.
-oops :)
+> Signed-off-by: Ciprian Regus <ciprian.regus@analog.com>
+> ---
+>  Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml | 6 +++++-
+>  MAINTAINERS                                                 | 1 +
+>  2 files changed, 6 insertions(+), 1 deletion(-)
+> 
 
-Thanks for pointing out my lack of observation!
+My bot found errors running 'make DT_CHECKER_FLAGS=-m dt_binding_check'
+on your patch (DT_CHECKER_FLAGS is new in v5.13):
 
-Jonathan
+yamllint warnings/errors:
+
+dtschema/dtc warnings/errors:
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml: properties:compatible:enum: 'lltc,ltc2497 lltc,ltc2499' is not of type 'array'
+	from schema $id: http://json-schema.org/draft-07/schema#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml: properties:compatible:enum: 'lltc,ltc2497 lltc,ltc2499' is not of type 'array'
+	from schema $id: http://devicetree.org/meta-schemas/keywords.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml: properties:compatible:enum: 'lltc,ltc2497 lltc,ltc2499' is not of type 'array'
+	from schema $id: http://devicetree.org/meta-schemas/string-array.yaml#
+/builds/robherring/linux-dt-review/Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.yaml: ignoring, error in schema: properties: compatible: enum
+Documentation/devicetree/bindings/iio/adc/lltc,ltc2497.example.dtb:0:0: /example-0/i2c/adc@76: failed to match any schema with compatible: ['lltc,ltc2497']
+
+doc reference errors (make refcheckdocs):
+
+See https://patchwork.ozlabs.org/patch/
+
+This check can fail if there are any dependencies. The base for a patch
+series is generally the most recent rc1.
+
+If you already ran 'make dt_binding_check' and didn't see the above
+error(s), then make sure 'yamllint' is installed and dt-schema is up to
+date:
+
+pip3 install dtschema --upgrade
+
+Please check and re-submit.
 
