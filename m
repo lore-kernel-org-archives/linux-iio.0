@@ -2,70 +2,171 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 588ACC3F6B0
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Aug 2022 12:16:24 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A31C8C00140
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Aug 2022 12:55:09 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237332AbiHXMQX (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:16:23 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:52418 "EHLO
+        id S237452AbiHXMzE (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Aug 2022 08:55:04 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56194 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237256AbiHXMQI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Aug 2022 08:16:08 -0400
-Received: from frasgout.his.huawei.com (frasgout.his.huawei.com [185.176.79.56])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 63CA46E2CF;
-        Wed, 24 Aug 2022 05:16:05 -0700 (PDT)
-Received: from fraeml741-chm.china.huawei.com (unknown [172.18.147.201])
-        by frasgout.his.huawei.com (SkyGuard) with ESMTP id 4MCQ6K3MYqz67wrR;
-        Wed, 24 Aug 2022 20:15:37 +0800 (CST)
-Received: from lhrpeml500005.china.huawei.com (7.191.163.240) by
- fraeml741-chm.china.huawei.com (10.206.15.222) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id
- 15.1.2375.24; Wed, 24 Aug 2022 14:16:01 +0200
-Received: from localhost (10.202.226.42) by lhrpeml500005.china.huawei.com
- (7.191.163.240) with Microsoft SMTP Server (version=TLS1_2,
- cipher=TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256) id 15.1.2375.24; Wed, 24 Aug
- 2022 13:16:00 +0100
-Date:   Wed, 24 Aug 2022 13:15:59 +0100
-From:   Jonathan Cameron <Jonathan.Cameron@huawei.com>
-To:     Andy Shevchenko <andy.shevchenko@gmail.com>
-CC:     Jonathan Cameron <jic23@kernel.org>,
-        Ciprian Regus <ciprian.regus@analog.com>,
-        Krzysztof Kozlowski <krzysztof.kozlowski+dt@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        linux-iio <linux-iio@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Uwe =?ISO-8859-1?Q?Kleine-K=F6nig?= 
-        <u.kleine-koenig@pengutronix.de>
-Subject: Re: [PATCH 2/3] drivers: iio: adc: LTC2499 support
-Message-ID: <20220824131559.00000989@huawei.com>
-In-Reply-To: <CAHp75Vft2pvXtxZcpvyV38cR9gOdDxDfCae8g5Uf2q6npWpb+Q@mail.gmail.com>
-References: <20220822125106.1106798-1-ciprian.regus@analog.com>
-        <20220822125106.1106798-3-ciprian.regus@analog.com>
-        <20220822203731.29c4c33b@jic23-huawei>
-        <CAHp75Vft2pvXtxZcpvyV38cR9gOdDxDfCae8g5Uf2q6npWpb+Q@mail.gmail.com>
-X-Mailer: Claws Mail 4.0.0 (GTK+ 3.24.29; i686-w64-mingw32)
+        with ESMTP id S237404AbiHXMzE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Aug 2022 08:55:04 -0400
+Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id BA8616DF96;
+        Wed, 24 Aug 2022 05:55:02 -0700 (PDT)
+Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
+        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OCiL9m012738;
+        Wed, 24 Aug 2022 08:54:54 -0400
+Received: from nwd2mta3.analog.com ([137.71.173.56])
+        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j5ad43vxx-1
+        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
+        Wed, 24 Aug 2022 08:54:54 -0400
+Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
+        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27OCsrNj040110
+        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
+        Wed, 24 Aug 2022 08:54:53 -0400
+Received: from ASHBCASHYB5.ad.analog.com (10.64.17.133) by
+ ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Wed, 24 Aug 2022 08:54:52 -0400
+Received: from ASHBMBX8.ad.analog.com (10.64.17.5) by
+ ASHBCASHYB5.ad.analog.com (10.64.17.133) with Microsoft SMTP Server
+ (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
+ 15.2.986.14; Wed, 24 Aug 2022 08:54:52 -0400
+Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx8.ad.analog.com
+ (10.64.17.5) with Microsoft SMTP Server id 15.2.986.14 via Frontend
+ Transport; Wed, 24 Aug 2022 08:54:52 -0400
+Received: from rbolboac.ad.analog.com ([10.48.65.109])
+        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27OCseSU004251;
+        Wed, 24 Aug 2022 08:54:46 -0400
+From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
+To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
+        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
+Subject: [PATCH 1/2] bindings: iio: adc: Add max11205 documentation file
+Date:   Wed, 24 Aug 2022 15:52:02 +0300
+Message-ID: <20220824125203.685287-2-ramona.bolboaca@analog.com>
+X-Mailer: git-send-email 2.25.1
+In-Reply-To: <20220824125203.685287-1-ramona.bolboaca@analog.com>
+References: <20220824125203.685287-1-ramona.bolboaca@analog.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="US-ASCII"
-Content-Transfer-Encoding: 7bit
-X-Originating-IP: [10.202.226.42]
-X-ClientProxiedBy: lhrpeml500005.china.huawei.com (7.191.163.240) To
- lhrpeml500005.china.huawei.com (7.191.163.240)
-X-CFilter-Loop: Reflected
+Content-Transfer-Encoding: 7BIT
+Content-Type:   text/plain; charset=US-ASCII
+X-ADIRuleOP-NewSCL: Rule Triggered
+X-Proofpoint-GUID: tKnM75TFC_3XaUtwuX_csVXNPbs2PN51
+X-Proofpoint-ORIG-GUID: tKnM75TFC_3XaUtwuX_csVXNPbs2PN51
+X-Proofpoint-Virus-Version: vendor=baseguard
+ engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
+ definitions=2022-08-24_07,2022-08-22_02,2022-06-22_01
+X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
+ priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
+ mlxlogscore=999 spamscore=0 clxscore=1011 mlxscore=0 adultscore=0
+ bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
+ scancount=1 engine=8.12.0-2207270000 definitions=main-2208240049
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
+Add bindings documentation file and MAINTAINERS entry for MAX11205.
 
-> ...
-> 
-> > >  #include <linux/iio/iio.h>
-> > >  #include <linux/iio/driver.h>
-> > >  #include <linux/module.h>
-> > > +#include <linux/property.h>  
-> > why?  
-> 
-> device_get_match_data() requires it.
+Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+---
+ .../bindings/iio/adc/maxim,max11205.yaml      | 65 +++++++++++++++++++
+ MAINTAINERS                                   |  8 +++
+ 2 files changed, 73 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
 
-Good point :)  Not sure how I missed that!
+diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+new file mode 100644
+index 000000000000..bddd18a44969
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+@@ -0,0 +1,65 @@
++# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
++%YAML 1.2
++---
++$id: http://devicetree.org/schemas/iio/adc/maxim,max11205.yaml#
++$schema: http://devicetree.org/meta-schemas/core.yaml#
++
++title: Maxim MAX11205 ADC
++
++maintainers:
++  - Ramona Bolboaca <ramona.bolboaca@analog.com>
++
++description: |
++  The MAX11205 is an ultra-low-power (< 300FA max
++  active current), high-resolution, serial-output ADC.
++
++  https://datasheets.maximintegrated.com/en/ds/MAX11205.pdf
++
++properties:
++  compatible:
++    enum:
++      - maxim,max11205a
++      - maxim,max11205b
++
++  reg:
++    maxItems: 1
++
++  interrupts:
++    maxItems: 1
++
++  spi-max-frequency:
++    maximum: 5000000
++
++  spi-cpha: true
++
++  vref-supply:
++    description:
++      The regulator supply for the ADC reference voltage.
++
++required:
++  - compatible
++  - reg
++  - spi-max-frequency
++  - spi-cpha
++  - interrupts
++  - vref-supply
++
++additionalProperties: false
++
++examples:
++  - |
++    #include <dt-bindings/interrupt-controller/irq.h>
++    spi {
++        #address-cells = <1>;
++        #size-cells = <0>;
++        max11205@0 {
++                      compatible = "maxim,max11205a";
++                      reg = <0>;
++                      spi-max-frequency = <5000000>;
++                      spi-cpha;
++                      interrupt-parent = <&gpio>;
++                      interrupts = <19 IRQ_TYPE_EDGE_FALLING>;
++                      vref-supply = <&max11205_vref>;
++        };
++    };
++...
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 96f47a7865d6..db1b5dc03988 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -12341,6 +12341,14 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/proximity/maxbotix,mb1232.yaml
+ F:	drivers/iio/proximity/mb1232.c
+ 
++MAXIM MAX11205 DRIVER
++M:	Ramona Bolboaca <ramona.bolboaca@analog.com>
++L:	linux-iio@vger.kernel.org
++S:	Supported
++W:	https://ez.analog.com/linux-software-drivers
++F:	Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
++F:	drivers/iio/adc/max11205.c
++
+ MAXIM MAX17040 FAMILY FUEL GAUGE DRIVERS
+ R:	Iskren Chernev <iskren.chernev@gmail.com>
+ R:	Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+-- 
+2.25.1
 
