@@ -2,91 +2,162 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id E5DB4C32793
-	for <linux-iio@archiver.kernel.org>; Wed, 24 Aug 2022 12:55:15 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 69F8FC00140
+	for <linux-iio@archiver.kernel.org>; Wed, 24 Aug 2022 13:07:54 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S237624AbiHXMzL (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 24 Aug 2022 08:55:11 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56268 "EHLO
+        id S237933AbiHXNHv (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 24 Aug 2022 09:07:51 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:42314 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237597AbiHXMzF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Aug 2022 08:55:05 -0400
-Received: from mx0a-00128a01.pphosted.com (mx0a-00128a01.pphosted.com [148.163.135.77])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 9AB2A6DAE7;
-        Wed, 24 Aug 2022 05:55:03 -0700 (PDT)
-Received: from pps.filterd (m0167089.ppops.net [127.0.0.1])
-        by mx0a-00128a01.pphosted.com (8.17.1.5/8.17.1.5) with ESMTP id 27OCqMhE012681;
-        Wed, 24 Aug 2022 08:54:55 -0400
-Received: from nwd2mta3.analog.com ([137.71.173.56])
-        by mx0a-00128a01.pphosted.com (PPS) with ESMTPS id 3j5ad43vy2-1
-        (version=TLSv1.2 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=NOT);
-        Wed, 24 Aug 2022 08:54:54 -0400
-Received: from ASHBMBX9.ad.analog.com (ASHBMBX9.ad.analog.com [10.64.17.10])
-        by nwd2mta3.analog.com (8.14.7/8.14.7) with ESMTP id 27OCsrBV040113
-        (version=TLSv1/SSLv3 cipher=ECDHE-RSA-AES256-GCM-SHA384 bits=256 verify=FAIL);
-        Wed, 24 Aug 2022 08:54:53 -0400
-Received: from ASHBCASHYB4.ad.analog.com (10.64.17.132) by
- ASHBMBX9.ad.analog.com (10.64.17.10) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 24 Aug 2022 08:54:52 -0400
-Received: from ASHBMBX9.ad.analog.com (10.64.17.10) by
- ASHBCASHYB4.ad.analog.com (10.64.17.132) with Microsoft SMTP Server
- (version=TLS1_2, cipher=TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384) id
- 15.2.986.14; Wed, 24 Aug 2022 08:54:52 -0400
-Received: from zeus.spd.analog.com (10.66.68.11) by ashbmbx9.ad.analog.com
- (10.64.17.10) with Microsoft SMTP Server id 15.2.986.14 via Frontend
- Transport; Wed, 24 Aug 2022 08:54:52 -0400
-Received: from rbolboac.ad.analog.com ([10.48.65.109])
-        by zeus.spd.analog.com (8.15.1/8.15.1) with ESMTP id 27OCseST004251;
-        Wed, 24 Aug 2022 08:54:42 -0400
-From:   Ramona Bolboaca <ramona.bolboaca@analog.com>
-To:     <jic23@kernel.org>, <robh+dt@kernel.org>,
-        <krzysztof.kozlowski+dt@linaro.org>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC:     Ramona Bolboaca <ramona.bolboaca@analog.com>
-Subject: [PATCH 0/2] iio: adc: add max11205 adc driver
-Date:   Wed, 24 Aug 2022 15:52:01 +0300
-Message-ID: <20220824125203.685287-1-ramona.bolboaca@analog.com>
-X-Mailer: git-send-email 2.25.1
+        with ESMTP id S237944AbiHXNHu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Aug 2022 09:07:50 -0400
+Received: from mail-lf1-x134.google.com (mail-lf1-x134.google.com [IPv6:2a00:1450:4864:20::134])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id ADE0F97534
+        for <linux-iio@vger.kernel.org>; Wed, 24 Aug 2022 06:07:44 -0700 (PDT)
+Received: by mail-lf1-x134.google.com with SMTP id s1so21114797lfp.6
+        for <linux-iio@vger.kernel.org>; Wed, 24 Aug 2022 06:07:44 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :from:to:cc;
+        bh=07vPvByHp737Z4ko55zqWLWNBnP96zmWmjtNwCBec98=;
+        b=sTVjoh9c/E4kr0cniahRXMsvKK0b2tP3WbbNAyyeLZ0BjxqXHD15wAOoepB3jeaRgL
+         pICcDosxLt7ph0fVQJ17htSiwYxTDueBhpmX1bJNIgQuxNz/VOchbrsBOW2Hq2kWeZ50
+         /y5MCVTdM5aV0bKlL9nAlNIbVHC45X8SfuzTLullIpcZ6zzFosDqWO0/o++qvkiznOcI
+         NxtLkodrxpx4Z2y7gFtrmj8O/PPr9tlV9IJt0lcpHxrfMyw59gSsvcKzsXVPpshzz5xD
+         j2mMx81U8zbjJJjkSDEVMU0xZAtW7iq7zjYmcbPJeyfVcJffPCssM9BX3h9LepL7L5Al
+         4fWQ==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=content-transfer-encoding:in-reply-to:from:references:to
+         :content-language:subject:user-agent:mime-version:date:message-id
+         :x-gm-message-state:from:to:cc;
+        bh=07vPvByHp737Z4ko55zqWLWNBnP96zmWmjtNwCBec98=;
+        b=xSWvzdj6DoCEpK1pyT+eHX/v11DVFvEyIFkXATvl/eMETz0kKVdiu/5+/C115sQi2z
+         qX/2lc0pr0CyDp/fLL/mvykKkH+UBFaRd/gUukBwVkewNtCgeceMYoxMNuxR7dtwDNg8
+         kNnL5PKuS69FCH7gdOYebyiyDfCrYhFXmtdoF+4+4gLuJGHdLdFoUrqnNRCQ94z8dQyl
+         rQDgg/pl1tOLlMdMNRSAlKg7k2UTa+e5MQJ+liniyQlsMkQUouNdagqHb3P1C9CkwF45
+         dbVoLHHZ7J806IUUHWxtDtRXBbC3QAYkNCEiS+H+/6rlPsHIw+XwmzGJF4sXi0e7T6We
+         MEVg==
+X-Gm-Message-State: ACgBeo2hyvxBT1qsIftdVCRdNDnw3b14Ivo0kzK4vWk1VF9sfcUcPdJT
+        eMD/iVCuPqD5/oH6dvf8LEybf9bGINR1gSDNNiU=
+X-Google-Smtp-Source: AA6agR4MCTFUzzLJVCo+j8gtwAABrGcjHkwermyL3XDTUedLgroX4T6ImdZs9pPR9Ms2iQ45ySG8XQ==
+X-Received: by 2002:a05:6512:1191:b0:493:57c:84e3 with SMTP id g17-20020a056512119100b00493057c84e3mr1194980lfr.177.1661346463003;
+        Wed, 24 Aug 2022 06:07:43 -0700 (PDT)
+Received: from [10.243.4.185] ([194.204.13.210])
+        by smtp.gmail.com with ESMTPSA id d4-20020a056512368400b00492daab838bsm2069672lfs.46.2022.08.24.06.07.41
+        (version=TLS1_3 cipher=TLS_AES_128_GCM_SHA256 bits=128/128);
+        Wed, 24 Aug 2022 06:07:42 -0700 (PDT)
+Message-ID: <33eb031c-f1b5-b80d-52b0-48bcab02d697@linaro.org>
+Date:   Wed, 24 Aug 2022 16:07:41 +0300
 MIME-Version: 1.0
-Content-Transfer-Encoding: 7BIT
-Content-Type:   text/plain; charset=US-ASCII
-X-ADIRuleOP-NewSCL: Rule Triggered
-X-Proofpoint-GUID: vfrpV0RT2oP80eMNpU4JmBaL5hpF7jhU
-X-Proofpoint-ORIG-GUID: vfrpV0RT2oP80eMNpU4JmBaL5hpF7jhU
-X-Proofpoint-Virus-Version: vendor=baseguard
- engine=ICAP:2.0.205,Aquarius:18.0.895,Hydra:6.0.517,FMLib:17.11.122.1
- definitions=2022-08-24_07,2022-08-22_02,2022-06-22_01
-X-Proofpoint-Spam-Details: rule=outbound_notspam policy=outbound score=0 phishscore=0
- priorityscore=1501 malwarescore=0 lowpriorityscore=0 suspectscore=0
- mlxlogscore=624 spamscore=0 clxscore=1015 mlxscore=0 adultscore=0
- bulkscore=0 impostorscore=0 classifier=spam adjust=0 reason=mlx
- scancount=1 engine=8.12.0-2207270000 definitions=main-2208240049
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:91.0) Gecko/20100101
+ Thunderbird/91.12.0
+Subject: Re: [PATCH 1/2] bindings: iio: adc: Add max11205 documentation file
+Content-Language: en-US
+To:     Ramona Bolboaca <ramona.bolboaca@analog.com>, jic23@kernel.org,
+        robh+dt@kernel.org, krzysztof.kozlowski+dt@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+References: <20220824125203.685287-1-ramona.bolboaca@analog.com>
+ <20220824125203.685287-2-ramona.bolboaca@analog.com>
+From:   Krzysztof Kozlowski <krzysztof.kozlowski@linaro.org>
+In-Reply-To: <20220824125203.685287-2-ramona.bolboaca@analog.com>
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Adding support for max11205 16-bit single-channel ultra-low power
-delta-sigma adc.
-The MAX11205 is compatible with the 2-wire interface and uses
-SCLK and RDY/DOUT for serial communica- tions. In this mode, all
-controls are implemented by tim- ing the high or low phase of the SCLK.
-The 2-wire serial interface only allows for data to be read out through the
-RDY/DOUT output.
+On 24/08/2022 15:52, Ramona Bolboaca wrote:
+> Add bindings documentation file and MAINTAINERS entry for MAX11205.
+> 
+> Signed-off-by: Ramona Bolboaca <ramona.bolboaca@analog.com>
+> ---
+>  .../bindings/iio/adc/maxim,max11205.yaml      | 65 +++++++++++++++++++
+>  MAINTAINERS                                   |  8 +++
+>  2 files changed, 73 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+> new file mode 100644
+> index 000000000000..bddd18a44969
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
+> @@ -0,0 +1,65 @@
+> +# SPDX-License-Identifier: (GPL-2.0 OR BSD-2-Clause)
+> +%YAML 1.2
+> +---
+> +$id: http://devicetree.org/schemas/iio/adc/maxim,max11205.yaml#
+> +$schema: http://devicetree.org/meta-schemas/core.yaml#
+> +
+> +title: Maxim MAX11205 ADC
+> +
+> +maintainers:
+> +  - Ramona Bolboaca <ramona.bolboaca@analog.com>
+> +
+> +description: |
+> +  The MAX11205 is an ultra-low-power (< 300FA max
+> +  active current), high-resolution, serial-output ADC.
+> +
+> +  https://datasheets.maximintegrated.com/en/ds/MAX11205.pdf
+> +
+> +properties:
+> +  compatible:
+> +    enum:
+> +      - maxim,max11205a
+> +      - maxim,max11205b
+> +
+> +  reg:
+> +    maxItems: 1
+> +
+> +  interrupts:
+> +    maxItems: 1
+> +
+> +  spi-max-frequency:
+> +    maximum: 5000000
+> +
+> +  spi-cpha: true
 
-Ramona Bolboaca (2):
-  bindings: iio: adc: Add max11205 documentation file
-  iio: adc: add max11205 adc driver
+Both properties are good, but still you should reference
+/schemas/spi/spi-peripheral-props.yaml in allOf and use
+unevaluatedProperties:false. See other bindings for SPI devices.
 
- .../bindings/iio/adc/maxim,max11205.yaml      |  65 ++++++
- MAINTAINERS                                   |   8 +
- drivers/iio/adc/Kconfig                       |  14 ++
- drivers/iio/adc/Makefile                      |   1 +
- drivers/iio/adc/max11205.c                    | 192 ++++++++++++++++++
- 5 files changed, 280 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/maxim,max11205.yaml
- create mode 100644 drivers/iio/adc/max11205.c
+> +
+> +  vref-supply:
+> +    description:
+> +      The regulator supply for the ADC reference voltage.
+> +
+> +required:
+> +  - compatible
+> +  - reg
+> +  - spi-max-frequency
+> +  - spi-cpha
+> +  - interrupts
+> +  - vref-supply
+> +
+> +additionalProperties: false
+> +
+> +examples:
+> +  - |
+> +    #include <dt-bindings/interrupt-controller/irq.h>
+> +    spi {
+> +        #address-cells = <1>;
+> +        #size-cells = <0>;
+> +        max11205@0 {
 
--- 
-2.25.1
+adc
+Node names should be generic.
+https://devicetree-specification.readthedocs.io/en/latest/chapter2-devicetree-basics.html#generic-names-recommendation
 
+> +                      compatible = "maxim,max11205a";
+
+Messed up indentation. Use 4 spaces.
+
+> +                      reg = <0>;
+> +                      spi-max-frequency = <5000000>;
+> +                      spi-cpha;
+
+Best regards,
+Krzysztof
