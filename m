@@ -2,99 +2,102 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 4AC50C28D13
-	for <linux-iio@archiver.kernel.org>; Thu, 25 Aug 2022 12:40:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 73CD3C28D13
+	for <linux-iio@archiver.kernel.org>; Thu, 25 Aug 2022 14:26:37 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S241276AbiHYMkS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Thu, 25 Aug 2022 08:40:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:56326 "EHLO
+        id S233477AbiHYO0g (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Thu, 25 Aug 2022 10:26:36 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:38848 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S237774AbiHYMkR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Aug 2022 08:40:17 -0400
-Received: from smtp-out2.suse.de (smtp-out2.suse.de [IPv6:2001:67c:2178:6::1d])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 60D271A048;
-        Thu, 25 Aug 2022 05:40:16 -0700 (PDT)
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by smtp-out2.suse.de (Postfix) with ESMTPS id 1A8EE205A8;
-        Thu, 25 Aug 2022 12:40:15 +0000 (UTC)
-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed; d=suse.de; s=susede2_rsa;
-        t=1661431215; h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=m+esSZFT3CEpb8V0GtG2lZxTFRI8y+pv8iwD+6oOC0k=;
-        b=SzS2wPQnUpq1EfUDLBdJXaxyVByWNEL3P1e8Ho8MsIn5+TUU5nx3QVAsZfNnxyUs8+6vw8
-        RatvXC3SXtggIjxd0TbnyZwOY5AqMb/P0ATr6td69/LFbutQJNf6eOT4WzDniyXA+Ow3Dt
-        ooxnqg7s8/ZGxnPGWOIwmXwNxwCIyu4=
-DKIM-Signature: v=1; a=ed25519-sha256; c=relaxed/relaxed; d=suse.de;
-        s=susede2_ed25519; t=1661431215;
-        h=from:from:reply-to:date:date:message-id:message-id:to:to:cc:cc:
-         mime-version:mime-version:content-type:content-type:
-         content-transfer-encoding:content-transfer-encoding;
-        bh=m+esSZFT3CEpb8V0GtG2lZxTFRI8y+pv8iwD+6oOC0k=;
-        b=gxj3GYdh/sSww5BnxypS2QS+58hnAZ1r2LH5Z5lhC/rqrblZJDubWLdVCvy7DXLjVVLQ9V
-        8adjIUiNk9XFniCA==
-Received: from imap2.suse-dmz.suse.de (imap2.suse-dmz.suse.de [192.168.254.74])
-        (using TLSv1.3 with cipher TLS_AES_256_GCM_SHA384 (256/256 bits)
-         key-exchange X25519 server-signature ECDSA (P-521) server-digest SHA512)
-        (No client certificate requested)
-        by imap2.suse-dmz.suse.de (Postfix) with ESMTPS id D470913A8E;
-        Thu, 25 Aug 2022 12:40:14 +0000 (UTC)
-Received: from dovecot-director2.suse.de ([192.168.254.65])
-        by imap2.suse-dmz.suse.de with ESMTPSA
-        id aa5SMq5tB2OjGgAAMHmgww
-        (envelope-from <jdelvare@suse.de>); Thu, 25 Aug 2022 12:40:14 +0000
-Date:   Thu, 25 Aug 2022 14:40:12 +0200
-From:   Jean Delvare <jdelvare@suse.de>
+        with ESMTP id S241762AbiHYO0K (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Aug 2022 10:26:10 -0400
+Received: from mail-qt1-x829.google.com (mail-qt1-x829.google.com [IPv6:2607:f8b0:4864:20::829])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 53590B6D7C
+        for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2022 07:25:24 -0700 (PDT)
+Received: by mail-qt1-x829.google.com with SMTP id cr9so15296665qtb.13
+        for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2022 07:25:24 -0700 (PDT)
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=linaro.org; s=google;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:from:to:cc;
+        bh=9q5E2dO7Vvuh3mZ+3q9Pzgh7cxNE5Dy6aCcYQ91ZiBw=;
+        b=z8GV6tlcZFkSNZP4uYd0O7d0oixQplR8b8QdeZZZVmvm1B5qa8Dx+u6Li8ZaLdEv15
+         /ObGaSZggDd9w2/ZUVIufW0eJUOTocH9W+qTMCEhS50XVBF9vhIvLOZlui+ilFNFuH7E
+         zkAp7KZKV22QKK6a+pFHp6JM/i60JVJNfQ3nNZvjHOi6Ltx6u/qrbZC9xv4Zzmcqop8J
+         HVyys3S9AMJf5Z8ojNOUiZ3Mzmn/Vd1cQu/I+amG36Ii0/+gmADaobzXmrOtu0nNZcPB
+         AE7/BrUnizOyF9v9iFJ8rvnyMlCOIm/eHU49LyXDV0cqsbR1p9ZuqLimedl2scUlZJmW
+         WbJw==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=in-reply-to:content-disposition:mime-version:references:message-id
+         :subject:cc:to:from:date:x-gm-message-state:from:to:cc;
+        bh=9q5E2dO7Vvuh3mZ+3q9Pzgh7cxNE5Dy6aCcYQ91ZiBw=;
+        b=tiKYQSixkdgLF+0ToJFGp3R6NjpeVgm9KxnSnQhb03MQR/jifZKCAu/u4Xn5TFF2ak
+         Ir4grNs9hTuj32HEER7H2frRmMpbM9cOrd4e7FCIzHNiZrWWiQ202zxnqvk3bahO7JPh
+         DAg2O7dt/0obExdpXgqpGTZc5N2dLPfI40sRvM8rebY5fFCvGTKLdC0uNHzZ6nkt6v6W
+         qDYCqMvl99n/hDqlNRdm6O34d5ufDqOY4B8JiczipEms24PzicfBpjHiMWRLyjIiTk8w
+         U2cJUxQlPYAeXKeD87GgBtXSEx4/ECz3otpStiO4j5tiyvwxLh5KUFTHlKHaWzITWw3x
+         jG0A==
+X-Gm-Message-State: ACgBeo1Xjzo4CKGsXJk0/dUtTEuV7RmzoTFYGoAe104GIvH3G32Bg0oa
+        sdml/y7sC2GZDO28EJMZgdyi5Bqu5602tw==
+X-Google-Smtp-Source: AA6agR5wE3eOiAXbmnPqIYW2w3jLofEw0gDUxMOxhLoflF7uLUgsyqig0sIj3oy+OC4WTWAskIm1QQ==
+X-Received: by 2002:ac8:5e0a:0:b0:344:9b69:eef0 with SMTP id h10-20020ac85e0a000000b003449b69eef0mr3798389qtx.666.1661437522981;
+        Thu, 25 Aug 2022 07:25:22 -0700 (PDT)
+Received: from ishi ([2600:1700:5668:ac50::42])
+        by smtp.gmail.com with ESMTPSA id bs43-20020a05620a472b00b006b9b7879964sm17697072qkb.28.2022.08.25.07.25.21
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Thu, 25 Aug 2022 07:25:22 -0700 (PDT)
+Date:   Thu, 25 Aug 2022 10:25:20 -0400
+From:   William Breathitt Gray <william.gray@linaro.org>
 To:     linux-iio@vger.kernel.org
-Cc:     LKML <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH] iio:accel:dmard06: Optimize when CONFIG_OF isn't set
-Message-ID: <20220825144012.24a33bb0@endymion.delvare>
-Organization: SUSE Linux
-X-Mailer: Claws Mail 3.18.0 (GTK+ 2.24.32; x86_64-suse-linux-gnu)
+Cc:     linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] counter: 104-quad-8: Fix skipped IRQ lines during events
+ configuration
+Message-ID: <YweGUIh/TuZ6KUhA@ishi>
+References: <20220815122301.2750-1-william.gray@linaro.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Content-Transfer-Encoding: 7bit
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="7/wmN6eEarodysVb"
+Content-Disposition: inline
+In-Reply-To: <20220815122301.2750-1-william.gray@linaro.org>
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-When CONFIG_OF isn't set, we can optimize out dmard06_of_match as it
-will never be used.
 
-Signed-off-by: Jean Delvare <jdelvare@suse.de>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/iio/accel/dmard06.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+--7/wmN6eEarodysVb
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
---- linux-5.19.orig/drivers/iio/accel/dmard06.c	2022-08-25 14:19:11.742351430 +0200
-+++ linux-5.19/drivers/iio/accel/dmard06.c	2022-08-25 14:20:13.505276596 +0200
-@@ -209,7 +209,7 @@ static const struct i2c_device_id dmard0
- };
- MODULE_DEVICE_TABLE(i2c, dmard06_id);
- 
--static const struct of_device_id dmard06_of_match[] = {
-+static const struct of_device_id __maybe_unused dmard06_of_match[] = {
- 	{ .compatible = "domintech,dmard05" },
- 	{ .compatible = "domintech,dmard06" },
- 	{ .compatible = "domintech,dmard07" },
-@@ -222,7 +222,7 @@ static struct i2c_driver dmard06_driver
- 	.id_table = dmard06_id,
- 	.driver = {
- 		.name = DMARD06_DRV_NAME,
--		.of_match_table = dmard06_of_match,
-+		.of_match_table = of_match_ptr(dmard06_of_match),
- 		.pm = pm_sleep_ptr(&dmard06_pm_ops),
- 	},
- };
+On Mon, Aug 15, 2022 at 08:23:01AM -0400, William Breathitt Gray wrote:
+> IRQ trigger configuration is skipped if it has already been set before;
+> however, the IRQ line still needs to be OR'd to irq_enabled because
+> irq_enabled is reset for every events_configure call. This patch moves
+> the irq_enabled OR operation update to before the irq_trigger check so
+> that IRQ line enablement is not skipped.
+>=20
+> Fixes: c95cc0d95702 ("counter: 104-quad-8: Fix persistent enabled events =
+bug")
+> Signed-off-by: William Breathitt Gray <william.gray@linaro.org>
 
+Applied to counter-greg branch.
 
--- 
-Jean Delvare
-SUSE L3 Support
+William Breathitt Gray
+
+--7/wmN6eEarodysVb
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAEBCAAdFiEESdocE8T8CMGLP5oTJYqFfHOePQsFAmMHhkMACgkQJYqFfHOe
+PQsC0Qf/VmZbA9hKO6hKjRigTL6o6BphZZOyCdnL81/SSUZpEC69d2PJ46D+Hc2u
+akISOb4qdHJaFowlym1Xi/iNLi/uuDfOlWmhqF+j+dOnLA6RTY3osHUugGQEwS3v
+/D6V5EBlG53VEuu8r46PRh3Xa1p48lS3PYKq6vQ6hliwIq8Ui2xlXI5gkWnThUsU
+XL75UrG55xOgy24DMhbIOx+KVt6YdrvE7+9H/rGeVTdQL/fqRxzwd1XXDRSI7cGR
+VOs2dSRRcJLonj6rQmTmu9t8pNypdS3DQSCdueCSZhBHSjhoYZqokbXdUMlmKEe+
+cJwn/gHM+ijDlw0xFxu5t251KYFpKA==
+=bQZH
+-----END PGP SIGNATURE-----
+
+--7/wmN6eEarodysVb--
