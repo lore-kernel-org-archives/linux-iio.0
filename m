@@ -2,43 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id A0CC4ECAAD5
-	for <linux-iio@archiver.kernel.org>; Mon, 29 Aug 2022 11:44:38 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 8037CECAAD5
+	for <linux-iio@archiver.kernel.org>; Mon, 29 Aug 2022 11:45:23 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S229907AbiH2Loh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Mon, 29 Aug 2022 07:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
+        id S233087AbiH2LpW (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Mon, 29 Aug 2022 07:45:22 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36360 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233232AbiH2LoK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2022 07:44:10 -0400
-Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599CE861D9;
-        Mon, 29 Aug 2022 04:28:16 -0700 (PDT)
+        with ESMTP id S233390AbiH2Loe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2022 07:44:34 -0400
+Received: from mga17.intel.com (mga17.intel.com [192.55.52.151])
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id A7F03DFC3;
+        Mon, 29 Aug 2022 04:28:42 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
-  t=1661772497; x=1693308497;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=ktD+MPSTkvtZ2p7zqOjOliH/f+SyytDdfafxmL8w04Y=;
-  b=bbcRocCU4+jjG224BVz7Gp7O0HRvVWi7nA5TSBLxv7CVkJ4oZqGgnrSM
-   VH1tC9WEhh507wPduZ87AtwFzNJnR0LuFcskSOKCzY1+9CfpRWLB1O+ii
-   oiWTxLBFn6ID+BJoh9cEBDwZy1rhdRnJ+f78ogvJLIB/nLC6SMUDdNZJa
-   FkE0jHpULtiZSbVpm/wmjPE89eGeBnUzJnMxaEZtEAmBfHWTVd/tSLzf0
-   HxwxmVb1vtT7PMCo/cX3mi6PzrC6ND46cq8tznlq/+r/HszSnP0ibaaJ3
-   2TiPA2qMMXYRIMAJt1jU7aALPG8gQRXwFDmxxyLAiFxa9UrnME7lK3MBz
+  t=1661772522; x=1693308522;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=RMIzbw3S0NjAnyKRGZ1yrKelR3otHClPHqNHMk9KieA=;
+  b=NrFJZ7b+66GeuKfsLn8qUwjYzDyGZTF9/KOgYdbS0jBX3yAPZxfkp0nJ
+   8FBgbWZWtNo9UrMY46kH3S7SKZnyNRIq0Qs0EnD8DkGj+FbR7g5TLAGN8
+   wMKXqp4W4LkD7uj1d/YXxW49r+WvlA14m7Vkd/XTw8nzztdMVVylTqrSP
+   V5umwFieUrtVHyqYVu7Dcx4ywHD29ocq/cHzfAhcAorVcxXhr1VHcASi/
+   m2WjUWnf8d08y6Z3NUzRPRVAkPUYrYXgCLOpmo1cvAxtSYRaxc5KKM46i
+   LLMglk9vwia/K7+mw4Bk3VmQoEKCd+wHl1r6FK1+SxBylycjCkwq5U5A2
    Q==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="294879419"
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="275273872"
 X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="294879419"
-Received: from orsmga003.jf.intel.com ([10.7.209.27])
-  by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 04:23:58 -0700
+   d="scan'208";a="275273872"
+Received: from fmsmga002.fm.intel.com ([10.253.24.26])
+  by fmsmga107.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 04:23:57 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="562188843"
+   d="scan'208";a="714830573"
 Received: from black.fi.intel.com ([10.237.72.28])
-  by orsmga003.jf.intel.com with ESMTP; 29 Aug 2022 04:23:55 -0700
+  by fmsmga002.fm.intel.com with ESMTP; 29 Aug 2022 04:23:55 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 63062AD; Mon, 29 Aug 2022 14:24:10 +0300 (EEST)
+        id 7F0BA174; Mon, 29 Aug 2022 14:24:10 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -47,75 +47,76 @@ To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         linux-kernel@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 1/4] iio: magnetometer: yamaha-yas530: Use pointers as driver data
-Date:   Mon, 29 Aug 2022 14:24:04 +0300
-Message-Id: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 4/4] iio: magnetometer: yamaha-yas530: Use dev_err_probe()
+Date:   Mon, 29 Aug 2022 14:24:07 +0300
+Message-Id: <20220829112407.74917-4-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
+In-Reply-To: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
+References: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-Unify ID tables to use pointers for driver data. It will allow
-to simplify the driver later on.
+Unify error message format by using dev_err_probe().
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/magnetometer/yamaha-yas530.c | 21 +++++++++++----------
- 1 file changed, 11 insertions(+), 10 deletions(-)
+ drivers/iio/magnetometer/yamaha-yas530.c | 16 ++++++----------
+ 1 file changed, 6 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index 026f71e524f3..03e0525e6364 100644
+index bacd2b783113..63bb743dc4f6 100644
 --- a/drivers/iio/magnetometer/yamaha-yas530.c
 +++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -32,6 +32,7 @@
- #include <linux/mod_devicetable.h>
- #include <linux/mutex.h>
- #include <linux/pm_runtime.h>
-+#include <linux/property.h>
- #include <linux/regmap.h>
- #include <linux/regulator/consumer.h>
- #include <linux/random.h>
-@@ -1437,8 +1438,8 @@ static int yas5xx_probe(struct i2c_client *i2c,
+@@ -1420,10 +1420,8 @@ static int yas5xx_probe(struct i2c_client *i2c)
+ 		return dev_err_probe(dev, ret, "cannot get regulators\n");
+ 
+ 	ret = regulator_bulk_enable(ARRAY_SIZE(yas5xx->regs), yas5xx->regs);
+-	if (ret) {
+-		dev_err(dev, "cannot enable regulators\n");
+-		return ret;
+-	}
++	if (ret)
++		return dev_err_probe(dev, ret, "cannot enable regulators\n");
+ 
+ 	/* See comment in runtime resume callback */
+ 	usleep_range(31000, 40000);
+@@ -1431,15 +1429,13 @@ static int yas5xx_probe(struct i2c_client *i2c)
+ 	/* This will take the device out of reset if need be */
+ 	yas5xx->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
+ 	if (IS_ERR(yas5xx->reset)) {
+-		ret = dev_err_probe(dev, PTR_ERR(yas5xx->reset),
+-				    "failed to get reset line\n");
++		ret = dev_err_probe(dev, PTR_ERR(yas5xx->reset), "failed to get reset line\n");
+ 		goto reg_off;
+ 	}
+ 
+ 	yas5xx->map = devm_regmap_init_i2c(i2c, &yas5xx_regmap_config);
+ 	if (IS_ERR(yas5xx->map)) {
+-		dev_err(dev, "failed to allocate register map\n");
+-		ret = PTR_ERR(yas5xx->map);
++		ret = dev_err_probe(dev, PTR_ERR(yas5xx->map), "failed to allocate register map\n");
  		goto assert_reset;
  	}
  
--	yas5xx->chip_info = &yas5xx_chip_info_tbl[id->driver_data];
--	ci = yas5xx->chip_info;
-+	ci = device_get_match_data(dev);
-+	yas5xx->chip_info = ci;
+@@ -1487,13 +1483,13 @@ static int yas5xx_probe(struct i2c_client *i2c)
+ 					 yas5xx_handle_trigger,
+ 					 NULL);
+ 	if (ret) {
+-		dev_err(dev, "triggered buffer setup failed\n");
++		dev_err_probe(dev, ret, "triggered buffer setup failed\n");
+ 		goto assert_reset;
+ 	}
  
- 	ret = regmap_read(yas5xx->map, YAS5XX_DEVICE_ID, &id_check);
- 	if (ret)
-@@ -1583,19 +1584,19 @@ static DEFINE_RUNTIME_DEV_PM_OPS(yas5xx_dev_pm_ops, yas5xx_runtime_suspend,
- 				 yas5xx_runtime_resume, NULL);
+ 	ret = iio_device_register(indio_dev);
+ 	if (ret) {
+-		dev_err(dev, "device register failed\n");
++		dev_err_probe(dev, ret, "device register failed\n");
+ 		goto cleanup_buffer;
+ 	}
  
- static const struct i2c_device_id yas5xx_id[] = {
--	{"yas530", yas530 },
--	{"yas532", yas532 },
--	{"yas533", yas533 },
--	{"yas537", yas537 },
-+	{"yas530", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas530] },
-+	{"yas532", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas532] },
-+	{"yas533", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas533] },
-+	{"yas537", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas537] },
- 	{}
- };
- MODULE_DEVICE_TABLE(i2c, yas5xx_id);
- 
- static const struct of_device_id yas5xx_of_match[] = {
--	{ .compatible = "yamaha,yas530", },
--	{ .compatible = "yamaha,yas532", },
--	{ .compatible = "yamaha,yas533", },
--	{ .compatible = "yamaha,yas537", },
-+	{ .compatible = "yamaha,yas530", &yas5xx_chip_info_tbl[yas530] },
-+	{ .compatible = "yamaha,yas532", &yas5xx_chip_info_tbl[yas532] },
-+	{ .compatible = "yamaha,yas533", &yas5xx_chip_info_tbl[yas533] },
-+	{ .compatible = "yamaha,yas537", &yas5xx_chip_info_tbl[yas537] },
- 	{}
- };
- MODULE_DEVICE_TABLE(of, yas5xx_of_match);
 -- 
 2.35.1
 
