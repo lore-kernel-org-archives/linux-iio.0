@@ -2,43 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 470F5C54EE9
-	for <linux-iio@archiver.kernel.org>; Mon, 29 Aug 2022 11:44:39 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id A0CC4ECAAD5
+	for <linux-iio@archiver.kernel.org>; Mon, 29 Aug 2022 11:44:38 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S231131AbiH2Loh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        id S229907AbiH2Loh (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
         Mon, 29 Aug 2022 07:44:37 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36332 "EHLO
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:36270 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S233240AbiH2LoL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2022 07:44:11 -0400
+        with ESMTP id S233232AbiH2LoK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2022 07:44:10 -0400
 Received: from mga14.intel.com (mga14.intel.com [192.55.52.115])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id D6EBD8673C;
-        Mon, 29 Aug 2022 04:28:17 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 599CE861D9;
+        Mon, 29 Aug 2022 04:28:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/simple;
   d=intel.com; i=@intel.com; q=dns/txt; s=Intel;
   t=1661772497; x=1693308497;
-  h=from:to:cc:subject:date:message-id:in-reply-to:
-   references:mime-version:content-transfer-encoding;
-  bh=ufkiE0vbKX694dOg2orxNPFkPt51JYh25gzaZuabvzE=;
-  b=dHbNpi70Ntr0UJ3B2eUrivXdIaSWJ56Er+3hEPPJ4eC4tch4SY+t0z5T
-   zIRYvRlbrJpZcVzrZCRdpRgSOYygEunAGu8btC24FR0q/DJU1GKg0Q24k
-   4AR+6kkVdWJLZ4MWM5CwF8HpHh8m0aiL+K1pbc/Z3Exy6chDEVlnQHC8r
-   fuwD5C2ij4q/8XVyToTKChZpgYyq8CJtTwhdepy2XkY6SzxFZ9w43GvvI
-   y4YcY72+4afVXvidFwhISNKSzKVJEp84xjvsj2mTDbCpb5aTG77iK6dv8
-   lnCTvBrzvJihAQm1JAhnjuWVa2roEetWZYXszyAWoif/0WzouN0eTph/e
-   A==;
-X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="294879422"
+  h=from:to:cc:subject:date:message-id:mime-version:
+   content-transfer-encoding;
+  bh=ktD+MPSTkvtZ2p7zqOjOliH/f+SyytDdfafxmL8w04Y=;
+  b=bbcRocCU4+jjG224BVz7Gp7O0HRvVWi7nA5TSBLxv7CVkJ4oZqGgnrSM
+   VH1tC9WEhh507wPduZ87AtwFzNJnR0LuFcskSOKCzY1+9CfpRWLB1O+ii
+   oiWTxLBFn6ID+BJoh9cEBDwZy1rhdRnJ+f78ogvJLIB/nLC6SMUDdNZJa
+   FkE0jHpULtiZSbVpm/wmjPE89eGeBnUzJnMxaEZtEAmBfHWTVd/tSLzf0
+   HxwxmVb1vtT7PMCo/cX3mi6PzrC6ND46cq8tznlq/+r/HszSnP0ibaaJ3
+   2TiPA2qMMXYRIMAJt1jU7aALPG8gQRXwFDmxxyLAiFxa9UrnME7lK3MBz
+   Q==;
+X-IronPort-AV: E=McAfee;i="6500,9779,10453"; a="294879419"
 X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="294879422"
+   d="scan'208";a="294879419"
 Received: from orsmga003.jf.intel.com ([10.7.209.27])
   by fmsmga103.fm.intel.com with ESMTP/TLS/ECDHE-RSA-AES256-GCM-SHA384; 29 Aug 2022 04:23:58 -0700
 X-ExtLoop1: 1
 X-IronPort-AV: E=Sophos;i="5.93,272,1654585200"; 
-   d="scan'208";a="562188844"
+   d="scan'208";a="562188843"
 Received: from black.fi.intel.com ([10.237.72.28])
   by orsmga003.jf.intel.com with ESMTP; 29 Aug 2022 04:23:55 -0700
 Received: by black.fi.intel.com (Postfix, from userid 1003)
-        id 6C6EA45; Mon, 29 Aug 2022 14:24:10 +0300 (EEST)
+        id 63062AD; Mon, 29 Aug 2022 14:24:10 +0300 (EEST)
 From:   Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
@@ -47,40 +47,75 @@ To:     Jonathan Cameron <Jonathan.Cameron@huawei.com>,
         linux-kernel@vger.kernel.org
 Cc:     Jonathan Cameron <jic23@kernel.org>,
         Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v1 2/4] iio: magnetometer: yamaha-yas530: Make strings const in chip info
-Date:   Mon, 29 Aug 2022 14:24:05 +0300
-Message-Id: <20220829112407.74917-2-andriy.shevchenko@linux.intel.com>
+Subject: [PATCH v1 1/4] iio: magnetometer: yamaha-yas530: Use pointers as driver data
+Date:   Mon, 29 Aug 2022 14:24:04 +0300
+Message-Id: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
 X-Mailer: git-send-email 2.35.1
-In-Reply-To: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
-References: <20220829112407.74917-1-andriy.shevchenko@linux.intel.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-For better compiler coverage mark strings consts in the chip info.
+Unify ID tables to use pointers for driver data. It will allow
+to simplify the driver later on.
 
 Signed-off-by: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
 ---
- drivers/iio/magnetometer/yamaha-yas530.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/iio/magnetometer/yamaha-yas530.c | 21 +++++++++++----------
+ 1 file changed, 11 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/iio/magnetometer/yamaha-yas530.c b/drivers/iio/magnetometer/yamaha-yas530.c
-index 03e0525e6364..8cfe1ef9c5b4 100644
+index 026f71e524f3..03e0525e6364 100644
 --- a/drivers/iio/magnetometer/yamaha-yas530.c
 +++ b/drivers/iio/magnetometer/yamaha-yas530.c
-@@ -189,8 +189,8 @@ struct yas5xx;
-  */
- struct yas5xx_chip_info {
- 	unsigned int devid;
--	char *product_name;
--	char *version_names[2];
-+	const char *product_name;
-+	const char *version_names[2];
- 	const int *volatile_reg;
- 	int volatile_reg_qty;
- 	u32 scaling_val2;
+@@ -32,6 +32,7 @@
+ #include <linux/mod_devicetable.h>
+ #include <linux/mutex.h>
+ #include <linux/pm_runtime.h>
++#include <linux/property.h>
+ #include <linux/regmap.h>
+ #include <linux/regulator/consumer.h>
+ #include <linux/random.h>
+@@ -1437,8 +1438,8 @@ static int yas5xx_probe(struct i2c_client *i2c,
+ 		goto assert_reset;
+ 	}
+ 
+-	yas5xx->chip_info = &yas5xx_chip_info_tbl[id->driver_data];
+-	ci = yas5xx->chip_info;
++	ci = device_get_match_data(dev);
++	yas5xx->chip_info = ci;
+ 
+ 	ret = regmap_read(yas5xx->map, YAS5XX_DEVICE_ID, &id_check);
+ 	if (ret)
+@@ -1583,19 +1584,19 @@ static DEFINE_RUNTIME_DEV_PM_OPS(yas5xx_dev_pm_ops, yas5xx_runtime_suspend,
+ 				 yas5xx_runtime_resume, NULL);
+ 
+ static const struct i2c_device_id yas5xx_id[] = {
+-	{"yas530", yas530 },
+-	{"yas532", yas532 },
+-	{"yas533", yas533 },
+-	{"yas537", yas537 },
++	{"yas530", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas530] },
++	{"yas532", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas532] },
++	{"yas533", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas533] },
++	{"yas537", (kernel_ulong_t)&yas5xx_chip_info_tbl[yas537] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(i2c, yas5xx_id);
+ 
+ static const struct of_device_id yas5xx_of_match[] = {
+-	{ .compatible = "yamaha,yas530", },
+-	{ .compatible = "yamaha,yas532", },
+-	{ .compatible = "yamaha,yas533", },
+-	{ .compatible = "yamaha,yas537", },
++	{ .compatible = "yamaha,yas530", &yas5xx_chip_info_tbl[yas530] },
++	{ .compatible = "yamaha,yas532", &yas5xx_chip_info_tbl[yas532] },
++	{ .compatible = "yamaha,yas533", &yas5xx_chip_info_tbl[yas533] },
++	{ .compatible = "yamaha,yas537", &yas5xx_chip_info_tbl[yas537] },
+ 	{}
+ };
+ MODULE_DEVICE_TABLE(of, yas5xx_of_match);
 -- 
 2.35.1
 
