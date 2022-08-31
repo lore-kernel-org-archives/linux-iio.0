@@ -2,41 +2,43 @@ Return-Path: <linux-iio-owner@kernel.org>
 X-Spam-Checker-Version: SpamAssassin 3.4.0 (2014-02-07) on
 	aws-us-west-2-korg-lkml-1.web.codeaurora.org
 Received: from vger.kernel.org (vger.kernel.org [23.128.96.18])
-	by smtp.lore.kernel.org (Postfix) with ESMTP id 7D72AECAAD4
-	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 10:05:19 +0000 (UTC)
+	by smtp.lore.kernel.org (Postfix) with ESMTP id 0A395ECAAD1
+	for <linux-iio@archiver.kernel.org>; Wed, 31 Aug 2022 10:05:30 +0000 (UTC)
 Received: (majordomo@vger.kernel.org) by vger.kernel.org via listexpand
-        id S230080AbiHaKFS (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
-        Wed, 31 Aug 2022 06:05:18 -0400
-Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59134 "EHLO
+        id S231124AbiHaKF1 (ORCPT <rfc822;linux-iio@archiver.kernel.org>);
+        Wed, 31 Aug 2022 06:05:27 -0400
+Received: from lindbergh.monkeyblade.net ([23.128.96.19]:59436 "EHLO
         lindbergh.monkeyblade.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S230020AbiHaKFP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 06:05:15 -0400
+        with ESMTP id S230459AbiHaKFV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2022 06:05:21 -0400
 Received: from smtp1.axis.com (smtp1.axis.com [195.60.68.17])
-        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 0783B6E8A2;
-        Wed, 31 Aug 2022 03:05:09 -0700 (PDT)
+        by lindbergh.monkeyblade.net (Postfix) with ESMTPS id 2AA19543F3;
+        Wed, 31 Aug 2022 03:05:16 -0700 (PDT)
 DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
-  d=axis.com; q=dns/txt; s=axis-central1; t=1661940312;
-  x=1693476312;
-  h=from:to:cc:subject:date:message-id:mime-version:
-   content-transfer-encoding;
-  bh=vUrM9ZM91DzPeAfuKiBbAxb18ShY/Z4MIs2oFy4nP+8=;
-  b=YK1+mNlTNzlA013Mfv7+uEcS6hwmhxNkz04Jxm/etwyPgXo76Gxw4kgH
-   EAj7iMmXd5+nVsxYcv4+7/tF3UR9o3e4cfrNYI0/qJBE6ubdFmozmGuhq
-   VzSEVU5R0eARd7aCrFa0lJkuHlwj2dNgztaMfqjUyOER2SlonqpDeXXCq
-   Jv+9+dWQhUPIs6KFZ3WbDUS75b5ppXR6EMoWJgk7Ix5rKD1Y7INu6chDG
-   YoPPlSmwIYmMoM4Ru+aRqotpBitdpFRwdrjsjAbBr0BxT3rEYN/LRg2hs
-   +e69HlrKmFQDS+pUf6QUlXiknCAVEZ0V7zg7fdDCghfHHysAU3fIbBKnl
-   g==;
+  d=axis.com; q=dns/txt; s=axis-central1; t=1661940317;
+  x=1693476317;
+  h=from:to:cc:subject:date:message-id:in-reply-to:
+   references:mime-version:content-transfer-encoding;
+  bh=IV6/GgZtvZM/HS0HfOk29zo087rTH6OyitDmydT3TPc=;
+  b=MI+LNoqsJCy2Kkkg27zpOmFqFqpaVwsfQjFC+B1/1OOmkIAHk0ehzs9R
+   sma56gJoNT8wlDpd7F39bcEW+hAAEbvU0iKa8m9sZyJ5VlHTn4mifKM37
+   YoEkev4a0+4hBayPcbensKILZL8ZvVynN08nC3p1KfeROp5zf6ZiHe72Z
+   8mYvN0NVuINcTzj3W9HM4Rp60UJ3fUoPUpQhRNmK/T7xe0vmp7DuiEyLG
+   FalSgheXJvmRmuwrza4O+SLnemTEcQfWjgEXFHIkw9M3xB+PlMOqf/3zg
+   vMUmA70AXWGRs5U6ICBk1ZMIzhIruy2FdxfRsTomc6KpRBGA+9LwpeDav
+   A==;
 From:   Vincent Whitchurch <vincent.whitchurch@axis.com>
 To:     <jic23@kernel.org>
 CC:     <kernel@axis.com>,
         Vincent Whitchurch <vincent.whitchurch@axis.com>,
         <andy.shevchenko@gmail.com>, <lars@metafoo.de>,
         <linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: [PATCH v2 0/5] iio: adc: mcp320x: Add triggered buffer support
-Date:   Wed, 31 Aug 2022 12:05:01 +0200
-Message-ID: <20220831100506.3368103-1-vincent.whitchurch@axis.com>
+Subject: [PATCH v2 4/5] iio: adc: mcp320x: use device managed functions
+Date:   Wed, 31 Aug 2022 12:05:05 +0200
+Message-ID: <20220831100506.3368103-5-vincent.whitchurch@axis.com>
 X-Mailer: git-send-email 2.34.1
+In-Reply-To: <20220831100506.3368103-1-vincent.whitchurch@axis.com>
+References: <20220831100506.3368103-1-vincent.whitchurch@axis.com>
 MIME-Version: 1.0
 Content-Transfer-Encoding: 8bit
 Content-Type: text/plain
@@ -44,38 +46,71 @@ Precedence: bulk
 List-ID: <linux-iio.vger.kernel.org>
 X-Mailing-List: linux-iio@vger.kernel.org
 
-This series makes some suggested cleanups and then adds triggered buffer
-support to the mcp320x ADC driver.
+Use devm_* functions in probe to remove some code and to make it easier
+to add further calls to the probe function.
 
-v2:
-- Replace device_index rx switch with callbacks in chip_info
-- Replace device_index tx switch with computation based
-  on number of channels.
-- Use conv_time instead of device_index switch when initializing
-  conv_msg.
-- Keep includes in alphabetical order with iio includes in a separate group
-- Replace diff_off with scan_index as parameter to macro
-- Remove reformatting of macros which makes the real change hard
-  to spot
+Signed-off-by: Vincent Whitchurch <vincent.whitchurch@axis.com>
+---
+ drivers/iio/adc/mcp320x.c | 30 ++++++++++--------------------
+ 1 file changed, 10 insertions(+), 20 deletions(-)
 
-Cc: andy.shevchenko@gmail.com
-Cc: lars@metafoo.de
-Cc: linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-
-Axel Jonsson (1):
-  iio: adc: mcp320x: add triggered buffer support
-
-Vincent Whitchurch (4):
-  iio: adc: mcp320x: use callbacks for RX conversion
-  iio: adc: mcp320x: remove device_index check for TX
-  iio: adc: mcp320x: use conv_time instead of device_index switch
-  iio: adc: mcp320x: use device managed functions
-
- drivers/iio/adc/Kconfig   |   2 +
- drivers/iio/adc/mcp320x.c | 297 +++++++++++++++++++++++---------------
- 2 files changed, 183 insertions(+), 116 deletions(-)
-
+diff --git a/drivers/iio/adc/mcp320x.c b/drivers/iio/adc/mcp320x.c
+index 8ed27df9a0bb..b1c1bf4b8047 100644
+--- a/drivers/iio/adc/mcp320x.c
++++ b/drivers/iio/adc/mcp320x.c
+@@ -390,6 +390,11 @@ static const struct mcp320x_chip_info mcp320x_chip_infos[] = {
+ 	},
+ };
+ 
++static void mcp320x_reg_disable(void *reg)
++{
++	regulator_disable(reg);
++}
++
+ static int mcp320x_probe(struct spi_device *spi)
+ {
+ 	struct iio_dev *indio_dev;
+@@ -460,27 +465,13 @@ static int mcp320x_probe(struct spi_device *spi)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	mutex_init(&adc->lock);
+-
+-	ret = iio_device_register(indio_dev);
+-	if (ret < 0)
+-		goto reg_disable;
+-
+-	return 0;
+-
+-reg_disable:
+-	regulator_disable(adc->reg);
+-
+-	return ret;
+-}
++	ret = devm_add_action_or_reset(&spi->dev, mcp320x_reg_disable, adc->reg);
++	if (ret)
++		return ret;
+ 
+-static void mcp320x_remove(struct spi_device *spi)
+-{
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-	struct mcp320x *adc = iio_priv(indio_dev);
++	mutex_init(&adc->lock);
+ 
+-	iio_device_unregister(indio_dev);
+-	regulator_disable(adc->reg);
++	return devm_iio_device_register(&spi->dev, indio_dev);
+ }
+ 
+ static const struct of_device_id mcp320x_dt_ids[] = {
+@@ -535,7 +526,6 @@ static struct spi_driver mcp320x_driver = {
+ 		.of_match_table = mcp320x_dt_ids,
+ 	},
+ 	.probe = mcp320x_probe,
+-	.remove = mcp320x_remove,
+ 	.id_table = mcp320x_id,
+ };
+ module_spi_driver(mcp320x_driver);
 -- 
 2.34.1
 
